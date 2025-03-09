@@ -93,7 +93,6 @@ mod component
 /// ```
 ///
 /// This pattern enables fluent and customizable construction of `UserProfile` instances, allowing for easy setting and modification of its fields.
-
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_former" ) ]
 #[

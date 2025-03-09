@@ -180,7 +180,6 @@ mod private
   ///     // Do what you need to do
   ///   }
   /// ) );
-
   pub struct Handler< I, O >( Box< dyn Fn( I ) -> O > );
 
   impl< I, O > core::fmt::Debug for Handler< I, O >

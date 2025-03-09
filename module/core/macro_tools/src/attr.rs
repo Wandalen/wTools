@@ -51,7 +51,6 @@ mod private
   /// ```
   /// # Errors
   /// qqq: doc
-
   pub fn has_debug< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> syn::Result< bool >
   {
     for attr in attrs

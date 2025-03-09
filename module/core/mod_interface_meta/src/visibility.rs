@@ -10,7 +10,6 @@ mod private
   ///
   /// Custom keywords
   ///
-
   pub mod kw
   {
     #[ allow( clippy::wildcard_imports ) ]
@@ -28,7 +27,6 @@ mod private
   ///
   /// Visibility constructor.
   ///
-
   pub trait VisibilityInterface
   {
     type Token : syn::token::Token + syn::parse::Parse;
@@ -41,7 +39,6 @@ mod private
   ///
   /// Trait answering question can the visibility be used for non-standard module.
   ///
-
   pub trait ValidSubNamespace
   {
     fn valid_sub_namespace( &self ) -> bool { false }

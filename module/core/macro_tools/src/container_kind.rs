@@ -80,7 +80,6 @@ mod private
   /// ```
   /// # Panics
   /// qqq: doc
-
   #[ must_use ]
   pub fn of_optional( ty : &syn::Type ) -> ( ContainerKind, bool )
   {

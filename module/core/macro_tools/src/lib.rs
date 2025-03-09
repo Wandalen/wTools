@@ -14,7 +14,6 @@ mod private
   ///
   /// Result with `syn::Error`.
   ///
-
   pub type Result< T > = core::result::Result< T, syn::Error >;
 
 }
@@ -70,7 +69,6 @@ pub mod iter;
 ///
 /// Dependencies of the module.
 ///
-
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod dependency

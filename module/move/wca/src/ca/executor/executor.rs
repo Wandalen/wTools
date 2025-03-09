@@ -51,7 +51,7 @@ mod private
     // aaa : use typed error
     // aaa : done
     pub fn program( &self, dictionary : &Dictionary, program : Program< VerifiedCommand > )
-    -> Result< (), CommandError >
+    -> Result< (), Box< CommandError > >
     {
       for command in program.commands
       {
@@ -80,18 +80,18 @@ mod private
     // aaa : use typed error
     // aaa : done
     pub fn command( &self, dictionary : &Dictionary, command : VerifiedCommand )
-    -> Result< (), CommandError >
+    -> Result< (), Box< CommandError > >
     {
       if command.internal_command
       {
-        _exec_internal_command( dictionary, command.clone() )
-        .map_err( | error | CommandError::Internal { command, error } )
+        exec_internal_command( dictionary, command.clone() )
+        .map_err( | error | Box::new( CommandError::Internal { command, error } ) )
       }
       else
       {
         let routine = dictionary.command( &command.phrase ).unwrap().routine.clone();
-        _exec_command( command.clone(), routine, self.context.clone() )
-        .map_err( | error | CommandError::User { command, error } )
+        exec_command( command.clone(), routine, self.context.clone() )
+        .map_err( | error | Box::new( CommandError::User { command, error } ) )
       }
     }
 
@@ -101,7 +101,7 @@ mod private
 
   // qqq : use typed error
   // aaa : should it be typed? it is user command with unknown error type
-  fn _exec_command( command : VerifiedCommand, routine : Routine, ctx : Context )
+  fn exec_command( command : VerifiedCommand, routine : Routine, ctx : Context )
   -> error::untyped::Result< () >
   {
     match routine
@@ -123,7 +123,7 @@ mod private
   // aaa : use typed error
   // aaa : done
   #[ allow( clippy::needless_pass_by_value ) ]
-  fn _exec_internal_command( dictionary : &Dictionary, command : VerifiedCommand )
+  fn exec_internal_command( dictionary : &Dictionary, command : VerifiedCommand )
   -> Result< (), InternalCommandError >
   {
     match command.phrase.as_str()

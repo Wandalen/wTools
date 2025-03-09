@@ -27,7 +27,6 @@ mod private
   /// ```
   /// # Errors
   /// qqq: doc
-
   pub fn named_fields( ast : &syn::DeriveInput ) -> crate::Result< &Punctuated< syn::Field, syn::token::Comma > >
   {
 

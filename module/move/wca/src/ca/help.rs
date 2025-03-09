@@ -50,13 +50,13 @@ mod private
     /// Reresents how much information to display for the subjects
     ///
     /// - `None` - nothing
-    /// - `Simple` - <subjects>
+    /// - `Simple` - < subjects >
     /// - `Detailed` - each subject with information about it. E.g. `<String>`
     pub subject_detailing : LevelOfDetail,
     /// Reresents how much information to display for the properties
     ///
     /// - `None` - nothing
-    /// - `Simple` - <properties>
+    /// - `Simple` - < properties >
     /// - `Detailed` - each property with information about it. E.g. `<property_name:String>`
     pub property_detailing : LevelOfDetail,
     /// Reresents how much information to display for the properties

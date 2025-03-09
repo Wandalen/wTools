@@ -45,7 +45,6 @@ mod private
   /// and a semicolon at the end of each line. The function also demonstrates handling
   /// of input strings that end with a newline character by appending an additional line
   /// consisting only of the prefix and postfix.
-
   pub fn indentation< Prefix, Src, Postfix >( prefix : Prefix, src : Src, postfix : Postfix ) -> String
   where
     Prefix : AsRef< str >,
@@ -133,7 +132,6 @@ mod private
   /// println!( "{}", formatted_report );
   /// ```
   ///
-
   #[ allow( clippy::needless_pass_by_value ) ]
   pub fn report_format< IntoAbout, IntoInput, IntoOutput >
   (
@@ -196,7 +194,6 @@ mod private
   /// The above example demonstrates how the `report_print` function can be used to visualize the changes from original input code to the generated code,
   /// helping developers to verify and understand the modifications made during code generation processes. The output is formatted to show clear distinctions
   /// between the 'original' and 'generated' sections, providing an easy-to-follow comparison.
-
   pub fn report_print< IntoAbout, IntoInput, IntoOutput >
   (
     about : IntoAbout, input : IntoInput, output : IntoOutput
@@ -221,7 +218,6 @@ mod private
   /// tree_print!( tree_type );
   /// ```
   ///
-
   #[ macro_export ]
   macro_rules! tree_print
   {
@@ -249,7 +245,6 @@ mod private
   /// tree_print!( tree_type );
   /// ```
   ///
-
   #[ macro_export ]
   macro_rules! code_print
   {
@@ -268,7 +263,6 @@ mod private
   ///
   /// Macro for diagnostics purpose to export both syntax tree and source code behind it into a string.
   ///
-
   #[ macro_export ]
   macro_rules! tree_diagnostics_str
   {
@@ -282,7 +276,6 @@ mod private
   ///
   /// Macro for diagnostics purpose to diagnose source code behind it and export it into a string.
   ///
-
   #[ macro_export ]
   macro_rules! code_diagnostics_str
   {
@@ -296,7 +289,6 @@ mod private
   ///
   /// Macro to export source code behind a syntax tree into a string.
   ///
-
   #[ macro_export ]
   macro_rules! code_to_str
   {
@@ -317,7 +309,6 @@ mod private
   /// # ()
   /// ```
   ///
-
   #[ macro_export ]
   macro_rules! syn_err
   {
@@ -355,7 +346,6 @@ mod private
   /// # ()
   /// ```
   ///
-
   #[ macro_export ]
   macro_rules! return_syn_err
   {

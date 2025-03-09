@@ -3,9 +3,12 @@
 
 use std::collections::HashMap;
 use criterion::{ criterion_group, criterion_main, Criterion };
-use wca::{ CommandsAggregator, Routine, Type };
+use wca::grammar::Dictionary;
+use wca::{ CommandsAggregator, Type };
+use wca::executor::{ Routine, Handler };
+use wca::VerifiedCommand;
 
-fn init( count : usize, command : wca::Command ) -> CommandsAggregator
+fn init( count : usize, command : wca::grammar::Command ) -> CommandsAggregator
 {
   let mut commands = Vec::with_capacity( count );
   let mut routines = HashMap::with_capacity( count );
@@ -19,13 +22,23 @@ fn init( count : usize, command : wca::Command ) -> CommandsAggregator
     commands.push( command );
     routines.insert
     (
-      name, Routine::new( | _ | { assert_eq!( 1 + 1, 2 ); Ok( () ) } ),
+      name, Routine::from
+      ( 
+        Handler::from
+        (
+          | _ : VerifiedCommand | -> Result< (), wca::error::untyped::Error > 
+          {
+            assert_eq!( 1 + 1, 2 );
+            Ok( () )
+          } 
+        ) 
+      ),
     );
   }
 
   assert_eq!( count, commands.len() );
   assert_eq!( count, routines.len() );
-
+  
   CommandsAggregator::former()
   .grammar( commands )
   .executor( routines )
@@ -37,7 +50,7 @@ fn initialize_commands_without_args( count : usize ) -> CommandsAggregator
   init
   (
     count,
-    wca::Command::former()
+    wca::grammar::Command::former()
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "{placeholder}" )
@@ -49,12 +62,12 @@ fn initialize_commands_with_subjects( count : usize ) -> CommandsAggregator {
   init
   (
     count,
-    wca::Command::former()
+    wca::grammar::Command::former()
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "{placeholder}" )
-    .subject( "hint", Type::String, true )
-    .subject( "hint", Type::String, true )
+    .subject().hint( "hint" ).kind( Type::String ).optional( true ).end()
+    .subject().hint( "hint" ).kind( Type::String ).optional( true ).end()
     .form(),
   )
 }
@@ -63,12 +76,12 @@ fn initialize_commands_with_properties( count : usize ) -> CommandsAggregator {
   init
   (
     count,
-    wca::Command::former()
+    wca::grammar::Command::former()
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "{placeholder}" )
-    .property( "prop", "hint", Type::String, true )
-    .property( "prop2", "hint", Type::String, true )
+    .property( "prop" ).hint( "hint" ).kind( Type::String ).optional( true ).end()
+    .property( "prop2" ).hint( "hint" ).kind( Type::String ).optional( true ).end()
     .form(),
   )
 }

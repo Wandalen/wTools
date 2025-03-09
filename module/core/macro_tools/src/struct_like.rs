@@ -18,7 +18,7 @@ mod private
     Variant( &'a syn::Variant ),
   }
 
-  impl< 'a > Copy for FieldOrVariant< 'a >
+  impl Copy for FieldOrVariant< '_ >
   {
   }
 
@@ -56,7 +56,7 @@ mod private
     }
   }
 
-  impl< 'a > FieldOrVariant< 'a >
+  impl FieldOrVariant< '_ >
   {
 
     /// Returns a reference to the attributes of the item.

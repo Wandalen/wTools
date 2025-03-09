@@ -22,6 +22,8 @@ mod private
   #[ derive( Debug ) ]
   pub struct Parser;
 
+  type ParsedArgs = (Vec<String>, HashMap<String, String>, usize);
+
   impl Parser
   {
     /// Parses a vector of command line arguments and returns a `Program` containing the parsed commands.
@@ -105,10 +107,13 @@ mod private
       ))
     }
 
+    
+    
+
     // returns ( subjects, properties, relative_end_pos )
     // aaa : use typed error
     // aaa : done
-    fn parse_command_args( args : &[ String ] ) -> Result< ( Vec< String >, HashMap< String, String >, usize ), ParserError >
+    fn parse_command_args( args : &[ String ] ) -> Result< ParsedArgs, ParserError >
     {
       let mut i = 0;
 

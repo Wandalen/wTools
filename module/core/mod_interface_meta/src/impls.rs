@@ -285,7 +285,6 @@ mod private
   ///
   /// Handle record micro module.
   ///
-
   fn record_micro_module
   (
     record : &Record,

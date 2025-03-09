@@ -5,7 +5,6 @@ use macro_tools::{ container_kind };
 ///
 /// Definition of a field.
 ///
-
 #[ allow( dead_code ) ]
 pub struct FormerField< 'a >
 {
@@ -44,7 +43,6 @@ impl< 'a > FormerField< 'a >
 `scalar_setter_required`
 
 */
-
   /// Construct former field from [`syn::Field`]
   pub fn from_syn( field : &'a syn::Field, for_storage : bool, for_formed : bool ) -> Result< Self >
   {
@@ -86,7 +84,6 @@ impl< 'a > FormerField< 'a >
   /// int_optional_1 : core::option::Option::None,
   /// ```
   ///
-
   #[ inline( always ) ]
   pub fn storage_fields_none( &self ) -> TokenStream
   {
@@ -114,7 +111,6 @@ impl< 'a > FormerField< 'a >
   /// pub string_optional_1 : core::option::Option< String >,
   /// ```
   ///
-
   #[ inline( always ) ]
   pub fn storage_field_optional( &self ) -> TokenStream
   {
@@ -171,7 +167,6 @@ impl< 'a > FormerField< 'a >
   /// };
   /// ```
   ///
-
   #[ inline( always ) ]
   #[ allow( clippy::unnecessary_wraps ) ]
   pub fn storage_field_preform( &self ) -> Result< TokenStream >
@@ -289,7 +284,6 @@ impl< 'a > FormerField< 'a >
   ///
   /// Extract name of a field out.
   ///
-
   #[ inline( always ) ]
   pub fn storage_field_name( &self ) -> TokenStream
   {
@@ -326,7 +320,6 @@ impl< 'a > FormerField< 'a >
   /// - **Subform Setters**: Generated for fields annotated as subforms, allowing for nested
   ///   forming processes where a field itself can be formed using a dedicated former.
   ///
-
   #[ inline ]
   #[ allow( clippy::too_many_arguments ) ]
   pub fn former_field_setter
@@ -441,7 +434,6 @@ impl< 'a > FormerField< 'a >
   ///   self
   /// }
   /// ```
-
   #[ inline ]
   #[ allow( clippy::format_in_format_args ) ]
   pub fn scalar_setter
@@ -521,7 +513,6 @@ field : {field_ident}"#,
   ///
   /// See `tests/inc/former_tests/subform_collection_manual.rs` for example of generated code.
   ///
-
   #[ inline ]
   #[ allow( clippy::too_many_lines, clippy::too_many_arguments ) ]
   pub fn subform_collection_setter
@@ -855,7 +846,6 @@ with the new content generated during the subforming process.
   ///
   /// See `tests/inc/former_tests/subform_entry_manual.rs` for example of generated code.
   ///
-
   #[ inline ]
   #[ allow( clippy::format_in_format_args, clippy::too_many_lines, clippy::too_many_arguments ) ]
   pub fn subform_entry_setter
@@ -1146,7 +1136,6 @@ formation process of the `{item}`.
   /// Generates setter functions to subform scalar and all corresponding helpers.
   ///
   /// See `tests/inc/former_tests/subform_scalar_manual.rs` for example of generated code.
-
   #[ inline ]
   #[ allow( clippy::format_in_format_args, clippy::unnecessary_wraps, clippy::too_many_lines, clippy::too_many_arguments ) ]
   pub fn subform_scalar_setter

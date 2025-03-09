@@ -11,7 +11,6 @@ mod private
   /// The `ErrWith` trait provides methods to wrap an error with additional context, either by using a closure
   /// that generates the context or by directly providing the context.
   ///
-  /// ```
   pub trait ErrWith< ReportErr, ReportOk, E >
   {
     /// Takes a closure `f` that returns a value of type `ReportErr`, and uses it to wrap an error of type `(ReportErr, E)`

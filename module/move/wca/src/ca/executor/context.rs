@@ -56,7 +56,6 @@ mod private
     /// # Arguments
     ///
     /// * `value` - The value to be stored in the `Context`. The value must implement the `Send` and `Sync` traits.
-    /// ```
     // `'static` means that the object must be owned or live at least as a `Context'
     pub fn new< T : Send + Sync + 'static >( value : T ) -> Self
     {
