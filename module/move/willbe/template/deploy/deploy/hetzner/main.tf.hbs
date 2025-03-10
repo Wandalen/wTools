@@ -22,7 +22,7 @@ resource "hcloud_ssh_key" "redeploy" {
 
 # Static IP for the instance
 resource "hcloud_primary_ip" "primary_ip" {
-  name          = "{{docker_image_name}}-ip"
+  name          = "{{gcp_artifact_repo_name}}-ip"
   datacenter    = "hel1-dc2"
   type          = "ipv4"
   assignee_type = "server"
@@ -31,7 +31,7 @@ resource "hcloud_primary_ip" "primary_ip" {
 
 # Hetzner instance itself
 resource "hcloud_server" "{{docker_image_name}}" {
-  name        = "{{docker_image_name}}"
+  name        = "{{gcp_artifact_repo_name}}"
   image       = "ubuntu-22.04"
   server_type = "cx22"
   datacenter  = "hel1-dc2"

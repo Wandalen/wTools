@@ -88,6 +88,8 @@ You can put your service account keys here for them to be used in deployment.
 
 Get your key from GCP panel at https://console.cloud.google.com/iam-admin/serviceaccounts
 
+Created services account must have access to create, read, update, and delete Artifact Registry and Buckets services.
+
 Service Account -> Keys -> Add Key -> Create new key -> JSON
 
 Default key name is `service_account.json`, this can be modified in the [Makefile](../Makefile).
