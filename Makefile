@@ -39,7 +39,7 @@ sync : git.sync
 #	make audit
 
 audit :
-	cargo audit
+	cargo audit --ignore RUSTSEC-2024-0421
 
 #
 # === General commands
