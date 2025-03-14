@@ -30,6 +30,7 @@ mod private
   {
     // Result,
     untyped::Error as wError, // xxx
+    // only importing Error from this module is used
     for_lib::Error,
   };
   use iter_tools::Itertools;

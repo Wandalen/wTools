@@ -19,6 +19,7 @@ mod private
     (
       "Command not found. {} {}",
       if let Some( phrase ) = name_suggestion { format!( "Maybe you mean `.{phrase}`?" ) } else { "Please use `.` command to see the list of available commands.".into() },
+      // fix clippy
       if let Some( info ) = command_info { format!( "Command info: `{info}`" ) } else { String::new() }
     )]
     CommandNotFound { name_suggestion: Option< String >, command_info: Option< String > },
@@ -211,7 +212,7 @@ mod private
       )
       .collect()
     }
-
+    // fix clippy
     fn group_properties_and_their_aliases< 'a, Ks >( aliases : &'a HashMap< String, String >, used_keys :  Ks ) -> Vec<&'a String >
     where
       Ks : Iterator< Item = &'a String >

@@ -10,7 +10,7 @@ use wca::{ CommandsAggregator, Type };
 
 fn init( count : usize, command : wca::grammar::Command ) -> CommandsAggregator
 {
- 
+  
   let mut dic_former = Dictionary::former();
   for i in 0 .. count
   {
@@ -24,6 +24,8 @@ fn init( count : usize, command : wca::grammar::Command ) -> CommandsAggregator
   }
   let dictionary = dic_former.form();
   
+  // The CommandsAggregator has changed and there are no more grammar fields and the executor no longer stores routines.
+  // Accordingly, I made changes and write commands through DictionaryFormer and pass it to CommandsAggregator
   CommandsAggregator::former()
   .dictionary( dictionary )
   .perform()
@@ -43,6 +45,7 @@ fn initialize_commands_without_args( count : usize ) -> CommandsAggregator
 }
 
 fn initialize_commands_with_subjects( count : usize ) -> CommandsAggregator {
+  // The way commands are initialized has changed, now the ComandFormer from the grammar module is used and the subject() and property methods are called differently
   init
   (
     count,

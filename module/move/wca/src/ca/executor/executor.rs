@@ -80,6 +80,7 @@ mod private
     // aaa : use typed error
     // aaa : done
     pub fn command( &self, dictionary : &Dictionary, command : VerifiedCommand )
+    // fix clippy error
     -> Result< (), Box< CommandError > >
     {
       if command.internal_command
@@ -101,6 +102,7 @@ mod private
 
   // qqq : use typed error
   // aaa : should it be typed? it is user command with unknown error type
+  // fix clippy error
   fn exec_command( command : VerifiedCommand, routine : Routine, ctx : Context )
   -> error::untyped::Result< () >
   {
@@ -123,6 +125,7 @@ mod private
   // aaa : use typed error
   // aaa : done
   #[ allow( clippy::needless_pass_by_value ) ]
+  // fix clippy error
   fn exec_internal_command( dictionary : &Dictionary, command : VerifiedCommand )
   -> Result< (), InternalCommandError >
   {
