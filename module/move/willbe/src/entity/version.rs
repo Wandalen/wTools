@@ -207,7 +207,11 @@ mod private
     let current_version = version::Version::try_from( package_version.as_str() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     if current_version > o.new_version
     {
-      return Err( format_err!( "{report:?}\nThe current version of the package is higher than need to be set\n\tpackage: {name}\n\tcurrent_version: {current_version}\n\tnew_version: {}", o.new_version ) );
+      return Err( format_err!
+      ( 
+        "{report:?}\nThe current version of the package is higher than need to be set\n\tpackage: {name}\n\tcurrent_version: {current_version}\n\tnew_version: {}", 
+        o.new_version 
+      ));
     }
     report.old_version = Some( o.old_version.to_string() );
     report.new_version = Some( o.new_version.to_string() );
@@ -284,12 +288,26 @@ mod private
           let version = &mut dependency[ "version" ];
           if let Some( current_version ) = current_version.strip_prefix( '~' )
           {
-            if current_version != new_version { return Err( format_err!( "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`", version.as_str().unwrap_or_default() ) ); }
+            if current_version != new_version 
+            { 
+              return Err( format_err!
+              ( 
+                "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`", 
+                version.as_str().unwrap_or_default() 
+              )); 
+            }
             *version = value( format!( "~{old_version}" ) );
           }
           else
           {
-            if version.as_str().unwrap() != new_version { return Err( format_err!( "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`", version.as_str().unwrap_or_default() ) ); }
+            if version.as_str().unwrap() != new_version 
+            { 
+              return Err( format_err!
+              ( 
+                "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`", 
+                version.as_str().unwrap_or_default() 
+              )); 
+            }
             *version = value( old_version.clone() );
           }
         }
@@ -311,7 +329,14 @@ mod private
         if package.get_mut( "name" ).unwrap().as_str().unwrap() == name
         {
           let version = &mut package[ "version" ];
-          if version.as_str().unwrap() != new_version { return Err( format_err!( "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`", version.as_str().unwrap_or_default() ) ); }
+          if version.as_str().unwrap() != new_version 
+          { 
+            return Err( format_err!
+            ( 
+              "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`", 
+              version.as_str().unwrap_or_default() 
+            )); 
+          }
           *version = value( old_version.clone() );
         }
         else

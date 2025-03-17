@@ -203,9 +203,9 @@ mod private
   }
 
   impl< F, R > From< F > for Handler< VerifiedCommand, R >
-    where
-      R : IntoResult + 'static,
-      F : Fn( VerifiedCommand ) -> R + 'static,
+  where
+    R : IntoResult + 'static,
+    F : Fn( VerifiedCommand ) -> R + 'static,
   {
     fn from( value : F ) -> Self
     {

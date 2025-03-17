@@ -27,13 +27,13 @@ fn main() -> error_tools::error::untyped::Result< () >
 
   let ca = CommandsAggregator::former()
   .command( "echo" )
-    .hint( "prints all subjects and properties" )
-    .subject().kind( Type::String ).optional( true ).end()
-    .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
-    .routine( | o : VerifiedCommand |
-    {
-      println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props );
-    })
+  .hint( "prints all subjects and properties" )
+  .subject().kind( Type::String ).optional( true ).end()
+  .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
+  .routine( | o : VerifiedCommand |
+  {
+    println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props );
+  })
   .end()
   .perform();
 

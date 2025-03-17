@@ -3,12 +3,7 @@ mod private
 {
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
-
-  use std::
-  {
-    hash::Hash,
-  };
-
+  use std::hash::Hash;
   use crates_tools::CrateArchive;
   use error::
   {

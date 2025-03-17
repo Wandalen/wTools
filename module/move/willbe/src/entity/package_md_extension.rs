@@ -160,7 +160,7 @@ mod private
           data[ "package" ]
           .get( "metadata" )
         }
-        package::Package::WorkspacePackageRef(_) =>
+        package::Package::WorkspacePackageRef( _ ) =>
         {
           None
         }

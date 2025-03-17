@@ -4,13 +4,11 @@ mod private
 {
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
-
   use path::PathBuf;
   use collection::HashMap;
   use std::fmt;
   use colored::Colorize;
   use crates_tools::CrateArchive;
-
   use action::list::ListReport;
   use error::untyped::Result;
   // qqq : group dependencies
@@ -114,9 +112,9 @@ mod private
       action::list::ListOptions::former()
       .path_to_manifest( dir )
       .format( action::list::ListFormat::Tree )
-      .info([ action::list::PackageAdditionalInfo::Version, action::list::PackageAdditionalInfo::Path ])
-      .dependency_sources([ action::list::DependencySource::Local ])
-      .dependency_categories([ action::list::DependencyCategory::Primary ])
+      .info( [ action::list::PackageAdditionalInfo::Version, action::list::PackageAdditionalInfo::Path ] )
+      .dependency_sources( [ action::list::DependencySource::Local ] )
+      .dependency_categories( [ action::list::DependencyCategory::Primary ] )
       .form()
     )
     .unwrap();

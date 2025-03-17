@@ -16,33 +16,40 @@ fn main() -> error_tools::error::untyped::Result< () >
   let ca = wca::CommandsAggregator::former()
   .with_context( Mutex::new( 0 ) )
   .command( "echo" )
-    .hint( "prints all subjects and properties" )
-    .subject().kind( Type::String ).optional( true ).end()
-    .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
-    .routine( | o : VerifiedCommand | { println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props ) } )
-    .end()
+  .hint( "prints all subjects and properties" )
+  .subject().kind( Type::String ).optional( true ).end()
+  .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
+  .routine( | o : VerifiedCommand | 
+  { 
+    println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props ) 
+  })
+  .end()
   .command( "inc" )
-    .hint( "This command increments a state number each time it is called consecutively. (E.g. `.inc .inc`)" )
-    .routine( | ctx : Context |
-    {
-      let i : Arc< Mutex< i32 > > = ctx.get().unwrap();
-      let mut i = i.lock().unwrap();
-      println!( "i = {}", i );
-      *i += 1;
-    } )
-    .end()
+  .hint( "This command increments a state number each time it is called consecutively. (E.g. `.inc .inc`)" )
+  .routine( | ctx : Context |
+  {
+    let i : Arc< Mutex< i32 > > = ctx.get().unwrap();
+    let mut i = i.lock().unwrap();
+    println!( "i = {}", i );
+    *i += 1;
+  })
+  .end()
   .command( "error" )
-    .hint( "prints all subjects and properties" )
-    .subject().kind( Type::String ).optional( true ).end()
-    .routine( | o : VerifiedCommand | { println!( "Returns an error" ); Err( format!( "{}", o.args.get_owned::< String >( 0 ).unwrap_or_default() ) ) } )
-    .end()
+  .hint( "prints all subjects and properties" )
+  .subject().kind( Type::String ).optional( true ).end()
+  .routine( | o : VerifiedCommand | 
+  { 
+    println!( "Returns an error" ); 
+    Err( format!( "{}", o.args.get_owned::< String >( 0 ).unwrap_or_default() ) ) 
+  })
+  .end()
   .command( "exit" )
-    .hint( "just exit" )
-    .routine( Handler::< _, std::convert::Infallible >::from
-    (
-      || { println!( "exit" ); std::process::exit( 0 ) }
-    ) )
-    .end()
+  .hint( "just exit" )
+  .routine( Handler::< _, std::convert::Infallible >::from( || 
+  { 
+    println!( "exit" ); std::process::exit( 0 ) 
+  }))
+  .end()
   .perform();
 
   let args: Vec< String > = std::env::args().skip( 1 ).collect();

@@ -4,7 +4,6 @@ mod private
 {
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
-
   use std::{ env, fmt, fs };
   use
   {
@@ -36,7 +35,7 @@ mod private
       writeln!( f, "Actions :" )?;
       for ( path, report ) in &self.packages
       {
-        let report = report.to_string().replace('\n', "\n  ");
+        let report = report.to_string().replace( '\n', "\n  " );
         let path = if let Some( wrd ) = &self.workspace_root_dir
         {
           path.as_ref().strip_prefix( wrd.as_ref() ).unwrap()
@@ -67,7 +66,7 @@ mod private
           let mut actually_published : Vec< _ > = self.packages.iter()
           .filter_map
           (
-            |( path, repo )|
+            | ( path, repo ) |
             if repo.publish.as_ref().is_some_and( | r | r.error.is_ok() )
             {
               Some( path.clone() )
@@ -265,7 +264,7 @@ mod private
     for package_report in publish::perform_packages_publish( plan ).err_with_report( &report )?
     {
       let path : &std::path::Path = package_report.get_info.as_ref().unwrap().current_path.as_ref();
-      report.packages.push(( AbsolutePath::try_from( path ).unwrap(), package_report ));
+      report.packages.push( ( AbsolutePath::try_from( path ).unwrap(), package_report ) );
     }
 
     if let Some( dir ) = temp

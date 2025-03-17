@@ -143,7 +143,10 @@ mod private
       let stability = package.stability()?;
       let module_name = package.name()?;
       let repository_url = package.repository()?
-      .ok_or_else::< error::untyped::Error, _ >( || error::untyped::format_err!( "Fail to find repository_url in module`s Cargo.toml" ) )?;
+      .ok_or_else::< error::untyped::Error, _ >
+      ( 
+        || error::untyped::format_err!( "Fail to find repository_url in module`s Cargo.toml" ) 
+      )?;
 
       let discord_url = package
       .discord_url()?

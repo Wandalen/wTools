@@ -143,7 +143,7 @@ mod private
 
   impl fmt::Display for TestPackagePlan
   {
-    fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> std::fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> std::fmt::Result
     {
       writeln!( f, "Package : {}\nThe tests will be executed using the following configurations :", self.crate_dir.clone().absolute_path() )?;
       let mut all_features = collection::BTreeSet::new();
@@ -186,7 +186,7 @@ mod private
         row.add_cell( &variant.optimization.to_string() );
         let counter = 0;
         let flag = true;
-        generate_features_cells(&mut ff, variant, &mut row, counter, flag, &self.enabled_features );
+        generate_features_cells( &mut ff, variant, &mut row, counter, flag, &self.enabled_features );
 
         table.add_row( row );
       }
@@ -365,7 +365,11 @@ mod private
       .chain( if self.with_all_features { Some( "--all-features".into() ) } else { None } )
       // aaa : for Petro : bad, --all-features is always disabled!
       // aaa : add `debug_assert!( !self.with_all_features )`
-      .chain( if self.enable_features.is_empty() { None } else { Some([ "--features".into(), self.enable_features.iter().join( "," ) ]) }.into_iter().flatten() )
+      .chain( if self.enable_features.is_empty() { None } 
+      else 
+      { 
+        Some( [ "--features".into(), self.enable_features.iter().join( "," ) ] ) 
+      }.into_iter().flatten() )
       .chain( self.temp_directory_path.clone().map( | p | vec![ "--target-dir".to_string(), p.to_string_lossy().into() ] ).into_iter().flatten() )
       .collect()
     }
@@ -410,7 +414,11 @@ mod private
     }
     else
     {
-      let envs = if options.backtrace { [( "RUST_BACKTRACE".to_string(), "full".to_string() )].into_iter().collect() } else { collection::HashMap::new() };
+      let envs = if options.backtrace 
+      { 
+        [ ( "RUST_BACKTRACE".to_string(), "full".to_string() ) ].into_iter().collect() 
+      } 
+      else { collection::HashMap::new() };
       Run::former()
       .bin_path( program )
       .args( args.into_iter().map( std::ffi::OsString::from ).collect::< Vec< _ > >() )
@@ -514,7 +522,7 @@ mod private
         }
         all_features.extend( features );
       }
-      let mut ff: Vec< _ > = self.enabled_features.iter().cloned().collect();
+      let mut ff : Vec< _ > = self.enabled_features.iter().cloned().collect();
       for feature in all_features
       {
         if !ff.contains( &feature )
@@ -777,7 +785,7 @@ mod private
                 {
                   report.lock().unwrap().success_reports.push( r );
                 }
-                Err(( r, _ )) =>
+                Err( ( r, _ ) ) =>
                 {
                   report.lock().unwrap().failure_reports.push( r );
                 }
@@ -794,7 +802,7 @@ mod private
     }
     else
     {
-      Err(( report, format_err!( "Some tests was failed" ).into() ))
+      Err( ( report, format_err!( "Some tests was failed" ).into() ) )
     }
   }
 }

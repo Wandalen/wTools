@@ -25,7 +25,11 @@ mod private
   /// # Returns :
   /// Returns a result containing a report indicating the result of the operation.
   // qqq : should be typed error, apply err_with
-  #[ cfg_attr( feature = "tracing", tracing::instrument( skip( path, objects ), fields( path = %path.as_ref().display() ) ) ) ]
+  #[ cfg_attr
+  ( 
+    feature = "tracing", 
+    tracing::instrument( skip( path, objects ), fields( path = %path.as_ref().display() ) ) 
+  )]
   pub fn add< P, Os, O >( path : P, objects : Os, dry : bool )
   -> error::untyped::Result< Report >
   // qqq : use typed error
@@ -76,7 +80,15 @@ mod private
   /// # Returns :
   /// Returns a result containing a report indicating the result of the operation.
   // qqq : should be typed error, apply err_with
-  #[ cfg_attr( feature = "tracing", tracing::instrument( skip( path, message ), fields( path = %path.as_ref().display(), message = %message.as_ref() ) ) ) ]
+  #[ cfg_attr
+  ( 
+    feature = "tracing", 
+    tracing::instrument
+    ( 
+      skip( path, message ), 
+      fields( path = %path.as_ref().display(), message = %message.as_ref() ) 
+    ) 
+  )]
   pub fn commit< P, M >( path : P, message : M, dry : bool ) -> error::untyped::Result< Report >
   // qqq : don't use 1-prameter Result
   where

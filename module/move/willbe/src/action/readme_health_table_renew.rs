@@ -111,7 +111,7 @@ mod private
     else
     {
       // qqq : for Petro : use typed error
-      Err( HealthTableRenewError::Common( error::untyped::Error::msg( "Cannot find Cargo.toml" )))
+      Err( HealthTableRenewError::Common( error::untyped::Error::msg( "Cannot find Cargo.toml" ) ) )
     }
   }
 
@@ -197,7 +197,7 @@ mod private
       let cargo_toml_path = path.join( "Cargo.toml" );
       if !cargo_toml_path.exists()
       {
-        return Err( HealthTableRenewError::Common( error::untyped::Error::msg( "Cannot find Cargo.toml" )))
+        return Err( HealthTableRenewError::Common( error::untyped::Error::msg( "Cannot find Cargo.toml" ) ) )
       }
 
       let mut contents = String::new();
@@ -217,7 +217,7 @@ mod private
       .get( "workspace" )
       .and_then( | workspace | workspace.get( "metadata" ) )
       .and_then( | metadata | metadata.get( "branches" ) )
-      .and_then( | branches | branches.as_array())
+      .and_then( | branches | branches.as_array() )
       .map
       (
         | array |
@@ -618,11 +618,16 @@ ensure that at least one remotest is present in git. ",
   {
     match stability
     {
-      Stability::Experimental => " [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)".into(),
-      Stability::Stable => " [![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](https://github.com/emersion/stability-badges#stable)".into(),
-      Stability::Deprecated => " [![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/emersion/stability-badges#deprecated)".into(),
-      Stability::Unstable => " [![stability-unstable](https://img.shields.io/badge/stability-unstable-yellow.svg)](https://github.com/emersion/stability-badges#unstable)".into(),
-      Stability::Frozen => " [![stability-frozen](https://img.shields.io/badge/stability-frozen-blue.svg)](https://github.com/emersion/stability-badges#frozen)".into(),
+      Stability::Experimental => 
+      " [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)".into(),
+      Stability::Stable => 
+      " [![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](https://github.com/emersion/stability-badges#stable)".into(),
+      Stability::Deprecated => 
+      " [![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/emersion/stability-badges#deprecated)".into(),
+      Stability::Unstable => 
+      " [![stability-unstable](https://img.shields.io/badge/stability-unstable-yellow.svg)](https://github.com/emersion/stability-badges#unstable)".into(),
+      Stability::Frozen => 
+      " [![stability-frozen](https://img.shields.io/badge/stability-frozen-blue.svg)](https://github.com/emersion/stability-badges#frozen)".into(),
     }
   }
 
@@ -709,7 +714,7 @@ ensure that at least one remotest is present in git. ",
       target.extend_from_slice( &source[ from..= to ] );
       return Ok( () )
     }
-    Err( HealthTableRenewError::Common( error::untyped::Error::msg( "Incorrect indexes" )))
+    Err( HealthTableRenewError::Common( error::untyped::Error::msg( "Incorrect indexes" ) ) )
   }
 }
 

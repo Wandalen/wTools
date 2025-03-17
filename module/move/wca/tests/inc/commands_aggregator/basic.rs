@@ -10,7 +10,6 @@ use the_module::
   ValidationError,
 };
 
-//
 
 tests_impls!
 {
@@ -18,10 +17,10 @@ tests_impls!
   {
     let ca = CommandsAggregator::former()
     .command( "command" )
-      .hint( "hint" )
-      .long_hint( "long_hint" )
-      .routine( || println!( "Command" ) )
-      .end()
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .routine( || println!( "Command" ) )
+    .end()
     .perform();
 
     a_id!( (), ca.perform( ".command" ).unwrap() ); // Parse -> Validate -> Execute
@@ -31,11 +30,11 @@ tests_impls!
   {
     let ca = CommandsAggregator::former()
     .command( "command" )
-      .hint( "hint" )
-      .long_hint( "long_hint" )
-      .routine( || println!( "Command" ) )
-      .end()
-    .help_variants([ HelpVariants::General ])
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .routine( || println!( "Command" ) )
+    .end()
+    .help_variants( [ HelpVariants::General ] )
     .perform();
 
     a_id!( (), ca.perform( ".help" ).unwrap() ); // raw string -> GrammarProgram -> ExecutableProgram -> execute
@@ -49,15 +48,15 @@ tests_impls!
   {
     let ca = CommandsAggregator::former()
     .command( "cmd.first" )
-      .hint( "hint" )
-      .long_hint( "long_hint" )
-      .routine( || println!( "Command" ) )
-      .end()
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .routine( || println!( "Command" ) )
+    .end()
     .command( "cmd.second" )
-      .hint( "hint" )
-      .long_hint( "long_hint" )
-      .routine( || println!( "Command2" ) )
-      .end()
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .routine( || println!( "Command2" ) )
+    .end()
     .perform();
 
     a_id!( (), ca.perform( "." ).unwrap() );
@@ -68,15 +67,15 @@ tests_impls!
   {
     let ca = CommandsAggregator::former()
     .command( "command" )
-      .hint( "hint" )
-      .long_hint( "long_hint" )
-      .routine( || println!( "command" ) )
-      .end()
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .routine( || println!( "command" ) )
+    .end()
     .command( "command_with_execution_error" )
-      .hint( "hint" )
-      .long_hint( "long_hint" )
-      .routine( || { println!( "command" ); Err( "runtime error" ) } )
-      .end()
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .routine( || { println!( "command" ); Err( "runtime error" ) } )
+    .end()
     .perform();
 
     a_true!( ca.perform( ".command" ).is_ok() );
@@ -118,11 +117,11 @@ tests_impls!
   {
     let ca = CommandsAggregator::former()
     .command( "command" )
-      .hint( "hint" )
-      .long_hint( "long_hint" )
-      .subject().hint( "A path to directory." ).kind( Type::Path ).optional( true ).end()
-      .routine( || println!( "hello" ) )
-      .end()
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .subject().hint( "A path to directory." ).kind( Type::Path ).optional( true ).end()
+    .routine( || println!( "hello" ) )
+    .end()
     .perform();
 
     let command = vec![ ".command".into(), "./path:to_dir".into() ];
@@ -219,7 +218,7 @@ tests_impls!
     let raw_command = parser.parse( [ ".command", "qwe:rty" ] ).unwrap().commands.remove( 0 );
     let grammar_command = grammar.to_command( dictionary, raw_command ).unwrap();
 
-    a_id!( grammar_command.args.0, vec![ the_module::Value::String("qwe:rty".into()) ] );
+    a_id!( grammar_command.args.0, vec![ the_module::Value::String( "qwe:rty".into() ) ] );
 
     a_id!( (), executor.command( dictionary, grammar_command ).unwrap() );
   }
@@ -232,11 +231,11 @@ tests_impls!
 
     let ca = CommandsAggregator::former()
     .command( "query.execute" )
-      .hint( "hint" )
-      .long_hint( "long_hint" )
-      .subject().hint( "SQL query" ).kind( Type::String ).optional( false ).end()
-      .routine( move | o : VerifiedCommand | assert_eq!( query, o.args.get_owned::< &str >( 0 ).unwrap() ) )
-      .end()
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .subject().hint( "SQL query" ).kind( Type::String ).optional( false ).end()
+    .routine( move | o : VerifiedCommand | assert_eq!( query, o.args.get_owned::< &str >( 0 ).unwrap() ) )
+    .end()
     .perform();
 
     a_id!( (), ca.perform( vec![ ".query.execute".to_string(), query.into() ] ).unwrap() );

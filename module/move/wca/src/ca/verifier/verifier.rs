@@ -2,7 +2,6 @@ mod private
 {
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
-
   use help::{ HelpGeneratorOptions, LevelOfDetail, generate_help_content };
   use grammar::{ Dictionary, Command, command::ValueDescription };
   use executor::{ Args, Props };
@@ -18,7 +17,14 @@ mod private
     #[ error
     (
       "Command not found. {} {}",
-      if let Some( phrase ) = name_suggestion { format!( "Maybe you mean `.{phrase}`?" ) } else { "Please use `.` command to see the list of available commands.".into() },
+      if let Some( phrase ) = name_suggestion 
+      { 
+        format!( "Maybe you mean `.{phrase}`?" ) 
+      } 
+      else 
+      { 
+        "Please use `.` command to see the list of available commands.".into() 
+      },
       // fix clippy
       if let Some( info ) = command_info { format!( "Command info: `{info}`" ) } else { String::new() }
     )]
@@ -131,8 +137,11 @@ mod private
     ) -> usize
     {
       raw_properties.iter()
-        .filter( |( k, _ )| !( properties.contains_key( *k ) || properties_aliases.get( *k ).map_or( false, | key | properties.contains_key( key ) ) ) )
-        .count()
+      .filter( | ( k, _ ) | 
+      {
+        !( properties.contains_key( *k ) || properties_aliases.get( *k ).map_or( false, | key | properties.contains_key( key ) ) ) 
+      })
+      .count()
     }
 
     fn is_valid_command_variant( subjects_count : usize, raw_count : usize, possible_count : usize ) -> bool

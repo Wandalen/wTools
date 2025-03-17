@@ -25,7 +25,7 @@ mod private
 
   impl fmt::Display for ExtendedGitReport
   {
-    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
       let Self { add, commit, push } = &self;
 

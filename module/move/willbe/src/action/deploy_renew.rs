@@ -3,7 +3,7 @@ mod private
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use std::path::Path;
-  use error::{ untyped::Context };
+  use error::untyped::Context;
   #[ allow( clippy::wildcard_imports ) ]
   use tool::template::*;
 
@@ -45,7 +45,10 @@ mod private
   {
     let formed = TemplateFilesBuilder::former()
     // root
-    .file().data( include_str!( "../../template/deploy/.deploy_template.toml.hbs" ) ).path( "./.deploy_template.toml" ).mode( WriteMode::TomlExtend ).is_template( true ).end()
+    .file().data( include_str!( "../../template/deploy/.deploy_template.toml.hbs" ) ).path( "./.deploy_template.toml" )
+    .mode( WriteMode::TomlExtend )
+    .is_template( true )
+    .end()
     .file().data( include_str!( "../../template/deploy/Makefile.hbs" ) ).path( "./Makefile" ).is_template( true ).end()
     // /key
     .file().data( include_str!( "../../template/deploy/key/pack.sh" ) ).path( "./key/pack.sh" ).end()

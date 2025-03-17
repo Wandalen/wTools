@@ -116,9 +116,10 @@ tests_impls!
     // numbers
     let numbers = Type::List( Type::Number.into(), ';' ).try_cast( "100;3.14".into() );
     let numbers = numbers.unwrap();
-    a_id!(
-      Value::List( vec![ Value::Number( 100.0 ), Value::Number( 3.14 ) ] )
-    , numbers );
+    a_id!
+    (
+      Value::List( vec![ Value::Number( 100.0 ), Value::Number( 3.14 ) ] ), numbers 
+    );
 
     let inner_numbers : Vec< i32 > = numbers.clone().into();
     a_id!( vec![ 100, 3 ], inner_numbers );

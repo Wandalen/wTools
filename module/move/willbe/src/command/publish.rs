@@ -5,9 +5,8 @@ mod private
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use colored::Colorize;
-
   use wca::VerifiedCommand;
-  use error::{ untyped::Context }; // xxx
+  use error::untyped::Context; // xxx
   use former::Former;
   use std::fmt::Write;
   use channel::Channel;

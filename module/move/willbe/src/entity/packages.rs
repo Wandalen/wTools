@@ -3,10 +3,7 @@ mod private
 {
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
-  use std::
-  {
-    fmt::Formatter,
-  };
+  use std::fmt::Formatter;
   use package::PackageName;
   use collection::{ HashMap, HashSet };
 

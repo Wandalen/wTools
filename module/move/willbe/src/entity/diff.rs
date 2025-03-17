@@ -4,10 +4,7 @@ mod private
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
-  use std::
-  {
-    fmt::Formatter,
-  };
+  use std::fmt::Formatter;
   use path::PathBuf;
   use collection::HashMap;
   use colored::Colorize;
@@ -102,7 +99,7 @@ mod private
     #[ must_use ]
     pub fn has_changes( &self ) -> bool
     {
-      !self.0.iter().all( |( _, item )| matches!( item, DiffItem::File( Diff::Same( () ) ) ))
+      !self.0.iter().all( | ( _, item ) | matches!( item, DiffItem::File( Diff::Same( () ) ) ) )
     }
   }
 
@@ -110,7 +107,7 @@ mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
-      for ( path , diff ) in self.0.iter().sorted_by_key( |( k, _ )| k.as_path() )
+      for ( path , diff ) in self.0.iter().sorted_by_key( | ( k, _ ) | k.as_path() )
       {
         match diff
         {

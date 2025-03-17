@@ -63,7 +63,7 @@ impl ManifestFile
 
 impl fmt::Display for ManifestFile
 {
-  fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
     write!( f, "{}", self.0.display() )
   }
@@ -71,7 +71,7 @@ impl fmt::Display for ManifestFile
 
 impl fmt::Debug for ManifestFile
 {
-  fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
     write!( f, "manifest file :: {}", self.0.display() )
   }

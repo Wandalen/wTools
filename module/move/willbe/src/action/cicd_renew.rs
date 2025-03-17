@@ -9,7 +9,7 @@ mod private
     io::{ Write, Read },
   };
 
-  use path::{ Path };
+  use path::Path;
   use collection::BTreeMap;
   use convert_case::{ Casing, Case };
   use handlebars::{ RenderError, TemplateError };
@@ -382,7 +382,7 @@ mod private
         url::repo_url_extract( &url )
         .and_then( | url | url::git_info_extract( &url ).ok() )
         .map( UsernameAndRepository )
-        .ok_or_else( || error::untyped::format_err!( "Fail to parse repository url from workspace Cargo.toml"))
+        .ok_or_else( || error::untyped::format_err!( "Fail to parse repository url from workspace Cargo.toml") )
       }
       else
       {

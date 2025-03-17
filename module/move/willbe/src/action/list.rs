@@ -41,7 +41,7 @@ mod private
       {
         "tree" => ListFormat::Tree,
         "toposort" => ListFormat::Topological,
-        e => return Err( error::untyped::format_err!( "Unknown format '{}'. Available values : [tree, toposort]", e ))
+        e => return Err( error::untyped::format_err!( "Unknown format '{}'. Available values : [tree, toposort]", e ) )
       };
 
       Ok( value )
@@ -295,7 +295,7 @@ mod private
         (
           f,
           "{}",
-          v.iter().enumerate().map( |( i, v )| format!( "[{i}] {v}" ) ).collect::< Vec< _ > >().join( "\n" )
+          v.iter().enumerate().map( | ( i, v ) | format!( "[{i}] {v}" ) ).collect::< Vec< _ > >().join( "\n" )
         ),
 
         Self::Empty => write!( f, "Nothing" ),
@@ -440,8 +440,7 @@ mod private
   ///   or a tuple containing the list report and error if not successful.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
   pub fn list_all( args : ListOptions )
-  ->
-  ResultWithReport< ListReport, error::untyped::Error > // qqq : should be specific error
+  -> ResultWithReport< ListReport, error::untyped::Error > // qqq : should be specific error
   // qqq : use typed error
   {
     let mut report = ListReport::default();
@@ -503,7 +502,7 @@ mod private
       *report = match report
       {
         ListReport::Tree( ref mut v ) => ListReport::Tree
-        ( { v.extend([ printer ]); v.clone() } ),
+        ( { v.extend( [ printer ] ); v.clone() } ),
         ListReport::Empty => ListReport::Tree( vec![ printer ] ),
         ListReport::List( _ ) => unreachable!(),
       };
@@ -612,7 +611,7 @@ mod private
         )
         .err_with_report( &report )?;
         let packages_info : collection::HashMap< String, WorkspacePackageRef< '_ > > =
-          packages.map( | p | ( p.name().to_string(), p ) ).collect();
+        packages.map( | p | ( p.name().to_string(), p ) ).collect();
 
         if root_crate.is_empty()
         {
@@ -642,7 +641,7 @@ mod private
               Ok::< String, PathError >( name )
             }
           )
-          .collect::< Result< _, _ >>()
+          .collect::< Result< _, _ > >()
           .err_with_report( &report )?;
 
           report = ListReport::List( names );
@@ -733,7 +732,7 @@ mod private
     .chain( report.dev_dependencies.iter_mut() )
     .chain( report.build_dependencies.iter_mut() )
     {
-      build_deps_acc = merge_build_dependencies_impl(dep, build_deps_acc );
+      build_deps_acc = merge_build_dependencies_impl( dep, build_deps_acc );
     }
 
     for dep in std::mem::take( &mut report.build_dependencies )
@@ -792,7 +791,7 @@ mod private
   fn rearrange_duplicates( mut report : Vec< tool::ListNodeReport > ) -> Vec< tool::TreePrinter >
   {
     let mut required_normal : collection::HashMap< usize, Vec< tool::ListNodeReport > > = collection::HashMap::new();
-    for (i, report) in report.iter_mut().enumerate()
+    for ( i, report ) in report.iter_mut().enumerate()
     {
       let ( required, exist ) : ( Vec< _ >, Vec< _ > ) = std::mem::take
       (
@@ -832,11 +831,10 @@ mod private
 
       if !node.duplicate
       {
-        if let Some( r ) = required.iter_mut().flat_map( |( _, v )| v )
+        if let Some( r ) = required.iter_mut().flat_map( | ( _, v ) | v )
         .find
         (
-          | r |
-          r.name == node.name && r.version == node.version && r.crate_dir == node.crate_dir
+          | r | r.name == node.name && r.version == node.version && r.crate_dir == node.crate_dir
         )
         {
           std::mem::swap( r, node );

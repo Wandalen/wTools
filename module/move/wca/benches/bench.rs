@@ -44,7 +44,8 @@ fn initialize_commands_without_args( count : usize ) -> CommandsAggregator
   )
 }
 
-fn initialize_commands_with_subjects( count : usize ) -> CommandsAggregator {
+fn initialize_commands_with_subjects( count : usize ) -> CommandsAggregator 
+{
   // The way commands are initialized has changed, now the ComandFormer from the grammar module is used and the subject() and property methods are called differently
   init
   (
@@ -59,7 +60,8 @@ fn initialize_commands_with_subjects( count : usize ) -> CommandsAggregator {
   )
 }
 
-fn initialize_commands_with_properties( count : usize ) -> CommandsAggregator {
+fn initialize_commands_with_properties( count : usize ) -> CommandsAggregator 
+{
   init
   (
     count,
@@ -73,7 +75,8 @@ fn initialize_commands_with_properties( count : usize ) -> CommandsAggregator {
   )
 }
 
-fn run_commands< S : AsRef< str > >( ca : CommandsAggregator, command : S ) {
+fn run_commands< S : AsRef< str > >( ca : CommandsAggregator, command : S ) 
+{
   ca.perform( command.as_ref() ).unwrap()
 }
 

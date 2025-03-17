@@ -25,10 +25,7 @@ mod private
   #[ allow( clippy::wildcard_imports ) ]
   use petgraph::prelude::*;
 
-  use error::
-  {
-    typed::Error,
-  };
+  use error::typed::Error;
 
   use package::{ Package, publish_need };
   // qqq : for Bohdan : bad : tools can't depend on entitties!
@@ -54,11 +51,7 @@ mod private
   #[ must_use ]
   pub fn construct< PackageIdentifier >
   (
-    packages : &HashMap
-    <
-      PackageIdentifier,
-      HashSet< PackageIdentifier >,
-    >
+    packages : &HashMap< PackageIdentifier, HashSet< PackageIdentifier >, >
   )
   -> Graph< &PackageIdentifier, &PackageIdentifier >
   where
