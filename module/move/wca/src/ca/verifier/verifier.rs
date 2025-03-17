@@ -2,7 +2,6 @@ mod private
 {
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
-
   use help::{ HelpGeneratorOptions, LevelOfDetail, generate_help_content };
   use grammar::{ Dictionary, Command, command::ValueDescription };
   use executor::{ Args, Props };
@@ -18,8 +17,16 @@ mod private
     #[ error
     (
       "Command not found. {} {}",
-      if let Some( phrase ) = name_suggestion { format!( "Maybe you mean `.{phrase}`?" ) } else { "Please use `.` command to see the list of available commands.".into() },
-      if let Some( info ) = command_info { format!( "Command info: `{info}`" ) } else { "".into() }
+      if let Some( phrase ) = name_suggestion 
+      { 
+        format!( "Maybe you mean `.{phrase}`?" ) 
+      } 
+      else 
+      { 
+        "Please use `.` command to see the list of available commands.".into() 
+      },
+      // fix clippy
+      if let Some( info ) = command_info { format!( "Command info: `{info}`" ) } else { String::new() }
     )]
     CommandNotFound { name_suggestion: Option< String >, command_info: Option< String > },
     #[ error( "Fail in command `.{command_name}` while processing subjects. {error}" ) ]
@@ -130,8 +137,11 @@ mod private
     ) -> usize
     {
       raw_properties.iter()
-        .filter( |( k, _ )| !( properties.contains_key( *k ) || properties_aliases.get( *k ).map_or( false, | key | properties.contains_key( key ) ) ) )
-        .count()
+      .filter( | ( k, _ ) | 
+      {
+        !( properties.contains_key( *k ) || properties_aliases.get( *k ).map_or( false, | key | properties.contains_key( key ) ) ) 
+      })
+      .count()
     }
 
     fn is_valid_command_variant( subjects_count : usize, raw_count : usize, possible_count : usize ) -> bool
@@ -211,8 +221,8 @@ mod private
       )
       .collect()
     }
-
-    fn group_properties_and_their_aliases< 'a, Ks >( aliases : &'a HashMap< String, String >, used_keys :  Ks ) -> Vec< &String >
+    // fix clippy
+    fn group_properties_and_their_aliases< 'a, Ks >( aliases : &'a HashMap< String, String >, used_keys :  Ks ) -> Vec<&'a String >
     where
       Ks : Iterator< Item = &'a String >
     {
@@ -264,7 +274,7 @@ mod private
           #[ cfg( feature = "on_unknown_suggest" ) ]
           if let Some( phrase ) = Self::suggest_command( dictionary, &raw_command.name )
           {
-            return VerificationError::CommandNotFound { name_suggestion: Some( phrase ), command_info: None };
+            return VerificationError::CommandNotFound { name_suggestion: Some( phrase.to_string() ), command_info: None };
           }
           VerificationError::CommandNotFound { name_suggestion: None, command_info: None }
         }

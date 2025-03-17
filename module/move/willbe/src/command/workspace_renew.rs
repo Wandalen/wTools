@@ -4,9 +4,8 @@ mod private
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use former::Former;
-
   use wca::VerifiedCommand;
-  use error::{ untyped::Context };
+  use error::untyped::Context;
   use action::WorkspaceTemplate;
 
   #[ derive( Former ) ]

@@ -142,7 +142,6 @@ impl ItemAttributes
   /// This function provides an iterator that yields `syn::Field` objects. If `storage_fields` is set,
   /// it clones and iterates over its fields. If `storage_fields` is `None`, it returns an empty iterator.
   ///
-
   // pub fn storage_fields( &self ) -> impl Iterator< Item = syn::Field >
   pub fn storage_fields( &self ) -> &syn::punctuated::Punctuated< syn::Field, syn::token::Comma >
   {

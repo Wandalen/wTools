@@ -12,7 +12,7 @@ mod private
 
   // // use path::AbsolutePath;
   use former::Former;
-  use error::{ untyped::Context };
+  use error::untyped::Context;
   // use workspace::Workspace;
 
   /// Options available for the .features command
@@ -42,20 +42,19 @@ mod private
   impl fmt::Display for FeaturesReport
   {
     #[ allow( clippy::match_bool ) ]
-    fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> Result< (), fmt::Error >
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> Result< (), fmt::Error >
     {
       self.inner.iter().try_for_each
       ( | ( package, features ) |
       {
-        writeln!(f, "Package {package}:")?;
+        writeln!( f, "Package {package}:" )?;
         features.iter().try_for_each
         ( | ( feature, dependencies ) |
         {
           let feature = match self.with_features_deps
           {
             false => format!( "\t{feature}" ),
-            true
-            =>
+            true =>
             {
               let deps = dependencies.join( ", " );
               format!( "\t{feature}: [{deps}]" )
@@ -83,7 +82,7 @@ mod private
       {
         if let Ok( manifest_file ) = package.manifest_file()
         {
-          manifest_file.inner().starts_with(crate_dir.clone().absolute_path())
+          manifest_file.inner().starts_with( crate_dir.clone().absolute_path() )
         }
         else
         {
@@ -101,11 +100,12 @@ mod private
     packages
     // .iter()
     .for_each
-    ( | package |
-    {
-      let features = package.features();
-      report.inner.insert(package.name().to_owned(), features.to_owned());
-    }
+    ( 
+      | package |
+      {
+        let features = package.features();
+        report.inner.insert( package.name().to_owned(), features.to_owned() );
+      }
     );
     Ok( report )
   }

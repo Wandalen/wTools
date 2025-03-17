@@ -11,7 +11,7 @@ mod private
     path::PathBuf,
   };
   use wca::VerifiedCommand;
-  use error::{ untyped::Context };
+  use error::untyped::Context;
   use collection::HashSet;
 
   use action::
@@ -91,7 +91,7 @@ mod private
       {
         println!( "{report}" );
       }
-      Err(( report, e )) =>
+      Err( ( report, e ) ) =>
       {
         eprintln!( "{report}" );
 

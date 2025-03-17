@@ -111,7 +111,6 @@ item : {item}"#,
 ///
 /// Generate documentation for the former.
 ///
-
 fn doc_generate( item : &syn::Ident ) -> ( String, String )
 {
 

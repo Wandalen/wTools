@@ -48,7 +48,6 @@ mod private
   /// It is especially crucial in complex data structures, such as `HashMap`s, where entries
   /// often involve a key-value pair, and simple values need to be restructured to fit this model
   /// for operations like insertion or update.
-
   pub trait CollectionValToEntry< Val >
   {
     /// The specific type of entry that corresponds to the value within the collection.
@@ -142,7 +141,6 @@ mod private
   /// such as `HashMap`s. It not only identifies what constitutes an entry and a value in the context of the collection
   /// but also provides utility for converting between these two, which is critical in operations involving entry manipulation
   /// and value retrieval.
-
   pub trait Collection
   {
     /// The type of entries that can be added to the collection. This type can differ from `Val` in collections like `HashMap`,

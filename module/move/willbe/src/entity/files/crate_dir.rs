@@ -56,7 +56,7 @@ impl CrateDir
 
 impl fmt::Display for CrateDir
 {
-  fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
     write!( f, "{}", self.0.display() )
   }
@@ -64,7 +64,7 @@ impl fmt::Display for CrateDir
 
 impl fmt::Debug for CrateDir
 {
-  fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
     write!( f, "crate dir :: {}", self.0.display() )
   }

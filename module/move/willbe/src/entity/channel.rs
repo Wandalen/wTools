@@ -79,7 +79,7 @@ mod private
       "stable" => Some( Channel::Stable ),
       "nightly" => Some( Channel::Nightly ),
       _ => None
-    } )
+    })
     .collect();
 
     Ok( list )

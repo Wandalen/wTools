@@ -92,16 +92,18 @@ mod private
       // aaa : for Petro : non readable
       // aaa : readable and with actual command
       return Err
-      ((
-        report,
-        format_err!
+      ( 
         (
-          "Missing toolchain(-s) that was required : [{}]. \
+          report,
+          format_err!
+          (
+            "Missing toolchain(-s) that was required : [{}]. \
 Try to install it with `rustup install {}` command(-s)",
-          channels_diff.iter().join( ", " ),
-          channels_diff.iter().join( " " )
-        )
-      ))
+            channels_diff.iter().join( ", " ),
+            channels_diff.iter().join( " " )
+          )
+        ) 
+      )
     }
     report.dry = dry;
     let TestsCommandOptions

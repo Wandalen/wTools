@@ -3,12 +3,10 @@ mod private
 {
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
-
   // qqq : for Bohdan : bad
   // use std::*;
-
   use std::slice;
-  use former::{ Former };
+  use former::Former;
 
   /// Stores information about the current workspace.
   #[ derive( Debug, Clone ) ]

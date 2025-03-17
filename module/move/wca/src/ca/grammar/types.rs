@@ -98,7 +98,7 @@ mod private
 
   impl Display for Value
   {
-    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
       match self
       {
@@ -130,7 +130,7 @@ mod private
 
   macro_rules! value_into_impl
   {
-    ( $( $value_kind : path => $( $kind : ty => $cast : expr ),+ );+ ) =>
+    ( $( $value_kind : path => $( $kind : ty => $cast : expr ), + ); + ) =>
     {
       $( $(
         impl From< Value > for $kind
@@ -187,9 +187,18 @@ mod private
       match self
       {
         Self::String => Ok( Value::String( value ) ),
-        Self::Number => value.parse().map_err( | _ | error::untyped::format_err!( "Can not parse number from `{}`", value ) ).map( Value::Number ),
+        Self::Number => value.parse().map_err( | _ | 
+        {
+          error::untyped::format_err!( "Can not parse number from `{}`", value ) 
+        }).map( Value::Number ),
         Self::Path => Ok( Value::Path( value.into() ) ),
-        Self::Bool => Ok( Value::Bool( match value.as_str() { "1" | "true" => true, "0" | "false" => false, _ => return Err( error::untyped::format_err!( "Can not parse bool from `{}`", value ) ) } ) ),
+        Self::Bool => Ok( Value::Bool( match value.as_str() 
+        { 
+          "1" | "true" => true, "0" | "false" => false, _ => 
+          {
+            return Err( error::untyped::format_err!( "Can not parse bool from `{}`", value ) ) 
+          }
+        })),
         Self::List( kind, delimeter ) =>
         {
           let values: error::untyped::Result< Vec< Value > > = value

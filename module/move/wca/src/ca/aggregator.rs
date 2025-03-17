@@ -30,7 +30,8 @@ mod private
   {
     // Result,
     untyped::Error as wError, // xxx
-    for_lib::*,
+    // only importing Error from this module is used
+    for_lib::Error,
   };
   use iter_tools::Itertools;
 
@@ -149,7 +150,7 @@ mod private
       dictionary.order = ca.order.unwrap_or_default();
 
       let help_generator = core::mem::take( &mut ca.help_generator ).unwrap_or_default();
-      let help_variants = core::mem::take( &mut ca.help_variants ).unwrap_or_else( || HashSet::from([ HelpVariants::All ]) );
+      let help_variants = core::mem::take( &mut ca.help_variants ).unwrap_or_else( || HashSet::from( [ HelpVariants::All ] ) );
 
       if help_variants.contains( &HelpVariants::All )
       {
@@ -286,8 +287,14 @@ mod private
     {
       let Input( ref program ) = program.into_input();
 
-      let raw_program = self.parser.parse( program ).map_err( | e | Error::Validation( ValidationError::Parser { input : format!( "{program:?}" ), error : e } ) )?;
-      let grammar_program = self.verifier.to_program( &self.dictionary, raw_program ).map_err( | e | Error::Validation( ValidationError::Verifier( e ) ) )?;
+      let raw_program = self.parser.parse( program ).map_err( | e | 
+      {
+        Error::Validation( ValidationError::Parser { input : format!( "{program:?}" ), error : e } ) 
+      })?;
+      let grammar_program = self.verifier.to_program( &self.dictionary, raw_program ).map_err( | e | 
+      {
+        Error::Validation( ValidationError::Verifier( e ) ) 
+      })?;
 
       if let Some( callback ) = &self.callback_fn
       {

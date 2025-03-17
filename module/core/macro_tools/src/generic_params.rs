@@ -133,7 +133,6 @@ mod private
   /// };
   ///
   /// `assert_eq`!( got, exp );
-
   #[ must_use ]
   #[ allow( clippy::default_trait_access ) ]
   pub fn merge( a : &syn::Generics, b : &syn::Generics ) -> syn::Generics
@@ -210,7 +209,6 @@ mod private
   /// assert_eq!( simplified_generics.params.len(), 4 ); // Contains T, U, 'a, and N
   /// assert!( simplified_generics.where_clause.is_none() ); // Where clause is removed
   /// ```
-
   #[ allow( clippy::default_trait_access ) ]
   #[ must_use ]
   pub fn only_names( generics : &syn::Generics ) -> syn::Generics
@@ -395,7 +393,6 @@ mod private
   /// }
   /// ```
   ///
-
   #[ allow( clippy::type_complexity ) ]
   #[ must_use ]
   pub fn decompose

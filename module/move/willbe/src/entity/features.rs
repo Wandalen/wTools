@@ -63,7 +63,7 @@ mod private
     let filtered_features : BTreeSet< _ > = package
     .features()
     .keys()
-    .filter( | f | !exclude_features.contains( f ) && (include_features.contains(f) || include_features.is_empty()) )
+    .filter( | f | !exclude_features.contains( f ) && ( include_features.contains(f) || include_features.is_empty() ) )
     .cloned()
     .collect();
 
@@ -110,8 +110,7 @@ mod private
     with_none_features : bool,
     enabled_features : &[ String ],
     total_features : usize
-  )
-    -> usize
+  ) -> usize
   {
     let mut estimate = 0;
     let mut binom = 1;

@@ -9,7 +9,6 @@ mod private
   ///
   /// Trait to get name of an syntax element.
   ///
-
   pub trait Name
   {
     /// Get name.

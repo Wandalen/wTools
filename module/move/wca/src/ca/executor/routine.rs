@@ -180,7 +180,6 @@ mod private
   ///     // Do what you need to do
   ///   }
   /// ) );
-
   pub struct Handler< I, O >( Box< dyn Fn( I ) -> O > );
 
   impl< I, O > core::fmt::Debug for Handler< I, O >
@@ -204,9 +203,9 @@ mod private
   }
 
   impl< F, R > From< F > for Handler< VerifiedCommand, R >
-    where
-      R : IntoResult + 'static,
-      F : Fn( VerifiedCommand ) -> R + 'static,
+  where
+    R : IntoResult + 'static,
+    F : Fn( VerifiedCommand ) -> R + 'static,
   {
     fn from( value : F ) -> Self
     {

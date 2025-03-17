@@ -110,7 +110,10 @@ mod private
     // aaa : it is usable
     /// The type `Routine` represents the specific implementation of the routine.
     #[ scalar( setter = false ) ]
-    #[ former( default = Routine::from( Handler::< _, std::convert::Infallible >::from( || { panic!( "No routine available: A handler function for the command is missing" ) } ) ) ) ]
+    #[ former( default = Routine::from( Handler::< _, std::convert::Infallible >::from( || 
+      { 
+        panic!( "No routine available: A handler function for the command is missing" ) 
+      })))]
     pub routine : Routine,
   }
 
@@ -215,7 +218,8 @@ mod private
     /// * `name` - The name of the property. It should implement the `Into< String >` trait.
     /// # Panics
     /// qqq: doc
-    pub fn property< IntoName >( self, name : IntoName ) -> PropertyDescriptionAsSubformer< Self, impl PropertyDescriptionAsSubformerEnd< Self > >
+    pub fn property< IntoName >( self, name : IntoName ) 
+    -> PropertyDescriptionAsSubformer< Self, impl PropertyDescriptionAsSubformerEnd< Self > >
     where
       IntoName : Into< String >,
     {

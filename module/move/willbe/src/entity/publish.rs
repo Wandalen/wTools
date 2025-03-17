@@ -84,7 +84,7 @@ mod private
         Some( entity::git::GitOptions
         {
           git_root : workspace_root,
-          items : dependencies.iter().chain([ &crate_dir ]).map( | d | d.clone().absolute_path().join( "Cargo.toml" ) ).collect(),
+          items : dependencies.iter().chain( [ &crate_dir ] ).map( | d | d.clone().absolute_path().join( "Cargo.toml" ) ).collect(),
           message : format!( "{}-v{}", self.package.name().unwrap(), new_version ),
           dry : self.dry,
         })
@@ -184,17 +184,17 @@ mod private
           action::list::ListOptions::former()
           .path_to_manifest( wanted.clone() )
           .format( action::list::ListFormat::Tree )
-          .dependency_sources([ action::list::DependencySource::Local ])
-          .dependency_categories([ action::list::DependencyCategory::Primary ])
+          .dependency_sources( [ action::list::DependencySource::Local ] )
+          .dependency_categories( [ action::list::DependencyCategory::Primary ] )
           .form()
         )
-        .map_err( |( _, _e )| fmt::Error )?;
+        .map_err( | ( _, _e ) | fmt::Error )?;
         let action::list::ListReport::Tree( list ) = list else { unreachable!() };
 
         #[ allow( clippy::items_after_statements ) ]
         fn callback( name_bump_report : &collection::HashMap< &String, ( String, String ) >, mut r : tool::ListNodeReport ) -> tool::ListNodeReport
         {
-          if let Some(( old, new )) = name_bump_report.get( &r.name )
+          if let Some( ( old, new ) ) = name_bump_report.get( &r.name )
           {
             r.version = Some( format!( "({old} -> {new})" ) );
           }
@@ -409,9 +409,12 @@ mod private
         Err( e ) =>
         {
           version::revert( &bump_report )
-          .map_err( | le | format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) ) )
+          .map_err( | le | format_err!
+          ( 
+            "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) 
+          ))
           .err_with_report( &report )?;
-          return Err(( report, e ));
+          return Err( ( report, e ) );
         }
       };
       report.add = git.add;
@@ -432,7 +435,7 @@ mod private
           )
           .err_with_report( &report )?;
         }
-        return Err(( report, e ));
+        return Err( ( report, e ) );
       }
     };
 
@@ -463,7 +466,11 @@ mod private
     let mut report = vec![];
     for package in plan.plans
     {
-      let res = perform_package_publish( package ).map_err( |( current_rep, e )| format_err!( "{}\n{current_rep}\n{e}", report.iter().map( | r | format!( "{r}" ) ).join( "\n" ) ) )?;
+      let res = perform_package_publish( package ).map_err
+      ( 
+        | ( current_rep, e ) | 
+        format_err!( "{}\n{current_rep}\n{e}", report.iter().map( | r | format!( "{r}" ) ).join( "\n" ) ) 
+      )?;
       report.push( res );
     }
 

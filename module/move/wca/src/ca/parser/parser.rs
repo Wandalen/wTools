@@ -22,6 +22,9 @@ mod private
   #[ derive( Debug ) ]
   pub struct Parser;
 
+  // fix clippy error too large return type
+  type ParsedArgs = ( Vec< String >, HashMap< String, String >, usize );
+
   impl Parser
   {
     /// Parses a vector of command line arguments and returns a `Program` containing the parsed commands.
@@ -42,7 +45,7 @@ mod private
       As : IntoIterator< Item = A >,
       A : Into< String >,
     {
-      let args: Vec< _ > = args.into_iter().map( Into::into ).collect();
+      let args : Vec< _ > = args.into_iter().map( Into::into ).collect();
       let mut commands = vec![];
       let mut i = 0;
       while i < args.len()
@@ -72,7 +75,8 @@ mod private
     // aaa : use typed error
     fn parse_command( args : &[ String ] ) -> Result< ( ParsedCommand, usize ), ParserError >
     {
-      if args.is_empty() {
+      if args.is_empty() 
+      {
         return Err( ParserError::InternalError { details: "Try to parse command without input".into() } );
       }
 
@@ -90,7 +94,6 @@ mod private
       };
       i += 1;
       let ( subjects, properties, relative_pos ) = Self::parse_command_args( &args[ i .. ] )?;
-
       i += relative_pos;
 
       Ok(
@@ -105,10 +108,13 @@ mod private
       ))
     }
 
+    
+    
+
     // returns ( subjects, properties, relative_end_pos )
     // aaa : use typed error
     // aaa : done
-    fn parse_command_args( args : &[ String ] ) -> Result< ( Vec< String >, HashMap< String, String >, usize ), ParserError >
+    fn parse_command_args( args : &[ String ] ) -> Result< ParsedArgs, ParserError >
     {
       let mut i = 0;
 
@@ -177,7 +183,7 @@ mod private
         i += 1;
       }
 
-      Ok(( subjects, properties, i ))
+      Ok( ( subjects, properties, i ) )
     }
   }
 }

@@ -60,7 +60,6 @@ mod private
   /// }
   ///
   /// ```
-
   #[ cfg( feature = "iter_trait" ) ]
   pub trait _IterTrait< 'a, T >
   where

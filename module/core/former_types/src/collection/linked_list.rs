@@ -200,7 +200,6 @@ for LinkedList< E >
 /// It is particularly useful in scenarios where lists are repeatedly used or configured in similar ways across different
 /// parts of an application.
 ///
-
 pub type LinkedListFormer< E, Context, Formed, End > =
 CollectionFormer::< E, LinkedListDefinition< E, Context, Formed, End > >;
 

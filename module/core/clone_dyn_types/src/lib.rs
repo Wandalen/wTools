@@ -89,7 +89,6 @@ mod private
   ///
   /// assert_eq!( original.value, cloned.value );
   /// ```
-
   #[ inline ]
   pub fn clone< T >( src : &T ) -> T
   where
@@ -174,7 +173,6 @@ mod private
   /// let cloned : Box< dyn MyTrait > = clone_into_box( &MyStruct { value : 42 } );
   ///
   /// ```
-
   #[ inline ]
   pub fn clone_into_box< T >( ref_dyn : &T ) -> Box< T >
   where

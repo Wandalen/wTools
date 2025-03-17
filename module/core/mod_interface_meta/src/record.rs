@@ -9,7 +9,6 @@ mod private
   ///
   /// Custom keywords.
   ///
-
   pub mod kw
   {
     super::syn::custom_keyword!( layer );
@@ -174,7 +173,6 @@ mod private
   ///
   /// Many records.
   ///
-
   pub type Records = Many< Record >;
 
   impl AsMuchAsPossibleNoDelimiter for Record {}

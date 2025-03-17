@@ -3,7 +3,6 @@ mod private
 {
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
-
   use std::
   {
     io::Read,

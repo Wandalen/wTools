@@ -32,7 +32,7 @@ mod private
   {
     let text = grammar.commands()
     .into_iter()
-    .map( |( name, cmd )|
+    .map( | ( name, cmd ) |
     {
       let subjects = cmd.subjects.iter().fold( String::new(), | _, _ | " `[argument]`".to_string() );
       let properties = if cmd.properties.is_empty() { " " } else { " `[properties]` " };
@@ -54,14 +54,12 @@ mod private
 
     let about_each_command = grammar.commands()
     .into_iter()
-    .map( |( name, cmd )|
+    .map( | ( name, cmd ) |
     {
       let subjects = cmd.subjects.iter().fold( String::new(), | _, _ | " `[Subject]`".to_string() );
       let properties = if cmd.properties.is_empty() { " " } else { " `[properties]` " };
       let hint = if cmd.hint.is_empty() { &cmd.long_hint } else { &cmd.hint };
-
       let heading = format!( "## .{name}{subjects}{properties}\n__{hint}__\n" );
-
       let hint = if cmd.long_hint.is_empty() { &cmd.hint } else { &cmd.long_hint };
       let full_subjects = cmd
       .subjects
@@ -69,7 +67,7 @@ mod private
       .enumerate()
       .map
       (
-        |( number, subj )|
+        | ( number, subj ) |
         format!( "\n- {}subject_{number} - {} `[{:?}]`", if subj.optional { "`< optional >` " } else { "" }, subj.hint, subj.kind )
       )
       .join( "\n" );
@@ -78,7 +76,7 @@ mod private
       .into_iter()
       .map
       (
-        |( name, value )|
+        | ( name, value ) |
         format!( "\n- {}{} - {} `[{:?}]`", if value.optional { "`< optional >` " } else { "" }, value.hint, name, value.kind )
       )
       .join( "\n" );

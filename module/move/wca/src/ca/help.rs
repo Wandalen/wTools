@@ -50,13 +50,13 @@ mod private
     /// Reresents how much information to display for the subjects
     ///
     /// - `None` - nothing
-    /// - `Simple` - <subjects>
+    /// - `Simple` - < subjects >
     /// - `Detailed` - each subject with information about it. E.g. `<String>`
     pub subject_detailing : LevelOfDetail,
     /// Reresents how much information to display for the properties
     ///
     /// - `None` - nothing
-    /// - `Simple` - <properties>
+    /// - `Simple` - < properties >
     /// - `Detailed` - each property with information about it. E.g. `<property_name:String>`
     pub property_detailing : LevelOfDetail,
     /// Reresents how much information to display for the properties
@@ -110,20 +110,32 @@ mod private
         LevelOfDetail::None => String::new(),
         _ if command.subjects.is_empty() => String::new(),
         LevelOfDetail::Simple => "< subjects >".into(),
-        LevelOfDetail::Detailed => command.subjects.iter().map( | v | format!( "< {}{:?} >", if v.optional { "?" } else { "" }, v.kind ) ).collect::< Vec< _ > >().join( " " ),
+        LevelOfDetail::Detailed => command.subjects.iter().map( | v | 
+        {
+          format!( "< {}{:?} >", if v.optional { "?" } else { "" }, v.kind ) 
+        }).collect::< Vec< _ > >().join( " " ),
       };
       let properties = match o.property_detailing
       {
         LevelOfDetail::None => String::new(),
         _ if command.subjects.is_empty() => String::new(),
         LevelOfDetail::Simple => "< properties >".into(),
-        LevelOfDetail::Detailed => command.properties( dictionary.order ).iter().map( |( n, v )| format!( "< {}:{}{:?} >", if v.optional { "?" } else { "" }, n, v.kind ) ).collect::< Vec< _ > >().join( " " ),
+        LevelOfDetail::Detailed => command.properties( dictionary.order ).iter().map( | ( n, v ) | 
+        {
+          format!( "< {}:{}{:?} >", if v.optional { "?" } else { "" }, n, v.kind ) 
+        }).collect::< Vec< _ > >().join( " " ),
       };
 
       let footer = if o.with_footer
       {
-        let full_subjects = command.subjects.iter().map( | subj | format!( "- {} [{}{:?}]", subj.hint, if subj.optional { "?" } else { "" }, subj.kind ) ).join( "\n\t" );
-        let full_properties = format_table( command.properties( dictionary.order ).into_iter().map( | ( name, value ) | [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ] ) ).unwrap().replace( '\n', "\n\t" );
+        let full_subjects = command.subjects.iter().map( | subj | 
+        {
+          format!( "- {} [{}{:?}]", subj.hint, if subj.optional { "?" } else { "" }, subj.kind ) 
+        }).join( "\n\t" );
+        let full_properties = format_table( command.properties( dictionary.order ).into_iter().map( | ( name, value ) |
+        { 
+          [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ] 
+        })).unwrap().replace( '\n', "\n\t" );
 
         format!
         (
@@ -149,7 +161,7 @@ mod private
         format!
         (
           "{}{}{}",
-          format_table([[ row.name, row.args, row.hint ]]).unwrap(),
+          format_table( [ [ row.name, row.args, row.hint ] ] ).unwrap(),
           if row.footer.is_empty() { "" } else { "\n" },
           row.footer
         )
@@ -160,7 +172,7 @@ mod private
     {
       let rows = dictionary.commands()
       .into_iter()
-      .map( |( _, cmd )| cmd )
+      .map( | ( _, cmd ) | cmd )
       .map( for_single_command )
       .map( | row | [ row.name, row.args, row.hint ] );
       format_table( rows ).unwrap()
@@ -256,10 +268,10 @@ mod private
       let help = Command::former()
       .hint( "prints information about existing commands" )
       .property( "format" )
-        .hint( "help generates in format witch you write" )
-        .kind( Type::String )
-        .optional( true )
-        .end()
+      .hint( "help generates in format witch you write" )
+      .kind( Type::String )
+      .optional( true )
+      .end()
       .phrase( &phrase )
       .routine( routine )
       .form();
@@ -293,7 +305,7 @@ mod private
 
             let args = HelpGeneratorOptions::former()
             .command_prefix( "." )
-            .for_commands([ cmd ])
+            .for_commands( [ cmd ] )
             .description_detailing( LevelOfDetail::Detailed )
             .subject_detailing( LevelOfDetail::Simple )
             .property_detailing( LevelOfDetail::Simple )
@@ -310,8 +322,16 @@ mod private
 
       let help = Command::former()
       .hint( "prints full information about a specified command" )
-      .subject().hint( "command name" ).kind( Type::String ).optional( true ).end()
-      .property( "format" ).hint( "help generates in format witch you write" ).kind( Type::String ).optional( true ).end()
+      .subject()
+      .hint( "command name" )
+      .kind( Type::String )
+      .optional( true )
+      .end()
+      .property( "format" )
+      .hint( "help generates in format witch you write" )
+      .kind( Type::String )
+      .optional( true )
+      .end()
       .phrase( &phrase )
       .routine( routine )
       .form();
@@ -412,7 +432,7 @@ mod private
     where
       HelpFunction : Fn( &Dictionary, HelpGeneratorOptions< '_ > ) -> String + 'static
     {
-        Self( Rc::new( func ) )
+      Self( Rc::new( func ) )
     }
   }
 

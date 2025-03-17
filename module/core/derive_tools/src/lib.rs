@@ -71,7 +71,6 @@ mod derive_more
 pub use variadic_from as variadic;
 
 /// Namespace with dependencies.
-
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency

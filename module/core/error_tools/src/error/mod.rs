@@ -2,7 +2,7 @@
 mod private
 {
   #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
-  pub use std::error::Error as ErrorTrait;
+  pub use core::error::Error as ErrorTrait;
 
   /// This trait allows adding extra context or information to an error, creating a tuple of the additional
   /// context and the original error. This is particularly useful for error handling when you want to include
@@ -11,7 +11,6 @@ mod private
   /// The `ErrWith` trait provides methods to wrap an error with additional context, either by using a closure
   /// that generates the context or by directly providing the context.
   ///
-  /// ```
   pub trait ErrWith< ReportErr, ReportOk, E >
   {
     /// Takes a closure `f` that returns a value of type `ReportErr`, and uses it to wrap an error of type `(ReportErr, E)`

@@ -212,7 +212,6 @@ where
 ///
 /// The alias helps reduce boilerplate code and enhances readability, making the construction of hash maps in
 /// a builder pattern both efficient and expressive.
-
 pub type BTreeMapFormer< K, E, Context, Formed, End > =
 CollectionFormer::< ( K, E ), BTreeMapDefinition< K, E, Context, Formed, End > >;
 
@@ -225,7 +224,6 @@ CollectionFormer::< ( K, E ), BTreeMapDefinition< K, E, Context, Formed, End > >
 /// with the builder pattern provided by the `former` framework. It's a convenience trait that simplifies
 /// creating configured hash map builders with default settings.
 ///
-
 pub trait BTreeMapExt< K, E > : sealed::Sealed
 where
   K : Ord,

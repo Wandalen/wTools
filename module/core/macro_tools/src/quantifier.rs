@@ -11,7 +11,6 @@ mod private
   ///
   /// Marker saying how to parse several elements of such type in a row.
   ///
-
   pub trait AsMuchAsPossibleNoDelimiter {}
 
   /// Element of parsing.

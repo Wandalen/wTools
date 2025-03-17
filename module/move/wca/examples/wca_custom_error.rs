@@ -1,5 +1,5 @@
 //!
-//! # Handling Errors with CommandsAggregator
+//! # Handling Errors with `CommandsAggregator`
 //!
 //! This module provides an example of how to use `wca::CommandsAggregator` to manage error handling in a command-line interface. The `CommandsAggregator` offers a fluent interface for defining commands and associating them with various error types, making it straightforward to handle and present errors in a structured way.
 //!
@@ -19,20 +19,20 @@ fn main() -> error_tools::error::untyped::Result< () >
 {
   let ca = wca::CommandsAggregator::former()
   .command( "error.string" )
-    .hint( "Returns error as a string" )
-    .routine( || { Err( "this is string error" ) } )
+  .hint( "Returns error as a string" )
+  .routine( || { Err( "this is string error" ) } )
   .end()
   .command( "error.typed" )
-    .hint( "Returns error as a custom error" )
-    .routine( || { Err( CustomError::TheError ) } )
+  .hint( "Returns error as a custom error" )
+  .routine( || { Err( CustomError::TheError ) } )
   .end()
   .command( "error.untyped" )
-    .hint( "Returns error as untyped error" )
-    .routine( || { Err( error_tools::error::untyped::format_err!( "this is untyped error" ) ) } )
+  .hint( "Returns error as untyped error" )
+  .routine( || { Err( error_tools::error::untyped::format_err!( "this is untyped error" ) ) } )
   .end()
   .command( "error.with_context" )
-    .hint( "Returns error as untyped error with context" )
-    .routine( || { Err( error_tools::error::untyped::format_err!( "this is untyped error" ).context( "with context" ) ) } )
+  .hint( "Returns error as untyped error with context" )
+  .routine( || { Err( error_tools::error::untyped::format_err!( "this is untyped error" ).context( "with context" ) ) } )
   .end()
   .perform();
 

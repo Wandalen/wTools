@@ -49,7 +49,7 @@ impl SourceFile
 
 impl fmt::Display for SourceFile
 {
-  fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
     write!( f, "{}", self.0.display() )
   }
@@ -57,7 +57,7 @@ impl fmt::Display for SourceFile
 
 impl fmt::Debug for SourceFile
 {
-  fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
     write!( f, "source file :: {}", self.0.display() )
   }

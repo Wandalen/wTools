@@ -249,7 +249,6 @@ where
 /// the `CollectionFormer` with predefined settings. This approach minimizes boilerplate code and enhances
 /// readability, making it ideal for fluent and expressive construction of set collections within custom data structures.
 ///
-
 pub type HashSetFormer< K, Context, Formed, End > =
 CollectionFormer::< K, HashSetDefinition< K, Context, Formed, End > >;
 
@@ -261,7 +260,6 @@ CollectionFormer::< K, HashSetDefinition< K, Context, Formed, End > >;
 /// set construction. It simplifies the process of building `HashSet` instances by providing a straightforward
 /// way to start the builder pattern with default context and termination behavior.
 ///
-
 pub trait HashSetExt< K > : sealed::Sealed
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,

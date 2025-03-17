@@ -20,18 +20,18 @@ fn main() -> error_tools::error::untyped::Result< () >
 {
   let ca = CommandsAggregator::former()
   .command( "exit" )
-    .hint( "just exit" )
-    .routine( || exit() )
-    .end()
+  .hint( "just exit" )
+  // fix clippy
+  .routine( exit )
+  .end()
   .command( "echo" )
-    .hint( "prints all subjects and properties" )
-    .subject().hint( "Subject" ).kind( Type::String ).optional( true ).end()
-    .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
-    .routine( f1 )
-    .end()
+  .hint( "prints all subjects and properties" )
+  .subject().hint( "Subject" ).kind( Type::String ).optional( true ).end()
+  .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
+  .routine( f1 )
+  .end()
   .order( Order::Lexicography )
-  .perform()
-  ;
+  .perform();
 
   // aaa : aaa2 : for Bohdan : that should work
   // let ca = wca::CommandsAggregator::former()

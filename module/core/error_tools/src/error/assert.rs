@@ -4,7 +4,6 @@ mod private
   ///
   /// Macro asserts that two expressions are identical to each other. Unlike `std::assert_eq` it is removed from a release build.
   ///
-
   #[ macro_export ]
   macro_rules! debug_assert_id
   {
@@ -59,7 +58,6 @@ mod private
   }
 
   /// Macro asserts that two expressions are identical to each other. Unlike `std::assert_eq` it is removed from a release build. Alias of `debug_assert_id`.
-
   #[ macro_export ]
   macro_rules! debug_assert_identical
   {
@@ -71,7 +69,6 @@ mod private
   }
 
   /// Macro asserts that two expressions are not identical to each other. Unlike `std::assert_eq` it is removed from a release build.
-
   #[ macro_export ]
   macro_rules! debug_assert_ni
   {
@@ -84,7 +81,6 @@ mod private
   }
 
   /// Macro asserts that two expressions are not identical to each other. Unlike `std::assert_eq` it is removed from a release build.
-
   #[ macro_export ]
   macro_rules! debug_assert_not_identical
   {

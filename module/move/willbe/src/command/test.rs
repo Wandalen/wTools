@@ -130,7 +130,7 @@ Set at least one of them to true." );
           let args = if args_line.is_empty() { String::new() } else { format!(" {args_line}" ) };
           let prop = if prop_line.is_empty() { String::new() } else { format!(" {prop_line}" ) };
           let line = format!( "will .publish{args}{prop} dry:0" );
-          println!("To apply plan, call the command `{}`", line.blue());
+          println!( "To apply plan, call the command `{}`", line.blue() );
         }
         else
         {

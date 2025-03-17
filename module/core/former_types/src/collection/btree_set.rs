@@ -205,7 +205,6 @@ for BTreeSet< E >
 /// It is particularly useful in scenarios where binary tree sets are repeatedly used or configured in similar ways across different
 /// parts of an application.
 ///
-
 pub type BTreeSetFormer< E, Context, Formed, End > =
 CollectionFormer::< E, BTreeSetDefinition< E, Context, Formed, End > >;
 

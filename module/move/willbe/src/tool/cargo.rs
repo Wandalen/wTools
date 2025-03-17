@@ -162,7 +162,8 @@ mod private
       file.store()?;
 
       Some( manifest )
-    } else { None };
+    } 
+    else { None };
     let ( program, options ) = ( "rustup", args.to_pack_args() );
 
     if args.dry
@@ -240,7 +241,8 @@ mod private
       file.store()?;
 
       Some( manifest )
-    } else { None };
+    } 
+    else { None };
     let ( program, arguments) = ( "cargo", args.as_publish_args() );
 
     if args.dry
@@ -276,7 +278,16 @@ mod private
       }
       if args.retry_count > 0
       {
-        Err( error::untyped::format_err!( "It took {} attempts, but still failed. Here are the errors:\n{}", args.retry_count + 1, results.into_iter().map( | r | format!( "- {r}" ) ).collect::< Vec< _ > >().join( "\n" ) ) )
+        Err( error::untyped::format_err!
+        ( 
+          "It took {} attempts, but still failed. Here are the errors:\n{}", 
+          args.retry_count + 1, 
+          results
+          .into_iter()
+          .map( | r | format!( "- {r}" ) )
+          .collect::< Vec< _ > >()
+          .join( "\n" ) 
+        ))
       }
       else
       {

@@ -200,7 +200,6 @@ for Vec< E >
 /// It is particularly useful in scenarios where vectors are repeatedly used or configured in similar ways across different
 /// parts of an application.
 ///
-
 pub type VectorFormer< E, Context, Formed, End > =
 CollectionFormer::< E, VectorDefinition< E, Context, Formed, End > >;
 
