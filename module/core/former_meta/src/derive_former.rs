@@ -1,6 +1,6 @@
 #[ allow( clippy::wildcard_imports ) ]
 use super::*;
-use iter_tools::{ Itertools };
+use iter_tools::Itertools;
 use macro_tools::{ attr, diag, generic_params, generic_args, typ, derive, Result };
 use proc_macro2::TokenStream;
 
@@ -77,7 +77,7 @@ pub fn mutator
   {
     let debug = format!
     (
-      r#"
+      r"
 = Example of custom mutator
 
 impl< {} > former::FormerMutator
@@ -91,7 +91,7 @@ where
   {{
   }}
 }}
-      "#,
+      ",
       format!( "{}", qt!{ #former_definition_types_generics_impl } ),
       format!( "{}", qt!{ #former_definition_types_generics_ty } ),
       format!( "{}", qt!{ #former_definition_types_generics_where } ),
@@ -99,8 +99,8 @@ where
     // println!( "{debug}" );
     let about = format!
     (
-r#"derive : Former
-item : {item}"#,
+r"derive : Former
+item : {item}",
     );
     diag::report_print( about, original_input, debug );
   };
@@ -116,18 +116,18 @@ fn doc_generate( item : &syn::Ident ) -> ( String, String )
 
   let doc_former_mod = format!
   (
-r#" Implementation of former for [{item}].
-"#
+r" Implementation of former for [{item}].
+"
   );
 
   let doc_former_struct = format!
   (
-r#"
+r"
 Structure to form [{item}]. Represents a forming entity designed to construct objects through a builder pattern.
 
 This structure holds temporary storage and context during the formation process and
 utilizes a defined end strategy to finalize the object creation.
-"#
+"
   );
 
   ( doc_former_mod, doc_former_struct )
@@ -144,11 +144,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   use macro_tools::IntoGenericArgs;
 
   let original_input = input.clone();
-  let ast = match syn::parse::< syn::DeriveInput >( input )
-  {
-    Ok( syntax_tree ) => syntax_tree,
-    Err( err ) => return Err( err ),
-  };
+  let ast = syn::parse::< syn::DeriveInput >( input )?;
   let has_debug = attr::has_debug( ast.attrs.iter() )?;
   let struct_attrs = ItemAttributes::from_attrs( ast.attrs.iter() )?;
 
@@ -165,12 +161,12 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let as_subformer_end_doc = format!
   (
-    r#"
+    r"
 Represents an end condition for former of [`${item}`], tying the lifecycle of forming processes to a broader context.
 
 This trait is intended for use with subformer alias, ensuring that end conditions are met according to the
 specific needs of the broader forming context. It mandates the implementation of `former::FormingEnd`.
-    "#
+    "
   );
 
   /* parameters for structure */

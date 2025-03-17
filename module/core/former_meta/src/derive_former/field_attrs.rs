@@ -206,10 +206,10 @@ impl syn::parse::Parse for AttributeConfig
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ former( default = 13 ) ]'
+        r"Expects an attribute of format '#[ former( default = 13 ) ]'
   {known}
   But got: '{}'
-"#,
+",
         qt!{ #ident }
       )
     };
@@ -368,10 +368,10 @@ impl syn::parse::Parse for AttributeScalarSetter
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ scalar( name = myName, setter = true ) ]'
+        r"Expects an attribute of format '#[ scalar( name = myName, setter = true ) ]'
   {known}
   But got: '{}'
-"#,
+",
         qt!{ #ident }
       )
     };
@@ -544,10 +544,10 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ subform_scalar( name = myName, setter = true ) ]'
+        r"Expects an attribute of format '#[ subform_scalar( name = myName, setter = true ) ]'
   {known}
   But got: '{}'
-"#,
+",
         qt!{ #ident }
       )
     };
@@ -735,10 +735,10 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ subform_collection( name = myName, setter = true, debug, definition = MyDefinition ) ]'
+        r"Expects an attribute of format '#[ subform_collection( name = myName, setter = true, debug, definition = MyDefinition ) ]'
   {known}
   But got: '{}'
-"#,
+",
         qt!{ #ident }
       )
     };
@@ -919,10 +919,10 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ subform( name = myName, setter = true ) ]'
+        r"Expects an attribute of format '#[ subform( name = myName, setter = true ) ]'
   {known}
   But got: '{}'
-"#,
+",
         qt!{ #ident }
       )
     };
