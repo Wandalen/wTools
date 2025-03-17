@@ -139,7 +139,7 @@ mod private
       raw_properties.iter()
       .filter( | ( k, _ ) | 
       {
-        !( properties.contains_key( *k ) || properties_aliases.get( *k ).map_or( false, | key | properties.contains_key( key ) ) ) 
+        !( properties.contains_key( *k ) || properties_aliases.get( *k ).is_some_and( | key | properties.contains_key( key ) ) ) 
       })
       .count()
     }

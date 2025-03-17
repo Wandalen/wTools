@@ -190,7 +190,7 @@ mod private
     unsafe
     {
       let mut ptr = ref_dyn as *const T;
-      let data_ptr = &mut ptr as *mut *const T as *mut *mut ();
+      let data_ptr = &raw mut ptr as *mut *mut ();
       *data_ptr = < T as CloneDyn >::__clone_dyn( ref_dyn, DontCallMe );
       Box::from_raw( ptr as *mut T )
     }
