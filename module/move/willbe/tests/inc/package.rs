@@ -58,14 +58,14 @@ impl TestPackage
     self.dependencies.push( Dependency::Normal { name: name.into(), path: None, is_macro: false } );
     self
   }
-  
-  pub fn macro_dependency( mut self, name: impl Into< String > ) -> Self
+  // never used
+  pub fn _macro_dependency( mut self, name: impl Into< String > ) -> Self
   {
     self.dependencies.push( Dependency::Normal { name: name.into(), path: None, is_macro: true } );
     self
   }
-  
-  pub fn dev_dependency( mut self, name: impl Into< String > ) -> Self
+  // never used
+  pub fn _dev_dependency( mut self, name: impl Into< String > ) -> Self
   {
     self.dependencies.push( Dependency::Dev { name: name.into(), path: None, is_macro: false } );
     self

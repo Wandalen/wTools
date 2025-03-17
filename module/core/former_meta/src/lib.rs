@@ -268,7 +268,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 /// Derives the `ComponentsAssign` trait for a struct, enabling `components_assign` which set all fields at once.
 ///
 /// This will work only if every field can be acquired from the passed value.
-/// In other words, the type passed as an argument to `components_assign` must implement Into<T> for each field type.
+/// In other words, the type passed as an argument to `components_assign` must implement `Into<T>` for each field type.
 ///
 /// # Attributes
 ///
