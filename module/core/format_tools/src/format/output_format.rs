@@ -40,10 +40,7 @@ mod private
     InputExtract,
     Context,
   };
-  use core::
-  {
-    fmt,
-  };
+  use core::fmt;
 
   //=
 
@@ -136,10 +133,7 @@ pub mod own
   };
 
   #[ doc( inline ) ]
-  pub use private::
-  {
-    vector_table_write,
-  };
+  pub use private::vector_table_write;
 
 }
 
@@ -160,10 +154,7 @@ pub mod exposed
   pub use super::super::output_format;
 
   #[ doc( inline ) ]
-  pub use private::
-  {
-    TableOutputFormat,
-  };
+  pub use private::TableOutputFormat;
 
 }
 

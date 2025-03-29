@@ -471,3 +471,66 @@ fn max_width() -> usize
 
   0
 }
+
+#[ test ]
+fn ukrainian_chars()
+{
+  let test_objects = test_object::test_objects_gen_with_unicode();
+  let as_table = AsTable::new( &test_objects );
+
+  let mut output = String::new();
+  let mut context = print::Context::new( &mut output, Default::default() );
+  let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  assert!( got.is_ok() );
+  println!( "{}", &output );
+
+  let exp =  r#"│           id            │ created_at │     file_ids     │                   tools                   │
+───────────────────────────────────────────────────────────────────────────────────────────────────────
+│      Доміно             │    100     │ [                │                                           │
+│                         │            │     "файл1",     │                                           │
+│                         │            │     "файл2",     │                                           │
+│                         │            │ ]                │                                           │
+│ Інший юнікод            │    120     │        []        │ [                                         │
+│                         │            │                  │     {                                     │
+│                         │            │                  │         "тулз1": "значення1",             │
+│                         │            │                  │     },                                    │
+│                         │            │                  │     {                                     │
+│                         │            │                  │         "тулз2": "значення2",             │
+│                         │            │                  │     },                                    │
+│                         │            │                  │ ]                                         │"#;
+  a_id!( output.as_str(), exp );
+}
+
+
+#[ test ]
+fn ukrainian_and_english_chars()
+{
+  let test_objects = test_object::test_objects_gen_2_languages();
+  let as_table = AsTable::new( &test_objects );
+
+  let mut output = String::new();
+  let mut context = print::Context::new( &mut output, Default::default() );
+  let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  assert!( got.is_ok() );
+  println!( "{}", &output );
+
+  let exp =  r#"│      id      │ created_at │     file_ids     │                   tools                   │
+────────────────────────────────────────────────────────────────────────────────────────────
+│ Доміно       │    100     │ [                │ [                                         │
+│              │            │     "файл1",     │     {                                     │
+│              │            │     "файл2",     │         "тулз1": "значення1",             │
+│              │            │ ]                │     },                                    │
+│              │            │                  │     {                                     │
+│              │            │                  │         "тулз2": "значення2",             │
+│              │            │                  │     },                                    │
+│              │            │                  │ ]                                         │
+│     File     │    120     │   [              │        [                                  │
+│              │            │       "file1",   │            {                              │
+│              │            │       "file2",   │                "tools1": "value1",        │
+│              │            │   ]              │            },                             │
+│              │            │                  │            {                              │
+│              │            │                  │                "tools1": "value2",        │
+│              │            │                  │            },                             │
+│              │            │                  │        ]                                  │"#;
+  a_id!( output.as_str(), exp );
+}
