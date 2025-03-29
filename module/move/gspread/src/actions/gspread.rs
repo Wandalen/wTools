@@ -867,6 +867,39 @@ use std::usize;
     }
   }
 
+  // pub async fn get_rows_2< S : Secret >
+  // (
+  //   client : &Client< '_, S >,
+  //   spreadsheet_id : &str,
+  //   sheet_name : &str, 
+  // ) -> Result< Vec< Vec< serde_json::Value > > >
+  // {
+  //   // let range = format!( "{}!A2:ZZZ", sheet_name );
+  //   let mut rows = Vec::new();
+  //   let batch_size = 10000;
+  //   for start in 1..180000 {
+
+  //   }
+  //   match client
+  //   .spreadsheet()
+  //   .values_get( spreadsheet_id, &range )
+  //   .value_render_option( ValueRenderOption::UnformattedValue )
+  //   .doit()
+  //   .await
+  //   {
+  //     Ok( response ) => 
+  //     {
+  //       match response.values
+  //       {
+  //         Some( values ) => Ok( values ),
+  //         None => Ok( Vec::new() )
+  //       }
+  //     }
+  //     Err( error ) => Err( error )
+  //   }
+    
+  // }
+
   /// # `get_cell`
   ///
   /// Retrieves the value of a specific cell from a Google Sheet.
