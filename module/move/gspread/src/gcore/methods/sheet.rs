@@ -66,6 +66,21 @@ mod private
         _dest : dest
       }
     }
+
+    pub fn delete_dimension< 'a >
+    (
+      &'a self,
+      spreadsheet_id : &'a str,
+      request : DeleteDimensionRequest
+    ) -> SheetDeleteDimensionMethod< 'a, S >
+    {
+      SheetDeleteDimensionMethod
+      {
+        client : self.client,
+        spreadsheet_id : spreadsheet_id,
+        request : request
+      }
+    }
   }
 
   /// # SheetCopyMethod
@@ -176,11 +191,94 @@ mod private
     }
   }
 
+  pub struct SheetDeleteDimensionMethod< 'a, S : Secret >
+  {
+    client : &'a Client< 'a, S >,
+    spreadsheet_id : &'a str,
+    request : DeleteDimensionRequest
+  }
+
+  impl< S : Secret > SheetDeleteDimensionMethod< '_, S >
+  {
+    pub async fn doit( &self ) -> Result< Response  >
+    {
+      let endpoint = format!
+      (
+        "{}/{}:batchUpdate",
+        self.client.endpoint,
+        self.spreadsheet_id
+      );
+
+      let token = match &self.client.auth
+      {
+        Some( auth_data ) => 
+        {
+          let mut token_ref = auth_data.token.borrow_mut();
+
+          if let Some( token ) = &*token_ref 
+          {
+            token.clone()
+          } 
+          else 
+          {
+            let new_token = auth_data
+            .secret
+            .get_token()
+            .await
+            .map_err( | err | Error::ApiError( err.to_string() ) )?;
+
+            *token_ref = Some( new_token.clone() );
+
+            new_token
+          }
+        }
+        None => "".to_string()
+      };
+
+      let response = reqwest::Client::new()
+      .post( endpoint )
+      .json( &self.request )
+      .bearer_auth( token )
+      .send()
+      .await
+      .map_err( | err | Error::ApiError( err.to_string() ) )?;
+
+      let response_parsed = response.json::< Response >()
+      .await
+      .map_err( | err | Error::ParseError( err.to_string() ) )?;
+
+      Ok( response_parsed )
+    }
+  }
+
   #[ derive( Debug, ser::Serialize, ser::Deserialize ) ]
   pub struct BatchUpdateResponse
   {
     #[ serde( rename = "spreadsheetId" ) ]
     spreadsheet_id : Option< String >,
+  }
+
+  #[ derive( Debug, ser::Serialize, ser::Deserialize ) ]
+  pub enum Request
+  {
+    #[ serde( rename = "deleteDimension" ) ]
+    DeleteDimension( DeleteDimensionRequest )
+  }
+
+  #[ derive( Debug, ser::Serialize, ser::Deserialize ) ]
+  pub struct BatchUpdateRequest
+  {
+    /// A list of updates to apply to the spreadsheet. Requests will be applied in the order they are specified. If any request is not valid, no requests will be applied.
+    requests : Vec< Request >,
+    /// Determines if the update response should include the spreadsheet resource.
+    #[ serde( rename = "includeSpreadsheetInResponse" ) ]
+    include_spreadsheet_in_response : bool,
+    /// Limits the ranges included in the response spreadsheet. Meaningful only if includeSpreadsheetInResponse is 'true'.
+    #[ serde( rename = "resoponseRanges" ) ]
+    response_ranges : Vec< String >,
+    /// True if grid data should be returned. Meaningful only if includeSpreadsheetInResponse is 'true'. This parameter is ignored if a field mask was set in the request.
+    #[ serde( rename = "responseIncludeGridData" ) ]
+    response_include_grid_data : bool 
   }
 
   #[ derive( Debug, ser::Serialize, ser::Deserialize ) ]

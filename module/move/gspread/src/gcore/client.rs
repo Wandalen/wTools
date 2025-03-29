@@ -7,7 +7,7 @@ mod private
   use std::cell::RefCell;
   use former::Former;
  
-  use crate::{gcore::methods::{batch_update::SpreadSheetBatchUpdate, sheet::SpreadSheetMethod, values::SpreadSheetValuesMethod}, *};
+  use crate::{gcore::methods::{sheet::SpreadSheetMethod, values::SpreadSheetValuesMethod}, *};
   use gcore::Secret;
 
 
@@ -84,7 +84,7 @@ mod private
     pub endpoint : &'a str,
   }
 
-  impl< 'a, S : Secret > Client< 'a, S >
+  impl< S : Secret > Client< '_, S >
   {
     pub fn spreadsheet( &self ) -> SpreadSheetValuesMethod< S >
     {
@@ -99,19 +99,6 @@ mod private
       SpreadSheetMethod
       {
         client : self
-      }
-    }
-
-    pub fn batch_update< 'b >( &'a self, spreadsheet_id : &'b str ) -> SpreadSheetBatchUpdate< 'a, 'b, S >
-    {
-      SpreadSheetBatchUpdate
-      {
-        client : self,
-        spreadsheet_id,
-        requests : Default::default(),
-        include_spreadsheet_in_response : Default::default(),
-        response_ranges : Default::default(),
-        response_include_grid_data : Default::default()
       }
     }
   }
