@@ -501,7 +501,6 @@ fn ukrainian_chars()
   a_id!( output.as_str(), exp );
 }
 
-
 #[ test ]
 fn ukrainian_and_english_chars()
 {
