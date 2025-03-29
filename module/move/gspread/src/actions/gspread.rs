@@ -10,6 +10,7 @@ mod private
   use serde_json::json;
   use once_cell::sync::Lazy;
   use std::collections::HashMap;
+use std::usize;
 
   use crate::gcore::client::InsertDataOption;
   use crate::*;
