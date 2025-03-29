@@ -243,39 +243,65 @@ mod private
     }
   }
 
-  impl< 'a > Iterator for LinesWithLimit< 'a >
+  impl< 'a > Iterator for LinesWithLimit< 'a > 
   {
     type Item = &'a str;
 
-    fn next( &mut self ) -> Option< Self::Item >
+    fn next( &mut self ) -> Option< Self::Item > 
     {
-      if self.cur.is_none() || self.cur.is_some_and( str::is_empty )
+      loop 
       {
-        self.cur = self.lines.next();
-      }
-
-      match self.cur
-      {
-        None => return None,
-
-        Some( cur ) =>
+        let s = match self.cur 
         {
-          if self.limit_width == 0
+          Some( st ) if !st.is_empty() => st,
+
+          _ => 
           {
-            self.cur = None;
-            Some( cur )
+            let next_line = self.lines.next()?;
+            if next_line.is_empty() 
+            {
+              self.cur = None;
+              return Some( "" );
+            } 
+            else 
+            {
+              self.cur = Some( next_line );
+              continue; 
+            }
           }
-          else
-          {
-            let (chunk, rest) = cur.split_at(self.limit_width.min(cur.len()));
-            self.cur = Some( rest );
-          
-            Some(chunk)
-          }
+        };
+
+        if self.limit_width == 0 
+        {
+          self.cur = None;
+          return Some( s );
         }
+
+        let mut boundary_byte_index = s.len();
+        let mut char_count = 0;
+        for ( byte_i, _ch ) in s.char_indices() 
+        {
+          if char_count == self.limit_width 
+          {
+            boundary_byte_index = byte_i;
+            break;
+          }
+          char_count += 1;
+        }
+
+        let chunk = &s[ ..boundary_byte_index ];
+        let rest = &s[ boundary_byte_index.. ];
+
+        match rest.is_empty()
+        {
+          true => self.cur = None,
+          false => self.cur = Some( rest )
+        };
+
+        return Some( chunk );
       }
     }
-  }
+}
 
 }
 

@@ -28,10 +28,7 @@ use print::
   Context,
 };
 use std::borrow::Cow;
-use core::
-{
-  fmt,
-};
+use core::fmt;
 use std::sync::OnceLock;
 
 /// A struct representing the list of records( rows ) output format.

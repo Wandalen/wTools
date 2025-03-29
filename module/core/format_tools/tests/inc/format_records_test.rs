@@ -64,6 +64,57 @@ fn basic()
 //
 
 #[ test ]
+fn unicode()
+{
+  let test_objects = test_object::test_objects_gen_2_languages();
+
+  let as_table = AsTable::new( &test_objects );
+
+  let mut output = String::new();
+  let format = output_format::Records::default();
+  let printer = print::Printer::with_format( &format );
+  let mut context = print::Context::new( &mut output, printer );
+  let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  assert!( got.is_ok() );
+  println!( "{}", &output );
+
+  let exp = r#" = 1
+│ id         │ Доміно                        │
+│ created_at │ 100                           │
+│ file_ids   │ [                             │
+│            │     "файл1",                  │
+│            │     "файл2",                  │
+│            │ ]                             │
+│ tools      │ [                             │
+│            │     {                         │
+│            │         "тулз1": "значення1", │
+│            │     },                        │
+│            │     {                         │
+│            │         "тулз2": "значення2", │
+│            │     },                        │
+│            │ ]                             │
+ = 2
+│ id         │ File                        │
+│ created_at │ 120                         │
+│ file_ids   │ [                           │
+│            │     "file1",                │
+│            │     "file2",                │
+│            │ ]                           │
+│ tools      │ [                           │
+│            │     {                       │
+│            │         "tools1": "value1", │
+│            │     },                      │
+│            │     {                       │
+│            │         "tools1": "value2", │
+│            │     },                      │
+│            │ ]                           │"#;
+  a_id!( output.as_str(), exp );
+
+}
+
+//
+
+#[ test ]
 fn custom_format()
 {
   // use the_module::TableFormatter;

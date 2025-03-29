@@ -16,10 +16,7 @@ use print::
   InputExtract,
   Context,
 };
-use core::
-{
-  fmt,
-};
+use core::fmt;
 use std::sync::OnceLock;
 
 /// A struct representing the classic table output format.
@@ -261,8 +258,8 @@ impl TableOutputFormat for Table
 
         write!( c.buf, "{}", cell_prefix )?;
         
-        let lspaces = ( column_width - cell_wrapped_width ) / 2;
-        let rspaces = ( ( column_width - cell_wrapped_width ) as f32 / 2 as f32 ).round() as usize + cell_wrapped_width - slice_width;
+        let lspaces = column_width.saturating_sub( cell_wrapped_width ) / 2;
+        let rspaces = ( ( column_width.saturating_sub( cell_wrapped_width ) as f32 / 2 as f32 ) ).round() as usize + cell_wrapped_width.saturating_sub(slice_width);
 
         if lspaces > 0
         {
