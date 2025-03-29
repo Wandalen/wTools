@@ -5,18 +5,18 @@
 use httpmock::prelude::*;
 use serde_json::json;
 use gspread::*;
-use gcore::
-{
-  methods::values::BatchClearValuesResponse, 
-  Dimension, 
-  ValueRange,
-  ApplicationSecret,
-  Client
-};
 use actions::gspread::
 {
   clear_by_custom_row_key, 
   OnFind
+};
+use gcore::ApplicationSecret;
+use gcore::client::
+{
+  BatchClearValuesResponse, 
+  Client, 
+  Dimension, 
+  ValueRange 
 };
 
 

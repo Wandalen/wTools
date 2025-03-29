@@ -7,7 +7,7 @@ use serde_json::json;
 use gspread::*;
 use actions::gspread::get_row;
 use gcore::ApplicationSecret;
-use gcore::
+use gcore::client::
 {
   Client, 
   ValueRange

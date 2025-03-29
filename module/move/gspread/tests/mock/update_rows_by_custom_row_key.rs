@@ -2,7 +2,6 @@
 //! Tests to update
 //! 
 
-use gspread::gcore::methods::values::BatchUpdateValuesResponse;
 use httpmock::prelude::*;
 use serde_json::json;
 use gspread::*;
@@ -13,8 +12,9 @@ use actions::gspread::
   OnFind
 };
 use gcore::ApplicationSecret;
-use gcore::
+use gcore::client::
 {
+  BatchUpdateValuesResponse, 
   Client, 
   Dimension, 
   ValueRange
@@ -159,7 +159,7 @@ async fn test_mock_update_rows_by_custom_row_key_on_find_append_row_should_work(
   // 1. Start get_mock.
   let server = MockServer::start();
   let spreadsheet_id = "12345";
-  let body_batch_update = BatchUpdateValuesResponse
+  let body_batch_update = BatchUpdateValuesResponse 
   {
     spreadsheet_id : Some( spreadsheet_id.to_string() ),
     total_updated_rows : Some( 1 ),

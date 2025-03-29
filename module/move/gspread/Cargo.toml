@@ -17,11 +17,6 @@ default-run = "main"
 name = "main"
 path = "src/bin/main.rs"
 
-[[bin]]
-name = "test"
-path = "src/bin/test.rs"
-
-
 [features]
 with_online = []
 default = [ "enabled" ]

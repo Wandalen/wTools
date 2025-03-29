@@ -25,29 +25,7 @@ mod private
       self
     }
 
-    pub fn include_spreadsheet_in_response( mut self ) -> SpreadSheetBatchUpdate< 'a, 'b, S >
-    {
-      self.include_spreadsheet_in_response = true;
-      self
-    }
-
-    pub fn response_ranges
-    ( 
-      mut self,
-      ranges : Vec< String >
-    ) -> SpreadSheetBatchUpdate< 'a, 'b, S >
-    {
-      self.response_ranges = ranges;
-      self
-    }
-
-    pub fn response_include_grid_data( mut self ) -> SpreadSheetBatchUpdate< 'a, 'b, S >
-    {
-      self.response_include_grid_data = true;
-      self
-    }
-
-    pub async fn doit( &self ) -> Result< BatchUpdateResponse >
+    pub async fn doit( &self ) -> Result< Response >
     {
       let endpoint = format!
       (
@@ -108,7 +86,7 @@ mod private
         return Err( Error::ApiError( response_text ) );
       }
 
-      let response_parsed = response.json::< BatchUpdateResponse >()
+      let response_parsed = response.json::< Response >()
       .await
       .map_err( | err | Error::ParseError( err.to_string() ) )?;
 
@@ -125,7 +103,7 @@ mod private
     #[ serde( rename = "includeSpreadsheetInResponse" ) ]
     include_spreadsheet_in_response : bool,
     /// Limits the ranges included in the response spreadsheet. Meaningful only if includeSpreadsheetInResponse is 'true'.
-    #[ serde( rename = "responseRanges" ) ]
+    #[ serde( rename = "resoponseRanges" ) ]
     response_ranges : Vec< String >,
     /// True if grid data should be returned. Meaningful only if includeSpreadsheetInResponse is 'true'. This parameter is ignored if a field mask was set in the request.
     #[ serde( rename = "responseIncludeGridData" ) ]
@@ -136,10 +114,10 @@ mod private
   pub struct BatchUpdateResponse
   {
     #[ serde( rename = "spreadsheetId" ) ]
-    pub spreadsheet_id : Option< String >,
-    pub replies : Option< Vec< Response > >,
+    spreadsheet_id : Option< String >,
+    replies : Option< Vec< Response > >,
     #[ serde( rename = "updatedSpreadsheet" ) ]
-    pub updated_spreadsheet : Option< Spreadsheet >
+    updated_spreadsheet : Option< Spreadsheet >
   }
 }
 
@@ -147,7 +125,6 @@ crate::mod_interface!
 {
   own use
   {
-    SpreadSheetBatchUpdate,
-    BatchUpdateResponse
+    SpreadSheetBatchUpdate
   };
 }

@@ -2,15 +2,15 @@
 //! Tests for `update_row` function.
 //! 
 
-use gspread::gcore::methods::values::BatchUpdateValuesResponse;
 use httpmock::prelude::*;
 
 use serde_json::json;
 use gspread::*;
 use actions::gspread::update_row;
 use gcore::ApplicationSecret;
-use gcore::
+use gcore::client::
 {
+  BatchUpdateValuesResponse, 
   Client, 
   Dimension, 
   ValueRange

@@ -10,11 +10,16 @@ mod private
   use gcore::
   {
     Client, 
+    Response,
     Secret,
     Error, 
     Result
   };
-  use gcore::types::SheetProperties;
+  use gcore::types::
+  {
+    DeleteDimensionRequest, 
+    SheetProperties
+  };
 
   /// # SpreadSheetMethod
   ///

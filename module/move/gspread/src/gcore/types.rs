@@ -373,7 +373,7 @@ mod private
   }
 
   /// Additional properties of a [DATA_SOURCE](https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/sheets#SheetType) sheet. 
-  #[ derive( Debug, Serialize, Deserialize, Clone ) ]
+  #[ derive( Debug, Serialize, Deserialize ) ]
   pub struct DataSourceSheetProperties
   {
     /// ID of the [DataSource](https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets#DataSource) the sheet is connected to. 
@@ -434,6 +434,13 @@ mod private
     pub data_source_sheet_properties : Option< DataSourceSheetProperties >
   }
 
+  #[ derive( Debug ) ]
+  pub struct Range
+  {
+    start_index : usize,
+    end_index   : usize
+  }
+
   /// A range along a single dimension on a sheet. All indexes are zero-based. Indexes are half open: the start index is inclusive and the end index is exclusive. Missing indexes indicate the range is unbounded on that side.
   #[ derive( Debug, Serialize, Deserialize, Clone ) ]
   pub struct DimensionRange
@@ -475,11 +482,9 @@ mod private
     }
   
     #[ derive( Debug, Serialize, Deserialize ) ]
-    #[ serde( untagged ) ]
     pub enum Response
     {
-      #[ serde( rename = "deleteDimensionGroup" ) ]
-      DeleteDimensionGroup( DeleteDimensionGroupResponse ),
+      DeleteDimensionGroupResponse,
     }
 
     #[ derive( Debug, ser::Serialize, ser::Deserialize, Clone ) ]
@@ -3969,7 +3974,7 @@ mod private
       enbled : Option< bool >,
       /// The scope of the refresh. Must be ALL_DATA_SOURCES.
       #[ serde( rename = "refreshScope" ) ]
-      refresh_scope : Option< DataSourceRefreshScope >,
+      refreshScope : Option< DataSourceRefreshScope >,
       /// Output only. The time interval of the next run.
       #[ serde( rename = "nextRun" ) ]
       next_run : Option< Interval >,

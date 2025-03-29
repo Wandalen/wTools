@@ -2,17 +2,17 @@
 //! Tests for `set_cell` function.
 //! 
 
-use gspread::gcore::methods::values::UpdateValuesResponse;
 use gspread::gcore::ApplicationSecret;
 use httpmock::prelude::*;
 
 use serde_json::json;
 use gspread::actions::gspread::set_cell; 
-use gspread::gcore::
+use gspread::gcore::client::
 {
   Client, 
   Dimension, 
   ValueRange,
+  UpdateValuesResponse 
 };
 
 /// # What

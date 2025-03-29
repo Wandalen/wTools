@@ -2,7 +2,7 @@
 //! Tests for `append_row` function.
 //! 
 
-use gspread::gcore::methods::values::BatchUpdateValuesResponse;
+use gspread::gcore::client::BatchUpdateValuesResponse;
 use httpmock::prelude::*;
 use serde_json::json;
 use std::collections::HashMap;
