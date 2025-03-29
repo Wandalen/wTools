@@ -2,11 +2,11 @@
 //! Gspread errors.
 //! 
 
+
 mod private
 {
   use derive_tools::AsRefStr;
   use error_tools::typed::Error;
-
   use crate::*;
   use ser;
 
@@ -147,7 +147,7 @@ mod private
 
 crate::mod_interface!
 {
-  orphan use
+  own use
   {
     Error,
     Result

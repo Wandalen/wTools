@@ -11,8 +11,30 @@ mod private
   use once_cell::sync::Lazy;
   use std::collections::HashMap;
 
-  use crate::{gcore::{methods::values::{BatchClearValuesRequest, BatchClearValuesResponse, BatchUpdateValuesRequest, BatchUpdateValuesResponse, UpdateValuesResponse, ValuesClearResponse}, types::{DimensionRange, InsertDataOption, SheetProperties, ValueInputOption, ValueRenderOption}, Client, DeleteDimensionRequest, Dimension, Error, Result, ValueRange}, *};
+  use crate::gcore::client::InsertDataOption;
+  use crate::*;
   use gcore::Secret;
+  use gcore::error::
+  { 
+    Error, 
+    Result 
+  };
+  use gcore::client::
+  {
+    Client, 
+    Dimension, 
+    ValueRange, 
+    ValueInputOption, 
+    ValueRenderOption, 
+    UpdateValuesResponse, 
+    // ValuesAppendResponse,
+    BatchUpdateValuesRequest, 
+    BatchUpdateValuesResponse,
+    BatchClearValuesRequest,
+    BatchClearValuesResponse, 
+    SheetProperties, 
+    ValuesClearResponse
+  };
 
   static REGEX_ROW_INDEX : Lazy< Regex > = Lazy::new( || {
     Regex::new( r"^([A-Za-z]+)(\d+)$" ).unwrap()
@@ -639,44 +661,6 @@ mod private
       Err( error ) => Err( Error::ApiError( error.to_string() ) )
     }
 
-  }
-
-  pub async fn delete_rows< S : Secret >
-  (
-    client : &Client< '_, S >,
-    spreadsheet_id : &str,
-    sheet_id : &str,
-    range : RowRange
-  ) -> Result<()>
-  {
-    let (start_index, end_index) = match range
-    {
-      RowRange::All => ( None, None ),
-      RowRange::Range { row_start, row_end } => ( Some( row_start ), Some( row_end ) )
-    };
-
-    let dimension_range = DimensionRange
-    { 
-      sheet_id    : sheet_id.to_string(),
-      dimension   : Dimension::Row,
-      start_index : start_index,
-      end_index   : end_index
-    };
-
-    let request = DeleteDimensionRequest
-    {
-      range : dimension_range
-    };
-
-    match client
-    .sheet()
-    .delete_dimension( spreadsheet_id, request )
-    .doit()
-    .await
-    {
-      Ok( _ ) => Ok( () ),
-      Err( error ) => Err( Error::ApiError( error.to_string() ) )
-    }
   }
 
 
