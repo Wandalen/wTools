@@ -8,7 +8,7 @@
 mod private
 {
   use crate::*;
-  use actions::gspread::get_all_rows;
+  use actions::gspread::get_rows;
   use gcore::Secret;
   use gcore::error::Result;
   use gcore::client::Client;
@@ -20,12 +20,9 @@ mod private
     sheet_name : &str
   ) -> Result< Vec< Vec < serde_json::Value > > >
   {
-    match get_all_rows( client, spreadsheet_id, sheet_name ).await
+    match get_rows( client, spreadsheet_id, sheet_name ).await
     {
-      Ok( rows ) => {
-        println!("Got {} rows", rows.len());
-        Ok( rows )
-      },
+      Ok( rows ) => Ok( rows ),
       Err( error ) => Err( error )
     }
   }
