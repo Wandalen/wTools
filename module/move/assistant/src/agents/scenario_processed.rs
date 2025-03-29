@@ -41,9 +41,9 @@ mod private
 
     fn try_from( scenario_raw : ScenarioRaw ) -> Result< Self, Self::Error >
     {
-      let nodes : Result< Vec< Node >, Self::Error > = 
+      let nodes : Result< Vec< Node >, Self::Error > =
       scenario_raw.nodes.into_iter().map( | rn | Node::try_from( rn ) ).collect();
-      
+
       Ok( Self { nodes : nodes? } )
     }
   }
@@ -55,11 +55,11 @@ mod private
   #[ derive( Debug, PartialEq ) ]
   pub struct Node
   {
-    /// ID of the node. Must be unique, will also identify node output. 
+    /// ID of the node. Must be unique, will also identify node output.
     pub id : String,
 
     /// Type of the node.
-    pub r#type : Path,
+    pub typ : Path,
 
     /// Parameters of the node.
     pub params : HashMap< String, String >,
@@ -79,7 +79,7 @@ mod private
         Self
         {
           id : node_raw.id,
-          r#type : Path::try_from( node_raw.r#type )?,
+          typ : Path::try_from( node_raw.typ )?,
           params : node_raw.params,
           next : Path::try_from( node_raw.next )?,
         }
