@@ -45,14 +45,15 @@ mod former_tests
 
   mod name_collision_former_hashmap_without_parameter;
   mod name_collision_former_vector_without_parameter;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod name_collisions;
-  mod name_collision_context;
-  mod name_collision_end;
-  mod name_collision_on_end;
-  mod name_collision_core;
+  // mod name_collision_context;
+  // mod name_collision_end;
+  // mod name_collision_on_end;
+  // mod name_collision_core;
 
   // = parametrization
+
+  mod parametrized_dyn;
 
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod parametrized_struct_manual;

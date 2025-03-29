@@ -1,5 +1,5 @@
 [package]
-name = "_chain_of_packages_b"
+name = "_three_packages_with_features_b"
 version = "0.1.0"
 edition = "2021"
 repository = "https://github.com/Username/test/b"
@@ -9,9 +9,9 @@ stability = "stable"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-_chain_of_packages_c = { path = "../c", optional = true }
+_three_packages_with_features_c = { path = "../c", optional = true }
 
 [features]
 enabled = []
 default = ["boo"]
-boo = ["_chain_of_packages_c"]
+boo = ["_three_packages_with_features_c"]

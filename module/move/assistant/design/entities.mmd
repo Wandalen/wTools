@@ -1,0 +1,78 @@
+---
+title: OpenAI API
+---
+erDiagram
+    File {
+        string id PK
+        string object
+        integer bytes
+        integer created_at
+        string file_name
+        string purpose
+    }
+
+    Assistant {
+        string id PK
+        string object
+        string model
+        integer created_at
+        string name
+        string description
+        string instructions
+        tool[] tools
+        metadata metadata
+        headers headers
+    }
+
+    Thread {
+        string id PK
+        string object
+        integer created_at
+        object tool_resources
+        metadata metadata
+    }
+
+    Message {
+        string id PK
+        string object
+        integer created_at
+        string thread_id FK
+        string status
+        object incomplete_details
+        integer completed_at
+        integer incomplete_at
+        string role
+        array content
+        string assistant_id FK
+        string run_id FK
+        array attachments
+        metadata metadata
+    }
+
+    Run {
+        string id PK
+        string object
+        integer created_at
+        string thread_id FK
+        string assistant_id FK
+        string status
+        object required_action
+        object last_error
+        integer expires_at
+        integer started_at
+        integer cancelled_at
+        integer failed_at
+        integer completed_at
+        object incomplete_details
+        string model
+        string instructions
+        tool[] tools
+        metadata metadata
+        headers headers
+    }
+    
+    Assistant |o--o{ Run : ""
+
+    Thread ||--o{ Message : ""
+    Thread ||--o{ Run: ""
+

@@ -1,5 +1,5 @@
 use feed_rs::parser as feed_parser;
-use error_tools::Result;
+use error_tools::untyped::Result;
 
 #[ tokio::test ]
 async fn frame() -> Result< () >

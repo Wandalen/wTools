@@ -1,0 +1,7 @@
+error: proc-macro derive panicked
+ --> tests/inc/index/compiletime/struct_unit.rs:3:12
+  |
+3 | #[ derive( Index ) ]
+  |            ^^^^^
+  |
+  = help: message: not implemented: Index not implemented for Unit

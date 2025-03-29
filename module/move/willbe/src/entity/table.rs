@@ -1,3 +1,4 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
   use std::fmt::{Display, Formatter};
@@ -9,17 +10,18 @@ mod private
     inner : prettytable::Table,
   }
 
-  impl Display for Table 
+  impl Display for Table
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result 
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
-      writeln!( f, "{}", self.inner.to_string() )
+      writeln!( f, "{}", self.inner )
     }
   }
-  
+
   impl Table
   {
     /// Create an empty table.
+    #[ must_use ]
     pub fn new() -> Self
     {
       Self
@@ -28,7 +30,7 @@ mod private
       }
     }
   }
-  
+
   impl Table
   {
     /// Set the optional header.
@@ -36,17 +38,17 @@ mod private
     {
       self.inner.set_titles( row.inner );
     }
-    
+
     /// Append a row in the table.
     pub fn add_row(&mut self, row : Row )
     {
       self.inner.add_row( row.inner );
     }
   }
-  
+
   impl Default for Table
   {
-    fn default() -> Self 
+    fn default() -> Self
     {
       let mut table = Self::new();
       let format = default_format();
@@ -57,7 +59,7 @@ mod private
 
   fn default_format() -> prettytable::format::TableFormat
   {
-    let format = prettytable::format::FormatBuilder::new()
+    prettytable::format::FormatBuilder::new()
     .column_separator( ' ' )
     .borders( ' ' )
     .separators
@@ -66,20 +68,19 @@ mod private
       prettytable::format::LineSeparator::new( '-', '+', '+', '+' )
     )
     .padding( 1, 1 )
-    .build();
-    format
+    .build()
   }
-  
+
   /// Represent a table row made of cells.
   #[ derive( Debug ) ]
   pub struct Row
   {
     inner : prettytable::Row,
   }
-  
+
   impl Row
   {
-    
+
     /// Append a cell at the end of the row.
     pub fn add_cell( &mut self, title : &str )
     {
@@ -88,10 +89,12 @@ mod private
       self.inner.add_cell( prettytable::Cell::new( title ) );
     }
   }
-  
+
+  #[ allow( clippy::new_without_default ) ]
   impl Row
   {
     /// Create an row of length size, with empty strings stored.
+    #[ must_use ]
     pub fn new() -> Self
     {
       Self
@@ -104,6 +107,6 @@ mod private
 
 crate::mod_interface!
 {
-  protected use Table;
-  protected use Row;
+  own use Table;
+  own use Row;
 }

@@ -2,9 +2,10 @@
 //! Macro helpers around derive macro and structure [`syn::DeriveInput`].
 //!
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use syn::punctuated::Punctuated;
 
@@ -24,8 +25,9 @@ pub( crate ) mod private
   /// };
   /// let fields = derive.named_fields( &ast );
   /// ```
-
-  pub fn named_fields< 'a >( ast : &'a syn::DeriveInput ) -> crate::Result< &'a Punctuated< syn::Field, syn::token::Comma > >
+  /// # Errors
+  /// qqq: doc
+  pub fn named_fields( ast : &syn::DeriveInput ) -> crate::Result< &Punctuated< syn::Field, syn::token::Comma > >
   {
 
     let fields = match ast.data
@@ -48,18 +50,19 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     named_fields,
   };
@@ -67,37 +70,42 @@ pub mod protected
 }
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as derive;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use super::super::derive;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
   };
 
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
   };
 

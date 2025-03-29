@@ -2,16 +2,11 @@
 //! Macro helpers.
 //!
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
-
-  ///
-  /// Result with syn::Error.
-  ///
-
-  pub type Result< T > = std::result::Result< T, syn::Error >;
 
   /// Adds indentation and optional prefix/postfix to each line of the given string.
   ///
@@ -50,7 +45,6 @@ pub( crate ) mod private
   /// and a semicolon at the end of each line. The function also demonstrates handling
   /// of input strings that end with a newline character by appending an additional line
   /// consisting only of the prefix and postfix.
-
   pub fn indentation< Prefix, Src, Postfix >( prefix : Prefix, src : Src, postfix : Postfix ) -> String
   where
     Prefix : AsRef< str >,
@@ -68,17 +62,17 @@ pub( crate ) mod private
     {
       if b.0 > 0
       {
-        a.push_str( "\n" );
+        a.push( '\n' );
       }
       a.push_str( prefix );
-      a.push_str( &b.1 );
+      a.push_str( b.1 );
       a.push_str( postfix );
       a
     });
 
-    if src.ends_with( "\n" ) || src.ends_with( "\n\r" ) || src.ends_with( "\r\n" )
+    if src.ends_with( '\n' ) || src.ends_with( "\n\r" ) || src.ends_with( "\r\n" )
     {
-      result.push_str( "\n" );
+      result.push( '\n' );
       result.push_str( prefix );
       result.push_str( postfix );
     }
@@ -134,11 +128,11 @@ pub( crate ) mod private
   /// };
   ///
   /// // Format the debug report for printing or logging
-  /// let formatted_report = report_format( "Code Transformation for MyStruct", original_input, generated_code );
+  /// let formatted_report = report_format( &"Code Transformation for MyStruct", &original_input, generated_code );
   /// println!( "{}", formatted_report );
   /// ```
   ///
-
+  #[ allow( clippy::needless_pass_by_value ) ]
   pub fn report_format< IntoAbout, IntoInput, IntoOutput >
   (
     about : IntoAbout, input : IntoInput, output : IntoOutput
@@ -148,7 +142,7 @@ pub( crate ) mod private
     IntoInput : ToString,
     IntoOutput : ToString,
   {
-    format!( "\n" ) +
+    "\n".to_string() +
     &format!( " = context\n\n{}\n\n", indentation( "  ", about.to_string(), "" ) ) +
     &format!( " = original\n\n{}\n\n", indentation( "  ", input.to_string(), "" ) ) +
     &format!( " = generated\n\n{}\n", indentation( "  ", output.to_string(), "" ) )
@@ -200,7 +194,6 @@ pub( crate ) mod private
   /// The above example demonstrates how the `report_print` function can be used to visualize the changes from original input code to the generated code,
   /// helping developers to verify and understand the modifications made during code generation processes. The output is formatted to show clear distinctions
   /// between the 'original' and 'generated' sections, providing an easy-to-follow comparison.
-
   pub fn report_print< IntoAbout, IntoInput, IntoOutput >
   (
     about : IntoAbout, input : IntoInput, output : IntoOutput
@@ -225,7 +218,6 @@ pub( crate ) mod private
   /// tree_print!( tree_type );
   /// ```
   ///
-
   #[ macro_export ]
   macro_rules! tree_print
   {
@@ -253,7 +245,6 @@ pub( crate ) mod private
   /// tree_print!( tree_type );
   /// ```
   ///
-
   #[ macro_export ]
   macro_rules! code_print
   {
@@ -272,7 +263,6 @@ pub( crate ) mod private
   ///
   /// Macro for diagnostics purpose to export both syntax tree and source code behind it into a string.
   ///
-
   #[ macro_export ]
   macro_rules! tree_diagnostics_str
   {
@@ -286,7 +276,6 @@ pub( crate ) mod private
   ///
   /// Macro for diagnostics purpose to diagnose source code behind it and export it into a string.
   ///
-
   #[ macro_export ]
   macro_rules! code_diagnostics_str
   {
@@ -300,7 +289,6 @@ pub( crate ) mod private
   ///
   /// Macro to export source code behind a syntax tree into a string.
   ///
-
   #[ macro_export ]
   macro_rules! code_to_str
   {
@@ -321,7 +309,6 @@ pub( crate ) mod private
   /// # ()
   /// ```
   ///
-
   #[ macro_export ]
   macro_rules! syn_err
   {
@@ -359,7 +346,6 @@ pub( crate ) mod private
   /// # ()
   /// ```
   ///
-
   #[ macro_export ]
   macro_rules! return_syn_err
   {
@@ -384,38 +370,52 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
+
 }
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
+
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use private::
+  // {
+  //   Result,
+  // };
+
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as diag;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use super::super::diag;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
-    Result,
     indentation,
     report_format,
     report_print,
@@ -424,12 +424,14 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     tree_print,
     code_print,
@@ -441,5 +443,5 @@ pub mod prelude
   };
 
   // #[ doc( inline ) ]
-  // pub use super::private::Result;
+  // pub use private::Result;
 }

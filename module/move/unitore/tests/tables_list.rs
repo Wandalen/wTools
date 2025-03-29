@@ -4,12 +4,12 @@ use unitore::
   sled_adapter::FeedStorage,
   entity::table::TableStore,
 };
-use error_tools::Result;
+use error_tools::untyped::Result;
 
 #[ tokio::test ]
 async fn tables_list() -> Result< () >
 {
-  let temp_path = proper_path_tools::path::unique_folder_name().unwrap();
+  let temp_path = pth::path::unique_folder_name().unwrap();
 
   let config = Config::default()
   .path( format!( "./{}", temp_path ) )

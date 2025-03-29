@@ -26,7 +26,6 @@
 /// - Storage-specific fields which are not present in formed structure.
 ///
 /// Look example `former_custom_mutator.rs`
-
 pub trait FormerMutator
 where
   Self : crate::FormerDefinitionTypes,
@@ -59,7 +58,6 @@ where
 /// # Parameters
 /// - `Storage`: The type of the collection being processed.
 /// - `Context`: The type of the context that might be altered or returned upon completion.
-
 pub trait FormingEnd< Definition : crate::FormerDefinitionTypes >
 {
   /// Called at the end of the subforming process to return the modified or original context.
@@ -163,6 +161,7 @@ use alloc::boxed::Box;
 /// a closure needs to be stored or passed around as an object implementing
 /// `FormingEnd`.
 #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[ allow( clippy::type_complexity ) ]
 pub struct FormingEndClosure< Definition : crate::FormerDefinitionTypes >
 {
   closure : Box< dyn Fn( Definition::Storage, Option< Definition::Context > ) -> Definition::Formed >,
@@ -250,7 +249,6 @@ for FormingEndClosure< Definition >
 /// are aligned from the onset, particularly when one former is nested within another, facilitating the creation
 /// of complex hierarchical data structures.
 ///
-
 pub trait FormerBegin< Definition :  >
 where
   Definition : crate::FormerDefinition,

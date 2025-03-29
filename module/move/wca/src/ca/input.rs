@@ -1,13 +1,13 @@
-pub( crate ) mod private
+mod private
 {
-  use std::io;
-  use std::io::Write;
+  use std::io::{ self, Write };
 
   /// Ask use input from standard input.
+  #[ must_use ]
   pub fn ask( request : &str ) -> String
   {
     let mut response = String::new();
-    print!( "{} : ", request );
+    print!( "{request} : " );
     io::stdout().flush().ok();
     io::stdin().read_line( &mut response ).ok();
     response.trim().to_string()
@@ -78,6 +78,6 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   exposed use ask;
-  exposed use Input;
-  exposed use IntoInput;
+  orphan use Input;
+  orphan use IntoInput;
 }

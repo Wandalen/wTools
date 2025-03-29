@@ -12,22 +12,22 @@ pub mod variadic;
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
-  #[ cfg( derive_variadic_from ) ]
   pub use ::derive_tools_meta;
 }
 
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
-pub mod protected
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::variadic::orphan::*;
@@ -35,33 +35,35 @@ pub mod protected
 
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 
 }
 
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 
-  // #[ cfg( any_derive ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::derive_tools_meta::*;
 
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

@@ -6,6 +6,7 @@ members = [
   "module/core/*",
   "module/move/*",
   "module/test/*",
+  "step",
 ]
 exclude = [
   "-*",
@@ -28,9 +29,9 @@ discord_url = "https://discord.gg/m3YfbXpUUY"
 # Source :: https://github.com/obox-systems/conventions/blob/master/code_style.md#lints-and-warnings
 
 # Denies non-idiomatic code for Rust 2018 edition.
-rust_2018_idioms = "deny"
+rust_2018_idioms = { level = "deny", priority = -1 }
 # Denies using features that may break in future Rust versions.
-future_incompatible = "deny"
+future_incompatible = { level = "deny", priority = -1 }
 # Warns if public items lack documentation.
 missing_docs = "warn"
 # Warns for public types not implementing Debug.
@@ -40,11 +41,16 @@ unsafe-code = "warn"
 
 [workspace.lints.clippy]
 # Denies restrictive lints, limiting certain language features/patterns.
-restriction = "warn"
+#restriction = { level = "deny", priority = -1 }
 # Denies pedantic lints, enforcing strict coding styles and conventions.
-pedantic = "warn"
+pedantic = { level = "warn", priority = -1 }
 # Denies undocumented unsafe blocks.
 undocumented_unsafe_blocks = "deny"
+# xxx : check
+# Warns if core could be used instead of std, but didn't
+std_instead_of_core = "warn"
+# Warns if alloc could be used instead of std, but didn't
+std_instead_of_alloc = "warn"
 # xxx : document
 single_call_fn = "allow"
 inline_always = "allow"
@@ -74,7 +80,7 @@ path = "module/alias/std_x"
 ## data_type
 
 [workspace.dependencies.data_type]
-version = "~0.7.0"
+version = "~0.12.0"
 path = "module/core/data_type"
 default-features = false
 
@@ -92,19 +98,19 @@ default-features = false
 # path = "module/core/type_constructor_derive_pair_meta"
 
 [workspace.dependencies.interval_adapter]
-version = "~0.21.0"
+version = "~0.27.0"
 path = "module/core/interval_adapter"
 default-features = false
-features = [ "enabled" ]
+# features = [ "enabled" ]
 
 [workspace.dependencies.winterval]
 version = "~0.3.0"
 path = "module/alias/winterval"
 default-features = false
-features = [ "enabled" ]
+# features = [ "enabled" ]
 
 [workspace.dependencies.collection_tools]
-version = "~0.8.0"
+version = "~0.15.0"
 path = "module/core/collection_tools"
 default-features = false
 
@@ -112,28 +118,35 @@ default-features = false
 ## derive
 
 [workspace.dependencies.derive_tools]
-version = "~0.24.0"
+version = "~0.32.0"
 path = "module/core/derive_tools"
 default-features = false
-features = [ "enabled" ]
+# features = [ "enabled" ]
 
 [workspace.dependencies.derive_tools_meta]
-version = "~0.23.0"
+version = "~0.31.0"
 path = "module/core/derive_tools_meta"
 default-features = false
-features = [ "enabled" ]
+# features = [ "enabled" ]
 
 [workspace.dependencies.reflect_tools]
-version = "~0.2.0"
+version = "~0.3.0"
 path = "module/core/reflect_tools"
 default-features = false
-features = [ "enabled" ]
+# features = [ "enabled" ]
 
 [workspace.dependencies.reflect_tools_meta]
-version = "~0.2.0"
+version = "~0.3.0"
 path = "module/core/reflect_tools_meta"
 default-features = false
-features = [ "enabled" ]
+# features = [ "enabled" ]
+
+[workspace.dependencies.format_tools]
+version = "~0.2.0"
+path = "module/core/format_tools"
+default-features = false
+# features = [ "enabled" ]
+# xxx : remove features, maybe
 
 [workspace.dependencies.format_tools]
 version = "~0.1.0"
@@ -153,27 +166,33 @@ path = "module/alias/fundamental_data_type"
 default-features = false
 
 [workspace.dependencies.variadic_from]
-version = "~0.19.0"
+version = "~0.27.0"
 path = "module/core/variadic_from"
 default-features = false
-features = [ "enabled" ]
+# features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn]
-version = "~0.18.0"
+version = "~0.29.0"
 path = "module/core/clone_dyn"
 default-features = false
-features = [ "enabled" ]
+# features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn_meta]
-version = "~0.18.0"
+version = "~0.27.0"
 path = "module/core/clone_dyn_meta"
-features = [ "enabled" ]
+# features = [ "enabled" ]
+
+[workspace.dependencies.clone_dyn_types]
+version = "~0.26.0"
+path = "module/core/clone_dyn_types"
+default-features = false
+# features = [ "enabled" ]
 
 
 ## mem
 
 [workspace.dependencies.mem_tools]
-version = "~0.6.0"
+version = "~0.8.0"
 path = "module/core/mem_tools"
 default-features = false
 
@@ -181,7 +200,7 @@ default-features = false
 ## diagnostics
 
 [workspace.dependencies.diagnostics_tools]
-version = "~0.8.0"
+version = "~0.10.0"
 path = "module/core/diagnostics_tools"
 default-features = false
 
@@ -189,7 +208,7 @@ default-features = false
 ## iter
 
 [workspace.dependencies.iter_tools]
-version = "~0.17.0"
+version = "~0.24.0"
 path = "module/core/iter_tools"
 default-features = false
 
@@ -197,17 +216,17 @@ default-features = false
 ## meta
 
 [workspace.dependencies.meta_tools]
-version = "~0.10.0"
+version = "~0.12.0"
 path = "module/core/meta_tools"
 default-features = false
 
 [workspace.dependencies.for_each]
-version = "~0.8.0"
+version = "~0.10.0"
 path = "module/core/for_each"
 default-features = false
 
 [workspace.dependencies.former]
-version = "~2.3.0"
+version = "~2.11.0"
 path = "module/core/former"
 default-features = false
 
@@ -217,31 +236,31 @@ default-features = false
 # default-features = false
 
 [workspace.dependencies.former_meta]
-version = "~2.3.0"
+version = "~2.11.0"
 path = "module/core/former_meta"
 default-features = false
 
 [workspace.dependencies.former_types]
-version = "~2.4.0"
+version = "~2.12.0"
 path = "module/core/former_types"
 default-features = false
 
 [workspace.dependencies.impls_index]
-version = "~0.7.0"
+version = "~0.9.0"
 path = "module/core/impls_index"
 default-features = false
 
 [workspace.dependencies.impls_index_meta]
-version = "~0.7.0"
+version = "~0.9.0"
 path = "module/core/impls_index_meta"
 
 [workspace.dependencies.mod_interface]
-version = "~0.21.0"
+version = "~0.30.0"
 path = "module/core/mod_interface"
 default-features = false
 
 [workspace.dependencies.mod_interface_meta]
-version = "~0.21.0"
+version = "~0.29.0"
 path = "module/core/mod_interface_meta"
 default-features = false
 
@@ -267,7 +286,7 @@ default-features = false
 ## macro tools
 
 [workspace.dependencies.macro_tools]
-version = "~0.30.0"
+version = "~0.44.0"
 path = "module/core/macro_tools"
 default-features = false
 
@@ -293,12 +312,12 @@ default-features = false
 ## typing
 
 [workspace.dependencies.typing_tools]
-version = "~0.8.0"
+version = "~0.10.0"
 path = "module/core/typing_tools"
 default-features = false
 
 [workspace.dependencies.implements]
-version = "~0.8.0"
+version = "~0.10.0"
 path = "module/core/implements"
 default-features = false
 
@@ -308,12 +327,12 @@ path = "module/alias/instance_of"
 default-features = false
 
 [workspace.dependencies.inspect_type]
-version = "~0.10.0"
+version = "~0.12.0"
 path = "module/core/inspect_type"
 default-features = false
 
 [workspace.dependencies.is_slice]
-version = "~0.9.0"
+version = "~0.11.0"
 path = "module/core/is_slice"
 default-features = false
 
@@ -321,7 +340,7 @@ default-features = false
 ## error
 
 [workspace.dependencies.error_tools]
-version = "~0.14.0"
+version = "~0.19.0"
 path = "module/core/error_tools"
 default-features = false
 
@@ -333,7 +352,7 @@ path = "module/alias/werror"
 ## string tools
 
 [workspace.dependencies.strs_tools]
-version = "~0.14.0"
+version = "~0.18.0"
 path = "module/core/strs_tools"
 default-features = false
 
@@ -354,23 +373,28 @@ version = "~0.1.0"
 path = "module/alias/file_tools"
 default-features = false
 
-[workspace.dependencies.proper_path_tools]
-version = "~0.7.0"
-path = "module/core/proper_path_tools"
+[workspace.dependencies.pth]
+version = "~0.21.0"
+path = "module/core/pth"
 default-features = false
+
+# [workspace.dependencies.proper_path_tools]
+# version = "~0.15.0"
+# path = "module/core/proper_path_tools"
+# default-features = false
 
 
 ## process tools
 
 [workspace.dependencies.process_tools]
-version = "~0.6.0"
+version = "~0.12.0"
 path = "module/core/process_tools"
 default-features = false
 
-[workspace.dependencies.process_tools_published]
-package = "process_tools"
-version = "~0.2.0"
-default-features = false
+# [workspace.dependencies.process_tools_published]
+# package = "process_tools"
+# version = "~0.9.0"
+# default-features = false
 
 
 ## test
@@ -380,19 +404,34 @@ version = "~0.4.0"
 path = "module/alias/wtest"
 
 [workspace.dependencies.test_tools]
-version = "~0.9.0"
+version = "~0.11.0"
 path = "module/core/test_tools"
+features = [ "full" ]
+
+[workspace.dependencies.test_tools_stable]
+package = "test_tools"
+version = "~0.10.0"
+features = [ "full" ]
 
 [workspace.dependencies.wtest_basic]
 version = "~0.4.0"
 path = "module/alias/wtest_basic"
 
 
+## async
+
+[workspace.dependencies.async_from]
+version = "~0.2.0"
+path = "module/core/async_from"
+
+[workspace.dependencies.async_tools]
+version = "~0.1.0"
+path = "module/core/async_tools"
 
 ## graphs tools
 
 [workspace.dependencies.graphs_tools]
-version = "~0.2.0"
+version = "~0.3.0"
 path = "module/move/graphs_tools"
 default-features = false
 
@@ -410,7 +449,7 @@ default-features = false
 ## ca
 
 [workspace.dependencies.wca]
-version = "~0.18.0"
+version = "~0.23.0"
 path = "module/move/wca"
 
 
@@ -424,7 +463,7 @@ path = "module/move/wcensor"
 ## willbe
 
 [workspace.dependencies.willbe]
-version = "~0.12.0"
+version = "~0.20.0"
 path = "module/move/willbe"
 
 
@@ -460,11 +499,11 @@ version = "~0.2.0"
 path = "module/move/sqlx_query"
 
 [workspace.dependencies.deterministic_rand]
-version = "~0.5.0"
+version = "~0.6.0"
 path = "module/move/deterministic_rand"
 
 [workspace.dependencies.crates_tools]
-version = "~0.10.0"
+version = "~0.14.0"
 path = "module/move/crates_tools"
 
 
@@ -495,3 +534,45 @@ default-features = true
 version = "~0.3.0"
 path = "module/test/c"
 default-features = true
+
+## External
+
+[workspace.dependencies.async-trait]
+version = "0.1.83"
+
+[workspace.dependencies.tokio]
+version = "1.41.0"
+features = []
+default-features = false
+
+[workspace.dependencies.anyhow]
+version = "~1.0"
+# features = []
+# default-features = false
+
+[workspace.dependencies.thiserror]
+version = "~1.0"
+# features = []
+# default-features = false
+
+[workspace.dependencies.hashbrown]
+version = "~0.14.3"
+# optional = true
+default-features = false
+# features = [ "default" ]
+
+[workspace.dependencies.paste]
+version = "~1.0.14"
+default-features = false
+
+[workspace.dependencies.tempdir]
+version = "~0.3.7"
+
+[workspace.dependencies.rustversion]
+version = "~1.0"
+
+[workspace.dependencies.num-traits]
+version = "~0.2"
+
+[workspace.dependencies.rand]
+version = "0.8.5"

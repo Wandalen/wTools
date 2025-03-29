@@ -1,5 +1,5 @@
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
   use crate::prelude::*;
   // use core::ops::Deref;

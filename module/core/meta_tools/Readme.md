@@ -7,21 +7,6 @@
 
 Collection of general purpose meta tools.
 
-### Basic use-case  :: variadic constructor of collections
-
-Among other useful meta tools the module aggregates variadic constructors of collections. For example macro `hmap!` for constructing a hash map.
-
-<!-- {{# generate.module{} #}} -->
-
-```rust
-use meta_tools::*;
-
-let meta_map = hmap! { 3 => 13 };
-let mut std_map = std::collections::HashMap::new();
-std_map.insert( 3, 13 );
-assert_eq!( meta_map, std_map );
-```
-
 ### Basic Use Case :: function-style call
 
 Apply a macro for each element of a list.

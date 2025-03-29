@@ -1,35 +1,41 @@
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 /// Shared with parent namespace of the module
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 
   #[ cfg( feature = "either" ) ]
   #[ doc( inline ) ]
@@ -54,8 +60,10 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 
   // #[ cfg( feature = "either" ) ]
   // pub use ::either::*;

@@ -18,7 +18,7 @@ pub mod dependency
   #[ cfg( feature = "either" ) ]
   pub use ::either;
   // #[ cfg( feature = "type_constructor" ) ]
-  // pub use ::type_constructor; // xxx : rid off
+  // pub use ::type_constructor; // xxx : rid of
   #[ cfg( feature = "dt_interval" ) ]
   pub use ::interval_adapter;
   #[ cfg( feature = "dt_collection" ) ]
@@ -27,34 +27,40 @@ pub mod dependency
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::dt::orphan::*;
 }
 
 /// Shared with parent namespace of the module
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -73,8 +79,10 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -104,7 +112,7 @@ pub mod prelude
   // pub use std::vec::
   // {
   //   Vec,
-  //   Vec as DynArray,
+  //   Vec as DynList,
   // };
 
   #[ cfg( feature = "dt_interval" ) ]
@@ -118,13 +126,13 @@ pub mod prelude
   pub use crate::dependency::collection_tools::prelude::*;
 
   // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  #[ cfg( feature = "dt_prelude" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use core::
-  {
-    fmt,
-  };
+  // #[ cfg( feature = "dt_prelude" ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use core::
+  // {
+  //   fmt,
+  // };
 
 }
 

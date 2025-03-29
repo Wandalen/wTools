@@ -2,28 +2,40 @@
 //! Parse structures, like `struct { a : i32 }`.
 //!
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
+  // use iter_tools::{ IterTrait, BoxedIter };
 
   /// Extracts the types of each field into a vector.
-  // pub fn field_types< 'a >( t : &'a syn::ItemStruct ) -> impl IterTrait< 'a, &'a syn::Type > + Clone
-  pub fn field_types< 'a >( t : &'a syn::ItemStruct ) -> impl IterTrait< 'a, &'a syn::Type > + Clone
+  #[ must_use ]
+  pub fn field_types( t : &syn::ItemStruct )
+  ->
+  impl IterTrait< '_, &syn::Type >
+  // -> std::iter::Map
+  // <
+  //   syn::punctuated::Iter< 'a, syn::Field >,
+  //   impl FnMut( &'a syn::Field ) -> &'a syn::Type + 'a,
+  // >
   {
     t.fields.iter().map( | field | &field.ty )
   }
 
   /// Retrieves the names of each field, if they exist.
-  // pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< Box< dyn IterTrait< 'a, &'a syn::Ident > + '_ > >
-  pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< DynIter< 'a, syn::Ident > >
+  /// # Errors
+  /// qqq: doc
+  /// # Panics
+  /// qqq: error
+  #[ allow( clippy::match_wildcard_for_single_variants ) ]
+  #[ must_use ]
+  pub fn field_names( t : &syn::ItemStruct ) -> Option< BoxedIter< '_, &syn::Ident > >
   {
     match &t.fields
     {
-      // syn::Fields::Named( fields ) => Some( Box::new( fields.named.iter().map( | field | field.ident.as_ref().unwrap() ) ) ),
-      // syn::Fields::Unit => Some( Box::new( core::iter::empty() ) ),
-      syn::Fields::Named( fields ) => Some( DynIter::new( fields.named.iter().map( | field | field.ident.as_ref().unwrap() ) ) ),
-      syn::Fields::Unit => Some( DynIter::new( core::iter::empty() ) ),
+      syn::Fields::Named( fields ) => Some( Box::new( fields.named.iter().map( | field | field.ident.as_ref().unwrap() ) ) ),
+      syn::Fields::Unit => Some( Box::new( core::iter::empty() ) ),
       _ => None,
     }
   }
@@ -31,6 +43,9 @@ pub( crate ) mod private
   /// Retrieves the type of the first field of the struct.
   ///
   /// Returns the type if the struct has at least one field, otherwise returns an error.
+  /// # Errors
+  /// qqq
+  #[ allow( clippy::match_wildcard_for_single_variants ) ]
   pub fn first_field_type( t : &syn::ItemStruct ) -> Result< syn::Type >
   {
     let maybe_field = match t.fields
@@ -45,13 +60,16 @@ pub( crate ) mod private
       return Ok( field.ty.clone() )
     }
 
-    return Err( syn_err!( t.span(), "Expects at least one field" ) );
+    Err( syn_err!( t.span(), "Expects at least one field" ) )
   }
 
   /// Retrieves the name of the first field of the struct, if available.
   ///
   /// Returns `Some` with the field identifier for named fields, or `None` for unnamed fields.
   /// Returns an error if the struct has no fields
+  /// # Errors
+  /// qqq: doc
+  #[ allow( clippy::match_wildcard_for_single_variants ) ]
   pub fn first_field_name( t : &syn::ItemStruct ) -> Result< Option< syn::Ident > >
   {
     let maybe_field = match t.fields
@@ -66,7 +84,7 @@ pub( crate ) mod private
       return Ok( field.ident.clone() )
     }
 
-    return Err( syn_err!( t.span(), "Expects type for fields" ) );
+    Err( syn_err!( t.span(), "Expects type for fields" ) )
   }
 
 
@@ -74,19 +92,19 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
-    // fields_many,
     field_types,
     field_names,
     first_field_type,
@@ -95,23 +113,30 @@ pub mod protected
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as item_struct;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use super::super::item_struct;
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

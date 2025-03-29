@@ -1,6 +1,6 @@
 [package]
 name = "macro_tools"
-version = "0.30.0"
+version = "0.44.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -23,14 +23,76 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-# exclude = [ "/tests", "/examples", "-*" ]
+
 
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
-enabled = [ "former_types/enabled", "interval_adapter/enabled" ]
+default = [
+  "enabled",
+  "attr",
+  "attr_prop",
+  "components",
+  "ct",
+  "container_kind",
+  "derive",
+  "diag",
+  "equation",
+  "generic_args",
+  "generic_params",
+  "item",
+  "item_struct",
+  "name",
+  "kw",
+  "phantom",
+  "punctuated",
+  "quantifier",
+  "struct_like",
+  "tokens",
+  "typ",
+  "typed",
+]
+full = [
+  "default",
+]
+
+enabled = [
+  "former_types/enabled",
+  "interval_adapter/enabled",
+  "clone_dyn_types/enabled",
+  "iter_tools/enabled",
+]
+
+attr = [ "diag", "quantifier" ]
+attr_prop = [ "components" ]
+components = []
+ct = []
+container_kind = [ "typ" ]
+derive = []
+diag = []
+equation = []
+generic_args = []
+generic_params = [ "punctuated" ]
+item = [ "punctuated" ]
+item_struct = []
+iter = []
+name = []
+kw = []
+phantom = [ "item" ]
+punctuated = []
+quantifier = []
+struct_like = [ "item_struct" ]
+tokens = []
+typ = []
+typed = []
 
 # qqq : put all files under features: macro_attr, macro_container_kind, ...
+# qqq : optimize features list
+# qqq : make sure all combinations of features are working and passing test
+
+# qqq : expose features
+# syn_derive
+# syn_parsing
+# syn_printing
+# syn_clone
 
 [dependencies]
 
@@ -38,13 +100,13 @@ enabled = [ "former_types/enabled", "interval_adapter/enabled" ]
 proc-macro2 = { version = "~1.0.78", features = [] }
 quote = { version = "~1.0.35", features = [] }
 syn = { version = "~2.0.52", features = [ "full", "extra-traits" ] }
-
-# qqq : optimize features list
+const_format = { version = "0.2.32", features = [] }
 
 ## internal
 interval_adapter = { workspace = true, features = [] }
+iter_tools = { workspace = true, features = [ "iter_trait" ] }
+clone_dyn_types = { workspace = true, features = [] }
 former_types = { workspace = true, features = [ "types_component_assign" ] }
 
-[dev-dependencies]
-test_tools = { workspace = true }
-const_format = { version = "0.2.32" }
+# [dev-dependencies]
+# test_tools = { workspace = true }

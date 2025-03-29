@@ -1,5 +1,5 @@
 use super::*;
-use wca::TryCast;
+use the_module::{ TryCast, Type, Value };
 
 //
 
@@ -116,9 +116,10 @@ tests_impls!
     // numbers
     let numbers = Type::List( Type::Number.into(), ';' ).try_cast( "100;3.14".into() );
     let numbers = numbers.unwrap();
-    a_id!(
-      Value::List( vec![ Value::Number( 100.0 ), Value::Number( 3.14 ) ] )
-    , numbers );
+    a_id!
+    (
+      Value::List( vec![ Value::Number( 100.0 ), Value::Number( 3.14 ) ] ), numbers 
+    );
 
     let inner_numbers : Vec< i32 > = numbers.clone().into();
     a_id!( vec![ 100, 3 ], inner_numbers );
@@ -134,7 +135,7 @@ tests_impls!
     let string = Type::List( Type::String.into(), ',' ).try_cast( origin_string.into() ).unwrap();
     a_id!( origin_string, string.to_string() );
 
-    // xxx : qqq : that fails now. suggest solution
+    // xxx clarification is needed : qqq : that fails now. suggest solution
     // let origin_string = "100;3.14";
     // let string = Type::List( Type::Number.into(), ';' ).try_cast( origin_string.into() ).unwrap();
     // a_id!( origin_string, string.to_string() );

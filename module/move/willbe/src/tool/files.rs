@@ -1,15 +1,21 @@
 
-
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
+mod private
 {
+  #[ allow( unused_imports, clippy::wildcard_imports ) ]
+  use crate::tool::*;
+
   use std::path::{ Path, PathBuf };
 
   ///
   /// Find paths.
   ///
+  /// # Panics
+  /// qqq: doc
 
-  /* rrr : Dmytro : dubious prototype */
+  /* xxx : check */
+  #[ allow( clippy::useless_conversion ) ]
   pub fn find< P, S >( base_dir : P, patterns : &[ S ] ) -> Vec< PathBuf >
   where
     P : AsRef< Path >,
@@ -21,10 +27,11 @@ pub( crate ) mod private
     .into_iter()
     .filter_map( Result::ok )
     .map( | s | s.path().to_path_buf() )
-    .collect::< Vec< PathBuf > >()
+    .collect()
   }
 
   /// Check if path is valid.
+  #[ must_use ]
   pub fn valid_is( path : &str ) -> bool
   {
     std::fs::metadata( path ).is_ok()
@@ -35,6 +42,6 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  protected use valid_is;
+  own use valid_is;
   orphan use find;
 }

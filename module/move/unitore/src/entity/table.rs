@@ -1,7 +1,7 @@
 //! Functionality for storage tables information.
 
 use crate::*;
-use error_tools::Result;
+use error_tools::untyped::Result;
 use gluesql::prelude::Payload;
 
 use action::table::TablesReport;

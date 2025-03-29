@@ -1,76 +1,45 @@
-#![ cfg_attr( feature = "no_std", no_std ) ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/assistant/latest/assistant/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+use mod_interface::mod_interface;
+use error_tools::thiserror;
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
 }
 
-pub mod client;
-
-#[ allow( unused_imports ) ]
-pub use protected::*;
-
-/// Protected namespace of the module.
-pub mod protected
+/// Serde-related exports.
+pub mod ser
 {
-
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::
+  pub use serde::
   {
-    client::orphan::*,
+    Serialize,
+    Deserialize,
   };
-
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
-
+  pub use serde_with::*;
 }
 
-/// Orphan namespace of the module.
-pub mod orphan
-{
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
-}
+// pub mod client;
 
-/// Exposed namespace of the module.
-pub mod exposed
+crate::mod_interface!
 {
 
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::
-  {
-    client::exposed::*,
-  };
+  layer client;
+  layer debug;
+  layer commands;
+  layer actions;
+  layer secret;
+  layer util;
+  layer agents;
 
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use reflect_tools::
+  exposed use ::reflect_tools::
   {
     Fields,
     _IteratorTrait,
     IteratorTrait,
-  };
-
-}
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::
-  {
-    client::prelude::*,
   };
 
 }

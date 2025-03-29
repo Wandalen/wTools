@@ -19,7 +19,7 @@ fn add()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::list!
+  let exp = collection_tools::llist!
   [
     "a".to_string(),
     "b".to_string(),
@@ -33,7 +33,7 @@ fn add()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::list!
+  let exp = collection_tools::llist!
   [
     "a".to_string(),
     "b".to_string(),
@@ -46,7 +46,7 @@ fn add()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::list!
+  let exp = collection_tools::llist!
   [
     "a".to_string(),
     "b".to_string(),
@@ -56,10 +56,10 @@ fn add()
   // with begin_coercing
 
   let got : LinkedList< String > = the_module::LinkedListFormer
-  ::begin( Some( collection_tools::list![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
+  ::begin( Some( collection_tools::llist![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( "b" )
   .form();
-  let exp = collection_tools::list!
+  let exp = collection_tools::llist!
   [
     "a".to_string(),
     "b".to_string(),
@@ -73,7 +73,7 @@ fn add()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::list!
+  let exp = collection_tools::llist!
   [
     "a".to_string(),
     "b".to_string(),
@@ -92,9 +92,9 @@ fn replace()
 
   let got : LinkedList< String > = the_module::LinkedListFormer::new( former::ReturnStorage )
   .add( "x" )
-  .replace( collection_tools::list![ "a".to_string(), "b".to_string() ] )
+  .replace( collection_tools::llist![ "a".to_string(), "b".to_string() ] )
   .form();
-  let exp = collection_tools::list!
+  let exp = collection_tools::llist!
   [
     "a".to_string(),
     "b".to_string(),
@@ -113,7 +113,7 @@ fn entity_to()
   ::Former::new( former::ReturnPreformed )
   .add( 13 )
   .form();
-  let exp = collection_tools::list![ 13 ];
+  let exp = collection_tools::llist![ 13 ];
   a_id!( got, exp );
 
   // qqq : uncomment and make it working
@@ -192,7 +192,7 @@ fn subformer()
     .end()
   .form();
 
-  let children = collection_tools::list!
+  let children = collection_tools::llist!
   [
     Child { name : "a".to_string(), data : false },
     Child { name : "b".to_string(), data : false },

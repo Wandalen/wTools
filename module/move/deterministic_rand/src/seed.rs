@@ -3,8 +3,8 @@
 //! Master seed.
 //!
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
   #[ cfg( feature = "no_std" ) ]
   extern crate alloc;

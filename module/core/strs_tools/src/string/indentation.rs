@@ -1,5 +1,5 @@
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
 
   /// Adds indentation and optional prefix/postfix to each line of the given string.
@@ -57,17 +57,17 @@ pub( crate ) mod private
     {
       if b.0 > 0
       {
-        a.push_str( "\n" );
+        a.push( '\n' );
       }
       a.push_str( prefix );
-      a.push_str( &b.1 );
+      a.push_str( b.1 );
       a.push_str( postfix );
       a
     });
 
-    if src.ends_with( "\n" ) || src.ends_with( "\n\r" ) || src.ends_with( "\r\n" )
+    if src.ends_with( '\n' ) || src.ends_with( "\n\r" ) || src.ends_with( "\r\n" )
     {
-      result.push_str( "\n" );
+      result.push( '\n' );
       result.push_str( prefix );
       result.push_str( postfix );
     }
@@ -79,42 +79,49 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
-  pub use super::orphan::*;
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use orphan::*;
+  pub use private::
   {
   };
 }
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use exposed::*;
+  pub use private::
   {
   };
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as indentation;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use super::own as indentation;
 
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     indentation,
   };
 }
 
 /// Namespace of the module to include with `use module::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

@@ -1,8 +1,8 @@
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
   use crate::abs::registry::private::Registry;
-  use crate::protected::*;
+  use crate::own::*;
   // use crate::abs::*;
 
   use once_cell::sync::Lazy;
@@ -90,6 +90,6 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  protected use { REGISTRY, current };
+  own use { REGISTRY, current };
   exposed use { Context, current as context };
 }

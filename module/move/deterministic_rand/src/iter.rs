@@ -3,10 +3,10 @@
 //! Extensions of iterator for determinism.
 //!
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
-  
+
   use core::cmp::Ordering;
   #[ cfg( feature = "determinism" ) ]
   extern crate alloc;

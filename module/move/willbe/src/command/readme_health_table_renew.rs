@@ -1,15 +1,23 @@
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
-  use wtools::error::{ for_app::Context, Result };
+  use error::{ untyped::Context };
 
   ///
   /// Generate table.
   ///
-  pub fn readme_health_table_renew() -> Result< () >
+  /// # Errors
+  /// qqq: doc
+  // qqq : typed error
+  pub fn readme_health_table_renew() -> error::untyped::Result< () >
   {
-    action::readme_health_table_renew( &std::env::current_dir()? ).context( "Fail to create table" )
+    action::readme_health_table_renew
+    (
+      &std::env::current_dir()?
+    )
+    .context( "Fail to create table" )
   }
 }
 

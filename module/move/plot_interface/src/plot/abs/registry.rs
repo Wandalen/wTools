@@ -1,7 +1,7 @@
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
-  use crate::protected::*;
+  use crate::own::*;
   // use crate::abs::*;
   use once_cell::sync::Lazy;
   use std::sync::Mutex;

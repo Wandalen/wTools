@@ -46,7 +46,7 @@ pub mod dependency
   // layer sys;
 
   use super::math;
-  protected use ::wmath as math;
-  protected( crate ) use ::wtools::prelude::*;
+  own use ::wmath as math;
+  own use ::wtools::prelude::*;
 
 }

@@ -1,6 +1,6 @@
 //! Functionality for storing and retrieving config files.
 
-use error_tools::Result;
+use error_tools::untyped::Result;
 use gluesql::core::executor::Payload;
 
 /// Config file path.
@@ -44,7 +44,7 @@ pub trait ConfigStore
 
 // qqq : use AbsolutePath newtype from `path_tools`
 // qqq : normalize all paths with `path_tools::path::normalize`
-// https://docs.rs/proper_path_tools/latest/proper_path_tools/path/fn.normalize.html
+// https://docs.rs/pth/latest/pth/path/fn.normalize.html
 // added path normalization
 
 // unitore .query.execute \'SELECT \* FROM feed\'

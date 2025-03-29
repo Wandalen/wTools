@@ -1,6 +1,8 @@
+#[ allow( clippy::wildcard_imports ) ]
 use super::*;
 use macro_tools::
 {
+  ct,
   Result,
   AttributeComponent,
   AttributePropertyComponent,
@@ -24,13 +26,14 @@ pub struct FieldAttributes
 impl FieldAttributes
 {
 
+  #[ allow( clippy::single_match ) ]
   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
   {
     let mut result = Self::default();
 
     let error = | attr : &syn::Attribute | -> syn::Error
     {
-      let known_attributes = const_format::concatcp!
+      let known_attributes = ct::concatcp!
       (
         "Known attirbutes are : ",
         "debug",
@@ -49,7 +52,7 @@ impl FieldAttributes
     {
 
       let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
-      let key_str = format!( "{}", key_ident );
+      let key_str = format!( "{key_ident}" );
 
       // attributes does not have to be known
       // if attr::is_standard( &key_str )
@@ -60,7 +63,7 @@ impl FieldAttributes
       match key_str.as_ref()
       {
         FieldAttributeConfig::KEYWORD => result.assign( FieldAttributeConfig::from_meta( attr )? ),
-        "debug" => {},
+        // "debug" => {},
         _ => {},
         // _ => return Err( error( attr ) ),
       }
@@ -94,17 +97,18 @@ impl AttributeComponent for FieldAttributeConfig
 {
   const KEYWORD : &'static str = "from";
 
+  #[ allow( clippy::match_wildcard_for_single_variants ) ]
   fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
     match attr.meta
     {
       syn::Meta::List( ref meta_list ) =>
       {
-        return syn::parse2::< FieldAttributeConfig >( meta_list.tokens.clone() );
+        syn::parse2::< FieldAttributeConfig >( meta_list.tokens.clone() )
       },
       syn::Meta::Path( ref _path ) =>
       {
-        return Ok( Default::default() )
+        Ok( FieldAttributeConfig::default() )
       },
       _ => return_syn_err!( attr, "Expects an attribute of format `#[ from( on ) ]`. \nGot: {}", qt!{ #attr } ),
     }
@@ -166,7 +170,7 @@ impl syn::parse::Parse for FieldAttributeConfig
 
     let error = | ident : &syn::Ident | -> syn::Error
     {
-      let known = const_format::concatcp!
+      let known = ct::concatcp!
       (
         "Known entries of attribute ", FieldAttributeConfig::KEYWORD, " are : ",
         AttributePropertyDebug::KEYWORD,

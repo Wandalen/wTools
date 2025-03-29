@@ -52,8 +52,8 @@
 
 // qqq : make the example working. use tests for inpsisrations
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
 }
 
@@ -66,20 +66,19 @@ pub mod entity_hashset;
 pub mod primitive;
 
 pub mod fields;
-// pub mod to_string;
-// pub mod to_string_with_fallback;
 pub mod wrapper;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::axiomatic::orphan::*;
@@ -106,35 +105,31 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::fields::orphan::*;
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::to_string::orphan::*;
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::to_string_with_fallback::orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::wrapper::orphan::*;
 
-  // pub use super::private::
+  // pub use private::
   // {
   // };
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::axiomatic::exposed::*;
@@ -160,12 +155,6 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::fields::exposed::*;
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::to_string::exposed::*;
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::to_string_with_fallback::exposed::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::wrapper::exposed::*;
@@ -173,8 +162,10 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -201,12 +192,6 @@ pub mod prelude
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::fields::prelude::*;
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::to_string::prelude::*;
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::to_string_with_fallback::prelude::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::wrapper::prelude::*;

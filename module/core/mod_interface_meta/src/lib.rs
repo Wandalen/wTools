@@ -1,8 +1,26 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/mod_interface_meta/latest/mod_interface_meta/" ) ]
-#![ deny( dead_code ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+
+#![ warn( dead_code ) ]
+
+// /// Derives.
+// layer derive;
+// own use super::derive;
+// // xxx : change to remove need to write explicitly that
+
+// xxx : change to remove need to write explicitly that
+// crate::mod_interface!
+// {
+//   /// Derives.
+//   layer derive;
+//   own use super::derive; // xxx : change to remove need to write explicitly that
+// }
+
+// xxx : clean up, ad solve problems
+// - example based on simpified version of test::layer_have_layer with single sublayer
+// - example with attribute `#![ debug ]`
 
 // xxx : write good description and the main use-case
 
@@ -19,13 +37,13 @@
 //   // xxx : make it working
 //   // exposed use super;
 //   exposed use super::super::compiletime;
-//   protected use
+//   own use
 //   {
 //     *
 //   };
 // }
 
-// xxx : make use proper_path_tools::protected::path working
+// xxx : make use pth::own::path working
 
 // xxx : put modular files into a namespace `file` maybe
 // #[ cfg( feature = "enabled" ) ]
@@ -38,20 +56,55 @@
 //   pub mod item_struct;
 // }
 
+// xxx : check
+//
+// - does not work
+// exposed use
+// {
+//   ::former::Former,
+//   ::former::Assign,
+// };
+//
+// - work
+//
+// exposed use ::former::
+// {
+//   Former,
+//   Assign,
+// };
+
+// xxx : inherit all entities, somehow
+//
+// pub mod ca;
+//
+// crate::mod_interface!
+// {
+//   // #![ debug ]
+//
+//   // xxx : syntax for that, please
+//   use super::ca;
+//   own use super::ca::own::*;
+//
+//   // /// Commands aggregator library.
+//   // layer ca;
+// }
+
 mod impls;
 #[ allow( unused_imports ) ]
 use impls::exposed::*;
 mod record;
+#[ allow( clippy::wildcard_imports ) ]
 use record::exposed::*;
 mod visibility;
+#[ allow( clippy::wildcard_imports ) ]
 use visibility::exposed::*;
 mod use_tree;
+#[ allow( clippy::wildcard_imports ) ]
 use use_tree::exposed::*;
 
 ///
 /// Protocol of modularity unifying interface of a module and introducing layers.
 ///
-
 #[ cfg( feature = "enabled" ) ]
 #[ proc_macro ]
 pub fn mod_interface( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
@@ -73,7 +126,7 @@ mod_interface!
   pub mod file2;
 
   private mod micro_private;
-  protected mod micro_protected;
+  own mod micro_own;
   orphan mod micro_orphan;
   exposed mod micro_exposed;
   prelude mod micro_prelude;

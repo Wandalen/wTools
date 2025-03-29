@@ -1,3 +1,4 @@
+#[ allow( clippy::wildcard_imports ) ]
 use super::*;
 use macro_tools::{ attr, diag, item_struct, Result };
 
@@ -78,7 +79,7 @@ pub fn from_components( input : proc_macro::TokenStream ) -> Result< proc_macro2
   //   diag::report_print( "derive : FromComponents", original_input, &result );
   // }
 
-  Ok( result.into() )
+  Ok( result )
 }
 
 /// Generates trait bounds for the `From< T >` implementation, ensuring that `T`

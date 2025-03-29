@@ -1,7 +1,9 @@
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
+  #[ allow( clippy::wildcard_imports ) ]
   use string::
   {
     split::*,
@@ -48,6 +50,7 @@ pub( crate ) mod private
     }
   }
 
+  #[ allow( clippy::from_over_into ) ]
   impl< T > Into<Vec< T > > for OpType< T >
   {
     fn into( self ) -> Vec< T >
@@ -62,8 +65,11 @@ pub( crate ) mod private
 
   impl<T : Clone> OpType< T >
   {
-    /// Append item of OpType to current value. If current type is `Primitive`, then it will be converted to
+    /// Append item of `OpType` to current value. If current type is `Primitive`, then it will be converted to
     /// `Vector`.
+    /// # Panics
+    /// qqq: doc
+    #[ must_use ]
     pub fn append( mut self, item : OpType< T > ) -> OpType< T >
     {
       let mut mut_item = item;
@@ -156,6 +162,7 @@ pub( crate ) mod private
   /// Options for parser.
   ///
 
+  #[ allow( clippy::struct_excessive_bools ) ]
   #[ derive( Debug, former::Former ) ]
   #[ perform( fn parse( mut self ) -> Request< 'a > ) ]
   pub struct ParseOptions< 'a >
@@ -179,7 +186,7 @@ pub( crate ) mod private
   }
 
   ///
-  /// Adapter for ParseOptions.
+  /// Adapter for `ParseOptions`.
   ///
 
   pub trait ParseOptionsAdapter< 'a >
@@ -245,6 +252,7 @@ pub( crate ) mod private
       self.subject_win_paths_maybe
     }
 
+    #[ allow( clippy::assigning_clones, clippy::too_many_lines, clippy::collapsible_if ) ]
     fn parse( mut self ) -> Request< 'a >
     where
       Self : Sized,
@@ -474,6 +482,7 @@ pub( crate ) mod private
   /// It produces former. To convert former into options and run algorithm of splitting call `perform()`.
   ///
 
+  #[ must_use ]
   pub fn request_parse<'a>() -> ParseOptionsFormer<'a>
   {
     ParseOptions::former()
@@ -482,14 +491,16 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
-  pub use super::private::
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use orphan::*;
+  pub use private::
   {
     OpType,
     Request,
@@ -500,17 +511,23 @@ pub mod protected
 }
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
-  pub use super::exposed::*;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as parse_request;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use super::own as parse_request;
 
-  pub use super::private::
+  pub use private::
   {
     ParseOptionsAdapter,
     request_parse,
@@ -518,7 +535,10 @@ pub mod exposed
 }
 
 /// Namespace of the module to include with `use module::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
-  pub use super::private::ParseOptionsAdapter;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use private::ParseOptionsAdapter;
 }

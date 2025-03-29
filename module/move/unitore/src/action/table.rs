@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use action::Report;
 use sled_adapter::FeedStorage;
 use entity::table::TableStore;
-use error_tools::Result;
+use error_tools::untyped::Result;
 
 /// Get labels of column for specified table.
 pub async fn table_list

@@ -26,15 +26,15 @@
 //! defined in other crates.
 //!
 
-#[ cfg( not( all( feature = "enabled", debug_assertions ) )  ) ]
+#[ cfg( not( all( feature = "enabled", feature = "attr_prop", debug_assertions ) )  ) ]
 fn main(){}
-#[ cfg( all( feature = "enabled", debug_assertions )  ) ]
+#[ cfg( all( feature = "enabled", feature = "attr_prop",  debug_assertions )  ) ]
 fn main()
 {
 
   use macro_tools::
   {
-    attr,
+    ct,
     syn_err,
     return_syn_err,
     qt,
@@ -43,8 +43,8 @@ fn main()
     AttributePropertyComponent,
     AttributePropertyBoolean,
     AttributePropertySingletone,
+    Assign,
   };
-  use former_types::Assign;
 
   /// Represents the attributes of a struct. Aggregates all its attributes.
   #[ derive( Debug, Default ) ]
@@ -67,12 +67,11 @@ fn main()
       // Closure to generate an error message for unknown attributes.
       let error = | attr : & syn::Attribute | -> syn::Error
       {
-        let known_attributes = const_format::concatcp!
+        let known_attributes = ct::str::format!
         (
-          "Known attributes are: ",
+          "Known attributes are: {}, {}.",
           "debug",
-          ", ", AttributeMutator::KEYWORD,
-          "."
+          AttributeMutator::KEYWORD,
         );
         syn_err!
         (
@@ -192,12 +191,12 @@ fn main()
 
       let error = | ident : & syn::Ident | -> syn::Error
       {
-        let known = const_format::concatcp!
+        let known = ct::str::format!
         (
-          "Known entries of attribute ", AttributeMutator::KEYWORD, " are: ",
+          "Known entries of attribute {} are: {}, {}.",
+          AttributeMutator::KEYWORD,
           AttributePropertyCustom::KEYWORD,
-          ", ", AttributePropertyDebug::KEYWORD,
-          "."
+          AttributePropertyDebug::KEYWORD,
         );
         syn_err!
         (

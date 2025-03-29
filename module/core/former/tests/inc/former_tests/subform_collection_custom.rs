@@ -33,7 +33,7 @@ where
 
 impl< K > IntoIterator for LoggingSet< K >
 where
-  K : std::cmp::Eq + std::hash::Hash,
+  K : core::cmp::Eq + std::hash::Hash,
 {
   type Item = K;
   type IntoIter = collection_tools::hset::IntoIter< K >;
@@ -46,7 +46,7 @@ where
 
 impl<'a, K> IntoIterator for &'a LoggingSet< K >
 where
-  K : std::cmp::Eq + std::hash::Hash,
+  K : core::cmp::Eq + std::hash::Hash,
 {
   type Item = &'a K;
   type IntoIter = collection_tools::hset::Iter< 'a, K >;

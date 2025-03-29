@@ -46,11 +46,11 @@ mod private
   #[ derive( Debug, Serialize, Deserialize, Former, PartialEq ) ]
   pub struct NodeRaw
   {
-    /// ID of the node. Must be unique, will also identify node output.
+    /// ID of the node. Must be unique, will also identify node output. 
     pub id : String,
 
     /// Type of the node. Represented as a path.
-    pub typ : String,
+    pub r#type : String,
 
     /// Rest of the key-value pairs in the node that are specific to node types.
     #[ serde( flatten ) ]

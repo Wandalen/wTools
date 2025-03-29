@@ -1,12 +1,18 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use std::fs;
   use std::path::Path;
-  use error_tools::for_app::bail;
-  use error_tools::Result;
-  use wtools::iter::Itertools;
-  use crate::template::{Template, TemplateFileDescriptor, TemplateFiles, TemplateFilesBuilder, TemplateParameters, TemplateValues};
+  use error::untyped::bail;
+  // use error::Result;
+  // qqq : group dependencies
+  use iter::Itertools;
+  use template::
+  {
+    TemplateFileDescriptor, TemplateFiles, TemplateFilesBuilder, TemplateParameters, TemplateValues
+  };
 
   /// Template for creating workspace files.
   #[ derive( Debug ) ]
@@ -17,44 +23,14 @@ mod private
     values : TemplateValues,
   }
 
-  impl Template<WorkspaceTemplateFiles> for WorkspaceTemplate
+  impl WorkspaceTemplate
   {
-    fn create_all( self, path : &Path ) -> Result< () >
-    {
-      self.files.create_all( path, &self.values )
-    }
-
-    fn parameters( &self ) -> &TemplateParameters
+    /// Returns template parameters
+    #[ must_use ]
+    pub fn get_parameters( &self ) -> &TemplateParameters
     {
       &self.parameters
     }
-
-    fn set_values( &mut self, values : TemplateValues )
-    {
-      self.values = values
-    }
-
-    fn parameter_storage( &self ) -> &Path
-    {
-      "./.workspace_template.toml".as_ref()
-    }
-
-    fn template_name( &self ) -> &'static str
-    {
-      "workspace"
-    }
-
-    fn get_values( &self ) -> &TemplateValues
-    {
-      &self.values
-    }
-
-    fn get_values_mut( &mut self ) -> &mut TemplateValues
-    {
-      &mut self.values
-    }
-
-
   }
 
   impl Default for WorkspaceTemplate
@@ -68,9 +44,9 @@ mod private
       .form();
       Self
       {
-        files : Default::default(),
+        files : WorkspaceTemplateFiles::default(),
         parameters,
-        values : Default::default(),
+        values : TemplateValues::default(),
       }
     }
   }
@@ -79,25 +55,65 @@ mod private
   ///
   /// Default implementation contains all required files.
   #[ derive( Debug ) ]
-  pub struct WorkspaceTemplateFiles(Vec< TemplateFileDescriptor > );
+  pub struct WorkspaceTemplateFiles( Vec< TemplateFileDescriptor > );
 
   impl Default for WorkspaceTemplateFiles
   {
     fn default() -> Self
     {
       let formed = TemplateFilesBuilder::former()
-      .file().data( include_str!( "../../template/workspace/.gitattributes" ) ).path( "./.gitattributes" ).end()
-      .file().data( include_str!( "../../template/workspace/.gitignore1" ) ).path( "./.gitignore" ).end()
-      .file().data( include_str!( "../../template/workspace/.gitpod.yml" ) ).path( "./.gitpod.yml" ).end()
-      .file().data( include_str!( "../../template/workspace/Cargo.hbs" ) ).path( "./Cargo.toml" ).is_template( true ).end()
-      .file().data( include_str!( "../../template/workspace/Makefile" ) ).path( "./Makefile" ).end()
-      .file().data( include_str!( "../../template/workspace/Readme.md" ) ).path( "./Readme.md" ).end()
-      .file().data( include_str!( "../../template/workspace/.cargo/config.toml" ) ).path( "./.cargo/config.toml" ).end()
-      .file().data( include_str!( "../../template/workspace/module/module1/Cargo.toml.x" ) ).path( "./module/Cargo.toml" ).end()
-      .file().data( include_str!( "../../template/workspace/module/module1/Readme.md" ) ).path( "./module/module1/Readme.md" ).end()
-      .file().data( include_str!( "../../template/workspace/module/module1/examples/module1_example.rs" ) ).path( "./module/module1/examples/module1_example.rs" ).end()
-      .file().data( include_str!( "../../template/workspace/module/module1/src/lib.rs" ) ).path( "./module/module1/src/lib.rs" ).end()
-      .file().data( include_str!( "../../template/workspace/module/module1/tests/hello_test.rs" ) ).path( "./module/module1/tests/hello_test.rs" ).end()
+      .file()
+      .data( include_str!( "../../template/workspace/.gitattributes" ) )
+      .path( "./.gitattributes" )
+      .end()
+      .file()
+      .data( include_str!( "../../template/workspace/.gitignore1" ) )
+      .path( "./.gitignore" )
+      .end()
+      .file()
+      .data( include_str!( "../../template/workspace/.gitpod.yml" ) )
+      .path( "./.gitpod.yml" )
+      .end()
+      .file()
+      .data( include_str!( "../../template/workspace/Cargo.hbs" ) )
+      .path( "./Cargo.toml" )
+      .is_template( true )
+      .end()
+      .file()
+      .data( include_str!( "../../template/workspace/Makefile" ) )
+      .path( "./Makefile" )
+      .end()
+      .file()
+      .data( include_str!( "../../template/workspace/Readme.md" ) )
+      .path( "./Readme.md" )
+      .end()
+      .file()
+      .data( include_str!( "../../template/workspace/.cargo/config.toml" ) )
+      .path( "./.cargo/config.toml" )
+      .end()
+      .file()
+      .data( include_str!( "../../template/workspace/module/module1/Cargo.toml.x" ) )
+      .path( "./module/Cargo.toml" )
+      .end()
+      .file()
+      .data( include_str!( "../../template/workspace/module/module1/Readme.md" ) )
+      .path( "./module/module1/Readme.md" )
+      .end()
+      .file()
+      .data
+      (
+        include_str!( "../../template/workspace/module/module1/examples/module1_example.rs" )
+      )
+      .path( "./module/module1/examples/module1_example.rs" )
+      .end()
+      .file()
+      .data( include_str!( "../../template/workspace/module/module1/src/lib.rs" ) )
+      .path( "./module/module1/src/lib.rs" )
+      .end()
+      .file()
+      .data( include_str!( "../../template/workspace/module/module1/tests/hello_test.rs" ) )
+      .path( "./module/module1/tests/hello_test.rs" )
+      .end()
       .form();
 
       Self( formed.files )
@@ -117,27 +133,52 @@ mod private
     }
   }
 
+  // zzz
   // qqq : for Petro : should return report
   // qqq : for Petro : should have typed error
-  // aaa : parametrized templates??
-  // aaa : use Viktor lib
   /// Creates workspace template
-  pub fn workspace_renew( path : &Path, mut template : WorkspaceTemplate, repository_url : String, branches : Vec< String > ) -> Result< () >
+  /// # Errors
+  /// qqq: doc
+  /// # Panics
+  /// qqq: doc
+  pub fn action
+  (
+    path : &Path,
+    mut template : WorkspaceTemplate,
+    repository_url : String,
+    branches : Vec< String >
+  )
+  -> error::untyped::Result< () > // qqq : use typed error
   {
-    if fs::read_dir(path)?.count() != 0
+    if fs::read_dir( path )?.count() != 0
     {
       bail!( "Directory should be empty" )
     }
-    template.values.insert_if_empty( "project_name", wca::Value::String( path.file_name().unwrap().to_string_lossy().into() ) );
+    template
+    .values
+    .insert_if_empty
+    (
+      "project_name",
+      wca::Value::String( path.file_name().unwrap().to_string_lossy().into() )
+    );
     template.values.insert_if_empty( "url", wca::Value::String( repository_url ) );
-    template.values.insert_if_empty( "branches", wca::Value::String( branches.into_iter().map( | b | format!( r#""{}""#, b ) ).join( ", " ) ) );
-    template.create_all( path )?;
+    template
+    .values
+    .insert_if_empty
+    (
+      "branches",
+      wca::Value::String
+      (
+        branches.into_iter().map( | b | format!( r#""{b}""# ) ).join( ", " )
+      )
+    );
+    template.files.create_all( path, &template.values )?;
     Ok( () )
   }
 }
 
 crate::mod_interface!
 {
-  exposed use workspace_renew;
+  own use action;
   orphan use WorkspaceTemplate;
 }

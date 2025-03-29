@@ -7,6 +7,8 @@
 #[ cfg( feature = "enabled" ) ]
 use mod_interface::mod_interface;
 
+mod private {}
+
 #[ cfg( feature = "enabled" ) ]
 mod_interface!
 {

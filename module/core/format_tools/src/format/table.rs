@@ -2,120 +2,289 @@
 //! Table interface.
 //!
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
 
   use crate::*;
-  use core::fmt;
-  use std::borrow::Cow;
+  use core::
+  {
+    // fmt,
+    borrow::Borrow,
+  };
+  use std::
+  {
+    borrow::Cow,
+    collections::HashMap,
+  };
   use reflect_tools::
   {
     IteratorTrait,
     Fields,
   };
 
-  // ==
+  // =
 
-  /// A trait for iterating over all rows of a table.
-  pub trait TableSize< 'a >
+  /// Trait for types used as keys of rows in table-like structures.
+  ///
+
+  pub trait RowKey
   {
-    /// Returns size of a table.
-    fn table_size( &'a self ) -> [ usize ; 2 ];
   }
 
-  /// A trait for iterating over all rows of a table.
-  pub trait TableRows< 'a, RowKey, Row, CellKey, Cell >
+  impl< T > RowKey for T
   where
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-    Cell : fmt::Debug + Clone + 'a,
+    T : ?Sized,
   {
-    /// Returns an iterator over all rows of the table.
-    fn rows( &'a self ) -> impl IteratorTrait< Item = Row >;
   }
 
-  /// Trait returning headers of a table if any.
-  pub trait TableHeader< 'a, CellKey, Title >
+  /// Trait for types used as keys of cells in table-like structures.
+  ///
+  /// The `CellKey` trait aggregates necessary bounds for keys, ensuring they support
+  /// debugging, equality comparison, and hashing.
+  ///
+
+  pub trait CellKey
   where
-    Title : fmt::Debug,
+    Self : core::cmp::Eq + std::hash::Hash + Borrow< str >,
   {
-    /// Returns an iterator over all fields of the specified type within the entity.
-    fn header( &'a self ) -> Option< impl IteratorTrait< Item = ( CellKey, Title ) > >;
   }
+
+  impl< T > CellKey for T
+  where
+    T : core::cmp::Eq + std::hash::Hash + Borrow< str > + ?Sized,
+  {
+  }
+
+  /// Trait for types representing table cell content.
+  ///
+  /// `CellRepr` aggregates necessary bounds for types used as cell representations,
+  /// ensuring they are copyable and have a static lifetime.
+  ///
+
+  pub trait CellRepr
+  where
+    Self : Copy + 'static,
+  {
+  }
+
+  impl< T > CellRepr for T
+  where
+    T : Copy + 'static,
+  {
+  }
+
+  // =
+
+  /// Marker trait to tag structures for which table trait deducing should be done from trait Fields, which is reflection.
+  pub trait TableWithFields {}
+
+  // =
 
   /// A trait for iterating over all cells of a row.
-  pub trait Cells< 'a, CellKey, Cell >
+  pub trait Cells< CellKey >
   where
-    Cell : fmt::Debug + Clone + 'a,
+    // CellRepr : table::CellRepr,
+    CellKey : table::CellKey + ?Sized,
   {
     /// Returns an iterator over all cells of the row.
-    fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, Option< Cell > ) >
+    // fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, OptionalCow< 'b, str > ) >
+    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, Option< Cow< 'b, str > > ) >
+    where
+      'a : 'b,
+      CellKey : 'b,
     ;
   }
 
-  // ==
-
-  impl< 'a, T, RowKey, Row, CellKey, Cell, Title > TableSize< 'a >
-  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
-  where
-    Self : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-    Title : fmt::Debug,
-    Cell : fmt::Debug + Clone + 'a,
-    CellKey : fmt::Debug + Clone,
+  impl Cells< str > for HashMap< String, String >
   {
-    fn table_size( &'a self ) -> [ usize ; 2 ]
+    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b str, Option< Cow< 'b, str > > ) >
+    where
+      'a : 'b,
     {
-      let mut rows = self.rows();
-      let nrows = rows.len();
-      let row = rows.next();
-      if let Some( row ) = row
-      {
-        let ncells = row.cells().len();
-        [ nrows, ncells ]
-      }
-      else
-      {
-        [ 0, 0 ]
-      }
+      self.iter().map( | ( k, v ) | ( k.as_str(), Some( Cow::from( v ) ) ) )
     }
   }
 
-  impl< 'a, T, RowKey, Row, CellKey, Cell, Title > TableRows< 'a, RowKey, Row, CellKey, Cell >
-  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
+  impl< Row, CellKey > Cells< CellKey >
+  for Row
   where
-    T : Fields< 'a, RowKey, Option< Cow< 'a, Row > > >,
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-    Title : fmt::Debug,
-    Cell : fmt::Debug + Clone + 'a,
-    CellKey : fmt::Debug + Clone,
+    CellKey : table::CellKey + ?Sized,
+    for< 'ckv >
+    Row : TableWithFields + Fields
+    <
+      &'ckv CellKey,
+      // OptionalCow< 'ckv, str >,
+      Option< Cow< 'ckv, str > >,
+      Key< 'ckv > = &'ckv CellKey,
+      // Val< 'ckv > = OptionalCow< 'ckv, str >,
+      Val< 'ckv > = Option< Cow< 'ckv, str > >,
+    > + 'ckv, // xxx
+    // CellRepr : table::CellRepr,
   {
 
-    fn rows( &'a self ) -> impl IteratorTrait< Item = Row >
+    // fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, OptionalCow< 'b, str > ) >
+    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, Option< Cow< 'b, str > > ) >
+    where
+      'a : 'b,
+      CellKey : 'b,
     {
-      self.as_ref().fields().filter_map( move | ( _k, e ) |
-      {
-        match e
+      self.fields().map
+      (
+        move | ( key, cell ) |
         {
-          Some( e ) => Some( e.into_owned() ),
-          None => None,
+          ( key, cell )
         }
-      }).collect::< Vec< _ > >().into_iter()
+      )
     }
 
   }
 
-  impl< 'a, T, RowKey, Row, CellKey, Cell > TableHeader< 'a, CellKey, CellKey >
-  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKey >
-  where
-    Self : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-    CellKey : fmt::Debug + Clone,
-    Cell : fmt::Debug + Clone + 'a,
-    CellKey : fmt::Debug + Clone,
-  {
+  // =
 
-    fn header( &'a self ) -> Option< impl IteratorTrait< Item = ( CellKey, CellKey ) > >
+  /// Trait for iterating over rows in a table.
+  ///
+  /// `TableRows` provides an interface to access all rows in a table,
+  /// allowing iteration over the data structure.
+  ///
+  /// # Associated Types
+  ///
+  /// - `RowKey`: The type used to identify each row.
+  ///
+  /// - `Row`: The type representing a row, which must implement `Cells`
+  ///   for the specified `CellKey` and `CellRepr`.
+  ///
+  /// - `CellKey`: The type used to identify cells within a row, requiring
+  ///   implementation of the `Key` trait.
+  ///
+  /// - `CellRepr`: The type representing the content of a cell, requiring
+  ///   implementation of the `CellRepr` trait.
+  ///
+  /// # Required Methods
+  ///
+  /// - `rows(&self) -> impl IteratorTrait<Item = &Self::Row>`:
+  ///   Returns an iterator over all rows in the table.
+  pub trait TableRows
+  {
+    ///
+    /// The type used to identify each row.
+    type RowKey;
+    ///
+    /// The type representing a row, which must implement `Cells`
+    ///   for the specified `CellKey` and `CellRepr`.
+    type Row : Cells< Self::CellKey >;
+    ///
+    /// The type used to identify cells within a row, requiring
+    ///   implementation of the `Key` trait.
+    type CellKey : table::CellKey + ?Sized;
+    ///
+    // /// The type representing the content of a cell, requiring
+    // ///   implementation of the `CellRepr` trait.
+    // type // CellRepr : table::CellRepr;
+
+    /// Returns an iterator over all rows of the table.
+    fn rows( &self ) -> impl IteratorTrait< Item = &Self::Row >;
+    // fn rows< 'a >( & 'a self ) -> impl IteratorTrait< Item = & 'a Self::Row >
+    // where
+    //   Self::Row : 'a;
+  }
+
+  impl< T, RowKey, Row, CellKey > TableRows<>
+  for AsTable< '_, T, RowKey, Row, CellKey >
+  where
+
+    for< 'k, 'v > T : Fields
+    <
+      RowKey,
+      &'k Row,
+      // Key< 'k > = RowKey,
+      Val< 'v > = &'v Row,
+    > + 'k + 'v,
+
+    RowKey : table::RowKey,
+    Row : Cells< CellKey >,
+    CellKey : table::CellKey + ?Sized,
+    // CellRepr : table::CellRepr,
+  {
+    type RowKey = RowKey;
+    type Row = Row;
+    type CellKey = CellKey;
+    // type CellRepr = CellRepr;
+
+    fn rows( &self ) -> impl IteratorTrait< Item = &Self::Row >
+    // fn rows< 'a >( &'a self ) -> impl IteratorTrait< Item = &'a Self::Row >
+    // where
+      // Self::Row : 'a
+    {
+      self.as_ref().fields()
+      .map( move | ( _k, e ) : ( _, &Row ) |
+      {
+        e
+      })
+    }
+
+  }
+
+  // =
+
+//   /// A trait for iterating over all rows of a table.
+//   pub trait TableSize
+//   {
+//     /// Returns multi-dimensional size of a table.
+//     fn mcells( &self ) -> [ usize ; 2 ];
+//   }
+//
+//   impl< T, RowKey, Row, CellKey > TableSize
+//   for AsTable< '_, T, RowKey, Row, CellKey >
+//   where
+//     Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey >,
+//     RowKey : table::RowKey,
+//     Row : Cells< CellKey >,
+//     CellKey : table::CellKey + ?Sized,
+//     // CellRepr : table::CellRepr,
+//   {
+//     fn mcells( &self ) -> [ usize ; 2 ]
+//     {
+//       let rows = self.rows();
+//       let nrows = rows.len();
+//       let row = rows.clone().next();
+//       if let Some( row2 ) = row
+//       {
+//         let cit = row2.cells().clone();
+//         let mcells = cit.len();
+//         [ mcells, nrows + 1 ]
+//       }
+//       else
+//       {
+//         [ 0, 0 ] // xxx : test
+//       }
+//     }
+//   }
+
+  // =
+
+  /// Trait returning headers of a table if any.
+  pub trait TableHeader
+  {
+    /// The type used to identify cells within a row, requiring
+    ///   implementation of the `Key` trait.
+    type CellKey : table::CellKey + ?Sized;
+    /// Returns an iterator over all fields of the specified type within the entity.
+    fn header( &self ) -> Option< impl IteratorTrait< Item = ( &Self::CellKey, &'_ str ) > >;
+  }
+
+  impl< T, RowKey, Row, CellKey > TableHeader
+  for AsTable< '_, T, RowKey, Row, CellKey >
+  where
+    Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey >,
+    RowKey : table::RowKey,
+    Row : Cells< CellKey >,
+    CellKey : table::CellKey + ?Sized,
+    // CellRepr : table::CellRepr,
+  {
+    type CellKey = CellKey;
+
+    fn header( &self ) -> Option< impl IteratorTrait< Item = ( &Self::CellKey, &'_ str ) > >
     {
       let mut rows = self.rows();
       let row = rows.next();
@@ -125,9 +294,7 @@ pub( crate ) mod private
         (
           row
           .cells()
-          .map( | ( key, _title ) | ( key.clone(), key ) )
-          .collect::< Vec< _ > >()
-          .into_iter()
+          .map( | ( key, _title ) | ( key, key.borrow() ) )
         )
       }
       else
@@ -138,68 +305,62 @@ pub( crate ) mod private
 
   }
 
-  impl< 'a, Row, CellKey, Cell > Cells< 'a, CellKey, Cell >
-  for Row
-  where
-    Row : Fields< 'a, CellKey, Option< Cow< 'a, Cell > > > + 'a,
-    Cell : fmt::Debug + Clone + 'a,
-  {
-
-    fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, Option< Cell > ) >
-    {
-      self.fields().map
-      (
-        move | ( key, cell ) |
-        {
-          match cell
-          {
-            Some( cell ) => ( key, Some( cell.into_owned() ) ),
-            None => ( key, None )
-          }
-        }
-      )
-    }
-
-  }
+  // =
 
 }
 
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
+
+  #[ doc( inline ) ]
+  pub use private::
+  {
+    RowKey,
+    CellKey,
+    CellRepr,
+  };
+
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
+  pub use super::super::table;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
-    TableSize,
-    TableRows,
-    TableHeader,
+    TableWithFields,
     Cells,
+    TableRows,
+    // TableSize,
+    TableHeader,
   };
 
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

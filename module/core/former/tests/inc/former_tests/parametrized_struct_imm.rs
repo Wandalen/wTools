@@ -25,7 +25,7 @@ impl< Name > Property< Name >
 #[ derive( Debug, PartialEq, the_module::Former ) ]
 // #[ derive( Debug, PartialEq, the_module::Former ) ] #[ debug ]
 // #[ derive( Debug, PartialEq ) ]
-pub struct Child< K : core::hash::Hash + std::cmp::Eq >
+pub struct Child< K : core::hash::Hash + core::cmp::Eq >
 {
   pub name : String,
   #[ subform_collection( definition = former::HashMapDefinition ) ]

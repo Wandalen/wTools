@@ -1,10 +1,10 @@
 mod change_width;
 mod change_new;
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
-  use crate::protected::*;
+  use crate::own::*;
   use crate::abs::identity::private::Id;
   use crate::abs::identity::private::HasIdInterface;
 

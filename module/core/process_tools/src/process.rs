@@ -1,5 +1,6 @@
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
+mod private
 {
   // use crate::*;
 
@@ -14,8 +15,8 @@ pub( crate ) mod private
   use duct::cmd;
   use error_tools::
   {
-    for_app::{ Error, Context, anyhow },
-    Result,
+    untyped::{ Error, Context, format_err },
+    // Result,
   };
   use former::Former;
   use iter_tools::iter::Itertools;
@@ -73,17 +74,20 @@ pub( crate ) mod private
   /// Executes an external process in a specified directory without using a shell.
   ///
   /// # Arguments:
-  /// - `bin_path`: Path to the executable bin_path.
-  /// - `args`: Command-line arguments for the bin_path.
-  /// - `current_path`: Directory current_path to run the bin_path in.
+  /// - `bin_path`: Path to the executable `bin_path`.
+  /// - `args`: Command-line arguments for the `bin_path`.
+  /// - `current_path`: Directory `current_path` to run the `bin_path` in.
   ///
   /// # Returns:
   /// A `Result` containing `Report` on success, detailing execution output,
   /// or an error message on failure.
   ///
-  /// # Errors:
+  /// # Errors
   /// Returns an error if the process fails to spawn, complete, or if output
   /// cannot be decoded as UTF-8.
+  ///
+  /// # Panics
+  /// qqq: doc
   //
   // qqq : for Petro : use typed error
   // qqq : for Petro : write example
@@ -131,7 +135,7 @@ pub( crate ) mod private
       .context( "failed to spawn process" )
       .map_err( | e |
       {
-        report.error = Err( e.into() );
+        report.error = Err( e );
         Err::< (), () >( () )
       });
 
@@ -141,16 +145,14 @@ pub( crate ) mod private
       }
       let child = child.unwrap();
 
-      let output = child
+      child
       .wait_with_output()
       .context( "failed to wait on child" )
       .map_err( | e |
       {
-        report.error = Err( e.into() );
+        report.error = Err( e );
         Err::< (), () >( () )
-      });
-
-      output
+      })
     };
 
     if report.error.is_err()
@@ -163,7 +165,7 @@ pub( crate ) mod private
     .context( "Found invalid UTF-8" )
     .map_err( | e |
     {
-      report.error = Err( e.into() );
+      report.error = Err( e );
       Err::< (), () >( () )
     });
 
@@ -179,7 +181,7 @@ pub( crate ) mod private
     .context( "Found invalid UTF-8" )
     .map_err( | e |
       {
-        report.error = Err( e.into() );
+        report.error = Err( e );
         Err::< (), () >( () )
       });
 
@@ -197,7 +199,7 @@ pub( crate ) mod private
     }
     else
     {
-      report.error = Err( anyhow!( "Process was finished with error code : {}", output.status ) );
+      report.error = Err( format_err!( "Process was finished with error code : {}", output.status ) );
       Err( report )
     }
 
@@ -272,7 +274,7 @@ pub( crate ) mod private
   {
     fn clone( &self ) -> Self
     {
-      Report
+      Self
       {
         command : self.command.clone(),
         current_path : self.current_path.clone(),
@@ -290,10 +292,10 @@ pub( crate ) mod private
     {
       Report
       {
-        command : Default::default(),
+        command : String::default(),
         current_path : PathBuf::new(),
-        out : Default::default(),
-        err : Default::default(),
+        out : String::default(),
+        err : String::default(),
         error : Ok( () ),
       }
     }
@@ -324,8 +326,8 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  // protected use run_with_shell;
-  protected use run;
-  protected use Run;
-  protected use Report;
+  // own use run_with_shell;
+  own use run;
+  own use Run;
+  own use Report;
 }

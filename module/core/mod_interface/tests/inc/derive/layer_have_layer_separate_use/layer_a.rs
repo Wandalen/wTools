@@ -5,8 +5,8 @@ use super::tools::*;
 mod private
 {
 
-  /// layer_a_protected
-  pub fn layer_a_protected() -> bool
+  /// layer_a_own
+  pub fn layer_a_own() -> bool
   {
     true
   }
@@ -33,10 +33,10 @@ mod private
 
 //
 
-mod_interface!
+the_module::mod_interface!
 {
 
-  protected use { layer_a_protected };
+  own use { layer_a_own };
   orphan use layer_a_orphan;
   exposed use layer_a_exposed;
   prelude use layer_a_prelude;

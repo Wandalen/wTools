@@ -1,28 +1,34 @@
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
+mod private
 {
+  #[ allow( unused_imports, clippy::wildcard_imports ) ]
   use crate::*;
+
+  // use crate::tool::*;
+  // qqq : bad : for Bohdan : asterist only crate::* and prelude::*
 
   use std::
   {
     ops::Index,
     fmt::Debug,
     hash::Hash,
-    collections::{ HashMap, HashSet }
   };
-  use std::collections::VecDeque;
-  use std::path::PathBuf;
+  use collection::{ HashMap, HashSet, VecDeque };
+  use path::PathBuf;
   use petgraph::
   {
     graph::Graph,
     algo::toposort as pg_toposort,
   };
   use petgraph::graph::NodeIndex;
+  #[ allow( clippy::wildcard_imports ) ]
   use petgraph::prelude::*;
 
-  use error_tools::for_lib::Error;
-  use error::Result;
+  use error::typed::Error;
+
   use package::{ Package, publish_need };
+  // qqq : for Bohdan : bad : tools can't depend on entitties!
 
   #[ derive( Debug, Error ) ]
   pub enum GraphError< T : Debug >
@@ -38,10 +44,14 @@ pub( crate ) mod private
   ///
   /// Returns :
   /// The graph with all accepted packages
+  ///
+  /// # Panics
+  /// qqq: doc
+  #[ allow( clippy::implicit_hasher ) ]
+  #[ must_use ]
   pub fn construct< PackageIdentifier >
   (
-    packages : &HashMap< PackageIdentifier,
-    HashSet< PackageIdentifier > >
+    packages : &HashMap< PackageIdentifier, HashSet< PackageIdentifier >, >
   )
   -> Graph< &PackageIdentifier, &PackageIdentifier >
   where
@@ -82,6 +92,10 @@ pub( crate ) mod private
   ///
   /// # Panics
   /// If there is a cycle in the dependency graph
+  ///
+  /// # Errors
+  /// qqq: doc
+  #[ allow( clippy::needless_pass_by_value ) ]
   pub fn toposort< 'a, PackageIdentifier : Clone + std::fmt::Debug >
   (
     graph : Graph< &'a PackageIdentifier, &'a PackageIdentifier >
@@ -96,7 +110,7 @@ pub( crate ) mod private
         .iter()
         .rev()
         .map( | dep_idx | ( *graph.node_weight( *dep_idx ).unwrap() ).clone() )
-        .collect::< Vec< _ > >()
+        .collect()
       ),
       Err( index ) => Err( GraphError::Cycle( ( *graph.index( index.node_id() ) ).clone() ) ),
       // aaa : for Bohdan : bad, make proper error handling
@@ -113,40 +127,45 @@ pub( crate ) mod private
   /// # Returns
   ///
   /// The function returns a vector of vectors, where each inner vector represents a group of nodes that can be executed in parallel. Tasks within each group are sorted in topological order.
+  ///
+  /// # Panics
+  /// qqq: doc
+  #[ must_use ]
+  #[ allow( clippy::needless_pass_by_value ) ]
   pub fn topological_sort_with_grouping< 'a, PackageIdentifier : Clone + std::fmt::Debug >
   (
     graph : Graph< &'a PackageIdentifier, &'a PackageIdentifier >
-  ) 
-  -> Vec< Vec< PackageIdentifier > > 
+  )
+  -> Vec< Vec< PackageIdentifier > >
   {
     let mut in_degree = HashMap::new();
-    for node in graph.node_indices() 
+    for node in graph.node_indices()
     {
       in_degree.insert( node, graph.neighbors_directed( node, Incoming ).count() );
     }
 
     let mut roots = VecDeque::new();
-    for ( node, &degree ) in in_degree.iter() 
+    for ( node, &degree ) in &in_degree
     {
-      if degree == 0 
+      if degree == 0
       {
         roots.push_back( *node );
       }
     }
 
     let mut result = Vec::new();
-    while !roots.is_empty() 
+    while !roots.is_empty()
     {
       let mut next_roots = Vec::new();
       let mut group = Vec::new();
-      while let Some( node ) = roots.pop_front() 
+      while let Some( node ) = roots.pop_front()
       {
         group.push( node );
-        for edge in graph.neighbors( node ) 
+        for edge in graph.neighbors( node )
         {
           let degree = in_degree.get_mut( &edge ).unwrap();
           *degree -= 1;
-          if *degree == 0 
+          if *degree == 0
           {
             next_roots.push( edge );
           }
@@ -158,12 +177,12 @@ pub( crate ) mod private
     result
     .into_iter()
     .map
-    ( 
-      | vec | 
+    (
+      | vec |
       vec
       .iter()
       .map( | dep_idx | ( *graph.node_weight( *dep_idx ).unwrap() ).clone() )
-      .collect() 
+      .collect()
     )
     .rev()
     .collect()
@@ -184,6 +203,10 @@ pub( crate ) mod private
   ///
   /// # Constraints
   /// * `N` must implement the `PartialEq` trait.
+  ///
+  /// # Panics
+  /// qqq: doc
+  #[ allow( clippy::single_match, clippy::map_entry ) ]
   pub fn subgraph< N, E >( graph : &Graph< N, E >, roots : &[ N ] ) -> Graph< NodeIndex, EdgeIndex >
   where
     N : PartialEq< N >,
@@ -205,7 +228,7 @@ pub( crate ) mod private
       }
     }
 
-    for ( _, sub_node_id ) in &node_map
+    for sub_node_id in node_map.values()
     {
       let node_id_graph = subgraph[ *sub_node_id ];
 
@@ -236,14 +259,24 @@ pub( crate ) mod private
   /// # Returns
   ///
   /// A new `Graph` with the nodes that are not required to be published removed.
+  ///
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: doc
+
+  // qqq : for Bohdan : typed error
+  #[ allow( clippy::single_match, clippy::needless_pass_by_value, clippy::implicit_hasher ) ]
   pub fn remove_not_required_to_publish
-  ( 
-    package_map : &HashMap< String, Package >, 
-    graph : &Graph< String, String >, 
-    roots : &[ String ], 
+  (
+    package_map : &HashMap< String, Package< '_ > >,
+    graph : &Graph< String, String >,
+    roots : &[ String ],
     temp_path : Option< PathBuf >,
-  ) 
-  -> Result< Graph< String, String > >
+  )
+  -> error::untyped::Result< Graph< String, String > >
+  // qqq : use typed error!
   {
     let mut nodes = HashSet::new();
     let mut cleared_graph = Graph::new();
@@ -264,9 +297,9 @@ pub( crate ) mod private
         }
         let package = package_map.get( &graph[ n ] ).unwrap();
         _ = cargo::pack
-        ( 
+        (
           cargo::PackOptions::former()
-          .path( package.crate_dir().absolute_path().as_ref().to_path_buf() )
+          .path( package.crate_dir().absolute_path() )
           .option_temp_path( temp_path.clone() )
           .dry( false )
           .allow_dirty( true )
@@ -304,9 +337,9 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  protected use construct;
-  protected use toposort;
-  protected use topological_sort_with_grouping;
-  protected use subgraph;
-  protected use remove_not_required_to_publish;
+  own use construct;
+  own use toposort;
+  own use topological_sort_with_grouping;
+  own use subgraph;
+  own use remove_not_required_to_publish;
 }

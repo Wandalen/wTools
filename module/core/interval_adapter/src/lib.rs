@@ -2,31 +2,20 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/winterval/latest/winterval/" ) ]
-// #![ deny( rust_2018_idioms ) ]
-// #![ deny( missing_debug_implementations ) ]
-// #![ deny( missing_docs ) ]
-
-// #![ feature( step_trait ) ]
-
-/* zzz : consider https://doc.rust-lang.org/std/ops/trait.RangeBounds.html */
-/* zzz : implement iterator */
-
-//!
-//! Interval adapter for both open/closed implementations of intervals ( ranges ).
-//!
-
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 #[ cfg( feature = "enabled" ) ]
-pub( crate ) mod private
+mod private
 {
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
+  #[ allow( clippy::pub_use ) ]
   pub use core::ops::Bound;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
+  #[ allow( clippy::pub_use ) ]
   pub use core::ops::RangeBounds;
 
   use core::cmp::{ PartialEq, Eq };
@@ -34,6 +23,7 @@ pub( crate ) mod private
 
   // xxx : seal it
 
+  #[ allow( clippy::wrong_self_convention ) ]
   /// Extend bound adding few methods.
   pub trait BoundExt< T >
   where
@@ -52,23 +42,25 @@ pub( crate ) mod private
     isize : Into< T >,
   {
     #[ inline( always ) ]
+    #[ allow( clippy::arithmetic_side_effects, clippy::implicit_return, clippy::pattern_type_mismatch ) ]
     fn into_left_closed( &self ) -> T
     {
       match self
       {
-        Bound::Included( v ) => *v,
-        Bound::Excluded( v ) => *v + 1.into(),
+        Bound::Included( value ) => *value,
+        Bound::Excluded( value ) => *value + 1.into(),
         Bound::Unbounded => 0.into(),
         // Bound::Unbounded => isize::MIN.into(),
       }
     }
     #[ inline( always ) ]
+    #[ allow( clippy::arithmetic_side_effects, clippy::implicit_return, clippy::pattern_type_mismatch ) ]
     fn into_right_closed( &self ) -> T
     {
       match self
       {
-        Bound::Included( v ) => *v,
-        Bound::Excluded( v ) => *v - 1.into(),
+        Bound::Included( value ) => *value,
+        Bound::Excluded( value ) => *value - 1.into(),
         Bound::Unbounded => isize::MAX.into(),
       }
     }
@@ -110,6 +102,7 @@ pub( crate ) mod private
     fn right( &self ) -> Bound< T >;
     /// Interval in closed format as pair of numbers.
     /// To convert open endpoint to closed add or subtract one.
+    #[ allow( clippy::implicit_return ) ]
     #[ inline( always ) ]
     fn bounds( &self ) -> ( Bound< T >, Bound< T > )
     {
@@ -117,18 +110,21 @@ pub( crate ) mod private
     }
 
     /// The left endpoint of the interval, converting interval into closed one.
+    #[ allow( clippy::implicit_return ) ]
     #[ inline( always ) ]
     fn closed_left( &self ) -> T
     {
       self.left().into_left_closed()
     }
     /// The right endpoint of the interval, converting interval into closed one.
+    #[ allow( clippy::implicit_return ) ]
     #[ inline( always ) ]
     fn closed_right( &self ) -> T
     {
       self.right().into_right_closed()
     }
     /// Length of the interval, converting interval into closed one.
+    #[ allow( clippy::implicit_return, clippy::arithmetic_side_effects ) ]
     #[ inline( always ) ]
     fn closed_len( &self ) -> T
     {
@@ -136,6 +132,7 @@ pub( crate ) mod private
       self.closed_right() - self.closed_left() + one
     }
     /// Interval in closed format as pair of numbers, converting interval into closed one.
+    #[ allow( clippy::implicit_return ) ]
     #[ inline( always ) ]
     fn closed( &self ) -> ( T, T )
     {
@@ -143,6 +140,7 @@ pub( crate ) mod private
     }
 
     /// Convert to interval in canonical format.
+    #[ allow( unknown_lints, clippy::implicit_return ) ]
     #[ inline( always ) ]
     fn canonical( &self ) -> Interval< T >
     {
@@ -157,7 +155,6 @@ pub( crate ) mod private
   /// `NonIterableInterval` it does not implement iterator unlike `IterableInterval`.
   /// `IterableInterval` inherits all methods of `NonIterableInterval`.
   ///
-
   pub trait IterableInterval< T = isize >
   where
     Self : IntoIterator< Item = T > + NonIterableInterval< T >,
@@ -179,16 +176,18 @@ pub( crate ) mod private
   ///
   /// Canonical implementation of interval. Other implementations of interval is convertible to it.
   ///
-  /// Both [core::ops::Range], [core::ops::RangeInclusive] are convertable to [crate::Interval]
+  /// Both [`core::ops::Range`], [`core::ops::RangeInclusive`] are convertable to [`crate::Interval`]
   ///
-
+  #[ allow( clippy::used_underscore_binding ) ]
   #[ derive( PartialEq, Eq, Debug, Clone, Copy ) ]
   pub struct Interval< T = isize >
   where
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
+    /// Left
     _left : Bound< T >,
+    /// Right
     _right : Bound< T >,
   }
 
@@ -198,15 +197,18 @@ pub( crate ) mod private
     isize : Into< T >,
   {
     /// Constructor of an interval. Expects closed interval in arguments.
+    #[ allow( unknown_lints, clippy::implicit_return ) ]
+    #[ inline ]
     pub fn new( left : Bound< T >, right : Bound< T > ) -> Self
     {
       Self { _left : left, _right : right }
     }
     /// Convert to interval in canonical format.
+    #[ allow( clippy::implicit_return ) ]
     #[ inline( always ) ]
     pub fn iter< It >( &self ) -> impl Iterator< Item = T >
     {
-      ( &self ).into_iter()
+      self.into_iter()
     }
   }
 
@@ -221,6 +223,7 @@ pub( crate ) mod private
   {
     type Item = T;
     type IntoIter = IntervalIterator< T >;
+    #[ allow( clippy::implicit_return ) ]
     #[ inline( always ) ]
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -235,6 +238,7 @@ pub( crate ) mod private
   {
     type Item = T;
     type IntoIter = IntervalIterator< T >;
+    #[ allow( unknown_lints, clippy::implicit_return ) ]
     #[ inline( always ) ]
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -242,13 +246,16 @@ pub( crate ) mod private
     }
   }
 
+  /// qqq: Documentation
   #[ derive( Debug ) ]
   pub struct IntervalIterator< T >
   where
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
+    /// current
     current : T,
+    /// right
     right : T,
   }
 
@@ -258,6 +265,7 @@ pub( crate ) mod private
     isize : Into< T >,
   {
     /// Constructor.
+    #[ allow( clippy::used_underscore_binding, clippy::implicit_return ) ]
     pub fn new( ins : Interval< T > ) -> Self
     {
       let current = ins._left.into_left_closed();
@@ -266,12 +274,14 @@ pub( crate ) mod private
     }
   }
 
+  #[ allow( clippy::missing_trait_methods ) ]
   impl< T > Iterator for IntervalIterator< T >
   where
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
     type Item = T;
+    #[ allow( clippy::implicit_return, clippy::arithmetic_side_effects ) ]
     #[ inline( always ) ]
     fn next( &mut self ) -> Option< Self::Item >
     {
@@ -311,17 +321,20 @@ pub( crate ) mod private
   //   }
   // }
 
+  #[ allow( clippy::used_underscore_binding, clippy::missing_trait_methods ) ]
   impl< T > NonIterableInterval< T >
   for Interval< T >
   where
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
+    #[ allow( clippy::implicit_return ) ]
     #[ inline( always ) ]
     fn left( &self ) -> Bound< T >
     {
       self._left
     }
+    #[ allow( clippy::implicit_return ) ]
     #[ inline( always ) ]
     fn right( &self ) -> Bound< T >
     {
@@ -329,17 +342,20 @@ pub( crate ) mod private
     }
   }
 
+  #[ allow( clippy::missing_trait_methods ) ]
   impl< T > NonIterableInterval< T >
   for core::ops::Range< T >
   where
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
+    #[ allow( clippy::implicit_return ) ]
     #[ inline( always ) ]
     fn left( &self ) -> Bound< T >
     {
       Bound::Included( self.start )
     }
+    #[ allow( clippy::implicit_return ) ]
     #[ inline( always ) ]
     fn right( &self ) -> Bound< T >
     {
@@ -347,17 +363,20 @@ pub( crate ) mod private
     }
   }
 
+  #[ allow( clippy::missing_trait_methods ) ]
   impl< T > NonIterableInterval< T >
   for core::ops::RangeInclusive< T >
   where
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
+    #[ allow( clippy::implicit_return ) ]
     #[ inline( always ) ]
     fn left( &self ) -> Bound< T >
     {
       Bound::Included( *self.start() )
     }
+    #[ allow( clippy::implicit_return ) ]
     #[ inline( always ) ]
     fn right( &self ) -> Bound< T >
     {
@@ -365,17 +384,20 @@ pub( crate ) mod private
     }
   }
 
+  #[ allow( clippy::missing_trait_methods ) ]
   impl< T > NonIterableInterval< T >
   for core::ops::RangeTo< T >
   where
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
+    #[ allow( clippy::implicit_return ) ]
     #[ inline( always ) ]
     fn left( &self ) -> Bound< T >
     {
       Bound::Unbounded
     }
+    #[ allow( clippy::implicit_return ) ]
     #[ inline( always ) ]
     fn right( &self ) -> Bound< T >
     {
@@ -383,17 +405,20 @@ pub( crate ) mod private
     }
   }
 
+  #[ allow( clippy::missing_trait_methods ) ]
   impl< T > NonIterableInterval< T >
   for core::ops::RangeToInclusive< T >
   where
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
+    #[ allow( clippy::implicit_return ) ]
     #[ inline( always ) ]
     fn left( &self ) -> Bound< T >
     {
       Bound::Unbounded
     }
+    #[ allow( clippy::implicit_return )]
     #[ inline( always ) ]
     fn right( &self ) -> Bound< T >
     {
@@ -401,17 +426,20 @@ pub( crate ) mod private
     }
   }
 
+  #[allow( clippy::missing_trait_methods ) ]
   impl< T > NonIterableInterval< T >
   for core::ops::RangeFrom< T >
   where
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
+    #[ allow( clippy::implicit_return )]
     #[ inline( always ) ]
     fn left( &self ) -> Bound< T >
     {
       Bound::Included( self.start )
     }
+    #[ allow( clippy::implicit_return )]
     #[ inline( always ) ]
     fn right( &self ) -> Bound< T >
     {
@@ -419,17 +447,20 @@ pub( crate ) mod private
     }
   }
 
+  #[ allow( clippy::missing_trait_methods ) ]
   impl< T > NonIterableInterval< T >
   for core::ops::RangeFull
   where
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
+    #[ allow( clippy::implicit_return )]
     #[ inline( always ) ]
     fn left( &self ) -> Bound< T >
     {
       Bound::Unbounded
     }
+    #[ allow( clippy::implicit_return )]
     #[ inline( always ) ]
     fn right( &self ) -> Bound< T >
     {
@@ -437,17 +468,20 @@ pub( crate ) mod private
     }
   }
 
+  #[ allow( clippy::missing_trait_methods ) ]
   impl< T > NonIterableInterval< T >
   for ( T, T )
   where
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
+    #[ allow( clippy::implicit_return )]
     #[ inline( always ) ]
     fn left( &self ) -> Bound< T >
     {
       Bound::Included( self.0 )
     }
+    #[ allow( clippy::implicit_return )]
     #[ inline( always ) ]
     fn right( &self ) -> Bound< T >
     {
@@ -455,17 +489,22 @@ pub( crate ) mod private
     }
   }
 
+  #[ allow( clippy::missing_trait_methods ) ]
   impl< T > NonIterableInterval< T >
   for ( Bound< T >, Bound< T > )
   where
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
+    #[ allow( unknown_lints )]
+    #[ allow( clippy::implicit_return )]
     #[ inline( always ) ]
     fn left( &self ) -> Bound< T >
     {
       self.0
     }
+    #[ allow( unknown_lints )]
+    #[ allow( clippy::implicit_return )]
     #[ inline( always ) ]
     fn right( &self ) -> Bound< T >
     {
@@ -473,17 +512,21 @@ pub( crate ) mod private
     }
   }
 
+  #[ allow( clippy::missing_trait_methods ) ]
   impl< T > NonIterableInterval< T >
   for [ T ; 2 ]
   where
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
+    #[ allow( clippy::implicit_return )]
     #[ inline( always ) ]
     fn left( &self ) -> Bound< T >
     {
       Bound::Included( self[ 0 ] )
     }
+    #[ allow( unknown_lints )]
+    #[ allow( clippy::implicit_return )]
     #[ inline( always ) ]
     fn right( &self ) -> Bound< T >
     {
@@ -491,17 +534,20 @@ pub( crate ) mod private
     }
   }
 
+  #[ allow( clippy::missing_trait_methods ) ]
   impl< T > NonIterableInterval< T >
   for [ Bound< T > ; 2 ]
   where
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
+    #[ allow( clippy::implicit_return )]
     #[ inline( always ) ]
     fn left( &self ) -> Bound< T >
     {
       self[ 0 ]
     }
+    #[ allow( clippy::implicit_return )]
     #[ inline( always ) ]
     fn right( &self ) -> Bound< T >
     {
@@ -512,7 +558,7 @@ pub( crate ) mod private
   // =
   // from for std
   // =
-
+  /// qqq: documentation
   macro_rules! impl_interval_from
   {
     {} => {};
@@ -532,7 +578,7 @@ pub( crate ) mod private
         {
           let _left = NonIterableInterval::left( &src );
           let _right = NonIterableInterval::right( &src );
-          Self { _left, _right }
+          return Self { _left, _right }
         }
       }
     };
@@ -577,6 +623,9 @@ pub( crate ) mod private
     isize : Into< T >,
     Interval< T > : From< Self >,
   {
+    #[ allow( unknown_lints )]
+    #[ allow( clippy::implicit_return )]
+    #[ inline ]
     fn into_interval( self ) -> Interval< T >
     {
       From::from( self )
@@ -589,36 +638,43 @@ pub( crate ) mod private
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
 // #[ allow( unused_imports ) ]
-pub use protected::*;
+#[ allow( clippy::pub_use ) ]
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
-pub mod protected
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::orphan;
+  #[ allow(  clippy::useless_attribute, clippy::pub_use ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 /// Parented namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::exposed;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  #[ allow(  clippy::useless_attribute, clippy::pub_use ) ]
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::{ prelude, private };
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
+  pub use prelude::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  #[ allow(  clippy::useless_attribute, clippy::pub_use ) ]
+  pub use private::
   {
     Bound,
     BoundExt,
@@ -631,18 +687,20 @@ pub mod exposed
 }
 
 // #[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+// #[ allow( unused_imports ) ]
 // #[ cfg( feature = "enabled" ) ]
 // #[ allow( unused_imports ) ]
 // pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::private;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
+  pub use private::
   {
     IterableInterval,
     NonIterableInterval,

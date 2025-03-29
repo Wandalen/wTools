@@ -31,7 +31,7 @@
 // #[ cfg( feature = "enabled" ) ]
 // pub mod wtools;
 
-#[ cfg( all( feature = "derive_more" ) ) ]
+#[ cfg( feature = "derive_more" ) ]
 #[ allow( unused_imports ) ]
 mod derive_more
 {
@@ -43,22 +43,16 @@ mod derive_more
   pub use ::derive_more::Constructor;
   #[ cfg( feature = "derive_error" ) ]
   pub use ::derive_more::Error;
-  #[ cfg( feature = "derive_index_mut" ) ]
-  pub use ::derive_more::IndexMut;
-  #[ cfg( feature = "derive_index" ) ]
-  pub use ::derive_more::Index;
   #[ cfg( feature = "derive_into" ) ]
   pub use ::derive_more::Into;
-  #[ cfg( feature = "derive_iterator" ) ]
-  pub use ::derive_more::Iterator;
+  // #[ cfg( feature = "derive_iterator" ) ]
+  // pub use ::derive_more::Iterator;
   #[ cfg( feature = "derive_into_iterator" ) ]
   pub use ::derive_more::IntoIterator;
   #[ cfg( feature = "derive_mul" ) ]
   pub use ::derive_more::{ Mul, Div };
   #[ cfg( feature = "derive_mul_assign" ) ]
   pub use ::derive_more::{ MulAssign, DivAssign };
-  #[ cfg( feature = "derive_not" ) ]
-  pub use ::derive_more::Not;
   #[ cfg( feature = "derive_sum" ) ]
   pub use ::derive_more::Sum;
   #[ cfg( feature = "derive_try_into" ) ]
@@ -76,17 +70,23 @@ mod derive_more
 #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
 pub use variadic_from as variadic;
 
-// #[ cfg( feature = "derive_reflect" ) ]
-// pub mod reflect;
-
-// use derive_tools_meta::Deref;
-// use derive_tools_meta::VariadicFrom;
-
 /// Namespace with dependencies.
-
+#[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
+
+  #[ doc( inline ) ]
+  pub use ::derive_tools_meta;
+
+  #[ doc( inline ) ]
+  #[ cfg( feature = "derive_clone_dyn" ) ]
+  pub use ::clone_dyn::{ self, dependency::* };
+
+  #[ doc( inline ) ]
+  #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
+  pub use ::variadic_from::{ self, dependency::* };
+
   #[ doc( inline ) ]
   #[ cfg( feature = "derive_more" ) ]
   pub use ::derive_more;
@@ -96,180 +96,90 @@ pub mod dependency
   #[ doc( inline ) ]
   #[ cfg( feature = "parse_display" ) ]
   pub use ::parse_display;
-  #[ doc( inline ) ]
-  #[ cfg( feature = "clone_dyn" ) ]
-  pub use ::clone_dyn;
-  #[ doc( inline ) ]
-  #[ cfg( feature = "clone_dyn" ) ]
-  pub use ::clone_dyn::dependency::*;
-  #[ doc( inline ) ]
-  #[ cfg( any_derive ) ]
-  pub use ::derive_tools_meta;
-  #[ doc( inline ) ]
-  #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-  pub use ::variadic_from;
+
 }
 
 #[ doc( inline ) ]
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
-pub mod protected
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::clone_dyn::orphan::*;
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::wtools::orphan::*;
-  // #[ cfg( feature = "derive_reflect" ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::reflect::orphan::*;
 }
 
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 
-  #[ cfg( all( feature = "derive_more" ) ) ]
+  #[ cfg( feature = "derive_more" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::derive_more::*;
 
   #[ cfg( feature = "derive_strum" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::strum::*;
+  // qqq : xxx : name all
 
   #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
   #[ doc( inline ) ]
   pub use ::variadic_from::exposed::*;
 
-  // #[ cfg( all( feature = "derive_more", feature = "derive_add" ) ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use ::derive_more::Add;
-
-  // #[ allow( ambiguous_glob_reexports ) ]
-  // #[ cfg( feature = "derive_more" ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use ::derive_more::
-  // {
-  //   Add,
-  //   AddAssign,
-  //   AsMut,
-  //   AsRef,
-  //   Binary,
-  //   BitAnd,
-  //   BitAndAssign,
-  //   BitOr,
-  //   BitOrAssign,
-  //   BitXor,
-  //   BitXorAssign,
-  //   Constructor,
-  //   Debug,
-  //   Deref,
-  //   DerefMut,
-  //   Display,
-  //   Div,
-  //   DivAssign,
-  //   Error,
-  //   From,
-  //   FromStr,
-  //   Index,
-  //   IndexMut,
-  //   Into,
-  //   IntoIterator,
-  //   IsVariant,
-  //   LowerExp,
-  //   LowerHex,
-  //   Mul,
-  //   MulAssign,
-  //   Neg,
-  //   Not,
-  //   Octal,
-  //   Pointer,
-  //   Product,
-  //   Rem,
-  //   RemAssign,
-  //   Shl,
-  //   ShlAssign,
-  //   Shr,
-  //   ShrAssign,
-  //   Sub,
-  //   SubAssign,
-  //   Sum,
-  //   TryFrom,
-  //   TryInto,
-  //   TryUnwrap,
-  //   Unwrap,
-  //   UpperExp,
-  //   UpperHex,
-  // };
-
   #[ cfg( feature = "derive_strum" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::strum::*;
 
   #[ cfg( feature = "derive_display" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::parse_display::Display;
 
   #[ cfg( feature = "derive_from_str" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::parse_display::FromStr;
 
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::clone_dyn::exposed::*;
 
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::wtools::exposed::*;
-
-  // #[ cfg( feature = "derive_reflect" ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::reflect::exposed::*;
-
-  // #[ cfg( any_derive ) ]
+  #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+  pub use ::clone_dyn;
+
+  #[ doc( inline ) ]
   pub use ::derive_tools_meta::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   #[ cfg( feature = "derive_from" ) ]
   pub use ::derive_tools_meta::From;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   #[ cfg( feature = "derive_inner_from" ) ]
   pub use ::derive_tools_meta::InnerFrom;
 
@@ -277,37 +187,61 @@ pub mod exposed
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::clone_dyn;
 
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::clone_dyn::prelude::*;
-
-  // it should already be in predlue of clone_dyn
-  // #[ cfg( feature = "derive_clone_dyn" ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use ::clone_dyn::clone_dyn;
 
   #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
   #[ doc( inline ) ]
   pub use ::variadic_from::prelude::*;
 
-  // #[ cfg( feature = "derive_reflect" ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::reflect::prelude::*;
-
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::wtools::prelude::*;
-  // #[ doc( no_inline ) ]
-  // pub use super::wtools;
-
 }
+
+// xxx : minimize dependendencies
+// Adding aho-corasick v1.1.3
+// Adding cfg_aliases v0.1.1 (latest: v0.2.1)
+// Adding clone_dyn v0.24.0
+// Adding clone_dyn_meta v0.24.0
+// Adding clone_dyn_types v0.23.0
+// Adding collection_tools v0.12.0
+// Adding const_format v0.2.33
+// Adding const_format_proc_macros v0.2.33
+// Adding convert_case v0.6.0
+// Adding derive_more v1.0.0
+// Adding derive_more-impl v1.0.0
+// Adding derive_tools v0.28.0
+// Adding derive_tools_meta v0.27.0
+// Adding either v1.13.0
+// Adding former_types v2.8.0
+// Adding heck v0.4.1 (latest: v0.5.0)
+// Adding interval_adapter v0.24.0
+// Adding iter_tools v0.21.0
+// Adding itertools v0.11.0 (latest: v0.13.0)
+// Adding macro_tools v0.40.0
+// Adding parse-display v0.8.2 (latest: v0.10.0)
+// Adding parse-display-derive v0.8.2 (latest: v0.10.0)
+// Adding phf v0.10.1 (latest: v0.11.2)
+// Adding phf_generator v0.10.0 (latest: v0.11.2)
+// Adding phf_macros v0.10.0 (latest: v0.11.2)
+// Adding phf_shared v0.10.0 (latest: v0.11.2)
+// Adding proc-macro-hack v0.5.20+deprecated
+// Adding regex v1.10.6
+// Adding regex-automata v0.4.7
+// Adding regex-syntax v0.7.5 (latest: v0.8.4)
+// Adding regex-syntax v0.8.4
+// Adding rustversion v1.0.17
+// Adding structmeta v0.2.0 (latest: v0.3.0)
+// Adding structmeta-derive v0.2.0 (latest: v0.3.0)
+// Adding strum v0.25.0 (latest: v0.26.3)
+// Adding strum_macros v0.25.3 (latest: v0.26.4)
+// Adding unicode-segmentation v1.11.0
+// Adding unicode-xid v0.2.5
+// Adding variadic_from v0.23.0

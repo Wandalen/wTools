@@ -18,7 +18,7 @@ use item_attributes::*;
 
 //
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   // use macro_tools::quote::ToTokens;
@@ -126,7 +126,7 @@ pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
   Ok( result )
 }
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 // qqq : document, add example of generated code
 fn generate_unit
 (
@@ -145,7 +145,7 @@ fn generate_unit
       #generics_where
     {
       #[ inline( always ) ]
-      fn new() -> Self
+      pub fn new() -> Self
       {
         Self
       }
@@ -153,7 +153,7 @@ fn generate_unit
   }
 }
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 // qqq : document, add example of generated code
 fn generate_single_field_named
 (
@@ -175,8 +175,8 @@ fn generate_single_field_named
       #generics_where
     {
       #[ inline( always ) ]
-      // fn new( src : i32 ) -> Self
-      fn new( src : #field_type ) -> Self
+      // pub fn new( src : i32 ) -> Self
+      pub fn new( src : #field_type ) -> Self
       {
         // Self { a : src }
         Self { #field_name: src }
@@ -185,7 +185,7 @@ fn generate_single_field_named
   }
 }
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 // qqq : document, add example of generated code
 fn generate_single_field
 (
@@ -207,8 +207,8 @@ fn generate_single_field
       #generics_where
     {
       #[ inline( always ) ]
-      // fn new( src : bool ) -> Self
-      fn new( src : #field_type ) -> Self
+      // pub fn new( src : bool ) -> Self
+      pub fn new( src : #field_type ) -> Self
       {
         // Self( src )
         Self( src )
@@ -217,7 +217,7 @@ fn generate_single_field
   }
 }
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 // qqq : document, add example of generated code
 fn generate_multiple_fields_named< 'a >
 (
@@ -231,14 +231,12 @@ fn generate_multiple_fields_named< 'a >
 -> proc_macro2::TokenStream
 {
 
-  let field_names : Vec< _ > = field_names.collect(); // xxx : qqq : rid off collects
-
-  let val_type = field_names.iter()
+  let val_type = field_names
+  .clone()
   .zip( field_types )
   .enumerate()
-  .map(| ( index, ( field_name, field_type ) ) |
+  .map(| ( _index, ( field_name, field_type ) ) |
   {
-    // let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
     qt! { #field_name : #field_type }
   });
 
@@ -250,8 +248,8 @@ fn generate_multiple_fields_named< 'a >
       #generics_where
     {
       #[ inline( always ) ]
-      // fn new( src : ( i32, bool ) ) -> Self
-      fn new( #( #val_type ),* ) -> Self
+      // pub fn new( src : ( i32, bool ) ) -> Self
+      pub fn new( #( #val_type ),* ) -> Self
       {
         // StructNamedFields{ a : src.0, b : src.1 }
         #item_name { #( #field_names ),* }
@@ -261,7 +259,7 @@ fn generate_multiple_fields_named< 'a >
 
 }
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 // qqq : document, add example of generated code
 fn generate_multiple_fields< 'a >
 (
@@ -289,8 +287,8 @@ fn generate_multiple_fields< 'a >
       #generics_where
     {
       #[ inline( always ) ]
-      // fn new( src : (i32, bool) ) -> Self
-      fn new( src : ( #( #field_types ),* ) ) -> Self
+      // pub fn new( src : (i32, bool) ) -> Self
+      pub fn new( src : ( #( #field_types ),* ) ) -> Self
       {
         // StructWithManyFields( src.0, src.1 )
         #item_name( #( #params ),* )
@@ -299,7 +297,7 @@ fn generate_multiple_fields< 'a >
   }
 }
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 // qqq : document, add example of generated code
 fn variant_generate
 (
@@ -361,7 +359,7 @@ where
   {2}
 {{
   #[ inline ]
-  fn new( src : {args} ) -> Self
+  pub fn new( src : {args} ) -> Self
   {{
     Self::{variant_name}( {use_src} )
   }}
@@ -390,7 +388,7 @@ field : {variant_name}"#,
         #generics_where
       {
         #[ inline ]
-        fn new( src : #args ) -> Self
+        pub fn new( src : #args ) -> Self
         {
           Self::#variant_name( #use_src )
         }

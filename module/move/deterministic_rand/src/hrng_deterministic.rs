@@ -6,8 +6,8 @@
 //! Both have the same interface and are interchengable by switching on/off a feature `determinsim`.
 //!
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
 
   use crate::*;

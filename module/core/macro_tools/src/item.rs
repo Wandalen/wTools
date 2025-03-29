@@ -3,9 +3,10 @@
 //! to manipulate the structure of items, handle different kinds of fields, and provide a structured approach to
 //! organizing the codebase into different access levels.
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   /// Ensures the last field in a struct has a trailing comma.
@@ -56,7 +57,7 @@ pub( crate ) mod private
   ///   }
   /// }.to_string() );
   /// ```
-
+  #[ must_use ]
   pub fn ensure_comma( input : &syn::ItemStruct ) -> syn::ItemStruct
   {
     let mut new_input = input.clone(); // Clone the input to modify it
@@ -66,16 +67,16 @@ pub( crate ) mod private
       // Handle named fields
       syn::Fields::Named( syn::FieldsNamed { named, .. } ) =>
       {
-        punctuated::ensure_trailing_comma( named )
+        punctuated::ensure_trailing_comma( named );
       },
       // Handle unnamed fields (tuples)
       syn::Fields::Unnamed( syn::FieldsUnnamed { unnamed, .. } ) =>
       {
-        punctuated::ensure_trailing_comma( unnamed )
+        punctuated::ensure_trailing_comma( unnamed );
       },
       // Do nothing for unit structs
       syn::Fields::Unit => {}
-    }
+    };
 
     new_input
   }
@@ -84,44 +85,44 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-// qqq : zzz : make sure documentation look good. generate, review and fix every file
-/// This module provides various utilities and namespaces for working with `syn::Item`, specifically focusing on
-/// ensuring syntactical correctness and managing different visibility levels within the code. It includes functions
-/// to manipulate the structure of items, handle different kinds of fields, and provide a structured approach to
-/// organizing the codebase into different access levels.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     ensure_comma,
   };
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
   };
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  // pub use super::protected as item;
-  pub use super::protected as item;
+  use super::*;
+  pub use super::super::item;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::
@@ -131,6 +132,8 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

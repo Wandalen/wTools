@@ -1,4 +1,4 @@
-#![ cfg_attr( feature = "no_std", no_std ) ]
+#![ no_std ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/mod_interface/latest/mod_interface/" ) ]
@@ -15,15 +15,17 @@ pub mod dependency
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
-pub mod protected
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -33,27 +35,32 @@ pub mod protected
 
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use mod_interface_meta::*;

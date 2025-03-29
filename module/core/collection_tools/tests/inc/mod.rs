@@ -5,10 +5,11 @@ mod bset;
 mod heap;
 mod hmap;
 mod hset;
-mod list;
+mod llist;
 mod vec;
-mod vecd;
+mod deque;
 
+mod namespace_test;
 mod components;
 
 // qqq : make subdirectory for each container -- done

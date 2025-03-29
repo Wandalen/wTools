@@ -10,7 +10,7 @@ use macro_tools::prelude::*;
 mod derive_former;
 
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_components" ) ]
+#[ cfg( any( feature = "derive_components", feature = "derive_component_from", feature = "derive_from_components", feature = "derive_component_assign", feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
 mod component
 {
 
@@ -56,7 +56,7 @@ mod component
 ///
 /// Below is a typical usage example where the macro is applied to a struct:
 ///
-/// ```rust
+/// ```rust, ignore
 ///
 /// # #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
 /// # fn main()
@@ -93,7 +93,6 @@ mod component
 /// ```
 ///
 /// This pattern enables fluent and customizable construction of `UserProfile` instances, allowing for easy setting and modification of its fields.
-
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_former" ) ]
 #[
@@ -139,7 +138,9 @@ pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// ```rust
 /// # fn main()
 /// # {
-/// #[ derive( former::ComponentFrom ) ]
+/// use former_meta::ComponentFrom;
+///
+/// #[ derive( ComponentFrom ) ]
 /// struct Person
 /// {
 ///   pub age : i32,
@@ -191,9 +192,10 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 /// Given a struct definition annotated with `#[ derive( Assign ) ]` :
 ///
 /// ```rust
-/// use former::Assign;
+/// use former_types::Assign;
+/// use former_meta::Assign;
 ///
-/// #[ derive( Default, PartialEq, Debug, former::Assign ) ]
+/// #[ derive( Default, PartialEq, Debug, Assign ) ]
 /// struct Person
 /// {
 ///   age : i32,
@@ -211,7 +213,8 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 /// The procedural macro generates the following implementations for `Person` :
 ///
 /// ```rust
-/// use former::Assign;
+/// use former_types::Assign;
+/// use former_meta::Assign;
 ///
 /// #[ derive( Default, PartialEq, Debug ) ]
 /// struct Person
@@ -283,7 +286,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 ///
 /// An example when we encapsulate parameters passed to a function in a struct.
 ///
-/// ```rust
+/// ```rust, ignore
 /// use former::{ Assign, ComponentsAssign };
 ///
 /// #[ derive( Default, Assign, ComponentsAssign ) ]
@@ -342,7 +345,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 ///
 /// Which expands approximately into :
 ///
-/// ```rust
+/// ```rust, ignore
 /// use former::{ Assign, ComponentsAssign };
 ///
 /// #[derive(Default)]
@@ -537,7 +540,7 @@ pub fn components_assign( input : proc_macro::TokenStream ) -> proc_macro::Token
 /// Given the structs `Options1` and `Options2`, where `Options2` is a subset of `Options1`:
 ///
 /// ```rust
-/// use former::FromComponents;
+/// use former_meta::FromComponents;
 ///
 /// #[ derive( Debug, Default, PartialEq ) ]
 /// pub struct Options1

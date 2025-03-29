@@ -6,11 +6,12 @@ mod private
 {
 }
 
-mod_interface!
+the_module::mod_interface!
 {
+  // #![ debug ]
 
-  /// mod_protected
-  protected mod mod_protected;
+  /// mod_own
+  own mod mod_own;
   /// mod_orphan
   orphan mod mod_orphan;
   /// mod_exposed

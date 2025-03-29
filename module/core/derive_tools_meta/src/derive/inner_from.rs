@@ -228,6 +228,7 @@ fn from_impl_multiple_fields< 'a >
 ///
 /// ## Output
 /// ```rust
+/// use std::convert::From;
 /// pub struct Struct;
 /// #[ allow( non_local_definitions ) ]
 /// #[ allow( clippy::unused_imports ) ]

@@ -1,25 +1,28 @@
 /// Internal namespace.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
-
-  use { action, wtools };
 
   use std::
   {
     str::FromStr,
     path::PathBuf,
-    collections::HashSet,
   };
-
   use wca::VerifiedCommand;
-  use wtools::error::{ for_app::Context, Result };
+  use error::untyped::Context;
+  use collection::HashSet;
 
-  use _path::AbsolutePath;
-  use action::{ list as l, list::{ ListFormat, ListOptions } };
+  use action::
+  {
+    list as l,
+    list::{ ListFormat, ListOptions },
+  };
   use former::Former;
 
   #[ derive( Former ) ]
+  #[ allow( clippy::struct_excessive_bools ) ]
   struct ListProperties
   {
     #[ former( default = ListFormat::Tree ) ]
@@ -46,11 +49,16 @@ mod private
   ///
   /// List workspace packages.
   ///
+  /// # Errors
+  /// qqq: doc
 
-  pub fn list( o : VerifiedCommand ) -> Result< () >
+  // qqq : typed error
+  pub fn list( o : VerifiedCommand ) -> error::untyped::Result< () >
   {
-    let path_to_workspace : PathBuf = o.args.get_owned( 0 ).unwrap_or( std::env::current_dir().context( "Workspace list command without subject" )? );
-    let path_to_workspace = AbsolutePath::try_from( path_to_workspace )?;
+    let path_to_workspace : PathBuf = o.args
+    .get_owned( 0 )
+    .unwrap_or( std::env::current_dir().context( "Workspace list command without subject" )? );
+    // let path_to_workspace = AbsolutePath::try_from( fs::canonicalize( path_to_workspace )? )?;
 
     let ListProperties { format, with_version, with_path, with_local, with_remote, with_primary, with_dev, with_build } = o.props.try_into()?;
 
@@ -69,7 +77,7 @@ mod private
     if with_dev { categories.insert( l::DependencyCategory::Dev ); }
     if with_build { categories.insert( l::DependencyCategory::Build ); }
 
-    let args = ListOptions::former()
+    let o = ListOptions::former()
     .path_to_manifest( crate_dir )
     .format( format )
     .info( additional_info )
@@ -77,13 +85,13 @@ mod private
     .dependency_categories( categories )
     .form();
 
-    match action::list( args )
+    match action::list_all( o )
     {
       Ok( report ) =>
       {
         println!( "{report}" );
       }
-      Err(( report, e )) =>
+      Err( ( report, e ) ) =>
       {
         eprintln!( "{report}" );
 
@@ -94,21 +102,31 @@ mod private
     Ok( () )
   }
 
-  impl TryFrom< wca::Props > for ListProperties
+  impl TryFrom< wca::executor::Props > for ListProperties
   {
-    type Error = wtools::error::for_app::Error;
-    fn try_from( value : wca::Props ) -> Result< Self, Self::Error >
+    type Error = error::untyped::Error;
+    fn try_from( value : wca::executor::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();
 
-      this = if let Some( v ) = value.get_owned( "format" ).map( ListFormat::from_str ) { this.format( v? ) } else { this };
-      this = if let Some( v ) = value.get_owned( "with_version" ) { this.with_version::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "with_path" ) { this.with_path::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "with_local" ) { this.with_local::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "with_remote" ) { this.with_remote::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "with_primary" ) { this.with_primary::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "with_dev" ) { this.with_dev::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "with_build" ) { this.with_build::< bool >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "format" )
+      .map( ListFormat::from_str ) { this.format( v? ) } else { this };
+
+      this = if let Some( v ) = value
+      .get_owned( "with_version" ) { this.with_version::< bool >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "with_path" ) { this.with_path::< bool >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "with_local" ) { this.with_local::< bool >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "with_remote" ) { this.with_remote::< bool >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "with_primary" ) { this.with_primary::< bool >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "with_dev" ) { this.with_dev::< bool >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "with_build" ) { this.with_build::< bool >( v ) } else { this };
 
       Ok( this.form() )
     }

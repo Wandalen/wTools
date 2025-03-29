@@ -1,6 +1,7 @@
 use super::*;
 
 #[ test ]
+#[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 fn reexport()
 {
 
@@ -12,7 +13,8 @@ fn reexport()
   let got = vec1.last().unwrap().clone();
   assert_eq!( got, 2 );
 
-  let mut vec2 : the_module::DynArray< i32 > = the_module::DynArray::new();
+  use std::vec::Vec as DynList;
+  let mut vec2 : DynList< i32 > = DynList::new();
   vec2.push( 1 );
   vec2.push( 2 );
   let got = vec2.first().unwrap().clone();
@@ -41,6 +43,10 @@ fn constructor()
   exp.push( 13 );
   assert_eq!( got, exp );
 
+  let _got = the_module::vec!( "b" );
+  let _got = the_module::dlist!( "b" );
+  let _got = the_module::exposed::dlist!( "b" );
+
 }
 
 #[ cfg( feature = "collection_into_constructors" ) ]
@@ -60,6 +66,11 @@ fn into_constructor()
   exp.push( 13 );
   assert_eq!( got, exp );
 
+  let _got : Vec< &str > = the_module::into_vec!( "b" );
+  let _got : Vec< &str > = the_module::exposed::into_vec!( "b" );
+  let _got : Vec< &str > = the_module::into_dlist!( "b" );
+  let _got : Vec< &str > = the_module::exposed::into_dlist!( "b" );
+
 }
 
 // qqq : implement similar test for all containers -- done
@@ -75,7 +86,7 @@ fn iters()
   impl IntoIterator for MyContainer
   {
     type Item = i32;
-    type IntoIter = the_module::vec::IntoIter< i32 >;
+    type IntoIter = the_module::vector::IntoIter< i32 >;
     // qqq : should work -- works
 
     fn into_iter( self ) -> Self::IntoIter
@@ -87,7 +98,7 @@ fn iters()
   impl< 'a > IntoIterator for &'a MyContainer
   {
     type Item = &'a i32;
-    type IntoIter = the_module::vec::Iter< 'a, i32 >;
+    type IntoIter = the_module::vector::Iter< 'a, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -98,7 +109,7 @@ fn iters()
   impl< 'a > IntoIterator for &'a mut MyContainer
   {
     type Item = &'a mut i32;
-    type IntoIter = the_module::vec::IterMut< 'a, i32 >;
+    type IntoIter = the_module::vector::IterMut< 'a, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {

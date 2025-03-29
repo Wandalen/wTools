@@ -18,12 +18,16 @@ on :
         required : false
         type : string
         default : true
+      commiter_username:
+        type: string
+        default: true
+        required: false
 
 concurrency :
 
   group : standard_rust_push_${{ inputs.module_name }}_${{ github.ref }}_
-    ${{ contains( inputs.commit_message, '+test' ) || startsWith( inputs.commit_message, 'merge' ) }}
-  cancel-in-progress : true
+    ${{ contains( inputs.commit_message, '+test' ) || inputs.commiter_username == 'web-flow' || startsWith( inputs.commit_message, 'merge' ) }}
+  cancel-in-progress : ${{ contains( inputs.commit_message, '+test' ) || inputs.commiter_username == 'web-flow' }}
 
 env :
 
@@ -34,7 +38,7 @@ env :
 jobs :
 
   checkmate:
-    if : contains( inputs.commit_message, '+test' ) || contains( inputs.commit_message, 'merge' )
+    if : contains( inputs.commit_message, '+test' ) || inputs.commiter_username == 'web-flow' || startsWith( inputs.commit_message, 'merge' )
     runs-on: ubuntu-latest
     steps:
       - name: Install latest nightly toolchain
@@ -60,20 +64,32 @@ jobs :
       - name: Build module
         run: cd ${{ steps.rootpath.outputs.path }} && cargo build && cd -
       - name: Audit the modules
+        id: audit
         run: make audit
         continue-on-error: true
       - name: Generate documentation for the modules
+        id: documentation
         run: make doc open=no manifest_path=${{ inputs.manifest_path }}
         continue-on-error: true
       - name: Lint the modules
+        id: lint
         run: make lint manifest_path=${{ inputs.manifest_path }} warnings=no
         continue-on-error: true
       - name: Check the modules
+        id: check
         run: make check manifest_path=${{ inputs.manifest_path }}
         continue-on-error: true
       - name: Check the modules dependencies
+        id: udeps
         run: cargo +nightly udeps --all-targets --manifest-path ${{ inputs.manifest_path }}
         continue-on-error: true
+         # Added IDs for each step in the test job: This allows referencing the result of each step later.
+        #
+        # "Check for errors" step: Now checks the outcome status for each step.
+        # If any of them have a value of 'failure', this step will fail the job by returning exit 1.
+      - name: Check for errors
+        if: steps.audit.outcome != 'success' || steps.documentation.outcome != 'success' || steps.lint.outcome != 'success' || steps.check.outcome != 'success' || steps.udeps.outcome != 'success'
+        run: exit 1
 
 #  release:
 #    if: contains( inputs.commit_message, '+test' ) || contains( inputs.commit_message, 'merge' )
@@ -121,7 +137,10 @@ jobs :
   #        run: cargo miri test --manifest-path ${{ inputs.manifest_path }}
 
   will_test :
-    if : contains( inputs.commit_message, '+test' ) || contains( inputs.commit_message, 'merge' )
+#    This section ensures that `job` `will_test` will only be executed after `checkmate` and if `checkmate` fails, no tests will be run.
+    needs :
+      - checkmate
+    if : contains( inputs.commit_message, '+test' ) || inputs.commiter_username == 'web-flow' || startsWith( inputs.commit_message, 'merge' )
     concurrency :
       group : standard_rust_push_${{ inputs.module_name }}_${{ github.ref }}_${{ matrix.os }}
       cancel-in-progress : true
@@ -151,7 +170,7 @@ jobs :
           attempt_delay: 10000
       - uses: actions/checkout@v3
       - name: Install will
-        run: cargo install --git https://github.com/Wandalen/wTools --branch alpha willbe
+        run: cargo install willbe
       - name: Set MANIFEST_ROOT_PATH
         id: rootpath
         run: echo "::set-output name=path::$(dirname ${{ inputs.manifest_path }})"

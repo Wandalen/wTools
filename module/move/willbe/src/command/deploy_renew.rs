@@ -1,19 +1,25 @@
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use wca::VerifiedCommand;
-  use wtools::error::{ anyhow::Context, Result };
-  use tool::template::Template;
+  use error::{ untyped::Context };
+  #[ allow( clippy::wildcard_imports ) ]
   use action::deploy_renew::*;
 
   ///
   /// Create new deploy.
   ///
+  /// # Errors
+  /// qqq: doc
 
-  pub fn deploy_renew( o : VerifiedCommand ) -> Result< () >
+  // xxx : qqq : typed error
+  #[ allow( clippy::needless_pass_by_value ) ]
+  pub fn deploy_renew( o : VerifiedCommand ) -> error::untyped::Result< () >
   {
     let current_dir = std::env::current_dir()?;
+
     let mut template = DeployTemplate::default();
     _ = template.load_existing_params( &current_dir );
     let parameters = template.parameters();
@@ -23,7 +29,8 @@ mod private
       values.interactive_if_empty( mandatory );
     }
     template.set_values( values );
-    action::deploy_renew( &current_dir, template ).context( "Fail to create deploy template" )
+    action::deploy_renew( &current_dir, template )
+    .context( "Fail to create deploy template" )
   }
 
 }

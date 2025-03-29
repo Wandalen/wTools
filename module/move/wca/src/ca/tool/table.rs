@@ -1,9 +1,11 @@
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
-  
-  use wtools::error::{ Result, err };
-  
+
+  // use wtools::error::{ Result, err };
+  // use error::err;
+
   /// Represents a table composed of multiple rows.
   ///
   /// The `Table` struct is a simple container that holds multiple `Row` objects.
@@ -20,7 +22,7 @@ mod private
       Self( value.into_iter().map( Into::into ).collect() )
     }
   }
-  
+
   impl Table
   {
     /// Validates the structure of the given `self` object.
@@ -44,7 +46,7 @@ mod private
           return false;
         }
       }
-      
+
       true
     }
   }
@@ -54,7 +56,7 @@ mod private
   /// The `Row` struct is a container that holds multiple `String` objects representing the values in a table row.
   #[ derive( Debug ) ]
   pub struct Row( Vec< String > );
-  
+
   impl< R, V > From< R > for Row
   where
     R : IntoIterator< Item = V >,
@@ -65,10 +67,10 @@ mod private
       Self( value.into_iter().map( Into::into ).collect() )
     }
   }
-  
+
   fn max_column_lengths( table : &Table ) -> Vec< usize >
   {
-    let num_columns = table.0.get( 0 ).map_or( 0, | row | row.0.len() );
+    let num_columns = table.0.first().map_or( 0, | row | row.0.len() );
     ( 0 .. num_columns )
     .map( | column_index |
     {
@@ -79,7 +81,11 @@ mod private
     })
     .collect()
   }
-  
+
+  #[ derive( Debug, error::typed::Error ) ]
+  #[ error( "Invalid table" ) ]
+  pub struct FormatTableError;
+
   /// Formats a table into a readable string representation.
   ///
   /// # Arguments
@@ -88,19 +94,23 @@ mod private
   ///
   /// # Returns
   ///
-  /// * `Result<String, Error>` - A `Result` containing the formatted table as a `String`, or an `Error` if the table is invalid.
-  pub fn format_table< IntoTable >( table : IntoTable ) -> Result< String >
+  /// * `error::untyped::Result<String, Error>` - A `error::untyped::Result` containing the formatted table as a `String`, or an `Error` if the table is invalid.
+  /// # Errors
+  /// qqq: doc
+  // aaa : use typed error
+  // aaa : done
+  pub fn format_table< IntoTable >( table : IntoTable ) -> Result< String, FormatTableError >
   where
     IntoTable : Into< Table >,
   {
     let table = table.into();
     if !table.validate()
     {
-      return Err( err!( "Invalid table" ) );
+      return Err( FormatTableError );
     }
-    
+
     let max_lengths = max_column_lengths( &table );
-    
+
     let mut formatted_table = String::new();
     for row in table.0
     {
@@ -113,7 +123,7 @@ mod private
       formatted_table.push( '\n' );
     }
     formatted_table.pop(); // trailing end of line
-    
+
     Ok( formatted_table )
   }
 }
@@ -122,5 +132,5 @@ mod private
 
 crate::mod_interface!
 {
-  protected use format_table;
+  own use format_table;
 }

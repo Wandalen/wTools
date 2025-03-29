@@ -1,6 +1,6 @@
 [package]
 name = "derive_tools_meta"
-version = "0.23.0"
+version = "0.31.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,8 +24,6 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-# exclude = [ "/tests", "/examples", "-*" ]
-
 [lib]
 proc-macro = true
 
@@ -36,10 +34,14 @@ default = [
   "derive_deref",
   "derive_from",
   "derive_new",
+  "derive_index",
+  "derive_index_mut",
   "derive_inner_from",
   "derive_as_ref",
   "derive_as_mut",
   "derive_variadic_from",
+  "derive_not",
+  "derive_phantom"
 ]
 full = [
   "enabled",
@@ -47,10 +49,14 @@ full = [
   "derive_deref",
   "derive_from",
   "derive_new",
+  "derive_index",
+  "derive_index_mut",
   "derive_inner_from",
   "derive_as_ref",
   "derive_as_mut",
   "derive_variadic_from",
+  "derive_not",
+  "derive_phantom"
 ]
 enabled = [ "macro_tools/enabled", "iter_tools/enabled", "former_types/enabled" ]
 
@@ -60,15 +66,19 @@ derive_deref = []
 derive_deref_mut = []
 derive_from = []
 derive_new = []
+derive_index = []
+derive_index_mut = []
 derive_inner_from = []
-derive_variadic_from = []
+derive_variadic_from = [ "iter_tools/iter_ext" ]
+derive_not = []
+derive_phantom = []
 
 [dependencies]
-# xxx : qqq : optimize features set
-macro_tools = { workspace = true, features = [ "full" ] }
-iter_tools = { workspace = true, features = [ "full" ] }
+# zzz : qqq : optimize features set
+macro_tools = { workspace = true, features = [ "attr", "attr_prop", "container_kind", "ct", "diag", "generic_args", "typ", "derive", "generic_params", "name", "phantom", "struct_like", "quantifier" ] }
+# zzz : qqq : optimize features set
+iter_tools = { workspace = true, features = [ "iter_trait" ] }
 former_types = { workspace = true, features = [ "types_component_assign" ] }
-const_format = { version = "0.2.32" }
 
 [dev-dependencies]
 test_tools = { workspace = true }

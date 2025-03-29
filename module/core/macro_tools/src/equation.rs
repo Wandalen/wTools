@@ -2,9 +2,10 @@
 //! Attributes analyzys and manipulation.
 //!
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   /// Represents an equation parsed from a procedural macro input.
@@ -85,7 +86,7 @@ pub( crate ) mod private
 
   ///
   /// For attribute like `#[former( default = 31 ) ]` return key `default` and value `31`,
-  /// as well as syn::Meta as the last element of result tuple.
+  /// as well as `syn::Meta` as the last element of result tuple.
   ///
   /// ### Basic use-case.
   ///
@@ -96,65 +97,73 @@ pub( crate ) mod private
   /// let got = equation::from_meta( &attr ).unwrap();
   /// assert_eq!( macro_tools::code_to_str!( got ), "default = 31".to_string() );
   /// ```
-
+  /// # Errors
+  /// qqq: doc
   pub fn from_meta( attr : &syn::Attribute ) -> Result< Equation >
   {
     let meta = &attr.meta;
-    return match meta
+    match meta
     {
       syn::Meta::List( ref meta_list ) =>
       {
         let eq : Equation = syn::parse2( meta_list.tokens.clone() )?;
         Ok( eq )
       }
-      _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::Meta::List( meta_list )" ) ),
-    };
+      _ => Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::Meta::List( meta_list )" ) ),
+    }
   }
 
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     from_meta,
   };
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as equation;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use super::super::equation;
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     Equation,
   };
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

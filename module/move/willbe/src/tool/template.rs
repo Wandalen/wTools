@@ -1,50 +1,119 @@
+/// Define a private namespace for all its items.
 mod private
 {
-  use std::collections::BTreeMap;
-  use std::fs;
-  use error_tools::for_app::Context;
-  use error_tools::Result;
-  use former::Former;
-  use wca::Props;
-  use std::path::Path;
-  use std::path::PathBuf;
-  use wca::Value;
-  use std::collections::HashMap;
+  #[ allow( unused_imports, clippy::wildcard_imports ) ]
+  use crate::tool::*;
 
-  // qqq : for Viktor : is that trait really necessary?
-  // Template - remove
-  // DeployTemplate - move here
-  // DeployTemplateFiles - remove
-
-  /// Trait for creating a template for a file structure.
-  pub trait Template< F > : Sized
-  where
-    F : TemplateFiles + Default
+  use std::
   {
-    /// Creates all files in the template.
-    ///
-    /// Path is the base path for the template to be created in.
-    fn create_all( self, path : &Path ) -> Result< () >;
-
-    /// Returns all parameters used by the template.
-    fn parameters( &self ) -> &TemplateParameters;
-
-    /// Sets values for provided parameters.
-    fn set_values( &mut self, values : TemplateValues );
-
-    /// Relative path for parameter values storage.
-    fn parameter_storage( &self ) -> &Path;
-
-    ///
-    fn template_name( &self ) -> &'static str;
-
-    /// Loads provided parameters from previous run.
-    fn load_existing_params( &mut self, path : &Path ) -> Option< () >
+    fs,
+    path::
     {
-      let data = fs::read_to_string( path.join( self.parameter_storage() ) ).ok()?;
+      Path,
+      PathBuf
+    },
+  };
+  use error::untyped::Context;
+
+  /// Container for templates.
+  ///
+  /// Includes files to create, parameters that those templates accept,
+  /// and values for those parameters.
+  #[ derive( Debug ) ]
+  pub struct TemplateHolder
+  {
+    /// Files of the template.
+    pub files : Vec< TemplateFileDescriptor >,
+    /// Parameters definitions.
+    pub parameters : TemplateParameters,
+    /// The values associated with the template.
+    pub values : TemplateValues,
+    /// Path to the parameter storage for recovering values
+    /// for already generated templated files.
+    pub parameter_storage : &'static Path,
+    /// Name of the template to generate
+    pub template_name : &'static str,
+  }
+
+  impl TemplateFiles for Vec< TemplateFileDescriptor > {}
+
+
+  impl TemplateHolder
+  {
+    /// Creates all files in the specified path using the template values.
+    ///
+    /// # Parameters
+    ///
+    /// - `path`: A reference to the path where the files will be created.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` which is `Ok` if the files are created successfully, or an `Err` otherwise.
+    ///
+    /// # Errors
+    /// qqq: doc
+    pub fn create_all( self, path : &path::Path ) -> error::untyped::Result< () > // qqq : use typed error
+    {
+      self.files.create_all( path, &self.values )
+    }
+
+    /// Returns a reference to the template parameters.
+    ///
+    /// # Returns
+    ///
+    /// A reference to `TemplateParameters`.
+    #[ must_use ]
+    pub fn parameters( &self ) -> &TemplateParameters
+    {
+      &self.parameters
+    }
+
+    /// Sets the template values.
+    ///
+    /// # Parameters
+    ///
+    /// - `values`: The new `TemplateValues` to be set.
+    pub fn set_values( &mut self, values : TemplateValues )
+    {
+      self.values = values;
+    }
+
+    /// Returns a reference to the template values.
+    ///
+    /// # Returns
+    ///
+    /// A reference to `TemplateValues`.
+    #[ must_use ]
+    pub fn get_values( &self ) -> &TemplateValues
+    {
+      &self.values
+    }
+
+    /// Returns a mutable reference to the template values.
+    ///
+    /// # Returns
+    ///
+    /// A mutable reference to `TemplateValues`.
+    pub fn get_values_mut( &mut self ) -> &mut TemplateValues
+    {
+      &mut self.values
+    }
+
+    /// Loads existing parameters from the specified path and updates the template values.
+    ///
+    /// # Parameters
+    ///
+    /// - `path`: A reference to the path where the parameter file is located.
+    ///
+    /// # Returns
+    ///
+    /// An `Option` which is `Some(())` if the parameters are loaded successfully, or `None` otherwise.
+    pub fn load_existing_params( &mut self, path : &Path ) -> Option< () >
+    {
+      let data = fs::read_to_string( path.join( self.parameter_storage ) ).ok()?;
       let document = data.parse::< toml_edit::Document >().ok()?;
-      let parameters = self.parameters().descriptors.iter().map( | d | &d.parameter ).cloned().collect::< Vec< _ > >();
-      let template_table = document.get( self.template_name() )?;
+      let parameters : Vec< _ > = self.parameters().descriptors.iter().map( | d | &d.parameter ).cloned().collect();
+      let template_table = document.get( self.template_name )?;
       for parameter in parameters
       {
         let value = template_table.get( &parameter )
@@ -59,27 +128,22 @@ mod private
         );
         if let Some( value ) = value
         {
-          self.get_values_mut().insert_if_empty( &parameter, Value::String( value.into() ) );
+          self.get_values_mut().insert_if_empty( &parameter, wca::Value::String( value.into() ) );
         }
       }
       Some( () )
     }
 
-    /// Get all template values.
-    fn get_values( &self ) -> &TemplateValues;
-
-    /// Get all template values as a mutable reference.
-    fn get_values_mut( &mut self ) -> &mut TemplateValues;
-
     /// Fetches mandatory parameters that are not set yet.
-    fn get_missing_mandatory( &self ) -> Vec< &str >
+    #[ must_use ]
+    pub fn get_missing_mandatory( &self ) -> Vec< &str >
     {
       let values = self.get_values();
       self
       .parameters()
       .list_mandatory()
       .into_iter()
-      .filter( | key | values.0.get( *key ).map( | val | val.as_ref() ).flatten().is_none() )
+      .filter( | key | values.0.get( *key ).and_then( | val | val.as_ref() ).is_none() )
       .collect()
     }
   }
@@ -92,10 +156,13 @@ mod private
     /// Creates all files in provided path with values for required parameters.
     ///
     /// Consumes owner of the files.
-    fn create_all( self, path : &Path, values : &TemplateValues ) -> Result< () >
+    ///
+    /// # Errors
+    /// qqq: doc
+    fn create_all( self, path : &Path, values : &TemplateValues ) -> error::untyped::Result< () > // qqq : use typed error
     {
       let fsw = FileSystem;
-      for file in self.into_iter()
+      for file in self
       {
         file.create_file( &fsw, path, values )?;
       }
@@ -104,7 +171,7 @@ mod private
   }
 
   /// Parameters required for the template.
-  #[ derive( Debug, Default, Former ) ]
+  #[ derive( Debug, Default, former::Former ) ]
   pub struct TemplateParameters
   {
     #[ subform_entry( setter = false ) ]
@@ -114,17 +181,19 @@ mod private
   impl TemplateParameters
   {
     /// Extracts template values from props for parameters required for this template.
-    pub fn values_from_props( &self, props : &Props ) -> TemplateValues
+    #[ must_use ]
+    pub fn values_from_props( &self, props : &wca::executor::Props ) -> TemplateValues
     {
       let values = self.descriptors
       .iter()
       .map( | d | &d.parameter )
-      .map( | param | ( param.clone(), props.get( param ).map( Value::clone ) ) )
+      .map( | param | ( param.clone(), props.get( param ).cloned() ) )
       .collect();
       TemplateValues( values )
     }
 
     /// Get a list of all mandatory parameters.
+    #[ must_use ]
     pub fn list_mandatory( &self ) -> Vec< &str >
     {
       self.descriptors.iter().filter( | d | d.is_mandatory ).map( | d | d.parameter.as_str() ).collect()
@@ -132,7 +201,7 @@ mod private
   }
 
   /// Parameter description.
-  #[ derive( Debug, Default, Former ) ]
+  #[ derive( Debug, Default, former::Former ) ]
   pub struct TemplateParameterDescriptor
   {
     parameter : String,
@@ -154,34 +223,35 @@ mod private
 
   /// Holds a map of parameters and their values.
   #[ derive( Debug, Default ) ]
-  pub struct TemplateValues( HashMap< String, Option< Value > > );
+  pub struct TemplateValues( collection::HashMap< String, Option< wca::Value > > );
 
   impl TemplateValues
   {
     /// Converts values to a serializable object.
     ///
     /// Currently only `String`, `Number`, and `Bool` are supported.
-    pub fn to_serializable( &self ) -> BTreeMap< String, String >
+    #[ must_use ]
+    pub fn to_serializable( &self ) -> collection::BTreeMap< String, String >
     {
       self.0.iter().map
       (
         | ( key, value ) |
         {
-          let value = value.as_ref().map
+          let value = value.as_ref().map_or
           (
+            "___UNSPECIFIED___".to_string(),
             | value |
             {
               match value
               {
-                Value::String( val ) => val.to_string(),
-                Value::Number( val ) => val.to_string(),
-                Value::Path( _ ) => "unsupported".to_string(),
-                Value::Bool( val ) => val.to_string(),
-                Value::List( _ ) => "unsupported".to_string(),
+                wca::Value::String( val ) => val.to_string(),
+                wca::Value::Number( val ) => val.to_string(),
+                wca::Value::Bool( val ) => val.to_string(),
+                wca::Value::Path( _ ) |
+                wca::Value::List( _ ) => "unsupported".to_string(),
               }
             }
-          )
-          .unwrap_or( "___UNSPECIFIED___".to_string() );
+          );
           ( key.to_owned(), value )
         }
       )
@@ -189,9 +259,9 @@ mod private
     }
 
     /// Inserts new value if parameter wasn't initialized before.
-    pub fn insert_if_empty( &mut self, key : &str, value : Value )
+    pub fn insert_if_empty( &mut self, key : &str, value : wca::Value )
     {
-      if let None = self.0.get( key ).and_then( | v | v.as_ref() )
+      if self.0.get( key ).and_then( | v | v.as_ref() ).is_none()
       {
         self.0.insert( key.into() , Some( value ) );
       }
@@ -200,11 +270,11 @@ mod private
     /// Interactively asks user to provide value for a parameter.
     pub fn interactive_if_empty( &mut self, key : &str )
     {
-      if let None = self.0.get( key ).and_then( | v | v.as_ref() )
+      if self.0.get( key ).and_then( | v | v.as_ref() ).is_none()
       {
         println! ("Parameter `{key}` is not set" );
         let answer = wca::ask( "Enter value" );
-        self.0.insert( key.into(), Some( Value::String( answer ) ) );
+        self.0.insert( key.into(), Some( wca::Value::String( answer ) ) );
       }
     }
   }
@@ -213,7 +283,7 @@ mod private
   ///
   /// Holds raw template data, relative path for the file, and a flag that
   /// specifies whether the raw data should be treated as a template.
-  #[ derive( Debug, Former ) ]
+  #[ derive( Debug, former::Former ) ]
   pub struct TemplateFileDescriptor
   {
     path : PathBuf,
@@ -225,7 +295,7 @@ mod private
   impl TemplateFileDescriptor
   {
     fn contents< FS : FileSystemPort >( &self, fs : &FS, path : &PathBuf, values : &TemplateValues )
-    -> Result< String >
+    -> error::untyped::Result< String >
     {
       let contents = if self.is_template
       {
@@ -241,7 +311,7 @@ mod private
         WriteMode::TomlExtend =>
         {
           let instruction = FileReadInstruction { path : path.into() };
-          if let Some(existing_contents) = fs.read( &instruction ).ok()
+          if let Ok( existing_contents ) = fs.read( &instruction )
           {
             let document = contents.parse::< toml_edit::Document >().context( "Failed to parse template toml file" )?;
             let template_items = document.iter();
@@ -249,10 +319,10 @@ mod private
             let mut existing_document = existing_toml_contents.parse::< toml_edit::Document >().context( "Failed to parse existing toml file" )?;
             for ( template_key, template_item ) in template_items
             {
-              match existing_document.get_mut( &template_key )
+              match existing_document.get_mut( template_key )
               {
-                Some( item ) => *item = template_item.to_owned(),
-                None => existing_document[ &template_key ] = template_item.to_owned(),
+                Some( item ) => template_item.clone_into( item ),
+                None => template_item.clone_into( &mut existing_document[ template_key ] ),
               }
             }
             return Ok( existing_document.to_string() );
@@ -263,7 +333,8 @@ mod private
       }
     }
 
-    fn build_template( &self, values : &TemplateValues ) -> Result< String >
+    // qqq : use typed error
+    fn build_template( &self, values : &TemplateValues ) -> error::untyped::Result< String >
     {
       let mut handlebars = handlebars::Handlebars::new();
       handlebars.register_escape_fn( handlebars::no_escape );
@@ -271,7 +342,7 @@ mod private
       handlebars.render( "templated_file", &values.to_serializable() ).context( "Failed creating a templated file" )
     }
 
-    fn create_file< FS : FileSystemPort >( &self, fs : &FS, path : &Path, values : &TemplateValues ) -> Result< () >
+    fn create_file< FS : FileSystemPort >( &self, fs : &FS, path : &Path, values : &TemplateValues ) -> error::untyped::Result< () > // qqq : use typed error
     {
       let path = path.join( &self.path );
       let data = self.contents( fs, &path, values )?.as_bytes().to_vec();
@@ -298,7 +369,7 @@ mod private
   }
 
   /// Helper builder for full template file list.
-  #[ derive( Debug, Former ) ]
+  #[ derive( Debug, former::Former ) ]
   pub struct TemplateFilesBuilder
   {
     /// Stores all file descriptors for current template.
@@ -337,17 +408,21 @@ mod private
   pub trait FileSystemPort
   {
     /// Writing to file implementation.
-    fn write( &self, instruction : &FileWriteInstruction ) -> Result< () >;
+    /// # Errors
+    /// qqq: doc
+    fn write( &self, instruction : &FileWriteInstruction ) -> error::untyped::Result< () >; // qqq : use typed error
 
     /// Reading from a file implementation.
-    fn read( &self, instruction : &FileReadInstruction ) -> Result< Vec< u8 > >;
+    /// # Errors
+    /// qqq: doc
+    fn read( &self, instruction : &FileReadInstruction ) -> error::untyped::Result< Vec< u8 > >; // qqq : use typed error
   }
 
-  // qqq : xxx : why not public?
+  // zzz : why not public?
   struct FileSystem;
   impl FileSystemPort for FileSystem
   {
-    fn write( &self, instruction : &FileWriteInstruction ) -> Result< () >
+    fn write( &self, instruction : &FileWriteInstruction ) -> error::untyped::Result< () > // qqq : use typed error
     {
       let FileWriteInstruction { path, data } = instruction;
       let dir = path.parent().context( "Invalid file path provided" )?;
@@ -358,7 +433,8 @@ mod private
       fs::write( path, data ).context( "Failed creating and writing to file" )
     }
 
-    fn read( &self, instruction : &FileReadInstruction ) -> Result< Vec< u8 > >
+  // qqq : use typed error
+    fn read( &self, instruction : &FileReadInstruction ) -> error::untyped::Result< Vec< u8 > >
     {
       let FileReadInstruction { path } = instruction;
       fs::read( path ).context( "Failed reading a file" )
@@ -372,7 +448,8 @@ mod private
 
 crate::mod_interface!
 {
-  orphan use Template;
+  //orphan use Template;
+  orphan use TemplateHolder;
   orphan use TemplateFiles;
   orphan use TemplateFileDescriptor;
   orphan use TemplateParameters;

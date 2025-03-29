@@ -1,5 +1,5 @@
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
 
   use former::Former;
@@ -143,7 +143,7 @@ crate::mod_interface!
     Program,
   };
 
-  protected use
+  own use
   {
     Plan,
     Call,

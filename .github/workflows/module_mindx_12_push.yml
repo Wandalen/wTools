@@ -1,0 +1,24 @@
+name : mindx12
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # mindx12
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/blank/mindx12/Cargo.toml'
+      module_name : 'mindx12'
+      commit_message : ${{ github.event.head_commit.message }}
+      commiter_username:  ${{ github.event.head_commit.committer.username }}

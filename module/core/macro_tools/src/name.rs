@@ -2,14 +2,13 @@
 //! Tait to getn name of an Item.
 //!
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
 
   ///
   /// Trait to get name of an syntax element.
   ///
-
   pub trait Name
   {
     /// Get name.
@@ -39,7 +38,7 @@ pub( crate ) mod private
         syn::Item::Union( item ) => item.name(),
         // syn::Item::Use( item ) => item.name(),
         // syn::Item::Verbatim( item ) => item.name(),
-        _ => "".into(),
+        _ => String::new(),
       }
     }
   }
@@ -51,7 +50,7 @@ pub( crate ) mod private
       let first = self.segments.first();
       if first.is_none()
       {
-        return "".into()
+        return String::new()
       }
       let first = first.unwrap();
       first.ident.to_string()
@@ -104,7 +103,7 @@ pub( crate ) mod private
     {
       if self.trait_.is_none()
       {
-        return "".into()
+        return String::new()
       }
       let t = self.trait_.as_ref().unwrap();
       t.1.name()
@@ -117,7 +116,7 @@ pub( crate ) mod private
     {
       if self.ident.is_none()
       {
-        return "".to_string()
+        return String::new()
       }
       let ident = self.ident.as_ref().unwrap();
       ident.to_string()
@@ -226,37 +225,49 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as name;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+
+  pub use super::super::name;
+  // pub use super::own as name;
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::Name;
+  pub use private::Name;
 }

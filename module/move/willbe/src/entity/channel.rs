@@ -1,15 +1,17 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use std::
   {
     fmt::Formatter,
-    path::Path,
-    collections::HashSet,
+    ffi::OsString,
   };
-  use std::ffi::OsString;
-  use error_tools::for_app::Error;
-  use wtools::error::Result;
+  use path::Path;
+  use collection::HashSet;
+  use error::untyped::{ Error };
+  #[ allow( clippy::wildcard_imports ) ]
   use process_tools::process::*;
 
   /// The `Channel` enum represents different release channels for rust.
@@ -35,10 +37,28 @@ mod private
     }
   }
 
+  impl TryFrom< String > for Channel
+  {
+    type Error = error::untyped::Error;
+    fn try_from( value : String ) -> Result< Self, Self::Error >
+    {
+      Ok( match value.as_ref()
+      {
+        "stable" => Self::Stable,
+        "nightly" => Self::Nightly,
+        other => error::untyped::bail!( "Unexpected channel value. Expected [stable, channel]. Got: `{other}`" ),
+      })
+    }
+  }
+
   /// Retrieves a list of available channels.
   ///
   /// This function takes a path and returns a `Result` with a vector of strings representing the available channels.
-  pub fn available_channels< P >( path : P ) -> Result< HashSet< Channel > >
+  ///
+  /// # Errors
+  /// qqq: doc
+  // qqq : typed error
+  pub fn available_channels< P >( path : P ) -> error::untyped::Result< HashSet< Channel > >
   where
     P : AsRef< Path >,
   {
@@ -47,18 +67,19 @@ mod private
     .bin_path( program )
     .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
     .current_path( path.as_ref().to_path_buf() )
-    .run().map_err::< Error, _ >( | report | err!( report.to_string() ) )?;
+    .run().map_err::< Error, _ >( | report | error::untyped::format_err!( report.to_string() ) )?;
 
     let list = report
     .out
     .lines()
-    .map( | l | l.split_once( '-' ).unwrap().0 )
-    .filter_map( | c | match c
+    // toolchain with a name without `-` may exist, but we are looking at specific ones
+    .filter_map( | l | l.split_once( '-' ) )
+    .filter_map( |( c, _ ) | match c
     {
       "stable" => Some( Channel::Stable ),
       "nightly" => Some( Channel::Nightly ),
       _ => None
-    } )
+    })
     .collect();
 
     Ok( list )
@@ -69,6 +90,6 @@ mod private
 
 crate::mod_interface!
 {
-  protected use Channel;
-  protected use available_channels;
+  own use Channel;
+  own use available_channels;
 }

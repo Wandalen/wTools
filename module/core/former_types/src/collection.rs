@@ -5,10 +5,11 @@
 //! such as vectors, hash maps, and custom collection implementations.
 //!
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
 
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   /// Facilitates the conversion of collection entries to their corresponding value representations.
@@ -47,7 +48,6 @@ pub( crate ) mod private
   /// It is especially crucial in complex data structures, such as `HashMap`s, where entries
   /// often involve a key-value pair, and simple values need to be restructured to fit this model
   /// for operations like insertion or update.
-
   pub trait CollectionValToEntry< Val >
   {
     /// The specific type of entry that corresponds to the value within the collection.
@@ -141,7 +141,6 @@ pub( crate ) mod private
   /// such as `HashMap`s. It not only identifies what constitutes an entry and a value in the context of the collection
   /// but also provides utility for converting between these two, which is critical in operations involving entry manipulation
   /// and value retrieval.
-
   pub trait Collection
   {
     /// The type of entries that can be added to the collection. This type can differ from `Val` in collections like `HashMap`,
@@ -347,6 +346,8 @@ pub( crate ) mod private
   {
     /// Begins the construction process of a collection with optional initial storage and context,
     /// setting up an `on_end` completion handler to finalize the collection's construction.
+    /// # Panics
+    /// qqq: doc
     #[ inline( always ) ]
     pub fn begin
     (
@@ -370,6 +371,8 @@ pub( crate ) mod private
 
     /// Provides a variation of the `begin` method allowing for coercion of the end handler,
     /// facilitating ease of integration with different end conditions.
+    /// # Panics
+    /// qqq: docs
     #[ inline( always ) ]
     pub fn begin_coercing< IntoEnd >
     (
@@ -394,6 +397,8 @@ pub( crate ) mod private
     }
 
     /// Finalizes the building process, returning the formed or a context incorporating it.
+    /// # Panics
+    /// qqq: doc
     #[ inline( always ) ]
     pub fn end( mut self ) -> Definition::Formed
     {
@@ -412,6 +417,7 @@ pub( crate ) mod private
     /// Replaces the current storage with a provided storage, allowing for resetting or
     /// redirection of the building process.
     #[ inline( always ) ]
+    #[ must_use ]
     pub fn replace( mut self, storage : Definition::Storage ) -> Self
     {
       self.storage = storage;
@@ -462,6 +468,8 @@ pub( crate ) mod private
 
     /// Appends an entry to the end of the storage, expanding the internal collection.
     #[ inline( always ) ]
+    #[ must_use ]
+    #[ allow( clippy::should_implement_trait ) ]
     pub fn add< IntoElement >( mut self, entry : IntoElement ) -> Self
     where IntoElement : core::convert::Into< E >,
     {
@@ -515,35 +523,40 @@ mod vector_deque;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
 
     EntryToVal,
@@ -574,6 +587,8 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

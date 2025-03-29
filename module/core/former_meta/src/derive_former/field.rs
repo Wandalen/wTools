@@ -1,11 +1,10 @@
-
+#[ allow( clippy::wildcard_imports ) ]
 use super::*;
 use macro_tools::{ container_kind };
 
 ///
 /// Definition of a field.
 ///
-
 #[ allow( dead_code ) ]
 pub struct FormerField< 'a >
 {
@@ -26,25 +25,24 @@ impl< 'a > FormerField< 'a >
 
 /** methods
 
-from_syn
+`from_syn`
 
-storage_fields_none
-storage_field_optional
-storage_field_preform
-storage_field_name
-former_field_setter
-scalar_setter
-subform_entry_setter
-subform_collection_setter
+`storage_fields_none`
+`storage_field_optional`
+`storage_field_preform`
+`storage_field_name`
+`former_field_setter`
+`scalar_setter`
+`subform_entry_setter`
+`subform_collection_setter`
 
-scalar_setter_name
-subform_scalar_setter_name,
-subform_collection_setter_name
-subform_entry_setter_name
-scalar_setter_required
+`scalar_setter_name`
+`subform_scalar_setter_name`,
+`subform_collection_setter_name`
+`subform_entry_setter_name`
+`scalar_setter_required`
 
 */
-
   /// Construct former field from [`syn::Field`]
   pub fn from_syn( field : &'a syn::Field, for_storage : bool, for_formed : bool ) -> Result< Self >
   {
@@ -86,7 +84,6 @@ scalar_setter_required
   /// int_optional_1 : core::option::Option::None,
   /// ```
   ///
-
   #[ inline( always ) ]
   pub fn storage_fields_none( &self ) -> TokenStream
   {
@@ -114,7 +111,6 @@ scalar_setter_required
   /// pub string_optional_1 : core::option::Option< String >,
   /// ```
   ///
-
   #[ inline( always ) ]
   pub fn storage_field_optional( &self ) -> TokenStream
   {
@@ -171,8 +167,8 @@ scalar_setter_required
   /// };
   /// ```
   ///
-
   #[ inline( always ) ]
+  #[ allow( clippy::unnecessary_wraps ) ]
   pub fn storage_field_preform( &self ) -> Result< TokenStream >
   {
 
@@ -228,7 +224,7 @@ scalar_setter_required
       {
         None =>
         {
-          let panic_msg = format!( "Field '{}' isn't initialized", ident );
+          let panic_msg = format!( "Field '{ident}' isn't initialized" );
           qt!
           {
             {
@@ -288,7 +284,6 @@ scalar_setter_required
   ///
   /// Extract name of a field out.
   ///
-
   #[ inline( always ) ]
   pub fn storage_field_name( &self ) -> TokenStream
   {
@@ -325,8 +320,8 @@ scalar_setter_required
   /// - **Subform Setters**: Generated for fields annotated as subforms, allowing for nested
   ///   forming processes where a field itself can be formed using a dedicated former.
   ///
-
   #[ inline ]
+  #[ allow( clippy::too_many_arguments ) ]
   pub fn former_field_setter
   (
     &self,
@@ -376,7 +371,7 @@ scalar_setter_required
     };
 
     // subform collection setter
-    let ( setters_code, namespace_code ) = if let Some( _ ) = &self.attrs.subform_collection
+    let ( setters_code, namespace_code ) = if self.attrs.subform_collection.is_some()
     {
       let ( setters_code2, namespace_code2 ) = self.subform_collection_setter
       (
@@ -421,9 +416,9 @@ scalar_setter_required
   }
 
   ///
-  /// Generate a single scalar setter for the 'field_ident' with the 'setter_name' name.
+  /// Generate a single scalar setter for the '`field_ident`' with the '`setter_name`' name.
   ///
-  /// Used as a helper function for former_field_setter(), which generates alias setters
+  /// Used as a helper function for `former_field_setter()`, which generates alias setters
   ///
   /// # Example of generated code
   ///
@@ -439,8 +434,8 @@ scalar_setter_required
   ///   self
   /// }
   /// ```
-
   #[ inline ]
+  #[ allow( clippy::format_in_format_args ) ]
   pub fn scalar_setter
   (
     &self,
@@ -468,10 +463,10 @@ where
   #[ inline ]
   pub fn {field_ident}< Src >( mut self, src : Src ) -> Self
   where
-    Src : ::core::convert::Into< {0} >,
+    Src : Into< {0} >,
   {{
     debug_assert!( self.storage.{field_ident}.is_none() );
-    self.storage.{field_ident} = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
+    self.storage.{field_ident} = Some( Into::into( src ) );
     self
   }}
 }}
@@ -494,8 +489,7 @@ field : {field_ident}"#,
 
     let doc = format!
     (
-      "Scalar setter for the '{}' field.",
-      field_ident,
+      "Scalar setter for the '{field_ident}' field.",
     );
 
     qt!
@@ -515,12 +509,12 @@ field : {field_ident}"#,
   }
 
   ///
-  /// Generate a collection setter for the 'field_ident' with the 'setter_name' name.
+  /// Generate a collection setter for the '`field_ident`' with the '`setter_name`' name.
   ///
   /// See `tests/inc/former_tests/subform_collection_manual.rs` for example of generated code.
   ///
-
   #[ inline ]
+  #[ allow( clippy::too_many_lines, clippy::too_many_arguments ) ]
   pub fn subform_collection_setter
   (
     &self,
@@ -537,8 +531,9 @@ field : {field_ident}"#,
     let attr = self.attrs.subform_collection.as_ref().unwrap();
     let field_ident = &self.ident;
     let field_typ = &self.non_optional_ty;
-    let params = typ::type_parameters( &field_typ, .. );
+    let params = typ::type_parameters( field_typ, &( .. ) );
 
+    #[ allow( clippy::useless_attribute, clippy::items_after_statements ) ]
     use convert_case::{ Case, Casing };
 
     // example : `ParentSubformCollectionChildrenEnd`
@@ -584,10 +579,7 @@ field : {field_ident}"#,
 
     let doc = format!
     (
-      "Collection setter for the '{}' field. Method {} unlike method {} accept custom collection subformer.",
-      field_ident,
-      subform_collection,
-      field_ident,
+      "Collection setter for the '{field_ident}' field. Method {subform_collection} unlike method {field_ident} accept custom collection subformer."
     );
 
     let setter1 =
@@ -610,7 +602,12 @@ field : {field_ident}"#,
           End = #subform_collection_end< Definition >,
         >,
       {
-        Former2::former_begin( None, Some( self ), #subform_collection_end::< Definition >::default() )
+        Former2::former_begin
+        (
+          ::core::option::Option::None,
+          ::core::option::Option::Some( self ),
+          #subform_collection_end::< Definition >::default(),
+        )
       }
 
       // #[ inline( always ) ]
@@ -749,7 +746,7 @@ with the new content generated during the subforming process.
       format!( "{}", qt!{ #field_typ } ),
     );
 
-    let subformer_definition_types = if let Some( ref _subformer_definition ) = subformer_definition
+    let subformer_definition_types = if let Some( _subformer_definition ) = subformer_definition
     {
       let subformer_definition_types_string = format!( "{}Types", qt!{ #subformer_definition } );
       let subformer_definition_types : syn::Type = syn::parse_str( &subformer_definition_types_string )?;
@@ -786,7 +783,7 @@ with the new content generated during the subforming process.
         _phantom : core::marker::PhantomData< ( Definition, ) >,
       }
 
-      impl< Definition > Default
+      impl< Definition > ::core::default::Default
       for #subform_collection_end< Definition >
       {
 
@@ -849,8 +846,8 @@ with the new content generated during the subforming process.
   ///
   /// See `tests/inc/former_tests/subform_entry_manual.rs` for example of generated code.
   ///
-
   #[ inline ]
+  #[ allow( clippy::format_in_format_args, clippy::too_many_lines, clippy::too_many_arguments ) ]
   pub fn subform_entry_setter
   (
     &self,
@@ -934,7 +931,12 @@ allowing for dynamic and flexible construction of the `{item}` entity's {field_i
         >,
         Former2 : former::FormerBegin< Definition2 >,
       {
-        Former2::former_begin( None, Some( self ), #subform_entry_end::default() )
+        Former2::former_begin
+        (
+          ::core::option::Option::None,
+          ::core::option::Option::Some( self ),
+          #subform_entry_end::default(),
+        )
       }
 
     };
@@ -1070,7 +1072,7 @@ formation process of the `{item}`.
         _phantom : core::marker::PhantomData< fn( Definition ) >,
       }
 
-      impl< Definition > Default
+      impl< Definition > ::core::default::Default
       for #subform_entry_end< Definition >
       {
         #[ inline( always ) ]
@@ -1110,9 +1112,9 @@ formation process of the `{item}`.
           let mut super_former = super_former.unwrap();
           if super_former.storage.#field_ident.is_none()
           {
-            super_former.storage.#field_ident = Some( Default::default() );
+            super_former.storage.#field_ident = ::core::option::Option::Some( ::core::default::Default::default() );
           }
-          if let Some( ref mut field ) = super_former.storage.#field_ident
+          if let ::core::option::Option::Some( ref mut field ) = super_former.storage.#field_ident
           {
             former::CollectionAdd::add
             (
@@ -1134,8 +1136,8 @@ formation process of the `{item}`.
   /// Generates setter functions to subform scalar and all corresponding helpers.
   ///
   /// See `tests/inc/former_tests/subform_scalar_manual.rs` for example of generated code.
-
   #[ inline ]
+  #[ allow( clippy::format_in_format_args, clippy::unnecessary_wraps, clippy::too_many_lines, clippy::too_many_arguments ) ]
   pub fn subform_scalar_setter
   (
     &self,
@@ -1228,7 +1230,12 @@ generics, providing a cleaner interface for initiating subform operations on sca
         >,
         Former2 : former::FormerBegin< Definition2 >,
       {
-        Former2::former_begin( None, Some( self ), #subform_scalar_end::default() )
+        Former2::former_begin
+        (
+          ::core::option::Option::None,
+          ::core::option::Option::Some( self ),
+          #subform_scalar_end::default(),
+        )
       }
 
       // #[ inline( always ) ]
@@ -1372,7 +1379,7 @@ Essentially, this end action integrates the individually formed scalar value bac
         _phantom : core::marker::PhantomData< fn( Definition ) >,
       }
 
-      impl< Definition > Default
+      impl< Definition > ::core::default::Default
       for #subform_scalar_end< Definition >
       {
         #[ inline( always ) ]
@@ -1411,7 +1418,7 @@ Essentially, this end action integrates the individually formed scalar value bac
         {
           let mut super_former = super_former.unwrap();
           debug_assert!( super_former.storage.#field_ident.is_none() );
-          super_former.storage.#field_ident = Some( ::core::convert::Into::into( former::StoragePreform::preform( substorage ) ) );
+          super_former.storage.#field_ident = ::core::option::Option::Some( ::core::convert::Into::into( former::StoragePreform::preform( substorage ) ) );
           super_former
         }
       }
@@ -1421,7 +1428,7 @@ Essentially, this end action integrates the individually formed scalar value bac
 //         _phantom : core::marker::PhantomData< fn( Definition ) >,
 //       }
 //
-//       impl< Definition > Default
+//       impl< Definition > ::core::default::Default
 //       for ParentFormerSubformScalarChildEnd< Definition >
 //       {
 //         #[ inline( always ) ]
@@ -1475,12 +1482,12 @@ Essentially, this end action integrates the individually formed scalar value bac
   {
     if let Some( ref attr ) = self.attrs.scalar
     {
-      if let Some( ref name ) = attr.name.ref_internal()
+      if let Some( name ) = attr.name.ref_internal()
       {
         return name
       }
     }
-    return &self.ident;
+    self.ident
   }
 
   /// Get name of setter for subform scalar if such setter should be generated.
@@ -1490,17 +1497,14 @@ Essentially, this end action integrates the individually formed scalar value bac
     {
       if attr.setter()
       {
-        if let Some( ref name ) = attr.name.ref_internal()
+        if let Some( name ) = attr.name.ref_internal()
         {
-          return Some( &name )
+          return Some( name )
         }
-        else
-        {
-          return Some( &self.ident )
-        }
+        return Some( self.ident )
       }
     }
-    return None;
+    None
   }
 
   /// Get name of setter for collection if such setter should be generated.
@@ -1510,17 +1514,14 @@ Essentially, this end action integrates the individually formed scalar value bac
     {
       if attr.setter()
       {
-        if let Some( ref name ) = attr.name.ref_internal()
+        if let Some( name ) = attr.name.ref_internal()
         {
-          return Some( &name )
+          return Some( name )
         }
-        else
-        {
-          return Some( &self.ident )
-        }
+        return Some( self.ident )
       }
     }
-    return None;
+    None
   }
 
   /// Get name of setter for subform if such setter should be generated.
@@ -1532,15 +1533,12 @@ Essentially, this end action integrates the individually formed scalar value bac
       {
         if let Some( ref name ) = attr.name.as_ref()
         {
-          return Some( &name )
+          return Some( name )
         }
-        else
-        {
-          return Some( &self.ident )
-        }
+        return Some( self.ident )
       }
     }
-    return None;
+    None
   }
 
   /// Is scalar setter required. Does not if collection of subformer setter requested.
@@ -1552,13 +1550,13 @@ Essentially, this end action integrates the individually formed scalar value bac
     {
       if let Some( setter ) = attr.setter.internal()
       {
-        if setter == false
+        if !setter
         {
           return false
         }
         explicit = true;
       }
-      if let Some( ref _name ) = attr.name.ref_internal()
+      if let Some( _name ) = attr.name.ref_internal()
       {
         explicit = true;
       }
@@ -1579,7 +1577,7 @@ Essentially, this end action integrates the individually formed scalar value bac
       return false;
     }
 
-    return true;
+    true
   }
 
 }

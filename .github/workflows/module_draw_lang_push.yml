@@ -1,0 +1,24 @@
+name : draw_lang
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # draw_lang
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/blank/draw_lang/Cargo.toml'
+      module_name : 'draw_lang'
+      commit_message : ${{ github.event.head_commit.message }}
+      commiter_username:  ${{ github.event.head_commit.committer.username }}

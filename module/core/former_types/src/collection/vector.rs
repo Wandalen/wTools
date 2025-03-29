@@ -4,7 +4,7 @@
 //! this module abstracts the operations on vector-like data structures, making them more flexible and easier to integrate as
 //! as subformer, enabling fluid and intuitive manipulation of vectors via builder patterns.
 //!
-
+#[ allow( clippy::wildcard_imports ) ]
 use crate::*;
 #[ allow( unused ) ]
 use collection_tools::Vec;
@@ -200,7 +200,6 @@ for Vec< E >
 /// It is particularly useful in scenarios where vectors are repeatedly used or configured in similar ways across different
 /// parts of an application.
 ///
-
 pub type VectorFormer< E, Context, Formed, End > =
 CollectionFormer::< E, VectorDefinition< E, Context, Formed, End > >;
 
@@ -221,6 +220,7 @@ pub trait VecExt< E > : sealed::Sealed
 
 impl< E > VecExt< E > for Vec< E >
 {
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn former() -> VectorFormer< E, (), Vec< E >, ReturnStorage >
   {
     VectorFormer::< E, (), Vec< E >, ReturnStorage >::new( ReturnStorage::default() )

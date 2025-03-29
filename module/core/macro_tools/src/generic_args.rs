@@ -2,8 +2,8 @@
 //! This module provides utilities to handle and manipulate generic arguments using the `syn` crate. It includes traits and functions for transforming, merging, and managing generic parameters within procedural macros, enabling seamless syntactic analysis and code generation.
 //!
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
 
   /// A trait for converting a reference to an existing type into a `syn::AngleBracketedGenericArguments`.
@@ -24,6 +24,7 @@ pub( crate ) mod private
     /// # Returns
     /// A new instance of `syn::AngleBracketedGenericArguments` representing the generic parameters
     /// of the original type.
+    #[ allow( clippy::wrong_self_convention ) ]
     fn into_generic_args( &self ) -> syn::AngleBracketedGenericArguments;
   }
 
@@ -98,6 +99,7 @@ pub( crate ) mod private
   ///
   /// This example demonstrates how lifetimes `'a` and `'b` are placed before other generic parameters
   /// like `T`, `U`, and `V` in the merged result, adhering to the expected syntax order in Rust generics.
+  #[ must_use ]
   pub fn merge
   (
     a : &syn::AngleBracketedGenericArguments,
@@ -110,7 +112,7 @@ pub( crate ) mod private
     // Function to categorize and collect arguments into lifetimes and others
     let mut categorize_and_collect = |args : &syn::punctuated::Punctuated<syn::GenericArgument, syn::token::Comma>|
     {
-      for arg in args.iter()
+      for arg in args
       {
         match arg
         {
@@ -142,45 +144,46 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
-
-  //!
-  //! This module provides utilities to handle and manipulate generic arguments using the `syn` crate. It includes traits and functions for transforming, merging, and managing generic parameters within procedural macros, enabling seamless syntactic analysis and code generation.
-  //!
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     merge,
   };
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     IntoGenericArgs,
   };
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as generic_args;
+  use super::*;
+  pub use super::super::generic_args;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::
@@ -190,6 +193,8 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

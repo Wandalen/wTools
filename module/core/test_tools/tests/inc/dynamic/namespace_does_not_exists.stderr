@@ -10,7 +10,7 @@ error: cannot find macro `tests_index` in this scope
 15 | tests_index!
    | ^^^^^^^^^^^
    |
-help: consider importing one of these items
+help: consider importing one of these macros
    |
 1  + use meta_tools::tests_index;
    |
@@ -23,7 +23,7 @@ error: cannot find macro `tests_impls` in this scope
 5 | tests_impls!
   | ^^^^^^^^^^^
   |
-help: consider importing one of these items
+help: consider importing one of these macros
   |
 1 + use meta_tools::tests_impls;
   |

@@ -2,9 +2,10 @@
 //! Determine kind of a container.
 //!
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   // use crate::type_rightmost;
 
@@ -39,7 +40,9 @@ pub( crate ) mod private
   /// let kind = container_kind::of_type( &tree_type );
   /// assert_eq!( kind, container_kind::ContainerKind::HashMap );
   /// ```
-
+  /// # Panics 
+  /// qqq: doc
+  #[ must_use ]
   pub fn of_type( ty : &syn::Type ) -> ContainerKind
   {
 
@@ -61,7 +64,7 @@ pub( crate ) mod private
     ContainerKind::No
   }
 
-  /// Return kind of container specified by type. Unlike [of_type] it also understand optional types.
+  /// Return kind of container specified by type. Unlike [`of_type`] it also understand optional types.
   ///
   /// Good to verify `Option< alloc::vec::Vec< i32 > >` is optional vector.
   ///
@@ -75,13 +78,15 @@ pub( crate ) mod private
   /// assert_eq!( kind, container_kind::ContainerKind::HashMap );
   /// assert_eq!( optional, true );
   /// ```
-
+  /// # Panics
+  /// qqq: doc
+  #[ must_use ]
   pub fn of_optional( ty : &syn::Type ) -> ( ContainerKind, bool )
   {
 
     if typ::type_rightmost( ty ) == Some( "Option".to_string() )
     {
-      let ty2 = typ::type_parameters( ty, 0 ..= 0 ).first().copied();
+      let ty2 = typ::type_parameters( ty, &( 0 ..= 0 ) ).first().copied();
       // inspect_type::inspect_type_of!( ty2 );
       if ty2.is_none()
       {
@@ -98,18 +103,19 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     ContainerKind,
     of_type,
@@ -119,24 +125,32 @@ pub mod protected
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as container_kind;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use super::super::container_kind;
+
+  // pub use super::own as container_kind;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

@@ -13,8 +13,13 @@
     feature = "derive_deref",
     feature = "derive_deref_mut",
     feature = "derive_from",
+    feature = "derive_index",
+    feature = "derive_index_mut",
     feature = "derive_inner_from",
+    feature = "derive_new",
     feature = "derive_variadic_from",
+    feature = "derive_not",
+    feature = "derive_phantom"
   )
 )]
 #[ cfg( feature = "enabled" ) ]
@@ -28,8 +33,13 @@ mod derive;
 //     feature = "derive_deref",
 //     feature = "derive_deref_mut",
 //     feature = "derive_from",
+//     feature = "derive_index",
+//     feature = "derive_index_mut",
 //     feature = "derive_inner_from",
+//     feature = "derive_new",
 //     feature = "derive_variadic_from",
+//     feature = "derive_not",
+//     feature = "derive_phantom"
 //   )
 // )]
 // #[ cfg( feature = "enabled" ) ]
@@ -77,7 +87,7 @@ mod derive;
   From,
   attributes
   (
-    debug, // struct
+    debug, // item
     from, // field
   )
 )]
@@ -132,7 +142,7 @@ pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
   New,
   attributes
   (
-    debug, // struct
+    debug, // item
     new, // field
   )
 )]
@@ -335,7 +345,7 @@ pub fn deref_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 }
 
 ///
-/// Derive macro to implement AsRef when-ever it's possible to do automatically.
+/// Derive macro to implement `AsRef` when-ever it's possible to do automatically.
 ///
 /// ### Sample :: struct instead of macro.
 ///
@@ -497,7 +507,7 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
 /// // Use `#[ debug ]` to expand and debug generate code.
 /// // #[ debug ]
-/// struct MyStruct
+/// item MyStruct
 /// {
 ///   a : i32,
 ///   b : i32,
@@ -517,3 +527,243 @@ pub fn derive_variadic_from( input : proc_macro::TokenStream ) -> proc_macro::To
     Err( err ) => err.to_compile_error().into(),
   }
 }
+
+/// Provides an automatic [Not](core::ops::Not) trait  implementation for struct.
+///
+/// This macro simplifies the creation of a logical negation or complement operation
+/// for structs that encapsulate values which support the `!` operator.
+///
+/// ## Example Usage
+///
+/// Instead of manually implementing [Not](core::ops::Not) for [IsActive]:
+///
+/// ```rust
+/// use core::ops::Not;
+///
+/// pub struct IsActive( bool );
+///
+/// impl Not for IsActive
+/// {
+///   type Output = IsActive;
+///
+///   fn not(self) -> Self::Output
+///   {
+///     IsActive(!self.0)
+///   }
+/// }
+/// ```
+///
+/// Use `#[ derive( Not ) ]` to automatically generate the implementation:
+///
+/// ```rust
+/// # use derive_tools_meta::*;
+/// #[ derive( Not ) ]
+/// pub struct IsActive( bool );
+/// ```
+///
+/// The macro automatically implements the [not](core::ops::Not::not) method, reducing boilerplate code and potential errors.
+///
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_not" ) ]
+#[ proc_macro_derive
+(
+  Not,
+  attributes
+  (
+    debug, // item
+    not, // field
+  )
+)]
+pub fn derive_not( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+{
+  let result = derive::not::not( input );
+  match result
+  {
+    Ok( stream ) => stream.into(),
+    Err( err ) => err.to_compile_error().into(),
+  }
+}
+
+///
+/// Provides an automatic `PhantomData` field for a struct based on its generic types.
+///
+/// This macro simplifies the addition of a `PhantomData` field to a struct
+/// to indicate that the struct logically owns instances of the generic types,
+/// even though it does not store them.
+///
+/// ## Example Usage
+///
+/// Instead of manually adding `PhantomData<T>` to `MyStruct`:
+///
+/// ```rust
+/// use std::marker::PhantomData;
+///
+/// pub struct MyStruct<T>
+/// {
+///     data: i32,
+///     _phantom: PhantomData<T>,
+/// }
+/// ```
+///
+/// Use `#[ phantom ]` to automatically generate the `PhantomData` field:
+///
+/// ```rust
+/// use derive_tools_meta::*;
+///
+/// #[ phantom ]
+/// pub struct MyStruct< T >
+/// {
+///     data: i32,
+/// }
+/// ```
+///
+/// The macro facilitates the addition of the `PhantomData` field without additional boilerplate code.
+///
+
+#[ cfg( feature = "enabled" ) ]
+#[ cfg ( feature = "derive_phantom" ) ]
+#[ proc_macro_attribute ]
+pub fn phantom( _attr: proc_macro::TokenStream, input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+{
+  let result = derive::phantom::phantom( _attr, input );
+  match result
+  {
+    Ok( stream ) => stream.into(),
+    Err( err ) => err.to_compile_error().into(),
+  }
+}
+
+///
+/// Provides an automatic [Index](core::ops::Index) trait implementation when-ever it's possible.
+///
+/// This macro simplifies the indexing syntax of struct type.
+///
+/// ## Example Usage
+//
+/// Instead of manually implementing `Index< T >` for `IsTransparent`:
+///
+/// ```rust
+/// use core::ops::Index;
+///
+/// pub struct IsTransparent< T >
+/// {
+///     a : Vec< T >,
+/// }
+///
+/// impl< T > Index< usize > for IsTransparent< T > 
+/// {
+///   type Output = T;
+///
+///   #[ inline( always ) ]
+///   fn index( &self, index : usize ) -> &Self::Output 
+///   {
+///     &self.a[ index ]
+///   }
+/// }
+/// ```
+///
+/// Use `#[ index ]` to automatically generate the implementation:
+///
+/// ```rust
+/// use derive_tools_meta::*;
+/// 
+/// #[ derive( Index ) ]
+/// pub struct IsTransparent< T > 
+/// {
+///  #[ index ]
+///   a : Vec< T >  
+/// };
+/// ```
+///
+
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_index" ) ]
+#[ proc_macro_derive
+( 
+  Index, 
+  attributes
+  ( 
+    debug, // item 
+    index, // field
+  ) 
+)]
+pub fn derive_index( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+{
+  let result = derive::index::index( input );
+  match result
+  {
+    Ok( stream ) => stream.into(),
+    Err( err ) => err.to_compile_error().into(),
+  }
+}
+
+///
+/// Provides an automatic [IndexMut](core::ops::IndexMut) trait implementation when-ever it's possible.
+///
+/// This macro simplifies the indexing syntax of struct type.
+///
+/// ## Example Usage
+//
+/// Instead of manually implementing `IndexMut< T >` for `IsTransparent`:
+///
+/// ```rust
+/// use core::ops::{ Index, IndexMut };
+/// pub struct IsTransparent< T >
+/// {
+///     a : Vec< T >,
+/// }
+///
+/// impl< T > Index< usize > for IsTransparent< T > 
+/// {
+///   type Output = T;
+///
+///   #[ inline( always ) ]
+///   fn index( &self, index : usize ) -> &Self::Output 
+///   {
+///     &self.a[ index ]
+///   }
+/// }
+///
+/// impl< T > IndexMut< usize > for IsTransparent< T >
+/// {
+///   fn index_mut( &mut self, index : usize ) -> &mut Self::Output 
+///   {
+///     &mut self.a[ index ]
+///   }
+/// }
+/// ```
+///
+/// Use `#[ index ]` on field or `#[ index( name = field_name )]` on named items to automatically generate the implementation:
+///
+/// ```rust
+/// use derive_tools_meta::*;
+/// #[derive( IndexMut )]
+/// pub struct IsTransparent< T > 
+/// { 
+///   #[ index ]
+///   a : Vec< T >  
+/// };
+/// ```
+///
+
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_index_mut" ) ]
+#[ proc_macro_derive
+( 
+  IndexMut, 
+  attributes
+  ( 
+    debug, // item 
+    index, // field
+  ) 
+)]
+pub fn derive_index_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+{
+  let result = derive::index_mut::index_mut( input );
+  match result
+  {
+    Ok( stream ) => stream.into(),
+    Err( err ) => err.to_compile_error().into(),
+  }
+}
+

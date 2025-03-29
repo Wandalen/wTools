@@ -1,7 +1,7 @@
-pub( crate ) mod private
+mod private
 {
   use std::collections::HashMap;
-  
+
   /// Represents a program that contains one or more namespaces, where each namespace contains a list of commands.
   ///
   /// A `Program` consists of one or more commannd
@@ -17,7 +17,7 @@ pub( crate ) mod private
     /// list of namespaces with commands
     pub commands : Vec< Command >,
   }
-  
+
   /// Represents a parsed command that has been extracted from an input string by a `Parser`.
   ///
   /// The `ParsedCommand` struct is designed to be flexible and allow for a wide variety of commands to be parsed and represented. However, this flexibility also means that a `ParsedCommand` may contain invalid or unexpected data.
@@ -25,7 +25,7 @@ pub( crate ) mod private
   /// # Example:
   ///
   /// ```
-  /// # use wca::ParsedCommand;
+  /// # use wca::parser::ParsedCommand;
   /// # use std::collections::HashMap;
   /// ParsedCommand
   /// {
@@ -39,7 +39,7 @@ pub( crate ) mod private
   /// };
   /// ```
   ///
-  /// In the above example, a `ParsedCommand` instance is created with the name "command", a single subject "subject_value", and one property "prop_name" with a raw value of "raw_prop_value".
+  /// In the above example, a `ParsedCommand` instance is created with the name "command", a single subject "`subject_value`", and one property "`prop_name`" with a raw value of "`raw_prop_value`".
   ///
   #[ derive( Default, Debug, Clone, PartialEq, Eq ) ]
   pub struct ParsedCommand
@@ -57,6 +57,6 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  exposed use Program;
-  exposed use ParsedCommand;
+  orphan use Program;
+  orphan use ParsedCommand;
 }

@@ -16,24 +16,24 @@ fn exit()
   std::process::exit( 0 )
 }
 
-fn main()
+fn main() -> error_tools::error::untyped::Result< () >
 {
   let ca = CommandsAggregator::former()
   .command( "exit" )
-    .hint( "just exit" )
-    .routine( || exit() )
-    .end()
+  .hint( "just exit" )
+  // fix clippy
+  .routine( exit )
+  .end()
   .command( "echo" )
-    .hint( "prints all subjects and properties" )
-    .subject().hint( "Subject" ).kind( Type::String ).optional( true ).end()
-    .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
-    .routine( f1 )
-    .end()
+  .hint( "prints all subjects and properties" )
+  .subject().hint( "Subject" ).kind( Type::String ).optional( true ).end()
+  .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
+  .routine( f1 )
+  .end()
   .order( Order::Lexicography )
-  .perform()
-  ;
+  .perform();
 
-  // aaa : qqq2 : for Bohdan : that should work
+  // aaa : aaa2 : for Bohdan : that should work
   // let ca = wca::CommandsAggregator::former()
   // .command( "echo" )
   //   .hint( "prints all subjects and properties" )
@@ -50,6 +50,8 @@ fn main()
   // ca.execute( input ).unwrap();
   //aaa: works
 
-  let input = std::env::args().skip( 1 ).collect::< Vec< String > >();
-  ca.perform( input ).unwrap();
+  let input: Vec< String > = std::env::args().skip( 1 ).collect();
+  ca.perform( input )?;
+  
+  Ok( () )
 }

@@ -1,5 +1,5 @@
 /// Private namespace.
-pub( crate ) mod private
+mod private
 {
 
   /// Select strategy for the output format.

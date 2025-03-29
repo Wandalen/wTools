@@ -1,6 +1,6 @@
 [package]
 name = "reflect_tools_meta"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -22,7 +22,7 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-# exclude = [ "/tests", "/examples", "-*" ]
+
 
 [lib]
 proc-macro = true
@@ -31,17 +31,17 @@ proc-macro = true
 
 default = [
   "enabled",
-  "reflect_reflect",
+  "reflect_derive",
 ]
 
 full = [
-  "enabled",
-  "reflect_reflect",
+  "default",
 ]
 enabled = []
-reflect_reflect = []
+reflect_derive = []
 
 [dependencies]
+macro_tools = { workspace = true, features = [ "default" ] }
 # iter_tools = { workspace = true, features = [ "full" ] }
 # xxx : qqq : optimize features set
 

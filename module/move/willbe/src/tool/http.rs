@@ -1,7 +1,9 @@
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
+mod private
 {
-  use crate::*;
+  #[ allow( unused_imports, clippy::wildcard_imports ) ]
+  use crate::tool::*;
 
   use std::
   {
@@ -9,20 +11,27 @@ pub( crate ) mod private
     fmt::Write,
     time::Duration
   };
-  use wtools::error::{ for_app::Context, Result };
+  use error::{ untyped::Context };
   use ureq::Agent;
 
   ///
   /// Get data of remote package.
   ///
-  pub fn download< 'a >( name : &'a str, version : &'a str ) -> Result< Vec< u8 > >
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: docs
+  ///
+  // qqq : typed error
+  pub fn download< 'a >( name : &'a str, version : &'a str ) -> error::untyped::Result< Vec< u8 > >
   {
     let agent : Agent = ureq::AgentBuilder::new()
     .timeout_read( Duration::from_secs( 5 ) )
     .timeout_write( Duration::from_secs( 5 ) )
     .build();
     let mut buf = String::new();
-    write!( &mut buf, "https://static.crates.io/crates/{0}/{0}-{1}.crate", name, version )?;
+    write!( &mut buf, "https://static.crates.io/crates/{name}/{name}-{version}.crate" )?;
 
     let resp = agent.get( &buf[ .. ] ).call().context( "Get data of remote package" )?;
 

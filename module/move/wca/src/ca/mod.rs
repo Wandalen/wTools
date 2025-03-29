@@ -1,3 +1,8 @@
+//!
+//! Commands aggregator library.
+//!
+
+mod private {}
 
 crate::mod_interface!
 {
@@ -13,9 +18,7 @@ crate::mod_interface!
 
   /// Provides functionality for working with input data, including asking user questions and converting various string representations into a uniform `Input` struct.
   layer input;
-  
-  // /// The missing batteries of WCA.
-  // layer facade;
+
   /// Genera-purpose tools which might be moved out one day.
   layer tool;
 
@@ -25,7 +28,5 @@ crate::mod_interface!
   layer help;
   /// Responsible for generating Markdown formatted documentation for commands
   layer formatter;
-  // aaa : for Bohdan : write concise documentations
-  // aaa : Is this enough or is more needed?
 
 }

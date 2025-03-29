@@ -1,8 +1,9 @@
 //! This module provides a builder pattern implementation (`HashSetFormer`) for `HashSet`-like collections. It is designed to extend the builder pattern, allowing for fluent and dynamic construction of sets within custom data structures.
-
+#[ allow( clippy::wildcard_imports ) ]
 use crate::*;
 use collection_tools::HashSet;
 
+#[ allow( clippy::implicit_hasher ) ]
 impl< K > Collection for HashSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
@@ -18,6 +19,7 @@ where
 
 }
 
+#[ allow( clippy::implicit_hasher ) ]
 impl< K > CollectionAdd for HashSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
@@ -33,6 +35,7 @@ where
 
 }
 
+#[ allow( clippy::implicit_hasher ) ]
 impl< K > CollectionAssign for HashSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
@@ -49,6 +52,7 @@ where
   }
 }
 
+#[ allow( clippy::implicit_hasher ) ]
 impl< K > CollectionValToEntry< K > for HashSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
@@ -91,6 +95,7 @@ where
 
 // = storage
 
+#[ allow( clippy::implicit_hasher ) ]
 impl< K > Storage
 for HashSet< K >
 where
@@ -100,6 +105,7 @@ where
   type Preformed = HashSet< K >;
 }
 
+#[ allow( clippy::implicit_hasher ) ]
 impl< K > StoragePreform
 for HashSet< K >
 where
@@ -187,6 +193,7 @@ where
 
 // = entity to
 
+#[ allow( clippy::implicit_hasher ) ]
 impl< K, Definition > EntityToFormer< Definition > for HashSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
@@ -205,6 +212,7 @@ where
   type Former = HashSetFormer< K, Definition::Context, Definition::Formed, Definition::End >;
 }
 
+#[ allow( clippy::implicit_hasher ) ]
 impl< K > crate::EntityToStorage
 for HashSet< K >
 where
@@ -213,6 +221,7 @@ where
   type Storage = HashSet< K >;
 }
 
+#[ allow( clippy::implicit_hasher ) ]
 impl< K, Context, Formed, End > crate::EntityToDefinition< Context, Formed, End >
 for HashSet< K >
 where
@@ -223,6 +232,7 @@ where
   type Types = HashSetDefinitionTypes< K, Context, Formed >;
 }
 
+#[ allow( clippy::implicit_hasher ) ]
 impl< K, Context, Formed > crate::EntityToDefinitionTypes< Context, Formed >
 for HashSet< K >
 where
@@ -239,7 +249,6 @@ where
 /// the `CollectionFormer` with predefined settings. This approach minimizes boilerplate code and enhances
 /// readability, making it ideal for fluent and expressive construction of set collections within custom data structures.
 ///
-
 pub type HashSetFormer< K, Context, Formed, End > =
 CollectionFormer::< K, HashSetDefinition< K, Context, Formed, End > >;
 
@@ -251,7 +260,6 @@ CollectionFormer::< K, HashSetDefinition< K, Context, Formed, End > >;
 /// set construction. It simplifies the process of building `HashSet` instances by providing a straightforward
 /// way to start the builder pattern with default context and termination behavior.
 ///
-
 pub trait HashSetExt< K > : sealed::Sealed
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
@@ -260,10 +268,12 @@ where
   fn former() -> HashSetFormer< K, (), HashSet< K >, ReturnStorage >;
 }
 
+#[ allow( clippy::implicit_hasher ) ]
 impl< K > HashSetExt< K > for HashSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn former() -> HashSetFormer< K, (), HashSet< K >, ReturnStorage >
   {
     HashSetFormer::< K, (), HashSet< K >, ReturnStorage >::new( ReturnStorage::default() )

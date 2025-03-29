@@ -27,13 +27,16 @@ pub mod split;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  #[ allow( clippy::wildcard_imports ) ]
+  pub use orphan::*;
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
   pub use super::indentation::orphan::*;
   #[ cfg( all( feature = "string_isolate", not( feature = "no_std" ) ) ) ]
@@ -48,14 +51,19 @@ pub mod protected
 }
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
-  pub use super::exposed::*;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
   #[ allow( unused_imports ) ]
   pub use super::indentation::exposed::*;
@@ -71,8 +79,10 @@ pub mod exposed
 }
 
 /// Namespace of the module to include with `use module::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
   #[ allow( unused_imports ) ]
   pub use super::indentation::prelude::*;

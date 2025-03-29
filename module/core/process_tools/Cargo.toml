@@ -1,6 +1,6 @@
 [package]
 name = "process_tools"
-version = "0.6.0"
+version = "0.12.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -27,11 +27,11 @@ all-features = false
 
 [features]
 default = [ "enabled", "process_environment_is_cicd" ]
-full = [ "enabled", "process_environment_is_cicd" ]
+full = [ "default" ]
 enabled = [
   "mod_interface/enabled",
   "former/enabled",
-  "proper_path_tools/enabled",
+  "pth/enabled",
   "error_tools/enabled",
   "iter_tools/enabled",
 ]
@@ -42,8 +42,8 @@ process_environment_is_cicd = []
 [dependencies]
 mod_interface = { workspace = true }
 former = { workspace = true, features = [ "derive_former" ] }
-proper_path_tools = { workspace = true }
-error_tools = { workspace = true, features = [ "error_for_app" ] } # qqq : xxx : rid off error_for_app
+pth = { workspace = true }
+error_tools = { workspace = true, features = [ "error_untyped" ] }
 iter_tools = { workspace = true }
 
 ## external

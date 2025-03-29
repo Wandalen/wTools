@@ -3,8 +3,8 @@
 //! Basic tools for testing.
 //!
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
 }
 

@@ -1,6 +1,6 @@
 [package]
 name = "derive_tools"
-version = "0.24.0"
+version = "0.32.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -17,13 +17,16 @@ A collection of derive macros designed to enhance STD.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+
 [lints]
 workspace = true
+
 
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-# exclude = [ "/tests", "/examples", "-*" ]
+
+
 
 [features]
 
@@ -55,6 +58,7 @@ default = [
   "derive_is_variant",
   "derive_unwrap",
   # "derive_convert_case",
+  "derive_into",
 
   "derive_display",
   "derive_from_str",
@@ -68,6 +72,8 @@ default = [
   "derive_from",
   "derive_inner_from",
   "derive_new",
+
+  "derive_phantom",
 
   # "use_std",
 ]
@@ -114,10 +120,12 @@ full = [
   "derive_inner_from",
   "derive_new",
 
+  "derive_phantom",
+
   # "use_std",
 ]
 no_std = []
-use_alloc = [ "no_std", "clone_dyn/use_alloc" ]
+use_alloc = [ "no_std" ]
 enabled = [ "derive_tools_meta/enabled" ]
 
 # nightly = [ "derive_more/nightly" ]
@@ -143,14 +151,14 @@ derive_error = [ "derive_more", "derive_more/std", "derive_more/error" ]
 # derive_from = [ "derive_tools_meta/derive_from" ]
 # derive_reflect = [ "derive_tools_meta/derive_reflect" ]
 
-derive_index = [ "derive_more", "derive_more/std", "derive_more/index" ]
-derive_index_mut = [ "derive_more", "derive_more/std", "derive_more/index_mut" ]
+# derive_index = [ "derive_more", "derive_more/std", "derive_more/index" ]
+# derive_index_mut = [ "derive_more", "derive_more/std", "derive_more/index_mut" ]
 # derive_inner_from = [ "derive_more", "derive_more/into" ]
 derive_into_iterator = [ "derive_more", "derive_more/std", "derive_more/into_iterator" ]
 # derive_iterator = [ "derive_more", "derive_more/iterator" ]
+derive_into = [ "derive_more", "derive_more/into" ]
 derive_mul_assign = [ "derive_more", "derive_more/std", "derive_more/mul_assign" ]
 derive_mul = [ "derive_more", "derive_more/std", "derive_more/mul" ]
-derive_not = [ "derive_more", "derive_more/std", "derive_more/not" ]
 derive_sum = [ "derive_more", "derive_more/std", "derive_more/sum" ]
 derive_try_into = [ "derive_more", "derive_more/std", "derive_more/try_into" ]
 derive_is_variant = [ "derive_more", "derive_more/is_variant" ]
@@ -163,7 +171,7 @@ derive_from_str = [ "parse-display", "parse-display/std", "parse-display/regex" 
 
 derive_strum = [ "strum/std", "strum/derive", "strum/strum_macros" ]
 strum_phf = [ "strum/std", "strum/phf", "strum/strum_macros" ]
-# zzz : review features
+# zzz : qqq : review features
 
 derive_clone_dyn = [ "clone_dyn/enabled" ]
 # derive_clone_dyn_use_std = [ "derive_clone_dyn", "clone_dyn/use_std" ]
@@ -171,10 +179,17 @@ derive_clone_dyn = [ "clone_dyn/enabled" ]
 # derive_clone_dyn_use_alloc = [ "derive_clone_dyn", "clone_dyn/use_alloc" ]
 
 derive_from = [ "derive_tools_meta/derive_from" ]
+derive_index = [ "derive_tools_meta/derive_index" ]
+derive_index_mut = [ "derive_tools_meta/derive_index_mut" ]
 derive_inner_from = [ "derive_tools_meta/derive_inner_from" ]
 derive_new = [ "derive_tools_meta/derive_new" ]
 
+derive_not = [ "derive_tools_meta/derive_not" ]
+
+derive_phantom = [ "derive_tools_meta/derive_phantom" ]
+
 parse_display = [ "parse-display" ]
+
 
 [dependencies]
 
@@ -186,9 +201,10 @@ parse-display = { version = "~0.8.2", optional = true, default-features = false 
 
 
 ## internal
-derive_tools_meta = { workspace = true, features = [] }
-variadic_from = { workspace = true, features = [] }
-clone_dyn = { workspace = true, features = [] }
+derive_tools_meta = { workspace = true, optional = true, features = [] }
+variadic_from = { workspace = true, optional = true, features = [] }
+clone_dyn = { workspace = true, optional = true, features = [ "clone_dyn_types", "derive_clone_dyn" ] }
+
 
 [dev-dependencies]
 test_tools = { workspace = true }

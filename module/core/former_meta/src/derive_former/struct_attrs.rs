@@ -1,11 +1,12 @@
 //!
 //! Attributes of the whole item.
 //!
-
+#[ allow( clippy::wildcard_imports ) ]
 use super::*;
 
 use macro_tools::
 {
+  ct,
   Result,
   AttributeComponent,
   AttributePropertyComponent,
@@ -41,7 +42,7 @@ impl ItemAttributes
 
     let error = | attr : &syn::Attribute | -> syn::Error
     {
-      let known_attributes = const_format::concatcp!
+      let known_attributes = ct::concatcp!
       (
         "Known attirbutes are : ",
         "debug",
@@ -62,7 +63,7 @@ impl ItemAttributes
     {
 
       let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
-      let key_str = format!( "{}", key_ident );
+      let key_str = format!( "{key_ident}" );
 
       // attributes does not have to be known
       // if attr::is_standard( &key_str )
@@ -75,7 +76,7 @@ impl ItemAttributes
         AttributeStorageFields::KEYWORD => result.assign( AttributeStorageFields::from_meta( attr )? ),
         AttributeMutator::KEYWORD => result.assign( AttributeMutator::from_meta( attr )? ),
         AttributePerform::KEYWORD => result.assign( AttributePerform::from_meta( attr )? ),
-        "debug" => {}
+        // "debug" => {}
         _ => {},
         // _ => return Err( error( attr ) ),
         // attributes does not have to be known
@@ -86,7 +87,7 @@ impl ItemAttributes
   }
 
   ///
-  /// Generate parts, used for generating `perform()`` method.
+  /// Generate parts, used for generating `perform()` method.
   ///
   /// Similar to `form()`, but will also invoke function from `perform` attribute, if specified.
   ///
@@ -95,13 +96,13 @@ impl ItemAttributes
   /// ## perform :
   /// return result;
   ///
-  /// ## perform_output :
-  /// < T : ::core::default::Default >
+  /// ## `perform_output` :
+  /// < T : `::core::default::Default` >
   ///
-  /// ## perform_generics :
+  /// ## `perform_generics` :
   /// Vec< T >
   ///
-
+  #[ allow( clippy::unnecessary_wraps ) ]
   pub fn performer( &self )
   -> Result< ( TokenStream, TokenStream, TokenStream ) >
   {
@@ -141,7 +142,6 @@ impl ItemAttributes
   /// This function provides an iterator that yields `syn::Field` objects. If `storage_fields` is set,
   /// it clones and iterates over its fields. If `storage_fields` is `None`, it returns an empty iterator.
   ///
-
   // pub fn storage_fields( &self ) -> impl Iterator< Item = syn::Field >
   pub fn storage_fields( &self ) -> &syn::punctuated::Punctuated< syn::Field, syn::token::Comma >
   {
@@ -189,7 +189,7 @@ impl AttributeComponent for AttributeStorageFields
     {
       syn::Meta::List( ref meta_list ) =>
       {
-        return syn::parse2::< AttributeStorageFields >( meta_list.tokens.clone() );
+        syn::parse2::< AttributeStorageFields >( meta_list.tokens.clone() )
       },
       _ => return_syn_err!( attr, "Expects an attribute of format #[ storage_fields( a : i32, b : Option< String > ) ]
 .\nGot: {}", qt!{ #attr } ),
@@ -259,6 +259,7 @@ pub struct AttributeMutator
   pub debug : AttributePropertyDebug,
 }
 
+#[ allow( clippy::match_wildcard_for_single_variants ) ]
 impl AttributeComponent for AttributeMutator
 {
   const KEYWORD : &'static str = "mutator";
@@ -269,11 +270,11 @@ impl AttributeComponent for AttributeMutator
     {
       syn::Meta::List( ref meta_list ) =>
       {
-        return syn::parse2::< AttributeMutator >( meta_list.tokens.clone() );
+        syn::parse2::< AttributeMutator >( meta_list.tokens.clone() )
       },
       syn::Meta::Path( ref _path ) =>
       {
-        return Ok( Default::default() )
+        Ok( AttributeMutator::default() )
       },
       _ => return_syn_err!( attr, "Expects an attribute of format `#[ mutator( custom ) ]`. \nGot: {}", qt!{ #attr } ),
     }
@@ -336,7 +337,7 @@ impl syn::parse::Parse for AttributeMutator
 
     let error = | ident : &syn::Ident | -> syn::Error
     {
-      let known = const_format::concatcp!
+      let known = ct::concatcp!
       (
         "Known entries of attribute ", AttributeMutator::KEYWORD, " are : ",
         AttributePropertyCustom::KEYWORD,
@@ -406,7 +407,7 @@ impl AttributeComponent for AttributePerform
     {
       syn::Meta::List( ref meta_list ) =>
       {
-        return syn::parse2::< AttributePerform >( meta_list.tokens.clone() );
+        syn::parse2::< AttributePerform >( meta_list.tokens.clone() )
       },
       _ => return_syn_err!( attr, "Expects an attribute of format #[ perform( fn parse( mut self ) -> Request ) ]
 .\nGot: {}", qt!{ #attr } ),

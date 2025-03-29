@@ -28,6 +28,9 @@ fn constructor()
   exp.insert(13);
   assert_eq!( got, exp );
 
+  let _got = the_module::bset!( "b" );
+  let _got = the_module::exposed::bset!( "b" );
+
 }
 
 #[ cfg( feature = "collection_into_constructors" ) ]
@@ -47,6 +50,9 @@ fn into_constructor()
   exp.insert(13);
   assert_eq!( got, exp );
 
+  let _got : Bset< &str > = the_module::into_bset!( "b" );
+  let _got : Bset< &str > = the_module::exposed::into_bset!( "b" );
+
 }
 
 #[ test ]
@@ -61,7 +67,7 @@ fn iters()
   impl IntoIterator for MyContainer
   {
     type Item = i32;
-    type IntoIter = the_module::bset::IntoIter< i32 >;
+    type IntoIter = the_module::btree_set::IntoIter< i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -72,7 +78,7 @@ fn iters()
   impl< 'a > IntoIterator for &'a MyContainer
   {
     type Item = &'a i32;
-    type IntoIter = the_module::bset::Iter< 'a, i32 >;
+    type IntoIter = the_module::btree_set::Iter< 'a, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {

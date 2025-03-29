@@ -1,19 +1,38 @@
-use std::fs::{DirBuilder, File};
-use std::io::Write;
-use std::path::Path;
-use std::process::{Command, Stdio};
+use std::
+{
+  io::Write,
+  path::Path,
+  fs::{ DirBuilder, File },
+  process::{ Command, Stdio },
+};
 
 pub fn start_sync< AP, Args, Arg, P >
 (
   application : AP,
   args: Args,
   path : P,
-) -> String where AP : AsRef< Path >, Args : IntoIterator< Item = Arg >, Arg : AsRef< std::ffi::OsStr >, P : AsRef< Path >,
+) -> String 
+where 
+  AP : AsRef< Path >, 
+  Args : IntoIterator< Item = Arg >, 
+  Arg : AsRef< std::ffi::OsStr >, 
+  P : AsRef< Path >,
 {
   let ( application, path ) = ( application.as_ref(), path.as_ref() );
-  let args = args.into_iter().map( | a | a.as_ref().into() ).collect::< Vec< std::ffi::OsString > >();
-  let child = Command::new( application ).args( &args ).stdout( Stdio::piped() ).stderr( Stdio::piped() ).current_dir( path ).spawn().unwrap();
+  let args: Vec< std::ffi::OsString > = args.into_iter().map( | a | a.as_ref().into() ).collect();
+  let child = Command::new( application )
+  .args( &args )
+  .stdout( Stdio::piped() )
+  .stderr( Stdio::piped() )
+  .current_dir( path )
+  .spawn()
+  .unwrap();
   let output = child.wait_with_output().unwrap();
+  
+  if !output.status.success()
+  {
+    println!( "{}", String::from_utf8( output.stderr ).unwrap() );
+  }
 
   String::from_utf8( output.stdout ).unwrap()
 }
@@ -38,11 +57,11 @@ wca = {{path = "{}"}}"#,
   fn main(){
    let ca = wca::CommandsAggregator::former()
    .command( "echo" )
-     .hint( "prints all subjects and properties" )
-     .subject().hint( "Subject" ).kind( Type::String ).optional( true ).end()
-     .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
-     .routine( | o : VerifiedCommand | { println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props ) } )
-     .end()
+    .hint( "prints all subjects and properties" )
+    .subject().hint( "Subject" ).kind( Type::String ).optional( true ).end()
+    .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
+    .routine( | o : VerifiedCommand | { println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props ) } )
+    .end()
    .perform();
  
    let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
@@ -82,22 +101,22 @@ wca = {{path = "{}"}}"#,
  
    let ca = wca::CommandsAggregator::former()
    .command( "c" )
-     .hint( "c" )
-     .property( "c-property" ).kind( Type::String ).optional( true ).end()
-     .property( "b-property" ).kind( Type::String ).optional( true ).end()
-     .property( "a-property" ).kind( Type::String ).optional( true ).end()
-     .routine( | o : VerifiedCommand | { println!("c") } )
-     .end()
+    .hint( "c" )
+    .property( "c-property" ).kind( Type::String ).optional( true ).end()
+    .property( "b-property" ).kind( Type::String ).optional( true ).end()
+    .property( "a-property" ).kind( Type::String ).optional( true ).end()
+    .routine( | o : VerifiedCommand | { println!("c") } )
+    .end()
    .command( "b" )
-     .hint( "b" )
-     .property( "b-property" ).kind( Type::String ).optional( true ).end()
-     .routine( | o : VerifiedCommand | { println!("b") } )
-     .end()
+    .hint( "b" )
+    .property( "b-property" ).kind( Type::String ).optional( true ).end()
+    .routine( | o : VerifiedCommand | { println!("b") } )
+    .end()
    .command( "a" )
-     .hint( "a" )
-     .property( "a-property" ).kind( Type::String ).optional( true ).end()
-     .routine( | o : VerifiedCommand | { println!("a") } )
-     .end()
+    .hint( "a" )
+    .property( "a-property" ).kind( Type::String ).optional( true ).end()
+    .routine( | o : VerifiedCommand | { println!("a") } )
+    .end()
    .order( Order::Nature )
  
    .perform();
@@ -151,23 +170,23 @@ wca = {{path = "{}"}}"#,
  
    let ca = wca::CommandsAggregator::former()
    .command( "c" )
-     .hint( "c" )
-     .property( "c-property" ).kind( Type::String ).optional( true ).end()
-     .property( "b-property" ).kind( Type::String ).optional( true ).end()
-     .property( "a-property" ).kind( Type::String ).optional( true ).end()
-     .routine( | o : VerifiedCommand | { println!("c") } )
-     .end()
+    .hint( "c" )
+    .property( "c-property" ).kind( Type::String ).optional( true ).end()
+    .property( "b-property" ).kind( Type::String ).optional( true ).end()
+    .property( "a-property" ).kind( Type::String ).optional( true ).end()
+    .routine( | o : VerifiedCommand | { println!("c") } )
+    .end()
    .command( "b" )
-     .hint( "b" )
-     .property( "b-property" ).kind( Type::String ).optional( true ).end()
-     .routine( | o : VerifiedCommand | { println!("b") } )
-     .end()
+    .hint( "b" )
+    .property( "b-property" ).kind( Type::String ).optional( true ).end()
+    .routine( | o : VerifiedCommand | { println!("b") } )
+    .end()
    .command( "a" )
-     .hint( "a" )
-     .property( "a-property" ).kind( Type::String ).optional( true ).end()
-     .routine( | o : VerifiedCommand | { println!("a") } )
-     .end()
-     .order( Order::Lexicography )
+    .hint( "a" )
+    .property( "a-property" ).kind( Type::String ).optional( true ).end()
+    .routine( | o : VerifiedCommand | { println!("a") } )
+    .end()
+    .order( Order::Lexicography )
    .perform();
  
    let args = std::env::args().skip( 1 ).collect::< Vec< String > >();

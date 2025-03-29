@@ -1,5 +1,5 @@
 [package]
-name = "_chain_of_packages_d"
+name = "_three_packages_d"
 version = "0.1.0"
 edition = "2021"
 repository = "https://github.com/Username/test/c"

@@ -27,7 +27,7 @@ impl< Name > Property< Name >
 // #[ derive( Debug, PartialEq ) ]
 pub struct Child< K >
 where
-  K : core::hash::Hash + std::cmp::Eq,
+  K : core::hash::Hash + core::cmp::Eq,
 {
   pub name : String,
   #[ subform_collection( definition = former::HashMapDefinition ) ]

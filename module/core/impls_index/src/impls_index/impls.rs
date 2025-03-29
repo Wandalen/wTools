@@ -1,5 +1,5 @@
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
 
   ///
@@ -376,20 +376,15 @@ pub( crate ) mod private
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
-}
+  pub use prelude::*;
 
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     index,
     tests_index,
@@ -401,9 +396,15 @@ pub mod prelude
     _impls_callback,
   };
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::impls_index_meta::impls3;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use impls3 as impls;
+
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
+pub mod prelude
+{
+  use super::*;
 }

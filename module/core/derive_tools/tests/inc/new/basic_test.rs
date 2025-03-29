@@ -1,6 +1,10 @@
 use super::*;
 
-#[ derive( Debug, Clone, Copy, PartialEq, the_module::New ) ]
-pub struct IsTransparent( bool );
+mod mod1
+{
+  use super::*;
+  #[ derive( Debug, Clone, Copy, PartialEq, the_module::New ) ]
+  pub struct Struct1( pub bool );
+}
 
 include!( "./only_test/basic.rs" );

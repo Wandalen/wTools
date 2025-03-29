@@ -1,14 +1,17 @@
 #![ allow( missing_debug_implementations ) ]
 #![ allow( missing_docs ) ]
 
-use std::collections::HashMap;
-use criterion::{ criterion_group, criterion_main, Criterion };
-use wca::{ CommandsAggregator, Routine, Type };
 
-fn init( count : usize, command : wca::Command ) -> CommandsAggregator
+use criterion::{ criterion_group, criterion_main, Criterion };
+use wca::grammar::Dictionary;
+use wca::{ CommandsAggregator, Type };
+
+
+
+fn init( count : usize, command : wca::grammar::Command ) -> CommandsAggregator
 {
-  let mut commands = Vec::with_capacity( count );
-  let mut routines = HashMap::with_capacity( count );
+  
+  let mut dic_former = Dictionary::former();
   for i in 0 .. count
   {
     let name = format!( "command_{i}" );
@@ -16,19 +19,15 @@ fn init( count : usize, command : wca::Command ) -> CommandsAggregator
     let mut command = command.clone();
     command.phrase = name.clone();
 
-    commands.push( command );
-    routines.insert
-    (
-      name, Routine::new( | _ | { assert_eq!( 1 + 1, 2 ); Ok( () ) } ),
-    );
+    dic_former = dic_former.command( command );
+    
   }
-
-  assert_eq!( count, commands.len() );
-  assert_eq!( count, routines.len() );
-
+  let dictionary = dic_former.form();
+  
+  // The CommandsAggregator has changed and there are no more grammar fields and the executor no longer stores routines.
+  // Accordingly, I made changes and write commands through DictionaryFormer and pass it to CommandsAggregator
   CommandsAggregator::former()
-  .grammar( commands )
-  .executor( routines )
+  .dictionary( dictionary )
   .perform()
 }
 
@@ -37,7 +36,7 @@ fn initialize_commands_without_args( count : usize ) -> CommandsAggregator
   init
   (
     count,
-    wca::Command::former()
+    wca::grammar::Command::former()
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "{placeholder}" )
@@ -45,35 +44,39 @@ fn initialize_commands_without_args( count : usize ) -> CommandsAggregator
   )
 }
 
-fn initialize_commands_with_subjects( count : usize ) -> CommandsAggregator {
+fn initialize_commands_with_subjects( count : usize ) -> CommandsAggregator 
+{
+  // The way commands are initialized has changed, now the ComandFormer from the grammar module is used and the subject() and property methods are called differently
   init
   (
     count,
-    wca::Command::former()
+    wca::grammar::Command::former()
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "{placeholder}" )
-    .subject( "hint", Type::String, true )
-    .subject( "hint", Type::String, true )
+    .subject().hint( "hint" ).kind( Type::String ).optional( true ).end()
+    .subject().hint( "hint" ).kind( Type::String ).optional( true ).end()
     .form(),
   )
 }
 
-fn initialize_commands_with_properties( count : usize ) -> CommandsAggregator {
+fn initialize_commands_with_properties( count : usize ) -> CommandsAggregator 
+{
   init
   (
     count,
-    wca::Command::former()
+    wca::grammar::Command::former()
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "{placeholder}" )
-    .property( "prop", "hint", Type::String, true )
-    .property( "prop2", "hint", Type::String, true )
+    .property( "prop" ).hint( "hint" ).kind( Type::String ).optional( true ).end()
+    .property( "prop2" ).hint( "hint" ).kind( Type::String ).optional( true ).end()
     .form(),
   )
 }
 
-fn run_commands< S : AsRef< str > >( ca : CommandsAggregator, command : S ) {
+fn run_commands< S : AsRef< str > >( ca : CommandsAggregator, command : S ) 
+{
   ca.perform( command.as_ref() ).unwrap()
 }
 

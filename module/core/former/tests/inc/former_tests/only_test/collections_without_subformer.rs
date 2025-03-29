@@ -23,19 +23,19 @@ tests_impls!
     a_id!( ::std::mem::size_of_val( &former ), ::std::mem::size_of_val( &former2 ) );
 
     let command = Struct1::former().form();
-    a_id!( command.vec_1, Vec::< String >::new() );
-    a_id!( command.hashmap_1, collection_tools::hmap!{} );
-    a_id!( command.hashset_1, collection_tools::hset![] );
+    a_id!( command.vec_1, ::collection_tools::Vec::< String >::new() );
+    a_id!( command.hashmap_1, ::collection_tools::hmap!{} );
+    a_id!( command.hashset_1, ::collection_tools::hset![] );
 
     let command = Struct1::former().perform();
-    a_id!( command.vec_1, Vec::< String >::new() );
-    a_id!( command.hashmap_1, collection_tools::hmap!{} );
-    a_id!( command.hashset_1, collection_tools::hset![] );
+    a_id!( command.vec_1, ::collection_tools::Vec::< String >::new() );
+    a_id!( command.hashmap_1, ::collection_tools::hmap!{} );
+    a_id!( command.hashset_1, ::collection_tools::hset![] );
 
     let command = Struct1::former().end();
-    a_id!( command.vec_1, Vec::< String >::new() );
-    a_id!( command.hashmap_1, collection_tools::hmap!{} );
-    a_id!( command.hashset_1, collection_tools::hset![] );
+    a_id!( command.vec_1, ::collection_tools::Vec::< String >::new() );
+    a_id!( command.hashmap_1, ::collection_tools::hmap!{} );
+    a_id!( command.hashset_1, ::collection_tools::hset![] );
 
   }
 
@@ -47,16 +47,16 @@ tests_impls!
     // test.case( "vector : construction" );
 
     let command = Struct1::former()
-    .vec_1( collection_tools::vec![ "ghi".to_string(), "klm".to_string() ] )
+    .vec_1( ::collection_tools::vec![ "ghi".to_string(), "klm".to_string() ] )
     .form()
     ;
     // dbg!( &command );
 
     let expected = Struct1
     {
-      vec_1 : collection_tools::vec![ "ghi".to_string(), "klm".to_string() ],
-      hashmap_1 : collection_tools::hmap!{},
-      hashset_1 : collection_tools::hset!{},
+      vec_1 : ::collection_tools::vec![ "ghi".to_string(), "klm".to_string() ],
+      hashmap_1 : ::collection_tools::hmap!{},
+      hashset_1 : ::collection_tools::hset!{},
     };
     a_id!( command, expected );
   }
@@ -69,16 +69,16 @@ tests_impls!
     // test.case( "construction" );
 
     let command = Struct1::former()
-    .hashmap_1( collection_tools::hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } )
+    .hashmap_1( ::collection_tools::hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } )
     .form()
     ;
     // dbg!( &command );
 
     let expected = Struct1
     {
-      vec_1 : collection_tools::vec![],
-      hashmap_1 : collection_tools::hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
-      hashset_1 : collection_tools::hset!{},
+      vec_1 : ::collection_tools::vec![],
+      hashmap_1 : ::collection_tools::hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
+      hashset_1 : ::collection_tools::hset!{},
     };
     a_id!( command, expected );
   }
@@ -90,16 +90,16 @@ tests_impls!
 
     // test.case( "construction" );
     let command = Struct1::former()
-    .hashset_1( collection_tools::hset!{ "v1".to_string(), "v2".to_string() } )
+    .hashset_1( ::collection_tools::hset!{ "v1".to_string(), "v2".to_string() } )
     .form()
     ;
     // dbg!( &command );
 
     let expected = Struct1
     {
-      vec_1 : collection_tools::vec![],
-      hashmap_1 : collection_tools::hmap!{},
-      hashset_1 : collection_tools::hset!{ "v1".to_string(), "v2".to_string() },
+      vec_1 : ::collection_tools::vec![],
+      hashmap_1 : ::collection_tools::hmap!{},
+      hashset_1 : ::collection_tools::hset!{ "v1".to_string(), "v2".to_string() },
     };
     a_id!( command, expected );
   }
@@ -114,9 +114,9 @@ tests_impls!
 
     let expected = Struct1
     {
-      vec_1 : collection_tools::vec![],
-      hashmap_1 : collection_tools::hmap!{},
-      hashset_1 : collection_tools::hset!{},
+      vec_1 : ::collection_tools::vec![],
+      hashmap_1 : ::collection_tools::hmap!{},
+      hashset_1 : ::collection_tools::hset!{},
     };
     a_id!( command, expected );
   }
@@ -126,16 +126,16 @@ tests_impls!
   fn test_complex()
   {
     let command = Struct1::former()
-    .vec_1( collection_tools::vec![ "ghi".to_string(), "klm".to_string() ] )
-    .hashmap_1( collection_tools::hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } )
+    .vec_1( ::collection_tools::vec![ "ghi".to_string(), "klm".to_string() ] )
+    .hashmap_1( ::collection_tools::hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } )
     .form();
     // dbg!( &command );
 
     let expected = Struct1
     {
-      vec_1 : collection_tools::vec![ "ghi".to_string(), "klm".to_string() ],
-      hashmap_1 : collection_tools::hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
-      hashset_1 : collection_tools::hset!{},
+      vec_1 : ::collection_tools::vec![ "ghi".to_string(), "klm".to_string() ],
+      hashmap_1 : ::collection_tools::hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
+      hashset_1 : ::collection_tools::hset!{},
     };
     a_id!( command, expected );
 

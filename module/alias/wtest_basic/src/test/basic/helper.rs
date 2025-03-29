@@ -3,8 +3,8 @@
 //! Helpers.
 //!
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
 
   // zzz : move here test tools

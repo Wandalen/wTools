@@ -6,7 +6,7 @@ use crate::*;
 use gluesql::core::executor::Payload;
 use sled_adapter::Store;
 use action::Report;
-use error_tools::Result;
+use error_tools::untyped::Result;
 
 /// Execute query specified in query string.
 pub async fn query_execute

@@ -25,7 +25,7 @@ features = [ "full" ]
 all-features = false
 # rustdoc-args = []
 
-# exclude = [ "/tests", "/examples", "-*" ]
+
 
 # = features
 
@@ -58,7 +58,7 @@ meta_default = [
   "meta_mod_interface",
   # "meta_former",
   # "meta_options",
-  "meta_constructors",
+  # "meta_constructors",
   "meta_idents_concat",
 ]
 meta_full = [
@@ -68,7 +68,7 @@ meta_full = [
   "meta_mod_interface",
   # "meta_former",
   # "meta_options",
-  "meta_constructors",
+  # "meta_constructors",
   "meta_idents_concat",
 ]
 # meta_use_std = [ "meta", "meta_tools/use_std" ]
@@ -79,7 +79,7 @@ meta_for_each = [ "meta", "meta_tools/meta_for_each" ]
 meta_impls_index = [ "meta", "meta_tools/meta_impls_index" ]
 meta_mod_interface = [ "meta" ]
 # meta_mod_interface = [ "meta", "meta_tools/mod_interface" ]
-meta_constructors = [ "meta", "meta_tools/meta_constructors" ]
+# meta_constructors = [ "meta", "meta_tools/meta_constructors" ]
 meta_idents_concat = [ "meta", "meta_tools/meta_idents_concat" ]
 # meta_former = [ "meta", "meta_tools/former" ]
 # meta_options = [ "meta", "meta_tools/options" ]
@@ -173,22 +173,22 @@ string_split = [ "string", "strs_tools/string_split", "strs_tools/string_parse_r
 error = [ "error_tools" ]
 error_default = [
   "error",
-  "error_for_lib",
-  "error_for_app",
+  "error_typed",
+  "error_untyped",
   # "error_use_std",
 ]
 error_full = [
   "error",
-  "error_for_lib",
-  "error_for_app",
+  "error_typed",
+  "error_untyped",
   # "error_use_std",
 ]
 # error_use_std = [ "error", "error_tools/use_std" ]
 error_no_std = [ "error", "error_tools/no_std" ]
 #error_use_alloc = [ "error", "error_tools/use_alloc" ]
 
-error_for_lib = [ "error", "error_tools/error_for_lib" ]
-error_for_app = [ "error", "error_tools/error_for_app" ]
+error_typed = [ "error", "error_tools/error_typed" ]
+error_untyped = [ "error", "error_tools/error_untyped" ]
 
 # derive
 
@@ -318,7 +318,6 @@ dt_default = [
   # "dt_use_std",
   "data_type/default",
   "dt_either",
-  "dt_prelude",
   # "dt_type_constructor",
   # "dt_make",
   # "dt_vectorized_from",
@@ -329,7 +328,6 @@ dt_full = [
   # "dt_use_std",
   "data_type/full",
   "dt_either",
-  "dt_prelude",
   # "dt_type_constructor",
   # "dt_make",
   # "dt_vectorized_from",
@@ -341,7 +339,6 @@ dt_full = [
 dt_use_alloc = [ "dt", "data_type/use_alloc" ]
 
 dt_either = [ "dt", "data_type/dt_either" ]
-dt_prelude = [ "dt", "data_type/dt_prelude" ]
 # dt_type_constructor = [ "dt", "data_type/dt_type_constructor" ]
 # dt_make = [ "dt", "data_type/dt_make" ]
 # dt_vectorized_from = [ "dt", "data_type/dt_vectorized_from" ]

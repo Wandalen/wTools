@@ -3,103 +3,100 @@
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/error_tools/latest/error_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+#![ allow( clippy::mod_module_files ) ]
 
-/// Assertions.
-#[ cfg( feature = "enabled" ) ]
-pub mod assert;
-
-/// Alias for std::error::BasicError.
+/// Alias for `std::error::BasicError`.
+#[ allow( clippy::pub_use ) ]
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( not( feature = "no_std" ) ) ]
 pub mod error;
 
 /// Namespace with dependencies.
-
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  #[ cfg( feature = "error_for_lib" ) ]
+  #[ cfg( feature = "error_typed" ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use ::thiserror;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  #[ cfg( feature = "error_for_app" ) ]
+  #[ cfg( feature = "error_untyped" ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use ::anyhow;
 
 }
 
 #[ cfg( feature = "enabled" ) ]
-/// Exceptions handling mechanism for libs.
-pub mod for_lib
-{
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  #[ cfg( feature = "error_for_lib" ) ]
-  pub use ::thiserror::*;
-}
-
-#[ cfg( feature = "enabled" ) ]
-// qqq : cover by simple test /* aaa : Dmytro : added trivial test routine `basic` */
-/// Exceptions handling mechanism for apps.
-pub mod for_app
-{
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  #[ cfg( feature = "error_for_app" ) ]
-  pub use ::anyhow::*;
-}
-
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+#[ allow( clippy::pub_use ) ]
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
-pub mod protected
+#[ cfg( not( feature = "no_std" ) ) ]
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
+  pub use error::own::*;
+
 }
 
 /// Shared with parent namespace of the module
 #[ cfg( feature = "enabled" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
+  pub use exposed::*;
 
-  #[ cfg( feature = "error_for_app" ) ]
-  pub use super::for_app::Result;
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
+  pub use error::orphan::*;
 
 }
 
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::assert::exposed::*;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
 
-  #[ cfg( not( feature = "no_std" ) ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::error::exposed::*;
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
+  pub use prelude::*;
+
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
+  pub use error::exposed::*;
 
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::error;
+
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
+  pub use error::prelude::*;
+
 }

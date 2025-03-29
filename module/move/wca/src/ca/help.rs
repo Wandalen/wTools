@@ -1,32 +1,40 @@
-pub( crate ) mod private
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
+mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use ca::
   {
-    Command,
-    Routine, 
-    Type, 
-    formatter::private::
-    { 
-      HelpFormat, 
-      md_generator 
+    Type,
+    formatter::
+    {
+      HelpFormat,
+      md_generator
     },
     tool::table::format_table,
   };
+  use verifier::VerifiedCommand;
+  use grammar::{ Command, Dictionary };
+  use executor::Routine;
 
-  use wtools::Itertools;
+  use iter_tools::Itertools;
   use std::rc::Rc;
-  use error_tools::for_app::anyhow;
+  use error::untyped::format_err;
   use former::Former;
 
-  // qqq : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
+  // aaa : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
+  // aaa : it is
 
+  /// Enum `LevelOfDetail` specifies the granularity of detail for rendering or processing:
   #[ derive( Debug, Default, Copy, Clone, PartialEq, Eq ) ]
   pub enum LevelOfDetail
   {
+    /// No detail (default).
     #[ default ]
     None,
+    /// Basic level of detail.
     Simple,
+    /// High level of detail.
     Detailed,
   }
 
@@ -42,13 +50,13 @@ pub( crate ) mod private
     /// Reresents how much information to display for the subjects
     ///
     /// - `None` - nothing
-    /// - `Simple` - <subjects>
+    /// - `Simple` - < subjects >
     /// - `Detailed` - each subject with information about it. E.g. `<String>`
     pub subject_detailing : LevelOfDetail,
     /// Reresents how much information to display for the properties
     ///
     /// - `None` - nothing
-    /// - `Simple` - <properties>
+    /// - `Simple` - < properties >
     /// - `Detailed` - each property with information about it. E.g. `<property_name:String>`
     pub property_detailing : LevelOfDetail,
     /// Reresents how much information to display for the properties
@@ -63,8 +71,19 @@ pub( crate ) mod private
     pub order : Order,
   }
 
-  // qqq : for Barsik : make possible to change properties order
-  pub( crate ) fn generate_help_content( dictionary : &Dictionary, o : HelpGeneratorOptions< '_ > ) -> String
+  // aaa : for Barsik : make possible to change properties order
+  // aaa : order option
+
+  /// Generates help content as a formatted string based on a given dictionary and options.
+  ///
+  /// This function takes a `Dictionary` of terms or commands and a `HelpGeneratorOptions`
+  /// struct to customize the help output, generating a user-friendly help message
+  /// or guide in `String` format.
+  /// # Panics
+  /// qqq: doc
+  #[ must_use ]
+  #[ allow( clippy::match_same_arms ) ]
+  pub fn generate_help_content( dictionary : &Dictionary, o : HelpGeneratorOptions< '_ > ) -> String
   {
     struct Row
     {
@@ -88,31 +107,43 @@ pub( crate ) mod private
       };
       let subjects = match o.subject_detailing
       {
-        LevelOfDetail::None => "".into(),
-        _ if command.subjects.is_empty() => "".into(),
+        LevelOfDetail::None => String::new(),
+        _ if command.subjects.is_empty() => String::new(),
         LevelOfDetail::Simple => "< subjects >".into(),
-        LevelOfDetail::Detailed => command.subjects.iter().map( | v | format!( "< {}{:?} >", if v.optional { "?" } else { "" }, v.kind ) ).collect::< Vec< _ > >().join( " " ),
+        LevelOfDetail::Detailed => command.subjects.iter().map( | v | 
+        {
+          format!( "< {}{:?} >", if v.optional { "?" } else { "" }, v.kind ) 
+        }).collect::< Vec< _ > >().join( " " ),
       };
       let properties = match o.property_detailing
       {
-        LevelOfDetail::None => "".into(),
-        _ if command.subjects.is_empty() => "".into(),
+        LevelOfDetail::None => String::new(),
+        _ if command.subjects.is_empty() => String::new(),
         LevelOfDetail::Simple => "< properties >".into(),
-        LevelOfDetail::Detailed => command.properties( dictionary.order ).iter().map( |( n, v )| format!( "< {}:{}{:?} >", if v.optional { "?" } else { "" }, n, v.kind ) ).collect::< Vec< _ > >().join( " " ),
+        LevelOfDetail::Detailed => command.properties( dictionary.order ).iter().map( | ( n, v ) | 
+        {
+          format!( "< {}:{}{:?} >", if v.optional { "?" } else { "" }, n, v.kind ) 
+        }).collect::< Vec< _ > >().join( " " ),
       };
 
       let footer = if o.with_footer
       {
-        let full_subjects = command.subjects.iter().map( | subj | format!( "- {} [{}{:?}]", subj.hint, if subj.optional { "?" } else { "" }, subj.kind ) ).join( "\n\t" );
-        let full_properties = format_table( command.properties( dictionary.order ).into_iter().map( | ( name, value ) | [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ] ) ).unwrap().replace( '\n', "\n\t" );
-        
+        let full_subjects = command.subjects.iter().map( | subj | 
+        {
+          format!( "- {} [{}{:?}]", subj.hint, if subj.optional { "?" } else { "" }, subj.kind ) 
+        }).join( "\n\t" );
+        let full_properties = format_table( command.properties( dictionary.order ).into_iter().map( | ( name, value ) |
+        { 
+          [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ] 
+        })).unwrap().replace( '\n', "\n\t" );
+
         format!
         (
           "{}{}",
-          if command.subjects.is_empty() { "".to_string() } else { format!( "\nSubjects:\n\t{}", &full_subjects ) },
-          if command.properties.is_empty() { "".to_string() } else { format!( "\nProperties:\n\t{}",&full_properties ) }
+          if command.subjects.is_empty() { String::new() } else { format!( "\nSubjects:\n\t{}", &full_subjects ) },
+          if command.properties.is_empty() { String::new() } else { format!( "\nProperties:\n\t{}",&full_properties ) }
         )
-      } else { "".into() };
+      } else { String::new() };
 
       Row
       {
@@ -130,7 +161,7 @@ pub( crate ) mod private
         format!
         (
           "{}{}{}",
-          format_table([[ row.name, row.args, row.hint ]]).unwrap(),
+          format_table( [ [ row.name, row.args, row.hint ] ] ).unwrap(),
           if row.footer.is_empty() { "" } else { "\n" },
           row.footer
         )
@@ -141,7 +172,7 @@ pub( crate ) mod private
     {
       let rows = dictionary.commands()
       .into_iter()
-      .map( |( _, cmd )| cmd )
+      .map( | ( _, cmd ) | cmd )
       .map( for_single_command )
       .map( | row | [ row.name, row.args, row.hint ] );
       format_table( rows ).unwrap()
@@ -165,6 +196,7 @@ pub( crate ) mod private
   impl HelpVariants
   {
     /// Generates help commands
+    #[ allow( clippy::match_wildcard_for_single_variants ) ]
     pub fn generate( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary, order : Order )
     {
       match self
@@ -183,6 +215,7 @@ pub( crate ) mod private
     }
 
     // .help
+    #[ allow( clippy::unused_self ) ]
     fn general_help( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary, order : Order )
     {
       let phrase = "help".to_string();
@@ -230,15 +263,15 @@ pub( crate ) mod private
           }
         }
 
-        Ok::< _, error_tools::for_app::Error >( () )
+        Ok::< _, error_tools::untyped::Error >( () )
       };
       let help = Command::former()
       .hint( "prints information about existing commands" )
       .property( "format" )
-        .hint( "help generates in format witch you write" )
-        .kind( Type::String )
-        .optional( true )
-        .end()
+      .hint( "help generates in format witch you write" )
+      .kind( Type::String )
+      .optional( true )
+      .end()
       .phrase( &phrase )
       .routine( routine )
       .form();
@@ -247,6 +280,7 @@ pub( crate ) mod private
     }
 
     // .help command_name
+    #[ allow( clippy::unused_self ) ]
     fn subject_command_help( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary )
     {
       let phrase = "help".to_string();
@@ -265,11 +299,13 @@ pub( crate ) mod private
           _ =>
           {
             let command = o.args.get_owned::< String >( 0 ).unwrap();
-            let cmd = grammar.commands.get( &command ).ok_or_else( || anyhow!( "Can not found help for command `{command}`" ) )?;
+            let cmd = grammar.commands
+            .get( &command )
+            .ok_or_else( || format_err!( "Can not found help for command `{command}`" ) )?;
 
             let args = HelpGeneratorOptions::former()
             .command_prefix( "." )
-            .for_commands([ cmd ])
+            .for_commands( [ cmd ] )
             .description_detailing( LevelOfDetail::Detailed )
             .subject_detailing( LevelOfDetail::Simple )
             .property_detailing( LevelOfDetail::Simple )
@@ -281,13 +317,21 @@ pub( crate ) mod private
           }
         };
 
-        Ok::< _, error_tools::for_app::Error >( () )
+        Ok::< _, error_tools::untyped::Error >( () )
       };
 
       let help = Command::former()
       .hint( "prints full information about a specified command" )
-      .subject().hint( "command name" ).kind( Type::String ).optional( true ).end()
-      .property( "format" ).hint( "help generates in format witch you write" ).kind( Type::String ).optional( true ).end()
+      .subject()
+      .hint( "command name" )
+      .kind( Type::String )
+      .optional( true )
+      .end()
+      .property( "format" )
+      .hint( "help generates in format witch you write" )
+      .kind( Type::String )
+      .optional( true )
+      .end()
       .phrase( &phrase )
       .routine( routine )
       .form();
@@ -355,7 +399,7 @@ pub( crate ) mod private
   ///
   /// ```
   /// # use wca::ca::help::{ HelpGeneratorOptions, HelpGeneratorFn };
-  /// use wca::{ Command, Dictionary };
+  /// use wca::grammar::{ Command, Dictionary };
   ///
   /// fn my_help_generator( dictionary : &Dictionary, args : HelpGeneratorOptions< '_ > ) -> String
   /// {
@@ -388,22 +432,23 @@ pub( crate ) mod private
     where
       HelpFunction : Fn( &Dictionary, HelpGeneratorOptions< '_ > ) -> String + 'static
     {
-        Self( Rc::new( func ) )
+      Self( Rc::new( func ) )
     }
   }
 
   impl HelpGeneratorFn
   {
     /// Executes the function to generate help content
+    #[ must_use ]
     pub fn exec( &self, dictionary : &Dictionary, args : HelpGeneratorOptions< '_ > ) -> String
     {
       self.0( dictionary, args )
     }
   }
 
-  impl std::fmt::Debug for HelpGeneratorFn
+  impl core::fmt::Debug for HelpGeneratorFn
   {
-    fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
     {
       f.write_str( "HelpGenerator" )
     }
@@ -414,7 +459,11 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  protected use HelpGeneratorFn;
-  protected use HelpGeneratorOptions;
+  own use HelpGeneratorFn;
+  own use HelpGeneratorOptions;
+  own use LevelOfDetail;
+  own use generate_help_content;
+
   prelude use HelpVariants;
+
 }

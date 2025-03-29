@@ -1,7 +1,7 @@
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
-  use crate::protected::*;
+  use crate::own::*;
   use crate::abs::identity::private::Id;
   use crate::sys::context_changer::private::ContextChanger;
   use crate::sys::drawing::changer::private::DrawChanger;

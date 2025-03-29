@@ -6,9 +6,9 @@
 //! In this example, we generate a type `core::option::Option<i8, i16, i32, i64>` and extract its type parameters.
 //!
 
-#[ cfg( not( feature = "enabled" ) ) ]
+#[ cfg( not( all( feature = "enabled", feature = "typ" ) ) ) ]
 fn main(){}
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( all( feature = "enabled", feature = "typ" ) ) ]
 fn main()
 {
   // Import necessary macros and modules from the `macro_tools` crate.

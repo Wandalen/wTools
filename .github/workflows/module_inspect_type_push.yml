@@ -21,3 +21,4 @@ jobs :
       manifest_path : 'module/core/inspect_type/Cargo.toml'
       module_name : 'inspect_type'
       commit_message : ${{ github.event.head_commit.message }}
+      commiter_username:  ${{ github.event.head_commit.committer.username }}

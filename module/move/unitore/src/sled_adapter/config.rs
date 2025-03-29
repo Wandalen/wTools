@@ -1,7 +1,7 @@
 //! Config file operation with Sled storage.
 
 use crate::*;
-use error_tools::{ err, Result };
+use error_tools::{ err, untyped::Result };
 use gluesql::
 {
   core::

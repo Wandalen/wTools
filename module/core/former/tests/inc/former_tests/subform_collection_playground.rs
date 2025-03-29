@@ -51,7 +51,7 @@ impl< Name > Property< Name >
 #[ derive( Debug, PartialEq, the_module::Former ) ]
 pub struct Child< K >
 where
-  K : core::hash::Hash + std::cmp::Eq,
+  K : core::hash::Hash + core::cmp::Eq,
 {
   pub name : String,
   pub subject : String,
@@ -62,7 +62,7 @@ where
 // manual
 impl< K, Definition > ChildFormer< K, Definition >
 where
-  K : core::hash::Hash + std::cmp::Eq,
+  K : core::hash::Hash + core::cmp::Eq,
   Definition : former::FormerDefinition< Storage = ChildFormerStorage< K > >,
   Definition::Storage : former::StoragePreform,
 {
@@ -100,7 +100,7 @@ where
 #[ derive( Debug, PartialEq, the_module::Former ) ]
 pub struct Parent< K >
 where
-  K : core::hash::Hash + std::cmp::Eq,
+  K : core::hash::Hash + core::cmp::Eq,
 {
   pub parameter1 : String,
   #[ subform_collection( definition = former::HashMapDefinition ) ]

@@ -1,20 +1,19 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
-  use std::
-  {
-    collections::HashSet,
-    fmt::Formatter,
-    path::PathBuf,
-  };
-  use std::collections::HashMap;
+  use std::fmt::Formatter;
+  use path::PathBuf;
+  use collection::HashMap;
   use colored::Colorize;
   use crates_tools::CrateArchive;
-  use similar::*;
+  use collection::HashSet;
+  use similar::{ TextDiff, ChangeTag };
 
-  use wtools::iter::Itertools;
-  
+  // use similar::*; // qqq : for Bohdan : bad
+
   /// These files are ignored because they can be safely changed without affecting functionality
   ///
   /// - `.cargo_vcs_info.json` - contains the git sha1 hash that varies between different commits
@@ -73,12 +72,15 @@ mod private
     /// # Returns
     ///
     /// Returns a new instance of the struct with the excluded items removed from the internal report.
+    /// # Panics
+    /// qqq: doc
+    #[ must_use ]
     pub fn exclude< Is, I >( mut self, items : Is ) -> Self
     where
       Is : Into< HashSet< I > >,
       I : AsRef< std::path::Path >,
     {
-      let current = self.0.keys().cloned().collect::< HashSet< _ > >();
+      let current : HashSet< _ > = self.0.keys().cloned().collect();
       let Some( key ) = current.iter().next() else { return self };
 
       let crate_part = std::path::Path::new( key.components().next().unwrap().as_os_str() );
@@ -89,14 +91,15 @@ mod private
       Self( map )
     }
 
-    /// Checks if there are any changes in the DiffItems.
+    /// Checks if there are any changes in the `DiffItems`.
     ///
     /// # Returns
-    /// * `true` if there are changes in any of the DiffItems.
-    /// * `false` if all DiffItems are the same.
+    /// * `true` if there are changes in any of the `DiffItems`.
+    /// * `false` if all `DiffItems` are the same.
+    #[ must_use ]
     pub fn has_changes( &self ) -> bool
     {
-      !self.0.iter().all( |( _, item )| matches!( item, DiffItem::File( Diff::Same( () ) ) ))
+      !self.0.iter().all( | ( _, item ) | matches!( item, DiffItem::File( Diff::Same( () ) ) ) )
     }
   }
 
@@ -104,7 +107,7 @@ mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
-      for ( path , diff ) in self.0.iter().sorted_by_key( |( k, _ )| k.as_path() )
+      for ( path , diff ) in self.0.iter().sorted_by_key( | ( k, _ ) | k.as_path() )
       {
         match diff
         {
@@ -112,9 +115,9 @@ mod private
           {
             match item
             {
-              Diff::Same( _ ) => writeln!( f, " {}", path.display() )?,
-              Diff::Add( _ ) => writeln!( f, "+ {} NEW", path.to_string_lossy().green() )?,
-              Diff::Rem( _ ) => writeln!( f, "- {} REMOVED", path.to_string_lossy().red() )?,
+              Diff::Same( () ) => writeln!( f, " {}", path.display() )?,
+              Diff::Add( () ) => writeln!( f, "+ {} NEW", path.to_string_lossy().green() )?,
+              Diff::Rem( () ) => writeln!( f, "- {} REMOVED", path.to_string_lossy().red() )?,
             };
           }
           DiffItem::Content( items ) =>
@@ -127,7 +130,7 @@ mod private
             {
               match item
               {
-                Diff::Same( t ) => write!( f, "|   {}", t )?,
+                Diff::Same( t ) => write!( f, "|   {t}" )?,
                 Diff::Add( t ) => write!( f, "| + {}", t.green() )?,
                 Diff::Rem( t ) => write!( f, "| - {}", t.red() )?,
               };
@@ -156,6 +159,9 @@ mod private
   /// # Returns
   ///
   /// A `DiffReport` struct, representing the unique and shared attributes of the two crate archives.
+  /// # Panics
+  /// qqq: doc
+  #[ must_use ]
   pub fn crate_diff( left : &CrateArchive, right : &CrateArchive ) -> DiffReport
   {
     let mut report = DiffReport::default();
@@ -218,9 +224,9 @@ mod private
 
 crate::mod_interface!
 {
-  protected use Diff;
-  protected use DiffItem;
-  protected use DiffReport;
-  protected use crate_diff;
-  protected use PUBLISH_IGNORE_LIST;
+  own use Diff;
+  own use DiffItem;
+  own use DiffReport;
+  own use crate_diff;
+  own use PUBLISH_IGNORE_LIST;
 }

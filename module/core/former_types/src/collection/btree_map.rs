@@ -4,7 +4,7 @@
 //! this module abstracts the operations on binary tree map-like data structures, making them more flexible and easier to integrate as
 //! as subformer, enabling fluid and intuitive manipulation of binary tree maps via builder patterns.
 //!
-
+#[ allow( clippy::wildcard_imports ) ]
 use crate::*;
 use collection_tools::BTreeMap;
 
@@ -212,7 +212,6 @@ where
 ///
 /// The alias helps reduce boilerplate code and enhances readability, making the construction of hash maps in
 /// a builder pattern both efficient and expressive.
-
 pub type BTreeMapFormer< K, E, Context, Formed, End > =
 CollectionFormer::< ( K, E ), BTreeMapDefinition< K, E, Context, Formed, End > >;
 
@@ -225,7 +224,6 @@ CollectionFormer::< ( K, E ), BTreeMapDefinition< K, E, Context, Formed, End > >
 /// with the builder pattern provided by the `former` framework. It's a convenience trait that simplifies
 /// creating configured hash map builders with default settings.
 ///
-
 pub trait BTreeMapExt< K, E > : sealed::Sealed
 where
   K : Ord,
@@ -238,6 +236,7 @@ impl< K, E > BTreeMapExt< K, E > for BTreeMap< K, E >
 where
   K : Ord,
 {
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn former() -> BTreeMapFormer< K, E, (), BTreeMap< K, E >, ReturnStorage >
   {
     BTreeMapFormer::< K, E, (), BTreeMap< K, E >, ReturnStorage >::new( ReturnStorage::default() )

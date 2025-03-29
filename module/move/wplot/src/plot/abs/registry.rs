@@ -1,8 +1,8 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 #[ cfg( not( feature = "no_std" ) ) ]
-pub( crate ) mod private
+mod private
 {
-  // use crate::protected::*;
+  // use crate::own::*;
   // use crate::abs::*;
   use once_cell::sync::Lazy;
   // use wtools::from;

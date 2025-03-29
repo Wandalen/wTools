@@ -1,29 +1,31 @@
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
-  use derive_tools::IsVariant;
+  #[ allow( clippy::wildcard_imports ) ]
   use macro_tools::exposed::*;
 
   ///
   /// Custom keywords.
   ///
-
   pub mod kw
   {
     super::syn::custom_keyword!( layer );
+    super::syn::custom_keyword!( reuse );
   }
 
   ///
   /// Kind of element.
   ///
 
-  #[ derive( IsVariant, Debug, PartialEq, Eq, Clone, Copy ) ]
+  #[ derive( Debug, PartialEq, Eq, Clone, Copy ) ]
   pub enum ElementType
   {
     MicroModule( syn::token::Mod ),
     Layer( kw::layer ),
     Use( syn::token::Use ),
+    Reuse( kw::reuse ),
   }
 
   //
@@ -31,7 +33,7 @@ pub( crate ) mod private
   impl syn::parse::Parse for ElementType
   {
 
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       let lookahead = input.lookahead1();
       let element_type = match()
@@ -47,6 +49,10 @@ pub( crate ) mod private
         _case if lookahead.peek( kw::layer ) =>
         {
           ElementType::Layer( input.parse()? )
+        },
+        _case if lookahead.peek( kw::reuse ) =>
+        {
+          ElementType::Reuse( input.parse()? )
         },
         _default =>
         {
@@ -64,12 +70,14 @@ pub( crate ) mod private
   {
     fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
     {
+      #[ allow( clippy::enum_glob_use ) ]
       use ElementType::*;
       match self
       {
         MicroModule( e ) => e.to_tokens( tokens ),
         Use( e ) => e.to_tokens( tokens ),
         Layer( e ) => e.to_tokens( tokens ),
+        Reuse( e ) => e.to_tokens( tokens ),
       }
     }
   }
@@ -94,7 +102,7 @@ pub( crate ) mod private
   impl syn::parse::Parse for Record
   {
 
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
 
       let attrs = input.parse()?;
@@ -105,7 +113,7 @@ pub( crate ) mod private
 
       match element_type
       {
-        ElementType::Use( _ ) =>
+        ElementType::Use( _ ) | ElementType::Reuse( _ ) =>
         {
           use_elements = Some( input.parse()? );
           elements = syn::punctuated::Punctuated::new();
@@ -122,7 +130,7 @@ pub( crate ) mod private
           {
             let ident = input.parse()?;
             elements = syn::punctuated::Punctuated::new();
-            elements.push( Pair::new( Default::default(), ident ) );
+            elements.push( Pair::new( AttributesOuter::default(), ident ) );
           }
         },
       }
@@ -165,7 +173,6 @@ pub( crate ) mod private
   ///
   /// Many records.
   ///
-
   pub type Records = Many< Record >;
 
   impl AsMuchAsPossibleNoDelimiter for Record {}
@@ -187,7 +194,7 @@ pub( crate ) mod private
   {
     /// Validate each inner attribute of the thesis.
     #[ allow ( dead_code ) ]
-    pub fn inner_attributes_validate( &self ) -> Result< () >
+    pub fn inner_attributes_validate( &self ) -> syn::Result< () >
     {
       self.head.iter().try_for_each( | attr |
       {
@@ -195,8 +202,7 @@ pub( crate ) mod private
         // code_print!( attr.path() );
         // code_print!( attr.meta );
 
-        let good = true
-          && code_to_str!( attr.path() ) == "debug"
+        let good = code_to_str!( attr.path() ) == "debug"
           // && code_to_str!( attr.meta ).is_empty()
         ;
 
@@ -210,7 +216,7 @@ pub( crate ) mod private
           ));
         }
 
-        Result::Ok( () )
+        syn::Result::Ok( () )
       })?;
       Ok( () )
     }
@@ -229,7 +235,7 @@ pub( crate ) mod private
 
   impl syn::parse::Parse for Thesis
   {
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       let head = input.parse()?;
       // let head = Default::default();
@@ -256,29 +262,34 @@ pub( crate ) mod private
 }
 
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use orphan::*;
 }
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use prelude::*;
+  pub use private::
   {
     ElementType,
     Record,
@@ -288,10 +299,12 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use private::
   {
   };
 }

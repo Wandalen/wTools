@@ -2,9 +2,10 @@
 //! Attributes analyzys and manipulation.
 //!
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use core::fmt;
 
@@ -32,6 +33,7 @@ pub( crate ) mod private
   impl Tokens
   {
     /// Constructor from `proc_macro2::TokenStream`.
+    #[ must_use ]
     pub fn new( inner : proc_macro2::TokenStream ) -> Self
     {
       Tokens { inner }
@@ -59,7 +61,7 @@ pub( crate ) mod private
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
-      write!( f, "{}", self.inner.to_string() )
+      write!( f, "{}", self.inner )
     }
   }
 
@@ -67,7 +69,7 @@ pub( crate ) mod private
   {
     fn fmt( &self, f : &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
     {
-      write!( f, "{}", self.inner.to_string() )
+      write!( f, "{}", self.inner )
     }
   }
 
@@ -75,41 +77,51 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as tokens;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+
+  pub use super::super::tokens;
+  // pub use super::own as tokens;
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     Tokens,
   };
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }
 

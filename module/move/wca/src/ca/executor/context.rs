@@ -1,4 +1,5 @@
-pub( crate ) mod private
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
+mod private
 {
   use std::sync::Arc;
 
@@ -7,7 +8,7 @@ pub( crate ) mod private
   /// # Examples:
   ///
   /// ```
-  /// # use wca::{ Routine, Handler, Context, Value, Args, Props, VerifiedCommand };
+  /// # use wca::{ executor::{ Routine, Handler, Args, Props, Context },  Value, VerifiedCommand };
   /// # use std::sync::{ Arc, Mutex };
   /// let routine = Routine::from( Handler::from
   /// (
@@ -33,13 +34,13 @@ pub( crate ) mod private
   /// }
   /// assert_eq!( 1, *ctx.get::< Mutex< i32 > >().unwrap().lock().unwrap() );
   /// ```
-  // qqq : ?
+  // xxx clarification is needed qqq : поточнити
   #[ derive( Debug, Clone ) ]
   pub struct Context
   {
-    inner : Arc< dyn std::any::Any + Send + Sync >,
+    inner : Arc< dyn core::any::Any + Send + Sync >,
   }
-  
+
   impl Default for Context
   {
     fn default() -> Self
@@ -47,7 +48,7 @@ pub( crate ) mod private
       Self::new( () )
     }
   }
-  
+
   impl Context
   {
     /// Creates a new `Context` object with the given value.
@@ -55,7 +56,6 @@ pub( crate ) mod private
     /// # Arguments
     ///
     /// * `value` - The value to be stored in the `Context`. The value must implement the `Send` and `Sync` traits.
-    /// ```
     // `'static` means that the object must be owned or live at least as a `Context'
     pub fn new< T : Send + Sync + 'static >( value : T ) -> Self
     {
@@ -80,6 +80,7 @@ pub( crate ) mod private
     /// An `Option` containing a reference-counted smart pointer (`Arc`) to the object of type `T` if it exists in the context.
     /// `None` is returned if the object does not exist or if it cannot be downcasted to type `T`.
     // `'static` means that the object must be owned or live at least as a `Context'
+    #[ must_use ]
     pub fn get< T : Send + Sync + 'static >( &self ) -> Option< Arc< T > >
     {
       self.inner.clone().downcast::< T >().ok()
@@ -91,5 +92,5 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  exposed use Context;
+  orphan use Context;
 }

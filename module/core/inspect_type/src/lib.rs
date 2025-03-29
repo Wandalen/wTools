@@ -1,33 +1,12 @@
-#![ cfg_attr( feature = "no_std", no_std ) ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/inspect_type/latest/inspect_type/" ) ]
-// #![ deny( rust_2018_idioms ) ]
-// #![ deny( missing_debug_implementations ) ]
-// #![ deny( missing_docs ) ]
-
-// #![ cfg( rustversion::nightly ) ]
-// #![ feature( type_name_of_val ) ]
-// #![ cfg_attr( feature = "type_name_of_val", feature( type_name_of_val ) ) ]
-
-// #![ cfg_attr( RUSTC_IS_NIGHTLY, feature( type_name_of_val ) ) ]
-
-//!
-//! Diagnostic-purpose tools to inspect type of a variable and its size.
-//!
-
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+#![ allow( unexpected_cfgs ) ]
 
-
-// #[ cfg( not( feature = "no_std" ) ) ]
-// /// Little experiment.
-// #[ derive( Debug ) ]
-// pub struct Experimental( i32 );
-
-// #[ cfg( feature = "nightly" ) ]
-// #[ cfg( feature = "type_name_of_val" ) ]
-// #[ rustversion::nightly ]
-#[ cfg( RUSTC_IS_NIGHTLY ) ]
+// #[ allow( unexpected_cfgs ) ]
+// #[ cfg( RUSTC_IS_NIGHTLY ) ]
+#[ cfg( not( RUSTC_IS_STABLE ) ) ]
 mod nightly
 {
 
@@ -79,40 +58,45 @@ mod nightly
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   // #[ cfg( feature = "nightly" ) ]
   // #[ rustversion::nightly ]
   // #[ cfg( feature = "type_name_of_val" ) ]
-  #[ cfg( RUSTC_IS_NIGHTLY ) ]
+  // #[ cfg( RUSTC_IS_NIGHTLY ) ]
+  #[ cfg( not( RUSTC_IS_STABLE ) ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::nightly::*;
 }

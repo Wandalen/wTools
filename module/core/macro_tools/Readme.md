@@ -1,6 +1,6 @@
 <!-- {{# generate.module_header{} #}} -->
 
-# Module :: proc_macro_tools
+# Module :: `proc_macro_tools`
 <!--{ generate.module_header.start() }-->
  [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_macro_tools_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_macro_tools_push.yml) [![docs.rs](https://img.shields.io/docsrs/macro_tools?color=e3e8f0&logo=docs.rs)](https://docs.rs/macro_tools) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Fmacro_tools%2Fexamples%2Fmacro_tools_trivial.rs,RUN_POSTFIX=--example%20macro_tools_trivial/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 <!--{ generate.module_header.end }-->
@@ -15,9 +15,9 @@ The purpose of `typ::type_parameters` is to extract type parameters from a given
 In this example, we generate a type `core::option::Option<i8, i16, i32, i64>` and extract its type parameters.
 
 ```rust
-#[ cfg( not( feature = "enabled" ) ) ]
+#[ cfg( not( all( feature = "enabled", feature = "typ" ) ) ) ]
 fn main(){}
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( all( feature = "enabled", feature = "typ" ) ) ]
 fn main()
 {
   // Import necessary macros and modules from the `macro_tools` crate.
@@ -67,10 +67,10 @@ using reusable components like `AttributePropertyBoolean`.
 - `AttributeComponent`: A trait that defines how an attribute should be parsed from a `syn::Attribute`.
 - `AttributePropertyComponent`: A trait that defines a marker for attribute properties.
 - `Assign`: A trait that simplifies the logic of assigning fields to a struct. Using a
-component-based approach requires each field to have a unique type, which aligns with the
-strengths of strongly-typed languages. This method ensures that the logic of
-assigning values to fields is encapsulated within the fields themselves, promoting modularity
-and reusability.
+  component-based approach requires each field to have a unique type, which aligns with the
+  strengths of strongly-typed languages. This method ensures that the logic of
+  assigning values to fields is encapsulated within the fields themselves, promoting modularity
+  and reusability.
 
 The reusable property components from the library come with parameters that distinguish
 different properties of the same type. This is useful when an attribute has multiple boolean
@@ -80,15 +80,16 @@ defined in other crates.
 
 ```rust
 
-#[ cfg( not( all( feature = "enabled", debug_assertions ) )  ) ]
+#[ cfg( not( all( feature = "enabled", feature = "attr_prop", debug_assertions ) )  ) ]
 fn main(){}
-#[ cfg( all( feature = "enabled", debug_assertions )  ) ]
+#[ cfg( all( feature = "enabled", feature = "attr_prop", debug_assertions )  ) ]
 fn main()
 {
 
   use macro_tools::
   {
     attr,
+    ct,
     syn_err,
     return_syn_err,
     qt,
@@ -97,8 +98,8 @@ fn main()
     AttributePropertyComponent,
     AttributePropertyBoolean,
     AttributePropertySingletone,
+    Assign,
   };
-  use former_types::Assign;
 
   /// Represents the attributes of a struct. Aggregates all its attributes.
   #[ derive( Debug, Default ) ]
@@ -121,12 +122,11 @@ fn main()
       // Closure to generate an error message for unknown attributes.
       let error = | attr : & syn::Attribute | -> syn::Error
       {
-        let known_attributes = const_format::concatcp!
+        let known_attributes = ct::str::format!
         (
-          "Known attributes are: ",
+          "Known attributes are: {}, {}.",
           "debug",
-          ", ", AttributeMutator::KEYWORD,
-          "."
+          AttributeMutator::KEYWORD,
         );
         syn_err!
         (
@@ -241,12 +241,12 @@ fn main()
 
       let error = | ident : & syn::Ident | -> syn::Error
       {
-        let known = const_format::concatcp!
+        let known = ct::str::format!
         (
-          "Known entries of attribute ", AttributeMutator::KEYWORD, " are: ",
+          "Known entries of attribute {} are: {}, {}.",
+          AttributeMutator::KEYWORD,
           AttributePropertyCustom::KEYWORD,
-          ", ", AttributePropertyDebug::KEYWORD,
-          "."
+          AttributePropertyDebug::KEYWORD,
         );
         syn_err!
         (

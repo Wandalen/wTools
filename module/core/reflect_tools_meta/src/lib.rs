@@ -5,20 +5,23 @@
 // #![ allow( non_upper_case_globals ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-#[ cfg
-(
-  any
-  (
-    feature = "reflect_relfect",
-  )
-)]
+// #[ cfg( feature = "enabled" ) ]
+// use macro_tools::prelude::*;
+
 #[ cfg( feature = "enabled" ) ]
-mod implementation;
+mod implementation
+{
+  #[ cfg( feature = "reflect_derive" ) ]
+  pub mod reflect;
+  #[ cfg( feature = "reflect_derive" ) ]
+  pub use reflect::*;
+}
+
 #[ cfg
 (
   any
   (
-    feature = "reflect_relfect",
+    feature = "reflect_derive",
   )
 )]
 #[ cfg( feature = "enabled" ) ]
@@ -33,7 +36,7 @@ use implementation::*;
 ///
 
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_reflect" ) ]
+#[ cfg( feature = "reflect_derive" ) ]
 #[ proc_macro_derive( Reflect, attributes( debug ) ) ]
 pub fn derive_reflect( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {

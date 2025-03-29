@@ -5,7 +5,7 @@ use gluesql::sled_storage::sled::Config;
 use wca::{ Command, VerifiedCommand };
 use sled_adapter::FeedStorage;
 use action::{ Report, frame::{ frames_list, frames_download } };
-use error_tools::Result;
+use error_tools::untyped::Result;
 
 /// Struct that provides commands for frames.
 #[ derive( Debug ) ]

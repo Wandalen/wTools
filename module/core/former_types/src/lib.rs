@@ -6,30 +6,30 @@
 
 /// Axiomatic things.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_former" ) ]
+#[ cfg( feature = "types_former" ) ]
 mod axiomatic;
 /// Definition of former.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_former" ) ]
+#[ cfg( feature = "types_former" ) ]
 mod definition;
 /// Forming process.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_former" ) ]
+#[ cfg( feature = "types_former" ) ]
 mod forming;
 /// Storage.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_former" ) ]
+#[ cfg( feature = "types_former" ) ]
 mod storage;
 
 /// Interface for collections.
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-#[ cfg( feature = "derive_former" ) ]
+#[ cfg( feature = "types_former" ) ]
 mod collection;
 
 /// Component-based forming.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( any( feature = "types_component_assign" ) ) ]
+#[ cfg( feature = "types_component_assign" ) ]
 mod component;
 
 /// Namespace with dependencies.
@@ -42,38 +42,50 @@ pub mod dependency
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
-pub mod protected
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 /// Parented namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
+
+  #[ doc( inline ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  #[ cfg( feature = "types_former" ) ]
+  pub use collection::orphan::*;
+
 }
 
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  #[ cfg( feature = "derive_former" ) ]
+  #[ cfg( feature = "types_former" ) ]
   pub use super::
   {
     axiomatic::*,
@@ -83,19 +95,27 @@ pub mod exposed
   };
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  #[ cfg( feature = "derive_former" ) ]
-  pub use super::collection::*;
+  #[ cfg( feature = "types_former" ) ]
+  pub use collection::exposed::*;
 
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  #[ cfg( any( feature = "types_component_assign" ) ) ]
-  pub use super::component::*;
+  #[ cfg( feature = "types_component_assign" ) ]
+  pub use component::*;
+
+  #[ doc( inline ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  #[ cfg( feature = "types_former" ) ]
+  pub use collection::prelude::*;
+
 }

@@ -1,18 +1,24 @@
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
-  use action;
-  use _path::AbsolutePath;
-  use error_tools::Result;
-  use wtools::error::anyhow::Error;
+  // use action;
+  use error::untyped::{ Error };
 
   /// Generates header to main Readme.md file.
-  pub fn readme_header_renew() -> Result< () >
+  ///
+  /// # Errors
+  /// qqq: doc
+  // qqq : typed error
+  pub fn readme_header_renew() -> error::untyped::Result< () >
   {
-    match action::readme_header_renew( AbsolutePath::try_from( std::env::current_dir()? )? )
+    match crate::action::main_header::action
+    (
+      CrateDir::transitive_try_from::< AbsolutePath >( CurrentPath )?
+    )
     {
-      Ok( report ) => 
-      { 
+      Ok( report ) =>
+      {
         println!( "{report}" );
         Ok( () )
       }

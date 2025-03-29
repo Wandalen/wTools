@@ -3,24 +3,15 @@ use super::*;
 
 use the_module::
 {
-  // Fields,
-  // IteratorTrait,
-  // MaybeAs,
   ToStringWith,
-  // _ToStringWithFallback,
-  // ToStringWithFallbackParams,
   WithDebug,
   WithDisplay,
-  // Ref,
-  // to_string_with_fallback,
 };
 
-// use std::
-// {
-//   // fmt,
-//   // collections::HashMap,
-//   // borrow::Cow,
-// };
+use std::
+{
+  borrow::Cow,
+};
 
 //
 
@@ -53,5 +44,61 @@ fn to_string_with_test()
   a_id!( got, exp );
 
   // -
+
+}
+
+//
+
+#[ test ]
+fn borrowed()
+{
+
+  let src = 13;
+  let got = ToStringWith::< WithDisplay >::to_string_with( &src );
+  let exp : Cow< '_, str > = Cow::Owned( "13".to_string() );
+  a_id!( got, exp );
+  a_true!( matches!( got, Cow::Owned( _ ) ) );
+
+}
+
+//
+
+#[ test ]
+fn borrowed_str()
+{
+  use the_module::{ ToStringWith };
+
+  // let src = "str";
+  // let got = to_string::Ref::< '_, str, WithDisplay >::from( src ).to_string_with();
+  // let exp : Cow< '_, str > = Cow::Borrowed( "str" );
+  // a_id!( got, exp );
+  // a_true!( matches!( got, Cow::Borrowed( _ ) ) );
+
+  let src = "str";
+  let got = ToStringWith::< WithDisplay >::to_string_with( &src );
+  let exp : Cow< '_, str > = Cow::Borrowed( "str" );
+  a_id!( got, exp );
+  a_true!( !matches!( got, Cow::Borrowed( _ ) ) );
+
+}
+
+//
+
+#[ test ]
+fn borrowed_string()
+{
+  use the_module::{ ToStringWith };
+
+  // let src = "string".to_string();
+  // let got = to_string::Ref::< '_, String, WithDisplay >::from( &src ).to_string_with();
+  // let exp : Cow< '_, str > = Cow::Borrowed( "string" );
+  // a_id!( got, exp );
+  // a_true!( matches!( got, Cow::Borrowed( _ ) ) );
+
+  let src = "string".to_string();
+  let got = ToStringWith::< WithDisplay >::to_string_with( &src );
+  let exp : Cow< '_, str > = Cow::Borrowed( "string" );
+  a_id!( got, exp );
+  a_true!( !matches!( got, Cow::Borrowed( _ ) ) );
 
 }

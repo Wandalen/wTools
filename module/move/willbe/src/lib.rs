@@ -3,14 +3,12 @@
 #![ doc( html_root_url = "https://docs.rs/willbe/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-use mod_interface::mod_interface;
-/// Micro wtools
-pub mod wtools;
-use wtools::*;
+pub use mod_interface::mod_interface;
 
-/// Internal namespace.
-pub( crate ) mod private
+/// Define a private namespace for all its items.
+mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   /// Takes the command line arguments and perform associated function(s).
@@ -18,14 +16,17 @@ pub( crate ) mod private
   /// It then terminates the program with an exit code of 1 to indicate an error due to the lack of input.
   ///
   /// Do not support interactive mode.
-  pub fn run( args : Vec< String > ) -> Result< (), wtools::error::for_app::Error >
+  ///
+  /// # Errors
+  /// qqq: doc
+  pub fn run( args : Vec< String > ) -> Result< (), error::untyped::Error >
   {
     #[ cfg( feature = "tracing" ) ]
     {
       tracing_subscriber::fmt().pretty().init();
     }
 
-    let args = args.into_iter().skip( 1 ).collect::< Vec< String > >();
+    let args : Vec< String > = args.into_iter().skip( 1 ).collect();
 
     let ca = command::ca()
     .help_variants( [ wca::HelpVariants::General, wca::HelpVariants::SubjectCommand ] )
@@ -44,12 +45,13 @@ pub( crate ) mod private
     }
 
   }
+
 }
 
 mod_interface!
 {
 
-  protected use run;
+  own use run;
 
   /// Entities of which spaces consists of.
   layer entity;

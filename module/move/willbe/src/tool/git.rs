@@ -1,11 +1,17 @@
+/// Define a private namespace for all its items.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  use crate::*;
+  #[ allow( unused_imports, clippy::wildcard_imports ) ]
+  use crate::tool::*;
+
   use std::ffi::OsString;
   use std::path::Path;
+
+  #[ allow( clippy::wildcard_imports ) ]
   use process_tools::process::*;
-  use wtools::error::Result;
-  use wtools::error::err;
+  // use error::err;
+  // qqq : group dependencies
 
   /// Adds changes to the Git staging area.
   ///
@@ -18,16 +24,24 @@ mod private
   ///
   /// # Returns :
   /// Returns a result containing a report indicating the result of the operation.
-  #[ cfg_attr( feature = "tracing", tracing::instrument( skip( path, objects ), fields( path = %path.as_ref().display() ) ) ) ]
-  pub fn add< P, Os, O >( path : P, objects : Os, dry : bool ) -> Result< Report >
+  // qqq : should be typed error, apply err_with
+  #[ cfg_attr
+  ( 
+    feature = "tracing", 
+    tracing::instrument( skip( path, objects ), fields( path = %path.as_ref().display() ) ) 
+  )]
+  pub fn add< P, Os, O >( path : P, objects : Os, dry : bool )
+  -> error::untyped::Result< Report >
+  // qqq : use typed error
   where
     P : AsRef< Path >,
     Os : AsRef< [ O ] >,
     O : AsRef< str >,
   {
-    let objects = objects.as_ref().iter().map( | x | x.as_ref() );
+    let objects = objects.as_ref().iter().map( std::convert::AsRef::as_ref );
 
-    let ( program, args ) = ( "git", Some( "add" ).into_iter().chain( objects ).collect::< Vec< _ > >() );
+    // qqq : for Bohdan : don't enlarge length of lines artificially
+    let ( program, args ) : ( _, Vec< _ > ) = ( "git", Some( "add" ).into_iter().chain( objects ).collect() );
 
     if dry
     {
@@ -49,7 +63,7 @@ mod private
       .bin_path( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .current_path( path.as_ref().to_path_buf() )
-      .run().map_err( | report | err!( report.to_string() ) )
+      .run().map_err( | report | error::untyped::format_err!( report.to_string() ) )
     }
   }
 
@@ -65,8 +79,18 @@ mod private
   ///
   /// # Returns :
   /// Returns a result containing a report indicating the result of the operation.
-  #[ cfg_attr( feature = "tracing", tracing::instrument( skip( path, message ), fields( path = %path.as_ref().display(), message = %message.as_ref() ) ) ) ]
-  pub fn commit< P, M >( path : P, message : M, dry : bool ) -> Result< Report >
+  // qqq : should be typed error, apply err_with
+  #[ cfg_attr
+  ( 
+    feature = "tracing", 
+    tracing::instrument
+    ( 
+      skip( path, message ), 
+      fields( path = %path.as_ref().display(), message = %message.as_ref() ) 
+    ) 
+  )]
+  pub fn commit< P, M >( path : P, message : M, dry : bool ) -> error::untyped::Result< Report >
+  // qqq : don't use 1-prameter Result
   where
     P : AsRef< Path >,
     M : AsRef< str >,
@@ -93,7 +117,7 @@ mod private
       .bin_path( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .current_path( path.as_ref().to_path_buf() )
-      .run().map_err( | report | err!( report.to_string() ) )
+      .run().map_err( | report | error::untyped::format_err!( report.to_string() ) )
     }
   }
 
@@ -108,8 +132,12 @@ mod private
   ///
   /// # Returns :
   /// Returns a result containing a report indicating the result of the operation.
+
+  // qqq : should be typed error, apply err_with
+
   #[ cfg_attr( feature = "tracing", tracing::instrument( skip( path ), fields( path = %path.as_ref().display() ) ) ) ]
-  pub fn push< P >( path : P, dry : bool ) -> Result< Report >
+  pub fn push< P >( path : P, dry : bool ) -> error::untyped::Result< Report >
+  // qqq : don't use 1-prameter Result
   where
     P : AsRef< Path >,
   {
@@ -135,10 +163,10 @@ mod private
       .bin_path( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .current_path( path.as_ref().to_path_buf() )
-      .run().map_err( | report | err!( report.to_string() ) )
+      .run().map_err( | report | error::untyped::format_err!( report.to_string() ) )
     }
   }
-  
+
   /// This function is a wrapper around the `git reset` command.
   ///
   /// # Args :
@@ -150,21 +178,29 @@ mod private
   ///
   /// # Returns :
   /// This function returns a `Result` containing a `Report` if the command is executed successfully. The `Report` contains the command executed, the output
-// git reset command wrapper
-  pub fn reset< P >( path : P, hard : bool, commits_count : usize, dry : bool ) -> Result< Report >
+  /// git reset command wrapper
+  ///
+  /// # Errors
+  /// qqq: doc
+
+  // qqq : should be typed error, apply err_with
+
+  pub fn reset< P >( path : P, hard : bool, commits_count : usize, dry : bool )
+  -> error::untyped::Result< Report >
+  // qqq : don't use 1-prameter Result
   where
     P : AsRef< Path >,
   {
-    if commits_count < 1 { return Err( err!( "Cannot reset, the count of commits must be greater than 0" ) ) }
-    let ( program, args ) = 
+    if commits_count < 1 { return Err( error::untyped::format_err!( "Cannot reset, the count of commits must be greater than 0" ) ) }
+    let ( program, args ) : ( _, Vec< _ > ) =
     (
       "git",
       Some( "reset" )
       .into_iter()
       .chain( if hard { Some( "--hard" ) } else { None } )
       .map( String::from )
-      .chain( Some( format!( "HEAD~{}", commits_count ) ) )
-      .collect::< Vec< _ > >()
+      .chain( Some( format!( "HEAD~{commits_count}" ) ) )
+      .collect()
     );
 
     if dry
@@ -187,7 +223,7 @@ mod private
       .bin_path( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .current_path( path.as_ref().to_path_buf() )
-      .run().map_err( | report | err!( report.to_string() ) )
+      .run().map_err( | report | error::untyped::format_err!( report.to_string() ) )
     }
   }
 
@@ -200,7 +236,14 @@ mod private
   /// # Returns
   ///
   /// A `Result` containing a `Report`, which represents the result of the command execution.
-  pub fn ls_remote_url< P >( path : P ) -> Result< Report >
+  ///
+  /// # Errors
+  /// qqq: doc
+
+  // qqq : should be typed error, apply err_with
+  // qqq : don't use 1-prameter Result
+
+  pub fn ls_remote_url< P >( path : P ) -> error::untyped::Result< Report >
   where
     P : AsRef< Path >,
   {
@@ -210,7 +253,7 @@ mod private
     .bin_path( program )
     .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
     .current_path( path.as_ref().to_path_buf() )
-    .run().map_err( | report | err!( report.to_string() ) )
+    .run().map_err( | report | error::untyped::format_err!( report.to_string() ) )
   }
 }
 
@@ -218,9 +261,9 @@ mod private
 
 crate::mod_interface!
 {
-  protected use add;
-  protected use commit;
-  protected use push;
-  protected use reset;
-  protected use ls_remote_url;
+  own use add;
+  own use commit;
+  own use push;
+  own use reset;
+  own use ls_remote_url;
 }

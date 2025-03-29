@@ -1,6 +1,6 @@
 [package]
 name = "reflect_tools"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -22,35 +22,37 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-# exclude = [ "/tests", "/examples", "-*" ]
+
 
 [features]
 
 default = [
   "enabled",
-  "reflect_reflect",
+  "reflect_types",
   "reflect_newtype",
 ]
 
 full = [
-  "enabled",
-  "reflect_reflect",
-  "reflect_newtype",
+  "default",
 ]
 enabled = [
   "reflect_tools_meta/enabled",
-  "derive_tools/enabled"
+  "derive_tools/enabled",
+  "collection_tools/enabled",
 ]
-reflect_reflect = []
+reflect_types = []
 reflect_newtype = []
 
 [dependencies]
 reflect_tools_meta = { workspace = true, features = [] }
-derive_tools = { workspace = true, features = ["derive_from", "derive_inner_from" ] }
+derive_tools = { workspace = true, features = [ "derive_from", "derive_inner_from" ] }
+collection_tools = { workspace = true, features = [] }
+
 # qqq : xxx : optimize features set
 
 [dev-dependencies]
 test_tools = { workspace = true }
+collection_tools = { workspace = true, features = [ "collection_constructors", "collection_into_constructors" ] }
 
 # [build-dependencies]
 # cfg_aliases = "0.1.1"

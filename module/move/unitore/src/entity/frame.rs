@@ -1,7 +1,7 @@
 //! Frame storing and retrieving functionality.
 
 use crate::*;
-use error_tools::Result;
+use error_tools::untyped::Result;
 use gluesql::core::
 {
   ast_builder::{ null, text, timestamp, ExprNode }, chrono::{ DateTime, SecondsFormat, Utc }, executor::Payload

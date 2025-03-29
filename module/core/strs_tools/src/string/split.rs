@@ -1,5 +1,5 @@
 /// Private namespace.
-pub( crate ) mod private
+mod private
 {
 
   use crate::string::parse_request::OpType;
@@ -72,7 +72,7 @@ pub( crate ) mod private
       {
         if let Some( x ) =  src.find( pat )
         {
-          r.push( ( x, x + pat.len() ) )
+          r.push( ( x, x + pat.len() ) );
         }
       }
 
@@ -116,7 +116,7 @@ pub( crate ) mod private
 
   impl< 'a, D : Searcher + Clone > SplitFastIterator< 'a, D >
   {
-    #[ allow( dead_code ) ]
+    #[ allow( dead_code, clippy::needless_pass_by_value ) ]
     fn new( o : impl SplitOptionsAdapter< 'a, D > ) -> Self
     {
       Self
@@ -154,12 +154,10 @@ pub( crate ) mod private
             {
               return None;
             }
-            else
-            {
-              self.counter -= 1;
-              self.stop_empty = true;
-              return Some( Split { string : "", typ : SplitType::Delimeted } );
-            }
+
+            self.counter -= 1;
+            self.stop_empty = true;
+            return Some( Split { string : "", typ : SplitType::Delimeted } );
           }
 
           if start == 0 && end != 0
@@ -170,7 +168,7 @@ pub( crate ) mod private
           let mut next = &self.iterable[ ..start ];
           if start == end && self.counter >= 3
           {
-            next = &self.iterable[ ..start + 1 ];
+            next = &self.iterable[ ..=start ];
             start += 1;
           }
 
@@ -229,6 +227,7 @@ pub( crate ) mod private
   ///
 
   #[ derive( Debug ) ]
+  #[ allow( clippy::struct_excessive_bools ) ]
   pub struct SplitIterator< 'a >
   {
     iterator : SplitFastIterator< 'a, Vec< &'a str > >,
@@ -247,6 +246,7 @@ pub( crate ) mod private
 
   impl< 'a > SplitIterator< 'a >
   {
+    #[ allow( clippy::needless_pass_by_value ) ]
     fn new( o : impl SplitOptionsAdapter< 'a, Vec< &'a str > > ) -> Self
     {
       let iterator;
@@ -338,10 +338,7 @@ pub( crate ) mod private
               {
                 return self.next();
               }
-              else
-              {
-                return Some( split );
-              }
+              return Some( split );
             },
             None =>
             {
@@ -405,6 +402,7 @@ pub( crate ) mod private
   ///
 
   #[ derive( Debug ) ]
+  #[ allow( clippy::struct_excessive_bools ) ]
   pub struct SplitOptions< 'a, D >
   where
     D : Searcher + Default + Clone,
@@ -422,7 +420,8 @@ pub( crate ) mod private
 
   impl< 'a > SplitOptions< 'a, Vec< &'a str > >
   {
-    /// Produces SplitIterator.
+    /// Produces `SplitIterator`.
+    #[ must_use ]
     pub fn split( self ) -> SplitIterator< 'a >
     where
       Self : Sized,
@@ -435,7 +434,7 @@ pub( crate ) mod private
   where
     D : Searcher + Default + Clone
   {
-    /// Produces SplitFastIterator.
+    /// Produces `SplitFastIterator`.
     pub fn split_fast( self ) -> SplitFastIterator< 'a, D >
     where
       Self : Sized,
@@ -561,9 +560,10 @@ pub( crate ) mod private
   }
 
   ///
-  /// Former for SplitOptions.
+  /// Former for `SplitOptions`.
   ///
 
+  #[ allow( clippy::struct_excessive_bools ) ]
   #[ derive( Debug ) ]
   pub struct SplitOptionsFormer< 'a >
   {
@@ -637,6 +637,7 @@ pub( crate ) mod private
   ///   .perform();
   /// ```
 
+  #[ must_use ]
   pub fn split< 'a >() -> SplitOptionsFormer< 'a >
   {
     SplitOptionsFormer::new( < &str >::default() )
@@ -645,14 +646,16 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
-  pub use super::private::
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use orphan::*;
+  pub use private::
   {
     Split,
     SplitType,
@@ -664,17 +667,23 @@ pub mod protected
 }
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
-  pub use super::exposed::*;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as split;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use super::own as split;
 
-  pub use super::private::
+  pub use private::
   {
     SplitOptionsAdapter,
     split,
@@ -682,7 +691,10 @@ pub mod exposed
 }
 
 /// Namespace of the module to include with `use module::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
-  pub use super::private::SplitOptionsAdapter;
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  pub use private::SplitOptionsAdapter;
 }
