@@ -27,7 +27,6 @@ mod private
   /// use process_tools::environment;
   /// assert_eq!( environment::is_cicd(), true );
   /// ```
-
   #[ cfg( feature = "process_environment_is_cicd" ) ]
   #[ must_use ]
   pub fn is_cicd() -> bool

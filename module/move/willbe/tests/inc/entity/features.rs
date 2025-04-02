@@ -26,7 +26,7 @@ fn mock_package( features : Vec< ( &str, Vec< &str > ) > ) -> cargo_metadata::Pa
     "dependencies" : [],
     "targets" : [],
     "features" : features_map,
-    "manifest_path" : "".to_string(),
+    "manifest_path" : String::new(), // fix clippy
     "authors" : [],
     "categories" : [],
     "keywords" : [],

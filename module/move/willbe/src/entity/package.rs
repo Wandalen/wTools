@@ -29,8 +29,9 @@ mod private
   #[ derive( Debug, Clone ) ]
   pub enum Package< 'a >
   {
+    
     /// `Cargo.toml` file.
-    Manifest( Manifest ),
+    Manifest( Box< Manifest > ), // fix clippy
     /// Cargo package package.
     WorkspacePackageRef( WorkspacePackageRef< 'a > ),
   }
@@ -59,7 +60,8 @@ mod private
     NotAPackage,
   }
 
-  impl< 'a > TryFrom< ManifestFile > for Package< 'a >
+  // fix clippy
+  impl TryFrom< ManifestFile > for Package< '_ >
   {
     type Error = PackageError;
 
@@ -71,11 +73,11 @@ mod private
         return Err( PackageError::NotAPackage );
       }
 
-      Ok( Self::Manifest( package ) )
+      Ok( Self::Manifest( Box::new( package ) ) ) // fix clippy
     }
   }
 
-  impl< 'a > TryFrom< CrateDir > for Package< 'a >
+  impl TryFrom< CrateDir > for Package< '_ > // fix clippy
   {
     type Error = PackageError;
 
@@ -87,11 +89,11 @@ mod private
         return Err( PackageError::NotAPackage );
       }
 
-      Ok( Self::Manifest( package ) )
+      Ok( Self::Manifest( Box::new( package ) ) ) // fix clippy
     }
   }
 
-  impl< 'a > TryFrom< Manifest > for Package< 'a >
+  impl TryFrom< Manifest > for Package< '_ > // fix clippy
   {
     type Error = PackageError;
 
@@ -102,7 +104,7 @@ mod private
         return Err( PackageError::NotAPackage );
       }
 
-      Ok( Self::Manifest( value ) )
+      Ok( Self::Manifest( Box::new( value ) ) ) // fix clippy
     }
   }
 
@@ -114,7 +116,7 @@ mod private
     }
   }
 
-  impl< 'a > Package< 'a >
+  impl Package< '_ > // fix clippy
   {
 
     /// Path to `Cargo.toml`
@@ -193,7 +195,7 @@ mod private
     {
       match self
       {
-        Package::Manifest( package ) => Ok( package.clone() ),
+        Package::Manifest( package ) => Ok( *package.clone() ), // fix clippy
         Package::WorkspacePackageRef( package ) => Manifest::try_from
         (
           package.manifest_file().map_err( | _ | PackageError::LocalPath )? // qqq : use trait
@@ -217,7 +219,6 @@ mod private
   /// Panics if the package is not loaded or local package is not packed.
   /// # Errors
   /// qqq: doc
-
   pub fn publish_need( package : &Package< '_ >, path : Option< path::PathBuf > ) -> Result< bool, PackageError >
   {
     let name = package.name()?;

@@ -44,6 +44,7 @@ mod private
     }
   }
 
+  
   /// Provides a means to filter both packages and dependencies of an existing package metadata set.
   ///
   /// # Arguments
@@ -71,10 +72,7 @@ mod private
   /// * `dependency_filter`: When specified, it's used with each package and its dependencies to decide
   ///   which dependencies should be included in the return for that package. If not provided, all
   ///   dependencies for a package are included.
-
-  // aaa : for Bohdan : for Petro : bad. don't use PackageMetadata directly, use its abstraction only!
-
-  pub fn filter< 'a >
+  pub fn filter< 'a >   // aaa : for Bohdan : for Petro : bad. don't use PackageMetadata directly, use its abstraction only!
   (
     // packages : &[ WorkspacePackageRef< '_ > ],
     packages : impl Iterator< Item = WorkspacePackageRef< 'a > >,

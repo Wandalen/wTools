@@ -56,7 +56,6 @@ pub fn component_from( input : proc_macro::TokenStream ) -> Result< proc_macro2:
 ///   }
 /// }
 ///
-
 fn for_each_field( field : &syn::Field, item_name : &syn::Ident ) -> Result< proc_macro2::TokenStream >
 {
   let field_name = field.ident.as_ref()

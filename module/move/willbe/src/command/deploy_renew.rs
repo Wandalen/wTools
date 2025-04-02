@@ -13,7 +13,6 @@ mod private
   ///
   /// # Errors
   /// qqq: doc
-
   // xxx : qqq : typed error
   #[ allow( clippy::needless_pass_by_value ) ]
   pub fn deploy_renew( o : VerifiedCommand ) -> error::untyped::Result< () >

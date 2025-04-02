@@ -51,7 +51,7 @@ mod private
     dry : bool,
   }
 
-  impl< 'a > PublishSinglePackagePlanner< 'a >
+  impl PublishSinglePackagePlanner< '_ > // fix clippy
   {
     fn build( self ) -> PackagePublishInstruction
     {

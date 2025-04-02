@@ -136,7 +136,8 @@ mod private
     fn from_cargo_toml
     (
       package : Package< '_ >,
-      default_discord_url : &Option< String >,
+      // fix clippy
+      default_discord_url : Option< &String >,
     )
     -> Result< Self, ModulesHeadersRenewError >
     {
@@ -150,7 +151,7 @@ mod private
 
       let discord_url = package
       .discord_url()?
-      .or_else( || default_discord_url.clone() );
+      .or_else( || default_discord_url.cloned() );
       Ok
         (
           Self
@@ -193,8 +194,9 @@ mod private
         )
         .to_string_lossy()
         .to_string();
+        // fix clippy
         #[ cfg( target_os = "windows" ) ]
-        let relative_path = relative_path.replace( "\\", "/" );
+        let relative_path = relative_path.replace( '\\', "/" );
         // aaa : for Petro : use path_toools
         // aaa : used
         let p = relative_path.replace( '/',"%2F" );
@@ -297,8 +299,8 @@ mod private
         .err_with_report( &report )?
       )
       .err_with_report( &report )?;
-
-      let header = ModuleHeader::from_cargo_toml( pakage, &discord_url )
+      // fix clippy
+      let header = ModuleHeader::from_cargo_toml( pakage, discord_url.as_ref() )
       .err_with_report( &report )?;
 
       let mut file = OpenOptions::new()

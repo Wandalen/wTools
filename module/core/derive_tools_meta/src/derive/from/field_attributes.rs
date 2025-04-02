@@ -14,7 +14,6 @@ use former_types::Assign;
 ///
 /// Attributes of a field / variant
 ///
-
 /// Represents the attributes of a struct. Aggregates all its attributes.
 #[ derive( Debug, Default ) ]
 pub struct FieldAttributes
@@ -181,10 +180,10 @@ impl syn::parse::Parse for FieldAttributeConfig
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ from( on ) ]'
+        r"Expects an attribute of format '#[ from( on ) ]'
   {known}
   But got: '{}'
-"#,
+",
         qt!{ #ident }
       )
     };

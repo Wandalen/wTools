@@ -16,7 +16,6 @@ mod private
   ///
   /// # Errors
   /// qqq: doc
-
   #[ allow( clippy::needless_pass_by_value ) ]
   pub fn features( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {

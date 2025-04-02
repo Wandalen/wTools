@@ -265,7 +265,6 @@ mod private
   ///
   /// # Panics
   /// qqq: doc
-
   // qqq : for Bohdan : typed error
   #[ allow( clippy::single_match, clippy::needless_pass_by_value, clippy::implicit_hasher ) ]
   pub fn remove_not_required_to_publish

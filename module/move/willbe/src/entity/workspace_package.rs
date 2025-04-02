@@ -140,7 +140,7 @@ mod private
     }
   }
 
-  impl< 'a > Entries for WorkspacePackageRef< 'a >
+  impl Entries for WorkspacePackageRef< '_ > // fix clippy
   {
     fn entries( &self ) -> impl IterTrait< '_, SourceFile >
     {
@@ -154,7 +154,7 @@ mod private
     }
   }
 
-  impl< 'a > Sources for WorkspacePackageRef< 'a >
+  impl Sources for WorkspacePackageRef< '_ > // fix clippy
   {
     fn sources( &self ) -> impl IterTrait< '_, SourceFile >
     {
@@ -163,14 +163,14 @@ mod private
       WalkDir::new( crate_dir )
       .into_iter()
       .filter_map( Result::ok )
-      .filter( | e | e.path().extension().map_or( false, | ext | ext == "rs" ) )
+      .filter( | e | e.path().extension().is_some_and(| ext | ext == "rs") ) // fix clippy
       .map( | e | SourceFile::try_from( e.path() ).unwrap() )
       .collect::< Vec< _ > >()
       .into_iter()
     }
   }
 
-  impl< 'a > CodeItems for WorkspacePackageRef< 'a >
+  impl CodeItems for WorkspacePackageRef< '_ > // fix clippy
   {
     fn items( &self ) -> impl IterTrait< '_, syn::Item >
     {
@@ -181,7 +181,7 @@ mod private
     }
   }
 
-  impl< 'a > AsCode for WorkspacePackageRef< 'a >
+  impl AsCode for WorkspacePackageRef< '_ > // fix clippy
   {
     fn as_code( &self ) -> std::io::Result< Cow< '_, str > >
     {

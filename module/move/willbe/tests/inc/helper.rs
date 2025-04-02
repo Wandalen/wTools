@@ -7,7 +7,7 @@ use std::
   io::Write,
 };
 
-pub const BINARY_NAME : &'static str = "will";
+pub const BINARY_NAME : &str = "will"; // fix clippy
 
 #[ derive( Debug ) ]
 pub struct ProjectBuilder
@@ -59,19 +59,19 @@ impl ProjectBuilder
     if let Some( content ) = &self.toml_content
     {
       let mut file = File::create( project_path.join( "Cargo.toml" ) )?;
-      write!( file, "{}", content )?;
+      write!( file, "{content}" )?; // fix clippy
     }
 
     let mut file = File::create( project_path.join( "src/lib.rs" ) )?;
     if let Some( content ) = &self.lib_content
     {
-      write!( file, "{}", content )?;
+      write!( file, "{content}" )?; // fix clippy
     }
 
     if let Some( content ) = &self.test_content
     {
       let mut file = File::create( project_path.join( "tests/tests.rs" ) )?;
-      write!( file, "{}", content )?;
+      write!( file, "{content}" )?; // fix clippy
     }
 
     Ok( project_path.to_path_buf() )

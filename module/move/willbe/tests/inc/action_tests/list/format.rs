@@ -56,13 +56,13 @@ fn node_with_depth_two_leaves_stop_spacer()
     dev_dependencies : vec![],
     build_dependencies : vec![],
   };
-  let expected = r#"
+  let expected = r"
 node
 ├─ sub_node1
 │  └─ sub_sub_node1
 └─ sub_node2
    └─ sub_sub_node2
-"#.trim();
+".trim();
 
   let printer = TreePrinter::new( &node );
   let actual = printer.display_with_spacer( "" ).unwrap();
@@ -116,12 +116,12 @@ fn node_with_depth_two_leaves()
     dev_dependencies : vec![],
     build_dependencies : vec![],
   };
-  let expected = r#"
+  let expected = r"
 node
 ├─ sub_node1
 │  └─ sub_sub_node
 └─ sub_node2
-"#.trim();
+".trim();
 
   let printer = TreePrinter::new( &node );
   let actual = printer.display_with_spacer( "" ).unwrap();
@@ -162,11 +162,11 @@ fn node_with_depth_one_leaf()
     dev_dependencies : vec![],
     build_dependencies : vec![],
   };
-  let expected = r#"
+  let expected = r"
 node
 └─ sub_node
    └─ sub_sub_node
-"#.trim();
+".trim();
 
   let printer = TreePrinter::new( &node );
   let actual = printer.display_with_spacer( "" ).unwrap();
@@ -211,12 +211,12 @@ fn node_with_build_dependencies_tree_with_two_leaves()
       }
     ],
   };
-  let expected = r#"
+  let expected = r"
 node
 [build-dependencies]
 ├─ build_sub_node1
 └─ build_sub_node2
-"#.trim();
+".trim();
 
   let printer = TreePrinter::new( &node );
   let actual = printer.display_with_spacer( "" ).unwrap();
@@ -250,11 +250,11 @@ fn node_with_build_dependencies_tree_with_one_leaf()
       }
     ],
   };
-  let expected = r#"
+  let expected = r"
 node
 [build-dependencies]
 └─ build_sub_node
-"#.trim();
+".trim();
 
   let printer = TreePrinter::new( &node );
   let actual = printer.display_with_spacer( "" ).unwrap();
@@ -299,12 +299,12 @@ fn node_with_dev_dependencies_tree_with_two_leaves()
     ],
     build_dependencies : vec![],
   };
-  let expected = r#"
+  let expected = r"
 node
 [dev-dependencies]
 ├─ dev_sub_node1
 └─ dev_sub_node2
-"#.trim();
+".trim();
 
   let printer = TreePrinter::new( &node );
   let actual = printer.display_with_spacer( "" ).unwrap();
@@ -338,11 +338,11 @@ fn node_with_dev_dependencies_tree_with_one_leaf()
     ],
     build_dependencies : vec![],
   };
-  let expected = r#"
+  let expected = r"
 node
 [dev-dependencies]
 └─ dev_sub_node
-"#.trim();
+".trim();
 
   let printer = TreePrinter::new( &node );
   let actual = printer.display_with_spacer( "" ).unwrap();
@@ -387,11 +387,11 @@ fn node_with_dependencies_tree_with_two_leaves()
     dev_dependencies : vec![],
     build_dependencies : vec![],
   };
-  let expected = r#"
+  let expected = r"
 node
 ├─ sub_node1
 └─ sub_node2
-"#.trim();
+".trim();
 
   let printer = TreePrinter::new( &node );
   let actual = printer.display_with_spacer( "" ).unwrap();
@@ -423,10 +423,10 @@ fn node_with_dependency_tree_with_one_leaf()
     dev_dependencies : vec![],
     build_dependencies : vec![],
   };
-  let expected = r#"
+  let expected = r"
 node
 └─ sub_node
-"#.trim();
+".trim();
 
   let printer = TreePrinter::new( &node );
   let actual = printer.display_with_spacer( "" ).unwrap();

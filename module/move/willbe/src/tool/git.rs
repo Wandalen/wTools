@@ -182,9 +182,7 @@ mod private
   ///
   /// # Errors
   /// qqq: doc
-
   // qqq : should be typed error, apply err_with
-
   pub fn reset< P >( path : P, hard : bool, commits_count : usize, dry : bool )
   -> error::untyped::Result< Report >
   // qqq : don't use 1-prameter Result
@@ -239,10 +237,8 @@ mod private
   ///
   /// # Errors
   /// qqq: doc
-
   // qqq : should be typed error, apply err_with
   // qqq : don't use 1-prameter Result
-
   pub fn ls_remote_url< P >( path : P ) -> error::untyped::Result< Report >
   where
     P : AsRef< Path >,
