@@ -98,19 +98,19 @@ pub mod test;
 
 /// Error tools.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "standalone" ) ]
+#[ cfg( feature = "standalone_build" ) ]
 mod standalone
 {
 
   /// Error tools.
   #[ path = "../../../../core/error_tools/src/error/mod.rs" ]
-  pub mod error;
-  pub use error as error_tools;
+  pub mod error_tools;
+  pub use error_tools as error;
 
   /// Collection tools.
   #[ path = "../../../../core/collection_tools/src/collection/mod.rs" ]
-  pub mod collection;
-  pub use collection as collection_tools;
+  pub mod collection_tools;
+  pub use collection_tools as collection;
 
   /// impl and index macros.
   #[ path = "../../../../core/impls_index/src/impls_index/mod.rs" ]
@@ -119,27 +119,33 @@ mod standalone
   /// Memory tools.
   #[ path = "../../../../core/mem_tools/src/mem.rs" ]
   pub mod mem_tools;
+  pub use mem_tools as mem;
+
+  /// Typing tools.
+  #[ path = "../../../../core/typing_tools/src/typing.rs" ]
+  pub mod typing_tools;
+  pub use typing_tools as typing;
 
 }
 
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "standalone" ) ]
+#[ cfg( feature = "standalone_build" ) ]
 pub use standalone::*;
 
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( not( feature = "standalone" ) ) ]
+#[ cfg( not( feature = "standalone_build" ) ) ]
 pub use ::
 {
   error_tools,
   collection_tools,
   impls_index,
   mem_tools,
+  typing_tools,
 };
 
 #[ cfg( feature = "enabled" ) ]
 pub use ::
 {
-  typing_tools,
   diagnostics_tools,
   process_tools,
 };

@@ -1,6 +1,8 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
+use test_tools::exposed::*;
+
 mod basic_test;
 mod namespace_test;
 

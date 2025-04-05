@@ -1,3 +1,5 @@
+//! All test.
+
 #![ allow( unused_imports ) ]
 
 // #![ deny( rust_2018_idioms ) ]

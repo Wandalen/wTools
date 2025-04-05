@@ -1,10 +1,12 @@
+//! All tests.
+
 #![ allow( unused_imports ) ]
 
 #[ path="../../../../module/step/meta/src/module/aggregating.rs" ]
 mod aggregating;
 
-#[ allow( unused_imports ) ]
-use test_tools::exposed::*;
+// #[ allow( unused_imports ) ]
+// use test_tools::exposed::*;
 
 #[ allow( unused_imports ) ]
 use ::collection_tools as the_module;
