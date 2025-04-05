@@ -7,8 +7,5 @@
 // #![ feature( meta_idents_concat ) ]
 #![ allow( unused_imports ) ]
 
-// use test_tools::exposed::*;
 use is_slice as the_module;
-
-// #[ path = "./inc.rs" ]
 mod inc;

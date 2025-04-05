@@ -1,4 +1,5 @@
 //! All Tests
+#![ allow( unused_imports ) ]
 
 // #![ allow( unexpected_cfgs ) ]
 // #![ no_std ]
@@ -15,7 +16,5 @@
 
 // #![ cfg_attr( RUSTC_IS_NIGHTLY, feature( type_name_of_val ) ) ]
 
-#[ allow( unused_imports ) ]
 use inspect_type as the_module;
-
 mod inc;

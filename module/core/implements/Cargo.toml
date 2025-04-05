@@ -24,8 +24,6 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-
-
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
@@ -36,4 +34,5 @@ enabled = []
 [dependencies]
 
 [dev-dependencies]
-test_tools = { workspace = true }
+# this crate should not rely on test_tools to exclude cyclic dependencies
+# test_tools = { workspace = true }

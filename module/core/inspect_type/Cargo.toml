@@ -32,7 +32,8 @@ enabled = []
 [dependencies]
 
 [dev-dependencies]
-test_tools = { workspace = true }
+# this crate should not rely on test_tools to exclude cyclic dependencies
+# test_tools = { workspace = true }
 
 [build-dependencies]
 rustc_version = "0.4"
