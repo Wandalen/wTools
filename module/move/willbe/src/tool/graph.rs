@@ -283,8 +283,9 @@ mod private
     for root in roots
     {
       let root = graph.node_indices().find( | &i | graph[ i ] == *root ).unwrap();
+      // qqq : no unwraps. simulate crash here and check output. it should be verbal
       let mut dfs = DfsPostOrder::new( &graph, root );
-      'main : while let Some( n ) = dfs.next(&graph)
+      'main : while let Some( n ) = dfs.next( &graph )
       {
         for neighbor in graph.neighbors_directed( n, Outgoing )
         {
