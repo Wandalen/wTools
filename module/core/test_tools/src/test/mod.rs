@@ -20,6 +20,7 @@ pub mod compiletime;
 pub mod helper;
 pub mod smoke_test;
 pub mod version;
+pub mod process;
 
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
@@ -44,6 +45,7 @@ pub mod own
     helper::orphan::*,
     smoke_test::orphan::*,
     version::orphan::*,
+    process::orphan::*,
   };
 
 }
@@ -78,6 +80,7 @@ pub mod exposed
     helper::exposed::*,
     smoke_test::exposed::*,
     version::exposed::*,
+    process::exposed::*,
   };
 
   #[ doc( inline ) ]
@@ -107,6 +110,7 @@ pub mod prelude
     helper::prelude::*,
     smoke_test::prelude::*,
     version::prelude::*,
+    process::prelude::*,
   };
 
 }

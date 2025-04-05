@@ -19,11 +19,9 @@ keywords = [ "fundamental", "general-purpose" ]
 [lints]
 workspace = true
 
-
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-
 
 [features]
 default = [ "enabled", "process_environment_is_cicd" ]

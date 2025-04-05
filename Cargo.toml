@@ -555,6 +555,11 @@ version = "~1.0"
 # features = []
 # default-features = false
 
+[workspace.dependencies.pretty_assertions]
+version = "~1.4.0"
+# features = []
+# default-features = false
+
 [workspace.dependencies.hashbrown]
 version = "~0.14.3"
 # optional = true
@@ -576,3 +581,6 @@ version = "~0.2"
 
 [workspace.dependencies.rand]
 version = "0.8.5"
+
+[workspace.dependencies.trybuild]
+version = "1.0.85"

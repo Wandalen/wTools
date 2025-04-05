@@ -44,7 +44,7 @@ fn main()
     K : core::cmp::Eq + std::hash::Hash,
   {
     type Item = K;
-    type IntoIter = collection_tools::hset::IntoIter< K >;
+    type IntoIter = collection_tools::hash_set::IntoIter< K >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -58,7 +58,7 @@ fn main()
     K : core::cmp::Eq + std::hash::Hash,
   {
     type Item = &'a K;
-    type IntoIter = collection_tools::hset::Iter< 'a, K >;
+    type IntoIter = collection_tools::hash_set::Iter< 'a, K >;
 
     fn into_iter( self ) -> Self::IntoIter
     {

@@ -250,7 +250,6 @@ mod private
   }
 
   /// Run smoke test for both published and local version of the module.
-
   pub fn smoke_tests_run()
   {
     smoke_test_for_local_run();
@@ -344,9 +343,13 @@ pub mod own
   use super::*;
 
   #[ doc( inline ) ]
-  pub use
+  pub use private::
   {
-    private::*,
+    SmokeModuleTest,
+    smoke_test_run,
+    smoke_tests_run,
+    smoke_test_for_local_run,
+    smoke_test_for_published_run,
   };
 
 }

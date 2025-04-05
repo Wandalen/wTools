@@ -26,9 +26,9 @@ mod private
     ///
     /// A `Result` of type `ReportOk` if the original result is `Ok`, or a tuple `(ReportErr, E)` containing the additional
     /// context and the original error if the original result is `Err`.
-    /// 
+    ///
     /// # Errors
-    /// 
+    ///
     /// qqq: errors
     ///
     /// # Example
@@ -55,9 +55,9 @@ mod private
     ///
     /// A `Result` of type `ReportOk` if the original result is `Ok`, or a tuple `(ReportErr, E)` containing the additional
     /// context and the original error if the original result is `Err`.
-    /// 
+    ///
     /// # Errors
-    /// 
+    ///
     /// qqq: Errors
     ///
     /// # Example

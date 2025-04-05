@@ -4,9 +4,10 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 #![ allow( unexpected_cfgs ) ]
 
+// xxx : qqq : no need in nightly anymore
 // #[ allow( unexpected_cfgs ) ]
 // #[ cfg( RUSTC_IS_NIGHTLY ) ]
-#[ cfg( not( RUSTC_IS_STABLE ) ) ]
+// #[ cfg( not( RUSTC_IS_STABLE ) ) ]
 mod nightly
 {
 
@@ -96,7 +97,7 @@ pub mod prelude
   // #[ rustversion::nightly ]
   // #[ cfg( feature = "type_name_of_val" ) ]
   // #[ cfg( RUSTC_IS_NIGHTLY ) ]
-  #[ cfg( not( RUSTC_IS_STABLE ) ) ]
+  // #[ cfg( not( RUSTC_IS_STABLE ) ) ]
   #[ doc( inline ) ]
   pub use super::nightly::*;
 }

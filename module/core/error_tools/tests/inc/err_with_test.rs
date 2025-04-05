@@ -20,7 +20,7 @@ fn err_with()
 fn err_with_report()
 {
 
-  use error_tools::ErrWith;
+  use the_module::ErrWith;
   let result : Result< (), std::io::Error > = Err( std::io::Error::new( std::io::ErrorKind::Other, "an error occurred" ) );
   let report = "additional context";
   let got : Result< (), ( &str, std::io::Error ) > = result.err_with_report( &report );

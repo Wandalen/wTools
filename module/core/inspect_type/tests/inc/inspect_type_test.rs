@@ -4,10 +4,9 @@ use super::*;
 
 //
 
-// #[ test_tools::nightly ]
-// #[ cfg( feature = "nightly" ) ]
-// #[ cfg( RUSTC_IS_NIGHTLY ) ]
-#[ cfg( not( RUSTC_IS_STABLE ) ) ]
+// use the_module::nightly;
+
+// #[ cfg( not( RUSTC_IS_STABLE ) ) ]
 tests_impls!
 {
 
@@ -43,10 +42,7 @@ tests_impls!
 
 //
 
-// #[ test_tools::nightly ]
-// #[ cfg( feature = "nightly" ) ]
-// #[ cfg( RUSTC_IS_NIGHTLY ) ]
-#[ cfg( not( RUSTC_IS_STABLE ) ) ]
+// #[ cfg( not( RUSTC_IS_STABLE ) ) ]
 tests_index!
 {
   inspect_to_str_type_of_test,

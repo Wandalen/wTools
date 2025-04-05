@@ -1,9 +1,10 @@
 #![ deny( unused_imports ) ]
 
 use super::*;
-#[ allow ( unused_imports ) ]
-use the_module::exposed::*;
+// #[ allow ( unused_imports ) ]
+// use the_module::exposed::*;
 // use test_tools::exposed::*;
+// use test_tools::a_id;
 
 //
 
@@ -12,7 +13,7 @@ fn fn_name()
 {
   let f1 = 13;
 
-  let f2 = fn_name!
+  let f2 = the_module::exposed::fn_name!
   {
     fn f1()
     {
@@ -29,7 +30,7 @@ fn fn_name()
 fn fn_rename()
 {
 
-  fn_rename!
+  the_module::exposed::fn_rename!
   {
     @Name { f2 }
     @Fn
@@ -100,7 +101,7 @@ fn fns()
       };
     }
 
-    fns!
+    the_module::exposed::fns!
     {
       @Callback { count }
       @Fns
@@ -135,7 +136,7 @@ fn fns()
       };
     }
 
-    fns!
+    the_module::exposed::fns!
     {
       @Callback { count }
       @Fns
@@ -172,7 +173,7 @@ fn fns()
       };
     }
 
-    fns!
+    the_module::exposed::fns!
     {
       @Callback { count }
       @Fns
@@ -204,7 +205,7 @@ fn fns()
       };
     }
 
-    fns!
+    the_module::exposed::fns!
     {
       @Callback { count }
       @Fns
@@ -235,7 +236,7 @@ fn fns()
       };
     }
 
-    fns!
+    the_module::exposed::fns!
     {
       @Callback { count }
       @Fns
@@ -268,7 +269,7 @@ fn fns()
       };
     }
 
-    fns!
+    the_module::exposed::fns!
     {
       @Callback { count }
       @Fns
@@ -300,7 +301,7 @@ fn fns()
 //       };
 //     }
 //
-//     fns!
+//     the_module::exposed::fns!
 //     {
 //       @Callback { count }
 //       @Fns
@@ -333,7 +334,7 @@ fn fns()
     }
 
     // trace_macros!( true );
-    fns!
+    the_module::exposed::fns!
     {
       @Callback { count }
       @Fns
