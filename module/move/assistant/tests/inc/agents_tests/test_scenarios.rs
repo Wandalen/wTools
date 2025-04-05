@@ -14,7 +14,7 @@ pub fn gen_test_scenario_raw() -> ScenarioRaw
   [
     NodeRaw::former()
     .id( "node_1".to_string() )
-    .r#type( "agents::completion".to_string() )
+    .typ( "agents::completion".to_string() )
     .params(
       {
         let mut map : HashMap< String, String > = HashMap::new();
@@ -27,7 +27,7 @@ pub fn gen_test_scenario_raw() -> ScenarioRaw
 
     NodeRaw::former()
     .id( "node_2".to_string() )
-    .r#type( "agents::classify".to_string() )
+    .typ( "agents::classify".to_string() )
     .params(
       {
         let mut map : HashMap< String, String > = HashMap::new();
@@ -49,7 +49,7 @@ pub fn gen_test_scenario_raw_wrong() -> ScenarioRaw
   [
     NodeRaw::former()
     .id( "node_1".to_string() )
-    .r#type( ":agents:".to_string() ) // This part is incorrect. Path written in wrong syntax.
+    .typ( ":agents:".to_string() ) // This part is incorrect. Path written in wrong syntax.
     .params(
       {
         let mut map : HashMap< String, String > = HashMap::new();

@@ -25,12 +25,12 @@ mod private
       writer.write( b" {\n" )?;
 
       writer.write( b"  \"type\": \"" )?;
-      writer.write( node.r#type.as_bytes() )?;
+      writer.write( node.typ.as_bytes() )?;
       writer.write( b"\"" )?;
 
       if node.params.len() > 0
       {
-        writer.write( b"," )?; 
+        writer.write( b"," )?;
       }
 
       writer.write( b"\n" )?;
