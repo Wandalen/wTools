@@ -53,7 +53,8 @@ serde = { version = "1.0.213", features = ["derive"] }
 serde_with = "3.11.0"
 # error_tools = "0.17.0"
 error_tools = { workspace = true, features = [ "full" ] }
-derive_tools = { version = "0.32.0", features = ["full"] }
+derive_tools = { workspace = true, features = ["full"] }
+# derive_tools = { version = "0.32.0", features = ["full"] }
 regex = { version = "1.10.3" }
 serde_yaml = "0.9"
 
