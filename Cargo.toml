@@ -136,7 +136,7 @@ default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.reflect_tools_meta]
-version = "~0.3.0"
+version = "~0.4.0"
 path = "module/core/reflect_tools_meta"
 default-features = false
 # features = [ "enabled" ]
@@ -505,6 +505,14 @@ path = "module/move/deterministic_rand"
 [workspace.dependencies.crates_tools]
 version = "~0.15.0"
 path = "module/move/crates_tools"
+
+[workspace.dependencies.assistant]
+version = "~0.1.0"
+path = "module/move/assistant"
+
+[workspace.dependencies.llm_tools]
+version = "~0.1.0"
+path = "module/move/llm_tools"
 
 
 ## steps
