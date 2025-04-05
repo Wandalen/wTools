@@ -12,7 +12,6 @@ use former_types::Assign;
 ///
 /// Attributes of the whole tiem
 ///
-
 /// Represents the attributes of a struct. Aggregates all its attributes.
 #[ derive( Debug, Default ) ]
 pub struct ItemAttributes
@@ -165,10 +164,10 @@ impl syn::parse::Parse for ItemAttributeConfig
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ from( off ) ]'
+        r"Expects an attribute of format '#[ from( off ) ]'
   {known}
   But got: '{}'
-"#,
+",
         qt!{ #ident }
       )
     };

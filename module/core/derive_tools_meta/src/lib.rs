@@ -79,7 +79,6 @@ mod derive;
 ///
 /// The macro facilitates the conversion without additional boilerplate code.
 ///
-
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_from" ) ]
 #[ proc_macro_derive
@@ -134,7 +133,6 @@ pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// The macro facilitates the conversion without additional boilerplate code.
 ///
-
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_new" ) ]
 #[ proc_macro_derive
@@ -229,7 +227,6 @@ pub fn new( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///   }
 /// }
 /// ```
-
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_inner_from" ) ]
 #[ proc_macro_derive( InnerFrom, attributes( debug ) ) ]
@@ -270,7 +267,6 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///   }
 /// }
 /// ```
-
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_deref" ) ]
 #[ proc_macro_derive( Deref, attributes( debug ) ) ]
@@ -330,7 +326,6 @@ pub fn deref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// }
 ///
 /// ```
-
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_deref_mut" ) ]
 #[ proc_macro_derive( DerefMut, attributes( debug ) ) ]
@@ -369,7 +364,6 @@ pub fn deref_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///   }
 /// }
 /// ```
-
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_as_ref" ) ]
 #[ proc_macro_derive( AsRef, attributes( debug ) ) ]
@@ -409,7 +403,6 @@ pub fn as_ref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// }
 ///
 /// ```
-
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_as_mut" ) ]
 #[ proc_macro_derive( AsMut, attributes( debug ) ) ]
@@ -514,7 +507,6 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// }
 /// ```
 ///
-
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_variadic_from" ) ]
 #[ proc_macro_derive( VariadicFrom, attributes( debug ) ) ]
@@ -619,7 +611,6 @@ pub fn derive_not( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// The macro facilitates the addition of the `PhantomData` field without additional boilerplate code.
 ///
-
 #[ cfg( feature = "enabled" ) ]
 #[ cfg ( feature = "derive_phantom" ) ]
 #[ proc_macro_attribute ]
@@ -675,7 +666,6 @@ pub fn phantom( _attr: proc_macro::TokenStream, input : proc_macro::TokenStream 
 /// };
 /// ```
 ///
-
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_index" ) ]
 #[ proc_macro_derive
@@ -745,7 +735,6 @@ pub fn derive_index( input : proc_macro::TokenStream ) -> proc_macro::TokenStrea
 /// };
 /// ```
 ///
-
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_index_mut" ) ]
 #[ proc_macro_derive

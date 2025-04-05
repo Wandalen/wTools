@@ -19,7 +19,7 @@ mod private
   }
 
   #[ cfg( feature = "progress_bar" ) ]
-  impl < 'a > std::fmt::Debug for ProgressBar< 'a >
+  impl  std::fmt::Debug for ProgressBar< '_ > // fix clippy
   {
     fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
     {

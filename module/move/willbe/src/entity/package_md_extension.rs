@@ -28,8 +28,8 @@ mod private
     /// qqq: doc
     fn discord_url( &self ) -> Result< Option< String >, package::PackageError >;
   }
-
-  impl < 'a > package::Package< 'a >
+  // fix clippy
+  impl  package::Package< '_ >
   {
     /// Package name
     /// # Errors

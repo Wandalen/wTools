@@ -8,7 +8,6 @@ mod private
   ///
   /// Form CA commands grammar.
   ///
-
   #[ allow( clippy::too_many_lines ) ]
   pub fn ca() -> CommandsAggregatorFormer
   {

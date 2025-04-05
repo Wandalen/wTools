@@ -1,7 +1,7 @@
 use crate::*;
 
 use std::path::{ Path, PathBuf };
-use std::str::FromStr;
+use core::str::FromStr;
 use std::io::Write;
 use assert_fs::prelude::*;
 use the_module::
@@ -167,7 +167,7 @@ default-features = true
   let mut root_manifest = Manifest::try_from( root_manifest_dir_absolute_path ).unwrap();
   // root_manifest.load().unwrap();
   let data = root_manifest.data();
-  let current_version_item = data.get( "workspace" ).and_then( | w | w.get( "dependencies" ) ).and_then( | d | d.get( &name ) ).and_then( | p | p.get( "version" ) ).unwrap();
+  let current_version_item = data.get( "workspace" ).and_then( | w | w.get( "dependencies" ) ).and_then( | d | d.get( name ) ).and_then( | p | p.get( "version" ) ).unwrap(); // fix clippy
   let current_version = current_version_item.as_str().unwrap();
   assert_eq!( &bumped_version.to_string(), current_version );
 }
@@ -223,7 +223,7 @@ default-features = true
   let mut root_manifest = Manifest::try_from( root_manifest_dir_absolute_path ).unwrap();
   // root_manifest.load().unwrap();
   let data = root_manifest.data();
-  let current_version_item = data.get( "workspace" ).and_then( | w | w.get( "dependencies" ) ).and_then( | d | d.get( &name ) ).and_then( | p | p.get( "version" ) ).unwrap();
+  let current_version_item = data.get( "workspace" ).and_then( | w | w.get( "dependencies" ) ).and_then( | d | d.get( name ) ).and_then( | p | p.get( "version" ) ).unwrap(); 
   let current_version = current_version_item.as_str().unwrap();
   assert_eq!( &version.to_string(), current_version );
 }

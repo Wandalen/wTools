@@ -1,6 +1,6 @@
 #[ allow( clippy::wildcard_imports ) ]
 use super::*;
-use macro_tools::{ container_kind };
+use macro_tools::container_kind;
 
 ///
 /// Definition of a field.
@@ -455,7 +455,7 @@ impl< 'a > FormerField< 'a >
     {
       let debug = format!
       (
-        r#"
+        r"
 impl< Definition > {former}< Definition >
 where
   Definition : former::FormerDefinition< Storage = {former_storage} >,
@@ -470,14 +470,14 @@ where
     self
   }}
 }}
-        "#,
+        ",
         format!( "{}", qt!{ #typ } ),
       );
       let about = format!
       (
-r#"derive : Former
+r"derive : Former
 item : {item}
-field : {field_ident}"#,
+field : {field_ident}",
       );
       diag::report_print( about, original_input, debug );
     }
@@ -693,7 +693,7 @@ field : {field_ident}"#,
     {
       let debug = format!
       (
-        r#"
+        r"
 /// The collection setter provides a collection setter that returns a CollectionFormer tailored for managing a collection of child entities. It employs a generic collection definition to facilitate operations on the entire collection, such as adding or updating elements.
 
 impl< Definition, > {former}< Definition, >
@@ -713,14 +713,14 @@ where
   }}
 
 }}
-        "#,
+        ",
         format!( "{}", qt!{ #( #params, )* } ),
       );
       let about = format!
       (
-r#"derive : Former
+r"derive : Former
 item : {item}
-field : {field_ident}"#,
+field : {field_ident}",
       );
       diag::report_print( about, original_input, debug );
     }
@@ -736,13 +736,13 @@ field : {field_ident}"#,
 
     let subform_collection_end_doc = format!
     (
-      r#"
+      r"
 A callback structure to manage the final stage of forming a `{0}` for the `{item}` collection.
 
 This callback is used to integrate the contents of a temporary `{0}` back into the original `{item}` former
 after the subforming process is completed. It replaces the existing content of the `{field_ident}` field in `{item}`
 with the new content generated during the subforming process.
-      "#,
+      ",
       format!( "{}", qt!{ #field_typ } ),
     );
 
@@ -891,7 +891,7 @@ with the new content generated during the subforming process.
 
     let doc = format!
     (
-      r#"
+      r"
 
 Initiates the addition of {field_ident} to the `{item}` entity using a dedicated subformer.
 
@@ -905,7 +905,7 @@ parent's structure once formed.
 Returns an instance of `Former2`, a subformer ready to begin the formation process for `{0}` entities,
 allowing for dynamic and flexible construction of the `{item}` entity's {field_ident}.
 
-      "#,
+      ",
       format!( "{}", qt!{ #field_typ } ),
     );
 
@@ -946,7 +946,7 @@ allowing for dynamic and flexible construction of the `{item}` entity's {field_i
 
       let doc = format!
       (
-        r#"
+        r"
 Provides a user-friendly interface to add an instancce of {field_ident} to the {item}.
 
 # Returns
@@ -954,7 +954,7 @@ Provides a user-friendly interface to add an instancce of {field_ident} to the {
 Returns an instance of `Former2`, a subformer ready to begin the formation process for `{0}` entities,
 allowing for dynamic and flexible construction of the `{item}` entity's {field_ident}.
 
-        "#,
+        ",
         format!( "{}", qt!{ #field_typ } ),
       );
 
@@ -998,7 +998,7 @@ allowing for dynamic and flexible construction of the `{item}` entity's {field_i
     {
       let debug = format!
       (
-        r#"
+        r"
 /// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
 /// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
 /// integrating them into the formation process of the parent entity.
@@ -1016,21 +1016,21 @@ where
   // Replace {0} with name of type of entry value.
 
 }}
-        "#,
+        ",
         format!( "{}", qt!{ #entry_typ } ),
       );
       let about = format!
       (
-r#"derive : Former
+r"derive : Former
 item : {item}
-field : {field_ident}"#,
+field : {field_ident}",
       );
       diag::report_print( about, original_input, debug );
     }
 
     let doc = format!
     (
-      r#"
+      r"
 
 Implements the `FormingEnd` trait for `{subform_entry_end}` to handle the final
 stage of the forming process for a `{item}` collection that contains `{0}` elements.
@@ -1058,7 +1058,7 @@ preformed elements to this storage.
 Returns the updated `{former}` instance with newly added {field_ident}, completing the
 formation process of the `{item}`.
 
-      "#,
+      ",
       format!( "{}", qt!{ #field_typ } ),
     );
 
@@ -1179,7 +1179,7 @@ formation process of the `{item}`.
 
     let doc = format!
     (
-      r#"
+      r"
 
 Initiates the scalar subformer for a `{0}` entity within a `{item}`.
 
@@ -1203,7 +1203,7 @@ is properly initialized with all necessary configurations, including the default
 This function is typically called internally by a more user-friendly method that abstracts away the complex
 generics, providing a cleaner interface for initiating subform operations on scalar fields.
 
-      "#,
+      ",
       format!( "{}", qt!{ #field_typ } ),
     );
 
@@ -1267,7 +1267,7 @@ generics, providing a cleaner interface for initiating subform operations on sca
 
       let doc = format!
       (
-        r#"
+        r"
 Provides a user-friendly interface to begin subforming a scalar `{0}` field within a `{item}`.
 
 This method abstracts the underlying complex generics involved in setting up the former, simplifying the
@@ -1277,7 +1277,7 @@ This method utilizes the more generic `{subform_scalar}` method to set up and re
 providing a straightforward and type-safe interface for client code. It encapsulates details about the specific
 former and end action types, ensuring a seamless developer experience when forming parts of a `{item}`.
 
-        "#,
+        ",
         format!( "{}", qt!{ #field_typ } ),
       );
 
@@ -1320,7 +1320,7 @@ former and end action types, ensuring a seamless developer experience when formi
     {
       let debug = format!
       (
-        r#"
+        r"
 /// Extends `{former}` to include a method that initializes and configures a subformer for the '{field_ident}' field.
 /// This function demonstrates the dynamic addition of a named {field_ident}, leveraging a subformer to specify detailed properties.
 
@@ -1334,21 +1334,21 @@ where
     self._{field_ident}_subform_scalar::< {0}Former< _ >, _, >().name( name )
   }}
 }}
-        "#,
+        ",
         format!( "{}", qt!{ #field_typ } ),
       );
       let about = format!
       (
-r#"derive : Former
+r"derive : Former
 item : {item}
-field : {field_ident}"#,
+field : {field_ident}",
       );
       diag::report_print( about, original_input, debug );
     }
 
     let doc = format!
     (
-      r#"
+      r"
 
 Represents the endpoint for the forming process of a scalar field managed by a subformer within a `{item}` entity.
 
@@ -1366,7 +1366,7 @@ Essentially, this end action integrates the individually formed scalar value bac
 - `super_former`: An optional context of the `{former}`, which will receive the value. The function ensures
   that this context is not `None` and inserts the formed value into the designated field within `{item}`'s storage.
 
-      "#,
+      ",
       format!( "{}", qt!{ #field_typ } ),
     );
 

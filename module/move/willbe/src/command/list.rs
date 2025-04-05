@@ -51,7 +51,6 @@ mod private
   ///
   /// # Errors
   /// qqq: doc
-
   // qqq : typed error
   pub fn list( o : VerifiedCommand ) -> error::untyped::Result< () >
   {

@@ -32,7 +32,6 @@ use macro_tools::{ attr, diag, item_struct, Result };
 /// }
 /// ```
 ///
-
 #[ inline ]
 pub fn from_components( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
@@ -97,7 +96,6 @@ pub fn from_components( input : proc_macro::TokenStream ) -> Result< proc_macro2
 /// ```
 ///
 /// These trait bounds are then used in the `From<T>` implementation to ensure type compatibility.
-
 #[ inline ]
 // fn trait_bounds( field_types : &[ &syn::Type ] ) -> Vec< proc_macro2::TokenStream >
 fn trait_bounds< 'a >( field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type > ) -> Vec< proc_macro2::TokenStream >
@@ -125,7 +123,6 @@ fn trait_bounds< 'a >( field_types : impl macro_tools::IterTrait< 'a, &'a syn::T
 /// let field2 = Into::< String >::into( src.clone() );
 /// ```
 ///
-
 #[ inline ]
 fn field_assign< 'a >( fields : impl Iterator< Item = &'a syn::Field > ) -> Vec< proc_macro2::TokenStream >
 {

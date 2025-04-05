@@ -23,7 +23,7 @@ fn without_any_toml_configurations_test()
   // Arrange
   let temp = arrange( "without_any_toml_configurations" );
   // Act
-  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
+  ()  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 }
 
 #[ test ]
@@ -33,7 +33,7 @@ fn tags_should_stay()
   let temp = arrange( "without_module_toml_configurations" );
 
   // Act
-  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
+  ()  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
@@ -52,7 +52,7 @@ fn stability_experimental_by_default()
   let temp = arrange( "without_module_toml_configurations" );
 
   // Act
-  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
+  ()  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
@@ -70,7 +70,7 @@ fn stability_and_repository_from_module_toml()
   let temp = arrange( "without_workspace_toml_configurations" );
 
   // Act
-  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
+  ()  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
@@ -97,17 +97,17 @@ fn variadic_tag_configuration_test()
   let with_gitpod_only =
     "-->\r| Module | Sample |\n|--------|:------:|\n";
 
-  let expected = vec![ explicit_all_true_flag, all_true_flag, with_stability_only, with_branches_only, with_docs_only, with_gitpod_only ];
+  let expected = [explicit_all_true_flag, all_true_flag, with_stability_only, with_branches_only, with_docs_only, with_gitpod_only];
   let temp = arrange( "variadic_tag_configurations" );
 
   // Act
-  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
+  ()  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
   let mut content = String::new();
   _ = file.read_to_string( &mut content ).unwrap();
-  for ( index, actual ) in content.split( "###" ).into_iter().enumerate()
+  for ( index, actual ) in content.split( "###" ).enumerate()
   {
     assert!( actual.trim().contains( expected[ index ] ) );
   }
@@ -121,7 +121,7 @@ fn module_cell()
   let temp = arrange( "full_config" );
 
   // Act
-  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
+  ()  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
@@ -139,7 +139,7 @@ fn stability_cell()
   let temp = arrange( "full_config" );
 
   // Act
-  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
+  ()  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
@@ -157,7 +157,7 @@ fn branches_cell()
   let temp = arrange( "full_config" );
 
   // Act
-  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
+  ()  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
@@ -175,7 +175,7 @@ fn docs_cell()
   let temp = arrange( "full_config" );
 
   // Act
-  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
+  ()  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
@@ -193,7 +193,7 @@ fn sample_cell()
   let temp = arrange( "full_config" );
 
   // Act
-  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
+  ()  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();

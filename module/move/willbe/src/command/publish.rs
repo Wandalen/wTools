@@ -32,7 +32,6 @@ mod private
   ///
   /// # Errors
   /// qqq: doc
-
   pub fn publish( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {
     let args_line = format!

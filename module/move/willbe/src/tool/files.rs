@@ -13,7 +13,6 @@ mod private
   ///
   /// # Panics
   /// qqq: doc
-
   /* xxx : check */
   #[ allow( clippy::useless_conversion ) ]
   pub fn find< P, S >( base_dir : P, patterns : &[ S ] ) -> Vec< PathBuf >

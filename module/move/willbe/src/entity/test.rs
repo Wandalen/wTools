@@ -391,7 +391,7 @@ mod private
   /// # Errors
   /// qqq: doc
   #[ allow( clippy::needless_pass_by_value ) ]
-  pub fn _run< P >( path : P, options : SingleTestOptions ) -> Result< Report, Report >
+  pub fn run_rec< P >( path : P, options : SingleTestOptions ) -> Result< Report, Report >
   // xxx
   where
     P : AsRef< path::Path >
@@ -713,7 +713,7 @@ mod private
               }
               let args = args_t.form();
               let temp_dir = args.temp_directory_path.clone();
-              let cmd_rep = _run( crate_dir, args );
+              let cmd_rep = run_rec( crate_dir, args );
               r.lock().unwrap().tests.insert( variant.clone(), cmd_rep );
               #[ cfg( feature = "progress_bar" ) ]
               if options.with_progress
@@ -812,7 +812,7 @@ crate::mod_interface!
 
   own use SingleTestOptions;
   own use TestVariant;
-  own use _run;
+  own use run_rec;
 
   own use TestPlan;
   own use TestOptions;

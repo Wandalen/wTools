@@ -35,7 +35,6 @@ mod private
   ///
   /// # Panics
   /// qqq: doc
-
   pub fn publish_diff( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {
     let path : PathBuf = o.args.get_owned( 0 ).unwrap_or( std::env::current_dir()? );

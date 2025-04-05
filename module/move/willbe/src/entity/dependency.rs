@@ -20,8 +20,8 @@ mod private
   {
     inner : &'a cargo_metadata::Dependency,
   }
-
-  impl< 'a > DependencyRef< 'a >
+  // fix clippy
+  impl DependencyRef< '_ >
   {
 
     /// The file system path for a local path dependency.
@@ -172,7 +172,7 @@ mod private
   /// # Panics
   /// qqq: doc
   #[ allow( clippy::needless_pass_by_value, clippy::implicit_hasher ) ]
-  pub fn _list
+  pub fn list_rec
   (
     workspace : &Workspace, // aaa : for Bohdan : no mut // aaa : no mut
     package : &Package< '_ >,
@@ -214,7 +214,7 @@ mod private
         if graph.get( &dep ).is_none()
         {
           // unwrap because `recursive` + `with_remote` not yet implemented
-          _list
+          list_rec
           (
             workspace,
             &dep.crate_dir.unwrap().try_into()?,
@@ -254,7 +254,7 @@ mod private
   -> error::untyped::Result< Vec< CrateId > >
   {
     let mut graph = collection::HashMap::new();
-    let root = _list( workspace, package, &mut graph, opts.clone() )?;
+    let root = list_rec( workspace, package, &mut graph, opts.clone() )?;
 
     let output = match opts.sort
     {
@@ -300,7 +300,7 @@ crate::mod_interface!
   own use CrateId;
   own use DependenciesSort;
   own use DependenciesOptions;
-  own use _list;
+  own use list_rec;
   own use list;
 
 }

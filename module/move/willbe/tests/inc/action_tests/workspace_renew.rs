@@ -26,7 +26,7 @@ fn default_case()
   create_dir(temp.join("test_project_name" )).unwrap();
 
   // Act
-  _ = workspace_renew::action( &temp.path().join( "test_project_name" ), WorkspaceTemplate::default(), "https://github.con/Username/TestRepository".to_string(), vec![ "master".to_string() ] ).unwrap();
+  () = workspace_renew::action( &temp.path().join( "test_project_name" ), WorkspaceTemplate::default(), "https://github.con/Username/TestRepository".to_string(), vec![ "master".to_string() ] ).unwrap();
 
   // Assets
   assert!( temp_path.join( "module" ).exists() );
@@ -41,9 +41,9 @@ fn default_case()
   let name = "project_name = \"test_project_name\"";
   let repo_url = "repo_url = \"https://github.con/Username/TestRepository\"";
   let branches = "branches = [\"master\"]";
-  assert!( actual.contains( &name) );
-  assert!( actual.contains( &repo_url) );
-  assert!( actual.contains( &branches) );
+  assert!( actual.contains( name) );
+  assert!( actual.contains( repo_url) );
+  assert!( actual.contains( branches) );
 
   assert!( temp_path.join( "Makefile" ).exists() );
   assert!( temp_path.join( ".cargo" ).exists() );
@@ -57,7 +57,7 @@ fn non_empty_dir()
   let temp = arrange( "single_module" );
 
   // Act
-  let r = workspace_renew::action( temp.path(), WorkspaceTemplate::default(), "".to_string(), vec![] );
+  let r = workspace_renew::action( temp.path(), WorkspaceTemplate::default(), String::new(), vec![] ); // fix clippy
 
   // Assert
   assert!( r.is_err() );

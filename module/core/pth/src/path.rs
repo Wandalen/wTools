@@ -1,5 +1,4 @@
 /// Define a private namespace for all its items.
-
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
@@ -37,7 +36,6 @@ mod private
   /// assert_eq!( path::is_glob( "file[0-9].txt" ), true ); // Unescaped brackets indicate a glob pattern
   /// assert_eq!( path::is_glob( "file\\[0-9].txt" ), false ); // Escaped brackets, not a glob pattern
   /// ```
-
   // qqq : xxx : should probably be Path
   #[ must_use ]
   pub fn is_glob( path : &str ) -> bool
@@ -132,7 +130,6 @@ mod private
   ///
   /// A `PathBuf` containing the normalized path.
   ///
-
   pub fn normalize< P : AsRef< std::path::Path > >( path : P ) -> std::path::PathBuf
   {
     use std::path::{ Component, PathBuf };
@@ -192,7 +189,8 @@ mod private
 
     // Convert back to a PathBuf using "/" as the separator for consistency
     #[ cfg( target_os = "windows" ) ]
-    let normalized = PathBuf::from( normalized.to_string_lossy().replace( "\\", "/" ) );
+    let normalized = PathBuf::from( normalized.to_string_lossy().replace( '\\', "/" ) );
+    // fix clippy
 
     normalized
   }
@@ -224,7 +222,7 @@ mod private
     #[ cfg( target_os = "windows" ) ]
     let path =
     {
-      const VERBATIM_PREFIX : &str = r#"\\?\"#;
+      const VERBATIM_PREFIX : &str = r"\\?\";
       // is necessary because of the normalization step that replaces the backslash with a slash.
       const VERBATIM_PREFIX_MIRRORS_EDGE : &str = "//?/";
       let p = path.display().to_string();
@@ -234,7 +232,8 @@ mod private
       }
       else
       {
-        path.into()
+        // fix clippy
+        path
       }
     };
 
@@ -270,7 +269,6 @@ mod private
   /// ```
   /// # Errors
   /// qqq: doc
-
   #[ cfg( feature = "path_unique_folder_name" ) ]
   pub fn unique_folder_name() -> std::result::Result< std::string::String, std::time::SystemTimeError >
   {
@@ -283,7 +281,8 @@ mod private
     // Thread-local static variable for a counter
     std::thread_local!
     {
-      #[ allow( clippy::thread_local_initializer_can_be_made_const ) ]
+      // fix clippy
+      #[ allow( clippy::missing_const_for_thread_local ) ]
       static COUNTER : core::cell::Cell< usize > = core::cell::Cell::new( 0 );
     }
 
@@ -482,7 +481,6 @@ mod private
   /// assert_eq!( extensions, expected );
   /// ```
   ///
-
   // qqq : xxx : should return iterator
   pub fn exts( path : impl AsRef< std::path::Path > ) -> std::vec::Vec< std::string::String >
   {
@@ -561,11 +559,8 @@ mod private
 
     let path_buf = Path::new( path.as_ref() );
 
-    let parent = match path_buf.parent()
-    {
-      Some( parent ) => parent,
-      None => return None,
-    };
+    // fix clippy
+    let parent = path_buf.parent()?;
     let file_stem = match path_buf.file_stem()
     {
       Some( name ) =>
@@ -668,7 +663,6 @@ mod private
   /// assert_eq!( common_path, Some( "/a/b/".to_string() ) );
   /// ```
   ///
-
   // xxx : qqq : should probably be PathBuf?
   pub fn path_common< 'a, I >( paths : I ) -> Option< std::string::String >
   where
@@ -759,7 +753,6 @@ mod private
   ///
   /// * `path` - A mutable reference to a string representing the path to be cleaned.
   ///
-
   // xxx : qqq : should probably be Path?
   fn path_remove_dots( path : &mut std::string::String )
   {
@@ -784,7 +777,6 @@ mod private
   ///
   /// * `path` - A mutable reference to a string representing the path to be cleaned.
   ///
-
   // xxx : qqq : should probably be Path?
   fn path_remove_double_dots( path : &mut std::string::String )
   {
