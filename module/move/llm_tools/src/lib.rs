@@ -29,8 +29,6 @@ crate::mod_interface!
 
   layer client;
   layer debug;
-  layer commands;
-  layer actions;
   layer secret;
   layer util;
 
