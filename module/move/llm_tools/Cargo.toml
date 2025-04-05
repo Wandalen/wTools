@@ -11,7 +11,7 @@ documentation = "https://docs.rs/llm_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/llm_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/llm_tools"
 description = """
-Assist AI in writing code.
+Unified API for AI.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
