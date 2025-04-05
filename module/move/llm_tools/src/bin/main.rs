@@ -29,7 +29,6 @@ async fn main() -> Result< (), Box< dyn Error > >
   dotenv().ok();
 
   let secret = Secret::load()?;
-
   let client = client( &secret )?;
 
   let response = client.file_list().await?;
@@ -41,15 +40,14 @@ async fn main() -> Result< (), Box< dyn Error > >
     AsTable::new( &files ).table_to_string_with_format( &output_format::Table::default() ),
   );
 
-  let response = client.list_assistant( None, None, None, None ).await?;
-
-  // println!( "Assistants: {:?}", assistants.data );
-  let assistants : Vec< _ > = response.data.into_iter().map( | e | llm_tools::AssistantObjectWrap( e ) ).collect();
-  println!
-  (
-    "Assistants:\n{}",
-    AsTable::new( &assistants ).table_to_string_with_format( &output_format::Records::default() ),
-  );
+  // let response = client.list_assistant( None, None, None, None ).await?;
+  // // println!( "Assistants: {:?}", assistants.data );
+  // let assistants : Vec< _ > = response.data.into_iter().map( | e | llm_tools::AssistantObjectWrap( e ) ).collect();
+  // println!
+  // (
+  //   "Assistants:\n{}",
+  //   AsTable::new( &assistants ).table_to_string_with_format( &output_format::Records::default() ),
+  // );
 
   Ok( () )
 }

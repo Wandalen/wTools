@@ -25,9 +25,9 @@ mod private
     /// Secret file is illformed.
     #[ error( "Secret file is illformed\n{0}" ) ]
     SecretFileIllformed
-    ( 
-      #[ from ] 
-      #[ serde_as( as = "DisplayFromStr" ) ] 
+    (
+      #[ from ]
+      #[ serde_as( as = "DisplayFromStr" ) ]
       dotenv::Error
     ),
 
@@ -154,7 +154,7 @@ Either define missing environment variable or make sure `./.key/-env.toml` file 
   /// * On failure, returns an error indicating the missing environment variable.
   fn var
   (
-    name : &'static str, 
+    name : &'static str,
     default : Option< &'static str >,
   ) -> Result< String >
   {
@@ -191,7 +191,7 @@ Either define missing environment variable or make sure `./.key/-env.toml` file 
   /// * On failure, returns an error indicating the missing or ill-formed environment variable.
   fn _var_path
   (
-    name : &'static str, 
+    name : &'static str,
     default : Option< &'static str >,
   ) -> Result< pth::AbsolutePath >
   {
