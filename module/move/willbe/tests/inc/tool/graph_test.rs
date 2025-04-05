@@ -11,11 +11,11 @@ struct IndexMap< T >( HashMap< T, usize > );
 
 impl< T > IndexMap< T >
 where
-  T : std::hash::Hash + Eq,
+  T : core::hash::Hash + Eq, // fix clippy
 {
   pub fn new( elements : Vec< T > ) -> Self
   {
-    let index_map = elements.into_iter().enumerate().map( |( index, value )| ( value, index ) ).collect();
+    let index_map = elements.into_iter().enumerate().map( | ( index, value ) | ( value, index ) ).collect();
     Self( index_map )
   }
 
@@ -142,7 +142,7 @@ fn simple_case()
   let groups = topological_sort_with_grouping( graph );
 
   assert_eq!( groups[ 0 ], vec![ "A" ] );
-  assert_eq!( groups[1].len(), 2 );
+  assert_eq!( groups[ 1 ].len(), 2 );
   assert!( groups[ 1 ].contains( &"C" ) );
   assert!( groups[ 1 ].contains( &"B" ) );
 }
@@ -198,18 +198,18 @@ fn complicated_test()
 
   let groups = topological_sort_with_grouping( graph );
 
-  dbg!(&groups);
+  dbg!( &groups );
 
   assert_eq!( groups[ 0 ], vec![ "0" ] );
 
-  assert_eq!( groups[1].len(), 3 );
+  assert_eq!( groups[ 1 ].len(), 3 );
   assert!( groups[ 1 ].contains( &"6" ) );
   assert!( groups[ 1 ].contains( &"5" ) );
   assert!( groups[ 1 ].contains( &"4" ) );
 
   assert_eq!( groups[ 2 ], vec![ "3" ] );
 
-  assert_eq!( groups[3].len(), 3 );
+  assert_eq!( groups[ 3 ].len(), 3 );
   assert!( groups[ 3 ].contains( &"1" ) );
   assert!( groups[ 3 ].contains( &"2" ) );
   assert!( groups[ 3 ].contains( &"7" ) );

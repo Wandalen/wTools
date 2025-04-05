@@ -163,7 +163,6 @@ mod private
   pub type BoxedIter< 'a, T > = Box< dyn _IterTrait< 'a, T > + 'a >;
 
   /// Extension of iterator.
-
   // zzz : review
   #[ cfg( feature = "iter_ext" ) ]
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
@@ -297,10 +296,7 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ cfg( feature = "iter_trait" ) ]
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  pub use private::
-  {
-    BoxedIter,
-  };
+  pub use private::BoxedIter;
 
 
 

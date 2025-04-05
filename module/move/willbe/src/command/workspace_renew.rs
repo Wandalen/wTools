@@ -20,7 +20,6 @@ mod private
   ///
   /// # Errors
   /// qqq: doc
-
   // qqq : typed error
   pub fn workspace_renew( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {

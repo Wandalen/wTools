@@ -4,10 +4,7 @@ mod private
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
-  use std::
-  {
-    fmt
-  };
+  use std::fmt;
   use collection::{ BTreeMap, HashMap };
 
   // // use path::AbsolutePath;
@@ -51,15 +48,14 @@ mod private
         features.iter().try_for_each
         ( | ( feature, dependencies ) |
         {
-          let feature = match self.with_features_deps
+          // fix clippy
+          let feature = if self.with_features_deps 
           {
-            false => format!( "\t{feature}" ),
-            true =>
-            {
-              let deps = dependencies.join( ", " );
-              format!( "\t{feature}: [{deps}]" )
-            }
-          };
+            let deps = dependencies.join( ", " );
+            format!( "\t{feature}: [{deps}]" )
+          } 
+          else 
+          { format!( "\t{feature}" ) };
           writeln!( f, "{feature}" )
         }
         )

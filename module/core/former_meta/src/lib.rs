@@ -157,7 +157,6 @@ pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// # }
 /// ```
 ///
-
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_component_from" ) ]
 #[ proc_macro_derive( ComponentFrom, attributes( debug ) ) ]
@@ -250,7 +249,6 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 /// ```
 /// This allows any type that can be converted into an `i32` or `String` to be set as
 /// the value of the `age` or `name` fields of `Person` instances, respectively.
-
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_component_assign" ) ]
 #[ proc_macro_derive( Assign, attributes( debug ) ) ]
@@ -268,7 +266,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 /// Derives the `ComponentsAssign` trait for a struct, enabling `components_assign` which set all fields at once.
 ///
 /// This will work only if every field can be acquired from the passed value.
-/// In other words, the type passed as an argument to `components_assign` must implement Into<T> for each field type.
+/// In other words, the type passed as an argument to `components_assign` must implement `Into<T>` for each field type.
 ///
 /// # Attributes
 ///
@@ -503,7 +501,6 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 /// take_smaller_opts( &options2 );
 /// ```
 ///
-
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
 #[ proc_macro_derive( ComponentsAssign, attributes( debug ) ) ]
@@ -604,7 +601,6 @@ pub fn components_assign( input : proc_macro::TokenStream ) -> proc_macro::Token
 /// automatically generating the necessary `From< &Options1 >` implementation for `Options2`, facilitating
 /// an easy conversion between these types based on their compatible fields.
 ///
-
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_from_components" ) ]
 #[ proc_macro_derive( FromComponents, attributes( debug ) ) ]

@@ -18,12 +18,12 @@ fn status_code_1_on_failure()
 
   let project = ProjectBuilder::new( "status_code" )
   .toml_file( "" )
-  .test_file( r#"
+  .test_file( r"
     #[test]
     fn should_fail() {
       panic!();
     }
-  "#)
+  ")
   .build( temp )
   .unwrap();
 
@@ -42,12 +42,12 @@ fn status_code_not_zero_on_failure()
 
   let project = ProjectBuilder::new( "status_code" )
   .toml_file( "" )
-  .test_file( r#"
+  .test_file( r"
   #[test]
   fn should_fail() {
     panic!();
   }
-  "#)
+  ")
   .build( temp )
   .unwrap();
 

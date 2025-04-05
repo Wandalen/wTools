@@ -498,7 +498,7 @@ fn variant_generate
   {
     let debug = format!
     (
-      r#"
+      r"
 #[ automatically_derived ]
 impl< {0} > From< {args} > for {item_name}< {1} >
 where
@@ -510,16 +510,16 @@ where
     Self::{variant_name}( {use_src} )
   }}
 }}
-      "#,
+      ",
       format!( "{}", qt!{ #generics_impl } ),
       format!( "{}", qt!{ #generics_ty } ),
       format!( "{}", qt!{ #generics_where } ),
     );
     let about = format!
     (
-r#"derive : From
+r"derive : From
 item : {item_name}
-field : {variant_name}"#,
+field : {variant_name}",
     );
     diag::report_print( about, original_input, debug );
   }

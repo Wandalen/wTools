@@ -347,10 +347,10 @@ impl syn::parse::Parse for AttributeMutator
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ mutator( custom ) ]'
+        r"Expects an attribute of format '#[ mutator( custom ) ]'
   {known}
   But got: '{}'
-"#,
+",
         qt!{ #ident }
       )
     };

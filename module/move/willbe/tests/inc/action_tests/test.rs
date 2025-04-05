@@ -28,13 +28,13 @@ fn fail_test()
 
   let project = ProjectBuilder::new( "fail_test" )
   .toml_file( "[features]\nenabled = []" )
-  .test_file( r#"
+  .test_file( r"
     #[test]
     fn should_fail()
     {
       panic!()
     }
-  "#)
+  ")
   .build( temp )
   .unwrap();
   let abs = AbsolutePath::try_from( project ).unwrap();
@@ -47,7 +47,7 @@ fn fail_test()
   .form();
 
   let rep = test( args, false ).unwrap_err().0;
-  println!( "========= OUTPUT =========\n{}\n==========================", rep );
+  println!( "========= OUTPUT =========\n{rep}\n==========================" );
 
   let no_features = rep
   .failure_reports[ 0 ]
@@ -68,12 +68,12 @@ fn fail_build()
   let project = ProjectBuilder::new( "fail_build" )
   .lib_file( "compile_error!( \"achtung\" );" )
   .toml_file( "[features]\nenabled = []" )
-  .test_file( r#"
+  .test_file( r"
     #[test]
     fn should_pass() {
       assert!(true);
     }
-  "#)
+  ")
   .build( temp )
   .unwrap();
   let abs = AbsolutePath::try_from( project ).unwrap();
@@ -86,7 +86,7 @@ fn fail_build()
   .form();
 
   let rep = test( args, false ).unwrap_err().0;
-  println!( "========= OUTPUT =========\n{}\n==========================", rep );
+  println!( "========= OUTPUT =========\n{rep}\n==========================" );
 
   let no_features = rep
   .failure_reports[ 0 ]
@@ -105,30 +105,30 @@ fn call_from_workspace_root()
 
   let fail_project = ProjectBuilder::new( "fail_test" )
   .toml_file( "[features]\nenabled = []" )
-  .test_file( r#"
+  .test_file( r"
   #[test]
   fn should_fail123() {
     panic!()
   }
-  "#);
+  ");
 
   let pass_project = ProjectBuilder::new( "apass_test" )
   .toml_file( "[features]\nenabled = []" )
-  .test_file( r#"
+  .test_file( r"
   #[test]
   fn should_pass() {
     assert_eq!(1,1);
   }
-  "#);
+  ");
 
   let pass_project2 = ProjectBuilder::new( "pass_test2" )
   .toml_file( "[features]\nenabled = []" )
-  .test_file( r#"
+  .test_file( r"
   #[test]
   fn should_pass() {
     assert_eq!(1,1);
   }
-  "#);
+  ");
 
   let workspace = WorkspaceBuilder::new()
   .member( fail_project )
@@ -164,12 +164,12 @@ fn plan()
 
   let project = ProjectBuilder::new( "plan_test" )
   .toml_file( "[features]\nenabled = []" )
-  .test_file( r#"
+  .test_file( r"
   #[test]
   fn should_pass() {
     assert!(true);
   }
-  "#)
+  ")
   .build( temp )
   .unwrap();
   let abs = AbsolutePath::try_from( project ).unwrap();
@@ -198,12 +198,12 @@ fn backtrace_should_be()
 
   let project = ProjectBuilder::new( "fail_build" )
   .toml_file( "[features]\nenabled = []" )
-  .test_file( r#"
+  .test_file( r"
   #[test]
   fn fail() {
     assert!(false);
   }
-  "#)
+  ")
   .build( temp )
   .unwrap();
   let abs = AbsolutePath::try_from( project ).unwrap();
@@ -216,7 +216,7 @@ fn backtrace_should_be()
   .form();
 
   let rep = test( args, false ).unwrap_err().0;
-  println!( "========= OUTPUT =========\n{}\n==========================", rep );
+  println!( "========= OUTPUT =========\n{rep}\n==========================" );
 
   let no_features = rep
   .failure_reports[ 0 ]

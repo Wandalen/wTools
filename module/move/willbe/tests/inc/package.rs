@@ -18,7 +18,7 @@ impl Dependency
       Dependency::Normal { name, path, is_macro } if !is_macro => 
       if let Some( path ) = path
       {
-        format!( "[dependencies.{name}]\npath = \"../{}\"", path.display().to_string().replace( "\\", "/" ) )
+        format!( "[dependencies.{name}]\npath = \"../{}\"", path.display().to_string().replace( '\\', "/" ) ) // fix clippy
       }
       else
       {
@@ -28,7 +28,7 @@ impl Dependency
       Dependency::Dev { name, path, is_macro } if !is_macro =>
       if let Some( path ) = path
       {
-        format!( "[dev-dependencies.{name}]\npath = \"../{}\"", path.display().to_string().replace( "\\", "/" ) )
+        format!( "[dev-dependencies.{name}]\npath = \"../{}\"", path.display().to_string().replace( '\\', "/" ) ) // fix clippy
       }
       else
       {
@@ -58,14 +58,14 @@ impl TestPackage
     self.dependencies.push( Dependency::Normal { name: name.into(), path: None, is_macro: false } );
     self
   }
-  
-  pub fn macro_dependency( mut self, name: impl Into< String > ) -> Self
+  // never used
+  pub fn _macro_dependency( mut self, name: impl Into< String > ) -> Self
   {
     self.dependencies.push( Dependency::Normal { name: name.into(), path: None, is_macro: true } );
     self
   }
-  
-  pub fn dev_dependency( mut self, name: impl Into< String > ) -> Self
+  // never used
+  pub fn _dev_dependency( mut self, name: impl Into< String > ) -> Self
   {
     self.dependencies.push( Dependency::Dev { name: name.into(), path: None, is_macro: false } );
     self
@@ -82,7 +82,7 @@ impl TestPackage
     let path = path.as_ref().join( &self.name );
 
     () = fs::create_dir_all( path.join( "src" ) )?;
-    () = fs::write( path.join( "src" ).join( "lib.rs" ), &[] )?;
+    () = fs::write( path.join( "src" ).join( "lib.rs" ), [] )?;
     
     let cargo = format!
     (
@@ -250,7 +250,7 @@ fn kos_plan()
   let the_patterns: Vec< String > = workspace
   .packages
   .iter()
-  .flat_map( | p | p.path.as_ref().map( | p | p.to_string_lossy().into_owned() ) )
+  .filter_map( | p | p.path.as_ref().map( | p | p.to_string_lossy().into_owned() ) ) // fix clippy
   .collect();
   dbg!(&the_patterns);
   

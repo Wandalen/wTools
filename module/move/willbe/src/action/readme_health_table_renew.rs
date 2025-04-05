@@ -152,21 +152,18 @@ mod private
   {
     fn from( value : HashMap< String, query::Value > ) -> Self
     {
+      // fix clippy
       let include_branches = value
-      .get( "with_branches" )
-      .map_or( true, bool::from );
+      .get( "with_branches" ).is_none_or(bool::from);
 
       let include_stability = value
-      .get( "with_stability" )
-      .map_or( true, bool::from );
+      .get( "with_stability" ).is_none_or(bool::from);
 
       let include_docs = value
-      .get( "with_docs" )
-      .map_or( true, bool::from );
+      .get( "with_docs" ).is_none_or(bool::from);
 
       let include = value
-      .get( "with_gitpod" )
-      .map_or( true, bool::from );
+      .get( "with_gitpod" ).is_none_or(bool::from);
 
       let b_p = value.get( "1" );
       let base_path = if let Some( query::Value::String( path ) ) = value.get( "path" ).or( b_p )
@@ -598,9 +595,9 @@ ensure that at least one remotest is present in git. ",
         let file_name = entry.file_name();
         if let Some( file_name_str ) = file_name.to_str()
         {
+          // fix clippy
           if std::path::Path::new( file_name_str )
-          .extension()
-          .map_or( false, | ext | ext.eq_ignore_ascii_case( "rs" ) )
+          .extension().is_some_and(| ext | ext.eq_ignore_ascii_case( "rs" ))
           {
             return Some( entry.path() )
           }

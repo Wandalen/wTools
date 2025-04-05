@@ -15,7 +15,6 @@ mod private
   /// typically as a string. This can be useful for generating code from various data structures
   /// or objects.
   ///
-  /// ```
   pub trait AsCode
   {
     /// Converts the object to its code representation.

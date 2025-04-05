@@ -77,7 +77,7 @@ fn initialize_commands_with_properties( count : usize ) -> CommandsAggregator
 
 fn run_commands< S : AsRef< str > >( ca : CommandsAggregator, command : S ) 
 {
-  ca.perform( command.as_ref() ).unwrap()
+  ca.perform( command.as_ref() ).unwrap();
 }
 
 fn benchmark_initialize_thousand_commands( c : &mut Criterion )

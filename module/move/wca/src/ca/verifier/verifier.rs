@@ -139,7 +139,8 @@ mod private
       raw_properties.iter()
       .filter( | ( k, _ ) | 
       {
-        !( properties.contains_key( *k ) || properties_aliases.get( *k ).map_or( false, | key | properties.contains_key( key ) ) ) 
+        // fix clippy
+        !( properties.contains_key( *k ) || properties_aliases.get( *k ).is_some_and( | key | properties.contains_key( key ) ) ) 
       })
       .count()
     }
@@ -266,19 +267,16 @@ mod private
           props : Props( HashMap::new() ),
         });
       }
+      // fix clippy
       let command = dictionary.command( &raw_command.name )
-      .ok_or_else::< VerificationError, _ >
-      (
-        ||
-        {
-          #[ cfg( feature = "on_unknown_suggest" ) ]
-          if let Some( phrase ) = Self::suggest_command( dictionary, &raw_command.name )
-          {
-            return VerificationError::CommandNotFound { name_suggestion: Some( phrase.to_string() ), command_info: None };
-          }
-          VerificationError::CommandNotFound { name_suggestion: None, command_info: None }
+      .ok_or(
+      {
+        #[ cfg( feature = "on_unknown_suggest" ) ]
+        if let Some( phrase ) = Self::suggest_command( dictionary, &raw_command.name ) {
+          return VerificationError::CommandNotFound { name_suggestion: Some( phrase.to_string() ), command_info: None };
         }
-      )?;
+        VerificationError::CommandNotFound { name_suggestion: None, command_info: None }
+      })?;
 
       let Some( cmd ) = Self::check_command( command, &raw_command ) else
       {
