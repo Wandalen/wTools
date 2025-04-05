@@ -1,5 +1,8 @@
 use super::*;
 
+#[ allow( unused_imports ) ]
+use test_tools::exposed::*;
+
 mod bmap;
 mod bset;
 mod heap;

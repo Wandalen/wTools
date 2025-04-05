@@ -1,6 +1,6 @@
 [package]
 name = "former"
-version = "2.11.0"
+version = "2.12.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -62,7 +62,6 @@ types_component_assign = [ "former_types/types_component_assign" ]
 former_meta = { workspace = true }
 former_types = { workspace = true }
 # collection_tools = { workspace = true, features = [ "collection_constructors" ] }
-
 
 [dev-dependencies]
 test_tools = { workspace = true }

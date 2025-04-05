@@ -1,9 +1,12 @@
 
+// To avoid conflicts with test_tools it's important to import only those names which are needed.
+use test_tools::a_id;
+
 use super::
 {
   the_module,
-  only_for_terminal_module,
-  a_id,
+  // only_for_terminal_module,
+  // a_id,
 };
 
 mod func_test;

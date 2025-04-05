@@ -49,22 +49,10 @@ pub mod own
   #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
-  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
-  pub use super::
-  {
-    btree_map,
-    btree_set,
-    binary_heap,
-    hash_map,
-    hash_set,
-    linked_list,
-    vector,
-    vec_deque,
-  };
-
   #[ doc( inline ) ]
   #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use orphan::*;
+  // xxx2 : check
 
 }
 
@@ -95,6 +83,20 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use super::super::collection;
+
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
+  pub use super::
+  {
+    btree_map,
+    btree_set,
+    binary_heap,
+    hash_map,
+    hash_set,
+    linked_list,
+    vector,
+    vec_deque,
+  };
 
   #[ doc( inline ) ]
   #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]

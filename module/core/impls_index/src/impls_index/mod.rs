@@ -49,6 +49,7 @@ pub mod orphan
 pub mod exposed
 {
   use super::*;
+  pub use super::super::impls_index;
   #[ doc( inline ) ]
   pub use prelude::*;
   #[ doc( inline ) ]

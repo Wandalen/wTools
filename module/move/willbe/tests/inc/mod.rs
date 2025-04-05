@@ -1,4 +1,5 @@
 use super::*;
+use test_tools::exposed::*;
 
 /// Entities of which spaces consists of.
 mod entity;

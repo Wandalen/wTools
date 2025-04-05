@@ -1,12 +1,11 @@
 // #![ deny( missing_docs ) ]
 
-#[ allow( unused_imports ) ]
 use super::*;
+use test_tools::exposed::*;
 
 #[ cfg( feature = "derive_former" ) ]
 mod former_tests
 {
-  #[ allow( unused_imports ) ]
   use super::*;
 
   // = basic
@@ -53,7 +52,7 @@ mod former_tests
 
   // = parametrization
 
-  mod parametrized_dyn;
+  mod parametrized_dyn; // xxx2 : qqq2 : fix the issue
 
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod parametrized_struct_manual;

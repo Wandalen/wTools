@@ -43,6 +43,7 @@ pub mod orphan
 {
   #[ allow( clippy::wildcard_imports ) ]
   use super::*;
+
   #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use super::super::untyped;
   #[ allow( clippy::useless_attribute, clippy::pub_use ) ]

@@ -1,4 +1,4 @@
-
+//! Smoke testing of the crate.
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( not( feature = "no_std" ) ) ]

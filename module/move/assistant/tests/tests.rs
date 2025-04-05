@@ -1,3 +1,4 @@
+//! All test.
 
 include!( "../../../../module/step/meta/src/module/terminal.rs" );
 
