@@ -378,21 +378,22 @@ mod private
       })
     }
   }
+
 }
 
 crate::mod_interface!
 {
-  own use
+  own use private::
   {
-    private::LlmError,
-    private::Value,
-    private::MessageGenerated,
-    private::MessageGeneration,
-    private::Message,
-    private::Messages,
-    private::Conversation,
-    private::MessageSend,
-    private::MessageStream,
-    private::ConversationGenerationStream,
+    LlmError,
+    Value,
+    MessageGenerated,
+    MessageGeneration,
+    Message,
+    Messages,
+    Conversation,
+    MessageSend,
+    MessageStream,
+    ConversationGenerationStream,
   };
 }
