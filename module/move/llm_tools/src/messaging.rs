@@ -18,7 +18,7 @@ mod private
   };
 
   /// Represents potential errors that may occur during LLM invocations.
-  #[derive(Debug)]
+  #[ derive( Debug ) ]
   pub enum LlmError
   {
     /// Catch-all variant for unknown or miscellaneous errors.
@@ -58,19 +58,19 @@ mod private
   pub struct MessageGeneration
   {
     /// The total number of tokens used for generation, if known.
-    pub tokens_used_val : Option<u64>,
+    pub tokens_used_val : Option< u64 >,
     /// The model used to generate this message, if known.
-    pub model_name : Option<String>,
+    pub model_name : Option< String >,
     /// Whether the generation is considered final/complete.
     pub complete : bool,
     /// A queue of partial tokens or chunks for streaming (mocked).
-    pub partial_content : Vec<String>,
+    pub partial_content : Vec< String >,
   }
 
   impl MessageGeneration
   {
     /// Creates a new generator with optional known tokens_used/model.
-    pub fn new( tokens_used : Option<u64>, model : Option<String> ) -> Self
+    pub fn new( tokens_used : Option<u64>, model : Option< String > ) -> Self
     {
       Self
       {
@@ -122,13 +122,13 @@ mod private
   ///
   /// It can optionally contain a dynamically-dispatched object that provides
   /// asynchronous access to the message generation process.
-  #[derive(Debug)]
+  #[ derive( Debug ) ]
   pub struct Message
   {
     /// The role of the message sender (e.g., "user", "assistant").
     pub role : String,
     /// A unique identifier for the message, if any.
-    pub id : Option<String>,
+    pub id : Option< String >,
     /// The main textual content of the message.
     pub content : String,
     /// Optional handle to the generation process and metadata.
@@ -168,8 +168,8 @@ mod private
   }
 
   /// A thin wrapper around a vector of messages to store a conversation log.
-  #[repr(transparent)]
-  #[derive(Debug)]
+  #[ repr( transparent ) ]
+  #[ derive( Debug ) ]
   pub struct Messages( Vec<Message> );
 
   impl Messages
@@ -200,7 +200,7 @@ mod private
   }
 
   /// Represents a conversation that holds a series of messages and relevant parameters.
-  #[derive(Debug)]
+  #[ derive( Debug ) ]
   pub struct Conversation
   {
     /// A collection of messages exchanged within this conversation.
@@ -230,7 +230,7 @@ mod private
     ///
     /// # Errors
     ///
-    /// Returns `Err(LlmError::Unknown(...))` for unexpected conditions.
+    /// Returns `Err( LlmError::Unknown( ...) )` for unexpected conditions.
     pub fn parameter_set
     (
       &mut self,
@@ -250,7 +250,7 @@ mod private
     ///
     /// # Errors
     ///
-    /// Returns `Err(LlmError::Unknown(...))` for unexpected conditions.
+    /// Returns `Err( LlmError::Unknown( ... ) )` for unexpected conditions.
     pub fn context
     (
       &mut self,
@@ -269,7 +269,7 @@ mod private
     ///
     /// # Errors
     ///
-    /// Returns `Err(LlmError::Unknown(...))` for unexpected conditions.
+    /// Returns `Err( LlmError::Unknown( ... ) )` for unexpected conditions.
     pub fn message_add
     (
       &mut self,
@@ -332,7 +332,7 @@ mod private
   }
 
   /// The concrete stream type that yields MessageGeneration objects.
-  #[derive(Debug)]
+  #[ derive( Debug ) ]
   pub struct ConversationGenerationStream
   {
     gens : std::vec::IntoIter< MessageGeneration >,
@@ -384,6 +384,15 @@ crate::mod_interface!
 {
   own use
   {
-    private::*,
+    private::LlmError,
+    private::Value,
+    private::MessageGenerated,
+    private::MessageGeneration,
+    private::Message,
+    private::Messages,
+    private::Conversation,
+    private::MessageSend,
+    private::MessageStream,
+    private::ConversationGenerationStream,
   };
 }

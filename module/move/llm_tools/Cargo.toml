@@ -38,6 +38,7 @@ name = "main"
 path = "src/bin/main.rs"
 
 [dependencies]
+
 # xxx : qqq : optimze features
 mod_interface = { workspace = true, features = [ "full" ] }
 former = { workspace = true, features = [ "full" ] }
@@ -46,23 +47,9 @@ reflect_tools = { workspace = true, features = [ "full" ] }
 openai-api-rs = { version = "=5.0.14" }
 tokio = { version = "1", features = ["full"] }
 dotenv = "0.15"
-# clap = { version = "4.5.20", features = ["derive"] }
-# pth = "0.21.0"
 pth = { workspace = true, features = [ "full" ] }
-# serde = { version = "1.0.213", features = ["derive"] }
-# serde_with = "3.11.0"
-# error_tools = "0.17.0"
 error_tools = { workspace = true, features = [ "full" ] }
 derive_tools = { workspace = true, features = ["full"] }
-# derive_tools = { version = "0.32.0", features = ["full"] }
-# regex = { version = "1.10.3" }
-# serde_yaml = "0.9"
-
-# regex = { version = "1.10.3" }
-# serde = { version = "1.0.219", features = ["derive"] }
-# serde_with = { version = "3.12.0" }
-# serde_json = { version = "1.0.140" }
-# serde_yaml = { version = "0.9.34" }
 
 regex = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
