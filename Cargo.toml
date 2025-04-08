@@ -336,6 +336,11 @@ version = "~0.12.0"
 path = "module/core/is_slice"
 default-features = false
 
+[workspace.dependencies.asbytes]
+version = "~0.1.0"
+path = "module/core/asbytes"
+default-features = false
+
 
 ## error
 
@@ -592,3 +597,27 @@ version = "0.8.5"
 
 [workspace.dependencies.trybuild]
 version = "1.0.85"
+
+[workspace.dependencies.futures-core]
+version = "0.3.31"
+
+[workspace.dependencies.futures-util]
+version = "0.3.31"
+
+[workspace.dependencies.regex]
+version = "1.11.1"
+
+[workspace.dependencies.serde]
+version = "1.0.219"
+
+[workspace.dependencies.serde_with]
+version = "3.12.0"
+
+[workspace.dependencies.serde_json]
+version = "1.0.140"
+
+[workspace.dependencies.serde_yaml]
+version = "0.9.34"
+
+[workspace.dependencies.bytemuck]
+version = "1.21.0"

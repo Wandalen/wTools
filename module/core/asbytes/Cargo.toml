@@ -1,0 +1,44 @@
+[package]
+name = "asbytes"
+version = "0.1.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/asbytes"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/asbytes"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/asbytes"
+description = """
+Unified and ergonomic abstraction for converting various data structures into raw byte slices.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+features = [ "full" ]
+all-features = false
+
+[features]
+default = [ "enabled", "as_bytes", "derive", "must_cast" ]
+full = [ "default" ]
+enabled = []
+as_bytes = [ "dep:bytemuck" ]
+
+derive = [ "bytemuck/derive" ] # Provide derive macros for the various traits.
+extern_crate_alloc = [ "bytemuck/extern_crate_alloc" ]  # Provide utilities for alloc related types such as Box and Vec.
+zeroable_maybe_uninit = [ "bytemuck/zeroable_maybe_uninit" ] # and zeroable_atomics: Provide more Zeroable impls.
+wasm_simd = [ "bytemuck/wasm_simd" ]  # Support more SIMD types.
+aarch64_simd = [ "bytemuck/aarch64_simd" ]  # Support more SIMD types.
+min_const_generics = [ "bytemuck/min_const_generics" ]  # Provides appropriate impls for arrays of all lengths instead of just for a select list of array lengths.
+must_cast = [ "bytemuck/must_cast" ]  # Provides the must_ functions, which will compile error if the requested cast can’t be statically verified.
+const_zeroed = [ "bytemuck/const_zeroed" ]  #
+
+[dependencies]
+bytemuck = { workspace = true, optional = true }
+
+[dev-dependencies]

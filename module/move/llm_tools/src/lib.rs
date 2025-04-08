@@ -28,6 +28,8 @@ crate::mod_interface!
 {
 
   layer client;
+  layer messaging;
+
   layer debug;
   layer secret;
   layer util;
