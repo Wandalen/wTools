@@ -337,7 +337,7 @@ path = "module/core/is_slice"
 default-features = false
 
 [workspace.dependencies.asbytes]
-version = "~0.1.0"
+version = "~0.2.0"
 path = "module/core/asbytes"
 default-features = false
 
