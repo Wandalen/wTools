@@ -1,3 +1,4 @@
+
 //! Content of a message which can be not only text, but also other media type.
 
 mod private
@@ -10,12 +11,10 @@ mod private
     iter::IntoIterator,
   };
   use serde_json;
+  use derive_tools::From;
 
   /// Represents errors during content conversion, particularly from JSON.
-  #[ derive( Debug ) ]
-  #[ derive( Clone ) ]
-  #[ derive( PartialEq ) ]
-  #[ derive( Eq ) ]
+  #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub enum Error
   {
     /// Indicates that a JSON type cannot be represented as the target ContentAny variant.
@@ -57,10 +56,7 @@ mod private
   }
 
   /// Classifies the high-level type of content.
-  #[ derive( Debug ) ]
-  #[ derive( PartialEq ) ]
-  #[ derive( Eq ) ]
-  #[ derive( Clone ) ]
+  #[ derive( Debug, PartialEq, Eq, Clone ) ]
   pub enum ContentType
   {
     /// Represents a null or empty value.
@@ -77,6 +73,10 @@ mod private
     Sound,
     /// Represents video content.
     Video,
+    /// Represents PDF content.
+    Pdf, // Added Pdf
+    /// Represents a generic file content.
+    File, // Added File
     /// Represents an array of content.
     Array,
     /// Represents an unknown or unspecified content type.
@@ -84,9 +84,7 @@ mod private
   }
 
   /// Holds media data along with its type and encoding information. Generic over the data storage type `S`.
-  #[ derive( Debug ) ]
-  #[ derive( Clone ) ]
-  #[ derive( PartialEq ) ]
+  #[ derive( Debug, Clone, PartialEq ) ]
   pub struct Source< S >
   where
     S : Data,
@@ -115,10 +113,7 @@ mod private
   }
 
   /// Represents image content, wrapping a `Source`.
-  #[ derive( Debug ) ]
-  #[ derive( Clone ) ]
-  #[ derive( PartialEq ) ]
-  #[ derive( Default ) ]
+  #[ derive( Debug, Clone, PartialEq, Default ) ]
   pub struct Image< S >
   where
     S : Data,
@@ -128,10 +123,7 @@ mod private
   }
 
   /// Represents sound content, wrapping a `Source`.
-  #[ derive( Debug ) ]
-  #[ derive( Clone ) ]
-  #[ derive( PartialEq ) ]
-  #[ derive( Default ) ]
+  #[ derive( Debug, Clone, PartialEq, Default ) ]
   pub struct Sound< S >
   where
     S : Data,
@@ -142,10 +134,7 @@ mod private
 
 
   /// Represents video content, wrapping a `Source`.
-  #[ derive( Debug ) ]
-  #[ derive( Clone ) ]
-  #[ derive( PartialEq ) ]
-  #[ derive( Default ) ]
+  #[ derive( Debug, Clone, PartialEq, Default ) ]
   pub struct Video< S >
   where
     S : Data,
@@ -154,10 +143,28 @@ mod private
     pub source : Source< S >,
   }
 
+  /// Represents PDF content, wrapping a `Source`.
+  #[ derive( Debug, Clone, PartialEq, Default ) ] // Added Pdf struct
+  pub struct Pdf< S >
+  where
+    S : Data,
+  {
+    /// The underlying source data for the PDF.
+    pub source : Source< S >,
+  }
+
+  /// Represents generic file content, wrapping a `Source`.
+  #[ derive( Debug, Clone, PartialEq, Default ) ] // Added File struct
+  pub struct File< S >
+  where
+    S : Data,
+  {
+    /// The underlying source data for the file.
+    pub source : Source< S >,
+  }
+
   /// Represents any possible content type, generic over the data storage type `S` for media.
-  #[ derive( Debug ) ]
-  #[ derive( Clone ) ]
-  #[ derive( PartialEq ) ]
+  #[ derive( Debug, Clone, PartialEq, From ) ]
   pub enum ContentAny< S >
   where
     S : Data,
@@ -178,39 +185,10 @@ mod private
     Sound( Sound< S > ),
     /// Represents video content.
     Video( Video< S > ),
-  }
-
-  impl< S > From< Image< S > > for ContentAny< S >
-  where
-    S : Data,
-  {
-    #[ inline ]
-    fn from( image : Image< S > ) -> Self
-    {
-      ContentAny::Image( image )
-    }
-  }
-
-  impl< S > From< Sound< S > > for ContentAny< S >
-  where
-    S : Data,
-  {
-    #[ inline ]
-    fn from( sound : Sound< S > ) -> Self
-    {
-      ContentAny::Sound( sound )
-    }
-  }
-
-  impl< S > From< Video< S > > for ContentAny< S >
-  where
-    S : Data,
-  {
-    #[ inline ]
-    fn from( video : Video< S > ) -> Self
-    {
-      ContentAny::Video( video )
-    }
+    /// Represents PDF content.
+    Pdf( Pdf< S > ), // Added Pdf variant
+    /// Represents generic file content.
+    File( File< S > ), // Added File variant
   }
 
   /// Trait for types that can be treated as or converted into `ContentAny<S>`.
@@ -261,9 +239,11 @@ mod private
         ContentAny::Number( n ) => < serde_json::Number as ContentLike< S > >::content_type( n ),
         ContentAny::String( s ) => < String as ContentLike< S > >::content_type( s ),
         ContentAny::Array( arr ) => < Vec< ContentAny< S > > as ContentLike< S > >::content_type( arr ),
-        ContentAny::Image( _ ) => ContentType::Image,
-        ContentAny::Sound( _ ) => ContentType::Sound,
-        ContentAny::Video( _ ) => ContentType::Video,
+        ContentAny::Image( it ) => < Image< S > as ContentLike< S > >::content_type( it ),
+        ContentAny::Sound( it ) => < Sound< S > as ContentLike< S > >::content_type( it ),
+        ContentAny::Video( it ) => < Video< S > as ContentLike< S > >::content_type( it ),
+        ContentAny::Pdf( it ) => < Pdf< S > as ContentLike< S > >::content_type( it ), // Added Pdf arm
+        ContentAny::File( it ) => < File< S > as ContentLike< S > >::content_type( it ), // Added File arm
       }
     }
 
@@ -279,6 +259,8 @@ mod private
         ContentAny::Image( image ) => < Image< S > as ContentLike< S > >::content_to_bytes( image ),
         ContentAny::Sound( sound ) => < Sound< S > as ContentLike< S > >::content_to_bytes( sound ),
         ContentAny::Video( video ) => < Video< S > as ContentLike< S > >::content_to_bytes( video ),
+        ContentAny::Pdf( pdf ) => < Pdf< S > as ContentLike< S > >::content_to_bytes( pdf ), // Added Pdf arm
+        ContentAny::File( file ) => < File< S > as ContentLike< S > >::content_to_bytes( file ), // Added File arm
       }
     }
 
@@ -422,6 +404,94 @@ mod private
       };
       // Call the `new` associated function from the builder module
       Video::new( source_s ).into()
+    }
+  }
+
+  // Added ContentLike impl for Pdf
+  impl< T, S > ContentLike< S > for Pdf< T >
+  where
+    T : Data + Into< S > + 'static,
+    S : Data + 'static,
+  {
+    fn content_type( &self ) -> ContentType
+    {
+      ContentType::Pdf
+    }
+
+    fn content_to_bytes( self ) -> Vec< u8 >
+    where
+      Self : Sized
+    {
+      // Use crate::IntoBytes explicitly
+      self.source.data.into_bytes()
+    }
+
+    fn content_to_json( self ) -> serde_json::Value
+    where
+      Self : Sized
+    {
+      let content_any_s : ContentAny< S > = self.into_any();
+      content_any_s.content_to_json()
+    }
+
+    /// Converts Pdf<T> into ContentAny<S>::Pdf, converting data from T to S.
+    #[ inline ]
+    fn into_any( self ) -> ContentAny< S >
+    where
+      Self : Sized,
+    {
+      let source_s = Source::< S >
+      {
+        media_type : self.source.media_type,
+        encoding : self.source.encoding,
+        data : self.source.data.into(),
+      };
+      // Call the `new` associated function from the builder module
+      Pdf::new( source_s ).into()
+    }
+  }
+
+  // Added ContentLike impl for File
+  impl< T, S > ContentLike< S > for File< T >
+  where
+    T : Data + Into< S > + 'static,
+    S : Data + 'static,
+  {
+    fn content_type( &self ) -> ContentType
+    {
+      ContentType::File
+    }
+
+    fn content_to_bytes( self ) -> Vec< u8 >
+    where
+      Self : Sized
+    {
+      // Use crate::IntoBytes explicitly
+      self.source.data.into_bytes()
+    }
+
+    fn content_to_json( self ) -> serde_json::Value
+    where
+      Self : Sized
+    {
+      let content_any_s : ContentAny< S > = self.into_any();
+      content_any_s.content_to_json()
+    }
+
+    /// Converts File<T> into ContentAny<S>::File, converting data from T to S.
+    #[ inline ]
+    fn into_any( self ) -> ContentAny< S >
+    where
+      Self : Sized,
+    {
+      let source_s = Source::< S >
+      {
+        media_type : self.source.media_type,
+        encoding : self.source.encoding,
+        data : self.source.data.into(),
+      };
+      // Call the `new` associated function from the builder module
+      File::new( source_s ).into()
     }
   }
 
@@ -602,7 +672,6 @@ mod private
     }
   }
 
-
   /// Converts `ContentAny<S>` to a `serde_json::Value`, omitting media data.
   impl< S > From< ContentAny< S > > for serde_json::Value
   where
@@ -633,6 +702,18 @@ mod private
           "type" : "video",
           "media_type" : video.source.media_type,
           "encoding" : video.source.encoding,
+        }),
+        ContentAny::Pdf( pdf ) => serde_json::json! // Added Pdf arm
+        ({
+          "type" : "pdf",
+          "media_type" : pdf.source.media_type,
+          "encoding" : pdf.source.encoding,
+        }),
+        ContentAny::File( file ) => serde_json::json! // Added File arm
+        ({
+          "type" : "file",
+          "media_type" : file.source.media_type,
+          "encoding" : file.source.encoding,
         }),
         ContentAny::Array( list ) =>
         {
@@ -668,6 +749,8 @@ mod private
         serde_json::Value::Object( obj ) =>
         {
           let _ = obj; // Avoid unused variable warning
+          // Media types (Image, Sound, Video, Pdf, File) are represented as objects in JSON,
+          // but converting *from* JSON object back to a specific media type with data is not supported here.
           Err( Error::UnsupportedType( "Object (Media types require specific structure for JSON deserialization)".to_string() ) )
         },
       }
@@ -699,6 +782,8 @@ mod private
         serde_json::Value::Object( obj ) =>
         {
           let _ = obj; // Avoid unused variable warning
+          // Media types (Image, Sound, Video, Pdf, File) are represented as objects in JSON,
+          // but converting *from* JSON object back to a specific media type with data is not supported here.
           Err( Error::UnsupportedType( "Object (Media types cannot be reliably represented as String from JSON)".to_string() ) )
         },
       }
@@ -706,6 +791,8 @@ mod private
   }
 
 } // mod private
+
+mod builder;
 
 crate::mod_interface!
 {
@@ -720,12 +807,16 @@ crate::mod_interface!
     Image,
     Sound,
     Video,
+    Pdf,
+    File,
     ContentAny,
   };
 
   // Expose the builder module itself. Users will need to use paths like
-  // `content::Source::new()` or `content::ContentAny::string()`
+  // `content::builder::source()` or `content::builder::string()`
   // or import items from `content::builder`.
-  layer builder;
+  // The builder methods on the types themselves (like Source::media_type)
+  // are already available because the types are exposed.
+  reuse builder;
 
 }
