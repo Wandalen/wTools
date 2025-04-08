@@ -1,4 +1,3 @@
-
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/asbytes/latest/asbytes/" ) ]
@@ -8,6 +7,8 @@
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
+  // Only include bytemuck if either as_bytes or into_bytes is enabled
+  #[ cfg( any( feature = "as_bytes", feature = "into_bytes" ) ) ]
   pub use ::bytemuck;
 }
 
@@ -15,133 +16,12 @@ pub mod dependency
 #[ cfg( feature = "enabled" ) ]
 mod private
 {
-
-  pub use bytemuck::
-  {
-    Pod,
-  };
-
-  /// Trait for converting data to byte slices.
-  /// This trait abstracts the conversion of types that implement Pod into their raw byte representation.
-  #[ cfg( feature = "as_bytes" ) ]
-  pub trait AsBytes
-  {
-
-    /// Returns the underlying byte slice of the data.
-    fn as_bytes( &self ) -> &[ u8 ]
-    ;
-
-    /// Returns the size in bytes of the data.
-    #[ inline ]
-    fn byte_size( &self ) -> usize
-    {
-      self.as_bytes().len()
-    }
-
-    /// Returns the count of scalar elements contained in the data.
-    /// For flat structures, this corresponds to the number of elements.
-    /// For multidimensional data, this value may differ from the total number of components.
-    fn len( &self ) -> usize;
-
-  }
-
-  /// Implementation for any single POD type.
-  impl< T : Pod > AsBytes for ( T, )
-  {
-
-    #[ inline ]
-    fn as_bytes( &self ) -> &[ u8 ]
-    {
-      // Use bytes_of to get the byte slice of a single POD item
-      bytemuck::bytes_of( &self.0 )
-    }
-
-    #[ inline ]
-    fn byte_size( &self ) -> usize
-    {
-      // The size is simply the size of the type itself
-      std::mem::size_of::< T >()
-    }
-
-    #[ inline ]
-    fn len( &self ) -> usize
-    {
-      // A single item has a length of 1 element
-      1
-    }
-
-  }
-
-  impl< T : Pod > AsBytes for Vec< T >
-  {
-
-    #[ inline ]
-    fn as_bytes( &self ) -> &[ u8 ]
-    {
-      bytemuck::cast_slice( self )
-    }
-
-    #[ inline ]
-    fn byte_size( &self ) -> usize
-    {
-      self.len() * std::mem::size_of::< T >() / std::mem::size_of::< u8 >()
-    }
-
-    #[ inline ]
-    fn len( &self ) -> usize
-    {
-      self.len()
-    }
-
-  }
-
-  impl< T : Pod > AsBytes for [ T ]
-  {
-
-    #[ inline ]
-    fn as_bytes( &self ) -> &[ u8 ]
-    {
-      bytemuck::cast_slice( self )
-    }
-
-    #[ inline ]
-    fn byte_size( &self ) -> usize
-    {
-      self.len() * std::mem::size_of::< T >() / std::mem::size_of::< u8 >()
-    }
-
-    #[ inline ]
-    fn len( &self ) -> usize
-    {
-      self.len()
-    }
-
-  }
-
-  impl< T : Pod, const N : usize > AsBytes for [ T ; N ]
-  {
-
-    #[ inline ]
-    fn as_bytes( &self ) -> &[ u8 ]
-    {
-      bytemuck::cast_slice( self )
-    }
-
-    #[ inline ]
-    fn byte_size( &self ) -> usize
-    {
-      self.len() * std::mem::size_of::< T >() / std::mem::size_of::< u8 >()
-    }
-
-    #[ inline ]
-    fn len( &self ) -> usize
-    {
-      N
-    }
-
-  }
-
 }
+
+#[ cfg( feature = "as_bytes" ) ]
+mod as_bytes;
+#[ cfg( feature = "into_bytes" ) ]
+mod into_bytes;
 
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
@@ -158,6 +38,15 @@ pub mod own
   #[ doc( inline ) ]
   pub use orphan::*;
 
+  #[ doc( inline ) ]
+  #[ cfg( feature = "as_bytes" ) ]
+  pub use as_bytes::orphan::*;
+  #[ doc( inline ) ]
+  #[ cfg( feature = "into_bytes" ) ]
+  pub use into_bytes::orphan::*;
+
+  // Re-export bytemuck items only if a feature needing it is enabled
+  #[ cfg( any( feature = "as_bytes", feature = "into_bytes" ) ) ]
   #[ doc( inline ) ]
   pub use bytemuck::
   {
@@ -196,6 +85,11 @@ pub mod own
     Zeroable,
     ZeroableInOption,
   };
+
+  // Expose allocation submodule if into_bytes and extern_crate_alloc are enabled
+  #[ cfg( all( feature = "into_bytes", feature = "extern_crate_alloc" ) ) ]
+  pub use bytemuck::allocation;
+
 }
 
 #[ cfg( feature = "enabled" ) ]
@@ -209,6 +103,7 @@ pub use own::*;
 pub mod orphan
 {
   use super::*;
+
   #[ doc( inline ) ]
   pub use exposed::*;
 
@@ -222,14 +117,14 @@ pub mod exposed
   use super::*;
 
   #[ doc( inline ) ]
-  pub use prelude::*;
-
   #[ cfg( feature = "as_bytes" ) ]
-  pub use private::
-  {
-    AsBytes,
-    Pod,
-  };
+  pub use as_bytes::exposed::*;
+  #[ doc( inline ) ]
+  #[ cfg( feature = "into_bytes" ) ]
+  pub use into_bytes::exposed::*;
+
+  #[ doc( inline ) ]
+  pub use prelude::*;
 
 }
 
@@ -239,4 +134,10 @@ pub mod exposed
 pub mod prelude
 {
   use super::*;
+  #[ doc( inline ) ]
+  #[ cfg( feature = "as_bytes" ) ]
+  pub use as_bytes::prelude::*;
+  #[ doc( inline ) ]
+  #[ cfg( feature = "into_bytes" ) ]
+  pub use into_bytes::prelude::*;
 }

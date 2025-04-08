@@ -34,6 +34,8 @@ crate::mod_interface!
   layer secret;
   layer util;
 
+  own use ::asbytes::AsBytes;
+
   exposed use ::reflect_tools::
   {
     Fields,

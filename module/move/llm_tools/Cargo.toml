@@ -44,9 +44,11 @@ mod_interface = { workspace = true, features = [ "full" ] }
 former = { workspace = true, features = [ "full" ] }
 format_tools = { workspace = true, features = [ "full" ] }
 reflect_tools = { workspace = true, features = [ "full" ] }
+
 openai-api-rs = { version = "=5.0.14" }
 tokio = { version = "1", features = ["full"] }
 dotenv = "0.15"
+asbytes = { workspace = true, features = [ "full" ] }
 pth = { workspace = true, features = [ "full" ] }
 error_tools = { workspace = true, features = [ "full" ] }
 derive_tools = { workspace = true, features = ["full"] }
