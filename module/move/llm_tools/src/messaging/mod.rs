@@ -19,7 +19,6 @@ mod private
 crate::mod_interface!
 {
 
-  layer content;
   layer conversation;
   layer message;
   layer messages;

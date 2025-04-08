@@ -27,6 +27,7 @@ pub mod ser
 crate::mod_interface!
 {
 
+  layer content;
   layer client;
   layer messaging;
 
@@ -34,7 +35,7 @@ crate::mod_interface!
   layer secret;
   layer util;
 
-  own use ::asbytes::AsBytes;
+  own use ::asbytes::IntoBytes;
 
   exposed use ::reflect_tools::
   {
