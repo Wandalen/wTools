@@ -613,3 +613,6 @@ version = "1.0.140"
 
 [workspace.dependencies.serde_yaml]
 version = "0.9.34"
+
+[workspace.dependencies.bytemuck]
+version = "1.21.0"

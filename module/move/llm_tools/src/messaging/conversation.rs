@@ -14,6 +14,8 @@ mod private
   #[ derive( Debug ) ]
   pub struct Conversation
   {
+    /// Systems instuction for context.
+    pub context : String,
     /// A collection of messages exchanged within this conversation.
     pub messages : Messages,
     /// A collection of key-value parameters to customize LLM behavior.
@@ -27,6 +29,7 @@ mod private
     {
       Self
       {
+        context : Default::default(),
         messages : Messages::new(),
         parameters : HashMap::new(),
       }
