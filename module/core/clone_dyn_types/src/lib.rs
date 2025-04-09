@@ -186,7 +186,7 @@ mod private
     // The safety of this function relies on the correct implementation of the `CloneDyn` trait for the given type `T`.
     // Specifically, `__clone_dyn` must return a valid pointer to a cloned instance of `T`.
     //
-    #[ allow( unsafe_code, clippy::implicit_return, clippy::as_conversions, clippy::ptr_cast_constness, clippy::ptr_as_ptr, clippy::multiple_unsafe_ops_per_block, clippy::undocumented_unsafe_blocks, clippy::ref_as_ptr ) ]
+    #[ allow( unsafe_code, clippy::implicit_return, clippy::as_conversions, clippy::ptr_cast_constness, clippy::ptr_as_ptr, clippy::multiple_unsafe_ops_per_block, clippy::undocumented_unsafe_blocks, clippy::ref_as_ptr, clippy::borrow_as_ptr ) ]
     unsafe
     {
       let mut ptr = ref_dyn as *const T;
