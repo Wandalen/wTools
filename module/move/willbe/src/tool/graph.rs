@@ -273,6 +273,7 @@ mod private
     graph : &Graph< String, String >,
     roots : &[ String ],
     temp_path : Option< PathBuf >,
+    exclude_dev_dependencies : bool,
   )
   -> error::untyped::Result< Graph< String, String > >
   // qqq : use typed error!
@@ -303,6 +304,7 @@ mod private
           .option_temp_path( temp_path.clone() )
           .dry( false )
           .allow_dirty( true )
+          .exclude_dev_dependencies( exclude_dev_dependencies )
           .form()
         )?;
         if publish_need( package, temp_path.clone() ).unwrap()
