@@ -161,21 +161,37 @@ mod components_tests
   mod component_from_manual;
   #[ cfg( feature = "derive_component_from" ) ]
   mod component_from;
+  #[ cfg( feature = "derive_component_from" ) ]
+  mod component_from_tuple;
+  #[ cfg( feature = "derive_component_from" ) ]
+  mod component_from_tuple_manual;
 
   #[ cfg( feature = "derive_component_assign" ) ]
   mod component_assign_manual;
   #[ cfg( feature = "derive_component_assign" ) ]
   mod component_assign;
+  #[ cfg( feature = "derive_component_assign" ) ]
+  mod component_assign_tuple;
+  #[ cfg( feature = "derive_component_assign" ) ]
+  mod component_assign_tuple_manual;
 
   #[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
   mod components_assign_manual;
   #[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
   mod components_assign;
+  #[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
+  mod components_assign_tuple;
+  #[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
+  mod components_assign_tuple_manual;
 
   #[ cfg( all( feature = "derive_from_components" ) ) ]
   mod from_components_manual;
   #[ cfg( all( feature = "derive_from_components" ) ) ]
   mod from_components;
+  #[ cfg( all( feature = "derive_from_components" ) ) ]
+  mod from_components_tuple;
+  #[ cfg( all( feature = "derive_from_components" ) ) ]
+  mod from_components_tuple_manual;
 
   #[ cfg( all( feature = "derive_component_from", feature = "derive_component_assign", feature = "derive_components_assign", feature = "derive_from_components" ) ) ]
   mod composite_manual;

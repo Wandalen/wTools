@@ -160,7 +160,7 @@ pub mod own
 
 /// Parented namespace of the module.
 #[ cfg( feature = "enabled" ) ]
-  #[ allow( unused_imports ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   use super::*;
