@@ -108,5 +108,5 @@ iter_tools = { workspace = true, features = [ "iter_trait" ] }
 clone_dyn_types = { workspace = true, features = [] }
 former_types = { workspace = true, features = [ "types_component_assign" ] }
 
-# [dev-dependencies]
-# test_tools = { workspace = true }
+[dev-dependencies]
+test_tools = { workspace = true }

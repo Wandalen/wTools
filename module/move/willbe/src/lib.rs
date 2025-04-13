@@ -3,6 +3,56 @@
 #![ doc( html_root_url = "https://docs.rs/willbe/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+// qqq2 : xxx2 : fix broken sequence of publishing because of skipping debug dependencies
+//
+// cd module/core/former_meta
+// cargo package --allow-dirty --no-verify
+//
+// Caused by:
+//   failed to select a version for `former_types`.
+//       ... required by package `macro_tools v0.46.0`
+//       ... which satisfies dependency `macro_tools = "~0.46.0"` of package `impls_index_meta v0.10.0`
+//       ... which satisfies dependency `impls_index_meta = "~0.10.0"` of package `test_tools v0.12.0`
+//       ... which satisfies dependency `test_tools = "~0.12.0"` of package `former_meta v2.12.0 (C:\pro\lib\wtools\module\core\former_meta)`
+//   versions that meet the requirements `~2.14.0` are: 2.14.0
+//
+//   all possible versions conflict with previously selected packages.
+//
+//     previously selected package `former_types v2.15.0`
+//       ... which satisfies dependency `former_types = "~2.15.0"` of package `former_meta v2.12.0 (C:\pro\lib\wtools\module\core\former_meta)`
+//
+//   failed to select a version for `former_types` which could resolve this conflict
+
+// qqq2 : xx2 : attempt to publish graphs_tools publish all crates do not respecting check on outdate
+//
+// Wrong:
+// [0] interval_adapter (0.28.0 -> 0.29.0)
+// [1] collection_tools (0.17.0 -> 0.18.0)
+// [2] former_types (2.14.0 -> 2.15.0)
+// [3] clone_dyn_types (0.28.0 -> 0.29.0)
+// [4] iter_tools (0.26.0 -> 0.27.0)
+// [5] macro_tools (0.46.0 -> 0.47.0)
+// [6] derive_tools_meta (0.32.0 -> 0.33.0)
+// [7] variadic_from (0.28.0 -> 0.29.0)
+// [8] former_meta (2.12.0 -> 2.13.0)
+// [9] impls_index_meta (0.10.0 -> 0.11.0)
+// [10] clone_dyn_meta (0.28.0 -> 0.29.0)
+// [11] clone_dyn (0.30.0 -> 0.31.0)
+// [12] derive_tools (0.33.0 -> 0.34.0)
+// [13] mod_interface_meta (0.30.0 -> 0.31.0)
+// [14] mod_interface (0.31.0 -> 0.32.0)
+// [15] for_each (0.10.0 -> 0.11.0)
+// [16] impls_index (0.9.0 -> 0.10.0)
+// [17] meta_tools (0.12.0 -> 0.13.0)
+// [18] former (2.12.0 -> 2.13.0)
+// [19] graphs_tools (0.3.0 -> 0.4.0)
+//
+// Correct:
+// [0] impls_index (0.9.0 -> 0.10.0)
+// [1] for_each (0.10.0 -> 0.11.0)
+// [2] meta_tools (0.12.0 -> 0.13.0)
+// [3] graphs_tools (0.3.0 -> 0.4.0)
+
 pub use mod_interface::mod_interface;
 
 /// Define a private namespace for all its items.

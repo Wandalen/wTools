@@ -40,7 +40,7 @@ mod private
   /// let kind = container_kind::of_type( &tree_type );
   /// assert_eq!( kind, container_kind::ContainerKind::HashMap );
   /// ```
-  /// # Panics 
+  /// # Panics
   /// qqq: doc
   #[ must_use ]
   pub fn of_type( ty : &syn::Type ) -> ContainerKind
@@ -86,7 +86,7 @@ mod private
 
     if typ::type_rightmost( ty ) == Some( "Option".to_string() )
     {
-      let ty2 = typ::type_parameters( ty, &( 0 ..= 0 ) ).first().copied();
+      let ty2 = typ::type_parameters( ty, 0 ..= 0 ).first().copied();
       // inspect_type::inspect_type_of!( ty2 );
       if ty2.is_none()
       {
