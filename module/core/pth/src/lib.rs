@@ -6,12 +6,13 @@
 #![ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 
 #[ cfg( feature = "enabled" ) ]
-use mod_interface::mod_interface;
+use ::mod_interface::mod_interface;
 
 #[ cfg( feature="no_std" ) ]
 #[ macro_use ]
 extern crate alloc;
 
+/// Own namespace of the module. Contains items public within this layer, but not propagated.
 mod private {}
 
 #[ cfg( feature = "enabled" ) ]

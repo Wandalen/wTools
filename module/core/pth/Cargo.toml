@@ -45,6 +45,7 @@ derive_serde = [ "serde" ]
 path_utf8 = [ "camino" ]
 
 [dependencies]
+# qqq : xxx : make sure all dependencies are in workspace
 regex = { version = "1.10.3" }
 mod_interface = { workspace = true }
 serde = { version = "1.0.197", optional = true, features = [ "derive" ] }

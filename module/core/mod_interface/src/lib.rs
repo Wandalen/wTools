@@ -1,62 +1,67 @@
-/// Private namespace of the module. Should contain the actual implementation.
-mod private
-{
-}
+#![ no_std ]
+#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
+#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
+#![ doc( html_root_url = "https://docs.rs/mod_interface/latest/mod_interface/" ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Own namespace of the module. Contains items public within this layer, but not propagated.
-#[ allow( unused_imports ) ]
-pub mod own
+/// Namespace with dependencies.
+#[ cfg( feature = "enabled" ) ]
+pub mod dependency
 {
-  use super::*;
-  #[ doc( inline ) ]
-  pub use orphan::*; // Includes items from the orphan level
-  /// Function specific to layer_a's `own` level.
-  pub fn layer_a_own() -> bool
-  {
-    true
-  }
+  // pub use mod_interface_runtime;
+  pub use mod_interface_meta;
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use own::*; // Exports items from `own` and `orphan` levels to the root of the layer.
+#[ cfg( feature = "enabled" ) ]
+pub use own::*;
 
-/// Orphan namespace of the module. Contains items propagated to the immediate parent.
+/// Own namespace of the module.
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
+pub mod own
+{
+  #[ allow( clippy::wildcard_imports ) ]
+  use super::*;
+  #[ doc( inline ) ]
+  pub use orphan::*;
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use mod_interface_meta as meta;
+
+}
+
+/// Orphan namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
-  pub use exposed::*; // Includes items from the exposed level
-  /// Function specific to layer_a's `orphan` level.
-  pub fn layer_a_orphan() -> bool
-  {
-    true
-  }
+  pub use exposed::*;
 }
 
-/// Exposed namespace of the module. Contains items propagated to all ancestor layers.
+/// Exposed namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
-  pub use prelude::*; // Includes items from the prelude level
-  /// Function specific to layer_a's `exposed` level.
-  pub fn layer_a_exposed() -> bool
-  {
-    true
-  }
+  pub use prelude::*;
 }
 
-/// Prelude namespace of the module. Contains items propagated to all ancestors and intended for glob import.
+/// Prelude to use essentials: `use my_module::prelude::*`.
+#[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
   use super::*;
-  /// Function specific to layer_a's `prelude` level.
-  pub fn layer_a_prelude() -> bool
-  {
-    true
-  }
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use mod_interface_meta::*;
 }
