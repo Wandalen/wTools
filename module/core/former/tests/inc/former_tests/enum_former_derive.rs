@@ -6,10 +6,10 @@ use super::*;
 
 // Define the inner structs
 #[derive(Debug, Clone, PartialEq, former::Former)]
-pub struct Break { pub condition: bool }
+pub struct Break { pub condition : bool }
 
 #[derive(Debug, Clone, PartialEq, former::Former)]
-pub struct Run { pub command: String }
+pub struct Run { pub command : String }
 
 // Derive Former on the simplified enum - This should generate static methods
 #[derive(Debug, Clone, PartialEq, former::Former)]

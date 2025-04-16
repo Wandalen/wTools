@@ -4,8 +4,8 @@
 fn build_break_variant_static() // Test name kept for clarity, could be renamed
 {
   let got = FunctionStep::r#break() // Use raw identifier here
-    .condition( true )
-    .form(); // This calls FunctionStepBreakEnd::call
+  .condition( true )
+  .form(); // This calls FunctionStepBreakEnd::call
 
   let expected = FunctionStep::Break( Break { condition : true } );
   assert_eq!( got, expected );
@@ -15,8 +15,8 @@ fn build_break_variant_static() // Test name kept for clarity, could be renamed
 fn build_run_variant_static() // Test name kept for clarity, could be renamed
 {
   let got = FunctionStep::run()
-    .command( "cargo build" )
-    .form(); // This calls FunctionStepRunEnd::call
+  .command( "cargo build" )
+  .form(); // This calls FunctionStepRunEnd::call
 
   let expected = FunctionStep::Run( Run { command : "cargo build".to_string() } );
   assert_eq!( got, expected );
