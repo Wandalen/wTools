@@ -1,4 +1,3 @@
-// File: module/core/former/tests/inc/former_tests/enum_former_derive.rs
 #![ allow( unused_imports ) ]
 #![ allow( dead_code ) ]
 

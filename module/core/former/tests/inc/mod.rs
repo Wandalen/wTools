@@ -161,6 +161,7 @@ mod former_tests
 #[ cfg( feature = "derive_former" ) ]
 mod former_enum_tests
 {
+  use super::*;
 
   // = enum
 

@@ -1,5 +1,3 @@
-// // File: module/core/former/tests/inc/former_enum_tests/multi_field_derive.rs
-// #![ allow( dead_code ) ] // Allow unused variants/methods during macro phase
 // use super::*; // Assuming it's in a module within `former_enum_tests`
 //
 // /// Enum with different variant types for testing.

@@ -1,5 +1,3 @@
-// File: module/core/former/tests/inc/former_enum_tests/multi_field_manual.rs
-#![ allow( dead_code ) ] // Allow unused variants/methods during manual phase
 use super::*; // Assuming it's in a module within `former_enum_tests`
 // No need for FormingEnd or StoragePreform here for the scalar-style method
 

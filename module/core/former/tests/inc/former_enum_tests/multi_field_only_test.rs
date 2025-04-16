@@ -1,4 +1,3 @@
-// File: module/core/former/tests/inc/former_enum_tests/multi_field_only_test.rs
 
 // Use the enum and its impl from the including file (`multi_field_manual.rs` or `multi_field_derive.rs`)
 use super::*;

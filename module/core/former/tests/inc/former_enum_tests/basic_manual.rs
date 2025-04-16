@@ -1,6 +1,3 @@
-// File: module/core/former/tests/inc/former_tests/enum_former_manual.rs
-#![ allow( unused_imports ) ]
-#![ allow( dead_code ) ]
 
 use super::*;
 use former::StoragePreform;
