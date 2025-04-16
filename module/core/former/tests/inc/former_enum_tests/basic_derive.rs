@@ -21,4 +21,4 @@ enum FunctionStep
 }
 
 // Include the test logic
-include!( "enum_former_only_test.rs" );
+include!( "basic_only_test.rs" );

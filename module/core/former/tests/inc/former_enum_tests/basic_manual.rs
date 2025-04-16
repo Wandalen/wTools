@@ -87,4 +87,4 @@ for FunctionStepRunEnd
 }
 
 // Include the test logic
-include!( "./enum_former_only_test.rs" ); // Renamed from _static_only_test
+include!( "./basic_only_test.rs" ); // Renamed from _static_only_test
