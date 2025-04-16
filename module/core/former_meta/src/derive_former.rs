@@ -1,12 +1,13 @@
+// File: module/core/former_meta/src/derive_former.rs
 #[ allow( clippy::wildcard_imports ) ]
 use super::*;
 use iter_tools::Itertools;
 use macro_tools::
 {
-  attr, diag, generic_params, generic_args, typ, derive, Result, ident,
-  proc_macro2::TokenStream, quote::{ format_ident, quote }, syn::spanned::Spanned
+  attr, diag, generic_params, generic_args, typ, derive, Result,
+  proc_macro2::TokenStream, quote::{ format_ident, quote }, syn::spanned::Spanned,
+  ident,
 };
-
 #[ cfg( feature = "derive_former" ) ]
 use convert_case::{ Case, Casing };
 
@@ -22,6 +23,8 @@ mod struct_attrs;
 use struct_attrs::*;
 
 /// Generates the code for implementing the `FormerMutator` trait for a specified former definition type.
+/// If the `custom` attribute is not specified, a default empty implementation is generated.
+/// If the `debug` attribute is specified, it prints an example of a custom mutator implementation.
 #[ allow( clippy::format_in_format_args, clippy::unnecessary_wraps ) ]
 pub fn mutator
 (
@@ -37,11 +40,13 @@ pub fn mutator
 {
   let former_mutator_code = if mutator.custom.value( false )
   {
-    qt!{}
+    // If custom mutator is requested via #[ mutator( custom ) ], generate nothing, assuming user provides the impl.
+    quote!{}
   }
   else
   {
-    qt!
+    // Otherwise, generate a default empty impl.
+    quote!
     {
       impl< #former_definition_types_generics_impl > former::FormerMutator
       for #former_definition_types < #former_definition_types_generics_ty >
@@ -52,6 +57,7 @@ pub fn mutator
     }
   };
 
+  // If debug is enabled for the mutator attribute, print a helpful example.
   if mutator.debug.value( false )
   {
     let debug = format!
@@ -66,16 +72,21 @@ where
 {{
   /// Mutates the context and storage of the entity just before the formation process completes.
   #[ inline ]
-  fn form_mutation( storage : &mut Self::Storage, context : &mut Option< Self::Context > )
+  fn form_mutation
+  (
+    storage : &mut Self::Storage,
+    context : &mut Option< Self::Context >,
+  )
   {{
+    // Example: Set a default value if field 'a' wasn't provided
+    // storage.a.get_or_insert_with( Default::default );
   }}
 }}
       ",
-      format!( "{}", qt!{ #former_definition_types_generics_impl } ),
-      format!( "{}", qt!{ #former_definition_types_generics_ty } ),
-      format!( "{}", qt!{ #former_definition_types_generics_where } ),
+      format!( "{}", quote!{ #former_definition_types_generics_impl } ),
+      format!( "{}", quote!{ #former_definition_types_generics_ty } ),
+      format!( "{}", quote!{ #former_definition_types_generics_where } ),
     );
-    // println!( "{debug}" );
     let about = format!
     (
 r"derive : Former
@@ -88,8 +99,7 @@ item : {item}",
 }
 
 
-/// Generate documentation for the former.
-// ... (doc_generate function remains the same) ...
+/// Generate documentation strings for the former struct and its module.
 fn doc_generate( item : &syn::Ident ) -> ( String, String )
 {
 
@@ -114,6 +124,7 @@ utilizes a defined end strategy to finalize the object creation.
 
 
 /// Generate the whole Former ecosystem for either a struct or an enum.
+/// This is the main entry point for the `#[derive(Former)]` macro.
 #[ allow( clippy::too_many_lines ) ]
 pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 {
@@ -121,6 +132,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let ast = syn::parse::< syn::DeriveInput >( input )?;
   let has_debug = attr::has_debug( ast.attrs.iter() )?;
 
+  // Dispatch based on whether the input is a struct, enum, or union.
   let result = match ast.data
   {
       syn::Data::Struct( ref data_struct ) =>
@@ -129,14 +141,16 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       },
       syn::Data::Enum( ref data_enum ) =>
       {
-          former_for_enum( &ast, data_enum, &original_input, has_debug ) // New function for enums
+          former_for_enum( &ast, data_enum, &original_input, has_debug )
       },
       syn::Data::Union( _ ) =>
       {
+          // Unions are not supported.
           Err( syn::Error::new( ast.span(), "Former derive does not support unions" ) )
       }
   }?;
 
+  // If the top-level `#[debug]` attribute was found, print the final generated code.
   if has_debug
   {
     let about = format!( "derive : Former\nstructure : {}", ast.ident );
@@ -146,31 +160,33 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   Ok( result )
 }
 
+
+/// Generate the Former ecosystem for a struct.
 #[ allow( clippy::too_many_lines ) ]
 fn former_for_struct
 (
   ast : &syn::DeriveInput,
-  _data_struct : &syn::DataStruct, // Keep parameter for consistency, might be used later
+  _data_struct : &syn::DataStruct,
   original_input : &proc_macro::TokenStream,
-  _has_debug : bool, // qqq : xxx : make sure debug works
+  _has_debug : bool,
 ) -> Result< TokenStream >
 {
-  // --- Existing struct logic starts here ---
-  use macro_tools::IntoGenericArgs; // Needed for struct logic
+  use macro_tools::IntoGenericArgs;
 
+  // Parse struct-level attributes like `storage_fields`, `mutator`, `perform`.
   let struct_attrs = ItemAttributes::from_attrs( ast.attrs.iter() )?;
 
-  /* names */
+  /* names: Generate identifiers for the Former components based on the struct name. */
+  let vis = &ast.vis; // Visibility of the original struct.
+  let item = &ast.ident; // Name of the original struct.
+  let former = format_ident!( "{item}Former" ); // e.g., MyStructFormer
+  let former_storage = format_ident!( "{item}FormerStorage" ); // e.g., MyStructFormerStorage
+  let former_definition = format_ident!( "{item}FormerDefinition" ); // e.g., MyStructFormerDefinition
+  let former_definition_types = format_ident!( "{item}FormerDefinitionTypes" ); // e.g., MyStructFormerDefinitionTypes
+  let as_subformer = format_ident!( "{item}AsSubformer" ); // e.g., MyStructAsSubformer
+  let as_subformer_end = format_ident!( "{item}AsSubformerEnd" ); // e.g., MyStructAsSubformerEnd
 
-  let vis = &ast.vis;
-  let item = &ast.ident;
-  let former = format_ident!( "{item}Former" );
-  let former_storage = format_ident!( "{item}FormerStorage" );
-  let former_definition = format_ident!( "{item}FormerDefinition" );
-  let former_definition_types = format_ident!( "{item}FormerDefinitionTypes" );
-  let as_subformer = format_ident!( "{item}AsSubformer" );
-  let as_subformer_end = format_ident!( "{item}AsSubformerEnd" );
-
+  // Generate documentation string for the AsSubformerEnd trait.
   let as_subformer_end_doc = format!
   (
     r"
@@ -181,22 +197,24 @@ specific needs of the broader forming context. It mandates the implementation of
     "
   );
 
-  /* parameters for structure */
-
+  /* parameters for structure: Decompose the original struct's generics. */
   let generics = &ast.generics;
-  let ( struct_generics_with_defaults, struct_generics_impl, struct_generics_ty, struct_generics_where )
-  = generic_params::decompose( generics );
+  let
+  (
+    struct_generics_with_defaults, // Generics with defaults (e.g., `<T = i32>`). Used for struct definition.
+    struct_generics_impl,          // Generics for `impl` block (e.g., `<T: Clone>`). Bounds, no defaults.
+    struct_generics_ty,            // Generics for type usage (e.g., `<T>`). Names only.
+    struct_generics_where          // Where clause predicates (e.g., `T: Send`).
+  ) = generic_params::decompose( generics );
 
-  /* parameters for definition */
-
+  /* parameters for definition: Merge struct generics with default definition parameters. */
   let extra : macro_tools::syn::AngleBracketedGenericArguments = parse_quote!
   {
-    < (), #item < #struct_generics_ty >, former::ReturnPreformed >
+    < (), #item < #struct_generics_ty >, former::ReturnPreformed > // Default Context, Formed, End
   };
   let former_definition_args = generic_args::merge( &generics.into_generic_args(), &extra ).args;
 
-  /* parameters for former */
-
+  /* parameters for former: Merge struct generics with the Definition generic parameter. */
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
     < Definition = #former_definition < #former_definition_args > >
@@ -205,12 +223,10 @@ specific needs of the broader forming context. It mandates the implementation of
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty > >,
   };
   let extra = generic_params::merge( generics, &extra.into() );
-
   let ( former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where )
   = generic_params::decompose( &extra );
 
-  /* parameters for former perform */
-
+  /* parameters for former perform: Similar to former parameters, but specifically for the perform method. */
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
     < Definition = #former_definition < #former_definition_args > >
@@ -227,13 +243,10 @@ specific needs of the broader forming context. It mandates the implementation of
       >,
   };
   let extra = generic_params::merge( generics, &extra.into() );
-
-  // FIX: Remove underscore from _former_perform_generics_ty when destructuring
   let ( _former_perform_generics_with_defaults, former_perform_generics_impl, former_perform_generics_ty, former_perform_generics_where )
   = generic_params::decompose( &extra );
 
-  /* parameters for definition types */
-
+  /* parameters for definition types: Merge struct generics with Context and Formed parameters. */
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
     < __Context = (), __Formed = #item < #struct_generics_ty > >
@@ -241,11 +254,10 @@ specific needs of the broader forming context. It mandates the implementation of
   let former_definition_types_generics = generic_params::merge( generics, &extra.into() );
   let ( former_definition_types_generics_with_defaults, former_definition_types_generics_impl, former_definition_types_generics_ty, former_definition_types_generics_where )
   = generic_params::decompose( &former_definition_types_generics );
-
+  // Generate PhantomData tuple type based on the impl generics.
   let former_definition_types_phantom = macro_tools::phantom::tuple( &former_definition_types_generics_impl );
 
-  /* parameters for definition */
-
+  /* parameters for definition: Merge struct generics with Context, Formed, and End parameters. */
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
     < __Context = (), __Formed = #item < #struct_generics_ty >, __End = former::ReturnPreformed >
@@ -253,54 +265,46 @@ specific needs of the broader forming context. It mandates the implementation of
   let generics_of_definition = generic_params::merge( generics, &extra.into() );
   let ( former_definition_generics_with_defaults, former_definition_generics_impl, former_definition_generics_ty, former_definition_generics_where )
   = generic_params::decompose( &generics_of_definition );
-
+  // Generate PhantomData tuple type based on the impl generics.
   let former_definition_phantom = macro_tools::phantom::tuple( &former_definition_generics_impl );
 
-  /* struct attributes */
-
+  /* struct attributes: Generate documentation and extract perform method details. */
   let ( _doc_former_mod, doc_former_struct ) = doc_generate( item );
   let ( perform, perform_output, perform_generics ) = struct_attrs.performer()?;
 
-  /* fields */
-
+  /* fields: Process struct fields and storage_fields attribute. */
   let fields = derive::named_fields( &ast )?;
-
+  // Create FormerField representation for actual struct fields.
   let formed_fields : Vec< _ > = fields
-  .iter() // Use iter() instead of into_iter()
-  .map( | field |
-  {
-    FormerField::from_syn( field, true, true )
-  })
+  .iter()
+  .map( | field | FormerField::from_syn( field, true, true ) )
   .collect::< Result< _ > >()?;
-
+  // Create FormerField representation for storage-only fields.
   let storage_fields : Vec< _ > = struct_attrs
   .storage_fields()
   .iter()
-  .map( | field |
-  {
-    FormerField::from_syn( field, true, false )
-  })
+  .map( | field | FormerField::from_syn( field, true, false ) )
   .collect::< Result< _ > >()?;
 
+  // Generate code snippets for each field (storage init, storage field def, preform logic, setters).
   let
   (
-    storage_field_none,
-    storage_field_optional,
-    storage_field_name,
-    storage_field_preform,
-    former_field_setter,
+    storage_field_none, // Code for initializing storage field to None.
+    storage_field_optional, // Code for the storage field definition (e.g., `pub field: Option<Type>`).
+    storage_field_name, // Code for the field name (e.g., `field,`). Used in final struct construction.
+    storage_field_preform, // Code for unwrapping/defaulting the field in `preform`.
+    former_field_setter, // Code for the setter method(s) for the field.
   )
   :
   ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
-  = formed_fields
+  = formed_fields // Combine actual fields and storage-only fields for processing.
   .iter()
   .chain( storage_fields.iter() )
-  .map( | field |
-  {(
+  .map( | field | {(
     field.storage_fields_none(),
     field.storage_field_optional(),
-    field.storage_field_name(),
-    field.storage_field_preform(),
+    field.storage_field_name(), // Only generated if field.for_formed is true.
+    field.storage_field_preform(), // Only generated if field.for_formed is true.
     field.former_field_setter
     (
       item,
@@ -316,46 +320,33 @@ specific needs of the broader forming context. It mandates the implementation of
     ),
   )}).multiunzip();
 
+  // Collect results, separating setters and namespace code (like End structs).
   let results : Result< Vec< _ > > = former_field_setter.into_iter().collect();
   let ( former_field_setter, namespace_code ) : ( Vec< _ >, Vec< _ > ) = results?.into_iter().unzip();
+  // Collect preform logic results.
+  let storage_field_preform : Vec< _ > = storage_field_preform.into_iter().collect::< Result< _ > >()?;
+  // Generate mutator implementation code.
+  let former_mutator_code = mutator( item, &original_input, &struct_attrs.mutator, &former_definition_types, &former_definition_types_generics_impl, &former_definition_types_generics_ty, &former_definition_types_generics_where )?;
 
-  let storage_field_preform : Vec< _ > = storage_field_preform
-  .into_iter()
-  .collect::< Result< _ > >()?;
-
-  let former_mutator_code = mutator
-  (
-    item,
-    &original_input,
-    &struct_attrs.mutator,
-    &former_definition_types,
-    &former_definition_types_generics_impl,
-    &former_definition_types_generics_ty,
-    &former_definition_types_generics_where,
-  )?;
-
-  let result = qt!
+  // Assemble the final generated code using quote!
+  let result = quote!
   {
 
-    // = formed
-
+    // = formed: Implement the `::former()` static method on the original struct.
     #[ automatically_derived ]
     impl < #struct_generics_impl > #item < #struct_generics_ty >
     where
       #struct_generics_where
     {
-
       /// Provides a mechanism to initiate the formation process with a default completion behavior.
       #[ inline( always ) ]
       pub fn former() -> #former < #struct_generics_ty #former_definition< #former_definition_args > >
       {
         #former :: < #struct_generics_ty #former_definition< #former_definition_args > > :: new_coercing( former::ReturnPreformed )
       }
-
     }
 
-    // = entity to former
-
+    // = entity to former: Implement former traits linking the struct to its generated components.
     impl< #struct_generics_impl Definition > former::EntityToFormer< Definition >
     for #item < #struct_generics_ty >
     where
@@ -391,8 +382,7 @@ specific needs of the broader forming context. It mandates the implementation of
       type Types = #former_definition_types < #struct_generics_ty __Context, __Formed >;
     }
 
-    // = definition types
-
+    // = definition types: Define the FormerDefinitionTypes struct.
     /// Defines the generic parameters for formation behavior including context, form, and end conditions.
     #[ derive( Debug ) ]
     #vis struct #former_definition_types < #former_definition_types_generics_with_defaults >
@@ -426,8 +416,7 @@ specific needs of the broader forming context. It mandates the implementation of
       type Context = __Context;
     }
 
-    // = definition
-
+    // = definition: Define the FormerDefinition struct.
     /// Holds the definition types used during the formation process.
     #[ derive( Debug ) ]
     #vis struct #former_definition < #former_definition_generics_with_defaults >
@@ -464,12 +453,10 @@ specific needs of the broader forming context. It mandates the implementation of
       type Context = __Context;
     }
 
-    // = former mutator
-
+    // = former mutator: Implement the FormerMutator trait.
     #former_mutator_code
 
-    // = storage
-
+    // = storage: Define the FormerStorage struct.
     #[ doc = "Stores potential values for fields during the formation process." ]
     #[ allow( explicit_outlives_requirements ) ]
     #vis struct #former_storage < #struct_generics_with_defaults >
@@ -487,7 +474,6 @@ specific needs of the broader forming context. It mandates the implementation of
     where
       #struct_generics_where
     {
-
       #[ inline( always ) ]
       fn default() -> Self
       {
@@ -496,7 +482,6 @@ specific needs of the broader forming context. It mandates the implementation of
           #( #storage_field_none, )*
         }
       }
-
     }
 
     impl < #struct_generics_impl > former::Storage
@@ -521,11 +506,9 @@ specific needs of the broader forming context. It mandates the implementation of
         };
         return result;
       }
-
     }
 
-    // = former
-
+    // = former: Define the Former struct itself.
     #[ doc = #doc_former_struct ]
     #vis struct #former < #former_generics_with_defaults >
     where
@@ -544,17 +527,22 @@ specific needs of the broader forming context. It mandates the implementation of
     where
       #former_generics_where
     {
-
       /// Initializes a former with an end condition and default storage.
       #[ inline( always ) ]
-      pub fn new( on_end : Definition::End ) -> Self
+      pub fn new
+      (
+        on_end : Definition::End
+      ) -> Self
       {
         Self::begin_coercing( ::core::option::Option::None, ::core::option::Option::None, on_end )
       }
 
       /// Initializes a former with a coercible end condition.
       #[ inline( always ) ]
-      pub fn new_coercing< IntoEnd >( end : IntoEnd ) -> Self
+      pub fn new_coercing< IntoEnd >
+      (
+        end : IntoEnd
+      ) -> Self
       where
         IntoEnd : ::core::convert::Into< Definition::End >,
       {
@@ -628,37 +616,33 @@ specific needs of the broader forming context. It mandates the implementation of
         former::FormingEnd::< Definition::Types >::call( &on_end, self.storage, context )
       }
 
+      // Insert generated setter methods for each field.
       #(
         #former_field_setter
       )*
 
     }
 
-    // = former :: preform
-
+    // = former :: preform: Implement `preform` for direct storage transformation.
     impl< #former_generics_impl > #former< #former_generics_ty >
     where
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty >, Formed = #item < #struct_generics_ty > >,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty >, Formed = #item < #struct_generics_ty > >,
       #former_generics_where
     {
-
       /// Executes the transformation from the former's storage state to the preformed object.
       pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
       {
         former::StoragePreform::preform( self.storage )
       }
-
     }
 
-    // = former :: perform
-
+    // = former :: perform: Implement `perform` if specified by attributes.
     #[ automatically_derived ]
-    impl < #former_perform_generics_impl > #former < #former_perform_generics_ty > // FIX: Use the correct generic type parameter here
+    impl < #former_perform_generics_impl > #former < #former_perform_generics_ty >
     where
       #former_perform_generics_where
     {
-
       /// Finish setting options and call perform on formed entity.
       #[ inline( always ) ]
       pub fn perform #perform_generics ( self ) -> #perform_output
@@ -666,22 +650,15 @@ specific needs of the broader forming context. It mandates the implementation of
         let result = self.form();
         #perform
       }
-
     }
 
-    // = former begin
-
+    // = former begin: Implement `FormerBegin` trait.
     impl< #struct_generics_impl Definition > former::FormerBegin< Definition >
-    for #former
-    <
-      #struct_generics_ty
-      Definition,
-    >
+    for #former < #struct_generics_ty Definition, >
     where
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
       #struct_generics_where
     {
-
       #[ inline( always ) ]
       fn former_begin
       (
@@ -694,13 +671,12 @@ specific needs of the broader forming context. It mandates the implementation of
         debug_assert!( storage.is_none() );
         Self::begin( ::core::option::Option::None, context, on_end )
       }
-
     }
 
-    // = subformer
-
+    // = subformer: Define the `AsSubformer` type alias.
     /// Provides a specialized former for structure using predefined settings for superformer and end conditions.
     // #vis type #as_subformer < #struct_generics_impl __Superformer, __End > = #former
+    // xxx
     #vis type #as_subformer < #struct_generics_ty __Superformer, __End > = #former
     <
       #struct_generics_ty
@@ -713,8 +689,8 @@ specific needs of the broader forming context. It mandates the implementation of
       >,
     >;
 
-    // = as subformer end
 
+    // = as subformer end: Define the `AsSubformerEnd` trait.
     #[ doc = #as_subformer_end_doc ]
     pub trait #as_subformer_end < #struct_generics_impl SuperFormer >
     where
@@ -737,16 +713,13 @@ specific needs of the broader forming context. It mandates the implementation of
     {
     }
 
-    // = etc
-
-    #(
-      #namespace_code
-    )*
+    // = etc: Insert any namespace code generated by field setters (e.g., End structs for subformers).
+    #( #namespace_code )*
 
   };
-  // --- Existing struct logic ends here ---
   Ok( result )
 }
+
 
 /// Generate the Former ecosystem for an enum.
 #[ allow( clippy::too_many_lines ) ]
@@ -755,7 +728,7 @@ fn former_for_enum
   ast : &syn::DeriveInput,
   data_enum : &syn::DataEnum,
   _original_input : &proc_macro::TokenStream,
-  _has_debug : bool,
+  _has_debug : bool, // qqq : xxx : make sure debug works
 ) -> Result< TokenStream >
 {
   let enum_name = &ast.ident;
@@ -771,6 +744,7 @@ fn former_for_enum
   {
     let variant_ident = &variant.ident;
 
+    // Only handle tuple variants with exactly one field.
     let inner_type = match &variant.fields
     {
         syn::Fields::Unnamed( fields ) if fields.unnamed.len() == 1 =>
@@ -790,16 +764,16 @@ fn former_for_enum
         }
     };
 
-    // Generate names
-    // FIX: Explicit snake_case conversion + use ident_maybe_raw
+    // Generate names for methods and types.
     let variant_name_str = variant_ident.to_string();
     let method_name_snake_str = variant_name_str.to_case( Case::Snake );
-    // Create a temporary Ident with the correct span for keyword checking
     let method_name_ident_temp = format_ident!( "{}", method_name_snake_str, span = variant_ident.span() );
-    // Use the utility function on the temporary snake_case ident
+    // Ensure raw identifier `r#` is used if the snake_case name is a keyword.
     let method_name = ident::ident_maybe_raw( &method_name_ident_temp );
 
+    // Generate name for the specialized End struct for this variant.
     let end_struct_name = format_ident!( "{}{}End", enum_name, variant_ident );
+    // Extract the base name of the inner type (assuming it's a path).
     let inner_type_name = match inner_type
     {
         syn::Type::Path( type_path ) => type_path.path.segments.last().map( | s | s.ident.clone() )
@@ -807,62 +781,69 @@ fn former_for_enum
         _ => return Err( syn::Error::new_spanned( inner_type, "Inner variant type must be a path type (like MyStruct or MyStruct<T>) to derive Former" ) ),
     };
 
+    // Generate names for the inner type's Former components.
     let inner_former_name = format_ident!( "{}Former", inner_type_name );
     let inner_storage_name = format_ident!( "{}FormerStorage", inner_type_name );
     let inner_def_name = format_ident!( "{}FormerDefinition", inner_type_name );
     let inner_def_types_name = format_ident!( "{}FormerDefinitionTypes", inner_type_name );
 
+    // Placeholders for handling generics of the inner type (TODO).
     let _inner_generics_impl = quote! {};
     let inner_generics_ty = quote! {};
     let inner_generics_where = quote! {};
 
-    // Generate End struct definition
-    let end_struct_def = qt!
+    // Generate the definition for the specialized End struct.
+    let end_struct_def = quote!
     {
-      #[derive(Default, Debug)]
+      #[ derive( Default, Debug ) ]
       #vis struct #end_struct_name;
     };
 
-    // Generate impl FormingEnd for End struct
-    let end_impl = qt!
+    // Generate the `impl FormingEnd` block for the specialized End struct.
+    let end_impl = quote!
     {
-      #[automatically_derived]
-      impl<#enum_generics_impl> former::FormingEnd
+      #[ automatically_derived ]
+      impl< #enum_generics_impl > former::FormingEnd
       <
-          #inner_def_types_name<#inner_generics_ty (), #enum_name<#enum_generics_ty> >
+          // Define the types for the inner former: Context=(), Formed=TheEnum<...>
+          #inner_def_types_name< #inner_generics_ty (), #enum_name< #enum_generics_ty > >
       >
       for #end_struct_name
-      where #enum_generics_where #inner_generics_where
+      where // Include where clauses from the enum and potentially the inner type.
+        #enum_generics_where #inner_generics_where
       {
           #[ inline( always ) ]
           fn call
           (
             &self,
-            sub_storage : #inner_storage_name<#inner_generics_ty>,
-            _context : Option< () >,
-          ) -> #enum_name<#enum_generics_ty>
+            sub_storage : #inner_storage_name< #inner_generics_ty >, // Storage from the inner former.
+            _context : Option< () >, // Context is () as we start from a static method.
+          ) -> #enum_name< #enum_generics_ty > // Returns the final enum instance.
           {
+            // Preform the inner data and wrap it in the correct enum variant.
             let data = former::StoragePreform::preform( sub_storage );
             #enum_name::#variant_ident( data )
           }
       }
     };
 
-    // Generate static method
-    let static_method = qt!
+    // Generate the static method on the enum (e.g., `pub fn run() -> RunFormer<...>` ).
+    let static_method = quote!
     {
       #[ inline( always ) ]
-      #vis fn #method_name() // Use corrected method name
-      -> #inner_former_name
+      #vis fn #method_name() // Use the generated (potentially raw) method name.
+      -> #inner_former_name // Return type is the Former for the inner data type.
          <
+           // Configure the inner former's definition:
            #inner_def_name
            <
-               (),
-               #enum_name<#enum_generics_ty>,
-               #end_struct_name
+               (),                             // Context is ().
+               #enum_name< #enum_generics_ty >, // The final type to be Formed is the enum itself.
+               #end_struct_name                // Use the specialized End struct.
            >
          >
       {
+          // Start the inner former using its `begin` associated function.
           #inner_former_name::begin( None, None, #end_struct_name::default() )
       }
     };
@@ -872,15 +853,19 @@ fn former_for_enum
 
   } // End variant loop
 
-  // Combine generated code
-  let result = qt!
+  // Combine generated code for the enum.
+  let result = quote!
   {
-      #[automatically_derived]
-      impl<#enum_generics_impl> #enum_name<#enum_generics_ty> #enum_generics_where
+      // Implement the static methods on the enum.
+      #[ automatically_derived ]
+      impl< #enum_generics_impl > #enum_name< #enum_generics_ty >
+      where
+        #enum_generics_where
       {
           #( #methods )*
       }
 
+      // Define the End structs and their implementations outside the enum impl block.
       #( #end_impls )*
   };
 
