@@ -13,12 +13,12 @@ pub struct Run { pub command: String }
 
 // Derive Former on the simplified enum - This should generate static methods
 #[derive(Debug, Clone, PartialEq, former::Former)]
-#[debug]
+// #[debug]
 enum FunctionStep
 {
-  Break(Break),
-  Run(Run),
+  Break( Break ),
+  Run( Run ),
 }
 
 // Include the test logic
-include!("enum_former_only_test.rs");
+include!( "enum_former_only_test.rs" );
