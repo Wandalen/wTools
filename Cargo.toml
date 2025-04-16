@@ -246,7 +246,7 @@ path = "module/core/former_types"
 default-features = false
 
 [workspace.dependencies.impls_index]
-version = "~0.9.0"
+version = "~0.10.0"
 path = "module/core/impls_index"
 default-features = false
 
