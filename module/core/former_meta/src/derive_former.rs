@@ -700,7 +700,8 @@ specific needs of the broader forming context. It mandates the implementation of
     // = subformer
 
     /// Provides a specialized former for structure using predefined settings for superformer and end conditions.
-    #vis type #as_subformer < #struct_generics_impl __Superformer, __End > = #former
+    // #vis type #as_subformer < #struct_generics_impl __Superformer, __End > = #former
+    #vis type #as_subformer < #struct_generics_ty __Superformer, __End > = #former
     <
       #struct_generics_ty
       #former_definition
