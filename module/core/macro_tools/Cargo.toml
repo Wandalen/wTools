@@ -105,9 +105,9 @@ typed = []
 # const_format = { version = "0.2.32", default-features = false, features = [] }
 
 # external
-proc-macro2 = { workspace = true, default-features = false, features = [] }
-quote = { workspace = true, default-features = false, features = [] }
-syn = { workspace = true, default-features = false, features = [ "full", "extra-traits" ] } # qqq : xxx : optimize set of features
+proc-macro2 = { workspace = true, default-features = false, features = [ "default" ] }
+quote = { workspace = true, default-features = false, features = [ "default" ] }
+syn = { workspace = true, default-features = false, features = [ "clone-impls", "full", "derive", "parsing", "printing", "proc-macro", "extra-traits" ] } # qqq : xxx : optimize set of features, bind features of dependecies to features of this crate, optimally
 const_format = { workspace = true, default-features = false, features = [] }
 
 ## internal
