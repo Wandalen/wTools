@@ -53,6 +53,10 @@
 // [2] meta_tools (0.12.0 -> 0.13.0)
 // [3] graphs_tools (0.3.0 -> 0.4.0)
 
+// qqq2 : xxx2 : another problem
+// if you publish a crate and after you try to publish another which depends on the first willbe don't see any changes and don't publish second
+// for example publishing impl_index -> after publising test_tools make willbe struggle to see that publishing of test_tools is required
+
 pub use mod_interface::mod_interface;
 
 /// Define a private namespace for all its items.
