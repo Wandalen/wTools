@@ -37,7 +37,7 @@ impl From<&SelfTuple> for char
     }
 }
 
-#[test]
+#[ test ]
 fn components_assign_self()
 {
     let t1 = SelfTuple(true, 'a');

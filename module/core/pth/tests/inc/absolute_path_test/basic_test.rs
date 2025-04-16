@@ -24,7 +24,7 @@ fn test_to_string_lossy()
   let result = path.to_string_lossy();
   assert_eq!( result, "/path/to/file.txt" );
 }
-#[test]
+#[ test ]
 fn test_to_string_lossy_hard()
 {
   let abs_path : AbsolutePath = "/path/with/😀/unicode.txt".try_into().unwrap();
@@ -32,7 +32,7 @@ fn test_to_string_lossy_hard()
   assert_eq!( string_lossy, "/path/with/\u{1F600}/unicode.txt" );
 }
 
-#[test]
+#[ test ]
 #[ cfg( not( feature="no_std" ) ) ]
 fn test_try_from_pathbuf()
 {
@@ -42,7 +42,7 @@ fn test_try_from_pathbuf()
   assert_eq!( abs_path.to_string_lossy(), "/path/to/some/file.txt" );
 }
 
-#[test]
+#[ test ]
 #[ cfg( not( feature="no_std" ) ) ]
 fn test_try_from_path()
 {
@@ -51,7 +51,7 @@ fn test_try_from_path()
   assert_eq!( abs_path.to_string_lossy(), "/path/to/some/file.txt" );
 }
 
-#[test]
+#[ test ]
 fn test_parent()
 {
   let abs_path : AbsolutePath = "/path/to/some/file.txt".try_into().unwrap();
@@ -59,7 +59,7 @@ fn test_parent()
   assert_eq!( parent_path.to_string_lossy(), "/path/to/some" );
 }
 
-#[test]
+#[ test ]
 fn test_join()
 {
   let abs_path : AbsolutePath = "/path/to/some".try_into().unwrap();
@@ -67,7 +67,7 @@ fn test_join()
   assert_eq!( joined_path.to_string_lossy(), "/path/to/some/file.txt" );
 }
 
-#[test]
+#[ test ]
 fn test_relative_path_try_from_str()
 {
   let rel_path_str = "src/main.rs";
@@ -75,7 +75,7 @@ fn test_relative_path_try_from_str()
   assert_eq!( rel_path.to_string_lossy(), "src/main.rs" );
 }
 
-#[test]
+#[ test ]
 #[ cfg( not( feature="no_std" ) ) ]
 fn test_relative_path_try_from_pathbuf()
 {
@@ -84,7 +84,7 @@ fn test_relative_path_try_from_pathbuf()
   assert_eq!( rel_path.to_string_lossy(), "src/main.rs" );
 }
 
-#[test]
+#[ test ]
 #[ cfg( not( feature="no_std" ) ) ]
 fn test_relative_path_try_from_path()
 {
@@ -94,7 +94,7 @@ fn test_relative_path_try_from_path()
   assert_eq!( rel_path_result.unwrap().to_string_lossy(), "src/main.rs" );
 }
 
-#[test]
+#[ test ]
 fn test_relative_path_parent()
 {
   let rel_path = AbsolutePath::try_from( "src/main.rs" ).unwrap();
@@ -102,7 +102,7 @@ fn test_relative_path_parent()
   assert_eq!( parent_path.to_string_lossy(), "src" );
 }
 
-#[test]
+#[ test ]
 fn test_relative_path_join()
 {
   let rel_path = AbsolutePath::try_from( "src" ).unwrap();

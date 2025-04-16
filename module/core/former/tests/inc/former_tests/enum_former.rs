@@ -29,7 +29,7 @@ enum FunctionStep
 // Test that attempts to derive Former on an enum compile.
 // Note: The functionality of the derived Former for an enum is undefined/unsupported
 // for the pattern `enum_former().variant_name()`.
-#[test]
+#[ test ]
 fn enum_former_compiles()
 {
   // This mainly checks if the derive macro runs without panicking on an enum.
@@ -44,7 +44,7 @@ fn enum_former_compiles()
 
 // Demonstrate the standard/intended way to construct these enum variants
 // when the inner types derive Former.
-#[test]
+#[ test ]
 fn enum_variant_construction()
 {
   // Construct the Prompt variant

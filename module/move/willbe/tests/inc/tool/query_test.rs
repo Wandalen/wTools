@@ -49,7 +49,7 @@ fn parse_empty_string()
   assert_eq!( parse( "()" ).unwrap().into_vec(), vec![] );
 }
 
-#[test]
+#[ test ]
 fn parse_single_value()
 {
   let mut expected_map = HashMap::new();
