@@ -3,12 +3,13 @@ use super::*;
 use iter_tools::Itertools;
 use macro_tools::
 {
-  attr, diag, generic_params, generic_args, typ, derive, Result, kw, // Added kw
-  proc_macro2::TokenStream, quote::{ format_ident, quote }, syn::spanned::Spanned // Added Spanned
+  attr, diag, generic_params, generic_args, typ, derive, Result, ident,
+  proc_macro2::TokenStream, quote::{ format_ident, quote }, syn::spanned::Spanned
 };
 
 #[ cfg( feature = "derive_former" ) ]
 use convert_case::{ Case, Casing };
+
 
 mod field_attrs;
 #[ allow( clippy::wildcard_imports ) ]
@@ -21,7 +22,6 @@ mod struct_attrs;
 use struct_attrs::*;
 
 /// Generates the code for implementing the `FormerMutator` trait for a specified former definition type.
-// ... (mutator function remains the same) ...
 #[ allow( clippy::format_in_format_args, clippy::unnecessary_wraps ) ]
 pub fn mutator
 (
@@ -772,35 +772,31 @@ fn former_for_enum
 
     let inner_type = match &variant.fields
     {
-      syn::Fields::Unnamed( fields ) if fields.unnamed.len() == 1 =>
-      {
-          &fields.unnamed.first().unwrap().ty
-      },
-      _ =>
-      {
-        return Err
-        (
-          syn::Error::new_spanned
+        syn::Fields::Unnamed( fields ) if fields.unnamed.len() == 1 =>
+        {
+            &fields.unnamed.first().unwrap().ty
+        },
+        _ =>
+        {
+          return Err
           (
-            &variant.fields,
-            "Former derive on enums currently only supports tuple variants with exactly one field, like `VariantName(DataType)`"
-          )
-        );
-      }
+            syn::Error::new_spanned
+            (
+              &variant.fields,
+              "Former derive on enums currently only supports tuple variants with exactly one field, like `VariantName(DataType)`"
+            )
+          );
+        }
     };
 
     // Generate names
+    // FIX: Explicit snake_case conversion + use ident_maybe_raw
     let variant_name_str = variant_ident.to_string();
-    // FIX: Convert to snake_case unless it's a keyword, then use r#original
-    let method_name = if kw::is( &variant_name_str )
-    {
-        format_ident!( "r#{}", variant_name_str )
-    }
-    else
-    {
-        // Convert PascalCase variant name to snake_case method name
-        format_ident!( "{}", variant_name_str.to_case( Case::Snake ) )
-    };
+    let method_name_snake_str = variant_name_str.to_case( Case::Snake );
+    // Create a temporary Ident with the correct span for keyword checking
+    let method_name_ident_temp = format_ident!( "{}", method_name_snake_str, span = variant_ident.span() );
+    // Use the utility function on the temporary snake_case ident
+    let method_name = ident::ident_maybe_raw( &method_name_ident_temp );
 
     let end_struct_name = format_ident!( "{}{}End", enum_name, variant_ident );
     let inner_type_name = match inner_type
