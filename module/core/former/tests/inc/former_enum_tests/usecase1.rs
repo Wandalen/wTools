@@ -1,3 +1,4 @@
+// File: module/core/former/tests/inc/former_enum_tests/basic.rs
 use super::*;
 
 // Define the inner structs that the enum variants will hold.
@@ -14,9 +15,8 @@ pub struct InstructionsApplyToFiles { pub instruction: String }
 #[derive(Debug, Clone, PartialEq, former::Former)]
 pub struct Run { pub command: String }
 
-// Attempt to derive Former on the enum.
-// This is likely NOT the intended use case for the Former derive macro.
-// It might compile but won't generate methods like `.prompt()`, `.break()`, etc.
+// Derive Former on the enum.
+// By default, this should generate subformer starter methods for each variant.
 #[derive(Debug, Clone, PartialEq, former::Former)]
 enum FunctionStep
 {
@@ -26,26 +26,43 @@ enum FunctionStep
   Run(Run),
 }
 
-// Test that attempts to derive Former on an enum compile.
-// Note: The functionality of the derived Former for an enum is undefined/unsupported
-// for the pattern `enum_former().variant_name()`.
+// Renamed test to reflect its purpose: testing the subformer construction
 #[ test ]
-fn enum_former_compiles()
+fn enum_variant_subformer_construction()
 {
-  // This mainly checks if the derive macro runs without panicking on an enum.
-  // The generated former won't have the methods like `.prompt()`, etc.
-  // We create a dummy former just to ensure compilation.
-  // Depending on the macro implementation, this might produce a former
-  // that allows setting *internal* fields if the macro incorrectly assumes a struct layout,
-  // or it might simply be empty or fail later.
-  let _former = FunctionStep::former(); // Check if former() method exists
-  println!("Deriving Former on an enum compiles, but the generated former is not designed for enum variant construction.");
+  // Construct the Prompt variant using the generated subformer starter
+  let prompt_step = FunctionStep::prompt() // Expects subformer starter
+    .content( "Explain the code." )
+    .form(); // Calls the specialized PromptEnd
+  let expected_prompt = FunctionStep::Prompt( Prompt { content: "Explain the code.".to_string() } );
+  assert_eq!( prompt_step, expected_prompt );
+
+  // Construct the Break variant using the generated subformer starter
+  let break_step = FunctionStep::r#break() // Expects subformer starter (using raw identifier)
+    .condition( true )
+    .form(); // Calls the specialized BreakEnd
+  let expected_break = FunctionStep::Break( Break { condition: true } );
+  assert_eq!( break_step, expected_break );
+
+  // Construct the InstructionsApplyToFiles variant using the generated subformer starter
+  let apply_step = FunctionStep::instructions_apply_to_files() // Expects subformer starter
+    .instruction( "Apply formatting." )
+    .form(); // Calls the specialized InstructionsApplyToFilesEnd
+  let expected_apply = FunctionStep::InstructionsApplyToFiles( InstructionsApplyToFiles { instruction: "Apply formatting.".to_string() } );
+  assert_eq!( apply_step, expected_apply );
+
+  // Construct the Run variant using the generated subformer starter
+  let run_step = FunctionStep::run() // Expects subformer starter
+    .command( "cargo check" )
+    .form(); // Calls the specialized RunEnd
+  let expected_run = FunctionStep::Run( Run { command: "cargo check".to_string() } );
+  assert_eq!( run_step, expected_run );
 }
 
-// Demonstrate the standard/intended way to construct these enum variants
-// when the inner types derive Former.
+// Keep the original test demonstrating manual construction for comparison if desired,
+// but it's not strictly necessary for testing the derive macro itself.
 #[ test ]
-fn enum_variant_construction()
+fn enum_variant_manual_construction()
 {
   // Construct the Prompt variant
   let prompt_step = FunctionStep::Prompt

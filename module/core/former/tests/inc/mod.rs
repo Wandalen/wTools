@@ -153,6 +153,7 @@ mod former_tests
   // = unsorted
 
   mod keyword_field_derive; // Add this line
+  mod keyword_subform_derive;
 
 }
 
@@ -164,7 +165,7 @@ mod former_enum_tests
   // = enum
 
   // xxx : qqq : enable or remove
-  // mod usecase1;
+  mod usecase1;
 
   mod basic_manual;
   mod basic_derive;
