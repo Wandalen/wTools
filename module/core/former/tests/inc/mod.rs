@@ -150,6 +150,13 @@ mod former_tests
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_all_parametrized;
 
+  // = enum
+
+  // xxx : qqq : enable or remove
+  // mod enum_former;
+  mod enum_former_manual;
+  mod enum_former_derive;
+
 }
 
 #[ cfg( feature = "derive_components" ) ]
