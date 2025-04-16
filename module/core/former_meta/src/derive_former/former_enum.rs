@@ -2,20 +2,14 @@
 
 #![ allow( clippy::wildcard_imports ) ]
 use super::*; // Use items from parent module (derive_former.rs)
-// Removed Itertools - not used here
 use macro_tools::
 {
-  // Removed unused: attr, diag, generic_args, typ, derive
   generic_params, Result,
   proc_macro2::TokenStream, quote::{ format_ident, quote },
   ident,
 };
 #[ cfg( feature = "derive_former" ) ]
 use convert_case::{ Case, Casing };
-
-// Bring in necessary local types from parent (assuming they are pub(super) or pub in parent)
-// use super::{ field_attrs::*, field::*, struct_attrs::* }; // Not needed due to use super::*;
-// use super::{ mutator, doc_generate }; // Not currently used by enum logic
 
 
 /// Generate the Former ecosystem for an enum.
@@ -36,7 +30,7 @@ pub(super) fn former_for_enum // Make it pub(super)
 
   // Initialize vectors to collect generated code pieces
   let mut methods = Vec::new();
-  let mut end_impls = Vec::new(); // Need this again for End structs
+  let mut end_impls = Vec::new(); // Needed again for subform variants
 
   // Iterate through each variant of the enum
   for variant in &data_enum.variants
@@ -49,10 +43,16 @@ pub(super) fn former_for_enum // Make it pub(super)
     let method_name_ident_temp = format_ident!( "{}", method_name_snake_str, span = variant_ident.span() );
     let method_name = ident::ident_maybe_raw( &method_name_ident_temp );
 
+    // Parse attributes *from the variant* itself
+    // Using FieldAttributes as it contains the scalar property we need.
+    // A dedicated VariantAttributes might be cleaner long-term.
+    let variant_attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
+    let wants_scalar = variant_attrs.scalar.is_some() && variant_attrs.scalar.as_ref().unwrap().setter();
+
     // Generate method based on the variant's fields
     match &variant.fields
     {
-        // Case 1: Unit variant (e.g., `Empty`) - Keep direct constructor
+        // Case 1: Unit variant (e.g., `Empty`) - Always Direct constructor
         syn::Fields::Unit =>
         {
             let static_method = quote!
@@ -70,132 +70,163 @@ pub(super) fn former_for_enum // Make it pub(super)
         // Case 2: Tuple variant (e.g., `Simple(String)`, `MultiTuple(i32, String)`)
         syn::Fields::Unnamed( fields ) =>
         {
-            // Sub-case: Single field tuple variant (e.g., `Simple(String)`) - Generate Subformer Starter
+            // Sub-case: Single field tuple variant (e.g., `Simple(String)`)
             if fields.unnamed.len() == 1
             {
                 let field = fields.unnamed.first().unwrap();
                 let inner_type = &field.ty;
 
-                // Generate name for the specialized End struct for this variant.
-                let end_struct_name = format_ident!( "{}{}End", enum_name, variant_ident );
-
-                // Extract the base name and generics of the inner type (assuming it's a path).
-                let ( inner_type_name, inner_generics ) = match inner_type
+                if wants_scalar
                 {
-                    syn::Type::Path( type_path ) =>
+                    // --- Generate Direct Constructor (Scalar Style) ---
+                    let static_method = quote!
                     {
-                      let segment = type_path.path.segments.last().ok_or_else( || syn::Error::new_spanned( inner_type, "Cannot derive name from type path") )?;
-                      ( segment.ident.clone(), segment.arguments.clone() ) // Get name and any generics like <T>
-                    },
-                    _ => return Err( syn::Error::new_spanned( inner_type, "Inner variant type must be a path type (like MyStruct or MyStruct<T>) to derive Former" ) ),
-                };
-
-                // Generate names for the inner type's Former components.
-                let inner_former_name = format_ident!( "{}Former", inner_type_name );
-                let inner_storage_name = format_ident!( "{}FormerStorage", inner_type_name );
-                let inner_def_name = format_ident!( "{}FormerDefinition", inner_type_name );
-                let inner_def_types_name = format_ident!( "{}FormerDefinitionTypes", inner_type_name );
-
-                // Extract type generics from inner type arguments if present. Use owned Punctuated.
-                let inner_generics_ty : syn::punctuated::Punctuated<syn::GenericArgument, syn::token::Comma> = match &inner_generics
-                {
-                    syn::PathArguments::AngleBracketed( args ) => args.args.clone(), // Clone the args
-                    _ => syn::punctuated::Punctuated::new(), // Return an empty owned list
-                };
-                // TODO: Properly handle inner_generics_impl and inner_generics_where if needed
-
-                // Generate the definition for the specialized End struct.
-                let end_struct_def = quote!
-                {
-                  #[ derive( Default, Debug ) ]
-                  #vis struct #end_struct_name;
-                };
-
-                // Generate the `impl FormingEnd` block for the specialized End struct.
-                let end_impl = quote!
-                {
-                  #[ automatically_derived ]
-                  impl< #enum_generics_impl > former::FormingEnd
-                  <
-                      // DefinitionTypes of the inner former: Context=(), Formed=TheEnum<...>
-                      #inner_def_types_name< #inner_generics_ty (), #enum_name< #enum_generics_ty > >
-                  >
-                  for #end_struct_name
-                  where // Include where clauses from the enum
-                    #enum_generics_where // TODO: Add where clauses from inner type if needed
-                  {
+                      /// Constructor for the #variant_ident variant (scalar style).
+                      /// Takes a value convertible into the inner type #inner_type.
                       #[ inline( always ) ]
-                      fn call
-                      (
-                        &self,
-                        sub_storage : #inner_storage_name< #inner_generics_ty >, // Storage from the inner former.
-                        _context : Option< () >, // Context is () as we start from a static method.
-                      ) -> #enum_name< #enum_generics_ty > // Returns the final enum instance.
+                      #vis fn #method_name( value : impl Into< #inner_type > ) -> Self
                       {
-                        // Preform the inner data and wrap it in the correct enum variant.
-                        let data = former::StoragePreform::preform( sub_storage );
-                        #enum_name::#variant_ident( data )
+                        // Construct the variant, converting the input value
+                        Self::#variant_ident( value.into() )
                       }
-                  }
-                };
-
-                // Generate the static method on the enum that returns the subformer
-                let static_method = quote!
+                    };
+                    methods.push( static_method );
+                }
+                else // Default or explicit subform_scalar -> Generate Subformer
                 {
-                  /// Starts forming the #variant_ident variant.
-                  #[ inline( always ) ]
-                  #vis fn #method_name() // Use the generated (potentially raw) method name.
-                  -> #inner_former_name // Return type is the Former for the inner data type.
-                     <
-                       #inner_generics_ty // Pass inner type generics
-                       // Configure the inner former's definition:
-                       #inner_def_name
-                       <
-                           #inner_generics_ty // Pass inner type generics again
-                           (),                             // Context is ().
-                           #enum_name< #enum_generics_ty >, // The final type to be Formed is the enum itself.
-                           #end_struct_name                // Use the specialized End struct.
-                       >
-                     >
-                  {
-                      // Start the inner former using its `begin` associated function.
-                      #inner_former_name::begin( None, None, #end_struct_name::default() )
-                  }
-                };
+                    // --- Generate Subformer Starter + End Logic ---
 
-                methods.push( static_method );
-                end_impls.push( quote!{ #end_struct_def #end_impl } );
+                    // Generate name for the specialized End struct for this variant.
+                    let end_struct_name = format_ident!( "{}{}End", enum_name, variant_ident );
 
+                    // Extract the base name and generics of the inner type (assuming it's a path).
+                    let ( inner_type_name, inner_generics ) = match inner_type
+                    {
+                        syn::Type::Path( type_path ) =>
+                        {
+                          let segment = type_path.path.segments.last().ok_or_else( || syn::Error::new_spanned( inner_type, "Cannot derive name from type path") )?;
+                          ( segment.ident.clone(), segment.arguments.clone() ) // Get name and any generics like <T>
+                        },
+                        _ => return Err( syn::Error::new_spanned( inner_type, "Inner variant type must be a path type (like MyStruct or MyStruct<T>) to derive Former" ) ),
+                    };
+
+                    // Generate names for the inner type's Former components.
+                    let inner_former_name = format_ident!( "{}Former", inner_type_name );
+                    let inner_storage_name = format_ident!( "{}FormerStorage", inner_type_name );
+                    let inner_def_name = format_ident!( "{}FormerDefinition", inner_type_name );
+                    let inner_def_types_name = format_ident!( "{}FormerDefinitionTypes", inner_type_name );
+
+                    // Extract type generics from inner type arguments if present. Use owned Punctuated.
+                    let inner_generics_ty : syn::punctuated::Punctuated<syn::GenericArgument, syn::token::Comma> = match &inner_generics
+                    {
+                        syn::PathArguments::AngleBracketed( args ) => args.args.clone(), // Clone the args
+                        _ => syn::punctuated::Punctuated::new(), // Return an empty owned list
+                    };
+                    // TODO: Properly handle inner_generics_impl and inner_generics_where if needed
+
+                    // Generate the definition for the specialized End struct.
+                    let end_struct_def = quote!
+                    {
+                      #[ derive( Default, Debug ) ]
+                      #vis struct #end_struct_name;
+                    };
+
+                    // Generate the `impl FormingEnd` block for the specialized End struct.
+                    let end_impl = quote!
+                    {
+                      #[ automatically_derived ]
+                      impl< #enum_generics_impl > former::FormingEnd
+                      <
+                          // DefinitionTypes of the inner former: Context=(), Formed=TheEnum<...>
+                          #inner_def_types_name< #inner_generics_ty (), #enum_name< #enum_generics_ty > >
+                      >
+                      for #end_struct_name
+                      where // Include where clauses from the enum
+                        #enum_generics_where // TODO: Add where clauses from inner type if needed
+                      {
+                          #[ inline( always ) ]
+                          fn call
+                          (
+                            &self,
+                            sub_storage : #inner_storage_name< #inner_generics_ty >, // Storage from the inner former.
+                            _context : Option< () >, // Context is () as we start from a static method.
+                          ) -> #enum_name< #enum_generics_ty > // Returns the final enum instance.
+                          {
+                            // Preform the inner data and wrap it in the correct enum variant.
+                            let data = former::StoragePreform::preform( sub_storage );
+                            #enum_name::#variant_ident( data )
+                          }
+                      }
+                    };
+
+                    // Generate the static method on the enum that returns the subformer
+                    let static_method = quote!
+                    {
+                      /// Starts forming the #variant_ident variant using a subformer.
+                      #[ inline( always ) ]
+                      #vis fn #method_name() // Use the generated (potentially raw) method name.
+                      -> #inner_former_name // Return type is the Former for the inner data type.
+                         <
+                           #inner_generics_ty // Pass inner type generics
+                           // Configure the inner former's definition:
+                           #inner_def_name
+                           <
+                               #inner_generics_ty // Pass inner type generics again
+                               (),                             // Context is ().
+                               #enum_name< #enum_generics_ty >, // The final type to be Formed is the enum itself.
+                               #end_struct_name                // Use the specialized End struct.
+                           >
+                         >
+                      {
+                          // Start the inner former using its `begin` associated function.
+                          #inner_former_name::begin( None, None, #end_struct_name::default() )
+                      }
+                    };
+
+                    methods.push( static_method );
+                    end_impls.push( quote!{ #end_struct_def #end_impl } );
+                } // End of if/else based on #[scalar]
             }
             // Sub-case: Multi-field tuple variant (e.g., `MultiTuple(i32, String)`)
-            else if fields.unnamed.len() > 1
+            else // if fields.unnamed.len() > 1 - Always true here
             {
-                // Generate parameters and arguments for the direct constructor method
-                let mut params = Vec::new();
-                let mut args = Vec::new();
-                for ( i, field ) in fields.unnamed.iter().enumerate()
+                if wants_scalar
                 {
-                    let param_name = format_ident!( "field{}", i );
-                    let field_type = &field.ty;
-                    // Use `impl Into` for flexibility, especially for Strings
-                    // Basic types like i32, bool don't strictly need it but it doesn't hurt
-                    params.push( quote! { #param_name : impl Into< #field_type > } );
-                    args.push( quote! { #param_name.into() } );
-                }
+                    // --- Generate Direct Constructor (Multi-Arg) ---
+                    let mut params = Vec::new();
+                    let mut args = Vec::new();
+                    for ( i, field ) in fields.unnamed.iter().enumerate()
+                    {
+                        let param_name = format_ident!( "field{}", i );
+                        let field_type = &field.ty;
+                        params.push( quote! { #param_name : impl Into< #field_type > } );
+                        args.push( quote! { #param_name.into() } );
+                    }
 
-                // Generate the static method
-                let static_method = quote!
+                    let static_method = quote!
+                    {
+                      /// Constructor for the #variant_ident variant with multiple fields (scalar style).
+                      #[ inline( always ) ]
+                      #vis fn #method_name( #( #params ),* ) -> Self
+                      {
+                        Self::#variant_ident( #( #args ),* )
+                      }
+                    };
+                    methods.push( static_method );
+                }
+                else // Default: Subformer (but unsupported for multi-field tuple)
                 {
-                  /// Constructor for the #variant_ident variant with multiple fields.
-                  #[ inline( always ) ]
-                  #vis fn #method_name( #( #params ),* ) -> Self
-                  {
-                    Self::#variant_ident( #( #args ),* )
-                  }
-                };
-                methods.push( static_method );
+                    // --- Throw Error ---
+                    return Err
+                    (
+                      syn::Error::new_spanned
+                      (
+                        variant,
+                        "Former derive on enums does not support the default subformer pattern for multi-field tuple variants.\nAdd the `#[ scalar ]` attribute to the variant, e.g., `#[ derive( Former ) ] enum MyEnum { #[ scalar ] MyVariant( T1, T2 ) }`, to generate a static constructor method `MyEnum::my_variant( T1, T2 ) -> MyEnum` instead."
+                      )
+                    );
+                }
             }
-            // else: fields.unnamed.len() == 0 - should not happen for Unnamed, ignore or error?
         },
         // Case 3: Struct variant (e.g., `StructVariant { field: T }`)
         syn::Fields::Named( _fields ) =>

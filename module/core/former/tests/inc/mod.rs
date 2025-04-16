@@ -175,7 +175,7 @@ mod former_enum_tests
   mod unit_variant_manual;
   mod unit_variant_derive;
 
-  // mod keyword_variant_derive;
+  mod keyword_variant_derive;
 
 }
 
