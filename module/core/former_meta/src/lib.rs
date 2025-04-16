@@ -3,8 +3,6 @@
 #![ doc( html_root_url = "https://docs.rs/former_derive_meta/latest/former_derive_meta/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-// - qqq : xxx : Decide if support for unit variants (enum E { Unit }) should be added. This would generate EnumName::unit_variant() which likely just returns Ok(EnumName::UnitVariant) or similar, skipping the builder part.
-// - qqq : xxx : Consider if tuple variants with multiple simple fields (e.g., Variant(i32, String)) should be supported, perhaps by generating a method like EnumName::variant(field0: i32, field1: String) -> EnumName. This deviates further from the core "Former" idea but might be desired for convenience. Supporting variants with named fields (Variant{x: i32}) would be even more complex.
 // - qqq : xxx : Crucially: Implement proper handling for generics within the DataType of VariantName(DataType). This was skipped in the previous implementation step for simplicity.
 // - qqq : xxx : make sure debug works for enum
 // - qqq : xxx : make sure that fields/variants colliding with keywords works for both enum and struct

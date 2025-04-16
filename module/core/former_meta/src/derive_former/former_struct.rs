@@ -5,19 +5,13 @@ use super::*; // Use items from parent module (derive_former.rs)
 use iter_tools::Itertools;
 use macro_tools::
 {
-  // Removed unused: attr, diag, typ, Spanned, ident
   generic_params, generic_args, derive, Result,
   proc_macro2::TokenStream, quote::{ format_ident, quote },
-  IntoGenericArgs,
 };
-// Removed unused: Casing
-#[ cfg( feature = "derive_former" ) ]
-use convert_case::{ Casing };
-
 
 /// Generate the Former ecosystem for a struct.
 #[ allow( clippy::too_many_lines ) ]
-pub(super) fn former_for_struct // Make it pub(super)
+pub fn former_for_struct
 (
   ast : &syn::DeriveInput,
   _data_struct : &syn::DataStruct,
@@ -25,6 +19,8 @@ pub(super) fn former_for_struct // Make it pub(super)
   _has_debug : bool,
 ) -> Result< TokenStream >
 {
+  use macro_tools::IntoGenericArgs;
+
   // Parse struct-level attributes like `storage_fields`, `mutator`, `perform`.
   let struct_attrs = ItemAttributes::from_attrs( ast.attrs.iter() )?;
 
@@ -121,7 +117,7 @@ specific needs of the broader forming context. It mandates the implementation of
   let former_definition_phantom = macro_tools::phantom::tuple( &former_definition_generics_impl );
 
   /* struct attributes: Generate documentation and extract perform method details. */
-  let ( _doc_former_mod, doc_former_struct ) = super::doc_generate( item ); // Use super::
+  let ( _doc_former_mod, doc_former_struct ) = doc_generate( item );
   let ( perform, perform_output, perform_generics ) = struct_attrs.performer()?;
 
   /* fields: Process struct fields and storage_fields attribute. */
@@ -178,16 +174,7 @@ specific needs of the broader forming context. It mandates the implementation of
   // Collect preform logic results.
   let storage_field_preform : Vec< _ > = storage_field_preform.into_iter().collect::< Result< _ > >()?;
   // Generate mutator implementation code.
-  let former_mutator_code = super::mutator // Use super::
-  (
-    item,
-    &original_input,
-    &struct_attrs.mutator,
-    &former_definition_types,
-    &former_definition_types_generics_impl,
-    &former_definition_types_generics_ty,
-    &former_definition_types_generics_where
-  )?;
+  let former_mutator_code = mutator( item, &original_input, &struct_attrs.mutator, &former_definition_types, &former_definition_types_generics_impl, &former_definition_types_generics_ty, &former_definition_types_generics_where )?;
 
   // Assemble the final generated code using quote!
   let result = quote!
@@ -536,6 +523,8 @@ specific needs of the broader forming context. It mandates the implementation of
 
     // = subformer: Define the `AsSubformer` type alias.
     /// Provides a specialized former for structure using predefined settings for superformer and end conditions.
+    // #vis type #as_subformer < #struct_generics_impl __Superformer, __End > = #former
+    // xxx
     #vis type #as_subformer < #struct_generics_ty __Superformer, __End > = #former
     <
       #struct_generics_ty
@@ -551,10 +540,8 @@ specific needs of the broader forming context. It mandates the implementation of
 
     // = as subformer end: Define the `AsSubformerEnd` trait.
     #[ doc = #as_subformer_end_doc ]
-    // CORRECTED: Use _ty for trait generics, _impl for where clause
-    pub trait #as_subformer_end < #struct_generics_ty SuperFormer >
+    pub trait #as_subformer_end < #struct_generics_impl SuperFormer >
     where
-      #struct_generics_impl // Use _impl here for constraints
       #struct_generics_where
       Self : former::FormingEnd
       <
@@ -563,11 +550,9 @@ specific needs of the broader forming context. It mandates the implementation of
     {
     }
 
-    // CORRECTED: Use _impl for impl generics, _ty for trait path generics
     impl< #struct_generics_impl SuperFormer, __T > #as_subformer_end < #struct_generics_ty SuperFormer >
     for __T
     where
-      #struct_generics_impl // Use _impl here for constraints
       #struct_generics_where
       Self : former::FormingEnd
       <

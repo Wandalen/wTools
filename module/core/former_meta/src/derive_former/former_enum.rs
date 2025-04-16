@@ -5,13 +5,17 @@ use super::*; // Use items from parent module (derive_former.rs)
 // Removed Itertools - not used here
 use macro_tools::
 {
-  // Removed attr, diag, generic_args, typ, derive - not used directly here
+  // Removed unused: attr, diag, generic_args, typ, derive
   generic_params, Result,
   proc_macro2::TokenStream, quote::{ format_ident, quote },
   ident,
 };
 #[ cfg( feature = "derive_former" ) ]
 use convert_case::{ Case, Casing };
+
+// Bring in necessary local types from parent (assuming they are pub(super) or pub in parent)
+// use super::{ field_attrs::*, field::*, struct_attrs::* }; // Not needed due to use super::*;
+// use super::{ mutator, doc_generate }; // Not currently used by enum logic
 
 
 /// Generate the Former ecosystem for an enum.
@@ -166,9 +170,30 @@ pub(super) fn former_for_enum // Make it pub(super)
             // Sub-case: Multi-field tuple variant (e.g., `MultiTuple(i32, String)`)
             else if fields.unnamed.len() > 1
             {
-                // TODO: Implement logic for multi-field tuple variants (direct constructor)
-                // For now, skip them
-                continue;
+                // Generate parameters and arguments for the direct constructor method
+                let mut params = Vec::new();
+                let mut args = Vec::new();
+                for ( i, field ) in fields.unnamed.iter().enumerate()
+                {
+                    let param_name = format_ident!( "field{}", i );
+                    let field_type = &field.ty;
+                    // Use `impl Into` for flexibility, especially for Strings
+                    // Basic types like i32, bool don't strictly need it but it doesn't hurt
+                    params.push( quote! { #param_name : impl Into< #field_type > } );
+                    args.push( quote! { #param_name.into() } );
+                }
+
+                // Generate the static method
+                let static_method = quote!
+                {
+                  /// Constructor for the #variant_ident variant with multiple fields.
+                  #[ inline( always ) ]
+                  #vis fn #method_name( #( #params ),* ) -> Self
+                  {
+                    Self::#variant_ident( #( #args ),* )
+                  }
+                };
+                methods.push( static_method );
             }
             // else: fields.unnamed.len() == 0 - should not happen for Unnamed, ignore or error?
         },

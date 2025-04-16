@@ -150,11 +150,9 @@ mod former_tests
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_all_parametrized;
 
-//   // = enum
-//
-//   // mod enum_former;
-//   mod enum_former_manual;
-//   mod enum_former_derive;
+  // = unsorted
+
+  mod keyword_field_derive; // Add this line
 
 }
 
@@ -166,7 +164,8 @@ mod former_enum_tests
   // = enum
 
   // xxx : qqq : enable or remove
-  // mod basic;
+  // mod usecase1;
+
   mod basic_manual;
   mod basic_derive;
 
@@ -175,6 +174,8 @@ mod former_enum_tests
 
   mod unit_variant_manual;
   mod unit_variant_derive;
+
+  // mod keyword_variant_derive;
 
 }
 
