@@ -173,6 +173,9 @@ mod former_enum_tests
   mod multi_field_manual;
   mod multi_field_derive;
 
+  mod unit_variant_manual;
+  mod unit_variant_derive;
+
 }
 
 
