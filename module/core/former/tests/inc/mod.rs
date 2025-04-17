@@ -45,10 +45,8 @@ mod former_tests
   mod name_collision_former_hashmap_without_parameter;
   mod name_collision_former_vector_without_parameter;
   mod name_collisions;
-  // mod name_collision_context;
-  // mod name_collision_end;
-  // mod name_collision_on_end;
-  // mod name_collision_core;
+  mod keyword_field_derive;
+  mod keyword_subform_derive;
 
   // = parametrization
 
@@ -150,11 +148,6 @@ mod former_tests
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_all_parametrized;
 
-  // = unsorted
-
-  mod keyword_field_derive; // Add this line
-  mod keyword_subform_derive;
-
 }
 
 #[ cfg( feature = "derive_former" ) ]
@@ -169,12 +162,12 @@ mod former_enum_tests
 
   mod basic_manual;
   mod basic_derive;
-
   mod multi_field_manual;
   mod multi_field_derive;
-
   mod unit_variant_manual;
   mod unit_variant_derive;
+  mod enum_named_fields_manual;
+  mod enum_named_fields_derive;
 
   mod keyword_variant_derive;
 
