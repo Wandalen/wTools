@@ -75,7 +75,7 @@ use super::*;
 use test_tools::exposed::*;
 
 #[ cfg( feature = "derive_former" ) ]
-mod former_tests
+mod former_struct_tests
 {
   use super::*;
 
@@ -239,6 +239,11 @@ mod former_enum_tests
   mod unit_variant_derive;
   mod enum_named_fields_manual;
   mod enum_named_fields_derive;
+
+  // = generics
+
+  mod generics_in_tuple_variant_manual;
+  mod generics_in_tuple_variant_derive;
 
   mod keyword_variant_derive;
 
