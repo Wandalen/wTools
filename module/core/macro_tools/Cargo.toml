@@ -38,7 +38,7 @@ default = [
   "equation",
   "generic_args",
   "generic_params",
-  "ident", # <--- Rename feature
+  "ident",
   "item",
   "item_struct",
   "name",
@@ -72,7 +72,7 @@ diag = []
 equation = []
 generic_args = []
 generic_params = [ "punctuated" ]
-ident = [ "kw" ] # <--- Rename feature and remove convert_case dependency
+ident = [ "kw" ]
 item = [ "punctuated" ]
 item_struct = []
 iter = []

@@ -1,4 +1,5 @@
 // File: module/core/former/tests/inc/former_tests/keyword_subform_only_test.rs
+use super::*; // Imports items from keyword_subform_derive.rs
 
 #[test]
 fn subform_methods_work_with_keywords()
@@ -27,14 +28,21 @@ fn subform_methods_work_with_keywords()
 
     .form(); // Finalize KeywordSubformStruct
 
-  // Assertions
+  // --- Assertions ---
+
+  // Check r#for field (Vec<String>)
   assert_eq!( got.r#for, vec![ "loop1".to_string(), "loop2".to_string() ] );
 
+  // Check r#match field (HashMap<String, SubEntry>)
+  assert_eq!( got.r#match.len(), 2 );
   assert!( got.r#match.contains_key( "key1" ) );
   assert_eq!( got.r#match[ "key1" ].value, 10 );
+  assert_eq!( got.r#match[ "key1" ].key, "key1" ); // Verify key was set correctly
   assert!( got.r#match.contains_key( "key2" ) );
   assert_eq!( got.r#match[ "key2" ].value, 20 );
-  assert_eq!( got.r#match.len(), 2 );
+  assert_eq!( got.r#match[ "key2" ].key, "key2" ); // Verify key was set correctly
 
+
+  // Check r#impl field (SubScalar)
   assert_eq!( got.r#impl, SubScalar { data: true } );
 }

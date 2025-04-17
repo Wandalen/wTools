@@ -25,6 +25,7 @@ fn basic_construction()
 fn default_values()
 {
   // Test that default values work even if fields are keywords
+  // This relies on the struct deriving Default as well.
   let got = KeywordFieldsStruct::former().form();
   let expected = KeywordFieldsStruct::default(); // Assuming Default derive
   assert_eq!( got, expected );
