@@ -1,4 +1,75 @@
-// #![ deny( missing_docs ) ]
+//! # Test Module Structure and Coverage Outline
+//!
+//! This module aggregates various test suites for the `former` crate and its associated derive macros.
+//! Below is an outline of the features tested and their corresponding test modules within this directory.
+//!
+//! ## Feature Coverage Outline:
+//!
+//! - **Former Derive for Structs**
+//!   - **Basic Functionality:**
+//!     - Simple struct definition and forming
+//!     - Primitive types
+//!     - Optional types
+//!     - Tuple structs
+//!     - User-defined types (with Default, without Default, without Debug)
+//!     - Unsigned primitive types
+//!   - **Collections Handling:**
+//!     - Basic scalar setters for collections
+//!     - Standard collections (Vec, HashMap, HashSet, BTreeMap, BTreeSet, LinkedList, BinaryHeap)
+//!     - Collection interface traits
+//!   - **Subform Setters:**
+//!     - `#[subform_collection]` (implicit, explicit definition, named, custom, setter on/off)
+//!     - `#[subform_entry]` (implicit, manual, named, setter on/off, HashMap specific)
+//!     - `#[subform_scalar]` (implicit, manual, named)
+//!     - Combinations of subform attributes on a single field
+//!   - **Attributes:**
+//!     - **Struct-level:**
+//!       - `#[storage_fields]`
+//!       - `#[mutator(custom)]`
+//!       - `#[perform]`
+//!     - **Field-level:**
+//!       - `#[former(default = ...)]`
+//!       - `#[scalar(name = ..., setter = ..., debug)]`
+//!       - `#[subform_collection(name = ..., setter = ..., debug, definition = ...)]`
+//!       - `#[subform_entry(name = ..., setter = ..., debug)]`
+//!       - `#[subform_scalar(name = ..., setter = ..., debug)]`
+//!       - Multiple attributes on one field
+//!       - Feature-gated fields (`#[cfg(...)]`)
+//!   - **Generics & Lifetimes:**
+//!     - Parametrized struct
+//!     - Parametrized field
+//!     - Slice lifetimes
+//!     - Dyn traits
+//!   - **Edge Cases:**
+//!     - Keyword identifiers for fields
+//!     - Keyword identifiers for subform setters
+//!     - Name collisions (with std types, keywords, etc.)
+//!     - Visibility (public/private structs and fields)
+//!   - **Compile-time Failures:** Tests ensuring incorrect usage results in compile errors.
+//!
+//! - **Former Derive for Enums**
+//!   - Basic setup (manual vs derived)
+//!   - Unit variants
+//!   - Tuple variants:
+//!     - Single field (scalar vs subform default behavior)
+//!     - Multi-field (scalar only, error for default subform)
+//!   - Named-field (struct-like) variants
+//!   - Variant attributes (`#[scalar]`, `#[subform_scalar]`)
+//!   - Edge cases (keywords as variant names)
+//!
+//! - **Component Derives**
+//!   - `#[derive(ComponentFrom)]`
+//!   - `#[derive(Assign)]`
+//!   - `#[derive(ComponentsAssign)]`
+//!   - `#[derive(FromComponents)]`
+//!   - Composite usage (using multiple component derives together)
+//!   - Tuple struct support for component derives
+//!   - Manual vs Derived comparison tests
+//!   - Compile-time Failures (placeholder/needs expansion)
+//!
+//! - **General Tests**
+//!   - Basic smoke tests (local and published)
+//!   - Experimental area for temporary tests
 
 use super::*;
 use test_tools::exposed::*;

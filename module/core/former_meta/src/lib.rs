@@ -6,7 +6,6 @@
 // - qqq : xxx : Crucially: Implement proper handling for generics within the DataType of VariantName(DataType). This was skipped in the previous implementation step for simplicity.
 // - qqq : xxx : make sure debug works for enum
 // - qqq : xxx : make sure that fields/variants colliding with keywords works for both enum and struct
-// - qqq : xxx : make enum with named fields working
 
 #[ allow( unused_imports ) ]
 use macro_tools::prelude::*;

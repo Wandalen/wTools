@@ -3,7 +3,7 @@ use super::*;
 // Define the enum with different kinds of variants, including struct-like ones with varying field counts.
 #[ derive( Debug, PartialEq, former::Former ) ]
 // #[ debug ] // Uncomment to see generated code
-pub enum EnumWithNamedFields // Renamed enum for clarity
+pub enum EnumWithNamedFields
 {
   // Struct-like variant with ZERO named fields
   // Expected: EnumWithNamedFields::variant_zero().form() -> EnumWithNamedFields::VariantZero {}
