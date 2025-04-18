@@ -245,6 +245,14 @@ mod former_enum_tests
   mod generics_in_tuple_variant_manual;
   mod generics_in_tuple_variant_derive;
 
+  mod generics_shared_tuple_manual;
+  mod generics_shared_tuple_derive;
+
+  mod generics_shared_struct_derive;
+  mod generics_shared_struct_manual;
+
+  // = conflicts
+
   mod keyword_variant_derive;
 
 }
@@ -313,10 +321,12 @@ only_for_terminal_module!
     println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
     let t = test_tools::compiletime::TestCases::new();
 
-    t.compile_fail( "tests/inc/former_tests/compiletime/field_attr_bad.rs" );
-    t.compile_fail( "tests/inc/former_tests/compiletime/struct_attr_bad.rs" );
-    t.pass( "tests/inc/former_tests/compiletime/hashmap_without_parameter.rs" );
-    t.pass( "tests/inc/former_tests/compiletime/vector_without_parameter.rs" );
+    t.compile_fail( "tests/inc/former_struct_tests/compiletime/field_attr_bad.rs" );
+    t.compile_fail( "tests/inc/former_struct_tests/compiletime/struct_attr_bad.rs" );
+    t.pass( "tests/inc/former_struct_tests/compiletime/hashmap_without_parameter.rs" );
+    t.pass( "tests/inc/former_struct_tests/compiletime/vector_without_parameter.rs" );
+
+    // assert!( false );
 
   }
 

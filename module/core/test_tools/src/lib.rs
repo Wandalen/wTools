@@ -272,6 +272,8 @@ pub mod prelude
   #[ doc( inline ) ]
   pub use test::prelude::*;
 
+  pub use ::rustversion::{ nightly, stable };
+
   #[ doc( inline ) ]
   pub use
   {
