@@ -13,6 +13,57 @@ use macro_tools::
 #[ cfg( feature = "derive_former" ) ]
 use convert_case::{ Case, Casing };
 
+// ==================================
+//      Generic Handling Strategy
+// ==================================
+//
+// IMPORTANT NOTE ON GENERICS:
+//
+// Handling generics in enum variants for the `Former` derive involves several complexities,
+// primarily concerning the interaction between the enum's own generic parameters (e.g., `Enum<T>`)
+// and the generics potentially present in the data type held by a variant (e.g., `Variant(Inner<T>)`
+// or `Variant(Inner<U>)`).
+//
+// The core challenges and the chosen strategy are:
+//
+// 1.  **Extracting Bounds from Inner Types is Unreliable:** Attempting to determine the necessary
+//     trait bounds for a generic parameter (`T` or `U`) solely by inspecting the inner type
+//     (e.g., `Inner<T>`) within the variant is generally not feasible or reliable in a procedural macro.
+//     The macro only sees the *use* of the type, not its definition, and thus cannot know the
+//     bounds `Inner` requires for its generic parameters. The previous attempt to implement
+//     `generics_of_type` demonstrated this difficulty, leading to compilation errors.
+//
+// 2.  **Focus on Propagating Enum Generics:** The correct approach is to focus on the generics
+//     defined *on the enum itself*. These generics (`enum Enum<T: Bound>`) and their associated
+//     `where` clauses *must* be correctly propagated to all generated code that depends on them.
+//
+// 3.  **Merging Generics for Implementations:** When generating `impl` blocks (like `impl FormingEnd`
+//     for the specialized `End` struct or `impl FormerMutator` for implicit definition types),
+//     we often need to combine the enum's generics with *additional* generics introduced by the
+//     macro's infrastructure (e.g., `Definition`, `Context`, `Formed`, `End`).
+//     **For this purpose, `macro_tools::generic_params::merge` MUST be used.** It correctly
+//     combines two complete `syn::Generics` structures (including their `where` clauses).
+//
+// 4.  **Bound Requirements:** The necessary bounds for the *inner type's* generics (e.g., the bounds
+//     `Inner` requires for `T` or `U`) are implicitly handled by the Rust compiler *after* the macro
+//     generates the code. If the generated code attempts to use the inner type in a way that
+//     violates its bounds (because the enum's generics/bounds passed down are insufficient),
+//     the compiler will produce the appropriate error. The macro's responsibility is to correctly
+//     apply the *enum's* bounds where needed.
+//
+// 5.  **`macro_tools::generic_params::merge` Issues:** If any issues arise with the merging logic itself
+//     (e.g., incorrect handling of `where` clauses by the `merge` function), those issues must be
+//     addressed within the `macro_tools` crate, as it is the designated tool for this task.
+//
+// In summary: We propagate the enum's generics and bounds. We use `generic_params::merge`
+// to combine these with macro-internal generics when generating implementations. We rely on
+// the Rust compiler to enforce the bounds required by the inner data types used in variants.
+//
+// ==================================
+
+// ==================================
+//        Main Generation Logic
+// ==================================
 
 /// Generate the Former ecosystem for an enum.
 #[ allow( clippy::too_many_lines ) ]
@@ -51,36 +102,32 @@ pub(super) fn former_for_enum // Make it pub(super)
     let wants_scalar = variant_attrs.scalar.is_some() && variant_attrs.scalar.as_ref().unwrap().setter();
     let wants_subform_scalar = variant_attrs.subform_scalar.is_some(); // Check for explicit subform_scalar
 
-    // Merge bounds: Start with enum's where clause + add common bounds needed by former components
-    use std::collections::HashSet;
-    let mut merged_bounds_set = HashSet::new();
-    let mut merged_where_clause = enum_generics_where.clone();
-
-    for pred in &enum_generics_where {
-        merged_bounds_set.insert(quote!{#pred}.to_string());
-    }
-
-    for param in generics.params.iter() {
-        if let syn::GenericParam::Type(tp) = param {
-            let ident = &tp.ident;
-            // CORRECTED: Add bounds required by the manual implementation/tests
-            // Note: This is still a simplification. A robust solution would inspect trait bounds properly.
-            let common_bounds: Vec<syn::WherePredicate> = vec![
-                parse_quote! { #ident: core::fmt::Debug },
-                parse_quote! { #ident: core::default::Default },
-                parse_quote! { #ident: core::cmp::PartialEq },
-                parse_quote! { #ident: core::clone::Clone },
-                // parse_quote! { #ident: BoundA }, // Removed dummy bounds
-                // parse_quote! { #ident: BoundB }, // Removed dummy bounds
-            ];
-            for bound in common_bounds {
-                let bound_str = quote!{#bound}.to_string();
-                if merged_bounds_set.insert(bound_str) {
-                    merged_where_clause.push(bound);
-                }
-            }
-        }
-    }
+    // --- Prepare merged where clause for this variant's generated impls ---
+    // Start with the enum's where clause. We might add more bounds later if needed
+    // specifically by the traits we implement (like FormingEnd often needs Default, Debug etc.)
+    // For now, we primarily rely on propagating the enum's constraints.
+    // FIX: Removed `mut` as it's not mutated currently.
+    let merged_where_clause = enum_generics_where.clone();
+    // Example of adding common bounds (adjust as needed based on trait requirements):
+    // use std::collections::HashSet;
+    // let mut merged_bounds_set = HashSet::new();
+    // for pred in &enum_generics_where { merged_bounds_set.insert(quote!{#pred}.to_string()); }
+    // for param in generics.params.iter() {
+    //     if let syn::GenericParam::Type(tp) = param {
+    //         let ident = &tp.ident;
+    //         let common_bounds: Vec<syn::WherePredicate> = vec![
+    //             syn::parse_quote! { #ident: core::fmt::Debug },
+    //             syn::parse_quote! { #ident: core::default::Default },
+    //             // Add other common bounds required by FormingEnd, StoragePreform etc.
+    //         ];
+    //         for bound in common_bounds {
+    //             if merged_bounds_set.insert(quote!{#bound}.to_string()) {
+    //                 merged_where_clause.push(bound);
+    //             }
+    //         }
+    //     }
+    // }
+    // --- End merged where clause preparation ---
 
 
     // Generate method based on the variant's fields
@@ -110,7 +157,21 @@ pub(super) fn former_for_enum // Make it pub(super)
                 let field = fields.unnamed.first().unwrap();
                 let inner_type = &field.ty;
 
-                let inner_former_exists = quote!{ #inner_type::Former }.to_string() != quote!{ < #inner_type as former :: EntityToFormer > :: Former }.to_string();
+                // Check if the inner type likely has a Former derived (simplistic check)
+                // A more robust check would involve trying to resolve the path `::Former`
+                // but that's complex in proc macros. This assumes simple paths.
+                let inner_former_exists = if let syn::Type::Path( tp ) = inner_type
+                {
+                  tp.path.segments.last().map_or( false, | seg |
+                  {
+                    // Heuristic: if it's not a primitive type maybe it has a former
+                    !matches!( seg.ident.to_string().as_str(), "bool" | "char" | "str" | "String" | "i8" | "i16" | "i32" | "i64" | "i128" | "isize" | "u8" | "u16" | "u32" | "u64" | "u128" | "usize" | "f32" | "f64" )
+                  })
+                }
+                else
+                {
+                  false // Not a path, unlikely to have a derived Former
+                };
 
                 if wants_scalar || ( !wants_subform_scalar && !inner_former_exists )
                 {
@@ -121,7 +182,7 @@ pub(super) fn former_for_enum // Make it pub(super)
                       /// Takes a value convertible into the inner type #inner_type.
                       #[ inline( always ) ]
                       #vis fn #method_name < #enum_generics_impl > ( value : impl Into< #inner_type > ) -> Self
-                      where #enum_generics_where
+                      where #enum_generics_where // Use enum's where clause
                       {
                         Self::#variant_ident( value.into() )
                       }
@@ -134,6 +195,7 @@ pub(super) fn former_for_enum // Make it pub(super)
 
                     let end_struct_name = format_ident!( "{}{}End", enum_name, variant_ident );
 
+                    // Attempt to extract name and generics from the inner type path
                     let ( inner_type_name, inner_generics ) = match inner_type
                     {
                         syn::Type::Path( type_path ) =>
@@ -149,33 +211,41 @@ pub(super) fn former_for_enum // Make it pub(super)
                     let inner_def_name = format_ident!( "{}FormerDefinition", inner_type_name );
                     let inner_def_types_name = format_ident!( "{}FormerDefinitionTypes", inner_type_name );
 
+                    // Extract type arguments from inner_generics PathArguments
                     let inner_generics_ty : syn::punctuated::Punctuated<syn::GenericArgument, syn::token::Comma> = match &inner_generics
                     {
                         syn::PathArguments::AngleBracketed( args ) => args.args.clone(),
-                        _ => syn::punctuated::Punctuated::new(),
+                        _ => syn::punctuated::Punctuated::new(), // Handle cases without generics like `MyStruct`
                     };
+                    // Add comma if generics are present
                     let inner_generics_ty_comma = if inner_generics_ty.is_empty() { quote!{} } else { quote!{ #inner_generics_ty, } };
 
+                    // Create PhantomData type using enum's generics
                     let phantom_field_type = phantom::tuple( &enum_generics_ty );
 
+                    // Define the End struct with enum's generics and merged where clause
                     let end_struct_def = quote!
                     {
                       #[ derive( Default, Debug ) ]
                       #vis struct #end_struct_name < #enum_generics_impl >
+                      // Use the potentially merged where clause here
                       where #merged_where_clause
                       {
                         _phantom : #phantom_field_type,
                       }
                     };
 
+                    // Implement FormingEnd for the End struct
                     let end_impl = quote!
                     {
                       #[ automatically_derived ]
                       impl< #enum_generics_impl > former::FormingEnd
                       <
+                          // Use DefinitionTypes of the *inner* type's former
                           #inner_def_types_name< #inner_generics_ty_comma (), #enum_name< #enum_generics_ty > >
                       >
                       for #end_struct_name < #enum_generics_ty >
+                      // Use the potentially merged where clause here
                       where
                         #merged_where_clause
                       {
@@ -183,40 +253,47 @@ pub(super) fn former_for_enum // Make it pub(super)
                           fn call
                           (
                             &self,
+                            // Storage is from the *inner* type's former
                             sub_storage : #inner_storage_name< #inner_generics_ty >,
-                            _context : Option< () >,
-                          ) -> #enum_name< #enum_generics_ty >
+                            _context : Option< () >, // Context is () from static method
+                          ) -> #enum_name< #enum_generics_ty > // Returns the Enum type
                           {
+                            // Preform the inner data and wrap it in the enum variant
                             let data = former::StoragePreform::preform( sub_storage );
                             #enum_name::#variant_ident( data )
                           }
                       }
                     };
 
+                    // Define the static starter method on the enum
                     let static_method = quote!
                     {
                       /// Starts forming the #variant_ident variant using a subformer.
                       #[ inline( always ) ]
-                      #vis fn #method_name ()
-                      -> #inner_former_name
+                      #vis fn #method_name () // Generics defined by the return type's where clause
+                      -> #inner_former_name // Return type is the *inner* type's former...
                          <
-                           #inner_generics_ty_comma
+                           #inner_generics_ty_comma // ...specialized with its own generics...
+                           // ...and configured with a definition that uses the specialized End struct.
                            #inner_def_name
                            <
-                               #inner_generics_ty_comma
-                               (),
-                               #enum_name< #enum_generics_ty >,
-                               #end_struct_name < #enum_generics_ty >
+                               #inner_generics_ty_comma // Inner type generics
+                               (),                    // Context = ()
+                               #enum_name< #enum_generics_ty >, // Formed = Enum<EnumGenerics>
+                               #end_struct_name < #enum_generics_ty > // End = Specialized End<EnumGenerics>
                            >
                          >
+                      // Use the potentially merged where clause here
                       where #merged_where_clause
                       {
+                          // Start the inner former using its `begin` associated function.
+                          // The End struct passed depends on the enum's generics.
                           #inner_former_name::begin( None, None, #end_struct_name::< #enum_generics_ty >::default() )
                       }
                     };
 
                     methods.push( static_method );
-                    end_impls.push( quote!{ #end_struct_def #end_impl } );
+                    end_impls.push( quote!{ #end_struct_def #end_impl } ); // Collect End struct and its impl
                 }
             }
             // Sub-case: Multi-field tuple variant
@@ -240,7 +317,7 @@ pub(super) fn former_for_enum // Make it pub(super)
                       /// Constructor for the #variant_ident variant with multiple fields (scalar style).
                       #[ inline( always ) ]
                       #vis fn #method_name < #enum_generics_impl > ( #( #params ),* ) -> Self
-                      where #enum_generics_where
+                      where #enum_generics_where // Use enum's where clause
                       {
                         Self::#variant_ident( #( #args ),* )
                       }
@@ -278,7 +355,7 @@ pub(super) fn former_for_enum // Make it pub(super)
               vis: vis.clone(),
               struct_token: Default::default(),
               ident: implicit_former_name.clone(),
-              generics: generics.clone(),
+              generics: generics.clone(), // Use enum's generics for the implicit struct
               fields: syn::Fields::Named( syn::FieldsNamed { brace_token: Default::default(), named: variant_struct_fields } ),
               semi_token: None,
           };
@@ -293,18 +370,19 @@ pub(super) fn former_for_enum // Make it pub(super)
           let storage_field_definitions = storage_fields_processed.iter().map( |f| f.storage_field_optional() );
           let storage_field_defaults = storage_fields_processed.iter().map( |f| f.storage_fields_none() );
 
+          // Use enum's generics for storage phantom data
           let phantom_field_type_storage = phantom::tuple( &enum_generics_ty );
           let implicit_storage_struct = quote!
           {
             #[ derive( Debug ) ]
             #vis struct #implicit_storage_name < #enum_generics_impl >
-            where #enum_generics_where
+            where #enum_generics_where // Use enum's where clause
             {
               #( #storage_field_definitions, )*
               _phantom : #phantom_field_type_storage,
             }
             impl< #enum_generics_impl > ::core::default::Default for #implicit_storage_name < #enum_generics_ty >
-            where #enum_generics_where
+            where #enum_generics_where // Use enum's where clause
             {
               #[ inline( always ) ]
               fn default() -> Self { Self { #( #storage_field_defaults, )* _phantom: ::core::marker::PhantomData } }
@@ -314,18 +392,19 @@ pub(super) fn former_for_enum // Make it pub(super)
           // 2. Implicit StoragePreform
           let storage_preform_fields = storage_fields_processed.iter().map( |f| f.storage_field_preform() ).collect::< Result< Vec<_> > >()?;
           let storage_preform_field_names_vec : Vec<_> = storage_fields_processed.iter().map( |f| f.ident ).collect();
+          // The preformed type is a tuple of the *actual* field types from the variant
           let preformed_tuple_types = fields.named.iter().map( |f| &f.ty );
           let preformed_type = quote!{ ( #( #preformed_tuple_types ),* ) };
 
           let implicit_storage_preform = quote!
           {
             impl< #enum_generics_impl > former::Storage for #implicit_storage_name < #enum_generics_ty >
-            where #enum_generics_where
+            where #enum_generics_where // Use enum's where clause
             {
               type Preformed = #preformed_type;
             }
             impl< #enum_generics_impl > former::StoragePreform for #implicit_storage_name < #enum_generics_ty >
-            where #enum_generics_where
+            where #enum_generics_where // Use enum's where clause
             {
               fn preform( mut self ) -> Self::Preformed
               {
@@ -336,6 +415,7 @@ pub(super) fn former_for_enum // Make it pub(super)
           };
 
           // 3. Implicit DefinitionTypes
+          // Use helper to generate generics like <'a, T, Context2=(), Formed2=Enum<'a, T>>
           let ( former_definition_types_generics_with_defaults, former_definition_types_generics_impl, former_definition_types_generics_ty, former_definition_types_generics_where )
             = generic_params::decompose( &generics_of_definition_types_renamed( &generics, enum_name, &enum_generics_ty )? );
           let former_definition_types_phantom = macro_tools::phantom::tuple( &former_definition_types_generics_impl );
@@ -344,28 +424,29 @@ pub(super) fn former_for_enum // Make it pub(super)
           {
             #[ derive( Debug ) ]
             #vis struct #implicit_def_types_name < #former_definition_types_generics_with_defaults >
-            where #former_definition_types_generics_where
+            where #former_definition_types_generics_where // Merged where clause
             { _phantom : #former_definition_types_phantom }
 
             impl < #former_definition_types_generics_impl > ::core::default::Default
             for #implicit_def_types_name < #former_definition_types_generics_ty >
-            where #former_definition_types_generics_where
+            where #former_definition_types_generics_where // Merged where clause
             { fn default() -> Self { Self { _phantom : ::core::marker::PhantomData } } }
 
             impl < #former_definition_types_generics_impl > former::FormerDefinitionTypes
             for #implicit_def_types_name < #former_definition_types_generics_ty >
-            where #former_definition_types_generics_where
+            where #former_definition_types_generics_where // Merged where clause
             {
-              type Storage = #implicit_storage_name < #enum_generics_ty >;
-              type Formed = Formed2;
-              type Context = Context2;
+              type Storage = #implicit_storage_name < #enum_generics_ty >; // Storage uses enum generics
+              type Formed = Formed2; // Use renamed generic
+              type Context = Context2; // Use renamed generic
             }
             impl< #former_definition_types_generics_impl > former::FormerMutator
             for #implicit_def_types_name < #former_definition_types_generics_ty >
-            where #former_definition_types_generics_where {}
+            where #former_definition_types_generics_where {} // Merged where clause
           };
 
           // 4. Implicit Definition
+          // Use helper to generate generics like <'a, T, Context2=(), Formed2=Enum<'a, T>, End2=EnumVariantEnd<'a, T>>
           let ( former_definition_generics_with_defaults, former_definition_generics_impl, former_definition_generics_ty, former_definition_generics_where )
             = generic_params::decompose( &generics_of_definition_renamed( &generics, enum_name, &enum_generics_ty, &end_struct_name )? );
           let former_definition_phantom = macro_tools::phantom::tuple( &former_definition_generics_impl );
@@ -374,29 +455,30 @@ pub(super) fn former_for_enum // Make it pub(super)
           {
             #[ derive( Debug ) ]
             #vis struct #implicit_def_name < #former_definition_generics_with_defaults >
-            where #former_definition_generics_where
+            where #former_definition_generics_where // Merged where clause
             { _phantom : #former_definition_phantom }
 
             impl < #former_definition_generics_impl > ::core::default::Default
             for #implicit_def_name < #former_definition_generics_ty >
-            where #former_definition_generics_where
+            where #former_definition_generics_where // Merged where clause
             { fn default() -> Self { Self { _phantom : ::core::marker::PhantomData } } }
 
             impl < #former_definition_generics_impl > former::FormerDefinition
             for #implicit_def_name < #former_definition_generics_ty >
             where
-              End2 : former::FormingEnd< #implicit_def_types_name < #former_definition_types_generics_ty > >,
-              #former_definition_generics_where
+              End2 : former::FormingEnd< #implicit_def_types_name < #former_definition_types_generics_ty > >, // Use renamed End2
+              #former_definition_generics_where // Merged where clause
             {
               type Types = #implicit_def_types_name < #former_definition_types_generics_ty >;
-              type End = End2;
-              type Storage = #implicit_storage_name < #enum_generics_ty >;
-              type Formed = Formed2;
-              type Context = Context2;
+              type End = End2; // Use renamed End2
+              type Storage = #implicit_storage_name < #enum_generics_ty >; // Storage uses enum generics
+              type Formed = Formed2; // Use renamed Formed2
+              type Context = Context2; // Use renamed Context2
             }
           };
 
           // 5. Implicit Former Struct + Setters
+          // Use helper to generate generics like <'a, T, Definition=...> where Definition : ...
           let former_generics_result = generics_of_former_renamed
           (
             &generics,
@@ -409,6 +491,7 @@ pub(super) fn former_for_enum // Make it pub(super)
           let ( former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where )
             = generic_params::decompose( &former_generics_result );
 
+          // Get where clause from the original enum generics
           let default_where_predicates = syn::punctuated::Punctuated::< syn::WherePredicate, syn::token::Comma >::new();
           let variant_struct_where = variant_struct.generics.where_clause.as_ref().map_or
           (
@@ -416,20 +499,21 @@ pub(super) fn former_for_enum // Make it pub(super)
             | wc | &wc.predicates
           );
 
+          // Generate setters using the implicit former's details
           let setters = storage_fields_processed.iter().map( |f|
             {
               f.former_field_setter
               (
-                &variant_struct.ident,
+                &variant_struct.ident, // Use the implicit former's name as the item context for setters
                 original_input,
-                &variant_struct.generics.params,
-                &variant_struct.generics.params,
-                variant_struct_where,
-                &implicit_former_name,
-                &former_generics_impl,
-                &former_generics_ty,
-                &former_generics_where,
-                &implicit_storage_name,
+                &variant_struct.generics.params, // Use enum generics for the struct context
+                &variant_struct.generics.params, // Use enum generics for the struct context
+                variant_struct_where,            // Use enum where clause
+                &implicit_former_name,           // The former being defined
+                &former_generics_impl,           // Its impl generics
+                &former_generics_ty,             // Its type generics
+                &former_generics_where,          // Its where clause
+                &implicit_storage_name,          // Its storage
               )
             })
             .collect::< Result< Vec<_> > >()?;
@@ -439,7 +523,7 @@ pub(super) fn former_for_enum // Make it pub(super)
           {
             #[ doc = "Implicit former for the struct-like variant" ]
             #vis struct #implicit_former_name < #former_generics_with_defaults >
-            where #former_generics_where
+            where #former_generics_where // Use former's where clause
             {
               storage : Definition::Storage,
               context : ::core::option::Option< Definition::Context >,
@@ -448,7 +532,7 @@ pub(super) fn former_for_enum // Make it pub(super)
 
             #[ automatically_derived ]
             impl < #former_generics_impl > #implicit_former_name < #former_generics_ty >
-            where #former_generics_where
+            where #former_generics_where // Use former's where clause
             {
               #[ inline( always ) ] pub fn form( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed { self.end() }
               #[ inline( always ) ] pub fn end( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
@@ -473,12 +557,13 @@ pub(super) fn former_for_enum // Make it pub(super)
           {
             #[ derive( Default, Debug ) ]
             #vis struct #end_struct_name < #enum_generics_impl >
-            where #merged_where_clause
+            where #merged_where_clause // Use merged bounds
             {
               _phantom : #phantom_field_type_end,
             }
           };
 
+          // Construct the final enum variant using field names
           let variant_construction = if fields.named.is_empty()
           { quote! { #enum_name::#variant_ident {} } }
           else
@@ -489,21 +574,25 @@ pub(super) fn former_for_enum // Make it pub(super)
             #[ automatically_derived ]
             impl< #enum_generics_impl > former::FormingEnd
             <
+                // Use DefinitionTypes of the *implicit* former
                 #implicit_def_types_name< #enum_generics_ty (), #enum_name< #enum_generics_ty > >
             >
             for #end_struct_name < #enum_generics_ty >
             where
-              #merged_where_clause
+              #merged_where_clause // Use merged bounds
             {
                 #[ inline( always ) ]
                 fn call
                 (
                   &self,
+                  // Storage is from the *implicit* former
                   sub_storage : #implicit_storage_name< #enum_generics_ty >,
-                  _context : Option< () >,
-                ) -> #enum_name< #enum_generics_ty >
+                  _context : Option< () >, // Context is () from static method
+                ) -> #enum_name< #enum_generics_ty > // Returns the Enum type
                 {
+                  // Preform the tuple of fields from the implicit storage
                   let ( #( #storage_preform_field_names_vec ),* ) = former::StoragePreform::preform( sub_storage );
+                  // Construct the enum variant using the field names
                   #variant_construction
                 }
             }
@@ -514,20 +603,23 @@ pub(super) fn former_for_enum // Make it pub(super)
           {
             /// Starts forming the #variant_ident variant using its implicit subformer.
             #[ inline( always ) ]
-            #vis fn #method_name ()
-            -> #implicit_former_name
+            #vis fn #method_name () // Generics defined by the return type's where clause
+            -> #implicit_former_name // Return type is the *implicit* former...
                <
-                 #enum_generics_ty
+                 #enum_generics_ty // ...specialized with the enum's generics...
+                 // ...and configured with a definition that uses the specialized End struct.
                  #implicit_def_name
                  <
-                     #enum_generics_ty
-                     (),
-                     #enum_name< #enum_generics_ty >,
-                     #end_struct_name < #enum_generics_ty >
+                     #enum_generics_ty // Enum generics
+                     (),                    // Context = ()
+                     #enum_name< #enum_generics_ty >, // Formed = Enum<EnumGenerics>
+                     #end_struct_name < #enum_generics_ty > // End = Specialized End<EnumGenerics>
                  >
                >
-            where #merged_where_clause
+            where #merged_where_clause // Use merged bounds
             {
+                // Start the implicit former using its `begin` associated function.
+                // The End struct passed depends on the enum's generics.
                 #implicit_former_name::begin( None, None, #end_struct_name::< #enum_generics_ty >::default() )
             }
           };
@@ -589,7 +681,7 @@ fn generics_of_definition_types_renamed // Renamed
 ) -> Result< syn::Generics >
 {
   // Use Context2, Formed2
-  let extra : macro_tools::GenericsWithWhere = parse_quote!
+  let extra : macro_tools::GenericsWithWhere = syn::parse_quote!
   {
     < Context2 = (), Formed2 = #_enum_name < #enum_generics_ty > >
   };
@@ -605,7 +697,7 @@ fn generics_of_definition_renamed // Renamed
 ) -> Result< syn::Generics >
 {
   // Use Context2, Formed2, End2
-  let extra : macro_tools::GenericsWithWhere = parse_quote!
+  let extra : macro_tools::GenericsWithWhere = syn::parse_quote!
   {
     < Context2 = (), Formed2 = #_enum_name < #enum_generics_ty >, End2 = #end_struct_name < #enum_generics_ty > >
   };
@@ -628,7 +720,7 @@ fn generics_of_former_renamed // Renamed
    };
 
    // Use Definition
-   let extra : macro_tools::GenericsWithWhere = parse_quote!
+   let extra : macro_tools::GenericsWithWhere = syn::parse_quote!
   {
     < Definition = #default_definition_type > // Use the correctly constructed default
     where
