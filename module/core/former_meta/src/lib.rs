@@ -3,9 +3,6 @@
 #![ doc( html_root_url = "https://docs.rs/former_derive_meta/latest/former_derive_meta/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-// - qqq : xxx : make sure debug works for enum
-// - qqq : xxx : make sure that fields/variants colliding with keywords works for both enum and struct
-
 #[ allow( unused_imports ) ]
 use macro_tools::prelude::*;
 
