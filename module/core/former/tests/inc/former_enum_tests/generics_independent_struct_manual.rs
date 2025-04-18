@@ -19,7 +19,6 @@
 use super::*; // Imports testing infrastructure and potentially other common items
 // FIX: Removed redundant import, it's imported in _only_test.rs if needed there,
 // but primarily needed here for manual impls.
-use std::marker::PhantomData;
 use former_types::
 {
   Assign, // Needed for manual setter impls if we were doing that deeply

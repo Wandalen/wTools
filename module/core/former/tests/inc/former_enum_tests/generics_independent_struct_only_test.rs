@@ -23,8 +23,7 @@
 /// test files for this scenario (G6).
 
 use super::*; // Imports items from the parent file (either manual or derive)
-// FIX: Removed redundant import, it's imported in _manual.rs where needed.
-// use std::marker::PhantomData;
+use std::marker::PhantomData;
 
 // Define dummy bounds for testing purposes
 pub trait BoundA : core::fmt::Debug + Default + Clone + PartialEq {}
@@ -67,9 +66,8 @@ fn independent_generics_struct_variant()
 
   let expected_inner = InnerG6::< TypeForU > { inner_field : TypeForU( 99 ) };
   // Construct expected enum variant
-  // FIX: Added _phantom_t field to expected value construction
-  // Use std::marker::PhantomData directly here since it's not imported
-  let expected = EnumG6::< TypeForT >::V1 { inner : expected_inner, flag : true, _phantom_t: std::marker::PhantomData };
+  // FIX: Re-added _phantom_t field to expected value construction, as both manual and derive enums now have it.
+  let expected = EnumG6::< TypeForT >::V1 { inner : expected_inner, flag : true, _phantom_t: PhantomData };
 
   assert_eq!( got, expected );
 }
@@ -89,9 +87,8 @@ fn default_construction_independent_struct_variant()
 
   let expected_inner = InnerG6::< TypeForU >::default(); // Expect default inner
   // Construct expected enum with default inner and specified flag
-  // FIX: Added _phantom_t field to expected value construction
-  // Use std::marker::PhantomData directly here since it's not imported
-  let expected = EnumG6::< TypeForT >::V1 { inner : expected_inner, flag : false, _phantom_t: std::marker::PhantomData };
+  // FIX: Re-added _phantom_t field to expected value construction, as both manual and derive enums now have it.
+  let expected = EnumG6::< TypeForT >::V1 { inner : expected_inner, flag : false, _phantom_t: PhantomData };
 
   assert_eq!( got, expected );
 }
