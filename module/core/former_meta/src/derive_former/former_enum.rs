@@ -136,12 +136,13 @@ pub(super) fn former_for_enum // Make it pub(super)
         // Case 1: Unit variant (e.g., `Empty`) - Always Direct constructor
         syn::Fields::Unit =>
         {
+            // FIX: Removed generics from method signature
             let static_method = quote!
             {
               /// Constructor for the #variant_ident unit variant.
               #[ inline( always ) ]
-              #vis fn #method_name < #enum_generics_impl >() -> Self
-              where #enum_generics_where // Use original enum where clause
+              #vis fn #method_name() -> Self
+              // where #enum_generics_where // Removed where clause from method
               {
                 Self::#variant_ident
               }
@@ -176,13 +177,14 @@ pub(super) fn former_for_enum // Make it pub(super)
                 if wants_scalar || ( !wants_subform_scalar && !inner_former_exists )
                 {
                     // --- Generate Direct Constructor (Scalar Style) ---
+                    // FIX: Removed generics from method signature
                     let static_method = quote!
                     {
                       /// Constructor for the #variant_ident variant (scalar style).
                       /// Takes a value convertible into the inner type #inner_type.
                       #[ inline( always ) ]
-                      #vis fn #method_name < #enum_generics_impl > ( value : impl Into< #inner_type > ) -> Self
-                      where #enum_generics_where // Use enum's where clause
+                      #vis fn #method_name( value : impl Into< #inner_type > ) -> Self
+                      // where #enum_generics_where // Removed where clause from method
                       {
                         Self::#variant_ident( value.into() )
                       }
@@ -239,11 +241,14 @@ pub(super) fn former_for_enum // Make it pub(super)
                     let end_impl = quote!
                     {
                       #[ automatically_derived ]
+                      // Use enum's impl generics here
                       impl< #enum_generics_impl > former::FormingEnd
                       <
                           // Use DefinitionTypes of the *inner* type's former
+                          // Specify its generics, context=(), formed=Enum<EnumGenerics>
                           #inner_def_types_name< #inner_generics_ty_comma (), #enum_name< #enum_generics_ty > >
                       >
+                      // Use enum's type generics here
                       for #end_struct_name < #enum_generics_ty >
                       // Use the potentially merged where clause here
                       where
@@ -253,10 +258,10 @@ pub(super) fn former_for_enum // Make it pub(super)
                           fn call
                           (
                             &self,
-                            // Storage is from the *inner* type's former
+                            // Storage is from the *inner* type's former, specialized with its generics
                             sub_storage : #inner_storage_name< #inner_generics_ty >,
                             _context : Option< () >, // Context is () from static method
-                          ) -> #enum_name< #enum_generics_ty > // Returns the Enum type
+                          ) -> #enum_name< #enum_generics_ty > // Returns the Enum type specialized with its generics
                           {
                             // Preform the inner data and wrap it in the enum variant
                             let data = former::StoragePreform::preform( sub_storage );
@@ -266,12 +271,14 @@ pub(super) fn former_for_enum // Make it pub(super)
                     };
 
                     // Define the static starter method on the enum
+                    // FIX: Removed generics and where clause from method signature
                     let static_method = quote!
                     {
                       /// Starts forming the #variant_ident variant using a subformer.
                       #[ inline( always ) ]
-                      #vis fn #method_name () // Generics defined by the return type's where clause
-                      -> #inner_former_name // Return type is the *inner* type's former...
+                      #vis fn #method_name ()
+                      // Return type is the *inner* type's former...
+                      -> #inner_former_name
                          <
                            #inner_generics_ty_comma // ...specialized with its own generics...
                            // ...and configured with a definition that uses the specialized End struct.
@@ -283,8 +290,7 @@ pub(super) fn former_for_enum // Make it pub(super)
                                #end_struct_name < #enum_generics_ty > // End = Specialized End<EnumGenerics>
                            >
                          >
-                      // Use the potentially merged where clause here
-                      where #merged_where_clause
+                      // where #merged_where_clause // Removed where clause from method
                       {
                           // Start the inner former using its `begin` associated function.
                           // The End struct passed depends on the enum's generics.
@@ -312,12 +318,13 @@ pub(super) fn former_for_enum // Make it pub(super)
                         args.push( quote! { #param_name.into() } );
                     }
 
+                    // FIX: Removed generics from method signature
                     let static_method = quote!
                     {
                       /// Constructor for the #variant_ident variant with multiple fields (scalar style).
                       #[ inline( always ) ]
-                      #vis fn #method_name < #enum_generics_impl > ( #( #params ),* ) -> Self
-                      where #enum_generics_where // Use enum's where clause
+                      #vis fn #method_name( #( #params ),* ) -> Self
+                      // where #enum_generics_where // Removed where clause from method
                       {
                         Self::#variant_ident( #( #args ),* )
                       }
@@ -599,12 +606,14 @@ pub(super) fn former_for_enum // Make it pub(super)
           };
 
           // --- Generate Static Starter Method ---
+          // FIX: Removed generics and where clause from method signature
           let static_method = quote!
           {
             /// Starts forming the #variant_ident variant using its implicit subformer.
             #[ inline( always ) ]
-            #vis fn #method_name () // Generics defined by the return type's where clause
-            -> #implicit_former_name // Return type is the *implicit* former...
+            #vis fn #method_name ()
+            // Return type is the *implicit* former...
+            -> #implicit_former_name
                <
                  #enum_generics_ty // ...specialized with the enum's generics...
                  // ...and configured with a definition that uses the specialized End struct.
@@ -616,7 +625,7 @@ pub(super) fn former_for_enum // Make it pub(super)
                      #end_struct_name < #enum_generics_ty > // End = Specialized End<EnumGenerics>
                  >
                >
-            where #merged_where_clause // Use merged bounds
+            // where #merged_where_clause // Removed where clause from method
             {
                 // Start the implicit former using its `begin` associated function.
                 // The End struct passed depends on the enum's generics.
