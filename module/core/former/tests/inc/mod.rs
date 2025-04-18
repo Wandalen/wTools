@@ -254,6 +254,9 @@ mod former_enum_tests
   mod generics_independent_tuple_manual;
   mod generics_independent_tuple_derive;
 
+  mod generics_independent_struct_manual;
+  mod generics_independent_struct_derive;
+
   // = conflicts
 
   mod keyword_variant_derive;

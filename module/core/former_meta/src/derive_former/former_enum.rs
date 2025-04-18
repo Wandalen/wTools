@@ -136,7 +136,7 @@ pub(super) fn former_for_enum // Make it pub(super)
         // Case 1: Unit variant (e.g., `Empty`) - Always Direct constructor
         syn::Fields::Unit =>
         {
-            // FIX: Removed generics from method signature
+            // FIX: Removed generics from method signature in Step 1.5 - CORRECT
             let static_method = quote!
             {
               /// Constructor for the #variant_ident unit variant.
@@ -177,7 +177,7 @@ pub(super) fn former_for_enum // Make it pub(super)
                 if wants_scalar || ( !wants_subform_scalar && !inner_former_exists )
                 {
                     // --- Generate Direct Constructor (Scalar Style) ---
-                    // FIX: Removed generics from method signature
+                    // FIX: Removed generics from method signature in Step 1.5 - CORRECT
                     let static_method = quote!
                     {
                       /// Constructor for the #variant_ident variant (scalar style).
