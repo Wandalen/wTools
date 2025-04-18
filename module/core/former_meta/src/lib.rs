@@ -3,7 +3,6 @@
 #![ doc( html_root_url = "https://docs.rs/former_derive_meta/latest/former_derive_meta/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-// - qqq : xxx : Crucially: Implement proper handling for generics within the DataType of VariantName(DataType). This was skipped in the previous implementation step for simplicity.
 // - qqq : xxx : make sure debug works for enum
 // - qqq : xxx : make sure that fields/variants colliding with keywords works for both enum and struct
 

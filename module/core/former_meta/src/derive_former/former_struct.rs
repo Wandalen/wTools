@@ -524,7 +524,6 @@ specific needs of the broader forming context. It mandates the implementation of
     // = subformer: Define the `AsSubformer` type alias.
     /// Provides a specialized former for structure using predefined settings for superformer and end conditions.
     // #vis type #as_subformer < #struct_generics_impl __Superformer, __End > = #former
-    // xxx
     #vis type #as_subformer < #struct_generics_ty __Superformer, __End > = #former
     <
       #struct_generics_ty
