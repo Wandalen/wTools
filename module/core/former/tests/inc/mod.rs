@@ -248,8 +248,11 @@ mod former_enum_tests
   mod generics_shared_tuple_manual;
   mod generics_shared_tuple_derive;
 
-  mod generics_shared_struct_derive;
   mod generics_shared_struct_manual;
+  mod generics_shared_struct_derive;
+
+  mod generics_independent_tuple_manual;
+  mod generics_independent_tuple_derive;
 
   // = conflicts
 
