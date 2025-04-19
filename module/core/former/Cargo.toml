@@ -12,7 +12,7 @@ documentation = "https://docs.rs/former"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/former"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/former"
 description = """
-A flexible implementation of the Builder pattern supporting nested builders and collection-specific subformers.
+A flexible implementation of the Builder pattern supporting nested builders and collection-specific subformers. Simplify the construction of complex objects.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]

@@ -4,6 +4,9 @@
 #![ doc( html_root_url = "https://docs.rs/former/latest/former/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+// xxx : disable and phase out attribute "[ perform( fn method_name<...> () -> OutputType ) ]"
+// xxx : split out crate component model
+
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
