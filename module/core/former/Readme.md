@@ -117,8 +117,8 @@ Derive `Former` on your struct and use the generated `::former()` method to star
   pub struct Config
   {
     #[ former( default = 1024 ) ] // Use 1024 if .buffer_size() is not called
-    buffer_size : usize,
-    timeout : Option< u32 >, // Defaults to None
+    buffer_size : i32,
+    timeout : Option< i32 >, // Defaults to None
     #[ former( default = true ) ] // Default for bool
     enabled : bool,
   }
