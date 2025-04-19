@@ -2,6 +2,7 @@
 //! Macro helpers.
 //!
 
+
 /// Define a private namespace for all its items.
 mod private
 {

@@ -29,7 +29,7 @@ fn fail_test()
   let project = ProjectBuilder::new( "fail_test" )
   .toml_file( "[features]\nenabled = []" )
   .test_file( r"
-    #[test]
+    #[ test ]
     fn should_fail()
     {
       panic!()
@@ -69,7 +69,7 @@ fn fail_build()
   .lib_file( "compile_error!( \"achtung\" );" )
   .toml_file( "[features]\nenabled = []" )
   .test_file( r"
-    #[test]
+    #[ test ]
     fn should_pass() {
       assert!(true);
     }
@@ -106,7 +106,7 @@ fn call_from_workspace_root()
   let fail_project = ProjectBuilder::new( "fail_test" )
   .toml_file( "[features]\nenabled = []" )
   .test_file( r"
-  #[test]
+  #[ test ]
   fn should_fail123() {
     panic!()
   }
@@ -115,7 +115,7 @@ fn call_from_workspace_root()
   let pass_project = ProjectBuilder::new( "apass_test" )
   .toml_file( "[features]\nenabled = []" )
   .test_file( r"
-  #[test]
+  #[ test ]
   fn should_pass() {
     assert_eq!(1,1);
   }
@@ -124,7 +124,7 @@ fn call_from_workspace_root()
   let pass_project2 = ProjectBuilder::new( "pass_test2" )
   .toml_file( "[features]\nenabled = []" )
   .test_file( r"
-  #[test]
+  #[ test ]
   fn should_pass() {
     assert_eq!(1,1);
   }
@@ -165,7 +165,7 @@ fn plan()
   let project = ProjectBuilder::new( "plan_test" )
   .toml_file( "[features]\nenabled = []" )
   .test_file( r"
-  #[test]
+  #[ test ]
   fn should_pass() {
     assert!(true);
   }
@@ -199,7 +199,7 @@ fn backtrace_should_be()
   let project = ProjectBuilder::new( "fail_build" )
   .toml_file( "[features]\nenabled = []" )
   .test_file( r"
-  #[test]
+  #[ test ]
   fn fail() {
     assert!(false);
   }

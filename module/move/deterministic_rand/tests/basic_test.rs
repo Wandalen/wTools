@@ -2,7 +2,7 @@
 use rand::distributions::Uniform;
 use rayon::prelude::*;
 
-#[test]
+#[ test ]
 fn test_rng_manager()
 {
   use deterministic_rand::{ Hrng, Rng };
@@ -37,7 +37,7 @@ fn test_rng_manager()
 
 #[ cfg( not( feature = "no_std" ) ) ]
 #[ cfg( feature = "determinism" ) ]
-#[test]
+#[ test ]
 fn test_reusability()
 {
   use deterministic_rand::{ Hrng, Rng };
@@ -95,7 +95,7 @@ fn test_reusability()
 
 #[ cfg( not( feature = "no_std" ) ) ]
 #[ cfg( feature = "determinism" ) ]
-#[test]
+#[ test ]
 fn test_par()
 {
   use std::sync::{ Arc, Mutex };
@@ -137,7 +137,7 @@ fn test_par()
 
 #[ cfg( not( feature = "no_std" ) ) ]
 #[ cfg( feature = "determinism" ) ]
-#[test]
+#[ test ]
 fn seed()
 {
   use deterministic_rand::Seed;

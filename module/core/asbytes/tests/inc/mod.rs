@@ -1,3 +1,4 @@
 use super::*;
 
-mod basic_test;
+mod as_bytes_test;
+mod into_bytes_test;

@@ -40,6 +40,8 @@ pub mod equation;
 pub mod generic_args;
 #[ cfg( all( feature = "enabled", feature = "generic_params" ) ) ]
 pub mod generic_params;
+#[ cfg( all( feature = "enabled", feature = "ident" ) ) ] // Use new feature name
+pub mod ident;                                           // Use new module name
 #[ cfg( all( feature = "enabled", feature = "item" ) ) ]
 pub mod item;
 #[ cfg( all( feature = "enabled", feature = "item_struct" ) ) ]
@@ -126,6 +128,8 @@ pub mod own
     pub use generic_args::orphan::*;
     #[ cfg( feature = "generic_params" ) ]
     pub use generic_params::orphan::*;
+    #[ cfg( feature = "ident" ) ] // Use new feature name
+    pub use ident::orphan::*;    // Use new module name
     #[ cfg( feature = "item" ) ]
     pub use item::orphan::*;
     #[ cfg( feature = "item_struct" ) ]
@@ -160,7 +164,7 @@ pub mod own
 
 /// Parented namespace of the module.
 #[ cfg( feature = "enabled" ) ]
-  #[ allow( unused_imports ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   use super::*;
@@ -210,6 +214,8 @@ pub mod exposed
     pub use generic_args::exposed::*;
     #[ cfg( feature = "generic_params" ) ]
     pub use generic_params::exposed::*;
+    #[ cfg( feature = "ident" ) ] // Use new feature name
+    pub use ident::exposed::*;    // Use new module name
     #[ cfg( feature = "item" ) ]
     pub use item::exposed::*;
     #[ cfg( feature = "item_struct" ) ]
@@ -275,6 +281,8 @@ pub mod prelude
     pub use generic_args::prelude::*;
     #[ cfg( feature = "generic_params" ) ]
     pub use generic_params::prelude::*;
+    #[ cfg( feature = "ident" ) ] // Use new feature name
+    pub use ident::prelude::*;    // Use new module name
     #[ cfg( feature = "item" ) ]
     pub use item::prelude::*;
     #[ cfg( feature = "item_struct" ) ]
@@ -353,5 +361,3 @@ pub mod prelude
   };
 
 }
-
-// qqq : introduce features. make it smart. discuss list of features before implementing

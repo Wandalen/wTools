@@ -1,6 +1,6 @@
 [package]
 name = "macro_tools"
-version = "0.46.0"
+version = "0.52.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -38,6 +38,7 @@ default = [
   "equation",
   "generic_args",
   "generic_params",
+  "ident",
   "item",
   "item_struct",
   "name",
@@ -71,6 +72,7 @@ diag = []
 equation = []
 generic_args = []
 generic_params = [ "punctuated" ]
+ident = [ "kw" ]
 item = [ "punctuated" ]
 item_struct = []
 iter = []
@@ -97,10 +99,16 @@ typed = []
 [dependencies]
 
 ## external
-proc-macro2 = { version = "~1.0.78", features = [] }
-quote = { version = "~1.0.35", features = [] }
-syn = { version = "~2.0.52", features = [ "full", "extra-traits" ] }
-const_format = { version = "0.2.32", features = [] }
+# proc-macro2 = { version = "~1.0.78", default-features = false, features = [] }
+# quote = { version = "~1.0.35", default-features = false, features = [] }
+# syn = { version = "~2.0.52", default-features = false, features = [ "full", "extra-traits" ] } # qqq : xxx : optimize set of features
+# const_format = { version = "0.2.32", default-features = false, features = [] }
+
+# external
+proc-macro2 = { workspace = true, default-features = false, features = [ "default" ] }
+quote = { workspace = true, default-features = false, features = [ "default" ] }
+syn = { workspace = true, default-features = false, features = [ "clone-impls", "full", "derive", "parsing", "printing", "proc-macro", "extra-traits" ] } # qqq : xxx : optimize set of features, bind features of dependecies to features of this crate, optimally
+const_format = { workspace = true, default-features = false, features = [] }
 
 ## internal
 interval_adapter = { workspace = true, features = [] }
@@ -108,5 +116,5 @@ iter_tools = { workspace = true, features = [ "iter_trait" ] }
 clone_dyn_types = { workspace = true, features = [] }
 former_types = { workspace = true, features = [ "types_component_assign" ] }
 
-# [dev-dependencies]
-# test_tools = { workspace = true }
+[dev-dependencies]
+test_tools = { workspace = true } # Added test_tools dependency

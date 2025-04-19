@@ -22,6 +22,7 @@ dist
 Cargo.lock
 .DS_Store
 .idea
+.mastermind
 *.log
 *.db
 *.tmp

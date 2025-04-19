@@ -16,5 +16,4 @@ pub struct Options1
 
 //
 
-
 include!( "./only_test/component_from.rs" );

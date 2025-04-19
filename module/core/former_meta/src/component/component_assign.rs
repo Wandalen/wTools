@@ -1,6 +1,14 @@
 #[ allow( clippy::wildcard_imports ) ]
 use super::*;
-use macro_tools::{ attr, diag, Result };
+// Use re-exports from macro_tools
+use macro_tools::
+{
+  qt,
+  attr, diag, Result,
+  proc_macro2::TokenStream,
+  syn::Index,
+};
+
 
 ///
 /// Generates implementations of the `Assign` trait for each field of a struct.
@@ -12,15 +20,31 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> Result< proc_macro
   let has_debug = attr::has_debug( parsed.attrs.iter() )?;
   let item_name = &parsed.ident.clone();
 
-  let for_field = parsed.fields.iter().map( | field |
+  // Directly iterate over fields and handle named/unnamed cases
+  let for_fields = match &parsed.fields
   {
-    for_each_field( field, &parsed.ident )
-  })
-  .collect::< Result< Vec< _ > > >()?;
+    syn::Fields::Named( fields_named ) =>
+    {
+      fields_named.named.iter()
+      .map( | field | for_each_field( field, None, item_name ) ) // Pass None for index
+      .collect::< Result< Vec< _ > > >()?
+    },
+    syn::Fields::Unnamed( fields_unnamed ) =>
+    {
+      fields_unnamed.unnamed.iter().enumerate()
+      .map( |( index, field )| for_each_field( field, Some( index ), item_name ) ) // Pass Some(index)
+      .collect::< Result< Vec< _ > > >()?
+    },
+    syn::Fields::Unit =>
+    {
+      // No fields to generate Assign for
+      vec![]
+    },
+  };
 
   let result = qt!
   {
-    #( #for_field )*
+    #( #for_fields )*
   };
 
   if has_debug
@@ -42,31 +66,53 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> Result< proc_macro
 /// # Parameters
 ///
 /// - `field`: Reference to the struct field's metadata.
+/// - `index`: `Some(usize)` for tuple fields, `None` for named fields.
 /// - `item_name`: The name of the struct.
 ///
-/// # Example of generated code
+/// # Example of generated code for a tuple struct field
 ///
 /// ```rust, ignore
-/// impl< IntoT > former::Assign< i32, IntoT > for Options1
+/// impl< IntoT > Assign< i32, IntoT > for TupleStruct
 /// where
 ///   IntoT : Into< i32 >,
 /// {
 ///   #[ inline( always ) ]
 ///   fn assign( &mut self, component : IntoT )
 ///   {
-///     self.field1 = component.into().clone();
+///     self.0 = component.into(); // Uses index
 ///   }
 /// }
 /// ```
-fn for_each_field( field : &syn::Field, item_name : &syn::Ident ) -> Result< proc_macro2::TokenStream >
+fn for_each_field
+(
+  field : &syn::Field,
+  index : Option< usize >, // Added index parameter
+  item_name : &syn::Ident
+) -> Result< proc_macro2::TokenStream >
 {
-  let field_name = field.ident.as_ref()
-  .ok_or_else( || syn::Error::new( field.span(), "Field without a name" ) )?;
   let field_type = &field.ty;
+
+  // Construct the field accessor based on whether it's named or tuple
+  let field_accessor : TokenStream = if let Some( ident ) = &field.ident
+  {
+    // Named field: self.field_name
+    quote! { #ident }
+  }
+  else if let Some( idx ) = index
+  {
+    // Tuple field: self.0, self.1, etc.
+    let index_lit = Index::from( idx );
+    quote! { #index_lit }
+  }
+  else
+  {
+    // Should not happen if called correctly from `component_assign`
+    return Err( syn::Error::new_spanned( field, "Field has neither ident nor index" ) );
+  };
 
   Ok( qt!
   {
-    #[ allow( non_snake_case ) ]
+    #[ allow( non_snake_case ) ] // Still useful for named fields that might not be snake_case
     impl< IntoT > Assign< #field_type, IntoT > for #item_name
     where
       IntoT : Into< #field_type >,
@@ -74,7 +120,7 @@ fn for_each_field( field : &syn::Field, item_name : &syn::Ident ) -> Result< pro
       #[ inline( always ) ]
       fn assign( &mut self, component : IntoT )
       {
-        self.#field_name = component.into();
+        self.#field_accessor = component.into(); // Use the accessor
       }
     }
   })

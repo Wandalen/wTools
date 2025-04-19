@@ -1,3 +1,4 @@
+// File: module/core/former_meta/src/derive_former/field.rs
 #[ allow( clippy::wildcard_imports ) ]
 use super::*;
 use macro_tools::container_kind;
@@ -531,17 +532,23 @@ field : {field_ident}",
     let attr = self.attrs.subform_collection.as_ref().unwrap();
     let field_ident = &self.ident;
     let field_typ = &self.non_optional_ty;
-    let params = typ::type_parameters( field_typ, &( .. ) );
+    let params = typ::type_parameters( field_typ, .. );
 
     #[ allow( clippy::useless_attribute, clippy::items_after_statements ) ]
     use convert_case::{ Case, Casing };
+
+    // Get the field name as a string
+    let field_name_str = field_ident.to_string();
+    // Remove the raw identifier prefix `r#` if present
+    let field_name_cleaned = field_name_str.strip_prefix("r#").unwrap_or(&field_name_str);
 
     // example : `ParentSubformCollectionChildrenEnd`
     let subform_collection_end = format_ident!
     {
       "{}SubformCollection{}End",
       item,
-      field_ident.to_string().to_case( Case::Pascal )
+      // Use the cleaned name for PascalCase conversion
+      field_name_cleaned.to_case( Case::Pascal )
     };
 
     // example : `_children_subform_collection`
@@ -874,12 +881,18 @@ with the new content generated during the subforming process.
     // example : `children`
     let setter_name = self.subform_entry_setter_name();
 
+    // Get the field name as a string
+    let field_name_str = field_ident.to_string();
+    // Remove the raw identifier prefix `r#` if present
+    let field_name_cleaned = field_name_str.strip_prefix("r#").unwrap_or(&field_name_str);
+
     // example : `ParentSubformEntryChildrenEnd`
     let subform_entry_end = format_ident!
     {
       "{}SubformEntry{}End",
       item,
-      field_ident.to_string().to_case( Case::Pascal )
+      // Use the cleaned name for PascalCase conversion
+      field_name_cleaned.to_case( Case::Pascal )
     };
 
     // example : `_children_subform_entry`
@@ -1162,12 +1175,18 @@ formation process of the `{item}`.
     // example : `children`
     let setter_name = self.subform_scalar_setter_name();
 
+    // Get the field name as a string
+    let field_name_str = field_ident.to_string();
+    // Remove the raw identifier prefix `r#` if present
+    let field_name_cleaned = field_name_str.strip_prefix("r#").unwrap_or(&field_name_str);
+
     // example : `ParentSubformScalarChildrenEnd`
     let subform_scalar_end = format_ident!
     {
       "{}SubformScalar{}End",
       item,
-      field_ident.to_string().to_case( Case::Pascal )
+      // Use the cleaned name for PascalCase conversion
+      field_name_cleaned.to_case( Case::Pascal )
     };
 
     // example : `_children_subform_scalar`

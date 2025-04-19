@@ -3,7 +3,7 @@ use super::*;
 
 //
 
-#[test]
+#[ test ]
 fn named_fields_with_named_fields()
 {
   use syn::{ parse_quote, punctuated::Punctuated, Field, token::Comma };

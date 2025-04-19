@@ -59,7 +59,7 @@ mod private
   /// # Panics
   /// qqq: doc
   #[ allow( clippy::cast_possible_wrap ) ]
-  pub fn type_parameters< 'a >( ty : &'a syn::Type, range : &'a impl NonIterableInterval ) -> Vec< &'a syn::Type >
+  pub fn type_parameters< 'a >( ty : &'a syn::Type, range : impl NonIterableInterval ) -> Vec< &'a syn::Type >
   {
     if let syn::Type::Path( syn::TypePath{ path : syn::Path { ref segments, .. }, .. } ) = ty
     {
@@ -133,7 +133,7 @@ mod private
   /// qqq: docs
   pub fn parameter_first( ty : &syn::Type ) -> Result< &syn::Type >
   {
-    typ::type_parameters( ty, &( 0 ..= 0 ) )
+    typ::type_parameters( ty, 0 ..= 0 )
     .first()
     .copied()
     .ok_or_else( || syn_err!( ty, "Expects at least one parameter here:\n  {}", qt!{ #ty } ) )

@@ -1,6 +1,6 @@
 [package]
 name = "variadic_from"
-version = "0.28.0"
+version = "0.29.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",

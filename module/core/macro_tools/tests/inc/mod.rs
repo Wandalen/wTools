@@ -1,7 +1,4 @@
-
-#[ allow( unused_imports ) ]
 use super::*;
-#[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 
 #[ allow( unused_imports ) ]
@@ -32,6 +29,8 @@ mod if_enabled
   mod generic_args_test;
   #[ cfg( feature = "generic_params" ) ]
   mod generic_params_test;
+  #[ cfg( feature = "ident" ) ] // Use new feature name
+  mod ident_test;              // Add the new test file
   #[ cfg( feature = "item" ) ]
   mod item_test;
   #[ cfg( feature = "item_struct" ) ]
