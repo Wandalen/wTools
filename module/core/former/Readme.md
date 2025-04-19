@@ -215,7 +215,7 @@ Where `former` significantly simplifies complex scenarios is in building collect
 
 ## Where to Go Next
 
-*   **[Advanced Usage & Concepts](./advanced.md):** Dive deeper into subformers, customization options, storage, context, definitions, mutators, and custom collections.
+*   **[Advanced Usage & Concepts](https://github.com/Wandalen/wTools/tree/master/module/core/former/advanced.md):** Dive deeper into subformers, customization options, storage, context, definitions, mutators, and custom collections.
 *   **[Examples Directory](https://github.com/Wandalen/wTools/tree/master/module/core/former/examples):** Explore practical, runnable examples showcasing various features.
 *   **[API Documentation (docs.rs)](https://docs.rs/former):** Get detailed information on all public types, traits, and functions.
 *   **[Repository (GitHub)](https://github.com/Wandalen/wTools/tree/master/module/core/former):** View the source code, contribute, or report issues.

@@ -4,8 +4,10 @@
 #![ doc( html_root_url = "https://docs.rs/former/latest/former/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+// xxx : add to readme example with enums
 // xxx : disable and phase out attribute "[ perform( fn method_name<...> () -> OutputType ) ]"
 // xxx : split out crate component model
+// xxx : fix commented out tests
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
