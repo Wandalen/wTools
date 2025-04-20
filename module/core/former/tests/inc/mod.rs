@@ -253,18 +253,21 @@ mod former_enum_tests
   mod generics_shared_tuple_derive;
   mod generics_shared_struct_manual;
   mod generics_shared_struct_derive;
-
   mod generics_independent_tuple_manual;
   mod generics_independent_tuple_derive;
   mod generics_independent_struct_manual;
   mod generics_independent_struct_derive;
-
   mod scalar_generic_tuple_manual;
   mod scalar_generic_tuple_derive;
 
   // = conflicts
 
   mod keyword_variant_derive;
+
+  // = standalone constructor
+
+  mod standalone_constructor_manual;
+  mod standalone_constructor_derive;
 
 }
 
