@@ -20,6 +20,11 @@ mod private
   {
     let path_arg : PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
 
+    // qqq : xxx : refactor this block
+    //       Use the requested `pth::absolute::join` function (see qqq in pth/src/lib.rs)
+    //       to simplify this path resolution. The call should look something like:
+    //       `let absolute_path = pth::absolute::join( ( CurrentPath, path_arg.clone() ) )?`
+    //       This assumes `join_absolute` takes a tuple and handles the logic internally.
     // Determine the absolute path explicitly
     let absolute_path = if path_arg.is_relative()
     {
@@ -34,9 +39,10 @@ mod private
       AbsolutePath::try_from( path_arg.clone() )
         .map_err( | e | Error::new( e ).context( format!( "Invalid absolute path provided: {}", path_arg.display() ) ) )?
     };
+    // Note: AbsolutePath::try_from also performs canonicalization implicitly via path::canonicalize
 
     // Create CrateDir from the verified AbsolutePath
-    let crate_dir = CrateDir::try_from( absolute_path )
+    let crate_dir = CrateDir::try_from( absolute_path ) // This should now work as AbsolutePath is canonical
       .map_err( | e : PathError | Error::new( e ).context( "Failed to identify crate directory (does Cargo.toml exist?)" ) )?;
 
     // Load the workspace based on the crate directory
