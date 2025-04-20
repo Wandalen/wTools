@@ -219,6 +219,11 @@ mod former_struct_tests
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_all_parametrized;
 
+  // = standalone constructor
+
+  mod standalone_constructor_manual;
+  mod standalone_constructor_derive;
+
 }
 
 #[ cfg( feature = "derive_former" ) ]
