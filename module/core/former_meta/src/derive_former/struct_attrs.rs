@@ -15,8 +15,7 @@ use macro_tools::
 
 use former_types::{ Assign, OptionExt };
 
-/// Represents the attributes of a struct, including storage fields, mutator, and perform attributes.
-
+/// Represents the attributes of a struct, including storage fields, mutator, perform, and standalone constructor attributes. // <<< Updated doc
 #[ derive( Debug, Default ) ]
 pub struct ItemAttributes
 {
@@ -31,11 +30,15 @@ pub struct ItemAttributes
   /// Optional attribute for specifying a method to call after forming.
   /// This attribute can hold information about a method that should be invoked after the form operation is complete.
   pub perform : Option< AttributePerform >,
+
+  /// Optional attribute to enable generation of standalone constructor functions. // <<< Added field
+  pub standalone_constructors : AttributePropertyStandaloneConstructors,
 }
 
 impl ItemAttributes
 {
 
+  /// Parses attributes from an iterator.
   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
   {
     let mut result = Self::default();
@@ -49,6 +52,7 @@ impl ItemAttributes
         ", ", AttributeStorageFields::KEYWORD,
         ", ", AttributeMutator::KEYWORD,
         ", ", AttributePerform::KEYWORD,
+        ", ", AttributePropertyStandaloneConstructors::KEYWORD, // <<< Added keyword
         ".",
       );
       syn_err!
@@ -76,10 +80,11 @@ impl ItemAttributes
         AttributeStorageFields::KEYWORD => result.assign( AttributeStorageFields::from_meta( attr )? ),
         AttributeMutator::KEYWORD => result.assign( AttributeMutator::from_meta( attr )? ),
         AttributePerform::KEYWORD => result.assign( AttributePerform::from_meta( attr )? ),
-        // "debug" => {}
+        // <<< Added case for standalone_constructors
+        AttributePropertyStandaloneConstructors::KEYWORD => result.assign( AttributePropertyStandaloneConstructors::from( true ) ),
+        // "debug" => {} // Assuming debug is handled elsewhere or implicitly
         _ => {},
-        // _ => return Err( error( attr ) ),
-        // attributes does not have to be known
+        // _ => return Err( error( attr ) ), // Allow unknown attributes
       }
     }
 
@@ -148,22 +153,66 @@ impl ItemAttributes
 
     self.storage_fields.as_ref().map_or_else
     (
+      // qqq : find better solutioin. avoid leaking
       || &*Box::leak( Box::new( syn::punctuated::Punctuated::new() ) ),
       | attr | &attr.fields
     )
 
-    // zzz : qqq : find better solutioin
-
-    // self.storage_fields
-    // .as_ref()
-    // .map_or_else(
-    //   || syn::punctuated::Punctuated::< syn::Field, syn::token::Comma >::new().into_iter(),
-    //   | attr | attr.fields.clone().into_iter()
-    //   // Clone and create an iterator when storage_fields is Some
-    // )
   }
 
 }
+
+// = Assign implementations for ItemAttributes =
+
+impl< IntoT > Assign< AttributeStorageFields, IntoT > for ItemAttributes
+where
+  IntoT : Into< AttributeStorageFields >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.storage_fields.option_assign( component );
+  }
+}
+
+impl< IntoT > Assign< AttributeMutator, IntoT > for ItemAttributes
+where
+  IntoT : Into< AttributeMutator >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.mutator.assign( component );
+  }
+}
+
+impl< IntoT > Assign< AttributePerform, IntoT > for ItemAttributes
+where
+  IntoT : Into< AttributePerform >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.perform.option_assign( component );
+  }
+}
+
+// <<< Added Assign impl for the new property
+impl< IntoT > Assign< AttributePropertyStandaloneConstructors, IntoT > for ItemAttributes
+where
+  IntoT : Into< AttributePropertyStandaloneConstructors >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.standalone_constructors.assign( component );
+  }
+}
+
 
 ///
 /// Attribute to hold storage-specific fields.
@@ -198,17 +247,7 @@ impl AttributeComponent for AttributeStorageFields
 
 }
 
-impl< IntoT > Assign< AttributeStorageFields, IntoT > for ItemAttributes
-where
-  IntoT : Into< AttributeStorageFields >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, component : IntoT )
-  {
-    let component = component.into();
-    self.storage_fields.option_assign( component );
-  }
-}
+// Assign impl for AttributeStorageFields remains the same
 
 impl< IntoT > Assign< AttributeStorageFields, IntoT > for AttributeStorageFields
 where
@@ -282,17 +321,7 @@ impl AttributeComponent for AttributeMutator
 
 }
 
-impl< IntoT > Assign< AttributeMutator, IntoT > for ItemAttributes
-where
-  IntoT : Into< AttributeMutator >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, component : IntoT )
-  {
-    let component = component.into();
-    self.mutator.assign( component );
-  }
-}
+// Assign impls for AttributeMutator remain the same
 
 impl< IntoT > Assign< AttributeMutator, IntoT > for AttributeMutator
 where
@@ -427,17 +456,7 @@ impl syn::parse::Parse for AttributePerform
   }
 }
 
-impl< IntoT > Assign< AttributePerform, IntoT > for ItemAttributes
-where
-  IntoT : Into< AttributePerform >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, component : IntoT )
-  {
-    let component = component.into();
-    self.perform.option_assign( component );
-  }
-}
+// Assign impl for AttributePerform remains the same
 
 impl< IntoT > Assign< AttributePerform, IntoT > for AttributePerform
 where
@@ -451,7 +470,7 @@ where
   }
 }
 
-// == attribute properties
+// == attribute properties ==
 
 /// Marker type for attribute property to specify whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
@@ -482,3 +501,19 @@ impl AttributePropertyComponent for CustomMarker
 /// Indicates whether a custom code should be generated.
 /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
 pub type AttributePropertyCustom = AttributePropertyOptionalSingletone< CustomMarker >;
+
+// = <<< Added marker and type for standalone_constructors
+
+/// Marker type for attribute property to enable standalone constructors.
+/// Defaults to `false`.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct StandaloneConstructorsMarker;
+
+impl AttributePropertyComponent for StandaloneConstructorsMarker
+{
+  const KEYWORD : &'static str = "standalone_constructors";
+}
+
+/// Indicates whether standalone constructors should be generated.
+/// Defaults to `false`. Parsed as a singletone attribute (`#[standalone_constructors]`).
+pub type AttributePropertyStandaloneConstructors = AttributePropertyOptionalSingletone< StandaloneConstructorsMarker >;

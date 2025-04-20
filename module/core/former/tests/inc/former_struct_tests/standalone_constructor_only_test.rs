@@ -1,25 +1,27 @@
 //
-// Contains the test logic for standalone constructors.
+// Contains the shared test logic for standalone constructors.
 // This file is included by both the manual and derive test files.
+// It uses consistent names defined in the including files.
 //
 
-// Use the items defined in the including file (either manual or derive)
+// Use the items defined in the including file (manual or derive)
 use super::*;
 
-/// Tests the standalone constructor for a struct with no arguments (manual version).
+/// Tests the standalone constructor for a struct with no arguments.
 #[ test ]
-fn no_args_manual()
+fn no_args_test() // Generic test name
 {
-  // Call the manually defined standalone constructor
-  let former = manual_no_args_struct();
+  // Call the constructor function (manual or derived)
+  // Assumes `test_struct_no_args` is defined in the including scope
+  let former = test_struct_no_args();
 
   // Use the former to build the struct
   let instance = former
   .field1( 42 ) // Set the field using the regular setter
   .form();
 
-  // Define the expected struct instance
-  let expected = ManualNoArgsStruct
+  // Define the expected struct instance (using the consistent struct name)
+  let expected = TestStructNoArgs
   {
     field1 : 42,
   };
@@ -28,20 +30,21 @@ fn no_args_manual()
   assert_eq!( instance, expected );
 }
 
-/// Tests the standalone constructor for a struct with arguments (manual version).
+/// Tests the standalone constructor for a struct with arguments.
 #[ test ]
-fn with_args_manual()
+fn with_args_test() // Generic test name
 {
-  // Call the manually defined standalone constructor with arguments
-  let former = manual_with_args_struct( "hello", true );
+  // Call the constructor function (manual or derived) with arguments
+  // Assumes `test_struct_with_args` is defined in the including scope
+  let former = test_struct_with_args( "hello", true ); // Use literal args
 
   // Use the former to set the remaining optional field and build the struct
   let instance = former
   .field_c( 3.14 ) // Set the non-constructor field
   .form();
 
-  // Define the expected struct instance
-  let expected = ManualWithArgsStruct
+  // Define the expected struct instance (using the consistent struct name)
+  let expected = TestStructWithArgs
   {
     field_a : "hello".to_string(),
     field_b : true,
@@ -52,10 +55,10 @@ fn with_args_manual()
   assert_eq!( instance, expected );
 
   // Test case where the non-constructor field is not set
-  let former2 = manual_with_args_struct( "world", false );
+  let former2 = test_struct_with_args( "world", false );
   let instance2 = former2.form(); // field_c remains None
 
-  let expected2 = ManualWithArgsStruct
+  let expected2 = TestStructWithArgs
   {
     field_a : "world".to_string(),
     field_b : false,

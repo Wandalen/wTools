@@ -34,6 +34,9 @@ pub struct FieldAttributes
 
   /// Subform entry setter attribute for a field.
   pub subform_entry : Option< AttributeSubformEntrySetter >,
+
+  /// Marks a field as a required argument for standalone constructors.
+  pub arg_for_constructor : AttributePropertyArgForConstructor,
 }
 
 impl FieldAttributes
@@ -59,13 +62,14 @@ impl FieldAttributes
     // Known attributes for error reporting
     let known_attributes = ct::concatcp!
     (
-      "Known attributes are : ",
-      "debug",
+      "Known field attributes are : ",
+      "debug", // Assuming debug might be handled elsewhere
       ", ", AttributeConfig::KEYWORD,
       ", ", AttributeScalarSetter::KEYWORD,
       ", ", AttributeSubformScalarSetter::KEYWORD,
       ", ", AttributeSubformCollectionSetter::KEYWORD,
       ", ", AttributeSubformEntrySetter::KEYWORD,
+      ", ", AttributePropertyArgForConstructor::KEYWORD,
       ".",
     );
 
@@ -87,12 +91,11 @@ impl FieldAttributes
       let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
       let key_str = format!( "{key_ident}" );
 
-      // // Skip standard attributes
+      // attributes does not have to be known
       // if attr::is_standard( &key_str )
       // {
       //   continue;
       // }
-      // attributes does not have to be known
 
       // Match the attribute key and assign to the appropriate field
       match key_str.as_ref()
@@ -102,10 +105,10 @@ impl FieldAttributes
         AttributeSubformScalarSetter::KEYWORD => result.assign( AttributeSubformScalarSetter::from_meta( attr )? ),
         AttributeSubformCollectionSetter::KEYWORD => result.assign( AttributeSubformCollectionSetter::from_meta( attr )? ),
         AttributeSubformEntrySetter::KEYWORD => result.assign( AttributeSubformEntrySetter::from_meta( attr )? ),
-        // "debug" => {},
-        _ => {},
+        AttributePropertyArgForConstructor::KEYWORD => result.assign( AttributePropertyArgForConstructor::from( true ) ),
+        // "debug" => {}, // Assuming debug is handled elsewhere or implicitly
+        _ => {}, // Allow unknown attributes
         // _ => return Err( error( attr ) ),
-        // attributes does not have to be known
       }
     }
 
@@ -113,6 +116,81 @@ impl FieldAttributes
   }
 
 }
+
+// = Assign implementations for FieldAttributes =
+
+impl< IntoT > Assign< AttributeConfig, IntoT > for FieldAttributes
+where
+  IntoT : Into< AttributeConfig >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component : AttributeConfig = component.into();
+    self.config.option_assign( component );
+  }
+}
+
+impl< IntoT > Assign< AttributeScalarSetter, IntoT > for FieldAttributes
+where
+  IntoT : Into< AttributeScalarSetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.scalar.option_assign( component );
+  }
+}
+
+impl< IntoT > Assign< AttributeSubformScalarSetter, IntoT > for FieldAttributes
+where
+  IntoT : Into< AttributeSubformScalarSetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.subform_scalar.option_assign( component );
+  }
+}
+
+impl< IntoT > Assign< AttributeSubformCollectionSetter, IntoT > for FieldAttributes
+where
+  IntoT : Into< AttributeSubformCollectionSetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.subform_collection.option_assign( component );
+  }
+}
+
+impl< IntoT > Assign< AttributeSubformEntrySetter, IntoT > for FieldAttributes
+where
+  IntoT : Into< AttributeSubformEntrySetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.subform_entry.option_assign( component );
+  }
+}
+
+impl< IntoT > Assign< AttributePropertyArgForConstructor, IntoT > for FieldAttributes
+where
+  IntoT : Into< AttributePropertyArgForConstructor >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.arg_for_constructor.assign( component );
+  }
+}
+
 
 ///
 /// Attribute to hold configuration information about the field such as default value.
@@ -153,18 +231,6 @@ impl AttributeComponent for AttributeConfig
 
 }
 
-impl< IntoT > Assign< AttributeConfig, IntoT > for FieldAttributes
-where
-  IntoT : Into< AttributeConfig >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, component : IntoT )
-  {
-    let component : AttributeConfig = component.into();
-    self.config.option_assign( component );
-  }
-}
-
 impl< IntoT > Assign< AttributeConfig, IntoT > for AttributeConfig
 where
   IntoT : Into< AttributeConfig >,
@@ -184,7 +250,6 @@ where
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    // panic!( "" );
     self.default.assign( component.into() );
   }
 }
@@ -242,6 +307,7 @@ impl syn::parse::Parse for AttributeConfig
   }
 }
 
+/// Attribute for scalar setters.
 #[ derive( Debug, Default ) ]
 pub struct AttributeScalarSetter
 {
@@ -288,18 +354,6 @@ impl AttributeComponent for AttributeScalarSetter
     }
   }
 
-}
-
-impl< IntoT > Assign< AttributeScalarSetter, IntoT > for FieldAttributes
-where
-  IntoT : Into< AttributeScalarSetter >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, component : IntoT )
-  {
-    let component = component.into();
-    self.scalar.option_assign( component );
-  }
 }
 
 impl< IntoT > Assign< AttributeScalarSetter, IntoT > for AttributeScalarSetter
@@ -406,20 +460,8 @@ impl syn::parse::Parse for AttributeScalarSetter
   }
 }
 
-///
-/// Attribute to enable/disable scalar setter generation.
-///
-/// ## Example Input
-///
-/// A typical input to parse might look like the following:
-///
-/// ```ignore
-/// name = field_name, setter = true
-/// ```
-///
-
+/// Attribute for subform scalar setters.
 #[ derive( Debug, Default ) ]
-
 pub struct AttributeSubformScalarSetter
 {
   /// Optional identifier for naming the setter.
@@ -464,18 +506,6 @@ impl AttributeComponent for AttributeSubformScalarSetter
     }
   }
 
-}
-
-impl< IntoT > Assign< AttributeSubformScalarSetter, IntoT > for FieldAttributes
-where
-  IntoT : Into< AttributeSubformScalarSetter >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, component : IntoT )
-  {
-    let component = component.into();
-    self.subform_scalar.option_assign( component );
-  }
 }
 
 impl< IntoT > Assign< AttributeSubformScalarSetter, IntoT > for AttributeSubformScalarSetter
@@ -582,19 +612,7 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
   }
 }
 
-/// Represents an attribute for configuring collection setter generation.
-///
-/// This struct is part of a meta-programming approach to enable detailed configuration of nested structs or collections such as `Vec< E >, HashMap< K, E >` and so on.
-/// It allows the customization of setter methods and the specification of the collection's behavior through meta attributes.
-///
-/// ## Example Input
-///
-/// The following is an example of a token stream that this struct can parse:
-/// ```ignore
-/// name = "custom_setter", setter = true, definition = former::VectorDefinition
-/// ```
-///
-
+/// Attribute for subform collection setters.
 #[ derive( Debug, Default ) ]
 pub struct AttributeSubformCollectionSetter
 {
@@ -642,18 +660,6 @@ impl AttributeComponent for AttributeSubformCollectionSetter
     }
   }
 
-}
-
-impl< IntoT > Assign< AttributeSubformCollectionSetter, IntoT > for FieldAttributes
-where
-  IntoT : Into< AttributeSubformCollectionSetter >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, component : IntoT )
-  {
-    let component = component.into();
-    self.subform_collection.option_assign( component );
-  }
 }
 
 impl< IntoT > Assign< AttributeSubformCollectionSetter, IntoT > for AttributeSubformCollectionSetter
@@ -774,24 +780,7 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
   }
 }
 
-/// Represents a subform attribute to control subform setter generation.
-/// Used to specify extra options for using one former as subformer of another one.
-/// For example name of setter could be customized.
-///
-/// ## Example Input
-///
-/// A typical input to parse might look like the following:
-///
-/// ```ignore
-/// name = field_name, setter = true
-/// ```
-///
-/// or simply:
-///
-/// ```ignore
-/// mame = field_name
-/// ```
-
+/// Attribute for subform entry setters.
 #[ derive( Debug, Default ) ]
 pub struct AttributeSubformEntrySetter
 {
@@ -839,18 +828,6 @@ impl AttributeComponent for AttributeSubformEntrySetter
     }
   }
 
-}
-
-impl< IntoT > Assign< AttributeSubformEntrySetter, IntoT > for FieldAttributes
-where
-  IntoT : Into< AttributeSubformEntrySetter >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, component : IntoT )
-  {
-    let component = component.into();
-    self.subform_entry.option_assign( component );
-  }
 }
 
 impl< IntoT > Assign< AttributeSubformEntrySetter, IntoT > for AttributeSubformEntrySetter
@@ -957,7 +934,7 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
   }
 }
 
-// == attribute properties
+// == attribute properties ==
 
 // =
 
@@ -966,8 +943,6 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
 #[ derive( Debug, Default, Clone, Copy ) ]
 pub struct DebugMarker;
 
-/// Specifies whether to provide a sketch as a hint.
-/// Defaults to `false`, which means no hint is provided unless explicitly requested.
 impl AttributePropertyComponent for DebugMarker
 {
   const KEYWORD : &'static str = "debug";
@@ -1037,3 +1012,19 @@ impl AttributePropertyComponent for DefinitionMarker
 
 /// Definition of the collection former to use, e.g., `former::VectorFormer`.
 pub type AttributePropertyDefinition = AttributePropertyOptionalSyn< syn::Type, DefinitionMarker >;
+
+// =
+
+/// Marker type for attribute property marking a field as a constructor argument.
+/// Defaults to `false`.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct ArgForConstructorMarker;
+
+impl AttributePropertyComponent for ArgForConstructorMarker
+{
+  const KEYWORD : &'static str = "arg_for_constructor";
+}
+
+/// Indicates whether a field should be an argument for standalone constructors.
+/// Defaults to `false`. Parsed as a singletone attribute (`#[arg_for_constructor]`).
+pub type AttributePropertyArgForConstructor = AttributePropertyOptionalSingletone< ArgForConstructorMarker >;

@@ -1,12 +1,10 @@
 //!
 //! Manual implementation for testing standalone constructors.
-//! This file defines the struct, its manual Former implementation,
-//! and the manual standalone constructor function.
+//! Uses consistent names matching the derive version for testing.
 //!
 
-// Use necessary items from the former_types crate explicitly
 #[ allow( unused_imports ) ]
-use ::former::prelude::*; // Keep prelude for convenience if needed elsewhere
+use ::former::prelude::*;
 #[ allow( unused_imports ) ]
 use ::former_types::
 {
@@ -17,35 +15,36 @@ use ::former_types::
 
 // === Struct Definition: No Args ===
 
-/// Structure for manual testing of standalone constructors without arguments.
+/// Manual struct without constructor args.
 #[ derive( Debug, PartialEq, Default, Clone ) ]
-pub struct ManualNoArgsStruct
+pub struct TestStructNoArgs
 {
-  field1 : i32,
+  /// A simple field.
+  pub field1 : i32,
 }
 
 // === Manual Former Implementation: No Args ===
-// ... (Implementation remains the same as previous correct version) ...
+// ... (No changes needed here, as all methods/fields are used by no_args_test) ...
 // Storage
-/// Storage for ManualNoArgsStructFormer.
+/// Manual storage for TestStructNoArgsFormer.
 #[ derive( Debug, Default ) ]
-pub struct ManualNoArgsStructFormerStorage
+pub struct TestStructNoArgsFormerStorage
 {
-  /// Option to store the value for field1.
-  pub field1 : ::core::option::Option< i32 >,
+  /// Optional storage for field1.
+  pub field1 : Option< i32 >,
 }
 
-impl Storage for ManualNoArgsStructFormerStorage
+impl Storage for TestStructNoArgsFormerStorage
 {
-  type Preformed = ManualNoArgsStruct;
+  type Preformed = TestStructNoArgs;
 }
 
-impl StoragePreform for ManualNoArgsStructFormerStorage
+impl StoragePreform for TestStructNoArgsFormerStorage
 {
-  #[ inline( always ) ] // Attribute on its own line
+  #[ inline( always ) ]
   fn preform( mut self ) -> Self::Preformed
   {
-    ManualNoArgsStruct
+    TestStructNoArgs
     {
       field1 : self.field1.take().unwrap_or_default(),
     }
@@ -53,349 +52,330 @@ impl StoragePreform for ManualNoArgsStructFormerStorage
 }
 
 // Definition Types
-/// Definition types for ManualNoArgsStructFormer.
+/// Manual definition types for TestStructNoArgsFormer.
 #[ derive( Debug, Default ) ]
-pub struct ManualNoArgsStructFormerDefinitionTypes< Context = (), Formed = ManualNoArgsStruct >
+pub struct TestStructNoArgsFormerDefinitionTypes< Context = (), Formed = TestStructNoArgs >
 {
   _phantom : core::marker::PhantomData< ( Context, Formed ) >,
 }
 
 impl< Context, Formed > FormerDefinitionTypes
-for ManualNoArgsStructFormerDefinitionTypes< Context, Formed >
+for TestStructNoArgsFormerDefinitionTypes< Context, Formed >
 {
-  type Storage = ManualNoArgsStructFormerStorage;
+  type Storage = TestStructNoArgsFormerStorage;
   type Formed = Formed;
   type Context = Context;
 }
 
-// Mutator (empty default)
 impl< Context, Formed > FormerMutator
-for ManualNoArgsStructFormerDefinitionTypes< Context, Formed >
+for TestStructNoArgsFormerDefinitionTypes< Context, Formed >
 {
 }
 
 // Definition
-/// Definition for ManualNoArgsStructFormer.
+/// Manual definition for TestStructNoArgsFormer.
 #[ derive( Debug, Default ) ]
-pub struct ManualNoArgsStructFormerDefinition< Context = (), Formed = ManualNoArgsStruct, End = ReturnPreformed >
+pub struct TestStructNoArgsFormerDefinition< Context = (), Formed = TestStructNoArgs, End = ReturnPreformed >
 {
   _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
 }
 
 impl< Context, Formed, End > FormerDefinition
-for ManualNoArgsStructFormerDefinition< Context, Formed, End >
+for TestStructNoArgsFormerDefinition< Context, Formed, End >
 where
-  End : FormingEnd< ManualNoArgsStructFormerDefinitionTypes< Context, Formed > >,
+  End : FormingEnd< TestStructNoArgsFormerDefinitionTypes< Context, Formed > >,
 {
-  type Storage = ManualNoArgsStructFormerStorage;
+  type Storage = TestStructNoArgsFormerStorage;
   type Formed = Formed;
   type Context = Context;
-  type Types = ManualNoArgsStructFormerDefinitionTypes< Context, Formed >;
+  type Types = TestStructNoArgsFormerDefinitionTypes< Context, Formed >;
   type End = End;
 }
 
 // Former
-/// Manual Former implementation for ManualNoArgsStruct.
+/// Manual Former for TestStructNoArgs.
 #[ derive( Debug ) ]
-pub struct ManualNoArgsStructFormer< Definition = ManualNoArgsStructFormerDefinition >
+pub struct TestStructNoArgsFormer< Definition = TestStructNoArgsFormerDefinition >
 where
-  Definition : FormerDefinition< Storage = ManualNoArgsStructFormerStorage >,
+  Definition : FormerDefinition< Storage = TestStructNoArgsFormerStorage >,
 {
-  storage : Definition::Storage,
-  context : Option< Definition::Context >,
-  on_end : Option< Definition::End >,
+  /// Former storage.
+  pub storage : Definition::Storage,
+  /// Former context.
+  pub context : Option< Definition::Context >,
+  /// Former end handler.
+  pub on_end : Option< Definition::End >,
 }
 
-// Former methods (new, form, end, begin, setters)
-impl< Definition > ManualNoArgsStructFormer< Definition >
+impl< Definition > TestStructNoArgsFormer< Definition >
 where
-  Definition : FormerDefinition< Storage = ManualNoArgsStructFormerStorage >,
-  Definition::Types : FormerDefinitionTypes< Storage = ManualNoArgsStructFormerStorage >,
+  Definition : FormerDefinition< Storage = TestStructNoArgsFormerStorage >,
+  Definition::Types : FormerDefinitionTypes< Storage = TestStructNoArgsFormerStorage >,
   Definition::Types : FormerMutator,
 {
-  /// Finalizes the forming process and returns the formed object.
-  #[ inline( always ) ] // Attribute on its own line
+  /// Finalizes the forming process.
+  #[ inline( always ) ]
   pub fn form( self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
   {
     self.end()
   }
 
-  /// Finalizes the forming process and returns the formed object.
-  #[ inline( always ) ] // Attribute on its own line
+  /// Finalizes the forming process.
+  #[ inline( always ) ]
   pub fn end( mut self )
-  -> // Arrow and type on new line
+  ->
   < Definition::Types as FormerDefinitionTypes >::Formed
   {
-    let on_end = self.on_end.take().unwrap();
-    let context = self.context.take();
-    // Apply mutations before finalizing
+    let end = self.on_end.take().unwrap();
     < Definition::Types as FormerMutator >::form_mutation( &mut self.storage, &mut self.context );
-    // Call the end handler
-    on_end.call( self.storage, context )
+    end.call( self.storage, self.context.take() )
   }
 
-  /// Begins the forming process with optional initial storage and context.
-  #[ inline( always ) ] // Attribute on its own line
+  /// Begins the forming process.
+  #[ inline( always ) ]
   pub fn begin
   (
-    storage : Option< Definition::Storage >,
-    context : Option< Definition::Context >,
-    on_end : Definition::End,
+    s : Option< Definition::Storage >,
+    c : Option< Definition::Context >,
+    e : Definition::End,
   ) -> Self
   {
     Self
     {
-      storage : storage.unwrap_or_default(), // Use default storage if none provided
-      context,
-      on_end : Some( on_end ),
+      storage : s.unwrap_or_default(),
+      context : c,
+      on_end : Some( e ),
     }
   }
 
-  /// Creates a new former instance with a specific end condition.
-  #[ inline( always ) ] // Attribute on its own line
-  pub fn new( on_end : Definition::End ) -> Self
+  /// Creates a new former instance.
+  #[ inline( always ) ]
+  pub fn new( e : Definition::End ) -> Self
   {
-    Self::begin( None, None, on_end )
+    Self::begin( None, None, e )
   }
 
-  // Setter for field1
-  /// Sets the value for field1.
-  #[ inline ] // Attribute on its own line
+  /// Setter for field1.
+  #[ inline ]
   pub fn field1( mut self, src : impl Into< i32 > ) -> Self
   {
-    debug_assert!( self.storage.field1.is_none(), "Field 'field1' was already set" );
+    debug_assert!( self.storage.field1.is_none() );
     self.storage.field1 = Some( src.into() );
     self
   }
 }
 
 // === Standalone Constructor (Manual): No Args ===
-
-/// Manual standalone constructor for ManualNoArgsStruct.
-/// Returns a Former instance ready to build a ManualNoArgsStruct.
-pub fn manual_no_args_struct()
--> // Arrow and type on new line
-ManualNoArgsStructFormer< ManualNoArgsStructFormerDefinition< (), ManualNoArgsStruct, ReturnPreformed > >
+/// Manual standalone constructor for TestStructNoArgs.
+pub fn test_struct_no_args()
+->
+TestStructNoArgsFormer< TestStructNoArgsFormerDefinition< (), TestStructNoArgs, ReturnPreformed > >
 {
-  // Instantiate the Former with the default ReturnPreformed end condition.
-  ManualNoArgsStructFormer::new( ReturnPreformed )
+  TestStructNoArgsFormer::new( ReturnPreformed )
 }
 
 // === Struct Definition: With Args ===
-
-/// Structure for manual testing of standalone constructors with arguments.
+/// Manual struct with constructor args.
 #[ derive( Debug, PartialEq, Default, Clone ) ]
-pub struct ManualWithArgsStruct
+pub struct TestStructWithArgs
 {
-  field_a : String,
-  field_b : bool,
-  field_c : Option< f32 >, // A field *not* expected to be a constructor arg
+  /// Field A.
+  pub field_a : String,
+  /// Field B.
+  pub field_b : bool,
+  /// Field C (optional).
+  pub field_c : Option< f32 >,
 }
 
 // === Manual Former Implementation: With Args ===
-
-// Storage
-/// Storage for ManualWithArgsStructFormer.
+// ... (Storage, DefTypes, Def implementations remain the same) ...
+/// Manual storage for TestStructWithArgsFormer.
 #[ derive( Debug, Default ) ]
-pub struct ManualWithArgsStructFormerStorage
+pub struct TestStructWithArgsFormerStorage
 {
-  /// Option to store the value for field_a.
-  pub field_a : ::core::option::Option< String >,
-  /// Option to store the value for field_b.
-  pub field_b : ::core::option::Option< bool >,
-  /// Option to store the value for field_c.
-  pub field_c : ::core::option::Option< f32 >,
+  /// Optional storage for field_a.
+  pub field_a : Option< String >,
+  /// Optional storage for field_b.
+  pub field_b : Option< bool >,
+  /// Optional storage for field_c.
+  pub field_c : Option< f32 >,
 }
 
-impl Storage for ManualWithArgsStructFormerStorage
+impl Storage for TestStructWithArgsFormerStorage
 {
-  type Preformed = ManualWithArgsStruct;
+  type Preformed = TestStructWithArgs;
 }
 
-impl StoragePreform for ManualWithArgsStructFormerStorage
+impl StoragePreform for TestStructWithArgsFormerStorage
 {
-  #[ inline( always ) ] // Attribute on its own line
+  #[ inline( always ) ]
   fn preform( mut self ) -> Self::Preformed
   {
-    ManualWithArgsStruct
+    TestStructWithArgs
     {
       field_a : self.field_a.take().unwrap_or_default(),
       field_b : self.field_b.take().unwrap_or_default(),
-      // Optional fields default to None if not set
       field_c : self.field_c.take(),
     }
   }
 }
 
-// Definition Types
-/// Definition types for ManualWithArgsStructFormer.
+/// Manual definition types for TestStructWithArgsFormer.
 #[ derive( Debug, Default ) ]
-pub struct ManualWithArgsStructFormerDefinitionTypes< Context = (), Formed = ManualWithArgsStruct >
+pub struct TestStructWithArgsFormerDefinitionTypes< C = (), F = TestStructWithArgs >
 {
-  _phantom : core::marker::PhantomData< ( Context, Formed ) >,
+  _p : core::marker::PhantomData< ( C, F ) >,
 }
 
-impl< Context, Formed > FormerDefinitionTypes
-for ManualWithArgsStructFormerDefinitionTypes< Context, Formed >
+impl< C, F > FormerDefinitionTypes
+for TestStructWithArgsFormerDefinitionTypes< C, F >
 {
-  type Storage = ManualWithArgsStructFormerStorage;
-  type Formed = Formed;
-  type Context = Context;
+  type Storage = TestStructWithArgsFormerStorage;
+  type Formed = F;
+  type Context = C;
 }
 
-// Mutator (empty default)
-impl< Context, Formed > FormerMutator
-for ManualWithArgsStructFormerDefinitionTypes< Context, Formed >
+impl< C, F > FormerMutator
+for TestStructWithArgsFormerDefinitionTypes< C, F >
 {
 }
 
-// Definition
-/// Definition for ManualWithArgsStructFormer.
+/// Manual definition for TestStructWithArgsFormer.
 #[ derive( Debug, Default ) ]
-pub struct ManualWithArgsStructFormerDefinition< Context = (), Formed = ManualWithArgsStruct, End = ReturnPreformed >
+pub struct TestStructWithArgsFormerDefinition< C = (), F = TestStructWithArgs, E = ReturnPreformed >
 {
-  _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
+  _p : core::marker::PhantomData< ( C, F, E ) >,
 }
 
-impl< Context, Formed, End > FormerDefinition
-for ManualWithArgsStructFormerDefinition< Context, Formed, End >
+impl< C, F, E > FormerDefinition
+for TestStructWithArgsFormerDefinition< C, F, E >
 where
-  End : FormingEnd< ManualWithArgsStructFormerDefinitionTypes< Context, Formed > >,
+  E : FormingEnd< TestStructWithArgsFormerDefinitionTypes< C, F > >,
 {
-  type Storage = ManualWithArgsStructFormerStorage;
-  type Formed = Formed;
-  type Context = Context;
-  type Types = ManualWithArgsStructFormerDefinitionTypes< Context, Formed >;
-  type End = End;
+  type Storage = TestStructWithArgsFormerStorage;
+  type Formed = F;
+  type Context = C;
+  type Types = TestStructWithArgsFormerDefinitionTypes< C, F >;
+  type End = E;
 }
 
-// Former
-/// Manual Former implementation for ManualWithArgsStruct.
+
+/// Manual Former for TestStructWithArgs.
 #[ derive( Debug ) ]
-pub struct ManualWithArgsStructFormer< Definition = ManualWithArgsStructFormerDefinition >
+#[ allow( dead_code ) ] // Allow dead code for the whole struct as tests might not use all fields
+pub struct TestStructWithArgsFormer< D = TestStructWithArgsFormerDefinition >
 where
-  Definition : FormerDefinition< Storage = ManualWithArgsStructFormerStorage >,
+  D : FormerDefinition< Storage = TestStructWithArgsFormerStorage >,
 {
-  storage : Definition::Storage,
-  context : Option< Definition::Context >,
-  on_end : Option< Definition::End >,
+  /// Former storage.
+  pub storage : D::Storage,
+  /// Former context.
+  pub context : Option< D::Context >, // Warning: field is never read
+  /// Former end handler.
+  pub on_end : Option< D::End >, // Warning: field is never read
 }
 
-// Former methods (new, form, end, begin, setters)
-impl< Definition > ManualWithArgsStructFormer< Definition >
+impl< D > TestStructWithArgsFormer< D >
 where
-  Definition : FormerDefinition< Storage = ManualWithArgsStructFormerStorage >,
-  Definition::Types : FormerDefinitionTypes< Storage = ManualWithArgsStructFormerStorage >,
-  Definition::Types : FormerMutator,
+  D : FormerDefinition< Storage = TestStructWithArgsFormerStorage >,
+  D::Types : FormerDefinitionTypes< Storage = TestStructWithArgsFormerStorage >,
+  D::Types : FormerMutator,
 {
-  /// Finalizes the forming process and returns the formed object.
-  #[ inline( always ) ] // Attribute on its own line
-  pub fn form( self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
+  /// Finalizes the forming process.
+  #[ inline( always ) ]
+  #[ allow( dead_code ) ] // Warning: method is never used
+  pub fn form( self ) -> < D::Types as FormerDefinitionTypes >::Formed
   {
     self.end()
   }
 
-  /// Finalizes the forming process and returns the formed object.
-  #[ inline( always ) ] // Attribute on its own line
+  /// Finalizes the forming process.
+  #[ inline( always ) ]
+  #[ allow( dead_code ) ] // Warning: method is never used
   pub fn end( mut self )
-  -> // Arrow and type on new line
-  < Definition::Types as FormerDefinitionTypes >::Formed
+  ->
+  < D::Types as FormerDefinitionTypes >::Formed
   {
-    let on_end = self.on_end.take().unwrap();
-    let context = self.context.take();
-    // Apply mutations before finalizing
-    < Definition::Types as FormerMutator >::form_mutation( &mut self.storage, &mut self.context );
-    // Call the end handler
-    on_end.call( self.storage, context )
+    let end = self.on_end.take().unwrap();
+    < D::Types as FormerMutator >::form_mutation( &mut self.storage, &mut self.context );
+    end.call( self.storage, self.context.take() )
   }
 
-  /// Begins the forming process with optional initial storage and context.
-  #[ inline( always ) ] // Attribute on its own line
+  /// Begins the forming process.
+  #[ inline( always ) ]
   pub fn begin
   (
-    storage : Option< Definition::Storage >,
-    context : Option< Definition::Context >,
-    on_end : Definition::End,
+    s : Option< D::Storage >,
+    c : Option< D::Context >,
+    e : D::End,
   ) -> Self
   {
     Self
     {
-      storage : storage.unwrap_or_default(), // Use default storage if none provided
-      context,
-      on_end : Some( on_end ),
+      storage : s.unwrap_or_default(),
+      context : c,
+      on_end : Some( e ),
     }
   }
 
-  /// Creates a new former instance with a specific end condition.
-  #[ inline( always ) ] // Attribute on its own line
-  #[ allow( dead_code ) ] // This method is unused when using the standalone constructor
-  pub fn new( on_end : Definition::End ) -> Self
+  /// Creates a new former instance.
+  #[ inline( always ) ]
+  #[ allow( dead_code ) ]
+  pub fn new( e : D::End ) -> Self
   {
-    Self::begin( None, None, on_end )
+    Self::begin( None, None, e )
   }
 
-  // Setters
-  /// Sets the value for field_a.
-  #[ inline ] // Attribute on its own line
-  #[ allow( dead_code ) ] // This setter is unused when using the standalone constructor for this field
+  /// Setter for field_a.
+  #[ inline ]
+  #[ allow( dead_code ) ]
   pub fn field_a( mut self, src : impl Into< String > ) -> Self
   {
-    debug_assert!( self.storage.field_a.is_none(), "Field 'field_a' was already set" );
+    debug_assert!( self.storage.field_a.is_none() );
     self.storage.field_a = Some( src.into() );
     self
   }
 
-  /// Sets the value for field_b.
-  #[ inline ] // Attribute on its own line
-  #[ allow( dead_code ) ] // This setter is unused when using the standalone constructor for this field
+  /// Setter for field_b.
+  #[ inline ]
+  #[ allow( dead_code ) ]
   pub fn field_b( mut self, src : impl Into< bool > ) -> Self
   {
-    debug_assert!( self.storage.field_b.is_none(), "Field 'field_b' was already set" );
+    debug_assert!( self.storage.field_b.is_none() );
     self.storage.field_b = Some( src.into() );
     self
   }
 
-  /// Sets the value for field_c.
-  #[ inline ] // Attribute on its own line
+  /// Setter for field_c.
+  #[ inline ]
+  #[ allow( dead_code ) ] // Warning: method is never used
   pub fn field_c( mut self, src : impl Into< f32 > ) -> Self
   {
-    debug_assert!( self.storage.field_c.is_none(), "Field 'field_c' was already set" );
+    debug_assert!( self.storage.field_c.is_none() );
     self.storage.field_c = Some( src.into() );
     self
   }
 }
 
 // === Standalone Constructor (Manual): With Args ===
-
-/// Manual standalone constructor for ManualWithArgsStruct.
-/// Assumes field_a and field_b are constructor arguments.
-pub fn manual_with_args_struct
+/// Manual standalone constructor for TestStructWithArgs.
+#[ allow( dead_code ) ] // Warning: function is never used
+pub fn test_struct_with_args
 (
   field_a : impl Into< String >,
   field_b : impl Into< bool >,
 )
--> // Arrow and type on new line
-ManualWithArgsStructFormer< ManualWithArgsStructFormerDefinition< (), ManualWithArgsStruct, ReturnPreformed > >
+->
+TestStructWithArgsFormer< TestStructWithArgsFormerDefinition< (), TestStructWithArgs, ReturnPreformed > >
 {
-  // Create initial storage with arguments pre-filled
-  let initial_storage = ManualWithArgsStructFormerStorage
+  let initial_storage = TestStructWithArgsFormerStorage
   {
     field_a : Some( field_a.into() ),
     field_b : Some( field_b.into() ),
-    field_c : None, // Non-argument field starts as None
+    field_c : None,
   };
-
-  // Begin the former with the pre-filled storage
-  ManualWithArgsStructFormer::begin
-  (
-    Some( initial_storage ),
-    None, // No context needed for top-level constructor
-    ReturnPreformed, // Default end condition
-  )
+  TestStructWithArgsFormer::begin( Some( initial_storage ), None, ReturnPreformed )
 }
 
-
 // === Include Test Logic ===
-// This assumes the test logic will be in a file named `standalone_constructor_only_test.rs`
-// in the same directory. We will create this file next.
-include!( "standalone_constructor_only_test.rs" );
+include!( "standalone_constructor_only_test.rs" ); // Include the single test file
