@@ -1,24 +1,23 @@
 //!
 //! Manual implementation for testing standalone constructors for enums.
-//! This file defines the enum, its manual Former implementations for variants,
-//! and the manual standalone constructor functions.
+//! Uses consistent names matching the derive version for testing.
 //!
 
 #[ allow( unused_imports ) ]
-use ::former::prelude::*; // Use the main crate's prelude for testing
+use ::former::prelude::*;
 #[ allow( unused_imports ) ]
 use ::former_types::
 {
   Storage, StoragePreform,
   FormerDefinitionTypes, FormerMutator, FormerDefinition,
-  FormingEnd, ReturnPreformed, // ReturnPreformed might not be used directly for variants
+  FormingEnd, ReturnPreformed,
 };
 
 // === Enum Definition ===
 
 /// Enum for manual testing of standalone constructors.
 #[ derive( Debug, PartialEq, Clone ) ]
-pub enum ManualEnum
+pub enum TestEnum // Consistent name
 {
   /// A unit variant.
   UnitVariant,
@@ -34,20 +33,20 @@ pub enum ManualEnum
 // === Manual Former Implementation for TupleVariant ===
 
 // Storage
-/// Storage for ManualEnumTupleVariantFormer.
+/// Storage for TestEnumTupleVariantFormer.
 #[ derive( Debug, Default ) ]
-pub struct ManualEnumTupleVariantFormerStorage
+pub struct TestEnumTupleVariantFormerStorage
 {
   /// Option to store the value for the tuple field.
   pub _0 : ::core::option::Option< i32 >,
 }
 
-impl Storage for ManualEnumTupleVariantFormerStorage
+impl Storage for TestEnumTupleVariantFormerStorage
 {
   type Preformed = i32; // Preformed is the inner type
 }
 
-impl StoragePreform for ManualEnumTupleVariantFormerStorage
+impl StoragePreform for TestEnumTupleVariantFormerStorage
 {
   #[ inline( always ) ]
   fn preform( mut self ) -> Self::Preformed
@@ -57,63 +56,63 @@ impl StoragePreform for ManualEnumTupleVariantFormerStorage
 }
 
 // Definition Types
-/// Definition types for ManualEnumTupleVariantFormer.
+/// Definition types for TestEnumTupleVariantFormer.
 #[ derive( Debug, Default ) ]
-pub struct ManualEnumTupleVariantFormerDefinitionTypes< Context = (), Formed = ManualEnum >
+pub struct TestEnumTupleVariantFormerDefinitionTypes< Context = (), Formed = TestEnum >
 {
   _phantom : core::marker::PhantomData< ( Context, Formed ) >,
 }
 
 impl< Context, Formed > FormerDefinitionTypes
-for ManualEnumTupleVariantFormerDefinitionTypes< Context, Formed >
+for TestEnumTupleVariantFormerDefinitionTypes< Context, Formed >
 {
-  type Storage = ManualEnumTupleVariantFormerStorage;
+  type Storage = TestEnumTupleVariantFormerStorage;
   type Formed = Formed;
   type Context = Context;
 }
 
 // Mutator
 impl< Context, Formed > FormerMutator
-for ManualEnumTupleVariantFormerDefinitionTypes< Context, Formed >
+for TestEnumTupleVariantFormerDefinitionTypes< Context, Formed >
 {
 }
 
 // Definition
-/// Definition for ManualEnumTupleVariantFormer.
+/// Definition for TestEnumTupleVariantFormer.
 #[ derive( Debug, Default ) ]
-pub struct ManualEnumTupleVariantFormerDefinition< Context = (), Formed = ManualEnum, End = ManualEnumTupleVariantEnd >
+pub struct TestEnumTupleVariantFormerDefinition< Context = (), Formed = TestEnum, End = TestEnumTupleVariantEnd > // Use consistent End name
 {
   _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
 }
 
 impl< Context, Formed, End > FormerDefinition
-for ManualEnumTupleVariantFormerDefinition< Context, Formed, End >
+for TestEnumTupleVariantFormerDefinition< Context, Formed, End >
 where
-  End : FormingEnd< ManualEnumTupleVariantFormerDefinitionTypes< Context, Formed > >,
+  End : FormingEnd< TestEnumTupleVariantFormerDefinitionTypes< Context, Formed > >,
 {
-  type Storage = ManualEnumTupleVariantFormerStorage;
+  type Storage = TestEnumTupleVariantFormerStorage;
   type Formed = Formed;
   type Context = Context;
-  type Types = ManualEnumTupleVariantFormerDefinitionTypes< Context, Formed >;
+  type Types = TestEnumTupleVariantFormerDefinitionTypes< Context, Formed >;
   type End = End;
 }
 
 // Former
-/// Manual Former implementation for ManualEnum::TupleVariant.
+/// Manual Former implementation for TestEnum::TupleVariant.
 #[ derive( Debug ) ]
-pub struct ManualEnumTupleVariantFormer< Definition = ManualEnumTupleVariantFormerDefinition >
+pub struct TestEnumTupleVariantFormer< Definition = TestEnumTupleVariantFormerDefinition > // Use consistent Def name
 where
-  Definition : FormerDefinition< Storage = ManualEnumTupleVariantFormerStorage >,
+  Definition : FormerDefinition< Storage = TestEnumTupleVariantFormerStorage >,
 {
   storage : Definition::Storage,
   context : Option< Definition::Context >,
   on_end : Option< Definition::End >,
 }
 
-impl< Definition > ManualEnumTupleVariantFormer< Definition >
+impl< Definition > TestEnumTupleVariantFormer< Definition >
 where
-  Definition : FormerDefinition< Storage = ManualEnumTupleVariantFormerStorage >,
-  Definition::Types : FormerDefinitionTypes< Storage = ManualEnumTupleVariantFormerStorage >,
+  Definition : FormerDefinition< Storage = TestEnumTupleVariantFormerStorage >,
+  Definition::Types : FormerDefinitionTypes< Storage = TestEnumTupleVariantFormerStorage >,
   Definition::Types : FormerMutator,
 {
   #[ inline( always ) ]
@@ -158,43 +157,43 @@ where
 }
 
 // End Struct for TupleVariant
-/// End handler for ManualEnumTupleVariantFormer.
+/// End handler for TestEnumTupleVariantFormer.
 #[ derive( Debug, Default ) ]
-pub struct ManualEnumTupleVariantEnd;
+pub struct TestEnumTupleVariantEnd; // Consistent name
 
-impl FormingEnd< ManualEnumTupleVariantFormerDefinitionTypes< (), ManualEnum > >
-for ManualEnumTupleVariantEnd
+impl FormingEnd< TestEnumTupleVariantFormerDefinitionTypes< (), TestEnum > >
+for TestEnumTupleVariantEnd // Consistent name
 {
   #[ inline( always ) ]
   fn call
   (
     &self,
-    storage : ManualEnumTupleVariantFormerStorage,
+    storage : TestEnumTupleVariantFormerStorage,
     _context : Option< () >,
-  ) -> ManualEnum
+  ) -> TestEnum
   {
     let val = storage.preform();
-    ManualEnum::TupleVariant( val )
+    TestEnum::TupleVariant( val ) // Use consistent enum name
   }
 }
 
 // === Manual Former Implementation for StructVariant ===
 
 // Storage
-/// Storage for ManualEnumStructVariantFormer.
+/// Storage for TestEnumStructVariantFormer.
 #[ derive( Debug, Default ) ]
-pub struct ManualEnumStructVariantFormerStorage
+pub struct TestEnumStructVariantFormerStorage
 {
   /// Option to store the value for the struct field.
   pub field : ::core::option::Option< String >,
 }
 
-impl Storage for ManualEnumStructVariantFormerStorage
+impl Storage for TestEnumStructVariantFormerStorage
 {
   type Preformed = String; // Preformed is the inner type
 }
 
-impl StoragePreform for ManualEnumStructVariantFormerStorage
+impl StoragePreform for TestEnumStructVariantFormerStorage
 {
   #[ inline( always ) ]
   fn preform( mut self ) -> Self::Preformed
@@ -204,63 +203,63 @@ impl StoragePreform for ManualEnumStructVariantFormerStorage
 }
 
 // Definition Types
-/// Definition types for ManualEnumStructVariantFormer.
+/// Definition types for TestEnumStructVariantFormer.
 #[ derive( Debug, Default ) ]
-pub struct ManualEnumStructVariantFormerDefinitionTypes< Context = (), Formed = ManualEnum >
+pub struct TestEnumStructVariantFormerDefinitionTypes< Context = (), Formed = TestEnum >
 {
   _phantom : core::marker::PhantomData< ( Context, Formed ) >,
 }
 
 impl< Context, Formed > FormerDefinitionTypes
-for ManualEnumStructVariantFormerDefinitionTypes< Context, Formed >
+for TestEnumStructVariantFormerDefinitionTypes< Context, Formed >
 {
-  type Storage = ManualEnumStructVariantFormerStorage;
+  type Storage = TestEnumStructVariantFormerStorage;
   type Formed = Formed;
   type Context = Context;
 }
 
 // Mutator
 impl< Context, Formed > FormerMutator
-for ManualEnumStructVariantFormerDefinitionTypes< Context, Formed >
+for TestEnumStructVariantFormerDefinitionTypes< Context, Formed >
 {
 }
 
 // Definition
-/// Definition for ManualEnumStructVariantFormer.
+/// Definition for TestEnumStructVariantFormer.
 #[ derive( Debug, Default ) ]
-pub struct ManualEnumStructVariantFormerDefinition< Context = (), Formed = ManualEnum, End = ManualEnumStructVariantEnd >
+pub struct TestEnumStructVariantFormerDefinition< Context = (), Formed = TestEnum, End = TestEnumStructVariantEnd > // Use consistent End name
 {
   _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
 }
 
 impl< Context, Formed, End > FormerDefinition
-for ManualEnumStructVariantFormerDefinition< Context, Formed, End >
+for TestEnumStructVariantFormerDefinition< Context, Formed, End >
 where
-  End : FormingEnd< ManualEnumStructVariantFormerDefinitionTypes< Context, Formed > >,
+  End : FormingEnd< TestEnumStructVariantFormerDefinitionTypes< Context, Formed > >,
 {
-  type Storage = ManualEnumStructVariantFormerStorage;
+  type Storage = TestEnumStructVariantFormerStorage;
   type Formed = Formed;
   type Context = Context;
-  type Types = ManualEnumStructVariantFormerDefinitionTypes< Context, Formed >;
+  type Types = TestEnumStructVariantFormerDefinitionTypes< Context, Formed >;
   type End = End;
 }
 
 // Former
-/// Manual Former implementation for ManualEnum::StructVariant.
+/// Manual Former implementation for TestEnum::StructVariant.
 #[ derive( Debug ) ]
-pub struct ManualEnumStructVariantFormer< Definition = ManualEnumStructVariantFormerDefinition >
+pub struct TestEnumStructVariantFormer< Definition = TestEnumStructVariantFormerDefinition > // Use consistent Def name
 where
-  Definition : FormerDefinition< Storage = ManualEnumStructVariantFormerStorage >,
+  Definition : FormerDefinition< Storage = TestEnumStructVariantFormerStorage >,
 {
   storage : Definition::Storage,
   context : Option< Definition::Context >,
   on_end : Option< Definition::End >,
 }
 
-impl< Definition > ManualEnumStructVariantFormer< Definition >
+impl< Definition > TestEnumStructVariantFormer< Definition >
 where
-  Definition : FormerDefinition< Storage = ManualEnumStructVariantFormerStorage >,
-  Definition::Types : FormerDefinitionTypes< Storage = ManualEnumStructVariantFormerStorage >,
+  Definition : FormerDefinition< Storage = TestEnumStructVariantFormerStorage >,
+  Definition::Types : FormerDefinitionTypes< Storage = TestEnumStructVariantFormerStorage >,
   Definition::Types : FormerMutator,
 {
   #[ inline( always ) ]
@@ -305,51 +304,51 @@ where
 }
 
 // End Struct for StructVariant
-/// End handler for ManualEnumStructVariantFormer.
+/// End handler for TestEnumStructVariantFormer.
 #[ derive( Debug, Default ) ]
-pub struct ManualEnumStructVariantEnd;
+pub struct TestEnumStructVariantEnd; // Consistent name
 
-impl FormingEnd< ManualEnumStructVariantFormerDefinitionTypes< (), ManualEnum > >
-for ManualEnumStructVariantEnd
+impl FormingEnd< TestEnumStructVariantFormerDefinitionTypes< (), TestEnum > >
+for TestEnumStructVariantEnd // Consistent name
 {
   #[ inline( always ) ]
   fn call
   (
     &self,
-    storage : ManualEnumStructVariantFormerStorage,
+    storage : TestEnumStructVariantFormerStorage,
     _context : Option< () >,
-  ) -> ManualEnum
+  ) -> TestEnum
   {
     let val = storage.preform();
-    ManualEnum::StructVariant { field : val }
+    TestEnum::StructVariant { field : val } // Use consistent enum name
   }
 }
 
 // === Standalone Constructors (Manual) ===
 
-/// Manual standalone constructor for ManualEnum::UnitVariant.
-pub fn manual_unit_variant() -> ManualEnum
+/// Manual standalone constructor for TestEnum::UnitVariant.
+pub fn unit_variant() -> TestEnum // Consistent name
 {
-  ManualEnum::UnitVariant
+  TestEnum::UnitVariant // Consistent name
 }
 
-/// Manual standalone constructor for ManualEnum::TupleVariant.
+/// Manual standalone constructor for TestEnum::TupleVariant.
 /// Returns a Former instance for the variant.
-pub fn manual_tuple_variant()
+pub fn tuple_variant() // Consistent name
 -> // Arrow and type on new line
-ManualEnumTupleVariantFormer< ManualEnumTupleVariantFormerDefinition< (), ManualEnum, ManualEnumTupleVariantEnd > >
+TestEnumTupleVariantFormer< TestEnumTupleVariantFormerDefinition< (), TestEnum, TestEnumTupleVariantEnd > > // Consistent names
 {
-  ManualEnumTupleVariantFormer::new( ManualEnumTupleVariantEnd )
+  TestEnumTupleVariantFormer::new( TestEnumTupleVariantEnd ) // Consistent names
 }
 
-/// Manual standalone constructor for ManualEnum::StructVariant.
+/// Manual standalone constructor for TestEnum::StructVariant.
 /// Returns a Former instance for the variant.
-pub fn manual_struct_variant()
+pub fn struct_variant() // Consistent name
 -> // Arrow and type on new line
-ManualEnumStructVariantFormer< ManualEnumStructVariantFormerDefinition< (), ManualEnum, ManualEnumStructVariantEnd > >
+TestEnumStructVariantFormer< TestEnumStructVariantFormerDefinition< (), TestEnum, TestEnumStructVariantEnd > > // Consistent names
 {
-  ManualEnumStructVariantFormer::new( ManualEnumStructVariantEnd )
+  TestEnumStructVariantFormer::new( TestEnumStructVariantEnd ) // Consistent names
 }
 
 // === Include Test Logic ===
-include!( "standalone_constructor_only_test.rs" ); // New test file needed
+include!( "standalone_constructor_only_test.rs" ); // Use the consistent name
