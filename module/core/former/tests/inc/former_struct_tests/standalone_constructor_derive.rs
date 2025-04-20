@@ -1,3 +1,4 @@
+// module/core/former/tests/inc/former_struct_tests/standalone_constructor_derive.rs
 //!
 //! Derive-based tests for standalone constructors for structs.
 //! Uses consistent names matching the manual version for testing.
@@ -28,10 +29,10 @@ pub struct TestStructNoArgs // Consistent name
 pub struct TestStructWithArgs // Consistent name
 {
   /// Field A (constructor arg - attribute removed for now).
-  // #[ arg_for_constructor ] // <<< Removed
+  #[ arg_for_constructor ] // <<< Uncommented
   pub field_a : String,
   /// Field B (constructor arg - attribute removed for now).
-  // #[ arg_for_constructor ] // <<< Removed
+  #[ arg_for_constructor ] // <<< Uncommented
   pub field_b : bool,
   /// Field C (optional, not constructor arg).
   pub field_c : Option< f32 >,

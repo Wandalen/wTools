@@ -31,7 +31,7 @@ fn no_args_test() // Generic test name
   assert_eq!( instance, expected );
 }
 
-/* // qqq : Uncomment tests below once arg_for_constructor is implemented for structs
+// qqq : Uncomment tests below once arg_for_constructor is implemented for structs // Removed comment block start
 /// Tests the standalone constructor for a struct with arguments.
 #[ test ]
 fn with_args_test() // Generic test name
@@ -68,4 +68,3 @@ fn with_args_test() // Generic test name
   };
   assert_eq!( instance2, expected2 );
 }
-*/
