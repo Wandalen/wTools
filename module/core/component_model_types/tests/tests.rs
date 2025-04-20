@@ -1,10 +1,8 @@
+//! All tests
+#![ allow( unused_imports ) ]
 
 include!( "../../../../module/step/meta/src/module/terminal.rs" );
 
-#[ allow( unused_imports ) ]
-use mingl as the_module;
-#[ allow( unused_imports ) ]
-use test_tools::exposed::*;
-
+use component_model_types as the_module;
 #[ cfg( feature = "enabled" ) ]
 mod inc;

@@ -1,5 +1,5 @@
 [package]
-name = "component_model"
+name = "mindx12"
 version = "0.1.0"
 edition = "2021"
 authors = [
@@ -7,9 +7,9 @@ authors = [
 ]
 license = "MIT"
 readme = "Readme.md"
-documentation = "https://docs.rs/component_model"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/core/component_model"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/component_model"
+documentation = "https://docs.rs/mindx12"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/mindx12"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/mindx12"
 description = """
 Type-based data assignment and extraction between structs.
 """
