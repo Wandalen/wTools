@@ -47,5 +47,5 @@ pub enum EnumG6< T : BoundA > // BoundA required by enum
 }
 
 // --- Include the Test Logic ---
-// This file contains the actual #[test] functions.
+// This file contains the actual #[ test ] functions.
 include!( "generics_independent_struct_only_test.rs" );

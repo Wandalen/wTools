@@ -22,5 +22,5 @@
 // }
 //
 // // --- Include the Test Logic ---
-// // This file contains the actual #[test] functions.
+// // This file contains the actual #[ test ] functions.
 // include!( "generics_in_tuple_variant_only_test.rs" );

@@ -32,5 +32,5 @@ pub enum EnumScalarGeneric< T : Bound > // Enum bound
 }
 
 // --- Include the Test Logic ---
-// This file contains the actual #[test] functions.
+// This file contains the actual #[ test ] functions.
 include!( "scalar_generic_tuple_only_test.rs" );

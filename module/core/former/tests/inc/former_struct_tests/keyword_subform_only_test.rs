@@ -1,7 +1,7 @@
 // File: module/core/former/tests/inc/former_tests/keyword_subform_only_test.rs
 use super::*; // Imports items from keyword_subform_derive.rs
 
-#[test]
+#[ test ]
 fn subform_methods_work_with_keywords()
 {
   let got = KeywordSubformStruct::former()

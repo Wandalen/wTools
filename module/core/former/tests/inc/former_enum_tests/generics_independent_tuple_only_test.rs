@@ -1,6 +1,6 @@
 /// Test logic for enum variants with independent generic parameters.
 ///
-/// This file contains the actual `#[test]` functions for testing the `Former`
+/// This file contains the actual `#[ test ]` functions for testing the `Former`
 /// derive macro's handling of enums where the enum itself has a generic parameter (`T`)
 /// and a variant contains an inner type with a *different* generic parameter (`U`).
 ///

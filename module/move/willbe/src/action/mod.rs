@@ -1,7 +1,10 @@
+// module/move/willbe/src/action/mod.rs
 mod private {}
 
 crate::mod_interface!
 {
+  /// Generate documentation for a crate.
+  layer crate_doc; // Added new layer
   /// Deploy new.
   layer deploy_renew;
   /// List packages.

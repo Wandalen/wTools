@@ -271,7 +271,6 @@ mod former_enum_tests
 
 }
 
-
 #[ cfg( feature = "derive_components" ) ]
 mod components_tests
 {

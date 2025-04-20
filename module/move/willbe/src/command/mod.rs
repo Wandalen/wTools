@@ -1,3 +1,4 @@
+// module/move/willbe/src/command/mod.rs
 /// Define a private namespace for all its items.
 mod private
 {
@@ -298,6 +299,23 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
         .end()
       .routine( command::features )
       .end()
+
+    // Updated command definition
+    .command( "crate.doc" )
+      .hint( "Generate documentation for a crate in a single Markdown file." )
+      .long_hint( "Generates documentation for the specified crate and outputs it as a single Markdown file." )
+      .subject()
+        .hint( "Path to the crate directory. If not specified, uses the current directory." )
+        .kind( Type::Path )
+        .optional( true )
+        .end()
+      .property( "output" ) // Added output property
+        .hint( "Path to the output Markdown file. Defaults to {crate_name}_doc.md in the crate directory." )
+        .kind( Type::Path )
+        .optional( true )
+        .end()
+      .routine( command::crate_doc )
+      .end()
   }
 }
 
@@ -306,6 +324,8 @@ crate::mod_interface!
 
   own use ca;
 
+  /// Generate documentation for a crate.
+  layer crate_doc;
   /// List packages.
   layer list;
   /// Publish packages.

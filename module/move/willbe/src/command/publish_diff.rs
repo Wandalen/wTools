@@ -49,6 +49,7 @@ mod private
     println!( "{}", action::publish_diff( o )? );
     if let Some( keep ) = keep_archive
     {
+      // qqq : dont use canonicalizefunction. path does not have exist
       let keep = AbsolutePath::try_from( fs::canonicalize( keep )? ).unwrap();
       println!( "Remote version of the package was saved at `{}`", keep.as_ref().display() );
     }

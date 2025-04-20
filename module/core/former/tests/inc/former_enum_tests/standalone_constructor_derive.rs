@@ -53,4 +53,4 @@
 // // Includes tests that call the *expected* generated functions.
 // include!( "standalone_constructor_only_test.rs" ); // Use the consistent name
 
-// qqq : xxx : not ready
+// qqq : xxx : finish it
