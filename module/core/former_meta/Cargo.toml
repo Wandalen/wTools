@@ -24,6 +24,9 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
+[lib]
+proc-macro = true
+
 [features]
 
 default = [
@@ -46,9 +49,6 @@ derive_component_assign = []
 derive_components_assign = [ "derive_component_assign", "convert_case" ]
 derive_component_from = []
 derive_from_components = []
-
-[lib]
-proc-macro = true
 
 [dependencies]
 macro_tools = { workspace = true, features = [ "attr", "attr_prop", "ct", "item_struct", "container_kind", "diag", "phantom", "generic_params", "generic_args", "typ", "derive", "ident" ] } # qqq : zzz : optimize set of features
