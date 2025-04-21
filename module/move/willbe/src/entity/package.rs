@@ -219,7 +219,7 @@ mod private
   /// Panics if the package is not loaded or local package is not packed.
   /// # Errors
   /// qqq: doc
-  pub fn publish_need( package : &Package< '_ >, path : Option< path::PathBuf > ) -> Result< bool, PackageError >
+  pub fn publish_need( package : &Package< '_ >, path : Option< path::PathBuf >, exclude_dev_dependencies : bool ) -> Result< bool, PackageError >
   {
     let name = package.name()?;
     let version = package.version()?;
@@ -236,7 +236,7 @@ mod private
       _ => return Err( PackageError::LoadRemotePackage ),
     };
 
-    Ok( diff::crate_diff( &local_package, &remote_package ).exclude( diff::PUBLISH_IGNORE_LIST ).has_changes() )
+    Ok( diff::crate_diff( &local_package, &remote_package, exclude_dev_dependencies ).exclude( diff::PUBLISH_IGNORE_LIST ).has_changes() )
   }
 
 }
