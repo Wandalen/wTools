@@ -1,3 +1,4 @@
+// module/core/former/tests/inc/former_enum_tests/standalone_constructor_manual.rs
 //!
 //! Manual implementation for testing standalone constructors for enums.
 //! Uses consistent names matching the derive version for testing.
@@ -334,20 +335,24 @@ pub fn unit_variant() -> TestEnum // Consistent name
 
 /// Manual standalone constructor for TestEnum::TupleVariant.
 /// Returns a Former instance for the variant.
+// <<< Takes ZERO arguments >>>
 pub fn tuple_variant() // Consistent name
 -> // Arrow and type on new line
 TestEnumTupleVariantFormer< TestEnumTupleVariantFormerDefinition< (), TestEnum, TestEnumTupleVariantEnd > > // Consistent names
 {
-  TestEnumTupleVariantFormer::new( TestEnumTupleVariantEnd ) // Consistent names
+  // <<< Begins with None storage >>>
+  TestEnumTupleVariantFormer::begin( None, None, TestEnumTupleVariantEnd ) // Consistent names
 }
 
 /// Manual standalone constructor for TestEnum::StructVariant.
 /// Returns a Former instance for the variant.
+// <<< Takes ZERO arguments >>>
 pub fn struct_variant() // Consistent name
 -> // Arrow and type on new line
 TestEnumStructVariantFormer< TestEnumStructVariantFormerDefinition< (), TestEnum, TestEnumStructVariantEnd > > // Consistent names
 {
-  TestEnumStructVariantFormer::new( TestEnumStructVariantEnd ) // Consistent names
+  // <<< Begins with None storage >>>
+  TestEnumStructVariantFormer::begin( None, None, TestEnumStructVariantEnd ) // Consistent names
 }
 
 // === Include Test Logic ===

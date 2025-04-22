@@ -27,11 +27,7 @@ fn unit_variant_test() // Use enum-specific test name
 fn tuple_variant_test() // Use enum-specific test name
 {
   // Call the constructor function (manual or derived)
-  // Assumes `tuple_variant` is defined in the including scope
-  // For now, derive version generates a former even if scalar, manual generates former.
-  // We expect the derive version to eventually generate a direct constructor if scalar.
-  // The test currently assumes it gets a former.
-  let former = tuple_variant(); // Call the constructor (might take args later)
+  let former = tuple_variant(); // <<< Call with zero args
 
   // Use the former to build the variant
   let instance = former
@@ -50,8 +46,7 @@ fn tuple_variant_test() // Use enum-specific test name
 fn struct_variant_test() // Use enum-specific test name
 {
   // Call the constructor function (manual or derived)
-  // Assumes `struct_variant` is defined in the including scope
-  let former = struct_variant(); // Call the constructor (might take args later)
+  let former = struct_variant(); // <<< Call with zero args
 
   // Use the former to build the variant
   let instance = former
@@ -65,8 +60,7 @@ fn struct_variant_test() // Use enum-specific test name
   assert_eq!( instance, expected );
 }
 
-/* // qqq : Uncomment tests below once arg_for_constructor is implemented for enums
-
+/* // <<< Commented out argument-taking tests >>>
 /// Tests the standalone constructor for a tuple variant with arguments.
 #[ test ]
 fn tuple_variant_with_args_test()
@@ -98,5 +92,4 @@ fn struct_variant_with_args_test()
 
   assert_eq!( instance, expected );
 }
-
-*/
+*/ // <<< End comment block >>>

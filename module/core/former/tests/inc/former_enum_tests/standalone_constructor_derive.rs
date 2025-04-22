@@ -3,8 +3,7 @@
 //! Derive-based tests for standalone constructors for enums.
 //! This file defines an enum mirroring the manual one but uses the derive macro
 //! with the new attributes (`standalone_constructors`, `arg_for_constructor`).
-//! It includes the shared test logic. This file is expected *not* to compile
-//! successfully until the derive macro implementation is updated.
+//! It includes the shared test logic.
 //!
 
 #[ allow( unused_imports ) ]
@@ -16,7 +15,7 @@ use ::former::Former; // Import derive macro
 /// Enum using derive for standalone constructors.
 // Attributes to be implemented by the derive macro
 #[ derive( Debug, PartialEq, Clone, Former ) ]
-#[ standalone_constructors ] // New attribute
+#[ standalone_constructors ] // New attribute is active
 pub enum TestEnum // Consistent name
 {
   /// A unit variant.
