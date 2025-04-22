@@ -1,6 +1,6 @@
 use super::*;
 
-#[test]
+#[ test ]
 fn unit_variant_constructors()
 {
   // Test the Status::Pending constructor

@@ -20,6 +20,7 @@ mod private
   pub fn features( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {
     let path : PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
+    // qqq : dont use canonicalizefunction. path does not have exist
     let crate_dir = CrateDir::try_from( fs::canonicalize( path )? )?;
     let with_features_deps = o
     .props

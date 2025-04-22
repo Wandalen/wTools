@@ -44,6 +44,7 @@ mod component
 /// - `perform`: Specifies a custom method to be invoked automatically at the end of the build process.
 /// - `storage_fields`: Specifies fields that should be treated as part of the storage for the former.
 /// - `mutator`: Defines a custom mutator class or function to manipulate the data just before the object is finalized.
+/// - `standalone_constructors`: Generates top-level standalone constructor functions. // <<< Added doc
 ///
 /// # Field Attributes
 ///
@@ -51,6 +52,7 @@ mod component
 /// - `scalar`: Indicates that the field is a scalar value, enabling direct assignment without the need for a sub-former.
 /// - `collection`: Marks the field as a collection that can use specific former methods to manage its contents.
 /// - `subform`: Specifies that the field should utilize a nested former, facilitating the construction of complex nested structures.
+/// - `arg_for_constructor`: Marks a field as a required argument for standalone constructors. // <<< Added doc
 ///
 /// # Usage Example
 ///
@@ -99,10 +101,13 @@ mod component
   proc_macro_derive
   (
     Former,
-    attributes
+    attributes // This list defines attributes the derive macro processes
     (
       debug, perform, storage_fields, mutator, // struct attributes
       former, scalar, subform_scalar, subform_collection, subform_entry, // field attributes
+      // <<< Added the new attributes here >>>
+      standalone_constructors, // Add struct-level attribute
+      arg_for_constructor      // Add field-level attribute
     )
   )
 ]
@@ -115,6 +120,8 @@ pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
     Err( err ) => err.to_compile_error().into(),
   }
 }
+
+// ... (rest of the component derives remain the same) ...
 
 ///
 /// Macro to implement `From` for each component (field) of a structure.

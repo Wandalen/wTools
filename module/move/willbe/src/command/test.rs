@@ -71,6 +71,7 @@ mod private
     .collect::< Vec< _ > >().join(" ");
 
     let path : PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
+    // qqq : dont use canonicalizefunction. path does not have exist
     let path = AbsolutePath::try_from( fs::canonicalize( path )? )?;
     let TestsProperties
     {

@@ -11,7 +11,7 @@ documentation = "https://docs.rs/mindx12"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/mindx12"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/mindx12"
 description = """
-Draw language.
+Type-based data assignment and extraction between structs.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]

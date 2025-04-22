@@ -52,7 +52,7 @@ fn construction_with_bounds()
 // Optional: Add a test that *should* fail compilation if bounds are not met.
 // This requires a compile-fail test setup (like trybuild), which is outside
 // the scope of just adding files here.
-// #[test]
+// #[ test ]
 // fn construction_without_bounds_fails()
 // {
 //   // Define a type that does NOT satisfy the bounds (e.g., no Copy or no Default)

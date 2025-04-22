@@ -25,5 +25,5 @@ pub enum EnumG3< T : BoundA + BoundB > // BoundA required by enum, BoundB requir
 }
 
 // --- Include the Test Logic ---
-// This file contains the actual #[test] functions.
+// This file contains the actual #[ test ] functions.
 include!( "generics_shared_tuple_only_test.rs" );

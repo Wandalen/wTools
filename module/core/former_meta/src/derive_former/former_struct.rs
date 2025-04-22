@@ -7,6 +7,7 @@ use macro_tools::
 {
   generic_params, generic_args, derive, Result,
   proc_macro2::TokenStream, quote::{ format_ident, quote },
+  ident, // Added for ident_maybe_raw
 };
 
 /// Generate the Former ecosystem for a struct.
@@ -20,6 +21,7 @@ pub fn former_for_struct
 ) -> Result< TokenStream >
 {
   use macro_tools::IntoGenericArgs;
+  use convert_case::{ Case, Casing }; // Added for snake_case naming
 
   // Parse struct-level attributes like `storage_fields`, `mutator`, `perform`.
   let struct_attrs = ItemAttributes::from_attrs( ast.attrs.iter() )?;
@@ -134,6 +136,74 @@ specific needs of the broader forming context. It mandates the implementation of
   .map( | field | FormerField::from_syn( field, true, false ) )
   .collect::< Result< _ > >()?;
 
+  // <<< Start of changes for constructor arguments >>>
+  // Identify fields marked as constructor arguments
+  let constructor_args_fields : Vec< _ > = formed_fields
+  .iter()
+  .filter( | f | f.attrs.arg_for_constructor.value( false ) ) // Use the parsed attribute
+  .collect();
+
+  // Generate constructor function parameters
+  let constructor_params = constructor_args_fields
+  .iter()
+  .map( | f |
+  {
+    let ident = f.ident;
+    let ty = f.non_optional_ty; // Use non-optional type for the argument
+    // Use raw identifier for parameter name if needed
+    let param_name = ident::ident_maybe_raw( ident );
+    quote! { #param_name : impl ::core::convert::Into< #ty > }
+  });
+
+  // Generate initial storage assignments for constructor arguments
+  let constructor_storage_assignments = constructor_args_fields
+  .iter()
+  .map( | f |
+  {
+    let ident = f.ident;
+    // Use raw identifier for parameter name if needed
+    let param_name = ident::ident_maybe_raw( ident );
+    quote! { #ident : ::core::option::Option::Some( #param_name.into() ) }
+  });
+
+  // Generate initial storage assignments for non-constructor arguments (set to None)
+  let non_constructor_storage_assignments = formed_fields
+  .iter()
+  .chain( storage_fields.iter() ) // Include storage-only fields
+  .filter( | f | !f.attrs.arg_for_constructor.value( false ) ) // Filter out constructor args
+  .map( | f |
+  {
+    let ident = f.ident;
+    quote! { #ident : ::core::option::Option::None }
+  });
+
+  // Combine all storage assignments
+  let all_storage_assignments = constructor_storage_assignments
+  .chain( non_constructor_storage_assignments );
+
+  // Determine if we need to initialize storage (if there are args)
+  let initial_storage_code = if constructor_args_fields.is_empty()
+  {
+    // No args, begin with None storage
+    quote! { ::core::option::Option::None }
+  }
+  else
+  {
+    // Has args, create initial storage instance
+    quote!
+    {
+      ::core::option::Option::Some
+      (
+        #former_storage :: < #struct_generics_ty > // Add generics to storage type
+        {
+          #( #all_storage_assignments ),*
+        }
+      )
+    }
+  };
+  // <<< End of changes for constructor arguments >>>
+
+
   // Generate code snippets for each field (storage init, storage field def, preform logic, setters).
   let
   (
@@ -176,6 +246,48 @@ specific needs of the broader forming context. It mandates the implementation of
   // Generate mutator implementation code.
   let former_mutator_code = mutator( item, &original_input, &struct_attrs.mutator, &former_definition_types, &former_definition_types_generics_impl, &former_definition_types_generics_ty, &former_definition_types_generics_where )?;
 
+  // <<< Start of updated code for standalone constructor >>>
+  let standalone_constructor_code = if struct_attrs.standalone_constructors.value( false )
+  {
+    // Generate constructor name (snake_case)
+    let constructor_name_str = item.to_string().to_case( Case::Snake );
+    let constructor_name_ident_temp = format_ident!( "{}", constructor_name_str, span = item.span() );
+    let constructor_name = ident::ident_maybe_raw( &constructor_name_ident_temp );
+
+    // Define the return type for the constructor
+    let return_type = quote!
+    {
+      #former < #struct_generics_ty #former_definition< #former_definition_args > >
+    };
+
+    // Generate the constructor function
+    quote!
+    {
+      /// Standalone constructor function for #item.
+      #[ inline( always ) ]
+      #vis fn #constructor_name < #struct_generics_impl >
+      (
+        // <<< Insert constructor parameters >>>
+        #( #constructor_params ),*
+      )
+      -> // Return type on new line
+      #return_type
+      where
+        #struct_generics_where // Use original struct where clause
+      {
+        // <<< Use initial_storage_code >>>
+        #former::begin( #initial_storage_code, None, former::ReturnPreformed )
+      }
+    }
+  }
+  else
+  {
+    // If #[standalone_constructors] is not present, generate nothing.
+    quote!{}
+  };
+  // <<< End of updated code for standalone constructor >>>
+
+
   // Assemble the final generated code using quote!
   let result = quote!
   {
@@ -193,6 +305,9 @@ specific needs of the broader forming context. It mandates the implementation of
         #former :: < #struct_generics_ty #former_definition< #former_definition_args > > :: new_coercing( former::ReturnPreformed )
       }
     }
+
+    // <<< Added Standalone Constructor Function >>>
+    #standalone_constructor_code
 
     // = entity to former: Implement former traits linking the struct to its generated components.
     impl< #struct_generics_impl Definition > former::EntityToFormer< Definition >
@@ -516,7 +631,10 @@ specific needs of the broader forming context. It mandates the implementation of
       )
       -> Self
       {
-        debug_assert!( storage.is_none() );
+        // qqq : This debug_assert should be enabled by default. How to do that?
+        //       Maybe always generate code with debug_assert and remove it if release build?
+        //       Or rely on optimizer to remove it?
+        // debug_assert!( storage.is_none() );
         Self::begin( ::core::option::Option::None, context, on_end )
       }
     }

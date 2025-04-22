@@ -219,6 +219,58 @@ mod former_struct_tests
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_all_parametrized;
 
+  // = standalone constructor
+
+  mod standalone_constructor_manual;
+  mod standalone_constructor_derive;
+
+}
+
+#[ cfg( feature = "derive_former" ) ]
+mod former_enum_tests
+{
+  use super::*;
+
+  // = enum
+
+  // xxx : qqq : enable or remove
+  mod usecase1;
+
+  mod basic_manual;
+  mod basic_derive;
+  mod multi_field_manual;
+  mod multi_field_derive;
+  mod unit_variant_manual;
+  mod unit_variant_derive;
+  mod enum_named_fields_manual;
+  mod enum_named_fields_derive;
+
+  // = generics
+
+  mod generics_in_tuple_variant_manual;
+  mod generics_in_tuple_variant_derive;
+  mod generics_shared_tuple_manual;
+  mod generics_shared_tuple_derive;
+  mod generics_shared_struct_manual;
+  mod generics_shared_struct_derive;
+  mod generics_independent_tuple_manual;
+  mod generics_independent_tuple_derive;
+  mod generics_independent_struct_manual;
+  mod generics_independent_struct_derive;
+  mod scalar_generic_tuple_manual;
+  mod scalar_generic_tuple_derive;
+
+  // = conflicts
+
+  mod keyword_variant_derive;
+
+  // = standalone constructor
+
+  mod standalone_constructor_manual;
+  mod standalone_constructor_derive;
+  mod standalone_constructor_args_manual;
+  mod standalone_constructor_args_derive;
+
 }
 
 #[ cfg( feature = "derive_former" ) ]

@@ -135,6 +135,7 @@ mod private
     {
       let current_path = AbsolutePath::try_from
       (
+        // qqq : dont use canonicalizefunction. path does not have exist
         fs::canonicalize( pattern.as_str() )?
       )?;
       // let current_path = AbsolutePath::try_from( std::path::PathBuf::from( pattern ) )?;
