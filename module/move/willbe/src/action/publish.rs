@@ -218,7 +218,8 @@ mod private
       &package_map,
       &tmp,
       &packages_to_publish,
-      dir.clone()
+      dir.clone(),
+      exclude_dev_dependencies
     )?;
     let subgraph = subgraph
     .map( | _, n | n, | _, e | e );
