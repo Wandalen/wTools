@@ -268,6 +268,8 @@ mod former_enum_tests
 
   mod standalone_constructor_manual;
   mod standalone_constructor_derive;
+  mod standalone_constructor_args_manual;
+  mod standalone_constructor_args_derive;
 
 }
 

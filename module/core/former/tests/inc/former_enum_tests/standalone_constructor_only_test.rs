@@ -59,37 +59,3 @@ fn struct_variant_test() // Use enum-specific test name
   // Assert that the formed instance matches the expected one
   assert_eq!( instance, expected );
 }
-
-/* // <<< Commented out argument-taking tests >>>
-/// Tests the standalone constructor for a tuple variant with arguments.
-#[ test ]
-fn tuple_variant_with_args_test()
-{
-  // Assumes `tuple_variant` takes an i32 argument due to #[arg_for_constructor]
-  let former = tuple_variant( 202 ); // Call constructor with arg
-
-  // Form directly (no other fields to set in this simple case)
-  let instance = former.form();
-
-  // Define the expected enum instance
-  let expected = TestEnum::TupleVariant( 202 );
-
-  assert_eq!( instance, expected );
-}
-
-/// Tests the standalone constructor for a struct variant with arguments.
-#[ test ]
-fn struct_variant_with_args_test()
-{
-  // Assumes `struct_variant` takes a String argument due to #[arg_for_constructor]
-  let former = struct_variant( "arg_value" ); // Call constructor with arg
-
-  // Form directly (no other fields to set in this simple case)
-  let instance = former.form();
-
-  // Define the expected enum instance
-  let expected = TestEnum::StructVariant { field : "arg_value".to_string() };
-
-  assert_eq!( instance, expected );
-}
-*/ // <<< End comment block >>>

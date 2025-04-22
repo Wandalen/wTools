@@ -142,6 +142,7 @@ where
   }
 
   #[ inline( always ) ]
+  #[ allow( dead_code) ]
   pub fn new( on_end : Definition::End ) -> Self
   {
     Self::begin( None, None, on_end )
@@ -149,6 +150,7 @@ where
 
   /// Setter for the tuple field.
   #[ inline ]
+  #[ allow( dead_code) ]
   pub fn _0( mut self, src : impl Into< i32 > ) -> Self
   {
     debug_assert!( self.storage._0.is_none(), "Field '_0' was already set" );
@@ -289,6 +291,7 @@ where
   }
 
   #[ inline( always ) ]
+  #[ allow( dead_code) ]
   pub fn new( on_end : Definition::End ) -> Self
   {
     Self::begin( None, None, on_end )
