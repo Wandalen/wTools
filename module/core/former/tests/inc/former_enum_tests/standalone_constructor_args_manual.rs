@@ -4,7 +4,9 @@
 //! Uses distinct names to avoid conflicts with zero-arg tests.
 //!
 
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
+#[ allow( unused_imports ) ]
 use ::former_types::
 {
   Storage, StoragePreform,
@@ -140,7 +142,7 @@ where
   }
 
   #[ inline( always ) ]
-  #[ allow( dead_code) ]
+  #[allow(dead_code)]
   pub fn new( on_end : Definition::End ) -> Self
   {
     Self::begin( None, None, on_end )
@@ -150,7 +152,7 @@ where
   #[ inline ]
   pub fn _0( mut self, src : impl Into< i32 > ) -> Self
   {
-    // debug_assert!( self.storage._0.is_none(), "Field '_0' was already set" ); // <<< Removed assert
+    // debug_assert!( self.storage._0.is_none(), "Field '_0' was already set" );
     self.storage._0 = Some( src.into() );
     self
   }
@@ -288,7 +290,7 @@ where
   }
 
   #[ inline( always ) ]
-  #[ allow( dead_code) ]
+  #[allow(dead_code)]
   pub fn new( on_end : Definition::End ) -> Self
   {
     Self::begin( None, None, on_end )
@@ -296,9 +298,10 @@ where
 
   /// Setter for the struct field.
   #[ inline ]
+  #[allow(dead_code)] // <<< Added allow(dead_code)
   pub fn field( mut self, src : impl Into< String > ) -> Self
   {
-    // debug_assert!( self.storage.field.is_none(), "Field 'field' was already set" ); // <<< Removed assert
+    // debug_assert!( self.storage.field.is_none(), "Field 'field' was already set" );
     self.storage.field = Some( src.into() );
     self
   }
