@@ -29,6 +29,24 @@ pub enum TestEnumArgs // Use the distinct name
     #[ arg_for_constructor ] // Mark field as constructor arg
     field : String,
   },
+  /// A tuple variant with multiple fields marked as constructor args.
+  #[ scalar ] // <<< Keep scalar attribute
+  MultiTupleArgs // Use the distinct name
+  (
+    // #[ arg_for_constructor ] // <<< REMOVED
+    i32,
+    // #[ arg_for_constructor ] // <<< REMOVED
+    bool,
+  ),
+  /// A struct variant with multiple fields marked as constructor args.
+  // #[ scalar ] // <<< Keep scalar attribute
+  MultiStructArgs // Use the distinct name
+  {
+    #[ arg_for_constructor ]
+    a : i32,
+    #[ arg_for_constructor ]
+    b : bool,
+  },
 }
 
 // === Include Test Logic ===

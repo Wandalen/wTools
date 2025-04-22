@@ -29,6 +29,14 @@ pub enum TestEnumArgs // New name
   {
     field : String,
   },
+  /// A tuple variant with multiple fields (intended as constructor args).
+  MultiTupleArgs( i32, bool ), // <<< New Variant
+  /// A struct variant with multiple fields (intended as constructor args).
+  MultiStructArgs // <<< New Variant
+  {
+    a : i32,
+    b : bool,
+  },
 }
 
 // === Manual Former Implementation for TupleVariantArgs ===
@@ -83,7 +91,8 @@ for TestEnumArgsTupleVariantArgsFormerDefinitionTypes< Context, Formed >
 // Definition
 /// Definition for TestEnumArgsTupleVariantArgsFormer.
 #[ derive( Debug, Default ) ]
-pub struct TestEnumArgsTupleVariantArgsFormerDefinition< Context = (), Formed = TestEnumArgs, End = TestEnumArgsTupleVariantArgsEnd >
+pub struct TestEnumArgsTupleVariantArgsFormerDefinition
+< Context = (), Formed = TestEnumArgs, End = TestEnumArgsTupleVariantArgsEnd >
 {
   _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
 }
@@ -103,7 +112,8 @@ where
 // Former
 /// Manual Former implementation for TestEnumArgs::TupleVariantArgs.
 #[ derive( Debug ) ]
-pub struct TestEnumArgsTupleVariantArgsFormer< Definition = TestEnumArgsTupleVariantArgsFormerDefinition >
+pub struct TestEnumArgsTupleVariantArgsFormer
+< Definition = TestEnumArgsTupleVariantArgsFormerDefinition >
 where
   Definition : FormerDefinition< Storage = TestEnumArgsTupleVariantArgsFormerStorage >,
 {
@@ -119,7 +129,10 @@ where
   Definition::Types : FormerMutator,
 {
   #[ inline( always ) ]
-  pub fn form( self ) -> < Definition::Types as FormerDefinitionTypes >::Formed { self.end() }
+  pub fn form( self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
+  {
+    self.end()
+  }
 
   #[ inline( always ) ]
   pub fn end( mut self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
@@ -231,7 +244,8 @@ for TestEnumArgsStructVariantArgsFormerDefinitionTypes< Context, Formed >
 // Definition
 /// Definition for TestEnumArgsStructVariantArgsFormer.
 #[ derive( Debug, Default ) ]
-pub struct TestEnumArgsStructVariantArgsFormerDefinition< Context = (), Formed = TestEnumArgs, End = TestEnumArgsStructVariantArgsEnd >
+pub struct TestEnumArgsStructVariantArgsFormerDefinition
+< Context = (), Formed = TestEnumArgs, End = TestEnumArgsStructVariantArgsEnd >
 {
   _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
 }
@@ -251,7 +265,8 @@ where
 // Former
 /// Manual Former implementation for TestEnumArgs::StructVariantArgs.
 #[ derive( Debug ) ]
-pub struct TestEnumArgsStructVariantArgsFormer< Definition = TestEnumArgsStructVariantArgsFormerDefinition >
+pub struct TestEnumArgsStructVariantArgsFormer
+< Definition = TestEnumArgsStructVariantArgsFormerDefinition >
 where
   Definition : FormerDefinition< Storage = TestEnumArgsStructVariantArgsFormerStorage >,
 {
@@ -267,7 +282,10 @@ where
   Definition::Types : FormerMutator,
 {
   #[ inline( always ) ]
-  pub fn form( self ) -> < Definition::Types as FormerDefinitionTypes >::Formed { self.end() }
+  pub fn form( self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
+  {
+    self.end()
+  }
 
   #[ inline( always ) ]
   pub fn end( mut self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
@@ -298,7 +316,7 @@ where
 
   /// Setter for the struct field.
   #[ inline ]
-  #[allow(dead_code)] // <<< Added allow(dead_code)
+  #[allow(dead_code)]
   pub fn field( mut self, src : impl Into< String > ) -> Self
   {
     // debug_assert!( self.storage.field.is_none(), "Field 'field' was already set" );
@@ -329,6 +347,280 @@ for TestEnumArgsStructVariantArgsEnd
 }
 
 
+// === Manual Former Implementation for MultiTupleArgs === <<< NEW >>>
+
+// Storage
+#[ derive( Debug, Default ) ]
+pub struct TestEnumArgsMultiTupleArgsFormerStorage
+{
+  pub _0 : ::core::option::Option< i32 >,
+  pub _1 : ::core::option::Option< bool >,
+}
+impl Storage for TestEnumArgsMultiTupleArgsFormerStorage
+{
+  type Preformed = ( i32, bool );
+}
+impl StoragePreform for TestEnumArgsMultiTupleArgsFormerStorage
+{
+  #[ inline( always ) ]
+  fn preform( mut self ) -> Self::Preformed
+  {
+    ( self._0.take().unwrap_or_default(), self._1.take().unwrap_or_default() )
+  }
+}
+// Definition Types
+#[ derive( Debug, Default ) ]
+pub struct TestEnumArgsMultiTupleArgsFormerDefinitionTypes
+< Context = (), Formed = TestEnumArgs >
+{
+  _phantom : core::marker::PhantomData< ( Context, Formed ) >,
+}
+impl< Context, Formed > FormerDefinitionTypes
+for TestEnumArgsMultiTupleArgsFormerDefinitionTypes< Context, Formed >
+{
+  type Storage = TestEnumArgsMultiTupleArgsFormerStorage;
+  type Formed = Formed;
+  type Context = Context;
+}
+impl< Context, Formed > FormerMutator
+for TestEnumArgsMultiTupleArgsFormerDefinitionTypes< Context, Formed >
+{
+}
+// Definition
+#[ derive( Debug, Default ) ]
+pub struct TestEnumArgsMultiTupleArgsFormerDefinition
+< Context = (), Formed = TestEnumArgs, End = TestEnumArgsMultiTupleArgsEnd >
+{
+  _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
+}
+impl< Context, Formed, End > FormerDefinition
+for TestEnumArgsMultiTupleArgsFormerDefinition< Context, Formed, End >
+where
+  End : FormingEnd< TestEnumArgsMultiTupleArgsFormerDefinitionTypes< Context, Formed > >,
+{
+  type Storage = TestEnumArgsMultiTupleArgsFormerStorage;
+  type Formed = Formed;
+  type Context = Context;
+  type Types = TestEnumArgsMultiTupleArgsFormerDefinitionTypes< Context, Formed >;
+  type End = End;
+}
+// Former
+#[ derive( Debug ) ]
+pub struct TestEnumArgsMultiTupleArgsFormer
+< Definition = TestEnumArgsMultiTupleArgsFormerDefinition >
+where
+  Definition : FormerDefinition< Storage = TestEnumArgsMultiTupleArgsFormerStorage >,
+{
+  storage : Definition::Storage,
+  context : Option< Definition::Context >,
+  on_end : Option< Definition::End >,
+}
+impl< Definition > TestEnumArgsMultiTupleArgsFormer< Definition >
+where
+  Definition : FormerDefinition< Storage = TestEnumArgsMultiTupleArgsFormerStorage >,
+  Definition::Types : FormerDefinitionTypes< Storage = TestEnumArgsMultiTupleArgsFormerStorage >,
+  Definition::Types : FormerMutator,
+{
+  #[ inline( always ) ]
+  pub fn form( self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
+  {
+    self.end()
+  }
+  #[ inline( always ) ]
+  pub fn end( mut self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
+  {
+    let on_end = self.on_end.take().unwrap();
+    let context = self.context.take();
+    < Definition::Types as FormerMutator >::form_mutation( &mut self.storage, &mut self.context );
+    on_end.call( self.storage, context )
+  }
+  #[ inline( always ) ]
+  pub fn begin
+  (
+    storage : Option< Definition::Storage >,
+    context : Option< Definition::Context >,
+    on_end : Definition::End,
+  ) -> Self
+  {
+    Self { storage : storage.unwrap_or_default(), context, on_end : Some( on_end ) }
+  }
+  #[ inline( always ) ]
+  #[allow(dead_code)]
+  pub fn new( on_end : Definition::End ) -> Self
+  {
+    Self::begin( None, None, on_end )
+  }
+  #[ inline ]
+  pub fn _0( mut self, src : impl Into< i32 > ) -> Self
+  {
+    self.storage._0 = Some( src.into() );
+    self
+  }
+  #[ inline ]
+  pub fn _1( mut self, src : impl Into< bool > ) -> Self
+  {
+    self.storage._1 = Some( src.into() );
+    self
+  }
+}
+// End Struct
+#[ derive( Debug, Default ) ]
+pub struct TestEnumArgsMultiTupleArgsEnd;
+impl FormingEnd< TestEnumArgsMultiTupleArgsFormerDefinitionTypes< (), TestEnumArgs > >
+for TestEnumArgsMultiTupleArgsEnd
+{
+  #[ inline( always ) ]
+  fn call
+  (
+    &self,
+    storage : TestEnumArgsMultiTupleArgsFormerStorage,
+    _context : Option< () >,
+  ) -> TestEnumArgs
+  {
+    let ( val0, val1 ) = storage.preform();
+    TestEnumArgs::MultiTupleArgs( val0, val1 )
+  }
+}
+
+
+// === Manual Former Implementation for MultiStructArgs === <<< NEW >>>
+
+// Storage
+#[ derive( Debug, Default ) ]
+pub struct TestEnumArgsMultiStructArgsFormerStorage
+{
+  pub a : ::core::option::Option< i32 >,
+  pub b : ::core::option::Option< bool >,
+}
+impl Storage for TestEnumArgsMultiStructArgsFormerStorage
+{
+  type Preformed = ( i32, bool );
+}
+impl StoragePreform for TestEnumArgsMultiStructArgsFormerStorage
+{
+  #[ inline( always ) ]
+  fn preform( mut self ) -> Self::Preformed
+  {
+    ( self.a.take().unwrap_or_default(), self.b.take().unwrap_or_default() )
+  }
+}
+// Definition Types
+#[ derive( Debug, Default ) ]
+pub struct TestEnumArgsMultiStructArgsFormerDefinitionTypes
+< Context = (), Formed = TestEnumArgs >
+{
+  _phantom : core::marker::PhantomData< ( Context, Formed ) >,
+}
+impl< Context, Formed > FormerDefinitionTypes
+for TestEnumArgsMultiStructArgsFormerDefinitionTypes< Context, Formed >
+{
+  type Storage = TestEnumArgsMultiStructArgsFormerStorage;
+  type Formed = Formed;
+  type Context = Context;
+}
+impl< Context, Formed > FormerMutator
+for TestEnumArgsMultiStructArgsFormerDefinitionTypes< Context, Formed >
+{
+}
+// Definition
+#[ derive( Debug, Default ) ]
+pub struct TestEnumArgsMultiStructArgsFormerDefinition
+< Context = (), Formed = TestEnumArgs, End = TestEnumArgsMultiStructArgsEnd >
+{
+  _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
+}
+impl< Context, Formed, End > FormerDefinition
+for TestEnumArgsMultiStructArgsFormerDefinition< Context, Formed, End >
+where
+  End : FormingEnd< TestEnumArgsMultiStructArgsFormerDefinitionTypes< Context, Formed > >,
+{
+  type Storage = TestEnumArgsMultiStructArgsFormerStorage;
+  type Formed = Formed;
+  type Context = Context;
+  type Types = TestEnumArgsMultiStructArgsFormerDefinitionTypes< Context, Formed >;
+  type End = End;
+}
+// Former
+#[ derive( Debug ) ]
+pub struct TestEnumArgsMultiStructArgsFormer
+< Definition = TestEnumArgsMultiStructArgsFormerDefinition >
+where
+  Definition : FormerDefinition< Storage = TestEnumArgsMultiStructArgsFormerStorage >,
+{
+  storage : Definition::Storage,
+  context : Option< Definition::Context >,
+  on_end : Option< Definition::End >,
+}
+impl< Definition > TestEnumArgsMultiStructArgsFormer< Definition >
+where
+  Definition : FormerDefinition< Storage = TestEnumArgsMultiStructArgsFormerStorage >,
+  Definition::Types : FormerDefinitionTypes< Storage = TestEnumArgsMultiStructArgsFormerStorage >,
+  Definition::Types : FormerMutator,
+{
+  #[ inline( always ) ]
+  pub fn form( self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
+  {
+    self.end()
+  }
+  #[ inline( always ) ]
+  pub fn end( mut self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
+  {
+    let on_end = self.on_end.take().unwrap();
+    let context = self.context.take();
+    < Definition::Types as FormerMutator >::form_mutation( &mut self.storage, &mut self.context );
+    on_end.call( self.storage, context )
+  }
+  #[ inline( always ) ]
+  pub fn begin
+  (
+    storage : Option< Definition::Storage >,
+    context : Option< Definition::Context >,
+    on_end : Definition::End,
+  ) -> Self
+  {
+    Self { storage : storage.unwrap_or_default(), context, on_end : Some( on_end ) }
+  }
+  #[ inline( always ) ]
+  #[allow(dead_code)]
+  pub fn new( on_end : Definition::End ) -> Self
+  {
+    Self::begin( None, None, on_end )
+  }
+  #[ inline ]
+  #[allow(dead_code)]
+  pub fn a( mut self, src : impl Into< i32 > ) -> Self
+  {
+    self.storage.a = Some( src.into() );
+    self
+  }
+  #[ inline ]
+  #[allow(dead_code)]
+  pub fn b( mut self, src : impl Into< bool > ) -> Self
+  {
+    self.storage.b = Some( src.into() );
+    self
+  }
+}
+// End Struct
+#[ derive( Debug, Default ) ]
+pub struct TestEnumArgsMultiStructArgsEnd;
+impl FormingEnd< TestEnumArgsMultiStructArgsFormerDefinitionTypes< (), TestEnumArgs > >
+for TestEnumArgsMultiStructArgsEnd
+{
+  #[ inline( always ) ]
+  fn call
+  (
+    &self,
+    storage : TestEnumArgsMultiStructArgsFormerStorage,
+    _context : Option< () >,
+  ) -> TestEnumArgs
+  {
+    let ( val_a, val_b ) = storage.preform();
+    TestEnumArgs::MultiStructArgs { a : val_a, b : val_b }
+  }
+}
+
+
 // === Standalone Constructors (Manual - Argument Taking) ===
 
 /// Manual standalone constructor for TestEnumArgs::UnitVariantArgs.
@@ -340,7 +632,10 @@ pub fn unit_variant_args() -> TestEnumArgs
 /// Manual standalone constructor for TestEnumArgs::TupleVariantArgs (takes arg).
 pub fn tuple_variant_args( _0 : impl Into< i32 > )
 ->
-TestEnumArgsTupleVariantArgsFormer< TestEnumArgsTupleVariantArgsFormerDefinition< (), TestEnumArgs, TestEnumArgsTupleVariantArgsEnd > >
+TestEnumArgsTupleVariantArgsFormer
+<
+  TestEnumArgsTupleVariantArgsFormerDefinition< (), TestEnumArgs, TestEnumArgsTupleVariantArgsEnd >
+>
 {
   let initial_storage = TestEnumArgsTupleVariantArgsFormerStorage
   {
@@ -352,7 +647,10 @@ TestEnumArgsTupleVariantArgsFormer< TestEnumArgsTupleVariantArgsFormerDefinition
 /// Manual standalone constructor for TestEnumArgs::StructVariantArgs (takes arg).
 pub fn struct_variant_args( field : impl Into< String > )
 ->
-TestEnumArgsStructVariantArgsFormer< TestEnumArgsStructVariantArgsFormerDefinition< (), TestEnumArgs, TestEnumArgsStructVariantArgsEnd > >
+TestEnumArgsStructVariantArgsFormer
+<
+  TestEnumArgsStructVariantArgsFormerDefinition< (), TestEnumArgs, TestEnumArgsStructVariantArgsEnd >
+>
 {
   let initial_storage = TestEnumArgsStructVariantArgsFormerStorage
   {
@@ -360,6 +658,39 @@ TestEnumArgsStructVariantArgsFormer< TestEnumArgsStructVariantArgsFormerDefiniti
   };
   TestEnumArgsStructVariantArgsFormer::begin( Some( initial_storage ), None, TestEnumArgsStructVariantArgsEnd )
 }
+
+/// Manual standalone constructor for TestEnumArgs::MultiTupleArgs (takes args). <<< NEW >>>
+pub fn multi_tuple_args( _0 : impl Into< i32 >, _1 : impl Into< bool > )
+->
+TestEnumArgsMultiTupleArgsFormer
+<
+  TestEnumArgsMultiTupleArgsFormerDefinition< (), TestEnumArgs, TestEnumArgsMultiTupleArgsEnd >
+>
+{
+  let initial_storage = TestEnumArgsMultiTupleArgsFormerStorage
+  {
+    _0 : Some( _0.into() ),
+    _1 : Some( _1.into() ),
+  };
+  TestEnumArgsMultiTupleArgsFormer::begin( Some( initial_storage ), None, TestEnumArgsMultiTupleArgsEnd )
+}
+
+/// Manual standalone constructor for TestEnumArgs::MultiStructArgs (takes args). <<< NEW >>>
+pub fn multi_struct_args( a : impl Into< i32 >, b : impl Into< bool > )
+->
+TestEnumArgsMultiStructArgsFormer
+<
+  TestEnumArgsMultiStructArgsFormerDefinition< (), TestEnumArgs, TestEnumArgsMultiStructArgsEnd >
+>
+{
+  let initial_storage = TestEnumArgsMultiStructArgsFormerStorage
+  {
+    a : Some( a.into() ),
+    b : Some( b.into() ),
+  };
+  TestEnumArgsMultiStructArgsFormer::begin( Some( initial_storage ), None, TestEnumArgsMultiStructArgsEnd )
+}
+
 
 // === Include Test Logic ===
 include!( "standalone_constructor_args_only_test.rs" );
