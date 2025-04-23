@@ -3,9 +3,9 @@ mod private
 {
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
-
   use std::
   {
+    fmt::Write as FmtWrite,
     fs::{ OpenOptions, File },
     io::{ Write, Read, Seek, SeekFrom },
   };
@@ -522,14 +522,11 @@ ensure that at least one remotest is present in git. ",
     }
     if table_parameters.include_docs
     {
-      rou.push_str
+      write!
       (
-        &format!
-        (
-          " [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{}) |",
-          &module_name
-        )
-      );
+        rou,
+        " [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{module_name}) |"
+      ).expect( "Writing to String shouldn't fail" );
     }
     if table_parameters.include
     {
@@ -540,7 +537,7 @@ ensure that at least one remotest is present in git. ",
       {
         let path = path.to_string_lossy().replace( '\\', "/" ).replace( '/', "%2F" );
         let tmp = name.to_string_lossy().replace( '\\', "/" );
-        let file_name = tmp.split( '/' ).last().unwrap();
+        let file_name = tmp.split( '/' ).next_back().unwrap();
         let name = file_name.strip_suffix( ".rs" ).unwrap();
         format!
         (
@@ -555,7 +552,7 @@ ensure that at least one remotest is present in git. ",
       {
         String::new()
       };
-      rou.push_str( &format!( " {example} |" ) );
+      write!(rou, " {example} |").expect( "Writing to String shouldn't fail" );
     }
     format!( "{rou}\n" )
   }

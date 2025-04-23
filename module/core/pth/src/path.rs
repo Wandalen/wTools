@@ -651,7 +651,7 @@ mod private
   /// # Returns
   ///
   /// * `Option<String>` - The common directory path shared by all paths, if it exists.
-  ///                      If no common directory path exists, returns `None`.
+  ///   If no common directory path exists, returns `None`.
   ///
   /// # Examples
   ///

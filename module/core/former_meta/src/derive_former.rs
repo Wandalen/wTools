@@ -93,7 +93,7 @@ r"derive : Former
 item : {item}",
     );
     diag::report_print( about, original_input, debug );
-  };
+  }
 
   Ok( former_mutator_code )
 }

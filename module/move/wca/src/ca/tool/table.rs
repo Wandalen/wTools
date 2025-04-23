@@ -2,6 +2,7 @@ mod private
 {
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
+  use core::fmt::Write;
 
   // use wtools::error::{ Result, err };
   // use error::err;
@@ -116,7 +117,7 @@ mod private
     {
       for ( i, cell ) in row.0.iter().enumerate()
       {
-        formatted_table.push_str( &format!( "{:width$}", cell, width = max_lengths[ i ] ) );
+        write!( formatted_table, "{:width$}", cell, width = max_lengths[ i ] ).expect( "Writing to String shouldn't fail" );
         formatted_table.push( ' ' );
       }
       formatted_table.pop(); // trailing space

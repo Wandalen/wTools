@@ -24,7 +24,7 @@ fn no_changes()
   let right_crate = crate_file_path( &right );
   let right_archive = CrateArchive::read( &right_crate ).unwrap();
 
-  let has_changes = crate_diff( &left_archive, &right_archive ).exclude( diff::PUBLISH_IGNORE_LIST ).has_changes();
+  let has_changes = crate_diff( &left_archive, &right_archive, false ).exclude( diff::PUBLISH_IGNORE_LIST ).has_changes();
 
   assert!( !has_changes );
 }
@@ -65,7 +65,7 @@ fn with_changes()
     CrateArchive::read( &right_crate ).unwrap()
   };
 
-  let has_changes = crate_diff( &left, &right ).exclude( diff::PUBLISH_IGNORE_LIST ).has_changes();
+  let has_changes = crate_diff( &left, &right, false ).exclude( diff::PUBLISH_IGNORE_LIST ).has_changes();
 
   assert!( has_changes );
 }

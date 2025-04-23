@@ -82,7 +82,7 @@ mod private
           {
             return Err( syn_err!( "Complex group uses like `use module1::{ module2, module3 }` are not supported." ) );
           },
-        };
+        }
       }
 
       Ok( path )
@@ -187,7 +187,7 @@ mod private
             group = true;
             break;
           },
-        };
+        }
       }
 
       Ok( Self

@@ -11,12 +11,12 @@ mod private
     typed::Error,
     ErrWith,
   };
+  use core::fmt;
   use std::
   {
     ffi::OsString,
     fs,
     path::PathBuf,
-    fmt,
   };
   use collection_tools::HashMap;
   use toml_edit::Document;
@@ -101,16 +101,24 @@ mod private
   ///
   /// # Returns
   /// Returns `Ok(CrateDocReport)` if successful, otherwise returns `Err((CrateDocReport, CrateDocError))`.
+  /// 
+  /// # Errors
+  /// Returns an error if the command arguments are invalid, the workspace cannot be loaded
+  #[allow(clippy::too_many_lines)]
   pub fn doc
   (
     workspace : &Workspace,
-    crate_dir : CrateDir,
+    crate_dir : &CrateDir,
     output_path_req : Option< PathBuf >,
   ) -> ResultWithReport< CrateDocReport, CrateDocError >
   {
-    let mut report = CrateDocReport::default();
-    report.crate_dir = Some( crate_dir.clone() );
-    report.status = format!( "Starting documentation generation for {}", crate_dir.as_ref().display() );
+    let mut report = CrateDocReport 
+    {
+      crate_dir : Some( crate_dir.clone() ),
+      status : format!( "Starting documentation generation for {}", crate_dir.as_ref().display() ),
+      ..Default::default()
+    };
+  
 
     // --- Get crate name early for --package argument and file naming ---
     let manifest_path_for_name = crate_dir.as_ref().join( "Cargo.toml" );
@@ -159,7 +167,7 @@ mod private
       Err( r ) =>
       {
         report.cargo_doc_report = Some( r.clone() );
-        report.status = format!( "Failed during `cargo doc` execution for `{}`.", crate_name );
+        report.status = format!( "Failed during `cargo doc` execution for `{crate_name}`." );
       }
     }
 
@@ -172,7 +180,7 @@ mod private
     let json_path = workspace
       .target_directory()
       .join( "doc" )
-      .join( format!( "{}.json", crate_name ) );
+      .join( format!( "{crate_name}.json" ) );
 
     // Check if JSON file exists and read it
     if !json_path.exists()
@@ -219,7 +227,7 @@ mod private
         workspace
           .target_directory()
           .join( "doc" )
-          .join( format!( "{}_doc.md", crate_name ) )
+          .join( format!( "{crate_name}_doc.md" ) )
       }
     };
 
@@ -241,7 +249,7 @@ mod private
       .context( format!( "Failed to write Markdown documentation to {}", output_md_abs_path.display() ) )
       .err_with_report( &report )?;
 
-    report.status = format!( "Markdown documentation generated successfully for `{}`", crate_name );
+    report.status = format!( "Markdown documentation generated successfully for `{crate_name}`" );
 
     Ok( report )
   }

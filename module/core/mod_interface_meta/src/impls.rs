@@ -496,7 +496,7 @@ mod private
             syn::Result::Ok( () )
           })?;
         }
-      };
+      }
 
       syn::Result::Ok( () )
     })?;

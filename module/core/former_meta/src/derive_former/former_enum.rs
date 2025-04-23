@@ -160,7 +160,7 @@ pub(super) fn former_for_enum
           let field_attrs = FieldAttributes::from_attrs( field.attrs.iter() )?;
 
           // Determine if the inner type likely has its own Former (heuristic)
-          let inner_former_exists = if let syn::Type::Path( tp ) = inner_type { tp.path.segments.last().map_or( false, | seg | !matches!( seg.ident.to_string().as_str(), "bool" | "char" | "str" | "String" | "i8" | "i16" | "i32" | "i64" | "i128" | "isize" | "u8" | "u16" | "u32" | "u64" | "u128" | "usize" | "f32" | "f64" ) ) } else { false };
+          let inner_former_exists = if let syn::Type::Path( tp ) = inner_type { tp.path.segments.last().is_some_and( | seg | !matches!( seg.ident.to_string().as_str(), "bool" | "char" | "str" | "String" | "i8" | "i16" | "i32" | "i64" | "i128" | "isize" | "u8" | "u16" | "u32" | "u64" | "u128" | "usize" | "f32" | "f64" ) ) } else { false };
 
           if wants_scalar || ( !wants_subform_scalar && !inner_former_exists )
           {
@@ -179,7 +179,7 @@ pub(super) fn former_for_enum
               enum_name,
               variant_ident,
               &variant.fields, // Pass fields here
-              &generics,
+              generics,
               &implicit_former_name,
               &implicit_storage_name,
               &implicit_def_name,
@@ -276,7 +276,7 @@ pub(super) fn former_for_enum
             let inner_storage_name = format_ident!( "{}FormerStorage", inner_type_name );
             let inner_def_name = format_ident!( "{}FormerDefinition", inner_type_name );
             let inner_def_types_name = format_ident!( "{}FormerDefinitionTypes", inner_type_name );
-            let inner_generics_ty : syn::punctuated::Punctuated<_,_> = match &inner_generics { syn::PathArguments::AngleBracketed( args ) => args.args.clone(), _ => Default::default() };
+            let inner_generics_ty : syn::punctuated::Punctuated<_,_> = match &inner_generics { syn::PathArguments::AngleBracketed( args ) => args.args.clone(), _ => syn::punctuated::Punctuated::default() };
             let inner_generics_ty_comma = if inner_generics_ty.is_empty() { quote!{} } else { quote!{ #inner_generics_ty, } };
 
             // --- Standalone Constructor (Subform Tuple(1)) ---
@@ -410,133 +410,131 @@ pub(super) fn former_for_enum
         }
         // Sub-case: Multi-field tuple variant
         else
+        if wants_scalar
         {
-          if wants_scalar
+          // --- Scalar Tuple(N) Variant ---
+          // Generate implicit former infrastructure for this scalar variant
+          let implicit_former_name = format_ident!( "{}{}Former", enum_name, variant_ident );
+          let implicit_storage_name = format_ident!( "{}{}FormerStorage", enum_name, variant_ident );
+          let implicit_def_name = format_ident!( "{}{}FormerDefinition", enum_name, variant_ident );
+          let implicit_def_types_name = format_ident!( "{}{}FormerDefinitionTypes", enum_name, variant_ident );
+          let end_struct_name = format_ident!( "{}{}End", enum_name, variant_ident );
+
+          // Generate the implicit former components (Storage, Defs, Former, End)
+          let ( implicit_former_components, _ ) = generate_implicit_former_for_variant
+          (
+            vis,
+            enum_name,
+            variant_ident,
+            &variant.fields, // Pass fields here
+            generics,
+            &implicit_former_name,
+            &implicit_storage_name,
+            &implicit_def_name,
+            &implicit_def_types_name,
+            &end_struct_name,
+            original_input,
+          )?;
+          end_impls.push( implicit_former_components ); // Add generated components
+
+          // --- Standalone Constructor (Scalar Tuple(N) - Returns Implicit Former) ---
+          if struct_attrs.standalone_constructors.value( false )
           {
-            // --- Scalar Tuple(N) Variant ---
-            // Generate implicit former infrastructure for this scalar variant
-            let implicit_former_name = format_ident!( "{}{}Former", enum_name, variant_ident );
-            let implicit_storage_name = format_ident!( "{}{}FormerStorage", enum_name, variant_ident );
-            let implicit_def_name = format_ident!( "{}{}FormerDefinition", enum_name, variant_ident );
-            let implicit_def_types_name = format_ident!( "{}{}FormerDefinitionTypes", enum_name, variant_ident );
-            let end_struct_name = format_ident!( "{}{}End", enum_name, variant_ident );
-
-            // Generate the implicit former components (Storage, Defs, Former, End)
-            let ( implicit_former_components, _ ) = generate_implicit_former_for_variant
-            (
-              vis,
-              enum_name,
-              variant_ident,
-              &variant.fields, // Pass fields here
-              &generics,
-              &implicit_former_name,
-              &implicit_storage_name,
-              &implicit_def_name,
-              &implicit_def_types_name,
-              &end_struct_name,
-              original_input,
-            )?;
-            end_impls.push( implicit_former_components ); // Add generated components
-
-            // --- Standalone Constructor (Scalar Tuple(N) - Returns Implicit Former) ---
-            if struct_attrs.standalone_constructors.value( false )
-            {
-              let mut constructor_params = Vec::new();
-              let mut initial_storage_assignments = Vec::new();
-              for ( i, field ) in fields.unnamed.iter().enumerate()
-              {
-                let field_attrs = FieldAttributes::from_attrs( field.attrs.iter() )?;
-                if field_attrs.arg_for_constructor.value( false )
-                {
-                  return Err( syn::Error::new_spanned( field, "#[arg_for_constructor] cannot be used on fields within a variant marked #[scalar]. All fields of a scalar variant are implicitly constructor arguments." ) );
-                }
-                let param_name = format_ident!( "_{}", i );
-                let field_type = &field.ty;
-                constructor_params.push( quote! { #param_name : impl Into< #field_type > } );
-                initial_storage_assignments.push( quote! { #param_name : ::core::option::Option::Some( #param_name.into() ) } );
-              }
-
-              let initial_storage_code = quote!
-              {
-                ::core::option::Option::Some
-                (
-                  #implicit_storage_name :: < #enum_generics_ty > // Add generics
-                  {
-                    #( #initial_storage_assignments ),* ,
-                    _phantom : ::core::marker::PhantomData // Add phantom if needed
-                  }
-                )
-              };
-
-              let return_type = quote!
-              {
-                #implicit_former_name
-                <
-                  #enum_generics_ty // Enum generics
-                  #implicit_def_name // Implicit definition
-                  <
-                    #enum_generics_ty // Enum generics
-                    (), // Context
-                    #enum_name< #enum_generics_ty >, // Formed
-                    #end_struct_name < #enum_generics_ty > // End
-                  >
-                >
-              };
-
-              let constructor = quote!
-              {
-                /// Standalone constructor for the #variant_ident variant with multiple fields (scalar style, returns former).
-                #[ inline( always ) ]
-                #vis fn #method_name < #enum_generics_impl >
-                ( // Paren on new line
-                  #( #constructor_params ),*
-                ) // Paren on new line
-                -> // Return type on new line
-                #return_type
-                where // Where clause on new line
-                  #enum_generics_where
-                { // Brace on new line
-                  #implicit_former_name::begin
-                  (
-                    #initial_storage_code,
-                    None, // Context
-                    #end_struct_name::< #enum_generics_ty >::default() // End
-                  )
-                } // Brace on new line
-              };
-              standalone_constructors.push( constructor );
-            }
-            // --- End Standalone Constructor ---
-
-            // Associated method (returns Self directly)
-            let mut params = Vec::new();
-            let mut args = Vec::new();
+            let mut constructor_params = Vec::new();
+            let mut initial_storage_assignments = Vec::new();
             for ( i, field ) in fields.unnamed.iter().enumerate()
             {
+              let field_attrs = FieldAttributes::from_attrs( field.attrs.iter() )?;
+              if field_attrs.arg_for_constructor.value( false )
+              {
+                return Err( syn::Error::new_spanned( field, "#[arg_for_constructor] cannot be used on fields within a variant marked #[scalar]. All fields of a scalar variant are implicitly constructor arguments." ) );
+              }
               let param_name = format_ident!( "_{}", i );
               let field_type = &field.ty;
-              params.push( quote! { #param_name : impl Into< #field_type > } );
-              args.push( quote! { #param_name.into() } );
+              constructor_params.push( quote! { #param_name : impl Into< #field_type > } );
+              initial_storage_assignments.push( quote! { #param_name : ::core::option::Option::Some( #param_name.into() ) } );
             }
-            let static_method = quote!
+
+            let initial_storage_code = quote!
             {
-              /// Constructor for the #variant_ident variant with multiple fields (scalar style).
+              ::core::option::Option::Some
+              (
+                #implicit_storage_name :: < #enum_generics_ty > // Add generics
+                {
+                  #( #initial_storage_assignments ),* ,
+                  _phantom : ::core::marker::PhantomData // Add phantom if needed
+                }
+              )
+            };
+
+            let return_type = quote!
+            {
+              #implicit_former_name
+              <
+                #enum_generics_ty // Enum generics
+                #implicit_def_name // Implicit definition
+                <
+                  #enum_generics_ty // Enum generics
+                  (), // Context
+                  #enum_name< #enum_generics_ty >, // Formed
+                  #end_struct_name < #enum_generics_ty > // End
+                >
+              >
+            };
+
+            let constructor = quote!
+            {
+              /// Standalone constructor for the #variant_ident variant with multiple fields (scalar style, returns former).
               #[ inline( always ) ]
-              #vis fn #method_name
+              #vis fn #method_name < #enum_generics_impl >
               ( // Paren on new line
-                #( #params ),*
+                #( #constructor_params ),*
               ) // Paren on new line
-              -> Self
+              -> // Return type on new line
+              #return_type
+              where // Where clause on new line
+                #enum_generics_where
               { // Brace on new line
-                Self::#variant_ident( #( #args ),* )
+                #implicit_former_name::begin
+                (
+                  #initial_storage_code,
+                  None, // Context
+                  #end_struct_name::< #enum_generics_ty >::default() // End
+                )
               } // Brace on new line
             };
-            methods.push( static_method );
+            standalone_constructors.push( constructor );
           }
-          else // Default: Subformer (unsupported)
+          // --- End Standalone Constructor ---
+
+          // Associated method (returns Self directly)
+          let mut params = Vec::new();
+          let mut args = Vec::new();
+          for ( i, field ) in fields.unnamed.iter().enumerate()
           {
-            return Err( syn::Error::new_spanned( variant, "Former derive on enums does not support the default subformer pattern for multi-field tuple variants.\nAdd the `#[ scalar ]` attribute to the variant..." ) );
+            let param_name = format_ident!( "_{}", i );
+            let field_type = &field.ty;
+            params.push( quote! { #param_name : impl Into< #field_type > } );
+            args.push( quote! { #param_name.into() } );
           }
+          let static_method = quote!
+          {
+            /// Constructor for the #variant_ident variant with multiple fields (scalar style).
+            #[ inline( always ) ]
+            #vis fn #method_name
+            ( // Paren on new line
+              #( #params ),*
+            ) // Paren on new line
+            -> Self
+            { // Brace on new line
+              Self::#variant_ident( #( #args ),* )
+            } // Brace on new line
+          };
+          methods.push( static_method );
+        }
+        else // Default: Subformer (unsupported)
+        {
+          return Err( syn::Error::new_spanned( variant, "Former derive on enums does not support the default subformer pattern for multi-field tuple variants.\nAdd the `#[ scalar ]` attribute to the variant..." ) );
         }
       },
       // Case 3: Struct variant
@@ -564,7 +562,7 @@ pub(super) fn former_for_enum
             enum_name,
             variant_ident,
             &variant.fields, // Pass fields here
-            &generics,
+            generics,
             &implicit_former_name,
             &implicit_storage_name,
             &implicit_def_name,
@@ -579,7 +577,7 @@ pub(super) fn former_for_enum
           {
             let mut constructor_params = Vec::new();
             let mut initial_storage_assignments = Vec::new();
-            for field in fields.named.iter()
+            for field in &fields.named
             {
               let field_attrs = FieldAttributes::from_attrs( field.attrs.iter() )?;
               if field_attrs.arg_for_constructor.value( false )
@@ -648,7 +646,7 @@ pub(super) fn former_for_enum
           // Associated method (returns Self directly)
           let mut params = Vec::new();
           let mut args = Vec::new();
-          for field in fields.named.iter()
+          for field in &fields.named
           {
             let field_ident = field.ident.as_ref().unwrap();
             let param_name = ident::ident_maybe_raw( field_ident );
@@ -687,7 +685,7 @@ pub(super) fn former_for_enum
             enum_name,
             variant_ident,
             &variant.fields, // Pass fields here
-            &generics,
+            generics,
             &implicit_former_name,
             &implicit_storage_name,
             &implicit_def_name,
@@ -735,7 +733,7 @@ pub(super) fn former_for_enum
             .filter( | f |
             {
               // Filter out constructor args
-              !FieldAttributes::from_attrs( f.attrs.iter() ).map_or( false, |a| a.arg_for_constructor.value( false ) )
+              !FieldAttributes::from_attrs( f.attrs.iter() ).is_ok_and( |a| a.arg_for_constructor.value( false ) )
             })
             .map( | f |
             {
@@ -862,7 +860,8 @@ pub(super) fn former_for_enum
 }
 
 /// Helper function to generate the implicit former infrastructure for a variant.
-/// Returns a tuple: (TokenStream for all components, TokenStream for setters only)
+/// Returns a tuple: (`TokenStream` for all components`TokenStream`am for setters only)
+#[allow(clippy::too_many_arguments, clippy::too_many_lines)]
 fn generate_implicit_former_for_variant
 (
   vis : &syn::Visibility,
@@ -878,40 +877,44 @@ fn generate_implicit_former_for_variant
   _original_input : &proc_macro::TokenStream,
 ) -> Result< ( TokenStream, TokenStream ) >
 {
-  let ( _enum_generics_with_defaults, enum_generics_impl, enum_generics_ty, enum_generics_where )
-    = generic_params::decompose( generics );
-
   // --- Extract field data into owned structures first ---
-  struct FieldData {
-      ident: syn::Ident,
-      ty: syn::Type,
-      attrs: FieldAttributes,
-      is_optional: bool,
-      non_optional_ty: syn::Type,
+  struct FieldData 
+  {
+    ident : syn::Ident,
+    ty  : syn::Type,
+    attrs : FieldAttributes,
+    is_optional : bool,
+    non_optional_ty : syn::Type,
   }
+  let ( _enum_generics_with_defaults, enum_generics_impl, enum_generics_ty, enum_generics_where ) = generic_params::decompose( generics );
 
-  let field_data_vec: Vec<FieldData> = match fields {
-      syn::Fields::Named(f) => f.named.iter()
-          .map(|field| {
-              let ident = field.ident.as_ref().cloned().ok_or_else(|| syn::Error::new_spanned(field, "Named field requires an identifier"))?;
-              let ty = field.ty.clone();
-              let attrs = FieldAttributes::from_attrs(field.attrs.iter())?;
-              let is_optional = typ::is_optional(&ty);
-              let non_optional_ty = if is_optional { typ::parameter_first(&ty)?.clone() } else { ty.clone() };
-              Ok(FieldData { ident, ty, attrs, is_optional, non_optional_ty })
-          })
-          .collect::<Result<_>>()?,
-      syn::Fields::Unnamed(f) => f.unnamed.iter().enumerate()
-          .map(|(index, field)| {
-              let ident = format_ident!("_{}", index); // Synthesize identifier
-              let ty = field.ty.clone();
-              let attrs = FieldAttributes::from_attrs(field.attrs.iter())?;
-              let is_optional = typ::is_optional(&ty);
-              let non_optional_ty = if is_optional { typ::parameter_first(&ty)?.clone() } else { ty.clone() };
-              Ok(FieldData { ident, ty, attrs, is_optional, non_optional_ty })
-          })
-          .collect::<Result<_>>()?,
-      syn::Fields::Unit => vec![], // No fields for unit variants
+  
+
+  let field_data_vec : Vec< FieldData > = match fields 
+  {
+    syn::Fields::Named( f ) => f.named.iter()
+    .map( | field | 
+    {
+      let ident = field.ident.clone().ok_or_else( || syn::Error::new_spanned( field, "Named field requires an identifier" ) )?;
+      let ty = field.ty.clone();
+      let attrs = FieldAttributes::from_attrs( field.attrs.iter() )?;
+      let is_optional = typ::is_optional( &ty );
+      let non_optional_ty = if is_optional { typ::parameter_first( &ty )?.clone() } else { ty.clone() };
+      Ok( FieldData { ident, ty, attrs, is_optional, non_optional_ty } )
+    } )
+    .collect::< Result< _ > >()?,
+    syn::Fields::Unnamed(f) => f.unnamed.iter().enumerate()
+    .map( | ( index, field ) | 
+    {
+      let ident = format_ident!( "_{}", index ); // Synthesize identifier
+      let ty = field.ty.clone();
+      let attrs = FieldAttributes::from_attrs( field.attrs.iter() )?;
+      let is_optional = typ::is_optional( &ty );
+      let non_optional_ty = if is_optional { typ::parameter_first( &ty )?.clone() } else { ty.clone() };
+      Ok( FieldData { ident, ty, attrs, is_optional, non_optional_ty } )
+    } )
+    .collect::< Result< _ > >()?,
+    syn::Fields::Unit => vec![], // No fields for unit variants
   };
   // --- End of data extraction ---
 
@@ -1041,7 +1044,7 @@ fn generate_implicit_former_for_variant
   };
 
   let ( former_definition_types_generics_with_defaults, former_definition_types_generics_impl, former_definition_types_generics_ty, former_definition_types_generics_where )
-    = generic_params::decompose( &generics_of_definition_types_renamed( &generics, enum_name, &enum_generics_ty )? );
+    = generic_params::decompose( &generics_of_definition_types_renamed( generics, enum_name, &enum_generics_ty ) );
   let former_definition_types_phantom = macro_tools::phantom::tuple( &former_definition_types_generics_impl );
 
   let implicit_def_types = quote!
@@ -1072,7 +1075,7 @@ fn generate_implicit_former_for_variant
   };
 
   let ( former_definition_generics_with_defaults, former_definition_generics_impl, former_definition_generics_ty, former_definition_generics_where )
-    = generic_params::decompose( &generics_of_definition_renamed( &generics, enum_name, &enum_generics_ty, &end_struct_name )? );
+    = generic_params::decompose( &generics_of_definition_renamed( generics, enum_name, &enum_generics_ty, end_struct_name ) );
   let former_definition_phantom = macro_tools::phantom::tuple( &former_definition_generics_impl );
 
   let implicit_def = quote!
@@ -1103,7 +1106,7 @@ fn generate_implicit_former_for_variant
     } // Brace on new line
   };
 
-  let former_generics_result = generics_of_former_renamed( &generics, &implicit_def_name, &implicit_storage_name, &enum_generics_ty, enum_name, &end_struct_name )?;
+  let former_generics_result = generics_of_former_renamed( generics, implicit_def_name, implicit_storage_name, &enum_generics_ty, enum_name, end_struct_name );
   let ( former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where )
     = generic_params::decompose( &former_generics_result );
 
@@ -1231,14 +1234,14 @@ fn generics_of_definition_types_renamed // Renamed
   enum_generics : &syn::Generics,
   _enum_name : &syn::Ident,
   enum_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-) -> Result< syn::Generics >
+) -> syn::Generics
 {
   // Use Context2, Formed2
   let extra : macro_tools::GenericsWithWhere = syn::parse_quote!
   {
     < Context2 = (), Formed2 = #_enum_name < #enum_generics_ty > >
   };
-  Ok( generic_params::merge( enum_generics, &extra.into() ) )
+  generic_params::merge( enum_generics, &extra.into() )
 }
 
 fn generics_of_definition_renamed // Renamed
@@ -1247,14 +1250,14 @@ fn generics_of_definition_renamed // Renamed
   _enum_name : &syn::Ident,
   enum_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   end_struct_name : &syn::Ident,
-) -> Result< syn::Generics >
+) -> syn::Generics
 {
   // Use Context2, Formed2, End2
   let extra : macro_tools::GenericsWithWhere = syn::parse_quote!
   {
     < Context2 = (), Formed2 = #_enum_name < #enum_generics_ty >, End2 = #end_struct_name < #enum_generics_ty > >
   };
-  Ok( generic_params::merge( enum_generics, &extra.into() ) )
+  generic_params::merge( enum_generics, &extra.into() )
 }
 
 fn generics_of_former_renamed // Renamed
@@ -1265,7 +1268,7 @@ fn generics_of_former_renamed // Renamed
   enum_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   enum_name : &syn::Ident, // Need enum name for default Formed type
   end_struct_name : &syn::Ident, // Need end struct name for default End type
-) -> Result< syn::Generics >
+) -> syn::Generics
 {
    let default_definition_type = quote!
    {
@@ -1280,5 +1283,5 @@ fn generics_of_former_renamed // Renamed
       Definition : former::FormerDefinition< Storage = #implicit_storage_name < #enum_generics_ty > >,
       Definition::Types : former::FormerDefinitionTypes< Storage = #implicit_storage_name < #enum_generics_ty > >,
   };
-  Ok( generic_params::merge( enum_generics, &extra.into() ) )
+  generic_params::merge( enum_generics, &extra.into() )
 }
