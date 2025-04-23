@@ -44,8 +44,8 @@ fn struct_variant_args_test() // New test name
 fn multi_tuple_variant_args_test()
 {
   // Assumes `multi_tuple_args` takes i32 and bool arguments and returns a Former
-  let former = multi_tuple_args( 99, true ); // <<< Get the former
-  let instance = former.form();             // <<< Call .form()
+  let former = multi_tuple_args( 99, true );   // <<< Get the former
+  let instance = former.form();               // <<< Call .form()
   let expected = TestEnumArgs::MultiTupleArgs( 99, true );
   assert_eq!( instance, expected );
 }

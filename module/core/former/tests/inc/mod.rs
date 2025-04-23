@@ -271,6 +271,10 @@ mod former_enum_tests
   mod standalone_constructor_args_manual;
   mod standalone_constructor_args_derive;
 
+  // = subform
+
+  mod subform_collection_test;
+
 }
 
 #[ cfg( feature = "derive_components" ) ]
