@@ -58,8 +58,8 @@ mod private
   /// ```
   /// # Panics
   /// qqq: doc
-  #[ allow( clippy::cast_possible_wrap ) ]
-  pub fn type_parameters< 'a >( ty : &'a syn::Type, range : impl NonIterableInterval ) -> Vec< &'a syn::Type >
+  #[ allow( clippy::cast_possible_wrap, clippy::needless_pass_by_value ) ]
+  pub fn type_parameters( ty : &syn::Type, range : impl NonIterableInterval ) -> Vec< &syn::Type >
   {
     if let syn::Type::Path( syn::TypePath{ path : syn::Path { ref segments, .. }, .. } ) = ty
     {

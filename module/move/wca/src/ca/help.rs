@@ -315,7 +315,7 @@ mod private
 
             println!( "Help command\n\n{text}" );
           }
-        };
+        }
 
         Ok::< _, error_tools::untyped::Error >( () )
       };

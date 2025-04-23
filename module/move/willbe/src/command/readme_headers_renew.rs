@@ -88,7 +88,7 @@ mod private
         report.main_header_renew_report = r;
         report.main_header_renew_error = Some( error );
       }
-    };
+    }
     match action::readme_modules_headers_renew( crate_dir )
     {
       Ok( r ) =>

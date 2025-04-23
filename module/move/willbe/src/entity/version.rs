@@ -358,8 +358,8 @@ mod private
   /// # Args :
   /// - `manifest` - a manifest mutable reference
   /// - `dry` - a flag that indicates whether to apply the changes or not
-  ///         - `true` - does not modify the manifest file, but only returns the new version;
-  ///         - `false` - overwrites the manifest file with the new version.
+  /// - `true` - does not modify the manifest file, but only returns the new version;
+  /// - `false` - overwrites the manifest file with the new version.
   ///
   /// # Returns :
   /// - `Ok` - the new version number as a string;

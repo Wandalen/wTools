@@ -108,7 +108,7 @@ mod private
       // qqq : for Kos : bad description
       let current_dir = current_dir
       .components()
-      .last()
+      .next_back()
       .context( "Invalid current directory" )?;
 
       let current_dir = current_dir.as_os_str().to_string_lossy();

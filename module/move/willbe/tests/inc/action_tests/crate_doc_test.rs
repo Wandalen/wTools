@@ -34,7 +34,7 @@ fn basic_test()
     .join( format!( "{}_doc.md", crate_name ) );
 
   // Act
-  let result = action::crate_doc::doc( &workspace, crate_dir.clone(), None );
+  let result = action::crate_doc::doc( &workspace, &crate_dir, None );
 
   // Assert
   assert!( result.is_ok(), "Action failed: {:?}", result.err() );
@@ -81,7 +81,7 @@ fn output_option_test()
 
 
   // Act
-  let result = action::crate_doc::doc( &workspace, crate_dir.clone(), Some( custom_output_rel_path.clone() ) );
+  let result = action::crate_doc::doc( &workspace, &crate_dir, Some( custom_output_rel_path.clone() ) );
 
   // Assert
   assert!( result.is_ok(), "Action failed: {:?}", result.err() );
@@ -144,7 +144,7 @@ fn cargo_doc_fail_test()
   .expect( "Failed to load workspace" );
 
   // Act
-  let result = action::crate_doc::doc( &workspace, crate_dir.clone(), None );
+  let result = action::crate_doc::doc( &workspace, &crate_dir, None );
 
   // Assert
   assert!( result.is_err(), "Action should fail when cargo doc fails" );

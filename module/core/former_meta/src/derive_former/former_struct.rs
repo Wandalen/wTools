@@ -123,7 +123,7 @@ specific needs of the broader forming context. It mandates the implementation of
   let ( perform, perform_output, perform_generics ) = struct_attrs.performer()?;
 
   /* fields: Process struct fields and storage_fields attribute. */
-  let fields = derive::named_fields( &ast )?;
+  let fields = derive::named_fields( ast )?;
   // Create FormerField representation for actual struct fields.
   let formed_fields : Vec< _ > = fields
   .iter()
@@ -226,7 +226,7 @@ specific needs of the broader forming context. It mandates the implementation of
     field.former_field_setter
     (
       item,
-      &original_input,
+      original_input,
       &struct_generics_impl,
       &struct_generics_ty,
       &struct_generics_where,
@@ -244,7 +244,7 @@ specific needs of the broader forming context. It mandates the implementation of
   // Collect preform logic results.
   let storage_field_preform : Vec< _ > = storage_field_preform.into_iter().collect::< Result< _ > >()?;
   // Generate mutator implementation code.
-  let former_mutator_code = mutator( item, &original_input, &struct_attrs.mutator, &former_definition_types, &former_definition_types_generics_impl, &former_definition_types_generics_ty, &former_definition_types_generics_where )?;
+  let former_mutator_code = mutator( item, original_input, &struct_attrs.mutator, &former_definition_types, &former_definition_types_generics_impl, &former_definition_types_generics_ty, &former_definition_types_generics_where )?;
 
   // <<< Start of updated code for standalone constructor >>>
   let standalone_constructor_code = if struct_attrs.standalone_constructors.value( false )

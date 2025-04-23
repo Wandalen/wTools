@@ -273,7 +273,7 @@ mod private
       {
         #[ cfg( feature = "on_unknown_suggest" ) ]
         if let Some( phrase ) = Self::suggest_command( dictionary, &raw_command.name ) {
-          return VerificationError::CommandNotFound { name_suggestion: Some( phrase.to_string() ), command_info: None };
+          return Err( VerificationError::CommandNotFound { name_suggestion: Some( phrase.to_string() ), command_info: None } );
         }
         VerificationError::CommandNotFound { name_suggestion: None, command_info: None }
       })?;

@@ -255,8 +255,8 @@ mod private
       .packages()
       .find( | &p |
       {
-        if !formed.crate_dir.include( p ) { return false };
-        if !formed.manifest_file.include( p ) { return false };
+        if !formed.crate_dir.include( p ) { return false }
+        if !formed.manifest_file.include( p ) { return false }
         true
       })
       // .unwrap()

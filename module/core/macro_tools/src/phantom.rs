@@ -110,7 +110,7 @@ mod private
             }
           )
       }
-    };
+    }
 
     input
   }

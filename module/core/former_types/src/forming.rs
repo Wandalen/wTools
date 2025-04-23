@@ -193,8 +193,8 @@ impl< Definition : crate::FormerDefinitionTypes > FormingEndClosure< Definition 
   /// # Parameters
   ///
   /// * `closure` - A closure that matches the expected signature for transforming a collection
-  ///               and context into a new context. This closure is stored and called by the
-  ///               `call` method of the `FormingEnd` trait implementation.
+  ///   and context into a new context. This closure is stored and called by the
+  ///   `call` method of the `FormingEnd` trait implementation.
   ///
   /// # Returns
   ///

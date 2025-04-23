@@ -16,6 +16,7 @@ mod private
   /// # Errors
   /// Returns an error if the command arguments are invalid, the workspace cannot be loaded,
   /// or if the documentation generation action fails.
+  #[allow(clippy::needless_pass_by_value)]
   pub fn crate_doc( o : VerifiedCommand ) -> error::untyped::Result< () >
   {
     let path_arg : PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
@@ -53,16 +54,16 @@ mod private
     let output_path_req : Option< PathBuf > = o.props.get_owned( "output" );
 
     // Call the action, passing the workspace reference
-    match action::crate_doc::doc( &workspace, crate_dir, output_path_req )
+    match action::crate_doc::doc( &workspace, &crate_dir, output_path_req )
     {
       Ok( report ) =>
       {
-        println!( "{}", report ); // Print the success report
+        println!( "{report}" ); // Print the success report
         Ok( () )
       }
       Err( ( report, e ) ) =>
       {
-        eprintln!( "{}", report ); // Print the report even on failure
+        eprintln!( "{report}" ); // Print the report even on failure
         // Convert the specific CrateDocError into a general untyped::Error for the command return
         Err( Error::new( e ).context( "Documentation generation failed" ) )
       }

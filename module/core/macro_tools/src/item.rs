@@ -76,7 +76,7 @@ mod private
       },
       // Do nothing for unit structs
       syn::Fields::Unit => {}
-    };
+    }
 
     new_input
   }

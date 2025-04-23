@@ -29,6 +29,7 @@ mod private
   /// assert_eq!( got_normal.to_string(), "my_var" );
   /// assert_eq!( got_keyword.to_string(), "r#fn" );
   /// ```
+  #[must_use]
   pub fn ident_maybe_raw( ident : &syn::Ident ) -> Ident
   {
     let name = ident.to_string();

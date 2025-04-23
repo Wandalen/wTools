@@ -118,7 +118,7 @@ mod private
               Diff::Same( () ) => writeln!( f, " {}", path.display() )?,
               Diff::Add( () ) => writeln!( f, "+ {} NEW", path.to_string_lossy().green() )?,
               Diff::Rem( () ) => writeln!( f, "- {} REMOVED", path.to_string_lossy().red() )?,
-            };
+            }
           }
           DiffItem::Content( items ) =>
           {
@@ -133,11 +133,11 @@ mod private
                 Diff::Same( t ) => write!( f, "|   {t}" )?,
                 Diff::Add( t ) => write!( f, "| + {}", t.green() )?,
                 Diff::Rem( t ) => write!( f, "| - {}", t.red() )?,
-              };
+              }
             }
             writeln!( f, "{}", "=".repeat( len + 2 ) )?;
           }
-        };
+        }
       }
 
       Ok( () )
@@ -152,9 +152,9 @@ mod private
   /// # Arguments
   ///
   /// * `left`: A reference to the first crate archive.
-  ///           Changes that are present here but lacking in 'right' are classified as additions.
+  ///   Changes that are present here but lacking in 'right' are classified as additions.
   /// * `right`: A reference to the second crate archive.
-  ///            Changes not found in 'left' but present in 'right' are classified as removals.
+  ///   Changes not found in 'left' but present in 'right' are classified as removals.
   ///
   /// # Returns
   ///
