@@ -1,4 +1,4 @@
-# Former Standalone Constructors Feature Plan
+# Plan
 
 ### Initial Task
 
