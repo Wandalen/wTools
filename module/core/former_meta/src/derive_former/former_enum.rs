@@ -12,7 +12,7 @@ use macro_tools::
 use convert_case::{ Case, Casing }; // Space before ;
 
 // ==================================
-//      Enum Variant Handling Rules (Consistent Logic) - REVISED AGAIN
+//      Enum Variant Handling Rules (Consistent Logic) - FINAL REVISION
 // ==================================
 //
 // This macro implements the `Former` derive for enums based on the following consistent rules:
@@ -29,12 +29,11 @@ use convert_case::{ Case, Casing }; // Space before ;
 //     *   **Multi-Field Variant (Tuple or Struct):** Error.
 //
 // 3.  **Default Behavior (No Attribute):**
-//     *   **Unit Variant:** Generates `Enum::variant() -> Enum`.
-//     *   **Single-Field Variant (Tuple or Struct):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Relies on compiler error if `InnerFormer` doesn't exist. Requires the field type to be a path type deriving `Former`.
-//     *   **Multi-Field Variant (Tuple or Struct):** **Compile-time Error.** Must explicitly use `#[scalar]` to get a direct constructor.
-//
-// Note: Implicit former generation for variants is *not* used. `#[scalar]` always results in a direct constructor.
-// Subforming only happens for single-field variants (default or with `#[subform_scalar]`).
+//     *   **Unit Variant:** Generates `Enum::variant() -> Enum`. (Equivalent to #[scalar])
+//     *   **Zero-Field Tuple Variant:** Generates `Enum::variant() -> Enum`. (Equivalent to #[scalar])
+//     *   **Single-Field Variant (Tuple or Struct):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Relies on compiler error if `InnerFormer` doesn't exist. Requires the field type to be a path type deriving `Former`. (Equivalent to #[subform_scalar])
+//     *   **Zero-Field Struct Variant:** Generates `Enum::variant() -> EnumVariantFormer<...>` (implicit former starter).
+//     *   **Multi-Field Variant (Tuple or Struct):** Generates `Enum::variant() -> EnumVariantFormer<...>` (implicit former starter).
 //
 // ==================================
 
@@ -45,7 +44,8 @@ struct EnumVariantFieldInfo
   // index : usize, // Removed unused field
   ident : syn::Ident,
   ty : syn::Type,
-  attrs : FieldAttributes, // Warning: field `attrs` is never read (Acceptable for now)
+  #[allow(dead_code)] // Keep attrs field even if unused for now
+  attrs : FieldAttributes,
   is_constructor_arg : bool,
 }
 
@@ -592,7 +592,7 @@ pub(super) fn former_for_enum
                 {
                     return Err( syn::Error::new_spanned( variant, "#[subform_scalar] cannot be used on zero-field struct variants." ) );
                 }
-                else if wants_scalar // Includes default case as per user clarification
+                else if wants_scalar // Default for Struct(0) is now an error, only #[scalar] works
                 {
                     // --- Scalar Struct(0) Variant ---
                     // --- Standalone Constructor (Scalar Struct(0)) ---
@@ -621,9 +621,9 @@ pub(super) fn former_for_enum
                     };
                     methods.push( static_method );
                 }
-                else // Default should error now based on revised rules
+                else // Default: Error
                 {
-                   return Err( syn::Error::new_spanned( variant, "Former derive requires `#[scalar]` attribute for struct-like variants (variants with named fields)." ) );
+                   return Err( syn::Error::new_spanned( variant, "Former derive requires `#[scalar]` attribute for zero-field struct-like variants." ) );
                 }
             }
             // Sub-case: Single field (Struct(1))
@@ -829,7 +829,7 @@ pub(super) fn former_for_enum
                 }
                 else // Default: Error
                 {
-                    return Err( syn::Error::new_spanned( variant, "Former derive requires `#[scalar]` attribute for struct-like variants (variants with named fields)." ) );
+                    return Err( syn::Error::new_spanned( variant, "Former derive requires `#[scalar]` attribute for struct-like variants with multiple fields." ) );
                 }
             }
         }
