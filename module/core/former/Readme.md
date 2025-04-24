@@ -192,6 +192,113 @@ Where `former` significantly simplifies complex scenarios is in building collect
 
 `former` provides different subform attributes (`#[ subform_collection ]`, `#[ subform_entry ]`, `#[ subform_scalar ]`) for various collection and nesting patterns.
 
+## Standalone Constructors
+
+For scenarios where you want a direct constructor function instead of always starting with `YourType::former()`, `former` offers standalone constructors.
+
+*   **Enable:** Add `#[ standalone_constructors ]` to your struct or enum definition.
+*   **Function Name:** A function named after your type (in snake_case) will be generated (e.g., `my_struct()` for `struct MyStruct`). For enums, functions are named after variants (e.g., `my_variant()` for `enum E { MyVariant }`).
+*   **Arguments:** By default, the constructor takes no arguments and returns the `Former` type.
+*   **Specify Arguments:** Mark specific fields with `#[ arg_for_constructor ]` to make them required arguments for the standalone constructor.
+*   **Return Type (Option 2 Logic):**
+    *   If **all** fields of the struct/variant are marked with `#[ arg_for_constructor ]`, the standalone constructor returns the instance directly (`Self`).
+    *   If **zero or some** fields are marked, the standalone constructor returns the `Former` type, pre-initialized with the provided arguments.
+
+**Example: Struct Standalone Constructors**
+
+```rust
+# #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
+# fn main() {}
+# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# fn main()
+# {
+  use former::Former;
+
+  #[ derive( Debug, PartialEq, Former ) ]
+  #[ standalone_constructors ] // Enable standalone constructors
+  pub struct ServerConfig
+  {
+    #[ arg_for_constructor ] // This field is a constructor arg
+    host : String,
+    #[ arg_for_constructor ] // This field is also a constructor arg
+    port : u16,
+    timeout : Option< u32 >, // This field is NOT a constructor arg
+  }
+
+  // Not all fields are args, so `server_config` returns the Former
+  let config_former = server_config( "localhost".to_string(), 8080u16 ); // Added u16 suffix
+
+  // Set the remaining field and form
+  let config = config_former
+  .timeout( 5000u32 ) // Added u32 suffix
+  .form();
+
+  assert_eq!( config.host, "localhost" );
+  assert_eq!( config.port, 8080u16 ); // Added u16 suffix
+  assert_eq!( config.timeout, Some( 5000u32 ) ); // Added u32 suffix
+
+  #[ derive( Debug, PartialEq, Former ) ]
+  #[ standalone_constructors ]
+  pub struct Point
+  {
+    #[ arg_for_constructor ]
+    x : i32,
+    #[ arg_for_constructor ]
+    y : i32,
+  }
+
+  // ALL fields are args, so `point` returns Self directly
+  let p = point( 10, 20 );
+  assert_eq!( p.x, 10 );
+  assert_eq!( p.y, 20 );
+# }
+```
+
+**Example: Enum Standalone Constructors**
+
+```rust
+# #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
+# fn main() {}
+# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# fn main()
+# {
+  use former::Former;
+
+  #[ derive( Debug, PartialEq, Former ) ]
+  #[ standalone_constructors ]
+  pub enum Message
+  {
+    Quit, // Unit variant constructor `quit()` returns Self
+    Write // Tuple variant constructor `write()` returns Former
+    {
+      #[ arg_for_constructor ] // Only this field is an arg
+      text : String,
+      urgent : bool, // Not an arg
+    },
+    Move // Struct variant constructor `move_point()` returns Self
+    {
+      #[ arg_for_constructor ]
+      x : i32,
+      #[ arg_for_constructor ]
+      y : i32,
+    }
+  }
+
+  // Unit variant - returns Self
+  let m1 = quit();
+  assert_eq!( m1, Message::Quit );
+
+  // Tuple variant - not all fields are args, returns Former
+  let m2_former = write( "hello".to_string() );
+  let m2 = m2_former.urgent( true ).form();
+  assert_eq!( m2, Message::Write { text: "hello".to_string(), urgent: true } );
+
+  // Struct variant - all fields are args, returns Self
+  let m3 = r#move( 1, 2 ); // Use raw identifier `r#move` as `move` is a keyword
+  assert_eq!( m3, Message::Move { x: 1, y: 2 } );
+# }
+```
+
 ## Key Features Overview
 
 *   **Automatic Builder Generation:** `#[ derive( Former ) ]` for structs and enums.

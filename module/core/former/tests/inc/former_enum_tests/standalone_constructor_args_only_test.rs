@@ -21,9 +21,8 @@ fn unit_variant_args_test() // New test name
 #[ test ]
 fn tuple_variant_args_test() // New test name
 {
-  // Assumes `tuple_variant_args` takes an i32 argument and returns a Former
-  let former = tuple_variant_args( 202 );
-  let instance = former.form(); // Call form()
+  // Assumes `tuple_variant_args` takes an i32 argument and returns Self (Option 2)
+  let instance = tuple_variant_args( 202 ); // Call directly
   let expected = TestEnumArgs::TupleVariantArgs( 202 );
   assert_eq!( instance, expected );
 }
@@ -32,9 +31,8 @@ fn tuple_variant_args_test() // New test name
 #[ test ]
 fn struct_variant_args_test() // New test name
 {
-  // Assumes `struct_variant_args` takes a String argument and returns a Former
-  let former = struct_variant_args( "arg_value" );
-  let instance = former.form(); // Call form()
+  // Assumes `struct_variant_args` takes a String argument and returns Self (Option 2)
+  let instance = struct_variant_args( "arg_value" ); // Call directly
   let expected = TestEnumArgs::StructVariantArgs { field : "arg_value".to_string() };
   assert_eq!( instance, expected );
 }
@@ -43,10 +41,12 @@ fn struct_variant_args_test() // New test name
 #[ test ]
 fn multi_tuple_variant_args_test()
 {
-  // Assumes `multi_tuple_args` takes i32 and bool arguments and returns a Former
-  let former = multi_tuple_args( 99, true );   // <<< Get the former
-  let instance = former.form();               // <<< Call .form()
-  let expected = TestEnumArgs::MultiTupleArgs( 99, true );
+  // Based on derive file, `MultiTupleArgs` has no #[arg_for_constructor] fields.
+  // Option 2 dictates constructor takes 0 args and returns Former.
+  let former = multi_tuple_args(); // Call with no args
+  let instance = former.form(); // Form the instance
+  // The default values will be used since no args were provided to the former
+  let expected = TestEnumArgs::MultiTupleArgs( i32::default(), bool::default() );
   assert_eq!( instance, expected );
 }
 
@@ -54,9 +54,8 @@ fn multi_tuple_variant_args_test()
 #[ test ]
 fn multi_struct_variant_args_test()
 {
-  // Assumes `multi_struct_args` takes i32 and bool arguments and returns a Former
-  let former = multi_struct_args( -1, false );
-  let instance = former.form(); // Call form()
+  // Assumes `multi_struct_args` takes i32 and bool arguments and returns Self (Option 2)
+  let instance = multi_struct_args( -1, false ); // Call directly
   let expected = TestEnumArgs::MultiStructArgs { a : -1, b : false };
   assert_eq!( instance, expected );
 }

@@ -630,65 +630,37 @@ pub fn unit_variant_args() -> TestEnumArgs
 }
 
 /// Manual standalone constructor for TestEnumArgs::TupleVariantArgs (takes arg).
-pub fn tuple_variant_args( _0 : impl Into< i32 > )
-->
-TestEnumArgsTupleVariantArgsFormer
-<
-  TestEnumArgsTupleVariantArgsFormerDefinition< (), TestEnumArgs, TestEnumArgsTupleVariantArgsEnd >
->
+/// Returns Self directly as per Option 2.
+pub fn tuple_variant_args( _0 : impl Into< i32 > ) -> TestEnumArgs // Changed return type
 {
-  let initial_storage = TestEnumArgsTupleVariantArgsFormerStorage
-  {
-    _0 : Some( _0.into() ),
-  };
-  TestEnumArgsTupleVariantArgsFormer::begin( Some( initial_storage ), None, TestEnumArgsTupleVariantArgsEnd )
+  TestEnumArgs::TupleVariantArgs( _0.into() ) // Direct construction
 }
 
 /// Manual standalone constructor for TestEnumArgs::StructVariantArgs (takes arg).
-pub fn struct_variant_args( field : impl Into< String > )
-->
-TestEnumArgsStructVariantArgsFormer
-<
-  TestEnumArgsStructVariantArgsFormerDefinition< (), TestEnumArgs, TestEnumArgsStructVariantArgsEnd >
->
+/// Returns Self directly as per Option 2.
+pub fn struct_variant_args( field : impl Into< String > ) -> TestEnumArgs // Changed return type
 {
-  let initial_storage = TestEnumArgsStructVariantArgsFormerStorage
-  {
-    field : Some( field.into() ),
-  };
-  TestEnumArgsStructVariantArgsFormer::begin( Some( initial_storage ), None, TestEnumArgsStructVariantArgsEnd )
+  TestEnumArgs::StructVariantArgs { field : field.into() } // Direct construction
 }
 
-/// Manual standalone constructor for TestEnumArgs::MultiTupleArgs (takes args). <<< NEW >>>
-pub fn multi_tuple_args( _0 : impl Into< i32 >, _1 : impl Into< bool > )
-->
+/// Manual standalone constructor for TestEnumArgs::MultiTupleArgs. <<< NEW >>>
+/// Takes 0 args and returns Former as per Option 2 (derive def has no args).
+pub fn multi_tuple_args() // No arguments
+-> // Return Former type
 TestEnumArgsMultiTupleArgsFormer
 <
   TestEnumArgsMultiTupleArgsFormerDefinition< (), TestEnumArgs, TestEnumArgsMultiTupleArgsEnd >
 >
 {
-  let initial_storage = TestEnumArgsMultiTupleArgsFormerStorage
-  {
-    _0 : Some( _0.into() ),
-    _1 : Some( _1.into() ),
-  };
-  TestEnumArgsMultiTupleArgsFormer::begin( Some( initial_storage ), None, TestEnumArgsMultiTupleArgsEnd )
+  // Begin former with no initial storage
+  TestEnumArgsMultiTupleArgsFormer::begin( None, None, TestEnumArgsMultiTupleArgsEnd )
 }
 
 /// Manual standalone constructor for TestEnumArgs::MultiStructArgs (takes args). <<< NEW >>>
-pub fn multi_struct_args( a : impl Into< i32 >, b : impl Into< bool > )
-->
-TestEnumArgsMultiStructArgsFormer
-<
-  TestEnumArgsMultiStructArgsFormerDefinition< (), TestEnumArgs, TestEnumArgsMultiStructArgsEnd >
->
+/// Returns Self directly as per Option 2.
+pub fn multi_struct_args( a : impl Into< i32 >, b : impl Into< bool > ) -> TestEnumArgs // Changed return type
 {
-  let initial_storage = TestEnumArgsMultiStructArgsFormerStorage
-  {
-    a : Some( a.into() ),
-    b : Some( b.into() ),
-  };
-  TestEnumArgsMultiStructArgsFormer::begin( Some( initial_storage ), None, TestEnumArgsMultiStructArgsEnd )
+  TestEnumArgs::MultiStructArgs { a : a.into(), b : b.into() } // Direct construction
 }
 
 
