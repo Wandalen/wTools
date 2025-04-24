@@ -29,6 +29,12 @@ pub struct InnerG5< U : BoundB > // BoundB required by the inner struct
   pub inner_field : U,
 }
 
+// Implement Into manually for testing the constructor signature
+impl< U : BoundB > From< U > for InnerG5< U >
+{
+  fn from( data : U ) -> Self { Self { inner_field : data } }
+}
+
 // --- Enum Definition with Bounds ---
 // Apply Former derive here. This is what we are testing.
 #[ derive( Debug, PartialEq, Clone, former::Former ) ]

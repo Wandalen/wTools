@@ -17,10 +17,26 @@
 //!   code's behavior against this manual implementation using the shared tests in
 //!   `scalar_generic_tuple_only_test.rs`.
 
-use super::*; // Imports testing infrastructure and potentially other common items
+// Imports testing infrastructure and potentially other common items
+use former::{
+  FormingEnd,
+  StoragePreform,
+  FormerDefinition,
+  FormerDefinitionTypes,
+  Storage,
+  ReturnPreformed,
+  FormerBegin,
+  FormerMutator,
+};
+use std::marker::PhantomData;
 
 // --- Bound, Types, and Inner Struct ---
 // Are defined in the included _only_test.rs file
+// pub trait Bound : core::fmt::Debug + Default + Clone + PartialEq {}
+// #[ derive( Debug, Default, Clone, PartialEq ) ] pub struct MyType( String ); impl Bound for MyType {}
+// #[ derive( Debug, Clone, PartialEq, Default ) ] pub struct InnerScalar< T : Bound > { pub data : T, }
+// impl< T : Bound > From< T > for InnerScalar< T > { fn from( data : T ) -> Self { Self { data } } }
+
 
 // --- Enum Definition with Bounds ---
 // Define the enum without the derive macro
@@ -31,7 +47,130 @@ pub enum EnumScalarGeneric< T : Bound > // Enum bound
   Variant2( InnerScalar< T >, bool ), // Tuple variant with generic and non-generic fields
 }
 
-// --- Manual implementation of static methods ---
+// --- Manual Former Setup for Variant2 ---
+// Needs to be generic over T: Bound
+pub struct EnumScalarGenericVariant2FormerStorage< T : Bound >
+{
+  field0 : Option< InnerScalar< T > >,
+  field1 : Option< bool >,
+  _phantom : PhantomData< T >, // To use the generic parameter
+}
+
+impl< T : Bound > Default for EnumScalarGenericVariant2FormerStorage< T >
+{
+  fn default() -> Self
+  {
+    Self { field0 : None, field1 : None, _phantom : PhantomData }
+  }
+}
+
+impl< T : Bound > Storage for EnumScalarGenericVariant2FormerStorage< T >
+{
+  type Preformed = ( InnerScalar< T >, bool );
+}
+
+impl< T : Bound + Default > StoragePreform for EnumScalarGenericVariant2FormerStorage< T >
+{
+  fn preform( mut self ) -> Self::Preformed
+  {
+    let field0 = self.field0.take().unwrap_or_default();
+    let field1 = self.field1.take().unwrap_or_default();
+    ( field0, field1 )
+  }
+}
+
+#[ derive( Default, Debug ) ]
+pub struct EnumScalarGenericVariant2FormerDefinitionTypes< T : Bound, C = (), F = EnumScalarGeneric< T > >
+{
+  _p : PhantomData< ( T, C, F ) >,
+}
+
+impl< T : Bound, C, F > FormerDefinitionTypes for EnumScalarGenericVariant2FormerDefinitionTypes< T, C, F >
+{
+  type Storage = EnumScalarGenericVariant2FormerStorage< T >;
+  type Context = C;
+  type Formed = F;
+}
+
+impl< T : Bound, C, F > FormerMutator for EnumScalarGenericVariant2FormerDefinitionTypes< T, C, F > {}
+
+#[ derive( Default, Debug ) ]
+pub struct EnumScalarGenericVariant2FormerDefinition< T : Bound, C = (), F = EnumScalarGeneric< T >, E = EnumScalarGenericVariant2End< T > >
+{
+  _p : PhantomData< ( T, C, F, E ) >,
+}
+
+impl< T : Bound, C, F, E > FormerDefinition for EnumScalarGenericVariant2FormerDefinition< T, C, F, E >
+where
+  E : FormingEnd< EnumScalarGenericVariant2FormerDefinitionTypes< T, C, F > >,
+{
+  type Storage = EnumScalarGenericVariant2FormerStorage< T >;
+  type Context = C;
+  type Formed = F;
+  type Types = EnumScalarGenericVariant2FormerDefinitionTypes< T, C, F >;
+  type End = E;
+}
+
+pub struct EnumScalarGenericVariant2Former< T : Bound, Definition = EnumScalarGenericVariant2FormerDefinition< T > >
+where
+  Definition : FormerDefinition< Storage = EnumScalarGenericVariant2FormerStorage< T > >,
+{
+  storage : Definition::Storage,
+  context : Option< Definition::Context >,
+  on_end : Option< Definition::End >,
+}
+
+impl< T : Bound, Definition > EnumScalarGenericVariant2Former< T, Definition >
+where
+  Definition : FormerDefinition< Storage = EnumScalarGenericVariant2FormerStorage< T > >,
+{
+  #[ inline( always ) ] pub fn form( self ) -> < Definition::Types as FormerDefinitionTypes >::Formed { self.end() }
+  #[ inline( always ) ] pub fn end( mut self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
+  {
+    let on_end = self.on_end.take().unwrap();
+    let context = self.context.take();
+    < Definition::Types as FormerMutator >::form_mutation( &mut self.storage, &mut self.context );
+    on_end.call( self.storage, context )
+  }
+  #[ inline( always ) ] pub fn begin
+  ( storage : Option< Definition::Storage >, context : Option< Definition::Context >, on_end : Definition::End ) -> Self
+  { Self { storage : storage.unwrap_or_default(), context, on_end : Some( on_end ) } }
+  #[ allow( dead_code ) ]
+  #[ inline( always ) ] pub fn new( on_end : Definition::End ) -> Self { Self::begin( None, None, on_end ) }
+
+  // Setters for fields
+  #[ inline ] pub fn _0( mut self, src : impl Into< InnerScalar< T > > ) -> Self
+  { self.storage.field0 = Some( src.into() ); self }
+  #[ inline ] pub fn _1( mut self, src : impl Into< bool > ) -> Self
+  { self.storage.field1 = Some( src.into() ); self }
+}
+
+#[ derive( Default, Debug ) ]
+pub struct EnumScalarGenericVariant2End< T : Bound >
+{
+  _phantom : PhantomData< T >,
+}
+
+impl< T : Bound > FormingEnd< EnumScalarGenericVariant2FormerDefinitionTypes< T, (), EnumScalarGeneric< T > > >
+for EnumScalarGenericVariant2End< T >
+{
+  #[ inline( always ) ]
+  fn call
+  (
+    &self,
+    sub_storage : EnumScalarGenericVariant2FormerStorage< T >,
+    _context : Option< () >,
+  )
+  -> EnumScalarGeneric< T >
+  {
+    let ( field0, field1 ) = sub_storage.preform();
+    EnumScalarGeneric::Variant2( field0, field1 )
+  }
+}
+// --- End Manual Former Setup for Variant2 ---
+
+
+// --- Manual implementation of static methods on EnumScalarGeneric ---
 impl< T : Bound > EnumScalarGeneric< T > // Apply bounds from enum definition
 {
   /// Manually implemented constructor for the Variant1 variant (scalar style).
@@ -44,7 +183,6 @@ impl< T : Bound > EnumScalarGeneric< T > // Apply bounds from enum definition
 
   /// Manually implemented former builder for the Variant2 variant.
   #[ inline( always ) ]
-  // FIX: Renamed to snake_case
   pub fn variant_2() -> EnumScalarGenericVariant2Former< T >
   {
     EnumScalarGenericVariant2Former::begin( None, None, EnumScalarGenericVariant2End::< T >::default() )

@@ -32,7 +32,7 @@ impl BoundB for TypeForU {}
 fn independent_generics_tuple_variant()
 {
   let got = EnumG5::< TypeForT >::v_1()
-    .inner_field( TypeForU( 99 ) )
+    ._0( TypeForU( 99 ) ) // Use the generated setter name for the first field
     .form();
 
   let expected_inner = InnerG5::< TypeForU > { inner_field : TypeForU( 99 ) };
@@ -44,7 +44,8 @@ fn independent_generics_tuple_variant()
 #[ test ]
 fn default_construction_independent_generics()
 {
-  let got = EnumG5::< TypeForT >::v1()
+  let got = EnumG5::< TypeForT >::v_1()
+    ._0( TypeForU::default() ) // Use the generated setter name for the first field
     .form();
 
   let expected_inner = InnerG5::< TypeForU > { inner_field : TypeForU::default() };

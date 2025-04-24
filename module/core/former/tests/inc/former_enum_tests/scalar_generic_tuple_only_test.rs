@@ -21,7 +21,7 @@
 /// test files for this scenario.
 
 use super::*; // Imports items from the parent file (either manual or derive)
-use std::marker::PhantomData; // Keep PhantomData import needed for manual test case construction
+// use std::marker::PhantomData; // Keep PhantomData import needed for manual test case construction
 
 // Define a simple bound for testing generics
 pub trait Bound : core::fmt::Debug + Default + Clone + PartialEq {}
@@ -71,7 +71,6 @@ fn scalar_on_multi_generic_tuple_variant()
   // `Variant2(InnerScalar<T>, bool)` marked with `#[scalar]`.
   let inner_data = InnerScalar { data: MyType( "value2".to_string() ) };
   // Expect a former builder `variant_2` with setters `_0` and `_1`
-  // FIX: Changed call to use former builder pattern
   let got = EnumScalarGeneric::< MyType >::variant_2()
     ._0( inner_data.clone() )
     ._1( true )
@@ -81,7 +80,6 @@ fn scalar_on_multi_generic_tuple_variant()
   assert_eq!( got, expected );
 
   // Test with Into
-  // FIX: Changed call to use former builder pattern
   let got_into = EnumScalarGeneric::< MyType >::variant_2()
     ._0( MyType( "value2_into".to_string() ) )
     ._1( false )

@@ -1152,7 +1152,8 @@ fn generate_implicit_former_for_variant
       let ty = &f_data.ty; // Use original type for setter input
       let is_optional = typ::is_optional( ty ); // <<< Calculate is_optional
       let non_optional_typ = if is_optional { typ::parameter_first( ty )? } else { ty }; // <<< Calculate non_optional_ty
-      let setter_name = &f_data.ident; // Use field ident as setter name for implicit former
+      // Use field identifier as setter name for implicit former (e.g., _0, _1 for tuple variants)
+      let setter_name = &f_data.ident;
       let doc = format!( "Setter for the '{field_ident}' field." );
 
       Ok( quote!

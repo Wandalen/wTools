@@ -66,9 +66,7 @@ impl< C, F > FormerDefinitionTypes for OtherInnerDataFormerDefinitionTypes< C, F
   type Context = C;
   type Formed = F;
 }
-// --- Added FormerMutator impl ---
 impl< C, F > FormerMutator for OtherInnerDataFormerDefinitionTypes< C, F > {}
-// --- End Added FormerMutator impl ---
 #[ derive( Default, Debug ) ]
 pub struct OtherInnerDataFormerDefinition< C = (), F = OtherInnerData, E = ReturnPreformed >
 {
@@ -144,12 +142,139 @@ enum EnumWithMultiField
   ImplicitSubform( OtherInnerData ),
 }
 
+// --- Manual Former Setup for MultiTuple Variant ---
+pub struct EnumWithMultiFieldMultiTupleFormerStorage
+{
+  field0 : Option< i32 >,
+  field1 : Option< String >,
+  field2 : Option< bool >,
+}
+impl Default for EnumWithMultiFieldMultiTupleFormerStorage
+{
+  fn default() -> Self
+  {
+    Self { field0 : None, field1 : None, field2 : None }
+  }
+}
+impl Storage for EnumWithMultiFieldMultiTupleFormerStorage
+{
+  type Preformed = ( i32, String, bool );
+}
+impl StoragePreform for EnumWithMultiFieldMultiTupleFormerStorage
+{
+  fn preform( mut self ) -> Self::Preformed
+  {
+    let field0 = self.field0.take().unwrap_or_default();
+    let field1 = self.field1.take().unwrap_or_default();
+    let field2 = self.field2.take().unwrap_or_default();
+    ( field0, field1, field2 )
+  }
+}
+#[ derive( Default, Debug ) ]
+pub struct EnumWithMultiFieldMultiTupleFormerDefinitionTypes< C = (), F = EnumWithMultiField >
+{
+  _p : core::marker::PhantomData< ( C, F ) >,
+}
+impl< C, F > FormerDefinitionTypes for EnumWithMultiFieldMultiTupleFormerDefinitionTypes< C, F >
+{
+  type Storage = EnumWithMultiFieldMultiTupleFormerStorage;
+  type Context = C;
+  type Formed = F;
+}
+impl< C, F > FormerMutator for EnumWithMultiFieldMultiTupleFormerDefinitionTypes< C, F > {}
+#[ derive( Default, Debug ) ]
+pub struct EnumWithMultiFieldMultiTupleFormerDefinition< C = (), F = EnumWithMultiField, E = EnumWithMultiFieldMultiTupleEnd >
+{
+  _p : core::marker::PhantomData< ( C, F, E ) >,
+}
+impl< C, F, E > FormerDefinition for EnumWithMultiFieldMultiTupleFormerDefinition< C, F, E >
+where
+  E : FormingEnd< EnumWithMultiFieldMultiTupleFormerDefinitionTypes< C, F > >,
+{
+  type Storage = EnumWithMultiFieldMultiTupleFormerStorage;
+  type Context = C;
+  type Formed = F;
+  type Types = EnumWithMultiFieldMultiTupleFormerDefinitionTypes< C, F >;
+  type End = E;
+}
+pub struct EnumWithMultiFieldMultiTupleFormer< Definition = EnumWithMultiFieldMultiTupleFormerDefinition >
+where
+  Definition : FormerDefinition< Storage = EnumWithMultiFieldMultiTupleFormerStorage >,
+{
+  storage : Definition::Storage,
+  context : Option< Definition::Context >,
+  on_end : Option< Definition::End >,
+}
+impl< Definition > EnumWithMultiFieldMultiTupleFormer< Definition >
+where
+  Definition : FormerDefinition< Storage = EnumWithMultiFieldMultiTupleFormerStorage >,
+{
+  pub fn _0( mut self, value : impl Into< i32 > ) -> Self
+  {
+    self.storage.field0 = Some( value.into() );
+    self
+  }
+  pub fn _1( mut self, value : impl Into< String > ) -> Self
+  {
+    self.storage.field1 = Some( value.into() );
+    self
+  }
+  pub fn _2( mut self, value : impl Into< bool > ) -> Self
+  {
+    self.storage.field2 = Some( value.into() );
+    self
+  }
+  pub fn form( self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
+  {
+    let end = self.on_end.unwrap();
+    end.call( self.storage, self.context )
+  }
+  pub fn begin
+  (
+    storage : Option< Definition::Storage >,
+    context : Option< Definition::Context >,
+    on_end : Definition::End,
+  ) -> Self
+  {
+    Self
+    {
+      storage : storage.unwrap_or_default(),
+      context,
+      on_end : Some( on_end ),
+    }
+  }
+  #[ allow( dead_code ) ]
+  pub fn new( on_end : Definition::End ) -> Self
+  {
+    Self::begin( None, None, on_end )
+  }
+}
+#[ derive( Default, Debug ) ]
+pub struct EnumWithMultiFieldMultiTupleEnd;
+impl FormingEnd< EnumWithMultiFieldMultiTupleFormerDefinitionTypes< (), EnumWithMultiField > >
+for EnumWithMultiFieldMultiTupleEnd
+{
+  #[ inline( always ) ]
+  fn call
+  (
+    &self,
+    sub_storage : EnumWithMultiFieldMultiTupleFormerStorage,
+    _context : Option< () >,
+  )
+  -> EnumWithMultiField
+  {
+    let ( field0, field1, field2 ) = sub_storage.preform();
+    EnumWithMultiField::MultiTuple( field0, field1, field2 )
+  }
+}
+// --- End Manual Former Setup for MultiTuple Variant ---
+
+
 // --- Specialized End Structs ---
 #[ derive( Default, Debug ) ]
 struct EnumWithMultiFieldStructEnd; // End struct for the Struct variant
 #[ derive( Default, Debug ) ]
 struct EnumWithMultiFieldImplicitSubformEnd; // End struct for the ImplicitSubform variant
-
 // --- Manual implementation of static methods ---
 impl EnumWithMultiField
 {
@@ -160,11 +285,11 @@ impl EnumWithMultiField
     Self::Simple( value.into() )
   }
 
-  /// Manually implemented constructor for the MultiTuple variant.
+  /// Manually implemented former builder for the MultiTuple variant.
   #[ inline( always ) ]
-  pub fn multi_tuple( field0 : i32, field1 : impl Into< String >, field2 : bool ) -> Self
+  pub fn multi_tuple() -> EnumWithMultiFieldMultiTupleFormer
   {
-    Self::MultiTuple( field0, field1.into(), field2 )
+    EnumWithMultiFieldMultiTupleFormer::begin( None, None, EnumWithMultiFieldMultiTupleEnd::default() )
   }
 
   /// Manually implemented constructor for the Empty variant.
@@ -194,7 +319,6 @@ impl EnumWithMultiField
 }
 
 // --- FormingEnd Implementations ---
-
 // End for Struct variant
 impl FormingEnd< InnerDataFormerDefinitionTypes< (), EnumWithMultiField > >
 for EnumWithMultiFieldStructEnd

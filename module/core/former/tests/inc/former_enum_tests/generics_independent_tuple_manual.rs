@@ -123,7 +123,7 @@ where Definition : FormerDefinition< Storage = InnerG5FormerStorage< U > >
   #[ inline( always ) ] pub fn new( on_end : Definition::End ) -> Self { Self::begin( None, None, on_end ) }
 
   // Setter for inner_field
-  #[ inline ] pub fn inner_field( mut self, src : impl Into< U > ) -> Self
+  #[ inline ] pub fn _0( mut self, src : impl Into< U > ) -> Self
   { self.storage.inner_field = Some( src.into() ); self }
 }
 
@@ -133,6 +133,12 @@ pub enum EnumG5< T : BoundA > // BoundA required by the enum
 {
   // CORRECTED: Added PhantomData<T> to use the generic parameter
   V1( InnerG5< TypeForU >, PhantomData< T > ),
+}
+
+// Implement Into manually for testing the constructor signature
+impl< U : BoundB > From< U > for InnerG5< U >
+{
+  fn from( data : U ) -> Self { Self { inner_field : data } }
 }
 
 // --- Specialized End Struct for the V1 Variant ---
