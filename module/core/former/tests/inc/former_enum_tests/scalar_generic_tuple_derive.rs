@@ -27,6 +27,9 @@ pub enum EnumScalarGeneric< T : Bound > // Enum bound
   #[ scalar ] // Explicitly request scalar constructor
   Variant1( InnerScalar< T > ), // Tuple variant with one generic field
 
+  // qqq : xxx : attribute 'scalar ' is for direct constructor EnumScalarGeneric::variant2( a, b ) or simply variant2( a, b )
+  // attribute 'subformer_scalar' it's actually below, so we have a rpoblem in proc macro
+  // check readme.md and advanced.md for more information on disinction
   #[ scalar ] // Explicitly request scalar constructor
   Variant2( InnerScalar< T >, bool ), // Tuple variant with generic and non-generic fields
 }
