@@ -1,3 +1,4 @@
+// File: module/core/former_meta/src/derive_former/field_attrs.rs
 //! Attributes of a field.
 #[ allow( clippy::wildcard_imports ) ]
 use super::*;
@@ -8,16 +9,23 @@ use macro_tools::
   AttributeComponent,
   AttributePropertyComponent,
   AttributePropertyOptionalBoolean,
-  AttributePropertyOptionalSyn,
+  AttributePropertyOptionalSyn, // <<< Reverted to use this
   AttributePropertyOptionalSingletone,
+  // syn::parse::{ Parse, ParseStream }, // Removed unused imports
+  proc_macro2::TokenStream, // Import TokenStream
+  // syn::spanned::Spanned, // No longer needed here
 };
-use former_types::{ Assign, OptionExt }; // Added space before ;
+use former_types::{ Assign, OptionExt };
+
+// ==================================
+// FieldAttributes Definition
+// ==================================
 
 ///
 /// Attributes of a field.
 ///
 
-#[ derive( Debug, Default, Clone ) ] // Added Clone
+#[ derive( Debug, Default, Clone ) ] // <<< Added Clone
 pub struct FieldAttributes
 {
   /// Configuration attribute for a field.
@@ -41,25 +49,8 @@ pub struct FieldAttributes
 
 impl FieldAttributes
 {
-
   /// Creates an instance of `FieldAttributes` from a list of attributes.
-  ///
-  /// # Parameters
-  ///
-  /// * `attrs`: An iterator over references to `syn::Attribute`.
-  ///
-  /// # Returns
-  ///
-  /// * `Result< Self >`: A result containing an instance of `FieldAttributes` on success,
-  ///   or a `syn::Error` on failure.
-  ///
-  /// This function processes each attribute in the provided iterator and assigns the
-  /// appropriate attribute type to the respective field in the `FieldAttributes` struct.
-  ///
-  pub fn from_attrs< 'a >
-  (
-    attrs : impl Iterator< Item = &'a syn::Attribute >
-  ) -> Result< Self >
+  pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
   {
     let mut result = Self::default();
     // Known attributes for error reporting
@@ -77,7 +68,7 @@ impl FieldAttributes
     );
 
     // Helper closure to create a syn::Error for unknown attributes
-    let error = | attr : &syn::Attribute | -> syn::Error // Space around |
+    let error = | attr : &syn::Attribute | -> syn::Error
     {
       syn_err!
       (
@@ -91,14 +82,8 @@ impl FieldAttributes
     for attr in attrs
     {
       // Get the attribute key as a string
-      let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?; // Space around ||
+      let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
       let key_str = format!( "{key_ident}" );
-
-      // attributes does not have to be known
-      // if attr::is_standard( &key_str )
-      // {
-      //   continue;
-      // }
 
       // Match the attribute key and assign to the appropriate field
       match key_str.as_ref()
@@ -109,21 +94,17 @@ impl FieldAttributes
         AttributeSubformCollectionSetter::KEYWORD => result.assign( AttributeSubformCollectionSetter::from_meta( attr )? ),
         AttributeSubformEntrySetter::KEYWORD => result.assign( AttributeSubformEntrySetter::from_meta( attr )? ),
         AttributePropertyArgForConstructor::KEYWORD => result.assign( AttributePropertyArgForConstructor::from( true ) ),
-        // "debug" => {}, // Assuming debug is handled elsewhere or implicitly
         _ => {}, // Allow unknown attributes
-        // _ => return Err( error( attr ) ),
       }
     }
 
     Ok( result )
   }
-
 }
 
 // = Assign implementations for FieldAttributes =
-
 impl< IntoT > Assign< AttributeConfig, IntoT > for FieldAttributes
-where // Where clause formatting
+where
   IntoT : Into< AttributeConfig >,
 {
   #[ inline( always ) ]
@@ -135,7 +116,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributeScalarSetter, IntoT > for FieldAttributes
-where // Where clause formatting
+where
   IntoT : Into< AttributeScalarSetter >,
 {
   #[ inline( always ) ]
@@ -147,7 +128,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributeSubformScalarSetter, IntoT > for FieldAttributes
-where // Where clause formatting
+where
   IntoT : Into< AttributeSubformScalarSetter >,
 {
   #[ inline( always ) ]
@@ -159,7 +140,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributeSubformCollectionSetter, IntoT > for FieldAttributes
-where // Where clause formatting
+where
   IntoT : Into< AttributeSubformCollectionSetter >,
 {
   #[ inline( always ) ]
@@ -171,7 +152,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributeSubformEntrySetter, IntoT > for FieldAttributes
-where // Where clause formatting
+where
   IntoT : Into< AttributeSubformEntrySetter >,
 {
   #[ inline( always ) ]
@@ -183,7 +164,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributePropertyArgForConstructor, IntoT > for FieldAttributes
-where // Where clause formatting
+where
   IntoT : Into< AttributePropertyArgForConstructor >,
 {
   #[ inline( always ) ]
@@ -195,13 +176,17 @@ where // Where clause formatting
 }
 
 
+// ==================================
+// Attribute Definitions
+// ==================================
+
 ///
 /// Attribute to hold configuration information about the field such as default value.
 ///
 /// `#[ default( 13 ) ]`
 ///
 
-#[ derive( Debug, Default, Clone ) ] // Added Clone
+#[ derive( Debug, Default, Clone ) ] // <<< Added Clone
 pub struct AttributeConfig
 {
 
@@ -235,7 +220,7 @@ impl AttributeComponent for AttributeConfig
 }
 
 impl< IntoT > Assign< AttributeConfig, IntoT > for AttributeConfig
-where // Where clause formatting
+where
   IntoT : Into< AttributeConfig >,
 {
   #[ inline( always ) ]
@@ -247,7 +232,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributePropertyDefault, IntoT > for AttributeConfig
-where // Where clause formatting
+where
   IntoT : Into< AttributePropertyDefault >,
 {
   #[ inline( always ) ]
@@ -263,12 +248,12 @@ impl syn::parse::Parse for AttributeConfig
   {
     let mut result = Self::default();
 
-    let error = | ident : &syn::Ident | -> syn::Error // Space around |
+    let error = | ident : &syn::Ident | -> syn::Error
     {
       let known = ct::concatcp!
       (
         "Known entries of attribute ", AttributeConfig::KEYWORD, " are : ",
-        AttributePropertyDefault::KEYWORD,
+        DefaultMarker::KEYWORD, // <<< Use Marker::KEYWORD
         ".",
       );
       syn_err!
@@ -290,7 +275,8 @@ impl syn::parse::Parse for AttributeConfig
         let ident : syn::Ident = input.parse()?;
         match ident.to_string().as_str()
         {
-          AttributePropertyDefault::KEYWORD => result.assign( AttributePropertyDefault::parse( input )? ),
+          // <<< Reverted to use AttributePropertyDefault::parse >>>
+          DefaultMarker::KEYWORD => result.assign( AttributePropertyDefault::parse( input )? ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -310,11 +296,11 @@ impl syn::parse::Parse for AttributeConfig
   }
 }
 
-
 /// Attribute for scalar setters.
-#[ derive( Debug, Default, Clone ) ] // Added Clone
+#[ derive( Debug, Default, Clone ) ] // <<< Added Clone
 pub struct AttributeScalarSetter
 {
+  /// Optional identifier for naming the setter.
   pub name : AttributePropertyName,
   /// Controls the generation of a setter method. If false, a setter method is not generated.
   pub setter : AttributePropertySetter,
@@ -330,7 +316,7 @@ impl AttributeScalarSetter
   #[ allow( dead_code ) ]
   pub fn setter( &self ) -> bool
   {
-    self.setter.is_none() || self.setter.unwrap() // Space around ||
+    self.setter.is_none() || self.setter.unwrap()
   }
 
 }
@@ -360,7 +346,7 @@ impl AttributeComponent for AttributeScalarSetter
 }
 
 impl< IntoT > Assign< AttributeScalarSetter, IntoT > for AttributeScalarSetter
-where // Where clause formatting
+where
   IntoT : Into< AttributeScalarSetter >,
 {
   #[ inline( always ) ]
@@ -374,7 +360,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributePropertyName, IntoT > for AttributeScalarSetter
-where // Where clause formatting
+where
   IntoT : Into< AttributePropertyName >,
 {
   #[ inline( always ) ]
@@ -385,7 +371,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributePropertySetter, IntoT > for AttributeScalarSetter
-where // Where clause formatting
+where
   IntoT : Into< AttributePropertySetter >,
 {
   #[ inline( always ) ]
@@ -396,7 +382,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributePropertyDebug, IntoT > for AttributeScalarSetter
-where // Where clause formatting
+where
   IntoT : Into< AttributePropertyDebug >,
 {
   #[ inline( always ) ]
@@ -412,7 +398,7 @@ impl syn::parse::Parse for AttributeScalarSetter
   {
     let mut result = Self::default();
 
-    let error = | ident : &syn::Ident | -> syn::Error // Space around |
+    let error = | ident : &syn::Ident | -> syn::Error
     {
       let known = ct::concatcp!
       (
@@ -463,11 +449,11 @@ impl syn::parse::Parse for AttributeScalarSetter
   }
 }
 
-
 /// Attribute for subform scalar setters.
-#[ derive( Debug, Default, Clone ) ] // Added Clone
+#[ derive( Debug, Default, Clone ) ] // <<< Added Clone
 pub struct AttributeSubformScalarSetter
 {
+  /// Optional identifier for naming the setter.
   pub name : AttributePropertyName,
   /// Controls the generation of a setter method. If false, a setter method is not generated.
   pub setter : AttributePropertySetter,
@@ -482,7 +468,7 @@ impl AttributeSubformScalarSetter
   /// Should setter be generated or not?
   pub fn setter( &self ) -> bool
   {
-    self.setter.is_none() || self.setter.unwrap() // Space around ||
+    self.setter.is_none() || self.setter.unwrap()
   }
 
 }
@@ -512,7 +498,7 @@ impl AttributeComponent for AttributeSubformScalarSetter
 }
 
 impl< IntoT > Assign< AttributeSubformScalarSetter, IntoT > for AttributeSubformScalarSetter
-where // Where clause formatting
+where
   IntoT : Into< AttributeSubformScalarSetter >,
 {
   #[ inline( always ) ]
@@ -526,7 +512,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributePropertyName, IntoT > for AttributeSubformScalarSetter
-where // Where clause formatting
+where
   IntoT : Into< AttributePropertyName >,
 {
   #[ inline( always ) ]
@@ -537,7 +523,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributePropertySetter, IntoT > for AttributeSubformScalarSetter
-where // Where clause formatting
+where
   IntoT : Into< AttributePropertySetter >,
 {
   #[ inline( always ) ]
@@ -548,7 +534,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributePropertyDebug, IntoT > for AttributeSubformScalarSetter
-where // Where clause formatting
+where
   IntoT : Into< AttributePropertyDebug >,
 {
   #[ inline( always ) ]
@@ -564,7 +550,7 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
   {
     let mut result = Self::default();
 
-    let error = | ident : &syn::Ident | -> syn::Error // Space around |
+    let error = | ident : &syn::Ident | -> syn::Error
     {
       let known = ct::concatcp!
       (
@@ -615,11 +601,11 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
   }
 }
 
-
 /// Attribute for subform collection setters.
-#[ derive( Debug, Default, Clone ) ] // Added Clone
+#[ derive( Debug, Default, Clone ) ] // <<< Added Clone
 pub struct AttributeSubformCollectionSetter
 {
+  /// Optional identifier for naming the setter.
   pub name : AttributePropertyName,
   /// Controls the generation of a setter method. If false, a setter method is not generated.
   pub setter : AttributePropertySetter,
@@ -636,7 +622,7 @@ impl AttributeSubformCollectionSetter
   /// Should setter be generated or not?
   pub fn setter( &self ) -> bool
   {
-    self.setter.is_none() || self.setter.unwrap() // Space around ||
+    self.setter.is_none() || self.setter.unwrap()
   }
 
 }
@@ -666,7 +652,7 @@ impl AttributeComponent for AttributeSubformCollectionSetter
 }
 
 impl< IntoT > Assign< AttributeSubformCollectionSetter, IntoT > for AttributeSubformCollectionSetter
-where // Where clause formatting
+where
   IntoT : Into< AttributeSubformCollectionSetter >,
 {
   #[ inline( always ) ]
@@ -681,7 +667,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributePropertyName, IntoT > for AttributeSubformCollectionSetter
-where // Where clause formatting
+where
   IntoT : Into< AttributePropertyName >,
 {
   #[ inline( always ) ]
@@ -692,7 +678,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributePropertySetter, IntoT > for AttributeSubformCollectionSetter
-where // Where clause formatting
+where
   IntoT : Into< AttributePropertySetter >,
 {
   #[ inline( always ) ]
@@ -703,7 +689,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributePropertyDefinition, IntoT > for AttributeSubformCollectionSetter
-where // Where clause formatting
+where
   IntoT : Into< AttributePropertyDefinition >,
 {
   #[ inline( always ) ]
@@ -714,7 +700,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributePropertyDebug, IntoT > for AttributeSubformCollectionSetter
-where // Where clause formatting
+where
   IntoT : Into< AttributePropertyDebug >,
 {
   #[ inline( always ) ]
@@ -730,7 +716,7 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
   {
     let mut result = Self::default();
 
-    let error = | ident : &syn::Ident | -> syn::Error // Space around |
+    let error = | ident : &syn::Ident | -> syn::Error
     {
       let known = ct::concatcp!
       (
@@ -738,7 +724,7 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
         AttributePropertyName::KEYWORD,
         ", ", AttributePropertySetter::KEYWORD,
         ", ", AttributePropertyDebug::KEYWORD,
-        ", ", AttributePropertyDefinition::KEYWORD,
+        ", ", DefinitionMarker::KEYWORD, // <<< Use Marker::KEYWORD
         ".",
       );
       syn_err!
@@ -763,7 +749,8 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
           AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
           AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
-          AttributePropertyDefinition::KEYWORD => result.assign( AttributePropertyDefinition::parse( input )? ),
+          // <<< Reverted to use AttributePropertyDefinition::parse >>>
+          DefinitionMarker::KEYWORD => result.assign( AttributePropertyDefinition::parse( input )? ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -783,11 +770,11 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
   }
 }
 
-
 /// Attribute for subform entry setters.
-#[ derive( Debug, Default, Clone ) ] // Added Clone
+#[ derive( Debug, Default, Clone ) ] // <<< Added Clone
 pub struct AttributeSubformEntrySetter
 {
+  /// An optional identifier that names the setter. It is parsed from inputs
   /// like `name = my_field`.
   pub name : AttributePropertyName,
   /// Disable generation of setter.
@@ -804,7 +791,7 @@ impl AttributeSubformEntrySetter
   /// Should setter be generated or not?
   pub fn setter( &self ) -> bool
   {
-    self.setter.as_ref().is_none() || self.setter.as_ref().unwrap() // Space around ||
+    self.setter.as_ref().is_none() || self.setter.as_ref().unwrap()
   }
 
 }
@@ -834,7 +821,7 @@ impl AttributeComponent for AttributeSubformEntrySetter
 }
 
 impl< IntoT > Assign< AttributeSubformEntrySetter, IntoT > for AttributeSubformEntrySetter
-where // Where clause formatting
+where
   IntoT : Into< AttributeSubformEntrySetter >,
 {
   #[ inline( always ) ]
@@ -848,7 +835,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributePropertyName, IntoT > for AttributeSubformEntrySetter
-where // Where clause formatting
+where
   IntoT : Into< AttributePropertyName >,
 {
   #[ inline( always ) ]
@@ -859,7 +846,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributePropertySetter, IntoT > for AttributeSubformEntrySetter
-where // Where clause formatting
+where
   IntoT : Into< AttributePropertySetter >,
 {
   #[ inline( always ) ]
@@ -870,7 +857,7 @@ where // Where clause formatting
 }
 
 impl< IntoT > Assign< AttributePropertyDebug, IntoT > for AttributeSubformEntrySetter
-where // Where clause formatting
+where
   IntoT : Into< AttributePropertyDebug >,
 {
   #[ inline( always ) ]
@@ -886,7 +873,7 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
   {
     let mut result = Self::default();
 
-    let error = | ident : &syn::Ident | -> syn::Error // Space around |
+    let error = | ident : &syn::Ident | -> syn::Error
     {
       let known = ct::concatcp!
       (
@@ -937,13 +924,13 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
   }
 }
 
-// == attribute properties ==
-
-// =
+// ==================================
+// Attribute Property Definitions
+// ==================================
 
 /// Marker type for attribute property to specify whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-#[ derive( Debug, Default, Clone, Copy ) ]
+#[ derive( Debug, Default, Clone, Copy ) ] // <<< Added Clone
 pub struct DebugMarker;
 
 impl AttributePropertyComponent for DebugMarker
@@ -959,7 +946,7 @@ pub type AttributePropertyDebug = AttributePropertyOptionalSingletone< DebugMark
 
 /// Disable generation of setter.
 /// Attributes still might generate some helper methods to reuse by custom setter.
-#[ derive( Debug, Default, Clone, Copy ) ]
+#[ derive( Debug, Default, Clone, Copy ) ] // <<< Added Clone
 pub struct SetterMarker;
 
 impl AttributePropertyComponent for SetterMarker
@@ -975,7 +962,7 @@ pub type AttributePropertySetter = AttributePropertyOptionalBoolean< SetterMarke
 
 /// Marker type for attribute property of optional identifier that names the setter. It is parsed from inputs
 /// like `name = my_field`.
-#[ derive( Debug, Default, Clone, Copy ) ]
+#[ derive( Debug, Default, Clone, Copy ) ] // <<< Added Clone
 pub struct NameMarker;
 
 impl AttributePropertyComponent for NameMarker
@@ -990,7 +977,7 @@ pub type AttributePropertyName = AttributePropertyOptionalSyn< syn::Ident, NameM
 // =
 
 /// Marker type for default value to use for a field.
-#[ derive( Debug, Default, Clone, Copy ) ]
+#[ derive( Debug, Default, Clone, Copy ) ] // <<< Added Clone
 pub struct DefaultMarker;
 
 impl AttributePropertyComponent for DefaultMarker
@@ -1000,12 +987,13 @@ impl AttributePropertyComponent for DefaultMarker
 
 /// An optional identifier that names the setter. It is parsed from inputs
 /// like `name = my_field`.
+// <<< REVERTED TYPE ALIAS >>>
 pub type AttributePropertyDefault = AttributePropertyOptionalSyn< syn::Expr, DefaultMarker >;
 
 // =
 
 /// Marker type for definition of the collection former to use, e.g., `former::VectorFormer`.
-#[ derive( Debug, Default, Clone, Copy ) ]
+#[ derive( Debug, Default, Clone, Copy ) ] // <<< Added Clone
 pub struct DefinitionMarker;
 
 impl AttributePropertyComponent for DefinitionMarker
@@ -1014,13 +1002,14 @@ impl AttributePropertyComponent for DefinitionMarker
 }
 
 /// Definition of the collection former to use, e.g., `former::VectorFormer`.
+// <<< REVERTED TYPE ALIAS >>>
 pub type AttributePropertyDefinition = AttributePropertyOptionalSyn< syn::Type, DefinitionMarker >;
 
 // =
 
 /// Marker type for attribute property marking a field as a constructor argument.
 /// Defaults to `false`.
-#[ derive( Debug, Default, Clone, Copy ) ]
+#[ derive( Debug, Default, Clone, Copy ) ] // <<< Added Clone
 pub struct ArgForConstructorMarker;
 
 impl AttributePropertyComponent for ArgForConstructorMarker

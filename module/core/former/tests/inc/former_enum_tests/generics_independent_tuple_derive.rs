@@ -38,7 +38,7 @@ impl< U : BoundB > From< U > for InnerG5< U >
 // --- Enum Definition with Bounds ---
 // Apply Former derive here. This is what we are testing.
 #[ derive( Debug, PartialEq, Clone, former::Former ) ]
-#[ debug ] // Uncomment to see generated code later
+// #[ debug ] // Uncomment to see generated code later
 pub enum EnumG5< T : BoundA > // BoundA required by the enum
 {
   // Variant holds InnerG5 instantiated with the *concrete* TypeForU

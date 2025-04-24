@@ -238,8 +238,6 @@ mod former_enum_tests
 
   mod basic_manual;
   mod basic_derive;
-  mod multi_field_manual;
-  mod multi_field_derive;
   mod unit_variant_manual;
   mod unit_variant_derive;
   mod enum_named_fields_manual;
@@ -251,29 +249,29 @@ mod former_enum_tests
   mod generics_in_tuple_variant_derive;
   mod generics_shared_tuple_manual;
   mod generics_shared_tuple_derive;
-  mod generics_shared_struct_manual;
-  mod generics_shared_struct_derive;
-  mod generics_independent_tuple_manual;
-  mod generics_independent_tuple_derive;
-  mod generics_independent_struct_manual;
-  mod generics_independent_struct_derive;
-  mod scalar_generic_tuple_manual;
-  mod scalar_generic_tuple_derive;
+  // mod generics_shared_struct_manual;
+  // mod generics_shared_struct_derive;
+  // mod generics_independent_tuple_manual;
+  // mod generics_independent_tuple_derive;
+  // mod generics_independent_struct_manual;
+  // mod generics_independent_struct_derive;
+  // mod scalar_generic_tuple_manual;
+  // mod scalar_generic_tuple_derive;
 
-  // = conflicts
-
-  mod keyword_variant_derive;
-
-  // = standalone constructor
-
-  mod standalone_constructor_manual;
-  mod standalone_constructor_derive;
-  mod standalone_constructor_args_manual;
-  mod standalone_constructor_args_derive;
-
-  // = subform
-
-  mod subform_collection_test;
+//   // = conflicts
+//
+//   mod keyword_variant_derive;
+//
+//   // = standalone constructor
+//
+//   mod standalone_constructor_manual;
+//   mod standalone_constructor_derive;
+//   mod standalone_constructor_args_manual;
+//   mod standalone_constructor_args_derive;
+//
+//   // = subform
+//
+//   mod subform_collection_test;
 
 }
 

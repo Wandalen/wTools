@@ -180,8 +180,11 @@ impl< 'a > FormerField< 'a >
 
     let ident = self.ident;
     let ty = self.ty;
+
+    // <<< Reverted: Use AttributePropertyOptionalSyn and ref_internal() >>>
     let default : Option< &syn::Expr > = self.attrs.config.as_ref()
     .and_then( | attr | attr.default.ref_internal() );
+    // <<< End Revert >>>
 
     let tokens = if self.is_optional
     {
@@ -558,12 +561,13 @@ field : {field_ident}",
       field_ident
     };
     // example : `former::VectorDefinition`
-    let subformer_definition = &attr.definition;
-    let subformer_definition = if subformer_definition.is_some()
+    // <<< Reverted: Use ref_internal() on AttributePropertyOptionalSyn >>>
+    let subformer_definition_type = attr.definition.ref_internal();
+    let subformer_definition = if let Some( def_type ) = subformer_definition_type
     {
       qt!
       {
-        #subformer_definition
+        #def_type // <<< Use the parsed syn::Type directly
         <
           #( #params, )*
           Self,
@@ -583,6 +587,7 @@ field : {field_ident}",
       }
       // < Vec< String > as former::EntityToDefinition< Self, Self, Struct1SubformCollectionVec1End > >::Definition
     };
+    // <<< End Revert >>>
 
     let doc = format!
     (
@@ -617,23 +622,6 @@ field : {field_ident}",
         )
       }
 
-      // #[ inline( always ) ]
-      // pub fn _hashset_1_assign< Former2 >( self ) -> Former2
-      // where
-      //   Former2 : former::FormerBegin
-      //   <
-      //     former::HashSetDefinition< String, Self, Self, Struct1SubformCollectionHashset1End< Definition > >,
-      //   >,
-      //   former::HashSetDefinition< String, Self, Self, Struct1SubformCollectionHashset1End< Definition > > : former::FormerDefinition
-      //   <
-      //     Storage : former::CollectionAdd< Entry = < collection_tools::HashSet< String > as former::Collection >::Entry >,
-      //     Context = Struct1Former< Definition >,
-      //     End = Struct1SubformCollectionHashset1End< Definition >,
-      //   >,
-      // {
-      //   Former2::former_begin( None, Some( self ), Struct1SubformCollectionHashset1End::< Definition >::default() )
-      // }
-
     };
 
     let setter_name = self.subform_collection_setter_name();
@@ -663,31 +651,8 @@ field : {field_ident}",
           <
             _,
             _,
-            // ( #( #params, )* ),
-            //  #subformer_definition,
           > > ()
         }
-
-        // #[ inline( always ) ]
-        // pub fn hashset_1( self ) -> former::CollectionFormer::
-        // <
-        //   String,
-        //   former::HashSetDefinition< String, Self, Self, Struct1SubformCollectionHashset1End< Definition > >,
-        // >
-        // where
-        //   former::HashSetDefinition< String, Self, Self, Struct1SubformCollectionHashset1End< Definition > > : former::FormerDefinition
-        //   <
-        //     Storage : former::CollectionAdd< Entry = < collection_tools::HashSet< String > as former::Collection >::Entry >,
-        //     Context = Struct1Former< Definition >,
-        //     End = Struct1SubformCollectionHashset1End< Definition >,
-        //   >,
-        // {
-        //   self._hashset_1_assign::< former::CollectionFormer::
-        //   <
-        //     String,
-        //     former::HashSetDefinition< String, Self, Self, Struct1SubformCollectionHashset1End< Definition > >,
-        //   > > ()
-        // }
 
       }
     }
@@ -738,8 +703,9 @@ field : {field_ident}",
       #setter2
     };
 
-    // example : `former::VectorDefinition``
-    let subformer_definition = self.attrs.subform_collection.as_ref().unwrap().definition.ref_internal();
+    // <<< Reverted: Use ref_internal() on AttributePropertyOptionalSyn >>>
+    let subformer_definition_type = self.attrs.subform_collection.as_ref().unwrap().definition.ref_internal();
+    // <<< End Revert >>>
 
     let subform_collection_end_doc = format!
     (
@@ -753,10 +719,12 @@ with the new content generated during the subforming process.
       format!( "{}", qt!{ #field_typ } ),
     );
 
-    let subformer_definition_types = if let Some( _subformer_definition ) = subformer_definition
+    let subformer_definition_types = if let Some( def_type ) = subformer_definition_type // <<< Use parsed syn::Type
     {
-      let subformer_definition_types_string = format!( "{}Types", qt!{ #subformer_definition } );
+      // <<< Reverted: Use the parsed type directly >>>
+      let subformer_definition_types_string = format!( "{}Types", qt!{ #def_type } );
       let subformer_definition_types : syn::Type = syn::parse_str( &subformer_definition_types_string )?;
+      // <<< End Revert >>>
       qt!
       {
         #subformer_definition_types

@@ -68,7 +68,7 @@ specific needs of the broader forming context. It mandates the implementation of
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
     < Definition = #former_definition < #former_definition_args > >
-    where // Where clause on new line
+    where
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty > >,
   };
@@ -80,7 +80,7 @@ specific needs of the broader forming context. It mandates the implementation of
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
     < Definition = #former_definition < #former_definition_args > >
-    where // Where clause on new line
+    where
       Definition : former::FormerDefinition
       < // Angle bracket on new line
         Storage = #former_storage < #struct_generics_ty >,
@@ -296,9 +296,9 @@ specific needs of the broader forming context. It mandates the implementation of
       ( // Paren on new line
         #( #constructor_params ),* // Parameters are generated earlier
       ) // Paren on new line
-      -> // Return type on new line
+      ->
       #return_type // Use determined return type
-      where // Where clause on new line
+      where
         #struct_generics_where // Use original struct where clause
       {
         #constructor_body // Use determined body
@@ -320,7 +320,7 @@ specific needs of the broader forming context. It mandates the implementation of
     // = formed: Implement the `::former()` static method on the original struct.
     #[ automatically_derived ]
     impl < #struct_generics_impl > #item < #struct_generics_ty >
-    where // Where clause on new line
+    where
       #struct_generics_where
     {
       /// Provides a mechanism to initiate the formation process with a default completion behavior.
@@ -337,7 +337,7 @@ specific needs of the broader forming context. It mandates the implementation of
     // = entity to former: Implement former traits linking the struct to its generated components.
     impl< #struct_generics_impl Definition > former::EntityToFormer< Definition >
     for #item < #struct_generics_ty >
-    where // Where clause on new line
+    where
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
       #struct_generics_where
     {
@@ -346,7 +346,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     impl< #struct_generics_impl > former::EntityToStorage
     for #item < #struct_generics_ty >
-    where // Where clause on new line
+    where
       #struct_generics_where
     {
       type Storage = #former_storage < #struct_generics_ty >;
@@ -354,7 +354,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     impl< #struct_generics_impl __Context, __Formed, __End > former::EntityToDefinition< __Context, __Formed, __End >
     for #item < #struct_generics_ty >
-    where // Where clause on new line
+    where
       __End : former::FormingEnd< #former_definition_types < #struct_generics_ty __Context, __Formed > >,
       #struct_generics_where
     {
@@ -364,7 +364,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     impl< #struct_generics_impl __Context, __Formed > former::EntityToDefinitionTypes< __Context, __Formed >
     for #item < #struct_generics_ty >
-    where // Where clause on new line
+    where
       #struct_generics_where
     {
       type Types = #former_definition_types < #struct_generics_ty __Context, __Formed >;
@@ -374,7 +374,7 @@ specific needs of the broader forming context. It mandates the implementation of
     /// Defines the generic parameters for formation behavior including context, form, and end conditions.
     #[ derive( Debug ) ]
     #vis struct #former_definition_types < #former_definition_types_generics_with_defaults >
-    where // Where clause on new line
+    where
       #former_definition_types_generics_where
     {
       _phantom : #former_definition_types_phantom,
@@ -382,7 +382,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     impl < #former_definition_types_generics_impl > ::core::default::Default
     for #former_definition_types < #former_definition_types_generics_ty >
-    where // Where clause on new line
+    where
       #former_definition_types_generics_where
     {
       fn default() -> Self
@@ -396,7 +396,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     impl < #former_definition_types_generics_impl > former::FormerDefinitionTypes
     for #former_definition_types < #former_definition_types_generics_ty >
-    where // Where clause on new line
+    where
       #former_definition_types_generics_where
     {
       type Storage = #former_storage < #struct_generics_ty >;
@@ -408,7 +408,7 @@ specific needs of the broader forming context. It mandates the implementation of
     /// Holds the definition types used during the formation process.
     #[ derive( Debug ) ]
     #vis struct #former_definition < #former_definition_generics_with_defaults >
-    where // Where clause on new line
+    where
       #former_definition_generics_where
     {
       _phantom : #former_definition_phantom,
@@ -416,7 +416,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     impl < #former_definition_generics_impl > ::core::default::Default
     for #former_definition < #former_definition_generics_ty >
-    where // Where clause on new line
+    where
       #former_definition_generics_where
     {
       fn default() -> Self
@@ -430,7 +430,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     impl < #former_definition_generics_impl > former::FormerDefinition
     for #former_definition < #former_definition_generics_ty >
-    where // Where clause on new line
+    where
       __End : former::FormingEnd< #former_definition_types < #former_definition_types_generics_ty > >,
       #former_definition_generics_where
     {
@@ -448,7 +448,7 @@ specific needs of the broader forming context. It mandates the implementation of
     #[ doc = "Stores potential values for fields during the formation process." ]
     #[ allow( explicit_outlives_requirements ) ]
     #vis struct #former_storage < #struct_generics_with_defaults >
-    where // Where clause on new line
+    where
       #struct_generics_where
     {
       #(
@@ -459,7 +459,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     impl < #struct_generics_impl > ::core::default::Default
     for #former_storage < #struct_generics_ty >
-    where // Where clause on new line
+    where
       #struct_generics_where
     {
       #[ inline( always ) ]
@@ -474,7 +474,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     impl < #struct_generics_impl > former::Storage
     for #former_storage < #struct_generics_ty >
-    where // Where clause on new line
+    where
       #struct_generics_where
     {
       type Preformed = #item < #struct_generics_ty >;
@@ -482,7 +482,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     impl < #struct_generics_impl > former::StoragePreform
     for #former_storage < #struct_generics_ty >
-    where // Where clause on new line
+    where
       #struct_generics_where
     {
       fn preform( mut self ) -> Self::Preformed
@@ -499,7 +499,7 @@ specific needs of the broader forming context. It mandates the implementation of
     // = former: Define the Former struct itself.
     #[ doc = #doc_former_struct ]
     #vis struct #former < #former_generics_with_defaults >
-    where // Where clause on new line
+    where
       #former_generics_where
     {
       /// Temporary storage for all fields during the formation process.
@@ -512,7 +512,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     #[ automatically_derived ]
     impl < #former_generics_impl > #former < #former_generics_ty >
-    where // Where clause on new line
+    where
       #former_generics_where
     {
       /// Initializes a former with an end condition and default storage.
@@ -531,7 +531,7 @@ specific needs of the broader forming context. It mandates the implementation of
       ( // Paren on new line
         end : IntoEnd
       ) -> Self // Paren on new line
-      where // Where clause on new line
+      where
         IntoEnd : ::core::convert::Into< Definition::End >,
       {
         Self::begin_coercing
@@ -572,7 +572,7 @@ specific needs of the broader forming context. It mandates the implementation of
         context : ::core::option::Option< Definition::Context >,
         on_end : IntoEnd,
       ) -> Self // Paren on new line
-      where // Where clause on new line
+      where
         IntoEnd : ::core::convert::Into< < Definition as former::FormerDefinition >::End >,
       {
         if storage.is_none()
@@ -613,7 +613,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     // = former :: preform: Implement `preform` for direct storage transformation.
     impl< #former_generics_impl > #former< #former_generics_ty >
-    where // Where clause on new line
+    where
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty >, Formed = #item < #struct_generics_ty > >,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty >, Formed = #item < #struct_generics_ty > >,
       #former_generics_where
@@ -628,7 +628,7 @@ specific needs of the broader forming context. It mandates the implementation of
     // = former :: perform: Implement `perform` if specified by attributes.
     #[ automatically_derived ]
     impl < #former_perform_generics_impl > #former < #former_perform_generics_ty >
-    where // Where clause on new line
+    where
       #former_perform_generics_where
     {
       /// Finish setting options and call perform on formed entity.
@@ -643,7 +643,7 @@ specific needs of the broader forming context. It mandates the implementation of
     // = former begin: Implement `FormerBegin` trait.
     impl< #struct_generics_impl Definition > former::FormerBegin< Definition >
     for #former < #struct_generics_ty Definition, >
-    where // Where clause on new line
+    where
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
       #struct_generics_where
     {
@@ -683,7 +683,7 @@ specific needs of the broader forming context. It mandates the implementation of
     // = as subformer end: Define the `AsSubformerEnd` trait.
     #[ doc = #as_subformer_end_doc ]
     pub trait #as_subformer_end < #struct_generics_impl SuperFormer >
-    where // Where clause on new line
+    where
       #struct_generics_where
       Self : former::FormingEnd
       < // Angle bracket on new line
@@ -694,7 +694,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     impl< #struct_generics_impl SuperFormer, __T > #as_subformer_end < #struct_generics_ty SuperFormer >
     for __T
-    where // Where clause on new line
+    where
       #struct_generics_where
       Self : former::FormingEnd
       < // Angle bracket on new line

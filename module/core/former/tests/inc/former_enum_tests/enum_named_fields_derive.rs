@@ -1,31 +1,46 @@
+// File: module/core/former/tests/inc/former_enum_tests/enum_named_fields_derive.rs
 use super::*;
+
+// Define the inner struct needed for subform tests directly in this file
+#[derive(Debug, PartialEq, Default, Clone, former::Former)]
+pub struct InnerForSubform {
+    pub value: i64,
+}
 
 // Define the enum with different kinds of variants, including struct-like ones with varying field counts.
 #[ derive( Debug, PartialEq, former::Former ) ]
-// #[ debug ] // Uncomment to see generated code
+// #[ debug ] // Keep debug commented for now unless needed again
 pub enum EnumWithNamedFields
 {
-  // Struct-like variant with ZERO named fields
-  // Expected: EnumWithNamedFields::variant_zero().form() -> EnumWithNamedFields::VariantZero {}
-  VariantZero {},
+  // --- Unit Variant ---
+  // Expect: unit_variant_default() -> Enum (Default is scalar for unit)
+  UnitVariantDefault, // Renamed from UnitVariant
+  #[ scalar ] // Expect: unit_variant_scalar() -> Enum
+  UnitVariantScalar, // New
 
-  // Struct-like variant with ONE named field
-  // Expected: EnumWithNamedFields::variant_one().field_a("val").form() -> EnumWithNamedFields::VariantOne { field_a: "val" }
-  VariantOne
-  {
-    field_a : String,
-  },
+  // --- Zero Fields (Named - Struct-like) ---
+  // VariantZeroDefault {}, // Expect: Compile Error (No #[scalar]) - Cannot test directly
+  #[ scalar ] // Expect: variant_zero_scalar() -> Enum
+  VariantZeroScalar {},
 
-  // Struct-like variant with MULTIPLE named fields
-  // Expected: EnumWithNamedFields::variant_two().field_b(1).field_c(true).form() -> EnumWithNamedFields::VariantTwo { field_b: 1, field_c: true }
-  VariantTwo
-  {
-    field_b : i32,
-    field_c : bool,
-  },
+  // --- Zero Fields (Unnamed - Tuple-like) ---
+  VariantZeroUnnamedDefault(), // Expect: variant_zero_unnamed_default() -> Enum (Default is scalar for 0 fields)
+  #[ scalar ] // Expect: variant_zero_unnamed_scalar() -> Enum
+  VariantZeroUnnamedScalar(),
 
-  // Keep a unit variant for completeness check
-  UnitVariant,
+  // --- One Field (Named - Struct-like) ---
+  // Expect: variant_one_default() -> InnerForSubformFormer<...> (Default behavior for single field is subform)
+  VariantOneDefault { field_c : InnerForSubform },
+  #[ scalar ] // Expect: variant_one_scalar( String ) -> Enum
+  VariantOneScalar { field_a : String },
+  #[ subform_scalar ] // Expect: variant_one_subform() -> InnerForSubformFormer<...>
+  VariantOneSubform { field_b : InnerForSubform },
+
+  // --- Two Fields (Named - Struct-like) ---
+  // VariantTwoDefault { field_f : i32, field_g : bool }, // Expect: Compile Error (No #[scalar]) - Cannot test directly
+  #[ scalar ] // Expect: variant_two_scalar( i32, bool ) -> Enum
+  VariantTwoScalar { field_d : i32, field_e : bool },
+
 }
 
 // Include the test logic file (using the new name)
