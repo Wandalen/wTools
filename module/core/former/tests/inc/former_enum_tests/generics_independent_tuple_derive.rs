@@ -9,6 +9,7 @@
 
 // File: module/core/former/tests/inc/former_enum_tests/generics_independent_tuple_derive.rs
 use super::*; // Imports testing infrastructure and potentially other common items
+use std::marker::PhantomData;
 
 // --- Dummy Bounds ---
 // Defined in _only_test.rs
@@ -31,14 +32,13 @@ pub struct InnerG5< U : BoundB > // BoundB required by the inner struct
 // --- Enum Definition with Bounds ---
 // Apply Former derive here. This is what we are testing.
 #[ derive( Debug, PartialEq, Clone, former::Former ) ]
-// #[ debug ] // Uncomment to see generated code later
+#[ debug ] // Uncomment to see generated code later
 pub enum EnumG5< T : BoundA > // BoundA required by the enum
 {
   // Variant holds InnerG5 instantiated with the *concrete* TypeForU
   // The macro needs to handle this fixed inner type correctly while keeping T generic.
-  V1( InnerG5< TypeForU > ),
-  // REMOVED: Manual PhantomData variant workaround
-  // _Phantom( core::marker::PhantomData< T > ),
+  #[ scalar ]
+  V1( InnerG5< TypeForU >, core::marker::PhantomData< T > ),
 }
 
 // --- Include the Test Logic ---

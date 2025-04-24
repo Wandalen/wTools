@@ -9,8 +9,12 @@ fn enum_variant_constructors()
   let exp_simple = EnumWithMultiField::Simple( "test simple".to_string() );
   assert_eq!( got_simple, exp_simple );
 
-  // Test the MultiTuple variant - Expects direct constructor due to #[scalar]
-  let got_multi = EnumWithMultiField::multi_tuple( 42, "hello", true );
+  // Test the MultiTuple variant - Expects former builder due to #[scalar] and multi-fields
+  let got_multi = EnumWithMultiField::multi_tuple()
+    ._0( 42 )
+    ._1( "hello" )
+    ._2( true )
+    .form();
   let exp_multi = EnumWithMultiField::MultiTuple( 42, "hello".to_string(), true );
   assert_eq!( got_multi, exp_multi );
 

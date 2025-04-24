@@ -15,8 +15,11 @@ fn keyword_variant_constructors()
   let exp_loop = KeywordVariantEnum::r#Loop;
   assert_eq!( got_loop, exp_loop );
 
-  // Test multi-field variant (bool, i32) - Expects direct constructor due to #[scalar]
-  let got_if = KeywordVariantEnum::r#if( true, 10 );
+  // Test multi-field variant (bool, i32) - Expects former builder due to #[scalar] and multi-fields
+  let got_if = KeywordVariantEnum::r#if()
+    ._0( true )
+    ._1( 10 )
+    .form();
   let exp_if = KeywordVariantEnum::r#If( true, 10 );
   assert_eq!( got_if, exp_if );
 
@@ -33,9 +36,12 @@ fn keyword_variant_constructors()
   let exp_struct = KeywordVariantEnum::r#Struct( InnerData { data1: -1, data2: false } );
   assert_eq!( got_struct, exp_struct );
 
-  // Test multi-field variant (usize, &'static str) - Expects direct constructor due to #[scalar]
+  // Test multi-field variant (usize, &'static str) - Expects former builder due to #[scalar] and multi-fields
   // Explicitly type the integer literal as usize
-  let got_for = KeywordVariantEnum::r#for( 5_usize, "times" ); // Changed 5 to 5_usize
+  let got_for = KeywordVariantEnum::r#for()
+    ._0( 5_usize )
+    ._1( "times" )
+    .form();
   let exp_for = KeywordVariantEnum::r#For( 5, "times" );
   assert_eq!( got_for, exp_for );
 

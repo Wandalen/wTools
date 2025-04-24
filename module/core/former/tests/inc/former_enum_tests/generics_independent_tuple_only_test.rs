@@ -15,7 +15,6 @@
 
 // File: module/core/former/tests/inc/former_enum_tests/generics_independent_tuple_only_test.rs
 use super::*; // Imports items from the parent file (either manual or derive)
-
 // Define dummy bounds for testing purposes
 pub trait BoundA : core::fmt::Debug + Default + Clone + PartialEq {}
 pub trait BoundB : core::fmt::Debug + Default + Clone + PartialEq {}
@@ -32,12 +31,11 @@ impl BoundB for TypeForU {}
 #[ test ]
 fn independent_generics_tuple_variant()
 {
-  let got = EnumG5::< TypeForT >::v1()
+  let got = EnumG5::< TypeForT >::v_1()
     .inner_field( TypeForU( 99 ) )
     .form();
 
   let expected_inner = InnerG5::< TypeForU > { inner_field : TypeForU( 99 ) };
-  // CORRECTED: Add PhantomData to expected variant construction
   let expected = EnumG5::< TypeForT >::V1( expected_inner, PhantomData );
 
   assert_eq!( got, expected );
@@ -50,7 +48,6 @@ fn default_construction_independent_generics()
     .form();
 
   let expected_inner = InnerG5::< TypeForU > { inner_field : TypeForU::default() };
-  // CORRECTED: Add PhantomData to expected variant construction
   let expected = EnumG5::< TypeForT >::V1( expected_inner, PhantomData );
 
   assert_eq!( got, expected );

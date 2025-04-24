@@ -175,7 +175,7 @@ impl< T : BoundA > EnumG5< T >
 {
   /// Manually implemented subformer starter for the V1 variant.
   #[ inline( always ) ]
-  pub fn v1() -> InnerG5Former // Return type is InnerG5Former specialized with TypeForU...
+  pub fn v_1() -> InnerG5Former // Return type is InnerG5Former specialized with TypeForU...
   <
     TypeForU, // <<< U is fixed to TypeForU here
     // ...and configured with a definition that uses the specialized End struct.

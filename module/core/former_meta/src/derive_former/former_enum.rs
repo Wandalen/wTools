@@ -629,27 +629,23 @@ pub(super) fn former_for_enum
           }
           // --- End Standalone Constructor ---
 
-          // Associated method (returns Self directly)
-          let mut params = Vec::new();
-          let mut args = Vec::new();
-          for field_info in &variant_field_info
-          {
-            let param_name = &field_info.ident;
-            let field_type = &field_info.ty;
-            params.push( quote! { #param_name : impl Into< #field_type > } );
-            args.push( quote! { #param_name.into() } );
-          }
+          // Associated method (returns implicit former)
           let static_method = quote!
           {
-            /// Constructor for the #variant_ident variant with multiple fields (scalar style).
+            /// Starts forming the #variant_ident variant using its implicit former.
             #[ inline( always ) ]
-            #vis fn #method_name
-            ( // Paren on new line
-              #( #params ),*
-            ) // Paren on new line
-            -> Self
+            #vis fn #method_name ()
+            -> // Return type on new line
+            #implicit_former_name
+            < // Angle bracket on new line
+              #enum_generics_ty
+              #implicit_def_name
+              <
+                #enum_generics_ty (), #enum_name< #enum_generics_ty >, #end_struct_name < #enum_generics_ty >
+              >
+            > // Angle bracket on new line
             {
-              Self::#variant_ident( #( #args ),* )
+              #implicit_former_name::begin( None, None, #end_struct_name::< #enum_generics_ty >::default() )
             }
           };
           methods.push( static_method );

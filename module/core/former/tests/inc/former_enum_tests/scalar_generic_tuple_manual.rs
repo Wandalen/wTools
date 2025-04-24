@@ -42,12 +42,12 @@ impl< T : Bound > EnumScalarGeneric< T > // Apply bounds from enum definition
     Self::Variant1( value.into() )
   }
 
-  /// Manually implemented constructor for the Variant2 variant (scalar style).
+  /// Manually implemented former builder for the Variant2 variant.
   #[ inline( always ) ]
   // FIX: Renamed to snake_case
-  pub fn variant_2( field0 : impl Into< InnerScalar< T > >, field1 : impl Into< bool > ) -> Self
+  pub fn variant_2() -> EnumScalarGenericVariant2Former< T >
   {
-    Self::Variant2( field0.into(), field1.into() )
+    EnumScalarGenericVariant2Former::begin( None, None, EnumScalarGenericVariant2End::< T >::default() )
   }
 }
 

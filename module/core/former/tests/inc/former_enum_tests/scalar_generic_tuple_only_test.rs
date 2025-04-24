@@ -67,19 +67,25 @@ fn scalar_on_single_generic_tuple_variant()
 #[ test ]
 fn scalar_on_multi_generic_tuple_variant()
 {
-  // Tests the direct constructor generated for a multi-field tuple variant
+  // Tests the former builder generated for a multi-field tuple variant
   // `Variant2(InnerScalar<T>, bool)` marked with `#[scalar]`.
   let inner_data = InnerScalar { data: MyType( "value2".to_string() ) };
-  // Expect a direct static constructor `variant_2` taking `impl Into<InnerScalar<MyType>>` and `impl Into<bool>`
-  // FIX: Changed call to snake_case
-  let got = EnumScalarGeneric::< MyType >::variant_2( inner_data.clone(), true );
+  // Expect a former builder `variant_2` with setters `_0` and `_1`
+  // FIX: Changed call to use former builder pattern
+  let got = EnumScalarGeneric::< MyType >::variant_2()
+    ._0( inner_data.clone() )
+    ._1( true )
+    .form();
 
   let expected = EnumScalarGeneric::< MyType >::Variant2( inner_data, true );
   assert_eq!( got, expected );
 
   // Test with Into
-  // FIX: Changed call to snake_case
-  let got_into = EnumScalarGeneric::< MyType >::variant_2( MyType( "value2_into".to_string() ), false );
+  // FIX: Changed call to use former builder pattern
+  let got_into = EnumScalarGeneric::< MyType >::variant_2()
+    ._0( MyType( "value2_into".to_string() ) )
+    ._1( false )
+    .form();
   let expected_into = EnumScalarGeneric::< MyType >::Variant2( InnerScalar { data: MyType( "value2_into".to_string() ) }, false );
   assert_eq!( got_into, expected_into );
 }
