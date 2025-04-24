@@ -2,7 +2,7 @@
 
 ## Progress
 
-*   ⚫ Increment 1: Analyze current enum macro logic (`former_enum.rs`)
+*   ⚫ Increment 1: Analyze `former_meta/src` & current enum macro logic (`former_enum.rs`)
 *   ⚫ Increment 2: Refactor `former_enum.rs` for consistent unit/single-field scalar/subform behavior
 *   ⚫ Increment 3: Refactor `former_enum.rs` for consistent multi-field/struct variant behavior
 *   ⚫ Increment 4: Update tests for unit/single-field variants
@@ -12,8 +12,8 @@
 
 ## Increments
 
-*   ⚫ Increment 1: Analyze current enum macro logic (`former_enum.rs`)
-    *   Goal: Understand the existing implementation for handling different variant kinds and attributes (`#[scalar]`, `#[subform_scalar]`). Identify discrepancies with the target consistent behavior rules.
+*   ⚫ Increment 1: Analyze `former_meta/src` & current enum macro logic (`former_enum.rs`)
+    *   Goal: Thoroughly analyze all source files within `module/core/former_meta/src` to understand the overall macro structure, helpers, and potential interactions. Then, specifically analyze the existing implementation in `former_enum.rs` for handling different variant kinds and attributes (`#[scalar]`, `#[subform_scalar]`). Identify discrepancies with the target consistent behavior rules.
 *   ⚫ Increment 2: Refactor `former_enum.rs` for consistent unit/single-field scalar/subform behavior
     *   Goal: Modify the macro code to correctly generate direct constructors or subformer starters for unit and single-field variants according to the defined rules (considering `#[scalar]`, `#[subform_scalar]`, and whether the inner type has `Former`).
 *   ⚫ Increment 3: Refactor `former_enum.rs` for consistent multi-field/struct variant behavior
@@ -29,4 +29,6 @@
 
 ## Notes & Insights
 
-*   *(No notes yet)*
+*   [2025-04-24/Init] Plan created to enforce consistent behavior for enum variant handling in `#[derive(Former)]` based on variant structure and attributes (`#[scalar]`, `#[subform_scalar]`).
+*   [2025-04-24/Init] Analysis of all `former_meta/src` files added as the first step of Increment 1.
+*   [2025-04-24/Init] Explicit mention of rule adherence (code/gen, design, codestyle) will be added to the detailed plan for each increment.
