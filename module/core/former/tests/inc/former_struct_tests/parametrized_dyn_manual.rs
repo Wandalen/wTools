@@ -1,10 +1,10 @@
-
-// xxx2 : qqq2 :
-// - uncomment code
-// - duplicate the file and actually use macro Former
-// - make macro working taking into account this corner case
-// - for your conveniency there expansion of macro is below
-
+//
+// // xxx2 : qqq2 :
+// // - uncomment code
+// // - duplicate the file and actually use macro Former
+// // - make macro working taking into account this corner case
+// // - for your conveniency there expansion of macro is below
+//
 // use super::*;
 // use core::fmt;
 //

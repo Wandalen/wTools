@@ -121,7 +121,7 @@ mod former_struct_tests
 
   // = parametrization
 
-  mod parametrized_dyn; // xxx2 : qqq2 : fix the issue
+  mod parametrized_dyn_manual; // xxx2 : qqq2 : fix the issue
 
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod parametrized_struct_manual;

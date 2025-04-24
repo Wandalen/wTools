@@ -60,7 +60,7 @@ impl FieldAttributes
   (
     attrs : impl Iterator< Item = &'a syn::Attribute >
   ) -> Result< Self >
-  { , params aligned
+  {
     let mut result = Self::default();
     // Known attributes for error reporting
     let known_attributes = ct::concatcp!
