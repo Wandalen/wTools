@@ -12,28 +12,31 @@ use macro_tools::
 use convert_case::{ Case, Casing }; // Space before ;
 
 // ==================================
-//      Enum Variant Handling Rules (Consistent Logic) - FINAL REVISION
+//      Enum Variant Handling Rules (Consistent Logic)
 // ==================================
 //
 // This macro implements the `Former` derive for enums based on the following consistent rules:
 //
 // 1.  **`#[scalar]` Attribute:**
 //     *   **Unit Variant:** Generates `Enum::variant() -> Enum`.
+//     *   **Zero-Field Variant Generates `Enum::variant() -> Enum`.
 //     *   **Single-Field Variant (Tuple or Struct):** Generates `Enum::variant(InnerType) -> Enum`.
 //     *   **Multi-Field Variant (Tuple or Struct):** Generates `Enum::variant(Field1Type, Field2Type, ...) -> Enum`.
 //     *   **Error Cases:** Cannot be combined with `#[subform_scalar]`.
 //
 // 2.  **`#[subform_scalar]` Attribute:**
-//     *   **Unit Variant:** Error or ignored.
+//     *   **Unit Variant:** Error.
+//     *   **Zero-Field Variant (Tuple or Struct):** Error.
 //     *   **Single-Field Variant (Tuple or Struct):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Requires the field type to be a path type deriving `Former`.
-//     *   **Multi-Field Variant (Tuple or Struct):** Error.
+//     *   **Multi-Field Variant (Tuple or Struct):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Requires the field type to be a path type deriving `Former`.
 //
 // 3.  **Default Behavior (No Attribute):**
-//     *   **Unit Variant:** Generates `Enum::variant() -> Enum`. (Equivalent to #[scalar])
-//     *   **Zero-Field Tuple Variant:** Generates `Enum::variant() -> Enum`. (Equivalent to #[scalar])
-//     *   **Single-Field Variant (Tuple or Struct):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Relies on compiler error if `InnerFormer` doesn't exist. Requires the field type to be a path type deriving `Former`. (Equivalent to #[subform_scalar])
-//     *   **Zero-Field Struct Variant:** Generates `Enum::variant() -> EnumVariantFormer<...>` (implicit former starter).
-//     *   **Multi-Field Variant (Tuple or Struct):** Generates `Enum::variant() -> EnumVariantFormer<...>` (implicit former starter).
+//     *   **Unit Variant:** Generates `Enum::variant() -> Enum`.
+//     *   **Zero-Field Variant Generates `Enum::variant() -> Enum`.
+//     *   **Single-Field Variant (Tuple or Struct):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Requires the field type to be a path type deriving `Former`.
+//     *   **Multi-Field Variant (Tuple or Struct):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Requires the field type to be a path type deriving `Former`.
+//
+// Body attribute `standalone_constructors` creates stand-alone, top-level constructors for struct/enum. for struct it's always single function, for enum it's as many functions as enum has vartianys.
 //
 // ==================================
 
