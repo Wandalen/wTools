@@ -14,11 +14,11 @@ use convert_case::{ Case, Casing }; // Space before ;
 
 /// Handles the generation of code for Unit enum variants.
 #[ allow( clippy::too_many_lines ) ] // qqq : eliminate this
-pub fn handle_unit_variant
+pub fn handle_unit_variant< 'a > // Added explicit lifetime 'a
 (
-  _ast : &syn::DeriveInput, // Prefixed with _
-  variant : &syn::Variant,
-  struct_attrs : &ItemAttributes,
+  _ast : &'a syn::DeriveInput, // Added lifetime 'a
+  variant : &'a syn::Variant, // Added lifetime 'a
+  struct_attrs : &'a ItemAttributes, // Added lifetime 'a
   enum_name : &syn::Ident,
   vis : &syn::Visibility,
   generics : &syn::Generics,
@@ -29,7 +29,7 @@ pub fn handle_unit_variant
   standalone_constructors : &mut Vec<TokenStream>,
   variant_attrs : &FieldAttributes,
   variant_field_info : &Vec<EnumVariantFieldInfo>,
-  _merged_where_clause : &syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>, // Prefixed with _
+  _merged_where_clause : Option< &'a syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma> >, // Changed type to Option<&'a Punctuated<...>>
 ) -> Result< () >
 {
   let variant_ident = &variant.ident;

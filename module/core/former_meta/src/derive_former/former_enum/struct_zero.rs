@@ -14,22 +14,22 @@ use convert_case::{ Case, Casing }; // Space before ;
 
 /// Handles the generation of code for zero-field Struct enum variants.
 #[ allow( clippy::too_many_lines ) ] // qqq : eliminate this
-pub fn handle_struct_zero_variant
+pub fn handle_struct_zero_variant< 'a > // Added explicit lifetime 'a
 (
-  _ast : &syn::DeriveInput, // Prefixed with _
-  variant : &syn::Variant,
-  struct_attrs : &ItemAttributes,
-  enum_name : &syn::Ident,
-  vis : &syn::Visibility,
-  generics : &syn::Generics,
-  _original_input : &proc_macro::TokenStream, // Prefixed with _
+  _ast : &'a syn::DeriveInput, // Added lifetime 'a, Prefixed with _
+  variant : &'a syn::Variant, // Added lifetime 'a
+  struct_attrs : &'a ItemAttributes, // Added lifetime 'a
+  enum_name : &'a syn::Ident, // Added lifetime 'a
+  vis : &'a syn::Visibility, // Added lifetime 'a
+  generics : &'a syn::Generics, // Added lifetime 'a
+  _original_input : &'a proc_macro::TokenStream, // Added lifetime 'a, Prefixed with _
   _has_debug : bool, // Prefixed with _
   methods : &mut Vec<TokenStream>,
   _end_impls : &mut Vec<TokenStream>, // Prefixed with _
   standalone_constructors : &mut Vec<TokenStream>,
-  variant_attrs : &FieldAttributes,
-  _variant_field_info : &Vec<EnumVariantFieldInfo>, // Prefixed with _
-  _merged_where_clause : &syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>, // Prefixed with _
+  variant_attrs : &'a FieldAttributes, // Added lifetime 'a
+  _variant_field_info : &'a Vec<EnumVariantFieldInfo>, // Added lifetime 'a, Prefixed with _
+  _merged_where_clause : Option< &'a syn::WhereClause >, // Changed type back to Option<&'a WhereClause>
 ) -> Result< () >
 {
   println!( "DEBUG: Entering handle_struct_zero_variant for variant: {}", variant.ident ); // Debug print
