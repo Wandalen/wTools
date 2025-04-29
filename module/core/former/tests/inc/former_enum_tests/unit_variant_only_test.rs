@@ -1,14 +1,15 @@
+// File: module/core/former/tests/inc/former_enum_tests/unit_variant_only_test.rs
 use super::*;
 
 #[ test ]
 fn unit_variant_constructors()
 {
-  // Test the Status::Pending constructor
+  // Test the Status::Pending constructor (expects direct constructor)
   let got_pending = Status::pending();
   let exp_pending = Status::Pending;
   assert_eq!( got_pending, exp_pending );
 
-  // Test the Status::Complete constructor
+  // Test the Status::Complete constructor (expects direct constructor)
   let got_complete = Status::complete();
   let exp_complete = Status::Complete;
   assert_eq!( got_complete, exp_complete );
