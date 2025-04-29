@@ -44,13 +44,15 @@
         *   Include the necessary `where End2: FormingEnd<...>` clause.
     *   Crucial Design Rules: [Visibility: Keep Implementation Details Private](#visibility-keep-implementation-details-private).
     *   Verification Strategy: Compile check (`cargo check --package former_meta`). **Hypothesis H6 Check:** Verify generics, associated types, and where clause.
-*   ⚫ **Increment 5: Implement Multi-Field Struct Variant - Subformer - Former Struct**
+*   ✅ **Increment 5: Implement Multi-Field Struct Variant - Subformer - Former Struct**
     *   Goal: Generate the implicit Former struct definition.
-    *   Detailed Plan Step 1: Generate the `VariantNameFormer` struct definition with generics (`#enum_generics_impl`, `Definition`). Use `VariantNameFormerDefinition< #enum_generics_ty >` as the default for `Definition`.
-    *   Detailed Plan Step 2: Include `storage`, `context`, `on_end` fields.
-    *   Detailed Plan Step 3: Include the necessary `where Definition: ...` clause.
+    *   Detailed Plan Step 1: Locate the relevant section in `former_meta/src/derive_former/former_enum.rs` (likely within the logic handling struct-like variants, default/subform case).
+    *   Detailed Plan Step 2: Generate the struct definition `struct VariantNameFormer<#enum_generics_impl, Definition = ...> where ...`.
+    *   Detailed Plan Step 3: Determine the correct default `Definition` type: `VariantNameFormerDefinition<#enum_generics_ty>`.
+    *   Detailed Plan Step 4: Include the standard former fields: `storage: Definition::Storage`, `context: Option<Definition::Context>`, `on_end: Option<Definition::End>`.
+    *   Detailed Plan Step 5: Construct the `where` clause for the `Definition` generic parameter, ensuring it requires `former::FormerDefinition` with the correct `Storage` type (`VariantNameFormerStorage<#enum_generics_ty>`) and `Definition::Types` bound. Also include the original enum's where clause (`#merged_where_clause`).
     *   Crucial Design Rules: [Visibility: Keep Implementation Details Private](#visibility-keep-implementation-details-private).
-    *   Verification Strategy: Compile check (`cargo check --package former_meta`). **Hypothesis H6 Check:** Verify generics and where clause.
+    *   Verification Strategy: Compile check (`cargo check --package former_meta`). **Hypothesis H6 Check:** Verify the generated struct compiles with correct generics, default definition, fields, and where clause.
 *   ⚫ **Increment 6: Implement Multi-Field Struct Variant - Subformer - Former Impl + Setters**
     *   Goal: Generate the `impl` block for the implicit Former, including standard methods and setters for variant fields.
     *   Detailed Plan Step 1: Generate `impl< #enum_generics_impl, Definition > VariantNameFormer<...> where ...`.
