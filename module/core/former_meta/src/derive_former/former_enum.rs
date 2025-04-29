@@ -1046,110 +1046,13 @@ pub(super) fn former_for_enum
                       } // Brace on new line
                     };
 
-                    // Generate Definition struct and impls
-                    let def_name = format_ident!( "{}{}FormerDefinition", enum_name, variant_ident );
-                    let end_struct_name = format_ident!( "{}{}End", enum_name, variant_ident ); // Needed for default End type
-
-                    // <<< Start Correction 7 >>>
-                    // Calculate phantom data type based on combined generics for the definition
-                    let def_phantom_generics_impl = generic_params::merge( &generics, &parse_quote!{ < Context2, Formed2, End2 > } );
-                    let ( _ , def_phantom_generics_impl, _, _ ) = generic_params::decompose( &def_phantom_generics_impl );
-                    let def_phantom = phantom::tuple( &def_phantom_generics_impl );
-
-                    // FIX: Remove trailing comma from enum_generics_ty when used inside <> with other args
-                    let enum_generics_ty_no_comma = {
-                      let mut ty = enum_generics_ty.clone();
-                      ty.pop_punct(); // Remove trailing comma if it exists
-                      ty
-                    };
-
-                    let def_struct = quote!
-                    {
-                      #[ derive( Debug ) ]
-                      #vis struct #def_name < #enum_generics_impl Context2 = (), Formed2 = #enum_name< #enum_generics_ty >, End2 = #end_struct_name< #enum_generics_ty > >
-                      where // Where clause on new line
-                        End2 : former::FormingEnd< #def_types_name< #enum_generics_ty_no_comma, Context2, Formed2 > >, // <<< Use no_comma version
-                        #merged_where_clause // Use original enum where clause + End2 bound
-                      { // Brace on new line
-                        _phantom : #def_phantom, // Use calculated phantom
-                      } // Brace on new line
-                    };
-
-                    let def_default_impl = quote!
-                    {
-                      impl< #enum_generics_impl Context2, Formed2, End2 > ::core::default::Default
-                      for #def_name < #enum_generics_ty Context2, Formed2, End2 >
-                      where // Where clause on new line
-                        End2 : former::FormingEnd< #def_types_name< #enum_generics_ty_no_comma, Context2, Formed2 > >, // <<< Use no_comma version
-                        #merged_where_clause
-                      { // Brace on new line
-                        fn default() -> Self
-                        { // Brace on new line
-                          Self { _phantom : ::core::marker::PhantomData }
-                        } // Brace on new line
-                      } // Brace on new line
-                    };
-
-                    let def_former_impl = quote!
-                    {
-                      impl< #enum_generics_impl Context2, Formed2, End2 > former::FormerDefinition
-                      for #def_name < #enum_generics_ty Context2, Formed2, End2 >
-                      where // Where clause on new line
-                        End2 : former::FormingEnd< #def_types_name< #enum_generics_ty_no_comma, Context2, Formed2 > >, // <<< Use no_comma version
-                        #merged_where_clause
-                      { // Brace on new line
-                        type Storage = #storage_struct_name< #enum_generics_ty >;
-                        type Context = Context2;
-                        type Formed = Formed2;
-                        type Types = #def_types_name< #enum_generics_ty_no_comma, Context2, Formed2 >; // <<< Use no_comma version
-                        type End = End2;
-                      } // Brace on new line
-                    };
-                    // <<< End Correction 7 >>>
-
-                    // Generate Former struct definition
-                    let former_name = format_ident!( "{}{}Former", enum_name, variant_ident );
-                    // <<< Start Correction 8 >>>
-                    // Construct generics for Former struct manually
-                    let mut former_generics = generics.clone();
-                    former_generics.params.push( parse_quote!( Definition = #def_name< #enum_generics_ty > ) );
-                    let former_where_clause = former_generics.make_where_clause();
-                    former_where_clause.predicates.push( parse_quote!{ Definition : former::FormerDefinition< Storage = #storage_struct_name< #enum_generics_ty > > } );
-                    former_where_clause.predicates.push( parse_quote!{ Definition::Types : former::FormerDefinitionTypes< Storage = #storage_struct_name< #enum_generics_ty > > } );
-                    if let Some( enum_where ) = &generics.where_clause
-                    {
-                      for predicate in &enum_where.predicates
-                      {
-                        former_where_clause.predicates.push( predicate.clone() );
-                      }
-                    }
-                    let ( _former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where ) = generic_params::decompose( &former_generics );
-                    // <<< End Correction 8 >>>
-
-                    let former_struct_def = quote!
-                    {
-                      #[ doc = "Former for the #variant_ident variant." ]
-                      #vis struct #former_name < #former_generics_impl > // Use decomposed impl generics
-                      where // Where clause on new line
-                        #former_generics_where // Use decomposed where clause
-                      { // Brace on new line
-                        /// Temporary storage for all fields during the formation process.
-                        pub storage : Definition::Storage,
-                        /// Optional context.
-                        pub context : ::core::option::Option< Definition::Context >,
-                        /// Optional handler for the end of formation.
-                        pub on_end : ::core::option::Option< Definition::End >,
-                      } // Brace on new line
-                    };
-
-
                     // Add generated storage, DefTypes, Definition, and Former code to end_impls
                     end_impls.push( quote!
                     {
                        #storage_def #storage_default_impl #storage_trait_impl #storage_preform_impl
                        #def_types_struct #def_types_default_impl #def_types_former_impl #def_types_mutator_impl
-                       #def_struct #def_default_impl #def_former_impl
-                       #former_struct_def // <<< Added Former struct definition
+                       // #def_struct #def_default_impl #def_former_impl // Will be added in Increment 4
+                       // #former_struct_def // Will be added in Increment 5
                     });
 
                     // --- Force Debug Print for EnumG4::V1 ---
@@ -1166,8 +1069,8 @@ pub(super) fn former_for_enum
                         // Implicit Former Components
                         #storage_def #storage_default_impl #storage_trait_impl #storage_preform_impl
                         #def_types_struct #def_types_default_impl #def_types_former_impl #def_types_mutator_impl
-                        #def_struct #def_default_impl #def_former_impl
-                        #former_struct_def // <<< Added Former struct definition
+                        // #def_struct #def_default_impl #def_former_impl // Placeholder
+                        // #former_struct_def // Placeholder
                         // Placeholder for Former impl, End struct/impl
                       };
                       diag::report_print( about, original_input, &variant_code );
@@ -1175,9 +1078,9 @@ pub(super) fn former_for_enum
                     // --- End Force Debug Print ---
 
 
-                    // Placeholder for the rest of the implicit former generation (Increments 6-10)
+                    // Placeholder for the rest of the implicit former generation (Increments 4-10)
                     // methods.push( quote!{ /* TODO: Add static method for subformer */ } );
-                    // end_impls.push( quote!{ /* TODO: Add Former impl, End impls */ } );
+                    // end_impls.push( quote!{ /* TODO: Add Def, Former, End impls */ } );
                     // standalone_constructors.push( quote!{ /* TODO: Add standalone constructor */ } );
                 }
             }

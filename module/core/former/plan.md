@@ -2,7 +2,7 @@
 
 ## Increments
 
-*   ⏳ **Increment 1: Implement Multi-Field Struct Variant - Subformer - Storage**
+*   ✅ **Increment 1: Implement Multi-Field Struct Variant - Subformer - Storage**
     *   Goal: Generate the implicit storage struct for the default/subform case for multi-field struct variants.
     *   Detailed Plan Step 1: Locate the `Struct Variant (len > 1)` case in `former_enum.rs`.
     *   Detailed Plan Step 2: Remove the `return Err(...)` for the default case.
@@ -13,7 +13,7 @@
     *   Detailed Plan Step 4: Implement `impl Default` for the storage struct.
     *   Crucial Design Rules: [Handling Panics vs Recoverable Errors](#handling-panics-vs-recoverable-errors), [Visibility: Keep Implementation Details Private](#visibility-keep-implementation-details-private).
     *   Verification Strategy: Compile check (`cargo check --package former_meta`). **Hypothesis H2, H6 Check:** Verify the generated storage struct compiles with correct fields, generics, and phantom data.
-*   ⚫ **Increment 2: Implement Multi-Field Struct Variant - Subformer - Storage Impls**
+*   ✅ **Increment 2: Implement Multi-Field Struct Variant - Subformer - Storage Impls**
     *   Goal: Generate `impl Storage` and `impl StoragePreform` for the implicit storage struct.
     *   Detailed Plan Step 1: Implement `impl Storage` for `VariantNameFormerStorage`. Define `type Preformed = ( #( #field_types ),* );`.
     *   Detailed Plan Step 2: Implement `impl StoragePreform` for `VariantNameFormerStorage`.
@@ -22,7 +22,7 @@
         *   Return the preformed tuple `( #( #preformed_fields ),* )`.
     *   Crucial Design Rules: [Handling Panics vs Recoverable Errors](#handling-panics-vs-recoverable-errors).
     *   Verification Strategy: Compile check (`cargo check --package former_meta`). **Hypothesis H3, H6 Check:** Verify `preform` returns the correct tuple type and handles defaults.
-*   ⚫ **Increment 3: Implement Multi-Field Struct Variant - Subformer - DefTypes**
+*   ✅ **Increment 3: Implement Multi-Field Struct Variant - Subformer - DefTypes**
     *   Goal: Generate the implicit DefinitionTypes struct and impl.
     *   Detailed Plan Step 1: Generate the `VariantNameFormerDefinitionTypes` struct definition with appropriate generics (`#enum_generics_impl`, `Context2`, `Formed2`) and phantom data.
     *   Detailed Plan Step 2: Implement `impl Default` for `VariantNameFormerDefinitionTypes`.
@@ -111,3 +111,6 @@
 *   **[2024-04-25/Inc 6 Plan Revision]** Further decomposed Increment 6. Will now implement logic for each variant type incrementally (Unit, Tuple(0), Tuple(1), Tuple(N), Struct(0), Struct(1), Struct(N)-Scalar). The complex Struct(N)-Subformer case is broken into multiple increments (12-21) based on verified hypotheses.
 *   **[2024-04-25/Plan Update 2]** Added explicit test enabling steps to increments 6-11, 23-26. Renumbered final increments.
 *   **[2024-04-26/Plan Revision 3]** Focused plan on fixing `generics_shared_struct_derive.rs` failure by implementing the multi-field struct subformer logic (Increments 1-10). Added final verification increment (11). Preserved previous notes.
+*   **[2024-04-26/Inc 1]** Completed implementation of storage struct definition and default impl for multi-field struct variant subformer case. Compile check passed.
+*   **[2024-04-26/Inc 2]** Completed implementation of `Storage` and `StoragePreform` traits for the implicit storage struct. Compile check passed.
+*   **[2024-04-26/Inc 3]** Completed implementation of `DefinitionTypes` struct and its trait impls (`Default`, `FormerDefinitionTypes`, `FormerMutator`) for the implicit former. Compile check passed.
