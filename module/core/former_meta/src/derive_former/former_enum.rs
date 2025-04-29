@@ -1,6 +1,16 @@
 // File: module/core/former_meta/src/derive_former/former_enum.rs
 #![ allow( clippy::wildcard_imports ) ]
 use super::*;
+
+mod unit;
+use unit::handle_unit_variant;
+
+mod tuple_zero;
+use tuple_zero::handle_tuple_zero_variant;
+
+mod struct_zero;
+use struct_zero::handle_struct_zero_variant;
+
 use macro_tools::
 {
   generic_params, Result,
@@ -147,69 +157,23 @@ pub(super) fn former_for_enum
       // Case 1: Unit variant
       syn::Fields::Unit =>
       {
-        // ... (Unit variant logic - unchanged) ...
-        // --- DEBUG PRINT 3a ---
-        // println!( "Former Enum Debug: Variant {} - Unit Case", variant_ident );
-        // --- END DEBUG PRINT 3a ---
-
-        // --- Error Handling ---
-        if wants_subform_scalar
-        {
-          return Err( syn::Error::new_spanned( variant, "#[subform_scalar] cannot be used on unit variants." ) );
-        }
-        // #[scalar] is redundant but allowed, default is scalar.
-
-        // --- Standalone Constructor (Unit) ---
-        if struct_attrs.standalone_constructors.value( false )
-        {
-          if variant_attrs.arg_for_constructor.value( false )
-          {
-            return Err( syn::Error::new_spanned( variant, "#[arg_for_constructor] cannot be applied to a unit enum variant." ) );
-          }
-          // <<< Use collected info (empty for unit) to generate params >>>
-          let _constructor_params : Vec<_> = variant_field_info // Will be empty // <<< Prefixed with _
-            .iter()
-            .filter( |f_info| f_info.is_constructor_arg )
-            .map( |f_info| {
-              let param_name = &f_info.ident; // Should not happen for unit
-              let ty = &f_info.ty;
-              quote! { #param_name : impl Into< #ty > }
-            })
-            .collect(); // <<< Added collect()
-          // <<< End Use >>>
-
-          // <<< Determine Return Type (Always Self for Unit) >>>
-          let return_type = quote! { #enum_name< #enum_generics_ty > };
-          // <<< End Determine >>>
-
-          let constructor = quote!
-          {
-            /// Standalone constructor for the #variant_ident unit variant.
-            #[ inline( always ) ]
-            #vis fn #method_name < #enum_generics_impl >()
-            -> // Return type on new line
-            #return_type // <<< Use determined return type
-            where // Where clause on new line
-              #enum_generics_where
-            { // Brace on new line
-              #enum_name::#variant_ident
-            } // Brace on new line
-          };
-          standalone_constructors.push( constructor );
-        }
-        // --- End Standalone Constructor ---
-
-        // Associated method (Default is scalar for Unit)
-        let static_method = quote!
-        {
-          /// Constructor for the #variant_ident unit variant.
-          #[ inline( always ) ]
-          #vis fn #method_name() -> Self
-          {
-            Self::#variant_ident
-          }
-        };
-        methods.push( static_method );
+        handle_unit_variant
+        (
+          ast,
+          variant,
+          &struct_attrs,
+          enum_name,
+          vis,
+          generics,
+          original_input,
+          has_debug,
+          &mut methods,
+          &mut end_impls,
+          &mut standalone_constructors,
+          &variant_attrs,
+          &variant_field_info,
+          &merged_where_clause,
+        )?;
       },
       // Case 2: Tuple variant
       syn::Fields::Unnamed( fields ) =>
@@ -229,42 +193,23 @@ pub(super) fn former_for_enum
           // Sub-case: Zero fields (treat like Unit variant)
           0 =>
           {
-            // Default behavior is scalar (direct constructor)
-            // #[scalar] attribute is redundant but allowed
-            if wants_subform_scalar
-            {
-               return Err( syn::Error::new_spanned( variant, "#[subform_scalar] cannot be used on zero-field tuple variants." ) );
-            }
-
-            // --- Standalone Constructor (Zero Tuple) ---
-            if struct_attrs.standalone_constructors.value( false )
-            {
-              // ... (logic similar to Unit variant standalone constructor) ...
-              let return_type = quote! { #enum_name< #enum_generics_ty > };
-              let constructor = quote!
-              {
-                /// Standalone constructor for the #variant_ident zero-field tuple variant.
-                #[ inline( always ) ]
-                #vis fn #method_name < #enum_generics_impl >()
-                -> #return_type
-                where #enum_generics_where
-                { Self::#variant_ident() }
-              };
-              standalone_constructors.push( constructor );
-            }
-            // --- End Standalone Constructor ---
-
-            // Associated method (direct constructor)
-            let static_method = quote!
-            {
-              /// Constructor for the #variant_ident zero-field tuple variant.
-              #[ inline( always ) ]
-              #vis fn #method_name() -> Self
-              {
-                Self::#variant_ident()
-              }
-            };
-            methods.push( static_method );
+            handle_tuple_zero_variant
+            (
+              ast,
+              variant,
+              &struct_attrs,
+              enum_name,
+              vis,
+              generics,
+              original_input,
+              has_debug,
+              &mut methods,
+              &mut end_impls,
+              &mut standalone_constructors,
+              &variant_attrs,
+              &variant_field_info,
+              &merged_where_clause,
+            )?;
           }
           // Sub-case: Single field tuple variant
           1 =>
@@ -624,48 +569,30 @@ pub(super) fn former_for_enum
         }
 
         // <<< Start: Logic for Named Fields (Struct-like Variants) >>>
+        println!( "DEBUG: Processing Named fields for variant: {}", variant.ident ); // Debug print
         match fields.named.len()
         {
             // Sub-case: Zero fields (Struct(0))
             0 =>
             {
-                if wants_subform_scalar
-                {
-                    return Err( syn::Error::new_spanned( variant, "#[subform_scalar] cannot be used on zero-field struct variants." ) );
-                }
-                else if wants_scalar // Default for Struct(0) is now an error, only #[scalar] works
-                {
-                    // --- Scalar Struct(0) Variant ---
-                    // --- Standalone Constructor (Scalar Struct(0)) ---
-                    if struct_attrs.standalone_constructors.value( false )
-                    {
-                        let constructor_params : Vec<_> = variant_field_info.iter().filter( |f| f.is_constructor_arg ).map( |f| { let pn = &f.ident; let ty = &f.ty; quote! { #pn : impl Into<#ty> } } ).collect();
-                        let return_type = quote! { #enum_name< #enum_generics_ty > };
-                        let constructor = quote!
-                        {
-                            /// Standalone constructor for the #variant_ident zero-field struct variant (scalar style).
-                            #[ inline( always ) ]
-                            #vis fn #method_name < #enum_generics_impl > ( #( #constructor_params ),* ) -> #return_type where #enum_generics_where
-                            { Self::#variant_ident {} }
-                        };
-                        standalone_constructors.push( constructor );
-                    }
-                    // --- End Standalone Constructor ---
-
-                    // Associated method (direct constructor)
-                    let static_method = quote!
-                    {
-                        /// Constructor for the #variant_ident zero-field struct variant (scalar style).
-                        #[ inline( always ) ]
-                        #vis fn #method_name() -> Self
-                        { Self::#variant_ident {} }
-                    };
-                    methods.push( static_method );
-                }
-                else // Default: Error
-                {
-                   return Err( syn::Error::new_spanned( variant, "Former derive requires `#[scalar]` attribute for zero-field struct-like variants." ) );
-                }
+                println!( "DEBUG: Calling handle_struct_zero_variant for variant: {}", variant.ident ); // Debug print
+                handle_struct_zero_variant
+                (
+                    ast,
+                    variant,
+                    &struct_attrs,
+                    enum_name,
+                    vis,
+                    generics,
+                    original_input,
+                    has_debug,
+                    &mut methods,
+                    &mut end_impls,
+                    &mut standalone_constructors,
+                    &variant_attrs,
+                    &variant_field_info,
+                    &merged_where_clause,
+                )?;
             }
             // Sub-case: Single field (Struct(1))
             1 =>
