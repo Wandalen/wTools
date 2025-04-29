@@ -17,7 +17,7 @@ pub struct InnerG4< T : BoundB > // BoundB required by the inner struct
 // --- Enum Definition with Bounds ---
 // Apply Former derive here. This is what we are testing.
 #[ derive( Debug, PartialEq, Clone, former::Former ) ]
-// #[ debug ] // Uncomment to see generated code later
+#[ debug ] // Uncomment to see generated code later
 pub enum EnumG4< T : BoundA + BoundB > // BoundA required by enum, BoundB required by InnerG4<T>
 {
   V1 // Struct-like variant
