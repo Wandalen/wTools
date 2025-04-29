@@ -1,5 +1,15 @@
 # Project Plan: Refactor Enum Variant Handling in Former Derive
 
+## Initial Task
+
+ move out each branch of `match &variant.fields` into a separate function in a separate file and there should be files for each of these cases:
+
+- Unit
+- Zero-Field Variant Tuple
+- Zero-Field Variant Struct
+- non Zero-Field Variant Tuple
+- non Zero-Field Variant Struct
+
 ## Increments
 
 *   ⏳ Increment 1: Set up module structure for variant former_enum
