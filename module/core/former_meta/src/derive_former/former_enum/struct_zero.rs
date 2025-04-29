@@ -1,3 +1,5 @@
+
+// File: module/core/former_meta/src/derive_former/former_enum/struct_zero.rs
 #![ allow( clippy::wildcard_imports ) ]
 use super::*;
 use macro_tools::
@@ -29,15 +31,18 @@ pub fn handle_struct_zero_variant< 'a > // Added explicit lifetime 'a
   standalone_constructors : &mut Vec<TokenStream>,
   variant_attrs : &'a FieldAttributes, // Added lifetime 'a
   _variant_field_info : &'a Vec<EnumVariantFieldInfo>, // Added lifetime 'a, Prefixed with _
-  _merged_where_clause : Option< &'a syn::WhereClause >, // Changed type back to Option<&'a WhereClause>
+  // Accept Option<&WhereClause> directly
+  merged_where_clause : Option< &'a syn::WhereClause >,
 ) -> Result< () >
 {
   println!( "DEBUG: Entering handle_struct_zero_variant for variant: {}", variant.ident ); // Debug print
   let variant_ident = &variant.ident;
 
   // Decompose generics within the function
-  let ( _enum_generics_with_defaults, enum_generics_impl, enum_generics_ty, enum_generics_where )
+  let ( _enum_generics_with_defaults, enum_generics_impl, enum_generics_ty, _enum_generics_where_punctuated ) // Use _ for unused where punctuated
   = generic_params::decompose( generics );
+  // Use the passed Option<&WhereClause>
+  let enum_generics_where = merged_where_clause;
 
   // Generate the snake_case method name, handling potential keywords
   let variant_name_str = variant_ident.to_string();
@@ -45,14 +50,14 @@ pub fn handle_struct_zero_variant< 'a > // Added explicit lifetime 'a
   let method_name_ident_temp = format_ident!( "{}", method_name_snake_str, span = variant_ident.span() );
   let method_name = macro_tools::ident::ident_maybe_raw( &method_name_ident_temp ); // Use fully qualified path
 
-  let _wants_scalar = variant_attrs.scalar.is_some() && variant_attrs.scalar.as_ref().unwrap().setter(); // Prefixed with _
+  let wants_scalar = variant_attrs.scalar.is_some() && variant_attrs.scalar.as_ref().unwrap().setter();
   let wants_subform_scalar = variant_attrs.subform_scalar.is_some();
 
   if wants_subform_scalar
   {
       return Err( syn::Error::new_spanned( variant, "#[subform_scalar] cannot be used on zero-field struct variants." ) );
   }
-  else if _wants_scalar // Default for Struct(0) is now an error, only #[scalar] works
+  else if wants_scalar // Default for Struct(0) is now an error, only #[scalar] works
   {
       // --- Scalar Struct(0) Variant ---
       // --- Standalone Constructor (Scalar Struct(0)) ---

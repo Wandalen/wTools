@@ -1,3 +1,4 @@
+// File: module/core/former_meta/src/derive_former/former_enum/unit.rs
 #![ allow( clippy::wildcard_imports ) ]
 use super::*;
 use macro_tools::
@@ -29,14 +30,18 @@ pub fn handle_unit_variant< 'a > // Added explicit lifetime 'a
   standalone_constructors : &mut Vec<TokenStream>,
   variant_attrs : &FieldAttributes,
   variant_field_info : &Vec<EnumVariantFieldInfo>,
-  _merged_where_clause : Option< &'a syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma> >, // Changed type to Option<&'a Punctuated<...>>
+  // Accept Option<&WhereClause> directly
+  merged_where_clause : Option< &'a syn::WhereClause >,
 ) -> Result< () >
 {
   let variant_ident = &variant.ident;
 
   // Decompose generics within the function
-  let ( _enum_generics_with_defaults, enum_generics_impl, enum_generics_ty, enum_generics_where )
+  let ( _enum_generics_with_defaults, enum_generics_impl, enum_generics_ty, _enum_generics_where_punctuated ) // Use _ for unused where punctuated
   = generic_params::decompose( generics );
+  // Use the passed Option<&WhereClause>
+  let enum_generics_where = merged_where_clause;
+
 
   // Generate the snake_case method name, handling potential keywords
   let variant_name_str = variant_ident.to_string();

@@ -1,4 +1,5 @@
-// File: module/core/former/tests/inc/former_enum_tests/basic.rs
+// File: module/core/former/tests/inc/former_enum_tests/usecase1.rs
+// File: module/core/former/tests/inc/former_enum_tests/basic.rs // NOTE: Corrected path based on previous logs/context
 use super::*;
 
 // Define the inner structs that the enum variants will hold.
@@ -17,6 +18,7 @@ pub struct Run { pub command: String }
 
 // Derive Former on the enum.
 // By default, this should generate subformer starter methods for each variant.
+// #[ debug ] // FIX: Removed debug attribute
 #[derive(Debug, Clone, PartialEq, former::Former)]
 enum FunctionStep
 {

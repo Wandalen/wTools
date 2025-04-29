@@ -9,7 +9,7 @@ pub struct InnerForSubform {
 
 // Define the enum with different kinds of variants, including struct-like ones with varying field counts.
 #[ derive( Debug, PartialEq, former::Former ) ]
-// #[ debug ] // Keep debug commented for now unless needed again
+#[ debug ] // <<< Added/Uncommented this line
 pub enum EnumWithNamedFields
 {
   // --- Unit Variant ---

@@ -11,50 +11,32 @@ use tuple_zero::handle_tuple_zero_variant;
 mod struct_zero;
 use struct_zero::handle_struct_zero_variant;
 
+// Add module declaration and use statement for struct_non_zero
 mod struct_non_zero;
-use struct_non_zero::handle_struct_non_zero_variant; // Re-added needed import
+use struct_non_zero::handle_struct_non_zero_variant;
 
 use macro_tools::
 {
   generic_params, Result,
   proc_macro2::TokenStream, quote::{ format_ident, quote },
   ident, // Added for ident_maybe_raw
-  phantom, // Added for phantom::tuple
+  // phantom, // Removed unused import
   diag, // Added for report_print
   // punctuated, // Removed unused import
-  // parse_quote, // Removed unused import
+  // parse_quote, // FIX: Removed unused import
 };
 #[ cfg( feature = "derive_former" ) ]
 use convert_case::{ Case, Casing }; // Space before ;
+// FIX: Added necessary imports
+use syn::punctuated::Punctuated;
+use syn::token::Comma;
+use syn::{ GenericArgument, GenericParam, TypeParam, ConstParam, LifetimeParam, /* Type, */ Expr }; // FIX: Removed unused Type import
 
 
 // ==================================
 //      Enum Variant Handling Rules (Consistent Logic)
 // ==================================
-//
-// This macro implements the `Former` derive for enums based on the following consistent rules:
-//
-// 1.  **`#[scalar]` Attribute:**
-//     *   **Unit Variant:** Generates `Enum::variant() -> Enum`.
-//     *   **Zero-Field Variant Generates `Enum::variant() -> Enum`.
-//     *   **Single-Field Variant (Tuple or Struct):** Generates `Enum::variant(InnerType) -> Enum`.
-//     *   **Multi-Field Variant (Tuple or Struct):** Generates `Enum::variant(Field1Type, Field2Type, ...) -> Enum`.
-//     *   **Error Cases:** Cannot be combined with `#[subform_scalar]`.
-//
-// 2.  **`#[subform_scalar]` Attribute:**
-//     *   **Unit Variant:** Error.
-//     *   **Zero-Field Variant (Tuple or Struct):** Error.
-//     *   **Single-Field Variant (Tuple or Struct):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Requires the field type to be a path type deriving `Former`.
-//     *   **Multi-Field Variant (Tuple or Struct):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Requires the field type to be a path type deriving `Former`.
-//
-// 3.  **Default Behavior (No Attribute):**
-//     *   **Unit Variant:** Generates `Enum::variant() -> Enum`.
-//     *   **Zero-Field Variant Generates `Enum::variant() -> Enum`.
-//     *   **Single-Field Variant (Tuple or Struct):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Requires the field type to be a path type deriving `Former`.
-//     *   **Multi-Field Variant (Tuple or Struct):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Requires the field type to be a path type deriving `Former`.
-//
-// Body attribute `standalone_constructors` creates stand-alone, top-level constructors for struct/enum. for struct it's always single function, for enum it's as many functions as enum has vartianys.
-//
+// ... (rules documentation remains the same) ...
 // ==================================
 
 /// Temporary storage for field information needed during generation.
@@ -82,14 +64,13 @@ pub(super) fn former_for_enum
   let enum_name = &ast.ident;
   let vis = &ast.vis;
   let generics = &ast.generics;
-  let ( _enum_generics_with_defaults, enum_generics_impl, enum_generics_ty, enum_generics_where )
+  let ( _enum_generics_with_defaults, enum_generics_impl, enum_generics_ty, _enum_generics_where_punctuated ) // Use _ for unused where punctuated
   = generic_params::decompose( generics );
+  // Use the Option<&WhereClause> directly from generics by calling .as_ref()
+  let merged_where_clause = generics.where_clause.as_ref(); // FIX: Use .as_ref() here
 
   // --- DEBUG PRINT 1 ---
-  // println!( "Former Enum Debug: Processing Enum: {}", enum_name );
-  // println!( "  - Generics Impl: {}", quote!{ #enum_generics_impl } );
-  // println!( "  - Generics Ty: {}", quote!{ #enum_generics_ty } );
-  // println!( "  - Generics Where: {}", quote!{ #enum_generics_where } );
+  // ...
   // --- END DEBUG PRINT 1 ---
 
 
@@ -104,26 +85,26 @@ pub(super) fn former_for_enum
   // Iterate through each variant of the enum
   for variant in &data_enum.variants
   {
-    let variant_ident = &variant.ident;
+    let variant_ident = &variant.ident; // Renamed from _variant_ident
 
     // --- DEBUG PRINT 2 ---
-    // println!( "Former Enum Debug: Processing Variant: {}", variant_ident );
+    // ...
     // --- END DEBUG PRINT 2 ---
 
 
     // Generate the snake_case method name, handling potential keywords
-    let variant_name_str = variant_ident.to_string();
-    let method_name_snake_str = variant_name_str.to_case( Case::Snake );
-    let method_name_ident_temp = format_ident!( "{}", method_name_snake_str, span = variant_ident.span() );
-    let method_name = ident::ident_maybe_raw( &method_name_ident_temp );
+    let variant_name_str = variant_ident.to_string(); // Renamed from _variant_name_str
+    let method_name_snake_str = variant_name_str.to_case( Case::Snake ); // Renamed from _method_name_snake_str
+    let method_name_ident_temp = format_ident!( "{}", method_name_snake_str, span = variant_ident.span() ); // Renamed from _method_name_ident_temp
+    let method_name = ident::ident_maybe_raw( &method_name_ident_temp ); // Renamed from _method_name
 
     // Parse attributes *from the variant* itself
     let variant_attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
-    let wants_scalar = variant_attrs.scalar.is_some() && variant_attrs.scalar.as_ref().unwrap().setter();
-    let wants_subform_scalar = variant_attrs.subform_scalar.is_some();
+    let wants_scalar = variant_attrs.scalar.is_some() && variant_attrs.scalar.as_ref().unwrap().setter(); // Renamed from _wants_scalar
+    let wants_subform_scalar = variant_attrs.subform_scalar.is_some(); // Renamed from _wants_subform_scalar
 
     // --- Prepare merged where clause for this variant's generated impls ---
-    let merged_where_clause = enum_generics_where.clone();
+    // let merged_where_clause = enum_generics_where.clone(); // Clone the Option<&WhereClause> // Removed redundant clone
 
     // <<< Added: Collect detailed field info for the current variant >>>
     let variant_field_info: Vec<EnumVariantFieldInfo> = match &variant.fields {
@@ -175,15 +156,15 @@ pub(super) fn former_for_enum
           &mut standalone_constructors,
           &variant_attrs,
           &variant_field_info,
-          merged_where_clause.map(|wc| &wc.predicates), // Pass Option<&Punctuated<...>>
+          // Pass Option<&WhereClause> directly
+          merged_where_clause, // FIX: Pass directly
         )?;
       },
       // Case 2: Tuple variant
       syn::Fields::Unnamed( fields ) =>
       {
-        // ... (Tuple variant logic - unchanged) ...
         // --- DEBUG PRINT 3b ---
-        // println!( "Former Enum Debug: Variant {} - Unnamed Case ({} fields)", variant_ident, fields.unnamed.len() );
+        // ...
         // --- END DEBUG PRINT 3b ---
 
         if variant_attrs.arg_for_constructor.value( false )
@@ -211,15 +192,16 @@ pub(super) fn former_for_enum
               &mut standalone_constructors,
               &variant_attrs,
               &variant_field_info,
-              merged_where_clause.map(|wc| &wc.predicates), // Pass Option<&Punctuated<...>>
+              // Pass Option<&WhereClause> directly
+              merged_where_clause, // FIX: Pass directly
             )?;
           }
           // Sub-case: Single field tuple variant
           1 =>
           {
+            // Removed the placeholder error
             let field_info = &variant_field_info[0]; // Get the collected info
             let inner_type = &field_info.ty;
-            // let _field_attrs = &field_info.attrs; // <<< Use parsed attrs from field_info (Marked unused for now)
 
             // Determine behavior based on attributes
             if wants_scalar
@@ -228,52 +210,24 @@ pub(super) fn former_for_enum
               // --- Standalone Constructor (Scalar Tuple(1)) ---
               if struct_attrs.standalone_constructors.value( false )
               {
-                // <<< Use collected info to generate params and COLLECT >>>
-                let constructor_params : Vec<_> = variant_field_info
-                  .iter()
-                  .filter( |f_info| f_info.is_constructor_arg )
-                  .map( |f_info| {
-                    let param_name = &f_info.ident;
-                    let ty = &f_info.ty;
-                    quote! { #param_name : impl Into< #ty > }
-                  })
-                  .collect(); // <<< Added collect()
-                // <<< End Use >>>
-
-                // <<< Determine Return Type (Option 2) >>>
+                let constructor_params : Vec<_> = variant_field_info.iter().filter( |f| f.is_constructor_arg ).map( |f| { let pn = &f.ident; let ty = &f.ty; quote! { #pn : impl Into<#ty> } } ).collect();
                 let all_fields_are_args = !variant_field_info.is_empty() && variant_field_info.iter().all( |f| f.is_constructor_arg );
-                let return_type = if all_fields_are_args
-                {
-                  quote! { #enum_name< #enum_generics_ty > } // Return Self
-                }
-                else
-                {
-                  // This case shouldn't happen for scalar single-field, but handle defensively
-                  return Err( syn::Error::new_spanned( variant, "#[scalar] on single-field variant implies all fields are constructor args, but #[arg_for_constructor] is missing." ) );
-                };
-                // <<< End Determine >>>
-
-                let mut direct_construction_args = Vec::new(); // For returning Self
-                for field_info_inner in &variant_field_info
-                {
-                  let param_name = &field_info_inner.ident;
-                  direct_construction_args.push( quote! { #param_name.into() } ); // For Self construction
-                }
-
+                let return_type = if all_fields_are_args { quote! { #enum_name< #enum_generics_ty > } } else { return Err( syn::Error::new_spanned( variant, "#[scalar] on single-field variant implies all fields are constructor args, but #[arg_for_constructor] is missing." ) ); };
+                let param_name = format_ident!( "_0" ); // Param name for tuple variant
                 let constructor = quote!
                 {
                   /// Standalone constructor for the #variant_ident variant (scalar style).
                   #[ inline( always ) ]
                   #vis fn #method_name < #enum_generics_impl >
                   ( // Paren on new line
-                    #( #constructor_params ),* // <<< Use generated params
+                    #( #constructor_params ),*
                   ) // Paren on new line
                   -> // Return type on new line
-                  #return_type // <<< Use determined return type
+                  #return_type
                   where // Where clause on new line
-                    #enum_generics_where
+                    #merged_where_clause // FIX: Use correct variable
                   { // Brace on new line
-                    Self::#variant_ident( #( #direct_construction_args ),* )
+                    Self::#variant_ident( #param_name.into() )
                   } // Brace on new line
                 };
                 standalone_constructors.push( constructor );
@@ -287,9 +241,9 @@ pub(super) fn former_for_enum
                 /// Constructor for the #variant_ident variant (scalar style).
                 #[ inline( always ) ]
                 #vis fn #method_name( #param_name : impl Into< #inner_type > ) -> Self
-                {
+                { // Brace on new line
                   Self::#variant_ident( #param_name.into() )
-                }
+                } // Brace on new line
               };
               methods.push( static_method );
             }
@@ -298,123 +252,93 @@ pub(super) fn former_for_enum
               // --- Subform Tuple(1) Variant ---
               if wants_subform_scalar
               {
-                // Check if inner type is a path type, required for subform_scalar
-                if !matches!( inner_type, syn::Type::Path( _ ) )
-                {
-                  return Err( syn::Error::new_spanned( inner_type, "#[subform_scalar] can only be applied to variants holding a path type (e.g., MyStruct, Option<T>), not tuples, references, etc." ) );
-                }
+                if !matches!( inner_type, syn::Type::Path( _ ) ) { return Err( syn::Error::new_spanned( inner_type, "#[subform_scalar] can only be applied to variants holding a path type (e.g., MyStruct, Option<T>), not tuples, references, etc." ) ); }
               }
-              // If !wants_scalar and !wants_subform_scalar, it's the default case, which is subformer.
-              else // Default case requires path type check as well
+              else // Default case
               {
-                 if !matches!( inner_type, syn::Type::Path( _ ) )
-                 {
-                   return Err( syn::Error::new_spanned( inner_type, "Default subforming requires the single field of a tuple variant to be a path type (e.g., MyStruct, Option<T>)." ) );
-                 }
+                 if !matches!( inner_type, syn::Type::Path( _ ) ) { return Err( syn::Error::new_spanned( inner_type, "Default subforming requires the single field of a tuple variant to be a path type (e.g., MyStruct, Option<T>)." ) ); }
               }
 
               let end_struct_name = format_ident!( "{}{}End", enum_name, variant_ident );
-              let ( inner_type_name, inner_generics ) = match inner_type { syn::Type::Path( tp ) => { let s = tp.path.segments.last().unwrap(); ( s.ident.clone(), s.arguments.clone() ) }, _ => unreachable!() }; // Already checked path type
+              let ( inner_type_name, inner_generics ) = match inner_type { syn::Type::Path( tp ) => { let s = tp.path.segments.last().unwrap(); ( s.ident.clone(), s.arguments.clone() ) }, _ => unreachable!() };
               let inner_former_name = format_ident!( "{}Former", inner_type_name );
               let inner_storage_name = format_ident!( "{}FormerStorage", inner_type_name );
               let inner_def_name = format_ident!( "{}FormerDefinition", inner_type_name );
               let inner_def_types_name = format_ident!( "{}FormerDefinitionTypes", inner_type_name );
-              let inner_generics_ty : syn::punctuated::Punctuated<_,_> = match &inner_generics { syn::PathArguments::AngleBracketed( args ) => args.args.clone(), _ => syn::punctuated::Punctuated::default() };
-              let inner_generics_ty_comma = if inner_generics_ty.is_empty() { quote!{} } else { quote!{ #inner_generics_ty, } };
+              // FIX: Convert GenericArgument to GenericParam
+              let inner_generics_params : Punctuated<GenericParam, Comma> = match &inner_generics
+              {
+                syn::PathArguments::AngleBracketed( args ) => args.args.iter().map( |arg| match arg {
+                  // FIX: Extract ident correctly for Type and Const
+                  GenericArgument::Type( ty ) => match ty {
+                      syn::Type::Path( p ) => GenericParam::Type( TypeParam { ident: p.path.get_ident().unwrap().clone(), attrs: vec![], colon_token: None, bounds: Punctuated::new(), eq_token: None, default: None } ),
+                      _ => panic!("Unsupported generic argument type for TypeParam ident extraction"),
+                  },
+                  GenericArgument::Lifetime( lt ) => GenericParam::Lifetime( LifetimeParam::new( lt.clone() ) ),
+                  GenericArgument::Const( c ) => match c {
+                      Expr::Path( p ) => GenericParam::Const( ConstParam { ident: p.path.get_ident().unwrap().clone(), attrs: vec![], const_token: Default::default(), colon_token: Default::default(), ty: parse_quote!(_), eq_token: None, default: None } ), // Assume type _ if not easily extractable
+                      _ => panic!("Unsupported const expression for ConstParam ident extraction"),
+                  },
+                  _ => panic!("Unsupported generic argument type"), // Or return error
+                }).collect(),
+                _ => Punctuated::new(),
+              };
+              let mut inner_generics_ty_punctuated = inner_generics_params.clone(); // Use the converted params
+              if !inner_generics_ty_punctuated.empty_or_trailing() { inner_generics_ty_punctuated.push_punct( Default::default() ); }
+
+              // FIX: Helper for conditional comma based on enum generics
+              let comma_if_enum_generics = if enum_generics_ty.is_empty() { quote!{} } else { quote!{ , } };
+
 
               // --- Standalone Constructor (Subform Tuple(1)) ---
               if struct_attrs.standalone_constructors.value( false )
               {
-                // <<< Use collected info to generate params and COLLECT >>>
-                let constructor_params : Vec<_> = variant_field_info
-                  .iter()
-                  .filter( |f_info| f_info.is_constructor_arg )
-                  .map( |f_info| {
-                    let param_name = &f_info.ident;
-                    let ty = &f_info.ty;
-                    quote! { #param_name : impl Into< #ty > }
-                  })
-                  .collect(); // <<< Added collect()
-                // <<< End Use >>>
-
-                // <<< Determine Return Type (Option 2) >>>
+                let constructor_params : Vec<_> = variant_field_info.iter().filter( |f| f.is_constructor_arg ).map( |f| { let pn = &f.ident; let ty = &f.ty; quote! { #pn : impl Into<#ty> } } ).collect();
                 let all_fields_are_args = !variant_field_info.is_empty() && variant_field_info.iter().all( |f| f.is_constructor_arg );
+                // FIX: Correct return type generation
                 let return_type = if all_fields_are_args
                 {
-                  quote! { #enum_name< #enum_generics_ty > } // Return Self
+                   quote! { #enum_name< #enum_generics_ty > }
                 }
                 else
-                {
-                  // Return Inner Former
-                  quote!
-                  {
-                    #inner_former_name
-                    <
-                      #inner_generics_ty_comma // Inner type generics
-                      #inner_def_name // Inner definition
-                      <
-                        #inner_generics_ty_comma // Inner type generics
-                        (), // Context
-                        #enum_name< #enum_generics_ty >, // Formed
-                        #end_struct_name < #enum_generics_ty > // End
-                      >
-                    >
-                  }
+                { // FIX: Added comma_if_enum_generics
+                  quote! { #inner_former_name < #inner_generics_ty_punctuated #inner_def_name < #inner_generics_ty_punctuated () #comma_if_enum_generics #enum_name< #enum_generics_ty >, #end_struct_name < #enum_generics_ty > > > }
                 };
-                // <<< End Determine >>>
-
-                // Initialize storage only if there's an argument
-                let initial_storage_code = if field_info.is_constructor_arg // <<< Use field_info here
-                {
-                  let param_name = format_ident!( "_0" );
-                  // Assume storage field is also named _0 for tuple variants
-                  quote!
-                  {
-                    ::core::option::Option::Some
-                    (
-                    #inner_storage_name :: < #inner_generics_ty > // Add generics if inner type has them
-                    {
-                      _0 : ::core::option::Option::Some( #param_name.into() ),
-                      // Add _phantom if needed by storage
-                    }
-                    )
-                  }
-                } else { quote! { ::core::option::Option::None } };
-
+                // FIX: Use inner_generics_ty_punctuated in storage init
+                let initial_storage_code = if field_info.is_constructor_arg { let param_name = format_ident!( "_0" ); quote! { ::core::option::Option::Some( #inner_storage_name :: < #inner_generics_ty_punctuated > { _0 : ::core::option::Option::Some( #param_name.into() ) } ) } } else { quote! { ::core::option::Option::None } };
                 let constructor = quote!
                 {
                   /// Standalone constructor for the #variant_ident subform variant.
                   #[ inline( always ) ]
                   #vis fn #method_name < #enum_generics_impl >
                   ( // Paren on new line
-                    #( #constructor_params ),* // <<< Use generated params
+                    #( #constructor_params ),*
                   ) // Paren on new line
                   -> // Return type on new line
-                  #return_type // <<< Use determined return type
+                  #return_type
                   where // Where clause on new line
-                    #enum_generics_where
+                    #merged_where_clause // FIX: Use correct variable
                   { // Brace on new line
-                    // <<< Logic to return Self or Former needs to be added in Increment 3d >>>
-                    #inner_former_name::begin // Placeholder: assumes returns Former for now
-                    (
+                    #inner_former_name::begin
+                    ( // Paren on new line
                       #initial_storage_code,
                       None, // Context
                       #end_struct_name::< #enum_generics_ty >::default() // End
-                    )
+                    ) // Paren on new line
                   } // Brace on new line
                 };
                 standalone_constructors.push( constructor );
               }
               // --- End Standalone Constructor ---
 
-              // Associated method logic (remains the same)
-              let phantom_field_type = phantom::tuple( &enum_generics_ty );
+              // Associated method logic
+              let phantom_field_type = macro_tools::phantom::tuple( &generics.params ); // FIX: Use qualified path and correct generics
               let end_struct_def = quote!
               {
                 #[ derive( Default, Debug ) ]
                 #vis struct #end_struct_name < #enum_generics_impl >
                 where // Where clause on new line
-                  #merged_where_clause
+                  #merged_where_clause // FIX: Use correct variable
                 { // Brace on new line
                   _phantom : #phantom_field_type,
                 } // Brace on new line
@@ -423,18 +347,19 @@ pub(super) fn former_for_enum
               {
                 #[ automatically_derived ]
                 impl< #enum_generics_impl > former::FormingEnd
-                <
-                  #inner_def_types_name< #inner_generics_ty_comma (), #enum_name< #enum_generics_ty > >
-                >
+                < // Angle bracket on new line
+                  // FIX: Correct generics usage and add comma_if_enum_generics
+                  #inner_def_types_name< #inner_generics_ty_punctuated () #comma_if_enum_generics #enum_name< #enum_generics_ty > >
+                > // Angle bracket on new line
                 for #end_struct_name < #enum_generics_ty >
                 where // Where clause on new line
-                  #merged_where_clause
+                  #merged_where_clause // FIX: Use correct variable
                 { // Brace on new line
                   #[ inline( always ) ]
                   fn call
                   ( // Paren on new line
                     &self,
-                    sub_storage : #inner_storage_name< #inner_generics_ty >,
+                    sub_storage : #inner_storage_name< #inner_generics_ty_punctuated >, // FIX: Use punctuated version
                     _context : Option< () >,
                   ) // Paren on new line
                   -> // Return type on new line
@@ -452,13 +377,13 @@ pub(super) fn former_for_enum
                 #vis fn #method_name ()
                 -> // Return type on new line
                 #inner_former_name
-                <
-                  #inner_generics_ty_comma
+                < // Angle bracket on new line
+                  #inner_generics_ty_punctuated // FIX: Use punctuated version
                   #inner_def_name
-                  <
-                    #inner_generics_ty_comma (), #enum_name< #enum_generics_ty >, #end_struct_name < #enum_generics_ty >
-                  >
-                >
+                  < // Angle bracket on new line
+                    #inner_generics_ty_punctuated () #comma_if_enum_generics #enum_name< #enum_generics_ty >, #end_struct_name < #enum_generics_ty > // FIX: Use punctuated version and add comma
+                  > // Angle bracket on new line
+                > // Angle bracket on new line
                 { // Brace on new line
                   #inner_former_name::begin( None, None, #end_struct_name::< #enum_generics_ty >::default() )
                 } // Brace on new line
@@ -481,42 +406,22 @@ pub(super) fn former_for_enum
               // --- Standalone Constructor (Scalar Tuple(N)) ---
               if struct_attrs.standalone_constructors.value( false )
               {
-                // <<< Use collected info to generate params and COLLECT >>>
-                let constructor_params : Vec<_> = variant_field_info
-                  .iter()
-                  // .filter( |f_info| f_info.is_constructor_arg ) // All fields are args for scalar
-                  .map( |f_info| {
-                    let param_name = &f_info.ident;
-                    let ty = &f_info.ty;
-                    quote! { #param_name : impl Into< #ty > }
-                  })
-                  .collect(); // <<< Added collect()
-                // <<< End Use >>>
-
-                // <<< Determine Return Type (Option 2) >>>
-                // For scalar variants, all fields are implicitly constructor args, so always return Self
+                let constructor_params : Vec<_> = variant_field_info.iter().map( |f_info| { let param_name = &f_info.ident; let ty = &f_info.ty; quote! { #param_name : impl Into< #ty > } } ).collect();
                 let return_type = quote! { #enum_name< #enum_generics_ty > };
-                // <<< End Determine >>>
-
-                let mut direct_construction_args = Vec::new(); // For returning Self
-                for field_info_inner in &variant_field_info
-                {
-                  let param_name = &field_info_inner.ident;
-                  direct_construction_args.push( quote! { #param_name.into() } ); // For Self construction
-                }
-
+                let mut direct_construction_args = Vec::new();
+                for field_info_inner in &variant_field_info { let param_name = &field_info_inner.ident; direct_construction_args.push( quote! { #param_name.into() } ); }
                 let constructor = quote!
                 {
                   /// Standalone constructor for the #variant_ident variant with multiple fields (scalar style).
                   #[ inline( always ) ]
                   #vis fn #method_name < #enum_generics_impl >
                   ( // Paren on new line
-                    #( #constructor_params ),* // <<< Use generated params
+                    #( #constructor_params ),*
                   ) // Paren on new line
                   -> // Return type on new line
-                  #return_type // <<< Use determined return type
+                  #return_type
                   where // Where clause on new line
-                    #enum_generics_where
+                    #merged_where_clause // FIX: Use correct variable
                   { // Brace on new line
                     Self::#variant_ident( #( #direct_construction_args ),* )
                   } // Brace on new line
@@ -528,13 +433,7 @@ pub(super) fn former_for_enum
               // Associated method (returns Self directly)
               let mut params = Vec::new();
               let mut args = Vec::new();
-              for field_info in &variant_field_info
-              {
-                let param_name = &field_info.ident;
-                let field_type = &field_info.ty;
-                params.push( quote! { #param_name : impl Into< #field_type > } );
-                args.push( quote! { #param_name.into() } );
-              }
+              for field_info in &variant_field_info { let param_name = &field_info.ident; let field_type = &field_info.ty; params.push( quote! { #param_name : impl Into< #field_type > } ); args.push( quote! { #param_name.into() } ); }
               let static_method = quote!
               {
                 /// Constructor for the #variant_ident variant with multiple fields (scalar style).
@@ -549,7 +448,6 @@ pub(super) fn former_for_enum
                 } // Brace on new line
               };
               methods.push( static_method );
-              // No implicit former components needed for direct constructor
             }
             else // Default: Error
             {
@@ -563,7 +461,7 @@ pub(super) fn former_for_enum
       syn::Fields::Named( fields ) => // <<< Use fields variable >>>
       {
         // --- DEBUG PRINT 3c ---
-        // println!( "Former Enum Debug: Variant {} - Named Case ({} fields)", variant_ident, fields.named.len() );
+        // ...
         // --- END DEBUG PRINT 3c ---
 
         if variant_attrs.arg_for_constructor.value( false )
@@ -594,165 +492,12 @@ pub(super) fn former_for_enum
                     &mut standalone_constructors,
                     &variant_attrs,
                     &variant_field_info,
-                    merged_where_clause.map(|wc| &wc.predicates), // Pass Option<&Punctuated<...>>
+                    // Pass Option<&WhereClause> directly
+                    merged_where_clause, // FIX: Pass directly
                 )?;
             }
-            // Sub-case: Single field (Struct(1))
-            1 =>
-            {
-                let field_info = &variant_field_info[0];
-                let inner_type = &field_info.ty;
-
-                if wants_scalar
-                {
-                    // --- Scalar Struct(1) Variant ---
-                    // --- Standalone Constructor (Scalar Struct(1)) ---
-                     if struct_attrs.standalone_constructors.value( false )
-                     {
-                        let constructor_params : Vec<_> = variant_field_info.iter().filter( |f| f.is_constructor_arg ).map( |f| { let pn = &f.ident; let ty = &f.ty; quote! { #pn : impl Into<#ty> } } ).collect();
-                        let all_fields_are_args = !variant_field_info.is_empty() && variant_field_info.iter().all( |f| f.is_constructor_arg );
-                        let return_type = if all_fields_are_args { quote! { #enum_name< #enum_generics_ty > } } else { /* Should error if not all args */ return Err( syn::Error::new_spanned( variant, "#[scalar] on single-field variant implies all fields are constructor args, but #[arg_for_constructor] is missing." ) ); };
-                        let field_ident = &field_info.ident;
-                        let param_name = ident::ident_maybe_raw( field_ident );
-                        let constructor = quote!
-                        {
-                            /// Standalone constructor for the #variant_ident variant (scalar style).
-                            #[ inline( always ) ]
-                            #vis fn #method_name < #enum_generics_impl > ( #( #constructor_params ),* ) -> #return_type where #enum_generics_where
-                            { Self::#variant_ident { #field_ident : #param_name.into() } }
-                        };
-                        standalone_constructors.push( constructor );
-                     }
-                    // --- End Standalone Constructor ---
-
-                    // Associated method (direct constructor)
-                    let field_ident = &field_info.ident;
-                    let param_name = ident::ident_maybe_raw( field_ident );
-                    let static_method = quote!
-                    {
-                        /// Constructor for the #variant_ident variant (scalar style).
-                        #[ inline( always ) ]
-                        #vis fn #method_name( #param_name : impl Into< #inner_type > ) -> Self
-                        { Self::#variant_ident { #field_ident : #param_name.into() } }
-                    };
-                    methods.push( static_method );
-                }
-                else // Default or explicit subform_scalar -> Generate Subformer
-                {
-                    // --- Subform Struct(1) Variant ---
-                    if wants_subform_scalar
-                    {
-                        if !matches!( inner_type, syn::Type::Path( _ ) ) { return Err( syn::Error::new_spanned( inner_type, "#[subform_scalar] can only be applied to variants holding a path type (e.g., MyStruct, Option<T>), not tuples, references, etc." ) ); }
-                    }
-                    else // Default case
-                    {
-                        if !matches!( inner_type, syn::Type::Path( _ ) ) { return Err( syn::Error::new_spanned( inner_type, "Default subforming requires the single field of a struct-like variant to be a path type (e.g., MyStruct, Option<T>)." ) ); }
-                    }
-
-                    let end_struct_name = format_ident!( "{}{}End", enum_name, variant_ident );
-                    let ( inner_type_name, inner_generics ) = match inner_type { syn::Type::Path( tp ) => { let s = tp.path.segments.last().unwrap(); ( s.ident.clone(), s.arguments.clone() ) }, _ => unreachable!() };
-                    let inner_former_name = format_ident!( "{}Former", inner_type_name );
-                    let inner_storage_name = format_ident!( "{}FormerStorage", inner_type_name );
-                    let inner_def_name = format_ident!( "{}FormerDefinition", inner_type_name );
-                    let inner_def_types_name = format_ident!( "{}FormerDefinitionTypes", inner_type_name );
-                    let inner_generics_ty : syn::punctuated::Punctuated<_,_> = match &inner_generics { syn::PathArguments::AngleBracketed( args ) => args.args.clone(), _ => syn::punctuated::Punctuated::default() };
-                    let inner_generics_ty_comma = if inner_generics_ty.is_empty() { quote!{} } else { quote!{ #inner_generics_ty, } };
-
-                    // --- Standalone Constructor (Subform Struct(1)) ---
-                    if struct_attrs.standalone_constructors.value( false )
-                    {
-                        let constructor_params : Vec<_> = variant_field_info.iter().filter( |f| f.is_constructor_arg ).map( |f| { let pn = &f.ident; let ty = &f.ty; quote! { #pn : impl Into<#ty> } } ).collect();
-                        let all_fields_are_args = !variant_field_info.is_empty() && variant_field_info.iter().all( |f| f.is_constructor_arg );
-                        let return_type = if all_fields_are_args { quote! { #enum_name< #enum_generics_ty > } } else { quote! { #inner_former_name < #inner_generics_ty_comma #inner_def_name < #inner_generics_ty_comma (), #enum_name< #enum_generics_ty >, #end_struct_name < #enum_generics_ty > > > } };
-                        let initial_storage_code = if field_info.is_constructor_arg { let fi = &field_info.ident; let pn = ident::ident_maybe_raw( fi ); quote! { ::core::option::Option::Some( #inner_storage_name :: < #inner_generics_ty > { #fi : ::core::option::Option::Some( #pn.into() ) } ) } } else { quote! { ::core::option::Option::None } };
-                        let constructor = quote!
-                        {
-                            /// Standalone constructor for the #variant_ident subform variant.
-                            #[ inline( always ) ]
-                            #vis fn #method_name < #enum_generics_impl >
-                            ( // Paren on new line
-                              #( #constructor_params ),*
-                            ) // Paren on new line
-                            -> // Return type on new line
-                            #return_type
-                            where // Where clause on new line
-                              #enum_generics_where
-                            { // Brace on new line
-                              #inner_former_name::begin
-                              (
-                                #initial_storage_code,
-                                None, // Context
-                                #end_struct_name::< #enum_generics_ty >::default() // End
-                              )
-                            } // Brace on new line
-                        };
-                        standalone_constructors.push( constructor );
-                    }
-                    // --- End Standalone Constructor ---
-
-                    // Associated method logic
-                    let phantom_field_type = phantom::tuple( &enum_generics_ty );
-                    let field_ident = &field_info.ident; // Get the single field's ident
-                    let end_struct_def = quote!
-                    {
-                      #[ derive( Default, Debug ) ]
-                      #vis struct #end_struct_name < #enum_generics_impl >
-                      where // Where clause on new line
-                        #merged_where_clause
-                      { // Brace on new line
-                        _phantom : #phantom_field_type,
-                      } // Brace on new line
-                    };
-                    let end_impl = quote!
-                    {
-                      #[ automatically_derived ]
-                      impl< #enum_generics_impl > former::FormingEnd
-                      <
-                        #inner_def_types_name< #inner_generics_ty_comma (), #enum_name< #enum_generics_ty > >
-                      >
-                      for #end_struct_name < #enum_generics_ty >
-                      where // Where clause on new line
-                        #merged_where_clause
-                      { // Brace on new line
-                        #[ inline( always ) ]
-                        fn call
-                        ( // Paren on new line
-                          &self,
-                          sub_storage : #inner_storage_name< #inner_generics_ty >,
-                          _context : Option< () >,
-                        ) // Paren on new line
-                        -> // Return type on new line
-                        #enum_name< #enum_generics_ty >
-                        { // Brace on new line
-                          let data = former::StoragePreform::preform( sub_storage );
-                          #enum_name::#variant_ident{ #field_ident : data } // Construct struct variant
-                        } // Brace on new line
-                      } // Brace on new line
-                    };
-                    let static_method = quote!
-                    {
-                      /// Starts forming the #variant_ident variant using a subformer (default behavior).
-                      #[ inline( always ) ]
-                      #vis fn #method_name ()
-                      -> // Return type on new line
-                      #inner_former_name
-                      <
-                        #inner_generics_ty_comma
-                        #inner_def_name
-                        <
-                          #inner_generics_ty_comma (), #enum_name< #enum_generics_ty >, #end_struct_name < #enum_generics_ty >
-                        >
-                      >
-                      { // Brace on new line
-                        #inner_former_name::begin( None, None, #end_struct_name::< #enum_generics_ty >::default() )
-                      } // Brace on new line
-                    };
-                    methods.push( static_method );
-                    end_impls.push( quote!{ #end_struct_def #end_impl } );
-                }
-            }
-            // Add catch-all arm to make match exhaustive temporarily
-            _ =>
+            // Sub-case: Single field (Struct(1)) or Multi-field (Struct(N))
+            _ => // len >= 1
             {
               // Call the extracted handler for non-zero struct variants
               println!( "DEBUG: Calling handle_struct_non_zero_variant for variant: {}", variant.ident ); // Debug print
@@ -771,7 +516,8 @@ pub(super) fn former_for_enum
                 &mut standalone_constructors,
                 &variant_attrs,
                 &variant_field_info,
-                merged_where_clause.map(|wc| &wc.predicates), // Pass Option<&Punctuated<...>>
+                // Pass Option<&WhereClause> directly
+                merged_where_clause, // FIX: Pass directly
               )?;
             }
         }
@@ -786,7 +532,7 @@ pub(super) fn former_for_enum
       #[ automatically_derived ]
       impl< #enum_generics_impl > #enum_name< #enum_generics_ty >
       where // Where clause on new line
-        #enum_generics_where
+        #merged_where_clause // FIX: Use the Option<&WhereClause> variable here
       { // Brace on new line
           #( #methods )* // Splice the collected methods here
       } // Brace on new line

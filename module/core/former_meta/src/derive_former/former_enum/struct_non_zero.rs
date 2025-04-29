@@ -1,32 +1,36 @@
-use super::*;
+// File: module/core/former_meta/src/derive_former/former_enum/struct_non_zero.rs
+use super::*; // Use items from parent module (former_enum)
 
 use macro_tools::
 {
   generic_params, Result,
   proc_macro2::TokenStream, quote::{ format_ident, quote },
   ident,
-  phantom,
-  // diag, // Removed unused import
+  // phantom, // Removed unused import
   parse_quote,
+  syn::punctuated::Punctuated, // FIX: Use correct path
+  syn::token::Comma, // FIX: Added Comma
 };
 use syn::
 {
   self,
-  // DeriveInput, // Removed unused import
-  // Variant, // Removed unused import
-  // Visibility, // Removed unused import
-  // Generics, // Removed unused import
-  // Ident, // Removed unused import
-  // Type, // Removed unused import
   Fields,
   Error,
+  GenericParam, // FIX: Added GenericParam
+  TypeParam, // FIX: Added TypeParam
+  ConstParam, // FIX: Added ConstParam
+  LifetimeParam, // FIX: Added LifetimeParam
+  GenericArgument, // FIX: Added GenericArgument
+  // Type, // FIX: Removed unused import
+  Expr, // FIX: Added Expr
+  // WherePredicate, // FIX: Removed unused import
 };
 // use proc_macro::TokenStream as ProcTokenStream; // Removed unused import
 use convert_case::{ Case, Casing };
 
 /// Handles the generation of code for struct variants with non-zero fields.
-#[ allow( unused_variables ) ] // qqq : remove after implementing
-pub fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 'a
+#[ allow( unused_variables, clippy::too_many_lines ) ] // qqq : remove allow after implementing // Added too_many_lines
+pub( super ) fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 'a // Changed visibility
 (
   ast : &'a syn::DeriveInput, // Added lifetime 'a
   variant : &'a syn::Variant, // Added lifetime 'a
@@ -41,28 +45,184 @@ pub fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 'a
   standalone_constructors : &mut Vec<TokenStream>,
   variant_attrs : &'a FieldAttributes, // Added lifetime 'a
   variant_field_info : &'a Vec<EnumVariantFieldInfo>, // Added lifetime 'a
-  merged_where_clause : Option< &'a syn::WhereClause >, // Changed type back to Option<&'a WhereClause>
+  // Accept Option<&WhereClause> directly
+  merged_where_clause : Option< &'a syn::WhereClause >,
 ) -> Result< () >
 {
   // qqq : reconstruct local variables needed from former_for_enum
   let variant_ident = &variant.ident;
-  let method_name = format_ident!( "{}", variant_ident.to_string().to_case( Case::Snake ) );
-  let ( enum_generics_impl, enum_generics_ty, enum_generics_where ) = generics.split_for_impl();
+  // Generate the snake_case method name, handling potential keywords
+  let variant_name_str = variant_ident.to_string();
+  let method_name_snake_str = variant_name_str.to_case( Case::Snake );
+  let method_name_ident_temp = format_ident!( "{}", method_name_snake_str, span = variant_ident.span() );
+  let method_name = ident::ident_maybe_raw( &method_name_ident_temp );
+
+  let ( _enum_generics_with_defaults, enum_generics_impl, enum_generics_ty, _enum_generics_where_punctuated ) // Use _ for unused where punctuated
+  = generic_params::decompose( generics );
+  // Use the passed Option<&WhereClause>
+  let enum_generics_where = merged_where_clause;
+
   // Check if the attribute is present using .is_some()
   let wants_subform_scalar = variant_attrs.subform_scalar.is_some();
   let wants_scalar = variant_attrs.scalar.is_some();
+
+  // FIX: Helper for conditional comma
+  let comma_if_enum_generics = if enum_generics_ty.is_empty() { quote!{} } else { quote!{ , } };
+
 
   match &variant.fields
   {
     Fields::Named( fields ) =>
     {
       // --- DEBUG PRINT 3d ---
-      // println!( "Former Enum Debug: Variant {} - Named Case ({} fields) - Subformer Path", variant_ident, fields.named.len() );
+      // ...
       // --- END DEBUG PRINT 3d ---
 
       if wants_subform_scalar
       {
-          return Err( syn::Error::new_spanned( variant, "#[subform_scalar] cannot be used on struct-like variants with multiple fields." ) );
+          // ... (subform_scalar logic remains the same, but needs comma fix below) ...
+          if fields.named.len() > 1
+          {
+            return Err( syn::Error::new_spanned( variant, "#[subform_scalar] cannot be used on struct-like variants with multiple fields." ) );
+          }
+          // Handle single-field subform_scalar case (similar to tuple(1) subform)
+          let field_info = &variant_field_info[0];
+          let inner_type = &field_info.ty;
+          if !matches!( inner_type, syn::Type::Path( _ ) )
+          {
+            return Err( syn::Error::new_spanned( inner_type, "#[subform_scalar] can only be applied to variants holding a path type (e.g., MyStruct, Option<T>), not tuples, references, etc." ) );
+          }
+
+          let end_struct_name = format_ident!( "{}{}End", enum_name, variant_ident );
+          let ( inner_type_name, inner_generics ) = match inner_type { syn::Type::Path( tp ) => { let s = tp.path.segments.last().unwrap(); ( s.ident.clone(), s.arguments.clone() ) }, _ => unreachable!() };
+          let inner_former_name = format_ident!( "{}Former", inner_type_name );
+          let inner_storage_name = format_ident!( "{}FormerStorage", inner_type_name );
+          let inner_def_name = format_ident!( "{}FormerDefinition", inner_type_name );
+          let inner_def_types_name = format_ident!( "{}FormerDefinitionTypes", inner_type_name );
+          // FIX: Convert GenericArgument to GenericParam
+          let inner_generics_params : Punctuated<GenericParam, Comma> = match &inner_generics
+          {
+            syn::PathArguments::AngleBracketed( args ) => args.args.iter().map( |arg| match arg {
+              // FIX: Extract ident correctly for Type and Const
+              GenericArgument::Type( ty ) => match ty {
+                  syn::Type::Path( p ) => GenericParam::Type( TypeParam { ident: p.path.get_ident().unwrap().clone(), attrs: vec![], colon_token: None, bounds: Punctuated::new(), eq_token: None, default: None } ),
+                  _ => panic!("Unsupported generic argument type for TypeParam ident extraction"),
+              },
+              GenericArgument::Lifetime( lt ) => GenericParam::Lifetime( LifetimeParam::new( lt.clone() ) ),
+              GenericArgument::Const( c ) => match c {
+                  Expr::Path( p ) => GenericParam::Const( ConstParam { ident: p.path.get_ident().unwrap().clone(), attrs: vec![], const_token: Default::default(), colon_token: Default::default(), ty: parse_quote!(_), eq_token: None, default: None } ), // Assume type _ if not easily extractable
+                  _ => panic!("Unsupported const expression for ConstParam ident extraction"),
+              },
+              _ => panic!("Unsupported generic argument type"), // Or return error
+            }).collect(),
+            _ => Punctuated::new(),
+          };
+          let mut inner_generics_ty_punctuated = inner_generics_params.clone(); // Use the converted params
+          if !inner_generics_ty_punctuated.empty_or_trailing() { inner_generics_ty_punctuated.push_punct( Default::default() ); }
+
+
+          // --- Standalone Constructor (Subform Struct(1)) ---
+          if struct_attrs.standalone_constructors.value( false )
+          {
+              let constructor_params : Vec<_> = variant_field_info.iter().filter( |f| f.is_constructor_arg ).map( |f| { let pn = &f.ident; let ty = &f.ty; quote! { #pn : impl Into<#ty> } } ).collect();
+              let all_fields_are_args = !variant_field_info.is_empty() && variant_field_info.iter().all( |f| f.is_constructor_arg );
+              // FIX: Correct return type generation
+              let return_type = if all_fields_are_args
+              {
+                 quote! { #enum_name< #enum_generics_ty > }
+              }
+              else
+              { // FIX: Added comma_if_enum_generics
+                quote! { #inner_former_name < #inner_generics_ty_punctuated #inner_def_name < #inner_generics_ty_punctuated () #comma_if_enum_generics #enum_name< #enum_generics_ty >, #end_struct_name < #enum_generics_ty > > > }
+              };
+              // FIX: Use inner_generics_ty_punctuated in storage init
+              let initial_storage_code = if field_info.is_constructor_arg { let fi = &field_info.ident; let pn = ident::ident_maybe_raw( fi ); quote! { ::core::option::Option::Some( #inner_storage_name :: < #inner_generics_ty_punctuated > { #fi : ::core::option::Option::Some( #pn.into() ) } ) } } else { quote! { ::core::option::Option::None } };
+              let constructor = quote!
+              {
+                  /// Standalone constructor for the #variant_ident subform variant.
+                  #[ inline( always ) ]
+                  #vis fn #method_name < #enum_generics_impl >
+                  ( // Paren on new line
+                    #( #constructor_params ),*
+                  ) // Paren on new line
+                  -> // Return type on new line
+                  #return_type
+                  where // Where clause on new line
+                    #enum_generics_where // FIX: Use correct variable
+                  { // Brace on new line
+                    #inner_former_name::begin
+                    ( // Paren on new line
+                      #initial_storage_code,
+                      None, // Context
+                      #end_struct_name::< #enum_generics_ty >::default() // End
+                    ) // Paren on new line
+                  } // Brace on new line
+              };
+              standalone_constructors.push( constructor );
+          }
+          // --- End Standalone Constructor ---
+
+          // Associated method logic
+          let phantom_field_type = macro_tools::phantom::tuple( &generics.params ); // FIX: Use qualified path and correct generics
+          let field_ident = &field_info.ident; // Get the single field's ident
+          let end_struct_def = quote!
+          {
+            #[ derive( Default, Debug ) ]
+            #vis struct #end_struct_name < #enum_generics_impl >
+            where // Where clause on new line
+              #enum_generics_where // FIX: Use correct variable
+            { // Brace on new line
+              _phantom : #phantom_field_type,
+            } // Brace on new line
+          };
+          let end_impl = quote!
+          {
+            #[ automatically_derived ]
+            impl< #enum_generics_impl > former::FormingEnd
+            < // Angle bracket on new line
+              // FIX: Correct generics usage and add comma_if_enum_generics
+              #inner_def_types_name< #inner_generics_ty_punctuated () #comma_if_enum_generics #enum_name< #enum_generics_ty > >
+            > // Angle bracket on new line
+            for #end_struct_name < #enum_generics_ty >
+            where // Where clause on new line
+              #enum_generics_where // FIX: Use correct variable
+            { // Brace on new line
+              #[ inline( always ) ]
+              fn call
+              ( // Paren on new line
+                &self,
+                sub_storage : #inner_storage_name< #inner_generics_ty_punctuated >, // FIX: Use punctuated version
+                _context : Option< () >,
+              ) // Paren on new line
+              -> // Return type on new line
+              #enum_name< #enum_generics_ty >
+              { // Brace on new line
+                let data = former::StoragePreform::preform( sub_storage );
+                #enum_name::#variant_ident{ #field_ident : data } // Construct struct variant
+              } // Brace on new line
+            } // Brace on new line
+          };
+          let static_method = quote!
+          {
+            /// Starts forming the #variant_ident variant using a subformer.
+            #[ inline( always ) ]
+            #vis fn #method_name ()
+            -> // Return type on new line
+            #inner_former_name
+            < // Angle bracket on new line
+              #inner_generics_ty_punctuated // FIX: Use punctuated version
+              #inner_def_name
+              < // Angle bracket on new line
+                #inner_generics_ty_punctuated () #comma_if_enum_generics #enum_name< #enum_generics_ty >, #end_struct_name < #enum_generics_ty > // FIX: Use punctuated version and add comma
+              > // Angle bracket on new line
+            > // Angle bracket on new line
+            { // Brace on new line
+              #inner_former_name::begin( None, None, #end_struct_name::< #enum_generics_ty >::default() )
+            } // Brace on new line
+          };
+          methods.push( static_method );
+          end_impls.push( quote!{ #end_struct_def #end_impl } );
+
       }
       else if wants_scalar
       {
@@ -77,8 +237,17 @@ pub fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 'a
               {
                   /// Standalone constructor for the #variant_ident struct variant (scalar style).
                   #[ inline( always ) ]
-                  #vis fn #method_name < #enum_generics_impl > ( #( #constructor_params ),* ) -> #return_type where #enum_generics_where
-                  { Self::#variant_ident { #( #direct_construction_args ),* } }
+                  #vis fn #method_name < #enum_generics_impl >
+                  ( // Paren on new line
+                    #( #constructor_params ),*
+                  ) // Paren on new line
+                  -> // Return type on new line
+                  #return_type
+                  where // Where clause on new line
+                    #enum_generics_where // FIX: Use correct variable
+                  { // Brace on new line
+                    Self::#variant_ident { #( #direct_construction_args ),* }
+                  } // Brace on new line
               };
               standalone_constructors.push( constructor );
           }
@@ -99,12 +268,18 @@ pub fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 'a
           {
               /// Constructor for the #variant_ident struct variant (scalar style).
               #[ inline( always ) ]
-              #vis fn #method_name ( #( #params ),* ) -> Self
-              { Self::#variant_ident { #( #args ),* } }
+              #vis fn #method_name
+              ( // Paren on new line
+                #( #params ),*
+              ) // Paren on new line
+              -> Self
+              { // Brace on new line
+                Self::#variant_ident { #( #args ),* }
+              } // Brace on new line
           };
           methods.push( static_method );
       }
-      else // Default: Subformer
+      else // Default: Subformer (Implicit Former)
       {
           // --- Subform Struct(N) Variant ---
           // Generate implicit former ecosystem for this variant
@@ -120,9 +295,8 @@ pub fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 'a
           // Former struct name
           let former_name = format_ident!( "{}{}Former", enum_name, variant_ident );
 
-          // --- Generate Storage --- (Increment 1)
-          // Pass generics.params to phantom::tuple
-          let phantom_field_type = phantom::tuple( &generics.params );
+          // --- Generate Storage --- (Increment 6, Step 6)
+          let phantom_field_type = macro_tools::phantom::tuple( &generics.params ); // FIX: Use qualified path and correct generics
           let storage_fields = variant_field_info.iter().map( |f_info|
           {
             let field_ident = &f_info.ident;
@@ -140,7 +314,7 @@ pub fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 'a
             #[ allow( explicit_outlives_requirements ) ] // qqq : check if needed
             #vis struct #storage_struct_name < #enum_generics_impl >
             where // Where clause on new line
-              #merged_where_clause
+              #enum_generics_where // FIX: Use correct variable
             { // Brace on new line
               #( #storage_fields, )*
               _phantom : #phantom_field_type,
@@ -151,7 +325,7 @@ pub fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 'a
             impl< #enum_generics_impl > ::core::default::Default
             for #storage_struct_name < #enum_generics_ty >
             where // Where clause on new line
-              #merged_where_clause
+              #enum_generics_where // FIX: Use correct variable
             { // Brace on new line
               #[ inline( always ) ]
               fn default() -> Self
@@ -165,14 +339,14 @@ pub fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 'a
             } // Brace on new line
           };
 
-          // --- Generate Storage Impls --- (Increment 2)
+          // --- Generate Storage Impls --- (Increment 6, Step 6)
           let field_types : Vec<_> = variant_field_info.iter().map( |f_info| &f_info.ty ).collect(); // Collect types
           let storage_trait_impl = quote!
           {
             impl< #enum_generics_impl > former::Storage
             for #storage_struct_name < #enum_generics_ty >
             where // Where clause on new line
-              #merged_where_clause
+              #enum_generics_where // FIX: Use correct variable
             { // Brace on new line
               type Preformed = ( #( #field_types ),* ); // Preformed type is a tuple of field types
             } // Brace on new line
@@ -208,7 +382,7 @@ pub fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 'a
             impl< #enum_generics_impl > former::StoragePreform
             for #storage_struct_name < #enum_generics_ty >
             where // Where clause on new line
-              #merged_where_clause
+              #enum_generics_where // FIX: Use correct variable
             { // Brace on new line
               fn preform( mut self ) -> Self::Preformed
               { // Brace on new line
@@ -218,10 +392,13 @@ pub fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 'a
             } // Brace on new line
           };
 
-          // --- Generate DefinitionTypes --- (Increment 3)
-          let def_types_generics_impl = generic_params::merge( &generics, &parse_quote!{ < Context2 = (), Formed2 = #enum_name< #enum_generics_ty > > } );
-          let ( _def_types_generics_with_defaults, def_types_generics_impl, def_types_generics_ty, def_types_generics_where ) = generic_params::decompose( &def_types_generics_impl );
-          let def_types_phantom = phantom::tuple( &def_types_generics_impl );
+          // --- Generate DefinitionTypes --- (Increment 6, Step 7)
+          // FIX: Correctly merge generics and handle commas
+          let mut def_types_generics_impl_punctuated : Punctuated<GenericParam, Comma> = generics.params.clone();
+          def_types_generics_impl_punctuated.push( parse_quote!( Context2 = () ) );
+          def_types_generics_impl_punctuated.push( parse_quote!( Formed2 = #enum_name< #enum_generics_ty > ) );
+          let ( _def_types_generics_with_defaults, def_types_generics_impl, def_types_generics_ty, def_types_generics_where ) = generic_params::decompose( &syn::Generics { params: def_types_generics_impl_punctuated, ..generics.clone() } );
+          let def_types_phantom = macro_tools::phantom::tuple( &def_types_generics_impl ); // FIX: Use qualified path
           let def_types_struct = quote!
           {
             #[ derive( Debug ) ]
@@ -268,18 +445,22 @@ pub fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 'a
             } // Brace on new line
           };
 
-          // --- Generate Definition --- (Increment 4)
-          // Removed line: let enum_generics_ty_no_comma = ...
-          let def_generics_impl = generic_params::merge( &generics, &parse_quote!{ < Context2 = (), Formed2 = #enum_name< #enum_generics_ty >, End2 = #end_struct_name< #enum_generics_ty > > } );
-          let ( _def_generics_with_defaults, def_generics_impl, def_generics_ty, def_generics_where ) = generic_params::decompose( &def_generics_impl );
-          let def_phantom = phantom::tuple( &def_generics_impl );
+          // --- Generate Definition --- (Increment 6, Step 8)
+          // FIX: Correctly merge generics and handle commas
+          let mut def_generics_impl_punctuated : Punctuated<GenericParam, Comma> = generics.params.clone();
+          def_generics_impl_punctuated.push( parse_quote!( Context2 = () ) );
+          def_generics_impl_punctuated.push( parse_quote!( Formed2 = #enum_name< #enum_generics_ty > ) );
+          def_generics_impl_punctuated.push( parse_quote!( End2 = #end_struct_name< #enum_generics_ty > ) );
+          let def_generics_syn = syn::Generics { params: def_generics_impl_punctuated, ..generics.clone() };
+          let ( _def_generics_with_defaults, def_generics_impl, def_generics_ty, def_generics_where ) = generic_params::decompose( &def_generics_syn );
+          let def_phantom = macro_tools::phantom::tuple( &def_generics_impl ); // FIX: Use qualified path
           let def_struct = quote!
           {
             #[ derive( Debug ) ]
             #vis struct #def_name < #def_generics_impl >
             where // Where clause on new line
-              // Use enum_generics_ty directly
-              End2 : former::FormingEnd< #def_types_name< #enum_generics_ty, Context2, Formed2 > >,
+              // FIX: Correctly reference DefinitionTypes with its generics
+              End2 : former::FormingEnd< #def_types_name< #enum_generics_ty #comma_if_enum_generics Context2, Formed2 > >, // Added comma_if_enum_generics
               #def_generics_where // Includes original enum where clause
             { // Brace on new line
               _phantom : #def_phantom,
@@ -290,8 +471,8 @@ pub fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 'a
             impl< #def_generics_impl > ::core::default::Default
             for #def_name < #def_generics_ty >
             where // Where clause on new line
-              // Use enum_generics_ty directly
-              End2 : former::FormingEnd< #def_types_name< #enum_generics_ty, Context2, Formed2 > >,
+              // FIX: Correctly reference DefinitionTypes with its generics
+              End2 : former::FormingEnd< #def_types_name< #enum_generics_ty #comma_if_enum_generics Context2, Formed2 > >, // Added comma_if_enum_generics
               #def_generics_where
             { // Brace on new line
               fn default() -> Self
@@ -305,22 +486,23 @@ pub fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 'a
             impl< #def_generics_impl > former::FormerDefinition
             for #def_name < #def_generics_ty >
             where // Where clause on new line
-              // Use enum_generics_ty directly
-              End2 : former::FormingEnd< #def_types_name< #enum_generics_ty, Context2, Formed2 > >,
+              // FIX: Correctly reference DefinitionTypes with its generics
+              End2 : former::FormingEnd< #def_types_name< #enum_generics_ty #comma_if_enum_generics Context2, Formed2 > >, // Added comma_if_enum_generics
               #def_generics_where
             { // Brace on new line
               type Storage = #storage_struct_name< #enum_generics_ty >;
               type Context = Context2;
               type Formed = Formed2;
-              // Use enum_generics_ty directly
-              type Types = #def_types_name< #enum_generics_ty, Context2, Formed2 >;
+              // FIX: Correctly reference DefinitionTypes with its generics
+              type Types = #def_types_name< #enum_generics_ty #comma_if_enum_generics Context2, Formed2 >; // Added comma_if_enum_generics
               type End = End2;
             } // Brace on new line
           };
 
-          // --- Generate Former Struct --- (Increment 5)
+          // --- Generate Former Struct --- (Increment 6, Step 9)
           let mut former_generics = generics.clone();
-          former_generics.params.push( parse_quote!( Definition = #def_name< #enum_generics_ty > ) );
+          // FIX: Correctly add Definition generic parameter and handle commas
+          former_generics.params.push( parse_quote!( Definition = #def_name< #enum_generics_ty #comma_if_enum_generics (), #enum_name<#enum_generics_ty>, #end_struct_name<#enum_generics_ty> > ) ); // Added comma_if_enum_generics
           let former_where_clause = former_generics.make_where_clause();
           former_where_clause.predicates.push( parse_quote!{ Definition : former::FormerDefinition< Storage = #storage_struct_name< #enum_generics_ty > > } );
           former_where_clause.predicates.push( parse_quote!{ Definition::Types : former::FormerDefinitionTypes< Storage = #storage_struct_name< #enum_generics_ty > > } );
@@ -331,7 +513,7 @@ pub fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 'a
               former_where_clause.predicates.push( predicate.clone() );
             }
           }
-          let ( _former_generics_with_defaults, former_generics_impl, _former_generics_ty, former_generics_where ) = generic_params::decompose( &former_generics );
+          let ( _former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where ) = generic_params::decompose( &former_generics );
           let former_struct_def = quote!
           {
             #[ doc = "Former for the #variant_ident variant." ]
@@ -348,6 +530,142 @@ pub fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 'a
             } // Brace on new line
           };
 
+          // --- Generate Former Impl + Setters --- (Increment 6, Step 10 - Partial)
+          let setters = variant_field_info.iter().map( |f_info|
+          {
+            let field_ident = &f_info.ident;
+            let field_type = &f_info.ty;
+            let setter_name = ident::ident_maybe_raw( field_ident );
+            quote!
+            {
+              #[ inline ]
+              pub fn #setter_name< Src >( mut self, src : Src ) -> Self
+              // FIX: Removed trailing comma from where clause
+              where Src : ::core::convert::Into< #field_type >
+              { // Brace on new line
+                debug_assert!( self.storage.#field_ident.is_none() );
+                self.storage.#field_ident = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
+                self
+              } // Brace on new line
+            }
+          });
+          let former_impl = quote!
+          {
+            #[ automatically_derived ]
+            impl< #former_generics_impl > #former_name < #former_generics_ty >
+            where // Where clause on new line
+              #former_generics_where
+            { // Brace on new line
+              // Standard former methods (new, begin, form, end)
+              #[ inline( always ) ] pub fn new( on_end : Definition::End ) -> Self { Self::begin( None, None, on_end ) }
+              #[ inline( always ) ] pub fn new_coercing< IntoEnd >( end : IntoEnd ) -> Self where IntoEnd : Into< Definition::End > { Self::begin_coercing( None, None, end ) }
+              #[ inline( always ) ] pub fn begin ( mut storage : ::core::option::Option< Definition::Storage >, context : ::core::option::Option< Definition::Context >, on_end : Definition::End ) -> Self { if storage.is_none() { storage = Some( Default::default() ); } Self { storage : storage.unwrap(), context, on_end : Some( on_end ) } }
+              #[ inline( always ) ] pub fn begin_coercing< IntoEnd > ( mut storage : ::core::option::Option< Definition::Storage >, context : ::core::option::Option< Definition::Context >, on_end : IntoEnd ) -> Self where IntoEnd : Into< Definition::End > { if storage.is_none() { storage = Some( Default::default() ); } Self { storage : storage.unwrap(), context, on_end : Some( on_end.into() ) } }
+              #[ inline( always ) ] pub fn form( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed { self.end() }
+              #[ inline( always ) ] pub fn end( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed { let on_end = self.on_end.take().unwrap(); let context = self.context.take(); < Definition::Types as former::FormerMutator >::form_mutation( &mut self.storage, &mut self.context ); on_end.call( self.storage, context ) }
+
+              // Field setters
+              #( #setters )*
+            } // Brace on new line
+          };
+
+          // --- Generate End Struct --- (Increment 6, Step 10 - Partial)
+          let phantom_field_type = macro_tools::phantom::tuple( &generics.params ); // FIX: Use qualified path and correct generics
+          let end_struct_def = quote!
+          {
+            #[ derive( Default, Debug ) ]
+            #vis struct #end_struct_name < #enum_generics_impl >
+            where // Where clause on new line
+              #enum_generics_where // FIX: Use correct variable
+            { // Brace on new line
+              _phantom : #phantom_field_type,
+            } // Brace on new line
+          };
+
+          // --- Generate End Impl --- (Increment 6, Step 10 - Partial)
+          let tuple_indices = ( 0..variant_field_info.len() ).map( syn::Index::from );
+          let field_idents_for_construction : Vec<_> = variant_field_info.iter().map( |f| &f.ident ).collect();
+          let end_impl = quote!
+          {
+            #[ automatically_derived ]
+            impl< #enum_generics_impl > former::FormingEnd
+            < // Angle bracket on new line
+              // FIX: Correct generics usage and add comma_if_enum_generics
+              #def_types_name< #enum_generics_ty #comma_if_enum_generics (), #enum_name< #enum_generics_ty > > // Added comma_if_enum_generics
+            > // Angle bracket on new line
+            for #end_struct_name < #enum_generics_ty >
+            where // Where clause on new line
+              #enum_generics_where // FIX: Use correct variable
+            { // Brace on new line
+              #[ inline( always ) ]
+              fn call
+              ( // Paren on new line
+                &self,
+                sub_storage : #storage_struct_name< #enum_generics_ty >,
+                _context : Option< () >,
+              ) // Paren on new line
+              -> // Return type on new line
+              #enum_name< #enum_generics_ty >
+              { // Brace on new line
+                let preformed_tuple = former::StoragePreform::preform( sub_storage );
+                #enum_name::#variant_ident
+                { // Brace on new line
+                  #( #field_idents_for_construction : preformed_tuple.#tuple_indices ),*
+                } // Brace on new line
+              } // Brace on new line
+            } // Brace on new line
+          };
+
+          // --- Generate Static Method --- (Increment 6, Step 10 - Partial)
+          let static_method = quote!
+          {
+            /// Starts forming the #variant_ident variant using its implicit former.
+            #[ inline( always ) ]
+            #vis fn #method_name ()
+            -> // Return type on new line
+            #former_name
+            < // Angle bracket on new line
+              #enum_generics_ty, // Enum generics
+              // Default definition for the implicit former
+              #def_name< #enum_generics_ty #comma_if_enum_generics (), #enum_name< #enum_generics_ty >, #end_struct_name< #enum_generics_ty > > // Added comma_if_enum_generics
+            > // Angle bracket on new line
+            { // Brace on new line
+              #former_name::begin( None, None, #end_struct_name::< #enum_generics_ty >::default() )
+            } // Brace on new line
+          };
+          methods.push( static_method );
+
+          // --- Generate Standalone Constructor (Subform Struct(N)) --- (Increment 6, Step 10 - Partial)
+          if struct_attrs.standalone_constructors.value( false )
+          {
+              let constructor_params : Vec<_> = variant_field_info.iter().filter( |f| f.is_constructor_arg ).map( |f| { let pn = &f.ident; let ty = &f.ty; quote! { #pn : impl Into<#ty> } } ).collect();
+              let all_fields_are_args = !variant_field_info.is_empty() && variant_field_info.iter().all( |f| f.is_constructor_arg );
+              // FIX: Added comma in return type generics
+              let return_type = if all_fields_are_args { quote! { #enum_name< #enum_generics_ty > } } else { quote! { #former_name < #enum_generics_ty, #def_name< #enum_generics_ty #comma_if_enum_generics (), #enum_name< #enum_generics_ty >, #end_struct_name< #enum_generics_ty > > > } }; // Added comma_if_enum_generics
+              let initial_storage_assignments = variant_field_info.iter().map( |f| { let fi = &f.ident; if f.is_constructor_arg { let pn = ident::ident_maybe_raw( fi ); quote! { #fi : ::core::option::Option::Some( #pn.into() ) } } else { quote! { #fi : ::core::option::Option::None } } } );
+              let initial_storage_code = if constructor_params.is_empty() { quote! { ::core::option::Option::None } } else { quote! { ::core::option::Option::Some( #storage_struct_name :: < #enum_generics_ty > { #( #initial_storage_assignments, )* _phantom: ::core::marker::PhantomData } ) } };
+              let constructor_body = if all_fields_are_args { let construction_args = variant_field_info.iter().map( |f| { let fi = &f.ident; let pn = ident::ident_maybe_raw( fi ); quote! { #fi : #pn.into() } } ); quote! { #enum_name::#variant_ident { #( #construction_args ),* } } } else { quote! { #former_name::begin( #initial_storage_code, None, #end_struct_name::< #enum_generics_ty >::default() ) } };
+              let constructor = quote!
+              {
+                  /// Standalone constructor for the #variant_ident subform variant.
+                  #[ inline( always ) ]
+                  #vis fn #method_name < #enum_generics_impl >
+                  ( // Paren on new line
+                    #( #constructor_params ),*
+                  ) // Paren on new line
+                  -> // Return type on new line
+                  #return_type
+                  where // Where clause on new line
+                    #enum_generics_where // FIX: Use correct variable
+                  { // Brace on new line
+                    #constructor_body
+                  } // Brace on new line
+              };
+              standalone_constructors.push( constructor );
+          }
+          // --- End Standalone Constructor ---
+
+
           // --- Collect generated code ---
           end_impls.push( storage_def );
           end_impls.push( storage_default_impl );
@@ -360,29 +678,13 @@ pub fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 'a
           end_impls.push( def_struct );
           end_impls.push( def_default_impl );
           end_impls.push( def_former_impl );
-          end_impls.push( former_struct_def ); // <<< Added Former struct definition
+          end_impls.push( former_struct_def );
+          end_impls.push( former_impl );
+          end_impls.push( end_struct_def );
+          end_impls.push( end_impl );
 
-          // --- Force Debug Print for EnumG4::V1 ---
-          // if enum_name == "EnumG4" && variant_ident == "V1"
-          // {
-          //   let about = format!( "derive : Former\nenum : {enum_name}::V1 (Forced Debug)" );
-          //   let variant_code = quote!
-          //   {
-          //     #storage_def #storage_default_impl #storage_trait_impl #storage_preform_impl
-          //     #def_types_struct #def_types_default_impl #def_types_former_impl #def_types_mutator_impl
-          //     #def_struct #def_default_impl #def_former_impl
-          //     #former_struct_def
-          //   };
-          //   diag::report_print( about, original_input, &variant_code );
-          // }
-          // --- End Force Debug Print ---
-
-          // Placeholder for the rest of the implicit former generation (Increments 6-10)
-          // methods.push( quote!{ /* TODO: Add static method for subformer */ } );
-          // end_impls.push( quote!{ /* TODO: Add Former impl, End impls */ } );
-          // standalone_constructors.push( quote!{ /* TODO: Add standalone constructor */ } );
-      }
-    }
+      } // End Default: Subformer
+    } // End match fields.named.len()
     _ => return Err( Error::new_spanned( variant, "Former derive macro only supports named fields for struct variants" ) ), // Added error handling for non-named fields
   }
   Ok( () )
