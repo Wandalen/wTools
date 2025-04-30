@@ -101,22 +101,30 @@ Refactor the `former_for_enum` function in `former_meta/src/derive_former/former
     *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure no semantic changes.
     *   **Crucial Design Rules:** Code clarity, maintainability.
     *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test former_enum_test`). **Analyze logs critically**. Ensure no regressions were introduced during cleanup.
-*   ⏳ **Increment 9: Verify `standalone_constructors` logic.**
-    *   Detailed Plan Step 1: Review the implementation of standalone constructor generation within each handler function (added in Increments 3-8).
+*   ⚫ **Increment 9: Define `EnumVariantHandlerContext` struct.** (New)
+*   ⚫ **Increment 10: Refactor `former_for_enum` dispatcher to use context struct.** (New)
+*   ⚫ **Increment 11: Refactor `handle_unit_variant` to use context struct.** (New)
+*   ⚫ **Increment 12: Refactor `handle_tuple_zero_variant` to use context struct.** (New)
+*   ⚫ **Increment 13: Refactor `handle_struct_zero_variant` to use context struct.** (New)
+*   ⚫ **Increment 14: Refactor `handle_tuple_non_zero_variant` to use context struct.** (New)
+*   ⚫ **Increment 15: Refactor `handle_struct_non_zero_variant` to use context struct.** (New)
+*   ⚫ **Increment 16: Verify `standalone_constructors` logic.** (Was 9)
+    *   Detailed Plan Step 1: Review the implementation of standalone constructor generation within each handler function (now accessed via the context struct).
     *   Detailed Plan Step 2: Ensure the logic correctly handles the `#[standalone_constructors]` struct attribute and the `#[arg_for_constructor]` field attribute according to the "Option 2" rules (return `Self` if all fields are args, otherwise return `Former`).
     *   Detailed Plan Step 3: Manually inspect generated code snippets (using `#[debug]` if necessary) for a few representative enum variants to confirm correctness.
     *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure no semantic changes.
     *   **Crucial Design Rules:** Correctness, adherence to specified constructor logic.
     *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run tests specifically targeting standalone constructors (`cargo test --package former --test former_standalone_constructor_test` - assuming such tests exist or are added). **Analyze logs critically**.
-*   ⚫ **Increment 10: Final review, cleanup, and documentation updates.**
-    *   Detailed Plan Step 1: Run `cargo clippy --package former_meta --fix --allow-dirty` to address lints.
-    *   Detailed Plan Step 2: Run the full test suite (`cargo test --all-targets` in workspace root or relevant crates) one last time.
-    *   Detailed Plan Step 3: Review all code changes made during the refactoring for clarity, consistency, and adherence to rules.
-    *   Detailed Plan Step 4: Update the documentation comments within the refactored code (e.g., the "Refactoring Plan" comment in `former_enum.rs`, comments in handlers).
-    *   Detailed Plan Step 5: Check if `Readme.md` or `advanced.md` in the `former` crate need updates (unlikely for this internal refactor, but good practice to check).
-    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure no semantic changes.
+*   ⚫ **Increment 17: Apply strict codestyle, remove temporary comments, address clippy warnings, add documentation.** (Updated)
+    *   Detailed Plan Step 1: Run `cargo clippy --package former_meta --fix --allow-dirty` to automatically fix simpler lints.
+    *   Detailed Plan Step 2: Review remaining `cargo clippy --package former_meta` warnings and manually address them, ensuring adherence to codestyle and design rules.
+    *   Detailed Plan Step 3: Review all refactored files (`former_enum.rs` and handlers in `former_enum/`) for strict adherence to codestyle rules (spacing, newlines, etc.).
+    *   Detailed Plan Step 4: Remove temporary comments (e.g., `// qqq`, `// xxx`, `// FIX:`) from the refactored files. Preserve task comments (`// TODO:`).
+    *   Detailed Plan Step 5: Add/update documentation comments for the new `EnumVariantHandlerContext` struct and the refactored handler functions, explaining the context struct approach and rationale.
+    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure no semantic changes were introduced by clippy fixes or manual changes.
     *   **Crucial Design Rules:** [Lints and warnings](#lints-and-warnings), [Comments and Documentation](#comments-and-documentation).
-    *   **Verification Strategy:** All tests pass (`cargo test --all-targets`). Clippy passes (`cargo clippy`). Manual code review confirms quality and documentation updates.
+    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Clippy passes (`cargo clippy --package former_meta`). Manual code review confirms quality, documentation updates, and comment cleanup.
+*   ⚫ **Increment 18: Final review and verification.** (New)
 
 ## Notes & Insights
 
