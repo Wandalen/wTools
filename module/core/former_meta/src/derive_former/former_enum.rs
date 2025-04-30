@@ -168,7 +168,7 @@ pub(super) fn former_for_enum
 
     // <<< Added: Collect detailed field info for the current variant >>>
     let variant_field_info: Vec<EnumVariantFieldInfo> = match &variant.fields {
-        syn::Fields::Named(f) => f.named.iter().enumerate().map(|(_index, field)| { // <<< Use _index
+        syn::Fields::Named(f) => f.named.iter().map(|field| { // <<< Use _index
             let attrs = FieldAttributes::from_attrs(field.attrs.iter())?;
             let is_constructor_arg = attrs.arg_for_constructor.value(false);
             Ok(EnumVariantFieldInfo {
@@ -216,17 +216,12 @@ pub(super) fn former_for_enum
           &mut standalone_constructors,
           &variant_attrs,
           &variant_field_info,
-          // Pass Option<&WhereClause> directly
-          merged_where_clause, // FIX: Pass directly
+          merged_where_clause,
         )?;
       },
       // Case 2: Tuple variant
       syn::Fields::Unnamed( fields ) =>
       {
-        // --- DEBUG PRINT 3b ---
-        // ...
-        // --- END DEBUG PRINT 3b ---
-
         if variant_attrs.arg_for_constructor.value( false )
         {
           return Err( syn::Error::new_spanned( variant, "#[arg_for_constructor] cannot be applied directly to an enum variant identifier. Apply it to the fields *within* the variant instead, e.g., `MyVariant( #[arg_for_constructor] i32 )`." ) );
@@ -252,15 +247,13 @@ pub(super) fn former_for_enum
               &mut standalone_constructors,
               &variant_attrs,
               &variant_field_info,
-              // Pass Option<&WhereClause> directly
-              merged_where_clause, // FIX: Pass directly
+              merged_where_clause,
             )?;
           }
           // Sub-case: Non-zero fields (Tuple(1) or Tuple(N))
           _ => // len >= 1
           {
-            // Call the extracted handler for non-zero tuple variants
-            handle_tuple_non_zero_variant // FIX: Corrected call
+            handle_tuple_non_zero_variant
             (
               ast,
               variant,
@@ -275,31 +268,24 @@ pub(super) fn former_for_enum
               &mut standalone_constructors,
               &variant_attrs,
               &variant_field_info,
-              merged_where_clause, // Pass Option<&WhereClause> directly
+              merged_where_clause,
             )?;
           }
         }
       },
       // Case 3: Struct variant
-      syn::Fields::Named( fields ) => // <<< Use fields variable >>>
+      syn::Fields::Named( fields ) =>
       {
-        // --- DEBUG PRINT 3c ---
-        // ...
-        // --- END DEBUG PRINT 3c ---
-
         if variant_attrs.arg_for_constructor.value( false )
         {
           return Err( syn::Error::new_spanned( variant, "#[arg_for_constructor] cannot be applied directly to an enum variant identifier. Apply it to the fields *within* the variant instead, e.g., `MyVariant { #[arg_for_constructor] field : i32 }`." ) );
         }
 
-        // <<< Start: Logic for Named Fields (Struct-like Variants) >>>
-        println!( "DEBUG: Processing Named fields for variant: {}", variant.ident ); // Debug print
         match fields.named.len()
         {
             // Sub-case: Zero fields (Struct(0))
             0 =>
             {
-                println!( "DEBUG: Calling handle_struct_zero_variant for variant: {}", variant.ident ); // Debug print
                 handle_struct_zero_variant
                 (
                     ast,
@@ -315,15 +301,12 @@ pub(super) fn former_for_enum
                     &mut standalone_constructors,
                     &variant_attrs,
                     &variant_field_info,
-                    // Pass Option<&WhereClause> directly
-                    merged_where_clause, // FIX: Pass directly
+                    merged_where_clause,
                 )?;
             }
             // Sub-case: Single field (Struct(1)) or Multi-field (Struct(N))
             _ => // len >= 1
             {
-              // Call the extracted handler for non-zero struct variants
-              println!( "DEBUG: Calling handle_struct_non_zero_variant for variant: {}", variant.ident ); // Debug print
               handle_struct_non_zero_variant
               (
                 ast,
@@ -339,14 +322,13 @@ pub(super) fn former_for_enum
                 &mut standalone_constructors,
                 &variant_attrs,
                 &variant_field_info,
-                // Pass Option<&WhereClause> directly
-                merged_where_clause, // FIX: Pass directly
+                merged_where_clause,
               )?;
             }
         }
-      } // End syn::Fields::Named
-    } // End match variant.fields
-  } // End variant loop
+      }
+    }
+  }
 
   // Assemble the final impl block containing the generated static methods
   let result = quote!

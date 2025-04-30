@@ -62,7 +62,7 @@ Result< () >
   if has_debug
   {
     let about = format!( "derive : Former\nenum : {enum_name}\nvariant : {variant_name_str}\nhandler : unit" );
-    diag::report_print( about, original_input, &methods.last().unwrap() ); // Print the generated method
+    diag::report_print( about, original_input, methods.last().unwrap() ); // Print the generated method
   }
 
   Ok( () )

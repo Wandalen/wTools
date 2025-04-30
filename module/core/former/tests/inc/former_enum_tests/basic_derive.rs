@@ -10,7 +10,7 @@ pub struct Run { pub command : String }
 
 // Derive Former on the simplified enum - This should generate static methods
 #[ derive( Debug, Clone, PartialEq, former::Former ) ]
-// #[ debug ]
+#[ debug ]
 enum FunctionStep
 {
   Break( Break ),

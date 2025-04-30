@@ -14,7 +14,6 @@ use syn::
 {
   self,
   Fields,
-  Error,
   GenericParam,
   TypeParam,
   ConstParam,
@@ -99,9 +98,7 @@ pub( super ) fn handle_tuple_non_zero_variant< 'a >
           if !matches!( inner_type, syn::Type::Path( _ ) ) { return Err( syn::Error::new_spanned( inner_type, "#[subform_scalar] can only be applied to variants holding a path type (e.g., MyStruct, Option<T>), not tuples, references, etc." ) ); }
         }
         else // Default case
-        {
-           if !matches!( inner_type, syn::Type::Path( _ ) ) { return Err( syn::Error::new_spanned( inner_type, "Default subforming requires the single field of a tuple variant to be a path type (e.g., MyStruct, Option<T>)." ) ); }
-        }
+        if !matches!( inner_type, syn::Type::Path( _ ) ) { return Err( syn::Error::new_spanned( inner_type, "Default subforming requires the single field of a tuple variant to be a path type (e.g., MyStruct, Option<T>)." ) ); }
 
         let end_struct_name = format_ident!( "{}{}End", enum_name, variant_ident );
         let ( inner_type_name, inner_generics ) = match inner_type { syn::Type::Path( tp ) => { let s = tp.path.segments.last().unwrap(); ( s.ident.clone(), s.arguments.clone() ) }, _ => unreachable!() };
