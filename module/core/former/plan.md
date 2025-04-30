@@ -1,4 +1,3 @@
-
 # Project Plan: Refactor Enum Variant Handling in Former Derive
 
 ## Initial Task
@@ -65,6 +64,23 @@
 
 
 ## Increments
+
+*   ⏳ Increment 1: Diagnose and fix current test failures in the `former` crate.
+    *   Detailed Plan Step 1: Execute `cargo test` within the `module/core/former` crate directory to capture the current test failures and error messages.
+    *   Detailed Plan Step 2: Analyze the `cargo test` output critically, focusing on the specific errors, failing test names, and code locations. Pay attention to potential issues related to the recent `WhereClause` fix or the partially refactored state (skipped/stuck increments).
+    *   Detailed Plan Step 3: Based on the analysis, identify the root cause(s) of the failures.
+    *   Detailed Plan Step 4: Propose and implement code changes in the relevant files (likely within `former_meta` or `former` test files) to address the identified issues. (This might involve multiple sub-steps depending on the errors).
+    *   Crucial Design Rules: [Error Handling: Use a Centralized Approach](#error-handling-use-a-centralized-approach), [Testing: Avoid Writing Automated Tests Unless Asked](#testing-avoid-writing-tests-unless-asked) (focus on fixing existing tests).
+    *   Verification Strategy: Run `cargo test` within the `module/core/former` crate directory. **Analyze logs critically**. Ensure all tests pass.
+*   ⚫ Increment 2: Create submodule structure `former_meta/src/derive_former/former_enum/` and necessary `mod.rs` files.
+*   ⚫ Increment 3: Extract handler for Unit variants (`handle_unit_variant`) into `former_enum/unit.rs`.
+*   ⚫ Increment 4: Extract handler for Tuple variants with zero fields (`handle_tuple_zero_variant`) into `former_enum/tuple_zero.rs`.
+*   ⚫ Increment 5: Extract handler for Struct variants with zero fields (`handle_struct_zero_variant`) into `former_enum/struct_zero.rs`.
+*   ⚫ Increment 6: Extract handler for Tuple variants with non-zero fields (`handle_tuple_non_zero_variant`) into `former_enum/tuple_non_zero.rs`. (Revisit skipped increment)
+*   ⚫ Increment 7: Extract handler for Struct variants with non-zero fields (`handle_struct_non_zero_variant`) into `former_enum/struct_non_zero.rs`. (Revisit previously stuck increment)
+*   ⚫ Increment 8: Refactor main `former_for_enum` function in `former_meta/src/derive_former/former_enum.rs` to delegate logic to the extracted handlers.
+*   ⚫ Increment 9: Address `standalone_constructors` logic within the refactored structure.
+*   ⚫ Increment 10: Final review, cleanup, and documentation updates (if necessary).
 
 ## Notes & Insights
 
