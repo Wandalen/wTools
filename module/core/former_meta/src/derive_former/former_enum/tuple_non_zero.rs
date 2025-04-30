@@ -14,7 +14,7 @@ use syn::
 {
   self,
   Fields,
-  // Error, // Removed unused import
+  Error,
   GenericParam,
   TypeParam,
   ConstParam,
@@ -118,7 +118,7 @@ pub( super ) fn handle_tuple_non_zero_variant< 'a >
         {
           let constructor_params : Vec<_> = variant_field_info.iter().filter( |f| f.is_constructor_arg ).map( |f| { let pn = &f.ident; let ty = &f.ty; quote! { #pn : impl Into<#ty> } } ).collect();
           let all_fields_are_args = !variant_field_info.is_empty() && variant_field_info.iter().all( |f| f.is_constructor_arg );
-          let return_type = if all_fields_are_args { quote! { #enum_name< #enum_generics_ty > } } else { quote! { #inner_former_name < #inner_generics_ty_punctuated #inner_def_name < #inner_generics_ty_punctuated () #comma_if_enum_generics #enum_name< #enum_generics_ty >, #end_struct_name < #enum_generics_ty > > > } };
+          let return_type = if all_fields_are_args { quote! { #enum_name< #enum_generics_ty > } } else { quote! { #inner_former_name < #inner_generics_ty_punctuated #inner_def_name < #inner_generics_ty_punctuated (), #comma_if_enum_generics #enum_name< #enum_generics_ty >, #end_struct_name < #enum_generics_ty > > > } }; // FIX: Added comma
           let initial_storage_code = if field_info.is_constructor_arg { let param_name = format_ident!( "_0" ); quote! { ::core::option::Option::Some( #inner_storage_name :: < #inner_generics_ty_punctuated > { _0 : ::core::option::Option::Some( #param_name.into() ) } ) } } else { quote! { ::core::option::Option::None } };
           let constructor = quote! { #[ inline( always ) ] #vis fn #method_name < #enum_generics_impl > ( #( #constructor_params ),* ) -> #return_type where #enum_generics_where { #inner_former_name::begin( #initial_storage_code, None, #end_struct_name::< #enum_generics_ty >::default() ) } };
           standalone_constructors.push( constructor );
@@ -129,22 +129,44 @@ pub( super ) fn handle_tuple_non_zero_variant< 'a >
         let end_impl = quote!
         {
           #[ automatically_derived ]
-          impl< #enum_generics_impl > former::FormingEnd < #inner_def_types_name< #inner_generics_ty_punctuated () #comma_if_enum_generics #enum_name< #enum_generics_ty > > > for #end_struct_name < #enum_generics_ty > where #enum_generics_where
+          impl< #enum_generics_impl > former::FormingEnd
+          // FIX: Added comma after ()
+          < #inner_def_types_name< #inner_generics_ty_punctuated (), #comma_if_enum_generics #enum_name< #enum_generics_ty > > >
+          for #end_struct_name < #enum_generics_ty >
+          where #enum_generics_where
           {
             #[ inline( always ) ]
-            fn call ( &self, sub_storage : #inner_storage_name< #inner_generics_ty_punctuated >, _context : Option< () > ) -> #enum_name< #enum_generics_ty >
+            fn call
+            (
+              &self,
+              sub_storage : #inner_storage_name< #inner_generics_ty_punctuated >,
+              _context : Option< () > // FIX: Removed trailing comma
+            )
+            -> #enum_name< #enum_generics_ty >
             {
               let data = former::StoragePreform::preform( sub_storage );
               #enum_name::#variant_ident( data )
             }
           }
         };
-        let static_method = quote! { #[ inline( always ) ] #vis fn #method_name () -> #inner_former_name < #inner_generics_ty_punctuated #inner_def_name < #inner_generics_ty_punctuated () #comma_if_enum_generics #enum_name< #enum_generics_ty >, #end_struct_name < #enum_generics_ty > > > { #inner_former_name::begin( None, None, #end_struct_name::< #enum_generics_ty >::default() ) } };
+        let static_method = quote!
+        {
+          /// Starts forming the #variant_ident variant using a subformer.
+          #[ inline( always ) ]
+          #vis fn #method_name ()
+          -> #inner_former_name
+          <
+            #inner_generics_ty_punctuated
+            #inner_def_name
+            // FIX: Added comma after ()
+            < #inner_generics_ty_punctuated (), #comma_if_enum_generics #enum_name< #enum_generics_ty >, #end_struct_name < #enum_generics_ty > >
+          >
+          { #inner_former_name::begin( None, None, #end_struct_name::< #enum_generics_ty >::default() ) }
+        };
         methods.push( static_method );
         end_impls.push( quote!{ #end_struct_def #end_impl } );
       }
     }
-    // FIX: Reinstate match arm
     _ => // len > 1
     {
       // --- Multi-Field Tuple Variant ---
@@ -171,6 +193,6 @@ pub( super ) fn handle_tuple_non_zero_variant< 'a >
         methods.push( static_method );
       }
     }
-  } // FIX: Close match statement
+  }
   Ok( () )
 }
