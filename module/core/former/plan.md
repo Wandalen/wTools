@@ -106,11 +106,11 @@ Refactor the `former_for_enum` function in `former_meta/src/derive_former/former
     *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure no semantic changes.
     *   **Crucial Design Rules:** Code clarity, maintainability.
     *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test former_enum_test`). **Analyze logs critically**. Ensure no regressions were introduced during cleanup.
-*   ⚫ **Increment 9: Define `EnumVariantHandlerContext` struct.** (New)
+*   ⏳ **Increment 9: Define `EnumVariantHandlerContext` struct.** (New)
     *   **Goal:** Define a single struct to hold all necessary context for enum variant handlers.
     *   **Rationale:** Consolidate arguments for cleaner function signatures and easier context passing.
     *   **Detailed Steps:**
-        *   Define `struct EnumVariantHandlerContext<'a>` in `former_meta/src/derive_former/former_enum.rs` (or `mod.rs`).
+        *   Define `struct EnumVariantHandlerContext<'a>` in `former_meta/src/derive_former/former_enum.rs`.
         *   Include fields with appropriate lifetimes (`'a`) for references to: `ast`, `variant`, `struct_attrs`, `enum_name`, `vis`, `generics`, `original_input`, `variant_attrs`, `variant_field_info`, `merged_where_clause`.
         *   Include mutable references or owned fields for output collectors: `methods: &'a mut Vec<TokenStream>`, `end_impls: &'a mut Vec<TokenStream>`, `standalone_constructors: &'a mut Vec<TokenStream>`.
         *   Include `has_debug: bool`.
