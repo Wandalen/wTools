@@ -11,10 +11,10 @@ documentation = "https://docs.rs/component_model_meta"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/component_model_meta"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/component_model_meta"
 description = """
-Type-based data assignment and extraction between structs.
+A flexible implementation of the Builder pattern supporting nested builders and collection-specific subcomponent_models. Implementation of its derive macro. Should not be used independently, instead use module::component_model which relies on the module.
 """
 categories = [ "algorithms", "development-tools" ]
-keywords = [ "fundamental", "general-purpose" ]
+keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 
 [lints]
 workspace = true
@@ -27,11 +27,33 @@ all-features = false
 proc-macro = true
 
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
-enabled = []
+
+default = [
+  "enabled",
+  "derive_component_model",
+  "derive_components",
+  "derive_component_from",
+  "derive_component_assign",
+  "derive_components_assign",
+  "derive_from_components",
+]
+full = [
+  "default",
+]
+enabled = [ "macro_tools/enabled", "iter_tools/enabled", "component_model_types/enabled" ]
+
+derive_component_model = [ "convert_case" ]
+derive_components = [ "derive_component_assign", "derive_components_assign", "derive_component_from", "derive_from_components" ]
+derive_component_assign = []
+derive_components_assign = [ "derive_component_assign", "convert_case" ]
+derive_component_from = []
+derive_from_components = []
 
 [dependencies]
+macro_tools = { workspace = true, features = [ "attr", "attr_prop", "ct", "item_struct", "container_kind", "diag", "phantom", "generic_params", "generic_args", "typ", "derive", "ident" ] } # qqq : zzz : optimize set of features
+component_model_types = { workspace = true, features = [ "types_component_assign" ] }
+iter_tools = { workspace = true }
+convert_case = { version = "0.6.0", default-features = false, optional = true, features = [] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
