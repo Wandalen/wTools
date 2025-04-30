@@ -1,115 +1,69 @@
 // File: module/core/former_meta/src/derive_former/former_enum/unit.rs
-#![ allow( clippy::wildcard_imports ) ]
-use super::*;
-use macro_tools::
-{
-  Result,
-  proc_macro2::TokenStream, quote::{ format_ident, quote },
-  // diag, // Added for report_print // Removed unused import
-  generic_params, // Added for decompose
-  // ident, // Removed unused import
-  // phantom, // Added for phantom::tuple // Removed unused import
-};
-#[ cfg( feature = "derive_former" ) ]
-use convert_case::{ Case, Casing }; // Space before ;
 
-/// Handles the generation of code for Unit enum variants.
-#[ allow( clippy::too_many_lines ) ] // qqq : eliminate this
-pub fn handle_unit_variant< 'a > // Added explicit lifetime 'a
+use macro_tools::{ Result, proc_macro2::TokenStream, quote::quote, syn, diag };
+use convert_case::{ Case, Casing };
+use super::ident;
+use syn::{ DeriveInput, Variant, Visibility, Generics, WhereClause, parse_quote }; // Added necessary syn items
+use super::{ ItemAttributes, FieldAttributes, EnumVariantFieldInfo }; // Import types from super
+
+#[ allow( clippy::too_many_arguments ) ] // Allow many arguments for handler functions
+pub( super ) fn handle_unit_variant
 (
-  _ast : &'a syn::DeriveInput, // Added lifetime 'a
-  variant : &'a syn::Variant, // Added lifetime 'a
-  struct_attrs : &'a ItemAttributes, // Added lifetime 'a
+  _ast : &DeriveInput,
+  variant : &Variant,
+  struct_attrs : &ItemAttributes,
   enum_name : &syn::Ident,
-  vis : &syn::Visibility,
-  generics : &syn::Generics,
-  _original_input : &proc_macro::TokenStream, // Prefixed with _
-  _has_debug : bool, // Prefixed with _
+  vis : &Visibility,
+  generics : &Generics,
+  original_input : &proc_macro::TokenStream,
+  has_debug : bool,
   methods : &mut Vec<TokenStream>,
-  _end_impls : &mut Vec<TokenStream>, // Prefixed with _
+  _end_impls : &mut Vec<TokenStream>, // Added end_impls
   standalone_constructors : &mut Vec<TokenStream>,
   variant_attrs : &FieldAttributes,
-  variant_field_info : &Vec<EnumVariantFieldInfo>,
-  // Accept Option<&WhereClause> directly
-  merged_where_clause : Option< &'a syn::WhereClause >,
-) -> Result< () >
+  _variant_field_info : &Vec<EnumVariantFieldInfo>,
+  merged_where_clause : Option<&WhereClause>,
+)
+->
+Result< () >
 {
   let variant_ident = &variant.ident;
-
-  // Decompose generics within the function
-  let ( _enum_generics_with_defaults, enum_generics_impl, enum_generics_ty, _enum_generics_where_punctuated ) // Use _ for unused where punctuated
-  = generic_params::decompose( generics );
-  // Use the passed Option<&WhereClause>
-  let enum_generics_where = merged_where_clause;
-
-
-  // Generate the snake_case method name, handling potential keywords
   let variant_name_str = variant_ident.to_string();
   let method_name_snake_str = variant_name_str.to_case( Case::Snake );
-  let method_name_ident_temp = format_ident!( "{}", method_name_snake_str, span = variant_ident.span() );
-  let method_name = macro_tools::ident::ident_maybe_raw( &method_name_ident_temp ); // Use fully qualified path
+  let method_name_ident_temp = parse_quote!( #method_name_snake_str );
+  let method_name = ident::ident_maybe_raw( &method_name_ident_temp );
 
-  let _wants_scalar = variant_attrs.scalar.is_some() && variant_attrs.scalar.as_ref().unwrap().setter(); // Prefixed with _
-  let wants_subform_scalar = variant_attrs.subform_scalar.is_some();
-
-  // --- Error Handling ---
-  if wants_subform_scalar
+  // Check for #[subform_scalar] attribute
+  if variant_attrs.subform_scalar.is_some()
   {
-    return Err( syn::Error::new_spanned( variant, "#[subform_scalar] cannot be used on unit variants." ) );
+    return Err( syn::Error::new_spanned( variant, "#[subform_scalar] is not allowed on unit variants" ) );
   }
-  // #[scalar] is redundant but allowed, default is scalar.
 
-  // --- Standalone Constructor (Unit) ---
-  if struct_attrs.standalone_constructors.value( false )
+  // Generate the static method for the unit variant
+  let method = quote!
   {
-    if variant_attrs.arg_for_constructor.value( false )
-    {
-      return Err( syn::Error::new_spanned( variant, "#[arg_for_constructor] cannot be applied to a unit enum variant." ) );
-    }
-    // <<< Use collected info (empty for unit) to generate params >>>
-    let _constructor_params : Vec<_> = variant_field_info // Will be empty // <<< Prefixed with _
-      .iter()
-      .filter( |f_info| f_info.is_constructor_arg )
-      .map( |f_info| {
-        let param_name = &f_info.ident; // Should not happen for unit
-        let ty = &f_info.ty;
-        quote! { #param_name : impl Into< #ty > }
-      })
-      .collect(); // <<< Added collect()
-    // <<< End Use >>>
-
-    // <<< Determine Return Type (Always Self for Unit) >>>
-    let return_type = quote! { #enum_name< #enum_generics_ty > }; // qqq : check generics
-    // <<< End Determine >>>
-
-    let constructor = quote!
-    {
-      /// Standalone constructor for the #variant_ident unit variant.
-      #[ inline( always ) ]
-      #vis fn #method_name < #enum_generics_impl >() // qqq : check generics
-      -> // Return type on new line
-      #return_type // <<< Use determined return type
-      where // Where clause on new line
-        #enum_generics_where // qqq : check generics
-      { // Brace on new line
-        #enum_name::#variant_ident
-      } // Brace on new line
-    };
-    standalone_constructors.push( constructor );
-  }
-  // --- End Standalone Constructor ---
-
-  // Associated method (Default is scalar for Unit)
-  let static_method = quote!
-  {
-    /// Constructor for the #variant_ident unit variant.
     #[ inline( always ) ]
-    #vis fn #method_name() -> Self
+    #vis fn #method_name #generics #merged_where_clause () -> #enum_name #generics.ty
     {
-      Self::#variant_ident
+      #enum_name :: #variant_ident
     }
   };
-  methods.push( static_method );
+
+  methods.push( method.clone() ); // Add to methods for the impl block
+
+  // If #[standalone_constructors] is present on the struct, add the method to standalone constructors
+  if struct_attrs.standalone_constructors.is_some()
+  {
+      standalone_constructors.push( method );
+  }
+
+
+  // Debug print if #[debug] is present on the enum
+  if has_debug
+  {
+    let about = format!( "derive : Former\nenum : {enum_name}\nvariant : {variant_name_str}\nhandler : unit" );
+    diag::report_print( about, original_input, &methods.last().unwrap() ); // Print the generated method
+  }
 
   Ok( () )
 }
