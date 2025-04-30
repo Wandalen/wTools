@@ -32,7 +32,7 @@ Refactor the `former_for_enum` function in `former_meta/src/derive_former/former
 
 ## Increments
 
-*   ⏳ **Increment 1: Diagnose and fix current test failures in the `former` crate.**
+*   ✅ **Increment 1: Diagnose and fix current test failures in the `former` crate.**
     *   Detailed Plan Step 1: Execute `cargo test` within the `module/core/former` crate directory to capture the current test failures and error messages.
     *   Detailed Plan Step 2: Analyze the `cargo test` output critically, focusing on the specific errors, failing test names, and code locations. Pay attention to potential issues related to the recent `WhereClause` fix or the partially refactored state (skipped/stuck increments).
     *   Detailed Plan Step 3: Based on the analysis, identify the root cause(s) of the failures.
@@ -134,4 +134,5 @@ Refactor the `former_for_enum` function in `former_meta/src/derive_former/former
 *   **[2025-04-29/Increment 6] Hypothesis Test:** Hypothesis 3: The generated `Definition` struct or its implementations contain a brace mismatch or syntax error. - **Result:** Rejected - **Reasoning:** Manual code review of the `quote!` blocks generating the `Definition` struct and its `impl` blocks (`def_struct`, `def_default_impl`, `def_former_impl`) in `struct_non_zero.rs` did not reveal any obvious brace mismatches or syntax errors violating codestyle rules.
 *   **[2025-04-29/Increment 6] Hypothesis Test:** Hypothesis 4: The generated `Former` struct contains a brace mismatch or syntax error. - **Result:** Rejected - **Reasoning:** Manual code review of the `quote!` block generating the `Former` struct definition (`former_struct_def`) in `struct_non_zero.rs` did not reveal any obvious brace mismatches or syntax errors violating codestyle rules.
 *   **[2024-04-30/Increment 6] Fix:** Resolved E0599 compilation errors by changing how `merged_where_clause` is passed to handler functions (passing `Option<&WhereClause>` instead of `Option<&Punctuated<...>>`).
+*   **[2024-04-30/Increment 1] Insight:** Initial test failures (E0599) in `former_enum_tests::basic_derive` were caused by the `#[derive(former::Former)]` attribute being commented out in the test setup file (`basic_derive.rs`). Uncommenting it resolved the failures. The test code in `basic_only_test.rs` correctly expected the default former behavior (returning formers), not the scalar behavior.
 *   **Insight:** Debugging revealed syntax errors in generated code related to comma placement in generic argument lists (e.g., `< () Enum<> >` vs `< (), Enum<> >`) and function signatures (trailing comma in `call` parameters). Careful construction of generic lists in `quote!` is crucial, especially when combining potentially empty enum generics with other parameters. Don't miss comma!
