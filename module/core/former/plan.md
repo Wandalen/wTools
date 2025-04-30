@@ -3,68 +3,68 @@
 
 ## Initial Task
 
- move out each branch of `match &variant.fields` into a separate function in a separate file and there should be files for each of these cases:
+// ==================================
+// Refactoring Plan Documentation - UPDATED
+// ==================================
+//
+//! # Refactoring Plan for `former_for_enum`
+//!
+//! The main `former_for_enum` function has become complex due to handling
+//! multiple enum variant structures (Unit, Tuple, Struct) and field counts (0, 1, N)
+//! within nested match statements.
+//!
+//! **Goal:** Improve readability, maintainability, and testability by extracting
+//! the logic for handling each distinct variant case into its own dedicated function
+//! located in a separate file within a new submodule.
+//!
+//! **Extraction Cases & Logic Handoff:**
+//!
+//! The main `former_for_enum` function dispatches control to specific handlers based on
+//! the variant's field kind (`Unit`, `Unnamed`, `Named`) and field count. Each handler
+//! then implements the logic based on the presence of `#[scalar]` or `#[subform_scalar]`
+//! attributes, according to the rules defined below the documentation comment.
+//!
 
-- Unit
-- Zero-Field Variant Tuple
-- Zero-Field Variant Struct
-- non Zero-Field Variant Tuple
-- non Zero-Field Variant Struct
+// ==================================
+//      Enum Variant Handling Rules (Consistent Logic) - UPDATED
+// ==================================
+//
+// This macro implements the `Former` derive for enums based on the following consistent rules.
+// Each case is handled by a specific function as noted:
+//
+// 1.  **`#[scalar]` Attribute:**
+//     *   **Unit Variant:** Generates `Enum::variant() -> Enum`. (Handled by: `handle_unit_variant`)
+//     *   **Zero-Field Variant (Tuple):** Generates `Enum::variant() -> Enum`. (Handled by: `handle_tuple_zero_variant`)
+//     *   **Zero-Field Variant (Struct):** Generates `Enum::variant() -> Enum`. (Handled by: `handle_struct_zero_variant`)
+//     *   **Single-Field Variant (Tuple):** Generates `Enum::variant(InnerType) -> Enum`. (Handled by: `handle_tuple_non_zero_variant`) // <<< CORRECTED Handler
+//     *   **Single-Field Variant (Struct):** Generates `Enum::variant { field: InnerType } -> Enum`. (Handled by: `handle_struct_non_zero_variant`) // <<< CORRECTED Handler
+//     *   **Multi-Field Variant (Tuple):** Generates `Enum::variant(T1, T2, ...) -> Enum`. (Handled by: `handle_tuple_non_zero_variant`)
+//     *   **Multi-Field Variant (Struct):** Generates `Enum::variant { f1: T1, f2: T2, ... } -> Enum`. (Handled by: `handle_struct_non_zero_variant`)
+//     *   **Error Cases:** Cannot be combined with `#[subform_scalar]`.
+//
+// 2.  **`#[subform_scalar]` Attribute:**
+//     *   **Unit Variant:** Error. (Checked in: `handle_unit_variant`)
+//     *   **Zero-Field Variant (Tuple or Struct):** Error. (Checked in: `handle_tuple_zero_variant`, `handle_struct_zero_variant`)
+//     *   **Single-Field Variant (Tuple):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Requires the field type to be a path type deriving `Former`. (Handled by: `handle_tuple_non_zero_variant`)
+//     *   **Single-Field Variant (Struct):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_variant`)
+//     *   **Multi-Field Variant (Tuple):** Error. Cannot use `subform_scalar` on multi-field tuple variants. (Checked in: `handle_tuple_non_zero_variant`)
+//     *   **Multi-Field Variant (Struct):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_variant`)
+//
+// 3.  **Default Behavior (No Attribute):**
+//     *   **Unit Variant:** Generates `Enum::variant() -> Enum`. (Handled by: `handle_unit_variant`)
+//     *   **Zero-Field Variant (Tuple):** Generates `Enum::variant() -> Enum`. (Handled by: `handle_tuple_zero_variant`)
+//     *   **Zero-Field Variant (Struct):** Error. Requires `#[scalar]`. (Checked in: `handle_struct_zero_variant`)
+//     *   **Single-Field Variant (Tuple):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Requires the field type to be a path type deriving `Former`. (Handled by: `handle_tuple_non_zero_variant`)
+//     *   **Single-Field Variant (Struct):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_variant`)
+//     *   **Multi-Field Variant (Tuple):** Generates `Enum::variant(Field1Type, Field2Type, ...) -> Enum` (behaves like `#[scalar]`). (Handled by: `handle_tuple_non_zero_variant`)
+//     *   **Multi-Field Variant (Struct):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_variant`)
+//
+// Body attribute `standalone_constructors` creates stand-alone, top-level constructors for struct/enum. for struct it's always single function, for enum it's as many functions as enum has vartianys.
+//
+// ==================================
+
 
 ## Increments
-
-*   ✅ Increment 1: Set up module structure for variant former_enum
-    *   Detailed Plan Step 1: Create directory `module/core/former_meta/src/derive_former/former_enum/`.
-    *   Detailed Plan Step 2: Create module file `module/core/former_meta/src/derive_former/former_enum/mod.rs`.
-    *   Detailed Plan Step 3: Add `mod former_enum;` to `module/core/former_meta/src/derive_former.rs`.
-    *   Crucial Design Rules: [Structuring: Organize by Feature or Layer](code/rules/design.md#structuring-organize-by-feature-or-layer), [Structuring: Add Module Declaration Before Content](code/rules/design.md#structuring-add-module-declaration-before-content)
-    *   Verification Strategy: Ensure `cargo test` completes successfully within the `former` crate. <!-- Updated -->
-*   ✅ Increment 2: Extract handler for Unit variants
-    *   Detailed Plan Step 1: Create file `module/core/former_meta/src/derive_former/former_enum/unit.rs`.
-    *   Detailed Plan Step 2: Add `mod unit;` to `module/core/former_meta/src/derive_former/former_enum.rs`.
-    *   Detailed Plan Step 3: Define function `handle_unit_variant` in `unit.rs` and move Unit variant handling logic into it.
-    *   Detailed Plan Step 4: Update `former_for_enum` to call `handle_unit_variant`.
-    *   Detailed Plan Step 5: Add necessary `use` statements.
-    *   Crucial Design Rules: [Structuring: Organize by Feature or Layer](code/rules/design.md#structuring-organize-by-feature-or-layer), [Structuring: Add Module Declaration Before Content](code/rules/design.md#structuring-add-module-declaration-before-content)
-    *   Verification Strategy: Ensure `cargo check` completes successfully within the `former_meta` crate and manually review the moved code.
-*   ✅ Increment 3: Extract handler for Tuple variants with zero fields
-    *   Detailed Plan Step 1: Create file `module/core/former_meta/src/derive_former/former_enum/tuple_zero.rs`.
-    *   Detailed Plan Step 2: Add `mod tuple_zero;` to `module/core/former_meta/src/derive_former/former_enum.rs`.
-    *   Detailed Plan Step 3: Define function `handle_tuple_zero_variant` in `tuple_zero.rs` and move zero-field Tuple variant handling logic into it.
-    *   Detailed Plan Step 4: Update `former_for_enum` to call `handle_tuple_zero_variant`.
-    *   Detailed Plan Step 5: Add necessary `use` statements.
-    *   Crucial Design Rules: [Structuring: Organize by Feature or Layer](code/rules/design.md#structuring-organize-by-feature-or-layer), [Structuring: Add Module Declaration Before Content](code/rules/design.md#structuring-add-module-declaration-before-content)
-    *   Verification Strategy: Ensure `cargo check` completes successfully within the `former_meta` crate and manually review the moved code.
-*   ✅ Increment 4: Extract handler for Struct variants with zero fields
-    *   Detailed Plan Step 1: Create file `module/core/former_meta/src/derive_former/former_enum/struct_zero.rs`.
-    *   Detailed Plan Step 2: Add `mod struct_zero;` to `module/core/former_meta/src/derive_former/former_enum.rs`.
-    *   Detailed Plan Step 3: Define function `handle_struct_zero_variant` in `struct_zero.rs` and move zero-field Struct variant handling logic into it.
-    *   Detailed Plan Step 4: Update `former_for_enum` to call `handle_struct_zero_variant`.
-    *   Detailed Plan Step 5: Add necessary `use` statements.
-    *   Crucial Design Rules: [Structuring: Organize by Feature or Layer](code/rules/design.md#structuring-organize-by-feature-or-layer), [Structuring: Add Module Declaration Before Content](code/rules/design.md#structuring-add-module-declaration-before-content)
-    *   Verification Strategy: Ensure `cargo check` completes successfully within the `former_meta` crate and manually review the moved code.
-*   ❌ Increment 5: Extract handler for Tuple variants with non-zero fields
-    *   Detailed Plan Step 1: Create file `module/core/former_meta/src/derive_former/former_enum/tuple_non_zero.rs`.
-    *   Detailed Plan Step 2: Add `mod tuple_non_zero;` to `module/core/former_meta/src/derive_former/former_enum.rs`.
-    *   Detailed Plan Step 3: Define function `handle_tuple_non_zero_variant` in `tuple_non_zero.rs` and move non-zero-field Tuple variant handling logic into it.
-    *   Detailed Plan Step 4: Update `former_for_enum` to call `handle_tuple_non_zero_variant`.
-    *   Detailed Plan Step 5: Add necessary `use` statements.
-    *   Crucial Design Rules: [Structuring: Organize by Feature or Layer](code/rules/design.md#structuring-organize-by-feature-or-layer), [Structuring: Add Module Declaration Before Content](code/rules/design.md#structuring-add-module-declaration-before-content)
-    *   Verification Strategy: Ensure `cargo check` completes successfully within the `former_meta` crate and manually review the moved code.
-*   ✅ Increment 6: Extract handler for Struct variants with non-zero fields
-    *   Detailed Plan Step 1: **Fix E0599 Errors:** Modify the calls to `handle_unit_variant`, `handle_tuple_zero_variant`, `handle_struct_zero_variant`, and the *future* call to `handle_struct_non_zero_variant` within `former_for_enum` in `former_enum.rs`. Change the last argument from `merged_where_clause.map(|wc| &wc.predicates)` back to `merged_where_clause`.
-    *   Detailed Plan Step 2: **Update Handler Signatures:** Modify the function signatures in `unit.rs`, `tuple_zero.rs`, and `struct_zero.rs` to accept `merged_where_clause : Option< &'a syn::WhereClause >` instead of `Option< &'a syn::punctuated::Punctuated<...> >`. Adjust the internal logic of these handlers if they were using the predicates directly (they likely weren't, as the error occurred during the call).
-    *   Detailed Plan Step 3: **Create File:** Create `module/core/former_meta/src/derive_former/former_enum/struct_non_zero.rs`.
-    *   Detailed Plan Step 4: **Add Module Declaration:** Add `mod struct_non_zero;` and `use struct_non_zero::handle_struct_non_zero_variant;` to `module/core/former_meta/src/derive_former/former_enum/mod.rs`.
-    *   Detailed Plan Step 5: **Define Function:** Define the function signature for `handle_struct_non_zero_variant` in `struct_non_zero.rs`, ensuring it accepts all necessary parameters (including `merged_where_clause : Option< &'a syn::WhereClause >`) and has the correct visibility (`pub(super)` likely).
-    *   Detailed Plan Step 6: **Move Logic:** Cut the code block corresponding to the `Fields::Named( fields )` match arm (where `fields.named.len() > 0`) from `former_for_enum` in `former_enum.rs` and paste it into the body of `handle_struct_non_zero_variant` in `struct_non_zero.rs`.
-    *   Detailed Plan Step 7: **Adjust Paths/Visibility:** Correct any import paths or visibility issues within the moved code block. Ensure it uses the passed parameters correctly.
-    *   Detailed Plan Step 8: **Update Caller:** In `former_for_enum` (in `former_enum.rs`), replace the moved code block with a call to `handle_struct_non_zero_variant`, passing the necessary arguments.
-    *   Detailed Plan Step 9: **Apply Codestyle:** Strictly apply codestyle rules (spacing, newlines, indentation) to `struct_non_zero.rs` and the modified `former_enum.rs`.
-    *   Crucial Design Rules: [Structuring: Organize by Feature or Layer](code/rules/design.md#structuring-organize-by-feature-or-layer), [Structuring: Add Module Declaration Before Content](code/rules/design.md#structuring-add-module-declaration-before-content), [Visibility: Keep Implementation Details Private](code/rules/design.md#visibility-keep-implementation-details-private).
-    *   Verification Strategy: Run `cargo check --package former_meta` after fixing E0599 errors (Step 1 & 2). Analyze output. Run `cargo check --package former_meta` after moving the code (Step 3-8). Analyze output. Run `cargo test --package former` to ensure semantic equivalence after the refactoring is complete. **Analyze logs critically.**
-*   ⚫ Increment 7: Update main match statement to use new former_enum
-*   ⚫ Increment 8: Verify refactoring with tests
 
 ## Notes & Insights
 

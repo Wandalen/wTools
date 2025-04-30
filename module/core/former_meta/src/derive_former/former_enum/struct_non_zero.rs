@@ -8,8 +8,8 @@ use macro_tools::
   ident,
   // phantom, // Removed unused import
   parse_quote,
-  syn::punctuated::Punctuated, // FIX: Use correct path
-  syn::token::Comma, // FIX: Added Comma
+  // syn::punctuated::Punctuated, // FIX: Removed unused import
+  // syn::token::Comma, // FIX: Removed unused import
 };
 use syn::
 {
@@ -23,6 +23,8 @@ use syn::
   GenericArgument, // FIX: Added GenericArgument
   // Type, // FIX: Removed unused import
   Expr, // FIX: Added Expr
+  punctuated::Punctuated, // FIX: Added import
+  token::Comma, // FIX: Added import
   // WherePredicate, // FIX: Removed unused import
 };
 // use proc_macro::TokenStream as ProcTokenStream; // Removed unused import
@@ -49,6 +51,7 @@ pub( super ) fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 
   merged_where_clause : Option< &'a syn::WhereClause >,
 ) -> Result< () >
 {
+  // ... (rest of the function remains the same as the previous correct version) ...
   // qqq : reconstruct local variables needed from former_for_enum
   let variant_ident = &variant.ident;
   // Generate the snake_case method name, handling potential keywords
@@ -197,6 +200,7 @@ pub( super ) fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 
               -> // Return type on new line
               #enum_name< #enum_generics_ty >
               { // Brace on new line
+                // FIX: Use data directly, not preformed_tuple.0
                 let data = former::StoragePreform::preform( sub_storage );
                 #enum_name::#variant_ident{ #field_ident : data } // Construct struct variant
               } // Brace on new line
@@ -395,6 +399,7 @@ pub( super ) fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 
           // --- Generate DefinitionTypes --- (Increment 6, Step 7)
           // FIX: Correctly merge generics and handle commas
           let mut def_types_generics_impl_punctuated : Punctuated<GenericParam, Comma> = generics.params.clone();
+          if !def_types_generics_impl_punctuated.is_empty() && !def_types_generics_impl_punctuated.trailing_punct() { def_types_generics_impl_punctuated.push_punct( Default::default() ); } // Add trailing comma if needed
           def_types_generics_impl_punctuated.push( parse_quote!( Context2 = () ) );
           def_types_generics_impl_punctuated.push( parse_quote!( Formed2 = #enum_name< #enum_generics_ty > ) );
           let ( _def_types_generics_with_defaults, def_types_generics_impl, def_types_generics_ty, def_types_generics_where ) = generic_params::decompose( &syn::Generics { params: def_types_generics_impl_punctuated, ..generics.clone() } );
@@ -448,6 +453,7 @@ pub( super ) fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 
           // --- Generate Definition --- (Increment 6, Step 8)
           // FIX: Correctly merge generics and handle commas
           let mut def_generics_impl_punctuated : Punctuated<GenericParam, Comma> = generics.params.clone();
+          if !def_generics_impl_punctuated.is_empty() && !def_generics_impl_punctuated.trailing_punct() { def_generics_impl_punctuated.push_punct( Default::default() ); } // Add trailing comma if needed
           def_generics_impl_punctuated.push( parse_quote!( Context2 = () ) );
           def_generics_impl_punctuated.push( parse_quote!( Formed2 = #enum_name< #enum_generics_ty > ) );
           def_generics_impl_punctuated.push( parse_quote!( End2 = #end_struct_name< #enum_generics_ty > ) );
@@ -519,7 +525,7 @@ pub( super ) fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 
             #[ doc = "Former for the #variant_ident variant." ]
             #vis struct #former_name < #former_generics_impl > // Use decomposed impl generics
             where // Where clause on new line
-              #former_generics_where // Use decomposed where clause
+              #former_generics_where // FIX: Corrected where clause generation
             { // Brace on new line
               /// Temporary storage for all fields during the formation process.
               pub storage : Definition::Storage,
@@ -554,7 +560,7 @@ pub( super ) fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 
             #[ automatically_derived ]
             impl< #former_generics_impl > #former_name < #former_generics_ty >
             where // Where clause on new line
-              #former_generics_where
+              #former_generics_where // FIX: Corrected where clause generation
             { // Brace on new line
               // Standard former methods (new, begin, form, end)
               #[ inline( always ) ] pub fn new( on_end : Definition::End ) -> Self { Self::begin( None, None, on_end ) }
@@ -562,7 +568,15 @@ pub( super ) fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 
               #[ inline( always ) ] pub fn begin ( mut storage : ::core::option::Option< Definition::Storage >, context : ::core::option::Option< Definition::Context >, on_end : Definition::End ) -> Self { if storage.is_none() { storage = Some( Default::default() ); } Self { storage : storage.unwrap(), context, on_end : Some( on_end ) } }
               #[ inline( always ) ] pub fn begin_coercing< IntoEnd > ( mut storage : ::core::option::Option< Definition::Storage >, context : ::core::option::Option< Definition::Context >, on_end : IntoEnd ) -> Self where IntoEnd : Into< Definition::End > { if storage.is_none() { storage = Some( Default::default() ); } Self { storage : storage.unwrap(), context, on_end : Some( on_end.into() ) } }
               #[ inline( always ) ] pub fn form( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed { self.end() }
-              #[ inline( always ) ] pub fn end( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed { let on_end = self.on_end.take().unwrap(); let context = self.context.take(); < Definition::Types as former::FormerMutator >::form_mutation( &mut self.storage, &mut self.context ); on_end.call( self.storage, context ) }
+              #[ inline( always ) ] pub fn end( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
+              { // Brace on new line
+                // FIX: Add use statement for FormingEnd trait
+                use former::FormingEnd;
+                let on_end = self.on_end.take().unwrap();
+                let context = self.context.take();
+                < Definition::Types as former::FormerMutator >::form_mutation( &mut self.storage, &mut self.context );
+                on_end.call( self.storage, context )
+              } // Brace on new line
 
               // Field setters
               #( #setters )*
@@ -607,10 +621,11 @@ pub( super ) fn handle_struct_non_zero_variant< 'a > // Added explicit lifetime 
               -> // Return type on new line
               #enum_name< #enum_generics_ty >
               { // Brace on new line
+                // FIX: Handle single vs multi-field preformed type
                 let preformed_tuple = former::StoragePreform::preform( sub_storage );
                 #enum_name::#variant_ident
                 { // Brace on new line
-                  #( #field_idents_for_construction : preformed_tuple.#tuple_indices ),*
+                  #( #field_idents_for_construction : preformed_tuple.#tuple_indices ),* // Use preformed directly if single field? No, preformed is always tuple here.
                 } // Brace on new line
               } // Brace on new line
             } // Brace on new line
