@@ -1,51 +1,144 @@
-# Project Plan: Fix former crate tests
+# Project Plan: Refactor Enum Variant Handling in Former Derive
+
+## Initial Task
+
+Refactor the `former_for_enum` function in `former_meta/src/derive_former/former_enum.rs` to improve readability, maintainability, and testability. Extract the logic for handling each distinct variant case (Unit, Tuple(0/N), Struct(0/N)) into its own dedicated handler function within a new submodule (`former_meta/src/derive_former/former_enum/`). Ensure the refactoring adheres strictly to the documented "Enum Variant Handling Rules" and passes all relevant tests. Fix any existing test failures in the `former` crate as a prerequisite.
+
+**Refactoring Principles:**
+
+*   **Reuse Existing Patterns:** All refactoring steps must prioritize reusing existing code structures, helper functions, and patterns already present within the `former_meta` crate and the broader `former` ecosystem (`macro_tools`, `former_types`).
+*   **Minimal Necessary Changes:** Implement the context struct refactoring by making only the essential modifications to achieve the goal. Avoid unnecessary restructuring or logic changes within the handlers beyond adapting them to use the context struct.
+
+**Enum Variant Handling Rules (Specification):**
+
+*   **`#[scalar]` Attribute:**
+    *   Unit Variant: `Enum::variant() -> Enum` (Handler: `unit`)
+    *   Tuple(0) Variant: `Enum::variant() -> Enum` (Handler: `tuple_zero`)
+    *   Struct(0) Variant: `Enum::variant {} -> Enum` (Handler: `struct_zero`)
+    *   Tuple(1) Variant: `Enum::variant(InnerType) -> Enum` (Handler: `tuple_non_zero`)
+    *   Struct(1) Variant: `Enum::variant { field: InnerType } -> Enum` (Handler: `struct_non_zero`)
+    *   Tuple(N) Variant: `Enum::variant(T1, T2, ...) -> Enum` (Handler: `tuple_non_zero`)
+    *   Struct(N) Variant: `Enum::variant { f1: T1, f2: T2, ... } -> Enum` (Handler: `struct_non_zero`)
+    *   Error: Cannot be combined with `#[subform_scalar]`.
+*   **`#[subform_scalar]` Attribute:**
+    *   Unit Variant: Error (Handler: `unit`)
+    *   Tuple(0)/Struct(0) Variant: Error (Handlers: `tuple_zero`, `struct_zero`)
+    *   Tuple(1) Variant: `Enum::variant() -> InnerFormer<...>` (Requires path type deriving `Former`) (Handler: `tuple_non_zero`)
+    *   Struct(1)/Struct(N) Variant: `Enum::variant() -> VariantFormer<...>` (Implicit former) (Handler: `struct_non_zero`)
+    *   Tuple(N) Variant: Error (Handler: `tuple_non_zero`)
+*   **Default Behavior (No Attribute):**
+    *   Unit Variant: `Enum::variant() -> Enum` (Handler: `unit`)
+    *   Tuple(0) Variant: `Enum::variant() -> Enum` (Handler: `tuple_zero`)
+    *   Struct(0) Variant: Error (Requires `#[scalar]`) (Handler: `struct_zero`)
+    *   Tuple(1) Variant: `Enum::variant() -> InnerFormer<...>` (Requires path type deriving `Former`) (Handler: `tuple_non_zero`)
+    *   Struct(1)/Struct(N) Variant: `Enum::variant() -> VariantFormer<...>` (Implicit former) (Handler: `struct_non_zero`)
+    *   Tuple(N) Variant: `Enum::variant(T1, T2, ...) -> Enum` (Like `#[scalar]`) (Handler: `tuple_non_zero`)
+*   **`#[standalone_constructors]` Attribute:** Generates top-level constructors based on the above rules and `#[arg_for_constructor]` on fields *within* variants. Logic to be integrated into each handler.
 
 ## Increments
 
-*   ✅ Increment 1: Fix macro interpolation errors in `former_meta` enum handlers.
-    *   Detailed Plan Step 1: Modify `module/core/former_meta/src/derive_former/former_enum/struct_non_zero.rs`. Assign `ctx.vis` to a local variable `vis` before each `quote!` macro call that uses it, and interpolate `#vis` instead of `#ctx.vis`. (DONE)
-    *   Detailed Plan Step 2: Modify `module/core/former_meta/src/derive_former/former_enum/tuple_non_zero.rs`. Assign `ctx.vis` to a local variable `vis` before each `quote!` macro call that uses it, and interpolate `#vis` instead of `#ctx.vis`. (DONE)
-    *   ✅ Detailed Plan Step 3: Modify `module/core/former_meta/src/derive_former/former_enum/struct_non_zero.rs`. Assign `ctx.enum_name` to a local variable `enum_name` before each `quote!` macro call that uses it, and interpolate `#enum_name` instead of `#&ctx.enum_name`. (DONE)
-    *   ✅ Detailed Plan Step 4: Modify `module/core/former_meta/src/derive_former/former_enum/tuple_non_zero.rs`. Assign `ctx.enum_name` to a local variable `enum_name` before each `quote!` macro call that uses it, and interpolate `#enum_name` instead of `#&ctx.enum_name`. (DONE)
-    *   Crucial Design Rules: N/A (Build fix)
-    *   Verification Strategy: Run `cargo test` in `module/core/former` and check if compilation errors related to macro interpolation are resolved. Analyze logs critically.
-*   ✅ Increment 2: Run tests and fix any remaining failures.
-    *   ✅ Detailed Plan Step 1: Run `cargo test` in `module/core/former`. (DONE)
-    *   ✅ Detailed Plan Step 2: Analyze any failures based on logs. (DONE)
-    *   ✅ Detailed Plan Step 3: Propose and implement fixes for remaining failures. (DONE)
-        *   Cloned `ctx.enum_name` before assigning to local variable `enum_name` inside `quote!` blocks in `struct_non_zero.rs` and `tuple_non_zero.rs` to fix `E0425` errors.
-        *   Ensured all interpolations of `ctx.enum_name` and `ctx.vis` within `quote!` blocks use the corresponding local variables (`enum_name` and `vis`) to fix remaining `E0425` and `E0277` errors.
-        *   Re-examined the `match` statement structure and indentation in `tuple_non_zero.rs` to fix the "unclosed delimiter" error.
-        *   Drastically simplified `handle_tuple_non_zero_variant` in `tuple_non_zero.rs` to isolate the cause of the "unclosed delimiter" error.
-        *   Fixed remaining `E0425` errors in `struct_non_zero.rs` by correcting `enum_name` interpolation in the `static_method` quote.
-        *   Fixed "unexpected closing delimiter" error in `struct_non_zero.rs` by correcting brace matching and indentation in the standalone constructor block.
-        *   Fixed `E0308` and related parsing errors in `struct_non_zero.rs` by moving `if/else` logic outside of `quote!` for `initial_storage_code` assignment.
-        *   Moved `let enum_name = ctx.enum_name;` and `let vis = ctx.vis;` assignments inside or immediately before the relevant `quote!` blocks in `struct_non_zero.rs` and `tuple_non_zero.rs` to address `E0425` errors.
-        *   Reverted `TokenStream` variable approach for `vis` and `enum_name` and went back to using `let vis = ctx.vis;` and `let enum_name = ctx.enum_name;` at the beginning of the function, interpolating `#vis` and `#enum_name`.
-        *   Implemented fix for `E0277` errors related to collection interpolation in `struct_non_zero.rs` and `tuple_non_zero.rs` by generating token stream for repeated parts separately.
-        *   Implemented fix for `E0425` error related to `def_types_name` in `struct_non_zero.rs` and `tuple_non_zero.rs` by generating token stream for the type within angle brackets separately.
-        *   Fixed `E0004` non-exhaustive patterns error in `struct_non_zero.rs` by updating the wildcard pattern in the match expression.
-    *   ✅ Detailed Plan Step 4: Debug SIGSEGV error during `cargo test`. (DONE - SIGSEGV is resolved)
-        *   Request user to run `cargo test -vv` in `module/core/former` to get more verbose output, including macro expansion details. (DONE)
-        *   Analyze verbose output to pinpoint the source of the segmentation fault. (DONE - Identified compilation errors instead of SIGSEGV)
-        *   Based on analysis, formulate hypotheses about the cause of the crash (e.g., infinite recursion in macro expansion, invalid token stream generated for a specific case). (DONE)
-        *   Propose and implement targeted fixes based on confirmed hypotheses. (DONE)
-    *   Crucial Design Rules: TBD based on failures.
-    *   Verification Strategy: Run `cargo test` in `module/core/former` until all tests pass. Analyze logs critically. (DONE - All tests pass)
+*   ✅ **Increment 1: Diagnose and fix current test failures in the `former` crate.**
+    *   Detailed Plan Step 1: Execute `cargo test` within the `module/core/former` crate directory to capture the current test failures and error messages.
+    *   Detailed Plan Step 2: Analyze the `cargo test` output critically, focusing on the specific errors, failing test names, and code locations. Pay attention to potential issues related to the recent `WhereClause` fix or the partially refactored state (skipped/stuck increments).
+    *   Detailed Plan Step 3: Based on the analysis, identify the root cause(s) of the failures.
+    *   Detailed Plan Step 4: Propose and implement code changes in the relevant files (likely within `former_meta` or `former` test files) to address the identified issues. (This might involve multiple sub-steps depending on the errors).
+    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation.
+    *   **Crucial Design Rules:** [Error Handling: Use a Centralized Approach](#error-handling-use-a-centralized-approach), [Testing: Avoid Writing Automated Tests Unless Asked](#testing-avoid-writing-tests-unless-asked) (focus on fixing existing tests).
+    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Ensure the module structure is recognized without errors.
+*   ✅ **Increment 2: Create submodule structure `former_meta/src/derive_former/former_enum/`**
+    *   Detailed Plan Step 1: Create the directory `module/core/former_meta/src/derive_former/former_enum`.
+    *   Detailed Plan Step 2: Create the file `module/core/former_meta/src/derive_former/former_enum/mod.rs`.
+    *   Detailed Plan Step 3: Add `mod unit; pub(super) use unit::*;` etc. lines within `former_enum/mod.rs` for all planned handler modules.
+    *   Detailed Plan Step 4: Add `mod former_enum;` to `module/core/former_meta/src/derive_former.rs`.
+    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure no semantic changes.
+    *   **Crucial Design Rules:** [Structuring: Organize by Feature or Layer](#structuring-organize-by-feature-or-layer), [Structuring: Add Module Declaration Before Content](#structuring-add-module-declaration-before-content).
+    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Ensure the module structure is recognized without errors.
+*   ✅ **Increment 3: Extract handler for Unit variants (`handle_unit_variant`)**
+    *   Detailed Plan Step 1: Create file `module/core/former_meta/src/derive_former/former_enum/unit.rs`.
+    *   Detailed Plan Step 2: Define the `pub(super) fn handle_unit_variant(...) -> Result<()>` function signature, accepting necessary parameters (ast, variant, attrs, names, generics, etc.).
+    *   Detailed Plan Step 3: Move the code block handling `syn::Fields::Unit` from `former_enum.rs` into `handle_unit_variant`.
+    *   Detailed Plan Step 4: Integrate logic for `#[standalone_constructors]` within `handle_unit_variant` for unit variants.
+    *   Detailed Plan Step 5: Update the `match variant.fields` arm for `syn::Fields::Unit` in `former_enum.rs` to call `handle_unit_variant`.
+    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure no semantic changes.
+    *   **Crucial Design Rules:** [Structuring: Organize by Feature or Layer](#structuring-organize-by-feature-or-layer), [Visibility: Keep Implementation Details Private](#visibility-keep-implementation-details-private).
+    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test tests`). **Analyze logs critically**. Ensure tests related to unit variants still pass and no regressions occurred.
+*   ✅ **Increment 4: Extract handler for Tuple variants with zero fields (`handle_tuple_zero_variant`)**
+    *   Detailed Plan Step 1: Create file `module/core/former_meta/src/derive_former/former_enum/tuple_zero.rs`.
+    *   Detailed Plan Step 2: Define `pub(super) fn handle_tuple_zero_variant(...) -> Result<()>` function signature.
+    *   Detailed Plan Step 3: Move the code block handling `syn::Fields::Unnamed` with `len() == 0` from `former_enum.rs` into `handle_tuple_zero_variant`.
+    *   Detailed Plan Step 4: Integrate logic for `#[standalone_constructors]` within `handle_tuple_zero_variant`.
+    *   Detailed Plan Step 5: Update the `match fields.unnamed.len()` arm for `0` in `former_enum.rs` to call `handle_tuple_zero_variant`.
+    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure minimal necessary changes.
+    *   **Crucial Design Rules:** [Structuring: Organize by Feature or Layer](#structuring-organize-by-feature-or-layer), [Visibility: Keep Implementation Details Private](#visibility-keep-implementation-details-private).
+    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test tests`). **Analyze logs critically**. Ensure tests related to zero-field tuple variants still pass.
+*   ✅ **Increment 5: Extract handler for Struct variants with zero fields (`handle_struct_zero_variant`)**
+    *   Detailed Plan Step 1: Create file `module/core/former_meta/src/derive_former/former_enum/struct_zero.rs`.
+    *   Detailed Plan Step 2: Define `pub(super) fn handle_struct_zero_variant(...) -> Result<()>` function signature.
+    *   Detailed Plan Step 3: Move the code block handling `syn::Fields::Named` with `len() == 0` from `former_enum.rs` into `handle_struct_zero_variant`.
+    *   Detailed Plan Step 4: Integrate logic for `#[standalone_constructors]` within `handle_struct_zero_variant`.
+    *   Detailed Plan Step 5: Update the `match fields.named.len()` arm for `0` in `former_enum.rs` to call `handle_struct_zero_variant`.
+    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure minimal necessary changes.
+    *   **Crucial Design Rules:** [Structuring: Organize by Feature or Layer](#structuring-organize-by-feature-or-layer), [Visibility: Keep Implementation Details Private](#visibility-keep-implementation-details-private).
+    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test tests`). **Analyze logs critically**. Ensure tests related to zero-field struct variants still pass.
+*   ✅ **Increment 6: Extract handler for Tuple variants with non-zero fields (`handle_tuple_non_zero_variant`)** (Revisit skipped increment)
+    *   Detailed Plan Step 1: Create file `module/core/former_meta/src/derive_former/former_enum/tuple_non_zero.rs`.
+    *   Detailed Plan Step 2: Define `pub(super) fn handle_tuple_non_zero_variant(...) -> Result<()>` function signature.
+    *   Detailed Plan Step 3: Move the code block handling `syn::Fields::Unnamed` with `len() >= 1` from `former_enum.rs` into `handle_tuple_non_zero_variant`.
+    *   Detailed Plan Step 4: Integrate logic for `#[standalone_constructors]` within `handle_tuple_non_zero_variant`.
+    *   Detailed Plan Step 5: Update the `match fields.unnamed.len()` arm for `_` (or `1..`) in `former_enum.rs` to call `handle_tuple_non_zero_variant`.
+    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure no semantic changes. Pay attention to the `WhereClause` handling fix noted previously.
+    *   **Crucial Design Rules:** [Structuring: Organize by Feature or Layer](#structuring-organize-by-feature-or-layer), [Visibility: Keep Implementation Details Private](#visibility-keep-implementation-details-private), [Handling Panics vs Recoverable Errors](#handling-panics-vs-recoverable-errors) (for attribute misuse).
+    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test tests`). **Analyze logs critically**. Ensure tests related to non-zero-field tuple variants pass.
+*   ❌ **Increment 15: Refactor `handle_struct_non_zero_variant` to use context struct.** (New)
+    *   **Goal:** Adapt the `handle_struct_non_zero_variant` function.
+    *   **Rationale:** Implement the new handler signature.
+    *   **Detailed Steps:**
+        *   Modify `handle_struct_non_zero_variant` in `former_meta/src/derive_former/former_enum/struct_non_zero.rs`.
+        *   Change signature to accept `ctx: &mut EnumVariantHandlerContext<'_>`.
+        *   Update body to access data via `ctx`.
+        *   **Minimal Change:** Adapt data access; keep core logic. **Fix pre-existing compilation errors identified in Increment 14 verification.**
+    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure minimal necessary changes.
+    *   **Crucial Design Rules:** Code clarity, maintainability.
+    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test tests`). **Analyze logs critically**. Ensure tests still pass after all handlers are refactored.
+*   ⚫ **Increment 16: Verify `standalone_constructors` logic.** (Was 9)
+    *   Detailed Plan Step 1: Review the implementation of standalone constructor generation within each handler function (now accessed via the context struct).
+    *   Detailed Plan Step 2: Ensure the logic correctly handles the `#[standalone_constructors]` struct attribute and the `#[arg_for_constructor]` field attribute according to the "Option 2" rules (return `Self` if all fields are args, otherwise return `Former`).
+    *   Detailed Plan Step 3: Manually inspect generated code snippets (using `#[debug]` if necessary) for a few representative enum variants to confirm correctness.
+    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure no semantic changes.
+    *   **Crucial Design Rules:** Correctness, adherence to specified constructor logic.
+    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run tests specifically targeting standalone constructors (`cargo test --package former --test tests` - assuming such tests exist or are added). **Analyze logs critically**.
+*   ⚫ **Increment 17: Apply strict codestyle, remove temporary comments, address clippy warnings, add documentation.** (Updated)
+    *   Detailed Plan Step 1: Run `cargo clippy --package former_meta --fix --allow-dirty` to automatically fix simpler lints, focusing on the `former_enum` module.
+    *   Detailed Plan Step 2: Review remaining `cargo clippy --package former_meta` warnings for the `former_enum` module and manually address them, ensuring adherence to codestyle and design rules.
+    *   Detailed Plan Step 3: Review all refactored files (`former_enum.rs` and handlers in `former_enum/`) for strict adherence to codestyle rules (spacing, newlines, etc.). **Pay special attention to generated code within `quote!` blocks.**
+    *   Detailed Plan Step 4: Remove temporary comments (e.g., `// qqq`, `// xxx`, `// FIX:`) from the refactored files. Preserve task comments (`// TODO:`).
+    *   Detailed Plan Step 5: Add/update documentation comments for the new `EnumVariantHandlerContext` struct and the refactored handler functions, explaining the context struct approach and rationale.
+    *   **Crucial Design Rules:** [Lints and warnings](#lints-and-warnings), [Comments and Documentation](#comments-and-documentation).
+    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Clippy passes (`cargo clippy --package former_meta`). Manual code review confirms quality, documentation updates, and comment cleanup.
+*   ⚫ **Increment 18: Final review and verification.** (New)
+    *   **Goal:** Ensure the entire refactoring is correct and integrated.
+    *   **Rationale:** Final check before considering the task complete.
+    *   **Detailed Steps:**
+        *   Run the full test suite (`cargo test --package former --test tests`).
+        *   Perform a final manual review of the changes in the `former_enum` module.
+    *   **Verification Strategy:** All enum tests pass. Code review confirms clarity and correctness.
 
 ## Notes & Insights
 
-*   [Date/Inc 2] Struggling Point: Unable to apply diffs to add debug statements in `struct_non_zero.rs` due to repeated "malformed diff" errors from the `apply_diff` tool. This is blocking further investigation into why standalone constructors are not being generated for struct variants with non-zero fields. - Status: Unresolved
-*   [Date/Inc 2] Hypothesis 3: The `handle_struct_non_zero_variant` function's logic for generating standalone constructors is somehow being skipped or is failing silently for struct variants with a single named field, even when the `standalone_constructors` attribute is present. This could be due to an incorrect condition check, a logic error in handling single-field struct variants in that specific block, or an interaction with other attributes or the variant's structure that I haven't identified. (Blocked from testing due to diff application issues)
+*   *(No notes yet)*
+*   **[2025-04-29] Skipped Increment:** Increment 5 (Extract handler for Tuple variants with non-zero fields) was skipped due to persistent issues with applying automated changes to `module/core/former_meta/src/derive_former/former_enum.rs`. Manual intervention is required to complete this increment.
+*   **[2025-04-29] Stuck in Increment 6:** Encountered persistent compilation errors after moving code into `handle_struct_non_zero_variant`. Initiating Stuck Resolution Process.
+*   **[2025-04-29] Hypotheses for Increment 6:**
+    *   Hypothesis 1: The generated `Storage` struct or its implementations contain a brace mismatch or syntax error.
+    *   Hypothesis 2: The generated `DefinitionTypes` struct or its implementations contain a brace mismatch or syntax error.
+    *   Hypothesis 3: The generated `Definition` struct or its implementations contain a brace mismatch or syntax error.
+    *   Hypothesis 4: The generated `Former` struct contains a brace mismatch or syntax error.
+*   **[2025-04-30/Increment 14] Verification Failure:** `cargo check --package former_meta` failed due to pre-existing errors in `module/core/former_meta/src/derive_former/former_enum/struct_non_zero.rs`. These errors are unrelated to the changes in Increment 14 and will be addressed in Increment 15.
+*   **[2025-05-01/Increment 15] Stuck Point:** Encountered persistent compilation errors (E0277: the trait bound `former_enum::EnumVariantHandlerContext<'a>: macro_tools::quote::ToTokens` is not satisfied) when refactoring `handle_struct_non_zero_variant` to use the context struct within `quote!` macros. This indicates an issue with correctly interpolating fields from the context struct. Status: Unresolved.
 
-*   [Date/Init] Initial analysis indicates compilation errors in `former_meta` related to `ToTokens` trait implementation for `EnumVariantHandlerContext` within `quote!` macros when interpolating `#ctx.vis`. - Status: Resolved
-*   [Date/Inc 1] Verification revealed new compilation errors in `former` tests due to incorrect interpolation (`# & ctx.enum_name`) in code generated by `former_meta`.
+## Hypotheses for Increment 15 Stuck Point
+
+*   Hypothesis 1: I am incorrectly interpolating the entire `ctx` variable within `quote!` instead of just the required fields (like `ctx.vis`).
+*   Hypothesis 2: The `quote!` macro syntax for interpolating fields from a struct variable is different than I am currently using.
+*   Hypothesis 3: There is an issue with the `EnumVariantHandlerContext` struct definition itself that prevents its fields from being correctly interpolated by `quote!`.
 *   [Date/Inc 1] Insight: `quote!` macro does not support interpolating paths like `#ctx.enum_name`. A local variable must be used to store the value before interpolation.
-*   [Date/Inc 2] Struggling Point: Encountering persistent "unclosed delimiter" error in `tuple_non_zero.rs` after fixing interpolation issues. The error message points to line 216 and suggests an indentation issue with a closing brace. - Status: Resolved
-*   [Date/Inc 2] Hypothesis Test 1: The "unclosed delimiter" error is caused by the interaction between the `quote!` macro output within the `match` arms and the final closing brace of the `match` statement, possibly due to incorrect indentation or structure of the generated code in the `len > 1` arm. - **Result:** Rejected - **Reasonning:** Simplifying the generated code in the `len > 1` arm did not resolve the error, indicating the issue is likely with the overall `match` structure or surrounding code.
-*   [Date/Inc 2] Hypothesis 2: The `unclosed delimiter` error is caused by an incorrect or missing token or structure immediately before or after the `match` statement in `tuple_non_zero.rs` that is interfering with the compiler's ability to correctly parse the end of the `match` block. - Status: Resolved
-*   [Date/Inc 2] Insight: Moving `let enum_name = ctx.enum_name;` and `let vis = ctx.vis;` assignments inside or immediately before the relevant `quote!` blocks is necessary for `quote!` to correctly capture these local variables for interpolation. - Status: Resolved
-*   [Date/Inc 2] Struggling Point: `cargo test` in `module/core/former` initially resulted in a `SIGSEGV` (Segmentation Fault) error, indicating a crash during compilation or macro expansion. - Status: Resolved
-*   [Date/Inc 2] Insight: Directly interpolating collections (`Dlist`, `Map`) and complex types like `def_types_name` within `quote!` macros can lead to `E0277` and `E0425` errors. Generating the token stream for these parts separately before interpolating the resulting token stream into the main `quote!` block resolves these issues.
-*   [Date/Inc 2] Insight: A mismatched closing brace within a generated code block in `struct_non_zero.rs` caused "mismatched closing delimiter" errors. Correcting the brace matching resolved this.
-*   [Date/Inc 2] Insight: An `E0004` non-exhaustive patterns error in `struct_non_zero.rs` was caused by an incorrect wildcard pattern in a match expression. Updating the wildcard pattern to `&_` resolved this.
