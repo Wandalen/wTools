@@ -108,21 +108,23 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
               let constructor_params : Vec<_> = ctx.variant_field_info.iter().filter( |f| f.is_constructor_arg ).map( |f| { let pn = &f.ident; let ty = &f.ty; quote! { #pn : impl Into<#ty> } } ).collect();
               let all_fields_are_args = !ctx.variant_field_info.is_empty() && ctx.variant_field_info.iter().all( |f| f.is_constructor_arg );
               // FIX: Correct return type generation
+              let enum_name = ctx.enum_name; // Assign ctx.enum_name to local variable
               let return_type = if all_fields_are_args
               {
-                 quote! { #&ctx.enum_name< #enum_generics_ty > }
+                 quote! { #enum_name< #enum_generics_ty > } // Use local variable #enum_name
               }
               else
               { // FIX: Added comma_if_enum_generics
-                quote! { #inner_former_name < #inner_generics_ty_punctuated #inner_def_name < #inner_generics_ty_punctuated (), #comma_if_enum_generics #&ctx.enum_name< #enum_generics_ty >, #end_struct_name < #enum_generics_ty > > > }
+                quote! { #inner_former_name < #inner_generics_ty_punctuated #inner_def_name < #inner_generics_ty_punctuated (), #comma_if_enum_generics #enum_name< #enum_generics_ty >, #end_struct_name < #enum_generics_ty > > > } // Use local variable #enum_name
               };
               // FIX: Use inner_generics_ty_punctuated in storage init
               let initial_storage_code = if field_info.is_constructor_arg { let fi = &field_info.ident; let pn = ident::ident_maybe_raw( fi ); quote! { ::core::option::Option::Some( #inner_storage_name :: < #inner_generics_ty_punctuated > { #fi : ::core::option::Option::Some( #pn.into() ) } ) } } else { quote! { ::core::option::Option::None } };
+              let vis = ctx.vis; // Assign ctx.vis to local variable
               let constructor = quote!
               {
                   /// Standalone constructor for the #variant_ident subform variant.
                   #[ inline( always ) ]
-                  #ctx.vis fn #method_name < #enum_generics_impl >
+                  #vis fn #method_name < #enum_generics_impl > // Use local variable #vis
                   ( // Paren on new line
                     #( #constructor_params ),*
                   ) // Paren on new line
@@ -146,10 +148,11 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
           // Associated method logic
           let phantom_field_type = macro_tools::phantom::tuple( &ctx.generics.params ); // FIX: Use qualified path and correct generics
           let field_ident = &field_info.ident; // Get the single field's ident
+          let vis = ctx.vis; // Assign ctx.vis to local variable
           ctx.end_impls.push( quote!
           {
             #[ derive( Default, Debug ) ]
-            #ctx.vis struct #end_struct_name < #enum_generics_impl >
+            #vis struct #end_struct_name < #enum_generics_impl > // Use local variable #vis
             where // Where clause on new line
               #enum_generics_where
             { // Brace on new line
@@ -163,7 +166,7 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
             < // Angle bracket on new line
               // FIX: Correct generics usage and add comma_if_enum_generics
               // Access def_types_name from ctx? No, it's derived locally.
-              #inner_def_types_name< #inner_generics_ty_punctuated (), #comma_if_enum_generics #&ctx.enum_name< #enum_generics_ty > >
+              #inner_def_types_name< #inner_generics_ty_punctuated (), #comma_if_enum_generics #enum_name< #enum_generics_ty > > // Use local variable #enum_name
             > // Angle bracket on new line
             for #end_struct_name < #enum_generics_ty >
             where // Where clause on new line
@@ -177,26 +180,27 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
                 _context : Option< () >,
               ) // Paren on new line
               -> // Return type on new line
-              #&ctx.enum_name< #enum_generics_ty >
+              #enum_name< #enum_generics_ty > // Use local variable #enum_name
               { // Brace on new line
                 // FIX: Handle single vs multi-field preformed type
                 let data = former::StoragePreform::preform( sub_storage );
-                #&ctx.enum_name::#variant_ident{ #field_ident : data } // Construct struct variant
+                #enum_name::#variant_ident{ #field_ident : data } // Use local variable #enum_name
               } // Brace on new line
             } // Brace on new line
           });
+          let vis = ctx.vis; // Assign ctx.vis to local variable
           let static_method = quote!
           {
             /// Starts forming the #variant_ident variant using its implicit former.
             #[ inline( always ) ]
-            #ctx.vis fn #method_name () // FIX: Corrected interpolation of ctx.vis
+            #vis fn #method_name () // Use local variable #vis
             -> // Return type on new line
             #inner_former_name
             < // Angle bracket on new line
               #inner_generics_ty_punctuated // FIX: Use punctuated version
               #inner_def_name
               < // Angle bracket on new line
-                #inner_generics_ty_punctuated (), #comma_if_enum_generics #&ctx.enum_name< #enum_generics_ty >, #end_struct_name < #enum_generics_ty > >
+                #inner_generics_ty_punctuated (), #comma_if_enum_generics #enum_name< #enum_generics_ty >, #end_struct_name < #enum_generics_ty > > // Use local variable #enum_name
               > // Angle bracket on new line
             > // Angle bracket on new line
             { // Brace on new line
@@ -213,13 +217,15 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
           if ctx.struct_attrs.standalone_constructors.value( false )
           {
               let constructor_params : Vec<_> = ctx.variant_field_info.iter().filter( |f| f.is_constructor_arg ).map( |f| { let pn = &f.ident; let ty = &f.ty; quote! { #pn : impl Into<#ty> } } ).collect();
-              let return_type = quote! { #&ctx.enum_name< #enum_generics_ty > };
+              let enum_name = ctx.enum_name; // Assign ctx.enum_name to local variable
+              let return_type = quote! { #enum_name< #enum_generics_ty > }; // Use local variable #enum_name
               let direct_construction_args = ctx.variant_field_info.iter().map( |f| { let fi = &f.ident; let pn = ident::ident_maybe_raw( fi ); quote! { #fi : #pn.into() } } );
+              let vis = ctx.vis; // Assign ctx.vis to local variable
               let constructor = quote!
               {
                   /// Standalone constructor for the #variant_ident struct variant (scalar style).
                   #[ inline( always ) ]
-                  #ctx.vis fn #method_name < #enum_generics_impl > // FIX: Corrected interpolation of ctx.vis
+                  #vis fn #method_name < #enum_generics_impl > // Use local variable #vis
                   ( // Paren on new line
                     #( #constructor_params ),*
                   ) // Paren on new line
@@ -247,11 +253,12 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
               params.push( quote! { #param_name : impl Into< #field_type > } );
               args.push( quote! { #field_ident : #param_name.into() } );
           }
+          let vis = ctx.vis; // Assign ctx.vis to local variable
           let static_method = quote!
           {
               /// Constructor for the #variant_ident struct variant (scalar style).
               #[ inline( always ) ]
-              #ctx.vis fn #method_name
+              #vis fn #method_name // Use local variable #vis
               ( // Paren on new line
                 #( #params ),*
               ) // Paren on new line
@@ -290,15 +297,16 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
           {
             let field_ident = &f_info.ident;
             quote! { #field_ident : ::core::option::Option::None }
-          });
-          // Push Storage struct definition
-          ctx.end_impls.push( quote!
-          {
-            #[ derive( Debug ) ] // Removed Default derive here
-            #ctx.vis struct #storage_struct_name < #enum_generics_impl >
-            where // Where clause on new line
-              #enum_generics_where
-            { // Brace on new line
+        });
+        // Push Storage struct definition
+        let vis = ctx.vis; // Assign ctx.vis to local variable
+        ctx.end_impls.push( quote!
+        {
+          #[ derive( Debug ) ] // Removed Default derive here
+          #vis struct #storage_struct_name < #enum_generics_impl > // Use local variable #vis
+          where // Where clause on new line
+            #enum_generics_where
+          { // Brace on new line
               #( #storage_fields, )*
               _phantom : #phantom_field_type,
             } // Brace on new line
@@ -383,14 +391,16 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
           let mut def_types_generics_impl_punctuated : Punctuated<GenericParam, Comma> = ctx.generics.params.clone();
           if !def_types_generics_impl_punctuated.is_empty() && !def_types_generics_impl_punctuated.trailing_punct() { def_types_generics_impl_punctuated.push_punct( Default::default() ); } // Add trailing comma if needed
           def_types_generics_impl_punctuated.push( parse_quote!( Context2 = () ) );
-          def_types_generics_impl_punctuated.push( parse_quote!( Formed2 = #&ctx.enum_name< #enum_generics_ty > ) );
+          let enum_name = ctx.enum_name; // Assign ctx.enum_name to local variable
+          def_types_generics_impl_punctuated.push( parse_quote!( Formed2 = #enum_name< #enum_generics_ty > ) ); // Use local variable #enum_name
           let ( _def_types_generics_with_defaults, def_types_generics_impl, def_types_generics_ty, def_types_generics_where ) = generic_params::decompose( &syn::Generics { params: def_types_generics_impl_punctuated, ..ctx.generics.clone() } );
           let def_types_phantom = macro_tools::phantom::tuple( &def_types_generics_impl ); // FIX: Use qualified path
           // Push DefinitionTypes struct definition
+          let vis = ctx.vis; // Assign ctx.vis to local variable
           ctx.end_impls.push( quote!
           {
             #[ derive( Debug ) ]
-            #ctx.vis struct #def_types_name < #def_types_generics_impl >
+            #vis struct #def_types_name < #def_types_generics_impl > // Use local variable #vis
             where // Where clause on new line
               #def_types_generics_where
             { // Brace on new line
@@ -441,19 +451,21 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
           let mut def_generics_impl_punctuated : Punctuated<GenericParam, Comma> = ctx.generics.params.clone();
           if !def_generics_impl_punctuated.is_empty() && !def_generics_impl_punctuated.trailing_punct() { def_generics_impl_punctuated.push_punct( Default::default() ); } // Add trailing comma if needed
           def_generics_impl_punctuated.push( parse_quote!( Context2 = () ) );
-          def_generics_impl_punctuated.push( parse_quote!( Formed2 = #&ctx.enum_name< #enum_generics_ty > ) );
+          let enum_name = ctx.enum_name; // Assign ctx.enum_name to local variable
+          def_generics_impl_punctuated.push( parse_quote!( Formed2 = #enum_name< #enum_generics_ty > ) ); // Use local variable #enum_name
           def_generics_impl_punctuated.push( parse_quote!( End2 = #end_struct_name< #enum_generics_ty > ) );
           let def_generics_syn = syn::Generics { params: def_generics_impl_punctuated, ..ctx.generics.clone() };
           let ( _def_generics_with_defaults, def_generics_impl, def_generics_ty, def_generics_where ) = generic_params::decompose( &def_generics_syn );
           let def_phantom = macro_tools::phantom::tuple( &def_generics_impl ); // FIX: Use qualified path
           // Push Definition struct definition
+          let vis = ctx.vis; // Assign ctx.vis to local variable
           ctx.end_impls.push( quote!
           {
             #[ derive( Debug ) ]
-            #ctx.vis struct #def_name < #def_generics_impl >
+            #vis struct #def_name < #def_generics_impl > // Use local variable #vis
             where // Where clause on new line
               // FIX: Correctly reference DefinitionTypes with its generics
-              End2 : former::FormingEnd< #def_types_name< #enum_generics_ty #comma_if_enum_generics Context2, Formed2 > >,
+              End2 : former::FormingEnd< #def_types_name< #enum_generics_ty #comma_if_enum_generics Context2, Formed2 > >, // Note: Formed2 already uses #enum_name
               #def_generics_where // Includes original enum where clause
             { // Brace on new line
               _phantom : #def_phantom,
@@ -480,14 +492,14 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
             for #def_name < #def_generics_ty >
             where // Where clause on new line
               // FIX: Correctly reference DefinitionTypes with its generics
-              End2 : former::FormingEnd< #def_types_name< #enum_generics_ty #comma_if_enum_generics Context2, Formed2 > >, // Added comma_if_enum_generics
+              End2 : former::FormingEnd< #def_types_name< #enum_generics_ty #comma_if_enum_generics Context2, Formed2 > >, // Note: Formed2 already uses #enum_name
               #def_generics_where
             { // Brace on new line
               type Storage = #storage_struct_name< #enum_generics_ty >;
               type Context = Context2;
-              type Formed = Formed2;
+              type Formed = Formed2; // Note: Formed2 already uses #enum_name
               // FIX: Correctly reference DefinitionTypes with its generics
-              type Types = #def_types_name< #enum_generics_ty #comma_if_enum_generics Context2, Formed2 >;
+              type Types = #def_types_name< #enum_generics_ty #comma_if_enum_generics Context2, Formed2 >; // Note: Formed2 already uses #enum_name
               type End = End2;
             } // Brace on new line
           });
@@ -495,7 +507,8 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
           // --- Generate Former Struct ---
           let mut former_generics = ctx.generics.clone();
           // FIX: Correctly add Definition generic parameter and handle commas
-          former_generics.params.push( parse_quote!( Definition = #def_name< #enum_generics_ty #comma_if_enum_generics (), #&ctx.enum_name<#enum_generics_ty>, #end_struct_name<#enum_generics_ty> > ) );
+          let enum_name = ctx.enum_name; // Assign ctx.enum_name to local variable
+          former_generics.params.push( parse_quote!( Definition = #def_name< #enum_generics_ty #comma_if_enum_generics (), #enum_name<#enum_generics_ty>, #end_struct_name<#enum_generics_ty> > ) ); // Use local variable #enum_name
           let former_where_clause = former_generics.make_where_clause();
           former_where_clause.predicates.push( parse_quote!{ Definition : former::FormerDefinition< Storage = #storage_struct_name< #enum_generics_ty > > } );
           former_where_clause.predicates.push( parse_quote!{ Definition::Types : former::FormerDefinitionTypes< Storage = #storage_struct_name< #enum_generics_ty > > } );
@@ -508,10 +521,11 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
           }
           let ( _former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where ) = generic_params::decompose( &former_generics );
           // Push Former struct definition
+          let vis = ctx.vis; // Assign ctx.vis to local variable
           ctx.end_impls.push( quote!
           {
             #[ doc = "Former for the #variant_ident variant." ]
-            #ctx.vis struct #former_name < #former_generics_impl >
+            #vis struct #former_name < #former_generics_impl > // Use local variable #vis
             where // Where clause on new line
               #former_generics_where
             { // Brace on new line
@@ -583,10 +597,11 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
           // --- Generate End Struct ---
           let phantom_field_type = macro_tools::phantom::tuple( &ctx.generics.params ); // FIX: Use qualified path and correct generics
           // Push End struct definition
+          let vis = ctx.vis; // Assign ctx.vis to local variable
           ctx.end_impls.push( quote!
           {
             #[ derive( Default, Debug ) ]
-            #ctx.vis struct #end_struct_name < #enum_generics_impl >
+            #vis struct #end_struct_name < #enum_generics_impl > // Use local variable #vis
             where // Where clause on new line
               #enum_generics_where
             { // Brace on new line
@@ -604,7 +619,7 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
             impl< #enum_generics_impl > former::FormingEnd
             < // Angle bracket on new line
               // FIX: Correct generics usage and add comma_if_enum_generics
-              #def_types_name< #enum_generics_ty #comma_if_enum_generics (), #&ctx.enum_name< #enum_generics_ty > >
+              #def_types_name< #enum_generics_ty #comma_if_enum_generics (), #enum_name< #enum_generics_ty > > // Use local variable #enum_name
             > // Angle bracket on new line
             for #end_struct_name < #enum_generics_ty >
             where // Where clause on new line
@@ -618,11 +633,11 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
                 _context : Option< () >,
               ) // Paren on new line
               -> // Return type on new line
-              #&ctx.enum_name< #enum_generics_ty >
+              #enum_name< #enum_generics_ty > // Use local variable #enum_name
               { // Brace on new line
                 // FIX: Handle single vs multi-field preformed type
                 let preformed_tuple = former::StoragePreform::preform( sub_storage ); // Renamed to avoid conflict
-                #&ctx.enum_name::#variant_ident
+                #enum_name::#variant_ident // Use local variable #enum_name
                 { // Brace on new line
                   #( #field_idents_for_construction : preformed_tuple.#tuple_indices ),* // Use preformed_tuple
                 } // Brace on new line
@@ -632,17 +647,18 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
 
           // --- Generate Static Method ---
           // Push static method for Former
+          let vis = ctx.vis; // Assign ctx.vis to local variable
           let static_method = quote!
           {
             /// Starts forming the #variant_ident variant using its implicit former.
             #[ inline( always ) ]
-            #ctx.vis fn #method_name () // FIX: Corrected interpolation of ctx.vis
+            #vis fn #method_name () // Use local variable #vis
             -> // Return type on new line
             #former_name
             < // Angle bracket on new line
               #enum_generics_ty, // Enum generics
               // Default definition
-              #def_name< #enum_generics_ty #comma_if_enum_generics (), #&ctx.enum_name< #enum_generics_ty >, #end_struct_name< #enum_generics_ty > >
+              #def_name< #enum_generics_ty #comma_if_enum_generics (), #enum_name< #enum_generics_ty >, #end_struct_name< #enum_generics_ty > > // Use local variable #enum_name
             > // Angle bracket on new line
             { // Brace on new line
               #former_name::begin( None, None, #end_struct_name::< #enum_generics_ty >::default() )
@@ -656,15 +672,17 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
               let constructor_params : Vec<_> = ctx.variant_field_info.iter().filter( |f| f.is_constructor_arg ).map( |f| { let pn = &f.ident; let ty = &f.ty; quote! { #pn : impl Into<#ty> } } ).collect();
               let all_fields_are_args = !ctx.variant_field_info.is_empty() && ctx.variant_field_info.iter().all( |f| f.is_constructor_arg );
               // FIX: Added comma in return type generics
-              let return_type = if all_fields_are_args { quote! { #&ctx.enum_name< #enum_generics_ty > } } else { quote! { #former_name < #enum_generics_ty, #def_name< #enum_generics_ty #comma_if_enum_generics (), #&ctx.enum_name< #enum_generics_ty >, #end_struct_name< #enum_generics_ty > > > } };
+              let enum_name = ctx.enum_name; // Assign ctx.enum_name to local variable
+              let return_type = if all_fields_are_args { quote! { #enum_name< #enum_generics_ty > } } else { quote! { #former_name < #enum_generics_ty, #def_name< #enum_generics_ty #comma_if_enum_generics (), #enum_name< #enum_generics_ty >, #end_struct_name< #enum_generics_ty > > > } }; // Use local variable #enum_name
               let initial_storage_assignments = ctx.variant_field_info.iter().filter( |f| f.is_constructor_arg ).map( |f| { let fi = &f.ident; let pn = ident::ident_maybe_raw( fi ); quote! { #fi : ::core::option::Option::Some( #pn.into() ) } } ); // Filter only constructor args
               let initial_storage_code = if constructor_params.is_empty() { quote! { ::core::option::Option::None } } else { quote! { ::core::option::Option::Some( #storage_struct_name :: < #enum_generics_ty > { #( #initial_storage_assignments, )* ..Default::default() } ) } }; // Use ..Default::default()
-              let constructor_body = if all_fields_are_args { let construction_args = ctx.variant_field_info.iter().map( |f| { let fi = &f.ident; let pn = ident::ident_maybe_raw( fi ); quote! { #fi : #pn.into() } } ); quote! { #&ctx.enum_name::#variant_ident { #( #construction_args ),* } } } else { quote! { #former_name::begin( #initial_storage_code, None, #end_struct_name::< #enum_generics_ty >::default() ) } };
+              let constructor_body = if all_fields_are_args { let construction_args = ctx.variant_field_info.iter().map( |f| { let fi = &f.ident; let pn = ident::ident_maybe_raw( fi ); quote! { #fi : #pn.into() } } ); quote! { #enum_name::#variant_ident { #( #construction_args ),* } } } else { quote! { #former_name::begin( #initial_storage_code, None, #end_struct_name::< #enum_generics_ty >::default() ) } }; // Use local variable #enum_name
+              let vis = ctx.vis; // Assign ctx.vis to local variable
               let constructor = quote!
               {
                   /// Standalone constructor for the #variant_ident subform variant.
                   #[ inline( always ) ]
-                  #ctx.vis fn #method_name < #enum_generics_impl >
+                  #vis fn #method_name < #enum_generics_impl > // Use local variable #vis
                   ( // Paren on new line
                     #( #constructor_params ),*
                   ) // Paren on new line

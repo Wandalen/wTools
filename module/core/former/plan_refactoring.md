@@ -141,3 +141,4 @@ Refactor the `former_for_enum` function in `former_meta/src/derive_former/former
 *   Hypothesis 1: I am incorrectly interpolating the entire `ctx` variable within `quote!` instead of just the required fields (like `ctx.vis`).
 *   Hypothesis 2: The `quote!` macro syntax for interpolating fields from a struct variable is different than I am currently using.
 *   Hypothesis 3: There is an issue with the `EnumVariantHandlerContext` struct definition itself that prevents its fields from being correctly interpolated by `quote!`.
+*   [Date/Inc 1] Insight: `quote!` macro does not support interpolating paths like `#ctx.enum_name`. A local variable must be used to store the value before interpolation.
