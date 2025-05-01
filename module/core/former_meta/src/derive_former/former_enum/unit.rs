@@ -40,12 +40,12 @@ Result< () >
     }
   };
 
-  ctx.methods.push( method.clone() ); // Add to methods for the impl block, Access from context
+  ctx.methods.push( method.clone().into() ); // Add to methods for the impl block, Access from context // Added into()
 
   // If #[standalone_constructors] is present on the struct, add the method to standalone constructors
   if ctx.struct_attrs.standalone_constructors.is_some() // Access from context
   {
-      ctx.standalone_constructors.push( method ); // Access from context
+      ctx.standalone_constructors.push( method.into() ); // Access from context // Added into()
   }
 
 

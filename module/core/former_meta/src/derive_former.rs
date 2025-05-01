@@ -29,7 +29,7 @@ use struct_attrs::*;
 pub fn mutator
 (
   item : &syn::Ident,
-  original_input : &proc_macro::TokenStream,
+  original_input : &macro_tools::proc_macro2::TokenStream,
   mutator : &AttributeMutator,
   former_definition_types : &syn::Ident,
   former_definition_types_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
@@ -128,7 +128,7 @@ utilizes a defined end strategy to finalize the object creation.
 #[ allow( clippy::too_many_lines ) ]
 pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 {
-  let original_input = input.clone();
+  let original_input : TokenStream = input.clone().into();
   let ast = syn::parse::< syn::DeriveInput >( input )?;
   let has_debug = attr::has_debug( ast.attrs.iter() )?;
 

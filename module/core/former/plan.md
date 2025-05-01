@@ -96,6 +96,7 @@ Refactor the `former_for_enum` function in `former_meta/src/derive_former/former
         *   Modify `handle_struct_non_zero_variant` in `former_meta/src/derive_former/former_enum/struct_non_zero.rs`.
         *   Change signature to accept `ctx: &mut EnumVariantHandlerContext<'_>`.
         *   Update body to access data via `ctx`.
+        *   **Fix Stuck Point:** Extract necessary fields from `ctx` into local variables before interpolating them in `quote!` macros.
         *   **Minimal Change:** Adapt data access; keep core logic. **Fix pre-existing compilation errors identified in Increment 14 verification.**
     *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure minimal necessary changes.
     *   **Crucial Design Rules:** Code clarity, maintainability.
@@ -135,10 +136,11 @@ Refactor the `former_for_enum` function in `former_meta/src/derive_former/former
     *   Hypothesis 4: The generated `Former` struct contains a brace mismatch or syntax error.
 *   **[2025-04-30/Increment 14] Verification Failure:** `cargo check --package former_meta` failed due to pre-existing errors in `module/core/former_meta/src/derive_former/former_enum/struct_non_zero.rs`. These errors are unrelated to the changes in Increment 14 and will be addressed in Increment 15.
 *   **[2025-05-01/Increment 15] Stuck Point:** Encountered persistent compilation errors (E0277: the trait bound `former_enum::EnumVariantHandlerContext<'a>: macro_tools::quote::ToTokens` is not satisfied) when refactoring `handle_struct_non_zero_variant` to use the context struct within `quote!` macros. This indicates an issue with correctly interpolating fields from the context struct. Status: Unresolved.
+*   **[2025-05-02/Increment 15] Analysis:** The error E0277 indicates that `EnumVariantHandlerContext` does not implement `ToTokens`, which is required for direct interpolation in `quote!`. This supports Hypothesis 1 from the Increment 15 hypotheses.
+*   [Date/Inc 1] Insight: `quote!` macro does not support interpolating paths like `#ctx.enum_name`. A local variable must be used to store the value before interpolation.
 
 ## Hypotheses for Increment 15 Stuck Point
 
 *   Hypothesis 1: I am incorrectly interpolating the entire `ctx` variable within `quote!` instead of just the required fields (like `ctx.vis`).
 *   Hypothesis 2: The `quote!` macro syntax for interpolating fields from a struct variable is different than I am currently using.
 *   Hypothesis 3: There is an issue with the `EnumVariantHandlerContext` struct definition itself that prevents its fields from being correctly interpolated by `quote!`.
-*   [Date/Inc 1] Insight: `quote!` macro does not support interpolating paths like `#ctx.enum_name`. A local variable must be used to store the value before interpolation.

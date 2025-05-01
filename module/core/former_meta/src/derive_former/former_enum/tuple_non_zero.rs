@@ -72,7 +72,7 @@ pub( super ) fn handle_tuple_non_zero_variant< 'a >
             #[ inline( always ) ]
             #vis fn #method_name < #enum_generics_impl > ( #( #constructor_params ),* ) -> #return_type where #enum_generics_where { Self::#variant_ident( #param_name.into() ) } // Use local variable #vis
           };
-          ctx.standalone_constructors.push( constructor );
+          ctx.standalone_constructors.push( constructor.into() ); // Added into()
         }
         let param_name = format_ident!( "_0" );
         let static_method = quote!
@@ -81,7 +81,7 @@ pub( super ) fn handle_tuple_non_zero_variant< 'a >
           #[ inline( always ) ]
           #vis fn #method_name( #param_name : impl Into< #inner_type > ) -> Self { Self::#variant_ident( #param_name.into() ) } // Use local variable #vis
         };
-        ctx.methods.push( static_method );
+        ctx.methods.push( static_method.into() ); // Added into()
       }
       else // Default or explicit subform_scalar -> Subformer
       {
@@ -125,7 +125,7 @@ pub( super ) fn handle_tuple_non_zero_variant< 'a >
             #[ inline( always ) ]
             #vis fn #method_name < #enum_generics_impl > ( #( #constructor_params ),* ) -> #return_type where #enum_generics_where { #inner_former_name::begin( #initial_storage_code, None, #end_struct_name::< #enum_generics_ty >::default() ) } // Use local variable #vis
           };
-          ctx.standalone_constructors.push( constructor );
+          ctx.standalone_constructors.push( constructor.into() ); // Added into()
         }
 
         // Access generics from ctx
@@ -172,8 +172,8 @@ pub( super ) fn handle_tuple_non_zero_variant< 'a >
           >
           { #inner_former_name::begin( None, None, #end_struct_name::< #enum_generics_ty >::default() ) }
         };
-        ctx.methods.push( static_method );
-        ctx.end_impls.push( quote!{ #end_struct_def #end_impl } );
+        ctx.methods.push( static_method.into() ); // Added into()
+        ctx.end_impls.push( quote!{ #end_struct_def #end_impl }.into() ); // Added into()
       }
     }
     _ => // len > 1
@@ -195,14 +195,14 @@ pub( super ) fn handle_tuple_non_zero_variant< 'a >
           // FIX: Iterate over ctx.variant_field_info directly (remove &)
           for field_info_inner in ctx.variant_field_info { let param_name = &field_info_inner.ident; direct_construction_args.push( quote! { #param_name.into() } ); }
           let constructor = quote! { #[ inline( always ) ] #vis fn #method_name < #enum_generics_impl > ( #( #constructor_params ),* ) -> #return_type where #enum_generics_where { Self::#variant_ident( #( #direct_construction_args ),* ) } }; // Use local variable #vis
-          ctx.standalone_constructors.push( constructor );
+          ctx.standalone_constructors.push( constructor.into() ); // Added into()
         }
         let mut params = Vec::new();
         let mut args = Vec::new();
         // FIX: Iterate over ctx.variant_field_info directly (remove &)
         for field_info in ctx.variant_field_info { let param_name = &field_info.ident; let field_type = &field_info.ty; params.push( quote! { #param_name : impl Into< #field_type > } ); args.push( quote! { #param_name.into() } ); }
         let static_method = quote! { #[ inline( always ) ] #vis fn #method_name ( #( #params ),* ) -> Self { Self::#variant_ident( #( #args ),* ) } }; // Use local variable #vis
-        ctx.methods.push( static_method );
+        ctx.methods.push( static_method.into() ); // Added into()
       }
     }
   }

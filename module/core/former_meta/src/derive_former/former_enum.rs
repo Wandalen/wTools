@@ -1,27 +1,30 @@
 // File: module/core/former_meta/src/derive_former/former_enum.rs
 #![ allow( clippy::wildcard_imports ) ]
 
+use proc_macro2::TokenStream; // Explicitly import TokenStream
+use proc_macro::TokenStream as ProcMacroTokenStream; // Import proc_macro::TokenStream with an alias
+
 // ==================================
 // Refactoring Plan Documentation - UPDATED
 // ==================================
 //
-//! # Refactoring Plan for `former_for_enum`
-//!
-//! The main `former_for_enum` function has become complex due to handling
-//! multiple enum variant structures (Unit, Tuple, Struct) and field counts (0, 1, N)
-//! within nested match statements.
-//!
-//! **Goal:** Improve readability, maintainability, and testability by extracting
-//! the logic for handling each distinct variant case into its own dedicated function
-//! located in a separate file within a new submodule.
-//!
-//! **Extraction Cases & Logic Handoff:**
-//!
-//! The main `former_for_enum` function dispatches control to specific handlers based on
-//! the variant's field kind (`Unit`, `Unnamed`, `Named`) and field count. Each handler
-//! then implements the logic based on the presence of `#[scalar]` or `#[subform_scalar]`
-//! attributes, according to the rules defined below the documentation comment.
-//!
+// # Refactoring Plan for `former_for_enum`
+//
+// The main `former_for_enum` function has become complex due to handling
+// multiple enum variant structures (Unit, Tuple, Struct) and field counts (0, 1, N)
+// within nested match statements.
+//
+// **Goal:** Improve readability, maintainability, and testability by extracting
+// the logic for handling each distinct variant case into its own dedicated function
+// located in a separate file within a new submodule.
+//
+// **Extraction Cases & Logic Handoff:**
+//
+// The main `former_for_enum` function dispatches control to specific handlers based on
+// the variant's field kind (`Unit`, `Unnamed`, `Named`) and field count. Each handler
+// then implements the logic based on the presence of `#[scalar]` or `#[subform_scalar]`
+// attributes, according to the rules defined below the documentation comment.
+//
 
 use super::*;
 
@@ -46,7 +49,7 @@ use tuple_non_zero::handle_tuple_non_zero_variant; // FIX: Added missing use
 use macro_tools::
 {
   generic_params, Result,
-  proc_macro2::TokenStream, quote::{ format_ident, quote },
+  quote::{ format_ident, quote }, // Added ToTokens // Removed ToTokens from quote import // Added ToTokens back for derive // Removed ToTokens from quote import again
   ident, // Added for ident_maybe_raw
   // phantom, // Removed unused import
   diag, // Added for report_print
@@ -119,7 +122,7 @@ pub(super) struct EnumVariantFieldInfo
 /// This struct consolidates the various pieces of data and output collectors
 /// required by the handler functions (`handle_*_variant`), simplifying their
 /// signatures and making context passing more manageable.
-#[ derive( Debug ) ] // Added Debug derive for potential debugging
+#[ derive( Debug ) ] // Added Debug derive for potential debugging // Added ToTokens derive // Use direct ToTokens // Use quot...
 pub(super) struct EnumVariantHandlerContext< 'a > // Use pub(super) as it's used within the derive_former module
 {
   /// Reference to the original derive input AST.
@@ -135,7 +138,7 @@ pub(super) struct EnumVariantHandlerContext< 'a > // Use pub(super) as it's used
   /// Generics of the enum.
   pub generics : &'a syn::Generics,
   /// Reference to the original proc_macro TokenStream input.
-  pub original_input : &'a proc_macro::TokenStream,
+  pub original_input : &'a TokenStream, // Change type back to proc_macro::TokenStream // Corrected type to proc_macro2::TokenStream
   /// Parsed attributes from the specific variant being processed.
   pub variant_attrs : &'a FieldAttributes,
   /// Collected information about the fields within the current variant.
@@ -162,9 +165,9 @@ pub(super) fn former_for_enum
 (
   ast : &syn::DeriveInput,
   data_enum : &syn::DataEnum,
-  original_input : &proc_macro::TokenStream, // Added original_input
+  original_input : &TokenStream, // Change type to proc_macro2::TokenStream
   has_debug : bool, // Added has_debug
-) -> Result< TokenStream >
+) -> Result< TokenStream > // Change return type to proc_macro2::TokenStream
 {
   let enum_name = &ast.ident;
   let vis = &ast.vis;
@@ -248,7 +251,7 @@ pub(super) fn former_for_enum
       enum_name,
       vis,
       generics,
-      original_input,
+      original_input, // Pass original_input directly (now correct type)
       variant_attrs : &variant_attrs,
       variant_field_info : &variant_field_info,
       merged_where_clause,
@@ -314,10 +317,9 @@ pub(super) fn former_for_enum
     }
   }
 
-  // Assemble the final impl block containing the generated static methods
-  let result = quote!
+  // Assemble the final impl block containing the generated static methods and standalone constructors
+  let methods_and_constructors_impl : TokenStream = quote!
   {
-      // Implement the static methods and standalone constructors on the enum.
       #[ automatically_derived ]
       impl< #enum_generics_impl > #enum_name< #enum_generics_ty >
       where // Where clause on new line
@@ -326,9 +328,19 @@ pub(super) fn former_for_enum
           #( #methods )* // Splice the collected methods here
           #( #standalone_constructors )* // Splice standalone constructors here
       } // Brace on new line
+  }; // Remove into()
 
-      // Define the End structs, implicit formers, etc., outside the enum impl block.
-      #( #end_impls )*
+  // Assemble the end_impls (End structs, implicit formers, etc.)
+  let end_impls_tokens : TokenStream = quote!
+  {
+      #( #end_impls )* // Splice the collected end_impls here
+  }; // Remove into()
+
+  // Combine the generated code pieces
+  let result = quote!
+  {
+      #methods_and_constructors_impl
+      #end_impls_tokens
   };
 
   if has_debug // Print generated code if #[debug] is present on the enum
@@ -337,5 +349,5 @@ pub(super) fn former_for_enum
     diag::report_print( about, original_input, &result );
   }
 
-  Ok( result )
+  Ok( result ) // Return proc_macro2::TokenStream directly
 }

@@ -330,7 +330,7 @@ impl< 'a > FormerField< 'a >
   (
     &self,
     item : &syn::Ident,
-    original_input : &proc_macro::TokenStream,
+    original_input : &macro_tools::proc_macro2::TokenStream,
     struct_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     struct_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
@@ -446,7 +446,7 @@ impl< 'a > FormerField< 'a >
     item : &syn::Ident,
     former : &syn::Ident,
     former_storage : &syn::Ident,
-    original_input : &proc_macro::TokenStream,
+    original_input : &macro_tools::proc_macro2::TokenStream,
   )
   -> TokenStream
   {
@@ -528,7 +528,7 @@ field : {field_ident}",
     former_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     former_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-    original_input : &proc_macro::TokenStream,
+    original_input : &macro_tools::proc_macro2::TokenStream,
   )
   -> Result< ( TokenStream, TokenStream ) >
   {
@@ -833,7 +833,7 @@ with the new content generated during the subforming process.
     struct_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     struct_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-    original_input : &proc_macro::TokenStream,
+    original_input : &macro_tools::proc_macro2::TokenStream,
   )
   -> Result< ( TokenStream, TokenStream ) >
   {
@@ -1129,7 +1129,7 @@ formation process of the `{item}`.
     struct_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     struct_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-    original_input : &proc_macro::TokenStream,
+    original_input : &macro_tools::proc_macro2::TokenStream,
   )
   -> Result< ( TokenStream, TokenStream ) >
   {
