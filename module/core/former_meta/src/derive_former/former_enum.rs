@@ -101,7 +101,9 @@ use convert_case::{ Case, Casing }; // Space before ;
 
 /// Temporary storage for field information needed during generation.
 #[derive(Clone)] // <<< Added Clone
-struct EnumVariantFieldInfo
+#[ derive( Debug ) ] // Added Debug derive
+
+pub(super) struct EnumVariantFieldInfo
 {
   // index : usize, // Removed unused field
   ident : syn::Ident,
@@ -109,6 +111,49 @@ struct EnumVariantFieldInfo
   #[allow(dead_code)] // Keep attrs field even if unused for now
   attrs : FieldAttributes,
   is_constructor_arg : bool,
+}
+
+
+/// Context struct holding all necessary information for enum variant handlers.
+///
+/// This struct consolidates the various pieces of data and output collectors
+/// required by the handler functions (`handle_*_variant`), simplifying their
+/// signatures and making context passing more manageable.
+#[ derive( Debug ) ] // Added Debug derive for potential debugging
+pub(super) struct EnumVariantHandlerContext< 'a > // Use pub(super) as it's used within the derive_former module
+{
+  /// Reference to the original derive input AST.
+  pub ast : &'a syn::DeriveInput,
+  /// Reference to the specific variant being processed.
+  pub variant : &'a syn::Variant,
+  /// Parsed attributes from the enum struct itself.
+  pub struct_attrs : &'a ItemAttributes,
+  /// Identifier of the enum.
+  pub enum_name : &'a syn::Ident,
+  /// Visibility of the enum.
+  pub vis : &'a syn::Visibility,
+  /// Generics of the enum.
+  pub generics : &'a syn::Generics,
+  /// Reference to the original proc_macro TokenStream input.
+  pub original_input : &'a proc_macro::TokenStream,
+  /// Parsed attributes from the specific variant being processed.
+  pub variant_attrs : &'a FieldAttributes,
+  /// Collected information about the fields within the current variant.
+  pub variant_field_info : &'a [ EnumVariantFieldInfo ], // Use slice for borrowed Vec data
+  /// The merged where clause for the enum's impl block.
+  pub merged_where_clause : Option< &'a syn::WhereClause >,
+
+  // Output Collectors
+  /// Mutable reference to collect generated method TokenStreams.
+  pub methods : &'a mut Vec< TokenStream >,
+  /// Mutable reference to collect generated end_impl TokenStreams (e.g., implicit formers).
+  pub end_impls : &'a mut Vec< TokenStream >,
+  /// Mutable reference to collect generated standalone constructor TokenStreams.
+  pub standalone_constructors : &'a mut Vec< TokenStream >,
+
+  // Flags
+  /// Flag indicating if the `#[debug]` attribute was present.
+  pub has_debug : bool,
 }
 
 /// Generate the Former ecosystem for an enum.
@@ -195,29 +240,32 @@ pub(super) fn former_for_enum
     // <<< End Added >>>
 
 
+    let mut ctx = EnumVariantHandlerContext
+    {
+      ast,
+      variant,
+      struct_attrs : &struct_attrs,
+      enum_name,
+      vis,
+      generics,
+      original_input,
+      variant_attrs : &variant_attrs,
+      variant_field_info : &variant_field_info,
+      merged_where_clause,
+      methods : &mut methods,
+      end_impls : &mut end_impls,
+      standalone_constructors : &mut standalone_constructors,
+      has_debug,
+    };
+
+
     // Generate method based on the variant's fields
     match &variant.fields
     {
       // Case 1: Unit variant
       syn::Fields::Unit =>
       {
-        handle_unit_variant
-        (
-          ast,
-          variant,
-          &struct_attrs,
-          enum_name,
-          vis,
-          generics,
-          original_input,
-          has_debug,
-          &mut methods,
-          &mut end_impls,
-          &mut standalone_constructors,
-          &variant_attrs,
-          &variant_field_info,
-          merged_where_clause,
-        )?;
+        handle_unit_variant( &mut ctx )?;
       },
       // Case 2: Tuple variant
       syn::Fields::Unnamed( fields ) =>
@@ -232,44 +280,12 @@ pub(super) fn former_for_enum
           // Sub-case: Zero fields (treat like Unit variant)
           0 =>
           {
-            handle_tuple_zero_variant
-            (
-              ast,
-              variant,
-              &struct_attrs,
-              enum_name,
-              vis,
-              generics,
-              original_input,
-              has_debug,
-              &mut methods,
-              &mut end_impls,
-              &mut standalone_constructors,
-              &variant_attrs,
-              &variant_field_info,
-              merged_where_clause,
-            )?;
+            handle_tuple_zero_variant( &mut ctx )?;
           }
           // Sub-case: Non-zero fields (Tuple(1) or Tuple(N))
           _ => // len >= 1
           {
-            handle_tuple_non_zero_variant
-            (
-              ast,
-              variant,
-              &struct_attrs,
-              enum_name,
-              vis,
-              generics,
-              original_input,
-              has_debug,
-              &mut methods,
-              &mut end_impls,
-              &mut standalone_constructors,
-              &variant_attrs,
-              &variant_field_info,
-              merged_where_clause,
-            )?;
+            handle_tuple_non_zero_variant( &mut ctx )?;
           }
         }
       },
@@ -286,44 +302,12 @@ pub(super) fn former_for_enum
             // Sub-case: Zero fields (Struct(0))
             0 =>
             {
-                handle_struct_zero_variant
-                (
-                    ast,
-                    variant,
-                    &struct_attrs,
-                    enum_name,
-                    vis,
-                    generics,
-                    original_input,
-                    has_debug,
-                    &mut methods,
-                    &mut end_impls,
-                    &mut standalone_constructors,
-                    &variant_attrs,
-                    &variant_field_info,
-                    merged_where_clause,
-                )?;
+                handle_struct_zero_variant( &mut ctx )?;
             }
             // Sub-case: Single field (Struct(1)) or Multi-field (Struct(N))
             _ => // len >= 1
             {
-              handle_struct_non_zero_variant
-              (
-                ast,
-                variant,
-                &struct_attrs,
-                enum_name,
-                vis,
-                generics,
-                original_input,
-                has_debug,
-                &mut methods,
-                &mut end_impls,
-                &mut standalone_constructors,
-                &variant_attrs,
-                &variant_field_info,
-                merged_where_clause,
-              )?;
+              handle_struct_non_zero_variant( &mut ctx )?;
             }
         }
       }

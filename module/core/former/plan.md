@@ -61,25 +61,25 @@ Refactor the `former_for_enum` function in `former_meta/src/derive_former/former
     *   Detailed Plan Step 5: Update the `match variant.fields` arm for `syn::Fields::Unit` in `former_enum.rs` to call `handle_unit_variant`.
     *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure no semantic changes.
     *   **Crucial Design Rules:** [Structuring: Organize by Feature or Layer](#structuring-organize-by-feature-or-layer), [Visibility: Keep Implementation Details Private](#visibility-keep-implementation-details-private).
-    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test former_enum_test`). **Analyze logs critically**. Ensure tests related to unit variants still pass and no regressions occurred.
+    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test tests`). **Analyze logs critically**. Ensure tests related to unit variants still pass and no regressions occurred.
 *   ✅ **Increment 4: Extract handler for Tuple variants with zero fields (`handle_tuple_zero_variant`)**
     *   Detailed Plan Step 1: Create file `module/core/former_meta/src/derive_former/former_enum/tuple_zero.rs`.
     *   Detailed Plan Step 2: Define `pub(super) fn handle_tuple_zero_variant(...) -> Result<()>` function signature.
     *   Detailed Plan Step 3: Move the code block handling `syn::Fields::Unnamed` with `len() == 0` from `former_enum.rs` into `handle_tuple_zero_variant`.
     *   Detailed Plan Step 4: Integrate logic for `#[standalone_constructors]` within `handle_tuple_zero_variant`.
     *   Detailed Plan Step 5: Update the `match fields.unnamed.len()` arm for `0` in `former_enum.rs` to call `handle_tuple_zero_variant`.
-    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure no semantic changes.
+    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure minimal necessary changes.
     *   **Crucial Design Rules:** [Structuring: Organize by Feature or Layer](#structuring-organize-by-feature-or-layer), [Visibility: Keep Implementation Details Private](#visibility-keep-implementation-details-private).
-    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test former_enum_test`). **Analyze logs critically**. Ensure tests related to zero-field tuple variants still pass.
+    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test tests`). **Analyze logs critically**. Ensure tests related to zero-field tuple variants still pass.
 *   ✅ **Increment 5: Extract handler for Struct variants with zero fields (`handle_struct_zero_variant`)**
     *   Detailed Plan Step 1: Create file `module/core/former_meta/src/derive_former/former_enum/struct_zero.rs`.
     *   Detailed Plan Step 2: Define `pub(super) fn handle_struct_zero_variant(...) -> Result<()>` function signature.
     *   Detailed Plan Step 3: Move the code block handling `syn::Fields::Named` with `len() == 0` from `former_enum.rs` into `handle_struct_zero_variant`.
     *   Detailed Plan Step 4: Integrate logic for `#[standalone_constructors]` within `handle_struct_zero_variant`.
     *   Detailed Plan Step 5: Update the `match fields.named.len()` arm for `0` in `former_enum.rs` to call `handle_struct_zero_variant`.
-    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure no semantic changes.
+    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure minimal necessary changes.
     *   **Crucial Design Rules:** [Structuring: Organize by Feature or Layer](#structuring-organize-by-feature-or-layer), [Visibility: Keep Implementation Details Private](#visibility-keep-implementation-details-private).
-    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test former_enum_test`). **Analyze logs critically**. Ensure tests related to zero-field struct variants still pass.
+    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test tests`). **Analyze logs critically**. Ensure tests related to zero-field struct variants still pass.
 *   ✅ **Increment 6: Extract handler for Tuple variants with non-zero fields (`handle_tuple_non_zero_variant`)** (Revisit skipped increment)
     *   Detailed Plan Step 1: Create file `module/core/former_meta/src/derive_former/former_enum/tuple_non_zero.rs`.
     *   Detailed Plan Step 2: Define `pub(super) fn handle_tuple_non_zero_variant(...) -> Result<()>` function signature.
@@ -88,123 +88,38 @@ Refactor the `former_for_enum` function in `former_meta/src/derive_former/former
     *   Detailed Plan Step 5: Update the `match fields.unnamed.len()` arm for `_` (or `1..`) in `former_enum.rs` to call `handle_tuple_non_zero_variant`.
     *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure no semantic changes. Pay attention to the `WhereClause` handling fix noted previously.
     *   **Crucial Design Rules:** [Structuring: Organize by Feature or Layer](#structuring-organize-by-feature-or-layer), [Visibility: Keep Implementation Details Private](#visibility-keep-implementation-details-private), [Handling Panics vs Recoverable Errors](#handling-panics-vs-recoverable-errors) (for attribute misuse).
-    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test former_enum_test`). **Analyze logs critically**. Ensure tests related to non-zero-field tuple variants pass.
-*   ✅ **Increment 7: Extract handler for Struct variants with non-zero fields (`handle_struct_non_zero_variant`)** (Revisit previously stuck increment)
-    *   Detailed Plan Step 1: Create file `module/core/former_meta/src/derive_former/former_enum/struct_non_zero.rs`.
-    *   Detailed Plan Step 2: Define `pub(super) fn handle_struct_non_zero_variant(...) -> Result<()>` function signature.
-    *   Detailed Plan Step 3: Move the code block handling `syn::Fields::Named` with `len() >= 1` from `former_enum.rs` into `handle_struct_non_zero_variant`.
-    *   Detailed Plan Step 4: Integrate logic for `#[standalone_constructors]` within `handle_struct_non_zero_variant`.
-    *   Detailed Plan Step 5: Update the `match fields.named.len()` arm for `_` (or `1..`) in `former_enum.rs` to call `handle_struct_non_zero_variant`.
-    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure no semantic changes. Pay attention to the `WhereClause` handling fix noted previously.
-    *   **Crucial Design Rules:** [Structuring: Organize by Feature or Layer](#structuring-organize-by-feature-or-layer), [Visibility: Keep Implementation Details Private](#visibility-keep-implementation-details-private), [Handling Panics vs Recoverable Errors](#handling-panics-vs-recoverable-errors) (for attribute misuse).
-    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test former_enum_test`). **Analyze logs critically**. Ensure tests related to non-zero-field struct variants pass.
-*   ✅ **Increment 8: Refactor main `former_for_enum` function.**
-    *   Detailed Plan Step 1: Review the `former_for_enum` function in `former_meta/src/derive_former/former_enum.rs`.
-    *   Detailed Plan Step 2: Remove any remaining logic that was moved into handlers.
-    *   Detailed Plan Step 3: Ensure the function primarily acts as a dispatcher, parsing top-level attributes and variant information, then calling the appropriate handler based on `variant.fields`.
-    *   Detailed Plan Step 4: Clean up any unused variables or imports.
-    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure no semantic changes.
-    *   **Crucial Design Rules:** Code clarity, maintainability.
-    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test former_enum_test`). **Analyze logs critically**. Ensure no regressions were introduced during cleanup.
-*   ⏳ **Increment 9: Define `EnumVariantHandlerContext` struct.** (New)
-    *   **Goal:** Define a single struct to hold all necessary context for enum variant handlers.
-    *   **Rationale:** Consolidate arguments for cleaner function signatures and easier context passing.
-    *   **Detailed Steps:**
-        *   Define `struct EnumVariantHandlerContext<'a>` in `former_meta/src/derive_former/former_enum.rs`.
-        *   Include fields with appropriate lifetimes (`'a`) for references to: `ast`, `variant`, `struct_attrs`, `enum_name`, `vis`, `generics`, `original_input`, `variant_attrs`, `variant_field_info`, `merged_where_clause`.
-        *   Include mutable references or owned fields for output collectors: `methods: &'a mut Vec<TokenStream>`, `end_impls: &'a mut Vec<TokenStream>`, `standalone_constructors: &'a mut Vec<TokenStream>`.
-        *   Include `has_debug: bool`.
-        *   Add documentation explaining the purpose and fields of the context struct.
-    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation.
-    *   **Crucial Design Rules:** Data structure clarity, appropriate use of lifetimes and references.
-    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Ensure the struct definition is correct.
-*   ⚫ **Increment 10: Refactor `former_for_enum` dispatcher to use context struct.** (New)
-    *   **Goal:** Modify the main `former_for_enum` function to create and pass the context struct to handlers.
-    *   **Rationale:** Adapt the dispatcher to the new handler signature.
-    *   **Detailed Steps:**
-        *   Modify `former_for_enum` in `former_meta/src/derive_former/former_enum.rs`.
-        *   Inside the loop iterating over variants, create an instance of `EnumVariantHandlerContext`, populating it with the relevant data for the current variant.
-        *   Update the calls to `handle_*_variant` functions within the `match variant.fields` block to pass the context struct instance instead of individual arguments.
-        *   **Minimal Change:** Only change how arguments are passed; do not alter the dispatching logic itself.
-    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure minimal necessary changes.
-    *   **Crucial Design Rules:** Code clarity, maintainability.
-    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Ensure the dispatcher still compiles and calls the handlers correctly (signature-wise).
-*   ⚫ **Increment 11: Refactor `handle_unit_variant` to use context struct.** (New)
-    *   **Goal:** Adapt the `handle_unit_variant` function to accept and use the context struct.
-    *   **Rationale:** Implement the new handler signature for unit variants.
-    *   **Detailed Steps:**
-        *   Modify `handle_unit_variant` in `former_meta/src/derive_former/former_enum/unit.rs`.
-        *   Change the function signature to accept `ctx: &mut EnumVariantHandlerContext<'_>`.
-        *   Update the function body to access all required data (e.g., `ctx.variant`, `ctx.enum_name`, `ctx.methods`, `ctx.struct_attrs`) from the `ctx` parameter instead of individual arguments.
-        *   **Minimal Change:** Adapt data access; keep the core code generation logic the same.
-    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure minimal necessary changes.
-    *   **Crucial Design Rules:** Code clarity, maintainability.
-    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Ensure the handler compiles with the new signature and context access.
-*   ⚫ **Increment 12: Refactor `handle_tuple_zero_variant` to use context struct.** (New)
-    *   **Goal:** Adapt the `handle_tuple_zero_variant` function.
-    *   **Rationale:** Implement the new handler signature.
-    *   **Detailed Steps:**
-        *   Modify `handle_tuple_zero_variant` in `former_meta/src/derive_former/former_enum/tuple_zero.rs`.
-        *   Change signature to accept `ctx: &mut EnumVariantHandlerContext<'_>`.
-        *   Update body to access data via `ctx`.
-        *   **Minimal Change:** Adapt data access; keep core logic.
-    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure minimal necessary changes.
-    *   **Crucial Design Rules:** Code clarity, maintainability.
-    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`).
-*   ⚫ **Increment 13: Refactor `handle_struct_zero_variant` to use context struct.** (New)
-    *   **Goal:** Adapt the `handle_struct_zero_variant` function.
-    *   **Rationale:** Implement the new handler signature.
-    *   **Detailed Steps:**
-        *   Modify `handle_struct_zero_variant` in `former_meta/src/derive_former/former_enum/struct_zero.rs`.
-        *   Change signature to accept `ctx: &mut EnumVariantHandlerContext<'_>`.
-        *   Update body to access data via `ctx`.
-        *   **Minimal Change:** Adapt data access; keep core logic.
-    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure minimal necessary changes.
-    *   **Crucial Design Rules:** Code clarity, maintainability.
-    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`).
-*   ⚫ **Increment 14: Refactor `handle_tuple_non_zero_variant` to use context struct.** (New)
-    *   **Goal:** Adapt the `handle_tuple_non_zero_variant` function.
-    *   **Rationale:** Implement the new handler signature.
-    *   **Detailed Steps:**
-        *   Modify `handle_tuple_non_zero_variant` in `former_meta/src/derive_former/former_enum/tuple_non_zero.rs`.
-        *   Change signature to accept `ctx: &mut EnumVariantHandlerContext<'_>`.
-        *   Update body to access data via `ctx`.
-        *   **Minimal Change:** Adapt data access; keep core logic.
-    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure minimal necessary changes.
-    *   **Crucial Design Rules:** Code clarity, maintainability.
-    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`).
-*   ⚫ **Increment 15: Refactor `handle_struct_non_zero_variant` to use context struct.** (New)
+    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test tests`). **Analyze logs critically**. Ensure tests related to non-zero-field tuple variants pass.
+*   ❌ **Increment 15: Refactor `handle_struct_non_zero_variant` to use context struct.** (New)
     *   **Goal:** Adapt the `handle_struct_non_zero_variant` function.
     *   **Rationale:** Implement the new handler signature.
     *   **Detailed Steps:**
         *   Modify `handle_struct_non_zero_variant` in `former_meta/src/derive_former/former_enum/struct_non_zero.rs`.
         *   Change signature to accept `ctx: &mut EnumVariantHandlerContext<'_>`.
         *   Update body to access data via `ctx`.
-        *   **Minimal Change:** Adapt data access; keep core logic.
+        *   **Minimal Change:** Adapt data access; keep core logic. **Fix pre-existing compilation errors identified in Increment 14 verification.**
     *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure minimal necessary changes.
     *   **Crucial Design Rules:** Code clarity, maintainability.
-    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test former_enum_test`). **Analyze logs critically**. Ensure tests still pass after all handlers are refactored.
+    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run enum tests (`cargo test --package former --test tests`). **Analyze logs critically**. Ensure tests still pass after all handlers are refactored.
 *   ⚫ **Increment 16: Verify `standalone_constructors` logic.** (Was 9)
     *   Detailed Plan Step 1: Review the implementation of standalone constructor generation within each handler function (now accessed via the context struct).
     *   Detailed Plan Step 2: Ensure the logic correctly handles the `#[standalone_constructors]` struct attribute and the `#[arg_for_constructor]` field attribute according to the "Option 2" rules (return `Self` if all fields are args, otherwise return `Former`).
     *   Detailed Plan Step 3: Manually inspect generated code snippets (using `#[debug]` if necessary) for a few representative enum variants to confirm correctness.
     *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure no semantic changes.
     *   **Crucial Design Rules:** Correctness, adherence to specified constructor logic.
-    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run tests specifically targeting standalone constructors (`cargo test --package former --test former_standalone_constructor_test` - assuming such tests exist or are added). **Analyze logs critically**.
+    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Run tests specifically targeting standalone constructors (`cargo test --package former --test tests` - assuming such tests exist or are added). **Analyze logs critically**.
 *   ⚫ **Increment 17: Apply strict codestyle, remove temporary comments, address clippy warnings, add documentation.** (Updated)
     *   Detailed Plan Step 1: Run `cargo clippy --package former_meta --fix --allow-dirty` to automatically fix simpler lints, focusing on the `former_enum` module.
     *   Detailed Plan Step 2: Review remaining `cargo clippy --package former_meta` warnings for the `former_enum` module and manually address them, ensuring adherence to codestyle and design rules.
     *   Detailed Plan Step 3: Review all refactored files (`former_enum.rs` and handlers in `former_enum/`) for strict adherence to codestyle rules (spacing, newlines, etc.). **Pay special attention to generated code within `quote!` blocks.**
     *   Detailed Plan Step 4: Remove temporary comments (e.g., `// qqq`, `// xxx`, `// FIX:`) from the refactored files. Preserve task comments (`// TODO:`).
     *   Detailed Plan Step 5: Add/update documentation comments for the new `EnumVariantHandlerContext` struct and the refactored handler functions, explaining the context struct approach and rationale.
-    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure minimal necessary changes were introduced by clippy fixes or manual changes.
     *   **Crucial Design Rules:** [Lints and warnings](#lints-and-warnings), [Comments and Documentation](#comments-and-documentation).
     *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Clippy passes (`cargo clippy --package former_meta`). Manual code review confirms quality, documentation updates, and comment cleanup.
 *   ⚫ **Increment 18: Final review and verification.** (New)
     *   **Goal:** Ensure the entire refactoring is correct and integrated.
     *   **Rationale:** Final check before considering the task complete.
     *   **Detailed Steps:**
-        *   Run the full test suite (`cargo test --package former --test former_enum_test`).
+        *   Run the full test suite (`cargo test --package former --test tests`).
         *   Perform a final manual review of the changes in the `former_enum` module.
     *   **Verification Strategy:** All enum tests pass. Code review confirms clarity and correctness.
 
@@ -218,18 +133,11 @@ Refactor the `former_for_enum` function in `former_meta/src/derive_former/former
     *   Hypothesis 2: The generated `DefinitionTypes` struct or its implementations contain a brace mismatch or syntax error.
     *   Hypothesis 3: The generated `Definition` struct or its implementations contain a brace mismatch or syntax error.
     *   Hypothesis 4: The generated `Former` struct contains a brace mismatch or syntax error.
-    *   Hypothesis 5: The issue arises from the combination or interaction of the individually generated components, not the components themselves.
-*   **[2025-04-29/Increment 6] Hypothesis Test:** Hypothesis 1: The generated `Storage` struct or its implementations contain a brace mismatch or syntax error. - **Result:** Rejected - **Reasoning:** Manual code review of the `quote!` blocks generating the `Storage` struct and its `impl` blocks (`storage_def`, `storage_default_impl`, `storage_trait_impl`, `storage_preform_impl`) in `struct_non_zero.rs` did not reveal any obvious brace mismatches or syntax errors violating codestyle rules.
-*   **[2025-04-29/Increment 6] Hypothesis Test:** Hypothesis 2: The generated `DefinitionTypes` struct or its implementations contain a brace mismatch or syntax error. - **Result:** Rejected - **Reasoning:** Manual code review of the `quote!` blocks generating the `DefinitionTypes` struct and its `impl` blocks (`def_types_struct`, `def_types_default_impl`, `def_types_former_impl`, `def_types_mutator_impl`) in `struct_non_zero.rs` did not reveal any obvious brace mismatches or syntax errors violating codestyle rules.
-*   **[2025-04-29/Increment 6] Hypothesis Test:** Hypothesis 3: The generated `Definition` struct or its implementations contain a brace mismatch or syntax error. - **Result:** Rejected - **Reasoning:** Manual code review of the `quote!` blocks generating the `Definition` struct and its `impl` blocks (`def_struct`, `def_default_impl`, `def_former_impl`) in `struct_non_zero.rs` did not reveal any obvious brace mismatches or syntax errors violating codestyle rules.
-*   **[2025-04-29/Increment 6] Hypothesis Test:** Hypothesis 4: The generated `Former` struct contains a brace mismatch or syntax error. - **Result:** Rejected - **Reasoning:** Manual code review of the `quote!` block generating the `Former` struct definition (`former_struct_def`) in `struct_non_zero.rs` did not reveal any obvious brace mismatches or syntax errors violating codestyle rules.
-*   **[2024-04-30/Increment 6] Fix:** Resolved E0599 compilation errors by changing how `merged_where_clause` is passed to handler functions (passing `Option<&WhereClause>` instead of `Option<&Punctuated<...>>`).
-*   **[2024-04-30/Increment 1] Insight:** Initial test failures (E0599) in `former_enum_tests::basic_derive` were caused by the `#[derive(former::Former)]` attribute being commented out in the test setup file (`basic_derive.rs`). Uncommenting it resolved the failures. The test code in `basic_only_test.rs` correctly expected the default former behavior (returning formers), not the scalar behavior.
-*   **[2024-04-30/Increment 2] Insight:** Attempting to add `mod former_enum;` to a non-existent `mod.rs` file and then adding a duplicate declaration in `derive_former.rs` caused compilation errors (E0761, E0428). The `former_enum` module is correctly defined by `former_enum.rs`. Removing the duplicate declaration and the redundant `mod.rs` file resolved these errors.
-*   **[2024-04-30/Increment 3] Insight:** Extracted the logic for handling unit variants into `handle_unit_variant` in `unit.rs`. Corrected the function signature and imports in `unit.rs` to match the parameters passed from `former_for_enum` and handle the `#[standalone_constructors]` attribute based on struct attributes. Verified with `cargo check` and `cargo test`.
-*   **[2024-04-30/Increment 4] Insight:** Extracted the logic for handling zero-field tuple variants into `handle_tuple_zero_variant` in `tuple_zero.rs`. Implemented the logic to check for the disallowed `#[subform_scalar]` attribute and generate the correct static method for this variant type. Verified with `cargo check` and `cargo test`.
-*   **[2024-04-30/Increment 5] Insight:** Extracted the logic for handling zero-field struct variants into `handle_struct_zero_variant` in `struct_zero.rs`. Implemented the logic to check for the required `#[scalar]` attribute and the disallowed `#[subform_scalar]` attribute, and generate the correct static method for this variant type. Verified with `cargo check` and `cargo test`.
-*   **[2024-04-30/Increment 6] Insight:** Verified that the existing implementation for handling non-zero tuple variants in `tuple_non_zero.rs` is correct and passes tests. Removed an unused import in `tuple_non_zero.rs` as part of cleanup. Verified with `cargo check`.
-*   **[2024-04-30/Increment 7] Insight:** Verified that the existing implementation for handling non-zero struct variants in `struct_non_zero.rs` is correct and passes tests. Verified with `cargo check` and `cargo test`.
-*   **[2024-04-30/Increment 8] Insight:** Refactored the main `former_for_enum` function to act as a dispatcher, removing the code blocks that were moved to the handler functions. Verified with `cargo check` and `cargo test`.
-*   **Insight:** Debugging revealed syntax errors in generated code related to comma placement in generic argument lists (e.g., `< () Enum<> >` vs `< (), Enum<> >`) and function signatures (trailing comma in `call` parameters). Careful construction of generic lists in `quote!` is crucial, especially when combining potentially empty enum generics with other parameters. Don't miss comma!
+*   **[2025-04-30/Increment 14] Verification Failure:** `cargo check --package former_meta` failed due to pre-existing errors in `module/core/former_meta/src/derive_former/former_enum/struct_non_zero.rs`. These errors are unrelated to the changes in Increment 14 and will be addressed in Increment 15.
+*   **[2025-05-01/Increment 15] Stuck Point:** Encountered persistent compilation errors (E0277: the trait bound `former_enum::EnumVariantHandlerContext<'a>: macro_tools::quote::ToTokens` is not satisfied) when refactoring `handle_struct_non_zero_variant` to use the context struct within `quote!` macros. This indicates an issue with correctly interpolating fields from the context struct. Status: Unresolved.
+
+## Hypotheses for Increment 15 Stuck Point
+
+*   Hypothesis 1: I am incorrectly interpolating the entire `ctx` variable within `quote!` instead of just the required fields (like `ctx.vis`).
+*   Hypothesis 2: The `quote!` macro syntax for interpolating fields from a struct variable is different than I am currently using.
+*   Hypothesis 3: There is an issue with the `EnumVariantHandlerContext` struct definition itself that prevents its fields from being correctly interpolated by `quote!`.
