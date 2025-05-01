@@ -317,20 +317,18 @@ pub(super) fn former_for_enum
   // Assemble the final impl block containing the generated static methods
   let result = quote!
   {
-      // Implement the static methods on the enum.
+      // Implement the static methods and standalone constructors on the enum.
       #[ automatically_derived ]
       impl< #enum_generics_impl > #enum_name< #enum_generics_ty >
       where // Where clause on new line
         #merged_where_clause // FIX: Use the Option<&WhereClause> variable here
       { // Brace on new line
           #( #methods )* // Splice the collected methods here
+          #( #standalone_constructors )* // Splice standalone constructors here
       } // Brace on new line
 
       // Define the End structs, implicit formers, etc., outside the enum impl block.
       #( #end_impls )*
-
-      // <<< Added: Splice standalone constructors here >>>
-      #( #standalone_constructors )*
   };
 
   if has_debug // Print generated code if #[debug] is present on the enum
