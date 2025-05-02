@@ -20,20 +20,16 @@ mod implements_impl;
 #[ cfg( feature = "enabled" ) ]
 mod private
 {
-
-  ///
   /// Macro `implements` to answer the question: does it implement a trait?
   ///
   /// ### Basic use-case.
   /// ```
   /// use implements::*;
-  ///
   /// dbg!( implements!( 13_i32 => Copy ) );
   /// // < implements!( 13_i32 => Copy ) : true
   /// dbg!( implements!( Box::new( 13_i32 ) => Copy ) );
   /// // < implements!( 13_i32 => Copy ) : false
   /// ```
-
   #[ macro_export ]
   macro_rules! implements
   {
@@ -43,19 +39,16 @@ mod private
     }
   }
 
-  ///
   /// Macro `instance_of` to answer the question: does it implement a trait? Alias of the macro `implements`.
   ///
   /// ### Basic use-case.
   /// ```
   /// use implements::instance_of;
-  ///
   /// dbg!( instance_of!( 13_i32 => Copy ) );
   /// // < instance_of!( 13_i32 => Copy ) : true
   /// dbg!( instance_of!( Box::new( 13_i32 ) => Copy ) );
   /// // < instance_of!( 13_i32 => Copy ) : false
   /// ```
-
   #[ macro_export ]
   macro_rules! instance_of
   {
@@ -79,7 +72,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super::{ orphan };
   #[ doc( inline ) ]
   pub use orphan::*;
 }
@@ -89,7 +82,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
+  use super::{ exposed };
   #[ doc( inline ) ]
   pub use exposed::*;
 }
@@ -99,7 +92,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  use super::{ prelude };
   #[ doc( inline ) ]
   pub use prelude::*;
 }
@@ -109,7 +102,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  use super::{ private };
   #[ doc( inline ) ]
   pub use private::
   {

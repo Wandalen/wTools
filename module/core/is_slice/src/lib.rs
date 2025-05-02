@@ -7,24 +7,18 @@
 #[ cfg( feature = "enabled" ) ]
 mod private
 {
-
   /// Macro to answer the question: is it a slice?
   ///
   /// ### Basic use-case.
   /// ```
   /// use is_slice::*;
-  ///
-  /// fn main()
-  /// {
-  ///   dbg!( is_slice!( Box::new( true ) ) );
-  ///   // < is_slice!(Box :: new(true)) = false
-  ///   dbg!( is_slice!( &[ 1, 2, 3 ] ) );
-  ///   // < is_slice!(& [1, 2, 3]) = false
-  ///   dbg!( is_slice!( &[ 1, 2, 3 ][ .. ] ) );
-  ///   // < is_slice!(& [1, 2, 3] [..]) = true
-  /// }
+  /// dbg!( is_slice!( Box::new( true ) ) );
+  /// // < is_slice!(Box :: new(true)) = false
+  /// dbg!( is_slice!( &[ 1, 2, 3 ] ) );
+  /// // < is_slice!(& [1, 2, 3]) = false
+  /// dbg!( is_slice!( &[ 1, 2, 3 ][ .. ] ) );
+  /// // < is_slice!(& [1, 2, 3] [..]) = true
   /// ```
-
   #[ macro_export ]
   macro_rules! is_slice
   {
@@ -73,7 +67,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super::{ orphan };
   #[ doc( inline ) ]
   pub use orphan::*;
 }
@@ -83,7 +77,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
+  use super::{ exposed };
   #[ doc( inline ) ]
   pub use exposed::*;
 }
@@ -93,7 +87,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  use super::{ prelude };
   #[ doc( inline ) ]
   pub use prelude::*;
 }
@@ -103,18 +97,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use private::
-  // {
-  // };
-
-  // #[ cfg( feature = "nightly" ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::nightly::*;
-
+  use super::{ private };
   #[ doc( inline ) ]
   pub use private::
   {

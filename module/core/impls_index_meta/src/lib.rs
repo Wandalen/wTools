@@ -7,11 +7,7 @@
 #[ cfg( feature = "enabled" ) ]
 mod impls;
 
-///
 /// Macros to put each function under a named macro to index every function in a class.
-///
-
-// xxx : make it default impls implementation
 #[ cfg( feature = "enabled" ) ]
 #[ proc_macro ]
 pub fn impls3( input : proc_macro::TokenStream ) -> proc_macro::TokenStream

@@ -76,8 +76,8 @@ use convert_case::{ Case, Casing }; // Space before ;
 //     *   **Zero-Field Variant (Struct):** Generates `Enum::variant() -> Enum`. (Handled by: `handle_struct_zero_variant`)
 //     *   **Single-Field Variant (Tuple):** Generates `Enum::variant(InnerType) -> Enum`. (Handled by: `handle_tuple_non_zero_variant`) // <<< CORRECTED Handler
 //     *   **Single-Field Variant (Struct):** Generates `Enum::variant { field: InnerType } -> Enum`. (Handled by: `handle_struct_non_zero_variant`) // <<< CORRECTED Handler
-//     *   **Multi-Field Variant (Tuple):** Generates `Enum::variant(T1, T2, ...) -> Enum`. (Handled by: `handle_tuple_non_zero_variant`)
-//     *   **Multi-Field Variant (Struct):** Generates `Enum::variant { f1: T1, f2: T2, ... } -> Enum`. (Handled by: `handle_struct_non_zero_variant`)
+//     *   **Multi-Field Variant (Tuple):** Generates `Enum::variant(T1, T2, ...) -> Enum` (Handled by: `handle_tuple_non_zero_variant`)
+//     *   **Multi-Field Variant (Struct):** Generates `Enum::variant { f1: T1, f2: T2, ... } -> Enum` (Handled by: `handle_struct_non_zero_variant`)
 //     *   **Error Cases:** Cannot be combined with `#[subform_scalar]`.
 //
 // 2.  **`#[subform_scalar]` Attribute:**
@@ -93,7 +93,7 @@ use convert_case::{ Case, Casing }; // Space before ;
 //     *   **Zero-Field Variant (Tuple):** Generates `Enum::variant() -> Enum`. (Handled by: `handle_tuple_zero_variant`)
 //     *   **Zero-Field Variant (Struct):** Error. Requires `#[scalar]`. (Checked in: `handle_struct_zero_variant`)
 //     *   **Single-Field Variant (Tuple):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Requires the field type to be a path type deriving `Former`. (Handled by: `handle_tuple_non_zero_variant`)
-//     *   **Single-Field Variant (Struct):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_variant`)
+//     *   **Single-Field Variant (Struct):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_zero_variant`)
 //     *   **Multi-Field Variant (Tuple):** Generates `Enum::variant(Field1Type, Field2Type, ...) -> Enum` (behaves like `#[scalar]`). (Handled by: `handle_tuple_non_zero_variant`)
 //     *   **Multi-Field Variant (Struct):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_variant`)
 //
@@ -126,6 +126,7 @@ pub(super) struct EnumVariantFieldInfo
 pub(super) struct EnumVariantHandlerContext< 'a > // Use pub(super) as it's used within the derive_former module
 {
   /// Reference to the original derive input AST.
+  #[allow(dead_code)] // Field is not currently read by handlers, but may be useful later.
   pub ast : &'a syn::DeriveInput,
   /// Reference to the specific variant being processed.
   pub variant : &'a syn::Variant,
@@ -137,7 +138,7 @@ pub(super) struct EnumVariantHandlerContext< 'a > // Use pub(super) as it's used
   pub vis : &'a syn::Visibility,
   /// Generics of the enum.
   pub generics : &'a syn::Generics,
-  /// Reference to the original proc_macro TokenStream input.
+  /// Reference to the original `proc_macro` `TokenStream` input.
   pub original_input : &'a TokenStream, // Change type back to proc_macro::TokenStream // Corrected type to proc_macro2::TokenStream
   /// Parsed attributes from the specific variant being processed.
   pub variant_attrs : &'a FieldAttributes,
@@ -147,11 +148,11 @@ pub(super) struct EnumVariantHandlerContext< 'a > // Use pub(super) as it's used
   pub merged_where_clause : Option< &'a syn::WhereClause >,
 
   // Output Collectors
-  /// Mutable reference to collect generated method TokenStreams.
+  /// Mutable reference to collect generated method `TokenStreams`.
   pub methods : &'a mut Vec< TokenStream >,
-  /// Mutable reference to collect generated end_impl TokenStreams (e.g., implicit formers).
+  /// Mutable reference to collect generated `end_impl` `TokenStreams` (e.g., implicit formers).
   pub end_impls : &'a mut Vec< TokenStream >,
-  /// Mutable reference to collect generated standalone constructor TokenStreams.
+  /// Mutable reference to collect generated standalone constructor `TokenStreams`.
   pub standalone_constructors : &'a mut Vec< TokenStream >,
 
   // Flags
@@ -193,7 +194,7 @@ pub(super) fn former_for_enum
   // Iterate through each variant of the enum
   for variant in &data_enum.variants
   {
-    let _variant_ident = &variant.ident; // Prefixed with _
+    let variant_ident = &variant.ident; // Prefixed with _
 
     // --- DEBUG PRINT 2 ---
     // ...
@@ -201,10 +202,10 @@ pub(super) fn former_for_enum
 
 
     // Generate the snake_case method name, handling potential keywords
-    let _variant_name_str = _variant_ident.to_string(); // Prefixed with _
-    let _method_name_snake_str = _variant_name_str.to_case( Case::Snake ); // Prefixed with _
-    let _method_name_ident_temp = format_ident!( "{}", _method_name_snake_str, span = _variant_ident.span() ); // Prefixed with _
-    let _method_name = ident::ident_maybe_raw( &_method_name_ident_temp ); // Prefixed with _
+    let variant_name_str = variant_ident.to_string(); // Prefixed with _
+    let method_name_snake_str = variant_name_str.to_case( Case::Snake ); // Prefixed with _
+    let method_name_ident_temp = format_ident!( "{}", method_name_snake_str, span = variant_ident.span() ); // Prefixed with _
+    let method_name = ident::ident_maybe_raw( &method_name_ident_temp ); // Prefixed with _
 
     // Parse attributes *from the variant* itself
     let variant_attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
@@ -350,3 +351,4 @@ pub(super) fn former_for_enum
   }
 
   Ok( result ) // Return proc_macro2::TokenStream directly
+}

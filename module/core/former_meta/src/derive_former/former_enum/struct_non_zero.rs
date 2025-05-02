@@ -26,9 +26,9 @@ use convert_case::{ Case, Casing };
 
 /// Handles the generation of code for struct variants with non-zero fields.
 #[ allow( clippy::too_many_lines ) ] // Keep this one for now
-pub( super ) fn handle_struct_non_zero_variant< 'a >
+pub( super ) fn handle_struct_non_zero_variant
 (
-  ctx : &mut EnumVariantHandlerContext< 'a >,
+  ctx : &mut EnumVariantHandlerContext< '_ >,
 ) -> Result< () >
 {
   // Extract necessary fields from context into local variables

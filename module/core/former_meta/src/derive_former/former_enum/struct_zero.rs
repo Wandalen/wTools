@@ -6,7 +6,7 @@ use super::ident;
 use syn::{ parse_quote };
 use super::EnumVariantHandlerContext; // Import the context struct
 
-// #[ allow( clippy::too_many_arguments ) ] // No longer needed
+// #[ allow( clippy::too_many_arguments ) ] // No longer needed with context struct
 pub( super ) fn handle_struct_zero_variant
 (
   ctx : &mut EnumVariantHandlerContext< '_ >, // Use context struct
@@ -48,12 +48,12 @@ Result< () >
     }
   };
 
-  ctx.methods.push( method.clone().into() ); // Add to methods via context // Added into()
+  ctx.methods.push( method.clone() ); // Add to methods via context // Added into()
 
   // If #[standalone_constructors] is present on the struct, add the method to standalone constructors
   if ctx.struct_attrs.standalone_constructors.is_some()
   {
-      ctx.standalone_constructors.push( method.into() ); // Add to standalone constructors via context // Added into()
+      ctx.standalone_constructors.push( method ); // Add to standalone constructors via context // Added into()
   }
 
   // Debug print if #[debug] is present on the enum

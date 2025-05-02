@@ -8,9 +8,9 @@ use super::{ EnumVariantHandlerContext }; // Keep EnumVariantHandlerContext
 
 
 // #[ allow( clippy::too_many_arguments ) ] // Allow many arguments for handler functions // qqq: Removed as arguments are consolidated
-pub( super ) fn handle_unit_variant< 'a > // Added explicit lifetime 'a
+pub( super ) fn handle_unit_variant
 (
-  ctx : &mut EnumVariantHandlerContext< 'a >, // Changed signature to accept context struct
+  ctx : &mut EnumVariantHandlerContext< '_ >, // Changed signature to accept context struct
 )
 ->
 Result< () >
@@ -40,12 +40,12 @@ Result< () >
     }
   };
 
-  ctx.methods.push( method.clone().into() ); // Add to methods for the impl block, Access from context // Added into()
+  ctx.methods.push( method.clone() ); // Add to methods for the impl block, Access from context // Added into()
 
   // If #[standalone_constructors] is present on the struct, add the method to standalone constructors
   if ctx.struct_attrs.standalone_constructors.is_some() // Access from context
   {
-      ctx.standalone_constructors.push( method.into() ); // Access from context // Added into()
+      ctx.standalone_constructors.push( method ); // Access from context // Added into()
   }
 
 
