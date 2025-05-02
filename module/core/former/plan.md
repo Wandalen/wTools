@@ -138,9 +138,19 @@ Refactor the `former_for_enum` function in `former_meta/src/derive_former/former
 *   **[2025-05-01/Increment 15] Stuck Point:** Encountered persistent compilation errors (E0277: the trait bound `former_enum::EnumVariantHandlerContext<'a>: macro_tools::quote::ToTokens` is not satisfied) when refactoring `handle_struct_non_zero_variant` to use the context struct within `quote!` macros. This indicates an issue with correctly interpolating fields from the context struct. Status: Unresolved.
 *   **[2025-05-02/Increment 15] Analysis:** The error E0277 indicates that `EnumVariantHandlerContext` does not implement `ToTokens`, which is required for direct interpolation in `quote!`. This supports Hypothesis 1 from the Increment 15 hypotheses.
 *   [Date/Inc 1] Insight: `quote!` macro does not support interpolating paths like `#ctx.enum_name`. A local variable must be used to store the value before interpolation.
+*   **[2025-05-02/Increment 15] Stuck Point:** Encountered persistent `mismatched types` errors (E0308) related to handling the `WhereClause` obtained from `generic_params::decompose`. The compiler expects `Punctuated<WherePredicate, Comma>` but finds `Option<_>`. Status: Unresolved.
 
-## Hypotheses for Increment 15 Stuck Point
+## Stuck Resolution: Increment 15 - WhereClause Handling
 
-*   Hypothesis 1: I am incorrectly interpolating the entire `ctx` variable within `quote!` instead of just the required fields (like `ctx.vis`).
-*   Hypothesis 2: The `quote!` macro syntax for interpolating fields from a struct variable is different than I am currently using.
-*   Hypothesis 3: There is an issue with the `EnumVariantHandlerContext` struct definition itself that prevents its fields from being correctly interpolated by `quote!`.
+**Problem:** Persistent `mismatched types` errors (E0308) when handling the `WhereClause` obtained from `generic_params::decompose`. The compiler expects `Punctuated<WherePredicate, Comma>` but finds `Option<_>`.
+
+**Decomposition:**
+*   Confirm the exact type returned by `generic_params::decompose` for the where clause.
+*   Understand why the compiler sees a type mismatch when using `Option` handling (`if let` or `match`) on this variable.
+*   Find the correct way to access and interpolate the predicates from the `WhereClause` within `quote!`.
+
+**Hypotheses:**
+*   Hypothesis 1: The `generic_params::decompose` function in the current `macro_tools` version returns `Punctuated<WherePredicate, Comma>` directly for the where clause, not `Option<&WhereClause>`.
+*   Hypothesis 2: The `Option<&WhereClause>` returned by `generic_params::decompose` has a lifetime issue or is not being correctly borrowed, leading to the type mismatch when pattern matching.
+*   Hypothesis 3: There is a misunderstanding of how `syn::WhereClause` or `syn::punctuated::Punctuated` should be handled or interpolated within `quote!` macros in this specific context.
+*   Hypothesis 4: The error is caused by an interaction with other parts of the `handle_struct_non_zero_variant` function or the surrounding code that is not immediately obvious.
