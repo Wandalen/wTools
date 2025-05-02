@@ -1,5 +1,6 @@
 // File: module/core/former_meta/src/derive_former/former_enum/struct_non_zero.rs
 use super::*; // Use items from parent module (former_enum)
+use syn::token::{ Const, Colon };
 
 use macro_tools::
 {
@@ -96,7 +97,7 @@ pub( super ) fn handle_struct_non_zero_variant
               },
               GenericArgument::Lifetime( lt ) => GenericParam::Lifetime( LifetimeParam::new( lt.clone() ) ),
               GenericArgument::Const( c ) => match c {
-                  Expr::Path( p ) => GenericParam::Const( ConstParam { ident: p.path.get_ident().unwrap().clone(), attrs: vec![], const_token: Default::default(), colon_token: Default::default(), ty: parse_quote!(_), eq_token: None, default: None } ),
+                  Expr::Path( p ) => GenericParam::Const( ConstParam { ident: p.path.get_ident().unwrap().clone(), attrs: vec![], const_token: Const::default(), colon_token: Colon::default(), ty: parse_quote!(_), eq_token: None, default: None } ),
                   &_ => panic!("Unsupported const expression for ConstParam ident extraction"),
                 },
               _ => panic!("Unsupported generic argument type"), // Or return error
@@ -104,7 +105,7 @@ pub( super ) fn handle_struct_non_zero_variant
             _ => Punctuated::new(),
           };
           let mut inner_generics_ty_punctuated = inner_generics_params.clone();
-          if !inner_generics_ty_punctuated.empty_or_trailing() { inner_generics_ty_punctuated.push_punct( Default::default() ); }
+          if !inner_generics_ty_punctuated.empty_or_trailing() { inner_generics_ty_punctuated.push_punct( Comma::default() ); }
 
 
           // --- Standalone Constructor (Subform Struct(1)) ---
@@ -172,13 +173,13 @@ pub( super ) fn handle_struct_non_zero_variant
                       }
                   }
               };
-              ctx.standalone_constructors.push( constructor.into() );
+              ctx.standalone_constructors.push( constructor );
              }
              // --- End Standalone Constructor ---
 
              // Associated method logic
              let phantom_field_type = macro_tools::phantom::tuple( &generics.params ); // FIX: Use qualified path and correct generics
-             let _field_ident = &field_info.ident; // Get the single field's ident
+             // let _field_ident = &field_info.ident; // Removed unused variable per clippy
              let end_struct_tokens = {
                  let where_clause_tokens = if let Some( where_clause ) = &ctx.generics.where_clause {
                      if where_clause.predicates.is_empty() {
@@ -200,7 +201,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             ctx.end_impls.push( end_struct_tokens.into() );
+             ctx.end_impls.push( end_struct_tokens );
              // Generate token stream for struct field assignments in call function
              let field_assignments_tokens = {
                  let mut tokens = quote! {};
@@ -257,7 +258,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             ctx.end_impls.push( forming_end_impl_tokens.into() );
+             ctx.end_impls.push( forming_end_impl_tokens );
              let static_method = quote!
              {
                /// Starts forming the #variant_ident variant using its implicit former.
@@ -276,7 +277,7 @@ pub( super ) fn handle_struct_non_zero_variant
                  #inner_former_name::begin( None, None, #end_struct_name::< #enum_generics_ty >::default() )
                }
              };
-             ctx.methods.push( static_method.into() );
+             ctx.methods.push( static_method );
 
          }
          else if wants_scalar
@@ -317,7 +318,7 @@ pub( super ) fn handle_struct_non_zero_variant
                          }
                      }
                  };
-                 ctx.standalone_constructors.push( constructor.into() );
+                 ctx.standalone_constructors.push( constructor );
              }
              // --- End Standalone Constructor ---
 
@@ -325,7 +326,7 @@ pub( super ) fn handle_struct_non_zero_variant
              let mut params = Vec::new();
              let mut args = Vec::new();
              // FIX: Iterate over ctx.variant_field_info directly (remove &)
-             for field_info in ctx.variant_field_info.iter()
+             for field_info in ctx.variant_field_info
              {
                  let field_ident = &field_info.ident;
                  let param_name = ident::ident_maybe_raw( field_ident );
@@ -359,7 +360,7 @@ pub( super ) fn handle_struct_non_zero_variant
                      }
                  }
              };
-             ctx.methods.push( static_method.into() );
+             ctx.methods.push( static_method );
          }
          else // Default: Subformer (Implicit Former)
          {
@@ -413,7 +414,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             ctx.end_impls.push( storage_struct_tokens.into() );
+             ctx.end_impls.push( storage_struct_tokens );
              // Push Default impl for Storage
              let storage_default_impl_tokens = {
                  let where_clause_tokens = if let Some( where_clause ) = &ctx.generics.where_clause {
@@ -444,7 +445,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             ctx.end_impls.push( storage_default_impl_tokens.into() );
+             ctx.end_impls.push( storage_default_impl_tokens );
              // Push former::Storage impl
              let storage_trait_impl_tokens = {
                  let where_clause_tokens = if let Some( where_clause ) = &ctx.generics.where_clause {
@@ -467,7 +468,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             ctx.end_impls.push( storage_trait_impl_tokens.into() );
+             ctx.end_impls.push( storage_trait_impl_tokens );
              let preform_field_assignments = variant_field_info.iter().map( |f_info|
              {
                let field_ident = &f_info.ident;
@@ -520,12 +521,12 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             ctx.end_impls.push( storage_preform_impl_tokens.into() );
+             ctx.end_impls.push( storage_preform_impl_tokens );
 
              // --- Generate DefinitionTypes ---
              // FIX: Correctly merge generics and handle commas
              let mut def_types_generics_impl_punctuated : Punctuated<GenericParam, Comma> = generics.params.clone();
-             if !def_types_generics_impl_punctuated.is_empty() && !def_types_generics_impl_punctuated.trailing_punct() { def_types_generics_impl_punctuated.push_punct( Default::default() ); }
+             if !def_types_generics_impl_punctuated.is_empty() && !def_types_generics_impl_punctuated.trailing_punct() { def_types_generics_impl_punctuated.push_punct( Comma::default() ); }
              def_types_generics_impl_punctuated.push( parse_quote!( Context2 = () ) );
              def_types_generics_impl_punctuated.push( parse_quote!( Formed2 = #enum_name< #enum_generics_ty > ) );
              let ( _def_types_generics_with_defaults, def_types_generics_impl, def_types_generics_ty, _def_types_generics_where ) = generic_params::decompose( &syn::Generics { params: def_types_generics_impl_punctuated, ..(*generics).clone() } );
@@ -552,7 +553,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             ctx.end_impls.push( def_types_struct_tokens.into() );
+             ctx.end_impls.push( def_types_struct_tokens );
              // Push Default impl for DefinitionTypes
              let def_types_default_impl_tokens = {
                  let where_clause_tokens = if let Some( where_clause ) = &ctx.generics.where_clause {
@@ -578,7 +579,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             ctx.end_impls.push( def_types_default_impl_tokens.into() );
+             ctx.end_impls.push( def_types_default_impl_tokens );
              // Push former::FormerDefinitionTypes impl
              let former_definition_types_impl_tokens = {
                  let where_clause_tokens = if let Some( where_clause ) = &ctx.generics.where_clause {
@@ -606,7 +607,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             ctx.end_impls.push( former_definition_types_impl_tokens.into() );
+             ctx.end_impls.push( former_definition_types_impl_tokens );
              // Push former::FormerMutator impl
              let former_mutator_impl_tokens = {
                  let where_clause_tokens = if let Some( where_clause ) = &ctx.generics.where_clause {
@@ -629,12 +630,12 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             ctx.end_impls.push( former_mutator_impl_tokens.into() );
+             ctx.end_impls.push( former_mutator_impl_tokens );
 
              // --- Generate Definition ---
              // FIX: Correctly merge generics and handle commas
              let mut def_generics_impl_punctuated : Punctuated<GenericParam, Comma> = generics.params.clone();
-             if !def_generics_impl_punctuated.is_empty() && !def_generics_impl_punctuated.trailing_punct() { def_generics_impl_punctuated.push_punct( Default::default() ); }
+             if !def_generics_impl_punctuated.is_empty() && !def_generics_impl_punctuated.trailing_punct() { def_generics_impl_punctuated.push_punct( Comma::default() ); }
              def_generics_impl_punctuated.push( parse_quote!( Context2 = () ) );
              def_generics_impl_punctuated.push( parse_quote!( Formed2 = #enum_name< #enum_generics_ty > ) );
              def_generics_impl_punctuated.push( parse_quote!( End2 = #end_struct_name< #enum_generics_ty > ) );
@@ -663,7 +664,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             ctx.end_impls.push( def_struct_tokens.into() );
+             ctx.end_impls.push( def_struct_tokens );
              // Push Default impl for Definition
              let def_default_impl_tokens = {
                  let where_clause_tokens = if let Some( where_clause ) = &ctx.generics.where_clause {
@@ -689,7 +690,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             ctx.end_impls.push( def_default_impl_tokens.into() );
+             ctx.end_impls.push( def_default_impl_tokens );
              // Push former::FormerDefinition impl
              let former_definition_impl_tokens = {
                  let where_clause_tokens = if let Some( where_clause ) = &ctx.generics.where_clause {
@@ -717,12 +718,12 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             ctx.end_impls.push( former_definition_impl_tokens.into() );
+             ctx.end_impls.push( former_definition_impl_tokens );
 
              // --- Generate Former Struct ---
              // Construct the generics for the former struct directly
              let mut former_generics_params = generics.params.clone();
-             if !former_generics_params.is_empty() && !former_generics_params.trailing_punct() { former_generics_params.push_punct( Default::default() ); }
+             if !former_generics_params.is_empty() && !former_generics_params.trailing_punct() { former_generics_params.push_punct( Comma::default() ); }
              former_generics_params.push( parse_quote!( Definition = #def_name< #enum_generics_ty #comma_if_enum_generics (), #enum_name<#enum_generics_ty>, #end_struct_name<#enum_generics_ty> > ) );
 
              let mut former_where_predicates = Punctuated::new();
@@ -741,7 +742,7 @@ pub( super ) fn handle_struct_non_zero_variant
                  params: former_generics_params,
                  gt_token: generics.gt_token,
                  where_clause: Some(syn::WhereClause {
-                     where_token: Default::default(),
+                     where_token: syn::token::Where::default(),
                      predicates: former_where_predicates,
                  }),
              };
@@ -776,7 +777,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             ctx.end_impls.push( former_struct_tokens.into() );
+             ctx.end_impls.push( former_struct_tokens );
              // --- Generate Former Impl + Setters ---
              let setters = variant_field_info.iter().map( |f_info|
              {
@@ -840,7 +841,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             ctx.end_impls.push( former_impl_tokens.into() );
+             ctx.end_impls.push( former_impl_tokens );
              // --- Generate End Struct ---
              let phantom_field_type = macro_tools::phantom::tuple( &generics.params ); // FIX: Use qualified path and correct generics
              // Push End struct definition
@@ -865,7 +866,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             ctx.end_impls.push( end_struct_tokens.into() );
+             ctx.end_impls.push( end_struct_tokens );
              // --- Generate End Impl ---
              let _tuple_indices = ( 0..ctx.variant_field_info.len() ).map( syn::Index::from );
              let _field_idents_for_construction : Vec<_> = ctx.variant_field_info.iter().map( |f| &f.ident ).collect();
@@ -925,7 +926,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             ctx.end_impls.push( forming_end_impl_tokens.into() );
+             ctx.end_impls.push( forming_end_impl_tokens );
              // --- Generate Static Method ---
              // Push static method for Former
              let static_method_tokens = {
@@ -956,7 +957,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             ctx.methods.push( static_method_tokens.into() );
+             ctx.methods.push( static_method_tokens );
              // --- Generate Standalone Constructor (Subform Struct(N)) ---
              if struct_attrs.standalone_constructors.value( false )
              {
@@ -994,7 +995,7 @@ pub( super ) fn handle_struct_non_zero_variant
                          }
                      }
                  };
-                 ctx.standalone_constructors.push( standalone_constructor_tokens.into() );
+                 ctx.standalone_constructors.push( standalone_constructor_tokens );
              }
              // --- End Standalone Constructor ---
 

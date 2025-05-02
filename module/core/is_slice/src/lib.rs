@@ -67,7 +67,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::{ orphan };
+  use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
 }
@@ -77,7 +77,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::{ exposed };
+  use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
 }
@@ -87,7 +87,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::{ prelude };
+  use super::*;
   #[ doc( inline ) ]
   pub use prelude::*;
 }
@@ -97,7 +97,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::{ private };
+  use super::*;
   #[ doc( inline ) ]
   pub use private::
   {
