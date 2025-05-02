@@ -880,9 +880,6 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
                  tokens
              };
              // Generate token stream for the type within the angle brackets for FormingEnd
-             let forming_end_type_tokens = quote! {
-                 #def_types_name< #enum_generics_ty #comma_if_enum_generics (), #enum_name< #enum_generics_ty > >
-             };
              let forming_end_impl_tokens = {
                  let where_clause_tokens = if let Some( where_clause ) = &ctx.generics.where_clause {
                      if where_clause.predicates.is_empty() {
@@ -893,6 +890,9 @@ pub( super ) fn handle_struct_non_zero_variant< 'a >
                      }
                  } else {
                      quote! {}
+                 };
+                 let forming_end_type_tokens = quote! {
+                     #def_types_name< #enum_generics_ty #comma_if_enum_generics (), #enum_name< #enum_generics_ty > >
                  };
                  quote!
                  {

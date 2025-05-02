@@ -36,13 +36,13 @@ Result< () >
   let enum_name = ctx.enum_name;
   let vis = ctx.vis;
   let generics = ctx.generics;
-  let merged_where_clause = ctx.merged_where_clause;
 
   // Generate the static method for the zero-field struct variant
+  let ( impl_generics, ty_generics, where_clause ) = generics.split_for_impl();
   let method = quote!
   {
     #[ inline( always ) ]
-    #vis fn #method_name #generics #merged_where_clause () -> #enum_name #generics.ty
+    #vis fn #method_name #impl_generics #where_clause () -> #enum_name #ty_generics
     {
       #enum_name :: #variant_ident {}
     }
