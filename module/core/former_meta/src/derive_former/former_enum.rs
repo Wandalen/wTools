@@ -2,7 +2,6 @@
 #![ allow( clippy::wildcard_imports ) ]
 
 use proc_macro2::TokenStream; // Explicitly import TokenStream
-use proc_macro::TokenStream as ProcMacroTokenStream; // Import proc_macro::TokenStream with an alias
 
 // ==================================
 // Refactoring Plan Documentation - UPDATED
@@ -24,6 +23,7 @@ use proc_macro::TokenStream as ProcMacroTokenStream; // Import proc_macro::Token
 // the variant's field kind (`Unit`, `Unnamed`, `Named`) and field count. Each handler
 // then implements the logic based on the presence of `#[scalar]` or `#[subform_scalar]`
 // attributes, according to the rules defined below the documentation comment.
+//
 //
 
 use super::*;
@@ -350,4 +350,3 @@ pub(super) fn former_for_enum
   }
 
   Ok( result ) // Return proc_macro2::TokenStream directly
-}

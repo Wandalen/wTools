@@ -105,17 +105,17 @@ Refactor the `former_for_enum` function in `former_meta/src/derive_former/former
     *   Detailed Plan Step 1: Review the implementation of standalone constructor generation within each handler function (now accessed via the context struct).
     *   Detailed Plan Step 2: Ensure the logic correctly handles the `#[standalone_constructors]` struct attribute and the `#[arg_for_constructor]` field attribute according to the "Option 2" rules (return `Self` if all fields are args, otherwise return `Former`).
     *   Detailed Plan Step 3: Manually inspect generated code snippets using the `#[debug]` attribute.
-        *   Identify a representative enum in the test files (`module/core/former/tests/inc/`).
-        *   Add the `#[derive(Former, debug)]` attribute to this enum.
-        *   Run `cargo check --package former` to trigger the macro and print the debug output.
-        *   Critically analyze the generated code output in the console for the standalone constructors, comparing it against the rules in the plan.
-        *   Repeat for other representative enums as needed to cover different variant types and attribute combinations.
+    *   Detailed Plan Step 4: Identify a representative enum in the test files (`module/core/former/tests/inc/`).
+    *   Detailed Plan Step 5: Add the `#[derive(Former, debug)]` attribute to this enum.
+    *   Detailed Plan Step 6: Run `cargo check --package former` to trigger the macro and print the debug output.
+    *   Detailed Plan Step 7: Critically analyze the generated code output in the console for the standalone constructors, comparing it against the rules in the plan.
+    *   Detailed Plan Step 8: Repeat for other representative enums as needed to cover different variant types and attribute combinations.
     *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Ensure no semantic changes.
     *   **Crucial Design Rules:** Correctness, adherence to specified constructor logic.
     *   **Verification Strategy:** Run tests specifically targeting standalone constructors (`cargo test --package former --test tests` - assuming such tests exist or are added). **Analyze logs critically**. Proceeding with test execution because manual inspection via debug output was not possible with current tools.
 *   ⏳ **Increment 17: Apply strict codestyle, remove temporary comments, address clippy warnings, add documentation.** (Updated)
-    *   Detailed Plan Step 1: Run `cargo clippy --package former_meta --fix --allow-dirty` to automatically fix simpler lints, focusing on the `former_enum` module.
-    *   Detailed Plan Step 2: Review remaining `cargo clippy --package former_meta` warnings for the `former_enum` module and manually address them, ensuring adherence to codestyle and design rules.
+    *   Detailed Plan Step 1: Run `cargo clippy --package former_meta` to itdentify lints and warnings in the `former_enum` module.
+    *   Detailed Plan Step 2: Manually address each clippy warning and lint reported in Step 1 for the `former_enum` module and its handler files, ensuring adherence to codestyle and design rules. Use the `write_to_file` tool to apply changes to each file.
     *   Detailed Plan Step 3: Review all refactored files (`former_enum.rs` and handlers in `former_enum/`) for strict adherence to codestyle rules (spacing, newlines, etc.). **Pay special attention to generated code within `quote!` blocks.**
     *   Detailed Plan Step 4: Remove temporary comments (e.g., `// qqq`, `// xxx`, `// FIX:`) from the refactored files. Preserve task comments (`// TODO:`).
     *   Detailed Plan Step 5: Add/update documentation comments for the new `EnumVariantHandlerContext` struct and the refactored handler functions, explaining the context struct approach and rationale.
