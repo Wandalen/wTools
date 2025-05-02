@@ -1,4 +1,3 @@
-
 //!
 //! Smoke test checking health of a module.
 //!
@@ -52,7 +51,7 @@ mod private
       let mut rng = rand::thread_rng();
       let y: f64 = rng.gen();
 
-      let smoke_test_path = format!( "{}{}_{}", dependency_name, test_postfix, y );
+      let smoke_test_path = format!( "{dependency_name}{test_postfix}_{y}", dependency_name = dependency_name, test_postfix = test_postfix, y = y );
       let mut test_path = std::env::temp_dir();
       test_path.push( smoke_test_path );
 
@@ -90,7 +89,7 @@ mod private
       let mut rng = rand::thread_rng();
       let y: f64 = rng.gen();
 
-      let smoke_test_path = format!( "{}{}_{}", self.dependency_name, test_postfix, y );
+      let smoke_test_path = format!( "{dependency_name}{test_postfix}_{y}", dependency_name = self.dependency_name, test_postfix = test_postfix, y = y );
       self.test_path.pop();
       self.test_path.push( smoke_test_path );
       self
@@ -128,9 +127,9 @@ mod private
 
       /* setup config */
       #[ cfg( target_os = "windows" ) ]
-      let local_path_clause = if self.local_path_clause == "" { "".to_string() } else { format!( ", path = \"{}\"", self.local_path_clause.escape_default() ) };
+      let local_path_clause = if self.local_path_clause.is_empty() { String::new() } else { format!( ", path = \"{}\"", self.local_path_clause.escape_default() ) };
       #[ cfg( not( target_os = "windows" ) ) ]
-      let local_path_clause = if self.local_path_clause == "" { "".to_string() } else { format!( ", path = \"{}\"", self.local_path_clause ) };
+      let local_path_clause = if self.local_path_clause.is_empty() { String::new() } else { format!( ", path = \"{}\"", self.local_path_clause ) };
       let dependencies_section = format!( "{} = {{ version = \"{}\" {} }}", self.dependency_name, self.version, &local_path_clause );
       let config_data = format!
       (
@@ -146,13 +145,13 @@ mod private
       );
       let mut config_path = test_path.clone();
       config_path.push( "Cargo.toml" );
-      println!( "\n{}\n", config_data );
+      println!( "\n{config_data}\n" );
       std::fs::write( config_path, config_data ).unwrap();
 
       /* write code */
       test_path.push( "src" );
       test_path.push( "main.rs" );
-      if self.code == ""
+      if self.code.is_empty()
       {
         self.code = format!( "use ::{}::*;", self.dependency_name );
       }
@@ -161,11 +160,11 @@ mod private
         "#[ allow( unused_imports ) ]
         fn main()
         {{
-          {}
+          {code}
         }}",
-        self.code,
+        code = self.code,
       );
-      println!( "\n{}\n", code );
+      println!( "\n{code}\n" );
       std::fs::write( &test_path, code ).unwrap();
 
       Ok( () )
@@ -223,16 +222,11 @@ mod private
   }
 
   /// Run smoke test for the module.
-
   pub fn smoke_test_run( local : bool )
   {
     let module_name = std::env::var( "CARGO_PKG_NAME" ).unwrap();
     let module_path = std::env::var( "CARGO_MANIFEST_DIR" ).unwrap();
-    let test_name = match local
-    {
-      false => "_published_smoke_test",
-      true => "_local_smoke_test",
-    };
+    let test_name = if !local { "_published_smoke_test" } else { "_local_smoke_test" };
     println!( "smoke_test_run module_name:{module_name} module_path:{module_path}" );
 
     let mut t = SmokeModuleTest::new( module_name.as_str() );
@@ -257,7 +251,6 @@ mod private
   }
 
   /// Run smoke test for local version of the module.
-
   pub fn smoke_test_for_local_run()
   {
     println!( "smoke_test_for_local_run : {:?}", std::env::var( "WITH_SMOKE" ) );
@@ -286,7 +279,6 @@ mod private
   }
 
   /// Run smoke test for published version of the module.
-
   pub fn smoke_test_for_published_run()
   {
     let run = if let Ok( value ) = std::env::var( "WITH_SMOKE" )
@@ -319,17 +311,18 @@ mod private
 // //
 // crate::mod_interface!
 // {
+// //
+// //   // exposed use super;
+// //   exposed use super::super::smoke_test;
+// //
+// //   exposed use SmokeModuleTest;
+// //   exposed use smoke_test_run;
+// //   exposed use smoke_tests_run;
+// //   exposed use smoke_test_for_local_run;
+// //   exposed use smoke_test_for_published_run;
+// //
+// // }
 //
-//   // exposed use super;
-//   exposed use super::super::smoke_test;
-//
-//   exposed use SmokeModuleTest;
-//   exposed use smoke_test_run;
-//   exposed use smoke_tests_run;
-//   exposed use smoke_test_for_local_run;
-//   exposed use smoke_test_for_published_run;
-//
-// }
 
 
 #[ doc( inline ) ]

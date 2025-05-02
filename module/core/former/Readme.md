@@ -197,7 +197,7 @@ Where `former` significantly simplifies complex scenarios is in building collect
 For scenarios where you want a direct constructor function instead of always starting with `YourType::former()`, `former` offers standalone constructors.
 
 *   **Enable:** Add `#[ standalone_constructors ]` to your struct or enum definition.
-*   **Function Name:** A function named after your type (in snake_case) will be generated (e.g., `my_struct()` for `struct MyStruct`). For enums, functions are named after variants (e.g., `my_variant()` for `enum E { MyVariant }`).
+*   **Function Name:** A function named after your type (in `snake_case`) will be generated (e.g., `my_struct()` for `struct MyStruct`). For enums, functions are named after variants (e.g., `my_variant()` for `enum E { MyVariant }`).
 *   **Arguments:** By default, the constructor takes no arguments and returns the `Former` type.
 *   **Specify Arguments:** Mark specific fields with `#[ arg_for_constructor ]` to make them required arguments for the standalone constructor.
 *   **Return Type (Option 2 Logic):**
