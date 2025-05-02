@@ -205,7 +205,7 @@ pub(super) fn former_for_enum
     let variant_name_str = variant_ident.to_string(); // Prefixed with _
     let method_name_snake_str = variant_name_str.to_case( Case::Snake ); // Prefixed with _
     let method_name_ident_temp = format_ident!( "{}", method_name_snake_str, span = variant_ident.span() ); // Prefixed with _
-    let method_name = ident::ident_maybe_raw( &method_name_ident_temp ); // Prefixed with _
+    let _ = ident::ident_maybe_raw( &method_name_ident_temp ); // Prefixed with _; unused variable warning fixed
 
     // Parse attributes *from the variant* itself
     let variant_attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;

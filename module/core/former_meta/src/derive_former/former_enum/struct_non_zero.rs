@@ -930,7 +930,7 @@ pub( super ) fn handle_struct_non_zero_variant
              // --- Generate Static Method ---
              // Push static method for Former
              let static_method_tokens = {
-                 let where_clause_tokens = if let Some( where_clause ) = &ctx.generics.where_clause {
+                 let _where_clause_tokens = if let Some( where_clause ) = &ctx.generics.where_clause {
                      if where_clause.predicates.is_empty() {
                          quote! {}
                      } else {
