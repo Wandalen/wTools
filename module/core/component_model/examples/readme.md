@@ -1,6 +1,6 @@
-# Former Crate Examples
+# Component Model Crate Examples
 
-This directory contains runnable examples demonstrating various features and use cases of the `component_model` crate and its associated derive macros (`#[ derive( Former ) ]`, `#[ derive( Assign ) ]`, etc.).
+This directory contains runnable examples demonstrating various features and use cases of the `component_model` crate and its associated derive macros (`#[ derive( ComponentModel ) ]`, `#[ derive( Assign ) ]`, etc.).
 
 Each file focuses on a specific aspect, from basic usage to advanced customization and subforming patterns.
 
@@ -34,15 +34,15 @@ cargo run --example component_model_trivial
 |                      | [component_model_collection_hashmap.rs](./component_model_collection_hashmap.rs)               | Building a `HashMap` using `#[ subform_collection ]` and `.add( ( k, v ) )`.                          |
 |                      | [component_model_collection_hashset.rs](./component_model_collection_hashset.rs)               | Building a `HashSet` using `#[ subform_collection ]` and `.add( value )`.                            |
 | **Customization**    | [component_model_custom_defaults.rs](./component_model_custom_defaults.rs)                     | Specifying custom default values with `#[ component_model( default = ... ) ]`.                                |
-|                      | [component_model_custom_setter.rs](./component_model_custom_setter.rs)                         | Defining an alternative custom setter method on the Former struct.                                   |
+|                      | [component_model_custom_setter.rs](./component_model_custom_setter.rs)                         | Defining an alternative custom setter method on the Component Model struct.                                   |
 |                      | [component_model_custom_setter_overriden.rs](./component_model_custom_setter_overriden.rs)     | Overriding a default setter using `#[ scalar( setter = false ) ]`.                                   |
 |                      | [component_model_custom_scalar_setter.rs](./component_model_custom_scalar_setter.rs)           | Defining a custom *scalar* setter manually (contrasting subform approach).                           |
 | **Subcomponent_models**       | [component_model_custom_subform_scalar.rs](./component_model_custom_subform_scalar.rs)         | Building a nested struct using `#[ subform_scalar ]`.                                                |
 |                      | [component_model_custom_subform_collection.rs](./component_model_custom_subform_collection.rs) | Implementing a custom *collection* subcomponent_model setter manually.                                        |
 |                      | [component_model_custom_subform_entry.rs](./component_model_custom_subform_entry.rs)           | Building collection entries individually using `#[ subform_entry ]` and a custom setter helper.      |
 |                      | [component_model_custom_subform_entry2.rs](./component_model_custom_subform_entry2.rs)         | Building collection entries individually using `#[ subform_entry ]` with fully manual closure logic. |
-| **Advanced**         | [component_model_custom_mutator.rs](./component_model_custom_mutator.rs)                       | Using `#[ storage_fields ]` and `#[ mutator( custom ) ]` with `impl FormerMutator`.                  |
-|                      | [component_model_custom_definition.rs](./component_model_custom_definition.rs)                 | Defining a custom `FormerDefinition` and `FormingEnd` to change the formed type.                   |
+| **Advanced**         | [component_model_custom_mutator.rs](./component_model_custom_mutator.rs)                       | Using `#[ storage_fields ]` and `#[ mutator( custom ) ]` with `impl ComponentModelMutator`.                  |
+|                      | [component_model_custom_definition.rs](./component_model_custom_definition.rs)                 | Defining a custom `ComponentModelDefinition` and `FormingEnd` to change the formed type.                   |
 |                      | [component_model_custom_collection.rs](./component_model_custom_collection.rs)                 | Implementing `Collection` traits for a custom collection type.                                       |
 | **Component Model**  | [component_model_component_from.rs](./component_model_component_from.rs)                       | Using `#[ derive( ComponentFrom ) ]` for type-based field extraction.                                |
 | **Debugging**        | [component_model_debug.rs](./component_model_debug.rs)                                         | Using the struct-level `#[ debug ]` attribute to view generated code.                                |
