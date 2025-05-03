@@ -4,29 +4,6 @@
 #![ doc( html_root_url = "https://docs.rs/component_model_types/latest/component_model_types/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-// /// Axiomatic things. // Removed
-// #[ cfg( feature = "enabled" ) ] // Removed
-// #[ cfg( feature = "types_component_model" ) ] // Removed
-// mod axiomatic; // Removed
-// /// Definition of component_model. // Removed
-// #[ cfg( feature = "enabled" ) ] // Removed
-// #[ cfg( feature = "types_component_model" ) ] // Removed
-// mod definition; // Removed
-// /// Forming process. // Removed
-// #[ cfg( feature = "enabled" ) ] // Removed
-// #[ cfg( feature = "types_component_model" ) ] // Removed
-// mod forming; // Removed
-/// Storage.
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "types_component_model" ) ]
-mod storage;
-
-// /// Interface for collections. // Removed
-// #[ cfg( feature = "enabled" ) ] // Removed
-// #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ] // Removed
-// #[ cfg( feature = "types_component_model" ) ] // Removed
-// mod collection; // Removed
-
 /// Component-based forming.
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "types_component_assign" ) ]
@@ -58,11 +35,6 @@ pub mod orphan
   #[ doc( inline ) ]
   pub use crate::exposed::*; // Changed to crate::exposed::*
 
-  // #[ doc( inline ) ] // Removed this block
-  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ] // Removed
-  // #[ cfg( feature = "types_component_model" ) ] // Removed
-  // pub use crate::collection::orphan::*; // Removed
-
 }
 
 /// Exposed namespace of the module.
@@ -71,21 +43,6 @@ pub mod exposed
 {
   #[ doc( inline ) ]
   pub use crate::prelude::*; // Changed to crate::prelude::*
-
-  #[ doc( inline ) ]
-  #[ cfg( feature = "types_component_model" ) ]
-  pub use super::
-  {
-    // axiomatic::*, // Removed
-    // definition::*, // Removed
-    // forming::*, // Removed
-    storage::*,
-  };
-
-  // #[ doc( inline ) ] // Removed this block
-  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ] // Removed
-  // #[ cfg( feature = "types_component_model" ) ] // Removed
-  // pub use crate::collection::exposed::*; // Removed
 
 }
 
@@ -96,10 +53,5 @@ pub mod prelude
   #[ doc( inline ) ]
   #[ cfg( feature = "types_component_assign" ) ]
   pub use crate::component::*; // Changed to crate::component::*
-
-  // #[ doc( inline ) ] // Removed this block
-  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ] // Removed
-  // #[ cfg( feature = "types_component_model" ) ] // Removed
-  // pub use crate::collection::prelude::*; // Removed
 
 }
