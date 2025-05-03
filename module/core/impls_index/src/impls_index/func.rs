@@ -2,10 +2,7 @@
 mod private
 {
 
-  ///
   /// Get name of a function.
-  ///
-
   #[ macro_export ]
   macro_rules! fn_name
   {
@@ -30,10 +27,7 @@ mod private
 
   }
 
-  ///
   /// Macro to rename function.
-  ///
-
   #[ macro_export ]
   macro_rules! fn_rename
   {
@@ -89,10 +83,7 @@ mod private
 
   }
 
-  ///
   /// Split functions.
-  ///
-
   #[ macro_export ]
   macro_rules! fns
   {
@@ -169,10 +160,7 @@ mod private
 
   }
 
-  ///
   /// Split functions.
-  ///
-
   #[ macro_export ]
   macro_rules! fns2
   {
