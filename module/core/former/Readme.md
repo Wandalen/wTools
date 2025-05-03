@@ -319,7 +319,6 @@ For scenarios where you want a direct constructor function instead of always sta
     *   Custom mutation logic: `#[ mutator( custom ) ]` + `impl FormerMutator`.
     *   Custom end-of-forming logic: Implement `FormingEnd`.
     *   Custom collection support: Implement `Collection` traits.
-*   **Component Model:** Separate derives (`Assign`, `ComponentFrom`, `ComponentsAssign`, `FromComponents`) for type-based field access and conversion (See `former_types` documentation).
 
 ## Where to Go Next
 

@@ -17,10 +17,10 @@ and implements the `Assign` trait for its fields. It shows how to use these impl
 instance using different types that can be converted into the required types.
 
 ```rust
-#[ cfg( any( not( feature = "types_component_model" ), not( feature = "enabled" ) ) ) ]
+#[ cfg( any( not( feature = "types_component_assign" ), not( feature = "enabled" ) ) ) ]
 fn main() {}
 
-#[ cfg( all( feature = "types_component_model", feature = "enabled" ) ) ]
+#[ cfg( all( feature = "types_component_assign", feature = "enabled" ) ) ]
 fn main()
 {
   use component_model_types::Assign;

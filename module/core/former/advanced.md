@@ -876,7 +876,7 @@ While the core of this crate is the `#[ derive( Former ) ]` macro, the `former` 
 These derives require the corresponding features to be enabled (they are enabled by default).
 
 *   **`#[ derive( Assign ) ]`:**
-    *   Implements the `former_types::Assign< FieldType, IntoT >` trait for each field of the struct.
+    *   Implements the `component_model_types::Assign< FieldType, IntoT >` trait for each field of the struct.
     *   Allows setting a field based on its **type**, using `.assign( value )` where `value` can be converted into the field's type.
     *   Requires fields to have unique types within the struct.
     *   *Example:* `my_struct.assign( 10_i32 ); my_struct.assign( "hello".to_string() );`

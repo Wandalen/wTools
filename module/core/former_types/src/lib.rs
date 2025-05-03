@@ -4,10 +4,6 @@
 #![ doc( html_root_url = "https://docs.rs/former_types/latest/former_types/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Axiomatic things.
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "types_former" ) ]
-mod axiomatic;
 /// Definition of former.
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "types_former" ) ]
@@ -26,11 +22,6 @@ mod storage;
 #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ cfg( feature = "types_former" ) ]
 mod collection;
-
-/// Component-based forming.
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "types_component_assign" ) ]
-mod component;
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
@@ -88,7 +79,6 @@ pub mod exposed
   #[ cfg( feature = "types_former" ) ]
   pub use super::
   {
-    axiomatic::*,
     definition::*,
     forming::*,
     storage::*,
@@ -108,10 +98,6 @@ pub mod prelude
 {
   #[ allow( clippy::wildcard_imports ) ]
   use super::*;
-
-  #[ doc( inline ) ]
-  #[ cfg( feature = "types_component_assign" ) ]
-  pub use component::*;
 
   #[ doc( inline ) ]
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]

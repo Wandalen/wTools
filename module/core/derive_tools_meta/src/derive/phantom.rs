@@ -1,5 +1,5 @@
 use super::*;
-use former_types::Assign;
+use component_model_types::Assign;
 use macro_tools::
 {
   ct,

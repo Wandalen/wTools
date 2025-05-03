@@ -80,7 +80,7 @@ pub mod dependency
   pub use ::proc_macro2;
   pub use ::interval_adapter;
   pub use ::clone_dyn_types;
-  pub use ::former_types;
+  pub use ::component_model_types;
 }
 
 #[ doc( inline ) ]

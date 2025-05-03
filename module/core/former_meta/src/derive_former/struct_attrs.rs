@@ -13,7 +13,7 @@ use macro_tools::
   AttributePropertyOptionalSingletone,
 };
 
-use former_types::{ Assign, OptionExt };
+use component_model_types::{ Assign, OptionExt };
 
 /// Represents the attributes of a struct, including storage fields, mutator, perform, and standalone constructor attributes. // <<< Updated doc
 #[ derive( Debug, Default ) ]

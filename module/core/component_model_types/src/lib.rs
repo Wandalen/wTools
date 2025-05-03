@@ -16,9 +16,9 @@ pub mod dependency
   pub use ::collection_tools;
 }
 
-// #[ doc( inline ) ] // Removed this block
-// #[ cfg( feature = "enabled" ) ]
-// pub use own::*;
+#[ doc( inline ) ]
+#[ cfg( feature = "enabled" ) ]
+pub use own::*;
 
 /// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]

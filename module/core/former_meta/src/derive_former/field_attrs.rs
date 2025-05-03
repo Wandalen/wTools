@@ -15,7 +15,8 @@ use macro_tools::
   proc_macro2::TokenStream, // Import TokenStream
   // syn::spanned::Spanned, // No longer needed here
 };
-use former_types::{ Assign, OptionExt };
+
+use component_model_types::{ Assign, OptionExt };
 
 // ==================================
 // FieldAttributes Definition

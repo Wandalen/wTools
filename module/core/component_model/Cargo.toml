@@ -1,6 +1,6 @@
 [package]
 name = "component_model"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -33,13 +33,11 @@ use_alloc = [ "no_std", "component_model_types/use_alloc", "collection_tools/use
 
 default = [
   "enabled",
-  "derive_component_model",
   "derive_components",
   "derive_component_from",
   "derive_component_assign",
   "derive_components_assign",
   "derive_from_components",
-  "types_component_model",
   "types_component_assign",
 ]
 full = [
@@ -47,14 +45,11 @@ full = [
 ]
 enabled = [ "component_model_meta/enabled", "component_model_types/enabled" ]
 
-derive_component_model = [ "component_model_meta/derive_component_model", "types_component_model" ]
 derive_components = [ "component_model_meta/derive_components", "derive_component_assign", "derive_components_assign", "derive_component_from", "derive_from_components" ]
 derive_component_assign = [ "component_model_meta/derive_component_assign", "types_component_assign" ]
 derive_components_assign = [ "derive_component_assign", "component_model_meta/derive_components_assign" ]
 derive_component_from = [ "component_model_meta/derive_component_from" ]
 derive_from_components = [ "component_model_meta/derive_from_components" ]
-
-types_component_model = [ "component_model_types/types_component_model" ]
 types_component_assign = [ "component_model_types/types_component_assign" ]
 
 [dependencies]

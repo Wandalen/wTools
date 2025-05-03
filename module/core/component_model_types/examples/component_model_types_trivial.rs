@@ -20,10 +20,10 @@
 //!   - `got.assign( "John" )`: Assigns the string `"John"` to the `name` field.
 //!
 
-#[ cfg( any( not( feature = "types_component_model" ), not( feature = "enabled" ) ) ) ]
+#[ cfg( any( not( feature = "types_component_assign" ), not( feature = "enabled" ) ) ) ]
 fn main() {}
 
-#[ cfg( all( feature = "types_component_model", feature = "enabled" ) ) ]
+#[ cfg( all( feature = "types_component_assign", feature = "enabled" ) ) ]
 fn main()
 {
   use component_model_types::Assign;

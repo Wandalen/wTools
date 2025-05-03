@@ -1,106 +1,129 @@
-# Project Plan: Fix Clippy Errors and Warnings in former and former_meta crates
+# Project Plan: Remove Component Model Derives from Former Crates
+
+## Original Goal
+
+Remove derives FromComponents, ComponentsAssign, ComponentAssign and ComponentFrom from crates former, former_meta, former_types as well as documentations, examples, types and everything related to these derives and component model. Don't edit other crates.
 
 ## Increments
 
-*   ✅ Increment 1: Address `absurd_extreme_comparisons` error in `derive_tools_meta/src/derive/new.rs`
-    *   Detailed Plan Step 1: Modify the comparison `if fields.len() <= 0` to `if fields.len() == 0` in `derive_tools_meta/src/derive/new.rs`.
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the error is resolved.
-*   ⏳ Increment 2: Address `used_underscore_binding` warnings in `clone_dyn_meta/src/lib.rs` and `derive_tools_meta/src/lib.rs`
-    *   Detailed Plan Step 1:  Remove the underscore prefix from the `_attr` argument in the `clone_dyn` and `phantom` functions or use `#[allow(clippy::used_underscore_binding)]`.
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warnings are resolved.
-*   ⚫ Increment 3: Address `unnecessary_wraps` warnings in `derive_tools_meta/src/derive/deref_mut.rs`
-    *   Detailed Plan Step 1: Remove `Result` from the return type of `generate_unit` and `generate_struct_tuple_fields` functions and adjust the returning expressions accordingly.
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warnings are resolved.
-*   ⚫ Increment 4: Address `needless_borrow` warnings in `derive_tools_meta/src/derive/deref_mut.rs`, `derive_tools_meta/src/derive/index.rs`, and `derive_tools_meta/src/derive/new.rs`
-    *   Detailed Plan Step 1: Remove unnecessary `&` in the specified locations.
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warnings are resolved.
-*   ⚫ Increment 5: Address `match_same_arms` warning in `derive_tools_meta/src/derive/index/item_attributes.rs`
-    *   Detailed Plan Step 1: Remove the redundant match arm.
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warning is resolved.
-*   ⚫ Increment 6: Address `needless_return` warnings in `derive_tools_meta/src/derive/index/item_attributes.rs` and `derive_tools_meta/src/derive/not/field_attributes.rs`
-    *   Detailed Plan Step 1: Remove the `return` keyword in the specified locations.
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warnings are resolved.
-*   ⚫ Increment 7: Address `match_wildcard_for_single_variants` warning in `derive_tools_meta/src/derive/index/item_attributes.rs` and `derive_tools_meta/src/derive/not/field_attributes.rs`
-    *   Detailed Plan Step 1: Replace the wildcard `_` with `syn::Meta::NameValue(_)` in the specified locations.
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warning is resolved.
-*   ⚫ Increment 8: Address `default_trait_access` warnings in `derive_tools_meta/src/derive/index/item_attributes.rs` and `derive_tools_meta/src/derive/not/field_attributes.rs`
-    *   Detailed Plan Step 1: Replace `Default::default()` with `ItemAttributeIndex::default()` or `FieldAttributeConfig::default()` in the specified locations.
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warnings are resolved.
-*   ⚫ Increment 9: Address `uninlined_format_args` warnings in `derive_tools_meta/src/derive/index/item_attributes.rs`, `derive_tools_meta/src/derive/not/field_attributes.rs`, and `derive_tools_meta/src/derive/new.rs`
-    *   Detailed Plan Step 1:  Use the variable directly in the format string (e.g., `format!("{key_ident}")` instead of `format!("{}", key_ident)`).
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warnings are resolved.
-*   ⚫ Increment 10: Address `if_not_else` warning in `derive_tools_meta/src/derive/index_mut.rs`
-    *   Detailed Plan Step 1:  Invert the condition and swap the `if` and `else` blocks.
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warning is resolved.
-*   ⚫ Increment 11: Address `cloned_instead_of_copied` warning in `derive_tools_meta/src/derive/index_mut.rs`
-    *   Detailed Plan Step 1: Replace `.cloned()` with `.copied()` in the specified location.
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warning is resolved.
-*   ⚫ Increment 12: Address `too_many_lines` warnings in `derive_tools_meta/src/derive/index_mut.rs` and `derive_tools_meta/src/derive/variadic_from.rs`
-    *   Detailed Plan Step 1: Refactor the functions to reduce the number of lines. This might involve extracting parts of the function into smaller, more manageable functions.
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warnings are resolved.
-*   ⚫ Increment 13: Address `doc_markdown` warnings in `clone_dyn/Readme.md`, `derive_tools_meta/src/derive/index.rs`, `derive_tools_meta/src/lib.rs` and `module/move/sqlx_query/../../../Readme.md`
-    *   Detailed Plan Step 1: Add backticks to the specified items in the documentation.
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warnings are resolved.
-*   ⚫ Increment 14: Address `empty_line_after_doc_comments` warning in `module/move/graphs_tools_deprecated/src/algo/dfs.rs`
-    *   Detailed Plan Step 1: Remove the empty line after the doc comment.
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warning is resolved.
-*   ⚫ Increment 15: Address `useless_format` warnings in `module/move/gspread/src/actions/utils.rs` and `module/move/gspread/src/gcore/client.rs`
-    *   Detailed Plan Step 1: Replace `format!( "{}" , var )` with `var.to_string()`
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warnings are resolved.
-*   ⚫ Increment 16: Address `ptr_arg` warning in `module/move/gspread/src/actions/gspread.rs`
-    *   Detailed Plan Step 1: Replace `&Vec<T>` with `&[T]`
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warning is resolved.
-*   ⚫ Increment 17: Address `manual_div_ceil` warning in `module/move/gspread/src/actions/gspread.rs`
-    *   Detailed Plan Step 1: Replace manual division with `div_ceil`
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warning is resolved.
-*   ⚫ Increment 18: Address `needless_return` warning in `module/move/gspread/src/actions/gspread.rs`
-    *   Detailed Plan Step 1: Remove `return` keyword
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warning is resolved.
-*   ⚫ Increment 19: Address `await_holding_refcell_ref` warnings in `module/move/gspread/src/gcore/client.rs`
-    *   Detailed Plan Step 1: Ensure the reference is dropped before calling `await`
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warnings are resolved.
-*   ⚫ Increment 20: Address `redundant_field_names` warnings in `module/move/gspread/src/gcore/client.rs`, `module/move/gspread/src/commands/gspread_row.rs` and `module/move/gspread/src/actions/gspread_row_update.rs`
-    *   Detailed Plan Step 1: Replace `field : field` with `field`
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warnings are resolved.
-*   ⚫ Increment 21: Address `redundant_static_lifetimes` warnings in `module/move/gspread/src/utils/constants.rs`
-    *   Detailed Plan Step 1: Remove `static` lifetime
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warnings are resolved.
-*   ⚫ Increment 22: Address `match_single_binding` warnings in `module/move/gspread/src/commands/gspread_header.rs`, `module/move/gspread/src/commands/gspread_rows.rs` and `module/move/gspread/src/commands/gspread_clear_custom.rs` and `module/move/gspread/src/commands/gspread_copy.rs`
-    *   Detailed Plan Step 1: Replace `match` with `let`
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warnings are resolved.
-*   ⚫ Increment 23: Address `manual_unwrap_or` warnings in `module/move/gspread/src/actions/gspread_row_update_custom.rs`
-    *   Detailed Plan Step 1: Replace manual implementation with `unwrap_or_default()`
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the warnings are resolved.
-*   ⚫ Increment 24: Address the error in `module/core/program_tools`
-    *   Detailed Plan Step 1: Investigate the error and apply the necessary changes to fix it.
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo clippy` and ensure the error is resolved.
-*   ⚫ Increment 25: Address the errors in `module/move/refiner`
-    *   Detailed Plan Step 1: Investigate the errors and apply the necessary changes to fix it.
-    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily](#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: Run `cargo check --workspace` and ensure the errors are resolved.
+*   ✅ **Increment 1:** Analyze and Remove Proc-Macro Code in `former_meta`
+    *   **Detailed Plan Step 1 (Locate Macros):** Use `search_files` within `module/core/former_meta/src` (likely in submodules like `derive/` or `component/`) for the exact proc-macro definitions. Search patterns:
+        *   `r#"#\[proc_macro_derive\(\s*FromComponents\s*[,)]"#`
+        *   `r#"#\[proc_macro_derive\(\s*ComponentsAssign\s*[,)]"#`
+        *   `r#"#\[proc_macro_derive\(\s*ComponentAssign\s*[,)]"#`
+        *   `r#"#\[proc_macro_derive\(\s*ComponentFrom\s*[,)]"#`
+        *   Also search for potential attribute macros if derive is not found: `r#"#\[proc_macro_attribute]\s*pub\s+fn\s+(?:from_components|components_assign|...)"#`
+    *   **Detailed Plan Step 2 (Analyze Dependencies):** Read the code surrounding the located macro definitions. Identify any helper functions, structs, or constants defined within `former_meta` that are *exclusively* used by these macros. Trace their usage to ensure they aren't needed elsewhere.
+    *   **Detailed Plan Step 3 (Remove Macro Code):** Use `apply_diff` to precisely remove the entire `#[proc_macro_derive]` function block (or `#[proc_macro_attribute]` function) for each of the four macros. Also, remove the helper code identified in Step 2 if it's confirmed to be exclusively used by the removed macros. Be careful not to remove unrelated code.
+    *   **Detailed Plan Step 4 (Remove Exports):** Check `module/core/former_meta/src/lib.rs` and any relevant `mod.rs` files (e.g., `module/core/former_meta/src/derive/mod.rs`) for `pub use` statements exporting the removed macros (e.g., `pub use private::FromComponents;`). Use `apply_diff` to remove these specific export lines.
+    *   **Crucial Design Rules:** [Structuring: Keep all Definitions and Details Inside `private` namespace](#structuring-keep-all-definitions-and-details-inside-private-namespace) (verify helpers were private if applicable), [Structuring: Explicit Exposure Rule](#structuring-explicit-exposure-rule) (guides removal of exports).
+    *   **Verification Strategy:**
+        *   Request user run `cargo build --package former_meta`.
+        *   Request user run `cargo clippy --package former_meta -- -D warnings`.
+        *   Analyze output critically: Expect successful compilation with no errors or warnings related to the removed macros or helpers. Verify no *new* unrelated errors/warnings were introduced.
+*   ✅ **Increment 2:** Remove Derive Usage in `former_types`
+    *   **Detailed Plan Step 1 (Locate Derive Usage):** Use `search_files` within `module/core/former/src/former_types/src` for the regex pattern: `r#"#\[derive\([^)]*(?:FromComponents|ComponentsAssign|ComponentAssign|ComponentFrom)[^)]*\)]"#`. This pattern finds the derives even when mixed with others.
+    *   **Detailed Plan Step 2 (Remove Derive Attributes):** For each file and struct/enum identified in Step 1, use `apply_diff`. The SEARCH block should target the `#[derive(...)]` line, and the REPLACE block should contain the same line but *without* `FromComponents`, `ComponentsAssign`, `ComponentAssign`, or `ComponentFrom`. Ensure other derives on the same line remain untouched. Example: `#[derive( Debug, Clone, FromComponents )]` becomes `#[derive( Debug, Clone )]`.
+    *   **Detailed Plan Step 3 (Analyze Implicit Dependencies):** Search within `module/core/former/src/former_types/src` for code that might rely on traits or methods generated by the removed derives. Search terms:
+        *   Trait bounds: `where T: FromComponents`, `impl FromComponents for ...` (and variants for other derives).
+        *   Potential method calls: `.from_components(`, `.assign_components(`, `.assign_component(`, `.component_from(`. (These are guesses; actual names depend on macro implementation).
+        *   Specific types potentially related only to these derives.
+    *   **Detailed Plan Step 4 (Remove/Refactor Dependent Code):** Based on Step 3 findings, use `apply_diff` to:
+        *   Remove `impl` blocks for the component traits.
+        *   Remove functions or methods whose logic entirely depended on the component model.
+        *   Refactor functions/methods by removing calls to component methods or changing signatures that used related types/traits.
+        *   Remove structs/enums if they become completely unused after removing derives and related logic.
+    *   **Crucial Design Rules:** [Prioritize Reuse and Minimal Change](#prioritize-reuse-and-minimal-change) (Adapt existing code where possible instead of wholesale removal).
+    *   **Verification Strategy:**
+        *   Request user run `cargo build --package former_types`.
+        *   Request user run `cargo clippy --package former_types -- -D warnings`.
+        *   Analyze output critically: Expect successful compilation. Look specifically for errors indicating missing traits, methods, or types that were previously generated or used by the component model. Ensure no new unrelated errors/warnings.
+*   ✅ **Increment 3:** Remove Derive Usage and Related Code in `former` (including tests and examples)
+    *   **Detailed Plan Step 1 (Locate Derive Usage in src):** Use `search_files` within `module/core/former/src/former/src` using the same regex as Increment 2, Step 1: `r#"#\[derive\([^)]*(?:FromComponents|ComponentsAssign|ComponentAssign|ComponentFrom)[^)]*\)]"#`. (Done - None found)
+    *   **Detailed Plan Step 2 (Locate Related Code in src):** Use `search_files` within `module/core/former/src/former/src` for:
+        *   The derive usage pattern from Step 1.
+        *   Explicit imports: `use former_types::.*Component.*`, `use former_meta::FromComponents` (and variants).
+        *   Method calls: `.components(`, `.assign_components_from(`, etc. (as in Inc 2, Step 3).
+        *   Function signatures or struct fields using component-related types from `former_types`.
+        *   Trait bounds or `impl` blocks related to component traits. (Done - None found)
+    *   **Detailed Plan Step 3.1 (Analyze Test Failures):** Analyze `cargo test --package former` output. Identify files/lines in `module/core/former/tests/` causing errors due to missing component model features. (Done)
+    *   **Detailed Plan Step 3.2 (Fix Tests):** Use `apply_diff` to remove/refactor failing test code in `module/core/former/tests/` based on Step 3.1 analysis. (Focus on removing tests for removed features or adapting assertions). (Done - Removed `mod components_tests;`)
+    *   **Detailed Plan Step 3.3 (Analyze Example Failures):** Analyze `cargo test --package former` output. Identify files/lines in `module/core/former/examples/` causing errors. (Done - Identified `former_component_from.rs`)
+    *   **Detailed Plan Step 3.4 (Fix Examples):** Use `apply_diff` or `write_to_file` to remove/refactor failing example code in `module/core/former/examples/` based on Step 3.3 analysis. (Done - Emptied `former_component_from.rs`, then added placeholder `main`)
+    *   **Detailed Plan Step 3.5 (Refactor src Logic):** Analyze code in `module/core/former/src/former/src` surrounding any potential (though unlikely based on searches) removals from previous steps. Refactor if needed. (Done - Checked `lib.rs`, no changes needed)
+    *   **Crucial Design Rules:** [Prioritize Reuse and Minimal Change](#prioritize-reuse-and-minimal-change) (Adapt existing code where possible instead of wholesale removal), [Testing: Avoid Writing Automated Tests Unless Asked](#testing-avoid-writing-tests-unless-asked) (Justifies removing tests for removed features).
+    *   **Verification Strategy:**
+        *   Run `cargo build --package former`.
+        *   Run `cargo test --package former`.
+        *   Analyze output critically: Expect successful compilation and tests passing. Focus on errors related to missing derives, types, traits, methods, or functions previously part of the component model implementation or its usage in `former`. Ensure no new unrelated errors/warnings.
+*   ✅ **Increment 4:** Clean Up Tests in All Affected Crates (Now potentially smaller scope due to Step 3.2)
+    *   **Detailed Plan Step 1 (Locate Affected Tests):** Use `search_files` in the following directories: `module/core/former/tests`, `module/core/former_meta/tests`, `module/core/former/src/former_types/tests`, `module/core/former/src/former/tests`. Search patterns:
+        *   Derive usage on test structs: `r#"#\[derive\([^)]*(?:FromComponents|ComponentsAssign|ComponentAssign|ComponentFrom)[^)]*\)]"#`
+        *   Component method calls: `.components(`, `.assign_components_from(`, etc.
+        *   Assertions checking component-related state or behavior.
+        *   Keywords: `FromComponents`, `ComponentsAssign`, `ComponentAssign`, `ComponentFrom`. (Done - Only found inactive code in `components_tests` or docs)
+    *   **Detailed Plan Step 2 (Analyze Tests):** For each identified test function or module, determine if its primary purpose was to test the now-removed component functionality. Can the test be adapted to test remaining functionality, or should it be removed entirely? (Done - No active tests found)
+    *   **Detailed Plan Step 3 (Remove/Modify Tests):**
+        *   For tests solely testing removed features: Use `apply_diff` to remove the entire `#[test]` function or the `mod tests { ... }` block. If a whole file (e.g., `tests/component_tests.rs`) becomes empty, propose its removal (e.g., via `write_to_file` with empty content or asking user to delete).
+        *   For tests partially affected: Use `apply_diff` to remove the specific derive usages, method calls, and assertions related to the component model, adapting the test to focus on remaining logic. (Done - No active tests needed modification)
+    *   **Crucial Design Rules:** [Testing: Avoid Writing Automated Tests Unless Asked](#testing-avoid-writing-tests-unless-asked) (Justifies removing tests for removed features).
+    *   **Verification Strategy:**
+        *   Request user run `cargo test --package former_meta --package former_types --package former`.
+        *   Analyze output critically: Ensure no tests fail. Verify that the *total number* of tests executed has decreased compared to the baseline (if known). Check for any new compilation errors within the test code itself.
+*   ✅ **Increment 5:** Update Documentation (Code & Readmes)
+    *   **Detailed Plan Step 1 (Locate Documentation):** Use `search_files` across:
+        *   Source files: `module/core/former_meta/src/**/*.rs`, `module/core/former/src/former_types/src/**/*.rs`, `module/core/former/src/former/src/**/*.rs`
+        *   Readme: `module/core/former/Readme.md`
+        *   Other potential docs: `module/core/former/docs/**/*.md` (if exists)
+        *   Search keywords: `FromComponents`, `ComponentsAssign`, `ComponentAssign`, `ComponentFrom`, "component model", "components assign", "component from". (Done - Found in `former_meta/src/component/*.rs` (removed), `former/Readme.md`, `former/tests/inc/mod.rs`)
+    *   **Detailed Plan Step 2 (Analyze Documentation):** Review search results in doc comments (`///`, `//!`) and Markdown files. Identify explanations, examples within docs, API references, or conceptual sections related to the removed derives/model. (Done - Identified locations)
+    *   **Detailed Plan Step 3 (Remove/Update Documentation):** Use `apply_diff` to:
+        *   Remove sentences or paragraphs discussing the removed features.
+        *   Remove code examples in docs that used the derives.
+        *   Update surrounding text to ensure logical flow and coherence after removals.
+        *   Remove mentions from API lists or feature summaries. (Done - Removed from `former/Readme.md`)
+    *   **Crucial Design Rules:** [Comments and Documentation](#comments-and-documentation) (Focus on removing outdated info, ensure clarity).
+    *   **Verification Strategy:**
+        *   Request user run `cargo doc --package former_meta --package former_types --package former --no-deps`. Check for warnings (especially broken links). (Done - Passed)
+        *   Recommend manual review by the user of `Readme.md` and key source files with modified doc comments to ensure accuracy and readability.
+*   ✅ **Increment 6:** Update Examples (Now potentially smaller scope due to Step 3.4)
+    *   **Detailed Plan Step 1 (Locate Examples):** Use `list_files` to check if `module/core/former/examples` exists. If yes, use `search_files` within `module/core/former/examples/*.rs` for the keywords and derive patterns used in previous increments. (Done - Found references in `former_component_from.rs` and potentially others)
+    *   **Detailed Plan Step 2 (Analyze Examples):** Determine if any found examples heavily rely on the removed component model features. Can they be refactored to demonstrate alternative usage, or are they now obsolete? (Done - `former_component_from.rs` is obsolete)
+    *   **Detailed Plan Step 3 (Remove/Modify Examples):**
+        *   If obsolete: Propose removing the example file (e.g., `write_to_file` with empty content or ask user).
+        *   If adaptable: Use `apply_diff` to remove derive usage and component method calls, refactoring the example to use current APIs. (Done - Emptied `former_component_from.rs` content in Inc 3, added placeholder `main`)
+    *   **Crucial Design Rules:** N/A (Focus is removal/adaptation).
+    *   **Verification Strategy:**
+        *   If examples were modified: Request user run `cargo run --example <modified_example_name> --package former` (or relevant crate). Check for compilation errors and verify expected output (if any).
+        *   If examples were removed: Request user run `cargo build --examples --package former` (or relevant crate) to ensure the examples build process doesn't fail.
+*   ⏳ **Increment 7:** Final Package Verification
+    *   **Detailed Plan Step 1 (Final Sweep):** Perform a final `search_files` across the target directories (`module/core/former_meta`, `module/core/former/src/former_types`, `module/core/former/src/former`, `module/core/former/tests`, `module/core/former/examples`, `module/core/former/docs`) for any remaining occurrences of `FromComponents`, `ComponentsAssign`, `ComponentAssign`, `ComponentFrom` to catch any missed references.
+    *   **Detailed Plan Step 2 (Final Cleanup):** If Step 1 finds anything, use `apply_diff` or `write_to_file` to remove the final remnants within the affected crate's files.
+    *   **Detailed Plan Step 3 (Comprehensive Checks - Targeted):** Request user run the following commands sequentially:
+        *   `cargo check --package former_meta --package former_types --package former --all-targets`
+        *   `cargo clippy --package former_meta --package former_types --package former --all-targets -- -D warnings`
+        *   `cargo test --package former_meta --package former_types --package former --all-targets`
+    *   **Crucial Design Rules:** N/A.
+    *   **Verification Strategy:** Analyze the output of *all* commands in Step 3 critically. The goal is zero errors and zero warnings across all specified packages (`former_meta`, `former_types`, `former`) and targets. Confirm all remaining tests within these packages pass.
 
 ## Notes & Insights
+
+*   *(This section must always be present and preserved)*
+*   **[Date/Inc #] Struggling Point:** Unable to locate proc-macro definitions or attributes using initial search patterns in `module/core/former_meta/src`. Also, `read_file` and `list_files` failed for paths within this directory, contradicting "VSCode Open Tabs". Status: Resolved (Root cause identified as incorrect paths in plan).
+*   **[Date/Inc #] Struggling Point:** Unable to remove the content of `module/core/former_meta/src/component/component_from.rs` using `write_to_file`. Status: Resolved (Used `apply_diff` successfully).
+*   **[Date/Inc #] Struggling Point:** Unable to remove component-specific traits and impls from `module/core/former_meta/src/lib.rs` using `apply_diff` due to content mismatch including documentation comments. Status: Resolved (Identified need to include comments in search).
+*   **[Date/Inc #] Struggling Point:** Unable to remove component-specific traits and impls from `module/core/former_meta/src/lib.rs` using `apply_diff` due to incorrect line numbering after previous edits. This issue is repeating. Status: Resolved (Realized these were documentation examples, not macro code).
+*   **[Date/Inc #] Struggling Point:** Unable to remove the content of `module/core/former/examples/former_component_from.rs` using `write_to_file`. Status: Resolved (Used `apply_diff` successfully).
+*   **[Date/Inc #] Hypothesis Test:** Hypothesis: The component model code is in `module/core/former_meta/src/component/*.rs` but uses different macro definitions/naming. Test: Read the content of these specific files. **Result:** Rejected. **Reasoning:** `read_file` failed for `from_components.rs`, and `list_files` found no files in the directory, indicating the path or tool is not working as expected for this location.
+*   **[Date/Inc #] Hypothesis Test:** Hypothesis: The files listed in "VSCode Open Tabs" within `module/core/former_meta/src/` are the correct paths, and the previous tool failures were transient or specific path issues. Test: Attempt to read `module/core/former_meta/src/lib.rs`. **Result:** Rejected. **Reasoning:** `read_file` failed for `lib.rs`.
+*   **[Date/Inc #] Hypothesis Test:** Hypothesis: `apply_diff` can be used as a fallback to remove the content of `module/core/former_meta/src/component/component_from.rs`. Test: Attempt to remove content using `apply_diff`. **Result:** Confirmed. **Reasoning:** The `apply_diff` operation was successful in removing the file content.
+*   **[Date/Inc #] Hypothesis Test:** Hypothesis: The `apply_diff` tool is highly sensitive to exact content matches, and removing blocks individually with meticulously copied content from the latest `read_file` result might succeed. Test: Attempt to remove the `BigOptsComponentsAssign` trait block from `module/core/former_meta/src/lib.rs` using `apply_diff` with content copied directly from the last successful `read_file` result. **Result:** Rejected. **Reasoning:** The `apply_diff` failed due to content mismatch, indicating the search content (copied from the previous read) did not exactly match the file content, likely due to documentation comments.
+*   **[Date/Inc #] Hypothesis Test:** Hypothesis: The `apply_diff` tool requires the search content to exactly match the file content, including documentation comments. I need to read the file again and meticulously copy the *entire* block, including the leading `///` comments, for the `apply_diff` to succeed. Test: Read `module/core/former_meta/src/lib.rs` again. Then, use the correct line numbers and the exact content (including documentation comments) from the new `read_file` result in `apply_diff` calls to remove the `BigOptsComponentsAssign` trait block using `apply_diff`, ensuring the SEARCH block includes the documentation comments exactly as they appear in the file. **Result:** Confirmed. **Reasoning:** Including the documentation comments in the search content allowed the `apply_diff` to succeed.
+*   **[Date/Inc #] Hypothesis Test:** Hypothesis: The line numbers for the `SmallerOptsComponentsAssign` blocks in `module/core/former_meta/src/lib.rs` have shifted due to the removal of the `BigOptsComponentsAssign` blocks. I need to get the current content of the file to determine the correct starting line numbers for the remaining blocks I want to remove. Test: Read `module/core/former_meta/src/lib.rs` again to get the updated line numbering. Then, use the correct line numbers and the exact content (including documentation comments) from the new `read_file` result in `apply_diff` calls to remove the `SmallerOptsComponentsAssign` trait and its impl block individually. **Result:** Inconclusive (Test not yet performed). **Reasoning:** Need to perform the read and the subsequent `apply_diff` attempts with the updated line numbers.
+*   **[Date/Inc #] Hypothesis Test:** Hypothesis: `apply_diff` can be used as a fallback to remove the content of `module/core/former/examples/former_component_from.rs` where `write_to_file` failed. Test: Attempt to remove content using `apply_diff`. **Result:** Confirmed. **Reasoning:** The `apply_diff` operation was successful in removing the file content.
+*   **[Date/Inc #] Insight:** The initial recursive file listing of the workspace revealed that the `former_meta` crate is located at `module/core/former_meta/`, not nested under `module/core/former/src/`. The paths in the plan for `former_meta` were incorrect, causing all file operations targeting that crate to fail. The plan has been updated with the correct paths.
+*   **[Date/Inc #] Insight:** Reading `module/core/former_meta/src/component/mod.rs` failed, suggesting the `component` directory might not be a standard module with a `mod.rs` file, or there's an environmental issue. However, the content of the individual files in `component/` and `lib.rs` has been read, allowing analysis of dependencies.
+*   **[Date/Inc #] Insight:** The removal process requires careful searching and targeted modifications across three crates (`former_meta`, `former_types`, `former`) plus associated tests, docs, and examples. Proceeding increment by increment, focusing on one crate or aspect (like tests) at a crucial to manage complexity.
+*   **[Date/Inc #] Insight:** Verification after each increment using `cargo build`, `clippy`, and `test` for the specific package(s) modified is essential to catch errors early before they propagate.
+*   **[Date/Inc #] Insight:** Refined final verification steps to explicitly target only `former`, `former_meta`, and `former_types` packages, avoiding workspace-wide commands, per user feedback.
+*   **[Date/Inc 3] Insight:** User requested running `cargo test` instead of `cargo clippy` for Increment 3 verification. Plan updated to reflect this. Test failures indicate component model usage in tests and examples, requiring these to be addressed within Increment 3.

@@ -26,25 +26,3 @@ mod former_tests
   mod parametrized_slice_manual;
 
 }
-
-#[ path = "../../../former/tests/inc/components_tests" ]
-mod components_tests
-{
-  use super::*;
-
-  #[ cfg( feature = "types_component_from" ) ]
-  mod component_from_manual;
-
-  #[ cfg( feature = "types_component_assign" ) ]
-  mod component_assign_manual;
-
-  #[ cfg( all( feature = "types_component_assign" ) ) ]
-  mod components_assign_manual;
-
-  // #[ cfg( all( feature = "derive_from_components" ) ) ]
-  mod from_components_manual;
-
-  #[ cfg( all( feature = "types_component_assign" ) ) ]
-  mod composite_manual;
-
-}
