@@ -15,6 +15,7 @@ use macro_tools::
   proc_macro2::TokenStream, // Import TokenStream
   // syn::spanned::Spanned, // No longer needed here
 };
+
 use component_model_types::{ Assign, OptionExt };
 
 // ==================================
