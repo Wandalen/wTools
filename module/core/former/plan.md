@@ -70,33 +70,33 @@ Remove derives FromComponents, ComponentsAssign, ComponentAssign and ComponentFr
     *   **Verification Strategy:**
         *   Request user run `cargo test --package former_meta --package former_types --package former`.
         *   Analyze output critically: Ensure no tests fail. Verify that the *total number* of tests executed has decreased compared to the baseline (if known). Check for any new compilation errors within the test code itself.
-*   ⏳ **Increment 5:** Update Documentation (Code & Readmes)
+*   ✅ **Increment 5:** Update Documentation (Code & Readmes)
     *   **Detailed Plan Step 1 (Locate Documentation):** Use `search_files` across:
         *   Source files: `module/core/former_meta/src/**/*.rs`, `module/core/former/src/former_types/src/**/*.rs`, `module/core/former/src/former/src/**/*.rs`
         *   Readme: `module/core/former/Readme.md`
         *   Other potential docs: `module/core/former/docs/**/*.md` (if exists)
-        *   Search keywords: `FromComponents`, `ComponentsAssign`, `ComponentAssign`, `ComponentFrom`, "component model", "components assign", "component from".
-    *   **Detailed Plan Step 2 (Analyze Documentation):** Review search results in doc comments (`///`, `//!`) and Markdown files. Identify explanations, examples within docs, API references, or conceptual sections related to the removed derives/model.
+        *   Search keywords: `FromComponents`, `ComponentsAssign`, `ComponentAssign`, `ComponentFrom`, "component model", "components assign", "component from". (Done - Found in `former_meta/src/component/*.rs` (removed), `former/Readme.md`, `former/tests/inc/mod.rs`)
+    *   **Detailed Plan Step 2 (Analyze Documentation):** Review search results in doc comments (`///`, `//!`) and Markdown files. Identify explanations, examples within docs, API references, or conceptual sections related to the removed derives/model. (Done - Identified locations)
     *   **Detailed Plan Step 3 (Remove/Update Documentation):** Use `apply_diff` to:
         *   Remove sentences or paragraphs discussing the removed features.
         *   Remove code examples in docs that used the derives.
         *   Update surrounding text to ensure logical flow and coherence after removals.
-        *   Remove mentions from API lists or feature summaries.
+        *   Remove mentions from API lists or feature summaries. (Done - Removed from `former/Readme.md`)
     *   **Crucial Design Rules:** [Comments and Documentation](#comments-and-documentation) (Focus on removing outdated info, ensure clarity).
     *   **Verification Strategy:**
-        *   Request user run `cargo doc --package former_meta --package former_types --package former --no-deps`. Check for warnings (especially broken links).
+        *   Request user run `cargo doc --package former_meta --package former_types --package former --no-deps`. Check for warnings (especially broken links). (Done - Passed)
         *   Recommend manual review by the user of `Readme.md` and key source files with modified doc comments to ensure accuracy and readability.
-*   ⚫ **Increment 6:** Update Examples (Now potentially smaller scope due to Step 3.4)
-    *   **Detailed Plan Step 1 (Locate Examples):** Use `list_files` to check if `module/core/former/examples` exists. If yes, use `search_files` within `module/core/former/examples/*.rs` for the keywords and derive patterns used in previous increments.
-    *   **Detailed Plan Step 2 (Analyze Examples):** Determine if any found examples heavily rely on the removed component model features. Can they be refactored to demonstrate alternative usage, or are they now obsolete?
+*   ✅ **Increment 6:** Update Examples (Now potentially smaller scope due to Step 3.4)
+    *   **Detailed Plan Step 1 (Locate Examples):** Use `list_files` to check if `module/core/former/examples` exists. If yes, use `search_files` within `module/core/former/examples/*.rs` for the keywords and derive patterns used in previous increments. (Done - Found references in `former_component_from.rs` and potentially others)
+    *   **Detailed Plan Step 2 (Analyze Examples):** Determine if any found examples heavily rely on the removed component model features. Can they be refactored to demonstrate alternative usage, or are they now obsolete? (Done - `former_component_from.rs` is obsolete)
     *   **Detailed Plan Step 3 (Remove/Modify Examples):**
         *   If obsolete: Propose removing the example file (e.g., `write_to_file` with empty content or ask user).
-        *   If adaptable: Use `apply_diff` to remove derive usage and component method calls, refactoring the example to use current APIs.
+        *   If adaptable: Use `apply_diff` to remove derive usage and component method calls, refactoring the example to use current APIs. (Done - Emptied `former_component_from.rs` content in Inc 3, added placeholder `main`)
     *   **Crucial Design Rules:** N/A (Focus is removal/adaptation).
     *   **Verification Strategy:**
         *   If examples were modified: Request user run `cargo run --example <modified_example_name> --package former` (or relevant crate). Check for compilation errors and verify expected output (if any).
         *   If examples were removed: Request user run `cargo build --examples --package former` (or relevant crate) to ensure the examples build process doesn't fail.
-*   ⚫ **Increment 7:** Final Package Verification
+*   ⏳ **Increment 7:** Final Package Verification
     *   **Detailed Plan Step 1 (Final Sweep):** Perform a final `search_files` across the target directories (`module/core/former_meta`, `module/core/former/src/former_types`, `module/core/former/src/former`, `module/core/former/tests`, `module/core/former/examples`, `module/core/former/docs`) for any remaining occurrences of `FromComponents`, `ComponentsAssign`, `ComponentAssign`, `ComponentFrom` to catch any missed references.
     *   **Detailed Plan Step 2 (Final Cleanup):** If Step 1 finds anything, use `apply_diff` or `write_to_file` to remove the final remnants within the affected crate's files.
     *   **Detailed Plan Step 3 (Comprehensive Checks - Targeted):** Request user run the following commands sequentially:
@@ -123,7 +123,7 @@ Remove derives FromComponents, ComponentsAssign, ComponentAssign and ComponentFr
 *   **[Date/Inc #] Hypothesis Test:** Hypothesis: `apply_diff` can be used as a fallback to remove the content of `module/core/former/examples/former_component_from.rs` where `write_to_file` failed. Test: Attempt to remove content using `apply_diff`. **Result:** Confirmed. **Reasoning:** The `apply_diff` operation was successful in removing the file content.
 *   **[Date/Inc #] Insight:** The initial recursive file listing of the workspace revealed that the `former_meta` crate is located at `module/core/former_meta/`, not nested under `module/core/former/src/`. The paths in the plan for `former_meta` were incorrect, causing all file operations targeting that crate to fail. The plan has been updated with the correct paths.
 *   **[Date/Inc #] Insight:** Reading `module/core/former_meta/src/component/mod.rs` failed, suggesting the `component` directory might not be a standard module with a `mod.rs` file, or there's an environmental issue. However, the content of the individual files in `component/` and `lib.rs` has been read, allowing analysis of dependencies.
-*   **[Date/Inc #] Insight:** The removal process requires careful searching and targeted modifications across three crates (`former_meta`, `former_types`, `former`) plus associated tests, docs, and examples. Proceeding increment by increment, focusing on one crate or aspect (like tests) at a time, is crucial to manage complexity.
+*   **[Date/Inc #] Insight:** The removal process requires careful searching and targeted modifications across three crates (`former_meta`, `former_types`, `former`) plus associated tests, docs, and examples. Proceeding increment by increment, focusing on one crate or aspect (like tests) at a crucial to manage complexity.
 *   **[Date/Inc #] Insight:** Verification after each increment using `cargo build`, `clippy`, and `test` for the specific package(s) modified is essential to catch errors early before they propagate.
 *   **[Date/Inc #] Insight:** Refined final verification steps to explicitly target only `former`, `former_meta`, and `former_types` packages, avoiding workspace-wide commands, per user feedback.
 *   **[Date/Inc 3] Insight:** User requested running `cargo test` instead of `cargo clippy` for Increment 3 verification. Plan updated to reflect this. Test failures indicate component model usage in tests and examples, requiring these to be addressed within Increment 3.

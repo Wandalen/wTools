@@ -25,7 +25,7 @@ pub mod own
   };
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use ::former_types::own::*;
+  pub use ::component_model_types::own::*;
 }
 
 /// Orphan namespace of the module.
@@ -51,7 +51,7 @@ pub mod exposed
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use ::former_types::exposed::*;
+  pub use ::component_model_types::exposed::*;
 
   #[ doc( inline ) ]
   pub use private::
@@ -68,6 +68,6 @@ pub mod prelude
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use ::former_types::prelude::*;
+  pub use ::component_model_types::prelude::*;
 
 }

@@ -56,7 +56,7 @@ full = [
 ]
 
 enabled = [
-  "former_types/enabled",
+  "component_model_types/enabled",
   "interval_adapter/enabled",
   "clone_dyn_types/enabled",
   "iter_tools/enabled",
@@ -114,7 +114,7 @@ const_format = { workspace = true, default-features = false, features = [] }
 interval_adapter = { workspace = true, features = [] }
 iter_tools = { workspace = true, features = [ "iter_trait" ] }
 clone_dyn_types = { workspace = true, features = [] }
-former_types = { workspace = true, features = [ "types_component_assign" ] }
+component_model_types = { workspace = true, features = [ "types_component_assign" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true } # Added test_tools dependency

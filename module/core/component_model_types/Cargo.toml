@@ -30,17 +30,14 @@ use_alloc = [ "no_std", "collection_tools/use_alloc" ]
 
 default = [
   "enabled",
-  "types_component_model",
   "types_component_assign",
 ]
 full = [
   "enabled",
-  "types_component_model",
   "types_component_assign",
 ]
 enabled = [ "collection_tools/enabled" ]
 
-types_component_model = []
 types_component_assign = []
 
 

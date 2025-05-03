@@ -23,7 +23,7 @@ fn main() {}
 #[ cfg( all( feature = "types_former", feature = "enabled" ) ) ]
 fn main()
 {
-  use former_types::Assign;
+  use component_model_types::Assign;
 
   #[ derive( Default, PartialEq, Debug ) ]
   struct Person

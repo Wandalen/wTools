@@ -9,7 +9,7 @@ use macro_tools::
   AttributePropertyOptionalSingletone,
 };
 
-use former_types::Assign;
+use component_model_types::Assign;
 
 ///
 /// Attributes of a field / variant
