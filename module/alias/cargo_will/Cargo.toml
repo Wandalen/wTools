@@ -33,7 +33,7 @@ enabled = []
 
 [dependencies]
 willbe = { workspace = true }
-error_tools = { workspace = true, features = ["err"] }
+error_tools = { workspace = true }
 
 # [dev-dependencies]
 # test_tools = { workspace = true }

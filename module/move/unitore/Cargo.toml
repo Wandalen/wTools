@@ -31,7 +31,7 @@ full = [
 enabled = []
 
 [dependencies]
-error_tools = { workspace = true, features = [ "default", "err" ] }
+error_tools = { workspace = true, features = [ "default" ] }
 pth = { workspace = true, features = [ "default" ] }
 tokio = { version = "1.36.0", features = [ "rt", "rt-multi-thread", "io-std", "macros" ] }
 hyper = { version = "1.1.0", features = [ "client" ] }
@@ -43,7 +43,7 @@ toml = "0.8.10"
 serde = "1.0.196"
 url = { version = "2.0", features = ["serde"] }
 humantime-serde = "1.1.1"
-gluesql = { version = "0.16.3", features = ["sled-storage"] }
+gluesql = "0.16.3"
 async-trait = "0.1.41"
 wca = { workspace = true }
 mockall = "0.12.1"

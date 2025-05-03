@@ -11,6 +11,7 @@ members = [
 exclude = [
   "-*",
   "module/move/_video_experiment",
+  "module/move/cargo_will",
 ]
 # default-members = [ "module/core/wtools" ]
 
