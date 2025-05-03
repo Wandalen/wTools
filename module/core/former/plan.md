@@ -1,129 +1,179 @@
-# Project Plan: Remove Component Model Derives from Former Crates
+# Project Plan: Uncomment and Fix Tests in `former` Crate
 
-## Original Goal
+## Goal
 
-Remove derives FromComponents, ComponentsAssign, ComponentAssign and ComponentFrom from crates former, former_meta, former_types as well as documentations, examples, types and everything related to these derives and component model. Don't edit other crates.
+Uncomment all non-component-related test modules and individual tests within `module/core/former/tests/inc/`. Address any `// xxx :` or `// qqq :` tasks found within these test files and ensure all uncommented tests pass.
+
+## Requirements
+
+*   **Adherence:** Strictly follow `code/gen` instructions, Design Rules, and Codestyle Rules for all modifications. Prioritize these rules over the existing style in the repository if conflicts arise.
+*   **Verification:** After each increment involving code changes, ensure the relevant code compiles (`cargo check --tests --package former`) and all *uncommented* tests pass (`cargo test --package former`). Critically analyze any failures.
+*   **Task Handling:** Address `// xxx :` and `// qqq :` comments found in uncommented test code. If a task is complex, convert it into a standard `// TODO:` comment with a brief explanation or suggest creating a dedicated issue.
+*   **Component Model Exclusion:** Do *not* uncomment or attempt to fix tests within `module/core/former/tests/inc/components_tests/`. This module should remain inactive or be deleted as per the component model removal plan (`plan.md`).
+*   **Integration:** Increment 5 must coordinate with and potentially update `module/core/former/plan_dyn_trait_issue.md` when addressing `parametrized_dyn_manual.rs`.
+*   **Minimal Changes:** Prioritize fixing existing tests with minimal changes. Avoid unnecessary refactoring unless required to make the test pass or adhere to rules.
+
+## Context (Relevant Files & Modules)
+
+The following files and modules are expected to be relevant for analysis and modification during this plan:
+
+*   **Main Test Aggregator:**
+    *   `module/core/former/tests/inc/mod.rs` (Needs uncommenting of modules)
+*   **Struct Tests (`module/core/former/tests/inc/former_struct_tests/`):**
+    *   `collection_former_linked_list.rs` (Contains `// qqq :`)
+    *   `collection_former_vec.rs` (Contains `// qqq :`)
+    *   `tuple_struct.rs` (Commented out, contains `// xxx : qqq :`)
+    *   `keyword_subform_derive.rs` (Contains `// qqq : xxx :`)
+    *   `parametrized_dyn_manual.rs` (Commented out, contains `// xxx2 : qqq2 :`, related to `plan_dyn_trait_issue.md`)
+    *   Other files in this directory may need review if tests fail after uncommenting `mod former_struct_tests;`.
+*   **Enum Tests (`module/core/former/tests/inc/former_enum_tests/`):**
+    *   `basic_derive.rs` (Contains `// qqq : xxx :`)
+    *   `generics_in_tuple_variant_derive.rs` (Commented out)
+    *   `generics_shared_struct_derive.rs` (Commented out, contains `// qqq : xxx :`)
+    *   `generics_shared_struct_manual.rs` (Commented out, contains `// xxx : qqq :`)
+    *   `generics_independent_tuple_derive.rs` (Contains `// xxx : qqq :`)
+    *   `usecase1.rs` (Commented out, contains `// qqq : xxx :`)
+    *   `subform_collection_test.rs` (Commented out, contains `// qqq : xxx :`, known compile fail)
+    *   Other files in this directory may need review if tests fail after uncommenting `mod former_enum_tests;`.
+*   **Potential Source Code (If test failures indicate issues):**
+    *   `module/core/former_meta/src/derive_former/former_struct.rs`
+    *   `module/core/former_meta/src/derive_former/former_enum.rs` (and its submodules)
+    *   `module/core/former_types/src/**` (especially collection implementations)
+    *   **`module/core/macro_tools/src/` Files:**
+        *   `lib.rs`
+        *   `attr.rs`
+        *   `attr_prop.rs`
+        *   `attr_prop/boolean.rs`
+        *   `attr_prop/boolean_optional.rs`
+        *   `attr_prop/singletone.rs`
+        *   `attr_prop/singletone_optional.rs`
+        *   `attr_prop/syn.rs`
+        *   `attr_prop/syn_optional.rs`
+        *   `components.rs`
+        *   `container_kind.rs`
+        *   `ct.rs`
+        *   `ct/str.rs`
+        *   `derive.rs`
+        *   `derive_former.rs`
+        *   `derive_former/field.rs`
+        *   `derive_former/field_attrs.rs`
+        *   `derive_former/former_enum.rs`
+        *   `derive_former/former_enum/struct_non_zero.rs`
+        *   `derive_former/former_enum/struct_zero.rs`
+        *   `derive_former/former_enum/tuple_non_zero.rs`
+        *   `derive_former/former_enum/tuple_zero.rs`
+        *   `derive_former/former_enum/unit.rs`
+        *   `derive_former/former_struct.rs`
+        *   `derive_former/struct_attrs.rs`
+        *   `diag.rs`
+        *   `equation.rs`
+        *   `generic_args.rs`
+        *   `generic_params.rs`
+        *   `ident.rs`
+        *   `item.rs`
+        *   `item_struct.rs`
+        *   `iter.rs`
+        *   `kw.rs`
+        *   `name.rs`
+        *   `phantom.rs`
+        *   `punctuated.rs`
+        *   `quantifier.rs`
+        *   `struct_like.rs`
+        *   `tokens.rs`
+        *   `typ.rs`
+        *   `typed.rs`
+*   **Related Plan:**
+    *   `module/core/former/plan_dyn_trait_issue.md`
 
 ## Increments
 
-*   ✅ **Increment 1:** Analyze and Remove Proc-Macro Code in `former_meta`
-    *   **Detailed Plan Step 1 (Locate Macros):** Use `search_files` within `module/core/former_meta/src` (likely in submodules like `derive/` or `component/`) for the exact proc-macro definitions. Search patterns:
-        *   `r#"#\[proc_macro_derive\(\s*FromComponents\s*[,)]"#`
-        *   `r#"#\[proc_macro_derive\(\s*ComponentsAssign\s*[,)]"#`
-        *   `r#"#\[proc_macro_derive\(\s*ComponentAssign\s*[,)]"#`
-        *   `r#"#\[proc_macro_derive\(\s*ComponentFrom\s*[,)]"#`
-        *   Also search for potential attribute macros if derive is not found: `r#"#\[proc_macro_attribute]\s*pub\s+fn\s+(?:from_components|components_assign|...)"#`
-    *   **Detailed Plan Step 2 (Analyze Dependencies):** Read the code surrounding the located macro definitions. Identify any helper functions, structs, or constants defined within `former_meta` that are *exclusively* used by these macros. Trace their usage to ensure they aren't needed elsewhere.
-    *   **Detailed Plan Step 3 (Remove Macro Code):** Use `apply_diff` to precisely remove the entire `#[proc_macro_derive]` function block (or `#[proc_macro_attribute]` function) for each of the four macros. Also, remove the helper code identified in Step 2 if it's confirmed to be exclusively used by the removed macros. Be careful not to remove unrelated code.
-    *   **Detailed Plan Step 4 (Remove Exports):** Check `module/core/former_meta/src/lib.rs` and any relevant `mod.rs` files (e.g., `module/core/former_meta/src/derive/mod.rs`) for `pub use` statements exporting the removed macros (e.g., `pub use private::FromComponents;`). Use `apply_diff` to remove these specific export lines.
-    *   **Crucial Design Rules:** [Structuring: Keep all Definitions and Details Inside `private` namespace](#structuring-keep-all-definitions-and-details-inside-private-namespace) (verify helpers were private if applicable), [Structuring: Explicit Exposure Rule](#structuring-explicit-exposure-rule) (guides removal of exports).
-    *   **Verification Strategy:**
-        *   Request user run `cargo build --package former_meta`.
-        *   Request user run `cargo clippy --package former_meta -- -D warnings`.
-        *   Analyze output critically: Expect successful compilation with no errors or warnings related to the removed macros or helpers. Verify no *new* unrelated errors/warnings were introduced.
-*   ✅ **Increment 2:** Remove Derive Usage in `former_types`
-    *   **Detailed Plan Step 1 (Locate Derive Usage):** Use `search_files` within `module/core/former/src/former_types/src` for the regex pattern: `r#"#\[derive\([^)]*(?:FromComponents|ComponentsAssign|ComponentAssign|ComponentFrom)[^)]*\)]"#`. This pattern finds the derives even when mixed with others.
-    *   **Detailed Plan Step 2 (Remove Derive Attributes):** For each file and struct/enum identified in Step 1, use `apply_diff`. The SEARCH block should target the `#[derive(...)]` line, and the REPLACE block should contain the same line but *without* `FromComponents`, `ComponentsAssign`, `ComponentAssign`, or `ComponentFrom`. Ensure other derives on the same line remain untouched. Example: `#[derive( Debug, Clone, FromComponents )]` becomes `#[derive( Debug, Clone )]`.
-    *   **Detailed Plan Step 3 (Analyze Implicit Dependencies):** Search within `module/core/former/src/former_types/src` for code that might rely on traits or methods generated by the removed derives. Search terms:
-        *   Trait bounds: `where T: FromComponents`, `impl FromComponents for ...` (and variants for other derives).
-        *   Potential method calls: `.from_components(`, `.assign_components(`, `.assign_component(`, `.component_from(`. (These are guesses; actual names depend on macro implementation).
-        *   Specific types potentially related only to these derives.
-    *   **Detailed Plan Step 4 (Remove/Refactor Dependent Code):** Based on Step 3 findings, use `apply_diff` to:
-        *   Remove `impl` blocks for the component traits.
-        *   Remove functions or methods whose logic entirely depended on the component model.
-        *   Refactor functions/methods by removing calls to component methods or changing signatures that used related types/traits.
-        *   Remove structs/enums if they become completely unused after removing derives and related logic.
-    *   **Crucial Design Rules:** [Prioritize Reuse and Minimal Change](#prioritize-reuse-and-minimal-change) (Adapt existing code where possible instead of wholesale removal).
-    *   **Verification Strategy:**
-        *   Request user run `cargo build --package former_types`.
-        *   Request user run `cargo clippy --package former_types -- -D warnings`.
-        *   Analyze output critically: Expect successful compilation. Look specifically for errors indicating missing traits, methods, or types that were previously generated or used by the component model. Ensure no new unrelated errors/warnings.
-*   ✅ **Increment 3:** Remove Derive Usage and Related Code in `former` (including tests and examples)
-    *   **Detailed Plan Step 1 (Locate Derive Usage in src):** Use `search_files` within `module/core/former/src/former/src` using the same regex as Increment 2, Step 1: `r#"#\[derive\([^)]*(?:FromComponents|ComponentsAssign|ComponentAssign|ComponentFrom)[^)]*\)]"#`. (Done - None found)
-    *   **Detailed Plan Step 2 (Locate Related Code in src):** Use `search_files` within `module/core/former/src/former/src` for:
-        *   The derive usage pattern from Step 1.
-        *   Explicit imports: `use former_types::.*Component.*`, `use former_meta::FromComponents` (and variants).
-        *   Method calls: `.components(`, `.assign_components_from(`, etc. (as in Inc 2, Step 3).
-        *   Function signatures or struct fields using component-related types from `former_types`.
-        *   Trait bounds or `impl` blocks related to component traits. (Done - None found)
-    *   **Detailed Plan Step 3.1 (Analyze Test Failures):** Analyze `cargo test --package former` output. Identify files/lines in `module/core/former/tests/` causing errors due to missing component model features. (Done)
-    *   **Detailed Plan Step 3.2 (Fix Tests):** Use `apply_diff` to remove/refactor failing test code in `module/core/former/tests/` based on Step 3.1 analysis. (Focus on removing tests for removed features or adapting assertions). (Done - Removed `mod components_tests;`)
-    *   **Detailed Plan Step 3.3 (Analyze Example Failures):** Analyze `cargo test --package former` output. Identify files/lines in `module/core/former/examples/` causing errors. (Done - Identified `former_component_from.rs`)
-    *   **Detailed Plan Step 3.4 (Fix Examples):** Use `apply_diff` or `write_to_file` to remove/refactor failing example code in `module/core/former/examples/` based on Step 3.3 analysis. (Done - Emptied `former_component_from.rs`, then added placeholder `main`)
-    *   **Detailed Plan Step 3.5 (Refactor src Logic):** Analyze code in `module/core/former/src/former/src` surrounding any potential (though unlikely based on searches) removals from previous steps. Refactor if needed. (Done - Checked `lib.rs`, no changes needed)
-    *   **Crucial Design Rules:** [Prioritize Reuse and Minimal Change](#prioritize-reuse-and-minimal-change) (Adapt existing code where possible instead of wholesale removal), [Testing: Avoid Writing Automated Tests Unless Asked](#testing-avoid-writing-tests-unless-asked) (Justifies removing tests for removed features).
-    *   **Verification Strategy:**
-        *   Run `cargo build --package former`.
-        *   Run `cargo test --package former`.
-        *   Analyze output critically: Expect successful compilation and tests passing. Focus on errors related to missing derives, types, traits, methods, or functions previously part of the component model implementation or its usage in `former`. Ensure no new unrelated errors/warnings.
-*   ✅ **Increment 4:** Clean Up Tests in All Affected Crates (Now potentially smaller scope due to Step 3.2)
-    *   **Detailed Plan Step 1 (Locate Affected Tests):** Use `search_files` in the following directories: `module/core/former/tests`, `module/core/former_meta/tests`, `module/core/former/src/former_types/tests`, `module/core/former/src/former/tests`. Search patterns:
-        *   Derive usage on test structs: `r#"#\[derive\([^)]*(?:FromComponents|ComponentsAssign|ComponentAssign|ComponentFrom)[^)]*\)]"#`
-        *   Component method calls: `.components(`, `.assign_components_from(`, etc.
-        *   Assertions checking component-related state or behavior.
-        *   Keywords: `FromComponents`, `ComponentsAssign`, `ComponentAssign`, `ComponentFrom`. (Done - Only found inactive code in `components_tests` or docs)
-    *   **Detailed Plan Step 2 (Analyze Tests):** For each identified test function or module, determine if its primary purpose was to test the now-removed component functionality. Can the test be adapted to test remaining functionality, or should it be removed entirely? (Done - No active tests found)
-    *   **Detailed Plan Step 3 (Remove/Modify Tests):**
-        *   For tests solely testing removed features: Use `apply_diff` to remove the entire `#[test]` function or the `mod tests { ... }` block. If a whole file (e.g., `tests/component_tests.rs`) becomes empty, propose its removal (e.g., via `write_to_file` with empty content or asking user to delete).
-        *   For tests partially affected: Use `apply_diff` to remove the specific derive usages, method calls, and assertions related to the component model, adapting the test to focus on remaining logic. (Done - No active tests needed modification)
-    *   **Crucial Design Rules:** [Testing: Avoid Writing Automated Tests Unless Asked](#testing-avoid-writing-tests-unless-asked) (Justifies removing tests for removed features).
-    *   **Verification Strategy:**
-        *   Request user run `cargo test --package former_meta --package former_types --package former`.
-        *   Analyze output critically: Ensure no tests fail. Verify that the *total number* of tests executed has decreased compared to the baseline (if known). Check for any new compilation errors within the test code itself.
-*   ✅ **Increment 5:** Update Documentation (Code & Readmes)
-    *   **Detailed Plan Step 1 (Locate Documentation):** Use `search_files` across:
-        *   Source files: `module/core/former_meta/src/**/*.rs`, `module/core/former/src/former_types/src/**/*.rs`, `module/core/former/src/former/src/**/*.rs`
-        *   Readme: `module/core/former/Readme.md`
-        *   Other potential docs: `module/core/former/docs/**/*.md` (if exists)
-        *   Search keywords: `FromComponents`, `ComponentsAssign`, `ComponentAssign`, `ComponentFrom`, "component model", "components assign", "component from". (Done - Found in `former_meta/src/component/*.rs` (removed), `former/Readme.md`, `former/tests/inc/mod.rs`)
-    *   **Detailed Plan Step 2 (Analyze Documentation):** Review search results in doc comments (`///`, `//!`) and Markdown files. Identify explanations, examples within docs, API references, or conceptual sections related to the removed derives/model. (Done - Identified locations)
-    *   **Detailed Plan Step 3 (Remove/Update Documentation):** Use `apply_diff` to:
-        *   Remove sentences or paragraphs discussing the removed features.
-        *   Remove code examples in docs that used the derives.
-        *   Update surrounding text to ensure logical flow and coherence after removals.
-        *   Remove mentions from API lists or feature summaries. (Done - Removed from `former/Readme.md`)
-    *   **Crucial Design Rules:** [Comments and Documentation](#comments-and-documentation) (Focus on removing outdated info, ensure clarity).
-    *   **Verification Strategy:**
-        *   Request user run `cargo doc --package former_meta --package former_types --package former --no-deps`. Check for warnings (especially broken links). (Done - Passed)
-        *   Recommend manual review by the user of `Readme.md` and key source files with modified doc comments to ensure accuracy and readability.
-*   ✅ **Increment 6:** Update Examples (Now potentially smaller scope due to Step 3.4)
-    *   **Detailed Plan Step 1 (Locate Examples):** Use `list_files` to check if `module/core/former/examples` exists. If yes, use `search_files` within `module/core/former/examples/*.rs` for the keywords and derive patterns used in previous increments. (Done - Found references in `former_component_from.rs` and potentially others)
-    *   **Detailed Plan Step 2 (Analyze Examples):** Determine if any found examples heavily rely on the removed component model features. Can they be refactored to demonstrate alternative usage, or are they now obsolete? (Done - `former_component_from.rs` is obsolete)
-    *   **Detailed Plan Step 3 (Remove/Modify Examples):**
-        *   If obsolete: Propose removing the example file (e.g., `write_to_file` with empty content or ask user).
-        *   If adaptable: Use `apply_diff` to remove derive usage and component method calls, refactoring the example to use current APIs. (Done - Emptied `former_component_from.rs` content in Inc 3, added placeholder `main`)
-    *   **Crucial Design Rules:** N/A (Focus is removal/adaptation).
-    *   **Verification Strategy:**
-        *   If examples were modified: Request user run `cargo run --example <modified_example_name> --package former` (or relevant crate). Check for compilation errors and verify expected output (if any).
-        *   If examples were removed: Request user run `cargo build --examples --package former` (or relevant crate) to ensure the examples build process doesn't fail.
-*   ⏳ **Increment 7:** Final Package Verification
-    *   **Detailed Plan Step 1 (Final Sweep):** Perform a final `search_files` across the target directories (`module/core/former_meta`, `module/core/former/src/former_types`, `module/core/former/src/former`, `module/core/former/tests`, `module/core/former/examples`, `module/core/former/docs`) for any remaining occurrences of `FromComponents`, `ComponentsAssign`, `ComponentAssign`, `ComponentFrom` to catch any missed references.
-    *   **Detailed Plan Step 2 (Final Cleanup):** If Step 1 finds anything, use `apply_diff` or `write_to_file` to remove the final remnants within the affected crate's files.
-    *   **Detailed Plan Step 3 (Comprehensive Checks - Targeted):** Request user run the following commands sequentially:
-        *   `cargo check --package former_meta --package former_types --package former --all-targets`
-        *   `cargo clippy --package former_meta --package former_types --package former --all-targets -- -D warnings`
-        *   `cargo test --package former_meta --package former_types --package former --all-targets`
-    *   **Crucial Design Rules:** N/A.
-    *   **Verification Strategy:** Analyze the output of *all* commands in Step 3 critically. The goal is zero errors and zero warnings across all specified packages (`former_meta`, `former_types`, `former`) and targets. Confirm all remaining tests within these packages pass.
+*   [⚫] **Increment 1:** Uncomment Main Test Modules & Get Baseline
+    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/mod.rs`. Uncomment the line `mod former_struct_tests;`. Keep `mod former_enum_tests;` and `mod components_tests;` commented for now.
+    *   **Detailed Plan Step 2:** Request user to run `cargo check --tests --package former` and `cargo test --package former`.
+    *   **Crucial Design Rules:** N/A (Analysis step).
+    *   **Verification Strategy:** Analyze the output provided by the user. Identify the list of failing tests within `former_struct_tests`. This establishes the baseline for subsequent increments. Expect compilation errors and test failures.
+*   [⚫] **Increment 2:** Address `former_struct_tests` Issues (Collection Formers)
+    *   **Detailed Plan Step 1:** Read `module/core/former/tests/inc/former_struct_tests/collection_former_linked_list.rs`. Locate the `// qqq : uncomment and make it working` comment within the `entity_to` test. Uncomment the two `let got = ...` lines related to `EntityToStorage`.
+    *   **Detailed Plan Step 2:** Read `module/core/former/tests/inc/former_struct_tests/collection_former_vec.rs`. Locate the `// qqq : uncomment and make it working` comment within the `entity_to` test. Uncomment the two `let got = ...` lines related to `EntityToStorage`.
+    *   **Detailed Plan Step 3:** Request user to run `cargo check --tests --package former`. Analyze potential compilation errors. Hypothesize that `EntityToStorage` might not be correctly implemented or derived for these collection types. If errors occur, investigate `former_types/src/collection/linked_list.rs` and `former_types/src/collection/vector.rs` and propose fixes to the `impl crate::EntityToStorage` blocks.
+    *   **Detailed Plan Step 4:** Request user to run `cargo test --package former --test collection_former_linked_list` and `cargo test --package former --test collection_former_vec`. Analyze any failures and propose necessary code corrections.
+    *   **Crucial Design Rules:** [Prioritize Reuse and Minimal Change](#prioritize-reuse-and-minimal-change).
+    *   **Verification Strategy:** Successful compilation (`cargo check`) and passing tests (`cargo test`) for `collection_former_linked_list` and `collection_former_vec`.
+*   [⚫] **Increment 3:** Address `former_struct_tests` Issue (`tuple_struct.rs`)
+    *   **Detailed Plan Step 1:** Read `module/core/former/tests/inc/former_struct_tests/tuple_struct.rs`.
+    *   **Detailed Plan Step 2:** Uncomment the entire file content.
+    *   **Detailed Plan Step 3:** Analyze the `// xxx : qqq : make that working` task. The code attempts to use `#[subform_collection]` on a field within a tuple struct `Struct1( #[ subform_collection ] HashMap< Key, Value > )`.
+    *   **Detailed Plan Step 4:** Request user to run `cargo check --tests --package former`. Analyze potential compilation errors. Hypothesize that the `Former` derive macro in `former_meta` might not correctly handle attributes on fields within tuple structs.
+    *   **Detailed Plan Step 5:** Investigate `former_meta/src/derive_former/former_struct.rs` and potentially `field.rs`/`field_attrs.rs` to understand how tuple struct fields and their attributes are processed. Propose necessary fixes to the macro code to support this pattern.
+    *   **Detailed Plan Step 6:** Request user to run `cargo test --package former --test tuple_struct`. Analyze failures and refine fixes.
+    *   **Crucial Design Rules:** N/A (Macro implementation focus).
+    *   **Verification Strategy:** Successful compilation (`cargo check`) and passing test (`cargo test`) for `tuple_struct`.
+*   [⚫] **Increment 4:** Address `former_struct_tests` Issue (`keyword_subform_derive.rs`)
+    *   **Detailed Plan Step 1:** Read `module/core/former/tests/inc/former_struct_tests/keyword_subform_derive.rs`.
+    *   **Detailed Plan Step 2:** Analyze the `// qqq : xxx : fix it` task. The test uses keywords (`for`, `match`, `impl`) as field names with subform attributes.
+    *   **Detailed Plan Step 3:** Request user to run `cargo check --tests --package former`. Analyze potential compilation errors. Hypothesize that the macro might not be generating method names or struct names using raw identifiers (`r#`) correctly when field names are keywords.
+    *   **Detailed Plan Step 4:** Investigate `former_meta/src/derive_former/field.rs` (specifically the setter generation functions like `subform_collection_setter`, `subform_entry_setter`, `subform_scalar_setter`) and `macro_tools/src/ident.rs`. Ensure `ident_maybe_raw` is used appropriately when generating identifiers based on field names. Propose fixes.
+    *   **Detailed Plan Step 5:** Request user to run `cargo test --package former --test keyword_subform_derive`. Analyze failures and refine fixes.
+    *   **Crucial Design Rules:** N/A (Macro implementation focus).
+    *   **Verification Strategy:** Successful compilation (`cargo check`) and passing test (`cargo test`) for `keyword_subform_derive`.
+*   [⚫] **Increment 5:** Address `former_struct_tests` Issue (`parametrized_dyn_manual.rs` - Integrate with `plan_dyn_trait_issue.md`)
+    *   **Detailed Plan Step 1:** Read `module/core/former/tests/inc/former_struct_tests/parametrized_dyn_manual.rs` and `module/core/former/plan_dyn_trait_issue.md`.
+    *   **Detailed Plan Step 2:** Systematically execute the detailed plan steps outlined in `plan_dyn_trait_issue.md`. This involves:
+        *   Uncommenting the manual implementation in `parametrized_dyn_manual.rs`.
+        *   Applying codestyle fixes.
+        *   Creating the shared test logic file (`parametrized_dyn_only_test.rs`).
+        *   Verifying the manual implementation compiles and passes tests.
+        *   Creating the derive macro invocation site (`parametrized_dyn_derive.rs`).
+        *   Analyzing the macro failure (likely related to handling `dyn Trait` and lifetimes).
+        *   Implementing the fix in `former_meta` (likely `derive_former/field.rs` or `derive_former/former_struct.rs`).
+    *   **Detailed Plan Step 3:** Update `plan_dyn_trait_issue.md` to reflect the progress and resolution.
+    *   **Crucial Design Rules:** Follow rules specified in `plan_dyn_trait_issue.md`.
+    *   **Verification Strategy:** Successful compilation (`cargo check`) and passing tests (`cargo test`) for both `parametrized_dyn_manual` and the new `parametrized_dyn_derive` test.
+*   [⚫] **Increment 6:** Uncomment `former_enum_tests` Submodules & Address Basic Issues
+    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/mod.rs`. Uncomment the line `mod former_enum_tests;`. Within that block, ensure only the following are initially uncommented: `mod basic_derive;`, `mod unit_variant_derive;`, `mod enum_named_fields_derive;`, `mod keyword_variant_derive;`. Keep others commented.
+    *   **Detailed Plan Step 2:** Read `module/core/former/tests/inc/former_enum_tests/basic_derive.rs`. Address the `// qqq : xxx : uncomment and make it working` task by ensuring the code is valid and removing the comment.
+    *   **Detailed Plan Step 3:** Request user to run `cargo check --tests --package former`. Analyze and fix any compilation errors in the newly uncommented enum tests.
+    *   **Detailed Plan Step 4:** Request user to run `cargo test --package former -- --test former_enum_tests::basic_derive --test former_enum_tests::unit_variant_derive --test former_enum_tests::enum_named_fields_derive --test former_enum_tests::keyword_variant_derive`. Analyze failures and propose fixes.
+    *   **Crucial Design Rules:** [Prioritize Reuse and Minimal Change](#prioritize-reuse-and-minimal-change).
+    *   **Verification Strategy:** Successful compilation (`cargo check`) and passing tests (`cargo test`) for the specified basic enum tests.
+*   [⚫] **Increment 7:** Address `former_enum_tests` Generics Issues
+    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/mod.rs`. Uncomment the generics-related test files within the `former_enum_tests` block: `generics_in_tuple_variant_derive.rs`, `generics_shared_struct_derive.rs`, `generics_shared_struct_manual.rs`, `generics_independent_tuple_derive.rs`, `scalar_generic_tuple_derive.rs`.
+    *   **Detailed Plan Step 2:** Address any `// qqq : xxx :` or similar tasks within these files by uncommenting code and removing the task comments.
+    *   **Detailed Plan Step 3:** Request user to run `cargo check --tests --package former`. Analyze compilation errors. These are likely complex and may require significant changes to how generics, bounds, and lifetimes are handled in `former_meta/src/derive_former/former_enum.rs` and its submodules.
+    *   **Detailed Plan Step 4:** Propose fixes incrementally, focusing on one test file/scenario at a time (e.g., fix `generics_shared_tuple`, then `generics_shared_struct`, etc.). This might involve adjusting how generic parameters are decomposed, merged, or applied in generated code (formers, storage, end handlers).
+    *   **Detailed Plan Step 5:** After proposing fixes for a specific test file, request user to run `cargo test --package former --test <test_name>`. Analyze results and refine fixes. Repeat for each generics test file.
+    *   **Crucial Design Rules:** N/A (Macro implementation focus).
+    *   **Verification Strategy:** Successful compilation (`cargo check`) and passing tests (`cargo test`) for each of the generics-related enum test files individually after fixes are applied.
+*   [⚫] **Increment 8:** Address `former_enum_tests` Issue (`usecase1.rs`)
+    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/mod.rs`. Uncomment `mod usecase1;`.
+    *   **Detailed Plan Step 2:** Read `module/core/former/tests/inc/former_enum_tests/usecase1.rs`. Uncomment the file content.
+    *   **Detailed Plan Step 3:** Address the `// qqq : xxx : uncomment and make it working` task. Analyze compilation errors or test failures. This test uses default subformer generation for enum variants holding structs that also derive `Former`.
+    *   **Detailed Plan Step 4:** Investigate `former_meta/src/derive_former/former_enum.rs` (likely `tuple_non_zero.rs` or `struct_non_zero.rs`) to ensure the default subformer logic (when no `#[scalar]` or `#[subform_scalar]` is present) is correctly generated for single-field variants. Propose fixes.
+    *   **Detailed Plan Step 5:** Request user to run `cargo test --package former --test usecase1`. Analyze failures and refine fixes.
+    *   **Crucial Design Rules:** N/A (Macro implementation focus).
+    *   **Verification Strategy:** Successful compilation (`cargo check`) and passing test (`cargo test`) for `usecase1`.
+*   [⚫] **Increment 9:** Address `former_enum_tests` Issue (`subform_collection_test.rs` - Known Compile Fail)
+    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/mod.rs`. Uncomment `mod subform_collection_test;`.
+    *   **Detailed Plan Step 2:** Read `module/core/former/tests/inc/former_enum_tests/subform_collection_test.rs`. Uncomment the file content.
+    *   **Detailed Plan Step 3:** Address the `// qqq : xxx : make it working` task. The comments indicate this test is expected to fail compilation because `#[subform_entry]` on `Vec<Enum>` is not currently supported.
+    *   **Detailed Plan Step 4:** **Confirm with the user if this feature (`#[subform_entry]` for `Vec<Enum>`) should be implemented.**
+        *   **If YES:** This is a significant feature addition. Propose a sub-plan to implement the necessary logic in `former_meta/src/derive_former/field.rs` (specifically `subform_entry_setter`) to handle enum variants. This involves generating code that can somehow select and start the correct former for a *specific enum variant* within the collection context. This is non-trivial.
+        *   **If NO:** Modify the test file. Either remove the test code entirely or wrap the failing code block with `#[test] #[should_panic]` (if it panics at runtime) or configure the test suite (e.g., using `compiletest_rs` or similar, though that's outside the scope of direct code generation here) to expect a compilation failure. The simplest approach is likely removing the test code and the file, adding a comment in `mod.rs` explaining the limitation.
+    *   **Detailed Plan Step 5:** Apply the chosen solution (implement feature or modify/remove test).
+    *   **Crucial Design Rules:** [Enhancements: Only Implement What’s Requested](#enhancements-only-implement-whats-requested) (Requires user confirmation before implementing the feature).
+    *   **Verification Strategy:** If implemented: Successful compilation (`cargo check`) and passing test (`cargo test --package former --test subform_collection_test`). If removed/modified: Successful compilation (`cargo check --tests --package former`) and no test failures related to this file.
+*   [⚫] **Increment 10:** Final Verification
+    *   **Detailed Plan Step 1:** Ensure no non-component test modules or files remain commented out in `module/core/former/tests/inc/mod.rs`.
+    *   **Detailed Plan Step 2:** Request user to run `cargo check --tests --package former --all-targets`.
+    *   **Detailed Plan Step 3:** Request user to run `cargo clippy --package former --all-targets -- -D warnings`.
+    *   **Detailed Plan Step 4:** Request user to run `cargo test --package former --all-targets`.
+    *   **Crucial Design Rules:** N/A (Verification step).
+    *   **Verification Strategy:** Analyze output from user. Expect zero errors and zero warnings from `check` and `clippy`. Expect all tests for the `former` package to pass.
 
 ## Notes & Insights
 
 *   *(This section must always be present and preserved)*
-*   **[Date/Inc #] Struggling Point:** Unable to locate proc-macro definitions or attributes using initial search patterns in `module/core/former_meta/src`. Also, `read_file` and `list_files` failed for paths within this directory, contradicting "VSCode Open Tabs". Status: Resolved (Root cause identified as incorrect paths in plan).
-*   **[Date/Inc #] Struggling Point:** Unable to remove the content of `module/core/former_meta/src/component/component_from.rs` using `write_to_file`. Status: Resolved (Used `apply_diff` successfully).
-*   **[Date/Inc #] Struggling Point:** Unable to remove component-specific traits and impls from `module/core/former_meta/src/lib.rs` using `apply_diff` due to content mismatch including documentation comments. Status: Resolved (Identified need to include comments in search).
-*   **[Date/Inc #] Struggling Point:** Unable to remove component-specific traits and impls from `module/core/former_meta/src/lib.rs` using `apply_diff` due to incorrect line numbering after previous edits. This issue is repeating. Status: Resolved (Realized these were documentation examples, not macro code).
-*   **[Date/Inc #] Struggling Point:** Unable to remove the content of `module/core/former/examples/former_component_from.rs` using `write_to_file`. Status: Resolved (Used `apply_diff` successfully).
-*   **[Date/Inc #] Hypothesis Test:** Hypothesis: The component model code is in `module/core/former_meta/src/component/*.rs` but uses different macro definitions/naming. Test: Read the content of these specific files. **Result:** Rejected. **Reasoning:** `read_file` failed for `from_components.rs`, and `list_files` found no files in the directory, indicating the path or tool is not working as expected for this location.
-*   **[Date/Inc #] Hypothesis Test:** Hypothesis: The files listed in "VSCode Open Tabs" within `module/core/former_meta/src/` are the correct paths, and the previous tool failures were transient or specific path issues. Test: Attempt to read `module/core/former_meta/src/lib.rs`. **Result:** Rejected. **Reasoning:** `read_file` failed for `lib.rs`.
-*   **[Date/Inc #] Hypothesis Test:** Hypothesis: `apply_diff` can be used as a fallback to remove the content of `module/core/former_meta/src/component/component_from.rs`. Test: Attempt to remove content using `apply_diff`. **Result:** Confirmed. **Reasoning:** The `apply_diff` operation was successful in removing the file content.
-*   **[Date/Inc #] Hypothesis Test:** Hypothesis: The `apply_diff` tool is highly sensitive to exact content matches, and removing blocks individually with meticulously copied content from the latest `read_file` result might succeed. Test: Attempt to remove the `BigOptsComponentsAssign` trait block from `module/core/former_meta/src/lib.rs` using `apply_diff` with content copied directly from the last successful `read_file` result. **Result:** Rejected. **Reasoning:** The `apply_diff` failed due to content mismatch, indicating the search content (copied from the previous read) did not exactly match the file content, likely due to documentation comments.
-*   **[Date/Inc #] Hypothesis Test:** Hypothesis: The `apply_diff` tool requires the search content to exactly match the file content, including documentation comments. I need to read the file again and meticulously copy the *entire* block, including the leading `///` comments, for the `apply_diff` to succeed. Test: Read `module/core/former_meta/src/lib.rs` again. Then, use the correct line numbers and the exact content (including documentation comments) from the new `read_file` result in `apply_diff` calls to remove the `BigOptsComponentsAssign` trait block using `apply_diff`, ensuring the SEARCH block includes the documentation comments exactly as they appear in the file. **Result:** Confirmed. **Reasoning:** Including the documentation comments in the search content allowed the `apply_diff` to succeed.
-*   **[Date/Inc #] Hypothesis Test:** Hypothesis: The line numbers for the `SmallerOptsComponentsAssign` blocks in `module/core/former_meta/src/lib.rs` have shifted due to the removal of the `BigOptsComponentsAssign` blocks. I need to get the current content of the file to determine the correct starting line numbers for the remaining blocks I want to remove. Test: Read `module/core/former_meta/src/lib.rs` again to get the updated line numbering. Then, use the correct line numbers and the exact content (including documentation comments) from the new `read_file` result in `apply_diff` calls to remove the `SmallerOptsComponentsAssign` trait and its impl block individually. **Result:** Inconclusive (Test not yet performed). **Reasoning:** Need to perform the read and the subsequent `apply_diff` attempts with the updated line numbers.
-*   **[Date/Inc #] Hypothesis Test:** Hypothesis: `apply_diff` can be used as a fallback to remove the content of `module/core/former/examples/former_component_from.rs` where `write_to_file` failed. Test: Attempt to remove content using `apply_diff`. **Result:** Confirmed. **Reasoning:** The `apply_diff` operation was successful in removing the file content.
-*   **[Date/Inc #] Insight:** The initial recursive file listing of the workspace revealed that the `former_meta` crate is located at `module/core/former_meta/`, not nested under `module/core/former/src/`. The paths in the plan for `former_meta` were incorrect, causing all file operations targeting that crate to fail. The plan has been updated with the correct paths.
-*   **[Date/Inc #] Insight:** Reading `module/core/former_meta/src/component/mod.rs` failed, suggesting the `component` directory might not be a standard module with a `mod.rs` file, or there's an environmental issue. However, the content of the individual files in `component/` and `lib.rs` has been read, allowing analysis of dependencies.
-*   **[Date/Inc #] Insight:** The removal process requires careful searching and targeted modifications across three crates (`former_meta`, `former_types`, `former`) plus associated tests, docs, and examples. Proceeding increment by increment, focusing on one crate or aspect (like tests) at a crucial to manage complexity.
-*   **[Date/Inc #] Insight:** Verification after each increment using `cargo build`, `clippy`, and `test` for the specific package(s) modified is essential to catch errors early before they propagate.
-*   **[Date/Inc #] Insight:** Refined final verification steps to explicitly target only `former`, `former_meta`, and `former_types` packages, avoiding workspace-wide commands, per user feedback.
-*   **[Date/Inc 3] Insight:** User requested running `cargo test` instead of `cargo clippy` for Increment 3 verification. Plan updated to reflect this. Test failures indicate component model usage in tests and examples, requiring these to be addressed within Increment 3.
+*   **[Date/Inc #] Insight:** The `components_tests` module and its contents will be ignored as the component model is being removed per the other plan (`plan.md`).
+*   **[Date/Inc #] Insight:** The task for `parametrized_dyn_manual.rs` seems complex and has its own plan (`plan_dyn_trait_issue.md`). This plan will integrate that work in Increment 5.
+*   **[Date/Inc #] Insight:** Several enum tests are fully commented out, suggesting potentially incomplete features or larger refactoring needs, especially around generics and subforms for enums.
+*   **[Date/Inc #] Insight:** `subform_collection_test.rs` is known to fail compilation and needs specific attention.
