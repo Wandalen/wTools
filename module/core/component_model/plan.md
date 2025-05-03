@@ -6,6 +6,8 @@ Refine the `component_model`, `component_model_meta`, and `component_model_types
 
 ## Crates Involved
 
+*   `component_model` (User-facing facade)
+*   `component_model_meta` (Proc-macro implementation)
 *   `component_model_types` (Core traits and types)
 
 ## Increments
