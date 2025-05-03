@@ -6,8 +6,6 @@ Refine the `component_model`, `component_model_meta`, and `component_model_types
 
 ## Crates Involved
 
-*   `component_model` (User-facing facade)
-*   `component_model_meta` (Proc-macro implementation)
 *   `component_model_types` (Core traits and types)
 
 ## Increments
@@ -18,10 +16,9 @@ Refine the `component_model`, `component_model_meta`, and `component_model_types
     *   Detailed Plan Step 3: Read and analyze `src/definition.rs`. Check for clarity, correctness, rule adherence, and `former` remnants. Propose changes if needed. *(Partially done - build errors encountered)*
     *   Detailed Plan Step 4: Read and analyze `src/forming.rs`. Check for clarity, correctness, rule adherence, and `former` remnants. Propose changes if needed. *(Partially done - build errors encountered)*
     *   Detailed Plan Step 5: Read and analyze `src/storage.rs`. Check for clarity, correctness, rule adherence, and `former` remnants. Propose changes if needed.
-    *   Detailed Plan Step 6: Read and analyze `src/collection.rs` (and its submodules). Check for clarity, correctness, rule adherence, and `former` remnants. Propose changes if needed. *(Partially done - build errors encountered)*
-    *   Detailed Plan Step 7: Read and analyze `src/component.rs`. Check for clarity, correctness, rule adherence (especially trait definitions like `Assign`), and `former` remnants. Propose changes if needed.
-    *   Detailed Plan Step 8: Review `Cargo.toml` for dependencies, features (especially related to `no_std`, `use_alloc`), metadata, and correctness. Propose updates if needed.
-    *   Detailed Plan Step 9: Review `Readme.md` for clarity, accuracy, consistency with code, and removal of `former` references/concepts. Propose updates if needed.
+    *   Detailed Plan Step 6: Read and analyze `src/component.rs`. Check for clarity, correctness, rule adherence (especially trait definitions like `Assign`), and `former` remnants. Propose changes if needed.
+    *   Detailed Plan Step 7: Review `Cargo.toml` for dependencies, features (especially related to `no_std`, `use_alloc`), metadata, and correctness. Propose updates if needed.
+    *   Detailed Plan Step 8: Review `Readme.md` for clarity, accuracy, consistency with code, and removal of `former` references/concepts. Propose updates if needed.
     *   Crucial Design Rules: [Visibility: Keep Implementation Details Private](https://github.com/Wandalen/wTools/blob/master/module/core/component_model/../../doc/rust/rules/design.md#visibility-keep-implementation-details-private), [Comments and Documentation](https://github.com/Wandalen/wTools/blob/master/module/core/component_model/../../doc/rust/rules/design.md#comments-and-documentation), [Code Style: Do Not Reformat Arbitrarily](https://github.com/Wandalen/wTools/blob/master/module/core/component_model/../../doc/rust/rules/design.md#code-style-do-not-reformat-arbitrarily)
     *   Verification Strategy: After each file modification, request user run `cargo build -p component_model_types` and provide output. **Analyze logs critically**. After all steps in this increment, request user run `cargo test -p component_model_types` and provide output. **Analyze logs critically**. Manual review against goals (clarity, correctness, consistency, rule adherence, `former` removal). Final clippy check in Increment 7.
 *   ⚫ **Increment 2: Review & Refine `component_model_meta` Crate**
