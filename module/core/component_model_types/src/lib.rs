@@ -39,50 +39,38 @@ pub mod dependency
   pub use ::collection_tools;
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-#[ cfg( feature = "enabled" ) ]
-pub use own::*;
+// #[ doc( inline ) ] // Removed this block
+// #[ cfg( feature = "enabled" ) ]
+// pub use own::*;
 
 /// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
 pub mod own
 {
-  #[ allow( clippy::wildcard_imports ) ]
-  use super::*;
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use crate::orphan::*; // Changed to crate::orphan::*
 }
 
 /// Parented namespace of the module.
 #[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
 pub mod orphan
 {
-  #[ allow( clippy::wildcard_imports ) ]
-  use super::*;
-
   #[ doc( inline ) ]
-  pub use exposed::*;
+  pub use crate::exposed::*; // Changed to crate::exposed::*
 
   #[ doc( inline ) ]
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   #[ cfg( feature = "types_component_model" ) ]
-  pub use collection::orphan::*;
+  pub use crate::collection::orphan::*; // Changed to crate::collection::orphan::*
 
 }
 
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  #[ allow( clippy::wildcard_imports ) ]
-  use super::*;
-
   #[ doc( inline ) ]
-  pub use prelude::*;
+  pub use crate::prelude::*; // Changed to crate::prelude::*
 
   #[ doc( inline ) ]
   #[ cfg( feature = "types_component_model" ) ]
@@ -97,25 +85,21 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   #[ cfg( feature = "types_component_model" ) ]
-  pub use collection::exposed::*;
+  pub use crate::collection::exposed::*; // Changed to crate::collection::exposed::*
 
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
 pub mod prelude
 {
-  #[ allow( clippy::wildcard_imports ) ]
-  use super::*;
-
   #[ doc( inline ) ]
   #[ cfg( feature = "types_component_assign" ) ]
-  pub use component::*;
+  pub use crate::component::*; // Changed to crate::component::*
 
   #[ doc( inline ) ]
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   #[ cfg( feature = "types_component_model" ) ]
-  pub use collection::prelude::*;
+  pub use crate::collection::prelude::*; // Changed to crate::collection::prelude::*
 
 }

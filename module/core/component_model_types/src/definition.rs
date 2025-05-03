@@ -15,6 +15,8 @@
 //!   process to ensure entities are formed according to specified rules and logic.
 //!
 
+use crate::exposed::*; // Added this line
+
 /// Maps a type of entity to its corresponding component_model definition.
 /// This trait provides a linkage between the entity and its definition,
 /// allowing the formation logic to understand what definition to apply
@@ -80,11 +82,12 @@ pub trait FormerDefinitionTypes : Sized
 pub trait FormerDefinition : Sized
 {
   /// Encapsulates the types related to the formation process including any mutators.
-  type Types : crate::FormerDefinitionTypes< Storage = Self::Storage, Formed = Self::Formed, Context = Self::Context >
-  + crate::FormerMutator;
+  // qqq : FormerDefinitionTypes bound is redundant, remove?
+  type Types : FormerDefinitionTypes< Storage = Self::Storage, Formed = Self::Formed, Context = Self::Context >
+  + FormerMutator;
 
   /// Defines the ending condition or operation of the formation process.
-  type End: crate::FormingEnd< Self::Types >;
+  type End: FormingEnd< Self::Types >;
 
   /// The storage type used during the formation.
   type Storage : Default;
