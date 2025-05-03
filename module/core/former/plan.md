@@ -2,64 +2,7 @@
 
 ## Initial Task
 
-Refactor the `former_for_enum` function in `former_meta/src/derive_former/former_enum.rs` to improve readability, maintainability, and testability. Extract the logic for handling each distinct variant case (Unit, Tuple(0/N), Struct(0/N)) into its own dedicated handler function within a new submodule (`former_meta/src/derive_former/former_enum/`). Ensure the refactoring adheres strictly to the documented "Enum Variant Handling Rules" and passes all relevant tests. Fix any existing test failures in the `former` crate as a prerequisite.
-
-**Refactoring Principles:**
-
-*   **Reuse Existing Patterns:** All refactoring steps must prioritize reusing existing code structures, helper functions, and patterns already present within the `former_meta` crate and the broader `former` ecosystem (`macro_tools`, `former_types`).
-*   **Minimal Necessary Changes:** Implement the context struct refactoring by making only the essential modifications to achieve the goal. Avoid unnecessary restructuring or logic changes within the handlers beyond adapting them to use the context struct.
-
-**Enum Variant Handling Rules (Specification):**
-
-*   **`#[scalar]` Attribute:**
-    *   Unit Variant: `Enum::variant() -> Enum` (Handler: `unit`)
-    *   Tuple(0) Variant: `Enum::variant() -> Enum` (Handler: `tuple_zero`)
-    *   Struct(0) Variant: `Enum::variant {} -> Enum` (Handler: `struct_zero`)
-    *   Tuple(1) Variant: `Enum::variant(InnerType) -> Enum` (Handler: `tuple_non_zero`)
-    *   Struct(1) Variant: `Enum::variant { field: InnerType } -> Enum` (Handler: `struct_non_zero`)
-    *   Tuple(N) Variant: `Enum::variant(T1, T2, ...) -> Enum` (Handler: `tuple_non_zero`)
-    *   Struct(N) Variant: `Enum::variant { f1: T1, f2: T2, ... } -> Enum` (Handler: `struct_non_zero`)
-    *   Error: Cannot be combined with `#[subform_scalar]`.
-*   **`#[subform_scalar]` Attribute:**
-    *   Unit Variant: Error (Handler: `unit`)
-    *   Tuple(0)/Struct(0) Variant: Error (Handlers: `tuple_zero`, `struct_zero`)
-    *   Tuple(1) Variant: `Enum::variant() -> InnerFormer<...>` (Requires path type deriving `Former`) (Handler: `tuple_non_zero`)
-    *   Struct(1)/Struct(N) Variant: `Enum::variant() -> VariantFormer<...>` (Implicit former) (Handler: `struct_non_zero`)
-    *   Tuple(N) Variant: Error (Handler: `tuple_non_zero`)
-*   **Default Behavior (No Attribute):**
-    *   Unit Variant: `Enum::variant() -> Enum` (Handler: `unit`)
-    *   Tuple(0) Variant: `Enum::variant() -> Enum` (Handler: `tuple_zero`)
-    *   Struct(0) Variant: Error (Requires `#[scalar]`) (Handler: `struct_zero`)
-    *   Tuple(1) Variant: `Enum::variant() -> InnerFormer<...>` (Requires path type deriving `Former`) (Handler: `tuple_non_zero`)
-    *   Struct(1)/Struct(N) Variant: `Enum::variant() -> VariantFormer<...>` (Implicit former) (Handler: `struct_non_zero`)
-    *   Tuple(N) Variant: `Enum::variant(T1, T2, ...) -> Enum` (Like `#[scalar]`) (Handler: `tuple_non_zero`)
-*   **`#[standalone_constructors]` Attribute:** Generates top-level constructors based on the above rules and `#[arg_for_constructor]` on fields *within* variants. Logic to be integrated into each handler.
-
-## Increments
-
-*   ✅ **Increment 1: Diagnose and fix current test failures in the `former` crate.**
-*   ✅ **Increment 2: Create submodule structure `former_meta/src/derive_former/former_enum/`**
-*   ✅ **Increment 3: Extract handler for Unit variants (`handle_unit_variant`)**
-*   ✅ **Increment 4: Extract handler for Tuple variants with zero fields (`handle_tuple_zero_variant`)**
-*   ✅ **Increment 5: Extract handler for Struct variants with zero fields (`handle_struct_zero_variant`)**
-*   ✅ **Increment 6: Extract handler for Tuple variants with non-zero fields (`handle_tuple_non_zero_variant`)**
-*   ✅ **Increment 15: Refactor `handle_struct_non_zero_variant` to use context struct.**
-*   ✅ **Increment 16: Verify `standalone_constructors` logic.**
-*   ✅ **Increment 17: Apply strict codestyle, remove temporary comments, address clippy warnings, add documentation.**
-    *   Detailed Plan Step 1: Run `cargo clippy --package former_meta` to itdentify lints and warnings in the `former_enum` module.
-    *   Detailed Plan Step 2: Manually address each clippy warning and lint reported in Step 1 for the `former_enum` module and its handler files, ensuring adherence to codestyle and design rules. Use the `write_to_file` tool to apply changes to each file.
-    *   Detailed Plan Step 3: Review all refactored files (`former_enum.rs` and handlers in `former_enum/`) for strict adherence to codestyle rules (spacing, newlines, etc.). **Pay special attention to generated code within `quote!` blocks.**
-    *   Detailed Plan Step 4: Remove temporary comments (e.g., `// qqq`, `// xxx`, `// FIX:`) from the refactored files. Preserve task comments (`// TODO:`).
-    *   Detailed Plan Step 5: Add/update documentation comments for the new `EnumVariantHandlerContext` struct and the refactored handler functions, explaining the context struct approach and rationale.
-    *   **Crucial Design Rules:** [Lints and warnings](#lints-and-warnings), [Comments and Documentation](#comments-and-documentation).
-    *   **Verification Strategy:** Compile checks (`cargo check --package former_meta`). Clippy passes (`cargo clippy --package former_meta`). Manual code review confirms quality, documentation updates, and comment cleanup.
-*   ✅ **Increment 18: Final review and verification.**
-    *   **Goal:** Ensure the entire refactoring is correct and integrated.
-    *   **Rationale:** Final check before considering the task complete.
-    *   **Detailed Steps:**
-        *   Run the full test suite (`cargo test --package former --test tests`).
-        *   Perform a final manual review of the changes in the `former_enum` module.
-    *   **Verification Strategy:** All enum tests pass. Code review confirms clarity and correctness.
+Fix all clippy errors and warning of crates former and former_meta. Fix even those errors and warning for fixing of which editing other crate from this workspace is required. Never edit file with clippy ( `clippy --fix` ). Before editing anything, run cargo clippy and do a plan respecting each warning/error and only after go step by step. Respect codestyle and design rules.
 
 ## Notes & Insights
 
