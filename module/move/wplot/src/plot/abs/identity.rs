@@ -1,88 +1,42 @@
-/// Define a private namespace for all its items.
-#[ cfg( not( feature = "no_std" ) ) ]
-mod private
+use super::*;
+use std::any::Any;
+use std::sync::Mutex;
+use lazy_static::lazy_static;
+
+/// Interface to describe identity.
+pub trait HasIdInterface : Send + Sync
 {
-  // use crate::own::*;
-  use once_cell::sync::Lazy;
-  use std::sync::Mutex;
-  use core::{hash::Hash, fmt};
-  // use core::any::TypeId;
-
-  static mut COUNTER : Lazy< Mutex< i64 > > = Lazy::new( ||
-  {
-    Mutex::new( 0 )
-  });
-
-  /// ID interface.
-  pub trait IdInterface
-  where
-    Self :
-      fmt::Debug +
-      Clone +
-      Copy +
-      PartialEq +
-      Eq +
-      Hash +
-    ,
-  {
-  }
-
-  /// Has id.
-  pub trait HasIdInterface
-  where
-    Self :
-      fmt::Debug +
-  {
-    /// Get id.
-    fn id( &self ) -> Id;
-  }
-
-  /// Reference on context.
-  #[ derive( Clone, Copy, PartialEq, Eq, Hash ) ]
-  pub struct Id
-  {
-    // #[ allow( dead_code ) ]
-    // tp_id : core::any::TypeId,
-    #[ allow( dead_code ) ]
-    in_id : i64,
-  }
-
-  impl Id
-  {
-    /// Construct a new id increasing counter.
-    pub fn new< T >() -> Self
-    where
-      T : core::any::Any,
-    {
-      // SAFETY : mutex guard it
-      let mut c = unsafe { COUNTER.lock().unwrap() };
-      *c += 1;
-      Self
-      {
-        in_id : *c,
-      }
-    }
-  }
-
-  impl IdInterface for Id
-  {
-  }
-
-  impl fmt::Debug for Id
-  {
-    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
-    {
-      f.write_fmt( format_args!( "id::{:?}", self.in_id ) )
-    }
-  }
-
+  /// Get id.
+  fn id( &self ) -> Id;
+  /// Get root.
+  fn root( &self ) -> &dyn Any;
 }
 
-#[ cfg( not( feature = "no_std" ) ) ]
-::meta_tools::mod_interface!
+impl dyn HasIdInterface
 {
+  /// Downcast to concrete type.
+  pub fn downcast_ref< T : Any >( &self ) -> Option< &T >
+  {
+    self.root().downcast_ref()
+  }
+}
 
-  exposed use Id;
-  prelude use { IdInterface, HasIdInterface };
+/// Id of resource.
+#[ derive( Debug, Copy, Clone, PartialEq, Eq, Hash ) ]
+pub struct Id( pub i32 );
 
+impl Id
+{
+  /// Generate new id.
+  pub fn next() -> Self
+  {
+    let mut c = unsafe { COUNTER.lock().unwrap() };
+    *c += 1;
+    Id( *c )
+  }
+}
+
+lazy_static!
+{
+  static ref COUNTER : Mutex< i32 > = Mutex::new( 0 );
 }

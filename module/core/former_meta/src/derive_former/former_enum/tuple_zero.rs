@@ -1,67 +1,61 @@
 // File: module/core/former_meta/src/derive_former/former_enum/tuple_zero.rs
 
-use macro_tools::{ Result, proc_macro2::TokenStream, quote::quote, syn, diag };
+use macro_tools::{ Result, quote::quote, syn, diag };
 use convert_case::{ Case, Casing };
 use super::ident;
-use syn::{ DeriveInput, Variant, Visibility, Generics, WhereClause, parse_quote };
-use super::{ ItemAttributes, FieldAttributes, EnumVariantFieldInfo };
+use syn::{ parse_quote };
+use super::EnumVariantHandlerContext; // Import the context struct
 
-#[ allow( clippy::too_many_arguments ) ] // Allow many arguments for handler functions
+
+// #[ allow( clippy::too_many_arguments ) ] // No longer needed with context struct
 pub( super ) fn handle_tuple_zero_variant
 (
-  _ast : &DeriveInput,
-  variant : &Variant,
-  struct_attrs : &ItemAttributes,
-  enum_name : &syn::Ident,
-  vis : &Visibility,
-  generics : &Generics,
-  original_input : &proc_macro::TokenStream,
-  has_debug : bool,
-  methods : &mut Vec<TokenStream>,
-  _end_impls : &mut Vec<TokenStream>,
-  standalone_constructors : &mut Vec<TokenStream>,
-  variant_attrs : &FieldAttributes,
-  _variant_field_info : &Vec<EnumVariantFieldInfo>,
-  merged_where_clause : Option<&WhereClause>,
+  ctx : &mut EnumVariantHandlerContext< '_ >, // Use context struct
 )
 ->
 Result< () >
 {
-  let variant_ident = &variant.ident;
+  let variant_ident = &ctx.variant.ident;
   let variant_name_str = variant_ident.to_string();
   let method_name_snake_str = variant_name_str.to_case( Case::Snake );
   let method_name_ident_temp = parse_quote!( #method_name_snake_str );
   let method_name = ident::ident_maybe_raw( &method_name_ident_temp );
 
   // Check for #[subform_scalar] attribute - not allowed on zero-field tuple variants
-  if variant_attrs.subform_scalar.is_some()
+  if ctx.variant_attrs.subform_scalar.is_some()
   {
-    return Err( syn::Error::new_spanned( variant, "#[subform_scalar] is not allowed on zero-field tuple variants" ) );
+    return Err( syn::Error::new_spanned( ctx.variant, "#[subform_scalar] is not allowed on zero-field tuple variants" ) );
   }
 
+  // Access necessary fields from context
+  let enum_name = ctx.enum_name;
+  let vis = ctx.vis;
+  let generics = ctx.generics;
+
   // Generate the static method for the zero-field tuple variant
+  let ( impl_generics, ty_generics, where_clause ) = generics.split_for_impl();
   let method = quote!
   {
     #[ inline( always ) ]
-    #vis fn #method_name #generics #merged_where_clause () -> #enum_name #generics.ty
+    #vis fn #method_name #impl_generics #where_clause () -> #enum_name #ty_generics
     {
       #enum_name :: #variant_ident ()
     }
   };
 
-  methods.push( method.clone() ); // Add to methods for the impl block
+  ctx.methods.push( method.clone() ); // Add to methods via context // Added into()
 
   // If #[standalone_constructors] is present on the struct, add the method to standalone constructors
-  if struct_attrs.standalone_constructors.is_some()
+  if ctx.struct_attrs.standalone_constructors.is_some()
   {
-      standalone_constructors.push( method );
+      ctx.standalone_constructors.push( method ); // Add to standalone constructors via context // Added into()
   }
 
   // Debug print if #[debug] is present on the enum
-  if has_debug
+  if ctx.has_debug
   {
     let about = format!( "derive : Former\nenum : {enum_name}\nvariant : {variant_name_str}\nhandler : tuple_zero" );
-    diag::report_print( about, original_input, methods.last().unwrap() ); // Print the generated method
+    diag::report_print( about, ctx.original_input, ctx.methods.last().unwrap() ); // Use context for original_input and methods
   }
 
   Ok( () )

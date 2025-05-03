@@ -16,7 +16,7 @@ pub fn former_for_struct
 (
   ast : &syn::DeriveInput,
   _data_struct : &syn::DataStruct,
-  original_input : &proc_macro::TokenStream,
+  original_input : &macro_tools::proc_macro2::TokenStream,
   _has_debug : bool,
 ) -> Result< TokenStream >
 {

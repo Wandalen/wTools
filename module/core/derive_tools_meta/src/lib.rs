@@ -614,9 +614,9 @@ pub fn derive_not( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 #[ cfg( feature = "enabled" ) ]
 #[ cfg ( feature = "derive_phantom" ) ]
 #[ proc_macro_attribute ]
-pub fn phantom( _attr: proc_macro::TokenStream, input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+pub fn phantom( attr: proc_macro::TokenStream, input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = derive::phantom::phantom( _attr, input );
+  let result = derive::phantom::phantom( attr, input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -641,12 +641,12 @@ pub fn phantom( _attr: proc_macro::TokenStream, input : proc_macro::TokenStream 
 ///     a : Vec< T >,
 /// }
 ///
-/// impl< T > Index< usize > for IsTransparent< T > 
+/// impl< T > Index< usize > for IsTransparent< T >
 /// {
 ///   type Output = T;
 ///
 ///   #[ inline( always ) ]
-///   fn index( &self, index : usize ) -> &Self::Output 
+///   fn index( &self, index : usize ) -> &Self::Output
 ///   {
 ///     &self.a[ index ]
 ///   }
@@ -657,25 +657,25 @@ pub fn phantom( _attr: proc_macro::TokenStream, input : proc_macro::TokenStream 
 ///
 /// ```rust
 /// use derive_tools_meta::*;
-/// 
+///
 /// #[ derive( Index ) ]
-/// pub struct IsTransparent< T > 
+/// pub struct IsTransparent< T >
 /// {
 ///  #[ index ]
-///   a : Vec< T >  
+///   a : Vec< T >
 /// };
 /// ```
 ///
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_index" ) ]
 #[ proc_macro_derive
-( 
-  Index, 
+(
+  Index,
   attributes
-  ( 
-    debug, // item 
+  (
+    debug, // item
     index, // field
-  ) 
+  )
 )]
 pub fn derive_index( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
@@ -703,12 +703,12 @@ pub fn derive_index( input : proc_macro::TokenStream ) -> proc_macro::TokenStrea
 ///     a : Vec< T >,
 /// }
 ///
-/// impl< T > Index< usize > for IsTransparent< T > 
+/// impl< T > Index< usize > for IsTransparent< T >
 /// {
 ///   type Output = T;
 ///
 ///   #[ inline( always ) ]
-///   fn index( &self, index : usize ) -> &Self::Output 
+///   fn index( &self, index : usize ) -> &Self::Output
 ///   {
 ///     &self.a[ index ]
 ///   }
@@ -716,7 +716,7 @@ pub fn derive_index( input : proc_macro::TokenStream ) -> proc_macro::TokenStrea
 ///
 /// impl< T > IndexMut< usize > for IsTransparent< T >
 /// {
-///   fn index_mut( &mut self, index : usize ) -> &mut Self::Output 
+///   fn index_mut( &mut self, index : usize ) -> &mut Self::Output
 ///   {
 ///     &mut self.a[ index ]
 ///   }
@@ -728,23 +728,23 @@ pub fn derive_index( input : proc_macro::TokenStream ) -> proc_macro::TokenStrea
 /// ```rust
 /// use derive_tools_meta::*;
 /// #[derive( IndexMut )]
-/// pub struct IsTransparent< T > 
-/// { 
+/// pub struct IsTransparent< T >
+/// {
 ///   #[ index ]
-///   a : Vec< T >  
+///   a : Vec< T >
 /// };
 /// ```
 ///
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_index_mut" ) ]
 #[ proc_macro_derive
-( 
-  IndexMut, 
+(
+  IndexMut,
   attributes
-  ( 
-    debug, // item 
+  (
+    debug, // item
     index, // field
-  ) 
+  )
 )]
 pub fn derive_index_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {

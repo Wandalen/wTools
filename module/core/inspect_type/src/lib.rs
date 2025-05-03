@@ -10,24 +10,17 @@
 // #[ cfg( not( RUSTC_IS_STABLE ) ) ]
 mod nightly
 {
-
-  ///
   /// Macro to inspect type of a variable and its size exporting it as a string.
-  ///
-
   #[ macro_export ]
-  // #[ cfg_attr( feature = "nightly1", macro_export ) ]
   macro_rules! inspect_to_str_type_of
   {
     ( $src : expr ) =>
     {{
       let mut result = String::new();
       let stringified = stringify!( $src );
-
       let size = &std::mem::size_of_val( &$src ).to_string()[ .. ];
       let type_name = std::any::type_name_of_val( &$src );
       result.push_str( &format!( "sizeof( {} : {} ) = {}", stringified, type_name, size )[ .. ] );
-
       result
     }};
     ( $( $src : expr ),+ $(,)? ) =>
@@ -36,12 +29,8 @@ mod nightly
     };
   }
 
-  ///
   /// Macro to inspect type of a variable and its size printing into stdout and exporting it as a string.
-  ///
-
   #[ macro_export ]
-  // #[ cfg_attr( feature = "nightly1", macro_export ) ]
   macro_rules! inspect_type_of
   {
     ( $src : expr ) =>
@@ -56,7 +45,6 @@ mod nightly
   pub use inspect_type_of;
 }
 
-
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use own::*;
@@ -65,7 +53,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super::orphan;
   #[ doc( inline ) ]
   pub use orphan::*;
 }
@@ -74,7 +62,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
+  use super::exposed;
   #[ doc( inline ) ]
   pub use exposed::*;
 }
@@ -83,7 +71,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  use super::prelude;
   #[ doc( inline ) ]
   pub use prelude::*;
 }
@@ -92,12 +80,6 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
-  // #[ cfg( feature = "nightly" ) ]
-  // #[ rustversion::nightly ]
-  // #[ cfg( feature = "type_name_of_val" ) ]
-  // #[ cfg( RUSTC_IS_NIGHTLY ) ]
-  // #[ cfg( not( RUSTC_IS_STABLE ) ) ]
   #[ doc( inline ) ]
-  pub use super::nightly::*;
+  pub use crate::nightly::*;
 }

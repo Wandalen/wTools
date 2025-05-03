@@ -2,10 +2,7 @@
 mod private
 {
 
-  ///
   /// Index of items.
-  ///
-
   #[ macro_export ]
   macro_rules! index
   {
@@ -34,10 +31,7 @@ mod private
 
   }
 
-  ///
   /// Define implementation putting each function under a macro.
-  ///
-
   #[ macro_export ]
   macro_rules! impls1
   {
@@ -96,13 +90,9 @@ mod private
   // qqq : document the idea and module
   // qqq : add section idea to each module
 
-  ///
   /// Define implementation putting each function under a macro.
-  ///
-  /// Use [index!] to generate code for each elment.
-  /// Unlike elements of [impls_optional!], elements of [impls] are mandatory to be used in [index!].
-  ///
-
+  /// Use [index!] to generate code for each element.
+  /// Unlike elements of [`impls_optional`!], elements of [`impls`] are mandatory to be used in [`index`!].
   #[ macro_export ]
   macro_rules! impls_optional
   {
@@ -156,13 +146,9 @@ mod private
     };
 
   }
-  ///
   /// Define implementation putting each function under a macro and adding attribute `#[ test ]`.
-  ///
-  /// Use [index!] to generate code for each elment.
-  /// Unlike elements of [test_impls_optional!], elements of [test_impls] are mandatory to be used in [index!].
-  ///
-
+  /// Use [index!] to generate code for each element.
+  /// Unlike elements of [`test_impls_optional`!], elements of [`test_impls`] are mandatory to be used in [`index`!].
   #[ macro_export ]
   macro_rules! tests_impls
   {
@@ -229,13 +215,9 @@ mod private
 
   }
 
-  ///
   /// Define implementation putting each function under a macro and adding attribute `#[ test ]`.
-  ///
-  /// Use [index!] to generate code for each elment.
-  /// Unlike elements of [test_impls!], elements of [test_impls_optional] are optional to be used in [index!].
-  ///
-
+  /// Use [index!] to generate code for each element.
+  /// Unlike elements of [`test_impls`!], elements of [`test_impls_optional`] are optional to be used in [`index`!].
   #[ macro_export ]
   macro_rules! tests_impls_optional
   {
@@ -302,10 +284,7 @@ mod private
 
   }
 
-  ///
   /// Define implementation putting each function under a macro.
-  ///
-
   #[ macro_export ]
   macro_rules! impls2
   {
@@ -324,10 +303,7 @@ mod private
 
   }
 
-  ///
   /// Internal impls1 macro. Don't use.
-  ///
-
   #[ macro_export ]
   macro_rules! _impls_callback
   {

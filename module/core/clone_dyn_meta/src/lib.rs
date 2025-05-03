@@ -13,9 +13,9 @@ mod derive;
 
 #[ cfg( feature = "enabled" ) ]
 #[ proc_macro_attribute ]
-pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStream ) -> proc_macro::TokenStream
+pub fn clone_dyn( attr : proc_macro::TokenStream, item : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = derive::clone_dyn( _attr, item );
+  let result = derive::clone_dyn( attr, item );
   match result
   {
     Ok( stream ) => stream.into(),

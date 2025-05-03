@@ -1,4 +1,3 @@
-
 //!
 //! Helpers for testing.
 //!
@@ -17,24 +16,19 @@ mod private
   // {
   //   f()
   // }
-
   //
-
   // #[panic_handler]
   // fn panic( info : &core::panic::PanicInfo ) -> !
   // {
   //   println!( "{:?}", info );
   //   loop {}
   // }
-
+  //
   // pub use test_suite;
   // pub use test_suite_internals;
   // pub use index;
 
-  ///
   /// Required to convert integets to floats.
-  ///
-
   #[ macro_export ]
   macro_rules! num
   {
@@ -54,11 +48,7 @@ mod private
     )};
 
   }
-
-  ///
   /// Test a file with documentation.
-  ///
-
   #[ macro_export ]
   macro_rules! doc_file_test
   {

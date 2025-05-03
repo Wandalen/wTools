@@ -1,6 +1,6 @@
 
 //!
-//! Compact version of module::process_tools. What is needed from process tools
+//! Compact version of `module::process_tools`. What is needed from process tools
 //!
 
 /// Define a private namespace for all its items.
