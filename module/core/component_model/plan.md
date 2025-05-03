@@ -1,70 +1,90 @@
-# Project Plan: Refine Component Model Crates
+# Formatting Plan for `component_model`, `component_model_meta`, and `component_model_types`
 
-## Goal
+This plan outlines the steps to manually format the specified Rust crates according to a defined set of guidelines, as `cargo fmt` is not to be used.
 
-Refine the `component_model`, `component_model_meta`, and `component_model_types` crates to be production-ready, ensuring complete isolation from the original `former` crate where appropriate, consistency, clarity, conciseness, correctness, and adherence to all specified rules (codestyle, clippy). Also make sure there is no garbase left in code, examples or documentation from former. Bear in mind that all "former" words were replaced by "component_model", so if something does not have in name former it does not mean it's not garbage!
+**Goal:** Ensure consistent and readable code formatting across the three crates.
 
-## Crates Involved
+**Files to Format:**
 
-*   `component_model` (User-facing facade)
-*   `component_model_meta` (Proc-macro implementation)
-*   `component_model_types` (Core traits and types)
+The following `.rs` files will be formatted:
 
-## Increments
+*   `module/core/component_model/examples/component_model_trivial.rs`
+*   `module/core/component_model/src/lib.rs`
+*   `module/core/component_model/tests/experimental.rs`
+*   `module/core/component_model/tests/smoke_test.rs`
+*   `module/core/component_model/tests/tests.rs`
+*   `module/core/component_model/tests/inc/components_tests/component_assign_manual.rs`
+*   `module/core/component_model/tests/inc/components_tests/component_assign_tuple_manual.rs`
+*   `module/core/component_model/tests/inc/components_tests/component_assign_tuple.rs`
+*   `module/core/component_model/tests/inc/components_tests/component_assign.rs`
+*   `module/core/component_model/tests/inc/components_tests/component_from_manual.rs`
+*   `module/core/component_model/tests/inc/components_tests/component_from_tuple_manual.rs`
+*   `module/core/component_model/tests/inc/components_tests/component_from_tuple.rs`
+*   `module/core/component_model/tests/inc/components_tests/component_from.rs`
+*   `module/core/component_model/tests/inc/components_tests/components_assign_manual.rs`
+*   `module/core/component_model/tests/inc/components_tests/components_assign_tuple_manual.rs`
+*   `module/core/component_model/tests/inc/components_tests/components_assign_tuple.rs`
+*   `module/core/component_model/tests/inc/components_tests/components_assign.rs`
+*   `module/core/component_model/tests/inc/components_tests/composite_manual.rs`
+*   `module/core/component_model/tests/inc/components_tests/composite.rs`
+*   `module/core/component_model/tests/inc/components_tests/from_components_manual.rs`
+*   `module/core/component_model/tests/inc/components_tests/from_components_tuple_manual.rs`
+*   `module/core/component_model/tests/inc/components_tests/from_components_tuple.rs`
+*   `module/core/component_model/tests/inc/components_tests/from_components.rs`
+*   `module/core/component_model/tests/inc/components_tests/compiletime/components_component_from_debug.rs`
+*   `module/core/component_model/tests/inc/components_tests/only_test/component_assign_tuple.rs`
+*   `module/core/component_model/tests/inc/components_tests/only_test/component_assign.rs`
+*   `module/core/component_model/tests/inc/components_tests/only_test/component_from_tuple.rs`
+*   `module/core/component_model/tests/inc/components_tests/only_test/component_from.rs`
+*   `module/core/component_model/tests/inc/components_tests/only_test/components_assign_tuple.rs`
+*   `module/core/component_model/tests/inc/components_tests/only_test/components_assign.rs`
+*   `module/core/component_model/tests/inc/components_tests/only_test/composite.rs`
+*   `module/core/component_model/tests/inc/components_tests/only_test/from_components_tuple.rs`
+*   `module/core/component_model/tests/inc/components_tests/only_test/from_components.rs`
+*   `module/core/component_model_meta/src/lib.rs`
+*   `module/core/component_model_meta/src/component/component_assign.rs`
+*   `module/core/component_model_meta/src/component/component_from.rs`
+*   `module/core/component_model_meta/src/component/components_assign.rs`
+*   `module/core/component_model_meta/src/component/from_components.rs`
+*   `module/core/component_model_meta/tests/smoke_test.rs`
+*   `module/core/component_model_types/examples/component_model_types_trivial.rs`
+*   `module/core/component_model_types/src/component.rs`
+*   `module/core/component_model_types/src/lib.rs`
+*   `module/core/component_model_types/tests/smoke_test.rs`
+*   `module/core/component_model_types/tests/tests.rs`
 
-*   ⏳ **Increment 1: Review & Refine `component_model_types` Crate**
-    *   Detailed Plan Step 1: Read and analyze `src/lib.rs` for structure, exports, features, and potential `former` remnants. Propose necessary cleanup. *(Cleanup attempted, resulted in build errors - needs fixing)*
-    *   Detailed Plan Step 2: Read and analyze `src/axiomatic.rs`. Check for clarity, correctness, rule adherence, and `former` remnants. Propose changes if needed.
-    *   Detailed Plan Step 3: Read and analyze `src/definition.rs`. Check for clarity, correctness, rule adherence, and `former` remnants. Propose changes if needed. *(Partially done - build errors encountered)*
-    *   Detailed Plan Step 4: Read and analyze `src/forming.rs`. Check for clarity, correctness, rule adherence, and `former` remnants. Propose changes if needed. *(Partially done - build errors encountered)*
-    *   Detailed Plan Step 5: Read and analyze `src/storage.rs`. Check for clarity, correctness, rule adherence, and `former` remnants. Propose changes if needed.
-    *   Detailed Plan Step 6: Read and analyze `src/component.rs`. Check for clarity, correctness, rule adherence (especially trait definitions like `Assign`), and `former` remnants. Propose changes if needed.
-    *   Detailed Plan Step 7: Review `Cargo.toml` for dependencies, features (especially related to `no_std`, `use_alloc`), metadata, and correctness. Propose updates if needed.
-    *   Detailed Plan Step 8: Review `Readme.md` for clarity, accuracy, consistency with code, and removal of `former` references/concepts. Propose updates if needed.
-    *   Crucial Design Rules: [Visibility: Keep Implementation Details Private](https://github.com/Wandalen/wTools/blob/master/module/core/component_model/../../doc/rust/rules/design.md#visibility-keep-implementation-details-private), [Comments and Documentation](https://github.com/Wandalen/wTools/blob/master/module/core/component_model/../../doc/rust/rules/design.md#comments-and-documentation), [Code Style: Do Not Reformat Arbitrarily](https://github.com/Wandalen/wTools/blob/master/module/core/component_model/../../doc/rust/rules/design.md#code-style-do-not-reformat-arbitrarily)
-    *   Verification Strategy: After each file modification, request user run `cargo build -p component_model_types` and provide output. **Analyze logs critically**. After all steps in this increment, request user run `cargo test -p component_model_types` and provide output. **Analyze logs critically**. Manual review against goals (clarity, correctness, consistency, rule adherence, `former` removal). Final clippy check in Increment 7.
-*   ⚫ **Increment 2: Review & Refine `component_model_meta` Crate**
-    *   Detailed Plan Step 1: Read and analyze `src/lib.rs` for structure, macro exports, features, and potential `former` remnants. Propose necessary cleanup.
-    *   Detailed Plan Step 2: Read and analyze `src/component/component_from.rs`. Check macro logic for clarity, correctness, rule adherence, path resolution, error handling, and `former` remnants. Propose changes if needed.
-    *   Detailed Plan Step 3: Read and analyze `src/component/from_components.rs`. Check macro logic for clarity, correctness, rule adherence, path resolution, error handling, and `former` remnants. Propose changes if needed.
-    *   Detailed Plan Step 4: Read and analyze `src/component/component_assign.rs`. Check macro logic for clarity, correctness, rule adherence, path resolution, error handling, and `former` remnants. Propose changes if needed.
-    *   Detailed Plan Step 5: Read and analyze `src/component/components_assign.rs`. Check macro logic for clarity, correctness, rule adherence, path resolution, error handling, and `former` remnants. Propose changes if needed.
-    *   Detailed Plan Step 6: Review `Cargo.toml` for dependencies (esp. `proc-macro2`, `quote`, `syn`), features, metadata, and correctness. Propose updates if needed.
-    *   Detailed Plan Step 7: Review `Readme.md` for clarity, accuracy, consistency with macro behavior, and removal of `former` references/concepts. Propose updates if needed.
-    *   Crucial Design Rules: [Proc Macro: Development Workflow](https://github.com/Wandalen/wTools/blob/master/module/core/component_model/../../doc/rust/rules/design.md#proc-macro-development-workflow), [Structuring: Proc Macro and Generated Path Resolution](https://github.com/Wandalen/wTools/blob/master/module/core/component_model/../../doc/rust/rules/design.md#structuring-proc-macro-and-generated-path-resolution), [Comments and Documentation](https://github.com/Wandalen/wTools/blob/master/module/core/component_model/../../doc/rust/rules/design.md#comments-and-documentation)
-    *   Verification Strategy: After each file modification, request user run `cargo build -p component_model_meta` and provide output. **Analyze logs critically**. After all steps in this increment, request user run `cargo test -p component_model_meta` (if tests exist) and provide output. **Analyze logs critically**. Manual review against goals. Final clippy check in Increment 7.
-*   ⚫ **Increment 3: Review & Refine `component_model` Facade Crate**
-    *   Detailed Plan Step 1: Read and analyze `src/lib.rs` for structure, re-exports (ensuring it exposes the intended public API from `_types` and `_meta`), features, and potential `former` remnants. Propose necessary cleanup.
-    *   Detailed Plan Step 2: Review `Cargo.toml` for dependencies (should primarily be `_types` and `_meta`), features, metadata, and correctness. Ensure features correctly enable/disable re-exports. Propose updates if needed.
-    *   Detailed Plan Step 3: Review `Readme.md` for clarity, accuracy, consistency with the exposed API, and removal of `former` references/concepts. Propose updates if needed.
-    *   Crucial Design Rules: [Visibility: Keep Implementation Details Private](https://github.com/Wandalen/wTools/blob/master/module/core/component_model/../../doc/rust/rules/design.md#visibility-keep-implementation-details-private), [Comments and Documentation](https://github.com/Wandalen/wTools/blob/master/module/core/component_model/../../doc/rust/rules/design.md#comments-and-documentation)
-    *   Verification Strategy: After each file modification, request user run `cargo build -p component_model` and provide output. **Analyze logs critically**. After all steps in this increment, request user run `cargo test -p component_model` and provide output. **Analyze logs critically**. Manual review against goals. Final clippy check in Increment 7.
-*   ⚫ **Increment 4: Review & Refine Tests (`component_model` crate)**
-    *   Detailed Plan Step 1: Analyze `tests/tests.rs`, `tests/smoke_test.rs`, `tests/experimental.rs` for correctness, clarity, coverage, and `former` remnants.
-    *   Detailed Plan Step 2: Analyze `tests/inc/mod.rs` and all files under `tests/inc/components_tests/`. Verify test structure (manual vs macro, shared logic via `_only_test.rs`), correctness, clarity, coverage (especially macro edge cases), and removal of `former` remnants.
-    *   Detailed Plan Step 3: Identify and fix commented-out tests (ref `// xxx : fix commented out tests` in `component_model/src/lib.rs`).
-    *   Detailed Plan Step 4: Ensure all tests pass and cover the refined API and macro behaviors.
-    *   Crucial Design Rules: [Testing: Avoid Writing Automated Tests Unless Asked](https://github.com/Wandalen/wTools/blob/master/module/core/component_model/../../doc/rust/rules/design.md#testing-avoid-writing-tests-unless-asked), [Proc Macro: Development Workflow](https://github.com/Wandalen/wTools/blob/master/module/core/component_model/../../doc/rust/rules/design.md#proc-macro-development-workflow) (test structure part)
-    *   Verification Strategy: Request user run `cargo test --workspace --all-targets --all-features` and provide output. **Analyze logs critically** for failures or warnings. Manual review of test logic and coverage.
-*   ⚫ **Increment 5: Review & Refine Examples (`component_model` & `component_model_types` crates)**
-    *   Detailed Plan Step 1: Read and analyze `component_model/examples/component_model_trivial.rs`. Ensure it compiles, runs, is clear, up-to-date, and free of `former` remnants.
-    *   Detailed Plan Step 2: Read and analyze `component_model/examples/readme.md`. Ensure consistency with the main Readme and code.
-    *   Detailed Plan Step 3: Check for examples in `component_model_types/examples/` (if any) and analyze them similarly.
-    *   Crucial Design Rules: [Comments and Documentation](https://github.com/Wandalen/wTools/blob/master/module/core/component_model/../../doc/rust/rules/design.md#comments-and-documentation)
-    *   Verification Strategy: Request user run `cargo run --example <name>` for each example in `component_model` and `component_model_types`. Provide output. Manual review for clarity and correctness.
-*   ⚫ **Increment 6: Final Readme Updates (All three crates)**
-    *   Detailed Plan Step 1: Review and update `component_model/Readme.md` for overall clarity, usage instructions, feature explanations, and consistency.
-    *   Detailed Plan Step 2: Review and update `component_model_meta/Readme.md` focusing on macro usage, attributes, and generated code examples.
-    *   Detailed Plan Step 3: Review and update `component_model_types/Readme.md` focusing on core traits and concepts.
-    *   Detailed Plan Step 4: Ensure crate-level documentation (`#![doc = ...]`) in each `lib.rs` is accurate and consistent.
-    *   Crucial Design Rules: [Comments and Documentation](https://github.com/Wandalen/wTools/blob/master/module/core/component_model/../../doc/rust/rules/design.md#comments-and-documentation)
-    *   Verification Strategy: Manual review of all three `Readme.md` files and `lib.rs` crate-level docs for accuracy, clarity, and consistency.
-*   ⚫ **Increment 7: Final Rule Check (Clippy & Codestyle)**
-    *   Detailed Plan Step 1: Run `cargo clippy --workspace --all-targets --all-features -- -D warnings`. Address any reported issues across all three crates.
-    *   Detailed Plan Step 2: Run `cargo fmt --all --check`. Address any formatting issues across all three crates.
-    *   Crucial Design Rules: All Codestyle and Design rules.
-    *   Verification Strategy: Request user run `cargo clippy --workspace --all-targets --all-features -- -D warnings` and `cargo fmt --all --check`. Provide output. Confirm no errors or warnings remain.
+**Steps:**
 
-## Notes & Insights
+1.  **Define Formatting Guidelines:**
+    *   Establish a clear set of formatting rules to be applied. These rules should cover aspects such as:
+        *   **Indentation:** Use 4 spaces for indentation.
+        *   **Line Length:** Aim for a maximum line length of 100 characters. Break lines logically if they exceed this limit.
+        *   **Spacing:**
+            *   Single space around operators (`=`, `+`, `-`, `*`, `/`, `==`, `!=`, `<`, `>`, `<=`, `>=`, `&&`, `||`, etc.).
+            *   Single space after commas and colons in lists, tuples, function arguments, etc.
+            *   No space before commas, colons, or semicolons.
+            *   Single space after keywords like `if`, `for`, `while`, `match`, `fn`, `let`, `use`, etc.
+            *   Space between function name and parentheses (`fn my_func()`).
+            *   No space between macro name and exclamation mark/parentheses (`my_macro!()`).
+        *   **Brace Placement:** Use K&R style (opening brace on the same line as the control structure, closing brace on its own line).
+        *   **Imports (`use` statements):**
+            *   Group imports by category (e.g., standard library, external crates, local modules).
+            *   Sort imports alphabetically within each group.
+            *   Use glob imports (`*`) sparingly, preferably only in test modules or prelude-like modules.
+        *   **Comments:**
+            *   Use `//` for line comments and `/* ... */` for block comments.
+            *   Ensure comments are properly indented and aligned with the code they refer to.
+            *   Add a space after `//` for readability.
+        *   **Blank Lines:** Use blank lines to separate logical blocks of code, such as between function definitions, struct definitions, or within functions to separate distinct operations.
+        *   **Attributes:** Place attributes on the line immediately preceding the item they apply to.
+2.  **Apply Formatting to Each File:**
+    *   Go through each `.rs` file listed above.
+    *   Manually apply the defined formatting guidelines to the code in each file.
+    *   Pay close attention to consistency across all files and crates.
+3.  **Review and Verify:**
+    *   After applying the formatting, review the changes in each file.
+    *   Consider using a diff tool to compare the formatted code with the original to easily spot any unintended changes or inconsistencies.
+    *   Occasionally, if a linter is available and permitted, run it to catch any formatting issues that might have been missed.
+    *   Ensure that the formatting changes have not altered the code's logic or functionality.
 
-*   *(No notes yet)*
+This plan requires careful manual work but ensures that the formatting adheres to the specified guidelines without using `cargo fmt`.
