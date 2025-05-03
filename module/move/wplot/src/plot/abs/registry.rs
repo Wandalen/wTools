@@ -1,86 +1,53 @@
-/// Define a private namespace for all its items.
-#[ cfg( not( feature = "no_std" ) ) ]
-mod private
+use crate::abs::identity::Id;
+use super::*;
+use std::any::Any;
+use std::sync::{ Arc, Mutex };
+use lazy_static::lazy_static;
+
+use super::context::ContextInterface;
+
+/// Interface to describe registry.
+#[ allow( missing_docs ) ]
+pub struct Registry< Context >
 {
-  // use crate::own::*;
-  // use crate::abs::*;
-  use once_cell::sync::Lazy;
-  // use wtools::from;
-  use std::sync::Mutex;
-  use dashmap::DashMap;
-  use std::sync::Arc;
-  use crate::abs::identity::private::Id;
-
-  use crate::abs::context::private::ContextInterface;
-
-  /// Registry of contexts.
-  #[ derive( Debug ) ]
-  pub struct Registry< Context >
-  where
-    Context : ContextInterface,
-  {
-    contexts : DashMap< Id, Context >,
-    contexts_with_name : DashMap< String, Id >,
-    current_context_name : Option< String >,
-  }
-
-  impl< Context > Registry< Context >
-  where
-    Context : ContextInterface,
-  {
-
-    /// Static constructor.
-    pub const fn new() -> Lazy< Arc< Mutex< Registry< Context > > > >
-    {
-      Lazy::new( ||
-      {
-        let contexts = DashMap::new();
-        let contexts_with_name = DashMap::new();
-        let current_context_name = None;
-        Arc::new( Mutex::new( Registry::< Context >
-        {
-          contexts,
-          contexts_with_name,
-          current_context_name,
-        }))
-      })
-    }
-
-    /// Construct a new context.
-    pub fn current( _registry : &mut Lazy< Arc< Mutex< Registry< Context > > > >  ) -> Context::Changer
-    {
-      let registry = _registry.lock().unwrap();
-      let mut current_name : Option< String > = registry.current_context_name.clone();
-      if current_name.is_none()
-      {
-        current_name = Some( "default".into() )
-      }
-      let current_name = current_name.unwrap();
-      if registry.contexts_with_name.contains_key( &current_name )
-      {
-        let id = *registry.contexts_with_name.get( &current_name ).unwrap().value();
-        registry.contexts.get_mut( &id ).unwrap().value_mut().changer()
-      }
-      else
-      {
-        // let context : Context = from!();
-        // let id = context.id();
-        // registry.contexts_with_name.insert( current_name, context.id() );
-        // registry.contexts.insert( id, context );
-        // registry.contexts.get_mut( &id ).unwrap().value_mut().changer()
-        let id = *registry.contexts_with_name.get( &current_name ).unwrap().value();
-        registry.contexts.get_mut( &id ).unwrap().value_mut().changer()
-      }
-    }
-
-  }
-
+  pub root : Arc< dyn Any + Send + Sync >,
+  pub current : i32,
+  phantom : std::marker::PhantomData< Context >,
 }
 
-#[ cfg( not( feature = "no_std" ) ) ]
-::meta_tools::mod_interface!
+impl< Context > Registry< Context >
 {
+  /// Constructor.
+  pub fn new( root : Arc< dyn Any + Send + Sync > ) -> Self
+  {
+    Self
+    {
+      root,
+      current : 0,
+      phantom : std::marker::PhantomData,
+    }
+  }
+}
 
-  orphan use Registry;
+impl< Context : ContextInterface > Registry< Context >
+{
+  /// Get id.
+  pub fn id( &self ) -> Id
+  {
+    Context::changer( self ).id()
+  }
 
+  /// Current.
+  pub fn current( _registry : &mut lazy_static::Lazy< Arc< Mutex< Registry< Context > > > >  ) -> Context::Changer
+  {
+    let mut c = unsafe { COUNTER.lock().unwrap() };
+    *c += 1;
+    println!( "Counter : {}", c );
+    todo!( "Implement" )
+  }
+}
+
+lazy_static!
+{
+  static ref COUNTER : Mutex< i32 > = Mutex::new( 0 );
 }

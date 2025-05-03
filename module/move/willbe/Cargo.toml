@@ -85,7 +85,7 @@ rustdoc-md = "0.1.0"
 
 ## internal
 crates_tools = { workspace = true }
-error_tools = { workspace = true, features = [ "default" ] }
+error_tools = { workspace = true, features = [ "default", "error_typed", "error_untyped", "err" ] }
 former = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
 mod_interface = { workspace = true, features = [ "default" ] }
