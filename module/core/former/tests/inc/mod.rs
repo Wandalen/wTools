@@ -235,11 +235,11 @@ mod former_enum_tests
 
   // xxx : qqq : enable or remove
 //   mod usecase1;
-//
-  // mod basic_manual;
-  // mod basic_derive;
-//   mod unit_variant_manual;
-//   mod unit_variant_derive;
+
+  mod basic_manual;
+  mod basic_derive;
+  mod unit_variant_manual;
+  mod unit_variant_derive;
 //   mod enum_named_fields_manual;
   // mod enum_named_fields_derive;
 //

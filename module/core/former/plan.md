@@ -126,8 +126,26 @@ When `cargo test` fails after uncommenting a test group (`_derive`, `_manual`, `
     *   Crucial Design Rules: [Structuring: Add Module Declaration Before Content](#structuring-add-module-declaration-before-content), [Minimal Changes](#enhancements-only-implement-whats-requested)
     *   Verification Strategy: Expect compilation success (`cargo check`) and zero tests run for `former_enum_tests` (`cargo test`). **Analyze logs critically.**
 
-*   [⚫] **Increment 2:** Uncomment and Test Basic Enum (`basic_*`)
-    *   **Requirement:** Uncomment `basic_derive`, `basic_manual`, and `basic_only_test` modules. Perform pre-analysis against "Expected Enum Former Behavior" (default subformer for single-field tuple). Address any `xxx`/`qqq` tasks in `basic_derive.rs`. Verify compilation and test success, diagnosing and fixing failures according to the "Failure Diagnosis Algorithm". Ensure `_derive` and `_manual` align with expected behavior.
+*   [⏳] **Increment 2:** Uncomment and Test Basic Enum (`basic_*`)
+    *   **Goal:** Activate and verify the tests for the basic enum `FunctionStep` involving single-field tuple variants holding `Former`-derived types.
+    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/mod.rs`. In the `mod former_enum_tests` block, uncomment the following lines:
+        ```rust
+        mod basic_manual;
+        mod basic_derive;
+        // Note: basic_only_test.rs is included by the above, no direct mod line needed.
+        ```
+    *   **Detailed Plan Step 2:** Modify `module/core/former/tests/inc/former_enum_tests/basic_derive.rs`. Remove the `// xxx : generated code for debugging` comments and the `// qqq : xxx : uncomment and make it working` comment, as the relevant code is already present and uncommented.
+    *   **Pre-Analysis:**
+        *   The enum `FunctionStep` has two variants: `Break(Break)` and `Run(Run)`. Both are single-field tuple variants holding types that derive `Former`.
+        *   The `basic_derive.rs` file uses `#[derive(Former)]` and `#[former(standalone_constructors)]`.
+        *   **Expected Behavior (Rule 3d & 4):** The derive macro should generate standalone constructor functions `break()` and `run()` that return the respective subformers (`BreakFormer`, `RunFormer`). This matches the logic in `basic_manual.rs`.
+        *   **Test Logic (`basic_only_test.rs`):** Tests call `FunctionStep::r#break()` and `FunctionStep::run()`, use the returned former's setters (`.condition()`, `.command()`), and call `.form()`.
+        *   **Prediction:** Tests are expected to pass if the derive macro correctly implements the default subformer behavior for single-field tuple variants and standalone constructors.
+    *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), "Expected Enum Former Behavior" rules 3d, 4.
+    *   **Verification Strategy:**
+        1.  Request user run `cargo check --tests --package former`. Expect success.
+        2.  Request user run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::basic`. Expect tests `build_break_variant_static` and `build_run_variant_static` to pass.
+        3.  Analyze logs critically using the "Failure Diagnosis Algorithm" if failures occur.
 
 *   [⚫] **Increment 3:** Uncomment and Test Enum Named Fields (`enum_named_fields_*`)
     *   **Requirement:** Uncomment `enum_named_fields_derive`, `enum_named_fields_manual`, and `enum_named_fields_only_test` modules. Perform pre-analysis against "Expected Enum Former Behavior" (scalar vs. subform vs. implicit former based on attributes and field count). Verify compilation and test success, diagnosing and fixing failures according to the "Failure Diagnosis Algorithm". Ensure `_derive` and `_manual` align with expected behavior.
