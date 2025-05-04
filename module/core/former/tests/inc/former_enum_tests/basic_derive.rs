@@ -1,3 +1,4 @@
+// File: module/core/former/tests/inc/former_enum_tests/basic_derive.rs
 
 use super::*;
 
@@ -18,13 +19,5 @@ enum FunctionStep
   Run( Run ),
 }
 
-// xxx : generated code for debugging
-
-//
-
-
-// xxx : generated code for debugging
-
 // Include the test logic
 include!( "basic_only_test.rs" );
-// qqq : xxx : uncomment and make it working
