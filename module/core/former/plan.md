@@ -147,8 +147,40 @@ When `cargo test` fails after uncommenting a test group (`_derive`, `_manual`, `
         2.  Request user run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::basic`. Expect tests `build_break_variant_static` and `build_run_variant_static` to pass.
         3.  Analyze logs critically using the "Failure Diagnosis Algorithm" if failures occur.
 
-*   [⚫] **Increment 3:** Uncomment and Test Enum Named Fields (`enum_named_fields_*`)
-    *   **Requirement:** Uncomment `enum_named_fields_derive`, `enum_named_fields_manual`, and `enum_named_fields_only_test` modules. Perform pre-analysis against "Expected Enum Former Behavior" (scalar vs. subform vs. implicit former based on attributes and field count). Verify compilation and test success, diagnosing and fixing failures according to the "Failure Diagnosis Algorithm". Ensure `_derive` and `_manual` align with expected behavior.
+*   [⏳] **Increment 3:** Uncomment and Test Enum Named Fields (`enum_named_fields_*`)
+    *   **Goal:** Activate and verify tests for `EnumWithNamedFields`, covering unit, zero-field, single-field, and multi-field variants with named fields, using various attributes (`#[scalar]`, `#[subform_scalar]`) and default behaviors.
+    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/mod.rs`. In the `mod former_enum_tests` block, uncomment the following lines:
+        ```rust
+        // mod enum_named_fields_manual; // Keep commented for now
+        mod enum_named_fields_derive;
+        // Note: enum_named_fields_only_test.rs is included by the above, no direct mod line needed.
+        ```
+        *(Self-correction: The original plan uncommented manual+derive together. Let's start with just derive to isolate potential macro issues first, aligning better with the Proc Macro Workflow's staged testing principle.)*
+    *   **Detailed Plan Step 2:** Modify `module/core/former/tests/inc/former_enum_tests/enum_named_fields_derive.rs`. Ensure the `#[debug]` attribute is present on the `EnumWithNamedFields` definition (it was added in the provided context). This will help diagnose issues by printing generated code.
+    *   **Pre-Analysis:**
+        *   The enum `EnumWithNamedFields` tests various combinations:
+            *   Unit variants (default, `#[scalar]`)
+            *   Zero-field named variants (`#[scalar]`, default error)
+            *   Zero-field unnamed variants (default, `#[scalar]`)
+            *   Single-field named variants (default subform, `#[scalar]`, `#[subform_scalar]`)
+            *   Two-field named variants (`#[scalar]`, default error)
+        *   **Expected Behavior:**
+            *   Unit/Zero-field unnamed (default/`#[scalar]`): Direct constructor `enum_name::variant_name() -> Enum`. (Rules 1a, 1b, 3a, 3b)
+            *   Zero-field named (`#[scalar]`): Direct constructor `enum_name::variant_name() -> Enum`. (Rule 1c)
+            *   Zero-field named (default): Compile error (Rule 3c) - *Test for this case might need adjustment or removal if it relies on compile error.*
+            *   Single-field named (default): Subformer `enum_name::variant_name() -> VariantFormer`. (Rule 3e)
+            *   Single-field named (`#[scalar]`): Direct constructor `enum_name::variant_name { field: Type } -> Enum`. (Rule 1e)
+            *   Single-field named (`#[subform_scalar]`): Subformer `enum_name::variant_name() -> VariantFormer`. (Rule 2e)
+            *   Two-field named (`#[scalar]`): Direct constructor `enum_name::variant_name { f1: T1, f2: T2 } -> Enum`. (Rule 1g)
+            *   Two-field named (default): Compile error (Rule 3g) - *Test for this case might need adjustment or removal.*
+        *   **Test Logic (`enum_named_fields_only_test.rs`):** Tests call the expected static methods/constructors based on the variant attributes and attempt to form the enum.
+        *   **Prediction:** Potential failures might occur if the derive macro doesn't correctly implement the implicit former logic for struct variants (default/`#[subform_scalar]`) or the direct constructor logic (`#[scalar]`). The `#[debug]` attribute will be helpful. Compile errors are expected for the default zero/multi-field named variants if tests exist for them.
+    *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), "Expected Enum Former Behavior" rules (all).
+    *   **Verification Strategy:**
+        1.  Request user run `cargo check --tests --package former`. Expect success or predictable compile errors for default zero/multi-field named variants if tested.
+        2.  Request user run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::enum_named_fields`. Expect tests to pass, potentially skipping compile-error tests.
+        3.  Analyze logs critically using the "Failure Diagnosis Algorithm" and the `#[debug]` output if failures occur.
+        4.  *(Next Step)* If derive tests pass, uncomment `enum_named_fields_manual` in `mod.rs` and re-run tests to verify manual implementation.
 
 *   [⚫] **Increment 4:** Uncomment and Test Generics Independent Struct (`generics_independent_struct_*`)
     *   **Requirement:** Uncomment `generics_independent_struct_derive`, `generics_independent_struct_manual`, and `generics_independent_struct_only_test` modules. Perform pre-analysis against "Expected Enum Former Behavior" (implicit former for struct variant). Verify compilation and test success, diagnosing and fixing failures according to the "Failure Diagnosis Algorithm". Ensure `_derive` and `_manual` align with expected behavior.
