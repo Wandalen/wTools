@@ -1,9 +1,9 @@
 // File: module/core/former_meta/src/derive_former/former_enum/tuple_zero.rs
 
-use macro_tools::{ Result, quote::quote, syn, diag };
+use macro_tools::{ Result, quote::{ quote, format_ident }, syn, diag }; // Added format_ident
 use convert_case::{ Case, Casing };
 use super::ident;
-use syn::{ parse_quote };
+// use syn::{ parse_quote }; // Removed parse_quote
 use super::EnumVariantHandlerContext; // Import the context struct
 
 
@@ -18,7 +18,8 @@ Result< () >
   let variant_ident = &ctx.variant.ident;
   let variant_name_str = variant_ident.to_string();
   let method_name_snake_str = variant_name_str.to_case( Case::Snake );
-  let method_name_ident_temp = parse_quote!( #method_name_snake_str );
+  // Use format_ident! instead of parse_quote! for robust identifier creation
+  let method_name_ident_temp = format_ident!( "{}", method_name_snake_str, span = variant_ident.span() );
   let method_name = ident::ident_maybe_raw( &method_name_ident_temp );
 
   // Check for #[subform_scalar] attribute - not allowed on zero-field tuple variants

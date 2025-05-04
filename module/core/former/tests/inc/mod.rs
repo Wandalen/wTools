@@ -240,7 +240,7 @@ mod former_enum_tests
   mod basic_derive;
   mod unit_variant_manual;
   mod unit_variant_derive;
-//   mod enum_named_fields_manual;
+  mod enum_named_fields_manual;
   mod enum_named_fields_derive;
 //
 //   // = generics

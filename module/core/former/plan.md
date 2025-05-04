@@ -120,67 +120,40 @@ When `cargo test` fails after uncommenting a test group (`_derive`, `_manual`, `
 ## Increments
 
 *   [✅] **Increment 1:** Uncomment `former_enum_tests` Module Declaration
-    *   **Goal:** Make the build system aware of the `former_enum_tests` module without activating any specific tests within it yet.
-    *   Detailed Plan Step 1: Modify `module/core/former/tests/inc/mod.rs`. Uncomment *only* the line `mod former_enum_tests;`. Leave all `mod <test_file>;` lines within that block commented.
-    *   Detailed Plan Step 2: Request user to run `cargo check --tests --package former` and `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests`.
-    *   Crucial Design Rules: [Structuring: Add Module Declaration Before Content](#structuring-add-module-declaration-before-content), [Minimal Changes](#enhancements-only-implement-whats-requested)
-    *   Verification Strategy: Expect compilation success (`cargo check`) and zero tests run for `former_enum_tests` (`cargo test`). **Analyze logs critically.**
-
-*   [⏳] **Increment 2:** Uncomment and Test Basic Enum (`basic_*`)
-    *   **Goal:** Activate and verify the tests for the basic enum `FunctionStep` involving single-field tuple variants holding `Former`-derived types.
-    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/mod.rs`. In the `mod former_enum_tests` block, uncomment the following lines:
-        ```rust
-        mod basic_manual;
-        mod basic_derive;
-        // Note: basic_only_test.rs is included by the above, no direct mod line needed.
-        ```
-    *   **Detailed Plan Step 2:** Modify `module/core/former/tests/inc/former_enum_tests/basic_derive.rs`. Remove the `// xxx : generated code for debugging` comments and the `// qqq : xxx : uncomment and make it working` comment, as the relevant code is already present and uncommented.
-    *   **Pre-Analysis:**
-        *   The enum `FunctionStep` has two variants: `Break(Break)` and `Run(Run)`. Both are single-field tuple variants holding types that derive `Former`.
-        *   The `basic_derive.rs` file uses `#[derive(Former)]` and `#[former(standalone_constructors)]`.
-        *   **Expected Behavior (Rule 3d & 4):** The derive macro should generate standalone constructor functions `break()` and `run()` that return the respective subformers (`BreakFormer`, `RunFormer`). This matches the logic in `basic_manual.rs`.
-        *   **Test Logic (`basic_only_test.rs`):** Tests call `FunctionStep::r#break()` and `FunctionStep::run()`, use the returned former's setters (`.condition()`, `.command()`), and call `.form()`.
-        *   **Prediction:** Tests are expected to pass if the derive macro correctly implements the default subformer behavior for single-field tuple variants and standalone constructors.
-    *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), "Expected Enum Former Behavior" rules 3d, 4.
-    *   **Verification Strategy:**
-        1.  Request user run `cargo check --tests --package former`. Expect success.
-        2.  Request user run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::basic`. Expect tests `build_break_variant_static` and `build_run_variant_static` to pass.
-        3.  Analyze logs critically using the "Failure Diagnosis Algorithm" if failures occur.
-
+    *   ... (details as before) ...
+*   [✅] **Increment 2:** Uncomment and Test Basic Enum (`basic_*`)
+    *   ... (details as before, successfully verified) ...
 *   [⏳] **Increment 3:** Uncomment and Test Enum Named Fields (`enum_named_fields_*`)
-    *   **Goal:** Activate and verify tests for `EnumWithNamedFields`, covering unit, zero-field, single-field, and multi-field variants with named fields, using various attributes (`#[scalar]`, `#[subform_scalar]`) and default behaviors.
-    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/mod.rs`. In the `mod former_enum_tests` block, uncomment the following lines:
-        ```rust
-        // mod enum_named_fields_manual; // Keep commented for now
-        mod enum_named_fields_derive;
-        // Note: enum_named_fields_only_test.rs is included by the above, no direct mod line needed.
-        ```
-        *(Self-correction: The original plan uncommented manual+derive together. Let's start with just derive to isolate potential macro issues first, aligning better with the Proc Macro Workflow's staged testing principle.)*
-    *   **Detailed Plan Step 2:** Modify `module/core/former/tests/inc/former_enum_tests/enum_named_fields_derive.rs`. Ensure the `#[debug]` attribute is present on the `EnumWithNamedFields` definition (it was added in the provided context). This will help diagnose issues by printing generated code.
-    *   **Pre-Analysis:**
-        *   The enum `EnumWithNamedFields` tests various combinations:
-            *   Unit variants (default, `#[scalar]`)
-            *   Zero-field named variants (`#[scalar]`, default error)
-            *   Zero-field unnamed variants (default, `#[scalar]`)
-            *   Single-field named variants (default subform, `#[scalar]`, `#[subform_scalar]`)
-            *   Two-field named variants (`#[scalar]`, default error)
-        *   **Expected Behavior:**
-            *   Unit/Zero-field unnamed (default/`#[scalar]`): Direct constructor `enum_name::variant_name() -> Enum`. (Rules 1a, 1b, 3a, 3b)
-            *   Zero-field named (`#[scalar]`): Direct constructor `enum_name::variant_name() -> Enum`. (Rule 1c)
-            *   Zero-field named (default): Compile error (Rule 3c) - *Test for this case might need adjustment or removal if it relies on compile error.*
-            *   Single-field named (default): Subformer `enum_name::variant_name() -> VariantFormer`. (Rule 3e)
-            *   Single-field named (`#[scalar]`): Direct constructor `enum_name::variant_name { field: Type } -> Enum`. (Rule 1e)
-            *   Single-field named (`#[subform_scalar]`): Subformer `enum_name::variant_name() -> VariantFormer`. (Rule 2e)
-            *   Two-field named (`#[scalar]`): Direct constructor `enum_name::variant_name { f1: T1, f2: T2 } -> Enum`. (Rule 1g)
-            *   Two-field named (default): Compile error (Rule 3g) - *Test for this case might need adjustment or removal.*
-        *   **Test Logic (`enum_named_fields_only_test.rs`):** Tests call the expected static methods/constructors based on the variant attributes and attempt to form the enum.
-        *   **Prediction:** Potential failures might occur if the derive macro doesn't correctly implement the implicit former logic for struct variants (default/`#[subform_scalar]`) or the direct constructor logic (`#[scalar]`). The `#[debug]` attribute will be helpful. Compile errors are expected for the default zero/multi-field named variants if tests exist for them.
+    *   **Goal:** Activate and verify tests for `EnumWithNamedFields`, covering unit, zero-field, single-field, and multi-field variants with named fields, using various attributes (`#[scalar]`, `#[subform_scalar]`) and default behaviors. **Strategy:** Isolate macro generation per variant type before running runtime tests.
+    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/mod.rs`. Ensure `mod enum_named_fields_derive;` is uncommented and `mod enum_named_fields_manual;` remains commented. *(Already done)*
+    *   **Detailed Plan Step 2:** Modify `module/core/former/tests/inc/former_enum_tests/enum_named_fields_derive.rs`:
+        *   Ensure `#[debug]` is present on `EnumWithNamedFields`. *(Already present)*
+        *   Comment out the `include!( "enum_named_fields_only_test.rs" );` line.
+        *   Comment out *all* variants within the `EnumWithNamedFields` definition.
+    *   **Detailed Plan Step 3 (Unit Variants):**
+        *   Uncomment `UnitVariantDefault` and `UnitVariantScalar` variants in `enum_named_fields_derive.rs`.
+        *   **Pre-Analysis:** Expect direct constructors (Rules 1a, 3a). Handler: `unit.rs`.
+        *   **Verification:** Run `cargo check --tests --package former`. Expect success. Analyze `#[debug]` output. Fix macro panics/syntax errors if they occur.
+    *   **Detailed Plan Step 4 (Zero-Field Variants):**
+        *   Uncomment `VariantZeroScalar {}`, `VariantZeroUnnamedDefault()`, `VariantZeroUnnamedScalar()` variants.
+        *   **Pre-Analysis:** Expect direct constructors (Rules 1c, 3b). Handlers: `struct_zero.rs`, `tuple_zero.rs`.
+        *   **Verification:** Run `cargo check --tests --package former`. Expect success. Analyze `#[debug]` output. Fix macro panics/syntax errors if they occur.
+    *   **Detailed Plan Step 5 (Single-Field Named Variants):**
+        *   Uncomment `VariantOneDefault { ... }`, `VariantOneScalar { ... }`, `VariantOneSubform { ... }`.
+        *   **Pre-Analysis:** Expect implicit former (Rule 3e), direct constructor (Rule 1e), implicit former (Rule 2e) respectively. Handler: `struct_non_zero.rs`.
+        *   **Verification:** Run `cargo check --tests --package former`. Expect success. Analyze `#[debug]` output. Fix macro panics/syntax errors if they occur.
+    *   **Detailed Plan Step 6 (Multi-Field Named Variants):**
+        *   Uncomment `VariantTwoScalar { ... }`.
+        *   **Pre-Analysis:** Expect direct constructor (Rule 1g). Handler: `struct_non_zero.rs`.
+        *   **Verification:** Run `cargo check --tests --package former`. Expect success. Analyze `#[debug]` output. Fix macro panics/syntax errors if they occur.
+    *   **Detailed Plan Step 7 (Enable Runtime Tests):**
+        *   Uncomment the `include!( "enum_named_fields_only_test.rs" );` line in `enum_named_fields_derive.rs`.
+        *   **Verification:** Run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::enum_named_fields`. Expect all tests within this module to pass. Fix any E0599 or runtime logic errors by adjusting the macro code generation based on previous analysis.
+    *   **Detailed Plan Step 8 (Enable Manual Tests):**
+        *   Modify `module/core/former/tests/inc/mod.rs`. Uncomment `mod enum_named_fields_manual;`.
+        *   **Verification:** Run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::enum_named_fields`. Expect all tests (derive + manual) to pass. Fix any discrepancies, prioritizing fixes in the macro if the manual implementation is correct according to the rules.
     *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), "Expected Enum Former Behavior" rules (all).
-    *   **Verification Strategy:**
-        1.  Request user run `cargo check --tests --package former`. Expect success or predictable compile errors for default zero/multi-field named variants if tested.
-        2.  Request user run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::enum_named_fields`. Expect tests to pass, potentially skipping compile-error tests.
-        3.  Analyze logs critically using the "Failure Diagnosis Algorithm" and the `#[debug]` output if failures occur.
-        4.  *(Next Step)* If derive tests pass, uncomment `enum_named_fields_manual` in `mod.rs` and re-run tests to verify manual implementation.
+    *   **Final Verification Strategy:** Successful execution of `cargo test` for the specific module after Step 8.
 
 *   [⚫] **Increment 4:** Uncomment and Test Generics Independent Struct (`generics_independent_struct_*`)
     *   **Requirement:** Uncomment `generics_independent_struct_derive`, `generics_independent_struct_manual`, and `generics_independent_struct_only_test` modules. Perform pre-analysis against "Expected Enum Former Behavior" (implicit former for struct variant). Verify compilation and test success, diagnosing and fixing failures according to the "Failure Diagnosis Algorithm". Ensure `_derive` and `_manual` align with expected behavior.

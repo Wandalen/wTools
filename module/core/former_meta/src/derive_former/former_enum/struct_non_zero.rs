@@ -48,6 +48,7 @@ pub( super ) fn handle_struct_non_zero_variant
   // Generate the snake_case method name, handling potential keywords
   let variant_name_str = variant_ident.to_string();
   let method_name_snake_str = variant_name_str.to_case( Case::Snake );
+  // Use format_ident! instead of parse_quote! for robust identifier creation
   let method_name_ident_temp = format_ident!( "{}", method_name_snake_str, span = variant_ident.span() );
   let method_name = ident::ident_maybe_raw( &method_name_ident_temp );
 
@@ -58,7 +59,7 @@ pub( super ) fn handle_struct_non_zero_variant
   let wants_subform_scalar = variant_attrs.subform_scalar.is_some();
   let wants_scalar = variant_attrs.scalar.is_some();
 
-  // FIX: Helper for conditional comma
+  // Helper for conditional comma
   let comma_if_enum_generics = if enum_generics_ty.is_empty() { quote!{} } else { quote!{ , } };
 
 
@@ -86,11 +87,11 @@ pub( super ) fn handle_struct_non_zero_variant
           let inner_storage_name = format_ident!( "{}FormerStorage", inner_type_name );
           let inner_def_name = format_ident!( "{}FormerDefinition", inner_type_name );
           let inner_def_types_name = format_ident!( "{}FormerDefinitionTypes", inner_type_name );
-          // FIX: Convert GenericArgument to GenericParam
+          // Convert GenericArgument to GenericParam
           let inner_generics_params : Punctuated<GenericParam, Comma> = match &inner_generics
           {
             syn::PathArguments::AngleBracketed( args ) => args.args.iter().map( |arg| match arg {
-              // FIX: Extract ident correctly for Type and Const
+              // Extract ident correctly for Type and Const
               GenericArgument::Type( ty ) => match ty {
                   syn::Type::Path( p ) => GenericParam::Type( TypeParam { ident: p.path.get_ident().unwrap().clone(), attrs: vec![], colon_token: None, bounds: Punctuated::new(), eq_token: None, default: None } ),
                   _ => panic!("Unsupported generic argument type for TypeParam ident extraction"),
@@ -121,7 +122,7 @@ pub( super ) fn handle_struct_non_zero_variant
               {
                 quote! { #inner_former_name < #inner_generics_ty_punctuated #inner_def_name < #inner_generics_ty_punctuated (), #comma_if_enum_generics #enum_name< #enum_generics_ty >, #end_struct_name < #enum_generics_ty > > > }
               };
-              // FIX: Use inner_generics_ty_punctuated in storage init
+              // Use inner_generics_ty_punctuated in storage init
               let initial_storage_code = if field_info.is_constructor_arg
               {
                 let fi = &field_info.ident;
@@ -178,7 +179,7 @@ pub( super ) fn handle_struct_non_zero_variant
              // --- End Standalone Constructor ---
 
              // Associated method logic
-             let phantom_field_type = macro_tools::phantom::tuple( &generics.params ); // FIX: Use qualified path and correct generics
+             let phantom_field_type = macro_tools::phantom::tuple( &generics.params ); // Use qualified path and correct generics
              // let _field_ident = &field_info.ident; // Removed unused variable per clippy
              let end_struct_tokens = {
                  let where_clause_tokens = if let Some( where_clause ) = &ctx.generics.where_clause {
@@ -232,7 +233,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    #[ automatically_derived ]
                    impl< #enum_generics_impl > former::FormingEnd
                    <
-                     // FIX: Correct generics usage and add comma_if_enum_generics
+                     // Correct generics usage and add comma_if_enum_generics
                      #forming_end_type_tokens
                    >
                    for #end_struct_name < #enum_generics_ty >
@@ -248,7 +249,7 @@ pub( super ) fn handle_struct_non_zero_variant
                      ->
                      #enum_name< #enum_generics_ty >
                      {
-                       // FIX: Handle single vs multi-field preformed type
+                       // Handle single vs multi-field preformed type
                        let preformed_tuple = former::StoragePreform::preform( sub_storage );
                        #enum_name::#variant_ident
                        {
@@ -325,11 +326,11 @@ pub( super ) fn handle_struct_non_zero_variant
              // Associated method (direct constructor)
              let mut params = Vec::new();
              let mut args = Vec::new();
-             // FIX: Iterate over ctx.variant_field_info directly (remove &)
-             for field_info in ctx.variant_field_info
+             // Iterate over ctx.variant_field_info directly (remove &)
+             for field_info in ctx.variant_field_info // Corrected iteration
              {
                  let field_ident = &field_info.ident;
-                 let param_name = ident::ident_maybe_raw( field_ident );
+                 let param_name = ident::ident_maybe_raw( field_ident ); // Uses ident_maybe_raw
                  let field_type = &field_info.ty;
                  params.push( quote! { #param_name : impl Into< #field_type > } );
                  args.push( quote! { #field_ident : #param_name.into() } );
@@ -379,7 +380,7 @@ pub( super ) fn handle_struct_non_zero_variant
              let former_name = format_ident!( "{}{}Former", enum_name, variant_ident );
 
              // --- Generate Storage ---
-             let phantom_field_type = macro_tools::phantom::tuple( &generics.params ); // FIX: Use qualified path and correct generics
+             let phantom_field_type = macro_tools::phantom::tuple( &generics.params ); // Use qualified path and correct generics
              let storage_fields = variant_field_info.iter().map( |f_info|
              {
                let field_ident = &f_info.ident;
@@ -414,7 +415,6 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             println!( "DEBUG: Storage Struct Tokens:\n{}", storage_struct_tokens );
              ctx.end_impls.push( storage_struct_tokens );
              // Push Default impl for Storage
              let storage_default_impl_tokens = {
@@ -446,7 +446,6 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             println!( "DEBUG: Storage Default Impl Tokens:\n{}", storage_default_impl_tokens );
              ctx.end_impls.push( storage_default_impl_tokens );
              // Push former::Storage impl
              let storage_trait_impl_tokens = {
@@ -470,7 +469,6 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             println!( "DEBUG: Storage Trait Impl Tokens:\n{}", storage_trait_impl_tokens );
              ctx.end_impls.push( storage_trait_impl_tokens );
              let preform_field_assignments = variant_field_info.iter().map( |f_info|
              {
@@ -524,17 +522,16 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             println!( "DEBUG: Storage Preform Impl Tokens:\n{}", storage_preform_impl_tokens );
              ctx.end_impls.push( storage_preform_impl_tokens );
 
              // --- Generate DefinitionTypes ---
-             // FIX: Correctly merge generics and handle commas
+             // Correctly merge generics and handle commas
              let mut def_types_generics_impl_punctuated : Punctuated<GenericParam, Comma> = generics.params.clone();
              if !def_types_generics_impl_punctuated.is_empty() && !def_types_generics_impl_punctuated.trailing_punct() { def_types_generics_impl_punctuated.push_punct( Comma::default() ); }
              def_types_generics_impl_punctuated.push( parse_quote!( Context2 = () ) );
              def_types_generics_impl_punctuated.push( parse_quote!( Formed2 = #enum_name< #enum_generics_ty > ) );
              let ( _def_types_generics_with_defaults, def_types_generics_impl, def_types_generics_ty, _def_types_generics_where ) = generic_params::decompose( &syn::Generics { params: def_types_generics_impl_punctuated, ..(*generics).clone() } );
-             let def_types_phantom = macro_tools::phantom::tuple( &def_types_generics_impl ); // FIX: Use qualified path
+             let def_types_phantom = macro_tools::phantom::tuple( &def_types_generics_impl ); // Use qualified path
              // Push DefinitionTypes struct definition
              let def_types_struct_tokens = {
                  let where_clause_tokens = if let Some( where_clause ) = &ctx.generics.where_clause {
@@ -557,7 +554,6 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             println!( "DEBUG: DefTypes Struct Tokens:\n{}", def_types_struct_tokens );
              ctx.end_impls.push( def_types_struct_tokens );
              // Push Default impl for DefinitionTypes
              let def_types_default_impl_tokens = {
@@ -584,7 +580,6 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             println!( "DEBUG: DefTypes Default Impl Tokens:\n{}", def_types_default_impl_tokens );
              ctx.end_impls.push( def_types_default_impl_tokens );
              // Push former::FormerDefinitionTypes impl
              let former_definition_types_impl_tokens = {
@@ -607,13 +602,10 @@ pub( super ) fn handle_struct_non_zero_variant
                      type Storage = #storage_struct_name< #enum_generics_ty >;
                      type Context = Context2;
                      type Formed = Formed2; // Note: Formed2 already uses #enum_name
-                     // FIX: Correctly reference DefinitionTypes with its generics
-                     type Types = #def_types_name< #enum_generics_ty #comma_if_enum_generics Context2, Formed2 >;
-                     type End = End2;
+                     // Removed End associated type as it's not part of FormerDefinitionTypes
                    }
                  }
              };
-             println!( "DEBUG: DefTypes Trait Impl Tokens:\n{}", former_definition_types_impl_tokens );
              ctx.end_impls.push( former_definition_types_impl_tokens );
              // Push former::FormerMutator impl
              let former_mutator_impl_tokens = {
@@ -637,11 +629,10 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             println!( "DEBUG: FormerMutator Impl Tokens:\n{}", former_mutator_impl_tokens );
              ctx.end_impls.push( former_mutator_impl_tokens );
 
              // --- Generate Definition ---
-             // FIX: Correctly merge generics and handle commas
+             // Correctly merge generics and handle commas
              let mut def_generics_impl_punctuated : Punctuated<GenericParam, Comma> = generics.params.clone();
              if !def_generics_impl_punctuated.is_empty() && !def_generics_impl_punctuated.trailing_punct() { def_generics_impl_punctuated.push_punct( Comma::default() ); }
              def_generics_impl_punctuated.push( parse_quote!( Context2 = () ) );
@@ -649,7 +640,7 @@ pub( super ) fn handle_struct_non_zero_variant
              def_generics_impl_punctuated.push( parse_quote!( End2 = #end_struct_name< #enum_generics_ty > ) );
              let def_generics_syn = syn::Generics { params: def_generics_impl_punctuated, ..(*generics).clone() };
              let ( _def_generics_with_defaults, def_generics_impl, def_generics_ty, _def_generics_where ) = generic_params::decompose( &def_generics_syn );
-             let def_phantom = macro_tools::phantom::tuple( &def_generics_impl ); // FIX: Use qualified path
+             let def_phantom = macro_tools::phantom::tuple( &def_generics_impl ); // Use qualified path
              // Push Definition struct definition
              let def_struct_tokens = {
                  let where_clause_tokens = if let Some( where_clause ) = &ctx.generics.where_clause {
@@ -672,7 +663,6 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             println!( "DEBUG: Def Struct Tokens:\n{}", def_struct_tokens );
              ctx.end_impls.push( def_struct_tokens );
              // Push Default impl for Definition
              let def_default_impl_tokens = {
@@ -699,7 +689,6 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             println!( "DEBUG: Def Default Impl Tokens:\n{}", def_default_impl_tokens );
              ctx.end_impls.push( def_default_impl_tokens );
              // Push former::FormerDefinition impl
              let former_definition_impl_tokens = {
@@ -713,22 +702,30 @@ pub( super ) fn handle_struct_non_zero_variant
                  } else {
                      quote! {}
                  };
+                 // Add the End2 bound here
+                 let mut where_clause_with_end_bound = where_clause_tokens.clone();
+                 if !where_clause_with_end_bound.to_string().contains("where") {
+                     where_clause_with_end_bound = quote! { where };
+                 } else if !where_clause_with_end_bound.to_string().ends_with(',') && !where_clause_with_end_bound.to_string().ends_with("where ") {
+                     where_clause_with_end_bound = quote! { #where_clause_with_end_bound , };
+                 }
+                 where_clause_with_end_bound = quote! { #where_clause_with_end_bound End2 : former::FormingEnd< #def_types_name< #enum_generics_ty #comma_if_enum_generics Context2, Formed2 > > };
+
                  quote!
                  {
                    impl< #def_generics_impl > former::FormerDefinition
                    for #def_name < #def_generics_ty >
-                   #where_clause_tokens
+                   #where_clause_with_end_bound // Use the clause with the End2 bound
                    {
                      type Storage = #storage_struct_name< #enum_generics_ty >;
                      type Context = Context2;
                      type Formed = Formed2; // Note: Formed2 already uses #enum_name
-                     // FIX: Correctly reference DefinitionTypes with its generics
+                     // Correctly reference DefinitionTypes with its generics
                      type Types = #def_types_name< #enum_generics_ty #comma_if_enum_generics Context2, Formed2 >;
                      type End = End2;
                    }
                  }
              };
-             println!( "DEBUG: Def Trait Impl Tokens:\n{}", former_definition_impl_tokens );
              ctx.end_impls.push( former_definition_impl_tokens );
 
              // --- Generate Former Struct ---
@@ -788,16 +785,16 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             println!( "DEBUG: Former Struct Tokens:\n{}", former_struct_tokens );
              ctx.end_impls.push( former_struct_tokens );
              // --- Generate Former Impl + Setters ---
              let setters = variant_field_info.iter().map( |f_info|
              {
                let field_ident = &f_info.ident;
                let field_type = &f_info.ty;
-               let setter_name = ident::ident_maybe_raw( field_ident );
+               let setter_name = ident::ident_maybe_raw( field_ident ); // Uses ident_maybe_raw
                quote!
                {
+                 #[ doc = "Setter for the #field_ident field." ] // FIX: Add doc comment for setter
                  #[ inline ]
                  pub fn #setter_name< Src >( mut self, src : Src ) -> Self
                  where Src : ::core::convert::Into< #field_type >
@@ -810,53 +807,46 @@ pub( super ) fn handle_struct_non_zero_variant
              });
              // Push Former impl block
              let former_impl_tokens = {
-                 let where_clause_tokens = if let Some( where_clause ) = &ctx.generics.where_clause {
-                     if where_clause.predicates.is_empty() {
-                         quote! {}
-                     } else {
-                         let predicates = &where_clause.predicates;
-                         quote! { where #predicates }
-                     }
-                 } else {
-                     quote! {}
-                 };
+                 // Add bounds to Definition in the impl block
+                 let former_impl_where_clause = former_generics_syn.where_clause.clone().unwrap_or_else(|| syn::WhereClause { where_token: syn::token::Where::default(), predicates: Punctuated::new() });
+                 // The bounds are already added to former_where_predicates which is used to create former_generics_syn.where_clause
+
                  quote!
                  {
                    #[ automatically_derived ]
-                   impl< #former_generics_impl > former::FormerName < #former_generics_ty >
-                   #where_clause_tokens
-                   {
-                     // Standard former methods (new, begin, form, end)
-                     #[ inline( always ) ] pub fn new( on_end : Definition::End ) -> Self { Self::begin( None, None, on_end ) }
-                     #[ inline( always ) ] pub fn new_coercing< IntoEnd >( end : IntoEnd ) -> Self where IntoEnd : Into< Definition::End > { Self::begin_coercing( None, None, end ) }
-                     #[ inline( always ) ] pub fn begin ( mut storage : ::core::option::Option< Definition::Storage >, context : ::core::option::Option< Definition::Context >, on_end : Definition::End ) -> Self
-                     {
-                       if storage.is_none() { storage = Some( Default::default() ); }
-                       Self { storage : storage.unwrap(), context, on_end : Some( on_end ), _phantom_def : ::core::marker::PhantomData }
-                     }
-                     #[ inline( always ) ] pub fn begin_coercing< IntoEnd > ( mut storage : ::core::option::Option< Definition::Storage >, context : ::core::option::Option< Definition::Context >, on_end : IntoEnd ) -> Self where IntoEnd : Into< Definition::End >
-                     {
-                       if storage.is_none() { storage = Some( Default::default() ); }
-                       Self { storage : storage.unwrap(), context, on_end : Some( on_end.into() ), _phantom_def : ::core::marker::PhantomData }
-                     }
-                     #[ inline( always ) ] pub fn form( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed { self.end() }
-                     #[ inline( always ) ] pub fn end( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
-                     {
-                       let context = self.context.take();
-                       let on_end = self.on_end.take().unwrap();
-                       // Apply mutator if needed (assuming default empty mutator for now)
-                       // < Definition::Types as former::FormerMutator >::form_mutation( &mut self.storage, &mut self.context );
-                       on_end.call( self.storage, context )
-                     }
-                     // Field setters
-                     #( #setters )*
-                   }
+                    impl #former_generics_impl #former_name #former_generics_ty // <<< Use generics directly, remove extra <> and comma
+                    #former_impl_where_clause // Use the constructed where clause with bounds
+                    {
+                        // Standard former methods (new, begin, form, end)
+                        #[ inline( always ) ] pub fn new( on_end : Definition::End ) -> Self { Self::begin( None, None, on_end ) }
+                        #[ inline( always ) ] pub fn new_coercing< IntoEnd >( end : IntoEnd ) -> Self where IntoEnd : Into< Definition::End > { Self::begin_coercing( None, None, end ) }
+                        #[ inline( always ) ] pub fn begin ( mut storage : ::core::option::Option< Definition::Storage >, context : ::core::option::Option< Definition::Context >, on_end : Definition::End ) -> Self
+                        {
+                          if storage.is_none() { storage = Some( Default::default() ); }
+                          Self { storage : storage.unwrap(), context, on_end : Some( on_end ), _phantom_def : ::core::marker::PhantomData }
+                        }
+                        #[ inline( always ) ] pub fn begin_coercing< IntoEnd > ( mut storage : ::core::option::Option< Definition::Storage >, context : ::core::option::Option< Definition::Context >, on_end : IntoEnd ) -> Self where IntoEnd : Into< Definition::End >
+                        {
+                          if storage.is_none() { storage = Some( Default::default() ); }
+                          Self { storage : storage.unwrap(), context, on_end : Some( on_end.into() ), _phantom_def : ::core::marker::PhantomData }
+                        }
+                        #[ inline( always ) ] pub fn form( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed { self.end() }
+                        #[ inline( always ) ] pub fn end( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
+                        {
+                          let context = self.context.take();
+                          let on_end = self.on_end.take().unwrap();
+                          // Apply mutator if needed (assuming default empty mutator for now)
+                          // < Definition::Types as former::FormerMutator >::form_mutation( &mut self.storage, &mut self.context );
+                          on_end.call( self.storage, context )
+                        }
+                        // Field setters
+                        #( #setters )*
+                    }
                  }
              };
-             println!( "DEBUG: Former Impl Tokens:\n{}", former_impl_tokens );
              ctx.end_impls.push( former_impl_tokens );
              // --- Generate End Struct ---
-             let phantom_field_type = macro_tools::phantom::tuple( &generics.params ); // FIX: Use qualified path and correct generics
+             let phantom_field_type = macro_tools::phantom::tuple( &generics.params ); // Use qualified path and correct generics
              // Push End struct definition
              let end_struct_tokens = {
                  let where_clause_tokens = if let Some( where_clause ) = &ctx.generics.where_clause {
@@ -879,7 +869,6 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             println!( "DEBUG: End Struct Tokens:\n{}", end_struct_tokens );
              ctx.end_impls.push( end_struct_tokens );
              // --- Generate End Impl ---
              let _tuple_indices = ( 0..ctx.variant_field_info.len() ).map( syn::Index::from );
@@ -914,7 +903,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    #[ automatically_derived ]
                    impl< #enum_generics_impl > former::FormingEnd
                    <
-                     // FIX: Correct generics usage and add comma_if_enum_generics
+                     // Correct generics usage and add comma_if_enum_generics
                      #forming_end_type_tokens
                    >
                    for #end_struct_name < #enum_generics_ty >
@@ -930,7 +919,7 @@ pub( super ) fn handle_struct_non_zero_variant
                      ->
                      #enum_name< #enum_generics_ty >
                      {
-                       // FIX: Handle single vs multi-field preformed type
+                       // Handle single vs multi-field preformed type
                        let preformed_tuple = former::StoragePreform::preform( sub_storage );
                        #enum_name::#variant_ident
                        {
@@ -940,7 +929,6 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             println!( "DEBUG: End Impl Tokens:\n{}", forming_end_impl_tokens );
              ctx.end_impls.push( forming_end_impl_tokens );
              // --- Generate Static Method ---
              // Push static method for Former
@@ -972,14 +960,13 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
-             println!( "DEBUG: Static Method Tokens:\n{}", static_method_tokens );
              ctx.methods.push( static_method_tokens );
              // --- Generate Standalone Constructor (Subform Struct(N)) ---
              if struct_attrs.standalone_constructors.value( false )
              {
                  let constructor_params : Vec<_> = variant_field_info.iter().filter( |f| f.is_constructor_arg ).map( |f| { let pn = &f.ident; let ty = &f.ty; quote! { #pn : impl Into<#ty> } } ).collect();
                  let all_fields_are_args = !variant_field_info.is_empty() && variant_field_info.iter().all( |f| f.is_constructor_arg );
-                 // FIX: Added comma in return type generics
+                 // Added comma in return type generics
                  let return_type = if all_fields_are_args { quote! { #enum_name< #enum_generics_ty > } } else { quote! { #former_name < #enum_generics_ty, #def_name< #enum_generics_ty #comma_if_enum_generics (), #enum_name< #enum_generics_ty >, #end_struct_name< #enum_generics_ty > > > } };
                  let initial_storage_assignments = variant_field_info.iter().filter( |f| f.is_constructor_arg ).map( |f| { let fi = &f.ident; let pn = ident::ident_maybe_raw( fi ); quote! { #fi : ::core::option::Option::Some( #pn.into() ) } } ); // Filter only constructor args
                  let initial_storage_code = if constructor_params.is_empty() { quote! { ::core::option::Option::None } } else { quote! { ::core::option::Option::Some( #storage_struct_name :: < #enum_generics_ty > { #( #initial_storage_assignments, )* ..Default::default() } ) } };
@@ -1011,7 +998,6 @@ pub( super ) fn handle_struct_non_zero_variant
                          }
                      }
                  };
-                 println!( "DEBUG: Standalone Constructor Tokens:\n{}", standalone_constructor_tokens );
                  ctx.standalone_constructors.push( standalone_constructor_tokens );
              }
              // --- End Standalone Constructor ---
