@@ -414,6 +414,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
+             println!( "DEBUG: Storage Struct Tokens:\n{}", storage_struct_tokens );
              ctx.end_impls.push( storage_struct_tokens );
              // Push Default impl for Storage
              let storage_default_impl_tokens = {
@@ -445,6 +446,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
+             println!( "DEBUG: Storage Default Impl Tokens:\n{}", storage_default_impl_tokens );
              ctx.end_impls.push( storage_default_impl_tokens );
              // Push former::Storage impl
              let storage_trait_impl_tokens = {
@@ -468,6 +470,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
+             println!( "DEBUG: Storage Trait Impl Tokens:\n{}", storage_trait_impl_tokens );
              ctx.end_impls.push( storage_trait_impl_tokens );
              let preform_field_assignments = variant_field_info.iter().map( |f_info|
              {
@@ -521,6 +524,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
+             println!( "DEBUG: Storage Preform Impl Tokens:\n{}", storage_preform_impl_tokens );
              ctx.end_impls.push( storage_preform_impl_tokens );
 
              // --- Generate DefinitionTypes ---
@@ -553,6 +557,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
+             println!( "DEBUG: DefTypes Struct Tokens:\n{}", def_types_struct_tokens );
              ctx.end_impls.push( def_types_struct_tokens );
              // Push Default impl for DefinitionTypes
              let def_types_default_impl_tokens = {
@@ -579,6 +584,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
+             println!( "DEBUG: DefTypes Default Impl Tokens:\n{}", def_types_default_impl_tokens );
              ctx.end_impls.push( def_types_default_impl_tokens );
              // Push former::FormerDefinitionTypes impl
              let former_definition_types_impl_tokens = {
@@ -607,6 +613,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
+             println!( "DEBUG: DefTypes Trait Impl Tokens:\n{}", former_definition_types_impl_tokens );
              ctx.end_impls.push( former_definition_types_impl_tokens );
              // Push former::FormerMutator impl
              let former_mutator_impl_tokens = {
@@ -630,6 +637,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
+             println!( "DEBUG: FormerMutator Impl Tokens:\n{}", former_mutator_impl_tokens );
              ctx.end_impls.push( former_mutator_impl_tokens );
 
              // --- Generate Definition ---
@@ -664,6 +672,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
+             println!( "DEBUG: Def Struct Tokens:\n{}", def_struct_tokens );
              ctx.end_impls.push( def_struct_tokens );
              // Push Default impl for Definition
              let def_default_impl_tokens = {
@@ -690,6 +699,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
+             println!( "DEBUG: Def Default Impl Tokens:\n{}", def_default_impl_tokens );
              ctx.end_impls.push( def_default_impl_tokens );
              // Push former::FormerDefinition impl
              let former_definition_impl_tokens = {
@@ -718,6 +728,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
+             println!( "DEBUG: Def Trait Impl Tokens:\n{}", former_definition_impl_tokens );
              ctx.end_impls.push( former_definition_impl_tokens );
 
              // --- Generate Former Struct ---
@@ -777,6 +788,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
+             println!( "DEBUG: Former Struct Tokens:\n{}", former_struct_tokens );
              ctx.end_impls.push( former_struct_tokens );
              // --- Generate Former Impl + Setters ---
              let setters = variant_field_info.iter().map( |f_info|
@@ -841,6 +853,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
+             println!( "DEBUG: Former Impl Tokens:\n{}", former_impl_tokens );
              ctx.end_impls.push( former_impl_tokens );
              // --- Generate End Struct ---
              let phantom_field_type = macro_tools::phantom::tuple( &generics.params ); // FIX: Use qualified path and correct generics
@@ -866,6 +879,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
+             println!( "DEBUG: End Struct Tokens:\n{}", end_struct_tokens );
              ctx.end_impls.push( end_struct_tokens );
              // --- Generate End Impl ---
              let _tuple_indices = ( 0..ctx.variant_field_info.len() ).map( syn::Index::from );
@@ -926,6 +940,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
+             println!( "DEBUG: End Impl Tokens:\n{}", forming_end_impl_tokens );
              ctx.end_impls.push( forming_end_impl_tokens );
              // --- Generate Static Method ---
              // Push static method for Former
@@ -957,6 +972,7 @@ pub( super ) fn handle_struct_non_zero_variant
                    }
                  }
              };
+             println!( "DEBUG: Static Method Tokens:\n{}", static_method_tokens );
              ctx.methods.push( static_method_tokens );
              // --- Generate Standalone Constructor (Subform Struct(N)) ---
              if struct_attrs.standalone_constructors.value( false )
@@ -995,6 +1011,7 @@ pub( super ) fn handle_struct_non_zero_variant
                          }
                      }
                  };
+                 println!( "DEBUG: Standalone Constructor Tokens:\n{}", standalone_constructor_tokens );
                  ctx.standalone_constructors.push( standalone_constructor_tokens );
              }
              // --- End Standalone Constructor ---
