@@ -68,7 +68,7 @@ module/core/former/tests/inc/
 
 ## Increments
 
-*   [⚫] **Increment 1: Activate `former_enum_tests` Module & Document Unit Test Matrix**
+*   [✅] **Increment 1: Activate `former_enum_tests` Module & Document Unit Test Matrix**
     *   **Goal:** Ensure the `former_enum_tests` module is active and document the "Test Matrix for Unit Variants".
     *   **Detailed Plan Step 1:** Check `module/core/former/tests/inc/mod.rs`. If `mod former_enum_tests;` (or the block `mod former_enum_tests { ... }`) is commented or missing, add/uncomment it.
     *   **Detailed Plan Step 2:** Modify `module/core/former/tests/inc/former_enum_tests/unit_variant_only_test.rs`. Add a file-level documentation comment (`//!`) at the top, containing the "Test Matrix for Unit Variants" table and a brief explanation of its purpose for unit variant testing.
@@ -79,7 +79,7 @@ module/core/former/tests/inc/
         *   Manually review `unit_variant_only_test.rs` to ensure the matrix is correctly embedded and formatted.
     *   **Crucial Design Rules:** [Comments and Documentation](#comments-and-documentation).
 
-*   [⚫] **Increment 2: Test Unit Variants - Default and `#[scalar]` Behavior (Combinations 1 & 2)**
+*   [⏳] **Increment 2: Test Unit Variants - Default and `#[scalar]` Behavior (Combinations 1 & 2)**
     *   **Goal:** Uncomment and verify tests for unit variants with default behavior and with the `#[scalar]` attribute.
     *   **Files:** `unit_variant_derive.rs`, `unit_variant_manual.rs`, `unit_variant_only_test.rs`.
     *   **Matrix Coverage:** Combinations #1 and #2.
@@ -93,6 +93,8 @@ module/core/former/tests/inc/
         2.  Run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::unit_variant_manual`. Analyze and fix if needed.
         3.  In `module/core/former/tests/inc/mod.rs`, uncomment `mod unit_variant_derive;`.
         4.  Run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::unit_variant_derive`. Analyze and fix if needed.
+    *   **Detailed Plan Step 5:** Modify `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs` to generate static constructor methods for unit variants.
+    *   **Detailed Plan Step 6:** Re-run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::unit_variant_derive` to verify the fix.
 
 *   [⚫] **Increment 3: Test Unit Variants - `#[standalone_constructors]` (Combinations 3 & 4)**
     *   **Goal:** Verify `#[standalone_constructors]` attribute on enums containing unit variants.
@@ -120,3 +122,5 @@ module/core/former/tests/inc/
 *   This plan focuses specifically on unit variants.
 *   The "Test Matrix for Unit Variants" will be embedded in `unit_variant_only_test.rs` (or `inc/mod.rs`).
 *   The "Expected Enum Former Behavior Rules" are simplified for unit variants.
+*   **[5/7/2025] Increment 1 Complete:** Activated `former_enum_tests` module (it was already active) and documented the unit test matrix in `unit_variant_only_test.rs`. Verified with `cargo check`.
+*   **[5/7/2025] Increment 2 Failed:** The derive test `former_enum_tests::unit_variant_derive` failed because the `#[derive(Former)]` macro is not generating the expected static constructor methods for unit variants. The next step is to fix the macro implementation in `former_meta`.
