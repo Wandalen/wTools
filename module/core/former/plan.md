@@ -4,15 +4,14 @@
 *   Systematically test the `#[derive(Former)]` macro for Rust enum **unit variants**.
 *   Cover combinations of relevant `former` attributes (`#[scalar]`, default behavior, `#[standalone_constructors]`) for unit variants, as defined in the "Test Matrix for Unit Variants".
 *   Incrementally uncomment, pre-analyze, fix, and verify existing test files related to unit variants within `module/core/former/tests/inc/former_enum_tests/`.
-*   **Embed the "Test Matrix for Unit Variants" (or a clear reference to it) as documentation within the `former_enum_tests` module.**
+*   **Embed the "Test Matrix for Unit Variants" (or a clear reference to it) as documentation within `module/core/former/tests/inc/former_enum_tests/unit_variant_only_test.rs` (or a central point in `inc/mod.rs` for `former_enum_tests`).**
 *   Ensure all code modifications adhere strictly to `code/gen` instructions, Design Rules, and Codestyle Rules.
 
 ## Relevant Context
 
 *   **Primary Test Directory:** `module/core/former/tests/inc/former_enum_tests/`
-    *   `mod.rs` (for module-level documentation)
-    *   Specifically: `unit_variant_derive.rs`, `unit_variant_manual.rs`, `unit_variant_only_test.rs`.
-    *   May also be relevant: `enum_named_fields_*.rs` (if they contain unit variants and their tests need updating with matrix info).
+    *   `unit_variant_derive.rs`, `unit_variant_manual.rs`, `unit_variant_only_test.rs`.
+*   **Main Test Module File:** `module/core/former/tests/inc/mod.rs` (declares `former_enum_tests` and its submodules).
 *   **Macro Implementation:** `module/core/former_meta/src/derive_former/former_enum/`
     *   `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs`
     *   `module/core/former_meta/src/derive_former/former_enum.rs` (main dispatch)
@@ -48,41 +47,36 @@ Factors to consider for unit variants (`enum MyEnum { MyUnitVariant }`):
 
 ### Target File Structure for Unit Variant Tests
 
-Within `module/core/former/tests/inc/former_enum_tests/`:
+The relevant files are within `module/core/former/tests/inc/former_enum_tests/`. Module declarations are in `module/core/former/tests/inc/mod.rs`.
 
 ```
-former_enum_tests/
-├── mod.rs                      // Declares test submodules. Will contain the Test Matrix documentation.
-├── unit_variant_derive.rs      // Tests using #[derive(Former)] for unit variants
-├── unit_variant_manual.rs      // Manual Former implementation for unit variants
-└── unit_variant_only_test.rs   // Shared test logic, included by _derive and _manual
+module/core/former/tests/inc/
+├── mod.rs                      // Declares `former_enum_tests` and its test files.
+│                               // Potentially a place for high-level enum test matrix docs.
+└── former_enum_tests/
+    ├── unit_variant_derive.rs
+    ├── unit_variant_manual.rs
+    └── unit_variant_only_test.rs // Will contain the Test Matrix for Unit Variants documentation.
+    // ... other enum test files ...
 ```
 
 ### Expected Enum Former Behavior Rules (Unit Variants Only)
-
-1.  **`#[scalar]` Attribute (on variant):**
-    *   **Unit Variant (`V`):** Generates `Enum::variant() -> Enum`. (Rule 1a)
-2.  **`#[subform_scalar]` Attribute (on variant):**
-    *   **Unit Variant:** Error. (Rule 2a)
-3.  **Default Behavior (No `#[scalar]` or `#[subform_scalar]` on variant):**
-    *   **Unit Variant (`V`):** Generates `Enum::variant() -> Enum`. (Rule 3a)
-4.  **`#[standalone_constructors]` Attribute (on enum):**
-    *   For a unit variant `MyUnitVariant`, generates `fn my_unit_variant() -> Enum`. (Rule 4)
+(Same as before)
 
 ### Failure Diagnosis Algorithm (Abbreviated for this plan)
-*   (Standard algorithm as previously defined)
+(Standard algorithm as previously defined)
 
 ## Increments
 
-*   [⚫] **Increment 1: Activate `former_enum_tests` Module & Document Test Matrix**
-    *   **Goal:** Ensure the main test module `former_enum_tests` is active and document the "Test Matrix for Unit Variants" within it.
-    *   **Detailed Plan Step 1:** Check `module/core/former/tests/inc/mod.rs`. If `mod former_enum_tests;` is commented or missing, add/uncomment it.
-    *   **Detailed Plan Step 2:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs`. Add a module-level documentation comment (`//!`) containing the "Test Matrix for Unit Variants" table and a brief explanation of its purpose.
-        *   The documentation should clearly state that this matrix guides the testing of unit variants and links attributes to expected behaviors and relevant rules.
+*   [⚫] **Increment 1: Activate `former_enum_tests` Module & Document Unit Test Matrix**
+    *   **Goal:** Ensure the `former_enum_tests` module is active and document the "Test Matrix for Unit Variants".
+    *   **Detailed Plan Step 1:** Check `module/core/former/tests/inc/mod.rs`. If `mod former_enum_tests;` (or the block `mod former_enum_tests { ... }`) is commented or missing, add/uncomment it.
+    *   **Detailed Plan Step 2:** Modify `module/core/former/tests/inc/former_enum_tests/unit_variant_only_test.rs`. Add a file-level documentation comment (`//!`) at the top, containing the "Test Matrix for Unit Variants" table and a brief explanation of its purpose for unit variant testing.
+        *   Alternatively, if a more centralized approach for all enum test matrices is preferred later, this documentation could be moved to `module/core/former/tests/inc/mod.rs` within the `former_enum_tests` module block. For now, `unit_variant_only_test.rs` is suitable.
     *   **Pre-Analysis:** This step primarily involves documentation and module activation.
     *   **Verification Strategy:**
         *   Run `cargo check --tests --package former`. Expect compilation success.
-        *   Manually review the `former_enum_tests/mod.rs` file to ensure the matrix is correctly embedded and formatted in the documentation.
+        *   Manually review `unit_variant_only_test.rs` to ensure the matrix is correctly embedded and formatted.
     *   **Crucial Design Rules:** [Comments and Documentation](#comments-and-documentation).
 
 *   [⚫] **Increment 2: Test Unit Variants - Default and `#[scalar]` Behavior (Combinations 1 & 2)**
@@ -90,19 +84,19 @@ former_enum_tests/
     *   **Files:** `unit_variant_derive.rs`, `unit_variant_manual.rs`, `unit_variant_only_test.rs`.
     *   **Matrix Coverage:** Combinations #1 and #2.
     *   **Pre-Analysis:**
-        *   `unit_variant_derive.rs`: Enum `Status { Pending, Complete }`. Expects `Status::pending() -> Status` and `Status::complete() -> Status` to be generated by `#[derive(Former)]`.
+        *   `unit_variant_derive.rs`: Enum `Status { Pending, Complete }`. Expects `Status::pending() -> Status` and `Status::complete() -> Status`.
         *   `unit_variant_manual.rs`: Should manually implement `Status::pending() -> Status` and `Status::complete() -> Status`.
         *   `unit_variant_only_test.rs`: Contains tests calling these static methods.
     *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rules 1a, 3a.
     *   **Verification Strategy:**
-        1.  Uncomment `mod unit_variant_manual;` in `former_enum_tests/mod.rs` (or `inc/mod.rs`).
+        1.  In `module/core/former/tests/inc/mod.rs` (within `mod former_enum_tests { ... }` if it's a block, or directly if flat), uncomment `mod unit_variant_manual;`.
         2.  Run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::unit_variant_manual`. Analyze and fix if needed.
-        3.  Uncomment `mod unit_variant_derive;` in `former_enum_tests/mod.rs` (or `inc/mod.rs`).
-        4.  Run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::unit_variant_derive`. Analyze and fix if needed, prioritizing macro fixes if manual version is correct.
+        3.  In `module/core/former/tests/inc/mod.rs`, uncomment `mod unit_variant_derive;`.
+        4.  Run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::unit_variant_derive`. Analyze and fix if needed.
 
 *   [⚫] **Increment 3: Test Unit Variants - `#[standalone_constructors]` (Combinations 3 & 4)**
     *   **Goal:** Verify `#[standalone_constructors]` attribute on enums containing unit variants.
-    *   **Files:** Primarily `unit_variant_derive.rs`, `unit_variant_manual.rs`, and `unit_variant_only_test.rs`.
+    *   **Files:** `unit_variant_derive.rs`, `unit_variant_manual.rs`, `unit_variant_only_test.rs`.
     *   **Matrix Coverage:** Combinations #3 and #4.
     *   **Pre-Analysis:**
         *   Modify/check `unit_variant_derive.rs`: Add `#[standalone_constructors]` to `Status` enum. Expect top-level `fn pending() -> Status` and `fn complete() -> Status`.
@@ -113,16 +107,16 @@ former_enum_tests/
 
 *   [⚫] **Increment 4: Test Unit Variants - `#[subform_scalar]` (Error Case - Combination 5)**
     *   **Goal:** Verify that using `#[subform_scalar]` on a unit variant results in a compile-time error.
-    *   **Files:** Create `former_enum_tests/compile_fail/unit_subform_scalar_error.rs`.
+    *   **Files:** Create `module/core/former/tests/inc/former_enum_tests/compile_fail/unit_subform_scalar_error.rs`.
     *   **Matrix Coverage:** Combination #5.
     *   **Pre-Analysis:** Define an enum with a unit variant annotated with `#[subform_scalar]`. Expect `former_meta` to produce a `syn::Error`.
     *   **Crucial Design Rules:** Expected Behavior Rule 2a.
-    *   **Verification Strategy:** Add a `trybuild` test case.
+    *   **Verification Strategy:** Add a `trybuild` test case. Ensure `former_meta` is a dev-dependency of `former` if `trybuild` tests are in the `former` crate, or adjust paths if `trybuild` tests are in `former_meta`.
 
 ### Requirements
-*   (Same as previous plan: Adherence, Detailed Increment Plan, Paired Testing, Incremental Verification, Failure Analysis, Minimal Changes, Approval Gates)
+*   (Same as previous plan)
 
 ## Notes & Insights
 *   This plan focuses specifically on unit variants.
-*   The "Test Matrix for Unit Variants" will be embedded in `former_enum_tests/mod.rs` for persistence.
+*   The "Test Matrix for Unit Variants" will be embedded in `unit_variant_only_test.rs` (or `inc/mod.rs`).
 *   The "Expected Enum Former Behavior Rules" are simplified for unit variants.
