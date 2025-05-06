@@ -497,7 +497,6 @@ path = "module/move/wpublisher_xxx"
 
 
 ## plot
-
 [workspace.dependencies.wplot]
 version = "~0.2.0"
 path = "module/move/wplot"

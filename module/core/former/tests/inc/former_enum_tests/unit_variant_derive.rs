@@ -3,6 +3,7 @@ use super::*;
 
 /// Enum with only unit variants for testing.
 #[ derive( Debug, PartialEq, the_module::Former ) ]
+#[ former( standalone_constructors ) ] // Added standalone_constructors attribute
 enum Status
 {
   Pending,

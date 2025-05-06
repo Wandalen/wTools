@@ -21,6 +21,7 @@
 // File: module/core/former/tests/inc/former_enum_tests/unit_variant_only_test.rs
 use super::*;
 
+
 #[ test ]
 fn unit_variant_constructors()
 {
@@ -32,5 +33,19 @@ fn unit_variant_constructors()
   // Test the Status::Complete constructor (expects direct constructor)
   let got_complete = Status::complete();
   let exp_complete = Status::Complete;
+  assert_eq!( got_complete, exp_complete );
+}
+
+#[ test ]
+fn unit_variant_standalone_constructors()
+{
+  // Test the top-level pending() standalone constructor
+  let got_pending = crate::inc::former_enum_tests::unit_variant_manual::pending();
+  let exp_pending = crate::inc::former_enum_tests::unit_variant_manual::Status::Pending; // Use full path to Status
+  assert_eq!( got_pending, exp_pending );
+
+  // Test the top-level complete() standalone constructor
+  let got_complete = crate::inc::former_enum_tests::unit_variant_manual::complete();
+  let exp_complete = crate::inc::former_enum_tests::unit_variant_manual::Status::Complete; // Use full path to Status
   assert_eq!( got_complete, exp_complete );
 }
