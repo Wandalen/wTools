@@ -3,7 +3,8 @@ use super::*; // Use items from parent module (former_enum)
 
 use macro_tools::
 {
-  generic_params, Result,
+  generic_params,
+  Result,
   quote::{ format_ident, quote }, // Removed unused TokenStream
   ident,
   parse_quote,
