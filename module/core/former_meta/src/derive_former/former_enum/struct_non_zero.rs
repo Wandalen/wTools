@@ -760,7 +760,7 @@ pub( super ) fn handle_struct_non_zero_variant
                  def_types_bound_generics_vec.push( formed_param );
                  let def_types_bound_generics = Punctuated::<_, Comma>::from_iter( def_types_bound_generics_vec );
 
-                 where_clause_with_end_bound = quote! { #where_clause_with_end_bound End2 : former::FormingEnd< #def_types_name< #def_types_bound_generics > > }; // Use constructed list
+                 where_clause_with_end_bound = quote! { #where_clause_with_end_bound End2 : former::FormingEnd< #def_types_name< Context2, Formed2 > > }; // Use generic parameters directly
 
                  quote!
                  {
@@ -806,7 +806,7 @@ pub( super ) fn handle_struct_non_zero_variant
              def_types_bound_generics_vec.push( context_param.clone() );
              def_types_bound_generics_vec.push( formed_param.clone() );
              let def_types_bound_generics = Punctuated::<_, Comma>::from_iter( def_types_bound_generics_vec );
-             former_where_predicates.push( parse_quote!{ Definition::Types : former::FormerDefinitionTypes< Storage = #storage_struct_name< #enum_generics_ty_no_comma >, Context = (), Formed = #enum_name< #enum_generics_ty_no_comma > > } ); // Use no_comma, () and EnumName for Context/Formed
+             former_where_predicates.push( parse_quote!{ Definition::Types : former::FormerDefinitionTypes< Storage = #storage_struct_name< #enum_generics_ty_no_comma >, Context = Context2, Formed = Formed2 > } ); // Use generic parameters directly
              // Add FormerMutator bound
              former_where_predicates.push( parse_quote!{ Definition::Types : former::FormerMutator } );
              // Add enum's original where clause predicates
@@ -886,7 +886,6 @@ pub( super ) fn handle_struct_non_zero_variant
                     impl< #former_generics_impl > #former_name < #former_generics_ty_no_comma > // Use no_comma
                     where #former_impl_where_clause // Use the constructed where clause with bounds
                     {
-                        use former::FormingEnd; // Bring FormingEnd trait into scope
                         // Standard former methods (new, begin, form, end) - Adjusted to use Definition::Types
                         #[ inline( always ) ] pub fn new( on_end : Definition::End ) -> Self { Self::begin( None, None, on_end ) }
                         #[ inline( always ) ] pub fn new_coercing< IntoEnd >( end : IntoEnd ) -> Self where IntoEnd : Into< Definition::End > { Self::begin_coercing( None, None, end ) }
@@ -966,33 +965,38 @@ pub( super ) fn handle_struct_non_zero_variant
                  quote!
                  {
                    #[ automatically_derived ]
-                   impl< #enum_generics_impl > former::FormingEnd
+                   impl< #enum_generics_impl, Context2, Formed2 > former::FormingEnd
                    <
                      // Correct generics usage and add comma_if_enum_generics
-                     #def_types_name< #forming_end_def_types_generics > // Use constructed list
+                     #def_types_name< Context2, Formed2 > // Use generic parameters directly
                    >
                    for #end_struct_name < #enum_generics_ty_no_comma > // Use no_comma
-                   #where_clause_tokens
+                   where
+                     Context2 : 'static, // Placeholder bound
+                     Formed2 : 'static, // Placeholder bound
+                     #where_clause_tokens // Include original where clause
                    {
                      #[ inline( always ) ]
                      fn call
                      (
                        &self,
                        sub_storage : #storage_struct_name< #enum_generics_ty_no_comma >, // Use no_comma
-                       _context : Option< () >,
+                       _context : Option< Context2 >, // Use Context2 generic parameter
                      )
                      ->
                      #enum_name< #enum_generics_ty_no_comma > // Use no_comma
                      {
                        // Correctly destructure the tuple from preform and use field names
                         let preformed_tuple = former::StoragePreform::preform( sub_storage );
+                        // Destructure the tuple into named fields
+                        let ( #( #field_idents_for_construction ),* ) = preformed_tuple;
                         #enum_name::#variant_ident
                         {
-                         #( #field_idents_for_construction : preformed_tuple.#tuple_indices ),* // Construct using field names
+                         #( #field_idents_for_construction ),* // Use the bound variables
                         }
-                     }
-                   }
-                 }
+                      }
+                    }
+                  }
              };
              ctx.end_impls.push( forming_end_impl_tokens );
              // --- Generate Static Method ---

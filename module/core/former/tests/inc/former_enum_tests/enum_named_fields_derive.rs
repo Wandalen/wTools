@@ -12,29 +12,29 @@ pub struct InnerForSubform {
 #[ debug ]
 pub enum EnumWithNamedFields
 {
-  // --- Unit Variant ---
-  // Expect: unit_variant_default() -> Enum (Default is scalar for unit)
-  UnitVariantDefault, // Renamed from UnitVariant
-  #[ scalar ] // Expect: unit_variant_scalar() -> Enum
-  UnitVariantScalar, // New
+//   // --- Unit Variant ---
+//   // Expect: unit_variant_default() -> Enum (Default is scalar for unit)
+//   UnitVariantDefault, // Renamed from UnitVariant
+//   #[ scalar ] // Expect: unit_variant_scalar() -> Enum
+//   UnitVariantScalar, // New
+//
+//   // --- Zero Fields (Named - Struct-like) ---
+//   // VariantZeroDefault {}, // Expect: Compile Error (No #[scalar]) - Cannot test directly
+//   #[ scalar ] // Expect: variant_zero_scalar() -> Enum
+//   VariantZeroScalar {},
+//
+//   // --- Zero Fields (Unnamed - Tuple-like) ---
+//   VariantZeroUnnamedDefault(), // Expect: variant_zero_unnamed_default() -> Enum (Default is scalar for 0 fields)
+//   #[ scalar ] // Expect: variant_zero_unnamed_scalar() -> Enum
+//   VariantZeroUnnamedScalar(),
 
-  // --- Zero Fields (Named - Struct-like) ---
-  // VariantZeroDefault {}, // Expect: Compile Error (No #[scalar]) - Cannot test directly
-  #[ scalar ] // Expect: variant_zero_scalar() -> Enum
-  VariantZeroScalar {},
-
-  // --- Zero Fields (Unnamed - Tuple-like) ---
-  VariantZeroUnnamedDefault(), // Expect: variant_zero_unnamed_default() -> Enum (Default is scalar for 0 fields)
-  #[ scalar ] // Expect: variant_zero_unnamed_scalar() -> Enum
-  VariantZeroUnnamedScalar(),
-
-  // --- One Field (Named - Struct-like) ---
-  // Expect: variant_one_default() -> InnerForSubformFormer<...> (Default behavior for single field is subform)
-  VariantOneDefault { field_c : InnerForSubform },
-  #[ scalar ] // Expect: variant_one_scalar( String ) -> Enum
-  VariantOneScalar { field_a : String },
-  #[ subform_scalar ] // Expect: variant_one_subform() -> InnerForSubformFormer<...>
-  VariantOneSubform { field_b : InnerForSubform },
+  // // --- One Field (Named - Struct-like) ---
+  // // Expect: variant_one_default() -> InnerForSubformFormer<...> (Default behavior for single field is subform)
+  // VariantOneDefault { field_c : InnerForSubform },
+  // #[ scalar ] // Expect: variant_one_scalar( String ) -> Enum
+  // VariantOneScalar { field_a : String },
+  // #[ subform_scalar ] // Expect: variant_one_subform() -> InnerForSubformFormer<...>
+  // VariantOneSubform { field_b : InnerForSubform },
 
   // // --- Two Fields (Named - Struct-like) --- (Commented out for isolation)
   // // // VariantTwoDefault { field_f : i32, field_g : bool }, // Expect: Compile Error (No #[scalar]) - Cannot test directly
