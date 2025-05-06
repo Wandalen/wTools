@@ -125,7 +125,7 @@ pub( super ) fn handle_struct_non_zero_variant
               let all_fields_are_args = !variant_field_info.is_empty() && variant_field_info.iter().all( |f| f.is_constructor_arg );
 
               // Construct return type generics list
-              let mut return_type_def_generics_vec : Vec<GenericParam> = inner_generics_ty_punctuated_no_comma.clone().into_iter().collect(); // Use clone().into_iter()
+              let mut return_type_def_generics_vec : Vec<GenericParam> = inner_generics_ty_punctuated_no_comma.iter().cloned().collect(); // Use iter().cloned()
               let context_arg : GenericArgument = parse_quote!( () );
               let formed_arg : GenericArgument = parse_quote!( #enum_name< #enum_generics_ty_no_comma > );
               let end_arg : GenericArgument = parse_quote!( #end_struct_name < #enum_generics_ty_no_comma > );
@@ -235,7 +235,7 @@ pub( super ) fn handle_struct_non_zero_variant
              };
              // Generate token stream for the type within the angle brackets for FormingEnd
              // Construct the punctuated list for DefinitionTypes generics
-             let mut forming_end_def_types_generics_vec : Vec<GenericParam> = inner_generics_ty_punctuated_no_comma.clone().into_iter().collect(); // Use clone().into_iter()
+             let mut forming_end_def_types_generics_vec : Vec<GenericParam> = inner_generics_ty_punctuated_no_comma.iter().cloned().collect(); // Use iter().cloned()
              let context_param : GenericParam = parse_quote!( Context = () );
              let formed_param : GenericParam = parse_quote!( Formed = #enum_name< #enum_generics_ty_no_comma > );
              forming_end_def_types_generics_vec.push( context_param );
@@ -290,7 +290,7 @@ pub( super ) fn handle_struct_non_zero_variant
              ctx.end_impls.push( forming_end_impl_tokens );
 
              // Construct the generics list for the static method return type
-             let mut static_method_return_generics_vec : Vec<GenericParam> = inner_generics_ty_punctuated_no_comma.clone().into_iter().collect(); // Use clone().into_iter()
+             let mut static_method_return_generics_vec : Vec<GenericParam> = inner_generics_ty_punctuated_no_comma.iter().cloned().collect(); // Use iter().cloned()
              let context_arg : GenericArgument = parse_quote!( () );
              let formed_arg : GenericArgument = parse_quote!( #enum_name< #enum_generics_ty_no_comma > );
              let end_arg : GenericArgument = parse_quote!( #end_struct_name < #enum_generics_ty_no_comma > );
@@ -753,7 +753,7 @@ pub( super ) fn handle_struct_non_zero_variant
                      where_clause_with_end_bound = quote! { #where_clause_with_end_bound , };
                  }
                  // Construct DefinitionTypes generics list for the bound
-                 let mut def_types_bound_generics_vec : Vec<GenericParam> = enum_generics_ty_no_comma.clone().into_iter().collect(); // Use clone().into_iter()
+                 let mut def_types_bound_generics_vec : Vec<GenericParam> = enum_generics_ty_no_comma.iter().cloned().collect(); // Use iter().cloned()
                  def_types_bound_generics_vec.push( context_param.clone() ); // Clone before moving
                  def_types_bound_generics_vec.push( formed_param.clone() ); // Clone before moving
                  let def_types_bound_generics = Punctuated::<_, Comma>::from_iter( def_types_bound_generics_vec );
@@ -781,7 +781,7 @@ pub( super ) fn handle_struct_non_zero_variant
              // Construct the generics for the former struct directly
              let mut former_generics_params_vec : Vec<GenericParam> = generics.params.iter().cloned().collect();
              // Construct the Definition generic argument
-             let mut def_arg_generics_vec : Vec<GenericParam> = enum_generics_ty_no_comma.clone().into_iter().collect(); // Use clone().into_iter()
+             let mut def_arg_generics_vec : Vec<GenericParam> = enum_generics_ty_no_comma.iter().cloned().collect(); // Use iter().cloned()
              let context_arg_param : GenericParam = parse_quote!( Context = () );
              let formed_arg_param : GenericParam = parse_quote!( Formed = #enum_name<#enum_generics_ty_no_comma> );
              let end_arg_param : GenericParam = parse_quote!( End = #end_struct_name<#enum_generics_ty_no_comma> );
@@ -798,7 +798,7 @@ pub( super ) fn handle_struct_non_zero_variant
              let mut former_where_predicates : Punctuated< syn::WherePredicate, Comma > = Punctuated::new();
              former_where_predicates.push( parse_quote!{ Definition : former::FormerDefinition< Storage = #storage_struct_name< #enum_generics_ty_no_comma > > } ); // Use no_comma
              // Construct DefinitionTypes generics list for the bound
-             let mut def_types_bound_generics_vec : Vec<GenericParam> = enum_generics_ty_no_comma.clone().into_iter().collect(); // Use clone().into_iter()
+             let mut def_types_bound_generics_vec : Vec<GenericParam> = enum_generics_ty_no_comma.iter().cloned().collect(); // Use iter().cloned()
              // let context_param_bound : GenericParam = parse_quote!( Context = () ); // Already defined
              // let formed_param_bound : GenericParam = parse_quote!( Formed = #enum_name< #enum_generics_ty_no_comma > ); // Already defined
              def_types_bound_generics_vec.push( context_param.clone() );
@@ -953,7 +953,7 @@ pub( super ) fn handle_struct_non_zero_variant
                      quote! {}
                  };
                  // Construct DefinitionTypes generics list for FormingEnd impl
-                 let mut forming_end_def_types_generics_vec : Vec<GenericParam> = enum_generics_ty_no_comma.clone().into_iter().collect(); // Use clone().into_iter()
+                 let mut forming_end_def_types_generics_vec : Vec<GenericParam> = enum_generics_ty_no_comma.iter().cloned().collect(); // Use iter().cloned()
                  let context_param : GenericParam = parse_quote!( Context2 = () );
                  let formed_param : GenericParam = parse_quote!( Formed2 = #enum_name< #enum_generics_ty_no_comma > );
                  forming_end_def_types_generics_vec.push( context_param );
@@ -1006,7 +1006,7 @@ pub( super ) fn handle_struct_non_zero_variant
                      quote! {}
                  };
                  // Construct Definition generics list for return type
-                 let mut static_method_def_generics_vec : Vec<GenericParam> = enum_generics_ty_no_comma.clone().into_iter().collect(); // Use clone().into_iter()
+                 let mut static_method_def_generics_vec : Vec<GenericParam> = enum_generics_ty_no_comma.iter().cloned().collect(); // Use iter().cloned()
                  let context_param : GenericParam = parse_quote!( Context2 = () );
                  let formed_param : GenericParam = parse_quote!( Formed2 = #enum_name< #enum_generics_ty_no_comma > );
                  let end_param : GenericParam = parse_quote!( End2 = #end_struct_name< #enum_generics_ty_no_comma > );
@@ -1039,7 +1039,7 @@ pub( super ) fn handle_struct_non_zero_variant
                  let constructor_params : Vec<_> = variant_field_info.iter().filter( |f| f.is_constructor_arg ).map( |f| { let pn = &f.ident; let ty = &f.ty; quote! { #pn : impl Into<#ty> } } ).collect();
                  let all_fields_are_args = !variant_field_info.is_empty() && variant_field_info.iter().all( |f| f.is_constructor_arg );
                  // Construct Definition generics list for return type
-                 let mut standalone_def_generics_vec : Vec<GenericParam> = enum_generics_ty_no_comma.clone().into_iter().collect(); // Use clone().into_iter()
+                 let mut standalone_def_generics_vec : Vec<GenericParam> = enum_generics_ty_no_comma.iter().cloned().collect(); // Use iter().cloned()
                  let context_param : GenericParam = parse_quote!( Context2 = () );
                  let formed_param : GenericParam = parse_quote!( Formed2 = #enum_name< #enum_generics_ty_no_comma > );
                  let end_param : GenericParam = parse_quote!( End2 = #end_struct_name< #enum_generics_ty_no_comma > );
@@ -1048,7 +1048,7 @@ pub( super ) fn handle_struct_non_zero_variant
                  standalone_def_generics_vec.push( end_param );
                  let standalone_def_generics = Punctuated::<_, Comma>::from_iter( standalone_def_generics_vec );
                  // Construct Former generics list for return type
-                 let mut standalone_former_generics_vec : Vec<GenericParam> = enum_generics_ty_no_comma.clone().into_iter().collect(); // Use clone().into_iter()
+                 let mut standalone_former_generics_vec : Vec<GenericParam> = enum_generics_ty_no_comma.iter().cloned().collect(); // Use iter().cloned()
                  let def_param : GenericParam = parse_quote!( Definition = #def_name< #standalone_def_generics > );
                  standalone_former_generics_vec.push( def_param );
                  let standalone_former_generics = Punctuated::<_, Comma>::from_iter( standalone_former_generics_vec );
