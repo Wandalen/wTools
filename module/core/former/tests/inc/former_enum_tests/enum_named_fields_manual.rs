@@ -49,7 +49,7 @@ where Definition: FormerDefinition<Storage = InnerForSubformFormerStorage> {
     #[inline(always)] pub fn begin(storage: Option<Definition::Storage>, context: Option<Definition::Context>, on_end: Definition::End) -> Self {
         Self { storage: storage.unwrap_or_default(), context, on_end: Some(on_end) }
     }
-    #[inline(always)] pub fn new(on_end: Definition::End) -> Self { Self::begin(None, None, on_end) }
+    #[inline(always)] pub fn _new(on_end: Definition::End) -> Self { Self::begin(None, None, on_end) }
     #[inline] pub fn value(mut self, src: impl Into<i64>) -> Self { self.storage.value = Some(src.into()); self }
 }
 // --- End Manual Former for InnerForSubform ---
@@ -64,7 +64,7 @@ pub enum EnumWithNamedFields // Renamed enum for clarity
   UnitVariantDefault, // Renamed
 
   VariantZeroScalar {},
-  VariantZeroDefault {}, // Error case - no manual impl needed
+  // VariantZeroDefault {}, // Error case - no manual impl needed
 
   VariantZeroUnnamedScalar(), // New
   VariantZeroUnnamedDefault(), // New
