@@ -1,3 +1,97 @@
+//
+// ## Expected Enum Former Behavior
+//
+// This plan adheres to the following rules for `#[derive(Former)]` on enums:
+//
+// 1.  **`#[scalar]` Attribute:**
+//     *   **Unit Variant:** Generates `Enum::variant() -> Enum`. (Handled by: `handle_unit_variant`)
+//     *   **Zero-Field Variant (Tuple):** Generates `Enum::variant() -> Enum`. (Handled by: `handle_tuple_zero_variant`)
+//     *   **Zero-Field Variant (Struct):** Generates `Enum::variant() -> Enum`. (Handled by: `handle_struct_zero_variant`)
+//     *   **Single-Field Variant (Tuple):** Generates `Enum::variant(InnerType) -> Enum`. (Handled by: `handle_tuple_non_zero_variant`)
+//     *   **Single-Field Variant (Struct):** Generates `Enum::variant { field: InnerType } -> Enum`. (Handled by: `handle_struct_non_zero_variant`)
+//     *   **Multi-Field Variant (Tuple):** Generates `Enum::variant(T1, T2, ...) -> Enum`. (Handled by: `handle_tuple_non_zero_variant`)
+//     *   **Multi-Field Variant (Struct):** Generates `Enum::variant { f1: T1, f2: T2, ... } -> Enum`. (Handled by: `handle_struct_non_zero_variant`)
+//     *   **Error Cases:** Cannot be combined with `#[subform_scalar]`.
+//
+// 2.  **`#[subform_scalar]` Attribute:**
+//     *   **Unit Variant:** Error. (Checked in: `handle_unit_variant`)
+//     *   **Zero-Field Variant (Tuple or Struct):** Error. (Checked in: `handle_tuple_zero_variant`, `handle_struct_zero_variant`)
+//     *   **Single-Field Variant (Tuple):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Requires the field type to be a path type deriving `Former`. (Handled by: `handle_tuple_non_zero_variant`)
+//     *   **Single-Field Variant (Struct):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_variant`)
+//     *   **Multi-Field Variant (Tuple):** Error. Cannot use `subform_scalar` on multi-field tuple variants. (Checked in: `handle_tuple_non_zero_variant`)
+//     *   **Multi-Field Variant (Struct):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_variant`)
+//
+// 3.  **Default Behavior (No Attribute):**
+//     *   **Unit Variant:** Generates `Enum::variant() -> Enum`. (Handled by: `handle_unit_variant`)
+//     *   **Zero-Field Variant (Tuple):** Generates `Enum::variant() -> Enum`. (Handled by: `handle_tuple_zero_variant`)
+//     *   **Zero-Field Variant (Struct):** Error. Requires `#[scalar]`. (Checked in: `handle_struct_zero_variant`)
+//     *   **Single-Field Variant (Tuple):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Requires the field type to be a path type deriving `Former`. (Handled by: `handle_tuple_non_zero_variant`)
+//     *   **Single-Field Variant (Struct):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_variant`)
+//     *   **Multi-Field Variant (Tuple):** Generates `Enum::variant(Field1Type, Field2Type, ...) -> Enum` (behaves like `#[scalar]`). (Handled by: `handle_tuple_non_zero_variant`)
+//     *   **Multi-Field Variant (Struct):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_variant`)
+//
+// 4.  **`#[standalone_constructors]` Attribute (Body Level):**
+//     *   Generates top-level constructor functions for each variant (e.g., `my_variant()`).
+//     *   Return type depends on `#[arg_for_constructor]` on fields within the variant (see Option 2 logic in Readme/advanced.md).
+//
+// # Target File Structure
+//
+// ```
+// former_enum/  (directory: module/core/former_meta/src/derive_former/former_enum/)
+// ├── mod.rs                             # Main module file for `former_enum`.
+// │                                      # - Declares all sibling files as submodules.
+// │                                      # - Contains the primary `former_for_enum` function.
+// │                                      # - Houses the main dispatch logic to route to specific handlers.
+// │                                      # - Defines `EnumVariantHandlerContext` and `EnumVariantFieldInfo`.
+// │
+// ├── common_emitters.rs                 # Contains shared helper functions for generating common code patterns
+// │                                      # used by multiple variant handlers (e.g., direct constructors,
+// │                                      # boilerplate for different subformer types).
+// │
+// ├── unit_variant_handler.rs            # Handles `Unit` variants.
+// │                                      # - `#[scalar]` or Default: Generates direct constructor.
+// │                                      # - `#[subform_scalar]`: Generates an error.
+// │
+// ├── tuple_zero_fields_handler.rs       # Handles `Tuple()` (zero-field tuple) variants.
+// │                                      # - `#[scalar]` or Default: Generates direct constructor.
+// │                                      # - `#[subform_scalar]`: Generates an error.
+// │
+// ├── struct_zero_fields_handler.rs      # Handles `Struct {}` (zero-field struct) variants.
+// │                                      # - `#[scalar]`: Generates direct constructor.
+// │                                      # - `#[subform_scalar]` or Default: Generates an error.
+// │
+// ├── tuple_single_field_scalar.rs       # Handles `Tuple(T1)` variants with the `#[scalar]` attribute.
+// │                                      # - Generates a direct constructor: `fn variant(T1) -> Enum`.
+// │
+// ├── tuple_single_field_subform.rs       # Handles `Tuple(T1)` variants with `#[subform_scalar]` or default behavior.
+// │                                      # - Generates a method returning an inner former: `fn variant() -> InnerFormer<...>`.
+// │                                      # - Requires T1 to derive Former.
+// │
+// ├── tuple_multi_fields_scalar.rs       # Handles `Tuple(T1, T2, ...)` (multi-field tuple) variants with
+// │                                      # `#[scalar]` or default behavior.
+// │                                      # - Generates a direct constructor: `fn variant(T1, T2, ...) -> Enum`.
+// │                                      # - (Note: `#[subform_scalar]` is an error for multi-field tuples,
+// │                                      #   handled by dispatch logic in `mod.rs`).
+// │
+// ├── struct_single_field_scalar.rs      # Handles `Struct { f1:T1 }` (single-field struct) variants
+// │                                      # with the `#[scalar]` attribute.
+// │                                      # - Generates a direct constructor: `fn variant { f1:T1 } -> Enum`.
+// │
+// ├── struct_single_field_subform.rs     # Handles `Struct { f1:T1 }` variants with `#[subform_scalar]`
+// │                                      # or default behavior.
+// │                                      # - Generates a method returning an implicit variant former:
+// │                                      #   `fn variant() -> VariantFormer<...>`.
+// │
+// ├── struct_multi_fields_scalar.rs      # Handles `Struct { f1:T1, ... }` (multi-field struct) variants
+// │                                      # with the `#[scalar]` attribute.
+// │                                      # - Generates a direct constructor: `fn variant { f1:T1, ... } -> Enum`.
+// │
+// └── struct_multi_fields_subform.rs     # Handles `Struct { f1:T1, ... }` variants with `#[subform_scalar]`
+//                                        # or default behavior.
+//                                        # - Generates a method returning an implicit variant former:
+//                                        #   `fn variant() -> VariantFormer<...>`.
+// ```
+
 #![allow(clippy::wildcard_imports)] // Keep if present
 
 use super::*;
