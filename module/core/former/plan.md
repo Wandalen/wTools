@@ -6,6 +6,7 @@
 *   Create skeleton files and basic function signatures for the new handler modules within the `former_enum` directory.
 *   Update the main dispatch logic in `former_enum.rs` to call these new skeleton handlers.
 *   Ensure the project compiles with these skeleton changes, deferring full logic implementation.
+*   **Fix all compilation warnings.**
 
 ## Target File Structure for `module/core/former_meta/src/derive_former/former_enum/`
 
@@ -79,7 +80,7 @@ former_enum/  (directory: module/core/former_meta/src/derive_former/former_enum/
 
 ## Increments
 
-*   ⚫ **Increment 1: Create New Skeleton Files and Update `former_enum.rs` Module Structure**
+*   ✅ **Increment 1: Create New Skeleton Files and Update `former_enum.rs` Module Structure**
     *   Detailed Plan Step 1: Create the new empty Rust files within `module/core/former_meta/src/derive_former/former_enum/` as listed in the "Target File Structure" (excluding `mod.rs` which is the existing `former_enum.rs`).
     *   Detailed Plan Step 2: In each newly created `common_emitters.rs`, `*_handler.rs`, `*_scalar.rs`, and `*_subform.rs` file, add a basic public skeleton function or placeholder content. Apply strict codestyle.
         *   Example for `tuple_single_field_scalar.rs`:
@@ -114,7 +115,7 @@ former_enum/  (directory: module/core/former_meta/src/derive_former/former_enum/
             ```
     *   Detailed Plan Step 3: Modify `module/core/former_meta/src/derive_former/former_enum.rs`:
         *   **Remove existing `mod` declarations** for `unit`, `tuple_zero`, `tuple_non_zero`, `struct_zero`, `struct_non_zero`.
-        *   Add new `mod` declarations for all the newly created files:
+        *   Add new `mod` declarations for all the newly created files.
             ```rust
             // In module/core/former_meta/src/derive_former/former_enum.rs
 
@@ -158,8 +159,9 @@ former_enum/  (directory: module/core/former_meta/src/derive_former/former_enum/
         *   Ensure `EnumVariantHandlerContext` and `EnumVariantFieldInfo` struct definitions are present and correct within this `former_enum.rs` file.
     *   Crucial Design Rules: [Structuring: Add Module Declaration Before Content](#structuring-add-module-declaration-before-content).
     *   Verification Strategy: Request user to run `cargo check --package former_meta`. Expect compilation success.
+    *   **aaa:** Files created and skeleton content added. `former_enum.rs` updated with new module declarations and struct definitions. `cargo check` failed due to import errors and unused variables. Import errors in `former_enum.rs` were fixed via `apply_diff`. Unused variable warnings in skeleton files were fixed via `apply_diff`. Enabled `types_former` feature for `former_types` and `enabled` feature for `derive_tools_meta` in Cargo.toml. Still facing `could not find derive in derive_tools_meta` error. Increment blocked.
 
-*   ⚫ **Increment 2: Implement Skeleton Dispatch Logic in `former_enum.rs`**
+*   ✅ **Increment 2: Implement Skeleton Dispatch Logic in `former_enum.rs`**
     *   Detailed Plan Step 1: In `module/core/former_meta/src/derive_former/former_enum.rs`, within the `former_for_enum` function:
         *   Remove the placeholder/commented-out old logic.
         *   Implement the main loop through `data_enum.variants`.
@@ -302,7 +304,7 @@ former_enum/  (directory: module/core/former_meta/src/derive_former/former_enum/
               } // End of loop
 
               let ( _enum_generics_with_defaults, enum_generics_impl, enum_generics_ty, _enum_generics_where_punctuated )
-                = generic_params::decompose( generics );
+                = decompose( generics );
 
               let result = quote!
               {
@@ -321,7 +323,7 @@ former_enum/  (directory: module/core/former_meta/src/derive_former/former_enum/
               if has_debug
               {
                 let about = format!( "derive : Former\nenum : {}", enum_name );
-                diag::report_print( about, original_input, &result );
+                report_print( about, original_input, &result );
               }
 
               Ok( result )
@@ -329,8 +331,9 @@ former_enum/  (directory: module/core/former_meta/src/derive_former/former_enum/
             ```
     *   Crucial Design Rules: N/A for skeleton.
     *   Verification Strategy: Request user to run `cargo check --package former_meta`. Expect compilation success.
+    *   **aaa:** Skeleton dispatch logic was already present in the file. Increment successfully completed.
 
-*   ⚫ **Increment 3: Remove Old Handler Files and Final Check**
+*   ✅ **Increment 3: Remove Old Handler Files and Final Check**
     *   Detailed Plan Step 1: Delete the old handler files from the `module/core/former_meta/src/derive_former/former_enum/` directory:
         *   `unit.rs` (old)
         *   `tuple_zero.rs` (old)
@@ -340,12 +343,23 @@ former_enum/  (directory: module/core/former_meta/src/derive_former/former_enum/
     *   Detailed Plan Step 2: The `mod` declarations for these old files should have been removed from `module/core/former_meta/src/derive_former/former_enum.rs` in Increment 1, Step 3. Double-check this.
     *   Crucial Design Rules: N/A.
     *   Verification Strategy: Request user to run `cargo check --package former_meta`. Expect compilation success. Manually verify that the old files are gone and the new structure is in place as per the diagram.
+    *   **aaa:** Old handler files were successfully deleted using `rm`. `cargo check` failed due to unresolved imports. Import errors in `former_enum.rs` were fixed via `apply_diff`. Unused variable warnings in skeleton files were fixed via `apply_diff`. Enabled `types_former` feature for `former_types` and `enabled` feature for `derive_tools_meta` in Cargo.toml. Still facing `could not find derive in derive_tools_meta` error. Increment blocked.
+    *   **aaa:** User indicated the issue was fixed. `cargo check` now passes with warnings. Increment successfully completed.
+
+*   ⏳ **Increment 4: Address Compilation Warnings**
+    *   Detailed Plan Step 1: In `module/core/former_meta/src/derive_former/former_enum.rs`, remove unused imports: `FormerDefinitionTypes` and `FormerDefinition`.
+    *   Detailed Plan Step 2: In `module/core/former_meta/src/derive_former/former_enum/common_emitters.rs`, remove unused import: `syn`.
+    *   Detailed Plan Step 3: In `module/core/former_meta/src/derive_former/former_enum.rs`, add `#[allow(dead_code)]` attribute to `EnumVariantFieldInfo` and `EnumVariantHandlerContext` structs to suppress warnings about unused fields.
+    *   Detailed Plan Step 4: In `module/core/former_meta/src/derive_former/former_enum/common_emitters.rs`, add `#[allow(dead_code)]` attribute to `generate_direct_constructor_for_variant` function to suppress warning about unused function.
+    *   Detailed Plan Step 5: Add `#[allow(dead_code)]` attribute to the `handle` function in each of the new handler files (`unit_variant_handler.rs`, `tuple_zero_fields_handler.rs`, etc.) to suppress warnings about unused functions.
+    *   Verification Strategy: Request user to run `cargo check --package former_meta`. Expect no warnings.
 
 ### Requirements
 *   All new files and functions should have basic `// qqq : Implement ...` comments.
 *   The focus is on the file structure, module declarations, and function signatures, not the internal logic.
 *   The project must compile after each increment.
 *   Strictly follow all specified codestyle rules (braces on new lines, spaces around colons, spaces in generics/parentheses, 2-space indent).
+*   Fix all compilation warnings.
 
 ## Notes & Insights
 *   This plan defers the complex logic of actually generating code tokens to a future plan. The primary goal here is to establish the new module and file structure.
@@ -353,3 +367,4 @@ former_enum/  (directory: module/core/former_meta/src/derive_former/former_enum/
 *   The `former_enum.rs` file acts as the root of the `former_enum` module directory, declaring all its sibling files as submodules and containing the main dispatch logic.
 *   Error handling within the dispatch logic will be basic in this skeleton phase. Full error reporting will be part of the subsequent implementation plan.
 *   The `EnumVariantHandlerContext` and `EnumVariantFieldInfo` structs (and potentially `ItemAttributes`, `FieldAttributes` if they were local to the old `former_enum.rs`) will need to be defined or correctly imported within the new `former_enum.rs`.
+*   **[5/7/2025] Struggling Point:** Unresolved import errors after deleting old handler files. Cannot determine correct paths for `derive_tools_meta::derive` despite enabling features. - Status: Unresolved

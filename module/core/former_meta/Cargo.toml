@@ -52,7 +52,7 @@ derive_former = [ "convert_case" ]
 
 [dependencies]
 macro_tools = { workspace = true, features = [ "attr", "attr_prop", "ct", "item_struct", "container_kind", "diag", "phantom", "generic_params", "generic_args", "typ", "derive", "ident" ] } # qqq : zzz : optimize set of features
-former_types = { workspace = true, features = [] }
+former_types = { workspace = true, features = [ "types_former" ] } # Enabled types_former feature
 component_model_types = { workspace = true, features = [ "types_component_assign" ] }
 iter_tools = { workspace = true }
 convert_case = { version = "0.6.0", default-features = false, optional = true, features = [] }
