@@ -44,4 +44,4 @@ pub enum EnumWithNamedFields
 }
 
 // Include the test logic file (using the new name)
-// include!( "enum_named_fields_only_test.rs" );
+include!( "enum_named_fields_only_test.rs" );

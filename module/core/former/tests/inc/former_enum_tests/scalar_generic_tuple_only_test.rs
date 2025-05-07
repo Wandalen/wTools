@@ -32,7 +32,7 @@ pub struct MyType( String );
 impl Bound for MyType {}
 
 // Define an inner generic struct to be used within the enum variants
-#[ derive( Debug, Clone, PartialEq, Default ) ]
+#[ derive( Debug, Clone, PartialEq, Default ) ] // Removed former::Former derive
 pub struct InnerScalar< T : Bound >
 {
   pub data : T,

@@ -42,7 +42,7 @@ fn with_args_test() // Generic test name
 
   // Use the former to set the remaining optional field and build the struct
   let instance = former
-  .field_c( 3.14 ) // Set the non-constructor field
+  .field_c( std::f32::consts::PI ) // Set the non-constructor field
   .form();
 
   // Define the expected struct instance (using the consistent struct name)
@@ -50,7 +50,7 @@ fn with_args_test() // Generic test name
   {
     field_a : "hello".to_string(),
     field_b : true,
-    field_c : Some( 3.14 ),
+    field_c : Some( std::f32::consts::PI ),
   };
 
   // Assert that the formed instance matches the expected one

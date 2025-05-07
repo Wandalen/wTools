@@ -15,6 +15,7 @@ pub struct Run { pub command : String }
 #[ former( standalone_constructors ) ]
 enum FunctionStep
 {
+  #[ subform_scalar ]
   Break( Break ),
   Run( Run ),
 }

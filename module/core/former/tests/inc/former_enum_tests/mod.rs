@@ -1,0 +1,142 @@
+//! ## Test Matrix for Enum Unnamed (Tuple) Variants
+//!
+//! This matrix guides the testing of `#[derive(Former)]` for enum unnamed (tuple) variants,
+//! linking combinations of attributes and variant structures to expected behaviors and
+//! relevant internal rule numbers.
+//!
+//! ---
+//!
+//! **Factors:**
+//!
+//! 1.  **Number of Fields:**
+//!     *   Zero (`V()`)
+//!     *   One (`V(T1)`)
+//!     *   Multiple (`V(T1, T2, ...)`)
+//! 2.  **Field Type `T1` (for Single-Field Variants):**
+//!     *   Derives `Former`
+//!     *   Does NOT derive `Former`
+//! 3.  **Variant-Level Attribute:**
+//!     *   None (Default behavior)
+//!     *   `#[scalar]`
+//!     *   `#[subform_scalar]`
+//! 4.  **Enum-Level Attribute:**
+//!     *   None
+//!     *   `#[standalone_constructors]`
+//! 5.  **Field-Level Attribute `#[arg_for_constructor]` (within `#[standalone_constructors]` context):**
+//!     *   Not applicable (for zero-field)
+//!     *   On the single field (for one-field)
+//!     *   On all fields / some fields / no fields (for multi-field)
+//!
+//! ---
+//!
+//! **Combinations for Zero-Field Tuple Variants (`V()`):**
+//!
+//! | #  | Variant Attr | Enum Attr                   | Expected Static Method        | Expected Standalone Constructor | Rule(s) | Handler (Meta)                 |
+//! |----|--------------|-----------------------------|-------------------------------|---------------------------------|---------|--------------------------------|
+//! | T0.1| Default      | None                        | `Enum::v() -> Enum`           | N/A                             | 3b      | `tuple_zero_fields_handler.rs` |
+//! | T0.2| `#[scalar]`  | None                        | `Enum::v() -> Enum`           | N/A                             | 1b      | `tuple_zero_fields_handler.rs` |
+//! | T0.3| Default      | `#[standalone_constructors]`| `Enum::v() -> Enum`           | `fn v() -> Enum`                | 3b, 4   | `tuple_zero_fields_handler.rs` |
+//! | T0.4| `#[scalar]`  | `#[standalone_constructors]`| `Enum::v() -> Enum`           | `fn v() -> Enum`                | 1b, 4   | `tuple_zero_fields_handler.rs` |
+//! | T0.5| `#[subform_scalar]` | (Any)                | *Compile Error*               | *Compile Error*                 | 2b      | (Dispatch)                     |
+//!
+//! ---
+//!
+//! **Combinations for Single-Field Tuple Variants (`V(T1)`):**
+//!
+//! | #   | Variant Attr      | T1 Derives Former | Enum Attr                   | Expected Static Method        | Expected Standalone Constructor | Rule(s)     | Handler (Meta)                 |
+//! |-----|-------------------|-------------------|-----------------------------|-------------------------------|---------------------------------|-------------|--------------------------------|
+//! | T1.1| Default           | Yes               | None                        | `Enum::variant() -> T1Former` | N/A                             | 3d.i        | `tuple_single_field_subform.rs`|
+//! | T1.2| Default           | No                | None                        | `Enum::variant(T1) -> Enum`   | N/A                             | 3d.ii       | `tuple_single_field_scalar.rs` |
+//! | T1.3| `#[scalar]`       | Any               | None                        | `Enum::variant(T1) -> Enum`   | N/A                             | 1d          | `tuple_single_field_scalar.rs` |
+//! | T1.4| `#[subform_scalar]`| Yes               | None                        | `Enum::variant() -> T1Former` | N/A                             | 2d          | `tuple_single_field_subform.rs`|
+//! | T1.5| `#[subform_scalar]`| No                | None                        | *Compile Error*               | *Compile Error*                 | 2d          | (Dispatch)                     |
+//! | T1.6| Default           | Yes               | `#[standalone_constructors]`| `Enum::variant() -> T1Former` | `fn variant() -> T1Former`      | 3d.i, 4     | `tuple_single_field_subform.rs`|
+//! | T1.7| Default           | No                | `#[standalone_constructors]`| `Enum::variant(T1) -> Enum`   | `fn variant(T1) -> Enum`        | 3d.ii, 4    | `tuple_single_field_scalar.rs` |
+//! | T1.8| `#[scalar]`       | Any               | `#[standalone_constructors]`| `Enum::variant(T1) -> Enum`   | `fn variant(T1) -> Enum`        | 1d, 4       | `tuple_single_field_scalar.rs` |
+//! | T1.9| `#[subform_scalar]`| Yes               | `#[standalone_constructors]`| `Enum::variant() -> T1Former` | `fn variant() -> T1Former`      | 2d, 4       | `tuple_single_field_subform.rs`|
+//! | T1.10| `#[subform_scalar]`| No                | `#[standalone_constructors]`| *Compile Error*               | *Compile Error*                 | 2d          | (Dispatch)                     |
+//!
+//! Note: The effect of `#[arg_for_constructor]` is covered by Rule 4 in conjunction with the base behavior.
+//!
+//! ---
+//!
+//! **Combinations for Multi-Field Tuple Variants (`V(T1, T2, ...)`):**
+//!
+//! | #   | Variant Attr | Enum Attr                   | Expected Static Method        | Expected Standalone Constructor | Rule(s) | Handler (Meta)                 |
+//! |-----|--------------|-----------------------------|-------------------------------|---------------------------------|---------|--------------------------------|
+//! | TN.1| Default      | None                        | `Enum::variant(T1, T2,...) -> Enum` | N/A                             | 3f      | `tuple_multi_fields_scalar.rs` |
+//! | TN.2| `#[scalar]`  | None                        | `Enum::variant(T1, T2,...) -> Enum` | N/A                             | 1f      | `tuple_multi_fields_scalar.rs` |
+//! | TN.3| `#[subform_scalar]` | (Any)                | *Compile Error*               | *Compile Error*                 | 2f      | (Dispatch)                     |
+//! | TN.4| Default      | `#[standalone_constructors]`| `Enum::variant(T1, T2,...) -> Enum` | `fn variant(T1, T2,...) -> Enum` | 3f, 4   | `tuple_multi_fields_scalar.rs` |
+//! | TN.5| `#[scalar]`  | `#[standalone_constructors]`| `Enum::variant(T1, T2,...) -> Enum` | `fn variant(T1, T2,...) -> Enum` | 1f, 4   | `tuple_multi_fields_scalar.rs` |
+//!
+//! Note: The effect of `#[arg_for_constructor]` is covered by Rule 4 in conjunction with the base behavior.
+//!
+//! ---
+//!
+//! This documentation will be expanded as testing for other variant types (struct, unit) is planned.
+//!
+
+use super::*;
+use test_tools::exposed::*;
+
+// Uncomment modules as they are addressed in increments.
+
+// Increment 2: Zero-Field Tuple Variants
+mod enum_named_fields_derive;
+mod enum_named_fields_manual;
+mod enum_named_fields_only_test;
+
+// Increment 3: Single-Field Tuple Variants - T1 derives Former
+mod basic_derive;
+mod basic_manual;
+mod basic_only_test;
+mod generics_in_tuple_variant_derive;
+mod generics_in_tuple_variant_manual;
+mod generics_in_tuple_variant_only_test;
+mod generics_shared_tuple_derive;
+mod generics_shared_tuple_manual;
+mod generics_shared_tuple_only_test;
+mod usecase1; // Need to check if this fits the manual/derive/only_test pattern
+
+// Increment 4: Single-Field Tuple Variants - T1 does NOT derive Former
+// mod tuple_single_non_former_derive; // May need to create
+// mod tuple_single_non_former_manual; // May need to create
+// mod tuple_single_non_former_only_test; // May need to create
+
+// Increment 5: Single-Field Tuple Variants - #[scalar]
+// mod generics_independent_tuple_derive;
+// mod generics_independent_tuple_manual;
+// mod generics_independent_tuple_only_test;
+mod scalar_generic_tuple_derive; // May need adaptation
+mod scalar_generic_tuple_manual; // May need adaptation
+mod scalar_generic_tuple_only_test; // May need adaptation
+
+// Increment 6: Single-Field Tuple Variants - #[standalone_constructors]
+mod standalone_constructor_derive; // May need adaptation
+mod standalone_constructor_manual; // May need adaptation
+mod standalone_constructor_only_test; // May need adaptation
+mod standalone_constructor_args_derive; // May need adaptation
+mod standalone_constructor_args_manual; // May need adaptation
+mod standalone_constructor_args_only_test; // May need adaptation
+
+// Increment 7: Multi-Field Tuple Variants (Default & #[scalar])
+mod tuple_multi_default_derive; // May need to create
+mod tuple_multi_default_manual; // May need to create
+mod tuple_multi_default_only_test; // May need to create
+mod tuple_multi_scalar_derive; // May need to create
+mod tuple_multi_scalar_manual; // May need to create
+mod tuple_multi_scalar_only_test; // May need to create
+
+// Increment 8: Multi-Field Tuple Variants - #[standalone_constructors]
+mod tuple_multi_standalone_manual; // New for Increment 8
+mod tuple_multi_standalone_derive; // New for Increment 8
+mod tuple_multi_standalone_only_test; // New for Increment 8
+mod tuple_multi_standalone_args_manual; // New for Increment 8
+mod tuple_multi_standalone_args_derive; // New for Increment 8
+mod tuple_multi_standalone_args_only_test; // New for Increment 8
+
+// Increment 9: Error Cases for Tuple Variants
+mod compile_fail; // This is a directory, needs a mod declaration
+
+// Increment 10: Final Review (No new modules here)

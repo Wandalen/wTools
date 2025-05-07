@@ -233,46 +233,6 @@ mod former_enum_tests
 
   // = enum
 
-  // xxx : qqq : enable or remove
-//   mod usecase1;
-
-  // mod basic_manual;
-  // mod basic_derive;
-  mod unit_variant_manual;
-  mod unit_variant_derive;
-  // mod enum_named_fields_manual;
-  // mod enum_named_fields_derive;
-//
-//   // = generics
-//
-//   mod generics_in_tuple_variant_manual;
-//   mod generics_in_tuple_variant_derive;
-//   mod generics_shared_tuple_manual;
-//   mod generics_shared_tuple_derive;
-//   mod generics_shared_struct_manual;
-//   mod generics_shared_struct_derive;
-  // mod generics_independent_tuple_manual;
-  // mod generics_independent_tuple_derive;
-  // mod generics_independent_struct_manual;
-  // mod generics_independent_struct_derive;
-  // mod scalar_generic_tuple_manual;
-  // mod scalar_generic_tuple_derive;
-
-//   // = conflicts
-//
-//   mod keyword_variant_derive;
-//
-//   // = standalone constructor
-//
-//   mod standalone_constructor_manual;
-//   mod standalone_constructor_derive;
-//   mod standalone_constructor_args_manual;
-//   mod standalone_constructor_args_derive;
-//
-//   // = subform
-//
-//   mod subform_collection_test;
-
 }
 
 
@@ -297,6 +257,11 @@ only_for_terminal_module!
     t.pass( "tests/inc/former_struct_tests/compiletime/vector_without_parameter.rs" );
 
     // assert!( false );
+
+    // Compile-fail tests for tuple variants (Increment 9)
+    t.compile_fail( "tests/inc/former_enum_tests/compile_fail/tuple_zero_subform_scalar_error.rs" ); // T0.5
+    t.compile_fail( "tests/inc/former_enum_tests/compile_fail/tuple_single_subform_non_former_error.rs" ); // T1.5
+    t.compile_fail( "tests/inc/former_enum_tests/compile_fail/tuple_multi_subform_scalar_error.rs" ); // TN.3
 
   }
 
