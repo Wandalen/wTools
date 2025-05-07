@@ -4,8 +4,9 @@
 *   Systematically test the `#[derive(Former)]` macro for Rust enum **unnamed (tuple) variants**.
 *   Cover combinations of relevant `former` attributes (`#[scalar]`, `#[subform_scalar]`, default behavior, `#[standalone_constructors]`, `#[arg_for_constructor]`) for tuple variants with 0, 1, and multiple fields.
 *   Address scenarios where the field type within a single-field tuple variant does or does not derive `Former`.
+*   **Restructure enum tests by creating `module/core/former/tests/inc/former_enum_tests/mod.rs` and moving relevant submodule declarations into it.**
 *   Incrementally uncomment, pre-analyze, fix, and verify existing test files related to tuple variants within `module/core/former/tests/inc/former_enum_tests/`.
-*   **Embed the "Test Matrix for Unnamed (Tuple) Variants" (or a clear reference to it) as documentation within `module/core/former/tests/inc/mod.rs`.**
+*   **Embed the "Test Matrix for Unnamed (Tuple) Variants" as documentation within the new `module/core/former/tests/inc/former_enum_tests/mod.rs`.**
 *   Ensure all code modifications adhere strictly to `code/gen` instructions, Design Rules, and Codestyle Rules.
 
 ## Relevant Context
@@ -19,7 +20,8 @@
     *   Files like `scalar_generic_tuple_*.rs` (for single and multi-field tuple variants with `#[scalar]` and generic inner types).
     *   Files like `standalone_constructor_*.rs` and `standalone_constructor_args_*.rs` (for tuple variants with these enum-level attributes).
     *   `usecase1.rs` (multiple single-field tuple variants with Former-derived inner types).
-*   **Main Test Module File:** `module/core/former/tests/inc/mod.rs`.
+*   **Enum Test Module File (New):** `module/core/former/tests/inc/former_enum_tests/mod.rs`
+*   **Main Test Module File (Parent):** `module/core/former/tests/inc/mod.rs`
 *   **Macro Implementation:** `module/core/former_meta/src/derive_former/former_enum/`
     *   `tuple_zero_fields_handler.rs`
     *   `tuple_single_field_scalar.rs`
@@ -33,7 +35,7 @@
 
 ### Test Matrix for Unnamed (Tuple) Variants
 
-**(This section will be embedded as documentation in `module/core/former/tests/inc/mod.rs` as per Increment 1. For brevity in this plan file, it's referenced here. The full matrix is defined in the previous interaction and will be used for the actual documentation.)**
+**(This section will be embedded as documentation in `module/core/former/tests/inc/former_enum_tests/mod.rs` as per Increment 1. For brevity in this plan file, it's referenced here. The full matrix is defined in the previous interaction and will be used for the actual documentation.)**
 
 *   **Factors:**
     1.  Number of Fields: Zero, One, Multiple.
@@ -43,28 +45,20 @@
     5.  Field-Level Attribute `#[arg_for_constructor]`.
 *   **Combinations Tables:** (As detailed previously for Zero-Field, Single-Field, Multi-Field)
 
-### Target File Structure for Unnamed (Tuple) Variant Tests
-
-Within `module/core/former/tests/inc/former_enum_tests/`:
-New files might be needed if existing ones don't cover specific matrix combinations cleanly.
-Documentation for this matrix will go into `module/core/former/tests/inc/mod.rs` within the `former_enum_tests` module scope.
+### Target File Structure
 
 ```
 module/core/former/tests/inc/
-├── mod.rs                      // Declares `former_enum_tests` and its test files.
-│                               // Will contain the Test Matrix documentation for tuple variants.
+├── mod.rs                      // Declares `mod former_enum_tests;`
 └── former_enum_tests/
-    ├── basic_derive.rs           // Covers T1.1
+    ├── mod.rs                  // New file. Declares all specific enum test files (basic_*, unit_variant_*, etc.)
+    │                           // Will contain the Test Matrix documentation for tuple variants (and later others).
+    ├── basic_derive.rs
     ├── basic_manual.rs
     └── basic_only_test.rs
-    // Potentially new files for tuple variants if existing ones are not suitable:
-    // ├── tuple_zero_derive.rs
-    // ├── tuple_zero_manual.rs
-    // └── tuple_zero_only_test.rs
-    // ... (other files as needed based on matrix coverage during detailed planning) ...
+    // ... other enum test files ...
     └── compile_fail/
-        ├── tuple_single_subform_non_former_error.rs // For T1.5
-        └── tuple_multi_subform_error.rs             // For TN.3
+        // ... trybuild tests ...
 ```
 
 ### Expected Enum Former Behavior Rules (Unnamed/Tuple Variants Only)
@@ -91,68 +85,73 @@ module/core/former/tests/inc/
 
 ## Increments
 
-*   [⏳] **Increment 1: Document Test Matrix for Tuple Variants**
-    *   **Goal:** Embed the "Test Matrix for Unnamed (Tuple) Variants" into the documentation within `module/core/former/tests/inc/mod.rs`.
-    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/mod.rs`.
-        *   Locate the `mod former_enum_tests { ... }` block (or the simple `mod former_enum_tests;` line if it's not a block yet).
-        *   If it's not a block, convert it to `mod former_enum_tests { /* existing submodule declarations */ }`.
-        *   Add a module-level documentation comment (`//!`) *inside* the `former_enum_tests` module block. This comment will contain:
+*   [⏳] **Increment 1: Create `former_enum_tests/mod.rs` and Document Test Matrix**
+    *   **Goal:** Create `module/core/former/tests/inc/former_enum_tests/mod.rs`. Move enum test submodule declarations from `inc/mod.rs` to `former_enum_tests/mod.rs`. Embed the "Test Matrix for Unnamed (Tuple) Variants" into `former_enum_tests/mod.rs`.
+    *   **Detailed Plan Step 1:** Create the new file `module/core/former/tests/inc/former_enum_tests/mod.rs`.
+    *   **Detailed Plan Step 2:** Modify `module/core/former/tests/inc/mod.rs`:
+        *   Remove all individual `mod basic_derive;`, `mod unit_variant_manual;`, etc., lines that pertain to files within the `former_enum_tests` directory.
+        *   Ensure (or add) the line `mod former_enum_tests;` to declare the subdirectory as a module.
+    *   **Detailed Plan Step 3:** Populate `module/core/former/tests/inc/former_enum_tests/mod.rs`:
+        *   Add `use super::*;` and `use test_tools::exposed::*;` (or similar common imports if present in the old `inc/mod.rs` for these tests).
+        *   Add all the `mod ...;` declarations for the test files that are now siblings to it (e.g., `mod basic_derive;`, `mod unit_variant_manual;`, etc.). **Initially, keep most of these commented out, except for those needed for the very next increment (e.g., related to zero-field tuples or the first set of unit tests if we were doing those first).** For this plan focusing on tuple variants, we might start by uncommenting files relevant to `Increment 2` (Zero-Field Tuple Variants).
+        *   Add a module-level documentation comment (`//!`) at the top. This comment will contain:
             *   A clear title, e.g., "## Test Matrix for Enum Unnamed (Tuple) Variants".
             *   The full "Test Matrix for Unnamed (Tuple) Variants" tables (Zero-Field, Single-Field, Multi-Field).
             *   A brief explanation stating that this matrix guides the testing of tuple variants, linking attributes and variant structures to expected behaviors and relevant internal rule numbers (e.g., "Rule 3b").
             *   A note that this documentation will be expanded as testing for other variant types (struct, unit) is planned.
-    *   **Pre-Analysis:** This is a documentation-only change. No functional code is altered.
-    *   **Crucial Design Rules:** [Comments and Documentation](#comments-and-documentation).
+    *   **Pre-Analysis:** This is primarily a structural and documentation change.
+    *   **Crucial Design Rules:** [Structuring: Add Module Declaration Before Content](#structuring-add-module-declaration-before-content), [Comments and Documentation](#comments-and-documentation).
     *   **Verification Strategy:**
-        1.  Request user to apply the changes (full file content for `module/core/former/tests/inc/mod.rs` will be provided).
-        2.  Request user to run `cargo check --tests --package former`. Expect compilation success.
-        3.  Request user to run `cargo doc --package former --no-deps --open` (or similar command to build and view docs) and manually verify that the "Test Matrix for Unnamed (Tuple) Variants" is correctly rendered in the documentation for the `former_enum_tests` module.
+        1.  Request user to apply the changes (content for `inc/mod.rs` and `former_enum_tests/mod.rs`).
+        2.  Request user to run `cargo check --tests --package former`. Expect compilation success (possibly with unused module warnings if many submodules in `former_enum_tests/mod.rs` are still commented).
+        3.  Request user to run `cargo doc --package former --no-deps --open` and manually verify that the "Test Matrix for Unnamed (Tuple) Variants" is correctly rendered in the documentation for the `former_enum_tests` module.
 
 *   [⚫] **Increment 2: Zero-Field Tuple Variants (Combinations T0.1 - T0.4)**
     *   **Goal:** Test `V()` variants.
-    *   **Files:** Adapt `enum_named_fields_*` (which contains `VariantZeroUnnamedDefault`, `VariantZeroUnnamedScalar`) or create dedicated `tuple_zero_*` files if cleaner.
+    *   **Files:**
+        *   Ensure `enum_named_fields_derive.rs`, `enum_named_fields_manual.rs`, `enum_named_fields_only_test.rs` are correctly declared (uncommented) in `former_enum_tests/mod.rs`. These files contain relevant zero-field tuple tests (`VariantZeroUnnamedDefault`, `VariantZeroUnnamedScalar`).
     *   **Matrix Coverage:** T0.1, T0.2, T0.3, T0.4.
     *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rules 1b, 3b, 4.
-    *   **Verification Strategy:** Staged testing (manual first, then derive) for each combination.
+    *   **Verification Strategy:** Staged testing (manual first, then derive) for each combination, using `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::enum_named_fields`.
 
 *   [⚫] **Increment 3: Single-Field Tuple Variants - `T1` derives `Former` (Default & Subform Scalar)**
     *   **Goal:** Test `V(T1)` where `T1` derives `Former`, covering default subformer behavior and explicit `#[subform_scalar]`.
-    *   **Files:** `basic_*`, `generics_in_tuple_variant_*`, `generics_shared_tuple_*`, `usecase1.rs`. May need to adapt or create `tuple_single_former_*` files.
+    *   **Files:** `basic_*`, `generics_in_tuple_variant_*`, `generics_shared_tuple_*`, `usecase1.rs`. May need to adapt or create `tuple_single_former_*` files. Ensure relevant modules are uncommented in `former_enum_tests/mod.rs`.
     *   **Matrix Coverage:** T1.1 (Default), T1.4 (`#[subform_scalar]`).
     *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rules 3d.i, 2d.
     *   **Verification Strategy:** Staged testing.
 
 *   [⚫] **Increment 4: Single-Field Tuple Variants - `T1` does NOT derive `Former` (Default Scalar-like)**
     *   **Goal:** Test `V(T1)` where `T1` does NOT derive `Former`, covering default scalar-like behavior.
-    *   **Files:** Adapt `scalar_generic_tuple_*` or create `tuple_single_non_former_*` files.
+    *   **Files:** Adapt `scalar_generic_tuple_*` or create `tuple_single_non_former_*` files. Ensure relevant modules are uncommented in `former_enum_tests/mod.rs`.
     *   **Matrix Coverage:** T1.2 (Default).
     *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rule 3d.ii.
     *   **Verification Strategy:** Staged testing.
 
 *   [⚫] **Increment 5: Single-Field Tuple Variants - `#[scalar]`**
     *   **Goal:** Test `V(T1)` with `#[scalar]`, for both `T1` deriving Former and not.
-    *   **Files:** Adapt `generics_independent_tuple_*`, `scalar_generic_tuple_*`.
+    *   **Files:** Adapt `generics_independent_tuple_*`, `scalar_generic_tuple_*`. Ensure relevant modules are uncommented in `former_enum_tests/mod.rs`.
     *   **Matrix Coverage:** T1.3.
     *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rule 1d.
     *   **Verification Strategy:** Staged testing.
 
 *   [⚫] **Increment 6: Single-Field Tuple Variants - `#[standalone_constructors]`**
     *   **Goal:** Test `#[standalone_constructors]` with single-field tuple variants.
-    *   **Files:** Adapt existing or create new tests focusing on `standalone_constructor_*` patterns for single-field tuples.
+    *   **Files:** Adapt existing or create new tests focusing on `standalone_constructor_*` patterns for single-field tuples. Ensure relevant modules are uncommented in `former_enum_tests/mod.rs`.
     *   **Matrix Coverage:** T1.6, T1.7, T1.8, T1.9, T1.10.
     *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rule 4 in conjunction with 1d, 2d, 3d.
     *   **Verification Strategy:** Staged testing.
 
 *   [⚫] **Increment 7: Multi-Field Tuple Variants (Default & `#[scalar]`)**
     *   **Goal:** Test `V(T1, T2, ...)` variants with default and `#[scalar]` attributes.
-    *   **Files:** Adapt `scalar_generic_tuple_*` or create `tuple_multi_*` files.
+    *   **Files:** Adapt `scalar_generic_tuple_*` or create `tuple_multi_*` files. Ensure relevant modules are uncommented in `former_enum_tests/mod.rs`.
     *   **Matrix Coverage:** TN.1 (Default), TN.2 (`#[scalar]`).
     *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rules 1f, 3f.
     *   **Verification Strategy:** Staged testing.
 
 *   [⚫] **Increment 8: Multi-Field Tuple Variants - `#[standalone_constructors]`**
     *   **Goal:** Test `#[standalone_constructors]` with multi-field tuple variants.
-    *   **Files:** Adapt existing or create new tests focusing on `standalone_constructor_*` patterns for multi-field tuples.
+    *   **Files:** Adapt existing or create new tests focusing on `standalone_constructor_*` patterns for multi-field tuples. Ensure relevant modules are uncommented in `former_enum_tests/mod.rs`.
     *   **Matrix Coverage:** TN.4, TN.5, TN.6.
     *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rule 4 in conjunction with 1f, 3f.
     *   **Verification Strategy:** Staged testing.
@@ -177,9 +176,10 @@ module/core/former/tests/inc/
 *   **Incremental Verification:** Verify after each increment.
 *   **Failure Analysis:** Follow the "Failure Diagnosis Algorithm".
 *   **Minimal Changes:** Prioritize minimal changes.
+*   **Approval Gates:** Obtain user approval before and after each increment.
 
 ## Notes & Insights
 *   This plan focuses specifically on unnamed (tuple) variants.
-*   The "Test Matrix for Unnamed (Tuple) Variants" will be embedded in `module/core/former/tests/inc/mod.rs`.
+*   The "Test Matrix for Unnamed (Tuple) Variants" will be embedded in `module/core/former/tests/inc/former_enum_tests/mod.rs`.
 *   The "Expected Enum Former Behavior Rules" are focused on tuple variants for this plan.
 *   Existing test files will be leveraged. New files (`tuple_zero_*`, `tuple_single_former_*`, etc.) might be created if existing files are not granular enough for clear matrix coverage. This will be decided during detailed planning for each increment.
