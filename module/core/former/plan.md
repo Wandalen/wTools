@@ -161,25 +161,13 @@ The primary files are `enum_named_fields_derive.rs`, `enum_named_fields_manual.r
     *   **Pre-Analysis:** This is a refactoring step required to fix compilation errors in the main derive macro logic.
     *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow).
     *   **Verification Strategy:** Request user to run `cargo check --package former --test tests --features derive_former`. Verify that the `mismatched types` errors related to `push` are resolved.
-    *   Detailed Plan Step 1: Read `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs`.
-    *   Detailed Plan Step 2: Modify `unit_variant_handler.rs` to return `Result<TokenStream>`.
-    *   Detailed Plan Step 3: Read `module/core/former_meta/src/derive_former/former_enum/tuple_zero_fields_handler.rs`.
-    *   Detailed Plan Step 4: Modify `tuple_zero_fields_handler.rs` to return `Result<TokenStream>`.
-    *   Detailed Plan Step 5: Read `module/core/former_meta/src/derive_former/former_enum/tuple_single_field_scalar.rs`.
-    *   Detailed Plan Step 6: Modify `tuple_single_field_scalar.rs` to return `Result<TokenStream>`.
-    *   Detailed Plan Step 7: Read `module/core/former_meta/src/derive_former/former_enum/tuple_single_field_subform.rs`.
-    *   Detailed Plan Step 8: Modify `tuple_single_field_subform.rs` to return `Result<TokenStream>`.
-    *   Detailed Plan Step 9: Read `module/core/former_meta/src/derive_former/former_enum/tuple_multi_fields_scalar.rs`.
-    *   Detailed Plan Step 10: Modify `tuple_multi_fields_scalar.rs` to return `Result<TokenStream>`.
-    *   Detailed Plan Step 11: Read `module/core/former_meta/src/derive_former/former_enum/struct_single_field_scalar.rs`.
-    *   Detailed Plan Step 12: Modify `struct_single_field_scalar.rs` to return `Result<TokenStream>`.
-    *   Detailed Plan Step 13: Read `module/core/former_meta/src/derive_former/former_enum/struct_single_field_subform.rs`.
-    *   Detailed Plan Step 14: Modify `struct_single_field_subform.rs` to return `Result<TokenStream>`.
-    *   Detailed Plan Step 15: Read `module/core/former_meta/src/derive_former/former_enum/struct_multi_fields_scalar.rs`.
-    *   Detailed Plan Step 16: Modify `struct_multi_fields_scalar.rs` to return `Result<TokenStream>`.
-    *   Detailed Plan Step 17: Read `module/core/former_meta/src/derive_former/former_enum/struct_multi_fields_subform.rs`.
-    *   Detailed Plan Step 18: Modify `struct_multi_fields_subform.rs` to return `Result<TokenStream>`.
-    *   Detailed Plan Step 19: Request user to run `cargo check --package former --test tests --features derive_former`.
+    *   Detailed Plan Step 1: Read `module/core/former/tests/inc/former_enum_tests/compile_fail/struct_zero_default_error.rs`.
+    *   Detailed Plan Step 2: Uncomment/add `trybuild` test for S0.1 in `struct_zero_default_error.rs`.
+    *   Detailed Plan Step 3: Read `module/core/former/tests/inc/former_enum_tests/compile_fail/struct_zero_subform_scalar_error.rs`.
+    *   Detailed Plan Step 4: Uncomment/add `trybuild` test for S0.5 in `struct_zero_subform_scalar_error.rs`.
+    *   Detailed Plan Step 5: Read `module/core/former/tests/inc/mod.rs`.
+    *   Detailed Plan Step 6: Uncomment `mod compile_fail;` in `module/core/former/tests/inc/mod.rs`.
+    *   Detailed Plan Step 7: Request user to run `cargo test --package former --test tests --features derive_former`. Verify that the trybuild tests pass (i.e., the expected compilation errors occur).
 
 *   [✅] **Increment 2: Zero-Field Struct Variants (Combinations S0.2, S0.4)**
     *   **Goal:** Test `V {}` variants with `#[scalar]`.
@@ -249,7 +237,7 @@ The primary files are `enum_named_fields_derive.rs`, `enum_named_fields_manual.r
     *   Detailed Plan Step 9: Implement/verify macro logic in relevant handler files to support `#[standalone_constructors]` and `#[arg_for_constructor]`.
     *   Detailed Plan Step 10: Request user to run derive test (`cargo test --package former --test tests --features derive_former`).
 
-*   [⏳] **Increment 6: Error Cases for Struct Variants (S0.1, S0.5)**
+*   [✅] **Increment 6: Error Cases for Struct Variants (S0.1, S0.5)**
     *   **Goal:** Verify compile errors for invalid attribute usage on struct variants.
     *   **Files:** Create new `trybuild` tests in `module/core/former/tests/inc/former_enum_tests/compile_fail/`:
         *   `struct_zero_default_error.rs` (for S0.1)
@@ -264,7 +252,7 @@ The primary files are `enum_named_fields_derive.rs`, `enum_named_fields_manual.r
     *   Detailed Plan Step 6: Uncomment `mod compile_fail;` in `module/core/former/tests/inc/mod.rs`.
     *   Detailed Plan Step 7: Request user to run `cargo test --package former --test tests --features derive_former`. Verify that the trybuild tests pass (i.e., the expected compilation errors occur).
 
-*   [⏳] **Increment 7: Generics with Struct Variants**
+*   [✅] **Increment 7: Generics with Struct Variants**
     *   **Goal:** Integrate and verify tests from `generics_independent_struct_*` and `generics_shared_struct_*`.
     *   **Files:** `generics_independent_struct_*`, `generics_shared_struct_*`.
     *   **Matrix Coverage:** Implicitly covers S1.1/SN.1 type behavior but with generics.
@@ -284,9 +272,15 @@ The primary files are `enum_named_fields_derive.rs`, `enum_named_fields_manual.r
     *   Detailed Plan Step 12: Uncomment/add tests in `generics_shared_struct_only_test.rs`.
     *   Detailed Plan Step 13: Request user to run `cargo test --package former --test tests --features derive_former`.
 
-*   [⚫] **Increment 8: Final Review and Full Test Suite for Named (Struct-like) Variants**
+*   [✅] **Increment 8: Final Review and Full Test Suite for Named (Struct-like) Variants**
     *   **Goal:** Ensure all named (struct-like) variant tests are active and passing.
-    *   **Verification Strategy:** `cargo check --all-targets --package former`, `cargo clippy ...`, `cargo test ... former_enum_tests`.
+    *   **Verification Strategy:** `cargo check --all-targets --package former`, `cargo clippy --all-targets --package former --features full`, `cargo test --package former --test tests --features derive_former`, `cargo test --package former --test tests --features derive_former --doc`, `cargo test --package former --test tests --features derive_former --tests inc::former_enum_tests::compile_fail`, `cargo test --package former --test tests --features derive_former --tests inc::former_enum_tests`.
+    *   Detailed Plan Step 1: Request user to run `cargo check --all-targets --package former`.
+    *   Detailed Plan Step 2: Request user to run `cargo clippy --all-targets --package former --features full`.
+    *   Detailed Plan Step 3: Request user to run `cargo test --package former --test tests --features derive_former`.
+    *   Detailed Plan Step 4: Request user to run `cargo test --package former --test tests --features derive_former --doc`.
+    *   Detailed Plan Step 5: Request user to run `cargo test --package former --test tests --features derive_former --tests inc::former_enum_tests::compile_fail`.
+    *   Detailed Plan Step 6: Request user to run `cargo test --package former --test tests --features derive_former --tests inc::former_enum_tests`.
 
 ### Requirements
 *   (Same as initial plan)
