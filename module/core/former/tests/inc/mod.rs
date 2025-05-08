@@ -227,20 +227,13 @@ mod former_struct_tests
 }
 
 #[ cfg( feature = "derive_former" ) ]
-mod former_enum_tests
-{
-  use super::*;
-
-  // = enum
-
-  // Increment 9: Error Cases for Tuple Variants
-} // Close former_enum_tests module
+#[ cfg( feature = "derive_former" ) ]
+mod former_enum_tests;
 
 only_for_terminal_module!
 {
 
   // Increment 9: Error Cases for Tuple Variants
-  mod former_enum_tests; // Declare former_enum_tests inside the macro
   mod compile_fail; // This is a directory, needs a mod declaration
 
   // stable have different information about error

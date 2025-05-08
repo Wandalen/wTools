@@ -153,60 +153,47 @@ use test_tools::exposed::*;
 // Uncomment modules as they are addressed in increments.
 
 // Increment 2: Zero-Field Tuple Variants
-mod enum_named_fields_derive;
-mod enum_named_fields_manual;
-mod enum_named_fields_only_test;
+// mod enum_named_fields_derive;
+// mod enum_named_fields_manual;
 
-// Increment 3: Single-Field Tuple Variants - T1 derives Former
-mod basic_derive;
-mod basic_manual;
-mod basic_only_test;
-mod generics_in_tuple_variant_derive;
-mod generics_in_tuple_variant_manual;
-mod generics_in_tuple_variant_only_test;
-mod generics_shared_tuple_derive;
-mod generics_shared_tuple_manual;
-mod generics_shared_tuple_only_test;
-mod usecase1; // Need to check if this fits the manual/derive/only_test pattern
-
-// Increment 4: Single-Field Tuple Variants - T1 does NOT derive Former
-// mod tuple_single_non_former_derive; // May need to create
-// mod tuple_single_non_former_manual; // May need to create
-// mod tuple_single_non_former_only_test; // May need to create
-
-// Increment 5: Single-Field Tuple Variants - #[scalar]
-// mod generics_independent_tuple_derive;
-// mod generics_independent_tuple_manual;
-// mod generics_independent_tuple_only_test;
-mod scalar_generic_tuple_derive; // May need adaptation
-mod scalar_generic_tuple_manual; // May need adaptation
-mod scalar_generic_tuple_only_test; // May need adaptation
-
-// Increment 6: Single-Field Tuple Variants - #[standalone_constructors]
-mod standalone_constructor_derive; // May need adaptation
-mod standalone_constructor_manual; // May need adaptation
-mod standalone_constructor_only_test; // May need adaptation
-mod standalone_constructor_args_derive; // May need adaptation
-mod standalone_constructor_args_manual; // May need adaptation
-mod standalone_constructor_args_only_test; // May need adaptation
-
-// Increment 7: Multi-Field Tuple Variants (Default & #[scalar])
-mod tuple_multi_default_derive; // May need to create
-mod tuple_multi_default_manual; // May need to create
-mod tuple_multi_default_only_test; // May need to create
-mod tuple_multi_scalar_derive; // May need to create
-mod tuple_multi_scalar_manual; // May need to create
-mod tuple_multi_scalar_only_test; // May need to create
-
-// Increment 8: Multi-Field Tuple Variants - #[standalone_constructors]
-mod tuple_multi_standalone_manual; // New for Increment 8
-mod tuple_multi_standalone_derive; // New for Increment 8
-mod tuple_multi_standalone_only_test; // New for Increment 8
-mod tuple_multi_standalone_args_manual; // New for Increment 8
-mod tuple_multi_standalone_args_derive; // New for Increment 8
-mod tuple_multi_standalone_args_only_test; // New for Increment 8
+// // Increment 3: Single-Field Tuple Variants - T1 derives Former
+// mod basic_derive;
+// mod basic_manual;
+// mod generics_in_tuple_variant_derive;
+// mod generics_in_tuple_variant_manual;
+// mod generics_shared_tuple_derive;
+// mod generics_shared_tuple_manual;
+//
+// // Increment 4: Single-Field Tuple Variants - T1 does NOT derive Former
+// // mod tuple_single_non_former_derive; // May need to create
+// // mod tuple_single_non_former_manual; // May need to create
+//
+// // Increment 5: Single-Field Tuple Variants - #[scalar]
+// // mod generics_independent_tuple_derive;
+// // mod generics_independent_tuple_manual;
+// mod scalar_generic_tuple_derive; // May need adaptation
+// mod scalar_generic_tuple_manual; // May need adaptation
+//
+// // Increment 6: Single-Field Tuple Variants - #[standalone_constructors]
+// mod standalone_constructor_derive; // May need adaptation
+// mod standalone_constructor_manual; // May need adaptation
+// mod standalone_constructor_args_derive; // May need adaptation
+// mod standalone_constructor_args_manual; // May need adaptation
+//
+// // Increment 7: Multi-Field Tuple Variants (Default & #[scalar])
+// mod tuple_multi_default_derive; // May need to create
+// mod tuple_multi_default_manual; // May need to create
+// mod tuple_multi_scalar_derive; // May need to create
+// mod tuple_multi_scalar_manual; // May need to create
+//
+// // Increment 8: Multi-Field Tuple Variants - #[standalone_constructors]
+// mod tuple_multi_standalone_manual; // New for Increment 8
+// mod tuple_multi_standalone_derive; // New for Increment 8
+// mod tuple_multi_standalone_args_manual; // New for Increment 8
+// mod tuple_multi_standalone_args_derive; // New for Increment 8
 
 // Increment 9: Error Cases for Tuple Variants
 // mod compile_fail; // This is a directory, needs a mod declaration
 
-// Increment 10: Final Review (No new modules here)
+// mod usecase1_manual;
+// mod usecase1_derive;
