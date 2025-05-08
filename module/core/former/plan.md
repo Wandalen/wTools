@@ -1,3 +1,4 @@
+<!-- module/core/former/plan.md -->
 # Project Plan: Verify Former Derive for Unit Enum Variants
 
 ## Goal
