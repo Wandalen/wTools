@@ -85,13 +85,23 @@ This plan focuses on verifying the behavior for **Tuple Variants**. The relevant
         *   T1.7 (Default, T1 not Former + Standalone): Rule 3d.ii, 4 (Needs specific test file if not covered implicitly)
         *   T1.8 (`#[scalar]` + Standalone): Rule 1d, 4 (`standalone_constructor_args_*`)
         *   T1.9 (`#[subform_scalar]`, T1 derives Former + Standalone): Rule 2d, 4 (Needs specific test file if not covered implicitly)
-        *   T1.10 (`#[subform_scalar]`, T1 not Former + Standalone): Rule 2d (Error - Covered by T1.5)
-    *   **Multi-Field (`V(T1, T2, ...)`):**
-        *   TN.1 (Default): Rule 3f (Needs specific test file if not covered implicitly by TN.4)
-        *   TN.2 (`#[scalar]`): Rule 1f (`keyword_variant_*`, `standalone_constructor_args_*`)
-        *   TN.3 (`#[subform_scalar]`): Rule 2f (Error - `compile_fail/tuple_multi_subform_scalar_error.rs`)
-        *   TN.4 (Default + Standalone): Rule 3f, 4 (Needs specific test file, potentially `standalone_constructor_args_*` if adapted)
-        *   TN.5 (`#[scalar]` + Standalone): Rule 1f, 4 (`standalone_constructor_args_*`)
+        *   T1.10| `#[subform_scalar]`| No                | `#[standalone_constructors]`| *Compile Error*               | *Compile Error*                 | 2d          | (Dispatch)                     |
+
+Note: The effect of `#[arg_for_constructor]` is covered by Rule 4 in conjunction with the base behavior.
+
+---
+
+**Combinations for Multi-Field Tuple Variants (`V(T1, T2, ...)`):**
+
+| #   | Variant Attr | Enum Attr                   | Expected Static Method        | Expected Standalone Constructor | Rule(s) | Handler (Meta)                 |
+|-----|--------------|-----------------------------|-------------------------------|---------------------------------|---------|--------------------------------|
+| TN.1| Default      | None                        | `Enum::variant(T1, T2,...) -> Enum` | N/A                             | 3f      | `tuple_multi_fields_scalar.rs` |
+| TN.2| `#[scalar]`  | None                        | `Enum::variant(T1, T2,...) -> Enum` | N/A                             | 1f      | `tuple_multi_fields_scalar.rs` |
+| TN.3| `#[subform_scalar]` | (Any)                | *Compile Error*               | *Compile Error*                 | 2f      | (Dispatch)                     |
+| TN.4| Default      | `#[standalone_constructors]`| `Enum::variant(T1, T2,...) -> Enum` | `fn variant(T1, T2,...) -> Enum` | 3f, 4   | `tuple_multi_fields_scalar.rs` |
+| TN.5| `#[scalar]`  | `#[standalone_constructors]`| `Enum::variant(T1, T2,...) -> Enum` | `fn variant(T1, T2,...) -> Enum` | 1f, 4   | `tuple_multi_fields_scalar.rs` |
+
+Note: The effect of `#[arg_for_constructor]` is covered by Rule 4 in conjunction with the base behavior.
 
 ### Failure Diagnosis Algorithm
 *   (Standard algorithm as previously defined, focusing on relevant `tuple_*_handler.rs` if `_derive` fails and `_manual` passes).
@@ -99,7 +109,7 @@ This plan focuses on verifying the behavior for **Tuple Variants**. The relevant
 
 ## Increments
 
-*   [⚫] **Increment 1: Document Tuple Variant Matrix**
+*   [✅] **Increment 1: Document Tuple Variant Matrix**
     *   **Goal:** Add the Tuple Variant Test Matrix documentation to `former_enum_tests/mod.rs`, preserving existing matrices. Keep all tuple test modules commented out for now.
     *   **Target Crate(s):** `former`
     *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs`:
@@ -186,6 +196,7 @@ This plan focuses on verifying the behavior for **Tuple Variants**. The relevant
 *   **Incremental Verification:** Verify compilation and test success after each relevant increment. Handle widespread failures by selectively commenting out only failing tests.
 *   **Failure Analysis:** Follow the "Failure Diagnosis Algorithm".
 *   **Approval Gates:** Obtain user approval before starting each increment and after successful verification.
+*   **No Clippy:** Avoid using `cargo clippy`.
 
 ## Notes & Insights
 *   This plan focuses on tuple enum variants, activating tests incrementally.
@@ -194,3 +205,4 @@ This plan focuses on verifying the behavior for **Tuple Variants**. The relevant
 *   The full "Expected Enum Former Behavior Rules" are kept for context.
 *   Test Matrix coverage for tuple variants is explicitly noted and will be added to `mod.rs`.
 *   `cargo clippy` check is excluded.
+*   Increment 1 verified successfully.

@@ -188,19 +188,19 @@ mod unit_variant_manual;
 // mod standalone_constructor_args_manual; // May need adaptation
 //
 // // Increment 7: Multi-Field Tuple Variants (Default & #[scalar])
-// mod tuple_multi_default_derive; // May need to create
-// mod tuple_multi_default_manual; // May need to create
-// mod tuple_multi_scalar_derive; // May need to create
-// mod tuple_multi_scalar_manual; // May need to create
+// // mod tuple_multi_default_derive; // May need to create
+// // mod tuple_multi_default_manual; // May need to create
+// // mod tuple_multi_scalar_derive; // May need to create
+// // mod tuple_multi_scalar_manual; // May need to create
 //
 // // Increment 8: Multi-Field Tuple Variants - #[standalone_constructors]
-// mod tuple_multi_standalone_manual; // New for Increment 8
-// mod tuple_multi_standalone_derive; // New for Increment 8
-// mod tuple_multi_standalone_args_manual; // New for Increment 8
-// mod tuple_multi_standalone_args_derive; // New for Increment 8
-
-// Increment 9: Error Cases for Tuple Variants
-// mod compile_fail; // This is a directory, needs a mod declaration
-
-// mod usecase1_manual;
-// mod usecase1_derive;
+// // mod tuple_multi_standalone_manual; // New for Increment 8
+// // mod tuple_multi_standalone_derive; // New for Increment 8
+// // mod tuple_multi_standalone_args_manual; // New for Increment 8
+// // mod tuple_multi_standalone_args_derive; // New for Increment 8
+//
+// // Increment 9: Error Cases for Tuple Variants
+// // mod compile_fail; // This is a directory, needs a mod declaration
+//
+// // mod usecase1_manual;
+// // mod usecase1_derive;
