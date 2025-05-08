@@ -37,6 +37,5 @@ pub fn complete() -> Status
   Status::Complete
 }
 
-
 // Include the test logic (now defined after standalone constructors)
 include!("unit_variant_only_test.rs");

@@ -17,7 +17,6 @@
 //
 // *(Note: "Default" for unit variants behaves like `#[scalar]`)*
 //
-
 // File: module/core/former/tests/inc/former_enum_tests/unit_variant_only_test.rs
 use super::*;
 
