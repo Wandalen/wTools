@@ -47,7 +47,7 @@ These rules define the expected code generation behavior for `#[derive(Former)]`
     *   **Single-Field Tuple Variant (`V(T1)` where `T1` does NOT derive `Former`):** Error. (Rule 2d)
     *   **Single-Field Struct Variant (`V { f1: T1 }`):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Rule 2e)
     *   **Multi-Field Tuple Variant:** Error. (Rule 2f)
-    *   **Multi-Field Struct Variant (`V { f1: T1, ... }`):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Rule 2g)
+    *   **Multi-Field Struct Variant (`V { f1: T1, f2: T2, ... }`):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Rule 2g)
 
 3.  **Default Behavior (No `#[scalar]` or `#[subform_scalar]` on variant):**
     *   **Unit Variant (`V`):** Generates `Enum::variant() -> Enum`. (Rule 3a)
@@ -57,7 +57,7 @@ These rules define the expected code generation behavior for `#[derive(Former)]`
     *   **Single-Field Tuple Variant (`V(T1)` where `T1` does NOT derive `Former`):** Generates `Enum::variant(T1) -> Enum`. (Rule 3d.ii)
     *   **Single-Field Struct Variant (`V { f1: T1 }`):** Generates `Enum::variant() -> VariantFormer<...>`. (Rule 3e)
     *   **Multi-Field Tuple Variant (`V(T1, T2, ...)`):** Generates `Enum::variant(T1, T2, ...) -> Enum`. (Rule 3f)
-    *   **Multi-Field Struct Variant (`V { f1: T1, ... }`):** Generates `Enum::variant() -> VariantFormer<...>`. (Rule 3g)
+    *   **Multi-Field Struct Variant (`V { f1: T1, f2: T2, ... }`):** Generates `Enum::variant() -> VariantFormer<...>`. (Rule 3g)
 
 4.  **`#[standalone_constructors]` Attribute (on enum):**
     *   Generates top-level constructor functions for each variant (e.g., `fn my_variant(...)`).
@@ -88,7 +88,7 @@ This plan focuses on verifying the behavior for **Unit Variants**. The relevant 
 
 ## Increments
 
-*   [⚫] **Increment 1: Activate Unit Variant Tests and Document Matrix**
+*   [✅] **Increment 1: Activate Unit Variant Tests and Document Matrix**
     *   **Goal:** Ensure only the `unit_variant_*` test modules are active within the `former_enum_tests` module and add the Unit Variant Test Matrix documentation to the module file, preserving existing matrix documentation.
     *   **Target Crate(s):** `former`
     *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs`:
@@ -128,27 +128,27 @@ This plan focuses on verifying the behavior for **Unit Variants**. The relevant 
     *   **Crucial Design Rules:** [Comments: Add Tasks and Label Simplifications](#comments-add-tasks-and-label-simplifications), [Comments: Annotate Addressed Tasks](#comments-annotate-addressed-tasks).
     *   **Verification Strategy:** Request user to apply changes. Run `cargo check --tests --package former` and `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::unit_variant`. Ensure tests still pass and comments are addressed appropriately.
     *   **Commit Message:** `chore(former): Address TODOs in unit variant enum tests`
-
-*   [⚫] **Increment 5: Final Focused Verification**
-    *   **Goal:** Ensure the activated unit tests pass and the `former` crate is healthy after the focused changes.
-    *   **Target Crate(s):** `former`
-    *   **Detailed Plan Step 1:** Run `cargo check --all-targets --package former`. Address any errors or warnings.
-    *   **Detailed Plan Step 2:** Run `cargo clippy --all-targets --package former --features full -- -D warnings`. Address any lints.
-    *   **Detailed Plan Step 3:** Run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::unit_variant`. Ensure unit tests pass.
-    *   **Verification Strategy:** Zero errors/warnings from `check` and `clippy`. All tests in `former_enum_tests::unit_variant` pass.
-    *   **Commit Message:** `test(former): Verify unit variant enum tests pass`
-
-### Requirements
-*   **Adherence:** Strictly follow `code/gen` instructions, Design Rules, and Codestyle Rules.
-*   **Focus:** Only uncomment and address code related to **unit enum variants**. Leave other enum tests (tuple, struct variants) commented out in `former_enum_tests/mod.rs`.
-*   **Preserve Docs:** When adding the Unit Variant Test Matrix to `former_enum_tests/mod.rs`, ensure the existing matrix documentation for Tuple and Named variants is **not removed**.
-*   **Incremental Verification:** Verify compilation and test success after each relevant increment.
-*   **Failure Analysis:** Follow the "Failure Diagnosis Algorithm" if tests fail.
-*   **Approval Gates:** Obtain user approval before starting each increment and after successful verification.
-
-## Notes & Insights
-*   This plan significantly narrows the scope to only unit enum variants.
-*   It assumes the necessary infrastructure (`former_enum_tests/mod.rs`) exists but focuses activation only on `unit_variant_*`.
-*   Verification steps target only the relevant unit tests until the final step.
-*   The full "Expected Enum Former Behavior Rules" are kept for context.
-*   Test Matrix coverage for unit variants is explicitly noted and will be added to `mod.rs` while preserving existing matrices.
+131 |
+132 | *   [⚫] **Increment 5: Final Focused Verification**
+133 |     *   **Goal:** Ensure the activated unit tests pass and the `former` crate is healthy after the focused changes.
+134 |     *   **Target Crate(s):** `former`
+135 |     *   **Detailed Plan Step 1:** Run `cargo check --all-targets --package former`. Address any errors or warnings.
+136 |     *   **Detailed Plan Step 2:** Run `cargo clippy --all-targets --package former --features full -- -D warnings`. Address any lints.
+137 |     *   **Detailed Plan Step 3:** Run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::unit_variant`. Ensure unit tests pass.
+138 |     *   **Verification Strategy:** Zero errors/warnings from `check` and `clippy`. All tests in `former_enum_tests::unit_variant` pass.
+139 |     *   **Commit Message:** `test(former): Verify unit variant enum tests pass`
+140 |
+141 | ### Requirements
+142 | *   **Adherence:** Strictly follow `code/gen` instructions, Design Rules, and Codestyle Rules.
+143 | *   **Focus:** Only uncomment and address code related to **unit enum variants**. Leave other enum tests (tuple, struct variants) commented out in `former_enum_tests/mod.rs`.
+144 | *   **Preserve Docs:** When adding the Unit Variant Test Matrix to `former_enum_tests/mod.rs`, ensure the existing matrix documentation for Tuple and Named variants is **not removed**.
+145 | *   **Incremental Verification:** Verify compilation and test success after each relevant increment.
+146 | *   **Failure Analysis:** Follow the "Failure Diagnosis Algorithm" if tests fail.
+147 | *   **Approval Gates:** Obtain user approval before starting each increment and after successful verification.
+148 |
+149 | ## Notes & Insights
+150 | *   This plan significantly narrows the scope to only unit enum variants.
+151 | *   It assumes the necessary infrastructure (`former_enum_tests/mod.rs`) exists but focuses activation only on `unit_variant_*`.
+152 | *   Verification steps target only the relevant unit tests until the final step.
+153 | *   The full "Expected Enum Former Behavior Rules" are kept for context.
+154 | *   Test Matrix coverage for unit variants is explicitly noted and will be added to `mod.rs` while preserving existing matrices.
