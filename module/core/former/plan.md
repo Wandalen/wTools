@@ -1,25 +1,47 @@
-<!-- module/core/former/plan.md -->
-# Project Plan: Verify Former Derive for Unit Enum Variants
+# Project Plan: Verify Former Derive for Tuple Enum Variants (Incremental Activation)
 
 ## Goal
-*   Ensure the `#[derive(Former)]` macro correctly generates the expected constructors for **unit enum variants** according to the defined behavior rules.
-*   Verify the implementation handles the `#[scalar]` (which is the default for unit variants) and `#[standalone_constructors]` attributes correctly for unit variants.
-*   Activate and ensure the `unit_variant_*` tests pass.
-*   Keep tests related to tuple or struct enum variants commented out.
-*   Add the Unit Variant Test Matrix documentation to `former_enum_tests/mod.rs` while **preserving the existing matrix documentation** for other variant types.
+*   Ensure the `#[derive(Former)]` macro correctly generates the expected constructors and subformers for **tuple enum variants** (`V()`, `V(T1)`, `V(T1, T2, ...)`) according to the defined behavior rules.
+*   Verify the implementation handles `#[scalar]`, `#[subform_scalar]`, `#[standalone_constructors]`, and `#[arg_for_constructor]` attributes correctly for tuple variants.
+*   **Incrementally activate** and ensure relevant tuple variant tests pass, grouping related `_derive`, `_manual`, and `_only_test` files for each variant type.
+*   Keep tests related to unit or struct enum variants commented out.
+*   Add the Tuple Variant Test Matrix documentation to `former_enum_tests/mod.rs` while **preserving the existing matrix documentation**.
 *   Ensure all code modifications adhere strictly to `code/gen` instructions, Design Rules, and Codestyle Rules.
+*   Avoid using `cargo clippy`.
 
 ## Relevant Context
 
-*   **Relevant Files (To be uncommented/verified/modified):**
-    *   `module/core/former/tests/inc/former_enum_tests/unit_variant_derive.rs`
-    *   `module/core/former/tests/inc/former_enum_tests/unit_variant_manual.rs`
-    *   `module/core/former/tests/inc/former_enum_tests/unit_variant_only_test.rs`
-    *   `module/core/former/tests/inc/former_enum_tests/mod.rs` (Uncomment `mod unit_variant_*;`, add unit matrix docs, preserve existing docs)
-    *   `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs` (Implementation)
+*   **Relevant Files (To be uncommented/verified/modified incrementally):**
+    *   `module/core/former/tests/inc/former_enum_tests/mod.rs` (Uncomment relevant `mod`, add tuple matrix docs, preserve existing docs)
+    *   **Zero-Field Tuple (`V()`):**
+        *   `enum_named_fields_derive.rs` (Variants: `VariantZeroUnnamedDefault`, `VariantZeroUnnamedScalar`)
+        *   `enum_named_fields_manual.rs` (Manual impl for above)
+        *   `enum_named_fields_only_test.rs` (Tests for above)
+        *   `compile_fail/tuple_zero_subform_scalar_error.rs`
+        *   Handler: `module/core/former_meta/src/derive_former/former_enum/tuple_zero_fields_handler.rs`
+    *   **Single-Field Tuple (`V(T1)`):**
+        *   `basic_derive.rs`, `basic_manual.rs`, `basic_only_test.rs`
+        *   `generics_in_tuple_variant_derive.rs`, `generics_in_tuple_variant_manual.rs`, `generics_in_tuple_variant_only_test.rs`
+        *   `generics_shared_tuple_derive.rs`, `generics_shared_tuple_manual.rs`, `generics_shared_tuple_only_test.rs`
+        *   `generics_independent_tuple_derive.rs`, `generics_independent_tuple_manual.rs`, `generics_independent_tuple_only_test.rs`
+        *   `scalar_generic_tuple_derive.rs`, `scalar_generic_tuple_manual.rs`, `scalar_generic_tuple_only_test.rs`
+        *   `standalone_constructor_derive.rs`, `standalone_constructor_manual.rs`, `standalone_constructor_only_test.rs` (TupleVariant)
+        *   `standalone_constructor_args_derive.rs`, `standalone_constructor_args_manual.rs`, `standalone_constructor_args_only_test.rs` (TupleVariantArgs)
+        *   `keyword_variant_derive.rs`, `keyword_variant_only_test.rs` (Variants: `r#Break`, `r#Let`)
+        *   `usecase1.rs` (Contains multiple `V(T1)` variants)
+        *   `compile_fail/tuple_single_subform_non_former_error.rs`
+        *   Handlers: `module/core/former_meta/src/derive_former/former_enum/tuple_single_field_scalar.rs`, `module/core/former_meta/src/derive_former/former_enum/tuple_single_field_subform.rs`
+    *   **Multi-Field Tuple (`V(T1, T2, ...)`):**
+        *   `keyword_variant_derive.rs`, `keyword_variant_only_test.rs` (Variants: `r#If`, `r#For`)
+        *   `standalone_constructor_args_derive.rs`, `standalone_constructor_args_manual.rs`, `standalone_constructor_args_only_test.rs` (Variant: `MultiTupleArgs`)
+        *   `compile_fail/tuple_multi_subform_scalar_error.rs`
+        *   Handler: `module/core/former_meta/src/derive_former/former_enum/tuple_multi_fields_scalar.rs`
 *   **Irrelevant Files (To remain commented out/ignored for this plan):**
-    *   All other test files/modules within `module/core/former/tests/inc/former_enum_tests/` (e.g., `basic_*`, `enum_named_fields_*`, `generics_*`, `keyword_*`, `scalar_generic_tuple_*`, `standalone_constructor_*`, `usecase1.rs`, `subform_collection_test.rs`).
-    *   All other handler files within `module/core/former_meta/src/derive_former/former_enum/` (e.g., `tuple_*`, `struct_*`).
+    *   `unit_variant_*` files.
+    *   Struct variant tests within `enum_named_fields_*`, `standalone_constructor_*`, `keyword_variant_*`.
+    *   `generics_independent_struct_*`, `generics_shared_struct_*` files.
+    *   `subform_collection_test.rs`.
+    *   Handler files: `unit_variant_handler.rs`, `struct_*_handler.rs`.
 *   **Main Test Module File (Parent):** `module/core/former/tests/inc/mod.rs`.
 *   **Core Types & Traits:** `module/core/former_types/src/lib.rs`.
 *   **Documentation:**
@@ -28,138 +50,147 @@
 
 ### Expected Enum Former Behavior Rules (Full Set for Context)
 
-These rules define the expected code generation behavior for `#[derive(Former)]` on enums, based on variant structure and attributes.
+(Same as previous plan - retained for reference)
+1.  **`#[scalar]` Attribute (on variant):** ...
+2.  **`#[subform_scalar]` Attribute (on variant):** ...
+3.  **Default Behavior (No `#[scalar]` or `#[subform_scalar]` on variant):** ...
+4.  **`#[standalone_constructors]` Attribute (on enum):** ...
 
-1.  **`#[scalar]` Attribute (on variant):**
-    *   **Unit Variant (`V`):** Generates `Enum::variant() -> Enum`. (Rule 1a)
-    *   **Zero-Field Tuple Variant (`V()`):** Generates `Enum::variant() -> Enum`. (Rule 1b)
-    *   **Zero-Field Struct Variant (`V {}`):** Generates `Enum::variant() -> Enum`. (Rule 1c)
-    *   **Single-Field Tuple Variant (`V(T1)`):** Generates `Enum::variant(T1) -> Enum`. (Rule 1d)
-    *   **Single-Field Struct Variant (`V { f1: T1 }`):** Generates `Enum::variant { f1: T1 } -> Enum`. (Rule 1e)
-    *   **Multi-Field Tuple Variant (`V(T1, T2, ...)`):** Generates `Enum::variant(T1, T2, ...) -> Enum`. (Rule 1f)
-    *   **Multi-Field Struct Variant (`V { f1: T1, f2: T2, ... }`):** Generates `Enum::variant() -> Enum`. (Rule 1g)
-    *   *Error Cases:* Cannot be combined with `#[subform_scalar]` on the same variant.
+### Test Matrix Coverage (Tuple Variants)
 
-2.  **`#[subform_scalar]` Attribute (on variant):**
-    *   **Unit Variant:** Error. (Rule 2a)
-    *   **Zero-Field Variant (Tuple or Struct):** Error. (Rule 2b, 2c)
-    *   **Single-Field Tuple Variant (`V(T1)` where `T1` derives `Former`):** Generates `Enum::variant() -> T1Former<...>` (former for the field's type). (Rule 2d)
-    *   **Single-Field Tuple Variant (`V(T1)` where `T1` does NOT derive `Former`):** Error. (Rule 2d)
-    *   **Single-Field Struct Variant (`V { f1: T1 }`):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Rule 2e)
-    *   **Multi-Field Tuple Variant:** Error. (Rule 2f)
-    *   **Multi-Field Struct Variant (`V { f1: T1, f2: T2, ... }`):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Rule 2g)
-
-3.  **Default Behavior (No `#[scalar]` or `#[subform_scalar]` on variant):**
-    *   **Unit Variant (`V`):** Generates `Enum::variant() -> Enum`. (Rule 3a)
-    *   **Zero-Field Tuple Variant (`V()`):** Generates `Enum::variant() -> Enum`. (Rule 3b)
-    *   **Zero-Field Struct Variant (`V {}`):** Error (requires `#[scalar]` or fields). (Rule 3c)
-    *   **Single-Field Tuple Variant (`V(T1)` where `T1` derives `Former`):** Generates `Enum::variant() -> T1Former<...>`. (Rule 3d.i)
-    *   **Single-Field Tuple Variant (`V(T1)` where `T1` does NOT derive `Former`):** Generates `Enum::variant(T1) -> Enum`. (Rule 3d.ii)
-    *   **Single-Field Struct Variant (`V { f1: T1 }`):** Generates `Enum::variant() -> VariantFormer<...>`. (Rule 3e)
-    *   **Multi-Field Tuple Variant (`V(T1, T2, ...)`):** Generates `Enum::variant(T1, T2, ...) -> Enum`. (Rule 3f)
-    *   **Multi-Field Struct Variant (`V { f1: T1, f2: T2, ... }`):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Rule 3g)
-
-4.  **`#[standalone_constructors]` Attribute (on enum):**
-    *   Generates top-level constructor functions for each variant (e.g., `fn my_variant(...)`).
-    *   **Return Type & Arguments (Option 2 Logic):**
-        *   If **all** fields of a variant are marked `#[arg_for_constructor]`: `fn my_variant(arg1: T1, ...) -> Enum`.
-        *   If **zero or some** fields are marked `#[arg_for_constructor]`:
-            *   If the variant's default/scalar behavior yields `Enum::variant(all_args) -> Enum`: `fn my_variant(marked_args...) -> EnumVariantFormerForRemainingArgs`. (Requires implicit variant former).
-            *   If the variant's default/scalar behavior yields `Enum::variant() -> Enum` (Unit/Zero-Tuple/Scalar-Zero-Struct): `fn my_variant() -> Enum`.
-            *   If the variant's default/subform behavior yields `Enum::variant() -> SpecificFormer`: `fn my_variant(marked_args...) -> SpecificFormer` (with args pre-set).
-
-### Test Matrix Coverage (Unit Variants)
-
-This plan focuses on verifying the behavior for **Unit Variants**. The relevant factors and combinations tested by the `unit_variant_*` files are:
+This plan focuses on verifying the behavior for **Tuple Variants**. The relevant factors and combinations tested by the relevant files are:
 
 *   **Factors:**
-    1.  Variant Type: Unit (Implicitly selected)
-    2.  Variant-Level Attribute: None (Default), `#[scalar]`
-    3.  Enum-Level Attribute: None, `#[standalone_constructors]`
+    1.  Variant Type: Tuple (Implicitly selected)
+    2.  Number of Fields: Zero (`V()`), One (`V(T1)`), Multiple (`V(T1, T2, ...)`)
+    3.  Field Type `T1` (for Single-Field): Derives `Former`, Does NOT derive `Former`
+    4.  Variant-Level Attribute: None (Default), `#[scalar]`, `#[subform_scalar]`
+    5.  Enum-Level Attribute: None, `#[standalone_constructors]`
+    6.  Field-Level Attribute `#[arg_for_constructor]` (within `#[standalone_constructors]` context): N/A, On single field, On all/some/no fields (multi)
 
-*   **Combinations Covered by `unit_variant_only_test.rs`:**
-    *   Unit + Default + None (Rule 3a) -> Tested via `Status::pending()` / `Status::complete()` in `unit_variant_constructors()` test.
-    *   Unit + `#[scalar]` + None (Rule 1a) -> Tested via `Status::pending()` / `Status::complete()` in `unit_variant_constructors()` test (as default is scalar).
-    *   Unit + Default + `#[standalone_constructors]` (Rule 3a, 4) -> Tested via `pending()` / `complete()` in `unit_variant_standalone_constructors()` test.
-    *   Unit + `#[scalar]` + `#[standalone_constructors]` (Rule 1a, 4) -> Tested via `pending()` / `complete()` in `unit_variant_standalone_constructors()` test.
+*   **Combinations Covered (Mapped to Rules & Test Files):**
+    *   **Zero-Field (`V()`):**
+        *   T0.1 (Default): Rule 3b (`enum_named_fields_*`)
+        *   T0.2 (`#[scalar]`): Rule 1b (`enum_named_fields_*`)
+        *   T0.3 (Default + Standalone): Rule 3b, 4 (`enum_named_fields_*`)
+        *   T0.4 (`#[scalar]` + Standalone): Rule 1b, 4 (`enum_named_fields_*`)
+        *   T0.5 (`#[subform_scalar]`): Rule 2b (Error - `compile_fail/tuple_zero_subform_scalar_error.rs`)
+    *   **Single-Field (`V(T1)`):**
+        *   T1.1 (Default, T1 derives Former): Rule 3d.i (`basic_*`, `generics_in_tuple_variant_*`, `generics_shared_tuple_*`, `usecase1.rs`)
+        *   T1.2 (Default, T1 not Former): Rule 3d.ii (Needs specific test file if not covered implicitly)
+        *   T1.3 (`#[scalar]`): Rule 1d (`generics_independent_tuple_*`, `scalar_generic_tuple_*`, `keyword_variant_*`)
+        *   T1.4 (`#[subform_scalar]`, T1 derives Former): Rule 2d (Needs specific test file if not covered implicitly)
+        *   T1.5 (`#[subform_scalar]`, T1 not Former): Rule 2d (Error - `compile_fail/tuple_single_subform_non_former_error.rs`)
+        *   T1.6 (Default, T1 derives Former + Standalone): Rule 3d.i, 4 (`standalone_constructor_*`)
+        *   T1.7 (Default, T1 not Former + Standalone): Rule 3d.ii, 4 (Needs specific test file if not covered implicitly)
+        *   T1.8 (`#[scalar]` + Standalone): Rule 1d, 4 (`standalone_constructor_args_*`)
+        *   T1.9 (`#[subform_scalar]`, T1 derives Former + Standalone): Rule 2d, 4 (Needs specific test file if not covered implicitly)
+        *   T1.10 (`#[subform_scalar]`, T1 not Former + Standalone): Rule 2d (Error - Covered by T1.5)
+    *   **Multi-Field (`V(T1, T2, ...)`):**
+        *   TN.1 (Default): Rule 3f (Needs specific test file if not covered implicitly by TN.4)
+        *   TN.2 (`#[scalar]`): Rule 1f (`keyword_variant_*`, `standalone_constructor_args_*`)
+        *   TN.3 (`#[subform_scalar]`): Rule 2f (Error - `compile_fail/tuple_multi_subform_scalar_error.rs`)
+        *   TN.4 (Default + Standalone): Rule 3f, 4 (Needs specific test file, potentially `standalone_constructor_args_*` if adapted)
+        *   TN.5 (`#[scalar]` + Standalone): Rule 1f, 4 (`standalone_constructor_args_*`)
 
 ### Failure Diagnosis Algorithm
-*   (Standard algorithm as previously defined, focusing on `unit_variant_handler.rs` if `_derive` fails and `_manual` passes).
+*   (Standard algorithm as previously defined, focusing on relevant `tuple_*_handler.rs` if `_derive` fails and `_manual` passes).
+*   **Widespread Failure Strategy:** If uncommenting a test group causes numerous failures, propose commenting out the failing tests within the `_only_test.rs` file and re-enabling them incrementally (one or small groups at a time) to isolate the root cause, following Rule 9.d.i of the Proc Macro Development Workflow.
 
 ## Increments
 
-*   [✅] **Increment 1: Activate Unit Variant Tests and Document Matrix**
-    *   **Goal:** Ensure only the `unit_variant_*` test modules are active within the `former_enum_tests` module and add the Unit Variant Test Matrix documentation to the module file, preserving existing matrix documentation.
+*   [⚫] **Increment 1: Document Tuple Variant Matrix**
+    *   **Goal:** Add the Tuple Variant Test Matrix documentation to `former_enum_tests/mod.rs`, preserving existing matrices. Keep all tuple test modules commented out for now.
     *   **Target Crate(s):** `former`
     *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs`:
-        *   Add the "Test Matrix Coverage (Unit Variants)" section from this plan as a module-level doc comment (`//!`) at the top of the file, **before** the existing matrix documentation for Tuple and Named variants.
-        *   Uncomment `mod unit_variant_derive;`.
-        *   Uncomment `mod unit_variant_manual;`.
-        *   Ensure all other `mod` declarations within this file remain commented out.
-    *   **Verification Strategy:** Request user to apply changes and run `cargo check --tests --package former`. Confirm no *new* compilation errors related to module declarations or documentation.
-    *   **Commit Message:** `chore(former): Activate unit variant enum tests and document matrix`
+        *   Add the "Test Matrix Coverage (Tuple Variants)" section from this plan as a module-level doc comment (`//!`), **after** any existing Unit Variant matrix and **before** any existing Named Variant matrix.
+        *   Ensure all `mod` declarations related to tuple variants remain commented out.
+    *   **Verification Strategy:** Request user to apply changes and run `cargo check --tests --package former`. Confirm no *new* compilation errors related to documentation.
+    *   **Commit Message:** `docs(former): Add test matrix for tuple enum variants`
 
-*   [✅] **Increment 2: Verify Manual Unit Variant Implementation**
-    *   **Goal:** Confirm the manual implementation in `unit_variant_manual.rs` compiles and passes tests, aligning with the expected behavior rules.
-    *   **Target Crate(s):** `former`
-    *   **Detailed Plan Step 1:** Review `module/core/former/tests/inc/former_enum_tests/unit_variant_manual.rs` and `unit_variant_only_test.rs`. (Done)
-    *   **Detailed Plan Step 2:** **Align Test Setup with User Instructions (using apply_diff):**
-        - **Modify `former_enum_tests/mod.rs` using `apply_diff`:**
-            - Search for the current content of the file.
-            - Replace it with the content that includes the test matrix documentation as doc comments at the top, and the `use` statements and `mod unit_variant_derive;` and `mod unit_variant_manual;` declarations outside the doc comment block.
-        - **Modify `unit_variant_manual.rs` using `apply_diff`:**
-            - Search for the `#[cfg(test)] mod tests { include!("unit_variant_only_test.rs"); }` block.
-            - Replace it with the original `include!("unit_variant_only_test.rs");` line at the top level.
-        - **Modify `unit_variant_only_test.rs` using `apply_diff`:**
-            - Search for the `#[cfg(test)]` attribute and `use super::*;` lines at the top.
-            - Replace them with just the original content (starting with the commented-out matrix or whatever was there originally before I added `#[cfg(test)]`).
-    *   **Detailed Plan Step 3:** Request user to run `cargo check --tests --package former --features enabled`. Confirm no new compilation errors. (Done)
-    *   **Detailed Plan Step 4:** Request user to run `cargo test --package former --test tests --features enabled -- --test-threads=1 --nocapture former_enum_tests::unit_variant_manual`. Analyze results against expected behavior. Address any failures by correcting the manual implementation or test logic. (Done)
-    *   **Pre-Analysis:** The manual implementation should provide static methods `Status::pending()` and `Status::complete()` returning `Status`. If `standalone_constructors` were manually implemented (as they are in the provided context), top-level functions `pending()` and `complete()` returning `Status` should also exist. This aligns with Rules 1a/3a and 4. The `_only_test.rs` file should call these.
-    *   **Crucial Design Rules:** Expected Behavior Rules 1a, 3a, 4.
-    *   **Verification Strategy:** Request user to run `cargo test --package former --test tests --features enabled -- --test-threads=1 --nocapture former_enum_tests::unit_variant_manual`. Analyze results against expected behavior. Address any failures by correcting the manual implementation or test logic.
-    *   **Commit Message:** `fix(former): Correct manual unit variant enum implementation` (if fixes needed) or `refactor(former): Verify manual unit variant enum implementation` (if no needed).
-
-*   [✅] **Increment 3: Verify Derived Unit Variant Implementation**
-    *   **Goal:** Confirm the `#[derive(Former)]` macro correctly generates code for unit variants, including handling `#[standalone_constructors]`, by ensuring `unit_variant_derive.rs` compiles and passes tests.
+*   [⚫] **Increment 2: Verify Zero-Field Tuple Variants (`V()`)**
+    *   **Goal:** Activate and verify `#[derive(Former)]` for zero-field tuple variants (Rules 1b, 3b, 4) using tests in `enum_named_fields_*`. Verify compile error for Rule 2b.
     *   **Target Crate(s):** `former`, `former_meta`
-    *   **Detailed Plan Step 1:** Review `module/core/former/tests/inc/former_enum_tests/unit_variant_derive.rs`. It derives `Former` and `standalone_constructors`.
-    *   **Detailed Plan Step 2:** Review `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs`.
-    *   **Pre-Analysis:** Expect the macro (via `unit_variant_handler.rs`) to generate code equivalent to the manual implementation based on Rules 1a/3a and 4. The handler should produce both the static methods and the standalone constructors.
-    *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rules 1a, 3a, 4.
-    *   **Verification Strategy:**
-        1.  Request user run `cargo check --tests --package former --features enabled`. Fix any compilation errors originating from the macro-generated code (likely requires changes in `former_meta/src/derive_former/former_enum/unit_variant_handler.rs`). (Done)
-        2.  Request user run `cargo test --package former --test tests --features enabled -- --test-threads=1 --nocapture former_enum_tests::unit_variant_derive`. Analyze failures using the diagnosis algorithm, comparing generated behavior to the (verified) manual implementation. Fix macro logic if needed. (Done)
-    *   **Commit Message:** `fix(former_meta): Correct unit variant enum code generation` (if fixes needed) or `refactor(former_meta): Verify unit variant enum code generation` (if no needed).
+    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs` to uncomment `mod enum_named_fields_derive;` and `mod enum_named_fields_manual;`.
+    *   **Detailed Plan Step 2:** Verify manual implementation for `VariantZeroUnnamedDefault` and `VariantZeroUnnamedScalar` in `enum_named_fields_manual.rs` passes tests (`cargo test ... enum_named_fields_manual`). Fix if needed.
+    *   **Detailed Plan Step 3:** Verify derived implementation for `VariantZeroUnnamedDefault` and `VariantZeroUnnamedScalar` in `enum_named_fields_derive.rs` passes tests (`cargo test ... enum_named_fields_derive`). Debug `tuple_zero_fields_handler.rs` if needed. *Handle widespread failures if they occur.*
+    *   **Detailed Plan Step 4:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs` to uncomment `mod compile_fail;`.
+    *   **Detailed Plan Step 5:** Verify `compile_fail/tuple_zero_subform_scalar_error.rs` fails compilation as expected (`cargo test --package former former_enum_tests::compile_fail`).
+    *   **Crucial Design Rules:** Expected Behavior Rules 1b, 2b, 3b, 4. [Proc Macro: Development Workflow](#proc-macro-development-workflow).
+    *   **Verification Strategy:** Tests pass for manual/derive, compile-fail test fails compilation.
+    *   **Commit Message:** `feat(former): Verify zero-field tuple enum variant support`
 
-*   [✅] **Increment 4: Address TODOs/Issues in Unit Variant Files**
-    *   **Goal:** Review and address any outstanding `// xxx :` or `// qqq :` comments specifically within the `unit_variant_derive.rs`, `unit_variant_manual.rs`, or `unit_variant_only_test.rs` files.
-    *   **Target Crate(s):** `former`
-    *   **Detailed Plan Step 1:** Search for `xxx :` and `qqq :` comments in the three `unit_variant_*` files. (Done)
-    *   **Detailed Plan Step 2:** Propose solutions or code changes for each identified comment based on its content. (No comments found)
-    *   **Crucial Design Rules:** [Comments: Add Tasks and Label Simplifications](#comments-add-tasks-and-label-simplifications), [Comments: Annotate Addressed Tasks](#comments-annotate-addressed-addressed-tasks).
-    *   **Verification Strategy:** Request user to apply changes. Run `cargo check --tests --package former --features enabled` and `cargo test --package former --test tests --features enabled -- --test-threads=1 --nocapture former_enum_tests::unit_variant`. Ensure tests still pass and comments are addressed appropriately.
-    *   **Commit Message:** `chore(former): Address TODOs in unit variant enum tests`
+*   [⚫] **Increment 3: Verify Single-Field Tuple Variants (`V(T1)`) - Scalar**
+    *   **Goal:** Activate and verify `#[derive(Former)]` for single-field tuple variants with `#[scalar]` (Rules 1d, 4) using relevant test groups.
+    *   **Target Crate(s):** `former`, `former_meta`
+    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs` to uncomment:
+        *   `mod generics_independent_tuple_derive;`, `mod generics_independent_tuple_manual;`
+        *   `mod scalar_generic_tuple_derive;`, `mod scalar_generic_tuple_manual;`
+        *   `mod keyword_variant_derive;` (if not already uncommented)
+        *   `mod standalone_constructor_args_derive;`, `mod standalone_constructor_args_manual;` (if not already uncommented)
+    *   **Detailed Plan Step 2:** Verify manual implementations pass tests (`cargo test ... <manual_module>`). Fix if needed.
+    *   **Detailed Plan Step 3:** Verify derived implementations pass tests (`cargo test ... <derive_module>`). Debug `tuple_single_field_scalar.rs` if needed. *Handle widespread failures if they occur.*
+    *   **Crucial Design Rules:** Expected Behavior Rules 1d, 4. [Proc Macro: Development Workflow](#proc-macro-development-workflow).
+    *   **Verification Strategy:** All relevant manual and derive tests pass.
+    *   **Commit Message:** `feat(former): Verify #[scalar] single-field tuple enum variant support`
 
-*   [✅] **Increment 5: Final Focused Verification**
-    *   **Goal:** Ensure the activated unit tests pass and the `former` crate is healthy after the focused changes.
+*   [⚫] **Increment 4: Verify Single-Field Tuple Variants (`V(T1)`) - Subform/Default**
+    *   **Goal:** Activate and verify `#[derive(Former)]` for single-field tuple variants with default/`#[subform_scalar]` behavior (Rules 2d, 3d.i, 3d.ii, 4). Verify compile error for Rule 2d (T1 not Former).
+    *   **Target Crate(s):** `former`, `former_meta`
+    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs` to uncomment:
+        *   `mod basic_derive;`, `mod basic_manual;`
+        *   `mod generics_in_tuple_variant_derive;`, `mod generics_in_tuple_variant_manual;`
+        *   `mod generics_shared_tuple_derive;`, `mod generics_shared_tuple_manual;`
+        *   `mod usecase1;`
+        *   `mod standalone_constructor_derive;`, `mod standalone_constructor_manual;`
+    *   **Detailed Plan Step 2:** Verify manual implementations pass tests (`cargo test ... <manual_module>`). Fix if needed.
+    *   **Detailed Plan Step 3:** Verify derived implementations pass tests (`cargo test ... <derive_module>`). Debug `tuple_single_field_subform.rs` and `tuple_single_field_scalar.rs` (for Rule 3d.ii) if needed. *Handle widespread failures if they occur.*
+    *   **Detailed Plan Step 4:** Verify `compile_fail/tuple_single_subform_non_former_error.rs` fails compilation as expected.
+    *   **Crucial Design Rules:** Expected Behavior Rules 2d, 3d.i, 3d.ii, 4. [Proc Macro: Development Workflow](#proc-macro-development-workflow).
+    *   **Verification Strategy:** All relevant manual/derive tests pass, compile-fail test fails compilation.
+    *   **Commit Message:** `feat(former): Verify default/subform single-field tuple enum variant support`
+
+*   [⚫] **Increment 5: Verify Multi-Field Tuple Variants (`V(T1, T2, ...)` )**
+    *   **Goal:** Activate and verify `#[derive(Former)]` for multi-field tuple variants (Rules 1f, 3f, 4). Verify compile error for Rule 2f.
+    *   **Target Crate(s):** `former`, `former_meta`
+    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs` to uncomment any remaining relevant modules (e.g., ensure `keyword_variant_derive`, `standalone_constructor_args_*` are active).
+    *   **Detailed Plan Step 2:** Verify manual implementations (if any exist/created for `standalone_constructor_args_*`) pass tests.
+    *   **Detailed Plan Step 3:** Verify derived implementations pass tests (`cargo test ... <derive_module>`). Debug `tuple_multi_fields_scalar.rs` if needed. *Handle widespread failures if they occur.*
+    *   **Detailed Plan Step 4:** Verify `compile_fail/tuple_multi_subform_scalar_error.rs` fails compilation as expected.
+    *   **Crucial Design Rules:** Expected Behavior Rules 1f, 2f, 3f, 4. [Proc Macro: Development Workflow](#proc-macro-development-workflow).
+    *   **Verification Strategy:** All relevant manual/derive tests pass, compile-fail test fails compilation.
+    *   **Commit Message:** `feat(former): Verify multi-field tuple enum variant support`
+
+*   [⚫] **Increment 6: Address TODOs/Issues in Tuple Variant Files**
+    *   **Goal:** Review and address any outstanding `// xxx :` or `// qqq :` comments within the **activated** tuple variant test files.
     *   **Target Crate(s):** `former`
-    *   **Detailed Plan Step 1:** Run `cargo check --all-targets --package former --features enabled`. Address any errors or warnings. (Done)
-    *   **Detailed Plan Step 2:** Run `cargo test --package former --test tests --features enabled -- --test-threads=1 --nocapture former_enum_tests::unit_variant`. Ensure unit tests pass. (Done)
-    *   **Verification Strategy:** Zero errors/warnings from `check`. All tests in `former_enum_tests::unit_variant` pass.
-    *   **Commit Message:** `test(former): Verify unit variant enum tests pass`
+    *   **Detailed Plan Step 1:** Search for `xxx :` and `qqq :` comments in all activated `_derive.rs`, `_manual.rs`, `_only_test.rs` files related to tuple variants.
+    *   **Detailed Plan Step 2:** Propose solutions or code changes for each identified comment based on its content.
+    *   **Crucial Design Rules:** [Comments: Add Tasks and Label Simplifications](#comments-add-tasks-and-label-simplifications), [Comments: Annotate Addressed Tasks](#comments-annotate-addressed-tasks).
+    *   **Verification Strategy:** Request user to apply changes. Run `cargo check --tests --package former` and `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::*tuple* former_enum_tests::basic* former_enum_tests::keyword* former_enum_tests::standalone* former_enum_tests::usecase1`. Ensure tests still pass and comments are addressed appropriately.
+    *   **Commit Message:** `chore(former): Address TODOs in tuple variant enum tests`
+
+*   [⚫] **Increment 7: Final Focused Verification**
+    *   **Goal:** Ensure all activated tuple tests pass and the `former` crate is healthy after the focused changes.
+    *   **Target Crate(s):** `former`
+    *   **Detailed Plan Step 1:** Run `cargo check --all-targets --package former`. Address any errors or warnings.
+    *   **Detailed Plan Step 2:** Run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::*tuple* former_enum_tests::basic* former_enum_tests::keyword* former_enum_tests::standalone* former_enum_tests::usecase1 former_enum_tests::compile_fail`. Ensure all activated tests pass and compile-fail tests fail as expected.
+    *   **Verification Strategy:** Zero errors/warnings from `check`. All activated tests pass.
+    *   **Commit Message:** `test(former): Verify tuple variant enum tests pass`
 
 ### Requirements
 *   **Adherence:** Strictly follow `code/gen` instructions, Design Rules, and Codestyle Rules.
-*   **Focus:** Only uncomment and address code related to **unit enum variants**. Leave other enum tests (tuple, struct variants) commented out in `former_enum_tests/mod.rs`.
-*   **Preserve Docs:** When adding the Unit Variant Test Matrix to `former_enum_tests/mod.rs`, ensure the existing matrix documentation for Tuple and Named variants is **not removed**.
-*   **Incremental Verification:** Verify compilation and test success after each relevant increment.
-*   **Failure Analysis:** Follow the "Failure Diagnosis Algorithm" if tests fail.
+*   **Focus:** Only uncomment and address code related to **tuple enum variants**. Leave unit and struct variant tests commented out.
+*   **Preserve Docs:** When adding the Tuple Variant Test Matrix to `former_enum_tests/mod.rs`, ensure the existing matrix documentation is **not removed**.
+*   **Incremental Activation:** Uncomment test modules (`mod ...;`) only in the increment where they are first needed for verification.
+*   **Incremental Verification:** Verify compilation and test success after each relevant increment. Handle widespread failures by isolating tests if needed.
+*   **Failure Analysis:** Follow the "Failure Diagnosis Algorithm".
 *   **Approval Gates:** Obtain user approval before starting each increment and after successful verification.
 
 ## Notes & Insights
-*   This plan significantly narrows the scope to only unit enum variants.
-*   It assumes the necessary infrastructure (`former_enum_tests/mod.rs`) exists but focuses activation only on `unit_variant_*`.
-*   Verification steps target only the relevant unit tests until the final step.
+*   This plan focuses on tuple enum variants, activating tests incrementally.
+*   It assumes the necessary infrastructure (`former_enum_tests/mod.rs`) exists.
+*   Verification steps target only the relevant tuple tests until the final step.
 *   The full "Expected Enum Former Behavior Rules" are kept for context.
-*   Test Matrix coverage for unit variants is explicitly noted and will be added to `mod.rs` while preserving existing matrices.
+*   Test Matrix coverage for tuple variants is explicitly noted and will be added to `mod.rs`.
+*   `cargo clippy` check is excluded.
