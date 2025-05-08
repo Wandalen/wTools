@@ -5,15 +5,16 @@
 *   Verify the implementation handles the `#[scalar]` (which is the default for unit variants) and `#[standalone_constructors]` attributes correctly for unit variants.
 *   Activate and ensure the `unit_variant_*` tests pass.
 *   Keep tests related to tuple or struct enum variants commented out.
+*   Document the Unit Variant Test Matrix within `former_enum_tests/mod.rs`.
 *   Ensure all code modifications adhere strictly to `code/gen` instructions, Design Rules, and Codestyle Rules.
 
 ## Relevant Context
 
-*   **Relevant Files (To be uncommented/verified):**
+*   **Relevant Files (To be uncommented/verified/modified):**
     *   `module/core/former/tests/inc/former_enum_tests/unit_variant_derive.rs`
     *   `module/core/former/tests/inc/former_enum_tests/unit_variant_manual.rs`
     *   `module/core/former/tests/inc/former_enum_tests/unit_variant_only_test.rs`
-    *   `module/core/former/tests/inc/former_enum_tests/mod.rs` (Only `mod unit_variant_*;` lines)
+    *   `module/core/former/tests/inc/former_enum_tests/mod.rs` (Uncomment `mod unit_variant_*;`, add docs)
     *   `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs` (Implementation)
 *   **Irrelevant Files (To remain commented out/ignored for this plan):**
     *   All other test files/modules within `module/core/former/tests/inc/former_enum_tests/` (e.g., `basic_*`, `enum_named_fields_*`, `generics_*`, `keyword_*`, `scalar_generic_tuple_*`, `standalone_constructor_*`, `usecase1.rs`, `subform_collection_test.rs`).
@@ -86,15 +87,16 @@ This plan focuses on verifying the behavior for **Unit Variants**. The relevant 
 
 ## Increments
 
-*   [⚫] **Increment 1: Activate Unit Variant Tests**
-    *   **Goal:** Ensure only the `unit_variant_*` test modules are active within the `former_enum_tests` module.
+*   [⚫] **Increment 1: Activate Unit Variant Tests and Document Matrix**
+    *   **Goal:** Ensure only the `unit_variant_*` test modules are active within the `former_enum_tests` module and add the Unit Variant Test Matrix documentation to the module file.
     *   **Target Crate(s):** `former`
-    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs`.
+    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs`:
+        *   Add the "Test Matrix Coverage (Unit Variants)" section from this plan as a module-level doc comment (`//!`) at the top of the file.
         *   Uncomment `mod unit_variant_derive;`.
         *   Uncomment `mod unit_variant_manual;`.
         *   Ensure all other `mod` declarations within this file remain commented out.
-    *   **Verification Strategy:** Request user to apply changes and run `cargo check --tests --package former`. Confirm no *new* compilation errors related to module declarations.
-    *   **Commit Message:** `chore(former): Activate unit variant enum tests`
+    *   **Verification Strategy:** Request user to apply changes and run `cargo check --tests --package former`. Confirm no *new* compilation errors related to module declarations or documentation.
+    *   **Commit Message:** `chore(former): Activate unit variant enum tests and document matrix`
 
 *   [⚫] **Increment 2: Verify Manual Unit Variant Implementation**
     *   **Goal:** Confirm the manual implementation in `unit_variant_manual.rs` compiles and passes tests, aligning with the expected behavior rules.
@@ -147,4 +149,4 @@ This plan focuses on verifying the behavior for **Unit Variants**. The relevant 
 *   It assumes the necessary infrastructure (`former_enum_tests/mod.rs`) exists but focuses activation only on `unit_variant_*`.
 *   Verification steps target only the relevant unit tests until the final step.
 *   The full "Expected Enum Former Behavior Rules" are kept for context.
-*   Test Matrix coverage for unit variants is explicitly noted.
+*   Test Matrix coverage for unit variants is explicitly noted and will be added to `mod.rs`.

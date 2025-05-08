@@ -152,6 +152,10 @@ use test_tools::exposed::*;
 
 // Uncomment modules as they are addressed in increments.
 
+// Increment 1: Unit Variant Tests
+mod unit_variant_derive;
+mod unit_variant_manual;
+
 // Increment 2: Zero-Field Tuple Variants
 // mod enum_named_fields_derive;
 // mod enum_named_fields_manual;
