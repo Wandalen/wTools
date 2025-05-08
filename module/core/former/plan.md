@@ -95,7 +95,7 @@ This plan focuses on verifying the behavior for **Tuple Variants**. The relevant
 
 ### Failure Diagnosis Algorithm
 *   (Standard algorithm as previously defined, focusing on relevant `tuple_*_handler.rs` if `_derive` fails and `_manual` passes).
-*   **Widespread Failure Strategy:** If uncommenting a test group causes numerous failures, propose commenting out the failing tests within the `_only_test.rs` file and re-enabling them incrementally (one or small groups at a time) to isolate the root cause, following Rule 9.d.i of the Proc Macro Development Workflow.
+*   **Widespread Failure Strategy:** If uncommenting a test group causes numerous failures, propose selectively commenting out (using `//`) only the failing `#[test]` functions or problematic `include!` lines. Avoid commenting out entire files or modules unless absolutely necessary. Re-enable tests incrementally (one or small groups at a time) to isolate the root cause, following Rule 9.d.i of the Proc Macro Development Workflow.
 
 ## Increments
 
@@ -113,7 +113,7 @@ This plan focuses on verifying the behavior for **Tuple Variants**. The relevant
     *   **Target Crate(s):** `former`, `former_meta`
     *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs` to uncomment `mod enum_named_fields_derive;` and `mod enum_named_fields_manual;`.
     *   **Detailed Plan Step 2:** Verify manual implementation for `VariantZeroUnnamedDefault` and `VariantZeroUnnamedScalar` in `enum_named_fields_manual.rs` passes tests (`cargo test ... enum_named_fields_manual`). Fix if needed.
-    *   **Detailed Plan Step 3:** Verify derived implementation for `VariantZeroUnnamedDefault` and `VariantZeroUnnamedScalar` in `enum_named_fields_derive.rs` passes tests (`cargo test ... enum_named_fields_derive`). Debug `tuple_zero_fields_handler.rs` if needed. *Handle widespread failures if they occur.*
+    *   **Detailed Plan Step 3:** Verify derived implementation for `VariantZeroUnnamedDefault` and `VariantZeroUnnamedScalar` in `enum_named_fields_derive.rs` passes tests (`cargo test ... enum_named_fields_derive`). Debug `tuple_zero_fields_handler.rs` if needed. *Handle widespread failures selectively if they occur.*
     *   **Detailed Plan Step 4:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs` to uncomment `mod compile_fail;`.
     *   **Detailed Plan Step 5:** Verify `compile_fail/tuple_zero_subform_scalar_error.rs` fails compilation as expected (`cargo test --package former former_enum_tests::compile_fail`).
     *   **Crucial Design Rules:** Expected Behavior Rules 1b, 2b, 3b, 4. [Proc Macro: Development Workflow](#proc-macro-development-workflow).
@@ -126,10 +126,10 @@ This plan focuses on verifying the behavior for **Tuple Variants**. The relevant
     *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs` to uncomment:
         *   `mod generics_independent_tuple_derive;`, `mod generics_independent_tuple_manual;`
         *   `mod scalar_generic_tuple_derive;`, `mod scalar_generic_tuple_manual;`
-        *   `mod keyword_variant_derive;` (if not already uncommented)
-        *   `mod standalone_constructor_args_derive;`, `mod standalone_constructor_args_manual;` (if not already uncommented)
+        *   `mod keyword_variant_derive;` (if not already uncommented for other tuple types)
+        *   `mod standalone_constructor_args_derive;`, `mod standalone_constructor_args_manual;` (if not already uncommented for other tuple types)
     *   **Detailed Plan Step 2:** Verify manual implementations pass tests (`cargo test ... <manual_module>`). Fix if needed.
-    *   **Detailed Plan Step 3:** Verify derived implementations pass tests (`cargo test ... <derive_module>`). Debug `tuple_single_field_scalar.rs` if needed. *Handle widespread failures if they occur.*
+    *   **Detailed Plan Step 3:** Verify derived implementations pass tests (`cargo test ... <derive_module>`). Debug `tuple_single_field_scalar.rs` if needed. *Handle widespread failures selectively if they occur.*
     *   **Crucial Design Rules:** Expected Behavior Rules 1d, 4. [Proc Macro: Development Workflow](#proc-macro-development-workflow).
     *   **Verification Strategy:** All relevant manual and derive tests pass.
     *   **Commit Message:** `feat(former): Verify #[scalar] single-field tuple enum variant support`
@@ -144,7 +144,7 @@ This plan focuses on verifying the behavior for **Tuple Variants**. The relevant
         *   `mod usecase1;`
         *   `mod standalone_constructor_derive;`, `mod standalone_constructor_manual;`
     *   **Detailed Plan Step 2:** Verify manual implementations pass tests (`cargo test ... <manual_module>`). Fix if needed.
-    *   **Detailed Plan Step 3:** Verify derived implementations pass tests (`cargo test ... <derive_module>`). Debug `tuple_single_field_subform.rs` and `tuple_single_field_scalar.rs` (for Rule 3d.ii) if needed. *Handle widespread failures if they occur.*
+    *   **Detailed Plan Step 3:** Verify derived implementations pass tests (`cargo test ... <derive_module>`). Debug `tuple_single_field_subform.rs` and `tuple_single_field_scalar.rs` (for Rule 3d.ii) if needed. *Handle widespread failures selectively if they occur.*
     *   **Detailed Plan Step 4:** Verify `compile_fail/tuple_single_subform_non_former_error.rs` fails compilation as expected.
     *   **Crucial Design Rules:** Expected Behavior Rules 2d, 3d.i, 3d.ii, 4. [Proc Macro: Development Workflow](#proc-macro-development-workflow).
     *   **Verification Strategy:** All relevant manual/derive tests pass, compile-fail test fails compilation.
@@ -153,9 +153,9 @@ This plan focuses on verifying the behavior for **Tuple Variants**. The relevant
 *   [⚫] **Increment 5: Verify Multi-Field Tuple Variants (`V(T1, T2, ...)` )**
     *   **Goal:** Activate and verify `#[derive(Former)]` for multi-field tuple variants (Rules 1f, 3f, 4). Verify compile error for Rule 2f.
     *   **Target Crate(s):** `former`, `former_meta`
-    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs` to uncomment any remaining relevant modules (e.g., ensure `keyword_variant_derive`, `standalone_constructor_args_*` are active).
+    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs` to ensure `keyword_variant_derive`, `standalone_constructor_args_*` are active.
     *   **Detailed Plan Step 2:** Verify manual implementations (if any exist/created for `standalone_constructor_args_*`) pass tests.
-    *   **Detailed Plan Step 3:** Verify derived implementations pass tests (`cargo test ... <derive_module>`). Debug `tuple_multi_fields_scalar.rs` if needed. *Handle widespread failures if they occur.*
+    *   **Detailed Plan Step 3:** Verify derived implementations pass tests (`cargo test ... <derive_module>`). Debug `tuple_multi_fields_scalar.rs` if needed. *Handle widespread failures selectively if they occur.*
     *   **Detailed Plan Step 4:** Verify `compile_fail/tuple_multi_subform_scalar_error.rs` fails compilation as expected.
     *   **Crucial Design Rules:** Expected Behavior Rules 1f, 2f, 3f, 4. [Proc Macro: Development Workflow](#proc-macro-development-workflow).
     *   **Verification Strategy:** All relevant manual/derive tests pass, compile-fail test fails compilation.
@@ -183,7 +183,7 @@ This plan focuses on verifying the behavior for **Tuple Variants**. The relevant
 *   **Focus:** Only uncomment and address code related to **tuple enum variants**. Leave unit and struct variant tests commented out.
 *   **Preserve Docs:** When adding the Tuple Variant Test Matrix to `former_enum_tests/mod.rs`, ensure the existing matrix documentation is **not removed**.
 *   **Incremental Activation:** Uncomment test modules (`mod ...;`) only in the increment where they are first needed for verification.
-*   **Incremental Verification:** Verify compilation and test success after each relevant increment. Handle widespread failures by isolating tests if needed.
+*   **Incremental Verification:** Verify compilation and test success after each relevant increment. Handle widespread failures by selectively commenting out only failing tests.
 *   **Failure Analysis:** Follow the "Failure Diagnosis Algorithm".
 *   **Approval Gates:** Obtain user approval before starting each increment and after successful verification.
 
