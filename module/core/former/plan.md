@@ -1,28 +1,30 @@
-
-# Project Plan: Finalizing `former` Enum Tests (Usecases and Known Issues)
+# Project Plan: Verify Former Derive for Unit Enum Variants
 
 ## Goal
-*   Integrate and verify the remaining specific enum test files in `module/core/former/tests/inc/former_enum_tests/` (`usecase1.rs`, `subform_collection_test.rs`) after the completion of unit, tuple, and named variant test plans.
-*   Ensure the behavior observed in these tests aligns with the established "Expected Enum Former Behavior Rules".
-*   Resolve the known compilation issue in `subform_collection_test.rs` based on a user-defined strategy.
-*   Perform a final verification run of the entire `former` test suite.
+*   Ensure the `#[derive(Former)]` macro correctly generates the expected constructors for **unit enum variants** according to the defined behavior rules.
+*   Verify the implementation handles the `#[scalar]` (which is the default for unit variants) and `#[standalone_constructors]` attributes correctly for unit variants.
+*   Activate and ensure the `unit_variant_*` tests pass.
+*   Keep tests related to tuple or struct enum variants commented out.
 *   Ensure all code modifications adhere strictly to `code/gen` instructions, Design Rules, and Codestyle Rules.
 
 ## Relevant Context
 
-*   **Primary Test Directory:** `module/core/former/tests/inc/former_enum_tests/`
-    *   `usecase1.rs`
-    *   `subform_collection_test.rs`
-*   **Enum Test Module File:** `module/core/former/tests/inc/former_enum_tests/mod.rs` (Assumed created and populated).
+*   **Relevant Files (To be uncommented/verified):**
+    *   `module/core/former/tests/inc/former_enum_tests/unit_variant_derive.rs`
+    *   `module/core/former/tests/inc/former_enum_tests/unit_variant_manual.rs`
+    *   `module/core/former/tests/inc/former_enum_tests/unit_variant_only_test.rs`
+    *   `module/core/former/tests/inc/former_enum_tests/mod.rs` (Only `mod unit_variant_*;` lines)
+    *   `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs` (Implementation)
+*   **Irrelevant Files (To remain commented out/ignored for this plan):**
+    *   All other test files/modules within `module/core/former/tests/inc/former_enum_tests/` (e.g., `basic_*`, `enum_named_fields_*`, `generics_*`, `keyword_*`, `scalar_generic_tuple_*`, `standalone_constructor_*`, `usecase1.rs`, `subform_collection_test.rs`).
+    *   All other handler files within `module/core/former_meta/src/derive_former/former_enum/` (e.g., `tuple_*`, `struct_*`).
 *   **Main Test Module File (Parent):** `module/core/former/tests/inc/mod.rs`.
-*   **Macro Implementation:** `module/core/former_meta/src/derive_former/former_enum/` (and its submodules).
 *   **Core Types & Traits:** `module/core/former_types/src/lib.rs`.
 *   **Documentation:**
-    *   `module/core/former/advanced.md`
+    *   `module/core/former/advanced.md` (Specifically attribute sections)
     *   `module/core/former/Readme.md`
-    *   Test Matrices documented in `former_enum_tests/mod.rs`.
 
-### Expected Enum Former Behavior Rules
+### Expected Enum Former Behavior Rules (Full Set for Context)
 
 These rules define the expected code generation behavior for `#[derive(Former)]` on enums, based on variant structure and attributes.
 
@@ -64,65 +66,85 @@ These rules define the expected code generation behavior for `#[derive(Former)]`
             *   If the variant's default/scalar behavior yields `Enum::variant() -> Enum` (Unit/Zero-Tuple/Scalar-Zero-Struct): `fn my_variant() -> Enum`.
             *   If the variant's default/subform behavior yields `Enum::variant() -> SpecificFormer`: `fn my_variant(marked_args...) -> SpecificFormer` (with args pre-set).
 
-### Test Matrix Coverage
-*   `usecase1.rs` primarily tests **Rule 3d.i**.
-*   `subform_collection_test.rs` attempts to test `#[subform_entry]` on `Vec<Enum>`, which is currently not defined by the rules above.
+### Test Matrix Coverage (Unit Variants)
 
-### Target File Structure
-*   Utilizes the structure established in the previous plan, with test modules declared in `module/core/former/tests/inc/former_enum_tests/mod.rs`.
+This plan focuses on verifying the behavior for **Unit Variants**. The relevant factors and combinations tested by the `unit_variant_*` files are:
+
+*   **Factors:**
+    1.  Variant Type: Unit (Implicitly selected)
+    2.  Variant-Level Attribute: None (Default), `#[scalar]`
+    3.  Enum-Level Attribute: None, `#[standalone_constructors]`
+
+*   **Combinations Covered by `unit_variant_only_test.rs`:**
+    *   Unit + Default + None (Rule 3a) -> Tested via `Status::pending()` / `Status::complete()` in `unit_variant_constructors()` test.
+    *   Unit + `#[scalar]` + None (Rule 1a) -> Tested via `Status::pending()` / `Status::complete()` in `unit_variant_constructors()` test (as default is scalar).
+    *   Unit + Default + `#[standalone_constructors]` (Rule 3a, 4) -> Tested via `pending()` / `complete()` in `unit_variant_standalone_constructors()` test.
+    *   Unit + `#[scalar]` + `#[standalone_constructors]` (Rule 1a, 4) -> Tested via `pending()` / `complete()` in `unit_variant_standalone_constructors()` test.
 
 ### Failure Diagnosis Algorithm
-*   (Standard algorithm as previously defined)
+*   (Standard algorithm as previously defined, focusing on `unit_variant_handler.rs` if `_derive` fails and `_manual` passes).
 
 ## Increments
 
-*   [⚫] **Increment 1: Activate and Verify `usecase1.rs`**
-    *   **Goal:** Uncomment, fix (if necessary), and verify the `usecase1.rs` test.
-    *   **Files:** `usecase1.rs`, `former_enum_tests/mod.rs`.
-    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs` to uncomment `mod usecase1;`.
-    *   **Detailed Plan Step 2:** Modify `module/core/former/tests/inc/former_enum_tests/usecase1.rs`: Uncomment all the code within the file. Address any `xxx`/`qqq` comments if present.
-    *   **Pre-Analysis:** The enum `FunctionStep` has variants like `Prompt(Prompt)`, `Break(Break)`, etc., where the inner types derive `Former`. The default behavior (Rule 3d.i) should generate static methods returning subformers (e.g., `FunctionStep::prompt() -> PromptFormer<...>`). The test `enum_variant_subformer_construction` calls these expected methods.
-    *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rule 3d.i.
+*   [⚫] **Increment 1: Activate Unit Variant Tests**
+    *   **Goal:** Ensure only the `unit_variant_*` test modules are active within the `former_enum_tests` module.
+    *   **Target Crate(s):** `former`
+    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs`.
+        *   Uncomment `mod unit_variant_derive;`.
+        *   Uncomment `mod unit_variant_manual;`.
+        *   Ensure all other `mod` declarations within this file remain commented out.
+    *   **Verification Strategy:** Request user to apply changes and run `cargo check --tests --package former`. Confirm no *new* compilation errors related to module declarations.
+    *   **Commit Message:** `chore(former): Activate unit variant enum tests`
+
+*   [⚫] **Increment 2: Verify Manual Unit Variant Implementation**
+    *   **Goal:** Confirm the manual implementation in `unit_variant_manual.rs` compiles and passes tests, aligning with the expected behavior rules.
+    *   **Target Crate(s):** `former`
+    *   **Detailed Plan Step 1:** Review `module/core/former/tests/inc/former_enum_tests/unit_variant_manual.rs` and `unit_variant_only_test.rs`.
+    *   **Pre-Analysis:** The manual implementation should provide static methods `Status::pending()` and `Status::complete()` returning `Status`. If `standalone_constructors` were manually implemented (as they are in the provided context), top-level functions `pending()` and `complete()` returning `Status` should also exist. This aligns with Rules 1a/3a and 4. The `_only_test.rs` file should call these.
+    *   **Crucial Design Rules:** Expected Behavior Rules 1a, 3a, 4.
+    *   **Verification Strategy:** Request user to run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::unit_variant_manual`. Analyze results against expected behavior. Address any failures by correcting the manual implementation or test logic.
+    *   **Commit Message:** `fix(former): Correct manual unit variant enum implementation` (if fixes needed) or `refactor(former): Verify manual unit variant enum implementation` (if no fixes needed).
+
+*   [⚫] **Increment 3: Verify Derived Unit Variant Implementation**
+    *   **Goal:** Confirm the `#[derive(Former)]` macro correctly generates code for unit variants, including handling `#[standalone_constructors]`, by ensuring `unit_variant_derive.rs` compiles and passes tests.
+    *   **Target Crate(s):** `former`, `former_meta`
+    *   **Detailed Plan Step 1:** Review `module/core/former/tests/inc/former_enum_tests/unit_variant_derive.rs`. It derives `Former` and `standalone_constructors`.
+    *   **Detailed Plan Step 2:** Review `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs`.
+    *   **Pre-Analysis:** Expect the macro (via `unit_variant_handler.rs`) to generate code equivalent to the manual implementation based on Rules 1a/3a and 4. The handler should produce both the static methods and the standalone constructors.
+    *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rules 1a, 3a, 4.
     *   **Verification Strategy:**
-        1.  Run `cargo check --tests --package former`. Fix any compilation errors, ensuring generated code matches Rule 3d.i.
-        2.  Run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::usecase1`. Analyze failures using the diagnosis algorithm.
+        1.  Request user run `cargo check --tests --package former`. Fix any compilation errors originating from the macro-generated code (likely requires changes in `former_meta/src/derive_former/former_enum/unit_variant_handler.rs`).
+        2.  Request user run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::unit_variant_derive`. Analyze failures using the diagnosis algorithm, comparing generated behavior to the (verified) manual implementation. Fix macro logic if needed.
+    *   **Commit Message:** `fix(former_meta): Correct unit variant enum code generation` (if fixes needed) or `refactor(former_meta): Verify unit variant enum code generation` (if no fixes needed).
 
-*   [⚫] **Increment 2: Resolve `subform_collection_test.rs` (Known Issue)**
-    *   **Goal:** Address the known compilation failure related to using `#[subform_entry]` on a `Vec<Enum>`.
-    *   **Files:** `subform_collection_test.rs`, `former_enum_tests/mod.rs`. Potentially `former_meta` files.
-    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs` to uncomment `mod subform_collection_test;`.
-    *   **Detailed Plan Step 2:** Modify `module/core/former/tests/inc/former_enum_tests/subform_collection_test.rs`: Uncomment the code within the file. Address any `xxx`/`qqq` comments.
-    *   **Detailed Plan Step 3 (Decision Point):**
-        *   Run `cargo check --tests --package former`. Confirm it fails compilation as expected (no current rule defines behavior for `#[subform_entry]` on `Vec<Enum>`).
-        *   **Present the failure to the user and ask for a decision:**
-            *   **Option A: Implement Feature:** Define behavior and implement in `former_meta`. *Estimate: High effort.*
-            *   **Option B: Change Test Expectation:** Modify test to use `trybuild` and assert compilation failure. *Estimate: Medium effort.*
-            *   **Option C: Remove/Comment Test:** Remove/comment out the test. *Estimate: Low effort.*
-    *   **Detailed Plan Step 4 (Execution based on decision):** Implement the chosen option (A, B, or C).
-    *   **Pre-Analysis:** The feature `#[subform_entry]` on `Vec<Enum>` is not covered by the current Expected Behavior Rules.
-    *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow) (if implementing), [Testing: Avoid Writing Automated Tests Unless Asked](#testing-avoid-writing-tests-unless-asked) (if removing).
-    *   **Verification Strategy:** Depends on the chosen option. Requires user confirmation of the strategy before Step 4.
+*   [⚫] **Increment 4: Address TODOs/Issues in Unit Variant Files**
+    *   **Goal:** Review and address any outstanding `// xxx :` or `// qqq :` comments specifically within the `unit_variant_derive.rs`, `unit_variant_manual.rs`, or `unit_variant_only_test.rs` files.
+    *   **Target Crate(s):** `former`
+    *   **Detailed Plan Step 1:** Search for `xxx :` and `qqq :` comments in the three `unit_variant_*` files.
+    *   **Detailed Plan Step 2:** Propose solutions or code changes for each identified comment based on its content.
+    *   **Crucial Design Rules:** [Comments: Add Tasks and Label Simplifications](#comments-add-tasks-and-label-simplifications), [Comments: Annotate Addressed Tasks](#comments-annotate-addressed-tasks).
+    *   **Verification Strategy:** Request user to apply changes. Run `cargo check --tests --package former` and `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::unit_variant`. Ensure tests still pass and comments are addressed appropriately.
+    *   **Commit Message:** `chore(former): Address TODOs in unit variant enum tests`
 
-*   [⚫] **Increment 3: Final Full Suite Verification**
-    *   **Goal:** Ensure all activated enum tests and the entire `former` crate test suite pass.
-    *   **Detailed Plan Step 1:** Verify all relevant `mod` declarations in `former_enum_tests/mod.rs` are uncommented (reflecting the outcome of Increment 2).
-    *   **Detailed Plan Step 2:** Run `cargo check --all-targets --package former`. Address any remaining errors or warnings.
-    *   **Detailed Plan Step 3:** Run `cargo clippy --all-targets --package former --features full -- -D warnings`. Address any lints.
-    *   **Detailed Plan Step 4:** Run `cargo test --package former --all-targets`. Ensure all tests pass.
-    *   **Pre-Analysis:** Assumes previous increments were successful.
-    *   **Verification Strategy:** Zero errors/warnings from `check` and `clippy`. All tests pass in the final `cargo test` run.
+*   [⚫] **Increment 5: Final Focused Verification**
+    *   **Goal:** Ensure the activated unit tests pass and the `former` crate is healthy after the focused changes.
+    *   **Target Crate(s):** `former`
+    *   **Detailed Plan Step 1:** Run `cargo check --all-targets --package former`. Address any errors or warnings.
+    *   **Detailed Plan Step 2:** Run `cargo clippy --all-targets --package former --features full -- -D warnings`. Address any lints.
+    *   **Detailed Plan Step 3:** Run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::unit_variant`. Ensure unit tests pass.
+    *   **Verification Strategy:** Zero errors/warnings from `check` and `clippy`. All tests in `former_enum_tests::unit_variant` pass.
+    *   **Commit Message:** `test(former): Verify unit variant enum tests pass`
 
 ### Requirements
-*   **Adherence:** Strictly follow `code/gen` instructions, Design Rules, and Codestyle Rules for all modifications.
-*   **Detailed Increment Plan:** Before starting implementation of an increment, a detailed plan for *that increment only* must be generated and approved.
-*   **Paired Testing:** Follow the [Proc Macro: Development Workflow](#proc-macro-development-workflow) rule where applicable.
-*   **Incremental Verification:** Verify after each increment.
-*   **Failure Analysis:** Follow the "Failure Diagnosis Algorithm".
-*   **Minimal Changes:** Prioritize minimal changes.
-*   **Approval Gates:** Obtain user approval before and after each increment, and **critically, before executing Step 4 of Increment 2**.
+*   **Adherence:** Strictly follow `code/gen` instructions, Design Rules, and Codestyle Rules.
+*   **Focus:** Only uncomment and address code related to **unit enum variants**. Leave other enum tests (tuple, struct variants) commented out in `former_enum_tests/mod.rs`.
+*   **Incremental Verification:** Verify compilation and test success after each relevant increment.
+*   **Failure Analysis:** Follow the "Failure Diagnosis Algorithm" if tests fail.
+*   **Approval Gates:** Obtain user approval before starting each increment and after successful verification.
 
 ## Notes & Insights
-*   This plan addresses the final specific enum test files identified.
-*   The full "Expected Enum Former Behavior Rules" are included for context.
-*   The resolution of `subform_collection_test.rs` requires explicit user direction.
-*   A final full test run is included to catch any integration issues.
+*   This plan significantly narrows the scope to only unit enum variants.
+*   It assumes the necessary infrastructure (`former_enum_tests/mod.rs`) exists but focuses activation only on `unit_variant_*`.
+*   Verification steps target only the relevant unit tests until the final step.
+*   The full "Expected Enum Former Behavior Rules" are kept for context.
+*   Test Matrix coverage for unit variants is explicitly noted.
