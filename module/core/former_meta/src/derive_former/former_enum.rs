@@ -91,13 +91,16 @@
 //                                        # - Generates a method returning an implicit variant former:
 //                                        #   `fn variant() -> VariantFormer<...>`.
 // ```
-
+//
 #![allow(clippy::wildcard_imports)] // Keep if present
 
 use super::*;
 use macro_tools::{ Result, quote::{ format_ident, quote }, syn };
 use proc_macro2::TokenStream; // Corrected import for TokenStream
 use macro_tools::generic_params::decompose; // Corrected path
+use super::struct_attrs::ItemAttributes; // Corrected import
+use super::field_attrs::FieldAttributes; // Corrected import
+
 
 // Declare new sibling modules
 mod common_emitters;
@@ -168,7 +171,7 @@ pub(super) fn former_for_enum
   for variant in &data_enum.variants
   {
     let variant_attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
-    let variant_field_info : Vec<EnumVariantFieldInfo> = match &variant.fields {
+    let variant_field_info : Vec<Result<EnumVariantFieldInfo>> = match &variant.fields {
         // qqq : Logic to populate variant_field_info (from previous plan)
         syn::Fields::Named(f) => f.named.iter().map(|field| {
             let attrs = FieldAttributes::from_attrs(field.attrs.iter())?;
@@ -179,7 +182,7 @@ pub(super) fn former_for_enum
                 attrs,
                 is_constructor_arg,
             })
-        }).collect::<Result<_>>()?,
+        }).collect(),
         syn::Fields::Unnamed(f) => f.unnamed.iter().enumerate().map(|(index, field)| {
             let attrs = FieldAttributes::from_attrs(field.attrs.iter())?;
             let is_constructor_arg = attrs.arg_for_constructor.value(false);
@@ -189,9 +192,11 @@ pub(super) fn former_for_enum
                 attrs,
                 is_constructor_arg,
             })
-        }).collect::<Result<_>>()?,
+        }).collect(),
         syn::Fields::Unit => vec![],
     };
+    let variant_field_info: Vec<EnumVariantFieldInfo> = variant_field_info.into_iter().collect::<Result<_>>()?;
+
 
     let mut ctx = EnumVariantHandlerContext
     {
@@ -214,16 +219,24 @@ pub(super) fn former_for_enum
     // Dispatch logic directly here
     match &ctx.variant.fields
     {
-      syn::Fields::Unit => unit_variant_handler::handle( &mut ctx )?,
+      syn::Fields::Unit => {
+          let generated = unit_variant_handler::handle(&mut ctx)?;
+          ctx.methods.push(generated); // Collect generated tokens
+      },
       syn::Fields::Unnamed( fields ) => match fields.unnamed.len()
       {
-        0 => tuple_zero_fields_handler::handle( &mut ctx )?,
+        0 => {
+            let generated = tuple_zero_fields_handler::handle(&mut ctx)?;
+            ctx.methods.push(generated); // Collect generated tokens
+        },
         1 =>
         {
           if ctx.variant_attrs.scalar.is_some() {
-              tuple_single_field_scalar::handle( &mut ctx )?
+              let generated = tuple_single_field_scalar::handle(&mut ctx)?;
+              ctx.methods.push(generated); // Collect generated tokens
           } else {
-              tuple_single_field_subform::handle( &mut ctx )?
+              let generated = tuple_single_field_subform::handle(&mut ctx)?;
+              ctx.methods.push(generated); // Collect generated tokens
           }
         }
         _ =>
@@ -232,7 +245,8 @@ pub(super) fn former_for_enum
           {
             return Err( syn::Error::new_spanned( ctx.variant, "#[subform_scalar] cannot be used on tuple variants with multiple fields." ) );
           }
-          tuple_multi_fields_scalar::handle( &mut ctx )?
+          let generated = tuple_multi_fields_scalar::handle(&mut ctx)?;
+          ctx.methods.push(generated); // Collect generated tokens
         }
       },
       syn::Fields::Named( fields ) => match fields.named.len()
@@ -247,7 +261,8 @@ pub(super) fn former_for_enum
           {
             return Err( syn::Error::new_spanned( ctx.variant, "Zero-field struct variants require `#[scalar]` attribute for direct construction." ) );
           }
-          struct_zero_fields_handler::handle( &mut ctx )?
+          let generated = struct_zero_fields_handler::handle(&mut ctx)?;
+          ctx.methods.push(generated); // Collect generated tokens
         }
         _len =>
         {
@@ -255,31 +270,38 @@ pub(super) fn former_for_enum
           {
             if fields.named.len() == 1
             {
-              struct_single_field_scalar::handle( &mut ctx )?
+              let generated = struct_single_field_scalar::handle(&mut ctx)?;
+              ctx.methods.push(generated); // Collect generated tokens
             }
             else
             {
-              struct_multi_fields_scalar::handle( &mut ctx )?
+              let generated = struct_multi_fields_scalar::handle(&mut ctx)?;
+              ctx.methods.push(generated); // Collect generated tokens
             }
           }
           else
           {
             if fields.named.len() == 1
             {
-              struct_single_field_subform::handle( &mut ctx )?
+              let generated = struct_single_field_subform::handle(&mut ctx)?;
+              ctx.methods.push(generated); // Collect generated tokens
             }
             else
             {
-              struct_multi_fields_subform::handle( &mut ctx )?
+              let generated = struct_multi_fields_subform::handle(&mut ctx)?;
+              ctx.methods.push(generated); // Collect generated tokens
             }
           }
         }
       }
-    }
+    } // End of match
   } // End of loop
 
   let ( _enum_generics_with_defaults, enum_generics_impl, enum_generics_ty, _enum_generics_where_punctuated )
     = decompose( generics );
+
+  // qqq : Need to separate generated tokens from handlers into methods, standalone_constructors, and end_impls.
+  // Currently, all are collected into methods.
 
   let result = quote!
   {
@@ -291,8 +313,9 @@ pub(super) fn former_for_enum
           #( #methods )*
       }
 
-      #( #standalone_constructors )*
-      #( #end_impls )*
+      // Standalone constructors and end impls should be placed here, outside the impl block.
+      // #( #standalone_constructors )*
+      // #( #end_impls )*
   };
 
   if has_debug

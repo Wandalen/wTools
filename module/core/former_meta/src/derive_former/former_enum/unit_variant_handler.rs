@@ -5,9 +5,10 @@ use macro_tools::{ Result, quote, syn };
 use super::EnumVariantHandlerContext;
 // use heck::ToSnakeCase; // Removed heck
 use convert_case::{ Case, Casing }; // Import Case and Casing from convert_case
+use proc_macro2::TokenStream; // Import TokenStream
 
 #[allow(dead_code)] // Suppress warning about unused function
-pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< () >
+pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< TokenStream >
 {
   // qqq : Implement skeleton body
 
@@ -29,13 +30,15 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
   let generated_method = quote!
   {
     #[ inline( always ) ]
-    fn #method_ident() -> Self
+    pub fn #method_ident() -> #enum_ident // Added pub and return type
     {
       #enum_ident::#variant_ident
     }
   };
 
-  ctx.methods.push( generated_method );
+  // ctx.methods.push( generated_method ); // Will be collected in former_for_enum
+
+  let mut generated_tokens = generated_method;
 
   // Generate standalone constructor if #[standalone_constructors] is present on the enum
   if ctx.struct_attrs.standalone_constructors.is_some()
@@ -48,9 +51,9 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
         #enum_ident::#variant_ident
       }
     };
-    ctx.standalone_constructors.push( generated_standalone );
+    // ctx.standalone_constructors.push( generated_standalone ); // Will be collected in former_for_enum
+    generated_tokens.extend(generated_standalone);
   }
 
-
-  Ok( () )
+  Ok( generated_tokens )
 }

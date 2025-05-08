@@ -10,6 +10,7 @@ pub struct InnerForSubform {
 // Define the enum with different kinds of variants, including struct-like ones with varying field counts.
 #[ derive( Debug, PartialEq, former::Former ) ]
 #[ debug ]
+#[ standalone_constructors ] // Added for S0.4
 pub enum EnumWithNamedFields
 {
 //   // --- Unit Variant ---
@@ -20,8 +21,8 @@ pub enum EnumWithNamedFields
 //
 //   // --- Zero Fields (Named - Struct-like) ---
 //   // VariantZeroDefault {}, // Expect: Compile Error (No #[scalar]) - Cannot test directly
-//   #[ scalar ] // Expect: variant_zero_scalar() -> Enum
-//   VariantZeroScalar {},
+  #[ scalar ] // Expect: variant_zero_scalar() -> Enum
+  VariantZeroScalar {}, // Uncommented for S0.2 and S0.4
 //
 //   // --- Zero Fields (Unnamed - Tuple-like) ---
 //   VariantZeroUnnamedDefault(), // Expect: variant_zero_unnamed_default() -> Enum (Default is scalar for 0 fields)

@@ -70,7 +70,7 @@
 //! - **General Tests**
 //!   - Basic smoke tests (local and published)
 //!   - Experimental area for temporary tests
-
+//!
 use super::*;
 use test_tools::exposed::*;
 
@@ -93,14 +93,14 @@ mod former_struct_tests
   mod subform_collection_basic_scalar;
   #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   mod subform_collection_basic_manual;
-  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_collection_basic;
 
   // = attribute
 
-  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod attribute_default_collection;
-  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod attribute_default_primitive;
   mod attribute_default_conflict;
   mod attribute_storage_with_end;
@@ -232,6 +232,9 @@ mod former_enum_tests
   use super::*;
 
   // = enum
+
+  // Increment 9: Error Cases for Tuple Variants
+  mod compile_fail; // This is a directory, needs a mod declaration
 
 }
 

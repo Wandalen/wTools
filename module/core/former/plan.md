@@ -15,7 +15,7 @@
     *   Files like `generics_shared_struct_*.rs` (for struct variants with shared generic inner types).
     *   Files like `standalone_constructor_*.rs` and `standalone_constructor_args_*.rs` (for struct variants with these enum-level attributes).
 *   **Enum Test Module File:** `module/core/former/tests/inc/former_enum_tests/mod.rs`
-*   **Main Test Module File (Parent):** `module/core/former/tests/inc/mod.rs`
+*   **Main Test Module File (Parent)::** `module/core/former/tests/inc/mod.rs`
 *   **Macro Implementation:** `module/core/former_meta/src/derive_former/former_enum/`
     *   `struct_zero_fields_handler.rs`
     *   `struct_single_field_scalar.rs`
@@ -47,6 +47,13 @@
     *   None
     *   `#[standalone_constructors]`
 5.  **Field-Level Attribute `#[arg_for_constructor]` (within `#[standalone_constructors]` context):**
+    *   Not applicable (for zero-field)
+    *   On the single field (for one-field)
+    *   On all fields / some fields / no fields (for multi-field)
+6.  **Enum-Level Attribute:**
+    *   None
+    *   `#[standalone_constructors]`
+7.  **Field-Level Attribute `#[arg_for_constructor]` (within `#[standalone_constructors]` context):**
     *   Not applicable (for zero-field)
     *   On the single field (for one-field)
     *   On all fields / some fields / no fields (for multi-field)
@@ -85,7 +92,7 @@
 |----|--------------|-----------------------------|------------------------------------|---------------------------------|---------|--------------------------------|
 | SN.1| Default      | None                        | `Enum::v() -> VariantFormer<...>`  | N/A                             | 3g      | `struct_multi_fields_subform.rs`|
 | SN.2| `#[scalar]`  | None                        | `Enum::v {f1:T1,...} -> Enum`      | N/A                             | 1g      | `struct_multi_fields_scalar.rs` |
-| SN.3| `#[subform_scalar]` | None                 | `Enum::v() -> VariantFormer<...>`  | N/A                             | 2g      | `struct_multi_fields_subform.rs`|
+| SN.3| `#[subform_scalar]` | (Any)                | `Enum::v() -> VariantFormer<...>`  | N/A                             | 2g      | `struct_multi_fields_subform.rs`|
 | SN.4| Default      | `#[standalone_constructors]`| `Enum::v() -> VariantFormer<...>`  | `fn v() -> VariantFormer<...>` (no args) | 3g,4 | `struct_multi_fields_subform.rs`|
 | SN.5| `#[scalar]`  | `#[standalone_constructors]`| `Enum::v {f1:T1,...} -> Enum`      | `fn v(f1:T1,...) -> Enum` (all args) | 1g,4 | `struct_multi_fields_scalar.rs` |
 | SN.6| `#[subform_scalar]` | `#[standalone_constructors]`| `Enum::v() -> VariantFormer<...>` | `fn v() -> VariantFormer<...>` (no args) | 2g,4 | `struct_multi_fields_subform.rs`|
@@ -121,12 +128,12 @@ The primary files are `enum_named_fields_derive.rs`, `enum_named_fields_manual.r
     *   Multi-Field Struct Variant (`V { f1: T1, ... }`): `Enum::variant { f1: T1, ... } -> Enum`. (Rule 1g)
 2.  **`#[subform_scalar]` Attribute (on variant):**
     *   Zero-Field Struct Variant: Error. (Rule 2c)
-    *   Single-Field Struct Variant (`V { f1: T1 }`): `Enum::variant() -> VariantFormer<...>`. (Rule 2e)
-    *   Multi-Field Struct Variant (`V { f1: T1, ... }`): `Enum::variant() -> VariantFormer<...>`. (Rule 2g)
+    *   Single-Field Struct Variant (`V { f1: T1 }`): `Enum::variant() -> VariantFormer<...>` (Rule 2e)
+    *   Multi-Field Struct Variant (`V { f1: T1, ... }`): `Enum::variant() -> VariantFormer<...>` (Rule 2g)
 3.  **Default Behavior (No `#[scalar]` or `#[subform_scalar]` on variant):**
     *   Zero-Field Struct Variant (`V {}`): Error. (Rule 3c)
-    *   Single-Field Struct Variant (`V { f1: T1 }`): `Enum::variant() -> VariantFormer<...>`. (Rule 3e)
-    *   Multi-Field Struct Variant (`V { f1: T1, ... }`): `Enum::variant() -> VariantFormer<...>`. (Rule 3g)
+    *   Single-Field Struct Variant (`V { f1: T1 }`): `Enum::variant() -> VariantFormer<...>` (Rule 3e)
+    *   Multi-Field Struct Variant (`V { f1: T1, ... }`): `Enum::variant() -> VariantFormer<...>` (Rule 3g)
 4.  **`#[standalone_constructors]` Attribute (on enum):**
     *   (As per general Rule 4, applied to the outcomes of Rules 1-3 above for struct-like variants).
 
@@ -135,7 +142,7 @@ The primary files are `enum_named_fields_derive.rs`, `enum_named_fields_manual.r
 
 ## Increments
 
-*   [⚫] **Increment 1: Document Test Matrix for Named (Struct-like) Variants**
+*   [✅] **Increment 1: Document Test Matrix for Named (Struct-like) Variants**
     *   **Goal:** Embed the "Test Matrix for Named (Struct-like) Variants" into the documentation within `module/core/former/tests/inc/former_enum_tests/mod.rs`.
     *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs`.
         *   Append to the existing module-level documentation comment (`//!`):
@@ -149,48 +156,133 @@ The primary files are `enum_named_fields_derive.rs`, `enum_named_fields_manual.r
         2.  Request user to run `cargo check --tests --package former`.
         3.  Request user to run `cargo doc --package former --no-deps --open` and verify the matrix documentation in the `former_enum_tests` module.
 
-*   [⚫] **Increment 2: Zero-Field Struct Variants (Combinations S0.2, S0.4)**
+*   [✅] **Increment 1.5: Refactor Enum Variant Handlers to Return TokenStream**
+    *   **Goal:** Update all existing enum variant handler functions in `module/core/former_meta/src/derive_former/former_enum/` to return `Result<TokenStream>` instead of `Result<()>`. Ensure they return `Ok(quote!{})` for cases where no tokens are generated.
+    *   **Pre-Analysis:** This is a refactoring step required to fix compilation errors in the main derive macro logic.
+    *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow).
+    *   **Verification Strategy:** Request user to run `cargo check --package former --test tests --features derive_former`. Verify that the `mismatched types` errors related to `push` are resolved.
+    *   Detailed Plan Step 1: Read `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs`.
+    *   Detailed Plan Step 2: Modify `unit_variant_handler.rs` to return `Result<TokenStream>`.
+    *   Detailed Plan Step 3: Read `module/core/former_meta/src/derive_former/former_enum/tuple_zero_fields_handler.rs`.
+    *   Detailed Plan Step 4: Modify `tuple_zero_fields_handler.rs` to return `Result<TokenStream>`.
+    *   Detailed Plan Step 5: Read `module/core/former_meta/src/derive_former/former_enum/tuple_single_field_scalar.rs`.
+    *   Detailed Plan Step 6: Modify `tuple_single_field_scalar.rs` to return `Result<TokenStream>`.
+    *   Detailed Plan Step 7: Read `module/core/former_meta/src/derive_former/former_enum/tuple_single_field_subform.rs`.
+    *   Detailed Plan Step 8: Modify `tuple_single_field_subform.rs` to return `Result<TokenStream>`.
+    *   Detailed Plan Step 9: Read `module/core/former_meta/src/derive_former/former_enum/tuple_multi_fields_scalar.rs`.
+    *   Detailed Plan Step 10: Modify `tuple_multi_fields_scalar.rs` to return `Result<TokenStream>`.
+    *   Detailed Plan Step 11: Read `module/core/former_meta/src/derive_former/former_enum/struct_single_field_scalar.rs`.
+    *   Detailed Plan Step 12: Modify `struct_single_field_scalar.rs` to return `Result<TokenStream>`.
+    *   Detailed Plan Step 13: Read `module/core/former_meta/src/derive_former/former_enum/struct_single_field_subform.rs`.
+    *   Detailed Plan Step 14: Modify `struct_single_field_subform.rs` to return `Result<TokenStream>`.
+    *   Detailed Plan Step 15: Read `module/core/former_meta/src/derive_former/former_enum/struct_multi_fields_scalar.rs`.
+    *   Detailed Plan Step 16: Modify `struct_multi_fields_scalar.rs` to return `Result<TokenStream>`.
+    *   Detailed Plan Step 17: Read `module/core/former_meta/src/derive_former/former_enum/struct_multi_fields_subform.rs`.
+    *   Detailed Plan Step 18: Modify `struct_multi_fields_subform.rs` to return `Result<TokenStream>`.
+    *   Detailed Plan Step 19: Request user to run `cargo check --package former --test tests --features derive_former`.
+
+*   [✅] **Increment 2: Zero-Field Struct Variants (Combinations S0.2, S0.4)**
     *   **Goal:** Test `V {}` variants with `#[scalar]`.
     *   **Files:** `enum_named_fields_*`.
     *   **Matrix Coverage:** S0.2, S0.4.
     *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rules 1c, 4.
     *   **Verification Strategy:** Staged testing.
+    *   Detailed Plan Step 1: Read `enum_named_fields_manual.rs`.
+    *   Detailed Plan Step 2: Add manual implementation for S0.2 and S0.4 to `enum_named_fields_manual.rs`.
+    *   Detailed Plan Step 3: Read `enum_named_fields_only_test.rs`.
+    *   Detailed Plan Step 4: Add shared test logic for S0.2 and S0.4 to `enum_named_fields_only_test.rs`.
+    *   Detailed Plan Step 5: Request user to run manual test (`cargo test --package former --test tests --features derive_former inc::former_enum_tests::enum_named_fields_manual`).
+    *   Detailed Plan Step 6: Read `enum_named_fields_derive.rs`.
+    *   Detailed Plan Step 7: Add macro invocation site for S0.2 and S0.4 to `enum_named_fields_derive.rs`.
+    *   Detailed Plan Step 8: Read `struct_zero_fields_handler.rs`.
+    *   Detailed Plan Step 9: Implement/verify macro logic in `struct_zero_fields_handler.rs`.
+    *   Detailed Plan Step 10: Request user to run derive test (`cargo test --package former --test tests --features derive_former inc::former_enum_tests::enum_named_fields_derive`).
 
-*   [⚫] **Increment 3: Single-Field Struct Variants (Combinations S1.1-S1.3 without standalone)**
+*   [✅] **Increment 3: Single-Field Struct Variants (Combinations S1.1-S1.3 without standalone)**
     *   **Goal:** Test `V { f1: T1 }` with Default, `#[scalar]`, and `#[subform_scalar]`.
     *   **Files:** `enum_named_fields_*`.
     *   **Matrix Coverage:** S1.1, S1.2, S1.3.
     *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rules 1e, 2e, 3e.
     *   **Verification Strategy:** Staged testing.
+    *   Detailed Plan Step 1: Read `enum_named_fields_manual.rs`.
+    *   Detailed Plan Step 2: Add manual implementation for S1.1-S1.3 to `enum_named_fields_manual.rs`.
+    *   Detailed Plan Step 3: Read `enum_named_fields_only_test.rs`.
+    *   Detailed Plan Step 4: Add shared test logic for S1.1-S1.3 to `enum_named_fields_only_test.rs`.
+    *   Detailed Plan Step 5: Request user to run manual test (`cargo test --package former --test tests --features derive_former inc::former_enum_tests::enum_named_fields_manual`).
+    *   Detailed Plan Step 6: Read `enum_named_fields_derive.rs`.
+    *   Detailed Plan Step 7: Add macro invocation site for S1.1-S1.3 to `enum_named_fields_derive.rs`.
+    *   Detailed Plan Step 8: Read `struct_single_field_scalar.rs` and `struct_single_field_subform.rs`.
+    *   Detailed Plan Step 9: Implement/verify macro logic in `struct_single_field_scalar.rs` and `struct_single_field_subform.rs`.
+    *   Detailed Plan Step 10: Request user to run derive test (`cargo test --package former --test tests --features derive_former inc::former_enum_tests::enum_named_fields_derive`).
 
-*   [⚫] **Increment 4: Multi-Field Struct Variants (Combinations SN.1-SN.3 without standalone)**
+*   [✅] **Increment 4: Multi-Field Struct Variants (Combinations SN.1-SN.3 without standalone)**
     *   **Goal:** Test `V { f1: T1, ... }` with Default, `#[scalar]`, and `#[subform_scalar]`.
     *   **Files:** `enum_named_fields_*`.
     *   **Matrix Coverage:** SN.1, SN.2, SN.3.
     *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rules 1g, 2g, 3g.
     *   **Verification Strategy:** Staged testing.
+    *   Detailed Plan Step 1: Read `enum_named_fields_manual.rs`.
+    *   Detailed Plan Step 2: Add manual implementation for SN.1-SN.3 to `enum_named_fields_manual.rs`.
+    *   Detailed Plan Step 3: Read `enum_named_fields_only_test.rs`.
+    *   Detailed Plan Step 4: Add shared test logic for SN.1-SN.3 to `enum_named_fields_only_test.rs`.
+    *   Detailed Plan Step 5: Request user to run manual test (`cargo test --package former --test tests --features derive_former inc::former_enum_tests::enum_named_fields_manual`).
+    *   Detailed Plan Step 6: Read `enum_named_fields_derive.rs`.
+    *   Detailed Plan Step 7: Add macro invocation site for SN.1-SN.3 to `enum_named_fields_derive.rs`.
+    *   Detailed Plan Step 8: Read `struct_multi_fields_scalar.rs` and `struct_multi_fields_subform.rs`.
+    *   Detailed Plan Step 9: Implement/verify macro logic in `struct_multi_fields_scalar.rs` and `struct_multi_fields_subform.rs`.
+    *   Detailed Plan Step 10: Request user to run derive test (`cargo test --package former --test tests --features derive_former inc::former_enum_tests::enum_named_fields_derive`).
 
-*   [⚫] **Increment 5: Struct Variants with `#[standalone_constructors]` (Combinations S0.4, S1.4-S1.7, SN.4-SN.7)**
+*   [✅] **Increment 5: Struct Variants with `#[standalone_constructors]` (Combinations S0.4, S1.4-S1.7, SN.4-SN.7)**
     *   **Goal:** Test `#[standalone_constructors]` with zero, single, and multi-field struct variants, including `#[arg_for_constructor]` interactions.
     *   **Files:** Adapt `enum_named_fields_*` and `standalone_constructor_args_*`.
     *   **Matrix Coverage:** S0.4, S1.4, S1.5, S1.6, S1.7, SN.4, SN.5, SN.6, SN.7.
     *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rule 4 in conjunction with 1c/e/g, 2e/g, 3e/g.
     *   **Verification Strategy:** Staged testing. This is a large increment; may need to be broken down further during detailed planning.
+    *   Detailed Plan Step 1: Read `enum_named_fields_manual.rs`.
+    *   Detailed Plan Step 2: Add manual implementation for S0.4, S1.4-S1.7, SN.4-SN.7 to `enum_named_fields_manual.rs`.
+    *   Detailed Plan Step 3: Read `enum_named_fields_only_test.rs`.
+    *   Detailed Plan Step 4: Add shared test logic for S0.4, S1.4-S1.7, SN.4-SN.7 to `enum_named_fields_only_test.rs`.
+    *   Detailed Plan Step 5: Request user to run manual test (`cargo test --package former --test tests --features derive_former`).
+    *   Detailed Plan Step 6: Read `enum_named_fields_derive.rs`.
+    *   Detailed Plan Step 7: Add macro invocation site for S0.4, S1.4-S1.7, SN.4-SN.7 to `enum_named_fields_derive.rs`.
+    *   Detailed Plan Step 8: Read relevant macro handler files (`struct_zero_fields_handler.rs`, `struct_single_field_scalar.rs`, `struct_single_field_subform.rs`, `struct_multi_fields_scalar.rs`, `struct_multi_fields_subform.rs`).
+    *   Detailed Plan Step 9: Implement/verify macro logic in relevant handler files to support `#[standalone_constructors]` and `#[arg_for_constructor]`.
+    *   Detailed Plan Step 10: Request user to run derive test (`cargo test --package former --test tests --features derive_former`).
 
-*   [⚫] **Increment 6: Error Cases for Struct Variants (S0.1, S0.5)**
+*   [⏳] **Increment 6: Error Cases for Struct Variants (S0.1, S0.5)**
     *   **Goal:** Verify compile errors for invalid attribute usage on struct variants.
     *   **Files:** Create new `trybuild` tests in `module/core/former/tests/inc/former_enum_tests/compile_fail/`:
         *   `struct_zero_default_error.rs` (for S0.1)
         *   `struct_zero_subform_scalar_error.rs` (for S0.5)
     *   **Crucial Design Rules:** Expected Behavior Rules 2c, 3c.
     *   **Verification Strategy:** Add `trybuild` test cases.
+    *   Detailed Plan Step 1: Read `module/core/former/tests/inc/former_enum_tests/compile_fail/struct_zero_default_error.rs`.
+    *   Detailed Plan Step 2: Uncomment/add `trybuild` test for S0.1 in `struct_zero_default_error.rs`.
+    *   Detailed Plan Step 3: Read `module/core/former/tests/inc/former_enum_tests/compile_fail/struct_zero_subform_scalar_error.rs`.
+    *   Detailed Plan Step 4: Uncomment/add `trybuild` test for S0.5 in `struct_zero_subform_scalar_error.rs`.
+    *   Detailed Plan Step 5: Read `module/core/former/tests/inc/mod.rs`.
+    *   Detailed Plan Step 6: Uncomment `mod compile_fail;` in `module/core/former/tests/inc/mod.rs`.
+    *   Detailed Plan Step 7: Request user to run `cargo test --package former --test tests --features derive_former`. Verify that the trybuild tests pass (i.e., the expected compilation errors occur).
 
-*   [⚫] **Increment 7: Generics with Struct Variants**
+*   [⏳] **Increment 7: Generics with Struct Variants**
     *   **Goal:** Integrate and verify tests from `generics_independent_struct_*` and `generics_shared_struct_*`.
     *   **Files:** `generics_independent_struct_*`, `generics_shared_struct_*`.
     *   **Matrix Coverage:** Implicitly covers S1.1/SN.1 type behavior but with generics.
     *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow).
     *   **Verification Strategy:** Staged testing.
+    *   Detailed Plan Step 1: Read `module/core/former/tests/inc/former_enum_tests/generics_independent_struct_derive.rs`.
+    *   Detailed Plan Step 2: Uncomment/add tests in `generics_independent_struct_derive.rs`.
+    *   Detailed Plan Step 3: Read `module/core/former/tests/inc/former_enum_tests/generics_independent_struct_manual.rs`.
+    *   Detailed Plan Step 4: Uncomment/add tests in `generics_independent_struct_manual.rs`.
+    *   Detailed Plan Step 5: Read `module/core/former/tests/inc/former_enum_tests/generics_independent_struct_only_test.rs`.
+    *   Detailed Plan Step 6: Uncomment/add tests in `generics_independent_struct_only_test.rs`.
+    *   Detailed Plan Step 7: Read `module/core/former/tests/inc/former_enum_tests/generics_shared_struct_derive.rs`.
+    *   Detailed Plan Step 8: Uncomment/add tests in `generics_shared_struct_derive.rs`.
+    *   Detailed Plan Step 9: Read `module/core/former/tests/inc/former_enum_tests/generics_shared_struct_manual.rs`.
+    *   Detailed Plan Step 10: Uncomment/add tests in `generics_shared_struct_manual.rs`.
+    *   Detailed Plan Step 11: Read `module/core/former/tests/inc/former_enum_tests/generics_shared_struct_only_test.rs`.
+    *   Detailed Plan Step 12: Uncomment/add tests in `generics_shared_struct_only_test.rs`.
+    *   Detailed Plan Step 13: Request user to run `cargo test --package former --test tests --features derive_former`.
 
 *   [⚫] **Increment 8: Final Review and Full Test Suite for Named (Struct-like) Variants**
     *   **Goal:** Ensure all named (struct-like) variant tests are active and passing.
@@ -204,3 +296,4 @@ The primary files are `enum_named_fields_derive.rs`, `enum_named_fields_manual.r
 *   The "Test Matrix for Named (Struct-like) Variants" will be appended to the documentation in `module/core/former/tests/inc/former_enum_tests/mod.rs`.
 *   The `enum_named_fields_*` files are central to many of these tests.
 *   Increment 5 is large and might be subdivided during its detailed planning phase.
+*   **Note:** Specific `cargo test` filters for individual test files within `inc::former_enum_tests` are not working as expected. Verification steps will use the broader command `cargo test --package former --test tests --features derive_former` which has been shown to run and pass the relevant tests.

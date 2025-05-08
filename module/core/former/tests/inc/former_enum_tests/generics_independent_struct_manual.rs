@@ -25,6 +25,7 @@ use former_types::
   FormingEnd, StoragePreform, FormerDefinition, FormerDefinitionTypes, Storage,
   ReturnPreformed, FormerBegin, FormerMutator, // Added necessary imports
 };
+use std::marker::PhantomData; // Added PhantomData
 
 // --- Dummy Bounds and Concrete Types ---
 // Are defined in the included _only_test.rs file
@@ -33,8 +34,8 @@ use former_types::
 // Also defined in the included _only_test.rs file.
 // Needs its own Former implementation (manual or derived) for the subform setter test case,
 // but for the direct setter test case here, we only need its definition.
-// #[ derive( Debug, Clone, PartialEq, Default, former::Former ) ]
-// pub struct InnerG6< U : BoundB > { pub inner_field : U }
+#[ derive( Debug, Clone, PartialEq, Default, former::Former ) ] // Uncommented InnerG6 derive
+pub struct InnerG6< U : BoundB > { pub inner_field : U }
 
 // --- Enum Definition with Bounds ---
 #[ derive( Debug, PartialEq, Clone ) ]
@@ -93,6 +94,7 @@ impl< T : BoundA, Context2, Formed2 > FormerDefinitionTypes for EnumG6V1FormerDe
   type Storage = EnumG6V1FormerStorage< T >; // Storage uses enum's generic T
   type Context = Context2;
   type Formed = Formed2;
+  type Types = EnumG6V1FormerDefinitionTypes< T, Context2, Formed2 >;
 }
 impl< T : BoundA, Context2, Formed2 > FormerMutator for EnumG6V1FormerDefinitionTypes< T, Context2, Formed2 > {}
 
