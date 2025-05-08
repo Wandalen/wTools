@@ -234,13 +234,14 @@ mod former_enum_tests
   // = enum
 
   // Increment 9: Error Cases for Tuple Variants
-  mod compile_fail; // This is a directory, needs a mod declaration
-
-}
-
+} // Close former_enum_tests module
 
 only_for_terminal_module!
 {
+
+  // Increment 9: Error Cases for Tuple Variants
+  mod former_enum_tests; // Declare former_enum_tests inside the macro
+  mod compile_fail; // This is a directory, needs a mod declaration
 
   // stable have different information about error
   // that's why these tests are active only for nightly

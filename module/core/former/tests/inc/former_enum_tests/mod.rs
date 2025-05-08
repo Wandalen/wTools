@@ -207,6 +207,6 @@ mod tuple_multi_standalone_args_derive; // New for Increment 8
 mod tuple_multi_standalone_args_only_test; // New for Increment 8
 
 // Increment 9: Error Cases for Tuple Variants
-mod compile_fail; // This is a directory, needs a mod declaration
+// mod compile_fail; // This is a directory, needs a mod declaration
 
 // Increment 10: Final Review (No new modules here)

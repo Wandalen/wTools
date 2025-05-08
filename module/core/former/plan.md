@@ -1,293 +1,128 @@
-# Project Plan: Comprehensive Testing of `former` Crate for Enum Named (Struct-like) Variants
+
+# Project Plan: Finalizing `former` Enum Tests (Usecases and Known Issues)
 
 ## Goal
-*   Systematically test the `#[derive(Former)]` macro for Rust enum **named (struct-like) variants**.
-*   Cover combinations of relevant `former` attributes (`#[scalar]`, `#[subform_scalar]`, default behavior, `#[standalone_constructors]`, `#[arg_for_constructor]`) for struct-like variants with 0, 1, and multiple fields.
-*   Incrementally uncomment, pre-analyze, fix, and verify existing test files related to struct-like variants within `module/core/former/tests/inc/former_enum_tests/`.
-*   **Embed the "Test Matrix for Named (Struct-like) Variants" as documentation within `module/core/former/tests/inc/former_enum_tests/mod.rs` (or a dedicated shared test file for named fields).**
+*   Integrate and verify the remaining specific enum test files in `module/core/former/tests/inc/former_enum_tests/` (`usecase1.rs`, `subform_collection_test.rs`) after the completion of unit, tuple, and named variant test plans.
+*   Ensure the behavior observed in these tests aligns with the established "Expected Enum Former Behavior Rules".
+*   Resolve the known compilation issue in `subform_collection_test.rs` based on a user-defined strategy.
+*   Perform a final verification run of the entire `former` test suite.
 *   Ensure all code modifications adhere strictly to `code/gen` instructions, Design Rules, and Codestyle Rules.
 
 ## Relevant Context
 
 *   **Primary Test Directory:** `module/core/former/tests/inc/former_enum_tests/`
-    *   `enum_named_fields_derive.rs`, `enum_named_fields_manual.rs`, `enum_named_fields_only_test.rs` (primary target for these tests).
-    *   Files like `generics_independent_struct_*.rs` (for struct variants with generic inner types).
-    *   Files like `generics_shared_struct_*.rs` (for struct variants with shared generic inner types).
-    *   Files like `standalone_constructor_*.rs` and `standalone_constructor_args_*.rs` (for struct variants with these enum-level attributes).
-*   **Enum Test Module File:** `module/core/former/tests/inc/former_enum_tests/mod.rs`
-*   **Main Test Module File (Parent)::** `module/core/former/tests/inc/mod.rs`
-*   **Macro Implementation:** `module/core/former_meta/src/derive_former/former_enum/`
-    *   `struct_zero_fields_handler.rs`
-    *   `struct_single_field_scalar.rs`
-    *   `struct_single_field_subform.rs`
-    *   `struct_multi_fields_scalar.rs`
-    *   `struct_multi_fields_subform.rs`
-    *   `module/core/former_meta/src/derive_former/former_enum.rs` (main dispatch)
-*   **Core Types & Traits:** `module/core/former_types/src/lib.rs`
+    *   `usecase1.rs`
+    *   `subform_collection_test.rs`
+*   **Enum Test Module File:** `module/core/former/tests/inc/former_enum_tests/mod.rs` (Assumed created and populated).
+*   **Main Test Module File (Parent):** `module/core/former/tests/inc/mod.rs`.
+*   **Macro Implementation:** `module/core/former_meta/src/derive_former/former_enum/` (and its submodules).
+*   **Core Types & Traits:** `module/core/former_types/src/lib.rs`.
 *   **Documentation:**
     *   `module/core/former/advanced.md`
     *   `module/core/former/Readme.md`
+    *   Test Matrices documented in `former_enum_tests/mod.rs`.
 
-### Test Matrix for Named (Struct-like) Variants
+### Expected Enum Former Behavior Rules
 
-**Factors:**
-
-1.  **Number of Fields:**
-    *   Zero (`V {}`)
-    *   One (`V { f1: T1 }`)
-    *   Multiple (`V { f1: T1, f2: T2, ... }`)
-2.  **Field Type `T1` (for Single-Field Variants, relevant for `#[subform_scalar]`):**
-    *   Derives `Former`
-    *   Does NOT derive `Former` (Note: `#[subform_scalar]` on a single-field struct variant *always* creates an implicit variant former, so this distinction is less critical than for tuples, but good to keep in mind for consistency if `T1` itself is used in a subform-like way *within* the implicit former).
-3.  **Variant-Level Attribute:**
-    *   None (Default behavior)
-    *   `#[scalar]`
-    *   `#[subform_scalar]`
-4.  **Enum-Level Attribute:**
-    *   None
-    *   `#[standalone_constructors]`
-5.  **Field-Level Attribute `#[arg_for_constructor]` (within `#[standalone_constructors]` context):**
-    *   Not applicable (for zero-field)
-    *   On the single field (for one-field)
-    *   On all fields / some fields / no fields (for multi-field)
-6.  **Enum-Level Attribute:**
-    *   None
-    *   `#[standalone_constructors]`
-7.  **Field-Level Attribute `#[arg_for_constructor]` (within `#[standalone_constructors]` context):**
-    *   Not applicable (for zero-field)
-    *   On the single field (for one-field)
-    *   On all fields / some fields / no fields (for multi-field)
-
----
-
-**Combinations for Zero-Field Struct Variants (`V {}`):**
-
-| #  | Variant Attr | Enum Attr                   | Expected Static Method        | Expected Standalone Constructor | Rule(s) | Handler (Meta)                 |
-|----|--------------|-----------------------------|-------------------------------|---------------------------------|---------|--------------------------------|
-| S0.1| Default      | None                        | *Compile Error*               | N/A                             | 3c      | (Dispatch)                     |
-| S0.2| `#[scalar]`  | None                        | `Enum::v() -> Enum`           | N/A                             | 1c      | `struct_zero_fields_handler.rs`|
-| S0.3| Default      | `#[standalone_constructors]`| *Compile Error*               | *Compile Error*                 | 3c, 4   | (Dispatch)                     |
-| S0.4| `#[scalar]`  | `#[standalone_constructors]`| `Enum::v() -> Enum`           | `fn v() -> Enum`                | 1c, 4   | `struct_zero_fields_handler.rs`|
-| S0.5| `#[subform_scalar]` | (Any)                | *Compile Error*               | *Compile Error*                 | 2c      | (Dispatch)                     |
-
----
-
-**Combinations for Single-Field Struct Variants (`V { f1: T1 }`):**
-
-| #  | Variant Attr | Enum Attr                   | Expected Static Method        | Expected Standalone Constructor | Rule(s) | Handler (Meta)                 |
-|----|--------------|-----------------------------|-------------------------------|---------------------------------|---------|--------------------------------|
-| S1.1| Default      | None                        | `Enum::v() -> VariantFormer<...>` | N/A                           | 3e      | `struct_single_field_subform.rs`|
-| S1.2| `#[scalar]`  | None                        | `Enum::v { f1: T1 } -> Enum`  | N/A                             | 1e      | `struct_single_field_scalar.rs` |
-| S1.3| `#[subform_scalar]` | None                 | `Enum::v() -> VariantFormer<...>` | N/A                           | 2e      | `struct_single_field_subform.rs`|
-| S1.4| Default      | `#[standalone_constructors]`| `Enum::v() -> VariantFormer<...>` | `fn v() -> VariantFormer<...>` (no args) | 3e,4 | `struct_single_field_subform.rs`|
-| S1.5| `#[scalar]`  | `#[standalone_constructors]`| `Enum::v { f1: T1 } -> Enum`  | `fn v(f1: T1) -> Enum` (f1 is arg) | 1e,4 | `struct_single_field_scalar.rs` |
-| S1.6| `#[subform_scalar]` | `#[standalone_constructors]`| `Enum::v() -> VariantFormer<...>` | `fn v() -> VariantFormer<...>` (no args) | 2e,4 | `struct_single_field_subform.rs`|
-| S1.7| Default      | `#[standalone_constructors]` + `#[arg_for_constructor]` on `f1` | `Enum::v() -> VariantFormer<...>` (f1 pre-set) | `fn v(f1: T1) -> Enum` (f1 is arg, returns Self) | 3e,4 | `struct_single_field_subform.rs` (for static method), standalone logic |
-
----
-
-**Combinations for Multi-Field Struct Variants (`V { f1: T1, f2: T2, ... }`):**
-
-| #  | Variant Attr | Enum Attr                   | Expected Static Method             | Expected Standalone Constructor | Rule(s) | Handler (Meta)                 |
-|----|--------------|-----------------------------|------------------------------------|---------------------------------|---------|--------------------------------|
-| SN.1| Default      | None                        | `Enum::v() -> VariantFormer<...>`  | N/A                             | 3g      | `struct_multi_fields_subform.rs`|
-| SN.2| `#[scalar]`  | None                        | `Enum::v {f1:T1,...} -> Enum`      | N/A                             | 1g      | `struct_multi_fields_scalar.rs` |
-| SN.3| `#[subform_scalar]` | (Any)                | `Enum::v() -> VariantFormer<...>`  | N/A                             | 2g      | `struct_multi_fields_subform.rs`|
-| SN.4| Default      | `#[standalone_constructors]`| `Enum::v() -> VariantFormer<...>`  | `fn v() -> VariantFormer<...>` (no args) | 3g,4 | `struct_multi_fields_subform.rs`|
-| SN.5| `#[scalar]`  | `#[standalone_constructors]`| `Enum::v {f1:T1,...} -> Enum`      | `fn v(f1:T1,...) -> Enum` (all args) | 1g,4 | `struct_multi_fields_scalar.rs` |
-| SN.6| `#[subform_scalar]` | `#[standalone_constructors]`| `Enum::v() -> VariantFormer<...>` | `fn v() -> VariantFormer<...>` (no args) | 2g,4 | `struct_multi_fields_subform.rs`|
-| SN.7| Default      | `#[standalone_constructors]` + some/all `#[arg_for_constructor]` | `Enum::v() -> VariantFormer<...>` (args pre-set) | `fn v(marked_args...) -> VariantFormer_or_Enum` (logic per Rule 4) | 3g,4 | `struct_multi_fields_subform.rs` (for static method), standalone logic |
-
----
-
-### Target File Structure for Named (Struct-like) Variant Tests
-
-Within `module/core/former/tests/inc/former_enum_tests/`:
-The primary files are `enum_named_fields_derive.rs`, `enum_named_fields_manual.rs`, and `enum_named_fields_only_test.rs`. These will be the main focus. Documentation for this matrix will be added to `former_enum_tests/mod.rs`.
-
-```module/core/former/tests/inc/
-├── mod.rs                      // Declares `mod former_enum_tests;`
-└── former_enum_tests/
-    ├── mod.rs                  // Declares all specific enum test files.
-    │                           // Will contain the Test Matrix documentation for named variants.
-    ├── enum_named_fields_derive.rs
-    ├── enum_named_fields_manual.rs
-    └── enum_named_fields_only_test.rs
-    // ... other existing files like generics_*, standalone_constructor_* ...
-    └── compile_fail/
-        ├── struct_zero_default_error.rs             // For S0.1
-        ├── struct_zero_subform_scalar_error.rs      // For S0.5
-```
-
-### Expected Enum Former Behavior Rules (Named/Struct-like Variants Only)
-(Extracted and focused from the general rules)
+These rules define the expected code generation behavior for `#[derive(Former)]` on enums, based on variant structure and attributes.
 
 1.  **`#[scalar]` Attribute (on variant):**
-    *   Zero-Field Struct Variant (`V {}`): `Enum::variant() -> Enum`. (Rule 1c)
-    *   Single-Field Struct Variant (`V { f1: T1 }`): `Enum::variant { f1: T1 } -> Enum`. (Rule 1e)
-    *   Multi-Field Struct Variant (`V { f1: T1, ... }`): `Enum::variant { f1: T1, ... } -> Enum`. (Rule 1g)
+    *   **Unit Variant (`V`):** Generates `Enum::variant() -> Enum`. (Rule 1a)
+    *   **Zero-Field Tuple Variant (`V()`):** Generates `Enum::variant() -> Enum`. (Rule 1b)
+    *   **Zero-Field Struct Variant (`V {}`):** Generates `Enum::variant() -> Enum`. (Rule 1c)
+    *   **Single-Field Tuple Variant (`V(T1)`):** Generates `Enum::variant(T1) -> Enum`. (Rule 1d)
+    *   **Single-Field Struct Variant (`V { f1: T1 }`):** Generates `Enum::variant { f1: T1 } -> Enum`. (Rule 1e)
+    *   **Multi-Field Tuple Variant (`V(T1, T2, ...)`):** Generates `Enum::variant(T1, T2, ...) -> Enum`. (Rule 1f)
+    *   **Multi-Field Struct Variant (`V { f1: T1, ... }`):** Generates `Enum::variant { f1: T1, ... } -> Enum`. (Rule 1g)
+    *   *Error Cases:* Cannot be combined with `#[subform_scalar]` on the same variant.
+
 2.  **`#[subform_scalar]` Attribute (on variant):**
-    *   Zero-Field Struct Variant: Error. (Rule 2c)
-    *   Single-Field Struct Variant (`V { f1: T1 }`): `Enum::variant() -> VariantFormer<...>` (Rule 2e)
-    *   Multi-Field Struct Variant (`V { f1: T1, ... }`): `Enum::variant() -> VariantFormer<...>` (Rule 2g)
+    *   **Unit Variant:** Error. (Rule 2a)
+    *   **Zero-Field Variant (Tuple or Struct):** Error. (Rule 2b, 2c)
+    *   **Single-Field Tuple Variant (`V(T1)` where `T1` derives `Former`):** Generates `Enum::variant() -> T1Former<...>` (former for the field's type). (Rule 2d)
+    *   **Single-Field Tuple Variant (`V(T1)` where `T1` does NOT derive `Former`):** Error. (Rule 2d)
+    *   **Single-Field Struct Variant (`V { f1: T1 }`):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Rule 2e)
+    *   **Multi-Field Tuple Variant:** Error. (Rule 2f)
+    *   **Multi-Field Struct Variant (`V { f1: T1, ... }`):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Rule 2g)
+
 3.  **Default Behavior (No `#[scalar]` or `#[subform_scalar]` on variant):**
-    *   Zero-Field Struct Variant (`V {}`): Error. (Rule 3c)
-    *   Single-Field Struct Variant (`V { f1: T1 }`): `Enum::variant() -> VariantFormer<...>` (Rule 3e)
-    *   Multi-Field Struct Variant (`V { f1: T1, ... }`): `Enum::variant() -> VariantFormer<...>` (Rule 3g)
+    *   **Unit Variant (`V`):** Generates `Enum::variant() -> Enum`. (Rule 3a)
+    *   **Zero-Field Tuple Variant (`V()`):** Generates `Enum::variant() -> Enum`. (Rule 3b)
+    *   **Zero-Field Struct Variant (`V {}`):** Error (requires `#[scalar]` or fields). (Rule 3c)
+    *   **Single-Field Tuple Variant (`V(T1)` where `T1` derives `Former`):** Generates `Enum::variant() -> T1Former<...>`. (Rule 3d.i)
+    *   **Single-Field Tuple Variant (`V(T1)` where `T1` does NOT derive `Former`):** Generates `Enum::variant(T1) -> Enum`. (Rule 3d.ii)
+    *   **Single-Field Struct Variant (`V { f1: T1 }`):** Generates `Enum::variant() -> VariantFormer<...>`. (Rule 3e)
+    *   **Multi-Field Tuple Variant (`V(T1, T2, ...)`):** Generates `Enum::variant(T1, T2, ...) -> Enum`. (Rule 3f)
+    *   **Multi-Field Struct Variant (`V { f1: T1, ... }`):** Generates `Enum::variant() -> VariantFormer<...>`. (Rule 3g)
+
 4.  **`#[standalone_constructors]` Attribute (on enum):**
-    *   (As per general Rule 4, applied to the outcomes of Rules 1-3 above for struct-like variants).
+    *   Generates top-level constructor functions for each variant (e.g., `fn my_variant(...)`).
+    *   **Return Type & Arguments (Option 2 Logic):**
+        *   If **all** fields of a variant are marked `#[arg_for_constructor]`: `fn my_variant(arg1: T1, ...) -> Enum`.
+        *   If **zero or some** fields are marked `#[arg_for_constructor]`:
+            *   If the variant's default/scalar behavior yields `Enum::variant(all_args) -> Enum`: `fn my_variant(marked_args...) -> EnumVariantFormerForRemainingArgs`. (Requires implicit variant former).
+            *   If the variant's default/scalar behavior yields `Enum::variant() -> Enum` (Unit/Zero-Tuple/Scalar-Zero-Struct): `fn my_variant() -> Enum`.
+            *   If the variant's default/subform behavior yields `Enum::variant() -> SpecificFormer`: `fn my_variant(marked_args...) -> SpecificFormer` (with args pre-set).
+
+### Test Matrix Coverage
+*   `usecase1.rs` primarily tests **Rule 3d.i**.
+*   `subform_collection_test.rs` attempts to test `#[subform_entry]` on `Vec<Enum>`, which is currently not defined by the rules above.
+
+### Target File Structure
+*   Utilizes the structure established in the previous plan, with test modules declared in `module/core/former/tests/inc/former_enum_tests/mod.rs`.
 
 ### Failure Diagnosis Algorithm
-(Standard algorithm as previously defined)
+*   (Standard algorithm as previously defined)
 
 ## Increments
 
-*   [✅] **Increment 1: Document Test Matrix for Named (Struct-like) Variants**
-    *   **Goal:** Embed the "Test Matrix for Named (Struct-like) Variants" into the documentation within `module/core/former/tests/inc/former_enum_tests/mod.rs`.
-    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs`.
-        *   Append to the existing module-level documentation comment (`//!`):
-            *   A clear title, e.g., "## Test Matrix for Enum Named (Struct-like) Variants".
-            *   The full "Test Matrix for Named (Struct-like) Variants" tables (Zero-Field, Single-Field, Multi-Field).
-            *   A brief explanation.
-    *   **Pre-Analysis:** Documentation-only change.
-    *   **Crucial Design Rules:** [Comments and Documentation](#comments-and-documentation).
+*   [⚫] **Increment 1: Activate and Verify `usecase1.rs`**
+    *   **Goal:** Uncomment, fix (if necessary), and verify the `usecase1.rs` test.
+    *   **Files:** `usecase1.rs`, `former_enum_tests/mod.rs`.
+    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs` to uncomment `mod usecase1;`.
+    *   **Detailed Plan Step 2:** Modify `module/core/former/tests/inc/former_enum_tests/usecase1.rs`: Uncomment all the code within the file. Address any `xxx`/`qqq` comments if present.
+    *   **Pre-Analysis:** The enum `FunctionStep` has variants like `Prompt(Prompt)`, `Break(Break)`, etc., where the inner types derive `Former`. The default behavior (Rule 3d.i) should generate static methods returning subformers (e.g., `FunctionStep::prompt() -> PromptFormer<...>`). The test `enum_variant_subformer_construction` calls these expected methods.
+    *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rule 3d.i.
     *   **Verification Strategy:**
-        1.  Request user to apply the changes.
-        2.  Request user to run `cargo check --tests --package former`.
-        3.  Request user to run `cargo doc --package former --no-deps --open` and verify the matrix documentation in the `former_enum_tests` module.
+        1.  Run `cargo check --tests --package former`. Fix any compilation errors, ensuring generated code matches Rule 3d.i.
+        2.  Run `cargo test --package former --test tests -- --test-threads=1 --nocapture former_enum_tests::usecase1`. Analyze failures using the diagnosis algorithm.
 
-*   [✅] **Increment 1.5: Refactor Enum Variant Handlers to Return TokenStream**
-    *   **Goal:** Update all existing enum variant handler functions in `module/core/former_meta/src/derive_former/former_enum/` to return `Result<TokenStream>` instead of `Result<()>`. Ensure they return `Ok(quote!{})` for cases where no tokens are generated.
-    *   **Pre-Analysis:** This is a refactoring step required to fix compilation errors in the main derive macro logic.
-    *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow).
-    *   **Verification Strategy:** Request user to run `cargo check --package former --test tests --features derive_former`. Verify that the `mismatched types` errors related to `push` are resolved.
-    *   Detailed Plan Step 1: Read `module/core/former/tests/inc/former_enum_tests/compile_fail/struct_zero_default_error.rs`.
-    *   Detailed Plan Step 2: Uncomment/add `trybuild` test for S0.1 in `struct_zero_default_error.rs`.
-    *   Detailed Plan Step 3: Read `module/core/former/tests/inc/former_enum_tests/compile_fail/struct_zero_subform_scalar_error.rs`.
-    *   Detailed Plan Step 4: Uncomment/add `trybuild` test for S0.5 in `struct_zero_subform_scalar_error.rs`.
-    *   Detailed Plan Step 5: Read `module/core/former/tests/inc/mod.rs`.
-    *   Detailed Plan Step 6: Uncomment `mod compile_fail;` in `module/core/former/tests/inc/mod.rs`.
-    *   Detailed Plan Step 7: Request user to run `cargo test --package former --test tests --features derive_former`. Verify that the trybuild tests pass (i.e., the expected compilation errors occur).
+*   [⚫] **Increment 2: Resolve `subform_collection_test.rs` (Known Issue)**
+    *   **Goal:** Address the known compilation failure related to using `#[subform_entry]` on a `Vec<Enum>`.
+    *   **Files:** `subform_collection_test.rs`, `former_enum_tests/mod.rs`. Potentially `former_meta` files.
+    *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs` to uncomment `mod subform_collection_test;`.
+    *   **Detailed Plan Step 2:** Modify `module/core/former/tests/inc/former_enum_tests/subform_collection_test.rs`: Uncomment the code within the file. Address any `xxx`/`qqq` comments.
+    *   **Detailed Plan Step 3 (Decision Point):**
+        *   Run `cargo check --tests --package former`. Confirm it fails compilation as expected (no current rule defines behavior for `#[subform_entry]` on `Vec<Enum>`).
+        *   **Present the failure to the user and ask for a decision:**
+            *   **Option A: Implement Feature:** Define behavior and implement in `former_meta`. *Estimate: High effort.*
+            *   **Option B: Change Test Expectation:** Modify test to use `trybuild` and assert compilation failure. *Estimate: Medium effort.*
+            *   **Option C: Remove/Comment Test:** Remove/comment out the test. *Estimate: Low effort.*
+    *   **Detailed Plan Step 4 (Execution based on decision):** Implement the chosen option (A, B, or C).
+    *   **Pre-Analysis:** The feature `#[subform_entry]` on `Vec<Enum>` is not covered by the current Expected Behavior Rules.
+    *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow) (if implementing), [Testing: Avoid Writing Automated Tests Unless Asked](#testing-avoid-writing-tests-unless-asked) (if removing).
+    *   **Verification Strategy:** Depends on the chosen option. Requires user confirmation of the strategy before Step 4.
 
-*   [✅] **Increment 2: Zero-Field Struct Variants (Combinations S0.2, S0.4)**
-    *   **Goal:** Test `V {}` variants with `#[scalar]`.
-    *   **Files:** `enum_named_fields_*`.
-    *   **Matrix Coverage:** S0.2, S0.4.
-    *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rules 1c, 4.
-    *   **Verification Strategy:** Staged testing.
-    *   Detailed Plan Step 1: Read `enum_named_fields_manual.rs`.
-    *   Detailed Plan Step 2: Add manual implementation for S0.2 and S0.4 to `enum_named_fields_manual.rs`.
-    *   Detailed Plan Step 3: Read `enum_named_fields_only_test.rs`.
-    *   Detailed Plan Step 4: Add shared test logic for S0.2 and S0.4 to `enum_named_fields_only_test.rs`.
-    *   Detailed Plan Step 5: Request user to run manual test (`cargo test --package former --test tests --features derive_former inc::former_enum_tests::enum_named_fields_manual`).
-    *   Detailed Plan Step 6: Read `enum_named_fields_derive.rs`.
-    *   Detailed Plan Step 7: Add macro invocation site for S0.2 and S0.4 to `enum_named_fields_derive.rs`.
-    *   Detailed Plan Step 8: Read `struct_zero_fields_handler.rs`.
-    *   Detailed Plan Step 9: Implement/verify macro logic in `struct_zero_fields_handler.rs`.
-    *   Detailed Plan Step 10: Request user to run derive test (`cargo test --package former --test tests --features derive_former inc::former_enum_tests::enum_named_fields_derive`).
-
-*   [✅] **Increment 3: Single-Field Struct Variants (Combinations S1.1-S1.3 without standalone)**
-    *   **Goal:** Test `V { f1: T1 }` with Default, `#[scalar]`, and `#[subform_scalar]`.
-    *   **Files:** `enum_named_fields_*`.
-    *   **Matrix Coverage:** S1.1, S1.2, S1.3.
-    *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rules 1e, 2e, 3e.
-    *   **Verification Strategy:** Staged testing.
-    *   Detailed Plan Step 1: Read `enum_named_fields_manual.rs`.
-    *   Detailed Plan Step 2: Add manual implementation for S1.1-S1.3 to `enum_named_fields_manual.rs`.
-    *   Detailed Plan Step 3: Read `enum_named_fields_only_test.rs`.
-    *   Detailed Plan Step 4: Add shared test logic for S1.1-S1.3 to `enum_named_fields_only_test.rs`.
-    *   Detailed Plan Step 5: Request user to run manual test (`cargo test --package former --test tests --features derive_former inc::former_enum_tests::enum_named_fields_manual`).
-    *   Detailed Plan Step 6: Read `enum_named_fields_derive.rs`.
-    *   Detailed Plan Step 7: Add macro invocation site for S1.1-S1.3 to `enum_named_fields_derive.rs`.
-    *   Detailed Plan Step 8: Read `struct_single_field_scalar.rs` and `struct_single_field_subform.rs`.
-    *   Detailed Plan Step 9: Implement/verify macro logic in `struct_single_field_scalar.rs` and `struct_single_field_subform.rs`.
-    *   Detailed Plan Step 10: Request user to run derive test (`cargo test --package former --test tests --features derive_former inc::former_enum_tests::enum_named_fields_derive`).
-
-*   [✅] **Increment 4: Multi-Field Struct Variants (Combinations SN.1-SN.3 without standalone)**
-    *   **Goal:** Test `V { f1: T1, ... }` with Default, `#[scalar]`, and `#[subform_scalar]`.
-    *   **Files:** `enum_named_fields_*`.
-    *   **Matrix Coverage:** SN.1, SN.2, SN.3.
-    *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rules 1g, 2g, 3g.
-    *   **Verification Strategy:** Staged testing.
-    *   Detailed Plan Step 1: Read `enum_named_fields_manual.rs`.
-    *   Detailed Plan Step 2: Add manual implementation for SN.1-SN.3 to `enum_named_fields_manual.rs`.
-    *   Detailed Plan Step 3: Read `enum_named_fields_only_test.rs`.
-    *   Detailed Plan Step 4: Add shared test logic for SN.1-SN.3 to `enum_named_fields_only_test.rs`.
-    *   Detailed Plan Step 5: Request user to run manual test (`cargo test --package former --test tests --features derive_former inc::former_enum_tests::enum_named_fields_manual`).
-    *   Detailed Plan Step 6: Read `enum_named_fields_derive.rs`.
-    *   Detailed Plan Step 7: Add macro invocation site for SN.1-SN.3 to `enum_named_fields_derive.rs`.
-    *   Detailed Plan Step 8: Read `struct_multi_fields_scalar.rs` and `struct_multi_fields_subform.rs`.
-    *   Detailed Plan Step 9: Implement/verify macro logic in `struct_multi_fields_scalar.rs` and `struct_multi_fields_subform.rs`.
-    *   Detailed Plan Step 10: Request user to run derive test (`cargo test --package former --test tests --features derive_former inc::former_enum_tests::enum_named_fields_derive`).
-
-*   [✅] **Increment 5: Struct Variants with `#[standalone_constructors]` (Combinations S0.4, S1.4-S1.7, SN.4-SN.7)**
-    *   **Goal:** Test `#[standalone_constructors]` with zero, single, and multi-field struct variants, including `#[arg_for_constructor]` interactions.
-    *   **Files:** Adapt `enum_named_fields_*` and `standalone_constructor_args_*`.
-    *   **Matrix Coverage:** S0.4, S1.4, S1.5, S1.6, S1.7, SN.4, SN.5, SN.6, SN.7.
-    *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow), Expected Behavior Rule 4 in conjunction with 1c/e/g, 2e/g, 3e/g.
-    *   **Verification Strategy:** Staged testing. This is a large increment; may need to be broken down further during detailed planning.
-    *   Detailed Plan Step 1: Read `enum_named_fields_manual.rs`.
-    *   Detailed Plan Step 2: Add manual implementation for S0.4, S1.4-S1.7, SN.4-SN.7 to `enum_named_fields_manual.rs`.
-    *   Detailed Plan Step 3: Read `enum_named_fields_only_test.rs`.
-    *   Detailed Plan Step 4: Add shared test logic for S0.4, S1.4-S1.7, SN.4-SN.7 to `enum_named_fields_only_test.rs`.
-    *   Detailed Plan Step 5: Request user to run manual test (`cargo test --package former --test tests --features derive_former`).
-    *   Detailed Plan Step 6: Read `enum_named_fields_derive.rs`.
-    *   Detailed Plan Step 7: Add macro invocation site for S0.4, S1.4-S1.7, SN.4-SN.7 to `enum_named_fields_derive.rs`.
-    *   Detailed Plan Step 8: Read relevant macro handler files (`struct_zero_fields_handler.rs`, `struct_single_field_scalar.rs`, `struct_single_field_subform.rs`, `struct_multi_fields_scalar.rs`, `struct_multi_fields_subform.rs`).
-    *   Detailed Plan Step 9: Implement/verify macro logic in relevant handler files to support `#[standalone_constructors]` and `#[arg_for_constructor]`.
-    *   Detailed Plan Step 10: Request user to run derive test (`cargo test --package former --test tests --features derive_former`).
-
-*   [✅] **Increment 6: Error Cases for Struct Variants (S0.1, S0.5)**
-    *   **Goal:** Verify compile errors for invalid attribute usage on struct variants.
-    *   **Files:** Create new `trybuild` tests in `module/core/former/tests/inc/former_enum_tests/compile_fail/`:
-        *   `struct_zero_default_error.rs` (for S0.1)
-        *   `struct_zero_subform_scalar_error.rs` (for S0.5)
-    *   **Crucial Design Rules:** Expected Behavior Rules 2c, 3c.
-    *   **Verification Strategy:** Add `trybuild` test cases.
-    *   Detailed Plan Step 1: Read `module/core/former/tests/inc/former_enum_tests/compile_fail/struct_zero_default_error.rs`.
-    *   Detailed Plan Step 2: Uncomment/add `trybuild` test for S0.1 in `struct_zero_default_error.rs`.
-    *   Detailed Plan Step 3: Read `module/core/former/tests/inc/former_enum_tests/compile_fail/struct_zero_subform_scalar_error.rs`.
-    *   Detailed Plan Step 4: Uncomment/add `trybuild` test for S0.5 in `struct_zero_subform_scalar_error.rs`.
-    *   Detailed Plan Step 5: Read `module/core/former/tests/inc/mod.rs`.
-    *   Detailed Plan Step 6: Uncomment `mod compile_fail;` in `module/core/former/tests/inc/mod.rs`.
-    *   Detailed Plan Step 7: Request user to run `cargo test --package former --test tests --features derive_former`. Verify that the trybuild tests pass (i.e., the expected compilation errors occur).
-
-*   [✅] **Increment 7: Generics with Struct Variants**
-    *   **Goal:** Integrate and verify tests from `generics_independent_struct_*` and `generics_shared_struct_*`.
-    *   **Files:** `generics_independent_struct_*`, `generics_shared_struct_*`.
-    *   **Matrix Coverage:** Implicitly covers S1.1/SN.1 type behavior but with generics.
-    *   **Crucial Design Rules:** [Proc Macro: Development Workflow](#proc-macro-development-workflow).
-    *   **Verification Strategy:** Staged testing.
-    *   Detailed Plan Step 1: Read `module/core/former/tests/inc/former_enum_tests/generics_independent_struct_derive.rs`.
-    *   Detailed Plan Step 2: Uncomment/add tests in `generics_independent_struct_derive.rs`.
-    *   Detailed Plan Step 3: Read `module/core/former/tests/inc/former_enum_tests/generics_independent_struct_manual.rs`.
-    *   Detailed Plan Step 4: Uncomment/add tests in `generics_independent_struct_manual.rs`.
-    *   Detailed Plan Step 5: Read `module/core/former/tests/inc/former_enum_tests/generics_independent_struct_only_test.rs`.
-    *   Detailed Plan Step 6: Uncomment/add tests in `generics_independent_struct_only_test.rs`.
-    *   Detailed Plan Step 7: Read `module/core/former/tests/inc/former_enum_tests/generics_shared_struct_derive.rs`.
-    *   Detailed Plan Step 8: Uncomment/add tests in `generics_shared_struct_derive.rs`.
-    *   Detailed Plan Step 9: Read `module/core/former/tests/inc/former_enum_tests/generics_shared_struct_manual.rs`.
-    *   Detailed Plan Step 10: Uncomment/add tests in `generics_shared_struct_manual.rs`.
-    *   Detailed Plan Step 11: Read `module/core/former/tests/inc/former_enum_tests/generics_shared_struct_only_test.rs`.
-    *   Detailed Plan Step 12: Uncomment/add tests in `generics_shared_struct_only_test.rs`.
-    *   Detailed Plan Step 13: Request user to run `cargo test --package former --test tests --features derive_former`.
-
-*   [✅] **Increment 8: Final Review and Full Test Suite for Named (Struct-like) Variants**
-    *   **Goal:** Ensure all named (struct-like) variant tests are active and passing.
-    *   **Verification Strategy:** `cargo check --all-targets --package former`, `cargo clippy --all-targets --package former --features full`, `cargo test --package former --test tests --features derive_former`, `cargo test --package former --test tests --features derive_former --doc`, `cargo test --package former --test tests --features derive_former --tests inc::former_enum_tests::compile_fail`, `cargo test --package former --test tests --features derive_former --tests inc::former_enum_tests`.
-    *   Detailed Plan Step 1: Request user to run `cargo check --all-targets --package former`.
-    *   Detailed Plan Step 2: Request user to run `cargo clippy --all-targets --package former --features full`.
-    *   Detailed Plan Step 3: Request user to run `cargo test --package former --test tests --features derive_former`.
-    *   Detailed Plan Step 4: Request user to run `cargo test --package former --test tests --features derive_former --doc`.
-    *   Detailed Plan Step 5: Request user to run `cargo test --package former --test tests --features derive_former --tests inc::former_enum_tests::compile_fail`.
-    *   Detailed Plan Step 6: Request user to run `cargo test --package former --test tests --features derive_former --tests inc::former_enum_tests`.
+*   [⚫] **Increment 3: Final Full Suite Verification**
+    *   **Goal:** Ensure all activated enum tests and the entire `former` crate test suite pass.
+    *   **Detailed Plan Step 1:** Verify all relevant `mod` declarations in `former_enum_tests/mod.rs` are uncommented (reflecting the outcome of Increment 2).
+    *   **Detailed Plan Step 2:** Run `cargo check --all-targets --package former`. Address any remaining errors or warnings.
+    *   **Detailed Plan Step 3:** Run `cargo clippy --all-targets --package former --features full -- -D warnings`. Address any lints.
+    *   **Detailed Plan Step 4:** Run `cargo test --package former --all-targets`. Ensure all tests pass.
+    *   **Pre-Analysis:** Assumes previous increments were successful.
+    *   **Verification Strategy:** Zero errors/warnings from `check` and `clippy`. All tests pass in the final `cargo test` run.
 
 ### Requirements
-*   (Same as initial plan)
+*   **Adherence:** Strictly follow `code/gen` instructions, Design Rules, and Codestyle Rules for all modifications.
+*   **Detailed Increment Plan:** Before starting implementation of an increment, a detailed plan for *that increment only* must be generated and approved.
+*   **Paired Testing:** Follow the [Proc Macro: Development Workflow](#proc-macro-development-workflow) rule where applicable.
+*   **Incremental Verification:** Verify after each increment.
+*   **Failure Analysis:** Follow the "Failure Diagnosis Algorithm".
+*   **Minimal Changes:** Prioritize minimal changes.
+*   **Approval Gates:** Obtain user approval before and after each increment, and **critically, before executing Step 4 of Increment 2**.
 
 ## Notes & Insights
-*   This plan focuses on named (struct-like) variants.
-*   The "Test Matrix for Named (Struct-like) Variants" will be appended to the documentation in `module/core/former/tests/inc/former_enum_tests/mod.rs`.
-*   The `enum_named_fields_*` files are central to many of these tests.
-*   Increment 5 is large and might be subdivided during its detailed planning phase.
-*   **Note:** Specific `cargo test` filters for individual test files within `inc::former_enum_tests` are not working as expected. Verification steps will use the broader command `cargo test --package former --test tests --features derive_former` which has been shown to run and pass the relevant tests.
+*   This plan addresses the final specific enum test files identified.
+*   The full "Expected Enum Former Behavior Rules" are included for context.
+*   The resolution of `subform_collection_test.rs` requires explicit user direction.
+*   A final full test run is included to catch any integration issues.
