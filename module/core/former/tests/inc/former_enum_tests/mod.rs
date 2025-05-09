@@ -115,59 +115,12 @@
 //!
 //! This documentation will be expanded as testing for other variant types (struct, unit) is planned.
 //!
-use super::*;
-use test_tools::exposed::*;
-
-// Uncomment modules as they are addressed in increments.
-
-// Increment 1: Unit Variant Tests
-// Increment 1: Unit Variant Tests
-// mod unit_variant_derive;
-// mod unit_variant_manual;
-
-// Increment 2: Zero-Field Tuple Variants
-// mod tuple_zero_fields_derive;
-mod enum_named_fields_manual;
-// mod enum_named_fields_derive;
-
-// // Increment 3: Single-Field Tuple Variants - T1 derives Former
-// mod basic_derive;
-// mod basic_manual;
-// mod generics_in_tuple_variant_derive;
-// mod generics_in_tuple_variant_manual;
-// mod generics_shared_tuple_derive;
-// mod generics_shared_tuple_manual;
-//
-// // Increment 4: Single-Field Tuple Variants - T1 does NOT derive Former
-// // mod tuple_single_non_former_derive; // May need to create
-// // mod tuple_single_non_former_manual; // May need to create
-//
-// // Increment 5: Single-Field Tuple Variants - #[scalar]
-// // mod generics_independent_tuple_derive;
-// // mod generics_independent_tuple_manual;
-// mod scalar_generic_tuple_derive; // May need adaptation
-// mod scalar_generic_tuple_manual; // May need adaptation
-//
-// // Increment 6: Single-Field Tuple Variants - #[standalone_constructors]
-// mod standalone_constructor_derive; // May need adaptation
-// mod standalone_constructor_manual; // May need adaptation
-// mod standalone_constructor_args_derive; // May need adaptation
-// mod standalone_constructor_args_manual; // May need adaptation
-//
-// // Increment 7: Multi-Field Tuple Variants (Default & #[scalar])
-// // mod tuple_multi_default_derive; // May need to create
-// // mod tuple_multi_default_manual; // May need to create
-// // mod tuple_multi_scalar_derive; // May need to create
-// // mod tuple_multi_scalar_manual; // May need to create
-//
-// // Increment 8: Multi-Field Tuple Variants - #[standalone_constructors]
-// // mod tuple_multi_standalone_manual; // New for Increment 8
-// // mod tuple_multi_standalone_derive; // New for Increment 8
-// // mod tuple_multi_standalone_args_manual; // New for Increment 8
-// // mod tuple_multi_standalone_args_derive; // New for Increment 8
-//
-// // Increment 9: Error Cases for Tuple Variants
-// // mod compile_fail; // This is a directory, needs a mod declaration
-//
-// // mod usecase1_manual;
-// // mod usecase1_derive;
+//! use super::*;
+//! use test_tools::exposed::*;
+//!
+//! // Uncomment modules as they are addressed in increments.
+//!
+//! pub mod unit_tests;
+//! pub mod unnamed_tests;
+//! pub mod named_tests;
+//! pub mod compile_fail;

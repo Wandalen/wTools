@@ -33,51 +33,146 @@
 
 ## Increments
 
-*   [⚫] **Increment 1: Detailed File Analysis and Relocation/Splitting Plan**
+*   [✅] **Increment 1: Detailed File Analysis and Relocation/Splitting Plan**
     *   **Goal:** Analyze each file in `former_enum_tests/`, determine its new location(s), and plan any necessary splits if a file covers multiple variant types. Plan `mod.rs` updates.
     *   **Target Crate(s):** `former`
-    *   **Detailed Plan Step 1:** List all files and subdirectories currently in `module/core/former/tests/inc/former_enum_tests/`.
-    *   **Detailed Plan Step 2 (Categorization & Splitting Strategy):** For each file:
-        *   Analyze its content (including any commented-out tests) to identify the primary enum variant type(s) it tests (Unit, Tuple/Unnamed, Named/Struct-like).
-        *   **If a file tests ONLY ONE variant type:** Assign it to the corresponding subdirectory (`unit_tests/`, `unnamed_tests/`, `named_tests/`).
-        *   **If a file tests MULTIPLE variant types (e.g., `keyword_variant_*.rs` might test unit, tuple, and named variants):**
-            *   Propose splitting the file into multiple new files. Each new file should contain only the tests and related helper code (like inner struct definitions if they are specific) for a *single* variant type.
-            *   Name the new files descriptively (e.g., `keyword_variant_unit_derive.rs`, `keyword_variant_tuple_derive.rs`, `keyword_variant_named_derive.rs`).
-            *   Assign each new split file to its corresponding subdirectory.
-            *   If an `_only_test.rs` file is shared by a file that needs splitting, that `_only_test.rs` file might also need to be split, or its `include!` directives adjusted in the newly split `_derive.rs` / `_manual.rs` files to only include relevant test functions. This requires careful analysis.
-        *   **`compile_fail/` directory:** Analyze each test within `compile_fail/`.
-            *   If a compile-fail test is specific to a variant type, plan to move it into a `compile_fail/` subdirectory within the respective variant type directory (e.g., `unnamed_tests/compile_fail/tuple_zero_error.rs`).
-            *   If a compile-fail test is generic or hard to categorize, it can remain in a top-level `former_enum_tests/compile_fail/` directory.
-    *   **Detailed Plan Step 3:** Create a clear mapping: `Original File Path -> New File Path(s)`.
-    *   **Detailed Plan Step 4:** Plan the `mod.rs` structure:
-        *   `former_enum_tests/mod.rs`: Will declare `pub mod unit_tests;`, `pub mod unnamed_tests;`, `pub mod named_tests;` (and potentially `pub mod compile_fail;` if a top-level one is kept).
-        *   `former_enum_tests/unit_tests/mod.rs`: Will declare `pub mod ...;` for all files moved/split into `unit_tests/`.
-        *   `former_enum_tests/unnamed_tests/mod.rs`: Will declare `pub mod ...;` for all files moved/split into `unnamed_tests/` (and `pub mod compile_fail;` if applicable).
-        *   `former_enum_tests/named_tests/mod.rs`: Will declare `pub mod ...;` for all files moved/split into `named_tests/` (and `pub mod compile_fail;` if applicable).
-        *   All `mod` declarations for individual test files within these new `mod.rs` files will initially be **commented out**. They will be uncommented by subsequent plans.
+    *   **Pre-Analysis:** The `former_enum_tests` directory contains various test files, some of which may test multiple enum variant types (unit, tuple, named). A detailed listing and analysis of each file's content is needed to determine the correct categorization and identify files requiring splitting. Compile-fail tests also need categorization.
+    *   **Crucial Design Rules:** Structuring: Organize by Feature or Layer, Structuring: Add Module Declaration Before Content, Structuring: Split Large Files Methodically (If Requested), Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks.
+    *   **Relevant Behavior Rules:** Expected Enum Former Behavior Rules (referenced for context on test purpose).
+    *   **Detailed Plan Step 1:** Listed all files and subdirectories currently in `module/core/former/tests/inc/former_enum_tests/`. (Completed)
+    *   **Detailed Plan Step 2 (Categorization & Splitting Strategy):** Analyzed each file to identify variant types and plan splitting/relocation. (Completed)
+        *   **Files to Move (No Splitting Needed):**
+            - `module/core/former/tests/inc/former_enum_tests/basic_derive.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/basic_derive.rs`
+            - `module/core/former/tests/inc/former_enum_tests/basic_manual.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/basic_manual.rs`
+            - `module/core/former/tests/inc/former_enum_tests/basic_only_test.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/basic_only_test.rs`
+            - `module/core/former/tests/inc/former_enum_tests/generics_in_tuple_variant_only_test.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/generics_in_tuple_variant_only_test.rs`
+            - `module/core/former/tests/inc/former_enum_tests/generics_independent_struct_derive.rs` -> `module/core/former/tests/inc/former_enum_tests/named_tests/generics_independent_struct_derive.rs`
+            - `module/core/former/tests/inc/former_enum_tests/generics_independent_struct_manual.rs` -> `module/core/former/tests/inc/former_enum_tests/named_tests/generics_independent_struct_manual.rs`
+            - `module/core/former/tests/inc/former_enum_tests/generics_independent_struct_only_test.rs` -> `module/core/former/tests/inc/former_enum_tests/named_tests/generics_independent_struct_only_test.rs`
+            - `module/core/former/tests/inc/former_enum_tests/generics_independent_tuple_derive.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/generics_independent_tuple_derive.rs`
+            - `module/core/former/tests/inc/former_enum_tests/generics_independent_tuple_manual.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/generics_independent_tuple_manual.rs`
+            - `module/core/former/tests/inc/former_enum_tests/generics_independent_tuple_only_test.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/generics_independent_tuple_only_test.rs`
+            - `module/core/former/tests/inc/former_enum_tests/generics_shared_struct_derive.rs` -> `module/core/former/tests/inc/former_enum_tests/named_tests/generics_shared_struct_derive.rs`
+            - `module/core/former/tests/inc/former_enum_tests/generics_shared_struct_manual.rs` -> `module/core/former/tests/inc/former_enum_tests/named_tests/generics_shared_struct_manual.rs`
+            - `module/core/former/tests/inc/former_enum_tests/generics_shared_struct_only_test.rs` -> `module/core/former/tests/inc/former_enum_tests/named_tests/generics_shared_struct_only_test.rs`
+            - `module/core/former/tests/inc/former_enum_tests/generics_shared_tuple_derive.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/generics_shared_tuple_derive.rs`
+            - `module/core/former/tests/inc/former_enum_tests/generics_shared_tuple_manual.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/generics_shared_tuple_manual.rs`
+            - `module/core/former/tests/inc/former_enum_tests/generics_shared_tuple_only_test.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/generics_shared_tuple_only_test.rs`
+            - `module/core/former/tests/inc/former_enum_tests/scalar_generic_tuple_derive.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/scalar_generic_tuple_derive.rs`
+            - `module/core/former/tests/inc/former_enum_tests/scalar_generic_tuple_manual.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/scalar_generic_tuple_manual.rs`
+            - `module/core/former/tests/inc/former_enum_tests/scalar_generic_tuple_only_test.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/scalar_generic_tuple_only_test.rs`
+            - `module/core/former/tests/inc/former_enum_tests/subform_collection_test.rs` -> `module/core/former/tests/inc/former_enum_tests/compile_fail/subform_collection_test.rs` (remains top-level compile_fail)
+            - `module/core/former/tests/inc/former_enum_tests/tuple_multi_default_derive.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/tuple_multi_default_derive.rs`
+            - `module/core/former/tests/inc/former_enum_tests/tuple_multi_default_manual.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/tuple_multi_default_manual.rs`
+            - `module/core/former/tests/inc/former_enum_tests/tuple_multi_default_only_test.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/tuple_multi_default_only_test.rs`
+            - `module/core/former/tests/inc/former_enum_tests/tuple_multi_scalar_derive.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/tuple_multi_scalar_derive.rs`
+            - `module/core/former/tests/inc/former_enum_tests/tuple_multi_scalar_manual.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/tuple_multi_scalar_manual.rs`
+            - `module/core/former/tests/inc/former_enum_tests/tuple_multi_scalar_only_test.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/tuple_multi_scalar_only_test.rs`
+            - `module/core/former/tests/inc/former_enum_tests/tuple_multi_standalone_args_derive.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/tuple_multi_standalone_args_derive.rs`
+            - `module/core/former/tests/inc/former_enum_tests/tuple_multi_standalone_args_manual.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/tuple_multi_standalone_args_manual.rs`
+            - `module/core/former/tests/inc/former_enum_tests/tuple_multi_standalone_args_only_test.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/tuple_multi_standalone_args_only_test.rs`
+            - `module/core/former/tests/inc/former_enum_tests/tuple_multi_standalone_derive.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/tuple_multi_standalone_derive.rs`
+            - `module/core/former/tests/inc/former_enum_tests/tuple_multi_standalone_manual.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/tuple_multi_standalone_manual.rs`
+            - `module/core/former/tests/inc/former_enum_tests/tuple_multi_standalone_only_test.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/tuple_multi_standalone_only_test.rs`
+            - `module/core/former/tests/inc/former_enum_tests/tuple_zero_fields_derive.rs` -> `module/core/former/tests/inc/former_enum_tests/unit_tests/tuple_zero_fields_derive.rs`
+            - `module/core/former/tests/inc/former_enum_tests/tuple_zero_fields_manual.rs` -> `module/core/former/tests/inc/former_enum_tests/unit_tests/tuple_zero_fields_manual.rs`
+            - `module/core/former/tests/inc/former_enum_tests/tuple_zero_fields_only_test.rs` -> `module/core/former/tests/inc/former_enum_tests/unit_tests/tuple_zero_fields_only_test.rs`
+            - `module/core/former/tests/inc/former_enum_tests/unit_variant_derive.rs` -> `module/core/former/tests/inc/former_enum_tests/unit_tests/unit_variant_derive.rs`
+            - `module/core/former/tests/inc/former_enum_tests/unit_variant_manual.rs` -> `module/core/former/tests/inc/former_enum_tests/unit_tests/unit_variant_manual.rs`
+            - `module/core/former/tests/inc/former_enum_tests/unit_variant_only_test.rs` -> `module/core/former/tests/inc/former_enum_tests/unit_tests/unit_variant_only_test.rs`
+            - `module/core/former/tests/inc/former_enum_tests/usecase1_derive.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/usecase1_derive.rs`
+            - `module/core/former/tests/inc/former_enum_tests/usecase1_manual.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/usecase1_manual.rs`
+            - `module/core/former/tests/inc/former_enum_tests/usecase1_only_test.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/usecase1_only_test.rs`
+            - `module/core/former/tests/inc/former_enum_tests/usecase1.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/usecase1.rs`
+        *   **Files to Split and Move:**
+            - `module/core/former/tests/inc/former_enum_tests/enum_named_fields_derive.rs` ->
+                - `module/core/former/tests/inc/former_enum_tests/unit_tests/enum_named_fields_unit_derive.rs` (Unit variants)
+                - `module/core/former/tests/inc/former_enum_tests/unnamed_tests/enum_named_fields_unnamed_derive.rs` (Zero-field Unnamed variants)
+                - `module/core/former/tests/inc/former_enum_tests/named_tests/enum_named_fields_named_derive.rs` (Zero, One, Two Fields Named variants, InnerForSubform struct)
+            - `module/core/former/tests/inc/former_enum_tests/enum_named_fields_manual.rs` ->
+                - `module/core/former/tests/inc/former_enum_tests/unit_tests/enum_named_fields_unit_manual.rs` (Manual impls for Unit variants)
+                - `module/core/former/tests/inc/former_enum_tests/unnamed_tests/enum_named_fields_unnamed_manual.rs` (Manual impls for Zero-field Unnamed variants)
+                - `module/core/former/tests/inc/former_enum_tests/named_tests/enum_named_fields_named_manual.rs` (Manual impls for Zero, One, Two Fields Named variants, InnerForSubform struct, InnerForSubformFormer, FormingEnd for named variants)
+            - `module/core/former/tests/inc/former_enum_tests/enum_named_fields_only_test.rs` ->
+                - `module/core/former/tests/inc/former_enum_tests/unit_tests/enum_named_fields_unit_only_test.rs` (Unit Variant tests)
+                - `module/core/former/tests/inc/former_enum_tests/unnamed_tests/enum_named_fields_unnamed_only_test.rs` (Zero Fields Unnamed tests)
+                - `module/core/former/tests/inc/former_enum_tests/named_tests/enum_named_fields_named_only_test.rs` (Zero, One, Two Fields Named tests)
+            - `module/core/former/tests/inc/former_enum_tests/generics_in_tuple_variant_derive.rs` ->
+                - `module/core/former/tests/inc/former_enum_tests/unit_tests/generics_in_tuple_variant_unit_derive.rs` (Unit variant)
+                - `module/core/former/tests/inc/former_enum_tests/unnamed_tests/generics_in_tuple_variant_tuple_derive.rs` (Tuple variant with generics, InnerGeneric struct)
+            - `module/core/former/tests/inc/former_enum_tests/generics_in_tuple_variant_manual.rs` ->
+                - `module/core/former/tests/inc/former_enum_tests/unit_tests/generics_in_tuple_variant_unit_manual.rs` (Manual impls for Unit variant)
+                - `module/core/former/tests/inc/former_enum_tests/unnamed_tests/generics_in_tuple_variant_tuple_manual.rs` (Manual impls for Tuple variant with generics, InnerGeneric struct, related former infrastructure)
+            - `module/core/former/tests/inc/former_enum_tests/keyword_variant_derive.rs` ->
+                - `module/core/former/tests/inc/former_enum_tests/unit_tests/keyword_variant_unit_derive.rs` (Unit variant r#Loop)
+                - `module/core/former/tests/inc/former_enum_tests/unnamed_tests/keyword_variant_tuple_derive.rs` (Tuple variants, StringFormerStub, InnerData)
+            - `module/core/former/tests/inc/former_enum_tests/keyword_variant_only_test.rs` ->
+                - `module/core/former/tests/inc/former_enum_tests/unit_tests/keyword_variant_unit_only_test.rs` (Test for r#Loop)
+                - `module/core/former/tests/inc/former_enum_tests/unnamed_tests/keyword_variant_tuple_only_test.rs` (Tests for tuple variants)
+            - `module/core/former/tests/inc/former_enum_tests/standalone_constructor_derive.rs` ->
+                - `module/core/former/tests/inc/former_enum_tests/unit_tests/standalone_constructor_unit_derive.rs` (UnitVariant)
+                - `module/core/former/tests/inc/former_enum_tests/unnamed_tests/standalone_constructor_tuple_derive.rs` (TupleVariant)
+                - `module/core/former/tests/inc/former_enum_tests/named_tests/standalone_constructor_named_derive.rs` (StructVariant)
+            - `module/core/former/tests/inc/former_enum_tests/standalone_constructor_only_test.rs` ->
+                - `module/core/former/tests/inc/former_enum_tests/unit_tests/standalone_constructor_unit_only_test.rs` (unit_variant_test)
+                - `module/core/former/tests/inc/former_enum_tests/unnamed_tests/standalone_constructor_tuple_only_test.rs` (tuple_variant_test)
+                - `module/core/former/tests/inc/former_enum_tests/named_tests/standalone_constructor_named_only_test.rs` (struct_variant_test)
+            - `module/core/former/tests/inc/former_enum_tests/standalone_constructor_args_derive.rs` ->
+                - `module/core/former/tests/inc/former_enum_tests/unit_tests/standalone_constructor_args_unit_derive.rs` (UnitVariantArgs)
+                - `module/core/former/tests/inc/former_enum_tests/unnamed_tests/standalone_constructor_args_tuple_derive.rs` (TupleVariantArgs, MultiTupleArgs)
+                - `module/core/former/tests/inc/former_enum_tests/named_tests/standalone_constructor_args_named_derive.rs` (StructVariantArgs, MultiStructArgs)
+            - `module/core/former/tests/inc/former_enum_tests/standalone_constructor_args_manual.rs` ->
+                - `module/core/former/tests/inc/former_enum_tests/unit_tests/standalone_constructor_args_unit_manual.rs` (Manual impls for UnitVariantArgs)
+                - `module/core/former/tests/inc/former_enum_tests/unnamed_tests/standalone_constructor_args_tuple_manual.rs` (Manual impls for TupleVariantArgs, MultiTupleArgs)
+                - `module/core/former/tests/inc/former_enum_tests/named_tests/standalone_constructor_args_named_manual.rs` (Manual impls for StructVariantArgs, MultiStructArgs)
+            - `module/core/former/tests/inc/former_enum_tests/standalone_constructor_args_only_test.rs` ->
+                - `module/core/former/tests/inc/former_enum_tests/unit_tests/standalone_constructor_args_unit_only_test.rs` (unit_variant_args_test)
+                - `module/core/former/tests/inc/former_enum_tests/unnamed_tests/standalone_constructor_args_tuple_only_test.rs` (tuple_variant_args_test, multi_tuple_variant_args_test)
+                - `module/core/former/tests/inc/former_enum_tests/named_tests/standalone_constructor_args_named_only_test.rs` (struct_variant_args_test, multi_struct_variant_args_test)
+
+        *   **Compile-Fail Files to Move:**
+            - `module/core/former/tests/inc/former_enum_tests/compile_fail/struct_zero_default_error.rs` -> `module/core/former/tests/inc/former_enum_tests/named_tests/compile_fail/struct_zero_default_error.rs`
+            - `module/core/former/tests/inc/former_enum_tests/compile_fail/struct_zero_subform_scalar_error.rs` -> `module/core/former/tests/inc/former_enum_tests/named_tests/compile_fail/struct_zero_subform_scalar_error.rs`
+            - `module/core/former/tests/inc/former_enum_tests/compile_fail/tuple_multi_subform_scalar_error.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/compile_fail/tuple_multi_subform_scalar_error.rs`
+            - `module/core/former/tests/inc/former_enum_tests/compile_fail/tuple_single_subform_non_former_error.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/compile_fail/tuple_single_subform_non_former_error.rs`
+            - `module/core/former/tests/inc/former_enum_tests/compile_fail/tuple_zero_subform_scalar_error.rs` -> `module/core/former/tests/inc/former_enum_tests/unnamed_tests/compile_fail/tuple_zero_subform_scalar_error.rs`
+            - `module/core/former/tests/inc/former_enum_tests/compile_fail/unit_subform_scalar_error.rs` -> `module/core/former/tests/inc/former_enum_tests/unit_tests/compile_fail/unit_subform_scalar_error.rs`
+            - `module/core/former/tests/inc/former_enum_tests/compile_fail/subform_collection_test.rs` -> `module/core/former/tests/inc/former_enum_tests/compile_fail/subform_collection_test.rs` (remains top-level compile_fail)
+
+    *   **Detailed Plan Step 3:** Create a clear mapping: `Original File Path -> New File Path(s)`. (Completed in analysis above)
+    *   **Detailed Plan Step 4:** Plan the `mod.rs` structure: (Completed in analysis above)
+        *   `former_enum_tests/mod.rs`: Will declare `pub mod unit_tests;`, `pub mod unnamed_tests;`, `pub mod named_tests;`. Add `pub mod compile_fail;`. Preserve existing module-level documentation (test matrices).
+        *   `former_enum_tests/unit_tests/mod.rs`: Will declare commented-out `pub mod ...;` for all files moved/split into `unit_tests/`. Add `pub mod compile_fail;` (commented out).
+        *   `former_enum_tests/unnamed_tests/mod.rs`: Will declare commented-out `pub mod ...;` for all files moved/split into `unnamed_tests/`. Add `pub mod compile_fail;` (commented out).
+        *   `former_enum_tests/named_tests/mod.rs`: Will declare commented-out `pub mod ...;` for all files moved/split into `named_tests/`. Add `pub mod compile_fail;` (commented out).
+        *   `module/core/former/tests/inc/former_enum_tests/unit_tests/compile_fail/mod.rs`: Create this file, initially empty.
+        *   `module/core/former/tests/inc/former_enum_tests/unnamed_tests/compile_fail/mod.rs`: Create this file, initially empty.
+        *   `module/core/former/tests/inc/former_enum_tests/named_tests/compile_fail/mod.rs`: Create this file, initially empty.
     *   **Verification Strategy:** User reviews the proposed file mapping, splitting strategy for mixed-aspect files, and the planned `mod.rs` structures.
+    *   **Test Matrix:** N/A for this planning increment.
     *   **Commit Message:** `docs(former): Plan detailed restructuring of enum tests directory`
 
-*   [⚫] **Increment 2: Create Directory Structure and Top-Level `mod.rs`**
+*   [✅] **Increment 2: Create Directory Structure and Top-Level `mod.rs`**
     *   **Goal:** Implement the directory hierarchy and the main `former_enum_tests/mod.rs`.
     *   **Target Crate(s):** `former`
     *   **Detailed Plan Step 1:** Create directories:
         *   `module/core/former/tests/inc/former_enum_tests/unit_tests/`
         *   `module/core/former/tests/inc/former_enum_tests/unnamed_tests/`
         *   `module/core/former/tests/inc/former_enum_tests/named_tests/`
-        *   If planned: `module/core/former/tests/inc/former_enum_tests/compile_fail/` (top-level)
-        *   If planned: `module/core/former/tests/inc/former_enum_tests/unit_tests/compile_fail/`
-        *   If planned: `module/core/former/tests/inc/former_enum_tests/unnamed_tests/compile_fail/`
-        *   If planned: `module/core/former/tests/inc/former_enum_tests/named_tests/compile_fail/`
+        *   `module/core/former/tests/inc/former_enum_tests/unit_tests/compile_fail/`
+        *   `module/core/former/tests/inc/former_enum_tests/unnamed_tests/compile_fail/`
+        *   `module/core/former/tests/inc/former_enum_tests/named_tests/compile_fail/`
     *   **Detailed Plan Step 2:** Create empty `mod.rs` files in each new subdirectory:
         *   `unit_tests/mod.rs`
         *   `unnamed_tests/mod.rs`
         *   `named_tests/mod.rs`
-        *   And in their `compile_fail` subdirectories if created.
+        *   `unit_tests/compile_fail/mod.rs`
+        *   `unnamed_tests/compile_fail/mod.rs`
+        *   `named_tests/compile_fail/mod.rs`
     *   **Detailed Plan Step 3:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs`:
         *   Remove all old `mod individual_file;` declarations.
         *   Add `pub mod unit_tests;`, `pub mod unnamed_tests;`, `pub mod named_tests;`.
-        *   Add `pub mod compile_fail;` if a top-level one is kept.
+        *   Add `pub mod compile_fail;`.
         *   Preserve existing module-level documentation (test matrices).
     *   **Verification Strategy:** User applies changes. Run `cargo check --tests --package former`. Expect it to pass (many "file not found" errors for tests are expected from the parent `inc/mod.rs` if it still tries to mod them directly, or just passes if `inc/mod.rs` only mods `former_enum_tests`).
     *   **Commit Message:** `refactor(former): Create directory hierarchy for categorized enum tests`
@@ -92,6 +187,7 @@
             *   Copy only the unit-variant-specific test functions, helper code, and `include!` directives (if the included file can be partially included or is also split) into this new file.
             *   Leave the original file in place for now; its remaining parts will be processed in later increments.
     *   **Detailed Plan Step 2:** Modify `module/core/former/tests/inc/former_enum_tests/unit_tests/mod.rs` to add (commented-out) `pub mod ...;` declarations for each new/moved file in this directory.
+    *   **Detailed Plan Step 3:** Move relevant `compile_fail/*.rs` files identified for `unit_tests/compile_fail/` into that directory and update `unit_tests/compile_fail/mod.rs` (commented out).
     *   **Verification Strategy:** User applies changes. Run `cargo check --tests --package former`. Fix any path issues in `use` statements or `include!` macros within the moved/split files.
     *   **Commit Message:** `refactor(former): Relocate and split unit enum test files`
 
@@ -103,9 +199,9 @@
         *   If the file tests *mixed* aspects (and wasn't fully processed in Increment 3):
             *   Create a new file in `unnamed_tests/` (e.g., `keyword_variant_tuple_derive.rs`).
             *   Copy only the tuple-variant-specific test functions, etc., into this new file.
-            *   If this step empties the original mixed-aspect file of its tuple content, the original might be deleted if its other aspects were also processed.
-        *   Move relevant `compile_fail/tuple_*.rs` files into `unnamed_tests/compile_fail/` and update `unnamed_tests/compile_fail/mod.rs` (commented out).
-    *   **Detailed Plan Step 2:** Modify `module/core/former/tests/inc/former_enum_tests/unnamed_tests/mod.rs` to add (commented-out) `pub mod ...;` declarations for new/moved files and `pub mod compile_fail;` if applicable.
+            *   If this step empties the original mixed-aspect file of its tuple content, that original might be deleted if its other aspects were also processed.
+    *   **Detailed Plan Step 2:** Modify `module/core/former/tests/inc/former_enum_tests/unnamed_tests/mod.rs` to add (commented-out) `pub mod ...;` declarations for new/moved files.
+    *   **Detailed Plan Step 3:** Move relevant `compile_fail/*.rs` files identified for `unnamed_tests/compile_fail/` into that directory and update `unnamed_tests/compile_fail/mod.rs` (commented out).
     *   **Verification Strategy:** User applies changes. Run `cargo check --tests --package former`. Fix paths.
     *   **Commit Message:** `refactor(former): Relocate and split unnamed (tuple) enum test files`
 
@@ -118,8 +214,8 @@
             *   Create a new file in `named_tests/` (e.g., `keyword_variant_named_derive.rs`).
             *   Copy only the named-variant-specific content.
             *   If this step processes the last remaining part of an original mixed-aspect file, that original file can now be deleted.
-        *   Move relevant `compile_fail/*struct*.rs` files into `named_tests/compile_fail/` and update `named_tests/compile_fail/mod.rs` (commented out).
-    *   **Detailed Plan Step 2:** Modify `module/core/former/tests/inc/former_enum_tests/named_tests/mod.rs` to add (commented-out) `pub mod ...;` declarations and `pub mod compile_fail;` if applicable.
+    *   **Detailed Plan Step 2:** Modify `module/core/former/tests/inc/former_enum_tests/named_tests/mod.rs` to add (commented-out) `pub mod ...;` declarations.
+    *   **Detailed Plan Step 3:** Move relevant `compile_fail/*.rs` files identified for `named_tests/compile_fail/` into that directory and update `named_tests/compile_fail/mod.rs` (commented out).
     *   **Verification Strategy:** User applies changes. Run `cargo check --tests --package former`. Fix paths.
     *   **Commit Message:** `refactor(former): Relocate and split named (struct) enum test files`
 
@@ -127,7 +223,7 @@
     *   **Goal:** Ensure the main `former_enum_tests/mod.rs` is clean, all original files from `former_enum_tests/` have been either moved, split and moved, or intentionally deleted (if their content was fully redistributed). Verify the overall project still compiles.
     *   **Target Crate(s):** `former`
     *   **Detailed Plan Step 1:** Review `module/core/former/tests/inc/former_enum_tests/`. Ensure no old test files remain directly in this directory (unless it's a top-level `compile_fail/mod.rs` or other non-variant-specific files).
-    *   **Detailed Plan Step 2:** Review `module/core/former/tests/inc/former_enum_tests/mod.rs` to ensure it only contains `pub mod unit_tests; pub mod unnamed_tests; pub mod named_tests;` (and potentially `pub mod compile_fail;`) and necessary `use` statements/documentation.
+    *   **Detailed Plan Step 2:** Review `module/core/former/tests/inc/former_enum_tests/mod.rs` to ensure it only contains `pub mod unit_tests; pub mod unnamed_tests; pub mod named_tests;` and `pub mod compile_fail;` and necessary `use` statements/documentation.
     *   **Detailed Plan Step 3:** Run `cargo check --tests --package former`. Address any remaining path or module system errors. The goal here is successful compilation of the new structure, not necessarily passing all tests (as most test `mod` declarations inside subdirectories are still commented out).
     *   **Verification Strategy:** `cargo check` passes. Manual review confirms no test files/logic were lost and categorization is correct.
     *   **Commit Message:** `refactor(former): Finalize restructuring of enum tests directory`
