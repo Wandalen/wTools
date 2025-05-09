@@ -121,7 +121,7 @@ This plan focuses on verifying the behavior for **Tuple Variants**. The relevant
 
 ## Increments
 
-*   [⚫] **Increment 1: Document Tuple Variant Matrix**
+*   [✅] **Increment 1: Document Tuple Variant Matrix**
     *   **Goal:** Add the Tuple Variant Test Matrix documentation to `former_enum_tests/mod.rs`, preserving existing matrices. Keep all tuple test modules commented out for now.
     *   **Target Crate(s):** `former`
     *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs`:
