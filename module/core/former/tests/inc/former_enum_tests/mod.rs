@@ -127,7 +127,8 @@ use test_tools::exposed::*;
 
 // Increment 2: Zero-Field Tuple Variants
 // mod tuple_zero_fields_derive;
-// mod tuple_zero_fields_manual;
+mod enum_named_fields_manual;
+// mod enum_named_fields_derive;
 
 // // Increment 3: Single-Field Tuple Variants - T1 derives Former
 // mod basic_derive;

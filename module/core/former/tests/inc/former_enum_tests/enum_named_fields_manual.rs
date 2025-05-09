@@ -110,8 +110,8 @@ impl EnumWithNamedFields
   // No method for VariantZeroDefault (error case)
 
   // Manual implementation of standalone constructor for S0.4
-  #[ inline( always ) ]
-  pub fn standalone_variant_zero_scalar() -> Self { Self::VariantZeroScalar {} }
+  // #[ inline( always ) ]
+  // pub fn standalone_variant_zero_scalar() -> Self { Self::VariantZeroScalar {} }
 
   // --- Zero Fields (Unnamed - Tuple-like) ---
   #[ inline( always ) ]
@@ -134,30 +134,30 @@ impl EnumWithNamedFields
   }
 
   // Manual implementation of standalone constructor for S1.4
-  #[ inline( always ) ]
-  pub fn standalone_variant_one_default() -> InnerForSubformFormer<InnerForSubformFormerDefinition<(), Self, EnumWithNamedFieldsVariantOneDefaultEnd>> {
-      InnerForSubformFormer::begin(None, None, EnumWithNamedFieldsVariantOneDefaultEnd::default())
-  }
+  // #[ inline( always ) ]
+  // pub fn standalone_variant_one_default() -> InnerForSubformFormer<InnerForSubformFormerDefinition<(), Self, EnumWithNamedFieldsVariantOneDefaultEnd>> {
+  //     InnerForSubformFormer::begin(None, None, EnumWithNamedFieldsVariantOneDefaultEnd::default())
+  // }
 
   // Manual implementation of standalone constructor for S1.5
-  #[ inline( always ) ]
-  pub fn standalone_variant_one_scalar( field_a : impl Into< String > ) -> Self { Self::VariantOneScalar { field_a: field_a.into() } }
+  // #[ inline( always ) ]
+  // pub fn standalone_variant_one_scalar( field_a : impl Into< String > ) -> Self { Self::VariantOneScalar { field_a: field_a.into() } }
 
   // Manual implementation of standalone constructor for S1.6
-  #[ inline( always ) ]
-  pub fn standalone_variant_one_subform() -> InnerForSubformFormer<InnerForSubformFormerDefinition<(), Self, EnumWithNamedFieldsVariantOneSubformEnd>> {
-      InnerForSubformFormer::begin(None, None, EnumWithNamedFieldsVariantOneSubformEnd::default())
-  }
+  // #[ inline( always ) ]
+  // pub fn standalone_variant_one_subform() -> InnerForSubformFormer<InnerForSubformFormerDefinition<(), Self, EnumWithNamedFieldsVariantOneSubformEnd>> {
+  //     InnerForSubformFormer::begin(None, None, EnumWithNamedFieldsVariantOneSubformEnd::default())
+  // }
 
   // Manual implementation of standalone constructor for S1.7 (assuming #[arg_for_constructor] on field_a)
   // This case is tricky for manual implementation as it depends on the macro's arg_for_constructor logic.
   // A simplified manual equivalent might be a direct constructor.
   // Let's add a direct constructor as a placeholder, noting it might differ from macro output.
   // qqq : Manual implementation for S1.7 might not perfectly match macro output due to arg_for_constructor complexity.
-  #[ inline( always ) ]
-  pub fn standalone_variant_one_default_with_arg( field_c : impl Into< InnerForSubform > ) -> Self {
-      Self::VariantOneDefault { field_c: field_c.into() }
-  }
+  // #[ inline( always ) ]
+  // pub fn standalone_variant_one_default_with_arg( field_c : impl Into< InnerForSubform > ) -> Self {
+  //     Self::VariantOneDefault { field_c: field_c.into() }
+  // }
 
 
   // --- Two Fields (Named - Struct-like) ---
@@ -168,62 +168,62 @@ impl EnumWithNamedFields
   // No method for VariantTwoDefault (error case)
 
   // Manual implementation of standalone constructor for SN.4
-  #[ inline( always ) ]
-  pub fn standalone_variant_two_default() -> InnerForSubformFormer<InnerForSubformFormerDefinition<(), Self, EnumWithNamedFieldsVariantTwoDefaultEnd>> {
-      // qqq : Need to define EnumWithNamedFieldsVariantTwoDefaultEnd for this manual impl
-      // For now, using InnerForSubformFormerDefinition as a placeholder.
-      // This will likely cause a compilation error until the correct End struct is defined.
-      InnerForSubformFormer::begin(None, None, InnerForSubformFormerDefinition::<(), Self, EnumWithNamedFieldsVariantTwoDefaultEnd>::default())
-  }
+  // #[ inline( always ) ]
+  // pub fn standalone_variant_two_default() -> InnerForSubformFormer<InnerForSubformFormerDefinition<(), Self, EnumWithNamedFieldsVariantTwoDefaultEnd>> {
+  //     // qqq : Need to define EnumWithNamedFieldsVariantTwoDefaultEnd for this manual impl
+  //     // For now, using InnerForSubformFormerDefinition as a placeholder.
+  //     // This will likely cause a compilation error until the correct End struct is defined.
+  //     InnerForSubformFormer::begin(None, None, InnerForSubformFormerDefinition::<(), Self, EnumWithNamedFieldsVariantTwoDefaultEnd>::default())
+  // }
 
   // Manual implementation of standalone constructor for SN.5
-  #[ inline( always ) ]
-  pub fn standalone_variant_two_scalar( field_d : impl Into< i32 >, field_e : impl Into< bool > ) -> Self {
-      Self::VariantTwoScalar { field_d: field_d.into(), field_e: field_e.into() }
-  }
+  // #[ inline( always ) ]
+  // pub fn standalone_variant_two_scalar( field_d : impl Into< i32 >, field_e : impl Into< bool > ) -> Self {
+  //     Self::VariantTwoScalar { field_d: field_d.into(), field_e: field_e.into() }
+  // }
 
   // Manual implementation of standalone constructor for SN.6
-  #[ inline( always ) ]
-  pub fn standalone_variant_two_subform() -> InnerForSubformFormer<InnerForSubformFormerDefinition<(), Self, EnumWithNamedFieldsVariantTwoSubformEnd>> {
-      // qqq : Need to define EnumWithNamedFieldsVariantTwoSubformEnd for this manual impl
-      // For now, using InnerForSubformFormerDefinition as a placeholder.
-      // This will likely cause a compilation error until the correct End struct is defined.
-      InnerForSubformFormer::begin(None, None, InnerForSubformFormerDefinition::<(), Self, EnumWithNamedFieldsVariantTwoSubformEnd>::default())
-  }
+  // #[ inline( always ) ]
+  // pub fn standalone_variant_two_subform() -> InnerForSubformFormer<InnerForSubformFormerDefinition<(), Self, EnumWithNamedFieldsVariantTwoSubformEnd>> {
+  //     // qqq : Need to define EnumWithNamedFieldsVariantTwoSubformEnd for this manual impl
+  //     // For now, using InnerForSubformFormerDefinition as a placeholder.
+  //     // This will likely cause a compilation error until the correct End struct is defined.
+  //     InnerForSubformFormer::begin(None, None, EnumWithNamedFieldsVariantTwoSubformEnd::default())
+  // }
 
   // Manual implementation of standalone constructor for SN.7 (assuming #[arg_for_constructor] on some fields)
   // Similar to S1.7, this is complex for manual implementation.
   // Let's add a direct constructor with all fields as args as a placeholder.
   // qqq : Manual implementation for SN.7 might not perfectly match macro output due to arg_for_constructor complexity.
-  #[ inline( always ) ]
-  pub fn standalone_variant_two_default_with_args( field_d : impl Into< i32 >, field_e : impl Into< bool > ) -> Self {
-      Self::VariantTwoDefault { field_d: field_d.into(), field_e: field_e.into() }
-  }
+  // #[ inline( always ) ]
+  // pub fn standalone_variant_two_default_with_args( field_d : impl Into< i32 >, field_e : impl Into< bool > ) -> Self {
+  //     Self::VariantOneDefault { field_d: field_d.into(), field_e: field_e.into() }
+  // }
 
 
 }
 
 // qqq : Need to define EnumWithNamedFieldsVariantTwoDefaultEnd and EnumWithNamedFieldsVariantTwoSubformEnd for manual impls
 // Placeholder definitions to avoid immediate compilation errors
-#[derive(Default, Debug)] pub struct EnumWithNamedFieldsVariantTwoDefaultEnd;
-impl FormingEnd<InnerForSubformFormerDefinitionTypes<(), EnumWithNamedFields>> for EnumWithNamedFieldsVariantTwoDefaultEnd {
-    #[inline(always)] fn call(&self, sub_storage: InnerForSubformFormerStorage, _context: Option<()>) -> EnumWithNamedFields {
-        // qqq : This implementation is incorrect, needs to handle the actual fields of VariantTwoDefault
-        // This will likely require a different approach or a dedicated manual struct for VariantTwoDefault's former.
-        // For now, returning a placeholder variant.
-        EnumWithNamedFields::UnitVariantScalar // Placeholder
-    }
-}
+// #[derive(Default, Debug)] pub struct EnumWithNamedFieldsVariantTwoDefaultEnd;
+// impl FormingEnd<InnerForSubformFormerDefinitionTypes<(), EnumWithNamedFields>> for EnumWithNamedFieldsVariantTwoDefaultEnd {
+//     #[inline(always)] fn call(&self, sub_storage: InnerForSubformFormerStorage, _context: Option<()>) -> EnumWithNamedFields {
+//         // qqq : This implementation is incorrect, needs to handle the actual fields of VariantTwoDefault
+//         // This will likely require a different approach or a dedicated manual struct for VariantTwoDefault's former.
+//         // For now, returning a placeholder variant.
+//         EnumWithNamedFields::UnitVariantScalar // Placeholder
+//     }
+// }
 
-#[derive(Default, Debug)] pub struct EnumWithNamedFieldsVariantTwoSubformEnd;
-impl FormingEnd<InnerForSubformFormerDefinitionTypes<(), EnumWithNamedFields>> for EnumWithNamedFieldsVariantTwoSubformEnd {
-    #[inline(always)] fn call(&self, sub_storage: InnerForSubformFormerStorage, _context: Option<()>) -> EnumWithNamedFields {
-        // qqq : This implementation is incorrect, needs to handle the actual fields of VariantTwoSubform
-        // This will likely require a different approach or a dedicated manual struct for VariantTwoSubform's former.
-        // For now, returning a placeholder variant.
-        EnumWithNamedFields::UnitVariantScalar // Placeholder
-    }
-}
+// #[derive(Default, Debug)] pub struct EnumWithNamedFieldsVariantTwoSubformEnd;
+// impl FormingEnd<InnerForSubformFormerDefinitionTypes<(), EnumWithNamedFields>> for EnumWithNamedFieldsVariantTwoSubformEnd {
+//     #[inline(always)] fn call(&self, sub_storage: InnerForSubformFormerStorage, _context: Option<()>) -> EnumWithNamedFields {
+//         // qqq : This implementation is incorrect, needs to handle the actual fields of VariantTwoSubform
+//         // This will likely require a different approach or a dedicated manual struct for VariantTwoSubform's former.
+//         // For now, returning a placeholder variant.
+//         EnumWithNamedFields::UnitVariantScalar // Placeholder
+//     }
+// }
 
 
 // Include the test logic file

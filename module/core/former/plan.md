@@ -22,8 +22,7 @@
         *   `compile_fail/tuple_zero_subform_scalar_error.rs`
     *   **Single-Field Tuple (`V(T1)`):**
         *   `basic_derive.rs`, `basic_manual.rs`, `basic_only_test.rs`
-        *   `generics_in_tuple_variant_derive.rs`, `generics_in_tuple_variant_manual.rs`, `generics_in_tuple_variant_only_test.rs`
-        *   `generics_shared_tuple_derive.rs`, `generics_shared_tuple_manual.rs`, `generics_shared_tuple_only_test.rs`
+        *   `generics_in_tuple_variant_derive.rs`, `generics_in_tuple_variant_manual.rs`, `generics_shared_tuple_derive.rs`, `generics_shared_tuple_manual.rs`, `generics_shared_tuple_only_test.rs`
         *   `generics_independent_tuple_derive.rs`, `generics_independent_tuple_manual.rs`, `generics_independent_tuple_only_test.rs`
         *   `scalar_generic_tuple_derive.rs`, `scalar_generic_tuple_manual.rs`, `scalar_generic_tuple_only_test.rs`
         *   `standalone_constructor_derive.rs` (Relevant Variant: `TupleVariant`)
@@ -130,16 +129,19 @@ This plan focuses on verifying the behavior for **Tuple Variants**. The relevant
     *   **Verification Strategy:** Request user to apply changes and run `cargo check --tests --package former`. Confirm no *new* compilation errors related to documentation.
     *   **Commit Message:** `docs(former): Add test matrix for tuple enum variants`
 
-*   [⚫] **Increment 2: Verify Zero-Field Tuple Variants (`V()`)**
+*   [⏳] **Increment 2: Verify Zero-Field Tuple Variants (`V()`)**
     *   **Goal:** Activate and verify `#[derive(Former)]` for zero-field tuple variants (Rules 1b, 3b, 4) using tests in `enum_named_fields_*`. Verify compile error for Rule 2b.
     *   **Target Crate(s):** `former`, `former_meta`
+    *   **Pre-Analysis:** The relevant test files (`enum_named_fields_manual.rs`, `enum_named_fields_derive.rs`, `enum_named_fields_only_test.rs`, `compile_fail/tuple_zero_subform_scalar_error.rs`) are expected to follow the Proc Macro Development Workflow structure, with `_only_test.rs` included by `_manual.rs` and `_derive.rs`.
+    *   **Crucial Design Rules:** Expected Behavior Rules 1b, 2b, 3b, 4. [Proc Macro: Development Workflow](#proc-macro-development-workflow).
+    *   **Relevant Behavior Rules:** Rules 1b, 2b, 3b, 4 from "Expected Enum Former Behavior Rules".
+    *   **Test Matrix:** This increment covers combinations T0.1 - T0.5 from the "Test Matrix Coverage (Tuple Variants)" section.
     *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs` to uncomment `mod enum_named_fields_manual;`.
-    *   **Detailed Plan Step 2:** Verify manual implementation for `VariantZeroUnnamedDefault` and `VariantZeroUnnamedScalar` in `enum_named_fields_manual.rs` passes tests (`cargo test ... enum_named_fields_manual`). Fix if needed.
+    *   **Detailed Plan Step 2:** Verify manual implementation for `VariantZeroUnnamedDefault` and `VariantZeroUnnamedScalar` in `enum_named_fields_manual.rs` passes tests (`cargo test --package former former_enum_tests::enum_named_fields_manual`). Fix if needed.
     *   **Detailed Plan Step 3:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs` to uncomment `mod enum_named_fields_derive;`.
-    *   **Detailed Plan Step 4:** Verify derived implementation for `VariantZeroUnnamedDefault` and `VariantZeroUnnamedScalar` in `enum_named_fields_derive.rs` passes tests (`cargo test ... enum_named_fields_derive`). Debug `tuple_zero_fields_handler.rs` if needed. *Handle widespread failures selectively if they occur.*
+    *   **Detailed Plan Step 4:** Verify derived implementation for `VariantZeroUnnamedDefault` and `VariantZeroUnnamedScalar` in `enum_named_fields_derive.rs` passes tests (`cargo test --package former former_enum_tests::enum_named_fields_derive`). Debug `tuple_zero_fields_handler.rs` if needed. *Handle widespread failures selectively if they occur.*
     *   **Detailed Plan Step 5:** Modify `module/core/former/tests/inc/former_enum_tests/mod.rs` to uncomment `mod compile_fail;` (if not already active).
     *   **Detailed Plan Step 6:** Verify `compile_fail/tuple_zero_subform_scalar_error.rs` fails compilation as expected (`cargo test --package former former_enum_tests::compile_fail::tuple_zero_subform_scalar_error`).
-    *   **Crucial Design Rules:** Expected Behavior Rules 1b, 2b, 3b, 4. [Proc Macro: Development Workflow](#proc-macro-development-workflow).
     *   **Verification Strategy:** Tests pass for manual/derive, compile-fail test fails compilation.
     *   **Commit Message:** `feat(former): Verify zero-field tuple enum variant support`
 
