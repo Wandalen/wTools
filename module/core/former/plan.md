@@ -8,7 +8,7 @@
 *   Update `mod.rs` files within each subdirectory accurately. Module declarations for individual test files will remain **commented out**.
 *   Ensure the `former` package compiles without errors or warnings after refactoring (`cargo check --package former --tests`).
 *   Ensure `cargo test --package former --test tests` passes (acknowledging that specific enum tests within the refactored area will not run due to commented-out module declarations).
-*   Preserve all existing test logic. If a test file, after moving/splitting, causes a persistent compilation error (not related to paths), the specific failing test function or its module declaration will be commented out to allow structural verification to proceed.
+*   Preserve all existing test logic. If a test file, after moving/splitting, causes a persistent compilation error (not related to paths), the specific failing test function or its `mod` declaration in the subdirectory `mod.rs` should be commented out to allow structural verification to proceed.
 
 ## Relevant Context
 
@@ -164,7 +164,7 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
 ### Requirements
 *   **Adherence:** Strictly follow `code/gen` instructions, Design Rules, and Codestyle Rules.
 *   **Single Aspect Focus:** Each test file within `enum_unit_tests/`, `enum_unnamed_tests/`, `enum_named_tests/` must focus on one aspect. Files covering multiple aspects must be split and/or moved. Files in `enum_complex_tests/` should be confirmed as genuinely complex_tests or refactored.
-*   **Preserve Logic:** All existing test code (including commented-out tests) must be preserved. If a test causes persistent compilation errors after moving/splitting (not path-related), the specific failing test function or its `mod` declaration in the subdirectory `mod.rs` should be commented out.
+*   **Preserve Logic:** All existing test code (including commented-out tests) must be preserved. If a test causes persistent compilation errors after moving/splitting (not path-related), the specific failing test function or its `mod` declaration in the subdirectory `mod.rs` should be commented out to allow structural verification to proceed.
 *   **Module Declarations:** All `mod` declarations for individual test files within `enum_unit_tests/mod.rs`, `enum_unnamed_tests/mod.rs`, `enum_named_tests/mod.rs`, and `enum_complex_tests/mod.rs` should remain **commented out**.
 *   **Incremental Verification:** `cargo check --package former --tests` should pass after each increment.
 *   **Approval Gates:** Obtain user approval for plans and after each increment.
