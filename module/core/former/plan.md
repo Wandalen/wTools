@@ -93,15 +93,15 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
 
 *   [✅] **Increment 2: Audit and Plan Splits/Moves for Enum Test Files in Actual Directories**
     *   **Goal:** For each test file in its *current* subdirectory (`enum_unit_tests`, `enum_unnamed_tests`, `enum_named_tests`, `enum_complex_tests`, and their `compile_fail` subdirs), verify if it truly adheres to a single aspect. Plan splits for any multi-aspect files and plan moves for files in the wrong category directory.
-    *   **Target Crate(s):** `former` (planning only)
+    *   **Target Crate(s)::** `former` (planning only)
     *   **Detailed Plan Step 1 (List Current Structure):** (Already completed in previous steps, found files in `enum_unit_tests/`, `enum_unnamed_tests/`, `enum_named_tests/`, `enum_complex_tests/`).
     *   **Detailed Plan Step 2 (Audit and Splitting/Moving Strategy):**
         *   **For `enum_unit_tests/`:** Review each file. If it contains non-unit variant tests, plan to move those parts to new files in `../enum_unnamed_tests/` or `../enum_named_tests/`. The file in `enum_unit_tests/` must be reduced to only unit-specific content.
         *   **For `enum_unnamed_tests/`:** Review each file. If it contains unit or named variant tests, plan to move those parts to new files in `../unit_tests/` or `../named_tests/`. The file in `enum_unnamed_tests/` must be reduced to only tuple-specific content.
         *   **For `named_tests/`:** Review each file. If it contains unit or tuple variant tests, plan to move those parts to new files in `../unit_tests/` or `../enum_unnamed_tests/`. The file in `named_tests/` must be reduced to only named-specific content.
-        *   **For `complex_tests/`:** Review each file. If a test can be clearly refactored into a single aspect (unit, unnamed, named) without losing its core testing purpose, plan to split/move it to the respective single-aspect directory. If it genuinely tests complex interactions not fitting a single category, it remains.
-        *   **For `compile_fail/` subdirectories:** Ensure tests within (e.g., `enum_unnamed_tests/compile_fail/`) are specific to that aspect. If not, plan to move them.
-        *   **Shared `_only_test.rs` files:** If an `_only_test.rs` file serves a `_derive.rs` or `_manual.rs` file that is being split or moved, the `_only_test.rs` file must also be split or moved accordingly, or its `include!` directives in the newly split/moved consumer files must be carefully adjusted to only pull relevant test functions.
+        *   **For `complex_tests/`:** Review each file. If a test can be clearly refactored into a single aspect (unit, unnamed, named) without losing its core testing purpose, plan to split/move it. If it genuinely tests complex_tests interactions not fitting a single category, it remains.
+        *   **For `compile_fail/` subdirectories:** Ensure tests within (e.g., `unnamed_tests/compile_fail/`) are specific to that aspect. If not, plan to move them.
+        *   **Shared `_only_test.rs` files:** If an `_only_test.rs` file serves a `_derive.rs` or `_manual.rs` file that is being split, the `_only_test.rs` file must also be split, or its `include!` directives in the newly split consumer files must be carefully adjusted to only pull relevant test functions.
     *   **Detailed Plan Step 3 (Output):** Present a list of files to be split, detailing how they will be split and where the new resulting files will be located. List files that are confirmed to be single-aspect and correctly located.
     *   **Verification Strategy:** User reviews the audit results and the proposed splitting/relocation plan.
     *   **Commit Message:** `docs(former): Audit and plan splits/moves for enum tests based on actual structure`
@@ -109,7 +109,7 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
 
 *   [✅] **Increment 3: Execute Moves for Files in Incorrect Directories**
     *   **Goal:** Move the files identified in Increment 2 that are in the wrong single-aspect directory to their correct location.
-    *   **Target Crate(s):** `former`
+    *   **Target Crate(s)::** `former`
     *   **Detailed Plan Step 1:** Move `module/core/former/tests/inc/enum_unit_tests/tuple_zero_fields_derive.rs` to `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_derive.rs`.
     *   **Detailed Plan Step 2:** Move `module/core/former/tests/inc/enum_unit_tests/tuple_zero_fields_manual.rs` to `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_manual.rs`.
     *   **Detailed Plan Step 3:** Move `module/core/former/tests/inc/enum_unit_tests/tuple_zero_fields_only_test.rs` to `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_only_test.rs`.
@@ -153,7 +153,7 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
 
 *   [⚫] **Increment 7: Final Structural Verification and Cleanup**
     *   **Goal:** Ensure all enum test files are correctly categorized with single-aspect focus, splits are complete, module structure is sound, and the `former` package compiles without errors or warnings.
-    *   **Target Crate(s):** `former`
+    *   **Target Crate(s)::** `former`
     *   **Detailed Plan Step 1:** Review all subdirectories (`enum_unit_tests/`, `enum_unnamed_tests/`, `enum_named_tests/`, `enum_complex_tests/`) to confirm single-aspect focus per file (except for `enum_complex_tests/` which may retain multi-aspect tests if deemed necessary).
     *   **Detailed Plan Step 2:** Review all `mod.rs` files in the `tests/inc/` hierarchy relevant to enum tests for correctness.
     *   **Detailed Plan Step 3:** Run `cargo check --package former --tests`. Address any compilation errors or warnings.
