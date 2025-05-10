@@ -8,7 +8,7 @@
     3.  Add a `//! Test Relevance/Acceptance Criteria: ...` comment block.
 *   Ensure all added documentation comments are clear, accurate, and adhere to specified content criteria and Rust documentation best practices.
 *   Ensure all modifications strictly adhere to `code/gen` instructions, Design Rules, and Codestyle Rules.
-*   Structure the work into logical increments, processing one test file or a closely related group of test files (e.e., `_derive.rs`, `_manual.rs`, and their shared `_only_test.rs`) per increment, with each increment having a narrow focus on a specific enum aspect (Unit, Unnamed/Tuple, Named/Struct, or Complex/Mixed).
+*   Structure the work into logical increments, processing one test file or a closely related group of test files (i.e., `_derive.rs`, `_manual.rs`, and their shared `_only_test.rs`) per increment, with each increment having a narrow focus on a specific enum aspect (Unit, Unnamed/Tuple, Named/Struct, or Complex/Mixed).
 *   **Crucially, this plan focuses *only* on adding documentation. Pre-existing test failures or logic errors are out of scope. Changes will only be committed if `cargo check --package former --tests` passes after adding comments.**
 
 ## Relevant Context
@@ -170,6 +170,7 @@ This section shows an example of the documentation comments that will be added t
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unit_tests/generics_in_tuple_variant_unit_derive.rs`
         *   `module/core/former/tests/inc/enum_unit_tests/generics_in_tuple_variant_unit_manual.rs`
+        *   `module/core/former/tests/inc/enum_unit_tests/generics_in_tuple_variant_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to generics_in_tuple_variant_unit tests`
 
 *   [✅] **Increment 4:** Document `keyword_variant_unit_*` files
@@ -214,7 +215,7 @@ This section shows an example of the documentation comments that will be added t
         *   `module/core/former/tests/inc/enum_unit_tests/standalone_constructor_unit_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_unit tests`
 
-*   [⏳] **Increment 6:** Document `standalone_constructor_args_unit_*` files
+*   [✅] **Increment 6:** Document `standalone_constructor_args_unit_*` files
     *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
     *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
     *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
@@ -445,7 +446,7 @@ This section shows an example of the documentation comments that will be added t
     1.  **`//! Purpose: ...`**:
         *   Start with "Purpose:".
         *   Clearly and concisely describe the main goal of the test file. What specific aspect of the `Former` derive macro's behavior for enums is this file intended to verify?
-        *   Mention the specific enum variant structure(s) (e.e., "unit variants", "single-field tuple variants with generics", "multi-field named struct variants") and any key attributes (e.e., `#[scalar]`, `#[subform_scalar]`, `#[standalone_constructors]`) being tested in this file.
+        *   Mention the specific enum variant structure(s) (e.g., "unit variants", "single-field tuple variants with generics", "multi-field named struct variants") and any key attributes (e.g., `#[scalar]`, `#[subform_scalar]`, `#[standalone_constructors]`) being tested in this file.
         *   State whether the file is for `derive` macro testing, `manual` implementation testing, or `shared test logic` (`_only_test.rs`).
         *   For `compile_fail` tests, clearly state the specific incorrect usage or error condition it's designed to trigger and verify, referencing the relevant behavior rule that is being intentionally violated.
         *   **For `_only_test.rs` files:** The purpose should state that it provides shared test assertions/logic for both derived and manual implementations of [specific feature/variant type].
