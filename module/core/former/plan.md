@@ -281,7 +281,21 @@ This section shows an example of the documentation comments that will be added t
         *   `module/core/former/tests/inc/enum_unnamed_tests/basic_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to basic unnamed enum tests`
 
-*   [⚫] **Increment 9:** Document `enum_named_fields_unnamed_*` files
+*   [✅] **Increment 9:** Document `enum_named_fields_unnamed_*` files
+    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
+    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
+    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
+    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
+    *   Detailed Plan Step 5: Request user to run verification command.
+    *   Pre-Analysis:
+        *   Identified enum variant structures in target file(s): Zero-field unnamed (tuple) variants (`VariantZeroUnnamedDefault()`, `VariantZeroUnnamedScalar()`).
+        *   Key attributes present: `#[derive(Former)]`, `#[debug]`, `#[standalone_constructors]` on the enum; `#[scalar]` on the `VariantZeroUnnamedScalar` variant.
+        *   Relevant "Expected Enum Former Behavior Rule IDs": 3b, 1b, 4a. Rule 4a is applicable due to the enum attribute but not explicitly tested in the provided test file.
+        *   Brief summary of how test functions appear to exercise these rules: `enum_named_fields_unnamed_only_test.rs` contains tests that call the static methods (`EnumWithNamedFields::variant_zero_unnamed_scalar()`, `EnumWithNamedFields::variant_zero_unnamed_default()`) and assert that the returned value is the direct enum variant.
+    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks, Structuring: Proc Macro Development Workflow.
+    *   Relevant Behavior Rules: Rule 3b (Tuple + Zero-Field + Default), Rule 1b (Tuple + Zero-Field + `#[scalar]`), Rule 4a (#[standalone_constructors]).
+    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
+    *   Test Matrix: N/A
     *   Enum Aspect Focus: Unnamed/Tuple (zero-field tuple variants)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/enum_named_fields_unnamed_derive.rs`
@@ -289,7 +303,17 @@ This section shows an example of the documentation comments that will be added t
         *   `module/core/former/tests/inc/enum_unnamed_tests/enum_named_fields_unnamed_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to enum_named_fields_unnamed tests`
 
-*   [⚫] **Increment 10:** Document `generics_independent_tuple_*` files
+*   [⏳] **Increment 10:** Document `generics_independent_tuple_*` files
+    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
+    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
+    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
+    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
+    *   Detailed Plan Step 5: Request user to run verification command.
+    *   Pre-Analysis: (To be filled after reading files)
+    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks, Structuring: Proc Macro Development Workflow.
+    *   Relevant Behavior Rules: (To be filled after pre-analysis)
+    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
+    *   Test Matrix: N/A
     *   Enum Aspect Focus: Unnamed/Tuple (single-field tuple with independent generics, `#[scalar]`)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/generics_independent_tuple_derive.rs`
@@ -453,3 +477,4 @@ This section shows an example of the documentation comments that will be added t
 *   **[2025-05-10/Inc 6] Note:** Started detailed planning for Increment 6: Document `standalone_constructor_args_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 6 complete.
 *   **[2025-05-10/Inc 7] Note:** Started detailed planning for Increment 7: Document `compile_fail/unit_subform_scalar_error.rs`. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 7 complete.
 *   **[2025-05-10/Inc 8] Note:** Started detailed planning for Increment 8: Document `basic_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 8 complete.
+*   **[2025-05-10/Inc 9] Note:** Started detailed planning for Increment 9: Document `enum_named_fields_unnamed_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 9 complete.

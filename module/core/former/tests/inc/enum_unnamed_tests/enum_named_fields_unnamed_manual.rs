@@ -40,5 +40,47 @@ impl EnumWithNamedFields
   pub fn variant_zero_unnamed_default() -> Self { Self::VariantZeroUnnamedDefault() } // New (Default is scalar)
 }
 
+// --- FormingEnd Implementations for End Structs ---
+
+// End for Break variant
+impl former::FormingEnd
+<
+  BreakFormerDefinitionTypes< (), FunctionStep > // Context is (), Formed is FunctionStep
+>
+for FunctionStepBreakEnd
+{
+  #[ inline( always ) ]
+  fn call
+  (
+    &self,
+    sub_storage : BreakFormerStorage, // Storage of the inner type (Break)
+    _context : Option< () >,          // Context is () from ::begin
+  ) -> FunctionStep                   // Returns the Enum type
+  {
+    let data = sub_storage.preform(); // Get the Break data
+    FunctionStep::Break( data )       // Construct the enum variant
+  }
+}
+
+// End for Run variant
+impl former::FormingEnd
+<
+  RunFormerDefinitionTypes< (), FunctionStep > // Context is (), Formed is FunctionStep
+>
+for FunctionStepRunEnd
+{
+  #[ inline( always ) ]
+  fn call
+  (
+    &self,
+    sub_storage : RunFormerStorage, // Storage of the inner type (Run)
+    _context : Option< () >,        // Context is () from ::begin
+  ) -> FunctionStep                 // Returns the Enum type
+  {
+    let data = sub_storage.preform(); // Get the Run data
+    FunctionStep::Run( data )         // Construct the enum variant
+  }
+}
+
 // Include the test logic file
 include!( "enum_named_fields_unnamed_only_test.rs" );
