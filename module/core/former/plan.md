@@ -129,7 +129,21 @@ This section shows an example of the documentation comments that will be added t
         *   `module/core/former/tests/inc/enum_unit_tests/unit_variant_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to unit_variant enum tests`
 
-*   [⚫] **Increment 2:** Document `enum_named_fields_unit_*` files
+*   [✅] **Increment 2:** Document `enum_named_fields_unit_*` files
+    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
+    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
+    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
+    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
+    *   Detailed Plan Step 5: Request user to run verification command.
+    *   Pre-Analysis:
+        *   Identified enum variant structures in target file(s): Unit variants.
+        *   Key attributes present: `#[derive(Former)]`, `#[debug]`, `#[standalone_constructors]` on the enum in `_derive.rs`. Manual implementations in `_manual.rs`.
+        *   Relevant "Expected Enum Former Behavior Rule IDs": 3a, 1a, 4a.
+        *   Brief summary of how test functions appear to exercise these rules: `unit_variant_scalar_test` and `unit_variant_default_construction` test static methods (`EnumWithNamedFields::unit_variant_scalar()`, `EnumWithNamedFields::unit_variant_default()`) and compare results with direct enum variants. Standalone constructors are present due to `#[standalone_constructors]` but not explicitly tested in `_only_test.rs`.
+    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks.
+    *   Relevant Behavior Rules: Rule 3a (Unit + Default), Rule 1a (Unit + `#[scalar]`), Rule 4a (#[standalone_constructors]).
+    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
+    *   Test Matrix: N/A
     *   Enum Aspect Focus: Unit (within a named-fields style enum definition)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unit_tests/enum_named_fields_unit_derive.rs`
@@ -137,7 +151,17 @@ This section shows an example of the documentation comments that will be added t
         *   `module/core/former/tests/inc/enum_unit_tests/enum_named_fields_unit_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to enum_named_fields_unit tests`
 
-*   [⚫] **Increment 3:** Document `generics_in_tuple_variant_unit_*` files
+*   [⏳] **Increment 3:** Document `generics_in_tuple_variant_unit_*` files
+    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
+    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
+    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
+    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
+    *   Detailed Plan Step 5: Request user to run verification command.
+    *   Pre-Analysis: (Will be filled after reading files in Step 6)
+    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks.
+    *   Relevant Behavior Rules: Rule 3a (Unit + Default), Rule 1a (Unit + `#[scalar]`), Rule 4a (#[standalone_constructors]).
+    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
+    *   Test Matrix: N/A
     *   Enum Aspect Focus: Unit (within generic enums)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unit_tests/generics_in_tuple_variant_unit_derive.rs`
@@ -233,8 +257,8 @@ This section shows an example of the documentation comments that will be added t
     *   Enum Aspect Focus: Unnamed/Tuple (with `#[standalone_constructors]` and `#[arg_for_constructor]`)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_args_tuple_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_args_tuple_multi_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_args_tuple_single_manual.rs`
+        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_tuple_multi_manual.rs`
+        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_tuple_single_manual.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_args_tuple_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_args_tuple tests`
 
@@ -415,3 +439,4 @@ This section shows an example of the documentation comments that will be added t
 *   **[2025-05-10/Inc 1] Note:** Started detailed planning for Increment 1: Document `unit_variant_*` files. Pre-analysis complete. Proceeding to draft and apply comments.
 *   **[2025-05-10/Inc 1] Note:** Encountered repeated failures using `apply_diff` to add comments to `unit_variant_only_test.rs`. Changing strategy for Detailed Plan Step 4 to use `write_to_file` as a fallback to replace the entire file content with the desired version containing the corrected comments.
 *   **[2025-05-10/Inc 1] Note:** Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 1 complete.
+*   **[2025-05-10/Inc 2] Note:** Started detailed planning for Increment 2: Document `enum_named_fields_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 2 complete.
