@@ -1,18 +1,29 @@
-/// Test logic for enum variants with independent generic parameters.
-///
-/// This file contains the actual `#[ test ]` functions for testing the `Former`
-/// derive macro's handling of enums where the enum itself has a generic parameter (`T`)
-/// and a variant contains an inner type with a *different* generic parameter (`U`).
-///
-/// Purpose:
-/// - Verify that the generated static method for the variant correctly handles the enum's generic (`T`).
-/// - Verify that the subformer for the inner type correctly handles its own generic (`U`).
-/// - Ensure that bounds from both the enum (`BoundA` for `T`) and the inner type (`BoundB` for `U`)
-///   are correctly applied and satisfied in the generated `impl FormingEnd`.
-///
-/// This file is included via `include!` by both the `_manual.rs` and `_derive.rs`
-/// test files for this scenario (G5).
-
+//! Purpose: Provides shared test assertions and logic for verifying the constructors generated
+//! by `#[derive(Former)]` for enums with unnamed (tuple) variants that have independent generic
+//! parameters and bounds, specifically when the variant is marked with `#[scalar]`.
+//! This file is included by both `generics_independent_tuple_derive.rs` and `generics_independent_tuple_manual.rs`.
+//!
+//! Coverage:
+//! - Rule 1d (Tuple + Single-Field + `#[scalar]` -> Scalar): Tests static method `EnumG5::<T>::v1()`.
+//! - Rule 4b (Option 2 Logic): Tests the use of subformer methods and `.form()`.
+//!
+//! Test Relevance/Acceptance Criteria:
+//! - Defines dummy bounds (`BoundA`, `BoundB`) and concrete types (`TypeForT`, `TypeForU`) that satisfy them.
+//! - Defines test functions (`independent_generics_tuple_variant`, `default_construction_independent_generics`)
+//!   that invoke the static method `EnumG5::<TypeForT>::v_1()` provided by the including file (either derived or manual).
+//! - This constructor returns a subformer (`InnerG5Former` specialized with `TypeForU` and configured to return `EnumG5<TypeForT>`).
+//! - The tests use the subformer setter (`._0()`) and `.form()` to build the final enum instance.
+//! - Asserts that the resulting `EnumG5` enum instances are equal to the expected variants
+//!   (`EnumG5::V1(InnerG5 { ... }, PhantomData)`), confirming correct handling of independent generics and the `#[scalar]` attribute.
+//! Test logic for enum variants with independent generic parameters.
+//!
+//! Purpose:
+//! - Define `EnumG5<T: BoundA>` and `InnerG5<U: BoundB>` with independent generics.
+//! - Apply `#[derive(Former)]` to both the enum and the inner struct.
+//! - Use the included `_only_test.rs` file to verify that the macro-generated code
+//!   correctly handles the distinct generics `T` and `U` (instantiated as `TypeForU`
+//!   in the variant) and their respective bounds.
+//!
 // File: module/core/former/tests/inc/former_enum_tests/generics_independent_tuple_only_test.rs
 use super::*; // Imports items from the parent file (either manual or derive)
 // Define dummy bounds for testing purposes

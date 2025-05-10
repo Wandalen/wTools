@@ -1,6 +1,33 @@
+//! Purpose: Provides shared test assertions and logic for verifying the constructors generated
+//! by `#[derive(Former)]` for enums with unnamed (tuple) variants that have shared generic
+//! parameters and bounds, using the default subform behavior. This file is included by both
+//! `generics_in_tuple_variant_tuple_derive.rs` and `generics_in_tuple_variant_tuple_manual.rs`.
+//!
+//! Coverage:
+//! - Rule 3d (Tuple + Single-Field + Default -> Subform): Tests static method `EnumOuter::<X>::variant()`.
+//! - Rule 4b (Option 2 Logic): Tests the use of subformer methods and `.form()`.
+//!
+//! Test Relevance/Acceptance Criteria:
+//! - Defines dummy bounds (`BoundA`, `BoundB`) and concrete types (`TypeForT`, `TypeForU`) that satisfy them.
+//! - Defines test functions (`basic_construction`, `construction_with_bounds`) that invoke the static method
+//!   `EnumOuter::<X>::variant()` provided by the including file (either derived or manual).
+//! - This constructor returns a subformer (`InnerGenericFormer<X>`).
+//! - The tests use the subformer setter (`.inner_field()`) and `.form()` to build the final enum instance.
+//! - Asserts that the resulting `EnumOuter` enum instances are equal to the expected variants
+//!   (`EnumOuter::Variant(InnerGeneric { ... })`), confirming correct handling of shared generics and bounds.
+//! Test logic for enum variants with independent generic parameters.
+//!
+//! Purpose:
+//! - Define `EnumG5<T: BoundA>` and `InnerG5<U: BoundB>` with independent generics.
+//! - Apply `#[derive(Former)]` to both the enum and the inner struct.
+//! - Use the included `_only_test.rs` file to verify that the macro-generated code
+//!   correctly handles the distinct generics `T` and `U` (instantiated as `TypeForU`
+//!   in the variant) and their respective bounds.
+//!
 // File: module/core/former/tests/inc/former_enum_tests/generics_in_tuple_variant_only_test.rs
+#[ allow( unused_imports ) ]
 use super::*; // Should import EnumOuter and InnerGeneric from either the manual or derive file
-// use std::fmt::Debug; // Removed redundant import (E0252 fix)
+use std::fmt::Debug; // Removed redundant import (E0252 fix)
 
 #[ test ]
 fn basic_construction()

@@ -1,3 +1,18 @@
+//! Purpose: Provides a manual implementation of constructors and `FormingEnd` for an enum
+//! with unnamed (tuple) variants that have independent generic parameters and bounds,
+//! to serve as a reference for verifying the `#[derive(Former)]` macro's behavior.
+//!
+//! Coverage:
+//! - Rule 1d (Tuple + Single-Field + `#[scalar]` -> Scalar): Manual implementation of static method `EnumG5::v_1()`.
+//! - Rule 4a (#[standalone_constructors]): Not applicable to this manual implementation file.
+//! - Rule 4b (Option 2 Logic): Manual implementation of `FormingEnd` for the variant end type.
+//!
+//! Test Relevance/Acceptance Criteria:
+//! - Defines a generic enum `EnumG5<T: BoundA>` with a single-field tuple variant `V1(InnerG5<TypeForU>, PhantomData<T>)`.
+//! - Manually implements a static method `EnumG5::v_1()` that mirrors the expected generated code for a scalar variant.
+//! - Manually implements `FormingEnd` for the end type associated with the variant subformer.
+//! - This file is included by `generics_independent_tuple_only_test.rs` to provide the manual implementations
+//!   that the shared tests compare against.
 //! Manual implementation for testing enum variants with independent generic parameters.
 //!
 //! Purpose:
@@ -13,7 +28,7 @@
 //!
 //! This setup tests the macro's ability to handle scenarios where the enum's state (`T`)
 //! is independent of the specific type (`TypeForU`) being formed within one of its variants.
-
+//!
 // File: module/core/former/tests/inc/former_enum_tests/generics_independent_tuple_manual.rs
 use super::*; // Imports testing infrastructure and potentially other common items
 use std::marker::PhantomData;
@@ -202,3 +217,4 @@ impl< T : BoundA > EnumG5< T >
 
 // --- Include the Test Logic ---
 include!( "generics_independent_tuple_only_test.rs" );
+// xxx : qqq : uncomment and fix issues

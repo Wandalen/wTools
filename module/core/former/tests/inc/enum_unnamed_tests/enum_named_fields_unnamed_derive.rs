@@ -1,3 +1,19 @@
+//! Purpose: Tests the `#[derive(Former)]` macro's generation of constructors for zero-field
+//! unnamed (tuple) variants, including with `#[scalar]` and `#[standalone_constructors]`.
+//! This file focuses on verifying the derive-based implementation.
+//!
+//! Coverage:
+//! - Rule 3b (Tuple + Zero-Field + Default): Verifies `EnumWithNamedFields::variant_zero_unnamed_default() -> EnumWithNamedFields`.
+//! - Rule 1b (Tuple + Zero-Field + `#[scalar]`): Verifies `EnumWithNamedFields::variant_zero_unnamed_scalar() -> EnumWithNamedFields`.
+//! - Rule 4a (#[standalone_constructors]): Verifies generation of top-level constructor functions (though not explicitly tested in `_only_test.rs`).
+//!
+//! Test Relevance/Acceptance Criteria:
+//! - Defines an enum `EnumWithNamedFields` with two zero-field unnamed variants: `VariantZeroUnnamedDefault()` and `VariantZeroUnnamedScalar()`.
+//! - `VariantZeroUnnamedScalar` is annotated with `#[scalar]`. The enum has `#[derive(Former)]`, `#[debug]`, and `#[standalone_constructors]`.
+//! - Relies on the derived static methods (`EnumWithNamedFields::variant_zero_unnamed_scalar()`, `EnumWithNamedFields::variant_zero_unnamed_default()`)
+//!   defined in `enum_named_fields_unnamed_only_test.rs`.
+//! - Asserts that these constructors produce the correct `EnumWithNamedFields` enum instances by comparing
+//!   with manually constructed variants.
 // File: module/core/former/tests/inc/former_enum_tests/unnamed_tests/enum_named_fields_unnamed_derive.rs
 use super::*;
 
