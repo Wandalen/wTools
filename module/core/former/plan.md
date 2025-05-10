@@ -237,7 +237,21 @@ This section shows an example of the documentation comments that will be added t
         *   `module/core/former/tests/inc/enum_unit_tests/standalone_constructor_args_unit_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_args_unit tests`
 
-*   [⚫] **Increment 7:** Document `compile_fail/unit_subform_scalar_error.rs`
+*   [✅] **Increment 7:** Document `compile_fail/unit_subform_scalar_error.rs`
+    *   Detailed Plan Step 1: Read the content of the target file to perform pre-analysis.
+    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
+    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for the target file based on pre-analysis and plan requirements.
+    *   Detailed Plan Step 4: Apply the drafted comments to the target file using `write_to_file`.
+    *   Detailed Plan Step 5: Request user to run verification command (`cargo check --package former --tests`).
+    *   Pre-Analysis:
+        *   Identified enum variant structures in target file(s): Unit variant with `#[subform_scalar]`.
+        *   Key attributes present: `#[derive(Former)]`, `#[standalone_constructors]` on the enum, `#[subform_scalar]` on the variant.
+        *   Relevant "Expected Enum Former Behavior Rule IDs": Rule 2a (Unit + `#[subform_scalar]` -> Error).
+        *   Brief summary of how test functions appear to exercise these rules: This is a compile-fail test file intended for use with `trybuild`. It defines the invalid structure that should cause a compilation error.
+    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks.
+    *   Relevant Behavior Rules: Rule 2a (Unit + `#[subform_scalar]` -> Error).
+    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors. The compile-fail test itself is verified by `trybuild` which is part of the broader test suite, but this increment only verifies that adding comments doesn't break compilation.
+    *   Test Matrix: N/A
     *   Enum Aspect Focus: Unit (compile-fail scenario)
     *   Target File(s): `module/core/former/tests/inc/enum_unit_tests/compile_fail/unit_subform_scalar_error.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to unit_subform_scalar_error compile_fail test`
@@ -490,3 +504,4 @@ This section shows an example of the documentation comments that will be added t
 *   **[2025-05-10/Inc 4] Note:** Started detailed planning for Increment 4: Document `keyword_variant_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 4 complete.
 *   **[2025-05-10/Inc 5] Note:** Started detailed planning for Increment 5: Document `standalone_constructor_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 5 complete.
 *   **[2025-05-10/Inc 6] Note:** Started detailed planning for Increment 6: Document `standalone_constructor_args_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 6 complete.
+*   **[2025-05-10/Inc 7] Note:** Started detailed planning for Increment 7: Document `compile_fail/unit_subform_scalar_error.rs`. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 7 complete.
