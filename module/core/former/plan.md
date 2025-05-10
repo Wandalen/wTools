@@ -141,7 +141,7 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
     *   **Commit Message:** `refactor(former): Correct or remove usecase1_manual test file`
     *   **Notes:** Corrected `usecase1_manual.rs` to contain the manual former implementation for `FunctionStep`. `cargo check --package former --tests` passed successfully.
 
-*   [⚫] **Increment 7: Final Structural Verification and Cleanup**
+*   [⏳] **Increment 7: Final Structural Verification and Cleanup**
     *   **Goal:** Ensure all enum test files are correctly categorized with single-aspect focus, splits are complete, module structure is sound, and the `former` package compiles without errors or warnings.
     *   **Target Crate(s)::** `former`
     *   **Detailed Plan Step 1:** Review all subdirectories (`enum_unit_tests/`, `enum_unnamed_tests/`, `enum_named_tests/`, `enum_complex_tests/`) to confirm single-aspect focus per file (except for `enum_complex_tests/` which may retain multi-aspect tests if deemed necessary).
