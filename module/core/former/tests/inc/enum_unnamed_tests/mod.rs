@@ -81,7 +81,11 @@
 // mod standalone_constructor_tuple_derive;
 // mod standalone_constructor_tuple_only_test;
 // mod standalone_constructor_args_tuple_derive;
-// mod standalone_constructor_args_tuple_manual;
+// mod standalone_constructor_args_tuple_single_manual; // Added
+// mod standalone_constructor_args_tuple_multi_manual; // Added
 // mod standalone_constructor_args_tuple_only_test;
+// mod tuple_zero_fields_derive; // Moved from enum_unit_tests
+// mod tuple_zero_fields_manual; // Moved from enum_unit_tests
+// mod tuple_zero_fields_only_test; // Moved from enum_unit_tests
 
 // pub mod compile_fail;

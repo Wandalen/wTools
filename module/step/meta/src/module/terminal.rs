@@ -1,3 +1,4 @@
+/// Mechanism to include tests only to terminal crate.
 #[ macro_export ]
 macro_rules! only_for_terminal_module
 {

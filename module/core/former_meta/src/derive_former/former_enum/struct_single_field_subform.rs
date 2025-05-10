@@ -20,8 +20,8 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
   let field = ctx.variant_field_info.get(0).ok_or_else(|| {
       syn::Error::new_spanned(ctx.variant, "Struct variant with subform behavior must have exactly one field.")
   })?;
-  let field_ident = &field.ident;
-  let field_ty = &field.ty;
+  let _field_ident = &field.ident;
+  let _field_ty = &field.ty;
 
   // Generate the name for the implicit variant former
   let variant_former_name = format_ident!("{}{}Former", enum_ident, variant_ident);

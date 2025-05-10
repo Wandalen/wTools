@@ -13,7 +13,7 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
   // The main dispatch should ensure this is only called for such variants.
 
   let variant_ident = &ctx.variant.ident;
-  let enum_ident = &ctx.enum_name;
+  let _enum_ident = &ctx.enum_name;
   let vis = &ctx.vis; // Get visibility
 
   // Get the single field's type
