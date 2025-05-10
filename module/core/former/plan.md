@@ -88,7 +88,7 @@ This section details the expected code generation behavior for `#[derive(Former)
         *   Uncomment `mod unit_variant_manual;`.
         *   Uncomment `mod unit_variant_only_test;`.
     *   **Detailed Plan Step 2 (Manual Verification):**
-        *   **Pre-Analysis:** `unit_variant_manual.rs` should implement `Status::pending()`, `Status::complete()`, and standalone `pending()`, `complete()` all returning `Status`. `unit_variant_only_test.rs` calls these. This covers matrix rows U.1, U.2, U.3, U.4.
+        *   **Pre-Analysis:** `unit_variant_manual.rs` should implement `Status::pending()`, `Status::complete()`, and standalone `pending()`, `complete()` all returning `Status`. This covers matrix rows U.1, U.2, U.3, U.4.
         *   Request user to run `cargo test --package former --test tests inc::enum_unit_tests::unit_variant_manual`.
         *   Analyze results. Fix any issues in `unit_variant_manual.rs` or `unit_variant_only_test.rs`.
     *   **Detailed Plan Step 3:** Modify `module/core/former/tests/inc/enum_unit_tests/mod.rs`:
@@ -98,6 +98,7 @@ This section details the expected code generation behavior for `#[derive(Former)
         *   Request user to run `cargo test --package former --test tests inc::enum_unit_tests::unit_variant_derive`.
         *   Analyze results. If failures, use Failure Diagnosis Algorithm. Fixes likely in `former_meta/src/derive_former/former_enum/unit_variant_handler.rs`. *Handle widespread failures selectively.*
     *   **Crucial Design Rules:** Expected Behavior Rules UV.Def, UV.S, E.SC. [Proc Macro: Development Workflow](#proc-macro-development-workflow).
+    *   **Relevant Behavior Rules:** U.1, U.2, U.3, U.4.
     *   **Verification Strategy:** All tests in `unit_variant_manual` and `unit_variant_derive` pass.
     *   **Commit Message:** `feat(former): Verify basic unit enum variant functionality`
 
@@ -119,10 +120,11 @@ This section details the expected code generation behavior for `#[derive(Former)
         *   **Pre-Analysis:** `enum_named_fields_unit_derive.rs` tests `UnitVariantDefault` and `UnitVariantScalar` with `#[standalone_constructors]`.
         *   Request user to run `cargo test --package former --test tests inc::enum_unit_tests::enum_named_fields_unit_derive`. Fix macro if needed. *Handle widespread failures selectively.*
     *   **Crucial Design Rules:** Expected Behavior Rules UV.Def, UV.S, E.SC. [Proc Macro: Development Workflow](#proc-macro-development-workflow).
+    *   **Relevant Behavior Rules:** U.1, U.2, U.3, U.4.
     *   **Verification Strategy:** All tests in `enum_named_fields_unit_manual` and `enum_named_fields_unit_derive` pass.
     *   **Commit Message:** `feat(former): Verify unit variants within mixed enum definitions`
 
-*   [⚫] **Increment 3: Activate and Verify Unit Variants in `generics_in_tuple_variant_unit_*`**
+*   [✅] **Increment 3: Activate and Verify Unit Variants in `generics_in_tuple_variant_unit_*`**
     *   **Goal:** Uncomment and ensure unit variant tests within the split `generics_in_tuple_variant_unit_*.rs` files pass. This tests unit variants in generic enums.
     *   **Target Crate(s):** `former`, `former_meta`
     *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/enum_unit_tests/mod.rs`:
@@ -136,7 +138,8 @@ This section details the expected code generation behavior for `#[derive(Former)
         *   **Pre-Analysis:** `generics_in_tuple_variant_unit_derive.rs` tests `OtherVariant` in `EnumOuter<X>`.
         *   Request user to run `cargo test --package former --test tests inc::enum_unit_tests::generics_in_tuple_variant_unit_derive`. Fix macro if needed. *Handle widespread failures selectively.*
     *   **Crucial Design Rules:** Expected Behavior Rules UV.Def, UV.S. [Proc Macro: Development Workflow](#proc-macro-development-workflow).
-    *   **Verification Strategy:** All tests pass.
+    *   **Relevant Behavior Rules:** U.1, U.2, U.3, U.4.
+    *   **Verification Strategy:** All tests in `generics_in_tuple_variant_unit_manual` and `generics_in_tuple_variant_unit_derive` pass.
     *   **Commit Message:** `feat(former): Verify unit variants in generic enums`
 
 *   [⚫] **Increment 4: Activate and Verify Unit Variants in `keyword_variant_unit_*`**
@@ -149,6 +152,7 @@ This section details the expected code generation behavior for `#[derive(Former)
         *   **Pre-Analysis:** `keyword_variant_unit_derive.rs` tests `r#Loop`.
         *   Request user to run `cargo test --package former --test tests inc::enum_unit_tests::keyword_variant_unit_derive`. Fix macro if needed. *Handle widespread failures selectively.*
     *   **Crucial Design Rules:** Expected Behavior Rules UV.Def, UV.S. [Proc Macro: Development Workflow](#proc-macro-development-workflow).
+    *   **Relevant Behavior Rules:** U.1, U.2, U.3, U.4.
     *   **Verification Strategy:** All tests pass.
     *   **Commit Message:** `feat(former): Verify unit variants with keyword identifiers`
 
@@ -162,6 +166,7 @@ This section details the expected code generation behavior for `#[derive(Former)
         *   **Pre-Analysis:** `standalone_constructor_unit_derive.rs` tests `UnitVariant` with `#[standalone_constructors]`.
         *   Request user to run `cargo test --package former --test tests inc::enum_unit_tests::standalone_constructor_unit_derive`. Fix macro if needed. *Handle widespread failures selectively.*
     *   **Crucial Design Rules:** Expected Behavior Rules UV.Def, UV.S, E.SC. [Proc Macro: Development Workflow](#proc-macro-development-workflow).
+    *   **Relevant Behavior Rules:** U.1, U.2, U.3, U.4.
     *   **Verification Strategy:** All tests pass.
     *   **Commit Message:** `feat(former): Verify standalone constructors for unit variants`
 
@@ -180,6 +185,7 @@ This section details the expected code generation behavior for `#[derive(Former)
         *   **Pre-Analysis:** `standalone_constructor_args_unit_derive.rs` tests `UnitVariantArgs` with `#[standalone_constructors]`.
         *   Request user to run `cargo test --package former --test tests inc::enum_unit_tests::standalone_constructor_args_unit_derive`. Fix macro if needed. *Handle widespread failures selectively.*
     *   **Crucial Design Rules:** Expected Behavior Rules UV.Def, UV.S, E.SC. [Proc Macro: Development Workflow](#proc-macro-development-workflow).
+    *   **Relevant Behavior Rules:** U.1, U.2, U.3, U.4.
     *   **Verification Strategy:** All tests pass.
     *   **Commit Message:** `feat(former): Verify standalone constructors (with args context) for unit variants`
 
@@ -198,7 +204,7 @@ This section details the expected code generation behavior for `#[derive(Former)
     *   **Target Crate(s):** `former`
     *   **Detailed Plan Step 1:** Search for `xxx :` and `qqq :` comments in all files within `module/core/former/tests/inc/enum_unit_tests/`.
     *   **Detailed Plan Step 2:** Propose solutions or code changes for each identified comment based on its content.
-    *   **Crucial Design Rules:** [Comments: Add Tasks and Label Simplifications](#comments-add-tasks-and-label-simplifications), [Comments: Annotate Addressed Tasks](#comments-annotate-addressed-tasks).
+    *   **Crucial Design Rules:** [Comments: Add Tasks and Label Simplifications](#comments-add-tasks-and-label_simplifications), [Comments: Annotate Addressed Tasks](#comments-annotate-addressed-tasks).
     *   **Verification Strategy:** Request user to apply changes. Run `cargo check --package former --tests` and `cargo test --package former --test tests inc::enum_unit_tests`. Ensure tests still pass and comments are addressed.
     *   **Commit Message:** `chore(former): Address TODOs in unit variant enum tests`
 

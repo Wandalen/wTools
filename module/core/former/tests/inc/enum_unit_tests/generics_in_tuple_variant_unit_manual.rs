@@ -5,18 +5,14 @@ use std::marker::PhantomData; // Import PhantomData
 
 // --- Enum Definition with Bounds ---
 #[ derive( Debug, PartialEq ) ]
-pub enum EnumOuter< X >
-where
-  X : Copy + Debug + Default + PartialEq, // Added Debug + Default + PartialEq
+pub enum EnumOuter
 {
   // --- Unit Variant ---
-  OtherVariant, // To make it slightly more realistic
+  OtherVariant,
 }
 
 // --- Manual constructor for OtherVariant ---
-impl< X > EnumOuter< X >
-where
-  X : Copy + Debug + Default + PartialEq, // Added Debug + Default + PartialEq
+impl EnumOuter
 {
   #[ allow( dead_code ) ]
   pub fn other_variant() -> Self
