@@ -4,7 +4,6 @@
 //!
 //! Coverage:
 //! - Rule 3d (Tuple + Default -> Subform): Manual implementation of static method `FunctionStep::run()`.
-//! - Rule 1d (Tuple + `#[scalar]` -> Scalar): Not applicable to the variants in this file.
 //! - Rule 2d (Tuple + `#[subform_scalar]` -> InnerFormer): Manual implementation of static method `FunctionStep::r#break()`.
 //! - Rule 4a (#[standalone_constructors]): Manual implementation of the standalone subformer starter `break_variant()`.
 //! - Rule 4b (Option 2 Logic): Manual implementation of `FormingEnd` for the variant end types.
@@ -16,7 +15,6 @@
 //! - Manually implements `FormingEnd` for the end types associated with the variant subformers.
 //! - This file is included by `basic_only_test.rs` to provide the manual implementations that
 //!   the shared tests compare against.
-// File: module/core/former/tests/inc/former_enum_tests/basic_derive.rs
 
 use super::*;
 use former::StoragePreform;

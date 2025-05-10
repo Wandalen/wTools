@@ -259,7 +259,21 @@ This section shows an example of the documentation comments that will be added t
 ---
 **Phase 2: Unnamed/Tuple Variant Tests (`enum_unnamed_tests`)**
 
-*   [⚫] **Increment 8:** Document `basic_*` files
+*   [✅] **Increment 8:** Document `basic_*` files
+    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
+    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
+    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
+    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
+    *   Detailed Plan Step 5: Request user to run verification command.
+    *   Pre-Analysis:
+        *   Identified enum variant structures in target file(s): Single-field tuple variants (`Break(Break)`, `Run(Run)`).
+        *   Key attributes present: `#[derive(Former)]`, `#[standalone_constructors]` on the enum; `#[subform_scalar]` on the `Break` variant.
+        *   Relevant "Expected Enum Former Behavior Rule IDs": 3d, 2d, 4a, 4b. Rule 1d is not applicable to this test case.
+        *   Brief summary of how test functions appear to exercise these rules: `basic_only_test.rs` contains tests that call the static methods (`FunctionStep::r#break()`, `FunctionStep::run()`) and the standalone constructor (`FunctionStep::break_variant()`). These tests then use the returned subformers to set fields and call `.form()`, asserting the final enum instance matches the expected value.
+    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks, Structuring: Proc Macro Development Workflow.
+    *   Relevant Behavior Rules: Rule 3d (Tuple + Default -> Subform), Rule 2d (Tuple + `#[subform_scalar]` -> InnerFormer), Rule 4a (#[standalone_constructors]), Rule 4b (Option 2 Logic).
+    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
+    *   Test Matrix: N/A
     *   Enum Aspect Focus: Unnamed/Tuple (basic single-field subform)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/basic_derive.rs`
@@ -413,7 +427,7 @@ This section shows an example of the documentation comments that will be added t
             *   What is the nature of the primary assertion (e.g., "Asserts the `got` instance (produced by the former) is equal to an `expected` instance (manually constructed to represent the correct state).", "Asserts that a subformer is returned and can be used to set inner fields.", "Asserts that a compile-time error occurs for an invalid attribute combination using `trybuild`.").
         *   **For `_derive.rs` files:** Mention that it relies on `#[derive(Former)]` for code generation and typically includes shared test logic via `include!("...")`.
         *   **For `_manual.rs` files:** Mention that it contains a hand-written former implementation and includes shared test logic via `include!("...")`.
-        *   **For `compile_fail/*.rs` files:** The file contains code that intentionally uses an attribute or enum structure in a way that violates a documented behavior rule (e.e., `#[subform_scalar]` on a unit variant). The test is accepted if `trybuild` confirms this results in a compilation error, thereby validating the macro's error reporting for this specific invalid scenario."
+        *   **For `compile_fail/*.rs` files:** The file contains code that intentionally uses an attribute or enum structure in a way that violates a documented behavior rule (i.e., `#[subform_scalar]` on a unit variant). The test is accepted if `trybuild` confirms this results in a compilation error, thereby validating the macro's error reporting for this specific invalid scenario."
 *   **Comment Style:** All added `//!` comments should be clear, concise, grammatically correct, and follow Rust documentation comment conventions. Use Markdown for lists or emphasis if it enhances readability. Aim for reasonable line lengths.
 *   **Pre-Analysis Output:** Before proposing comments for an increment, the AI must provide its pre-analysis findings for the targeted file(s) as specified in the "Increment Template".
 *   **Incremental Processing:** Modify files one increment at a time, following the "Increment Template."
@@ -438,3 +452,4 @@ This section shows an example of the documentation comments that will be added t
 *   **[2025-05-10/Inc 5] Note:** Started detailed planning for Increment 5: Document `standalone_constructor_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 5 complete.
 *   **[2025-05-10/Inc 6] Note:** Started detailed planning for Increment 6: Document `standalone_constructor_args_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 6 complete.
 *   **[2025-05-10/Inc 7] Note:** Started detailed planning for Increment 7: Document `compile_fail/unit_subform_scalar_error.rs`. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 7 complete.
+*   **[2025-05-10/Inc 8] Note:** Started detailed planning for Increment 8: Document `basic_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 8 complete.

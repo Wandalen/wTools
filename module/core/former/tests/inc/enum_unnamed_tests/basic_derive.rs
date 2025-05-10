@@ -1,11 +1,10 @@
 //! Purpose: Tests the `#[derive(Former)]` macro's generation of constructors for unnamed (tuple)
-//! variants, including with `#[subform_scalar]` and `#[standalone_constructors]`. This file
-//! focuses on verifying the derive-based implementation.
+//! variants that return subformers, including with `#[subform_scalar]` and `#[standalone_constructors]`.
+//! This file focuses on verifying the derive-based implementation.
 //!
 //! Coverage:
-//! - Rule 3d (Tuple + Default -> Subform): Verifies `FunctionStep::run() -> RunFormer`.
-//! - Rule 1d (Tuple + `#[scalar]` -> Scalar): Not explicitly tested in this file's enum definition.
-//! - Rule 2d (Tuple + `#[subform_scalar]` -> InnerFormer): Verifies `FunctionStep::r#break() -> BreakFormer`.
+//! - Rule 3d (Tuple + Default -> Subform): Tests static method `FunctionStep::run()`.
+//! - Rule 2d (Tuple + `#[subform_scalar]` -> InnerFormer): Tests static method `FunctionStep::r#break()`.
 //! - Rule 4a (#[standalone_constructors]): Verifies generation of top-level constructor functions.
 //! - Rule 4b (Option 2 Logic): Implicitly covered by the standalone constructor returning a subformer.
 //!
@@ -16,7 +15,6 @@
 //!   standalone constructor (`FunctionStep::break_variant()`) defined in `basic_only_test.rs`.
 //! - Asserts that these constructors return the expected subformers and that using the subformers
 //!   to set fields and call `.form()` results in the correct `FunctionStep` enum instances.
-// File: module/core/former/tests/inc/former_enum_tests/basic_derive.rs
 
 use super::*;
 
