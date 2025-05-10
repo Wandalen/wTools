@@ -1,3 +1,18 @@
+// Purpose: Provides shared test assertions and logic for verifying the constructors generated
+// by `#[derive(Former)]` for enums with unit variants, including with `#[standalone_constructors]`.
+// This file is included by both `unit_variant_derive.rs` and `unit_variant_manual.rs`.
+//
+// Coverage:
+// - Rule 3a (Unit + Default): Tests static methods `Status::pending()` and `Status::complete()`.
+// - Rule 1a (Unit + `#[scalar]`): Tests static methods (as default for unit is scalar).
+// - Rule 4a (#[standalone_constructors]): Tests standalone functions `pending()` and `complete()`.
+//
+// Test Relevance/Acceptance Criteria:
+// - Defines test functions (`unit_variant_constructors`, `unit_variant_standalone_constructors`) that
+//   invoke constructors provided by the including file (either derived or manual).
+// - Asserts that the instances created by these constructors are equal to the expected
+//   enum variants (`Status::Pending`, `Status::Complete`).
+//
 // # Test Matrix for Unit Variants
 //
 // This matrix outlines the combinations of `former` attributes tested for enum **unit variants**

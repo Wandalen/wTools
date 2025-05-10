@@ -107,7 +107,21 @@ This section shows an example of the documentation comments that will be added t
 ---
 **Phase 1: Unit Variant Tests (`enum_unit_tests`)**
 
-*   [⚫] **Increment 1:** Document `unit_variant_*` files
+*   [✅] **Increment 1:** Document `unit_variant_*` files
+    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
+    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
+    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
+    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
+    *   Detailed Plan Step 5: Request user to run verification command.
+    *   Pre-Analysis:
+        *   Identified enum variant structures in target file(s): Unit variants.
+        *   Key attributes present: `#[derive(Former)]`, `#[former( standalone_constructors )]` on the enum in `_derive.rs`. Manual implementations in `_manual.rs`.
+        *   Relevant "Expected Enum Former Behavior Rule IDs": 3a, 1a, 4a.
+        *   Brief summary of how test functions appear to exercise these rules: `unit_variant_constructors` tests static methods (`Status::pending()`, `Status::complete()`). `unit_variant_standalone_constructors` tests standalone functions (`pending()`, `complete()`). Both compare results with direct enum variants.
+    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks.
+    *   Relevant Behavior Rules: Rule 3a (Unit + Default), Rule 1a (Unit + `#[scalar]`), Rule 4a (#[standalone_constructors]).
+    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
+    *   Test Matrix: N/A
     *   Enum Aspect Focus: Unit
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unit_tests/unit_variant_derive.rs`
@@ -382,7 +396,7 @@ This section shows an example of the documentation comments that will be added t
         *   **For `_derive.rs` files:** Mention that it relies on `#[derive(Former)]` for code generation and typically includes shared test logic via `include!("...")`.
         *   **For `_manual.rs` files:** Mention that it contains a hand-written former implementation and includes shared test logic via `include!("...")`.
         *   **For `_only_test.rs` files:** Describe the nature of the test functions it contains (e.g., "Defines test functions like `check_variant_construction()` which take a formed enum and assert specific properties/equality. These are designed for reuse by `_derive` and `_manual` tests.").
-        *   **For `compile_fail/*.rs` files:** The file contains code that intentionally uses an attribute or enum structure in a way that violates a documented behavior rule (e.g., `#[subform_scalar]` on a unit variant). The test is accepted if `trybuild` confirms this results in a compilation error, thereby validating the macro's error reporting for this specific invalid scenario."
+        *   **For `compile_fail/*.rs` files:** The file contains code that intentionally uses an attribute or enum structure in a way that violates a documented behavior rule (e.e., `#[subform_scalar]` on a unit variant). The test is accepted if `trybuild` confirms this results in a compilation error, thereby validating the macro's error reporting for this specific invalid scenario."
 *   **Comment Style:** All added `//!` comments should be clear, concise, grammatically correct, and follow Rust documentation comment conventions. Use Markdown for lists or emphasis if it enhances readability. Aim for reasonable line lengths.
 *   **Pre-Analysis Output:** Before proposing comments for an increment, the AI must provide its pre-analysis findings for the targeted file(s) as specified in the "Increment Template".
 *   **Incremental Processing:** Modify files one increment at a time, following the "Increment Template."
@@ -398,3 +412,6 @@ This section shows an example of the documentation comments that will be added t
 *   The `_only_test.rs` files, when shared, will have their documentation reflect their broader applicability.
 *   **[Date/Inc #] Note:** Increment 3 and 11 both reference `generics_in_tuple_variant_only_test.rs`. The documentation for this shared file should be comprehensive enough to cover its usage in both unit and tuple variant contexts, likely handled in Increment 11.
 *   **[Date/Inc #] Note:** The commit messages in the Increment Template now include `[enum_aspect_focus]` for better categorization.
+*   **[2025-05-10/Inc 1] Note:** Started detailed planning for Increment 1: Document `unit_variant_*` files. Pre-analysis complete. Proceeding to draft and apply comments.
+*   **[2025-05-10/Inc 1] Note:** Encountered repeated failures using `apply_diff` to add comments to `unit_variant_only_test.rs`. Changing strategy for Detailed Plan Step 4 to use `write_to_file` as a fallback to replace the entire file content with the desired version containing the corrected comments.
+*   **[2025-05-10/Inc 1] Note:** Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 1 complete.
