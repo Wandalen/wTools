@@ -101,7 +101,7 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
         *   **For `named_tests/`:** Review each file. If it contains unit or tuple variant tests, plan to move those parts to new files in `../unit_tests/` or `../enum_unnamed_tests/`. The file in `enum_named_tests/` must be reduced to only named-specific content.
         *   **For `complex_tests/`:** Review each file. If a test can be clearly refactored into a single aspect (unit, unnamed, named) without losing its core testing purpose, plan to split/move it to the respective single-aspect directory. If it genuinely tests complex interactions not fitting a single category, it remains.
         *   **For `compile_fail/` subdirectories:** Ensure tests within (e.g., `enum_unnamed_tests/compile_fail/`) are specific to that aspect. If not, plan to move them.
-        *   **Shared `_only_test.rs` files:** If an `_only_test.rs` file serves a `_derive.rs` or `_manual.rs` file that is being split, the `_only_test.rs` file must also be split or moved accordingly, or its `include!` directives in the newly split/moved consumer files must be carefully adjusted to only pull relevant test functions.
+        *   **Shared `_only_test.rs` files:** If an `_only_test.rs` file serves a `_derive.rs` or `_manual.rs` file that is being split or moved, the `_only_test.rs` file must also be split or moved accordingly, or its `include!` directives in the newly split/moved consumer files must be carefully adjusted to only pull relevant test functions.
     *   **Detailed Plan Step 3 (Output):** Present a list of files to be split, detailing how they will be split and where the new resulting files will be located. List files that are confirmed to be single-aspect and correctly located.
     *   **Verification Strategy:** User reviews the audit results and the proposed splitting/relocation plan.
     *   **Commit Message:** `docs(former): Audit and plan splits/moves for enum tests based on actual structure`
@@ -144,7 +144,7 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
 
 *   [⚫] **Increment 6: Address Incorrect Manual Implementation**
     *   **Goal:** Correct or remove the incorrectly implemented manual test file `usecase1_manual.rs`.
-    *   **Target Crate(s):** `former`
+    *   **Target Crate(s)::** `former`
     *   **Detailed Plan Step 1:** Review `module/core/former/tests/inc/enum_unnamed_tests/usecase1_manual.rs`. Determine if a manual implementation for this use case is necessary.
     *   **Detailed Plan Step 2:** If necessary, replace the derive macro implementation with a correct manual implementation. If not necessary, delete the file.
     *   **Detailed Plan Step 3:** If the file is deleted, update `module/core/former/tests/inc/enum_unnamed_tests/mod.rs` to remove its module declaration.
