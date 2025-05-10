@@ -107,7 +107,7 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
     *   **Commit Message:** `docs(former): Audit and plan splits/moves for enum tests based on actual structure`
     *   **Notes:** Completed audit of all enum test directories. Identified files that need moving or splitting/cleanup to ensure single-aspect focus. Noted files needing correction or refinement in later increments.
 
-*   [⚫] **Increment 3: Execute Moves for Files in Incorrect Directories**
+*   [✅] **Increment 3: Execute Moves for Files in Incorrect Directories**
     *   **Goal:** Move the files identified in Increment 2 that are in the wrong single-aspect directory to their correct location.
     *   **Target Crate(s):** `former`
     *   **Detailed Plan Step 1:** Move `module/core/former/tests/inc/enum_unit_tests/tuple_zero_fields_derive.rs` to `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_derive.rs`.
@@ -115,6 +115,7 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
     *   **Detailed Plan Step 3:** Move `module/core/former/tests/inc/enum_unit_tests/tuple_zero_fields_only_test.rs` to `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_only_test.rs`.
     *   **Verification Strategy:** User applies changes. Run `cargo check --package former --tests`. Fix path issues.
     *   **Commit Message:** `refactor(former): Move tuple_zero_fields tests to enum_unnamed_tests`
+    *   **Notes:** Successfully moved `tuple_zero_fields` files to `enum_unnamed_tests/`. `cargo check --package former --tests` passed with warnings.
 
 *   [⚫] **Increment 4: Execute Splits and Cleanups**
     *   **Goal:** Split the manual test files identified in Increment 2 that cover multiple scenarios and clean up leftover code.
@@ -177,3 +178,4 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
 *   `cargo clippy` and workspace-wide test/check commands are avoided.
 *   **Update after Increment 1:** The target directories (`unit_tests/`, `unnamed_tests/`, `named_tests/`, `complex_tests/`) within the *expected* `former_enum_tests/` subdirectory were found to be empty. The test files expected to be in these directories are likely located elsewhere. Found actual enum test files in `tests/inc/enum_unit_tests/`, `tests/inc/enum_unnamed_tests/`, `tests/inc/enum_named_tests/`, and `tests/inc/enum_complex_tests/`. The subsequent increments will be revised to operate on these actual directories.
 *   **Update after Increment 2:** Completed audit of all enum test files. Identified files needing moving, splitting/cleanup, correction, or refinement. Proposed a detailed plan for file operations in Increments 3 and 4, and noted necessary updates to `mod.rs` files in Increment 5 and corrections/refinements in Increment 6.
+*   **Update after Increment 3:** Successfully moved `tuple_zero_fields` files to `enum_unnamed_tests/`. `cargo check --package former --tests` passed with warnings. Increment 3 is complete.
