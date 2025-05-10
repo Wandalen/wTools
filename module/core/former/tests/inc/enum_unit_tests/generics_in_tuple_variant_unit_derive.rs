@@ -7,7 +7,7 @@ use std::marker::PhantomData;
 // Apply Former derive here. This is what we are testing.
 #[derive(Debug, PartialEq, former::Former)]
 #[debug]
-pub enum EnumOuter
+pub enum EnumOuter< X : Copy > // Enum bound: Copy
 {
   // --- Unit Variant ---
   OtherVariant,
