@@ -361,7 +361,7 @@ Use the `#[ subform_entry ]` attribute on collection fields (like `Vec< Child >`
   assert_eq!( registry.commands[ "run" ].description, "Runs the task" );
 # }
 ```
-[See HashMap example](https://github.com/Wandalen/wTools/blob/master/module/core/former/examples/former_custom_subform_entry.rs) | [See Vec example](https://github.com/Wandalen/wTools/blob/master/module/core/former/tests/inc/former_struct_tests/subform_entry.rs)
+[See HashMap example](https://github.com/Wandalen/wTools/blob/master/module/core/former/examples/former_custom_subform_entry.rs) | [See Vec example](https://github.com/Wandalen/wTools/blob/master/module/core/former/tests/inc/struct_tests/subform_entry.rs)
 
 ## Customization
 

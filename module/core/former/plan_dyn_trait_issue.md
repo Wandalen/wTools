@@ -7,7 +7,7 @@ Check crates at
 - module/core/former_meta
 - module/core/macro_tools
 
-Fix module\core\former\tests\inc\former_struct_tests\parametrized_dyn_manual.rs
+Fix module\core\former\tests\inc\struct_tests\parametrized_dyn_manual.rs
 - uncomment code
 - duplicate the manual terive and do derive test actually using macro Former
 - make macro working taking into account this corner case

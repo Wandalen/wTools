@@ -1,6 +1,0 @@
-error: #[subform_scalar] cannot be used on unit variants.
- --> tests/inc/former_enum_tests/compile_fail/unit_subform_scalar_error.rs:5:5
-  |
-5 | /     #[subform_scalar] // Use #[subform_scalar] directly
-6 | |     MyUnitVariant, // This should cause a compile error
-  | |_________________^
