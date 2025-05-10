@@ -1,5 +1,4 @@
 // File: module/core/former/tests/inc/former_enum_tests/unit_tests/enum_named_fields_unit_only_test.rs
-use super::*; // Imports EnumWithNamedFields
 
 // --- Unit Variant ---
 

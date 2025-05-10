@@ -36,9 +36,7 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
     }
   };
 
-  // ctx.methods.push( generated_method ); // Will be collected in former_for_enum
-
-  let mut generated_tokens = generated_method;
+  ctx.methods.push( generated_method ); // Will be collected in former_for_enum
 
   // Generate standalone constructor if #[standalone_constructors] is present on the enum
   if ctx.struct_attrs.standalone_constructors.is_some()
@@ -51,9 +49,8 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
         #enum_ident::#variant_ident
       }
     };
-    // ctx.standalone_constructors.push( generated_standalone ); // Will be collected in former_for_enum
-    generated_tokens.extend(generated_standalone);
+    ctx.standalone_constructors.push( generated_standalone ); // Will be collected in former_for_enum
   }
 
-  Ok( generated_tokens )
+  Ok( quote!() ) // Return empty TokenStream as tokens are collected in ctx
 }

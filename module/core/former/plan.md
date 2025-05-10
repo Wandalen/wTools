@@ -101,16 +101,19 @@ This section details the expected code generation behavior for `#[derive(Former)
     *   **Verification Strategy:** All tests in `unit_variant_manual` and `unit_variant_derive` pass.
     *   **Commit Message:** `feat(former): Verify basic unit enum variant functionality`
 
-*   [⚫] **Increment 2: Activate and Verify Unit Variants in `enum_named_fields_unit_*`**
+*   [✅] **Increment 2: Activate and Verify Unit Variants in `enum_named_fields_unit_*`**
     *   **Goal:** Uncomment and ensure unit variant tests within the split `enum_named_fields_unit_*.rs` files pass. These also test `#[standalone_constructors]`.
     *   **Target Crate(s):** `former`, `former_meta`
     *   **Detailed Plan Step 1:** Modify `module/core/former/tests/inc/enum_unit_tests/mod.rs`:
-        *   Uncomment `mod enum_named_fields_unit_manual;`.
-        *   Uncomment `mod enum_named_fields_unit_only_test;`.
+        *   Uncomment `mod enum_named_fields_unit_manual;`. (Already uncommented)
+        *   Uncomment `mod enum_named_fields_unit_only_test;`. (Already uncommented)
+        *   Comment out `mod enum_named_fields_unit_derive;`.
     *   **Detailed Plan Step 2 (Manual Verification):**
         *   **Pre-Analysis:** `enum_named_fields_unit_manual.rs` should implement unit variants `UnitVariantDefault` and `UnitVariantScalar` with static methods and standalone constructors.
         *   Request user to run `cargo test --package former --test tests inc::enum_unit_tests::enum_named_fields_unit_manual`. Fix if needed.
     *   **Detailed Plan Step 3:** Modify `module/core/former/tests/inc/enum_unit_tests/mod.rs`:
+        *   Comment out `mod enum_named_fields_unit_manual;`.
+        *   Comment out `mod enum_named_fields_unit_only_test;`.
         *   Uncomment `mod enum_named_fields_unit_derive;`.
     *   **Detailed Plan Step 4 (Derive Verification):**
         *   **Pre-Analysis:** `enum_named_fields_unit_derive.rs` tests `UnitVariantDefault` and `UnitVariantScalar` with `#[standalone_constructors]`.
