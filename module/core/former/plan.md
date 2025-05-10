@@ -8,7 +8,7 @@
     3.  Add a `//! Test Relevance/Acceptance Criteria: ...` comment block.
 *   Ensure all added documentation comments are clear, accurate, and adhere to specified content criteria and Rust documentation best practices.
 *   Ensure all modifications strictly adhere to `code/gen` instructions, Design Rules, and Codestyle Rules.
-*   Structure the work into logical increments, processing one test file or a closely related group of test files (e.g., `_derive.rs`, `_manual.rs`, and their shared `_only_test.rs`) per increment.
+*   Structure the work into logical increments, processing one test file or a closely related group of test files (e.g., `_derive.rs`, `_manual.rs`, and their shared `_only_test.rs`) per increment, with each increment having a narrow focus on a specific enum aspect (Unit, Unnamed/Tuple, Named/Struct, or Complex/Mixed).
 *   **Crucially, this plan focuses *only* on adding documentation. Pre-existing test failures or logic errors are out of scope. Changes will only be committed if `cargo check --package former --tests` passes after adding comments.**
 
 ## Relevant Context
@@ -92,6 +92,7 @@ This section shows an example of the documentation comments that will be added t
 
 **Increment Template: Document Test File/Group**
 *   **Target Crate(s):** `former`
+*   **Enum Aspect Focus:** [Unit | Unnamed/Tuple | Named/Struct | Complex/Mixed]
 *   **Target File(s):** [List of specific `.rs` files for this increment]
 *   **Pre-Analysis (AI to output this in Detailed Planning - Output 4):**
     *   Identified enum variant structures in target file(s): [e.g., "Unit variants", "Single-field tuple variant with `#[scalar]`"]
@@ -101,119 +102,121 @@ This section shows an example of the documentation comments that will be added t
 *   **Proposed Comments:**
     *   AI will propose the three `//!` comment blocks (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file, adhering to the "Comment Content" requirements.
 *   **Verification Strategy:** After comments are added by the user, the AI will request the user to run `cargo check --package former --tests`. The code must compile without errors.
-*   **Commit Message:** `docs(former): Add purpose and coverage to [specific_test_file_or_group_name]`
+*   **Commit Message:** `docs(former): Add purpose and coverage to [enum_aspect_focus] [specific_test_file_or_group_name]`
 
 ---
+**Phase 1: Unit Variant Tests (`enum_unit_tests`)**
 
-*   [⚫] **Increment 1: Document `enum_unit_tests/unit_variant_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 1:** Document `unit_variant_*` files
+    *   Enum Aspect Focus: Unit
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unit_tests/unit_variant_derive.rs`
         *   `module/core/former/tests/inc/enum_unit_tests/unit_variant_manual.rs`
         *   `module/core/former/tests/inc/enum_unit_tests/unit_variant_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to unit_variant enum tests`
 
-*   [⚫] **Increment 2: Document `enum_unit_tests/enum_named_fields_unit_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 2:** Document `enum_named_fields_unit_*` files
+    *   Enum Aspect Focus: Unit (within a named-fields style enum definition)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unit_tests/enum_named_fields_unit_derive.rs`
         *   `module/core/former/tests/inc/enum_unit_tests/enum_named_fields_unit_manual.rs`
         *   `module/core/former/tests/inc/enum_unit_tests/enum_named_fields_unit_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to enum_named_fields_unit tests`
 
-*   [⚫] **Increment 3: Document `enum_unit_tests/generics_in_tuple_variant_unit_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 3:** Document `generics_in_tuple_variant_unit_*` files
+    *   Enum Aspect Focus: Unit (within generic enums)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unit_tests/generics_in_tuple_variant_unit_derive.rs`
         *   `module/core/former/tests/inc/enum_unit_tests/generics_in_tuple_variant_unit_manual.rs`
-    *   **Note:** `generics_in_tuple_variant_only_test.rs` is shared; its documentation will be handled in Increment 11.
     *   Commit Message: `docs(former): Add purpose and coverage to generics_in_tuple_variant_unit tests`
 
-*   [⚫] **Increment 4: Document `enum_unit_tests/keyword_variant_unit_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 4:** Document `keyword_variant_unit_*` files
+    *   Enum Aspect Focus: Unit (with keyword identifiers)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unit_tests/keyword_variant_unit_derive.rs`
         *   `module/core/former/tests/inc/enum_unit_tests/keyword_variant_unit_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to keyword_variant_unit tests`
 
-*   [⚫] **Increment 5: Document `enum_unit_tests/standalone_constructor_unit_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 5:** Document `standalone_constructor_unit_*` files
+    *   Enum Aspect Focus: Unit (with `#[standalone_constructors]`)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unit_tests/standalone_constructor_unit_derive.rs`
         *   `module/core/former/tests/inc/enum_unit_tests/standalone_constructor_unit_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_unit tests`
 
-*   [⚫] **Increment 6: Document `enum_unit_tests/standalone_constructor_args_unit_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 6:** Document `standalone_constructor_args_unit_*` files
+    *   Enum Aspect Focus: Unit (with `#[standalone_constructors]` and `#[arg_for_constructor]` context - though unit variants have no args)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unit_tests/standalone_constructor_args_unit_derive.rs`
         *   `module/core/former/tests/inc/enum_unit_tests/standalone_constructor_args_unit_manual.rs`
         *   `module/core/former/tests/inc/enum_unit_tests/standalone_constructor_args_unit_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_args_unit tests`
 
-*   [⚫] **Increment 7: Document `enum_unit_tests/compile_fail/unit_subform_scalar_error.rs`**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 7:** Document `compile_fail/unit_subform_scalar_error.rs`
+    *   Enum Aspect Focus: Unit (compile-fail scenario)
     *   Target File(s): `module/core/former/tests/inc/enum_unit_tests/compile_fail/unit_subform_scalar_error.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to unit_subform_scalar_error compile_fail test`
 
 ---
-*   [⚫] **Increment 8: Document `enum_unnamed_tests/basic_*` files**
-    *   Target Crate(s): `former`
+**Phase 2: Unnamed/Tuple Variant Tests (`enum_unnamed_tests`)**
+
+*   [⚫] **Increment 8:** Document `basic_*` files
+    *   Enum Aspect Focus: Unnamed/Tuple (basic single-field subform)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/basic_derive.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/basic_manual.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/basic_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to basic unnamed enum tests`
 
-*   [⚫] **Increment 9: Document `enum_unnamed_tests/enum_named_fields_unnamed_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 9:** Document `enum_named_fields_unnamed_*` files
+    *   Enum Aspect Focus: Unnamed/Tuple (zero-field tuple variants)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/enum_named_fields_unnamed_derive.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/enum_named_fields_unnamed_manual.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/enum_named_fields_unnamed_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to enum_named_fields_unnamed tests`
 
-*   [⚫] **Increment 10: Document `enum_unnamed_tests/generics_independent_tuple_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 10:** Document `generics_independent_tuple_*` files
+    *   Enum Aspect Focus: Unnamed/Tuple (single-field tuple with independent generics, `#[scalar]`)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/generics_independent_tuple_derive.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/generics_independent_tuple_manual.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/generics_independent_tuple_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to generics_independent_tuple tests`
 
-*   [⚫] **Increment 11: Document `enum_unnamed_tests/generics_in_tuple_variant_tuple_*` and shared `_only_test`**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 11:** Document `generics_in_tuple_variant_tuple_*` and shared `_only_test`
+    *   Enum Aspect Focus: Unnamed/Tuple (single-field tuple with shared generics, default subform)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/generics_in_tuple_variant_tuple_derive.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/generics_in_tuple_variant_tuple_manual.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/generics_in_tuple_variant_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to generics_in_tuple_variant_tuple tests`
 
-*   [⚫] **Increment 12: Document `enum_unnamed_tests/generics_shared_tuple_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 12:** Document `generics_shared_tuple_*` files
+    *   Enum Aspect Focus: Unnamed/Tuple (single-field tuple with shared generics, default subform)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/generics_shared_tuple_derive.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/generics_shared_tuple_manual.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/generics_shared_tuple_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to generics_shared_tuple tests`
 
-*   [⚫] **Increment 13: Document `enum_unnamed_tests/keyword_variant_tuple_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 13:** Document `keyword_variant_tuple_*` files
+    *   Enum Aspect Focus: Unnamed/Tuple (variants with keyword identifiers, mixed scalar/subform)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/keyword_variant_tuple_derive.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/keyword_variant_tuple_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to keyword_variant_tuple tests`
 
-*   [⚫] **Increment 14: Document `enum_unnamed_tests/scalar_generic_tuple_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 14:** Document `scalar_generic_tuple_*` files
+    *   Enum Aspect Focus: Unnamed/Tuple (generic tuple variants with `#[scalar]`)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/scalar_generic_tuple_derive.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/scalar_generic_tuple_manual.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/scalar_generic_tuple_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to scalar_generic_tuple tests`
 
-*   [⚫] **Increment 15: Document `enum_unnamed_tests/standalone_constructor_args_tuple_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 15:** Document `standalone_constructor_args_tuple_*` files
+    *   Enum Aspect Focus: Unnamed/Tuple (with `#[standalone_constructors]` and `#[arg_for_constructor]`)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_args_tuple_derive.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_args_tuple_multi_manual.rs`
@@ -221,55 +224,55 @@ This section shows an example of the documentation comments that will be added t
         *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_args_tuple_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_args_tuple tests`
 
-*   [⚫] **Increment 16: Document `enum_unnamed_tests/standalone_constructor_tuple_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 16:** Document `standalone_constructor_tuple_*` files
+    *   Enum Aspect Focus: Unnamed/Tuple (with `#[standalone_constructors]`, no field args)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_tuple_derive.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_tuple_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_tuple tests`
 
-*   [⚫] **Increment 17: Document `enum_unnamed_tests/tuple_multi_default_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 17:** Document `tuple_multi_default_*` files
+    *   Enum Aspect Focus: Unnamed/Tuple (multi-field, default scalar behavior)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_default_derive.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_default_manual.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_default_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to tuple_multi_default tests`
 
-*   [⚫] **Increment 18: Document `enum_unnamed_tests/tuple_multi_scalar_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 18:** Document `tuple_multi_scalar_*` files
+    *   Enum Aspect Focus: Unnamed/Tuple (multi-field with `#[scalar]`)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_scalar_derive.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_scalar_manual.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_scalar_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to tuple_multi_scalar tests`
 
-*   [⚫] **Increment 19: Document `enum_unnamed_tests/tuple_multi_standalone_args_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 19:** Document `tuple_multi_standalone_args_*` files
+    *   Enum Aspect Focus: Unnamed/Tuple (multi-field with `#[standalone_constructors]` and `#[arg_for_constructor]`)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_derive.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_manual.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to tuple_multi_standalone_args tests`
 
-*   [⚫] **Increment 20: Document `enum_unnamed_tests/tuple_multi_standalone_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 20:** Document `tuple_multi_standalone_*` files
+    *   Enum Aspect Focus: Unnamed/Tuple (multi-field with `#[standalone_constructors]`, no field args)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_derive.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_manual.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to tuple_multi_standalone tests`
 
-*   [⚫] **Increment 21: Document `enum_unnamed_tests/tuple_zero_fields_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 21:** Document `tuple_zero_fields_*` files
+    *   Enum Aspect Focus: Unnamed/Tuple (zero-field tuple variants)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_derive.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_manual.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to tuple_zero_fields tests`
 
-*   [⚫] **Increment 22: Document `enum_unnamed_tests/usecase1*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 22:** Document `usecase1*` files
+    *   Enum Aspect Focus: Unnamed/Tuple (single-field tuple, default subform, multiple variants)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/usecase1.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/usecase1_derive.rs`
@@ -277,8 +280,8 @@ This section shows an example of the documentation comments that will be added t
         *   `module/core/former/tests/inc/enum_unnamed_tests/usecase1_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to usecase1 unnamed enum tests`
 
-*   [⚫] **Increment 23: Document `enum_unnamed_tests/compile_fail/*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 23:** Document `compile_fail/*` files for unnamed variants
+    *   Enum Aspect Focus: Unnamed/Tuple (compile-fail scenarios)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/compile_fail/tuple_multi_subform_scalar_error.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/compile_fail/tuple_single_subform_non_former_error.rs`
@@ -286,32 +289,34 @@ This section shows an example of the documentation comments that will be added t
     *   Commit Message: `docs(former): Add purpose and coverage to unnamed enum compile_fail tests`
 
 ---
-*   [⚫] **Increment 24: Document `enum_named_tests/enum_named_fields_named_*` files**
-    *   Target Crate(s): `former`
+**Phase 3: Named/Struct Variant Tests (`enum_named_tests`)**
+
+*   [⚫] **Increment 24:** Document `enum_named_fields_named_*` files
+    *   Enum Aspect Focus: Named/Struct (various field counts and attributes)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_named_tests/enum_named_fields_named_derive.rs`
         *   `module/core/former/tests/inc/enum_named_tests/enum_named_fields_named_manual.rs`
         *   `module/core/former/tests/inc/enum_named_tests/enum_named_fields_named_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to enum_named_fields_named tests`
 
-*   [⚫] **Increment 25: Document `enum_named_tests/generics_independent_struct_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 25:** Document `generics_independent_struct_*` files
+    *   Enum Aspect Focus: Named/Struct (with independent generics)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_named_tests/generics_independent_struct_derive.rs`
         *   `module/core/former/tests/inc/enum_named_tests/generics_independent_struct_manual.rs`
         *   `module/core/former/tests/inc/enum_named_tests/generics_independent_struct_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to generics_independent_struct tests`
 
-*   [⚫] **Increment 26: Document `enum_named_tests/generics_shared_struct_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 26:** Document `generics_shared_struct_*` files
+    *   Enum Aspect Focus: Named/Struct (with shared generics)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_named_tests/generics_shared_struct_derive.rs`
         *   `module/core/former/tests/inc/enum_named_tests/generics_shared_struct_manual.rs`
         *   `module/core/former/tests/inc/enum_named_tests/generics_shared_struct_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to generics_shared_struct tests`
 
-*   [⚫] **Increment 27: Document `enum_named_tests/standalone_constructor_args_named_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 27:** Document `standalone_constructor_args_named_*` files
+    *   Enum Aspect Focus: Named/Struct (with `#[standalone_constructors]` and `#[arg_for_constructor]`)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_named_tests/standalone_constructor_args_named_derive.rs`
         *   `module/core/former/tests/inc/enum_named_tests/standalone_constructor_args_named_multi_manual.rs`
@@ -319,23 +324,25 @@ This section shows an example of the documentation comments that will be added t
         *   `module/core/former/tests/inc/enum_named_tests/standalone_constructor_args_named_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_args_named tests`
 
-*   [⚫] **Increment 28: Document `enum_named_tests/standalone_constructor_named_*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 28:** Document `standalone_constructor_named_*` files
+    *   Enum Aspect Focus: Named/Struct (with `#[standalone_constructors]`, no field args)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_named_tests/standalone_constructor_named_derive.rs`
         *   `module/core/former/tests/inc/enum_named_tests/standalone_constructor_named_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_named tests`
 
-*   [⚫] **Increment 29: Document `enum_named_tests/compile_fail/*` files**
-    *   Target Crate(s): `former`
+*   [⚫] **Increment 29:** Document `compile_fail/*` files for named variants
+    *   Enum Aspect Focus: Named/Struct (compile-fail scenarios)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_named_tests/compile_fail/struct_zero_default_error.rs`
         *   `module/core/former/tests/inc/enum_named_tests/compile_fail/struct_zero_subform_scalar_error.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to named enum compile_fail tests`
 
 ---
-*   [⚫] **Increment 30: Document `enum_complex_tests/subform_collection_test.rs`**
-    *   Target Crate(s): `former`
+**Phase 4: Complex/Mixed Enum Tests (`enum_complex_tests`)**
+
+*   [⚫] **Increment 30:** Document `subform_collection_test.rs`
+    *   Enum Aspect Focus: Complex/Mixed (subform entry with enum elements - currently commented out)
     *   Target File(s): `module/core/former/tests/inc/enum_complex_tests/subform_collection_test.rs`
     *   Note: This file's content is commented out. The purpose comment should reflect its original intent and current status.
     *   Commit Message: `docs(former): Add purpose and coverage to subform_collection_test (complex enum)`
@@ -343,6 +350,7 @@ This section shows an example of the documentation comments that will be added t
 ---
 *   [⚫] **Increment 31: Final Review and Cleanup**
     *   Target Crate(s): `former`
+    *   Enum Aspect Focus: N/A
     *   Goal: Ensure all enum test files have been processed. Check for consistency in comments.
     *   **Verification Strategy:** Run `cargo check --package former --tests`.
     *   Commit Message: `docs(former): Final review of enum test documentation`
@@ -388,3 +396,5 @@ This section shows an example of the documentation comments that will be added t
 *   The "Expected Enum Former Behavior Rules" section is critical for determining coverage.
 *   The "Increment Template" will be used for detailed planning of each increment.
 *   The `_only_test.rs` files, when shared, will have their documentation reflect their broader applicability.
+*   **[Date/Inc #] Note:** Increment 3 and 11 both reference `generics_in_tuple_variant_only_test.rs`. The documentation for this shared file should be comprehensive enough to cover its usage in both unit and tuple variant contexts, likely handled in Increment 11.
+*   **[Date/Inc #] Note:** The commit messages in the Increment Template now include `[enum_aspect_focus]` for better categorization.
