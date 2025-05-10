@@ -1,21 +1,27 @@
-// File: module/core/former/tests/inc/former_enum_tests/scalar_generic_tuple_manual.rs
+//! Purpose: This file provides a manual implementation of the `Former` pattern's static constructors
+//! for an enum (`EnumScalarGeneric<T>`) with tuple variants containing generic types and bounds. It
+//! demonstrates how the static constructors should behave for tuple variants involving generics,
+//! including both scalar (direct value) and subformer (builder) styles, mirroring the behavior
+//! tested in `scalar_generic_tuple_only_test.rs`.
+//!
+//! Coverage:
+//! - Rule 3d (Tuple + Single-Field + Default): Manually implements the subformer behavior for a single-field tuple variant with generics, aligning with the test logic.
+//! - Rule 3f (Tuple + Multi-Field + Default): Manually implements the subformer behavior for a multi-field tuple variant with generics, aligning with the test logic. Note: This contradicts the documented Rule 3f which states default for multi-field tuple is scalar. The manual implementation here reflects the current test behavior.
+//! - Rule 1d (Tuple + Single-Field + `#[scalar]`): Manually implements the scalar constructor for a single-field tuple variant with generics, reflecting the test logic's expectation for `Variant1`.
+//! - Rule 1f (Tuple + Multi-Field + `#[scalar]`): Not applicable, as the manual implementation for the multi-field variant uses a subformer, aligning with the test but not the documented rule for `#[scalar]`.
+//! - Rule 4b (Option 2 Logic): Demonstrated by the manual implementation of the `Variant2` subformer.
+//!
+//! Test Relevance/Acceptance Criteria:
+//! - Defines a generic enum `EnumScalarGeneric<T: Bound>` with single-field (`Variant1`) and multi-field (`Variant2`) tuple variants, both containing generic types and bounds.
+//! - Provides hand-written implementations of static methods (`variant_1`, `variant_2`) that mimic the behavior expected from the `#[derive(Former)]` macro for scalar and subformer constructors on these variants, specifically matching the expectations of `scalar_generic_tuple_only_test.rs`.
+//! - Includes shared test logic from `scalar_generic_tuple_only_test.rs`.
+//! - The tests in the included file call these manually implemented static methods.
+//! - For `variant_1()`, the test expects a direct scalar return and uses `.into()`, verifying the manual implementation of the scalar constructor for a single-field tuple variant.
+//! - For `variant_2()`, the test expects a former builder return, uses setters `._0()` and `._1()`, and calls `.form()`, verifying the manual implementation of the subformer for a multi-field tuple variant.
+//! - Asserts that the resulting enum instances match manually constructed expected values.
+//! - This file contains a hand-written former implementation and includes shared test logic via `include!("scalar_generic_tuple_only_test.rs")`.
 
-//! # Manual Test: #[scalar] Attribute on Generic Tuple Variants
-//!
-//! This file provides a manual implementation of the `Former` pattern's static constructors
-//! for an enum (`EnumScalarGeneric<T>`) with tuple variants containing generic types,
-//! where those variants would conceptually be marked with `#[scalar]`.
-//!
-//! ## Purpose:
-//!
-//! - To serve as a reference implementation demonstrating how the static constructors
-//!   should behave for `#[scalar]` tuple variants involving generics.
-//! - To manually implement the static methods (`variant_1`, `variant_2`), ensuring correct
-//!   handling of the enum's generic parameter `T`, its bounds, and the `impl Into<...>`
-//!   signatures for the variant fields.
-//! - To validate the logic used by the `#[derive(Former)]` macro by comparing its generated
-//!   code's behavior against this manual implementation using the shared tests in
-//!   `scalar_generic_tuple_only_test.rs`.
+// File: module/core/former/tests/inc/former_enum_tests/scalar_generic_tuple_manual.rs
 
 // Imports testing infrastructure and potentially other common items
 use former::{

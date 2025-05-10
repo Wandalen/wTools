@@ -374,170 +374,6 @@ This section shows an example of the documentation comments that will be added t
     *   Detailed Plan Step 5: Request user to run verification command.
     *   Pre-Analysis:
         *   Identified enum variant structures in target file(s): Single-field tuple variants with keyword identifiers (`r#use(u32)`, `r#break(Break)`).
-        *   Key attributes present: `#[derive(Former)]` on the enum in `_derive.rs`; `#[scalar]` on the `r#use` variant. Inner struct `Break` derives `Former`.
-        *   Relevant "Expected Enum Former Behavior Rule IDs": 1d, 3d, 4b.
-        *   Brief summary of how test functions appear to exercise these rules: `keyword_variant_scalar_test` tests the static method `KeywordVariantEnum::r#use(u32)` and asserts the resulting enum variant. `keyword_variant_subform_test` tests the static method `KeywordVariantEnum::r#break()`, uses the setter `.value()` on the returned subformer, calls `.form()`, and asserts the resulting enum variant. This verifies handling of keyword identifiers and mixed scalar/subform behavior.
-    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks, Structuring: Proc Macro Development Workflow.
-    *   Relevant Behavior Rules: Rule 1d (Tuple + Single-Field + `#[scalar]`), Rule 3d (Tuple + Single-Field + Default), Rule 4b (Option 2 Logic).
-    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
-    *   Test Matrix: N/A
-    *   Enum Aspect Focus: Unnamed/Tuple (variants with keyword identifiers, mixed scalar/subform)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/keyword_variant_tuple_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/keyword_variant_tuple_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to keyword_variant_tuple tests`
-
-*   [⚫] **Increment 14:** Document `scalar_generic_tuple_*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (generic tuple variants with `#[scalar]`)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/scalar_generic_tuple_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/scalar_generic_tuple_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/scalar_generic_tuple_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to scalar_generic_tuple tests`
-
-*   [⚫] **Increment 15:** Document `standalone_constructor_args_tuple_*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (with `#[standalone_constructors]` and `#[arg_for_constructor]`)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_args_tuple_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_tuple_multi_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_tuple_single_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_args_tuple_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_args_tuple tests`
-
-*   [⚫] **Increment 16:** Document `standalone_constructor_tuple_*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (with `#[standalone_constructors]`, no field args)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_tuple_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_tuple_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_tuple tests`
-
-*   [⚫] **Increment 17:** Document `tuple_multi_default_*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (multi-field, default scalar behavior)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_default_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_default_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_default_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to tuple_multi_default tests`
-*   [⚫] **Increment 18:** Document `tuple_multi_scalar_*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (multi-field with `#[scalar]`)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_scalar_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_scalar_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_scalar_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to tuple_multi_scalar tests`
-
-*   [⚫] **Increment 19:** Document `tuple_multi_standalone_args_*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (multi-field with `#[standalone_constructors]` and `#[arg_for_constructor]`)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to tuple_multi_standalone_args tests`
-
-*   [⚫] **Increment 20:** Document `tuple_multi_standalone_*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (multi-field with `#[standalone_constructors]`, no field args)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to tuple_multi_standalone tests`
-
-*   [⚫] **Increment 21:** Document `tuple_zero_fields_*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (zero-field tuple variants)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to tuple_zero_fields tests`
-
-*   [⚫] **Increment 22:** Document `usecase1*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (single-field tuple, default subform, multiple variants)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/usecase1.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/usecase1_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/usecase1_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/usecase1_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to usecase1 unnamed enum tests`
-
-*   [⚫] **Increment 23:** Document `compile_fail/*` files for unnamed variants
-    *   Enum Aspect Focus: Unnamed/Tuple (compile-fail scenarios)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/compile_fail/tuple_multi_subform_scalar_error.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/compile_fail/tuple_single_subform_non_former_error.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/compile_fail/tuple_zero_subform_scalar_error.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to unnamed enum compile_fail tests`
-
-### Requirements
-*   **Adherence:** Strictly follow `code/gen` instructions, Design Rules, and Codestyle Rules for all modifications.
-*   **Comment Content:** Each targeted test file **must** have the following three `//!` (file-level doc comments) added at the very beginning, before any `use` statements or code, in the specified order:
-    1.  **`//! Purpose: ...`**:
-        *   Start with "Purpose:".
-        *   Clearly and concisely describe the main goal of the test file. What specific aspect of the `Former` derive macro's behavior for enums is this file intended to verify?
-        *   Mention the specific enum variant structure(s) (e.g., "unit variants", "single-field tuple variants with generics", "multi-field named struct variants") and any key attributes (e.g., `#[scalar]`, `#[subform_scalar]`, `#[standalone_constructors]`) being tested in this file.
-        *   State whether the file is for `derive` macro testing, `manual` implementation testing, or `shared test logic` (`_only_test.rs`).
-        *   For `compile_fail` tests, clearly state the specific incorrect usage or error condition it's designed to trigger and verify, referencing the relevant behavior rule that is being intentionally violated.
-        *   **For `_only_test.rs` files:** The purpose should state that it provides shared test assertions/logic for both derived and manual implementations of [specific feature/variant type].
-    2.  **`//! Coverage: ...`**:
-        *   Start with "Coverage:".
-        *   List the specific Rule IDs (e.e., "Rule 1a", "Rule 3d.i") from the "Expected Enum Former Behavior Rules" section that the tests in this file primarily demonstrate or validate.
-        *   Briefly explain *what aspect* of the rule is being tested if the rule is broad and the test is specific (e.g., "Rule 4b - specifically the 'returns Former' case for standalone constructors with partial args").
-        *   If a test covers interactions between multiple rules (e.g., a variant attribute combined with an enum-level attribute), list all relevant rules and briefly note the interaction.
-        *   **For `_only_test.rs` files:** This comment should summarize all rules covered by the test functions within it, which are then applied to both `_derive.rs` and `_manual.rs` files that include it.
-    3.  **`//! Test Relevance/Acceptance Criteria: ...`**:
-        *   Start with "Test Relevance/Acceptance Criteria:".
-        *   Describe the key actions performed by the test code and the primary assertions made that validate its stated purpose and coverage. This should explain *how* the test verifies the intended behavior.
-        *   Be specific about the test's mechanics:
-            *   What specific enum structures or attributes are defined/used in this test?
-            *   What specific generated/manual methods are invoked (e.g., `MyEnum::variant_x()`, `former.field_y()`, standalone `variant_z()`)?
-            *   What are the key inputs provided to these methods?
-            *   What is the nature of the primary assertion (e.g., "Asserts the `got` instance (produced by the former) is equal to an `expected` instance (manually constructed to represent the correct state).", "Asserts that a subformer is returned and can be used to set inner fields.", "Asserts that a compile-time error occurs for an invalid attribute combination using `trybuild`.").
-        *   **For `_derive.rs` files:** Mention that it relies on `#[derive(Former)]` for code generation and typically includes shared test logic via `include!("...")`.
-        *   **For `_manual.rs` files:** Mention that it contains a hand-written former implementation and includes shared test logic via `include!("...")`.
-        *   **For `compile_fail/*.rs` files:** The file contains code that intentionally uses an attribute or enum structure in a way that violates a documented behavior rule (i.e., `#[subform_scalar]` on a unit variant). The test is accepted if `trybuild` confirms this results in a compilation error, thereby validating the macro's error reporting for this specific invalid scenario."
-*   **Comment Style:** All added `//!` comments should be clear, concise, grammatically correct, and follow Rust documentation comment conventions. Use Markdown for lists or emphasis if it enhances readability. Aim for reasonable line lengths.
-*   **Pre-Analysis Output:** Before proposing comments for an increment, the AI must provide its pre-analysis findings for the targeted file(s) as specified in the "Increment Template".
-*   **Incremental Processing:** Modify files one increment at a time, following the "Increment Template."
-*   **Verification:** After each increment, request user to apply changes and run `cargo check --package former --tests`. **The code must compile successfully after adding comments. If adding comments introduces a compilation error (e.e., a syntax error in the comment itself), that specific error must be fixed. Pre-existing test failures or logic errors are out of scope.**
-*   **No Functional Changes:** This task is purely for documentation and review. No functional code changes should be made to the tests or macro logic unless a comment itself causes a trivial syntax issue that prevents compilation.
-*   **Handling `xxx`/`qqq` Comments:** During the review of each test file, if any existing `// xxx :` or `// qqq :` comments are encountered, their presence and a brief summary of their content should be noted in the "Notes & Insights" section of the `plan.md` for that increment. Addressing or resolving these comments is out of scope for this plan.
-*   **`mod.rs` Files Review:** If, during the review of test files, it's discovered that an enum test file exists in the directories but is not declared in its respective `mod.rs` file, this should be noted in the "Notes & Insights" for that increment. Activating it is out of scope.
-
-## Notes & Insights
-*   This plan focuses exclusively on documenting existing enum tests by adding comments. It does not involve fixing failing tests or implementing new features.
-*   The "Expected Enum Former Behavior Rules" section is critical for determining coverage.
-*   The "Increment Template" will be used for detailed planning of each increment.
-*   The `_only_test.rs` files, when shared, will have their documentation reflect their broader applicability.
-*   **[Date/Inc #] Note:** Increment 3 and 11 both reference `generics_in_tuple_variant_only_test.rs`. The documentation for this shared file should be comprehensive enough to cover its usage in both unit and tuple variant contexts, likely handled in Increment 11.
-*   **[Date/Inc #] Note:** The commit messages in the Increment Template now include `[enum_aspect_focus]` for better categorization.
-*   **[2025-05-10/Inc 1] Note:** Started detailed planning for Increment 1: Document `unit_variant_*` files. Pre-analysis complete. Proceeding to draft and apply comments.
-*   **[2025-05-10/Inc 1] Note:** Encountered repeated failures using `apply_diff` to add comments to `unit_variant_only_test.rs`. Changing strategy for Detailed Plan Step 4 to use `write_to_file` as a fallback to replace the entire file content with the desired version containing the corrected comments.
-*   **[2025-05-10/Inc 1] Note:** Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 1 complete.
-*   **[2025-05-10/Inc 2] Note:** Started detailed planning for Increment 2: Document `enum_named_fields_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 2 complete.
-*   **[2025-05-10/Inc 3] Note:** Started detailed planning for Increment 3: Document `generics_in_tuple_variant_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 3 complete.
-*   **[2025-05-10/Inc 4] Note:** Started detailed planning for Increment 4: Document `keyword_variant_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 4 complete.
-*   **[2025-05-10/Inc 5] Note:** Started detailed planning for Increment 5: Document `standalone_constructor_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 5 complete.
-*   **[2025-05-10/Inc 6] Note:** Started detailed planning for Increment 6: Document `standalone_constructor_args_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 6 complete.
-*   **[2025-05-10/Inc 7] Note:** Started detailed planning for Increment 7: Document `compile_fail/unit_subform_scalar_error.rs`. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 7 complete.
-*   **[2025-05-10/Inc 8] Note:** Started detailed planning for Increment 8: Document `basic_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 8 complete.
-*   **[2025-05-10/Inc 9] Note:** Started detailed planning for Increment 9: Document `enum_named_fields_unnamed_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 9 complete.
-*   **[2025-05-10/Inc 10] Note:** Started detailed planning for Increment 10: Document `generics_independent_tuple_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 10 complete.
-*   **[2025-05-10/Inc 11] Note:** Started detailed planning for Increment 11: Document `generics_in_tuple_variant_tuple_*` and shared `_only_test`. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 11 complete.
-*   **[2025-05-10/Inc 12] Note:** Started detailed planning for Increment 12: Document `generics_shared_tuple_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 12 complete.
-*   [✅] **Increment 13:** Document `keyword_variant_tuple_*` files
-    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
-    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
-    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
-    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
-    *   Detailed Plan Step 5: Request user to run verification command.
-    *   Pre-Analysis:
-        *   Identified enum variant structures in target file(s): Single-field tuple variants with keyword identifiers (`r#use(u32)`, `r#break(Break)`).
-        *   Key attributes present: `#[derive(Former)]` on the enum in `_derive.rs`; `#[scalar]` on the `r#use` variant. Inner struct `Break` derives `Former`.
-        *   Relevant "Expected Enum Former Behavior Rule IDs": 1d, 3d, 4b.
-        *   Brief summary of how test functions appear to exercise these rules: `keyword_variant_scalar_test` tests the static method `KeywordVariantEnum::r#use(u32)` and asserts the resulting enum variant. `keyword_variant_subform_test` tests the static method `KeywordVariantEnum::r#break()`, uses the setter `.value()` on the returned subformer, calls `.form()`, and asserts the resulting enum variant. This verifies handling of keyword identifiers and mixed scalar/subform behavior.
-    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks, Structuring: Proc Macro Development Workflow.
-    *   Relevant Behavior Rules: Rule 1d (Tuple + Single-Field + `#[scalar]`), Rule 3d (Tuple + Single-Field + Default), Rule 4b (Option 2 Logic).
-    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
-    *   Test Matrix: N/A
     *   Enum Aspect Focus: Unnamed/Tuple (variants with keyword identifiers, mixed scalar/subform)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/keyword_variant_tuple_derive.rs`
@@ -546,7 +382,21 @@ This section shows an example of the documentation comments that will be added t
     *   **[2025-05-11/Inc 13] Note:** Pre-analysis for Increment 13 complete based on file contents. Relevant Behavior Rules identified as 1d, 3d, and 4b.
     *   **[2025-05-11/Inc 13] Note:** Reviewed target files for Increment 13. Existing documentation comments already meet the requirements. No file modifications were necessary. Verification (`cargo check --package former --tests`) passed. Increment 13 complete.
 
-*   [⚫] **Increment 14:** Document `scalar_generic_tuple_*` files
+*   [⏳] **Increment 14:** Document `scalar_generic_tuple_*` files
+    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
+    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
+    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
+    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
+    *   Detailed Plan Step 5: Request user to run verification command.
+    *   Pre-Analysis:
+        *   Identified enum variant structures in target file(s): Single-field tuple variant (`Variant1(InnerScalar<T>)`) and multi-field tuple variant (`Variant2(InnerScalar<T>, bool)`) within a generic enum (`EnumScalarGeneric<T>`). The enum and inner struct have bounds (`T: Bound`).
+        *   Key attributes present: `#[derive(Former)]`, `#[debug]`, `#[PartialEq]`, `#[Clone]` on the enum in `_derive.rs`. `#[derive(Debug, Clone, PartialEq, Default)]` on the inner struct `InnerScalar`. The `#[scalar]` attribute is commented out on both `Variant1` and `Variant2` in `_derive.rs`. The `#[standalone_constructors]` attribute is not present on the enum. The manual implementation in `_manual.rs` correctly implements the scalar constructor for `Variant1` and a former builder for `Variant2`.
+        *   Relevant "Expected Enum Former Behavior Rule IDs": 3d, 3f, 1d, 1f, 4b.
+        *   Brief summary of how test functions appear to exercise these rules: The test `scalar_on_single_generic_tuple_variant` in `_only_test.rs` calls `EnumScalarGeneric::<MyType>::variant_1()` and expects a direct scalar value, then uses `.into()`. The test `scalar_on_multi_generic_tuple_variant` in `_only_test.rs` calls `EnumScalarGeneric::<MyType>::variant_2()`, uses setters `._0()` and `._1()`, and calls `.form()`. These tests seem to expect scalar behavior for single-field tuple variants and subformer behavior for multi-field tuple variants, which aligns with Rule 3d but contradicts Rule 3f (multi-field default should be scalar). The `#[scalar]` attributes are commented out in the derive file, which should result in default behavior. The manual file implements scalar for Variant1 and subformer for Variant2, matching the test logic but not fully matching the expected derive behavior based on the plan rules.
+    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks, Structuring: Proc Macro Development Workflow.
+    *   Relevant Behavior Rules: Rule 3d, 3f, 1d, 1f, 4b.
+    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
+    *   Test Matrix: N/A
     *   Enum Aspect Focus: Unnamed/Tuple (generic tuple variants with `#[scalar]`)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/scalar_generic_tuple_derive.rs`
@@ -684,3 +534,5 @@ This section shows an example of the documentation comments that will be added t
 *   **[2025-05-10/Inc 12] Note:** Started detailed planning for Increment 12: Document `generics_shared_tuple_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 12 complete.
 *   **[2025-05-11/Inc 13] Note:** Pre-analysis for Increment 13 complete based on file contents. Relevant Behavior Rules identified as 1d, 3d, and 4b.
 *   **[2025-05-11/Inc 13] Note:** Reviewed target files for Increment 13. Existing documentation comments already meet the requirements. No file modifications were necessary. Verification (`cargo check --package former --tests`) passed. Increment 13 complete.
+*   **[2025-05-11/Inc 14] Note:** Pre-analysis for Increment 14 complete based on file contents. Relevant Behavior Rules identified as 3d, 3f, 1d, 1f, and 4b.
+*   **[2025-05-11/Inc 14] Note:** Found a discrepancy between the documented "Expected Enum Former Behavior Rules" (Rule 3f: Multi-field tuple default is scalar) and the test logic/manual implementation for `Variant2` in `scalar_generic_tuple_*` files (which tests/implements subformer behavior). Also, the `#[scalar]` attributes are commented out in the `_derive.rs` file, which should result in default behavior according to the rules, but the tests seem to expect scalar behavior for `Variant1` and subformer for `Variant2`. The documentation added will reflect the current state and behavior of the tests/manual implementation, and this discrepancy is noted here. Addressing this functional/test logic inconsistency is out of scope for this documentation task.
