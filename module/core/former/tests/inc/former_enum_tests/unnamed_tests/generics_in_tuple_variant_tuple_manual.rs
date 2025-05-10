@@ -1,4 +1,4 @@
-// File: module/core/former/tests/inc/former_enum_tests/generics_in_tuple_variant_manual.rs
+// File: module/core/former/tests/inc/former_enum_tests/unnamed_tests/generics_in_tuple_variant_tuple_manual.rs
 use super::*; // Imports testing infrastructure and potentially other common items
 use std::fmt::Debug; // Import Debug trait for bounds
 use std::marker::PhantomData; // Import PhantomData
@@ -63,6 +63,7 @@ where
   type Storage = InnerGenericFormerStorage< T >;
   type Context = C;
   type Formed = F;
+  type Types = InnerGenericFormerDefinitionTypes< T, C, F >;
 }
 // Added where clause and bounds
 impl< T, C, F > FormerMutator for InnerGenericFormerDefinitionTypes< T, C, F >
@@ -133,9 +134,8 @@ pub enum EnumOuter< X >
 where
   X : Copy + Debug + Default + PartialEq, // Added Debug + Default + PartialEq
 {
+  // --- Tuple Variant with Generics ---
   Variant( InnerGeneric< X > ), // Inner type uses X, which must satisfy InnerGeneric's bounds
-  #[ allow( dead_code ) ]
-  OtherVariant, // To make it slightly more realistic
 }
 
 // --- Specialized End Struct for the Variant ---
@@ -199,13 +199,6 @@ where
   {
     // Start the inner former using its `begin` associated function.
     InnerGenericFormer::begin( None, None, EnumOuterVariantEnd::< X >::default() )
-  }
-
-  // Manual constructor for OtherVariant
-  #[ allow( dead_code ) ]
-  pub fn other_variant() -> Self
-  {
-    EnumOuter::OtherVariant
   }
 }
 

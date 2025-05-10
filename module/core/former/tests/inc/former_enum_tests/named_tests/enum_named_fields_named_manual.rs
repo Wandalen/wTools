@@ -1,4 +1,4 @@
-// File: module/core/former/tests/inc/former_enum_tests/enum_named_fields_manual.rs
+// File: module/core/former/tests/inc/former_enum_tests/named_tests/enum_named_fields_named_manual.rs
 use super::*;
 use former::
 {
@@ -59,20 +59,16 @@ where Definition: FormerDefinition<Storage = InnerForSubformFormerStorage> {
 #[ derive( Debug, PartialEq ) ]
 pub enum EnumWithNamedFields // Renamed enum for clarity
 {
-  // Reordered to match derive file
-  UnitVariantScalar, // New
-  UnitVariantDefault, // Renamed
-
+  // --- Zero Fields (Named - Struct-like) ---
   VariantZeroScalar {},
   // VariantZeroDefault {}, // Error case - no manual impl needed
 
-  VariantZeroUnnamedScalar(), // New
-  VariantZeroUnnamedDefault(), // New
-
+  // --- One Field (Named - Struct-like) ---
   VariantOneScalar { field_a : String },
   VariantOneSubform { field_b : InnerForSubform },
   VariantOneDefault { field_c : InnerForSubform },
 
+  // --- Two Fields (Named - Struct-like) ---
   VariantTwoScalar { field_d : i32, field_e : bool },
   // VariantTwoDefault { field_f : i32, field_g : bool }, // Error case - no manual impl needed
 }
@@ -98,12 +94,6 @@ impl FormingEnd<InnerForSubformFormerDefinitionTypes<(), EnumWithNamedFields>> f
 // --- Static Methods on the Enum ---
 impl EnumWithNamedFields
 {
-  // --- Unit Variant ---
-  #[ inline( always ) ]
-  pub fn unit_variant_scalar() -> Self { Self::UnitVariantScalar } // New
-  #[ inline( always ) ]
-  pub fn unit_variant_default() -> Self { Self::UnitVariantDefault } // Renamed (Default is scalar)
-
   // --- Zero Fields (Named - Struct-like) ---
   #[ inline( always ) ]
   pub fn variant_zero_scalar() -> Self { Self::VariantZeroScalar {} }
@@ -112,12 +102,6 @@ impl EnumWithNamedFields
   // Manual implementation of standalone constructor for S0.4
   // #[ inline( always ) ]
   // pub fn standalone_variant_zero_scalar() -> Self { Self::VariantZeroScalar {} }
-
-  // --- Zero Fields (Unnamed - Tuple-like) ---
-  #[ inline( always ) ]
-  pub fn variant_zero_unnamed_scalar() -> Self { Self::VariantZeroUnnamedScalar() } // New
-  #[ inline( always ) ]
-  pub fn variant_zero_unnamed_default() -> Self { Self::VariantZeroUnnamedDefault() } // New (Default is scalar)
 
   // --- One Field (Named - Struct-like) ---
   #[ inline( always ) ]
@@ -227,4 +211,4 @@ impl EnumWithNamedFields
 
 
 // Include the test logic file
-include!( "enum_named_fields_only_test.rs" );
+include!( "enum_named_fields_named_only_test.rs" );

@@ -1,4 +1,4 @@
-// File: module/core/former/tests/inc/former_enum_tests/keyword_variant_derive.rs
+// File: module/core/former/tests/inc/former_enum_tests/unnamed_tests/keyword_variant_tuple_derive.rs
 use super::*;
 
 // Assume StringFormer exists for the derive macro to find for the r#Break variant
@@ -23,8 +23,6 @@ enum KeywordVariantEnum
   /// Explicitly scalar: Expects r#break(StringFormerStub)
   #[ scalar ]
   r#Break( StringFormerStub ),
-  /// Unit: Expects r#loop()
-  r#Loop,
   /// Multi-field tuple: Explicitly scalar required -> Expects r#if(bool, i32)
   #[ scalar ]
   r#If( bool, i32 ),
@@ -39,4 +37,5 @@ enum KeywordVariantEnum
   r#For( usize, &'static str ),
 }
 
-include!( "keyword_variant_only_test.rs" );
+// Include the test logic
+include!( "keyword_variant_tuple_only_test.rs" );

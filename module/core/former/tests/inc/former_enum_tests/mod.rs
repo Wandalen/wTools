@@ -115,12 +115,9 @@
 //!
 //! This documentation will be expanded as testing for other variant types (struct, unit) is planned.
 //!
-//! use super::*;
-//! use test_tools::exposed::*;
-//!
-//! // Uncomment modules as they are addressed in increments.
-//!
-//! pub mod unit_tests;
-//! pub mod unnamed_tests;
-//! pub mod named_tests;
-//! pub mod compile_fail;
+// Uncomment modules as they are addressed in increments.
+
+pub mod unit_tests;
+pub mod unnamed_tests;
+pub mod named_tests;
+pub mod compile_fail;

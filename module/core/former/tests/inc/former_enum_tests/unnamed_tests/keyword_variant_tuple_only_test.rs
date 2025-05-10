@@ -1,4 +1,4 @@
-// File: module/core/former/tests/inc/former_enum_tests/keyword_variant_only_test.rs
+// File: module/core/former/tests/inc/former_enum_tests/unnamed_tests/keyword_variant_tuple_only_test.rs
 use super::*;
 
 #[ test ]
@@ -9,11 +9,6 @@ fn keyword_variant_constructors()
   let got_break = KeywordVariantEnum::r#break( inner_string_stub );
   let exp_break = KeywordVariantEnum::r#Break( StringFormerStub { value: "stop".to_string() } );
   assert_eq!( got_break, exp_break );
-
-  // Test unit variant - Expects direct constructor
-  let got_loop = KeywordVariantEnum::r#loop();
-  let exp_loop = KeywordVariantEnum::r#Loop;
-  assert_eq!( got_loop, exp_loop );
 
   // Test multi-field variant (bool, i32) - Expects former builder due to #[scalar] and multi-fields
   let got_if = KeywordVariantEnum::r#if()
@@ -44,5 +39,4 @@ fn keyword_variant_constructors()
     .form();
   let exp_for = KeywordVariantEnum::r#For( 5, "times" );
   assert_eq!( got_for, exp_for );
-
 }
