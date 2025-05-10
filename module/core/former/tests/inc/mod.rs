@@ -6,4 +6,10 @@ use test_tools::exposed::*;
 mod struct_tests;
 
 #[ cfg( feature = "derive_former" ) ]
-mod enum_tests;
+pub mod enum_unit_tests;
+#[ cfg( feature = "derive_former" ) ]
+pub mod enum_unnamed_tests;
+#[ cfg( feature = "derive_former" ) ]
+pub mod enum_named_tests;
+#[ cfg( feature = "derive_former" ) ]
+pub mod enum_complex_tests;
