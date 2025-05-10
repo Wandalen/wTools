@@ -1,41 +1,45 @@
-// File: module/core/former/tests/inc/former_enum_tests/unnamed_tests/keyword_variant_tuple_derive.rs
-use super::*;
+//! Purpose: Tests the `#[derive(Former)]` macro's generation of constructors for unnamed (tuple)
+//! variants with keyword identifiers, specifically when the variant is marked with `#[scalar]`
+//! or uses the default subform behavior. This file focuses on verifying the derive-based implementation.
+//!
+//! Coverage:
+//! - Rule 1d (Tuple + Single-Field + `#[scalar]` -> Scalar): Verifies `KeywordVariantEnum::r#use() -> KeywordVariantEnum`.
+//! - Rule 3d (Tuple + Single-Field + Default -> Subform): Verifies `KeywordVariantEnum::r#break() -> BreakFormer`.
+//! - Rule 4b (Option 2 Logic): Verifies the use of the subformer returned by the `r#break` variant constructor.
+//!
+//! Test Relevance/Acceptance Criteria:
+//! - Defines an enum `KeywordVariantEnum` with tuple variants using keyword identifiers (`r#use(u32)`, `r#break(Break)`).
+//! - The `r#use` variant is marked `#[scalar]`, and `r#break` uses default behavior (which results in a subformer).
+//! - The enum has `#[derive(Former)]`.
+//! - Relies on the derived static methods `KeywordVariantEnum::r#use()` and `KeywordVariantEnum::r#break()` provided by this file (via `include!`).
+//! - Asserts that `KeywordVariantEnum::r#use()` takes the inner `u32` value and returns the `KeywordVariantEnum` instance.
+//! - Asserts that `KeywordVariantEnum::r#break()` returns a subformer for `Break`, and that using its setter (`.value()`) and `.form()` results in the `KeywordVariantEnum` instance.
+//! - Confirms correct handling of keyword identifiers and mixed scalar/subform behavior for tuple variants.
+#[ allow( unused_imports ) ]
+use super::*; // Imports testing infrastructure and potentially other common items
+use former::Former;
 
-// Assume StringFormer exists for the derive macro to find for the r#Break variant
-// (Normally provided by former crate itself or derived)
-#[ derive( Debug, Default, PartialEq, former::Former ) ]
-struct StringFormerStub
+// --- Dummy Struct ---
+// Used in the `r#break` variant. Needs to derive Former for the enum's derive to work correctly for subforming.
+#[ derive( Debug, Clone, Default, PartialEq, Former ) ]
+pub struct Break
 {
-  value : String,
+  pub value : u32,
 }
 
-// Define an inner struct that also derives Former
-#[ derive( Debug, Default, PartialEq, former::Former ) ]
-pub struct InnerData
+// --- Enum Definition ---
+// Apply Former derive here. This is what we are testing.
+#[ derive( Debug, PartialEq, Clone, Former ) ]
+// #[ debug ] // Uncomment to see generated code later
+pub enum KeywordVariantEnum
 {
-  data1 : i32,
-  data2 : bool,
+  // --- Tuple Variants with Keyword Identifiers ---
+  #[ scalar ] // Explicitly scalar
+  r#use( u32 ),
+  // Default behavior (should be subform for single-field tuple)
+  r#break( Break ),
 }
 
-#[ derive( Debug, PartialEq, the_module::Former ) ]
-enum KeywordVariantEnum
-{
-  /// Explicitly scalar: Expects r#break(StringFormerStub)
-  #[ scalar ]
-  r#Break( StringFormerStub ),
-  /// Multi-field tuple: Explicitly scalar required -> Expects r#if(bool, i32)
-  #[ scalar ]
-  r#If( bool, i32 ),
-  /// Explicitly scalar: Expects r#let(u32)
-  #[ scalar ]
-  r#Let( u32 ),
-  /// Explicit Subform: Expects r#struct() -> InnerDataFormer<...>
-  #[ subform_scalar ] // Apply attribute to variant
-  r#Struct( InnerData ),
-  /// Multi-field tuple: Explicitly scalar required -> Expects r#for(usize, &'static str)
-  #[ scalar ]
-  r#For( usize, &'static str ),
-}
-
-// Include the test logic
+// --- Include the Test Logic ---
+// This file contains the actual #[ test ] functions.
 include!( "keyword_variant_tuple_only_test.rs" );

@@ -4,7 +4,7 @@
 //! This file is included by both `generics_independent_tuple_derive.rs` and `generics_independent_tuple_manual.rs`.
 //!
 //! Coverage:
-//! - Rule 1d (Tuple + Single-Field + `#[scalar]` -> Scalar): Tests static method `EnumG5::<T>::v1()`.
+//! - Rule 1d (Tuple + Single-Field + `#[scalar]` -> Scalar): Tests static method `EnumG5::<T>::v_1()`.
 //! - Rule 4b (Option 2 Logic): Tests the use of subformer methods and `.form()`.
 //!
 //! Test Relevance/Acceptance Criteria:
@@ -15,16 +15,6 @@
 //! - The tests use the subformer setter (`._0()`) and `.form()` to build the final enum instance.
 //! - Asserts that the resulting `EnumG5` enum instances are equal to the expected variants
 //!   (`EnumG5::V1(InnerG5 { ... }, PhantomData)`), confirming correct handling of independent generics and the `#[scalar]` attribute.
-//! Test logic for enum variants with independent generic parameters.
-//!
-//! Purpose:
-//! - Define `EnumG5<T: BoundA>` and `InnerG5<U: BoundB>` with independent generics.
-//! - Apply `#[derive(Former)]` to both the enum and the inner struct.
-//! - Use the included `_only_test.rs` file to verify that the macro-generated code
-//!   correctly handles the distinct generics `T` and `U` (instantiated as `TypeForU`
-//!   in the variant) and their respective bounds.
-//!
-// File: module/core/former/tests/inc/former_enum_tests/generics_independent_tuple_only_test.rs
 use super::*; // Imports items from the parent file (either manual or derive)
 // Define dummy bounds for testing purposes
 pub trait BoundA : core::fmt::Debug + Default + Clone + PartialEq {}

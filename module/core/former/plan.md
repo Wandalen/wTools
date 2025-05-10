@@ -256,9 +256,6 @@ This section shows an example of the documentation comments that will be added t
     *   Target File(s): `module/core/former/tests/inc/enum_unit_tests/compile_fail/unit_subform_scalar_error.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to unit_subform_scalar_error compile_fail test`
 
----
-**Phase 2: Unnamed/Tuple Variant Tests (`enum_unnamed_tests`)**
-
 *   [✅] **Increment 8:** Document `basic_*` files
     *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
     *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
@@ -303,7 +300,73 @@ This section shows an example of the documentation comments that will be added t
         *   `module/core/former/tests/inc/enum_unnamed_tests/enum_named_fields_unnamed_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to enum_named_fields_unnamed tests`
 
-*   [⏳] **Increment 10:** Document `generics_independent_tuple_*` files
+*   [✅] **Increment 10:** Document `generics_independent_tuple_*` files
+    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
+    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
+    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
+    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
+    *   Detailed Plan Step 5: Request user to run verification command.
+    *   Pre-Analysis:
+        *   Identified enum variant structures in target file(s): Single-field tuple variant (`V1`) within a generic enum (`EnumG5`). The variant's field is a generic struct (`InnerG5`) instantiated with a concrete type (`TypeForU`), and the variant also contains `PhantomData<T>` to use the enum's generic `T`.
+        *   Key attributes present: `#[derive(Former)]` on both the enum and inner struct. `#[scalar]` on the `V1` variant. `#[standalone_constructors]` is on the enum but not explicitly tested in these files.
+        *   Relevant "Expected Enum Former Behavior Rule IDs": Rule 1d (Tuple + Single-Field + `#[scalar]` -> Scalar), Rule 4b (Option 2 Logic - related to the subformer mechanism used).
+        *   Brief summary of how test functions appear to exercise these rules: The tests in `_only_test.rs` call the static method `v_1()` (provided by the derive/manual file), which returns a former for the inner type (`InnerG5<TypeForU>`). They use the setter `._0()` on this former to set the inner field and then call `.form()` to get the final `EnumG5<TypeForT>` instance. They assert this instance is equal to a manually constructed `EnumG5::V1` variant. This verifies that the `#[scalar]` attribute on the tuple variant correctly results in a constructor that takes the inner type's value (via the subformer) and produces the enum variant, handling the independent generics correctly.
+    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks, Structuring: Proc Macro Development Workflow.
+    *   Relevant Behavior Rules: Rule 1d, Rule 4b.
+    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
+    *   Test Matrix: N/A
+    *   Enum Aspect Focus: Unnamed/Tuple (single-field tuple with independent generics, `#[scalar]`)
+    *   Target File(s):
+        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_independent_tuple_derive.rs`
+        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_independent_tuple_manual.rs`
+        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_independent_tuple_only_test.rs`
+    *   Commit Message: `docs(former): Add purpose and coverage to generics_independent_tuple tests`
+
+*   [✅] **Increment 11:** Document `generics_in_tuple_variant_tuple_*` and shared `_only_test`
+    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
+    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
+    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
+    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
+    *   Detailed Plan Step 5: Request user to run verification command.
+    *   Pre-Analysis:
+        *   Identified enum variant structures in target file(s): Single-field tuple variant (`Variant`) within a generic enum (`EnumOuter`), and unit variant (`OtherVariant`) within the same generic enum. The tuple variant's field is a generic struct (`InnerGeneric`) instantiated with the enum's generic `X`.
+        *   Key attributes present: `#[derive(Former)]` on both the enum and inner struct. `#[debug]` on the enum. No specific variant attributes (`#[scalar]`, `#[subform_scalar]`) are used on the tested variants in this increment, relying on default behavior. `#[standalone_constructors]` is on the enum but not explicitly tested in these files.
+        *   Relevant "Expected Enum Former Behavior Rule IDs": Rule 3d (Tuple + Single-Field + Default -> Subform), Rule 4b (Option 2 Logic - related to the subformer mechanism used), Rule 3a (Unit + Default).
+        *   Brief summary of how test functions appear to exercise these rules: The tests in `_only_test.rs` call the static methods `variant()` (for the tuple variant) and `other_variant()` (for the unit variant) provided by the including file (derive/manual). For the tuple variant, they use the returned subformer's setter (`.inner_field()`) and `.form()`. For the unit variant, they directly assert the returned enum instance. Both test the handling of shared generics and bounds.
+    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks, Structuring: Proc Macro Development Workflow.
+    *   Relevant Behavior Rules: Rule 3d, Rule 4b, Rule 3a.
+    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
+    *   Test Matrix: N/A
+    *   Enum Aspect Focus: Unnamed/Tuple (single-field tuple with shared generics, default subform) and Unit (with shared generics, default scalar)
+    *   Target File(s):
+        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_in_tuple_variant_tuple_derive.rs`
+        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_in_tuple_variant_tuple_manual.rs`
+        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_in_tuple_variant_only_test.rs`
+    *   Commit Message: `docs(former): Add purpose and coverage to generics_in_tuple_variant_tuple tests`
+
+*   [✅] **Increment 12:** Document `generics_shared_tuple_*` files
+    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
+    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
+    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
+    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
+    *   Detailed Plan Step 5: Request user to run verification command.
+    *   Pre-Analysis:
+        *   Identified enum variant structures in target file(s): Single-field tuple variant (`V1`) within a generic enum (`EnumG3`). The variant's field is a generic struct (`InnerG3`) instantiated with the enum's generic `T`.
+        *   Key attributes present: `#[derive(Former)]` on both the enum and inner struct. No specific variant attributes (`#[scalar]`, `#[subform_scalar]`) are used, relying on default behavior.
+        *   Relevant "Expected Enum Former Behavior Rule IDs": Rule 3d (Tuple + Single-Field + Default -> Subform), Rule 4b (Option 2 Logic - related to the subformer mechanism used).
+        *   Brief summary of how test functions appear to exercise these rules: The tests in `_only_test.rs` call the static method `v_1()` (provided by the derive/manual file), which returns a former for the inner type (`InnerG3<T>`). They use the setter `.inner_field()` on this former to set the inner field and then call `.form()` to get the final `EnumG3<T>` instance. They assert this instance is equal to a manually constructed `EnumG3::V1` variant. This verifies that the default behavior for a single-field tuple variant is to generate a subformer, handling the shared generics correctly.
+    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks, Structuring: Proc Macro Development Workflow.
+    *   Relevant Behavior Rules: Rule 3d, Rule 4b.
+    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
+    *   Test Matrix: N/A
+    *   Enum Aspect Focus: Unnamed/Tuple (single-field tuple with shared generics, default subform)
+    *   Target File(s):
+        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_shared_tuple_derive.rs`
+        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_shared_tuple_manual.rs`
+        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_shared_tuple_only_test.rs`
+    *   Commit Message: `docs(former): Add purpose and coverage to generics_shared_tuple tests`
+
+*   [⏳] **Increment 13:** Document `keyword_variant_tuple_*` files
     *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
     *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
     *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
@@ -314,30 +377,6 @@ This section shows an example of the documentation comments that will be added t
     *   Relevant Behavior Rules: (To be filled after pre-analysis)
     *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
     *   Test Matrix: N/A
-    *   Enum Aspect Focus: Unnamed/Tuple (single-field tuple with independent generics, `#[scalar]`)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_independent_tuple_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_independent_tuple_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_independent_tuple_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to generics_independent_tuple tests`
-
-*   [⚫] **Increment 11:** Document `generics_in_tuple_variant_tuple_*` and shared `_only_test`
-    *   Enum Aspect Focus: Unnamed/Tuple (single-field tuple with shared generics, default subform)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_in_tuple_variant_tuple_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_in_tuple_variant_tuple_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_in_tuple_variant_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to generics_in_tuple_variant_tuple tests`
-
-*   [⚫] **Increment 12:** Document `generics_shared_tuple_*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (single-field tuple with shared generics, default subform)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_shared_tuple_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_shared_tuple_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_shared_tuple_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to generics_shared_tuple tests`
-
-*   [⚫] **Increment 13:** Document `keyword_variant_tuple_*` files
     *   Enum Aspect Focus: Unnamed/Tuple (variants with keyword identifiers, mixed scalar/subform)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/keyword_variant_tuple_derive.rs`
@@ -375,7 +414,6 @@ This section shows an example of the documentation comments that will be added t
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_default_manual.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_default_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to tuple_multi_default tests`
-
 *   [⚫] **Increment 18:** Document `tuple_multi_scalar_*` files
     *   Enum Aspect Focus: Unnamed/Tuple (multi-field with `#[scalar]`)
     *   Target File(s):
@@ -455,7 +493,7 @@ This section shows an example of the documentation comments that will be added t
 *   **Comment Style:** All added `//!` comments should be clear, concise, grammatically correct, and follow Rust documentation comment conventions. Use Markdown for lists or emphasis if it enhances readability. Aim for reasonable line lengths.
 *   **Pre-Analysis Output:** Before proposing comments for an increment, the AI must provide its pre-analysis findings for the targeted file(s) as specified in the "Increment Template".
 *   **Incremental Processing:** Modify files one increment at a time, following the "Increment Template."
-*   **Verification:** After each increment, request user to apply changes and run `cargo check --package former --tests`. **The code must compile successfully after adding comments. If adding comments introduces a compilation error (e.g., a syntax error in the comment itself), that specific error must be fixed. Pre-existing test failures or logic errors are out of scope.**
+*   **Verification:** After each increment, request user to apply changes and run `cargo check --package former --tests`. **The code must compile successfully after adding comments. If adding comments introduces a compilation error (e.e., a syntax error in the comment itself), that specific error must be fixed. Pre-existing test failures or logic errors are out of scope.**
 *   **No Functional Changes:** This task is purely for documentation and review. No functional code changes should be made to the tests or macro logic unless a comment itself causes a trivial syntax issue that prevents compilation.
 *   **Handling `xxx`/`qqq` Comments:** During the review of each test file, if any existing `// xxx :` or `// qqq :` comments are encountered, their presence and a brief summary of their content should be noted in the "Notes & Insights" section of the `plan.md` for that increment. Addressing or resolving these comments is out of scope for this plan.
 *   **`mod.rs` Files Review:** If, during the review of test files, it's discovered that an enum test file exists in the directories but is not declared in its respective `mod.rs` file, this should be noted in the "Notes & Insights" for that increment. Activating it is out of scope.
@@ -478,3 +516,7 @@ This section shows an example of the documentation comments that will be added t
 *   **[2025-05-10/Inc 7] Note:** Started detailed planning for Increment 7: Document `compile_fail/unit_subform_scalar_error.rs`. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 7 complete.
 *   **[2025-05-10/Inc 8] Note:** Started detailed planning for Increment 8: Document `basic_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 8 complete.
 *   **[2025-05-10/Inc 9] Note:** Started detailed planning for Increment 9: Document `enum_named_fields_unnamed_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 9 complete.
+*   **[2025-05-10/Inc 10] Note:** Started detailed planning for Increment 10: Document `generics_independent_tuple_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 10 complete.
+*   **[2025-05-10/Inc 11] Note:** Started detailed planning for Increment 11: Document `generics_in_tuple_variant_tuple_*` and shared `_only_test`. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 11 complete.
+*   **[2025-05-10/Inc 12] Note:** Started detailed planning for Increment 12: Document `generics_shared_tuple_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 12 complete.
+*   **[2025-05-10/Inc 13] Note:** Started detailed planning for Increment 13: Document `keyword_variant_tuple_*` files. Pre-analysis complete. Proceeding to draft and apply comments.

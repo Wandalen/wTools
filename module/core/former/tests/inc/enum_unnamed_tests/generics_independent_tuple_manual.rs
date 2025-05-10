@@ -4,7 +4,6 @@
 //!
 //! Coverage:
 //! - Rule 1d (Tuple + Single-Field + `#[scalar]` -> Scalar): Manual implementation of static method `EnumG5::v_1()`.
-//! - Rule 4a (#[standalone_constructors]): Not applicable to this manual implementation file.
 //! - Rule 4b (Option 2 Logic): Manual implementation of `FormingEnd` for the variant end type.
 //!
 //! Test Relevance/Acceptance Criteria:
@@ -13,23 +12,6 @@
 //! - Manually implements `FormingEnd` for the end type associated with the variant subformer.
 //! - This file is included by `generics_independent_tuple_only_test.rs` to provide the manual implementations
 //!   that the shared tests compare against.
-//! Manual implementation for testing enum variants with independent generic parameters.
-//!
-//! Purpose:
-//! - Define an enum `EnumG5<T: BoundA>` where `T` is the enum's generic.
-//! - Define an inner struct `InnerG5<U: BoundB>` where `U` is the inner struct's generic.
-//! - Define a variant `V1(InnerG5<TypeForU>, PhantomData<T>)` where `U` is instantiated with a specific
-//!   concrete type (`TypeForU`) that satisfies `BoundB`, while `T` remains generic for the enum.
-//!   `PhantomData<T>` is added to ensure the `T` parameter is used.
-//! - Manually implement the `Former` logic (static method `v1`, `End` struct, `impl FormingEnd`)
-//!   to ensure the distinct generics `T` and `U` (instantiated as `TypeForU`) and their bounds
-//!   are handled correctly. The static method `v1` should be generic over `T`, while the
-//!   returned former and the `End` logic operate on the concrete `InnerG5<TypeForU>`.
-//!
-//! This setup tests the macro's ability to handle scenarios where the enum's state (`T`)
-//! is independent of the specific type (`TypeForU`) being formed within one of its variants.
-//!
-// File: module/core/former/tests/inc/former_enum_tests/generics_independent_tuple_manual.rs
 use super::*; // Imports testing infrastructure and potentially other common items
 use std::marker::PhantomData;
 use former_types::

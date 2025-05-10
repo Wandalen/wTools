@@ -1,4 +1,20 @@
-// File: module/core/former/tests/inc/former_enum_tests/generics_shared_tuple_manual.rs
+//! Purpose: Provides a manual implementation of constructors and `FormingEnd` for an enum
+//! with unnamed (tuple) variants that have shared generic parameters and bounds, using the
+//! default subform behavior, to serve as a reference for verifying the `#[derive(Former)]`
+//! macro's behavior.
+//!
+//! Coverage:
+//! - Rule 3d (Tuple + Single-Field + Default -> Subform): Manual implementation of static method `EnumG3::v_1()`.
+//! - Rule 4b (Option 2 Logic): Manual implementation of `FormingEnd` for the variant end type.
+//!
+//! Test Relevance/Acceptance Criteria:
+//! - Defines a generic enum `EnumG3<T: BoundA + BoundB>` with a single-field tuple variant `V1(InnerG3<T>)`.
+//! - The inner struct `InnerG3<T: BoundB>` has its own generic `T` and bound `BoundB`, and is instantiated with the enum's generic `T` in the variant.
+//! - Manually implements a static method `EnumG3::v_1()` that mirrors the expected generated code for a subform variant.
+//! - Manually implements `FormingEnd` for the end type associated with the variant subformer.
+//! - This file is included by `generics_shared_tuple_only_test.rs` to provide the manual implementations
+//!   that the shared tests compare against.
+#[ allow( unused_imports ) ]
 use super::*; // Imports testing infrastructure and potentially other common items
 use std::marker::PhantomData;
 use former_types::
@@ -103,7 +119,7 @@ where Definition : FormerDefinition< Storage = InnerG3FormerStorage< T > >
 // --- Enum Definition with Bounds ---
 #[ derive( Debug, PartialEq, Clone ) ]
 // CORRECTED: Added BoundB to the enum's generic constraint for T
-pub enum EnumG3< T : BoundA + BoundB > // BoundA required by the enum, BoundB required by InnerG3<T>
+pub enum EnumG3< T : BoundA + BoundB > // BoundA required by enum, BoundB required by InnerG3<T>
 {
   V1( InnerG3< T > ), // Inner type uses T, so T must satisfy InnerG3's bounds (BoundB) *in addition* to EnumG3's bounds (BoundA)
 }

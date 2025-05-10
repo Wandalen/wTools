@@ -10,18 +10,8 @@
 //! - Defines a generic enum `EnumG5<T: BoundA>` with a single-field tuple variant `V1(InnerG5<TypeForU>, PhantomData<T>)`.
 //! - The inner struct `InnerG5<U: BoundB>` has its own generic `U` and bound `BoundB`, and is instantiated with a concrete `TypeForU` in the variant.
 //! - The variant `V1` is annotated with `#[scalar]`. The enum has `#[derive(Former)]`.
-//! - Relies on the derived static method `EnumG5::<TypeForT>::v1()` defined in `generics_independent_tuple_only_test.rs`.
+//! - Relies on the derived static method `EnumG5::<TypeForT>::v_1()` defined in `generics_independent_tuple_only_test.rs`.
 //! - Asserts that this constructor produces the correct `EnumG5` enum instance by comparing with a manually constructed variant, confirming correct handling of independent generics and the `#[scalar]` attribute.
-//! Derive-based test for enum variants with independent generic parameters.
-//!
-//! Purpose:
-//! - Define `EnumG5<T: BoundA>` and `InnerG5<U: BoundB>` with independent generics.
-//! - Apply `#[derive(Former)]` to both the enum and the inner struct.
-//! - Use the included `_only_test.rs` file to verify that the macro-generated code
-//!   correctly handles the distinct generics `T` and `U` (instantiated as `TypeForU`
-//!   in the variant) and their respective bounds.
-//!
-// File: module/core/former/tests/inc/former_enum_tests/generics_independent_tuple_derive.rs
 use super::*; // Imports testing infrastructure and potentially other common items
 use std::marker::PhantomData;
 

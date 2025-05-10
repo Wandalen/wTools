@@ -8,30 +8,13 @@
 //! - Rule 4b (Option 2 Logic): Manual implementation of `FormingEnd` for the variant end type.
 //!
 //! Test Relevance/Acceptance Criteria:
-//! - Defines a generic enum `EnumOuter<X: Copy>` with a single-field tuple variant `Variant(InnerGeneric<X>)`.
+//! - Defines a generic enum `EnumOuter<X: Copy + Debug + Default + PartialEq>` with a single-field tuple variant `Variant(InnerGeneric<X>)`.
 //! - The inner struct `InnerGeneric<T: Debug + Copy + Default + PartialEq>` has its own generic `T` and bounds,
 //!   and is instantiated with the enum's generic `X` in the variant.
 //! - Manually implements a static method `EnumOuter::variant()` that mirrors the expected generated code for a subform variant.
 //! - Manually implements `FormingEnd` for the end type associated with the variant subformer.
 //! - This file is included by `generics_in_tuple_variant_only_test.rs` to provide the manual implementations
 //!   that the shared tests compare against.
-//! Manual implementation for testing enum variants with independent generic parameters.
-//!
-//! Purpose:
-//! - Define an enum `EnumG5<T: BoundA>` where `T` is the enum's generic.
-//! - Define an inner struct `InnerG5<U: BoundB>` where `U` is the inner struct's generic.
-//! - Define a variant `V1(InnerG5<TypeForU>, PhantomData<T>)` where `U` is instantiated with a specific
-//!   concrete type (`TypeForU`) that satisfies `BoundB`, while `T` remains generic for the enum.
-//!   `PhantomData<T>` is added to ensure the `T` parameter is used.
-//! - Manually implement the `Former` logic (static method `v1`, `End` struct, `impl FormingEnd`)
-//!   to ensure the distinct generics `T` and `U` (instantiated as `TypeForU`) and their bounds
-//!   are handled correctly. The static method `v1` should be generic over `T`, while the
-//!   returned former and the `End` logic operate on the concrete `InnerG5<TypeForU>`.
-//!
-//! This setup tests the macro's ability to handle scenarios where the enum's state (`T`)
-//! is independent of the specific type (`TypeForU`) being formed within one of its variants.
-//!
-// File: module/core/former/tests/inc/former_enum_tests/unnamed_tests/generics_in_tuple_variant_tuple_manual.rs
 #[ allow( unused_imports ) ]
 use super::*; // Imports testing infrastructure and potentially other common items
 use std::fmt::Debug; // Import Debug trait for bounds
