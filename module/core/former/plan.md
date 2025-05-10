@@ -98,7 +98,7 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
     *   **Detailed Plan Step 2 (Audit and Splitting/Moving Strategy):**
         *   **For `enum_unit_tests/`:** Review each file. If it contains non-unit variant tests, plan to move those parts to new files in `../enum_unnamed_tests/` or `../enum_named_tests/`. The file in `enum_unit_tests/` must be reduced to only unit-specific content.
         *   **For `enum_unnamed_tests/`:** Review each file. If it contains unit or named variant tests, plan to move those parts to new files in `../enum_unit_tests/` or `../enum_named_tests/`. The file in `enum_unnamed_tests/` must be reduced to only tuple-specific content.
-        *   **For `enum_named_tests/`:** Review each file. If it contains unit or tuple variant tests, plan to move those parts to new files in `../enum_unit_tests/` or `../enum_unnamed_tests/`. The file in `enum_named_tests/` must be reduced to only named-specific content.
+        *   **For `enum_named_tests/`:** Review each file. If it contains unit or tuple variant tests, plan to move those parts to new files in `../unit_tests/` or `../enum_unnamed_tests/`. The file in `enum_named_tests/` must be reduced to only named-specific content.
         *   **For `enum_complex_tests/`:** Review each file. If a test can be clearly refactored into a single aspect (unit, unnamed, named) without losing its core testing purpose, plan to split/move it to the respective single-aspect directory. If it genuinely tests complex interactions not fitting a single category, it remains.
         *   **For `compile_fail/` subdirectories:** Ensure tests within (e.g., `enum_unnamed_tests/compile_fail/`) are specific to that aspect. If not, plan to move them.
         *   **Shared `_only_test.rs` files:** If an `_only_test.rs` file serves a `_derive.rs` or `_manual.rs` file that is being split or moved, the `_only_test.rs` file must also be split or moved accordingly, or its `include!` directives in the newly split/moved consumer files must be carefully adjusted to only pull relevant test functions.
@@ -115,9 +115,9 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
     *   **Detailed Plan Step 3:** Move `module/core/former/tests/inc/enum_unit_tests/tuple_zero_fields_only_test.rs` to `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_only_test.rs`.
     *   **Verification Strategy:** User applies changes. Run `cargo check --package former --tests`. Fix path issues.
     *   **Commit Message:** `refactor(former): Move tuple_zero_fields tests to enum_unnamed_tests`
-    *   **Notes:** Successfully moved `tuple_zero_fields` files to `enum_unnamed_tests/`. `cargo check --package former --tests` passed with warnings.
+    *   **Notes:** Successfully moved `tuple_zero_fields` files to `enum_unnamed_tests/`. `cargo check --package former --tests` passed with warnings. Increment 3 is complete.
 
-*   [⚫] **Increment 4: Execute Splits and Cleanups**
+*   [✅] **Increment 4: Execute Splits and Cleanups**
     *   **Goal:** Split the manual test files identified in Increment 2 that cover multiple scenarios and clean up leftover code.
     *   **Target Crate(s):** `former`
     *   **Detailed Plan Step 1:** Create `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_args_tuple_single_manual.rs` with content from `standalone_constructor_args_tuple_manual.rs` relevant to `TupleVariantArgs(i32)`, removing leftover code.
@@ -128,6 +128,7 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
     *   **Detailed Plan Step 6:** Delete the original `module/core/former/tests/inc/enum_named_tests/standalone_constructor_args_named_manual.rs`.
     *   **Verification Strategy:** User applies changes. Run `cargo check --package former --tests`. Fix path issues.
     *   **Commit Message:** `refactor(former): Split and cleanup standalone_constructor_args manual tests`
+    *   **Notes:** Successfully split and cleaned up `standalone_constructor_args_tuple_manual.rs` and `standalone_constructor_args_named_manual.rs`. Deleted the original files. `cargo check --package former --tests` passed with warnings. Increment 4 is complete.
 
 *   [⚫] **Increment 5: Update `mod.rs` Files**
     *   **Goal:** Update the `mod.rs` files in the enum test directories to reflect the file moves and splits, and remove incorrect tuple variant references in `former_trybuild`.
@@ -179,3 +180,4 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
 *   **Update after Increment 1:** The target directories (`unit_tests/`, `unnamed_tests/`, `named_tests/`, `complex_tests/`) within the *expected* `former_enum_tests/` subdirectory were found to be empty. The test files expected to be in these directories are likely located elsewhere. Found actual enum test files in `tests/inc/enum_unit_tests/`, `tests/inc/enum_unnamed_tests/`, `tests/inc/enum_named_tests/`, and `tests/inc/enum_complex_tests/`. The subsequent increments will be revised to operate on these actual directories.
 *   **Update after Increment 2:** Completed audit of all enum test files. Identified files needing moving, splitting/cleanup, correction, or refinement. Proposed a detailed plan for file operations in Increments 3 and 4, and noted necessary updates to `mod.rs` files in Increment 5 and corrections/refinements in Increment 6.
 *   **Update after Increment 3:** Successfully moved `tuple_zero_fields` files to `enum_unnamed_tests/`. `cargo check --package former --tests` passed with warnings. Increment 3 is complete.
+*   **Update after Increment 4:** Successfully split and cleaned up `standalone_constructor_args_tuple_manual.rs` and `standalone_constructor_args_named_manual.rs`. Deleted the original files. `cargo check --package former --tests` passed with warnings. Increment 4 is complete.
