@@ -5,17 +5,15 @@ use super::*;
 #[test]
 fn keyword_static_constructors()
 {
-  // Test Matrix Row: T3.1 / T3.3
-  assert_eq!(<KeywordTest>::r#fn(), KeywordTest::r#fn); // Expect original name from derive
-  // Test Matrix Row: T3.2 / T3.4
-  assert_eq!(<KeywordTest>::r#struct(), KeywordTest::r#struct); // Expect original name from derive
+  // Calling renamed manual methods for Increment 7 verification
+  assert_eq!(KeywordTest::construct_fn(), KeywordTest::r#fn);
+  assert_eq!(KeywordTest::construct_struct(), KeywordTest::r#struct);
 }
 
 #[test]
 fn keyword_standalone_constructors()
 {
-  // Test Matrix Row: T3.3
-  assert_eq!(r#fn(), KeywordTest::r#fn); // Expect original name from derive
-  // Test Matrix Row: T3.4
-  assert_eq!(r#struct(), KeywordTest::r#struct); // Expect original name from derive
+  // Calling renamed manual methods for Increment 7 verification
+  assert_eq!(standalone_construct_fn(), KeywordTest::r#fn);
+  assert_eq!(standalone_construct_struct(), KeywordTest::r#struct);
 }

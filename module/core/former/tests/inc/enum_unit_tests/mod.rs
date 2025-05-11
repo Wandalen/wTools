@@ -18,23 +18,27 @@
 // mod tuple_zero_fields_derive;
 // mod tuple_zero_fields_manual;
 // mod tuple_zero_fields_only_test;
-// mod unit_variant_derive;
-// mod unit_variant_manual;
-// mod unit_variant_only_test; // This was for the previous tests, keyword tests will include their own _only_test
+mod unit_variant_derive;
+mod unit_variant_manual;
+// mod unit_variant_only_test; // Included
 
-// mod keyword_variant_manual;
-// mod keyword_variant_derive; // Will be enabled later
-// mod keyword_variant_only_test; // Should only be included, not a module itself
+mod keyword_variant_manual;
+// mod keyword_variant_derive; // Known broken
+// mod keyword_variant_only_test; // Included
 
-// mod generic_unit_variant_manual;
-// mod generic_unit_variant_derive;
+mod generic_unit_variant_manual;
+// mod generic_unit_variant_derive; // Known broken
+// mod generic_unit_variant_only_test; // Included
 
-// mod mixed_enum_unit_manual;
-// mod mixed_enum_unit_derive;
+mod mixed_enum_unit_manual;
+mod mixed_enum_unit_derive; // Configured to test only static method for SimpleUnit
+// mod mixed_enum_unit_only_test; // Included
 
-mod enum_named_fields_unit_derive;
+// mod enum_named_fields_unit_derive; // Not part of this plan's scope for unit variants
 // mod enum_named_fields_unit_manual;
 // mod enum_named_fields_unit_only_test;
+
+// These seem to be duplicates or older files, ensuring they are not active.
 // mod generics_in_tuple_variant_unit_derive;
 // mod generics_in_tuple_variant_unit_manual;
 // mod keyword_variant_unit_derive;

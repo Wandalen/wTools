@@ -5,11 +5,11 @@ use super::*;
 
 /// Enum with a unit variant and a struct-like variant, using Former.
 #[derive(Debug, PartialEq, former::Former)]
-#[former(standalone_constructors)] // Restore attribute
+#[former(standalone_constructors)] // Attribute present
 pub enum MixedEnum
 {
   SimpleUnit,
-  Complex { data: i32 }, // Restore Complex variant with i32
+  Complex { data: i32 }, // Complex variant present
 }
 
 include!("mixed_enum_unit_only_test.rs");
