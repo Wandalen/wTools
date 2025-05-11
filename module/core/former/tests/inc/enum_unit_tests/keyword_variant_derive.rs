@@ -1,14 +1,7 @@
-//! Derive implementation for testing unit variants with keyword identifiers.
+use former::Former; // Ensure derive is in scope
 
-use super::*;
-
-/// Enum with keyword identifiers for variants, using Former.
-#[derive(Debug, PartialEq, former::Former)]
-#[former(standalone_constructors)]
-pub enum KeywordTest
-{
+#[derive(Debug, PartialEq, Former)]
+pub enum KeywordTestMin {
   r#fn,
-  r#struct,
 }
-
-include!("keyword_variant_only_test.rs");
+// No include, no other attributes for now

@@ -5,7 +5,7 @@
 
 ## Expected Behavior Rules / Specifications
 *   Refer to `module/core/former/plan.md` (Phase 1) for the detailed "Expected Enum Former Behavior" rules, which still apply.
-*   `trybuild` tests should pass when the `.stderr` file correctly reflects the compiler's output (using `$DIR` for paths).
+*   `trybuild` tests should pass when the `.stderr` file correctly reflects the compiler's output (using `$DIR` for paths or blessed actual output).
 *   Derive tests for keyword variants, generic enums, and mixed enums (with standalone constructors) should compile and pass after fixes to `former_meta`.
 
 ## Target File Structure (If Applicable)
@@ -15,15 +15,16 @@
 
 *   [✅] **Increment 8:** Fix `trybuild` Mismatch for `subform_scalar_on_unit`
     *   **Detailed Plan Steps:**
-        1.  **Modify `.stderr` File:** (Verified file `module/core/former/tests/inc/enum_unit_tests/compile_fail/subform_scalar_on_unit.stderr` already uses `$DIR` placeholder correctly.)
-        2.  **Configure Test Execution:** (Completed: `module/core/former/tests/inc/enum_unit_tests/mod.rs` configured to only run `compile_fail` tests.)
-        3.  **Run `trybuild` Test:** (Completed: `cargo test --package former --test tests -- --test-threads=1 --nocapture enum_unit_tests::compile_fail::subform_scalar_on_unit_compile_fail` was run.)
-        4.  **Analyze Results:** (Completed: The test "failed" due to `trybuild`'s path rendering difference between `$DIR` and the actual path in the output. However, the crucial part is that the underlying code *did* fail to compile with the correct error message "TEST ERROR: #[subform_scalar] cannot be used on unit variants. V3", confirming the macro's error logic is working as intended.)
-    *   **Pre-Analysis:** The `subform_scalar_on_unit_compile_fail` test failed due to a path mismatch in the `.stderr` file. The underlying code correctly failed to compile.
+        1.  **Verify `.stderr` File Content (Initial State):** (Completed)
+        2.  **Configure Test Execution:** (Completed)
+        3.  **Run `trybuild` Test (Initial Run):** (Completed, showed mismatch)
+        4.  **Analyze Results & Bless `.stderr` File:** (Completed: User ran `TRYBUILD=overwrite cargo test...` which updated the `.stderr` file to match the actual compiler output, including the full relative path instead of `$DIR`.)
+        5.  **Confirm Test Pass (Post-Blessing):** (Completed: User ran `cargo test...` again, and the test now passes cleanly.)
+    *   **Pre-Analysis:** The `subform_scalar_on_unit_compile_fail` test previously failed due to a path mismatch in the `.stderr` file. The underlying code correctly failed to compile.
     *   **Crucial Design Rules:** N/A (Test harness adjustment)
     *   **Relevant Behavior Rules:** Rule 2a (Error for `#[subform_scalar]` on unit variant).
-    *   **Verification Strategy:** The `trybuild` test confirms compilation failure with the expected error message. The path rendering mismatch is a known `trybuild` artifact.
-    *   **Commit Message:** `fix(former): Correct stderr file for trybuild test subform_scalar_on_unit`
+    *   **Verification Strategy:** The `trybuild` test `enum_unit_tests::compile_fail::subform_scalar_on_unit_compile_fail` now passes.
+    *   **Commit Message:** `fix(former): Update stderr file for trybuild test subform_scalar_on_unit`
 
 *   [⚫] **Increment 9:** Attempt Fix for `keyword_variant_derive` Failures
     *   Target Crate(s): `former_meta`, `former`
