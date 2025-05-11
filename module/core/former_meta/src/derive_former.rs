@@ -130,18 +130,24 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 {
   let original_input : TokenStream = input.clone().into();
   let ast = syn::parse::< syn::DeriveInput >( input )?;
-  let has_debug = attr::has_debug( ast.attrs.iter() )?;
+
+  // Parse ItemAttributes ONCE here from all attributes on the item
+  let item_attributes = struct_attrs::ItemAttributes::from_attrs( ast.attrs.iter() )?;
+  // Determine has_debug based on the parsed item_attributes
+  let has_debug = item_attributes.debug.is_some();
 
   // Dispatch based on whether the input is a struct, enum, or union.
   let result = match ast.data
   {
       syn::Data::Struct( ref data_struct ) =>
       {
-          former_for_struct( &ast, data_struct, &original_input, has_debug )
+          // Pass the parsed item_attributes and the correctly determined has_debug
+          former_for_struct( &ast, data_struct, &original_input, &item_attributes, has_debug )
       },
       syn::Data::Enum( ref data_enum ) =>
       {
-          former_for_enum( &ast, data_enum, &original_input, has_debug )
+          // Pass the parsed item_attributes and the correctly determined has_debug
+          former_for_enum( &ast, data_enum, &original_input, &item_attributes, has_debug )
       },
       syn::Data::Union( _ ) =>
       {

@@ -15,10 +15,10 @@
 
 // Uncomment modules as they are addressed in increments.
 
-// mod tuple_zero_fields_derive;
-// mod tuple_zero_fields_manual;
-// mod unit_variant_derive;
-// mod unit_variant_manual;
+mod tuple_zero_fields_derive;
+mod tuple_zero_fields_manual;
+mod unit_variant_derive;
+mod unit_variant_manual;
 
 mod keyword_variant_manual;
 mod keyword_variant_derive; // Known broken
