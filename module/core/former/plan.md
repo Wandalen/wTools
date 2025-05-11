@@ -220,6 +220,20 @@
     *   **Verification Strategy:** `enum_unit_tests/mod.rs` reviewed for clear and accurate comments. All tests pass. (Verified)
     *   Commit Message: `docs(former): Add/clarify factor coverage comments in enum_unit_tests/mod.rs`
 
+*   [✅] **Increment 18: Re-verify and Remove Any Dead Files in `enum_unit_tests` Directory**
+    *   **Pre-Analysis:** User feedback requests a meticulous re-check for dead/garbage files in `module/core/former/tests/inc/enum_unit_tests/`.
+    *   **Detailed Plan Steps:**
+        1.  List all files in `module/core/former/tests/inc/enum_unit_tests/` and its `compile_fail/` subdirectory. (Done)
+        2.  Read `module/core/former/tests/inc/enum_unit_tests/mod.rs` to get the definitive list of *active* test modules. (Done)
+        3.  For each `.rs` file found on the filesystem, checked against active modules and include directives. All files were accounted for. (Done)
+        4.  No dead files identified for deletion. (Done)
+        5.  Explicitly stated no dead files found. (Done)
+    *   **Crucial Design Rules:** Minimal Change.
+    *   **Verification Strategy:**
+        *   `git status` should reflect any deletions (none in this case).
+        *   `cargo test --package former --test tests -- inc::enum_unit_tests` passed (verified in Increment 17).
+    *   Commit Message: `chore(former): Confirm no dead files in enum_unit_tests`
+
 ### Requirements
 (Content remains the same as before)
 
