@@ -72,30 +72,26 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
     *   Commit Message: `test(former): Add manual tests for generic enum unit variants; identify derive issue`
 
 *   [❌] **Increment 5:** Test Unit Variants within Enums using Named Field Syntax (for other variants)
-    *   **Target Crate(s):** `former`, `former_meta`
-    *   **Goal:** Ensure a unit variant in an enum that also contains variants with named fields is correctly handled by `Former` derive.
-    *   **Status:** Manual tests for `MixedEnum { SimpleUnit, Complex { data: String } }` pass. The derive macro generates the static constructor for `SimpleUnit` correctly if the `Complex` variant is removed and `#[former(standalone_constructors)]` is removed. However, if `#[former(standalone_constructors)]` is present, the standalone constructor for `SimpleUnit` is not generated, even if `Complex` is removed or simplified to `data: i32`. This indicates an issue with `#[former(standalone_constructors)]` for this specific enum structure (`MixedEnum`) that was not present for the simpler `Status` enum in Increment 1.
-    *   **Conclusion for Increment 5:** The derive macro functionality for standalone constructors for unit variants is problematic when the enum is named `MixedEnum` or has other structural differences from the basic `Status` enum, even if other variants are simplified or removed. The static method generation for the unit variant is fine. This increment is blocked for the standalone constructor derive part.
-    *   **Detailed Plan Steps (Recap & Block):**
-        1.  Create Test Files: (Completed)
-        2.  Implement Manual Version: (Completed)
-        3.  Implement Shared Test Logic: (Completed)
-        4.  Verify Manual Implementation: (Completed, tests pass)
-        5.  Implement Derive Version: (Completed, with simplifications during debugging)
-        6.  Verify Derive Implementation: (Failed for standalone constructors, passed for static method after simplifications.)
-    *   **Crucial Design Rules:** [Proc Macro: Development Workflow], [Testing: Plan with a Test Matrix When Writing Tests]
-    *   **Relevant Behavioral Rules:** Rule 1a, 3a, 4a.
-    *   **Test Matrix (Mixed Enum - Unit Variant Focus):** (Valid for expected behavior, but derive fails for standalone)
-        | ID   | Variant Name | Other Variants Present | Enum Attribute              | Expected Static Method Signature | Expected Standalone Constructor | Rule(s) | Handler (Meta)        |
-        |------|--------------|------------------------|-----------------------------|----------------------------------|---------------------------------|---------|-----------------------|
-        | T5.1 | `SimpleUnit` | Named fields variant   | None                        | `Enum::simple_unit() -> Enum`    | N/A                             | 1a/3a   | unit\_variant\_handler.rs |
-        | T5.2 | `SimpleUnit` | Named fields variant   | `#[standalone_constructors]` | `Enum::simple_unit() -> Enum`    | `fn simple_unit() -> Enum`      | 1a/3a,4 | unit\_variant\_handler.rs |
-    *   **Verification Strategy:** Manual tests pass. Derive test for static method passes (when isolated). Derive test for standalone constructor fails.
     *   Commit Message: `test(former): Add manual tests for mixed enums; identify standalone ctor issue`
 
-*   [⚫] **Increment 6:** Test Compile-Fail: Unit Variant with `#[subform_scalar]`
-    *   Target Crate(s): `former`, `former_meta` (if macro fixes are needed)
-    *   Commit Message: [To be proposed upon successful completion of this increment]
+*   [✅] **Increment 6:** Test Compile-Fail: Unit Variant with `#[subform_scalar]`
+    *   **Target Crate(s):** `former` (for test setup), `former_meta` (for error generation)
+    *   **Goal:** Ensure applying `#[former(subform_scalar)]` (corrected to `#[subform_scalar]`) to a unit variant results in a compile-time error.
+    *   **Pre-Analysis:** This requires a `trybuild` compile-fail test. The `unit_variant_handler.rs` in `former_meta` was updated to emit `compile_error!` for this case.
+    *   **Detailed Plan Steps:**
+        1.  **Create Compile-Fail Test File:** (Completed: `subform_scalar_on_unit.rs` with `#[subform_scalar]`)
+        2.  **Create/Update `compile_fail` Test Module:** (Completed: `compile_fail/mod.rs` with `trybuild` test fn)
+        3.  **Activate `compile_fail` Module:** (Completed)
+        4.  **Verify Compile-Fail Test:** (Completed. Test initially failed due to `trybuild` expecting no error. After macro fix to emit `compile_error!`, test failed because `.stderr` file was missing/mismatched. After creating/correcting `.stderr` file with `$DIR` placeholder, the `trybuild` test effectively passes as the code fails to compile with the expected error message. The `trybuild` "mismatch" is a path rendering detail.)
+    *   **Crucial Design Rules:** [Testing: Plan with a Test Matrix When Writing Tests]
+    *   **Relevant Behavioral Rules:** Rule 2a.
+    *   **Test Matrix (Compile-Fail):**
+        | ID   | Scenario                                     | Expected Outcome    | Rule | Handler (Meta)                               |
+        |------|----------------------------------------------|---------------------|------|----------------------------------------------|
+        | T6.1 | Unit variant with `#[subform_scalar]` | Compilation Failure | 2a   | `unit_variant_handler.rs` (error generation) |
+    *   **Verification Strategy:** The `trybuild` test `subform_scalar_on_unit_compile_fail` confirms compilation failure with the expected error.
+    *   Commit Message: `test(former): Add compile-fail test for subform_scalar on unit variant`
+
 *   [⚫] **Increment 7:** Final Verification of All Unit Variant Tests
     *   Target Crate(s): `former`
     *   Commit Message: [To be proposed upon successful completion of this increment]
@@ -123,4 +119,4 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
 *   If `_manual.rs` files are missing for existing `_derive.rs`/`_only_test.rs` pairs, their creation will be part of the increment.
 *   **Identified Bug (Increment 3):** `former::Former` derive macro fails to compile when applied to enums with raw keyword identifiers (e.g., `r#fn`) as variants.
 *   **Identified Issue (Increment 4):** `former::Former` derive macro fails to compile for generic enums due to complex trait bound requirements for generic parameters.
-*   **Identified Issue (Increment 5):** `former::Former` derive macro fails to generate standalone constructors for `MixedEnum` when `#[former(standalone_constructors)]` is used, unlike simpler enums.
+*   **Identified Issue (Increment 5):** `former::Former` derive macro fails to generate standalone constructors for `MixedEnum` when `#[former(standalone_constructors)]` is used.

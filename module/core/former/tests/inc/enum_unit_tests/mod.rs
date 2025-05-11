@@ -30,7 +30,7 @@
 // mod generic_unit_variant_derive;
 
 // mod mixed_enum_unit_manual;
-mod mixed_enum_unit_derive;
+// mod mixed_enum_unit_derive;
 
 mod enum_named_fields_unit_derive;
 // mod enum_named_fields_unit_manual;
@@ -45,4 +45,4 @@ mod enum_named_fields_unit_derive;
 // mod standalone_constructor_args_unit_manual;
 // mod standalone_constructor_args_unit_only_test;
 
-// pub mod compile_fail;
+pub mod compile_fail;

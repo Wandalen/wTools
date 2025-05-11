@@ -15,7 +15,11 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
   // Check for #[subform_scalar] on unit variants and return a specific error
   if ctx.variant_attrs.subform_scalar.is_some()
   {
-    return Err( syn::Error::new_spanned( ctx.variant, "#[subform_scalar] cannot be used on unit variants." ) );
+    // Directly return a TokenStream containing compile_error!
+    let error_message = "TEST ERROR: #[subform_scalar] cannot be used on unit variants. V3";
+    return Ok(quote_spanned! { ctx.variant.span() =>
+      compile_error!(#error_message);
+    });
   }
 
   let variant_ident = &ctx.variant.ident;
