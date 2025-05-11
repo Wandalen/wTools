@@ -80,17 +80,24 @@
     *   Test Matrix: Not applicable for this analysis increment.
     *   Commit Message: `docs(macro_tools): Analyze former_meta unit variant logic for potential generalizations`
 
-*   [⚫] **Increment 3: Propose Initial Detailed Refactoring Solution for Enum Unit Variants**
+*   [✅] **Increment 3: Propose Initial Detailed Refactoring Solution for Enum Unit Variants**
     *   Target Crate(s): `former_meta`, `macro_tools`
-    *   Detailed Plan Step 1: Based on the analyses from Increments 1 and 2, draft a detailed initial refactoring plan for `former_meta/src/derive_former/former_enum/unit_variant_handler.rs`.
-    *   Detailed Plan Step 2: **Output:** For `unit_variant_handler.rs`, provide:
+    *   Pre-Analysis: Based on the analyses from Increments 1 and 2, the goal is to draft a detailed initial refactoring plan for `former_meta/src/derive_former/former_enum/unit_variant_handler.rs`. This involves showing how `macro_tools` utilities (existing or proposed in Increment 2) will be used.
+    *   Detailed Plan Step 1: Draft the detailed initial refactoring plan for `former_meta/src/derive_former/former_enum/unit_variant_handler.rs`. This will involve:
+        *   Identifying specific code sections in the current `unit_variant_handler.rs` (read in Increment 2).
+        *   Mapping these sections to the `macro_tools` utilities identified in Increment 1 (e.g., `attr::Attributes::retrieve_optional_singletone_bool`, `diag::return_syn_err!`, `ident::new_ident_from_cased_str` (proposed), `generic_params::GenericsRef` methods (proposed), `tokens::qt!`).
+        *   Showing conceptual "before-and-after" code snippets or detailed pseudo-code.
+    *   Detailed Plan Step 2: **Output (as a textual report in the AI's response, not a file):** For `unit_variant_handler.rs`, provide:
         *   Conceptual "before-and-after" code snippets (or pseudo-code) demonstrating how `macro_tools` utilities will replace or augment existing logic.
         *   Clear explanation of changes to data flow or helper function usage.
-    *   Detailed Plan Step 3: **Output:** For `macro_tools`, provide:
-        *   Finalized signatures and intended module placement for any new utilities proposed in Increment 2.
+    *   Detailed Plan Step 3: **Output (as a textual report in the AI's response, not a file):** For `macro_tools`, provide:
+        *   Finalized signatures and intended module placement for any new utilities proposed in Increment 2 (i.e., `ident::new_ident_from_cased_str` and `generic_params::GenericsRef` helper methods).
     *   Detailed Plan Step 4: Outline the expected impact on code size, readability, and maintainability in `unit_variant_handler.rs`.
-    *   Detailed Plan Step 5: Briefly assess if this refactoring impacts the `former_meta/plan.md` for splitting large files (e.g., if `unit_variant_handler.rs` becomes trivial, does it still need to be a separate file?).
-    *   Verification Strategy: User reviews the detailed refactoring solution, including code change proposals and `macro_tools` additions.
+    *   Detailed Plan Step 5: Briefly assess if this refactoring impacts the `former_meta/plan.md` for splitting large files. (Given `unit_variant_handler.rs` is already relatively small and focused, significant impact is unlikely, but it should be considered).
+    *   Crucial Design Rules: [Prioritize Reuse and Minimal Change], [Code Style: Do Not Reformat Arbitrarily] (when showing existing code), [Comments and Documentation] (for new proposed utilities).
+    *   Relevant Behavior Rules: Rules 1a, 2a, 3a, 4a (to ensure the proposed refactoring maintains correct behavior).
+    *   Verification Strategy: User reviews the detailed refactoring solution presented in the AI's response. No code changes, so no compilation or tests.
+    *   Test Matrix: Not applicable for this planning/proposal increment.
     *   Commit Message: `docs(former_meta): Propose initial detailed refactoring for unit variant handling`
 
 *   [⚫] **Increment 4: Critique and Improve Refactoring Solution**
