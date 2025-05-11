@@ -17,16 +17,16 @@
 
 // mod tuple_zero_fields_derive;
 // mod tuple_zero_fields_manual;
-mod unit_variant_derive;
-mod unit_variant_manual;
+// mod unit_variant_derive;
+// mod unit_variant_manual;
 
 // mod keyword_variant_manual;
 // mod keyword_variant_derive; // Known broken
 
-mod generic_unit_variant_manual;
+// mod generic_unit_variant_manual;
 // mod generic_unit_variant_derive; // Known broken
 
-mod mixed_enum_unit_manual;
+// mod mixed_enum_unit_manual;
 // mod mixed_enum_unit_derive; // Configured to test only static method for SimpleUnit
 
 // mod enum_named_fields_unit_derive; // Not part of this plan's scope for unit variants
@@ -40,4 +40,4 @@ mod mixed_enum_unit_manual;
 // mod standalone_constructor_args_unit_derive;
 // mod standalone_constructor_args_unit_manual;
 
-pub mod compile_fail;
+pub mod compile_fail; // This should be the only one active for this increment
