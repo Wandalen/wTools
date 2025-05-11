@@ -13,6 +13,10 @@
     *   If redundant: remove the module declaration and associated files.
     *   If not relevant to unit variants: move to an appropriate test directory or a new `enum_other_tests` directory.
     *   Ensure overall `enum_unit_tests` provides complete coverage for unit variants.
+*   **New Goal (from user feedback after initial completion):**
+    1.  Ensure no garbage files are left in `module/core/former/tests/inc/enum_unit_tests`.
+    2.  Ensure `module/core/former/tests/inc/enum_unit_tests/mod.rs` has comments explaining which factors each group of tests covers.
+
 
 ## Relevant Context
 *   **Primary Test Directory:** `module/core/former/tests/inc/enum_unit_tests/`
@@ -194,6 +198,27 @@
     *   **Relevant Behavior Rules:** All rules for unit variants (1a, 2a, 3a, 4a).
     *   **Verification Strategy:** All tests in `inc::enum_unit_tests` pass. `enum_unit_tests/mod.rs` is clean. (Passed)
     *   Commit Message: `test(former): Finalize and verify all enum unit tests`
+
+*   [✅] **Increment 16: Garbage Collection in `enum_unit_tests` Directory**
+    *   **Pre-Analysis:** The user wants to ensure no unused/garbage files remain in `module/core/former/tests/inc/enum_unit_tests/`.
+    *   **Detailed Plan Steps:**
+        1.  List all files in `module/core/former/tests/inc/enum_unit_tests/` and its subdirectories. (Done)
+        2.  Read `module/core/former/tests/inc/enum_unit_tests/mod.rs` to get the list of active modules. (Done)
+        3.  Compared file list with active modules. All files were accounted for. (Done)
+        4.  No garbage files identified for deletion. (Done)
+    *   **Crucial Design Rules:** Minimal Change.
+    *   **Verification Strategy:** `git status` clean (no deletions). `cargo test --package former --test tests -- inc::enum_unit_tests` passed (implicitly from Increment 15). (Verified)
+    *   Commit Message: `chore(former): Verify no unused test files in enum_unit_tests directory`
+
+*   [✅] **Increment 17: Add/Verify Factor Coverage Comments in `enum_unit_tests/mod.rs`**
+    *   **Pre-Analysis:** The user wants comments in `enum_unit_tests/mod.rs` explaining which factors each group of tests covers. The file already has a "Test Matrix Coverage (Unit Variants)" section for `unit_variant_*` tests. This needs to be extended or replicated for other active test groups.
+    *   **Detailed Plan Steps:**
+        1.  Read `module/core/former/tests/inc/enum_unit_tests/mod.rs`. (Done)
+        2.  For each active test module group, analyzed scenarios/rules and added/updated comment blocks in `enum_unit_tests/mod.rs`. (Done)
+        3.  Ensured `cargo test --package former --test tests -- inc::enum_unit_tests` still passes. (Done, passed)
+    *   **Crucial Design Rules:** Comments and Documentation.
+    *   **Verification Strategy:** `enum_unit_tests/mod.rs` reviewed for clear and accurate comments. All tests pass. (Verified)
+    *   Commit Message: `docs(former): Add/clarify factor coverage comments in enum_unit_tests/mod.rs`
 
 ### Requirements
 (Content remains the same as before)
