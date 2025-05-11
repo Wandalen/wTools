@@ -21,6 +21,8 @@
     2.  Ensure all test groups in `enum_unit_tests` strictly pertain to unit variants.
     3.  Add detailed comments to `module/core/former/tests/inc/mod.rs` explaining the testing aspects covered by each of its declared enum test modules.
     4.  Address compiler warnings in `former` and `former_meta` crates.
+    5.  Make macro debug printing conditional (disable by default for production).
+    6.  Fix and re-enable `tuple_zero_fields` tests.
 
 
 ## Relevant Context
@@ -135,12 +137,39 @@
     *   **Verification Strategy:** `cargo test --package former --test tests` passed with 0 warnings related to these items.
     *   Commit Message: `fix(former): Address compiler warnings in tests`
 
+*   [✅] **Increment 26: Conditionally Disable Macro Debug Printing**
+    *   **Pre-Analysis:** The `former_meta` crate prints generated code when `#[former(debug)]` is used. This should be disabled by default for production/normal use but remain available for debugging.
+    *   **Detailed Plan Steps:**
+        1.  Modified `former_meta/Cargo.toml` to add the optional feature: `former_diagnostics_print_generated = []`. (Done)
+        2.  In `module/core/former_meta/src/derive_former.rs`, gated the `diag::report_print` call within the main `former` function with `#[cfg(feature = "former_diagnostics_print_generated")]`. (Done)
+        3.  In `module/core/former_meta/src/derive_former.rs`, gated the `diag::report_print` call within the `mutator` function similarly. (Done)
+        4.  Addressed new `unused_variables` warnings for `_item` and `_original_input` in `mutator` function by prefixing and updating usage. (Done)
+    *   **Crucial Design Rules:** Visibility.
+    *   **Verification Strategy:**
+        *   `cargo test --package former_meta` passed with 0 warnings. (Done)
+        *   `cargo test --package former --test tests` passed, and debug output did NOT appear. (Done)
+        *   `cargo test --package former --test tests --features former_meta/former_diagnostics_print_generated` passed, and debug output DID appear. (Done)
+    *   Commit Message: `feat(former_meta): Make debug printing of generated code conditional`
+
+*   [✅] **Increment 27: Fix and Re-enable `tuple_zero_fields` Tests**
+    *   **Pre-Analysis:** The `tuple_zero_fields` tests are currently commented out and had compilation errors. The core issue seems to be name resolution within the `tuple_zero_fields_only_test.rs` when included by `_manual.rs` and `_derive.rs`.
+    *   **Detailed Plan Steps:**
+        1.  Corrected `tuple_zero_fields_manual.rs` to define `EnumWithZeroFieldTuple` and standalone functions `variant_zero_default`, `variant_zero_scalar` to match derive output. (Done)
+        2.  Ensured `tuple_zero_fields_derive.rs` defines `EnumWithZeroFieldTuple` and has `#[former(standalone_constructors)]`. (Done)
+        3.  Corrected `tuple_zero_fields_only_test.rs` to expect standalone functions `variant_zero_default` and `variant_zero_scalar`. (Done)
+        4.  Modified `module/core/former/tests/inc/enum_unnamed_tests/mod.rs`: Uncommented `mod tuple_zero_fields_derive;` and `mod tuple_zero_fields_manual;`. (Done)
+    *   **Crucial Design Rules:** Proc Macro: Development Workflow.
+    *   **Verification Strategy:**
+        *   `cargo test --package former --test tests -- inc::enum_unnamed_tests` passed. (Done)
+        *   `cargo test --package former --test tests` passed without access violations (228 tests). (Done)
+    *   Commit Message: `fix(former): Resolve compilation errors and re-enable tuple_zero_fields tests`
+
 ### Requirements
 (Content remains the same as before)
 
 ## Notes & Insights
 (Content remains the same as before, new issues identified in increments will be added here)
 *   **Core Fix (Increment 8):** The `has_debug` flag (and `ItemAttributes` generally) was not being correctly determined and propagated from the main derive macro entry point (`derive_former.rs`) to `former_for_enum` and `former_for_struct`. This was fixed by parsing `ItemAttributes` once in `derive_former.rs` and passing the attributes and the derived `has_debug` boolean down.
-*   **Standalone Constructor Naming (Increment 8):** Handlers like `tuple_zero_fields_handler.rs` were generating standalone constructors with names that could clash if multiple enums were in the same file. Fixed by prefixing with enum name (e.g., `zero_tuple_variant`).
+*   **Standalone Constructor Naming (Increment 8 & 27):** Handlers like `tuple_zero_fields_handler.rs` were generating standalone constructors with names that could clash if multiple enums were in the same file. Fixed by prefixing with enum name (e.g., `zero_tuple_variant`). Later discovered that for simple unit/zero-field tuple variants, the derive macro generates standalone functions named after the variant (snake_case), not prefixed by enum name. Test files were updated accordingly.
 *   **PhantomData Issue (Increment 10.A):** `former::Former` derive attempts to create formers for `PhantomData` variants/fields, causing compilation errors. Fixed by modifying `tuple_single_field_subform.rs` to generate a direct/scalar-like constructor for variants whose single field is `PhantomData`.
-*   **Access Violation (Increment 21):** A `STATUS_ACCESS_VIOLATION` (0xc0000005) started occurring when compiling `former` tests. Temporarily commenting out the `tuple_zero_fields` tests resolved this for `inc::enum_unit_tests`, and subsequent incremental testing showed all other `inc` submodules also pass individually and together.
+*   **Access Violation (Increment 21):** A `STATUS_ACCESS_VIOLATION` (0xc0000005) started occurring when compiling `former` tests. Temporarily commenting out the `tuple_zero_fields` tests resolved this for `inc::enum_unit_tests`, and subsequent incremental testing showed all other `inc` submodules also pass individually and together. Re-enabling `tuple_zero_fields` after fixing name inconsistencies did not reintroduce the crash.

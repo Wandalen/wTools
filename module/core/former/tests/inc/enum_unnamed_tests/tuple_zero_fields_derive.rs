@@ -26,6 +26,7 @@ pub struct InnerForSubform
 
 // The enum under test for zero-field tuple variants with #[derive(Former)]
 #[ derive( Debug, PartialEq, Former ) ]
+#[former(standalone_constructors, debug)] // Added standalone_constructors and debug
 // #[ derive( Default ) ] // Do not derive Default here, it caused issues before.
 pub enum EnumWithZeroFieldTuple
 {

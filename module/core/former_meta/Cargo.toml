@@ -51,6 +51,7 @@ derive_former = [ "convert_case" ]
 # derive_from_components = []
 
 proc-macro-debug = [ "macro_tools/diag" ] # Added proc-macro-debug feature
+former_diagnostics_print_generated = []
 
 [dependencies]
 macro_tools = { workspace = true, features = [ "attr", "attr_prop", "ct", "item_struct", "container_kind", "diag", "phantom", "generic_params", "generic_args", "typ", "derive", "ident" ] } # qqq : zzz : optimize set of features

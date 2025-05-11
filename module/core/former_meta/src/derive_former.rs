@@ -28,8 +28,8 @@ use struct_attrs::*;
 #[ allow( clippy::format_in_format_args, clippy::unnecessary_wraps ) ]
 pub fn mutator
 (
-  item : &syn::Ident,
-  original_input : &macro_tools::proc_macro2::TokenStream,
+  _item : &syn::Ident, // Prefixed as it's only used when former_diagnostics_print_generated is active
+  _original_input : &macro_tools::proc_macro2::TokenStream, // Prefixed
   mutator : &AttributeMutator,
   former_definition_types : &syn::Ident,
   former_definition_types_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
@@ -57,10 +57,13 @@ pub fn mutator
     }
   };
 
-  // If debug is enabled for the mutator attribute, print a helpful example.
+  // If debug is enabled for the mutator attribute, print a helpful example,
+  // but only if the `former_diagnostics_print_generated` feature is enabled.
   if mutator.debug.value( false )
   {
-    let debug = format!
+    #[cfg(feature = "former_diagnostics_print_generated")]
+    {
+      let debug = format!
     (
       r"
 = Example of custom mutator
@@ -89,10 +92,11 @@ where
     );
     let about = format!
     (
-r"derive : Former
-item : {item}",
-    );
-    diag::report_print( about, original_input, debug );
+    r"derive : Former
+    item : {_item}", // Use prefixed name
+        );
+        diag::report_print( about, _original_input, debug ); // Use prefixed name
+    }
   }
 
   Ok( former_mutator_code )
@@ -156,11 +160,15 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
   }?;
 
-  // If the top-level `#[debug]` attribute was found, print the final generated code.
+  // If the top-level `#[debug]` attribute was found, print the final generated code,
+  // but only if the `former_diagnostics_print_generated` feature is enabled.
   if has_debug
   {
-    let about = format!( "derive : Former\nstructure : {}", ast.ident );
-    diag::report_print( about, &original_input, &result );
+    #[cfg(feature = "former_diagnostics_print_generated")]
+    {
+      let about = format!( "derive : Former\nstructure : {}", ast.ident );
+      diag::report_print( about, &original_input, &result );
+    }
   }
 
   Ok( result )
