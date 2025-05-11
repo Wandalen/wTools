@@ -29,8 +29,8 @@ mod generic_unit_variant_derive; // Known broken - attempting fix
 mod mixed_enum_unit_manual;
 mod mixed_enum_unit_derive; // Configured to test only static method for SimpleUnit
 
-// mod enum_named_fields_unit_derive; // Not part of this plan's scope for unit variants
-// mod enum_named_fields_unit_manual;
+mod enum_named_fields_unit_derive;
+mod enum_named_fields_unit_manual;
 
 // These seem to be duplicates or older files, ensuring they are not active.
 // mod generics_in_tuple_variant_unit_derive;

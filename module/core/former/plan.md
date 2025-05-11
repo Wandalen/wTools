@@ -87,15 +87,15 @@
         *   ID: T8.2, Factor: Variant Type, Level: Zero-Field Tuple (e.g. `V()`), Attribute: `#[scalar]` (on variant, though default is same), Expected: `Enum::v() -> Enum`, Standalone: `enum_name_v() -> Enum`
     *   Commit Message: `fix(former_meta): Correct ItemAttributes parsing and standalone ctor names for enums` (This commit will cover the core fix. A subsequent commit will add the new tests.)
 
-*   [⏳] **Increment 9:** Analyze and Address `enum_named_fields_unit_*` tests
+*   [✅] **Increment 9:** Analyze and Address `enum_named_fields_unit_*` tests
     *   **Pre-Analysis:** Comment suggests "Not part of this plan's scope for unit variants". However, these (`enum_named_fields_unit_derive`, `enum_named_fields_unit_manual`) might test a unit variant within an enum that *also* has variants with named struct fields. This is similar to Increment 5 (`mixed_enum_unit_*`) and is relevant.
     *   **Detailed Plan Steps:**
-        1.  Inspect file contents of `enum_named_fields_unit_manual.rs` and `enum_named_fields_unit_derive.rs` (and any `_only_test.rs`).
-        2.  If they test a unit variant's constructor behavior: Align, uncomment, test manual, test derive, fix `former_meta` if needed.
-        3.  If truly not about unit variant constructors, decide if they are redundant or should be moved.
+        1.  Inspect file contents of `enum_named_fields_unit_manual.rs` and `enum_named_fields_unit_derive.rs` (and any `_only_test.rs`). (Done)
+        2.  If they test a unit variant's constructor behavior: Align, uncomment, test manual, test derive, fix `former_meta` if needed. (Done: Uncommented, manual and derive tests passed.)
+        3.  If truly not about unit variant constructors, decide if they are redundant or should be moved. (Not applicable)
     *   **Crucial Design Rules:** "Proc Macro: Development Workflow"
     *   **Relevant Behavior Rules:** Rules 1a, 3a, 4a.
-    *   **Verification Strategy:** Relevant tests must pass or files moved/removed.
+    *   **Verification Strategy:** Relevant tests must pass or files moved/removed. (Passed)
     *   Commit Message: `test(former): Analyze and integrate/refactor enum_named_fields_unit tests`
 
 *   [⚫] **Increment 10:** Analyze and Address `generics_in_tuple_variant_unit_*` tests
