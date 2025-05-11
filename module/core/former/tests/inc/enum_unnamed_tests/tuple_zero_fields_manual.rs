@@ -26,42 +26,42 @@ pub struct InnerForSubform
   pub value : i32,
 }
 
-// Define the enum without the derive macro
-#[ derive( Debug, PartialEq ) ]
-pub enum EnumWithZeroFieldTuple
-{
-  VariantZeroDefault,
-  VariantZeroScalar,
-}
+// Define the enums without the derive macro
+#[derive(Debug, PartialEq)]
+pub enum ZeroTuple { Variant() }
 
-// Manually implement static methods and standalone constructors
-impl EnumWithZeroFieldTuple
+impl ZeroTuple
 {
-  #[ inline( always ) ]
-  pub fn variant_zero_default() -> Self
+  #[inline(always)]
+  pub fn variant() -> Self
   {
-    Self::VariantZeroDefault
-  }
-
-  #[ inline( always ) ]
-  pub fn variant_zero_scalar() -> Self
-  {
-    Self::VariantZeroScalar
+    Self::Variant()
   }
 }
 
-#[ inline( always ) ]
-pub fn standalone_variant_zero_default() -> EnumWithZeroFieldTuple
+#[inline(always)]
+pub fn zero_tuple_variant() -> ZeroTuple
 {
-  EnumWithZeroFieldTuple::VariantZeroDefault
+  ZeroTuple::Variant()
 }
 
-#[ inline( always ) ]
-pub fn standalone_variant_zero_scalar() -> EnumWithZeroFieldTuple
+#[derive(Debug, PartialEq)]
+pub enum ZeroTupleScalar { Variant() }
+
+impl ZeroTupleScalar
 {
-  EnumWithZeroFieldTuple::VariantZeroScalar
+  #[inline(always)]
+  pub fn variant() -> Self
+  {
+    Self::Variant()
+  }
 }
 
+#[inline(always)]
+pub fn zero_tuple_scalar_variant() -> ZeroTupleScalar
+{
+  ZeroTupleScalar::Variant()
+}
 
 // Include the shared test logic
 include!( "./tuple_zero_fields_only_test.rs" );
