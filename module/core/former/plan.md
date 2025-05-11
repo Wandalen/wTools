@@ -75,16 +75,16 @@
         *   `cargo test --package former --test tests -- inc::enum_unit_tests` passed.
     *   Commit Message: `refactor(former): Move tuple_zero_fields tests to dedicated enum_tuple_zero_field_tests module`
 
-*   [⏳] **Increment 20: Review Other Test Groups in `enum_unit_tests` for Strict Relevance**
+*   [✅] **Increment 20: Review Other Test Groups in `enum_unit_tests` for Strict Relevance**
     *   **Pre-Analysis:** Ensure all *other* remaining test groups in `enum_unit_tests` strictly pertain to *unit variants* or unit variants in a specific context (like generics or mixed enums).
     *   **Detailed Plan Steps:**
-        1.  For each remaining active test group in `enum_unit_tests/mod.rs` (e.g., `unit_variant_*`, `keyword_variant_*`, `generic_unit_variant_*`, `mixed_enum_unit_*`, `enum_named_fields_unit_*`, `generic_enum_simple_unit_*`):
-            *   Briefly re-verify that the core items being tested are indeed *unit variants* (e.g., `Variant`, not `Variant()` or `Variant{}`).
-            *   If a group is found to primarily test non-unit variants (even if zero-field), plan its relocation similar to Increment 19.
-        2.  Update `enum_unit_tests/mod.rs` comments if any further reclassification occurs or if comments for moved modules need to be fully removed.
+        1.  Read `module/core/former/tests/inc/enum_unit_tests/mod.rs`. (Done)
+        2.  For each remaining active test module group, re-verified that the core items being tested are indeed unit variants. (Done - all confirmed OK).
+        3.  No misclassified groups found. (Done)
+        4.  No file changes needed. (Done)
     *   **Crucial Design Rules:** Structuring: Organize by Feature or Layer.
-    *   **Verification Strategy:** `cargo test --package former --test tests -- inc::enum_unit_tests` must pass.
-    *   Commit Message: `chore(former): Confirm relevance of remaining tests in enum_unit_tests module`
+    *   **Verification Strategy:** `cargo test --package former --test tests -- inc::enum_unit_tests` must pass (verified in Inc 19).
+    *   Commit Message: `chore(former): Confirm strict relevance of remaining tests in enum_unit_tests module`
 
 ### Requirements
 (Content remains the same as before)
