@@ -152,8 +152,22 @@
     *   **Verification Strategy:** Confirmed file non-existence and `mod.rs` state. No changes needed.
     *   Commit Message: `chore(former): Confirm standalone_constructor_unit_derive is redundant and removed`
 
-*   [⚫] **Increment 13:** Analyze and Address `standalone_constructor_args_*` tests
-    *   Commit Message: `test(former): Analyze and refactor/move standalone_constructor_args_unit tests`
+*   [✅] **Increment 13:** Analyze and Address `standalone_constructor_args_*` tests
+    *   **Pre-Analysis:** The files `standalone_constructor_args_unit_derive.rs` and `standalone_constructor_args_unit_manual.rs` were commented out. They tested standalone constructors for basic unit variants.
+    *   **Detailed Plan Steps:**
+        1.  Read `standalone_constructor_args_unit_derive.rs`. (Done)
+        2.  Read `standalone_constructor_args_unit_manual.rs`. (Done)
+        3.  Read `standalone_constructor_args_unit_only_test.rs`. (Done)
+        4.  Analyzed purpose: Test standalone constructors for unit variants. The "args" in name was a misnomer. (Done)
+        5.  **Decision & Action:** Determined these files are redundant with `unit_variant_*` tests.
+            *   Deleted `standalone_constructor_args_unit_derive.rs`. (Done)
+            *   Deleted `standalone_constructor_args_unit_manual.rs`. (Done)
+            *   Deleted `standalone_constructor_args_unit_only_test.rs`. (Done)
+            *   Ensured `mod.rs` entries remain commented. (Done)
+    *   **Crucial Design Rules:** "Proc Macro: Development Workflow", "Prioritize Reuse and Minimal Change".
+    *   **Relevant Behavior Rules:** Rule 4.
+    *   **Verification Strategy:** Redundant files removed. `enum_unit_tests/mod.rs` is clean regarding these. (Verified)
+    *   Commit Message: `test(former): Remove redundant standalone_constructor_args_unit tests`
 
 *   [⚫] **Increment 14:** Analyze and Address `compile_fail` module
     *   Commit Message: `test(former): Consolidate and verify compile-fail tests for enum unit variants`
