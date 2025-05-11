@@ -13,13 +13,13 @@ pub enum KeywordTest
 impl KeywordTest
 {
   #[inline(always)]
-  pub fn construct_fn() -> Self // Renamed
+  pub fn r#fn() -> Self
   {
     Self::r#fn
   }
 
   #[inline(always)]
-  pub fn construct_struct() -> Self // Renamed
+  pub fn r#struct() -> Self
   {
     Self::r#struct
   }
@@ -27,13 +27,13 @@ impl KeywordTest
 
 // Standalone constructors
 #[inline(always)]
-pub fn standalone_construct_fn() -> KeywordTest // Renamed
+pub fn r#fn() -> KeywordTest
 {
   KeywordTest::r#fn
 }
 
 #[inline(always)]
-pub fn standalone_construct_struct() -> KeywordTest // Renamed
+pub fn r#struct() -> KeywordTest
 {
   KeywordTest::r#struct
 }

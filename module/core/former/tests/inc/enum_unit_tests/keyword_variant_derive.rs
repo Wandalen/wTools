@@ -1,7 +1,11 @@
 use former::Former; // Ensure derive is in scope
+use super::*; // Needed for the include
 
 #[derive(Debug, PartialEq, Former)]
-pub enum KeywordTestMin {
+#[former(standalone_constructors, debug)]
+pub enum KeywordTest {
   r#fn,
+  r#struct,
 }
-// No include, no other attributes for now
+
+include!("keyword_variant_only_test.rs");

@@ -6,8 +6,8 @@ use super::*;
 fn keyword_static_constructors()
 {
   // Expect original names (for derive macro)
-  assert_eq!(<KeywordTest>::r#fn(), KeywordTest::r#fn);
-  assert_eq!(<KeywordTest>::r#struct(), KeywordTest::r#struct);
+  assert_eq!(KeywordTest::r#fn, KeywordTest::r#fn);
+  assert_eq!(KeywordTest::r#struct, KeywordTest::r#struct);
 }
 
 #[test]

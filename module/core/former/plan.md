@@ -15,6 +15,7 @@
     *   `module/core/former/tests/inc/mod.rs` (to ensure test modules are active)
     *   `module/core/former_meta/src/derive_former/former_enum.rs` (macro implementation)
     *   `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs` (specific handler for unit variants)
+    *   `module/core/former_meta/src/derive_former/struct_attrs.rs` (attribute parsing)
 *   **Key Documentation for Reference:**
     *   `module/core/former/Readme.md`
     *   `module/core/former/advanced.md`
@@ -65,8 +66,27 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
 *   [✅] **Increment 2:** Test Unit Variants with `#[standalone_constructors]`
     *   Commit Message: `chore(former): Confirm standalone constructors for unit variants covered by previous tests`
 
-*   [❌] **Increment 3:** Test Unit Variants with Keyword Identifiers
-    *   Commit Message: `test(former): Add manual tests for keyword variants; identify derive bug`
+*   [✅] **Increment 3:** Test Unit Variants with Keyword Identifiers
+    *   **Pre-Analysis:** The `former::Former` derive macro was known to fail compilation when applied to enums with raw keyword identifiers.
+    *   **Detailed Plan Steps:**
+        1.  **Verify Manual Implementation:** `keyword_variant_manual.rs` and `keyword_variant_only_test.rs` confirmed and aligned. Manual tests passed.
+        2.  **Verify Derive Implementation (Initial Failure):** `keyword_variant_derive.rs` updated. Initial tests failed due to macro errors with raw identifiers.
+        3.  **Analyze Failure & Diagnose:** Identified issues in `former_meta`'s `unit_variant_handler.rs` (identifier quoting for method names, generic handling for standalone constructors) and `struct_attrs.rs` (parsing of `#[former(...)]` attributes like `debug` and `standalone_constructors`, and handling of top-level `#[debug]` and `#[standalone_constructors]`).
+        4.  **Propose Fix:** Proposed changes to `unit_variant_handler.rs` and `struct_attrs.rs`.
+        5.  **Implement Fix:** Applied fixes to `unit_variant_handler.rs` and `struct_attrs.rs`.
+        6.  **Verify Fix:** Tests for `keyword_variant_derive.rs` now pass.
+    *   **Crucial Design Rules:** "Proc Macro: Development Workflow"
+    *   **Relevant Behavior Rules:** Rule 3a (Default Unit Variant), Rule 1a (Scalar Unit Variant), Rule 4a (Standalone Constructors).
+    *   **Verification Strategy:** `keyword_variant_manual_test` passed. `keyword_variant_derive_test` passed after fixes.
+    *   **Test Matrix:**
+        *   ID: T3.1
+        *   Factor: Variant Naming
+        *   Level: Raw Keyword Identifier (e.g., `r#fn`, `r#match`)
+        *   Expected Outcome (Manual): Compiles and `keyword_variant_only_test.rs` tests pass. (Achieved)
+        *   Expected Outcome (Derive - Before Fix): Fails to compile or `keyword_variant_only_test.rs` tests fail. (Observed)
+        *   Expected Outcome (Derive - After Fix): Compiles and `keyword_variant_only_test.rs` tests pass, matching manual behavior. (Achieved)
+        *   Handler (Meta): `former_enum.rs`, `unit_variant_handler.rs`, `struct_attrs.rs`
+    *   Commit Message: `fix(former_meta): Handle raw identifiers and attribute parsing for enum formers`
 
 *   [❌] **Increment 4:** Test Unit Variants within Generic Enums
     *   Commit Message: `test(former): Add manual tests for generic enum unit variants; identify derive issue`
@@ -116,6 +136,6 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
 *   This plan focuses exclusively on the unit variant aspect of enum formers.
 *   The "Expected Enum Former Behavior" rules (1a, 2a, 3a, 4a) are central to this plan.
 *   If `_manual.rs` files are missing for existing `_derive.rs`/`_only_test.rs` pairs, their creation will be part of the increment.
-*   **Identified Bug (Increment 3):** `former::Former` derive macro fails to compile when applied to enums with raw keyword identifiers (e.g., `r#fn`) as variants.
+*   **Identified Bug (Increment 3):** `former::Former` derive macro fails to compile when applied to enums with raw keyword identifiers (e.g., `r#fn`) as variants. (NOW FIXED)
 *   **Identified Issue (Increment 4):** `former::Former` derive macro fails to compile for generic enums due to complex trait bound requirements for generic parameters.
 *   **Identified Issue (Increment 5):** `former::Former` derive macro fails to generate standalone constructors for `MixedEnum` when `#[former(standalone_constructors)]` is used.
