@@ -50,6 +50,7 @@ fn scalar_on_single_generic_tuple_variant()
 {
   // Tests the direct constructor generated for a single-field tuple variant
   // `Variant1(InnerScalar<T>)` marked with `#[scalar]`.
+  // Test Matrix Row: T14.1, T14.2 (Implicitly, as this tests the behavior expected by the matrix)
   let inner_data = InnerScalar { data: MyType( "value1".to_string() ) };
   // Expect a direct static constructor `variant_1` taking `impl Into<InnerScalar<MyType>>`
   // FIX: Changed call to snake_case
@@ -70,6 +71,7 @@ fn scalar_on_multi_generic_tuple_variant()
 {
   // Tests the former builder generated for a multi-field tuple variant
   // `Variant2(InnerScalar<T>, bool)` marked with `#[scalar]`.
+  // Test Matrix Row: T14.3, T14.4 (Implicitly, as this tests the behavior expected by the matrix)
   let inner_data = InnerScalar { data: MyType( "value2".to_string() ) };
   // Expect a former builder `variant_2` with setters `_0` and `_1`
   let got = EnumScalarGeneric::< MyType >::variant_2()

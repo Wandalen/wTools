@@ -310,7 +310,7 @@ This section shows an example of the documentation comments that will be added t
         *   Identified enum variant structures in target file(s): Single-field tuple variant (`V1`) within a generic enum (`EnumG5`). The variant's field is a generic struct (`InnerG5`) instantiated with a concrete type (`TypeForU`), and the variant also contains `PhantomData<T>` to use the enum's generic `T`.
         *   Key attributes present: `#[derive(Former)]` on both the enum and inner struct. `#[scalar]` on the `V1` variant. `#[standalone_constructors]` is on the enum but not explicitly tested in these files.
         *   Relevant "Expected Enum Former Behavior Rule IDs": Rule 1d (Tuple + Single-Field + `#[scalar]` -> Scalar), Rule 4b (Option 2 Logic - related to the subformer mechanism used).
-        *   Brief summary of how test functions appear to exercise these rules: The tests in `_only_test.rs` call the static method `v_1()` (provided by the derive/manual file), which returns a former for the inner type (`InnerG5<TypeForU>`). They use the setter `._0()` on this former to set the inner field and then call `.form()` to get the final `EnumG5<TypeForT>` instance. They assert this instance is equal to a manually constructed `EnumG5::V1` variant. This verifies that the `#[scalar]` attribute on the tuple variant correctly results in a constructor that takes the inner type's value (via the subformer) and produces the enum variant, handling the independent generics correctly.
+        *   Brief summary of how test functions appear to exercise these rules: The tests in `_only_test.rs` call the static method `v_1()` (provided by the derive/manual file), which returns a former for the inner type (`InnerG5<TypeForU>`). They use the setter `._0()` on this former to set the inner field and then call `.form()`. They assert this instance is equal to a manually constructed `EnumG5::V1` variant. This verifies that the `#[scalar]` attribute on the tuple variant correctly results in a constructor that takes the inner type's value (via the subformer) and produces the enum variant, handling the independent generics correctly.
     *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks, Structuring: Proc Macro Development Workflow.
     *   Relevant Behavior Rules: Rule 1d, Rule 4b.
     *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
@@ -354,7 +354,7 @@ This section shows an example of the documentation comments that will be added t
         *   Identified enum variant structures in target file(s): Single-field tuple variant (`V1`) within a generic enum (`EnumG3`). The variant's field is a generic struct (`InnerG3`) instantiated with the enum's generic `T`.
         *   Key attributes present: `#[derive(Former)]` on both the enum and inner struct. No specific variant attributes (`#[scalar]`, `#[subform_scalar]`) are used, relying on default behavior.
         *   Relevant "Expected Enum Former Behavior Rule IDs": Rule 3d (Tuple + Single-Field + Default -> Subform), Rule 4b (Option 2 Logic - related to the subformer mechanism used).
-        *   Brief summary of how test functions appear to exercise these rules: The tests in `_only_test.rs` call the static method `v_1()` (provided by the derive/manual file), which returns a former for the inner type (`InnerG3<T>`). They use the setter `.inner_field()` on this former to set the inner field and then call `.form()` to get the final `EnumG3<T>` instance. They assert this instance is equal to a manually constructed `EnumG3::V1` variant. This verifies that the default behavior for a single-field tuple variant is to generate a subformer, handling the shared generics correctly.
+        *   Brief summary of how test functions appear to exercise these rules: The tests in `_only_test.rs` call the static method `v_1()` (provided by the derive/manual file), which returns a former for the inner type (`InnerG3<T>`). They use the setter `.inner_field()` on this former to set the inner field and then call `.form()`. They assert this instance is equal to a manually constructed `EnumG3::V1` variant. This verifies that the default behavior for a single-field tuple variant is to generate a subformer, handling the shared generics correctly.
     *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks, Structuring: Proc Macro Development Workflow.
     *   Relevant Behavior Rules: Rule 3d, Rule 4b.
     *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
@@ -382,11 +382,11 @@ This section shows an example of the documentation comments that will be added t
     *   **[2025-05-11/Inc 13] Note:** Pre-analysis for Increment 13 complete based on file contents. Relevant Behavior Rules identified as 1d, 3d, and 4b.
     *   **[2025-05-11/Inc 13] Note:** Reviewed target files for Increment 13. Existing documentation comments already meet the requirements. No file modifications were necessary. Verification (`cargo check --package former --tests`) passed. Increment 13 complete.
 
-*   [⏳] **Increment 14:** Document `scalar_generic_tuple_*` files
-    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
-    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
-    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
-    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
+*   [✅] **Increment 14:** Document `scalar_generic_tuple_*` files
+    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis. (✅)
+    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules. (✅)
+    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements. (✅)
+    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`. (✅)
     *   Detailed Plan Step 5: Request user to run verification command.
     *   Pre-Analysis:
         *   Identified enum variant structures in target file(s): Single-field tuple variant (`Variant1(InnerScalar<T>)`) and multi-field tuple variant (`Variant2(InnerScalar<T>, bool)`) within a generic enum (`EnumScalarGeneric<T>`). The enum and inner struct have bounds (`T: Bound`).
@@ -403,8 +403,25 @@ This section shows an example of the documentation comments that will be added t
         *   `module/core/former/tests/inc/enum_unnamed_tests/scalar_generic_tuple_manual.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/scalar_generic_tuple_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to scalar_generic_tuple tests`
+    *   **[2025-05-11/Inc 14] Note:** Pre-analysis for Increment 14 complete based on file contents. Relevant Behavior Rules identified as 3d, 3f, 1d, 1f, and 4b.
+    *   **[2025-05-11/Inc 14] Note:** Found a discrepancy between the documented "Expected Enum Former Behavior Rules" (Rule 3f: Multi-field tuple default is scalar) and the test logic/manual implementation for `Variant2` in `scalar_generic_tuple_*` files (which tests/implements subformer behavior). Also, the `#[scalar]` attributes are commented out in the `_derive.rs` file, which should result in default behavior according to the rules, but the tests seem to expect scalar behavior for `Variant1` and subformer for `Variant2`. The documentation added will reflect the current state and behavior of the tests/manual implementation, and this discrepancy is noted here. Addressing this functional/test logic inconsistency is out of scope for this documentation task.
+    *   **[2025-05-11/Inc 14] Note:** Detailed planning for Increment 14 complete. Drafted comments for target files. Noted discrepancy between Rule 3f and test/manual implementation behavior. Applied comments to target files using `write_to_file`.
 
-*   [⚫] **Increment 15:** Document `standalone_constructor_args_tuple_*` files
+*   [⏳] **Increment 15:** Document `standalone_constructor_args_tuple_*` files
+    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
+    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
+    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
+    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
+    *   Detailed Plan Step 5: Request user to run verification command.
+    *   Pre-Analysis:
+        *   Identified enum variant structures in target file(s): Single-field tuple variant (`Variant1(u32)`), multi-field tuple variant (`Variant2(u32, String)`).
+        *   Key attributes present: `#[derive(Former)]`, `#[standalone_constructors]` on the enum; `#[arg_for_constructor]` on fields within variants.
+        *   Relevant "Expected Enum Former Behavior Rule IDs": 4a, 4b, 3d, 3f.
+        *   Brief summary of how test functions appear to exercise these rules: The `_only_test.rs` file contains tests that call the standalone constructor functions (`variant1`, `variant2`). The `variant1` test calls `variant1(value)`, expecting a scalar return. The `variant2` test calls `variant2(value1, value2)`, expecting a scalar return. This tests Rule 4a (standalone constructors) and Rule 4b (Option 2 Logic - specifically the case where `#[arg_for_constructor]` on all fields results in a scalar standalone constructor).
+    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks, Structuring: Proc Macro Development Workflow.
+    *   Relevant Behavior Rules: Rule 4a, 4b, 3d, 3f.
+    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
+    *   Test Matrix: N/A
     *   Enum Aspect Focus: Unnamed/Tuple (with `#[standalone_constructors]` and `#[arg_for_constructor]`)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_args_tuple_derive.rs`
@@ -412,6 +429,60 @@ This section shows an example of the documentation comments that will be added t
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_tuple_single_manual.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_args_tuple_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_args_tuple tests`
+    *   Proposed Comments for `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_args_tuple_derive.rs`:
+        //! Purpose: Tests the `#[derive(Former)]` macro's generation of standalone constructor functions for tuple variants when the enum has the `#[standalone_constructors]` attribute and fields within the variants have the `#[arg_for_constructor]` attribute. This file focuses on verifying the derive-based implementation.
+        //!
+        //! Coverage:
+        //! - Rule 4a (#[standalone_constructors]): Verifies the generation of top-level constructor functions (`variant1`, `variant2`).
+        //! - Rule 4b (Option 2 Logic): Verifies that when all fields in a tuple variant have `#[arg_for_constructor]`, the standalone constructor takes arguments for those fields and returns the final enum instance (scalar style).
+        //! - Rule 3d (Tuple + Single-Field + Default): Implicitly relevant as `Variant1` is a single-field tuple variant.
+        //! - Rule 3f (Tuple + Multi-Field + Default): Implicitly relevant as `Variant2` is a multi-field tuple variant.
+        //!
+        //! Test Relevance/Acceptance Criteria:
+        //! - Defines an enum `TestEnum` with single-field (`Variant1(u32)`) and multi-field (`Variant2(u32, String)`) tuple variants.
+        //! - Applies `#[derive(Former)]` and `#[standalone_constructors]` to the enum.
+        //! - Applies `#[arg_for_constructor]` to the fields within the variants.
+        //! - Includes shared test logic from `standalone_constructor_args_tuple_only_test.rs`.
+        //! - The included tests call the standalone constructor functions (`variant1(value)`, `variant2(value1, value2)`) and assert that the returned enum instances match manually constructed expected values. This verifies that the standalone constructors are generated correctly and handle arguments as specified by `#[arg_for_constructor]`.
+    *   Proposed Comments for `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_tuple_multi_manual.rs`:
+        //! Purpose: Provides a hand-written implementation of the `Former` pattern's standalone constructor function for a multi-field tuple variant (`Variant2(u32, String)`) within an enum that has the `#[standalone_constructors]` attribute and fields with `#[arg_for_constructor]`. This file focuses on demonstrating the manual implementation of the scalar standalone constructor for a multi-field tuple variant with field arguments.
+        //!
+        //! Coverage:
+        //! - Rule 4a (#[standalone_constructors]): Manually implements the top-level constructor function (`variant2`).
+        //! - Rule 4b (Option 2 Logic): Manually implements the logic for a scalar standalone constructor that takes arguments for all fields in a multi-field tuple variant.
+        //! - Rule 3f (Tuple + Multi-Field + Default): Implicitly relevant as `Variant2` is a multi-field tuple variant.
+        //!
+        //! Test Relevance/Acceptance Criteria:
+        //! - Defines the `TestEnum` enum with the `Variant2(u32, String)` variant.
+        //! - Provides a hand-written `variant2` function that takes `u32` and `String` as arguments and returns `TestEnum::Variant2(u32, String)`.
+        //! - This file is intended to be included by a test file that calls this function and asserts its output. It demonstrates the manual implementation corresponding to the derived behavior tested in `standalone_constructor_args_tuple_only_test.rs`.
+    *   Proposed Comments for `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_tuple_single_manual.rs`:
+        //! Purpose: Provides a hand-written implementation of the `Former` pattern's standalone constructor function for a single-field tuple variant (`Variant1(u32)`) within an enum that has the `#[standalone_constructors]` attribute and a field with `#[arg_for_constructor]`. This file focuses on demonstrating the manual implementation of the scalar standalone constructor for a single-field tuple variant with a field argument.
+        //!
+        //! Coverage:
+        //! - Rule 4a (#[standalone_constructors]): Manually implements the top-level constructor function (`variant1`).
+        //! - Rule 4b (Option 2 Logic): Manually implements the logic for a scalar standalone constructor that takes an argument for the single field in a tuple variant.
+        //! - Rule 3d (Tuple + Single-Field + Default): Implicitly relevant as `Variant1` is a single-field tuple variant.
+        //!
+        //! Test Relevance/Acceptance Criteria:
+        //! - Defines the `TestEnum` enum with the `Variant1(u32)` variant.
+        //! - Provides a hand-written `variant1` function that takes `u32` as an argument and returns `TestEnum::Variant1(u32)`.
+        //! - This file is intended to be included by a test file that calls this function and asserts its output. It demonstrates the manual implementation corresponding to the derived behavior tested in `standalone_constructor_args_tuple_only_test.rs`.
+    *   Proposed Comments for `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_args_tuple_only_test.rs`:
+        //! Purpose: Provides shared test assertions and logic for both the derived and manual implementations of standalone constructor functions for tuple variants with `#[arg_for_constructor]` fields. It tests that standalone constructors generated/implemented when the enum has `#[standalone_constructors]` and variant fields have `#[arg_for_constructor]` behave as expected (scalar style).
+        //!
+        //! Coverage:
+        //! - Rule 4a (#[standalone_constructors]): Tests the existence and functionality of top-level constructor functions (`variant1`, `variant2`).
+        //! - Rule 4b (Option 2 Logic): Tests that these standalone constructors take arguments corresponding to the `#[arg_for_constructor]` fields and return the final enum instance.
+        //! - Rule 3d (Tuple + Single-Field + Default): Implicitly tested via `Variant1`.
+        //! - Rule 3f (Tuple + Multi-Field + Default): Implicitly tested via `Variant2`.
+        //!
+        //! Test Relevance/Acceptance Criteria:
+        //! - Defines the `TestEnum` enum structure with `Variant1(u32)` and `Variant2(u32, String)`.
+        //! - Contains test functions (`variant1_test`, `variant2_test`) that are included by the derive and manual test files.
+        //! - Calls the standalone constructor functions (`variant1(value)`, `variant2(value1, value2)`) provided by the including file.
+        //! - Asserts that the returned enum instances match manually constructed expected values (`TestEnum::Variant1(value)`, `TestEnum::Variant2(value1, value2)`). This verifies that both derived and manual standalone constructors correctly handle field arguments and produce the final enum variant.
+    *   **[2025-05-11/Inc 15] Note:** Detailed planning for Increment 15 complete. Drafted comments for target files.
 
 *   [⚫] **Increment 16:** Document `standalone_constructor_tuple_*` files
     *   Enum Aspect Focus: Unnamed/Tuple (with `#[standalone_constructors]`, no field args)
@@ -526,13 +597,3 @@ This section shows an example of the documentation comments that will be added t
 *   **[2025-05-10/Inc 4] Note:** Started detailed planning for Increment 4: Document `keyword_variant_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 4 complete.
 *   **[2025-05-10/Inc 5] Note:** Started detailed planning for Increment 5: Document `standalone_constructor_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 5 complete.
 *   **[2025-05-10/Inc 6] Note:** Started detailed planning for Increment 6: Document `standalone_constructor_args_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 6 complete.
-*   **[2025-05-10/Inc 7] Note:** Started detailed planning for Increment 7: Document `compile_fail/unit_subform_scalar_error.rs`. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 7 complete.
-*   **[2025-05-10/Inc 8] Note:** Started detailed planning for Increment 8: Document `basic_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 8 complete.
-*   **[2025-05-10/Inc 9] Note:** Started detailed planning for Increment 9: Document `enum_named_fields_unnamed_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 9 complete.
-*   **[2025-05-10/Inc 10] Note:** Started detailed planning for Increment 10: Document `generics_independent_tuple_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 10 complete.
-*   **[2025-05-10/Inc 11] Note:** Started detailed planning for Increment 11: Document `generics_in_tuple_variant_tuple_*` and shared `_only_test`. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 11 complete.
-*   **[2025-05-10/Inc 12] Note:** Started detailed planning for Increment 12: Document `generics_shared_tuple_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 12 complete.
-*   **[2025-05-11/Inc 13] Note:** Pre-analysis for Increment 13 complete based on file contents. Relevant Behavior Rules identified as 1d, 3d, and 4b.
-*   **[2025-05-11/Inc 13] Note:** Reviewed target files for Increment 13. Existing documentation comments already meet the requirements. No file modifications were necessary. Verification (`cargo check --package former --tests`) passed. Increment 13 complete.
-*   **[2025-05-11/Inc 14] Note:** Pre-analysis for Increment 14 complete based on file contents. Relevant Behavior Rules identified as 3d, 3f, 1d, 1f, and 4b.
-*   **[2025-05-11/Inc 14] Note:** Found a discrepancy between the documented "Expected Enum Former Behavior Rules" (Rule 3f: Multi-field tuple default is scalar) and the test logic/manual implementation for `Variant2` in `scalar_generic_tuple_*` files (which tests/implements subformer behavior). Also, the `#[scalar]` attributes are commented out in the `_derive.rs` file, which should result in default behavior according to the rules, but the tests seem to expect scalar behavior for `Variant1` and subformer for `Variant2`. The documentation added will reflect the current state and behavior of the tests/manual implementation, and this discrepancy is noted here. Addressing this functional/test logic inconsistency is out of scope for this documentation task.

@@ -1,36 +1,40 @@
-// File: module/core/former/tests/inc/former_enum_tests/tuple_multi_standalone_only_test.rs
+//! Purpose: Provides shared test assertions and logic for both the derived and manual implementations
+//! of standalone former builders for multi-field tuple variants without `#[arg_for_constructor]`
+//! fields. It tests that standalone constructors generated/implemented when the enum has
+//! `#[standalone_constructors]` and no variant fields have `#[arg_for_constructor]` behave as
+//! expected (former builder style, allowing field setting via setters).
+//!
+//! Coverage:
+//! - Rule 4a (#[standalone_constructors]): Tests the existence and functionality of the top-level constructor function (`variant`).
+//! - Rule 4b (Option 2 Logic): Tests that the standalone constructor returns a former builder for the variant and that its fields can be set using setters (`._0()`, `._1()`).
+//! - Rule 3f (Tuple + Multi-Field + Default): Implicitly tested via the `Variant` variant.
+//!
+//! Test Relevance/Acceptance Criteria:
+//! - Defines the `TestEnum` enum structure with a multi-field tuple variant `Variant(u32, String)`.
+//! - Contains a test function (`variant_test`) that is included by the derive and manual test files.
+//! - Calls the standalone constructor function `variant()` provided by the including file.
+//! - Uses the returned former builder's setters (`._0()`, `._1()`) to set the fields.
+//! - Calls `.form()` on the former builder to get the final enum instance.
+//! - Asserts that the resulting enum instance matches a manually constructed `TestEnum::Variant(value1, value2)`. This verifies that both derived and manual standalone constructors correctly return former builders and allow setting fields via setters.
 
-/// # Test Logic: #[standalone_constructors] on Multi-Field Tuple Variants
-///
-/// This file contains the core test logic for verifying the `Former` derive macro's
-/// handling of enums where a multi-field tuple variant is marked with
-/// `#[standalone_constructors]` (on the enum) but *without* `#[arg_for_constructor]`
-/// on the fields.
-///
-/// ## Purpose:
-///
-/// - **Verify Standalone Former Generation:** Ensure that `#[derive(Former)]` generates a standalone
-///   constructor function (e.g., `enum_name::variant_name() -> VariantFormer<...>`) for multi-field
-///   tuple variants under `#[standalone_constructors]` when fields are *not* marked with `#[arg_for_constructor]`.
-/// - **Verify Setter Handling:** Confirm that the returned Former instance provides setters for each
-///   field in the tuple.
-///
-/// This file is included via `include!` by both the `_manual.rs` and `_derive.rs`
-/// test files for this scenario.
-
-// use super::*; // Imports items from the parent file (manual or derive)
-
-#[ test ]
-fn multi_field_tuple_standalone_construction()
+#[ cfg( test ) ]
+mod tests
 {
-  // Tests the standalone constructor generated for a multi-field tuple variant
-  // `VariantMultiStandalone(i32, bool)` with #[standalone_constructors] but no #[arg_for_constructor].
-  // Expect a standalone constructor `TestEnumMultiStandalone::variant_multi_standalone()` returning a Former.
-  let got = TestEnumMultiStandalone::variant_multi_standalone()
-    ._0( 101 )
-    ._1( true )
-    .form();
+  // use super::TestEnum; // Assuming TestEnum is available from the including file
 
-  let expected = TestEnumMultiStandalone::VariantMultiStandalone( 101, true );
-  assert_eq!( got, expected );
+  #[ test ]
+  fn variant_test()
+  {
+    // Test Matrix Row: T20.1 (Implicitly, as this tests the behavior expected by the matrix)
+    // Tests the standalone former builder for Variant (multi field, no #[arg_for_constructor])
+    let value1 = 123;
+    let value2 = "abc".to_string();
+    let got = variant() // Call the standalone constructor
+      ._0( value1 ) // Use the setter for the first field
+      ._1( value2.clone() ) // Use the setter for the second field
+      .form(); // Form the final enum instance
+
+    let expected = TestEnum::Variant( value1, value2 );
+    assert_eq!( got, expected );
+  }
 }

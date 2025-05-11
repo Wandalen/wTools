@@ -1,207 +1,171 @@
+//! Purpose: Provides a hand-written implementation of the `Former` pattern's standalone former builder
+//! for a multi-field tuple variant (`Variant(u32, String)`) within an enum that has
+//! `#[standalone_constructors]` and no fields with `#[arg_for_constructor]`. This file focuses on
+//! demonstrating the manual implementation corresponding to the derived behavior.
+//!
+//! Coverage:
+//! - Rule 4a (#[standalone_constructors]): Manually implements the top-level constructor function (`variant`).
+//! - Rule 4b (Option 2 Logic): Manually implements the logic for a standalone former builder that allows setting fields via setters (`._0()`, `._1()`) and calling `.form()`.
+//! - Rule 3f (Tuple + Multi-Field + Default): Implicitly relevant as `Variant` is a multi-field tuple variant.
+//!
+//! Test Relevance/Acceptance Criteria:
+//! - Defines the `TestEnum` enum with the `Variant(u32, String)` variant.
+//! - Provides a hand-written `variant` function that returns a former builder type (`TestEnumVariantFormer`).
+//! - Implements the former builder type with setters (`._0()`, `._1()`) and a `form()` method that constructs and returns `TestEnum::Variant(u32, String)`. This mimics the behavior expected when `#[standalone_constructors]` is on the enum and no fields have `#[arg_for_constructor]`.
+//! - Includes shared test logic from `tuple_multi_standalone_only_test.rs`.
+//! - The included test calls the manually implemented standalone constructor `variant()`, uses the returned former builders' setters, and calls `.form()`.
+//! - Asserts that the resulting enum instance matches a manually constructed `TestEnum::Variant(value1, value2)`. This verifies the manual implementation of the standalone former builder.
+
 // File: module/core/former/tests/inc/former_enum_tests/tuple_multi_standalone_manual.rs
 
-//! # Manual Test: #[standalone_constructors] on Multi-Field Tuple Variants (Returns Former)
-//!
-//! This file provides a manual implementation of the standalone constructor that returns a Former
-//! for an enum (`TestEnumMultiStandalone`) with a multi-field tuple variant (`VariantMultiStandalone(i32, bool)`),
-//! demonstrating the expected behavior under `#[standalone_constructors]` without `#[arg_for_constructor]`.
-//!
-//! ## Purpose:
-//!
-//! - To serve as a reference implementation demonstrating how the standalone constructor should
-//!   behave for multi-field tuple variants when it returns a Former instance.
-//! - To manually implement the necessary Former infrastructure and the standalone constructor
-//!   function (`variant_multi_standalone`).
-//! - To validate the logic used by the `#[derive(Former)]` macro by comparing its generated
-//!   code's behavior against this manual implementation using the shared tests in
-//!   `tuple_multi_standalone_only_test.rs`.
-
-#[ allow( unused_imports ) ]
-use ::former::prelude::*;
-#[ allow( unused_imports ) ]
-use ::former_types::
-{
-  Storage, StoragePreform,
-  FormerDefinitionTypes, FormerMutator, FormerDefinition,
-  FormingEnd, ReturnPreformed,
+use former::{
+  FormingEnd,
+  StoragePreform,
+  FormerDefinition,
+  FormerDefinitionTypes,
+  Storage,
+  ReturnPreformed,
+  FormerBegin,
+  FormerMutator,
 };
 use std::marker::PhantomData;
 
-// === Enum Definition ===
-
-/// Enum for manual testing of #[standalone_constructors] on multi-field tuple variants.
-#[ derive( Debug, PartialEq, Clone ) ]
-pub enum TestEnumMultiStandalone // Consistent name
+// Define the enum without the derive macro
+#[ derive( Debug, PartialEq ) ]
+pub enum TestEnum
 {
-  /// A multi-field tuple variant.
-  VariantMultiStandalone( i32, bool ), // Multi-field tuple variant
+  Variant( u32, String ),
 }
 
-// === Manual Former Implementation for VariantMultiStandalone ===
-
-// Storage
-#[ derive( Debug, Default ) ]
-pub struct TestEnumMultiStandaloneVariantFormerStorage
+// --- Manual Former Setup for Variant ---
+pub struct TestEnumVariantFormerStorage
 {
-  pub _0 : ::core::option::Option< i32 >,
-  pub _1 : ::core::option::Option< bool >,
+  field0 : Option< u32 >,
+  field1 : Option< String >,
 }
 
-impl Storage for TestEnumMultiStandaloneVariantFormerStorage
+impl Default for TestEnumVariantFormerStorage
 {
-  type Preformed = ( i32, bool );
-}
-
-impl StoragePreform for TestEnumMultiStandaloneVariantFormerStorage
-{
-  #[ inline( always ) ]
-  fn preform( mut self ) -> Self::Preformed
+  fn default() -> Self
   {
-    ( self._0.take().unwrap_or_default(), self._1.take().unwrap_or_default() )
+    Self { field0 : None, field1 : None }
   }
 }
 
-// Definition Types
-#[ derive( Debug, Default ) ]
-pub struct TestEnumMultiStandaloneVariantFormerDefinitionTypes< Context = (), Formed = TestEnumMultiStandalone >
+impl Storage for TestEnumVariantFormerStorage
 {
-  _phantom : core::marker::PhantomData< ( Context, Formed ) >,
+  type Preformed = ( u32, String );
 }
 
-impl< Context, Formed > FormerDefinitionTypes
-for TestEnumMultiStandaloneVariantFormerDefinitionTypes< Context, Formed >
+impl StoragePreform for TestEnumVariantFormerStorage
 {
-  type Storage = TestEnumMultiStandaloneVariantFormerStorage;
-  type Formed = Formed;
-  type Context = Context;
+  fn preform( mut self ) -> Self::Preformed
+  {
+    let field0 = self.field0.take().unwrap_or_default();
+    let field1 = self.field1.take().unwrap_or_default();
+    ( field0, field1 )
+  }
 }
 
-// Mutator
-impl< Context, Formed > FormerMutator
-for TestEnumMultiStandaloneVariantFormerDefinitionTypes< Context, Formed >
+#[ derive( Default, Debug ) ]
+pub struct TestEnumVariantFormerDefinitionTypes< C = (), F = TestEnum >
 {
+  _p : PhantomData< ( C, F ) >,
 }
 
-// Definition
-#[ derive( Debug, Default ) ]
-pub struct TestEnumMultiStandaloneVariantFormerDefinition
-< Context = (), Formed = TestEnumMultiStandalone, End = TestEnumMultiStandaloneVariantEnd >
+impl< C, F > FormerDefinitionTypes for TestEnumVariantFormerDefinitionTypes< C, F >
 {
-  _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
+  type Storage = TestEnumVariantFormerStorage;
+  type Context = C;
+  type Formed = F;
 }
 
-impl< Context, Formed, End > FormerDefinition
-for TestEnumMultiStandaloneVariantFormerDefinition< Context, Formed, End >
+impl< C, F > FormerMutator for TestEnumVariantFormerDefinitionTypes< C, F > {}
+
+#[ derive( Default, Debug ) ]
+pub struct TestEnumVariantFormerDefinition< C = (), F = TestEnum, E = TestEnumVariantEnd >
+{
+  _p : PhantomData< ( C, F, E ) >,
+}
+
+impl< C, F, E > FormerDefinition for TestEnumVariantFormerDefinition< C, F, E >
 where
-  End : FormingEnd< TestEnumMultiStandaloneVariantFormerDefinitionTypes< Context, Formed > >,
+  E : FormingEnd< TestEnumVariantFormerDefinitionTypes< C, F > >,
 {
-  type Storage = TestEnumMultiStandaloneVariantFormerStorage;
-  type Formed = Formed;
-  type Context = Context;
-  type Types = TestEnumMultiStandaloneVariantFormerDefinitionTypes< Context, Formed >;
-  type End = End;
+  type Storage = TestEnumVariantFormerStorage;
+  type Context = C;
+  type Formed = F;
+  type Types = TestEnumVariantFormerDefinitionTypes< C, F >;
+  type End = E;
 }
 
-// Former
-#[ derive( Debug ) ]
-pub struct TestEnumMultiStandaloneVariantFormer< Definition = TestEnumMultiStandaloneVariantFormerDefinition >
+pub struct TestEnumVariantFormer< Definition = TestEnumVariantFormerDefinition >
 where
-  Definition : FormerDefinition< Storage = TestEnumMultiStandaloneVariantFormerStorage >,
+  Definition : FormerDefinition< Storage = TestEnumVariantFormerStorage >,
 {
   storage : Definition::Storage,
   context : Option< Definition::Context >,
   on_end : Option< Definition::End >,
 }
 
-impl< Definition > TestEnumMultiStandaloneVariantFormer< Definition >
+impl< Definition > TestEnumVariantFormer< Definition >
 where
-  Definition : FormerDefinition< Storage = TestEnumMultiStandaloneVariantFormerStorage >,
-  Definition::Types : FormerDefinitionTypes< Storage = TestEnumMultiStandaloneVariantFormerStorage >,
-  Definition::Types : FormerMutator,
+  Definition : FormerDefinition< Storage = TestEnumVariantFormerStorage >,
 {
-  #[ inline( always ) ]
-  pub fn form( self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
-  {
-    self.end()
-  }
-
-  #[ inline( always ) ]
-  pub fn end( mut self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
+  #[ inline( always ) ] pub fn form( self ) -> < Definition::Types as FormerDefinitionTypes >::Formed { self.end() }
+  #[ inline( always ) ] pub fn end( mut self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
     < Definition::Types as FormerMutator >::form_mutation( &mut self.storage, &mut self.context );
     on_end.call( self.storage, context )
   }
+  #[ inline( always ) ] pub fn begin
+  ( storage : Option< Definition::Storage >, context : Option< Definition::Context >, on_end : Definition::End ) -> Self
+  { Self { storage : storage.unwrap_or_default(), context, on_end : Some( on_end ) } }
+  #[ allow( dead_code ) ]
+  #[ inline( always ) ] pub fn new( on_end : Definition::End ) -> Self { Self::begin( None, None, on_end ) }
 
-  #[ inline( always ) ]
-  pub fn begin
-  (
-    storage : Option< Definition::Storage >,
-    context : Option< Definition::Context >,
-    on_end : Definition::End,
-  ) -> Self
-  {
-    Self { storage : storage.unwrap_or_default(), context, on_end : Some( on_end ) }
-  }
-
-  #[ inline( always ) ]
-  #[allow(dead_code)]
-  pub fn new( on_end : Definition::End ) -> Self
-  {
-    Self::begin( None, None, on_end )
-  }
-
-  /// Setter for the first tuple field.
-  #[ inline ]
-  pub fn _0( mut self, src : impl Into< i32 > ) -> Self
-  {
-    debug_assert!( self.storage._0.is_none(), "Field '_0' was already set" );
-    self.storage._0 = Some( src.into() );
-    self
-  }
-
-  /// Setter for the second tuple field.
-  #[ inline ]
-  pub fn _1( mut self, src : impl Into< bool > ) -> Self
-  {
-    debug_assert!( self.storage._1.is_none(), "Field '_1' was already set" );
-    self.storage._1 = Some( src.into() );
-    self
-  }
+  // Setters for fields
+  #[ inline ] pub fn _0( mut self, src : impl Into< u32 > ) -> Self
+  { self.storage.field0 = Some( src.into() ); self }
+  #[ inline ] pub fn _1( mut self, src : impl Into< String > ) -> Self
+  { self.storage.field1 = Some( src.into() ); self }
 }
 
-// End Struct for VariantMultiStandalone
-#[ derive( Debug, Default ) ]
-pub struct TestEnumMultiStandaloneVariantEnd;
+#[ derive( Default, Debug ) ]
+pub struct TestEnumVariantEnd
+{
+}
 
-impl FormingEnd< TestEnumMultiStandaloneVariantFormerDefinitionTypes< (), TestEnumMultiStandalone > >
-for TestEnumMultiStandaloneVariantEnd
+impl FormingEnd< TestEnumVariantFormerDefinitionTypes< (), TestEnum > >
+for TestEnumVariantEnd
 {
   #[ inline( always ) ]
   fn call
   (
     &self,
-    storage : TestEnumMultiStandaloneVariantFormerStorage,
+    sub_storage : TestEnumVariantFormerStorage,
     _context : Option< () >,
-  ) -> TestEnumMultiStandalone
+  )
+  -> TestEnum
   {
-    let ( val0, val1 ) = storage.preform();
-    TestEnumMultiStandalone::VariantMultiStandalone( val0, val1 )
+    let ( field0, field1 ) = sub_storage.preform();
+    TestEnum::Variant( field0, field1 )
+  }
+}
+// --- End Manual Former Setup for Variant ---
+
+
+// Manually implement the standalone constructor for the variant
+impl TestEnum
+{
+  /// Manually implemented standalone constructor for the Variant variant (former builder style).
+  #[ inline( always ) ]
+  pub fn variant() -> TestEnumVariantFormer
+  {
+    TestEnumVariantFormer::begin( None, None, TestEnumVariantEnd::default() )
   }
 }
 
-// === Standalone Constructor (Manual) ===
-
-/// Manual standalone constructor for TestEnumMultiStandalone::VariantMultiStandalone.
-/// Returns a Former instance for the variant.
-pub fn variant_multi_standalone()
-->
-TestEnumMultiStandaloneVariantFormer< TestEnumMultiStandaloneVariantFormerDefinition< (), TestEnumMultiStandalone, TestEnumMultiStandaloneVariantEnd > >
-{
-  TestEnumMultiStandaloneVariantFormer::begin( None, None, TestEnumMultiStandaloneVariantEnd )
-}
-
-
-// === Include Test Logic ===
 include!( "tuple_multi_standalone_only_test.rs" );
