@@ -45,7 +45,7 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
       generated_tokens.extend(generated_method);
 
       if ctx.struct_attrs.standalone_constructors.is_some() {
-          let ( impl_generics, _ty_generics, where_clause ) = ctx.generics.split_for_impl(); // _ty_generics
+          let ( impl_generics, ty_generics, where_clause ) = ctx.generics.split_for_impl(); // Renamed back to ty_generics
           let enum_name_ident = ctx.enum_name;
           let standalone_constructor_name = format_ident!( "{}_{}", enum_name_ident.to_string().to_case( Case::Snake ), method_ident );
 
@@ -74,7 +74,7 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
       generated_tokens.extend(generated_method);
 
       if ctx.struct_attrs.standalone_constructors.is_some() {
-          let ( impl_generics, ty_generics, where_clause ) = ctx.generics.split_for_impl();
+          let ( impl_generics, _ty_generics, where_clause ) = ctx.generics.split_for_impl(); // Prefixed _ty_generics as it's not used in -> #inner_former_name
           let enum_name_ident = ctx.enum_name;
           // For standalone, the method name is typically just the snake_case variant name if not prefixed by enum
           // However, the original code used #method_ident for standalone too.

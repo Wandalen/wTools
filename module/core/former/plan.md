@@ -111,18 +111,20 @@
     *   **Verification Strategy:** `generic_enum_simple_unit_derive.rs` (with `_Phantom` variant) compiled and its test passed. (Done)
     *   Commit Message: `fix(former_meta): Prevent derive macro from generating formers for PhantomData variants`
 
-*   [⏳] **Increment 10.B:** Refactor and Test `generics_in_tuple_variant_unit_*` (as `generic_enum_simple_unit_*`)
-    *   **Pre-Analysis:** (As before, but assuming 10.A is done)
+*   [✅] **Increment 10.B:** Refactor and Test `generics_in_tuple_variant_unit_*` (as `generic_enum_simple_unit_*`)
+    *   **Pre-Analysis:** Files `generics_in_tuple_variant_unit_manual.rs` and `generics_in_tuple_variant_unit_derive.rs` existed and tested unit variants in generic enums. They have been refactored to `generic_enum_simple_unit_manual.rs`, `generic_enum_simple_unit_derive.rs`, and a new `generic_enum_simple_unit_only_test.rs` was created. The `former_meta` crate was fixed in 10.A to handle `PhantomData` correctly.
     *   **Detailed Plan Steps:**
-        *   (Steps 5.1-5.3, 8, 9 for file renaming, creation, and mod.rs update are already done or in progress from previous attempt at Increment 10)
-        *   Ensure `generic_enum_simple_unit_manual.rs` has `_Phantom(core::marker::PhantomData::<X>)` and includes `_only_test.rs`. (Done)
-        *   Ensure `generic_enum_simple_unit_derive.rs` has `_Phantom(core::marker::PhantomData::<X>)` and includes `_only_test.rs`. (Done)
-        *   Test Manual Implementation: `cargo test --package former --test tests -- inc::enum_unit_tests::generic_enum_simple_unit_manual`.
-        *   Test Derive Implementation: If manual passes, `cargo test --package former --test tests -- inc::enum_unit_tests::generic_enum_simple_unit_derive`.
-        *   Fix `former_meta` if needed (hopefully not, after 10.A).
+        *   Rename `generics_in_tuple_variant_unit_manual.rs` to `generic_enum_simple_unit_manual.rs`. (Done in 10.A commit)
+        *   Rename `generics_in_tuple_variant_unit_derive.rs` to `generic_enum_simple_unit_derive.rs`. (Done in 10.A commit)
+        *   Create `generic_enum_simple_unit_only_test.rs`. (Done in 10.A commit)
+        *   Update `generic_enum_simple_unit_manual.rs` (ensure `_Phantom(core::marker::PhantomData::<X>)` is present, include `_only_test.rs`). (Done in 10.A commit)
+        *   Update `generic_enum_simple_unit_derive.rs` (ensure `_Phantom(core::marker::PhantomData::<X>)` is present, include `_only_test.rs`). (Done in 10.A commit)
+        *   Update `enum_unit_tests/mod.rs` to use new names. (Done in 10.A commit)
+        *   Test Manual Implementation: `cargo test --package former --test tests -- inc::enum_unit_tests::generic_enum_simple_unit_manual`. (Done, passed)
+        *   Test Derive Implementation: If manual passes, `cargo test --package former --test tests -- inc::enum_unit_tests::generic_enum_simple_unit_derive`. (Done, passed)
     *   **Crucial Design Rules:** "Proc Macro: Development Workflow"
     *   **Relevant Behavior Rules:** Rules 1a, 3a.
-    *   **Verification Strategy:** Manual and derive tests for `generic_enum_simple_unit_*` must pass.
+    *   **Verification Strategy:** Manual and derive tests for `generic_enum_simple_unit_*` must pass. (Passed)
     *   Commit Message: `test(former): Refactor and test unit variants in simple generic enum`
 
 *   [⚫] **Increment 11:** Analyze and Address `keyword_variant_unit_derive`
