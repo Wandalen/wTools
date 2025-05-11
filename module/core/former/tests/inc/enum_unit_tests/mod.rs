@@ -33,8 +33,8 @@ mod enum_named_fields_unit_derive;
 mod enum_named_fields_unit_manual;
 
 // These seem to be duplicates or older files, ensuring they are not active.
-// mod generics_in_tuple_variant_unit_derive;
-// mod generics_in_tuple_variant_unit_manual;
+mod generic_enum_simple_unit_derive;
+mod generic_enum_simple_unit_manual;
 // mod keyword_variant_unit_derive;
 // mod standalone_constructor_unit_derive;
 // mod standalone_constructor_args_unit_derive;

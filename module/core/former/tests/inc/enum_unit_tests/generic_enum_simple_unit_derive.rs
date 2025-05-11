@@ -11,19 +11,21 @@
 //! - Relies on the derived static method `EnumOuter::<MyType>::other_variant()`.
 //! - Asserts that the `got` instance is equal to an `expected` instance, which is manually
 //!   constructed as `EnumOuter::<MyType>::OtherVariant`. This confirms the constructor produces the correct variant instance for a generic enum.
-// File: module/core/former/tests/inc/former_enum_tests/unit_tests/generics_in_tuple_variant_unit_derive.rs
+// File: module/core/former/tests/inc/enum_unit_tests/generic_enum_simple_unit_derive.rs
 use super::*; // Imports testing infrastructure and potentially other common items
 use std::fmt::Debug; // Import Debug trait for bounds
-use std::marker::PhantomData; // Import PhantomData
+// use std::marker::PhantomData; // No longer needed for this simple case
 
 // --- Enum Definition with Bounds ---
 // Apply Former derive here. This is what we are testing.
 #[derive(Debug, PartialEq, former::Former)]
 #[debug]
-pub enum EnumOuter< X : Copy > // Enum bound: Copy
+pub enum EnumOuter< X : Copy + Debug + PartialEq > // Enum bound: Copy + Debug + PartialEq
 {
   // --- Unit Variant ---
   OtherVariant,
+  #[allow(dead_code)] // Re-added to use generic X
+  _Phantom(core::marker::PhantomData::<X>),
 }
 
-// No include! directive needed as the original only_test file does not test the unit variant.
+include!( "generic_enum_simple_unit_only_test.rs" );

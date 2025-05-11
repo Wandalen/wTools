@@ -98,8 +98,32 @@
     *   **Verification Strategy:** Relevant tests must pass or files moved/removed. (Passed)
     *   Commit Message: `test(former): Analyze and integrate/refactor enum_named_fields_unit tests`
 
-*   [⚫] **Increment 10:** Analyze and Address `generics_in_tuple_variant_unit_*` tests
-    *   Commit Message: `test(former): Analyze and integrate/refactor generics_in_tuple_variant_unit tests`
+*   [✅] **Increment 10.A: Fix `former_meta` to Ignore `PhantomData` in Enums**
+    *   **Pre-Analysis:** The `former::Former` derive macro incorrectly attempts to generate "former" constructors for `core::marker::PhantomData` variants/fields in enums, leading to compilation errors (E0223).
+    *   **Detailed Plan Steps:**
+        1.  Read `module/core/former_meta/src/derive_former/former_enum.rs`. (Done)
+        2.  Identified `tuple_single_field_subform.rs` as the key handler for `Variant(PhantomData<T>)`. (Done)
+        3.  Modified `tuple_single_field_subform.rs` to check if `field_info.ty` is `PhantomData`. (Done)
+        4.  If it is `PhantomData`, the handler now generates a scalar-like direct constructor instead of attempting to create a `::Former` for `PhantomData`. (Done)
+        5.  Checked other handlers; `struct_single_field_subform.rs` and `*_multi_fields_subform.rs` seem okay as they would embed `PhantomData` directly into their `VariantFormer` structs, which derive `Default` correctly. (Done)
+    *   **Crucial Design Rules:** Minimal Change.
+    *   **Relevant Behavior Rules:** N/A (fixing macro internals).
+    *   **Verification Strategy:** `generic_enum_simple_unit_derive.rs` (with `_Phantom` variant) compiled and its test passed. (Done)
+    *   Commit Message: `fix(former_meta): Prevent derive macro from generating formers for PhantomData variants`
+
+*   [⏳] **Increment 10.B:** Refactor and Test `generics_in_tuple_variant_unit_*` (as `generic_enum_simple_unit_*`)
+    *   **Pre-Analysis:** (As before, but assuming 10.A is done)
+    *   **Detailed Plan Steps:**
+        *   (Steps 5.1-5.3, 8, 9 for file renaming, creation, and mod.rs update are already done or in progress from previous attempt at Increment 10)
+        *   Ensure `generic_enum_simple_unit_manual.rs` has `_Phantom(core::marker::PhantomData::<X>)` and includes `_only_test.rs`. (Done)
+        *   Ensure `generic_enum_simple_unit_derive.rs` has `_Phantom(core::marker::PhantomData::<X>)` and includes `_only_test.rs`. (Done)
+        *   Test Manual Implementation: `cargo test --package former --test tests -- inc::enum_unit_tests::generic_enum_simple_unit_manual`.
+        *   Test Derive Implementation: If manual passes, `cargo test --package former --test tests -- inc::enum_unit_tests::generic_enum_simple_unit_derive`.
+        *   Fix `former_meta` if needed (hopefully not, after 10.A).
+    *   **Crucial Design Rules:** "Proc Macro: Development Workflow"
+    *   **Relevant Behavior Rules:** Rules 1a, 3a.
+    *   **Verification Strategy:** Manual and derive tests for `generic_enum_simple_unit_*` must pass.
+    *   Commit Message: `test(former): Refactor and test unit variants in simple generic enum`
 
 *   [⚫] **Increment 11:** Analyze and Address `keyword_variant_unit_derive`
     *   Commit Message: `test(former): Analyze and cleanup/integrate keyword_variant_unit_derive test`
@@ -123,3 +147,4 @@
 (Content remains the same as before, new issues identified in increments will be added here)
 *   **Core Fix (Increment 8):** The `has_debug` flag (and `ItemAttributes` generally) was not being correctly determined and propagated from the main derive macro entry point (`derive_former.rs`) to `former_for_enum` and `former_for_struct`. This was fixed by parsing `ItemAttributes` once in `derive_former.rs` and passing the attributes and the derived `has_debug` boolean down.
 *   **Standalone Constructor Naming (Increment 8):** Handlers like `tuple_zero_fields_handler.rs` were generating standalone constructors with names that could clash if multiple enums were in the same file. Fixed by prefixing with enum name (e.g., `zero_tuple_variant`).
+*   **PhantomData Issue (Increment 10.A):** `former::Former` derive attempts to create formers for `PhantomData` variants/fields, causing compilation errors. Fixed by modifying `tuple_single_field_subform.rs` to generate a direct/scalar-like constructor for variants whose single field is `PhantomData`.
