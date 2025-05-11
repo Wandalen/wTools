@@ -184,7 +184,15 @@
     *   **Verification Strategy:** All compile-fail tests in the module pass. (Passed)
     *   Commit Message: `test(former): Consolidate and verify compile-fail tests for enum unit variants`
 
-*   [⚫] **Increment 15:** Final Cleanup and Verification of `enum_unit_tests`
+*   [✅] **Increment 15:** Final Cleanup and Verification of `enum_unit_tests`
+    *   **Pre-Analysis:** All specific commented-out test modules related to unit variants have been analyzed, and either integrated, refactored, or removed. The `enum_unit_tests/mod.rs` file should now only contain active and relevant test modules for unit variants.
+    *   **Detailed Plan Steps:**
+        1.  Review `module/core/former/tests/inc/enum_unit_tests/mod.rs` one last time to ensure all `mod` declarations are for active, relevant unit variant tests. Remove any remaining commented-out lines that were processed or deemed permanently irrelevant. (Done)
+        2.  Run all tests within the `enum_unit_tests` module to ensure everything passes together: `cargo test --package former --test tests -- inc::enum_unit_tests`. (Done, all 31 tests passed)
+        3.  Address any unexpected failures or warnings that arise from the full module test run. (No unexpected failures. Existing warnings are noted but out of scope for this specific plan.)
+    *   **Crucial Design Rules:** N/A (final verification).
+    *   **Relevant Behavior Rules:** All rules for unit variants (1a, 2a, 3a, 4a).
+    *   **Verification Strategy:** All tests in `inc::enum_unit_tests` pass. `enum_unit_tests/mod.rs` is clean. (Passed)
     *   Commit Message: `test(former): Finalize and verify all enum unit tests`
 
 ### Requirements
