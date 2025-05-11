@@ -59,7 +59,7 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
 
 ## Increments
 
-*   [⏳] **Increment 1:** Test Basic Unit Variants (Default and `#[scalar]`)
+*   [✅] **Increment 1:** Test Basic Unit Variants (Default and `#[scalar]`)
     *   **Target Crate(s):** `former`, `former_meta` (if macro fixes are needed)
     *   **Goal:** Ensure that basic unit variants (with no attributes and with `#[scalar]`) generate direct constructors as per Rules 1a and 3a.
     *   **Files to Review/Modify:**
@@ -101,7 +101,7 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
     *   **Verification Strategy:**
         *   After Step 3: User runs `cargo test --package former --test tests -- --test-threads=1 --nocapture enum_unit_tests::unit_variant_manual` and provides output. All tests in `unit_variant_manual` must pass.
         *   After Step 5: User runs `cargo test --package former --test tests -- --test-threads=1 --nocapture enum_unit_tests::unit_variant_derive` and provides output. All tests in `unit_variant_derive` must pass.
-    *   Commit Message: [To be proposed upon successful completion of this increment]
+    *   Commit Message: `feat(former): Verify basic unit variant constructors (default, scalar, standalone)`
 
 *   [⚫] **Increment 2:** Test Unit Variants with `#[standalone_constructors]`
     *   Target Crate(s): `former`, `former_meta` (if macro fixes are needed)
