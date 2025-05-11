@@ -18,9 +18,14 @@
 // mod tuple_zero_fields_derive;
 // mod tuple_zero_fields_manual;
 // mod tuple_zero_fields_only_test;
-mod unit_variant_derive;
-mod unit_variant_manual;
-mod unit_variant_only_test;
+// mod unit_variant_derive;
+// mod unit_variant_manual;
+// mod unit_variant_only_test; // This was for the previous tests, keyword tests will include their own _only_test
+
+mod keyword_variant_manual;
+// mod keyword_variant_derive; // Will be enabled later
+// mod keyword_variant_only_test; // Should only be included, not a module itself
+
 mod enum_named_fields_unit_derive;
 // mod enum_named_fields_unit_manual;
 // mod enum_named_fields_unit_only_test;

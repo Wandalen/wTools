@@ -23,7 +23,11 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
   let vis = &ctx.vis; // Get visibility
 
   // Convert variant identifier to snake_case for the method name using convert_case
-  let method_ident_string = variant_ident.to_string().to_case( Case::Snake );
+  let mut base_method_name = variant_ident.to_string();
+  if base_method_name.starts_with("r#") {
+    base_method_name = base_method_name[2..].to_string();
+  }
+  let method_ident_string = base_method_name.to_case( Case::Snake );
   let method_ident = syn::Ident::new( &method_ident_string, variant_ident.span() ); // Create new Ident with correct span
 
   // Generate the static constructor method
@@ -36,7 +40,7 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
     }
   };
 
-  ctx.methods.push( generated_method ); // Will be collected in former_for_enum
+  // ctx.methods.push( generated_method ); // No longer push here, will be returned
 
   // Generate standalone constructor if #[standalone_constructors] is present on the enum
   if ctx.struct_attrs.standalone_constructors.is_some()
@@ -49,8 +53,8 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
         #enum_ident::#variant_ident
       }
     };
-    ctx.standalone_constructors.push( generated_standalone ); // Will be collected in former_for_enum
+    ctx.standalone_constructors.push( generated_standalone );
   }
 
-  Ok( quote!() ) // Return empty TokenStream as tokens are collected in ctx
+  Ok( generated_method ) // Return static method tokens
 }

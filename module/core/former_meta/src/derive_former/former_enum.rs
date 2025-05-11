@@ -314,8 +314,8 @@ pub(super) fn former_for_enum
       }
 
       // Standalone constructors and end impls should be placed here, outside the impl block.
-      // #( #standalone_constructors )*
-      // #( #end_impls )*
+      #( #standalone_constructors )*
+      // #( #end_impls )* // Keep end_impls commented for now as it's not the focus
   };
 
   if has_debug

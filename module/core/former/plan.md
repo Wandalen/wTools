@@ -60,62 +60,36 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
 ## Increments
 
 *   [✅] **Increment 1:** Test Basic Unit Variants (Default and `#[scalar]`)
-    *   **Target Crate(s):** `former`, `former_meta` (if macro fixes are needed)
-    *   **Goal:** Ensure that basic unit variants (with no attributes and with `#[scalar]`) generate direct constructors as per Rules 1a and 3a.
-    *   **Files to Review/Modify:**
-        *   `module/core/former/tests/inc/enum_unit_tests/unit_variant_derive.rs`
-        *   `module/core/former/tests/inc/enum_unit_tests/unit_variant_manual.rs`
-        *   `module/core/former/tests/inc/enum_unit_tests/unit_variant_only_test.rs`
-        *   `module/core/former/tests/inc/mod.rs` (to ensure `enum_unit_tests` and its submodules are active)
-    *   **Pre-Analysis:**
-        *   The `unit_variant_*` files appear to test an enum `Status { Pending, Complete }`.
-        *   `unit_variant_only_test.rs` tests static methods `Status::pending()` and `Status::complete()`.
-        *   Rule 3a (Default Unit Variant): `Status::Pending` and `Status::Complete` should generate `Status::pending() -> Status` and `Status::complete() -> Status` respectively. This is the default behavior for unit variants.
-        *   Rule 1a (`#[scalar]` Unit Variant): If `#[scalar]` were applied (or if default implies scalar for unit variants, which it does), the behavior is the same: `Status::pending() -> Status`.
-        *   The existing tests seem to cover these direct constructor expectations.
-    *   **Detailed Plan Steps (Proc Macro Workflow):**
-        1.  **Review `unit_variant_manual.rs`:**
-            *   Ensure `Status::pending()` and `Status::complete()` are correctly implemented to return `Self::Pending` and `Self::Complete`.
-            *   Ensure `include!( "unit_variant_only_test.rs" );` is present.
-        2.  **Review `unit_variant_only_test.rs`:**
-            *   Confirm tests `unit_variant_constructors` correctly call `Status::pending()` and `Status::complete()` and assert equality with `Status::Pending` and `Status::Complete`.
-        3.  **Verify Manual Implementation:**
-            *   Modify `module/core/former/tests/inc/mod.rs` to ensure `mod enum_unit_tests;` is active.
-            *   Modify `module/core/former/tests/inc/enum_unit_tests/mod.rs` to ensure `mod unit_variant_manual;` is active and `mod unit_variant_derive;` is commented out.
-            *   Request user to run `cargo test --package former --test tests -- --test-threads=1 --nocapture enum_unit_tests::unit_variant_manual`.
-            *   If tests fail, analyze if the issue is in `_manual.rs` or `_only_test.rs` based on Rule 1a/3a. Propose fixes.
-        4.  **Review `unit_variant_derive.rs`:**
-            *   Ensure `#[derive(Former)]` is applied to the `Status` enum.
-            *   Unit variants `Pending` and `Complete` should not require explicit `#[scalar]` as default behavior for unit variants is scalar-like.
-            *   Ensure `include!( "unit_variant_only_test.rs" );` is present.
-        5.  **Verify Derive Implementation:**
-            *   Modify `module/core/former/tests/inc/enum_unit_tests/mod.rs` to ensure `mod unit_variant_derive;` is active.
-            *   Request user to run `cargo test --package former --test tests -- --test-threads=1 --nocapture enum_unit_tests::unit_variant_derive`.
-            *   If tests fail (and manual tests passed):
-                *   Add `#[debug]` to the `Status` enum in `unit_variant_derive.rs`.
-                *   Request user to re-run the test and provide the `#[debug]` output.
-                *   Analyze the generated code against `unit_variant_manual.rs` and Rule 1a/3a.
-                *   Propose fixes to `former_meta/src/derive_former/former_enum/unit_variant_handler.rs` or the test itself if the expectation is incorrect.
-    *   **Crucial Design Rules:** [Proc Macro: Development Workflow]
-    *   **Relevant Behavioral Rules:** Rule 1a, Rule 3a.
-    *   **Verification Strategy:**
-        *   After Step 3: User runs `cargo test --package former --test tests -- --test-threads=1 --nocapture enum_unit_tests::unit_variant_manual` and provides output. All tests in `unit_variant_manual` must pass.
-        *   After Step 5: User runs `cargo test --package former --test tests -- --test-threads=1 --nocapture enum_unit_tests::unit_variant_derive` and provides output. All tests in `unit_variant_derive` must pass.
     *   Commit Message: `feat(former): Verify basic unit variant constructors (default, scalar, standalone)`
 
 *   [✅] **Increment 2:** Test Unit Variants with `#[standalone_constructors]`
-    *   **Target Crate(s):** `former`
-    *   **Goal:** Confirm that unit variants with `#[former(standalone_constructors)]` on the enum generate both static methods and standalone functions.
-    *   **Pre-Analysis:** The `unit_variant_derive.rs` file already includes `#[former(standalone_constructors)]` on the `Status` enum. The `unit_variant_manual.rs` file manually implements both static and standalone constructors. The `unit_variant_only_test.rs` file includes tests for both `Status::pending()`/`Status::complete()` (static) and `pending()`/`complete()` (standalone).
-    *   **Detailed Plan Steps:**
-        1.  The functionality for this increment was already verified as part of Increment 1 because the `#[former(standalone_constructors)]` attribute was present and tested. No additional code changes or specific test runs are needed for this increment.
-    *   **Crucial Design Rules:** [Proc Macro: Development Workflow]
-    *   **Relevant Behavioral Rules:** Rule 1a, 3a, 4a.
-    *   **Verification Strategy:** Functionality verified during Increment 1. No new tests needed.
     *   Commit Message: `chore(former): Confirm standalone constructors for unit variants covered by previous tests`
-*   [⚫] **Increment 3:** Test Unit Variants with Keyword Identifiers
-    *   Target Crate(s): `former`, `former_meta` (if macro fixes are needed)
-    *   Commit Message: [To be proposed upon successful completion of this increment]
+
+*   [❌] **Increment 3:** Test Unit Variants with Keyword Identifiers
+    *   **Target Crate(s):** `former`, `former_meta`
+    *   **Goal:** Ensure unit variants named after Rust keywords (e.g., `r#fn`, `r#struct`) are correctly handled by `Former` derive, generating appropriate constructors.
+    *   **Status:** Manual tests for keyword identifiers (`keyword_variant_manual.rs`) are implemented and pass after renaming internal constructor functions to avoid compiler ambiguity. However, the `former::Former` derive macro exhibits a fundamental bug when applied to enums with raw keyword identifiers (e.g., `enum E { r#fn }`). It causes a compilation error ("expected identifier, found keyword `fn`") on the *input enum definition itself* and "proc-macro derive produced unparsable tokens". Attempts to fix this in `former_meta` (specifically `unit_variant_handler.rs` and `former_enum.rs`) were unsuccessful, indicating a deeper issue with raw identifier handling in the macro's AST processing or token generation.
+    *   **Detailed Plan Steps (Recap & Block):**
+        1.  Create Test Files: (Completed)
+        2.  Implement Manual Version: (Completed, with renames: `construct_fn`, `standalone_construct_fn`, etc.)
+        3.  Implement Shared Test Logic: (Completed, calls renamed manual methods)
+        4.  Verify Manual Implementation: (Completed, tests pass)
+        5.  Implement Derive Version: (Completed, simplified for isolation, then intended full version)
+        6.  Verify Derive Implementation: (Failed repeatedly. Minimal case `enum E { r#fn }` also fails.)
+        7.  Analyze Macro Error & Propose Fix: (Multiple attempts made. Fixes to `unit_variant_handler.rs` and `former_enum.rs` did not resolve the core issue. The problem seems fundamental to how `Former` processes enums with raw keyword identifiers.)
+    *   **Conclusion for Increment 3:** The derive macro functionality for keyword variants is **broken**. Further fixes to `former_meta` are required but are beyond simple targeted changes. This increment is blocked for the derive part. The manual tests and the identification of the bug are the main outcomes.
+    *   **Crucial Design Rules:** [Proc Macro: Development Workflow], [Testing: Plan with a Test Matrix When Writing Tests]
+    *   **Relevant Behavioral Rules:** Rule 1a, 3a, 4a.
+    *   **Test Matrix (Keyword Identifiers):** (Valid for expected behavior, but derive fails)
+        | ID   | Variant Name | Enum Attribute              | Expected Static Method        | Expected Standalone Constructor | Rule(s) | Handler (Meta)        |
+        |------|--------------|-----------------------------|-------------------------------|---------------------------------|---------|-----------------------|
+        | T3.1 | `r#fn`       | None                        | `Enum::r#fn() -> Enum`        | N/A                             | 1a/3a   | unit\_variant\_handler.rs |
+        | T3.2 | `r#struct`   | None                        | `Enum::r#struct() -> Enum`    | N/A                             | 1a/3a   | unit\_variant\_handler.rs |
+        | T3.3 | `r#fn`       | `#[standalone_constructors]` | `Enum::r#fn() -> Enum`        | `fn r#fn() -> Enum`             | 1a/3a,4 | unit\_variant\_handler.rs |
+        | T3.4 | `r#struct`   | `#[standalone_constructors]` | `Enum::r#struct() -> Enum`    | `fn r#struct() -> Enum`         | 1a/3a,4 | unit\_variant\_handler.rs |
+    *   **Verification Strategy:** Manual tests pass. Derive tests fail due to macro bug.
+    *   Commit Message: `test(former): Add manual tests for keyword variants; identify derive bug`
+
 *   [⚫] **Increment 4:** Test Unit Variants within Generic Enums
     *   Target Crate(s): `former`, `former_meta` (if macro fixes are needed)
     *   Commit Message: [To be proposed upon successful completion of this increment]
@@ -150,3 +124,4 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
 *   This plan focuses exclusively on the unit variant aspect of enum formers.
 *   The "Expected Enum Former Behavior" rules (1a, 2a, 3a, 4a) are central to this plan.
 *   If `_manual.rs` files are missing for existing `_derive.rs`/`_only_test.rs` pairs, their creation will be part of the increment.
+*   **Identified Bug (Increment 3):** `former::Former` derive macro fails to compile when applied to enums with raw keyword identifiers (e.g., `r#fn`) as variants, causing "unparsable tokens" and errors on the input enum definition. This requires a more significant fix in `former_meta`.
