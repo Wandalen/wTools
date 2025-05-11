@@ -66,37 +66,33 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
     *   Commit Message: `chore(former): Confirm standalone constructors for unit variants covered by previous tests`
 
 *   [❌] **Increment 3:** Test Unit Variants with Keyword Identifiers
-    *   **Target Crate(s):** `former`, `former_meta`
-    *   **Goal:** Ensure unit variants named after Rust keywords (e.g., `r#fn`, `r#struct`) are correctly handled by `Former` derive, generating appropriate constructors.
-    *   **Status:** Manual tests for keyword identifiers (`keyword_variant_manual.rs`) are implemented and pass after renaming internal constructor functions to avoid compiler ambiguity. However, the `former::Former` derive macro exhibits a fundamental bug when applied to enums with raw keyword identifiers (e.g., `enum E { r#fn }`). It causes a compilation error ("expected identifier, found keyword `fn`") on the *input enum definition itself* and "proc-macro derive produced unparsable tokens". Attempts to fix this in `former_meta` (specifically `unit_variant_handler.rs` and `former_enum.rs`) were unsuccessful, indicating a deeper issue with raw identifier handling in the macro's AST processing or token generation.
-    *   **Conclusion for Increment 3:** The derive macro functionality for keyword variants is **broken**. Further fixes to `former_meta` are required but are beyond simple targeted changes. This increment is blocked for the derive part. The manual tests and the identification of the bug are the main outcomes.
     *   Commit Message: `test(former): Add manual tests for keyword variants; identify derive bug`
 
 *   [❌] **Increment 4:** Test Unit Variants within Generic Enums
+    *   Commit Message: `test(former): Add manual tests for generic enum unit variants; identify derive issue`
+
+*   [❌] **Increment 5:** Test Unit Variants within Enums using Named Field Syntax (for other variants)
     *   **Target Crate(s):** `former`, `former_meta`
-    *   **Goal:** Ensure unit variants within generic enums are correctly handled by `Former` derive, generating appropriate constructors that respect generics.
-    *   **Status:** Manual tests for generic enums (`generic_unit_variant_manual.rs`) pass. However, the `former::Former` derive macro fails to compile when applied to a generic enum like `GenericOption<T>`. Attempts to specify the necessary `T: EntityToFormer<DefinitionType>` bound resulted in persistent compiler errors (E0782 "expected a type, found a trait" or E0107 "missing generics for trait"). This indicates a fundamental issue or a very subtle requirement in how the derive macro handles generic parameters and their `EntityToFormer` bounds.
-    *   **Conclusion for Increment 4:** The derive macro functionality for generic enums (at least with the attempted bounds) is **broken or requires non-obvious bound specifications**. This increment is blocked for the derive part. The manual tests are the main outcome.
+    *   **Goal:** Ensure a unit variant in an enum that also contains variants with named fields is correctly handled by `Former` derive.
+    *   **Status:** Manual tests for `MixedEnum { SimpleUnit, Complex { data: String } }` pass. The derive macro generates the static constructor for `SimpleUnit` correctly if the `Complex` variant is removed and `#[former(standalone_constructors)]` is removed. However, if `#[former(standalone_constructors)]` is present, the standalone constructor for `SimpleUnit` is not generated, even if `Complex` is removed or simplified to `data: i32`. This indicates an issue with `#[former(standalone_constructors)]` for this specific enum structure (`MixedEnum`) that was not present for the simpler `Status` enum in Increment 1.
+    *   **Conclusion for Increment 5:** The derive macro functionality for standalone constructors for unit variants is problematic when the enum is named `MixedEnum` or has other structural differences from the basic `Status` enum, even if other variants are simplified or removed. The static method generation for the unit variant is fine. This increment is blocked for the standalone constructor derive part.
     *   **Detailed Plan Steps (Recap & Block):**
         1.  Create Test Files: (Completed)
         2.  Implement Manual Version: (Completed)
         3.  Implement Shared Test Logic: (Completed)
         4.  Verify Manual Implementation: (Completed, tests pass)
-        5.  Implement Derive Version: (Completed)
-        6.  Verify Derive Implementation: (Failed repeatedly due to trait bound issues on `T`.)
+        5.  Implement Derive Version: (Completed, with simplifications during debugging)
+        6.  Verify Derive Implementation: (Failed for standalone constructors, passed for static method after simplifications.)
     *   **Crucial Design Rules:** [Proc Macro: Development Workflow], [Testing: Plan with a Test Matrix When Writing Tests]
     *   **Relevant Behavioral Rules:** Rule 1a, 3a, 4a.
-    *   **Test Matrix (Generic Enums - Unit Variant Focus):** (Valid for expected behavior, but derive fails)
-        | ID   | Variant Name | Enum Generics | Enum Attribute              | Expected Static Method Signature      | Expected Standalone Constructor | Rule(s) | Handler (Meta)        |
-        |------|--------------|---------------|-----------------------------|---------------------------------------|---------------------------------|---------|-----------------------|
-        | T4.1 | `UnitNone`   | `<T>`         | None                        | `Enum::<T>::unit_none() -> Enum<T>`   | N/A                             | 1a/3a   | unit\_variant\_handler.rs |
-        | T4.2 | `UnitNone`   | `<T>`         | `#[standalone_constructors]` | `Enum::<T>::unit_none() -> Enum<T>`   | `fn unit_none<T>() -> Enum<T>`  | 1a/3a,4 | unit\_variant\_handler.rs |
-    *   **Verification Strategy:** Manual tests pass. Derive tests fail due to macro bug/limitation with generic bounds.
-    *   Commit Message: `test(former): Add manual tests for generic enum unit variants; identify derive issue`
+    *   **Test Matrix (Mixed Enum - Unit Variant Focus):** (Valid for expected behavior, but derive fails for standalone)
+        | ID   | Variant Name | Other Variants Present | Enum Attribute              | Expected Static Method Signature | Expected Standalone Constructor | Rule(s) | Handler (Meta)        |
+        |------|--------------|------------------------|-----------------------------|----------------------------------|---------------------------------|---------|-----------------------|
+        | T5.1 | `SimpleUnit` | Named fields variant   | None                        | `Enum::simple_unit() -> Enum`    | N/A                             | 1a/3a   | unit\_variant\_handler.rs |
+        | T5.2 | `SimpleUnit` | Named fields variant   | `#[standalone_constructors]` | `Enum::simple_unit() -> Enum`    | `fn simple_unit() -> Enum`      | 1a/3a,4 | unit\_variant\_handler.rs |
+    *   **Verification Strategy:** Manual tests pass. Derive test for static method passes (when isolated). Derive test for standalone constructor fails.
+    *   Commit Message: `test(former): Add manual tests for mixed enums; identify standalone ctor issue`
 
-*   [⚫] **Increment 5:** Test Unit Variants within Enums using Named Field Syntax (for other variants)
-    *   Target Crate(s): `former`, `former_meta` (if macro fixes are needed)
-    *   Commit Message: [To be proposed upon successful completion of this increment]
 *   [⚫] **Increment 6:** Test Compile-Fail: Unit Variant with `#[subform_scalar]`
     *   Target Crate(s): `former`, `former_meta` (if macro fixes are needed)
     *   Commit Message: [To be proposed upon successful completion of this increment]
@@ -126,4 +122,5 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
 *   The "Expected Enum Former Behavior" rules (1a, 2a, 3a, 4a) are central to this plan.
 *   If `_manual.rs` files are missing for existing `_derive.rs`/`_only_test.rs` pairs, their creation will be part of the increment.
 *   **Identified Bug (Increment 3):** `former::Former` derive macro fails to compile when applied to enums with raw keyword identifiers (e.g., `r#fn`) as variants.
-*   **Identified Issue (Increment 4):** `former::Former` derive macro fails to compile for generic enums due to complex trait bound requirements for generic parameters, specifically `T: EntityToFormer<DefinitionType>`, where `DefinitionType` is hard to specify correctly without compiler/macro errors.
+*   **Identified Issue (Increment 4):** `former::Former` derive macro fails to compile for generic enums due to complex trait bound requirements for generic parameters.
+*   **Identified Issue (Increment 5):** `former::Former` derive macro fails to generate standalone constructors for `MixedEnum` when `#[former(standalone_constructors)]` is used, unlike simpler enums.

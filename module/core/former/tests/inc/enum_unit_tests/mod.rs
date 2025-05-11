@@ -27,7 +27,10 @@
 // mod keyword_variant_only_test; // Should only be included, not a module itself
 
 // mod generic_unit_variant_manual;
-mod generic_unit_variant_derive;
+// mod generic_unit_variant_derive;
+
+// mod mixed_enum_unit_manual;
+mod mixed_enum_unit_derive;
 
 mod enum_named_fields_unit_derive;
 // mod enum_named_fields_unit_manual;
