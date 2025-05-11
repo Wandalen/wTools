@@ -40,4 +40,4 @@ mod generic_enum_simple_unit_manual;
 // mod standalone_constructor_args_unit_derive;
 // mod standalone_constructor_args_unit_manual;
 
-// pub mod compile_fail;
+pub mod compile_fail;

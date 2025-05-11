@@ -169,7 +169,19 @@
     *   **Verification Strategy:** Redundant files removed. `enum_unit_tests/mod.rs` is clean regarding these. (Verified)
     *   Commit Message: `test(former): Remove redundant standalone_constructor_args_unit tests`
 
-*   [⚫] **Increment 14:** Analyze and Address `compile_fail` module
+*   [✅] **Increment 14:** Analyze and Address `compile_fail` module
+    *   **Pre-Analysis:** The `compile_fail` module in `enum_unit_tests/mod.rs` was commented out. It should contain tests that are expected to fail compilation, specifically for unit variant misconfigurations. Increment 6 already added `subform_scalar_on_unit.rs` and its `.stderr` file.
+    *   **Detailed Plan Steps:**
+        1.  List files in `module/core/former/tests/inc/enum_unit_tests/compile_fail/`. (Done)
+        2.  Reviewed `subform_scalar_on_unit.rs` (relevant) and `unit_subform_scalar_error.rs` (redundant). (Done)
+        3.  Identified Rule 2a as the key compile-fail scenario. (Done)
+        4.  Deleted redundant `unit_subform_scalar_error.rs`. (Done)
+        5.  Ensured `compile_fail/mod.rs` correctly references `subform_scalar_on_unit.rs`. (Done)
+        6.  Uncommented `pub mod compile_fail;` in `enum_unit_tests/mod.rs`. (Done)
+        7.  Ran `cargo test --package former --test tests -- inc::enum_unit_tests::compile_fail`. Verified tests pass. (Done)
+    *   **Crucial Design Rules:** "Testing: Plan with a Test Matrix When Writing Tests".
+    *   **Relevant Behavior Rules:** Rule 2a.
+    *   **Verification Strategy:** All compile-fail tests in the module pass. (Passed)
     *   Commit Message: `test(former): Consolidate and verify compile-fail tests for enum unit variants`
 
 *   [⚫] **Increment 15:** Final Cleanup and Verification of `enum_unit_tests`
