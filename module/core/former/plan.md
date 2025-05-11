@@ -46,18 +46,22 @@
 
 ### Increments
 
-*   [⚫] **Increment 1: Analyze `macro_tools` for `former_meta` (Enum Unit Variants)**
+*   [✅] **Increment 1: Analyze `macro_tools` for `former_meta` (Enum Unit Variants)**
     *   Target Crate(s): `macro_tools` (read-only), `former_meta` (analysis target)
-    *   Detailed Plan Step 1: Systematically review each module and public item in `macro_tools/src/`.
-    *   Detailed Plan Step 2: For each `macro_tools` utility, assess its direct applicability to simplifying or improving the logic in `former_meta/src/derive_former/former_enum/unit_variant_handler.rs` and its interaction with `former_meta/src/derive_former/former_enum.rs` (e.g., `EnumVariantHandlerContext`, attribute parsing). Consider:
+    *   Pre-Analysis: The goal is to identify how `macro_tools` can simplify `former_meta`'s unit variant handling. This requires a thorough understanding of `macro_tools` capabilities and the current implementation in `former_meta/src/derive_former/former_enum/unit_variant_handler.rs`. The existing "Notes & Insights" section already provides some initial pointers (e.g., `ident_maybe_raw`, `syn_err!`, `generic_params::decompose`).
+    *   Detailed Plan Step 1: Systematically review each module and public item in `module/core/macro_tools/src/`. This involves using `list_files` to get an accurate list of modules and then conceptually (or with `read_file` if needed for specific complex utilities) understanding their purpose.
+    *   Detailed Plan Step 2: For each identified `macro_tools` utility, assess its direct applicability to simplifying or improving the logic in `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs` and its interaction with `module/core/former_meta/src/derive_former/former_enum.rs` (e.g., `EnumVariantHandlerContext`, attribute parsing). Consider:
         *   Attribute parsing (`attr.rs`, `attr_prop.rs`): For `#[scalar]`, `#[subform_scalar]` on variants, and `#[standalone_constructors]`, `#[debug]` on the enum.
         *   Identifier generation/manipulation (`ident.rs`, `name.rs`, `kw.rs`): For constructor names, handling raw identifiers.
         *   Generic parameter handling (`generic_params.rs`, `generic_args.rs`): For generic enums and their constructors.
         *   Error reporting (`diag.rs`): For `syn_err!`, `return_syn_err!`.
         *   Code quoting (`qt!`, `quote!`).
         *   Type analysis (`typ.rs`): If any type introspection is needed for unit variants (less likely for units).
-    *   Detailed Plan Step 3: **Output:** Produce a detailed report mapping specific `macro_tools` utilities to concrete code sections or logic patterns in `unit_variant_handler.rs` and `former_enum.rs` (related to unit variants). For each mapping, explain the potential benefit (e.g., "Replace custom ident logic with `ident::ident_maybe_raw`", "Use `AttributePropertyOptionalSingletone` for `#[scalar]` flag").
-    *   Verification Strategy: User reviews the detailed analysis report and mapping.
+    *   Detailed Plan Step 3: **Output (as a textual report in the AI's response, not a file):** Produce a detailed report mapping specific `macro_tools` utilities to concrete code sections or logic patterns in `unit_variant_handler.rs` and `former_enum.rs` (related to unit variants). For each mapping, explain the potential benefit (e.g., "Replace custom ident logic with `ident::ident_maybe_raw`", "Use `AttributePropertyOptionalSingletone` for `#[scalar]` flag"). This report will be the main deliverable of this increment.
+    *   Crucial Design Rules: [Prioritize Reuse and Minimal Change], [Comments and Documentation].
+    *   Relevant Behavior Rules: Rules 1a, 2a, 3a, 4a (to ensure proposed `macro_tools` usage aligns with expected outcomes).
+    *   Verification Strategy: User reviews the detailed analysis report and mapping presented in the AI's response. No code changes, so no compilation or tests.
+    *   Test Matrix: Not applicable for this analysis increment.
     *   Commit Message: `docs(former_meta): Analyze macro_tools for refactoring unit variant handling`
 
 *   [⚫] **Increment 2: Analyze `former_meta` (Enum Unit Variants) for `macro_tools` Generalizations**
