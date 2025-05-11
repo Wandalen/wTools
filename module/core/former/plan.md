@@ -64,16 +64,20 @@
     *   Test Matrix: Not applicable for this analysis increment.
     *   Commit Message: `docs(former_meta): Analyze macro_tools for refactoring unit variant handling`
 
-*   [⚫] **Increment 2: Analyze `former_meta` (Enum Unit Variants) for `macro_tools` Generalizations**
+*   [✅] **Increment 2: Analyze `former_meta` (Enum Unit Variants) for `macro_tools` Generalizations**
     *   Target Crate(s): `former_meta` (read-only), `macro_tools` (analysis target)
-    *   Detailed Plan Step 1: Review `former_meta/src/derive_former/former_enum/unit_variant_handler.rs` and related logic in `former_meta/src/derive_former/former_enum.rs` (e.g., parts of `EnumVariantHandlerContext` or its setup if relevant to unit variants specifically and generalizable).
+    *   Pre-Analysis: The goal is to identify custom logic in `former_meta`'s unit variant handling that could be generalized and moved to `macro_tools`. This requires careful review of `former_meta/src/derive_former/former_enum/unit_variant_handler.rs` and related context.
+    *   Detailed Plan Step 1: Review `former_meta/src/derive_former/former_enum/unit_variant_handler.rs` and related logic in `former_meta/src/derive_former/former_enum.rs` (e.g., parts of `EnumVariantHandlerContext` or its setup if relevant to unit variants specifically and generalizable). This will involve using `read_file` to examine these files.
     *   Detailed Plan Step 2: Identify any custom logic, patterns, or helper functions used for unit variant handling that are sufficiently generic and could be beneficial to other procedural macro development if moved to `macro_tools`.
-    *   Detailed Plan Step 3: **Output:** Document findings as a list of concrete proposals for new utilities or modifications for `macro_tools`. Each proposal must include:
+    *   Detailed Plan Step 3: **Output (as a textual report in the AI's response, not a file):** Document findings as a list of concrete proposals for new utilities or modifications for `macro_tools`. Each proposal must include:
         *   Proposed function/struct/trait signature.
         *   Target module within `macro_tools`.
         *   Clear description of its purpose and generic applicability.
         *   A brief example of how it would be used.
-    *   Verification Strategy: User reviews the documented analysis and concrete proposals for `macro_tools`.
+    *   Crucial Design Rules: [Traits: Encourage Modular Design], [Visibility: Keep Implementation Details Private].
+    *   Relevant Behavior Rules: N/A for this analysis increment, but proposals should align with general good API design.
+    *   Verification Strategy: User reviews the documented analysis and concrete proposals for `macro_tools` presented in the AI's response. No code changes, so no compilation or tests.
+    *   Test Matrix: Not applicable for this analysis increment.
     *   Commit Message: `docs(macro_tools): Analyze former_meta unit variant logic for potential generalizations`
 
 *   [⚫] **Increment 3: Propose Initial Detailed Refactoring Solution for Enum Unit Variants**
