@@ -103,9 +103,16 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
         *   After Step 5: User runs `cargo test --package former --test tests -- --test-threads=1 --nocapture enum_unit_tests::unit_variant_derive` and provides output. All tests in `unit_variant_derive` must pass.
     *   Commit Message: `feat(former): Verify basic unit variant constructors (default, scalar, standalone)`
 
-*   [⚫] **Increment 2:** Test Unit Variants with `#[standalone_constructors]`
-    *   Target Crate(s): `former`, `former_meta` (if macro fixes are needed)
-    *   Commit Message: [To be proposed upon successful completion of this increment]
+*   [✅] **Increment 2:** Test Unit Variants with `#[standalone_constructors]`
+    *   **Target Crate(s):** `former`
+    *   **Goal:** Confirm that unit variants with `#[former(standalone_constructors)]` on the enum generate both static methods and standalone functions.
+    *   **Pre-Analysis:** The `unit_variant_derive.rs` file already includes `#[former(standalone_constructors)]` on the `Status` enum. The `unit_variant_manual.rs` file manually implements both static and standalone constructors. The `unit_variant_only_test.rs` file includes tests for both `Status::pending()`/`Status::complete()` (static) and `pending()`/`complete()` (standalone).
+    *   **Detailed Plan Steps:**
+        1.  The functionality for this increment was already verified as part of Increment 1 because the `#[former(standalone_constructors)]` attribute was present and tested. No additional code changes or specific test runs are needed for this increment.
+    *   **Crucial Design Rules:** [Proc Macro: Development Workflow]
+    *   **Relevant Behavioral Rules:** Rule 1a, 3a, 4a.
+    *   **Verification Strategy:** Functionality verified during Increment 1. No new tests needed.
+    *   Commit Message: `chore(former): Confirm standalone constructors for unit variants covered by previous tests`
 *   [⚫] **Increment 3:** Test Unit Variants with Keyword Identifiers
     *   Target Crate(s): `former`, `former_meta` (if macro fixes are needed)
     *   Commit Message: [To be proposed upon successful completion of this increment]
