@@ -1,175 +1,147 @@
-# Project Plan: Test `former` Crate - Enum Unit Variant Aspect
+# Project Plan: Refactor Enum Unit Variant Handling in `former`
 
-## Goal
-*   Systematically ensure comprehensive test coverage for the **unit variant aspect** of the `#[derive(Former)]` macro in the `former` crate.
-*   For each identified feature or rule related to unit variants:
-    1.  Ensure a manual implementation test (`_manual.rs`) exists and passes, using shared test logic from `_only_test.rs`.
-    2.  Ensure a derive macro invocation test (`_derive.rs`) exists and passes, using the same shared test logic.
-    3.  If discrepancies arise where the manual test passes but the derive test fails, investigate and propose fixes to the `former_meta` crate. This investigation should consider if the test's expectation is incorrect or if there's a bug in the macro implementation. Utilize the `#[debug]` attribute on the enum in the `_derive.rs` file to output the generated code for analysis and comparison against the manual implementation.
-*   All modifications will strictly adhere to `code/gen` instructions, Design Rules (especially "Proc Macro: Development Workflow"), and Codestyle Rules.
-*   Verification will be done via `cargo test --package former --test <specific_test_module_or_file>` after each increment. Workspace-level tests and clippy checks will be avoided.
-*   **New Goal (from feedback):** Analyze all remaining commented-out tests in `module/core/former/tests/inc/enum_unit_tests/mod.rs`. For each:
-    *   If relevant to unit variants and not redundant: uncomment, ensure test files are aligned, test, and fix if necessary.
-    *   If redundant: remove the module declaration and associated files.
-    *   If not relevant to unit variants: move to an appropriate test directory or a new `enum_other_tests` directory.
-    *   Ensure overall `enum_unit_tests` provides complete coverage for unit variants.
-*   **New Goal (from user feedback after initial completion):**
-    1.  Ensure no garbage files are left in `module/core/former/tests/inc/enum_unit_tests`.
-    2.  Ensure `module/core/former/tests/inc/enum_unit_tests/mod.rs` has comments explaining which factors each group of tests covers.
-*   **New Goal (from further user feedback):**
-    1.  Correctly relocate `tuple_zero_fields` tests to `enum_unnamed_tests`.
-    2.  Ensure all test groups in `enum_unit_tests` strictly pertain to unit variants.
-    3.  Add detailed comments to `module/core/former/tests/inc/mod.rs` explaining the testing aspects covered by each of its declared enum test modules.
-    4.  Address compiler warnings in `former` and `former_meta` crates.
-    5.  Make macro debug printing conditional (disable by default for production).
-    6.  Fix and re-enable `tuple_zero_fields` tests.
+### Goal
+*   Refactor the implementation of `#[derive(Former)]` for **enum unit variants** within the `former_meta` crate.
+*   This refactoring will focus on:
+    1.  Intensively analyzing and integrating reusable components from the `macro_tools` crate into the enum unit variant handling logic (`former_meta/src/derive_former/former_enum/unit_variant_handler.rs`).
+    2.  Analyzing the existing enum unit variant handling logic in `former_meta` to identify and potentially extract generalizable, well-tested utilities into the `macro_tools` crate.
+*   The process will include proposing an initial detailed refactoring solution, critiquing it, and then implementing an improved version.
+*   All changes must strictly adhere to `code/gen` instructions, Design Rules, and Codestyle Rules.
 
-
-## Relevant Context
-*   **Primary Test Directory:** `module/core/former/tests/inc/enum_unit_tests/`
-*   **Other Relevant Test Directories:** `module/core/former/tests/inc/enum_unnamed_tests/`, `module/core/former/tests/inc/enum_named_tests/`, `module/core/former/tests/inc/enum_complex_tests/`
-*   **Supporting Files (potential review/modification):**
-    *   `module/core/former/tests/inc/mod.rs` (to ensure test modules are active)
-    *   `module/core/former_meta/src/derive_former.rs` (main derive entry)
-    *   `module/core/former_meta/src/derive_former/former_enum.rs` (macro implementation for enums)
-    *   `module/core/former_meta/src/derive_former/former_struct.rs` (macro implementation for structs)
-    *   `module/core/former_meta/src/derive_former/former_enum/*_handler.rs` (variant handlers)
-    *   `module/core/former_meta/src/derive_former/struct_attrs.rs` (attribute parsing)
+### Relevant Context
+*   **Primary Crates for Modification:**
+    *   `module/core/former_meta` (specifically `src/derive_former/former_enum/unit_variant_handler.rs` and potentially `src/derive_former/former_enum.rs`)
+    *   `module/core/macro_tools` (for potential additions and modifications)
+*   **Key `macro_tools` Files for Analysis (Full Analysis in Increment 1):**
+    *   All files within `module/core/macro_tools/src/` including `attr.rs`, `attr_prop.rs`, `diag.rs`, `ident.rs`, `kw.rs`, `generic_params.rs`, `typ.rs`, `item.rs`, `name.rs`, `punctuated.rs`, `quantifier.rs`, `tokens.rs`, etc.
+*   **Key `former_meta` Files for Analysis:**
+    *   `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs`
+    *   `module/core/former_meta/src/derive_former/former_enum.rs` (for context, dispatch, and `EnumVariantHandlerContext`)
+    *   `module/core/former_meta/src/derive_former/field_attrs.rs`
+    *   `module/core/former_meta/src/derive_former/struct_attrs.rs` (for `ItemAttributes` like `standalone_constructors`, `debug`)
 *   **Key Documentation for Reference:**
     *   `module/core/former/Readme.md`
     *   `module/core/former/advanced.md`
-    *   This plan's "Expected Enum Former Behavior" section.
+    *   Existing `plan.md` files for "Expected Enum Former Behavior" rules.
 *   **Workspace:** Yes, this is part of a Cargo workspace.
-*   **Target File Structure:** Primarily working within existing test files or creating new ones following the `_manual.rs`, `_derive.rs`, `_only_test.rs` pattern within relevant test directories.
+*   **Other Active Plans:** The refactoring plan for `former_meta` (`former_meta/plan.md`) should be considered, as changes here might affect its assumptions.
 
-### Expected Enum Former Behavior
-(Content remains the same as before)
+### Project Requirements
+*   (This section should be cumulative. Assuming previous project requirements like Rust edition 2021, documentation for public APIs, etc., are still in effect. New project-level requirements identified will be added here.)
+*   **Behavioral Equivalence:** Refactoring must not change the externally observable behavior or the generated code structure of the `Former` macro for enum unit variants, unless explicitly justified by a bug fix or alignment with documented "Expected Enum Former Behavior". Existing tests in the `former` crate for unit variants serve as the primary regression guard.
+*   **`macro_tools` Generalization:** All new or modified code in `macro_tools` must be general-purpose, well-documented, and include unit tests. Utilities should not be overly specific to `former_meta`'s internal implementation details.
+*   **Code Quality:** Code changes should demonstrably improve clarity, maintainability, and reduce redundancy in `unit_variant_handler.rs`.
+*   **Error Reporting:** If `macro_tools` utilities are used for error handling, the quality (clarity, span accuracy) of compiler error messages generated by `former_meta` must be maintained or improved.
+*   **Performance:** The refactoring should not introduce measurable performance regressions in macro expansion time. (Primarily a consideration for complex macros, but good to keep in mind).
+*   **Rule Adherence:** All new and modified code must strictly adhere to the system prompt's Design Rules and Codestyle Rules, overriding existing styles in the repository if they conflict.
+*   **Proc Macro Workflow:** While this is primarily a refactoring task, if any part of the core macro logic generation for unit variants is significantly altered (beyond just using helper functions), the principles of the "Proc Macro: Development Workflow" (e.g., clear separation of concerns, testability) should be respected.
+*   **Verification Scope:** All `cargo` commands for verification (check, test, clippy) **must be scoped to individual packages** (e.g., `cargo test --package former_meta`) unless an increment explicitly plans for workspace-level integration testing as a final step.
 
-1.  **`#[scalar]` Attribute:**
-    *   **Unit Variant (Rule 1a):** Generates `Enum::variant() -> Enum`.
-    *   **Zero-Field Variant (Tuple) (Rule 1b):** Generates `Enum::variant() -> Enum`.
-    *   **Zero-Field Variant (Struct) (Rule 1c):** Generates `Enum::variant() -> Enum`.
-    *   ... (rest of rules)
+### Expected Behavior Rules (Enum Unit Variants)
+*   **Rule 1a (Unit + `#[scalar]`):** Generates `Enum::variant() -> Enum`. (Handled by: `unit_variant_handler.rs`)
+*   **Rule 2a (Unit + `#[subform_scalar]`):** Error. (Checked in: `unit_variant_handler.rs`)
+*   **Rule 3a (Unit + Default):** Generates `Enum::variant() -> Enum`. (Handled by: `unit_variant_handler.rs`)
+*   **Rule 4a (`#[standalone_constructors]` on Enum):**
+    *   For unit variants, generates top-level `fn variant_name() -> EnumName` (or `fn enum_name_variant_name() -> EnumName` depending on naming convention for standalone, to be confirmed from existing behavior). The name should be snake_case.
 
-2.  **`#[subform_scalar]` Attribute:**
-    *   ... (rest of rules)
+### Increments
 
-3.  **Default Behavior (No Attribute):**
-    *   ... (rest of rules)
+*   [⚫] **Increment 1: Analyze `macro_tools` for `former_meta` (Enum Unit Variants)**
+    *   Target Crate(s): `macro_tools` (read-only), `former_meta` (analysis target)
+    *   Detailed Plan Step 1: Systematically review each module and public item in `macro_tools/src/`.
+    *   Detailed Plan Step 2: For each `macro_tools` utility, assess its direct applicability to simplifying or improving the logic in `former_meta/src/derive_former/former_enum/unit_variant_handler.rs` and its interaction with `former_meta/src/derive_former/former_enum.rs` (e.g., `EnumVariantHandlerContext`, attribute parsing). Consider:
+        *   Attribute parsing (`attr.rs`, `attr_prop.rs`): For `#[scalar]`, `#[subform_scalar]` on variants, and `#[standalone_constructors]`, `#[debug]` on the enum.
+        *   Identifier generation/manipulation (`ident.rs`, `name.rs`, `kw.rs`): For constructor names, handling raw identifiers.
+        *   Generic parameter handling (`generic_params.rs`, `generic_args.rs`): For generic enums and their constructors.
+        *   Error reporting (`diag.rs`): For `syn_err!`, `return_syn_err!`.
+        *   Code quoting (`qt!`, `quote!`).
+        *   Type analysis (`typ.rs`): If any type introspection is needed for unit variants (less likely for units).
+    *   Detailed Plan Step 3: **Output:** Produce a detailed report mapping specific `macro_tools` utilities to concrete code sections or logic patterns in `unit_variant_handler.rs` and `former_enum.rs` (related to unit variants). For each mapping, explain the potential benefit (e.g., "Replace custom ident logic with `ident::ident_maybe_raw`", "Use `AttributePropertyOptionalSingletone` for `#[scalar]` flag").
+    *   Verification Strategy: User reviews the detailed analysis report and mapping.
+    *   Commit Message: `docs(former_meta): Analyze macro_tools for refactoring unit variant handling`
 
-4.  **`#[standalone_constructors]` Attribute (Body Level) (Rule 4):**
-    *   ... (rest of rules)
+*   [⚫] **Increment 2: Analyze `former_meta` (Enum Unit Variants) for `macro_tools` Generalizations**
+    *   Target Crate(s): `former_meta` (read-only), `macro_tools` (analysis target)
+    *   Detailed Plan Step 1: Review `former_meta/src/derive_former/former_enum/unit_variant_handler.rs` and related logic in `former_meta/src/derive_former/former_enum.rs` (e.g., parts of `EnumVariantHandlerContext` or its setup if relevant to unit variants specifically and generalizable).
+    *   Detailed Plan Step 2: Identify any custom logic, patterns, or helper functions used for unit variant handling that are sufficiently generic and could be beneficial to other procedural macro development if moved to `macro_tools`.
+    *   Detailed Plan Step 3: **Output:** Document findings as a list of concrete proposals for new utilities or modifications for `macro_tools`. Each proposal must include:
+        *   Proposed function/struct/trait signature.
+        *   Target module within `macro_tools`.
+        *   Clear description of its purpose and generic applicability.
+        *   A brief example of how it would be used.
+    *   Verification Strategy: User reviews the documented analysis and concrete proposals for `macro_tools`.
+    *   Commit Message: `docs(macro_tools): Analyze former_meta unit variant logic for potential generalizations`
 
-## Increments
+*   [⚫] **Increment 3: Propose Initial Detailed Refactoring Solution for Enum Unit Variants**
+    *   Target Crate(s): `former_meta`, `macro_tools`
+    *   Detailed Plan Step 1: Based on the analyses from Increments 1 and 2, draft a detailed initial refactoring plan for `former_meta/src/derive_former/former_enum/unit_variant_handler.rs`.
+    *   Detailed Plan Step 2: **Output:** For `unit_variant_handler.rs`, provide:
+        *   Conceptual "before-and-after" code snippets (or pseudo-code) demonstrating how `macro_tools` utilities will replace or augment existing logic.
+        *   Clear explanation of changes to data flow or helper function usage.
+    *   Detailed Plan Step 3: **Output:** For `macro_tools`, provide:
+        *   Finalized signatures and intended module placement for any new utilities proposed in Increment 2.
+    *   Detailed Plan Step 4: Outline the expected impact on code size, readability, and maintainability in `unit_variant_handler.rs`.
+    *   Detailed Plan Step 5: Briefly assess if this refactoring impacts the `former_meta/plan.md` for splitting large files (e.g., if `unit_variant_handler.rs` becomes trivial, does it still need to be a separate file?).
+    *   Verification Strategy: User reviews the detailed refactoring solution, including code change proposals and `macro_tools` additions.
+    *   Commit Message: `docs(former_meta): Propose initial detailed refactoring for unit variant handling`
 
-*   [✅] **Increment 1 - 20:** (All previous increments completed)
+*   [⚫] **Increment 4: Critique and Improve Refactoring Solution**
+    *   Target Crate(s): `former_meta`, `macro_tools`
+    *   Input: The detailed refactoring solution from Increment 3.
+    *   Detailed Plan Step 1: Perform a self-critique of the *detailed* initial refactoring solution. Consider:
+        *   **Effectiveness & Simplification:** Does the plan significantly leverage `macro_tools`? Does it genuinely simplify `unit_variant_handler.rs` logic? Are the `macro_tools` usages idiomatic and clear?
+        *   **Generalization Quality:** Are the proposed additions to `macro_tools` truly generic, well-justified, and do they have clean APIs?
+        *   **Complexity Trade-offs:** Does the refactoring introduce unnecessary complexity or layers of abstraction for the problem at hand?
+        *   **Rule Adherence & Correctness:** Does the plan fully align with "Expected Enum Former Behavior" for unit variants and all project/codestyle rules? Are there any edge cases missed?
+        *   **Maintainability Impact:** Will the refactored code be demonstrably easier to understand, test, and maintain?
+    *   Detailed Plan Step 2: **Output:** Based on the critique, propose specific, actionable improvements or alternatives to the refactoring plan. This might involve choosing different `macro_tools` utilities, refining proposed generalizations (APIs, scope), or adjusting the implementation strategy for `unit_variant_handler.rs`.
+    *   Verification Strategy: User reviews the critique and the improved refactoring solution.
+    *   Commit Message: `docs(former_meta): Critique and improve refactoring plan for unit variants`
 
-*   [✅] **Increment 21: Correctly Relocate `tuple_zero_fields` Tests to `enum_unnamed_tests`**
-    *   **Pre-Analysis:** Increment 19 incorrectly moved `tuple_zero_fields_*` tests to a new `enum_tuple_zero_field_tests` directory. The correct location is `enum_unnamed_tests` as these tests cover zero-field tuple variants (e.g., `Variant()`). The internal compilation errors in `tuple_zero_fields_only_test.rs` need to be resolved to fully verify this. A compiler crash (Access Violation) occurred when testing `enum_unit_tests` after these moves.
-    *   **Detailed Plan Steps:**
-        *   **21.A: Temporarily Comment Out `tuple_zero_fields` Tests to Isolate Access Violation**
-            1.  Modify `module/core/former/tests/inc/enum_unnamed_tests/mod.rs`: Comment out `mod tuple_zero_fields_derive;` and `mod tuple_zero_fields_manual;`. (Done)
-            2.  Run `cargo test --package former --test tests -- inc::enum_unit_tests`. (Done, Access Violation resolved, tests passed).
-        *   Original Steps (dependent on 21.A and fixing `tuple_zero_fields_only_test.rs` compilation):
-            1.  Move `module/core/former/tests/inc/enum_tuple_zero_field_tests/tuple_zero_fields_derive.rs` to `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_derive.rs`. (Done, files were already there or moved by git implicitly)
-            2.  Move `module/core/former/tests/inc/enum_tuple_zero_field_tests/tuple_zero_fields_manual.rs` to `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_manual.rs`. (Done)
-            3.  Move `module/core/former/tests/inc/enum_tuple_zero_field_tests/tuple_zero_fields_only_test.rs` to `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_only_test.rs`. (Done)
-            4.  Delete the directory `module/core/former/tests/inc/enum_tuple_zero_field_tests/` (including its `mod.rs`). (Done, directory confirmed gone)
-            5.  Modify `module/core/former/tests/inc/mod.rs` to remove `pub mod enum_tuple_zero_field_tests;`. (Done)
-            6.  Modify `module/core/former/tests/inc/enum_unnamed_tests/mod.rs` to add and **uncomment**:
-                ```rust
-                // Coverage for `tuple_zero_fields_*` tests:
-                // - Tests zero-field tuple variants e.g., `MyEnum::Variant()`.
-                // - Verifies Rules 1b (scalar), 3b (default), and 4a (standalone_constructors).
-                mod tuple_zero_fields_derive;
-                mod tuple_zero_fields_manual;
-                ```
-                (Done, but modules kept commented due to internal errors and access violation debugging).
-    *   **Crucial Design Rules:** Structuring: Organize by Feature or Layer, Problem Isolation.
-    *   **Verification Strategy:**
-        *   `cargo test --package former --test tests -- inc::enum_unit_tests` compiled and ran without access violation after 21.A.
-        *   (Deferred) `cargo test --package former --test tests -- inc::enum_unnamed_tests` - all tests in this module must pass.
-    *   Commit Message: `refactor(former): Relocate tuple_zero_fields tests and temporarily disable for stability`
+*   [⚫] **Increment 5: Implement Improved Refactoring (Enum Unit Variants in `former_meta`)**
+    *   Target Crate(s): `former_meta`
+    *   Pre-Analysis: Review the approved improved refactoring solution from Increment 4. Confirm the exact `macro_tools` utilities to be used (assuming they exist or will be implemented in Increment 6).
+    *   Detailed Plan Step 1: Modify `former_meta/src/derive_former/former_enum/unit_variant_handler.rs` according to the approved plan, integrating `macro_tools` utilities.
+    *   Detailed Plan Step 2: Ensure all existing tests in `former` crate for enum unit variants continue to pass with identical behavior (unless a bug fix was part of the approved plan).
+    *   Crucial Design Rules: [Prioritize Reuse and Minimal Change], [Proc Macro: Development Workflow].
+    *   Relevant Behavior Rules: Rules 1a, 2a, 3a, 4a.
+    *   Verification Strategy: User applies changes. `cargo check --package former_meta` must pass. `cargo test --package former --test tests -- inc::enum_unit_tests` (or more specific unit variant tests) must pass. Review diffs to ensure changes align with the plan and no unintended behavior changes occurred.
+    *   Commit Message: `refactor(former_meta): Improve unit variant handling using macro_tools`
 
-*   [✅] **Increment 22: Add Detailed Aspect Comments to `inc/mod.rs`**
-    *   **Pre-Analysis:** The main test module file `module/core/former/tests/inc/mod.rs` needs comments explaining the scope of each `enum_*_tests` submodule.
-    *   **Detailed Plan Steps:**
-        1.  Read `module/core/former/tests/inc/mod.rs`. (Done)
-        2.  Added `///` and `//` comments to `module/core/former/tests/inc/mod.rs` to document the purpose of each `enum_*_tests` submodule. (Done)
-        3.  File formatting maintained. (Done)
-    *   **Crucial Design Rules:** Comments and Documentation.
-    *   **Verification Strategy:** `cargo test --package former --test tests` passed.
-    *   Commit Message: `docs(former): Add detailed comments to test module declarations in inc/mod.rs`
+*   [⚫] **Increment 6: Implement Generalizations (New Utilities in `macro_tools`)**
+    *   Target Crate(s): `macro_tools`
+    *   Pre-Analysis: Review the approved new utilities for `macro_tools` from Increment 4.
+    *   Detailed Plan Step 1: Implement the new general-purpose utilities in the appropriate modules within `macro_tools/src/`.
+    *   Detailed Plan Step 2: Add comprehensive unit tests for these new utilities within `macro_tools/tests/inc/`. Each new public function/method should have corresponding tests.
+    *   Detailed Plan Step 3: Update `macro_tools/src/lib.rs` and relevant module files (`mod.rs`) to correctly export the new utilities under the appropriate namespaces (`own`, `orphan`, `exposed`, `prelude`).
+    *   Detailed Plan Step 4: Add clear ///doc comments for all new public items in `macro_tools`.
+    *   Crucial Design Rules: [Traits: Encourage Modular Design], [Visibility: Keep Implementation Details Private], [Comments and Documentation].
+    *   Verification Strategy: User applies changes. `cargo test --package macro_tools` must pass. `cargo doc --package macro_tools --no-deps` should build successfully.
+    *   Commit Message: `feat(macro_tools): Add new utilities generalized from former_meta enum handling`
 
-*   [✅] **Increment 23: Stabilize `former` Package Tests (Address Access Violation)**
-    *   **Pre-Analysis:** `cargo test --package former --test tests` might be crashing with `STATUS_ACCESS_VIOLATION`. The `tuple_zero_fields` tests are already commented out. The issue might be in another test module or a broader problem.
-    *   **Detailed Plan Steps:**
-        1.  Verified `module/core/former/tests/inc/enum_unnamed_tests/mod.rs` still has `tuple_zero_fields` modules commented out. (Done)
-        2.  Ran `cargo clean -p former`. (Done)
-        3.  Ran `cargo test --package former --test tests -- inc::enum_unit_tests`. (Passed)
-        4.  Ran `cargo test --package former --test tests -- inc::struct_tests`. (Passed)
-        5.  Ran `cargo test --package former --test tests -- inc::enum_named_tests`. (Passed, 0 tests)
-        6.  Ran `cargo test --package former --test tests -- inc::enum_complex_tests`. (Passed)
-        7.  Ran `cargo test --package former --test tests -- inc`. (Passed, all 220 tests in `inc` ran without crash)
-    *   **Crucial Design Rules:** Problem Isolation.
-    *   **Verification Strategy:** `cargo test --package former --test tests -- inc` passed.
-    *   Commit Message: `chore(former): Isolate and stabilize former package tests` (No file changes beyond plan, so commit was for plan.md)
+*   [⚫] **Increment 7: Final Verification and Documentation Update**
+    *   Target Crate(s): `former_meta`, `macro_tools`, `former`
+    *   Detailed Plan Step 1: Run `cargo clippy --package former_meta --all-targets -- -D warnings` and address any new lints.
+    *   Detailed Plan Step 2: Run `cargo clippy --package macro_tools --all-targets -- -D warnings` and address any new lints.
+    *   Detailed Plan Step 3: Run `cargo test --package former_meta` and `cargo test --package macro_tools`.
+    *   Detailed Plan Step 4: Run `cargo test --package former --test tests -- inc::enum_unit_tests` (and any other directly affected test suites) to ensure no regressions.
+    *   Detailed Plan Step 5: Update any relevant internal documentation or comments in `former_meta` (especially `unit_variant_handler.rs`) and `macro_tools` to reflect the refactoring and new utilities.
+    *   Detailed Plan Step 6: Review if the `former_meta/plan.md` (for splitting large files) needs adjustment based on changes to `unit_variant_handler.rs` or `former_enum.rs`. Propose updates if necessary.
+    *   Verification Strategy: User confirms all checks pass and reviews documentation updates and any proposed changes to other plans.
+    *   Commit Message: `chore(former): Final verification and docs update after unit variant refactor`
 
-*   [✅] **Increment 24: Fix Warnings in `former_meta`**
-    *   **Pre-Analysis:** `former_meta` has 3 warnings: `unused import: attr`, `unused variable: former_fields_init`, `unused variable: has_debug`.
-    *   **Detailed Plan Steps:**
-        1.  Addressed `unused import: attr` in `module/core/former_meta/src/derive_former.rs`. (Done)
-        2.  Addressed `unused variable: former_fields_init` in `module/core/former_meta/src/derive_former/former_enum/struct_single_field_subform.rs`. (Done)
-        3.  Addressed `unused variable: has_debug` in `module/core/former_meta/src/derive_former/former_struct.rs`. (Done)
-    *   **Crucial Design Rules:** Code Style.
-    *   **Verification Strategy:** `cargo test --package former_meta` showed 0 warnings for `former_meta`.
-    *   Commit Message: `fix(former_meta): Address compiler warnings`
+### Requirements (Task-Specific)
+*   The refactoring should prioritize clarity, maintainability, and testability of `unit_variant_handler.rs`.
+*   Any utilities moved to or created in `macro_tools` must be genuinely reusable, well-documented with examples (if applicable for complex utilities), and not overly specific to `former_meta`'s internal logic.
+*   The "Expected Enum Former Behavior" for unit variants must be strictly preserved or corrected if bugs are found and approved as part of the plan.
+*   Naming conventions for standalone constructors (e.g., `variant_name()` vs `enum_name_variant_name()`) should be consistent with the established patterns in `former_meta` or clarified if ambiguous.
+*   Consider the impact on generic enums: ensure refactoring correctly handles generics in unit variant constructors (both static and standalone).
 
-*   [✅] **Increment 25: Fix Warnings in `former` tests**
-    *   **Pre-Analysis:** `former` tests have several warnings (non_camel_case_types, dead_code).
-    *   **Detailed Plan Steps:**
-        1.  Addressed `non_camel_case_types` for `r#fn`, `r#struct` in `keyword_variant_manual.rs` and `keyword_variant_derive.rs` by adding `#[allow(non_camel_case_types)]`. (Done)
-        2.  Addressed `dead_code` for `enum Status` in `unit_variant_derive.rs` by adding `#[allow(dead_code)]`. (Done)
-        3.  Addressed `dead_code` for associated functions in `keyword_variant_manual.rs` by adding `#[allow(dead_code)]` to the `impl` block. (Done)
-        4.  Addressed `dead_code` for `Value` variant in `generic_unit_variant_manual.rs` and `_derive.rs` by adding `#[allow(dead_code)]`. (Done)
-        5.  Addressed `dead_code` for `Complex` variant in `mixed_enum_unit_manual.rs` and `_derive.rs` by adding `#[allow(dead_code)]`. (Done)
-    *   **Crucial Design Rules:** Code Style.
-    *   **Verification Strategy:** `cargo test --package former --test tests` passed with 0 warnings related to these items.
-    *   Commit Message: `fix(former): Address compiler warnings in tests`
-
-*   [✅] **Increment 26: Conditionally Disable Macro Debug Printing**
-    *   **Pre-Analysis:** The `former_meta` crate prints generated code when `#[former(debug)]` is used. This should be disabled by default for production/normal use but remain available for debugging.
-    *   **Detailed Plan Steps:**
-        1.  Modified `former_meta/Cargo.toml` to add the optional feature: `former_diagnostics_print_generated = []`. (Done)
-        2.  In `module/core/former_meta/src/derive_former.rs`, gated the `diag::report_print` call within the main `former` function with `#[cfg(feature = "former_diagnostics_print_generated")]`. (Done)
-        3.  In `module/core/former_meta/src/derive_former.rs`, gated the `diag::report_print` call within the `mutator` function similarly. (Done)
-        4.  Addressed new `unused_variables` warnings for `_item` and `_original_input` in `mutator` function by prefixing and updating usage. (Done)
-    *   **Crucial Design Rules:** Visibility.
-    *   **Verification Strategy:**
-        *   `cargo test --package former_meta` passed with 0 warnings. (Done)
-        *   `cargo test --package former --test tests` passed, and debug output did NOT appear. (Done)
-        *   `cargo test --package former --test tests --features former_meta/former_diagnostics_print_generated` passed, and debug output DID appear. (Done)
-    *   Commit Message: `feat(former_meta): Make debug printing of generated code conditional`
-
-*   [✅] **Increment 27: Fix and Re-enable `tuple_zero_fields` Tests**
-    *   **Pre-Analysis:** The `tuple_zero_fields` tests are currently commented out and had compilation errors. The core issue seems to be name resolution within the `tuple_zero_fields_only_test.rs` when included by `_manual.rs` and `_derive.rs`.
-    *   **Detailed Plan Steps:**
-        1.  Corrected `tuple_zero_fields_manual.rs` to define `EnumWithZeroFieldTuple` and standalone functions `variant_zero_default`, `variant_zero_scalar` to match derive output. (Done)
-        2.  Ensured `tuple_zero_fields_derive.rs` defines `EnumWithZeroFieldTuple` and has `#[former(standalone_constructors)]`. (Done)
-        3.  Corrected `tuple_zero_fields_only_test.rs` to expect standalone functions `variant_zero_default` and `variant_zero_scalar`. (Done)
-        4.  Modified `module/core/former/tests/inc/enum_unnamed_tests/mod.rs`: Uncommented `mod tuple_zero_fields_derive;` and `mod tuple_zero_fields_manual;`. (Done)
-    *   **Crucial Design Rules:** Proc Macro: Development Workflow.
-    *   **Verification Strategy:**
-        *   `cargo test --package former --test tests -- inc::enum_unnamed_tests` passed. (Done)
-        *   `cargo test --package former --test tests` passed without access violations (228 tests). (Done)
-    *   Commit Message: `fix(former): Resolve compilation errors and re-enable tuple_zero_fields tests`
-
-### Requirements
-(Content remains the same as before)
-
-## Notes & Insights
-(Content remains the same as before, new issues identified in increments will be added here)
-*   **Core Fix (Increment 8):** The `has_debug` flag (and `ItemAttributes` generally) was not being correctly determined and propagated from the main derive macro entry point (`derive_former.rs`) to `former_for_enum` and `former_for_struct`. This was fixed by parsing `ItemAttributes` once in `derive_former.rs` and passing the attributes and the derived `has_debug` boolean down.
-*   **Standalone Constructor Naming (Increment 8 & 27):** Handlers like `tuple_zero_fields_handler.rs` were generating standalone constructors with names that could clash if multiple enums were in the same file. Fixed by prefixing with enum name (e.g., `zero_tuple_variant`). Later discovered that for simple unit/zero-field tuple variants, the derive macro generates standalone functions named after the variant (snake_case), not prefixed by enum name. Test files were updated accordingly.
-*   **PhantomData Issue (Increment 10.A):** `former::Former` derive attempts to create formers for `PhantomData` variants/fields, causing compilation errors. Fixed by modifying `tuple_single_field_subform.rs` to generate a direct/scalar-like constructor for variants whose single field is `PhantomData`.
-*   **Access Violation (Increment 21):** A `STATUS_ACCESS_VIOLATION` (0xc0000005) started occurring when compiling `former` tests. Temporarily commenting out the `tuple_zero_fields` tests resolved this for `inc::enum_unit_tests`, and subsequent incremental testing showed all other `inc` submodules also pass individually and together. Re-enabling `tuple_zero_fields` after fixing name inconsistencies did not reintroduce the crash.
+### Notes & Insights
+*   (This section will be populated as the plan progresses)
+*   `unit_variant_handler.rs` currently handles `#[scalar]` (which is the default behavior for unit variants) and correctly errors on `#[subform_scalar]`. It also needs to interact with the enum-level `#[standalone_constructors]` attribute (parsed in `struct_attrs.rs` and available in `EnumVariantHandlerContext`).
+*   The primary logic in `unit_variant_handler.rs` involves generating a simple static method and, if `#[standalone_constructors]` is present, a corresponding standalone function. Both typically construct the enum variant directly (e.g., `EnumName::VariantName`).
+*   `macro_tools::ident::ident_maybe_raw` will be useful for generating constructor names from variant idents, especially if variants use raw identifiers (e.g., `r#fn`).
+*   `macro_tools::diag::syn_err!` and `return_syn_err!` are already suitable for error reporting (e.g., for `#[subform_scalar]` on a unit variant).
+*   `macro_tools::generic_params::decompose` and related functions will be crucial if the enum is generic, to correctly propagate generics to standalone constructors.
+*   The `EnumVariantHandlerContext` provides necessary context like `vis`, `generics`, `enum_name`, `variant_ident`, and `struct_attrs`. The refactoring should leverage this context effectively.
