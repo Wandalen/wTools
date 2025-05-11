@@ -1,15 +1,17 @@
 //! Derive implementation for testing unit variants in generic enums.
 
 use super::*;
-use former_types::EntityToFormer; // Keep for potential internal use by macro
+use former::Former;
+// use former_types::{EntityToFormer, FormerDefinition}; // Not needed if Value(T) is scalar
 
 /// Generic enum with a unit variant, using Former.
-#[derive(Debug, PartialEq, former::Former)]
+#[derive(Debug, PartialEq, Former)]
 #[former(standalone_constructors)]
-pub enum GenericOption<T: std::fmt::Debug + PartialEq + Clone> // Revert to minimal bounds
+pub enum GenericOption<T: std::fmt::Debug + PartialEq + Clone> // Minimal bounds for T
 {
+  #[scalar] // Treat Value(T) as a scalar constructor for the enum
   Value(T),
-  UnitNone,
+  NoValue,    // Unit variant
 }
 
 include!("generic_unit_variant_only_test.rs");

@@ -17,23 +17,22 @@
     *   Commit Message: `fix(former): Update stderr file for trybuild test subform_scalar_on_unit`
 
 *   [❌] **Increment 9:** Attempt Fix for `keyword_variant_derive` Failures
-    *   **Target Crate(s):** `former_meta`, `former`
-    *   **Goal:** Fix the `former_meta` bug causing compilation errors ("unparsable tokens", error on input enum) when deriving `Former` on enums with raw keyword identifiers (e.g., `r#fn`).
-    *   **Status:** Blocked. The issue persists even with simplified generated code. Emitting *no* tokens for the problematic variant allows compilation, suggesting the error is tied to the interaction of generated tokens for raw keyword variants with the compiler. The problem is likely deep within `syn/quote` or the proc macro token stream combination process. `unit_variant_handler.rs` was restored.
-    *   **Detailed Plan Steps:**
-        1.  **Restore Minimal Test Case:** (Completed)
-        2.  **Analyze `former_meta/src/derive_former/former_enum.rs`:** (Completed)
-        3.  **Propose and Implement Fix in `former_meta`:** (Attempted simplifications, but underlying issue remains)
-        4.  **Verify Fix (Minimal Case):** (Failed with original error, passed only when handler emitted no tokens for the variant)
-        5.  **Verify Fix (Full Case - if minimal passes):** (Not reached)
-    *   **Crucial Design Rules:** [Proc Macro: Development Workflow]
-    *   **Relevant Behavioral Rules:** Rule 1a, 3a, 4a.
-    *   **Verification Strategy:** Minimal case compilation failed.
-    *   **Commit Message:** `test(former_meta): Isolate keyword variant derive error, still unresolved`
+    *   Commit Message: `test(former_meta): Isolate keyword variant derive error, still unresolved`
 
-*   [⚫] **Increment 10:** Attempt Fix for `generic_unit_variant_derive` Failures
-    *   Target Crate(s): `former_meta`, `former`
-    *   Commit Message: `fix(former_meta): Attempt to fix generic enum derive issues`
+*   [❌] **Increment 10:** Attempt Fix for `generic_unit_variant_derive` Failures
+    *   **Target Crate(s):** `former_meta`, `former`
+    *   **Goal:** Fix the `former_meta` bug or add necessary trait bounds to allow deriving `Former` on generic enums with unit variants.
+    *   **Status:** Blocked. Despite adding `#[scalar]` to the generic `Value(T)` variant and improving generic handling in `unit_variant_handler.rs`, the derive still fails with "missing generics for enum GenericOption". This suggests that other variant handlers (e.g., `tuple_single_field_scalar.rs` for `Value(T)`) might also need corrections for generic parameter handling, or there's a more fundamental issue with generic enum expansion.
+    *   **Detailed Plan Steps:**
+        1.  **Restore Test Case:** (Completed)
+        2.  **Analyze Trait Bound Issue in `former_meta`:** (Analysis performed)
+        3.  **Attempt Fix 1: Add Trait Bounds to Test Case:** (Attempted various bounds, then switched to `#[scalar]` attribute on `Value(T)`)
+        4.  **Attempt Fix 2 (If Fix 1 Fails): Modify `former_meta`:** (Improved generics in `unit_variant_handler.rs`. Further fixes in other handlers like `tuple_single_field_scalar.rs` would be needed but are too complex for this iteration.)
+        5.  **Verify Fix:** (Still fails with "missing generics for enum GenericOption")
+    *   **Crucial Design Rules:** [Proc Macro: Development Workflow]
+    *   **Relevant Behavioral Rules:** Rules for unit variants (1a, 3a, 4a) should apply to `NoValue`.
+    *   **Verification Strategy:** `generic_unit_variant_derive` test suite fails.
+    *   **Commit Message:** `test(former_meta): Isolate generic enum derive error, still unresolved`
 
 *   [⚫] **Increment 11:** Attempt Fix for `mixed_enum_unit_derive` Standalone Constructor Failures
     *   Target Crate(s): `former_meta`, `former`

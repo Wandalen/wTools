@@ -24,27 +24,27 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
 
   let variant_ident = &ctx.variant.ident;
   let enum_ident = &ctx.enum_name;
-  let vis = &ctx.vis; // Get visibility
+  let vis = &ctx.vis;
 
-  // Convert variant identifier to snake_case for the method name using convert_case
+  let ( _generic_params_def, generic_params_impl, generic_params_ty, generic_params_where )
+    = macro_tools::generic_params::decompose( &ctx.generics );
+
   let mut base_method_name = variant_ident.to_string();
   if base_method_name.starts_with("r#") {
     base_method_name = base_method_name[2..].to_string();
   }
   let method_ident_string = base_method_name.to_case( Case::Snake );
-  let method_ident = syn::Ident::new( &method_ident_string, variant_ident.span() ); // Create new Ident with correct span
+  let method_ident = syn::Ident::new( &method_ident_string, variant_ident.span() );
 
   // Generate the static constructor method
   let generated_method = quote!
   {
     #[ inline( always ) ]
-    pub fn #method_ident() -> #enum_ident
+    pub fn #method_ident() -> Self // Use Self
     {
-      #enum_ident::#variant_ident
+      Self::#variant_ident // Use Self
     }
   };
-
-  // ctx.methods.push( generated_method ); // No longer push here, will be returned
 
   // Generate standalone constructor if #[standalone_constructors] is present on the enum
   if ctx.struct_attrs.standalone_constructors.is_some()
@@ -52,13 +52,14 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
     let generated_standalone = quote!
     {
       #[ inline( always ) ]
-      #vis fn #method_ident() -> #enum_ident
+      #vis fn #method_ident< #generic_params_impl >() -> #enum_ident< #generic_params_ty > // Add generics
+      where #generic_params_where // Add where clause
       {
-        #enum_ident::#variant_ident
+        #enum_ident::< #generic_params_ty >::#variant_ident // Use turbofish
       }
     };
     ctx.standalone_constructors.push( generated_standalone );
   }
 
-  Ok( generated_method ) // Return static method tokens
+  Ok( generated_method )
 }
