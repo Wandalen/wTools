@@ -16,6 +16,9 @@
 *   **New Goal (from user feedback after initial completion):**
     1.  Ensure no garbage files are left in `module/core/former/tests/inc/enum_unit_tests`.
     2.  Ensure `module/core/former/tests/inc/enum_unit_tests/mod.rs` has comments explaining which factors each group of tests covers.
+*   **New Goal (from further user feedback):**
+    1.  Re-evaluate if `tuple_zero_fields` tests truly belong in `enum_unit_tests` or if they should be moved due to the distinction between unit variants and zero-field tuple variants.
+    2.  Ensure all test groups in `enum_unit_tests` strictly pertain to unit variants.
 
 
 ## Relevant Context
@@ -54,201 +57,34 @@
 
 ## Increments
 
-*   [✅] **Increment 1:** Test Basic Unit Variants (Default and `#[scalar]`)
-    *   Commit Message: `feat(former): Verify basic unit variant constructors (default, scalar, standalone)`
+*   [✅] **Increment 1 - 18:** (All previous increments completed)
 
-*   [✅] **Increment 2:** Test Unit Variants with `#[standalone_constructors]`
-    *   Commit Message: `chore(former): Confirm standalone constructors for unit variants covered by previous tests`
-
-*   [✅] **Increment 3:** Test Unit Variants with Keyword Identifiers
-    *   Commit Message: `fix(former_meta): Handle raw identifiers and attribute parsing for enum formers`
-
-*   [✅] **Increment 4:** Test Unit Variants within Generic Enums
-    *   Commit Message: `fix(former_meta): Correctly handle generics in enum variant constructor generation`
-
-*   [✅] **Increment 5:** Test Unit Variants within Enums using Named Field Syntax (for other variants)
-    *   Commit Message: `fix(former_meta): Ensure implicit variant formers are defined and emitted for mixed enums`
-
-*   [✅] **Increment 6:** Test Compile-Fail: Unit Variant with `#[subform_scalar]`
-    *   Commit Message: `test(former): Add compile-fail test for subform_scalar on unit variant`
-
-*   [✅] **Increment 7:** Final Verification of All Unit Variant Tests (Initial Pass)
-    *   Commit Message: `test(former): Verify all working unit variant tests in enum_unit_tests module`
-
-*   [✅] **Increment 8:** Create and Test `tuple_zero_fields_*` tests
-    *   **Pre-Analysis:** Files for `tuple_zero_fields_derive` and `tuple_zero_fields_manual` did not exist. Created them.
+*   [✅] **Increment 19: Relocate `tuple_zero_fields` Tests**
+    *   **Pre-Analysis:** User feedback questioned if `tuple_zero_fields` tests (testing `Variant()`) belong in `enum_unit_tests`. Syntactically, `Variant()` is a tuple variant, not a unit variant (`Variant`). The "Expected Enum Former Behavior" rules also distinguish them (1a vs 1b, 3a vs 3b). For strictness and clarity, these tests should be moved.
     *   **Detailed Plan Steps:**
-        1.  **Create `tuple_zero_fields_only_test.rs`:** Done.
-        2.  **Create `tuple_zero_fields_manual.rs`:** Done. Aligned standalone constructor names.
-        3.  **Activate and Test Manual Implementation:** Done. Manual tests passed.
-        4.  **Create `tuple_zero_fields_derive.rs`:** Done.
-        5.  **Activate and Test Derive Implementation:** Done. Initial failures due to `#[former(scalar)]` misuse and standalone constructor name clashes. Fixed `ItemAttributes` parsing propagation in `derive_former.rs`, `former_enum.rs`, `former_struct.rs`. Fixed standalone constructor naming in `tuple_zero_fields_handler.rs`. Derive tests now pass.
-    *   **Crucial Design Rules:** "Proc Macro: Development Workflow"
-    *   **Relevant Behavior Rules:** Rules 1b (scalar), 3b (default), 4a (standalone).
-    *   **Verification Strategy:** Manual and derive tests passed.
-    *   **Test Matrix:**
-        *   ID: T8.1, Factor: Variant Type, Level: Zero-Field Tuple (e.g. `V()`), Attribute: Default, Expected: `Enum::v() -> Enum`, Standalone: `enum_name_v() -> Enum`
-        *   ID: T8.2, Factor: Variant Type, Level: Zero-Field Tuple (e.g. `V()`), Attribute: `#[scalar]` (on variant, though default is same), Expected: `Enum::v() -> Enum`, Standalone: `enum_name_v() -> Enum`
-    *   Commit Message: `fix(former_meta): Correct ItemAttributes parsing and standalone ctor names for enums` (This commit will cover the core fix. A subsequent commit will add the new tests.)
-
-*   [✅] **Increment 9:** Analyze and Address `enum_named_fields_unit_*` tests
-    *   **Pre-Analysis:** Comment suggests "Not part of this plan's scope for unit variants". However, these (`enum_named_fields_unit_derive`, `enum_named_fields_unit_manual`) might test a unit variant within an enum that *also* has variants with named struct fields. This is similar to Increment 5 (`mixed_enum_unit_*`) and is relevant.
-    *   **Detailed Plan Steps:**
-        1.  Inspect file contents of `enum_named_fields_unit_manual.rs` and `enum_named_fields_unit_derive.rs` (and any `_only_test.rs`). (Done)
-        2.  If they test a unit variant's constructor behavior: Align, uncomment, test manual, test derive, fix `former_meta` if needed. (Done: Uncommented, manual and derive tests passed.)
-        3.  If truly not about unit variant constructors, decide if they are redundant or should be moved. (Not applicable)
-    *   **Crucial Design Rules:** "Proc Macro: Development Workflow"
-    *   **Relevant Behavior Rules:** Rules 1a, 3a, 4a.
-    *   **Verification Strategy:** Relevant tests must pass or files moved/removed. (Passed)
-    *   Commit Message: `test(former): Analyze and integrate/refactor enum_named_fields_unit tests`
-
-*   [✅] **Increment 10.A: Fix `former_meta` to Ignore `PhantomData` in Enums**
-    *   **Pre-Analysis:** The `former::Former` derive macro incorrectly attempts to generate "former" constructors for `core::marker::PhantomData` variants/fields in enums, leading to compilation errors (E0223).
-    *   **Detailed Plan Steps:**
-        1.  Read `module/core/former_meta/src/derive_former/former_enum.rs`. (Done)
-        2.  Identified `tuple_single_field_subform.rs` as the key handler for `Variant(PhantomData<T>)`. (Done)
-        3.  Modified `tuple_single_field_subform.rs` to check if `field_info.ty` is `PhantomData`. (Done)
-        4.  If it is `PhantomData`, the handler now generates a scalar-like direct constructor instead of attempting to create a `::Former` for `PhantomData`. (Done)
-        5.  Checked other handlers; `struct_single_field_subform.rs` and `*_multi_fields_subform.rs` seem okay as they would embed `PhantomData` directly into their `VariantFormer` structs, which derive `Default` correctly. (Done)
-    *   **Crucial Design Rules:** Minimal Change.
-    *   **Relevant Behavior Rules:** N/A (fixing macro internals).
-    *   **Verification Strategy:** `generic_enum_simple_unit_derive.rs` (with `_Phantom` variant) compiled and its test passed. (Done)
-    *   Commit Message: `fix(former_meta): Prevent derive macro from generating formers for PhantomData variants`
-
-*   [✅] **Increment 10.B:** Refactor and Test `generics_in_tuple_variant_unit_*` (as `generic_enum_simple_unit_*`)
-    *   **Pre-Analysis:** Files `generics_in_tuple_variant_unit_manual.rs` and `generics_in_tuple_variant_unit_derive.rs` existed and tested unit variants in generic enums. They have been refactored to `generic_enum_simple_unit_manual.rs`, `generic_enum_simple_unit_derive.rs`, and a new `generic_enum_simple_unit_only_test.rs` was created. The `former_meta` crate was fixed in 10.A to handle `PhantomData` correctly.
-    *   **Detailed Plan Steps:**
-        *   Rename `generics_in_tuple_variant_unit_manual.rs` to `generic_enum_simple_unit_manual.rs`. (Done in 10.A commit)
-        *   Rename `generics_in_tuple_variant_unit_derive.rs` to `generic_enum_simple_unit_derive.rs`. (Done in 10.A commit)
-        *   Create `generic_enum_simple_unit_only_test.rs`. (Done in 10.A commit)
-        *   Update `generic_enum_simple_unit_manual.rs` (ensure `_Phantom(core::marker::PhantomData::<X>)` is present, include `_only_test.rs`). (Done in 10.A commit)
-        *   Update `generic_enum_simple_unit_derive.rs` (ensure `_Phantom(core::marker::PhantomData::<X>)` is present, include `_only_test.rs`). (Done in 10.A commit)
-        *   Update `enum_unit_tests/mod.rs` to use new names. (Done in 10.A commit)
-        *   Test Manual Implementation: `cargo test --package former --test tests -- inc::enum_unit_tests::generic_enum_simple_unit_manual`. (Done, passed)
-        *   Test Derive Implementation: If manual passes, `cargo test --package former --test tests -- inc::enum_unit_tests::generic_enum_simple_unit_derive`. (Done, passed)
-    *   **Crucial Design Rules:** "Proc Macro: Development Workflow"
-    *   **Relevant Behavior Rules:** Rules 1a, 3a.
-    *   **Verification Strategy:** Manual and derive tests for `generic_enum_simple_unit_*` must pass. (Passed)
-    *   Commit Message: `test(former): Refactor and test unit variants in simple generic enum`
-
-*   [✅] **Increment 11:** Analyze and Address `keyword_variant_unit_derive`
-    *   **Pre-Analysis:** The file `module/core/former/tests/inc/enum_unit_tests/keyword_variant_unit_derive.rs` was commented out. It tested unit variants with keyword names.
-    *   **Detailed Plan Steps:**
-        1.  Read `keyword_variant_unit_derive.rs`. (Done)
-        2.  Compared with `keyword_variant_derive.rs` and `keyword_variant_manual.rs`. (Done)
-        3.  **Decision & Action:** Determined `keyword_variant_unit_derive.rs` and its associated `keyword_variant_unit_only_test.rs` were redundant.
-            *   Deleted `module/core/former/tests/inc/enum_unit_tests/keyword_variant_unit_derive.rs`. (Done)
-            *   Deleted `module/core/former/tests/inc/enum_unit_tests/keyword_variant_unit_only_test.rs`. (Done)
-            *   Ensured `mod keyword_variant_unit_derive;` was removed/remains commented in `enum_unit_tests/mod.rs`. (Done, it was already commented)
-    *   **Crucial Design Rules:** "Proc Macro: Development Workflow", "Prioritize Reuse and Minimal Change".
-    *   **Relevant Behavior Rules:** Rules 1a, 3a.
-    *   **Verification Strategy:** Redundant files removed. `enum_unit_tests/mod.rs` is clean regarding this. (Verified)
-    *   Commit Message: `test(former): Remove redundant keyword_variant_unit_derive tests`
-
-*   [✅] **Increment 12:** Analyze and Address `standalone_constructor_unit_derive`
-    *   **Pre-Analysis:** The file `module/core/former/tests/inc/enum_unit_tests/standalone_constructor_unit_derive.rs` was commented out in `enum_unit_tests/mod.rs` and found to be non-existent.
-    *   **Detailed Plan Steps:**
-        1.  Attempt to read `standalone_constructor_unit_derive.rs`. (Done, file not found)
-        2.  Compare with `unit_variant_derive.rs` and `unit_variant_only_test.rs`. (Done, `unit_variant_only_test.rs` covers standalone constructors.)
-        3.  **Decision & Action:** Confirmed `standalone_constructor_unit_derive.rs` (and any associated `_only_test.rs`) is redundant and already deleted. The `mod.rs` entry is correctly commented.
-    *   **Crucial Design Rules:** "Proc Macro: Development Workflow", "Prioritize Reuse and Minimal Change".
-    *   **Relevant Behavior Rules:** Rule 4a.
-    *   **Verification Strategy:** Confirmed file non-existence and `mod.rs` state. No changes needed.
-    *   Commit Message: `chore(former): Confirm standalone_constructor_unit_derive is redundant and removed`
-
-*   [✅] **Increment 13:** Analyze and Address `standalone_constructor_args_*` tests
-    *   **Pre-Analysis:** The files `standalone_constructor_args_unit_derive.rs` and `standalone_constructor_args_unit_manual.rs` were commented out. They tested standalone constructors for basic unit variants.
-    *   **Detailed Plan Steps:**
-        1.  Read `standalone_constructor_args_unit_derive.rs`. (Done)
-        2.  Read `standalone_constructor_args_unit_manual.rs`. (Done)
-        3.  Read `standalone_constructor_args_unit_only_test.rs`. (Done)
-        4.  Analyzed purpose: Test standalone constructors for unit variants. The "args" in name was a misnomer. (Done)
-        5.  **Decision & Action:** Determined these files are redundant with `unit_variant_*` tests.
-            *   Deleted `standalone_constructor_args_unit_derive.rs`. (Done)
-            *   Deleted `standalone_constructor_args_unit_manual.rs`. (Done)
-            *   Deleted `standalone_constructor_args_unit_only_test.rs`. (Done)
-            *   Ensured `mod.rs` entries remain commented. (Done)
-    *   **Crucial Design Rules:** "Proc Macro: Development Workflow", "Prioritize Reuse and Minimal Change".
-    *   **Relevant Behavior Rules:** Rule 4.
-    *   **Verification Strategy:** Redundant files removed. `enum_unit_tests/mod.rs` is clean regarding these. (Verified)
-    *   Commit Message: `test(former): Remove redundant standalone_constructor_args_unit tests`
-
-*   [✅] **Increment 14:** Analyze and Address `compile_fail` module
-    *   **Pre-Analysis:** The `compile_fail` module in `enum_unit_tests/mod.rs` was commented out. It should contain tests that are expected to fail compilation, specifically for unit variant misconfigurations. Increment 6 already added `subform_scalar_on_unit.rs` and its `.stderr` file.
-    *   **Detailed Plan Steps:**
-        1.  List files in `module/core/former/tests/inc/enum_unit_tests/compile_fail/`. (Done)
-        2.  Reviewed `subform_scalar_on_unit.rs` (relevant) and `unit_subform_scalar_error.rs` (redundant). (Done)
-        3.  Identified Rule 2a as the key compile-fail scenario. (Done)
-        4.  Deleted redundant `unit_subform_scalar_error.rs`. (Done)
-        5.  Ensured `compile_fail/mod.rs` correctly references `subform_scalar_on_unit.rs`. (Done)
-        6.  Uncommented `pub mod compile_fail;` in `enum_unit_tests/mod.rs`. (Done)
-        7.  Ran `cargo test --package former --test tests -- inc::enum_unit_tests::compile_fail`. Verified tests pass. (Done)
-    *   **Crucial Design Rules:** "Testing: Plan with a Test Matrix When Writing Tests".
-    *   **Relevant Behavior Rules:** Rule 2a.
-    *   **Verification Strategy:** All compile-fail tests in the module pass. (Passed)
-    *   Commit Message: `test(former): Consolidate and verify compile-fail tests for enum unit variants`
-
-*   [✅] **Increment 15:** Final Cleanup and Verification of `enum_unit_tests`
-    *   **Pre-Analysis:** All specific commented-out test modules related to unit variants have been analyzed, and either integrated, refactored, or removed. The `enum_unit_tests/mod.rs` file should now only contain active and relevant test modules for unit variants.
-    *   **Detailed Plan Steps:**
-        1.  Review `module/core/former/tests/inc/enum_unit_tests/mod.rs` one last time to ensure all `mod` declarations are for active, relevant unit variant tests. Remove any remaining commented-out lines that were processed or deemed permanently irrelevant. (Done)
-        2.  Run all tests within the `enum_unit_tests` module to ensure everything passes together: `cargo test --package former --test tests -- inc::enum_unit_tests`. (Done, all 31 tests passed)
-        3.  Address any unexpected failures or warnings that arise from the full module test run. (No unexpected failures. Existing warnings are noted but out of scope for this specific plan.)
-    *   **Crucial Design Rules:** N/A (final verification).
-    *   **Relevant Behavior Rules:** All rules for unit variants (1a, 2a, 3a, 4a).
-    *   **Verification Strategy:** All tests in `inc::enum_unit_tests` pass. `enum_unit_tests/mod.rs` is clean. (Passed)
-    *   Commit Message: `test(former): Finalize and verify all enum unit tests`
-
-*   [✅] **Increment 16: Garbage Collection in `enum_unit_tests` Directory**
-    *   **Pre-Analysis:** The user wants to ensure no unused/garbage files remain in `module/core/former/tests/inc/enum_unit_tests/`.
-    *   **Detailed Plan Steps:**
-        1.  List all files in `module/core/former/tests/inc/enum_unit_tests/` and its subdirectories. (Done)
-        2.  Read `module/core/former/tests/inc/enum_unit_tests/mod.rs` to get the list of active modules. (Done)
-        3.  Compared file list with active modules. All files were accounted for. (Done)
-        4.  No garbage files identified for deletion. (Done)
-    *   **Crucial Design Rules:** Minimal Change.
-    *   **Verification Strategy:** `git status` clean (no deletions). `cargo test --package former --test tests -- inc::enum_unit_tests` passed (implicitly from Increment 15). (Verified)
-    *   Commit Message: `chore(former): Verify no unused test files in enum_unit_tests directory`
-
-*   [✅] **Increment 17: Add/Verify Factor Coverage Comments in `enum_unit_tests/mod.rs`**
-    *   **Pre-Analysis:** The user wants comments in `enum_unit_tests/mod.rs` explaining which factors each group of tests covers. The file already has a "Test Matrix Coverage (Unit Variants)" section for `unit_variant_*` tests. This needs to be extended or replicated for other active test groups.
-    *   **Detailed Plan Steps:**
-        1.  Read `module/core/former/tests/inc/enum_unit_tests/mod.rs`. (Done)
-        2.  For each active test module group, analyzed scenarios/rules and added/updated comment blocks in `enum_unit_tests/mod.rs`. (Done)
-        3.  Ensured `cargo test --package former --test tests -- inc::enum_unit_tests` still passes. (Done, passed)
-    *   **Crucial Design Rules:** Comments and Documentation.
-    *   **Verification Strategy:** `enum_unit_tests/mod.rs` reviewed for clear and accurate comments. All tests pass. (Verified)
-    *   Commit Message: `docs(former): Add/clarify factor coverage comments in enum_unit_tests/mod.rs`
-
-*   [✅] **Increment 18: Re-verify and Remove Any Dead Files in `enum_unit_tests` Directory**
-    *   **Pre-Analysis:** User feedback requests a meticulous re-check for dead/garbage files in `module/core/former/tests/inc/enum_unit_tests/`.
-    *   **Detailed Plan Steps:**
-        1.  List all files in `module/core/former/tests/inc/enum_unit_tests/` and its `compile_fail/` subdirectory. (Done)
-        2.  Read `module/core/former/tests/inc/enum_unit_tests/mod.rs` to get the definitive list of *active* test modules. (Done)
-        3.  For each `.rs` file found on the filesystem, checked against active modules and include directives. All files were accounted for. (Done)
-        4.  No dead files identified for deletion. (Done)
-        5.  Explicitly stated no dead files found. (Done)
-    *   **Crucial Design Rules:** Minimal Change.
+        1.  Create new directory: `module/core/former/tests/inc/enum_tuple_zero_field_tests/`. (Done by writing mod.rs)
+        2.  Move `module/core/former/tests/inc/enum_unit_tests/tuple_zero_fields_derive.rs` to `module/core/former/tests/inc/enum_tuple_zero_field_tests/tuple_zero_fields_derive.rs`. (Done)
+        3.  Move `module/core/former/tests/inc/enum_unit_tests/tuple_zero_fields_manual.rs` to `module/core/former/tests/inc/enum_tuple_zero_field_tests/tuple_zero_fields_manual.rs`. (Done)
+        4.  Move `module/core/former/tests/inc/enum_unit_tests/tuple_zero_fields_only_test.rs` to `module/core/former/tests/inc/enum_tuple_zero_field_tests/tuple_zero_fields_only_test.rs`. (Done)
+        5.  Create `module/core/former/tests/inc/enum_tuple_zero_field_tests/mod.rs`. (Done)
+        6.  Modify `module/core/former/tests/inc/enum_unit_tests/mod.rs` to remove `tuple_zero_fields` modules and comments. (Done)
+        7.  Modify `module/core/former/tests/inc/mod.rs` to add `pub mod enum_tuple_zero_field_tests;`. (Done)
+    *   **Crucial Design Rules:** Structuring: Organize by Feature or Layer.
     *   **Verification Strategy:**
-        *   `git status` should reflect any deletions (none in this case).
-        *   `cargo test --package former --test tests -- inc::enum_unit_tests` passed (verified in Increment 17).
-    *   Commit Message: `chore(former): Confirm no dead files in enum_unit_tests`
+        *   `cargo test --package former --test tests -- inc::enum_tuple_zero_field_tests` passed.
+        *   `cargo test --package former --test tests -- inc::enum_unit_tests` passed.
+    *   Commit Message: `refactor(former): Move tuple_zero_fields tests to dedicated enum_tuple_zero_field_tests module`
 
-*   [✅] **Increment 19: Meticulous Re-verification and Cleanup of `enum_unit_tests` Directory (Follow-up)**
-    *   **Pre-Analysis:** User feedback requests a more detailed re-check for dead/garbage files in `module/core/former/tests/inc/enum_unit_tests/`. This involves comparing all files on the filesystem within this directory (and subdirectories like `compile_fail`) against the active modules declared in `enum_unit_tests/mod.rs` and ensuring that `_only_test.rs` files are correctly included by active `_manual.rs` and `_derive.rs` files.
+*   [⏳] **Increment 20: Review Other Test Groups in `enum_unit_tests` for Strict Relevance**
+    *   **Pre-Analysis:** Ensure all *other* remaining test groups in `enum_unit_tests` strictly pertain to *unit variants* or unit variants in a specific context (like generics or mixed enums).
     *   **Detailed Plan Steps:**
-        1.  **(Tool Use):** `list_files` recursively for `module/core/former/tests/inc/enum_unit_tests/`. (Done)
-        2.  **(Tool Use):** `read_file` for `module/core/former/tests/inc/enum_unit_tests/mod.rs`. (Done)
-        3.  **(Tool Use):** `read_file` for `module/core/former/tests/inc/enum_unit_tests/compile_fail/mod.rs`. (Done)
-        4.  **Analysis (Internal):** Created a set of all `.rs` and `.stderr` files found. (Done)
-        5.  **Analysis (Internal):** For each active module pair, confirmed `_manual.rs`, `_derive.rs` exist, are active, include their `_only_test.rs`, and `_only_test.rs` exists. All files accounted for. (Done)
-        6.  **Analysis (Internal):** For `compile_fail` module, confirmed `subform_scalar_on_unit.rs` and `.stderr` are active and used. (Done)
-        7.  **Decision & Action:** No dead files found. (Done)
-    *   **Crucial Design Rules:** Minimal Change.
-    *   **Verification Strategy:**
-        *   `git status` clean (no deletions).
-        *   `cargo test --package former --test tests -- inc::enum_unit_tests` passed (verified in Increment 17).
-    *   Commit Message: `chore(former): Confirm no dead files in enum_unit_tests after meticulous check`
+        1.  For each remaining active test group in `enum_unit_tests/mod.rs` (e.g., `unit_variant_*`, `keyword_variant_*`, `generic_unit_variant_*`, `mixed_enum_unit_*`, `enum_named_fields_unit_*`, `generic_enum_simple_unit_*`):
+            *   Briefly re-verify that the core items being tested are indeed *unit variants* (e.g., `Variant`, not `Variant()` or `Variant{}`).
+            *   If a group is found to primarily test non-unit variants (even if zero-field), plan its relocation similar to Increment 19.
+        2.  Update `enum_unit_tests/mod.rs` comments if any further reclassification occurs or if comments for moved modules need to be fully removed.
+    *   **Crucial Design Rules:** Structuring: Organize by Feature or Layer.
+    *   **Verification Strategy:** `cargo test --package former --test tests -- inc::enum_unit_tests` must pass.
+    *   Commit Message: `chore(former): Confirm relevance of remaining tests in enum_unit_tests module`
 
 ### Requirements
 (Content remains the same as before)

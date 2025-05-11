@@ -15,12 +15,6 @@
 
 // Uncomment modules as they are addressed in increments.
 
-// Coverage for `tuple_zero_fields_*` tests:
-// - Tests zero-field tuple variants e.g., `MyEnum::Variant()`.
-// - Verifies Rules 1b (scalar), 3b (default), and 4a (standalone_constructors).
-mod tuple_zero_fields_derive;
-mod tuple_zero_fields_manual;
-
 // Coverage for `unit_variant_*` tests is described in the Test Matrix at the top of this file.
 mod unit_variant_derive;
 mod unit_variant_manual;

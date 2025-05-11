@@ -8,6 +8,8 @@ mod struct_tests;
 #[ cfg( feature = "derive_former" ) ]
 pub mod enum_unit_tests;
 #[ cfg( feature = "derive_former" ) ]
+pub mod enum_tuple_zero_field_tests;
+#[ cfg( feature = "derive_former" ) ]
 pub mod enum_unnamed_tests;
 #[ cfg( feature = "derive_former" ) ]
 pub mod enum_named_tests;
