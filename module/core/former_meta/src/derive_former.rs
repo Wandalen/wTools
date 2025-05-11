@@ -3,7 +3,7 @@
 use super::*;
 use macro_tools::
 {
-  attr, diag, typ, Result,
+  diag, typ, Result,
   proc_macro2::TokenStream, quote::{ format_ident, quote }, syn::spanned::Spanned,
 };
 

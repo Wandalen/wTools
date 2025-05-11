@@ -10,6 +10,7 @@ use former::Former;
 pub enum GenericOption<T: std::fmt::Debug + PartialEq + Clone> // Minimal bounds for T
 {
   #[scalar] // Treat Value(T) as a scalar constructor for the enum
+  #[allow(dead_code)] // This variant is not constructed by these specific unit tests
   Value(T),
   NoValue,    // Unit variant
 }

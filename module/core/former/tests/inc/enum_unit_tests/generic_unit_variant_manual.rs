@@ -6,6 +6,7 @@ use super::*;
 #[derive(Debug, PartialEq)]
 pub enum GenericOption<T>
 {
+  #[allow(dead_code)] // This variant is not constructed by these specific unit tests
   Value(T),
   NoValue, // Renamed from UnitNone
 }

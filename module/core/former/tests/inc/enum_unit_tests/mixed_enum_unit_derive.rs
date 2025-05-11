@@ -9,6 +9,7 @@ use super::*;
 pub enum MixedEnum
 {
   SimpleUnit,
+  #[allow(dead_code)] // This variant is not constructed by these specific unit tests
   Complex { data: i32 }, // Complex variant present
 }
 

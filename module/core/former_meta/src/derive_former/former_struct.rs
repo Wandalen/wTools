@@ -18,7 +18,7 @@ pub fn former_for_struct
   _data_struct : &syn::DataStruct,
   original_input : &macro_tools::proc_macro2::TokenStream,
   item_attributes : &ItemAttributes, // Changed: Accept parsed ItemAttributes
-  has_debug : bool, // This is the correctly determined has_debug
+  _has_debug : bool, // This is the correctly determined has_debug - now unused locally
 ) -> Result< TokenStream >
 {
   use macro_tools::IntoGenericArgs;

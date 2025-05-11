@@ -92,7 +92,7 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
   // Generate a MINIMAL definition for the implicit VariantFormer struct
   // This is NOT a full Former implementation, just enough to resolve type errors.
   let former_fields_def = quote! { pub #field_name_original : #field_ty };
-  let former_fields_init = quote! { #field_name_original : Default::default() };
+  // let former_fields_init = quote! { #field_name_original : Default::default() }; // Unused, commented out
 
   let variant_former_def = quote!
   {
