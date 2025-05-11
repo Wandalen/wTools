@@ -127,8 +127,19 @@
     *   **Verification Strategy:** Manual and derive tests for `generic_enum_simple_unit_*` must pass. (Passed)
     *   Commit Message: `test(former): Refactor and test unit variants in simple generic enum`
 
-*   [⚫] **Increment 11:** Analyze and Address `keyword_variant_unit_derive`
-    *   Commit Message: `test(former): Analyze and cleanup/integrate keyword_variant_unit_derive test`
+*   [✅] **Increment 11:** Analyze and Address `keyword_variant_unit_derive`
+    *   **Pre-Analysis:** The file `module/core/former/tests/inc/enum_unit_tests/keyword_variant_unit_derive.rs` was commented out. It tested unit variants with keyword names.
+    *   **Detailed Plan Steps:**
+        1.  Read `keyword_variant_unit_derive.rs`. (Done)
+        2.  Compared with `keyword_variant_derive.rs` and `keyword_variant_manual.rs`. (Done)
+        3.  **Decision & Action:** Determined `keyword_variant_unit_derive.rs` and its associated `keyword_variant_unit_only_test.rs` were redundant.
+            *   Deleted `module/core/former/tests/inc/enum_unit_tests/keyword_variant_unit_derive.rs`. (Done)
+            *   Deleted `module/core/former/tests/inc/enum_unit_tests/keyword_variant_unit_only_test.rs`. (Done)
+            *   Ensured `mod keyword_variant_unit_derive;` was removed/remains commented in `enum_unit_tests/mod.rs`. (Done, it was already commented)
+    *   **Crucial Design Rules:** "Proc Macro: Development Workflow", "Prioritize Reuse and Minimal Change".
+    *   **Relevant Behavior Rules:** Rules 1a, 3a.
+    *   **Verification Strategy:** Redundant files removed. `enum_unit_tests/mod.rs` is clean regarding this. (Verified)
+    *   Commit Message: `test(former): Remove redundant keyword_variant_unit_derive tests`
 
 *   [⚫] **Increment 12:** Analyze and Address `standalone_constructor_unit_derive`
     *   Commit Message: `test(former): Analyze and cleanup/integrate standalone_constructor_unit_derive test`
