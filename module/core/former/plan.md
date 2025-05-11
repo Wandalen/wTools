@@ -16,6 +16,7 @@
     *   `module/core/former_meta/src/derive_former/former_enum.rs` (macro implementation)
     *   `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs` (specific handler for unit variants)
     *   `module/core/former_meta/src/derive_former/former_enum/tuple_single_field_scalar.rs` (handler for scalar tuple variants)
+    *   `module/core/former_meta/src/derive_former/former_enum/struct_single_field_subform.rs` (handler for struct variants with subform behavior)
     *   `module/core/former_meta/src/derive_former/struct_attrs.rs` (attribute parsing)
 *   **Key Documentation for Reference:**
     *   `module/core/former/Readme.md`
@@ -71,29 +72,29 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
     *   Commit Message: `fix(former_meta): Handle raw identifiers and attribute parsing for enum formers`
 
 *   [✅] **Increment 4:** Test Unit Variants within Generic Enums
-    *   **Pre-Analysis:** `former::Former` derive macro was known to fail for generic enums.
-    *   **Detailed Plan Steps:**
-        1.  **Verify/Create Manual Implementation:** `generic_unit_variant_manual.rs` and `_only_test.rs` aligned. Manual tests passed.
-        2.  **Verify/Create Derive Implementation (Initial Failure):** `generic_unit_variant_derive.rs` updated with `#[former(debug)]`. Initial tests failed due to E0107 (missing generics) and E0592 (duplicate definitions for `value` variant).
-        3.  **Analyze Failure & Diagnose:** Identified that `tuple_single_field_scalar.rs` (handler for `Value(T) #[scalar]`) was not correctly using generic parameters for return types in generated methods. Also, its method identifier creation needed the raw ident fix.
-        4.  **Propose Fix:** Proposed changes to `tuple_single_field_scalar.rs` to correctly decompose and use generics for method signatures and return types, and to fix method identifier creation.
-        5.  **Implement Fix:** Applied fixes to `tuple_single_field_scalar.rs`.
-        6.  **Verify Fix:** Tests for `generic_unit_variant_derive.rs` now pass.
-    *   **Crucial Design Rules:** "Proc Macro: Development Workflow"
-    *   **Relevant Behavior Rules:** Rules 1a, 1d, 3a, 4a. Correct handling of generics in generated code.
-    *   **Verification Strategy:** Manual tests passed. Derive tests passed after fixes.
-    *   **Test Matrix:**
-        *   ID: T4.1
-        *   Factor: Enum Generics
-        *   Level: Single type parameter `T` used in a non-unit variant (e.g. `Value(T)`) to make the enum generic, with unit variants also present (`NoValue`). Enum has bounds `T: Debug + PartialEq + Clone`.
-        *   Expected Outcome (Manual): Compiles and `generic_unit_variant_only_test.rs` tests pass. (Achieved)
-        *   Expected Outcome (Derive - Before Fix): Fails to compile. (Observed: E0107, E0592)
-        *   Expected Outcome (Derive - After Fix): Compiles and `generic_unit_variant_only_test.rs` tests pass. (Achieved)
-        *   Handler (Meta): `former_enum.rs`, `unit_variant_handler.rs`, `tuple_single_field_scalar.rs`.
     *   Commit Message: `fix(former_meta): Correctly handle generics in enum variant constructor generation`
 
-*   [❌] **Increment 5:** Test Unit Variants within Enums using Named Field Syntax (for other variants)
-    *   Commit Message: `test(former): Add manual tests for mixed enums; identify standalone ctor issue`
+*   [✅] **Increment 5:** Test Unit Variants within Enums using Named Field Syntax (for other variants)
+    *   **Pre-Analysis:** `former::Former` derive was failing for mixed enums due to issues with implicit former generation for struct-like variants.
+    *   **Detailed Plan Steps:**
+        1.  **Verify/Create Manual Implementation:** `mixed_enum_unit_manual.rs` and `_only_test.rs` confirmed aligned. Manual tests passed.
+        2.  **Verify/Create Derive Implementation (Initial Failure):** `mixed_enum_unit_derive.rs` updated. Initial tests failed (E0412/E0433 - type `MixedEnumComplexFormer` not found).
+        3.  **Analyze Failure & Diagnose:** Identified that `struct_single_field_subform.rs` was not generating the definition for the implicit `VariantFormer` (e.g., `MixedEnumComplexFormer`). Also, the emission of `end_impls` (containing these definitions) was commented out in `former_enum.rs`.
+        4.  **Propose Fix:** Proposed to uncomment `end_impls` emission in `former_enum.rs` and to add minimal `VariantFormer` struct definition (including generics and `Default` derive) in `struct_single_field_subform.rs`.
+        5.  **Implement Fix:** Applied fixes to `former_enum.rs` and `struct_single_field_subform.rs`.
+        6.  **Verify Fix:** Tests for `mixed_enum_unit_derive.rs` now pass.
+    *   **Crucial Design Rules:** "Proc Macro: Development Workflow"
+    *   **Relevant Behavior Rules:** Rule 3a, 3e/3g (default behavior for unit and struct-like variants), Rule 4a.
+    *   **Verification Strategy:** Manual tests passed. Derive tests (including standalone for unit variant) passed after fixes.
+    *   **Test Matrix:**
+        *   ID: T5.1
+        *   Factor: Mixed Variant Types (Unit + Struct-like with named fields)
+        *   Level: Enum has `UnitVariant` and `StructVariant { field: String }`. `#[former(standalone_constructors)]` is applied.
+        *   Expected Outcome (Manual): Standalone constructor for `UnitVariant` exists and works. (Achieved)
+        *   Expected Outcome (Derive - Before Fix): Standalone constructor for `UnitVariant` is missing or incorrect. (Observed: E0412/E0433 due to struct variant issues)
+        *   Expected Outcome (Derive - After Fix): Standalone constructor for `UnitVariant` is correctly generated and test passes. (Achieved)
+        *   Handler (Meta): `former_enum.rs`, `unit_variant_handler.rs`, `struct_single_field_subform.rs`.
+    *   Commit Message: `fix(former_meta): Ensure implicit variant formers are defined and emitted for mixed enums`
 
 *   [✅] **Increment 6:** Test Compile-Fail: Unit Variant with `#[subform_scalar]`
     *   Commit Message: `test(former): Add compile-fail test for subform_scalar on unit variant`
@@ -118,4 +119,4 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
 *   If `_manual.rs` files are missing for existing `_derive.rs`/`_only_test.rs` pairs, their creation will be part of the increment.
 *   **Identified Bug (Increment 3):** `former::Former` derive macro fails to compile when applied to enums with raw keyword identifiers (e.g., `r#fn`) as variants. (NOW FIXED)
 *   **Identified Issue (Increment 4):** `former::Former` derive macro fails to compile for generic enums due to complex trait bound requirements for generic parameters. (NOW FIXED)
-*   **Identified Issue (Increment 5):** `former::Former` derive macro fails to generate standalone constructors for `MixedEnum` when `#[former(standalone_constructors)]` is used.
+*   **Identified Issue (Increment 5):** `former::Former` derive macro fails to generate standalone constructors for unit variants in an enum that also contains variants with named fields (struct-like variants), when `#[former(standalone_constructors)]` is used on the enum. (NOW FIXED - by ensuring implicit formers for other variants are correctly defined and emitted).
