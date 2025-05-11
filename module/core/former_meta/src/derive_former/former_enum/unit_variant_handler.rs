@@ -38,7 +38,7 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
   let generated_method = quote!
   {
     #[ inline( always ) ]
-    pub fn #method_ident() -> #enum_ident // Added pub and return type
+    pub fn #method_ident() -> #enum_ident
     {
       #enum_ident::#variant_ident
     }

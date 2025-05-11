@@ -21,7 +21,7 @@
 // mod unit_variant_manual;
 
 // mod keyword_variant_manual;
-// mod keyword_variant_derive; // Known broken
+mod keyword_variant_derive; // Known broken - attempting fix
 
 // mod generic_unit_variant_manual;
 // mod generic_unit_variant_derive; // Known broken
@@ -40,4 +40,4 @@
 // mod standalone_constructor_args_unit_derive;
 // mod standalone_constructor_args_unit_manual;
 
-pub mod compile_fail; // This should be the only one active for this increment
+// pub mod compile_fail;
