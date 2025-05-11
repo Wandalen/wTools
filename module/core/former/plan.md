@@ -129,14 +129,26 @@
     *   Test Matrix: Not applicable.
     *   Commit Message: `docs(former_meta): Critique and improve refactoring plan for unit variants`
 
-*   [⚫] **Increment 5: Implement Improved Refactoring (Enum Unit Variants in `former_meta`)**
+*   [✅] **Increment 5: Implement Improved Refactoring (Enum Unit Variants in `former_meta`)**
     *   Target Crate(s): `former_meta`
-    *   Pre-Analysis: Review the approved improved refactoring solution from Increment 4. Confirm the exact `macro_tools` utilities to be used (assuming they exist or will be implemented in Increment 6).
-    *   Detailed Plan Step 1: Modify `former_meta/src/derive_former/former_enum/unit_variant_handler.rs` according to the approved plan, integrating `macro_tools` utilities.
-    *   Detailed Plan Step 2: Ensure all existing tests in `former` crate for enum unit variants continue to pass with identical behavior (unless a bug fix was part of the approved plan).
+    *   Pre-Analysis: Review the approved improved refactoring solution from Increment 4. This means the changes will be based on using the (yet to be implemented in `macro_tools`) utilities:
+        *   `macro_tools::diag::return_syn_err!` (existing, but usage confirmed)
+        *   `macro_tools::ident::new_ident_from_cased_str` (proposed in Inc 4, to be implemented in Inc 6)
+        *   `macro_tools::generic_params::GenericsRef` enhanced methods (`impl_generics_tokens_if_any`, `ty_generics_tokens_if_any`, `type_path_tokens_if_any`, `where_clause_tokens_if_any`) (proposed in Inc 4, to be implemented in Inc 6).
+        *   **Crucially, since the `macro_tools` utilities are not yet implemented, this increment will involve writing the `former_meta` code *as if* they exist.** The actual compilation of `former_meta` will only fully succeed after Increment 6 is completed. This is acceptable as per the plan structure.
+    *   Detailed Plan Step 1: Modify `former_meta/src/derive_former/former_enum/unit_variant_handler.rs` according to the approved plan from Increment 4. This involves:
+        *   Replacing the `#[subform_scalar]` error handling with `macro_tools::diag::return_syn_err!`.
+        *   Replacing the manual identifier creation for `method_ident` with a call to the conceptual `macro_tools::ident::new_ident_from_cased_str`.
+        *   Replacing manual generic quoting with calls to the conceptual `macro_tools::generic_params::GenericsRef` helper methods.
+        *   Potentially switching `quote!` to `macro_tools::tokens::qt!`.
+    *   Detailed Plan Step 2: Ensure all existing tests in `former` crate for enum unit variants *would conceptually* continue to pass with identical behavior. Actual test runs for `former_meta` will depend on Increment 6.
     *   Crucial Design Rules: [Prioritize Reuse and Minimal Change], [Proc Macro: Development Workflow].
     *   Relevant Behavior Rules: Rules 1a, 2a, 3a, 4a.
-    *   Verification Strategy: User applies changes. `cargo check --package former_meta` must pass. `cargo test --package former --test tests -- inc::enum_unit_tests` (or more specific unit variant tests) must pass. Review diffs to ensure changes align with the plan and no unintended behavior changes occurred.
+    *   Verification Strategy:
+        *   User applies changes to `former_meta/src/derive_former/former_enum/unit_variant_handler.rs`.
+        *   `cargo check --package former_meta` will likely fail due to missing `macro_tools` utilities, which is expected at this stage. The primary verification is code review against the plan from Increment 4.
+        *   A full `cargo test --package former --test tests -- inc::enum_unit_tests` will be deferred until after Increment 6. The immediate goal is to ensure the `unit_variant_handler.rs` code *structurally* matches the refactoring plan.
+    *   Test Matrix: Not applicable for this refactoring increment directly, but existing tests cover behavior.
     *   Commit Message: `refactor(former_meta): Improve unit variant handling using macro_tools`
 
 *   [⚫] **Increment 6: Implement Generalizations (New Utilities in `macro_tools`)**
