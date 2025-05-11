@@ -1,3 +1,22 @@
+//! Purpose: Provides a hand-written implementation of the `Former` pattern's subformer starter methods
+//! for an enum with multiple single-field tuple variants, where the inner types also derive `Former`.
+//! This file demonstrates the manual implementation corresponding to the derived behavior, showing how
+//! to manually create the starter methods and the `FormerEnd` implementations to allow nested building.
+//!
+//! Coverage:
+//! - Rule 3d (Tuple + Single-Field + Default): Manually implements the subformer starter methods for single-field tuple variants.
+//! - Rule 4b (Option 2 Logic): Manually implements the `FormerEnd` trait for `ReturnContainer<FunctionStep>` for each inner type, allowing the inner formers to return the outer enum instance.
+//!
+//! Test Relevance/Acceptance Criteria:
+//! - Defines an enum `FunctionStep` with multiple single-field tuple variants (`Prompt`, `Break`, `InstructionsApplyToFiles`, `Run`).
+//! - The inner types (`Prompt`, `Break`, etc.) also derive `Former`.
+//! - Provides a hand-written `FunctionStepFormer` struct and implements `former::Former` for `FunctionStep` to return it.
+//! - Implements methods on `FunctionStepFormer` (e.g., `prompt()`, `r#break()`) that return formers for the inner types, configured with `ReturnContainer<FunctionStep>` as the end type.
+//! - Implements `FormerEnd<InnerType>` for `ReturnContainer<FunctionStep>` for each inner type, defining how to construct the `FunctionStep` variant from the formed inner type.
+//! - Includes shared test logic from `usecase1_only_test.rs`.
+//! - The included tests call the manually implemented static methods (e.g., `FunctionStep::prompt()`), use the returned subformers to set fields of the inner types, and call `.form()` on the subformers.
+//! - Asserts that the resulting enum instances match manually constructed expected values. This verifies that the manual implementation correctly provides subformer starters and integrates with the inner types' formers.
+
 use super::*;
 use former::Former;
 use former::FormerEnd; // Import necessary traits

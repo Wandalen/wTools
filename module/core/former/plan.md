@@ -407,7 +407,7 @@ This section shows an example of the documentation comments that will be added t
     *   **[2025-05-11/Inc 14] Note:** Found a discrepancy between the documented "Expected Enum Former Behavior Rules" (Rule 3f: Multi-field tuple default is scalar) and the test logic/manual implementation for `Variant2` in `scalar_generic_tuple_*` files (which tests/implements subformer behavior). Also, the `#[scalar]` attributes are commented out in the `_derive.rs` file, which should result in default behavior according to the rules, but the tests seem to expect scalar behavior for `Variant1` and subformer for `Variant2`. The documentation added will reflect the current state and behavior of the tests/manual implementation, and this discrepancy is noted here. Addressing this functional/test logic inconsistency is out of scope for this documentation task.
     *   **[2025-05-11/Inc 14] Note:** Detailed planning for Increment 14 complete. Drafted comments for target files. Noted discrepancy between Rule 3f and test/manual implementation behavior. Applied comments to target files using `write_to_file`.
 
-*   [⏳] **Increment 15:** Document `standalone_constructor_args_tuple_*` files
+*   [✅] **Increment 15:** Document `standalone_constructor_args_tuple_*` files
     *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
     *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
     *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
@@ -484,21 +484,21 @@ This section shows an example of the documentation comments that will be added t
         //! - Asserts that the returned enum instances match manually constructed expected values (`TestEnum::Variant1(value)`, `TestEnum::Variant2(value1, value2)`). This verifies that both derived and manual standalone constructors correctly handle field arguments and produce the final enum variant.
     *   **[2025-05-11/Inc 15] Note:** Detailed planning for Increment 15 complete. Drafted comments for target files.
 
-*   [⚫] **Increment 16:** Document `standalone_constructor_tuple_*` files
+*   [✅] **Increment 16:** Document `standalone_constructor_tuple_*` files
     *   Enum Aspect Focus: Unnamed/Tuple (with `#[standalone_constructors]`, no field args)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_tuple_derive.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_tuple_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_tuple tests`
 
-*   [⚫] **Increment 17:** Document `tuple_multi_default_*` files
+*   [✅] **Increment 17:** Document `tuple_multi_default_*` files
     *   Enum Aspect Focus: Unnamed/Tuple (multi-field, default scalar behavior)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_default_derive.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_default_manual.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_default_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to tuple_multi_default tests`
-*   [⚫] **Increment 18:** Document `tuple_multi_scalar_*` files
+*   [✅] **Increment 18:** Document `tuple_multi_scalar_*` files
     *   Enum Aspect Focus: Unnamed/Tuple (multi-field with `#[scalar]`)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_scalar_derive.rs`
@@ -506,7 +506,7 @@ This section shows an example of the documentation comments that will be added t
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_scalar_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to tuple_multi_scalar tests`
 
-*   [⚫] **Increment 19:** Document `tuple_multi_standalone_args_*` files
+*   [✅] **Increment 19:** Document `tuple_multi_standalone_args_*` files
     *   Enum Aspect Focus: Unnamed/Tuple (multi-field with `#[standalone_constructors]` and `#[arg_for_constructor]`)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_derive.rs`
@@ -514,7 +514,7 @@ This section shows an example of the documentation comments that will be added t
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to tuple_multi_standalone_args tests`
 
-*   [⚫] **Increment 20:** Document `tuple_multi_standalone_*` files
+*   [✅] **Increment 20:** Document `tuple_multi_standalone_*` files
     *   Enum Aspect Focus: Unnamed/Tuple (multi-field with `#[standalone_constructors]`, no field args)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_derive.rs`
@@ -522,7 +522,7 @@ This section shows an example of the documentation comments that will be added t
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to tuple_multi_standalone tests`
 
-*   [⚫] **Increment 21:** Document `tuple_zero_fields_*` files
+*   [✅] **Increment 21:** Document `tuple_zero_fields_*` files
     *   Enum Aspect Focus: Unnamed/Tuple (zero-field tuple variants)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_derive.rs`
@@ -530,7 +530,7 @@ This section shows an example of the documentation comments that will be added t
         *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to tuple_zero_fields tests`
 
-*   [⚫] **Increment 22:** Document `usecase1*` files
+*   [✅] **Increment 22:** Document `usecase1*` files
     *   Enum Aspect Focus: Unnamed/Tuple (single-field tuple, default subform, multiple variants)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/usecase1.rs`
@@ -539,13 +539,80 @@ This section shows an example of the documentation comments that will be added t
         *   `module/core/former/tests/inc/enum_unnamed_tests/usecase1_only_test.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to usecase1 unnamed enum tests`
 
-*   [⚫] **Increment 23:** Document `compile_fail/*` files for unnamed variants
+*   [✅] **Increment 23:** Document `compile_fail/*` files for unnamed variants
     *   Enum Aspect Focus: Unnamed/Tuple (compile-fail scenarios)
     *   Target File(s):
         *   `module/core/former/tests/inc/enum_unnamed_tests/compile_fail/tuple_multi_subform_scalar_error.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/compile_fail/tuple_single_subform_non_former_error.rs`
         *   `module/core/former/tests/inc/enum_unnamed_tests/compile_fail/tuple_zero_subform_scalar_error.rs`
     *   Commit Message: `docs(former): Add purpose and coverage to unnamed enum compile_fail tests`
+
+---
+**Phase 3: Named/Struct Variant Tests (`enum_named_tests`)**
+
+*   [⚫] **Increment 24:** Document `enum_named_fields_named_*` files
+    *   Enum Aspect Focus: Named/Struct (various field counts and attributes)
+    *   Target File(s):
+        *   `module/core/former/tests/inc/enum_named_tests/enum_named_fields_named_derive.rs`
+        *   `module/core/former/tests/inc/enum_named_tests/enum_named_fields_named_manual.rs`
+        *   `module/core/former/tests/inc/enum_named_tests/enum_named_fields_named_only_test.rs`
+    *   Commit Message: `docs(former): Add purpose and coverage to enum_named_fields_named tests`
+
+*   [⚫] **Increment 25:** Document `generics_independent_struct_*` files
+    *   Enum Aspect Focus: Named/Struct (with independent generics)
+    *   Target File(s):
+        *   `module/core/former/tests/inc/enum_named_tests/generics_independent_struct_derive.rs`
+        *   `module/core/former/tests/inc/enum_named_tests/generics_independent_struct_manual.rs`
+        *   `module/core/former/tests/inc/enum_named_tests/generics_independent_struct_only_test.rs`
+    *   Commit Message: `docs(former): Add purpose and coverage to generics_independent_struct tests`
+
+*   [⚫] **Increment 26:** Document `generics_shared_struct_*` files
+    *   Enum Aspect Focus: Named/Struct (with shared generics)
+    *   Target File(s):
+        *   `module/core/former/tests/inc/enum_named_tests/generics_shared_struct_derive.rs`
+        *   `module/core/former/tests/inc/enum_named_tests/generics_shared_struct_manual.rs`
+        *   `module/core/former/tests/inc/enum_named_tests/generics_shared_struct_only_test.rs`
+    *   Commit Message: `docs(former): Add purpose and coverage to generics_shared_struct tests`
+
+*   [⚫] **Increment 27:** Document `standalone_constructor_args_named_*` files
+    *   Enum Aspect Focus: Named/Struct (with `#[standalone_constructors]` and `#[arg_for_constructor]`)
+    *   Target File(s):
+        *   `module/core/former/tests/inc/enum_named_tests/standalone_constructor_args_named_derive.rs`
+        *   `module/core/former/tests/inc/enum_named_tests/standalone_constructor_args_named_multi_manual.rs`
+        *   `module/core/former/tests/inc/enum_named_tests/standalone_constructor_args_named_single_manual.rs`
+        *   `module/core/former/tests/inc/enum_named_tests/standalone_constructor_args_named_only_test.rs`
+    *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_args_named tests`
+
+*   [⚫] **Increment 28:** Document `standalone_constructor_named_*` files
+    *   Enum Aspect Focus: Named/Struct (with `#[standalone_constructors]`, no field args)
+    *   Target File(s):
+        *   `module/core/former/tests/inc/enum_named_tests/standalone_constructor_named_derive.rs`
+        *   `module/core/former/tests/inc/enum_named_tests/standalone_constructor_named_only_test.rs`
+    *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_named tests`
+
+*   [⚫] **Increment 29:** Document `compile_fail/*` files for named variants
+    *   Enum Aspect Focus: Named/Struct (compile-fail scenarios)
+    *   Target File(s):
+        *   `module/core/former/tests/inc/enum_named_tests/compile_fail/struct_zero_default_error.rs`
+        *   `module/core/former/tests/inc/enum_named_tests/compile_fail/struct_zero_subform_scalar_error.rs`
+    *   Commit Message: `docs(former): Add purpose and coverage to named enum compile_fail tests`
+
+---
+**Phase 4: Complex/Mixed Enum Tests (`enum_complex_tests`)**
+
+*   [⚫] **Increment 30:** Document `subform_collection_test.rs`
+    *   Enum Aspect Focus: Complex/Mixed (subform entry with enum elements - currently commented out)
+    *   Target File(s): `module/core/former/tests/inc/enum_complex_tests/subform_collection_test.rs`
+    *   Note: This file's content is commented out. The purpose comment should reflect its original intent and current status.
+    *   Commit Message: `docs(former): Add purpose and coverage to subform_collection_test (complex enum)`
+
+---
+*   [⚫] **Increment 31: Final Review and Cleanup**
+    *   Target Crate(s): `former`
+    *   Enum Aspect Focus: N/A
+    *   Goal: Ensure all enum test files have been processed. Check for consistency in comments.
+    *   **Verification Strategy:** Run `cargo check --package former --tests`.
+    *   Commit Message: `docs(former): Final review of enum test documentation`
 
 ### Requirements
 *   **Adherence:** Strictly follow `code/gen` instructions, Design Rules, and Codestyle Rules for all modifications.
