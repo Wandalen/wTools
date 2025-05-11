@@ -52,12 +52,12 @@ impl ItemAttributes
   pub fn from_attrs< 'a >( attrs_iter : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
   {
     let mut result = Self::default();
-    let mut former_attr_processed = false; // Flag to check if #[former(...)] was processed
+    // let mut former_attr_processed = false; // Flag to check if #[former(...)] was processed // REMOVED
 
     for attr in attrs_iter {
         let path = attr.path();
         if path.is_ident("former") {
-            former_attr_processed = true; // Mark that we found and processed #[former]
+            // former_attr_processed = true; // Mark that we found and processed #[former] // REMOVED
             match &attr.meta {
                 syn::Meta::List(meta_list) => {
                     let tokens_inside_former = meta_list.tokens.clone();

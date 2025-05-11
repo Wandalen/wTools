@@ -15,6 +15,7 @@
     *   `module/core/former/tests/inc/mod.rs` (to ensure test modules are active)
     *   `module/core/former_meta/src/derive_former/former_enum.rs` (macro implementation)
     *   `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs` (specific handler for unit variants)
+    *   `module/core/former_meta/src/derive_former/former_enum/tuple_single_field_scalar.rs` (handler for scalar tuple variants)
     *   `module/core/former_meta/src/derive_former/struct_attrs.rs` (attribute parsing)
 *   **Key Documentation for Reference:**
     *   `module/core/former/Readme.md`
@@ -67,29 +68,29 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
     *   Commit Message: `chore(former): Confirm standalone constructors for unit variants covered by previous tests`
 
 *   [✅] **Increment 3:** Test Unit Variants with Keyword Identifiers
-    *   **Pre-Analysis:** The `former::Former` derive macro was known to fail compilation when applied to enums with raw keyword identifiers.
-    *   **Detailed Plan Steps:**
-        1.  **Verify Manual Implementation:** `keyword_variant_manual.rs` and `keyword_variant_only_test.rs` confirmed and aligned. Manual tests passed.
-        2.  **Verify Derive Implementation (Initial Failure):** `keyword_variant_derive.rs` updated. Initial tests failed due to macro errors with raw identifiers.
-        3.  **Analyze Failure & Diagnose:** Identified issues in `former_meta`'s `unit_variant_handler.rs` (identifier quoting for method names, generic handling for standalone constructors) and `struct_attrs.rs` (parsing of `#[former(...)]` attributes like `debug` and `standalone_constructors`, and handling of top-level `#[debug]` and `#[standalone_constructors]`).
-        4.  **Propose Fix:** Proposed changes to `unit_variant_handler.rs` and `struct_attrs.rs`.
-        5.  **Implement Fix:** Applied fixes to `unit_variant_handler.rs` and `struct_attrs.rs`.
-        6.  **Verify Fix:** Tests for `keyword_variant_derive.rs` now pass.
-    *   **Crucial Design Rules:** "Proc Macro: Development Workflow"
-    *   **Relevant Behavior Rules:** Rule 3a (Default Unit Variant), Rule 1a (Scalar Unit Variant), Rule 4a (Standalone Constructors).
-    *   **Verification Strategy:** `keyword_variant_manual_test` passed. `keyword_variant_derive_test` passed after fixes.
-    *   **Test Matrix:**
-        *   ID: T3.1
-        *   Factor: Variant Naming
-        *   Level: Raw Keyword Identifier (e.g., `r#fn`, `r#match`)
-        *   Expected Outcome (Manual): Compiles and `keyword_variant_only_test.rs` tests pass. (Achieved)
-        *   Expected Outcome (Derive - Before Fix): Fails to compile or `keyword_variant_only_test.rs` tests fail. (Observed)
-        *   Expected Outcome (Derive - After Fix): Compiles and `keyword_variant_only_test.rs` tests pass, matching manual behavior. (Achieved)
-        *   Handler (Meta): `former_enum.rs`, `unit_variant_handler.rs`, `struct_attrs.rs`
     *   Commit Message: `fix(former_meta): Handle raw identifiers and attribute parsing for enum formers`
 
-*   [❌] **Increment 4:** Test Unit Variants within Generic Enums
-    *   Commit Message: `test(former): Add manual tests for generic enum unit variants; identify derive issue`
+*   [✅] **Increment 4:** Test Unit Variants within Generic Enums
+    *   **Pre-Analysis:** `former::Former` derive macro was known to fail for generic enums.
+    *   **Detailed Plan Steps:**
+        1.  **Verify/Create Manual Implementation:** `generic_unit_variant_manual.rs` and `_only_test.rs` aligned. Manual tests passed.
+        2.  **Verify/Create Derive Implementation (Initial Failure):** `generic_unit_variant_derive.rs` updated with `#[former(debug)]`. Initial tests failed due to E0107 (missing generics) and E0592 (duplicate definitions for `value` variant).
+        3.  **Analyze Failure & Diagnose:** Identified that `tuple_single_field_scalar.rs` (handler for `Value(T) #[scalar]`) was not correctly using generic parameters for return types in generated methods. Also, its method identifier creation needed the raw ident fix.
+        4.  **Propose Fix:** Proposed changes to `tuple_single_field_scalar.rs` to correctly decompose and use generics for method signatures and return types, and to fix method identifier creation.
+        5.  **Implement Fix:** Applied fixes to `tuple_single_field_scalar.rs`.
+        6.  **Verify Fix:** Tests for `generic_unit_variant_derive.rs` now pass.
+    *   **Crucial Design Rules:** "Proc Macro: Development Workflow"
+    *   **Relevant Behavior Rules:** Rules 1a, 1d, 3a, 4a. Correct handling of generics in generated code.
+    *   **Verification Strategy:** Manual tests passed. Derive tests passed after fixes.
+    *   **Test Matrix:**
+        *   ID: T4.1
+        *   Factor: Enum Generics
+        *   Level: Single type parameter `T` used in a non-unit variant (e.g. `Value(T)`) to make the enum generic, with unit variants also present (`NoValue`). Enum has bounds `T: Debug + PartialEq + Clone`.
+        *   Expected Outcome (Manual): Compiles and `generic_unit_variant_only_test.rs` tests pass. (Achieved)
+        *   Expected Outcome (Derive - Before Fix): Fails to compile. (Observed: E0107, E0592)
+        *   Expected Outcome (Derive - After Fix): Compiles and `generic_unit_variant_only_test.rs` tests pass. (Achieved)
+        *   Handler (Meta): `former_enum.rs`, `unit_variant_handler.rs`, `tuple_single_field_scalar.rs`.
+    *   Commit Message: `fix(former_meta): Correctly handle generics in enum variant constructor generation`
 
 *   [❌] **Increment 5:** Test Unit Variants within Enums using Named Field Syntax (for other variants)
     *   Commit Message: `test(former): Add manual tests for mixed enums; identify standalone ctor issue`
@@ -98,21 +99,6 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
     *   Commit Message: `test(former): Add compile-fail test for subform_scalar on unit variant`
 
 *   [✅] **Increment 7:** Final Verification of All Unit Variant Tests
-    *   **Target Crate(s):** `former`
-    *   **Goal:** Ensure all *passing* unit variant tests (manual and derive, excluding known broken ones) are active and pass together.
-    *   **Pre-Analysis:** Configured `enum_unit_tests/mod.rs` to enable all test files expected to pass. Known broken derive tests were excluded. `mixed_enum_unit_derive.rs` and its `_only_test.rs` were set to a minimal passing state (static method only).
-    *   **Detailed Plan Steps:**
-        1.  **Configure `module/core/former/tests/inc/enum_unit_tests/mod.rs`:** (Completed)
-            *   Enabled: `unit_variant_manual`, `unit_variant_derive`, `keyword_variant_manual`, `generic_unit_variant_manual`, `mixed_enum_unit_manual`, `mixed_enum_unit_derive` (simplified), `compile_fail`.
-            *   Disabled derive tests for keywords and generics.
-        2.  **Run All Activated `enum_unit_tests`:** (Completed)
-            *   User ran `cargo test --package former --test tests -- --test-threads=1 --nocapture enum_unit_tests`.
-            *   Result: 10 tests passed, 1 (trybuild) failed due to path normalization (expected behavior, actual error was correct). All functional tests passed.
-        3.  **Restore `mixed_enum_unit_derive.rs` and `mixed_enum_unit_only_test.rs`:** (Completed)
-            *   Restored to reflect the identified issue with standalone constructors for `MixedEnum`.
-    *   **Crucial Design Rules:** Standard test execution.
-    *   **Relevant Behavioral Rules:** All previously tested rules for unit variants.
-    *   **Verification Strategy:** `cargo test --package former --test tests -- --test-threads=1 --nocapture enum_unit_tests` passed for the selected configuration (ignoring trybuild path rendering).
     *   Commit Message: `test(former): Verify all working unit variant tests in enum_unit_tests module`
 
 ### Requirements
@@ -121,15 +107,9 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
     *   Ensure the relevant code compiles (`cargo check --package former --tests`).
     *   Run all active tests within the `enum_unit_tests` module (`cargo test --package former --test tests -- --test-threads=1 --nocapture enum_unit_tests`). Analyze logs critically.
 *   **Failure Analysis:** If tests fail, explicitly consider if the failure is due to an **incorrect test expectation** or a **bug in the macro implementation**. Utilize the `#[debug]` attribute on the enum in the `_derive.rs` file to output the generated code. Analyze this output and compare it with the `_manual.rs` implementation to pinpoint the source of the error before proposing fixes.
-*   **Proc Macro Workflow:** Each test-focused increment (1-5) will meticulously follow the Proc Macro Development Workflow:
-    1.  Plan and ensure `_manual.rs` implementation exists and is correct.
-    2.  Plan and ensure `_only_test.rs` shared test logic exists and is correct.
-    3.  Verify manual implementation (`_manual.rs` + `_only_test.rs`) passes.
-    4.  Plan and ensure `_derive.rs` macro invocation site exists.
-    5.  If `_derive.rs` tests fail while manual passes, analyze (using `#[debug]` output if helpful) and propose fixes to `former_meta` or the test itself if the expectation is wrong.
-    6.  Verify `_derive.rs` implementation passes.
+*   **Proc Macro Workflow:** Each test-focused increment (1-5) will meticulously follow the Proc Macro Development Workflow.
 *   **No Plan Commits:** This plan file (`-plan.md`) will not be committed to version control.
-*   **Scoped Testing:** Test execution will be limited to the `former` package and specifically the relevant test modules (e.g., `enum_unit_tests`), avoiding full workspace tests.
+*   **Scoped Testing:** Test execution will be limited to the `former` package and specifically the relevant test modules.
 *   **No Clippy:** Clippy checks will not be part of the verification steps.
 
 ## Notes & Insights
@@ -137,5 +117,5 @@ This plan adheres to the following rules for `#[derive(Former)]` on enums:
 *   The "Expected Enum Former Behavior" rules (1a, 2a, 3a, 4a) are central to this plan.
 *   If `_manual.rs` files are missing for existing `_derive.rs`/`_only_test.rs` pairs, their creation will be part of the increment.
 *   **Identified Bug (Increment 3):** `former::Former` derive macro fails to compile when applied to enums with raw keyword identifiers (e.g., `r#fn`) as variants. (NOW FIXED)
-*   **Identified Issue (Increment 4):** `former::Former` derive macro fails to compile for generic enums due to complex trait bound requirements for generic parameters.
+*   **Identified Issue (Increment 4):** `former::Former` derive macro fails to compile for generic enums due to complex trait bound requirements for generic parameters. (NOW FIXED)
 *   **Identified Issue (Increment 5):** `former::Former` derive macro fails to generate standalone constructors for `MixedEnum` when `#[former(standalone_constructors)]` is used.

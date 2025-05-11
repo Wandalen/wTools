@@ -23,8 +23,8 @@
 mod keyword_variant_manual;
 mod keyword_variant_derive; // Known broken
 
-// mod generic_unit_variant_manual;
-// mod generic_unit_variant_derive; // Known broken - attempting fix
+mod generic_unit_variant_manual;
+mod generic_unit_variant_derive; // Known broken - attempting fix
 
 // mod mixed_enum_unit_manual;
 // mod mixed_enum_unit_derive; // Configured to test only static method for SimpleUnit

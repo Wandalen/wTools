@@ -7,23 +7,23 @@ use super::*;
 pub enum GenericOption<T>
 {
   Value(T),
-  UnitNone,
+  NoValue, // Renamed from UnitNone
 }
 
 impl<T> GenericOption<T>
 {
   #[inline(always)]
-  pub fn unit_none() -> Self
+  pub fn no_value() -> Self // Renamed from unit_none
   {
-    Self::UnitNone
+    Self::NoValue // Renamed from UnitNone
   }
 }
 
 // Standalone constructor
 #[inline(always)]
-pub fn unit_none<T>() -> GenericOption<T>
+pub fn no_value<T>() -> GenericOption<T> // Renamed from unit_none
 {
-  GenericOption::<T>::UnitNone
+  GenericOption::<T>::NoValue // Renamed from UnitNone
 }
 
 include!("generic_unit_variant_only_test.rs");
