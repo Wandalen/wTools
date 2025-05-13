@@ -5,7 +5,7 @@ use macro_tools::
   diag, // For diag::return_syn_err!
   generic_params::GenericsRef, // For enhanced generics handling
   ident, // For proposed ident::new_ident_from_cased_str
-  tokens::qt, // For qt! macro, if preferred over quote::quote!
+  qt, // For qt! macro, if preferred over quote::quote!
   syn,
   quote::quote_spanned, // Keep for specific span control if needed, or replace with qt!
 };

@@ -151,15 +151,49 @@
     *   Test Matrix: Not applicable for this refactoring increment directly, but existing tests cover behavior.
     *   Commit Message: `refactor(former_meta): Improve unit variant handling using macro_tools`
 
-*   [⚫] **Increment 6: Implement Generalizations (New Utilities in `macro_tools`)**
+*   [⏳] **Increment 6: Implement Generalizations (New Utilities in `macro_tools`)**
     *   Target Crate(s): `macro_tools`
-    *   Pre-Analysis: Review the approved new utilities for `macro_tools` from Increment 4.
-    *   Detailed Plan Step 1: Implement the new general-purpose utilities in the appropriate modules within `macro_tools/src/`.
-    *   Detailed Plan Step 2: Add comprehensive unit tests for these new utilities within `macro_tools/tests/inc/`. Each new public function/method should have corresponding tests.
-    *   Detailed Plan Step 3: Update `macro_tools/src/lib.rs` and relevant module files (`mod.rs`) to correctly export the new utilities under the appropriate namespaces (`own`, `orphan`, `exposed`, `prelude`).
-    *   Detailed Plan Step 4: Add clear ///doc comments for all new public items in `macro_tools`.
-    *   Crucial Design Rules: [Traits: Encourage Modular Design], [Visibility: Keep Implementation Details Private], [Comments and Documentation].
-    *   Verification Strategy: User applies changes. `cargo test --package macro_tools` must pass. `cargo doc --package macro_tools --no-deps` should build successfully.
+    *   Pre-Analysis: Review the approved new utilities for `macro_tools` from Increment 4. These are:
+        1.  `macro_tools::ident::new_ident_from_cased_str`
+        2.  `macro_tools::generic_params::GenericsRef` enhanced methods:
+            *   `impl_generics_tokens_if_any()`
+            *   `ty_generics_tokens_if_any()`
+            *   `where_clause_tokens_if_any()`
+            *   `type_path_tokens_if_any()`
+            *   (And the conceptual private helper `split_for_impl_syn_components` or equivalent logic to access decomposed generic parts).
+    *   Detailed Plan Step 1: Implement these utilities in `module/core/macro_tools/src/ident.rs` and `module/core/macro_tools/src/generic_params.rs`.
+    *   Detailed Plan Step 2: Add comprehensive unit tests for these new utilities. This will involve creating new test files or extending existing ones in `module/core/macro_tools/tests/inc/` (e.g., a new `ident_general_tests.rs`, `generic_params_ref_tests.rs` or similar, and updating `module/core/macro_tools/tests/inc/mod.rs`).
+    *   Detailed Plan Step 3: Update `module/core/macro_tools/src/lib.rs` and relevant module files (`ident.rs`, `generic_params.rs` themselves if they define `pub` items, or their parent `mod.rs` if they are submodules) to correctly export the new public utilities.
+    *   Detailed Plan Step 4: Add clear `///doc` comments for all new public items in `macro_tools`.
+    *   Crucial Design Rules: [Traits: Encourage Modular Design], [Visibility: Keep Implementation Details Private], [Comments and Documentation], [Testing: Plan with a Test Matrix When Writing Tests].
+    *   Relevant Behavior Rules: N/A directly, but API design should be robust and adhere to Rust conventions.
+    *   Verification Strategy:
+        *   User applies changes to `macro_tools`.
+        *   `cargo check --package macro_tools` must pass.
+        *   `cargo test --package macro_tools` must pass.
+        *   `cargo doc --package macro_tools --no-deps` should build successfully.
+        *   `cargo clippy --package macro_tools --all-targets -- -D warnings` should pass.
+    *   Test Matrix:
+        *   **For `new_ident_from_cased_str` (in `macro_tools::ident`):**
+            *   ID: T6.1, Input: (`"normal_ident"`, `span`, `false`), Expected: `Ok(syn::Ident::new("normal_ident", span))`
+            *   ID: T6.2, Input: (`"fn"`, `span`, `false`), Expected: `Ok(syn::Ident::new_raw("fn", span))` (keyword becomes raw)
+            *   ID: T6.3, Input: (`"fn"`, `span`, `true`), Expected: `Ok(syn::Ident::new_raw("fn", span))` (original raw, cased is keyword)
+            *   ID: T6.4, Input: (`"my_raw_ident"`, `span`, `true`), Expected: `Ok(syn::Ident::new_raw("my_raw_ident", span))` (original raw, cased not keyword)
+            *   ID: T6.5, Input: (`""`, `span`, `false`), Expected: `Err(_)` (empty string)
+            *   ID: T6.6, Input: (`"with space"`, `span`, `false`), Expected: `Err(_)` (invalid ident chars)
+            *   ID: T6.7, Input: (`"ValidIdent"`, `span`, `false`), Expected: `Ok(syn::Ident::new("ValidIdent", span))` (function assumes input is already cased as desired for the ident name itself, only keyword/raw status is handled).
+        *   **For `GenericsRef` methods (in `macro_tools::generic_params`):**
+            *   (Setup: `let generics_std: syn::Generics = syn::parse_quote! { <T: Display + 'a, 'a, const N: usize> where T: Debug > };`)
+            *   (Setup: `let generics_empty: syn::Generics = syn::parse_quote! { };`)
+            *   (Setup: `let enum_name: syn::Ident = syn::parse_quote! { MyEnum };`)
+            *   ID: T6.8 (`impl_generics_tokens_if_any` with `generics_std`): Expected: `Ok(quote!( <T: Display + 'a, 'a, const N: usize> ))`
+            *   ID: T6.9 (`impl_generics_tokens_if_any` with `generics_empty`): Expected: `Ok(quote!( ))`
+            *   ID: T6.10 (`ty_generics_tokens_if_any` with `generics_std`): Expected: `Ok(quote!( <T, 'a, N> ))`
+            *   ID: T6.11 (`ty_generics_tokens_if_any` with `generics_empty`): Expected: `Ok(quote!( ))`
+            *   ID: T6.12 (`where_clause_tokens_if_any` with `generics_std`): Expected: `Ok(quote!( where T: Debug ))`
+            *   ID: T6.13 (`where_clause_tokens_if_any` with `generics_empty`): Expected: `Ok(quote!( ))`
+            *   ID: T6.14 (`type_path_tokens_if_any` with `generics_std`, `enum_name`): Expected: `Ok(quote!( MyEnum::<T, 'a, N> ))`
+            *   ID: T6.15 (`type_path_tokens_if_any` with `generics_empty`, `enum_name`): Expected: `Ok(quote!( MyEnum ))`
     *   Commit Message: `feat(macro_tools): Add new utilities generalized from former_meta enum handling`
 
 *   [⚫] **Increment 7: Final Verification and Documentation Update**
