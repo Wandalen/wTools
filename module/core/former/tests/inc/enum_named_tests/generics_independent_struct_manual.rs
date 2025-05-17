@@ -1,3 +1,23 @@
+//! Purpose: Provides a hand-written implementation of the `Former` pattern's former builder for a
+//! named (struct-like) variant (`V1`) within a generic enum (`EnumG6<T>`), where the variant
+//! contains a field with an independent concrete generic type (`InnerG6<TypeForU>`). This file
+//! demonstrates the manual implementation corresponding to the derived behavior, showing how to
+//! manually create the implicit former infrastructure and the static method.
+//!
+//! Coverage:
+//! - Rule 3g (Struct + Multi-Field + Default): Manually implements the static method `v_1()` which returns a former builder for the variant.
+//! - Rule 4b (Option 2 Logic): Manually implements the implicit former's components (Storage, DefinitionTypes, Definition, Former, End) and the `FormingEnd` trait, demonstrating the subformer mechanism in the context of independent generics.
+//!
+//! Test Relevance/Acceptance Criteria:
+//! - Defines a generic enum `EnumG6<T: BoundA>` with a named variant `V1 { inner: InnerG6<TypeForU>, flag: bool, _phantom_t: PhantomData<T> }`.
+//! - Defines the inner struct `InnerG6<U: BoundB>` which also derives `Former`.
+//! - Defines dummy bounds (`BoundA`, `BoundB`) and concrete types (`TypeForT`, `TypeForU`) in the included test file.
+//! - Provides hand-written implementations for the implicit former's components (`EnumG6V1FormerStorage`, `EnumG6V1FormerDefinitionTypes`, etc.) and the `FormingEnd` trait for `EnumG6V1End`.
+//! - Implements the static method `EnumG6::<T>::v_1()` which returns the manual former builder.
+//! - Includes shared test logic from `generics_independent_struct_only_test.rs`.
+//! - The included tests call the manually implemented static method `EnumG6::<TypeForT>::v_1()`, use the returned former's setters (`.inner()`, `.flag()`), and call `.form()`.
+//! - Asserts that the resulting enum instances match manually constructed expected values. This verifies that the manual implementation correctly provides a former builder that handles fields with independent concrete generic types and non-generic fields within a generic enum.
+
 // File: module/core/former/tests/inc/former_enum_tests/generics_independent_struct_manual.rs
 
 //! # Manual Test: Independent Generics in Struct Variants
@@ -53,7 +73,6 @@ pub enum EnumG6< T : BoundA > // BoundA required by the enum
 }
 
 // --- Manual IMPLICIT Former Implementation for Variant V1 ---
-
 // Storage for V1's fields
 #[ derive( Debug, Default ) ]
 pub struct EnumG6V1FormerStorage< T : BoundA > // Needs enum's bound

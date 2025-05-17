@@ -1,3 +1,22 @@
+//! Purpose: Tests the `#[derive(Former)]` macro's generation of a former builder for a named
+//! (struct-like) variant (`V1`) within a generic enum (`EnumG6<T>`), where the variant contains
+//! a field with an independent concrete generic type (`InnerG6<TypeForU>`). This file focuses on
+//! verifying the derive-based implementation's handling of independent generics and the generation
+//! of appropriate setters in the implicit former.
+//!
+//! Coverage:
+//! - Rule 3g (Struct + Multi-Field + Default): Verifies that for a named variant without specific attributes, the derived constructor is a former builder (`v_1()` returns a former).
+//! - Rule 4b (Option 2 Logic): Demonstrates the usage of the former builder's setters (`.inner()`, `.flag()`) and `.form()` method, verifying the subformer mechanism in the context of independent generics.
+//!
+//! Test Relevance/Acceptance Criteria:
+//! - Defines a generic enum `EnumG6<T: BoundA>` with a named variant `V1 { inner: InnerG6<TypeForU>, flag: bool, _phantom_t: PhantomData<T> }`.
+//! - Defines the inner struct `InnerG6<U: BoundB>` which also derives `Former`.
+//! - Defines dummy bounds (`BoundA`, `BoundB`) and concrete types (`TypeForT`, `TypeForU`) in the included test file.
+//! - Applies `#[derive(Former)]` to both `EnumG6` and `InnerG6`.
+//! - Includes shared test logic from `generics_independent_struct_only_test.rs`.
+//! - The included tests call the derived static method `EnumG6::<TypeForT>::v_1()`, use the returned former's setters (`.inner()`, `.flag()`), and call `.form()`.
+//! - Asserts that the resulting enum instances match manually constructed expected values. This verifies that the derived former builder correctly handles fields with independent concrete generic types and non-generic fields within a generic enum.
+
 // File: module/core/former/tests/inc/former_enum_tests/generics_independent_struct_derive.rs
 
 //! # Derive Test: Independent Generics in Struct Variants

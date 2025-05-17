@@ -16,79 +16,88 @@ use macro_tools::
 use component_model_types::{ Assign, OptionExt };
 
 /// Represents the attributes of a struct, including storage fields, mutator, perform, and standalone constructor attributes. // <<< Updated doc
-#[ derive( Debug, Default ) ]
+#[ derive( Debug ) ] // Removed Default from derive
 pub struct ItemAttributes
 {
   /// Optional attribute for storage-specific fields.
-  /// This field is used to specify fields that should be part of the storage but not the final formed structure.
   pub storage_fields : Option< AttributeStorageFields >,
-
   /// Attribute for customizing the mutation process in a forming operation.
-  /// The `mutator` attribute allows for specifying whether a custom mutator should be used or if a sketch should be provided as a hint.
   pub mutator : AttributeMutator,
-
   /// Optional attribute for specifying a method to call after forming.
-  /// This attribute can hold information about a method that should be invoked after the form operation is complete.
   pub perform : Option< AttributePerform >,
-
-  /// Optional attribute to enable generation of standalone constructor functions. // <<< Added field
+  /// Optional attribute to enable generation of standalone constructor functions.
   pub standalone_constructors : AttributePropertyStandaloneConstructors,
+  /// Optional attribute to enable debug output from the macro.
+  pub debug : AttributePropertyDebug, // Added debug field
+}
+
+// Default impl needs to include the new debug field
+impl Default for ItemAttributes {
+    fn default() -> Self {
+        Self {
+            storage_fields: Default::default(),
+            mutator: Default::default(),
+            perform: Default::default(),
+            standalone_constructors: Default::default(),
+            debug: Default::default(), // Initialize debug
+        }
+    }
 }
 
 impl ItemAttributes
 {
-
   /// Parses attributes from an iterator.
-  pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
+  /// This function now expects to find #[former(debug, standalone_constructors, ...)]
+  /// and also handles top-level #[storage_fields(...)], #[mutator(...)], #[perform(...)]
+  pub fn from_attrs< 'a >( attrs_iter : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
   {
     let mut result = Self::default();
+    // let mut former_attr_processed = false; // Flag to check if #[former(...)] was processed // REMOVED
 
-    let error = | attr : &syn::Attribute | -> syn::Error
-    {
-      let known_attributes = ct::concatcp!
-      (
-        "Known attirbutes are : ",
-        "debug",
-        ", ", AttributeStorageFields::KEYWORD,
-        ", ", AttributeMutator::KEYWORD,
-        ", ", AttributePerform::KEYWORD,
-        ", ", AttributePropertyStandaloneConstructors::KEYWORD, // <<< Added keyword
-        ".",
-      );
-      syn_err!
-      (
-        attr,
-        "Expects an attribute of format '#[ attribute( key1 = val1, key2 = val2 ) ]'\n  {known_attributes}\n  But got: '{}'",
-        qt!{ #attr }
-      )
-    };
+    for attr in attrs_iter {
+        let path = attr.path();
+        if path.is_ident("former") {
+            // former_attr_processed = true; // Mark that we found and processed #[former] // REMOVED
+            match &attr.meta {
+                syn::Meta::List(meta_list) => {
+                    let tokens_inside_former = meta_list.tokens.clone();
+                    // panic!("DEBUG PANIC: Inside #[former] parsing. Tokens: '{}'", tokens_inside_former.to_string());
 
-    for attr in attrs
-    {
+                    // Use the Parse impl for ItemAttributes to parse contents of #[former(...)]
+                    let parsed_former_attrs = syn::parse2::<ItemAttributes>(tokens_inside_former)?;
 
-      let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
-      let key_str = format!( "{key_ident}" );
+                    // Temporary panic to see what was parsed by ItemAttributes::parse
+                    // panic!("DEBUG PANIC: Parsed inner attributes. Debug: {:?}, Standalone: {:?}", parsed_former_attrs.debug.is_some(), parsed_former_attrs.standalone_constructors.is_some());
 
-      // attributes does not have to be known
-      // if attr::is_standard( &key_str )
-      // {
-      //   continue;
-      // }
-
-      match key_str.as_ref()
-      {
-        AttributeStorageFields::KEYWORD => result.assign( AttributeStorageFields::from_meta( attr )? ),
-        AttributeMutator::KEYWORD => result.assign( AttributeMutator::from_meta( attr )? ),
-        AttributePerform::KEYWORD => result.assign( AttributePerform::from_meta( attr )? ),
-        // <<< Added case for standalone_constructors
-        AttributePropertyStandaloneConstructors::KEYWORD => result.assign( AttributePropertyStandaloneConstructors::from( true ) ),
-        // "debug" => {} // Assuming debug is handled elsewhere or implicitly
-        _ => {},
-        // _ => return Err( error( attr ) ), // Allow unknown attributes
-      }
+                    // Assign only the flags that are meant to be inside #[former]
+                    result.debug.assign(parsed_former_attrs.debug);
+                    result.standalone_constructors.assign(parsed_former_attrs.standalone_constructors);
+                    // Note: This assumes other fields like storage_fields, mutator, perform
+                    // are NOT set via #[former(storage_fields=...)], but by their own top-level attributes.
+                    // If they can also be in #[former], the Parse impl for ItemAttributes needs to be more comprehensive.
+                }
+                _ => return_syn_err!(attr, "Expected #[former(...)] to be a list attribute like #[former(debug)]"),
+            }
+        } else if path.is_ident(AttributeStorageFields::KEYWORD) {
+            result.assign(AttributeStorageFields::from_meta(attr)?);
+        } else if path.is_ident(AttributeMutator::KEYWORD) {
+            result.assign(AttributeMutator::from_meta(attr)?);
+        } else if path.is_ident(AttributePerform::KEYWORD) {
+            result.assign(AttributePerform::from_meta(attr)?);
+        } else if path.is_ident(AttributePropertyDebug::KEYWORD) { // Handle top-level #[debug]
+            result.debug.assign(AttributePropertyDebug::from(true));
+        } else if path.is_ident(AttributePropertyStandaloneConstructors::KEYWORD) { // Handle top-level #[standalone_constructors]
+            result.standalone_constructors.assign(AttributePropertyStandaloneConstructors::from(true));
+        }
+        // Other attributes (like derive, allow, etc.) are ignored.
     }
 
-    Ok( result )
+    // After processing all attributes, former_attr_processed indicates if #[former()] was seen.
+    // The result.{debug/standalone_constructors} flags are set either by parsing #[former(...)]
+    // or by parsing top-level #[debug] / #[standalone_constructors].
+    // No further panics needed here as the flags should be correctly set now.
+
+    Ok(result)
   }
 
   ///
@@ -200,7 +209,6 @@ where
   }
 }
 
-// <<< Added Assign impl for the new property
 impl< IntoT > Assign< AttributePropertyStandaloneConstructors, IntoT > for ItemAttributes
 where
   IntoT : Into< AttributePropertyStandaloneConstructors >,
@@ -213,6 +221,18 @@ where
   }
 }
 
+// Added Assign impl for AttributePropertyDebug
+impl< IntoT > Assign< AttributePropertyDebug, IntoT > for ItemAttributes
+where
+  IntoT : Into< AttributePropertyDebug >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.debug.assign( component );
+  }
+}
 
 ///
 /// Attribute to hold storage-specific fields.
@@ -411,6 +431,44 @@ impl syn::parse::Parse for AttributeMutator
 
     Ok( result )
   }
+}
+
+// Add syn::parse::Parse for ItemAttributes to parse contents of #[former(...)]
+// This simplified version only looks for `debug` and `standalone_constructors` as flags.
+impl syn::parse::Parse for ItemAttributes {
+    fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
+        let mut result = Self {
+            // Initialize fields that are NOT parsed from inside #[former()] here
+            // to their defaults, as this Parse impl is only for former's args.
+            storage_fields: None,
+            mutator: Default::default(),
+            perform: None,
+            // These will be overwritten if found
+            standalone_constructors: Default::default(),
+            debug: Default::default(),
+        };
+
+        while !input.is_empty() {
+            let key_ident: syn::Ident = input.parse()?;
+            let key_str = key_ident.to_string();
+
+            match key_str.as_str() {
+                AttributePropertyDebug::KEYWORD => result.debug.assign(AttributePropertyDebug::from(true)),
+                AttributePropertyStandaloneConstructors::KEYWORD => result.standalone_constructors.assign(AttributePropertyStandaloneConstructors::from(true)),
+                // Add other #[former(...)] keys here if needed, e.g. former(storage = ...), former(perform = ...)
+                // For now, other keys inside #[former(...)] are errors.
+                _ => return_syn_err!(key_ident, "Unknown key '{}' for #[former(...)] attribute. Expected 'debug' or 'standalone_constructors'.", key_str),
+            }
+
+            if input.peek(syn::Token![,]) {
+                input.parse::<syn::Token![,]>()?;
+            } else if !input.is_empty() {
+                // If there's more input but no comma, it's a syntax error
+                return Err(input.error("Expected comma between #[former(...)] arguments or end of arguments."));
+            }
+        }
+        Ok(result)
+    }
 }
 
 ///

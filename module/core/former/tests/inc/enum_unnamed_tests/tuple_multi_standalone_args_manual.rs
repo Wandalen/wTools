@@ -1,44 +1,37 @@
+//! Purpose: Provides a hand-written implementation of the `Former` pattern's standalone scalar constructor
+//! for a multi-field tuple variant (`Variant(u32, String)`) within an enum that has
+//! `#[standalone_constructors]` and fields with `#[arg_for_constructor]`. This file focuses on
+//! demonstrating the manual implementation corresponding to the derived behavior.
+//!
+//! Coverage:
+//! - Rule 4a (#[standalone_constructors]): Manually implements the top-level constructor function (`variant`).
+//! - Rule 4b (Option 2 Logic): Manually implements the logic for a scalar standalone constructor that takes arguments for all fields in a multi-field tuple variant.
+//! - Rule 3f (Tuple + Multi-Field + Default): Implicitly relevant as `Variant` is a multi-field tuple variant.
+//!
+//! Test Relevance/Acceptance Criteria:
+//! - Defines the `TestEnum` enum with the `Variant(u32, String)` variant.
+//! - Provides a hand-written `variant` function that takes `u32` and `String` as arguments and returns `TestEnum::Variant(u32, String)`. This mimics the behavior expected when `#[standalone_constructors]` is on the enum and `#[arg_for_constructor]` is on all fields of the variant.
+//! - Includes shared test logic from `tuple_multi_standalone_args_only_test.rs`.
+//! - The included test calls this manually implemented standalone constructor and asserts that the returned enum instance matches a manually constructed `TestEnum::Variant(value1, value2)`. This verifies the manual implementation of the scalar standalone constructor with field arguments.
+
 // File: module/core/former/tests/inc/former_enum_tests/tuple_multi_standalone_args_manual.rs
 
-//! # Manual Test: #[standalone_constructors] and #[arg_for_constructor] on Multi-Field Tuple Variants (Returns Self)
-//!
-//! This file provides a manual implementation of the standalone constructor that takes arguments
-//! and returns Self for an enum (`TestEnumMultiStandaloneArgs`) with a multi-field tuple variant
-//! (`VariantMultiStandaloneArgs(i32, bool)`), demonstrating the expected behavior under
-//! `#[standalone_constructors]` with `#[arg_for_constructor]` on the fields.
-//!
-//! ## Purpose:
-//!
-//! - To serve as a reference implementation demonstrating how the standalone constructor should
-//!   behave for multi-field tuple variants when it takes arguments and returns Self.
-//! - To manually implement the standalone constructor function (`variant_multi_standalone_args`).
-//! - To validate the logic used by the `#[derive(Former)]` macro by comparing its generated
-//!   code's behavior against this manual implementation using the shared tests in
-//!   `tuple_multi_standalone_args_only_test.rs`.
-
-// use super::*; // Imports testing infrastructure
-
-// === Enum Definition ===
-
-/// Enum for manual testing of #[standalone_constructors] with #[arg_for_constructor] on multi-field tuple variants.
-#[ derive( Debug, PartialEq, Clone ) ]
-pub enum TestEnumMultiStandaloneArgs // Consistent name
+// Define the enum without the derive macro
+#[ derive( Debug, PartialEq ) ]
+pub enum TestEnum
 {
-  /// A multi-field tuple variant with #[standalone_constructors] and #[arg_for_constructor].
-  VariantMultiStandaloneArgs( i32, bool ), // Multi-field tuple variant
+  Variant( u32, String ),
 }
 
-// === Manual implementation of static methods on TestEnumMultiStandaloneArgs ===
-impl TestEnumMultiStandaloneArgs
+// Manually implement the standalone constructor for the variant
+impl TestEnum
 {
-  /// Manually implemented standalone constructor for the VariantMultiStandaloneArgs variant.
-  /// Takes arguments for fields marked with #[arg_for_constructor] and returns Self.
+  /// Manually implemented standalone constructor for the Variant variant (scalar style with args).
   #[ inline( always ) ]
-  pub fn variant_multi_standalone_args( field1 : impl Into< i32 >, field2 : impl Into< bool > ) -> Self
+  pub fn variant( value1 : u32, value2 : String ) -> Self
   {
-    Self::VariantMultiStandaloneArgs( field1.into(), field2.into() )
+    Self::Variant( value1, value2 )
   }
 }
 
-// === Include the Test Logic ===
 include!( "tuple_multi_standalone_args_only_test.rs" );

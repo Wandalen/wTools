@@ -17,14 +17,17 @@ pub fn former_for_struct
   ast : &syn::DeriveInput,
   _data_struct : &syn::DataStruct,
   original_input : &macro_tools::proc_macro2::TokenStream,
-  _has_debug : bool,
+  item_attributes : &ItemAttributes, // Changed: Accept parsed ItemAttributes
+  _has_debug : bool, // This is the correctly determined has_debug - now unused locally
 ) -> Result< TokenStream >
 {
   use macro_tools::IntoGenericArgs;
   use convert_case::{ Case, Casing }; // Added for snake_case naming // Space before ;
 
-  // Parse struct-level attributes like `storage_fields`, `mutator`, `perform`.
-  let struct_attrs = ItemAttributes::from_attrs( ast.attrs.iter() )?;
+  // Use the passed-in item_attributes
+  let struct_attrs = item_attributes;
+  // The _has_debug parameter is now replaced by the has_debug bool,
+  // and struct_attrs.debug.is_some() can also be used if needed locally.
 
   /* names: Generate identifiers for the Former components based on the struct name. */
   let vis = &ast.vis; // Visibility of the original struct.

@@ -1,41 +1,26 @@
-// File: module/core/former/tests/inc/former_enum_tests/tuple_multi_standalone_args_derive.rs
-
-//! # Derive Test: #[standalone_constructors] and #[arg_for_constructor] on Multi-Field Tuple Variants (Returns Self)
+//! Purpose: Tests the `#[derive(Former)]` macro's generation of a standalone scalar constructor
+//! for a multi-field tuple variant when the enum has `#[standalone_constructors]` and all fields
+//! within the variant have `#[arg_for_constructor]`. This file focuses on verifying the derive-based implementation.
 //!
-//! This test file verifies the `#[derive(Former)]` macro's handling of enums
-//! where a multi-field tuple variant is marked with `#[standalone_constructors]`
-//! (on the enum) and `#[arg_for_constructor]` on the fields.
+//! Coverage:
+//! - Rule 4a (#[standalone_constructors]): Verifies the generation of the top-level constructor function (`variant`).
+//! - Rule 4b (Option 2 Logic): Verifies that when all fields in a multi-field tuple variant have `#[arg_for_constructor]`, the standalone constructor takes arguments for those fields and returns the final enum instance (scalar style).
+//! - Rule 3f (Tuple + Multi-Field + Default): Implicitly relevant as `Variant` is a multi-field tuple variant.
 //!
-//! ## Purpose:
-//!
-//! - **Verify Standalone Direct Constructor Generation:** Ensure that `#[derive(Former)]` generates a standalone
-//!   constructor function (e.g., `enum_name::variant_name(T1, T2, ...) -> Enum`) for multi-field
-//!   tuple variants under `#[standalone_constructors]` when fields *are* marked with `#[arg_for_constructor]`.
-//! - **Verify Argument Handling in Constructor:** Confirm that the generated constructor correctly
-//!   accepts arguments via `impl Into<...>` for each field marked with `#[arg_for_constructor]`.
-//! - It uses the shared test logic from `tuple_multi_standalone_args_only_test.rs`.
+//! Test Relevance/Acceptance Criteria:
+//! - Defines an enum `TestEnum` with a multi-field tuple variant `Variant(u32, String)`.
+//! - Applies `#[derive(Former)]` and `#[standalone_constructors]` to the enum.
+//! - Applies `#[arg_for_constructor]` to both fields within the `Variant` variant.
+//! - Includes shared test logic from `tuple_multi_standalone_args_only_test.rs`.
+//! - The included test calls the derived standalone constructor function `variant(value1, value2)` and asserts that the returned enum instance matches a manually constructed `TestEnum::Variant(value1, value2)`. This verifies that the standalone constructor is generated correctly as a scalar function when all fields have `#[arg_for_constructor]`.
 
-#[ allow( unused_imports ) ]
-use ::former::prelude::*;
-use ::former::Former; // Import derive macro
+use former::Former;
 
-// === Enum Definition ===
-
-/// Enum using derive for #[standalone_constructors] with #[arg_for_constructor] on multi-field tuple variants.
-#[ derive( Debug, PartialEq, Clone, Former ) ]
-#[ standalone_constructors ] // Enable standalone constructors
-// #[ debug ] // Uncomment to see generated code later
-pub enum TestEnumMultiStandaloneArgs // Consistent name
+#[ derive( Former, Debug, PartialEq ) ]
+#[ former( standalone_constructors ) ]
+pub enum TestEnum
 {
-  /// A multi-field tuple variant with #[standalone_constructors] and #[arg_for_constructor].
-  VariantMultiStandaloneArgs // Consistent name
-  (
-    #[ arg_for_constructor ] // Mark field as constructor arg
-    i32,
-    #[ arg_for_constructor ] // Mark field as constructor arg
-    bool,
-  ),
+  Variant( #[ arg_for_constructor ] u32, #[ arg_for_constructor ] String ),
 }
 
-// === Include Test Logic ===
 include!( "tuple_multi_standalone_args_only_test.rs" );

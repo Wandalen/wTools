@@ -1,32 +1,22 @@
-// File: module/core/former/tests/inc/former_enum_tests/tuple_multi_scalar_derive.rs
-
-//! # Derive Test: #[scalar] Attribute on Multi-Field Tuple Variants
+//! Purpose: Tests the `#[derive(Former)]` macro's generation of a scalar constructor for a multi-field tuple variant when it is explicitly marked with the `#[scalar]` attribute. This file focuses on verifying the derive-based implementation.
 //!
-//! This test file verifies the `#[derive(Former)]` macro's handling of enums
-//! with multi-field tuple variants when explicitly marked with `#[scalar]`.
+//! Coverage:
+//! - Rule 1f (Tuple + Multi-Field + `#[scalar]`): Verifies that for a multi-field tuple variant with the `#[scalar]` attribute, the derived constructor is scalar, taking arguments for each field and returning the enum instance.
 //!
-//! ## Purpose:
-//!
-//! - To ensure the derive macro generates a direct static constructor method for
-//!   multi-field tuple variants marked with `#[scalar]`, correctly handling multiple fields
-//!   and the `impl Into<...>` signatures.
-//! - It uses the shared test logic from `tuple_multi_scalar_only_test.rs`.
+//! Test Relevance/Acceptance Criteria:
+//! - Defines an enum `TestEnum` with a multi-field tuple variant `Variant(u32, String)`.
+//! - Applies `#[derive(Former)]` to the enum.
+//! - Applies `#[scalar]` to the `Variant` variant.
+//! - Includes shared test logic from `tuple_multi_scalar_only_test.rs`.
+//! - The included test calls the derived static method `TestEnum::variant(value1, value2)` and asserts that the returned enum instance matches a manually constructed `TestEnum::Variant(value1, value2)`. This verifies that the `#[scalar]` attribute forces scalar behavior for a multi-field tuple variant.
 
-// use super::*; // Imports testing infrastructure
-use former::Former; // Import derive macro
+use former::Former;
 
-// === Enum Definition ===
-
-/// Enum using derive for #[scalar] multi-field tuple variant behavior.
-#[ derive( Debug, PartialEq, Clone, Former ) ]
-// #[ debug ] // Uncomment to see generated code later
-pub enum TestEnumMultiScalar // Consistent name
+#[ derive( Former, Debug, PartialEq ) ]
+pub enum TestEnum
 {
-  /// A multi-field tuple variant with #[scalar].
-  #[ scalar ] // Explicitly request scalar constructor
-  VariantMultiScalar( i32, bool ), // Multi-field tuple variant
+  #[ scalar ]
+  Variant( u32, String ),
 }
 
-// === Include Test Logic ===
-// This file contains the actual #[ test ] functions.
 include!( "tuple_multi_scalar_only_test.rs" );

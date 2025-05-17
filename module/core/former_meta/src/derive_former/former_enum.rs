@@ -154,14 +154,23 @@ pub(super) fn former_for_enum
   ast : &syn::DeriveInput,
   data_enum : &syn::DataEnum,
   original_input : &TokenStream,
+  item_attributes : &ItemAttributes, // Changed: Accept parsed ItemAttributes
   has_debug : bool
 ) -> Result< TokenStream >
 {
   let enum_name = &ast.ident;
   let vis = &ast.vis;
   let generics = &ast.generics;
-  let struct_attrs = ItemAttributes::from_attrs( ast.attrs.iter() )?;
+  // let struct_attrs = ItemAttributes::from_attrs( ast.attrs.iter() )?; // REMOVED: Use passed item_attributes
+  let struct_attrs = item_attributes; // Use the passed-in item_attributes
   // qqq : Ensure ItemAttributes and FieldAttributes are accessible/imported
+
+  // Diagnostic print for has_debug status (has_debug is now correctly determined by the caller)
+  if has_debug {
+    diag::report_print("DEBUG former_for_enum: has_debug is TRUE at start (passed in).", original_input, &quote!{ struct DebugFlagWasTrue; });
+  } else {
+    diag::report_print("DEBUG former_for_enum: has_debug is FALSE at start (passed in).", original_input, &quote!{ struct DebugFlagWasFalse; });
+  }
 
   let mut methods = Vec::new();
   let mut end_impls = Vec::new();
@@ -314,8 +323,8 @@ pub(super) fn former_for_enum
       }
 
       // Standalone constructors and end impls should be placed here, outside the impl block.
-      // #( #standalone_constructors )*
-      // #( #end_impls )*
+      #( #standalone_constructors )*
+      #( #end_impls )* // Uncommented to emit VariantFormer definitions
   };
 
   if has_debug

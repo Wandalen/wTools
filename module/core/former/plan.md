@@ -1,522 +1,224 @@
-# Project Plan: Review and Document Enum Tests in `former` Crate
+# Project Plan: Refactor Enum Unit Variant Handling in `former`
 
-## Goal
-*   Systematically review all **active** (i.e., compiled as part of `cargo check --tests`) enum-related test files within the `former` crate (`module/core/former/tests/inc/enum_*_tests/`).
-*   For each targeted test file:
-    1.  Add a `//! Purpose: ...` comment block.
-    2.  Add a `//! Coverage: ...` comment block.
-    3.  Add a `//! Test Relevance/Acceptance Criteria: ...` comment block.
-*   Ensure all added documentation comments are clear, accurate, and adhere to specified content criteria and Rust documentation best practices.
-*   Ensure all modifications strictly adhere to `code/gen` instructions, Design Rules, and Codestyle Rules.
-*   Structure the work into logical increments, processing one test file or a closely related group of test files (i.e., `_derive.rs`, `_manual.rs`, and their shared `_only_test.rs`) per increment, with each increment having a narrow focus on a specific enum aspect (Unit, Unnamed/Tuple, Named/Struct, or Complex/Mixed).
-*   **Crucially, this plan focuses *only* on adding documentation. Pre-existing test failures or logic errors are out of scope. Changes will only be committed if `cargo check --package former --tests` passes after adding comments.**
+### Goal
+*   Refactor the implementation of `#[derive(Former)]` for **enum unit variants** within the `former_meta` crate.
+*   This refactoring will focus on:
+    1.  Intensively analyzing and integrating reusable components from the `macro_tools` crate into the enum unit variant handling logic (`former_meta/src/derive_former/former_enum/unit_variant_handler.rs`).
+    2.  Analyzing the existing enum unit variant handling logic in `former_meta` to identify and potentially extract generalizable, well-tested utilities into the `macro_tools` crate.
+*   The process will include proposing an initial detailed refactoring solution, critiquing it, and then implementing an improved version.
+*   All changes must strictly adhere to `code/gen` instructions, Design Rules, and Codestyle Rules.
 
-## Relevant Context
-*   **Primary Test Directories:**
-    *   `module/core/former/tests/inc/enum_unit_tests/`
-    *   `module/core/former/tests/inc/enum_unnamed_tests/` (Tuple-like variants)
-    *   `module/core/former/tests/inc/enum_named_tests/` (Struct-like variants with named fields)
-    *   `module/core/former/tests/inc/enum_complex_tests/`
-*   **Module Files to Update (Potentially for review):**
-    *   `module/core/former/tests/inc/enum_unit_tests/mod.rs`
-    *   `module/core/former/tests/inc/enum_unnamed_tests/mod.rs`
-    *   `module/core/former/tests/inc/enum_named_tests/mod.rs`
-    *   `module/core/former/tests/inc/enum_complex_tests/mod.rs`
+### Relevant Context
+*   **Primary Crates for Modification:**
+    *   `module/core/former_meta` (specifically `src/derive_former/former_enum/unit_variant_handler.rs` and potentially `src/derive_former/former_enum.rs`)
+    *   `module/core/macro_tools` (for potential additions and modifications)
+*   **Key `macro_tools` Files for Analysis (Full Analysis in Increment 1):**
+    *   All files within `module/core/macro_tools/src/` including `attr.rs`, `attr_prop.rs`, `diag.rs`, `ident.rs`, `kw.rs`, `generic_params.rs`, `typ.rs`, `item.rs`, `name.rs`, `punctuated.rs`, `quantifier.rs`, `tokens.rs`, etc.
+*   **Key `former_meta` Files for Analysis:**
+    *   `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs`
+    *   `module/core/former_meta/src/derive_former/former_enum.rs` (for context, dispatch, and `EnumVariantHandlerContext`)
+    *   `module/core/former_meta/src/derive_former/field_attrs.rs`
+    *   `module/core/former_meta/src/derive_former/struct_attrs.rs` (for `ItemAttributes` like `standalone_constructors`, `debug`)
 *   **Key Documentation for Reference:**
     *   `module/core/former/Readme.md`
     *   `module/core/former/advanced.md`
-    *   This `plan.md` for the "Expected Enum Former Behavior Rules".
+    *   Existing `plan.md` files for "Expected Enum Former Behavior" rules.
 *   **Workspace:** Yes, this is part of a Cargo workspace.
-*   **Target File Structure:** No major structural changes, primarily adding comments to existing files.
+*   **Other Active Plans:** The refactoring plan for `former_meta` (`former_meta/plan.md`) should be considered, as changes here might affect its assumptions.
 
-### Expected Enum Former Behavior
+### Project Requirements
+*   (This section should be cumulative. Assuming previous project requirements like Rust edition 2021, documentation for public APIs, etc., are still in effect. New project-level requirements identified will be added here.)
+*   **Behavioral Equivalence:** Refactoring must not change the externally observable behavior or the generated code structure of the `Former` macro for enum unit variants, unless explicitly justified by a bug fix or alignment with documented "Expected Enum Former Behavior". Existing tests in the `former` crate for unit variants serve as the primary regression guard.
+*   **`macro_tools` Generalization:** All new or modified code in `macro_tools` must be general-purpose, well-documented, and include unit tests. Utilities should not be overly specific to `former_meta`'s internal implementation details.
+*   **Code Quality:** Code changes should demonstrably improve clarity, maintainability, and reduce redundancy in `unit_variant_handler.rs`.
+*   **Error Reporting:** If `macro_tools` utilities are used for error handling, the quality (clarity, span accuracy) of compiler error messages generated by `former_meta` must be maintained or improved.
+*   **Performance:** The refactoring should not introduce measurable performance regressions in macro expansion time. (Primarily a consideration for complex macros, but good to keep in mind).
+*   **Rule Adherence:** All new and modified code must strictly adhere to the system prompt's Design Rules and Codestyle Rules, overriding existing styles in the repository if they conflict.
+*   **Proc Macro Workflow:** While this is primarily a refactoring task, if any part of the core macro logic generation for unit variants is significantly altered (beyond just using helper functions), the principles of the "Proc Macro: Development Workflow" (e.g., clear separation of concerns, testability) should be respected.
+*   **Verification Scope:** All `cargo` commands for verification (check, test, clippy) **must be scoped to individual packages** (e.g., `cargo test --package former_meta`) unless an increment explicitly plans for workspace-level integration testing as a final step.
 
-This plan adheres to the following rules for `#[derive(Former)]` on enums:
+### Expected Behavior Rules (Enum Unit Variants)
+*   **Rule 1a (Unit + `#[scalar]`):** Generates `Enum::variant() -> Enum`. (Handled by: `unit_variant_handler.rs`)
+*   **Rule 2a (Unit + `#[subform_scalar]`):** Error. (Checked in: `unit_variant_handler.rs`)
+*   **Rule 3a (Unit + Default):** Generates `Enum::variant() -> Enum`. (Handled by: `unit_variant_handler.rs`)
+*   **Rule 4a (`#[standalone_constructors]` on Enum):**
+    *   For unit variants, generates top-level `fn variant_name() -> EnumName` (or `fn enum_name_variant_name() -> EnumName` depending on naming convention for standalone, to be confirmed from existing behavior). The name should be snake_case.
 
-1.  **`#[scalar]` Attribute:**
-    *   **Unit Variant (Rule 1a):** Generates `Enum::variant() -> Enum`. (Handled by: `handle_unit_variant`)
-    *   **Zero-Field Variant (Tuple) (Rule 1b):** Generates `Enum::variant() -> Enum`. (Handled by: `handle_tuple_zero_variant`)
-    *   **Zero-Field Variant (Struct) (Rule 1c):** Generates `Enum::variant() -> Enum`. (Handled by: `handle_struct_zero_variant`)
-    *   **Single-Field Variant (Tuple) (Rule 1d):** Generates `Enum::variant(InnerType) -> Enum`. (Handled by: `handle_tuple_non_zero_variant`)
-    *   **Single-Field Variant (Struct) (Rule 1e):** Generates `Enum::variant { field: InnerType } -> Enum`. (Handled by: `handle_struct_non_zero_variant`)
-    *   **Multi-Field Variant (Tuple) (Rule 1f):** Generates `Enum::variant(T1, T2, ...) -> Enum`. (Handled by: `handle_tuple_non_zero_variant`)
-    *   **Multi-Field Variant (Struct) (Rule 1g):** Generates `Enum::variant { f1: T1, f2: T2, ... } -> Enum`. (Handled by: `handle_struct_non_zero_variant`)
-    *   **Error Cases:** Cannot be combined with `#[subform_scalar]`.
+### Increments
 
-2.  **`#[subform_scalar]` Attribute:**
-    *   **Unit Variant (Rule 2a):** Error. (Checked in: `handle_unit_variant`)
-    *   **Zero-Field Variant (Tuple or Struct) (Rule 2b, 2c):** Error. (Checked in: `handle_tuple_zero_variant`, `handle_struct_zero_variant`)
-    *   **Single-Field Variant (Tuple) (Rule 2d):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Requires the field type to be a path type deriving `Former`. (Handled by: `handle_tuple_non_zero_variant`)
-    *   **Single-Field Variant (Struct) (Rule 2e):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_variant`)
-    *   **Multi-Field Variant (Tuple) (Rule 2f):** Error. Cannot use `subform_scalar` on multi-field tuple variants. (Checked in: `handle_tuple_non_zero_variant`)
-    *   **Multi-Field Variant (Struct) (Rule 2g):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_variant`)
+*   [✅] **Increment 1: Analyze `macro_tools` for `former_meta` (Enum Unit Variants)**
+    *   Target Crate(s): `macro_tools` (read-only), `former_meta` (analysis target)
+    *   Pre-Analysis: The goal is to identify how `macro_tools` can simplify `former_meta`'s unit variant handling. This requires a thorough understanding of `macro_tools` capabilities and the current implementation in `former_meta/src/derive_former/former_enum/unit_variant_handler.rs`. The existing "Notes & Insights" section already provides some initial pointers (e.g., `ident_maybe_raw`, `syn_err!`, `generic_params::decompose`).
+    *   Detailed Plan Step 1: Systematically review each module and public item in `module/core/macro_tools/src/`. This involves using `list_files` to get an accurate list of modules and then conceptually (or with `read_file` if needed for specific complex utilities) understanding their purpose.
+    *   Detailed Plan Step 2: For each identified `macro_tools` utility, assess its direct applicability to simplifying or improving the logic in `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs` and its interaction with `module/core/former_meta/src/derive_former/former_enum.rs` (e.g., `EnumVariantHandlerContext`, attribute parsing). Consider:
+        *   Attribute parsing (`attr.rs`, `attr_prop.rs`): For `#[scalar]`, `#[subform_scalar]` on variants, and `#[standalone_constructors]`, `#[debug]` on the enum.
+        *   Identifier generation/manipulation (`ident.rs`, `name.rs`, `kw.rs`): For constructor names, handling raw identifiers.
+        *   Generic parameter handling (`generic_params.rs`, `generic_args.rs`): For generic enums and their constructors.
+        *   Error reporting (`diag.rs`): For `syn_err!`, `return_syn_err!`.
+        *   Code quoting (`qt!`, `quote!`).
+        *   Type analysis (`typ.rs`): If any type introspection is needed for unit variants (less likely for units).
+    *   Detailed Plan Step 3: **Output (as a textual report in the AI's response, not a file):** Produce a detailed report mapping specific `macro_tools` utilities to concrete code sections or logic patterns in `unit_variant_handler.rs` and `former_enum.rs` (related to unit variants). For each mapping, explain the potential benefit (e.g., "Replace custom ident logic with `ident::ident_maybe_raw`", "Use `AttributePropertyOptionalSingletone` for `#[scalar]` flag"). This report will be the main deliverable of this increment.
+    *   Crucial Design Rules: [Prioritize Reuse and Minimal Change], [Comments and Documentation].
+    *   Relevant Behavior Rules: Rules 1a, 2a, 3a, 4a (to ensure proposed `macro_tools` usage aligns with expected outcomes).
+    *   Verification Strategy: User reviews the detailed analysis report and mapping presented in the AI's response. No code changes, so no compilation or tests.
+    *   Test Matrix: Not applicable for this analysis increment.
+    *   Commit Message: `docs(former_meta): Analyze macro_tools for refactoring unit variant handling`
 
-3.  **Default Behavior (No Attribute):**
-    *   **Unit Variant (Rule 3a):** Generates `Enum::variant() -> Enum`. (Handled by: `handle_unit_variant`)
-    *   **Zero-Field Variant (Tuple) (Rule 3b):** Generates `Enum::variant() -> Enum`. (Handled by: `handle_tuple_zero_variant`)
-    *   **Zero-Field Variant (Struct) (Rule 3c):** Error. Requires `#[scalar]`. (Checked in: `handle_struct_zero_variant`)
-    *   **Single-Field Variant (Tuple) (Rule 3d):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Requires the field type to be a path type deriving `Former`. (Handled by: `handle_tuple_non_zero_variant`)
-    *   **Single-Field Variant (Struct) (Rule 3e):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_variant`)
-    *   **Multi-Field Variant (Tuple) (Rule 3f):** Generates `Enum::variant(Field1Type, Field2Type, ...) -> Enum` (behaves like `#[scalar]`). (Handled by: `handle_tuple_non_zero_variant`)
-    *   **Multi-Field Variant (Struct) (Rule 3g):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_variant`)
+*   [✅] **Increment 2: Analyze `former_meta` (Enum Unit Variants) for `macro_tools` Generalizations**
+    *   Target Crate(s): `former_meta` (read-only), `macro_tools` (analysis target)
+    *   Pre-Analysis: The goal is to identify custom logic in `former_meta`'s unit variant handling that could be generalized and moved to `macro_tools`. This requires careful review of `former_meta/src/derive_former/former_enum/unit_variant_handler.rs` and related context.
+    *   Detailed Plan Step 1: Review `former_meta/src/derive_former/former_enum/unit_variant_handler.rs` and related logic in `former_meta/src/derive_former/former_enum.rs` (e.g., parts of `EnumVariantHandlerContext` or its setup if relevant to unit variants specifically and generalizable). This will involve using `read_file` to examine these files.
+    *   Detailed Plan Step 2: Identify any custom logic, patterns, or helper functions used for unit variant handling that are sufficiently generic and could be beneficial to other procedural macro development if moved to `macro_tools`.
+    *   Detailed Plan Step 3: **Output (as a textual report in the AI's response, not a file):** Document findings as a list of concrete proposals for new utilities or modifications for `macro_tools`. Each proposal must include:
+        *   Proposed function/struct/trait signature.
+        *   Target module within `macro_tools`.
+        *   Clear description of its purpose and generic applicability.
+        *   A brief example of how it would be used.
+    *   Crucial Design Rules: [Traits: Encourage Modular Design], [Visibility: Keep Implementation Details Private].
+    *   Relevant Behavior Rules: N/A for this analysis increment, but proposals should align with general good API design.
+    *   Verification Strategy: User reviews the documented analysis and concrete proposals for `macro_tools` presented in the AI's response. No code changes, so no compilation or tests.
+    *   Test Matrix: Not applicable for this analysis increment.
+    *   Commit Message: `docs(macro_tools): Analyze former_meta unit variant logic for potential generalizations`
 
-4.  **`#[standalone_constructors]` Attribute (Body Level) (Rule 4):**
-    *   **Rule 4a:** Generates top-level constructor functions for each variant (e.g., `my_variant()`).
-    *   **Rule 4b (Option 2 Logic):** Return type depends on `#[arg_for_constructor]` on fields within the variant.
+*   [✅] **Increment 3: Propose Initial Detailed Refactoring Solution for Enum Unit Variants**
+    *   Target Crate(s): `former_meta`, `macro_tools`
+    *   Pre-Analysis: Based on the analyses from Increments 1 and 2, the goal is to draft a detailed initial refactoring plan for `former_meta/src/derive_former/former_enum/unit_variant_handler.rs`. This involves showing how `macro_tools` utilities (existing or proposed in Increment 2) will be used.
+    *   Detailed Plan Step 1: Draft the detailed initial refactoring plan for `former_meta/src/derive_former/former_enum/unit_variant_handler.rs`. This will involve:
+        *   Identifying specific code sections in the current `unit_variant_handler.rs` (read in Increment 2).
+        *   Mapping these sections to the `macro_tools` utilities identified in Increment 1 (e.g., `attr::Attributes::retrieve_optional_singletone_bool`, `diag::return_syn_err!`, `ident::new_ident_from_cased_str` (proposed), `generic_params::GenericsRef` methods (proposed), `tokens::qt!`).
+        *   Showing conceptual "before-and-after" code snippets or detailed pseudo-code.
+    *   Detailed Plan Step 2: **Output (as a textual report in the AI's response, not a file):** For `unit_variant_handler.rs`, provide:
+        *   Conceptual "before-and-after" code snippets (or pseudo-code) demonstrating how `macro_tools` utilities will replace or augment existing logic.
+        *   Clear explanation of changes to data flow or helper function usage.
+    *   Detailed Plan Step 3: **Output (as a textual report in the AI's response, not a file):** For `macro_tools`, provide:
+        *   Finalized signatures and intended module placement for any new utilities proposed in Increment 2 (i.e., `ident::new_ident_from_cased_str` and `generic_params::GenericsRef` helper methods).
+    *   Detailed Plan Step 4: Outline the expected impact on code size, readability, and maintainability in `unit_variant_handler.rs`.
+    *   Detailed Plan Step 5: Briefly assess if this refactoring impacts the `former_meta/plan.md` for splitting large files. (Given `unit_variant_handler.rs` is already relatively small and focused, significant impact is unlikely, but it should be considered).
+    *   Crucial Design Rules: [Prioritize Reuse and Minimal Change], [Code Style: Do Not Reformat Arbitrarily] (when showing existing code), [Comments and Documentation] (for new proposed utilities).
+    *   Relevant Behavior Rules: Rules 1a, 2a, 3a, 4a (to ensure the proposed refactoring maintains correct behavior).
+    *   Verification Strategy: User reviews the detailed refactoring solution presented in the AI's response. No code changes, so no compilation or tests.
+    *   Test Matrix: Not applicable for this planning/proposal increment.
+    *   Commit Message: `docs(former_meta): Propose initial detailed refactoring for unit variant handling`
 
-### Example of Expected Documentation Comments
+*   [✅] **Increment 4: Critique and Improve Refactoring Solution**
+    *   Target Crate(s): `former_meta`, `macro_tools`
+    *   Input: The detailed refactoring solution from Increment 3.
+    *   Pre-Analysis: The goal is to critically evaluate the refactoring solution proposed in Increment 3 and suggest improvements. This involves checking for effectiveness, simplification, generalization quality, complexity, rule adherence, and maintainability.
+    *   Detailed Plan Step 1: Perform a self-critique of the *detailed* initial refactoring solution from Increment 3.
+        *   **Effectiveness & Simplification:**
+            *   Does the proposed use of `macro_tools::diag::return_syn_err!` simplify error handling for `#[subform_scalar]`? Yes, it's more direct.
+            *   Does the proposed `macro_tools::ident::new_ident_from_cased_str` significantly simplify identifier creation? Yes, it encapsulates complex keyword and raw string logic.
+            *   Do the proposed `GenericsRef` methods simplify generic token generation? Yes, they reduce boilerplate.
+            *   Is the switch to `macro_tools::tokens::qt!` a significant improvement? It's mostly stylistic but aligns with using `macro_tools`.
+        *   **Generalization Quality:**
+            *   Is `new_ident_from_cased_str` truly generic? Yes, identifier generation with case conversion and keyword/raw handling is a common macro task. The proposed signature seems reasonable.
+            *   Are the `GenericsRef` helper methods (`impl_generics_tokens_if_any`, `ty_generics_tokens_if_any`, `type_path_tokens_if_any`) generic? Yes, quoting generics conditionally is common.
+        *   **Complexity Trade-offs:**
+            *   Does introducing these new `macro_tools` utilities add undue complexity? No, they seem to encapsulate existing complexity into reusable forms. The benefit outweighs the cost of adding these small, focused utilities.
+        *   **Rule Adherence & Correctness:**
+            *   Does the proposed refactoring align with "Expected Enum Former Behavior"? Yes, the core logic of what's generated remains the same.
+            *   Are there edge cases missed for `new_ident_from_cased_str`? The proposal mentions returning `Result` for robustness, which is good. The keyword list/detection mechanism needs to be solid.
+            *   Are generics handled correctly? The proposed `GenericsRef` methods aim to standardize this.
+        *   **Maintainability Impact:**
+            *   Will `unit_variant_handler.rs` be easier to maintain? Yes, due to simplification and delegation.
+            *   Will the new `macro_tools` utilities be maintainable? Yes, if well-tested and documented.
+    *   Detailed Plan Step 2: **Output (as a textual report in the AI's response, not a file):** Based on the critique, propose specific, actionable improvements or alternatives to the refactoring plan.
+    *   Crucial Design Rules: [Prioritize Reuse and Minimal Change], [Comments and Documentation].
+    *   Relevant Behavior Rules: Rules 1a, 2a, 3a, 4a.
+    *   Verification Strategy: User reviews the critique and the improved refactoring solution. No code changes.
+    *   Test Matrix: Not applicable.
+    *   Commit Message: `docs(former_meta): Critique and improve refactoring plan for unit variants`
 
-This section shows an example of the documentation comments that will be added to a test file. The content should adhere to the criteria outlined in the `### Requirements` section under "Comment Content".
+*   [✅] **Increment 5: Implement Improved Refactoring (Enum Unit Variants in `former_meta`)**
+    *   Target Crate(s): `former_meta`
+    *   Pre-Analysis: Review the approved improved refactoring solution from Increment 4. This means the changes will be based on using the (yet to be implemented in `macro_tools`) utilities:
+        *   `macro_tools::diag::return_syn_err!` (existing, but usage confirmed)
+        *   `macro_tools::ident::new_ident_from_cased_str` (proposed in Inc 4, to be implemented in Inc 6)
+        *   `macro_tools::generic_params::GenericsRef` enhanced methods (`impl_generics_tokens_if_any`, `ty_generics_tokens_if_any`, `type_path_tokens_if_any`, `where_clause_tokens_if_any`) (proposed in Inc 4, to be implemented in Inc 6).
+        *   **Crucially, since the `macro_tools` utilities are not yet implemented, this increment will involve writing the `former_meta` code *as if* they exist.** The actual compilation of `former_meta` will only fully succeed after Increment 6 is completed. This is acceptable as per the plan structure.
+    *   Detailed Plan Step 1: Modify `former_meta/src/derive_former/former_enum/unit_variant_handler.rs` according to the approved plan from Increment 4. This involves:
+        *   Replacing the `#[subform_scalar]` error handling with `macro_tools::diag::return_syn_err!`.
+        *   Replacing the manual identifier creation for `method_ident` with a call to the conceptual `macro_tools::ident::new_ident_from_cased_str`.
+        *   Replacing manual generic quoting with calls to the conceptual `macro_tools::generic_params::GenericsRef` helper methods.
+        *   Potentially switching `quote!` to `macro_tools::tokens::qt!`.
+    *   Detailed Plan Step 2: Ensure all existing tests in `former` crate for enum unit variants *would conceptually* continue to pass with identical behavior. Actual test runs for `former_meta` will depend on Increment 6.
+    *   Crucial Design Rules: [Prioritize Reuse and Minimal Change], [Proc Macro: Development Workflow].
+    *   Relevant Behavior Rules: Rules 1a, 2a, 3a, 4a.
+    *   Verification Strategy:
+        *   User applies changes to `former_meta/src/derive_former/former_enum/unit_variant_handler.rs`.
+        *   `cargo check --package former_meta` will likely fail due to missing `macro_tools` utilities, which is expected at this stage. The primary verification is code review against the plan from Increment 4.
+        *   A full `cargo test --package former --test tests -- inc::enum_unit_tests` will be deferred until after Increment 6. The immediate goal is to ensure the `unit_variant_handler.rs` code *structurally* matches the refactoring plan.
+    *   Test Matrix: Not applicable for this refactoring increment directly, but existing tests cover behavior.
+    *   Commit Message: `refactor(former_meta): Improve unit variant handling using macro_tools`
 
-**For a file like `module/core/former/tests/inc/enum_unit_tests/generics_in_tuple_variant_unit_derive.rs`:**
-```rust
-//! Purpose: Tests the `#[derive(Former)]` macro's generation of constructors for unit variants
-//! within an enum that has generic parameters and bounds. This file focuses on verifying
-//! the derive-based implementation.
-//!
-//! Coverage:
-//! - Rule 3a (Unit + Default): Verifies `Enum::variant() -> Enum` for a generic enum.
-//! - Rule 1a (Unit + `#[scalar]`): Verifies `Enum::variant() -> Enum` (as default for unit is scalar) for a generic enum.
-//! - (Implicitly) Rule 4a: If `#[standalone_constructors]` were active on `EnumOuter`, this test would also cover
-//!   the generation of `fn other_variant() -> EnumOuter<X>`.
-//!
-//! Test Relevance/Acceptance Criteria:
-//! - Defines a generic enum `EnumOuter<X: Copy>` with a unit variant `OtherVariant`.
-//! - Instantiates `EnumOuter` with a concrete type `MyType` that fulfills the `Copy` bound.
-//! - Invokes the derived static method `EnumOuter::<MyType>::other_variant()`.
-//! - Asserts that the `got` instance is equal to an `expected` instance, which is manually
-//!   constructed as `EnumOuter::<MyType>::OtherVariant`. This confirms the constructor produces the correct variant instance.
-```
+*   [⏳] **Increment 6: Implement Generalizations (New Utilities in `macro_tools`)**
+    *   Target Crate(s): `macro_tools`
+    *   Pre-Analysis: Review the approved new utilities for `macro_tools` from Increment 4. These are:
+        1.  `macro_tools::ident::new_ident_from_cased_str`
+        2.  `macro_tools::generic_params::GenericsRef` enhanced methods:
+            *   `impl_generics_tokens_if_any()`
+            *   `ty_generics_tokens_if_any()`
+            *   `where_clause_tokens_if_any()`
+            *   `type_path_tokens_if_any()`
+            *   (And the conceptual private helper `split_for_impl_syn_components` or equivalent logic to access decomposed generic parts).
+    *   Detailed Plan Step 1: Implement these utilities in `module/core/macro_tools/src/ident.rs` and `module/core/macro_tools/src/generic_params.rs`.
+    *   Detailed Plan Step 2: Add comprehensive unit tests for these new utilities. This will involve creating new test files or extending existing ones in `module/core/macro_tools/tests/inc/` (e.g., a new `ident_general_tests.rs`, `generic_params_ref_tests.rs` or similar, and updating `module/core/macro_tools/tests/inc/mod.rs`).
+    *   Detailed Plan Step 3: Update `module/core/macro_tools/src/lib.rs` and relevant module files (`ident.rs`, `generic_params.rs` themselves if they define `pub` items, or their parent `mod.rs` if they are submodules) to correctly export the new public utilities.
+    *   Detailed Plan Step 4: Add clear `///doc` comments for all new public items in `macro_tools`.
+    *   Crucial Design Rules: [Traits: Encourage Modular Design], [Visibility: Keep Implementation Details Private], [Comments and Documentation], [Testing: Plan with a Test Matrix When Writing Tests].
+    *   Relevant Behavior Rules: N/A directly, but API design should be robust and adhere to Rust conventions.
+    *   Verification Strategy:
+        *   User applies changes to `macro_tools`.
+        *   `cargo check --package macro_tools` must pass.
+        *   `cargo test --package macro_tools` must pass.
+        *   `cargo doc --package macro_tools --no-deps` should build successfully.
+        *   `cargo clippy --package macro_tools --all-targets -- -D warnings` should pass.
+    *   Test Matrix:
+        *   **For `new_ident_from_cased_str` (in `macro_tools::ident`):**
+            *   ID: T6.1, Input: (`"normal_ident"`, `span`, `false`), Expected: `Ok(syn::Ident::new("normal_ident", span))`
+            *   ID: T6.2, Input: (`"fn"`, `span`, `false`), Expected: `Ok(syn::Ident::new_raw("fn", span))` (keyword becomes raw)
+            *   ID: T6.3, Input: (`"fn"`, `span`, `true`), Expected: `Ok(syn::Ident::new_raw("fn", span))` (original raw, cased is keyword)
+            *   ID: T6.4, Input: (`"my_raw_ident"`, `span`, `true`), Expected: `Ok(syn::Ident::new_raw("my_raw_ident", span))` (original raw, cased not keyword)
+            *   ID: T6.5, Input: (`""`, `span`, `false`), Expected: `Err(_)` (empty string)
+            *   ID: T6.6, Input: (`"with space"`, `span`, `false`), Expected: `Err(_)` (invalid ident chars)
+            *   ID: T6.7, Input: (`"ValidIdent"`, `span`, `false`), Expected: `Ok(syn::Ident::new("ValidIdent", span))` (function assumes input is already cased as desired for the ident name itself, only keyword/raw status is handled).
+        *   **For `GenericsRef` methods (in `macro_tools::generic_params`):**
+            *   (Setup: `let generics_std: syn::Generics = syn::parse_quote! { <T: Display + 'a, 'a, const N: usize> where T: Debug > };`)
+            *   (Setup: `let generics_empty: syn::Generics = syn::parse_quote! { };`)
+            *   (Setup: `let enum_name: syn::Ident = syn::parse_quote! { MyEnum };`)
+            *   ID: T6.8 (`impl_generics_tokens_if_any` with `generics_std`): Expected: `Ok(quote!( <T: Display + 'a, 'a, const N: usize> ))`
+            *   ID: T6.9 (`impl_generics_tokens_if_any` with `generics_empty`): Expected: `Ok(quote!( ))`
+            *   ID: T6.10 (`ty_generics_tokens_if_any` with `generics_std`): Expected: `Ok(quote!( <T, 'a, N> ))`
+            *   ID: T6.11 (`ty_generics_tokens_if_any` with `generics_empty`): Expected: `Ok(quote!( ))`
+            *   ID: T6.12 (`where_clause_tokens_if_any` with `generics_std`): Expected: `Ok(quote!( where T: Debug ))`
+            *   ID: T6.13 (`where_clause_tokens_if_any` with `generics_empty`): Expected: `Ok(quote!( ))`
+            *   ID: T6.14 (`type_path_tokens_if_any` with `generics_std`, `enum_name`): Expected: `Ok(quote!( MyEnum::<T, 'a, N> ))`
+            *   ID: T6.15 (`type_path_tokens_if_any` with `generics_empty`, `enum_name`): Expected: `Ok(quote!( MyEnum ))`
+    *   Commit Message: `feat(macro_tools): Add new utilities generalized from former_meta enum handling`
 
-## Increments
+*   [⚫] **Increment 7: Final Verification and Documentation Update**
+    *   Target Crate(s): `former_meta`, `macro_tools`, `former`
+    *   Detailed Plan Step 1: Run `cargo clippy --package former_meta --all-targets -- -D warnings` and address any new lints.
+    *   Detailed Plan Step 2: Run `cargo clippy --package macro_tools --all-targets -- -D warnings` and address any new lints.
+    *   Detailed Plan Step 3: Run `cargo test --package former_meta` and `cargo test --package macro_tools`.
+    *   Detailed Plan Step 4: Run `cargo test --package former --test tests -- inc::enum_unit_tests` (and any other directly affected test suites) to ensure no regressions.
+    *   Detailed Plan Step 5: Update any relevant internal documentation or comments in `former_meta` (especially `unit_variant_handler.rs`) and `macro_tools` to reflect the refactoring and new utilities.
+    *   Detailed Plan Step 6: Review if the `former_meta/plan.md` (for splitting large files) needs adjustment based on changes to `unit_variant_handler.rs` or `former_enum.rs`. Propose updates if necessary.
+    *   Verification Strategy: User confirms all checks pass and reviews documentation updates and any proposed changes to other plans.
+    *   Commit Message: `chore(former): Final verification and docs update after unit variant refactor`
 
-**Increment Template: Document Test File/Group**
-*   **Target Crate(s):** `former`
-*   **Enum Aspect Focus:** [Unit | Unnamed/Tuple | Named/Struct | Complex/Mixed]
-*   **Target File(s):** [List of specific `.rs` files for this increment]
-*   **Pre-Analysis (AI to output this in Detailed Planning - Output 4):**
-    *   Identified enum variant structures in target file(s): [e.g., "Unit variants", "Single-field tuple variant with `#[scalar]`"]
-    *   Key attributes present: [e.e., `#[scalar]`, `#[standalone_constructors]` on enum]
-    *   Relevant "Expected Enum Former Behavior Rule IDs": [e.g., "1a, 4a"]
-    *   Brief summary of how test functions appear to exercise these rules: [e.g., "Test `basic_construction` calls `Enum::variant()` and compares with manual construction. Test `standalone_construction` calls top-level `variant()`."]
-*   **Proposed Comments:**
-    *   AI will propose the three `//!` comment blocks (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file, adhering to the "Comment Content" requirements.
-*   **Verification Strategy:** After comments are added by the user, the AI will request the user to run `cargo check --package former --tests`. The code must compile without errors.
-*   **Commit Message:** `docs(former): Add purpose and coverage to [enum_aspect_focus] [specific_test_file_or_group_name]`
+### Requirements (Task-Specific)
+*   The refactoring should prioritize clarity, maintainability, and testability of `unit_variant_handler.rs`.
+*   Any utilities moved to or created in `macro_tools` must be genuinely reusable, well-documented with examples (if applicable for complex utilities), and not overly specific to `former_meta`'s internal logic.
+*   The "Expected Enum Former Behavior" for unit variants must be strictly preserved or corrected if bugs are found and approved as part of the plan.
+*   Naming conventions for standalone constructors (e.g., `variant_name()` vs `enum_name_variant_name()`) should be consistent with the established patterns in `former_meta` or clarified if ambiguous.
+*   Consider the impact on generic enums: ensure refactoring correctly handles generics in unit variant constructors (both static and standalone).
 
----
-**Phase 1: Unit Variant Tests (`enum_unit_tests`)**
-
-*   [✅] **Increment 1:** Document `unit_variant_*` files
-    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
-    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
-    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
-    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
-    *   Detailed Plan Step 5: Request user to run verification command.
-    *   Pre-Analysis:
-        *   Identified enum variant structures in target file(s): Unit variants.
-        *   Key attributes present: `#[derive(Former)]`, `#[former( standalone_constructors )]` on the enum in `_derive.rs`. Manual implementations in `_manual.rs`.
-        *   Relevant "Expected Enum Former Behavior Rule IDs": 3a, 1a, 4a.
-        *   Brief summary of how test functions appear to exercise these rules: `unit_variant_constructors` tests static methods (`Status::pending()`, `Status::complete()`). `unit_variant_standalone_constructors` tests standalone functions (`pending()`, `complete()`). Both compare results with direct enum variants.
-    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks.
-    *   Relevant Behavior Rules: Rule 3a (Unit + Default), Rule 1a (Unit + `#[scalar]`), Rule 4a (#[standalone_constructors]).
-    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
-    *   Test Matrix: N/A
-    *   Enum Aspect Focus: Unit
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unit_tests/unit_variant_derive.rs`
-        *   `module/core/former/tests/inc/enum_unit_tests/unit_variant_manual.rs`
-        *   `module/core/former/tests/inc/enum_unit_tests/unit_variant_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to unit_variant enum tests`
-
-*   [✅] **Increment 2:** Document `enum_named_fields_unit_*` files
-    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
-    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
-    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
-    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
-    *   Detailed Plan Step 5: Request user to run verification command.
-    *   Pre-Analysis:
-        *   Identified enum variant structures in target file(s): Unit variants.
-        *   Key attributes present: `#[derive(Former)]`, `#[debug]`, `#[standalone_constructors]` on the enum in `_derive.rs`. Manual implementations in `_manual.rs`.
-        *   Relevant "Expected Enum Former Behavior Rule IDs": 3a, 1a, 4a.
-        *   Brief summary of how test functions appear to exercise these rules: `unit_variant_scalar_test` and `unit_variant_default_construction` test static methods (`EnumWithNamedFields::unit_variant_scalar()`, `EnumWithNamedFields::unit_variant_default()`) and compare results with direct enum variants. Standalone constructors are present due to `#[standalone_constructors]` but not explicitly tested in `_only_test.rs`.
-    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks.
-    *   Relevant Behavior Rules: Rule 3a (Unit + Default), Rule 1a (Unit + `#[scalar]`), Rule 4a (#[standalone_constructors]).
-    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
-    *   Test Matrix: N/A
-    *   Enum Aspect Focus: Unit (within a named-fields style enum definition)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unit_tests/enum_named_fields_unit_derive.rs`
-        *   `module/core/former/tests/inc/enum_unit_tests/enum_named_fields_unit_manual.rs`
-        *   `module/core/former/tests/inc/enum_unit_tests/enum_named_fields_unit_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to enum_named_fields_unit tests`
-
-*   [✅] **Increment 3:** Document `generics_in_tuple_variant_unit_*` files
-    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
-    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
-    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
-    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
-    *   Detailed Plan Step 5: Request user to run verification command.
-    *   Pre-Analysis:
-        *   Identified enum variant structures in target file(s): Unit variants within a generic enum with bounds.
-        *   Key attributes present: `#[derive(Former)]`, `#[debug]` on the enum in `_derive.rs`. Manual implementation in `_manual.rs`.
-        *   Relevant "Expected Enum Former Behavior Rule IDs": 3a, 1a. (Rule 4a is implicitly covered by the enum having `#[derive(Former)]` but not explicitly tested in these files).
-        *   Brief summary of how test functions appear to exercise these rules: No test functions are present in these specific files. The comment in both files indicates that the original `_only_test.rs` file for tuple variants did not test the unit variant. This means these files likely rely on broader tests or were intended for future test logic.
-    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks.
-    *   Relevant Behavior Rules: Rule 3a (Unit + Default), Rule 1a (Unit + `#[scalar]`).
-    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
-    *   Test Matrix: N/A
-    *   Enum Aspect Focus: Unit (within generic enums)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unit_tests/generics_in_tuple_variant_unit_derive.rs`
-        *   `module/core/former/tests/inc/enum_unit_tests/generics_in_tuple_variant_unit_manual.rs`
-        *   `module/core/former/tests/inc/enum_unit_tests/generics_in_tuple_variant_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to generics_in_tuple_variant_unit tests`
-
-*   [✅] **Increment 4:** Document `keyword_variant_unit_*` files
-    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
-    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
-    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
-    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
-    *   Detailed Plan Step 5: Request user to run verification command.
-    *   Pre-Analysis:
-        *   Identified enum variant structures in target file(s): Unit variant with a keyword identifier (`r#Loop`).
-        *   Key attributes present: `#[derive(Former)]` on the enum in `_derive.rs`.
-        *   Relevant "Expected Enum Former Behavior Rule IDs": 3a, 1a. (Rule 4a is implicitly covered by the enum having `#[derive(Former)]` but not explicitly tested in these files).
-        *   Brief summary of how test functions appear to exercise these rules: `keyword_variant_constructors` tests the static method (`KeywordVariantEnum::r#loop()`) and compares the result with the direct enum variant (`KeywordVariantEnum::r#Loop`).
-    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks.
-    *   Relevant Behavior Rules: Rule 3a (Unit + Default), Rule 1a (Unit + `#[scalar]`).
-    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
-    *   Test Matrix: N/A
-    *   Enum Aspect Focus: Unit (with keyword identifiers)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unit_tests/keyword_variant_unit_derive.rs`
-        *   `module/core/former/tests/inc/enum_unit_tests/keyword_variant_unit_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to keyword_variant_unit tests`
-
-*   [✅] **Increment 5:** Document `standalone_constructor_unit_*` files
-    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
-    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
-    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
-    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
-    *   Detailed Plan Step 5: Request user to run verification command.
-    *   Pre-Analysis:
-        *   Identified enum variant structures in target file(s): Unit variants.
-        *   Key attributes present: `#[derive(Former)]`, `#[standalone_constructors]` on the enum in `_derive.rs`.
-        *   Relevant "Expected Enum Former Behavior Rule IDs": 3a, 1a, 4a.
-        *   Brief summary of how test functions appear to exercise these rules: `unit_variant_test` tests the standalone constructor function (`unit_variant()`) and compares the result with the direct enum variant (`TestEnum::UnitVariant`).
-    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks.
-    *   Relevant Behavior Rules: Rule 3a (Unit + Default), Rule 1a (Unit + `#[scalar]`), Rule 4a (#[standalone_constructors]).
-    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
-    *   Test Matrix: N/A
-    *   Enum Aspect Focus: Unit (with `#[standalone_constructors]`)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unit_tests/standalone_constructor_unit_derive.rs`
-        *   `module/core/former/tests/inc/enum_unit_tests/standalone_constructor_unit_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_unit tests`
-
-*   [✅] **Increment 6:** Document `standalone_constructor_args_unit_*` files
-    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
-    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
-    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
-    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
-    *   Detailed Plan Step 5: Request user to run verification command.
-    *   Pre-Analysis:
-        *   Identified enum variant structures in target file(s): Unit variants.
-        *   Key attributes present: `#[derive(Former)]`, `#[standalone_constructors]`, `#[debug]` on the enum in `_derive.rs`. Manual implementation in `_manual.rs`.
-        *   Relevant "Expected Enum Former Behavior Rule IDs": 3a, 1a, 4a. (Rule 4b is mentioned in the plan but not applicable to unit variants).
-        *   Brief summary of how test functions appear to exercise these rules: `unit_variant_args_test` tests the standalone constructor function (`unit_variant_args()`) and compares the result with the direct enum variant (`TestEnumArgs::UnitVariantArgs`).
-    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks.
-    *   Relevant Behavior Rules: Rule 3a (Unit + Default), Rule 1a (Unit + `#[scalar]`), Rule 4a (#[standalone_constructors]).
-    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
-    *   Test Matrix: N/A
-    *   Enum Aspect Focus: Unit (with `#[standalone_constructors]` and `#[arg_for_constructor]` context - though unit variants have no args)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unit_tests/standalone_constructor_args_unit_derive.rs`
-        *   `module/core/former/tests/inc/enum_unit_tests/standalone_constructor_args_unit_manual.rs`
-        *   `module/core/former/tests/inc/enum_unit_tests/standalone_constructor_args_unit_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_args_unit tests`
-
-*   [✅] **Increment 7:** Document `compile_fail/unit_subform_scalar_error.rs`
-    *   Detailed Plan Step 1: Read the content of the target file to perform pre-analysis.
-    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
-    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for the target file based on pre-analysis and plan requirements.
-    *   Detailed Plan Step 4: Apply the drafted comments to the target file using `write_to_file`.
-    *   Detailed Plan Step 5: Request user to run verification command (`cargo check --package former --tests`).
-    *   Pre-Analysis:
-        *   Identified enum variant structures in target file(s): Unit variant with `#[subform_scalar]`.
-        *   Key attributes present: `#[derive(Former)]`, `#[standalone_constructors]` on the enum, `#[subform_scalar]` on the variant.
-        *   Relevant "Expected Enum Former Behavior Rule IDs": Rule 2a (Unit + `#[subform_scalar]` -> Error).
-        *   Brief summary of how test functions appear to exercise these rules: This is a compile-fail test file intended for use with `trybuild`. It defines the invalid structure that should cause a compilation error.
-    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks.
-    *   Relevant Behavior Rules: Rule 2a (Unit + `#[subform_scalar]` -> Error).
-    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors. The compile-fail test itself is verified by `trybuild` which is part of the broader test suite, but this increment only verifies that adding comments doesn't break compilation.
-    *   Test Matrix: N/A
-    *   Enum Aspect Focus: Unit (compile-fail scenario)
-    *   Target File(s): `module/core/former/tests/inc/enum_unit_tests/compile_fail/unit_subform_scalar_error.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to unit_subform_scalar_error compile_fail test`
-
-*   [✅] **Increment 8:** Document `basic_*` files
-    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
-    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
-    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
-    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
-    *   Detailed Plan Step 5: Request user to run verification command.
-    *   Pre-Analysis:
-        *   Identified enum variant structures in target file(s): Single-field tuple variants (`Break(Break)`, `Run(Run)`).
-        *   Key attributes present: `#[derive(Former)]`, `#[standalone_constructors]` on the enum; `#[subform_scalar]` on the `Break` variant.
-        *   Relevant "Expected Enum Former Behavior Rule IDs": 3d, 2d, 4a, 4b. Rule 1d is not applicable to this test case.
-        *   Brief summary of how test functions appear to exercise these rules: `basic_only_test.rs` contains tests that call the static methods (`FunctionStep::r#break()`, `FunctionStep::run()`) and the standalone constructor (`FunctionStep::break_variant()`). These tests then use the returned subformers to set fields and call `.form()`, asserting the final enum instance matches the expected value.
-    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks, Structuring: Proc Macro Development Workflow.
-    *   Relevant Behavior Rules: Rule 3d (Tuple + Default -> Subform), Rule 2d (Tuple + `#[subform_scalar]` -> InnerFormer), Rule 4a (#[standalone_constructors]), Rule 4b (Option 2 Logic).
-    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
-    *   Test Matrix: N/A
-    *   Enum Aspect Focus: Unnamed/Tuple (basic single-field subform)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/basic_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/basic_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/basic_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to basic unnamed enum tests`
-
-*   [✅] **Increment 9:** Document `enum_named_fields_unnamed_*` files
-    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
-    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
-    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
-    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
-    *   Detailed Plan Step 5: Request user to run verification command.
-    *   Pre-Analysis:
-        *   Identified enum variant structures in target file(s): Zero-field unnamed (tuple) variants (`VariantZeroUnnamedDefault()`, `VariantZeroUnnamedScalar()`).
-        *   Key attributes present: `#[derive(Former)]`, `#[debug]`, `#[standalone_constructors]` on the enum; `#[scalar]` on the `VariantZeroUnnamedScalar` variant.
-        *   Relevant "Expected Enum Former Behavior Rule IDs": 3b, 1b, 4a. Rule 4a is applicable due to the enum attribute but not explicitly tested in the provided test file.
-        *   Brief summary of how test functions appear to exercise these rules: `enum_named_fields_unnamed_only_test.rs` contains tests that call the static methods (`EnumWithNamedFields::variant_zero_unnamed_scalar()`, `EnumWithNamedFields::variant_zero_unnamed_default()`) and assert that the returned value is the direct enum variant.
-    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks, Structuring: Proc Macro Development Workflow.
-    *   Relevant Behavior Rules: Rule 3b (Tuple + Zero-Field + Default), Rule 1b (Tuple + Zero-Field + `#[scalar]`), Rule 4a (#[standalone_constructors]).
-    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
-    *   Test Matrix: N/A
-    *   Enum Aspect Focus: Unnamed/Tuple (zero-field tuple variants)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/enum_named_fields_unnamed_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/enum_named_fields_unnamed_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/enum_named_fields_unnamed_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to enum_named_fields_unnamed tests`
-
-*   [✅] **Increment 10:** Document `generics_independent_tuple_*` files
-    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
-    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
-    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
-    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
-    *   Detailed Plan Step 5: Request user to run verification command.
-    *   Pre-Analysis:
-        *   Identified enum variant structures in target file(s): Single-field tuple variant (`V1`) within a generic enum (`EnumG5`). The variant's field is a generic struct (`InnerG5`) instantiated with a concrete type (`TypeForU`), and the variant also contains `PhantomData<T>` to use the enum's generic `T`.
-        *   Key attributes present: `#[derive(Former)]` on both the enum and inner struct. `#[scalar]` on the `V1` variant. `#[standalone_constructors]` is on the enum but not explicitly tested in these files.
-        *   Relevant "Expected Enum Former Behavior Rule IDs": Rule 1d (Tuple + Single-Field + `#[scalar]` -> Scalar), Rule 4b (Option 2 Logic - related to the subformer mechanism used).
-        *   Brief summary of how test functions appear to exercise these rules: The tests in `_only_test.rs` call the static method `v_1()` (provided by the derive/manual file), which returns a former for the inner type (`InnerG5<TypeForU>`). They use the setter `._0()` on this former to set the inner field and then call `.form()` to get the final `EnumG5<TypeForT>` instance. They assert this instance is equal to a manually constructed `EnumG5::V1` variant. This verifies that the `#[scalar]` attribute on the tuple variant correctly results in a constructor that takes the inner type's value (via the subformer) and produces the enum variant, handling the independent generics correctly.
-    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks, Structuring: Proc Macro Development Workflow.
-    *   Relevant Behavior Rules: Rule 1d, Rule 4b.
-    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
-    *   Test Matrix: N/A
-    *   Enum Aspect Focus: Unnamed/Tuple (single-field tuple with independent generics, `#[scalar]`)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_independent_tuple_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_independent_tuple_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_independent_tuple_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to generics_independent_tuple tests`
-
-*   [✅] **Increment 11:** Document `generics_in_tuple_variant_tuple_*` and shared `_only_test`
-    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
-    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
-    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
-    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
-    *   Detailed Plan Step 5: Request user to run verification command.
-    *   Pre-Analysis:
-        *   Identified enum variant structures in target file(s): Single-field tuple variant (`Variant`) within a generic enum (`EnumOuter`), and unit variant (`OtherVariant`) within the same generic enum. The tuple variant's field is a generic struct (`InnerGeneric`) instantiated with the enum's generic `X`.
-        *   Key attributes present: `#[derive(Former)]` on both the enum and inner struct. `#[debug]` on the enum. No specific variant attributes (`#[scalar]`, `#[subform_scalar]`) are used on the tested variants in this increment, relying on default behavior. `#[standalone_constructors]` is on the enum but not explicitly tested in these files.
-        *   Relevant "Expected Enum Former Behavior Rule IDs": Rule 3d (Tuple + Single-Field + Default -> Subform), Rule 4b (Option 2 Logic - related to the subformer mechanism used), Rule 3a (Unit + Default).
-        *   Brief summary of how test functions appear to exercise these rules: The tests in `_only_test.rs` call the static methods `variant()` (for the tuple variant) and `other_variant()` (for the unit variant) provided by the including file (derive/manual). For the tuple variant, they use the returned subformer's setter (`.inner_field()`) and `.form()`. For the unit variant, they directly assert the returned enum instance. Both test the handling of shared generics and bounds.
-    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks, Structuring: Proc Macro Development Workflow.
-    *   Relevant Behavior Rules: Rule 3d, Rule 4b, Rule 3a.
-    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
-    *   Test Matrix: N/A
-    *   Enum Aspect Focus: Unnamed/Tuple (single-field tuple with shared generics, default subform) and Unit (with shared generics, default scalar)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_in_tuple_variant_tuple_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_in_tuple_variant_tuple_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_in_tuple_variant_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to generics_in_tuple_variant_tuple tests`
-
-*   [✅] **Increment 12:** Document `generics_shared_tuple_*` files
-    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
-    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
-    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
-    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
-    *   Detailed Plan Step 5: Request user to run verification command.
-    *   Pre-Analysis:
-        *   Identified enum variant structures in target file(s): Single-field tuple variant (`V1`) within a generic enum (`EnumG3`). The variant's field is a generic struct (`InnerG3`) instantiated with the enum's generic `T`.
-        *   Key attributes present: `#[derive(Former)]` on both the enum and inner struct. No specific variant attributes (`#[scalar]`, `#[subform_scalar]`) are used, relying on default behavior.
-        *   Relevant "Expected Enum Former Behavior Rule IDs": Rule 3d (Tuple + Single-Field + Default -> Subform), Rule 4b (Option 2 Logic - related to the subformer mechanism used).
-        *   Brief summary of how test functions appear to exercise these rules: The tests in `_only_test.rs` call the static method `v_1()` (provided by the derive/manual file), which returns a former for the inner type (`InnerG3<T>`). They use the setter `.inner_field()` on this former to set the inner field and then call `.form()` to get the final `EnumG3<T>` instance. They assert this instance is equal to a manually constructed `EnumG3::V1` variant. This verifies that the default behavior for a single-field tuple variant is to generate a subformer, handling the shared generics correctly.
-    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks, Structuring: Proc Macro Development Workflow.
-    *   Relevant Behavior Rules: Rule 3d, Rule 4b.
-    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
-    *   Test Matrix: N/A
-    *   Enum Aspect Focus: Unnamed/Tuple (single-field tuple with shared generics, default subform)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_shared_tuple_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_shared_tuple_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/generics_shared_tuple_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to generics_shared_tuple tests`
-
-*   [⏳] **Increment 13:** Document `keyword_variant_tuple_*` files
-    *   Detailed Plan Step 1: Read the content of the target files to perform pre-analysis.
-    *   Detailed Plan Step 2: Perform pre-analysis based on file content and plan rules.
-    *   Detailed Plan Step 3: Draft the `//!` comments (Purpose, Coverage, Test Relevance/Acceptance Criteria) for each target file based on pre-analysis and plan requirements.
-    *   Detailed Plan Step 4: Apply the drafted comments to the target files using `write_to_file`.
-    *   Detailed Plan Step 5: Request user to run verification command.
-    *   Pre-Analysis: (To be filled after reading files)
-    *   Crucial Design Rules: Comments and Documentation, Comments: Spaces, Comments: Focus on Rationale, Preserve Existing Tasks, Comments: Add Tasks and Label Simplifications, Comments: Annotate Addressed Tasks, Structuring: Proc Macro Development Workflow.
-    *   Relevant Behavior Rules: (To be filled after pre-analysis)
-    *   Verification Strategy: After comments are added, request user to run `cargo check --package former --tests`. The code must compile without errors.
-    *   Test Matrix: N/A
-    *   Enum Aspect Focus: Unnamed/Tuple (variants with keyword identifiers, mixed scalar/subform)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/keyword_variant_tuple_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/keyword_variant_tuple_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to keyword_variant_tuple tests`
-
-*   [⚫] **Increment 14:** Document `scalar_generic_tuple_*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (generic tuple variants with `#[scalar]`)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/scalar_generic_tuple_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/scalar_generic_tuple_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/scalar_generic_tuple_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to scalar_generic_tuple tests`
-
-*   [⚫] **Increment 15:** Document `standalone_constructor_args_tuple_*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (with `#[standalone_constructors]` and `#[arg_for_constructor]`)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_args_tuple_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_tuple_multi_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_tuple_single_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_args_tuple_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_args_tuple tests`
-
-*   [⚫] **Increment 16:** Document `standalone_constructor_tuple_*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (with `#[standalone_constructors]`, no field args)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_tuple_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/standalone_constructor_tuple_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to standalone_constructor_tuple tests`
-
-*   [⚫] **Increment 17:** Document `tuple_multi_default_*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (multi-field, default scalar behavior)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_default_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_default_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_default_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to tuple_multi_default tests`
-*   [⚫] **Increment 18:** Document `tuple_multi_scalar_*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (multi-field with `#[scalar]`)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_scalar_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_scalar_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_scalar_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to tuple_multi_scalar tests`
-
-*   [⚫] **Increment 19:** Document `tuple_multi_standalone_args_*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (multi-field with `#[standalone_constructors]` and `#[arg_for_constructor]`)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_args_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to tuple_multi_standalone_args tests`
-
-*   [⚫] **Increment 20:** Document `tuple_multi_standalone_*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (multi-field with `#[standalone_constructors]`, no field args)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_multi_standalone_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to tuple_multi_standalone tests`
-
-*   [⚫] **Increment 21:** Document `tuple_zero_fields_*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (zero-field tuple variants)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to tuple_zero_fields tests`
-
-*   [⚫] **Increment 22:** Document `usecase1*` files
-    *   Enum Aspect Focus: Unnamed/Tuple (single-field tuple, default subform, multiple variants)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/usecase1.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/usecase1_derive.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/usecase1_manual.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/usecase1_only_test.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to usecase1 unnamed enum tests`
-
-*   [⚫] **Increment 23:** Document `compile_fail/*` files for unnamed variants
-    *   Enum Aspect Focus: Unnamed/Tuple (compile-fail scenarios)
-    *   Target File(s):
-        *   `module/core/former/tests/inc/enum_unnamed_tests/compile_fail/tuple_multi_subform_scalar_error.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/compile_fail/tuple_single_subform_non_former_error.rs`
-        *   `module/core/former/tests/inc/enum_unnamed_tests/compile_fail/tuple_zero_subform_scalar_error.rs`
-    *   Commit Message: `docs(former): Add purpose and coverage to unnamed enum compile_fail tests`
-
-### Requirements
-*   **Adherence:** Strictly follow `code/gen` instructions, Design Rules, and Codestyle Rules for all modifications.
-*   **Comment Content:** Each targeted test file **must** have the following three `//!` (file-level doc comments) added at the very beginning, before any `use` statements or code, in the specified order:
-    1.  **`//! Purpose: ...`**:
-        *   Start with "Purpose:".
-        *   Clearly and concisely describe the main goal of the test file. What specific aspect of the `Former` derive macro's behavior for enums is this file intended to verify?
-        *   Mention the specific enum variant structure(s) (e.g., "unit variants", "single-field tuple variants with generics", "multi-field named struct variants") and any key attributes (e.g., `#[scalar]`, `#[subform_scalar]`, `#[standalone_constructors]`) being tested in this file.
-        *   State whether the file is for `derive` macro testing, `manual` implementation testing, or `shared test logic` (`_only_test.rs`).
-        *   For `compile_fail` tests, clearly state the specific incorrect usage or error condition it's designed to trigger and verify, referencing the relevant behavior rule that is being intentionally violated.
-        *   **For `_only_test.rs` files:** The purpose should state that it provides shared test assertions/logic for both derived and manual implementations of [specific feature/variant type].
-    2.  **`//! Coverage: ...`**:
-        *   Start with "Coverage:".
-        *   List the specific Rule IDs (e.e., "Rule 1a", "Rule 3d.i") from the "Expected Enum Former Behavior Rules" section that the tests in this file primarily demonstrate or validate.
-        *   Briefly explain *what aspect* of the rule is being tested if the rule is broad and the test is specific (e.g., "Rule 4b - specifically the 'returns Former' case for standalone constructors with partial args").
-        *   If a test covers interactions between multiple rules (e.g., a variant attribute combined with an enum-level attribute), list all relevant rules and briefly note the interaction.
-        *   **For `_only_test.rs` files:** This comment should summarize all rules covered by the test functions within it, which are then applied to both `_derive.rs` and `_manual.rs` files that include it.
-    3.  **`//! Test Relevance/Acceptance Criteria: ...`**:
-        *   Start with "Test Relevance/Acceptance Criteria:".
-        *   Describe the key actions performed by the test code and the primary assertions made that validate its stated purpose and coverage. This should explain *how* the test verifies the intended behavior.
-        *   Be specific about the test's mechanics:
-            *   What specific enum structures or attributes are defined/used in this test?
-            *   What specific generated/manual methods are invoked (e.g., `MyEnum::variant_x()`, `former.field_y()`, standalone `variant_z()`)?
-            *   What are the key inputs provided to these methods?
-            *   What is the nature of the primary assertion (e.g., "Asserts the `got` instance (produced by the former) is equal to an `expected` instance (manually constructed to represent the correct state).", "Asserts that a subformer is returned and can be used to set inner fields.", "Asserts that a compile-time error occurs for an invalid attribute combination using `trybuild`.").
-        *   **For `_derive.rs` files:** Mention that it relies on `#[derive(Former)]` for code generation and typically includes shared test logic via `include!("...")`.
-        *   **For `_manual.rs` files:** Mention that it contains a hand-written former implementation and includes shared test logic via `include!("...")`.
-        *   **For `compile_fail/*.rs` files:** The file contains code that intentionally uses an attribute or enum structure in a way that violates a documented behavior rule (i.e., `#[subform_scalar]` on a unit variant). The test is accepted if `trybuild` confirms this results in a compilation error, thereby validating the macro's error reporting for this specific invalid scenario."
-*   **Comment Style:** All added `//!` comments should be clear, concise, grammatically correct, and follow Rust documentation comment conventions. Use Markdown for lists or emphasis if it enhances readability. Aim for reasonable line lengths.
-*   **Pre-Analysis Output:** Before proposing comments for an increment, the AI must provide its pre-analysis findings for the targeted file(s) as specified in the "Increment Template".
-*   **Incremental Processing:** Modify files one increment at a time, following the "Increment Template."
-*   **Verification:** After each increment, request user to apply changes and run `cargo check --package former --tests`. **The code must compile successfully after adding comments. If adding comments introduces a compilation error (e.e., a syntax error in the comment itself), that specific error must be fixed. Pre-existing test failures or logic errors are out of scope.**
-*   **No Functional Changes:** This task is purely for documentation and review. No functional code changes should be made to the tests or macro logic unless a comment itself causes a trivial syntax issue that prevents compilation.
-*   **Handling `xxx`/`qqq` Comments:** During the review of each test file, if any existing `// xxx :` or `// qqq :` comments are encountered, their presence and a brief summary of their content should be noted in the "Notes & Insights" section of the `plan.md` for that increment. Addressing or resolving these comments is out of scope for this plan.
-*   **`mod.rs` Files Review:** If, during the review of test files, it's discovered that an enum test file exists in the directories but is not declared in its respective `mod.rs` file, this should be noted in the "Notes & Insights" for that increment. Activating it is out of scope.
-
-## Notes & Insights
-*   This plan focuses exclusively on documenting existing enum tests by adding comments. It does not involve fixing failing tests or implementing new features.
-*   The "Expected Enum Former Behavior Rules" section is critical for determining coverage.
-*   The "Increment Template" will be used for detailed planning of each increment.
-*   The `_only_test.rs` files, when shared, will have their documentation reflect their broader applicability.
-*   **[Date/Inc #] Note:** Increment 3 and 11 both reference `generics_in_tuple_variant_only_test.rs`. The documentation for this shared file should be comprehensive enough to cover its usage in both unit and tuple variant contexts, likely handled in Increment 11.
-*   **[Date/Inc #] Note:** The commit messages in the Increment Template now include `[enum_aspect_focus]` for better categorization.
-*   **[2025-05-10/Inc 1] Note:** Started detailed planning for Increment 1: Document `unit_variant_*` files. Pre-analysis complete. Proceeding to draft and apply comments.
-*   **[2025-05-10/Inc 1] Note:** Encountered repeated failures using `apply_diff` to add comments to `unit_variant_only_test.rs`. Changing strategy for Detailed Plan Step 4 to use `write_to_file` as a fallback to replace the entire file content with the desired version containing the corrected comments.
-*   **[2025-05-10/Inc 1] Note:** Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 1 complete.
-*   **[2025-05-10/Inc 2] Note:** Started detailed planning for Increment 2: Document `enum_named_fields_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 2 complete.
-*   **[2025-05-10/Inc 3] Note:** Started detailed planning for Increment 3: Document `generics_in_tuple_variant_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 3 complete.
-*   **[2025-05-10/Inc 4] Note:** Started detailed planning for Increment 4: Document `keyword_variant_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 4 complete.
-*   **[2025-05-10/Inc 5] Note:** Started detailed planning for Increment 5: Document `standalone_constructor_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 5 complete.
-*   **[2025-05-10/Inc 6] Note:** Started detailed planning for Increment 6: Document `standalone_constructor_args_unit_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 6 complete.
-*   **[2025-05-10/Inc 7] Note:** Started detailed planning for Increment 7: Document `compile_fail/unit_subform_scalar_error.rs`. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 7 complete.
-*   **[2025-05-10/Inc 8] Note:** Started detailed planning for Increment 8: Document `basic_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 8 complete.
-*   **[2025-05-10/Inc 9] Note:** Started detailed planning for Increment 9: Document `enum_named_fields_unnamed_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 9 complete.
-*   **[2025-05-10/Inc 10] Note:** Started detailed planning for Increment 10: Document `generics_independent_tuple_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 10 complete.
-*   **[2025-05-10/Inc 11] Note:** Started detailed planning for Increment 11: Document `generics_in_tuple_variant_tuple_*` and shared `_only_test`. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 11 complete.
-*   **[2025-05-10/Inc 12] Note:** Started detailed planning for Increment 12: Document `generics_shared_tuple_*` files. Pre-analysis complete. Proceeding to draft and apply comments. Successfully applied comments and verified compilation with `cargo check --package former --tests`. Increment 12 complete.
-*   **[2025-05-10/Inc 13] Note:** Started detailed planning for Increment 13: Document `keyword_variant_tuple_*` files. Pre-analysis complete. Proceeding to draft and apply comments.
+### Notes & Insights
+*   (This section will be populated as the plan progresses)
+*   `unit_variant_handler.rs` currently handles `#[scalar]` (which is the default behavior for unit variants) and correctly errors on `#[subform_scalar]`. It also needs to interact with the enum-level `#[standalone_constructors]` attribute (parsed in `struct_attrs.rs` and available in `EnumVariantHandlerContext`).
+*   The primary logic in `unit_variant_handler.rs` involves generating a simple static method and, if `#[standalone_constructors]` is present, a corresponding standalone function. Both typically construct the enum variant directly (e.g., `EnumName::VariantName`).
+*   `macro_tools::ident::ident_maybe_raw` will be useful for generating constructor names from variant idents, especially if variants use raw identifiers (e.g., `r#fn`).
+*   `macro_tools::diag::syn_err!` and `return_syn_err!` are already suitable for error reporting (e.g., for `#[subform_scalar]` on a unit variant).
+*   `macro_tools::generic_params::decompose` and related functions will be crucial if the enum is generic, to correctly propagate generics to standalone constructors.
+*   The `EnumVariantHandlerContext` provides necessary context like `vis`, `generics`, `enum_name`, `variant_ident`, and `struct_attrs`. The refactoring should leverage this context effectively.

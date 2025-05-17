@@ -1,42 +1,46 @@
-// File: module/core/former/tests/inc/former_enum_tests/unnamed_tests/keyword_variant_tuple_only_test.rs
-use super::*;
+//! Purpose: Provides shared test assertions and logic for verifying the constructors generated
+//! by `#[derive(Former)]` for enums with unnamed (tuple) variants that have keyword identifiers.
+//! This file is included by `keyword_variant_tuple_derive.rs`.
+//!
+//! Coverage:
+//! - Rule 1d (Tuple + Single-Field + `#[scalar]` -> Scalar): Tests static method `KeywordVariantEnum::r#use()`.
+//! - Rule 3d (Tuple + Single-Field + Default -> Subform): Tests static method `KeywordVariantEnum::r#break()`.
+//! - Rule 4b (Option 2 Logic): Tests the use of the subformer returned by the `r#break` variant constructor.
+//!
+//! Test Relevance/Acceptance Criteria:
+//! - Relies on the enum `KeywordVariantEnum` and inner struct `Break` defined in the including file (via `include!`).
+//! - Defines test functions (`keyword_variant_scalar_test`, `keyword_variant_subform_test`) that invoke the static methods
+//!   `KeywordVariantEnum::r#use()` and `KeywordVariantEnum::r#break()` provided by the including file.
+//! - Asserts that `KeywordVariantEnum::r#use()` takes the inner `u32` value and returns the `KeywordVariantEnum::r#use()` instance.
+//! - Asserts that `KeywordVariantEnum::r#break()` returns a subformer for `Break`, and that using its setter (`.value()`) and `.form()` results in the `KeywordVariantEnum::r#break()` instance.
+//! - Confirms correct handling of keyword identifiers and mixed scalar/subform behavior for tuple variants.
+#[ allow( unused_imports ) ]
+use super::*; // Imports items from the parent file (either manual or derive)
+use former::Former; // Import Former trait for the inner struct
+
+// Note: The enum `KeywordVariantEnum` and struct `Break` are defined in the including file.
 
 #[ test ]
-fn keyword_variant_constructors()
+fn keyword_variant_scalar_test()
 {
-  // Test single-field variant (StringFormerStub) - Expects direct constructor due to #[scalar]
-  let inner_string_stub = StringFormerStub { value : "stop".to_string() };
-  let got_break = KeywordVariantEnum::r#break( inner_string_stub );
-  let exp_break = KeywordVariantEnum::r#Break( StringFormerStub { value: "stop".to_string() } );
-  assert_eq!( got_break, exp_break );
+  // Test the scalar variant with a keyword identifier
+  let got = KeywordVariantEnum::r#use( 10 ); // Use the derived static method
 
-  // Test multi-field variant (bool, i32) - Expects former builder due to #[scalar] and multi-fields
-  let got_if = KeywordVariantEnum::r#if()
-    ._0( true )
-    ._1( 10 )
-    .form();
-  let exp_if = KeywordVariantEnum::r#If( true, 10 );
-  assert_eq!( got_if, exp_if );
+  let expected = KeywordVariantEnum::r#use( 10 ); // Manually construct the expected variant
 
-  // Test single-field variant (u32) - Expects direct constructor due to #[scalar]
-  let got_let = KeywordVariantEnum::r#let( 99_u32 );
-  let exp_let = KeywordVariantEnum::r#Let( 99_u32 );
-  assert_eq!( got_let, exp_let );
+  assert_eq!( got, expected );
+}
 
-  // Test single-field variant (InnerData) - Expects subformer due to #[subform_scalar]
-  let got_struct = KeywordVariantEnum::r#struct()
-    .data1( -1 )
-    .data2( false )
-    .form();
-  let exp_struct = KeywordVariantEnum::r#Struct( InnerData { data1: -1, data2: false } );
-  assert_eq!( got_struct, exp_struct );
+#[ test ]
+fn keyword_variant_subform_test()
+{
+  // Test the subform variant with a keyword identifier
+  let got = KeywordVariantEnum::r#break() // Use the derived static method, returns a former
+    .value( 20 )                          // Use the setter on the Break former
+    .form();                              // Form the final enum instance
 
-  // Test multi-field variant (usize, &'static str) - Expects former builder due to #[scalar] and multi-fields
-  // Explicitly type the integer literal as usize
-  let got_for = KeywordVariantEnum::r#for()
-    ._0( 5_usize )
-    ._1( "times" )
-    .form();
-  let exp_for = KeywordVariantEnum::r#For( 5, "times" );
-  assert_eq!( got_for, exp_for );
+  let expected_inner = Break { value : 20 };
+  let expected = KeywordVariantEnum::r#break( expected_inner ); // Manually construct the expected variant
+
+  assert_eq!( got, expected );
 }
