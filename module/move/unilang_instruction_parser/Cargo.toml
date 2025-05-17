@@ -1,0 +1,19 @@
+[package]
+name = "unilang_instruction_parser"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+readme = "Readme.md"
+description = "Parser for unilang CLI syntax."
+
+[lib]
+name = "unilang_instruction_parser"
+path = "src/lib.rs"
+
+[dependencies]
+strs_tools = { workspace = true, default_features = true } # Requesting default features
+error_tools = { workspace = true, features = [ "enabled", "error_typed" ] }
+iter_tools = { workspace = true, features = [ "enabled" ] }
+
+[dev-dependencies]
+test_tools = { workspace = true }

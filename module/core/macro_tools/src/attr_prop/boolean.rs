@@ -6,7 +6,7 @@
 use core::marker::PhantomData;
 #[ allow( clippy::wildcard_imports ) ]
 use crate::*;
-// use former_types::Assign;
+// use component_model_types::Assign;
 
 /// Default marker for `AttributePropertyBoolean`.
 /// Used if no marker is defined as parameter.

@@ -13,6 +13,7 @@
 /.vscode
 /_*
 
+.roo
 .env
 _key
 _data
@@ -31,3 +32,4 @@ Cargo.lock
 .warchive*
 -*
 rustc-ice-*.txt
+.roo

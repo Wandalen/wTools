@@ -1,4 +1,3 @@
-
 //!
 //! Smoke test checking health of a module.
 //!
@@ -44,15 +43,16 @@ mod private
   impl< 'a > SmokeModuleTest< 'a >
   {
     /// Constructor of a context for smoke testing.
+    #[ must_use ]
     pub fn new( dependency_name : &'a str ) -> SmokeModuleTest< 'a >
     {
-      let test_postfix = "_smoke_test";
-
       use rand::prelude::*;
+
+      let test_postfix = "_smoke_test";
       let mut rng = rand::thread_rng();
       let y: f64 = rng.gen();
 
-      let smoke_test_path = format!( "{}{}_{}", dependency_name, test_postfix, y );
+      let smoke_test_path = format!( "{dependency_name}{test_postfix}_{y}" );
       let mut test_path = std::env::temp_dir();
       test_path.push( smoke_test_path );
 
@@ -84,13 +84,13 @@ mod private
     /// Set postfix to add to name of test.
     pub fn test_postfix( &mut self, test_postfix : &'a str ) -> &mut SmokeModuleTest< 'a >
     {
-      self.test_postfix = test_postfix;
-
       use rand::prelude::*;
+
+      self.test_postfix = test_postfix;
       let mut rng = rand::thread_rng();
       let y: f64 = rng.gen();
 
-      let smoke_test_path = format!( "{}{}_{}", self.dependency_name, test_postfix, y );
+      let smoke_test_path = format!( "{dependency_name}{test_postfix}_{y}", dependency_name = self.dependency_name, test_postfix = test_postfix, y = y );
       self.test_path.pop();
       self.test_path.push( smoke_test_path );
       self
@@ -104,6 +104,15 @@ mod private
     }
 
     /// Prepare files at temp dir for smoke testing.
+    /// Prepare files at temp dir for smoke testing.
+    ///
+    /// # Panics
+    ///
+    /// This function will panic if it fails to create the directory or write to the file.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the operation fails.
     pub fn form( &mut self ) -> Result< (), &'static str >
     {
       std::fs::create_dir( &self.test_path ).unwrap();
@@ -122,15 +131,15 @@ mod private
       .output()
       .expect( "Failed to execute command" )
       ;
-      println!( "{}", std::str::from_utf8( &output.stderr ).expect( "Invalid UTF-8" ) );
+      println!( "{}", core::str::from_utf8( &output.stderr ).expect( "Invalid UTF-8" ) );
 
       test_path.push( test_name );
 
       /* setup config */
       #[ cfg( target_os = "windows" ) ]
-      let local_path_clause = if self.local_path_clause == "" { "".to_string() } else { format!( ", path = \"{}\"", self.local_path_clause.escape_default() ) };
+      let local_path_clause = if self.local_path_clause.is_empty() { String::new() } else { format!( ", path = \"{}\"", self.local_path_clause.escape_default() ) };
       #[ cfg( not( target_os = "windows" ) ) ]
-      let local_path_clause = if self.local_path_clause == "" { "".to_string() } else { format!( ", path = \"{}\"", self.local_path_clause ) };
+      let local_path_clause = if self.local_path_clause.is_empty() { String::new() } else { format!( ", path = \"{}\"", self.local_path_clause ) };
       let dependencies_section = format!( "{} = {{ version = \"{}\" {} }}", self.dependency_name, self.version, &local_path_clause );
       let config_data = format!
       (
@@ -146,13 +155,13 @@ mod private
       );
       let mut config_path = test_path.clone();
       config_path.push( "Cargo.toml" );
-      println!( "\n{}\n", config_data );
+      println!( "\n{config_data}\n" );
       std::fs::write( config_path, config_data ).unwrap();
 
       /* write code */
       test_path.push( "src" );
       test_path.push( "main.rs" );
-      if self.code == ""
+      if self.code.is_empty()
       {
         self.code = format!( "use ::{}::*;", self.dependency_name );
       }
@@ -161,17 +170,26 @@ mod private
         "#[ allow( unused_imports ) ]
         fn main()
         {{
-          {}
+          {code}
         }}",
-        self.code,
+        code = self.code,
       );
-      println!( "\n{}\n", code );
+      println!( "\n{code}\n" );
       std::fs::write( &test_path, code ).unwrap();
 
       Ok( () )
     }
 
     /// Do smoke testing.
+    /// Do smoke testing.
+    ///
+    /// # Panics
+    ///
+    /// This function will panic if the command execution fails or if the smoke test fails.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the operation fails.
     pub fn perform( &self ) -> Result<(), &'static str>
     {
       let mut test_path = self.test_path.clone();
@@ -186,8 +204,8 @@ mod private
       .unwrap()
       ;
       println!( "status : {}", output.status );
-      println!( "{}", std::str::from_utf8( &output.stdout ).expect( "Invalid UTF-8" ) );
-      println!( "{}", std::str::from_utf8( &output.stderr ).expect( "Invalid UTF-8" ) );
+      println!( "{}", core::str::from_utf8( &output.stdout ).expect( "Invalid UTF-8" ) );
+      println!( "{}", core::str::from_utf8( &output.stderr ).expect( "Invalid UTF-8" ) );
       assert!( output.status.success(), "Smoke test failed" );
 
       let output = std::process::Command::new( "cargo" )
@@ -197,14 +215,23 @@ mod private
       .unwrap()
       ;
       println!( "status : {}", output.status );
-      println!( "{}", std::str::from_utf8( &output.stdout ).expect( "Invalid UTF-8" ) );
-      println!( "{}", std::str::from_utf8( &output.stderr ).expect( "Invalid UTF-8" ) );
+      println!( "{}", core::str::from_utf8( &output.stdout ).expect( "Invalid UTF-8" ) );
+      println!( "{}", core::str::from_utf8( &output.stderr ).expect( "Invalid UTF-8" ) );
       assert!( output.status.success(), "Smoke test failed" );
 
       Ok( () )
     }
 
     /// Cleaning temp directory after testing.
+    /// Cleaning temp directory after testing.
+    ///
+    /// # Panics
+    ///
+    /// This function will panic if it fails to remove the directory and `force` is set to `false`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the operation fails.
     pub fn clean( &self, force : bool ) -> Result<(), &'static str>
     {
       let result = std::fs::remove_dir_all( &self.test_path );
@@ -223,16 +250,16 @@ mod private
   }
 
   /// Run smoke test for the module.
-
+  /// Run smoke test for the module.
+  ///
+  /// # Panics
+  ///
+  /// This function will panic if the environment variables `CARGO_PKG_NAME` or `CARGO_MANIFEST_DIR` are not set.
   pub fn smoke_test_run( local : bool )
   {
     let module_name = std::env::var( "CARGO_PKG_NAME" ).unwrap();
     let module_path = std::env::var( "CARGO_MANIFEST_DIR" ).unwrap();
-    let test_name = match local
-    {
-      false => "_published_smoke_test",
-      true => "_local_smoke_test",
-    };
+    let test_name = if local { "_local_smoke_test" } else { "_published_smoke_test" };
     println!( "smoke_test_run module_name:{module_name} module_path:{module_path}" );
 
     let mut t = SmokeModuleTest::new( module_name.as_str() );
@@ -257,7 +284,6 @@ mod private
   }
 
   /// Run smoke test for local version of the module.
-
   pub fn smoke_test_for_local_run()
   {
     println!( "smoke_test_for_local_run : {:?}", std::env::var( "WITH_SMOKE" ) );
@@ -286,7 +312,6 @@ mod private
   }
 
   /// Run smoke test for published version of the module.
-
   pub fn smoke_test_for_published_run()
   {
     let run = if let Ok( value ) = std::env::var( "WITH_SMOKE" )
@@ -319,17 +344,18 @@ mod private
 // //
 // crate::mod_interface!
 // {
+// //
+// //   // exposed use super;
+// //   exposed use super::super::smoke_test;
+// //
+// //   exposed use SmokeModuleTest;
+// //   exposed use smoke_test_run;
+// //   exposed use smoke_tests_run;
+// //   exposed use smoke_test_for_local_run;
+// //   exposed use smoke_test_for_published_run;
+// //
+// // }
 //
-//   // exposed use super;
-//   exposed use super::super::smoke_test;
-//
-//   exposed use SmokeModuleTest;
-//   exposed use smoke_test_run;
-//   exposed use smoke_tests_run;
-//   exposed use smoke_test_for_local_run;
-//   exposed use smoke_test_for_published_run;
-//
-// }
 
 
 #[ doc( inline ) ]

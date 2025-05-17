@@ -6,7 +6,7 @@ use macro_tools::
   AttributeComponent,
 };
 
-use former_types::Assign;
+use component_model_types::Assign;
 
 ///
 /// Attributes of the whole item.

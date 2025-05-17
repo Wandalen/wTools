@@ -1,4 +1,2 @@
-use super::*;
-// use test_tools::exposed::*;
-
-mod inspect_type_test;
+#[ allow( unused_imports ) ]
+use super::own::*;

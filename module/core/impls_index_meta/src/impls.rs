@@ -1,3 +1,4 @@
+extern crate alloc;
 use proc_macro2::TokenStream;
 use quote::{ quote, ToTokens };
 use syn::
@@ -9,6 +10,7 @@ use syn::
   spanned::Spanned, // Import Spanned trait for error reporting
 };
 use core::fmt; // Import fmt for manual Debug impl if needed
+use alloc::vec::IntoIter; // Use alloc instead of std
 
 // --- Local replacements for macro_tools types/traits ---
 
@@ -20,7 +22,6 @@ trait AsMuchAsPossibleNoDelimiter {}
 pub struct Many< T : ToTokens >( pub Vec< T > );
 
 // Manual Debug implementation for Many<T> if T implements Debug
-// If T doesn't implement Debug, this won't compile, but it's better than deriving
 impl< T > fmt::Debug for Many< T >
 where T: ToTokens + fmt::Debug
 {
@@ -29,7 +30,6 @@ where T: ToTokens + fmt::Debug
         f.debug_tuple( "Many" ).field( &self.0 ).finish()
     }
 }
-
 
 impl< T > Many< T >
 where
@@ -47,7 +47,7 @@ where
     T : ToTokens,
 {
     type Item = T;
-    type IntoIter = std::vec::IntoIter< Self::Item >;
+    type IntoIter = IntoIter< Self::Item >;
     fn into_iter( self ) -> Self::IntoIter
     {
         self.0.into_iter()
@@ -104,11 +104,8 @@ impl fmt::Debug for Item2
     }
 }
 
-
 // Implement the marker trait for Item2 to use in Many's parse impl.
 impl AsMuchAsPossibleNoDelimiter for Item2 {}
-
-//
 
 impl Parse for Item2
 {
@@ -131,8 +128,6 @@ impl Parse for Item2
   }
 }
 
-//
-
 impl ToTokens for Item2
 {
   fn to_tokens( &self, tokens : &mut TokenStream )
@@ -141,8 +136,6 @@ impl ToTokens for Item2
     self.func.to_tokens( tokens );
   }
 }
-
-//
 
 // No derive(Debug) here as Item2 does not derive Debug anymore
 pub struct Items2
@@ -158,7 +151,6 @@ impl fmt::Debug for Items2
         f.debug_tuple( "Items2" ).field( &self.0 ).finish()
     }
 }
-
 
 // Implement Parse for Many<Item2> specifically
 // because Item2 implements AsMuchAsPossibleNoDelimiter
@@ -180,8 +172,6 @@ where
     }
 }
 
-//
-
 impl Parse for Items2
 {
   fn parse( input : ParseStream< '_ > ) -> Result< Self >
@@ -191,8 +181,6 @@ impl Parse for Items2
   }
 }
 
-//
-
 impl ToTokens for Items2
 {
   fn to_tokens( &self, tokens : &mut TokenStream )
@@ -200,17 +188,10 @@ impl ToTokens for Items2
     self.0.iter().for_each( | e |
     {
       // Extract the function item specifically
-      let func = match &e.func
-      {
-          Item::Fn( func_item ) => func_item,
-          // Use spanned for better error location if this panic ever occurs
-          _ => panic!( "Internal error: Item2 should always contain a function item at {:?}", e.func.span() ),
-      };
+      let Item::Fn(func) = &e.func else { panic!( "Internal error: Item2 should always contain a function item at {:?}", e.func.span() ) };
 
       // Get the function name identifier
       let name_ident = &func.sig.ident;
-      // Removed unused name_str
-      // let name_str = name_ident.to_string();
 
       // Construct the macro definition
       let declare_aliased = quote!
@@ -254,12 +235,10 @@ impl ToTokens for Items2
           };
         }
       };
-      result.to_tokens( tokens )
+      result.to_tokens( tokens );
     });
   }
 }
-
-//
 
 pub fn impls( input : proc_macro::TokenStream ) -> Result< TokenStream >
 {

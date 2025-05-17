@@ -16,12 +16,12 @@ pub fn former_for_struct
 (
   ast : &syn::DeriveInput,
   _data_struct : &syn::DataStruct,
-  original_input : &proc_macro::TokenStream,
+  original_input : &macro_tools::proc_macro2::TokenStream,
   _has_debug : bool,
 ) -> Result< TokenStream >
 {
   use macro_tools::IntoGenericArgs;
-  use convert_case::{ Case, Casing }; // Added for snake_case naming
+  use convert_case::{ Case, Casing }; // Added for snake_case naming // Space before ;
 
   // Parse struct-level attributes like `storage_fields`, `mutator`, `perform`.
   let struct_attrs = ItemAttributes::from_attrs( ast.attrs.iter() )?;
@@ -82,15 +82,15 @@ specific needs of the broader forming context. It mandates the implementation of
     < Definition = #former_definition < #former_definition_args > >
     where
       Definition : former::FormerDefinition
-      <
+      < // Angle bracket on new line
         Storage = #former_storage < #struct_generics_ty >,
         Formed = #item < #struct_generics_ty >,
-      >,
+      >, // Angle bracket on new line
       Definition::Types : former::FormerDefinitionTypes
-      <
+      < // Angle bracket on new line
         Storage = #former_storage < #struct_generics_ty >,
         Formed = #item < #struct_generics_ty >,
-      >,
+      >, // Angle bracket on new line
   };
   let extra = generic_params::merge( generics, &extra.into() );
   let ( _former_perform_generics_with_defaults, former_perform_generics_impl, former_perform_generics_ty, former_perform_generics_where )
@@ -146,7 +146,7 @@ specific needs of the broader forming context. It mandates the implementation of
   // Generate constructor function parameters
   let constructor_params = constructor_args_fields
   .iter()
-  .map( | f |
+  .map( | f | // Space around |
   {
     let ident = f.ident;
     let ty = f.non_optional_ty; // Use non-optional type for the argument
@@ -158,7 +158,7 @@ specific needs of the broader forming context. It mandates the implementation of
   // Generate initial storage assignments for constructor arguments
   let constructor_storage_assignments = constructor_args_fields
   .iter()
-  .map( | f |
+  .map( | f | // Space around |
   {
     let ident = f.ident;
     // Use raw identifier for parameter name if needed
@@ -171,7 +171,7 @@ specific needs of the broader forming context. It mandates the implementation of
   .iter()
   .chain( storage_fields.iter() ) // Include storage-only fields
   .filter( | f | !f.attrs.arg_for_constructor.value( false ) ) // Filter out constructor args
-  .map( | f |
+  .map( | f | // Space around |
   {
     let ident = f.ident;
     quote! { #ident : ::core::option::Option::None }
@@ -193,12 +193,12 @@ specific needs of the broader forming context. It mandates the implementation of
     quote!
     {
       ::core::option::Option::Some
-      (
+      ( // Paren on new line
         #former_storage :: < #struct_generics_ty > // Add generics to storage type
         {
           #( #all_storage_assignments ),*
         }
-      )
+      ) // Paren on new line
     }
   };
   // <<< End of changes for constructor arguments >>>
@@ -218,13 +218,14 @@ specific needs of the broader forming context. It mandates the implementation of
   = formed_fields // Combine actual fields and storage-only fields for processing.
   .iter()
   .chain( storage_fields.iter() )
-  .map( | field | {(
+  .map( | field | // Space around |
+  {(
     field.storage_fields_none(),
     field.storage_field_optional(),
     field.storage_field_name(), // Only generated if field.for_formed is true.
     field.storage_field_preform(), // Only generated if field.for_formed is true.
     field.former_field_setter
-    (
+    ( // Paren on new line
       item,
       original_input,
       &struct_generics_impl,
@@ -235,7 +236,7 @@ specific needs of the broader forming context. It mandates the implementation of
       &former_generics_ty,
       &former_generics_where,
       &former_storage,
-    ),
+    ), // Paren on new line
   )}).multiunzip();
 
   // Collect results, separating setters and namespace code (like End structs).
@@ -246,7 +247,7 @@ specific needs of the broader forming context. It mandates the implementation of
   // Generate mutator implementation code.
   let former_mutator_code = mutator( item, original_input, &struct_attrs.mutator, &former_definition_types, &former_definition_types_generics_impl, &former_definition_types_generics_ty, &former_definition_types_generics_where )?;
 
-  // <<< Start of updated code for standalone constructor >>>
+  // <<< Start of updated code for standalone constructor (Option 2) >>>
   let standalone_constructor_code = if struct_attrs.standalone_constructors.value( false )
   {
     // Generate constructor name (snake_case)
@@ -254,10 +255,36 @@ specific needs of the broader forming context. It mandates the implementation of
     let constructor_name_ident_temp = format_ident!( "{}", constructor_name_str, span = item.span() );
     let constructor_name = ident::ident_maybe_raw( &constructor_name_ident_temp );
 
-    // Define the return type for the constructor
-    let return_type = quote!
+    // Determine if all fields are constructor arguments
+    // Note: We only consider fields that are part of the final struct (`formed_fields`)
+    let all_fields_are_args = formed_fields.iter().all( | f | f.attrs.arg_for_constructor.value( false ) ); // Space around |
+
+    // Determine return type and body based on Option 2 rule
+    let ( return_type, constructor_body ) = if all_fields_are_args
     {
-      #former < #struct_generics_ty #former_definition< #former_definition_args > >
+      // Return Self
+      let return_type = quote! { #item< #struct_generics_ty > };
+      let construction_args = formed_fields.iter().map( | f | // Space around |
+      {
+        let field_ident = f.ident;
+        let param_name = ident::ident_maybe_raw( field_ident );
+        quote! { #field_ident : #param_name.into() }
+      });
+      let body = quote! { #item { #( #construction_args ),* } };
+      ( return_type, body )
+    }
+    else
+    {
+      // Return Former
+      let former_return_type = quote!
+      {
+        #former < #struct_generics_ty #former_definition< #former_definition_args > >
+      };
+      let former_body = quote!
+      {
+        #former::begin( #initial_storage_code, None, former::ReturnPreformed )
+      };
+      ( former_return_type, former_body )
     };
 
     // Generate the constructor function
@@ -266,17 +293,15 @@ specific needs of the broader forming context. It mandates the implementation of
       /// Standalone constructor function for #item.
       #[ inline( always ) ]
       #vis fn #constructor_name < #struct_generics_impl >
-      (
-        // <<< Insert constructor parameters >>>
-        #( #constructor_params ),*
-      )
-      -> // Return type on new line
-      #return_type
+      ( // Paren on new line
+        #( #constructor_params ),* // Parameters are generated earlier
+      ) // Paren on new line
+      ->
+      #return_type // Use determined return type
       where
         #struct_generics_where // Use original struct where clause
       {
-        // <<< Use initial_storage_code >>>
-        #former::begin( #initial_storage_code, None, former::ReturnPreformed )
+        #constructor_body // Use determined body
       }
     }
   }
@@ -285,7 +310,7 @@ specific needs of the broader forming context. It mandates the implementation of
     // If #[standalone_constructors] is not present, generate nothing.
     quote!{}
   };
-  // <<< End of updated code for standalone constructor >>>
+  // <<< End of updated code for standalone constructor (Option 2) >>>
 
 
   // Assemble the final generated code using quote!
@@ -493,9 +518,9 @@ specific needs of the broader forming context. It mandates the implementation of
       /// Initializes a former with an end condition and default storage.
       #[ inline( always ) ]
       pub fn new
-      (
+      ( // Paren on new line
         on_end : Definition::End
-      ) -> Self
+      ) -> Self // Paren on new line
       {
         Self::begin_coercing( ::core::option::Option::None, ::core::option::Option::None, on_end )
       }
@@ -503,28 +528,28 @@ specific needs of the broader forming context. It mandates the implementation of
       /// Initializes a former with a coercible end condition.
       #[ inline( always ) ]
       pub fn new_coercing< IntoEnd >
-      (
+      ( // Paren on new line
         end : IntoEnd
-      ) -> Self
+      ) -> Self // Paren on new line
       where
         IntoEnd : ::core::convert::Into< Definition::End >,
       {
         Self::begin_coercing
-        (
+        ( // Paren on new line
           ::core::option::Option::None,
           ::core::option::Option::None,
           end,
-        )
+        ) // Paren on new line
       }
 
       /// Begins the formation process with specified context and termination logic.
       #[ inline( always ) ]
       pub fn begin
-      (
+      ( // Paren on new line
         mut storage : ::core::option::Option< Definition::Storage >,
         context : ::core::option::Option< Definition::Context >,
         on_end : < Definition as former::FormerDefinition >::End,
-      )
+      ) // Paren on new line
       -> Self
       {
         if storage.is_none()
@@ -542,11 +567,11 @@ specific needs of the broader forming context. It mandates the implementation of
       /// Starts the formation process with coercible end condition and optional initial values.
       #[ inline( always ) ]
       pub fn begin_coercing< IntoEnd >
-      (
+      ( // Paren on new line
         mut storage : ::core::option::Option< Definition::Storage >,
         context : ::core::option::Option< Definition::Context >,
         on_end : IntoEnd,
-      ) -> Self
+      ) -> Self // Paren on new line
       where
         IntoEnd : ::core::convert::Into< < Definition as former::FormerDefinition >::End >,
       {
@@ -624,11 +649,11 @@ specific needs of the broader forming context. It mandates the implementation of
     {
       #[ inline( always ) ]
       fn former_begin
-      (
+      ( // Paren on new line
         storage : ::core::option::Option< Definition::Storage >,
         context : ::core::option::Option< Definition::Context >,
         on_end : Definition::End,
-      )
+      ) // Paren on new line
       -> Self
       {
         // qqq : This debug_assert should be enabled by default. How to do that?
@@ -643,16 +668,16 @@ specific needs of the broader forming context. It mandates the implementation of
     /// Provides a specialized former for structure using predefined settings for superformer and end conditions.
     // #vis type #as_subformer < #struct_generics_impl __Superformer, __End > = #former
     #vis type #as_subformer < #struct_generics_ty __Superformer, __End > = #former
-    <
+    < // Angle bracket on new line
       #struct_generics_ty
       #former_definition
-      <
+      < // Angle bracket on new line
         #struct_generics_ty
         __Superformer,
         __Superformer,
         __End,
-      >,
-    >;
+      >, // Angle bracket on new line
+    >; // Angle bracket on new line
 
 
     // = as subformer end: Define the `AsSubformerEnd` trait.
@@ -661,9 +686,9 @@ specific needs of the broader forming context. It mandates the implementation of
     where
       #struct_generics_where
       Self : former::FormingEnd
-      <
+      < // Angle bracket on new line
         #former_definition_types < #struct_generics_ty SuperFormer, SuperFormer >,
-      >,
+      >, // Angle bracket on new line
     {
     }
 
@@ -672,9 +697,9 @@ specific needs of the broader forming context. It mandates the implementation of
     where
       #struct_generics_where
       Self : former::FormingEnd
-      <
+      < // Angle bracket on new line
         #former_definition_types < #struct_generics_ty SuperFormer, SuperFormer >,
-      >,
+      >, // Angle bracket on new line
     {
     }
 

@@ -320,7 +320,7 @@ fn variant_generate
     return Ok( qt!{} )
   }
 
-  if fields.len() <= 0
+  if fields.len() == 0
   {
     return Ok( qt!{} )
   }

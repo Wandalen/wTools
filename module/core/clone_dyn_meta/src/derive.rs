@@ -9,7 +9,7 @@ use macro_tools::
   generic_params,
   ct,
 };
-use former_types::{ Assign };
+use component_model_types::{ Assign };
 
 //
 

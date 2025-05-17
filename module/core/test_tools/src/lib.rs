@@ -17,7 +17,6 @@
 // xxx2 : try to repurpose top-level lib.rs fiel for only top level features
 
 /// Namespace with dependencies.
-
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( not( feature = "doctest" ) ) ]

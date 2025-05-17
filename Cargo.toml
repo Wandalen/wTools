@@ -11,6 +11,7 @@ members = [
 exclude = [
   "-*",
   "module/move/_video_experiment",
+  "module/move/cargo_will",
 ]
 # default-members = [ "module/core/wtools" ]
 
@@ -56,6 +57,7 @@ single_call_fn = "allow"
 inline_always = "allow"
 module_name_repetitions = "allow"
 absolute_paths = "allow"
+wildcard_imports = "allow"
 
 ## top level
 
@@ -241,17 +243,17 @@ path = "module/core/former_types"
 default-features = false
 
 [workspace.dependencies.component_model]
-version = "~0.1.0"
+version = "~0.2.0"
 path = "module/core/component_model"
 default-features = false
 
 [workspace.dependencies.component_model_meta]
-version = "~0.1.0"
+version = "~0.2.0"
 path = "module/core/component_model_meta"
 default-features = false
 
 [workspace.dependencies.component_model_types]
-version = "~0.1.0"
+version = "~0.2.0"
 path = "module/core/component_model_types"
 default-features = false
 
@@ -296,7 +298,7 @@ default-features = false
 ## macro tools
 
 [workspace.dependencies.macro_tools]
-version = "~0.53.0"
+version = "~0.54.0"
 path = "module/core/macro_tools"
 default-features = false
 
@@ -460,13 +462,11 @@ default-features = false
 # path = "module/alias/wautomata"
 # default-features = false
 
-
 ## ca
 
 [workspace.dependencies.wca]
 version = "~0.24.0"
 path = "module/move/wca"
-
 
 ## censor
 
@@ -497,7 +497,6 @@ path = "module/move/wpublisher_xxx"
 
 
 ## plot
-
 [workspace.dependencies.wplot]
 version = "~0.2.0"
 path = "module/move/wplot"
@@ -649,7 +648,6 @@ default-features = false
 [workspace.dependencies.const_format]
 version = "~0.2.32"
 default-features = false
-
 # proc-macro2 = { version = "~1.0.78", default-features = false, features = [] }
 # quote = { version = "~1.0.35", default-features = false, features = [] }
 # syn = { version = "~2.0.52", default-features = false, features = [ "full", "extra-traits" ] } # qqq : xxx : optimize set of features

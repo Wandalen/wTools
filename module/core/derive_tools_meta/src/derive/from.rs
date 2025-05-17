@@ -144,7 +144,6 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
   Ok( result )
 }
 
-// qqq  : document, add example of generated code -- done
 /// Generates `From` implementation for unit structs
 ///
 /// # Example
@@ -194,7 +193,6 @@ fn generate_unit
   }
 }
 
-// qqq  : document, add example of generated code -- done
 /// Generates `From` implementation for tuple structs with a single field
 ///
 /// # Example
@@ -254,7 +252,6 @@ fn generate_single_field_named
   }
 }
 
-// qqq  : document, add example of generated code -- done
 /// Generates `From` implementation for structs with a single named field
 ///
 /// # Example of generated code
@@ -309,7 +306,6 @@ fn generate_single_field
   }
 }
 
-// qqq : document, add example of generated code -- done
 /// Generates `From` implementation for structs with multiple named fields
 ///
 /// # Example
@@ -443,7 +439,6 @@ fn generate_multiple_fields< 'a >
   }
 }
 
-// qqq : document, add example of generated code
 #[ allow ( clippy::format_in_format_args ) ]
 fn variant_generate
 (
@@ -493,7 +488,6 @@ fn variant_generate
     )
   };
 
-  // qqq : make `debug` working for all branches
   if attrs.config.debug.value( false )
   {
     let debug = format!
