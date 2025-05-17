@@ -398,6 +398,7 @@ mod private
     fn quoting_postfixes( &self ) -> &Vec< &'a str > { &self.quoting_postfixes }
   }
 
+  /*
   macro_rules! builder_impls_from
   {
     ( $name : ident, $( ( $field : ident, $type : ty ) ),* $( , )? ) =>
@@ -428,6 +429,7 @@ mod private
       }
     }
   }
+  */
 
   #[ allow( clippy::struct_excessive_bools ) ]
   #[ derive( Debug ) ]
