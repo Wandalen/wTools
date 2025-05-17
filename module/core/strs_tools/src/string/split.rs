@@ -443,13 +443,13 @@ mod private
     quoting_prefixes : Vec< &'a str >,
     quoting_postfixes : Vec< &'a str >,
   }
-  builder_impls_from!
-  (
-    SplitOptionsFormer,
-    ( preserving_empty, bool ), ( preserving_delimeters, bool ), ( preserving_quoting, bool ),
-    ( stripping, bool ), ( quoting, bool ),
-    ( quoting_prefixes, Vec< &'a str > ), ( quoting_postfixes, Vec< &'a str > ),
-  );
+  // builder_impls_from!
+  // (
+  //   SplitOptionsFormer,
+  //   ( preserving_empty, bool ), ( preserving_delimeters, bool ), ( preserving_quoting, bool ),
+  //   ( stripping, bool ), ( quoting, bool ),
+  //   ( quoting_prefixes, Vec< &'a str > ), ( quoting_postfixes, Vec< &'a str > ),
+  // );
 
   impl< 'a > SplitOptionsFormer< 'a >
   {
@@ -465,9 +465,44 @@ mod private
         quoting_prefixes : vec![], quoting_postfixes : vec![],
       }
     }
+
+    // Manually added setters
+    pub fn preserving_empty( &mut self, value : bool ) -> &mut Self { self.preserving_empty = value; self }
+    pub fn preserving_delimeters( &mut self, value : bool ) -> &mut Self { self.preserving_delimeters = value; self }
+    pub fn preserving_quoting( &mut self, value : bool ) -> &mut Self { self.preserving_quoting = value; self }
+    pub fn stripping( &mut self, value : bool ) -> &mut Self { self.stripping = value; self }
+    pub fn quoting( &mut self, value : bool ) -> &mut Self { self.quoting = value; self }
+    pub fn quoting_prefixes( &mut self, value : Vec< &'a str > ) -> &mut Self { self.quoting_prefixes = value; self }
+    pub fn quoting_postfixes( &mut self, value : Vec< &'a str > ) -> &mut Self { self.quoting_postfixes = value; self }
+
+    // Existing methods that were likely part of the manual impl before, or should be retained
+    pub fn src( &mut self, value : &'a str ) -> &mut Self { self.src = value; self }
     pub fn delimeter< D : Into< OpType< &'a str > > >( &mut self, value : D ) -> &mut Self
     { self.delimeter = OpType::Vector( vec![] ).append( value.into() ); self }
-    pub fn src( &mut self, value : &'a str ) -> &mut Self { self.src = value; self }
+
+    // Manually added form method
+    pub fn form( &mut self ) -> SplitOptions< 'a, Vec< &'a str > >
+    {
+      if self.quoting
+      {
+        if self.quoting_prefixes.is_empty() { self.quoting_prefixes = vec![ "\"", "`", "'" ]; }
+        if self.quoting_postfixes.is_empty() { self.quoting_postfixes = vec![ "\"", "`", "'" ]; }
+      }
+      SplitOptions
+      {
+        src : self.src,
+        delimeter : self.delimeter.clone().vector().unwrap(),
+        preserving_empty : self.preserving_empty,
+        preserving_delimeters : self.preserving_delimeters,
+        preserving_quoting : self.preserving_quoting,
+        stripping : self.stripping,
+        quoting : self.quoting,
+        quoting_prefixes : self.quoting_prefixes.clone(),
+        quoting_postfixes : self.quoting_postfixes.clone(),
+      }
+    }
+
+    // Existing perform method
     pub fn perform( &mut self ) -> SplitIterator< 'a > { self.form().split() }
   }
 
