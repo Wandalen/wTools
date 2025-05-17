@@ -53,11 +53,14 @@ string_indentation = [ "enabled" ]
 string_isolate = [ "enabled" ]
 string_parse_request  = [ "string_split", "string_isolate", "enabled" ]
 string_parse_number = [ "lexical", "enabled" ]
-string_split = [ "string_parse_request", "enabled" ]
+string_split = [ "enabled" ] # Removed circular dependency on string_parse_request
+string_parse = []
 
 [dependencies]
-former = { workspace = true, features = [ "default" ] }
 lexical = { version = "~6.1", optional = true }
+component_model_types = { workspace = true, features = ["enabled"] }
+mod_interface = { workspace = true }
+mod_interface_meta = { workspace = true, features = ["enabled"] }
 
 [dev-dependencies]
 test_tools = { workspace = true }

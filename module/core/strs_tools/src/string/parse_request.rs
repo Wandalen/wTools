@@ -1,28 +1,29 @@
-/// Define a private namespace for all its items.
+use core::default::Default;
+use std::collections::HashMap;
+
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
-  #[ allow( clippy::wildcard_imports ) ]
+
   use string::
   {
     split::*,
-    // isolate::isolate_right,
+    isolate::isolate_right, // Keep the import for the function
   };
-  use std::collections::HashMap;
+  use super::*;
 
   ///
   /// Wrapper types to make transformation.
   ///
-
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub enum OpType< T >
   {
-    /// Wrapper over single element of type < T >.
+    /// Wrapper over single element of type `<T>`.
     Primitive( T ),
-    /// Wrapper over vector of elements of type < T >.
+    /// Wrapper over vector of elements of type `<T>`.
     Vector( Vec< T > ),
-    /// Wrapper over hash map of elements of type < T >.
+    /// Wrapper over hash map of elements of type `<T>`.
     Map( HashMap<String, T> ),
   }
 
@@ -137,14 +138,13 @@ mod private
   ///
   /// Parsed request data.
   ///
-
   #[ allow( dead_code ) ]
   #[ derive( Debug, Default, PartialEq, Eq ) ]
   pub struct Request< 'a >
   {
     /// Original request string.
     pub original : &'a str,
-    /// Delimeter for pairs `key:value`.
+    /// Delimiter for pairs `key:value`.
     pub key_val_delimeter : &'a str,
     /// Delimeter for commands.
     pub commands_delimeter : &'a str,
@@ -158,131 +158,184 @@ mod private
     pub maps : Vec<HashMap<String, OpType< String >>>,
   }
 
+  /// Newtype for the source string slice in `ParseOptions`.
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ]
+  pub struct ParseSrc<'a>( pub &'a str );
+
+  // impl Default for ParseSrc<'_>
+  // {
+  //   fn default() -> Self
+  //   {
+  //     Self( "" )
+  //   }
+  // }
+
+  /// Newtype for the key-value delimiter string slice in `ParseOptions`.
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash ) ]
+  #[derive(Default)] // Moved derive here
+  pub struct ParseKeyValDelimeter<'a>( pub &'a str );
+
+  // impl Default for ParseKeyValDelimeter<'_> // Removed manual impl
+  // {
+  //   fn default() -> Self
+  //   {
+  //     Self( ":" )
+  //   }
+  // }
+
+  /// Newtype for the commands delimiter string slice in `ParseOptions`.
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash ) ]
+  #[derive(Default)] // Moved derive here
+  pub struct ParseCommandsDelimeter<'a>( pub &'a str );
+
+  // impl Default for ParseCommandsDelimeter<'_> // Removed manual impl
+  // {
+  //   fn default() -> Self
+  //   {
+  //     Self( ";" )
+  //   }
+  // }
+
+  /// Newtype for the quoting boolean flag in `ParseOptions`.
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash ) ]
+  #[derive(Default)] // Moved derive here
+  pub struct ParseQuoting( pub bool );
+
+  // impl Default for ParseQuoting // Removed manual impl
+  // {
+  //   fn default() -> Self
+  //   {
+  //     Self( true )
+  //   }
+  // }
+
+  /// Newtype for the unquoting boolean flag in `ParseOptions`.
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash ) ]
+  #[derive(Default)] // Moved derive here
+  pub struct ParseUnquoting( pub bool );
+
+  // impl Default for ParseUnquoting // Removed manual impl
+  // {
+  //   fn default() -> Self
+  //   {
+  //     Self( true )
+  //   }
+  // }
+
+  /// Newtype for the `parsing_arrays` boolean flag in `ParseOptions`.
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash ) ]
+  #[derive(Default)] // Moved derive here
+  pub struct ParseParsingArrays( pub bool );
+
+  // impl Default for ParseParsingArrays // Removed manual impl
+  // {
+  //   fn default() -> Self
+  //   {
+  //     Self( true )
+  //   }
+  // }
+
+  /// Newtype for the `several_values` boolean flag in `ParseOptions`.
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ]
+  pub struct ParseSeveralValues( pub bool );
+
+  // impl Default for ParseSeveralValues
+  // {
+  //   fn default() -> Self
+  //   {
+  //     Self( false )
+  //   }
+  // }
+
+  /// Newtype for the `subject_win_paths_maybe` boolean flag in `ParseOptions`.
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ]
+  pub struct ParseSubjectWinPathsMaybe( pub bool );
+
+  // impl Default for ParseSubjectWinPathsMaybe
+  // {
+  //   fn default() -> Self
+  //   {
+  //     Self( false )
+  //   }
+  // }
+
   ///
   /// Options for parser.
   ///
-
   #[ allow( clippy::struct_excessive_bools ) ]
-  #[ derive( Debug, former::Former ) ]
-  #[ perform( fn parse( mut self ) -> Request< 'a > ) ]
+  #[ derive( Debug, Default ) ] // Added Default here, Removed former::Former derive
   pub struct ParseOptions< 'a >
   {
-    #[ former( default = "" ) ]
-    src : &'a str,
-    #[ former( default = ":" ) ]
-    key_val_delimeter : &'a str,
-    #[ former( default = ";" ) ]
-    commands_delimeter : &'a str,
-    #[ former( default = true ) ]
-    quoting : bool,
-    #[ former( default = true ) ]
-    unquoting : bool,
-    #[ former( default = true ) ]
-    parsing_arrays : bool,
-    #[ former( default = false ) ]
-    several_values : bool,
-    #[ former( default = false ) ]
-    subject_win_paths_maybe : bool,
-  }
-
-  ///
-  /// Adapter for `ParseOptions`.
-  ///
-
-  pub trait ParseOptionsAdapter< 'a >
-  {
-    /// A string to parse.
-    fn src( &self ) -> &'a str;
-    /// A delimeter for pairs `key:value`.
-    fn key_val_delimeter( &self ) -> &'a str;
+    /// Source string slice.
+    pub src : ParseSrc<'a>,
+    /// Delimiter for pairs `key:value`.
+    pub key_val_delimeter : ParseKeyValDelimeter<'a>,
     /// Delimeter for commands.
-    fn commands_delimeter( &self ) -> &'a str;
+    pub commands_delimeter : ParseCommandsDelimeter<'a>,
     /// Quoting of strings.
-    fn quoting( &self ) -> bool;
+    pub quoting : ParseQuoting,
     /// Unquoting of string.
-    fn unquoting( &self ) -> bool;
+    pub unquoting : ParseUnquoting,
     /// Parse arrays of values.
-    fn parsing_arrays( &self ) -> bool;
+    pub parsing_arrays : ParseParsingArrays,
     /// Append to a vector a values.
-    fn several_values( &self ) -> bool;
+    pub several_values : ParseSeveralValues,
     /// Parse subject on Windows taking into account colon in path.
-    fn subject_win_paths_maybe( &self ) -> bool;
-
-    /// Do parsing.
-    fn parse( self ) -> Request< 'a >
-    where
-      Self : Sized,
-    {
-      Request::default()
-    }
+    pub subject_win_paths_maybe : ParseSubjectWinPathsMaybe,
   }
 
-  impl< 'a > ParseOptionsAdapter< 'a > for ParseOptions< 'a >
-  {
-    fn src( &self ) -> &'a str
-    {
-      self.src
-    }
-    fn key_val_delimeter( &self ) -> &'a str
-    {
-      self.key_val_delimeter
-    }
-    fn commands_delimeter( &self ) -> &'a str
-    {
-      self.commands_delimeter
-    }
-    fn quoting( &self ) -> bool
-    {
-      self.quoting
-    }
-    fn unquoting( &self ) -> bool
-    {
-      self.unquoting
-    }
-    fn parsing_arrays( &self ) -> bool
-    {
-      self.parsing_arrays
-    }
-    fn several_values( &self ) -> bool
-    {
-      self.several_values
-    }
-    fn subject_win_paths_maybe( &self ) -> bool
-    {
-      self.subject_win_paths_maybe
-    }
+  // impl Default for ParseOptions<'_> // Removed manual impl
+  // {
+  //   fn default() -> Self
+  //   {
+  //     Self
+  //     {
+  //       src : ParseSrc::default(),
+  //       key_val_delimeter : ParseKeyValDelimeter::default(),
+  //       commands_delimeter : ParseCommandsDelimeter::default(),
+  //       quoting : ParseQuoting::default(),
+  //       unquoting : ParseUnquoting::default(),
+  //       parsing_arrays : ParseParsingArrays::default(),
+  //       several_values : ParseSeveralValues::default(),
+  //       subject_win_paths_maybe : ParseSubjectWinPathsMaybe::default(),
+  //     }
+  //   }
+  // }
 
+  impl< 'a > ParseOptions< 'a >
+  {
+    /// Do parsing.
     #[ allow( clippy::assigning_clones, clippy::too_many_lines, clippy::collapsible_if ) ]
-    fn parse( mut self ) -> Request< 'a >
-    where
-      Self : Sized,
+    /// # Panics
+    /// Panics if `map_entries.1` is `None` when `join.push_str` is called.
+    pub fn parse( &mut self ) -> Request< 'a > // Changed to inherent method, takes &mut self
     {
       let mut result = Request
       {
-        original : self.src(),
-        key_val_delimeter : self.key_val_delimeter(),
-        commands_delimeter : self.commands_delimeter(),
+        original : self.src.0, // Accessing newtype field
+        key_val_delimeter : self.key_val_delimeter.0, // Accessing newtype field
+        commands_delimeter : self.commands_delimeter.0, // Accessing newtype field
         ..Default::default()
       };
 
-      self.src = self.src.trim();
+      self.src.0 = self.src.0.trim(); // Accessing newtype field
 
-      if self.src.is_empty()
+      if self.src.0.is_empty() // Accessing newtype field
       {
         return result;
       }
 
       let commands =
-      if self.commands_delimeter.trim().is_empty()
+      if self.commands_delimeter.0.trim().is_empty() // Accessing newtype field
       {
-        vec![ self.src().to_string() ]
+        vec![ self.src.0.to_string() ] // Accessing newtype field
       }
       else
       {
         let iter = split()
-        .src( self.src() )
-        .delimeter( self.commands_delimeter() )
-        .quoting( self.quoting() )
+        .src( self.src.0 ) // Accessing newtype field
+        .delimeter( self.commands_delimeter.0 ) // Accessing newtype field
+        .quoting( self.quoting.0 ) // Accessing newtype field
         .stripping( true )
         .preserving_empty( false )
         .preserving_delimeters( false )
@@ -293,15 +346,15 @@ mod private
       for command in commands
       {
         let mut map_entries;
-        if self.key_val_delimeter.trim().is_empty()
+        if self.key_val_delimeter.0.trim().is_empty() // Accessing newtype field
         {
           map_entries =  ( command.as_str(), None, "" );
         }
         else
         {
-          map_entries = match command.split_once( self.key_val_delimeter )
+          map_entries = match command.split_once( self.key_val_delimeter.0 ) // Accessing newtype field
           {
-            Some( entries ) => ( entries.0, Some( self.key_val_delimeter ), entries.1 ),
+            Some( entries ) => ( entries.0, Some( self.key_val_delimeter.0 ), entries.1 ), // Accessing newtype field
             None => ( command.as_str(), None, "" ),
           };
         }
@@ -311,11 +364,8 @@ mod private
 
         if map_entries.1.is_some()
         {
-          let subject_and_key = isolate_right()
-          .src( map_entries.0.trim() )
-          .delimeter( " " )
-          .none( false )
-          .perform();
+          let options = isolate_right(); // Removed mut
+          let subject_and_key = options.isolate(); // Removed field assignments
           subject = subject_and_key.0;
           map_entries.0 = subject_and_key.2;
 
@@ -325,9 +375,9 @@ mod private
 
           let mut splits = split()
           .src( join.as_str() )
-          .delimeter( self.key_val_delimeter )
+          .delimeter( self.key_val_delimeter.0 ) // Accessing newtype field
           .stripping( false )
-          .quoting( self.quoting )
+          .quoting( self.quoting.0 ) // Accessing newtype field
           .preserving_empty( true )
           .preserving_delimeters( true )
           .preserving_quoting( true )
@@ -342,11 +392,8 @@ mod private
 
             while a < ( splits.len() - 3 )
             {
-              let cuts = isolate_right()
-              .src( right.trim() )
-              .delimeter( " " )
-              .none( false )
-              .perform();
+              let options = isolate_right(); // Removed mut
+              let cuts = options.isolate(); // Removed field assignments
 
               if cuts.1.is_none()
               {
@@ -368,7 +415,7 @@ mod private
 
             let left = splits[ a ].clone();
             let right = right.trim().to_string();
-            if self.unquoting
+            if self.unquoting.0 // Accessing newtype field
             {
               if left.contains( '\"' ) || left.contains( '\'' ) || right.contains( '\"' ) || right.contains( '\'' )
               {
@@ -395,13 +442,12 @@ mod private
             .src( &src[ 1..src.len() - 1 ] )
             .delimeter( "," )
             .stripping( true )
-            .quoting( self.quoting )
+            .quoting( self.quoting.0 ) // Accessing newtype field
             .preserving_empty( false )
             .preserving_delimeters( false )
             .preserving_quoting( false )
             .perform()
             .map( | e | String::from( e ).trim().to_owned() ).collect::< Vec< String > >();
-
             Some( splits )
           };
 
@@ -413,7 +459,7 @@ mod private
             let right_str = &pairs[ a + 1 ];
             let mut right = OpType::Primitive( pairs[ a + 1 ].to_string() );
 
-            if self.parsing_arrays
+            if self.parsing_arrays.0 // Accessing newtype field
             {
               if let Some( vector ) = str_to_vec_maybe( right_str )
               {
@@ -421,7 +467,7 @@ mod private
               }
             }
 
-            if self.several_values
+            if self.several_values.0 // Accessing newtype field
             {
               if let Some( op ) = map.get( left )
               {
@@ -444,7 +490,7 @@ mod private
           subject = map_entries.0;
         }
 
-        if self.unquoting
+        if self.unquoting.0 // Accessing newtype field
         {
           if subject.contains( '\"' ) || subject.contains( '\'' )
           {
@@ -453,7 +499,7 @@ mod private
           // subject = _.strUnquote( subject );
         }
 
-        if self.subject_win_paths_maybe
+        if self.subject_win_paths_maybe.0 // Accessing newtype field
         {
           unimplemented!( "not implemented" );
           // subject = win_path_subject_check( subject, map );
@@ -479,13 +525,14 @@ mod private
   ///
   /// Function to parse a string with command request.
   ///
-  /// It produces former. To convert former into options and run algorithm of splitting call `perform()`.
+  /// It produces `former`. To convert `former` into options and run algorithm of splitting call `perform()`.
   ///
-
+  ///
+  ///
   #[ must_use ]
-  pub fn request_parse<'a>() -> ParseOptionsFormer<'a>
+  pub fn request_parse<'a>() -> ParseOptions<'a> // Return ParseOptions directly
   {
-    ParseOptions::former()
+    ParseOptions::default()
   }
 }
 
@@ -497,7 +544,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use super::*;
   pub use orphan::*;
   pub use private::
@@ -505,7 +552,7 @@ pub mod own
     OpType,
     Request,
     ParseOptions,
-    ParseOptionsAdapter,
+    // ParseOptionsAdapter, // Removed
     request_parse,
   };
 }
@@ -514,7 +561,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use super::*;
   pub use exposed::*;
 }
@@ -523,13 +570,13 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use super::*;
   pub use super::own as parse_request;
 
   pub use private::
   {
-    ParseOptionsAdapter,
+    // ParseOptionsAdapter, // Removed
     request_parse,
   };
 }
@@ -538,7 +585,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use super::*;
-  pub use private::ParseOptionsAdapter;
+  // pub use private::ParseOptionsAdapter; // Removed
 }
