@@ -19,4 +19,4 @@ mod number_test;
 #[ cfg( all( feature = "string_parse", not( feature = "no_std" ) ) ) ]
 mod parse_test;
 #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
-mod split_test;
+pub mod split_test;

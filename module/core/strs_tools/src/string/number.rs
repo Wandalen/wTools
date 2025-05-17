@@ -11,7 +11,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use super::*;
   pub use orphan::*;
   pub use private::
@@ -27,7 +27,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use super::*;
   pub use exposed::*;
   pub use private::
@@ -39,7 +39,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use super::*;
   pub use super::own as number;
 

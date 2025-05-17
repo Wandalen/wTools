@@ -1,22 +1,3 @@
-//! Purpose: Provides shared test assertions and logic for both the derived and manual implementations
-//! of a former builder for a named (struct-like) variant (`V1`) within a generic enum (`EnumG6<T>`),
-//! where the variant contains a field with an independent concrete generic type (`InnerG6<TypeForU>`).
-//! It tests that the constructors generated/implemented for this scenario behave as expected (returning
-//! former builders for nested building), correctly handling independent generics.
-//!
-//! Coverage:
-//! - Rule 3g (Struct + Multi-Field + Default): Tests that the constructor for a named variant without specific attributes is a former builder (`v_1()` returns a former).
-//! - Rule 4b (Option 2 Logic): Tests the usage of the former builder's setters (`.inner()`, `.flag()`) and `.form()` method, verifying the subformer mechanism in the context of independent generics.
-//!
-//! Test Relevance/Acceptance Criteria:
-//! - Defines dummy bounds (`BoundA`, `BoundB`) and concrete types (`TypeForT`, `TypeForU`) satisfying them.
-//! - Defines the inner struct `InnerG6<U: BoundB>` which also derives `Former`.
-//! - Defines the `EnumG6<T: BoundA>` enum structure with the named variant `V1 { inner: InnerG6<TypeForU>, flag: bool, _phantom_t: PhantomData<T> }`.
-//! - Contains test functions (`independent_generics_struct_variant`, `default_construction_independent_struct_variant`) that are included by the derive and manual test files.
-//! - The `independent_generics_struct_variant` test calls the static method `EnumG6::<TypeForT>::v_1()`, uses the returned former's setters (`.inner()`, `.flag()`), and calls `.form()`.
-//! - The `default_construction_independent_struct_variant` test omits the `.inner()` setter call to verify default value handling for the inner field.
-//! - Both tests assert that the resulting enum instances match manually constructed expected values. This verifies that both derived and manual implementations correctly provide former builders that handle fields with independent concrete generic types and non-generic fields within a generic enum.
-
 // File: module/core/former/tests/inc/former_enum_tests/generics_independent_struct_only_test.rs
 
 /// # Test Logic: Independent Generics in Struct Variants
@@ -31,7 +12,7 @@
 /// ## Purpose:
 ///
 /// - **Verify Generic Propagation:** Ensure the enum's generics (`T`) and bounds (`BoundA`) are correctly
-///   applied to the generated implicit former, storage, definitions, former struct, and end struct for the variant.
+///   applied to the generated implicit former, storage, definitions, and end struct for the variant.
 /// - **Verify Concrete Inner Type Handling:** Ensure the implicit former correctly handles fields
 ///   with concrete types (like `InnerG6<TypeForU>`) within the generic enum context.
 /// - **Verify Setter Functionality:** Confirm that setters generated for the implicit former work correctly
@@ -69,7 +50,6 @@ pub struct InnerG6< U : BoundB > // BoundB required by the inner struct
 #[ test ]
 fn independent_generics_struct_variant()
 {
-  // Test Matrix Row: T25.1 (Implicitly, as this tests the behavior expected by the matrix)
   //! Tests the construction of a struct variant (`V1`) where the inner field (`inner`)
   //! uses a concrete type (`InnerG6<TypeForU>`) independent of the enum's generic (`T`).
   //! It verifies that the implicit former's setters for both the concrete inner field
@@ -95,7 +75,6 @@ fn independent_generics_struct_variant()
 #[ test ]
 fn default_construction_independent_struct_variant()
 {
-  // Test Matrix Row: T25.2 (Implicitly, as this tests the behavior expected by the matrix)
   //! Tests the construction of a struct variant (`V1`) relying on the `Default`
   //! implementation for the inner field (`inner`) which has a concrete type (`InnerG6<TypeForU>`).
   //! It verifies that the implicit former correctly uses the default value when the setter is not called.

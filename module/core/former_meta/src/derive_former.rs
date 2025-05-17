@@ -3,7 +3,7 @@
 use super::*;
 use macro_tools::
 {
-  diag, typ, Result,
+  attr, diag, typ, Result,
   proc_macro2::TokenStream, quote::{ format_ident, quote }, syn::spanned::Spanned,
 };
 
@@ -28,8 +28,8 @@ use struct_attrs::*;
 #[ allow( clippy::format_in_format_args, clippy::unnecessary_wraps ) ]
 pub fn mutator
 (
-  _item : &syn::Ident, // Prefixed as it's only used when former_diagnostics_print_generated is active
-  _original_input : &macro_tools::proc_macro2::TokenStream, // Prefixed
+  item : &syn::Ident,
+  original_input : &macro_tools::proc_macro2::TokenStream,
   mutator : &AttributeMutator,
   former_definition_types : &syn::Ident,
   former_definition_types_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
@@ -57,13 +57,10 @@ pub fn mutator
     }
   };
 
-  // If debug is enabled for the mutator attribute, print a helpful example,
-  // but only if the `former_diagnostics_print_generated` feature is enabled.
+  // If debug is enabled for the mutator attribute, print a helpful example.
   if mutator.debug.value( false )
   {
-    #[cfg(feature = "former_diagnostics_print_generated")]
-    {
-      let debug = format!
+    let debug = format!
     (
       r"
 = Example of custom mutator
@@ -92,11 +89,10 @@ where
     );
     let about = format!
     (
-    r"derive : Former
-    item : {_item}", // Use prefixed name
-        );
-        diag::report_print( about, _original_input, debug ); // Use prefixed name
-    }
+r"derive : Former
+item : {item}",
+    );
+    diag::report_print( about, original_input, debug );
   }
 
   Ok( former_mutator_code )
@@ -134,24 +130,18 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 {
   let original_input : TokenStream = input.clone().into();
   let ast = syn::parse::< syn::DeriveInput >( input )?;
-
-  // Parse ItemAttributes ONCE here from all attributes on the item
-  let item_attributes = struct_attrs::ItemAttributes::from_attrs( ast.attrs.iter() )?;
-  // Determine has_debug based on the parsed item_attributes
-  let has_debug = item_attributes.debug.is_some();
+  let has_debug = attr::has_debug( ast.attrs.iter() )?;
 
   // Dispatch based on whether the input is a struct, enum, or union.
   let result = match ast.data
   {
       syn::Data::Struct( ref data_struct ) =>
       {
-          // Pass the parsed item_attributes and the correctly determined has_debug
-          former_for_struct( &ast, data_struct, &original_input, &item_attributes, has_debug )
+          former_for_struct( &ast, data_struct, &original_input, has_debug )
       },
       syn::Data::Enum( ref data_enum ) =>
       {
-          // Pass the parsed item_attributes and the correctly determined has_debug
-          former_for_enum( &ast, data_enum, &original_input, &item_attributes, has_debug )
+          former_for_enum( &ast, data_enum, &original_input, has_debug )
       },
       syn::Data::Union( _ ) =>
       {
@@ -160,15 +150,11 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
   }?;
 
-  // If the top-level `#[debug]` attribute was found, print the final generated code,
-  // but only if the `former_diagnostics_print_generated` feature is enabled.
+  // If the top-level `#[debug]` attribute was found, print the final generated code.
   if has_debug
   {
-    #[cfg(feature = "former_diagnostics_print_generated")]
-    {
-      let about = format!( "derive : Former\nstructure : {}", ast.ident );
-      diag::report_print( about, &original_input, &result );
-    }
+    let about = format!( "derive : Former\nstructure : {}", ast.ident );
+    diag::report_print( about, &original_input, &result );
   }
 
   Ok( result )

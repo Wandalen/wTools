@@ -26,7 +26,6 @@ pub mod dependency
 #[ cfg( feature = "enabled" ) ]
 pub use own::*;
 
-#[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
 // Former macro is intentionally not re-exported; all coupling with "former" is removed.
 
@@ -74,17 +73,20 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use component_model_types::exposed::*;
 
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use component_model_types::prelude::*;
 }
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
+/// Namespace of the module to include with `use module::*`.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use component_model_types::prelude::*;
-
 }

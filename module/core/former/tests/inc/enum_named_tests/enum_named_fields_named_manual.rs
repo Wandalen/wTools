@@ -1,25 +1,3 @@
-//! Purpose: Provides a hand-written implementation of the `Former` pattern's constructors for named
-//! (struct-like) variants with varying field counts and attributes (`#[scalar]`, `#[subform_scalar]`),
-//! demonstrating the manual implementation corresponding to the derived behavior. This includes manual
-//! implementations for static methods and standalone constructors.
-//!
-//! Coverage:
-//! - Rule 1c (Struct + Zero-Field + `#[scalar]`): Manually implements the static method `EnumWithNamedFields::variant_zero_scalar()`.
-//! - Rule 1e (Struct + Single-Field + `#[scalar]`): Manually implements the static method `EnumWithNamedFields::variant_one_scalar()`.
-//! - Rule 2e (Struct + Single-Field + `#[subform_scalar]`): Manually implements the static method `EnumWithNamedFields::variant_one_subform()` which returns a former for the inner type.
-//! - Rule 3e (Struct + Single-Field + Default): Manually implements the static method `EnumWithNamedFields::variant_one_default()` which returns a former for the inner type.
-//! - Rule 1g (Struct + Multi-Field + `#[scalar]`): Manually implements the static method `EnumWithNamedFields::variant_two_scalar()`.
-//! - Rule 3g (Struct + Multi-Field + Default): Manually implements the static method `EnumWithNamedFields::variant_two_default()` which returns a former for the variant. (Note: This variant is commented out in the enum definition in this file).
-//! - Rule 4a (#[standalone_constructors]): Manually implements standalone constructor functions (e.g., `standalone_variant_zero_scalar()`, `standalone_variant_one_default()`, etc.) corresponding to the tests in `_only_test.rs`.
-//! - Rule 4b (Option 2 Logic): Demonstrated by the manual implementations of standalone constructors, showing how their return type depends on field attributes.
-//!
-//! Test Relevance/Acceptance Criteria:
-//! - Defines an enum `EnumWithNamedFields` with named variants covering zero, one, and two fields.
-//! - Provides hand-written implementations of static methods and standalone constructors that mimic the behavior expected from the `#[derive(Former)]` macro for named variants with different attributes and field counts.
-//! - Includes necessary manual former components (Storage, DefinitionTypes, Definition, Former, End) for subform and standalone former builder scenarios.
-//! - Includes shared test logic from `enum_named_fields_named_only_test.rs`.
-//! - The included tests call these manually implemented methods/functions and assert that the returned values match the expected enum instances or former types, verifying the manual implementation.
-
 // File: module/core/former/tests/inc/former_enum_tests/named_tests/enum_named_fields_named_manual.rs
 use super::*;
 use former::

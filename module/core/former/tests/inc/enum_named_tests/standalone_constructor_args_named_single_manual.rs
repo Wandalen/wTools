@@ -1,20 +1,3 @@
-//! Purpose: Provides a hand-written implementation of the standalone scalar constructor function
-//! for a single-field named (struct-like) variant (`StructVariantArgs { field: String }`) within
-//! an enum, demonstrating the manual implementation corresponding to the derived behavior when the
-//! enum has `#[standalone_constructors]` and the field has `#[arg_for_constructor]`.
-//!
-//! Coverage:
-//! - Rule 4a (#[standalone_constructors]): Manually implements the top-level constructor function (`struct_variant_args`).
-//! - Rule 4b (Option 2 Logic): Manually implements the logic for a scalar standalone constructor that takes an argument for the single field in a named variant.
-//! - Rule 1e (Struct + Single-Field + `#[scalar]`): Implicitly relevant as `StructVariantArgs` is a single-field named variant.
-//! - Rule 3e (Struct + Single-Field + Default): Implicitly relevant as `StructVariantArgs` is a single-field named variant.
-//!
-//! Test Relevance/Acceptance Criteria:
-//! - Defines the `TestEnumArgs` enum with the single-field named variant `StructVariantArgs { field: String }`.
-//! - Provides a hand-written `struct_variant_args` function that takes `String` as an argument and returns `TestEnumArgs::StructVariantArgs { field: String }`. This mimics the behavior expected when `#[standalone_constructors]` is on the enum and `#[arg_for_constructor]` is on the field.
-//! - Includes shared test logic from `standalone_constructor_args_named_only_test.rs`.
-//! - The included test calls this manually implemented standalone constructor and asserts that the returned enum instance matches a manually constructed `TestEnumArgs::StructVariantArgs { field: value }`. This verifies the manual implementation of the scalar standalone constructor with a field argument.
-
 // File: module/core/former/tests/inc/enum_named_tests/standalone_constructor_args_named_single_manual.rs
 
 #[ allow( unused_imports ) ]

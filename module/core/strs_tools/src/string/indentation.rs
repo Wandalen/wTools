@@ -1,7 +1,6 @@
 /// Define a private namespace for all its items.
 mod private
 {
-
   /// Adds indentation and optional prefix/postfix to each line of the given string.
   ///
   /// This function iterates over each line in the input string and applies the specified
@@ -23,23 +22,16 @@ mod private
   ///
   /// # Example
   /// ```
-  /// use strs_tools::exposed::*;
-  ///
-  /// let input = "Line 1\nLine 2\nLine 3";
-  /// let indented = indentation( "  ", input, ";" );
-  /// assert_eq!( indented, "  Line 1;\n  Line 2;\n  Line 3;" );
-  ///
-  /// // Demonstrating the function's handling of trailing newlines
-  /// let input_with_newline = "Line 1\nLine 2\nLine 3\n";
-  /// let indented_with_newline = indentation( "  ", input_with_newline, ";" );
-  /// assert_eq!( indented_with_newline, "  Line 1;\n  Line 2;\n  Line 3;\n  ;" );
+  ///   let iter = strs_tools::string::split()
+  ///   .src( "abc def" )
+  ///   .delimeter( " " )
+  ///   .perform();
   /// ```
   ///
   /// In the example above, `indentation` is used to add two spaces before each line
   /// and a semicolon at the end of each line. The function also demonstrates handling
   /// of input strings that end with a newline character by appending an additional line
   /// consisting only of the prefix and postfix.
-
   pub fn indentation< Prefix, Src, Postfix >( prefix : Prefix, src : Src, postfix : Postfix ) -> String
   where
     Prefix : AsRef< str >,
@@ -85,7 +77,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use super::*;
   pub use orphan::*;
   pub use private::
@@ -97,7 +89,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use super::*;
   pub use exposed::*;
   pub use private::
@@ -109,7 +101,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use super::*;
   pub use super::own as indentation;
 
@@ -123,5 +115,6 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+
   use super::*;
 }

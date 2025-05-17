@@ -19,7 +19,7 @@ use super::*;
 
 // Define the enum with zero-field unnamed (tuple) variants for testing.
 #[ derive( Debug, PartialEq, former::Former ) ]
-// #[ debug ]
+#[ debug ]
 #[ standalone_constructors ]
 pub enum EnumWithNamedFields
 {

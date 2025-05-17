@@ -1,22 +1,26 @@
 /// Private namespace.
 mod private
 {
-
   use crate::string::parse_request::OpType;
 
   ///
   /// Either delimeter or delimeted with the slice on its string.
   ///
-
   #[ allow( dead_code ) ]
-  #[ derive( Debug ) ]
+  #[derive(Debug, Clone)]
   pub struct Split< 'a >
   {
-    string : &'a str,
-    typ : SplitType,
+    /// The string slice representing the split segment or delimiter.
+    pub string : &'a str,
+    /// The type of split: either Delimeted (content between delimiters) or Delimeter (the delimiter itself).
+    pub typ : SplitType,
+    /// The starting byte index of the split segment or delimiter in the original source string.
+    pub start : usize,
+    /// The ending byte index (exclusive) of the split segment or delimiter in the original source string.
+    pub end : usize,
   }
 
-  impl< 'a > From< Split< 'a > > for String
+  impl From< Split< '_ > > for String
   {
     fn from( src : Split< '_ > ) -> Self
     {
@@ -24,11 +28,7 @@ mod private
     }
   }
 
-  ///
-  /// Either delimeter or delimeted
-  ///
-
-  #[ derive( Debug ) ]
+  #[derive(Debug, Clone, Copy, PartialEq, Eq)]
   pub enum SplitType
   {
     /// Substring of the original string with text inbetween delimeters.
@@ -37,13 +37,8 @@ mod private
     Delimeter,
   }
 
-  ///
-  /// Find first match in the string.
-  ///
-
   pub trait Searcher
   {
-    /// Find positions of delimeter.
     fn pos( &self, src : &str ) -> Option< ( usize, usize ) >;
   }
 
@@ -51,6 +46,7 @@ mod private
   {
     fn pos( &self, src : &str ) -> Option< ( usize, usize ) >
     {
+      if self.is_empty() { return None; }
       src.find( self ).map( | start | ( start, start + self.len() ) )
     }
   }
@@ -59,6 +55,7 @@ mod private
   {
     fn pos( &self, src : &str ) -> Option< ( usize, usize ) >
     {
+      if self.is_empty() { return None; }
       src.find( self ).map( | start | ( start, start + self.len() ) )
     }
   }
@@ -70,34 +67,17 @@ mod private
       let mut r = vec![];
       for pat in self
       {
+        if pat.is_empty() { continue; }
         if let Some( x ) =  src.find( pat )
         {
           r.push( ( x, x + pat.len() ) );
         }
       }
-
-      if r.is_empty()
-      {
-        return None;
-      }
-
-      r.into_iter().reduce( | accum, item |
-      {
-        if accum.0 > item.0 || accum.1 > item.1
-        {
-          item
-        }
-        else
-        {
-          accum
-        }
-      })
+      if r.is_empty() { return None; }
+      r.sort_by( |a, b| a.0.cmp( &b.0 ).then_with( || (a.1 - a.0).cmp( &(b.1 - b.0) ) ) );
+      r.first().copied()
     }
   }
-
-  ///
-  /// Split iterator.
-  ///
 
   #[ derive( Debug ) ]
   pub struct SplitFastIterator< 'a, D >
@@ -105,14 +85,10 @@ mod private
     D : Searcher
   {
     iterable : &'a str,
+    current_offset : usize,
     counter : i32,
     delimeter : D,
-    preserving_empty : bool,
-    preserving_delimeters : bool,
-    stop_empty : bool,
   }
-
-  //
 
   impl< 'a, D : Searcher + Clone > SplitFastIterator< 'a, D >
   {
@@ -122,16 +98,12 @@ mod private
       Self
       {
         iterable : o.src(),
+        current_offset : 0,
         delimeter : o.delimeter(),
         counter : 0,
-        preserving_empty : o.preserving_empty(),
-        preserving_delimeters : o.preserving_delimeters(),
-        stop_empty : false,
       }
     }
   }
-
-  //
 
   impl< 'a, D > Iterator for SplitFastIterator< 'a, D >
   where
@@ -141,90 +113,59 @@ mod private
 
     fn next( &mut self ) -> Option< Self::Item >
     {
+      // println!( "SFI - START - ctr:{}, off:{}, iter:'{}'", self.counter, self.current_offset, self.iterable );
+      if self.iterable.is_empty() && self.counter > 0 { return None; }
       self.counter += 1;
 
-      if self.counter % 2 == 1
+      if self.counter % 2 == 1 // ODD: Delimeted segment
       {
-        let positions = self.delimeter.pos( self.iterable );
-        if let Some( ( mut start, end ) ) = positions
+        if let Some( ( d_start, _d_end ) ) = self.delimeter.pos( self.iterable ) // _d_end to silence warning
         {
-          if self.iterable.is_empty() && start == end
+          if d_start == 0
           {
-            if self.stop_empty
-            {
-              return None;
-            }
-
-            self.counter -= 1;
-            self.stop_empty = true;
-            return Some( Split { string : "", typ : SplitType::Delimeted } );
+            let split = Split { string: "", typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset };
+            // Not advancing state here; EVEN counter will consume the delimiter at current position.
+            // println!( "SFI - ODD - YIELD empty seg (delim at start): {:?}", split);
+            return Some( split );
           }
-
-          if start == 0 && end != 0
+          else
           {
-            return self.next();
+            let segment_str = &self.iterable[ ..d_start ];
+            let split = Split { string: segment_str, typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset + segment_str.len() };
+            self.current_offset += segment_str.len();
+            self.iterable = &self.iterable[ d_start.. ];
+            // println!( "SFI - ODD - YIELD seg: {:?}, new_off:{}, new_iter:'{}'", split, self.current_offset, self.iterable );
+            return Some( split );
           }
-
-          let mut next = &self.iterable[ ..start ];
-          if start == end && self.counter >= 3
-          {
-            next = &self.iterable[ ..=start ];
-            start += 1;
-          }
-
-          self.iterable = &self.iterable[ start.. ];
-
-          if !self.preserving_empty && next.is_empty()
-          {
-            return self.next();
-          }
-
-          Some( Split { string : next, typ : SplitType::Delimeted } )
         }
-        else if self.iterable.is_empty()
+        else // No delimiter, last segment
         {
-          None
-        }
-        else
-        {
-          let r = Split { string : self.iterable, typ : SplitType::Delimeted };
+          if self.iterable.is_empty() { return None; }
+          let segment_str = self.iterable;
+          let split = Split { string: segment_str, typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset + segment_str.len() };
+          self.current_offset += segment_str.len();
           self.iterable = "";
-          Some( r )
+          // println!( "SFI - ODD - YIELD last seg: {:?}", split );
+          return Some( split );
         }
       }
-      else
+      else // EVEN: Delimiter
       {
-        if self.delimeter.pos( self.iterable ).is_none()
+        if let Some( ( d_start, d_end ) ) = self.delimeter.pos( self.iterable )
         {
-          self.iterable = "";
-          return None;
-        }
+          if d_start > 0 { self.iterable = ""; return None; }
 
-        let ( start, end ) = self.delimeter.pos( self.iterable ).unwrap();
-        let string = &self.iterable[ start..end ];
-        self.iterable = &self.iterable[ end.. ];
-
-        if !self.preserving_empty && string.is_empty()
-        {
-          return self.next();
+          let delimiter_str = &self.iterable[ ..d_end ];
+          let split = Split { string: delimiter_str, typ: SplitType::Delimeter, start: self.current_offset, end: self.current_offset + delimiter_str.len() };
+          self.current_offset += delimiter_str.len();
+          self.iterable = &self.iterable[ d_end.. ];
+          // println!( "SFI - EVEN - YIELD delim: {:?}, new_off:{}, new_iter:'{}'", split, self.current_offset, self.iterable );
+          return Some( split );
         }
-
-        if self.preserving_delimeters
-        {
-          Some( Split { string, typ : SplitType::Delimeter } )
-        }
-        else
-        {
-          self.next()
-          // return self.next_odd_split();
-        }
+        else { return None; }
       }
     }
   }
-
-  ///
-  /// Split iterator.
-  ///
 
   #[ derive( Debug ) ]
   #[ allow( clippy::struct_excessive_bools ) ]
@@ -235,58 +176,38 @@ mod private
     stripping : bool,
     preserving_empty : bool,
     preserving_delimeters : bool,
-    #[ allow( dead_code ) ]
     preserving_quoting : bool,
     quoting : bool,
     quoting_prefixes : Vec< &'a str >,
     quoting_postfixes : Vec< &'a str >,
   }
 
-  //
-
   impl< 'a > SplitIterator< 'a >
   {
     #[ allow( clippy::needless_pass_by_value ) ]
     fn new( o : impl SplitOptionsAdapter< 'a, Vec< &'a str > > ) -> Self
     {
-      let iterator;
-      if !o.stripping() && !o.quoting() /* && !onDelimeter */
+      let mut delimeter_list_for_fast_iterator;
+      if o.quoting()
       {
-        iterator = SplitFastIterator
-        {
-          iterable : o.src(),
-          delimeter : o.delimeter(),
-          counter : 0,
-          preserving_empty : o.preserving_empty(),
-          preserving_delimeters : o.preserving_delimeters(),
-          stop_empty : false,
-        };
+        delimeter_list_for_fast_iterator = o.quoting_prefixes().clone();
+        delimeter_list_for_fast_iterator.extend( o.quoting_postfixes().clone() );
+        delimeter_list_for_fast_iterator.extend( o.delimeter() );
       }
       else
       {
-        let mut delimeter;
-        if o.quoting()
-        {
-          delimeter = o.quoting_prefixes().clone();
-          delimeter.extend( o.quoting_postfixes().clone() );
-          delimeter.extend( o.delimeter() );
-        }
-        else
-        {
-          delimeter = o.delimeter();
-        }
-
-        iterator = SplitFastIterator
-        {
-          iterable : o.src(),
-          delimeter,
-          counter : 0,
-          preserving_empty : true,
-          preserving_delimeters : true,
-          stop_empty : false,
-        };
+        delimeter_list_for_fast_iterator = o.delimeter();
       }
+      delimeter_list_for_fast_iterator.retain(|&pat| !pat.is_empty());
 
+      let iterator = SplitFastIterator
+      {
+        iterable : o.src(),
+        current_offset : 0,
+        delimeter : delimeter_list_for_fast_iterator,
+        counter : 0,
+      };
+      // println!("SI::new - Initialized with PE:{}, PD:{}, S:{}, Q:{}", o.preserving_empty(), o.preserving_delimeters(), o.stripping(), o.quoting());
       Self
       {
         iterator,
@@ -308,98 +229,118 @@ mod private
 
     fn next( &mut self ) -> Option< Self::Item >
     {
-      if let Some( mut split ) = self.iterator.next()
+      // println!( "SI::next() CALLED. Options: PE:{}, PD:{}, S:{}, Q:{}", self.preserving_empty, self.preserving_delimeters, self.stripping, self.quoting );
+      while let Some( raw_split_val ) = self.iterator.next()
       {
+        let mut current_split = raw_split_val;
+        // println!( "SI - Raw from SFI: {:?}", current_split );
+
         if self.quoting
+        && current_split.typ == SplitType::Delimeter // Corrected from Delimeted
+        && self.quoting_prefixes.contains( &current_split.string )
         {
-          split = self.quoted_split( split.string );
+          // println!( "SI - >>> Calling HQS for: {:?}", current_split );
+          current_split = self.handle_quoted_section( current_split );
+          // println!( "SI - <<< Returned from HQS: {:?}", current_split );
         }
 
-        if self.stripping
+        if self.stripping && current_split.typ == SplitType::Delimeted
         {
-          split.string = split.string.trim();
-          if !self.preserving_empty && split.string.is_empty()
+          let original_string_ptr = current_split.string.as_ptr();
+          let original_len = current_split.string.len();
+          let trimmed_string = current_split.string.trim();
+          if trimmed_string.len() < original_len || (trimmed_string.is_empty() && original_len > 0)
           {
-            return self.next();
-          }
-        }
-        else if !self.quoting
-        {
-          return Some( split );
-        }
-
-        if !self.preserving_delimeters
-        {
-          match self.iterator.delimeter.pos( split.string )
-          {
-            Some( ( s, e ) ) =>
-            {
-              if s == 0 && e == split.string.len()
-              {
-                return self.next();
-              }
-              return Some( split );
-            },
-            None =>
-            {
-              return Some( split );
-            },
+            let leading_whitespace_len = trimmed_string.as_ptr() as usize - original_string_ptr as usize;
+            current_split.start += leading_whitespace_len;
+            current_split.string = trimmed_string;
+            current_split.end = current_split.start + current_split.string.len();
           }
         }
 
-        if !self.preserving_empty && split.string.is_empty()
+        let mut skip = false;
+        // println!( "SI - Filtering: Split: {:?}, Type: {:?}, Options: PE:{}, PD:{}", current_split.string, current_split.typ, self.preserving_empty, self.preserving_delimeters );
+        if current_split.typ == SplitType::Delimeted
         {
-          return self.next();
+          if current_split.string.is_empty() && !self.preserving_empty { skip = true; /*println!("SI - SKIP empty Dmd");*/ }
+        }
+        else if current_split.typ == SplitType::Delimeter
+        {
+          if !self.preserving_delimeters { skip = true; /*println!("SI - SKIP Dlr");*/ }
         }
 
-        Some( split )
+        if skip { /*println!("SI - SKIPPED: {:?}", current_split);*/ continue; }
+
+        // println!( "SI - YIELDING: {:?}", current_split );
+        return Some( current_split );
       }
-      else
-      {
-        None
-      }
+      // println!( "SI - SFI exhausted" );
+      None
     }
   }
 
   impl< 'a > SplitIterator< 'a >
   {
-    pub fn quoted_split( &mut self, split_str : &'a str ) -> Split< 'a >
+    fn handle_quoted_section( &mut self, prefix_split : Split< 'a > ) -> Split< 'a >
     {
-      match self.quoting_prefixes.iter().position( | &quote | quote == split_str )
-      {
-        Some( index ) =>
-        {
-          let postfix = self.quoting_postfixes[ index ];
-          let pos = self.src.find( self.iterator.iterable ).unwrap();
-          let start = pos - split_str.len();
-          let end = self.iterator.iterable.find( postfix );
+      let prefix_str = prefix_split.string;
+      let prefix_start_abs = prefix_split.start;
+      // println!( "HQS --- START --- prefix_split: {:?}, SFI.iter: '{}', SFI.offset: {}", prefix_split, self.iterator.iterable, self.iterator.current_offset );
 
-          if let Some( end ) = end
-          {
-            while self.iterator.next().unwrap().string != postfix {}
-            if self.preserving_quoting
-            {
-              Split { string : &self.src[ start..pos + end + postfix.len() ], typ : SplitType::Delimeted }
-            }
-            else
-            {
-              Split { string : &self.src[ start + split_str.len() ..pos + end ], typ : SplitType::Delimeted }
-            }
-          }
-          else
-          {
-            self.iterator.iterable = "";
-            Split { string : &self.src[ start.. ], typ : SplitType::Delimeted }
-          }
-        },
-        None => Split { string : split_str, typ : SplitType::Delimeted },
+      let prefix_idx = self.quoting_prefixes.iter().position( |&p| p == prefix_str ).unwrap();
+      let expected_postfix = self.quoting_postfixes[prefix_idx];
+
+      let search_space = self.iterator.iterable;
+      let search_offset_abs = self.iterator.current_offset;
+
+      // println!("HQS - Searching for postfix '{}' in search_space '{}' (abs_offset: {})", expected_postfix, search_space, search_offset_abs);
+
+      if let Some( (postfix_rel_start, postfix_rel_end) ) = expected_postfix.pos( search_space )
+      {
+        // println!( "HQS - Found postfix '{}' at rel ({},{}) in '{}'", expected_postfix, postfix_rel_start, postfix_rel_end, search_space );
+        let content_in_search_space = &search_space[ ..postfix_rel_start ];
+        // println!( "HQS - content_in_search_space: '{}'", content_in_search_space);
+
+        let final_str;
+        let final_start_abs;
+        let final_end_abs;
+
+        if self.preserving_quoting
+        {
+          final_start_abs = prefix_start_abs;
+          final_end_abs = search_offset_abs + postfix_rel_end;
+          if final_end_abs > self.src.len() || final_start_abs > final_end_abs { /*println!("HQS - Bounds error PQ=true"); */ return prefix_split; }
+          final_str = &self.src[ final_start_abs .. final_end_abs ];
+          // println!( "HQS - Preserving quotes: final_str='{}', final_start_abs={}, final_end_abs={}", final_str, final_start_abs, final_end_abs);
+        }
+        else
+        {
+          final_start_abs = search_offset_abs;
+          final_end_abs = search_offset_abs + content_in_search_space.len();
+          if final_end_abs > self.src.len() || final_start_abs > final_end_abs { /*println!("HQS - Bounds error PQ=false"); */ return prefix_split; }
+          final_str = content_in_search_space;
+          // println!( "HQS - Stripping quotes: final_str='{}', final_start_abs={}, final_end_abs={}", final_str, final_start_abs, final_end_abs);
+        }
+
+        let consumed_len_in_iterable = postfix_rel_end;
+        // println!( "HQS - Advancing SFI: current_offset was {}, iterable was '{}'", self.iterator.current_offset, self.iterator.iterable );
+        // println!( "HQS - Advancing SFI by: {}", consumed_len_in_iterable );
+        self.iterator.current_offset += consumed_len_in_iterable;
+        self.iterator.iterable = &self.iterator.iterable[ consumed_len_in_iterable.. ];
+        self.iterator.counter += 1; // Account for consuming the content and the postfix
+        // println!( "HQS - SFI state after advance: offset:{}, iter:'{}', counter:{}", self.iterator.current_offset, self.iterator.iterable, self.iterator.counter );
+
+        let result = Split { string: final_str, typ: SplitType::Delimeted, start: final_start_abs, end: final_end_abs };
+        // println!( "HQS --- END (postfix found) --- Ret: {:?}", result );
+        return result;
+      }
+      else
+      {
+        // println!( "HQS --- END (postfix NOT found) --- Prefix as literal: {:?}, SFI.iter: '{}', SFI.offset: {}", prefix_split, self.iterator.iterable, self.iterator.current_offset );
+        return prefix_split;
       }
     }
   }
-
-  ///
-  /// Options of function split.
-  ///
 
   #[ derive( Debug ) ]
   #[ allow( clippy::struct_excessive_bools ) ]
@@ -420,100 +361,42 @@ mod private
 
   impl< 'a > SplitOptions< 'a, Vec< &'a str > >
   {
-    /// Produces `SplitIterator`.
     #[ must_use ]
-    pub fn split( self ) -> SplitIterator< 'a >
-    where
-      Self : Sized,
-    {
-      SplitIterator::new( self )
-    }
+    pub fn split( self ) -> SplitIterator< 'a > { SplitIterator::new( self ) }
   }
 
   impl< 'a, D > SplitOptions< 'a, D >
   where
     D : Searcher + Default + Clone
   {
-    /// Produces `SplitFastIterator`.
-    pub fn split_fast( self ) -> SplitFastIterator< 'a, D >
-    where
-      Self : Sized,
-    {
-      SplitFastIterator::new( self )
-    }
+    pub fn split_fast( self ) -> SplitFastIterator< 'a, D > { SplitFastIterator::new( self ) }
   }
 
-  ///
-  /// Adapter for Split Options.
-  ///
-
-  pub trait SplitOptionsAdapter< 'a, D >
-  where
-    D : Clone
+  pub trait SplitOptionsAdapter< 'a, D > where D : Clone
   {
-    /// A string to split.
     fn src( &self ) -> &'a str;
-    /// A delimeter to split string.
     fn delimeter( &self ) -> D;
-    /// Preserving or dropping empty splits.
     fn preserving_empty( &self ) -> bool;
-    /// Preserving or dropping delimeters.
     fn preserving_delimeters( &self ) -> bool;
-    /// Preserving or dropping quotes.
     fn preserving_quoting( &self ) -> bool;
-    /// Stripping.
     fn stripping( &self ) -> bool;
-    /// Quoting.
     fn quoting( &self ) -> bool;
-    /// Quoting prefixes.
     fn quoting_prefixes( &self ) -> &Vec< &'a str >;
-    /// Quoting postfixes.
     fn quoting_postfixes( &self ) -> &Vec< &'a str >;
   }
 
-  //
-
   impl< 'a, D : Searcher + Clone + Default > SplitOptionsAdapter< 'a, D > for SplitOptions< 'a, D >
   {
-    fn src( &self ) -> &'a str
-    {
-      self.src
-    }
-    fn delimeter( &self ) -> D
-    {
-      self.delimeter.clone()
-    }
-    fn preserving_empty( &self ) -> bool
-    {
-      self.preserving_empty
-    }
-    fn preserving_delimeters( &self ) -> bool
-    {
-      self.preserving_delimeters
-    }
-    fn preserving_quoting( &self ) -> bool
-    {
-      self.preserving_quoting
-    }
-    fn stripping( &self ) -> bool
-    {
-      self.stripping
-    }
-    fn quoting( &self ) -> bool
-    {
-      self.quoting
-    }
-    fn quoting_prefixes( &self ) -> &Vec< &'a str >
-    {
-      &self.quoting_prefixes
-    }
-    fn quoting_postfixes( &self ) -> &Vec< &'a str >
-    {
-      &self.quoting_postfixes
-    }
+    fn src( &self ) -> &'a str { self.src }
+    fn delimeter( &self ) -> D { self.delimeter.clone() }
+    fn preserving_empty( &self ) -> bool { self.preserving_empty }
+    fn preserving_delimeters( &self ) -> bool { self.preserving_delimeters }
+    fn preserving_quoting( &self ) -> bool { self.preserving_quoting }
+    fn stripping( &self ) -> bool { self.stripping }
+    fn quoting( &self ) -> bool { self.quoting }
+    fn quoting_prefixes( &self ) -> &Vec< &'a str > { &self.quoting_prefixes }
+    fn quoting_postfixes( &self ) -> &Vec< &'a str > { &self.quoting_postfixes }
   }
-
-  //
 
   macro_rules! builder_impls_from
   {
@@ -521,26 +404,13 @@ mod private
     {
       impl< 'a > $name< 'a >
       {
-        $(
-          pub fn $field( &mut self, value : $type ) -> &mut $name< 'a >
-          {
-            self.$field = value;
-            self
-          }
-        )*
-
+        $( pub fn $field( &mut self, value : $type ) -> &mut $name< 'a > { self.$field = value; self } )*
         pub fn form( &mut self ) -> SplitOptions< 'a, Vec< &'a str > >
         {
           if self.quoting
           {
-            if self.quoting_prefixes.is_empty()
-            {
-              self.quoting_prefixes = vec![ "\"", "`", "'" ];
-            }
-            if self.quoting_postfixes.is_empty()
-            {
-              self.quoting_postfixes = vec![ "\"", "`", "'" ];
-            }
+            if self.quoting_prefixes.is_empty() { self.quoting_prefixes = vec![ "\"", "`", "'" ]; }
+            if self.quoting_postfixes.is_empty() { self.quoting_postfixes = vec![ "\"", "`", "'" ]; }
           }
           SplitOptions
           {
@@ -559,10 +429,6 @@ mod private
     }
   }
 
-  ///
-  /// Former for `SplitOptions`.
-  ///
-
   #[ allow( clippy::struct_excessive_bools ) ]
   #[ derive( Debug ) ]
   pub struct SplitOptionsFormer< 'a >
@@ -580,121 +446,41 @@ mod private
   builder_impls_from!
   (
     SplitOptionsFormer,
-    ( src, &'a str ),
-    ( preserving_empty, bool ),
-    ( preserving_delimeters, bool ),
-    ( preserving_quoting, bool ),
-    ( stripping, bool ),
-    ( quoting, bool ),
-    ( quoting_prefixes, Vec< &'a str > ),
-    ( quoting_postfixes, Vec< &'a str > ),
+    ( preserving_empty, bool ), ( preserving_delimeters, bool ), ( preserving_quoting, bool ),
+    ( stripping, bool ), ( quoting, bool ),
+    ( quoting_prefixes, Vec< &'a str > ), ( quoting_postfixes, Vec< &'a str > ),
   );
 
   impl< 'a > SplitOptionsFormer< 'a >
   {
     pub fn new< D : Into< OpType< &'a str > > >( delimeter : D ) -> SplitOptionsFormer< 'a >
     {
-      let op_vec : OpType<&'a str> = OpType::Vector( vec![] );
       Self
       {
-        src : "",
-        delimeter : op_vec.append( delimeter.into() ),
-        preserving_empty : true,
-        preserving_delimeters : true,
-        preserving_quoting : true,
-        stripping : true,
-        quoting : true,
-        quoting_prefixes : vec![],
-        quoting_postfixes : vec![],
+        src : "", delimeter : OpType::Vector( vec![] ).append( delimeter.into() ),
+        preserving_empty : false,
+        preserving_delimeters : true, // Changed default to true
+        preserving_quoting : false,
+        stripping : false, quoting : false,
+        quoting_prefixes : vec![], quoting_postfixes : vec![],
       }
     }
-
-    pub fn delimeter< D : Into< OpType< &'a str > > >( &mut self, value : D ) -> &mut SplitOptionsFormer< 'a >
-    {
-      let op_vec : OpType<&'a str> = OpType::Vector( vec![] );
-      let op : OpType<&'a str> = value.into();
-      self.delimeter = op_vec.append( op );
-      self
-    }
-
-    pub fn perform( &mut self ) -> SplitIterator< 'a >
-    {
-      let opts = self.form();
-      opts.split()
-    }
+    pub fn delimeter< D : Into< OpType< &'a str > > >( &mut self, value : D ) -> &mut Self
+    { self.delimeter = OpType::Vector( vec![] ).append( value.into() ); self }
+    pub fn src( &mut self, value : &'a str ) -> &mut Self { self.src = value; self }
+    pub fn perform( &mut self ) -> SplitIterator< 'a > { self.form().split() }
   }
-
-  ///
-  /// Function to split a string.
-  ///
-  /// It produces former. To convert former into options and run algorithm of splitting call `form()`.
-  ///
-  /// # Sample
-  /// ```
-  ///   let iter = strs_tools::string::split()
-  ///   .src( "abc def" )
-  ///   .delimeter( " " )
-  ///   .perform();
-  /// ```
 
   #[ must_use ]
-  pub fn split< 'a >() -> SplitOptionsFormer< 'a >
-  {
-    SplitOptionsFormer::new( < &str >::default() )
-  }
+  pub fn split< 'a >() -> SplitOptionsFormer< 'a > { SplitOptionsFormer::new( <&str>::default() ) }
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-pub use own::*;
-
-/// Own namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod own
+mod_interface_meta::mod_interface!
 {
-  #[ allow( clippy::wildcard_imports ) ]
-  use super::*;
-  pub use orphan::*;
-  pub use private::
-  {
-    Split,
-    SplitType,
-    SplitFastIterator,
-    SplitOptions,
-    SplitOptionsAdapter,
-    split,
-  };
-}
-
-/// Parented namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
-  #[ allow( clippy::wildcard_imports ) ]
-  use super::*;
-  pub use exposed::*;
-}
-
-/// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
-  #[ allow( clippy::wildcard_imports ) ]
-  use super::*;
-  pub use super::own as split;
-
-  pub use private::
-  {
-    SplitOptionsAdapter,
-    split,
-  };
-}
-
-/// Namespace of the module to include with `use module::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
-  #[ allow( clippy::wildcard_imports ) ]
-  use super::*;
-  pub use private::SplitOptionsAdapter;
+  exposed use private::Split;
+  exposed use private::SplitType;
+  exposed use private::SplitFastIterator;
+  exposed use private::SplitIterator;
+  exposed use private::split;
+  exposed use private::SplitOptionsFormer;
 }

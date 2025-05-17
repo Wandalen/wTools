@@ -93,204 +93,6 @@ mod private
     }
   }
 
-  /// A wrapper around a reference to `syn::Generics` to provide convenient helper methods
-  /// for generating token streams related to generic parameters.
-  ///
-  /// This is particularly useful in procedural macros for constructing parts of function
-  /// signatures, type paths, and where clauses that involve generics.
-  #[derive(Debug, Clone, Copy)]
-  pub struct GenericsRef<'a>
-  {
-    syn_generics: &'a syn::Generics,
-  }
-
-  impl<'a> GenericsRef<'a>
-  {
-    /// Creates a new `GenericsRef` from a reference to `syn::Generics`.
-    #[must_use]
-    pub fn new_borrowed(syn_generics: &'a syn::Generics) -> Self
-    {
-      Self { syn_generics }
-    }
-
-    /// Returns the `impl_generics` part (e.g., `<T: Trait, 'b, const C: usize>`)
-    /// as a `TokenStream` if generics are present, otherwise an empty `TokenStream`.
-    ///
-    /// This is suitable for use in `impl <#impl_generics> Struct ...` contexts.
-    /// It includes bounds and lifetimes.
-    ///
-    /// # Errors
-    ///
-    /// Currently, this method is not expected to return an error, but returns `Result`
-    /// for future-proofing and consistency with other token-generating methods.
-    pub fn impl_generics_tokens_if_any(&self) -> Result<proc_macro2::TokenStream>
-    {
-      if self.syn_generics.params.is_empty()
-      {
-        return Ok(quote::quote! {});
-      }
-      let (_, impl_g, _, _) = decompose_item_soft(self.syn_generics);
-      Ok(quote::quote! { < #impl_g > })
-    }
-
-    /// Returns the `ty_generics` part (e.g., `<T, 'b, C>`) as a `TokenStream`
-    /// if generics are present, otherwise an empty `TokenStream`.
-    ///
-    /// This is suitable for use in type paths like `Struct::<#ty_generics>`.
-    /// It includes only the identifiers of the generic parameters (types, lifetimes, consts).
-    ///
-    /// # Errors
-    ///
-    /// Currently, this method is not expected to return an error, but returns `Result`
-    /// for future-proofing and consistency.
-    pub fn ty_generics_tokens_if_any(&self) -> Result<proc_macro2::TokenStream>
-    {
-      if self.syn_generics.params.is_empty()
-      {
-        return Ok(quote::quote! {});
-      }
-      let (_, _, ty_g, _) = decompose_item_soft(self.syn_generics);
-      Ok(quote::quote! { < #ty_g > })
-    }
-
-    /// Returns the `where_clause` (e.g., `where T: Trait`) as a `TokenStream`
-    /// if a where clause is present in the original generics, otherwise an empty `TokenStream`.
-    ///
-    /// # Errors
-    ///
-    /// Currently, this method is not expected to return an error, but returns `Result`
-    /// for future-proofing and consistency.
-    pub fn where_clause_tokens_if_any(&self) -> Result<proc_macro2::TokenStream>
-    {
-      let (_, _, _, where_c_punctuated) = decompose_item_soft(self.syn_generics);
-      if where_c_punctuated.is_empty() {
-        Ok(quote::quote! {})
-      } else {
-        Ok(quote::quote! { where #where_c_punctuated })
-      }
-    }
-
-    /// Returns a token stream representing a path to a type, including its generic arguments
-    /// if present (e.g., `MyType::<T, U>`). If no generics are present, it returns
-    /// just the `base_ident`.
-    ///
-    /// # Arguments
-    ///
-    /// * `base_ident`: The identifier of the base type (e.g., `MyType`).
-    ///
-    /// # Errors
-    ///
-    /// Currently, this method is not expected to return an error, but returns `Result`
-    /// for future-proofing and consistency.
-    pub fn type_path_tokens_if_any(&self, base_ident: &syn::Ident) -> Result<proc_macro2::TokenStream>
-    {
-      if self.syn_generics.params.is_empty()
-      {
-        Ok(quote::quote! { #base_ident })
-      } else
-      {
-        let (_, _, ty_g, _) = decompose_item_soft(self.syn_generics);
-        Ok(quote::quote! { #base_ident ::< #ty_g > })
-      }
-    }
-  }
-
-  // Helper function similar to the original `decompose`.
-  #[allow(clippy::type_complexity)]
-  fn decompose_item_soft
-  (
-    generics: &syn::Generics,
-  ) ->
-  (
-    syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>, // with_defaults
-    syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>, // for_impl
-    syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>, // for_ty
-    syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>, // where_clause
-  )
-  {
-    let mut generics_with_defaults = generics.params.clone();
-    punctuated::ensure_trailing_comma(&mut generics_with_defaults);
-
-    let mut generics_for_impl = syn::punctuated::Punctuated::new();
-    let mut generics_for_ty = syn::punctuated::Punctuated::new();
-
-    for param in &generics.params {
-        match param {
-            syn::GenericParam::Type(type_param) => {
-                let impl_param = syn::GenericParam::Type(syn::TypeParam {
-                    attrs: vec![],
-                    ident: type_param.ident.clone(),
-                    colon_token: type_param.colon_token,
-                    bounds: type_param.bounds.clone(),
-                    eq_token: None,
-                    default: None,
-                });
-                generics_for_impl.push_value(impl_param);
-                generics_for_impl.push_punct(syn::token::Comma::default());
-
-                let ty_param = syn::GenericParam::Type(syn::TypeParam {
-                    attrs: vec![],
-                    ident: type_param.ident.clone(),
-                    colon_token: None,
-                    bounds: syn::punctuated::Punctuated::new(),
-                    eq_token: None,
-                    default: None,
-                });
-                generics_for_ty.push_value(ty_param);
-                generics_for_ty.push_punct(syn::token::Comma::default());
-            }
-            syn::GenericParam::Const(const_param) => {
-                let impl_param = syn::GenericParam::Const(syn::ConstParam {
-                    attrs: vec![],
-                    const_token: const_param.const_token,
-                    ident: const_param.ident.clone(),
-                    colon_token: const_param.colon_token,
-                    ty: const_param.ty.clone(),
-                    eq_token: None,
-                    default: None,
-                });
-                generics_for_impl.push_value(impl_param);
-                generics_for_impl.push_punct(syn::token::Comma::default());
-
-                let ty_param = syn::GenericParam::Type(syn::TypeParam { // Const params are represented by their idents for ty_generics
-                    attrs: vec![],
-                    ident: const_param.ident.clone(),
-                    colon_token: None,
-                    bounds: syn::punctuated::Punctuated::new(),
-                    eq_token: None,
-                    default: None,
-                });
-                generics_for_ty.push_value(ty_param);
-                generics_for_ty.push_punct(syn::token::Comma::default());
-            }
-            syn::GenericParam::Lifetime(lifetime_param) => {
-                generics_for_impl.push_value(syn::GenericParam::Lifetime(lifetime_param.clone()));
-                generics_for_impl.push_punct(syn::token::Comma::default());
-
-                let ty_param = syn::GenericParam::Lifetime(syn::LifetimeParam {
-                    attrs: vec![],
-                    lifetime: lifetime_param.lifetime.clone(),
-                    colon_token: None,
-                    bounds: syn::punctuated::Punctuated::new(),
-                });
-                generics_for_ty.push_value(ty_param);
-                generics_for_ty.push_punct(syn::token::Comma::default());
-            }
-        }
-    }
-
-    let generics_where = if let Some(where_clause) = &generics.where_clause {
-        let mut predicates = where_clause.predicates.clone();
-        punctuated::ensure_trailing_comma(&mut predicates);
-        predicates
-    } else {
-        syn::punctuated::Punctuated::new()
-    };
-
-    (generics_with_defaults, generics_for_impl, generics_for_ty, generics_where)
-  }
-
-
   /// Merges two `syn::Generics` instances into a new one.
   ///
   /// This function takes two references to `syn::Generics` and combines their
@@ -345,6 +147,7 @@ mod private
     };
 
     // Merge params
+    // result.params.extend( a.params.iter().chain( b.params.iter() ) );
     for param in &a.params
     {
       result.params.push( param.clone() );
@@ -410,6 +213,7 @@ mod private
   #[ must_use ]
   pub fn only_names( generics : &syn::Generics ) -> syn::Generics
   {
+    // use syn::{ Generics, GenericParam, LifetimeDef, TypeParam, ConstParam };
     use syn::{ Generics, GenericParam, LifetimeParam, TypeParam, ConstParam };
 
     let result = Generics
@@ -487,6 +291,11 @@ mod private
   #[ must_use ]
   pub fn names( generics : &syn::Generics )
   -> impl IterTrait< '_, &syn::Ident >
+  // -> std::iter::Map
+  // <
+  //   syn::punctuated::Iter< 'a, syn::GenericParam >,
+  //   impl FnMut( &'a syn::GenericParam ) -> &'a syn::Ident + 'a,
+  // >
   {
     generics.params.iter().map( | param | match param
     {
@@ -722,7 +531,6 @@ pub mod own
     only_names,
     names,
     decompose,
-    GenericsRef,
   };
 }
 

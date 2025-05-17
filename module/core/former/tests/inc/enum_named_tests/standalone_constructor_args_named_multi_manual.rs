@@ -1,20 +1,3 @@
-//! Purpose: Provides a hand-written implementation of the standalone scalar constructor function
-//! for a multi-field named (struct-like) variant (`MultiStructArgs { a: i32, b: bool }`) within
-//! an enum, demonstrating the manual implementation corresponding to the derived behavior when the
-//! enum has `#[standalone_constructors]` and all fields have `#[arg_for_constructor]`.
-//!
-//! Coverage:
-//! - Rule 4a (#[standalone_constructors]): Manually implements the top-level constructor function (`multi_struct_args`).
-//! - Rule 4b (Option 2 Logic): Manually implements the logic for a scalar standalone constructor that takes arguments for all fields in a multi-field named variant.
-//! - Rule 1g (Struct + Multi-Field + `#[scalar]`): Implicitly relevant as `MultiStructArgs` is a multi-field named variant.
-//! - Rule 3g (Struct + Multi-Field + Default): Implicitly relevant as `MultiStructArgs` is a multi-field named variant.
-//!
-//! Test Relevance/Acceptance Criteria:
-//! - Defines the `TestEnumArgs` enum with the multi-field named variant `MultiStructArgs { a: i32, b: bool }`.
-//! - Provides a hand-written `multi_struct_args` function that takes `i32` and `bool` as arguments and returns `TestEnumArgs::MultiStructArgs { a: i32, b: bool }`. This mimics the behavior expected when `#[standalone_constructors]` is on the enum and `#[arg_for_constructor]` is on all fields of the variant.
-//! - Includes shared test logic from `standalone_constructor_args_named_only_test.rs`.
-//! - The included test calls this manually implemented standalone constructor and asserts that the returned enum instance matches a manually constructed `TestEnumArgs::MultiStructArgs { a: value1, b: value2 }`. This verifies the manual implementation of the scalar standalone constructor with field arguments.
-
 // File: module/core/former/tests/inc/enum_named_tests/standalone_constructor_args_named_multi_manual.rs
 
 #[ allow( unused_imports ) ]

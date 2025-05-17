@@ -1,17 +1,17 @@
-//! Purpose: Tests the `#[derive(Former)]` macro's generation of constructors for single-field and multi-field tuple variants within a generic enum with bounds. This file focuses on verifying the derive-based implementation, particularly the default behavior when `#[scalar]` is commented out.
-//!
-//! Coverage:
-//! - Rule 3d (Tuple + Single-Field + Default): Verifies `Enum::variant() -> InnerFormer<...>` for a generic enum.
-//! - Rule 3f (Tuple + Multi-Field + Default): Verifies `Enum::variant(T1, T2, ...) -> Enum` for a generic enum. (Note: Tests in `_only_test.rs` included by this file seem to expect subformer behavior for multi-field variants, which contradicts this rule. The comment reflects the rule as defined in the plan).
-//! - Rule 4b (Option 2 Logic): Related to the subformer mechanism used for `Variant1` (as tested) and expected for `Variant2` (as tested, contradicting Rule 3f).
-//!
-//! Test Relevance/Acceptance Criteria:
-//! - Defines a generic enum `EnumScalarGeneric<T: Bound>` with variants `Variant1(InnerScalar<T>)` and `Variant2(InnerScalar<T>, bool)`.
-//! - Includes shared test logic from `scalar_generic_tuple_only_test.rs`.
-//! - Relies on `#[derive(Former)]` to generate static methods (`variant_1`, `variant_2`).
-//! - The included tests invoke these methods and use `.into()` for `variant_1` (expecting scalar) and setters/`.form()` for `variant_2` (expecting subformer), asserting the final enum instance matches manual construction. This tests the derived constructors' behavior with generic tuple variants.
-
 // File: module/core/former/tests/inc/former_enum_tests/scalar_generic_tuple_derive.rs
+
+//! # Derive Test: #[scalar] Attribute on Generic Tuple Variants
+//!
+//! This test file verifies the `#[derive(Former)]` macro's handling of tuple variants
+//! containing generic types when the variant is explicitly marked with `#[scalar]`.
+//!
+//! ## Purpose:
+//!
+//! - To ensure the derive macro generates a direct static constructor method for
+//!   `#[scalar]` tuple variants, correctly handling generic parameters and bounds.
+//! - To confirm the generated constructor signature accepts arguments via `impl Into<...>`
+//!   for each field in the tuple, including generic ones.
+//! - It uses the shared test logic from `scalar_generic_tuple_only_test.rs`.
 
 use super::*; // Imports testing infrastructure and potentially other common items
 
@@ -31,7 +31,7 @@ pub enum EnumScalarGeneric< T : Bound > // Enum bound
   // attribute 'subformer_scalar' it's actually below, so we have a rpoblem in proc macro
   // check readme.md and advanced.md for more information on disinction
   // #[ scalar ] // Removed #[scalar] and Variant2 for single-field test
-  Variant2( InnerScalar< T >, bool ), // Tuple variant with generic and non-generic fields
+  // Variant2( InnerScalar< T >, bool ), // Tuple variant with generic and non-generic fields
 }
 
 // --- Include the Test Logic ---

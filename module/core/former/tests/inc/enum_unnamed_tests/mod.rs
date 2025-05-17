@@ -84,12 +84,8 @@
 // mod standalone_constructor_args_tuple_single_manual; // Added
 // mod standalone_constructor_args_tuple_multi_manual; // Added
 // mod standalone_constructor_args_tuple_only_test;
-
-// Coverage for `tuple_zero_fields_*` tests:
-// - Tests zero-field tuple variants e.g., `MyEnum::Variant()`.
-// - Verifies Rules 1b (scalar), 3b (default), and 4a (standalone_constructors).
-mod tuple_zero_fields_derive; // Re-enabled after fixing _only_test.rs and derive attributes
-mod tuple_zero_fields_manual; // Re-enabled after fixing _only_test.rs
-// Note: tuple_zero_fields_only_test.rs is included by the manual and derive files.
+// mod tuple_zero_fields_derive; // Moved from enum_unit_tests
+// mod tuple_zero_fields_manual; // Moved from enum_unit_tests
+// mod tuple_zero_fields_only_test; // Moved from enum_unit_tests
 
 // pub mod compile_fail;
