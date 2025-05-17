@@ -187,8 +187,7 @@ mod private
       if self.syn_generics.params.is_empty()
       {
         Ok(quote::quote! { #base_ident })
-      } else
-      {
+      } else {
         let (_, _, ty_g, _) = decompose_item_soft(self.syn_generics);
         Ok(quote::quote! { #base_ident ::< #ty_g > })
       }
