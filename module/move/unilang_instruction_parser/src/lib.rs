@@ -1,20 +1,34 @@
-//! `unilang_instruction_parser` is a crate for parsing unilang CLI syntax.
 //!
-//! It takes string input (either a single `&str` or a slice `&[&str]`) and
-//! produces a vector of `GenericInstruction`s, representing the parsed commands
-//! and their arguments. The parser is designed to provide precise, location-aware
-//! error reporting.
+//! `unilang_instruction_parser` is a Rust crate designed to parse `unilang` CLI-like instruction strings.
+//! It leverages `strs_tools` for initial itemization and then performs syntactic analysis
+//! to produce structured `GenericInstruction` objects. The parser is capable of handling
+//! commands, named arguments, positional arguments, and provides location-aware error reporting.
+//!
 
-#![warn(missing_docs)]
-#![warn(missing_debug_implementations)]
-// #![deny(unsafe_code)] // Not strictly needed for this crate yet, but good practice.
+#![ cfg_attr( feature = "no_std", no_std ) ]
+#![ cfg_attr( docsrs, feature( doc_auto_cfg ) ) ]
+#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_hr.png" ) ]
+#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_hr.png" ) ]
+#![ warn( missing_docs ) ]
+#![ warn( missing_debug_implementations ) ]
+#![ warn( rust_2018_idioms ) ]
 
+/// Contains types related to parser configuration.
 pub mod config;
+/// Defines error types for the parser.
 pub mod error;
+/// Defines instruction and argument structures.
 pub mod instruction;
+/// Contains the core parsing engine.
 pub mod parser_engine;
 
-pub use config::UnilangParserOptions;
-pub use error::{ParseError, ErrorKind, SourceLocation};
-pub use instruction::{Argument, GenericInstruction};
-pub use parser_engine::Parser;
+/// Prelude for commonly used items.
+pub mod prelude
+{
+  pub use super::config::*;
+  pub use super::error::*;
+  pub use super::instruction::*;
+  pub use super::parser_engine::*;
+}
+
+pub use prelude::*;

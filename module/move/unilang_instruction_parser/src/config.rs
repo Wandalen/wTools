@@ -1,48 +1,35 @@
-//! Configuration for the unilang instruction parser.
+//! Defines configuration options for the unilang parser.
 
-// No direct import of SplitOptions needed here anymore, components will be stored.
-
-/// Options to configure the behavior of the `unilang` parser.
+/// Options for configuring the `unilang` parser.
 ///
-/// This structure holds components needed to construct `strs_tools::string::split::SplitOptions`
-/// for the initial splitting of the input string.
-#[derive(Debug)]
-pub struct UnilangParserOptions {
-    // Components to build strs_tools::string::split::SplitOptions
-    pub delimiters_and_operators: Vec<&'static str>,
-    pub quoting_prefixes: Vec<&'static str>,
-    pub quoting_postfixes: Vec<&'static str>,
-    pub preserve_delimiters: bool,
-    pub preserve_quoting: bool,
-    pub stripping: bool,
-    pub quoting: bool,
-    pub preserve_empty: bool,
-    // Other unilang-specific options that are not part of SplitOptions
-    // will be handled post-splitting or stored here if needed.
-    // For example:
-    // pub escape_char: Option<char>,
-    // pub comment_prefix: Option<&'static str>,
-    // pub implicit_whitespace_delimit: bool,
+/// This structure wraps `strs_tools::string::parse_request::ItemizerOptions` to allow
+/// customization of the underlying itemization process.
+#[derive(Debug, Clone)]
+pub struct UnilangParserOptions
+{
+  /// Options for the `strs_tools::string::parse_request::Itemizer`.
+  pub itemizer_options : strs_tools::string::parse_request::ItemizerOptions<'static>,
 }
 
-impl Default for UnilangParserOptions {
-    fn default() -> Self {
-        const DELIMITERS_AND_OPERATORS: &[&str] = &[" ", "\t", "\n", "\r", "::", ";;", "?"]; // Added whitespace
-        const QUOTE_PREFIXES: &[&str] = &["\"", "'"];
-        const QUOTE_POSTFIXES: &[&str] = &["\"", "'"];
-
-        Self {
-            delimiters_and_operators: DELIMITERS_AND_OPERATORS.to_vec(),
-            quoting_prefixes: QUOTE_PREFIXES.to_vec(),
-            quoting_postfixes: QUOTE_POSTFIXES.to_vec(),
-            preserve_delimiters: true, // Keep delimiters as separate items.
-            preserve_quoting: false,   // Remove quotes from the content of quoted strings.
-            stripping: true,             // Strip leading/trailing whitespace from each item.
-            quoting: true,               // Enable handling of quoted strings.
-            preserve_empty: false,    // Don't keep empty strings from splits.
-            // escape_char: Some('\\'), // To be handled by unilang_parser
-            // comment_prefix: Some("#"), // To be handled by unilang_parser
-            // implicit_whitespace_delimit: true, // To be handled by unilang_parser
-        }
+impl Default for UnilangParserOptions
+{
+  fn default() -> Self
+  {
+    // Configure itemizer options for unilang syntax by default.
+    // These settings are based on the typical unilang specification.
+    Self
+    {
+      itemizer_options : strs_tools::string::parse_request::ItemizerOptions
+      {
+        quote_pairs : vec![ ( "\"", "\"" ), ( "'", "'" ) ],
+        escape_char : Some( '\\' ),
+        delimiters : vec![ "::", ";;" ], // "::" for named args, ";;" for command separation
+        operators : vec![ "?" ],       // "?" for help
+        comment_prefix : Some( "#" ),  // Standard comment prefix
+        keep_whitespace_items : false, // Whitespace is generally not significant for commands
+        keep_comment_items : false,    // Comments are discarded
+        implicit_whitespace_delimit : true, // Items are separated by whitespace if no other delimiter
+      },
     }
+  }
 }

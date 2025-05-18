@@ -1,72 +1,100 @@
-//! Error types for the unilang instruction parser.
-
+//! Defines error types for the unilang instruction parser.
 use std::fmt;
-// strs_tools::string::split::SplitIterator does not return Result, so no direct error types to import for From impl.
-// Errors like unterminated quotes will be handled by unilang_instruction_parser's analysis phase.
 
 /// Represents the location of a parsing error.
 #[derive(Debug, PartialEq, Clone)]
-pub enum SourceLocation {
-    /// Location within a single string input.
-    StrSpan { start: usize, end: usize },
-    /// Location within a segment of a slice input.
-    SliceSegment {
-        segment_index: usize,
-        start_in_segment: usize,
-        end_in_segment: usize,
-    },
+pub enum SourceLocation
+{
+  /// Location within a single string input.
+  StrSpan
+  {
+    start : usize,
+    end : usize,
+  },
+  /// Location within a segment of a slice input.
+  SliceSegment
+  {
+    segment_index : usize,
+    start_in_segment : usize,
+    end_in_segment : usize,
+  },
 }
 
-/// Represents the kind of parsing error.
+/// Specifies the kind of parsing error.
 #[derive(Debug)]
-pub enum ErrorKind {
-    // /// Error originating from the underlying itemizer. // Removed as SplitIterator doesn't return Result<Item, Error>
-    // Itemization(StrsItemizerErrorKind),
-    /// General syntax error detected by unilang_instruction_parser.
-    Syntax(String),
-    /// Unterminated quoted string.
-    UnterminatedQuote,
-    /// Invalid escape sequence within a string.
-    InvalidEscapeSequence,
+pub enum ErrorKind
+{
+  /// Error originating from the `strs_tools` itemizer.
+  Itemization(strs_tools::string::parse_request::ErrorKind),
+  /// General syntax error.
+  Syntax(String),
+  /// Unterminated quoted string.
+  UnterminatedQuote,
+  /// Invalid escape sequence within a string.
+  InvalidEscapeSequence,
 }
 
-/// Represents a parsing error with its kind and location.
+/// Represents an error encountered during parsing.
 #[derive(Debug)]
-pub struct ParseError {
-    pub kind: ErrorKind,
-    pub location: Option<SourceLocation>,
+pub struct ParseError
+{
+  /// The kind of error.
+  pub kind : ErrorKind,
+  /// The location of the error, if available.
+  pub location : Option<SourceLocation>,
 }
 
-impl fmt::Display for ParseError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match &self.kind {
-            // ErrorKind::Itemization(kind) => write!(f, "Itemization error: {}", kind), // Removed
-            ErrorKind::Syntax(msg) => write!(f, "Syntax error: {}", msg),
-            ErrorKind::UnterminatedQuote => write!(f, "Syntax error: Unterminated quote"),
-            ErrorKind::InvalidEscapeSequence => write!(f, "Syntax error: Invalid escape sequence"),
-        }?;
-        if let Some(loc) = &self.location {
-            match loc {
-                SourceLocation::StrSpan { start, end } => {
-                    write!(f, " at bytes {}-{}", start, end)?;
-                }
-                SourceLocation::SliceSegment { segment_index, start_in_segment, end_in_segment } => {
-                    write!(f, " in segment {} at bytes {}-{}", segment_index, start_in_segment, end_in_segment)?;
-                }
-            }
+impl fmt::Display for ParseError
+{
+  fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+  {
+    match &self.kind
+    {
+      ErrorKind::Itemization( e ) => write!( f, "Itemization error: {}", e )?,
+      ErrorKind::Syntax( msg ) => write!( f, "Syntax error: {}", msg )?,
+      ErrorKind::UnterminatedQuote => write!( f, "Syntax error: Unterminated quote" )?,
+      ErrorKind::InvalidEscapeSequence => write!( f, "Syntax error: Invalid escape sequence" )?,
+    }
+    if let Some( loc ) = &self.location
+    {
+      match loc
+      {
+        SourceLocation::StrSpan { start, end } =>
+        {
+          write!( f, " at bytes {}-{}", start, end )?;
         }
-        Ok(())
+        SourceLocation::SliceSegment { segment_index, start_in_segment, end_in_segment } =>
+        {
+          write!( f, " in segment {} at bytes {}-{}", segment_index, start_in_segment, end_in_segment )?;
+        }
+      }
     }
+    Ok( () )
+  }
 }
 
-impl std::error::Error for ParseError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        // Since ErrorKind variants are simple for now, they don't wrap other errors.
-        // If Itemization was wrapping a Box<dyn Error>, this would be relevant.
-        None
+impl std::error::Error for ParseError
+{
+  fn source( &self ) -> Option< &( dyn std::error::Error + 'static ) >
+  {
+    match &self.kind
+    {
+      // qqq: Consider if `strs_tools::string::parse_request::ErrorKind` should implement `std::error::Error` itself.
+      // If it does, this can be `Some(e)`. For now, it doesn't.
+      ErrorKind::Itemization( _e ) => None,
+      _ => None,
     }
+  }
 }
 
-// The From<StrsItemizerParseError> is removed because strs_tools::string::split::SplitIterator
-// does not return a Result<_, StrsItemizerParseError>. Errors like unterminated quotes
-// will be detected and reported by unilang_instruction_parser's own logic.
+impl From<strs_tools::string::parse_request::ParseError> for ParseError
+{
+  fn from( err : strs_tools::string::parse_request::ParseError ) -> Self
+  {
+    // For now, itemization errors from strs_tools are mapped to StrSpan.
+    // If itemization is done per segment for slice inputs, this mapping will need
+    // to be adjusted by the caller to include segment_index.
+    let location = SourceLocation::StrSpan { start : err.location.start, end : err.location.end };
+    ParseError { kind : ErrorKind::Itemization( err.kind ), location : Some( location ) }
+  }
+}
