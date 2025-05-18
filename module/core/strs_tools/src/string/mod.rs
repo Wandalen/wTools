@@ -32,30 +32,30 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  #[allow(unused_imports)] use super::*;
+  // Removed: #[allow(unused_imports)] use super::*;
 
-  pub use orphan::*;
+  pub use super::orphan::*; // Corrected
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
-  pub use self::indentation; // Corrected
-  #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
-  pub use self::indentation::orphan::*; // Corrected
+  // pub use self::indentation; // Removed
+  // #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ] // Redundant cfg
+  pub use super::indentation::orphan::*; // Corrected
   #[ cfg( all( feature = "string_isolate", not( feature = "no_std" ) ) ) ]
-  pub use self::isolate; // Corrected
-  #[ cfg( all( feature = "string_isolate", not( feature = "no_std" ) ) ) ]
-  pub use self::isolate::orphan::*; // Corrected
+  // pub use self::isolate; // Removed
+  // #[ cfg( all( feature = "string_isolate", not( feature = "no_std" ) ) ) ] // Redundant cfg
+  pub use super::isolate::orphan::*; // Corrected
   #[ cfg( all( feature = "string_parse_number", not( feature = "no_std" ) ) ) ]
-  pub use self::number; // Corrected
-  #[ cfg( all( feature = "string_parse_number", not( feature = "no_std" ) ) ) ]
+  // pub use self::number; // Removed
+  // #[ cfg( all( feature = "string_parse_number", not( feature = "no_std" ) ) ) ] // Redundant cfg
   #[ allow( unused_imports ) ]
-  pub use self::number::orphan::*; // Corrected
+  pub use super::number::orphan::*; // Corrected
   #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
-  pub use self::parse_request; // Corrected
-  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
-  pub use self::parse_request::orphan::*; // Corrected
+  // pub use self::parse_request; // Removed
+  // #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ] // Redundant cfg
+  pub use super::parse_request::orphan::*; // Corrected
   #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
-  pub use self::split; // Corrected
-  #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
-  pub use self::split::orphan::*; // Corrected
+  // pub use self::split; // Removed
+  // #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ] // Redundant cfg
+  pub use super::split::orphan::*; // Corrected
 }
 
 /// Parented namespace of the module.
@@ -63,27 +63,27 @@ pub mod own
 pub mod orphan
 {
   #[allow(unused_imports)] use super::*;
-  pub use exposed::*;
+  pub use super::exposed::*; // Corrected
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  #[allow(unused_imports)] use super::*;
-  pub use prelude::*;
+  // Removed: #[allow(unused_imports)] use super::*;
+  pub use super::prelude::*; // Corrected
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
   #[ allow( unused_imports ) ]
-  pub use self::indentation::exposed::*; // Corrected
+  pub use super::indentation::exposed::*; // Corrected
   #[ cfg( all( feature = "string_isolate", not( feature = "no_std" ) ) ) ]
-  pub use self::isolate::exposed::*; // Corrected
+  pub use super::isolate::exposed::*; // Corrected
   #[ cfg( all( feature = "string_parse_number", not( feature = "no_std" ) ) ) ]
   #[ allow( unused_imports ) ]
-  pub use self::number::exposed::*; // Corrected
+  pub use super::number::exposed::*; // Corrected
   #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
-  pub use self::parse_request::exposed::*; // Corrected
+  pub use super::parse_request::exposed::*; // Corrected
   #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
-  pub use self::split::exposed::*; // Corrected
+  pub use super::split::exposed::*; // Corrected
 }
 
 /// Namespace of the module to include with `use module::*`.
@@ -93,14 +93,14 @@ pub mod prelude
   #[allow(unused_imports)] use super::*;
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
   #[ allow( unused_imports ) ]
-  pub use self::indentation::prelude::*; // Corrected
+  pub use super::indentation::prelude::*; // Corrected
   #[ cfg( all( feature = "string_isolate", not( feature = "no_std" ) ) ) ]
-  pub use self::isolate::prelude::*; // Corrected
+  pub use super::isolate::prelude::*; // Corrected
   #[ cfg( all( feature = "string_parse_number", not( feature = "no_std" ) ) ) ]
   #[ allow( unused_imports ) ]
-  pub use self::number::prelude::*; // Corrected
+  pub use super::number::prelude::*; // Corrected
   #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
-  pub use self::parse_request::prelude::*; // Corrected
+  pub use super::parse_request::prelude::*; // Corrected
   #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
-  pub use self::split::prelude::*; // Corrected
+  pub use super::split::prelude::*; // Corrected
 }
