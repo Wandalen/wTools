@@ -512,12 +512,61 @@ mod private
   pub fn split< 'a >() -> SplitOptionsFormer< 'a > { SplitOptionsFormer::new( <&str>::default() ) }
 }
 
-mod_interface_meta::mod_interface!
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use own::*;
+
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
-  exposed use private::Split;
-  exposed use private::SplitType;
-  exposed use private::SplitFastIterator;
-  exposed use private::SplitIterator;
-  exposed use private::split;
-  exposed use private::SplitOptionsFormer;
+  #[allow(unused_imports)] use super::*;
+  pub use orphan::*;
+  pub use private::
+  {
+    Split,
+    SplitType,
+    SplitFastIterator,
+    SplitIterator,
+    split,
+    SplitOptionsFormer,
+  };
+}
+
+/// Parented namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod orphan
+{
+  #[allow(unused_imports)] use super::*;
+  pub use exposed::*;
+}
+
+/// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod exposed
+{
+  #[allow(unused_imports)] use super::*;
+  pub use prelude::*;
+  pub use super::own as split; // Alias for the 'own' module itself
+  pub use private::
+  {
+    Split,
+    SplitType,
+    SplitFastIterator,
+    SplitIterator,
+    split, // The function
+    SplitOptionsFormer,
+  };
+}
+
+/// Namespace of the module to include with `use module::*`.
+#[ allow( unused_imports ) ]
+pub mod prelude
+{
+  #[allow(unused_imports)] use super::*;
+  pub use private::
+  {
+    SplitOptionsFormer,
+    split,
+  };
 }

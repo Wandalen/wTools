@@ -213,9 +213,10 @@ pub mod private
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  #[allow(unused_imports)] use super::*;
   use super::private as i;
 
+  pub use orphan::*; // Added
   pub use i::IsolateOptions;
   // pub use i::IsolateOptionsAdapter; // Removed
   pub use i::isolate;
@@ -229,8 +230,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-
-  use super::*;
+  #[allow(unused_imports)] use super::*;
   pub use exposed::*;
 }
 
@@ -238,7 +238,8 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  #[allow(unused_imports)] use super::*;
+  pub use prelude::*; // Added
   pub use super::own as isolate;
 
   use super::private as i;
@@ -253,7 +254,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  #[allow(unused_imports)] use super::*;
   use super::private as i;
 
   // pub use i::IsolateOptionsAdapter; // Removed
