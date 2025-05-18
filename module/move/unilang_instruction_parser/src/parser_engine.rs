@@ -2,8 +2,8 @@
 
 use crate::config::UnilangParserOptions;
 use crate::error::{ ParseError, ErrorKind, SourceLocation };
-use crate::instruction::GenericInstruction;
-use crate::item_adapter::{ classify_split, RichItem, UnilangTokenKind };
+use crate::instruction::{ GenericInstruction, Argument };
+use crate::item_adapter::{ classify_split, RichItem, UnilangTokenKind, unescape_string };
 use std::borrow::Cow;
 use std::collections::HashMap;
 
@@ -23,7 +23,7 @@ impl Parser
   }
 
   /// Parses a single string into a vector of generic instructions.
-  pub fn parse_single_str<'input>( &'input self, input : &'input str ) -> Result< Vec< GenericInstruction<'input> >, ParseError >
+  pub fn parse_single_str<'input>( &'input self, input : &'input str ) -> Result< Vec< GenericInstruction >, ParseError >
   {
     let mut rich_items_vec : Vec<RichItem<'input>> = Vec::new();
     let mut split_iterator = self.options.to_split_options_former( input ).perform();
@@ -38,7 +38,7 @@ impl Parser
   }
 
   /// Parses a slice of strings into a vector of generic instructions.
-  pub fn parse_slice<'input>( &'input self, input_segments : &'input [&'input str] ) -> Result< Vec< GenericInstruction<'input> >, ParseError >
+  pub fn parse_slice<'input>( &'input self, input_segments : &'input [&'input str] ) -> Result< Vec< GenericInstruction >, ParseError >
   {
     let mut rich_items_accumulator_vec : Vec<RichItem<'input>> = Vec::new();
 
@@ -61,7 +61,7 @@ impl Parser
     &'input self,
     items : &'s_slice [RichItem<'input>],
   )
-  -> Result<Vec<GenericInstruction<'input>>, ParseError>
+  -> Result<Vec<GenericInstruction>, ParseError>
   {
     let mut instructions = Vec::new();
     if items.is_empty()
@@ -113,7 +113,7 @@ impl Parser
     &'input self,
     instruction_rich_items : &'s_slice [RichItem<'input>]
   )
-  -> Result<GenericInstruction<'input>, ParseError>
+  -> Result<GenericInstruction, ParseError>
   {
     if instruction_rich_items.is_empty()
     {
@@ -123,7 +123,6 @@ impl Parser
       });
     }
 
-    // Determine overall location
     let first_item_loc = instruction_rich_items.first().unwrap().source_location();
     let last_item_loc = instruction_rich_items.last().unwrap().source_location();
     let overall_location = match ( &first_item_loc, &last_item_loc )
@@ -132,76 +131,131 @@ impl Parser
             SourceLocation::StrSpan{ start: *s1, end: *e2 },
         ( SourceLocation::SliceSegment{ segment_index: idx1, start_in_segment: s1, .. }, SourceLocation::SliceSegment{ segment_index: idx2, end_in_segment: e2, .. } ) if idx1 == idx2 =>
             SourceLocation::SliceSegment{ segment_index: *idx1, start_in_segment: *s1, end_in_segment: *e2 },
-        _ => first_item_loc, // Fallback
+        _ => first_item_loc,
     };
 
     let mut command_path_slices = Vec::new();
     let mut help_requested = false;
-    let mut remaining_items_idx = 0;
+    let mut items_cursor = 0;
 
     // Parse Command Path
-    for (idx, item) in instruction_rich_items.iter().enumerate()
-    {
-      remaining_items_idx = idx;
-      match &item.kind {
-        UnilangTokenKind::Identifier(s) | UnilangTokenKind::UnquotedValue(s) =>
+    while items_cursor < instruction_rich_items.len() {
+        let item = &instruction_rich_items[items_cursor];
+
+        // Peek ahead: if current is Ident/Unquoted and next is '::', it's an arg name.
+        if (matches!(item.kind, UnilangTokenKind::Identifier(_)) || matches!(item.kind, UnilangTokenKind::UnquotedValue(_)))
+            && items_cursor + 1 < instruction_rich_items.len()
+            && instruction_rich_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter(Cow::Borrowed("::"))
         {
-          command_path_slices.push(s.as_ref().to_string());
+            break;
         }
-        UnilangTokenKind::Operator(op_cow) if op_cow.as_ref() == "?" =>
-        {
-          // If '?' is encountered, it might be a help operator.
-          // Path parsing stops here. We check if it's the last significant item.
-          remaining_items_idx = idx; // Current item is '?'
-          break;
+
+        match &item.kind {
+            UnilangTokenKind::Identifier(s) | UnilangTokenKind::UnquotedValue(s) => {
+                command_path_slices.push(s.as_ref().to_string());
+                items_cursor += 1;
+            }
+            UnilangTokenKind::Operator(op_cow) if op_cow.as_ref() == "?" => {
+                break;
+            }
+            _ => {
+                break;
+            }
         }
-        _ =>
-        {
-          // Not a path component, stop path parsing.
-          // This item (at idx) will be the first potential argument or error.
-          break;
-        }
-      }
-      // If loop finishes, all items were path components.
-      if idx == instruction_rich_items.len() - 1 {
-        remaining_items_idx = idx + 1;
-      }
     }
 
     // Check for Help Operator
-    // It must be the *next* item after the path, or the only item if no path.
-    // Or if the path loop broke on '?', check that '?'
-    if remaining_items_idx < instruction_rich_items.len() {
-        let current_item = &instruction_rich_items[remaining_items_idx];
-        if current_item.kind == UnilangTokenKind::Operator(Cow::Borrowed("?")) {
-            // Check if it's the last item in the instruction_rich_items slice
-            // or if subsequent items are not suitable for arguments (e.g. another ';;' which shouldn't be here)
-            if remaining_items_idx == instruction_rich_items.len() - 1 {
+    if items_cursor < instruction_rich_items.len() {
+        let item = &instruction_rich_items[items_cursor];
+        if item.kind == UnilangTokenKind::Operator(Cow::Borrowed("?")) {
+            if items_cursor == instruction_rich_items.len() - 1 {
                 help_requested = true;
-                remaining_items_idx += 1; // Consume the '?'
+                items_cursor += 1;
             } else {
-                // '?' is not the last significant item, this might be an error later
-                // depending on argument parsing rules (e.g. "? arg").
-                // For now, we assume '?' must be effectively last for help.
-                // This logic will be refined with argument parsing.
-                // If path was empty and this is the first item:
-                if command_path_slices.is_empty() && remaining_items_idx == 0 {
+                if command_path_slices.is_empty() && items_cursor == 0 {
                     help_requested = true;
-                    remaining_items_idx += 1;
+                    items_cursor += 1;
                 }
             }
         }
     }
 
+    let mut named_arguments = HashMap::new();
+    let mut positional_arguments = Vec::new();
+    let mut expect_named_arg_value = false;
+    let mut current_named_arg_name : Option<(String, SourceLocation)> = None;
+    // TODO: Implement E6 argument order rules (e.g. positional before named) more strictly.
 
-    // For Increment 4, remaining_items (instruction_rich_items[remaining_items_idx..]) are not processed further.
-    // They will be handled in Increment 5 for argument parsing.
-    // If after path and help, there are still items that are not arguments, it will be an error in Inc 5.
+    while items_cursor < instruction_rich_items.len() {
+        let item = &instruction_rich_items[items_cursor];
+        let current_item_location = item.source_location(); // Store for potential error reporting
+
+        if expect_named_arg_value {
+            items_cursor += 1; // Consume item that will be the value
+            match &item.kind {
+                UnilangTokenKind::Identifier(val_s) | UnilangTokenKind::UnquotedValue(val_s) | UnilangTokenKind::QuotedValue(val_s) => {
+                    let (name, name_loc) = current_named_arg_name.take().unwrap();
+                    if named_arguments.contains_key(&name) {
+                        return Err(ParseError{ kind: ErrorKind::Syntax(format!("Duplicate named argument: {}", name)), location: Some(name_loc) });
+                    }
+                    named_arguments.insert(name, Argument {
+                        name_slice: None,
+                        value: unescape_string(val_s.as_ref()),
+                        name_location: Some(name_loc),
+                        value_location: item.source_location(),
+                    });
+                    expect_named_arg_value = false;
+                }
+                _ => return Err(ParseError{ kind: ErrorKind::Syntax("Expected value after '::' for named argument".to_string()), location: Some(current_item_location) }),
+            }
+        } else {
+            // item is current_item_at_cursor (before potential increment below)
+            match &item.kind {
+                UnilangTokenKind::Identifier(s) | UnilangTokenKind::UnquotedValue(s) => {
+                    // Look ahead to see if the *next* token is "::"
+                    if items_cursor + 1 < instruction_rich_items.len() &&
+                       instruction_rich_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter(Cow::Borrowed("::"))
+                    {
+                        // Current 'item' is the name
+                        current_named_arg_name = Some((s.as_ref().to_string(), item.source_location()));
+                        items_cursor += 2; // Consume name and '::'
+                        expect_named_arg_value = true;
+                    } else {
+                        // Positional argument
+                        positional_arguments.push(Argument{
+                            name_slice: None,
+                            value: unescape_string(s.as_ref()),
+                            name_location: None,
+                            value_location: item.source_location(),
+                        });
+                        items_cursor += 1; // Consume item
+                    }
+                }
+                UnilangTokenKind::QuotedValue(s) => {
+                    // Always a positional argument if not expecting a named value
+                    positional_arguments.push(Argument{
+                        name_slice: None,
+                        value: unescape_string(s.as_ref()),
+                        name_location: None,
+                        value_location: item.source_location(),
+                    });
+                    items_cursor += 1; // Consume item
+                }
+                UnilangTokenKind::Delimiter(d_cow) if d_cow.as_ref() == "::" => {
+                     return Err(ParseError{ kind: ErrorKind::Syntax("Unexpected '::' without preceding argument name".to_string()), location: Some(item.source_location()) });
+                }
+                _ => return Err(ParseError{ kind: ErrorKind::Syntax(format!("Unexpected token in arguments: '{}'", item.inner.string)), location: Some(item.source_location()) }),
+            }
+        }
+    }
+    if expect_named_arg_value {
+        return Err(ParseError{ kind: ErrorKind::Syntax("Expected value for named argument but found end of instruction".to_string()), location: current_named_arg_name.map(|(_,loc)| loc).or_else(|| instruction_rich_items.last().map(|i|i.source_location())) });
+    }
 
     Ok( GenericInstruction {
       command_path_slices,
-      named_arguments : HashMap::new(),
-      positional_arguments : Vec::new(),
+      named_arguments,
+      positional_arguments,
       help_requested,
       overall_location,
     })
