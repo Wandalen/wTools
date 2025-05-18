@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use component_model::Assign;
+use the_module::Assign;
 
 
 #[ derive( Default, PartialEq, Debug ) ]
