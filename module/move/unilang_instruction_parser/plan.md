@@ -7,16 +7,16 @@
 *   Provide precise, AST-node-level, location-aware error reporting using `SourceLocation`.
 
 ### Progress
-*   Overall Task for unilang_instruction_parser: 🏗️ Foundational Setup - 20% Complete (Core types adapted to `strs_tools::string::split`)
+*   Overall Task for unilang_instruction_parser: 🏗️ Foundational Setup - 30% Complete (Parser entry points and RichItem stream generation implemented)
 *   Milestones Achieved:
     *   ✅ Increment 1: Core types adapted to `strs_tools::string::split` and `no_std` feature added.
+    *   ✅ Increment 2: Parser entry points and `RichItem` stream generation implemented.
 *   Currently Working On:
-    *   All steps for Increment 1 are complete.
+    *   All steps for Increment 2 are complete.
 *   Up Next:
-    *   ⚫🚀 Increment 2: Implement Parser Entry Points and `RichItem` Stream Generation
-    *   ⚫🚀 Increment 3: Syntactic Analyzer - Command Grouping and Instruction Boundaries
-    *   ⚫🚀 Increment 4: Syntactic Analyzer - Command Path and Help Operator Parsing
-    *   ⚫🚀 Increment 5: Syntactic Analyzer - Argument Parsing (Named, Positional)
+    *   ⚫🚀 Increment 3: Syntactic Analyzer - Command Grouping and Instruction Boundaries (Needs plan revision due to itemizer change)
+    *   ⚫🚀 Increment 4: Syntactic Analyzer - Command Path and Help Operator Parsing (Needs plan revision due to itemizer change)
+    *   ⚫🚀 Increment 5: Syntactic Analyzer - Argument Parsing (Named, Positional) (Needs plan revision due to itemizer change)
     *   ⚫🚀 Increment 6: Error Reporting Integration and Refinement
     *   ⚫🚀 Increment 7: Comprehensive Test Suite (Test Matrix)
     *   ⚫🚀 Increment 8: Documentation and Examples
@@ -117,16 +117,57 @@
     *   Commit Message: `refactor(unilang_parser): Adapt core types to strs_tools::string::split API and add RichItem`
 
 #### Phase 2: Parsing Engine Implementation
-(Increments 2-5 will need significant rework based on the new itemization approach. The parser will iterate `SplitIterator`, then classify each `Split` into `RichItem` with `UnilangTokenKind`, then process the stream of `RichItem`s. Comment and escape handling will need to be integrated into the parser logic.)
 
-*   ⚫ **Increment 2: Implement Parser Entry Points and `RichItem` Stream Generation**
-    *   (Plan to be revised: `parse_single_str` and `parse_slice` will use `SplitOptionsFormer::new(...).src(...).perform()`. The loop will take `Split<'a>`, classify it into `RichItem<'a> { inner, segment_idx, kind }`. Whitespace/comment `Split` items might need explicit filtering if not handled by `stripping` or if `SplitOptionsFormer` preserves them.)
+*   ✅ **Increment 2: Implement Parser Entry Points and `RichItem` Stream Generation**
+    *   Target Component(s): `unilang_instruction_parser`
+    *   Pre-Analysis: Increment 1 is complete. `strs_tools::string::split` is the itemizer. `item_adapter::classify_split` provides initial token classification.
+    *   Crucial Design Rules: [Error Handling: Use a Centralized Approach](#error-handling-use-a-centralized-approach), [Implementation: Complete One Sub-Task Before Starting Another](#implementation-complete-one-sub-task-before-starting-another).
+    *   Relevant Behavior Rules: E4 (Identifiers), E5 (Item Stream).
+    *   Detailed Plan Step 1: **Refine `item_adapter::classify_split` function.**
+        *   Ensure it correctly identifies `Delimiter("::")`, `Delimiter(";;")`, and `Operator("?")` based on `split.string` when `split.typ == SplitType::Delimeter`.
+        *   For `SplitType::Delimeted` content:
+            *   If `UnilangParserOptions` is configured to preserve quotes by `SplitOptionsFormer` (e.g., by setting `preserving_quoting: true` in `to_split_options_former`), then `classify_split` must check if `split.string` starts/ends with configured quote characters. If so, classify as `UnilangTokenKind::QuotedValue` (containing the *inner* string, without the quotes).
+            *   Otherwise (not quoted or quotes already stripped by `SplitOptionsFormer`), classify as `UnilangTokenKind::Identifier` or `UnilangTokenKind::UnquotedValue`. The distinction might be heuristic for now (e.g., based on `unilang/spec.md` rules for identifiers if available, otherwise assume `UnquotedValue` or a more general `PotentialIdentifierOrValue`).
+            *   Empty `Delimeted` strings should probably be `UnilangTokenKind::Unrecognized("")` or filtered out before classification if `SplitOptionsFormer`'s `preserving_empty` is false.
+        *   Add basic tests for `classify_split` within `item_adapter.rs` (e.g., in a `#[cfg(test)] mod tests { ... }`).
+    *   Detailed Plan Step 2: In `src/parser_engine.rs`, implement `pub fn parse_single_str<'input>(&self, input: &'input str) -> Result<Vec<GenericInstruction<'input>>, ParseError>`.
+        *   Create a `SplitIterator` using `self.options.to_split_options_former(input).perform()`.
+        *   Iterate through the `Split<'input>` items from the iterator.
+        *   For each `Split` item:
+            *   Call `item_adapter::classify_split` to get `UnilangTokenKind<'input>`.
+            *   Construct `RichItem<'input> { inner: split_item, segment_idx: None, kind: classified_kind }`.
+            *   Collect these `RichItem`s into a `Vec`.
+        *   Pass the `Vec<RichItem<'input>>` to `analyze_items_to_instructions`.
+        *   Handle potential errors from `analyze_items_to_instructions`.
+    *   Detailed Plan Step 3: In `src/parser_engine.rs`, implement `pub fn parse_slice<'input>(&self, input_segments: &'input [&'input str]) -> Result<Vec<GenericInstruction<'input>>, ParseError>`.
+        *   Initialize an empty `Vec<RichItem<'input>>`.
+        *   Loop through `input_segments` with `enumerate()` to get `seg_idx` and `segment_str`.
+        *   For each `segment_str`:
+            *   Create a `SplitIterator` using `self.options.to_split_options_former(segment_str).perform()`.
+            *   Iterate, classify each `Split`, and construct `RichItem<'input> { inner: split_item, segment_idx: Some(seg_idx), kind: classified_kind }`.
+            *   Append to the main `Vec<RichItem<'input>>`.
+        *   Pass the combined `Vec<RichItem<'input>>` to `analyze_items_to_instructions`.
+    *   Detailed Plan Step 4: In `src/parser_engine.rs`, implement a placeholder for `fn analyze_items_to_instructions<'input>(&self, items: Vec<RichItem<'input>>) -> Result<Vec<GenericInstruction<'input>>, ParseError>`.
+        *   This function will take `items: Vec<RichItem<'input>>`.
+        *   For now, it should just return `Ok(vec![])`.
+        *   Add a `// TODO: Implement full syntactic analysis` comment.
+    *   Detailed Plan Step 5: Create `tests/parser_config_entry_tests.rs` (if not existing) and add tests for `parse_single_str` and `parse_slice`:
+        *   Test with empty input: `""`, `&[]` -> `Ok(vec![])`.
+        *   Test with whitespace/comment-only input (assuming `SplitOptionsFormer` with `stripping:true` and parser filtering will result in no significant `RichItem`s): `"   # comment   "` -> `Ok(vec![])`.
+        *   Test with a single simple token, e.g., `"command"` -> `Ok(vec![])` (as `analyze_items_to_instructions` is a stub, but ensures item stream generation and classification runs). Verify that `classify_split` produces an expected `UnilangTokenKind` for "command".
+        *   Test with multiple segments: `&["cmd1", "arg1"]` -> `Ok(vec![])`.
+    *   Verification Strategy: `cargo build --package unilang_instruction_parser`, then `cargo test --package unilang_instruction_parser --test parser_config_entry_tests`. Review `item_adapter::classify_split` logic.
+    *   Commit Message: `feat(unilang_parser): Implement parser entry points and RichItem stream generation using string::split`
+
 *   ⚫ **Increment 3: Syntactic Analyzer - Command Grouping and Instruction Boundaries**
-    *   (Plan to be revised: Will operate on `Vec<RichItem<'input>>`. Grouping by `RichItem` where `kind == UnilangTokenKind::Delimiter(";;".to_string())`.)
+    *   (Plan to be revised: Will operate on `Vec<RichItem<'input>>`. Grouping by `RichItem` where `kind == UnilangTokenKind::Delimiter(";;".into())`.)
+    *   **(Needs plan revision due to itemizer change)**
 *   ⚫ **Increment 4: Syntactic Analyzer - Command Path and Help Operator Parsing**
-    *   (Plan to be revised: Operates on `&[RichItem<'input>]`. Path from `UnilangTokenKind::Identifier` or `UnquotedValue`. Help from `UnilangTokenKind::Operator("?".to_string())`.)
+    *   (Plan to be revised: Operates on `&[RichItem<'input>]`. Path from `UnilangTokenKind::Identifier` or `UnquotedValue`. Help from `UnilangTokenKind::Operator("?".into())`.)
+    *   **(Needs plan revision due to itemizer change)**
 *   ⚫ **Increment 5: Syntactic Analyzer - Argument Parsing (Named, Positional)**
-    *   (Plan to be revised: Named args: `Identifier`/`UnquotedValue` -> `Delimiter("::".to_string())` -> `QuotedValue`/`UnquotedValue`. Unescaping is now parser's job.)
+    *   (Plan to be revised: Named args: `Identifier`/`UnquotedValue` -> `Delimiter("::".into())` -> `QuotedValue`/`UnquotedValue`. Unescaping is now parser's job.)
+    *   **(Needs plan revision due to itemizer change)**
 
 #### Phase 3: Refinements and Testing
 *   ⚫ **Increment 6: Error Reporting Integration and Refinement**
@@ -143,4 +184,4 @@
     *   Value unescaping.
     *   Potentially comment handling if not fully managed by `SplitOptionsFormer`.
 *   The `UnilangTokenKind` and `classify_split` function will be central to the new approach.
-*   Increments 2-5 need substantial revision in their detailed steps once Increment 1 is complete and the classification mechanism is clearer.
+*   Increments 2-5 need substantial revision in their detailed steps once Increment 1 is complete and the classification mechanism is clearer. The current text for Inc 2 is a first pass.
