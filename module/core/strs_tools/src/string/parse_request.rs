@@ -8,7 +8,6 @@ mod private
 
   use string::
   {
-    split::*,
     isolate::isolate_right, // Keep the import for the function
   };
   use super::*;
@@ -52,7 +51,7 @@ mod private
   }
 
   #[ allow( clippy::from_over_into ) ]
-  impl< T > Into<Vec< T > > for OpType< T >
+  impl< T > Into<Vec< T >> for OpType< T >
   {
     fn into( self ) -> Vec< T >
     {
@@ -146,7 +145,7 @@ mod private
     pub original : &'a str,
     /// Delimiter for pairs `key:value`.
     pub key_val_delimeter : &'a str,
-    /// Delimeter for commands.
+    /// Delimiter for commands.
     pub commands_delimeter : &'a str,
     /// Parsed subject of first command.
     pub subject : String,
@@ -544,8 +543,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
-
-  use super::*;
+  #[ allow( unused_imports ) ] use super::*;
   pub use orphan::*;
   pub use private::
   {
@@ -561,8 +559,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-
-  use super::*;
+  #[ allow( unused_imports ) ] use super::*;
   pub use exposed::*;
 }
 
@@ -570,8 +567,8 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-
-  use super::*;
+  #[ allow( unused_imports ) ] use super::*;
+  pub use prelude::*; // Added
   pub use super::own as parse_request;
 
   pub use private::
@@ -585,7 +582,6 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-
-  use super::*;
+  #[ allow( unused_imports ) ] use super::*;
   // pub use private::ParseOptionsAdapter; // Removed
 }

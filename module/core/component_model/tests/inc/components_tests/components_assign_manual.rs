@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use component_model::{ Assign, AssignWithType };
+use the_module::{ Assign, AssignWithType };
 
 ///
 /// Options1
@@ -42,7 +42,7 @@ impl From< &Options1 > for f32
   }
 }
 
-impl< IntoT > component_model::Assign< i32, IntoT > for Options1
+impl< IntoT > the_module::Assign< i32, IntoT > for Options1
 where
   IntoT : Into< i32 >,
 {
@@ -53,7 +53,7 @@ where
   }
 }
 
-impl< IntoT > component_model::Assign< String, IntoT > for Options1
+impl< IntoT > the_module::Assign< String, IntoT > for Options1
 where
   IntoT : Into< String >,
 {
@@ -64,7 +64,7 @@ where
   }
 }
 
-impl< IntoT > component_model::Assign< f32, IntoT > for Options1
+impl< IntoT > the_module::Assign< f32, IntoT > for Options1
 where
   IntoT : Into< f32 >,
 {
@@ -93,9 +93,9 @@ where
 // #[ allow( dead_code ) ]
 impl< T, IntoT > Options1ComponentsAssign< IntoT > for T
 where
-  T : component_model::Assign< i32, IntoT >,
-  T : component_model::Assign< String, IntoT >,
-  T : component_model::Assign< f32, IntoT >,
+  T : the_module::Assign< i32, IntoT >,
+  T : the_module::Assign< String, IntoT >,
+  T : the_module::Assign< f32, IntoT >,
   IntoT : Into< i32 >,
   IntoT : Into< String >,
   IntoT : Into< f32 >,
@@ -104,9 +104,9 @@ where
   #[ inline( always ) ]
   fn options_1_assign( &mut self, component : IntoT )
   {
-    component_model::Assign::< i32, _ >::assign( self, component.clone() );
-    component_model::Assign::< String, _ >::assign( self, component.clone() );
-    component_model::Assign::< f32, _ >::assign( self, component.clone() );
+    the_module::Assign::< i32, _ >::assign( self, component.clone() );
+    the_module::Assign::< String, _ >::assign( self, component.clone() );
+    the_module::Assign::< f32, _ >::assign( self, component.clone() );
   }
 }
 
@@ -139,7 +139,7 @@ impl From< &Options2 > for String
   }
 }
 
-impl< IntoT > component_model::Assign< i32, IntoT > for Options2
+impl< IntoT > the_module::Assign< i32, IntoT > for Options2
 where
   IntoT : Into< i32 >,
 {
@@ -150,7 +150,7 @@ where
   }
 }
 
-impl< IntoT > component_model::Assign< String, IntoT > for Options2
+impl< IntoT > the_module::Assign< String, IntoT > for Options2
 where
   IntoT : Into< String >,
 {
@@ -176,8 +176,8 @@ where
 
 impl< T, IntoT > Options2ComponentsAssign< IntoT > for T
 where
-  T : component_model::Assign< i32, IntoT >,
-  T : component_model::Assign< String, IntoT >,
+  T : the_module::Assign< i32, IntoT >,
+  T : the_module::Assign< String, IntoT >,
   IntoT : Into< i32 >,
   IntoT : Into< String >,
   IntoT : Clone,
@@ -185,8 +185,8 @@ where
   #[ inline( always ) ]
   fn options_2_assign( &mut self, component : IntoT )
   {
-    component_model::Assign::< i32, _ >::assign( self, component.clone() );
-    component_model::Assign::< String, _ >::assign( self, component.clone() );
+    the_module::Assign::< i32, _ >::assign( self, component.clone() );
+    the_module::Assign::< String, _ >::assign( self, component.clone() );
   }
 }
 

@@ -6,7 +6,6 @@ mod components_tests
 {
   use super::*;
 
-  #[ cfg( feature = "types_component_from" ) ]
   mod component_from_manual;
 
   #[ cfg( feature = "types_component_assign" ) ]

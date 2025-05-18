@@ -90,7 +90,7 @@ default-features = false
 # version = "~0.2.0"
 # path = "module/core/type_constructor_meta"
 # default-features = false
-
+#
 # [workspace.dependencies.type_constructor_make_meta]
 # version = "~0.2.0"
 # path = "module/core/type_constructor_make_meta"

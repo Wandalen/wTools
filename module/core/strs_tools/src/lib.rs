@@ -18,8 +18,9 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  #[ allow( unused_imports ) ] use super::*;
   pub use orphan::*;
+  pub use super::string; // Added
   pub use super::string::orphan::*;
 }
 
@@ -28,8 +29,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-
-  use super::*;
+  #[ allow( unused_imports ) ] use super::*;
   pub use exposed::*;
 }
 
@@ -38,7 +38,8 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  #[ allow( unused_imports ) ] use super::*;
+  pub use prelude::*; // Added
   pub use super::string::exposed::*;
 }
 
@@ -47,6 +48,6 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  #[ allow( unused_imports ) ] use super::*;
   pub use super::string::prelude::*;
 }

@@ -28,6 +28,7 @@ mod private
     }
   }
 
+  /// Defines the type of a split segment, either a delimited part or the delimiter itself.
   #[derive(Debug, Clone, Copy, PartialEq, Eq)]
   pub enum SplitType
   {
@@ -37,8 +38,10 @@ mod private
     Delimeter,
   }
 
+  /// Trait for finding the position of a delimiter pattern within a string.
   pub trait Searcher
   {
+    /// Finds the first occurrence of the pattern in `src`. Returns a tuple of (start, end) byte indices if found.
     fn pos( &self, src : &str ) -> Option< ( usize, usize ) >;
   }
 
@@ -79,6 +82,7 @@ mod private
     }
   }
 
+  /// A fast, low-level iterator for splitting strings based on a delimiter. Alternates between delimited segments and delimiters.
   #[ derive( Debug ) ]
   pub struct SplitFastIterator< 'a, D >
   where
@@ -92,6 +96,7 @@ mod private
 
   impl< 'a, D : Searcher + Clone > SplitFastIterator< 'a, D >
   {
+    /// Creates a new `SplitFastIterator` with the given options.
     #[ allow( dead_code, clippy::needless_pass_by_value ) ]
     fn new( o : impl SplitOptionsAdapter< 'a, D > ) -> Self
     {
@@ -167,6 +172,7 @@ mod private
     }
   }
 
+  /// An iterator for splitting strings with advanced options like stripping, preserving empty segments, and handling quotes.
   #[ derive( Debug ) ]
   #[ allow( clippy::struct_excessive_bools ) ]
   pub struct SplitIterator< 'a >
@@ -184,6 +190,7 @@ mod private
 
   impl< 'a > SplitIterator< 'a >
   {
+    /// Creates a new `SplitIterator` with the given options.
     #[ allow( clippy::needless_pass_by_value ) ]
     fn new( o : impl SplitOptionsAdapter< 'a, Vec< &'a str > > ) -> Self
     {
@@ -342,6 +349,7 @@ mod private
     }
   }
 
+  /// Options for configuring string splitting behavior for `SplitIterator` and `SplitFastIterator` generic over delimiter type.
   #[ derive( Debug ) ]
   #[ allow( clippy::struct_excessive_bools ) ]
   pub struct SplitOptions< 'a, D >
@@ -361,6 +369,7 @@ mod private
 
   impl< 'a > SplitOptions< 'a, Vec< &'a str > >
   {
+    /// Consumes the options and returns a `SplitIterator` for splitting with a `Vec<&str>` delimiter.
     #[ must_use ]
     pub fn split( self ) -> SplitIterator< 'a > { SplitIterator::new( self ) }
   }
@@ -369,19 +378,30 @@ mod private
   where
     D : Searcher + Default + Clone
   {
+    /// Consumes the options and returns a `SplitFastIterator` for splitting.
     pub fn split_fast( self ) -> SplitFastIterator< 'a, D > { SplitFastIterator::new( self ) }
   }
 
+  /// Adapter trait to provide a consistent interface for split options.
   pub trait SplitOptionsAdapter< 'a, D > where D : Clone
   {
+    /// The source string to be split.
     fn src( &self ) -> &'a str;
+    /// The delimiter(s) to split the string by.
     fn delimeter( &self ) -> D;
+    /// Whether to preserve empty segments.
     fn preserving_empty( &self ) -> bool;
+    /// Whether to preserve delimiters as part of the iteration.
     fn preserving_delimeters( &self ) -> bool;
+    /// Whether to preserve quoting characters in the output segments.
     fn preserving_quoting( &self ) -> bool;
+    /// Whether to strip leading/trailing whitespace from delimited segments.
     fn stripping( &self ) -> bool;
+    /// Whether to enable quote handling.
     fn quoting( &self ) -> bool;
+    /// Prefixes that start a quoted section.
     fn quoting_prefixes( &self ) -> &Vec< &'a str >;
+    /// Postfixes that end a quoted section.
     fn quoting_postfixes( &self ) -> &Vec< &'a str >;
   }
 
@@ -398,6 +418,7 @@ mod private
     fn quoting_postfixes( &self ) -> &Vec< &'a str > { &self.quoting_postfixes }
   }
 
+  /*
   macro_rules! builder_impls_from
   {
     ( $name : ident, $( ( $field : ident, $type : ty ) ),* $( , )? ) =>
@@ -428,7 +449,9 @@ mod private
       }
     }
   }
+  */
 
+  /// A builder for `SplitOptions` to configure string splitting.
   #[ allow( clippy::struct_excessive_bools ) ]
   #[ derive( Debug ) ]
   pub struct SplitOptionsFormer< 'a >
@@ -443,16 +466,17 @@ mod private
     quoting_prefixes : Vec< &'a str >,
     quoting_postfixes : Vec< &'a str >,
   }
-  builder_impls_from!
-  (
-    SplitOptionsFormer,
-    ( preserving_empty, bool ), ( preserving_delimeters, bool ), ( preserving_quoting, bool ),
-    ( stripping, bool ), ( quoting, bool ),
-    ( quoting_prefixes, Vec< &'a str > ), ( quoting_postfixes, Vec< &'a str > ),
-  );
+  // builder_impls_from!
+  // (
+  //   SplitOptionsFormer,
+  //   ( preserving_empty, bool ), ( preserving_delimeters, bool ), ( preserving_quoting, bool ),
+  //   ( stripping, bool ), ( quoting, bool ),
+  //   ( quoting_prefixes, Vec< &'a str > ), ( quoting_postfixes, Vec< &'a str > ),
+  // );
 
   impl< 'a > SplitOptionsFormer< 'a >
   {
+    /// Creates a new `SplitOptionsFormer` with a default delimiter.
     pub fn new< D : Into< OpType< &'a str > > >( delimeter : D ) -> SplitOptionsFormer< 'a >
     {
       Self
@@ -465,22 +489,118 @@ mod private
         quoting_prefixes : vec![], quoting_postfixes : vec![],
       }
     }
+
+    // Manually added setters
+    /// Sets whether to preserve empty segments.
+    pub fn preserving_empty( &mut self, value : bool ) -> &mut Self { self.preserving_empty = value; self }
+    /// Sets whether to preserve delimiters.
+    pub fn preserving_delimeters( &mut self, value : bool ) -> &mut Self { self.preserving_delimeters = value; self }
+    /// Sets whether to preserve quoting characters.
+    pub fn preserving_quoting( &mut self, value : bool ) -> &mut Self { self.preserving_quoting = value; self }
+    /// Sets whether to strip whitespace from segments.
+    pub fn stripping( &mut self, value : bool ) -> &mut Self { self.stripping = value; self }
+    /// Sets whether to enable quote handling.
+    pub fn quoting( &mut self, value : bool ) -> &mut Self { self.quoting = value; self }
+    /// Sets the quoting prefixes.
+    pub fn quoting_prefixes( &mut self, value : Vec< &'a str > ) -> &mut Self { self.quoting_prefixes = value; self }
+    /// Sets the quoting postfixes.
+    pub fn quoting_postfixes( &mut self, value : Vec< &'a str > ) -> &mut Self { self.quoting_postfixes = value; self }
+
+    // Existing methods that were likely part of the manual impl before, or should be retained
+    /// Sets the source string to split.
+    pub fn src( &mut self, value : &'a str ) -> &mut Self { self.src = value; self }
+    /// Sets the delimiter(s).
     pub fn delimeter< D : Into< OpType< &'a str > > >( &mut self, value : D ) -> &mut Self
     { self.delimeter = OpType::Vector( vec![] ).append( value.into() ); self }
-    pub fn src( &mut self, value : &'a str ) -> &mut Self { self.src = value; self }
+
+    // Manually added form method
+    /// Consumes the builder and returns `SplitOptions` configured for `Vec<&str>` delimiter.
+    pub fn form( &mut self ) -> SplitOptions< 'a, Vec< &'a str > >
+    {
+      if self.quoting
+      {
+        if self.quoting_prefixes.is_empty() { self.quoting_prefixes = vec![ "\"", "`", "'" ]; }
+        if self.quoting_postfixes.is_empty() { self.quoting_postfixes = vec![ "\"", "`", "'" ]; }
+      }
+      SplitOptions
+      {
+        src : self.src,
+        delimeter : self.delimeter.clone().vector().unwrap(),
+        preserving_empty : self.preserving_empty,
+        preserving_delimeters : self.preserving_delimeters,
+        preserving_quoting : self.preserving_quoting,
+        stripping : self.stripping,
+        quoting : self.quoting,
+        quoting_prefixes : self.quoting_prefixes.clone(),
+        quoting_postfixes : self.quoting_postfixes.clone(),
+      }
+    }
+
+    // Existing perform method
+    /// Consumes the builder, creates `SplitOptions`, and returns a `SplitIterator` for `Vec<&str>` delimiter.
     pub fn perform( &mut self ) -> SplitIterator< 'a > { self.form().split() }
   }
 
+  /// Creates a new `SplitOptionsFormer` for configuring string splitting with default options.
   #[ must_use ]
   pub fn split< 'a >() -> SplitOptionsFormer< 'a > { SplitOptionsFormer::new( <&str>::default() ) }
 }
 
-mod_interface_meta::mod_interface!
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use own::*;
+
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
-  exposed use private::Split;
-  exposed use private::SplitType;
-  exposed use private::SplitFastIterator;
-  exposed use private::SplitIterator;
-  exposed use private::split;
-  exposed use private::SplitOptionsFormer;
+  #[ allow( unused_imports ) ] use super::*;
+  pub use orphan::*;
+  pub use private::
+  {
+    Split,
+    SplitType,
+    SplitFastIterator,
+    SplitIterator,
+    split,
+    SplitOptionsFormer,
+  };
+}
+
+/// Parented namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod orphan
+{
+  #[ allow( unused_imports ) ] use super::*;
+  pub use exposed::*;
+}
+
+/// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod exposed
+{
+  #[ allow( unused_imports ) ] use super::*;
+  pub use prelude::*;
+  pub use super::own as split; // Alias for the 'own' module itself
+  pub use private::
+  {
+    Split,
+    SplitType,
+    SplitFastIterator,
+    SplitIterator,
+    split, // The function
+    SplitOptionsFormer,
+  };
+}
+
+/// Namespace of the module to include with `use module::*`.
+#[ allow( unused_imports ) ]
+pub mod prelude
+{
+  #[ allow( unused_imports ) ] use super::*;
+  pub use private::
+  {
+    SplitOptionsFormer,
+    split,
+  };
 }

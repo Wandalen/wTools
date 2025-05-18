@@ -57,10 +57,8 @@ string_split = [ "enabled" ] # Removed circular dependency on string_parse_reque
 string_parse = []
 
 [dependencies]
-lexical = { version = "~6.1", optional = true }
+lexical = { version = "7.0.4", optional = true }
 component_model_types = { workspace = true, features = ["enabled"] }
-mod_interface = { workspace = true }
-mod_interface_meta = { workspace = true, features = ["enabled"] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
