@@ -19,6 +19,8 @@ pub mod config;
 pub mod error;
 /// Defines instruction and argument structures.
 pub mod instruction;
+/// Adapts and classifies items from the splitter.
+pub mod item_adapter;
 /// Contains the core parsing engine.
 pub mod parser_engine;
 
@@ -28,6 +30,7 @@ pub mod prelude
   pub use super::config::*;
   pub use super::error::*;
   pub use super::instruction::*;
+  pub use super::item_adapter::*;
   pub use super::parser_engine::*;
 }
 

@@ -14,6 +14,10 @@ documentation = "https://docs.rs/unilang_instruction_parser"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/move/unilang_instruction_parser"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/unilang_instruction_parser"
 
+[features]
+default = []
+no_std = []
+
 [dependencies]
 strs_tools = { workspace = true, features = ["string_parse_request"] }
 error_tools = { workspace = true, features = [ "enabled", "error_typed" ] }
