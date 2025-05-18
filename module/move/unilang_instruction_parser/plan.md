@@ -7,15 +7,15 @@
 *   Provide precise, AST-node-level, location-aware error reporting using `SourceLocation`.
 
 ### Progress
-*   Overall Task for unilang_instruction_parser: ⚙️ Parsing Logic - 40% Complete (Instruction grouping implemented)
+*   Overall Task for unilang_instruction_parser: ⚙️ Parsing Logic - 50% Complete (Path and help operator parsing implemented)
 *   Milestones Achieved:
     *   ✅ Increment 1: Core types adapted to `strs_tools::string::split` and `no_std` feature added.
     *   ✅ Increment 2: Parser entry points and `RichItem` stream generation implemented.
     *   ✅ Increment 3: Syntactic Analyzer - Command Grouping and Instruction Boundaries implemented.
+    *   ✅ Increment 4: Syntactic Analyzer - Command Path and Help Operator Parsing implemented.
 *   Currently Working On:
-    *   All steps for Increment 3 are complete.
+    *   All steps for Increment 4 are complete.
 *   Up Next:
-    *   ⚫🚀 Increment 4: Syntactic Analyzer - Command Path and Help Operator Parsing (Needs plan revision)
     *   ⚫🚀 Increment 5: Syntactic Analyzer - Argument Parsing (Named, Positional) (Needs plan revision)
     *   ⚫🚀 Increment 6: Error Reporting Integration and Refinement
     *   ⚫🚀 Increment 7: Comprehensive Test Suite (Test Matrix)
@@ -60,28 +60,31 @@
     *   Commit Message: `feat(unilang_parser): Implement parser entry points and RichItem stream generation using string::split`
 
 *   ✅ **Increment 3: Syntactic Analyzer - Command Grouping and Instruction Boundaries**
-    *   Target Component(s): `unilang_instruction_parser`
-    *   Pre-Analysis: Increment 2 complete. `analyze_items_to_instructions` is a stub.
-    *   Detailed Plan Step 1: In `parser_engine.rs`, begin actual implementation of `analyze_items_to_instructions(self, items: Vec<RichItem<'input>>)`.
-    *   Detailed Plan Step 2: Iterate through the input `items` (which are `RichItem<'input>`).
-    *   Detailed Plan Step 3: Identify groups of `RichItem`s that constitute a single potential instruction. These groups are separated by `RichItem`s where `kind == UnilangTokenKind::Delimiter(Cow::Borrowed(";;"))`.
-        *   Collect `RichItem`s into a sub-vector for each potential instruction.
-    *   Detailed Plan Step 4: For each sub-vector of `RichItem`s:
-        *   If the sub-vector is empty (e.g., input like `cmd ;; ;; cmd2` or leading/trailing `;;` after filtering): Handle as per Expected Behavior E8 (e.g., return `ParseError::Syntax("Empty instruction segment".to_string())` or skip if spec allows). For now, assume error for empty segments.
-        *   If non-empty, pass this sub-vector (e.g., `&[RichItem<'input>]`) to a new private helper method, e.g., `parse_single_instruction_from_rich_items(&self, instruction_rich_items: &[RichItem<'input>]) -> Result<GenericInstruction<'input>, ParseError>`. This new helper will be implemented in subsequent increments (4 & 5).
-        *   For this increment (Increment 3), `parse_single_instruction_from_rich_items` can be a stub that returns a dummy `GenericInstruction` or `Err(ParseError)` to allow testing the grouping logic. For example, it could return `Ok(GenericInstruction { command_path_slices: vec![first_item_slice.to_string()], named_arguments: HashMap::new(), positional_arguments: vec![], help_requested: false, overall_location: /* derive from first/last item */ })` if `instruction_rich_items` is not empty.
-    *   Detailed Plan Step 5: Collect the `Result<GenericInstruction, ParseError>` from each call to `parse_single_instruction_from_rich_items`. If any result is an `Err`, propagate it. Otherwise, collect `Ok` values into `Vec<GenericInstruction>`.
-    *   Detailed Plan Step 6: Create `tests/syntactic_analyzer_command_tests.rs` (if not existing) and add tests for:
-        *   Input with a single command (no `;;`). Expected: 1 instruction (dummy).
-        *   Input with multiple commands separated by `;;`. Expected: N instructions (dummy).
-        *   Edge cases: `cmd;;`, `;;cmd`, `;;`, `cmd1 ;;;; cmd2`. Verify correct number of (dummy) instructions or appropriate errors for empty segments based on E8.
-    *   Verification Strategy: `cargo test --package unilang_instruction_parser --test syntactic_analyzer_command_tests`.
     *   Commit Message: `feat(unilang_parser): Implement instruction grouping by ';;' delimiter in analyze_items_to_instructions`
-    *   **(This is a revised plan for Increment 3 based on the new itemizer.)**
 
-*   ⚫ **Increment 4: Syntactic Analyzer - Command Path and Help Operator Parsing**
-    *   (Plan to be revised: Will implement `parse_single_instruction_from_rich_items` focusing on path and help operator `?` from `UnilangTokenKind::Operator`.)
-    *   **(Needs plan revision due to itemizer change)**
+*   ✅ **Increment 4: Syntactic Analyzer - Command Path and Help Operator Parsing**
+    *   Target Component(s): `unilang_instruction_parser`
+    *   Pre-Analysis: Increment 3 complete. `parse_single_instruction_from_rich_items` is a stub.
+    *   Detailed Plan Step 1: In `parser_engine.rs`, begin actual implementation of `parse_single_instruction_from_rich_items(&self, instruction_rich_items: &[RichItem<'input>])`.
+    *   Detailed Plan Step 2: Initialize a `GenericInstruction<'input>`. Determine its `overall_location` from the span of the first to the last `RichItem` in `instruction_rich_items`.
+    *   Detailed Plan Step 3: Parse Command Path:
+        *   Iterate from the start of `instruction_rich_items`.
+        *   Consume `RichItem`s if their `kind` is `UnilangTokenKind::Identifier(...)` or `UnilangTokenKind::UnquotedValue(...)`. Add the `String` payload from these kinds to `GenericInstruction.command_path_slices`.
+        *   Stop path parsing when a `RichItem` is encountered whose `kind` is not suitable for a path segment (e.g., `Operator`, `Delimiter` like `::`, or if argument parsing rules dictate).
+        *   If no path segments are found but other items exist (e.g., only a `?`), this is valid for a help request on the "current context" (empty path).
+    *   Detailed Plan Step 4: Parse Help Operator (`?`):
+        *   After path parsing (or if no path was parsed), check if the *next significant `RichItem`* (or the last item if it's the only one remaining in `instruction_rich_items` after path items are conceptually consumed) is `kind == UnilangTokenKind::Operator(Cow::Borrowed("?"))`.
+        *   If so, set `GenericInstruction.help_requested = true`. This `RichItem` is then consumed.
+        *   A `?` appearing elsewhere (e.g., within arguments, or not as the effective last element of the command/path part) should result in a `ParseError::Syntax` as per E2, likely when argument parsing begins and finds an unexpected operator.
+    *   Detailed Plan Step 5: Store any remaining `RichItem`s from `instruction_rich_items` (those not part of the command path or the help operator) to be processed by argument parsing logic in Increment 5. For this increment, these remaining items can be ignored by the stub logic within `parse_single_instruction_from_rich_items` after path/help is determined.
+    *   Detailed Plan Step 6: Update tests in `tests/syntactic_analyzer_command_tests.rs`:
+        *   Re-enable and adapt tests for simple paths (e.g., "cmd", "cmd subcmd").
+        *   Re-enable and adapt tests for help operator (e.g., "cmd ?", "?", "cmd sub ?").
+        *   Ensure `command_path_slices` (now `Vec<String>`) and `help_requested` are correctly populated.
+        *   Verify `overall_location`.
+    *   Verification Strategy: `cargo test --package unilang_instruction_parser --test syntactic_analyzer_command_tests`.
+    *   Commit Message: `feat(unilang_parser): Implement command path and help operator parsing`
+
 *   ⚫ **Increment 5: Syntactic Analyzer - Argument Parsing (Named, Positional)**
     *   (Plan to be revised: Will complete `parse_single_instruction_from_rich_items` focusing on arguments. Unescaping logic will be needed here or called from here.)
     *   **(Needs plan revision due to itemizer change)**
@@ -98,4 +101,4 @@
 ### Notes & Insights
 *   **Itemizer Change Impact:** Switching to `strs_tools::string::split` is a major change. The parser now has more responsibilities.
 *   The `UnilangTokenKind` and `classify_split` function are central.
-*   Increments 3-5 detailed plans need to be developed one by one as they become active.
+*   Increments 4-5 detailed plans need to be developed one by one as they become active.

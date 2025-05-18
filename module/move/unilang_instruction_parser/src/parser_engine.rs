@@ -2,7 +2,7 @@
 
 use crate::config::UnilangParserOptions;
 use crate::error::{ ParseError, ErrorKind, SourceLocation };
-use crate::instruction::GenericInstruction; // Retains 'input due to Argument<'input>
+use crate::instruction::GenericInstruction;
 use crate::item_adapter::{ classify_split, RichItem, UnilangTokenKind };
 use std::borrow::Cow;
 use std::collections::HashMap;
@@ -108,11 +108,9 @@ impl Parser
   }
 
   /// Parses a single instruction from a slice of RichItems.
-  /// Stub implementation for Increment 3.
-  #[allow(dead_code)]
   fn parse_single_instruction_from_rich_items<'s_slice, 'input : 's_slice>
   (
-    &'input self, // 'input for self as options might be used for context
+    &'input self,
     instruction_rich_items : &'s_slice [RichItem<'input>]
   )
   -> Result<GenericInstruction<'input>, ParseError>
@@ -124,13 +122,8 @@ impl Parser
         location: None,
       });
     }
-    if instruction_rich_items.len() == 1 && instruction_rich_items[0].kind == UnilangTokenKind::Delimiter(Cow::Borrowed(";;")) {
-        return Err(ParseError {
-            kind: ErrorKind::Syntax("Empty instruction segment: segment contains only ';;'".to_string()),
-            location: Some(instruction_rich_items[0].source_location()),
-        });
-    }
 
+    // Determine overall location
     let first_item_loc = instruction_rich_items.first().unwrap().source_location();
     let last_item_loc = instruction_rich_items.last().unwrap().source_location();
     let overall_location = match ( &first_item_loc, &last_item_loc )
@@ -139,20 +132,77 @@ impl Parser
             SourceLocation::StrSpan{ start: *s1, end: *e2 },
         ( SourceLocation::SliceSegment{ segment_index: idx1, start_in_segment: s1, .. }, SourceLocation::SliceSegment{ segment_index: idx2, end_in_segment: e2, .. } ) if idx1 == idx2 =>
             SourceLocation::SliceSegment{ segment_index: *idx1, start_in_segment: *s1, end_in_segment: *e2 },
-        _ => first_item_loc,
+        _ => first_item_loc, // Fallback
     };
 
-    let command_path_str = match &instruction_rich_items[0].kind {
-        UnilangTokenKind::Identifier(s) | UnilangTokenKind::UnquotedValue(s) => s.as_ref().to_string(),
-        UnilangTokenKind::Operator(s) | UnilangTokenKind::Delimiter(s) => s.as_ref().to_string(),
-        _ => "dummy_cmd_path_inc3".to_string(),
-    };
+    let mut command_path_slices = Vec::new();
+    let mut help_requested = false;
+    let mut remaining_items_idx = 0;
+
+    // Parse Command Path
+    for (idx, item) in instruction_rich_items.iter().enumerate()
+    {
+      remaining_items_idx = idx;
+      match &item.kind {
+        UnilangTokenKind::Identifier(s) | UnilangTokenKind::UnquotedValue(s) =>
+        {
+          command_path_slices.push(s.as_ref().to_string());
+        }
+        UnilangTokenKind::Operator(op_cow) if op_cow.as_ref() == "?" =>
+        {
+          // If '?' is encountered, it might be a help operator.
+          // Path parsing stops here. We check if it's the last significant item.
+          remaining_items_idx = idx; // Current item is '?'
+          break;
+        }
+        _ =>
+        {
+          // Not a path component, stop path parsing.
+          // This item (at idx) will be the first potential argument or error.
+          break;
+        }
+      }
+      // If loop finishes, all items were path components.
+      if idx == instruction_rich_items.len() - 1 {
+        remaining_items_idx = idx + 1;
+      }
+    }
+
+    // Check for Help Operator
+    // It must be the *next* item after the path, or the only item if no path.
+    // Or if the path loop broke on '?', check that '?'
+    if remaining_items_idx < instruction_rich_items.len() {
+        let current_item = &instruction_rich_items[remaining_items_idx];
+        if current_item.kind == UnilangTokenKind::Operator(Cow::Borrowed("?")) {
+            // Check if it's the last item in the instruction_rich_items slice
+            // or if subsequent items are not suitable for arguments (e.g. another ';;' which shouldn't be here)
+            if remaining_items_idx == instruction_rich_items.len() - 1 {
+                help_requested = true;
+                remaining_items_idx += 1; // Consume the '?'
+            } else {
+                // '?' is not the last significant item, this might be an error later
+                // depending on argument parsing rules (e.g. "? arg").
+                // For now, we assume '?' must be effectively last for help.
+                // This logic will be refined with argument parsing.
+                // If path was empty and this is the first item:
+                if command_path_slices.is_empty() && remaining_items_idx == 0 {
+                    help_requested = true;
+                    remaining_items_idx += 1;
+                }
+            }
+        }
+    }
+
+
+    // For Increment 4, remaining_items (instruction_rich_items[remaining_items_idx..]) are not processed further.
+    // They will be handled in Increment 5 for argument parsing.
+    // If after path and help, there are still items that are not arguments, it will be an error in Inc 5.
 
     Ok( GenericInstruction {
-      command_path_slices : vec![ command_path_str ], // Now Vec<String>
-      named_arguments : HashMap::new(), // Keys will also be String in future
-      positional_arguments : Vec::new(), // Values are Argument<'input>
-      help_requested : false,
+      command_path_slices,
+      named_arguments : HashMap::new(),
+      positional_arguments : Vec::new(),
+      help_requested,
       overall_location,
     })
   }
