@@ -33,7 +33,7 @@ fn test_m_t3_9_mod_index_first()
 fn test_m_t3_10_mod_index_last()
 {
   let src = "abc";
-  let mut iter = split()
+  let iter = split() // Changed from `let mut iter`
   .src( src )
   .delimeter( "b" )
   .preserving_empty( false )

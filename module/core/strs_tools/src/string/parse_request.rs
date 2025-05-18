@@ -8,7 +8,6 @@ mod private
 
   use string::
   {
-    split::*,
     isolate::isolate_right, // Keep the import for the function
   };
   use super::*;
