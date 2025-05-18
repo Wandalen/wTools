@@ -13,7 +13,7 @@
 //! - Includes shared test logic from `tuple_zero_fields_only_test.rs`.
 //! - The included tests call these manually implemented methods/functions and assert that the returned enum instances match the direct enum variants. This verifies the manual implementation of constructors for zero-field tuple variants.
 
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use test_tools::exposed::*;
 use core::fmt::Debug;

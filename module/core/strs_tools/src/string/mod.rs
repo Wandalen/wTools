@@ -32,7 +32,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  // Removed: #[allow(unused_imports)] use super::*;
+  // Removed: #[ allow( unused_imports ) ] use super::*;
 
   pub use super::orphan::*; // Corrected
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
@@ -62,7 +62,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  #[allow(unused_imports)] use super::*;
+  #[ allow( unused_imports ) ] use super::*;
   pub use super::exposed::*; // Corrected
 }
 
@@ -70,7 +70,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  // Removed: #[allow(unused_imports)] use super::*;
+  // Removed: #[ allow( unused_imports ) ] use super::*;
   pub use super::prelude::*; // Corrected
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
   #[ allow( unused_imports ) ]
@@ -90,7 +90,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  #[allow(unused_imports)] use super::*;
+  #[ allow( unused_imports ) ] use super::*;
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
   #[ allow( unused_imports ) ]
   pub use super::indentation::prelude::*; // Corrected

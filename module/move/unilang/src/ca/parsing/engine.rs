@@ -1,6 +1,6 @@
 //! Main parser logic for unilang CLI syntax.
 
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::input::{ InputAbstraction, InputPart, DelimiterType, Location };
 use super::instruction::GenericInstruction;
 use super::error::ParseError;
