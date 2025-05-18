@@ -3,31 +3,32 @@
 use crate::config::UnilangParserOptions;
 use crate::error::SourceLocation;
 use strs_tools::string::split::{ Split, SplitType };
-use std::borrow::Cow;
 
 /// Represents the classified kind of a token relevant to unilang syntax.
+/// String content is owned.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum UnilangTokenKind<'a>
+pub enum UnilangTokenKind
 {
-  Identifier( Cow<'a, str> ),
-  Operator( Cow<'a, str> ),
-  Delimiter( Cow<'a, str> ),
-  QuotedValue( Cow<'a, str> ), // Indicates it was quoted, content is raw (quotes stripped by SplitIterator)
-  UnquotedValue( Cow<'a, str> ),
-  Unrecognized( Cow<'a, str> ),
+  Identifier( String ),
+  Operator( String ),
+  Delimiter( String ),
+  QuotedValue( String ),
+  UnquotedValue( String ),
+  Unrecognized( String ),
 }
 
 /// Represents an item from the `strs_tools::string::split::SplitIterator`,
 /// enriched with segment information and a classified `UnilangTokenKind`.
+/// It still needs a lifetime 'input_lifetime due to `inner: Split<'input_lifetime>`.
 #[derive(Debug, Clone)]
-pub struct RichItem<'a>
+pub struct RichItem<'input_lifetime>
 {
-  pub inner : Split<'a>,
+  pub inner : Split<'input_lifetime>,
   pub segment_idx : Option<usize>,
-  pub kind : UnilangTokenKind<'a>,
+  pub kind : UnilangTokenKind,
 }
 
-impl<'a> RichItem<'a>
+impl<'input_lifetime> RichItem<'input_lifetime>
 {
   pub fn source_location( &self ) -> SourceLocation
   {
@@ -49,13 +50,26 @@ impl<'a> RichItem<'a>
       }
     }
   }
+
+  pub fn kind_payload_as_str( &self ) -> Option<&str>
+  {
+    match &self.kind
+    {
+      UnilangTokenKind::Identifier(s) |
+      UnilangTokenKind::Operator(s) |
+      UnilangTokenKind::Delimiter(s) |
+      UnilangTokenKind::QuotedValue(s) |
+      UnilangTokenKind::UnquotedValue(s) |
+      UnilangTokenKind::Unrecognized(s) => Some(s.as_str()),
+    }
+  }
 }
 
-pub fn classify_split<'a>
+pub fn classify_split<'input_lifetime>
 (
-  split : &Split<'a>,
+  split : &Split<'input_lifetime>,
   options : &UnilangParserOptions
-) -> UnilangTokenKind<'a>
+) -> UnilangTokenKind
 {
   match split.typ
   {
@@ -63,76 +77,82 @@ pub fn classify_split<'a>
     {
       if split.string == "?"
       {
-        UnilangTokenKind::Operator( Cow::Borrowed( "?" ) )
+        UnilangTokenKind::Operator( "?".to_string() )
       }
-      else if options.delimiters.contains( &split.string )
+      else if options.main_delimiters.iter().any( |d| d == &split.string )
       {
-        UnilangTokenKind::Delimiter( Cow::Borrowed( split.string ) )
+        UnilangTokenKind::Delimiter( split.string.to_string() )
+      }
+      else if options.whitespace_is_separator && split.string.trim().is_empty()
+      {
+        UnilangTokenKind::Unrecognized( split.string.to_string() )
       }
       else
       {
-        UnilangTokenKind::Unrecognized( Cow::Borrowed( split.string ) )
+        UnilangTokenKind::Unrecognized( split.string.to_string() )
       }
     }
     SplitType::Delimeted =>
     {
-      // TODO: Refine this classification, especially for QuotedValue.
-      // Current assumption: SplitIterator strips quotes.
-      // The `classify_split` needs to know if the original was quoted to make it QuotedValue.
-      // This might require `preserving_quoting: true` in SplitOptionsFormer and stripping here.
-      // For now, we can't reliably distinguish QuotedValue from UnquotedValue/Identifier.
-      if !split.string.is_empty() && split.string.chars().all( |c| c.is_alphanumeric() || c == '_' )
-      {
-        UnilangTokenKind::Identifier( Cow::Borrowed( split.string ) )
+      let s = split.string;
+      // Check if the string s (which now includes outer quotes due to preserving_quoting: true)
+      // matches any of the quote pairs.
+      for (prefix, postfix) in &options.quote_pairs {
+          if s.starts_with(prefix) && s.ends_with(postfix) && s.len() >= prefix.len() + postfix.len() {
+              // It's a quoted string. Extract the inner content.
+              let inner_content = &s[prefix.len()..(s.len() - postfix.len())];
+              return UnilangTokenKind::QuotedValue(inner_content.to_string());
+          }
       }
-      else if !split.string.is_empty()
+
+      // If not a recognized quoted string, proceed with other classifications.
+      if !s.is_empty() && s.chars().all( |c| c.is_alphanumeric() || c == '_' )
       {
-        UnilangTokenKind::UnquotedValue( Cow::Borrowed( split.string ) )
+        UnilangTokenKind::Identifier( s.to_string() )
+      }
+      else if !s.is_empty()
+      {
+        UnilangTokenKind::UnquotedValue( s.to_string() )
       }
       else
       {
-        UnilangTokenKind::Unrecognized( Cow::Borrowed( "" ) )
+        UnilangTokenKind::Unrecognized( "".to_string() )
       }
     }
   }
 }
 
-/// Unescapes string values. Returns Cow<'static, str> by always producing an owned String.
-///
-/// TODO: Implement full unescaping according to `unilang/spec.md` (R5, E1).
-pub fn unescape_string(s: &str) -> Cow<'static, str> {
-    // If it contains a backslash, assume it might need unescaping.
-    // A real implementation would parse all escape sequences.
-    if s.contains('\\') {
-        // Basic example: replace common escapes.
-        // This is NOT a complete or correct unescaper.
-        let mut unescaped = String::with_capacity(s.len());
-        let mut chars = s.chars();
-        while let Some(c) = chars.next() {
-            if c == '\\' {
-                match chars.next() {
-                    Some('\\') => unescaped.push('\\'),
-                    Some('\"') => unescaped.push('\"'),
-                    Some('\'') => unescaped.push('\''),
-                    Some('n') => unescaped.push('\n'),
-                    Some('t') => unescaped.push('\t'),
-                    // Add other escapes like \r, \0, \xHH, \u{HHHH} as per spec
-                    Some(other) => { // Invalid escape, push backslash and char
-                        unescaped.push('\\');
-                        unescaped.push(other);
-                    }
-                    None => unescaped.push('\\'), // Trailing backslash
-                }
-            } else {
-                unescaped.push(c);
-            }
-        }
-        Cow::Owned(unescaped)
-    } else {
-        // If no backslashes, can't be any standard escapes.
-        // To return Cow<'static, str>, we must own it if it's not a 'static literal.
-        Cow::Owned(s.to_string())
+/// Unescapes string values, returning an owned String.
+/// This function now expects the *inner content* of a quoted string if it was quoted.
+pub fn unescape_string(s: &str) -> String {
+    if !s.contains('\\') {
+        return s.to_string();
     }
+
+    let mut unescaped = String::with_capacity(s.len());
+    let mut chars = s.chars();
+
+    while let Some(c) = chars.next() {
+        if c == '\\' {
+            match chars.next() {
+                Some('\\') => unescaped.push('\\'),
+                Some('\"') => unescaped.push('\"'),
+                Some('\'') => unescaped.push('\''),
+                Some('n') => unescaped.push('\n'),
+                Some('t') => unescaped.push('\t'),
+                Some(other_char) => {
+                    unescaped.push('\\');
+                    unescaped.push(other_char);
+                }
+                None => {
+                    unescaped.push('\\');
+                }
+            }
+        } else {
+            unescaped.push(c);
+        }
+    }
+    unescaped
 }
 
 
@@ -156,37 +176,61 @@ mod tests
     let split_qmark = Split { string: "?", typ: SplitType::Delimeter, start:0, end:1 };
     let split_unknown_delim = Split { string: "&&", typ: SplitType::Delimeter, start:0, end:2 };
 
-    assert_eq!( classify_split( &split_colon, &options ), UnilangTokenKind::Delimiter( Cow::Borrowed( "::" ) ) );
-    assert_eq!( classify_split( &split_semicolon, &options ), UnilangTokenKind::Delimiter( Cow::Borrowed( ";;" ) ) );
-    assert_eq!( classify_split( &split_qmark, &options ), UnilangTokenKind::Operator( Cow::Borrowed( "?" ) ) );
-    assert_eq!( classify_split( &split_unknown_delim, &options ), UnilangTokenKind::Unrecognized( Cow::Borrowed( "&&" ) ) );
+    assert_eq!( classify_split( &split_colon, &options ), UnilangTokenKind::Delimiter( "::".to_string() ) );
+    assert_eq!( classify_split( &split_semicolon, &options ), UnilangTokenKind::Delimiter( ";;".to_string() ) );
+    assert_eq!( classify_split( &split_qmark, &options ), UnilangTokenKind::Operator( "?".to_string() ) );
+    assert_eq!( classify_split( &split_unknown_delim, &options ), UnilangTokenKind::Unrecognized( "&&".to_string() ) );
   }
 
   #[test]
   fn classify_delimited_content()
   {
-    let options = get_default_options();
+    let mut options = get_default_options();
+    // options.preserve_quotes_in_split = true; // Not needed, handled by SplitOptionsFormer.preserving_quoting
+
+    // Test case for QuotedValue
+    let split_quoted = Split { string: "\"hello world\"", typ: SplitType::Delimeted, start:0, end:13 };
+    assert_eq!( classify_split( &split_quoted, &options ), UnilangTokenKind::QuotedValue( "hello world".to_string() ) );
+
+    let split_single_quoted = Split { string: "'another value'", typ: SplitType::Delimeted, start:0, end:15 };
+    assert_eq!( classify_split( &split_single_quoted, &options ), UnilangTokenKind::QuotedValue( "another value".to_string() ) );
+
+    let split_empty_quoted = Split { string: "\"\"", typ: SplitType::Delimeted, start:0, end:2 };
+    assert_eq!( classify_split( &split_empty_quoted, &options ), UnilangTokenKind::QuotedValue( "".to_string() ) );
+
+    // Test cases for Identifier and UnquotedValue
     let split_ident = Split { string: "command", typ: SplitType::Delimeted, start:0, end:7 };
     let split_ident_with_num = Split { string: "cmd1", typ: SplitType::Delimeted, start:0, end:4 };
     let split_unquoted_val = Split { string: "some-value/path", typ: SplitType::Delimeted, start:0, end:15 };
     let split_num_val = Split { string: "123.45", typ: SplitType::Delimeted, start:0, end:6 };
 
-    assert_eq!( classify_split( &split_ident, &options ), UnilangTokenKind::Identifier( Cow::Borrowed( "command" ) ) );
-    assert_eq!( classify_split( &split_ident_with_num, &options ), UnilangTokenKind::Identifier( Cow::Borrowed( "cmd1" ) ) );
-    assert_eq!( classify_split( &split_unquoted_val, &options ), UnilangTokenKind::UnquotedValue( Cow::Borrowed( "some-value/path" ) ) );
-    assert_eq!( classify_split( &split_num_val, &options ), UnilangTokenKind::UnquotedValue( Cow::Borrowed( "123.45" ) ) );
+    assert_eq!( classify_split( &split_ident, &options ), UnilangTokenKind::Identifier( "command".to_string() ) );
+    assert_eq!( classify_split( &split_ident_with_num, &options ), UnilangTokenKind::Identifier( "cmd1".to_string() ) );
+    assert_eq!( classify_split( &split_unquoted_val, &options ), UnilangTokenKind::UnquotedValue( "some-value/path".to_string() ) );
+    assert_eq!( classify_split( &split_num_val, &options ), UnilangTokenKind::UnquotedValue( "123.45".to_string() ) );
+
+    // Test case: string that looks like a quote but isn't complete or is just a quote char
+    let split_just_quote = Split { string: "\"", typ: SplitType::Delimeted, start:0, end:1 };
+    assert_eq!( classify_split( &split_just_quote, &options ), UnilangTokenKind::UnquotedValue( "\"".to_string() ) );
+
+    let split_unclosed_quote = Split { string: "\"open", typ: SplitType::Delimeted, start:0, end:5 };
+    assert_eq!( classify_split( &split_unclosed_quote, &options ), UnilangTokenKind::UnquotedValue( "\"open".to_string() ) );
+
   }
 
   #[test]
-  fn unescape_simple() {
-      assert_eq!(unescape_string("simple"), Cow::Owned::<String>("simple".to_string()));
-      assert_eq!(unescape_string("a\\\\b"), Cow::Owned("a\\b".to_string()));
-      assert_eq!(unescape_string("a\\\"b"), Cow::Owned("a\"b".to_string()));
-      assert_eq!(unescape_string("a\\\'b"), Cow::Owned("a\'b".to_string()));
-      assert_eq!(unescape_string("a\\nb"), Cow::Owned("a\nb".to_string()));
-      assert_eq!(unescape_string("a\\tb"), Cow::Owned("a\tb".to_string()));
-      assert_eq!(unescape_string("complex\\\\path\\\"with\\\'quotes\\nnext"), Cow::Owned("complex\\path\"with\'quotes\nnext".to_string()));
-      assert_eq!(unescape_string("trailing\\"), Cow::Owned("trailing\\".to_string()));
-       assert_eq!(unescape_string("noescape"), Cow::Owned("noescape".to_string()));
+  fn unescape_logic_owned() {
+      assert_eq!(unescape_string("simple"), "simple".to_string());
+      assert_eq!(unescape_string("path/with/slashes"), "path/with/slashes".to_string());
+      assert_eq!(unescape_string("a\\\\b"), "a\\b".to_string());
+      assert_eq!(unescape_string("a\\\"b"), "a\"b".to_string());
+      assert_eq!(unescape_string("a\\\'b"), "a\'b".to_string());
+      assert_eq!(unescape_string("a\\nb"), "a\nb".to_string());
+      assert_eq!(unescape_string("a\\tb"), "a\tb".to_string());
+      assert_eq!(unescape_string("complex\\\\path\\\"with\\\'quotes\\nnext"), "complex\\path\"with\'quotes\nnext".to_string());
+      assert_eq!(unescape_string("trailing\\"), "trailing\\".to_string());
+      assert_eq!(unescape_string("invalid\\z escape"), "invalid\\z escape".to_string());
+      assert_eq!(unescape_string(""), "".to_string());
+      assert_eq!(unescape_string("\\\\\\"), "\\\\".to_string());
   }
 }

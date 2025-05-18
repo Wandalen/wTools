@@ -4,8 +4,8 @@ use crate::config::UnilangParserOptions;
 use crate::error::{ ParseError, ErrorKind, SourceLocation };
 use crate::instruction::{ GenericInstruction, Argument };
 use crate::item_adapter::{ classify_split, RichItem, UnilangTokenKind, unescape_string };
-use std::borrow::Cow;
 use std::collections::HashMap;
+use strs_tools::string::split::SplitType;
 
 /// The main parser for unilang instructions.
 #[derive(Debug)]
@@ -30,6 +30,10 @@ impl Parser
 
     while let Some( split_item ) = split_iterator.next()
     {
+      if self.options.whitespace_is_separator && split_item.typ == SplitType::Delimeter && split_item.string.trim().is_empty()
+      {
+        continue;
+      }
       let classified_kind = classify_split( &split_item, &self.options );
       rich_items_vec.push( RichItem { inner: split_item, segment_idx: None, kind: classified_kind } );
     }
@@ -47,6 +51,10 @@ impl Parser
       let mut split_iterator = self.options.to_split_options_former( segment_str ).perform();
       while let Some( split_item ) = split_iterator.next()
       {
+        if self.options.whitespace_is_separator && split_item.typ == SplitType::Delimeter && split_item.string.trim().is_empty()
+        {
+          continue;
+        }
         let classified_kind = classify_split( &split_item, &self.options );
         rich_items_accumulator_vec.push( RichItem { inner: split_item, segment_idx: Some( seg_idx ), kind: classified_kind } );
       }
@@ -55,11 +63,10 @@ impl Parser
     self.analyze_items_to_instructions( &rich_items_accumulator_vec )
   }
 
-  /// Analyzes a slice of rich items into generic instructions.
-  fn analyze_items_to_instructions<'s_slice, 'input : 's_slice>
+  fn analyze_items_to_instructions<'input>
   (
     &'input self,
-    items : &'s_slice [RichItem<'input>],
+    items : &'input [RichItem<'input>],
   )
   -> Result<Vec<GenericInstruction>, ParseError>
   {
@@ -71,7 +78,7 @@ impl Parser
 
     let mut start_index = 0;
     for (i, item_ref) in items.iter().enumerate() {
-        if item_ref.kind == UnilangTokenKind::Delimiter(Cow::Borrowed(";;")) {
+        if item_ref.kind == UnilangTokenKind::Delimiter(";;".to_string()) {
             let segment = &items[start_index..i];
             if segment.is_empty() {
                 return Err(ParseError {
@@ -88,15 +95,15 @@ impl Parser
         let segment = &items[start_index..];
         instructions.push(self.parse_single_instruction_from_rich_items(segment)?);
     } else if start_index == items.len() && !items.is_empty() {
-        if items.last().unwrap().kind == UnilangTokenKind::Delimiter(Cow::Borrowed(";;")) {
-            return Err(ParseError {
+        if items.last().unwrap().kind == UnilangTokenKind::Delimiter(";;".to_string()) {
+             return Err(ParseError {
                 kind: ErrorKind::Syntax("Empty instruction segment due to trailing ';;'".to_string()),
                 location: Some(items.last().unwrap().source_location()),
             });
         }
     }
 
-    if instructions.is_empty() && items.len() == 1 && items[0].kind == UnilangTokenKind::Delimiter(Cow::Borrowed(";;"))
+    if instructions.is_empty() && items.len() == 1 && items[0].kind == UnilangTokenKind::Delimiter(";;".to_string())
     {
        return Err(ParseError {
             kind: ErrorKind::Syntax("Empty instruction segment: input is only ';;'".to_string()),
@@ -107,11 +114,10 @@ impl Parser
     Ok(instructions)
   }
 
-  /// Parses a single instruction from a slice of RichItems.
-  fn parse_single_instruction_from_rich_items<'s_slice, 'input : 's_slice>
+  fn parse_single_instruction_from_rich_items<'input>
   (
     &'input self,
-    instruction_rich_items : &'s_slice [RichItem<'input>]
+    instruction_rich_items : &'input [RichItem<'input>]
   )
   -> Result<GenericInstruction, ParseError>
   {
@@ -138,118 +144,102 @@ impl Parser
     let mut help_requested = false;
     let mut items_cursor = 0;
 
-    // Parse Command Path
-    while items_cursor < instruction_rich_items.len() {
+    // Parse Command Path - Corrected Single-Segment Logic
+    if items_cursor < instruction_rich_items.len() {
         let item = &instruction_rich_items[items_cursor];
-
-        // Peek ahead: if current is Ident/Unquoted and next is '::', it's an arg name.
-        if (matches!(item.kind, UnilangTokenKind::Identifier(_)) || matches!(item.kind, UnilangTokenKind::UnquotedValue(_)))
-            && items_cursor + 1 < instruction_rich_items.len()
-            && instruction_rich_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter(Cow::Borrowed("::"))
-        {
-            break;
-        }
-
-        match &item.kind {
-            UnilangTokenKind::Identifier(s) | UnilangTokenKind::UnquotedValue(s) => {
-                command_path_slices.push(s.as_ref().to_string());
-                items_cursor += 1;
-            }
-            UnilangTokenKind::Operator(op_cow) if op_cow.as_ref() == "?" => {
-                break;
-            }
-            _ => {
-                break;
-            }
+        if let UnilangTokenKind::Identifier(s) | UnilangTokenKind::UnquotedValue(s) = &item.kind {
+            command_path_slices.push(s.clone());
+            items_cursor += 1;
         }
     }
 
     // Check for Help Operator
     if items_cursor < instruction_rich_items.len() {
-        let item = &instruction_rich_items[items_cursor];
-        if item.kind == UnilangTokenKind::Operator(Cow::Borrowed("?")) {
+        let potential_help_item = &instruction_rich_items[items_cursor];
+        if potential_help_item.kind == UnilangTokenKind::Operator("?".to_string()) {
             if items_cursor == instruction_rich_items.len() - 1 {
                 help_requested = true;
                 items_cursor += 1;
-            } else {
-                if command_path_slices.is_empty() && items_cursor == 0 {
-                    help_requested = true;
-                    items_cursor += 1;
-                }
+            } else if command_path_slices.is_empty() && items_cursor == 0 && instruction_rich_items.len() == 1 {
+                help_requested = true;
+                items_cursor += 1;
             }
         }
     }
 
     let mut named_arguments = HashMap::new();
     let mut positional_arguments = Vec::new();
-    let mut expect_named_arg_value = false;
-    let mut current_named_arg_name : Option<(String, SourceLocation)> = None;
-    // TODO: Implement E6 argument order rules (e.g. positional before named) more strictly.
+    let mut current_named_arg_name_data : Option<(&'input str, SourceLocation)> = None;
+    let mut seen_named_argument = false;
 
     while items_cursor < instruction_rich_items.len() {
         let item = &instruction_rich_items[items_cursor];
-        let current_item_location = item.source_location(); // Store for potential error reporting
+        let current_item_location = item.source_location();
 
-        if expect_named_arg_value {
-            items_cursor += 1; // Consume item that will be the value
+        if let Some((name_str_ref, name_loc)) = current_named_arg_name_data.take() {
             match &item.kind {
                 UnilangTokenKind::Identifier(val_s) | UnilangTokenKind::UnquotedValue(val_s) | UnilangTokenKind::QuotedValue(val_s) => {
-                    let (name, name_loc) = current_named_arg_name.take().unwrap();
-                    if named_arguments.contains_key(&name) {
-                        return Err(ParseError{ kind: ErrorKind::Syntax(format!("Duplicate named argument: {}", name)), location: Some(name_loc) });
+                    let name_key = name_str_ref.to_string();
+                    if self.options.error_on_duplicate_named_arguments && named_arguments.contains_key(&name_key) {
+                        return Err(ParseError{ kind: ErrorKind::Syntax(format!("Duplicate named argument: {}", name_key)), location: Some(name_loc.clone()) });
                     }
-                    named_arguments.insert(name, Argument {
-                        name_slice: None,
-                        value: unescape_string(val_s.as_ref()),
+                    named_arguments.insert(name_key.clone(), Argument {
+                        name: Some(name_key),
+                        value: unescape_string(val_s),
                         name_location: Some(name_loc),
                         value_location: item.source_location(),
                     });
-                    expect_named_arg_value = false;
+                    items_cursor += 1;
                 }
-                _ => return Err(ParseError{ kind: ErrorKind::Syntax("Expected value after '::' for named argument".to_string()), location: Some(current_item_location) }),
+                _ => return Err(ParseError{ kind: ErrorKind::Syntax(format!("Expected value for named argument '{}' but found {:?}", name_str_ref, item.kind)), location: Some(current_item_location) }),
             }
         } else {
-            // item is current_item_at_cursor (before potential increment below)
             match &item.kind {
-                UnilangTokenKind::Identifier(s) | UnilangTokenKind::UnquotedValue(s) => {
-                    // Look ahead to see if the *next* token is "::"
+                UnilangTokenKind::Identifier(s_val_owned) | UnilangTokenKind::UnquotedValue(s_val_owned) => {
                     if items_cursor + 1 < instruction_rich_items.len() &&
-                       instruction_rich_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter(Cow::Borrowed("::"))
+                       instruction_rich_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter("::".to_string())
                     {
-                        // Current 'item' is the name
-                        current_named_arg_name = Some((s.as_ref().to_string(), item.source_location()));
-                        items_cursor += 2; // Consume name and '::'
-                        expect_named_arg_value = true;
+                        current_named_arg_name_data = Some((item.inner.string, item.source_location()));
+                        items_cursor += 2;
+                        seen_named_argument = true;
                     } else {
-                        // Positional argument
+                        if seen_named_argument && self.options.error_on_positional_after_named {
+                             return Err(ParseError{ kind: ErrorKind::Syntax("Positional argument encountered after a named argument.".to_string()), location: Some(item.source_location()) });
+                        }
                         positional_arguments.push(Argument{
-                            name_slice: None,
-                            value: unescape_string(s.as_ref()),
+                            name: None,
+                            value: unescape_string(s_val_owned),
                             name_location: None,
                             value_location: item.source_location(),
                         });
-                        items_cursor += 1; // Consume item
+                        items_cursor += 1;
                     }
                 }
-                UnilangTokenKind::QuotedValue(s) => {
-                    // Always a positional argument if not expecting a named value
+                UnilangTokenKind::QuotedValue(s_val_owned) => {
+                    if seen_named_argument && self.options.error_on_positional_after_named {
+                         return Err(ParseError{ kind: ErrorKind::Syntax("Positional argument encountered after a named argument.".to_string()), location: Some(item.source_location()) });
+                    }
                     positional_arguments.push(Argument{
-                        name_slice: None,
-                        value: unescape_string(s.as_ref()),
+                        name: None,
+                        value: unescape_string(s_val_owned),
                         name_location: None,
                         value_location: item.source_location(),
                     });
-                    items_cursor += 1; // Consume item
+                    items_cursor += 1;
                 }
-                UnilangTokenKind::Delimiter(d_cow) if d_cow.as_ref() == "::" => {
-                     return Err(ParseError{ kind: ErrorKind::Syntax("Unexpected '::' without preceding argument name".to_string()), location: Some(item.source_location()) });
+                UnilangTokenKind::Delimiter(d_s) if d_s == "::" => {
+                     return Err(ParseError{ kind: ErrorKind::Syntax("Unexpected '::' without preceding argument name or after a previous value.".to_string()), location: Some(item.source_location()) });
                 }
-                _ => return Err(ParseError{ kind: ErrorKind::Syntax(format!("Unexpected token in arguments: '{}'", item.inner.string)), location: Some(item.source_location()) }),
+                UnilangTokenKind::Operator(op_s) if op_s == "?" => {
+                     return Err(ParseError{ kind: ErrorKind::Syntax("Unexpected help operator '?' amidst arguments.".to_string()), location: Some(item.source_location()) });
+                }
+                _ => return Err(ParseError{ kind: ErrorKind::Syntax(format!("Unexpected token in arguments: '{}' ({:?})", item.inner.string, item.kind)), location: Some(item.source_location()) }),
             }
         }
     }
-    if expect_named_arg_value {
-        return Err(ParseError{ kind: ErrorKind::Syntax("Expected value for named argument but found end of instruction".to_string()), location: current_named_arg_name.map(|(_,loc)| loc).or_else(|| instruction_rich_items.last().map(|i|i.source_location())) });
+
+    if let Some((name_str_ref, name_loc)) = current_named_arg_name_data {
+        return Err(ParseError{ kind: ErrorKind::Syntax(format!("Expected value for named argument '{}' but found end of instruction", name_str_ref)), location: Some(name_loc) });
     }
 
     Ok( GenericInstruction {

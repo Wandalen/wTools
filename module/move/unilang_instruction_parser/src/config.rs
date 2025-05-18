@@ -1,23 +1,30 @@
 //! Defines configuration options for the unilang parser.
 use strs_tools::string::split::SplitOptionsFormer;
-use strs_tools::string::parse_request::OpType; // Required for SplitOptionsFormer delimeter
+use strs_tools::string::parse_request::OpType;
 
 /// High-level options for configuring the `unilang` parser.
 /// These options will be translated into settings for `strs_tools::string::split::SplitOptionsFormer`.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UnilangParserOptions
 {
   /// Quote pairs to be used for identifying quoted values.
   /// Each tuple is (prefix, postfix).
   pub quote_pairs : Vec<( &'static str, &'static str )>,
-  /// Delimiters that separate significant parts of the command.
-  /// e.g., "::" for named arguments, ";;" for command separation.
-  /// The "?" help operator can also be treated as a delimiter here.
-  pub delimiters : Vec<&'static str>,
+  /// Delimiters that separate significant parts of the command, e.g., "::", ";;", "?".
+  pub main_delimiters : Vec<&'static str>,
   /// Whether to strip leading/trailing whitespace from delimited segments.
   pub strip_whitespace : bool,
-  // Note: Escape character and comment prefix handling are now responsibilities
-  // of the unilang_instruction_parser itself, post-itemization by `strs_tools::string::split`.
+  /// If true, the parser will return an error if a named argument is duplicated.
+  /// If false (default), the last occurrence of a duplicated named argument wins.
+  pub error_on_duplicate_named_arguments : bool,
+  /// If true (default), the parser will return an error if a positional argument
+  /// is encountered after any named argument has already been parsed for that instruction.
+  /// If false, positional arguments can be interleaved with or follow named arguments.
+  pub error_on_positional_after_named : bool,
+  /// Whether whitespace should also act as a separator between tokens.
+  pub whitespace_is_separator : bool,
+  // /// Whether to preserve quoting characters in the output of `SplitIterator`.
+  // pub preserve_quotes_in_split : bool, // New option, might not be needed if classify_split handles it
 }
 
 impl Default for UnilangParserOptions
@@ -27,9 +34,12 @@ impl Default for UnilangParserOptions
     Self
     {
       quote_pairs : vec![ ( "\"", "\"" ), ( "'", "'" ) ],
-      // Key unilang delimiters. "?" is included to be split out.
-      delimiters : vec![ "::", ";;", "?" ],
-      strip_whitespace : true, // Typically, whitespace around tokens is not significant.
+      main_delimiters : vec![ "::", ";;", "?" ],
+      strip_whitespace : true,
+      error_on_duplicate_named_arguments : false,
+      error_on_positional_after_named : true,
+      whitespace_is_separator : true,
+      // preserve_quotes_in_split : false, // Default to false, let classify_split manage
     }
   }
 }
@@ -47,19 +57,23 @@ impl UnilangParserOptions
       postfixes.push( *postfix );
     }
 
-    let mut former = SplitOptionsFormer::new( OpType::Vector( self.delimiters.clone() ) );
+    let mut effective_delimiters = self.main_delimiters.clone();
+    if self.whitespace_is_separator
+    {
+      effective_delimiters.extend( vec![ " ", "\t", "\n", "\r" ] );
+    }
+
+    let mut former = SplitOptionsFormer::new( OpType::Vector( Vec::new() ) );
     former.src( src );
-    former.preserving_empty( false ); // Typically, empty segments are not meaningful instructions or parts.
-    former.preserving_delimeters( true ); // We need to see the delimiters to parse structure.
+    former.delimeter( OpType::Vector( effective_delimiters ) );
+    former.preserving_empty( false );
+    former.preserving_delimeters( true );
     former.stripping( self.strip_whitespace );
-    former.quoting( !self.quote_pairs.is_empty() ); // Enable quoting if pairs are defined.
+    former.quoting( !self.quote_pairs.is_empty() );
     former.quoting_prefixes( prefixes );
     former.quoting_postfixes( postfixes );
-    // `preserving_quoting` is false by default in SplitOptionsFormer if not set.
-    // For unilang, we usually want the unescaped value without the quotes,
-    // so `preserving_quoting: false` (default) is often desired.
-    // If quotes themselves need to be analyzed, this could be true,
-    // and unilang_parser would strip them. For now, assume false is fine.
+    former.preserving_quoting( true ); // Preserve outer quotes from SplitIterator
+
     former
   }
 }
