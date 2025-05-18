@@ -1,4 +1,3 @@
-
 /// Add indentation to each line.
 #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
 pub mod indentation;
@@ -33,19 +32,28 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
-
-  use super::*;
+  #[allow(unused_imports)] use super::*;
 
   pub use orphan::*;
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
+  pub use super::indentation;
+  #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
   pub use super::indentation::orphan::*;
   #[ cfg( all( feature = "string_isolate", not( feature = "no_std" ) ) ) ]
+  pub use super::isolate;
+  #[ cfg( all( feature = "string_isolate", not( feature = "no_std" ) ) ) ]
   pub use super::isolate::orphan::*;
+  #[ cfg( all( feature = "string_parse_number", not( feature = "no_std" ) ) ) ]
+  pub use super::number;
   #[ cfg( all( feature = "string_parse_number", not( feature = "no_std" ) ) ) ]
   #[ allow( unused_imports ) ]
   pub use super::number::orphan::*;
   #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
+  pub use super::parse_request;
+  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
   pub use super::parse_request::orphan::*;
+  #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+  pub use super::split;
   #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
   pub use super::split::orphan::*;
 }
@@ -54,8 +62,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-
-  use super::*;
+  #[allow(unused_imports)] use super::*;
   pub use exposed::*;
 }
 
@@ -63,7 +70,8 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  #[allow(unused_imports)] use super::*;
+  pub use prelude::*;
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
   #[ allow( unused_imports ) ]
   pub use super::indentation::exposed::*;
@@ -82,7 +90,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  #[allow(unused_imports)] use super::*;
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
   #[ allow( unused_imports ) ]
   pub use super::indentation::prelude::*;
