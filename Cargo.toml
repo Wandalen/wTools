@@ -90,7 +90,7 @@ default-features = false
 # version = "~0.2.0"
 # path = "module/core/type_constructor_meta"
 # default-features = false
-
+#
 # [workspace.dependencies.type_constructor_make_meta]
 # version = "~0.2.0"
 # path = "module/core/type_constructor_make_meta"
@@ -265,16 +265,6 @@ default-features = false
 [workspace.dependencies.impls_index_meta]
 version = "~0.12.0"
 path = "module/core/impls_index_meta"
-
-[workspace.dependencies.mod_interface]
-version = "~0.33.0"
-path = "module/core/mod_interface"
-default-features = false
-
-[workspace.dependencies.mod_interface_meta]
-version = "~0.31.0"
-path = "module/core/mod_interface_meta"
-default-features = false
 
 [workspace.dependencies.multilayer]
 version = "~0.1.3"
