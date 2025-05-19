@@ -141,32 +141,43 @@ impl Parser
     };
 
     let mut command_path_slices = Vec::new();
-    let mut help_requested = false;
     let mut items_cursor = 0;
 
-    // Parse Command Path - Corrected Single-Segment Logic
-    if items_cursor < instruction_rich_items.len() {
-        let item = &instruction_rich_items[items_cursor];
-        if let UnilangTokenKind::Identifier(s) | UnilangTokenKind::UnquotedValue(s) = &item.kind {
-            command_path_slices.push(s.clone());
-            items_cursor += 1;
+    // Phase 1: Consume Command Path (Restored to greedy version that passed temp_path_only_multi_segment_path)
+    while items_cursor < instruction_rich_items.len() {
+        let current_item = &instruction_rich_items[items_cursor];
+        match &current_item.kind {
+            UnilangTokenKind::Identifier(s) | UnilangTokenKind::UnquotedValue(s) => {
+                if items_cursor + 1 < instruction_rich_items.len() {
+                    if instruction_rich_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter("::".to_string()) {
+                        break;
+                    }
+                }
+                command_path_slices.push(s.clone());
+                items_cursor += 1;
+            }
+            UnilangTokenKind::Operator(_) | UnilangTokenKind::QuotedValue(_) => {
+                break;
+            }
+            _ => {
+                break;
+            }
         }
     }
 
-    // Check for Help Operator
+    // Phase 2: Check for Help Operator immediately after the path
+    let mut help_requested = false;
     if items_cursor < instruction_rich_items.len() {
         let potential_help_item = &instruction_rich_items[items_cursor];
         if potential_help_item.kind == UnilangTokenKind::Operator("?".to_string()) {
             if items_cursor == instruction_rich_items.len() - 1 {
                 help_requested = true;
                 items_cursor += 1;
-            } else if command_path_slices.is_empty() && items_cursor == 0 && instruction_rich_items.len() == 1 {
-                help_requested = true;
-                items_cursor += 1;
             }
         }
     }
 
+    // Phase 3: Argument Parsing
     let mut named_arguments = HashMap::new();
     let mut positional_arguments = Vec::new();
     let mut current_named_arg_name_data : Option<(&'input str, SourceLocation)> = None;
@@ -228,6 +239,7 @@ impl Parser
                     items_cursor += 1;
                 }
                 UnilangTokenKind::Delimiter(d_s) if d_s == "::" => {
+                     // dbg!("Inside Delimiter('::') arm, about to return Err for named_arg_missing_name_error"); // Removed
                      return Err(ParseError{ kind: ErrorKind::Syntax("Unexpected '::' without preceding argument name or after a previous value.".to_string()), location: Some(item.source_location()) });
                 }
                 UnilangTokenKind::Operator(op_s) if op_s == "?" => {
