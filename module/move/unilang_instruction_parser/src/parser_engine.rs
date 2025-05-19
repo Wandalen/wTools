@@ -143,32 +143,54 @@ impl Parser
     let mut command_path_slices = Vec::new();
     let mut items_cursor = 0;
 
-    // Phase 1: Consume Command Path
+    // Phase 1: Consume Command Path (Revised Logic for "name::val" as first and segment breaks)
     while items_cursor < instruction_rich_items.len() {
         let current_item = &instruction_rich_items[items_cursor];
+
+        // If this is the very first token of an instruction, and it's an Identifier/UnquotedValue
+        // followed immediately by "::", then it's not a path segment but the start of a named argument.
+        // In this case, the path is empty, and we break to let argument parsing handle it.
+        if command_path_slices.is_empty() && items_cursor == 0 {
+            if let UnilangTokenKind::Identifier(_) | UnilangTokenKind::UnquotedValue(_) = &current_item.kind {
+                if items_cursor + 1 < instruction_rich_items.len() &&
+                   instruction_rich_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter("::".to_string()) {
+                    break; // This is "name::value" at the start, path is empty.
+                }
+            }
+        }
+
         match &current_item.kind {
             UnilangTokenKind::Identifier(s) | UnilangTokenKind::UnquotedValue(s) => {
                 command_path_slices.push(s.clone());
+                let processed_item_segment_idx = current_item.segment_idx; // Segment of the item just added to path
                 items_cursor += 1;
 
                 if items_cursor < instruction_rich_items.len() {
-                    let next_token_kind = &instruction_rich_items[items_cursor].kind;
-                    match next_token_kind {
+                    let next_item_candidate = &instruction_rich_items[items_cursor];
+
+                    // Stop if next item is in a new segment (for slice inputs)
+                    if next_item_candidate.segment_idx != processed_item_segment_idx {
+                        break;
+                    }
+
+                    match &next_item_candidate.kind {
                         UnilangTokenKind::Identifier(_) | UnilangTokenKind::UnquotedValue(_) => {
+                            // If this next potential path segment is actually a named arg name, stop path.
                             if items_cursor + 1 < instruction_rich_items.len() &&
                                instruction_rich_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter("::".to_string()) {
                                 break;
                             }
+                            // Otherwise, loop continues to consume it as path.
                         }
-                        _ => {
+                        _ => { // Next is Operator, Delimiter (not ::), Quoted, Unrecognized - path ends here.
                             break;
                         }
                     }
-                } else {
+                } else { // No more tokens
                     break;
                 }
             }
-            _ => {
+            _ => { // Current token is not path-like (e.g., starts with "?", or "::value" if first token logic above didn't catch it)
                 break;
             }
         }
@@ -195,7 +217,7 @@ impl Parser
     while items_cursor < instruction_rich_items.len() {
         let item = &instruction_rich_items[items_cursor];
         let current_item_location = item.source_location();
-        // dbg! removed
+        // dbg!(&item.kind, items_cursor);
 
         if let Some((name_str_ref, name_loc)) = current_named_arg_name_data.take() {
             match &item.kind {
@@ -208,11 +230,9 @@ impl Parser
 
                     let value_str_to_unescape = val_s;
                     let base_loc_for_unescape = if let UnilangTokenKind::QuotedValue(_) = &item.kind {
-                        // dbg! removed
                         let (prefix_len, postfix_len) = self.options.quote_pairs.iter()
                             .find(|(p, _postfix)| item.inner.string.starts_with(*p))
                             .map_or((0,0), |(p, pf)| (p.len(), pf.len()));
-                        // dbg! removed
 
                         match item.source_location() {
                             SourceLocation::StrSpan { start, end } => SourceLocation::StrSpan {
@@ -268,11 +288,9 @@ impl Parser
                          return Err(ParseError{ kind: ErrorKind::Syntax("Positional argument encountered after a named argument.".to_string()), location: Some(item.source_location()) });
                     }
 
-                    // dbg! removed
                     let (prefix_len, postfix_len) = self.options.quote_pairs.iter()
                         .find(|(p, _postfix)| item.inner.string.starts_with(*p))
                         .map_or((0,0), |(p, pf)| (p.len(), pf.len()));
-                    // dbg! removed
 
                     let inner_content_location = match item.source_location() {
                         SourceLocation::StrSpan { start, end } => SourceLocation::StrSpan {
