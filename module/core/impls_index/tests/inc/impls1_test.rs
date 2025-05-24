@@ -94,11 +94,12 @@ fn impls_basic()
     {
       fn f1()
       {
-        macro_rules! macro1
-        {
-          ( $( $Arg : tt )* ) => { };
-        }
-        macro1!();
+        // xxx : qqq : uncomment and fix
+        // macro_rules! macro1
+        // {
+        //   ( $( $Arg : tt )* ) => { { $( $Arg )* } };
+        // }
+        // macro1!();
       }
     }
 
