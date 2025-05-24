@@ -127,15 +127,11 @@ pub fn classify_split<'input_lifetime>
   if s == ";;" { return UnilangTokenKind::Delimiter(";;".to_string()); }
   if s == ":" { return UnilangTokenKind::Delimiter(":".to_string()); }
 
-  if split.typ == SplitType::Delimeted {
-      if !s.is_empty() {
-          let mut chars = s.chars();
-          if let Some(first_char) = chars.next() {
-              if first_char.is_alphabetic() || first_char == '_' {
-                  if chars.all(|c| c.is_alphanumeric() || c == '_' || c == '-') {
-                      return UnilangTokenKind::Identifier(s.to_string());
-                  }
-              }
+  if split.typ == SplitType::Delimeted && !s.is_empty() {
+      let mut chars = s.chars();
+      if let Some(first_char) = chars.next() {
+          if (first_char.is_alphabetic() || first_char == '_') && chars.all(|c| c.is_alphanumeric() || c == '_' || c == '-') {
+              return UnilangTokenKind::Identifier(s.to_string());
           }
       }
   }
@@ -277,7 +273,7 @@ mod tests
     assert_eq!( classify_split( &split_single_quoted, &options ), UnilangTokenKind::QuotedValue( "another value".to_string() ) );
 
     let split_empty_quoted = Split { string: "\"\"", typ: SplitType::Delimeted, start:0, end:2 };
-    assert_eq!( classify_split( &split_empty_quoted, &options ), UnilangTokenKind::QuotedValue( "".to_string() ) );
+    assert_eq!( classify_split( &split_empty_quoted, &options ), UnilangTokenKind::QuotedValue( String::new() ) );
 
     let split_ident = Split { string: "command", typ: SplitType::Delimeted, start:0, end:7 };
     let split_ident_with_hyphen = Split { string: "cmd-name", typ: SplitType::Delimeted, start:0, end:8 };
@@ -289,8 +285,8 @@ mod tests
 
     let split_unquoted_val_path = Split { string: "some-value/path", typ: SplitType::Delimeted, start:0, end:15 };
     let split_num_val = Split { string: "123.45", typ: SplitType::Delimeted, start:0, end:6 };
-    assert_eq!( classify_split( &split_unquoted_val_path, &options ), UnilangTokenKind::UnquotedValue( "some-value/path".to_string() ) );
     assert_eq!( classify_split( &split_num_val, &options ), UnilangTokenKind::UnquotedValue( "123.45".to_string() ) );
+    assert_eq!( classify_split( &split_unquoted_val_path, &options ), UnilangTokenKind::UnquotedValue( "some-value/path".to_string() ) );
 
     let split_just_quote = Split { string: "\"", typ: SplitType::Delimeted, start:0, end:1 };
     assert_eq!( classify_split( &split_just_quote, &options ), UnilangTokenKind::Unrecognized( "\"".to_string() ) );
