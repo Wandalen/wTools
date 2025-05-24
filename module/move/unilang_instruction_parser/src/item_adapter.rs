@@ -199,7 +199,7 @@ pub fn unescape_string_with_errors(
                             SourceLocation::SliceSegment {
                                 segment_index: *segment_index,
                                 start_in_segment: base_start_in_seg + error_start_offset,
-                                end_in_segment: base_start_in_seg + error_end_offset,
+                                end_in_segment: base_start_in_seg + error_end_offset, // Corrected line
                             }
                         }
                     };
