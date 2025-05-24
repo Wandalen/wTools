@@ -7,7 +7,7 @@
 *   Organize examples consistently with other crates and ensure they are useful for developers.
 
 ### Progress
-*   ✅ Increment 5 Complete
+*   ✅ All Increments Complete
 
 ### Target Crate
 *   `module/move/unilang_instruction_parser`
@@ -32,6 +32,8 @@
     *   `module/move/unilang_instruction_parser/examples/basic_usage.rs`
 *   External Crates Requiring `task.md` Proposals:
     *   `module/core/strs_tools` (Reason: Clippy warnings prevent clean compilation with `-D warnings`, and tokenization issues affect unescaping tests in `unilang_instruction_parser`.)
+    *   `module/core/former_meta` (Reason: Compilation error `E0554` and clippy warnings block workspace build.)
+    *   `module/move/willbe` / `module/alias/cargo_will` (Reason: Output filename collisions block clean workspace build.)
 
 ### Expected Behavior Rules / Specifications (for Target Crate)
 *   (To be defined as issues are identified)
@@ -86,7 +88,7 @@
             | CT6.1 | `cmd.sub/path arg1 name::val`             | `["cmd", "sub", "path", "arg1"]` | `[]`                     | `{"name": "val"}`   | `false`       | Command path with `.` and `/` separators. |
     *   Commit Message: "refactor(unilang_instruction_parser): Refine test specifications and coverage"
 
-*   ⏳ Increment 5: Update `Readme.md`
+*   ✅ Increment 5: Update `Readme.md`
     *   Detailed Plan Step 1: Read `module/move/unilang_instruction_parser/Readme.md`.
     *   Detailed Plan Step 2: Rewrite the `Readme.md` to be concise and clearly communicate the crate's purpose.
     *   Pre-Analysis: Current `Readme.md` content.
@@ -95,7 +97,7 @@
     *   Verification Strategy: Confirm `write_to_file` success.
     *   Commit Message: "docs(unilang_instruction_parser): Update Readme.md for clarity and conciseness"
 
-*   ⚫ Increment 6: Organize and Improve Examples
+*   ✅ Increment 6: Organize and Improve Examples
     *   Detailed Plan Step 1: Read existing examples in `examples/`.
     *   Detailed Plan Step 2: Review examples for usefulness and clarity.
     *   Detailed Plan Step 3: Rename/restructure examples to match common patterns in other crates (e.g., `_trivial_sample.rs`, `_more.rs`).
@@ -121,3 +123,4 @@
 *   Initial assessment suggests a focus on test stability and documentation.
 *   Clippy warnings in `strs_tools` are blocking clean compilation with `-D warnings`. A `task.md` has been proposed for this.
 *   Unescaping tests in `unilang_instruction_parser` are currently ignored due to dependency on `strs_tools`'s tokenization issues.
+*   Compilation errors and output filename collisions in `former_meta`, `willbe`, and `cargo_will` are blocking clean workspace builds. `task.md` proposals have been created for these.
