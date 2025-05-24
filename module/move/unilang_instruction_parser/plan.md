@@ -21,9 +21,9 @@
     *   ✅ Increment 8: Documentation and Examples
     *   ✅ Increment 9: Address Test Failures (Workaround, Parser Fix, and External Bug Report)
     *   ✅ Increment 10: Refine Parser Behavior for Comments and Align Config Entry Tests
-    *   ✅ **Increment 11: Investigate and Resolve Segmentation Fault in `argument_parsing_tests.rs`** (Segfault no longer occurring with current test run; ignored tests confirmed)
+    *   ✅ Increment 11: Investigate and Resolve Segmentation Fault in `argument_parsing_tests.rs` (Segfault no longer occurring with current test run; ignored tests confirmed)
+    *   ✅ **Increment 12: Align and Verify Test Matrix CT2.1**
 *   Next Increments:
-    *   ⚫ Increment 12: Align and Verify Test Matrix CT2.1
     *   ⚫ Increment 13: (Optional) Investigate `unreachable_pattern` warnings in `error_reporting_tests.rs`
     *   ⚫ Increment 14: Final Verification and Comprehensive Test Run
 
@@ -118,16 +118,16 @@
     *   Verification Strategy: Execute `cargo test -p unilang_instruction_parser --test argument_parsing_tests -- --show-output --nocapture` via `execute_command`. Analyze output. (Done - passed, 4 ignored, no segfault)
     *   Commit Message: `test(unilang_parser): Verify argument_parsing_tests stability, confirm ignored tests`
 
-*   ⚫ **Increment 12: Align and Verify Test Matrix CT2.1** (Depends on Increment 11)
-    *   Detailed Plan Step 1: Review Test Matrix row CT2.1: `Input: slice | Path: multi | Help: absent | Args: pos1, name1::val1 | Quoting: mixed | Escapes: none | Separator: none | Options: allow_pos_after_named=false | Expected: 3 Instr: 1(Path: p1 p2), 2(Path: pos1), 3(Named: n1:v1)`.
-    *   Detailed Plan Step 2: Locate the test function covering CT2.1 (likely in `comprehensive_tests.rs`, e.g., `ct2_1_slice_multi_path_mixed_args`). If it doesn't exist, create it.
-    *   Detailed Plan Step 3: Ensure the test implementation accurately reflects the CT2.1 specification, especially the input slice structure and expected separate instructions.
-    *   Detailed Plan Step 4: Execute `cargo test -p unilang_instruction_parser --test comprehensive_tests -- ct2_1_slice_multi_path_mixed_args --show-output` (or the correct test name) via `execute_command`.
-    *   Detailed Plan Step 5: If the test fails, apply Critical Log Analysis to the `execute_command` output. Implement necessary fixes in the parser logic (e.g., `parser_engine.rs`) or the test itself to ensure alignment with CT2.1.
-    *   Pre-Analysis: The plan mentioned "Aligning Test Matrix CT2.1" as a current focus. This increment ensures it's explicitly handled.
+*   ✅ **Increment 12: Align and Verify Test Matrix CT2.1** (Depends on Increment 11)
+    *   Detailed Plan Step 1: Review Test Matrix row CT2.1: `Input: slice | Path: multi | Help: absent | Args: pos1, name1::val1 | Quoting: mixed | Escapes: none | Separator: none | Options: allow_pos_after_named=false | Expected: 3 Instr: 1(Path: p1 p2), 2(Path: pos1), 3(Named: n1:v1)`. (Done)
+    *   Detailed Plan Step 2: Locate the test function covering CT2.1 (likely in `comprehensive_tests.rs`, e.g., `ct2_1_slice_multi_path_mixed_args`). If it doesn't exist, create it. (Done, test `ct2_1_slice_multi_path_mixed_args` exists)
+    *   Detailed Plan Step 3: Ensure the test implementation accurately reflects the CT2.1 specification, especially the input slice structure and expected separate instructions. (Done, implementation matches)
+    *   Detailed Plan Step 4: Execute `cargo test -p unilang_instruction_parser --test comprehensive_tests -- ct2_1_slice_multi_path_mixed_args --show-output` (or the correct test name) via `execute_command`. (Done, test passed)
+    *   Detailed Plan Step 5: If the test fails, apply Critical Log Analysis to the `execute_command` output. Implement necessary fixes in the parser logic (e.g., `parser_engine.rs`) or the test itself to ensure alignment with CT2.1. (Skipped, test passed)
+    *   Pre-Analysis: The plan mentioned "Aligning Test Matrix CT2.1" as a current focus. This increment ensures it's explicitly handled. The `parser_engine.rs` was previously updated to treat `segment_idx` changes as instruction boundaries, which fixed `ct2_1_slice_multi_path_mixed_args`. This increment will re-verify this.
     *   Crucial Design Rules: [Testing: Plan with a Test Matrix When Writing Tests]
     *   Relevant Behavior Rules: [Instruction separator], [Argument parsing]
-    *   Verification Strategy: `cargo test -p unilang_instruction_parser --test comprehensive_tests -- ct2_1_slice_multi_path_mixed_args --show-output` (or the correct test name) passes, based on `execute_command` output.
+    *   Verification Strategy: `cargo test -p unilang_instruction_parser --test comprehensive_tests -- ct2_1_slice_multi_path_mixed_args --show-output` (or the correct test name) passes, based on `execute_command` output. (Done, passed)
     *   Commit Message: `test(unilang_parser): Align and verify Test Matrix CT2.1 (slice input behavior)`
 
 *   ⚫ **Increment 13: (Optional) Investigate `unreachable_pattern` warnings in `error_reporting_tests.rs`** (Depends on Increment 11)
