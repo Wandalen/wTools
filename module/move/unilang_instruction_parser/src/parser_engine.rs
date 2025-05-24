@@ -21,17 +21,20 @@ pub struct Parser
 impl Parser
 {
   /// Creates a new `Parser` with the specified [`UnilangParserOptions`].
+  #[allow(clippy::must_use_candidate)]
   pub fn new( options : UnilangParserOptions ) -> Self
   {
     Self { options }
   }
 
   /// Parses a single input string into a vector of [`GenericInstruction`]s.
+  #[allow(clippy::missing_errors_doc)]
   pub fn parse_single_str<'input>( &'input self, input : &'input str ) -> Result< Vec< GenericInstruction >, ParseError >
   {
     let mut rich_items_vec : Vec<RichItem<'input>> = Vec::new();
     let mut split_iterator = self.options.to_split_options_former( input ).perform();
 
+  #[allow(clippy::while_let_on_iterator)]
     while let Some( split_item ) = split_iterator.next()
     {
       if self.options.whitespace_is_separator && split_item.typ == SplitType::Delimeter && split_item.string.trim().is_empty()
@@ -45,6 +48,7 @@ impl Parser
   }
 
   /// Parses a slice of input strings into a vector of [`GenericInstruction`]s.
+  #[allow(clippy::missing_errors_doc)]
   pub fn parse_slice<'input>( &'input self, input_segments : &'input [&'input str] ) -> Result< Vec< GenericInstruction >, ParseError >
   {
     let mut rich_items_accumulator_vec : Vec<RichItem<'input>> = Vec::new();
@@ -52,6 +56,7 @@ impl Parser
     for ( seg_idx, segment_str ) in input_segments.iter().enumerate()
     {
       let mut split_iterator = self.options.to_split_options_former( segment_str ).perform();
+      #[allow(clippy::while_let_on_iterator)]
       while let Some( split_item ) = split_iterator.next()
       {
         if self.options.whitespace_is_separator && split_item.typ == SplitType::Delimeter && split_item.string.trim().is_empty()
@@ -165,6 +170,8 @@ impl Parser
   }
 
   /// Parses a single instruction from a slice of `RichItem`s.
+  #[allow(clippy::too_many_lines)]
+  #[allow(unreachable_patterns)]
   fn parse_single_instruction_from_rich_items<'input>
   (
     &'input self,
@@ -205,7 +212,7 @@ impl Parser
     while items_cursor < significant_items.len() {
         let current_item = significant_items[items_cursor];
 
-        if let UnilangTokenKind::Identifier(_) | UnilangTokenKind::UnquotedValue(_) = &current_item.kind {
+        if let UnilangTokenKind::Identifier(_) | UnilangTokenKind::QuotedValue(_) = &current_item.kind {
             if items_cursor + 1 < significant_items.len() &&
                significant_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter("::".to_string()) {
                 break;
@@ -213,7 +220,8 @@ impl Parser
         }
 
         match &current_item.kind {
-            UnilangTokenKind::Identifier(s) | UnilangTokenKind::UnquotedValue(s) => {
+            UnilangTokenKind::Identifier(s) | UnilangTokenKind::QuotedValue(s) => {
+                #[allow(clippy::collapsible_if)]
                 if !command_path_slices.is_empty() {
                     if items_cursor > 0 {
                          let previous_item_in_path_source = significant_items[items_cursor -1];
@@ -234,6 +242,7 @@ impl Parser
     let mut help_requested = false;
     if items_cursor < significant_items.len() {
         let potential_help_item = significant_items[items_cursor];
+        #[allow(clippy::collapsible_if)]
         if potential_help_item.kind == UnilangTokenKind::Operator("?".to_string()) {
             if items_cursor == significant_items.len() - 1 {
                 help_requested = true;
@@ -256,8 +265,7 @@ impl Parser
 
         if let Some((name_str_ref, name_loc)) = current_named_arg_name_data.take() {
             match &item.kind {
-                UnilangTokenKind::Identifier(val_s) | UnilangTokenKind::UnquotedValue(val_s)
-                | UnilangTokenKind::QuotedValue(val_s) => {
+                UnilangTokenKind::Identifier(val_s) | UnilangTokenKind::QuotedValue(val_s) => {
                     let name_key = name_str_ref.to_string();
                     if self.options.error_on_duplicate_named_arguments && named_arguments.contains_key(&name_key) {
                         return Err(ParseError{ kind: ErrorKind::Syntax(format!("Duplicate named argument: {}", name_key)), location: Some(name_loc.clone()) });
@@ -277,7 +285,7 @@ impl Parser
                             SourceLocation::SliceSegment { segment_index, start_in_segment, end_in_segment } => SourceLocation::SliceSegment {
                                 segment_index,
                                 start_in_segment: start_in_segment + prefix_len,
-                                end_in_segment: end_in_segment - postfix_len,
+                                end_in_segment: end_in_segment - postfix_len
                             },
                         }
                     } else {
@@ -305,7 +313,7 @@ impl Parser
             }
         } else {
             match &item.kind {
-                UnilangTokenKind::Identifier(s_val_owned) | UnilangTokenKind::UnquotedValue(s_val_owned) => {
+                UnilangTokenKind::Identifier(s_val_owned) | UnilangTokenKind::QuotedValue(s_val_owned) => {
                     if items_cursor + 1 < significant_items.len() &&
                        significant_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter("::".to_string())
                     {
@@ -342,7 +350,7 @@ impl Parser
                         SourceLocation::SliceSegment { segment_index, start_in_segment, end_in_segment } => SourceLocation::SliceSegment {
                             segment_index,
                             start_in_segment: start_in_segment + prefix_len,
-                            end_in_segment: end_in_segment - postfix_len,
+                            end_in_segment: end_in_segment - postfix_len
                         },
                     };
                     // eprintln!("[UNESCAPE_DEBUG] Attempting to unescape for positional arg: raw value: '{}', base_loc: {:?}", s_val_owned, inner_content_location);

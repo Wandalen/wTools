@@ -9,6 +9,7 @@ use strs_tools::string::parse_request::OpType;
 /// lower-level settings for the `strs_tools::string::split::SplitOptionsFormer` which performs
 /// the initial tokenization of the input string.
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[allow(clippy::struct_excessive_bools)]
 pub struct UnilangParserOptions
 {
   /// Defines pairs of characters or strings that denote the start and end of a quoted value.
@@ -23,6 +24,9 @@ pub struct UnilangParserOptions
   /// - `"::"` for separating named argument names from their values.
   /// - `";;"` for separating multiple instructions within a single input string.
   /// - `"?"` for requesting help on a command.
+  /// These delimiters are preserved during tokenization and used by the parser to
+  /// determine the structure of commands and arguments.
+  #[allow(clippy::doc_lazy_continuation)]
   /// These delimiters are preserved during tokenization and used by the parser to
   /// determine the structure of commands and arguments.
   pub main_delimiters : Vec<&'static str>,
@@ -83,6 +87,7 @@ impl UnilangParserOptions
   ///
   /// This method configures the splitter based on the defined quote pairs, delimiters,
   /// and whitespace handling rules.
+  #[allow(clippy::must_use_candidate)]
   pub fn to_split_options_former<'s>( &'s self, src : &'s str ) -> SplitOptionsFormer<'s>
   {
     let mut prefixes = Vec::with_capacity( self.quote_pairs.len() );

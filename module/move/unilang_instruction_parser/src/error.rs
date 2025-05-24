@@ -1,4 +1,6 @@
 //! Defines error types for the unilang instruction parser.
+#![allow(clippy::std_instead_of_alloc)]
+#![allow(clippy::std_instead_of_core)]
 use std::fmt;
 
 /// Represents the location of a token or parsing error within the input source.

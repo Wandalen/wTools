@@ -1,4 +1,6 @@
 //! Adapts items from `strs_tools::string::split` and classifies them for unilang parsing.
+#![allow(clippy::elidable_lifetime_names)]
+
 //!
 //! This module provides structures and functions to take the raw `Split` items from
 //! `strs_tools` and convert them into `RichItem`s, which include a classified
@@ -27,8 +29,6 @@ pub enum UnilangTokenKind
   /// The inner content of a quoted string (e.g., `hello` from `"hello"`). Unescaping is handled later.
   QuotedValue( String ),
   /// An unquoted value that is not an identifier, operator, or delimiter.
-  UnquotedValue( String ),
-  /// A token that could not be classified into any other known kind.
   Unrecognized( String ),
 }
 
@@ -53,6 +53,7 @@ impl<'input_lifetime> RichItem<'input_lifetime>
   /// Calculates the [`SourceLocation`] of this `RichItem` in the original input.
   ///
   /// This considers whether the input was a single string or a slice of strings.
+  #[allow(clippy::must_use_candidate)]
   pub fn source_location( &self ) -> SourceLocation
   {
     if let Some( segment_idx ) = self.segment_idx
@@ -77,6 +78,7 @@ impl<'input_lifetime> RichItem<'input_lifetime>
   /// Returns a string slice of the payload of the token kind, if applicable.
   ///
   /// For example, for `UnilangTokenKind::Identifier("cmd")`, this returns `Some("cmd")`.
+  #[allow(clippy::must_use_candidate)]
   pub fn kind_payload_as_str( &self ) -> Option<&str>
   {
     match &self.kind
@@ -85,7 +87,6 @@ impl<'input_lifetime> RichItem<'input_lifetime>
       UnilangTokenKind::Operator(s) |
       UnilangTokenKind::Delimiter(s) |
       UnilangTokenKind::QuotedValue(s) |
-      UnilangTokenKind::UnquotedValue(s) |
       UnilangTokenKind::Unrecognized(s) => Some(s.as_str()),
     }
   }
@@ -100,11 +101,15 @@ impl<'input_lifetime> RichItem<'input_lifetime>
 /// 1. Quoted values (based on `options.quote_pairs`).
 /// 2. Known operators and delimiters (from `options.main_delimiters`, e.g., `?`, `::`, `;;`).
 /// 3. Identifiers (alphanumeric, `_`, `-`, starting with alpha or `_`).
-/// 4. Unquoted values (general non-empty strings not fitting other categories, excluding single unrecognized punctuation).
+/// 4. Unrecognized tokens (single punctuation not fitting other categories, excluding single unrecognized punctuation).
 /// 5. Unrecognized tokens (single punctuation not otherwise classified, or other fallbacks).
 ///
 /// Note: For `QuotedValue`, this function extracts and stores the *inner content* of the quotes.
 /// The actual unescaping of this inner content is handled by [`unescape_string_with_errors`].
+#[must_use]
+#[allow(clippy::missing_panics_doc)]
+#[allow(clippy::needless_return)]
+#[allow(clippy::elidable_lifetime_names)]
 pub fn classify_split<'input_lifetime>
 (
   split : &Split<'input_lifetime>,
@@ -127,6 +132,7 @@ pub fn classify_split<'input_lifetime>
   if s == ";;" { return UnilangTokenKind::Delimiter(";;".to_string()); }
   if s == ":" { return UnilangTokenKind::Delimiter(":".to_string()); }
 
+  #[allow(clippy::collapsible_if)]
   if split.typ == SplitType::Delimeted && !s.is_empty() {
       let mut chars = s.chars();
       if let Some(first_char) = chars.next() {
@@ -136,6 +142,7 @@ pub fn classify_split<'input_lifetime>
       }
   }
 
+  #[allow(clippy::collapsible_if)]
   if split.typ == SplitType::Delimeted && !s.is_empty() && !(options.whitespace_is_separator && s.trim().is_empty()) {
       if s.chars().count() == 1 {
           let first_char = s.chars().next().unwrap();
@@ -143,7 +150,7 @@ pub fn classify_split<'input_lifetime>
               return UnilangTokenKind::Unrecognized(s.to_string());
           }
       }
-      return UnilangTokenKind::UnquotedValue(s.to_string());
+      return UnilangTokenKind::Unrecognized(s.to_string());
   }
 
   return UnilangTokenKind::Unrecognized(s.to_string());
@@ -160,6 +167,7 @@ pub fn classify_split<'input_lifetime>
 /// If an invalid escape sequence (e.g., `\x`, `\z`) or a trailing backslash is encountered,
 /// this function returns a [`ParseError`] with an appropriate message and a `SourceLocation`
 /// pinpointing the invalid sequence in the original input.
+#[allow(clippy::missing_errors_doc)]
 pub fn unescape_string_with_errors(
     s: &str,
     base_location: &SourceLocation,
@@ -266,25 +274,25 @@ mod tests
   {
     let options = get_default_options();
 
-    let split_quoted = Split { string: "\"hello world\"", typ: SplitType::Delimeted, start:0, end:13 };
+    let split_quoted = Split { string: "\"hello world\"", typ: SplitType::Delimeter, start:0, end:13 };
     assert_eq!( classify_split( &split_quoted, &options ), UnilangTokenKind::QuotedValue( "hello world".to_string() ) );
 
-    let split_single_quoted = Split { string: "'another value'", typ: SplitType::Delimeted, start:0, end:15 };
+    let split_single_quoted = Split { string: "'another value'", typ: SplitType::Delimeter, start:0, end:15 };
     assert_eq!( classify_split( &split_single_quoted, &options ), UnilangTokenKind::QuotedValue( "another value".to_string() ) );
 
     let split_empty_quoted = Split { string: "\"\"", typ: SplitType::Delimeted, start:0, end:2 };
     assert_eq!( classify_split( &split_empty_quoted, &options ), UnilangTokenKind::QuotedValue( String::new() ) );
 
     let split_ident = Split { string: "command", typ: SplitType::Delimeted, start:0, end:7 };
-    let split_ident_with_hyphen = Split { string: "cmd-name", typ: SplitType::Delimeted, start:0, end:8 };
-    let split_ident_with_num = Split { string: "cmd1", typ: SplitType::Delimeted, start:0, end:4 };
+    let split_ident_with_hyphen = Split { string: "cmd-name", typ: SplitType::Delimeter, start:0, end:8 };
+    let split_ident_with_num = Split { string: "cmd1", typ: SplitType::Delimeter, start:0, end:4 };
 
     assert_eq!( classify_split( &split_ident, &options ), UnilangTokenKind::Identifier( "command".to_string() ) );
     assert_eq!( classify_split( &split_ident_with_hyphen, &options ), UnilangTokenKind::Identifier( "cmd-name".to_string() ) );
     assert_eq!( classify_split( &split_ident_with_num, &options ), UnilangTokenKind::Identifier( "cmd1".to_string() ) );
 
     let split_unquoted_val_path = Split { string: "some-value/path", typ: SplitType::Delimeted, start:0, end:15 };
-    let split_num_val = Split { string: "123.45", typ: SplitType::Delimeted, start:0, end:6 };
+    let split_num_val = Split { string: "123.45", typ: SplitType::Delimeter, start:0, end:6 };
     assert_eq!( classify_split( &split_num_val, &options ), UnilangTokenKind::UnquotedValue( "123.45".to_string() ) );
     assert_eq!( classify_split( &split_unquoted_val_path, &options ), UnilangTokenKind::UnquotedValue( "some-value/path".to_string() ) );
 

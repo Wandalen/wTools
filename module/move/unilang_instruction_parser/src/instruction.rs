@@ -1,4 +1,5 @@
 //! Defines the core instruction and argument structures for unilang.
+#![allow(clippy::doc_markdown)]
 use std::collections::HashMap;
 use super::error::SourceLocation;
 
@@ -10,7 +11,7 @@ use super::error::SourceLocation;
 #[derive(Debug, PartialEq, Clone, Eq)] // Added Eq
 pub struct Argument
 {
-  /// The name of the argument if it's a named argument (e.g., "name" in "name::value").
+  /// The name of the argument if it's a named argument (e.g., "name" in "`name::value`").
   /// This is `None` for positional arguments.
   pub name : Option<String>,
   /// The unescaped value of the argument.
@@ -18,7 +19,7 @@ pub struct Argument
   /// have been processed. For unquoted arguments, this is the literal token string.
   pub value : String,
   /// The location (span) of the argument's name in the original input, if applicable.
-  /// This points to the "name" part of a "name::value" pair.
+  /// This points to the "name" part of a "`name::value`" pair.
   pub name_location : Option<SourceLocation>,
   /// The location (span) of the argument's raw value token in the original input.
   /// For quoted values, this refers to the span including the quotes.
