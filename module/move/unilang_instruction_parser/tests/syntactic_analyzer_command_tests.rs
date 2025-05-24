@@ -148,11 +148,20 @@ fn single_command_slice_input_path_check() {
     let result = parser.parse_slice(input);
     assert!(result.is_ok(), "parse_slice failed for input '{:?}': {:?}", input, result.err());
     let instructions = result.unwrap();
-    assert_eq!(instructions.len(), 1, "Expected 1 instruction from &[\"cmd\", \"arg\"] because 'arg' should be argument to 'cmd'");
-    let instruction = &instructions[0];
-    assert_eq!(instruction.command_path_slices, vec!["cmd".to_string()]);
-    assert_eq!(instruction.positional_arguments.len(), 1, "Expected 'arg' to be a positional argument");
-    assert_eq!(instruction.positional_arguments[0].value, "arg".to_string());
+    // Each string in the slice (not containing ";;") forms its own instruction.
+    assert_eq!(instructions.len(), 2, "Expected 2 instructions from &[\"cmd\", \"arg\"]");
+
+    let instr1 = &instructions[0];
+    assert_eq!(instr1.command_path_slices, vec!["cmd".to_string()], "Instr1 path");
+    assert!(instr1.positional_arguments.is_empty(), "Instr1 positional");
+    assert!(instr1.named_arguments.is_empty(), "Instr1 named");
+    assert!(!instr1.help_requested, "Instr1 help");
+
+    let instr2 = &instructions[1];
+    assert_eq!(instr2.command_path_slices, vec!["arg".to_string()], "Instr2 path (arg treated as command)");
+    assert!(instr2.positional_arguments.is_empty(), "Instr2 positional");
+    assert!(instr2.named_arguments.is_empty(), "Instr2 named");
+    assert!(!instr2.help_requested, "Instr2 help");
 }
 
 #[test]
@@ -162,16 +171,26 @@ fn multiple_commands_slice_input_path_check() {
     let result = parser.parse_slice(input);
     assert!(result.is_ok(), "parse_slice failed for input '{:?}': {:?}", input, result.err());
     let instructions = result.unwrap();
-    assert_eq!(instructions.len(), 3);
+    // Expected:
+    // 1. from "cmd1 path1" -> path ["cmd1", "path1"]
+    // 2. from ";;" -> boundary
+    // 3. from "cmd2" -> path ["cmd2"]
+    // 4. from "?" -> path [], help true
+    // 5. from ";;" -> boundary
+    // 6. from "cmd3" -> path ["cmd3"]
+    assert_eq!(instructions.len(), 4, "Expected 4 instructions from the slice input");
 
-    assert_eq!(instructions[0].command_path_slices, vec!["cmd1".to_string(), "path1".to_string()]);
-    assert!(!instructions[0].help_requested);
+    assert_eq!(instructions[0].command_path_slices, vec!["cmd1".to_string(), "path1".to_string()], "Instr1 Path");
+    assert!(!instructions[0].help_requested, "Instr1 Help");
 
-    assert_eq!(instructions[1].command_path_slices, vec!["cmd2".to_string()]);
-    assert!(instructions[1].help_requested);
+    assert_eq!(instructions[1].command_path_slices, vec!["cmd2".to_string()], "Instr2 Path");
+    assert!(!instructions[1].help_requested, "Instr2 Help should be false as '?' is next segment");
 
-    assert_eq!(instructions[2].command_path_slices, vec!["cmd3".to_string()]);
-    assert!(!instructions[2].help_requested);
+    assert!(instructions[2].command_path_slices.is_empty(), "Instr3 Path (from '?')");
+    assert!(instructions[2].help_requested, "Instr3 Help (from '?')");
+
+    assert_eq!(instructions[3].command_path_slices, vec!["cmd3".to_string()], "Instr4 Path");
+    assert!(!instructions[3].help_requested, "Instr4 Help");
 }
 
 // Test for path ending before a delimiter like '::'

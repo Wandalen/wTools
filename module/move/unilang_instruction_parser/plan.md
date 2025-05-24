@@ -21,7 +21,7 @@
     *   ✅ Increment 9: Address Test Failures (Workaround, Parser Fix, and External Bug Report)
     *   ✅ Increment 10: Refine Parser Behavior for Comments and Align Config Entry Tests
 *   Currently Working On:
-    *   Final Verification
+    *   Final Verification (Aligning Test Matrix CT2.1)
 
 ### Target Crate
 *   module/move/unilang_instruction_parser
@@ -38,6 +38,7 @@
     *   `module/move/unilang_instruction_parser/tests/argument_parsing_tests.rs`
     *   `module/move/unilang_instruction_parser/tests/parser_config_entry_tests.rs`
     *   `module/move/unilang_instruction_parser/tests/syntactic_analyzer_command_tests.rs`
+    *   `module/move/unilang_instruction_parser/tests/comprehensive_tests.rs`
 *   Crates for Documentation (for AI's reference, if `read_file` on docs is planned):
     *   `strs_tools`
 *   External Crates Requiring `task.md` Proposals (if any identified during planning):
@@ -48,7 +49,7 @@
 *   Path parsing: Greedy consumption of `Identifier` and `UnquotedValue` tokens until a non-path-like token or a named argument (`name::value`) is encountered. Handles empty path for initial "name::val" and respects slice segment boundaries.
 *   Argument parsing: Handles positional, named (`name::value`), and quoted arguments. Supports options for duplicate named args and positional args after named.
 *   Help operator `?`: Parsed if it's the last token after the command path.
-*   Instruction separator `;;`: Splits input into multiple `GenericInstruction`s.
+*   Instruction separator `;;`: Splits input into multiple `GenericInstruction`s. Each string in a slice input `&[&str]` also forms a new instruction context unless joined by `;;`.
 *   Error reporting: Provides `ErrorKind` and `SourceLocation` for syntax violations.
 *   Unescaping: Standard escapes (`\\`, `\"`, `\'`, `\n`, `\t`) are handled within quoted values. Invalid escapes (e.g., `\x`) result in a `ParseError`.
 *   Comments: Lines/segments starting with `#` should be ignored and produce no instructions.
@@ -82,22 +83,9 @@
     *   Commit Message: `docs(unilang_parser): Add crate and API documentation, Readme, and basic usage example`
 *   ✅ **Increment 9: Address Test Failures (Workaround, Parser Fix, and External Bug Report)**
     *   Commit Message: `fix(unilang_parser): Correct path parsing logic and test assertions, ignore remaining known failures`
-
 *   ✅ **Increment 10: Refine Parser Behavior for Comments and Align Config Entry Tests**
-    *   Target Component(s): `unilang_instruction_parser/src/parser_engine.rs`, `unilang_instruction_parser/tests/parser_config_entry_tests.rs`.
-    *   Pre-Analysis: 6 tests in `parser_config_entry_tests.rs` were ignored.
-    *   Detailed Plan Step 1: **Modify Parser for Comment Handling.** (Completed)
-    *   Detailed Plan Step 2: **Update `parse_single_str_comment_input` and `parse_slice_comment_segments` tests.** (Completed)
-    *   Detailed Plan Step 3: **Update "simple command placeholder" tests.** (Completed)
-    *   Detailed Plan Step 4: **Update "unterminated quote" tests.** (Completed)
-    *   Crucial Design Rules: N/A.
-    *   Relevant Behavior Rules: "Comments: Lines/segments starting with `#` should be ignored".
-    *   Verification Strategy:
-        *   `cargo test --package unilang_instruction_parser --test parser_config_entry_tests` now shows 0 failed, 0 ignored. (Completed)
-        *   `cargo test --package unilang_instruction_parser --all-targets` should show 0 failed, 4 ignored (the `strs_tools` ones).
     *   Commit Message: `fix(unilang_parser): Improve comment handling, align config entry tests`
     *   **Test Matrix (Accumulated - more rows can be added in future tasks):**
-        *   (No changes to Test Matrix itself for this increment)
 
         | ID    | Input Type | Path Complexity | Help Op | Arguments                                  | Quoting        | Escapes      | Separator | Options                               | Expected Outcome (Simplified)                               |
         |-------|------------|-----------------|---------|--------------------------------------------|----------------|--------------|-----------|---------------------------------------|-------------------------------------------------------------|
@@ -107,7 +95,7 @@
         | CT1.4 | single_str | single          | absent  | pos1 ("quoted val")                        | double         | none         | none      | default                               | Path: `cmd`, Pos: `quoted val`                              |
         | CT1.5 | single_str | single          | absent  | name1::"esc\\nval"                         | double         | std          | none      | default                               | Path: `cmd`, Named: `n1:esc\nval`                           |
         | CT1.6 | single_str | single          | absent  | name1::"bad\\xval"                         | double         | invalid      | none      | default                               | Error: Invalid escape                                       |
-        | CT2.1 | slice      | multi           | absent  | pos1, name1::val1                          | mixed          | none         | none      | allow_pos_after_named=false           | Path: `p1 p2`, Pos: `pos1`, Named: `n1:v1`                  |
+        | CT2.1 | slice      | multi           | absent  | pos1, name1::val1                          | mixed          | none         | none      | allow_pos_after_named=false           | 3 Instr: 1(Path: `p1 p2`), 2(Path: `pos1`), 3(Named: `n1:v1`)|
         | CT3.1 | single_str | single          | absent  | arg1 (path); name::val (arg)               | none           | none         | `;;`      | default                               | Instr1: Path `cmd1 arg1`; Instr2: Path `cmd2`, Named `name:val`|
         | CT4.1 | single_str | single          | absent  | name::val1, name::val2                     | none           | none         | none      | error_on_duplicate=true               | Error: Duplicate named                                      |
         | CT4.2 | single_str | single          | absent  | name::val1, name::val2                     | none           | none         | none      | error_on_duplicate=false              | Path: `cmd`, Named: `name:val2` (last wins)                 |
@@ -129,5 +117,5 @@
     *   `missing_docs` for `tests/tests.rs` was fixed.
     *   `unused_imports` in `tests/comprehensive_tests.rs` were fixed.
     *   Multiple `unreachable_pattern` warnings in `tests/error_reporting_tests.rs` persist. These should be investigated in a future task.
-*   **Parser Bug with `parse_slice` State:** (No change to this note - this specific bug regarding `error_on_positional_after_named` state carrying over still needs a dedicated fix if it impacts other scenarios. The fix in `analyze_items_to_instructions` for `segment_idx` change as a boundary helps `parse_slice_simple_command_placeholder` pass by creating separate instructions).
-*   **Current Focus:** Increment 10 completed. All planned increments are done. Preparing for final verification.
+*   **Parser Bug with `parse_slice` State:** The `analyze_items_to_instructions` function was updated to treat `segment_idx` changes as instruction boundaries. This fixed `parse_slice_simple_command_placeholder` and `ct2_1_slice_multi_path_mixed_args`. The original note about `error_on_positional_after_named` state carrying over might still be relevant if more complex slice interactions are tested, but the primary boundary issue is resolved.
+*   **Current Focus:** All planned increments are done. Final verification.

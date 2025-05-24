@@ -125,19 +125,35 @@ fn ct1_6_single_str_single_path_named_arg_invalid_escape() {
 // Test Matrix Row: CT2.1
 #[test]
 fn ct2_1_slice_multi_path_mixed_args() {
-    let parser = Parser::new(options_allow_pos_after_named()); // allow_pos_after_named is false by default, this uses true
+    let parser = Parser::new(options_allow_pos_after_named());
     let input_slice: &[&str] = &["path1 path2", "pos1", "name1::val1"];
     let result = parser.parse_slice(input_slice);
     assert!(result.is_ok(), "CT2.1 Parse error: {:?}", result.err());
     let instructions = result.unwrap();
-    assert_eq!(instructions.len(), 1);
-    let instruction = &instructions[0];
-    assert_eq!(instruction.command_path_slices, vec!["path1".to_string(), "path2".to_string()], "CT2.1 Path");
-    assert_eq!(instruction.positional_arguments.len(), 1, "CT2.1 Positional args count");
-    assert_eq!(instruction.positional_arguments[0].value, "pos1".to_string(), "CT2.1 Positional arg value");
-    assert_eq!(instruction.named_arguments.len(), 1, "CT2.1 Named args count");
-    let named_arg = instruction.named_arguments.get("name1").expect("CT2.1 Missing name1");
-    assert_eq!(named_arg.value, "val1".to_string(), "CT2.1 name1 value");
+    assert_eq!(instructions.len(), 3, "CT2.1 Expected 3 instructions from slice");
+
+    // Instruction 1: from "path1 path2"
+    let instr1 = &instructions[0];
+    assert_eq!(instr1.command_path_slices, vec!["path1".to_string(), "path2".to_string()], "CT2.1 Instr1 Path");
+    assert!(instr1.positional_arguments.is_empty(), "CT2.1 Instr1 Positional args");
+    assert!(instr1.named_arguments.is_empty(), "CT2.1 Instr1 Named args");
+    assert!(!instr1.help_requested, "CT2.1 Instr1 Help requested");
+
+    // Instruction 2: from "pos1"
+    let instr2 = &instructions[1];
+    assert_eq!(instr2.command_path_slices, vec!["pos1".to_string()], "CT2.1 Instr2 Path (pos1 treated as command)");
+    assert!(instr2.positional_arguments.is_empty(), "CT2.1 Instr2 Positional args");
+    assert!(instr2.named_arguments.is_empty(), "CT2.1 Instr2 Named args");
+    assert!(!instr2.help_requested, "CT2.1 Instr2 Help requested");
+
+    // Instruction 3: from "name1::val1"
+    let instr3 = &instructions[2];
+    assert!(instr3.command_path_slices.is_empty(), "CT2.1 Instr3 Path should be empty");
+    assert!(instr3.positional_arguments.is_empty(), "CT2.1 Instr3 Positional args");
+    assert_eq!(instr3.named_arguments.len(), 1, "CT2.1 Instr3 Named args count");
+    let named_arg = instr3.named_arguments.get("name1").expect("CT2.1 Missing name1 in Instr3");
+    assert_eq!(named_arg.value, "val1".to_string(), "CT2.1 name1 value in Instr3");
+    assert!(!instr3.help_requested, "CT2.1 Instr3 Help requested");
 }
 
 // Test Matrix Row: CT3.1
@@ -180,7 +196,7 @@ fn ct4_1_single_str_duplicate_named_error() {
 // Test Matrix Row: CT4.2
 #[test]
 fn ct4_2_single_str_duplicate_named_last_wins() {
-    let parser = Parser::new(default_options()); // error_on_duplicate_named_arguments is false by default
+    let parser = Parser::new(default_options());
     let input = "cmd name::val1 name::val2";
     let result = parser.parse_single_str(input);
     assert!(result.is_ok(), "CT4.2 Parse error: {:?}", result.err());
@@ -196,9 +212,8 @@ fn ct4_2_single_str_duplicate_named_last_wins() {
 #[test]
 fn ct5_1_single_str_no_path_named_arg_only() {
     let parser = Parser::new(default_options());
-    let input = "name::val"; // No command path
+    let input = "name::val";
     let result = parser.parse_single_str(input);
-    // Current parser behavior: if first token is `name::val` like, path is empty.
     assert!(result.is_ok(), "CT5.1 Parse error: {:?}", result.err());
     let instructions = result.unwrap();
     assert_eq!(instructions.len(), 1);

@@ -80,76 +80,78 @@ impl Parser
     }
 
     let mut start_index = 0;
-    let mut current_segment_idx = items[0].segment_idx; // Initialize with the first item's segment index
+    let mut current_segment_idx_val = items[0].segment_idx;
 
     for i in 0..items.len() {
         let item_ref = &items[i];
-        let is_last_item = i == items.len() - 1;
 
-        // Determine if a boundary is crossed: either ';;' or change in segment_idx (for slice inputs)
         let is_boundary_delimiter = item_ref.kind == UnilangTokenKind::Delimiter(";;".to_string());
-        let is_segment_idx_change = item_ref.segment_idx != current_segment_idx && item_ref.segment_idx.is_some();
+        let is_segment_idx_change = item_ref.segment_idx != current_segment_idx_val && item_ref.segment_idx.is_some();
 
         if is_boundary_delimiter || is_segment_idx_change {
-            let segment_to_parse = if is_boundary_delimiter { &items[start_index..i] } else { &items[start_index..i] }; // If segment_idx changes, current item belongs to next instruction
+            let segment_to_parse = &items[start_index..i]; // Segment before boundary
 
             if !segment_to_parse.is_empty() {
-                if let Some(first_token) = segment_to_parse.first() {
-                    if let UnilangTokenKind::Unrecognized(s) = &first_token.kind {
-                        if s == "#" { // Comment segment
-                            // Skip, do nothing
-                        } else {
-                            instructions.push(self.parse_single_instruction_from_rich_items(segment_to_parse)?);
-                        }
+                let first_significant_token_opt = segment_to_parse.iter().find(|item| {
+                    match &item.kind {
+                        UnilangTokenKind::Delimiter(s) | UnilangTokenKind::Unrecognized(s) => !s.trim().is_empty(),
+                        _ => true,
+                    }
+                });
+
+                if let Some(first_significant_token) = first_significant_token_opt {
+                    if let UnilangTokenKind::Unrecognized(s) = &first_significant_token.kind {
+                        if s == "#" { /* Comment segment, skip */ }
+                        else { instructions.push(self.parse_single_instruction_from_rich_items(segment_to_parse)?); }
                     } else {
                         instructions.push(self.parse_single_instruction_from_rich_items(segment_to_parse)?);
                     }
+                } // Else: segment was all whitespace, skip.
+            } else if is_boundary_delimiter { // Empty segment specifically due to ';;'
+                 if start_index == i { // Handles `;; cmd` or `cmd ;;;; cmd`
+                    return Err(ParseError {
+                        kind: ErrorKind::Syntax("Empty instruction segment due to ';;'".to_string()),
+                        location: Some(item_ref.source_location()),
+                    });
                 }
-            } else if is_boundary_delimiter { // Empty segment due to ';;'
-                return Err(ParseError {
-                    kind: ErrorKind::Syntax("Empty instruction segment due to ';;'".to_string()),
-                    location: Some(item_ref.source_location()),
-                });
             }
 
-            start_index = if is_boundary_delimiter { i + 1 } else { i }; // Next instruction starts after ';;' or at current item if segment_idx changed
-            current_segment_idx = item_ref.segment_idx; // Update current segment_idx
-        }
-
-        // If it's the last item and no boundary was just processed for it, parse the remaining segment
-        if is_last_item && start_index <= i {
-            let segment = &items[start_index..=i]; // Include the last item
-             if !segment.is_empty() {
-                if let Some(first_token) = segment.first() {
-                    if let UnilangTokenKind::Unrecognized(s) = &first_token.kind {
-                        if s == "#" {
-                            // Last segment is a comment, do nothing
-                        } else {
-                             instructions.push(self.parse_single_instruction_from_rich_items(segment)?);
-                        }
-                    } else {
-                        instructions.push(self.parse_single_instruction_from_rich_items(segment)?);
-                    }
-                }
-            } else if start_index == items.len() && items.last().unwrap().kind == UnilangTokenKind::Delimiter(";;".to_string()) {
-                 return Err(ParseError { // Trailing ';;'
-                    kind: ErrorKind::Syntax("Empty instruction segment due to trailing ';;'".to_string()),
-                    location: Some(items.last().unwrap().source_location()),
-                });
-            }
+            start_index = if is_boundary_delimiter { i + 1 } else { i };
+            current_segment_idx_val = item_ref.segment_idx;
         }
     }
 
-    // Final check for comment-only input if no instructions were generated
-     if instructions.is_empty() && items.len() > 0 {
-        if let Some(first_token) = items.first() {
-            if let UnilangTokenKind::Unrecognized(s) = &first_token.kind {
-                if s == "#" {
-                    return Ok(instructions);
+    // Process the final segment after the loop
+    if start_index < items.len() {
+        let segment_to_parse = &items[start_index..];
+        if !segment_to_parse.is_empty() {
+            let first_significant_token_opt = segment_to_parse.iter().find(|item| {
+                match &item.kind {
+                    UnilangTokenKind::Delimiter(s) | UnilangTokenKind::Unrecognized(s) => !s.trim().is_empty(),
+                    _ => true,
                 }
-            }
+            });
+
+            if let Some(first_significant_token) = first_significant_token_opt {
+                if let UnilangTokenKind::Unrecognized(s) = &first_significant_token.kind {
+                    if s == "#" { /* Comment segment, skip */ }
+                    else { instructions.push(self.parse_single_instruction_from_rich_items(segment_to_parse)?); }
+                } else {
+                    instructions.push(self.parse_single_instruction_from_rich_items(segment_to_parse)?);
+                }
+            } // Else: final segment was all whitespace, skip.
         }
+    } else if !items.is_empty() && items.last().unwrap().kind == UnilangTokenKind::Delimiter(";;".to_string()) {
+        // This handles an input that ends exactly with ";;" (e.g., "cmd ;;")
+        // The loop would have processed "cmd", start_index would be items.len().
+        // This signifies an empty segment after the last processed instruction.
+        return Err(ParseError {
+            kind: ErrorKind::Syntax("Empty instruction segment due to trailing ';;'".to_string()),
+            location: Some(items.last().unwrap().source_location()),
+        });
     }
+
+    // Specific check for input that is *only* a comment (already handled by loop logic if it results in empty instructions)
     // Specific check for input that is *only* ";;"
     if instructions.is_empty() && items.len() == 1 && items[0].kind == UnilangTokenKind::Delimiter(";;".to_string())
     {
@@ -170,16 +172,23 @@ impl Parser
   )
   -> Result<GenericInstruction, ParseError>
   {
-    if instruction_rich_items.is_empty()
+    let significant_items: Vec<&RichItem<'input>> = instruction_rich_items.iter().filter(|item| {
+        match &item.kind {
+            UnilangTokenKind::Delimiter(s) | UnilangTokenKind::Unrecognized(s) => !s.trim().is_empty(),
+            _ => true,
+        }
+    }).collect();
+
+    if significant_items.is_empty()
     {
       return Err( ParseError {
-        kind: ErrorKind::Syntax( "Internal error or empty/comment segment: parse_single_instruction_from_rich_items called with empty items".to_string() ),
-        location: None,
+        kind: ErrorKind::Syntax( "Internal error or empty/comment segment: parse_single_instruction_from_rich_items called with effectively empty items".to_string() ),
+        location: if instruction_rich_items.is_empty() { None } else { Some(instruction_rich_items.first().unwrap().source_location()) },
       });
     }
 
-    let first_item_loc = instruction_rich_items.first().unwrap().source_location();
-    let last_item_loc = instruction_rich_items.last().unwrap().source_location();
+    let first_item_loc = significant_items.first().unwrap().source_location();
+    let last_item_loc = significant_items.last().unwrap().source_location();
     let overall_location = match ( &first_item_loc, &last_item_loc )
     {
         ( SourceLocation::StrSpan{ start: s1, .. }, SourceLocation::StrSpan{ end: e2, .. } ) =>
@@ -193,12 +202,12 @@ impl Parser
     let mut items_cursor = 0;
 
     // Phase 1: Consume Command Path
-    while items_cursor < instruction_rich_items.len() {
-        let current_item = &instruction_rich_items[items_cursor];
+    while items_cursor < significant_items.len() {
+        let current_item = significant_items[items_cursor];
 
         if let UnilangTokenKind::Identifier(_) | UnilangTokenKind::UnquotedValue(_) = &current_item.kind {
-            if items_cursor + 1 < instruction_rich_items.len() &&
-               instruction_rich_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter("::".to_string()) {
+            if items_cursor + 1 < significant_items.len() &&
+               significant_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter("::".to_string()) {
                 break;
             }
         }
@@ -207,9 +216,7 @@ impl Parser
             UnilangTokenKind::Identifier(s) | UnilangTokenKind::UnquotedValue(s) => {
                 if !command_path_slices.is_empty() {
                     if items_cursor > 0 {
-                         let previous_item_in_path_source = &instruction_rich_items[items_cursor -1];
-                         // Path should only cross segment_idx if it's the *first* token of the path for the new segment_idx
-                         // This means if command_path_slices is NOT empty, and segment_idx changes, path must end.
+                         let previous_item_in_path_source = significant_items[items_cursor -1];
                          if current_item.segment_idx != previous_item_in_path_source.segment_idx {
                              break;
                          }
@@ -225,10 +232,10 @@ impl Parser
     }
 
     let mut help_requested = false;
-    if items_cursor < instruction_rich_items.len() {
-        let potential_help_item = &instruction_rich_items[items_cursor];
+    if items_cursor < significant_items.len() {
+        let potential_help_item = significant_items[items_cursor];
         if potential_help_item.kind == UnilangTokenKind::Operator("?".to_string()) {
-            if items_cursor == instruction_rich_items.len() - 1 {
+            if items_cursor == significant_items.len() - 1 {
                 help_requested = true;
                 items_cursor += 1;
             }
@@ -240,9 +247,12 @@ impl Parser
     let mut current_named_arg_name_data : Option<(&'input str, SourceLocation)> = None;
     let mut seen_named_argument = false;
 
-    while items_cursor < instruction_rich_items.len() {
-        let item = &instruction_rich_items[items_cursor];
-        let current_item_location = item.source_location();
+    // eprintln!("[ARG_LOOP_START] Initial items_cursor: {}, significant_items_len: {}", items_cursor, significant_items.len());
+    while items_cursor < significant_items.len() {
+        let item = significant_items[items_cursor];
+        // let current_item_location = item.source_location();
+        // eprintln!("[ARG_MATCH_ITEM] items_cursor: {}, item: {:?}", items_cursor, item);
+
 
         if let Some((name_str_ref, name_loc)) = current_named_arg_name_data.take() {
             match &item.kind {
@@ -274,11 +284,14 @@ impl Parser
                         item.source_location()
                     };
 
+                    // eprintln!("[UNESCAPE_DEBUG] Attempting to unescape for named arg: '{}', raw value: '{}', base_loc: {:?}", name_str_ref, value_str_to_unescape, base_loc_for_unescape);
                     let final_value = if let UnilangTokenKind::QuotedValue(_) = &item.kind {
                         unescape_string_with_errors(value_str_to_unescape, &base_loc_for_unescape)?
                     } else {
                         value_str_to_unescape.to_string()
                     };
+                    // eprintln!("[UNESCAPE_DEBUG] Unescaped value for named: '{}'", final_value);
+
 
                     named_arguments.insert(name_key.clone(), Argument {
                         name: Some(name_key),
@@ -288,13 +301,13 @@ impl Parser
                     });
                     items_cursor += 1;
                 }
-                _ => return Err(ParseError{ kind: ErrorKind::Syntax(format!("Expected value for named argument '{}' but found {:?}", name_str_ref, item.kind)), location: Some(current_item_location) }),
+                _ => return Err(ParseError{ kind: ErrorKind::Syntax(format!("Expected value for named argument '{}' but found {:?}", name_str_ref, item.kind)), location: Some(item.source_location()) }),
             }
         } else {
             match &item.kind {
                 UnilangTokenKind::Identifier(s_val_owned) | UnilangTokenKind::UnquotedValue(s_val_owned) => {
-                    if items_cursor + 1 < instruction_rich_items.len() &&
-                       instruction_rich_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter("::".to_string())
+                    if items_cursor + 1 < significant_items.len() &&
+                       significant_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter("::".to_string())
                     {
                         current_named_arg_name_data = Some((item.inner.string, item.source_location()));
                         items_cursor += 2;
@@ -332,7 +345,10 @@ impl Parser
                             end_in_segment: end_in_segment - postfix_len,
                         },
                     };
+                    // eprintln!("[UNESCAPE_DEBUG] Attempting to unescape for positional arg: raw value: '{}', base_loc: {:?}", s_val_owned, inner_content_location);
                     let unescaped_value = unescape_string_with_errors(s_val_owned, &inner_content_location)?;
+                    // eprintln!("[UNESCAPE_DEBUG] Unescaped value for positional: '{}'", unescaped_value);
+
 
                     positional_arguments.push(Argument{
                         name: None,

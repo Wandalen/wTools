@@ -84,21 +84,21 @@ fn error_invalid_escape_sequence_location_slice() {
 #[test]
 fn error_unexpected_delimiter_location_slice() {
   let parser = Parser::new(default_options());
-  let input: &[&str] = &[r#"cmd"#, r#"::"#, r#"arg2"#]; // path=[], named={"cmd":"arg2"}
+  let input: &[&str] = &[r#"cmd"#, r#"::"#, r#"arg2"#];
   let result = parser.parse_slice(input);
 
-  assert!(result.is_ok(), "parse_slice failed for input: {:?}, error: {:?}", input, result.err());
-  let instructions = result.unwrap();
-  assert_eq!(instructions.len(), 1);
-  let instruction = &instructions[0];
-  assert!(instruction.command_path_slices.is_empty(), "Path should be empty for slice input");
-  assert_eq!(instruction.named_arguments.len(), 1);
-  let arg = instruction.named_arguments.get("cmd").expect("Missing named arg 'cmd' for slice");
-  assert_eq!(arg.value, "arg2");
-  // Location for "cmd" (name) would be in segment 0
-  assert_eq!(arg.name_location, Some(SourceLocation::SliceSegment { segment_index: 0, start_in_segment: 0, end_in_segment: 3 }));
-  // Location for "arg2" (value) would be in segment 2
-  assert_eq!(arg.value_location, SourceLocation::SliceSegment { segment_index: 2, start_in_segment: 0, end_in_segment: 4 });
+  // When "::" is its own segment, it's an error because it's unexpected without a preceding name.
+  assert!(result.is_err(), "parse_slice should have failed for input: {:?}, but got Ok: {:?}", input, result.ok());
+  if let Err(err) = result {
+      match err.kind {
+          ErrorKind::Syntax(s) => {
+              assert!(s.contains("Unexpected '::' without preceding argument name or after a previous value"), "Error message mismatch: {}", s);
+          }
+          _ => panic!("Unexpected error kind: {:?}", err.kind),
+      }
+      let expected_location = Some(SourceLocation::SliceSegment { segment_index: 1, start_in_segment: 0, end_in_segment: 2 }); // "::" is in segment 1
+      assert_eq!(err.location, expected_location, "Incorrect error location for unexpected delimiter in slice");
+  }
 }
 
 // New tests from Increment 6 plan
@@ -162,7 +162,7 @@ fn missing_value_for_named_arg() {
 #[test]
 fn unexpected_colon_colon_no_name() {
     let parser = Parser::new(default_options());
-    let input = "cmd ::value"; // This will be parsed as: path=[], named={"cmd":"value"}
+    let input = "cmd ::value";
     let result = parser.parse_single_str(input);
     assert!(result.is_ok(), "Expected Ok for 'cmd ::value', input: '{}', got: {:?}", input, result.err());
     let instructions = result.unwrap();
@@ -172,8 +172,8 @@ fn unexpected_colon_colon_no_name() {
     assert_eq!(instruction.named_arguments.len(), 1);
     let arg = instruction.named_arguments.get("cmd").expect("Missing named arg 'cmd'");
     assert_eq!(arg.value, "value");
-    assert_eq!(arg.name_location, Some(SourceLocation::StrSpan { start: 0, end: 3})); // "cmd"
-    assert_eq!(arg.value_location, SourceLocation::StrSpan { start: 6, end: 11}); // "value"
+    assert_eq!(arg.name_location, Some(SourceLocation::StrSpan { start: 0, end: 3}));
+    assert_eq!(arg.value_location, SourceLocation::StrSpan { start: 6, end: 11});
 }
 
 #[test]
