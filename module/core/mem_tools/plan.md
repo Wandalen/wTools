@@ -8,6 +8,7 @@
 *   ✅ Increment 2: Lint Configuration Review and Cleanup.
 *   ✅ Increment 3: Fix `empty_line_after_doc_comments` lint.
 *   ✅ Increment 4: Fix `same_ptr` and `same_data` implementations.
+*   ⏳ Increment 5: Apply Clippy auto-fixes.
 
 ### Target Crate
 *   `module/core/mem_tools`
@@ -27,6 +28,7 @@
 *   `same_ptr` should return true if two references point to the same memory location.
 *   `same_data` should return true if two references point to data with the same content and size.
 *   All tests in `mem_tools` should pass.
+*   All Clippy warnings (except `unsafe-code`) should be resolved.
 
 ### Target File Structure (If Applicable)
 *   (No structural changes planned initially)
@@ -68,6 +70,14 @@
     *   Verification Strategy: Execute `cargo test -p mem_tools --all-targets` via `execute_command`. Analyze `execute_command` output for test failures.
     *   Commit Message: `fix(mem_tools): Correct same_ptr and same_data implementations`
 
+*   ⏳ Increment 5: Apply Clippy auto-fixes.
+    *   Detailed Plan Step 1: Execute `cargo clippy --fix --lib -p mem_tools` to apply the suggested fixes.
+    *   Pre-Analysis: `cargo clippy` reported multiple warnings related to `as` casting between raw pointers and `reference as raw pointer`, with suggestions for `pointer::cast` and `std::ptr::from_ref`.
+    *   Crucial Design Rules: [Lints and warnings], [Prioritize Reuse and Minimal Change]
+    *   Relevant Behavior Rules: All Clippy warnings (except `unsafe-code`) should be resolved.
+    *   Verification Strategy: Execute `cargo build -p mem_tools` and `cargo clippy -p mem_tools` via `execute_command`. Analyze `execute_command` output for errors or warnings.
+    *   Commit Message: `fix(mem_tools): Apply clippy auto-fixes for pointer casts`
+
 ### Task Requirements
 *   Fix any compilation errors.
 *   Address any lint warnings.
@@ -84,3 +94,4 @@
 *   Lint cleanup for `unsafe_code` and commented-out denies is complete.
 *   `empty_line_after_doc_comments` lint has been fixed.
 *   Tests are now passing after correcting pointer comparison logic in `same_ptr` and `same_data`.
+*   Clippy reported additional warnings related to pointer casting, which can be auto-fixed.
