@@ -5,9 +5,10 @@
 *   Utilize `strs_tools::string::split` for lexical analysis/itemization.
 *   Produce `Vec<GenericInstruction>` (using owned `String`s for arguments) from `&str` or `&[&str]` input.
 *   Provide precise, AST-node-level, location-aware error reporting using `SourceLocation`.
+*   Ensure all tests pass and are not ignored, where feasible within `unilang_instruction_parser`.
 
 ### Progress
-*   Overall Task for unilang_instruction_parser: 🚀 All Planned Increments Complete
+*   Overall Task for unilang_instruction_parser: 🚧 Addressing final test issues and verification
 *   Milestones Achieved:
     *   ✅ Increment 1: Core types adapted to `strs_tools::string::split` and `no_std` feature added.
     *   ✅ Increment 2: Parser entry points and `RichItem` stream generation implemented.
@@ -20,8 +21,11 @@
     *   ✅ Increment 8: Documentation and Examples
     *   ✅ Increment 9: Address Test Failures (Workaround, Parser Fix, and External Bug Report)
     *   ✅ Increment 10: Refine Parser Behavior for Comments and Align Config Entry Tests
-*   Currently Working On:
-    *   Final Verification (Aligning Test Matrix CT2.1)
+    *   ✅ **Increment 11: Investigate and Resolve Segmentation Fault in `argument_parsing_tests.rs`** (Segfault no longer occurring with current test run; ignored tests confirmed)
+*   Next Increments:
+    *   ⚫ Increment 12: Align and Verify Test Matrix CT2.1
+    *   ⚫ Increment 13: (Optional) Investigate `unreachable_pattern` warnings in `error_reporting_tests.rs`
+    *   ⚫ Increment 14: Final Verification and Comprehensive Test Run
 
 ### Target Crate
 *   module/move/unilang_instruction_parser
@@ -39,6 +43,7 @@
     *   `module/move/unilang_instruction_parser/tests/parser_config_entry_tests.rs`
     *   `module/move/unilang_instruction_parser/tests/syntactic_analyzer_command_tests.rs`
     *   `module/move/unilang_instruction_parser/tests/comprehensive_tests.rs`
+    *   `module/move/unilang_instruction_parser/tests/error_reporting_tests.rs`
 *   Crates for Documentation (for AI's reference, if `read_file` on docs is planned):
     *   `strs_tools`
 *   External Crates Requiring `task.md` Proposals (if any identified during planning):
@@ -101,6 +106,57 @@
         | CT4.2 | single_str | single          | absent  | name::val1, name::val2                     | none           | none         | none      | error_on_duplicate=false              | Path: `cmd`, Named: `name:val2` (last wins)                 |
         | CT5.1 | single_str | no path         | absent  | name::val                                  | none           | none         | none      | default                               | Path: `[]`, Named: `name:val`                               |
 
+#### Phase 3: Finalization and Verification
+*   ✅ **Increment 11: Investigate and Resolve Segmentation Fault in `argument_parsing_tests.rs`**
+    *   Detailed Plan Step 1: Read `module/move/unilang_instruction_parser/tests/argument_parsing_tests.rs` to get a list of all test function names. (Done)
+    *   Detailed Plan Step 2: For each test function in `argument_parsing_tests.rs` (starting from the top, ensuring ignored tests are temporarily un-ignored for this step): Execute `cargo test -p unilang_instruction_parser --test argument_parsing_tests -- <test_name_exact_match> -- --nocapture` via `execute_command`. Analyze `execute_command` output. If a segfault occurs, this test is the trigger (or one of them). Note the test name. If no segfault, re-ignore the test if it was one of the 4 known unescaping-related tests. (Done - no segfault with individual runs, ignored tests handled)
+    *   Detailed Plan Step 3: If a specific test `[CRASHING_TEST_NAME]` is identified: (Skipped - no single test caused segfault)
+    *   Detailed Plan Step 4: If no single test triggers it, plan to test in batches. (Revised - ran full suite with --nocapture, no segfault)
+    *   Pre-Analysis: A segmentation fault occurred when running the full `argument_parsing_tests.rs` suite. The 4 unescaping tests were re-ignored prior to this.
+    *   Crucial Design Rules: N/A (focus on critical bug fixing)
+    *   Relevant Behavior Rules: N/A
+    *   Verification Strategy: Execute `cargo test -p unilang_instruction_parser --test argument_parsing_tests -- --show-output --nocapture` via `execute_command`. Analyze output. (Done - passed, 4 ignored, no segfault)
+    *   Commit Message: `test(unilang_parser): Verify argument_parsing_tests stability, confirm ignored tests`
+
+*   ⚫ **Increment 12: Align and Verify Test Matrix CT2.1** (Depends on Increment 11)
+    *   Detailed Plan Step 1: Review Test Matrix row CT2.1: `Input: slice | Path: multi | Help: absent | Args: pos1, name1::val1 | Quoting: mixed | Escapes: none | Separator: none | Options: allow_pos_after_named=false | Expected: 3 Instr: 1(Path: p1 p2), 2(Path: pos1), 3(Named: n1:v1)`.
+    *   Detailed Plan Step 2: Locate the test function covering CT2.1 (likely in `comprehensive_tests.rs`, e.g., `ct2_1_slice_multi_path_mixed_args`). If it doesn't exist, create it.
+    *   Detailed Plan Step 3: Ensure the test implementation accurately reflects the CT2.1 specification, especially the input slice structure and expected separate instructions.
+    *   Detailed Plan Step 4: Execute `cargo test -p unilang_instruction_parser --test comprehensive_tests -- ct2_1_slice_multi_path_mixed_args --show-output` (or the correct test name) via `execute_command`.
+    *   Detailed Plan Step 5: If the test fails, apply Critical Log Analysis to the `execute_command` output. Implement necessary fixes in the parser logic (e.g., `parser_engine.rs`) or the test itself to ensure alignment with CT2.1.
+    *   Pre-Analysis: The plan mentioned "Aligning Test Matrix CT2.1" as a current focus. This increment ensures it's explicitly handled.
+    *   Crucial Design Rules: [Testing: Plan with a Test Matrix When Writing Tests]
+    *   Relevant Behavior Rules: [Instruction separator], [Argument parsing]
+    *   Verification Strategy: `cargo test -p unilang_instruction_parser --test comprehensive_tests -- ct2_1_slice_multi_path_mixed_args --show-output` (or the correct test name) passes, based on `execute_command` output.
+    *   Commit Message: `test(unilang_parser): Align and verify Test Matrix CT2.1 (slice input behavior)`
+
+*   ⚫ **Increment 13: (Optional) Investigate `unreachable_pattern` warnings in `error_reporting_tests.rs`** (Depends on Increment 11)
+    *   Pre-Analysis: The plan notes persistent `unreachable_pattern` warnings. This increment is optional but good for hygiene.
+    *   Detailed Plan Step 1: Execute `cargo clippy --package unilang_instruction_parser --tests -- -A clippy::uninlined_format_args -D warnings` via `execute_command` to list current warnings, focusing on `unreachable_pattern` in `error_reporting_tests.rs`.
+    *   Detailed Plan Step 2: For each `unreachable_pattern` warning identified in `error_reporting_tests.rs` from the `execute_command` output:
+        *   Read the relevant section of `tests/error_reporting_tests.rs`.
+        *   Analyze the match arms and the logic leading to them.
+        *   Attempt to refactor the match statement or the test case logic to eliminate the unreachable pattern without altering the test's intended coverage or assertions. This might involve reordering arms, combining arms, or adjusting test input if the pattern is genuinely impossible for valid test scenarios.
+    *   Crucial Design Rules: N/A (focus on code correctness)
+    *   Relevant Behavior Rules: N/A
+    *   Verification Strategy:
+        *   Execute `cargo clippy --package unilang_instruction_parser --tests -- -A clippy::uninlined_format_args -D warnings` via `execute_command`. Analyze output to ensure `unreachable_pattern` warnings in `error_reporting_tests.rs` are resolved.
+        *   Execute `cargo test -p unilang_instruction_parser --test error_reporting_tests --show-output` via `execute_command`. Analyze output to ensure all tests in this suite still pass.
+    *   Commit Message: `fix(unilang_parser): Address unreachable_pattern warnings in error_reporting_tests`
+
+*   ⚫ **Increment 14: Final Verification and Comprehensive Test Run** (Depends on Increment 11, 12, 13)
+    *   Detailed Plan Step 1: Execute `cargo test -p unilang_instruction_parser --all-targets -- --show-output --skip test_unescape_internal_quotes_truncated_segment --skip test_unescape_internal_quotes_multiple_escapes --skip test_unescape_internal_quotes_mixed_escaped_and_normal --skip test_unescape_internal_quotes_at_boundaries` (or similar, to skip tests that were confirmed to be re-ignored due to the external `strs_tools` bug in Increment 11) via `execute_command`.
+    *   Detailed Plan Step 2: Analyze the `execute_command` output from Step 1. Ensure all other tests pass.
+    *   Detailed Plan Step 3: Execute `cargo clippy --package unilang_instruction_parser --all-targets --all-features -- -A clippy::uninlined_format_args -D warnings` via `execute_command`.
+    *   Detailed Plan Step 4: Analyze the `execute_command` output from Step 3. Ensure no new clippy warnings or errors are present.
+    *   Detailed Plan Step 5: Execute `git status` via `execute_command`.
+    *   Detailed Plan Step 6: Analyze the `execute_command` output from Step 5. Ensure the working directory is clean (no uncommitted changes).
+    *   Pre-Analysis: This is the final check before task completion.
+    *   Crucial Design Rules: N/A
+    *   Relevant Behavior Rules: N/A
+    *   Verification Strategy: All `execute_command` calls complete successfully, and their outputs indicate all tests (excluding explicitly re-ignored ones) pass, no new clippy issues, and a clean git status.
+    *   Commit Message: `chore(unilang_parser): Complete final verification and test suite execution`
+
 ### Task Requirements
 *   (As before)
 
@@ -109,13 +165,13 @@
 
 ### Notes & Insights
 *   **Ownership Change:** Complete.
-*   **Unescaping Limitation:** The 4 failing tests in `argument_parsing_tests.rs` are due to `strs_tools::string::split` truncating segments with internal escaped quotes. These are now marked `#[ignore]`. A `task.md` in `strs_tools` addresses this.
+*   **Unescaping Limitation:** The 4 failing tests in `argument_parsing_tests.rs` are due to `strs_tools::string::split` truncating segments with internal escaped quotes. These are confirmed `#[ignore]` with `// aaa:` comments. A `task.md` in `strs_tools` addresses this.
 *   **`parser_config_entry_tests.rs` Issues:** All tests in this suite now pass after parser enhancements for comment handling and test expectation alignment for simple commands and unterminated quotes.
 *   **Error Location for `StrSpan` Escapes:** (No change to this note)
 *   **Clippy Lints in `strs_tools`:** A `task.md` in `strs_tools` addresses clippy lints.
 *   **Test Warnings in `unilang_instruction_parser`:**
     *   `missing_docs` for `tests/tests.rs` was fixed.
     *   `unused_imports` in `tests/comprehensive_tests.rs` were fixed.
-    *   Multiple `unreachable_pattern` warnings in `tests/error_reporting_tests.rs` persist. These should be investigated in a future task.
+    *   Multiple `unreachable_pattern` warnings in `tests/error_reporting_tests.rs` persist. Increment 13 aims to address these.
 *   **Parser Bug with `parse_slice` State:** The `analyze_items_to_instructions` function was updated to treat `segment_idx` changes as instruction boundaries. This fixed `parse_slice_simple_command_placeholder` and `ct2_1_slice_multi_path_mixed_args`. The original note about `error_on_positional_after_named` state carrying over might still be relevant if more complex slice interactions are tested, but the primary boundary issue is resolved.
-*   **Current Focus:** All planned increments are done. Final verification.
+*   **Segmentation Fault:** A previous attempt to run the full `argument_parsing_tests.rs` suite resulted in a segfault. However, running tests individually and then the full suite with `-- --nocapture` did *not* reproduce the segfault. The 4 problematic unescaping tests remain ignored.
