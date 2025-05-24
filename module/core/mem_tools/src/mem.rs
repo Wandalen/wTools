@@ -11,8 +11,8 @@ mod private
   {
     extern "C" { fn memcmp( s1 : *const u8, s2 : *const u8, n : usize ) -> i32; }
 
-    let mem1 = src1 as *const T1 as *const u8;
-    let mem2 = src2 as *const T2 as *const u8;
+    let mem1 = core::ptr::from_ref::<T1>(src1).cast::<u8>();
+    let mem2 = core::ptr::from_ref::<T2>(src2).cast::<u8>();
 
     if !same_size( src1, src2 )
     {
@@ -35,8 +35,8 @@ mod private
   /// Unlike `std::ptr::eq()` does not require arguments to have the same type.
   pub fn same_ptr< T1 : ?Sized, T2 : ?Sized >( src1 : &T1, src2 : &T2 ) -> bool
   {
-    let mem1 = src1 as *const T1 as *const ();
-    let mem2 = src2 as *const T2 as *const ();
+    let mem1 = core::ptr::from_ref::<T1>(src1).cast::<()>();
+    let mem2 = core::ptr::from_ref::<T2>(src2).cast::<()>();
     mem1 == mem2
   }
 
