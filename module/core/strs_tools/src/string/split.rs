@@ -308,7 +308,27 @@ mod private
 
       // println!("HQS - Searching for postfix '{}' in search_space '{}' (abs_offset: {})", expected_postfix, search_space, search_offset_abs);
 
-      if let Some( (postfix_rel_start, postfix_rel_end) ) = expected_postfix.pos( search_space )
+      let mut current_search_offset = 0;
+      let mut found_postfix_pos : Option< ( usize, usize ) > = None;
+
+      while let Some( ( pos, end_pos ) ) = expected_postfix.pos( &search_space[ current_search_offset.. ] )
+      {
+        let abs_pos = current_search_offset + pos;
+        if abs_pos > 0 && search_space.as_bytes()[ abs_pos - 1 ] == b'\\'
+        {
+          // It's an escaped postfix, skip it
+          current_search_offset = end_pos; // Move past the escaped postfix
+          continue;
+        }
+        else
+        {
+          // Found unescaped postfix
+          found_postfix_pos = Some( ( abs_pos, abs_pos + expected_postfix.len() ) );
+          break;
+        }
+      }
+
+      if let Some( (postfix_rel_start, postfix_rel_end) ) = found_postfix_pos
       {
         // println!( "HQS - Found postfix '{}' at rel ({},{}) in '{}'", expected_postfix, postfix_rel_start, postfix_rel_end, search_space );
         let content_in_search_space = &search_space[ ..postfix_rel_start ];
