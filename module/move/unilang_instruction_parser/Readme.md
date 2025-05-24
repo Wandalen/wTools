@@ -1,17 +1,15 @@
 # `unilang_instruction_parser`
 
-`unilang_instruction_parser` is a Rust crate designed to parse `unilang` CLI-like instruction strings. It transforms raw string input into structured `GenericInstruction` objects, which represent a command and its associated arguments. The parser is built to be robust, provide detailed error reporting with source locations, and is configurable.
-
-This parser is intended to be a core component for any application that needs to interpret `unilang` command syntax, as specified in `unilang/spec.md` (conceptual).
+`unilang_instruction_parser` is a Rust crate for parsing `unilang` CLI-like instruction strings into structured `GenericInstruction` objects. It provides a robust and configurable parser with detailed error reporting.
 
 ## Features
 
-*   **Command Path Parsing**: Handles single or multi-segment command paths (e.g., `command.sub_command`).
+*   **Command Path Parsing**: Handles single or multi-segment command paths, including `.` and `/` as path separators (e.g., `command.sub.command`, `path/to/cmd`).
 *   **Argument Types**: Supports positional arguments and named arguments (e.g., `name::value`).
-*   **Quoting & Escaping**: Parses quoted values (`"value with spaces"`, `'another value'`) and handles standard escape sequences (`\\`, `\"`, `\'`, `\n`, `\t`) within them.
+*   **Quoting & Escaping**: Parses quoted values (`"value with spaces"`, `'another value'`) and handles standard escape sequences (`\\`, `\"`, `\'`, `\n`, `\t`).
 *   **Help Operator**: Recognizes the `?` operator for requesting help on a command.
-*   **Multiple Instructions**: Can parse multiple instructions separated by `;;` from a single input.
-*   **Detailed Error Reporting**: Provides `ParseError` with `ErrorKind` and `SourceLocation` to pinpoint syntax issues in the input.
+*   **Multiple Instructions**: Parses multiple instructions separated by `;;` from a single input.
+*   **Detailed Error Reporting**: Provides `ParseError` with `ErrorKind` and `SourceLocation` to pinpoint syntax issues.
 *   **Configurable Behavior**: Allows customization of parsing rules via `UnilangParserOptions` (e.g., behavior for duplicate named arguments, allowing positional arguments after named ones).
 *   **`no_std` Support**: Can be used in `no_std` environments via a feature flag.
 
@@ -29,63 +27,43 @@ unilang_instruction_parser = { path = "path/to/unilang_instruction_parser" } # O
 ## Basic Usage
 
 ```rust
-use unilang_instruction_parser::{Parser, UnilangParserOptions, GenericInstruction, Argument, SourceLocation, ParseError};
+use unilang_instruction_parser::{Parser, UnilangParserOptions, GenericInstruction, Argument, SourceLocation};
 
-fn main() -> Result<(), ParseError> {
-    let options = UnilangParserOptions::default();
-    let parser = Parser::new(options);
-    let input = "log.level severity::\"debug\" message::'Hello, Unilang!' --verbose ;; system.info ?";
+let options = UnilangParserOptions { error_on_positional_after_named: false, ..Default::default() };
+let parser = Parser::new(options);
+let input = "log.level severity::\"debug\" message::'Hello, Unilang!' --verbose ;; system.info ?";
 
-    match parser.parse_single_str(input) {
-        Ok(instructions) => {
-            for instruction in instructions {
-                println!("Command Path: {:?}", instruction.command_path_slices);
+let instructions = parser.parse_single_str(input).expect("Failed to parse valid input");
 
-                if instruction.help_requested {
-                    println!("Help was requested for this command.");
-                }
+for instruction in instructions {
+    println!("Command Path: {:?}", instruction.command_path_slices);
 
-                println!("Positional Arguments:");
-                for pos_arg in &instruction.positional_arguments {
-                    println!("  - Value: '{}' (at {:?})", pos_arg.value, pos_arg.value_location);
-                }
-
-                println!("Named Arguments:");
-                for (name, named_arg) in &instruction.named_arguments {
-                    println!("  - {}: '{}' (name at {:?}, value at {:?})",
-                        name,
-                        named_arg.value,
-                        named_arg.name_location,
-                        named_arg.value_location
-                    );
-                }
-                println!("---");
-            }
-        }
-        Err(e) => {
-            eprintln!("Failed to parse input: {}", e);
-            if let Some(location) = e.location {
-                eprintln!("Error location: {:?}", location);
-                // Example: Highlighting the error in the original input (simplified)
-                // This requires access to the original input string and logic to map SourceLocation
-                // (StrSpan or SliceSegment) back to the string.
-                match location {
-                    SourceLocation::StrSpan { start, end } => {
-                        if end <= input.len() {
-                            eprintln!("Problematic part: \"{}\"", &input[start..end]);
-                        }
-                    }
-                    SourceLocation::SliceSegment { segment_index, start_in_segment, end_in_segment } => {
-                        // For slice input, you'd need the original slice segments.
-                        eprintln!("Problem in segment {}, bytes {}-{}", segment_index, start_in_segment, end_in_segment);
-                    }
-                }
-            }
-        }
+    if instruction.help_requested {
+        println!("Help was requested for this command.");
     }
 
-    Ok(())
+    println!("Positional Arguments:");
+    for pos_arg in &instruction.positional_arguments {
+        println!("  - Value: '{}' (at {:?})", pos_arg.value, pos_arg.value_location);
+    }
+
+    println!("Named Arguments:");
+    for (name, named_arg) in &instruction.named_arguments {
+        println!("  - {}: '{}' (name at {:?}, value at {:?})",
+            name,
+            named_arg.value,
+            named_arg.name_location,
+            named_arg.value_location
+        );
+    }
+    println!("---");
 }
+
+// For error handling, you would typically use a match statement:
+// match parser.parse_single_str("invalid input") {
+//     Ok(_) => { /* handle success */ },
+//     Err(e) => { eprintln!("Parse error: {}", e); },
+// }
 ```
 
 ## Specification
