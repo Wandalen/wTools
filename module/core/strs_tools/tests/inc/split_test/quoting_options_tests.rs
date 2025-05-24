@@ -90,10 +90,10 @@ fn test_m_t3_11_quoting_preserve_all_no_strip()
   .perform();
   let expected = vec![
     ("a", SplitType::Delimeted, 0, 1),
-    (" ", SplitType::Delimeter, 1, 2),
+    (" ", SplitType::Delimiter, 1, 2),
     ("", SplitType::Delimeted, 2, 2),         // Empty segment before opening quote
     ("'b c'", SplitType::Delimeted, 2, 7), // Quotes preserved
-    (" ", SplitType::Delimeter, 7, 8),
+    (" ", SplitType::Delimiter, 7, 8),
     ("d", SplitType::Delimeted, 8, 9),
   ];
   let results: Vec<_> = iter.collect();
@@ -151,10 +151,10 @@ fn test_m_t3_13_quoting_preserve_all_strip()
   .perform();
   let expected = vec![
     ("a", SplitType::Delimeted, 0, 1),     // Stripping "a" is "a"
-    (" ", SplitType::Delimeter, 1, 2),     // Delimiter preserved
+    (" ", SplitType::Delimiter, 1, 2),     // Delimiter preserved
     ("", SplitType::Delimeted, 2, 2),      // Empty segment before quote, preserved by PE=T
     ("'b c'", SplitType::Delimeted, 2, 7), // Quoted segment, PQ=T, stripping "'b c'" is "'b c'"
-    (" ", SplitType::Delimeter, 7, 8),     // Delimiter preserved
+    (" ", SplitType::Delimiter, 7, 8),     // Delimiter preserved
     ("d", SplitType::Delimeted, 8, 9),     // Stripping "d" is "d"
   ];
   let results: Vec<_> = iter.collect();
@@ -214,11 +214,11 @@ fn test_m_t3_15_no_quoting_preserve_all_no_strip()
   .perform();
   let expected = vec![
     ("a", SplitType::Delimeted, 0, 1),
-    (" ", SplitType::Delimeter, 1, 2),
+    (" ", SplitType::Delimiter, 1, 2),
     ("'b", SplitType::Delimeted, 2, 4), // 'b is a segment
-    (" ", SplitType::Delimeter, 4, 5),
+    (" ", SplitType::Delimiter, 4, 5),
     ("c'", SplitType::Delimeted, 5, 7), // c' is a segment
-    (" ", SplitType::Delimeter, 7, 8),
+    (" ", SplitType::Delimiter, 7, 8),
     ("d", SplitType::Delimeted, 8, 9),
   ];
   for (i, split) in iter.enumerate() {

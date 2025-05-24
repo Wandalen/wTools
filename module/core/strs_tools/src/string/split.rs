@@ -34,8 +34,8 @@ mod private
   {
     /// Substring of the original string with text inbetween delimeters.
     Delimeted,
-    /// Delimeter.
-    Delimeter,
+    /// Delimiter.
+    Delimiter,
   }
 
   /// Trait for finding the position of a delimiter pattern within a string.
@@ -161,7 +161,7 @@ mod private
           if d_start > 0 { self.iterable = ""; return None; }
 
           let delimiter_str = &self.iterable[ ..d_end ];
-          let split = Split { string: delimiter_str, typ: SplitType::Delimeter, start: self.current_offset, end: self.current_offset + delimiter_str.len() };
+          let split = Split { string: delimiter_str, typ: SplitType::Delimiter, start: self.current_offset, end: self.current_offset + delimiter_str.len() };
           self.current_offset += delimiter_str.len();
           self.iterable = &self.iterable[ d_end.. ];
           // println!( "SFI - EVEN - YIELD delim: {:?}, new_off:{}, new_iter:'{}'", split, self.current_offset, self.iterable );
@@ -243,7 +243,7 @@ mod private
         // println!( "SI - Raw from SFI: {:?}", current_split );
 
         if self.quoting
-        && current_split.typ == SplitType::Delimeter // Corrected from Delimeted
+        && current_split.typ == SplitType::Delimiter // Corrected from Delimeted
         && self.quoting_prefixes.contains( &current_split.string )
         {
           // println!( "SI - >>> Calling HQS for: {:?}", current_split );
@@ -271,10 +271,11 @@ mod private
         {
           if current_split.string.is_empty() && !self.preserving_empty { skip = true; /*println!("SI - SKIP empty Dmd");*/ }
         }
-        else if current_split.typ == SplitType::Delimeter
+        else if current_split.typ == SplitType::Delimiter
         {
           if !self.preserving_delimeters { skip = true; /*println!("SI - SKIP Dlr");*/ }
         }
+        // println!( "SI - Filtering: Split: {:?}, Type: {:?}, Options: PE:{}, PD:{}", current_split.string, current_split.typ, self.preserving_empty, self.preserving_delimeters );
 
         if skip { /*println!("SI - SKIPPED: {:?}", current_split);*/ continue; }
 
@@ -288,6 +289,11 @@ mod private
 
   impl< 'a > SplitIterator< 'a >
   {
+    /// Handles a quoted section, consuming the content until the matching postfix.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the `prefix_split.string` is not found in `self.quoting_prefixes`.
     fn handle_quoted_section( &mut self, prefix_split : Split< 'a > ) -> Split< 'a >
     {
       let prefix_str = prefix_split.string;
@@ -515,6 +521,10 @@ mod private
 
     // Manually added form method
     /// Consumes the builder and returns `SplitOptions` configured for `Vec<&str>` delimiter.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the delimiter cannot be converted to a vector.
     pub fn form( &mut self ) -> SplitOptions< 'a, Vec< &'a str > >
     {
       if self.quoting

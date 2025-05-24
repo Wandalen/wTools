@@ -117,9 +117,9 @@ fn test_m_t3_1_preserve_all_no_strip_no_quote()
   .perform();
   let expected = vec![
     ("a", SplitType::Delimeted, 0, 1),
-    (" ", SplitType::Delimeter, 1, 2),
+    (" ", SplitType::Delimiter, 1, 2),
     ("b", SplitType::Delimeted, 2, 3),
-    (" ", SplitType::Delimeter, 3, 4),
+    (" ", SplitType::Delimiter, 3, 4),
     ("c", SplitType::Delimeted, 4, 5),
   ];
   for (i, split) in iter.enumerate() {
@@ -146,11 +146,11 @@ fn test_m_t3_3_leading_trailing_space_preserve_all()
   .perform();
   let expected = vec![
     ("", SplitType::Delimeted, 0, 0),
-    (" ", SplitType::Delimeter, 0, 1),
+    (" ", SplitType::Delimiter, 0, 1),
     ("a", SplitType::Delimeted, 1, 2),
-    (" ", SplitType::Delimeter, 2, 3),
+    (" ", SplitType::Delimiter, 2, 3),
     ("b", SplitType::Delimeted, 3, 4),
-    (" ", SplitType::Delimeter, 4, 5),
+    (" ", SplitType::Delimiter, 4, 5),
     ("", SplitType::Delimeted, 5, 5),
   ];
   for (i, split) in iter.enumerate() {
@@ -177,9 +177,9 @@ fn test_m_t3_5_consecutive_delimiters_preserve_all()
   .perform();
   let expected = vec![
     ("a", SplitType::Delimeted, 0, 1),
-    (",", SplitType::Delimeter, 1, 2),
+    (",", SplitType::Delimiter, 1, 2),
     ("", SplitType::Delimeted, 2, 2),
-    (",", SplitType::Delimeter, 2, 3),
+    (",", SplitType::Delimiter, 2, 3),
     ("b", SplitType::Delimeted, 3, 4),
   ];
   for (i, split) in iter.enumerate() {

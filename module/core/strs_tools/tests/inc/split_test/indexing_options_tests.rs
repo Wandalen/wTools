@@ -152,7 +152,7 @@ fn test_scenario_index_preserving_delimiters_and_empty()
 
   let result = iter.nth( 1 ); // Get the second element (index 1)
 
-  let expected_split = (",", SplitType::Delimeter, 1, 2);
+  let expected_split = (",", SplitType::Delimiter, 1, 2);
   assert!(result.is_some());
   let split_item = result.unwrap();
   assert_eq!(split_item.string, expected_split.0);
