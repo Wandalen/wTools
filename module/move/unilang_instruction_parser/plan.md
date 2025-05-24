@@ -12,6 +12,7 @@
 *   ✅ Increment 3: Fix Warnings and Test Failures (Trailing Delimiter Bug Fixed)
 *   ✅ Increment 2: Enable All Tests (Proposed external change to `strs_tools` for ignored tests)
 *   ✅ Increment 4: Review and Refine Readme
+*   ✅ Increment 5: Organize and Improve Examples
 
 ### Target Crate
 *   `module/move/unilang_instruction_parser`
@@ -90,12 +91,12 @@
     *   Verification Strategy: Confirm `write_to_file` success.
     *   Commit Message: "docs(unilang_instruction_parser): Refine Readme for clarity and conciseness"
 
-*   ⚫ Increment 5: Organize and Improve Examples
+*   ✅ Increment 5: Organize and Improve Examples
     *   Detailed Plan Step 1: Read `module/move/unilang_instruction_parser/examples/unilang_instruction_parser_trivial_sample.rs`.
     *   Detailed Plan Step 2: Review `module/core/former/examples/` for organization patterns.
-    *   Detailed Plan Step 3: Rename `unilang_instruction_parser_trivial_sample.rs` to `unilang_instruction_parser_trivial.rs` if needed, or create new example files following the pattern.
+    *   Detailed Plan Step 3: Rename `unilang_instruction_parser_trivial_sample.rs` to `unilang_instruction_parser_basic.rs` and simplify its content.
     *   Detailed Plan Step 4: Ensure examples are useful and well-documented.
-    *   Pre-Analysis: Assess current example quality and organization.
+    *   Pre-Analysis: Assessed current example quality and organization.
     *   Crucial Design Rules: Comments and Documentation, Enhancements: Only Implement What’s Requested (focus on improving existing examples, not adding new features).
     *   Relevant Behavior Rules: Examples should be well-structured, useful, and follow the pattern of `module/core/former/examples`.
     *   Verification Strategy: Run `cargo build -p module/move/unilang_instruction_parser --examples` and analyze output. Confirm file structure changes.
