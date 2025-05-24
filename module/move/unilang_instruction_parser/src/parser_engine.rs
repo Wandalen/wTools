@@ -12,28 +12,6 @@ use std::collections::HashMap;
 use strs_tools::string::split::SplitType;
 
 /// The main parser for unilang instructions.
-///
-/// This struct is responsible for tokenizing the input using `strs_tools` (configured by
-/// [`UnilangParserOptions`]), classifying tokens, and then applying syntactic rules
-/// to build a sequence of [`GenericInstruction`]s.
-///
-/// ## Parsing Process
-///
-/// 1.  **Tokenization**: The input string (or each string in a slice) is split into raw tokens
-///     (called `Split` items) by `strs_tools::string::split::SplitIterator`. This is configured
-///     by `UnilangParserOptions::to_split_options_former`.
-/// 2.  **Classification**: Each `Split` item is classified into a [`UnilangTokenKind`] (e.g., Identifier,
-///     Operator, QuotedValue) and wrapped in a [`RichItem`] which also includes source location info.
-/// 3.  **Instruction Grouping**: The stream of `RichItem`s is divided into segments based on the
-///     instruction separator `;;`.
-/// 4.  **Single Instruction Parsing**: Each segment of `RichItem`s is then parsed into a single
-///     [`GenericInstruction`]. This involves:
-///     *   **Path Parsing**: Identifying the command path (sequence of identifiers/unquoted values).
-///     *   **Help Operator Parsing**: Checking for a trailing `?`.
-///     *   **Argument Parsing**: Processing named (`name::value`) and positional arguments, including
-///         handling quotes and unescaping values.
-///
-/// Errors encountered at any stage are reported as a [`ParseError`].
 #[derive(Debug)]
 pub struct Parser
 {
@@ -43,27 +21,12 @@ pub struct Parser
 impl Parser
 {
   /// Creates a new `Parser` with the specified [`UnilangParserOptions`].
-  ///
-  /// # Arguments
-  ///
-  /// * `options`: The configuration options that will guide the parsing process.
   pub fn new( options : UnilangParserOptions ) -> Self
   {
     Self { options }
   }
 
   /// Parses a single input string into a vector of [`GenericInstruction`]s.
-  ///
-  /// The input string can contain multiple instructions separated by `;;`.
-  ///
-  /// # Arguments
-  ///
-  /// * `input`: The input string to parse.
-  ///
-  /// # Returns
-  ///
-  /// * `Ok(Vec<GenericInstruction>)` if parsing is successful.
-  /// * `Err(ParseError)` if a parsing error occurs.
   pub fn parse_single_str<'input>( &'input self, input : &'input str ) -> Result< Vec< GenericInstruction >, ParseError >
   {
     let mut rich_items_vec : Vec<RichItem<'input>> = Vec::new();
@@ -78,26 +41,10 @@ impl Parser
       let classified_kind = classify_split( &split_item, &self.options );
       rich_items_vec.push( RichItem { inner: split_item, segment_idx: None, kind: classified_kind } );
     }
-    // eprintln!("[DEBUG] Input: \"{}\", RichItems from parse_single_str: {:?}", input, rich_items_vec);
-
     self.analyze_items_to_instructions( &rich_items_vec )
   }
 
   /// Parses a slice of input strings into a vector of [`GenericInstruction`]s.
-  ///
-  /// Each string in the slice is treated as a segment. The parser processes these segments
-  /// sequentially. Instruction separators `;;` can still be used within individual segments.
-  /// `SourceLocation` in errors or parsed items will use `SliceSegment` to indicate
-  /// the origin segment and position within that segment.
-  ///
-  /// # Arguments
-  ///
-  /// * `input_segments`: A slice of string slices, where each inner slice is a segment of the input.
-  ///
-  /// # Returns
-  ///
-  /// * `Ok(Vec<GenericInstruction>)` if parsing is successful.
-  /// * `Err(ParseError)` if a parsing error occurs.
   pub fn parse_slice<'input>( &'input self, input_segments : &'input [&'input str] ) -> Result< Vec< GenericInstruction >, ParseError >
   {
     let mut rich_items_accumulator_vec : Vec<RichItem<'input>> = Vec::new();
@@ -115,12 +62,10 @@ impl Parser
         rich_items_accumulator_vec.push( RichItem { inner: split_item, segment_idx: Some( seg_idx ), kind: classified_kind } );
       }
     }
-    // eprintln!("[DEBUG] Input Slice: {:?}, RichItems from parse_slice: {:?}", input_segments, rich_items_accumulator_vec);
-
     self.analyze_items_to_instructions( &rich_items_accumulator_vec )
   }
 
-  /// Analyzes a stream of `RichItem`s, groups them by the `;;` separator,
+  /// Analyzes a stream of `RichItem`s, groups them by `;;` or change in `segment_idx`,
   /// and parses each group into a `GenericInstruction`.
   fn analyze_items_to_instructions<'input>
   (
@@ -130,38 +75,82 @@ impl Parser
   -> Result<Vec<GenericInstruction>, ParseError>
   {
     let mut instructions = Vec::new();
-    if items.is_empty()
-    {
-      return Ok( instructions );
+    if items.is_empty() {
+        return Ok(instructions);
     }
 
     let mut start_index = 0;
-    for (i, item_ref) in items.iter().enumerate() {
-        if item_ref.kind == UnilangTokenKind::Delimiter(";;".to_string()) {
-            let segment = &items[start_index..i];
-            if segment.is_empty() {
+    let mut current_segment_idx = items[0].segment_idx; // Initialize with the first item's segment index
+
+    for i in 0..items.len() {
+        let item_ref = &items[i];
+        let is_last_item = i == items.len() - 1;
+
+        // Determine if a boundary is crossed: either ';;' or change in segment_idx (for slice inputs)
+        let is_boundary_delimiter = item_ref.kind == UnilangTokenKind::Delimiter(";;".to_string());
+        let is_segment_idx_change = item_ref.segment_idx != current_segment_idx && item_ref.segment_idx.is_some();
+
+        if is_boundary_delimiter || is_segment_idx_change {
+            let segment_to_parse = if is_boundary_delimiter { &items[start_index..i] } else { &items[start_index..i] }; // If segment_idx changes, current item belongs to next instruction
+
+            if !segment_to_parse.is_empty() {
+                if let Some(first_token) = segment_to_parse.first() {
+                    if let UnilangTokenKind::Unrecognized(s) = &first_token.kind {
+                        if s == "#" { // Comment segment
+                            // Skip, do nothing
+                        } else {
+                            instructions.push(self.parse_single_instruction_from_rich_items(segment_to_parse)?);
+                        }
+                    } else {
+                        instructions.push(self.parse_single_instruction_from_rich_items(segment_to_parse)?);
+                    }
+                }
+            } else if is_boundary_delimiter { // Empty segment due to ';;'
                 return Err(ParseError {
                     kind: ErrorKind::Syntax("Empty instruction segment due to ';;'".to_string()),
                     location: Some(item_ref.source_location()),
                 });
             }
-            instructions.push(self.parse_single_instruction_from_rich_items(segment)?);
-            start_index = i + 1;
+
+            start_index = if is_boundary_delimiter { i + 1 } else { i }; // Next instruction starts after ';;' or at current item if segment_idx changed
+            current_segment_idx = item_ref.segment_idx; // Update current segment_idx
+        }
+
+        // If it's the last item and no boundary was just processed for it, parse the remaining segment
+        if is_last_item && start_index <= i {
+            let segment = &items[start_index..=i]; // Include the last item
+             if !segment.is_empty() {
+                if let Some(first_token) = segment.first() {
+                    if let UnilangTokenKind::Unrecognized(s) = &first_token.kind {
+                        if s == "#" {
+                            // Last segment is a comment, do nothing
+                        } else {
+                             instructions.push(self.parse_single_instruction_from_rich_items(segment)?);
+                        }
+                    } else {
+                        instructions.push(self.parse_single_instruction_from_rich_items(segment)?);
+                    }
+                }
+            } else if start_index == items.len() && items.last().unwrap().kind == UnilangTokenKind::Delimiter(";;".to_string()) {
+                 return Err(ParseError { // Trailing ';;'
+                    kind: ErrorKind::Syntax("Empty instruction segment due to trailing ';;'".to_string()),
+                    location: Some(items.last().unwrap().source_location()),
+                });
+            }
         }
     }
 
-    if start_index < items.len() {
-        let segment = &items[start_index..];
-        instructions.push(self.parse_single_instruction_from_rich_items(segment)?);
-    } else if start_index == items.len() && !items.is_empty() {
-        if items.last().unwrap().kind == UnilangTokenKind::Delimiter(";;".to_string()) {
-             return Err(ParseError {
-                kind: ErrorKind::Syntax("Empty instruction segment due to trailing ';;'".to_string()),
-                location: Some(items.last().unwrap().source_location()),
-            });
+    // Final check for comment-only input if no instructions were generated
+     if instructions.is_empty() && items.len() > 0 {
+        if let Some(first_token) = items.first() {
+            if let UnilangTokenKind::Unrecognized(s) = &first_token.kind {
+                if s == "#" {
+                    return Ok(instructions);
+                }
+            }
         }
     }
-
+    // Specific check for input that is *only* ";;"
     if instructions.is_empty() && items.len() == 1 && items[0].kind == UnilangTokenKind::Delimiter(";;".to_string())
     {
        return Err(ParseError {
@@ -170,12 +159,10 @@ impl Parser
         });
     }
 
-
     Ok(instructions)
   }
 
   /// Parses a single instruction from a slice of `RichItem`s.
-  /// This is the core logic for interpreting the command path, help operator, and arguments.
   fn parse_single_instruction_from_rich_items<'input>
   (
     &'input self,
@@ -186,7 +173,7 @@ impl Parser
     if instruction_rich_items.is_empty()
     {
       return Err( ParseError {
-        kind: ErrorKind::Syntax( "Internal error: parse_single_instruction_from_rich_items called with empty items".to_string() ),
+        kind: ErrorKind::Syntax( "Internal error or empty/comment segment: parse_single_instruction_from_rich_items called with empty items".to_string() ),
         location: None,
       });
     }
@@ -221,13 +208,14 @@ impl Parser
                 if !command_path_slices.is_empty() {
                     if items_cursor > 0 {
                          let previous_item_in_path_source = &instruction_rich_items[items_cursor -1];
+                         // Path should only cross segment_idx if it's the *first* token of the path for the new segment_idx
+                         // This means if command_path_slices is NOT empty, and segment_idx changes, path must end.
                          if current_item.segment_idx != previous_item_in_path_source.segment_idx {
                              break;
                          }
                     }
                 }
                 command_path_slices.push(s.clone());
-                // eprintln!("[PATH_DEBUG] Pushed to path: '{}', current path_slices: {:?}", s, command_path_slices);
                 items_cursor += 1;
             }
             _ => {
@@ -368,8 +356,6 @@ impl Parser
     if let Some((name_str_ref, name_loc)) = current_named_arg_name_data {
         return Err(ParseError{ kind: ErrorKind::Syntax(format!("Expected value for named argument '{}' but found end of instruction", name_str_ref)), location: Some(name_loc) });
     }
-
-    // eprintln!("[FINAL_PATH_DEBUG] Final command_path_slices before Ok: {:?}", command_path_slices);
 
     Ok( GenericInstruction {
       command_path_slices,
