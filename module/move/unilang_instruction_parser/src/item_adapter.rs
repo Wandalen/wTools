@@ -251,9 +251,9 @@ mod tests
   {
     let options = get_default_options();
 
-    let split_colon = Split { string: "::", typ: SplitType::Delimeter, start:0, end:2 };
-    let split_semicolon = Split { string: ";;", typ: SplitType::Delimeter, start:0, end:2 };
-    let split_qmark = Split { string: "?", typ: SplitType::Delimeter, start:0, end:1 };
+    let split_colon = Split { string: "::", typ: SplitType::Delimeted, start:0, end:2 };
+    let split_semicolon = Split { string: ";;", typ: SplitType::Delimeted, start:0, end:2 };
+    let split_qmark = Split { string: "?", typ: SplitType::Delimeted, start:0, end:1 };
 
     assert_eq!( classify_split( &split_colon, &options ), UnilangTokenKind::Delimiter( "::".to_string() ) );
     assert_eq!( classify_split( &split_semicolon, &options ), UnilangTokenKind::Delimiter( ";;".to_string() ) );
@@ -265,7 +265,7 @@ mod tests
     let split_bang = Split { string: "!", typ: SplitType::Delimeted, start:0, end:1 };
     assert_eq!( classify_split( &split_bang, &options ), UnilangTokenKind::Unrecognized( "!".to_string() ) );
 
-    let split_single_colon = Split { string: ":", typ: SplitType::Delimeter, start:0, end:1 };
+    let split_single_colon = Split { string: ":", typ: SplitType::Delimeted, start:0, end:1 };
     assert_eq!( classify_split( &split_single_colon, &options ), UnilangTokenKind::Delimiter( ":".to_string() ) );
   }
 
@@ -274,33 +274,33 @@ mod tests
   {
     let options = get_default_options();
 
-    let split_quoted = Split { string: "\"hello world\"", typ: SplitType::Delimeter, start:0, end:13 };
+    let split_quoted = Split { string: "\"hello world\"", typ: SplitType::Delimeted, start:0, end:13 };
     assert_eq!( classify_split( &split_quoted, &options ), UnilangTokenKind::QuotedValue( "hello world".to_string() ) );
 
-    let split_single_quoted = Split { string: "'another value'", typ: SplitType::Delimeter, start:0, end:15 };
+    let split_single_quoted = Split { string: "'another value'", typ: SplitType::Delimeted, start:0, end:15 };
     assert_eq!( classify_split( &split_single_quoted, &options ), UnilangTokenKind::QuotedValue( "another value".to_string() ) );
 
     let split_empty_quoted = Split { string: "\"\"", typ: SplitType::Delimeted, start:0, end:2 };
     assert_eq!( classify_split( &split_empty_quoted, &options ), UnilangTokenKind::QuotedValue( String::new() ) );
 
     let split_ident = Split { string: "command", typ: SplitType::Delimeted, start:0, end:7 };
-    let split_ident_with_hyphen = Split { string: "cmd-name", typ: SplitType::Delimeter, start:0, end:8 };
-    let split_ident_with_num = Split { string: "cmd1", typ: SplitType::Delimeter, start:0, end:4 };
+    let split_ident_with_hyphen = Split { string: "cmd-name", typ: SplitType::Delimeted, start:0, end:8 };
+    let split_ident_with_num = Split { string: "cmd1", typ: SplitType::Delimeted, start:0, end:4 };
 
     assert_eq!( classify_split( &split_ident, &options ), UnilangTokenKind::Identifier( "command".to_string() ) );
     assert_eq!( classify_split( &split_ident_with_hyphen, &options ), UnilangTokenKind::Identifier( "cmd-name".to_string() ) );
     assert_eq!( classify_split( &split_ident_with_num, &options ), UnilangTokenKind::Identifier( "cmd1".to_string() ) );
 
     let split_unquoted_val_path = Split { string: "some-value/path", typ: SplitType::Delimeted, start:0, end:15 };
-    let split_num_val = Split { string: "123.45", typ: SplitType::Delimeter, start:0, end:6 };
-    assert_eq!( classify_split( &split_num_val, &options ), UnilangTokenKind::UnquotedValue( "123.45".to_string() ) );
-    assert_eq!( classify_split( &split_unquoted_val_path, &options ), UnilangTokenKind::UnquotedValue( "some-value/path".to_string() ) );
+    let split_num_val = Split { string: "123.45", typ: SplitType::Delimeted, start:0, end:6 };
+    assert_eq!( classify_split( &split_num_val, &options ), UnilangTokenKind::Unrecognized( "123.45".to_string() ) );
+    assert_eq!( classify_split( &split_unquoted_val_path, &options ), UnilangTokenKind::Unrecognized( "some-value/path".to_string() ) );
 
     let split_just_quote = Split { string: "\"", typ: SplitType::Delimeted, start:0, end:1 };
     assert_eq!( classify_split( &split_just_quote, &options ), UnilangTokenKind::Unrecognized( "\"".to_string() ) );
 
     let split_unclosed_quote = Split { string: "\"open", typ: SplitType::Delimeted, start:0, end:5 };
-    assert_eq!( classify_split( &split_unclosed_quote, &options ), UnilangTokenKind::UnquotedValue( "\"open".to_string() ) );
+    assert_eq!( classify_split( &split_unclosed_quote, &options ), UnilangTokenKind::Unrecognized( "\"open".to_string() ) );
   }
 
   #[test]
