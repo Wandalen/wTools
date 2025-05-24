@@ -10,9 +10,10 @@
 *   ✅ Initial Plan Created
 *   ✅ Increment 1: Initial Build and Test Check
 *   ✅ Increment 3: Fix Warnings and Test Failures (Trailing Delimiter Bug Fixed)
-*   ✅ Increment 2: Enable All Tests (Proposed external change to `strs_tools` for ignored tests)
+*   ❌ Increment 2: Enable All Tests (Needs Revisit - `strs_tools` bug isolated)
 *   ✅ Increment 4: Review and Refine Readme
 *   ✅ Increment 5: Organize and Improve Examples
+*   ⏳ Increment 6: Debug and Fix `strs_tools` Escaped Quotes Bug
 
 ### Target Crate
 *   `module/move/unilang_instruction_parser`
@@ -21,7 +22,7 @@
 *   Files to Include:
     *   `module/move/unilang_instruction_parser/Cargo.toml`
     *   `module/move/unilang_instruction_parser/Readme.md`
-    *   `module/move/unilang_instruction_parser/examples/unilang_instruction_parser_trivial_sample.rs`
+    *   `module/move/unilang_instruction_parser/examples/unilang_instruction_parser_basic.rs`
     *   `module/move/unilang_instruction_parser/src/config.rs`
     *   `module/move/unilang_instruction_parser/src/error.rs`
     *   `module/move/unilang_instruction_parser/src/instruction.rs`
@@ -35,11 +36,10 @@
     *   `module/move/unilang_instruction_parser/tests/syntactic_analyzer_command_tests.rs`
     *   `module/move/unilang_instruction_parser/tests/tests.rs`
     *   `module/move/unilang_instruction_parser/tests/inc/mod.rs`
+    *   `module/core/strs_tools/src/string/split.rs` (for direct modification in Increment 6)
 *   Crates for Documentation:
     *   `module/move/unilang_instruction_parser`
     *   `module/core/former` (for example organization reference)
-*   External Crates Requiring `task.md` Proposals:
-    *   `module/core/strs_tools` (Reason: Fix tokenization of escaped quotes to enable `unilang_instruction_parser` tests)
 
 ### Expected Behavior Rules / Specifications (for Target Crate)
 *   All `cargo test` commands for the target crate must pass.
@@ -71,15 +71,15 @@
     *   Verification Strategy: Analyze `execute_command` output.
     *   Commit Message: "fix(unilang_instruction_parser): Debugging trailing semicolon error with simplified parser"
 
-*   ✅ Increment 2: Enable All Tests
+*   ❌ Increment 2: Enable All Tests (Needs Revisit - `strs_tools` bug isolated)
     *   Detailed Plan Step 1: Read `module/move/unilang_instruction_parser/tests/argument_parsing_tests.rs`, `module/move/unilang_instruction_parser/tests/comprehensive_tests.rs`, `module/move/unilang_instruction_parser/tests/error_reporting_tests.rs` to identify any disabled tests.
-    *   Detailed Plan Step 2: For tests ignored due to external dependencies (e.g., `strs_tools`), create/update a `task.md` proposal in the external crate's root directory.
+    *   Detailed Plan Step 2: For tests ignored due to external dependencies (e.g., `strs_tools`), create/update a `task.md` proposal in the external crate's root directory. (This step was previously done, but now the strategy is to fix directly).
     *   Detailed Plan Step 3: For tests ignored for other reasons, un-ignore them and fix any resulting failures.
-    *   Pre-Analysis: Identified ignored tests in `argument_parsing_tests.rs` and `error_reporting_tests.rs` due to `strs_tools` bug.
+    *   Pre-Analysis: Identified ignored tests in `argument_parsing_tests.rs` and `error_reporting_tests.rs` due to `strs_tools` bug. User feedback requires direct fix.
     *   Crucial Design Rules: Testing: Avoid Writing Automated Tests Unless Asked (ensuring existing tests are enabled, not adding new ones unless specified).
-    *   Relevant Behavior Rules: All tests are enabled (or external dependency proposed).
-    *   Verification Strategy: Confirm `task.md` written successfully. Run `cargo test -p unilang_instruction_parser` and analyze output to confirm all tests are run (excluding those with external dependencies).
-    *   Commit Message: "feat(unilang_instruction_parser): Propose strs_tools fix to enable all tests"
+    *   Relevant Behavior Rules: All tests are enabled and passing.
+    *   Verification Strategy: Run `cargo test -p unilang_instruction_parser --all-targets` and analyze output.
+    *   Commit Message: "fix(unilang_instruction_parser): Propose strs_tools fix to enable all tests" (This commit message will be updated for the new Increment 6)
 
 *   ✅ Increment 4: Review and Refine Readme
     *   Detailed Plan Step 1: Read `module/move/unilang_instruction_parser/Readme.md`.
@@ -102,6 +102,20 @@
     *   Verification Strategy: Run `cargo build -p module/move/unilang_instruction_parser --examples` and analyze output. Confirm file structure changes.
     *   Commit Message: "docs(unilang_instruction_parser): Organize and improve examples"
 
+*   ⏳ Increment 6: Debug and Fix `strs_tools` Escaped Quotes Bug
+    *   Detailed Plan Step 1: Revert `strs_tools` changes in `module/core/strs_tools/src/string/split.rs` to re-introduce the `break` statement.
+    *   Detailed Plan Step 2: Re-add `#[ignore]` attributes to the 4 tests in `module/move/unilang_instruction_parser/tests/argument_parsing_tests.rs` and `module/move/unilang_instruction_parser/tests/error_reporting_tests.rs`.
+    *   Detailed Plan Step 3: Run `cargo test -p unilang_instruction_parser --all-targets` to confirm no hangs and all *other* tests pass.
+    *   Detailed Plan Step 4: Debug `strs_tools::string::split::SplitIterator::handle_quoted_section` to correctly handle escaped quotes without hanging. This may involve adding debug prints or simplifying test cases.
+    *   Detailed Plan Step 5: Apply the fix to `module/core/strs_tools/src/string/split.rs`.
+    *   Detailed Plan Step 6: Remove `#[ignore]` attributes from the 4 tests in `module/move/unilang_instruction_parser/tests/argument_parsing_tests.rs` and `module/move/unilang_instruction_parser/tests/error_reporting_tests.rs`.
+    *   Detailed Plan Step 7: Run `cargo test -p unilang_instruction_parser --all-targets` to verify all tests pass.
+    *   Pre-Analysis: The previous attempt to fix `strs_tools` resulted in a hang. This increment focuses on isolating and correctly fixing that bug.
+    *   Crucial Design Rules: Proc Macro: Development Workflow (applying debugging principles), Testing: Plan with a Test Matrix When Writing Tests (if new tests are needed for `strs_tools`).
+    *   Relevant Behavior Rules: All tests are enabled and passing.
+    *   Verification Strategy: Analyze `execute_command` output for test results and hangs.
+    *   Commit Message: "fix(strs_tools): Debug and fix escaped quotes tokenization bug"
+
 ### Task Requirements
 *   Fix all tests and warnings.
 *   All tests must be enabled.
@@ -112,6 +126,7 @@
 
 ### Project Requirements
 *   (No project-wide requirements identified yet)
+*   **New Global Constraint:** Never use `#[allow(clippy::missing_errors_doc)]`.
 
 ### Notes & Insights
 *   The `task.md` file exists in the target crate, which might contain additional context or previous tasks. I will ignore it for now as the current task is clearly defined.

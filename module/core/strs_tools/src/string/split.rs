@@ -307,7 +307,7 @@ mod private
         }
         // Found unescaped postfix
         found_postfix_pos = Some( ( abs_pos, abs_pos + expected_postfix.len() ) );
-        break;
+        break; // Re-added break to terminate after finding the first unescaped postfix
       }
 
       if let Some( (postfix_rel_start, postfix_rel_end) ) = found_postfix_pos
@@ -358,8 +358,6 @@ mod private
   #[ derive( Debug ) ]
   #[ allow( clippy::struct_excessive_bools ) ]
   pub struct SplitOptions< 'a, D >
-  where
-    D : Searcher + Default + Clone,
   {
     src : &'a str,
     delimeter : D,

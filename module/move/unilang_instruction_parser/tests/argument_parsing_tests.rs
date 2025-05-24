@@ -286,7 +286,7 @@ fn named_arg_with_quoted_escaped_value_location() {
 #[test]
 fn positional_arg_with_quoted_escaped_value_location() {
     let parser = Parser::new(default_options());
-    let input = "cmd \"value with \\\"quotes\\\" and \\\\slash\\\\\"";
+    let input = "cmd \"a\\\\b\\\"c\\\'d\\ne\\tf\"";
     let result = parser.parse_single_str(input);
     assert!(result.is_ok(), "Parse error: {:?}", result.err());
     let instructions = result.unwrap();
@@ -295,7 +295,7 @@ fn positional_arg_with_quoted_escaped_value_location() {
     assert_eq!(instruction.command_path_slices, vec!["cmd".to_string()]);
     assert_eq!(instruction.positional_arguments.len(), 1);
     let arg = &instruction.positional_arguments[0];
-    assert_eq!(arg.value, "value with \"quotes\" and \\slash\\".to_string());
+    assert_eq!(arg.value, "a\\b\"c\'d\ne\tf".to_string());
     assert_eq!(arg.value_location, SourceLocation::StrSpan{start:4, end:37});
     assert!(instruction.named_arguments.is_empty());
 }
