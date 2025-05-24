@@ -34,7 +34,7 @@
 //! use unilang_instruction_parser::{Parser, UnilangParserOptions, GenericInstruction, Argument, SourceLocation};
 //!
 //! fn main() -> Result<(), unilang_instruction_parser::error::ParseError> {
-//!     let options = UnilangParserOptions::default();
+//!     let options = UnilangParserOptions { error_on_positional_after_named: false, ..Default::default() };
 //!     let parser = Parser::new(options);
 //!     let input = "command.sub_command path/arg1 name::\"value with spaces\" --verbose ;; another_cmd ?";
 //!

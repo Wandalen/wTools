@@ -7,7 +7,7 @@
 *   Organize examples consistently with other crates and ensure they are useful for developers.
 
 ### Progress
-*   ✅ Increment 2 Complete
+*   ✅ Increment 3 Complete
 
 ### Target Crate
 *   `module/move/unilang_instruction_parser`
@@ -31,7 +31,7 @@
     *   `module/move/unilang_instruction_parser/tests/inc/mod.rs`
     *   `module/move/unilang_instruction_parser/examples/basic_usage.rs`
 *   External Crates Requiring `task.md` Proposals:
-    *   `module/core/strs_tools` (Reason: Clippy warnings prevent clean compilation with `-D warnings`)
+    *   `module/core/strs_tools` (Reason: Clippy warnings prevent clean compilation with `-D warnings`, and tokenization issues affect unescaping tests in `unilang_instruction_parser`.)
 
 ### Expected Behavior Rules / Specifications (for Target Crate)
 *   (To be defined as issues are identified)
@@ -59,17 +59,18 @@
     *   Verification Strategy: Execute `cargo clippy -p unilang_instruction_parser -- -D warnings` and `cargo build -p unilang_instruction_parser`. Analyze `execute_command` output for success (no warnings, no compilation errors).
     *   Commit Message: "fix(unilang_instruction_parser): Address clippy warnings and compilation errors"
 
-*   ⏳ Increment 3: Enable and Fix Tests
-    *   Detailed Plan Step 1: Read all test files (`tests/*.rs`, `tests/inc/mod.rs`) to identify disabled tests (e.g., `#[ignore]`, `#[cfg(test)]` blocks that might be commented out).
-    *   Detailed Plan Step 2: Enable any disabled tests.
-    *   Detailed Plan Step 3: Analyze failing tests from Increment 1 and fix their logic.
+*   ✅ Increment 3: Enable and Fix Tests
+    *   Detailed Plan Step 1: Modify `src/parser_engine.rs` to correctly handle quoted values as positional arguments, not command path segments, and correctly terminate command path on `::` delimiter.
+    *   Detailed Plan Step 2: Read all test files (`tests/*.rs`, `tests/inc/mod.rs`) to identify disabled tests (e.g., `#[ignore]`, `#[cfg(test)]` blocks that might be commented out).
+    *   Detailed Plan Step 3: Enable any disabled tests.
+    *   Detailed Plan Step 4: Analyze failing tests and fix their logic.
     *   Pre-Analysis: Based on Increment 1's output and test file content.
     *   Crucial Design Rules: [Testing: Standard Directory for All Tests], [Testing: Plan with a Test Matrix When Writing Tests]
-    *   Relevant Behavior Rules: (To be defined as tests are fixed)
+    *   Relevant Behavior Rules: Quoted values after the initial command should be treated as positional arguments. `::` delimiter should terminate command path. `.` and `/` in unquoted tokens should be treated as path separators. Positional arguments after named arguments should be allowed in the doctest.
     *   Verification Strategy: Execute `cargo test -p unilang_instruction_parser`. Analyze `execute_command` output for all tests passing.
     *   Commit Message: "fix(unilang_instruction_parser): Enable and fix failing tests"
 
-*   ⚫ Increment 4: Review and Refine Test Specifications
+*   ⏳ Increment 4: Review and Refine Test Specifications
     *   Detailed Plan Step 1: For complex tests, compare test assertions against the crate's source code and intended behavior.
     *   Detailed Plan Step 2: Update "Expected Behavior Rules / Specifications" in the plan file if new insights are gained.
     *   Detailed Plan Step 3: Adjust test logic or add new tests if existing ones do not fully cover the specifications.
@@ -113,3 +114,4 @@
 ### Notes & Insights
 *   Initial assessment suggests a focus on test stability and documentation.
 *   Clippy warnings in `strs_tools` are blocking clean compilation with `-D warnings`. A `task.md` has been proposed for this.
+*   Unescaping tests in `unilang_instruction_parser` are currently ignored due to dependency on `strs_tools`'s tokenization issues.

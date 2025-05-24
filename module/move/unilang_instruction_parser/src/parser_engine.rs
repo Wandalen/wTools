@@ -212,28 +212,49 @@ impl Parser
     while items_cursor < significant_items.len() {
         let current_item = significant_items[items_cursor];
 
-        if let UnilangTokenKind::Identifier(_) | UnilangTokenKind::QuotedValue(_) = &current_item.kind {
-            if items_cursor + 1 < significant_items.len() &&
-               significant_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter("::".to_string()) {
-                break;
-            }
+        // This `if let` block is for named argument detection, not path termination.
+        // It should remain as is, as it correctly breaks if a named argument is next.
+        if items_cursor + 1 < significant_items.len() &&
+           significant_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter("::".to_string()) {
+            break; // Break to handle named argument
         }
 
         match &current_item.kind {
-            UnilangTokenKind::Identifier(s) | UnilangTokenKind::QuotedValue(s) => {
+            UnilangTokenKind::Identifier(s) => {
+                // Existing logic for segment index change
                 #[allow(clippy::collapsible_if)]
                 if !command_path_slices.is_empty() {
                     if items_cursor > 0 {
                          let previous_item_in_path_source = significant_items[items_cursor -1];
                          if current_item.segment_idx != previous_item_in_path_source.segment_idx {
-                             break;
+                             break; // Segment change, end of path
                          }
                     }
                 }
                 command_path_slices.push(s.clone());
                 items_cursor += 1;
-            }
+            },
+            UnilangTokenKind::QuotedValue(_) => {
+                // Quoted values are always arguments, not part of the command path
+                break;
+            },
+            UnilangTokenKind::Unrecognized(s) => {
+                // If an Unrecognized token contains '.' or '/', treat it as a path segment
+                if s.contains('.') || s.contains('/') {
+                    let segments: Vec<String> = s.split(|c| c == '.' || c == '/').map(|s| s.to_string()).collect();
+                    for segment in segments {
+                        if !segment.is_empty() {
+                            command_path_slices.push(segment);
+                        }
+                    }
+                    items_cursor += 1;
+                } else {
+                    // Otherwise, it's an unexpected token, so break
+                    break;
+                }
+            },
             _ => {
+                // Any other token type (including other delimiters/operators) also ends the command path
                 break;
             }
         }
@@ -333,34 +354,14 @@ impl Parser
                         items_cursor += 1;
                     }
                 }
-                UnilangTokenKind::QuotedValue(s_val_owned) => {
+                UnilangTokenKind::Unrecognized(s_val_owned) if s_val_owned.starts_with("--") => {
+                    // Treat as a positional argument
                     if seen_named_argument && self.options.error_on_positional_after_named {
                          return Err(ParseError{ kind: ErrorKind::Syntax("Positional argument encountered after a named argument.".to_string()), location: Some(item.source_location()) });
                     }
-
-                    let (prefix_len, postfix_len) = self.options.quote_pairs.iter()
-                        .find(|(p, _postfix)| item.inner.string.starts_with(*p))
-                        .map_or((0,0), |(p, pf)| (p.len(), pf.len()));
-
-                    let inner_content_location = match item.source_location() {
-                        SourceLocation::StrSpan { start, end } => SourceLocation::StrSpan {
-                            start: start + prefix_len,
-                            end: end - postfix_len
-                        },
-                        SourceLocation::SliceSegment { segment_index, start_in_segment, end_in_segment } => SourceLocation::SliceSegment {
-                            segment_index,
-                            start_in_segment: start_in_segment + prefix_len,
-                            end_in_segment: end_in_segment - postfix_len
-                        },
-                    };
-                    // eprintln!("[UNESCAPE_DEBUG] Attempting to unescape for positional arg: raw value: '{}', base_loc: {:?}", s_val_owned, inner_content_location);
-                    let unescaped_value = unescape_string_with_errors(s_val_owned, &inner_content_location)?;
-                    // eprintln!("[UNESCAPE_DEBUG] Unescaped value for positional: '{}'", unescaped_value);
-
-
                     positional_arguments.push(Argument{
                         name: None,
-                        value: unescaped_value,
+                        value: s_val_owned.to_string(),
                         name_location: None,
                         value_location: item.source_location(),
                     });
