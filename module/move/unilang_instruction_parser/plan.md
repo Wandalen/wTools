@@ -7,7 +7,7 @@
 *   Provide precise, AST-node-level, location-aware error reporting using `SourceLocation`.
 
 ### Progress
-*   Overall Task for unilang_instruction_parser: ⚙️ Documentation - Complete
+*   Overall Task for unilang_instruction_parser: 🚀 All Planned Increments Complete
 *   Milestones Achieved:
     *   ✅ Increment 1: Core types adapted to `strs_tools::string::split` and `no_std` feature added.
     *   ✅ Increment 2: Parser entry points and `RichItem` stream generation implemented.
@@ -19,7 +19,7 @@
     *   ✅ Increment 7: Comprehensive Test Suite (Test Matrix) implemented with initial set of tests.
     *   ✅ Increment 8: Documentation and Examples
 *   Currently Working On:
-    *   All planned increments complete.
+    *   Final Verification
 
 ### Target Crate
 *   module/move/unilang_instruction_parser
@@ -107,4 +107,4 @@
     *   `unused_imports` in `tests/comprehensive_tests.rs` were fixed.
     *   Multiple `unreachable_pattern` warnings in `tests/error_reporting_tests.rs` persist. These should be investigated in a future task to ensure test correctness and potentially refine `ErrorKind` definitions.
 *   **Parser Bug with `parse_slice` State:** Discovered a bug where `error_on_positional_after_named` state seems to carry over between distinct segments in `parse_slice` when default options are used. For example, if segment `N` has a named argument, segment `N+1` (a new string from the input slice) might incorrectly flag its first positional token. This needs investigation in a separate task. The `basic_usage.rs` example now uses specific options for its slice test to bypass this for demonstration purposes.
-*   **Current Focus:** Increment 8 completed. All planned increments are done.
+*   **Current Focus:** Increment 8 completed. All planned increments are done. Preparing for final verification.
