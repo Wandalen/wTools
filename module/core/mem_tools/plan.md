@@ -7,6 +7,7 @@
 *   ✅ Increment 1: Initial Build and Error Analysis.
 *   ✅ Increment 2: Lint Configuration Review and Cleanup.
 *   ✅ Increment 3: Fix `empty_line_after_doc_comments` lint.
+*   ✅ Increment 4: Fix `same_ptr` and `same_data` implementations.
 
 ### Target Crate
 *   `module/core/mem_tools`
@@ -16,12 +17,16 @@
     *   `module/core/mem_tools/Cargo.toml`
     *   `module/core/mem_tools/src/lib.rs`
     *   `module/core/mem_tools/src/mem.rs`
+    *   `module/core/mem_tools/tests/inc/mem_test.rs`
     *   `Cargo.toml` (workspace root)
 
 ### Expected Behavior Rules / Specifications (for Target Crate)
 *   The crate should compile successfully with `cargo build -p mem_tools`.
 *   No compilation errors or warnings should be reported, except for the `unsafe-code` warning which is allowed by workspace configuration.
 *   Lint configurations should align with workspace settings, without redundant or conflicting local attributes.
+*   `same_ptr` should return true if two references point to the same memory location.
+*   `same_data` should return true if two references point to data with the same content and size.
+*   All tests in `mem_tools` should pass.
 
 ### Target File Structure (If Applicable)
 *   (No structural changes planned initially)
@@ -54,6 +59,15 @@
     *   Verification Strategy: Execute `cargo build -p mem_tools` and `cargo clippy -p mem_tools` via `execute_command`. Analyze `execute_command` output for errors or warnings.
     *   Commit Message: `fix(mem_tools): Remove empty line after doc comment`
 
+*   ✅ Increment 4: Fix `same_ptr` and `same_data` implementations.
+    *   Detailed Plan Step 1: Modify `same_ptr` to use `src1 as *const ()` and `src2 as *const ()`.
+    *   Detailed Plan Step 2: Modify `same_data` to use `src1 as *const u8` and `src2 as *const u8`.
+    *   Pre-Analysis: The current implementation of `same_ptr` and `same_data` incorrectly takes the address of the *reference* itself instead of the *data* it points to, leading to incorrect comparisons and test failures.
+    *   Crucial Design Rules: [Lifetimes: Keep Them Explicit], [Handling Panics vs Recoverable Errors]
+    *   Relevant Behavior Rules: `same_ptr` should return true if two references point to the same memory location. `same_data` should return true if two references point to data with the same content and size.
+    *   Verification Strategy: Execute `cargo test -p mem_tools --all-targets` via `execute_command`. Analyze `execute_command` output for test failures.
+    *   Commit Message: `fix(mem_tools): Correct same_ptr and same_data implementations`
+
 ### Task Requirements
 *   Fix any compilation errors.
 *   Address any lint warnings.
@@ -69,3 +83,4 @@
 *   Initial build passed without errors or warnings.
 *   Lint cleanup for `unsafe_code` and commented-out denies is complete.
 *   `empty_line_after_doc_comments` lint has been fixed.
+*   Tests are now passing after correcting pointer comparison logic in `same_ptr` and `same_data`.
