@@ -7,7 +7,7 @@
 *   Organize examples consistently with other crates and ensure they are useful for developers.
 
 ### Progress
-*   ✅ Increment 3 Complete
+*   ✅ Increment 4 Complete
 
 ### Target Crate
 *   `module/move/unilang_instruction_parser`
@@ -70,17 +70,23 @@
     *   Verification Strategy: Execute `cargo test -p unilang_instruction_parser`. Analyze `execute_command` output for all tests passing.
     *   Commit Message: "fix(unilang_instruction_parser): Enable and fix failing tests"
 
-*   ⏳ Increment 4: Review and Refine Test Specifications
-    *   Detailed Plan Step 1: For complex tests, compare test assertions against the crate's source code and intended behavior.
-    *   Detailed Plan Step 2: Update "Expected Behavior Rules / Specifications" in the plan file if new insights are gained.
-    *   Detailed Plan Step 3: Adjust test logic or add new tests if existing ones do not fully cover the specifications.
-    *   Pre-Analysis: Based on code review and test analysis.
+*   ✅ Increment 4: Review and Refine Test Specifications
+    *   Detailed Plan Step 1: Review `src/instruction.rs` to understand the `GenericInstruction` and `Argument` structures.
+    *   Detailed Plan Step 2: Review `src/parser_engine.rs` and `src/item_adapter.rs` to ensure the parsing logic is fully covered by tests.
+    *   Detailed Plan Step 3: Identify any edge cases or complex interactions that might not be explicitly tested.
+    *   Detailed Plan Step 4: Add a new comprehensive test `ct6_1_command_path_with_dots_and_slashes` to `tests/comprehensive_tests.rs`.
+    *   Pre-Analysis: All existing tests pass. Focus on completeness and clarity.
     *   Crucial Design Rules: [Testing: Plan with a Test Matrix When Writing Tests], [Comments and Documentation]
-    *   Relevant Behavior Rules: (To be refined)
+    *   Relevant Behavior Rules: Command paths can contain `.` and `/` as separators within a single token.
     *   Verification Strategy: Execute `cargo test -p unilang_instruction_parser`. Analyze `execute_command` output for all tests passing.
+    *   Test Matrix:
+        *   #### Test Matrix for Command Path with Dots and Slashes
+            | ID    | Input                                     | Expected Command Path Slices | Expected Positional Args | Expected Named Args | Expected Help | Notes                                     |
+            |-------|-------------------------------------------|------------------------------|--------------------------|---------------------|---------------|-------------------------------------------|
+            | CT6.1 | `cmd.sub/path arg1 name::val`             | `["cmd", "sub", "path", "arg1"]` | `[]`                     | `{"name": "val"}`   | `false`       | Command path with `.` and `/` separators. |
     *   Commit Message: "refactor(unilang_instruction_parser): Refine test specifications and coverage"
 
-*   ⚫ Increment 5: Update `Readme.md`
+*   ⏳ Increment 5: Update `Readme.md`
     *   Detailed Plan Step 1: Read `module/move/unilang_instruction_parser/Readme.md`.
     *   Detailed Plan Step 2: Rewrite the `Readme.md` to be concise and clearly communicate the crate's purpose.
     *   Pre-Analysis: Current `Readme.md` content.

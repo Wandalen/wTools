@@ -222,3 +222,20 @@ fn ct5_1_single_str_no_path_named_arg_only() {
     assert_eq!(instruction.named_arguments.len(), 1, "CT5.1 Named args count");
     assert_eq!(instruction.named_arguments.get("name").unwrap().value, "val".to_string(), "CT5.1 name value");
 }
+
+// Test Matrix Row: CT6.1
+#[test]
+fn ct6_1_command_path_with_dots_and_slashes() {
+    let parser = Parser::new(default_options());
+    let input = "cmd.sub/path arg1 name::val";
+    let result = parser.parse_single_str(input);
+    assert!(result.is_ok(), "CT6.1 Parse error: {:?}", result.err());
+    let instructions = result.unwrap();
+    assert_eq!(instructions.len(), 1);
+    let instruction = &instructions[0];
+    assert_eq!(instruction.command_path_slices, vec!["cmd".to_string(), "sub".to_string(), "path".to_string(), "arg1".to_string()], "CT6.1 Path");
+    assert!(instruction.positional_arguments.is_empty(), "CT6.1 Positional args should be empty");
+    assert_eq!(instruction.named_arguments.len(), 1, "CT6.1 Named args count");
+    assert_eq!(instruction.named_arguments.get("name").unwrap().value, "val".to_string(), "CT6.1 name value");
+    assert!(!instruction.help_requested, "CT6.1 Help requested");
+}

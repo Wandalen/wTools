@@ -37,7 +37,7 @@ pub struct GenericInstruction
 {
   /// A vector of strings representing the segments of the command path.
   /// For example, `command.sub_command --arg` would result in `vec!["command", "sub_command"]`.
-  /// If the input was `cmd arg1`, and `arg1` is consumed by greedy path parsing, this would be `vec!["cmd", "arg1"]`.
+  /// If the input was `cmd arg1`, `arg1` would be a positional argument, not part of the command path.
   pub command_path_slices : Vec<String>,
   /// A hash map of named arguments.
   /// The key is the argument name (e.g., "config" for `config::"path/to/file"`),
