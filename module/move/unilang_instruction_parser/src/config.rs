@@ -3,50 +3,86 @@ use strs_tools::string::split::SplitOptionsFormer;
 use strs_tools::string::parse_request::OpType;
 
 /// High-level options for configuring the `unilang` parser.
-/// These options will be translated into settings for `strs_tools::string::split::SplitOptionsFormer`.
+///
+/// These options control various aspects of the parsing process, such as how quotes and delimiters
+/// are handled, and rules for argument parsing. These options are then translated into
+/// lower-level settings for the `strs_tools::string::split::SplitOptionsFormer` which performs
+/// the initial tokenization of the input string.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UnilangParserOptions
 {
-  /// Quote pairs to be used for identifying quoted values.
-  /// Each tuple is (prefix, postfix).
+  /// Defines pairs of characters or strings that denote the start and end of a quoted value.
+  ///
+  /// For example, `vec![("\"", "\""), ("'", "'")]` would recognize both double-quoted
+  /// and single-quoted strings. The parser will extract the inner content of these quotes.
+  /// Escape sequences within these quoted values are handled by the parser.
   pub quote_pairs : Vec<( &'static str, &'static str )>,
-  /// Delimiters that separate significant parts of the command, e.g., "::", ";;", "?".
+  /// A list of strings that act as primary delimiters or operators in the unilang syntax.
+  ///
+  /// This typically includes:
+  /// - `"::"` for separating named argument names from their values.
+  /// - `";;"` for separating multiple instructions within a single input string.
+  /// - `"?"` for requesting help on a command.
+  /// These delimiters are preserved during tokenization and used by the parser to
+  /// determine the structure of commands and arguments.
   pub main_delimiters : Vec<&'static str>,
-  /// Whether to strip leading/trailing whitespace from delimited segments.
+  /// If `true`, leading and trailing whitespace will be stripped from each token produced
+  /// by the underlying `strs_tools` splitter before classification.
+  /// Defaults to `true`.
   pub strip_whitespace : bool,
-  /// If true, the parser will return an error if a named argument is duplicated.
-  /// If false (default), the last occurrence of a duplicated named argument wins.
+  /// If `true`, the parser will return an error if a named argument is duplicated within a single instruction.
+  ///
+  /// For example, `cmd name::val1 name::val2` would cause an error.
+  /// If `false` (the default), the last occurrence of a duplicated named argument "wins", effectively
+  /// overwriting previous values for that argument name.
   pub error_on_duplicate_named_arguments : bool,
-  /// If true (default), the parser will return an error if a positional argument
+  /// If `true` (the default), the parser will return an error if a positional argument
   /// is encountered after any named argument has already been parsed for that instruction.
-  /// If false, positional arguments can be interleaved with or follow named arguments.
+  ///
+  /// For example, `cmd name::val pos_arg` would cause an error.
+  /// If `false`, positional arguments can be interleaved with or follow named arguments,
+  /// e.g., `cmd name1::val1 pos1 name2::val2 pos2`.
   pub error_on_positional_after_named : bool,
-  /// Whether whitespace should also act as a separator between tokens.
+  /// If `true` (the default), whitespace characters (space, tab, newline, carriage return)
+  /// will also act as separators between tokens, in addition to `main_delimiters`.
+  /// If `false`, only `main_delimiters` will separate tokens, and whitespace might become
+  /// part of unquoted values.
   pub whitespace_is_separator : bool,
-  // /// Whether to preserve quoting characters in the output of `SplitIterator`.
-  // pub preserve_quotes_in_split : bool, // New option, might not be needed if classify_split handles it
 }
 
 impl Default for UnilangParserOptions
 {
+  /// Creates a default set of parser options.
+  ///
+  /// Default values are:
+  /// - `quote_pairs`: `vec![("\"", "\""), ("'", "'")]`
+  /// - `main_delimiters`: `vec![ "::", ";;", "?" ]`
+  /// - `strip_whitespace`: `true`
+  /// - `error_on_duplicate_named_arguments`: `false` (last one wins)
+  /// - `error_on_positional_after_named`: `true` (strict order)
+  /// - `whitespace_is_separator`: `true`
   fn default() -> Self
   {
     Self
     {
       quote_pairs : vec![ ( "\"", "\"" ), ( "'", "'" ) ],
-      main_delimiters : vec![ "::", ";;", "?" ],
+      main_delimiters : vec![ "::", ";;", "?" ], // Corrected: removed duplicate line
       strip_whitespace : true,
       error_on_duplicate_named_arguments : false,
       error_on_positional_after_named : true,
       whitespace_is_separator : true,
-      // preserve_quotes_in_split : false, // Default to false, let classify_split manage
     }
   }
 }
 
 impl UnilangParserOptions
 {
-  /// Translates these high-level options into `SplitOptionsFormer` for the `strs_tools::string::split` module.
+  /// Translates these high-level `UnilangParserOptions` into a `SplitOptionsFormer`
+  /// instance, which is used by the `strs_tools::string::split` module for initial
+  /// tokenization of the input string.
+  ///
+  /// This method configures the splitter based on the defined quote pairs, delimiters,
+  /// and whitespace handling rules.
   pub fn to_split_options_former<'s>( &'s self, src : &'s str ) -> SplitOptionsFormer<'s>
   {
     let mut prefixes = Vec::with_capacity( self.quote_pairs.len() );
@@ -72,7 +108,7 @@ impl UnilangParserOptions
     former.quoting( !self.quote_pairs.is_empty() );
     former.quoting_prefixes( prefixes );
     former.quoting_postfixes( postfixes );
-    former.preserving_quoting( true ); // Preserve outer quotes from SplitIterator
+    former.preserving_quoting( true );
 
     former
   }

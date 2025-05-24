@@ -1,4 +1,10 @@
 //! Adapts items from `strs_tools::string::split` and classifies them for unilang parsing.
+//!
+//! This module provides structures and functions to take the raw `Split` items from
+//! `strs_tools` and convert them into `RichItem`s, which include a classified
+//! `UnilangTokenKind`. This classification is crucial for the parser engine to
+//! understand the syntactic role of each token. It also includes the `unescape_string_with_errors`
+//! function for processing escape sequences within string literals.
 
 use crate::config::UnilangParserOptions;
 use crate::error::SourceLocation;
@@ -6,30 +12,47 @@ use crate::error::{ErrorKind, ParseError};
 use strs_tools::string::split::{ Split, SplitType };
 
 /// Represents the classified kind of a token relevant to unilang syntax.
-/// String content is owned.
+///
+/// Each variant stores the string content of the token. For `QuotedValue`,
+/// this is the raw inner content of the string, before unescaping.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum UnilangTokenKind
 {
+  /// An identifier, typically used for command names, path segments, or argument names.
   Identifier( String ),
+  /// An operator, like `?` for help.
   Operator( String ),
+  /// A delimiter, like `::` for named arguments or `;;` for instruction separation.
   Delimiter( String ),
+  /// The inner content of a quoted string (e.g., `hello` from `"hello"`). Unescaping is handled later.
   QuotedValue( String ),
+  /// An unquoted value that is not an identifier, operator, or delimiter.
   UnquotedValue( String ),
+  /// A token that could not be classified into any other known kind.
   Unrecognized( String ),
 }
 
-/// Represents an item from the `strs_tools::string::split::SplitIterator`,
-/// enriched with segment information and a classified `UnilangTokenKind`.
+/// Represents an item (token) from the input string after initial splitting and classification.
+///
+/// It wraps a `strs_tools::string::split::Split` item, adding a `segment_idx` (for slice inputs)
+/// and a `UnilangTokenKind` which categorizes the token based on unilang syntax rules.
 #[derive(Debug, Clone)]
 pub struct RichItem<'input_lifetime>
 {
+  /// The original `Split` item from `strs_tools`.
   pub inner : Split<'input_lifetime>,
+  /// The index of the string segment this item originated from, if parsing a slice `&[&str]`.
+  /// `None` if parsing a single `&str`.
   pub segment_idx : Option<usize>,
+  /// The classified kind of this token according to unilang syntax.
   pub kind : UnilangTokenKind,
 }
 
 impl<'input_lifetime> RichItem<'input_lifetime>
 {
+  /// Calculates the [`SourceLocation`] of this `RichItem` in the original input.
+  ///
+  /// This considers whether the input was a single string or a slice of strings.
   pub fn source_location( &self ) -> SourceLocation
   {
     if let Some( segment_idx ) = self.segment_idx
@@ -51,6 +74,9 @@ impl<'input_lifetime> RichItem<'input_lifetime>
     }
   }
 
+  /// Returns a string slice of the payload of the token kind, if applicable.
+  ///
+  /// For example, for `UnilangTokenKind::Identifier("cmd")`, this returns `Some("cmd")`.
   pub fn kind_payload_as_str( &self ) -> Option<&str>
   {
     match &self.kind
@@ -65,6 +91,20 @@ impl<'input_lifetime> RichItem<'input_lifetime>
   }
 }
 
+/// Classifies a `strs_tools::string::split::Split` item into a [`UnilangTokenKind`].
+///
+/// This function applies a set of rules based on the `UnilangParserOptions` and the
+/// content and type of the `Split` item to determine its syntactic role in unilang.
+///
+/// The classification order is roughly:
+/// 1. Quoted values (based on `options.quote_pairs`).
+/// 2. Known operators and delimiters (from `options.main_delimiters`, e.g., `?`, `::`, `;;`).
+/// 3. Identifiers (alphanumeric, `_`, `-`, starting with alpha or `_`).
+/// 4. Unquoted values (general non-empty strings not fitting other categories, excluding single unrecognized punctuation).
+/// 5. Unrecognized tokens (single punctuation not otherwise classified, or other fallbacks).
+///
+/// Note: For `QuotedValue`, this function extracts and stores the *inner content* of the quotes.
+/// The actual unescaping of this inner content is handled by [`unescape_string_with_errors`].
 pub fn classify_split<'input_lifetime>
 (
   split : &Split<'input_lifetime>,
@@ -113,6 +153,17 @@ pub fn classify_split<'input_lifetime>
   return UnilangTokenKind::Unrecognized(s.to_string());
 }
 
+/// Unescapes string values, handling standard escape sequences and reporting errors for invalid ones.
+///
+/// Takes the raw string content `s` (e.g., the inner content of a quoted string)
+/// and a `base_location` which represents the [`SourceLocation`] of `s` within the
+/// original, complete input string or input slice segment.
+///
+/// Supported standard escapes: `\\`, `\"`, `\'`, `\n`, `\t`.
+///
+/// If an invalid escape sequence (e.g., `\x`, `\z`) or a trailing backslash is encountered,
+/// this function returns a [`ParseError`] with an appropriate message and a `SourceLocation`
+/// pinpointing the invalid sequence in the original input.
 pub fn unescape_string_with_errors(
     s: &str,
     base_location: &SourceLocation,
@@ -132,7 +183,7 @@ pub fn unescape_string_with_errors(
                 Some((_escape_char_idx, '\'')) => unescaped.push('\''),
                 Some((_escape_char_idx, 'n')) => unescaped.push('\n'),
                 Some((_escape_char_idx, 't')) => unescaped.push('\t'),
-                Some((escape_char_idx_val, other_char)) => { // Renamed to avoid conflict if used
+                Some((escape_char_idx_val, other_char)) => {
                     let error_start_offset = idx;
                     let error_end_offset = escape_char_idx_val + other_char.len_utf8();
 
