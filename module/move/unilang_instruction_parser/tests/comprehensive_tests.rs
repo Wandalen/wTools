@@ -2,8 +2,9 @@
 //! Tests are designed based on the Test Matrix in plan.md.
 
 use unilang_instruction_parser::*;
-use unilang_instruction_parser::error::{ErrorKind, SourceLocation};
-use std::collections::HashMap;
+use unilang_instruction_parser::error::{ErrorKind};
+// Removed: use unilang_instruction_parser::error::{ErrorKind, SourceLocation};
+// Removed: use std::collections::HashMap;
 
 fn default_options() -> UnilangParserOptions {
     UnilangParserOptions::default()

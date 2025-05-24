@@ -1,31 +1,30 @@
-<!-- {{# generate.module_header{} #}} -->
+# `unilang_instruction_parser`
 
-# Module :: unilang_instruction_parser
-<!--{ generate.module_header.start() }-->
- [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_unilang_instruction_parser_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_unilang_instruction_parser_push.yml) [![docs.rs](https://img.shields.io/docsrs/unilang_instruction_parser?color=e3e8f0&logo=docs.rs)](https://docs.rs/unilang_instruction_parser) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fmove%2Funilang_instruction_parser%2Fexamples%2Funilang_instruction_parser_trivial.rs,RUN_POSTFIX=--example%20module%2Fmove%2Funilang_instruction_parser%2Fexamples%2Funilang_instruction_parser_trivial.rs/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
-<!--{ generate.module_header.end }-->
+`unilang_instruction_parser` is a Rust crate designed to parse `unilang` CLI-like instruction strings. It transforms raw string input into structured `GenericInstruction` objects, which represent a command and its associated arguments. The parser is built to be robust, provide detailed error reporting with source locations, and is configurable.
 
-`unilang_instruction_parser` is a Rust crate designed to parse `unilang` CLI-like instruction strings. It transforms raw text input into structured `GenericInstruction` objects, capable of handling complex command paths, named and positional arguments, quoted strings with escapes, and provides detailed, location-aware error reporting.
+This parser is intended to be a core component for any application that needs to interpret `unilang` command syntax, as specified in `unilang/spec.md` (conceptual).
 
-The parser is configurable and aims to adhere to the (hypothetical) `unilang/spec.md` for syntax rules.
+## Features
 
-## Key Features
-
-*   **Structured Output**: Parses input into `Vec<GenericInstruction>`, where each instruction contains:
-    *   `command_path_slices`: A `Vec<String>` for multi-segment command paths (e.g., `git remote add`).
-    *   `positional_arguments`: A `Vec<Argument>` for ordered arguments.
-    *   `named_arguments`: A `HashMap<String, Argument>` for arguments like `name::value`.
-    *   `help_requested`: A boolean flag for the `?` operator.
-    *   `overall_location`: A `SourceLocation` spanning the entire instruction.
-*   **Argument Types**: Handles unquoted, double-quoted (`"`), and single-quoted (`'`) arguments.
-*   **Escape Sequences**: Supports common escapes (`\\`, `\"`, `\'`, `\n`, `\t`) within quoted strings and reports errors for invalid sequences.
-*   **Instruction Separation**: Parses multiple instructions separated by `;;`.
-*   **Configurable Behavior**: `UnilangParserOptions` allows customization, such as:
-    *   Error handling for duplicate named arguments.
-    *   Rules for positional arguments appearing after named arguments.
-    *   Definition of quote pairs and primary delimiters.
-*   **Detailed Error Reporting**: `ParseError` provides an `ErrorKind` and an optional `SourceLocation` to pinpoint syntax issues in the input string or slice segments.
+*   **Command Path Parsing**: Handles single or multi-segment command paths (e.g., `command.sub_command`).
+*   **Argument Types**: Supports positional arguments and named arguments (e.g., `name::value`).
+*   **Quoting & Escaping**: Parses quoted values (`"value with spaces"`, `'another value'`) and handles standard escape sequences (`\\`, `\"`, `\'`, `\n`, `\t`) within them.
+*   **Help Operator**: Recognizes the `?` operator for requesting help on a command.
+*   **Multiple Instructions**: Can parse multiple instructions separated by `;;` from a single input.
+*   **Detailed Error Reporting**: Provides `ParseError` with `ErrorKind` and `SourceLocation` to pinpoint syntax issues in the input.
+*   **Configurable Behavior**: Allows customization of parsing rules via `UnilangParserOptions` (e.g., behavior for duplicate named arguments, allowing positional arguments after named ones).
 *   **`no_std` Support**: Can be used in `no_std` environments via a feature flag.
+
+## Installation
+
+Add `unilang_instruction_parser` as a dependency to your `Cargo.toml`:
+
+```toml
+[dependencies]
+unilang_instruction_parser = { path = "path/to/unilang_instruction_parser" } # Or version = "x.y.z" if published
+```
+
+(Adjust the path or version as necessary.)
 
 ## Basic Usage
 
@@ -35,58 +34,64 @@ use unilang_instruction_parser::{Parser, UnilangParserOptions, GenericInstructio
 fn main() -> Result<(), ParseError> {
     let options = UnilangParserOptions::default();
     let parser = Parser::new(options);
-    let input = "module.install path::\"C:/Program Files/My App\" version::1.2.3 --force ;; list.items --sort name";
+    let input = "log.level severity::\"debug\" message::'Hello, Unilang!' --verbose ;; system.info ?";
 
-    let instructions = parser.parse_single_str(input)?;
+    match parser.parse_single_str(input) {
+        Ok(instructions) => {
+            for instruction in instructions {
+                println!("Command Path: {:?}", instruction.command_path_slices);
 
-    for instruction in instructions {
-        println!("Command Path: {:?}", instruction.command_path_slices);
+                if instruction.help_requested {
+                    println!("Help was requested for this command.");
+                }
 
-        if instruction.help_requested {
-            println!("Help was requested for this command.");
+                println!("Positional Arguments:");
+                for pos_arg in &instruction.positional_arguments {
+                    println!("  - Value: '{}' (at {:?})", pos_arg.value, pos_arg.value_location);
+                }
+
+                println!("Named Arguments:");
+                for (name, named_arg) in &instruction.named_arguments {
+                    println!("  - {}: '{}' (name at {:?}, value at {:?})",
+                        name,
+                        named_arg.value,
+                        named_arg.name_location,
+                        named_arg.value_location
+                    );
+                }
+                println!("---");
+            }
         }
-
-        println!("Positional Arguments:");
-        for pos_arg in &instruction.positional_arguments { // Added &
-            println!("  - Value: '{}' (at {:?})", pos_arg.value, pos_arg.value_location);
+        Err(e) => {
+            eprintln!("Failed to parse input: {}", e);
+            if let Some(location) = e.location {
+                eprintln!("Error location: {:?}", location);
+                // Example: Highlighting the error in the original input (simplified)
+                // This requires access to the original input string and logic to map SourceLocation
+                // (StrSpan or SliceSegment) back to the string.
+                match location {
+                    SourceLocation::StrSpan { start, end } => {
+                        if end <= input.len() {
+                            eprintln!("Problematic part: \"{}\"", &input[start..end]);
+                        }
+                    }
+                    SourceLocation::SliceSegment { segment_index, start_in_segment, end_in_segment } => {
+                        // For slice input, you'd need the original slice segments.
+                        eprintln!("Problem in segment {}, bytes {}-{}", segment_index, start_in_segment, end_in_segment);
+                    }
+                }
+            }
         }
-
-        println!("Named Arguments:");
-        for (name, named_arg) in &instruction.named_arguments { // Added &
-            println!("  - {}: '{}' (name at {:?}, value at {:?})",
-                name,
-                named_arg.value,
-                named_arg.name_location,
-                named_arg.value_location
-            );
-        }
-        println!("---");
     }
+
     Ok(())
 }
 ```
 
-## Installation
+## Specification
 
-Add this to your `Cargo.toml`:
+This parser aims to strictly adhere to the (conceptual) `unilang` command language specification, which would typically be detailed in a document like `unilang/spec.md`. Key aspects include the structure of commands, argument types, quoting rules, and error conditions.
 
-```toml
-[dependencies]
-unilang_instruction_parser = "0.1.0" # Replace with the desired version
-```
-Or use `cargo add`:
-```sh
-cargo add unilang_instruction_parser
-```
+## License
 
-## Try out from the repository
-
-```sh
-git clone https://github.com/Wandalen/wTools
-cd wTools
-# To run the example (once created in examples/basic_usage.rs):
-# cargo run --example basic_usage -p unilang_instruction_parser
-```
-(Note: The `trivial` example mentioned in the original boilerplate might need to be updated or replaced by `basic_usage.rs` as planned in Increment 8.)
-
-<!-- {{# generate.module_footer{} #}} -->
+This crate is licensed under the terms of the [Apache License 2.0](LICENSE) or the [MIT License](LICENSE), at your option.
