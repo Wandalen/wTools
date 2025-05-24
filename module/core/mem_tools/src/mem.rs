@@ -24,7 +24,6 @@ mod private
     // Safety: The unsafe block is required because we're calling a foreign function (memcmp)
     // and manually managing memory addresses. We ensure that the pointers are valid and
     // the size is correct by checking the size with `same_size` before calling `memcmp`.
-    #[ allow( unsafe_code ) ]
     unsafe { memcmp( mem1, mem2, core::mem::size_of_val( src1 ) ) == 0 }
   }
 
