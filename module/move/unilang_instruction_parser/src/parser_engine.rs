@@ -71,7 +71,6 @@ impl Parser
 
     while let Some( split_item ) = split_iterator.next()
     {
-      // Skip whitespace tokens if they are configured as separators and are effectively empty.
       if self.options.whitespace_is_separator && split_item.typ == SplitType::Delimeter && split_item.string.trim().is_empty()
       {
         continue;
@@ -79,6 +78,7 @@ impl Parser
       let classified_kind = classify_split( &split_item, &self.options );
       rich_items_vec.push( RichItem { inner: split_item, segment_idx: None, kind: classified_kind } );
     }
+    // eprintln!("[DEBUG] Input: \"{}\", RichItems from parse_single_str: {:?}", input, rich_items_vec);
 
     self.analyze_items_to_instructions( &rich_items_vec )
   }
@@ -115,6 +115,7 @@ impl Parser
         rich_items_accumulator_vec.push( RichItem { inner: split_item, segment_idx: Some( seg_idx ), kind: classified_kind } );
       }
     }
+    // eprintln!("[DEBUG] Input Slice: {:?}, RichItems from parse_slice: {:?}", input_segments, rich_items_accumulator_vec);
 
     self.analyze_items_to_instructions( &rich_items_accumulator_vec )
   }
@@ -138,7 +139,7 @@ impl Parser
     for (i, item_ref) in items.iter().enumerate() {
         if item_ref.kind == UnilangTokenKind::Delimiter(";;".to_string()) {
             let segment = &items[start_index..i];
-            if segment.is_empty() { // Error if ";;" creates an empty instruction segment
+            if segment.is_empty() {
                 return Err(ParseError {
                     kind: ErrorKind::Syntax("Empty instruction segment due to ';;'".to_string()),
                     location: Some(item_ref.source_location()),
@@ -149,12 +150,10 @@ impl Parser
         }
     }
 
-    // Handle the last segment after the final (or no) ";;"
     if start_index < items.len() {
         let segment = &items[start_index..];
         instructions.push(self.parse_single_instruction_from_rich_items(segment)?);
     } else if start_index == items.len() && !items.is_empty() {
-        // This case handles input ending with ";;" which implies an empty instruction after it.
         if items.last().unwrap().kind == UnilangTokenKind::Delimiter(";;".to_string()) {
              return Err(ParseError {
                 kind: ErrorKind::Syntax("Empty instruction segment due to trailing ';;'".to_string()),
@@ -163,11 +162,10 @@ impl Parser
         }
     }
 
-    // Specific check for input that is *only* ";;"
     if instructions.is_empty() && items.len() == 1 && items[0].kind == UnilangTokenKind::Delimiter(";;".to_string())
     {
        return Err(ParseError {
-            kind: ErrorKind::Syntax("Empty instruction segment due to ';;'".to_string()), // Message refined in tests
+            kind: ErrorKind::Syntax("Empty instruction segment due to ';;'".to_string()),
             location: Some(items[0].source_location()),
         });
     }
@@ -187,14 +185,12 @@ impl Parser
   {
     if instruction_rich_items.is_empty()
     {
-      // This should ideally not be reached if analyze_items_to_instructions filters empty segments.
       return Err( ParseError {
         kind: ErrorKind::Syntax( "Internal error: parse_single_instruction_from_rich_items called with empty items".to_string() ),
         location: None,
       });
     }
 
-    // Determine the overall location span for this instruction.
     let first_item_loc = instruction_rich_items.first().unwrap().source_location();
     let last_item_loc = instruction_rich_items.last().unwrap().source_location();
     let overall_location = match ( &first_item_loc, &last_item_loc )
@@ -203,7 +199,7 @@ impl Parser
             SourceLocation::StrSpan{ start: *s1, end: *e2 },
         ( SourceLocation::SliceSegment{ segment_index: idx1, start_in_segment: s1, .. }, SourceLocation::SliceSegment{ segment_index: idx2, end_in_segment: e2, .. } ) if idx1 == idx2 =>
             SourceLocation::SliceSegment{ segment_index: *idx1, start_in_segment: *s1, end_in_segment: *e2 },
-        _ => first_item_loc, // Fallback if segments differ (should not happen for single instruction)
+        _ => first_item_loc,
     };
 
     let mut command_path_slices = Vec::new();
@@ -213,42 +209,26 @@ impl Parser
     while items_cursor < instruction_rich_items.len() {
         let current_item = &instruction_rich_items[items_cursor];
 
-        if command_path_slices.is_empty() && items_cursor == 0 {
-            if let UnilangTokenKind::Identifier(_) | UnilangTokenKind::UnquotedValue(_) = &current_item.kind {
-                if items_cursor + 1 < instruction_rich_items.len() &&
-                   instruction_rich_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter("::".to_string()) {
-                    break;
-                }
+        if let UnilangTokenKind::Identifier(_) | UnilangTokenKind::UnquotedValue(_) = &current_item.kind {
+            if items_cursor + 1 < instruction_rich_items.len() &&
+               instruction_rich_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter("::".to_string()) {
+                break;
             }
         }
 
         match &current_item.kind {
             UnilangTokenKind::Identifier(s) | UnilangTokenKind::UnquotedValue(s) => {
-                command_path_slices.push(s.clone());
-                let processed_item_segment_idx = current_item.segment_idx;
-                items_cursor += 1;
-
-                if items_cursor < instruction_rich_items.len() {
-                    let next_item_candidate = &instruction_rich_items[items_cursor];
-
-                    if next_item_candidate.segment_idx != processed_item_segment_idx {
-                        break;
+                if !command_path_slices.is_empty() {
+                    if items_cursor > 0 {
+                         let previous_item_in_path_source = &instruction_rich_items[items_cursor -1];
+                         if current_item.segment_idx != previous_item_in_path_source.segment_idx {
+                             break;
+                         }
                     }
-
-                    match &next_item_candidate.kind {
-                        UnilangTokenKind::Identifier(_) | UnilangTokenKind::UnquotedValue(_) => {
-                            if items_cursor + 1 < instruction_rich_items.len() &&
-                               instruction_rich_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter("::".to_string()) {
-                                break;
-                            }
-                        }
-                        _ => {
-                            break;
-                        }
-                    }
-                } else {
-                    break;
                 }
+                command_path_slices.push(s.clone());
+                // eprintln!("[PATH_DEBUG] Pushed to path: '{}', current path_slices: {:?}", s, command_path_slices);
+                items_cursor += 1;
             }
             _ => {
                 break;
@@ -256,21 +236,17 @@ impl Parser
         }
     }
 
-    // Phase 2: Check for Help Operator immediately after the path
     let mut help_requested = false;
     if items_cursor < instruction_rich_items.len() {
         let potential_help_item = &instruction_rich_items[items_cursor];
         if potential_help_item.kind == UnilangTokenKind::Operator("?".to_string()) {
-            // Help operator must be the last token in the instruction segment.
             if items_cursor == instruction_rich_items.len() - 1 {
                 help_requested = true;
                 items_cursor += 1;
             }
-            // If '?' is not last, it will be caught as an unexpected token in argument parsing.
         }
     }
 
-    // Phase 3: Argument Parsing
     let mut named_arguments = HashMap::new();
     let mut positional_arguments = Vec::new();
     let mut current_named_arg_name_data : Option<(&'input str, SourceLocation)> = None;
@@ -289,13 +265,13 @@ impl Parser
                         return Err(ParseError{ kind: ErrorKind::Syntax(format!("Duplicate named argument: {}", name_key)), location: Some(name_loc.clone()) });
                     }
 
-                    let value_str_to_unescape = val_s; // For QuotedValue, this is inner content
+                    let value_str_to_unescape = val_s;
                     let base_loc_for_unescape = if let UnilangTokenKind::QuotedValue(_) = &item.kind {
                         let (prefix_len, postfix_len) = self.options.quote_pairs.iter()
                             .find(|(p, _postfix)| item.inner.string.starts_with(*p))
                             .map_or((0,0), |(p, pf)| (p.len(), pf.len()));
 
-                        match item.source_location() { // This is location of the full token "value..."
+                        match item.source_location() {
                             SourceLocation::StrSpan { start, end } => SourceLocation::StrSpan {
                                 start: start + prefix_len,
                                 end: end - postfix_len
@@ -307,43 +283,38 @@ impl Parser
                             },
                         }
                     } else {
-                        // For Identifier/UnquotedValue, the base for unescaping (if it were to happen)
-                        // is the item's location itself.
                         item.source_location()
                     };
 
-                    // Unescape based on token type; only QuotedValues are typically unescaped.
                     let final_value = if let UnilangTokenKind::QuotedValue(_) = &item.kind {
                         unescape_string_with_errors(value_str_to_unescape, &base_loc_for_unescape)?
                     } else {
-                        value_str_to_unescape.to_string() // Identifiers/UnquotedValues are taken literally
+                        value_str_to_unescape.to_string()
                     };
 
                     named_arguments.insert(name_key.clone(), Argument {
                         name: Some(name_key),
                         value: final_value,
                         name_location: Some(name_loc),
-                        value_location: item.source_location(), // Location of the raw value token
+                        value_location: item.source_location(),
                     });
                     items_cursor += 1;
                 }
                 _ => return Err(ParseError{ kind: ErrorKind::Syntax(format!("Expected value for named argument '{}' but found {:?}", name_str_ref, item.kind)), location: Some(current_item_location) }),
             }
-        } else { // No pending named argument name, so this token is either a new name, a positional arg, or an error.
+        } else {
             match &item.kind {
                 UnilangTokenKind::Identifier(s_val_owned) | UnilangTokenKind::UnquotedValue(s_val_owned) => {
-                    // Check if it's a name for a named argument: "name" followed by "::"
                     if items_cursor + 1 < instruction_rich_items.len() &&
                        instruction_rich_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter("::".to_string())
                     {
                         current_named_arg_name_data = Some((item.inner.string, item.source_location()));
-                        items_cursor += 2; // Consume name and "::"
+                        items_cursor += 2;
                         seen_named_argument = true;
-                    } else { // It's a positional argument
+                    } else {
                         if seen_named_argument && self.options.error_on_positional_after_named {
                              return Err(ParseError{ kind: ErrorKind::Syntax("Positional argument encountered after a named argument.".to_string()), location: Some(item.source_location()) });
                         }
-                        // Unquoted positional arguments are taken literally.
                         positional_arguments.push(Argument{
                             name: None,
                             value: s_val_owned.to_string(),
@@ -353,7 +324,7 @@ impl Parser
                         items_cursor += 1;
                     }
                 }
-                UnilangTokenKind::QuotedValue(s_val_owned) => { // This is a quoted positional argument
+                UnilangTokenKind::QuotedValue(s_val_owned) => {
                     if seen_named_argument && self.options.error_on_positional_after_named {
                          return Err(ParseError{ kind: ErrorKind::Syntax("Positional argument encountered after a named argument.".to_string()), location: Some(item.source_location()) });
                     }
@@ -384,12 +355,9 @@ impl Parser
                     items_cursor += 1;
                 }
                 UnilangTokenKind::Delimiter(d_s) if d_s == "::" => {
-                     // This occurs if "::" is found without a preceding identifier to be its name.
                      return Err(ParseError{ kind: ErrorKind::Syntax("Unexpected '::' without preceding argument name or after a previous value.".to_string()), location: Some(item.source_location()) });
                 }
                 UnilangTokenKind::Operator(op_s) if op_s == "?" => {
-                     // '?' should only be handled by Phase 2 if it's the last token.
-                     // If it appears here, it's an error.
                      return Err(ParseError{ kind: ErrorKind::Syntax("Unexpected help operator '?' amidst arguments.".to_string()), location: Some(item.source_location()) });
                 }
                 _ => return Err(ParseError{ kind: ErrorKind::Syntax(format!("Unexpected token in arguments: '{}' ({:?})", item.inner.string, item.kind)), location: Some(item.source_location()) }),
@@ -397,10 +365,11 @@ impl Parser
         }
     }
 
-    // Check if a named argument was started but not completed (e.g. "cmd name::" at end of input)
     if let Some((name_str_ref, name_loc)) = current_named_arg_name_data {
         return Err(ParseError{ kind: ErrorKind::Syntax(format!("Expected value for named argument '{}' but found end of instruction", name_str_ref)), location: Some(name_loc) });
     }
+
+    // eprintln!("[FINAL_PATH_DEBUG] Final command_path_slices before Ok: {:?}", command_path_slices);
 
     Ok( GenericInstruction {
       command_path_slices,
