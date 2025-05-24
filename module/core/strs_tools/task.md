@@ -1,43 +1,42 @@
 # Change Proposal for `strs_tools`
 
 ### Task ID
-*   `TASK-20250524-UNILANG-CLIPPY-FIX`
+*   `TASK-20250524-UNILANG-ESCAPES`
 
 ### Requesting Context
 *   **Requesting Crate/Project:** `module/move/unilang_instruction_parser`
-*   **Driving Feature/Task:** Fixing tests and warnings in `unilang_instruction_parser` revealed clippy warnings in `strs_tools` that prevent successful compilation with `-D warnings`.
-*   **Link to Requester's Plan:** `../move/unilang_instruction_parser/plan.md`
+*   **Driving Feature/Task:** Fixing all tests and warnings in `unilang_instruction_parser`, specifically tests related to escaped quotes.
+*   **Link to Requester's Plan:** `module/move/unilang_instruction_parser/plan.md`
 *   **Date Proposed:** 2025-05-24
 
 ### Overall Goal of Proposed Change
-*   Address all clippy warnings in `strs_tools` to ensure clean compilation with `-D warnings` enabled.
+*   Improve the `strs_tools` crate's `SplitIterator` or related tokenization logic to correctly handle escaped quote characters within quoted strings, ensuring that the `Split` items produced accurately reflect the intended string content and do not prematurely terminate quoted values due to internal escape sequences.
 
 ### Problem Statement / Justification
-*   The `unilang_instruction_parser` crate, a consumer of `strs_tools`, is configured to treat warnings as errors (`-D warnings`). During its test and linting process, `cargo clippy` reports several warnings in `strs_tools` (e.g., `redundant_else`, `collapsible_else_if`, `needless_return`, `missing_panics_doc`). These warnings prevent `unilang_instruction_parser` from successfully compiling and passing its lint checks, blocking further development and verification.
+*   The `unilang_instruction_parser` crate relies on `strs_tools` for initial string splitting and tokenization. Currently, tests in `unilang_instruction_parser` (e.g., `error_invalid_escape_sequence_location_str`, `error_invalid_escape_sequence_location_slice`, `unescaping_works_for_named_arg_value`, `unescaping_works_for_positional_arg_value`) are ignored because `strs_tools`'s `SplitIterator` appears to misinterpret escaped quote characters (e.g., `\"`) within quoted strings. This leads to incorrect `Split` items being generated, which then causes parsing errors in `unilang_instruction_parser` when attempting to unescape the string or determine its boundaries. The current behavior prevents `unilang_instruction_parser` from correctly parsing strings containing escaped quotes.
 
 ### Proposed Solution / Specific Changes
-*   **File:** `src/string/split.rs`
-*   **Changes:**
-    *   **Redundant `else` blocks:** Refactor `if/else` structures to remove redundant `else` blocks where the `if` branch contains a `return`.
-    *   **Collapsible `else if` / `if`:** Collapse nested `if` statements into single `if` conditions where appropriate.
-    *   **Unneeded `return` statements:** Remove explicit `return` keywords where the expression is the last in a block and its value is implicitly returned.
-    *   **Missing `#[panics]` doc:** Add `#[panics]` sections to documentation for functions that may panic (e.g., `SplitOptions::form` due to `unwrap()`).
+*   The core issue is that `strs_tools::string::split::SplitIterator` (or its underlying tokenizer) needs to correctly identify the boundaries of quoted strings, even when they contain escaped quote characters. The `SplitType::Delimeted` for quoted strings should encompass the entire quoted content, and the internal logic should not be confused by `\"` or `\'`.
+*   **Internal Changes (high-level):** The `SplitIterator`'s logic for `preserving_quoting` and `quoting_pairs` needs to be robust against escaped quote characters. It should treat `\"` as part of the string content, not as a closing quote. This likely requires modifying the state machine or character-by-character processing within the tokenizer to correctly identify the *actual* closing quote.
 
 ### Expected Behavior & Usage Examples (from Requester's Perspective)
-*   After these changes, `cargo clippy -p strs_tools -- -D warnings` should complete successfully with no warnings.
-*   `unilang_instruction_parser` should then be able to compile and run its tests without being blocked by `strs_tools`'s clippy warnings.
+*   After the fix, `unilang_instruction_parser` should be able to parse inputs like:
+    ```
+    cmd "value with \"quotes\" and \\\\slash\\\\"
+    cmd name::"value with \"quotes\""
+    ```
+*   And the `Split` items for the quoted parts should correctly span the entire quoted string, allowing `unescape_string_with_errors` in `unilang_instruction_parser` to correctly process the inner content.
 
 ### Acceptance Criteria (for this proposed change)
-*   `cargo clippy -p strs_tools -- -D warnings` exits with code 0 (success) and no warnings are reported.
-*   The functionality of `strs_tools` remains unchanged.
+*   The `strs_tools` crate, when used by `unilang_instruction_parser`, correctly tokenizes strings containing escaped quotes.
+*   Specifically, for an input like `"value with \"quotes\""`, the `Split` item for the quoted value should have `typ: SplitType::Delimeted` and `string: "\"value with \\\"quotes\\\""`.
+*   The previously ignored tests in `unilang_instruction_parser` related to escaped quotes (e.g., `unescaping_works_for_named_arg_value`, `unescaping_works_for_positional_arg_value`, `error_invalid_escape_sequence_location_str`, `error_invalid_escape_sequence_location_slice`) should pass when un-ignored.
 
 ### Potential Impact & Considerations
-*   **Breaking Changes:** No breaking changes are anticipated as these are refactoring/lint fixes.
+*   **Breaking Changes:** Unlikely, as this is a bug fix. It should improve correctness without changing existing valid behavior.
 *   **Dependencies:** No new dependencies.
-*   **Performance:** No significant performance impact expected; may slightly improve readability.
-*   **Security:** No security implications.
-*   **Testing:** Existing tests for `strs_tools` should continue to pass. New clippy checks should pass.
+*   **Performance:** Should be minimal.
+*   **Testing:** New unit/integration tests should be added to `strs_tools` specifically for escaped quotes within quoted strings.
 
 ### Notes & Open Questions
-*   The `SplitType::Delimeter` typo in `strs_tools/src/string/split.rs` (line 162) should also be addressed, changing it to `SplitType::Delimeted` for consistency with `SplitType::Delimeted` used elsewhere in the same file and in `unilang_instruction_parser`. This was identified during `unilang_instruction_parser`'s test fixes.
-*   **Unescaping Test Failures:** Several tests in `unilang_instruction_parser` related to string unescaping (e.g., `unescaping_works_for_named_arg_value`, `positional_arg_with_quoted_escaped_value_location`) are currently failing and have been re-ignored. These failures appear to stem from `strs_tools`'s tokenization of escaped quotes, where the raw string provided to `unescape_string_with_errors` in `unilang_instruction_parser` is not as expected (e.g., backslashes are already consumed or misinterpreted). A thorough review of `strs_tools`'s string splitting and quoting logic is needed to ensure it correctly preserves or passes through escape sequences for subsequent unescaping.
+*   None.
