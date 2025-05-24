@@ -37,7 +37,7 @@ impl Parser
   #[allow(clippy::while_let_on_iterator)]
     while let Some( split_item ) = split_iterator.next()
     {
-      if self.options.whitespace_is_separator && split_item.typ == SplitType::Delimeter && split_item.string.trim().is_empty()
+      if self.options.whitespace_is_separator && (split_item.typ == SplitType::Delimeted || split_item.typ == SplitType::Delimiter) && split_item.string.trim().is_empty()
       {
         continue;
       }
@@ -59,7 +59,7 @@ impl Parser
       #[allow(clippy::while_let_on_iterator)]
       while let Some( split_item ) = split_iterator.next()
       {
-        if self.options.whitespace_is_separator && split_item.typ == SplitType::Delimeter && split_item.string.trim().is_empty()
+        if self.options.whitespace_is_separator && split_item.typ == SplitType::Delimeted && split_item.string.trim().is_empty()
         {
           continue;
         }
@@ -146,12 +146,14 @@ impl Parser
                 }
             } // Else: final segment was all whitespace, skip.
         }
-    } else if !items.is_empty() && items.last().unwrap().kind == UnilangTokenKind::Delimiter(";;".to_string()) {
-        // This handles an input that ends exactly with ";;" (e.g., "cmd ;;")
-        // The loop would have processed "cmd", start_index would be items.len().
-        // This signifies an empty segment after the last processed instruction.
+    }
+
+    // Check for trailing delimiter that results in an empty instruction segment
+    if !items.is_empty() && items.last().unwrap().kind == UnilangTokenKind::Delimiter(";;".to_string()) && start_index == items.len() {
+        // This means the last instruction was followed by a trailing delimiter,
+        // and no new instruction was formed from the segment after it.
         return Err(ParseError {
-            kind: ErrorKind::Syntax("Empty instruction segment due to trailing ';;'".to_string()),
+            kind: ErrorKind::TrailingDelimiter,
             location: Some(items.last().unwrap().source_location()),
         });
     }

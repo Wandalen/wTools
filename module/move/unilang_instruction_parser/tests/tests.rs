@@ -12,3 +12,5 @@ mod syntactic_analyzer_command_tests;
 
 #[path = "argument_parsing_tests.rs"]
 mod argument_parsing_tests;
+
+mod inc;
