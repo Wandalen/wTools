@@ -34,7 +34,7 @@ mod private
   {
     /// Substring of the original string with text inbetween delimeters.
     Delimeted,
-    /// Delimiter.
+    /// Delimiter,
     Delimiter,
   }
 
@@ -133,42 +133,33 @@ mod private
             // println!( "SFI - ODD - YIELD empty seg (delim at start): {:?}", split);
             return Some( split );
           }
-          else
-          {
-            let segment_str = &self.iterable[ ..d_start ];
-            let split = Split { string: segment_str, typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset + segment_str.len() };
-            self.current_offset += segment_str.len();
-            self.iterable = &self.iterable[ d_start.. ];
-            // println!( "SFI - ODD - YIELD seg: {:?}, new_off:{}, new_iter:'{}'", split, self.current_offset, self.iterable );
-            return Some( split );
-          }
-        }
-        else // No delimiter, last segment
-        {
-          if self.iterable.is_empty() { return None; }
-          let segment_str = self.iterable;
+          let segment_str = &self.iterable[ ..d_start ];
           let split = Split { string: segment_str, typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset + segment_str.len() };
           self.current_offset += segment_str.len();
-          self.iterable = "";
-          // println!( "SFI - ODD - YIELD last seg: {:?}", split );
+          self.iterable = &self.iterable[ d_start.. ];
+          // println!( "SFI - ODD - YIELD seg: {:?}, new_off:{}, new_iter:'{}'", split, self.current_offset, self.iterable );
           return Some( split );
         }
+        let segment_str = self.iterable;
+        let split = Split { string: segment_str, typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset + segment_str.len() };
+        self.current_offset += segment_str.len();
+        self.iterable = "";
+        // println!( "SFI - ODD - YIELD last seg: {:?}", split );
+        return Some( split );
       }
-      else // EVEN: Delimiter
+      // EVEN: Delimiter
+      if let Some( ( d_start, d_end ) ) = self.delimeter.pos( self.iterable )
       {
-        if let Some( ( d_start, d_end ) ) = self.delimeter.pos( self.iterable )
-        {
-          if d_start > 0 { self.iterable = ""; return None; }
+        if d_start > 0 { self.iterable = ""; return None; }
 
-          let delimiter_str = &self.iterable[ ..d_end ];
-          let split = Split { string: delimiter_str, typ: SplitType::Delimiter, start: self.current_offset, end: self.current_offset + delimiter_str.len() };
-          self.current_offset += delimiter_str.len();
-          self.iterable = &self.iterable[ d_end.. ];
-          // println!( "SFI - EVEN - YIELD delim: {:?}, new_off:{}, new_iter:'{}'", split, self.current_offset, self.iterable );
-          return Some( split );
-        }
-        else { return None; }
+        let delimiter_str = &self.iterable[ ..d_end ];
+        let split = Split { string: delimiter_str, typ: SplitType::Delimiter, start: self.current_offset, end: self.current_offset + delimiter_str.len() };
+        self.current_offset += delimiter_str.len();
+        self.iterable = &self.iterable[ d_end.. ];
+        // println!( "SFI - EVEN - YIELD delim: {:?}, new_off:{}, new_iter:'{}'", split, self.current_offset, self.iterable );
+        return Some( split );
       }
+      None
     }
   }
 
@@ -267,17 +258,11 @@ mod private
 
         let mut skip = false;
         // println!( "SI - Filtering: Split: {:?}, Type: {:?}, Options: PE:{}, PD:{}", current_split.string, current_split.typ, self.preserving_empty, self.preserving_delimeters );
-        if current_split.typ == SplitType::Delimeted
-        {
-          if current_split.string.is_empty() && !self.preserving_empty { skip = true; /*println!("SI - SKIP empty Dmd");*/ }
-        }
-        else if current_split.typ == SplitType::Delimiter
-        {
-          if !self.preserving_delimeters { skip = true; /*println!("SI - SKIP Dlr");*/ }
-        }
+        if current_split.typ == SplitType::Delimeted && current_split.string.is_empty() && !self.preserving_empty { skip = true; /*println!("SI - SKIP empty Dmd");*/ }
+        if current_split.typ == SplitType::Delimiter && !self.preserving_delimeters { skip = true; /*println!("SI - SKIP Dlr");*/ }
         // println!( "SI - Filtering: Split: {:?}, Type: {:?}, Options: PE:{}, PD:{}", current_split.string, current_split.typ, self.preserving_empty, self.preserving_delimeters );
 
-        if skip { /*println!("SI - SKIPPED: {:?}", current_split);*/ continue; }
+        if skip { continue; }
 
         // println!( "SI - YIELDING: {:?}", current_split );
         return Some( current_split );
@@ -320,12 +305,9 @@ mod private
           current_search_offset = end_pos; // Move past the escaped postfix
           continue;
         }
-        else
-        {
-          // Found unescaped postfix
-          found_postfix_pos = Some( ( abs_pos, abs_pos + expected_postfix.len() ) );
-          break;
-        }
+        // Found unescaped postfix
+        found_postfix_pos = Some( ( abs_pos, abs_pos + expected_postfix.len() ) );
+        break;
       }
 
       if let Some( (postfix_rel_start, postfix_rel_end) ) = found_postfix_pos
@@ -362,15 +344,12 @@ mod private
         self.iterator.iterable = &self.iterator.iterable[ consumed_len_in_iterable.. ];
         self.iterator.counter += 1; // Account for consuming the content and the postfix
         // println!( "HQS - SFI state after advance: offset:{}, iter:'{}', counter:{}", self.iterator.current_offset, self.iterator.iterable, self.iterator.counter );
-
-        let result = Split { string: final_str, typ: SplitType::Delimeted, start: final_start_abs, end: final_end_abs };
-        // println!( "HQS --- END (postfix found) --- Ret: {:?}", result );
-        return result;
+        Split { string: final_str, typ: SplitType::Delimeted, start: final_start_abs, end: final_end_abs }
       }
       else
       {
         // println!( "HQS --- END (postfix NOT found) --- Prefix as literal: {:?}, SFI.iter: '{}', SFI.offset: {}", prefix_split, self.iterator.iterable, self.iterator.current_offset );
-        return prefix_split;
+        prefix_split
       }
     }
   }

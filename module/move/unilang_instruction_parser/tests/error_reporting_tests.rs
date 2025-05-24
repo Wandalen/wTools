@@ -34,7 +34,8 @@ fn error_invalid_escape_sequence_location_str() {
   match err.kind {
     ErrorKind::Syntax(s) => {
         assert!(s.contains("Invalid escape sequence: \\x"), "Error message for invalid escape: {}", s);
-    }
+    },
+    _ => panic!("Expected Syntax error, but got: {:?}", err.kind),
   }
 
   // Adjusted expected location to match current actual output for debugging
@@ -74,7 +75,8 @@ fn error_invalid_escape_sequence_location_slice() {
   match err.kind {
     ErrorKind::Syntax(s) => {
         assert!(s.contains("Invalid escape sequence: \\y"), "Error message for invalid escape: {}", s);
-    }
+    },
+    _ => panic!("Expected Syntax error, but got: {:?}", err.kind),
   }
 
   let expected_location = Some(SourceLocation::SliceSegment { segment_index: 2, start_in_segment: 12, end_in_segment: 14 });
@@ -93,7 +95,8 @@ fn error_unexpected_delimiter_location_slice() {
       match err.kind {
           ErrorKind::Syntax(s) => {
               assert!(s.contains("Unexpected '::' without preceding argument name or after a previous value"), "Error message mismatch: {}", s);
-          }
+          },
+          _ => panic!("Expected Syntax error, but got: {:?}", err.kind),
       }
       let expected_location = Some(SourceLocation::SliceSegment { segment_index: 1, start_in_segment: 0, end_in_segment: 2 }); // "::" is in segment 1
       assert_eq!(err.location, expected_location, "Incorrect error location for unexpected delimiter in slice");
@@ -110,7 +113,8 @@ fn empty_instruction_segment_double_semicolon() {
     assert!(result.is_err(), "Expected error for empty segment due to ';;', input: '{}'", input);
     let err = result.unwrap_err();
     match err.kind {
-        ErrorKind::Syntax(s) => assert!(s.contains("Empty instruction segment due to trailing ';;'"), "Msg: {}", s),
+        ErrorKind::TrailingDelimiter => {}, // Updated to expect TrailingDelimiter
+        _ => panic!("Expected TrailingDelimiter error, but got: {:?}", err.kind),
     }
     assert_eq!(err.location, Some(SourceLocation::StrSpan { start: 5, end: 7 }));
 }
@@ -123,7 +127,8 @@ fn empty_instruction_segment_trailing_semicolon() {
     assert!(result.is_err(), "Expected error for empty segment due to trailing ';;', input: '{}'", input);
     let err = result.unwrap_err();
      match err.kind {
-        ErrorKind::Syntax(s) => assert!(s.contains("Empty instruction segment due to trailing ';;'"), "Msg: {}", s),
+        ErrorKind::TrailingDelimiter => {}, // Updated to expect TrailingDelimiter
+        _ => panic!("Expected TrailingDelimiter error, but got: {:?}", err.kind),
     }
     assert_eq!(err.location, Some(SourceLocation::StrSpan { start: 5, end: 7 }));
 }
@@ -137,6 +142,7 @@ fn empty_instruction_segment_only_semicolon() {
     let err = result.unwrap_err();
     match err.kind {
         ErrorKind::Syntax(s) => assert!(s.contains("Empty instruction segment due to ';;'"), "Msg: {}. Expected specific message for ';;' only.", s),
+        _ => panic!("Expected Syntax error, but got: {:?}", err.kind),
     }
     assert_eq!(err.location, Some(SourceLocation::StrSpan { start: 0, end: 2 }));
 }
@@ -150,6 +156,7 @@ fn missing_value_for_named_arg() {
     let err = result.unwrap_err();
     match err.kind {
         ErrorKind::Syntax(s) => assert!(s.contains("Expected value for named argument 'name' but found end of instruction"), "Msg: {}", s),
+        _ => panic!("Expected Syntax error, but got: {:?}", err.kind),
     }
     assert_eq!(err.location, Some(SourceLocation::StrSpan { start: 4, end: 8 }));
 }
@@ -180,6 +187,7 @@ fn unexpected_colon_colon_after_value() {
     let err = result.unwrap_err();
     match err.kind {
         ErrorKind::Syntax(s) => assert!(s.contains("Unexpected '::' without preceding argument name or after a previous value"), "Msg: {}", s),
+        _ => panic!("Expected Syntax error, but got: {:?}", err.kind),
     }
     assert_eq!(err.location, Some(SourceLocation::StrSpan { start: 15, end: 17 }));
 }
@@ -193,6 +201,7 @@ fn positional_after_named_error() {
     let err = result.unwrap_err();
     match err.kind {
         ErrorKind::Syntax(s) => assert!(s.contains("Positional argument encountered after a named argument"), "Msg: {}", s),
+        _ => panic!("Expected Syntax error, but got: {:?}", err.kind),
     }
     assert_eq!(err.location, Some(SourceLocation::StrSpan { start: 14, end: 18 }));
 }
@@ -206,6 +215,7 @@ fn unexpected_help_operator_middle() {
     let err = result.unwrap_err();
     match err.kind {
         ErrorKind::Syntax(s) => assert!(s.contains("Unexpected help operator '?' amidst arguments"), "Msg: {}", s),
+        _ => panic!("Expected Syntax error, but got: {:?}", err.kind),
     }
     assert_eq!(err.location, Some(SourceLocation::StrSpan { start: 4, end: 5 }));
 }
@@ -220,6 +230,7 @@ fn unexpected_token_in_args() {
     let err = result.unwrap_err();
     match err.kind {
         ErrorKind::Syntax(s) => assert!(s.contains("Unexpected token in arguments: '!'"), "Msg: {}", s),
+        _ => panic!("Expected Syntax error, but got: {:?}", err.kind),
     }
     assert_eq!(err.location, Some(SourceLocation::StrSpan { start: 9, end: 10 }));
 }

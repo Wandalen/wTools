@@ -204,7 +204,7 @@ pub fn unescape_string_with_errors(
                         }
                     };
                     return Err(ParseError {
-                        kind: ErrorKind::Syntax(format!("Invalid escape sequence: \\{}", other_char)),
+                        kind: ErrorKind::Syntax(format!("Invalid escape sequence: \\{other_char}")),
                         location: Some(error_location),
                     });
                 }

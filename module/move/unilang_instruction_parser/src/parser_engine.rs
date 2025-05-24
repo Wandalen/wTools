@@ -243,7 +243,7 @@ impl Parser
             UnilangTokenKind::Unrecognized(s) => {
                 // If an Unrecognized token contains '.' or '/', treat it as a path segment
                 if s.contains('.') || s.contains('/') {
-                    let segments: Vec<String> = s.split(|c| c == '.' || c == '/').map(|s| s.to_string()).collect();
+                    let segments: Vec<String> = s.split(['.', '/']).map(ToString::to_string).collect();
                     for segment in segments {
                         if !segment.is_empty() {
                             command_path_slices.push(segment);
@@ -291,7 +291,7 @@ impl Parser
                 UnilangTokenKind::Identifier(val_s) | UnilangTokenKind::QuotedValue(val_s) => {
                     let name_key = name_str_ref.to_string();
                     if self.options.error_on_duplicate_named_arguments && named_arguments.contains_key(&name_key) {
-                        return Err(ParseError{ kind: ErrorKind::Syntax(format!("Duplicate named argument: {}", name_key)), location: Some(name_loc.clone()) });
+                        return Err(ParseError{ kind: ErrorKind::Syntax(format!("Duplicate named argument: {name_key}")), location: Some(name_loc.clone()) });
                     }
 
                     let value_str_to_unescape = val_s;
@@ -332,7 +332,7 @@ impl Parser
                     });
                     items_cursor += 1;
                 }
-                _ => return Err(ParseError{ kind: ErrorKind::Syntax(format!("Expected value for named argument '{}' but found {:?}", name_str_ref, item.kind)), location: Some(item.source_location()) }),
+                _ => return Err(ParseError{ kind: ErrorKind::Syntax(format!("Expected value for named argument '{name_str_ref}' but found {:?}", item.kind)), location: Some(item.source_location()) }),
             }
         } else {
             match &item.kind {
@@ -381,7 +381,7 @@ impl Parser
     }
 
     if let Some((name_str_ref, name_loc)) = current_named_arg_name_data {
-        return Err(ParseError{ kind: ErrorKind::Syntax(format!("Expected value for named argument '{}' but found end of instruction", name_str_ref)), location: Some(name_loc) });
+        return Err(ParseError{ kind: ErrorKind::Syntax(format!("Expected value for named argument '{name_str_ref}' but found end of instruction")), location: Some(name_loc) });
     }
 
     Ok( GenericInstruction {

@@ -80,7 +80,7 @@ impl fmt::Display for ParseError
   {
     match &self.kind
     {
-      ErrorKind::Syntax( msg ) => write!( f, "Syntax error: {}", msg )?,
+      ErrorKind::Syntax( msg ) => write!( f, "Syntax error: {msg}" )?,
       ErrorKind::TrailingDelimiter => write!( f, "Syntax error: Empty instruction segment due to trailing ';;'" )?,
       // ErrorKind::UnterminatedQuote => write!( f, "Syntax error: Unterminated quote" )?,
       // ErrorKind::InvalidEscapeSequence => write!( f, "Syntax error: Invalid escape sequence" )?,
@@ -91,11 +91,11 @@ impl fmt::Display for ParseError
       {
         SourceLocation::StrSpan { start, end } =>
         {
-          write!( f, " at bytes {}-{}", start, end )?;
+          write!( f, " at bytes {start}-{end}" )?;
         }
         SourceLocation::SliceSegment { segment_index, start_in_segment, end_in_segment } =>
         {
-          write!( f, " in segment {} at bytes {}-{}", segment_index, start_in_segment, end_in_segment )?;
+          write!( f, " in segment {segment_index} at bytes {start_in_segment}-{end_in_segment}" )?;
         }
       }
     }

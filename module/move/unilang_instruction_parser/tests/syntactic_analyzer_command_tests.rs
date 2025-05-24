@@ -108,7 +108,7 @@ fn trailing_semicolon_error_if_empty_segment_is_error() {
     let result = parser.parse_single_str("cmd1 ;;");
     assert!(result.is_err(), "Expected error for trailing ';;' if empty segments are errors");
      if let Err(e) = result {
-        assert!(matches!(e.kind, ErrorKind::Syntax(_)));
+        assert!(matches!(e.kind, ErrorKind::TrailingDelimiter)); // Updated to expect TrailingDelimiter
         assert!(e.to_string().contains("Empty instruction segment"));
     }
 }
