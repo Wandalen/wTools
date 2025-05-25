@@ -118,7 +118,6 @@ mod private
 
     fn next( &mut self ) -> Option< Self::Item >
     {
-      // println!( "SFI - START - ctr:{}, off:{}, iter:'{}'", self.counter, self.current_offset, self.iterable );
       if self.iterable.is_empty() && self.counter > 0 { return None; }
       self.counter += 1;
 
@@ -130,21 +129,18 @@ mod private
           {
             let split = Split { string: "", typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset };
             // Not advancing state here; EVEN counter will consume the delimiter at current position.
-            // println!( "SFI - ODD - YIELD empty seg (delim at start): {:?}", split);
             return Some( split );
           }
           let segment_str = &self.iterable[ ..d_start ];
           let split = Split { string: segment_str, typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset + segment_str.len() };
           self.current_offset += segment_str.len();
           self.iterable = &self.iterable[ d_start.. ];
-          // println!( "SFI - ODD - YIELD seg: {:?}, new_off:{}, new_iter:'{}'", split, self.current_offset, self.iterable );
           return Some( split );
         }
         let segment_str = self.iterable;
         let split = Split { string: segment_str, typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset + segment_str.len() };
         self.current_offset += segment_str.len();
         self.iterable = "";
-        // println!( "SFI - ODD - YIELD last seg: {:?}", split );
         return Some( split );
       }
       // EVEN: Delimiter
@@ -156,7 +152,6 @@ mod private
         let split = Split { string: delimiter_str, typ: SplitType::Delimiter, start: self.current_offset, end: self.current_offset + delimiter_str.len() };
         self.current_offset += delimiter_str.len();
         self.iterable = &self.iterable[ d_end.. ];
-        // println!( "SFI - EVEN - YIELD delim: {:?}, new_off:{}, new_iter:'{}'", split, self.current_offset, self.iterable );
         return Some( split );
       }
       None
@@ -227,19 +222,15 @@ mod private
 
     fn next( &mut self ) -> Option< Self::Item >
     {
-      // println!( "SI::next() CALLED. Options: PE:{}, PD:{}, S:{}, Q:{}", self.preserving_empty, self.preserving_delimeters, self.stripping, self.quoting );
       while let Some( raw_split_val ) = self.iterator.next()
       {
         let mut current_split = raw_split_val;
-        // println!( "SI - Raw from SFI: {:?}", current_split );
 
         if self.quoting
         && current_split.typ == SplitType::Delimiter // Corrected from Delimeted
         && self.quoting_prefixes.contains( &current_split.string )
         {
-          // println!( "SI - >>> Calling HQS for: {:?}", current_split );
           current_split = self.handle_quoted_section( current_split );
-          // println!( "SI - <<< Returned from HQS: {:?}", current_split );
         }
 
         if self.stripping && current_split.typ == SplitType::Delimeted
@@ -283,7 +274,6 @@ mod private
     {
       let prefix_str = prefix_split.string;
       let prefix_start_abs = prefix_split.start;
-      // println!( "HQS --- START --- prefix_split: {:?}, SFI.iter: '{}', SFI.offset: {}", prefix_split, self.iterator.iterable, self.iterator.current_offset );
 
       let prefix_idx = self.quoting_prefixes.iter().position( |&p| p == prefix_str ).unwrap();
       let expected_postfix = self.quoting_postfixes[prefix_idx];
@@ -291,30 +281,34 @@ mod private
       let search_space = self.iterator.iterable;
       let search_offset_abs = self.iterator.current_offset;
 
-      // println!("HQS - Searching for postfix '{}' in search_space '{}' (abs_offset: {})", expected_postfix, search_space, search_offset_abs);
-
-      let mut current_search_offset = 0;
       let mut found_postfix_pos : Option< ( usize, usize ) > = None;
+      let mut chars = search_space.char_indices();
+      let mut is_escaped = false;
 
-      while let Some( ( pos, end_pos ) ) = expected_postfix.pos( &search_space[ current_search_offset.. ] )
+      while let Some( ( idx, ch ) ) = chars.next()
       {
-        let abs_pos = current_search_offset + pos;
-        if abs_pos > 0 && search_space.as_bytes()[ abs_pos - 1 ] == b'\\'
+        if is_escaped
         {
-          // It's an escaped postfix, skip it
-          current_search_offset = end_pos; // Move past the escaped postfix
+          is_escaped = false;
           continue;
         }
-        // Found unescaped postfix
-        found_postfix_pos = Some( ( abs_pos, abs_pos + expected_postfix.len() ) );
-        break; // Re-added break to terminate after finding the first unescaped postfix
+
+        if ch == '\\'
+        {
+          is_escaped = true;
+          continue;
+        }
+
+        if search_space[ idx.. ].starts_with( expected_postfix )
+        {
+          found_postfix_pos = Some( ( idx, idx + expected_postfix.len() ) );
+          break;
+        }
       }
 
       if let Some( (postfix_rel_start, postfix_rel_end) ) = found_postfix_pos
       {
-        // println!( "HQS - Found postfix '{}' at rel ({},{}) in '{}'", expected_postfix, postfix_rel_start, postfix_rel_end, search_space );
         let content_in_search_space = &search_space[ ..postfix_rel_start ];
-        // println!( "HQS - content_in_search_space: '{}'", content_in_search_space);
 
         let final_str;
         let final_start_abs;
@@ -324,31 +318,25 @@ mod private
         {
           final_start_abs = prefix_start_abs;
           final_end_abs = search_offset_abs + postfix_rel_end;
-          if final_end_abs > self.src.len() || final_start_abs > final_end_abs { /*println!("HQS - Bounds error PQ=true"); */ return prefix_split; }
+          if final_end_abs > self.src.len() || final_start_abs > final_end_abs { println!("HQS - Bounds error PQ=true"); return prefix_split; }
           final_str = &self.src[ final_start_abs .. final_end_abs ];
-          // println!( "HQS - Preserving quotes: final_str='{}', final_start_abs={}, final_end_abs={}", final_str, final_start_abs, final_end_abs);
         }
         else
         {
           final_start_abs = search_offset_abs;
           final_end_abs = search_offset_abs + content_in_search_space.len();
-          if final_end_abs > self.src.len() || final_start_abs > final_end_abs { /*println!("HQS - Bounds error PQ=false"); */ return prefix_split; }
+          if final_end_abs > self.src.len() || final_start_abs > final_end_abs { println!("HQS - Bounds error PQ=false"); return prefix_split; }
           final_str = content_in_search_space;
-          // println!( "HQS - Stripping quotes: final_str='{}', final_start_abs={}, final_end_abs={}", final_str, final_start_abs, final_end_abs);
         }
 
         let consumed_len_in_iterable = postfix_rel_end;
-        // println!( "HQS - Advancing SFI: current_offset was {}, iterable was '{}'", self.iterator.current_offset, self.iterator.iterable );
-        // println!( "HQS - Advancing SFI by: {}", consumed_len_in_iterable );
         self.iterator.current_offset += consumed_len_in_iterable;
         self.iterator.iterable = &self.iterator.iterable[ consumed_len_in_iterable.. ];
-        self.iterator.counter += 1; // Account for consuming the content and the postfix
-        // println!( "HQS - SFI state after advance: offset:{}, iter:'{}', counter:{}", self.iterator.current_offset, self.iterator.iterable, self.iterator.counter );
+        self.iterator.counter += 2; // Account for consuming the content and the postfix
         Split { string: final_str, typ: SplitType::Delimeted, start: final_start_abs, end: final_end_abs }
       }
       else
       {
-        // println!( "HQS --- END (postfix NOT found) --- Prefix as literal: {:?}, SFI.iter: '{}', SFI.offset: {}", prefix_split, self.iterator.iterable, self.iterator.current_offset );
         prefix_split
       }
     }
@@ -358,6 +346,8 @@ mod private
   #[ derive( Debug ) ]
   #[ allow( clippy::struct_excessive_bools ) ]
   pub struct SplitOptions< 'a, D >
+  where
+    D : Searcher + Default + Clone,
   {
     src : &'a str,
     delimeter : D,

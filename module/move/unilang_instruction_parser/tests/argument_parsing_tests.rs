@@ -260,7 +260,6 @@ fn command_with_path_and_args_complex_fully_parsed() {
 
 // Ignored due to external bug in strs_tools tokenization of escaped quotes. See strs_tools/task.md#TASK-YYYYMMDD-HHMMSS-UnescapingBug (Task ID to be updated)
 // aaa: Kept ignored due to external strs_tools bug (see task.md in strs_tools). Un-ignoring and attempting fix confirmed external dependency.
-#[ignore]
 #[test]
 fn named_arg_with_quoted_escaped_value_location() {
     let parser = Parser::new(default_options());

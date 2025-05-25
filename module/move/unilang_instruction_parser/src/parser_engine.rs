@@ -315,13 +315,11 @@ impl Parser
                         item.source_location()
                     };
 
-                    // eprintln!("[UNESCAPE_DEBUG] Attempting to unescape for named arg: '{}', raw value: '{}', base_loc: {:?}", name_str_ref, value_str_to_unescape, base_loc_for_unescape);
                     let final_value = if let UnilangTokenKind::QuotedValue(_) = &item.kind {
                         unescape_string_with_errors(value_str_to_unescape, &base_loc_for_unescape)?
                     } else {
                         value_str_to_unescape.to_string()
                     };
-                    // eprintln!("[UNESCAPE_DEBUG] Unescaped value for named: '{}'", final_value);
 
 
                     named_arguments.insert(name_key.clone(), Argument {
@@ -349,7 +347,26 @@ impl Parser
                         }
                         positional_arguments.push(Argument{
                             name: None,
-                            value: s_val_owned.to_string(),
+                            value: if let UnilangTokenKind::QuotedValue(_) = &item.kind {
+                                let (prefix_len, postfix_len) = self.options.quote_pairs.iter()
+                                    .find(|(p, _postfix)| item.inner.string.starts_with(*p))
+                                    .map_or((0,0), |(p, pf)| (p.len(), pf.len()));
+
+                                let base_loc_for_unescape = match item.source_location() {
+                                    SourceLocation::StrSpan { start, end } => SourceLocation::StrSpan {
+                                        start: start + prefix_len,
+                                        end: end - postfix_len
+                                    },
+                                    SourceLocation::SliceSegment { segment_index, start_in_segment, end_in_segment } => SourceLocation::SliceSegment {
+                                        segment_index,
+                                        start_in_segment: start_in_segment + prefix_len,
+                                        end_in_segment: end_in_segment - postfix_len
+                                    },
+                                };
+                                unescape_string_with_errors(s_val_owned, &base_loc_for_unescape)?
+                            } else {
+                                s_val_owned.to_string()
+                            },
                             name_location: None,
                             value_location: item.source_location(),
                         });
