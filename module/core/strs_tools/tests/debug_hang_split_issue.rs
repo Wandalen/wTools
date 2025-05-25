@@ -1,9 +1,10 @@
+//! For debugging split issues that cause hangs.
 // This file is for debugging purposes only and will be removed after the issue is resolved.
 
 #[ test ]
 fn debug_hang_split_issue()
 {
-  use strs_tools::string::split::{ SplitOptionsFormer, SplitType };
+  use strs_tools::string::split::{ SplitOptionsFormer }; // Removed SplitType
 
   let input = r#""value with \\"quotes\\" and \\\\slash\\\\""#; // The problematic quoted string
   let mut splitter = SplitOptionsFormer::new( vec![ "::", " " ] )
