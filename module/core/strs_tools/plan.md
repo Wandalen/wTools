@@ -6,6 +6,7 @@
 ### Progress
 *   ✅ Increment 1: Stabilize current quoting logic & address warnings (Stuck Resolution)
 *   ✅ Increment 1.5: Fix empty segment generation with `preserving_empty` and quoting
+*   ⏳ Increment 2: Verify integration with `unilang_instruction_parser` (In Progress)
 
 ### Target Crate
 *   `module/core/strs_tools`
@@ -68,12 +69,13 @@
         *   Execute `cargo clippy -p strs_tools -- -D warnings` via `execute_command`.
     *   Commit Message: `fix(strs_tools): Correct empty segment handling with quoting and preserving_empty`
 
-*   ⚫ Increment 2: Verify integration with `unilang_instruction_parser`
-    *   Detailed Plan Step 1: After Increment 1.5 is complete and committed.
-    *   Pre-Analysis: This increment assumes Increment 1.5 was successful.
-    *   Crucial Design Rules: N/A (Verification only)
-    *   Relevant Behavior Rules: Acceptance criteria from `task.md` regarding `unilang_instruction_parser` tests.
-    *   Verification Strategy: Execute `cargo test -p unilang_instruction_parser` via `execute_command`. Analyze output.
+*   ⏳ Increment 2: Verify integration with `unilang_instruction_parser`
+    *   Detailed Plan Step 1: Execute `cargo test -p unilang_instruction_parser --all-targets` via `execute_command`.
+    *   Detailed Plan Step 2: Analyze the output of the `execute_command`. If all tests pass, the integration is successful. If `unilang_instruction_parser` tests fail due to `strs_tools` changes, revise plan to fix `strs_tools`.
+    *   Pre-Analysis: This increment assumes Increment 1.5 was successful and all `strs_tools` tests pass.
+    *   Crucial Design Rules: N/A (Verification only).
+    *   Relevant Behavior Rules: Acceptance criteria from `module/core/strs_tools/-task.md` (i.e., `unilang_instruction_parser` tests related to argument parsing should pass).
+    *   Verification Strategy: The `execute_command` in Step 1 and analysis in Step 2 is the verification.
     *   Commit Message: `chore(strs_tools): Verify quoted split integration with unilang_instruction_parser`
 
 ### Task Requirements
