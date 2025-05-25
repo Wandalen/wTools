@@ -5,7 +5,7 @@
 
 ### Progress
 *   ✅ Increment 1: Stabilize current quoting logic & address warnings (Stuck Resolution)
-*   ⚫ Increment 1.5: Fix empty segment generation with `preserving_empty` and quoting (Planned)
+*   ✅ Increment 1.5: Fix empty segment generation with `preserving_empty` and quoting
 
 ### Target Crate
 *   `module/core/strs_tools`
@@ -39,10 +39,7 @@
 *   ✅ Increment 1: Stabilize current quoting logic & address warnings (Stuck Resolution)
     *   Detailed Plan Step 1: (Done) Implemented dynamic delimiter adjustment logic in `SplitIterator` and `SplitFastIterator` in `module/core/strs_tools/src/string/split.rs`.
     *   Detailed Plan Step 2: (Done) Added new unit tests to `module/core/strs_tools/tests/inc/split_test/quoting_options_tests.rs`.
-    *   Detailed Plan Step 3: (Done) Temporarily commented out the 3 failing tests:
-        *   `inc::split_test::combined_options_tests::test_m_t3_13_quoting_preserve_all_strip` (in `tests/inc/split_test/combined_options_tests.rs`)
-        *   `inc::split_test::quoting_options_tests::test_m_t3_11_quoting_preserve_all_no_strip` (in `tests/inc/split_test/quoting_options_tests.rs`)
-        *   `inc::split_test::quoting_options_tests::test_m_t3_13_quoting_preserve_all_strip` (in `tests/inc/split_test/quoting_options_tests.rs`)
+    *   Detailed Plan Step 3: (Done) Temporarily commented out the 3 failing tests.
     *   Detailed Plan Step 4: (Done) Fix compiler warnings in `module/core/strs_tools/src/string/split.rs`.
     *   Pre-Analysis: The core quoting logic for many cases might be correct. Isolating the problematic tests will help confirm this.
     *   Crucial Design Rules: [Comments and Documentation]
@@ -53,16 +50,22 @@
     *   Test Matrix: (Already developed and partially implemented)
     *   Commit Message: `refactor(strs_tools): Stabilize quote handling, address warnings, temp. ignore 3 tests`
 
-*   ⚫ Increment 1.5: Fix empty segment generation with `preserving_empty` and quoting
-    *   Detailed Plan Step 1: (To be detailed) Analyze the interaction between `SplitIterator`'s quote detection and `SplitFastIterator`'s empty segment generation when `preserving_empty(true)`.
-    *   Detailed Plan Step 2: (To be detailed) Refine `SplitIterator::next()` to ensure empty segments are correctly produced before a quoted section that immediately follows a delimiter.
-    *   Detailed Plan Step 3: (To be detailed) Uncomment the 3 previously failing tests one by one.
-    *   Detailed Plan Step 4: (To be detailed) Debug and fix the logic until each uncommented test passes.
-    *   Pre-Analysis: This requires a focused look at the state transitions in `SplitIterator`.
+*   ✅ Increment 1.5: Fix empty segment generation with `preserving_empty` and quoting
+    *   Detailed Plan Step 1: (Done) Analyzed `SplitIterator::next()` and `SplitFastIterator::next()` interaction.
+    *   Detailed Plan Step 2: (Done) Refined `SplitIterator::next()` with `last_yielded_token_was_delimiter` state and preemptive empty segment logic.
+    *   Detailed Plan Step 3: (Done) Uncommented `inc::split_test::combined_options_tests::test_m_t3_13_quoting_preserve_all_strip`.
+    *   Detailed Plan Step 4: (Done) Added and removed temporary `println!` statements.
+    *   Detailed Plan Step 5: (Done) Tested `test_m_t3_13_quoting_preserve_all_strip` - PASSED.
+    *   Detailed Plan Step 6: (Done) Logic refined.
+    *   Detailed Plan Step 7: (Done) Uncommented `inc::split_test::quoting_options_tests::test_m_t3_11_quoting_preserve_all_no_strip`. Tested - PASSED.
+    *   Detailed Plan Step 8: (Done) Uncommented `inc::split_test::quoting_options_tests::test_m_t3_13_quoting_preserve_all_strip`. Tested - PASSED.
+    *   Detailed Plan Step 9: (Done) Removed all temporary `println!` statements from `split.rs`.
+    *   Pre-Analysis: The critical part is the order of operations in `SplitIterator::next()`: let SFI yield, then SI analyzes that yield and the *remaining* SFI iterable for quotes.
     *   Crucial Design Rules: [Testing: Plan with a Test Matrix When Writing Tests]
-    *   Relevant Behavior Rules: Rule 1 (specifically the empty segment part if applicable to test cases).
+    *   Relevant Behavior Rules: Correct production of empty segments when `preserving_empty(true)` even with adjacent quotes.
     *   Verification Strategy:
-        *   Execute `cargo test -p strs_tools` via `execute_command` focusing on the re-enabled tests.
+        *   Execute `cargo test -p strs_tools` via `execute_command`. All tests (including the 3 re-enabled ones) should pass.
+        *   Execute `cargo clippy -p strs_tools -- -D warnings` via `execute_command`.
     *   Commit Message: `fix(strs_tools): Correct empty segment handling with quoting and preserving_empty`
 
 *   ⚫ Increment 2: Verify integration with `unilang_instruction_parser`
@@ -86,5 +89,4 @@
 *   Lints must be defined in workspace `Cargo.toml` and inherited by crates.
 
 ### Notes & Insights
-*   The interaction of `preserving_empty` with the quote detection logic in `SplitIterator` is the primary remaining challenge.
-*   Ensuring `SplitFastIterator` correctly yields empty segments when a delimiter is at the start of its current `iterable` (and its counter is ODD) is key, and `SplitIterator` must not interfere with this.
+*   The `last_yielded_token_was_delimiter` state in `SplitIterator` was key to correctly inserting empty segments before a quote that followed a delimiter when `preserving_empty` is true.

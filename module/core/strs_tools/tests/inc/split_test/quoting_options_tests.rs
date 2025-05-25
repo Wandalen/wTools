@@ -75,8 +75,8 @@ fn test_quoting_enabled_preserving_quotes_false()
 
 // Test Matrix ID: T3.11
 // Description: src="a 'b c' d", del=" ", PE=T, PD=T, S=F, Q=T
-// #[test] // Temporarily commented out due to persistent failure - See plan.md Increment 1.5
-fn _test_m_t3_11_quoting_preserve_all_no_strip()
+#[test]
+fn test_m_t3_11_quoting_preserve_all_no_strip()
 {
   let src = "a 'b c' d";
   let iter = split()
@@ -136,8 +136,8 @@ fn test_m_t3_12_quoting_no_preserve_strip()
 
 // Test Matrix ID: T3.13
 // Description: src="a 'b c' d", del=" ", PE=T, PD=T, S=T, Q=T
-// #[test] // Temporarily commented out due to persistent failure - See plan.md Increment 1.5
-fn _test_m_t3_13_quoting_preserve_all_strip()
+#[test]
+fn test_m_t3_13_quoting_preserve_all_strip()
 {
   let src = "a 'b c' d";
   let iter = split()

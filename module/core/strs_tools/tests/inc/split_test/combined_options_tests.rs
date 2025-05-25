@@ -3,8 +3,8 @@ use strs_tools::string::split::*;
 
 // Test Matrix ID: T3.13
 // Description: src="a 'b c' d", del=" ", PE=T, PD=T, S=T, Q=T
-// #[test] // Temporarily commented out due to persistent failure - See plan.md Increment 1.5
-fn _test_m_t3_13_quoting_preserve_all_strip() // Renamed from test_split_indices_t3_13
+#[test]
+fn test_m_t3_13_quoting_preserve_all_strip() // Renamed from test_split_indices_t3_13
 {
   let src = "a 'b c' d";
   let iter = split()

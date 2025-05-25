@@ -119,7 +119,10 @@ mod private
 
     fn next( &mut self ) -> Option< Self::Item >
     {
-      if self.iterable.is_empty() && ( self.counter > 0 || self.active_quote_char.is_some() ) { return None; }
+      if self.iterable.is_empty() && ( self.counter > 0 || self.active_quote_char.is_some() ) 
+      {
+        return None; 
+      }
 
       if let Some( current_quote_char ) = self.active_quote_char
       {
@@ -156,11 +159,14 @@ mod private
         let split = Split { string: segment_str, typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset + segment_str.len() };
         self.current_offset += consumed_len;
         self.iterable = &self.iterable[ consumed_len.. ];
-        self.counter += 1; 
+        self.counter += 1;
         return Some( split ); 
       }
       
-      if self.iterable.is_empty() && self.counter > 0 { return None; }
+      if self.iterable.is_empty() && self.counter > 0 
+      { 
+        return None; 
+      }
       self.counter += 1;
 
       if self.counter % 2 == 1 // ODD: Delimeted segment
@@ -180,7 +186,9 @@ mod private
         }
         else 
         {
-          if self.iterable.is_empty() { return None; } 
+          if self.iterable.is_empty() { 
+            return None; 
+          } 
           let segment_str = self.iterable;
           let split = Split { string: segment_str, typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset + segment_str.len() };
           self.current_offset += segment_str.len();
@@ -188,10 +196,11 @@ mod private
           Some( split ) 
         }
       }
-      // EVEN: Delimiter (No preceding else needed as ODD branch always returns or this is the only path)
-      else if let Some( ( d_start, d_end ) ) = self.delimeter.pos( self.iterable )
+      else if let Some( ( d_start, d_end ) ) = self.delimeter.pos( self.iterable ) // EVEN: Delimiter
       {
-        if d_start > 0 { self.iterable = ""; return None; } 
+        if d_start > 0 { self.iterable = ""; 
+          return None; 
+        } 
         let delimiter_str = &self.iterable[ ..d_end ];
         let split = Split { string: delimiter_str, typ: SplitType::Delimiter, start: self.current_offset, end: self.current_offset + delimiter_str.len() };
         self.current_offset += delimiter_str.len();
@@ -207,7 +216,7 @@ mod private
 
   /// An iterator for splitting strings with advanced options like stripping,
   /// preserving empty segments, and handling quotes.
-  #[ derive( Debug ) ]
+  #[derive(Debug)]
   #[ allow( clippy::struct_excessive_bools ) ]
   pub struct SplitIterator< 'a >
   {
@@ -220,6 +229,8 @@ mod private
     quoting : bool,
     quoting_prefixes : Vec< &'a str >,
     quoting_postfixes : Vec< &'a str >,
+    pending_opening_quote_delimiter : Option< Split< 'a > >,
+    last_yielded_token_was_delimiter : bool,
   }
 
   impl< 'a > SplitIterator< 'a >
@@ -249,6 +260,8 @@ mod private
         quoting : o.quoting(),
         quoting_prefixes : o.quoting_prefixes().clone(),
         quoting_postfixes : o.quoting_postfixes().clone(),
+        pending_opening_quote_delimiter : None,
+        last_yielded_token_was_delimiter : false,
       }
     }
   }
@@ -257,18 +270,56 @@ mod private
   {
     type Item = Split< 'a >;
 
+    #[allow(clippy::too_many_lines)] 
     fn next( &mut self ) -> Option< Self::Item >
     {
       loop
       {
-        let effective_split_opt : Option<Split<'a>>;
-
-        if self.quoting && self.iterator.active_quote_char.is_none()
+        if let Some( pending_split ) = self.pending_opening_quote_delimiter.take()
         {
+          if pending_split.typ != SplitType::Delimiter || self.preserving_delimeters { // Simplified boolean
+            if self.quoting && self.quoting_prefixes.contains(&pending_split.string) {
+                if let Some(fcoq) = pending_split.string.chars().next() {
+                    self.iterator.active_quote_char = Some(fcoq);
+                }
+            }
+            self.last_yielded_token_was_delimiter = pending_split.typ == SplitType::Delimiter;
+            return Some( pending_split );
+          }
+          if self.quoting && self.quoting_prefixes.contains(&pending_split.string) {
+             if let Some(fcoq) = pending_split.string.chars().next() {
+                self.iterator.active_quote_char = Some(fcoq);
+             }
+          }
+        }
+
+        if self.last_yielded_token_was_delimiter && 
+           self.preserving_empty && 
+           self.quoting && 
+           self.iterator.active_quote_char.is_none() &&
+           self.quoting_prefixes.iter().any(|p| self.iterator.iterable.starts_with(p)) &&
+           self.iterator.delimeter.pos(self.iterator.iterable).is_none_or(|(ds, _)| ds != 0) // Simplified boolean
+        {
+            let current_sfi_offset = self.iterator.current_offset;
+            let empty_token = Split { string: "", typ: SplitType::Delimeted, start: current_sfi_offset, end: current_sfi_offset };
+            self.last_yielded_token_was_delimiter = false; 
+            return Some(empty_token);
+        }
+        self.last_yielded_token_was_delimiter = false; 
+        
+        let sfi_next_internal_counter_will_be_odd = self.iterator.counter % 2 == 0; 
+        let sfi_iterable_starts_with_delimiter = self.iterator.delimeter.pos( self.iterator.iterable ).is_some_and( |(d_start, _)| d_start == 0 ); 
+        let sfi_should_yield_empty_now = self.preserving_empty && sfi_next_internal_counter_will_be_odd && sfi_iterable_starts_with_delimiter;
+        
+        let effective_split_opt : Option<Split<'a>>;
+        let mut quote_handled_by_peek = false;
+
+        if self.quoting && self.iterator.active_quote_char.is_none() && !sfi_should_yield_empty_now {
           if let Some( first_char_iterable ) = self.iterator.iterable.chars().next()
           {
             if let Some( prefix_idx ) = self.quoting_prefixes.iter().position( |p| self.iterator.iterable.starts_with( p ) )
             {
+              quote_handled_by_peek = true; 
               let prefix_str = self.quoting_prefixes[ prefix_idx ];
               let opening_quote_original_start = self.iterator.current_offset;
               let prefix_len = prefix_str.len();
@@ -278,7 +329,7 @@ mod private
               self.iterator.iterable = &self.iterator.iterable[ prefix_len.. ];
               self.iterator.active_quote_char = Some( first_char_iterable );
 
-              let quoted_segment_from_sfi_opt = self.iterator.next();
+              let quoted_segment_from_sfi_opt = self.iterator.next(); 
               self.iterator.active_quote_char = None; 
 
               if let Some( mut quoted_segment ) = quoted_segment_from_sfi_opt
@@ -323,15 +374,40 @@ mod private
                 }
                 effective_split_opt = Some( prefix_as_token );
               }
-            } else { effective_split_opt = self.iterator.next(); } 
-          } else { effective_split_opt = self.iterator.next(); } 
+            } else { 
+              effective_split_opt = self.iterator.next(); 
+            } 
+          } else { 
+            effective_split_opt = self.iterator.next(); 
+          } 
         }
         else 
         {
           effective_split_opt = self.iterator.next();
         }
 
-        let mut current_split = effective_split_opt?; 
+        let mut current_split = effective_split_opt?;
+        
+        if !quote_handled_by_peek && 
+           self.quoting && 
+           current_split.typ == SplitType::Delimiter && 
+           self.iterator.active_quote_char.is_none() 
+        {
+            if let Some(_prefix_idx) = self.quoting_prefixes.iter().position(|p| *p == current_split.string) { 
+                let opening_quote_delimiter = current_split.clone();
+                
+                if self.preserving_delimeters {
+                    self.pending_opening_quote_delimiter = Some(opening_quote_delimiter.clone());
+                }
+                if let Some(fcoq) = opening_quote_delimiter.string.chars().next() {
+                    self.iterator.active_quote_char = Some(fcoq);
+                }
+                
+                if !self.preserving_delimeters {
+                    continue; 
+                }
+            }
+        }
 
         if self.stripping && current_split.typ == SplitType::Delimeted
         {
@@ -353,6 +429,9 @@ mod private
 
         if !skip
         {
+          if current_split.typ == SplitType::Delimiter {
+            self.last_yielded_token_was_delimiter = true;
+          }
           return Some( current_split );
         }
       }
@@ -360,7 +439,7 @@ mod private
   }
 
   /// Options for configuring string splitting behavior.
-  #[ derive( Debug ) ]
+  #[derive(Debug)]
   #[ allow( clippy::struct_excessive_bools ) ]
   pub struct SplitOptions< 'a, D >
   where
