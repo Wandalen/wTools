@@ -1,26 +1,40 @@
+//! Provides tools for splitting strings with advanced options including quoting.
+
 // TEMPORARILY making private public for diagnostics
+/// Internal implementation details for string splitting.
 pub mod private // Changed from cfg-gated to simple pub mod
 {
   use crate::string::parse_request::OpType;
   use bitflags::bitflags;
 
   bitflags! {
+      /// Flags to control the behavior of the split iterators.
       #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
       pub struct SplitFlags: u8 {
+          /// Preserves empty segments.
           const PRESERVING_EMPTY      = 1 << 0;
+          /// Preserves delimiter segments.
           const PRESERVING_DELIMITERS = 1 << 1;
+          /// Preserves quoting characters in the output.
           const PRESERVING_QUOTING    = 1 << 2;
+          /// Strips leading/trailing whitespace from delimited segments.
           const STRIPPING             = 1 << 3;
+          /// Enables handling of quoted sections.
           const QUOTING               = 1 << 4;
       }
   }
 
+  /// Represents a segment of a string after splitting.
   #[derive(Debug, Clone)]
   pub struct Split< 'a >
   {
+    /// The string content of the segment.
     pub string : &'a str,
+    /// The type of the segment (delimited or delimiter).
     pub typ : SplitType,
+    /// The starting byte index of the segment in the original string.
     pub start : usize,
+    /// The ending byte index of the segment in the original string.
     pub end : usize,
   }
 
@@ -32,15 +46,21 @@ pub mod private // Changed from cfg-gated to simple pub mod
     }
   }
 
+  /// Defines the type of a split segment.
   #[derive(Debug, Clone, Copy, PartialEq, Eq)]
   pub enum SplitType
   {
+    /// A segment of delimited content.
     Delimeted,
+    /// A segment representing a delimiter.
     Delimiter,
   }
 
+  /// Trait for finding the position of a delimiter pattern in a string.
   pub trait Searcher
   {
+    /// Finds the first occurrence of the delimiter pattern in `src`.
+    /// Returns `Some((start_index, end_index))` if found, `None` otherwise.
     fn pos( &self, src : &str ) -> Option< ( usize, usize ) >;
   }
 
@@ -81,8 +101,9 @@ pub mod private // Changed from cfg-gated to simple pub mod
     }
   }
 
+  /// An iterator that quickly splits a string based on a delimiter, without advanced options.
   #[derive(Debug)]
-  pub struct SplitFastIterator< 'a, D > 
+  pub struct SplitFastIterator< 'a, D >
   where
     D : Searcher
   {
@@ -107,6 +128,7 @@ pub mod private // Changed from cfg-gated to simple pub mod
       }
     }
 
+    /// Sets the internal state of the iterator, for testing purposes.
     // Test helper methods are pub
     pub fn set_test_state(
         &mut self,
@@ -121,9 +143,13 @@ pub mod private // Changed from cfg-gated to simple pub mod
         self.counter = counter;
     }
 
+    /// Gets the current iterable string, for testing purposes.
     pub fn get_test_iterable(&self) -> &'a str { self.iterable }
+    /// Gets the current offset within the original string, for testing purposes.
     pub fn get_test_current_offset(&self) -> usize { self.current_offset }
+    /// Gets the currently active quote character, if any, for testing purposes.
     pub fn get_test_active_quote_char(&self) -> Option<char> { self.active_quote_char }
+    /// Gets the internal counter value, for testing purposes.
     pub fn get_test_counter(&self) -> i32 { self.counter }
   }
 
@@ -176,8 +202,9 @@ pub mod private // Changed from cfg-gated to simple pub mod
     }
   }
 
+  /// An iterator that splits a string with advanced options like quoting and preservation.
   #[derive(Debug)]
-  #[ allow( clippy::struct_excessive_bools ) ]
+  #[ allow( clippy::struct_excessive_bools ) ] // This lint is addressed by using SplitFlags
   pub struct SplitIterator< 'a >
   {
     iterator : SplitFastIterator< 'a, Vec< &'a str > >,
@@ -332,7 +359,8 @@ pub mod private // Changed from cfg-gated to simple pub mod
     } 
   } 
 
-  #[derive(Debug, Clone)] 
+  /// Options to configure the behavior of split iterators.
+  #[derive(Debug, Clone)]
   pub struct SplitOptions< 'a, D >
   where
     D : Searcher + Default + Clone,
@@ -351,6 +379,7 @@ pub mod private // Changed from cfg-gated to simple pub mod
 
   impl< 'a > SplitOptions< 'a, Vec< &'a str > >
   {
+    /// Consumes the options and returns a `SplitIterator`.
     #[ must_use ]
     pub fn split( self ) -> SplitIterator< 'a > { SplitIterator::new( &self ) }
   }
@@ -359,22 +388,25 @@ pub mod private // Changed from cfg-gated to simple pub mod
   where
     D : Searcher + Default + Clone
   {
+    /// Consumes the options and returns a `SplitFastIterator`.
     // This is inside pub mod private, so pub fn makes it pub
     pub fn split_fast( self ) -> SplitFastIterator< 'a, D > { SplitFastIterator::new( &self ) }
   }
 
-  pub trait SplitOptionsAdapter< 'a, D > where D : Searcher + Default + Clone 
+  /// Adapter trait to provide split options to iterators.
+  pub trait SplitOptionsAdapter< 'a, D > where D : Searcher + Default + Clone
   {
+    /// Gets the source string to be split.
     fn src( &self ) -> &'a str;
+    /// Gets the delimiter(s) to use for splitting.
     fn delimeter( &self ) -> D;
-    // fn preserving_empty( &self ) -> bool;
-    // fn preserving_delimeters( &self ) -> bool;
-    // fn preserving_quoting( &self ) -> bool;
-    // fn stripping( &self ) -> bool;
-    // fn quoting( &self ) -> bool;
+    /// Gets the behavior flags for splitting.
     fn flags( &self ) -> SplitFlags;
+    /// Gets the prefixes that denote the start of a quoted section.
     fn quoting_prefixes( &self ) -> &Vec< &'a str >;
+    /// Gets the postfixes that denote the end of a quoted section.
     fn quoting_postfixes( &self ) -> &Vec< &'a str >;
+    /// Clones the options, specifically for initializing a `SplitFastIterator`.
     fn clone_options_for_sfi( &self ) -> SplitOptions< 'a, D >;
   }
 
@@ -393,7 +425,9 @@ pub mod private // Changed from cfg-gated to simple pub mod
     fn clone_options_for_sfi( &self ) -> SplitOptions< 'a, D > { self.clone() }
   }
 
-  #[ allow( clippy::struct_excessive_bools ) ] #[ derive( Debug ) ]
+  /// Former (builder) for creating `SplitOptions`.
+  #[ allow( clippy::struct_excessive_bools ) ] // This lint is addressed by using SplitFlags
+  #[ derive( Debug ) ]
   pub struct SplitOptionsFormer< 'a >
   {
     src : &'a str,
@@ -410,6 +444,7 @@ pub mod private // Changed from cfg-gated to simple pub mod
 
   impl< 'a > SplitOptionsFormer< 'a >
   {
+    /// Creates a new `SplitOptionsFormer` with the given delimiter(s).
     pub fn new< D : Into< OpType< &'a str > > >( delimeter : D ) -> SplitOptionsFormer< 'a >
     {
       Self
@@ -423,16 +458,30 @@ pub mod private // Changed from cfg-gated to simple pub mod
         quoting_prefixes : vec![], quoting_postfixes : vec![],
       }
     }
+    /// Sets whether to preserve empty segments.
     pub fn preserving_empty( &mut self, value : bool ) -> &mut Self { if value { self.flags.insert(SplitFlags::PRESERVING_EMPTY); } else { self.flags.remove(SplitFlags::PRESERVING_EMPTY); } self }
+    /// Sets whether to preserve delimiter segments.
     pub fn preserving_delimeters( &mut self, value : bool ) -> &mut Self { if value { self.flags.insert(SplitFlags::PRESERVING_DELIMITERS); } else { self.flags.remove(SplitFlags::PRESERVING_DELIMITERS); } self }
+    /// Sets whether to preserve quoting characters in the output.
     pub fn preserving_quoting( &mut self, value : bool ) -> &mut Self { if value { self.flags.insert(SplitFlags::PRESERVING_QUOTING); } else { self.flags.remove(SplitFlags::PRESERVING_QUOTING); } self }
+    /// Sets whether to strip leading/trailing whitespace from delimited segments.
     pub fn stripping( &mut self, value : bool ) -> &mut Self { if value { self.flags.insert(SplitFlags::STRIPPING); } else { self.flags.remove(SplitFlags::STRIPPING); } self }
+    /// Sets whether to enable handling of quoted sections.
     pub fn quoting( &mut self, value : bool ) -> &mut Self { if value { self.flags.insert(SplitFlags::QUOTING); } else { self.flags.remove(SplitFlags::QUOTING); } self }
+    /// Sets the prefixes that denote the start of a quoted section.
     pub fn quoting_prefixes( &mut self, value : Vec< &'a str > ) -> &mut Self { self.quoting_prefixes = value; self }
+    /// Sets the postfixes that denote the end of a quoted section.
     pub fn quoting_postfixes( &mut self, value : Vec< &'a str > ) -> &mut Self { self.quoting_postfixes = value; self }
+    /// Sets the source string to be split.
     pub fn src( &mut self, value : &'a str ) -> &mut Self { self.src = value; self }
+    /// Sets the delimiter(s) to use for splitting.
     pub fn delimeter< D : Into< OpType< &'a str > > >( &mut self, value : D ) -> &mut Self
     { self.delimeter = OpType::Vector( vec![] ).append( value.into() ); self }
+    /// Consumes the former and returns configured `SplitOptions`.
+    ///
+    /// # Panics
+    /// Panics if `delimeter` field contains an `OpType::Primitive(None)` which results from `<&str>::default()`,
+    /// and `vector()` method on `OpType` is not robust enough to handle it (currently it would unwrap a None).
     pub fn form( &mut self ) -> SplitOptions< 'a, Vec< &'a str > >
     {
       if self.flags.contains(SplitFlags::QUOTING)
@@ -454,8 +503,11 @@ pub mod private // Changed from cfg-gated to simple pub mod
         quoting_postfixes : self.quoting_postfixes.clone(),
       }
     }
+    /// Consumes the former, builds `SplitOptions`, and returns a `SplitIterator`.
     pub fn perform( &mut self ) -> SplitIterator< 'a > { self.form().split() }
   }
+  /// Creates a new `SplitOptionsFormer` to build `SplitOptions` for splitting a string.
+  /// This is the main entry point for using the string splitting functionality.
   #[ must_use ] pub fn split< 'a >() -> SplitOptionsFormer< 'a > { SplitOptionsFormer::new( <&str>::default() ) }
 } 
 // NOTE: The #[cfg(not(test))] mod private block was removed as part of the simplification.
