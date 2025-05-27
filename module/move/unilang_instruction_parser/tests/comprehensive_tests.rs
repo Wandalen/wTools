@@ -239,3 +239,71 @@ fn ct6_1_command_path_with_dots_and_slashes() {
     assert_eq!(instruction.named_arguments.get("name").unwrap().value, "val".to_string(), "CT6.1 name value");
     assert!(!instruction.help_requested, "CT6.1 Help requested");
 }
+
+// Test Matrix Row: SA1.1 (Spec Adherence - Root Namespace List)
+#[test]
+fn sa1_1_root_namespace_list() {
+    let parser = Parser::new(default_options());
+    let input = ".";
+    let result = parser.parse_single_str(input);
+    assert!(result.is_ok(), "SA1.1 Parse error for '.': {:?}", result.err());
+    let instructions = result.unwrap();
+    assert_eq!(instructions.len(), 1, "SA1.1 Expected 1 instruction for input '.'");
+    let instruction = &instructions[0];
+    assert!(instruction.command_path_slices.is_empty(), "SA1.1 Path for '.' should be empty");
+    assert!(instruction.positional_arguments.is_empty(), "SA1.1 Positional args for '.' should be empty");
+    assert!(instruction.named_arguments.is_empty(), "SA1.1 Named args for '.' should be empty");
+    assert!(!instruction.help_requested, "SA1.1 Help requested for '.' should be false");
+    assert_eq!(instruction.overall_location, error::SourceLocation::StrSpan { start: 0, end: 1 });
+}
+
+// Test Matrix Row: SA1.2 (Spec Adherence - Root Namespace Help)
+#[test]
+fn sa1_2_root_namespace_help() {
+    let parser = Parser::new(default_options());
+    let input = ". ?";
+    let result = parser.parse_single_str(input);
+    assert!(result.is_ok(), "SA1.2 Parse error for '. ?': {:?}", result.err());
+    let instructions = result.unwrap();
+    assert_eq!(instructions.len(), 1, "SA1.2 Expected 1 instruction for '. ?'");
+    let instruction = &instructions[0];
+    // Expecting path to be empty, no positional args, and help requested.
+    assert!(instruction.command_path_slices.is_empty(), "SA1.2 Path for '. ?' should be empty");
+    assert!(instruction.positional_arguments.is_empty(), "SA1.2 Positional args for '. ?' should be empty");
+    assert!(instruction.help_requested, "SA1.2 Help requested for '. ?' should be true");
+}
+
+// Test Matrix Row: SA2.1 (Spec Adherence - Whole Line Comment)
+#[test]
+fn sa2_1_whole_line_comment() {
+    let parser = Parser::new(default_options());
+    let input = "# this is a whole line comment";
+    let result = parser.parse_single_str(input);
+    assert!(result.is_ok(), "SA2.1 Parse error for whole line comment: {:?}", result.err());
+    let instructions = result.unwrap();
+    assert!(instructions.is_empty(), "SA2.1 Expected no instructions for a whole line comment, got: {:?}", instructions);
+}
+
+// Test Matrix Row: SA2.2 (Spec Adherence - Comment Only Line)
+#[test]
+fn sa2_2_comment_only_line() {
+    let parser = Parser::new(default_options());
+    let input = "#";
+    let result = parser.parse_single_str(input);
+    assert!(result.is_ok(), "SA2.2 Parse error for '#' only line: {:?}", result.err());
+    let instructions = result.unwrap();
+    assert!(instructions.is_empty(), "SA2.2 Expected no instructions for '#' only line, got: {:?}", instructions);
+}
+
+// Test Matrix Row: SA2.3 (Spec Adherence - Inline Comment Attempt)
+#[test]
+fn sa2_3_inline_comment_attempt() {
+    let parser = Parser::new(default_options());
+    let input = "cmd arg1 # inline comment";
+    let result = parser.parse_single_str(input);
+    assert!(result.is_err(), "SA2.3 Expected error for inline '#', got Ok: {:?}", result.ok());
+    if let Err(e) = result {
+        assert!(matches!(e.kind, ErrorKind::Syntax(_)), "SA2.3 ErrorKind mismatch: {:?}", e.kind);
+        assert!(e.to_string().contains("Unexpected token in arguments: '#'"), "SA2.3 Error message mismatch: {}", e.to_string());
+    }
+}

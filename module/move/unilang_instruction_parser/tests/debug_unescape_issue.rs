@@ -1,6 +1,8 @@
+#![allow(missing_docs)]
 // This file is for debugging purposes only and will be removed after the issue is resolved.
 
 #[ test ]
+/// Tests a specific unescape scenario for debugging.
 fn debug_unescape_issue()
 {
   use unilang_instruction_parser::item_adapter::unescape_string_with_errors;

@@ -15,7 +15,7 @@
 *   ✅ Increment 5: Organize and Improve Examples
 *   ⚪ Increment 6: Debug and Fix `strs_tools` Escaped Quotes Bug (Superseded by Increment 7 findings and `strs_tools/task.md`)
 *   ⚪ Increment 7: Isolate and Debug Unescaping Issue (Analysis Complete; actionable fix for target crate moved to revised Increment 2)
-*   ⚫ Increment 8: Final Checks, Specification Adherence & Cleanup
+*   ✅ Increment 8: Final Checks, Specification Adherence & Cleanup
 
 ### Target Crate
 *   `module/move/unilang_instruction_parser`
@@ -122,14 +122,23 @@
 *   ⚪ Increment 7: Isolate and Debug Unescaping Issue (Analysis Complete)
     *   Detailed Plan: Analysis confirmed the issue was related to `strs_tools` tokenization and `unilang_instruction_parser`'s unescaping. The `strs_tools` part is covered by `module/core/strs_tools/task.md`. The `unilang_instruction_parser` part (ensuring `parser_engine.rs` calls `unescape_string_with_errors`) is now integrated into the revised Increment 2. Debug test files are preserved.
 
-*   ⚫ Increment 8: Final Checks, Specification Adherence & Cleanup
-    *   Detailed Plan Step 1: Run `cargo clippy -p unilang_instruction_parser -- -D warnings`. Address any reported warnings.
-    *   Detailed Plan Step 2: Run `cargo test -p unilang_instruction_parser --all-targets -- --nocapture`. Ensure all tests pass.
-    *   Detailed Plan Step 3: Review `module/move/unilang/spec.md` against the current behavior and test coverage. If significant gaps are identified, plan a sub-increment to add targeted tests.
-    *   Pre-Analysis: All previous increments related to `unilang_instruction_parser` are assumed complete and verified.
-    *   Crucial Design Rules: Adherence to specifications.
+*   ✅ Increment 8: Final Checks, Specification Adherence & Cleanup
+    *   Detailed Plan Step 1: Execute `cargo clippy -p unilang_instruction_parser -- -D warnings` via `execute_command`. Analyze output. If warnings exist, create sub-steps to fix them (read relevant file, apply diff, re-run clippy).
+    *   Detailed Plan Step 2: Execute `cargo test -p unilang_instruction_parser --all-targets -- --nocapture` via `execute_command`. Analyze output. If tests fail, apply Critical Log Analysis and create sub-steps to fix them.
+    *   Detailed Plan Step 3: Use `read_file` to get the content of `module/move/unilang/spec.md`.
+    *   Detailed Plan Step 4: Use `read_file` to get the content of key source files: `module/move/unilang_instruction_parser/src/parser_engine.rs`, `module/move/unilang_instruction_parser/src/instruction.rs`, `module/move/unilang_instruction_parser/src/item_adapter.rs`, and `module/move/unilang_instruction_parser/src/config.rs`.
+    *   Detailed Plan Step 5: Mentally review the parser's behavior (based on code and test outcomes) against the specifications in `spec.md`. Identify any obvious deviations or specification points not covered by existing tests.
+    *   Detailed Plan Step 6: If significant deviations or critical untested specification points are identified:
+        *   Draft new, focused test case(s) targeting these points. These will likely go into `tests/comprehensive_tests.rs` or a new `tests/spec_adherence_tests.rs` if many are needed.
+        *   Plan `apply_diff` or `append_to_file` to add these tests.
+        *   Execute `cargo test -p unilang_instruction_parser --all-targets -- --nocapture` via `execute_command` to run the new tests.
+        *   If new tests fail, plan and implement fixes in the source code.
+    *   Detailed Plan Step 7: (If any code changes were made in this increment) Re-run `cargo clippy -p unilang_instruction_parser -- -D warnings` and `cargo test -p unilang_instruction_parser --all-targets -- --nocapture` via `execute_command` to ensure no regressions.
+    *   Pre-Analysis: Previous increments are complete. Focus is now on overall crate health, comprehensive testing, and adherence to `spec.md`. The `named_arg_with_quoted_escaped_value_location` test has a `qqq:` comment regarding its span that might need to be addressed if `strs_tools` behavior is confirmed.
+    *   Crucial Design Rules: Adherence to specifications. Testing: Plan with a Test Matrix When Writing Tests (if new tests are added).
     *   Relevant Behavior Rules: All tests pass, no clippy warnings, behavior matches `spec.md`.
-    *   Verification Strategy: Analyze `execute_command` output for clippy and test results. Manual review against `spec.md`.
+    *   Test Matrix: (Developed and applied for new tests SA1.1, SA1.2, SA2.1, SA2.2, SA2.3 in `comprehensive_tests.rs`)
+    *   Verification Strategy: Analyze `execute_command` output for `clippy` and `test`. Manual review of code against `spec.md`. Successful execution of any newly added spec-adherence tests.
     *   Commit Message: "chore(unilang_instruction_parser): Final checks, clippy, all tests pass, spec adherence"
 
 ### Task Requirements
