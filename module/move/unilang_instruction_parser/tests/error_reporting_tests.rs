@@ -20,7 +20,6 @@ fn options_error_on_positional_after_named() -> UnilangParserOptions {
 }
 
 // Existing tests from the file
-#[ignore]
 #[test]
 fn error_invalid_escape_sequence_location_str() {
   let parser = Parser::new(default_options());
@@ -61,7 +60,6 @@ fn error_unexpected_delimiter_location_str() {
   assert_eq!(arg.value_location, SourceLocation::StrSpan { start: 7, end: 11 }); // Adjusted for "arg2"
 }
 
-#[ignore]
 #[test]
 fn error_invalid_escape_sequence_location_slice() {
   let parser = Parser::new(default_options());
