@@ -12,7 +12,7 @@
 *   ✅ Increment 2: Verify integration with `unilang_instruction_parser` and propose fix for it
 *   ✅ Increment 3: Address Clippy Lints (Code Style & Refactoring) in `strs_tools`
 *   ✅ Increment 4: Add Missing Documentation & Fix `missing_panics_doc` in `strs_tools`
-*   ⚫ Increment 5: Revert `pub mod private` to `cfg`-gated visibility in `split.rs`
+*   ⏳ Increment 5: Revert `pub mod private` to `cfg`-gated visibility in `split.rs`
 
 ### Target Crate
 *   `module/core/strs_tools`
@@ -125,7 +125,7 @@
     *   Verification Strategy: Execute `cargo clippy -p strs_tools -- -D warnings` via `execute_command`. Analyze output, expecting all `missing_docs` and `missing_panics_doc` lints to be resolved. (Done - all doc warnings resolved)
     *   Commit Message: `docs(strs_tools): Add missing documentation and panic docs for split module`
 
-*   ⚫ Increment 5: Revert `pub mod private` to `cfg`-gated visibility in `split.rs`
+*   ⏳ Increment 5: Revert `pub mod private` to `cfg`-gated visibility in `split.rs`
     *   Detailed Plan Step 1: Read `module/core/strs_tools/src/string/split.rs`.
     *   Detailed Plan Step 2: Change `pub mod private` (around `split.rs:2`) to:
         ```rust
