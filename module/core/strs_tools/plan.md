@@ -12,7 +12,7 @@
 *   ✅ Increment 2: Verify integration with `unilang_instruction_parser` and propose fix for it
 *   ✅ Increment 3: Address Clippy Lints (Code Style & Refactoring) in `strs_tools`
 *   ✅ Increment 4: Add Missing Documentation & Fix `missing_panics_doc` in `strs_tools`
-*   ⏳ Increment 5: Revert `pub mod private` to `cfg`-gated visibility in `split.rs`
+*   ✅ Increment 5: Revert `pub mod private` to `cfg`-gated visibility in `split.rs`
 
 ### Target Crate
 *   `module/core/strs_tools`
@@ -125,23 +125,16 @@
     *   Verification Strategy: Execute `cargo clippy -p strs_tools -- -D warnings` via `execute_command`. Analyze output, expecting all `missing_docs` and `missing_panics_doc` lints to be resolved. (Done - all doc warnings resolved)
     *   Commit Message: `docs(strs_tools): Add missing documentation and panic docs for split module`
 
-*   ⏳ Increment 5: Revert `pub mod private` to `cfg`-gated visibility in `split.rs`
-    *   Detailed Plan Step 1: Read `module/core/strs_tools/src/string/split.rs`.
-    *   Detailed Plan Step 2: Change `pub mod private` (around `split.rs:2`) to:
-        ```rust
-        #[cfg(test)]
-        pub(crate) mod private;
-        #[cfg(not(test))]
-        mod private;
-        ```
-        Or a similar appropriate `cfg` structure that ensures `private` items are accessible for tests but properly encapsulated for non-test builds.
-    *   Detailed Plan Step 3: Ensure all necessary items from `private` used by tests are correctly exposed or accessible (e.g. using `pub(crate)` within `private` for test-specific helpers if needed, or ensuring test helpers are within `#[cfg(test)]` blocks).
+*   ✅ Increment 5: Revert `pub mod private` to `cfg`-gated visibility in `split.rs`
+    *   Detailed Plan Step 1: Read `module/core/strs_tools/src/string/split.rs`. (Done)
+    *   Detailed Plan Step 2: Change `pub mod private` (around `split.rs:2`) to `mod private` and ensure `SplitFlags` is defined outside `private` and `use super::SplitFlags` is inside `private`. Make `private::split` `pub fn`. (Done)
+    *   Detailed Plan Step 3: Ensure all necessary items from `private` used by tests are correctly exposed or accessible (e.g. using `pub(crate)` within `private` for test-specific helpers if needed, or ensuring test helpers are within `#[cfg(test)]` blocks). (Done by making `private::split` `pub` and `SplitFastIterator` and its helpers `pub` within `private`).
     *   Pre-Analysis: The current `pub mod private` was a temporary measure. This change restores proper encapsulation.
     *   Crucial Design Rules: [Visibility: Keep Implementation Details Private].
     *   Relevant Behavior Rules: N/A.
     *   Verification Strategy:
-        *   Execute `cargo test -p strs_tools --all-targets` via `execute_command`. Analyze output, all tests must pass.
-        *   Execute `cargo clippy -p strs_tools -- -D warnings` via `execute_command`. Analyze output, no new warnings should be introduced, and ideally, all previous warnings should be gone.
+        *   Execute `cargo test -p strs_tools --all-targets` via `execute_command`. Analyze output, all tests must pass. (Done)
+        *   Execute `cargo clippy -p strs_tools -- -D warnings` via `execute_command`. Analyze output, no new warnings should be introduced, and ideally, all previous warnings should be gone. (Done)
     *   Commit Message: `refactor(strs_tools): Refine visibility of private module in split.rs using cfg`
 
 ### Task Requirements
@@ -161,6 +154,6 @@
 *   The `last_yielded_token_was_delimiter` state in `SplitIterator` was key to correctly inserting empty segments before a quote that followed a delimiter when `preserving_empty` is true.
 *   The `unilang_instruction_parser` test `named_arg_with_quoted_escaped_value_location` expects the `value_location` to be the span of the *unescaped content* in the *original string*, which means excluding the outer quotes. The current `strs_tools` implementation was returning the span including the quotes.
 *   **Clarification from `strs_tools/-task.md`:** `strs_tools` is responsible for providing the *raw content* of the quoted string (excluding outer quotes) and its corresponding span. Unescaping is the responsibility of `unilang_instruction_parser`. The `strs_tools` plan's Rule 1 has been updated to reflect this.
-*   The `pub mod private` change in `split.rs` was a temporary diagnostic step. Increment 5 will address this.
+*   The `pub mod private` change in `split.rs` was a temporary diagnostic step. Increment 5 has addressed this by making `mod private` non-pub and ensuring necessary items within it are accessible for re-export or tests.
 *   The `clippy::struct_excessive_bools` lint for `SplitOptions` was addressed by refactoring to use `bitflags`.
 *   A `bitflags` dependency was added to `module/core/strs_tools/Cargo.toml`. This should ideally be moved to the workspace `Cargo.toml` and inherited. This can be a follow-up task or addressed if other workspace changes are made.

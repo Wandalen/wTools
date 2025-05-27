@@ -1,28 +1,31 @@
 //! Provides tools for splitting strings with advanced options including quoting.
 
-// TEMPORARILY making private public for diagnostics
+use bitflags::bitflags;
+
+bitflags! {
+    /// Flags to control the behavior of the split iterators.
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+    pub struct SplitFlags: u8 {
+        /// Preserves empty segments.
+        const PRESERVING_EMPTY      = 1 << 0;
+        /// Preserves delimiter segments.
+        const PRESERVING_DELIMITERS = 1 << 1;
+        /// Preserves quoting characters in the output.
+        const PRESERVING_QUOTING    = 1 << 2;
+        /// Strips leading/trailing whitespace from delimited segments.
+        const STRIPPING             = 1 << 3;
+        /// Enables handling of quoted sections.
+        const QUOTING               = 1 << 4;
+    }
+}
+
 /// Internal implementation details for string splitting.
-pub mod private // Changed from cfg-gated to simple pub mod
+mod private
 {
   use crate::string::parse_request::OpType;
-  use bitflags::bitflags;
-
-  bitflags! {
-      /// Flags to control the behavior of the split iterators.
-      #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-      pub struct SplitFlags: u8 {
-          /// Preserves empty segments.
-          const PRESERVING_EMPTY      = 1 << 0;
-          /// Preserves delimiter segments.
-          const PRESERVING_DELIMITERS = 1 << 1;
-          /// Preserves quoting characters in the output.
-          const PRESERVING_QUOTING    = 1 << 2;
-          /// Strips leading/trailing whitespace from delimited segments.
-          const STRIPPING             = 1 << 3;
-          /// Enables handling of quoted sections.
-          const QUOTING               = 1 << 4;
-      }
-  }
+  use super::SplitFlags; // Import SplitFlags from parent module
+  // use bitflags::bitflags; // Moved to top
+  // bitflags! definition moved to top
 
   /// Represents a segment of a string after splitting.
   #[derive(Debug, Clone)]
