@@ -2,12 +2,17 @@
 
 ### Goal
 *   Modify `strs_tools::string::split::SplitIterator` to correctly tokenize strings containing quoted sections, ensuring that internal delimiters (e.g., spaces, `::`) within a quoted section are *not* treated as delimiters. The entire content of a quoted section (excluding outer quotes, but including escaped inner quotes and delimiters) should be returned as a single `Delimeted` item.
+*   Ensure the `strs_tools` crate has no clippy warnings.
+*   Address pending visibility refinement for `private` module in `split.rs`.
 
 ### Progress
 *   ✅ Increment 1: Stabilize current quoting logic & address warnings (Stuck Resolution)
 *   ✅ Increment 1.5: Fix empty segment generation with `preserving_empty` and quoting
 *   ✅ Increment 2.1: Fix quoted string span and content in `strs_tools::string::split.rs`
 *   ✅ Increment 2: Verify integration with `unilang_instruction_parser` and propose fix for it
+*   ✅ Increment 3: Address Clippy Lints (Code Style & Refactoring) in `strs_tools`
+*   ⚫ Increment 4: Add Missing Documentation & Fix `missing_panics_doc` in `strs_tools`
+*   ⚫ Increment 5: Revert `pub mod private` to `cfg`-gated visibility in `split.rs`
 
 ### Target Crate
 *   `module/core/strs_tools`
@@ -73,10 +78,7 @@
     *   Commit Message: `fix(strs_tools): Correct empty segment handling with quoting and preserving_empty`
 
 *   ✅ Increment 2.1: Fix quoted string span and content in `strs_tools::string::split.rs`
-    *   Detailed Plan Step 1: (Done) Iteratively debugged visibility issues with `SplitFastIterator` and its test helper methods, and the `SplitOptions::split_fast` method. This involved:
-        *   Adjusting `pub(crate)` and `#[cfg(test)] pub` attributes.
-        *   Consolidating `mod private` definitions and using `#[cfg(test)]` on specific items/methods.
-        *   Correcting re-exports in `mod own`, `mod exposed`, `mod prelude`.
+    *   Detailed Plan Step 1: (Done) Iteratively debugged visibility issues with `SplitFastIterator` and its test helper methods, and the `SplitOptions::split_fast` method.
     *   Detailed Plan Step 2: (Done) Added a temporary diagnostic test (`temp_diag_sfi_escaped_quote`) to inspect `SplitFastIterator` behavior.
     *   Detailed Plan Step 3: (Done) Analyzed test failures in `test_span_content_escaped_quotes_no_preserve` and identified incorrect expected span indices in the test itself.
     *   Detailed Plan Step 4: (Done) Corrected the expected start and end indices in `test_span_content_escaped_quotes_no_preserve`.
@@ -100,11 +102,54 @@
     *   Verification Strategy: `task.md` generation confirmed by `write_to_file` tool output.
     *   Commit Message: `chore(strs_tools): Propose fix to unilang_instruction_parser for span calculation`
 
+*   ✅ Increment 3: Address Clippy Lints (Code Style & Refactoring) in `strs_tools`
+    *   Detailed Plan Step 1: Read `module/core/strs_tools/src/string/split.rs`. (Done)
+    *   Detailed Plan Step 2: Apply fixes for `clippy::collapsible_if` at `split.rs:284`. (Done)
+    *   Detailed Plan Step 3: Apply fixes for `clippy::needless_pass_by_value` at `split.rs:86` and `split.rs:187`. (Done)
+    *   Detailed Plan Step 4: Apply fixes for `clippy::manual_let_else` and `clippy::question_mark` at `split.rs:282`. (Done)
+    *   Detailed Plan Step 5: Analyze and attempt to refactor `SplitOptions` struct (around `split.rs:322`) to address `clippy::struct_excessive_bools`. This might involve creating a new enum or bitflags for some boolean options if straightforward. If complex, defer to a separate task. (Done - refactored using bitflags)
+    *   Pre-Analysis: Clippy output provides direct suggestions for most lints. `struct_excessive_bools` is the most complex.
+    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily], [Structuring: Prefer Smaller Files and Methodically Split Large Ones] (if refactoring bools becomes complex).
+    *   Relevant Behavior Rules: N/A.
+    *   Verification Strategy: Execute `cargo clippy -p strs_tools -- -D warnings` via `execute_command`. Analyze output, expecting these specific lints to be resolved. Some `missing_docs` lints might still appear. (Done - only doc warnings remain)
+    *   Commit Message: `style(strs_tools): Address clippy code style and refactoring lints`
+
+*   ⚫ Increment 4: Add Missing Documentation & Fix `missing_panics_doc` in `strs_tools`
+    *   Detailed Plan Step 1: Read `module/core/strs_tools/src/string/split.rs`.
+    *   Detailed Plan Step 2: Add `//!` module-level documentation for `split.rs` and `pub mod private`.
+    *   Detailed Plan Step 3: Add `///` documentation for all public structs, enums, traits, methods, and functions in `split.rs` flagged by `missing_docs`. Start with minimal compliant comments (e.g., "Represents a split segment.").
+    *   Detailed Plan Step 4: Add `# Panics` section to the doc comment for `SplitOptionsFormer::form` (around `split.rs:417`) as flagged by `clippy::missing_panics_doc`.
+    *   Pre-Analysis: Numerous items require documentation. The focus is on satisfying clippy first.
+    *   Crucial Design Rules: [Comments and Documentation].
+    *   Relevant Behavior Rules: N/A.
+    *   Verification Strategy: Execute `cargo clippy -p strs_tools -- -D warnings` via `execute_command`. Analyze output, expecting all `missing_docs` and `missing_panics_doc` lints to be resolved.
+    *   Commit Message: `docs(strs_tools): Add missing documentation and panic docs for split module`
+
+*   ⚫ Increment 5: Revert `pub mod private` to `cfg`-gated visibility in `split.rs`
+    *   Detailed Plan Step 1: Read `module/core/strs_tools/src/string/split.rs`.
+    *   Detailed Plan Step 2: Change `pub mod private` (around `split.rs:2`) to:
+        ```rust
+        #[cfg(test)]
+        pub(crate) mod private;
+        #[cfg(not(test))]
+        mod private;
+        ```
+        Or a similar appropriate `cfg` structure that ensures `private` items are accessible for tests but properly encapsulated for non-test builds.
+    *   Detailed Plan Step 3: Ensure all necessary items from `private` used by tests are correctly exposed or accessible (e.g. using `pub(crate)` within `private` for test-specific helpers if needed, or ensuring test helpers are within `#[cfg(test)]` blocks).
+    *   Pre-Analysis: The current `pub mod private` was a temporary measure. This change restores proper encapsulation.
+    *   Crucial Design Rules: [Visibility: Keep Implementation Details Private].
+    *   Relevant Behavior Rules: N/A.
+    *   Verification Strategy:
+        *   Execute `cargo test -p strs_tools --all-targets` via `execute_command`. Analyze output, all tests must pass.
+        *   Execute `cargo clippy -p strs_tools -- -D warnings` via `execute_command`. Analyze output, no new warnings should be introduced, and ideally, all previous warnings should be gone.
+    *   Commit Message: `refactor(strs_tools): Refine visibility of private module in split.rs using cfg`
+
 ### Task Requirements
 *   All changes must be within `module/core/strs_tools`.
-*   The solution should follow "Option 1 (Preferred): Modify `SplitIterator` to dynamically adjust `SplitFastIterator`'s delimiters." from the task description.
+*   The solution should follow "Option 1 (Preferred): Modify `SplitIterator` to dynamically adjust `SplitFastIterator`'s delimiters." from the task description. (This seems completed by prior increments).
 *   The `debug_hang_split_issue` test in `strs_tools` must pass.
 *   All tests in `module/move/unilang_instruction_parser` (especially those related to quoted arguments) must pass after this change is implemented in `strs_tools`. (Note: This requirement is now addressed by proposing a fix to `unilang_instruction_parser`).
+*   The `strs_tools` crate must have no clippy warnings after all increments are complete.
 
 ### Project Requirements
 *   Must use Rust 2021 edition.
@@ -116,4 +161,6 @@
 *   The `last_yielded_token_was_delimiter` state in `SplitIterator` was key to correctly inserting empty segments before a quote that followed a delimiter when `preserving_empty` is true.
 *   The `unilang_instruction_parser` test `named_arg_with_quoted_escaped_value_location` expects the `value_location` to be the span of the *unescaped content* in the *original string*, which means excluding the outer quotes. The current `strs_tools` implementation was returning the span including the quotes.
 *   **Clarification from `strs_tools/-task.md`:** `strs_tools` is responsible for providing the *raw content* of the quoted string (excluding outer quotes) and its corresponding span. Unescaping is the responsibility of `unilang_instruction_parser`. The `strs_tools` plan's Rule 1 has been updated to reflect this.
-*   The `pub mod private` change in `split.rs` was a temporary diagnostic step. This should be reverted to `#[cfg(test)] pub(crate) mod private` and `#[cfg(not(test))] mod private` after full verification, or addressed with a more robust `cfg` strategy if needed. For now, with tests passing, it was committed as is, but a follow-up task to refine visibility might be needed.
+*   The `pub mod private` change in `split.rs` was a temporary diagnostic step. Increment 5 will address this.
+*   The `clippy::struct_excessive_bools` lint for `SplitOptions` was addressed by refactoring to use `bitflags`.
+*   A `bitflags` dependency was added to `module/core/strs_tools/Cargo.toml`. This should ideally be moved to the workspace `Cargo.toml` and inherited. This can be a follow-up task or addressed if other workspace changes are made.

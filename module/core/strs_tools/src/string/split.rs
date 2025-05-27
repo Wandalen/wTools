@@ -2,6 +2,18 @@
 pub mod private // Changed from cfg-gated to simple pub mod
 {
   use crate::string::parse_request::OpType;
+  use bitflags::bitflags;
+
+  bitflags! {
+      #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+      pub struct SplitFlags: u8 {
+          const PRESERVING_EMPTY      = 1 << 0;
+          const PRESERVING_DELIMITERS = 1 << 1;
+          const PRESERVING_QUOTING    = 1 << 2;
+          const STRIPPING             = 1 << 3;
+          const QUOTING               = 1 << 4;
+      }
+  }
 
   #[derive(Debug, Clone)]
   pub struct Split< 'a >
@@ -83,7 +95,7 @@ pub mod private // Changed from cfg-gated to simple pub mod
 
   impl< 'a, D : Searcher + Default + Clone > SplitFastIterator< 'a, D >
   {
-    fn new( o : impl SplitOptionsAdapter< 'a, D > ) -> Self
+    fn new( o : &impl SplitOptionsAdapter< 'a, D > ) -> Self
     {
       Self
       {
@@ -170,11 +182,12 @@ pub mod private // Changed from cfg-gated to simple pub mod
   {
     iterator : SplitFastIterator< 'a, Vec< &'a str > >,
     src : &'a str,
-    stripping : bool,
-    preserving_empty : bool,
-    preserving_delimeters : bool,
-    preserving_quoting : bool,
-    quoting : bool,
+    // stripping : bool,
+    // preserving_empty : bool,
+    // preserving_delimeters : bool,
+    // preserving_quoting : bool,
+    // quoting : bool,
+    flags : SplitFlags,
     quoting_prefixes : Vec< &'a str >,
     quoting_postfixes : Vec< &'a str >,
     pending_opening_quote_delimiter : Option< Split< 'a > >,
@@ -184,15 +197,18 @@ pub mod private // Changed from cfg-gated to simple pub mod
 
   impl< 'a > SplitIterator< 'a >
   {
-    fn new( o : impl SplitOptionsAdapter< 'a, Vec< &'a str > > ) -> Self
+    fn new( o : &impl SplitOptionsAdapter< 'a, Vec< &'a str > > ) -> Self
     {
       let mut delimeter_list_for_fast_iterator = o.delimeter();
       delimeter_list_for_fast_iterator.retain(|&pat| !pat.is_empty());
-      let iterator = SplitFastIterator::new( o.clone_options_for_sfi() );
+      let iterator = SplitFastIterator::new( &o.clone_options_for_sfi() );
+      let flags = o.flags();
       Self {
-        iterator, src : o.src(), stripping : o.stripping(), preserving_empty : o.preserving_empty(),
-        preserving_delimeters : o.preserving_delimeters(), preserving_quoting : o.preserving_quoting(),
-        quoting : o.quoting(), quoting_prefixes : o.quoting_prefixes().clone(),
+        iterator, src : o.src(), flags,
+        // stripping : flags.contains(SplitFlags::STRIPPING), preserving_empty : flags.contains(SplitFlags::PRESERVING_EMPTY),
+        // preserving_delimeters : flags.contains(SplitFlags::PRESERVING_DELIMITERS), preserving_quoting : flags.contains(SplitFlags::PRESERVING_QUOTING),
+        // quoting : flags.contains(SplitFlags::QUOTING),
+        quoting_prefixes : o.quoting_prefixes().clone(),
         quoting_postfixes : o.quoting_postfixes().clone(), pending_opening_quote_delimiter : None,
         last_yielded_token_was_delimiter : false, just_finished_peeked_quote_end_offset : None,
       }
@@ -209,17 +225,17 @@ pub mod private // Changed from cfg-gated to simple pub mod
         let mut just_finished_quote_offset_cache = None;
         if let Some(offset) = self.just_finished_peeked_quote_end_offset.take() { just_finished_quote_offset_cache = Some(offset); }
         if let Some( pending_split ) = self.pending_opening_quote_delimiter.take() {
-          if pending_split.typ != SplitType::Delimiter || self.preserving_delimeters { 
-            if self.quoting && self.quoting_prefixes.contains(&pending_split.string) {
+          if pending_split.typ != SplitType::Delimiter || self.flags.contains(SplitFlags::PRESERVING_DELIMITERS) {
+            if self.flags.contains(SplitFlags::QUOTING) && self.quoting_prefixes.contains(&pending_split.string) {
               if let Some(fcoq) = pending_split.string.chars().next() { self.iterator.active_quote_char = Some(fcoq); }
             }
             self.last_yielded_token_was_delimiter = pending_split.typ == SplitType::Delimiter; return Some( pending_split );
           }
-          if self.quoting && self.quoting_prefixes.contains(&pending_split.string) {
+          if self.flags.contains(SplitFlags::QUOTING) && self.quoting_prefixes.contains(&pending_split.string) {
             if let Some(fcoq) = pending_split.string.chars().next() { self.iterator.active_quote_char = Some(fcoq); }
           }
         }
-        if self.last_yielded_token_was_delimiter && self.preserving_empty && self.quoting && 
+        if self.last_yielded_token_was_delimiter && self.flags.contains(SplitFlags::PRESERVING_EMPTY) && self.flags.contains(SplitFlags::QUOTING) &&
            self.iterator.active_quote_char.is_none() && self.quoting_prefixes.iter().any(|p| self.iterator.iterable.starts_with(p)) &&
            self.iterator.delimeter.pos(self.iterator.iterable).is_none_or(|(ds, _)| ds != 0) {
           let current_sfi_offset = self.iterator.current_offset;
@@ -228,10 +244,10 @@ pub mod private // Changed from cfg-gated to simple pub mod
         }
         self.last_yielded_token_was_delimiter = false; 
         let sfi_next_internal_counter_will_be_odd = self.iterator.counter % 2 == 0; 
-        let sfi_iterable_starts_with_delimiter = self.iterator.delimeter.pos( self.iterator.iterable ).is_some_and( |(d_start, _)| d_start == 0 ); 
-        let sfi_should_yield_empty_now = self.preserving_empty && sfi_next_internal_counter_will_be_odd && sfi_iterable_starts_with_delimiter;
+        let sfi_iterable_starts_with_delimiter = self.iterator.delimeter.pos( self.iterator.iterable ).is_some_and( |(d_start, _)| d_start == 0 );
+        let sfi_should_yield_empty_now = self.flags.contains(SplitFlags::PRESERVING_EMPTY) && sfi_next_internal_counter_will_be_odd && sfi_iterable_starts_with_delimiter;
         let effective_split_opt : Option<Split<'a>>; let mut quote_handled_by_peek = false;
-        if self.quoting && self.iterator.active_quote_char.is_none() && !sfi_should_yield_empty_now {
+        if self.flags.contains(SplitFlags::QUOTING) && self.iterator.active_quote_char.is_none() && !sfi_should_yield_empty_now {
           if let Some( first_char_iterable ) = self.iterator.iterable.chars().next() {
             if let Some( prefix_idx ) = self.quoting_prefixes.iter().position( |p| self.iterator.iterable.starts_with( p ) ) {
               quote_handled_by_peek = true; let prefix_str = self.quoting_prefixes[ prefix_idx ];
@@ -243,7 +259,7 @@ pub mod private // Changed from cfg-gated to simple pub mod
               if let Some( mut quoted_segment ) = quoted_segment_from_sfi_opt {
                 self.just_finished_peeked_quote_end_offset = Some(quoted_segment.end); 
                 if quoted_segment.string.ends_with( expected_postfix ) {
-                  if self.preserving_quoting {
+                  if self.flags.contains(SplitFlags::PRESERVING_QUOTING) {
                     quoted_segment.start = opening_quote_original_start; 
                     let full_quoted_len = prefix_len + quoted_segment.string.len();
                     if quoted_segment.start + full_quoted_len <= self.src.len() { quoted_segment.string = &self.src[ quoted_segment.start .. ( quoted_segment.start + full_quoted_len ) ]; }
@@ -258,7 +274,7 @@ pub mod private // Changed from cfg-gated to simple pub mod
                     quoted_segment.end = quoted_segment.start + quoted_segment.string.len(); 
                   }
                 } else { // Unclosed quote
-                  if self.preserving_quoting {
+                  if self.flags.contains(SplitFlags::PRESERVING_QUOTING) {
                     quoted_segment.start = opening_quote_original_start;
                     let full_quoted_len = prefix_len + quoted_segment.string.len();
                     if quoted_segment.start + full_quoted_len <= self.src.len() { quoted_segment.string = &self.src[ quoted_segment.start .. ( quoted_segment.start + full_quoted_len ) ]; }
@@ -269,7 +285,7 @@ pub mod private // Changed from cfg-gated to simple pub mod
                 quoted_segment.typ = SplitType::Delimeted; effective_split_opt = Some( quoted_segment );
               } else { // SFI returned None
                 let mut prefix_as_token = Split { string: prefix_str, typ: SplitType::Delimeted, start: opening_quote_original_start, end: opening_quote_original_start + prefix_len };
-                if !self.preserving_quoting {
+                if !self.flags.contains(SplitFlags::PRESERVING_QUOTING) {
                   prefix_as_token.string = ""; prefix_as_token.start = opening_quote_original_start + prefix_len; prefix_as_token.end = prefix_as_token.start; 
                 }
                 effective_split_opt = Some( prefix_as_token );
@@ -279,26 +295,24 @@ pub mod private // Changed from cfg-gated to simple pub mod
             } else { effective_split_opt = self.iterator.next(); }
           } else { effective_split_opt = self.iterator.next(); }
         } else { effective_split_opt = self.iterator.next(); }
-        let mut current_split = match effective_split_opt { Some(s) => s, None => return None };
+        let mut current_split = effective_split_opt?;
         if let Some(peeked_quote_end) = just_finished_quote_offset_cache {
-          if current_split.typ == SplitType::Delimeted && current_split.string.is_empty() && current_split.start == peeked_quote_end && self.preserving_empty {
-            if peeked_quote_end < self.src.len() {
-              let char_after_quote = &self.src[peeked_quote_end..];
-              if self.iterator.delimeter.pos(char_after_quote).is_some_and(|(ds, _)| ds == 0) {
-                self.last_yielded_token_was_delimiter = false; continue;
-              }
+          if current_split.typ == SplitType::Delimeted && current_split.string.is_empty() && current_split.start == peeked_quote_end && self.flags.contains(SplitFlags::PRESERVING_EMPTY) && peeked_quote_end < self.src.len() {
+            let char_after_quote = &self.src[peeked_quote_end..];
+            if self.iterator.delimeter.pos(char_after_quote).is_some_and(|(ds, _)| ds == 0) {
+              self.last_yielded_token_was_delimiter = false; continue;
             }
           }
         }
-        if !quote_handled_by_peek && self.quoting && current_split.typ == SplitType::Delimiter && self.iterator.active_quote_char.is_none() {
-          if let Some(_prefix_idx) = self.quoting_prefixes.iter().position(|p| *p == current_split.string) { 
+        if !quote_handled_by_peek && self.flags.contains(SplitFlags::QUOTING) && current_split.typ == SplitType::Delimiter && self.iterator.active_quote_char.is_none() {
+          if let Some(_prefix_idx) = self.quoting_prefixes.iter().position(|p| *p == current_split.string) {
             let opening_quote_delimiter = current_split.clone();
-            if self.preserving_delimeters { self.pending_opening_quote_delimiter = Some(opening_quote_delimiter.clone()); }
+            if self.flags.contains(SplitFlags::PRESERVING_DELIMITERS) { self.pending_opening_quote_delimiter = Some(opening_quote_delimiter.clone()); }
             if let Some(fcoq) = opening_quote_delimiter.string.chars().next() { self.iterator.active_quote_char = Some(fcoq); }
-            if !self.preserving_delimeters { continue; }
+            if !self.flags.contains(SplitFlags::PRESERVING_DELIMITERS) { continue; }
           }
         }
-        if self.stripping && current_split.typ == SplitType::Delimeted {
+        if self.flags.contains(SplitFlags::STRIPPING) && current_split.typ == SplitType::Delimeted {
           let original_string_ptr = current_split.string.as_ptr(); let original_len = current_split.string.len();
           let trimmed_string = current_split.string.trim();
           if trimmed_string.len() < original_len || (trimmed_string.is_empty() && original_len > 0) {
@@ -308,8 +322,8 @@ pub mod private // Changed from cfg-gated to simple pub mod
           }
         }
         let mut skip = false;
-        if current_split.typ == SplitType::Delimeted && current_split.string.is_empty() && !self.preserving_empty { skip = true; }
-        if current_split.typ == SplitType::Delimiter && !self.preserving_delimeters { skip = true; }
+        if current_split.typ == SplitType::Delimeted && current_split.string.is_empty() && !self.flags.contains(SplitFlags::PRESERVING_EMPTY) { skip = true; }
+        if current_split.typ == SplitType::Delimiter && !self.flags.contains(SplitFlags::PRESERVING_DELIMITERS) { skip = true; }
         if !skip {
           if current_split.typ == SplitType::Delimiter { self.last_yielded_token_was_delimiter = true; }
           return Some( current_split );
@@ -325,11 +339,12 @@ pub mod private // Changed from cfg-gated to simple pub mod
   {
     src : &'a str,
     delimeter : D,
-    preserving_empty : bool,
-    preserving_delimeters : bool,
-    preserving_quoting : bool,
-    stripping : bool,
-    quoting : bool,
+    flags : SplitFlags,
+    // preserving_empty : bool,
+    // preserving_delimeters : bool,
+    // preserving_quoting : bool,
+    // stripping : bool,
+    // quoting : bool,
     quoting_prefixes : Vec< &'a str >,
     quoting_postfixes : Vec< &'a str >,
   }
@@ -337,7 +352,7 @@ pub mod private // Changed from cfg-gated to simple pub mod
   impl< 'a > SplitOptions< 'a, Vec< &'a str > >
   {
     #[ must_use ]
-    pub fn split( self ) -> SplitIterator< 'a > { SplitIterator::new( self ) }
+    pub fn split( self ) -> SplitIterator< 'a > { SplitIterator::new( &self ) }
   }
 
   impl< 'a, D > SplitOptions< 'a, D >
@@ -345,18 +360,19 @@ pub mod private // Changed from cfg-gated to simple pub mod
     D : Searcher + Default + Clone
   {
     // This is inside pub mod private, so pub fn makes it pub
-    pub fn split_fast( self ) -> SplitFastIterator< 'a, D > { SplitFastIterator::new( self ) }
+    pub fn split_fast( self ) -> SplitFastIterator< 'a, D > { SplitFastIterator::new( &self ) }
   }
 
   pub trait SplitOptionsAdapter< 'a, D > where D : Searcher + Default + Clone 
   {
     fn src( &self ) -> &'a str;
     fn delimeter( &self ) -> D;
-    fn preserving_empty( &self ) -> bool;
-    fn preserving_delimeters( &self ) -> bool;
-    fn preserving_quoting( &self ) -> bool;
-    fn stripping( &self ) -> bool;
-    fn quoting( &self ) -> bool;
+    // fn preserving_empty( &self ) -> bool;
+    // fn preserving_delimeters( &self ) -> bool;
+    // fn preserving_quoting( &self ) -> bool;
+    // fn stripping( &self ) -> bool;
+    // fn quoting( &self ) -> bool;
+    fn flags( &self ) -> SplitFlags;
     fn quoting_prefixes( &self ) -> &Vec< &'a str >;
     fn quoting_postfixes( &self ) -> &Vec< &'a str >;
     fn clone_options_for_sfi( &self ) -> SplitOptions< 'a, D >;
@@ -366,11 +382,12 @@ pub mod private // Changed from cfg-gated to simple pub mod
   {
     fn src( &self ) -> &'a str { self.src }
     fn delimeter( &self ) -> D { self.delimeter.clone() }
-    fn preserving_empty( &self ) -> bool { self.preserving_empty }
-    fn preserving_delimeters( &self ) -> bool { self.preserving_delimeters }
-    fn preserving_quoting( &self ) -> bool { self.preserving_quoting }
-    fn stripping( &self ) -> bool { self.stripping }
-    fn quoting( &self ) -> bool { self.quoting }
+    // fn preserving_empty( &self ) -> bool { self.flags.contains(SplitFlags::PRESERVING_EMPTY) }
+    // fn preserving_delimeters( &self ) -> bool { self.flags.contains(SplitFlags::PRESERVING_DELIMITERS) }
+    // fn preserving_quoting( &self ) -> bool { self.flags.contains(SplitFlags::PRESERVING_QUOTING) }
+    // fn stripping( &self ) -> bool { self.flags.contains(SplitFlags::STRIPPING) }
+    // fn quoting( &self ) -> bool { self.flags.contains(SplitFlags::QUOTING) }
+    fn flags( &self ) -> SplitFlags { self.flags }
     fn quoting_prefixes( &self ) -> &Vec< &'a str > { &self.quoting_prefixes }
     fn quoting_postfixes( &self ) -> &Vec< &'a str > { &self.quoting_postfixes }
     fn clone_options_for_sfi( &self ) -> SplitOptions< 'a, D > { self.clone() }
@@ -381,11 +398,12 @@ pub mod private // Changed from cfg-gated to simple pub mod
   {
     src : &'a str,
     delimeter : OpType< &'a str >,
-    preserving_empty : bool,
-    preserving_delimeters : bool,
-    preserving_quoting : bool,
-    stripping : bool,
-    quoting : bool,
+    flags : SplitFlags,
+    // preserving_empty : bool,
+    // preserving_delimeters : bool,
+    // preserving_quoting : bool,
+    // stripping : bool,
+    // quoting : bool,
     quoting_prefixes : Vec< &'a str >,
     quoting_postfixes : Vec< &'a str >,
   }
@@ -397,18 +415,19 @@ pub mod private // Changed from cfg-gated to simple pub mod
       Self
       {
         src : "", delimeter : OpType::Vector( vec![] ).append( delimeter.into() ),
-        preserving_empty : false,
-        preserving_delimeters : true,
-        preserving_quoting : false,
-        stripping : false, quoting : false,
+        flags : SplitFlags::PRESERVING_DELIMITERS, // Default
+        // preserving_empty : false,
+        // preserving_delimeters : true,
+        // preserving_quoting : false,
+        // stripping : false, quoting : false,
         quoting_prefixes : vec![], quoting_postfixes : vec![],
       }
     }
-    pub fn preserving_empty( &mut self, value : bool ) -> &mut Self { self.preserving_empty = value; self }
-    pub fn preserving_delimeters( &mut self, value : bool ) -> &mut Self { self.preserving_delimeters = value; self }
-    pub fn preserving_quoting( &mut self, value : bool ) -> &mut Self { self.preserving_quoting = value; self }
-    pub fn stripping( &mut self, value : bool ) -> &mut Self { self.stripping = value; self }
-    pub fn quoting( &mut self, value : bool ) -> &mut Self { self.quoting = value; self }
+    pub fn preserving_empty( &mut self, value : bool ) -> &mut Self { if value { self.flags.insert(SplitFlags::PRESERVING_EMPTY); } else { self.flags.remove(SplitFlags::PRESERVING_EMPTY); } self }
+    pub fn preserving_delimeters( &mut self, value : bool ) -> &mut Self { if value { self.flags.insert(SplitFlags::PRESERVING_DELIMITERS); } else { self.flags.remove(SplitFlags::PRESERVING_DELIMITERS); } self }
+    pub fn preserving_quoting( &mut self, value : bool ) -> &mut Self { if value { self.flags.insert(SplitFlags::PRESERVING_QUOTING); } else { self.flags.remove(SplitFlags::PRESERVING_QUOTING); } self }
+    pub fn stripping( &mut self, value : bool ) -> &mut Self { if value { self.flags.insert(SplitFlags::STRIPPING); } else { self.flags.remove(SplitFlags::STRIPPING); } self }
+    pub fn quoting( &mut self, value : bool ) -> &mut Self { if value { self.flags.insert(SplitFlags::QUOTING); } else { self.flags.remove(SplitFlags::QUOTING); } self }
     pub fn quoting_prefixes( &mut self, value : Vec< &'a str > ) -> &mut Self { self.quoting_prefixes = value; self }
     pub fn quoting_postfixes( &mut self, value : Vec< &'a str > ) -> &mut Self { self.quoting_postfixes = value; self }
     pub fn src( &mut self, value : &'a str ) -> &mut Self { self.src = value; self }
@@ -416,7 +435,7 @@ pub mod private // Changed from cfg-gated to simple pub mod
     { self.delimeter = OpType::Vector( vec![] ).append( value.into() ); self }
     pub fn form( &mut self ) -> SplitOptions< 'a, Vec< &'a str > >
     {
-      if self.quoting
+      if self.flags.contains(SplitFlags::QUOTING)
       {
         if self.quoting_prefixes.is_empty() { self.quoting_prefixes = vec![ "\"", "`", "'" ]; }
         if self.quoting_postfixes.is_empty() { self.quoting_postfixes = vec![ "\"", "`", "'" ]; }
@@ -425,11 +444,12 @@ pub mod private // Changed from cfg-gated to simple pub mod
       {
         src : self.src,
         delimeter : self.delimeter.clone().vector().unwrap(),
-        preserving_empty : self.preserving_empty,
-        preserving_delimeters : self.preserving_delimeters,
-        preserving_quoting : self.preserving_quoting,
-        stripping : self.stripping,
-        quoting : self.quoting,
+        flags : self.flags,
+        // preserving_empty : self.preserving_empty,
+        // preserving_delimeters : self.preserving_delimeters,
+        // preserving_quoting : self.preserving_quoting,
+        // stripping : self.stripping,
+        // quoting : self.quoting,
         quoting_prefixes : self.quoting_prefixes.clone(),
         quoting_postfixes : self.quoting_postfixes.clone(),
       }
