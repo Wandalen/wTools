@@ -4,6 +4,7 @@
 *   Modify `strs_tools::string::split::SplitIterator` to correctly tokenize strings containing quoted sections, ensuring that internal delimiters (e.g., spaces, `::`) within a quoted section are *not* treated as delimiters. The entire content of a quoted section (excluding outer quotes, but including escaped inner quotes and delimiters) should be returned as a single `Delimeted` item.
 *   Ensure the `strs_tools` crate has no clippy warnings.
 *   Address pending visibility refinement for `private` module in `split.rs`.
+*   **Ensure strict adherence to all codestyle rules defined in `code/rules/codestyle.md`.**
 
 ### Progress
 *   ✅ Increment 1: Stabilize current quoting logic & address warnings (Stuck Resolution)
@@ -13,6 +14,7 @@
 *   ✅ Increment 3: Address Clippy Lints (Code Style & Refactoring) in `strs_tools`
 *   ✅ Increment 4: Add Missing Documentation & Fix `missing_panics_doc` in `strs_tools`
 *   ✅ Increment 5: Revert `pub mod private` to `cfg`-gated visibility in `split.rs`
+*   ⚫ Increment 6: Apply Strict Codestyle Rules to `strs_tools`
 
 ### Target Crate
 *   `module/core/strs_tools`
@@ -137,18 +139,34 @@
         *   Execute `cargo clippy -p strs_tools -- -D warnings` via `execute_command`. Analyze output, no new warnings should be introduced, and ideally, all previous warnings should be gone. (Done)
     *   Commit Message: `refactor(strs_tools): Refine visibility of private module in split.rs using cfg`
 
+*   ⚫ Increment 6: Apply Strict Codestyle Rules to `strs_tools`
+    *   Detailed Plan Step 1: Read `module/core/strs_tools/src/string/split.rs` and `module/core/strs_tools/src/lib.rs`.
+    *   Detailed Plan Step 2: Systematically review the code in these files against each rule in `code/rules/codestyle.md`.
+    *   Detailed Plan Step 3: For each identified deviation, prepare an `apply_diff` operation to correct it. Prioritize grouping multiple small changes into a single `apply_diff` call where possible.
+    *   Detailed Plan Step 4: Apply the diffs using `apply_diff`.
+    *   Pre-Analysis: This is a manual review and correction process. Focus on formatting, spacing, newlines, attribute placement, and `use` statement organization.
+    *   Crucial Design Rules: [Code Style: Do Not Reformat Arbitrarily], [New Lines for Blocks], [Indentation], [Spaces Around Symbols], [Attributes: Spaces], [Attributes: Separate Attributes from Items], [Where Clause Formatting], [Trait Implementation Formatting], [Function Signature Formatting], [Comments: Spaces], [Nesting], [Code Length], [Lifetime Annotations].
+    *   Relevant Behavior Rules: N/A.
+    *   Verification Strategy:
+        *   Execute `cargo fmt --check -p strs_tools` via `execute_command`. Analyze output (expecting no unformatted files).
+        *   Execute `cargo clippy -p strs_tools -- -D warnings` via `execute_command`. Analyze output (expecting no warnings).
+        *   Execute `cargo test -p strs_tools --all-targets` via `execute_command`. Analyze output (all tests must pass).
+    *   Commit Message: `style(strs_tools): Apply strict codestyle rules`
+
 ### Task Requirements
 *   All changes must be within `module/core/strs_tools`.
 *   The solution should follow "Option 1 (Preferred): Modify `SplitIterator` to dynamically adjust `SplitFastIterator`'s delimiters." from the task description. (This seems completed by prior increments).
 *   The `debug_hang_split_issue` test in `strs_tools` must pass.
 *   All tests in `module/move/unilang_instruction_parser` (especially those related to quoted arguments) must pass after this change is implemented in `strs_tools`. (Note: This requirement is now addressed by proposing a fix to `unilang_instruction_parser`).
 *   The `strs_tools` crate must have no clippy warnings after all increments are complete.
+*   **The `strs_tools` crate must strictly adhere to all codestyle rules defined in `code/rules/codestyle.md`.**
 
 ### Project Requirements
 *   Must use Rust 2021 edition.
 *   All new APIs must be async (not applicable for this task).
 *   All dependencies must be centralized in workspace `Cargo.toml`.
 *   Lints must be defined in workspace `Cargo.toml` and inherited by crates.
+*   **New Global Constraint:** Never use `#[allow(clippy::missing_errors_doc)]`.
 
 ### Notes & Insights
 *   The `last_yielded_token_was_delimiter` state in `SplitIterator` was key to correctly inserting empty segments before a quote that followed a delimiter when `preserving_empty` is true.
