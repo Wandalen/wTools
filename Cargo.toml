@@ -339,7 +339,7 @@ path = "module/alias/instance_of"
 default-features = false
 
 [workspace.dependencies.inspect_type]
-version = "~0.15.0"
+version = "~0.16.0"
 path = "module/core/inspect_type"
 default-features = false
 
