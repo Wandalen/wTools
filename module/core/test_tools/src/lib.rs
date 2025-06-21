@@ -145,6 +145,11 @@ pub use ::
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( not( feature = "doctest" ) ) ]
+#[ cfg( all( feature = "standalone_build", not( feature = "normal_build" ) ) ) ]
+pub use implsindex as impls_index;
+
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( not( feature = "doctest" ) ) ]
 #[ allow( unused_imports ) ]
 pub use ::
 {

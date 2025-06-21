@@ -49,7 +49,8 @@ pub mod orphan
 pub mod exposed
 {
   use super::*;
-  pub use super::super::impls_index;
+  pub use super::super::implsindex;
+  // pub use crate as impls_index;
   #[ doc( inline ) ]
   pub use prelude::*;
   #[ doc( inline ) ]
