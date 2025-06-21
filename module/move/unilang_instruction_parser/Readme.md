@@ -1,30 +1,55 @@
-<!-- {{# generate.module_header{} #}} -->
+# `unilang_instruction_parser`
 
-# Module :: unilang_instruction_parser
-<!--{ generate.module_header.start() }-->
- [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_unilang_instruction_parser_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_unilang_instruction_parser_push.yml) [![docs.rs](https://img.shields.io/docsrs/unilang_instruction_parser?color=e3e8f0&logo=docs.rs)](https://docs.rs/unilang_instruction_parser) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fmove%2Funilang_instruction_parser%2Fexamples%2Funilang_instruction_parser_trivial.rs,RUN_POSTFIX=--example%20module%2Fmove%2Funilang_instruction_parser%2Fexamples%2Funilang_instruction_parser_trivial.rs/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
-<!--{ generate.module_header.end }-->
+A Rust crate for parsing CLI-like instruction strings into structured `GenericInstruction` objects, providing a configurable parser with detailed error reporting.
 
-Parser of instructions for unilang.
+## Features
 
-## Sample
+*   **Command Paths**: Supports single/multi-segment paths (e.g., `cmd.sub`, `path/to/cmd`).
+*   **Arguments**: Parses positional and named arguments (`name::value`).
+*   **Quoting & Escaping**: Handles quoted values (`"val"`, `'val'`) and standard escape sequences.
+*   **Help Operator**: Recognizes `?` for help requests.
+*   **Multiple Instructions**: Parses `;;`-separated instructions.
+*   **Error Reporting**: Provides `ParseError` with `ErrorKind` and `SourceLocation`.
+*   **Configurable**: Customizes parsing rules via `UnilangParserOptions`.
+*   **`no_std` Support**: Available via a feature flag.
 
-<!-- {{# generate.module{} #}} -->
+## Installation
+
+Add `unilang_instruction_parser` as a dependency to your `Cargo.toml`:
+
+```toml
+[dependencies]
+unilang_instruction_parser = { path = "path/to/unilang_instruction_parser" } # Or version = "x.y.z" if published
+```
+
+(Adjust the path or version as necessary.)
+
+## Basic Usage
 
 ```rust
+use unilang_instruction_parser::{Parser, UnilangParserOptions};
+
+let options = UnilangParserOptions::default();
+let parser = Parser::new(options);
+let input = "log.level severity::\"debug\" message::'Hello, Unilang!' --verbose";
+
+match parser.parse_single_str(input) {
+    Ok(instructions) => {
+        for instruction in instructions {
+            println!("Parsed Instruction: {:?}", instruction);
+            // Access instruction.command_path_slices, instruction.named_arguments, etc.
+        }
+    },
+    Err(e) => {
+        eprintln!("Parse error: {}", e);
+    },
+}
 ```
 
-### To add to your project
+## Specification
 
-```sh
-cargo add unilang_instruction_parser
-```
+This parser aims to strictly adhere to the (conceptual) `unilang` command language specification, which would typically be detailed in a document like `unilang/spec.md`.
 
-### Try out from the repository
+## License
 
-```sh
-git clone https://github.com/Wandalen/wTools
-cd wTools
-cd examples/unilang_instruction_parser_trivial
-cargo run
-```
+This crate is licensed under the terms of the [Apache License 2.0](LICENSE) or the [MIT License](LICENSE), at your option.

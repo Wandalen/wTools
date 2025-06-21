@@ -18,10 +18,10 @@ fn test_m_t3_13_quoting_preserve_all_strip() // Renamed from test_split_indices_
   .perform();
   let expected = vec![
     ("a", SplitType::Delimeted, 0, 1),
-    (" ", SplitType::Delimeter, 1, 2),
+    (" ", SplitType::Delimiter, 1, 2),
     ("", SplitType::Delimeted, 2, 2),      // Empty segment before quote
     ("'b c'", SplitType::Delimeted, 2, 7), // Quotes preserved, stripping does not affect non-whitespace quotes
-    (" ", SplitType::Delimeter, 7, 8),
+    (" ", SplitType::Delimiter, 7, 8),
     ("d", SplitType::Delimeted, 8, 9),
   ];
   let results: Vec<_> = iter.collect();
