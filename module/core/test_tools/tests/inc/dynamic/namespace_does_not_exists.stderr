@@ -1,8 +1,10 @@
-error[E0433]: failed to resolve: use of undeclared crate or module `wtest_basic`
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `wtest_basic`
  --> tests/inc/dynamic/namespace_does_not_exists.rs:1:5
   |
 1 | use wtest_basic::exposed::exposed::*;
-  |     ^^^^^^^^^^^ use of undeclared crate or module `wtest_basic`
+  |     ^^^^^^^^^^^ use of unresolved module or unlinked crate `wtest_basic`
+  |
+  = help: if you wanted to use a crate named `wtest_basic`, use `cargo add wtest_basic` to add it to your `Cargo.toml`
 
 error: cannot find macro `tests_index` in this scope
   --> tests/inc/dynamic/namespace_does_not_exists.rs:15:1
@@ -10,9 +12,7 @@ error: cannot find macro `tests_index` in this scope
 15 | tests_index!
    | ^^^^^^^^^^^
    |
-help: consider importing one of these macros
-   |
-1  + use meta_tools::tests_index;
+help: consider importing this macro
    |
 1  + use test_tools::tests_index;
    |
@@ -23,9 +23,7 @@ error: cannot find macro `tests_impls` in this scope
 5 | tests_impls!
   | ^^^^^^^^^^^
   |
-help: consider importing one of these macros
-  |
-1 + use meta_tools::tests_impls;
+help: consider importing this macro
   |
 1 + use test_tools::tests_impls;
   |
