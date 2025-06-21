@@ -421,7 +421,7 @@ version = "~0.4.0"
 path = "module/alias/wtest"
 
 [workspace.dependencies.test_tools]
-version = "~0.15.0"
+version = "~0.16.0"
 path = "module/core/test_tools"
 features = [ "full" ]
 
