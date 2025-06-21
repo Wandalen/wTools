@@ -32,8 +32,8 @@ no-default-features = false
 [features]
 default = [
   "enabled",
-  "standalone_build",
-  # "normal_build",
+  # "standalone_build",
+  "normal_build",
   "process_tools",
   "process_environment_is_cicd",
 ]
@@ -52,12 +52,12 @@ enabled = [
 # nightly = [ "typing_tools/nightly" ]
 
 normal_build = [
-  # "dep:error_tools",
-  # "dep:collection_tools",
-  # "dep:impls_index",
-  # "dep:mem_tools",
-  # "dep:typing_tools",
-  # "dep:diagnostics_tools",
+  "dep:error_tools",
+  "dep:collection_tools",
+  "dep:impls_index",
+  "dep:mem_tools",
+  "dep:typing_tools",
+  "dep:diagnostics_tools",
 ]
 
 # standalone_build vesion of build is used to avoid cyclic dependency
@@ -109,12 +109,12 @@ rand = { workspace = true }
 
 ## internal
 
-# error_tools = { workspace = true, features = [ "full" ], optional = true }
-# collection_tools = { workspace = true, features = [ "full" ], optional = true }
-# impls_index = { workspace = true, features = [ "full" ], optional = true }
-# mem_tools = { workspace = true, features = [ "full" ], optional = true }
-# typing_tools = { workspace = true, features = [ "full" ], optional = true }
-# diagnostics_tools = { workspace = true, features = [ "full" ], optional = true }
+error_tools = { workspace = true, features = [ "full" ], optional = true }
+collection_tools = { workspace = true, features = [ "full" ], optional = true }
+impls_index = { workspace = true, features = [ "full" ], optional = true }
+mem_tools = { workspace = true, features = [ "full" ], optional = true }
+typing_tools = { workspace = true, features = [ "full" ], optional = true }
+diagnostics_tools = { workspace = true, features = [ "full" ], optional = true }
 
 
 ## transient
