@@ -263,7 +263,7 @@ path = "module/core/impls_index"
 default-features = false
 
 [workspace.dependencies.impls_index_meta]
-version = "~0.12.0"
+version = "~0.13.0"
 path = "module/core/impls_index_meta"
 
 [workspace.dependencies.mod_interface]
