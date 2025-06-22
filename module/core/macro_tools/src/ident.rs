@@ -46,76 +46,27 @@ mod private
     }
   }
 
-  /// Creates a `syn::Ident` from a string that is already in the target case.
-  /// Handles Rust keywords and original raw identifier status.
-  /// If `cased_name_str` is a keyword, or if `source_had_raw_prefix` is true,
-  /// `syn::Ident::new_raw` is used. Otherwise, `syn::Ident::new` is used.
-  ///
-  /// Returns an error if `cased_name_str` is empty or an invalid identifier.
-  pub fn new_ident_from_cased_str
-  (
-    cased_name_str: &str,
-    span: proc_macro2::Span,
-    source_had_raw_prefix: bool
-  ) -> Result<syn::Ident> // Use local Result<T> alias
-  {
-    if cased_name_str.is_empty() {
-      return Err(syn::Error::new(span, "Cannot create identifier from empty string"));
-    }
-
-    // Comprehensive list of Rust 2021 keywords that are problematic as idents.
-    // Based on https://doc.rust-lang.org/reference/keywords.html
-    const RUST_KEYWORDS: &[&str] = &[
-      // Strict keywords
-      "as", "break", "const", "continue", "crate", "else", "enum", "extern", "false", "fn",
-      "for", "if", "impl", "in", "let", "loop", "match", "mod", "move", "mut", "pub",
-      "ref", "return", "self", "Self", "static", "struct", "super", "trait", "true",
-      "type", "unsafe", "use", "where", "while",
-      // Reserved keywords
-      "abstract", "async", "await", "become", "box", "do", "final", "macro", "override",
-      "priv", "try", "typeof", "unsized", "virtual", "yield",
-      // Weak keywords
-      "dyn", "union",
-    ];
-
-    let is_keyword = RUST_KEYWORDS.contains( &cased_name_str );
-
-    if is_keyword
-    {
-      return Ok( syn::Ident::new_raw( cased_name_str, span ) );
-    }
-
-    match syn::parse_str::< syn::Ident >( cased_name_str )
-    {
-      Ok( ident ) => Ok( ident ),
-      Err( _ ) =>
-      {
-        if source_had_raw_prefix
-        {
-          return Ok( syn::Ident::new_raw( cased_name_str, span ) );
-        }
-        Err( syn::Error::new( span, format!( "Invalid identifier string: '{}'", cased_name_str ) ) )
-      }
-    }
-  }
-
   /// Creates a new `syn::Ident` from an existing one, converting it to the specified case.
   ///
-  /// This function is a convenient wrapper around `new_ident_from_cased_str`.
-  /// It handles extracting the string representation and span from the original `Ident`,
-  /// and converting the case.
-  pub fn cased_ident_from_ident( original: &syn::Ident, case: convert_case::Case ) -> Result< syn::Ident >
+  /// This function handles raw identifier prefixes (`r#`) correctly and ensures that
+  /// the newly created identifier is also a raw identifier if its cased version is a
+  /// Rust keyword.
+  pub fn cased_ident_from_ident( original: &syn::Ident, case: convert_case::Case ) -> syn::Ident
   {
     let original_str = original.to_string();
-    let had_raw_prefix = original_str.starts_with("r#");
-    let core_str = if had_raw_prefix { &original_str[2..] } else { &original_str };
+    let had_raw_prefix = original_str.starts_with( "r#" );
+    let core_str = if had_raw_prefix { &original_str[ 2.. ] } else { &original_str };
 
-    if kw::is(core_str) && !had_raw_prefix {
-        return Ok(syn::Ident::new_raw(core_str, original.span()));
+    let cased_str = core_str.to_case( case );
+
+    if kw::is( &cased_str )
+    {
+      syn::Ident::new_raw( &cased_str, original.span() )
     }
-
-    let cased_str = core_str.to_case(case);
-    new_ident_from_cased_str(&cased_str, original.span(), had_raw_prefix)
+    else
+    {
+      syn::Ident::new( &cased_str, original.span() )
+    }
   }
 }
 
@@ -133,8 +84,6 @@ pub mod own
   pub use orphan::*;
   #[ doc( inline ) ]
   pub use private::ident_maybe_raw;
-  #[ doc( inline ) ]
-  pub use private::new_ident_from_cased_str;
   #[ doc( inline ) ]
   pub use private::cased_ident_from_ident;
 }
