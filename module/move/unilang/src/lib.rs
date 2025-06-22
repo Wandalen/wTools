@@ -12,3 +12,5 @@ mod private
 ///
 #[ cfg( feature = "enabled" ) ]
 pub mod data;
+#[ cfg( feature = "enabled" ) ]
+pub mod registry;

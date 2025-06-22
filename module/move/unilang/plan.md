@@ -4,8 +4,8 @@
 *   Implement Phase 1 of the Unilang framework: "Core `unilang` Language Engine & CLI Foundations", as detailed in `module/move/unilang/roadmap.md`. This involves creating the `unilang` crate, establishing the parsing pipeline, core data structures, command registration, basic execution flow, and initial help/error capabilities.
 
 ### Progress
-*   🚀 Phase 1 In Progress (Increment 2/9 done)
-*   Key Milestones Achieved: ✅ Foundational crate setup, ✅ Core data structures defined.
+*   🚀 Phase 1 In Progress (Increment 3/9 done)
+*   Key Milestones Achieved: ✅ Foundational crate setup, ✅ Core data structures defined, ✅ Command registry implemented.
 
 ### Target Crate
 *   module/move/unilang
@@ -21,7 +21,7 @@
     *   None identified yet.
 
 ### Expected Behavior Rules / Specifications (for Target Crate)
-*   The framework should be designed for an "integrator" to build upon.
+*   The framework should be designed for an "integrator" to build their own utility upon.
 *   Adherence to the Unilang specification v1.0.0 as referenced in the roadmap.
 *   Phase 1 focuses on enabling a functional CLI.
 
@@ -67,7 +67,16 @@
     *   Verification Strategy: Attempt to run `cargo build -p unilang` via `execute_command`. Acknowledge that this is expected to fail due to system permissions, but the attempt serves to confirm file creation and structure. Manual user verification of compilation will be required.
     *   Commit Message: "feat(unilang): Define core data structures"
 
-*   ⚫ Increment 3: Command Registry (Roadmap 3.2)
+*   ✅ Increment 3: Command Registry (Roadmap 3.2)
+    *   Detailed Plan Step 1: Create the file `module/move/unilang/src/registry.rs`.
+    *   Detailed Plan Step 2: Declare the `registry` module in `src/lib.rs`.
+    *   Detailed Plan Step 3: Implement the `CommandRegistry` struct in `src/registry.rs` to store `CommandDefinition`s.
+    *   Detailed Plan Step 4: Implement a `register` method on `CommandRegistry`.
+    *   Detailed Plan Step 5: Implement a basic builder pattern on `CommandRegistry` for compile-time registration.
+    *   Pre-Analysis: Core data structures are defined. A central registry is needed to manage them.
+    *   Crucial Design Rules: [Traits: Encourage Modular Design](#traits-encourage-modular-design), [Error Handling: Use a Centralized Approach](#error-handling-use-a-centralized-approach)
+    *   Relevant Behavior Rules: The registry should support compile-time registration and basic namespace handling (Spec 3.2).
+    *   Verification Strategy: Attempt to run `cargo build -p unilang`. The build should pass, confirming the new module and structs are syntactically correct.
     *   Commit Message: "feat(unilang): Implement command registry and registration API"
 
 *   ⚫ Increment 4: Lexer (Roadmap 2.1)
