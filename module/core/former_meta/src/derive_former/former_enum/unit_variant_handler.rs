@@ -36,21 +36,20 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
   let vis = &ctx.vis;
 
   // Generate method_ident (for static method and standalone constructor)
+  // Generate method_ident using the new utility from `proc_macro_tools`
   let variant_ident_str = variant_ident.to_string();
   let is_raw_prefix = variant_ident_str.starts_with( "r#" );
   let core_name_str = if is_raw_prefix { &variant_ident_str[ 2.. ] } else { &variant_ident_str };
   let snake_case_name = core_name_str.to_case( Case::Snake );
 
-  // Use the proposed (conceptual) macro_tools utility
-  // This will fail to compile until Increment 6 implements this utility.
-  let method_ident = ident::new_ident_from_cased_str(
-      &snake_case_name,
-      variant_ident.span(),
-      is_raw_prefix
+  let method_ident = ident::new_ident_from_cased_str
+  (
+    &snake_case_name,
+    variant_ident.span(),
+    is_raw_prefix
   )?;
 
-  // Prepare generics using the proposed (conceptual) GenericsRef enhancements
-  // These will also fail to compile until Increment 6.
+  // Prepare generics using the new `GenericsRef` utility
   let generics_ref = GenericsRef::new_borrowed( &ctx.generics );
   let fn_signature_generics = generics_ref.impl_generics_tokens_if_any()?;
   let return_type_generics = generics_ref.ty_generics_tokens_if_any()?;

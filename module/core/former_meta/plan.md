@@ -4,7 +4,7 @@
 *   Refactor the implementation of `#[derive(Former)]` for **enum unit variants** within the `former_meta` crate, assuming necessary generalizations are made in the `proc_macro_tools` crate.
 
 ### Progress
-*   🚀 Phase 1 Complete (Increment 1)
+*   ✅ Phase 1 Complete (Increment 1)
 *   🚧 Phase 2 In Progress (Increment 2)
 
 ### Target Crate
@@ -32,17 +32,15 @@
 ### Increments
 
 *   [✅] Increment 1: Propose API additions to `proc_macro_tools` via `task.md`
-    *   Detailed Plan Step 1: Draft the content for `module/alias/proc_macro_tools/task.md` using the "External Crate Change Proposal Structure". The content will specify the addition of `cased_ident_from_ident` and `GenericsRef` utilities.
-    *   Detailed Plan Step 2: Use `write_to_file` to create/update `module/alias/proc_macro_tools/task.md`.
-    *   Pre-Analysis: The `former_meta` crate currently has manual and repetitive logic for converting identifier cases and handling generic parameters. Generalizing this into `proc_macro_tools` will improve code reuse and maintainability.
-    *   Crucial Design Rules: [Traits: Encourage Modular Design], [Visibility: Keep Implementation Details Private]
-    *   Relevant Behavior Rules: N/A for this increment.
-    *   Verification Strategy: Confirm `task.md` is written successfully by analyzing the `write_to_file` tool output.
     *   Commit Message: "chore: Propose API additions to proc_macro_tools for former refactoring"
 
-*   [⚫] Increment 2: Implement Improved Refactoring (Enum Unit Variants in `former_meta`)
-    *   Detailed Plan Step 1: Modify `former_meta/src/derive_former/former_enum/unit_variant_handler.rs` to use the (proposed) new utilities from `proc_macro_tools`.
-    *   Verification Strategy: Execute `cargo check -p former_meta` and `cargo test -p former_meta`.
+*   [⏳] Increment 2: Implement Improved Refactoring (Enum Unit Variants in `former_meta`)
+    *   Detailed Plan Step 1: Read the content of `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs`.
+    *   Detailed Plan Step 2: Modify `unit_variant_handler.rs` to use the proposed `proc_macro_tools` utilities. This involves replacing manual identifier creation and generics quoting with calls to `cased_ident_from_ident` and `GenericsRef` methods.
+    *   Pre-Analysis: The current implementation is verbose. Using the new utilities will make it more concise and maintainable.
+    *   Crucial Design Rules: [Prioritize Reuse and Minimal Change], [Proc Macro: Development Workflow]
+    *   Relevant Behavior Rules: Rules 1a, 2a, 3a, 4a.
+    *   Verification Strategy: Execute `cargo check -p former_meta`. If it passes, execute `cargo test -p former_meta`.
     *   Commit Message: "refactor(former_meta): Improve unit variant handling using macro_tools"
 
 *   [⚫] Increment 3: Final Verification
@@ -62,4 +60,4 @@
 
 ### Notes & Insights
 *   This plan supersedes the one in `module/core/former/plan.md` for the execution of this task.
-*   The successful completion of Increment 2 depends on the eventual implementation of the changes proposed in Increment 1's `task.md`.
+*   The successful completion of Increment 2 depends on the eventual implementation of the changes proposed in Increment 1's `task.md`. For the purpose of this task, we will assume the changes are available and proceed with the refactoring.
