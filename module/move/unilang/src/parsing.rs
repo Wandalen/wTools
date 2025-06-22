@@ -208,3 +208,100 @@ impl< 'a > Lexer< 'a >
     }
   }
 }
+
+/// Represents a single command statement.
+#[ derive( Debug, PartialEq, Clone ) ]
+pub struct Statement
+{
+  /// The command identifier.
+  pub command : String,
+  /// The arguments for the command.
+  pub args : Vec< Token >,
+}
+
+/// Represents a program, which is a series of statements.
+#[ derive( Debug, Default ) ]
+pub struct Program
+{
+  /// The statements that make up the program.
+  pub statements : Vec< Statement >,
+}
+
+///
+/// The parser for the Unilang language.
+///
+#[ derive( Debug ) ]
+pub struct Parser< 'a >
+{
+  lexer : Lexer< 'a >,
+  current_token : Token,
+  peek_token : Token,
+}
+
+impl< 'a > Parser< 'a >
+{
+  ///
+  /// Creates a new `Parser`.
+  ///
+  pub fn new( lexer : Lexer< 'a > ) -> Self
+  {
+    let mut parser = Parser {
+      lexer,
+      current_token : Token::Eof,
+      peek_token : Token::Eof,
+    };
+    parser.next_token();
+    parser.next_token();
+    parser
+  }
+
+  ///
+  /// Advances the tokens.
+  ///
+  fn next_token( &mut self )
+  {
+    self.current_token = self.peek_token.clone();
+    self.peek_token = self.lexer.next_token();
+  }
+
+  ///
+  /// Parses the program.
+  ///
+  pub fn parse_program( &mut self ) -> Program
+  {
+    let mut program = Program::default();
+
+    while self.current_token != Token::Eof
+    {
+      if let Some( statement ) = self.parse_statement()
+      {
+        program.statements.push( statement );
+      }
+      self.next_token();
+    }
+
+    program
+  }
+
+  ///
+  /// Parses a single statement.
+  ///
+  fn parse_statement( &mut self ) -> Option< Statement >
+  {
+    if let Token::Identifier( command ) = self.current_token.clone()
+    {
+      let mut args = Vec::new();
+      self.next_token();
+      while self.current_token != Token::CommandSeparator && self.current_token != Token::Eof
+      {
+        args.push( self.current_token.clone() );
+        self.next_token();
+      }
+      Some( Statement { command, args } )
+    }
+    else
+    {
+      None
+    }
+  }
+}

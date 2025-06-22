@@ -4,8 +4,8 @@
 *   Implement Phase 1 of the Unilang framework: "Core `unilang` Language Engine & CLI Foundations", as detailed in `module/move/unilang/roadmap.md`. This involves creating the `unilang` crate, establishing the parsing pipeline, core data structures, command registration, basic execution flow, and initial help/error capabilities.
 
 ### Progress
-*   🚀 Phase 1 In Progress (Increment 4/9 done)
-*   Key Milestones Achieved: ✅ Foundational crate setup, ✅ Core data structures defined, ✅ Command registry implemented, ✅ Lexer implemented.
+*   🚀 Phase 1 In Progress (Increment 5/9 done)
+*   Key Milestones Achieved: ✅ Foundational crate setup, ✅ Core data structures defined, ✅ Command registry implemented, ✅ Lexer implemented, ✅ Parser implemented.
 
 ### Target Crate
 *   module/move/unilang
@@ -91,7 +91,16 @@
     *   Verification Strategy: Attempt to run `cargo build -p unilang`. The build should pass, confirming the new module and structs are syntactically correct.
     *   Commit Message: "feat(unilang): Implement lexer for CLI syntax"
 
-*   ⚫ Increment 5: Parser (Roadmap 2.2, 2.3)
+*   ✅ Increment 5: Parser (Roadmap 2.2, 2.3)
+    *   Detailed Plan Step 1: Define `Statement` and `Program` structs in `src/parsing.rs` to represent the AST.
+    *   Detailed Plan Step 2: Implement the `Parser` struct in `src/parsing.rs`, taking a `Lexer` as input.
+    *   Detailed Plan Step 3: Implement `parse_program` method on the `Parser` to produce a `Program` AST.
+    *   Detailed Plan Step 4: Implement helper methods for parsing different statement types.
+    *   Detailed Plan Step 5: Add basic logic to identify and extract global arguments.
+    *   Pre-Analysis: The lexer is complete. The parser will consume the tokens from the lexer to build a structured representation of the input.
+    *   Crucial Design Rules: [Implementation: Complete One Sub-Task Before Starting Another](#implementation-complete-one-sub-task-before-starting-another)
+    *   Relevant Behavior Rules: The parser should produce an AST that represents the "Generic Instructions" mentioned in Spec 2.2.
+    *   Verification Strategy: Attempt to run `cargo build -p unilang`. The build should pass, confirming the new structs and methods are syntactically correct.
     *   Commit Message: "feat(unilang): Implement parser and global argument extraction"
 
 *   ⚫ Increment 6: Semantic Analysis (Roadmap 4.1-4.4)
