@@ -277,7 +277,11 @@ impl< 'a > Parser< 'a >
       {
         program.statements.push( statement );
       }
-      self.next_token();
+      else
+      {
+        // If it's not a valid statement, skip the token to avoid infinite loops on invalid input.
+        self.next_token();
+      }
     }
 
     program
@@ -291,12 +295,19 @@ impl< 'a > Parser< 'a >
     if let Token::Identifier( command ) = self.current_token.clone()
     {
       let mut args = Vec::new();
-      self.next_token();
+      self.next_token(); // Consume command identifier.
       while self.current_token != Token::CommandSeparator && self.current_token != Token::Eof
       {
         args.push( self.current_token.clone() );
         self.next_token();
       }
+
+      // Consume the separator if it exists, to be ready for the next statement.
+      if self.current_token == Token::CommandSeparator
+      {
+        self.next_token();
+      }
+
       Some( Statement { command, args } )
     }
     else

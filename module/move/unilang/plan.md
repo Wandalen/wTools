@@ -44,6 +44,7 @@
 *         `phase1/`
 *           `mod.rs`
 *           `foundational_setup.rs`
+*           `full_pipeline_test.rs`
 
 ### Increments
 
@@ -152,6 +153,35 @@
     *   Relevant Behavior Rules: Help generation should be based on `CommandDefinition`s (Spec 3.2.6). The output should be structured and a default text formatter should be provided (Spec 6.3).
     *   Verification Strategy: Attempt to run `cargo build -p unilang`. The build should pass.
     *   Commit Message: "feat(unilang): Implement basic help generation"
+
+*   ⚫ Increment 10: Phase 1 Integration Testing
+    *   Detailed Plan Step 1: Create the test file `module/move/unilang/tests/inc/phase1/full_pipeline_test.rs`.
+    *   Detailed Plan Step 2: Add the new test module to `module/move/unilang/tests/inc/phase1/mod.rs`.
+    *   Detailed Plan Step 3: Implement tests based on the Test Matrix below.
+    *   Pre-Analysis: All Phase 1 components are implemented. Integration tests are needed to verify the entire pipeline from parsing to execution.
+    *   Crucial Design Rules: [Testing: Plan with a Test Matrix When Writing Tests](#testing-plan-with-a-test-matrix-when-writing-tests)
+    *   Relevant Behavior Rules: Tests should cover all major functionalities of Phase 1.
+    *   Verification Strategy: Run `cargo test -p unilang --test full_pipeline_test` and ensure all tests pass.
+    *   Commit Message: "test(unilang): Add integration tests for Phase 1 pipeline"
+    *   Test Matrix:
+        | ID | Component | Input | Expected Outcome |
+        |---|---|---|---|
+        | T1.1 | Lexer | `command "arg1" 123 1.23 true` | Correct sequence of tokens |
+        | T1.2 | Lexer | `cmd1 ;; cmd2` | Identifiers and CommandSeparator |
+        | T1.3 | Lexer | `  ` (whitespace) | Skips whitespace correctly |
+        | T1.4 | Lexer | `""` (empty string) | Empty String token |
+        | T2.1 | Parser | `command "arg1"` | Program with one statement |
+        | T2.2 | Parser | `cmd1 1;;"cmd2" 2` | Program with two statements |
+        | T2.3 | Parser | (empty input) | Empty program |
+        | T3.1 | Semantic | Valid command and args | `Ok(VerifiedCommand)` |
+        | T3.2 | Semantic | Unknown command | `Err(Error)` with `COMMAND_NOT_FOUND` |
+        | T3.3 | Semantic | Missing required arg | `Err(Error)` with `MISSING_ARGUMENT` |
+        | T3.4 | Semantic | Wrong argument type | `Err(Error)` with `INVALID_ARGUMENT_TYPE` |
+        | T3.5 | Semantic | Too many arguments | `Err(Error)` with `TOO_MANY_ARGUMENTS` |
+        | T4.1 | Interpreter | Single valid command | `Ok` with one `OutputData` |
+        | T4.2 | Interpreter | Multiple valid commands | `Ok` with multiple `OutputData` |
+        | T5.1 | Help Gen | Command with args | Formatted help string |
+        | T5.2 | Help Gen | Command without args | Formatted help string |
 
 ### Task Requirements
 *   The implementation must follow the structure and goals of Phase 1 from `module/move/unilang/roadmap.md`.
