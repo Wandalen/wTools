@@ -32,7 +32,15 @@
     *   Relevant Behavior Rules: N/A
     *   Verification Strategy: Run `cargo build -p unilang` to ensure the changes compile.
     *   Commit Message: "style(unilang): Clean up and document src/lib.rs"
-*   ⚫ Increment 2: Review `src/data.rs`
+*   ✅ Increment 2: Review `src/data.rs`
+    *   Detailed Plan Step 1: Read the content of `src/data.rs`.
+    *   Detailed Plan Step 2: Apply codestyle fixes (spacing, newlines, etc.).
+    *   Detailed Plan Step 3: Add concise documentation to all public structs and their fields.
+    *   Detailed Plan Step 4: Re-enable the `former` crate derive macros and attributes and fix any resulting compilation errors.
+    *   Pre-Analysis: The file contains core data structures. The `former` derive is currently commented out and needs to be re-enabled and fixed.
+    *   Crucial Design Rules: [Comments and Documentation](#comments-and-documentation)
+    *   Relevant Behavior Rules: N/A
+    *   Verification Strategy: Run `cargo build -p unilang` to ensure the changes compile without errors or warnings.
     *   Commit Message: "style(unilang): Clean up and document src/data.rs"
 *   ⚫ Increment 3: Review `src/error.rs`
     *   Commit Message: "style(unilang): Clean up and document src/error.rs"
