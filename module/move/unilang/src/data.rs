@@ -7,7 +7,7 @@
 ///
 /// Defines a command, including its name, arguments, and other metadata.
 ///
-#[ derive( Debug ) ]
+#[ derive( Debug, Clone ) ]
 pub struct CommandDefinition
 {
   /// The name of the command.
@@ -22,7 +22,7 @@ pub struct CommandDefinition
 ///
 /// Defines an argument for a command.
 ///
-#[ derive( Debug ) ]
+#[ derive( Debug, Clone ) ]
 pub struct ArgumentDefinition
 {
   /// The name of the argument.

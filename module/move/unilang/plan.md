@@ -4,8 +4,8 @@
 *   Implement Phase 1 of the Unilang framework: "Core `unilang` Language Engine & CLI Foundations", as detailed in `module/move/unilang/roadmap.md`. This involves creating the `unilang` crate, establishing the parsing pipeline, core data structures, command registration, basic execution flow, and initial help/error capabilities.
 
 ### Progress
-*   🚀 Phase 1 In Progress (Increment 5/9 done)
-*   Key Milestones Achieved: ✅ Foundational crate setup, ✅ Core data structures defined, ✅ Command registry implemented, ✅ Lexer implemented, ✅ Parser implemented.
+*   🚀 Phase 1 In Progress (Increment 6/9 done)
+*   Key Milestones Achieved: ✅ Foundational crate setup, ✅ Core data structures defined, ✅ Command registry implemented, ✅ Lexer implemented, ✅ Parser implemented, ✅ Semantic analysis implemented.
 
 ### Target Crate
 *   module/move/unilang
@@ -103,7 +103,17 @@
     *   Verification Strategy: Attempt to run `cargo build -p unilang`. The build should pass, confirming the new structs and methods are syntactically correct.
     *   Commit Message: "feat(unilang): Implement parser and global argument extraction"
 
-*   ⚫ Increment 6: Semantic Analysis (Roadmap 4.1-4.4)
+*   ✅ Increment 6: Semantic Analysis (Roadmap 4.1-4.4)
+    *   Detailed Plan Step 1: Create the file `module/move/unilang/src/semantic.rs`.
+    *   Detailed Plan Step 2: Declare the `semantic` module in `src/lib.rs`.
+    *   Detailed Plan Step 3: Implement a `VerifiedCommand` struct in `src/semantic.rs` to hold a resolved command and its arguments.
+    *   Detailed Plan Step 4: Implement a `SemanticAnalyzer` struct that takes a `Program` (AST) and a `CommandRegistry`.
+    *   Detailed Plan Step 5: Implement an `analyze` method on `SemanticAnalyzer` that performs command resolution and argument binding.
+    *   Detailed Plan Step 6: Implement basic argument type checking for `String`, `Integer`, `Float`, `Boolean`.
+    *   Pre-Analysis: The parser produces an AST. The semantic analyzer will take this AST and the command registry to produce a verified, executable representation of a command.
+    *   Crucial Design Rules: [Error Handling: Use a Centralized Approach](#error-handling-use-a-centralized-approach)
+    *   Relevant Behavior Rules: The analyzer must perform command resolution (4.1), argument binding (4.2), and basic type checking (4.3) as per the spec. It should generate a `VerifiedCommand` (4.4).
+    *   Verification Strategy: Attempt to run `cargo build -p unilang`. The build should pass.
     *   Commit Message: "feat(unilang): Implement semantic analysis and command binding"
 
 *   ⚫ Increment 7: Interpreter (Roadmap 5)
