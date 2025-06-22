@@ -1,6 +1,10 @@
-//! Generic instruction representation for the unilang parser.
+//!
+//! Generic instruction representation for the command aggregator parser.
+//!
 
+///
 /// Represents a parsed command instruction before validation against a command registry.
+///
 #[ derive( Debug, Clone, PartialEq, Eq ) ]
 pub struct GenericInstruction< 'a >
 {

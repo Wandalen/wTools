@@ -1,6 +1,10 @@
-//! Input abstraction for the unilang parser.
+//!
+//! Input abstraction for the command aggregator parser.
+//!
 
+///
 /// Represents a location within the input, handling both single strings and slices.
+///
 #[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
 pub enum Location
 {
@@ -14,26 +18,35 @@ pub enum Location
   ),
 }
 
+///
 /// Represents the current state of the input being parsed.
+///
 #[ derive( Debug, Clone, PartialEq, Eq ) ]
 pub enum InputState< 'a >
 {
   /// State for a single string input.
   SingleString
   {
+    /// The input string.
     input : &'a str,
+    /// The current byte offset.
     offset : usize,
   },
   /// State for a slice of string segments input.
   SegmentSlice
   {
+    /// The slice of string segments.
     segments : &'a [&'a str],
+    /// The current segment index.
     segment_index : usize,
+    /// The current byte offset within the segment.
     offset_in_segment : usize,
   },
 }
 
+///
 /// Provides a unified interface to process input from either a single string or a slice of strings.
+///
 #[ derive( Debug, Clone, PartialEq, Eq ) ]
 pub struct InputAbstraction< 'a >
 {
@@ -42,7 +55,9 @@ pub struct InputAbstraction< 'a >
 
 impl< 'a > InputAbstraction< 'a >
 {
+  ///
   /// Creates a new `InputAbstraction` from a single string.
+  ///
   pub fn from_str( input : &'a str ) -> Self
   {
     Self
@@ -51,7 +66,9 @@ impl< 'a > InputAbstraction< 'a >
     }
   }
 
+  ///
   /// Creates a new `InputAbstraction` from a slice of string segments.
+  ///
   pub fn from_segments( segments : &'a [&'a str] ) -> Self
   {
     Self
@@ -61,9 +78,11 @@ impl< 'a > InputAbstraction< 'a >
   }
 
   // Placeholder methods based on the revised conceptual design.
-  // Implementation will be done in Increment 2.
+  // Implementation will be done in a future increment.
 
+  ///
   /// Peeks at the next character without consuming it.
+  ///
   pub fn peek_next_char( &self ) -> Option< char >
   {
     // TODO: Implement based on InputState
@@ -71,7 +90,9 @@ impl< 'a > InputAbstraction< 'a >
     None
   }
 
+  ///
   /// Consumes and returns the next character.
+  ///
   pub fn next_char( &mut self ) -> Option< char >
   {
     // TODO: Implement based on InputState
@@ -79,7 +100,9 @@ impl< 'a > InputAbstraction< 'a >
     None
   }
 
+  ///
   /// Peeks at the next full segment (relevant for `&[&str]` input).
+  ///
   pub fn peek_next_segment( &self ) -> Option< &'a str >
   {
     // TODO: Implement based on InputState
@@ -87,7 +110,9 @@ impl< 'a > InputAbstraction< 'a >
     None
   }
 
+  ///
   /// Consumes and returns the next full segment (relevant for `&[&str]` input).
+  ///
   pub fn next_segment( &mut self ) -> Option< &'a str >
   {
     // TODO: Implement based on InputState
@@ -95,10 +120,10 @@ impl< 'a > InputAbstraction< 'a >
     None
   }
 
+  ///
   /// Searches for the next occurrence of any of the provided string patterns.
   /// Returns the matched pattern and its location.
-  /// Searches for the next occurrence of any of the provided string patterns.
-  /// Returns the matched pattern and its location.
+  ///
   pub fn find_next_occurrence( &self, _patterns : &'a [&'a str] ) -> Option< ( &'a str, Location ) >
   {
     // TODO: Implement based on InputState and patterns
@@ -106,8 +131,9 @@ impl< 'a > InputAbstraction< 'a >
     None
   }
 
+  ///
   /// Consumes the input up to a specified location and returns the consumed slice.
-  /// Consumes the input up to a specified location and returns the consumed slice.
+  ///
   pub fn consume_until( &mut self, _location : Location ) -> &'a str
   {
     // TODO: Implement based on InputState and target location
@@ -115,8 +141,9 @@ impl< 'a > InputAbstraction< 'a >
     ""
   }
 
+  ///
   /// Consumes a specified number of characters/bytes.
-  /// Consumes a specified number of characters/bytes.
+  ///
   pub fn consume_len( &mut self, _len : usize ) -> &'a str
   {
     // TODO: Implement based on InputState and length
@@ -124,7 +151,9 @@ impl< 'a > InputAbstraction< 'a >
     ""
   }
 
+  ///
   /// Returns the current parsing location.
+  ///
   pub fn current_location( &self ) -> Location
   {
     match &self.state
@@ -134,7 +163,9 @@ impl< 'a > InputAbstraction< 'a >
     }
   }
 
+  ///
   /// Checks if there is any remaining input.
+  ///
   pub fn is_empty( &self ) -> bool
   {
     match &self.state
@@ -155,7 +186,9 @@ impl< 'a > InputAbstraction< 'a >
   }
 }
 
+///
 /// Represents the type of delimiter found during parsing.
+///
 #[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
 pub enum DelimiterType
 {
@@ -173,7 +206,9 @@ pub enum DelimiterType
   Whitespace,
 }
 
+///
 /// Represents a part of the input after splitting by a delimiter.
+///
 #[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
 pub enum InputPart< 'a >
 {

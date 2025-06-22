@@ -1,17 +1,26 @@
-//! Main parser logic for unilang CLI syntax.
+//!
+//! Main parser logic for the command aggregator.
+//!
 
 #[ allow( unused_imports ) ]
 use super::input::{ InputAbstraction, InputPart, DelimiterType, Location };
 use super::instruction::GenericInstruction;
 use super::error::ParseError;
 
-/// The main parser engine.
+///
+/// The main parser engine for the command aggregator.
+///
 #[ derive( Debug ) ]
 pub struct Parser;
 
 impl Parser
 {
+  ///
   /// Parses the input into a sequence of generic instructions.
+  ///
+  /// This is the main entry point for the parsing engine, taking an
+  /// `InputAbstraction` and returning a `Vec` of `GenericInstruction`s
+  /// or a `ParseError`.
   pub fn parse< 'a >( input : InputAbstraction< 'a > ) -> Result< Vec< GenericInstruction< 'a > >, ParseError >
   {
     // TODO: Implement parsing logic using InputAbstraction
