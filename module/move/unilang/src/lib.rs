@@ -11,17 +11,4 @@ mod private
 
 ///
 #[ cfg( feature = "enabled" ) ]
-mod_interface::mod_interface!
-{
-
-  /// Namespace with dependencies.
-  #[ cfg( feature = "enabled" ) ]
-  pub mod dependency
-  {
-  }
-
-  // use super::private as i;
-  // pub use i::exposed::*;
-  // pub use i::prelude::*;
-
-}
+pub mod data;
