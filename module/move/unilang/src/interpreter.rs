@@ -9,6 +9,8 @@ use crate::error::Error;
 ///
 /// The execution context for a command.
 ///
+/// This struct holds all the necessary information for a command to be
+/// executed, such as global arguments, configuration, and I/O streams.
 #[ derive( Debug, Default ) ]
 pub struct ExecutionContext
 {
@@ -18,6 +20,7 @@ pub struct ExecutionContext
 ///
 /// The interpreter for Unilang commands.
 ///
+/// This struct takes a list of verified commands and executes them sequentially.
 #[ derive( Debug ) ]
 pub struct Interpreter< 'a >
 {
@@ -35,8 +38,10 @@ impl< 'a > Interpreter< 'a >
   }
 
   ///
-  /// Runs the commands.
+  /// Runs the commands and returns a list of outputs or an error.
   ///
+  /// This method iterates through the verified commands and, for now,
+  /// simulates their execution by printing them.
   pub fn run( &self, _context : &mut ExecutionContext ) -> Result< Vec< OutputData >, Error >
   {
     let mut results = Vec::new();
