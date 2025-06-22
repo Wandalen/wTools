@@ -7,6 +7,8 @@ use crate::data::CommandDefinition;
 ///
 /// Generates help information for commands.
 ///
+/// This struct provides methods to create formatted help messages from
+/// `CommandDefinition` instances, which can be displayed to the user.
 #[ derive( Debug, Default ) ]
 pub struct HelpGenerator;
 
@@ -21,8 +23,10 @@ impl HelpGenerator
   }
 
   ///
-  /// Generates help for a single command.
+  /// Generates a help string for a single command.
   ///
+  /// The output is a formatted string containing the command's usage,
+  /// description, and a list of its arguments.
   pub fn command( &self, command : &CommandDefinition ) -> String
   {
     let mut help = String::new();
