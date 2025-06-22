@@ -1,142 +1,41 @@
-# Project Plan: Unilang Codestyle and Documentation Review
+# Project Plan: Unilang Test File Documentation
 
 ### Goal
-*   Iterate through each file of the `unilang` crate, ensuring all code adheres to the established codestyle rules and has concise, accurate documentation.
+*   Add comprehensive documentation to all test files, including references to the Test Matrix, to ensure clarity and maintainability.
 
 ### Progress
-*   ✅ Codestyle Review Complete
+*   ✅ Test Documentation Complete
 
 ### Target Crate
 *   module/move/unilang
 
 ### Relevant Context
 *   Files to Include (for AI's reference, if `read_file` is planned, primarily from Target Crate):
-    *   All `.rs` files within `module/move/unilang/src` and `module/move/unilang/tests`.
+    *   `module/move/unilang/tests/inc/phase1/full_pipeline_test.rs`
 
 ### Expected Behavior Rules / Specifications (for Target Crate)
-*   All files must pass `cargo clippy` with the workspace lint settings without warnings.
-*   All public items should have clear, concise documentation.
-*   Code formatting should be consistent across the entire crate.
+*   Test functions should have doc comments explaining their purpose.
+*   Each test function should reference the Test Matrix row(s) it covers.
 
 ### Target File Structure (If Applicable, within Target Crate)
 *   No changes to the file structure are planned.
 
 ### Increments
 
-*   ✅ Increment 1: Review `src/lib.rs`
-    *   Detailed Plan Step 1: Read the content of `src/lib.rs`.
-    *   Detailed Plan Step 2: Apply codestyle fixes, including adding documentation for all public modules.
-    *   Detailed Plan Step 3: Use `mod_interface` to structure the crate's public API.
-    *   Pre-Analysis: The `lib.rs` file is the entry point to the crate and should be well-documented and structured.
-    *   Crucial Design Rules: [Structuring: Modules with `mod_interface`](#structuring-modules-with-mod_interface), [Comments and Documentation](#comments-and-documentation)
-    *   Relevant Behavior Rules: N/A
-    *   Verification Strategy: Run `cargo build -p unilang` to ensure the changes compile.
-    *   Commit Message: "style(unilang): Clean up and document src/lib.rs"
-*   ✅ Increment 2: Review `src/data.rs`
-    *   Detailed Plan Step 1: Read the content of `src/data.rs`.
-    *   Detailed Plan Step 2: Apply codestyle fixes (spacing, newlines, etc.).
-    *   Detailed Plan Step 3: Add concise documentation to all public structs and their fields.
-    *   Detailed Plan Step 4: Re-enable the `former` crate derive macros and attributes and fix any resulting compilation errors.
-    *   Pre-Analysis: The file contains core data structures. The `former` derive is currently commented out and needs to be re-enabled and fixed.
-    *   Crucial Design Rules: [Comments and Documentation](#comments-and-documentation)
-    *   Relevant Behavior Rules: N/A
-    *   Verification Strategy: Run `cargo build -p unilang` to ensure the changes compile without errors or warnings.
-    *   Commit Message: "style(unilang): Clean up and document src/data.rs"
-*   ✅ Increment 3: Review `src/error.rs`
-    *   Detailed Plan Step 1: Read the content of `src/error.rs`.
-    *   Detailed Plan Step 2: Apply codestyle fixes (spacing, newlines, etc.).
-    *   Detailed Plan Step 3: Add concise documentation to the `Error` enum and its variants.
-    *   Pre-Analysis: The file contains the basic error enum. It needs proper documentation and formatting.
-    *   Crucial Design Rules: [Error Handling: Use a Centralized Approach](#error-handling-use-a-centralized-approach), [Comments and Documentation](#comments-and-documentation)
-    *   Relevant Behavior Rules: N/A
-    *   Verification Strategy: Run `cargo build -p unilang` to ensure the changes compile.
-    *   Commit Message: "style(unilang): Clean up and document src/error.rs"
-*   ✅ Increment 4: Review `src/help.rs`
-    *   Detailed Plan Step 1: Read the content of `src/help.rs`.
-    *   Detailed Plan Step 2: Apply codestyle fixes (spacing, newlines, etc.).
-    *   Detailed Plan Step 3: Add concise documentation to the `HelpGenerator` struct and its methods.
-    *   Pre-Analysis: The file contains the basic help generator. It needs proper documentation and formatting.
-    *   Crucial Design Rules: [Comments and Documentation](#comments-and-documentation)
-    *   Relevant Behavior Rules: N/A
-    *   Verification Strategy: Run `cargo build -p unilang` to ensure the changes compile.
-    *   Commit Message: "style(unilang): Clean up and document src/help.rs"
-*   ✅ Increment 5: Review `src/interpreter.rs`
-    *   Detailed Plan Step 1: Read the content of `src/interpreter.rs`.
-    *   Detailed Plan Step 2: Apply codestyle fixes (spacing, newlines, etc.).
-    *   Detailed Plan Step 3: Add concise documentation to the `Interpreter` and `ExecutionContext` structs and their methods.
-    *   Pre-Analysis: The file contains the basic interpreter. It needs proper documentation and formatting.
-    *   Crucial Design Rules: [Comments and Documentation](#comments-and-documentation)
-    *   Relevant Behavior Rules: N/A
-    *   Verification Strategy: Run `cargo build -p unilang` to ensure the changes compile.
-    *   Commit Message: "style(unilang): Clean up and document src/interpreter.rs"
-*   ✅ Increment 6: Review `src/parsing.rs`
-    *   Detailed Plan Step 1: Read the content of `src/parsing.rs`.
-    *   Detailed Plan Step 2: Apply codestyle fixes (spacing, newlines, etc.).
-    *   Detailed Plan Step 3: Add concise documentation to all public items (`Token`, `Lexer`, `Parser`, `Statement`, `Program`) and their methods/variants/fields.
-    *   Pre-Analysis: The file contains the lexer and parser. It's a large file and will require careful review to ensure all items are documented and formatted correctly.
-    *   Crucial Design Rules: [Comments and Documentation](#comments-and-documentation), [New Lines for Blocks](#new-lines-for-blocks), [Spaces Around Symbols](#spaces-around-symbols).
-    *   Relevant Behavior Rules: N/A
-    *   Verification Strategy: Run `cargo build -p unilang` to ensure the changes compile.
-    *   Commit Message: "style(unilang): Clean up and document src/parsing.rs"
-*   ✅ Increment 7: Review `src/registry.rs`
-    *   Detailed Plan Step 1: Read the content of `src/registry.rs`.
-    *   Detailed Plan Step 2: Apply codestyle fixes (spacing, newlines, etc.).
-    *   Detailed Plan Step 3: Add concise documentation to the `CommandRegistry` struct, `CommandRegistryBuilder` struct, and their methods.
-    *   Pre-Analysis: The file contains the command registry. It needs proper documentation and formatting.
-    *   Crucial Design Rules: [Comments and Documentation](#comments-and-documentation)
-    *   Relevant Behavior Rules: N/A
-    *   Verification Strategy: Run `cargo build -p unilang` to ensure the changes compile.
-    *   Commit Message: "style(unilang): Clean up and document src/registry.rs"
-*   ✅ Increment 8: Review `src/semantic.rs`
-    *   Detailed Plan Step 1: Read the content of `src/semantic.rs`.
-    *   Detailed Plan Step 2: Apply codestyle fixes (spacing, newlines, etc.).
-    *   Detailed Plan Step 3: Add concise documentation to the `VerifiedCommand` and `SemanticAnalyzer` structs and their methods.
-    *   Pre-Analysis: The file contains the semantic analyzer. It needs proper documentation and formatting.
-    *   Crucial Design Rules: [Comments and Documentation](#comments-and-documentation)
-    *   Relevant Behavior Rules: N/A
-    *   Verification Strategy: Run `cargo build -p unilang` to ensure the changes compile.
-    *   Commit Message: "style(unilang): Clean up and document src/semantic.rs"
-*   ✅ Increment 9: Review `src/ca/` directory
-    *   Detailed Plan Step 1: Read all files in `src/ca/` and its subdirectories.
-    *   Detailed Plan Step 2: Refactor `src/ca/mod.rs`.
-    *   Detailed Plan Step 3: Refactor `src/ca/parsing/mod.rs`.
-    *   Detailed Plan Step 4: Refactor `src/ca/parsing/engine.rs`.
-    *   Detailed Plan Step 5: Refactor `src/ca/parsing/error.rs`.
-    *   Detailed Plan Step 6: Refactor `src/ca/parsing/input.rs`.
-    *   Detailed Plan Step 7: Refactor `src/ca/parsing/instruction.rs`.
-    *   Pre-Analysis: This directory seems to contain a secondary parsing engine or a more complex command architecture (`ca`). It needs to be reviewed for consistency with the rest of the crate.
-    *   Crucial Design Rules: [Comments and Documentation](#comments-and-documentation), [New Lines for Blocks](#new-lines-for-blocks), [Spaces Around Symbols](#spaces-around-symbols).
-    *   Relevant Behavior Rules: N/A
-    *   Verification Strategy: Run `cargo build -p unilang` after refactoring all files in the directory.
-    *   Commit Message: "style(unilang): Clean up and document src/ca/**"
-*   ✅ Increment 10: Review `tests/` directory
-    *   Detailed Plan Step 1: Read all files in `tests/` and its subdirectories.
-    *   Detailed Plan Step 2: Refactor `tests/tests.rs`.
-    *   Detailed Plan Step 3: Refactor `tests/inc/mod.rs`.
-    *   Detailed Plan Step 4: Refactor `tests/inc/phase1/mod.rs`.
-    *   Detailed Plan Step 5: Refactor `tests/inc/phase1/foundational_setup.rs`.
-    *   Detailed Plan Step 6: Refactor `tests/inc/phase1/full_pipeline_test.rs`.
-    *   Pre-Analysis: The test files need to be reviewed for clarity, documentation, and adherence to codestyle.
-    *   Crucial Design Rules: [Comments and Documentation](#comments-and-documentation)
+*   ✅ Increment 1: Document `tests/inc/phase1/full_pipeline_test.rs`
+    *   Detailed Plan Step 1: Read the content of `tests/inc/phase1/full_pipeline_test.rs`.
+    *   Detailed Plan Step 2: Add documentation to each test function, linking it to the corresponding Test Matrix rows from the previous plan.
+    *   Pre-Analysis: The integration test file lacks documentation.
+    *   Crucial Design Rules: [Testing: Plan with a Test Matrix When Writing Tests](#testing-plan-with-a-test-matrix-when-writing-tests), [Comments and Documentation](#comments-and-documentation)
     *   Relevant Behavior Rules: N/A
     *   Verification Strategy: Run `cargo test -p unilang` to ensure all tests still pass.
-    *   Commit Message: "style(unilang): Clean up and document tests/**"
-*   ✅ Increment 11: Final Verification
-    *   Detailed Plan Step 1: Run `cargo clippy -- -D warnings` to ensure there are no warnings.
-    *   Detailed Plan Step 2: Run `cargo test` to ensure all tests pass.
-    *   Pre-Analysis: All files have been reviewed. A final check is needed to ensure the entire crate is clean.
-    *   Crucial Design Rules: N/A
-    *   Relevant Behavior Rules: N/A
-    *   Verification Strategy: All checks must pass.
-    *   Commit Message: "chore(unilang): Final verification of codestyle changes"
+    *   Commit Message: "docs(unilang): Add test matrix documentation to integration tests"
 
 ### Task Requirements
-*   Systematically review every `.rs` file.
-*   Apply codestyle fixes and add documentation as needed.
+*   Add documentation to test files.
 
 ### Project Requirements
 *   Maintain consistency with the overall workspace codestyle.
 
 ### Notes & Insights
-*   This is a good opportunity to improve the overall quality and maintainability of the crate.
-*   The `former` crate usage is still disabled and should be noted for future work.
+*   This will significantly improve the test suite's readability.

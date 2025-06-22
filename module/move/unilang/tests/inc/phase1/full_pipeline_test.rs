@@ -11,7 +11,12 @@ use unilang::interpreter::{ Interpreter, ExecutionContext };
 ///
 /// Tests for the `Lexer`.
 ///
-// Test Matrix Rows: T1.1, T1.2, T1.3, T1.4
+/// This test covers the following combinations from the Test Matrix:
+/// - T1.1: A command with various argument types.
+/// - T1.2: Multiple commands separated by `;;`.
+/// - T1.3: Whitespace handling.
+/// - T1.4: Empty string literals.
+///
 #[test]
 fn lexer_tests()
 {
@@ -48,7 +53,11 @@ fn lexer_tests()
 ///
 /// Tests for the `Parser`.
 ///
-// Test Matrix Rows: T2.1, T2.2, T2.3
+/// This test covers the following combinations from the Test Matrix:
+/// - T2.1: A single command with one argument.
+/// - T2.2: Multiple commands with arguments.
+/// - T2.3: Empty input.
+///
 #[test]
 fn parser_tests()
 {
@@ -83,7 +92,13 @@ fn parser_tests()
 ///
 /// Tests for the `SemanticAnalyzer`.
 ///
-// Test Matrix Rows: T3.1, T3.2, T3.3, T3.4, T3.5
+/// This test covers the following combinations from the Test Matrix:
+/// - T3.1: A valid command with correct arguments.
+/// - T3.2: An unknown command.
+/// - T3.3: A command with a missing required argument.
+/// - T3.4: A command with an argument of the wrong type.
+/// - T3.5: A command with too many arguments.
+///
 #[test]
 fn semantic_analyzer_tests()
 {
@@ -159,7 +174,10 @@ fn semantic_analyzer_tests()
 ///
 /// Tests for the `Interpreter`.
 ///
-// Test Matrix Rows: T4.1, T4.2
+/// This test covers the following combinations from the Test Matrix:
+/// - T4.1: A single valid command.
+/// - T4.2: Multiple valid commands.
+///
 #[test]
 fn interpreter_tests()
 {
@@ -203,7 +221,10 @@ fn interpreter_tests()
 ///
 /// Tests for the `HelpGenerator`.
 ///
-// Test Matrix Rows: T5.1, T5.2
+/// This test covers the following combinations from the Test Matrix:
+/// - T5.1: A command with arguments.
+/// - T5.2: A command without arguments.
+///
 #[test]
 fn help_generator_tests()
 {
