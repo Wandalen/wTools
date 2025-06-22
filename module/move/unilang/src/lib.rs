@@ -18,3 +18,5 @@ pub mod registry;
 pub mod parsing;
 #[ cfg( feature = "enabled" ) ]
 pub mod semantic;
+#[ cfg( feature = "enabled" ) ]
+pub mod interpreter;

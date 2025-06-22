@@ -4,8 +4,8 @@
 *   Implement Phase 1 of the Unilang framework: "Core `unilang` Language Engine & CLI Foundations", as detailed in `module/move/unilang/roadmap.md`. This involves creating the `unilang` crate, establishing the parsing pipeline, core data structures, command registration, basic execution flow, and initial help/error capabilities.
 
 ### Progress
-*   🚀 Phase 1 In Progress (Increment 6/9 done)
-*   Key Milestones Achieved: ✅ Foundational crate setup, ✅ Core data structures defined, ✅ Command registry implemented, ✅ Lexer implemented, ✅ Parser implemented, ✅ Semantic analysis implemented.
+*   🚀 Phase 1 In Progress (Increment 7/9 done)
+*   Key Milestones Achieved: ✅ Foundational crate setup, ✅ Core data structures defined, ✅ Command registry implemented, ✅ Lexer implemented, ✅ Parser implemented, ✅ Semantic analysis implemented, ✅ Interpreter implemented.
 
 ### Target Crate
 *   module/move/unilang
@@ -116,7 +116,17 @@
     *   Verification Strategy: Attempt to run `cargo build -p unilang`. The build should pass.
     *   Commit Message: "feat(unilang): Implement semantic analysis and command binding"
 
-*   ⚫ Increment 7: Interpreter (Roadmap 5)
+*   ✅ Increment 7: Interpreter (Roadmap 5)
+    *   Detailed Plan Step 1: Create the file `module/move/unilang/src/interpreter.rs`.
+    *   Detailed Plan Step 2: Declare the `interpreter` module in `src/lib.rs`.
+    *   Detailed Plan Step 3: Define a basic `ExecutionContext` struct in `src/interpreter.rs`.
+    *   Detailed Plan Step 4: Implement the `Interpreter` struct that takes a list of `VerifiedCommand`s.
+    *   Detailed Plan Step 5: Implement a `run` method on the `Interpreter` to iterate through commands.
+    *   Detailed Plan Step 6: The `run` method will currently just print the `VerifiedCommand` to simulate execution, as actual routine invocation is not yet implemented.
+    *   Pre-Analysis: The semantic analyzer produces `VerifiedCommand`s. The interpreter will consume these and execute them.
+    *   Crucial Design Rules: [Implementation: Complete One Sub-Task Before Starting Another](#implementation-complete-one-sub-task-before-starting-another)
+    *   Relevant Behavior Rules: The interpreter should handle sequential execution of commands (Spec 5.4) and use a basic `ExecutionContext` (Spec 4.7, 5.1).
+    *   Verification Strategy: Attempt to run `cargo build -p unilang`. The build should pass.
     *   Commit Message: "feat(unilang): Implement basic interpreter and execution context"
 
 *   ⚫ Increment 8: Error Handling (Roadmap 4.5)
