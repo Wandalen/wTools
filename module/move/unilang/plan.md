@@ -4,8 +4,8 @@
 *   Implement Phase 1 of the Unilang framework: "Core `unilang` Language Engine & CLI Foundations", as detailed in `module/move/unilang/roadmap.md`. This involves creating the `unilang` crate, establishing the parsing pipeline, core data structures, command registration, basic execution flow, and initial help/error capabilities.
 
 ### Progress
-*   🚀 Phase 1 In Progress (Increment 8/9 done)
-*   Key Milestones Achieved: ✅ Foundational crate setup, ✅ Core data structures defined, ✅ Command registry implemented, ✅ Lexer implemented, ✅ Parser implemented, ✅ Semantic analysis implemented, ✅ Interpreter implemented, ✅ Error handling implemented.
+*   🚀 Phase 1 Complete (Increments 1-9)
+*   Key Milestones Achieved: ✅ Foundational crate setup, ✅ Core data structures defined, ✅ Command registry implemented, ✅ Lexer implemented, ✅ Parser implemented, ✅ Semantic analysis implemented, ✅ Interpreter implemented, ✅ Error handling implemented, ✅ Help generation implemented.
 
 ### Target Crate
 *   module/move/unilang
@@ -141,7 +141,16 @@
     *   Verification Strategy: Attempt to run `cargo build -p unilang`. The build should pass.
     *   Commit Message: "feat(unilang): Implement standard error handling"
 
-*   ⚫ Increment 9: Help Generation (Roadmap 6)
+*   ✅ Increment 9: Help Generation (Roadmap 6)
+    *   Detailed Plan Step 1: Create the file `module/move/unilang/src/help.rs`.
+    *   Detailed Plan Step 2: Declare the `help` module in `src/lib.rs`.
+    *   Detailed Plan Step 3: Implement a `HelpGenerator` struct in `src/help.rs`.
+    *   Detailed Plan Step 4: Implement a method on `HelpGenerator` to generate structured help data from a `CommandDefinition`.
+    *   Detailed Plan Step 5: Implement a default text formatter for the structured help data.
+    *   Pre-Analysis: The core components are in place. The final piece for Phase 1 is providing help generation capabilities.
+    *   Crucial Design Rules: [Comments and Documentation](#comments-and-documentation)
+    *   Relevant Behavior Rules: Help generation should be based on `CommandDefinition`s (Spec 3.2.6). The output should be structured and a default text formatter should be provided (Spec 6.3).
+    *   Verification Strategy: Attempt to run `cargo build -p unilang`. The build should pass.
     *   Commit Message: "feat(unilang): Implement basic help generation"
 
 ### Task Requirements
