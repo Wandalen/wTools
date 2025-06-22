@@ -1,32 +1,35 @@
 //!
-//! The parsing components for the Unilang framework.
+//! The parsing components for the Unilang framework, including the lexer and parser.
 //!
 
 ///
 /// Represents a token in the Unilang language.
 ///
+/// Tokens are the smallest individual units of meaning in the language,
+/// produced by the `Lexer` and consumed by the `Parser`.
 #[ derive( Debug, PartialEq, Clone ) ]
 pub enum Token
 {
-  /// A command or argument name.
+  /// A command or argument name (e.g., `my_command`, `arg1`).
   Identifier( String ),
-  /// A string literal.
+  /// A string literal (e.g., `"hello world"`).
   String( String ),
-  /// An integer literal.
+  /// An integer literal (e.g., `123`, `-45`).
   Integer( i64 ),
-  /// A float literal.
+  /// A float literal (e.g., `1.23`).
   Float( f64 ),
-  /// A boolean literal.
+  /// A boolean literal (`true` or `false`).
   Boolean( bool ),
   /// The command separator `;;`.
   CommandSeparator,
-  /// End of input.
+  /// Represents the end of the input string.
   Eof,
 }
 
 ///
 /// The lexer for the Unilang language.
 ///
+/// The lexer is responsible for breaking the input string into a sequence of tokens.
 #[ derive( Debug ) ]
 pub struct Lexer< 'a >
 {
@@ -39,11 +42,12 @@ pub struct Lexer< 'a >
 impl< 'a > Lexer< 'a >
 {
   ///
-  /// Creates a new `Lexer`.
+  /// Creates a new `Lexer` from an input string.
   ///
   pub fn new( input : &'a str ) -> Self
   {
-    let mut lexer = Lexer {
+    let mut lexer = Lexer
+    {
       input,
       position : 0,
       read_position : 0,
@@ -54,7 +58,7 @@ impl< 'a > Lexer< 'a >
   }
 
   ///
-  /// Reads the next character from the input.
+  /// Reads the next character from the input and advances the position.
   ///
   fn read_char( &mut self )
   {
@@ -121,7 +125,7 @@ impl< 'a > Lexer< 'a >
   }
 
   ///
-  /// Skips whitespace characters.
+  /// Skips any whitespace characters.
   ///
   fn skip_whitespace( &mut self )
   {
@@ -162,7 +166,7 @@ impl< 'a > Lexer< 'a >
   }
 
   ///
-  /// Reads a number literal from the input.
+  /// Reads a number literal (integer or float) from the input.
   ///
   fn read_number( &mut self ) -> Token
   {
@@ -194,7 +198,7 @@ impl< 'a > Lexer< 'a >
   }
 
   ///
-  /// Peeks at the next character without consuming it.
+  /// Peeks at the next character in the input without consuming it.
   ///
   fn peek_char( &self ) -> u8
   {
@@ -209,7 +213,9 @@ impl< 'a > Lexer< 'a >
   }
 }
 
-/// Represents a single command statement.
+///
+/// Represents a single command statement in the AST.
+///
 #[ derive( Debug, PartialEq, Clone ) ]
 pub struct Statement
 {
@@ -219,7 +225,10 @@ pub struct Statement
   pub args : Vec< Token >,
 }
 
+///
 /// Represents a program, which is a series of statements.
+///
+/// This is the root of the Abstract Syntax Tree (AST).
 #[ derive( Debug, Default ) ]
 pub struct Program
 {
@@ -230,6 +239,8 @@ pub struct Program
 ///
 /// The parser for the Unilang language.
 ///
+/// The parser takes a `Lexer` and produces an Abstract Syntax Tree (AST)
+/// represented by a `Program` struct.
 #[ derive( Debug ) ]
 pub struct Parser< 'a >
 {
@@ -241,22 +252,24 @@ pub struct Parser< 'a >
 impl< 'a > Parser< 'a >
 {
   ///
-  /// Creates a new `Parser`.
+  /// Creates a new `Parser` from a `Lexer`.
   ///
   pub fn new( lexer : Lexer< 'a > ) -> Self
   {
-    let mut parser = Parser {
+    let mut parser = Parser
+    {
       lexer,
       current_token : Token::Eof,
       peek_token : Token::Eof,
     };
+    // Prime the parser with the first two tokens.
     parser.next_token();
     parser.next_token();
     parser
   }
 
   ///
-  /// Advances the tokens.
+  /// Advances the parser to the next token.
   ///
   fn next_token( &mut self )
   {
@@ -265,7 +278,7 @@ impl< 'a > Parser< 'a >
   }
 
   ///
-  /// Parses the program.
+  /// Parses the entire input and returns a `Program` AST.
   ///
   pub fn parse_program( &mut self ) -> Program
   {

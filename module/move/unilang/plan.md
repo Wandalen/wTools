@@ -69,7 +69,14 @@
     *   Relevant Behavior Rules: N/A
     *   Verification Strategy: Run `cargo build -p unilang` to ensure the changes compile.
     *   Commit Message: "style(unilang): Clean up and document src/interpreter.rs"
-*   ⚫ Increment 6: Review `src/parsing.rs`
+*   ✅ Increment 6: Review `src/parsing.rs`
+    *   Detailed Plan Step 1: Read the content of `src/parsing.rs`.
+    *   Detailed Plan Step 2: Apply codestyle fixes (spacing, newlines, etc.).
+    *   Detailed Plan Step 3: Add concise documentation to all public items (`Token`, `Lexer`, `Parser`, `Statement`, `Program`) and their methods/variants/fields.
+    *   Pre-Analysis: The file contains the lexer and parser. It's a large file and will require careful review to ensure all items are documented and formatted correctly.
+    *   Crucial Design Rules: [Comments and Documentation](#comments-and-documentation), [New Lines for Blocks](#new-lines-for-blocks), [Spaces Around Symbols](#spaces-around-symbols).
+    *   Relevant Behavior Rules: N/A
+    *   Verification Strategy: Run `cargo build -p unilang` to ensure the changes compile.
     *   Commit Message: "style(unilang): Clean up and document src/parsing.rs"
 *   ⚫ Increment 7: Review `src/registry.rs`
     *   Commit Message: "style(unilang): Clean up and document src/registry.rs"
