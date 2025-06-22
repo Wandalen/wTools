@@ -4,8 +4,8 @@
 *   Implement Phase 1 of the Unilang framework: "Core `unilang` Language Engine & CLI Foundations", as detailed in `module/move/unilang/roadmap.md`. This involves creating the `unilang` crate, establishing the parsing pipeline, core data structures, command registration, basic execution flow, and initial help/error capabilities.
 
 ### Progress
-*   🚀 Phase 1 In Progress (Increment 3/9 done)
-*   Key Milestones Achieved: ✅ Foundational crate setup, ✅ Core data structures defined, ✅ Command registry implemented.
+*   🚀 Phase 1 In Progress (Increment 4/9 done)
+*   Key Milestones Achieved: ✅ Foundational crate setup, ✅ Core data structures defined, ✅ Command registry implemented, ✅ Lexer implemented.
 
 ### Target Crate
 *   module/move/unilang
@@ -79,7 +79,16 @@
     *   Verification Strategy: Attempt to run `cargo build -p unilang`. The build should pass, confirming the new module and structs are syntactically correct.
     *   Commit Message: "feat(unilang): Implement command registry and registration API"
 
-*   ⚫ Increment 4: Lexer (Roadmap 2.1)
+*   ✅ Increment 4: Lexer (Roadmap 2.1)
+    *   Detailed Plan Step 1: Create the file `module/move/unilang/src/parsing.rs`.
+    *   Detailed Plan Step 2: Declare the `parsing` module in `src/lib.rs`.
+    *   Detailed Plan Step 3: Implement a `Token` enum in `src/parsing.rs` to represent lexical units.
+    *   Detailed Plan Step 4: Implement a `Lexer` struct in `src/parsing.rs` to tokenize an input string.
+    *   Detailed Plan Step 5: Implement a `next_token` method on the `Lexer`.
+    *   Pre-Analysis: The foundational modules are in place. The next logical step is to start the parsing pipeline, beginning with lexical analysis.
+    *   Crucial Design Rules: [Structuring: Add Module Declaration Before Content](#structuring-add-module-declaration-before-content)
+    *   Relevant Behavior Rules: The lexer should handle basic CLI syntax according to Unilang Spec 1.1.1.
+    *   Verification Strategy: Attempt to run `cargo build -p unilang`. The build should pass, confirming the new module and structs are syntactically correct.
     *   Commit Message: "feat(unilang): Implement lexer for CLI syntax"
 
 *   ⚫ Increment 5: Parser (Roadmap 2.2, 2.3)

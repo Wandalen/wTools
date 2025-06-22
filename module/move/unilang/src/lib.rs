@@ -14,3 +14,5 @@ mod private
 pub mod data;
 #[ cfg( feature = "enabled" ) ]
 pub mod registry;
+#[ cfg( feature = "enabled" ) ]
+pub mod parsing;
