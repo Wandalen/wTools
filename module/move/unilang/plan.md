@@ -96,7 +96,18 @@
     *   Relevant Behavior Rules: N/A
     *   Verification Strategy: Run `cargo build -p unilang` to ensure the changes compile.
     *   Commit Message: "style(unilang): Clean up and document src/semantic.rs"
-*   ⚫ Increment 9: Review `src/ca/` directory
+*   ✅ Increment 9: Review `src/ca/` directory
+    *   Detailed Plan Step 1: Read all files in `src/ca/` and its subdirectories.
+    *   Detailed Plan Step 2: Refactor `src/ca/mod.rs`.
+    *   Detailed Plan Step 3: Refactor `src/ca/parsing/mod.rs`.
+    *   Detailed Plan Step 4: Refactor `src/ca/parsing/engine.rs`.
+    *   Detailed Plan Step 5: Refactor `src/ca/parsing/error.rs`.
+    *   Detailed Plan Step 6: Refactor `src/ca/parsing/input.rs`.
+    *   Detailed Plan Step 7: Refactor `src/ca/parsing/instruction.rs`.
+    *   Pre-Analysis: This directory seems to contain a secondary parsing engine or a more complex command architecture (`ca`). It needs to be reviewed for consistency with the rest of the crate.
+    *   Crucial Design Rules: [Comments and Documentation](#comments-and-documentation), [New Lines for Blocks](#new-lines-for-blocks), [Spaces Around Symbols](#spaces-around-symbols).
+    *   Relevant Behavior Rules: N/A
+    *   Verification Strategy: Run `cargo build -p unilang` after refactoring all files in the directory.
     *   Commit Message: "style(unilang): Clean up and document src/ca/**"
 *   ⚫ Increment 10: Review `tests/` directory
     *   Commit Message: "style(unilang): Clean up and document tests/**"
