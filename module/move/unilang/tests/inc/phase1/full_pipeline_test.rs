@@ -8,7 +8,10 @@ use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
 use unilang::interpreter::{ Interpreter, ExecutionContext };
 
-// T1.1, T1.2, T1.3, T1.4
+///
+/// Tests for the `Lexer`.
+///
+// Test Matrix Rows: T1.1, T1.2, T1.3, T1.4
 #[test]
 fn lexer_tests()
 {
@@ -42,7 +45,10 @@ fn lexer_tests()
   assert_eq!( lexer.next_token(), Token::Eof );
 }
 
-// T2.1, T2.2, T2.3
+///
+/// Tests for the `Parser`.
+///
+// Test Matrix Rows: T2.1, T2.2, T2.3
 #[test]
 fn parser_tests()
 {
@@ -74,7 +80,10 @@ fn parser_tests()
   assert_eq!( program.statements.len(), 0 );
 }
 
-// T3.1, T3.2, T3.3, T3.4, T3.5
+///
+/// Tests for the `SemanticAnalyzer`.
+///
+// Test Matrix Rows: T3.1, T3.2, T3.3, T3.4, T3.5
 #[test]
 fn semantic_analyzer_tests()
 {
@@ -147,7 +156,10 @@ fn semantic_analyzer_tests()
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "TOO_MANY_ARGUMENTS" ) );
 }
 
-// T4.1, T4.2
+///
+/// Tests for the `Interpreter`.
+///
+// Test Matrix Rows: T4.1, T4.2
 #[test]
 fn interpreter_tests()
 {
@@ -188,7 +200,10 @@ fn interpreter_tests()
   assert_eq!( result.len(), 2 );
 }
 
-// T5.1, T5.2
+///
+/// Tests for the `HelpGenerator`.
+///
+// Test Matrix Rows: T5.1, T5.2
 #[test]
 fn help_generator_tests()
 {

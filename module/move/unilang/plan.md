@@ -109,7 +109,17 @@
     *   Relevant Behavior Rules: N/A
     *   Verification Strategy: Run `cargo build -p unilang` after refactoring all files in the directory.
     *   Commit Message: "style(unilang): Clean up and document src/ca/**"
-*   ⚫ Increment 10: Review `tests/` directory
+*   ✅ Increment 10: Review `tests/` directory
+    *   Detailed Plan Step 1: Read all files in `tests/` and its subdirectories.
+    *   Detailed Plan Step 2: Refactor `tests/tests.rs`.
+    *   Detailed Plan Step 3: Refactor `tests/inc/mod.rs`.
+    *   Detailed Plan Step 4: Refactor `tests/inc/phase1/mod.rs`.
+    *   Detailed Plan Step 5: Refactor `tests/inc/phase1/foundational_setup.rs`.
+    *   Detailed Plan Step 6: Refactor `tests/inc/phase1/full_pipeline_test.rs`.
+    *   Pre-Analysis: The test files need to be reviewed for clarity, documentation, and adherence to codestyle.
+    *   Crucial Design Rules: [Comments and Documentation](#comments-and-documentation)
+    *   Relevant Behavior Rules: N/A
+    *   Verification Strategy: Run `cargo test -p unilang` to ensure all tests still pass.
     *   Commit Message: "style(unilang): Clean up and document tests/**"
 *   ⚫ Increment 11: Final Verification
     *   Commit Message: "chore(unilang): Final verification of codestyle changes"
