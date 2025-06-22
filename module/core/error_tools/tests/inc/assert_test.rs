@@ -3,7 +3,7 @@ use super::*;
 
 //
 
-tests_impls!
+test_tools::tests_impls!
 {
   fn debug_assert_id_pass()
   {
@@ -78,7 +78,7 @@ tests_impls!
 
 //
 
-tests_index!
+test_tools::tests_index!
 {
   debug_assert_id_pass,
   debug_assert_id_fail,

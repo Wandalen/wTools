@@ -4,7 +4,7 @@ use super::*;
 //
 
 #[ cfg( feature = "error_untyped" ) ]
-tests_impls!
+test_tools::tests_impls!
 {
   fn basic()
   {
@@ -20,7 +20,7 @@ tests_impls!
 //
 
 #[ cfg( feature = "error_untyped" ) ]
-tests_index!
+test_tools::tests_index!
 {
   basic,
 }

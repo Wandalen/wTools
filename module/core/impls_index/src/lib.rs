@@ -6,7 +6,7 @@
 
 /// Collection of general purpose meta tools.
 #[ cfg( feature = "enabled" ) ]
-pub mod impls_index;
+pub mod implsindex;
 
 /// Namespace with dependencies.
 
@@ -30,7 +30,8 @@ pub mod own
   #[ doc( inline ) ]
   pub use orphan::*;
   #[ doc( inline ) ]
-  pub use super::impls_index::orphan::*;
+  pub use super::implsindex::orphan::*;
+  // pub use crate as impls_index;
 }
 
 /// Orphan namespace of the module.
@@ -52,7 +53,7 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use prelude::*;
   #[ doc( inline ) ]
-  pub use super::impls_index::exposed::*;
+  pub use super::implsindex::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -62,5 +63,5 @@ pub mod prelude
 {
   use super::*;
   #[ doc( inline ) ]
-  pub use super::impls_index::prelude::*;
+  pub use super::implsindex::prelude::*;
 }

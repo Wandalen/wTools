@@ -1,6 +1,6 @@
 [package]
 name = "test_tools"
-version = "0.14.0"
+version = "0.16.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -32,8 +32,8 @@ no-default-features = false
 [features]
 default = [
   "enabled",
-  "standalone_build",
-  # "normal_build",
+  # "standalone_build",
+  "normal_build",
   "process_tools",
   "process_environment_is_cicd",
 ]
@@ -52,13 +52,12 @@ enabled = [
 # nightly = [ "typing_tools/nightly" ]
 
 normal_build = [
-  # "dep:error_tools",
-  # "dep:collection_tools",
-  # "dep:impls_index",
-  # "dep:mem_tools",
-  # "dep:typing_tools",
-  # "dep:diagnostics_tools",
-  # # "dep:process_tools",
+  "dep:error_tools",
+  "dep:collection_tools",
+  "dep:impls_index",
+  "dep:mem_tools",
+  "dep:typing_tools",
+  "dep:diagnostics_tools",
 ]
 
 # standalone_build vesion of build is used to avoid cyclic dependency
@@ -70,8 +69,6 @@ standalone_build = [
   "standalone_mem_tools",
   "standalone_typing_tools",
   "standalone_diagnostics_tools",
-  # "standalone_process_tools",
-  # "dep:process_tools",
 ]
 standalone_error_tools = [ "dep:anyhow", "dep:thiserror", "error_typed", "error_untyped" ]
 standalone_collection_tools = [ "dep:hashbrown", "collection_constructors", "collection_into_constructors" ]
@@ -110,15 +107,14 @@ num-traits = { workspace = true }
 rand = { workspace = true }
 # tempdir = { workspace = true }
 
-# ## internal
-#
-# error_tools = { workspace = true, features = [ "full" ], optional = true }
-# collection_tools = { workspace = true, features = [ "full" ], optional = true }
-# impls_index = { workspace = true, features = [ "full" ], optional = true }
-# mem_tools = { workspace = true, features = [ "full" ], optional = true }
-# typing_tools = { workspace = true, features = [ "full" ], optional = true }
-# diagnostics_tools = { workspace = true, features = [ "full" ], optional = true }
-# # process_tools = { workspace = true, features = [ "full" ], optional = true }
+## internal
+
+error_tools = { workspace = true, features = [ "full" ], optional = true }
+collection_tools = { workspace = true, features = [ "full" ], optional = true }
+impls_index = { workspace = true, features = [ "full" ], optional = true }
+mem_tools = { workspace = true, features = [ "full" ], optional = true }
+typing_tools = { workspace = true, features = [ "full" ], optional = true }
+diagnostics_tools = { workspace = true, features = [ "full" ], optional = true }
 
 
 ## transient
