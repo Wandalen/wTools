@@ -11,8 +11,8 @@ pub mod collection_tools;
 pub use collection_tools as collection;
 
 /// impl and index macros.
-#[ path = "../../../core/impls_index/src/impls_index/mod.rs" ]
-pub mod impls_index;
+#[ path = "../../../core/impls_index/src/implsindex/mod.rs" ]
+pub mod implsindex;
 
 /// Memory tools.
 #[ path = "../../../core/mem_tools/src/mem.rs" ]

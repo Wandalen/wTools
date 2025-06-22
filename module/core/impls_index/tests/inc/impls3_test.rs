@@ -1,5 +1,5 @@
 use super::*;
-use the_module::exposed::{ impls3, index, impls_index };
+use the_module::exposed::{ impls3, index, implsindex as impls_index };
 
 //
 

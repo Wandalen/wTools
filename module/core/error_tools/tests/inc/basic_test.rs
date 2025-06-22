@@ -5,7 +5,7 @@ use super::*;
 //
 
 #[ cfg( not( feature = "no_std" ) ) ]
-tests_impls!
+test_tools::tests_impls!
 {
 //   fn basic()
 //   {
@@ -123,7 +123,7 @@ tests_impls!
 //
 
 #[ cfg( not( feature = "no_std" ) ) ]
-tests_index!
+test_tools::tests_index!
 {
   // basic,
   // use1,

@@ -96,7 +96,7 @@ fn impls_basic()
       {
         macro_rules! macro1
         {
-          ( $( $Arg : tt )* ) => { };
+          () => { };
         }
         macro1!();
       }
