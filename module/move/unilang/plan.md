@@ -87,7 +87,14 @@
     *   Relevant Behavior Rules: N/A
     *   Verification Strategy: Run `cargo build -p unilang` to ensure the changes compile.
     *   Commit Message: "style(unilang): Clean up and document src/registry.rs"
-*   ⚫ Increment 8: Review `src/semantic.rs`
+*   ✅ Increment 8: Review `src/semantic.rs`
+    *   Detailed Plan Step 1: Read the content of `src/semantic.rs`.
+    *   Detailed Plan Step 2: Apply codestyle fixes (spacing, newlines, etc.).
+    *   Detailed Plan Step 3: Add concise documentation to the `VerifiedCommand` and `SemanticAnalyzer` structs and their methods.
+    *   Pre-Analysis: The file contains the semantic analyzer. It needs proper documentation and formatting.
+    *   Crucial Design Rules: [Comments and Documentation](#comments-and-documentation)
+    *   Relevant Behavior Rules: N/A
+    *   Verification Strategy: Run `cargo build -p unilang` to ensure the changes compile.
     *   Commit Message: "style(unilang): Clean up and document src/semantic.rs"
 *   ⚫ Increment 9: Review `src/ca/` directory
     *   Commit Message: "style(unilang): Clean up and document src/ca/**"

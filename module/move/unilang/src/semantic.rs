@@ -11,18 +11,22 @@ use std::collections::HashMap;
 ///
 /// Represents a command that has been verified against the command registry.
 ///
+/// This struct holds the command's definition and the arguments provided
+/// by the user, ensuring that the command is valid and ready for execution.
 #[ derive( Debug, Clone ) ]
 pub struct VerifiedCommand
 {
   /// The definition of the command.
   pub definition : CommandDefinition,
-  /// The arguments provided for the command.
+  /// The arguments provided for the command, mapped by name.
   pub arguments : HashMap< String, Token >,
 }
 
 ///
-/// The semantic analyzer.
+/// The semantic analyzer, responsible for validating the parsed program.
 ///
+/// The analyzer checks the program against the command registry to ensure
+/// that commands exist, arguments are correct, and types match.
 #[ derive( Debug ) ]
 pub struct SemanticAnalyzer< 'a >
 {
@@ -43,6 +47,8 @@ impl< 'a > SemanticAnalyzer< 'a >
   ///
   /// Analyzes the program and returns a list of verified commands or an error.
   ///
+  /// This is the main entry point for semantic analysis, processing each
+  /// statement in the program.
   pub fn analyze( &self ) -> Result< Vec< VerifiedCommand >, Error >
   {
     let mut verified_commands = Vec::new();
@@ -67,6 +73,8 @@ impl< 'a > SemanticAnalyzer< 'a >
   ///
   /// Binds the arguments from a statement to the command definition.
   ///
+  /// This function checks for the correct number and types of arguments,
+  /// returning an error if validation fails.
   fn bind_arguments( &self, statement : &Statement, command_def : &CommandDefinition ) -> Result< HashMap< String, Token >, Error >
   {
     let mut bound_args = HashMap::new();
