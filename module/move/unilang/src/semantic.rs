@@ -3,6 +3,7 @@
 //!
 
 use crate::data::{ CommandDefinition, ErrorData };
+use crate::error::Error;
 use crate::parsing::{ Program, Statement, Token };
 use crate::registry::CommandRegistry;
 use std::collections::HashMap;
@@ -42,7 +43,7 @@ impl< 'a > SemanticAnalyzer< 'a >
   ///
   /// Analyzes the program and returns a list of verified commands or an error.
   ///
-  pub fn analyze( &self ) -> Result< Vec< VerifiedCommand >, ErrorData >
+  pub fn analyze( &self ) -> Result< Vec< VerifiedCommand >, Error >
   {
     let mut verified_commands = Vec::new();
 
@@ -66,7 +67,7 @@ impl< 'a > SemanticAnalyzer< 'a >
   ///
   /// Binds the arguments from a statement to the command definition.
   ///
-  fn bind_arguments( &self, statement : &Statement, command_def : &CommandDefinition ) -> Result< HashMap< String, Token >, ErrorData >
+  fn bind_arguments( &self, statement : &Statement, command_def : &CommandDefinition ) -> Result< HashMap< String, Token >, Error >
   {
     let mut bound_args = HashMap::new();
     let mut arg_iter = statement.args.iter().peekable();
@@ -90,7 +91,7 @@ impl< 'a > SemanticAnalyzer< 'a >
           return Err( ErrorData {
             code : "INVALID_ARGUMENT_TYPE".to_string(),
             message : format!( "Invalid type for argument '{}'. Expected {}, got {:?}", arg_def.name, arg_def.kind, token ),
-          } );
+          }.into() );
         }
         bound_args.insert( arg_def.name.clone(), token.clone() );
       }
@@ -99,7 +100,7 @@ impl< 'a > SemanticAnalyzer< 'a >
         return Err( ErrorData {
           code : "MISSING_ARGUMENT".to_string(),
           message : format!( "Missing required argument: {}", arg_def.name ),
-        } );
+        }.into() );
       }
     }
 
@@ -108,7 +109,7 @@ impl< 'a > SemanticAnalyzer< 'a >
       return Err( ErrorData {
         code : "TOO_MANY_ARGUMENTS".to_string(),
         message : "Too many arguments provided".to_string(),
-      } );
+      }.into() );
     }
 
     Ok( bound_args )

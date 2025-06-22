@@ -3,7 +3,8 @@
 //!
 
 use crate::semantic::VerifiedCommand;
-use crate::data::{ OutputData, ErrorData };
+use crate::data::OutputData;
+use crate::error::Error;
 
 ///
 /// The execution context for a command.
@@ -36,7 +37,7 @@ impl< 'a > Interpreter< 'a >
   ///
   /// Runs the commands.
   ///
-  pub fn run( &self, _context : &mut ExecutionContext ) -> Result< Vec< OutputData >, ErrorData >
+  pub fn run( &self, _context : &mut ExecutionContext ) -> Result< Vec< OutputData >, Error >
   {
     let mut results = Vec::new();
     for command in self.commands

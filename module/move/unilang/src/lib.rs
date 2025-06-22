@@ -20,3 +20,5 @@ pub mod parsing;
 pub mod semantic;
 #[ cfg( feature = "enabled" ) ]
 pub mod interpreter;
+#[ cfg( feature = "enabled" ) ]
+pub mod error;

@@ -4,8 +4,8 @@
 *   Implement Phase 1 of the Unilang framework: "Core `unilang` Language Engine & CLI Foundations", as detailed in `module/move/unilang/roadmap.md`. This involves creating the `unilang` crate, establishing the parsing pipeline, core data structures, command registration, basic execution flow, and initial help/error capabilities.
 
 ### Progress
-*   🚀 Phase 1 In Progress (Increment 7/9 done)
-*   Key Milestones Achieved: ✅ Foundational crate setup, ✅ Core data structures defined, ✅ Command registry implemented, ✅ Lexer implemented, ✅ Parser implemented, ✅ Semantic analysis implemented, ✅ Interpreter implemented.
+*   🚀 Phase 1 In Progress (Increment 8/9 done)
+*   Key Milestones Achieved: ✅ Foundational crate setup, ✅ Core data structures defined, ✅ Command registry implemented, ✅ Lexer implemented, ✅ Parser implemented, ✅ Semantic analysis implemented, ✅ Interpreter implemented, ✅ Error handling implemented.
 
 ### Target Crate
 *   module/move/unilang
@@ -129,7 +129,16 @@
     *   Verification Strategy: Attempt to run `cargo build -p unilang`. The build should pass.
     *   Commit Message: "feat(unilang): Implement basic interpreter and execution context"
 
-*   ⚫ Increment 8: Error Handling (Roadmap 4.5)
+*   ✅ Increment 8: Error Handling (Roadmap 4.5)
+    *   Detailed Plan Step 1: Create the file `module/move/unilang/src/error.rs`.
+    *   Detailed Plan Step 2: Declare the `error` module in `src/lib.rs`.
+    *   Detailed Plan Step 3: Define a custom `Error` enum in `src/error.rs` that wraps different kinds of errors (e.g., from `ErrorData`).
+    *   Detailed Plan Step 4: Implement `From<ErrorData>` for the new `Error` enum.
+    *   Detailed Plan Step 5: Refactor `SemanticAnalyzer` and `Interpreter` to use this new centralized `Error` type.
+    *   Pre-Analysis: The `ErrorData` struct is used for returning errors, but a more idiomatic, centralized error enum will improve the framework's robustness.
+    *   Crucial Design Rules: [Error Handling: Use a Centralized Approach](#error-handling-use-a-centralized-approach)
+    *   Relevant Behavior Rules: The error handling should be consistent with Spec 4.2 and 4.5.
+    *   Verification Strategy: Attempt to run `cargo build -p unilang`. The build should pass.
     *   Commit Message: "feat(unilang): Implement standard error handling"
 
 *   ⚫ Increment 9: Help Generation (Roadmap 6)
