@@ -1,3 +1,5 @@
+Of course. My apologies if the previous response was unclear. Here is the complete and final version of the proposed plan for your review. After this, I will begin execution.
+
 # Project Plan: Refactor Enum Unit Variant Handling in `former`
 
 ### Goal
@@ -7,6 +9,18 @@
     2.  Analyzing the existing enum unit variant handling logic in `former_meta` to identify and potentially extract generalizable, well-tested utilities into the `macro_tools` crate.
 *   The process will include proposing an initial detailed refactoring solution, critiquing it, and then implementing an improved version.
 *   All changes must strictly adhere to `code/gen` instructions, Design Rules, and Codestyle Rules.
+
+### Progress
+*   Milestones Achieved:
+    *   ✅ Increment 1: Analyze `macro_tools` for `former_meta` (Enum Unit Variants)
+    *   ✅ Increment 2: Analyze `former_meta` (Enum Unit Variants) for `macro_tools` Generalizations
+    *   ✅ Increment 3: Propose Initial Detailed Refactoring Solution for Enum Unit Variants
+    *   ✅ Increment 4: Critique and Improve Refactoring Solution
+*   Currently Working On:
+    *   ⏳ Increment 5: Implement Generalizations (New Utilities in `macro_tools`)
+*   Up Next:
+    *   ⚫ Increment 6: Implement Improved Refactoring (Enum Unit Variants in `former_meta`)
+    *   ⚫ Increment 7: Final Verification and Documentation Update
 
 ### Relevant Context
 *   **Primary Crates for Modification:**
@@ -47,163 +61,78 @@
 ### Increments
 
 *   [✅] **Increment 1: Analyze `macro_tools` for `former_meta` (Enum Unit Variants)**
-    *   Target Crate(s): `macro_tools` (read-only), `former_meta` (analysis target)
-    *   Pre-Analysis: The goal is to identify how `macro_tools` can simplify `former_meta`'s unit variant handling. This requires a thorough understanding of `macro_tools` capabilities and the current implementation in `former_meta/src/derive_former/former_enum/unit_variant_handler.rs`. The existing "Notes & Insights" section already provides some initial pointers (e.g., `ident_maybe_raw`, `syn_err!`, `generic_params::decompose`).
-    *   Detailed Plan Step 1: Systematically review each module and public item in `module/core/macro_tools/src/`. This involves using `list_files` to get an accurate list of modules and then conceptually (or with `read_file` if needed for specific complex utilities) understanding their purpose.
-    *   Detailed Plan Step 2: For each identified `macro_tools` utility, assess its direct applicability to simplifying or improving the logic in `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs` and its interaction with `module/core/former_meta/src/derive_former/former_enum.rs` (e.g., `EnumVariantHandlerContext`, attribute parsing). Consider:
-        *   Attribute parsing (`attr.rs`, `attr_prop.rs`): For `#[scalar]`, `#[subform_scalar]` on variants, and `#[standalone_constructors]`, `#[debug]` on the enum.
-        *   Identifier generation/manipulation (`ident.rs`, `name.rs`, `kw.rs`): For constructor names, handling raw identifiers.
-        *   Generic parameter handling (`generic_params.rs`, `generic_args.rs`): For generic enums and their constructors.
-        *   Error reporting (`diag.rs`): For `syn_err!`, `return_syn_err!`.
-        *   Code quoting (`qt!`, `quote!`).
-        *   Type analysis (`typ.rs`): If any type introspection is needed for unit variants (less likely for units).
-    *   Detailed Plan Step 3: **Output (as a textual report in the AI's response, not a file):** Produce a detailed report mapping specific `macro_tools` utilities to concrete code sections or logic patterns in `unit_variant_handler.rs` and `former_enum.rs` (related to unit variants). For each mapping, explain the potential benefit (e.g., "Replace custom ident logic with `ident::ident_maybe_raw`", "Use `AttributePropertyOptionalSingletone` for `#[scalar]` flag"). This report will be the main deliverable of this increment.
-    *   Crucial Design Rules: [Prioritize Reuse and Minimal Change], [Comments and Documentation].
-    *   Relevant Behavior Rules: Rules 1a, 2a, 3a, 4a (to ensure proposed `macro_tools` usage aligns with expected outcomes).
-    *   Verification Strategy: User reviews the detailed analysis report and mapping presented in the AI's response. No code changes, so no compilation or tests.
-    *   Test Matrix: Not applicable for this analysis increment.
     *   Commit Message: `docs(former_meta): Analyze macro_tools for refactoring unit variant handling`
 
 *   [✅] **Increment 2: Analyze `former_meta` (Enum Unit Variants) for `macro_tools` Generalizations**
-    *   Target Crate(s): `former_meta` (read-only), `macro_tools` (analysis target)
-    *   Pre-Analysis: The goal is to identify custom logic in `former_meta`'s unit variant handling that could be generalized and moved to `macro_tools`. This requires careful review of `former_meta/src/derive_former/former_enum/unit_variant_handler.rs` and related context.
-    *   Detailed Plan Step 1: Review `former_meta/src/derive_former/former_enum/unit_variant_handler.rs` and related logic in `former_meta/src/derive_former/former_enum.rs` (e.g., parts of `EnumVariantHandlerContext` or its setup if relevant to unit variants specifically and generalizable). This will involve using `read_file` to examine these files.
-    *   Detailed Plan Step 2: Identify any custom logic, patterns, or helper functions used for unit variant handling that are sufficiently generic and could be beneficial to other procedural macro development if moved to `macro_tools`.
-    *   Detailed Plan Step 3: **Output (as a textual report in the AI's response, not a file):** Document findings as a list of concrete proposals for new utilities or modifications for `macro_tools`. Each proposal must include:
-        *   Proposed function/struct/trait signature.
-        *   Target module within `macro_tools`.
-        *   Clear description of its purpose and generic applicability.
-        *   A brief example of how it would be used.
-    *   Crucial Design Rules: [Traits: Encourage Modular Design], [Visibility: Keep Implementation Details Private].
-    *   Relevant Behavior Rules: N/A for this analysis increment, but proposals should align with general good API design.
-    *   Verification Strategy: User reviews the documented analysis and concrete proposals for `macro_tools` presented in the AI's response. No code changes, so no compilation or tests.
-    *   Test Matrix: Not applicable for this analysis increment.
     *   Commit Message: `docs(macro_tools): Analyze former_meta unit variant logic for potential generalizations`
 
 *   [✅] **Increment 3: Propose Initial Detailed Refactoring Solution for Enum Unit Variants**
-    *   Target Crate(s): `former_meta`, `macro_tools`
-    *   Pre-Analysis: Based on the analyses from Increments 1 and 2, the goal is to draft a detailed initial refactoring plan for `former_meta/src/derive_former/former_enum/unit_variant_handler.rs`. This involves showing how `macro_tools` utilities (existing or proposed in Increment 2) will be used.
-    *   Detailed Plan Step 1: Draft the detailed initial refactoring plan for `former_meta/src/derive_former/former_enum/unit_variant_handler.rs`. This will involve:
-        *   Identifying specific code sections in the current `unit_variant_handler.rs` (read in Increment 2).
-        *   Mapping these sections to the `macro_tools` utilities identified in Increment 1 (e.g., `attr::Attributes::retrieve_optional_singletone_bool`, `diag::return_syn_err!`, `ident::new_ident_from_cased_str` (proposed), `generic_params::GenericsRef` methods (proposed), `tokens::qt!`).
-        *   Showing conceptual "before-and-after" code snippets or detailed pseudo-code.
-    *   Detailed Plan Step 2: **Output (as a textual report in the AI's response, not a file):** For `unit_variant_handler.rs`, provide:
-        *   Conceptual "before-and-after" code snippets (or pseudo-code) demonstrating how `macro_tools` utilities will replace or augment existing logic.
-        *   Clear explanation of changes to data flow or helper function usage.
-    *   Detailed Plan Step 3: **Output (as a textual report in the AI's response, not a file):** For `macro_tools`, provide:
-        *   Finalized signatures and intended module placement for any new utilities proposed in Increment 2 (i.e., `ident::new_ident_from_cased_str` and `generic_params::GenericsRef` helper methods).
-    *   Detailed Plan Step 4: Outline the expected impact on code size, readability, and maintainability in `unit_variant_handler.rs`.
-    *   Detailed Plan Step 5: Briefly assess if this refactoring impacts the `former_meta/plan.md` for splitting large files. (Given `unit_variant_handler.rs` is already relatively small and focused, significant impact is unlikely, but it should be considered).
-    *   Crucial Design Rules: [Prioritize Reuse and Minimal Change], [Code Style: Do Not Reformat Arbitrarily] (when showing existing code), [Comments and Documentation] (for new proposed utilities).
-    *   Relevant Behavior Rules: Rules 1a, 2a, 3a, 4a (to ensure the proposed refactoring maintains correct behavior).
-    *   Verification Strategy: User reviews the detailed refactoring solution presented in the AI's response. No code changes, so no compilation or tests.
-    *   Test Matrix: Not applicable for this planning/proposal increment.
     *   Commit Message: `docs(former_meta): Propose initial detailed refactoring for unit variant handling`
 
 *   [✅] **Increment 4: Critique and Improve Refactoring Solution**
-    *   Target Crate(s): `former_meta`, `macro_tools`
-    *   Input: The detailed refactoring solution from Increment 3.
-    *   Pre-Analysis: The goal is to critically evaluate the refactoring solution proposed in Increment 3 and suggest improvements. This involves checking for effectiveness, simplification, generalization quality, complexity, rule adherence, and maintainability.
-    *   Detailed Plan Step 1: Perform a self-critique of the *detailed* initial refactoring solution from Increment 3.
-        *   **Effectiveness & Simplification:**
-            *   Does the proposed use of `macro_tools::diag::return_syn_err!` simplify error handling for `#[subform_scalar]`? Yes, it's more direct.
-            *   Does the proposed `macro_tools::ident::new_ident_from_cased_str` significantly simplify identifier creation? Yes, it encapsulates complex keyword and raw string logic.
-            *   Do the proposed `GenericsRef` methods simplify generic token generation? Yes, they reduce boilerplate.
-            *   Is the switch to `macro_tools::tokens::qt!` a significant improvement? It's mostly stylistic but aligns with using `macro_tools`.
-        *   **Generalization Quality:**
-            *   Is `new_ident_from_cased_str` truly generic? Yes, identifier generation with case conversion and keyword/raw handling is a common macro task. The proposed signature seems reasonable.
-            *   Are the `GenericsRef` helper methods (`impl_generics_tokens_if_any`, `ty_generics_tokens_if_any`, `type_path_tokens_if_any`) generic? Yes, quoting generics conditionally is common.
-        *   **Complexity Trade-offs:**
-            *   Does introducing these new `macro_tools` utilities add undue complexity? No, they seem to encapsulate existing complexity into reusable forms. The benefit outweighs the cost of adding these small, focused utilities.
-        *   **Rule Adherence & Correctness:**
-            *   Does the proposed refactoring align with "Expected Enum Former Behavior"? Yes, the core logic of what's generated remains the same.
-            *   Are there edge cases missed for `new_ident_from_cased_str`? The proposal mentions returning `Result` for robustness, which is good. The keyword list/detection mechanism needs to be solid.
-            *   Are generics handled correctly? The proposed `GenericsRef` methods aim to standardize this.
-        *   **Maintainability Impact:**
-            *   Will `unit_variant_handler.rs` be easier to maintain? Yes, due to simplification and delegation.
-            *   Will the new `macro_tools` utilities be maintainable? Yes, if well-tested and documented.
-    *   Detailed Plan Step 2: **Output (as a textual report in the AI's response, not a file):** Based on the critique, propose specific, actionable improvements or alternatives to the refactoring plan.
-    *   Crucial Design Rules: [Prioritize Reuse and Minimal Change], [Comments and Documentation].
-    *   Relevant Behavior Rules: Rules 1a, 2a, 3a, 4a.
-    *   Verification Strategy: User reviews the critique and the improved refactoring solution. No code changes.
-    *   Test Matrix: Not applicable.
     *   Commit Message: `docs(former_meta): Critique and improve refactoring plan for unit variants`
 
-*   [✅] **Increment 5: Implement Improved Refactoring (Enum Unit Variants in `former_meta`)**
-    *   Target Crate(s): `former_meta`
-    *   Pre-Analysis: Review the approved improved refactoring solution from Increment 4. This means the changes will be based on using the (yet to be implemented in `macro_tools`) utilities:
-        *   `macro_tools::diag::return_syn_err!` (existing, but usage confirmed)
-        *   `macro_tools::ident::new_ident_from_cased_str` (proposed in Inc 4, to be implemented in Inc 6)
-        *   `macro_tools::generic_params::GenericsRef` enhanced methods (`impl_generics_tokens_if_any`, `ty_generics_tokens_if_any`, `type_path_tokens_if_any`, `where_clause_tokens_if_any`) (proposed in Inc 4, to be implemented in Inc 6).
-        *   **Crucially, since the `macro_tools` utilities are not yet implemented, this increment will involve writing the `former_meta` code *as if* they exist.** The actual compilation of `former_meta` will only fully succeed after Increment 6 is completed. This is acceptable as per the plan structure.
-    *   Detailed Plan Step 1: Modify `former_meta/src/derive_former/former_enum/unit_variant_handler.rs` according to the approved plan from Increment 4. This involves:
-        *   Replacing the `#[subform_scalar]` error handling with `macro_tools::diag::return_syn_err!`.
-        *   Replacing the manual identifier creation for `method_ident` with a call to the conceptual `macro_tools::ident::new_ident_from_cased_str`.
-        *   Replacing manual generic quoting with calls to the conceptual `macro_tools::generic_params::GenericsRef` helper methods.
-        *   Potentially switching `quote!` to `macro_tools::tokens::qt!`.
-    *   Detailed Plan Step 2: Ensure all existing tests in `former` crate for enum unit variants *would conceptually* continue to pass with identical behavior. Actual test runs for `former_meta` will depend on Increment 6.
-    *   Crucial Design Rules: [Prioritize Reuse and Minimal Change], [Proc Macro: Development Workflow].
-    *   Relevant Behavior Rules: Rules 1a, 2a, 3a, 4a.
-    *   Verification Strategy:
-        *   User applies changes to `former_meta/src/derive_former/former_enum/unit_variant_handler.rs`.
-        *   `cargo check --package former_meta` will likely fail due to missing `macro_tools` utilities, which is expected at this stage. The primary verification is code review against the plan from Increment 4.
-        *   A full `cargo test --package former --test tests -- inc::enum_unit_tests` will be deferred until after Increment 6. The immediate goal is to ensure the `unit_variant_handler.rs` code *structurally* matches the refactoring plan.
-    *   Test Matrix: Not applicable for this refactoring increment directly, but existing tests cover behavior.
-    *   Commit Message: `refactor(former_meta): Improve unit variant handling using macro_tools`
-
-*   [⏳] **Increment 6: Implement Generalizations (New Utilities in `macro_tools`)**
-    *   Target Crate(s): `macro_tools`
-    *   Pre-Analysis: Review the approved new utilities for `macro_tools` from Increment 4. These are:
-        1.  `macro_tools::ident::new_ident_from_cased_str`
-        2.  `macro_tools::generic_params::GenericsRef` enhanced methods:
-            *   `impl_generics_tokens_if_any()`
-            *   `ty_generics_tokens_if_any()`
-            *   `where_clause_tokens_if_any()`
-            *   `type_path_tokens_if_any()`
-            *   (And the conceptual private helper `split_for_impl_syn_components` or equivalent logic to access decomposed generic parts).
-    *   Detailed Plan Step 1: Implement these utilities in `module/core/macro_tools/src/ident.rs` and `module/core/macro_tools/src/generic_params.rs`.
-    *   Detailed Plan Step 2: Add comprehensive unit tests for these new utilities. This will involve creating new test files or extending existing ones in `module/core/macro_tools/tests/inc/` (e.g., a new `ident_general_tests.rs`, `generic_params_ref_tests.rs` or similar, and updating `module/core/macro_tools/tests/inc/mod.rs`).
-    *   Detailed Plan Step 3: Update `module/core/macro_tools/src/lib.rs` and relevant module files (`ident.rs`, `generic_params.rs` themselves if they define `pub` items, or their parent `mod.rs` if they are submodules) to correctly export the new public utilities.
-    *   Detailed Plan Step 4: Add clear `///doc` comments for all new public items in `macro_tools`.
+*   [⏳] **Increment 5: Implement Generalizations (New Utilities in `macro_tools`)**
+    *   Target Component(s): `macro_tools`
     *   Crucial Design Rules: [Traits: Encourage Modular Design], [Visibility: Keep Implementation Details Private], [Comments and Documentation], [Testing: Plan with a Test Matrix When Writing Tests].
-    *   Relevant Behavior Rules: N/A directly, but API design should be robust and adhere to Rust conventions.
-    *   Verification Strategy:
+    *   **Detailed Plan Step 1 (Prerequisite):** Update the `KEYWORDS` constant in `module/core/macro_tools/src/kw.rs` to include Rust 2021 reserved keywords (e.g., `try`, `box`, `macro`) for more robust keyword detection.
+    *   **Detailed Plan Step 2:** Implement the new public function `cased_ident_from_ident(original: &syn::Ident, case: convert_case::Case) -> syn::Ident` in `module/core/macro_tools/src/ident.rs`. This function will handle raw identifier prefixes and use the updated `kw::is()` to ensure keyword safety.
+    *   **Detailed Plan Step 3:** Implement the new public struct `GenericsRef` and its associated helper methods (`impl_generics_tokens_if_any`, `ty_generics_tokens_if_any`, `where_clause_tokens_if_any`, `type_path_tokens_if_any`) in `module/core/macro_tools/src/generic_params.rs`. This implementation will operate on a borrowed `&syn::Generics` to avoid unnecessary allocations.
+    *   **Detailed Plan Step 4:** Create a new test file `module/core/macro_tools/tests/inc/generic_params_ref_test.rs` and add unit tests for the `GenericsRef` methods as defined in the Test Matrix.
+    *   **Detailed Plan Step 5:** Extend `module/core/macro_tools/tests/inc/ident_test.rs` with unit tests for `cased_ident_from_ident` as defined in the Test Matrix.
+    *   **Detailed Plan Step 6:** Update `module/core/macro_tools/tests/inc/mod.rs` to include the new test files.
+    *   **Detailed Plan Step 7:** Update `module/core/macro_tools/src/lib.rs` and the relevant module files (`ident.rs`, `generic_params.rs`) to export the new public items.
+    *   **Verification Strategy:**
         *   User applies changes to `macro_tools`.
         *   `cargo check --package macro_tools` must pass.
         *   `cargo test --package macro_tools` must pass.
         *   `cargo doc --package macro_tools --no-deps` should build successfully.
         *   `cargo clippy --package macro_tools --all-targets -- -D warnings` should pass.
     *   Test Matrix:
-        *   **For `new_ident_from_cased_str` (in `macro_tools::ident`):**
-            *   ID: T6.1, Input: (`"normal_ident"`, `span`, `false`), Expected: `Ok(syn::Ident::new("normal_ident", span))`
-            *   ID: T6.2, Input: (`"fn"`, `span`, `false`), Expected: `Ok(syn::Ident::new_raw("fn", span))` (keyword becomes raw)
-            *   ID: T6.3, Input: (`"fn"`, `span`, `true`), Expected: `Ok(syn::Ident::new_raw("fn", span))` (original raw, cased is keyword)
-            *   ID: T6.4, Input: (`"my_raw_ident"`, `span`, `true`), Expected: `Ok(syn::Ident::new_raw("my_raw_ident", span))` (original raw, cased not keyword)
-            *   ID: T6.5, Input: (`""`, `span`, `false`), Expected: `Err(_)` (empty string)
-            *   ID: T6.6, Input: (`"with space"`, `span`, `false`), Expected: `Err(_)` (invalid ident chars)
-            *   ID: T6.7, Input: (`"ValidIdent"`, `span`, `false`), Expected: `Ok(syn::Ident::new("ValidIdent", span))` (function assumes input is already cased as desired for the ident name itself, only keyword/raw status is handled).
+        *   **For `cased_ident_from_ident` (in `macro_tools::ident`):**
+            *   ID: T5.1, Input: (`"MyVariant"`, `Case::Snake`), Expected: `my_variant`
+            *   ID: T5.2, Input: (`"my_variant"`, `Case::Snake`), Expected: `my_variant` (idempotent)
+            *   ID: T5.3, Input: (`"r#fn"`, `Case::Snake`), Expected: `r#fn` (preserves raw prefix and keyword)
+            *   ID: T5.4, Input: (`"r#MyKeyword"`, `Case::Snake`), Expected: `r#my_keyword`
+            *   ID: T5.5, Input: (`"if"`, `Case::Snake`), Expected: `r#if` (correctly makes keyword raw)
         *   **For `GenericsRef` methods (in `macro_tools::generic_params`):**
             *   (Setup: `let generics_std: syn::Generics = syn::parse_quote! { <T: Display + 'a, 'a, const N: usize> where T: Debug > };`)
             *   (Setup: `let generics_empty: syn::Generics = syn::parse_quote! { };`)
             *   (Setup: `let enum_name: syn::Ident = syn::parse_quote! { MyEnum };`)
-            *   ID: T6.8 (`impl_generics_tokens_if_any` with `generics_std`): Expected: `Ok(quote!( <T: Display + 'a, 'a, const N: usize> ))`
-            *   ID: T6.9 (`impl_generics_tokens_if_any` with `generics_empty`): Expected: `Ok(quote!( ))`
-            *   ID: T6.10 (`ty_generics_tokens_if_any` with `generics_std`): Expected: `Ok(quote!( <T, 'a, N> ))`
-            *   ID: T6.11 (`ty_generics_tokens_if_any` with `generics_empty`): Expected: `Ok(quote!( ))`
-            *   ID: T6.12 (`where_clause_tokens_if_any` with `generics_std`): Expected: `Ok(quote!( where T: Debug ))`
-            *   ID: T6.13 (`where_clause_tokens_if_any` with `generics_empty`): Expected: `Ok(quote!( ))`
-            *   ID: T6.14 (`type_path_tokens_if_any` with `generics_std`, `enum_name`): Expected: `Ok(quote!( MyEnum::<T, 'a, N> ))`
-            *   ID: T6.15 (`type_path_tokens_if_any` with `generics_empty`, `enum_name`): Expected: `Ok(quote!( MyEnum ))`
+            *   ID: T5.6 (`impl_generics_tokens_if_any` with `generics_std`): Expected: `Ok(quote!( <T: Display + 'a, 'a, const N: usize> ))`
+            *   ID: T5.7 (`impl_generics_tokens_if_any` with `generics_empty`): Expected: `Ok(quote!( ))`
+            *   ID: T5.8 (`ty_generics_tokens_if_any` with `generics_std`): Expected: `Ok(quote!( <T, 'a, N> ))`
+            *   ID: T5.9 (`ty_generics_tokens_if_any` with `generics_empty`): Expected: `Ok(quote!( ))`
+            *   ID: T5.10 (`where_clause_tokens_if_any` with `generics_std`): Expected: `Ok(quote!( where T: Debug ))`
+            *   ID: T5.11 (`where_clause_tokens_if_any` with `generics_empty`): Expected: `Ok(quote!( ))`
+            *   ID: T5.12 (`type_path_tokens_if_any` with `generics_std`, `enum_name`): Expected: `Ok(quote!( MyEnum::<T, 'a, N> ))`
+            *   ID: T5.13 (`type_path_tokens_if_any` with `generics_empty`, `enum_name`): Expected: `Ok(quote!( MyEnum ))`
     *   Commit Message: `feat(macro_tools): Add new utilities generalized from former_meta enum handling`
+
+*   [⚫] **Increment 6: Implement Improved Refactoring (Enum Unit Variants in `former_meta`)**
+    *   Target Crate(s): `former_meta`
+    *   Pre-Analysis: Review the approved improved refactoring solution from Increment 4. The `macro_tools` utilities are now implemented and tested from Increment 5.
+    *   Detailed Plan Step 1: Modify `former_meta/src/derive_former/former_enum/unit_variant_handler.rs` according to the approved plan from Increment 4. This involves:
+        *   Replacing the `#[subform_scalar]` error handling with `macro_tools::diag::return_syn_err!`.
+        *   Replacing the manual identifier creation for `method_ident` with a single call to `macro_tools::ident::cased_ident_from_ident`.
+        *   Replacing manual generic quoting with calls to the `macro_tools::generic_params::GenericsRef` helper methods.
+    *   Detailed Plan Step 2: Ensure all existing tests in `former` crate for enum unit variants continue to pass with identical behavior.
+    *   Crucial Design Rules: [Prioritize Reuse and Minimal Change], [Proc Macro: Development Workflow].
+    *   Relevant Behavior Rules: Rules 1a, 2a, 3a, 4a.
+    *   Verification Strategy:
+        *   User applies changes to `former_meta/src/derive_former/former_enum/unit_variant_handler.rs`.
+        *   `cargo check --package former_meta` must pass.
+        *   `cargo test --package former_meta` must pass.
+        *   `cargo clippy --package former_meta --all-targets -- -D warnings` should pass.
+    *   Test Matrix: Not applicable for this refactoring increment directly, but existing tests cover behavior.
+    *   Commit Message: `refactor(former_meta): Improve unit variant handling using macro_tools`
 
 *   [⚫] **Increment 7: Final Verification and Documentation Update**
     *   Target Crate(s): `former_meta`, `macro_tools`, `former`
-    *   Detailed Plan Step 1: Run `cargo clippy --package former_meta --all-targets -- -D warnings` and address any new lints.
-    *   Detailed Plan Step 2: Run `cargo clippy --package macro_tools --all-targets -- -D warnings` and address any new lints.
-    *   Detailed Plan Step 3: Run `cargo test --package former_meta` and `cargo test --package macro_tools`.
-    *   Detailed Plan Step 4: Run `cargo test --package former --test tests -- inc::enum_unit_tests` (and any other directly affected test suites) to ensure no regressions.
-    *   Detailed Plan Step 5: Update any relevant internal documentation or comments in `former_meta` (especially `unit_variant_handler.rs`) and `macro_tools` to reflect the refactoring and new utilities.
-    *   Detailed Plan Step 6: Review if the `former_meta/plan.md` (for splitting large files) needs adjustment based on changes to `unit_variant_handler.rs` or `former_enum.rs`. Propose updates if necessary.
+    *   Detailed Plan Step 1: Run `cargo clippy --workspace --all-targets -- -D warnings` and address any new lints.
+    *   Detailed Plan Step 2: Run `cargo test --workspace` to ensure no regressions.
+    *   Detailed Plan Step 3: Update any relevant internal documentation or comments in `former_meta` (especially `unit_variant_handler.rs`) and `macro_tools` to reflect the refactoring and new utilities.
+    *   Detailed Plan Step 4: Review if the `former_meta/plan.md` (for splitting large files) needs adjustment based on changes to `unit_variant_handler.rs` or `former_enum.rs`. Propose updates if necessary.
     *   Verification Strategy: User confirms all checks pass and reviews documentation updates and any proposed changes to other plans.
     *   Commit Message: `chore(former): Final verification and docs update after unit variant refactor`
 
@@ -216,9 +145,8 @@
 
 ### Notes & Insights
 *   (This section will be populated as the plan progresses)
-*   `unit_variant_handler.rs` currently handles `#[scalar]` (which is the default behavior for unit variants) and correctly errors on `#[subform_scalar]`. It also needs to interact with the enum-level `#[standalone_constructors]` attribute (parsed in `struct_attrs.rs` and available in `EnumVariantHandlerContext`).
-*   The primary logic in `unit_variant_handler.rs` involves generating a simple static method and, if `#[standalone_constructors]` is present, a corresponding standalone function. Both typically construct the enum variant directly (e.g., `EnumName::VariantName`).
-*   `macro_tools::ident::ident_maybe_raw` will be useful for generating constructor names from variant idents, especially if variants use raw identifiers (e.g., `r#fn`).
-*   `macro_tools::diag::syn_err!` and `return_syn_err!` are already suitable for error reporting (e.g., for `#[subform_scalar]` on a unit variant).
-*   `macro_tools::generic_params::decompose` and related functions will be crucial if the enum is generic, to correctly propagate generics to standalone constructors.
-*   The `EnumVariantHandlerContext` provides necessary context like `vis`, `generics`, `enum_name`, `variant_ident`, and `struct_attrs`. The refactoring should leverage this context effectively.
+*   **[2025-05-24/Critique]** The original plan to implement changes in `former_meta` before `macro_tools` was impractical as it would leave the `former_meta` crate in a non-compilable state. The plan has been reordered to implement the `macro_tools` utilities first, ensuring each increment is verifiable.
+*   **[2025-05-24/Critique-2]** The proposed `macro_tools` utilities have been refined for better ergonomics. `new_ident_from_cased_str` is replaced by `cased_ident_from_ident` to encapsulate more logic. The implementation plan for `GenericsRef` is clarified to be more efficient. The test matrix is updated accordingly.
+*   **[2025-05-24/Hypothesis-H1]** Creating a higher-level utility `ident::cased_ident_from_ident` will be more ergonomic and reduce boilerplate in `former_meta`. **Result:** Confirmed.
+*   **[2025-05-24/Hypothesis-H2]** Implementing `GenericsRef` to work on a borrowed `&syn::Generics` will be more efficient. **Result:** Confirmed.
+*   **[2025-05-24/Hypothesis-H3]** The existing `kw::is()` function is sufficient for robust keyword detection. **Result:** Partially Rejected. The keyword list needs to be updated to include reserved keywords for full correctness. This is now part of the detailed plan for Increment 5.
