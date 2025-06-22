@@ -51,6 +51,7 @@ mod private
   /// This function handles raw identifier prefixes (`r#`) correctly and ensures that
   /// the newly created identifier is also a raw identifier if its cased version is a
   /// Rust keyword.
+  #[must_use]
   pub fn cased_ident_from_ident( original: &syn::Ident, case: convert_case::Case ) -> syn::Ident
   {
     let original_str = original.to_string();

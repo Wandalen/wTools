@@ -125,6 +125,7 @@ mod private
     ///
     /// This is suitable for use in `impl <#impl_generics> Struct ...` contexts.
     /// It includes bounds and lifetimes.
+    #[must_use]
     pub fn impl_generics_tokens_if_any(&self) -> proc_macro2::TokenStream
     {
       if self.syn_generics.params.is_empty()
@@ -140,6 +141,7 @@ mod private
     ///
     /// This is suitable for use in type paths like `Struct::<#ty_generics>`.
     /// It includes only the identifiers of the generic parameters (types, lifetimes, consts).
+    #[must_use]
     pub fn ty_generics_tokens_if_any(&self) -> proc_macro2::TokenStream
     {
       if self.syn_generics.params.is_empty()
@@ -152,6 +154,7 @@ mod private
 
     /// Returns the `where_clause` (e.g., `where T: Trait`) as a `TokenStream`
     /// if a where clause is present in the original generics, otherwise an empty `TokenStream`.
+    #[must_use]
     pub fn where_clause_tokens_if_any(&self) -> proc_macro2::TokenStream
     {
       let (_, _, where_clause) = self.syn_generics.split_for_impl();
@@ -165,6 +168,7 @@ mod private
     /// # Arguments
     ///
     /// * `base_ident`: The identifier of the base type (e.g., `MyType`).
+    #[must_use]
     pub fn type_path_tokens_if_any(&self, base_ident: &syn::Ident) -> proc_macro2::TokenStream
     {
       if self.syn_generics.params.is_empty()
@@ -374,7 +378,7 @@ mod private
   ///
   /// # Returns
   ///
-  /// Returns a new `Generics` instance containing only the names of the parameters.
+  /// Returns a new `syn::Generics` instance containing only the names of the parameters.
   ///
   /// # Examples
   ///
@@ -685,6 +689,7 @@ mod private
   }
 
 }
+
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
