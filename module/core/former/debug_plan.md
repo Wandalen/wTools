@@ -6,7 +6,7 @@
 ### Progress
 *   🚀 Phase 1 Complete (Increment 1)
 *   Key Milestones Achieved: ✅ Increment 1: Isolate the failing test case.
-*   Currently Working On: ⏳ Increment 2: Analyze and fix the responsible handler.
+*   Currently Working On: ❌ **Stuck:** Increment 2: Analyze and fix the responsible handler.
 
 ### Target Crate
 *   `module/core/former`
@@ -14,7 +14,7 @@
 
 ### Relevant Context
 *   **Failing Test Case:** `module/core/former/tests/inc/enum_unit_tests/generic_unit_variant_derive.rs`
-*   **Likely Bug Location:** `module/core/former_meta/src/derive_former/former_enum/tuple_single_field_scalar.rs` or another variant handler.
+*   **Likely Bug Location:** `module/core/former_meta/src/derive_former/former_enum.rs`
 *   **Key Files:**
     *   `module/core/former_meta/src/derive_former/former_enum.rs`
     *   `module/core/macro_tools/src/generic_params.rs`
@@ -32,12 +32,10 @@
     *   Verification Strategy: Execute `cargo test --package former --test tests` via `execute_command`. Analyze the output to confirm that only the `generic_unit_variant_derive` test runs and fails as expected.
     *   Commit Message: `chore(former): Isolate failing generic enum test`
 
-*   [⏳] **Increment 2: Analyze and fix the responsible handler**
-    *   Detailed Plan Step 1: Systematically comment out variant handler calls in `module/core/former_meta/src/derive_former/former_enum.rs` to identify which handler is generating the corrupt token stream.
-    *   Detailed Plan Step 2: Once the handler is identified (likely `tuple_single_field_scalar` or `tuple_single_field_subform`), analyze its use of `split_for_impl` and the `quote!` macro.
-    *   Detailed Plan Step 3: Correct the handler to generate syntactically correct code for generic variants.
-    *   Verification Strategy: `cargo test --package former` should pass.
-    *   Commit Message: `fix(former_meta): Correct token stream generation for generic enum variants`
+*   [❌] **Increment 2: Analyze and fix the responsible handler**
+    *   **Stuck Resolution:** Previous attempts to fix the token generation in both the specific handler (`tuple_single_field_scalar.rs`) and the main `former_enum.rs` file have failed to resolve the cryptic `comparison operators cannot be chained` error. This indicates a fundamental issue with how the multiple generated items (`impl`, `fn`, `struct`) are being combined into a single token stream.
+    *   **Conclusion:** The problem is a subtle token stream corruption issue that is beyond the current capabilities to debug with the available information. The debugging plan is now considered complete, but the issue remains unresolved. All changes have been reverted.
+    *   Commit Message: `chore(former): Conclude debugging of generic enum expansion`
 
 ### Task Requirements
 *   The fix must not introduce regressions in other parts of the `Former` macro.
@@ -50,3 +48,4 @@
 ### Notes & Insights
 *   The error `comparison operators cannot be chained` is a red herring from the compiler, indicating a subtle token stream corruption.
 *   The issue is likely related to the interaction between the `impl` block's generics and the generics of the methods being generated inside it.
+*   **[Stuck]** Multiple attempts to fix generics and where clauses have failed. The problem is likely structural.

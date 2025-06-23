@@ -97,7 +97,6 @@
 use super::*;
 use macro_tools::{ Result, quote::{ format_ident, quote }, syn };
 use proc_macro2::TokenStream; // Corrected import for TokenStream
-use macro_tools::generic_params::decompose; // Corrected path
 use super::struct_attrs::ItemAttributes; // Corrected import
 use super::field_attrs::FieldAttributes; // Corrected import
 
@@ -306,25 +305,26 @@ pub(super) fn former_for_enum
     } // End of match
   } // End of loop
 
-  let ( _enum_generics_with_defaults, enum_generics_impl, enum_generics_ty, _enum_generics_where_punctuated )
-    = decompose( generics );
+  let generics_ref = macro_tools::generic_params::GenericsRef::new( generics );
+  let enum_generics_impl = generics_ref.impl_generics_tokens_if_any();
+  let enum_generics_ty = generics_ref.ty_generics_tokens_if_any();
+  let enum_where_clause = generics_ref.where_clause_tokens_if_any();
 
   // qqq : Need to separate generated tokens from handlers into methods, standalone_constructors, and end_impls.
   // Currently, all are collected into methods.
 
   let result = quote!
   {
-      #[ automatically_derived ]
-      impl< #enum_generics_impl > #enum_name< #enum_generics_ty >
-      where
-        #merged_where_clause
-      {
-          #( #methods )*
-      }
+    #( #end_impls )*
 
-      // Standalone constructors and end impls should be placed here, outside the impl block.
-      #( #standalone_constructors )*
-      #( #end_impls )* // Uncommented to emit VariantFormer definitions
+    #[ automatically_derived ]
+    impl #enum_generics_impl #enum_name #enum_generics_ty
+    #enum_where_clause
+    {
+        #( #methods )*
+    }
+
+    #( #standalone_constructors )*
   };
 
   if has_debug
