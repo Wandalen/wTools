@@ -16,7 +16,7 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
 {
   if let Some( attr ) = &ctx.variant_attrs.subform_scalar
   {
-    return diag::return_syn_err!( attr.name.span(), "Attribute `subform_scalar` is not applicable to unit variants" );
+    return diag::return_syn_err!( attr.name.span(), "TEST ERROR: #[subform_scalar] cannot be used on unit variants. V3" );
   }
 
   let variant_ident = &ctx.variant.ident;
