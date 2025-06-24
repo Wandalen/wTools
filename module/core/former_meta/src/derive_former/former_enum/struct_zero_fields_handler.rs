@@ -1,11 +1,11 @@
 use super::*;
-use macro_tools::{ Result, quote };
+use macro_tools::quote;
 use proc_macro2::TokenStream; // Corrected import for TokenStream
 // use former_types::FormerDefinition; // Not needed here
 
 /// Handles zero-field struct variants with the `#[scalar]` attribute.
 /// Returns generated tokens for the static method and optionally the standalone constructor.
-pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< TokenStream >
+pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> TokenStream
 {
   // This handler is specifically for variants with #[scalar]
   // The main dispatch should ensure this is only called for scalar zero-field struct variants.
@@ -52,5 +52,5 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
     // and place them in the correct scope (outside the enum impl block).
   }
 
-  Ok( generated_tokens )
+  generated_tokens
 }

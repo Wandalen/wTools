@@ -1,6 +1,6 @@
 <!-- {{# generate.module_header{} #}} -->
 
-# Module :: component_model
+# Module :: `component_model`
 
 [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)
 [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_component_model_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_component_model_push.yml)
@@ -47,19 +47,19 @@ where
   }
 }
 
-fn main() {
+//fn main() {
   let mut person = Person::default();
   person.assign(42);
   person.assign("Alice");
   assert_eq!(person, Person { age: 42, name: "Alice".to_string() });
-}
+//}
 ```
 
 ## API Overview
 
-- **Assign**: Generic trait for assigning values to struct fields by type.
-- **AssignWithType**: Trait for assigning values with explicit type annotation.
-- **ComponentsAssign**: Trait for assigning multiple components at once.
+- **`Assign`**: Generic trait for assigning values to struct fields by type.
+- **`AssignWithType`**: Trait for assigning values with explicit type annotation.
+- **`ComponentsAssign`**: Trait for assigning multiple components at once.
 
 See [component_model_types documentation](https://docs.rs/component_model_types) for details.
 

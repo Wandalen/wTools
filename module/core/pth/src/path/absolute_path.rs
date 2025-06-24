@@ -167,7 +167,7 @@ mod private
 
       if !is_absolute( &path )
       {
-        return Err( io::Error::new( io::ErrorKind::Other, format!( "Path expected to be absolute, but it's not {path:?}" ) ) );
+        return Err( io::Error::other( format!( "Path expected to be absolute, but it's not {}", path.display() ) ) );
       }
 
       Ok( Self( path ) )
@@ -260,7 +260,7 @@ mod private
     #[ inline ]
     fn try_from( src : &'a AbsolutePath ) -> Result< &'a str, Self::Error >
     {
-      src.to_str().ok_or_else( || io::Error::new( io::ErrorKind::Other, format!( "Can't convert &PathBuf into &str {src}" ) ) )
+      src.to_str().ok_or_else( || io::Error::other( format!( "Can't convert &PathBuf into &str {src}" ) ) )
     }
   }
 

@@ -6,8 +6,7 @@ use macro_tools::
   generic_params::GenericsRef, // For enhanced generics handling
   ident, // For proposed ident::new_ident_from_cased_str
   qt, // For qt! macro, if preferred over quote::quote!
-  syn,
-  quote::quote_spanned, // Keep for specific span control if needed, or replace with qt!
+  syn
 };
 use super::EnumVariantHandlerContext;
 use convert_case::{ Case, Casing }; // Keep for Case::Snake
@@ -23,12 +22,12 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
   // we might need to iterate attributes here to find the span, or use a broader span.
   // For this refactoring, we'll assume `FieldAttributes` can provide a span for `subform_scalar` if present.
   // If not, `ctx.variant.span()` is a fallback.
-  if let Some( attr_property ) = &ctx.variant_attrs.subform_scalar // Assuming FieldAttributes stores it as Option<AttributeProperty>
+  if let Some( _attr_property ) = &ctx.variant_attrs.subform_scalar // Assuming FieldAttributes stores it as Option<AttributeProperty>
   {
     // If AttributeProperty has a span() method or field:
     // return diag::return_syn_err!( attr_property.span(), "Attribute `subform_scalar` is not applicable to unit variants" );
     // Otherwise, using variant span as a fallback:
-    return diag::return_syn_err!( ctx.variant.span(), "Attribute `subform_scalar` is not applicable to unit variants" );
+    diag::return_syn_err!( ctx.variant.span(), "Attribute `subform_scalar` is not applicable to unit variants" );
   }
 
   let variant_ident = &ctx.variant.ident;
@@ -51,7 +50,7 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
 
   // Prepare generics using the proposed (conceptual) GenericsRef enhancements
   // These will also fail to compile until Increment 6.
-  let generics_ref = GenericsRef::new_borrowed( &ctx.generics );
+  let generics_ref = GenericsRef::new_borrowed( ctx.generics );
   let fn_signature_generics = generics_ref.impl_generics_tokens_if_any()?;
   let return_type_generics = generics_ref.ty_generics_tokens_if_any()?;
   let enum_path_for_construction = generics_ref.type_path_tokens_if_any( enum_name )?;

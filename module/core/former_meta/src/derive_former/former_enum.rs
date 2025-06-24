@@ -148,7 +148,7 @@ pub(super) struct EnumVariantHandlerContext< 'a >
   pub has_debug : bool,
 }
 
-
+#[allow(clippy::too_many_lines)]
 pub(super) fn former_for_enum
 (
   ast : &syn::DeriveInput,
@@ -211,7 +211,7 @@ pub(super) fn former_for_enum
     {
       ast,
       variant,
-      struct_attrs : &struct_attrs,
+      struct_attrs,
       enum_name,
       vis,
       generics,
@@ -266,11 +266,11 @@ pub(super) fn former_for_enum
           {
             return Err( syn::Error::new_spanned( ctx.variant, "#[subform_scalar] is not allowed on zero-field struct variants." ) );
           }
-          if !ctx.variant_attrs.scalar.is_some()
+          if ctx.variant_attrs.scalar.is_none()
           {
             return Err( syn::Error::new_spanned( ctx.variant, "Zero-field struct variants require `#[scalar]` attribute for direct construction." ) );
           }
-          let generated = struct_zero_fields_handler::handle(&mut ctx)?;
+          let generated = struct_zero_fields_handler::handle(&mut ctx);
           ctx.methods.push(generated); // Collect generated tokens
         }
         _len =>
@@ -284,23 +284,21 @@ pub(super) fn former_for_enum
             }
             else
             {
-              let generated = struct_multi_fields_scalar::handle(&mut ctx)?;
+              let generated = struct_multi_fields_scalar::handle(&mut ctx);
               ctx.methods.push(generated); // Collect generated tokens
             }
+          }
+          else if fields.named.len() == 1
+          {
+            let generated = struct_single_field_subform::handle(&mut ctx)?;
+            ctx.methods.push(generated); // Collect generated tokens
           }
           else
           {
-            if fields.named.len() == 1
-            {
-              let generated = struct_single_field_subform::handle(&mut ctx)?;
-              ctx.methods.push(generated); // Collect generated tokens
-            }
-            else
-            {
-              let generated = struct_multi_fields_subform::handle(&mut ctx)?;
-              ctx.methods.push(generated); // Collect generated tokens
-            }
+            let generated = struct_multi_fields_subform::handle(&mut ctx);
+            ctx.methods.push(generated); // Collect generated tokens
           }
+          
         }
       }
     } // End of match
@@ -329,7 +327,7 @@ pub(super) fn former_for_enum
 
   if has_debug
   {
-    let about = format!( "derive : Former\nenum : {}", enum_name );
+    let about = format!( "derive : Former\nenum : {enum_name}" );
     diag::report_print( about, original_input, &result );
   }
 

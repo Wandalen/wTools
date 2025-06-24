@@ -18,46 +18,59 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
 
   // Decompose generics for use in signatures (impl_generics and ty_generics are needed from local decomposition)
   let ( _def_generics, impl_generics, ty_generics, _local_where_clause_option_unused ) = // Renamed to avoid confusion
-      macro_tools::generic_params::decompose(&ctx.generics);
+  macro_tools::generic_params::decompose( ctx.generics );
 
   // Use merged_where_clause from the context for any top-level item's where clause (like standalone fns or VariantFormer struct)
-  let top_level_where_clause = match ctx.merged_where_clause { // Use ctx.merged_where_clause
-      Some(clause) => quote! { where #clause }, // Add `where` keyword if clause exists
-      None => quote! {},
+  let top_level_where_clause = match ctx.merged_where_clause 
+  { // Use ctx.merged_where_clause
+    Some( clause ) => quote! { where #clause }, // Add `where` keyword if clause exists
+    None => quote! {},
   };
 
   // Get the single field's info
-  let field_info = ctx.variant_field_info.get(0).ok_or_else(|| {
-      syn::Error::new_spanned(ctx.variant, "Struct variant with subform behavior must have exactly one field for this handler.")
+  let field_info = ctx.variant_field_info.first().ok_or_else( 
+  || 
+  {
+    syn::Error::new_spanned( ctx.variant, "Struct variant with subform behavior must have exactly one field for this handler." )
   })?;
   let field_name_original = &field_info.ident; // This is the original field name from the enum variant
   let field_ty = &field_info.ty;
 
   // Generate the name for the implicit variant former, make it generic if enum is generic
-  let variant_former_name_str = format!("{}{}Former", enum_ident, variant_ident);
-  let variant_former_ident = format_ident!("{}", variant_former_name_str);
-  let variant_former_name_generic = if ctx.generics.params.is_empty() {
-      quote! { #variant_former_ident }
-  } else {
-      quote! { #variant_former_ident< #ty_generics > }
+  let variant_former_name_str = format!( "{enum_ident}{variant_ident}Former" );
+  let variant_former_ident = format_ident!( "{}", variant_former_name_str );
+  let variant_former_name_generic = if ctx.generics.params.is_empty() 
+  {
+    quote! { #variant_former_ident }
+  } 
+  else 
+  {
+    quote! { #variant_former_ident< #ty_generics > }
   };
 
   // Correctly create method_ident for the accessor method, handling raw identifiers
-  let method_ident = {
-      let name_str = variant_ident.to_string();
-      // Raw identifier check (consistent with other handlers)
-      if let Some(core_name) = name_str.strip_prefix("r#") {
-          let snake_core_name = core_name.to_case(Case::Snake);
-          syn::Ident::new_raw(&snake_core_name, variant_ident.span())
-      } else {
-          let snake_name = name_str.to_case(Case::Snake);
-          let is_keyword = matches!(snake_name.as_str(), "as" | "async" | "await" | "break" | "const" | "continue" | "crate" | "dyn" | "else" | "enum" | "extern" | "false" | "fn" | "for" | "if" | "impl" | "in" | "let" | "loop" | "match" | "mod" | "move" | "mut" | "pub" | "ref" | "return" | "Self" | "self" | "static" | "struct" | "super" | "trait" | "true" | "type" | "unsafe" | "use" | "where" | "while" | "union" );
-          if is_keyword {
-              syn::Ident::new_raw(&snake_name, variant_ident.span())
-          } else {
-              syn::Ident::new(&snake_name, variant_ident.span())
-          }
+  let method_ident = 
+  {
+    let name_str = variant_ident.to_string();
+    // Raw identifier check (consistent with other handlers)
+    if let Some( core_name ) = name_str.strip_prefix( "r#" ) 
+    {
+      let snake_core_name = core_name.to_case( Case::Snake );
+      syn::Ident::new_raw( &snake_core_name, variant_ident.span() )
+    } 
+    else 
+    {
+      let snake_name = name_str.to_case( Case::Snake );
+      let is_keyword = matches!( snake_name.as_str(), "as" | "async" | "await" | "break" | "const" | "continue" | "crate" | "dyn" | "else" | "enum" | "extern" | "false" | "fn" | "for" | "if" | "impl" | "in" | "let" | "loop" | "match" | "mod" | "move" | "mut" | "pub" | "ref" | "return" | "Self" | "self" | "static" | "struct" | "super" | "trait" | "true" | "type" | "unsafe" | "use" | "where" | "while" | "union" );
+      if is_keyword 
+      {
+        syn::Ident::new_raw( &snake_name, variant_ident.span() )
+      } 
+      else 
+      {
+        syn::Ident::new( &snake_name, variant_ident.span() )
       }
+    }
   };
 
   // Generate the static method: Enum::variant_name() -> VariantFormer<...>

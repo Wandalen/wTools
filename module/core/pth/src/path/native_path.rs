@@ -243,7 +243,7 @@ mod private
       .to_str()
       .ok_or_else
       (
-        move || io::Error::new( io::ErrorKind::Other, format!( "Can't convert &PathBuf into &str {src}" ) )
+        move || io::Error::other( format!( "Can't convert &PathBuf into &str {src}" ) )
       )
     }
   }

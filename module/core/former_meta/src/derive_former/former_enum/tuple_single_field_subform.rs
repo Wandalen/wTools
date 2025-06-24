@@ -13,16 +13,15 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
   // The main dispatch should ensure this is only called for such variants.
 
   let variant_ident = &ctx.variant.ident;
-  let _enum_ident = &ctx.enum_name;
   let vis = &ctx.vis; // Get visibility
 
   // Get the single field's type
-  let field = ctx.variant_field_info.get(0).ok_or_else(|| {
+  let field = ctx.variant_field_info.first().ok_or_else(|| {
       syn::Error::new_spanned(ctx.variant, "Tuple variant with subform behavior must have exactly one field.")
   })?;
   let field_ty = &field.ty;
 
-  let type_path_str = quote!{ #field_ty }.to_string().replace(" ", "");
+  let type_path_str = quote!{ #field_ty }.to_string().replace(' ', "");
   let is_phantom_data_field = type_path_str.starts_with("core::marker::PhantomData") || type_path_str.starts_with("std::marker::PhantomData");
 
   let method_ident_string = variant_ident.to_string().to_case( Case::Snake );

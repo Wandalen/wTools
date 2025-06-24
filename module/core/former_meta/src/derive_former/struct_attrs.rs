@@ -16,7 +16,7 @@ use macro_tools::
 use component_model_types::{ Assign, OptionExt };
 
 /// Represents the attributes of a struct, including storage fields, mutator, perform, and standalone constructor attributes. // <<< Updated doc
-#[ derive( Debug ) ] // Removed Default from derive
+#[ derive( Debug, Default ) ] // Removed Default from derive
 pub struct ItemAttributes
 {
   /// Optional attribute for storage-specific fields.
@@ -31,24 +31,12 @@ pub struct ItemAttributes
   pub debug : AttributePropertyDebug, // Added debug field
 }
 
-// Default impl needs to include the new debug field
-impl Default for ItemAttributes {
-    fn default() -> Self {
-        Self {
-            storage_fields: Default::default(),
-            mutator: Default::default(),
-            perform: Default::default(),
-            standalone_constructors: Default::default(),
-            debug: Default::default(), // Initialize debug
-        }
-    }
-}
 
 impl ItemAttributes
 {
   /// Parses attributes from an iterator.
-  /// This function now expects to find #[former(debug, standalone_constructors, ...)]
-  /// and also handles top-level #[storage_fields(...)], #[mutator(...)], #[perform(...)]
+  /// This function now expects to find #[former(debug, `standalone_constructors`, ...)]
+  /// and also handles top-level #[`storage_fields`(...)], #[mutator(...)], #[perform(...)]
   pub fn from_attrs< 'a >( attrs_iter : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
   {
     let mut result = Self::default();
@@ -441,11 +429,11 @@ impl syn::parse::Parse for ItemAttributes {
             // Initialize fields that are NOT parsed from inside #[former()] here
             // to their defaults, as this Parse impl is only for former's args.
             storage_fields: None,
-            mutator: Default::default(),
+            mutator: AttributeMutator::default(),
             perform: None,
             // These will be overwritten if found
-            standalone_constructors: Default::default(),
-            debug: Default::default(),
+            standalone_constructors: AttributePropertyOptionalSingletone::default(),
+            debug: AttributePropertyOptionalSingletone::default(),
         };
 
         while !input.is_empty() {
