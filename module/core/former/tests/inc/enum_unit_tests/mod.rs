@@ -1,1 +1,1 @@
-mod generic_unit_variant_manual;
+mod generic_unit_variant_derive;
