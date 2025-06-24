@@ -333,5 +333,6 @@ pub(super) fn former_for_enum
     diag::report_print( about, original_input, &result );
   }
 
+  println!( "!{}", result );
   Ok( result )
 }
