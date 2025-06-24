@@ -1,30 +1,49 @@
-//! Manual implementation for testing unit variants in generic enums.
-
 use super::*;
 
-/// Generic enum with a unit variant.
-#[derive(Debug, PartialEq)]
-pub enum GenericOption<T>
+//
+
+#[derive( Debug, PartialEq )]
+pub enum GenericOption< T >
+where
+  T : std::fmt::Debug + PartialEq + Clone,
 {
-  #[allow(dead_code)] // This variant is not constructed by these specific unit tests
-  Value(T),
-  NoValue, // Renamed from UnitNone
+  Value( T ),
+  NoValue,
 }
 
-impl<T> GenericOption<T>
+// Manual implementation of Former
+impl< T > GenericOption< T >
+where
+  T : std::fmt::Debug + PartialEq + Clone,
 {
   #[inline(always)]
-  pub fn no_value() -> Self // Renamed from unit_none
+  pub fn value( _0 : impl Into< T > ) -> Self
   {
-    Self::NoValue // Renamed from UnitNone
+    Self::Value( _0.into() )
+  }
+  #[inline(always)]
+  pub fn no_value() -> Self
+  {
+    Self::NoValue
   }
 }
 
-// Standalone constructor
+// Manual implementation of standalone constructors
 #[inline(always)]
-pub fn no_value<T>() -> GenericOption<T> // Renamed from unit_none
+pub fn value< T >( _0 : impl Into< T > ) -> GenericOption< T >
+where
+  T : std::fmt::Debug + PartialEq + Clone,
 {
-  GenericOption::<T>::NoValue // Renamed from UnitNone
+  GenericOption::Value( _0.into() )
 }
 
-include!("generic_unit_variant_only_test.rs");
+#[inline(always)]
+pub fn no_value< T >() -> GenericOption< T >
+where
+  T : std::fmt::Debug + PartialEq + Clone,
+{
+  GenericOption::NoValue
+}
+
+
+include!( "generic_unit_variant_only_test.rs" );
