@@ -109,6 +109,7 @@ proc-macro2 = { workspace = true, default-features = false, features = [ "defaul
 quote = { workspace = true, default-features = false, features = [ "default" ] }
 syn = { workspace = true, default-features = false, features = [ "clone-impls", "full", "derive", "parsing", "printing", "proc-macro", "extra-traits" ] } # qqq : xxx : optimize set of features, bind features of dependecies to features of this crate, optimally
 const_format = { workspace = true, default-features = false, features = [] }
+convert_case = { workspace = true, default-features = false, features = [] }
 
 ## internal
 interval_adapter = { workspace = true, features = [] }

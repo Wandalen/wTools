@@ -34,7 +34,9 @@ mod if_enabled
   #[ cfg( feature = "ident" ) ] // Use new feature name
   mod ident_test;
   #[ cfg( feature = "ident" ) ]
-  mod ident_new_from_cased_str_test; // Added new test file
+  mod ident_cased_test;
+  #[ cfg( feature = "generic_params" ) ]
+  mod generic_params_ref_refined_test;
   #[ cfg( feature = "item" ) ]
   mod item_test;
   #[ cfg( feature = "item_struct" ) ]

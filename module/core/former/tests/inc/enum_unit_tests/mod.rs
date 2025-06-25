@@ -28,7 +28,6 @@ mod keyword_variant_derive; // Known broken
 // Coverage for `generic_unit_variant_*` tests:
 // - Tests unit variants within generic enums e.g., `Enum<T>::UnitVariant`.
 // - Verifies Rules 1a, 3a, and 4a in a generic context.
-mod generic_unit_variant_manual;
 mod generic_unit_variant_derive; // Known broken - attempting fix
 
 // Coverage for `mixed_enum_unit_*` tests:

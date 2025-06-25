@@ -631,6 +631,9 @@ version = "0.9.34"
 [workspace.dependencies.bytemuck]
 version = "1.21.0"
 
+[workspace.dependencies.convert_case]
+version = "0.6.0"
+
 ## External - parse
 
 [workspace.dependencies.proc-macro2]
