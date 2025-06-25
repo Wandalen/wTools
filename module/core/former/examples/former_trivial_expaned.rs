@@ -10,6 +10,7 @@
 #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
 fn main() {}
 #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+#[allow(clippy::too_many_lines)]
 fn main()
 {
 
@@ -167,7 +168,7 @@ fn main()
         {
           trait MaybeDefault< T >
           {
-            fn maybe_default(self : &Self) -> T
+            fn maybe_default(&self) -> T
             {
               panic!("Field 'age' isn't initialized")
             }
@@ -177,12 +178,12 @@ fn main()
           impl< T > MaybeDefault< T > for ::core::marker::PhantomData< T >
           where T : ::core::default::Default,
           {
-            fn maybe_default(self : &Self) -> T
+            fn maybe_default(&self) -> T
             {
               T::default()
             }
           }
-          (&::core::marker::PhantomData::< i32 >).maybe_default()
+          (::core::marker::PhantomData::< i32 >).maybe_default()
         }
       };
       let username = if self.username.is_some()
@@ -194,7 +195,7 @@ fn main()
         {
           trait MaybeDefault< T >
           {
-            fn maybe_default(self : &Self) -> T
+            fn maybe_default(&self) -> T
             {
               panic!("Field 'username' isn't initialized")
             }
@@ -204,12 +205,12 @@ fn main()
           impl< T > MaybeDefault< T > for ::core::marker::PhantomData< T >
           where T : ::core::default::Default,
           {
-            fn maybe_default(self : &Self) -> T
+            fn maybe_default(&self) -> T
             {
               T::default()
             }
           }
-          (&::core::marker::PhantomData::< String >).maybe_default()
+          (::core::marker::PhantomData::< String >).maybe_default()
         }
       };
       let bio_optional = if self.bio_optional.is_some()
@@ -220,13 +221,12 @@ fn main()
       {
         ::core::option::Option::None
       };
-      let result = UserProfile::<>
+      UserProfile::<>
       {
         age,
         username,
         bio_optional,
-      };
-      return result;
+      }
     }
   }
 
@@ -261,12 +261,12 @@ fn main()
     {
       if storage.is_none()
       {
-        storage = Some(::core::default::Default::default());
+        storage = Some(UserProfileFormerStorage::default());
       }
       Self
       {
         storage : storage.unwrap(),
-        context : context,
+        context,
         on_end : ::core::option::Option::Some(on_end),
       }
     }
@@ -277,12 +277,12 @@ fn main()
     {
       if storage.is_none()
       {
-        storage = Some(::core::default::Default::default());
+        storage = Some(UserProfileFormerStorage::default());
       }
       Self
       {
         storage : storage.unwrap(),
-        context : context,
+        context,
         on_end : ::core::option::Option::Some(::core::convert::Into::into(on_end)),
       }
     }
@@ -347,8 +347,7 @@ fn main()
     #[ inline( always ) ]
     pub fn perform(self) -> Definition::Formed
     {
-      let result = self.form();
-      return result;
+      self.form()
     }
   }
 

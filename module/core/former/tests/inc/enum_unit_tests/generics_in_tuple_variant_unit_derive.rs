@@ -19,7 +19,7 @@ use std::marker::PhantomData; // Import PhantomData
 // --- Enum Definition with Bounds ---
 // Apply Former derive here. This is what we are testing.
 #[derive(Debug, PartialEq, former::Former)]
-#[debug]
+// #[debug]
 pub enum EnumOuter< X : Copy > // Enum bound: Copy
 {
   // --- Unit Variant ---

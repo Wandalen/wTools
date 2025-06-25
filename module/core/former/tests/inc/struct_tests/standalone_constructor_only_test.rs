@@ -41,15 +41,15 @@ fn with_args_test() // Generic test name
 
   // Use the former to set the remaining optional field and build the struct
   let instance = former
-  .field_c( std::f32::consts::PI ) // Set the non-constructor field
+  .c( core::f32::consts::PI ) // Set the non-constructor field
   .form();
 
   // Define the expected struct instance (using the consistent struct name)
   let expected = TestStructWithArgs
   {
-    field_a : "hello".to_string(),
-    field_b : true,
-    field_c : Some( std::f32::consts::PI ),
+    a : "hello".to_string(),
+    b : true,
+    c : Some( core::f32::consts::PI ),
   };
 
   // Assert that the formed instance matches the expected one
@@ -61,9 +61,9 @@ fn with_args_test() // Generic test name
 
   let expected2 = TestStructWithArgs
   {
-    field_a : "world".to_string(),
-    field_b : false,
-    field_c : None,
+    a : "world".to_string(),
+    b : false,
+    c : None,
   };
   assert_eq!( instance2, expected2 );
 }

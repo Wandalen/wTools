@@ -19,7 +19,7 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
 
   // Decompose generics for use in signatures (impl_generics and ty_generics are needed)
   let ( _def_generics, impl_generics, ty_generics, _local_where_clause_option ) =
-      macro_tools::generic_params::decompose(&ctx.generics);
+      macro_tools::generic_params::decompose(ctx.generics);
 
   // Use merged_where_clause from the context for the standalone constructor's where clause
   let where_clause = match ctx.merged_where_clause {
@@ -28,7 +28,7 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
   };
 
   // Get the single field's type and identifier
-  let field = ctx.variant_field_info.get(0).ok_or_else(|| {
+  let field = ctx.variant_field_info.first().ok_or_else(|| {
       syn::Error::new_spanned(ctx.variant, "Tuple variant with #[scalar] must have exactly one field.")
   })?;
   let field_ty = &field.ty;

@@ -1,4 +1,4 @@
-//! Example former_custom_collection.rs
+//! Example `former_custom_collection.rs`
 //!
 //! This example demonstrates how to define and use a custom collection with former.
 //! The custom collection implemented here is a `LoggingSet`, which extends the basic `HashSet` behavior
@@ -10,6 +10,7 @@
 fn main() {}
 
 #[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
+#[allow(clippy::too_many_lines)]
 fn main()
 {
   use collection_tools::HashSet;
@@ -33,7 +34,7 @@ fn main()
     {
       Self
       {
-        set : Default::default() // Initialize the internal HashSet.
+        set : HashSet::default() // Initialize the internal HashSet.
       }
     }
   }
@@ -41,7 +42,7 @@ fn main()
   // Allow the custom collection to be converted into an iterator, to iterate over the elements.
   impl< K > IntoIterator for LoggingSet< K >
   where
-    K : core::cmp::Eq + std::hash::Hash,
+    K : core::cmp::Eq + core::hash::Hash,
   {
     type Item = K;
     type IntoIter = collection_tools::hash_set::IntoIter< K >;
@@ -55,7 +56,7 @@ fn main()
   // Similar iterator functionality but for borrowing the elements.
   impl<'a, K> IntoIterator for &'a LoggingSet< K >
   where
-    K : core::cmp::Eq + std::hash::Hash,
+    K : core::cmp::Eq + core::hash::Hash,
   {
     type Item = &'a K;
     type IntoIter = collection_tools::hash_set::Iter< 'a, K >;
@@ -274,7 +275,7 @@ fn main()
     .end()
   .form();
 
-  println!("Got: {:?}", parent);
+  println!("Got: {parent:?}");
   // > Parent { children: LoggingSet { set: {10, 20} } }
 
 }

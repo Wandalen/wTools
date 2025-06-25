@@ -1,5 +1,4 @@
 /// Shared test logic for unit variants in generic enums.
-
 use super::*;
 
 #[test]

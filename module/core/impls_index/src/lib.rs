@@ -9,7 +9,6 @@
 pub mod implsindex;
 
 /// Namespace with dependencies.
-
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {

@@ -24,7 +24,7 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
 
   // Decompose generics (we need impl_generics and ty_generics from this)
   let ( _def_generics, impl_generics, ty_generics, _local_where_clause_option_unused ) = // Renamed to avoid confusion
-      macro_tools::generic_params::decompose(&ctx.generics);
+      macro_tools::generic_params::decompose(ctx.generics);
 
   // Use merged_where_clause from the context for the standalone constructor's where clause
   let top_level_where_clause = match ctx.merged_where_clause { // Use ctx.merged_where_clause
@@ -65,14 +65,14 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
     let fn_signature_generics = if ctx.generics.params.is_empty() { quote!{} } else { quote!{ < #impl_generics > } };
     let return_type_generics = if ctx.generics.params.is_empty() { quote!{} } else { quote!{ < #ty_generics > } };
 
-    let enum_path_for_construction = if ctx.generics.params.is_empty() {
+    let enum_path_for_construction = if ctx.generics.params.is_empty() || ty_generics.is_empty() {
         quote!{ #enum_ident }
     } else {
-        if ty_generics.is_empty() { quote!{ #enum_ident } } else { quote!{ #enum_ident::< #ty_generics > } }
+        quote!{ #enum_ident::< #ty_generics > }
     };
 
     // Create unique name for standalone constructor: [enum_name]_[variant_snake_case]
-    let standalone_method_name_str = format!("{}_{}", enum_ident.to_string().to_case(Case::Snake), method_ident.to_string());
+    let standalone_method_name_str = format!("{}_{}", enum_ident.to_string().to_case(Case::Snake), method_ident);
     let standalone_method_ident = syn::Ident::new(&standalone_method_name_str, variant_ident.span());
 
     let generated_standalone = quote!

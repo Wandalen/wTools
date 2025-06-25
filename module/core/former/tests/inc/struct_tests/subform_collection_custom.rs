@@ -25,7 +25,7 @@ where
   {
     Self
     {
-      set : Default::default()
+      set : HashSet::default()
     }
   }
 
@@ -33,7 +33,7 @@ where
 
 impl< K > IntoIterator for LoggingSet< K >
 where
-  K : core::cmp::Eq + std::hash::Hash,
+  K : core::cmp::Eq + core::hash::Hash,
 {
   type Item = K;
   type IntoIter = collection_tools::hash_set::IntoIter< K >;
@@ -46,7 +46,7 @@ where
 
 impl<'a, K> IntoIterator for &'a LoggingSet< K >
 where
-  K : core::cmp::Eq + std::hash::Hash,
+  K : core::cmp::Eq + core::hash::Hash,
 {
   type Item = &'a K;
   type IntoIter = collection_tools::hash_set::Iter< 'a, K >;
@@ -259,6 +259,6 @@ fn basic()
     .end()
   .form();
 
-  println!("Got: {:?}", parent);
+  println!("Got: {parent:?}");
 
 }

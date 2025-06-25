@@ -4,6 +4,7 @@
 use super::*;
 #[ allow( unused_imports ) ]
 use collection_tools::BTreeMap;
+use the_module::BTreeMapExt;
 
 // qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ] -- done
 // #[ cfg( not( feature = "use_alloc" ) ) ]
@@ -69,7 +70,6 @@ fn add()
 
   // with help of ext
 
-  use the_module::BTreeMapExt;
   let got : BTreeMap< String, String > = BTreeMap::former()
   .add( ( "a".into(), "x".into() ) )
   .add( ( "b".into(), "y".into() ) )
@@ -151,7 +151,7 @@ fn entry_to_val()
 {
   let got = former::EntryToVal::< BTreeMap< u32, i32 > >::entry_to_val( ( 1u32, 13i32 ) );
   let exp = 13i32;
-  a_id!( got, exp )
+  a_id!( got, exp );
 }
 
 #[ test ]
@@ -177,7 +177,7 @@ fn val_to_entry()
 
   let got = former::ValToEntry::< BTreeMap< u32, Val > >::val_to_entry( Val { key : 1u32, data : 13i32 } );
   let exp = ( 1u32, Val { key : 1u32, data : 13i32 } );
-  a_id!( got, exp )
+  a_id!( got, exp );
 
 }
 

@@ -1,5 +1,4 @@
 /// Shared test logic for unit variants with keyword identifiers.
-
 use super::*;
 
 #[test]

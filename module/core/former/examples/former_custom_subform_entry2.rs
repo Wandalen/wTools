@@ -72,7 +72,7 @@ fn main()
 
         if super_former.storage.child.is_none()
         {
-          super_former.storage.child = Some( Default::default() );
+          super_former.storage.child = Some( HashMap::default() );
         }
 
         // add instance to the collection
@@ -100,7 +100,7 @@ fn main()
 
         if super_former.storage.child.is_none()
         {
-          super_former.storage.child = Some( Default::default() );
+          super_former.storage.child = Some( HashMap::default() );
         }
 
         // add instance to the collection

@@ -9,6 +9,7 @@
 /// Define a private namespace for all its items.
 mod private
 {
+  extern crate alloc;
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
@@ -155,7 +156,7 @@ mod private
   {
     type Item = T;
     #[ allow( clippy::std_instead_of_alloc ) ]
-    type IntoIter = std::vec::IntoIter< Self::Item >;
+    type IntoIter = alloc::vec::IntoIter< Self::Item >;
     fn into_iter( self ) -> Self::IntoIter
     {
       self.0.into_iter()

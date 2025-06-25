@@ -29,12 +29,12 @@ pub struct TestStructWithArgs // Consistent name
 {
   /// Field A (constructor arg - attribute removed for now).
   #[ arg_for_constructor ] // <<< Uncommented
-  pub field_a : String,
+  pub a : String,
   /// Field B (constructor arg - attribute removed for now).
   #[ arg_for_constructor ] // <<< Uncommented
-  pub field_b : bool,
+  pub b : bool,
   /// Field C (optional, not constructor arg).
-  pub field_c : Option< f32 >,
+  pub c : Option< f32 >,
 }
 
 // === Include Test Logic ===

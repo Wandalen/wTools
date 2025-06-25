@@ -17,7 +17,7 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
   let vis = &ctx.vis; // Get visibility
 
   // Get the single field's type and identifier
-  let field = ctx.variant_field_info.get(0).ok_or_else(|| {
+  let field = ctx.variant_field_info.first().ok_or_else(|| {
       syn::Error::new_spanned(ctx.variant, "Struct variant with #[scalar] must have exactly one field.")
   })?;
   let field_ident = &field.ident;

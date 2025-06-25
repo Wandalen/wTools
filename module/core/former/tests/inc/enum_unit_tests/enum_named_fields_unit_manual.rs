@@ -19,7 +19,7 @@ use former::
   FormingEnd, StoragePreform, FormerDefinition, FormerDefinitionTypes, Storage,
   ReturnPreformed, FormerBegin, FormerMutator,
 };
-use std::marker::PhantomData;
+use core::marker::PhantomData;
 
 // Define the enum with unit variants for manual testing.
 #[ derive( Debug, PartialEq ) ]

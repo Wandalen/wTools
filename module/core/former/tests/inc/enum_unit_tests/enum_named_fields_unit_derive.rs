@@ -5,7 +5,7 @@
 //! Coverage:
 //! - Rule 3a (Unit + Default): Verifies `EnumWithNamedFields::unit_variant_default() -> EnumWithNamedFields`.
 //! - Rule 1a (Unit + `#[scalar]`): Verifies `EnumWithNamedFields::unit_variant_scalar() -> EnumWithNamedFields`.
-//! - Rule 4a (#[standalone_constructors]): Verifies generation of top-level constructor functions (though not explicitly tested in `_only_test.rs`).
+//! - Rule 4a (`#[standalone_constructors]`): Verifies generation of top-level constructor functions (though not explicitly tested in `_only_test.rs`).
 //!
 //! Test Relevance/Acceptance Criteria:
 //! - Defines an enum `EnumWithNamedFields` with unit variants `UnitVariantDefault` and `UnitVariantScalar`,

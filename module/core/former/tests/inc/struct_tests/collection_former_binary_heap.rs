@@ -4,6 +4,7 @@
 use super::*;
 #[ allow( unused_imports ) ]
 use collection_tools::BinaryHeap;
+use the_module::BinaryHeapExt;
 
 #[ test ]
 fn add()
@@ -67,7 +68,6 @@ fn add()
 
   // with help of ext
 
-  use the_module::BinaryHeapExt;
   let got : BinaryHeap< String > = BinaryHeap::former()
   .add( "a" )
   .add( "b" )
@@ -148,7 +148,7 @@ fn entry_to_val()
 {
   let got = former::EntryToVal::< BinaryHeap< i32 > >::entry_to_val( 13i32 );
   let exp = 13i32;
-  a_id!( got, exp )
+  a_id!( got, exp );
 }
 
 #[ test ]
@@ -156,7 +156,7 @@ fn val_to_entry()
 {
   let got = former::ValToEntry::< BinaryHeap< i32 > >::val_to_entry( 13i32 );
   let exp = 13i32;
-  a_id!( got, exp )
+  a_id!( got, exp );
 }
 
 #[ test ]

@@ -5,7 +5,7 @@
 //! Coverage:
 //! - Rule 3b (Tuple + Zero-Field + Default): Manually implements the static method `EnumWithZeroFieldTuple::variant_zero_default()` to return the enum instance.
 //! - Rule 1b (Tuple + Zero-Field + `#[scalar]`): Manually implements the static method `EnumWithZeroFieldTuple::variant_zero_scalar()` to return the enum instance.
-//! - Rule 4a (#[standalone_constructors]): Manually implements standalone constructor functions (`enum_with_zero_field_tuple_variant_zero_default`, `enum_with_zero_field_tuple_variant_zero_scalar`) to return the enum instance, corresponding to the tests in `_only_test.rs`.
+//! - Rule 4a (`#[standalone_constructors]`): Manually implements standalone constructor functions (`enum_with_zero_field_tuple_variant_zero_default`, `enum_with_zero_field_tuple_variant_zero_scalar`) to return the enum instance, corresponding to the tests in `_only_test.rs`.
 //!
 //! Test Relevance/Acceptance Criteria:
 //! - Defines an enum `EnumWithZeroFieldTuple` with zero-field tuple variants `VariantZeroDefault` and `VariantZeroScalar`.

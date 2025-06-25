@@ -19,6 +19,7 @@ fn child()
 }
 
 #[ test ]
+#[ allow( clippy::used_underscore_items ) ]
 fn _child()
 {
 

@@ -7,7 +7,7 @@ use former::Former;
 /// Generic enum with a unit variant, using Former.
 #[derive(Debug, PartialEq, Former)]
 #[former(standalone_constructors, debug)]
-pub enum GenericOption<T: std::fmt::Debug + PartialEq + Clone> // Minimal bounds for T
+pub enum GenericOption<T: core::fmt::Debug + PartialEq + Clone> // Minimal bounds for T
 {
   #[scalar] // Treat Value(T) as a scalar constructor for the enum
   #[allow(dead_code)] // This variant is not constructed by these specific unit tests

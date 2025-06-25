@@ -3,7 +3,7 @@
 //! Coverage:
 //! - Rule 3b (Tuple + Zero-Field + Default): Verifies the derived static method `EnumWithZeroFieldTuple::variant_zero_default()` returns the enum instance.
 //! - Rule 1b (Tuple + Zero-Field + `#[scalar]`): Verifies the derived static method `EnumWithZeroFieldTuple::variant_zero_scalar()` returns the enum instance.
-//! - Rule 4a (#[standalone_constructors]): Implicitly covered by the tests in `_only_test.rs` which include standalone constructor tests, although the `#[standalone_constructors]` attribute is not currently on the enum in this file.
+//! - Rule 4a (`#[standalone_constructors]`): Implicitly covered by the tests in `_only_test.rs` which include standalone constructor tests, although the `#[standalone_constructors]` attribute is not currently on the enum in this file.
 //!
 //! Test Relevance/Acceptance Criteria:
 //! - Defines an enum `EnumWithZeroFieldTuple` with zero-field tuple variants `VariantZeroDefault` and `VariantZeroScalar`.

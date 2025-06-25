@@ -57,6 +57,7 @@ where
 {
 
   #[ inline( always ) ]
+  #[ allow( clippy::used_underscore_items ) ]
   pub fn child( self ) ->
   ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   {
@@ -83,7 +84,6 @@ where
 /// - `substorage`: Storage type specific to the `Child`, containing the newly formed scalar value.
 /// - `super_former`: An optional context of the `ParentFormer`, which will receive the value. The function ensures
 ///   that this context is not `None` and inserts the formed value into the designated field within `Parent`'s storage.
-///
 
 pub struct ParentFormerSubformScalarChildEnd< Definition >
 {

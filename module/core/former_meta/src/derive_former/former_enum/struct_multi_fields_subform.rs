@@ -1,13 +1,13 @@
 // qqq : Implement logic for Struct { f1:T1, ... } with #[subform_scalar] or default
 
 use super::*;
-use macro_tools::{ Result, quote, syn };
+use macro_tools::{ quote, syn };
 use super::EnumVariantHandlerContext;
 use proc_macro2::TokenStream; // Import TokenStream
 use convert_case::{ Case, Casing }; // Import Case and Casing from convert_case
 
 #[allow(dead_code)] // Suppress warning about unused function
-pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< TokenStream >
+pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> TokenStream
 {
   // This handler is specifically for Struct { f1: T1, ... } variants with #[subform_scalar] or default behavior.
   // The main dispatch should ensure this is only called for such variants.
@@ -55,5 +55,5 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
   // This will likely involve using common_emitters or dedicated logic here.
   // For now, just returning the method/constructor tokens.
 
-  Ok( generated_tokens )
+  generated_tokens
 }

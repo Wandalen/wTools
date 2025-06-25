@@ -35,7 +35,7 @@ impl< T : Debug + Copy + Default + PartialEq > From< T > for InnerGeneric< T >
 // --- Enum Definition with Bounds ---
 // Apply Former derive here. This is what we are testing.
 #[derive(Debug, PartialEq, former::Former)]
-#[debug]
+// #[debug]
 pub enum EnumOuter< X : Copy + Debug + Default + PartialEq > // Enum bound: Copy
 {
   // --- Tuple Variant with Generics ---
