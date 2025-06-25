@@ -113,24 +113,27 @@ mod private
       Self { syn_generics }
     }
 
+    /// Creates a new `GenericsRef` from a reference to `syn::Generics`. Alias for `new_borrowed`.
+    #[must_use]
+    pub fn new(syn_generics: &'a syn::Generics) -> Self
+    {
+      Self::new_borrowed(syn_generics)
+    }
+
     /// Returns the `impl_generics` part (e.g., `<T: Trait, 'b, const C: usize>`)
     /// as a `TokenStream` if generics are present, otherwise an empty `TokenStream`.
     ///
     /// This is suitable for use in `impl <#impl_generics> Struct ...` contexts.
     /// It includes bounds and lifetimes.
-    ///
-    /// # Errors
-    ///
-    /// Currently, this method is not expected to return an error, but returns `Result`
-    /// for future-proofing and consistency with other token-generating methods.
-    pub fn impl_generics_tokens_if_any(&self) -> Result<proc_macro2::TokenStream>
+    #[must_use]
+    pub fn impl_generics_tokens_if_any(&self) -> proc_macro2::TokenStream
     {
       if self.syn_generics.params.is_empty()
       {
-        return Ok(quote::quote! {});
+        return quote::quote! {};
       }
-      let (_, impl_g, _, _) = decompose_item_soft(self.syn_generics);
-      Ok(quote::quote! { < #impl_g > })
+      let (impl_g, _, _) = self.syn_generics.split_for_impl();
+      quote::quote! { #impl_g }
     }
 
     /// Returns the `ty_generics` part (e.g., `<T, 'b, C>`) as a `TokenStream`
@@ -138,36 +141,24 @@ mod private
     ///
     /// This is suitable for use in type paths like `Struct::<#ty_generics>`.
     /// It includes only the identifiers of the generic parameters (types, lifetimes, consts).
-    ///
-    /// # Errors
-    ///
-    /// Currently, this method is not expected to return an error, but returns `Result`
-    /// for future-proofing and consistency.
-    pub fn ty_generics_tokens_if_any(&self) -> Result<proc_macro2::TokenStream>
+    #[must_use]
+    pub fn ty_generics_tokens_if_any(&self) -> proc_macro2::TokenStream
     {
       if self.syn_generics.params.is_empty()
       {
-        return Ok(quote::quote! {});
+        return quote::quote! {};
       }
-      let (_, _, ty_g, _) = decompose_item_soft(self.syn_generics);
-      Ok(quote::quote! { < #ty_g > })
+      let (_, ty_g, _) = self.syn_generics.split_for_impl();
+      quote::quote! { #ty_g }
     }
 
     /// Returns the `where_clause` (e.g., `where T: Trait`) as a `TokenStream`
     /// if a where clause is present in the original generics, otherwise an empty `TokenStream`.
-    ///
-    /// # Errors
-    ///
-    /// Currently, this method is not expected to return an error, but returns `Result`
-    /// for future-proofing and consistency.
-    pub fn where_clause_tokens_if_any(&self) -> Result<proc_macro2::TokenStream>
+    #[must_use]
+    pub fn where_clause_tokens_if_any(&self) -> proc_macro2::TokenStream
     {
-      let (_, _, _, where_c_punctuated) = decompose_item_soft(self.syn_generics);
-      if where_c_punctuated.is_empty() {
-        Ok(quote::quote! {})
-      } else {
-        Ok(quote::quote! { where #where_c_punctuated })
-      }
+      let (_, _, where_clause) = self.syn_generics.split_for_impl();
+      quote::quote! { #where_clause }
     }
 
     /// Returns a token stream representing a path to a type, including its generic arguments
@@ -177,19 +168,15 @@ mod private
     /// # Arguments
     ///
     /// * `base_ident`: The identifier of the base type (e.g., `MyType`).
-    ///
-    /// # Errors
-    ///
-    /// Currently, this method is not expected to return an error, but returns `Result`
-    /// for future-proofing and consistency.
-    pub fn type_path_tokens_if_any(&self, base_ident: &syn::Ident) -> Result<proc_macro2::TokenStream>
+    #[must_use]
+    pub fn type_path_tokens_if_any(&self, base_ident: &syn::Ident) -> proc_macro2::TokenStream
     {
       if self.syn_generics.params.is_empty()
       {
-        Ok(quote::quote! { #base_ident })
+        quote::quote! { #base_ident }
       } else {
-        let (_, _, ty_g, _) = decompose_item_soft(self.syn_generics);
-        Ok(quote::quote! { #base_ident ::< #ty_g > })
+        let (_, ty_g, _) = self.syn_generics.split_for_impl();
+        quote::quote! { #base_ident #ty_g }
       }
     }
   }
@@ -251,11 +238,12 @@ mod private
                 generics_for_impl.push_value(impl_param);
                 generics_for_impl.push_punct(syn::token::Comma::default());
 
-                let ty_param = syn::GenericParam::Type(syn::TypeParam { // Const params are represented by their idents for ty_generics
+                let ty_param = syn::GenericParam::Const(syn::ConstParam {
                     attrs: vec![],
+                    const_token: const_param.const_token,
                     ident: const_param.ident.clone(),
-                    colon_token: None,
-                    bounds: syn::punctuated::Punctuated::new(),
+                    colon_token: const_param.colon_token,
+                    ty: const_param.ty.clone(),
                     eq_token: None,
                     default: None,
                 });
@@ -390,7 +378,7 @@ mod private
   ///
   /// # Returns
   ///
-  /// Returns a new `Generics` instance containing only the names of the parameters.
+  /// Returns a new `syn::Generics` instance containing only the names of the parameters.
   ///
   /// # Examples
   ///
@@ -653,12 +641,13 @@ mod private
           generics_for_impl.push_value( impl_param );
           generics_for_impl.push_punct( syn::token::Comma::default() );
 
-          let ty_param = syn::GenericParam::Type( syn::TypeParam
+          let ty_param = syn::GenericParam::Const( syn::ConstParam
           {
             attrs : vec![],
+            const_token : const_param.const_token,
             ident : const_param.ident.clone(),
-            colon_token : None,
-            bounds : syn::punctuated::Punctuated::new(),
+            colon_token : const_param.colon_token,
+            ty : const_param.ty.clone(),
             eq_token : None,
             default : None,
           });
@@ -700,6 +689,7 @@ mod private
   }
 
 }
+
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]

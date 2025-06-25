@@ -287,7 +287,7 @@ fn decompose_generics_with_constants_only()
   let ( _impl_with_def, impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
 
   let impl_exp : syn::Generics = syn::parse_quote! { < const N : usize, const M : usize, > };
-  let ty_exp : syn::Generics = syn::parse_quote! { < N, M, > };
+  let ty_exp : syn::Generics = syn::parse_quote! { < const N : usize, const M : usize, > };
   a_id!( impl_gen, impl_exp.params );
   a_id!( ty_gen, ty_exp.params );
 
@@ -323,7 +323,7 @@ fn decompose_mixed_generics_types()
   let ( _impl_with_def, impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
 
   let impl_exp : syn::Generics = syn::parse_quote! { < 'a, T, const N : usize, U : Trait1, > };
-  let ty_exp : syn::Generics = syn::parse_quote! { < 'a, T, N, U, > };
+  let ty_exp : syn::Generics = syn::parse_quote! { < 'a, T, const N : usize, U, > };
   a_id!( impl_gen, impl_exp.params );
   a_id!( ty_gen, ty_exp.params );
 

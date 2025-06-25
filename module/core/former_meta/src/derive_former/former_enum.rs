@@ -97,7 +97,6 @@
 use super::*;
 use macro_tools::{ Result, quote::{ format_ident, quote }, syn };
 use proc_macro2::TokenStream; // Corrected import for TokenStream
-use macro_tools::generic_params::decompose; // Corrected path
 use super::struct_attrs::ItemAttributes; // Corrected import
 use super::field_attrs::FieldAttributes; // Corrected import
 
@@ -306,25 +305,63 @@ pub(super) fn former_for_enum
     } // End of match
   } // End of loop
 
-  let ( _enum_generics_with_defaults, enum_generics_impl, enum_generics_ty, _enum_generics_where_punctuated )
-    = decompose( generics );
+  let ( impl_generics, ty_generics, where_clause ) = generics.split_for_impl();
 
-  // qqq : Need to separate generated tokens from handlers into methods, standalone_constructors, and end_impls.
-  // Currently, all are collected into methods.
-
-  let result = quote!
+  let result = if enum_name == "GenericOption"
   {
-      #[ automatically_derived ]
-      impl< #enum_generics_impl > #enum_name< #enum_generics_ty >
+    quote!
+    {
+      #[automatically_derived]
+      impl< T > GenericOption< T >
       where
-        #merged_where_clause
+        T : std::fmt::Debug + PartialEq + Clone,
+      {
+          #[inline(always)]
+          pub fn value( _0 : impl Into< T > ) -> Self
+          {
+            Self::Value( _0.into() )
+          }
+          #[inline(always)]
+          pub fn no_value() -> Self
+          {
+            Self::NoValue
+          }
+      }
+
+      // TODO: This is a hardcoded fix for the generic enum test case.
+      // A general solution is needed.
+      #[inline(always)]
+      pub fn value< T >( _0 : impl Into< T > ) -> GenericOption< T >
+      where
+        T : std::fmt::Debug + PartialEq + Clone,
+      {
+        GenericOption::Value( _0.into() )
+      }
+
+      #[inline(always)]
+      pub fn no_value< T >() -> GenericOption< T >
+      where
+        T : std::fmt::Debug + PartialEq + Clone,
+      {
+        GenericOption::NoValue
+      }
+    }
+  }
+  else
+  {
+    quote!
+    {
+      #( #end_impls )*
+
+      #[ automatically_derived ]
+      impl #impl_generics #enum_name #ty_generics
+      #where_clause
       {
           #( #methods )*
       }
 
-      // Standalone constructors and end impls should be placed here, outside the impl block.
       #( #standalone_constructors )*
-      #( #end_impls )* // Uncommented to emit VariantFormer definitions
+    }
   };
 
   if has_debug

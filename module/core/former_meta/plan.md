@@ -1,82 +1,63 @@
-# Project Plan: Refactor Large Files in `former_meta`
+# Project Plan: Refactor Enum Unit Variant Handling in `former_meta`
 
-## Progress
+### Goal
+*   Refactor the implementation of `#[derive(Former)]` for **enum unit variants** within the `former_meta` crate, assuming necessary generalizations are made in the `proc_macro_tools` crate.
 
-*   [⏳] **Increment 1: Plan Splitting `src/derive_former/field.rs`** <-- Current
-*   [⚫] Increment 2: Implement Splitting `src/derive_former/field.rs`
-*   [⚫] Increment 3: Plan Splitting `src/derive_former/former_enum.rs`
-*   [⚫] Increment 4: Implement Splitting `src/derive_former/former_enum.rs`
+### Progress
+*   ✅ Phase 1 Complete (Increment 1)
+*   🚧 Phase 2 In Progress (Increment 2)
 
-## Increments
+### Target Crate
+*   `module/core/former_meta`
 
-*   [⏳] **Increment 1: Plan Splitting `src/derive_former/field.rs`**
-    *   **Analysis:**
-        *   Current File: `src/derive_former/field.rs` (1440 lines)
-        *   Purpose: Defines `FormerField` struct and associated methods for generating code related to individual struct fields (storage representation, preform logic, various setters).
-        *   Key Items:
-            *   `FormerField` struct definition.
-            *   `impl FormerField`:
-                *   `from_syn`: Constructor.
-                *   `storage_fields_none`: Generates `field: None`.
-                *   `storage_field_optional`: Generates `pub field: Option<T>`.
-                *   `storage_field_preform`: Generates complex logic for unwrapping/defaulting fields in the `form()` method. (Large)
-                *   `storage_field_name`: Generates `field,` for struct construction.
-                *   `former_field_setter`: Main dispatcher calling specific setter generation methods.
-                *   `scalar_setter`: Generates simple scalar setter.
-                *   `subform_scalar_setter`: Generates complex scalar subformer setter, including `End` struct. (Very Large)
-                *   `subform_collection_setter`: Generates complex collection subformer setter, including `End` struct. (Very Large)
-                *   `subform_entry_setter`: Generates complex entry subformer setter, including `End` struct. (Very Large)
-                *   Helper methods: `scalar_setter_name`, `subform_scalar_setter_name`, `subform_collection_setter_name`, `subform_entry_setter_name`, `scalar_setter_required`.
-    *   **Proposed Splitting Strategy:**
-        *   Create a new sub-module: `src/derive_former/field/`.
-        *   Move the `FormerField` struct definition and the `impl FormerField` block containing the *simpler* methods (`from_syn`, `storage_fields_none`, `storage_field_optional`, `storage_field_name`, `former_field_setter`, `scalar_setter`, name helpers, `scalar_setter_required`) into `src/derive_former/field/mod.rs`.
-        *   Extract the complex `storage_field_preform` logic into its own file: `src/derive_former/field/preform.rs`. Make the function public within the `field` module.
-        *   Extract the `subform_scalar_setter` logic (including its `End` struct generation) into `src/derive_former/field/setter_subform_scalar.rs`. Make the function public within the `field` module.
-        *   Extract the `subform_collection_setter` logic (including its `End` struct generation) into `src/derive_former/field/setter_subform_collection.rs`. Make the function public within the `field` module.
-        *   Extract the `subform_entry_setter` logic (including its `End` struct generation) into `src/derive_former/field/setter_subform_entry.rs`. Make the function public within the `field` module.
-        *   Update `src/derive_former/mod.rs` to declare `pub mod field;`.
-        *   Ensure all extracted functions are correctly called from `former_field_setter` in `field/mod.rs`.
-    *   **Crucial Design Rules:** [Structuring: Organize by Feature or Layer](#structuring-organize-by-feature-or-layer), [Visibility: Keep Implementation Details Private](#visibility-keep-implementation-details-private).
-    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation.
-    *   **Verification Strategy:** Ensure the code compiles successfully after refactoring. Review diffs to confirm only code movement occurred. Run existing tests (`cargo test`) to confirm semantic equivalence.
+### Relevant Context
+*   Files to Include (for AI's reference, if `read_file` is planned, primarily from Target Crate):
+    *   `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs`
+    *   `module/core/former_meta/src/derive_former/former_enum.rs`
+*   Crates for Documentation (for AI's reference, if `read_file` on docs is planned):
+    *   `former`
+    *   `proc_macro_tools`
+*   External Crates Requiring `task.md` Proposals (if any identified during planning):
+    *   `module/alias/proc_macro_tools` (Reason: Needs new generalized utilities for identifier case conversion and generics handling to support the refactoring in `former_meta`.)
 
-*   [⚫] Increment 2: Implement Splitting `src/derive_former/field.rs`
-    *   **Goal:** Refactor `src/derive_former/field.rs` into the `src/derive_former/field/` module as planned in Increment 1. **This refactoring must be purely structural, ensuring the code remains semantically identical to the original.**
-    *   Detailed Plan Step 1: Create directory `src/derive_former/field/`.
-    *   Detailed Plan Step 2: Create `src/derive_former/field/mod.rs`. Move `FormerField` struct and simpler methods from `src/derive_former/field.rs` into it. Add necessary `pub use` or `mod` statements for the files to be created.
-    *   Detailed Plan Step 3: Create `src/derive_former/field/preform.rs` and move the `storage_field_preform` function logic into it. Adjust visibility.
-    *   Detailed Plan Step 4: Create `src/derive_former/field/setter_subform_scalar.rs` and move the `subform_scalar_setter` function logic (including `End` struct) into it. Adjust visibility.
-    *   Detailed Plan Step 5: Create `src/derive_former/field/setter_subform_collection.rs` and move the `subform_collection_setter` function logic (including `End` struct) into it. Adjust visibility.
-    *   Detailed Plan Step 6: Create `src/derive_former/field/setter_subform_entry.rs` and move the `subform_entry_setter` function logic (including `End` struct) into it. Adjust visibility.
-    *   Detailed Plan Step 7: Delete the original `src/derive_former/field.rs`.
-    *   Detailed Plan Step 8: Update `src/derive_former/mod.rs` to declare `pub mod field;`.
-    *   Detailed Plan Step 9: Run `cargo check` or `cargo build` to ensure compilation. Fix any path or visibility errors.
-    *   Crucial Design Rules: [Structuring: Organize by Feature or Layer](#structuring-organize-by-feature-or-layer), [Visibility: Keep Implementation Details Private](#visibility-keep-implementation-details-private), [Structuring: Add Module Declaration Before Content](#structuring-add-module-declaration-before-content).
-    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Confirm no semantic changes were introduced.
-    *   **Verification Strategy:** Compilation success (`cargo check`), review code diffs to confirm only code movement, **run tests (`cargo test`) to verify semantic equivalence.**
+### Expected Behavior Rules / Specifications (for Target Crate)
+*   **Rule 1a (Unit + `#[scalar]`):** Generates `Enum::variant() -> Enum`.
+*   **Rule 2a (Unit + `#[subform_scalar]`):** Must produce a compile-time error.
+*   **Rule 3a (Unit + Default):** Generates `Enum::variant() -> Enum`.
+*   **Rule 4a (`#[standalone_constructors]` on Enum):** For unit variants, generates a top-level function `fn variant_name() -> EnumName` (name in snake_case).
 
-*   [⚫] Increment 3: Plan Splitting `src/derive_former/former_enum.rs`
-    *   Detailed Plan Step 1: Analyze `src/derive_former/former_enum.rs` (items, complexity).
-    *   Detailed Plan Step 2: Propose a new module structure (e.g., `src/derive_former/enum/mod.rs`, `src/derive_former/enum/variant_former.rs`).
-    *   Detailed Plan Step 3: Define which items go into which new file. Focus on extracting the large `generate_implicit_former_for_variant` helper.
-    *   Crucial Design Rules: [Structuring: Organize by Feature or Layer](#structuring-organize-by-feature-or-layer), [Visibility: Keep Implementation Details Private](#visibility-keep-implementation-details-private).
-    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation.
-    *   **Verification Strategy:** Ensure the plan logically separates concerns and reduces file size effectively.
+### Target File Structure (If Applicable, within Target Crate)
+*   No major file structure changes are planned for `former_meta`.
 
-*   [⚫] Increment 4: Implement Splitting `src/derive_former/former_enum.rs`
-    *   **Goal:** Refactor `src/derive_former/former_enum.rs` into the `src/derive_former/enum/` module as planned in Increment 3. **This refactoring must be purely structural, ensuring the code remains semantically identical to the original.**
-    *   Detailed Plan Step 1: Create directory `src/derive_former/enum/`.
-    *   Detailed Plan Step 2: Create `src/derive_former/enum/mod.rs`. Move `former_for_enum` and smaller helpers into it.
-    *   Detailed Plan Step 3: Create `src/derive_former/enum/variant_former.rs`. Move `generate_implicit_former_for_variant` into it. Adjust visibility.
-    *   Detailed Plan Step 4: Delete the original `src/derive_former/former_enum.rs`.
-    *   Detailed Plan Step 5: Update `src/derive_former/mod.rs` to declare `pub mod r#enum;` (using raw identifier for `enum`).
-    *   Detailed Plan Step 6: Run `cargo check` or `cargo build` to ensure compilation. Fix any path or visibility errors.
-    *   Crucial Design Rules: [Structuring: Organize by Feature or Layer](#structuring-organize-by-feature-or-layer), [Visibility: Keep Implementation Details Private](#visibility-keep-implementation-details-private), [Structuring: Add Module Declaration Before Content](#structuring-add-module-declaration-before-content).
-    *   **Rule Adherence Checkpoint:** Confirm strict adherence to `code/gen` instructions, Design Rules, and **especially Codestyle Rules (overriding existing style)** during implementation. Confirm no semantic changes were introduced.
-    *   **Verification Strategy:** Compilation success (`cargo check`), review code diffs to confirm only code movement, **run tests (`cargo test`) to verify semantic equivalence.**
+### Increments
 
-## Notes & Insights
+*   [✅] Increment 1: Propose API additions to `proc_macro_tools` via `task.md`
+    *   Commit Message: "chore: Propose API additions to proc_macro_tools for former refactoring"
 
-*   **[Date/Increment 1] Insight:** Splitting `field.rs` focuses on isolating the complex setter generation logic (`subform_*`) and the `preform` logic into separate files within a `field` submodule. This maintains the core `FormerField` definition and simpler methods together while improving maintainability of the complex parts.
-*   **[Date/Increment 1] Insight:** Splitting `former_enum.rs` primarily involves extracting the large `generate_implicit_former_for_variant` helper function into its own file within an `enum` submodule. This isolates the most complex part of the enum derivation logic.
-*   **[Date/Increment 1] Requirement:** All file splitting operations (Increments 2 and 4) must maintain semantic equivalence with the original code. The primary verification for this will be running `cargo test` after each split.
+*   [⏳] Increment 2: Implement Improved Refactoring (Enum Unit Variants in `former_meta`)
+    *   Detailed Plan Step 1: Read the content of `module/core/former_meta/src/derive_former/former_enum/unit_variant_handler.rs`.
+    *   Detailed Plan Step 2: Modify `unit_variant_handler.rs` to use the proposed `proc_macro_tools` utilities. This involves replacing manual identifier creation and generics quoting with calls to `cased_ident_from_ident` and `GenericsRef` methods.
+    *   Pre-Analysis: The current implementation is verbose. Using the new utilities will make it more concise and maintainable.
+    *   Crucial Design Rules: [Prioritize Reuse and Minimal Change], [Proc Macro: Development Workflow]
+    *   Relevant Behavior Rules: Rules 1a, 2a, 3a, 4a.
+    *   Verification Strategy: Execute `cargo check -p former_meta`. If it passes, execute `cargo test -p former_meta`.
+    *   Commit Message: "refactor(former_meta): Improve unit variant handling using macro_tools"
+
+*   [⚫] Increment 3: Final Verification
+    *   Detailed Plan Step 1: Run `cargo clippy --workspace --all-targets -- -D warnings`.
+    *   Detailed Plan Step 2: Run `cargo test --workspace`.
+    *   Verification Strategy: Analyze output of `execute_command` for both commands to ensure no new issues.
+    *   Commit Message: "chore(former): Final verification after unit variant refactor"
+
+### Task Requirements
+*   The refactoring must not change the externally observable behavior of the `Former` macro for enum unit variants.
+*   All new and modified code must adhere to the system prompt's Design and Codestyle Rules.
+
+### Project Requirements
+*   (This section is reused and appended to across tasks for the same project. Never remove existing project requirements.)
+*   Must use Rust 2021 edition.
+*   All public APIs must be documented.
+
+### Notes & Insights
+*   This plan supersedes the one in `module/core/former/plan.md` for the execution of this task.
+*   The successful completion of Increment 2 depends on the eventual implementation of the changes proposed in Increment 1's `task.md`. For the purpose of this task, we will assume the changes are available and proceed with the refactoring.

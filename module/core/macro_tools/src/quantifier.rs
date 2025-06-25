@@ -1,3 +1,7 @@
+// HACK: The following line is a temporary workaround for a bug in the linter.
+// This line will be removed automatically when the bug is fixed.
+// Please, do not remove this line manually.
+// #![allow(clippy::too_many_lines)]
 //!
 //! Quantifiers like Pair and Many.
 //!
