@@ -28,7 +28,7 @@ mod private
     /// Options for bumping the package version.
     pub bump : version::BumpOptions,
     /// Git options related to the package.
-    pub git_options : Option< entity::git::GitOptions >,
+    pub git_options : entity::git::GitOptions,
     /// Options for publishing the package using Cargo.
     pub publish : cargo::PublishOptions,
     /// Indicates whether the process should be dry-run (no actual publishing).
@@ -44,8 +44,6 @@ mod private
     package : package::Package< 'a >,
     channel : channel::Channel,
     base_temp_dir : Option< path::PathBuf >,
-    #[ former( default = true ) ]
-    commit_changes : bool,
     #[ former( default = true ) ]
     dry : bool,
   }
@@ -77,16 +75,13 @@ mod private
         dependencies : dependencies.clone(),
         dry : self.dry,
       };
-      let git_options = if self.commit_changes
+      let git_options = entity::git::GitOptions
       {
-        Some( entity::git::GitOptions
-        {
-          git_root : workspace_root,
-          items : dependencies.iter().chain( [ &crate_dir ] ).map( | d | d.clone().absolute_path().join( "Cargo.toml" ) ).collect(),
-          message : format!( "{}-v{}", self.package.name().unwrap(), new_version ),
-          dry : self.dry,
-        })
-      } else { None };
+        git_root : workspace_root,
+        items : dependencies.iter().chain( [ &crate_dir ] ).map( | d | d.clone().absolute_path().join( "Cargo.toml" ) ).collect(),
+        message : format!( "{}-v{}", self.package.name().unwrap(), new_version ),
+        dry : self.dry,
+      };
       let publish = cargo::PublishOptions
       {
         path : crate_dir.clone().absolute_path().inner(),
@@ -127,14 +122,6 @@ mod private
 
     /// Release channels for rust.
     pub channel : channel::Channel,
-
-    /// Setting this option to true will temporarily remove development dependencies before executing the command, then restore them afterward.
-    #[ allow( dead_code ) ] // former related
-    pub exclude_dev_dependencies : bool,
-
-    /// Indicates whether changes should be committed.
-    #[ former( default = true ) ]
-    pub commit_changes : bool,
 
     /// `dry` - A boolean value indicating whether to do a dry run. If set to `true`, the application performs
     /// a simulated run without making any actual changes. If set to `false`, the operations are actually executed.
@@ -262,10 +249,6 @@ mod private
       {
         plan = plan.dry( dry );
       }
-      if let Some( commit_changes ) = &self.storage.commit_changes
-      {
-        plan = plan.commit_changes( *commit_changes );
-      }
       let plan = plan
       .channel( channel )
       .package( package )
@@ -370,7 +353,7 @@ mod private
   ///
   /// # Errors
   /// qqq: doc
-  #[ allow( clippy::option_map_unit_fn ) ]
+  #[ allow( clippy::option_map_unit_fn, clippy::result_large_err ) ]
   pub fn perform_package_publish( instruction : PackagePublishInstruction ) -> ResultWithReport< PublishReport, Error >
   {
     let mut report = PublishReport::default();
@@ -385,7 +368,7 @@ mod private
     } = instruction;
     pack.dry = dry;
     bump.dry = dry;
-    git_options.as_mut().map( | d | d.dry = dry );
+    git_options.dry = dry;
     publish.dry = dry;
 
     report.get_info = Some( cargo::pack( pack ).err_with_report( &report )? );
@@ -393,50 +376,38 @@ mod private
     let bump_report = version::bump( bump ).err_with_report( &report )?;
     report.bump = Some( bump_report.clone() );
 
-    let git_root = git_options.as_ref().map( | g | g.git_root.clone() );
-    if let Some( git_options ) = git_options
+    let git_root = git_options.git_root.clone();
+    let git = match entity::git::perform_git_commit( git_options )
     {
-      let git = match entity::git::perform_git_commit( git_options )
+      Ok( git ) => git,
+      Err( e ) =>
       {
-        Ok( git ) => git,
-        Err( e ) =>
-        {
-          version::revert( &bump_report )
-          .map_err( | le | format_err!
-          ( 
-            "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) 
-          ))
-          .err_with_report( &report )?;
-          return Err( ( report, e ) );
-        }
-      };
-      report.add = git.add;
-      report.commit = git.commit;
-    }
+        version::revert( &bump_report )
+        .map_err( | le | format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) ) )
+        .err_with_report( &report )?;
+        return Err( ( report, e ) );
+      }
+    };
+    report.add = git.add;
+    report.commit = git.commit;
     report.publish = match cargo::publish( publish )
     {
       Ok( publish ) => Some( publish ),
       Err( e ) =>
       {
-        if let Some( git_root ) = git_root.as_ref()
-        {
-          tool::git::reset( git_root.as_ref(), true, 1, false )
-          .map_err
-          (
-            | le |
-            format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) )
-          )
-          .err_with_report( &report )?;
-        }
+        tool::git::reset( git_root.as_ref(), true, 1, false )
+        .map_err
+        (
+          | le |
+          format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) )
+        )
+        .err_with_report( &report )?;
         return Err( ( report, e ) );
       }
     };
 
-    if let Some( git_root ) = git_root.as_ref()
-    {
-      let res = tool::git::push( git_root, dry ).err_with_report( &report )?;
-      report.push = Some( res );
-    }
+    let res = tool::git::push( &git_root, dry ).err_with_report( &report )?;
+    report.push = Some( res );
 
     Ok( report )
   }

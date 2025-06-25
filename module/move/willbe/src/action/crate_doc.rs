@@ -104,7 +104,7 @@ mod private
   /// 
   /// # Errors
   /// Returns an error if the command arguments are invalid, the workspace cannot be loaded
-  #[allow(clippy::too_many_lines)]
+  #[ allow( clippy::too_many_lines, clippy::result_large_err ) ]
   pub fn doc
   (
     workspace : &Workspace,
@@ -123,17 +123,17 @@ mod private
     // --- Get crate name early for --package argument and file naming ---
     let manifest_path_for_name = crate_dir.as_ref().join( "Cargo.toml" );
     let manifest_content_for_name = fs::read_to_string( &manifest_path_for_name )
-      .map_err( CrateDocError::Io )
-      .context( format!( "Failed to read Cargo.toml at {}", manifest_path_for_name.display() ) )
-      .err_with_report( &report )?;
+    .map_err( CrateDocError::Io )
+    .context( format!( "Failed to read Cargo.toml at {}", manifest_path_for_name.display() ) )
+    .err_with_report( &report )?;
     let manifest_toml_for_name = manifest_content_for_name.parse::< Document >()
-      .map_err( CrateDocError::Toml )
-      .context( format!( "Failed to parse Cargo.toml at {}", manifest_path_for_name.display() ) )
-      .err_with_report( &report )?;
+    .map_err( CrateDocError::Toml )
+    .context( format!( "Failed to parse Cargo.toml at {}", manifest_path_for_name.display() ) )
+    .err_with_report( &report )?;
     let crate_name = manifest_toml_for_name[ "package" ][ "name" ]
-      .as_str()
-      .ok_or_else( || CrateDocError::MissingPackageName( manifest_path_for_name.clone() ) )
-      .err_with_report( &report )?;
+    .as_str()
+    .ok_or_else( || CrateDocError::MissingPackageName( manifest_path_for_name.clone() ) )
+    .err_with_report( &report )?;
     // --- End get crate name early ---
 
     // Define the arguments for `cargo doc`
