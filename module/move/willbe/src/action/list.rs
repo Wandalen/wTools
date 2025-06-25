@@ -324,10 +324,10 @@ mod private
   }
 
   #[ allow( clippy::trivially_copy_pass_by_ref, clippy::needless_lifetimes ) ]
-  fn process_package_dependency
+  fn process_package_dependency< 'a >
   (
     workspace : &Workspace,
-    package : &WorkspacePackageRef< '_ >,
+    package : &WorkspacePackageRef< 'a >,
     args : &ListOptions,
     dep_rep : &mut tool::ListNodeReport,
     visited : &mut collection::HashSet< DependencyId >

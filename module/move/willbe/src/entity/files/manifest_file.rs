@@ -157,13 +157,13 @@ impl TryFrom< AbsolutePath > for ManifestFile
 
     if !manifest_file.as_ref().ends_with( "Cargo.toml" )
     {
-      let err = io::Error::other( format!( "File path does not end with Cargo.toml as it should {}", manifest_file.display() ) );
+      let err = io::Error::new( io::ErrorKind::Other, format!( "File path does not end with Cargo.toml as it should {manifest_file:?}" ) );
       return Err( PathError::Io( err ) );
     }
 
     if !manifest_file.as_ref().is_file()
     {
-      let err = io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {}", manifest_file.display() ) );
+      let err = io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {manifest_file:?}" ) );
       return Err( PathError::Io( err ) );
     }
     Ok( Self( manifest_file ) )

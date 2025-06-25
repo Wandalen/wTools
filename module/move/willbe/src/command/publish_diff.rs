@@ -14,6 +14,8 @@ mod private
   #[ derive( former::Former ) ]
   struct PublishDiffProperties
   {
+    #[ former( default = false ) ]
+    exclude_dev_dependencies : bool,
     keep_archive : Option< PathBuf >,
   }
 
@@ -36,10 +38,11 @@ mod private
   pub fn publish_diff( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {
     let path : PathBuf = o.args.get_owned( 0 ).unwrap_or( std::env::current_dir()? );
-    let PublishDiffProperties { keep_archive } = o.props.try_into()?;
+    let PublishDiffProperties { keep_archive, exclude_dev_dependencies } = o.props.try_into()?;
 
     let mut o = action::PublishDiffOptions::former()
-    .path( path );
+    .path( path )
+    .exclude_dev_dependencies( exclude_dev_dependencies );
     if let Some( k ) = keep_archive.clone() { o = o.keep_archive( k ); }
     let o = o.form();
 
@@ -60,6 +63,12 @@ mod private
     fn try_from( value : wca::executor::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();
+
+      this = if let Some( v ) = value
+      .get_owned( "exclude_dev_dependencies" )
+      { this.exclude_dev_dependencies::< bool >( v ) }
+      else
+      { this };
 
       this = if let Some( v ) = value
       .get_owned( "keep_archive" )

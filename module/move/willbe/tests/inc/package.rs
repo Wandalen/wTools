@@ -260,6 +260,8 @@ fn kos_plan()
     channel::Channel::Stable,
     false,
     false,
+    true,
+    false,
   )
   .unwrap();
   

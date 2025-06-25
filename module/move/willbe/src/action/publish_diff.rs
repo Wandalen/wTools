@@ -22,6 +22,7 @@ mod private
   pub struct PublishDiffOptions
   {
     path : PathBuf,
+    exclude_dev_dependencies : bool,
     keep_archive : Option< PathBuf >,
   }
 
@@ -168,7 +169,7 @@ mod private
           std::fs::write( local_path, content )?;
         }
       }
-      diffs.insert( path, crate_diff( &l, &r ).exclude( diff::PUBLISH_IGNORE_LIST ) );
+      diffs.insert( path, crate_diff( &l, &r, o.exclude_dev_dependencies ).exclude( diff::PUBLISH_IGNORE_LIST ) );
       let report = tasks[ current_idx ].info.normal_dependencies.clone();
       let printer : Vec< TreePrinter > = report
       .iter()

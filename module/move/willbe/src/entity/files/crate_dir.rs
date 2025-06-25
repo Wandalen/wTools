@@ -147,7 +147,7 @@ impl TryFrom< AbsolutePath > for CrateDir
   {
     if !crate_dir_path.as_ref().join( "Cargo.toml" ).is_file()
     {
-      let err =  io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {}", crate_dir_path.display() ) );
+      let err =  io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {crate_dir_path:?}" ) );
       return Err( PathError::Io( err ) );
     }
     Ok( Self( crate_dir_path ) )
