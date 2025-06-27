@@ -8,7 +8,7 @@ fn concat()
 {
   use the_module::ct;
 
-  const KEYWORD : &'static str = "keyword";
+  const KEYWORD : &str = "keyword";
   let got = ct::str::concat!
   (
     "Known attirbutes are : ",
@@ -27,7 +27,7 @@ fn format()
 {
   use the_module::ct;
 
-  const KEYWORD : &'static str = "keyword";
+  const KEYWORD : &str = "keyword";
   let got = ct::str::format!
   (
     "Known attirbutes are : {}{}",

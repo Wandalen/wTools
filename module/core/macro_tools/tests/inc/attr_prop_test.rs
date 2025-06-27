@@ -71,34 +71,26 @@ fn attr_prop_test()
   }
 
   let input : syn::Attribute = syn::parse_quote!( #[ attribute( enabled = true ) ] );
-  let meta = match input.meta
-  {
-    syn::Meta::List( meta_list ) => meta_list,
-    _ => panic!( "Expected a Meta::List" ),
-  };
+  let syn::Meta::List( meta ) = input.meta else { panic!( "Expected a Meta::List" ) };
 
   let nested_meta_stream : proc_macro2::TokenStream = meta.tokens;
   let attrs : MyAttributes = syn::parse2( nested_meta_stream ).unwrap();
-  println!( "{:?}", attrs );
+  println!( "{attrs:?}" );
 
   let attr : AttributePropertyBoolean< DebugMarker > = AttributePropertyBoolean::default();
-  assert_eq!( attr.internal(), false );
+  assert!( !attr.internal() );
   let attr : AttributePropertyBoolean< DebugMarker > = true.into();
-  assert_eq!( attr.internal(), true );
+  assert!( attr.internal() );
   let attr : AttributePropertyBoolean< DebugMarker > = false.into();
-  assert_eq!( attr.internal(), false );
+  assert!( !attr.internal() );
 
   let input : syn::Attribute = syn::parse_quote!( #[ attribute( enabled = true ) ] );
-  let meta = match input.meta
-  {
-    syn::Meta::List( meta_list ) => meta_list,
-    _ => panic!( "Expected a Meta::List" ),
-  };
+  let syn::Meta::List( meta ) = input.meta else { panic!( "Expected a Meta::List" ) };
 
   let nested_meta_stream : proc_macro2::TokenStream = meta.tokens;
   let parsed : MyAttributes = syn::parse2( nested_meta_stream ).unwrap();
-  assert_eq!( parsed.enabled.internal(), true );
-  assert_eq!( parsed.debug.internal(), false );
+  assert!( parsed.enabled.internal() );
+  assert!( !parsed.debug.internal() );
 
 }
 
@@ -108,9 +100,9 @@ fn attribute_property_enabled()
   use the_module::AttributePropertyOptionalSingletone;
 
   // Test default value
-  let attr : AttributePropertyOptionalSingletone = Default::default();
+  let attr : AttributePropertyOptionalSingletone = AttributePropertyOptionalSingletone::default();
   assert_eq!( attr.internal(), None );
-  assert_eq!( attr.value( true ), true );
-  assert_eq!( attr.value( false ), false );
+  assert!( attr.value( true ) );
+  assert!( !attr.value( false ) );
 
 }

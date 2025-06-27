@@ -201,7 +201,7 @@ fn test_field_or_variant_field()
   match field_or_variant
   {
     FieldOrVariant::Field( f ) => assert_eq!( f.ty, parse_quote!( i32 ) ),
-    _ => panic!( "Expected Field variant" ),
+    FieldOrVariant::Variant( _ ) => panic!( "Expected Field variant" ),
   }
 }
 
@@ -220,7 +220,7 @@ fn test_field_or_variant_variant()
   };
 
   let variant = input.elements().next().expect( "Expected at least one variant" );
-  let field_or_variant = FieldOrVariant::from( variant );
+  let field_or_variant = variant;
 
   match field_or_variant
   {
@@ -229,7 +229,7 @@ fn test_field_or_variant_variant()
       let exp : syn::Ident = parse_quote!( Variant1 );
       assert_eq!( v.ident, exp );
     },
-    _ => panic!( "Expected Variant variant" ),
+    FieldOrVariant::Field( _ ) => panic!( "Expected Variant variant" ),
   }
 }
 
@@ -398,7 +398,7 @@ fn struct_with_attrs2()
   assert!( matches!( ast.vis(), syn::Visibility::Public( _ ) ), "Expected public visibility" );
 
   // Check all elements
-  let elements : Vec< FieldOrVariant< '_ > > = ast.elements().map( FieldOrVariant::from ).collect();
+  let elements : Vec< FieldOrVariant< '_ > > = ast.elements().collect();
 
   // Check the first variant
   let first_field_or_variant = &elements[ 0 ];

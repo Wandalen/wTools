@@ -29,7 +29,10 @@ fn main()
 
   // Iterate over the extracted type parameters and print each one.
   // The `qt!` macro is used to convert the type parameter back to a token stream for printing.
-  got.iter().for_each( | e | println!( "{}", qt!( #e ) ) );
+  for e in &got
+  {
+    println!( "{}", qt!( #e ) );
+  }
 
   /* Expected output:
      i8
