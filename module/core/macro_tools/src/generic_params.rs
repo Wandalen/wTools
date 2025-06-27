@@ -44,8 +44,41 @@ mod private
     }
 
     /// Parses a string to a `GenericsWithWhere`, specifically designed to handle generics syntax with where clauses effectively.
+    ///
+    /// This function provides a convenient way to parse generic parameters and their associated
+    /// `where` clauses from a string slice, returning a `GenericsWithWhere` instance.
+    ///
+    /// # Arguments
+    ///
+    /// * `s` - The string slice containing the generics and optional `where` clause (e.g., `"<T: Debug> where T: Default"`).
+    ///
+    /// # Returns
+    ///
+    /// Returns a `syn::Result` which is `Ok(GenericsWithWhere)` on successful parsing,
+    /// or `Err(syn::Error)` if the input string does not conform to valid Rust generics syntax.
+    ///
     /// # Errors
-    /// qqq: doc
+    ///
+    /// Returns a `syn::Error` if the input string `s` cannot be parsed as valid Rust generics
+    /// or a `where` clause.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use macro_tools::generic_params::GenericsWithWhere;
+    ///
+    /// let parsed = GenericsWithWhere::parse_from_str( "< T : Clone, U : Default = Default1 > where T : Default" ).unwrap();
+    /// assert!( parsed.generics.params.len() == 2 );
+    /// assert!( parsed.generics.where_clause.is_some() );
+    ///
+    /// let parsed_no_where = GenericsWithWhere::parse_from_str( "< T >" ).unwrap();
+    /// assert!( parsed_no_where.generics.params.len() == 1 );
+    /// assert!( parsed_no_where.generics.where_clause.is_none() );
+    ///
+    /// let parsed_only_where = GenericsWithWhere::parse_from_str( "where T : Debug" ).unwrap();
+    /// assert!( parsed_only_where.generics.params.is_empty() );
+    /// assert!( parsed_only_where.generics.where_clause.is_some() );
+    /// ```
     pub fn parse_from_str( s : &str ) -> syn::Result< GenericsWithWhere >
     {
       syn::parse_str::< GenericsWithWhere >( s )
