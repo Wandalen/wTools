@@ -3,6 +3,7 @@
 ### Goal
 *   To thoroughly investigate and resolve the "comparison operators cannot be chained" error that occurs when `#[derive(Former)]` is used on generic enums.
 *   To review, refine, and potentially extend the `macro_tools` utilities (e.g., `ident::cased_ident_from_ident`, `generic_params::GenericsRef`) that were generalized from `former_meta` in a previous task.
+*   To add `#[ allow( clippy::wildcard_imports ) ]` to the workspace `Cargo.toml`.
 
 ### Progress
 *   ✅ Increment 1: Initial Setup & `Cargo.toml` Fix
@@ -11,6 +12,7 @@
 *   ⚫ Increment 3: Investigate Generic Enum Fix (in `former_meta` context)
 *   ⚫ Increment 4: Implement Generic Enum Fix (in `former_meta` and `macro_tools`)
 *   ⚫ Increment 5: Comprehensive Testing & Documentation for Generic Enum Fix
+*   ⏳ Increment 6: Propose `clippy::wildcard_imports` allow for workspace
 
 ### Target Crate
 *   `module/core/macro_tools`
@@ -28,6 +30,8 @@
     *   `macro_tools`
     *   `former`
     *   `former_meta`
+*   External Crates Requiring `task.md` Proposals (if any identified during planning):
+    *   `./Cargo.toml` (Reason: To add `clippy::wildcard_imports` allow attribute)
 
 ### Expected Behavior Rules / Specifications (for Target Crate)
 *   The `#[derive(Former)]` macro should successfully compile and generate correct code for generic enums, including those with complex generic parameters and bounds.
@@ -122,12 +126,19 @@
     *   Relevant Behavior Rules: All new and modified `macro_tools` utilities have comprehensive unit tests that pass. `cargo clippy --package macro_tools --all-targets -- -D warnings` passes without warnings or errors. `macro_tools` documentation is updated and clear.
     *   Verification Strategy: Execute `cargo test --workspace` and `cargo clippy --workspace --all-targets -- -D warnings` via `execute_command`. Analyze output for success and absence of warnings.
     *   Commit Message: `docs(former_meta): Add comprehensive tests and documentation for generic enum fix`
+*   ⏳ Increment 6: Propose `clippy::wildcard_imports` allow for workspace
+    *   Detailed Plan Step 1: Define the required change for `Cargo.toml` at the workspace root to add `#[ allow( clippy::wildcard_imports ) ]` to `[workspace.lints.clippy]`.
+    *   Detailed Plan Step 2: Draft the content for `Cargo.toml` at the workspace root, including the proposed change.
+    *   Detailed Plan Step 3: Use `write_to_file` to create/update `task.md` in the workspace root directory (`./task.md`) with the `External Crate Change Proposal` structure.
+    *   Verification Strategy: Confirm `task.md` written successfully by analyzing `write_to_file` tool output.
+    *   Commit Message: `chore: Propose clippy::wildcard_imports allow for workspace`
 
 ### Task Requirements
 *   The `former` crate's `cargo test --package former` (with the generic enum tests re-enabled) passes without compilation errors or test failures related to generic enums.
 *   All new and modified `macro_tools` utilities have comprehensive unit tests that pass.
 *   `cargo clippy --package macro_tools --all-targets -- -D warnings` passes without warnings or errors.
 *   `macro_tools` documentation is updated and clear.
+*   A `task.md` file is generated in the workspace root proposing the `clippy::wildcard_imports` allow attribute.
 
 ### Project Requirements
 *   (To be populated from workspace Cargo.toml if available)
@@ -135,3 +146,4 @@
 ### Notes & Insights
 *   The "comparison operators cannot be chained" error message is highly misleading; the actual issue is likely deeper in generic handling.
 *   The `default-features` warning for `convert_case` in `macro_tools/Cargo.toml` should also be addressed as part of this task.
+*   The `clippy::wildcard_imports` lint is too aggressive for some macro-generated code and should be allowed at the workspace level.
