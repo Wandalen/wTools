@@ -1,122 +1,162 @@
 use super::*;
-use component_model_types::Assign;
 use macro_tools::
 {
-  ct,
+  attr,
   diag,
+  generic_params,
+  struct_like::StructLike,
   Result,
-  phantom::add_to_item,
-  quote::ToTokens,
-  syn::ItemStruct,
-  AttributePropertyComponent,
-  AttributePropertyOptionalSingletone
+  qt,
 };
 
-pub fn phantom( _attr : proc_macro::TokenStream, input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
-{
-  let attrs = syn::parse::< ItemAttributes >( _attr )?;
-  let original_input = input.clone();
-  let item_parsed = syn::parse::< ItemStruct >( input )?;
+#[ path = "from/field_attributes.rs" ]
+mod field_attributes;
+use field_attributes::*;
+#[ path = "from/item_attributes.rs" ]
+mod item_attributes;
+use item_attributes::*;
 
-  let has_debug = attrs.debug.value( false );
-  let item_name = &item_parsed.ident;
-  let result = add_to_item( &item_parsed ).to_token_stream();
+use macro_tools::phantom;
+
+///
+/// Provides an automatic `PhantomData` field for a struct based on its generic types.
+///
+pub fn phantom( attr_input : proc_macro::TokenStream, input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
+{
+  let original_input = input.clone();
+  let parsed = syn::parse::< StructLike >( input )?;
+  let has_debug = attr::has_debug( parsed.attrs().iter() )?;
+  let item_attrs = ItemAttributes::from_attrs( parsed.attrs().iter() )?;
+  let item_name = &parsed.ident();
+
+  let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
+  = generic_params::decompose( &parsed.generics() );
+
+  let result = match parsed
+  {
+    StructLike::Unit( ref _item ) =>
+    {
+      return_syn_err!( parsed.span(), "Expects a structure with fields" );
+    },
+    StructLike::Struct( ref item ) =>
+    {
+      let mut result = item.clone();
+      phantom::add_to_item( &mut result );
+      qt!{ #result }
+    },
+    StructLike::Enum( ref item ) =>
+    {
+      let variants_result : Result< Vec< proc_macro2::TokenStream > > = item.variants.iter().map( | variant |
+      {
+        variant_generate
+        (
+          item_name,
+          &item_attrs,
+          &generics_impl,
+          &generics_ty,
+          &generics_where,
+          variant,
+          &original_input,
+        )
+      }).collect();
+
+      let variants = match variants_result
+      {
+        Ok( v ) => v,
+        Err( e ) => return Err( e ),
+      };
+
+      qt!
+      {
+        #( #variants )*
+      }
+    },
+  };
 
   if has_debug
   {
-    let about = format!( "derive : PhantomData\nstructure : {item_name}" );
+    let about = format!( "derive : Phantom\nstructure : {item_name}" );
     diag::report_print( about, &original_input, &result );
   }
 
   Ok( result )
 }
 
-// == attributes
-
-/// Represents the attributes of a struct. Aggregates all its attributes.
-#[ derive( Debug, Default ) ]
-pub struct ItemAttributes
+/// Generates `PhantomData` field for enum variants.
+fn variant_generate
+(
+  item_name : &syn::Ident,
+  item_attrs : &ItemAttributes,
+  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  variant : &syn::Variant,
+  original_input : &proc_macro::TokenStream,
+)
+-> Result< proc_macro2::TokenStream >
 {
-  /// Attribute for customizing generated code.
-  pub debug : AttributePropertyDebug,
-}
+  let variant_name = &variant.ident;
+  let fields = &variant.fields;
+  let attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
 
-impl syn::parse::Parse for ItemAttributes
-{
-  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+  if !attrs.config.enabled.value( item_attrs.config.enabled.value( true ) )
   {
-    let mut result = Self::default();
+    return Ok( qt!{} )
+  }
 
-    let error = | ident : &syn::Ident | -> syn::Error
+  if fields.is_empty()
+  {
+    return Ok( qt!{} )
+  }
+
+  if fields.len() != 1
+  {
+    return_syn_err!( fields.span(), "Expects a single field to derive Phantom" );
+  }
+
+  let field = fields.iter().next().unwrap();
+  let field_type = &field.ty;
+  let field_name = &field.ident;
+
+  if attrs.config.debug.value( false )
+  {
+    let debug = format_args!
+    (
+      r#"
+#[ automatically_derived ]
+impl< {} > {}< {} >
+where
+  {}
+{{
+  // PhantomData field added
+}}
+      "#,
+      qt!{ #generics_impl },
+      item_name,
+      qt!{ #generics_ty },
+      qt!{ #generics_where },
+    );
+    let about = format!
+    (
+r#"derive : Phantom
+item : {item_name}
+field : {variant_name}"#,
+    );
+    diag::report_print( about, original_input, debug.to_string() );
+  }
+
+  Ok
+  (
+    qt!
     {
-        let known = ct::concatcp!
-        (
-        "Known properties of attribute `phantom` are : ",
-        AttributePropertyDebug::KEYWORD,
-        ".",
-      );
-      syn_err!
-      (
-        ident,
-        r#"Expects an attribute of format '#[ phantom( {} ) ]'
-  {known}
-  But got: '{}'
-"#,
-        AttributePropertyDebug::KEYWORD,
-        qt!{ #ident }
-      )
-    };
-
-    while !input.is_empty()
-    {
-      let lookahead = input.lookahead1();
-      if lookahead.peek( syn::Ident )
+      #[ automatically_derived ]
+      impl< #generics_impl > #item_name< #generics_ty >
+      where
+        #generics_where
       {
-        let ident : syn::Ident = input.parse()?;
-        match ident.to_string().as_str()
-        {
-          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
-          _ => return Err( error( &ident ) ),
-        }
-      }
-      else
-      {
-        return Err( lookahead.error() );
-      }
-
-      // Optional comma handling
-      if input.peek( syn::Token![ , ] )
-      {
-        input.parse::< syn::Token![ , ] >()?;
+        // PhantomData field added
       }
     }
+  )
 
-    Ok( result )
-  }
 }
-
-impl< IntoT > Assign< AttributePropertyDebug, IntoT > for ItemAttributes
-  where
-    IntoT : Into< AttributePropertyDebug >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, prop : IntoT )
-  {
-    self.debug = prop.into();
-  }
-}
-
-// == attribute properties
-
-/// Marker type for attribute property to specify whether to provide a generated code as a hint.
-#[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyDebugMarker;
-
-impl AttributePropertyComponent for AttributePropertyDebugMarker
-{
-  const KEYWORD : &'static str = "debug";
-}
-
-/// Specifies whether to provide a generated code as a hint.
-/// Defaults to `false`, which means no debug is provided unless explicitly requested.
-pub type AttributePropertyDebug = AttributePropertyOptionalSingletone< AttributePropertyDebugMarker >;

@@ -1,13 +1,28 @@
 use super::*;
-use macro_tools::{ attr, diag, generic_params, Result, struct_like::StructLike };
+use macro_tools::
+{
+  attr,
+  diag,
+  generic_params,
+  item_struct,
+  struct_like::StructLike,
+  Result,
+  qt,
+};
 
-//
+use super::field_attributes::{ FieldAttributes };
+use super::item_attributes::{ ItemAttributes };
+use super::field_attributes::AttributePropertyDebug;
 
+///
+/// Derive macro to implement DerefMut when-ever it's possible to do automatically.
+///
 pub fn deref_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   let original_input = input.clone();
   let parsed = syn::parse::< StructLike >( input )?;
-  let has_debug = attr::has_debug( parsed.attrs().iter() )?;
+  let has_debug = AttributePropertyDebug::from_attrs( parsed.attrs().iter() )?.value( false );
+  let item_attrs = ItemAttributes::from_attrs( parsed.attrs().iter() )?;
   let item_name = &parsed.ident();
 
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
@@ -15,30 +30,52 @@ pub fn deref_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::Toke
 
   let result = match parsed
   {
-
-    StructLike::Unit( _ ) => generate_unit(),
-
+    StructLike::Unit( ref _item ) =>
+    {
+      return_syn_err!( parsed.span(), "Expects a structure with one field" );
+    },
     StructLike::Struct( ref item ) =>
-    generate_struct
-    (
-      item_name,
-      &generics_impl,
-      &generics_ty,
-      &generics_where,
-      &item.fields,
-    ),
-
+    {
+      let field_type = item_struct::first_field_type( &item )?;
+      let field_name = item_struct::first_field_name( &item ).ok().flatten();
+      generate
+      (
+        item_name,
+        &generics_impl,
+        &generics_ty,
+        &generics_where,
+        &field_type,
+        field_name.as_ref(),
+      )
+    },
     StructLike::Enum( ref item ) =>
-    generate_enum
-    (
-      item_name,
-      &generics_impl,
-      &generics_ty,
-      &generics_where,
-      &item.variants,
-    ),
+    {
+      let variants_result : Result< Vec< proc_macro2::TokenStream > > = item.variants.iter().map( | variant |
+      {
+        variant_generate
+        (
+          item_name,
+          &item_attrs,
+          &generics_impl,
+          &generics_ty,
+          &generics_where,
+          variant,
+          &original_input,
+        )
+      }).collect();
 
-  }?;
+      let variants = match variants_result
+      {
+        Ok( v ) => v,
+        Err( e ) => return Err( e ),
+      };
+
+      qt!
+      {
+        #( #variants )*
+      }
+    },
+  };
 
   if has_debug
   {
@@ -49,85 +86,11 @@ pub fn deref_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::Toke
   Ok( result )
 }
 
-/// Placeholder for unit structs and enums. Does not generate any `DerefMut` implementation
-fn generate_unit() -> Result< proc_macro2::TokenStream >
-{
-  Ok( qt!{} )
-}
-
-/// An aggregator function to generate `DerefMut` implementation for unit, tuple structs and the ones with named fields
-fn generate_struct
-(
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  fields : &syn::Fields,
-)
--> Result< proc_macro2::TokenStream >
-{
-  match fields
-  {
-
-    syn::Fields::Unit => generate_unit(),
-
-    syn::Fields::Unnamed( _ ) =>
-    generate_struct_tuple_fields
-    (
-      item_name,
-      generics_impl,
-      generics_ty,
-      generics_where,
-    ),
-
-    syn::Fields::Named( fields ) =>
-    generate_struct_named_fields
-    (
-      item_name,
-      generics_impl,
-      generics_ty,
-      generics_where,
-      fields,
-    ),
-
-  }
-}
-
-/// Generates `DerefMut` implementation for structs with tuple fields
+/// Generates `DerefMut` implementation for structs.
 ///
-/// # Example
-///
-/// ## Input
+/// Example of generated code:
 /// ```rust
-/// # use derive_tools_meta::DerefMut;
-/// #[ derive( DerefMut ) ]
-/// pub struct Struct( i32, Vec< String > );
-///
-/// impl ::core::ops::Deref for Struct
-/// {
-///   type Target = i32;
-///   fn deref( &self ) -> &Self::Target
-///   {
-///     &self.0
-///   }
-/// }
-/// ```
-///
-/// ## Output
-/// ```rust
-/// pub struct Struct( i32, Vec< String > );
-/// #[ automatically_derived ]
-/// impl ::core::ops::Deref for Struct
-/// {
-///   type Target = i32;
-///   #[ inline( always ) ]
-///   fn deref( &self ) -> &Self::Target
-///   {
-///     &self.0
-///   }
-/// }
-/// #[ automatically_derived ]
-/// impl ::core::ops::DerefMut for Struct
+/// impl core::ops::DerefMut for IsTransparent
 /// {
 ///   #[ inline( always ) ]
 ///   fn deref_mut( &mut self ) -> &mut Self::Target
@@ -136,365 +99,147 @@ fn generate_struct
 ///   }
 /// }
 /// ```
-///
-fn generate_struct_tuple_fields
+fn generate
 (
   item_name : &syn::Ident,
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  _field_type : &syn::Type,
+  field_name : Option< &syn::Ident >,
 )
--> Result< proc_macro2::TokenStream >
+-> proc_macro2::TokenStream
 {
-  Ok
-  (
-    qt!
-    {
-      #[ automatically_derived ]
-      impl< #generics_impl > ::core::ops::DerefMut for #item_name< #generics_ty >
-      where
-        #generics_where
-      {
-        #[ inline( always ) ]
-        fn deref_mut( &mut self ) -> &mut Self::Target
-        {
-          &mut self.0
-        }
-      }
-    }
-  )
-}
-
-/// Generates `DerefMut` implementation for structs with named fields
-///
-/// # Example
-///
-/// ## Input
-/// ```rust
-/// # use derive_tools_meta::DerefMut;
-/// #[ derive( DerefMut ) ]
-/// pub struct Struct
-/// {
-///   a : i32,
-///   b : Vec< String >,
-/// }
-///
-/// impl ::core::ops::Deref for Struct
-/// {
-///   type Target = i32;
-///   fn deref( &self ) -> &Self::Target
-///   {
-///     &self.a
-///   }
-/// }
-/// ```
-///
-/// ## Output
-/// ```rust
-/// pub struct Struct
-/// {
-///   a : i32,
-///   b : Vec< String >,
-/// }
-/// #[ automatically_derived ]
-/// impl ::core::ops::Deref for Struct
-/// {
-///   type Target = i32;
-///   #[ inline( always ) ]
-///   fn deref( &self ) -> &Self::Target
-///   {
-///     &self.a
-///   }
-/// }
-/// #[ automatically_derived ]
-/// impl ::core::ops::DerefMut for Struct
-/// {
-///   #[ inline( always ) ]
-///   fn deref_mut( &mut self ) -> &mut Self::Target
-///   {
-///     &mut self.a
-///   }
-/// }
-/// ```
-///
-fn generate_struct_named_fields
-(
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  fields : &syn::FieldsNamed,
-)
--> Result< proc_macro2::TokenStream >
-{
-  let fields = &fields.named;
-  let field_name = match fields.first()
+  let body = if let Some( field_name ) = field_name
   {
-    Some( field ) => field.ident.as_ref().unwrap(),
-    None => return generate_unit(),
+    qt!{ &mut self.#field_name }
+  }
+  else
+  {
+    qt!{ &mut self.0 }
   };
 
-  Ok
-  (
-    qt!
+  qt!
+  {
+    #[ automatically_derived ]
+    impl< #generics_impl > core::ops::DerefMut for #item_name< #generics_ty >
+    where
+      #generics_where
     {
-      #[ automatically_derived ]
-      impl< #generics_impl > ::core::ops::DerefMut for #item_name< #generics_ty >
-      where
-        #generics_where
+      #[ inline( always ) ]
+      fn deref_mut( &mut self ) -> &mut Self::Target
       {
-        #[ inline( always ) ]
-        fn deref_mut( &mut self ) -> &mut Self::Target
-        {
-          &mut self.#field_name
-        }
+        #body
       }
     }
-  )
-}
-
-/// An aggregator function to generate `DerefMut` implementation for unit, tuple enums and the ones with named fields
-fn generate_enum
-(
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  variants : &syn::punctuated::Punctuated<syn::Variant, syn::Token![,]>,
-)
--> Result< proc_macro2::TokenStream >
-{
-  let fields = match variants.first()
-  {
-    Some( variant ) => &variant.fields,
-    None => return generate_unit(),
-  };
-
-  let idents = variants.iter().map( | v | v.ident.clone() ).collect::< Vec< _ > >();
-
-  match fields
-  {
-
-    syn::Fields::Unit => generate_unit(),
-
-    syn::Fields::Unnamed( _ ) =>
-    generate_enum_tuple_variants
-    (
-      item_name,
-      &generics_impl,
-      &generics_ty,
-      &generics_where,
-      &idents,
-    ),
-
-    syn::Fields::Named( ref item ) =>
-    generate_enum_named_variants
-    (
-      item_name,
-      &generics_impl,
-      &generics_ty,
-      &generics_where,
-      &idents,
-      item,
-    ),
-
   }
 }
 
-/// Generates `DerefMut` implementation for enums with tuple fields
+/// Generates `DerefMut` implementation for enum variants.
 ///
-/// # Example
-///
-/// ## Input
+/// Example of generated code:
 /// ```rust
-/// # use derive_tools_meta::DerefMut;
-/// #[ derive( DerefMut ) ]
-/// pub enum E
+/// impl core::ops::DerefMut for MyEnum
 /// {
-///   A ( i32, Vec< String > ),
-///   B ( i32, Vec< String > ),
-///   C ( i32, Vec< String > ),
-/// }
-///
-/// impl ::core::ops::Deref for E
-/// {
-///   type Target = i32;
-///   fn deref( &self ) -> &Self::Target
+///   fn deref_mut( &mut self, index : usize ) -> &mut Self::Output
 ///   {
-///     match self
-///     {
-///       E::A( v, .. ) | E::B( v, .. ) | E::C( v, .. ) => v,
-///     }
+///     &mut self.0[ index ]
 ///   }
 /// }
 /// ```
-///
-/// ## Output
-/// ```rust
-/// pub enum E
-/// {
-///   A ( i32, Vec< String > ),
-///   B ( i32, Vec< String > ),
-///   C ( i32, Vec< String > ),
-/// }
-/// #[ automatically_derived ]
-/// impl ::core::ops::Deref for E
-/// {
-///   type Target = i32;
-///   #[ inline( always ) ]
-///   fn deref( &self ) -> &Self::Target
-///   {
-///     match self
-///     {
-///       E::A( v, .. ) | E::B( v, .. ) | E::C( v, .. ) => v,
-///     }
-///   }
-/// }
-/// #[ automatically_derived ]
-/// impl ::core::ops::DerefMut for E
-/// {
-///   #[ inline( always ) ]
-///   fn deref_mut( &mut self ) -> &mut Self::Target
-///   {
-///     match self
-///     {
-///       E::A( v, .. ) | E::B( v, .. ) | E::C( v, .. ) => v,
-///     }
-///   }
-/// }
-/// ```
-///
-fn generate_enum_tuple_variants
+fn variant_generate
 (
   item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  variant_idents : &[ syn::Ident ],
-)
--> Result< proc_macro2::TokenStream >
-{
-  Ok
-  (
-    qt!
-    {
-      #[ automatically_derived ]
-      impl< #generics_impl > ::core::ops::DerefMut for #item_name< #generics_ty >
-      where
-        #generics_where
-      {
-        #[ inline( always ) ]
-        fn deref_mut( &mut self ) -> &mut Self::Target
-        {
-          match self
-          {
-            #( #item_name::#variant_idents( v, .. ) )|* => v
-          }
-        }
-      }
-    }
-  )
-}
-
-/// Generates `DerefMut` implementation for enums with named fields
-///
-/// # Example
-///
-/// ## Input
-/// ```rust
-/// # use derive_tools_meta::DerefMut;
-/// #[ derive( DerefMut ) ]
-/// pub enum E
-/// {
-///   A { a : i32, b : Vec< String > },
-///   B { a : i32, b : Vec< String > },
-///   C { a : i32, b : Vec< String > },
-/// }
-///
-/// impl ::core::ops::Deref for E
-/// {
-///   type Target = i32;
-///   fn deref( &self ) -> &Self::Target
-///   {
-///     match self
-///     {
-///       E::A { a : v, .. } | E::B { a : v, .. } | E::C { a : v, .. } => v,
-///     }
-///   }
-/// }
-/// ```
-///
-/// ## Output
-/// ```rust
-/// pub enum E
-/// {
-///   A { a : i32, b : Vec< String > },
-///   B { a : i32, b : Vec< String > },
-///   C { a : i32, b : Vec< String > },
-/// }
-/// #[ automatically_derived ]
-/// impl ::core::ops::Deref for E
-/// {
-///   type Target = i32;
-///   #[ inline( always ) ]
-///   fn deref( &self ) -> &Self::Target
-///   {
-///     match self
-///     {
-///       E::A { a : v, .. } | E::B { a : v, .. } | E::C { a : v, .. } => v,
-///     }
-///   }
-/// }
-/// #[ automatically_derived ]
-/// impl ::core::ops::DerefMut for E
-/// {
-///   #[ inline( always ) ]
-///   fn deref_mut( &mut self ) -> &mut Self::Target
-///   {
-///     match self
-///     {
-///       E::A { a : v, .. } | E::B { a : v, .. } | E::C { a : v, .. } => v,
-///     }
-///   }
-/// }
-/// ```
-///
-fn generate_enum_named_variants
-(
-  item_name : &syn::Ident,
+  item_attrs : &ItemAttributes,
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  variant_idents : &[ syn::Ident ],
-  fields : &syn::FieldsNamed,
+  variant : &syn::Variant,
+  original_input : &proc_macro::TokenStream,
 )
 -> Result< proc_macro2::TokenStream >
 {
-  let fields = &fields.named;
-  let field_name = match fields.first()
+  let variant_name = &variant.ident;
+  let fields = &variant.fields;
+  let attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
+
+  if !attrs.config.enabled.value( item_attrs.config.enabled.value( true ) )
   {
-    Some( field ) => field.ident.as_ref().unwrap(),
-    None => return generate_unit(),
+    return Ok( qt!{} )
+  }
+
+  if fields.is_empty()
+  {
+    return Ok( qt!{} )
+  }
+
+  if fields.len() != 1
+  {
+    return_syn_err!( fields.span(), "Expects a single field to derive DerefMut" );
+  }
+
+  let field = fields.iter().next().unwrap();
+  let field_type = &field.ty;
+  let field_name = &field.ident;
+
+  let body = if let Some( field_name ) = field_name
+  {
+    qt!{ &mut self.#field_name }
+  }
+  else
+  {
+    qt!{ &mut self.0 }
   };
+
+  if attrs.config.debug.value( false )
+  {
+    let debug = format_args!
+    (
+      r#"
+#[ automatically_derived ]
+impl< {} > core::ops::DerefMut for {}< {} >
+where
+  {}
+{{
+  #[ inline ]
+  fn deref_mut( &mut self ) -> &mut {}
+  {{
+    {}
+  }}
+}}
+      "#,
+      qt!{ #generics_impl },
+      item_name,
+      qt!{ #generics_ty },
+      qt!{ #generics_where },
+      qt!{ #field_type },
+      body,
+    );
+    let about = format!
+    (
+r#"derive : DerefMut
+item : {item_name}
+field : {variant_name}"#,
+    );
+    diag::report_print( about, original_input, debug.to_string() );
+  }
 
   Ok
   (
     qt!
     {
       #[ automatically_derived ]
-      impl< #generics_impl > ::core::ops::DerefMut for #item_name< #generics_ty >
+      impl< #generics_impl > core::ops::DerefMut for #item_name< #generics_ty >
       where
         #generics_where
       {
-        #[ inline( always ) ]
-        fn deref_mut( &mut self ) -> &mut Self::Target
+        #[ inline ]
+        fn deref_mut( &mut self ) -> &mut #field_type
         {
-          match self
-          {
-            #( #item_name::#variant_idents{ #field_name : v, ..} )|* => v
-          }
+          #body
         }
       }
     }
   )
+
 }

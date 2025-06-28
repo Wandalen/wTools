@@ -1,160 +1,147 @@
-
 use super::*;
-use macro_tools::{ Result, format_ident, attr, diag };
-use iter::{ IterExt, Itertools };
+use macro_tools::{ Result, format_ident, attr, diag, qt };
 
-/// This function generates an implementation of a variadic `From` trait for a given struct.
-/// It handles both named and unnamed fields within the struct, generating appropriate code
-/// for converting a tuple of fields into an instance of the struct.
+#[ path = "from/field_attributes.rs" ]
+mod field_attributes;
+use field_attributes::*;
+#[ path = "from/item_attributes.rs" ]
+mod item_attributes;
+use item_attributes::*;
 
+/// The `derive_variadic_from` macro is designed to provide a way to implement the `From`-like
+/// traits for structs with a variable number of fields, allowing them to be constructed from
+/// tuples of different lengths or from individual arguments.
 pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
-
   let original_input = input.clone();
   let parsed = syn::parse::< syn::ItemStruct >( input )?;
   let has_debug = attr::has_debug( parsed.attrs.iter() )?;
+  let item_attrs = ItemAttributes::from_attrs( parsed.attrs.iter() )?;
   let item_name = &parsed.ident;
 
-  let len = parsed.fields.len();
-  let from_trait = format_ident!( "From{len}",  );
-  let from_method = format_ident!( "from{len}" );
-
-  let
-  (
-    types,
-    fn_params,
-    src_into_vars,
-    vars
-  )
-  :
-  ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
-  = parsed.fields.iter().enumerate().map_result( | ( i, field ) |
+  let fields_parsed = match parsed.fields
   {
-    let ident = field.ident.clone().map_or_else( || format_ident!( "_{i}" ), | e | e );
-    let ty = field.ty.clone();
-    Result::Ok
-    ((
-      qt!{ #ty, },
-      qt!{ #ident : #ty, },
-      qt!{ let #ident = ::core::convert::Into::into( #ident ); },
-      qt!{ #ident, },
-    ))
-  })?
-  .into_iter()
-  .multiunzip();
-
-  let result = match &parsed.fields
-  {
-    syn::Fields::Named( _ ) =>
-    {
-
-      if 1 <= len && len <= 3
-      {
-        qt!
-        {
-
-          #[ automatically_derived ]
-          // impl variadic_from::From2< i32 > for StructNamedFields
-          impl variadic_from::#from_trait< #( #types )* > for #item_name
-          {
-            // fn from1( a : i32, b : i32 ) -> Self
-            fn #from_method
-            (
-              #( #fn_params )*
-            ) -> Self
-            {
-              #( #src_into_vars )*
-              // let a = ::core::convert::Into::into( a );
-              // let b = ::core::convert::Into::into( b );
-              Self
-              {
-                #( #vars )*
-                // a,
-                // b,
-              }
-            }
-          }
-
-          impl From< ( #( #types )* ) > for #item_name
-          {
-            /// Reuse From1.
-            #[ inline( always ) ]
-            fn from( src : ( #( #types )* ) ) -> Self
-            {
-              Self::from1( src )
-            }
-          }
-
-        }
-      }
-      else
-      {
-        qt!{}
-      }
-
-    }
-    syn::Fields::Unnamed( _ ) =>
-    {
-
-      if 1 <= len && len <= 3
-      {
-        qt!
-        {
-
-          #[ automatically_derived ]
-          // impl variadic_from::From2< i32 > for StructNamedFields
-          impl variadic_from::#from_trait< #( #types )* > for #item_name
-          {
-            // fn from1( a : i32, b : i32 ) -> Self
-            fn #from_method
-            (
-              #( #fn_params )*
-            ) -> Self
-            {
-              #( #src_into_vars )*
-              // let a = ::core::convert::Into::into( a );
-              // let b = ::core::convert::Into::into( b );
-              Self
-              (
-                #( #vars )*
-                // a,
-                // b,
-              )
-            }
-          }
-
-          impl From< ( #( #types )* ) > for #item_name
-          {
-            /// Reuse From1.
-            #[ inline( always ) ]
-            fn from( src : ( #( #types )* ) ) -> Self
-            {
-              Self::from1( src )
-            }
-          }
-
-        }
-      }
-      else
-      {
-        qt!{}
-      }
-
-    }
-    syn::Fields::Unit =>
-    {
-
-      qt!{}
-
-    }
-    // _ => return Err( syn_err!( parsed.fields.span(), "Expects fields" ) ),
+    syn::Fields::Named( ref fields ) => fields.named.clone(),
+    syn::Fields::Unnamed( ref fields ) => fields.unnamed.clone(),
+    syn::Fields::Unit => return_syn_err!( parsed.span(), "Expects a structure with fields" ),
   };
+
+  if fields_parsed.len() > 3
+  {
+    return Ok( qt!{} );
+  }
+
+  let mut result = proc_macro2::TokenStream::new();
+
+  // from!()
+  if fields_parsed.is_empty()
+  {
+    result.extend( generate_empty( item_name ) );
+  }
+
+  // from!( 13 )
+  if fields_parsed.len() == 1
+  {
+    let f1 = fields_parsed.iter().next().unwrap();
+    let field_type1 = &f1.ty;
+    result.extend( generate_single( item_name, field_type1 ) );
+  }
+
+  // from!( 13, 14 )
+  if fields_parsed.len() == 2
+  {
+    let f1 = fields_parsed.iter().next().unwrap();
+    let f2 = fields_parsed.iter().skip( 1 ).next().unwrap();
+    let field_type1 = &f1.ty;
+    let field_type2 = &f2.ty;
+    result.extend( generate_two( item_name, field_type1, field_type2 ) );
+  }
+
+  // from!( 13, 14, 15 )
+  if fields_parsed.len() == 3
+  {
+    let f1 = fields_parsed.iter().next().unwrap();
+    let f2 = fields_parsed.iter().skip( 1 ).next().unwrap();
+    let f3 = fields_parsed.iter().skip( 2 ).next().unwrap();
+    let field_type1 = &f1.ty;
+    let field_type2 = &f2.ty;
+    let field_type3 = &f3.ty;
+    result.extend( generate_three( item_name, field_type1, field_type2, field_type3 ) );
+  }
 
   if has_debug
   {
-    let about = format!( "derive : VariadicForm\nstructure : {item_name}" );
+    let about = format!( "derive : VariadicFrom\nstructure : {item_name}" );
     diag::report_print( about, &original_input, &result );
   }
 
   Ok( result )
+}
+
+/// Generates `From` implementation for empty tuple.
+fn generate_empty( item_name : &syn::Ident ) -> proc_macro2::TokenStream
+{
+  qt!
+  {
+    #[ automatically_derived ]
+    impl From< () > for #item_name
+    {
+      #[ inline( always ) ]
+      fn from( _src : () ) -> Self
+      {
+        Self::default()
+      }
+    }
+  }
+}
+
+/// Generates `From` implementation for a single field.
+fn generate_single( item_name : &syn::Ident, field_type : &syn::Type ) -> proc_macro2::TokenStream
+{
+  qt!
+  {
+    #[ automatically_derived ]
+    impl From< #field_type > for #item_name
+    {
+      #[ inline( always ) ]
+      fn from( src : #field_type ) -> Self
+      {
+        Self { a : src, ..Default::default() }
+      }
+    }
+  }
+}
+
+/// Generates `From` implementation for two fields.
+fn generate_two( item_name : &syn::Ident, field_type1 : &syn::Type, field_type2 : &syn::Type ) -> proc_macro2::TokenStream
+{
+  qt!
+  {
+    #[ automatically_derived ]
+    impl From< ( #field_type1, #field_type2 ) > for #item_name
+    {
+      #[ inline( always ) ]
+      fn from( src : ( #field_type1, #field_type2 ) ) -> Self
+      {
+        Self { a : src.0, b : src.1, ..Default::default() }
+      }
+    }
+  }
+}
+
+/// Generates `From` implementation for three fields.
+fn generate_three( item_name : &syn::Ident, field_type1 : &syn::Type, field_type2 : &syn::Type, field_type3 : &syn::Type ) -> proc_macro2::TokenStream
+{
+  qt!
+  {
+    #[ automatically_derived ]
+    impl From< ( #field_type1, #field_type2, #field_type3 ) > for #item_name
+    {
+      #[ inline( always ) ]
+      fn from( src : ( #field_type1, #field_type2, #field_type3 ) ) -> Self
+      {
+        Self { a : src.0, b : src.1, c : src.2, ..Default::default() }
+      }
+    }
+  }
 }

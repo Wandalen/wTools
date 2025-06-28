@@ -5,14 +5,18 @@ use macro_tools::
   ct,
   Result,
   AttributeComponent,
+  AttributePropertyComponent,
+  AttributePropertyOptionalSingletone,
 };
 
 use component_model_types::Assign;
+use syn;
 
 ///
-/// Attributes of the whole tiem
+/// Attributes of the whole item
 ///
 /// Represents the attributes of a struct. Aggregates all its attributes.
+///
 #[ derive( Debug, Default ) ]
 pub struct ItemAttributes
 {
@@ -51,19 +55,10 @@ impl ItemAttributes
       let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
       let key_str = format!( "{key_ident}" );
 
-      // attributes does not have to be known
-      // if attr::is_standard( &key_str )
-      // {
-      //   continue;
-      // }
-
       match key_str.as_ref()
       {
         ItemAttributeConfig::KEYWORD => result.assign( ItemAttributeConfig::from_meta( attr )? ),
-        // "debug" => {}
         _ => {},
-        // _ => return Err( error( attr ) ),
-        // attributes does not have to be known
       }
     }
 
@@ -78,7 +73,6 @@ impl ItemAttributes
 ///
 /// `#[ from( on ) ]`
 ///
-
 #[ derive( Debug, Default ) ]
 pub struct ItemAttributeConfig
 {
@@ -201,4 +195,36 @@ impl syn::parse::Parse for ItemAttributeConfig
   }
 }
 
-// ==
+// == attribute properties
+
+/// Marker type for attribute property to specify whether to provide a generated code as a hint.
+/// Defaults to `false`, which means no debug is provided unless explicitly requested.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct AttributePropertyDebugMarker;
+
+impl AttributePropertyComponent for AttributePropertyDebugMarker
+{
+  const KEYWORD : &'static str = "debug";
+}
+
+/// Specifies whether to provide a generated code as a hint.
+/// Defaults to `false`, which means no debug is provided unless explicitly requested.
+pub type AttributePropertyDebug = AttributePropertyOptionalSingletone< AttributePropertyDebugMarker >;
+
+// =
+
+/// Marker type for attribute property to indicates whether `From` implementation for fields/variants should be generated.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct EnabledMarker;
+
+impl EnabledMarker
+{
+  /// Keywords for parsing this attribute property.
+  pub const KEYWORD_OFF : &'static str = "off";
+  /// Keywords for parsing this attribute property.
+  pub const KEYWORD_ON : &'static str = "on";
+}
+
+/// Specifies whether `From` implementation for fields/variants should be generated.
+/// Can be altered using `on` and `off` attributes. But default it's `on`.
+pub type AttributePropertyEnabled = AttributePropertyOptionalSingletone< EnabledMarker >;

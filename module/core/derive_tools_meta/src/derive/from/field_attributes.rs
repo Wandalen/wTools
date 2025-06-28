@@ -10,11 +10,13 @@ use macro_tools::
 };
 
 use component_model_types::Assign;
+use syn;
 
 ///
 /// Attributes of a field / variant
 ///
 /// Represents the attributes of a struct. Aggregates all its attributes.
+///
 #[ derive( Debug, Default ) ]
 pub struct FieldAttributes
 {
@@ -53,18 +55,10 @@ impl FieldAttributes
       let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
       let key_str = format!( "{key_ident}" );
 
-      // attributes does not have to be known
-      // if attr::is_standard( &key_str )
-      // {
-      //   continue;
-      // }
-
       match key_str.as_ref()
       {
         FieldAttributeConfig::KEYWORD => result.assign( FieldAttributeConfig::from_meta( attr )? ),
-        // "debug" => {},
         _ => {},
-        // _ => return Err( error( attr ) ),
       }
     }
 
@@ -79,7 +73,6 @@ impl FieldAttributes
 ///
 /// `#[ from( on ) ]`
 ///
-
 #[ derive( Debug, Default ) ]
 pub struct FieldAttributeConfig
 {
@@ -89,7 +82,6 @@ pub struct FieldAttributeConfig
   /// Specifies whether to print a sketch of generated `From` or not.
   /// Defaults to `false`, which means no code is printed unless explicitly requested.
   pub debug : AttributePropertyDebug,
-  // qqq : apply debug properties to all brenches, not only enums
 }
 
 impl AttributeComponent for FieldAttributeConfig
@@ -251,5 +243,3 @@ impl EnabledMarker
 /// Specifies whether `From` implementation for fields/variants should be generated.
 /// Can be altered using `on` and `off` attributes. But default it's `on`.
 pub type AttributePropertyEnabled = AttributePropertyOptionalSingletone< EnabledMarker >;
-
-// ==

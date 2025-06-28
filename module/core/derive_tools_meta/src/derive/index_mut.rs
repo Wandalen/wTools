@@ -1,362 +1,247 @@
 use super::*;
 use macro_tools::
 {
-  attr, 
-  diag, 
+  attr,
+  diag,
   generic_params,
-  struct_like::StructLike, 
-  Result
+  item_struct,
+  struct_like::StructLike,
+  Result,
+  qt,
 };
 
-#[ path = "index/item_attributes.rs" ]
-mod item_attributes;
-use item_attributes::*;
-#[ path = "index/field_attributes.rs" ]
+#[ path = "from/field_attributes.rs" ]
 mod field_attributes;
 use field_attributes::*;
+#[ path = "from/item_attributes.rs" ]
+mod item_attributes;
+use item_attributes::*;
 
-
-pub fn index_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream > 
+///
+/// Provides an automatic [IndexMut](core::ops::IndexMut) trait implementation when-ever it's possible.
+///
+pub fn index_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   let original_input = input.clone();
   let parsed = syn::parse::< StructLike >( input )?;
   let has_debug = attr::has_debug( parsed.attrs().iter() )?;
-  let item_name = &parsed.ident();
- 
   let item_attrs = ItemAttributes::from_attrs( parsed.attrs().iter() )?;
+  let item_name = &parsed.ident();
 
-  let ( _generics_with_defaults, generics_impl, generics_ty, generics_where ) 
+  let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
   = generic_params::decompose( &parsed.generics() );
 
-  let result = match parsed 
+  let result = match parsed
   {
-    StructLike::Struct( ref item ) => 
-    generate_struct
-    (
-      item_name,
-      &item_attrs,
-      &generics_impl,
-      &generics_ty,
-      &generics_where,
-      &item.fields,
+    StructLike::Unit( ref _item ) =>
+    {
+      return_syn_err!( parsed.span(), "Expects a structure with one field" );
+    },
+    StructLike::Struct( ref item ) =>
+    {
+      let field_type = item_struct::first_field_type( &item )?;
+      let field_name = item_struct::first_field_name( &item ).ok().flatten();
+      generate
+      (
+        item_name,
+        &generics_impl,
+        &generics_ty,
+        &generics_where,
+        &field_type,
+        field_name.as_ref(),
+      )
+    },
+    StructLike::Enum( ref item ) =>
+    {
+      let variants_result : Result< Vec< proc_macro2::TokenStream > > = item.variants.iter().map( | variant |
+      {
+        variant_generate
+        (
+          item_name,
+          &item_attrs,
+          &generics_impl,
+          &generics_ty,
+          &generics_where,
+          variant,
+          &original_input,
+        )
+      }).collect();
 
-    ),
-    StructLike::Enum( _ ) => 
-    unimplemented!( "IndexMut not implemented for Enum" ),
-    StructLike::Unit( _ ) => 
-    unimplemented!( "IndexMut not implemented for Unit" ),
-  }?;
+      let variants = match variants_result
+      {
+        Ok( v ) => v,
+        Err( e ) => return Err( e ),
+      };
 
-  if has_debug 
+      qt!
+      {
+        #( #variants )*
+      }
+    },
+  };
+
+  if has_debug
   {
-    let about = format!( "derive : Not\nstructure : {item_name}" );
+    let about = format!( "derive : IndexMut\nstructure : {item_name}" );
     diag::report_print( about, &original_input, &result );
   }
 
   Ok( result )
 }
 
-/// An aggregator function to generate `IndexMut` implementation for tuple and named structs 
-fn generate_struct
+/// Generates `IndexMut` implementation for structs.
+///
+/// Example of generated code:
+/// ```rust
+/// impl core::ops::IndexMut< usize > for IsTransparent
+/// {
+///   fn index_mut( &mut self, index : usize ) -> &mut Self::Output
+///   {
+///     &mut self.a[ index ]
+///   }
+/// }
+/// ```
+fn generate
 (
   item_name : &syn::Ident,
-  item_attrs : &ItemAttributes,
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  fields : &syn::Fields,
-) 
--> Result< proc_macro2::TokenStream > 
+  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  _field_type : &syn::Type,
+  field_name : Option< &syn::Ident >,
+)
+-> proc_macro2::TokenStream
 {
-
-  match fields 
+  let body = if let Some( field_name ) = field_name
   {
-    syn::Fields::Named( fields ) => 
-    generate_struct_named_fields
-    (
-      item_name, 
-      &item_attrs,
-      generics_impl, 
-      generics_ty, 
-      generics_where, 
-      fields
-    ),
-    
-    syn::Fields::Unnamed( fields ) => 
-    generate_struct_tuple_fields
-    (
-      item_name, 
-      generics_impl, 
-      generics_ty, 
-      generics_where, 
-      fields
-    ),
+    qt!{ &mut self.#field_name }
+  }
+  else
+  {
+    qt!{ &mut self.0 }
+  };
 
-    syn::Fields::Unit => 
-    unimplemented!( "IndexMut not implemented for Unit" ),
+  qt!
+  {
+    #[ automatically_derived ]
+    impl< #generics_impl > core::ops::IndexMut< usize > for #item_name< #generics_ty >
+    where
+      #generics_where
+    {
+      #[ inline( always ) ]
+      fn index_mut( &mut self, index : usize ) -> &mut Self::Output
+      {
+        #body[ index ]
+      }
+    }
   }
 }
 
-
-fn generate_struct_named_fields
+/// Generates `IndexMut` implementation for enum variants.
+///
+/// Example of generated code:
+/// ```rust
+/// impl core::ops::IndexMut< usize > for MyEnum
+/// {
+///   fn index_mut( &mut self, index : usize ) -> &mut Self::Output
+///   {
+///     &mut self.0[ index ]
+///   }
+/// }
+/// ```
+fn variant_generate
 (
   item_name : &syn::Ident,
   item_attrs : &ItemAttributes,
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  fields : &syn::FieldsNamed,
-) 
--> Result< proc_macro2::TokenStream > 
+  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  variant : &syn::Variant,
+  original_input : &proc_macro::TokenStream,
+)
+-> Result< proc_macro2::TokenStream >
 {
+  let variant_name = &variant.ident;
+  let fields = &variant.fields;
+  let attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
 
-  let fields = fields.named.clone();
-  let attr_name = &item_attrs.index.name.clone().internal();
-
-  let field_attrs: Vec< &syn::Field > = fields
-    .iter()
-    .filter
-    (
-      | field | 
-      {
-        FieldAttributes::from_attrs( field.attrs.iter() ).map_or
-        ( 
-          false, 
-          | attrs | attrs.index.value( false ) 
-        )
-      }
-    )
-    .collect();
-
-  let generate = | is_mut : bool | 
-  -> Result< proc_macro2::TokenStream >
+  if !attrs.config.enabled.value( item_attrs.config.enabled.value( true ) )
   {
-    if let Some( attr_name ) = attr_name 
-    {
-      Ok
-      (
-        if is_mut
-        {   
-          qt! 
-          {
-            &mut self.#attr_name[ index ]
-          }
-        }
-        else 
-        {
-          qt! 
-          {
-           &self.#attr_name[ index ]
-          }
-        }
-      )
-    } 
-    else 
-    {
-      match field_attrs.len() 
-      {
-        0 | 1 => 
-        {
-          let field_name = 
-            match field_attrs
-              .first()
-              .cloned()
-              .or_else
-              (
-                || fields.first()
-              ) 
-            {
-              Some( field ) => 
-              field.ident.as_ref().unwrap(),
-              None => 
-              unimplemented!( "IndexMut not implemented for Unit" ),
-            };
-          
-          Ok
-          (
-            if is_mut 
-            {
-              qt! 
-              {
-                &mut self.#field_name[ index ]
-              }
-            } 
-            else 
-            {
-              qt! 
-              {
-                &self.#field_name[ index ]
-              }
-            }
-          )
-        }
-        _ => 
-        Err
-        (
-          syn::Error::new_spanned
-          (
-            &fields,
-            "Only one field can include #[ index ] derive macro",
-          )
-        ),
-      }
-    } 
+    return Ok( qt!{} )
+  }
+
+  if fields.is_empty()
+  {
+    return Ok( qt!{} )
+  }
+
+  if fields.len() != 1
+  {
+    return_syn_err!( fields.span(), "Expects a single field to derive IndexMut" );
+  }
+
+  let field = fields.iter().next().unwrap();
+  let field_type = &field.ty;
+  let field_name = &field.ident;
+
+  let body = if let Some( field_name ) = field_name
+  {
+    qt!{ &mut self.#field_name }
+  }
+  else
+  {
+    qt!{ &mut self.0 }
   };
 
+  if attrs.config.debug.value( false )
+  {
+    let debug = format_args!
+    (
+      r#"
+#[ automatically_derived ]
+impl< {} > core::ops::IndexMut< usize > for {}< {} >
+where
+  {}
+{{
+  #[ inline ]
+  fn index_mut( &mut self, index : usize ) -> &mut {}
+  {{
+    {}[ index ]
+  }}
+}}
+      "#,
+      qt!{ #generics_impl },
+      item_name,
+      qt!{ #generics_ty },
+      qt!{ #generics_where },
+      qt!{ #field_type },
+      body,
+    );
+    let about = format!
+    (
+r#"derive : IndexMut
+item : {item_name}
+field : {variant_name}"#,
+    );
+    diag::report_print( about, original_input, debug.to_string() );
+  }
 
-  let generated_index = generate( false )?;
-  let generated_index_mut = generate( true )?;
-  
   Ok
   (
-    qt! 
+    qt!
     {
-       #[ automatically_derived ]
-      impl< #generics_impl > ::core::ops::Index< usize > for #item_name< #generics_ty >
-      where
-        #generics_where
-      {
-        type Output = T;
-        #[ inline( always ) ]
-        fn index( &self, index : usize ) -> &Self::Output
-        {
-          #generated_index
-        }
-      }
-      
       #[ automatically_derived ]
-      impl< #generics_impl > ::core::ops::IndexMut< usize > for #item_name< #generics_ty >
+      impl< #generics_impl > core::ops::IndexMut< usize > for #item_name< #generics_ty >
       where
         #generics_where
       {
-        #[ inline( always ) ]
-        fn index_mut( &mut self, index : usize ) -> &mut Self::Output
+        #[ inline ]
+        fn index_mut( &mut self, index : usize ) -> &mut #field_type
         {
-          #generated_index_mut 
+          #body[ index ]
         }
       }
     }
   )
-}
 
-fn generate_struct_tuple_fields
-(
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  fields : &syn::FieldsUnnamed,
-) 
--> Result< proc_macro2::TokenStream > 
-{
-  let fields = fields.unnamed.clone();
-  let non_empty_attrs : Vec< &syn::Field > = fields
-    .iter()
-    .filter( | field | !field.attrs.is_empty() )
-    .collect();
-  
- 
-  let generate = | is_mut : bool |
-  ->  Result< proc_macro2::TokenStream >
-  {
-    match non_empty_attrs.len() 
-    {
-      0 =>
-      { 
-        Ok
-        (
-          if is_mut 
-          {
-            qt! 
-            {
-              &mut self.0[ index ] 
-            }
-          }
-          else 
-          {
-            qt! 
-            {
-              &self.0[ index ] 
-            }
-          }  
-        )
-      },
-    1 => fields
-      .iter()
-      .enumerate()
-      .map
-    (
-      | ( i, field ) | 
-      { 
-        let i = syn::Index::from( i );  
-        if !field.attrs.is_empty() 
-        {
-          Ok
-          (
-            if is_mut 
-            { 
-              qt!{&mut self.#i[ index ]} 
-            } 
-            else 
-            { 
-              qt!{&self.#i[ index ] }
-            } 
-          )
-        } 
-        else 
-        {
-          Ok
-          ( 
-            qt!{ } 
-          )
-        }
-      }
-    ).collect(),
-    _ => 
-      Err
-      (
-        syn::Error::new_spanned
-        ( 
-          &fields, 
-          "Only one field can include #[ index ] derive macro" 
-        )
-      ),
-    }
-  };
-
-
-
-  let generated = generate( false )?;
-  let generated_mut = generate( true )?;
-
-  Ok
-  (
-    qt! 
-    {
-      #[ automatically_derived ]
-      impl< #generics_impl > ::core::ops::Index< usize > for #item_name< #generics_ty >
-      where
-        #generics_where
-      {
-        type Output = T;
-        #[ inline( always ) ]
-        fn index( &self, index : usize ) -> &Self::Output
-        {
-          #generated
-        }
-      }
-
-       #[ automatically_derived ]
-      impl< #generics_impl > ::core::ops::IndexMut< usize > for #item_name< #generics_ty >
-      where
-        #generics_where
-      {
-        #[ inline( always ) ]
-        fn index_mut( &mut self, index : usize ) -> &mut Self::Output
-        {
-          #generated_mut
-        }
-      }
-    }
-  )
 }

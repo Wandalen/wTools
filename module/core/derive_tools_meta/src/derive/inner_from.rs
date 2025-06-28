@@ -1,8 +1,12 @@
-
 use super::*;
-use macro_tools::{ attr, diag, item_struct, Result };
+use macro_tools::{ attr, diag, item_struct, Result, qt };
 
-//
+#[ path = "from/field_attributes.rs" ]
+mod field_attributes;
+use field_attributes::*;
+#[ path = "from/item_attributes.rs" ]
+mod item_attributes;
+use item_attributes::*;
 
 pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
@@ -14,16 +18,16 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
   let mut field_types = item_struct::field_types( &parsed );
   let field_names = item_struct::field_names( &parsed );
   let result =
-  match ( field_types.len(), field_names )
+  match ( field_types.len() == 0, field_names )
   {
-    ( 0, _ ) => unit( item_name ),
-    ( 1, Some( mut field_names ) ) =>
+    ( true, _ ) => unit( item_name ),
+    ( false, Some( mut field_names ) ) =>
     {
       let field_name = field_names.next().unwrap();
       let field_type = field_types.next().unwrap();
       from_impl_named( item_name, field_type, field_name )
     }
-    ( 1, None ) =>
+    ( false, None ) =>
     {
       let field_type = field_types.next().unwrap();
       from_impl( item_name, field_type )
@@ -50,14 +54,13 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
 
   if has_debug
   {
-    let about = format!( "derive : InnerFrom\nstructure : {item_name}" );
-    diag::report_print( about, &original_input, &result );
+    let about = format_args!( "derive : InnerFrom\nstructure : {item_name}" );
+    diag::report_print( about.to_string(), &original_input, &result );
   }
 
   Ok( result )
 }
 
-// qqq  : document, add example of generated code
 /// Generates `From` implementation for the inner type regarding bounded type
 /// Works with structs with a single named field
 ///
@@ -90,7 +93,6 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
 ///   }
 /// }
 /// ```
-///
 fn from_impl_named
 (
   item_name : &syn::Ident,
@@ -105,7 +107,6 @@ fn from_impl_named
     impl From< #item_name > for #field_type
     {
       #[ inline( always ) ]
-      // fm from( src : MyStruct ) -> Self
       fn from( src : #item_name ) -> Self
       {
         src.#field_name
@@ -114,7 +115,6 @@ fn from_impl_named
   }
 }
 
-// qqq  : document, add example of generated code -- done
 /// Generates `From` implementation for the only contained type regarding the bounded type
 ///
 /// # Example
@@ -140,7 +140,6 @@ fn from_impl_named
 ///   }
 /// }
 /// ```
-///
 fn from_impl
 (
   item_name : &syn::Ident,
@@ -154,7 +153,6 @@ fn from_impl
     impl From< #item_name > for #field_type
     {
       #[ inline( always ) ]
-      // fn from( src : IsTransparent ) -> Self
       fn from( src : #item_name ) -> Self
       {
         src.0
@@ -163,7 +161,6 @@ fn from_impl
   }
 }
 
-// qqq  : document, add example of generated code -- done
 /// Generates `From` implementation for the tuple type containing all the inner types regarding the bounded type
 /// Can generate implementations both for structs with named fields and tuple structs.
 ///
@@ -190,7 +187,6 @@ fn from_impl
 ///   }
 /// }
 /// ```
-///
 fn from_impl_multiple_fields< 'a >
 (
   item_name : &syn::Ident,
@@ -205,7 +201,6 @@ fn from_impl_multiple_fields< 'a >
     impl From< #item_name > for ( #( #field_types ), *)
     {
       #[ inline( always ) ]
-      // fn from( src : StructWithManyFields ) -> Self
       fn from( src : #item_name ) -> Self
       {
         ( #( #params ), * )
@@ -214,7 +209,6 @@ fn from_impl_multiple_fields< 'a >
   }
 }
 
-// qqq  : document, add example of generated code -- done
 /// Generates `From` implementation for the unit type regarding the bound type
 ///
 /// # Example
@@ -242,7 +236,6 @@ fn from_impl_multiple_fields< 'a >
 ///   }
 /// }
 /// ```
-///
 fn unit( item_name : &syn::Ident ) -> proc_macro2::TokenStream
 {
   qt!
@@ -253,7 +246,6 @@ fn unit( item_name : &syn::Ident ) -> proc_macro2::TokenStream
     impl From< #item_name > for ()
     {
       #[ inline( always ) ]
-      // fn from( src : UnitStruct ) -> ()
       fn from( src : #item_name ) -> ()
       {
         ()
