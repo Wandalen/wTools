@@ -27,7 +27,7 @@ This task plan implements **M3.1: implement_parser_integration** from `roadmap.m
         2.  **Expected Outcome:** The command **must fail** with compilation errors, specifically "unresolved import" or "module not found" errors. This confirms that the legacy dependencies have been successfully severed at the source level.
     *   **Commit Message:** `refactor(unilang): Remove legacy parser and command aggregator modules`
 
-*   **⏳ Increment 2: Refactor `SemanticAnalyzer` to Consume `GenericInstruction`**
+*   **✅ Increment 2: Refactor `SemanticAnalyzer` to Consume `GenericInstruction`**
     *   **Goal:** To update the `SemanticAnalyzer` to consume `Vec<unilang_instruction_parser::GenericInstruction>` instead of the legacy `Program` AST. This is the core of the refactoring, adapting the semantic logic to the new, correct parser output.
     *   **Specification Reference:** Implements the "Semantic Analysis" stage of the "Unified Processing Pipeline" defined in `spec.md` (Section 2.2.1).
     *   **Steps:**
@@ -50,7 +50,7 @@ This task plan implements **M3.1: implement_parser_integration** from `roadmap.m
         2.  **Expected Outcome:** The `unilang` library crate **must build successfully**. Tests and the CLI binary will still fail to compile, but this step ensures the library's internal logic is now consistent.
     *   **Commit Message:** `refactor(unilang): Adapt SemanticAnalyzer to consume GenericInstruction`
 
-*   **⚫ Increment 3: Refactor `unilang_cli` Binary**
+*   **⏳ Increment 3: Refactor `unilang_cli` Binary**
     *   **Goal:** To update the main CLI binary to use the new, unified parsing pipeline, making it the first fully functional end-to-end component of the refactored system.
     *   **Specification Reference:** Fulfills the CLI modality's adherence to the `spec.md` (Section 2.2.1) "Unified Processing Pipeline".
     *   **Steps:**
@@ -85,6 +85,11 @@ This task plan implements **M3.1: implement_parser_integration** from `roadmap.m
 *   **Increment 1: Remove Legacy Components**
     *   Removed `module/move/unilang/src/parsing.rs` and `module/move/unilang/src/ca/`.
     *   Updated `module/move/unilang/src/lib.rs` to remove module declarations for `parsing` and `ca`.
+*   **Increment 2: Refactor `SemanticAnalyzer` to Consume `GenericInstruction`**
+    *   Updated `module/move/unilang/src/semantic.rs` to use `unilang_instruction_parser::GenericInstruction`.
+    *   Refactored `SemanticAnalyzer::new` and `SemanticAnalyzer::analyze` to work with `GenericInstruction`.
+    *   Refactored `bind_arguments` to correctly handle named and positional arguments from `GenericInstruction` and removed references to non-existent fields in `ArgumentDefinition`.
+    *   Added `unilang_instruction_parser` as a dependency in `module/move/unilang/Cargo.toml`.
 
 ### Task Requirements
 *   None
