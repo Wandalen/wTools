@@ -63,7 +63,7 @@ impl< 'a > Interpreter< 'a >
     for command in self.commands
     {
       // For now, just print the command to simulate execution
-      println!( "Executing: {command:?}" );
+      // println!( "Executing: {command:?}" );
 
       // Look up the routine from the registry
       let routine = self.registry.get_routine( &command.definition.name )

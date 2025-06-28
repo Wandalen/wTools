@@ -11,7 +11,7 @@ use crate::error::Error;
 ///
 /// This struct is the central piece of a command's definition, providing all
 /// the necessary information for parsing, validation, and execution.
-#[ derive( Debug, Clone, serde::Serialize, serde::Deserialize/*, Former*/ ) ]
+#[ derive( Debug, Clone, serde::Serialize, serde::Deserialize, former::Former ) ]
 pub struct CommandDefinition
 {
   /// The name of the command, used to invoke it from the command line.
@@ -30,7 +30,7 @@ pub struct CommandDefinition
 ///
 /// Each argument has a name, a description, a data type, and can be
 /// marked as optional.
-#[ derive( Debug, Clone, serde::Serialize, serde::Deserialize/*, Former*/ ) ]
+#[ derive( Debug, Clone, serde::Serialize, serde::Deserialize, former::Former ) ]
 pub struct ArgumentDefinition
 {
   /// The name of the argument, used for identification.

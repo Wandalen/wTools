@@ -32,6 +32,7 @@
     *   ✅ Increment 3: Implement Complex Argument Types and Attributes (`JsonString`, `multiple`, `validation_rules`).
     *   ✅ Increment 4: Implement Runtime Command Registration API.
     *   ✅ Increment 5: Implement Loading Command Definitions from External Files.
+    *   ✅ Increment 6: Implement CLI Argument Parsing and Execution.
 
 ### Target Crate/Library
 *   `module/move/unilang`
@@ -177,7 +178,7 @@
         *   Execute `timeout 90 cargo test -p unilang --test command_loader_test` and verify no failures.
     *   **Commit Message:** `feat(unilang): Implement loading command definitions from external files`
 
-*   ⚫ Increment 6: Implement CLI Argument Parsing and Execution.
+*   ✅ Increment 6: Implement CLI Argument Parsing and Execution.
     *   **Goal:** Integrate the `unilang` core into a basic CLI application, allowing users to execute commands defined in the registry via command-line arguments.
     *   **Steps:**
         *   Step 1: Create a new binary target `src/bin/unilang_cli.rs` in `module/move/unilang/Cargo.toml`.
@@ -230,6 +231,9 @@
     *   **Commit Message:** `feat(unilang): Implement command help generation and discovery`
 
 ### Changelog
+*   **2025-06-28 - Increment 6: Implement CLI Argument Parsing and Execution**
+    *   **Description:** Integrated the `unilang` core into a basic CLI application (`src/bin/unilang_cli.rs`). Implemented a `main` function to initialize `CommandRegistry`, register sample commands, parse command-line arguments, and use `Lexer`, `Parser`, `SemanticAnalyzer`, and `Interpreter` for execution. Handled errors by printing to `stderr` and exiting with a non-zero status code. Corrected `CommandDefinition` and `ArgumentDefinition` `former` usage. Implemented `as_integer` and `as_path` helper methods on `Value` in `src/types.rs`. Updated `CommandRoutine` signatures and return types in `src/bin/unilang_cli.rs` to align with `Result<OutputData, ErrorData>`. Corrected `Parser`, `SemanticAnalyzer`, and `Interpreter` instantiation and usage. Updated `cli_integration_test.rs` to match new `stderr` output format. Removed unused `std::path::PathBuf` import. Addressed Clippy lints (`unnecessary_wraps`, `needless_pass_by_value`, `uninlined_format_args`).
+    *   **Verification:** All tests passed, including `cli_integration_test.rs`, and `cargo clippy -p unilang -- -D warnings` passed.
 *   **2025-06-28 - Increment 5: Implement Loading Command Definitions from External Files**
     *   **Description:** Implemented parsers for YAML/JSON `CommandDefinition` files and a placeholder mechanism to resolve `routine_link` attributes to function pointers. Added `thiserror` as a dependency. Modified `src/data.rs` to add `#[serde(try_from = "String", into = "String")]` to `Kind` and implemented `From<Kind> for String` and `TryFrom<String> for Kind`. Implemented `Display` for `ErrorData`. Modified `src/loader.rs` to implement `load_command_definitions_from_yaml_str`, `load_command_definitions_from_json_str`, and `resolve_routine_link` (placeholder). Updated `CommandRegistryBuilder` in `src/registry.rs` with `load_from_yaml_str` and `load_from_json_str` methods. Created `tests/inc/phase2/command_loader_test.rs` with a detailed test matrix. Addressed Clippy lints: `single-char-pattern`, `uninlined-format-args`, `std-instead-of-core`, `missing-errors-doc`, `manual-string-new`, and `needless-pass-by-value`.
     *   **Verification:** All tests passed, including `command_loader_test.rs`, and `cargo clippy -p unilang -- -D warnings` passed.

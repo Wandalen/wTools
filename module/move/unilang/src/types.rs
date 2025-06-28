@@ -48,6 +48,34 @@ pub enum Value
   Object( serde_json::Value ),
 }
 
+impl Value
+{
+  /// Returns a reference to the inner `i64` if the value is `Integer`, otherwise `None`.
+  #[ must_use ]
+  pub fn as_integer( &self ) -> Option< &i64 >
+  {
+    if let Self::Integer( v ) = self
+    {
+      Some( v )
+    }
+    else
+    {
+      None
+    }
+  }
+
+  /// Returns a reference to the inner `PathBuf` if the value is `Path`, `File`, or `Directory`, otherwise `None`.
+  #[ must_use ]
+  pub fn as_path( &self ) -> Option< &PathBuf >
+  {
+    match self
+    {
+      Self::Path( v ) | Self::File( v ) | Self::Directory( v ) => Some( v ),
+      _ => None,
+    }
+  }
+}
+
 impl PartialEq for Value
 {
   fn eq( &self, other: &Self ) -> bool
