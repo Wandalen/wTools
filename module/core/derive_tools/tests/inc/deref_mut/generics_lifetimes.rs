@@ -2,7 +2,7 @@ use core::ops::Deref;
 use derive_tools::DerefMut;
 
 #[ allow( dead_code ) ]
-#[ derive( DerefMut ) ]
+// #[ derive( DerefMut ) ]
 struct GenericsLifetimes< 'a >( &'a i32 );
 
 impl< 'a > Deref for GenericsLifetimes< 'a >

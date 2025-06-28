@@ -4,7 +4,7 @@
 
 use unilang::registry::CommandRegistry;
 use unilang::data::{ CommandDefinition, ArgumentDefinition, Kind, ErrorData, OutputData };
-use unilang::parsing::Parser;
+use unilang_instruction_parser::{Parser, UnilangParserOptions};
 use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };
 use unilang::interpreter::{ Interpreter, ExecutionContext };
 use std::env;
@@ -48,7 +48,7 @@ fn cat_routine( verified_command : VerifiedCommand, _context : ExecutionContext 
   Ok( OutputData { content, format: "text".to_string() } )
 }
 
-fn main()
+fn main() -> Result< (), unilang::error::Error >
 {
   let args : Vec< String > = env::args().collect();
 
@@ -106,7 +106,7 @@ fn main()
   {
     println!( "{}", help_generator.list_commands() );
     eprintln!( "Usage: {0} <command> [args...]", args[ 0 ] );
-    return;
+    return Ok( () );
   }
 
   let command_name = &args[ 1 ];
@@ -134,15 +134,14 @@ fn main()
       eprintln!( "Error: Invalid usage of help command. Use `help` or `help <command_name>`." );
       std::process::exit( 1 );
     }
-    return;
+    return Ok( () );
   }
 
-  let command_input = args[ 1.. ].join( " " );
+  let parser = Parser::new(UnilangParserOptions::default());
+  let command_input_str = args[1..].join(" ");
+  let instructions = parser.parse_single_str(&command_input_str)?;
 
-  let mut parser = Parser::new( &command_input );
-  let program = parser.parse();
-
-  let semantic_analyzer = SemanticAnalyzer::new( &program, &registry );
+  let semantic_analyzer = SemanticAnalyzer::new( &instructions, &registry );
 
   let result = semantic_analyzer.analyze()
   .and_then( | verified_commands |
@@ -154,7 +153,7 @@ fn main()
 
   match result
   {
-    Ok( _ ) => {},
+    Ok( _ ) => Ok( () ),
     Err( e ) =>
     {
       eprintln!( "Error: {e}" );

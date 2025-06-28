@@ -2,7 +2,7 @@ use core::ops::Deref;
 use derive_tools::DerefMut;
 
 #[ allow( dead_code) ]
-// #[ derive( DerefMut ) ]
+// // #[ derive( DerefMut ) ]
 enum EnumNamed
 {
   A { a : String, b : i32 },

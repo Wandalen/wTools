@@ -2,7 +2,7 @@ use core::ops::Deref;
 use derive_tools::DerefMut;
 
 #[ allow( dead_code ) ]
-#[ derive( DerefMut ) ]
+// #[ derive( DerefMut ) ]
 struct GenericsTypes< T >( T );
 
 impl< T > Deref for GenericsTypes< T >

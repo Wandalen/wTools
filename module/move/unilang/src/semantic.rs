@@ -4,7 +4,7 @@
 
 use crate::data::{ CommandDefinition, ErrorData };
 use crate::error::Error;
-use unilang_instruction_parser::{GenericInstruction, Argument as ParserArgument};
+use unilang_instruction_parser::{GenericInstruction}; // Removed Argument as ParserArgument
 use crate::registry::CommandRegistry;
 use crate::types::{ self, Value };
 use std::collections::HashMap;
@@ -93,42 +93,57 @@ impl< 'a > SemanticAnalyzer< 'a >
 
     for arg_def in &command_def.arguments
     {
-      let mut value_found = false;
-      let mut raw_value = None;
+      let mut value_to_bind_str_option = None; // This will hold the raw string value to parse
 
-      // 1. Check named arguments
+      // 1. Try to find a named argument
       if let Some( arg ) = instruction.named_arguments.get( &arg_def.name )
       {
-        raw_value = Some( arg );
-        value_found = true;
+        value_to_bind_str_option = Some( arg.value.clone() );
       }
       // Aliases are not supported by ArgumentDefinition, so skipping alias check.
-      // 2. Check positional arguments if not already found
-      if !value_found
-      {
-        if let Some( arg ) = instruction.positional_arguments.get( positional_arg_idx )
-        {
-          raw_value = Some( arg );
-          positional_arg_idx += 1;
-          value_found = true;
-        }
-      }
-
-      if let Some( raw_value ) = raw_value
+      // 2. If not found by name, try to find positional arguments
+      else if positional_arg_idx < instruction.positional_arguments.len()
       {
         if arg_def.multiple
         {
-          // For multiple arguments, the raw_value is expected to be a list of strings
-          // This part needs careful consideration based on how unilang_instruction_parser handles multiple values for a single named argument.
-          // Assuming for now that `raw_value` is a single string that needs to be parsed into a list if `multiple` is true.
-          // A more robust solution would involve `unilang_instruction_parser` providing a list of raw strings for `multiple` arguments.
-          // For now, we'll treat it as a single value and parse it into a list of one element.
-          let parsed_value = types::parse_value( &raw_value.value, &arg_def.kind )
-          .map_err( |e| ErrorData {
-            code : "INVALID_ARGUMENT_TYPE".to_string(),
-            message : format!( "Invalid value for argument '{}': {}. Expected {:?}.", arg_def.name, e.reason, e.expected_kind ),
-          } )?;
-          let collected_values = vec![ parsed_value ];
+          // Consume all remaining positional arguments for a 'multiple' argument
+          let mut collected_raw_values = Vec::new();
+          while let Some( arg ) = instruction.positional_arguments.get( positional_arg_idx )
+          {
+            collected_raw_values.push( arg.value.clone() );
+            positional_arg_idx += 1;
+          }
+          if !collected_raw_values.is_empty() || arg_def.optional
+          {
+            // For multiple arguments, join them into a single string for now.
+            // They will be split and parsed into Value::List later.
+            value_to_bind_str_option = Some( collected_raw_values.join(",") );
+          }
+        }
+        else
+        {
+          // Consume a single positional argument
+          if let Some( arg ) = instruction.positional_arguments.get( positional_arg_idx )
+          {
+            value_to_bind_str_option = Some( arg.value.clone() );
+            positional_arg_idx += 1;
+          }
+        }
+      }
+
+      // Now, process the found value (or check for missing/default)
+      if let Some( raw_value_str ) = value_to_bind_str_option
+      {
+        if arg_def.multiple
+        {
+          // For multiple arguments, parse the joined string into a list of values
+          let collected_values: Result<Vec<Value>, Error> = raw_value_str.split(',')
+            .map(|s| types::parse_value(s, &arg_def.kind).map_err(|e| ErrorData {
+                code: "INVALID_ARGUMENT_TYPE".to_string(),
+                message: format!("Invalid value for argument '{}': {}. Expected {:?}.", arg_def.name, e.reason, e.expected_kind),
+            }.into()))
+            .collect();
+          let collected_values = collected_values?;
 
           for value in &collected_values
           {
@@ -147,7 +162,7 @@ impl< 'a > SemanticAnalyzer< 'a >
         }
         else
         {
-          let parsed_value = types::parse_value( &raw_value.value, &arg_def.kind )
+          let parsed_value = types::parse_value( &raw_value_str, &arg_def.kind )
           .map_err( |e| ErrorData {
             code : "INVALID_ARGUMENT_TYPE".to_string(),
             message : format!( "Invalid value for argument '{}': {}. Expected {:?}.", arg_def.name, e.reason, e.expected_kind ),

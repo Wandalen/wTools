@@ -373,18 +373,22 @@ impl Parser
                         items_cursor += 1;
                     }
                 }
-                UnilangTokenKind::Unrecognized(s_val_owned) if s_val_owned.starts_with("--") => {
-                    // Treat as a positional argument
-                    if seen_named_argument && self.options.error_on_positional_after_named {
-                         return Err(ParseError{ kind: ErrorKind::Syntax("Positional argument encountered after a named argument.".to_string()), location: Some(item.source_location()) });
+                UnilangTokenKind::Unrecognized(s_val_owned) => { // Removed `if s_val_owned.starts_with("--")`
+                    // Treat as a positional argument if it's not a delimiter
+                    if !s_val_owned.trim().is_empty() && !self.options.main_delimiters.contains(&s_val_owned.as_str()) {
+                        if seen_named_argument && self.options.error_on_positional_after_named {
+                             return Err(ParseError{ kind: ErrorKind::Syntax("Positional argument encountered after a named argument.".to_string()), location: Some(item.source_location()) });
+                        }
+                        positional_arguments.push(Argument{
+                            name: None,
+                            value: s_val_owned.to_string(),
+                            name_location: None,
+                            value_location: item.source_location(),
+                        });
+                        items_cursor += 1;
+                    } else {
+                        return Err(ParseError{ kind: ErrorKind::Syntax(format!("Unexpected token in arguments: '{}' ({:?})", item.inner.string, item.kind)), location: Some(item.source_location()) });
                     }
-                    positional_arguments.push(Argument{
-                        name: None,
-                        value: s_val_owned.to_string(),
-                        name_location: None,
-                        value_location: item.source_location(),
-                    });
-                    items_cursor += 1;
                 }
                 UnilangTokenKind::Delimiter(d_s) if d_s == "::" => {
                      return Err(ParseError{ kind: ErrorKind::Syntax("Unexpected '::' without preceding argument name or after a previous value.".to_string()), location: Some(item.source_location()) });

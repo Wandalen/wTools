@@ -4,7 +4,7 @@ use core::ops::Deref;
 use derive_tools::Deref;
 
 #[ allow( dead_code ) ]
-#[ derive( Deref ) ]
+// #[ derive( Deref ) ]
 struct BoundsMixed< T : ToString, U >( T, U )
 where
   U : Debug;

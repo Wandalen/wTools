@@ -2,7 +2,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-#[ derive( the_module::Index ) ]
+// #[ derive( the_module::Index ) ]
 #[ index ( name = b ) ]
 struct StructMultipleNamed< T > 
 {

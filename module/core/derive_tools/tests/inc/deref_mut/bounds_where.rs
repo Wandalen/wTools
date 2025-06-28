@@ -5,7 +5,7 @@ use core::ops::Deref;
 use derive_tools::DerefMut;
 
 #[ allow( dead_code ) ]
-#[ derive( DerefMut ) ]
+// #[ derive( DerefMut ) ]
 struct BoundsWhere< T, U >( T, U )
 where
   T : ToString,

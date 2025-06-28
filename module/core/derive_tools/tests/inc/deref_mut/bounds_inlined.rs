@@ -4,7 +4,7 @@ use core::ops::Deref;
 use derive_tools::DerefMut;
 
 #[ allow( dead_code ) ]
-#[ derive( DerefMut ) ]
+// #[ derive( DerefMut ) ]
 struct BoundsInlined< T : ToString, U : Debug >( T, U );
 
 impl< T : ToString, U : Debug > Deref for BoundsInlined< T, U >

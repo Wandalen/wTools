@@ -9,7 +9,7 @@ pub mod marker {}
 pub mod a {}
 pub mod b {}
 
-#[ derive( the_module::Index, the_module::From ) ]
+// #[ derive( the_module::Index, the_module::From ) ]
 #[ allow( dead_code ) ]
 struct StructMultipleNamed< T > 
 {

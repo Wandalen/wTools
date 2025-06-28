@@ -50,7 +50,7 @@ This task plan implements **M3.1: implement_parser_integration** from `roadmap.m
         2.  **Expected Outcome:** The `unilang` library crate **must build successfully**. Tests and the CLI binary will still fail to compile, but this step ensures the library's internal logic is now consistent.
     *   **Commit Message:** `refactor(unilang): Adapt SemanticAnalyzer to consume GenericInstruction`
 
-*   **⏳ Increment 3: Refactor `unilang_cli` Binary**
+*   **✅ Increment 3: Refactor `unilang_cli` Binary**
     *   **Goal:** To update the main CLI binary to use the new, unified parsing pipeline, making it the first fully functional end-to-end component of the refactored system.
     *   **Specification Reference:** Fulfills the CLI modality's adherence to the `spec.md` (Section 2.2.1) "Unified Processing Pipeline".
     *   **Steps:**
@@ -64,7 +64,7 @@ This task plan implements **M3.1: implement_parser_integration** from `roadmap.m
         2.  Execute the compiled binary with a simple command via `assert_cmd` or manually: `target/debug/unilang_cli add 5 3`. The command should execute and print the correct result. This provides a basic smoke test before fixing the entire test suite.
     *   **Commit Message:** `refactor(cli): Migrate unilang_cli to use the new parsing pipeline`
 
-*   **⚫ Increment 4: Migrate Integration Tests**
+*   **⏳ Increment 4: Migrate Integration Tests**
     *   **Goal:** To update all integration tests to use the new parsing pipeline, ensuring the entire framework is correct, robust, and fully verified against its expected behavior.
     *   **Specification Reference:** Verifies the end-to-end conformance of the new pipeline (`spec.md` Section 2.2.1) and the correctness of argument binding (`spec.md` Section 2.3.3).
     *   **Steps:**
@@ -90,6 +90,11 @@ This task plan implements **M3.1: implement_parser_integration** from `roadmap.m
     *   Refactored `SemanticAnalyzer::new` and `SemanticAnalyzer::analyze` to work with `GenericInstruction`.
     *   Refactored `bind_arguments` to correctly handle named and positional arguments from `GenericInstruction` and removed references to non-existent fields in `ArgumentDefinition`.
     *   Added `unilang_instruction_parser` as a dependency in `module/move/unilang/Cargo.toml`.
+*   **Increment 3: Refactor `unilang_cli` Binary**
+    *   Updated `src/bin/unilang_cli.rs` to use `unilang_instruction_parser::Parser` and `UnilangParserOptions`.
+    *   Migrated parsing logic to use `parser.parse_single_str()` with joined arguments.
+    *   Adapted `SemanticAnalyzer` invocation to use the new `instructions` vector.
+    *   Verified successful build and smoke test execution.
 
 ### Task Requirements
 *   None
