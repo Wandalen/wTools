@@ -90,7 +90,6 @@ fn into_generic_args_single_type_parameter()
   a_id!( exp, got, "Failed into_generic_args_single_type_parameter: exp {:?}, got {:?}", exp, got );
 }
 
-///
 
 #[ test ]
 fn into_generic_args_single_lifetime_parameter()
@@ -121,8 +120,8 @@ fn into_generic_args_single_lifetime_parameter()
   let got = generics.into_generic_args();
 
   // Debug prints for better traceability in case of failure
-  println!( "Expected: {:?}", exp );
-  println!( "Got: {:?}", got );
+  println!( "Expected: {exp:?}" );
+  println!( "Got: {got:?}" );
 
   // Assert to check if the exp matches the got
   a_id!( exp, got, "Failed into_generic_args_single_lifetime_parameter: exp {:?}, got {:?}", exp, got );
@@ -170,8 +169,8 @@ fn into_generic_args_single_const_parameter()
   };
 
   // Debug prints for better traceability in case of failure
-  println!( "Expected: {:?}", exp );
-  println!( "Got: {:?}", got );
+  println!( "Expected: {exp:?}" );
+  println!( "Got: {got:?}" );
 
   a_id!( exp, got, "Failed into_generic_args_single_const_parameter: exp {:?}, got {:?}", exp, got );
 }

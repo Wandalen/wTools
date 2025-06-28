@@ -26,7 +26,7 @@ pub struct TestStructNoArgs
 // === Manual Former Implementation: No Args ===
 // ... (No changes needed here, as all methods/fields are used by no_args_test) ...
 // Storage
-/// Manual storage for TestStructNoArgsFormer.
+/// Manual storage for `TestStructNoArgsFormer`.
 #[ derive( Debug, Default ) ]
 pub struct TestStructNoArgsFormerStorage
 {
@@ -52,7 +52,7 @@ impl StoragePreform for TestStructNoArgsFormerStorage
 }
 
 // Definition Types
-/// Manual definition types for TestStructNoArgsFormer.
+/// Manual definition types for `TestStructNoArgsFormer`.
 #[ derive( Debug, Default ) ]
 pub struct TestStructNoArgsFormerDefinitionTypes< Context = (), Formed = TestStructNoArgs >
 {
@@ -73,7 +73,7 @@ for TestStructNoArgsFormerDefinitionTypes< Context, Formed >
 }
 
 // Definition
-/// Manual definition for TestStructNoArgsFormer.
+/// Manual definition for `TestStructNoArgsFormer`.
 #[ derive( Debug, Default ) ]
 pub struct TestStructNoArgsFormerDefinition< Context = (), Formed = TestStructNoArgs, End = ReturnPreformed >
 {
@@ -93,7 +93,7 @@ where
 }
 
 // Former
-/// Manual Former for TestStructNoArgs.
+/// Manual Former for `TestStructNoArgs`.
 #[ derive( Debug ) ]
 pub struct TestStructNoArgsFormer< Definition = TestStructNoArgsFormerDefinition >
 where
@@ -166,7 +166,7 @@ where
 }
 
 // === Standalone Constructor (Manual): No Args ===
-/// Manual standalone constructor for TestStructNoArgs.
+/// Manual standalone constructor for `TestStructNoArgs`.
 pub fn test_struct_no_args()
 ->
 TestStructNoArgsFormer< TestStructNoArgsFormerDefinition< (), TestStructNoArgs, ReturnPreformed > >
@@ -180,25 +180,25 @@ TestStructNoArgsFormer< TestStructNoArgsFormerDefinition< (), TestStructNoArgs, 
 pub struct TestStructWithArgs
 {
   /// Field A.
-  pub field_a : String,
+  pub a : String,
   /// Field B.
-  pub field_b : bool,
+  pub b : bool,
   /// Field C (optional).
-  pub field_c : Option< f32 >,
+  pub c : Option< f32 >,
 }
 
 // === Manual Former Implementation: With Args ===
 // ... (Storage, DefTypes, Def implementations remain the same) ...
-/// Manual storage for TestStructWithArgsFormer.
+/// Manual storage for `TestStructWithArgsFormer`.
 #[ derive( Debug, Default ) ]
 pub struct TestStructWithArgsFormerStorage
 {
-  /// Optional storage for field_a.
-  pub field_a : Option< String >,
-  /// Optional storage for field_b.
-  pub field_b : Option< bool >,
-  /// Optional storage for field_c.
-  pub field_c : Option< f32 >,
+  /// Optional storage for `a`.
+  pub a : Option< String >,
+  /// Optional storage for `b`.
+  pub b : Option< bool >,
+  /// Optional storage for `c`.
+  pub c : Option< f32 >,
 }
 
 impl Storage for TestStructWithArgsFormerStorage
@@ -213,14 +213,14 @@ impl StoragePreform for TestStructWithArgsFormerStorage
   {
     TestStructWithArgs
     {
-      field_a : self.field_a.take().unwrap_or_default(),
-      field_b : self.field_b.take().unwrap_or_default(),
-      field_c : self.field_c.take(),
+      a : self.a.take().unwrap_or_default(),
+      b : self.b.take().unwrap_or_default(),
+      c : self.c.take(),
     }
   }
 }
 
-/// Manual definition types for TestStructWithArgsFormer.
+/// Manual definition types for `TestStructWithArgsFormer`.
 #[ derive( Debug, Default ) ]
 pub struct TestStructWithArgsFormerDefinitionTypes< C = (), F = TestStructWithArgs >
 {
@@ -240,7 +240,7 @@ for TestStructWithArgsFormerDefinitionTypes< C, F >
 {
 }
 
-/// Manual definition for TestStructWithArgsFormer.
+/// Manual definition for `TestStructWithArgsFormer`.
 #[ derive( Debug, Default ) ]
 pub struct TestStructWithArgsFormerDefinition< C = (), F = TestStructWithArgs, E = ReturnPreformed >
 {
@@ -260,7 +260,7 @@ where
 }
 
 
-/// Manual Former for TestStructWithArgs.
+/// Manual Former for `TestStructWithArgs`.
 #[ derive( Debug ) ]
 #[ allow( dead_code ) ] // Allow dead code for the whole struct as tests might not use all fields
 pub struct TestStructWithArgsFormer< D = TestStructWithArgsFormerDefinition >
@@ -326,53 +326,53 @@ where
     Self::begin( None, None, e )
   }
 
-  /// Setter for field_a.
+  /// Setter for `a`.
   #[ inline ]
   #[ allow( dead_code ) ]
-  pub fn field_a( mut self, src : impl Into< String > ) -> Self
+  pub fn a( mut self, src : impl Into< String > ) -> Self
   {
-    debug_assert!( self.storage.field_a.is_none() );
-    self.storage.field_a = Some( src.into() );
+    debug_assert!( self.storage.a.is_none() );
+    self.storage.a = Some( src.into() );
     self
   }
 
-  /// Setter for field_b.
+  /// Setter for `b`.
   #[ inline ]
   #[ allow( dead_code ) ]
-  pub fn field_b( mut self, src : impl Into< bool > ) -> Self
+  pub fn b( mut self, src : impl Into< bool > ) -> Self
   {
-    debug_assert!( self.storage.field_b.is_none() );
-    self.storage.field_b = Some( src.into() );
+    debug_assert!( self.storage.b.is_none() );
+    self.storage.b = Some( src.into() );
     self
   }
 
-  /// Setter for field_c.
+  /// Setter for `c`.
   #[ inline ]
   #[ allow( dead_code ) ] // Warning: method is never used
-  pub fn field_c( mut self, src : impl Into< f32 > ) -> Self
+  pub fn c( mut self, src : impl Into< f32 > ) -> Self
   {
-    debug_assert!( self.storage.field_c.is_none() );
-    self.storage.field_c = Some( src.into() );
+    debug_assert!( self.storage.c.is_none() );
+    self.storage.c = Some( src.into() );
     self
   }
 }
 
 // === Standalone Constructor (Manual): With Args ===
-/// Manual standalone constructor for TestStructWithArgs.
+/// Manual standalone constructor for `TestStructWithArgs`.
 #[ allow( dead_code ) ] // Warning: function is never used
 pub fn test_struct_with_args
 (
-  field_a : impl Into< String >,
-  field_b : impl Into< bool >,
+  a : impl Into< String >,
+  b : impl Into< bool >,
 )
 ->
 TestStructWithArgsFormer< TestStructWithArgsFormerDefinition< (), TestStructWithArgs, ReturnPreformed > >
 {
   let initial_storage = TestStructWithArgsFormerStorage
   {
-    field_a : Some( field_a.into() ),
-    field_b : Some( field_b.into() ),
-    field_c : None,
+    a : Some( a.into() ),
+    b : Some( b.into() ),
+    c : None,
   };
   TestStructWithArgsFormer::begin( Some( initial_storage ), None, ReturnPreformed )
 }

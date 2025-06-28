@@ -78,7 +78,7 @@ fn parameter_first_with_multiple_generics()
   let first_param = parameter_first( &parsed_type ).expect( "Expected to extract the first generic parameter" );
 
   let expected_type : Type = parse_str( "Option<i32>" ).expect( "Expected type to parse correctly" );
-  assert_eq!( format!( "{:?}", expected_type ), format!( "{:?}", first_param ), "Extracted type does not match expected" );
+  assert_eq!( format!( "{expected_type:?}" ), format!( "{:?}", first_param ), "Extracted type does not match expected" );
 }
 
 #[ test ]
@@ -94,7 +94,7 @@ fn parameter_first_with_no_generics()
   // tree_print!( got.as_ref().unwrap() );
 
   let expected_type : Type = parse_str( "i32" ).expect( "Expected type to parse correctly" );
-  assert_eq!( format!( "{:?}", expected_type ), format!( "{:?}", got ), "Extracted type does not match expected" );
+  assert_eq!( format!( "{expected_type:?}" ), format!( "{:?}", got ), "Extracted type does not match expected" );
 
 }
 
@@ -110,7 +110,7 @@ fn parameter_first_with_single_generic()
   let first_param = parameter_first( &parsed_type ).expect( "Expected to extract the first generic parameter" );
 
   let expected_type : Type = parse_str( "i32" ).expect( "Expected type to parse correctly" );
-  assert_eq!( format!( "{:?}", expected_type ), format!( "{:?}", first_param ), "Extracted type does not match expected" );
+  assert_eq!( format!( "{expected_type:?}" ), format!( "{:?}", first_param ), "Extracted type does not match expected" );
 }
 
 #[ test ]
@@ -125,7 +125,7 @@ fn parameter_first_with_deeply_nested_generics()
   let first_param = parameter_first( &parsed_type ).expect( "Expected to extract the first generic parameter" );
 
   let expected_type : Type = parse_str( "HashMap< String, Option< i32 > >" ).expect( "Expected type to parse correctly" );
-  assert_eq!( format!( "{:?}", expected_type ), format!( "{:?}", first_param ), "Extracted type does not match expected" );
+  assert_eq!( format!( "{expected_type:?}" ), format!( "{:?}", first_param ), "Extracted type does not match expected" );
 }
 
 //

@@ -289,15 +289,7 @@ mod private
     println!( "smoke_test_for_local_run : {:?}", std::env::var( "WITH_SMOKE" ) );
     let run = if let Ok( value ) = std::env::var( "WITH_SMOKE" )
     {
-      match value.as_str()
-      {
-        "0" => false,
-        "1" => true,
-        "false" => false,
-        "local" => true,
-        "published" => false,
-        _ => false,
-      }
+      matches!( value.as_str(), "1" | "local" )
     }
     else
     {
@@ -316,15 +308,7 @@ mod private
   {
     let run = if let Ok( value ) = std::env::var( "WITH_SMOKE" )
     {
-      match value.as_str()
-      {
-        "0" => false,
-        "1" => true,
-        "false" => false,
-        "local" => false,
-        "published" => true,
-        _ => false,
-      }
+      matches!( value.as_str(), "1" | "published" )
     }
     else
     {

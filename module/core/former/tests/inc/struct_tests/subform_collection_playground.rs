@@ -1,6 +1,7 @@
 #![ deny( missing_docs ) ]
 #![ allow( dead_code ) ]
 use super::*;
+use std::collections::HashMap;
 
 //
 // this should work
@@ -42,7 +43,7 @@ impl< Name > Property< Name >
     Description : core::convert::Into< String >,
     Code : core::convert::Into< isize >,
   {
-    Self { name : name.into(), description : description.into(), code : code.into() }
+    Self { name, description : description.into(), code : code.into() }
   }
 }
 
@@ -78,7 +79,7 @@ where
   {
     if self.storage.properties.is_none()
     {
-      self.storage.properties = core::option::Option::Some( Default::default() );
+      self.storage.properties = core::option::Option::Some( HashMap::default() );
     }
     if let core::option::Option::Some( ref mut properties ) = self.storage.properties
     {

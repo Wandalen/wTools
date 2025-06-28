@@ -58,7 +58,7 @@ where
       let mut super_former = super_former.unwrap();
       if super_former.storage.children.is_none()
       {
-        super_former.storage.children = Some( Default::default() );
+        super_former.storage.children = Some( Vec::default() );
       }
       if let Some( ref mut children ) = super_former.storage.children
       {
@@ -76,6 +76,7 @@ where
 
   // less generic, but more concise way to define custom subform setter
   #[ inline( always ) ]
+  #[ allow( clippy::used_underscore_items ) ]
   pub fn child( self, name : &str ) ->
   ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   {
@@ -94,6 +95,7 @@ where
 
   // it is generated
   #[ inline( always ) ]
+  #[ allow( clippy::used_underscore_items ) ]
   pub fn _child( self ) ->
   < < Vec< Child > as former::Collection >::Entry as former::EntityToFormer
     <
@@ -187,7 +189,7 @@ where
     let mut super_former = super_former.unwrap();
     if super_former.storage.children.is_none()
     {
-      super_former.storage.children = Some( Default::default() );
+      super_former.storage.children = Some( Vec::default() );
     }
     if let Some( ref mut fields ) = super_former.storage.children
     {

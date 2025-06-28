@@ -12,7 +12,6 @@ mod private
   /// cta_true!( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) );
   /// ```
   ///
-
   #[ macro_export ]
   macro_rules! cta_true
   {

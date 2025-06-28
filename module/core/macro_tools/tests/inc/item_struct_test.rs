@@ -102,7 +102,7 @@ fn test_field_or_variant_field()
     {
       assert_eq!( f.ty, syn::parse_quote!( i32 ) );
     },
-    _ => panic!( "Expected Field variant" ),
+    the_module::struct_like::FieldOrVariant::Variant( _ ) => panic!( "Expected Field variant" ),
   }
 }
 
@@ -128,7 +128,7 @@ fn test_field_or_variant_variant()
       let exp : syn::Ident = syn::parse_quote!( Variant1 );
       assert_eq!( v.ident, exp );
     },
-    _ => panic!( "Expected Variant variant" ),
+    the_module::struct_like::FieldOrVariant::Field( _ ) => panic!( "Expected Variant variant" ),
   }
 }
 

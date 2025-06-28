@@ -12,7 +12,7 @@
 //! - This file is used as a reference for comparison in tests that include `generics_in_tuple_variant_only_test.rs` (though that file does not currently test unit variants).
 // File: module/core/former/tests/inc/enum_unit_tests/generic_enum_simple_unit_manual.rs
 use super::*; // Imports testing infrastructure and potentially other common items
-use std::fmt::Debug; // Import Debug trait for bounds
+use core::fmt::Debug; // Import Debug trait for bounds
 // use std::marker::PhantomData; // No longer needed for this simple case
 
 // --- Enum Definition with Bounds ---

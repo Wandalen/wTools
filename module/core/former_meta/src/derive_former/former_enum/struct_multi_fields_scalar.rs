@@ -1,13 +1,13 @@
 // qqq : Implement logic for Struct { f1:T1, ... } with #[scalar]
 
 use super::*;
-use macro_tools::{ Result, quote, syn };
+use macro_tools::{ quote, syn };
 use super::EnumVariantHandlerContext;
 use proc_macro2::TokenStream; // Import TokenStream
 use convert_case::{ Case, Casing }; // Import Case and Casing from convert_case
 
 #[allow(dead_code)] // Suppress warning about unused function
-pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< TokenStream >
+pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> TokenStream
 {
   // This handler is specifically for Struct { f1: T1, ... } variants with #[scalar].
   // The main dispatch should ensure this is only called for such variants.
@@ -73,5 +73,5 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< 
     generated_tokens.extend(generated_standalone);
   }
 
-  Ok( generated_tokens )
+  generated_tokens
 }

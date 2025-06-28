@@ -9,7 +9,7 @@
 //!
 //! Test Relevance/Acceptance Criteria:
 //! - Defines an enum `EnumWithNamedFields` with two zero-field unnamed variants: `VariantZeroUnnamedDefault()` and `VariantZeroUnnamedScalar()`.
-//! - `VariantZeroUnnamedScalar` is annotated with `#[scalar]`. The enum has `#[derive(Former)]`, `#[debug]`, and `#[standalone_constructors]`.
+//! - `VariantZeroUnnamedScalar` is annotated with `#[scalar]`. The enum has `#[derive(Former)]`, `#[ debug ]`, and `#[standalone_constructors]`.
 //! - Relies on the derived static methods (`EnumWithNamedFields::variant_zero_unnamed_scalar()`, `EnumWithNamedFields::variant_zero_unnamed_default()`)
 //!   defined in `enum_named_fields_unnamed_only_test.rs`.
 //! - Asserts that these constructors produce the correct `EnumWithNamedFields` enum instances by comparing

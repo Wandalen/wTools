@@ -4,7 +4,105 @@ use super::*;
 #[ allow( unused_imports ) ]
 use collection_tools::Vec;
 
+fn context_plus_13( _storage : Vec< String >, context : Option< f32 > ) -> f32
+{
+  if let Some( context ) = context
+  {
+    13.1 + context
+  }
+  else
+  {
+    13.1
+  }
+}
+
+type MyCollection< E > = the_module::CollectionFormer::< E, Return13Generic< E > >;
+
 //
+struct Return13;
+impl former::FormerDefinitionTypes for Return13
+{
+  type Storage = Vec< String >;
+  type Formed = i32;
+  type Context = ();
+}
+
+impl former::FormerMutator
+for Return13
+{
+}
+
+impl former::FormerDefinition for Return13
+{
+  type Types = Return13;
+  type End = Return13;
+  type Storage = Vec< String >;
+  type Formed = i32;
+  type Context = ();
+}
+
+// -
+
+impl former::FormingEnd< Return13 >
+for Return13
+{
+  fn call
+  (
+    &self,
+    _storage : < Return13 as former::FormerDefinitionTypes >::Storage,
+    _context : Option< < Return13 as former::FormerDefinitionTypes >::Context >
+  ) -> < Return13 as former::FormerDefinitionTypes >::Formed
+  {
+    13
+  }
+}
+
+struct Return13Generic< E >( ::core::marker::PhantomData< E > );
+
+impl< E > Return13Generic< E >
+{
+  pub fn new() -> Self
+  {
+    Self ( ::core::marker::PhantomData )
+  }
+}
+
+impl< E > former::FormerDefinitionTypes for Return13Generic< E >
+{
+  type Storage = Vec< E >;
+  type Formed = i32;
+  type Context = ();
+}
+
+impl< E > former::FormerMutator
+for Return13Generic< E >
+{
+}
+
+impl< E > former::FormerDefinition for Return13Generic< E >
+{
+  type Types = Return13Generic< E >;
+  type End = Return13Generic< E >;
+  type Storage = Vec< E >;
+  type Formed = i32;
+  type Context = ();
+}
+
+// -
+
+impl< E > the_module::FormingEnd< Return13Generic< E > >
+for Return13Generic< E >
+{
+  fn call
+  (
+    &self,
+    _storage : < Return13Generic< E > as the_module::FormerDefinitionTypes >::Storage,
+    _context : Option< < Return13Generic< E > as the_module::FormerDefinitionTypes >::Context >
+  ) -> < Return13Generic< E > as the_module::FormerDefinitionTypes >::Formed
+  {
+    13
+  }
+}
 
 #[ test ]
 fn definitions()
@@ -64,17 +162,6 @@ fn begin_and_custom_end()
 
   // with a context
 
-  fn context_plus_13( _storage : Vec< String >, context : Option< f32 > ) -> f32
-  {
-    if let Some( context ) = context
-    {
-      13.1 + context
-    }
-    else
-    {
-      13.1
-    }
-  }
   let got = the_module::VectorFormer::begin( None, Some( 10.0 ), context_plus_13 )
   .add( "a" )
   .add( "b" )
@@ -92,43 +179,6 @@ fn begin_and_custom_end()
 fn custom_definition()
 {
 
-  struct Return13;
-  impl former::FormerDefinitionTypes for Return13
-  {
-    type Storage = Vec< String >;
-    type Formed = i32;
-    type Context = ();
-  }
-
-  impl former::FormerMutator
-  for Return13
-  {
-  }
-
-  impl former::FormerDefinition for Return13
-  {
-    type Types = Return13;
-    type End = Return13;
-    type Storage = Vec< String >;
-    type Formed = i32;
-    type Context = ();
-  }
-
-  // -
-
-  impl former::FormingEnd< Return13 >
-  for Return13
-  {
-    fn call
-    (
-      &self,
-      _storage : < Return13 as former::FormerDefinitionTypes >::Storage,
-      _context : Option< < Return13 as former::FormerDefinitionTypes >::Context >
-    ) -> < Return13 as former::FormerDefinitionTypes >::Formed
-    {
-      13
-    }
-  }
 
   //
 
@@ -156,63 +206,17 @@ fn custom_definition()
 fn custom_definition_parametrized()
 {
 
-  struct Return13< E >( ::core::marker::PhantomData< E > );
-
-  impl< E > Return13< E >
-  {
-    pub fn new() -> Self
-    {
-      Self ( ::core::marker::PhantomData )
-    }
-  }
-
-  impl< E > former::FormerDefinitionTypes for Return13< E >
-  {
-    type Storage = Vec< E >;
-    type Formed = i32;
-    type Context = ();
-  }
-
-  impl< E > former::FormerMutator
-  for Return13< E >
-  {
-  }
-
-  impl< E > former::FormerDefinition for Return13< E >
-  {
-    type Types = Return13< E >;
-    type End = Return13< E >;
-    type Storage = Vec< E >;
-    type Formed = i32;
-    type Context = ();
-  }
-
-  // -
-
-  impl< E > the_module::FormingEnd< Return13< E > >
-  for Return13< E >
-  {
-    fn call
-    (
-      &self,
-      _storage : < Return13< E > as the_module::FormerDefinitionTypes >::Storage,
-      _context : Option< < Return13< E > as the_module::FormerDefinitionTypes >::Context >
-    ) -> < Return13< E > as the_module::FormerDefinitionTypes >::Formed
-    {
-      13
-    }
-  }
 
   //
 
-  let got = the_module::CollectionFormer::< String, Return13< String > >::begin_coercing( None, None, Return13::new() )
+  let got = the_module::CollectionFormer::< String, Return13Generic< String > >::begin_coercing( None, None, Return13Generic::new() )
   .add( "a" )
   .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
 
-  let got = the_module::CollectionFormer::< String, Return13< String > >::new_coercing( Return13::new() )
+  let got = the_module::CollectionFormer::< String, Return13Generic< String > >::new_coercing( Return13Generic::new() )
   .add( "a" )
   .add( "b" )
   .form();
@@ -221,16 +225,15 @@ fn custom_definition_parametrized()
 
   //
 
-  type MyCollection< E > = the_module::CollectionFormer::< E, Return13< E > >;
 
-  let got = MyCollection::< String >::begin_coercing( None, None, Return13::new() )
+  let got = MyCollection::< String >::begin_coercing( None, None, Return13Generic::new() )
   .add( "a" )
   .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
 
-  let got = MyCollection::< String >::new_coercing( Return13::new() )
+  let got = MyCollection::< String >::new_coercing( Return13Generic::new() )
   .add( "a" )
   .add( "b" )
   .form();

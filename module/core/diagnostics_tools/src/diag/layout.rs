@@ -6,8 +6,6 @@ mod private
   ///
   /// Compile-time assertion that two types have the same size.
   ///
-
-
   #[ macro_export ]
   macro_rules! cta_type_same_size
   {
@@ -25,8 +23,6 @@ mod private
   ///
   /// Compile-time assertion of having the same align.
   ///
-
-
   #[ macro_export ]
   macro_rules! cta_type_same_align
   {
@@ -43,8 +39,6 @@ mod private
   ///
   /// Compile-time assertion that memory behind two references have the same size.
   ///
-
-
   #[ macro_export ]
   macro_rules! cta_ptr_same_size
   {
@@ -66,8 +60,6 @@ mod private
   ///
   /// Does not consume values.
   ///
-
-
   #[ macro_export ]
   macro_rules! cta_mem_same_size
   {

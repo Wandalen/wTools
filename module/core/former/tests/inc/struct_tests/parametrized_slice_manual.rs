@@ -1,3 +1,7 @@
+#![allow(clippy::elidable_lifetime_names)]
+#![allow(clippy::let_and_return)]
+#![allow(clippy::needless_borrow)]
+#![allow(unused_variables)]
 #[ allow( unused_imports ) ]
 use super::*;
 
@@ -29,7 +33,7 @@ pub struct Struct1FormerDefinitionTypes< 'a, Context, Formed >
   _phantom : core::marker::PhantomData< ( &'a(), Context, Formed ) >,
 }
 
-impl< 'a, Context, Formed > Default for Struct1FormerDefinitionTypes< 'a, Context, Formed >
+impl< Context, Formed > Default for Struct1FormerDefinitionTypes< '_, Context, Formed >
 {
   fn default() -> Self
   {
@@ -47,8 +51,8 @@ for Struct1FormerDefinitionTypes< 'a, Context, Formed >
 
 // = former mutator
 
-impl< 'a, Context, Formed > former::FormerMutator
-for Struct1FormerDefinitionTypes< 'a, Context, Formed >
+impl< Context, Formed > former::FormerMutator
+for Struct1FormerDefinitionTypes< '_, Context, Formed >
 {
 }
 
@@ -61,7 +65,7 @@ pub struct Struct1FormerDefinition< 'a, Context, Formed, End >
   _phantom : core::marker::PhantomData< ( &'a(), Context, Formed, End ) >,
 }
 
-impl< 'a, Context, Formed, End > Default for Struct1FormerDefinition< 'a, Context, Formed, End >
+impl< Context, Formed, End > Default for Struct1FormerDefinition< '_, Context, Formed, End >
 {
   fn default() -> Self
   {
@@ -91,7 +95,7 @@ pub struct Struct1FormerStorage< 'a >
   pub string_slice_1 : ::core::option::Option< &'a str >,
 }
 
-impl< 'a > ::core::default::Default for Struct1FormerStorage< 'a >
+impl ::core::default::Default for Struct1FormerStorage< '_ >
 {
   #[ inline( always ) ]
   fn default() -> Self
@@ -135,11 +139,10 @@ impl< 'a > former::StoragePreform for Struct1FormerStorage< 'a >
           fn maybe_default( self : &Self ) -> T { T::default() }
         }
 
-        ( &::core::marker::PhantomData::< &'a str > ).maybe_default()
+        ( ::core::marker::PhantomData::< &'a str > ).maybe_default()
       }
     };
-    let result = Struct1 { string_slice_1, };
-    return result;
+    Struct1 { string_slice_1, }
   }
 }
 
@@ -168,8 +171,7 @@ where
   #[ inline( always ) ]
   pub fn perform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
-    let result = self.form();
-    return result;
+    self.form()
   }
 
   #[ inline( always ) ]

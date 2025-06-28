@@ -13,8 +13,6 @@ mod private
   /// use diagnostics_tools::prelude::*;
   /// a_true!( 1 == 1, "something wrong" );
   /// ```
-  ///
-
   #[ macro_export ]
   macro_rules! a_true
   {
@@ -39,8 +37,6 @@ mod private
   /// use diagnostics_tools::prelude::*;
   /// a_true!( 1 == 2, "something wrong" );
   /// ```
-  ///
-
   #[ macro_export ]
   macro_rules! a_false
   {
@@ -58,7 +54,7 @@ mod private
   /// Asserts that a boolean expression is true at runtime.
   ///
   /// This will invoke the panic! macro if the provided expression cannot be evaluated to true at runtime.
-  /// Like [a_true!], this macro also has a second version, where a custom panic message can be provided.
+  /// Like [`a_true!`], this macro also has a second version, where a custom panic message can be provided.
   ///
   /// ### Basic use-case.
   ///
@@ -66,8 +62,6 @@ mod private
   /// use diagnostics_tools::prelude::*;
   /// a_dbg_true!( 1 == 1, "something wrong" );
   /// ```
-  ///
-
   #[ macro_export ]
   macro_rules! a_dbg_true
   {
@@ -85,7 +79,7 @@ mod private
   /// Asserts that a boolean expression is false at runtime.
   ///
   /// This will invoke the panic! macro if the provided expression cannot be evaluated to false at runtime.
-  /// Like [a_false!], this macro also has a second version, where a custom panic message can be provided.
+  /// Like [`a_false!`], this macro also has a second version, where a custom panic message can be provided.
   ///
   /// ### Basic use-case.
   ///
@@ -93,8 +87,6 @@ mod private
   /// use diagnostics_tools::prelude::*;
   /// a_dbg_true!( 1 == 2, "something wrong" );
   /// ```
-  ///
-
   #[ macro_export ]
   macro_rules! a_dbg_false
   {
@@ -112,7 +104,7 @@ mod private
   /// Asserts that two expressions are identical.
   ///
   /// This macro will invoke the panic! macro if the two expressions have different values at runtime.
-  /// Like [a_id!], this macro also has a second version where a custom panic message can be provided.
+  /// Like [`a_id!`], this macro also has a second version where a custom panic message can be provided.
   ///
   /// ### Basic use-case.
   ///
@@ -120,8 +112,6 @@ mod private
   /// use diagnostics_tools::prelude::*;
   /// a_dbg_id!( 1, 1, "something wrong" );
   /// ```
-  ///
-
   #[ macro_export ]
   macro_rules! a_dbg_id
   {
@@ -142,7 +132,7 @@ mod private
   /// Asserts that two expressions are not identical with each other.
   ///
   /// This will invoke the panic! macro if two experessions have the same value at runtime.
-  /// Like [a_id!], this macro also has a second version, where a custom panic message can be provided.
+  /// Like [`a_id!`], this macro also has a second version, where a custom panic message can be provided.
   ///
   /// ### Basic use-case.
   ///
@@ -150,8 +140,6 @@ mod private
   /// use diagnostics_tools::prelude::*;
   /// a_dbg_not_id!( 1, 2, "something wrong" );
   /// ```
-  ///
-
   #[ macro_export ]
   macro_rules! a_dbg_not_id
   {
@@ -174,7 +162,6 @@ mod private
   ///
   /// Asserts that two expressions are identical to each other (using [`PartialEq`]). Prints nice diff.
   ///
-
   #[macro_export]
   macro_rules! a_id
   {
@@ -193,7 +180,6 @@ mod private
   ///
   /// Asserts that two expressions are not identical to each other (using [`PartialEq`]). Prints nice diff.
   ///
-
   #[macro_export]
   macro_rules! a_not_id
   {

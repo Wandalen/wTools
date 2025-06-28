@@ -28,12 +28,12 @@ fn main()
   #[ derive( Debug, PartialEq, Eq, Former ) ]
   pub struct Structure1
   {
-    int_1 : i32,
-    string_1 : String,
-    vec_1 : Vec< u32 >,
-    hashmap_1 : collection_tools::HashMap< String, String >,
-    int_optional_1 : core::option::Option< i32 >,
-    string_optional_1 : Option< String >,
+    int : i32,
+    string : String,
+    vec : Vec< u32 >,
+    hashmap : collection_tools::HashMap< String, String >,
+    int_optional : core::option::Option< i32 >,
+    string_optional : Option< String >,
   }
   let hashmap = collection_tools::HashMap::from
   ([
@@ -42,11 +42,11 @@ fn main()
   ]);
 
   let struct1 = Structure1::former()
-  .int_1( 13 )
-  .string_1( "Abcd".to_string() )
-  .vec_1( vec![ 1, 3 ] )
-  .hashmap_1( hashmap )
-  .string_optional_1( "dir1" )
+  .int( 13 )
+  .string( "Abcd".to_string() )
+  .vec( vec![ 1, 3 ] )
+  .hashmap( hashmap )
+  .string_optional( "dir1" )
   .form();
   dbg!( &struct1 );
 

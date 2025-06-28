@@ -44,8 +44,41 @@ mod private
     }
 
     /// Parses a string to a `GenericsWithWhere`, specifically designed to handle generics syntax with where clauses effectively.
+    ///
+    /// This function provides a convenient way to parse generic parameters and their associated
+    /// `where` clauses from a string slice, returning a `GenericsWithWhere` instance.
+    ///
+    /// # Arguments
+    ///
+    /// * `s` - The string slice containing the generics and optional `where` clause (e.g., `"<T: Debug> where T: Default"`).
+    ///
+    /// # Returns
+    ///
+    /// Returns a `syn::Result` which is `Ok(GenericsWithWhere)` on successful parsing,
+    /// or `Err(syn::Error)` if the input string does not conform to valid Rust generics syntax.
+    ///
     /// # Errors
-    /// qqq: doc
+    ///
+    /// Returns a `syn::Error` if the input string `s` cannot be parsed as valid Rust generics
+    /// or a `where` clause.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use macro_tools::generic_params::GenericsWithWhere;
+    ///
+    /// let parsed = GenericsWithWhere::parse_from_str( "< T : Clone, U : Default = Default1 > where T : Default" ).unwrap();
+    /// assert!( parsed.generics.params.len() == 2 );
+    /// assert!( parsed.generics.where_clause.is_some() );
+    ///
+    /// let parsed_no_where = GenericsWithWhere::parse_from_str( "< T >" ).unwrap();
+    /// assert!( parsed_no_where.generics.params.len() == 1 );
+    /// assert!( parsed_no_where.generics.where_clause.is_none() );
+    ///
+    /// let parsed_only_where = GenericsWithWhere::parse_from_str( "where T : Debug" ).unwrap();
+    /// assert!( parsed_only_where.generics.params.is_empty() );
+    /// assert!( parsed_only_where.generics.where_clause.is_some() );
+    /// ```
     pub fn parse_from_str( s : &str ) -> syn::Result< GenericsWithWhere >
     {
       syn::parse_str::< GenericsWithWhere >( s )
@@ -180,103 +213,6 @@ mod private
       }
     }
   }
-
-  // Helper function similar to the original `decompose`.
-  #[allow(clippy::type_complexity)]
-  fn decompose_item_soft
-  (
-    generics: &syn::Generics,
-  ) ->
-  (
-    syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>, // with_defaults
-    syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>, // for_impl
-    syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>, // for_ty
-    syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>, // where_clause
-  )
-  {
-    let mut generics_with_defaults = generics.params.clone();
-    punctuated::ensure_trailing_comma(&mut generics_with_defaults);
-
-    let mut generics_for_impl = syn::punctuated::Punctuated::new();
-    let mut generics_for_ty = syn::punctuated::Punctuated::new();
-
-    for param in &generics.params {
-        match param {
-            syn::GenericParam::Type(type_param) => {
-                let impl_param = syn::GenericParam::Type(syn::TypeParam {
-                    attrs: vec![],
-                    ident: type_param.ident.clone(),
-                    colon_token: type_param.colon_token,
-                    bounds: type_param.bounds.clone(),
-                    eq_token: None,
-                    default: None,
-                });
-                generics_for_impl.push_value(impl_param);
-                generics_for_impl.push_punct(syn::token::Comma::default());
-
-                let ty_param = syn::GenericParam::Type(syn::TypeParam {
-                    attrs: vec![],
-                    ident: type_param.ident.clone(),
-                    colon_token: None,
-                    bounds: syn::punctuated::Punctuated::new(),
-                    eq_token: None,
-                    default: None,
-                });
-                generics_for_ty.push_value(ty_param);
-                generics_for_ty.push_punct(syn::token::Comma::default());
-            }
-            syn::GenericParam::Const(const_param) => {
-                let impl_param = syn::GenericParam::Const(syn::ConstParam {
-                    attrs: vec![],
-                    const_token: const_param.const_token,
-                    ident: const_param.ident.clone(),
-                    colon_token: const_param.colon_token,
-                    ty: const_param.ty.clone(),
-                    eq_token: None,
-                    default: None,
-                });
-                generics_for_impl.push_value(impl_param);
-                generics_for_impl.push_punct(syn::token::Comma::default());
-
-                let ty_param = syn::GenericParam::Const(syn::ConstParam {
-                    attrs: vec![],
-                    const_token: const_param.const_token,
-                    ident: const_param.ident.clone(),
-                    colon_token: const_param.colon_token,
-                    ty: const_param.ty.clone(),
-                    eq_token: None,
-                    default: None,
-                });
-                generics_for_ty.push_value(ty_param);
-                generics_for_ty.push_punct(syn::token::Comma::default());
-            }
-            syn::GenericParam::Lifetime(lifetime_param) => {
-                generics_for_impl.push_value(syn::GenericParam::Lifetime(lifetime_param.clone()));
-                generics_for_impl.push_punct(syn::token::Comma::default());
-
-                let ty_param = syn::GenericParam::Lifetime(syn::LifetimeParam {
-                    attrs: vec![],
-                    lifetime: lifetime_param.lifetime.clone(),
-                    colon_token: None,
-                    bounds: syn::punctuated::Punctuated::new(),
-                });
-                generics_for_ty.push_value(ty_param);
-                generics_for_ty.push_punct(syn::token::Comma::default());
-            }
-        }
-    }
-
-    let generics_where = if let Some(where_clause) = &generics.where_clause {
-        let mut predicates = where_clause.predicates.clone();
-        punctuated::ensure_trailing_comma(&mut predicates);
-        predicates
-    } else {
-        syn::punctuated::Punctuated::new()
-    };
-
-    (generics_with_defaults, generics_for_impl, generics_for_ty, generics_where)
-  }
-
 
   /// Merges two `syn::Generics` instances into a new one.
   ///

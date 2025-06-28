@@ -4,7 +4,7 @@
 //! Coverage:
 //! - Rule 3a (Unit + Default): Verifies `Enum::variant() -> Enum`.
 //! - Rule 1a (Unit + `#[scalar]`): Verifies `Enum::variant() -> Enum` (as default for unit is scalar).
-//! - Rule 4a (#[standalone_constructors]): Verifies generation of top-level constructor functions.
+//! - Rule 4a (`#[standalone_constructors]`): Verifies generation of top-level constructor functions.
 //!
 //! Test Relevance/Acceptance Criteria:
 //! - Defines an enum `Status` with unit variants `Pending` and `Complete`, and the `#[former( standalone_constructors )]` attribute.
