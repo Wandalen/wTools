@@ -21,6 +21,7 @@ use core::marker::PhantomData;
 
 // Helper struct used in tests (though not directly by this enum's variants)
 #[derive(Debug, PartialEq, Default)]
+#[ allow( dead_code ) ]
 pub struct InnerForSubform {
     pub value: i32,
 }

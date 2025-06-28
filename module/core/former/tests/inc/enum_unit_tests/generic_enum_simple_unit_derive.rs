@@ -28,4 +28,4 @@ pub enum EnumOuter< X : Copy + Debug + PartialEq > // Enum bound: Copy + Debug +
   _Phantom(core::marker::PhantomData::<X>),
 }
 
-// include!( "generic_enum_simple_unit_only_test.rs" ); // Temporarily disabled due to generic enum derivation issue. See former/plan.md for details.
+include!( "generic_enum_simple_unit_only_test.rs" ); // Temporarily disabled due to generic enum derivation issue. See former/plan.md for details.

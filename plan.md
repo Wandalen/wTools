@@ -1,13 +1,14 @@
 # Project Plan: Audit, Improve, and Run Clippy Lints for `former` Crate
 
 ### Goal
-*   Audit, improve, and run `module/core/former/task_clippy_lints.md` to ensure it follows codestyle rules, has concise documentation, and avoids breaking the working crate. **Additionally, ensure `cargo test` passes for the `former` crate.**
+*   Audit, improve, and run `module/core/former/task_clippy_lints.md` to ensure it follows codestyle rules, has concise documentation, and avoids breaking the working crate. **Additionally, ensure `cargo test` passes for the `former` crate without any warnings.**
 
 ### Progress
 *   🚀 Increment 1 Complete
 *   🚀 Increment 2 Complete
 *   🚀 Increment 3 Complete
 *   🚀 Increment 4 Complete
+*   🚀 Increment 5 Complete
 
 ### Target Crate
 *   `module/core/former`
@@ -18,13 +19,16 @@
     *   `module/core/former/Cargo.toml`
     *   `module/core/former/src/lib.rs`
     *   `Cargo.toml` (workspace root)
+    *   `module/core/former/tests/inc/enum_unit_tests/generic_enum_simple_unit_derive.rs`
+    *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_derive.rs`
+    *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_manual.rs`
 *   Crates for Documentation:
     *   `former`
 
 ### Expected Behavior Rules / Specifications (for Target Crate)
 *   The `module/core/former/task_clippy_lints.md` file should be well-formatted, concise, and adhere to the codestyle rules.
 *   The `module/core/former` crate should compile without warnings when `cargo clippy -p former` is run with the recommended lints.
-*   **`cargo test -p former` should pass without errors.**
+*   `cargo test -p former` should pass without errors **and without any warnings.**
 *   No existing knowledge or functionality should be lost or broken.
 
 ### Increments
@@ -64,6 +68,17 @@
     *   Relevant Behavior Rules: `cargo test -p former` should pass.
     *   Verification Strategy: Execute `cargo test -p former` via `execute_command` and analyze output.
     *   Commit Message: `fix(former): Resolve failing tests`
+
+*   ✅ Increment 5: Address `cargo test` warnings for `former` crate.
+    *   Detailed Plan Step 1: Read `module/core/former/tests/inc/enum_unit_tests/generic_enum_simple_unit_derive.rs` to address `EnumOuter` warning.
+    *   Detailed Plan Step 2: Read `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_derive.rs` to address `InnerForSubform` warning.
+    *   Detailed Plan Step 3: Read `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_manual.rs` to address `InnerForSubform` warning.
+    *   Detailed Plan Step 4: Apply conservative changes (e.g., `#[allow(dead_code)]` or using the items if appropriate) to resolve the warnings.
+    *   Pre-Analysis: The `former` crate now passes its tests without warnings.
+    *   Crucial Design Rules: [Comments and Documentation], [Enhancements: Only Implement What’s Requested].
+    *   Relevant Behavior Rules: `cargo test -p former` should pass without warnings.
+    *   Verification Strategy: Execute `cargo test -p former` via `execute_command` and analyze output for warnings.
+    *   Commit Message: `fix(former): Resolve cargo test warnings`
 
 ### Task Requirements
 *   Do only conservative changes.

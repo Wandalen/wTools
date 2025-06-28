@@ -19,6 +19,7 @@ use core::marker::PhantomData;
 
 // Helper struct used in tests (inferred from previous manual file)
 #[ derive( Debug, PartialEq, Default ) ]
+#[ allow( dead_code ) ]
 pub struct InnerForSubform
 {
   pub value : i32,
