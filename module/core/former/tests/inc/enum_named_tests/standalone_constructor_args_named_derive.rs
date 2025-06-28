@@ -13,7 +13,7 @@
 //!
 //! Test Relevance/Acceptance Criteria:
 //! - Defines an enum `TestEnumArgs` with single-field (`StructVariantArgs { field: String }`) and multi-field (`MultiStructArgs { a: i32, b: bool }`) named variants.
-//! - Applies `#[derive(Former)]`, `#[standalone_constructors]`, and `#[debug]` to the enum.
+//! - Applies `#[derive(Former)]`, `#[standalone_constructors]`, and `#[ debug ]` to the enum.
 //! - Applies `#[arg_for_constructor]` to the fields within both variants.
 //! - Includes shared test logic from `standalone_constructor_args_named_only_test.rs`.
 //! - The included tests call the derived standalone constructor functions (`struct_variant_args(value)`, `multi_struct_args(value1, value2)`) and assert that the returned enum instances match manually constructed expected values. This verifies that the standalone constructors are generated correctly as scalar functions when all fields have `#[arg_for_constructor]`.

@@ -9,7 +9,7 @@
 //! Test Relevance/Acceptance Criteria:
 //! - Defines a generic enum `EnumOuter<X: Copy + Debug + Default + PartialEq>` with a single-field tuple variant `Variant(InnerGeneric<X>)`.
 //! - The inner struct `InnerGeneric<T: Debug + Copy + Default + PartialEq>` has its own generic `T` and bounds, and is instantiated with the enum's generic `X` in the variant.
-//! - The enum has `#[derive(Former)]` and `#[debug]`.
+//! - The enum has `#[derive(Former)]` and `#[ debug ]`.
 //! - Relies on the derived static method `EnumOuter::<X>::variant()` provided by this file (via `include!`).
 //! - Asserts that this constructor returns the expected subformer (`InnerGenericFormer<X>`) and that using the subformer's setter (`.inner_field()`) and `.form()` results in the correct `EnumOuter` enum instance.
 //! - Verifies that the bounds (`Copy`, `Debug`, `Default`, `PartialEq`) are correctly handled by using types that satisfy them.
@@ -35,7 +35,7 @@ impl< T : Debug + Copy + Default + PartialEq > From< T > for InnerGeneric< T >
 // --- Enum Definition with Bounds ---
 // Apply Former derive here. This is what we are testing.
 #[derive(Debug, PartialEq, former::Former)]
-// #[debug]
+// #[ debug ]
 pub enum EnumOuter< X : Copy + Debug + Default + PartialEq > // Enum bound: Copy
 {
   // --- Tuple Variant with Generics ---

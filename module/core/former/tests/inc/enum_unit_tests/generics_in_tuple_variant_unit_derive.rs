@@ -7,7 +7,7 @@
 //! - Rule 1a (Unit + `#[scalar]`): Verifies `EnumOuter::<T>::other_variant() -> EnumOuter<T>` (as default for unit is scalar) for a generic enum.
 //!
 //! Test Relevance/Acceptance Criteria:
-//! - Defines a generic enum `EnumOuter<X: Copy>` with a unit variant `OtherVariant`, and the `#[derive(Former)]` and `#[debug]` attributes.
+//! - Defines a generic enum `EnumOuter<X: Copy>` with a unit variant `OtherVariant`, and the `#[derive(Former)]` and `#[ debug ]` attributes.
 //! - Relies on the derived static method `EnumOuter::<MyType>::other_variant()`.
 //! - Asserts that the `got` instance is equal to an `expected` instance, which is manually
 //!   constructed as `EnumOuter::<MyType>::OtherVariant`. This confirms the constructor produces the correct variant instance for a generic enum.
@@ -19,7 +19,7 @@ use std::marker::PhantomData; // Import PhantomData
 // --- Enum Definition with Bounds ---
 // Apply Former derive here. This is what we are testing.
 #[derive(Debug, PartialEq, former::Former)]
-// #[debug]
+// #[ debug ]
 pub enum EnumOuter< X : Copy > // Enum bound: Copy
 {
   // --- Unit Variant ---

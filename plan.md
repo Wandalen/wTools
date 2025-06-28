@@ -1,7 +1,7 @@
 # Project Plan: Audit, Improve, and Run Clippy Lints for `former` Crate
 
 ### Goal
-*   Audit, improve, and run `module/core/former/task_clippy_lints.md` to ensure it follows codestyle rules, has concise documentation, and avoids breaking the working crate. **Additionally, ensure `cargo test` passes for the `former` crate without any warnings.**
+*   Audit, improve, and run `module/core/former/task_clippy_lints.md` to ensure it follows codestyle rules, has concise documentation, and avoids breaking the working crate. **Additionally, ensure `cargo test` passes for the `former` crate without any warnings and without debug output from `#[ debug ]` attributes.**
 
 ### Progress
 *   🚀 Increment 1 Complete
@@ -9,6 +9,7 @@
 *   🚀 Increment 3 Complete
 *   🚀 Increment 4 Complete
 *   🚀 Increment 5 Complete
+*   🚀 Increment 6 Complete
 
 ### Target Crate
 *   `module/core/former`
@@ -19,16 +20,15 @@
     *   `module/core/former/Cargo.toml`
     *   `module/core/former/src/lib.rs`
     *   `Cargo.toml` (workspace root)
-    *   `module/core/former/tests/inc/enum_unit_tests/generic_enum_simple_unit_derive.rs`
-    *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_derive.rs`
-    *   `module/core/former/tests/inc/enum_unnamed_tests/tuple_zero_fields_manual.rs`
+    *   All test files within `module/core/former/tests/` that contain `#[ debug ]`.
 *   Crates for Documentation:
     *   `former`
 
 ### Expected Behavior Rules / Specifications (for Target Crate)
 *   The `module/core/former/task_clippy_lints.md` file should be well-formatted, concise, and adhere to the codestyle rules.
 *   The `module/core/former` crate should compile without warnings when `cargo clippy -p former` is run with the recommended lints.
-*   `cargo test -p former` should pass without errors **and without any warnings.**
+*   `cargo test -p former` should pass without errors and without any warnings.
+*   **`cargo test -p former` should not produce any debug output related to `#[ debug ]` attributes.**
 *   No existing knowledge or functionality should be lost or broken.
 
 ### Increments
@@ -79,6 +79,16 @@
     *   Relevant Behavior Rules: `cargo test -p former` should pass without warnings.
     *   Verification Strategy: Execute `cargo test -p former` via `execute_command` and analyze output for warnings.
     *   Commit Message: `fix(former): Resolve cargo test warnings`
+
+*   ✅ Increment 6: Comment out active `#[ debug ]` attributes in `former` crate tests.
+    *   Detailed Plan Step 1: Search for `#[ debug ]` in `module/core/former/tests/` directory.
+    *   Detailed Plan Step 2: For each file found, read its content.
+    *   Detailed Plan Step 3: Comment out all occurrences of `#[ debug ]` attributes.
+    *   Pre-Analysis: `#[ debug ]` attributes are used for macro debugging and should not be active in final code.
+    *   Crucial Design Rules: [Enhancements: Only Implement What’s Requested].
+    *   Relevant Behavior Rules: `cargo test -p former` should not produce debug output.
+    *   Verification Strategy: Execute `cargo test -p former` via `execute_command` and visually inspect output for debug messages.
+    *   Commit Message: `chore(former): Comment out debug attributes in tests`
 
 ### Task Requirements
 *   Do only conservative changes.

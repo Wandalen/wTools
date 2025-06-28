@@ -37,8 +37,8 @@ fn main()
 
   // Child struct with Former derived for builder pattern support
   #[ derive( Debug, PartialEq, Former ) ]
-  // Optional: Use `#[debug]` to expand and debug generated code.
-  // #[debug]
+  // Optional: Use `#[ debug ]` to expand and debug generated code.
+  // #[ debug ]
   pub struct Child
   {
     name : String,
@@ -47,8 +47,8 @@ fn main()
 
   // Parent struct designed to hold a single Child instance using subform scalar
   #[ derive( Debug, PartialEq, Former ) ]
-  // Optional: Use `#[debug]` to expand and debug generated code.
-  // #[debug]
+  // Optional: Use `#[ debug ]` to expand and debug generated code.
+  // #[ debug ]
   pub struct Parent
   {
     // The `subform_scalar` attribute is used to specify that the 'child' field has its own former
