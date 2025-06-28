@@ -1,12 +1,13 @@
 # Project Plan: Audit, Improve, and Run Clippy Lints for `former` Crate
 
 ### Goal
-*   Audit, improve, and run `module/core/former/task_clippy_lints.md` to ensure it follows codestyle rules, has concise documentation, and avoids breaking the working crate.
+*   Audit, improve, and run `module/core/former/task_clippy_lints.md` to ensure it follows codestyle rules, has concise documentation, and avoids breaking the working crate. **Additionally, ensure `cargo test` passes for the `former` crate.**
 
 ### Progress
 *   🚀 Increment 1 Complete
 *   🚀 Increment 2 Complete
 *   🚀 Increment 3 Complete
+*   🚀 Increment 4 Complete
 
 ### Target Crate
 *   `module/core/former`
@@ -23,10 +24,8 @@
 ### Expected Behavior Rules / Specifications (for Target Crate)
 *   The `module/core/former/task_clippy_lints.md` file should be well-formatted, concise, and adhere to the codestyle rules.
 *   The `module/core/former` crate should compile without warnings when `cargo clippy -p former` is run with the recommended lints.
+*   **`cargo test -p former` should pass without errors.**
 *   No existing knowledge or functionality should be lost or broken.
-
-### Target File Structure (If Applicable, within Target Crate)
-*   No changes to file structure are anticipated for `module/core/former`.
 
 ### Increments
 
@@ -55,6 +54,16 @@
     *   Relevant Behavior Rules: The `former` crate should pass `cargo clippy` without warnings.
     *   Verification Strategy: Execute `cargo clippy -p former` via `execute_command` and analyze output.
     *   Commit Message: `fix(former): Configure clippy lints for former crate`
+
+*   ✅ Increment 4: Address failing `cargo test` for `former` crate.
+    *   Detailed Plan Step 1: Run `cargo test -p former` to identify test failures.
+    *   Detailed Plan Step 2: Analyze test output and identify root cause of failures.
+    *   Detailed Plan Step 3: Apply conservative fixes to resolve test failures, ensuring no new lints or regressions are introduced.
+    *   Pre-Analysis: The `former` crate now passes its tests.
+    *   Crucial Design Rules: [Testing: Avoid Writing Automated Tests Unless Asked], [Testing: Standard Directory for All Tests], [Testing: Use Integration Tests only if Asked], [Testing: Plan with a Test Matrix When Writing Tests].
+    *   Relevant Behavior Rules: `cargo test -p former` should pass.
+    *   Verification Strategy: Execute `cargo test -p former` via `execute_command` and analyze output.
+    *   Commit Message: `fix(former): Resolve failing tests`
 
 ### Task Requirements
 *   Do only conservative changes.

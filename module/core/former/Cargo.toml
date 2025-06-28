@@ -64,5 +64,5 @@ former_types = { workspace = true }
 # collection_tools = { workspace = true, features = [ "collection_constructors" ] }
 
 [dev-dependencies]
-# test_tools = { workspace = true, default-features = false } # Commented out to temporarily disable openssl-sys
+test_tools = { workspace = true }
 collection_tools = { workspace = true, features = [ "collection_constructors" ] }
