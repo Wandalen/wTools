@@ -54,7 +54,7 @@ impl CommandRegistry
   /// Returns an `Error::Registration` if a command with the same name
   /// is already registered and cannot be overwritten (e.g., if it was
   /// a compile-time registered command).
-  pub fn command_add_runtime( &mut self, command_def: CommandDefinition, routine: CommandRoutine ) -> Result<(), Error>
+  pub fn command_add_runtime( &mut self, command_def: &CommandDefinition, routine: CommandRoutine ) -> Result<(), Error>
   {
     if self.commands.contains_key( &command_def.name )
     {
@@ -116,6 +116,54 @@ impl CommandRegistryBuilder
   {
     self.registry.register( command );
     self
+  }
+
+  ///
+  /// Loads command definitions from a YAML string and adds them to the registry.
+  ///
+  /// # Errors
+  ///
+  /// Returns an `Error` if the YAML string is invalid or if routine links cannot be resolved.
+  pub fn load_from_yaml_str( mut self, yaml_str: &str ) -> Result< Self, Error >
+  {
+    let command_defs = crate::loader::load_command_definitions_from_yaml_str( yaml_str )?;
+    for command_def in command_defs
+    {
+      if let Some( link ) = &command_def.routine_link
+      {
+        let routine = crate::loader::resolve_routine_link( link )?;
+        self.registry.command_add_runtime( &command_def, routine )?;
+      }
+      else
+      {
+        self.registry.register( command_def );
+      }
+    }
+    Ok( self )
+  }
+
+  ///
+  /// Loads command definitions from a JSON string and adds them to the registry.
+  ///
+  /// # Errors
+  ///
+  /// Returns an `Error` if the JSON string is invalid or if routine links cannot be resolved.
+  pub fn load_from_json_str( mut self, json_str: &str ) -> Result< Self, Error >
+  {
+    let command_defs = crate::loader::load_command_definitions_from_json_str( json_str )?;
+    for command_def in command_defs
+    {
+      if let Some( link ) = &command_def.routine_link
+      {
+        let routine = crate::loader::resolve_routine_link( link )?;
+        self.registry.command_add_runtime( &command_def, routine )?;
+      }
+      else
+      {
+        self.registry.register( command_def );
+      }
+    }
+    Ok( self )
   }
 
   ///

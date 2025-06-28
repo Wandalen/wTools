@@ -33,6 +33,7 @@ fn setup_registry_with_runtime_command( command_name: &str, routine: CommandRout
     name: command_name.to_string(),
     description: "A runtime test command".to_string(),
     arguments: args,
+    routine_link : Some( format!( "{}_link", command_name ) ),
   };
   registry.command_add_runtime( command_def, routine ).unwrap();
   registry
@@ -106,6 +107,7 @@ fn test_runtime_command_duplicate_registration()
     name: command_name.to_string(),
     description: "A runtime test command".to_string(),
     arguments: vec![],
+    routine_link : Some( format!( "{}_link", command_name ) ),
   };
   
   // First registration (should succeed)

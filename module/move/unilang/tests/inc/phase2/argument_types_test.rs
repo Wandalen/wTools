@@ -34,9 +34,10 @@ fn test_path_argument_type()
       description: "A path argument".to_string(),
       kind: Kind::Path,
       optional: false,
-      multiple: false, // Added
-      validation_rules: vec![], // Added
+      multiple: false,
+      validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let result = analyze_program( ".test.command ./some/relative/path", &registry );
@@ -66,9 +67,10 @@ fn test_file_argument_type()
       description: "A file argument".to_string(),
       kind: Kind::File,
       optional: false,
-      multiple: false, // Added
-      validation_rules: vec![], // Added
+      multiple: false,
+      validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
 
@@ -107,9 +109,10 @@ fn test_directory_argument_type()
       description: "A directory argument".to_string(),
       kind: Kind::Directory,
       optional: false,
-      multiple: false, // Added
-      validation_rules: vec![], // Added
+      multiple: false,
+      validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
 
@@ -145,9 +148,10 @@ fn test_enum_argument_type()
       description: "An enum argument".to_string(),
       kind: Kind::Enum( vec!["A".to_string(), "B".to_string(), "C".to_string()] ),
       optional: false,
-      multiple: false, // Added
-      validation_rules: vec![], // Added
+      multiple: false,
+      validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
 
@@ -182,9 +186,10 @@ fn test_url_argument_type()
       description: "A URL argument".to_string(),
       kind: Kind::Url,
       optional: false,
-      multiple: false, // Added
-      validation_rules: vec![], // Added
+      multiple: false,
+      validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
 
@@ -214,9 +219,10 @@ fn test_datetime_argument_type()
       description: "A DateTime argument".to_string(),
       kind: Kind::DateTime,
       optional: false,
-      multiple: false, // Added
-      validation_rules: vec![], // Added
+      multiple: false,
+      validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
 
@@ -246,9 +252,10 @@ fn test_pattern_argument_type()
       description: "A Pattern argument".to_string(),
       kind: Kind::Pattern,
       optional: false,
-      multiple: false, // Added
-      validation_rules: vec![], // Added
+      multiple: false,
+      validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
 

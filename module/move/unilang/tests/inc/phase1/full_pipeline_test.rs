@@ -110,18 +110,19 @@ fn semantic_analyzer_tests()
         description : "A string argument".to_string(),
         kind : Kind::String,
         optional : false,
-        multiple : false, // Added
-        validation_rules : vec![], // Added
+        multiple : false,
+        validation_rules : vec![],
       },
       ArgumentDefinition {
         name : "arg2".to_string(),
         description : "An integer argument".to_string(),
         kind : Kind::Integer,
         optional : true,
-        multiple : false, // Added
-        validation_rules : vec![], // Added
+        multiple : false,
+        validation_rules : vec![],
       },
     ],
+    routine_link : None,
   } );
 
   // T3.1
@@ -183,6 +184,7 @@ fn interpreter_tests()
     name : "cmd1".to_string(),
     description : "".to_string(),
     arguments : vec![],
+    routine_link : Some( "cmd1_routine_link".to_string() ),
   }, cmd1_routine ).unwrap();
 
   // Dummy routine for cmd2
@@ -193,6 +195,7 @@ fn interpreter_tests()
     name : "cmd2".to_string(),
     description : "".to_string(),
     arguments : vec![],
+    routine_link : Some( "cmd2_routine_link".to_string() ),
   }, cmd2_routine ).unwrap();
 
   // T4.1
@@ -240,9 +243,10 @@ fn help_generator_tests()
       description : "A string argument".to_string(),
       kind : Kind::String,
       optional : false,
-      multiple : false, // Added
-      validation_rules : vec![], // Added
+      multiple : false,
+      validation_rules : vec![],
     } ],
+    routine_link : None,
   };
   let help_text = help_gen.command( &cmd_with_args );
   assert!( help_text.contains( "Usage: test_cmd" ) );
@@ -255,6 +259,7 @@ fn help_generator_tests()
     name : "simple_cmd".to_string(),
     description : "A simple command".to_string(),
     arguments : vec![],
+    routine_link : None,
   };
   let help_text = help_gen.command( &cmd_without_args );
   assert!( help_text.contains( "Usage: simple_cmd" ) );

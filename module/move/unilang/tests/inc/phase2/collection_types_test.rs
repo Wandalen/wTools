@@ -31,9 +31,10 @@ fn test_list_argument_type()
       description: "A list argument".to_string(),
       kind: Kind::List( Box::new( Kind::String ), None ),
       optional: false,
-      multiple: false, // Added
-      validation_rules: vec![], // Added
+      multiple: false,
+      validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let result = analyze_program( ".test.command val1,val2,val3", &registry );
@@ -51,9 +52,10 @@ fn test_list_argument_type()
       description: "A list argument".to_string(),
       kind: Kind::List( Box::new( Kind::Integer ), None ),
       optional: false,
-      multiple: false, // Added
-      validation_rules: vec![], // Added
+      multiple: false,
+      validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let result = analyze_program( ".test.command 1,2,3", &registry );
@@ -71,9 +73,10 @@ fn test_list_argument_type()
       description: "A list argument".to_string(),
       kind: Kind::List( Box::new( Kind::String ), Some( ';' ) ),
       optional: false,
-      multiple: false, // Added
-      validation_rules: vec![], // Added
+      multiple: false,
+      validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let result = analyze_program( ".test.command val1;val2;val3", &registry );
@@ -91,9 +94,10 @@ fn test_list_argument_type()
       description: "A list argument".to_string(),
       kind: Kind::List( Box::new( Kind::String ), None ),
       optional: false,
-      multiple: false, // Added
-      validation_rules: vec![], // Added
+      multiple: false,
+      validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let result = analyze_program( ".test.command \"\"", &registry );
@@ -111,9 +115,10 @@ fn test_list_argument_type()
       description: "A list argument".to_string(),
       kind: Kind::List( Box::new( Kind::Integer ), None ),
       optional: false,
-      multiple: false, // Added
-      validation_rules: vec![], // Added
+      multiple: false,
+      validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let result = analyze_program( ".test.command 1,invalid,3", &registry );
@@ -134,9 +139,10 @@ fn test_map_argument_type()
       description: "A map argument".to_string(),
       kind: Kind::Map( Box::new( Kind::String ), Box::new( Kind::String ), None, None ),
       optional: false,
-      multiple: false, // Added
-      validation_rules: vec![], // Added
+      multiple: false,
+      validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let result = analyze_program( ".test.command key1=val1,key2=val2", &registry );
@@ -157,9 +163,10 @@ fn test_map_argument_type()
       description: "A map argument".to_string(),
       kind: Kind::Map( Box::new( Kind::String ), Box::new( Kind::Integer ), None, None ),
       optional: false,
-      multiple: false, // Added
-      validation_rules: vec![], // Added
+      multiple: false,
+      validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let result = analyze_program( ".test.command num1=1,num2=2", &registry );
@@ -180,9 +187,10 @@ fn test_map_argument_type()
       description: "A map argument".to_string(),
       kind: Kind::Map( Box::new( Kind::String ), Box::new( Kind::String ), Some( ';' ), Some( ':' ) ),
       optional: false,
-      multiple: false, // Added
-      validation_rules: vec![], // Added
+      multiple: false,
+      validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let result = analyze_program( ".test.command key1:val1;key2:val2", &registry );
@@ -203,9 +211,10 @@ fn test_map_argument_type()
       description: "A map argument".to_string(),
       kind: Kind::Map( Box::new( Kind::String ), Box::new( Kind::String ), None, None ),
       optional: false,
-      multiple: false, // Added
-      validation_rules: vec![], // Added
+      multiple: false,
+      validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let result = analyze_program( ".test.command \"\"", &registry );
@@ -223,9 +232,10 @@ fn test_map_argument_type()
       description: "A map argument".to_string(),
       kind: Kind::Map( Box::new( Kind::String ), Box::new( Kind::String ), None, None ),
       optional: false,
-      multiple: false, // Added
-      validation_rules: vec![], // Added
+      multiple: false,
+      validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let result = analyze_program( ".test.command key1=val1,key2", &registry );
@@ -242,9 +252,10 @@ fn test_map_argument_type()
       description: "A map argument".to_string(),
       kind: Kind::Map( Box::new( Kind::String ), Box::new( Kind::Integer ), None, None ),
       optional: false,
-      multiple: false, // Added
-      validation_rules: vec![], // Added
+      multiple: false,
+      validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let result = analyze_program( ".test.command key1=val1,key2=invalid", &registry );

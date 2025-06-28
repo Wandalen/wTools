@@ -35,6 +35,7 @@ fn test_json_string_argument_type()
       multiple: false,
       validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let json_str = r#""{\"key\": \"value\"}""#; // Input string with outer quotes for lexer
@@ -67,6 +68,7 @@ fn test_object_argument_type()
       multiple: false,
       validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let json_str = r#""{\"num\": 123}""#; // Input string with outer quotes for lexer
@@ -99,6 +101,7 @@ fn test_multiple_attribute()
       multiple: true,
       validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let result = analyze_program( ".test.command val1 val2", &registry );
@@ -119,6 +122,7 @@ fn test_multiple_attribute()
       multiple: true,
       validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let result = analyze_program( ".test.command 1 2", &registry );
@@ -139,6 +143,7 @@ fn test_multiple_attribute()
       multiple: true,
       validation_rules: vec![],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let result = analyze_program( ".test.command a,b c,d", &registry );
@@ -163,6 +168,7 @@ fn test_validation_rules()
       multiple: false,
       validation_rules: vec!["min:10".to_string(), "max:20".to_string()],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let result = analyze_program( ".test.command 15", &registry );
@@ -195,6 +201,7 @@ fn test_validation_rules()
       multiple: false,
       validation_rules: vec!["regex:^[a-zA-Z]+$".to_string()],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let result = analyze_program( ".test.command abc", &registry );
@@ -221,6 +228,7 @@ fn test_validation_rules()
       multiple: true,
       validation_rules: vec!["min_length:3".to_string()],
     }],
+    routine_link : None,
   };
   let registry = setup_test_environment( command );
   let result = analyze_program( ".test.command ab cde", &registry );

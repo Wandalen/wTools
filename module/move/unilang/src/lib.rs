@@ -7,6 +7,7 @@
 pub mod types;
 pub mod data;
 pub mod error;
+pub mod loader;
 pub mod parsing;
 pub mod registry;
 pub mod semantic;

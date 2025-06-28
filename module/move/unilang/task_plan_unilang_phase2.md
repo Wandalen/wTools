@@ -31,6 +31,7 @@
     *   ✅ Increment 2: Implement Collection Argument Types (`List`, `Map`).
     *   ✅ Increment 3: Implement Complex Argument Types and Attributes (`JsonString`, `multiple`, `validation_rules`).
     *   ✅ Increment 4: Implement Runtime Command Registration API.
+    *   ✅ Increment 5: Implement Loading Command Definitions from External Files.
 
 ### Target Crate/Library
 *   `module/move/unilang`
@@ -154,7 +155,7 @@
         *   Execute `timeout 90 cargo test -p unilang --test runtime_command_registration_test` and verify no failures.
     *   **Commit Message:** `feat(unilang): Implement runtime command registration API`
 
-*   ⏳ Increment 5: Implement Loading Command Definitions from External Files
+*   ✅ Increment 5: Implement Loading Command Definitions from External Files
     *   **Goal:** Provide parsers for YAML/JSON `CommandDefinition` files and a mechanism to resolve `routine_link` attributes to function pointers.
     *   **Steps:**
         *   Step 1: Add `serde`, `serde_yaml`, and `serde_json` as dependencies in `module/move/unilang/Cargo.toml` with `derive` feature for `serde`.
@@ -229,6 +230,9 @@
     *   **Commit Message:** `feat(unilang): Implement command help generation and discovery`
 
 ### Changelog
+*   **2025-06-28 - Increment 5: Implement Loading Command Definitions from External Files**
+    *   **Description:** Implemented parsers for YAML/JSON `CommandDefinition` files and a placeholder mechanism to resolve `routine_link` attributes to function pointers. Added `thiserror` as a dependency. Modified `src/data.rs` to add `#[serde(try_from = "String", into = "String")]` to `Kind` and implemented `From<Kind> for String` and `TryFrom<String> for Kind`. Implemented `Display` for `ErrorData`. Modified `src/loader.rs` to implement `load_command_definitions_from_yaml_str`, `load_command_definitions_from_json_str`, and `resolve_routine_link` (placeholder). Updated `CommandRegistryBuilder` in `src/registry.rs` with `load_from_yaml_str` and `load_from_json_str` methods. Created `tests/inc/phase2/command_loader_test.rs` with a detailed test matrix. Addressed Clippy lints: `single-char-pattern`, `uninlined-format-args`, `std-instead-of-core`, `missing-errors-doc`, `manual-string-new`, and `needless-pass-by-value`.
+    *   **Verification:** All tests passed, including `command_loader_test.rs`, and `cargo clippy -p unilang -- -D warnings` passed.
 *   **2025-06-28 - Increment 4: Implement Runtime Command Registration API**
     *   **Description:** Implemented the core functionality for registering and retrieving executable command routines at runtime. This involved defining `CommandRoutine` as a `Box<dyn Fn(...)>`, adding a `routines` map to `CommandRegistry`, and implementing `command_add_runtime` and `get_routine` methods. The `Interpreter` was updated to use this registry for command execution. `Clone` was added to `ExecutionContext`. `Debug` derive was removed from `CommandRegistry`, `CommandRegistryBuilder`, `SemanticAnalyzer`, and `Interpreter` due to `CommandRoutine` not implementing `Debug`, and `#[allow(missing_debug_implementations)]` was added. An unused import in `src/interpreter.rs` was removed.
     *   **Verification:** All tests passed, including `runtime_command_registration_test.rs`.
