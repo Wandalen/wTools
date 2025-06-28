@@ -147,6 +147,14 @@ impl core::str::FromStr for Kind
   }
 }
 
+impl core::fmt::Display for Kind
+{
+  fn fmt( &self, f : &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
+  {
+    write!( f, "{}", String::from( self.clone() ) )
+  }
+}
+
 ///
 /// Represents a namespace for organizing commands.
 ///

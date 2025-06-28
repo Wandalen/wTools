@@ -35,7 +35,7 @@ fn setup_registry_with_runtime_command( command_name: &str, routine: CommandRout
     arguments: args,
     routine_link : Some( format!( "{}_link", command_name ) ),
   };
-  registry.command_add_runtime( command_def, routine ).unwrap();
+  registry.command_add_runtime( &command_def, routine ).unwrap();
   registry
 }
 
@@ -111,12 +111,12 @@ fn test_runtime_command_duplicate_registration()
   };
   
   // First registration (should succeed)
-  let result1 = registry.command_add_runtime( command_def.clone(), Box::new( test_routine_no_args ) );
+  let result1 = registry.command_add_runtime( &command_def.clone(), Box::new( test_routine_no_args ) );
   assert!( result1.is_ok() );
 
   // Second registration (should also succeed for now, as per registry.rs comment)
   // xxx: Update this test when the registry policy for overwriting is implemented.
-  let result2 = registry.command_add_runtime( command_def.clone(), Box::new( test_routine_error ) );
+  let result2 = registry.command_add_runtime( &command_def.clone(), Box::new( test_routine_error ) );
   assert!( result2.is_ok() ); // Currently allows overwrite
 
   // Verify that the second routine (error routine) is now active

@@ -1,3 +1,7 @@
+//! Tests for the command loader module.
+//!
+//! This module contains tests for loading command definitions from external
+//! files (YAML/JSON) and resolving routine links.
 use unilang::
 {
   data::

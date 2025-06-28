@@ -180,7 +180,7 @@ fn interpreter_tests()
   let cmd1_routine = Box::new( | _cmd: VerifiedCommand, _ctx: ExecutionContext | -> Result<OutputData, ErrorData> {
     Ok( OutputData { content: "cmd1 executed".to_string(), format: "text".to_string() } )
   });
-  registry.command_add_runtime( CommandDefinition {
+  registry.command_add_runtime( &CommandDefinition {
     name : "cmd1".to_string(),
     description : "".to_string(),
     arguments : vec![],
@@ -191,7 +191,7 @@ fn interpreter_tests()
   let cmd2_routine = Box::new( | _cmd: VerifiedCommand, _ctx: ExecutionContext | -> Result<OutputData, ErrorData> {
     Ok( OutputData { content: "cmd2 executed".to_string(), format: "text".to_string() } )
   });
-  registry.command_add_runtime( CommandDefinition {
+  registry.command_add_runtime( &CommandDefinition {
     name : "cmd2".to_string(),
     description : "".to_string(),
     arguments : vec![],
