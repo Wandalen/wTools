@@ -27,6 +27,7 @@ use super::EnumVariantHandlerContext;
 use convert_case::Case;
 use proc_macro2::TokenStream;
 
+// qqq: Refactored to use `macro_tools` utilities for error handling, identifier casing, and generic quoting.
 pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< TokenStream >
 {
   if let Some( attr ) = &ctx.variant_attrs.subform_scalar
