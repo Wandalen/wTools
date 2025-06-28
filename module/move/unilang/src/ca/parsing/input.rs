@@ -58,7 +58,8 @@ impl< 'a > InputAbstraction< 'a >
   ///
   /// Creates a new `InputAbstraction` from a single string.
   ///
-  pub fn from_str( input : &'a str ) -> Self
+  #[must_use]
+  pub fn from_single_str( input : &'a str ) -> Self
   {
     Self
     {
@@ -69,6 +70,7 @@ impl< 'a > InputAbstraction< 'a >
   ///
   /// Creates a new `InputAbstraction` from a slice of string segments.
   ///
+  #[must_use]
   pub fn from_segments( segments : &'a [&'a str] ) -> Self
   {
     Self
@@ -83,6 +85,7 @@ impl< 'a > InputAbstraction< 'a >
   ///
   /// Peeks at the next character without consuming it.
   ///
+  #[must_use]
   pub fn peek_next_char( &self ) -> Option< char >
   {
     // TODO: Implement based on InputState
@@ -103,6 +106,7 @@ impl< 'a > InputAbstraction< 'a >
   ///
   /// Peeks at the next full segment (relevant for `&[&str]` input).
   ///
+  #[must_use]
   pub fn peek_next_segment( &self ) -> Option< &'a str >
   {
     // TODO: Implement based on InputState
@@ -124,6 +128,7 @@ impl< 'a > InputAbstraction< 'a >
   /// Searches for the next occurrence of any of the provided string patterns.
   /// Returns the matched pattern and its location.
   ///
+  #[must_use]
   pub fn find_next_occurrence( &self, _patterns : &'a [&'a str] ) -> Option< ( &'a str, Location ) >
   {
     // TODO: Implement based on InputState and patterns
@@ -154,6 +159,7 @@ impl< 'a > InputAbstraction< 'a >
   ///
   /// Returns the current parsing location.
   ///
+  #[must_use]
   pub fn current_location( &self ) -> Location
   {
     match &self.state
@@ -166,6 +172,7 @@ impl< 'a > InputAbstraction< 'a >
   ///
   /// Checks if there is any remaining input.
   ///
+  #[must_use]
   pub fn is_empty( &self ) -> bool
   {
     match &self.state

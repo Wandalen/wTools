@@ -4,8 +4,9 @@
 
 use crate::data::{ CommandDefinition, ErrorData };
 use crate::error::Error;
-use crate::parsing::{ Program, Statement, Token };
+use crate::parsing::Program;
 use crate::registry::CommandRegistry;
+use crate::types::{ self, Value };
 use std::collections::HashMap;
 
 ///
@@ -18,8 +19,8 @@ pub struct VerifiedCommand
 {
   /// The definition of the command.
   pub definition : CommandDefinition,
-  /// The arguments provided for the command, mapped by name.
-  pub arguments : HashMap< String, Token >,
+  /// The arguments provided for the command, parsed and typed.
+  pub arguments : HashMap< String, Value >,
 }
 
 ///
@@ -39,6 +40,7 @@ impl< 'a > SemanticAnalyzer< 'a >
   ///
   /// Creates a new `SemanticAnalyzer`.
   ///
+  #[must_use]
   pub fn new( program : &'a Program, registry : &'a CommandRegistry ) -> Self
   {
     Self { program, registry }
@@ -49,6 +51,11 @@ impl< 'a > SemanticAnalyzer< 'a >
   ///
   /// This is the main entry point for semantic analysis, processing each
   /// statement in the program.
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if any command is not found, if arguments are invalid,
+  /// or if any other semantic rule is violated.
   pub fn analyze( &self ) -> Result< Vec< VerifiedCommand >, Error >
   {
     let mut verified_commands = Vec::new();
@@ -60,7 +67,11 @@ impl< 'a > SemanticAnalyzer< 'a >
         message : format!( "Command not found: {}", statement.command ),
       } )?;
 
-      let arguments = self.bind_arguments( statement, command_def )?;
+      // For now, we'll treat the parsed tokens as raw strings for the purpose of this integration.
+      // A more advanced implementation would handle Generic Instructions properly.
+      let raw_args: Vec<String> = statement.args.iter().map( ToString::to_string ).collect();
+
+      let arguments = Self::bind_arguments( &raw_args, command_def )?; // Changed to Self::
       verified_commands.push( VerifiedCommand {
         definition : ( *command_def ).clone(),
         arguments,
@@ -75,33 +86,22 @@ impl< 'a > SemanticAnalyzer< 'a >
   ///
   /// This function checks for the correct number and types of arguments,
   /// returning an error if validation fails.
-  fn bind_arguments( &self, statement : &Statement, command_def : &CommandDefinition ) -> Result< HashMap< String, Token >, Error >
+  fn bind_arguments( raw_args : &[ String ], command_def : &CommandDefinition ) -> Result< HashMap< String, Value >, Error >
   {
     let mut bound_args = HashMap::new();
-    let mut arg_iter = statement.args.iter().peekable();
+    let mut arg_iter = raw_args.iter();
 
     for arg_def in &command_def.arguments
     {
-      if let Some( token ) = arg_iter.next()
+      if let Some( raw_value ) = arg_iter.next()
       {
-        // Basic type checking
-        let type_matches = match ( &token, arg_def.kind.as_str() )
-        {
-          ( Token::String( _ ), "String" ) => true,
-          ( Token::Integer( _ ), "Integer" ) => true,
-          ( Token::Float( _ ), "Float" ) => true,
-          ( Token::Boolean( _ ), "Boolean" ) => true,
-          _ => false,
-        };
+        let parsed_value = types::parse_value( raw_value, &arg_def.kind )
+        .map_err( |e| ErrorData {
+          code : "INVALID_ARGUMENT_TYPE".to_string(),
+          message : format!( "Invalid value for argument '{}': {}. Expected {:?}.", arg_def.name, e.reason, e.expected_kind ),
+        } )?;
 
-        if !type_matches
-        {
-          return Err( ErrorData {
-            code : "INVALID_ARGUMENT_TYPE".to_string(),
-            message : format!( "Invalid type for argument '{}'. Expected {}, got {:?}", arg_def.name, arg_def.kind, token ),
-          }.into() );
-        }
-        bound_args.insert( arg_def.name.clone(), token.clone() );
+        bound_args.insert( arg_def.name.clone(), parsed_value );
       }
       else if !arg_def.optional
       {

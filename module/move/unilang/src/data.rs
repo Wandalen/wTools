@@ -33,11 +33,41 @@ pub struct ArgumentDefinition
   pub name : String,
   /// A brief description of the argument's purpose.
   pub description : String,
-  /// The expected data type of the argument (e.g., "String", "Integer").
-  pub kind : String,
+  /// The expected data type of the argument.
+  pub kind : Kind,
   /// If `true`, the argument is not required for the command to execute.
   // #[ former( default ) ]
   pub optional : bool,
+}
+
+///
+/// Represents the data type of an argument.
+///
+#[ derive( Debug, Clone, PartialEq, Eq ) ]
+pub enum Kind
+{
+  /// A sequence of characters.
+  String,
+  /// A whole number.
+  Integer,
+  /// A floating-point number.
+  Float,
+  /// A true or false value.
+  Boolean,
+  /// A URI representing a file system path.
+  Path,
+  /// A `Path` that must point to a file.
+  File,
+  /// A `Path` that must point to a directory.
+  Directory,
+  /// A string that must be one of the predefined, case-sensitive choices.
+  Enum( Vec< String > ),
+  /// A Uniform Resource Locator.
+  Url,
+  /// A date and time.
+  DateTime,
+  /// A regular expression pattern string.
+  Pattern,
 }
 
 ///
@@ -77,7 +107,7 @@ pub struct OutputData
 #[ derive( Debug, Clone/*, Former*/ ) ]
 pub struct ErrorData
 {
-  /// A unique, machine-readable code for the error (e.g., "COMMAND_NOT_FOUND").
+  /// A unique, machine-readable code for the error (e.g., "`COMMAND_NOT_FOUND`").
   pub code : String,
   /// A human-readable message explaining the error.
   pub message : String,

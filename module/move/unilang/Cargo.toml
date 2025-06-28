@@ -32,6 +32,9 @@ enabled = []
 on_unknown_suggest = [ "dep:textdistance" ]
 
 [dependencies]
+url = "2.5.0"
+chrono = { version = "0.4.38", features = ["serde"] }
+regex = "1.10.4"
 
 ## internal
 error_tools = { workspace = true, features = [ "enabled", "error_typed", "error_untyped" ] }

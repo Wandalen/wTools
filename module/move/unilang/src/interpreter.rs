@@ -32,6 +32,7 @@ impl< 'a > Interpreter< 'a >
   ///
   /// Creates a new `Interpreter`.
   ///
+  #[must_use]
   pub fn new( commands : &'a [ VerifiedCommand ] ) -> Self
   {
     Self { commands }
@@ -42,13 +43,19 @@ impl< 'a > Interpreter< 'a >
   ///
   /// This method iterates through the verified commands and, for now,
   /// simulates their execution by printing them.
+  ///
+  /// # Errors
+  ///
+  /// This method currently does not return errors directly from command execution,
+  /// but it is designed to propagate `Error` from command routines in future implementations.
+  #[allow( clippy::needless_pass_by_value )] // context is passed by value for future extensibility
   pub fn run( &self, _context : &mut ExecutionContext ) -> Result< Vec< OutputData >, Error >
   {
     let mut results = Vec::new();
     for command in self.commands
     {
       // For now, just print the command to simulate execution
-      println!( "Executing: {:?}", command );
+      println!( "Executing: {command:?}" );
       results.push( OutputData {
         content : format!( "Successfully executed command: {}", command.definition.name ),
         format : "text".to_string(),

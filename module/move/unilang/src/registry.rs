@@ -21,6 +21,7 @@ impl CommandRegistry
   ///
   /// Creates a new, empty `CommandRegistry`.
   ///
+  #[must_use]
   pub fn new() -> Self
   {
     Self::default()
@@ -38,6 +39,7 @@ impl CommandRegistry
   ///
   /// Returns a builder for creating a `CommandRegistry` with a fluent API.
   ///
+  #[must_use]
   pub fn builder() -> CommandRegistryBuilder
   {
     CommandRegistryBuilder::new()
@@ -60,6 +62,7 @@ impl CommandRegistryBuilder
   ///
   /// Creates a new `CommandRegistryBuilder`.
   ///
+  #[must_use]
   pub fn new() -> Self
   {
     Self::default()
@@ -68,6 +71,7 @@ impl CommandRegistryBuilder
   ///
   /// Adds a command to the registry being built.
   ///
+  #[must_use]
   pub fn command( mut self, command : CommandDefinition ) -> Self
   {
     self.registry.register( command );
@@ -77,6 +81,7 @@ impl CommandRegistryBuilder
   ///
   /// Builds and returns the `CommandRegistry`.
   ///
+  #[must_use]
   pub fn build( self ) -> CommandRegistry
   {
     self.registry

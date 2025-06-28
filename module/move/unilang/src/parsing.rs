@@ -1,6 +1,7 @@
 //!
 //! The parsing components for the Unilang framework, including the lexer and parser.
 //!
+use core::fmt; // Changed from std::fmt
 
 ///
 /// Represents a token in the Unilang language.
@@ -26,6 +27,23 @@ pub enum Token
   Eof,
 }
 
+impl fmt::Display for Token
+{
+  fn fmt( &self, f: &mut fmt::Formatter< '_ > ) -> fmt::Result
+  {
+    match self
+    {
+      Token::Identifier( s ) | Token::String( s ) => write!( f, "{s}" ), // Combined match arms
+      Token::Integer( i ) => write!( f, "{i}" ),
+      Token::Float( fl ) => write!( f, "{fl}" ),
+      Token::Boolean( b ) => write!( f, "{b}" ),
+      Token::CommandSeparator => write!( f, ";;" ),
+      Token::Eof => write!( f, "EOF" ),
+    }
+  }
+}
+
+
 ///
 /// The lexer for the Unilang language.
 ///
@@ -44,6 +62,7 @@ impl< 'a > Lexer< 'a >
   ///
   /// Creates a new `Lexer` from an input string.
   ///
+  #[must_use]
   pub fn new( input : &'a str ) -> Self
   {
     let mut lexer = Lexer
@@ -75,53 +94,18 @@ impl< 'a > Lexer< 'a >
   }
 
   ///
-  /// Returns the next token from the input.
+  /// Peeks at the next character in the input without consuming it.
   ///
-  pub fn next_token( &mut self ) -> Token
+  fn peek_char( &self ) -> u8
   {
-    self.skip_whitespace();
-
-    let token = match self.ch
+    if self.read_position >= self.input.len()
     {
-      b';' =>
-      {
-        if self.peek_char() == b';'
-        {
-          self.read_char();
-          Token::CommandSeparator
-        }
-        else
-        {
-          // Handle single semicolon as an identifier or error
-          let ident = self.read_identifier();
-          return Token::Identifier( ident );
-        }
-      }
-      b'a'..=b'z' | b'A'..=b'Z' | b'_' =>
-      {
-        let ident = self.read_identifier();
-        return match ident.as_str()
-        {
-          "true" => Token::Boolean( true ),
-          "false" => Token::Boolean( false ),
-          _ => Token::Identifier( ident ),
-        };
-      }
-      b'"' =>
-      {
-        let string = self.read_string();
-        Token::String( string )
-      }
-      b'0'..=b'9' =>
-      {
-        return self.read_number();
-      }
-      0 => Token::Eof,
-      _ => Token::Identifier( self.read_identifier() ),
-    };
-
-    self.read_char();
-    token
+      0
+    }
+    else
+    {
+      self.input.as_bytes()[ self.read_position ]
+    }
   }
 
   ///
@@ -136,24 +120,30 @@ impl< 'a > Lexer< 'a >
   }
 
   ///
-  /// Reads an identifier from the input.
+  /// Reads a "word" or an unquoted token from the input. A word is any sequence
+  /// of characters that is not whitespace and does not contain special separators.
   ///
-  fn read_identifier( &mut self ) -> String
+  fn read_word( &mut self ) -> String
   {
     let position = self.position;
-    while self.ch.is_ascii_alphanumeric() || self.ch == b'_'
+    while !self.ch.is_ascii_whitespace() && self.ch != 0
     {
+      // Stop before `;;`
+      if self.ch == b';' && self.peek_char() == b';'
+      {
+        break;
+      }
       self.read_char();
     }
     self.input[ position..self.position ].to_string()
   }
 
   ///
-  /// Reads a string literal from the input.
+  /// Reads a string literal from the input, handling the enclosing quotes.
   ///
   fn read_string( &mut self ) -> String
   {
-    let position = self.position + 1;
+    let position = self.position + 1; // Skip the opening quote
     loop
     {
       self.read_char();
@@ -162,53 +152,81 @@ impl< 'a > Lexer< 'a >
         break;
       }
     }
-    self.input[ position..self.position ].to_string()
+    let result = self.input[ position..self.position ].to_string();
+    if self.ch == b'"'
+    {
+      self.read_char(); // Consume the closing quote
+    }
+    result
   }
 
   ///
-  /// Reads a number literal (integer or float) from the input.
+  /// Returns the next token from the input.
   ///
-  fn read_number( &mut self ) -> Token
+  /// # Panics
+  ///
+  /// Panics if parsing a float from a string fails, which should only happen
+  /// if the string is not a valid float representation.
+  pub fn next_token( &mut self ) -> Token
   {
-    let position = self.position;
-    let mut is_float = false;
-    while self.ch.is_ascii_digit()
+    self.skip_whitespace();
+
+    match self.ch
     {
-      self.read_char();
-    }
-    if self.ch == b'.' && self.peek_char().is_ascii_digit()
-    {
-      is_float = true;
-      self.read_char();
-      while self.ch.is_ascii_digit()
+      b';' =>
       {
-        self.read_char();
+        if self.peek_char() == b';'
+        {
+          self.read_char(); // consume first ;
+          self.read_char(); // consume second ;
+          Token::CommandSeparator
+        }
+        else
+        {
+          // A single semicolon is just part of a word/identifier
+          let word = self.read_word();
+          Token::Identifier( word )
+        }
       }
-    }
-
-    let number_str = &self.input[ position..self.position ];
-    if is_float
-    {
-      Token::Float( number_str.parse().unwrap() )
-    }
-    else
-    {
-      Token::Integer( number_str.parse().unwrap() )
-    }
-  }
-
-  ///
-  /// Peeks at the next character in the input without consuming it.
-  ///
-  fn peek_char( &self ) -> u8
-  {
-    if self.read_position >= self.input.len()
-    {
-      0
-    }
-    else
-    {
-      self.input.as_bytes()[ self.read_position ]
+      b'"' =>
+      {
+        let s = self.read_string();
+        Token::String( s )
+      }
+      0 => Token::Eof,
+      _ =>
+      {
+        let word = self.read_word();
+        if word == "true"
+        {
+          Token::Boolean( true )
+        }
+        else if word == "false"
+        {
+          Token::Boolean( false )
+        }
+        else if let Ok( i ) = word.parse::< i64 >()
+        {
+          if word.contains( '.' )
+          {
+            // It's a float that happens to parse as an int (e.g. "1.0")
+            // so we parse as float
+            Token::Float( word.parse::< f64 >().unwrap() )
+          }
+          else
+          {
+            Token::Integer( i )
+          }
+        }
+        else if let Ok( f ) = word.parse::< f64 >()
+        {
+          Token::Float( f )
+        }
+        else
+        {
+          Token::Identifier( word )
+        }
+      }
     }
   }
 }
@@ -252,10 +270,12 @@ pub struct Parser< 'a >
 impl< 'a > Parser< 'a >
 {
   ///
-  /// Creates a new `Parser` from a `Lexer`.
+  /// Creates a new `Parser` from an input string.
   ///
-  pub fn new( lexer : Lexer< 'a > ) -> Self
+  #[must_use]
+  pub fn new( input: &'a str ) -> Self
   {
+    let lexer = Lexer::new( input );
     let mut parser = Parser
     {
       lexer,
@@ -280,7 +300,7 @@ impl< 'a > Parser< 'a >
   ///
   /// Parses the entire input and returns a `Program` AST.
   ///
-  pub fn parse_program( &mut self ) -> Program
+  pub fn parse( &mut self ) -> Program
   {
     let mut program = Program::default();
 

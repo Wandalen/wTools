@@ -3,6 +3,7 @@
 //!
 
 use crate::data::CommandDefinition;
+use core::fmt::Write; // Changed from std::fmt::Write
 
 ///
 /// Generates help information for commands.
@@ -17,9 +18,10 @@ impl HelpGenerator
   ///
   /// Creates a new `HelpGenerator`.
   ///
+  #[must_use]
   pub fn new() -> Self
   {
-    Self::default()
+    Self {}
   }
 
   ///
@@ -27,18 +29,19 @@ impl HelpGenerator
   ///
   /// The output is a formatted string containing the command's usage,
   /// description, and a list of its arguments.
+  #[must_use]
   pub fn command( &self, command : &CommandDefinition ) -> String
   {
     let mut help = String::new();
-    help.push_str( &format!( "Usage: {}\n", command.name ) );
-    help.push_str( &format!( "\n  {}\n", command.description ) );
+    writeln!( &mut help, "Usage: {}", command.name ).unwrap(); // Changed to writeln!
+    writeln!( &mut help, "\n  {}\n", command.description ).unwrap(); // Changed to writeln!
 
     if !command.arguments.is_empty()
     {
-      help.push_str( "\nArguments:\n" );
+      writeln!( &mut help, "\nArguments:" ).unwrap();
       for arg in &command.arguments
       {
-        help.push_str( &format!( "  {:<15} {}\n", arg.name, arg.description ) );
+        writeln!( &mut help, "  {:<15} {}", arg.name, arg.description ).unwrap(); // Changed to writeln!
       }
     }
 
