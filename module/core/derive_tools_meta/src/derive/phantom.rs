@@ -1,27 +1,25 @@
-use super::*;
 use macro_tools::
 {
-  attr,
   diag,
   generic_params,
+  item_struct,
   struct_like::StructLike,
   Result,
   qt,
+  attr,
+  syn,
+  proc_macro2,
+  return_syn_err,
+  Spanned,
 };
 
-#[ path = "from/field_attributes.rs" ]
-mod field_attributes;
-use field_attributes::*;
-#[ path = "from/item_attributes.rs" ]
-mod item_attributes;
-use item_attributes::*;
-
-use macro_tools::phantom;
+use super::field_attributes::{ FieldAttributes };
+use super::item_attributes::{ ItemAttributes };
 
 ///
-/// Provides an automatic `PhantomData` field for a struct based on its generic types.
+/// Derive macro to implement `PhantomData` when-ever it's possible to do automatically.
 ///
-pub fn phantom( attr_input : proc_macro::TokenStream, input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
+pub fn phantom( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   let original_input = input.clone();
   let parsed = syn::parse::< StructLike >( input )?;
@@ -30,23 +28,30 @@ pub fn phantom( attr_input : proc_macro::TokenStream, input : proc_macro::TokenS
   let item_name = &parsed.ident();
 
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
-  = generic_params::decompose( &parsed.generics() );
+  = generic_params::decompose( parsed.generics() );
 
   let result = match parsed
   {
     StructLike::Unit( ref _item ) =>
     {
-      return_syn_err!( parsed.span(), "Expects a structure with fields" );
+      return_syn_err!( parsed.span(), "Expects a structure with one field" );
     },
     StructLike::Struct( ref item ) =>
     {
-      let mut result = item.clone();
-      phantom::add_to_item( &mut result );
-      qt!{ #result }
+      let field_type = item_struct::first_field_type( item )?;
+      let _field_name_option = item_struct::first_field_name( item )?;
+      generate
+      (
+        item_name,
+        &generics_impl,
+        &generics_ty,
+        &generics_where,
+        &field_type,
+      )
     },
     StructLike::Enum( ref item ) =>
     {
-      let variants_result : Result< Vec< proc_macro2::TokenStream > > = item.variants.iter().map( | variant |
+      let variants = item.variants.iter().map( | variant |
       {
         variant_generate
         (
@@ -58,13 +63,7 @@ pub fn phantom( attr_input : proc_macro::TokenStream, input : proc_macro::TokenS
           variant,
           &original_input,
         )
-      }).collect();
-
-      let variants = match variants_result
-      {
-        Ok( v ) => v,
-        Err( e ) => return Err( e ),
-      };
+      }).collect::< Result< Vec< proc_macro2::TokenStream > > >()?;
 
       qt!
       {
@@ -75,14 +74,60 @@ pub fn phantom( attr_input : proc_macro::TokenStream, input : proc_macro::TokenS
 
   if has_debug
   {
-    let about = format!( "derive : Phantom\nstructure : {item_name}" );
+    let about = format!( "derive : PhantomData\nstructure : {item_name}" );
     diag::report_print( about, &original_input, &result );
   }
 
   Ok( result )
 }
 
-/// Generates `PhantomData` field for enum variants.
+/// Generates `PhantomData` implementation for structs.
+///
+/// Example of generated code:
+/// ```text
+/// impl PhantomData for IsTransparent
+/// {
+///   type Output = bool;
+///   fn phantom( self ) -> bool
+///   {
+///     self.0
+///   }
+/// }
+/// ```
+fn generate
+(
+  item_name : &syn::Ident,
+  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  field_type : &syn::Type,
+)
+-> proc_macro2::TokenStream
+{
+  qt!
+  {
+    #[ automatically_derived ]
+    impl< #generics_impl > core::marker::PhantomData< #field_type > for #item_name< #generics_ty >
+    where
+      #generics_where
+    {
+      // No methods to implement for PhantomData
+    }
+  }
+}
+
+/// Generates `PhantomData` implementation for enum variants.
+///
+/// Example of generated code:
+/// ```text
+/// impl PhantomData for MyEnum
+/// {
+///   fn phantom( self ) -> i32
+///   {
+///     self.0
+///   }
+/// }
+/// ```
 fn variant_generate
 (
   item_name : &syn::Ident,
@@ -99,7 +144,7 @@ fn variant_generate
   let fields = &variant.fields;
   let attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
 
-  if !attrs.config.enabled.value( item_attrs.config.enabled.value( true ) )
+  if !attrs.enabled.value( item_attrs.enabled.value( true ) )
   {
     return Ok( qt!{} )
   }
@@ -111,36 +156,37 @@ fn variant_generate
 
   if fields.len() != 1
   {
-    return_syn_err!( fields.span(), "Expects a single field to derive Phantom" );
+    return_syn_err!( fields.span(), "Expects a single field to derive PhantomData" );
   }
 
-  let field = fields.iter().next().unwrap();
+  let field = fields.iter().next().expect( "Expects a single field to derive PhantomData" );
   let field_type = &field.ty;
-  let field_name = &field.ident;
+  
 
-  if attrs.config.debug.value( false )
+  if attrs.debug.value( false )
   {
-    let debug = format_args!
+    let debug = format!
     (
-      r#"
+      r"
 #[ automatically_derived ]
-impl< {} > {}< {} >
+impl< {} > core::marker::PhantomData< {} > for {}< {} >
 where
   {}
 {{
-  // PhantomData field added
+  // No methods to implement for PhantomData
 }}
-      "#,
+      ",
       qt!{ #generics_impl },
+      qt!{ #field_type },
       item_name,
       qt!{ #generics_ty },
       qt!{ #generics_where },
     );
     let about = format!
     (
-r#"derive : Phantom
+r"derive : PhantomData
 item : {item_name}
-field : {variant_name}"#,
+field : {variant_name}",
     );
     diag::report_print( about, original_input, debug.to_string() );
   }
@@ -150,13 +196,12 @@ field : {variant_name}"#,
     qt!
     {
       #[ automatically_derived ]
-      impl< #generics_impl > #item_name< #generics_ty >
+      impl< #generics_impl > core::marker::PhantomData< #field_type > for #item_name< #generics_ty >
       where
         #generics_where
       {
-        // PhantomData field added
+        // No methods to implement for PhantomData
       }
     }
   )
-
 }

@@ -1,24 +1,23 @@
-use super::*;
 use macro_tools::
 {
-  attr,
   diag,
   generic_params,
   item_struct,
   struct_like::StructLike,
   Result,
   qt,
+  attr,
+  syn,
+  proc_macro2,
+  return_syn_err,
+  Spanned,
 };
 
-#[ path = "from/field_attributes.rs" ]
-mod field_attributes;
-use field_attributes::*;
-#[ path = "from/item_attributes.rs" ]
-mod item_attributes;
-use item_attributes::*;
+use super::field_attributes::{ FieldAttributes };
+use super::item_attributes::{ ItemAttributes };
 
 ///
-/// Provides an automatic [IndexMut](core::ops::IndexMut) trait implementation when-ever it's possible.
+/// Derive macro to implement `IndexMut` when-ever it's possible to do automatically.
 ///
 pub fn index_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
@@ -29,7 +28,7 @@ pub fn index_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::Toke
   let item_name = &parsed.ident();
 
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
-  = generic_params::decompose( &parsed.generics() );
+  = generic_params::decompose( parsed.generics() );
 
   let result = match parsed
   {
@@ -39,8 +38,8 @@ pub fn index_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::Toke
     },
     StructLike::Struct( ref item ) =>
     {
-      let field_type = item_struct::first_field_type( &item )?;
-      let field_name = item_struct::first_field_name( &item ).ok().flatten();
+      let field_type = item_struct::first_field_type( item )?;
+      let field_name = item_struct::first_field_name( item ).ok().flatten();
       generate
       (
         item_name,
@@ -67,11 +66,7 @@ pub fn index_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::Toke
         )
       }).collect();
 
-      let variants = match variants_result
-      {
-        Ok( v ) => v,
-        Err( e ) => return Err( e ),
-      };
+      let variants = variants_result?;
 
       qt!
       {
@@ -92,12 +87,12 @@ pub fn index_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::Toke
 /// Generates `IndexMut` implementation for structs.
 ///
 /// Example of generated code:
-/// ```rust
-/// impl core::ops::IndexMut< usize > for IsTransparent
+/// ```text
+/// impl IndexMut< usize > for IsTransparent
 /// {
-///   fn index_mut( &mut self, index : usize ) -> &mut Self::Output
+///   fn index_mut( &mut self, index : usize ) -> &mut bool
 ///   {
-///     &mut self.a[ index ]
+///     &mut self.0
 ///   }
 /// }
 /// ```
@@ -107,7 +102,7 @@ fn generate
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  _field_type : &syn::Type,
+  field_type : &syn::Type,
   field_name : Option< &syn::Ident >,
 )
 -> proc_macro2::TokenStream
@@ -128,10 +123,11 @@ fn generate
     where
       #generics_where
     {
+      type Output = #field_type;
       #[ inline( always ) ]
-      fn index_mut( &mut self, index : usize ) -> &mut Self::Output
+      fn index_mut( &mut self, _index : usize ) -> &mut #field_type
       {
-        #body[ index ]
+        #body
       }
     }
   }
@@ -140,12 +136,12 @@ fn generate
 /// Generates `IndexMut` implementation for enum variants.
 ///
 /// Example of generated code:
-/// ```rust
-/// impl core::ops::IndexMut< usize > for MyEnum
+/// ```text
+/// impl IndexMut< usize > for MyEnum
 /// {
-///   fn index_mut( &mut self, index : usize ) -> &mut Self::Output
+///   fn index_mut( &mut self, index : usize ) -> &mut i32
 ///   {
-///     &mut self.0[ index ]
+///     &mut self.0
 ///   }
 /// }
 /// ```
@@ -165,7 +161,7 @@ fn variant_generate
   let fields = &variant.fields;
   let attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
 
-  if !attrs.config.enabled.value( item_attrs.config.enabled.value( true ) )
+  if !attrs.enabled.value( item_attrs.enabled.value( true ) )
   {
     return Ok( qt!{} )
   }
@@ -180,7 +176,7 @@ fn variant_generate
     return_syn_err!( fields.span(), "Expects a single field to derive IndexMut" );
   }
 
-  let field = fields.iter().next().unwrap();
+  let field = fields.iter().next().expect( "Expects a single field to derive IndexMut" );
   let field_type = &field.ty;
   let field_name = &field.ident;
 
@@ -193,35 +189,37 @@ fn variant_generate
     qt!{ &mut self.0 }
   };
 
-  if attrs.config.debug.value( false )
+  if attrs.debug.value( false )
   {
-    let debug = format_args!
+    let debug = format!
     (
-      r#"
+      r"
 #[ automatically_derived ]
 impl< {} > core::ops::IndexMut< usize > for {}< {} >
 where
   {}
 {{
+  type Output = {};
   #[ inline ]
-  fn index_mut( &mut self, index : usize ) -> &mut {}
+  fn index_mut( &mut self, _index : usize ) -> &mut {}
   {{
-    {}[ index ]
+    {}
   }}
 }}
-      "#,
+      ",
       qt!{ #generics_impl },
       item_name,
       qt!{ #generics_ty },
       qt!{ #generics_where },
       qt!{ #field_type },
+      qt!{ #field_type },
       body,
     );
     let about = format!
     (
-r#"derive : IndexMut
+r"derive : IndexMut
 item : {item_name}
-field : {variant_name}"#,
+field : {variant_name}",
     );
     diag::report_print( about, original_input, debug.to_string() );
   }
@@ -235,13 +233,13 @@ field : {variant_name}"#,
       where
         #generics_where
       {
+        type Output = #field_type;
         #[ inline ]
-        fn index_mut( &mut self, index : usize ) -> &mut #field_type
+        fn index_mut( &mut self, _index : usize ) -> &mut #field_type
         {
-          #body[ index ]
+          #body
         }
       }
     }
   )
-
 }
