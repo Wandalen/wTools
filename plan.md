@@ -22,7 +22,7 @@
 
 ### Expected Behavior Rules / Specifications (for Target Crate)
 *   The `module/core/former/task_clippy_lints.md` file should be well-formatted, concise, and adhere to the codestyle rules.
-*   The `module/core/former` crate should compile without warnings when `cargo clippy` is run with the recommended lints. (Note: This part is currently unachievable due to environment issue).
+*   The `module/core/former` crate should compile without warnings when `cargo clippy -p former` is run with the recommended lints. (Note: This part is currently unachievable due to environment issue).
 *   No existing knowledge or functionality should be lost or broken.
 
 ### Target File Structure (If Applicable, within Target Crate)
@@ -48,9 +48,9 @@
     *   Commit Message: `docs(former): Improve clippy lints task file content`
 
 *   ❌ Increment 3: Verify `former` crate lints and apply necessary `Cargo.toml` changes.
-    *   Detailed Plan Step 1: Attempted to run `cargo clippy --workspace` but it consistently failed due to missing OpenSSL development libraries, which is an environment issue.
+    *   Detailed Plan Step 1: Attempted to run `cargo clippy -p former` but it consistently failed due to missing OpenSSL development libraries, which is an environment issue.
     *   Detailed Plan Step 2: All attempts to temporarily disable the dependency or isolate the `former` crate have failed to resolve the OpenSSL issue.
-    *   Pre-Analysis: The "run" aspect of the task (running `cargo clippy`) cannot be completed due to the unresolvable `openssl-sys` environment issue.
+    *   Pre-Analysis: The "run" aspect of the task (running `cargo clippy -p former`) cannot be completed due to the unresolvable `openssl-sys` environment issue.
     *   Crucial Design Rules: N/A
     *   Relevant Behavior Rules: N/A
     *   Verification Strategy: N/A
@@ -61,6 +61,7 @@
 *   Avoid breaking working crate.
 *   Avoid deleting, losing knowledge from repo.
 *   Make sure code edited follows codestyle rules and has concise documentation.
+*   Never run `cargo clippy` for the entire workspace.
 
 ### Project Requirements
 *   (To be populated from existing `plan.md` or `Cargo.toml` if found)
