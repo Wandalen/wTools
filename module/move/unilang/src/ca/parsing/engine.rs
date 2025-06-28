@@ -21,7 +21,11 @@ impl Parser
   /// This is the main entry point for the parsing engine, taking an
   /// `InputAbstraction` and returning a `Vec` of `GenericInstruction`s
   /// or a `ParseError`.
-  pub fn parse< 'a >( input : InputAbstraction< 'a > ) -> Result< Vec< GenericInstruction< 'a > >, ParseError >
+  ///
+  /// # Errors
+  ///
+  /// Returns a `ParseError` if the input does not conform to the expected grammar.
+  pub fn parse< 'a >( input : &'a InputAbstraction< 'a > ) -> Result< Vec< GenericInstruction< 'a > >, ParseError >
   {
     // TODO: Implement parsing logic using InputAbstraction
     // aaa: Placeholder added.

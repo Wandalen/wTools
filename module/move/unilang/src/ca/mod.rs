@@ -7,7 +7,8 @@ pub mod parsing;
 
 mod private {}
 
-crate::mod_interface!
+use mod_interface::mod_interface;
+mod_interface!
 {
   /// Exposes the parsing module.
   exposed use parsing;

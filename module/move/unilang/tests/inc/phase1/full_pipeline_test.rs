@@ -2,11 +2,12 @@
 //! Integration tests for the full Phase 1 pipeline.
 //!
 
-use unilang::data::{ ArgumentDefinition, CommandDefinition };
+use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, OutputData, ErrorData }; // Corrected import for ErrorData
 use unilang::parsing::{ Lexer, Parser, Token };
 use unilang::registry::CommandRegistry;
-use unilang::semantic::SemanticAnalyzer;
+use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };
 use unilang::interpreter::{ Interpreter, ExecutionContext };
+use unilang::types::Value;
 
 ///
 /// Tests for the `Lexer`.
@@ -63,18 +64,16 @@ fn parser_tests()
 {
   // T2.1
   let input = "command \"arg1\"";
-  let lexer = Lexer::new( input );
-  let mut parser = Parser::new( lexer );
-  let program = parser.parse_program();
+  let mut parser = Parser::new( input );
+  let program = parser.parse();
   assert_eq!( program.statements.len(), 1 );
   assert_eq!( program.statements[ 0 ].command, "command" );
   assert_eq!( program.statements[ 0 ].args, vec![ Token::String( "arg1".to_string() ) ] );
 
   // T2.2
   let input = "cmd1 1 ;; cmd2 2";
-  let lexer = Lexer::new( input );
-  let mut parser = Parser::new( lexer );
-  let program = parser.parse_program();
+  let mut parser = Parser::new( input );
+  let program = parser.parse();
   assert_eq!( program.statements.len(), 2 );
   assert_eq!( program.statements[ 0 ].command, "cmd1" );
   assert_eq!( program.statements[ 0 ].args, vec![ Token::Integer( 1 ) ] );
@@ -83,9 +82,8 @@ fn parser_tests()
 
   // T2.3
   let input = "";
-  let lexer = Lexer::new( input );
-  let mut parser = Parser::new( lexer );
-  let program = parser.parse_program();
+  let mut parser = Parser::new( input );
+  let program = parser.parse();
   assert_eq!( program.statements.len(), 0 );
 }
 
@@ -110,62 +108,57 @@ fn semantic_analyzer_tests()
       ArgumentDefinition {
         name : "arg1".to_string(),
         description : "A string argument".to_string(),
-        kind : "String".to_string(),
+        kind : Kind::String,
         optional : false,
+        multiple : false,
+        validation_rules : vec![],
       },
       ArgumentDefinition {
         name : "arg2".to_string(),
         description : "An integer argument".to_string(),
-        kind : "Integer".to_string(),
+        kind : Kind::Integer,
         optional : true,
+        multiple : false,
+        validation_rules : vec![],
       },
     ],
+    routine_link : None,
   } );
 
   // T3.1
-  let input = "test_cmd \"hello\" 123";
-  let lexer = Lexer::new( input );
-  let mut parser = Parser::new( lexer );
-  let program = parser.parse_program();
+  let input = "test_cmd hello 123";
+  let program = Parser::new( input ).parse();
   let analyzer = SemanticAnalyzer::new( &program, &registry );
   let verified = analyzer.analyze().unwrap();
   assert_eq!( verified.len(), 1 );
   assert_eq!( verified[ 0 ].definition.name, "test_cmd" );
-  assert_eq!( verified[ 0 ].arguments.get( "arg1" ).unwrap(), &Token::String( "hello".to_string() ) );
-  assert_eq!( verified[ 0 ].arguments.get( "arg2" ).unwrap(), &Token::Integer( 123 ) );
+  assert_eq!( verified[ 0 ].arguments.get( "arg1" ).unwrap(), &Value::String( "hello".to_string() ) );
+  assert_eq!( verified[ 0 ].arguments.get( "arg2" ).unwrap(), &Value::Integer( 123 ) );
 
   // T3.2
   let input = "unknown_cmd";
-  let lexer = Lexer::new( input );
-  let mut parser = Parser::new( lexer );
-  let program = parser.parse_program();
+  let program = Parser::new( input ).parse();
   let analyzer = SemanticAnalyzer::new( &program, &registry );
   let error = analyzer.analyze().unwrap_err();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "COMMAND_NOT_FOUND" ) );
 
   // T3.3
   let input = "test_cmd";
-  let lexer = Lexer::new( input );
-  let mut parser = Parser::new( lexer );
-  let program = parser.parse_program();
+  let program = Parser::new( input ).parse();
   let analyzer = SemanticAnalyzer::new( &program, &registry );
   let error = analyzer.analyze().unwrap_err();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "MISSING_ARGUMENT" ) );
 
-  // T3.4
-  let input = "test_cmd 123";
-  let lexer = Lexer::new( input );
-  let mut parser = Parser::new( lexer );
-  let program = parser.parse_program();
+  // T3.4 - Updated to test a clear type mismatch for the second argument
+  let input = "test_cmd hello not-an-integer";
+  let program = Parser::new( input ).parse();
   let analyzer = SemanticAnalyzer::new( &program, &registry );
   let error = analyzer.analyze().unwrap_err();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
 
   // T3.5
   let input = "test_cmd \"hello\" 123 456";
-  let lexer = Lexer::new( input );
-  let mut parser = Parser::new( lexer );
-  let program = parser.parse_program();
+  let program = Parser::new( input ).parse();
   let analyzer = SemanticAnalyzer::new( &program, &registry );
   let error = analyzer.analyze().unwrap_err();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "TOO_MANY_ARGUMENTS" ) );
@@ -182,40 +175,51 @@ fn semantic_analyzer_tests()
 fn interpreter_tests()
 {
   let mut registry = CommandRegistry::new();
-  registry.register( CommandDefinition {
+  
+  // Dummy routine for cmd1
+  let cmd1_routine = Box::new( | _cmd: VerifiedCommand, _ctx: ExecutionContext | -> Result<OutputData, ErrorData> {
+    Ok( OutputData { content: "cmd1 executed".to_string(), format: "text".to_string() } )
+  });
+  registry.command_add_runtime( &CommandDefinition {
     name : "cmd1".to_string(),
     description : "".to_string(),
     arguments : vec![],
-  } );
-  registry.register( CommandDefinition {
+    routine_link : Some( "cmd1_routine_link".to_string() ),
+  }, cmd1_routine ).unwrap();
+
+  // Dummy routine for cmd2
+  let cmd2_routine = Box::new( | _cmd: VerifiedCommand, _ctx: ExecutionContext | -> Result<OutputData, ErrorData> {
+    Ok( OutputData { content: "cmd2 executed".to_string(), format: "text".to_string() } )
+  });
+  registry.command_add_runtime( &CommandDefinition {
     name : "cmd2".to_string(),
     description : "".to_string(),
     arguments : vec![],
-  } );
+    routine_link : Some( "cmd2_routine_link".to_string() ),
+  }, cmd2_routine ).unwrap();
 
   // T4.1
   let input = "cmd1";
-  let lexer = Lexer::new( input );
-  let mut parser = Parser::new( lexer );
-  let program = parser.parse_program();
+  let program = Parser::new( input ).parse();
   let analyzer = SemanticAnalyzer::new( &program, &registry );
   let verified = analyzer.analyze().unwrap();
-  let interpreter = Interpreter::new( &verified );
+  let interpreter = Interpreter::new( &verified, &registry ); // Added registry
   let mut context = ExecutionContext::default();
   let result = interpreter.run( &mut context ).unwrap();
   assert_eq!( result.len(), 1 );
+  assert_eq!( result[0].content, "cmd1 executed" );
 
   // T4.2
   let input = "cmd1 ;; cmd2";
-  let lexer = Lexer::new( input );
-  let mut parser = Parser::new( lexer );
-  let program = parser.parse_program();
+  let program = Parser::new( input ).parse();
   let analyzer = SemanticAnalyzer::new( &program, &registry );
   let verified = analyzer.analyze().unwrap();
-  let interpreter = Interpreter::new( &verified );
+  let interpreter = Interpreter::new( &verified, &registry ); // Added registry
   let mut context = ExecutionContext::default();
   let result = interpreter.run( &mut context ).unwrap();
   assert_eq!( result.len(), 2 );
+  assert_eq!( result[0].content, "cmd1 executed" );
+  assert_eq!( result[1].content, "cmd2 executed" );
 }
 
 ///
@@ -237,9 +241,12 @@ fn help_generator_tests()
     arguments : vec![ ArgumentDefinition {
       name : "arg1".to_string(),
       description : "A string argument".to_string(),
-      kind : "String".to_string(),
+      kind : Kind::String,
       optional : false,
+      multiple : false,
+      validation_rules : vec![],
     } ],
+    routine_link : None,
   };
   let help_text = help_gen.command( &cmd_with_args );
   assert!( help_text.contains( "Usage: test_cmd" ) );
@@ -252,6 +259,7 @@ fn help_generator_tests()
     name : "simple_cmd".to_string(),
     description : "A simple command".to_string(),
     arguments : vec![],
+    routine_link : None,
   };
   let help_text = help_gen.command( &cmd_without_args );
   assert!( help_text.contains( "Usage: simple_cmd" ) );

@@ -33,3 +33,4 @@ Cargo.lock
 -*
 rustc-ice-*.txt
 .roo
+.roomodes
