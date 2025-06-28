@@ -2,10 +2,10 @@
 //! Integration tests for the full Phase 1 pipeline.
 //!
 
-use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind };
+use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, OutputData, ErrorData }; // Corrected import for ErrorData
 use unilang::parsing::{ Lexer, Parser, Token };
 use unilang::registry::CommandRegistry;
-use unilang::semantic::SemanticAnalyzer;
+use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };
 use unilang::interpreter::{ Interpreter, ExecutionContext };
 use unilang::types::Value;
 
@@ -110,12 +110,16 @@ fn semantic_analyzer_tests()
         description : "A string argument".to_string(),
         kind : Kind::String,
         optional : false,
+        multiple : false, // Added
+        validation_rules : vec![], // Added
       },
       ArgumentDefinition {
         name : "arg2".to_string(),
         description : "An integer argument".to_string(),
         kind : Kind::Integer,
         optional : true,
+        multiple : false, // Added
+        validation_rules : vec![], // Added
       },
     ],
   } );
@@ -170,36 +174,49 @@ fn semantic_analyzer_tests()
 fn interpreter_tests()
 {
   let mut registry = CommandRegistry::new();
-  registry.register( CommandDefinition {
+  
+  // Dummy routine for cmd1
+  let cmd1_routine = Box::new( | _cmd: VerifiedCommand, _ctx: ExecutionContext | -> Result<OutputData, ErrorData> {
+    Ok( OutputData { content: "cmd1 executed".to_string(), format: "text".to_string() } )
+  });
+  registry.command_add_runtime( CommandDefinition {
     name : "cmd1".to_string(),
     description : "".to_string(),
     arguments : vec![],
-  } );
-  registry.register( CommandDefinition {
+  }, cmd1_routine ).unwrap();
+
+  // Dummy routine for cmd2
+  let cmd2_routine = Box::new( | _cmd: VerifiedCommand, _ctx: ExecutionContext | -> Result<OutputData, ErrorData> {
+    Ok( OutputData { content: "cmd2 executed".to_string(), format: "text".to_string() } )
+  });
+  registry.command_add_runtime( CommandDefinition {
     name : "cmd2".to_string(),
     description : "".to_string(),
     arguments : vec![],
-  } );
+  }, cmd2_routine ).unwrap();
 
   // T4.1
   let input = "cmd1";
   let program = Parser::new( input ).parse();
   let analyzer = SemanticAnalyzer::new( &program, &registry );
   let verified = analyzer.analyze().unwrap();
-  let interpreter = Interpreter::new( &verified );
+  let interpreter = Interpreter::new( &verified, &registry ); // Added registry
   let mut context = ExecutionContext::default();
   let result = interpreter.run( &mut context ).unwrap();
   assert_eq!( result.len(), 1 );
+  assert_eq!( result[0].content, "cmd1 executed" );
 
   // T4.2
   let input = "cmd1 ;; cmd2";
   let program = Parser::new( input ).parse();
   let analyzer = SemanticAnalyzer::new( &program, &registry );
   let verified = analyzer.analyze().unwrap();
-  let interpreter = Interpreter::new( &verified );
+  let interpreter = Interpreter::new( &verified, &registry ); // Added registry
   let mut context = ExecutionContext::default();
   let result = interpreter.run( &mut context ).unwrap();
   assert_eq!( result.len(), 2 );
+  assert_eq!( result[0].content, "cmd1 executed" );
+  assert_eq!( result[1].content, "cmd2 executed" );
 }
 
 ///
@@ -223,6 +240,8 @@ fn help_generator_tests()
       description : "A string argument".to_string(),
       kind : Kind::String,
       optional : false,
+      multiple : false, // Added
+      validation_rules : vec![], // Added
     } ],
   };
   let help_text = help_gen.command( &cmd_with_args );

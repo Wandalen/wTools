@@ -4,11 +4,13 @@
 //! It is responsible for converting raw string inputs from the command line into strongly-typed Rust values.
 
 use crate::data::Kind;
-use std::path::{ Path, PathBuf };
+use std::path::PathBuf; // Removed `Path`
 use url::Url;
 use chrono::{ DateTime, FixedOffset };
 use regex::Regex;
 use core::fmt;
+use std::collections::HashMap; // Added for Map Value
+use serde_json; // Added for JsonString and Object Value
 
 /// Represents a parsed and validated value of a specific kind.
 #[derive( Debug, Clone )]
@@ -36,6 +38,14 @@ pub enum Value
   DateTime( DateTime< FixedOffset > ),
   /// A regular expression pattern string.
   Pattern( Regex ),
+  /// A list of elements of a specified `Type`.
+  List( Vec< Value > ),
+  /// A key-value map.
+  Map( HashMap< String, Value > ),
+  /// A JSON string.
+  JsonString( String ),
+  /// A JSON object.
+  Object( serde_json::Value ),
 }
 
 impl PartialEq for Value
@@ -44,14 +54,21 @@ impl PartialEq for Value
   {
     match ( self, other )
     {
-      ( Self::String( l ), Self::String( r ) ) | ( Self::Enum( l ), Self::Enum( r ) ) => l == r,
+      ( Self::String( l ), Self::String( r ) )
+      | ( Self::Enum( l ), Self::Enum( r ) )
+      | ( Self::JsonString( l ), Self::JsonString( r ) ) => l == r, // Merged match arms
       ( Self::Integer( l ), Self::Integer( r ) ) => l == r,
       ( Self::Float( l ), Self::Float( r ) ) => l == r,
       ( Self::Boolean( l ), Self::Boolean( r ) ) => l == r,
-      ( Self::Path( l ), Self::Path( r ) ) | ( Self::File( l ), Self::File( r ) ) | ( Self::Directory( l ), Self::Directory( r ) ) => l == r,
+      ( Self::Path( l ), Self::Path( r ) )
+      | ( Self::File( l ), Self::File( r ) )
+      | ( Self::Directory( l ), Self::Directory( r ) ) => l == r, // Merged match arms
       ( Self::Url( l ), Self::Url( r ) ) => l == r,
       ( Self::DateTime( l ), Self::DateTime( r ) ) => l == r,
       ( Self::Pattern( l ), Self::Pattern( r ) ) => l.as_str() == r.as_str(),
+      ( Self::List( l ), Self::List( r ) ) => l == r,
+      ( Self::Map( l ), Self::Map( r ) ) => l == r,
+      ( Self::Object( l ), Self::Object( r ) ) => l == r,
       _ => false,
     }
   }
@@ -63,7 +80,7 @@ impl fmt::Display for Value
   {
     match self
     {
-      Value::String( s ) | Value::Enum( s ) => write!( f, "{s}" ),
+      Value::String( s ) | Value::Enum( s ) | Value::JsonString( s ) => write!( f, "{s}" ), // Merged match arms
       Value::Integer( i ) => write!( f, "{i}" ),
       Value::Float( fl ) => write!( f, "{fl}" ),
       Value::Boolean( b ) => write!( f, "{b}" ),
@@ -71,6 +88,9 @@ impl fmt::Display for Value
       Value::Url( u ) => write!( f, "{u}" ),
       Value::DateTime( dt ) => write!( f, "{}", dt.to_rfc3339() ),
       Value::Pattern( r ) => write!( f, "{}", r.as_str() ),
+      Value::List( l ) => write!( f, "{l:?}" ),
+      Value::Map( m ) => write!( f, "{m:?}" ),
+      Value::Object( o ) => write!( f, "{o}" ),
     }
   }
 }
@@ -95,6 +115,37 @@ pub fn parse_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
 {
   match kind
   {
+    Kind::String | Kind::Integer | Kind::Float | Kind::Boolean | Kind::Enum( _ ) =>
+    {
+      parse_primitive_value( input, kind )
+    },
+    Kind::Path | Kind::File | Kind::Directory =>
+    {
+      parse_path_value( input, kind )
+    },
+    Kind::Url | Kind::DateTime | Kind::Pattern =>
+    {
+      parse_url_datetime_pattern_value( input, kind )
+    },
+    Kind::List( .. ) =>
+    {
+      parse_list_value( input, kind )
+    },
+    Kind::Map( .. ) =>
+    {
+      parse_map_value( input, kind )
+    },
+    Kind::JsonString | Kind::Object =>
+    {
+      parse_json_value( input, kind )
+    },
+  }
+}
+
+fn parse_primitive_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
+{
+  match kind
+  {
     Kind::String => Ok( Value::String( input.to_string() ) ),
     Kind::Integer => input.parse::< i64 >().map( Value::Integer ).map_err( |e| TypeError { expected_kind: kind.clone(), reason: e.to_string() } ),
     Kind::Float => input.parse::< f64 >().map( Value::Float ).map_err( |e| TypeError { expected_kind: kind.clone(), reason: e.to_string() } ),
@@ -107,34 +158,6 @@ pub fn parse_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
         _ => Err( TypeError { expected_kind: kind.clone(), reason: "Invalid boolean value".to_string() } ),
       }
     }
-    Kind::Path =>
-    {
-      if input.is_empty()
-      {
-        return Err( TypeError { expected_kind: kind.clone(), reason: "Path cannot be empty".to_string() } );
-      }
-      Ok( Value::Path( PathBuf::from( input ) ) )
-    },
-    Kind::File =>
-    {
-      let path = Path::new( input );
-      if path.is_dir()
-      {
-        return Err( TypeError { expected_kind: kind.clone(), reason: "Expected a file, but found a directory".to_string() } );
-      }
-      // Further validation (like existence) would be a validation rule, not a type error.
-      Ok( Value::File( path.to_path_buf() ) )
-    },
-    Kind::Directory =>
-    {
-      let path = Path::new( input );
-      if path.is_file()
-      {
-        return Err( TypeError { expected_kind: kind.clone(), reason: "Expected a directory, but found a file".to_string() } );
-      }
-      // Further validation (like existence) would be a validation rule, not a type error.
-      Ok( Value::Directory( path.to_path_buf() ) )
-    },
     Kind::Enum( choices ) =>
     {
       if choices.contains( &input.to_string() )
@@ -146,8 +169,116 @@ pub fn parse_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
         Err( TypeError { expected_kind: kind.clone(), reason: format!( "Value '{input}' is not one of the allowed choices: {choices:?}" ) } )
       }
     },
+    _ => unreachable!( "Called parse_primitive_value with non-primitive kind: {:?}", kind ),
+  }
+}
+
+fn parse_path_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
+{
+  if input.is_empty()
+  {
+    return Err( TypeError { expected_kind: kind.clone(), reason: "Path cannot be empty".to_string() } );
+  }
+  let path = PathBuf::from( input );
+  match kind
+  {
+    Kind::Path => Ok( Value::Path( path ) ),
+    Kind::File =>
+    {
+      if path.is_dir()
+      {
+        return Err( TypeError { expected_kind: kind.clone(), reason: "Expected a file, but found a directory".to_string() } );
+      }
+      Ok( Value::File( path ) )
+    },
+    Kind::Directory =>
+    {
+      if path.is_file()
+      {
+        return Err( TypeError { expected_kind: kind.clone(), reason: "Expected a directory, but found a file".to_string() } );
+      }
+      Ok( Value::Directory( path ) )
+    },
+    _ => unreachable!( "Called parse_path_value with non-path kind: {:?}", kind ),
+  }
+}
+
+fn parse_url_datetime_pattern_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
+{
+  match kind
+  {
     Kind::Url => Url::parse( input ).map( Value::Url ).map_err( |e| TypeError { expected_kind: kind.clone(), reason: e.to_string() } ),
     Kind::DateTime => DateTime::parse_from_rfc3339( input ).map( Value::DateTime ).map_err( |e| TypeError { expected_kind: kind.clone(), reason: e.to_string() } ),
     Kind::Pattern => Regex::new( input ).map( Value::Pattern ).map_err( |e| TypeError { expected_kind: kind.clone(), reason: e.to_string() } ),
+    _ => unreachable!( "Called parse_url_datetime_pattern_value with unsupported kind: {:?}", kind ),
+  }
+}
+
+fn parse_list_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
+{
+  let Kind::List( item_kind, delimiter_opt ) = kind else { unreachable!( "Called parse_list_value with non-list kind: {:?}", kind ) };
+
+  if input.is_empty()
+  {
+    return Ok( Value::List( Vec::new() ) );
+  }
+  let delimiter = delimiter_opt.unwrap_or( ',' );
+  let parts: Vec<&str> = input.split( delimiter ).collect();
+  let mut parsed_items = Vec::new();
+  for part in parts
+  {
+    parsed_items.push( parse_value( part, item_kind )? );
+  }
+  Ok( Value::List( parsed_items ) )
+}
+
+fn parse_map_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
+{
+  let Kind::Map( _key_kind, value_kind, entry_delimiter_opt, kv_delimiter_opt ) = kind else { unreachable!( "Called parse_map_value with non-map kind: {:?}", kind ) };
+
+  if input.is_empty()
+  {
+    return Ok( Value::Map( HashMap::new() ) );
+  }
+  let entry_delimiter = entry_delimiter_opt.unwrap_or( ',' );
+  let kv_delimiter = kv_delimiter_opt.unwrap_or( '=' );
+  let entries: Vec<&str> = input.split( entry_delimiter ).collect();
+  let mut parsed_map = HashMap::new();
+  for entry in entries
+  {
+    let parts: Vec<&str> = entry.splitn( 2, kv_delimiter ).collect();
+    if parts.len() != 2
+    {
+      return Err( TypeError { expected_kind: kind.clone(), reason: format!( "Invalid map entry: '{entry}'. Expected 'key{kv_delimiter}value'" ) } );
+    }
+    let key_str = parts[ 0 ];
+    let value_str = parts[ 1 ];
+
+    // For simplicity, map keys are always String for now.
+    // A more robust solution would parse key_kind.
+    let parsed_key = key_str.to_string();
+    let parsed_value = parse_value( value_str, value_kind )?;
+    parsed_map.insert( parsed_key, parsed_value );
+  }
+  Ok( Value::Map( parsed_map ) )
+}
+
+fn parse_json_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
+{
+  match kind
+  {
+    Kind::JsonString =>
+    {
+      serde_json::from_str::< serde_json::Value >( input )
+      .map_err( |e| TypeError { expected_kind: kind.clone(), reason: e.to_string() } )?;
+      Ok( Value::JsonString( input.to_string() ) )
+    },
+    Kind::Object =>
+    {
+      serde_json::from_str::< serde_json::Value >( input )
+      .map( Value::Object )
+      .map_err( |e| TypeError { expected_kind: kind.clone(), reason: e.to_string() } )
+    },
+    _ => unreachable!( "Called parse_json_value with non-JSON kind: {:?}", kind ),
   }
 }

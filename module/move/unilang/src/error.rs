@@ -15,6 +15,8 @@ pub enum Error
   /// An error that occurred during semantic analysis or execution,
   /// containing detailed information about the failure.
   Execution( ErrorData ),
+  /// An error that occurred during command registration.
+  Registration( String ),
 }
 
 impl From< ErrorData > for Error

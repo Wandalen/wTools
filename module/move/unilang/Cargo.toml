@@ -32,6 +32,7 @@ enabled = []
 on_unknown_suggest = [ "dep:textdistance" ]
 
 [dependencies]
+serde_json = "1.0"
 url = "2.5.0"
 chrono = { version = "0.4.38", features = ["serde"] }
 regex = "1.10.4"

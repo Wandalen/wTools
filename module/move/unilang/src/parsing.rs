@@ -139,25 +139,43 @@ impl< 'a > Lexer< 'a >
   }
 
   ///
-  /// Reads a string literal from the input, handling the enclosing quotes.
+  /// Reads a string literal from the input, handling the enclosing quotes and escapes.
   ///
   fn read_string( &mut self ) -> String
   {
-    let position = self.position + 1; // Skip the opening quote
+    let quote_char = self.ch;
+    self.read_char(); // Consume the opening quote
+    let mut s = String::new();
     loop
     {
-      self.read_char();
-      if self.ch == b'"' || self.ch == 0
+      if self.ch == 0
+      {
+        // xxx: Handle unterminated string error
+        break;
+      }
+      if self.ch == b'\\'
+      {
+        self.read_char(); // Consume '\'
+        match self.ch
+        {
+          b'n' => s.push( '\n' ),
+          b't' => s.push( '\t' ),
+          b'r' => s.push( '\r' ),
+          _ => s.push( self.ch as char ), // Push the escaped character itself
+        }
+      }
+      else if self.ch == quote_char
       {
         break;
       }
+      else
+      {
+        s.push( self.ch as char );
+      }
+      self.read_char();
     }
-    let result = self.input[ position..self.position ].to_string();
-    if self.ch == b'"'
-    {
-      self.read_char(); // Consume the closing quote
-    }
-    result
+    self.read_char(); // Consume the closing quote
+    s
   }
 
   ///
@@ -188,7 +206,7 @@ impl< 'a > Lexer< 'a >
           Token::Identifier( word )
         }
       }
-      b'"' =>
+      b'"' | b'\'' => // Handle both single and double quotes
       {
         let s = self.read_string();
         Token::String( s )

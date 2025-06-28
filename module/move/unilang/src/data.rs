@@ -38,6 +38,10 @@ pub struct ArgumentDefinition
   /// If `true`, the argument is not required for the command to execute.
   // #[ former( default ) ]
   pub optional : bool,
+  /// If `true`, the argument can be specified multiple times.
+  pub multiple : bool,
+  /// Custom validation rules for the argument.
+  pub validation_rules : Vec< String >,
 }
 
 ///
@@ -68,6 +72,14 @@ pub enum Kind
   DateTime,
   /// A regular expression pattern string.
   Pattern,
+  /// A list of elements of a specified `Type`.
+  List( Box< Kind >, Option< char > ),
+  /// A key-value map.
+  Map( Box< Kind >, Box< Kind >, Option< char >, Option< char > ),
+  /// A JSON string.
+  JsonString,
+  /// A JSON object.
+  Object,
 }
 
 ///
