@@ -137,6 +137,122 @@ fn generate
 /// ```text
 /// impl DerefMut for MyEnum
 /// {
+///   fn deref_mut( &mut self, index : usize ) -> &mut i32
+///   {
+///     &mut self.0
+///   }
+/// }
+/// ```
+fn variant_generate
+(
+  item_name : &syn::Ident,
+  item_attrs : &ItemAttributes,
+  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  variant : &syn::Variant,
+  original_input : &proc_macro::TokenStream,
+)
+-> Result< proc_macro2::TokenStream >
+{
+  let variant_name = &variant.ident;
+  let fields = &variant.fields;
+  let attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
+
+  if !attrs.enabled.value( item_attrs.enabled.value( true ) )
+  {
+    return Ok( qt!{} )
+  }
+
+  if fields.is_empty()
+  {
+    return Ok( qt!{} )
+  }
+
+  if fields.len() != 1
+  {
+    return_syn_err!( fields.span(), "Expects a single field to derive DerefMut" );
+  }
+
+  let field = fields.iter().next().expect( "Expects a single field to derive DerefMut" );
+  let field_type = &field.ty;
+  let field_name = &field.ident;
+
+  let body = if let Some( field_name ) = field_name
+  {
+    qt!{ &mut self.#field_name }
+  }
+  else
+  {
+    qt!{ &mut self.0 }
+  };
+
+  if attrs.debug.value( false )
+  {
+    let debug = format!
+    (
+      r"
+#[ automatically_derived ]
+impl< {} > core::ops::DerefMut for {}< {} >
+where
+  {}
+{{
+  fn deref_mut( &mut self ) -> &mut {}
+  {{
+    {}
+  }}
+}}
+      ",
+      qt!{ #generics_impl },
+      item_name,
+      qt!{ #generics_ty },
+      qt!{ #generics_where },
+      qt!{ #field_type },
+      body,
+    );
+    let about = format!
+    (
+r"derive : DerefMut
+item : {item_name}
+field : {variant_name}",
+    );
+    diag::report_print( about, original_input, debug.to_string() );
+  }
+
+  Ok
+  (
+    qt!
+    {
+      #[ automatically_derived ]
+      impl< #generics_impl > core::ops::DerefMut for #item_name< #generics_ty >
+      where
+        #generics_where
+      {
+        fn deref_mut( &mut self ) -> &mut #field_type
+        {
+          #body
+        }
+      }
+    }
+  )
+}
+    where
+      #generics_where
+    {
+      fn deref_mut( &mut self ) -> &mut #field_type
+      {
+        #body
+      }
+    }
+  }
+}
+
+/// Generates `DerefMut` implementation for enum variants.
+///
+/// Example of generated code:
+/// ```text
+/// impl DerefMut for MyEnum
+/// {
 ///   fn deref_mut( &mut self ) -> &mut i32
 ///   {
 ///     &mut self.0
@@ -225,6 +341,122 @@ field : {variant_name}",
     {
       #[ automatically_derived ]
       impl< #generics_impl > core::ops::DerefMut for #item_name< #generics_ty >
+    where
+      #generics_where
+    {
+      fn deref_mut( &mut self ) -> &mut #field_type
+      {
+        #body
+      }
+    }
+  }
+}
+
+/// Generates `DerefMut` implementation for enum variants.
+///
+/// Example of generated code:
+/// ```text
+/// impl DerefMut for MyEnum
+/// {
+///   fn deref_mut( &mut self, index : usize ) -> &mut i32
+///   {
+///     &mut self.0
+///   }
+/// }
+/// ```
+fn variant_generate
+(
+  item_name : &syn::Ident,
+  item_attrs : &ItemAttributes,
+  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  variant : &syn::Variant,
+  original_input : &proc_macro::TokenStream,
+)
+-> Result< proc_macro2::TokenStream >
+{
+  let variant_name = &variant.ident;
+  let fields = &variant.fields;
+  let attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
+
+  if !attrs.enabled.value( item_attrs.enabled.value( true ) )
+  {
+    return Ok( qt!{} )
+  }
+
+  if fields.is_empty()
+  {
+    return Ok( qt!{} )
+  }
+
+  if fields.len() != 1
+  {
+    return_syn_err!( fields.span(), "Expects a single field to derive DerefMut" );
+  }
+
+  let field = fields.iter().next().expect( "Expects a single field to derive DerefMut" );
+  let field_type = &field.ty;
+  let field_name = &field.ident;
+
+  let body = if let Some( field_name ) = field_name
+  {
+    qt!{ &mut self.#field_name }
+  }
+  else
+  {
+    qt!{ &mut self.0 }
+  };
+
+  if attrs.debug.value( false )
+  {
+    let debug = format!
+    (
+      r"
+#[ automatically_derived ]
+impl< {} > core::ops::DerefMut for {}< {} >
+where
+  {}
+{{
+  fn deref_mut( &mut self ) -> &mut {}
+  {{
+    {}
+  }}
+}}
+      ",
+      qt!{ #generics_impl },
+      item_name,
+      qt!{ #generics_ty },
+      qt!{ #generics_where },
+      qt!{ #field_type },
+      body,
+    );
+    let about = format!
+    (
+r"derive : DerefMut
+item : {item_name}
+field : {variant_name}",
+    );
+    diag::report_print( about, original_input, debug.to_string() );
+  }
+
+  Ok
+  (
+    qt!
+    {
+      #[ automatically_derived ]
+      impl< #generics_impl > core::ops::DerefMut for #item_name< #generics_ty >
+      where
+        #generics_where
+      {
+        fn deref_mut( &mut self ) -> &mut #field_type
+        {
+          #body
+        }
+      }
+    }
+  )
+}
       where
         #generics_where
       {

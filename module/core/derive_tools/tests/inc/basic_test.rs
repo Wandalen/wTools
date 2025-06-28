@@ -74,7 +74,7 @@ tests_impls!
 
   //
 
-  #[ cfg( all( feature = "strum", feature = "strum_derive" ) ) ]
+  #[ cfg( all( feature = "strum", feature = "derive_strum" ) ) ]
   fn enum_with_strum()
   {
     use the_module::{ EnumIter, IntoEnumIterator };

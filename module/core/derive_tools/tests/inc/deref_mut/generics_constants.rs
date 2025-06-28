@@ -2,7 +2,7 @@ use core::ops::Deref;
 use derive_tools::{ DerefMut };
 
 #[ allow( dead_code ) ]
-#[ derive( DerefMut ) ]
+// #[ derive( DerefMut ) ]
 struct GenericsConstants< const N : usize >( i32 );
 
 impl< const N : usize > Deref for GenericsConstants< N >

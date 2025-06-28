@@ -1,23 +1,23 @@
-use super::*;
 use macro_tools::
 {
-  attr,
   diag,
   generic_params,
+  item_struct,
   struct_like::StructLike,
   Result,
   qt,
+  attr,
+  syn,
+  proc_macro2,
+  return_syn_err,
+  Spanned,
 };
 
-#[ path = "from/field_attributes.rs" ]
-mod field_attributes;
-use field_attributes::*;
-#[ path = "from/item_attributes.rs" ]
-mod item_attributes;
-use item_attributes::*;
+use super::field_attributes::{ FieldAttributes };
+use super::item_attributes::{ ItemAttributes };
 
 ///
-/// Provides an automatic [Not](core::ops::Not) trait  implementation for struct.
+/// Derive macro to implement Not when-ever it's possible to do automatically.
 ///
 pub fn not( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
@@ -28,7 +28,7 @@ pub fn not( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
   let item_name = &parsed.ident();
 
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
-  = generic_params::decompose( &parsed.generics() );
+  = generic_params::decompose( parsed.generics() );
 
   let result = match parsed
   {
@@ -38,21 +38,22 @@ pub fn not( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
     },
     StructLike::Struct( ref item ) =>
     {
-      let field_type = item.fields.iter().next().map( | e | &e.ty );
-      let field_name = item.fields.iter().next().map( | e | &e.ident );
+      let field_type = item_struct::first_field_type( item )?;
+      let field_name_option = item_struct::first_field_name( item )?;
+      let field_name = field_name_option.as_ref();
       generate
       (
         item_name,
         &generics_impl,
         &generics_ty,
         &generics_where,
-        field_type.unwrap(),
-        field_name.flatten(),
+        &field_type,
+        field_name,
       )
     },
     StructLike::Enum( ref item ) =>
     {
-      let variants_result : Result< Vec< proc_macro2::TokenStream > > = item.variants.iter().map( | variant |
+      let variants = item.variants.iter().map( | variant |
       {
         variant_generate
         (
@@ -64,13 +65,7 @@ pub fn not( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
           variant,
           &original_input,
         )
-      }).collect();
-
-      let variants = match variants_result
-      {
-        Ok( v ) => v,
-        Err( e ) => return Err( e ),
-      };
+      }).collect::< Result< Vec< proc_macro2::TokenStream > > >()?;
 
       qt!
       {
@@ -91,14 +86,13 @@ pub fn not( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
 /// Generates `Not` implementation for structs.
 ///
 /// Example of generated code:
-/// ```rust
-/// impl core::ops::Not for IsActive
+/// ```text
+/// impl Not for IsTransparent
 /// {
-///   type Output = IsActive;
-///
-///   fn not(self) -> Self::Output
+///   type Output = bool;
+///   fn not( self ) -> bool
 ///   {
-///     IsActive(!self.0)
+///     !self.0
 ///   }
 /// }
 /// ```
@@ -129,11 +123,11 @@ fn generate
     where
       #generics_where
     {
-      type Output = Self;
+      type Output = #field_type;
       #[ inline( always ) ]
-      fn not( self ) -> Self::Output
+      fn not( self ) -> #field_type
       {
-        #item_name( #body )
+        #body
       }
     }
   }
@@ -142,14 +136,12 @@ fn generate
 /// Generates `Not` implementation for enum variants.
 ///
 /// Example of generated code:
-/// ```rust
-/// impl core::ops::Not for MyEnum
+/// ```text
+/// impl Not for MyEnum
 /// {
-///   type Output = MyEnum;
-///
-///   fn not(self) -> Self::Output
+///   fn not( self ) -> i32
 ///   {
-///     MyEnum::Variant(!self.0)
+///     !self.0
 ///   }
 /// }
 /// ```
@@ -169,7 +161,7 @@ fn variant_generate
   let fields = &variant.fields;
   let attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
 
-  if !attrs.config.enabled.value( item_attrs.config.enabled.value( true ) )
+  if !attrs.enabled.value( item_attrs.enabled.value( true ) )
   {
     return Ok( qt!{} )
   }
@@ -184,7 +176,7 @@ fn variant_generate
     return_syn_err!( fields.span(), "Expects a single field to derive Not" );
   }
 
-  let field = fields.iter().next().unwrap();
+  let field = fields.iter().next().expect( "Expects a single field to derive Not" );
   let field_type = &field.ty;
   let field_name = &field.ident;
 
@@ -197,36 +189,37 @@ fn variant_generate
     qt!{ !self.0 }
   };
 
-  if attrs.config.debug.value( false )
+  if attrs.debug.value( false )
   {
-    let debug = format_args!
+    let debug = format!
     (
-      r#"
+      r"
 #[ automatically_derived ]
 impl< {} > core::ops::Not for {}< {} >
 where
   {}
 {{
-  type Output = Self;
+  type Output = {};
   #[ inline ]
-  fn not( self ) -> Self::Output
+  fn not( self ) -> {}
   {{
-    {}( {} )
+    {}
   }}
 }}
-      "#,
+      ",
       qt!{ #generics_impl },
       item_name,
       qt!{ #generics_ty },
       qt!{ #generics_where },
-      item_name,
+      qt!{ #field_type },
+      qt!{ #field_type },
       body,
     );
     let about = format!
     (
-r#"derive : Not
+r"derive : Not
 item : {item_name}
-field : {variant_name}"#,
+field : {variant_name}",
     );
     diag::report_print( about, original_input, debug.to_string() );
   }
@@ -240,14 +233,13 @@ field : {variant_name}"#,
       where
         #generics_where
       {
-        type Output = Self;
+        type Output = #field_type;
         #[ inline ]
-        fn not( self ) -> Self::Output
+        fn not( self ) -> #field_type
         {
-          Self::#variant_name( #body )
+          #body
         }
       }
     }
   )
-
 }

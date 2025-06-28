@@ -1,18 +1,20 @@
-use super::*;
 use macro_tools::
 {
-  attr,
   diag,
   generic_params,
   item_struct,
   struct_like::StructLike,
   Result,
   qt,
+  attr,
+  syn,
+  proc_macro2,
+  return_syn_err,
+  Spanned,
 };
 
 use super::field_attributes::{ FieldAttributes };
 use super::item_attributes::{ ItemAttributes };
-use super::field_attributes::AttributePropertyDebug;
 
 ///
 /// Derive macro to implement Deref when-ever it's possible to do automatically.
@@ -21,12 +23,12 @@ pub fn deref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
 {
   let original_input = input.clone();
   let parsed = syn::parse::< StructLike >( input )?;
-  let has_debug = AttributePropertyDebug::from_attrs( parsed.attrs().iter() )?.value( false );
+  let has_debug = attr::has_debug( parsed.attrs().iter() )?;
   let item_attrs = ItemAttributes::from_attrs( parsed.attrs().iter() )?;
   let item_name = &parsed.ident();
 
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
-  = generic_params::decompose( &parsed.generics() );
+  = generic_params::decompose( parsed.generics() );
 
   let result = match parsed
   {
@@ -36,8 +38,8 @@ pub fn deref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
     },
     StructLike::Struct( ref item ) =>
     {
-      let field_type = item_struct::first_field_type( &item )?;
-      let field_name = item_struct::first_field_name( &item ).ok().flatten();
+      let field_type = item_struct::first_field_type( item )?;
+      let field_name = item_struct::first_field_name( item ).ok().flatten();
       generate
       (
         item_name,
@@ -64,11 +66,7 @@ pub fn deref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
         )
       }).collect();
 
-      let variants = match variants_result
-      {
-        Ok( v ) => v,
-        Err( e ) => return Err( e ),
-      };
+      let variants = variants_result?;
 
       qt!
       {
@@ -89,12 +87,11 @@ pub fn deref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
 /// Generates `Deref` implementation for structs.
 ///
 /// Example of generated code:
-/// ```rust
-/// impl core::ops::Deref for IsTransparent
+/// ```text
+/// impl Deref for IsTransparent
 /// {
 ///   type Target = bool;
-///   #[ inline( always ) ]
-///   fn deref( &self ) -> &Self::Target
+///   fn deref( &self ) -> &bool
 ///   {
 ///     &self.0
 ///   }
@@ -122,14 +119,15 @@ fn generate
 
   qt!
   {
+    use core::ops;
     #[ automatically_derived ]
-    impl< #generics_impl > core::ops::Deref for #item_name< #generics_ty >
+    impl< #generics_impl > ops::Deref for #item_name< #generics_ty >
     where
       #generics_where
     {
       type Target = #field_type;
       #[ inline( always ) ]
-      fn deref( &self ) -> &Self::Target
+      fn deref( &self ) -> &#field_type
       {
         #body
       }
@@ -140,12 +138,11 @@ fn generate
 /// Generates `Deref` implementation for enum variants.
 ///
 /// Example of generated code:
-/// ```rust
-/// impl core::ops::Deref for MyEnum
+/// ```text
+/// impl Deref for MyEnum
 /// {
 ///   type Target = i32;
-///   #[ inline ]
-///   pub fn deref( &self ) -> &Self::Target
+///   fn deref( &self ) -> &i32
 ///   {
 ///     &self.0
 ///   }
@@ -167,7 +164,7 @@ fn variant_generate
   let fields = &variant.fields;
   let attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
 
-  if !attrs.config.enabled.value( item_attrs.config.enabled.value( true ) )
+  if !attrs.enabled.value( item_attrs.enabled.value( true ) )
   {
     return Ok( qt!{} )
   }
@@ -182,7 +179,7 @@ fn variant_generate
     return_syn_err!( fields.span(), "Expects a single field to derive Deref" );
   }
 
-  let field = fields.iter().next().unwrap();
+  let field = fields.iter().next().expect( "Expects a single field to derive Deref" );
   let field_type = &field.ty;
   let field_name = &field.ident;
 
@@ -195,11 +192,11 @@ fn variant_generate
     qt!{ &self.0 }
   };
 
-  if attrs.config.debug.value( false )
+  if attrs.debug.value( false )
   {
-    let debug = format_args!
+    let debug = format!
     (
-      r#"
+      r"
 #[ automatically_derived ]
 impl< {} > core::ops::Deref for {}< {} >
 where
@@ -207,24 +204,25 @@ where
 {{
   type Target = {};
   #[ inline ]
-  fn deref( &self ) -> &Self::Target
+  fn deref( &self ) -> &{}
   {{
     {}
   }}
 }}
-      "#,
+      ",
       qt!{ #generics_impl },
       item_name,
       qt!{ #generics_ty },
       qt!{ #generics_where },
       qt!{ #field_type },
+      qt!{ #field_type },
       body,
     );
     let about = format!
     (
-r#"derive : Deref
+r"derive : Deref
 item : {item_name}
-field : {variant_name}"#,
+field : {variant_name}",
     );
     diag::report_print( about, original_input, debug.to_string() );
   }
@@ -240,12 +238,11 @@ field : {variant_name}"#,
       {
         type Target = #field_type;
         #[ inline ]
-        fn deref( &self ) -> &Self::Target
+        fn deref( &self ) -> &#field_type
         {
           #body
         }
       }
     }
   )
-
 }

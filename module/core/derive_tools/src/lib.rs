@@ -183,6 +183,13 @@ pub mod exposed
   #[ cfg( feature = "derive_inner_from" ) ]
   pub use ::derive_tools_meta::InnerFrom;
 
+  #[ doc( inline ) ]
+  #[ cfg( feature = "derive_new" ) ]
+  pub use ::derive_tools_meta::New;
+
+  #[ doc( inline ) ]
+  #[ cfg( feature = "derive_variadic_from" ) ]
+  pub use ::variadic_from::prelude::{ From1, From2, From3 };
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

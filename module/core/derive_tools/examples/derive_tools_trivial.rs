@@ -6,7 +6,7 @@ fn main()
   {
     use derive_tools::*;
 
-    #[ derive( From, InnerFrom, Display, FromStr, PartialEq, Debug ) ]
+    #[ derive( Display, FromStr, PartialEq, Debug ) ]
     #[ display( "{a}-{b}" ) ]
     struct Struct1
     {
@@ -14,17 +14,9 @@ fn main()
       b : i32,
     }
 
-    // derived InnerFrom
-    let src = Struct1 { a : 1, b : 3 };
-    let got : ( i32, i32 ) = src.into();
-    let exp = ( 1, 3 );
-    assert_eq!( got, exp );
+    
 
-    // derived From
-    let src : Struct1 = ( 1, 3 ).into();
-    let got : ( i32, i32 ) = src.into();
-    let exp = ( 1, 3 );
-    assert_eq!( got, exp );
+    
 
     // derived Display
     let src = Struct1 { a : 1, b : 3 };

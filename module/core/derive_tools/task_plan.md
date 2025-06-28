@@ -16,10 +16,11 @@
 *   🚀 Phase 1 Complete: `derive_tools_meta` compilation errors resolved.
 *   🚀 Phase 2 Complete: `derive_tools_meta` `cargo test` passes.
 *   🚀 Phase 3 Complete: `derive_tools_meta` `cargo clippy` passes with `-D warnings`.
-*   🚧 Phase 4 In Progress: Final verification and `derive_tools` crate testing.
+*   ❌ Phase 4 Blocked: `derive_tools` crate testing failed.
 
 ### Target Crate/Library
-*   `module/core/derive_tools_meta`
+*   `module/core/derive_tools` (Primary focus for current errors)
+*   `module/core/derive_tools_meta` (Dependency, previously fixed)
 
 ### Relevant Context
 *   Files to Include (for AI's reference, primarily from Target Crate):
@@ -40,8 +41,23 @@
     *   `module/core/derive_tools_meta/src/derive/phantom.rs`
     *   `module/core/derive_tools_meta/src/derive/variadic_from.rs`
     *   `module/core/derive_tools_meta/tests/smoke_test.rs`
+    *   `module/core/derive_tools/src/lib.rs`
+    *   `module/core/derive_tools/examples/derive_tools_trivial.rs`
+    *   `module/core/derive_tools/tests/inc/deref/basic_test.rs`
+    *   `module/core/derive_tools/tests/inc/deref_mut/basic_test.rs`
+    *   `module/core/derive_tools/tests/inc/index_mut/struct_named.rs`
+    *   `module/core/derive_tools/tests/inc/index_mut/struct_multiple_named_field.rs`
+    *   `module/core/derive_tools/tests/inc/index_mut/struct_tuple.rs`
+    *   `module/core/derive_tools/tests/inc/index_mut/struct_multiple_tuple.rs`
+    *   `module/core/derive_tools/tests/inc/phantom/*.rs` (all files in this directory)
+    *   `module/core/derive_tools/tests/inc/inner_from/*.rs` (all files in this directory)
+    *   `module/core/derive_tools/tests/inc/new/*.rs` (all files in this directory)
+    *   `module/core/derive_tools/tests/inc/variadic_from/*.rs` (all files in this directory)
+    *   `module/core/derive_tools/tests/inc/all_test.rs`
+    *   `module/core/derive_tools/tests/inc/basic_test.rs`
 *   Crates for Documentation (for AI's reference, if `read_file` on docs is planned):
     *   `derive_tools_meta`
+    *   `derive_tools`
     *   `macro_tools`
 *   External Crates Requiring `task.md` Proposals (if any identified during planning):
     *   `module/core/macro_tools` (Reason: `const` generics handling in `macro_tools::generic_params::decompose` needs fixing for `Deref` and `DerefMut` derives.)
@@ -50,11 +66,15 @@
 *   All procedural macros in `derive_tools_meta` should compile without errors.
 *   All tests for `derive_tools_meta` (`cargo test -p derive_tools_meta`) should pass.
 *   `cargo clippy -p derive_tools_meta -- -D warnings` should run without any warnings.
+*   All tests for `derive_tools` (`cargo test -p derive_tools`) should pass.
+*   `cargo clippy -p derive_tools -- -D warnings` should run without any warnings.
 *   The generated code by the macros should be semantically equivalent to the original working version before the `macro_tools` update.
 
 ### Crate Conformance Check Procedure
 *   Step 1: Run `timeout 90 cargo test -p derive_tools_meta --all-targets` and verify no failures or warnings.
 *   Step 2: Run `timeout 90 cargo clippy -p derive_tools_meta -- -D warnings` and verify no errors or warnings.
+*   Step 3: Run `timeout 90 cargo test -p derive_tools --all-targets` and verify no failures or warnings.
+*   Step 4: Run `timeout 90 cargo clippy -p derive_tools -- -D warnings` and verify no errors or warnings.
 
 ### Increments
 *   ✅ Increment 1: Resolve compilation errors in `derive_tools_meta`.
@@ -103,14 +123,23 @@
         *   Run `timeout 90 cargo clippy -p derive_tools_meta -- -D warnings` and verify exit code 0.
     *   **Commit Message:** `refactor(derive_tools_meta): Address all clippy warnings`
 
-*   ⚫ Increment 4: Final verification and `derive_tools` crate testing.
+*   ⏳ Increment 4: Final verification and `derive_tools` crate testing.
     *   **Goal:** Ensure the entire `derive_tools` workspace (including `derive_tools` and `derive_tools_meta`) is fully functional and passes all checks.
     *   **Steps:**
-        *   Step 1: Run `timeout 90 cargo test --workspace` to ensure all tests in the workspace pass.
-        *   Step 2: Run `timeout 90 cargo clippy --workspace -- -D warnings` to ensure no clippy warnings in the entire workspace.
-        *   Step 3: Run `git status` to ensure a clean working directory.
-        *   Step 4: Perform Increment Verification.
-        *   Step 5: Perform Crate Conformance Check.
+        *   Step 1: Run `timeout 90 cargo test --workspace` to identify overall issues. (Failed with timeout)
+        *   Step 2: Run `timeout 90 cargo test -p derive_tools` to isolate issues in the main crate. (Failed with multiple errors)
+        *   Step 3: Address `Expects an attribute of format #[ from( on ) ]. Got: #[display("{a}-{b}")]` error in `derive_tools_trivial.rs` example. This indicates an issue with how `#[display]` is being parsed or applied by the `From` or `VariadicFrom` derive macro.
+        *   Step 4: Address `the trait bound (i32, i32): std::convert::From<Struct1> is not satisfied` errors in `derive_tools_trivial.rs` example. This indicates an issue with the `Into` or `From` implementation for tuples.
+        *   Step 5: Address `Expects a structure with one field` errors in `variadic_from` tests. This implies `VariadicFrom` is being applied to structs with zero or multiple fields, but the macro expects a single field.
+        *   Step 6: Address `cannot find trait VariadicFrom/InnerFrom/New in the crate root` errors. This means `derive_tools` is not re-exporting these traits correctly from `derive_tools_meta`.
+        *   Step 7: Address `unexpected const parameter declaration` and `proc-macro derive produced unparsable tokens` related to `const N : usize` in `Deref` and `DerefMut` derives. Re-emphasize that this is an external dependency issue in `macro_tools` and the `task.md` proposal is the long-term solution. For now, if possible, temporarily disable or work around these specific tests if they block progress on other issues.
+        *   Step 8: Address `cannot find attribute index in this scope` and `type Output is not a member of trait core::ops::IndexMut` errors in `index_mut` tests. This suggests `#[index]` attribute is not correctly recognized or imported, and the `IndexMut` derive is not generating the correct associated type.
+        *   Step 9: Address `E0392: type parameter T is never used` errors in `phantom` tests. This indicates the `PhantomData` derive is not correctly using type parameters.
+        *   Step 10: Address `warning: unexpected cfg condition value: strum_derive`.
+        *   Step 11: Re-run `timeout 90 cargo test -p derive_tools` and `timeout 90 cargo clippy -p derive_tools -- -D warnings`.
+        *   Step 12: Run `git status` to ensure a clean working directory.
+        *   Step 13: Perform Increment Verification.
+        *   Step 14: Perform Crate Conformance Check.
     *   **Increment Verification:**
         *   Run `timeout 90 cargo test --workspace` and `timeout 90 cargo clippy --workspace -- -D warnings` and verify exit code 0 for both.
         *   Run `git status` and verify no uncommitted changes.
@@ -155,3 +184,12 @@
 *   The `proc-macro` crate type has specific limitations regarding module visibility and `pub mod` declarations, which necessitated the `#[path]` attribute and centralized `derive/mod.rs` for attribute helper structs.
 *   The `AttributePropertyOptionalSingletone` API change in `macro_tools` was a significant source of errors, requiring careful refactoring.
 *   Doc tests in procedural macro crates often require `/// ```text` instead of `/// ```rust` because they cannot directly run macro examples.
+*   **New Insight (2025-06-28):** `cargo test -p derive_tools` revealed several new categories of errors, indicating that fixes in `derive_tools_meta` were not sufficient for full `derive_tools` functionality. These include:
+    *   Incorrect attribute parsing in `derive_tools_trivial.rs` examples (e.g., `#[display]` attribute not expected by `From` or `VariadicFrom` derives).
+    *   Incorrect `From` trait implementations for tuples in examples.
+    *   `VariadicFrom` macro expecting a single-field struct, leading to errors when applied to unit or multi-field structs.
+    *   Missing re-exports of `VariadicFrom`, `InnerFrom`, and `New` traits in `derive_tools`'s `src/lib.rs`.
+    *   Persistent `const` generics issues in `Deref` and `DerefMut` derives, confirming the need for the `macro_tools` update.
+    *   Issues with `IndexMut` derive, including attribute recognition and `Output` associated type implementation.
+    *   `PhantomData` derive not correctly handling unused type parameters.
+    *   A `cfg` warning related to `strum_derive`.

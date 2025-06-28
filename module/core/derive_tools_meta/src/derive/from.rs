@@ -1,26 +1,23 @@
-use super::*;
 use macro_tools::
 {
-  attr,
   diag,
   generic_params,
   item_struct,
   struct_like::StructLike,
   Result,
+  qt,
+  attr,
+  syn,
+  proc_macro2,
+  return_syn_err,
+  Spanned,
 };
 
-#[ path = "from/field_attributes.rs" ]
-mod field_attributes;
-use field_attributes::*;
-#[ path = "from/item_attributes.rs" ]
-mod item_attributes;
-use item_attributes::*;
+use super::field_attributes::{ FieldAttributes };
+use super::item_attributes::{ ItemAttributes };
 
 ///
-/// Provides an automatic `From` implementation for struct wrapping a single value.
-///
-/// This macro simplifies the conversion of an inner type to an outer struct type
-/// when the outer type is a simple wrapper around the inner type.
+/// Derive macro to implement From when-ever it's possible to do automatically.
 ///
 pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
@@ -31,80 +28,30 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
   let item_name = &parsed.ident();
 
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
-  = generic_params::decompose( &parsed.generics() );
+  = generic_params::decompose( parsed.generics() );
 
   let result = match parsed
   {
     StructLike::Unit( ref _item ) =>
     {
-      generate_unit
+      return_syn_err!( parsed.span(), "Expects a structure with one field" );
+    },
+    StructLike::Struct( ref item ) =>
+    {
+      let field_type = item_struct::first_field_type( item )?;
+      let field_name = item_struct::first_field_name( item ).ok().flatten();
+      generate
       (
         item_name,
         &generics_impl,
         &generics_ty,
         &generics_where,
+        &field_type,
+        field_name.as_ref(),
       )
-    },
-    StructLike::Struct( ref item ) =>
-    {
-
-      let mut field_types = item_struct::field_types( &item );
-      let field_names = item_struct::field_names( &item );
-
-      match ( field_types.len(), field_names )
-      {
-        ( 0, _ ) =>
-        generate_unit
-        (
-          item_name,
-          &generics_impl,
-          &generics_ty,
-          &generics_where,
-        ),
-        ( 1, Some( mut field_names ) ) =>
-        generate_single_field_named
-        (
-          item_name,
-          &generics_impl,
-          &generics_ty,
-          &generics_where,
-          field_names.next().unwrap(),
-          &field_types.next().unwrap(),
-        ),
-        ( 1, None ) =>
-        generate_single_field
-        (
-          item_name,
-          &generics_impl,
-          &generics_ty,
-          &generics_where,
-          &field_types.next().unwrap(),
-        ),
-        ( _, Some( field_names ) ) =>
-        generate_multiple_fields_named
-        (
-          item_name,
-          &generics_impl,
-          &generics_ty,
-          &generics_where,
-          field_names,
-          field_types,
-        ),
-        ( _, None ) =>
-        generate_multiple_fields
-        (
-          item_name,
-          &generics_impl,
-          &generics_ty,
-          &generics_where,
-          field_types,
-        ),
-      }
-
     },
     StructLike::Enum( ref item ) =>
     {
-
       let variants_result : Result< Vec< proc_macro2::TokenStream > > = item.variants.iter().map( | variant |
       {
         variant_generate
@@ -119,11 +66,7 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
         )
       }).collect();
 
-      let variants = match variants_result
-      {
-        Ok( v ) => v,
-        Err( e ) => return Err( e ),
-      };
+      let variants = variants_result?;
 
       qt!
       {
@@ -141,227 +84,49 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
   Ok( result )
 }
 
-/// Generates `From` implementation for unit structs.
+/// Generates `From` implementation for structs.
 ///
 /// Example of generated code:
-/// ```rust
-/// impl From< UnitStruct > for UnitStruct
-/// {
-///   #[ inline( always ) ]
-///   fn from( src : UnitStruct ) -> Self
-///   {
-///     src
-///   }
-/// }
-/// ```
-fn generate_unit
-(
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-)
--> proc_macro2::TokenStream
-{
-  qt!
-  {
-    #[ automatically_derived ]
-    impl< #generics_impl > From< #item_name< #generics_ty > > for #item_name< #generics_ty >
-    where
-      #generics_where
-    {
-      #[ inline( always ) ]
-      pub fn from( src : #item_name< #generics_ty > ) -> Self
-      {
-        src
-      }
-    }
-  }
-}
-
-/// Generates `From` implementation for structs with a single named field.
-///
-/// Example of generated code:
-/// ```rust
-/// impl From< i32 > for MyStruct
-/// {
-///   #[ inline( always ) ]
-///   fn from( src : i32 ) -> Self
-///   {
-///     Self { a : src }
-///   }
-/// }
-/// ```
-fn generate_single_field_named
-(
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  field_name : &syn::Ident,
-  field_type : &syn::Type,
-)
--> proc_macro2::TokenStream
-{
-  qt!
-  {
-    #[ automatically_derived ]
-    impl< #generics_impl > From< #field_type > for #item_name< #generics_ty >
-    where
-      #generics_where
-    {
-      #[ inline( always ) ]
-      pub fn from( src : #field_type ) -> Self
-      {
-        Self { #field_name: src }
-      }
-    }
-  }
-}
-
-/// Generates `From` implementation for structs with a single unnamed field (tuple struct).
-///
-/// Example of generated code:
-/// ```rust
+/// ```text
 /// impl From< bool > for IsTransparent
 /// {
-///   #[ inline( always ) ]
 ///   fn from( src : bool ) -> Self
 ///   {
 ///     Self( src )
 ///   }
 /// }
 /// ```
-fn generate_single_field
+fn generate
 (
   item_name : &syn::Ident,
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
   field_type : &syn::Type,
+  field_name : Option< &syn::Ident >,
 )
 -> proc_macro2::TokenStream
 {
-
-  qt!
+  let body = if let Some( field_name ) = field_name
   {
-    #[automatically_derived]
-    impl< #generics_impl > From< #field_type > for #item_name< #generics_ty >
-    where
-      #generics_where
-    {
-      #[ inline( always ) ]
-      pub fn from( src : #field_type ) -> Self
-      {
-        Self( src )
-      }
-    }
+    qt!{ Self { #field_name : src } }
   }
-}
-
-/// Generates `From` implementation for structs with multiple named fields.
-///
-/// Example of generated code:
-/// ```rust
-/// impl From< ( i32, bool ) > for StructNamedFields
-/// {
-///   #[ inline( always ) ]
-///   fn from( src : ( i32, bool ) ) -> Self
-///   {
-///     StructNamedFields{ a : src.0, b : src.1 }
-///   }
-/// }
-/// ```
-fn generate_multiple_fields_named< 'a >
-(
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  field_names : impl macro_tools::IterTrait< 'a, &'a syn::Ident >,
-  field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
-)
--> proc_macro2::TokenStream
-{
-  let field_types_cloned = field_types.collect::< Vec< _ > >();
-
-  let _val_type = field_names
-  .clone()
-  .zip( field_types_cloned.iter() )
-  .enumerate()
-  .map(| ( _index, ( field_name, field_type ) ) |
+  else
   {
-    qt! { #field_name : #field_type }
-  });
-
-  let field_names2 = field_names.clone();
-  let field_types2 = field_types_cloned.clone();
-
-  let params = ( 0..field_names.len() )
-  .map( | index |
-  {
-    let index = syn::Index::from( index );
-    qt!( src.#index )
-  });
+    qt!{ Self( src ) }
+  };
 
   qt!
   {
-    impl< #generics_impl > From< ( #( #field_types2 ),* ) > for #item_name< #generics_ty >
+    #[ automatically_derived ]
+    impl< #generics_impl > core::convert::From< #field_type > for #item_name< #generics_ty >
     where
       #generics_where
     {
       #[ inline( always ) ]
-      pub fn from( src : ( #( #field_types_cloned ),* ) ) -> Self
+      fn from( src : #field_type ) -> Self
       {
-        #item_name { #( #field_names2 : #params ),* }
-      }
-    }
-  }
-
-}
-
-/// Generates `From` implementation for structs with multiple unnamed fields (tuple struct).
-///
-/// Example of generated code:
-/// ```rust
-/// impl From< (i32, bool) > for StructWithManyFields
-/// {
-///   #[ inline( always ) ]
-///   fn from( src : (i32, bool) ) -> Self
-///   {
-///     StructWithManyFields( src.0, src.1 )
-///   }
-/// }
-/// ```
-fn generate_multiple_fields< 'a >
-(
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  field_types : impl macro_tools::IterTrait< 'a, &'a macro_tools::syn::Type >,
-)
--> proc_macro2::TokenStream
-{
-  let field_types_cloned = field_types.collect::< Vec< _ > >();
-
-  let params = ( 0..field_types_cloned.len() )
-  .map( | index |
-  {
-    let index = syn::Index::from( index );
-    qt!( src.#index )
-  });
-
-  qt!
-  {
-    impl< #generics_impl > From< ( #( #field_types_cloned ),* ) > for #item_name< #generics_ty >
-    where
-      #generics_where
-    {
-      #[ inline( always ) ]
-      pub fn from( src : ( #( #field_types_cloned ),* ) ) -> Self
-      {
-        #item_name( #( #params ),* )
+        #body
       }
     }
   }
@@ -370,11 +135,10 @@ fn generate_multiple_fields< 'a >
 /// Generates `From` implementation for enum variants.
 ///
 /// Example of generated code:
-/// ```rust
+/// ```text
 /// impl From< i32 > for MyEnum
 /// {
-///   #[ inline ]
-///   pub fn from( src : i32 ) -> Self
+///   fn from( src : i32 ) -> Self
 ///   {
 ///     Self::Variant( src )
 ///   }
@@ -396,7 +160,7 @@ fn variant_generate
   let fields = &variant.fields;
   let attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
 
-  if !attrs.config.enabled.value( item_attrs.config.enabled.value( true ) )
+  if !attrs.enabled.value( item_attrs.enabled.value( true ) )
   {
     return Ok( qt!{} )
   }
@@ -406,58 +170,54 @@ fn variant_generate
     return Ok( qt!{} )
   }
 
-  let ( args, use_src ) = if fields.len() == 1
+  if fields.len() != 1
   {
-    let field = fields.iter().next().unwrap();
-    (
-      qt!{ #field },
-      qt!{ src },
-    )
+    return_syn_err!( fields.span(), "Expects a single field to derive From" );
+  }
+
+  let field = fields.iter().next().expect( "Expects a single field to derive From" );
+  let field_type = &field.ty;
+  let field_name = &field.ident;
+
+  let body = if let Some( field_name ) = field_name
+  {
+    qt!{ Self::#variant_name { #field_name : src } }
   }
   else
   {
-    let src_i = ( 0..fields.len() ).map( | e |
-    {
-      let i = syn::Index::from( e );
-      qt!{ src.#i, }
-    });
-    (
-      qt!{ #fields },
-      qt!{ #( #src_i )* },
-    )
+    qt!{ Self::#variant_name( src ) }
   };
 
-  if attrs.config.debug.value( false )
+  if attrs.debug.value( false )
   {
-    let debug = format_args!
+    let debug = format!
     (
-      r#"
+      r"
 #[ automatically_derived ]
-impl< {} > From< {} > for {}< {} >
+impl< {} > core::convert::From< {} > for {}< {} >
 where
   {}
 {{
   #[ inline ]
-  pub fn from( src : {} ) -> Self
+  fn from( src : {} ) -> Self
   {{
-    Self::{}( {} )
+    {}
   }}
 }}
-      "#,
+      ",
       qt!{ #generics_impl },
-      qt!{ #args },
+      qt!{ #field_type },
       item_name,
       qt!{ #generics_ty },
       qt!{ #generics_where },
-      qt!{ #args },
-      variant_name,
-      use_src,
+      qt!{ #field_type },
+      body,
     );
     let about = format!
     (
-r#"derive : From
+r"derive : From
 item : {item_name}
-field : {variant_name}"#,
+field : {variant_name}",
     );
     diag::report_print( about, original_input, debug.to_string() );
   }
@@ -467,17 +227,16 @@ field : {variant_name}"#,
     qt!
     {
       #[ automatically_derived ]
-      impl< #generics_impl > From< #args > for #item_name< #generics_ty >
+      impl< #generics_impl > core::convert::From< #field_type > for #item_name< #generics_ty >
       where
         #generics_where
       {
         #[ inline ]
-        pub fn from( src : #args ) -> Self
+        fn from( src : #field_type ) -> Self
         {
-          Self::#variant_name( #use_src )
+          #body
         }
       }
     }
   )
-
 }
