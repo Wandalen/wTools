@@ -1,0 +1,7 @@
+error: Too many arguments
+ --> tests/inc/compile_fail/test_too_many_args.rs:5:11
+  |
+5 |   let _ = from!( 1, 2, 3, 4 );
+  |           ^^^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `from` (in Nightly builds, run with -Z macro-backtrace for more info)

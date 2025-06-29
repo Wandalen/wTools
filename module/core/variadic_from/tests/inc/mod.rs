@@ -37,3 +37,4 @@ use super::*;
 mod variadic_from_manual_test;
 
 mod variadic_from_derive_test;
+mod variadic_from_compile_fail_test;

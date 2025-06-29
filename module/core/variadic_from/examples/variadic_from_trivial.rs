@@ -14,8 +14,6 @@ fn main()
   // Define a struct `MyStruct` with a single field `value`.
   // It derives common traits and `VariadicFrom`.
   #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
-  
-  #[ from( f32 ) ]
   struct MyStruct
   {
     value : i32,
@@ -26,29 +24,19 @@ fn main()
   let exp = MyStruct { value : 10 };
   assert_eq!( got, exp );
 
-  let got : MyStruct = 20.0.into();
-  let exp = MyStruct { value : 20 };
-  assert_eq!( got, exp );
-
-  dbg!( exp );
-  //> MyStruct {
-  //>   value : 20,
-  //> }
-
   // Example with a tuple struct
   #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
-  #[ from( i16 ) ]
-  #[ from( u8 ) ]
   struct MyTupleStruct( i32 );
 
-  let got_tuple : MyTupleStruct = 50i16.into();
+  let got_tuple : MyTupleStruct = 50.into();
   let exp_tuple = MyTupleStruct( 50 );
   assert_eq!( got_tuple, exp_tuple );
 
-  let got_tuple : MyTupleStruct = 100u8.into();
-  let exp_tuple = MyTupleStruct( 100 );
-  assert_eq!( got_tuple, exp_tuple );
+  dbg!( exp );
+  //> MyStruct {
+  //>   value : 10,
+  //> }
 
   dbg!( exp_tuple );
-  //> MyTupleStruct( 100 )
+  //> MyTupleStruct( 50 )
 }

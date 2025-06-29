@@ -55,6 +55,10 @@ pub mod variadic
     {
       $crate::variadic::From3::from3( $a1, $a2, $a3 )
     };
+    ( $( $rest : expr ),* ) =>
+    {
+      compile_error!( "Too many arguments" );
+    };
   }
 }
 
