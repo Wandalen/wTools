@@ -20,19 +20,19 @@ pub fn variadic_from_derive( input : TokenStream ) -> TokenStream
     _ => return syn::Error::new_spanned( ast, "VariadicFrom can only be derived for structs." ).to_compile_error().into(),
   };
 
-  let ( field_types, field_names_or_indices ) : ( Vec< &Type >, Vec< proc_macro2::TokenStream > ) = match &data.fields
+  let ( field_types, field_names_or_indices, is_tuple_struct ) : ( Vec< &Type >, Vec< proc_macro2::TokenStream >, bool ) = match &data.fields
   {
     Fields::Unnamed( fields ) =>
     {
       let types = fields.unnamed.iter().map( |f| &f.ty ).collect();
       let indices = ( 0..fields.unnamed.len() ).map( |i| syn::Index::from( i ).to_token_stream() ).collect();
-      ( types, indices )
+      ( types, indices, true )
     },
     Fields::Named( fields ) =>
     {
       let types = fields.named.iter().map( |f| &f.ty ).collect();
       let names = fields.named.iter().map( |f| f.ident.as_ref().unwrap().to_token_stream() ).collect();
-      ( types, names )
+      ( types, names, false )
     },
     _ => return syn::Error::new_spanned( ast, "VariadicFrom can only be derived for structs with named or unnamed fields." ).to_compile_error().into(),
   };
@@ -62,13 +62,14 @@ pub fn variadic_from_derive( input : TokenStream ) -> TokenStream
       {
         let field_type = &field_types[ 0 ];
         let field_name_or_index = &field_names_or_indices[ 0 ];
+        let constructor = if is_tuple_struct { quote! { ( a1 ) } } else { quote! { { #field_name_or_index : a1 } } };
         impls.extend( quote!
         {
           impl variadic_from::exposed::From1< #field_type > for #name
           {
             fn from1( a1 : #field_type ) -> Self
             {
-              Self { #field_name_or_index : a1 }
+              Self #constructor
             }
           }
         });
@@ -79,13 +80,17 @@ pub fn variadic_from_derive( input : TokenStream ) -> TokenStream
         let field_type2 = &field_types[ 1 ];
         let field_name_or_index1 = &field_names_or_indices[ 0 ];
         let field_name_or_index2 = &field_names_or_indices[ 1 ];
+
+        let constructor_1_2 = if is_tuple_struct { quote! { ( a1, a2 ) } } else { quote! { { #field_name_or_index1 : a1, #field_name_or_index2 : a2 } } };
+        let constructor_1_1 = if is_tuple_struct { quote! { ( a1, a1 ) } } else { quote! { { #field_name_or_index1 : a1, #field_name_or_index2 : a1 } } };
+
         impls.extend( quote!
         {
           impl variadic_from::exposed::From2< #field_type1, #field_type2 > for #name
           {
             fn from2( a1 : #field_type1, a2 : #field_type2 ) -> Self
             {
-              Self { #field_name_or_index1 : a1, #field_name_or_index2 : a2 }
+              Self #constructor_1_2
             }
           }
         });
@@ -96,7 +101,7 @@ pub fn variadic_from_derive( input : TokenStream ) -> TokenStream
           {
             fn from1( a1 : #field_type1 ) -> Self
             {
-              Self { #field_name_or_index1 : a1, #field_name_or_index2 : a1 }
+              Self #constructor_1_1
             }
           }
         });
@@ -109,13 +114,18 @@ pub fn variadic_from_derive( input : TokenStream ) -> TokenStream
         let field_name_or_index1 = &field_names_or_indices[ 0 ];
         let field_name_or_index2 = &field_names_or_indices[ 1 ];
         let field_name_or_index3 = &field_names_or_indices[ 2 ];
+
+        let constructor_1_2_3 = if is_tuple_struct { quote! { ( a1, a2, a3 ) } } else { quote! { { #field_name_or_index1 : a1, #field_name_or_index2 : a2, #field_name_or_index3 : a3 } } };
+        let constructor_1_1_1 = if is_tuple_struct { quote! { ( a1, a1, a1 ) } } else { quote! { { #field_name_or_index1 : a1, #field_name_or_index2 : a1, #field_name_or_index3 : a1 } } };
+        let constructor_1_2_2 = if is_tuple_struct { quote! { ( a1, a2, a2 ) } } else { quote! { { #field_name_or_index1 : a1, #field_name_or_index2 : a2, #field_name_or_index3 : a2 } } };
+
         impls.extend( quote!
         {
           impl variadic_from::exposed::From3< #field_type1, #field_type2, #field_type3 > for #name
           {
             fn from3( a1 : #field_type1, a2 : #field_type2, a3 : #field_type3 ) -> Self
             {
-              Self { #field_name_or_index1 : a1, #field_name_or_index2 : a2, #field_name_or_index3 : a3 }
+              Self #constructor_1_2_3
             }
           }
         });
@@ -126,7 +136,7 @@ pub fn variadic_from_derive( input : TokenStream ) -> TokenStream
           {
             fn from1( a1 : #field_type1 ) -> Self
             {
-              Self { #field_name_or_index1 : a1, #field_name_or_index2 : a1, #field_name_or_index3 : a1 }
+              Self #constructor_1_1_1
             }
           }
         });
@@ -136,7 +146,7 @@ pub fn variadic_from_derive( input : TokenStream ) -> TokenStream
           {
             fn from2( a1 : #field_type1, a2 : #field_type2 ) -> Self
             {
-              Self { #field_name_or_index1 : a1, #field_name_or_index2 : a2, #field_name_or_index3 : a2 }
+              Self #constructor_1_2_2
             }
           }
         });
@@ -146,16 +156,31 @@ pub fn variadic_from_derive( input : TokenStream ) -> TokenStream
 
     // Generate From<(T1, ..., TN)> for tuple conversion
     let tuple_types = quote! { #( #field_types ),* };
-    let tuple_args = quote! { #( #field_names_or_indices ),* };
+    // Generate new argument names for the `from` function
+    let from_fn_args : Vec<proc_macro2::Ident> = (0..num_fields).map(|i| format!("__a{}", i + 1).parse().unwrap()).collect();
+    let from_fn_args_pattern = quote! { #( #from_fn_args ),* }; // For the pattern in `fn from((...))`
+
+    // The arguments used in the constructor
+    let constructor_args_for_from_trait = if is_tuple_struct {
+        quote! { #( #from_fn_args ),* }
+    } else {
+        // For named fields, we need `field_name: arg_name`
+        let named_field_inits = field_names_or_indices.iter().zip(from_fn_args.iter()).map(|(name, arg)| {
+            quote! { #name : #arg }
+        }).collect::<Vec<_>>();
+        quote! { #( #named_field_inits ),* }
+    };
+
+    let tuple_constructor = if is_tuple_struct { quote! { ( #constructor_args_for_from_trait ) } } else { quote! { { #constructor_args_for_from_trait } } };
 
     impls.extend( quote!
     {
       impl From< ( #tuple_types ) > for #name
       {
         #[ inline( always ) ]
-        fn from( ( #tuple_args ) : ( #tuple_types ) ) -> Self
+        fn from( ( #from_fn_args_pattern ) : ( #tuple_types ) ) -> Self // Use generated args here
         {
-          Self { #tuple_args }
+          Self #tuple_constructor
         }
       }
     });
@@ -173,13 +198,17 @@ pub fn variadic_from_derive( input : TokenStream ) -> TokenStream
           panic!( "Expected a type argument for `from` attribute, e.g., `#[from(i32)]`. Got: {}", attr.to_token_stream() )
         });
 
+        // For #[from(Type)], the argument is always `value`.
+        let from_constructor_arg = if is_tuple_struct { quote! { value as #target_field_type } } else { quote! { #target_field_name_or_index : value as #target_field_type } };
+        let from_constructor = if is_tuple_struct { quote! { ( #from_constructor_arg ) } } else { quote! { { #from_constructor_arg } } };
+
         impls.extend( quote!
         {
           impl From< #from_type > for #name
           {
             fn from( value : #from_type ) -> Self
             {
-              Self { #target_field_name_or_index : value as #target_field_type }
+              Self #from_constructor
             }
           }
         });

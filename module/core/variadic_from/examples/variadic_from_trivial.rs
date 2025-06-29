@@ -14,7 +14,7 @@ fn main()
   // Define a struct `MyStruct` with a single field `value`.
   // It derives common traits and `VariadicFrom`.
   #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
-  #[ from( i32 ) ]
+  
   #[ from( f32 ) ]
   struct MyStruct
   {
