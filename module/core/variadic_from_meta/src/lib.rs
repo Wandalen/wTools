@@ -6,6 +6,7 @@
 use proc_macro::TokenStream;
 use quote::{ quote, ToTokens };
 use syn::{ parse_macro_input, DeriveInput, Data, Fields, Type };
+use proc_macro2::Span; // Re-add Span for syn::Ident::new
 
 /// Derive macro for `VariadicFrom`.
 #[ proc_macro_derive( VariadicFrom, attributes( from ) ) ] // Re-enabled attributes(from)
@@ -38,22 +39,21 @@ pub fn variadic_from_derive( input : TokenStream ) -> TokenStream
   };
 
   let num_fields = field_types.len();
-  let first_field_type = field_types.get( 0 ).cloned();
-  let first_field_name_or_index = field_names_or_indices.get( 0 ).cloned();
+  let _first_field_type = field_types.get( 0 ).cloned();
+  let _first_field_name_or_index = field_names_or_indices.get( 0 ).cloned();
 
   let mut impls = quote! {};
 
   // Generate FromN trait implementations (for variadic arguments)
   if num_fields == 0 || num_fields > 3
   {
-    // This error is for the case where no #[from(Type)] attributes are present either.
-    // If there are #[from(Type)] attributes, we proceed even with 0 or >3 fields.
-    if ast.attrs.iter().all( |attr| !attr.path().is_ident("from") )
-    {
-      return syn::Error::new_spanned( ast, "VariadicFrom currently supports structs with 1 to 3 fields, or requires `#[from(Type)]` attributes." ).to_compile_error().into();
-    }
+    // As per spec.md, if field count is 0 or >3, the derive macro generates no code.
+    return TokenStream::new();
   }
 
+  // Generate new argument names for the `from` function
+  let from_fn_args : Vec<proc_macro2::Ident> = (0..num_fields).map(|i| syn::Ident::new(&format!("__a{}", i + 1), Span::call_site())).collect();
+  let _from_fn_args_pattern = quote! { #( #from_fn_args ),* }; // For the pattern in `fn from((...))`
   if num_fields > 0 && num_fields <= 3
   {
     match num_fields
@@ -154,46 +154,68 @@ pub fn variadic_from_derive( input : TokenStream ) -> TokenStream
       _ => {}, // Should be caught by the initial num_fields check
     }
 
-    // Generate From<(T1, ..., TN)> for tuple conversion
-    let tuple_types = quote! { #( #field_types ),* };
-    // Generate new argument names for the `from` function
-    let from_fn_args : Vec<proc_macro2::Ident> = (0..num_fields).map(|i| format!("__a{}", i + 1).parse().unwrap()).collect();
-    let from_fn_args_pattern = quote! { #( #from_fn_args ),* }; // For the pattern in `fn from((...))`
-
-    // The arguments used in the constructor
-    let constructor_args_for_from_trait = if is_tuple_struct {
-        quote! { #( #from_fn_args ),* }
-    } else {
-        // For named fields, we need `field_name: arg_name`
-        let named_field_inits = field_names_or_indices.iter().zip(from_fn_args.iter()).map(|(name, arg)| {
-            quote! { #name : #arg }
-        }).collect::<Vec<_>>();
-        quote! { #( #named_field_inits ),* }
-    };
-
-    let tuple_constructor = if is_tuple_struct { quote! { ( #constructor_args_for_from_trait ) } } else { quote! { { #constructor_args_for_from_trait } } };
-
-    impls.extend( quote!
+    // Generate From<T> or From<(T1, ..., TN)> for conversion
+    if num_fields == 1
     {
-      impl From< ( #tuple_types ) > for #name
+      let field_type = &field_types[ 0 ];
+      let from_fn_arg = &from_fn_args[ 0 ];
+      // qqq: from_fn_args is defined outside this block, but used here.
+      // This is a temporary fix to resolve the E0425 error.
+      // The `from_fn_args` variable needs to be moved to a scope accessible by both branches.
+      let field_name_or_index_0 = &field_names_or_indices[0];
+let constructor_arg = if is_tuple_struct { quote! { #from_fn_arg } } else { quote! { #field_name_or_index_0 : #from_fn_arg } };
+      let constructor = if is_tuple_struct { quote! { ( #constructor_arg ) } } else { quote! { { #constructor_arg } } };
+
+      impls.extend( quote!
       {
-        #[ inline( always ) ]
-        fn from( ( #from_fn_args_pattern ) : ( #tuple_types ) ) -> Self // Use generated args here
+        impl From< #field_type > for #name
         {
-          Self #tuple_constructor
+          #[ inline( always ) ]
+          fn from( #from_fn_arg : #field_type ) -> Self
+          {
+            Self #constructor
+          }
         }
-      }
-    });
+      });
+    }
+    else // num_fields is 2 or 3
+    {
+      let tuple_types = quote! { #( #field_types ),* };
+      let from_fn_args_pattern = quote! { #( #from_fn_args ),* };
+      let constructor_args_for_from_trait = if is_tuple_struct {
+          quote! { #( #from_fn_args ),* }
+      } else {
+          let named_field_inits = field_names_or_indices.iter().zip(from_fn_args.iter()).map(|(name, arg)| {
+              quote! { #name : #arg }
+          }).collect::<Vec<_>>();
+          quote! { #( #named_field_inits ),* }
+      };
+      let tuple_constructor = if is_tuple_struct { quote! { ( #constructor_args_for_from_trait ) } } else { quote! { { #constructor_args_for_from_trait } } };
+
+      impls.extend( quote!
+      {
+        impl From< ( #tuple_types ) > for #name
+        {
+          #[ inline( always ) ]
+          fn from( ( #from_fn_args_pattern ) : ( #tuple_types ) ) -> Self
+          {
+            Self #tuple_constructor
+          }
+        }
+      });
+    }
   }
 
   // Process #[from(Type)] attributes
+  // This section is removed as per spec.md
+  /*
   for attr in &ast.attrs
   {
     if attr.path().is_ident( "from" )
     {
       if let ( Some( target_field_type ), Some( target_field_name_or_index ) ) = ( first_field_type, first_field_name_or_index.clone() )
       {
-        let from_type : Type = attr.parse_args().unwrap_or_else( | _ |
+        let from_type : syn::Type = attr.parse_args().unwrap_or_else( | _ |
         {
           panic!( "Expected a type argument for `from` attribute, e.g., `#[from(i32)]`. Got: {}", attr.to_token_stream() )
         });
@@ -219,10 +241,19 @@ pub fn variadic_from_derive( input : TokenStream ) -> TokenStream
       }
     }
   }
+  */
 
-  if impls.is_empty()
+  // If no implementations were generated by field count, and no #[from(Type)] attributes were processed,
+  // then the macro should return an error.
+  // However, as per spec.md, if field count is 0 or >3, the derive macro generates no code.
+  // So, the `if impls.is_empty()` check should only return an error if there are no fields AND no #[from(Type)] attributes.
+  // Since #[from(Type)] is removed, this check simplifies.
+  if num_fields == 0 || num_fields > 3
   {
-    return syn::Error::new_spanned( ast, "VariadicFrom requires at least one field or `#[from(Type)]` attribute." ).to_compile_error().into();
+    // No code generated for these cases, as per spec.md.
+    // If the user tries to use FromN or From<tuple>, it will be a compile error naturally.
+    // So, we return an empty TokenStream.
+    return TokenStream::new();
   }
 
   let result = quote!
