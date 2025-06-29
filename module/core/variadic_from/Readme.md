@@ -62,7 +62,7 @@ fn main()
   //> }
 
 }
-```text
+```rust
 
 <details>
 <summary>The code above will be expanded to this</summary>
