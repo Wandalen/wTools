@@ -14,8 +14,8 @@
 ### Progress
 *   ✅ Phase 1: Define `FromN` Traits and `from!` Macro.
 *   ✅ Phase 2: Refactor `variadic_from_meta` for Multi-Field Structs and Variadic `From`.
-*   ⚫ Phase 3: Implement `#[from(Type)]` Attribute Handling.
-*   ⚫ Phase 4: Update Tests and Verify Doc Tests.
+*   ✅ Phase 3: Implement `#[from(Type)]` Attribute Handling.
+*   ⚫ Phase 4: Update Doc Tests and Final Verification.
 *   ⚫ Phase 5: Final Verification.
 
 ### Target Crate/Library
@@ -86,7 +86,7 @@
     *   **Commit Message:** `feat(variadic_from): Define FromN traits and from! macro`
 
 *   ✅ Increment 2: Refactor `variadic_from_meta` for Multi-Field Structs and Variadic `From`.
-    *   **Goal:** Modify the `VariadicFrom` derive macro in `variadic_from_meta` to handle multi-field structs and generate `FromN` and tuple `From` implementations, including special cases for `From1` and `From2` on multi-field structs.
+    *   **Goal:** Modify the `VariadicFrom` derive macro in `variadic_from_meta` to handle multi-field structs and generate `FromN` and tuple `From` implementations, including special cases for `From1` on 2-field and 3-field structs, and `From2` on 3-field structs.
     *   **Steps:**
         *   Step 1: Update `variadic_from_meta/src/lib.rs` to parse multi-field structs.
         *   Step 2: Generate `impl FromN` for structs based on the number of fields, including special cases for `From1` on 2-field and 3-field structs, and `From2` on 3-field structs.
@@ -99,7 +99,7 @@
         *   Run `timeout 90 cargo test -p variadic_from_meta` and verify exit code 0.
     *   **Commit Message:** `feat(variadic_from_meta): Support multi-field structs and variadic From`
 
-*   ⚫ Increment 3: Implement `#[from(Type)]` Attribute Handling.
+*   ✅ Increment 3: Implement `#[from(Type)]` Attribute Handling.
     *   **Goal:** Extend the `VariadicFrom` derive macro to process `#[from(Type)]` attributes and generate `impl From<Type> for MyStruct` conversions.
     *   **Steps:**
         *   Step 1: Modify `variadic_from_meta/src/lib.rs` to parse `#[from(Type)]` attributes.
@@ -134,6 +134,7 @@
     *   **Increment 5 (Previous):** Verified that `cargo test -p variadic_from --all-targets` and `cargo clippy -p variadic_from -p variadic_from_meta -- -D warnings` pass without errors or warnings. Addressed `missing documentation` warning in `module/core/variadic_from/tests/variadic_from_tests.rs`.
     *   **Increment 1 (Current):** Defined `From1`, `From2`, `From3` traits and `from!` declarative macro in `module/core/variadic_from/src/lib.rs`. Updated `module/core/variadic_from/tests/inc/variadic_from_manual_test.rs` and `module/core/variadic_from/tests/inc/variadic_from_only_test.rs` to use the new traits and macro. Verified successful build and test execution for `variadic_from`.
     *   **Increment 2 (Current):** Refactored `variadic_from_meta/src/lib.rs` to handle multi-field structs and generate `FromN` and tuple `From` implementations, including special cases for `From1` on 2-field and 3-field structs, and `From2` on 3-field structs. Updated `module/core/variadic_from/tests/inc/variadic_from_derive_test.rs` and `module/core/variadic_from/tests/inc/variadic_from_manual_test.rs` to include `ThreeFieldStruct` and made all structs public for shared test access. Verified successful test execution for both `variadic_from` and `variadic_from_meta`.
+    *   **Increment 3 (Current):** Extended `VariadicFrom` derive macro to process `#[from(Type)]` attributes and generate `impl From<Type> for MyStruct` conversions. Updated `module/core/variadic_from/tests/inc/variadic_from_derive_test.rs` to include `FromAttributeStruct` with `#[from(f32)]` attribute and corresponding assertions. Resolved conflicting `From<i32>` implementation by removing `#[from(i32)]` from `FromAttributeStruct` in the test file. Verified successful test execution for both `variadic_from` and `variadic_from_meta`.
 
 ### Task Requirements
 *   Implement the `VariadicFrom` derive macro to handle multi-field structs and generate `FromN` and tuple `From` implementations.

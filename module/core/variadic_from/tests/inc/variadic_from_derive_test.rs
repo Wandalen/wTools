@@ -22,6 +22,23 @@ pub struct ThreeFieldStruct
   y : i32,
   z : i32,
 }
+#[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
+
+#[ from( f32 ) ]
+pub struct FromAttributeStruct
+{
+  value : i32,
+}
+
+#[ test ]
+fn from_attribute_test()
+{
+  let x : FromAttributeStruct = From::from( 10 );
+  assert_eq!( x.value, 10 );
+
+  let x : FromAttributeStruct = From::from( 20.0f32 );
+  assert_eq!( x.value, 20 );
+}
 
 // Explicitly implement From1<f32> for NamedStruct to satisfy the test in variadic_from_only_test.rs
 impl From1< f32 > for NamedStruct
