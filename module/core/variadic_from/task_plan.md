@@ -1,20 +1,20 @@
 # Task Plan: Implement `VariadicFrom` Derive Macro (Aligned with spec.md)
 
 ### Goal
-*   Implement the `VariadicFrom` derive macro and `from!` helper macro for the `module/core/variadic_from` crate, strictly adhering to `module/core/variadic_from/spec.md`. This includes defining `FromN` traits, adding blanket `From1` implementations, implementing `from!` macro with argument count validation, and ensuring the derive macro generates `FromN` and `From<tuple>` implementations based on field count (1-3 fields). All generated code must be correct, compiles without errors, passes tests (including doc tests), and adheres to `clippy` warnings.
+*   Implement the `VariadicFrom` derive macro and `from!` helper macro for the `module/core/variadic_from` crate, strictly adhering to `module/core/variadic_from/spec.md`. This includes defining `FromN` traits, adding blanket `From1` implementations, implementing `from!` macro with argument count validation, and ensuring the derive macro generates `FromN` and `From<T>`/`From<tuple>` implementations based on field count (1-3 fields). All generated code must be correct, compiles without errors, passes tests (including doc tests), and adheres to `clippy` warnings.
 
 ### Ubiquitous Language (Vocabulary)
 *   **Variadic Constructor:** A constructor that can accept a variable number of arguments. In the context of this crate, this is achieved through the `from!` macro.
 *   **`FromN` Traits:** A set of custom traits (`From1`, `From2`, `From3`) that define a contract for constructing a type from a specific number (`N`) of arguments.
-*   **`VariadicFrom` Trait:** A marker trait implemented via a derive macro (`#[derive(VariadicFrom)]`). Its presence on a struct signals that the derive macro should automatically implement the appropriate `FromN` and `From<tuple>` traits based on the number of fields in the struct.
+*   **`VariadicFrom` Trait:** A marker trait implemented via a derive macro (`#[derive(VariadicFrom)]`). Its presence on a struct signals that the derive macro should automatically implement the appropriate `FromN` and `From<T>`/`From<tuple>` traits based on the number of fields in the struct.
 *   **`from!` Macro:** A declarative, user-facing macro that provides the primary interface for variadic construction. It resolves to a call to `Default::default()`, `From1::from1`, `From2::from2`, or `From3::from3` based on the number of arguments provided.
 *   **Named Struct:** A struct where fields are defined with explicit names, e.g., `struct MyStruct { a: i32 }`.
 *   **Unnamed Struct (Tuple Struct):** A struct where fields are defined by their type only, e.g., `struct MyStruct(i32)`.
 
 ### Progress
 *   ✅ Phase 1: Define `FromN` Traits and `from!` Macro with `compile_error!`.
-*   ⏳ Phase 2: Implement Blanket `From1` Implementations.
-*   ⚫ Phase 3: Refactor `variadic_from_meta` for Multi-Field Structs and Tuple `From`.
+*   ✅ Phase 2: Implement Blanket `From1` Implementations.
+*   ⏳ Phase 3: Refactor `variadic_from_meta` for Multi-Field Structs and `From<T>`/`From<tuple>` (and remove `#[from(Type)]` handling).
 *   ⚫ Phase 4: Update Tests and Verify Doc Tests.
 *   ⚫ Phase 5: Final Verification.
 
@@ -36,10 +36,12 @@
 
 ### Expected Behavior Rules / Specifications (for Target Crate)
 *   **`VariadicFrom` Derive Macro Behavior (from spec.md Section 3.1):**
-    *   If field count is 1, 2, or 3: Generates an implementation of the corresponding `FromN` trait and an implementation of the standard `From<(T1, ..., TN)>` trait.
+    *   If field count is 1, 2, or 3: Generates an implementation of the corresponding `FromN` trait and an implementation of the standard `From<T>`/`From<tuple>` trait.
+    *   If field count is 1: Generates an implementation of the standard `From<T>` trait (where `T` is the type of the single field). The body of this implementation delegates directly to the newly implemented `From1` trait, calling `Self::from1(...)`.
+    *   If field count is 2 or 3: Generates an implementation of the standard `From<(T1, ..., TN)>` trait. The body of this implementation delegates directly to the newly implemented `FromN` trait, calling `Self::fromN(...)`.
     *   If field count is 0 or greater than 3: The derive macro generates no code.
 *   **`from!` Declarative Macro Behavior (from spec.md Section 3.2):**
-    *   `from!()` expands to `::core::default::Default::default()`.
+    *   `from!()` expands to `::core::default::Default::default()`. This requires the target type to implement the `Default` trait.
     *   `from!(arg1)` expands to `$crate::From1::from1(arg1)`.
     *   `from!(arg1, arg2)` expands to `$crate::From2::from2(arg1, arg2)`.
     *   `from!(arg1, arg2, arg3)` expands to `$crate::From3::from3(arg1, arg2, arg3)`.
@@ -64,9 +66,10 @@
 *   Step 6: Perform conformance checks from `spec.md` Section 10:
     *   Derive on 2-Field Named Struct: Verify `impl From2` and `impl From<(T1, T2)>` are generated.
     *   Derive on 3-Field Unnamed Struct: Verify `impl From3` and `impl From<(T1, T2, T3)>` are generated.
-    *   `from!` Macro Correctness: Verify `from!()`, `from!(a)`, `from!(a, b)`, `from!(a, b, c)` compile and produce correct instances.
+    *   `from!` Macro Correctness: Verify `from!()`, `from!(a)`, `from!(a, b)`, and `from!(a, b, c)` compile and produce correct instances.
     *   `from!` Macro Error Handling: Verify `from!(a, b, c, d)` results in `compile_error!`.
-    *   Tuple Conversion Correctness: Verify `(a, b).into()` and `MyStruct::from((a, b))` compile and produce correct instances.
+    *   Tuple Conversion Correctness (2-3 fields): Verify `(a, b).into()` and `MyStruct::from((a, b))` compile and produce the correct struct instance.
+    *   Single-Field Conversion Correctness: Verify `a.into()` and `MyStruct::from(a)` on a derived 1-field struct compile and produce the correct struct instance.
     *   Derive on 4-Field Struct: Verify `#[derive(VariadicFrom)]` on 4-field struct generates no code (i.e., calling `from!` or `FromN` fails).
     *   Manual `From1` Implementation: Verify manual `impl From1<T>` takes precedence over derived logic.
 
@@ -86,7 +89,7 @@
         *   Test `from!(a,b,c,d)` results in compile error.
     *   **Commit Message:** `feat(variadic_from): Define FromN traits and from! macro with compile_error!`
 
-*   ⏳ Increment 2: Implement Blanket `From1` Implementations.
+*   ✅ Increment 2: Implement Blanket `From1` Implementations.
     *   **Goal:** Add the blanket `From1` implementations to `module/core/variadic_from/src/lib.rs` as specified in `spec.md`.
     *   **Steps:**
         *   Step 1: Add `impl<T, All> From1<(T,)> for All where All: From1<T>` to `module/core/variadic_from/src/lib.rs`.
@@ -101,15 +104,17 @@
         *   Run `timeout 90 cargo test -p variadic_from_meta` and verify exit code 0.
     *   **Commit Message:** `feat(variadic_from): Implement From1 blanket implementations`
 
-*   ⚫ Increment 3: Refactor `variadic_from_meta` for Multi-Field Structs and Tuple `From` (and remove `#[from(Type)]` handling).
-    *   **Goal:** Modify the `VariadicFrom` derive macro in `variadic_from_meta` to handle multi-field structs and generate `FromN` and tuple `From` implementations, strictly adhering to `spec.md` (i.e., *remove* `#[from(Type)]` attribute handling and ensure no code generation for 0 or >3 fields).
+*   ⏳ Increment 3: Refactor `variadic_from_meta` for Multi-Field Structs and `From<T>`/`From<tuple>` (and remove `#[from(Type)]` handling).
+    *   **Goal:** Modify the `VariadicFrom` derive macro in `variadic_from_meta` to handle multi-field structs and generate `FromN` and `From<T>`/`From<tuple>` implementations, strictly adhering to `spec.md` (i.e., *remove* `#[from(Type)]` attribute handling and ensure no code generation for 0 or >3 fields).
     *   **Steps:**
         *   Step 1: Update `variadic_from_meta/src/lib.rs` to parse multi-field structs and correctly generate `Self(...)` or `Self { ... }` based on `is_tuple_struct`. (This was the previous attempt, needs to be re-applied and verified).
         *   Step 2: **Remove all logic related to `#[from(Type)]` attributes** from `variadic_from_meta/src/lib.rs`.
         *   Step 3: Modify the error handling for `num_fields == 0 || num_fields > 3` to *generate no code* instead of returning a `syn::Error`.
-        *   Step 4: Update `module/core/variadic_from/tests/inc/variadic_from_derive_test.rs` to remove tests related to `#[from(Type)]` attributes and ensure it uses the derive macro on multi-field structs, mirroring `spec.md` examples.
-        *   Step 5: Perform Increment Verification.
-        *   Step 6: Perform Crate Conformance Check.
+        *   Step 4: **Modify `variadic_from_meta/src/lib.rs` to generate `impl From<T>` for single-field structs and `impl From<(T1, ..., TN)>` for multi-field structs (2 or 3 fields).**
+        *   Step 5: Update `module/core/variadic_from/tests/inc/variadic_from_derive_test.rs` to remove tests related to `#[from(Type)]` attributes and ensure it uses the derive macro on multi-field structs, mirroring `spec.md` examples.
+        *   Step 6: Update `module/core/variadic_from/tests/inc/variadic_from_only_test.rs` to adjust tests for single-field `From<T>` conversions.
+        *   Step 7: Perform Increment Verification.
+        *   Step 8: Perform Crate Conformance Check.
     *   **Increment Verification:**
         *   Run `timeout 90 cargo test -p variadic_from --test variadic_from_tests` and verify exit code 0.
         *   Run `timeout 90 cargo test -p variadic_from_meta` and verify exit code 0.
@@ -137,6 +142,7 @@
     *   **Increment 2 (Previous):** Refactored `variadic_from_meta/src/lib.rs` to handle multi-field structs and generate `FromN` and tuple `From` implementations, including special cases for `From1` on 2-field and 3-field structs, and `From2` on 3-field structs. Updated `module/core/variadic_from/tests/inc/variadic_from_derive_test.rs` and `module/core/variadic_from/tests/inc/variadic_from_manual_test.rs` to include `ThreeFieldStruct` and made all structs public for shared test access. Verified successful test execution for both `variadic_from` and `variadic_from_meta`.
     *   **Increment 3 (Previous):** Extended `VariadicFrom` derive macro to process `#[from(Type)]` attributes and generate `impl From<Type> for MyStruct` conversions. Updated `module/core/variadic_from/tests/inc/variadic_from_derive_test.rs` to include `FromAttributeStruct` with `#[from(f32)]` attribute and corresponding assertions. Resolved conflicting `From<i32>` implementation by removing `#[from(i32)]` from `FromAttributeStruct` in the test file. Verified successful test execution for both `variadic_from` and `variadic_from_meta`.
     *   **Increment 1 (Current):** Defined `FromN` traits and `from!` macro with `compile_error!` for >3 args. Debugged and fixed `trybuild` test hang by correcting the path in `variadic_from_compile_fail_test.rs` and moving the generated `.stderr` file. Updated `variadic_from_trivial.rs` example to align with `spec.md` (removed `#[from(Type)]` attributes and adjusted conversions). Removed unused `Index` import and prefixed unused variables in `variadic_from_meta/src/lib.rs`. All tests pass and no warnings.
+    *   **Increment 2 (Current):** Implemented Blanket `From1` Implementations. Added blanket `From1` implementations to `module/core/variadic_from/src/lib.rs`. Updated `spec.md` to clarify `From<T>` for single-field structs. Refactored `variadic_from_meta/src/lib.rs` to generate `From<T>` for single-field structs and `From<tuple>` for multi-field structs. Adjusted test files (`variadic_from_derive_test.rs`, `variadic_from_only_test.rs`) to reflect these changes and removed temporary debugging test files. Resolved `E0425` and `E0277` errors in `variadic_from_meta/src/lib.rs` by correctly handling `TokenStream` and `Ident` in `quote!` macro. Resolved `E0428` errors by correctly structuring test files and removing duplicate test functions. Resolved `dead_code` warnings in `variadic_from_manual_test.rs`. All tests pass and no warnings.
 
 ### Task Requirements
 *   Implement the `VariadicFrom` derive macro to handle multi-field structs and generate `FromN` and tuple `From` implementations.

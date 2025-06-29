@@ -4,6 +4,7 @@ use variadic_from::exposed::{ From1, From2, From3, from };
 
 // For `MyStruct`
 #[ derive( Default ) ]
+#[ allow( dead_code ) ]
 pub struct MyStruct
 {
   a : i32,
@@ -22,6 +23,7 @@ impl From2< i32, i32 > for MyStruct
 
 // For `NamedStruct`
 #[ derive( Default ) ]
+#[ allow( dead_code ) ]
 pub struct NamedStruct
 {
   field : i32,
@@ -39,6 +41,7 @@ impl From1< f32 > for NamedStruct
 
 // For `ThreeFieldStruct`
 #[ derive( Default ) ]
+#[ allow( dead_code ) ]
 pub struct ThreeFieldStruct
 {
   x : i32,
@@ -61,4 +64,4 @@ impl From3< i32, i32, i32 > for ThreeFieldStruct
   fn from3( a : i32, b : i32, c : i32 ) -> Self { Self { x : a, y : b, z : c } }
 }
 
-include!( "variadic_from_only_test.rs" );
+

@@ -2,7 +2,6 @@
 
 use crate::the_module; // Import the alias for the crate
 
-#[ test ]
 fn basic_test()
 {
   let x : MyStruct = the_module::from!();
@@ -20,7 +19,6 @@ fn basic_test()
   assert_eq!( x_from_i32_i32.b, 40 );
 }
 
-#[ test ]
 fn named_field_test()
 {
   let x : NamedStruct = the_module::from!( 10 );
@@ -30,7 +28,6 @@ fn named_field_test()
   assert_eq!( x_from_f32.field, 30 );
 }
 
-#[ test ]
 fn three_field_struct_test()
 {
   let x : ThreeFieldStruct = the_module::from!();
@@ -53,3 +50,11 @@ fn three_field_struct_test()
   assert_eq!( x_from_i32_i32_i32.y, 200 );
   assert_eq!( x_from_i32_i32_i32.z, 300 );
 }
+
+fn blanket_from1_unit_test()
+{
+  let x : MyStruct = the_module::from!( () );
+  assert_eq!( x.a, 0 );
+  assert_eq!( x.b, 0 );
+}
+

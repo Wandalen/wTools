@@ -9,14 +9,14 @@ The primary goal of the `variadic_from` crate is to enhance developer ergonomics
 The framework is guided by these principles:
 *   **Convention over Configuration:** The system should work out-of-the-box with sensible defaults. The `VariadicFrom` derive macro should automatically generate the necessary implementations for the most common use cases without requiring manual configuration.
 *   **Minimal Syntactic Noise:** The user-facing `from!` macro provides a clean, concise way to construct objects, abstracting away the underlying implementation details of which `FromN` trait is being called.
-*   **Seamless Integration:** The crate should feel like a natural extension of the Rust language. It achieves this by automatically implementing the standard `From<T>` trait for tuples, enabling idiomatic conversions like `.into()`.
+*   **Seamless Integration:** The crate should feel like a natural extension of the Rust language. It achieves this by automatically implementing the standard `From<T>` trait for single fields and `From<tuple>` for multiple fields, enabling idiomatic conversions like `.into()`.
 *   **Non-Intrusive Extensibility:** While the derive macro handles the common cases, the system is built on a foundation of public traits (`From1`, `From2`, etc.) that developers can implement manually for custom behavior or to support types not covered by the macro.
 
 #### 1.2. Key Terminology (Ubiquitous Language)
 
 *   **Variadic Constructor:** A constructor that can accept a variable number of arguments. In the context of this crate, this is achieved through the `from!` macro.
 *   **`FromN` Traits:** A set of custom traits (`From1`, `From2`, `From3`) that define a contract for constructing a type from a specific number (`N`) of arguments.
-*   **`VariadicFrom` Trait:** A marker trait implemented via a derive macro (`#[derive(VariadicFrom)]`). Its presence on a struct signals that the derive macro should automatically implement the appropriate `FromN` and `From<tuple>` traits based on the number of fields in the struct.
+*   **`VariadicFrom` Trait:** A marker trait implemented via a derive macro (`#[derive(VariadicFrom)]`). Its presence on a struct signals that the derive macro should automatically implement the appropriate `FromN` and `From<T>`/`From<tuple>` traits based on the number of fields in the struct.
 *   **`from!` Macro:** A declarative, user-facing macro that provides the primary interface for variadic construction. It resolves to a call to `Default::default()`, `From1::from1`, `From2::from2`, or `From3::from3` based on the number of arguments provided.
 *   **Named Struct:** A struct where fields are defined with explicit names, e.g., `struct MyStruct { a: i32 }`.
 *   **Unnamed Struct (Tuple Struct):** A struct where fields are defined by their type only, e.g., `struct MyStruct(i32)`.
@@ -86,7 +86,7 @@ The `FromN` traits provide a standardized interface for constructing a type from
 *   **Behavior:** When a struct is decorated with `#[derive(VariadicFrom)]`, the derive macro is responsible for:
     1.  Implementing the `VariadicFrom` trait for that struct.
     2.  Generating implementations for the appropriate `FromN` trait(s).
-    3.  Generating an implementation for the standard `From<tuple>` trait.
+    3.  Generating an implementation for the standard `From<T>` trait (for single-field structs) or `From<tuple>` trait (for multi-field structs).
 
 ### 3. Processing & Execution Model
 
@@ -104,7 +104,8 @@ The derive macro is the core of the crate's code generation capabilities.
 *   **Code Generation Logic:**
     *   **If field count is 1, 2, or 3:**
         *   It generates an implementation of the corresponding `FromN` trait. For a struct with `N` fields, it generates `impl FromN<T1, ..., TN> for MyStruct`, where `T1..TN` are the field types. The body of the generated function constructs an instance of the struct, mapping the arguments to the fields in order.
-        *   It generates an implementation of the standard `From<(T1, ..., TN)>` trait. The body of this implementation delegates directly to the newly implemented `FromN` trait, calling `Self::fromN(...)`.
+        *   For structs with 2 or 3 fields, it generates an implementation of the standard `From<(T1, ..., TN)>` trait. The body of this implementation delegates directly to the newly implemented `FromN` trait, calling `Self::fromN(...)`.
+        *   For structs with 1 field, it generates an implementation of the standard `From<T>` trait (where `T` is the type of the single field). The body of this implementation delegates directly to the newly implemented `From1` trait, calling `Self::from1(...)`.
     *   **If field count is 0 or greater than 3:** The derive macro generates no code. This is a deliberate design choice to prevent unexpected behavior for unsupported struct sizes.
 
 #### 3.2. The `from!` Macro
@@ -248,13 +249,15 @@ The following checks must be performed to verify that an implementation of the `
 4.  **`from!` Macro Error Handling:**
     *   **Action:** Call `from!(a, b, c, d)`.
     *   **Expected:** The code fails to compile with an error message explicitly stating the argument limit has been exceeded.
-5.  **Tuple Conversion Correctness:**
+5.  **Tuple Conversion Correctness (2-3 fields):**
     *   **Action:** Use `(a, b).into()` and `MyStruct::from((a, b))` on a derived 2-field struct.
     *   **Expected:** Both conversions compile and produce the correct struct instance.
-6.  **Derive on 4-Field Struct:**
+6.  **Single-Field Conversion Correctness:**
+    *   **Action:** Use `a.into()` and `MyStruct::from(a)` on a derived 1-field struct.
+    *   **Expected:** Both conversions compile and produce the correct struct instance.
+7.  **Derive on 4-Field Struct:**
     *   **Action:** Apply `#[derive(VariadicFrom)]` to a struct with 4 fields and attempt to call `from!(a, b, c, d)`.
     *   **Expected:** The code fails to compile with an error indicating that no `From4` trait or method exists, confirming the derive macro did not generate code.
-7.  **Manual `From1` Implementation:**
+8.  **Manual `From1` Implementation:**
     *   **Action:** Create a struct with `#[derive(VariadicFrom)]` and also provide a manual `impl From1<T> for MyStruct`.
     *   **Expected:** Calling `from!(t)` uses the manual implementation, demonstrating that user-defined logic can coexist with the derived logic.
-```

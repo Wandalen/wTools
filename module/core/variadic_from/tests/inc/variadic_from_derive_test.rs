@@ -30,4 +30,30 @@ impl From1< f32 > for NamedStruct
   fn from1( a : f32 ) -> Self { Self { field : a as i32 } }
 }
 
-include!( "variadic_from_only_test.rs" );
+
+
+
+#[ test ]
+fn single_field_conversion_test()
+{
+  let x : NamedStruct = 200.into();
+  assert_eq!( x.field, 200 );
+}
+
+#[ test ]
+fn blanket_from1_two_tuple_test()
+{
+  let x : MyStruct = ( 30, 40 ).into();
+  assert_eq!( x.a, 30 );
+  assert_eq!( x.b, 40 );
+}
+
+#[ test ]
+
+fn blanket_from1_three_tuple_test()
+{
+  let x : ThreeFieldStruct = ( 4, 5, 6 ).into();
+  assert_eq!( x.x, 4 );
+  assert_eq!( x.y, 5 );
+  assert_eq!( x.z, 6 );
+}
