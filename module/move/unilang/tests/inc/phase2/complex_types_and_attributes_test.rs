@@ -1,11 +1,12 @@
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind };
-use unilang::parsing::Parser;
+use unilang_instruction_parser::{ Parser, UnilangParserOptions }; // Updated import
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
 use unilang::types::Value;
 // use std::collections::HashMap; // Removed unused import
 use serde_json::json;
 
+use unilang_instruction_parser::SourceLocation::StrSpan;
 fn setup_test_environment( command: CommandDefinition ) -> CommandRegistry
 {
   let mut registry = CommandRegistry::new();
@@ -13,10 +14,20 @@ fn setup_test_environment( command: CommandDefinition ) -> CommandRegistry
   registry
 }
 
-fn analyze_program( program_str: &str, registry: &CommandRegistry ) -> Result< Vec< unilang::semantic::VerifiedCommand >, unilang::error::Error >
+fn analyze_program( command_name: &str, positional_args: Vec<unilang_instruction_parser::Argument>, named_args: std::collections::HashMap<String, unilang_instruction_parser::Argument>, registry: &CommandRegistry ) -> Result< Vec< unilang::semantic::VerifiedCommand >, unilang::error::Error >
 {
-  let program = Parser::new( program_str ).parse();
-  let analyzer = SemanticAnalyzer::new( &program, registry );
+  let instructions = vec!
+  [
+    unilang_instruction_parser::GenericInstruction
+    {
+      command_path_slices : command_name.split( '.' ).map( |s| s.to_string() ).collect(),
+      named_arguments : named_args,
+      positional_arguments : positional_args,
+      help_requested : false,
+      overall_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 }, // Placeholder
+    }
+  ];
+  let analyzer = SemanticAnalyzer::new( &instructions, registry );
   analyzer.analyze()
 }
 
@@ -38,16 +49,46 @@ fn test_json_string_argument_type()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let json_str = r#""{\"key\": \"value\"}""#; // Input string with outer quotes for lexer
-  let result = analyze_program( &format!( ".test.command {}", json_str ), &registry );
+  let json_str = r#"{"key": "value"}"#; // Input string for parsing
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : json_str.to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "json_arg" ).unwrap();
-  assert_eq!( *arg, Value::JsonString( r#"{"key": "value"}"#.to_string() ) );
+  assert_eq!( *arg, Value::JsonString( json_str.to_string() ) );
 
   // Test Matrix Row: T3.2
-  let json_str_invalid = r#""{"key": "value""#; // Input string with outer quotes for lexer
-  let result = analyze_program( &format!( ".test.command {}", json_str_invalid ), &registry );
+  let json_str_invalid = r#"{"key": "value""#; // Input string for parsing
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : json_str_invalid.to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_err() );
   let error = result.err().unwrap();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
@@ -71,16 +112,46 @@ fn test_object_argument_type()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let json_str = r#""{\"num\": 123}""#; // Input string with outer quotes for lexer
-  let result = analyze_program( &format!( ".test.command {}", json_str ), &registry );
+  let json_str = r#"{"num": 123}"#; // Input string for parsing
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : json_str.to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "object_arg" ).unwrap();
   assert_eq!( *arg, Value::Object( json!({ "num": 123 }) ) );
 
   // Test Matrix Row: T3.4
-  let json_str_invalid = r#""invalid""#; // Input string with outer quotes for lexer
-  let result = analyze_program( &format!( ".test.command {}", json_str_invalid ), &registry );
+  let json_str_invalid = r#"invalid"#; // Input string for parsing
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : json_str_invalid.to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_err() );
   let error = result.err().unwrap();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
@@ -104,7 +175,29 @@ fn test_multiple_attribute()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let result = analyze_program( ".test.command val1 val2", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "val1".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      },
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "val2".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "multi_arg" ).unwrap();
@@ -125,7 +218,29 @@ fn test_multiple_attribute()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let result = analyze_program( ".test.command 1 2", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "1".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      },
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "2".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "multi_arg" ).unwrap();
@@ -146,7 +261,29 @@ fn test_multiple_attribute()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let result = analyze_program( ".test.command a,b c,d", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "a,b".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      },
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "c,d".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "multi_list_arg" ).unwrap();
@@ -171,20 +308,65 @@ fn test_validation_rules()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let result = analyze_program( ".test.command 15", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "15".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "num_arg" ).unwrap();
   assert_eq!( *arg, Value::Integer( 15 ) );
 
   // Test Matrix Row: T3.9
-  let result = analyze_program( ".test.command 5", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "5".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_err() );
   let error = result.err().unwrap();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "VALIDATION_RULE_FAILED" ) );
 
   // Test Matrix Row: T3.10
-  let result = analyze_program( ".test.command 25", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "25".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_err() );
   let error = result.err().unwrap();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "VALIDATION_RULE_FAILED" ) );
@@ -204,14 +386,44 @@ fn test_validation_rules()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let result = analyze_program( ".test.command abc", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "abc".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "str_arg" ).unwrap();
   assert_eq!( *arg, Value::String( "abc".to_string() ) );
 
   // Test Matrix Row: T3.12
-  let result = analyze_program( ".test.command abc1", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "abc1".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_err() );
   let error = result.err().unwrap();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "VALIDATION_RULE_FAILED" ) );
@@ -231,7 +443,29 @@ fn test_validation_rules()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let result = analyze_program( ".test.command ab cde", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "ab".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      },
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "cde".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_err() );
   let error = result.err().unwrap();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "VALIDATION_RULE_FAILED" ) );

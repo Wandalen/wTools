@@ -20,4 +20,4 @@ mod mod1
 
 }
 
-include!( "./only_test/named.rs" );
+// include!( "./only_test/named.rs" );

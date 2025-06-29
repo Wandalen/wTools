@@ -1,44 +1,40 @@
 //! This test file contains manual implementations of `From` for `variadic_from` to serve as a baseline.
 
-// For `MyStruct`
-struct MyStruct( i32 );
+use variadic_from::exposed::{ From1, From2, From3, from };
 
-impl From< i32 > for MyStruct
+// For `MyStruct`
+#[ derive( Default ) ]
+struct MyStruct
 {
-  fn from( value : i32 ) -> Self
-  {
-    Self( value )
-  }
+  a : i32,
+  b : i32,
 }
 
-impl From< f32 > for MyStruct
+impl From1< i32 > for MyStruct
 {
-  fn from( value : f32 ) -> Self
-  {
-    Self( value as i32 )
-  }
+  fn from1( a : i32 ) -> Self { Self { a, b : a } }
+}
+
+impl From2< i32, i32 > for MyStruct
+{
+  fn from2( a : i32, b : i32 ) -> Self { Self { a, b } }
 }
 
 // For `NamedStruct`
+#[ derive( Default ) ]
 struct NamedStruct
 {
   field : i32,
 }
 
-impl From< i32 > for NamedStruct
+impl From1< i32 > for NamedStruct
 {
-  fn from( value : i32 ) -> Self
-  {
-    Self { field : value }
-  }
+  fn from1( a : i32 ) -> Self { Self { field : a } }
 }
 
-impl From< f32 > for NamedStruct
+impl From1< f32 > for NamedStruct
 {
-  fn from( value : f32 ) -> Self
-  {
-    Self { field : value as i32 }
-  }
+  fn from1( a : f32 ) -> Self { Self { field : a as i32 } }
 }
 
 include!( "variadic_from_only_test.rs" );

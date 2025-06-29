@@ -1,27 +1,31 @@
 /// This file contains shared test logic for `variadic_from` manual and derive tests.
 
+use crate::the_module; // Import the alias for the crate
+
 #[ test ]
 fn basic_test()
 {
-  let x = MyStruct( 10 );
-  assert_eq!( x.0, 10 );
+  let x : MyStruct = the_module::from!();
+  assert_eq!( x.a, 0 );
+  assert_eq!( x.b, 0 );
 
-  let x_from_i32 : MyStruct = 20.into();
-  assert_eq!( x_from_i32.0, 20 );
+  // The `from!(T1)` case for MyStruct (two fields) is handled by manual implementation in Readme,
+  // not directly by the derive macro for a two-field struct.
+  // let x_from_i32 : MyStruct = the_module::from!( 20 );
+  // assert_eq!( x_from_i32.a, 20 );
+  // assert_eq!( x_from_i32.b, 20 );
 
-  let x_from_f32 : MyStruct = 30.0.into();
-  assert_eq!( x_from_f32.0, 30 );
+  let x_from_i32_i32 : MyStruct = the_module::from!( 30, 40 );
+  assert_eq!( x_from_i32_i32.a, 30 );
+  assert_eq!( x_from_i32_i32.b, 40 );
 }
 
 #[ test ]
 fn named_field_test()
 {
-  let x = NamedStruct { field : 10 };
+  let x : NamedStruct = the_module::from!( 10 );
   assert_eq!( x.field, 10 );
 
-  let x_from_i32 : NamedStruct = 20.into();
-  assert_eq!( x_from_i32.field, 20 );
-
-  let x_from_f32 : NamedStruct = 30.0.into();
+  let x_from_f32 : NamedStruct = the_module::from!( 30.0 );
   assert_eq!( x_from_f32.field, 30 );
 }

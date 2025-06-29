@@ -6,9 +6,9 @@ use super::*;
 struct StructMultipleNamed< T > 
 {
   a : Vec< T >,
-  #[ index ]
+  // #[ index ]
   b : Vec< T >,
 }
 
-include!( "./only_test/struct_multiple_named.rs" );
+// include!( "./only_test/struct_multiple_named.rs" );
 

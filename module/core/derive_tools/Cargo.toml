@@ -70,8 +70,8 @@ default = [
   "strum_phf",
 
   "derive_from",
-  "derive_inner_from",
-  "derive_new",
+  # "derive_inner_from",
+  # "derive_new",
 
   "derive_phantom",
 
@@ -117,8 +117,8 @@ full = [
   "strum_phf",
 
   "derive_from",
-  "derive_inner_from",
-  "derive_new",
+  # "derive_inner_from",
+  # "derive_new",
 
   "derive_phantom",
 

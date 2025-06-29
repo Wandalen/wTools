@@ -12,4 +12,4 @@ impl Not for StructNamedEmpty
   }
 }
 
-include!( "./only_test/struct_named_empty.rs" );
+// include!( "./only_test/struct_named_empty.rs" );

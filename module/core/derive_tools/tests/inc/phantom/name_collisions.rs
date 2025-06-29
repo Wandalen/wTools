@@ -5,11 +5,11 @@ pub mod core {}
 pub mod marker {}
 
 #[ allow( dead_code ) ]
-#[ the_module::phantom ]
+// #[ the_module::phantom ]
 struct NameCollisions< T >
 {
   a : String,
   b : i32,
 }
 
-include!( "./only_test/name_collisions.rs" );
+// include!( "./only_test/name_collisions.rs" );

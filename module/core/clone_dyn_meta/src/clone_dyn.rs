@@ -19,11 +19,7 @@ pub fn clone_dyn( attr_input : proc_macro::TokenStream, item_input : proc_macro:
 
   let attrs = syn::parse::< ItemAttributes >( attr_input )?;
   let original_input = item_input.clone();
-  let mut item_parsed = match syn::parse::< syn::ItemTrait >( item_input )
-  {
-    Ok( original ) => original,
-    Err( err ) => return Err( err ),
-  };
+  let mut item_parsed = syn::parse::< syn::ItemTrait >( item_input )?;
 
   let has_debug = attrs.debug.value( false );
   let item_name = &item_parsed.ident;
@@ -120,10 +116,10 @@ impl syn::parse::Parse for ItemAttributes
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ clone_dyn( {} ) ]'
+        r"Expects an attribute of format '#[ clone_dyn( {} ) ]'
   {known}
   But got: '{}'
-"#,
+",
         AttributePropertyDebug::KEYWORD,
         qt!{ #ident }
       )

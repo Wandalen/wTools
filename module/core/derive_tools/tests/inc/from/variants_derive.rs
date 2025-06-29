@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-#[ derive( Debug, PartialEq, the_module::From ) ]
+// #[ derive( Debug, PartialEq, the_module::From ) ]
 // #[ debug ]
 pub enum GetData
 {

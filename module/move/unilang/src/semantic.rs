@@ -91,65 +91,67 @@ impl< 'a > SemanticAnalyzer< 'a >
     let mut bound_args = HashMap::new();
     let mut positional_arg_idx = 0;
 
+    eprintln!( "--- bind_arguments debug ---" );
+    eprintln!( "Instruction: {:?}", instruction );
+    eprintln!( "Command Definition: {:?}", command_def );
+
     for arg_def in &command_def.arguments
     {
-      let mut value_to_bind_str_option = None; // This will hold the raw string value to parse
+      eprintln!( "Processing argument definition: {:?}", arg_def );
+      let mut raw_values_for_current_arg: Vec<String> = Vec::new();
 
       // 1. Try to find a named argument
       if let Some( arg ) = instruction.named_arguments.get( &arg_def.name )
       {
-        value_to_bind_str_option = Some( arg.value.clone() );
+        raw_values_for_current_arg.push( arg.value.clone() );
+        eprintln!( "Found named argument '{}': {:?}", arg_def.name, arg.value );
       }
-      // Aliases are not supported by ArgumentDefinition, so skipping alias check.
+
       // 2. If not found by name, try to find positional arguments
-      else if positional_arg_idx < instruction.positional_arguments.len()
+      // If 'multiple' is true, consume all remaining positional arguments
+      // Otherwise, consume only one positional argument
+      if raw_values_for_current_arg.is_empty() // Only look for positional if not found by name
       {
         if arg_def.multiple
         {
-          // Consume all remaining positional arguments for a 'multiple' argument
-          let mut collected_raw_values = Vec::new();
-          while let Some( arg ) = instruction.positional_arguments.get( positional_arg_idx )
+          while positional_arg_idx < instruction.positional_arguments.len()
           {
-            collected_raw_values.push( arg.value.clone() );
+            raw_values_for_current_arg.push( instruction.positional_arguments[ positional_arg_idx ].value.clone() );
+            eprintln!( "Found positional (multiple) argument: {:?}", instruction.positional_arguments[ positional_arg_idx ].value );
             positional_arg_idx += 1;
-          }
-          if !collected_raw_values.is_empty() || arg_def.optional
-          {
-            // For multiple arguments, join them into a single string for now.
-            // They will be split and parsed into Value::List later.
-            value_to_bind_str_option = Some( collected_raw_values.join(",") );
           }
         }
         else
         {
-          // Consume a single positional argument
-          if let Some( arg ) = instruction.positional_arguments.get( positional_arg_idx )
+          if positional_arg_idx < instruction.positional_arguments.len()
           {
-            value_to_bind_str_option = Some( arg.value.clone() );
+            raw_values_for_current_arg.push( instruction.positional_arguments[ positional_arg_idx ].value.clone() );
+            eprintln!( "Found positional (single) argument: {:?}", instruction.positional_arguments[ positional_arg_idx ].value );
             positional_arg_idx += 1;
           }
         }
       }
 
-      // Now, process the found value (or check for missing/default)
-      if let Some( raw_value_str ) = value_to_bind_str_option
+      eprintln!( "Raw values for current arg '{}': {:?}", arg_def.name, raw_values_for_current_arg );
+
+      // Now, process the collected raw string values
+      if !raw_values_for_current_arg.is_empty()
       {
         if arg_def.multiple
         {
-          // For multiple arguments, parse the joined string into a list of values
-          let collected_values: Result<Vec<Value>, Error> = raw_value_str.split(',')
-            .map(|s| types::parse_value(s, &arg_def.kind).map_err(|e| ErrorData {
-                code: "INVALID_ARGUMENT_TYPE".to_string(),
-                message: format!("Invalid value for argument '{}': {}. Expected {:?}.", arg_def.name, e.reason, e.expected_kind),
-            }.into()))
-            .collect();
-          let collected_values = collected_values?;
-
-          for value in &collected_values
+          let mut collected_values = Vec::new();
+          for raw_value_str in raw_values_for_current_arg
           {
+            eprintln!( "Parsing multiple argument item: '{}' as {:?}", raw_value_str, arg_def.kind );
+            let parsed_value = types::parse_value( &raw_value_str, &arg_def.kind )
+            .map_err( |e| ErrorData {
+              code : "INVALID_ARGUMENT_TYPE".to_string(),
+              message : format!( "Invalid value for argument '{}': {}. Expected {:?}.", arg_def.name, e.reason, e.expected_kind ),
+            } )?;
+
             for rule in &arg_def.validation_rules
             {
-              if !Self::apply_validation_rule( value, rule )
+              if !Self::apply_validation_rule( &parsed_value, rule )
               {
                 return Err( ErrorData {
                   code : "VALIDATION_RULE_FAILED".to_string(),
@@ -157,11 +159,15 @@ impl< 'a > SemanticAnalyzer< 'a >
                 }.into() );
               }
             }
+            collected_values.push( parsed_value );
           }
           bound_args.insert( arg_def.name.clone(), Value::List( collected_values ) );
         }
         else
         {
+          // For non-multiple arguments, there should be only one value
+          let raw_value_str = raw_values_for_current_arg.remove( 0 ); // Take the first (and only) value
+          eprintln!( "Parsing single argument: '{}' as {:?}", raw_value_str, arg_def.kind );
           let parsed_value = types::parse_value( &raw_value_str, &arg_def.kind )
           .map_err( |e| ErrorData {
             code : "INVALID_ARGUMENT_TYPE".to_string(),
@@ -184,23 +190,25 @@ impl< 'a > SemanticAnalyzer< 'a >
       else if !arg_def.optional
       {
         // If no value is found and argument is not optional, it's a missing argument error.
+        eprintln!( "Error: Missing required argument: {}", arg_def.name );
         return Err( ErrorData {
           code : "MISSING_ARGUMENT".to_string(),
           message : format!( "Missing required argument: {}", arg_def.name ),
         }.into() );
       }
-      // Default values are not supported by ArgumentDefinition, so skipping default value logic.
     }
 
     // Check for unconsumed positional arguments
     if positional_arg_idx < instruction.positional_arguments.len()
     {
+      eprintln!( "Error: Too many positional arguments provided. Unconsumed: {:?}", &instruction.positional_arguments[ positional_arg_idx.. ] );
       return Err( ErrorData {
         code : "TOO_MANY_ARGUMENTS".to_string(),
         message : "Too many positional arguments provided".to_string(),
       }.into() );
     }
 
+    eprintln!( "--- bind_arguments end ---" );
     Ok( bound_args )
   }
 

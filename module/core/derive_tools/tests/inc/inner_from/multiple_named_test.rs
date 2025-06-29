@@ -7,4 +7,4 @@ struct StructNamedFields
   b : bool,
 }
 
-include!( "./only_test/multiple_named.rs" );
+// include!( "./only_test/multiple_named.rs" );

@@ -6,6 +6,7 @@
 
 // // xxx : implement derive new
 //
+/*
 // #[ derive( Debug, PartialEq, Default ) ]
 // pub struct Property< Name >
 // {
@@ -27,6 +28,7 @@
 //     Self { name : name.into(), description : description.into(), code : code.into() }
 //   }
 // }
+*/
 
 // #[ cfg( feature = "enabled" ) ]
 // pub mod wtools;
@@ -186,10 +188,6 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ cfg( feature = "derive_new" ) ]
   pub use ::derive_tools_meta::New;
-
-  #[ doc( inline ) ]
-  #[ cfg( feature = "derive_variadic_from" ) ]
-  pub use ::variadic_from::prelude::{ From1, From2, From3 };
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

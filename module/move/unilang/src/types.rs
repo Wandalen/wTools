@@ -141,7 +141,9 @@ pub struct TypeError
 /// specified `Kind` or if it fails validation for that `Kind`.
 pub fn parse_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
 {
-  match kind
+  eprintln!( "--- parse_value debug ---" );
+  eprintln!( "Input: '{}', Kind: {:?}", input, kind );
+  let result = match kind
   {
     Kind::String | Kind::Integer | Kind::Float | Kind::Boolean | Kind::Enum( _ ) =>
     {
@@ -167,11 +169,15 @@ pub fn parse_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
     {
       parse_json_value( input, kind )
     },
-  }
+  };
+  eprintln!( "Result: {:?}", result );
+  eprintln!( "--- parse_value end ---" );
+  result
 }
 
 fn parse_primitive_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
 {
+  eprintln!( "  parse_primitive_value: Input: '{}', Kind: {:?}", input, kind );
   match kind
   {
     Kind::String => Ok( Value::String( input.to_string() ) ),
@@ -203,11 +209,13 @@ fn parse_primitive_value( input: &str, kind: &Kind ) -> Result< Value, TypeError
 
 fn parse_path_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
 {
+  eprintln!( "  parse_path_value: Input: '{}', Kind: {:?}", input, kind );
   if input.is_empty()
   {
     return Err( TypeError { expected_kind: kind.clone(), reason: "Path cannot be empty".to_string() } );
   }
   let path = PathBuf::from( input );
+  eprintln!( "  PathBuf created: {:?}", path );
   match kind
   {
     Kind::Path => Ok( Value::Path( path ) ),
@@ -215,6 +223,7 @@ fn parse_path_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
     {
       if path.is_dir()
       {
+        eprintln!( "  Error: Expected a file, but found a directory: {:?}", path );
         return Err( TypeError { expected_kind: kind.clone(), reason: "Expected a file, but found a directory".to_string() } );
       }
       Ok( Value::File( path ) )
@@ -223,6 +232,7 @@ fn parse_path_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
     {
       if path.is_file()
       {
+        eprintln!( "  Error: Expected a directory, but found a file: {:?}", path );
         return Err( TypeError { expected_kind: kind.clone(), reason: "Expected a directory, but found a file".to_string() } );
       }
       Ok( Value::Directory( path ) )
@@ -297,6 +307,7 @@ fn parse_json_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
   {
     Kind::JsonString =>
     {
+      // Validate that it's a valid JSON string, but store it as a raw string.
       serde_json::from_str::< serde_json::Value >( input )
       .map_err( |e| TypeError { expected_kind: kind.clone(), reason: e.to_string() } )?;
       Ok( Value::JsonString( input.to_string() ) )

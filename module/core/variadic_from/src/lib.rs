@@ -4,15 +4,65 @@
 #![ doc( html_root_url = "https://docs.rs/variadic_from/latest/variadic_from/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+/// Internal implementation of variadic `From` traits and macro.
 #[ cfg( feature = "enabled" ) ]
-pub mod variadic;
+pub mod variadic
+{
+  /// Trait for converting from one argument.
+  pub trait From1< T1 >
+  where
+    Self : Sized,
+  {
+    /// Converts from one argument.
+    fn from1( a1 : T1 ) -> Self;
+  }
+
+  /// Trait for converting from two arguments.
+  pub trait From2< T1, T2 >
+  where
+    Self : Sized,
+  {
+    /// Converts from two arguments.
+    fn from2( a1 : T1, a2 : T2 ) -> Self;
+  }
+
+  /// Trait for converting from three arguments.
+  pub trait From3< T1, T2, T3 >
+  where
+    Self : Sized,
+  {
+    /// Converts from three arguments.
+    fn from3( a1 : T1, a2 : T2, a3 : T3 ) -> Self;
+  }
+
+  /// Macro to construct a struct from variadic arguments.
+  #[ macro_export ]
+  macro_rules! from
+  {
+    () =>
+    {
+      core::default::Default::default()
+    };
+    ( $a1 : expr ) =>
+    {
+      $crate::variadic::From1::from1( $a1 )
+    };
+    ( $a1 : expr, $a2 : expr ) =>
+    {
+      $crate::variadic::From2::from2( $a1, $a2 )
+    };
+    ( $a1 : expr, $a2 : expr, $a3 : expr ) =>
+    {
+      $crate::variadic::From3::from3( $a1, $a2, $a3 )
+    };
+  }
+}
 
 /// Namespace with dependencies.
-
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
-  pub use ::variadic_from_meta; // qqq: Uncommented for Increment 4
+  pub use ::variadic_from_meta;
 }
 
 #[ cfg( feature = "enabled" ) ]
@@ -50,9 +100,22 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use prelude::*;
 
-  #[ doc( inline ) ] // qqq: Uncommented for Increment 4
-  pub use ::variadic_from_meta::*; // qqq: Uncommented for Increment 4
+  #[ doc( inline ) ]
+  pub use ::variadic_from_meta::*;
 
+  #[ cfg( feature = "type_variadic_from" ) ]
+  #[ doc( inline ) ]
+  pub use crate::variadic::From1;
+  #[ cfg( feature = "type_variadic_from" ) ]
+  #[ doc( inline ) ]
+  pub use crate::variadic::From2;
+  #[ cfg( feature = "type_variadic_from" ) ]
+  #[ doc( inline ) ]
+  pub use crate::variadic::From3;
+
+  #[ cfg( feature = "type_variadic_from" ) ]
+  #[ doc( inline ) ]
+  pub use crate::from;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -62,9 +125,20 @@ pub mod prelude
 {
   use super::*;
 
-  // #[ doc( no_inline ) ]
-  // pub use super::variadic;
   #[ doc( no_inline ) ]
-  pub use ::variadic_from_meta::VariadicFrom; // Added for Increment 4
+  pub use ::variadic_from_meta::VariadicFrom;
 
+  #[ cfg( feature = "type_variadic_from" ) ]
+  #[ doc( inline ) ]
+  pub use crate::variadic::From1;
+  #[ cfg( feature = "type_variadic_from" ) ]
+  #[ doc( inline ) ]
+  pub use crate::variadic::From2;
+  #[ cfg( feature = "type_variadic_from" ) ]
+  #[ doc( inline ) ]
+  pub use crate::variadic::From3;
+
+  #[ cfg( feature = "type_variadic_from" ) ]
+  #[ doc( inline ) ]
+  pub use crate::from;
 }

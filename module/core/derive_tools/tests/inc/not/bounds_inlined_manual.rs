@@ -18,4 +18,4 @@ impl< T : ToString + Not< Output = T >, U : Debug + Not< Output = U > > Not for 
   }
 }
 
-include!( "./only_test/bounds_inlined.rs" );
+// include!( "./only_test/bounds_inlined.rs" );

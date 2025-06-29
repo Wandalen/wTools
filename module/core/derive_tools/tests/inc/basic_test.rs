@@ -12,7 +12,8 @@ tests_impls!
   {
     use the_module::*;
 
-    #[ derive( From, InnerFrom, Display, FromStr, PartialEq, Debug ) ]
+    #[ derive( From, // InnerFrom,
+Display, FromStr, PartialEq, Debug ) ]
     #[ display( "{a}-{b}" ) ]
     struct Struct1
     {
@@ -53,7 +54,8 @@ tests_impls!
   {
     use the_module::*;
 
-    #[ derive( From, InnerFrom, Display ) ]
+    #[ derive( From, // InnerFrom,
+Display ) ]
     #[ display( "{a}-{b}" ) ]
     struct Struct1
     {

@@ -1,9 +1,10 @@
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind };
-use unilang::parsing::Parser;
+use unilang_instruction_parser::{ Parser, UnilangParserOptions }; // Updated import
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
 use unilang::types::Value;
 use std::collections::HashMap;
+use unilang_instruction_parser::SourceLocation::StrSpan;
 
 fn setup_test_environment( command: CommandDefinition ) -> CommandRegistry
 {
@@ -12,10 +13,20 @@ fn setup_test_environment( command: CommandDefinition ) -> CommandRegistry
   registry
 }
 
-fn analyze_program( program_str: &str, registry: &CommandRegistry ) -> Result< Vec< unilang::semantic::VerifiedCommand >, unilang::error::Error >
+fn analyze_program( command_name: &str, positional_args: Vec<unilang_instruction_parser::Argument>, named_args: std::collections::HashMap<String, unilang_instruction_parser::Argument>, registry: &CommandRegistry ) -> Result< Vec< unilang::semantic::VerifiedCommand >, unilang::error::Error >
 {
-  let program = Parser::new( program_str ).parse();
-  let analyzer = SemanticAnalyzer::new( &program, registry );
+  let instructions = vec!
+  [
+    unilang_instruction_parser::GenericInstruction
+    {
+      command_path_slices : command_name.split( '.' ).map( |s| s.to_string() ).collect(),
+      named_arguments : named_args,
+      positional_arguments : positional_args,
+      help_requested : false,
+      overall_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 }, // Placeholder
+    }
+  ];
+  let analyzer = SemanticAnalyzer::new( &instructions, registry );
   analyzer.analyze()
 }
 
@@ -37,7 +48,22 @@ fn test_list_argument_type()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let result = analyze_program( ".test.command val1,val2,val3", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "val1,val2,val3".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "list_arg" ).unwrap();
@@ -58,7 +84,22 @@ fn test_list_argument_type()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let result = analyze_program( ".test.command 1,2,3", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "1,2,3".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "list_arg" ).unwrap();
@@ -79,7 +120,22 @@ fn test_list_argument_type()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let result = analyze_program( ".test.command val1;val2;val3", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "val1;val2;val3".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "list_arg" ).unwrap();
@@ -100,7 +156,22 @@ fn test_list_argument_type()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let result = analyze_program( ".test.command \"\"", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "list_arg" ).unwrap();
@@ -121,7 +192,22 @@ fn test_list_argument_type()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let result = analyze_program( ".test.command 1,invalid,3", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "1,invalid,3".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_err() );
   let error = result.err().unwrap();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
@@ -145,7 +231,22 @@ fn test_map_argument_type()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let result = analyze_program( ".test.command key1=val1,key2=val2", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "key1=val1,key2=val2".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "map_arg" ).unwrap();
@@ -169,7 +270,22 @@ fn test_map_argument_type()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let result = analyze_program( ".test.command num1=1,num2=2", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "num1=1,num2=2".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "map_arg" ).unwrap();
@@ -193,7 +309,22 @@ fn test_map_argument_type()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let result = analyze_program( ".test.command key1:val1;key2:val2", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "key1:val1;key2:val2".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "map_arg" ).unwrap();
@@ -217,7 +348,22 @@ fn test_map_argument_type()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let result = analyze_program( ".test.command \"\"", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "map_arg" ).unwrap();
@@ -238,7 +384,22 @@ fn test_map_argument_type()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let result = analyze_program( ".test.command key1=val1,key2", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "key1=val1,key2".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_err() );
   let error = result.err().unwrap();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
@@ -258,7 +419,22 @@ fn test_map_argument_type()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let result = analyze_program( ".test.command key1=val1,key2=invalid", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "key1=val1,key2=invalid".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_err() );
   let error = result.err().unwrap();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );

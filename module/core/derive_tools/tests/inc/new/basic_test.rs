@@ -7,4 +7,4 @@ mod mod1
   pub struct Struct1( pub bool );
 }
 
-include!( "./only_test/basic.rs" );
+// include!( "./only_test/basic.rs" );

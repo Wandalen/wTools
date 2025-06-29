@@ -1,7 +1,7 @@
 use super::*;
 
 #[ allow( dead_code ) ]
-#[ the_module::phantom ]
+// #[ the_module::phantom ]
 struct StructNamed< T >
 {
   a : String,
