@@ -1,4 +1,4 @@
-//! This file contains shared test logic for `variadic_from` manual and derive tests.
+/// This file contains shared test logic for `variadic_from` manual and derive tests.
 
 #[ test ]
 fn basic_test()
