@@ -12,7 +12,7 @@ pub mod variadic;
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
-  // pub use ::variadic_from_meta; // qqq: Temporarily commented out for Increment 1 verification
+  pub use ::variadic_from_meta; // qqq: Uncommented for Increment 4
 }
 
 #[ cfg( feature = "enabled" ) ]
@@ -50,8 +50,8 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use prelude::*;
 
-  // #[ doc( inline ) ] // qqq: Temporarily commented out for Increment 1 verification
-  // pub use ::variadic_from_meta::*; // qqq: Temporarily commented out for Increment 1 verification
+  #[ doc( inline ) ] // qqq: Uncommented for Increment 4
+  pub use ::variadic_from_meta::*; // qqq: Uncommented for Increment 4
 
 }
 
@@ -64,7 +64,7 @@ pub mod prelude
 
   // #[ doc( no_inline ) ]
   // pub use super::variadic;
-  // #[ doc( no_inline ) ]
-  // pub use ::variadic_from_meta::VariadicFrom;
+  #[ doc( no_inline ) ]
+  pub use ::variadic_from_meta::VariadicFrom; // Added for Increment 4
 
 }
