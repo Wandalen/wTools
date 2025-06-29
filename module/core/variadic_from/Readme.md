@@ -19,29 +19,18 @@ constructors for a struct, allowing it to be instantiated from different numbers
 arguments or tuples. It also showcases how to derive common traits like `Debug`,
 `PartialEq`, `Default`, and `VariadicFrom` for the struct.
 
-```text
-#[ cfg( not( all(feature = "enabled", feature = "type_variadic_from", feature = "derive_variadic_from" ) ) ) ]
-fn main(){}
-#[ cfg( all( feature = "enabled", feature = "type_variadic_from", feature = "derive_variadic_from" ) )]
-fn main()
+```rust
+#[test]
+fn readme_example_basic()
 {
   use variadic_from::exposed::*;
 
-  // Define a struct `MyStruct` with fields `a` and `b`.
-  // The struct derives common traits like `Debug`, `PartialEq`, `Default`, and `VariadicFrom`.
   #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
-  // Use `#[ debug ]` to expand and debug generate code.
-  // #[ debug ]
   struct MyStruct
   {
     a : i32,
     b : i32,
   }
-
-  
-  
-
-  
 
   let got : MyStruct = from!();
   let exp = MyStruct { a : 0, b : 0 };
@@ -54,42 +43,24 @@ fn main()
   let got : MyStruct = from!( 13, 14 );
   let exp = MyStruct { a : 13, b : 14 };
   assert_eq!( got, exp );
-
-  dbg!( exp );
-  //> MyStruct {
-  //>   a : 13,
-  //>   b : 14,
-  //> }
-
 }
-```rust
+```
 
 <details>
 <summary>The code above will be expanded to this</summary>
 
-```text
-#[ cfg( not( all(feature = "enabled", feature = "type_variadic_from" ) ) ) ]
-fn main(){}
-#[ cfg( all( feature = "enabled", feature = "type_variadic_from" ) )]
-fn main()
+```rust
+#[test]
+fn readme_example_expanded()
 {
   use variadic_from::exposed::*;
 
-  // Define a struct `MyStruct` with fields `a` and `b`.
-  // The struct derives common traits like `Debug`, `PartialEq`, `Default`
-  // `VariadicFrom` defined manually.
   #[ derive( Debug, PartialEq, Default ) ]
   struct MyStruct
   {
     a : i32,
     b : i32,
   }
-
-  // Implement the `From1` trait for `MyStruct`, which allows constructing a `MyStruct` instance
-  // from a single `i32` value by assigning it to both `a` and `b` fields.
-  
-
-  // == begin of generated
 
   impl From2< i32, i32 > for MyStruct
   {
@@ -105,8 +76,6 @@ fn main()
     }
   }
 
-  // == end of generated
-
   let got : MyStruct = from!();
   let exp = MyStruct { a : 0, b : 0 };
   assert_eq!( got, exp );
@@ -118,13 +87,6 @@ fn main()
   let got : MyStruct = from!( 13, 14 );
   let exp = MyStruct { a : 13, b : 14 };
   assert_eq!( got, exp );
-
-  dbg!( exp );
-  //> MyStruct {
-  //>   a : 13,
-  //>   b : 14,
-  //> }
-
 }
 ```
 
