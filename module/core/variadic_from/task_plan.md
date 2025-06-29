@@ -14,8 +14,8 @@
 ### Progress
 *   ✅ Phase 1: Define `FromN` Traits and `from!` Macro with `compile_error!`.
 *   ✅ Phase 2: Implement Blanket `From1` Implementations.
-*   ✅ Phase 3: Refactor `variadic_from_meta` for Multi-Field Structs and `From<T>`/`From<tuple>` (and remove `#[from(Type)]` handling).
-*   ⏳ Phase 4: Update Doc Tests and Final Verification.
+*   ⏳ Phase 3: Refactor `variadic_from_meta` for Multi-Field Structs and `From<T>`/`From<tuple>` (and remove `#[from(Type)]` handling).
+*   ⚫ Phase 4: Update Doc Tests and Final Verification.
 *   ⚫ Phase 5: Final Verification.
 
 ### Target Crate/Library
