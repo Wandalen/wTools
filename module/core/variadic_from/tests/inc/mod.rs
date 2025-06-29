@@ -33,3 +33,5 @@ mod from0_unnamed_derive;
 mod sample;
 #[ cfg( all( feature = "type_variadic_from" ) ) ]
 mod exports;
+
+mod variadic_from_manual_test;
