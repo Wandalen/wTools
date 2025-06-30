@@ -108,3 +108,4 @@ cargo add variadic_from
 git clone https://github.com/Wandalen/wTools
 cd wTools
 cargo run --example variadic_from_trivial
+```
