@@ -4,6 +4,7 @@
 use super::*;
 #[ allow( unused_imports ) ]
 use collection_tools::HashMap;
+use the_module::HashMapExt;
 
 // qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ] -- done
 // #[ cfg( not( feature = "use_alloc" ) ) ]
@@ -69,7 +70,6 @@ fn add()
 
   // with help of ext
 
-  use the_module::HashMapExt;
   let got : HashMap< String, String > = HashMap::former()
   .add( ( "a".into(), "x".into() ) )
   .add( ( "b".into(), "y".into() ) )
@@ -151,7 +151,7 @@ fn entry_to_val()
 {
   let got = former::EntryToVal::< HashMap< u32, i32 > >::entry_to_val( ( 1u32, 13i32 ) );
   let exp = 13i32;
-  a_id!( got, exp )
+  a_id!( got, exp );
 }
 
 #[ test ]
@@ -177,7 +177,7 @@ fn val_to_entry()
 
   let got = former::ValToEntry::< HashMap< u32, Val > >::val_to_entry( Val { key : 1u32, data : 13i32 } );
   let exp = ( 1u32, Val { key : 1u32, data : 13i32 } );
-  a_id!( got, exp )
+  a_id!( got, exp );
 
 }
 

@@ -162,7 +162,7 @@ mod private
   /// # Panics
   /// qqq: doc
   #[ must_use ]
-  pub fn crate_diff( left : &CrateArchive, right : &CrateArchive, exclude_dev_dependencies : bool ) -> DiffReport
+  pub fn crate_diff( left : &CrateArchive, right : &CrateArchive ) -> DiffReport
   {
     let mut report = DiffReport::default();
 
@@ -189,37 +189,9 @@ mod private
     {
       
       // unwraps are safe because the paths to the files was compared previously
-      let mut local = left.content_bytes( path ).unwrap();
-      let mut remote = right.content_bytes( path ).unwrap();
+      let local = left.content_bytes( path ).unwrap();
+      let remote = right.content_bytes( path ).unwrap();
 
-
-      let ( l, r ) = if path.ends_with( "Cargo.toml.orig" ) && exclude_dev_dependencies 
-      {
-
-        let local = std::str::from_utf8( left.content_bytes( path ).unwrap() ).unwrap();
-        let mut local_data = local.parse::< toml_edit::Document >().unwrap();
-        local_data.remove( "dev-dependencies" );
-        let local = local_data.to_string().as_bytes().to_vec();
-
-
-        let remote = std::str::from_utf8( right.content_bytes( path ).unwrap() ).unwrap();
-        let mut remote_data = remote.parse::< toml_edit::Document >().unwrap();
-        remote_data.remove( "dev-dependencies" );
-        let remote = remote_data.to_string().as_bytes().to_vec();
-
-        ( local, remote )
-      } 
-      else 
-      {
-        ( vec![], vec![] )
-      };
-
-
-      if !l.is_empty() && !r.is_empty()
-      {
-        local = l.as_slice();
-        remote = r.as_slice();
-      }
 
       if local == remote
       {

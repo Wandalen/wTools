@@ -4,23 +4,13 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 #![ allow( clippy::mod_module_files ) ]
 
-///
-/// A framework for creating multi-modal applications.
-///
-
-/// Internal namespace.
-mod private
-{
-}
-
-#[ cfg( feature = "enabled" ) ]
-mod_interface::mod_interface!
-{
-  exposed mod data;
-  exposed mod registry;
-  exposed mod parsing;
-  exposed mod semantic;
-  exposed mod interpreter;
-  exposed mod error;
-  exposed mod help;
-}
+pub mod types;
+pub mod data;
+pub mod error;
+pub mod loader;
+pub mod parsing;
+pub mod registry;
+pub mod semantic;
+pub mod interpreter;
+pub mod help;
+pub mod ca;

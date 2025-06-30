@@ -52,23 +52,26 @@ fn main()
     children : HashMap< String, Child >,
   }
 
-  /// The containr setter provides a collection setter that returns a CollectionFormer tailored for managing a collection of child entities. It employs a generic collection definition to facilitate operations on the entire collection, such as adding or updating elements.
+  /// The containr setter provides a collection setter that returns a `CollectionFormer` tailored for managing a collection of child entities. It employs a generic collection definition to facilitate operations on the entire collection, such as adding or updating elements.
   impl< Definition, > ParentFormer< Definition, >
   where
     Definition : former::FormerDefinition< Storage = ParentFormerStorage >,
   {
 
     #[ inline( always ) ]
-    pub fn children( self ) -> former::CollectionFormer::
-    <
-      ( String, Child ),
-      former::HashMapDefinition< String, Child, Self, Self, ParentSubformCollectionChildrenEnd< Definition >, >
-    >
+    pub fn children( self ) -> ParentChildrenFormer< Self, Definition >
     {
       self._children_subform_collection()
     }
 
   }
+
+  pub type ParentChildrenFormer< SuperFormer, Definition > =
+  former::CollectionFormer::
+  <
+    ( String, Child ),
+    former::HashMapDefinition< String, Child, SuperFormer, SuperFormer, ParentSubformCollectionChildrenEnd< Definition > >,
+  >;
 
   let echo = Child { name : "echo".to_string(), description : "prints all subjects and properties".to_string() };
   let exit = Child { name : "exit".to_string(), description : "just exit".to_string() };

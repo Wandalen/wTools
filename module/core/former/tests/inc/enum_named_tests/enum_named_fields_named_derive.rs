@@ -16,7 +16,7 @@
 //!
 //! Test Relevance/Acceptance Criteria:
 //! - Defines an enum `EnumWithNamedFields` with named variants covering zero, one, and two fields.
-//! - Applies `#[derive(Former)]`, `#[debug]`, and `#[standalone_constructors]` to the enum.
+//! - Applies `#[derive(Former)]`, `#[ debug ]`, and `#[standalone_constructors]` to the enum.
 //! - Applies `#[scalar]` and `#[subform_scalar]` to relevant variants.
 //! - Includes shared test logic from `enum_named_fields_named_only_test.rs`.
 //! - The included tests call the derived static methods (e.g., `EnumWithNamedFields::variant_zero_scalar()`, `EnumWithNamedFields::variant_one_scalar()`, `EnumWithNamedFields::variant_one_subform()`, etc.) and standalone constructors (e.g., `standalone_variant_zero_scalar()`).
@@ -33,7 +33,7 @@ pub struct InnerForSubform {
 
 // Define the enum with named field variants for testing.
 #[ derive( Debug, PartialEq, former::Former ) ]
-#[ debug ]
+// #[ debug ]
 #[ standalone_constructors ]
 pub enum EnumWithNamedFields
 {

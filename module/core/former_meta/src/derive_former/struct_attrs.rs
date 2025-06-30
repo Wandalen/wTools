@@ -36,7 +36,7 @@ impl ItemAttributes
 {
   /// Parses attributes from an iterator.
   /// This function now expects to find #[former(debug, `standalone_constructors`, ...)]
-  /// and also handles top-level #[`storage_fields`(...)], #[mutator(...)], #[perform(...)]
+  /// and also handles top-level #[`storage_fields`(...)], #[`mutator`(...)], #[`perform`(...)]
   pub fn from_attrs< 'a >( attrs_iter : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
   {
     let mut result = Self::default();
@@ -432,8 +432,8 @@ impl syn::parse::Parse for ItemAttributes {
             mutator: AttributeMutator::default(),
             perform: None,
             // These will be overwritten if found
-            standalone_constructors: AttributePropertyOptionalSingletone::default(),
-            debug: AttributePropertyOptionalSingletone::default(),
+            standalone_constructors: AttributePropertyStandaloneConstructors::default(),
+            debug: AttributePropertyDebug::default(),
         };
 
         while !input.is_empty() {

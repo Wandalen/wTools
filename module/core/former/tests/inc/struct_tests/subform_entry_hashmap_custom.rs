@@ -59,7 +59,7 @@ where
       let mut super_former = super_former.unwrap();
       if super_former.storage.command.is_none()
       {
-        super_former.storage.command = Some( Default::default() );
+        super_former.storage.command = Some( HashMap::default() );
       }
       if let Some( ref mut children ) = super_former.storage.command
       {
@@ -94,7 +94,7 @@ where
 
       if super_former.storage.command.is_none()
       {
-        super_former.storage.command = Some( Default::default() );
+        super_former.storage.command = Some( HashMap::default() );
       }
 
       // add instance to the collection

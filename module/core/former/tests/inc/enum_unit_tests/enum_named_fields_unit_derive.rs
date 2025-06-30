@@ -5,12 +5,12 @@
 //! Coverage:
 //! - Rule 3a (Unit + Default): Verifies `EnumWithNamedFields::unit_variant_default() -> EnumWithNamedFields`.
 //! - Rule 1a (Unit + `#[scalar]`): Verifies `EnumWithNamedFields::unit_variant_scalar() -> EnumWithNamedFields`.
-//! - Rule 4a (#[standalone_constructors]): Verifies generation of top-level constructor functions (though not explicitly tested in `_only_test.rs`).
+//! - Rule 4a (`#[standalone_constructors]`): Verifies generation of top-level constructor functions (though not explicitly tested in `_only_test.rs`).
 //!
 //! Test Relevance/Acceptance Criteria:
 //! - Defines an enum `EnumWithNamedFields` with unit variants `UnitVariantDefault` and `UnitVariantScalar`,
 //!   using named fields syntax (`{}`). `UnitVariantScalar` has the `#[scalar]` attribute. The enum has
-//!   `#[derive(Former)]`, `#[debug]`, and `#[standalone_constructors]`.
+//!   `#[derive(Former)]`, `#[ debug ]`, and `#[standalone_constructors]`.
 //! - Relies on the derived static methods (`EnumWithNamedFields::unit_variant_scalar()`, `EnumWithNamedFields::unit_variant_default()`)
 //!   defined in `enum_named_fields_unit_only_test.rs`.
 //! - Asserts that these constructors produce the correct `EnumWithNamedFields` enum instances by comparing
@@ -20,7 +20,7 @@ use super::*;
 
 // Define the enum with unit variants for testing.
 #[ derive( Debug, PartialEq, former::Former ) ]
-#[ debug ]
+// #[ debug ]
 #[ standalone_constructors ]
 pub enum EnumWithNamedFields
 {

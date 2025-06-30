@@ -261,7 +261,7 @@ fn phantom_tuple_empty_generics()
   let exp : syn::Type = parse_quote! { ::core::marker::PhantomData<()> };
   let got = result;
 
-  assert_eq!( format!( "{:?}", exp ), format!( "{:?}", got ), "Expected empty PhantomData, got: {:?}", got );
+  assert_eq!( format!( "{exp:?}" ), format!( "{:?}", got ), "Expected empty PhantomData, got: {:?}", got );
 }
 
 //
@@ -278,7 +278,7 @@ fn phantom_tuple_only_type_parameters()
   let exp : syn::Type = parse_quote! { ::core::marker::PhantomData< ( *const T, *const U ) > };
   let got = result;
 
-  assert_eq!( format!( "{:?}", exp ), format!( "{:?}", got ), "Expected PhantomData with type parameters, got: {:?}", got );
+  assert_eq!( format!( "{exp:?}" ), format!( "{:?}", got ), "Expected PhantomData with type parameters, got: {:?}", got );
 }
 
 //
@@ -295,5 +295,5 @@ fn phantom_tuple_mixed_generics()
   let exp : syn::Type = parse_quote! { ::core::marker::PhantomData< ( *const T, &'a (), N ) > };
   let got = result;
 
-  assert_eq!( format!( "{:?}", exp ), format!( "{:?}", got ), "Expected PhantomData with mixed generics, got: {:?}", got );
+  assert_eq!( format!( "{exp:?}" ), format!( "{:?}", got ), "Expected PhantomData with mixed generics, got: {:?}", got );
 }

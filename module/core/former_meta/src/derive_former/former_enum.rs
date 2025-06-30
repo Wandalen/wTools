@@ -147,6 +147,7 @@ pub(super) struct EnumVariantHandlerContext< 'a >
   pub has_debug : bool,
 }
 
+
 #[allow(clippy::too_many_lines)]
 pub(super) fn former_for_enum
 (

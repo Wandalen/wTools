@@ -51,6 +51,39 @@ mod private
   /// This function handles raw identifier prefixes (`r#`) correctly and ensures that
   /// the newly created identifier is also a raw identifier if its cased version is a
   /// Rust keyword.
+  ///
+  /// # Arguments
+  ///
+  /// * `original` - The original `syn::Ident` to convert.
+  /// * `case` - The target `convert_case::Case` to convert the identifier to.
+  ///
+  /// # Returns
+  ///
+  /// Returns a new `syn::Ident` in the specified case, preserving the span of the original
+  /// identifier and handling raw identifiers (`r#`) appropriately.
+  ///
+  /// # Examples
+  ///
+  /// ```rust
+  /// use macro_tools::{ syn, format_ident };
+  /// use convert_case::Case;
+  ///
+  /// let ident_normal = format_ident!( "my_variable" );
+  /// let ident_keyword = format_ident!( "r#fn" );
+  ///
+  /// // Convert to PascalCase
+  /// let got_pascal = macro_tools::ident::cased_ident_from_ident( &ident_normal, Case::Pascal );
+  /// assert_eq!( got_pascal.to_string(), "MyVariable" );
+  ///
+  /// // Convert a raw identifier to SnakeCase
+  /// let got_snake_raw = macro_tools::ident::cased_ident_from_ident( &ident_keyword, Case::Snake );
+  /// assert_eq!( got_snake_raw.to_string(), "r#fn" );
+  ///
+  /// // Convert a normal identifier that becomes a keyword in the new case
+  /// let ident_struct = format_ident!( "struct" );
+  /// let got_pascal_keyword = macro_tools::ident::cased_ident_from_ident( &ident_struct, Case::Pascal );
+  /// assert_eq!( got_pascal_keyword.to_string(), "Struct" ); // qqq: "Struct" is not a keyword, so `r#` is not added.
+  /// ```
   #[must_use]
   pub fn cased_ident_from_ident( original: &syn::Ident, case: convert_case::Case ) -> syn::Ident
   {
