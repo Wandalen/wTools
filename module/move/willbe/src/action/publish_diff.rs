@@ -99,6 +99,16 @@ mod private
   }
 
   /// Return the differences between a local and remote package versions.
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if there's an issue with path conversion, packing the local crate,
+  /// or if the internal `list` action returns an unexpected format.
+  ///
+  /// # Panics
+  ///
+  /// This function may panic if the internal `list_all` action fails, if it's unable to download
+  /// the package from crates.io, or if a dependency tree walk encounters an unexpected structure.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
   pub fn publish_diff( o : PublishDiffOptions ) -> Result< PublishDiffReport >
   // qqq : don't use 1-prameter Result

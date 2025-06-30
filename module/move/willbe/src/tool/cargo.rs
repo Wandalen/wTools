@@ -92,6 +92,11 @@ mod private
   /// - `path` - path to the package directory
   /// - `dry` - a flag that indicates whether to execute the command or not
   ///
+  // FIX: Added # Errors section for `pack` function
+  /// # Errors
+  ///
+  /// Returns an error if the `rustup ... cargo package` command fails.
+  ///
   #[ cfg_attr
   (
     feature = "tracing",
@@ -159,14 +164,19 @@ mod private
     }
   }
 
- /// Upload a package to the registry
+  /// Upload a package to the registry
+  // FIX: Added # Errors section for `publish` function
+  /// # Errors
+  ///
+  /// Returns an error if the `cargo publish` command fails after all retry attempts.
+  ///
   #[ cfg_attr
   (
     feature = "tracing",
     track_caller,
     tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
   )]
-  pub fn publish( args : PublishOptions ) -> error::untyped::Result< process::Report >
+  pub fn publish( args : &PublishOptions ) -> error::untyped::Result< process::Report >
   // qqq : use typed error
   {
   

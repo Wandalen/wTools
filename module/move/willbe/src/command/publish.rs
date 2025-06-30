@@ -55,7 +55,7 @@ mod private
       dry,
       temp
     } = o.props.try_into()?;
-    let plan = action::publish_plan( patterns, channel, dry, temp )
+    let plan = action::publish_plan( &patterns, channel, dry, temp )
     .context( "Failed to plan the publication process" )?;
 
     let mut formatted_plan = String::new();

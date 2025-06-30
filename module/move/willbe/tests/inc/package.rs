@@ -256,7 +256,7 @@ fn kos_plan()
   
   let plan = action::publish_plan
   (
-    the_patterns,
+    &the_patterns,
     channel::Channel::Stable,
     false,
     false,
