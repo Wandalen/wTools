@@ -14,7 +14,7 @@
 *   **Overall Progress:** 1/7 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Initial Lint Fix
-    *   ⚫ Increment 2: Codebase Analysis & Test Matrix Design
+    *   ⏳ Increment 2: Codebase Analysis & Test Matrix Design
     *   ⚫ Increment 3: Test Implementation & `cfg` Scaffolding
     *   ⚫ Increment 4: `macro_tools` Refactoring
     *   ⚫ Increment 5: Comprehensive Feature Combination Verification
@@ -74,9 +74,13 @@ This matrix outlines the test cases required to ensure comprehensive coverage of
 ##### Increment 2: Codebase Analysis & Test Matrix Design
 *   **Goal:** Analyze the codebase to identify test gaps, required `cfg` attributes, and `macro_tools` refactoring opportunities. The output of this increment is an updated plan, not code changes.
 *   **Steps:**
-    *   Step 1: Review all `tests/inc/*.rs` files. Compare existing tests against the `Test Matrix`. Identify any test cases from the matrix that are not yet implemented.
+    *   Step 1: Review all `tests/inc/*.rs` files. Compare existing tests against the `Test Matrix`. Identified that all test cases from the matrix (T1.1, T1.2, T1.3, T2.1, T3.1, T4.1, T4.2) have corresponding implementations or test files. No new test functions need to be implemented.
     *   Step 2: Review `clone_dyn/Cargo.toml` features and the tests. Determine which tests need `#[cfg(feature = "...")]` attributes to run only under specific feature combinations.
-    *   Step 3: Read `module/core/clone_dyn_meta/src/clone_dyn.rs`. Analyze the `ItemAttributes::parse` implementation and other areas for direct usage of `syn`, `quote`, or `proc-macro2` that could be replaced by `macro_tools` helpers.
+        *   `tests/inc/mod.rs`:
+            *   `pub mod basic_manual;` should be `#[cfg( feature = "clone_dyn_types" )]`
+            *   `pub mod basic;` should be `#[cfg( feature = "derive_clone_dyn" )]`
+            *   `pub mod parametrized;` should be `#[cfg( feature = "derive_clone_dyn" )]`
+    *   Step 3: Read `module/core/clone_dyn_meta/src/clone_dyn.rs`. Analyze the `ItemAttributes::parse` implementation and other areas for direct usage of `syn`, `quote`, or `proc-macro2` that could be replaced by `macro_tools` helpers. Identified that `ItemAttributes::parse` can be refactored to use `macro_tools::Attribute` or `macro_tools::AttributeProperties` for parsing the `debug` attribute.
     *   Step 4: Update this plan file (`task_plan.md`) with the findings: detail the new tests to be written in Increment 3, the `cfg` attributes to be added, and the specific refactoring plan for Increment 4.
 *   **Increment Verification:**
     *   The `task_plan.md` is updated with a detailed plan for the subsequent implementation increments.
@@ -85,9 +89,9 @@ This matrix outlines the test cases required to ensure comprehensive coverage of
 ##### Increment 3: Test Implementation & `cfg` Scaffolding
 *   **Goal:** Implement the new tests and `cfg` attributes as designed in Increment 2.
 *   **Steps:**
-    *   Step 1: Use `insert_content` to add the Test Matrix documentation to the top of `tests/inc/only_test/basic.rs` and other relevant test files.
-    *   Step 2: Implement any new test functions identified in the analysis from Increment 2.
-    *   Step 3: Add the planned `#[cfg]` attributes to the test modules and functions in `tests/inc/mod.rs` and other test files.
+    *   Step 1: Use `insert_content` to add the Test Matrix documentation to the top of `tests/inc/only_test/basic.rs`.
+    *   Step 2: No new test functions need to be implemented.
+    *   Step 3: Add the planned `#[cfg]` attributes to the test modules in `tests/inc/mod.rs`.
 *   **Increment Verification:**
     *   Run `timeout 90 cargo test -p clone_dyn --features derive_clone_dyn` to ensure all existing and new tests pass with default features.
 *   **Commit Message:** "test(clone_dyn): Implement test matrix and add feature cfgs"
@@ -143,3 +147,4 @@ This matrix outlines the test cases required to ensure comprehensive coverage of
 ### Changelog
 *   2025-07-01: V6: Re-structured increments for better workflow (Analyze -> Implement -> Verify). Made planning steps more explicit and proactive.
 *   2025-07-01: V7: Completed Increment 1: Initial Lint Fix. Corrected `doc_markdown` lint in `clone_dyn/Readme.md`.
+*   2025-07-01: V8: Completed Increment 2: Codebase Analysis & Test Matrix Design. Detailed `cfg` adjustments for Increment 3 and `macro_tools` refactoring for Increment 4.
