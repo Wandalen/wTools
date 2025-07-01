@@ -3,7 +3,7 @@ use super::*;
 // use diagnostics_tools::prelude::*;
 // use derives::*;
 
-#[ derive( Debug, Clone, Copy, PartialEq, ) ]
+#[ derive( Debug, Clone, Copy, PartialEq, derives::debug ) ]
 pub struct IsTransparentSimple( bool );
 
 impl core::ops::Deref for IsTransparentSimple
@@ -16,7 +16,7 @@ impl core::ops::Deref for IsTransparentSimple
   }
 }
 
-#[ derive( Debug, Clone, Copy, PartialEq ) ]
+#[ derive( Debug, Clone, Copy, PartialEq, derives::debug ) ]
 pub struct IsTransparentComplex< 'a, 'b : 'a, T, U : ToString + ?Sized, const N : usize >( &'a T, core::marker::PhantomData< &'b U > )
 where 'a : 'b, T : AsRef< U >;
 

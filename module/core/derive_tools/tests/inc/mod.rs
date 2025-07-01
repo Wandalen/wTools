@@ -1,5 +1,5 @@
-
-
+use crate as the_module;
+use test_tools as derives;
 // = import tests of clone_dyn
 
 // #[ cfg( feature = "derive_clone_dyn" ) ]
@@ -43,17 +43,17 @@ mod as_ref_manual_test;
 #[ cfg( feature = "derive_as_ref" ) ]
 mod as_ref_test;
 
-// #[ cfg( feature = "derive_deref" ) ]
-// #[ path = "deref" ]
-// mod deref_tests
-// {
-//   #[ allow( unused_imports ) ]
-//   use super::*;
+#[ cfg( feature = "derive_deref" ) ]
+#[ path = "deref" ]
+mod deref_tests
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
 
-//   //
+  //
 
-//   mod basic_test;
-//   mod basic_manual_test;
+  mod basic_test;
+  mod basic_manual_test;
 
 //   //
 
@@ -106,7 +106,7 @@ mod as_ref_test;
 //   //
 
 //   mod name_collisions;
-// }
+}
 
 // #[ cfg( feature = "derive_deref_mut" ) ]
 // #[ path = "deref_mut" ]

@@ -48,6 +48,7 @@ pub fn deref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
         &generics_where,
         &field_type,
         field_name.as_ref(),
+        &original_input,
       )
     },
     StructLike::Enum( ref item ) =>
@@ -105,6 +106,7 @@ fn generate
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
   field_type : &syn::Type,
   field_name : Option< &syn::Ident >,
+  original_input : &proc_macro::TokenStream,
 )
 -> proc_macro2::TokenStream
 {
@@ -116,6 +118,39 @@ fn generate
   {
     qt!{ &self.0 }
   };
+
+  let debug = format!
+  (
+    r"
+#[ automatically_derived ]
+impl< {} > core::ops::Deref for {}< {} >
+where
+  {}
+{{
+  type Target = {};
+  #[ inline ]
+  fn deref( &self ) -> &{}
+  {{
+    {}
+  }}
+}}
+    ",
+    qt!{ #generics_impl },
+    item_name,
+    qt!{ #generics_ty },
+    qt!{ #generics_where },
+    qt!{ #field_type },
+    qt!{ #field_type },
+    body,
+  );
+  let about = format!
+  (
+r"derive : Deref
+item : {item_name}
+field_type : {field_type:?}
+field_name : {field_name:?}",
+  );
+  diag::report_print( about, original_input, debug.to_string() );
 
   qt!
   {
