@@ -12,14 +12,14 @@
 
 ### Progress
 *   **Primary Target Crate:** `module/core/derive_tools`
-*   **Overall Progress:** 4/20 increments complete
+*   **Overall Progress:** 5/20 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Initial `derive_tools` Analysis and Baseline
     *   ✅ Increment 2: Plan and Document `AsMut` and `AsRef` Tests
     *   ✅ Increment 3: Fix `as_mut` tests
     *   ✅ Increment 4: Fix `as_ref` tests
-    *   ⏳ Increment 5: Plan and Document `Deref` Tests
-    *   ⚫ Increment 6: Fix `Deref` tests for basic structs
+    *   ✅ Increment 5: Plan and Document `Deref` Tests
+    *   ⏳ Increment 6: Fix `Deref` tests for basic structs
     *   ⚫ Increment 7: Fix `Deref` tests for enums
     *   ⚫ Increment 8: Fix `Deref` tests for generics and bounds
     *   ⚫ Increment 9: Plan and Document `DerefMut` Tests
@@ -128,7 +128,239 @@
     *   Execute `timeout 90 cargo test -p derive_tools --test tests -- as_ref_manual_test` and `timeout 90 cargo test -p derive_tools --test tests -- as_ref_test`. Verify both pass.
 *   **Commit Message:** `fix(derive_tools): Re-enable and fix as_ref tests`
 
-... (The plan will continue in this detailed, granular fashion for all other test modules, with each having its own planning, documentation, and fixing increments) ...
+##### Increment 5: Plan and Document `Deref` Tests
+*   **Goal:** Create the test matrices for `Deref` and add them as documentation to the relevant test files.
+*   **Specification Reference:** N/A
+*   **Test Matrix for `Deref`:**
+    | ID   | Struct Type        | Inner Type | Implementation | Expected Behavior                                       | Test File                   |
+    |------|--------------------|------------|----------------|---------------------------------------------------------|-----------------------------|
+    | T5.1 | Tuple struct (1 field) | `i32`      | `#[derive(Deref)]` | Dereferencing returns a reference to the inner `i32`. | `deref_test.rs`             |
+    | T5.2 | Tuple struct (1 field) | `i32`      | Manual `impl`  | Dereferencing returns a reference to the inner `i32`. | `deref_manual_test.rs`      |
+    | T5.3 | Named struct (1 field) | `String`   | `#[derive(Deref)]` | Dereferencing returns a reference to the inner `String`. | `deref_test.rs`             |
+    | T5.4 | Named struct (1 field) | `String`   | Manual `impl`  | Dereferencing returns a reference to the inner `String`. | `deref_manual_test.rs`      |
+*   **Steps:**
+    *   Step 1: Create file `tests/inc/deref_test.rs` with initial content `include!( "./only_test/deref.rs" );`.
+    *   Step 2: Create file `tests/inc/deref_manual_test.rs` with initial content `include!( "./only_test/deref.rs" );`.
+    *   Step 3: Create file `tests/inc/only_test/deref.rs` with initial content `#[ test ] fn deref_test() { }`.
+    *   Step 4: Use `insert_content` to add the `Deref` test matrix as a file-level doc comment to `tests/inc/deref_test.rs`.
+    *   Step 5: Use `insert_content` to add a doc comment explaining the purpose of the test function in `tests/inc/only_test/deref.rs`.
+    *   Step 6: Use `insert_content` to add the `Deref` test matrix as a file-level doc comment to `tests/inc/deref_manual_test.rs`.
+*   **Increment Verification:**
+    *   Use `read_file` to confirm the documentation has been added correctly to all three files.
+*   **Commit Message:** `docs(test): Add test matrices and purpose for Deref`
+
+##### Increment 6: Fix `Deref` tests for basic structs
+*   **Goal:** Re-enable and fix `Deref` tests for basic structs.
+*   **Specification Reference:** T5.1, T5.2, T5.3, T5.4
+*   **Steps:**
+    *   Step 1: Use `search_and_replace` on `module/core/derive_tools/tests/inc/mod.rs` to uncomment `mod deref_manual_test;` and `mod deref_test;`.
+    *   Step 2: Execute `timeout 90 cargo test -p derive_tools --test tests -- deref_test`.
+    *   Step 3: If the test fails, apply Critical Log Analysis.
+    *   Step 4: Propose and apply a fix to `derive_tools_meta/src/derive/deref.rs`.
+    *   Step 5: Perform Increment Verification.
+    *   Step 6: Perform Crate Conformance Check.
+*   **Increment Verification:**
+    *   Execute `timeout 90 cargo test -p derive_tools --test tests -- deref_manual_test` and `timeout 90 cargo test -p derive_tools --test tests -- deref_test`. Verify both pass.
+*   **Commit Message:** `fix(derive_tools): Re-enable and fix Deref tests for basic structs`
+
+##### Increment 7: Fix `Deref` tests for enums
+*   **Goal:** Re-enable and fix `Deref` tests for enums.
+*   **Specification Reference:** N/A
+*   **Steps:**
+    *   Step 1: Use `search_and_replace` on `module/core/derive_tools/tests/inc/mod.rs` to uncomment `mod deref_enum_test;` and `mod deref_enum_manual_test;`.
+    *   Step 2: Execute `timeout 90 cargo test -p derive_tools --test tests -- deref_enum_test`.
+    *   Step 3: If the test fails, apply Critical Log Analysis.
+    *   Step 4: Propose and apply a fix to `derive_tools_meta/src/derive/deref.rs`.
+    *   Step 5: Perform Increment Verification.
+    *   Step 6: Perform Crate Conformance Check.
+*   **Increment Verification:**
+    *   Execute `timeout 90 cargo test -p derive_tools --test tests -- deref_enum_manual_test` and `timeout 90 cargo test -p derive_tools --test tests -- deref_enum_test`. Verify both pass.
+*   **Commit Message:** `fix(derive_tools): Re-enable and fix Deref tests for enums`
+
+##### Increment 8: Fix `Deref` tests for generics and bounds
+*   **Goal:** Re-enable and fix `Deref` tests for generics and bounds.
+*   **Specification Reference:** N/A
+*   **Steps:**
+    *   Step 1: Use `search_and_replace` on `module/core/derive_tools/tests/inc/mod.rs` to uncomment `mod deref_generics_test;` and `mod deref_generics_manual_test;`.
+    *   Step 2: Execute `timeout 90 cargo test -p derive_tools --test tests -- deref_generics_test`.
+    *   Step 3: If the test fails, apply Critical Log Analysis.
+    *   Step 4: Propose and apply a fix to `derive_tools_meta/src/derive/deref.rs`.
+    *   Step 5: Perform Increment Verification.
+    *   Step 6: Perform Crate Conformance Check.
+*   **Increment Verification:**
+    *   Execute `timeout 90 cargo test -p derive_tools --test tests -- deref_generics_manual_test` and `timeout 90 cargo test -p derive_tools --test tests -- deref_generics_test`. Verify both pass.
+*   **Commit Message:** `fix(derive_tools): Re-enable and fix Deref tests for generics and bounds`
+
+##### Increment 9: Plan and Document `DerefMut` Tests
+*   **Goal:** Create the test matrices for `DerefMut` and add them as documentation to the relevant test files.
+*   **Specification Reference:** N/A
+*   **Test Matrix for `DerefMut`:**
+    | ID   | Struct Type        | Inner Type | Implementation | Expected Behavior                                           | Test File                   |
+    |------|--------------------|------------|----------------|-------------------------------------------------------------|-----------------------------|
+    | T9.1 | Tuple struct (1 field) | `i32`      | `#[derive(DerefMut)]` | Dereferencing returns a mutable reference to the inner `i32`. | `deref_mut_test.rs`         |
+    | T9.2 | Tuple struct (1 field) | `i32`      | Manual `impl`  | Dereferencing returns a mutable reference to the inner `i32`. | `deref_mut_manual_test.rs`  |
+    | T9.3 | Named struct (1 field) | `String`   | `#[derive(DerefMut)]` | Dereferencing returns a mutable reference to the inner `String`. | `deref_mut_test.rs`         |
+    | T9.4 | Named struct (1 field) | `String`   | Manual `impl`  | Dereferencing returns a mutable reference to the inner `String`. | `deref_mut_manual_test.rs`  |
+*   **Steps:**
+    *   Step 1: Use `insert_content` to add the `DerefMut` test matrix as a file-level doc comment to `tests/inc/deref_mut_test.rs`.
+    *   Step 2: Use `insert_content` to add a doc comment explaining the purpose of the test function in `tests/inc/only_test/deref_mut.rs`.
+*   **Increment Verification:**
+    *   Use `read_file` to confirm the documentation has been added correctly to both files.
+*   **Commit Message:** `docs(test): Add test matrices and purpose for DerefMut`
+
+##### Increment 10: Fix `DerefMut` tests
+*   **Goal:** Re-enable and fix `DerefMut` tests.
+*   **Specification Reference:** T9.1, T9.2, T9.3, T9.4
+*   **Steps:**
+    *   Step 1: Use `search_and_replace` on `module/core/derive_tools/tests/inc/mod.rs` to uncomment `mod deref_mut_manual_test;` and `mod deref_mut_test;`.
+    *   Step 2: Execute `timeout 90 cargo test -p derive_tools --test tests -- deref_mut_test`.
+    *   Step 3: If the test fails, apply Critical Log Analysis.
+    *   Step 4: Propose and apply a fix to `derive_tools_meta/src/derive/deref_mut.rs`.
+    *   Step 5: Perform Increment Verification.
+    *   Step 6: Perform Crate Conformance Check.
+*   **Increment Verification:**
+    *   Execute `timeout 90 cargo test -p derive_tools --test tests -- deref_mut_manual_test` and `timeout 90 cargo test -p derive_tools --test tests -- deref_mut_test`. Verify both pass.
+*   **Commit Message:** `fix(derive_tools): Re-enable and fix DerefMut tests`
+
+##### Increment 11: Plan and Document `From` Tests
+*   **Goal:** Create the test matrices for `From` and add them as documentation to the relevant test files.
+*   **Specification Reference:** N/A
+*   **Test Matrix for `From`:**
+    | ID    | Struct Type        | Source Type | Implementation | Expected Behavior                                       | Test File                   |
+    |-------|--------------------|-------------|----------------|---------------------------------------------------------|-----------------------------|
+    | T11.1 | Tuple struct (1 field) | `i32`       | `#[derive(From)]` | `From<i32>` is implemented, allowing conversion.        | `from_test.rs`              |
+    | T11.2 | Tuple struct (1 field) | `i32`       | Manual `impl`  | `From<i32>` is implemented, allowing conversion.        | `from_manual_test.rs`       |
+    | T11.3 | Named struct (1 field) | `String`    | `#[derive(From)]` | `From<String>` is implemented, allowing conversion.     | `from_test.rs`              |
+    | T11.4 | Named struct (1 field) | `String`    | Manual `impl`  | `From<String>` is implemented, allowing conversion.     | `from_manual_test.rs`       |
+*   **Steps:**
+    *   Step 1: Use `insert_content` to add the `From` test matrix as a file-level doc comment to `tests/inc/from_test.rs`.
+    *   Step 2: Use `insert_content` to add a doc comment explaining the purpose of the test function in `tests/inc/only_test/from.rs`.
+*   **Increment Verification:**
+    *   Use `read_file` to confirm the documentation has been added correctly to both files.
+*   **Commit Message:** `docs(test): Add test matrices and purpose for From`
+
+##### Increment 12: Fix `From` tests
+*   **Goal:** Re-enable and fix `From` tests.
+*   **Specification Reference:** T11.1, T11.2, T11.3, T11.4
+*   **Steps:**
+    *   Step 1: Use `search_and_replace` on `module/core/derive_tools/tests/inc/mod.rs` to uncomment `mod from_manual_test;` and `mod from_test;`.
+    *   Step 2: Execute `timeout 90 cargo test -p derive_tools --test tests -- from_test`.
+    *   Step 3: If the test fails, apply Critical Log Analysis.
+    *   Step 4: Propose and apply a fix to `derive_tools_meta/src/derive/from.rs`.
+    *   Step 5: Perform Increment Verification.
+    *   Step 6: Perform Crate Conformance Check.
+*   **Increment Verification:**
+    *   Execute `timeout 90 cargo test -p derive_tools --test tests -- from_manual_test` and `timeout 90 cargo test -p derive_tools --test tests -- from_test`. Verify both pass.
+*   **Commit Message:** `fix(derive_tools): Re-enable and fix From tests`
+
+##### Increment 13: Plan and Document `InnerFrom` and `New` tests
+*   **Goal:** Create the test matrices for `InnerFrom` and `New` and add them as documentation to the relevant test files.
+*   **Specification Reference:** N/A
+*   **Test Matrix for `InnerFrom`:**
+    | ID    | Struct Type        | Inner Type | Implementation | Expected Behavior                                       | Test File                   |
+    |-------|--------------------|------------|----------------|---------------------------------------------------------|-----------------------------|
+    | T13.1 | Tuple struct (1 field) | `i32`      | `#[derive(InnerFrom)]` | `From<i32>` is implemented for the inner type.          | `inner_from_test.rs`        |
+    | T13.2 | Tuple struct (1 field) | `i32`      | Manual `impl`  | `From<i32>` is implemented for the inner type.          | `inner_from_manual_test.rs` |
+*   **Test Matrix for `New`:**
+    | ID    | Struct Type        | Fields     | Implementation | Expected Behavior                                       | Test File                   |
+    |-------|--------------------|------------|----------------|---------------------------------------------------------|-----------------------------|
+    | T14.1 | Tuple struct (1 field) | 1          | `#[derive(New)]` | `new()` constructor is generated.                       | `new_test.rs`               |
+    | T14.2 | Tuple struct (1 field) | 1          | Manual `impl`  | `new()` constructor is generated.                       | `new_manual_test.rs`        |
+    | T14.3 | Named struct (1 field) | 1          | `#[derive(New)]` | `new()` constructor is generated.                       | `new_test.rs`               |
+    | T14.4 | Named struct (1 field) | 1          | Manual `impl`  | `new()` constructor is generated.                       | `new_manual_test.rs`        |
+*   **Steps:**
+    *   Step 1: Use `insert_content` to add the `InnerFrom` test matrix as a file-level doc comment to `tests/inc/inner_from_test.rs`.
+    *   Step 2: Use `insert_content` to add a doc comment explaining the purpose of the test function in `tests/inc/only_test/inner_from.rs`.
+    *   Step 3: Use `insert_content` to add the `New` test matrix as a file-level doc comment to `tests/inc/new_test.rs`.
+    *   Step 4: Use `insert_content` to add a doc comment explaining the purpose of the test function in `tests/inc/only_test/new.rs`.
+*   **Increment Verification:**
+    *   Use `read_file` to confirm the documentation has been added correctly to all four files.
+*   **Commit Message:** `docs(test): Add test matrices and purpose for InnerFrom and New`
+
+##### Increment 14: Fix `InnerFrom` tests
+*   **Goal:** Re-enable and fix `InnerFrom` tests.
+*   **Specification Reference:** T13.1, T13.2
+*   **Steps:**
+    *   Step 1: Use `search_and_replace` on `module/core/derive_tools/tests/inc/mod.rs` to uncomment `mod inner_from_manual_test;` and `mod inner_from_test;`.
+    *   Step 2: Execute `timeout 90 cargo test -p derive_tools --test tests -- inner_from_test`.
+    *   Step 3: If the test fails, apply Critical Log Analysis.
+    *   Step 4: Propose and apply a fix to `derive_tools_meta/src/derive/inner_from.rs`.
+    *   Step 5: Perform Increment Verification.
+    *   Step 6: Perform Crate Conformance Check.
+*   **Increment Verification:**
+    *   Execute `timeout 90 cargo test -p derive_tools --test tests -- inner_from_manual_test` and `timeout 90 cargo test -p derive_tools --test tests -- inner_from_test`. Verify both pass.
+*   **Commit Message:** `fix(derive_tools): Re-enable and fix InnerFrom tests`
+
+##### Increment 15: Fix `New` tests
+*   **Goal:** Re-enable and fix `New` tests.
+*   **Specification Reference:** T14.1, T14.2, T14.3, T14.4
+*   **Steps:**
+    *   Step 1: Use `search_and_replace` on `module/core/derive_tools/tests/inc/mod.rs` to uncomment `mod new_manual_test;` and `mod new_test;`.
+    *   Step 2: Execute `timeout 90 cargo test -p derive_tools --test tests -- new_test`.
+    *   Step 3: If the test fails, apply Critical Log Analysis.
+    *   Step 4: Propose and apply a fix to `derive_tools_meta/src/derive/new.rs`.
+    *   Step 5: Perform Increment Verification.
+    *   Step 6: Perform Crate Conformance Check.
+*   **Increment Verification:**
+    *   Execute `timeout 90 cargo test -p derive_tools --test tests -- new_manual_test` and `timeout 90 cargo test -p derive_tools --test tests -- new_test`. Verify both pass.
+*   **Commit Message:** `fix(derive_tools): Re-enable and fix New tests`
+
+##### Increment 16: Plan and Document `Not`, `Index`, `IndexMut` tests
+*   **Goal:** Create the test matrices for `Not`, `Index`, and `IndexMut` and add them as documentation to the relevant test files.
+*   **Specification Reference:** N/A
+*   **Test Matrix for `Not`:**
+    | ID    | Struct Type        | Inner Type | Implementation | Expected Behavior                                       | Test File                   |
+    |-------|--------------------|------------|----------------|---------------------------------------------------------|-----------------------------|
+    | T16.1 | Tuple struct (1 field) | `bool`     | `#[derive(Not)]` | `!` operator returns the logical NOT of the inner field. | `not_test.rs`               |
+    | T16.2 | Tuple struct (1 field) | `bool`     | Manual `impl`  | `!` operator returns the logical NOT of the inner field. | `not_manual_test.rs`        |
+*   **Test Matrix for `Index`:**
+    | ID    | Struct Type        | Inner Type | Implementation | Expected Behavior                                       | Test File                   |
+    |-------|--------------------|------------|----------------|---------------------------------------------------------|-----------------------------|
+    | T17.1 | Tuple struct (1 field) | `Vec<i32>` | `#[derive(Index)]` | `[]` operator returns a reference to an element.        | `index_test.rs`             |
+    | T17.2 | Tuple struct (1 field) | `Vec<i32>` | Manual `impl`  | `[]` operator returns a reference to an element.        | `index_manual_test.rs`      |
+*   **Test Matrix for `IndexMut`:**
+    | ID    | Struct Type        | Inner Type | Implementation | Expected Behavior                                           | Test File                   |
+    |-------|--------------------|------------|----------------|-------------------------------------------------------------|-----------------------------|
+    | T18.1 | Tuple struct (1 field) | `Vec<i32>` | `#[derive(IndexMut)]` | `[]` operator returns a mutable reference to an element.    | `index_mut_test.rs`         |
+    | T18.2 | Tuple struct (1 field) | `Vec<i32>` | Manual `impl`  | `[]` operator returns a mutable reference to an element.    | `index_mut_manual_test.rs`  |
+*   **Steps:**
+    *   Step 1: Use `insert_content` to add the `Not` test matrix as a file-level doc comment to `tests/inc/not_test.rs`.
+    *   Step 2: Use `insert_content` to add a doc comment explaining the purpose of the test function in `tests/inc/only_test/not.rs`.
+    *   Step 3: Use `insert_content` to add the `Index` test matrix as a file-level doc comment to `tests/inc/index_test.rs`.
+    *   Step 4: Use `insert_content` to add a doc comment explaining the purpose of the test function in `tests/inc/only_test/index.rs`.
+    *   Step 5: Use `insert_content` to add the `IndexMut` test matrix as a file-level doc comment to `tests/inc/index_mut_test.rs`.
+    *   Step 6: Use `insert_content` to add a doc comment explaining the purpose of the test function in `tests/inc/only_test/index_mut.rs`.
+*   **Increment Verification:**
+    *   Use `read_file` to confirm the documentation has been added correctly to all six files.
+*   **Commit Message:** `docs(test): Add test matrices and purpose for Not, Index, IndexMut`
+
+##### Increment 17: Fix `Not` tests
+*   **Goal:** Re-enable and fix `Not` tests.
+*   **Specification Reference:** T16.1, T16.2
+*   **Steps:**
+    *   Step 1: Use `search_and_replace` on `module/core/derive_tools/tests/inc/mod.rs` to uncomment `mod not_manual_test;` and `mod not_test;`.
+    *   Step 2: Execute `timeout 90 cargo test -p derive_tools --test tests -- not_test`.
+    *   Step 3: If the test fails, apply Critical Log Analysis.
+    *   Step 4: Propose and apply a fix to `derive_tools_meta/src/derive/not.rs`.
+    *   Step 5: Perform Increment Verification.
+    *   Step 6: Perform Crate Conformance Check.
+*   **Increment Verification:**
+    *   Execute `timeout 90 cargo test -p derive_tools --test tests -- not_manual_test` and `timeout 90 cargo test -p derive_tools --test tests -- not_test`. Verify both pass.
+*   **Commit Message:** `fix(derive_tools): Re-enable and fix Not tests`
+
+##### Increment 18: Fix `Index` and `IndexMut` tests
+*   **Goal:** Re-enable and fix `Index` and `IndexMut` tests.
+*   **Specification Reference:** T17.1, T17.2, T18.1, T18.2
+*   **Steps:**
+    *   Step 1: Use `search_and_replace` on `module/core/derive_tools/tests/inc/mod.rs` to uncomment `mod index_manual_test;`, `mod index_test;`, `mod index_mut_manual_test;`, and `mod index_mut_test;`.
+    *   Step 2: Execute `timeout 90 cargo test -p derive_tools --test tests -- index_test`.
+    *   Step 3: If the test fails, apply Critical Log Analysis.
+    *   Step 4: Propose and apply a fix to `derive_tools_meta/src/derive/index.rs` and `derive_tools_meta/src/derive/index_mut.rs`.
+    *   Step 5: Perform Increment Verification.
+    *   Step 6: Perform Crate Conformance Check.
+*   **Increment Verification:**
+    *   Execute `timeout 90 cargo test -p derive_tools --test tests -- index_manual_test`, `timeout 90 cargo test -p derive_tools --test tests -- index_test`, `timeout 90 cargo test -p derive_tools --test tests -- index_mut_manual_test`, and `timeout 90 cargo test -p derive_tools --test tests -- index_mut_test`. Verify all pass.
+*   **Commit Message:** `fix(derive_tools): Re-enable and fix Index and IndexMut tests`
 
 ##### Increment 19: Redesign and Fix `PhantomData` derive and tests
 *   **Goal:** Re-enable the `phantom_tests` module and the `PhantomData` derive macro, fixing all related issues by implementing the correct logic.
@@ -188,6 +420,7 @@
 *   The `no_std` compatibility issues in `pth` and `error_tools` have been formally postponed to new tasks. This task will proceed without addressing `no_std` for these external crates.
 
 ### Changelog
+*   [Increment 5 | 2025-07-01 12:09 UTC] Created `deref_test.rs`, `deref_manual_test.rs`, and `only_test/deref.rs` and added test matrices and doc comments.
 *   [Increment 1 | 2025-07-01 09:16 UTC] Initial workspace test run failed with errors in `pth` and `wca` crates, primarily related to missing `use` statements and conflicting trait implementations.
 *   [Increment 1 | 2025-07-01 11:12 UTC] `cargo test -p derive_tools --all-targets` failed due to unresolved modules (`the_module`), missing macros (`a_id`), and unrecognized attributes (`clone_dyn`) originating from `clone_dyn` crate's tests, which are included in `derive_tools`'s test suite.
 *   [2025-07-01 11:18 UTC] Updated test command syntax in plan to correctly target internal test modules.
