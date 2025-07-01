@@ -4,6 +4,8 @@
 //! |------|--------------------|----------------|---------------------------------------------------------|-----------------------------|
 //! | T3.1 | Tuple struct (1 field) | `#[derive(AsRef)]` | `.as_ref()` returns a reference to the inner field. | `as_ref_test.rs`            |
 //! | T3.2 | Tuple struct (1 field) | Manual `impl`  | `.as_ref()` returns a reference to the inner field. | `as_ref_manual_test.rs`     |
+use test_tools::a_id;
+use crate::the_module;
 use super::*;
 
 // use diagnostics_tools::prelude::*;
