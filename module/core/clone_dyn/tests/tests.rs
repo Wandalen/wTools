@@ -1,8 +1,9 @@
+//! Test suite for the `clone_dyn` crate.
 
 #[ allow( unused_imports ) ]
 use clone_dyn as the_module;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 
-#[ cfg( all( feature = "enabled", any( not( feature = "no_std" ), feature = "use_alloc" ) ) ) ]
+#[ cfg( feature = "enabled" ) ]
 mod inc;
