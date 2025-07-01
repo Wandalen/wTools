@@ -1,3 +1,4 @@
+//! Tests for the `derive_tools` crate.
 
 include!( "../../../../module/step/meta/src/module/terminal.rs" );
 

@@ -18,7 +18,8 @@
 *   ✅ Phase 4: Update Doc Tests and Final Verification.
 *   ✅ Phase 5: Final Verification.
 *   ✅ Phase 6: Refactor `Readme.md` Examples for Runnable Doc Tests.
-*   ⏳ Phase 7: Improve `Readme.md` Content and Scaffolding.
+*   ✅ Phase 7: Improve `Readme.md` Content and Scaffolding.
+*   ⏳ Phase 8: Generalize `CONTRIBUTING.md`.
 
 ### Target Crate/Library
 *   `module/core/variadic_from` (Primary focus for integration and usage)
@@ -167,10 +168,20 @@
         *   Step 11: Add "Debugging" section with basic debugging tips for procedural macros.
         *   Step 12: Ensure all existing badges are present and relevant.
         *   Step 13: Perform Crate Conformance Check (specifically `cargo test --doc` and `git status`).
-    *   **Increment Verification:**
-        *   Run `timeout 90 cargo test -p variadic_from --doc` and verify no failures.
-        *   Run `git status` and verify no uncommitted changes.
     *   **Commit Message:** `docs(variadic_from): Improve Readme.md content and scaffolding`
+
+*   ⏳ Increment 8: Generalize `CONTRIBUTING.md`.
+    *   **Goal:** Modify `CONTRIBUTING.md` to be a general guide for contributing to the entire `wTools` repository, rather than being specific to `variadic_from`.
+    *   **Steps:**
+        *   Step 1: Read `CONTRIBUTING.md`.
+        *   Step 2: Change the title from "Contributing to `variadic_from`" to "Contributing to `wTools`".
+        *   Step 3: Remove specific `cd wTools/module/core/variadic_from` instructions.
+        *   Step 4: Generalize commit messages to refer to the relevant crate (e.g., `feat(crate_name): ...`).
+        *   Step 5: Perform Crate Conformance Check (specifically `git status`).
+    *   **Increment Verification:**
+        *   Run `git status` and verify no uncommitted changes.
+        *   Manually review `CONTRIBUTING.md` to ensure it is generalized.
+    *   **Commit Message:** `docs: Generalize CONTRIBUTING.md for wTools repository`
 
 ### Changelog
 *   **2025-06-29:**

@@ -1,4 +1,4 @@
-# Contributing to `variadic_from`
+# Contributing to `wTools`
 
 We welcome contributions to the `variadic_from` project! By contributing, you help improve this crate for everyone.
 
@@ -8,7 +8,7 @@ We welcome contributions to the `variadic_from` project! By contributing, you he
 2.  **Clone Your Fork:** Clone your forked repository to your local machine.
     ```sh
     git clone https://github.com/your-username/wTools.git
-    cd wTools/module/core/variadic_from
+    
     ```
 3.  **Create a New Branch:** Create a new branch for your feature or bug fix.
     ```sh
@@ -29,21 +29,17 @@ We welcome contributions to the `variadic_from` project! By contributing, you he
     ```
 7.  **Commit Your Changes:** Write clear and concise commit messages.
     ```sh
-    git commit -m "feat(variadic_from): Add your feature description"
+    git commit -m "feat(crate_name): Add your feature description" # Replace `crate_name` with the actual crate name
     ```
     or
     ```sh
-    git commit -m "fix(variadic_from): Fix your bug description"
+    git commit -m "fix(crate_name): Fix your bug description" # Replace `crate_name` with the actual crate name
     ```
 8.  **Push to Your Fork:**
     ```sh
     git push origin feature/your-feature-name
     ```
 9.  **Open a Pull Request:** Go to the original `wTools` repository on GitHub and open a pull request from your branch. Provide a clear description of your changes and reference any related issues.
-
-## Code Style and Design
-
-Please adhere to the project's established [code style guidelines](https://github.com/Wandalen/wTools/blob/master/doc/modules/code_style.md) and [design principles](https://github.com/Wandalen/wTools/blob/master/doc/modules/design_principles.md). This ensures consistency and maintainability across the codebase.
 
 ## Reporting Issues
 
