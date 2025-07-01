@@ -46,8 +46,8 @@
 
 ### Permissions &amp; Boundaries
 *   **Mode:** `code`
-*   **Run workspace-wise commands:** true
-*   **Add transient comments:** true
+*   **Run workspace-wise commands:** false
+*   **Add transient comments:** false
 *   **Additional Editable Crates:**
     *   `module/core/derive_tools_meta` (Reason: Implements the derive macros)
     *   `module/core/macro_tools` (Reason: Foundational utilities may need fixes. This is permitted *if and only if* a bug in `macro_tools` is identified as the root cause of a `derive_tools` test failure.)
