@@ -13,10 +13,10 @@
 ### Progress
 *   **Roadmap Milestone:** M2: Full Test Suite Restoration
 *   **Primary Editable Crate:** `module/core/derive_tools`
-*   **Overall Progress:** 0/18 increments complete
+*   **Overall Progress:** 1/18 increments complete
 *   **Increment Status:** (Grouped by derive for clarity)
-    *   ⚫ **Group 0: Setup**
-        *   ⚫ Increment 1: Establish Initial Baseline
+    *   ✅ **Group 0: Setup**
+        *   ✅ Increment 1: Establish Initial Baseline
     *   ⚫ **Group 1: Foundational Fixes**
         *   ⚫ Increment 2: Fix `macro_tools` `const` Generics Bug
     *   ⚫ **Group 2: Deref Family**
@@ -44,7 +44,7 @@
         *   ⚫ Increment 17: Final Workspace Verification
         *   ⚫ Increment 18: Update Project Changelog
 
-### Permissions &amp; Boundaries
+### Permissions & Boundaries
 *   **Mode:** `code`
 *   **Run workspace-wise commands:** false
 *   **Add transient comments:** false
@@ -140,7 +140,7 @@
         //! | T2.2 | Named Struct       | 1           | None             | -            | `Deref`      | Implements `DerefMut` to the inner field.               | `tests/inc/deref_mut/basic_test.rs` |
         //! | T2.3 | Named Struct       | >1          | None             | `#[deref_mut]` | `Deref`      | Implements `DerefMut` to the specified field.           | `tests/inc/deref_mut/struct_named.rs` |
         //! | T2.4 | Struct             | 1           | Any              | -            | No `Deref`   | Fails to compile: `DerefMut` requires `Deref`.          | `trybuild`   |
-        //! | T2.5 | Enum               | Any         | Any              | -            | -            | Fails to compile: `DerefMut` cannot be on an enum.      | `tests/inc/deref_mut/compile_fail_enum.rs` |
+        //! | T2.5 | Enum               | Any         | Any              | -            | -            | Fails to compile: `DerefMut` cannot be on an enum.      | `trybuild`   |
         ```    2.  **Action:** Use `search_and_replace` to uncomment the `deref_mut_tests` module in `module/core/derive_tools/tests/inc/mod.rs`.
     3.  **Action:** Fix the `DerefMut` implementation in `module/core/derive_tools_meta/src/derive/deref_mut.rs`.
     4.  **Verification:** Execute `timeout 180 cargo test -p derive_tools --test deref_mut_tests`.
@@ -330,4 +330,9 @@
 *   Implementing new features, even if they are defined in `spec.md`. The focus of this task is to fix and restore existing functionality covered by the current test suite.
 
 ### Changelog
+*   [Increment 1 | 2025-07-01 20:55 UTC] Established initial baseline.
+    *   **Commented-out test modules:** `clone_dyn_test`, `variadic_from_test`, `all_manual_test`, `all_test`, `basic_test`, and numerous sub-modules within `deref_tests`, `deref_mut_tests`, `new_tests`, `from_tests`, `not_tests`, `inner_from_tests`, `index_tests`, `index_mut_tests`.
+    *   **Failing tests:** None.
+    *   **Clippy warnings:** None.
+    *   **Compilation warnings:** 2 warnings in `deref/basic_manual_test.rs` about `IsTransparentComplex` struct never being constructed.
 *   [YYYY-MM-DD] Initialized V4 of the task plan. Restructured to use atomic, test-driven increments with localized context and dynamic dependency handling.
