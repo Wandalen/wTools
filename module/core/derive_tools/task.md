@@ -24,7 +24,7 @@
     *   ⚫ Increment 8: Fix `Deref` tests for generics and bounds
     *   ⚫ Increment 9: Plan and Document `DerefMut` Tests
     *   ⚫ Increment 10: Fix `DerefMut` tests
-    *   ⚫ Increment 11: Plan and Document `From` tests
+    *   ⚫ Increment 11: Plan and Document `From` Tests
     *   ⚫ Increment 12: Fix `From` tests
     *   ⚫ Increment 13: Plan and Document `InnerFrom` and `New` tests
     *   ⚫ Increment 14: Fix `InnerFrom` tests
@@ -125,7 +125,7 @@
     *   Step 5: Perform Increment Verification.
     *   Step 6: Perform Crate Conformance Check.
 *   **Increment Verification:**
-    *   Execute `timeout 90 cargo test -p derive_tools --test tests -- as_ref_manual_test` and `timeout 90 cargo test -p derive_tools --test tests -- as_ref_test`. Verify both pass.
+    *   Execute `timeout 90 cargo test -p derive_tools --test tests -- as_ref_manual_test` and `timeout 90 cargo test -p tests -- as_ref_test`. Verify both pass.
 *   **Commit Message:** `fix(derive_tools): Re-enable and fix as_ref tests`
 
 ... (The plan will continue in this detailed, granular fashion for all other test modules, with each having its own planning, documentation, and fixing increments) ...
@@ -190,3 +190,4 @@
 ### Changelog
 *   [Increment 1 | 2025-07-01 09:16 UTC] Initial workspace test run failed with errors in `pth` and `wca` crates, primarily related to missing `use` statements and conflicting trait implementations.
 *   [Increment 1 | 2025-07-01 11:12 UTC] `cargo test -p derive_tools --all-targets` failed due to unresolved modules (`the_module`), missing macros (`a_id`), and unrecognized attributes (`clone_dyn`) originating from `clone_dyn` crate's tests, which are included in `derive_tools`'s test suite.
+*   [2025-07-01 11:18 UTC] Updated test command syntax in plan to correctly target internal test modules.
