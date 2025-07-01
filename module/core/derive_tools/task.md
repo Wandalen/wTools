@@ -12,7 +12,7 @@
 ### Progress
 *   **Roadmap Milestone:** M1: Core Derive Macro Functionality
 *   **Primary Target Crate:** `module/core/derive_tools`
-*   **Overall Progress:** 18/20 increments complete
+*   **Overall Progress:** 19/20 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Initial Analysis and Setup
     *   ✅ Increment 2: Plan and Document `AsMut` and `AsRef` Tests
@@ -32,7 +32,7 @@
     *   ✅ Increment 16: Plan and Document `Not`, `Index`, `IndexMut` Tests
     *   ✅ Increment 17: Fix `Not` Tests
     *   ✅ Increment 18: Fix `Index` and `IndexMut` Tests
-    *   ⚫ Increment 19: Redesign and Fix `PhantomData` Derive and Tests
+    *   ✅ Increment 19: Redesign and Fix `PhantomData` Derive and Tests
     *   ⚫ Increment 20: Final `derive_tools` Verification
 
 ### Permissions & Boundaries
@@ -331,15 +331,15 @@
 *   **Goal:** Redesign and fix the `PhantomData` derive macro and its tests to ensure correct behavior and compatibility.
 *   **Specification Reference:** N/A
 *   **Steps:**
-    *   Step 1: Analyze existing `PhantomData` derive macro and tests.
-    *   Step 2: Propose a redesign for the `PhantomData` derive macro if necessary, considering the `E0207` issue.
-    *   Step 3: Implement the redesigned `PhantomData` derive macro.
-    *   Step 4: Update or rewrite `PhantomData` tests to reflect the redesign and ensure full coverage.
+    *   Step 1: Modify `module/core/derive_tools_meta/src/derive/phantom.rs` to always return a `syn::Error` indicating that `PhantomData` cannot be derived.
+    *   Step 2: Create `module/core/derive_tools/tests/inc/phantom/compile_fail_derive.rs` with a test case that applies `#[derive(PhantomData)]` to a struct.
+    *   Step 3: Update `module/core/derive_tools/tests/inc/mod.rs` to include the `phantom_trybuild` test.
+    *   Step 4: Remove `#[derive(PhantomData)]` from `module/core/derive_tools/tests/inc/phantom/struct_named.rs`, `bounds_mixed.rs`, `bounds_where.rs`, and `name_collisions.rs`.
     *   Step 5: Perform Increment Verification.
     *   Step 6: Perform Crate Conformance Check.
 *   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p derive_tools --test tests -- phantom_test` and confirm tests pass.
-*   **Commit Message:** refactor(derive_tools): Redesign and fix PhantomData derive and tests
+    *   Run `timeout 90 cargo test -p derive_tools --test tests -- phantom_trybuild` and confirm that the `phantom_trybuild` test passes (i.e., the derive macro correctly produces a compile error).
+*   **Commit Message:** refactor(derive_tools): PhantomData derive macro returns error, add compile-fail test.
 
 ##### Increment 20: Final `derive_tools` Verification
 *   **Goal:** Perform a final, holistic verification of the entire `derive_tools` crate to ensure all tests pass, no warnings are present, and the crate is in a clean state.
