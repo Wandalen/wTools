@@ -11,11 +11,11 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Target Crate:** `module/core/clone_dyn`
-*   **Overall Progress:** 1/7 increments complete
+*   **Overall Progress:** 2/7 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Initial Lint Fix
-    *   ⏳ Increment 2: Codebase Analysis & Test Matrix Design
-    *   ⚫ Increment 3: Test Implementation & `cfg` Scaffolding
+    *   ✅ Increment 2: Codebase Analysis & Test Matrix Design
+    *   ⏳ Increment 3: Test Implementation & `cfg` Scaffolding
     *   ⚫ Increment 4: `macro_tools` Refactoring
     *   ⚫ Increment 5: Comprehensive Feature Combination Verification
     *   ⚫ Increment 6: Documentation Overhaul
@@ -89,7 +89,7 @@ This matrix outlines the test cases required to ensure comprehensive coverage of
 ##### Increment 3: Test Implementation & `cfg` Scaffolding
 *   **Goal:** Implement the new tests and `cfg` attributes as designed in Increment 2.
 *   **Steps:**
-    *   Step 1: Use `insert_content` to add the Test Matrix documentation to the top of `tests/inc/only_test/basic.rs`.
+    *   Step 1: Use `insert_content` to add the Test Matrix documentation to the top of `tests/inc/only_test/basic.rs`. (Corrected to `//` comments from `//!` during execution).
     *   Step 2: No new test functions need to be implemented.
     *   Step 3: Add the planned `#[cfg]` attributes to the test modules in `tests/inc/mod.rs`.
 *   **Increment Verification:**
@@ -148,3 +148,4 @@ This matrix outlines the test cases required to ensure comprehensive coverage of
 *   2025-07-01: V6: Re-structured increments for better workflow (Analyze -> Implement -> Verify). Made planning steps more explicit and proactive.
 *   2025-07-01: V7: Completed Increment 1: Initial Lint Fix. Corrected `doc_markdown` lint in `clone_dyn/Readme.md`.
 *   2025-07-01: V8: Completed Increment 2: Codebase Analysis & Test Matrix Design. Detailed `cfg` adjustments for Increment 3 and `macro_tools` refactoring for Increment 4.
+*   2025-07-01: V9: Completed Increment 3: Test Implementation & `cfg` Scaffolding. Added Test Matrix documentation to `only_test/basic.rs` (as `//` comments) and adjusted `cfg` attributes in `tests/inc/mod.rs`.
