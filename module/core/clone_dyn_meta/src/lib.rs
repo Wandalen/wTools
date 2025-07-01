@@ -1,4 +1,3 @@
-
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/clone_dyn_meta/latest/clone_dyn_meta/" ) ]
@@ -18,25 +17,18 @@ mod internal
 /// ### Sample.
 ///
 /// ```rust
-/// use clone_dyn::CloneDyn;
-///
-/// #[ derive( CloneDyn ) ]
+/// #[ cfg( feature = "derive_clone_dyn" ) ]
+/// #[ clone_dyn ]
 /// pub trait Trait1
 /// {
 ///   fn f1( &self );
 /// }
 ///
-/// #[ derive( CloneDyn ) ]
+/// #[ cfg( feature = "derive_clone_dyn" ) ]
+/// #[ clone_dyn ]
 /// pub trait Trait2 : Trait1
 /// {
 ///   fn f2( &self );
-/// }
-///
-/// #[ derive( CloneDyn ) ]
-/// pub struct Container
-/// {
-///   #[ derive_clone_dyn( Trait1, Trait2 ) ]
-///   field1 : i32,
 /// }
 /// ```
 ///

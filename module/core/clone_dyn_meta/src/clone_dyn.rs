@@ -89,16 +89,6 @@ pub fn clone_dyn( attr_input : proc_macro::TokenStream, item_input : proc_macro:
   Ok( result )
 }
 
-// == attributes
-
-/// Represents the attributes of a struct. Aggregates all its attributes.
-#[ derive( Debug, Default ) ]
-pub struct ItemAttributes
-{
-  /// Attribute for customizing generated code.
-  pub debug : AttributePropertyDebug,
-}
-
 impl syn::parse::Parse for ItemAttributes
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
@@ -152,6 +142,17 @@ impl syn::parse::Parse for ItemAttributes
     Ok( result )
   }
 }
+// == attributes
+
+/// Represents the attributes of a struct. Aggregates all its attributes.
+#[ derive( Debug, Default ) ]
+pub struct ItemAttributes
+{
+  /// Attribute for customizing generated code.
+  pub debug : AttributePropertyDebug,
+}
+
+
 
 impl< IntoT > Assign< AttributePropertyDebug, IntoT > for ItemAttributes
 where
