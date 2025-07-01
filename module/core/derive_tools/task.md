@@ -12,12 +12,12 @@
 
 ### Progress
 *   **Primary Target Crate:** `module/core/derive_tools`
-*   **Overall Progress:** 2/20 increments complete
+*   **Overall Progress:** 3/20 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Initial `derive_tools` Analysis and Baseline
     *   ✅ Increment 2: Plan and Document `AsMut` and `AsRef` Tests
-    *   ⏳ Increment 3: Fix `as_mut` tests
-    *   ⚫ Increment 4: Fix `as_ref` tests
+    *   ✅ Increment 3: Fix `as_mut` tests
+    *   ⏳ Increment 4: Fix `as_ref` tests
     *   ⚫ Increment 5: Plan and Document `Deref` Tests
     *   ⚫ Increment 6: Fix `Deref` tests for basic structs
     *   ⚫ Increment 7: Fix `Deref` tests for enums
@@ -105,13 +105,13 @@
 *   **Specification Reference:** T2.1, T2.2
 *   **Steps:**
     *   Step 1: Use `search_and_replace` on `module/core/derive_tools/tests/inc/mod.rs` to uncomment `mod as_mut_manual_test;` and `mod as_mut_test;`.
-    *   Step 2: Execute `timeout 90 cargo test -p derive_tools --test as_mut_test`.
+    *   Step 2: Execute `timeout 90 cargo test -p derive_tools --test tests -- as_mut_test`.
     *   Step 3: If the test fails, apply the Critical Log Analysis Procedure to the output. Hypothesize that the `AsMut` derive in `derive_tools_meta` is not generating the correct implementation.
     *   Step 4: Propose and apply a fix to `derive_tools_meta/src/derive/as_mut.rs`.
     *   Step 5: Perform Increment Verification.
     *   Step 6: Perform Crate Conformance Check.
 *   **Increment Verification:**
-    *   Execute `timeout 90 cargo test -p derive_tools --test as_mut_manual_test` and `timeout 90 cargo test -p derive_tools --test as_mut_test`. Verify both pass.
+    *   Execute `timeout 90 cargo test -p derive_tools --test tests -- as_mut_manual_test` and `timeout 90 cargo test -p derive_tools --test tests -- as_mut_test`. Verify both pass.
 *   **Commit Message:** `fix(derive_tools): Re-enable and fix as_mut tests`
 
 ##### Increment 4: Fix `as_ref` tests
@@ -119,13 +119,13 @@
 *   **Specification Reference:** T3.1, T3.2
 *   **Steps:**
     *   Step 1: Use `search_and_replace` on `module/core/derive_tools/tests/inc/mod.rs` to uncomment `mod as_ref_manual_test;` and `mod as_ref_test;`.
-    *   Step 2: Execute `timeout 90 cargo test -p derive_tools --test as_ref_test`.
+    *   Step 2: Execute `timeout 90 cargo test -p derive_tools --test tests -- as_ref_test`.
     *   Step 3: If the test fails, apply Critical Log Analysis.
     *   Step 4: Propose and apply a fix to `derive_tools_meta/src/derive/as_ref.rs`.
     *   Step 5: Perform Increment Verification.
     *   Step 6: Perform Crate Conformance Check.
 *   **Increment Verification:**
-    *   Execute `timeout 90 cargo test -p derive_tools --test as_ref_manual_test` and `timeout 90 cargo test -p derive_tools --test as_ref_test`. Verify both pass.
+    *   Execute `timeout 90 cargo test -p derive_tools --test tests -- as_ref_manual_test` and `timeout 90 cargo test -p derive_tools --test tests -- as_ref_test`. Verify both pass.
 *   **Commit Message:** `fix(derive_tools): Re-enable and fix as_ref tests`
 
 ... (The plan will continue in this detailed, granular fashion for all other test modules, with each having its own planning, documentation, and fixing increments) ...
