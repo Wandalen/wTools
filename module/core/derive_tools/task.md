@@ -63,6 +63,7 @@
     *   `timeout 90 cargo test -p derive_tools --no-default-features --features "derive_from"`
     *   `timeout 90 cargo test -p derive_tools --no-default-features --features "derive_as_ref,derive_as_mut"`
     *   `timeout 90 cargo test -p derive_tools --no-default-features --features "derive_deref,derive_deref_mut"`
+    *   `timeout 90 cargo test -p derive_tools --no-default-features --features "derive_deref,derive_deref_mut"`
     *   `timeout 90 cargo test -p derive_tools --features "full"`
 
 ### Increments
