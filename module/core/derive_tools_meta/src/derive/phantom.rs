@@ -1,3 +1,4 @@
+#![ allow( dead_code ) ]
 use macro_tools::
 {
   diag,

@@ -75,18 +75,6 @@ impl ItemAttributes
           Ok( () )
         })?;
       }
-      else if attr.path().is_ident( "debug" )
-      {
-        result.debug = AttributePropertyOptionalSingletone::from( true );
-      }
-      else if attr.path().is_ident( "enabled" )
-      {
-        result.enabled = AttributePropertyOptionalSingletone::from( true );
-      }
-      else if attr.path().is_ident( "skip" )
-      {
-        result.skip = AttributePropertyOptionalSingletone::from( true );
-      }
       else
       {
         // qqq : unknown attribute, but it is not an error, because it can be an attribute for other derive.
