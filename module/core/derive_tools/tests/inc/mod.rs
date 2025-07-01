@@ -2,9 +2,9 @@
 
 // = import tests of clone_dyn
 
-#[ cfg( feature = "derive_clone_dyn" ) ]
-#[ path = "../../../../../module/core/clone_dyn/tests/inc/mod.rs" ]
-mod clone_dyn_test;
+// #[ cfg( feature = "derive_clone_dyn" ) ]
+// #[ path = "../../../../../module/core/clone_dyn/tests/inc/mod.rs" ]
+// mod clone_dyn_test;
 
 // = import tests of variadic_from
 

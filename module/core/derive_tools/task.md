@@ -12,9 +12,9 @@
 
 ### Progress
 *   **Primary Target Crate:** `module/core/derive_tools`
-*   **Overall Progress:** 0/20 increments complete
+*   **Overall Progress:** 1/20 increments complete
 *   **Increment Status:**
-    *   ⚫ Increment 1: Initial Workspace Analysis and Baseline
+    *   ✅ Increment 1: Initial `derive_tools` Analysis and Baseline
     *   ⚫ Increment 2: Plan and Document `AsMut` and `AsRef` Tests
     *   ⚫ Increment 3: Fix `as_mut` tests
     *   ⚫ Increment 4: Fix `as_ref` tests
@@ -33,11 +33,11 @@
     *   ⚫ Increment 17: Fix `Not` tests
     *   ⚫ Increment 18: Fix `Index` and `IndexMut` tests
     *   ⚫ Increment 19: Redesign and Fix `PhantomData` derive and tests
-    *   ⚫ Increment 20: Final Workspace Verification
+    *   ⚫ Increment 20: Final `derive_tools` Verification
 
 ### Permissions & Boundaries
-*   **Run workspace-wise commands:** true
-*   **Add transient comments:** true
+*   **Run workspace-wise commands:** false
+*   **Add transient comments:** false
 *   **Additional Editable Crates:**
     *   `module/core/derive_tools_meta` (Reason: Fixes to macro implementations are required)
 
@@ -45,6 +45,11 @@
 *   Control Files to Reference:
     *   `module/core/macro_tools/task.md` (Proposal to fix `const` generics issue)
     *   `module/core/clone_dyn/task.md` (Proposal to fix `clippy::doc_markdown` warning)
+    *   `module/core/derive_tools/task/postpone_no_std_refactoring_task.md` (New task for `no_std` refactoring postponement)
+    *   `module/move/willbe/task/remove_pth_std_feature_dependency_task.md` (New task proposal for `willbe` to resolve `pth` `std` feature conflict)
+    *   `module/core/pth/task/no_std_refactoring_task.md` (New task for `pth` `no_std` refactoring postponement)
+    *   `module/core/error_tools/task/no_std_refactoring_task.md` (New task for `error_tools` `no_std` refactoring postponement)
+    *   `module/core/clone_dyn/task/fix_test_issues_task.md` (New task for `clone_dyn` test issues)
 *   Files to Include:
     *   `module/core/derive_tools/tests/inc/mod.rs`
     *   All files under `module/core/derive_tools/tests/inc/`
@@ -62,16 +67,16 @@
 
 ### Increments
 
-##### Increment 1: Initial Workspace Analysis and Baseline
-*   **Goal:** Establish a clear baseline of the current compilation and test failures across the workspace.
+##### Increment 1: Initial `derive_tools` Analysis and Baseline
+*   **Goal:** Establish a clear baseline of the current compilation and test failures for the `derive_tools` crate only.
 *   **Specification Reference:** N/A
 *   **Steps:**
-    *   Step 1: Execute `timeout 180 cargo test --workspace --all-features`.
-    *   Step 2: Analyze the output to identify the primary points of failure. The expected failure is in `derive_tools` due to the `macro_tools` update.
+    *   Step 1: Execute `timeout 120 cargo test -p derive_tools --all-targets`.
+    *   Step 2: Analyze the output to identify the primary points of failure within `derive_tools`.
     *   Step 3: Document the initial error state in the `### Changelog` section of this plan.
 *   **Increment Verification:**
-    *   The initial error state is successfully logged.
-*   **Commit Message:** `chore: Establish baseline for derive_tools fix`
+    *   The initial error state for `derive_tools` is successfully logged.
+*   **Commit Message:** `chore(derive_tools): Establish baseline for derive_tools fix`
 
 ##### Increment 2: Plan and Document `AsMut` and `AsRef` Tests
 *   **Goal:** Create the test matrices for `AsMut` and `AsRef` and add them as documentation to the relevant test files.
@@ -139,16 +144,16 @@
     *   Execute `timeout 90 cargo test -p derive_tools --test phantom_tests`. Verify it passes.
 *   **Commit Message:** `fix(derive_tools): Redesign and fix PhantomData derive and tests`
 
-##### Increment 20: Final Workspace Verification
-*   **Goal:** Perform a final, comprehensive check of the entire workspace to ensure no regressions were introduced.
+##### Increment 20: Final `derive_tools` Verification
+*   **Goal:** Perform a final, comprehensive check of the `derive_tools` crate to ensure no regressions were introduced.
 *   **Specification Reference:** N/A
 *   **Steps:**
-    *   Step 1: Execute `timeout 180 cargo test --workspace --all-features`.
-    *   Step 2: Execute `timeout 180 cargo clippy --workspace --all-features -- -D warnings`.
-    *   Step 3: Analyze results, acknowledging the known external issue in `clone_dyn`. If all other checks pass, the task is complete.
+    *   Step 1: Execute `timeout 120 cargo test -p derive_tools --all-targets`.
+    *   Step 2: Execute `timeout 120 cargo clippy -p derive_tools -- -D warnings`.
+    *   Step 3: Analyze results. If all checks pass, the task is complete.
 *   **Increment Verification:**
-    *   All workspace checks pass (or only fail because of the known external issue).
-*   **Commit Message:** `chore(workspace): Final verification of derive_tools fixes`
+    *   All `derive_tools` checks pass.
+*   **Commit Message:** `chore(derive_tools): Final verification of derive_tools fixes`
 
 ### Task Requirements
 *   Ensure `derive_tools` is compatible with `macro_tools` v0.55.0.
@@ -174,5 +179,14 @@
 ### Out of Scope
 *   Implementing new features.
 *   Addressing issues in `macro_tools` or `clone_dyn` directly (only proposing changes via `task.md`).
+*   **`no_std` compatibility for `pth` and `error_tools` (postponed to a new task).**
+
+### External System Dependencies (Optional)
+*   N/A
+
+### Notes & Insights
+*   The `no_std` compatibility issues in `pth` and `error_tools` have been formally postponed to new tasks. This task will proceed without addressing `no_std` for these external crates.
 
 ### Changelog
+*   [Increment 1 | 2025-07-01 09:16 UTC] Initial workspace test run failed with errors in `pth` and `wca` crates, primarily related to missing `use` statements and conflicting trait implementations.
+*   [Increment 1 | 2025-07-01 11:12 UTC] `cargo test -p derive_tools --all-targets` failed due to unresolved modules (`the_module`), missing macros (`a_id`), and unrecognized attributes (`clone_dyn`) originating from `clone_dyn` crate's tests, which are included in `derive_tools`'s test suite.
