@@ -23,7 +23,7 @@ pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
   let original_input = input.clone();
   let parsed = syn::parse::< StructLike >( input )?;
   let has_debug = attr::has_debug( parsed.attrs().iter() )?;
-  let item_attrs = ItemAttributes::from_attrs( parsed.attrs().iter() )?;
+  let _item_attrs = ItemAttributes::from_attrs( parsed.attrs().iter() )?;
   let item_name = &parsed.ident();
 
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
@@ -37,20 +37,12 @@ pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
     },
     StructLike::Struct( ref item ) =>
     {
-      let fields_result : Result< Vec< proc_macro2::TokenStream > > = item.fields.iter().map( | field |
+      let fields_result : Result< Vec< ( syn::Ident, syn::Type ) > > = item.fields.iter().map( | field |
       {
         let _attrs = FieldAttributes::from_attrs( field.attrs.iter() )?;
-        let field_name = &field.ident;
-        
-        let field_name_assign = if field_name.is_some()
-        {
-          qt!{ #field_name : Default::default() }
-        }
-        else
-        {
-          qt!{ Default::default() }
-        };
-        Ok( field_name_assign )
+        let field_name = field.ident.clone().expect( "Expected named field" );
+        let field_type = field.ty.clone();
+        Ok( ( field_name, field_type ) )
       }).collect();
 
       let fields = fields_result?;
@@ -62,29 +54,11 @@ pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
         &generics_ty,
         &generics_where,
         &fields,
-        item.fields.len(),
       )
     },
     StructLike::Enum( ref item ) =>
     {
-      let variants = item.variants.iter().map( | variant |
-      {
-        variant_generate
-        (
-          item_name,
-          &item_attrs,
-          &generics_impl,
-          &generics_ty,
-          &generics_where,
-          variant,
-          &original_input,
-        )
-      }).collect::< Result< Vec< proc_macro2::TokenStream > > >()?;
-
-      qt!
-      {
-        #( #variants )*
-      }
+      return_syn_err!( item.span(), "New can be applied only to a structure" );
     },
   };
 
@@ -128,7 +102,7 @@ fn generate_unit
       #[ inline( always ) ]
       fn new() -> Self
       {
-        Self
+        Self {}
       }
     }
   }
@@ -140,9 +114,9 @@ fn generate_unit
 /// ```text
 /// impl New for MyStruct
 /// {
-///   fn new() -> Self
+///   fn new( field1: i32, field2: i32 ) -> Self
 ///   {
-///     Self { field1: Default::default(), field2: Default::default() }
+///     Self { field1, field2 }
 ///   }
 /// }
 /// ```
@@ -152,18 +126,25 @@ fn generate_struct
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  fields : &Vec< proc_macro2::TokenStream >,
-  fields_len : usize,
+  fields : &[ ( syn::Ident, syn::Type ) ],
 )
 -> proc_macro2::TokenStream
 {
-  let body = if fields_len == 0
+  let fields_init = fields.iter().map( | ( field_name, _field_type ) | {
+    qt!{ #field_name }
+  }).collect::< Vec< _ > >();
+
+  let fields_params = fields.iter().map( | ( field_name, field_type ) | {
+    qt!{ #field_name : #field_type }
+  }).collect::< Vec< _ > >();
+
+  let body = if fields.is_empty()
   {
-    qt!{ Self }
+    qt!{ Self {} }
   }
   else
   {
-    qt!{ Self { #( #fields ),* } }
+    qt!{ Self { #( #fields_init ),* } }
   };
 
   qt!
@@ -174,116 +155,10 @@ fn generate_struct
       #generics_where
     {
       #[ inline( always ) ]
-      fn new() -> Self
+      fn new( #( #fields_params ),* ) -> Self
       {
         #body
       }
     }
   }
-}
-
-/// Generates `New` implementation for enum variants.
-///
-/// Example of generated code:
-/// ```text
-/// impl New for MyEnum
-/// {
-///   fn new() -> Self
-///   {
-///     Self::Variant( Default::default() )
-///   }
-/// }
-/// ```
-fn variant_generate
-(
-  item_name : &syn::Ident,
-  item_attrs : &ItemAttributes,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  variant : &syn::Variant,
-  original_input : &proc_macro::TokenStream,
-)
--> Result< proc_macro2::TokenStream >
-{
-  let variant_name = &variant.ident;
-  let fields = &variant.fields;
-  let attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
-
-  if !attrs.enabled.value( item_attrs.enabled.value( true ) )
-  {
-    return Ok( qt!{} )
-  }
-
-  if fields.is_empty()
-  {
-    return Ok( qt!{} )
-  }
-
-  if fields.len() != 1
-  {
-    return_syn_err!( fields.span(), "Expects a single field to derive New" );
-  }
-
-  let field = fields.iter().next().expect( "Expects a single field to derive New" );
-  let field_name = &field.ident;
-
-  let body = if let Some( field_name ) = field_name
-  {
-    qt!{ Self::#variant_name { #field_name : Default::default() } }
-  }
-  else
-  {
-    qt!{ Self::#variant_name( Default::default() ) }
-  };
-
-  if attrs.debug.value( false )
-  {
-    let debug = format!
-    (
-      r"
-#[ automatically_derived ]
-impl< {} > crate::New for {}< {} >
-where
-  {}
-{{
-  #[ inline ]
-  fn new() -> Self
-  {{
-    {}
-  }}
-}}
-      ",
-      qt!{ #generics_impl },
-      item_name,
-      qt!{ #generics_ty },
-      qt!{ #generics_where },
-      body,
-    );
-    let about = format!
-    (
-r"derive : New
-item : {item_name}
-field : {variant_name}",
-    );
-    diag::report_print( about, original_input, debug.to_string() );
-  }
-
-  Ok
-  (
-    qt!
-    {
-      #[ automatically_derived ]
-      impl< #generics_impl > crate::New for #item_name< #generics_ty >
-      where
-        #generics_where
-      {
-        #[ inline ]
-        fn new() -> Self
-        {
-          #body
-        }
-      }
-    }
-  )
 }

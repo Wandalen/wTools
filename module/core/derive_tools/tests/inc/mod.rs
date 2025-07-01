@@ -1,3 +1,4 @@
+#![ allow( unused_imports ) ]
 use crate as the_module;
 use test_tools as derives;
 // = import tests of clone_dyn
@@ -107,7 +108,28 @@ mod deref_tests
 
 //   mod name_collisions;
 }
+#[ cfg( feature = "derive_deref_mut" ) ]
+#[ path = "deref_mut" ]
+mod deref_mut_tests
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
 
+  mod basic_test;
+  mod basic_manual_test;
+}
+
+  only_for_terminal_module!
+  {
+    #[ test_tools::nightly ]
+    #[ test ]
+    fn deref_mut_trybuild()
+    {
+      println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+      let t = test_tools::compiletime::TestCases::new();
+      t.compile_fail( "tests/inc/deref_mut/compile_fail_enum.rs" );
+    }
+  }
 // #[ cfg( feature = "derive_deref_mut" ) ]
 // #[ path = "deref_mut" ]
 // mod deref_mut_tests
@@ -133,12 +155,42 @@ mod deref_tests
 //   mod enum_named_manual;
 
 //   //
-
 //   mod generics_lifetimes;
 //   mod generics_lifetimes_manual;
 
 //   mod generics_types;
 //   mod generics_types_manual;
+#[ cfg( feature = "derive_from" ) ]
+#[ path = "from" ]
+mod from_tests
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
+
+  mod basic_test;
+  mod basic_manual_test;
+}
+#[ cfg( feature = "derive_inner_from" ) ]
+#[ path = "inner_from" ]
+mod inner_from_tests
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
+
+  mod basic_test;
+  mod basic_manual_test;
+}
+
+#[ cfg( feature = "derive_new" ) ]
+#[ path = "new" ]
+mod new_tests
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
+
+  mod basic_test;
+  mod basic_manual_test;
+}
 //   mod generics_types_default;
 //   mod generics_types_default_manual;
 
@@ -155,6 +207,7 @@ mod deref_tests
 //   mod bounds_where_manual;
 //   mod bounds_mixed;
 //   mod bounds_mixed_manual;
+
 
 //   //
 
@@ -210,6 +263,7 @@ mod deref_tests
 //   mod multiple_named_manual_test;
 //   mod multiple_unnamed_manual_test;
 //   mod unit_manual_test;
+//   mod named_test;
 //   mod multiple_named_test;
 //   mod unit_test;
 //   mod multiple_unnamed_test;
@@ -419,6 +473,23 @@ mod deref_tests
 
 //       t.compile_fail( "tests/inc/index_mut/compiletime/struct.rs" );
 //       t.compile_fail( "tests/inc/index_mut/compiletime/struct_unit.rs" );
+  mod deref
+  {
+    mod basic_test;
+    mod basic_manual_test;
+  }
+
+  only_for_terminal_module!
+  {
+    #[ test_tools::nightly ]
+    #[ test ]
+    fn deref_trybuild()
+    {
+      println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+      let t = test_tools::compiletime::TestCases::new();
+      t.compile_fail( "tests/inc/deref/compile_fail_enum.rs" );
+    }
+  }
 //       t.compile_fail( "tests/inc/index_mut/compiletime/struct_named_empty.rs" );
 //       t.compile_fail( "tests/inc/index_mut/compiletime/enum.rs" );
 //     }

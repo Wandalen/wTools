@@ -207,6 +207,8 @@ clone_dyn = { workspace = true, optional = true, features = [ "clone_dyn_types",
 
 
 [dev-dependencies]
+
+derive_tools_meta = { workspace = true, features = ["enabled"] }
 test_tools = { workspace = true }
 
 [build-dependencies]
