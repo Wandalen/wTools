@@ -1,476 +1,333 @@
-# Task Plan: Restore derive_tools Functionality
+# Task Plan: Restore and Complete `derive_tools` Functionality (V4)
 
 ### Goal
-*   The goal is to restore the full functionality of the `derive_tools` crate by re-enabling all tests, fixing compilation errors/warnings, and ensuring compatibility with `macro_tools` v0.55.0.
+*   To methodically restore, validate, and complete the entire test suite for the `derive_tools` crate, ensuring every derive macro is fully functional, tested, and compliant with the project's specifications. This V4 plan uses a highly granular, test-driven, and context-aware structure to ensure robust execution.
 
 ### Ubiquitous Language (Vocabulary)
-*   **`derive_tools`**: The primary target crate, a library providing various derive macros.
-*   **`derive_tools_meta`**: The procedural macro crate that implements the derive macros for `derive_tools`.
-*   **`macro_tools`**: A utility crate used by `derive_tools_meta` for procedural macro development.
-*   **`test_tools`**: A utility crate used for testing.
-*   **`trybuild`**: A testing tool used for compile-fail tests, verifying that certain code snippets produce expected compilation errors.
-*   **`IsTransparentComplex`**: A complex struct used in tests, which has been problematic due to `E0207` (unconstrained const parameter) with `macro_tools`.
-*   **`E0207`**: A Rust compiler error indicating an unconstrained const parameter, which has been a recurring blocker for `IsTransparentComplex` related tests.
-*   **`return_syn_err!`**: A macro used in `derive_tools_meta` to return a `syn::Error` for invalid macro usage.
+*   **`derive_tools`**: The user-facing facade crate.
+*   **`derive_tools_meta`**: The procedural macro implementation crate.
+*   **`macro_tools`**: The foundational utility crate. Its correctness is critical.
+*   **Test Matrix**: A structured table defining test cases. Relevant rows from the master matrix MUST be added as a doc comment to each specific test file being worked on.
+*   **`trybuild`**: The framework used for compile-fail tests.
 
 ### Progress
-*   **Roadmap Milestone:** M1: Core API Implementation
-*   **Primary Target Crate:** `module/core/derive_tools`
-*   **Overall Progress:** 20/20 increments complete
-*   **Increment Status:**
-    *   ✅ Increment 1: Initial Analysis and Setup
-    *   ✅ Increment 2: Plan and Document `AsMut` and `AsRef` Tests
-    *   ✅ Increment 3: Fix `AsMut` Tests
-    *   ✅ Increment 4: Fix `AsRef` Tests
-    *   ✅ Increment 5: Plan and Document `Deref` Tests
-    *   ✅ Increment 6: Fix `Deref` Tests for Basic Structs
-    *   ✅ Increment 7: Fix `Deref` Derive for Enums
-    *   ✅ Increment 8: Address `Deref` Generics and Bounds (`IsTransparentComplex`)
-    *   ✅ Increment 9: Plan and Document `DerefMut` Tests
-    *   ✅ Increment 10: Fix `DerefMut` Tests
-    *   ✅ Increment 11: Plan and Document `From` Tests
-    *   ✅ Increment 12: Fix `From` Tests
-    *   ✅ Increment 13: Plan and Document `InnerFrom` and `New` Tests
-    *   ✅ Increment 14: Fix `InnerFrom` Tests
-    *   ✅ Increment 15: Fix `New` Tests
-    *   ✅ Increment 16: Plan and Document `Not`, `Index`, and `IndexMut` Tests
-    *   ✅ Increment 17: Fix `Not` Tests
-    *   ✅ Increment 18: Fix `Index` and `IndexMut` Tests
-    *   ✅ Increment 19: Redesign and Fix `PhantomData` Derive and Tests
-    *   ✅ Increment 20: Final `derive_tools` Verification
+*   **Roadmap Milestone:** M2: Full Test Suite Restoration
+*   **Primary Editable Crate:** `module/core/derive_tools`
+*   **Overall Progress:** 0/18 increments complete
+*   **Increment Status:** (Grouped by derive for clarity)
+    *   ⚫ **Group 0: Setup**
+        *   ⚫ Increment 1: Establish Initial Baseline
+    *   ⚫ **Group 1: Foundational Fixes**
+        *   ⚫ Increment 2: Fix `macro_tools` `const` Generics Bug
+    *   ⚫ **Group 2: Deref Family**
+        *   ⚫ Increment 3: Re-enable and Fix `Deref`
+        *   ⚫ Increment 4: Re-enable and Fix `DerefMut`
+    *   ⚫ **Group 3: AsRef Family**
+        *   ⚫ Increment 5: Re-enable and Fix `AsRef`
+        *   ⚫ Increment 6: Re-enable and Fix `AsMut`
+    *   ⚫ **Group 4: Conversion Family**
+        *   ⚫ Increment 7: Re-enable and Fix `From`
+        *   ⚫ Increment 8: Re-enable and Fix `InnerFrom`
+    *   ⚫ **Group 5: Constructor Family**
+        *   ⚫ Increment 9: Re-enable and Fix `New`
+    *   ⚫ **Group 6: Operator Family**
+        *   ⚫ Increment 10: Re-enable and Fix `Not`
+        *   ⚫ Increment 11: Re-enable and Fix `Index`
+        *   ⚫ Increment 12: Re-enable and Fix `IndexMut`
+    *   ⚫ **Group 7: Special Macros**
+        *   ⚫ Increment 13: Redesign and Fix `PhantomData` Macro
+    *   ⚫ **Group 8: Integration Tests**
+        *   ⚫ Increment 14: Fix `all_test` Integration
+        *   ⚫ Increment 15: Fix `basic_test` Integration
+    *   ⚫ **Group 9: Finalization**
+        *   ⚫ Increment 16: Final Code Cleanup and Documentation Review
+        *   ⚫ Increment 17: Final Workspace Verification
+        *   ⚫ Increment 18: Update Project Changelog
 
-### Permissions & Boundaries
+### Permissions &amp; Boundaries
+*   **Mode:** `code`
 *   **Run workspace-wise commands:** true
 *   **Add transient comments:** true
 *   **Additional Editable Crates:**
     *   `module/core/derive_tools_meta` (Reason: Implements the derive macros)
-
-### Relevant Context
-*   Control Files to Reference (if they exist):
-    *   `./roadmap.md`
-    *   `./spec.md`
-    *   `./spec_addendum.md`
-*   Files to Include (for AI's reference, if `read_file` is planned):
-    *   `module/core/derive_tools/Cargo.toml`
-    *   `module/core/derive_tools_meta/Cargo.toml`
-    *   `module/core/derive_tools/tests/inc/mod.rs`
-    *   `module/core/derive_tools_meta/src/derive/as_mut.rs`
-    *   `module/core/derive_tools_meta/src/derive/as_ref.rs`
-    *   `module/core/derive_tools_meta/src/derive/deref.rs`
-    *   `module/core/derive_tools_meta/src/derive/deref_mut.rs`
-    *   `module/core/derive_tools_meta/src/derive/from.rs`
-    *   `module/core/derive_tools_meta/src/derive/inner_from.rs`
-    *   `module/core/derive_tools_meta/src/derive/new.rs`
-    *   `module/core/derive_tools_meta/src/derive/not.rs`
-    *   `module/core/derive_tools_meta/src/derive/index.rs`
-    *   `module/core/derive_tools_meta/src/derive/index_mut.rs`
-    *   `module/core/derive_tools_meta/src/derive/phantom.rs`
-*   Crates for Documentation (for AI's reference, if `read_file` on docs is planned):
-    *   `derive_tools`
-    *   `derive_tools_meta`
-*   External Crates Requiring `task.md` Proposals (if any identified during planning):
-    *   N/A
-
-### Expected Behavior Rules / Specifications
-*   All derive macros in `derive_tools_meta` should correctly implement the corresponding traits for supported struct types (unit, tuple, named).
-*   Derive macros should return a `syn::Error` for unsupported types (e.g., enums for `Deref`, `DerefMut`, `New`, `Not`, `Index`, `IndexMut`, `InnerFrom`; any type for `PhantomData`).
-*   All existing tests in `derive_tools` should pass.
-*   All `trybuild` compile-fail tests should pass, verifying expected compilation errors.
-*   `cargo clippy` should report no warnings with `-D warnings` enabled for `derive_tools` and `derive_tools_meta`.
-*   The `derive_tools` crate should be compatible with `macro_tools` v0.55.0.
-*   The `E0207` (unconstrained const parameter) issue for `IsTransparentComplex` structs is acknowledged as a `macro_tools` limitation and is currently worked around by commenting out affected tests. A separate task will be created for this if `macro_tools` does not address it.
+    *   `module/core/macro_tools` (Reason: Foundational utilities may need fixes. This is permitted *if and only if* a bug in `macro_tools` is identified as the root cause of a `derive_tools` test failure.)
 
 ### Crate Conformance Check Procedure
-*   **Step 1: Run Tests.** Execute `timeout 90 cargo test -p derive_tools --all-targets`. If this fails, fix all test errors before proceeding.
-*   **Step 2: Run Linter (Conditional).** Only if Step 1 passes, execute `timeout 90 cargo clippy -p derive_tools -- -D warnings`.
+*   **This is run at the end of each major group of increments.**
+*   **Step 1: Run Tests.** Execute `timeout 180 cargo test -p derive_tools --all-targets`.
+*   **Step 2: Run Linter (Conditional).** Only if Step 1 passes, execute `timeout 180 cargo clippy -p derive_tools --all-features -- -D warnings`.
 
 ### Increments
-(Note: The status of each increment is tracked in the `### Progress` section.)
-##### Increment 1: Initial Analysis and Setup
-*   **Goal:** Understand the current state of the `derive_tools` crate, identify existing issues, and set up the development environment.
-*   **Specification Reference:** N/A
-*   **Steps:**
-    *   Step 1: Perform `list_files` recursively on `module/core/derive_tools` and `module/core/derive_tools_meta` to understand the project structure.
-    *   Step 2: Read `module/core/derive_tools/Cargo.toml` and `module/core/derive_tools_meta/Cargo.toml` to understand dependencies.
-    *   Step 3: Read `module/core/derive_tools/tests/inc/mod.rs` to understand the test structure.
-    *   Step 4: Run `timeout 90 cargo test -p derive_tools --all-targets` to identify initial test failures.
-    *   Step 5: Run `timeout 90 cargo clippy -p derive_tools -- -D warnings` to identify initial lint warnings.
-    *   Step 6: Analyze the output from steps 4 and 5 to identify specific errors and warnings.
-    *   Step 7: Perform Increment Verification.
-    *   Step 8: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Review the output of `cargo test` and `cargo clippy` to confirm initial state.
-*   **Commit Message:** feat(derive_tools): Initial analysis and setup
 
-##### Increment 2: Plan and Document `AsMut` and `AsRef` Tests
-*   **Goal:** Create the basic test structure and manual implementations for `AsMut` and `AsRef` derives, and update `mod.rs` to include them.
-*   **Specification Reference:** N/A
+#### Group 0: Setup
+##### Increment 1: Establish Initial Baseline
+*   **Goal:** Get a clear, current picture of the crate's state by running tests and lints to understand all existing failures.
+*   **Context & Rationale:** Before making changes, we need a snapshot of what's broken. This includes disabled tests (which we can infer from the file list vs. `mod.rs`) and active failures. This baseline will validate our fixes later.
+*   **Elaboration & Self-Critique (Pre-computation):**
+    *   **Critique:** Just running `cargo test` won't show which tests are commented out in `tests/inc/mod.rs`. I need to read that file. Using `--no-fail-fast` is crucial to get a complete list of all failing tests.
+    *   **Final Approach:** Read `tests/inc/mod.rs`, run a full test suite with `--no-fail-fast`, run clippy, and log the complete state.
 *   **Steps:**
-    *   Step 1: Create `module/core/derive_tools/tests/inc/as_mut/basic_test.rs` with `#[derive(AsMut)]` and basic test cases.
-    *   Step 2: Create `module/core/derive_tools/tests/inc/as_mut/basic_manual_test.rs` with manual `impl AsMut` and corresponding test cases.
-    *   Step 3: Create `module/core/derive_tools/tests/inc/as_ref/basic_test.rs` with `#[derive(AsRef)]` and basic test cases.
-    *   Step 4: Create `module/core/derive_tools/tests/inc/as_ref/basic_manual_test.rs` with manual `impl AsRef` and corresponding test cases.
-    *   Step 5: Create `module/core/derive_tools/tests/inc/as_mut_only_test.rs` for shared test logic.
-    *   Step 6: Create `module/core/derive_tools/tests/inc/as_ref_only_test.rs` for shared test logic.
-    *   Step 7: Update `module/core/derive_tools/tests/inc/mod.rs` to include `as_mut_tests` and `as_ref_tests` modules.
-    *   Step 8: Perform Increment Verification.
-    *   Step 9: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Verify that `module/core/derive_tools/tests/inc/mod.rs` includes the new modules.
-    *   Verify that the new test files exist.
-    *   Run `timeout 90 cargo test -p derive_tools --all-targets` and analyze output for new failures related to these tests.
-*   **Commit Message:** feat(derive_tools): Plan and document AsMut and AsRef tests
+    1.  **Action:** Use `read_file` to load `module/core/derive_tools/tests/inc/mod.rs`.
+    2.  **Action:** Use `execute_command` to run `timeout 180 cargo test -p derive_tools --all-targets --no-fail-fast`.
+    3.  **Action:** Use `execute_command` to run `timeout 180 cargo clippy -p derive_tools --all-features -- -D warnings`.
+    4.  **Analysis:** Create a summary of all commented-out test modules, all failing tests, and all clippy warnings. Store this in the `### Changelog` section.
+    5.  **Verification:** The summary of failures and warnings is complete and logged in the changelog.
+    6.  **Commit:** This is an analysis-only step, no code changes to commit.
+*   **Commit Message:** `chore(derive_tools): Establish baseline of test and lint failures`
 
-##### Increment 3: Fix `AsMut` Tests
-*   **Goal:** Fix the `AsMut` derive macro to correctly implement the `AsMut` trait for structs and ensure tests pass.
-*   **Specification Reference:** N/A
+---
+#### Group 1: Foundational Fixes
+##### Increment 2: Fix `macro_tools` `const` Generics Bug
+*   **Goal:** Apply the fix proposed in `macro_tools/task.md` to resolve the `const` generics issue, which is a known blocker for many `derive_tools` tests.
+*   **Context & Rationale:** The `Deref` and `DerefMut` tests (and likely others) are failing because `macro_tools::generic_params::decompose` incorrectly handles `const` parameters. Fixing this foundational issue in the dependency is the first step to unblocking the `derive_tools` tests.
+*   **Elaboration & Self-Critique (Pre-computation):**
+    *   **Critique:** The proposal in `macro_tools/task.md` is sound. The key is to change how `generics_for_ty` is constructed for `ConstParam`. I must ensure the fix doesn't break other uses of `decompose`. The change should be surgical.
+    *   **Final Approach:** Read `macro_tools/src/generic_params.rs`, apply the targeted fix to the `decompose` function, and then immediately run tests within the `macro_tools` crate to ensure no regressions were introduced there.
 *   **Steps:**
-    *   Step 1: Read `module/core/derive_tools_meta/src/derive/as_mut.rs`.
-    *   Step 2: Modify `module/core/derive_tools_meta/src/derive/as_mut.rs` to correctly generate `AsMut` implementations for unit, tuple, and named structs.
-    *   Step 3: Clean up unused imports and variables in `module/core/derive_tools_meta/src/derive/as_mut.rs`.
-    *   Step 4: Perform Increment Verification.
-    *   Step 5: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p derive_tools --test as_mut_tests` and analyze output.
-    *   Run `timeout 90 cargo clippy -p derive_tools -- -D warnings` and analyze output.
-*   **Commit Message:** fix(derive_tools): Fix AsMut derive and tests
+    1.  **Action:** Use `read_file` to load `module/core/macro_tools/src/generic_params.rs`.
+    2.  **Action:** Use `search_and_replace` to modify the `decompose` function in `module/core/macro_tools/src/generic_params.rs` to correctly handle `ConstParam` for `generics_for_ty`, ensuring it only includes the identifier.
+    3.  **Verification:** Execute `timeout 180 cargo test -p macro_tools --all-targets`.
+    4.  **Conditional Rethinking:**
+        *   **If** verification succeeds, proceed to Commit.
+        *   **Else**, analyze the failure, propose a refined fix for `macro_tools`, and loop back to Action 2.
+    5.  **Commit:** Use `execute_command` to `git add .` and `git commit` the changes to `macro_tools`.
+*   **Commit Message:** `fix(macro_tools): Correctly decompose const generics for type paths`
 
-##### Increment 4: Fix `AsRef` Tests
-*   **Goal:** Fix the `AsRef` derive macro to correctly implement the `AsRef` trait for structs and ensure tests pass.
-*   **Specification Reference:** N/A
+---
+#### Group 2: Deref Family
+##### Increment 3: Re-enable and Fix `Deref`
+*   **Goal:** Re-enable all `Deref` tests, create a comprehensive test matrix, and fix the `Deref` derive macro and its tests.
+*   **Context & Rationale:** `Deref` is a fundamental trait. With the `macro_tools` fix in place, we can now tackle the tests that depend on `const` generics and other complex scenarios.
+*   **Elaboration & Self-Critique (Pre-computation):**
+    *   **Critique:** The test matrix must be thorough. It should cover: single-field structs (tuple and named), multi-field structs (should fail without attribute), enums (should fail), unit structs (should fail), and all generic variations.
+    *   **Final Approach:** First, write the test matrix into the main test file. Second, uncomment the `deref_tests` module in `mod.rs`. Third, run tests to see the specific failures. Fourth, fix the `deref.rs` implementation in `derive_tools_meta`. Finally, verify and commit.
 *   **Steps:**
-    *   Step 1: Read `module/core/derive_tools_meta/src/derive/as_ref.rs`.
-    *   Step 2: Modify `module/core/derive_tools_meta/src/derive/as_ref.rs` to correctly generate `AsRef` implementations for unit, tuple, and named structs.
-    *   Step 3: Clean up unused imports and variables in `module/core/derive_tools_meta/src/derive/as_ref.rs`.
-    *   Step 4: Perform Increment Verification.
-    *   Step 5: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p derive_tools --test as_ref_tests` and analyze output.
-    *   Run `timeout 90 cargo clippy -p derive_tools -- -D warnings` and analyze output.
-*   **Commit Message:** fix(derive_tools): Fix AsRef derive and tests
+    1.  **Action:** Use `write_to_file` to prepend the following Test Matrix as a doc comment to `module/core/derive_tools/tests/inc/deref/basic_test.rs`.
+        ```rust
+        //! # Test Matrix for `Deref`
+        //!
+        //! | ID   | Struct Type        | Fields      | Generics         | Attributes | Expected Behavior                                     | Test Type    |
+        //! |------|--------------------|-------------|------------------|------------|-------------------------------------------------------|--------------|
+        //! | T1.1 | Tuple Struct       | 1           | None             | -          | Implements `Deref` to the inner field.                | `tests/inc/deref/basic_test.rs` |
+        //! | T1.2 | Named Struct       | 1           | None             | -          | Implements `Deref` to the inner field.                | `tests/inc/deref/basic_test.rs` |
+        //! | T1.3 | Tuple Struct       | >1          | None             | -          | Fails to compile: `Deref` requires a single field.    | `trybuild`   |
+        //! | T1.4 | Named Struct       | >1          | None             | `#[deref]` | Implements `Deref` to the specified field.            | `tests/inc/deref/struct_named.rs` |
+        //! | T1.5 | Named Struct       | >1          | None             | -          | Fails to compile: `#[deref]` attribute is required.   | `trybuild`   |
+        //! | T1.6 | Enum               | Any         | Any              | -          | Fails to compile: `Deref` cannot be on an enum.       | `tests/inc/deref/compile_fail_enum.rs` |
+        //! | T1.7 | Unit Struct        | 0           | None             | -          | Fails to compile: `Deref` requires a field.           | `trybuild`   |
+        //! | T1.8 | Struct             | 1           | Lifetime         | -          | Implements `Deref` correctly with lifetimes.          | `tests/inc/deref/generics_lifetimes.rs` |
+        //! | T1.9 | Struct             | 1           | Type             | -          | Implements `Deref` correctly with type generics.      | `tests/inc/deref/generics_types.rs` |
+        //! | T1.10| Struct             | 1           | Const            | -          | Implements `Deref` correctly with const generics.     | `tests/inc/deref/generics_constants.rs` |
+        //! | T1.11| Struct             | 1           | Where clause     | -          | Implements `Deref` correctly with where clauses.      | `tests/inc/deref/bounds_where.rs` |
+        ```
+    2.  **Action:** Use `search_and_replace` to uncomment the `deref_tests` module in `module/core/derive_tools/tests/inc/mod.rs`.
+    3.  **Action:** Fix the `Deref` implementation in `module/core/derive_tools_meta/src/derive/deref.rs` to handle all cases from the test matrix correctly, including returning `syn::Error` for enums and multi-field structs without an attribute.
+    4.  **Verification:** Execute `timeout 180 cargo test -p derive_tools --test deref_tests`.
+    5.  **Conditional Rethinking:** If verification fails, analyze the failure, propose a fix, and loop back to Action 3.
+    6.  **Commit:** Use `execute_command` to `git add .` and `git commit` the changes.
+*   **Commit Message:** `fix(derive_tools): Re-enable, document, and fix Deref derive and tests`
 
-##### Increment 5: Plan and Document `Deref` Tests
-*   **Goal:** Create the basic test structure and manual implementations for `Deref` derive, and update `mod.rs` to include them.
-*   **Specification Reference:** N/A
+##### Increment 4: Re-enable and Fix `DerefMut`
+*   **Goal:** Re-enable all `DerefMut` tests, create a comprehensive test matrix, and fix the `DerefMut` derive macro.
 *   **Steps:**
-    *   Step 1: Create `module/core/derive_tools/tests/inc/deref/basic_test.rs` with `#[derive(Deref)]` and basic test cases. Comment out `IsTransparentComplex` struct and its test.
-    *   Step 2: Create `module/core/derive_tools/tests/inc/deref/basic_manual_test.rs` with manual `impl Deref` and corresponding test cases. Comment out `IsTransparentComplex` struct and its `impl Deref` block and test.
-    *   Step 3: Create `module/core/derive_tools/tests/inc/deref_only_test.rs` for shared test logic.
-    *   Step 4: Update `module/core/derive_tools/tests/inc/mod.rs` to include `deref_tests` module.
-    *   Step 5: Perform Increment Verification.
-    *   Step 6: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Verify that `module/core/derive_tools/tests/inc/mod.rs` includes the new module.
-    *   Verify that the new test files exist.
-    *   Run `timeout 90 cargo test -p derive_tools --all-targets` and analyze output for new failures related to these tests.
-*   **Commit Message:** feat(derive_tools): Plan and document Deref tests
+    1.  **Action:** Use `write_to_file` to prepend the following Test Matrix as a doc comment to `module/core/derive_tools/tests/inc/deref_mut/basic_test.rs`.
+        ```rust
+        //! # Test Matrix for `DerefMut`
+        //!
+        //! | ID   | Struct Type        | Fields      | Generics         | Attributes   | Prerequisite | Expected Behavior                                       | Test Type    |
+        //! |------|--------------------|-------------|------------------|--------------|--------------|---------------------------------------------------------|--------------|
+        //! | T2.1 | Tuple Struct       | 1           | None             | -            | `Deref`      | Implements `DerefMut` to the inner field.               | `tests/inc/deref_mut/basic_test.rs` |
+        //! | T2.2 | Named Struct       | 1           | None             | -            | `Deref`      | Implements `DerefMut` to the inner field.               | `tests/inc/deref_mut/basic_test.rs` |
+        //! | T2.3 | Named Struct       | >1          | None             | `#[deref_mut]` | `Deref`      | Implements `DerefMut` to the specified field.           | `tests/inc/deref_mut/struct_named.rs` |
+        //! | T2.4 | Struct             | 1           | Any              | -            | No `Deref`   | Fails to compile: `DerefMut` requires `Deref`.          | `trybuild`   |
+        //! | T2.5 | Enum               | Any         | Any              | -            | -            | Fails to compile: `DerefMut` cannot be on an enum.      | `tests/inc/deref_mut/compile_fail_enum.rs` |
+        ```    2.  **Action:** Use `search_and_replace` to uncomment the `deref_mut_tests` module in `module/core/derive_tools/tests/inc/mod.rs`.
+    3.  **Action:** Fix the `DerefMut` implementation in `module/core/derive_tools_meta/src/derive/deref_mut.rs`.
+    4.  **Verification:** Execute `timeout 180 cargo test -p derive_tools --test deref_mut_tests`.
+    5.  **Conditional Rethinking:** If verification fails, analyze the failure, propose a fix, and loop back to Action 3.
+    6.  **Commit:** Use `execute_command` to `git add .` and `git commit` the changes.
+*   **Commit Message:** `fix(derive_tools): Re-enable, document, and fix DerefMut derive and tests`
 
-##### Increment 6: Fix `Deref` Tests for Basic Structs
-*   **Goal:** Fix the `Deref` derive macro to correctly implement the `Deref` trait for basic structs and ensure tests pass.
-*   **Specification Reference:** N/A
+---
+#### Group 3: AsRef Family
+##### Increment 5: Re-enable and Fix `AsRef`
+*   **Goal:** Re-enable, document, and fix the `AsRef` derive.
 *   **Steps:**
-    *   Step 1: Read `module/core/derive_tools_meta/src/derive/deref.rs`.
-    *   Step 2: Modify `module/core/derive_tools_meta/src/derive/deref.rs` to correctly generate `Deref` implementations for unit, tuple, and named structs.
-    *   Step 3: Clean up unused imports and variables in `module/core/derive_tools_meta/src/derive/deref.rs`.
-    *   Step 4: Perform Increment Verification.
-    *   Step 5: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p derive_tools --test deref_tests` and analyze output.
-    *   Run `timeout 90 cargo clippy -p derive_tools -- -D warnings` and analyze output.
-*   **Commit Message:** fix(derive_tools): Fix Deref derive for basic structs and tests
+    1.  **Action:** Add the following Test Matrix to `tests/inc/as_ref_test.rs`.
+        ```rust
+        //! # Test Matrix for `AsRef`
+        //!
+        //! | ID   | Struct Type  | Fields | Attributes          | Expected Behavior                               | Test Type  |
+        //! |------|--------------|--------|---------------------|-------------------------------------------------|------------|
+        //! | T3.1 | Tuple Struct | 1      | -                   | Implements `AsRef<InnerType>`.                  | `as_ref_test.rs` |
+        //! | T3.2 | Named Struct | >1     | `#[as_ref]` on field | Implements `AsRef<FieldType>`.                  | `trybuild` |
+        //! | T3.3 | Struct       | 1      | `#[as_ref(forward)]` | Forwards `AsRef` impl from inner field.         | `trybuild` |
+        //! | T3.4 | Enum         | Any    | -                   | Fails to compile.                               | `trybuild` |
+        ```
+    2.  **Action:** Uncomment `as_ref_test` in `tests/inc/mod.rs`.
+    3.  **Action:** Fix `derive_tools_meta/src/derive/as_ref.rs`.
+    4.  **Verification:** `timeout 180 cargo test -p derive_tools --test as_ref_test`.
+    5.  **Commit.**
+*   **Commit Message:** `fix(derive_tools): Re-enable, document, and fix AsRef derive`
 
-##### Increment 7: Fix `Deref` Derive for Enums
-*   **Goal:** Modify the `Deref` derive macro to explicitly return a `syn::Error` when applied to an enum, and add a compile-fail test.
-*   **Specification Reference:** N/A
+##### Increment 6: Re-enable and Fix `AsMut`
+*   **Goal:** Re-enable, document, and fix the `AsMut` derive.
 *   **Steps:**
-    *   Step 1: Read `module/core/derive_tools_meta/src/derive/deref.rs`.
-    *   Step 2: Modify `module/core/derive_tools_meta/src/derive/deref.rs` to return `return_syn_err!` when `StructLike::Enum` is matched.
-    *   Step 3: Create `module/core/derive_tools/tests/inc/deref/compile_fail_enum.rs` to test the error for enums.
-    *   Step 4: Update `module/core/derive_tools/tests/inc/mod.rs` to include `deref_trybuild` for the compile-fail test.
-    *   Step 5: Perform Increment Verification.
-    *   Step 6: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p derive_tools --test deref_trybuild` and analyze output to ensure the compile-fail test passes.
-    *   Run `timeout 90 cargo clippy -p derive_tools -- -D warnings` and analyze output.
-*   **Commit Message:** fix(derive_tools): Deref derive returns error for enums with compile-fail test
+    1.  **Action:** Add the following Test Matrix to `tests/inc/as_mut_test.rs`.
+        ```rust
+        //! # Test Matrix for `AsMut`
+        //!
+        //! | ID   | Struct Type  | Fields | Attributes         | Prerequisite | Expected Behavior                               | Test Type  |
+        //! |------|--------------|--------|--------------------|--------------|-------------------------------------------------|------------|
+        //! | T4.1 | Tuple Struct | 1      | -                  | `AsRef`      | Implements `AsMut<InnerType>`.                  | `as_mut_test.rs` |
+        //! | T4.2 | Named Struct | >1     | `#[as_mut]` on field | `AsRef`      | Implements `AsMut<FieldType>`.                  | `trybuild` |
+        //! | T4.3 | Struct       | 1      | -                  | No `AsRef`   | Fails to compile.                               | `trybuild` |
+        //! | T4.4 | Enum         | Any    | -                  | -            | Fails to compile.                               | `trybuild` |
+        ```
+    2.  **Action:** Uncomment `as_mut_test` in `tests/inc/mod.rs`.
+    3.  **Action:** Fix `derive_tools_meta/src/derive/as_mut.rs`.
+    4.  **Verification:** `timeout 180 cargo test -p derive_tools --test as_mut_test`.
+    5.  **Commit.**
+*   **Commit Message:** `fix(derive_tools): Re-enable, document, and fix AsMut derive`
 
-##### Increment 8: Address `Deref` Generics and Bounds (`IsTransparentComplex`)
-*   **Goal:** Acknowledge and temporarily work around the `E0207` issue with `IsTransparentComplex` structs in `Deref` tests.
-*   **Specification Reference:** N/A
+---
+#### Group 4: Conversion Family
+##### Increment 7: Re-enable and Fix `From`
+*   **Goal:** Re-enable, document, and fix the `From` derive for both structs and enums.
 *   **Steps:**
-    *   Step 1: Ensure `IsTransparentComplex` struct and its related tests/implementations are commented out in `module/core/derive_tools/tests/inc/deref/basic_test.rs` and `module/core/derive_tools/tests/inc/deref/basic_manual_test.rs`.
-    *   Step 2: Update `module/core/derive_tools/task.md` to explicitly state that `E0207` is a known issue with `macro_tools` and that `IsTransparentComplex` tests are temporarily disabled.
-    *   Step 3: Perform Increment Verification.
-    *   Step 4: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p derive_tools --all-targets` and confirm no new errors related to `IsTransparentComplex` appear.
-    *   Run `timeout 90 cargo clippy -p derive_tools -- -D warnings` and confirm no new warnings.
-*   **Commit Message:** chore(derive_tools): Temporarily disable Deref generics tests due to E0207
+    1.  **Action:** Add Test Matrix to `tests/inc/from/basic_test.rs`.
+    2.  **Action:** Uncomment `from_tests` in `tests/inc/mod.rs`.
+    3.  **Action:** Fix `derive_tools_meta/src/derive/from.rs`.
+    4.  **Verification:** `timeout 180 cargo test -p derive_tools --test from_tests`.
+    5.  **Commit.**
+*   **Commit Message:** `fix(derive_tools): Re-enable, document, and fix From derive`
 
-##### Increment 9: Plan and Document `DerefMut` Tests
-*   **Goal:** Create the basic test structure and manual implementations for `DerefMut` derive, and update `mod.rs` to include them.
-*   **Specification Reference:** N/A
+##### Increment 8: Re-enable and Fix `InnerFrom`
+*   **Goal:** Re-enable, document, and fix the `InnerFrom` derive.
 *   **Steps:**
-    *   Step 1: Create `module/core/derive_tools/tests/inc/deref_mut/basic_test.rs` with `#[derive(DerefMut)]` and basic test cases. Comment out `IsTransparentComplex` struct and its test.
-    *   Step 2: Create `module/core/derive_tools/tests/inc/deref_mut/basic_manual_test.rs` with manual `impl DerefMut` and corresponding test cases. Comment out `IsTransparentComplex` struct and its `impl Deref`/`impl DerefMut` blocks and test.
-    *   Step 3: Create `module/core/derive_tools/tests/inc/deref_mut_only_test.rs` for shared test logic.
-    *   Step 4: Update `module/core/derive_tools/tests/inc/mod.rs` to include `deref_mut_tests` module.
-    *   Step 5: Perform Increment Verification.
-    *   Step 6: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Verify that `module/core/derive_tools/tests/inc/mod.rs` includes the new module.
-    *   Verify that the new test files exist.
-    *   Run `timeout 90 cargo test -p derive_tools --all-targets` and analyze output for new failures related to these tests.
-*   **Commit Message:** feat(derive_tools): Plan and document DerefMut tests
+    1.  **Action:** Add Test Matrix to `tests/inc/inner_from/basic_test.rs`.
+    2.  **Action:** Uncomment `inner_from_tests` in `tests/inc/mod.rs`.
+    3.  **Action:** Fix `derive_tools_meta/src/derive/inner_from.rs`.
+    4.  **Verification:** `timeout 180 cargo test -p derive_tools --test inner_from_tests`.
+    5.  **Commit.**
+*   **Commit Message:** `fix(derive_tools): Re-enable, document, and fix InnerFrom derive`
 
-##### Increment 10: Fix `DerefMut` Tests
-*   **Goal:** Fix the `DerefMut` derive macro to correctly implement the `DerefMut` trait for structs, ensure tests pass, and handle enums with a compile-fail test.
-*   **Specification Reference:** N/A
+---
+#### Group 5: Constructor Family
+##### Increment 9: Re-enable and Fix `New`
+*   **Goal:** Re-enable, document, and fix the `New` derive.
 *   **Steps:**
-    *   Step 1: Read `module/core/derive_tools_meta/src/derive/deref_mut.rs`.
-    *   Step 2: Modify `module/core/derive_tools_meta/src/derive/deref_mut.rs` to correctly generate `DerefMut` implementations for unit, tuple, and named structs. Ensure `derive_tools_meta::Deref` is used.
-    *   Step 3: Modify `module/core/derive_tools_meta/src/derive/deref_mut.rs` to return `return_syn_err!` when `StructLike::Enum` is matched.
-    *   Step 4: Create `module/core/derive_tools/tests/inc/deref_mut/compile_fail_enum.rs` to test the error for enums.
-    *   Step 5: Update `module/core/derive_tools/tests/inc/mod.rs` to include `deref_mut_trybuild` for the compile-fail test.
-    *   Step 6: Clean up unused imports and variables in `module/core/derive_tools_meta/src/derive/deref_mut.rs`.
-    *   Step 7: Perform Increment Verification.
-    *   Step 8: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p derive_tools --test deref_mut_tests` and analyze output.
-    *   Run `timeout 90 cargo test -p derive_tools --test deref_mut_trybuild` and analyze output.
-    *   Run `timeout 90 cargo clippy -p derive_tools -- -D warnings` and analyze output.
-*   **Commit Message:** fix(derive_tools): Fix DerefMut derive and tests, add enum compile-fail
+    1.  **Action:** Add Test Matrix to `tests/inc/new/basic_test.rs`.
+    2.  **Action:** Uncomment `new_tests` in `tests/inc/mod.rs`.
+    3.  **Action:** Fix `derive_tools_meta/src/derive/new.rs`.
+    4.  **Verification:** `timeout 180 cargo test -p derive_tools --test new_tests`.
+    5.  **Commit.**
+*   **Commit Message:** `fix(derive_tools): Re-enable, document, and fix New derive`
 
-##### Increment 11: Plan and Document `From` Tests
-*   **Goal:** Create the basic test structure and manual implementations for `From` derive, and update `mod.rs` to include them.
-*   **Specification Reference:** N/A
+---
+#### Group 6: Operator Family
+##### Increment 10: Re-enable and Fix `Not`
+*   **Goal:** Re-enable, document, and fix the `Not` derive.
 *   **Steps:**
-    *   Step 1: Create `module/core/derive_tools/tests/inc/from/basic_test.rs` with `#[derive(From)]` and basic test cases. Comment out `IsTransparentComplex` struct and its test.
-    *   Step 2: Create `module/core/derive_tools/tests/inc/from/basic_manual_test.rs` with manual `impl From` and corresponding test cases. Comment out `IsTransparentComplex` struct and its `impl From` block and test.
-    *   Step 3: Create `module/core/derive_tools/tests/inc/from_only_test.rs` for shared test logic.
-    *   Step 4: Update `module/core/derive_tools/tests/inc/mod.rs` to include `from_tests` module.
-    *   Step 5: Perform Increment Verification.
-    *   Step 6: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Verify that `module/core/derive_tools/tests/inc/mod.rs` includes the new module.
-    *   Verify that the new test files exist.
-    *   Run `timeout 90 cargo test -p derive_tools --all-targets` and analyze output for new failures related to these tests.
-*   **Commit Message:** feat(derive_tools): Plan and document From tests
+    1.  **Action:** Add Test Matrix to `tests/inc/not/basic_test.rs`.
+    2.  **Action:** Uncomment `not_tests` in `tests/inc/mod.rs`.
+    3.  **Action:** Fix `derive_tools_meta/src/derive/not.rs`.
+    4.  **Verification:** `timeout 180 cargo test -p derive_tools --test not_tests`.
+    5.  **Commit.**
+*   **Commit Message:** `fix(derive_tools): Re-enable, document, and fix Not derive`
 
-##### Increment 12: Fix `From` Tests
-*   **Goal:** Fix the `From` derive macro to correctly implement the `From` trait for structs and ensure tests pass. Address any `E0428` errors from duplicate module definitions.
-*   **Specification Reference:** N/A
+##### Increment 11: Re-enable and Fix `Index`
+*   **Goal:** Re-enable, document, and fix the `Index` derive.
 *   **Steps:**
-    *   Step 1: Read `module/core/derive_tools_meta/src/derive/from.rs`.
-    *   Step 2: Modify `module/core/derive_tools_meta/src/derive/from.rs` to correctly generate `From` implementations for unit, tuple, and named structs.
-    *   Step 3: Read `module/core/derive_tools/tests/inc/mod.rs`.
-    *   Step 4: If `E0428` (name defined multiple times) is present for `from_tests`, remove the duplicate `mod from_tests;` declaration from `module/core/derive_tools/tests/inc/mod.rs`.
-    *   Step 5: Clean up unused imports and variables in `module/core/derive_tools_meta/src/derive/from.rs`.
-    *   Step 6: Perform Increment Verification.
-    *   Step 7: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p derive_tools --test from_tests` and analyze output.
-    *   Run `timeout 90 cargo clippy -p derive_tools -- -D warnings` and analyze output.
-*   **Commit Message:** fix(derive_tools): Fix From derive and tests, resolve module duplication
+    1.  **Action:** Add Test Matrix to `tests/inc/index/basic_test.rs`.
+    2.  **Action:** Uncomment `index_tests` in `tests/inc/mod.rs`.
+    3.  **Action:** Fix `derive_tools_meta/src/derive/index.rs`.
+    4.  **Verification:** `timeout 180 cargo test -p derive_tools --test index_tests`.
+    5.  **Commit.**
+*   **Commit Message:** `fix(derive_tools): Re-enable, document, and fix Index derive`
 
-##### Increment 13: Plan and Document `InnerFrom` and `New` Tests
-*   **Goal:** Create the basic test structure and manual implementations for `InnerFrom` and `New` derives, and update `mod.rs` to include them.
-*   **Specification Reference:** N/A
+##### Increment 12: Re-enable and Fix `IndexMut`
+*   **Goal:** Re-enable, document, and fix the `IndexMut` derive.
 *   **Steps:**
-    *   Step 1: Create `module/core/derive_tools/tests/inc/inner_from/basic_test.rs` with `#[derive(InnerFrom)]` and basic test cases.
-    *   Step 2: Create `module/core/derive_tools/tests/inc/inner_from/basic_manual_test.rs` with manual `impl InnerFrom` and corresponding test cases.
-    *   Step 3: Create `module/core/derive_tools/tests/inc/inner_from_only_test.rs` for shared test logic.
-    *   Step 4: Create `module/core/derive_tools/tests/inc/new/basic_test.rs` with `#[derive(New)]` and basic test cases.
-    *   Step 5: Create `module/core/derive_tools/tests/inc/new/basic_manual_test.rs` with manual `impl New` and corresponding test cases.
-    *   Step 6: Create `module/core/derive_tools/tests/inc/new_only_test.rs` for shared test logic.
-    *   Step 7: Update `module/core/derive_tools/tests/inc/mod.rs` to include `inner_from_tests` and `new_tests` modules.
-    *   Step 8: Perform Increment Verification.
-    *   Step 9: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Verify that `module/core/derive_tools/tests/inc/mod.rs` includes the new modules.
-    *   Verify that the new test files exist.
-    *   Run `timeout 90 cargo test -p derive_tools --all-targets` and analyze output for new failures related to these tests.
-*   **Commit Message:** feat(derive_tools): Plan and document InnerFrom and New tests
+    1.  **Action:** Add Test Matrix to `tests/inc/index_mut/basic_test.rs`.
+    2.  **Action:** Uncomment `index_mut_tests` in `tests/inc/mod.rs`.
+    3.  **Action:** Fix `derive_tools_meta/src/derive/index_mut.rs`.
+    4.  **Verification:** `timeout 180 cargo test -p derive_tools --test index_mut_tests`.
+    5.  **Commit.**
+*   **Commit Message:** `fix(derive_tools): Re-enable, document, and fix IndexMut derive`
 
-##### Increment 14: Fix `InnerFrom` Tests
-*   **Goal:** Fix the `InnerFrom` derive macro to correctly implement the `InnerFrom` trait for structs and ensure tests pass. Handle unit structs and enums with a compile-fail test.
-*   **Specification Reference:** N/A
+---
+#### Group 7: Special Macros
+##### Increment 13: Redesign and Fix `PhantomData` Macro
+*   **Goal:** Redesign the flawed `PhantomData` derive into a working attribute macro and fix all related tests.
+*   **Context & Rationale:** The `derive(PhantomData)` approach is fundamentally incorrect as `PhantomData` is a struct, not a trait. The correct approach is a macro that *adds* a `_phantom` field.
 *   **Steps:**
-    *   Step 1: Read `module/core/derive_tools_meta/src/derive/inner_from.rs`.
-    *   Step 2: Modify `module/core/derive_tools_meta/src/derive/inner_from.rs` to correctly generate `InnerFrom` implementations for tuple and named structs.
-    *   Step 3: Modify `module/core/derive_tools_meta/src/derive/inner_from.rs` to return `return_syn_err!` for unit structs and enums.
-    *   Step 4: Create `module/core/derive_tools/tests/inc/inner_from/compile_fail_unit_struct.rs` and `compile_fail_enum.rs` for compile-fail tests.
-    *   Step 5: Update `module/core/derive_tools/tests/inc/mod.rs` to include `inner_from_trybuild` for the compile-fail tests.
-    *   Step 6: Clean up unused imports and variables in `module/core/derive_tools_meta/src/derive/inner_from.rs`.
-    *   Step 7: Perform Increment Verification.
-    *   Step 8: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p derive_tools --test inner_from_tests` and analyze output.
-    *   Run `timeout 90 cargo test -p derive_tools --test inner_from_trybuild` and analyze output.
-    *   Run `timeout 90 cargo clippy -p derive_tools -- -D warnings` and analyze output.
-*   **Commit Message:** fix(derive_tools): Fix InnerFrom derive and tests, add compile-fail for unit structs/enums
+    1.  **Action:** Refactor `derive_tools_meta/src/derive/phantom.rs` into a function-like macro `#[phantom]`.
+    2.  **Action:** Update `lib.rs` files to export the new macro.
+    3.  **Action:** Update all tests in `tests/inc/phantom/` to use `#[phantom]` instead of `#[derive(PhantomData)]`.
+    4.  **Action:** Add a `trybuild` test to ensure `#[derive(PhantomData)]` now fails to compile.
+    5.  **Verification:** `timeout 180 cargo test -p derive_tools --test phantom_tests`.
+    6.  **Commit.**
+*   **Commit Message:** `refactor(derive_tools): Redesign PhantomData to attribute macro, fix tests`
 
-##### Increment 15: Fix `New` Tests
-*   **Goal:** Fix the `New` derive macro to correctly generate `new()` constructors for structs and ensure tests pass. Handle enums with a compile-fail test. Fix `clippy::ptr_arg` warnings.
-*   **Specification Reference:** N/A
+---
+#### Group 8: Integration Tests
+##### Increment 14: Fix `all_test` Integration
+*   **Goal:** Fix the `all_test.rs` which tests multiple derives on a single struct.
 *   **Steps:**
-    *   Step 1: Read `module/core/derive_tools_meta/src/derive/new.rs`.
-    *   Step 2: Modify `module/core/derive_tools_meta/src/derive/new.rs` to correctly generate `new()` constructors for unit, tuple, and named structs.
-    *   Step 3: Modify `module/core/derive_tools_meta/src/derive/new.rs` to return `return_syn_err!` when `StructLike::Enum` is matched.
-    *   Step 4: Create `module/core/derive_tools/tests/inc/new/compile_fail_enum.rs` for compile-fail test.
-    *   Step 5: Update `module/core/derive_tools/tests/inc/mod.rs` to include `new_trybuild` for the compile-fail test.
-    *   Step 6: Fix `clippy::ptr_arg` warnings in `module/core/derive_tools_meta/src/derive/new.rs` by changing `&Vec` to `&[_]` in function signatures.
-    *   Step 7: Clean up unused imports and variables in `module/core/derive_tools_meta/src/derive/new.rs`.
-    *   Step 8: Perform Increment Verification.
-    *   Step 9: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p derive_tools --test new_tests` and analyze output.
-    *   Run `timeout 90 cargo test -p derive_tools --test new_trybuild` and analyze output.
-    *   Run `timeout 90 cargo clippy -p derive_tools -- -D warnings` and analyze output.
-*   **Commit Message:** fix(derive_tools): Fix New derive and tests, add enum compile-fail, fix clippy warnings
+    1.  **Action:** Uncomment `all_test` in `tests/inc/mod.rs`.
+    2.  **Verification:** `timeout 180 cargo test -p derive_tools --test all_test`.
+    3.  **Commit.**
+*   **Commit Message:** `fix(derive_tools): Repair all_test integration tests`
 
-##### Increment 16: Plan and Document `Not`, `Index`, and `IndexMut` Tests
-*   **Goal:** Create the basic test structure and manual implementations for `Not`, `Index`, and `IndexMut` derives, and update `mod.rs` to include them.
-*   **Specification Reference:** N/A
+##### Increment 15: Fix `basic_test` Integration
+*   **Goal:** Fix the `basic_test.rs` which tests a combination of derives.
 *   **Steps:**
-    *   Step 1: Create `module/core/derive_tools/tests/inc/not/basic_test.rs` with `#[derive(Not)]` and basic test cases.
-    *   Step 2: Create `module/core/derive_tools/tests/inc/not/basic_manual_test.rs` with manual `impl Not` and corresponding test cases.
-    *   Step 3: Create `module/core/derive_tools/tests/inc/not_only_test.rs` for shared test logic.
-    *   Step 4: Create `module/core/derive_tools/tests/inc/index/basic_test.rs` with `#[derive(Index)]` and basic test cases.
-    *   Step 5: Create `module/core/derive_tools/tests/inc/index/basic_manual_test.rs` with manual `impl Index` and corresponding test cases.
-    *   Step 6: Create `module/core/derive_tools/tests/inc/index_only_test.rs` for shared test logic.
-    *   Step 7: Create `module/core/derive_tools/tests/inc/index_mut/basic_test.rs` with `#[derive(IndexMut)]` and basic test cases.
-    *   Step 8: Create `module/core/derive_tools/tests/inc/index_mut/basic_manual_test.rs` with manual `impl IndexMut` and corresponding test cases.
-    *   Step 9: Create `module/core/derive_tools/tests/inc/index_mut_only_test.rs` for shared test logic.
-    *   Step 10: Update `module/core/derive_tools/tests/inc/mod.rs` to include `not_tests`, `index_tests`, and `index_mut_tests` modules.
-    *   Step 11: Perform Increment Verification.
-    *   Step 12: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Verify that `module/core/derive_tools/tests/inc/mod.rs` includes the new modules.
-    *   Verify that the new test files exist.
-    *   Run `timeout 90 cargo test -p derive_tools --all-targets` and analyze output for new failures related to these tests.
-*   **Commit Message:** feat(derive_tools): Plan and document Not, Index, IndexMut tests
+    1.  **Action:** Uncomment `basic_test` in `tests/inc/mod.rs`.
+    2.  **Verification:** `timeout 180 cargo test -p derive_tools --test basic_test`.
+    3.  **Commit.**
+*   **Commit Message:** `fix(derive_tools): Repair basic_test integration tests`
 
-##### Increment 17: Fix `Not` Tests
-*   **Goal:** Fix the `Not` derive macro to correctly implement the `Not` trait for structs and ensure tests pass. Handle enums with a compile-fail test.
-*   **Specification Reference:** N/A
+---
+#### Group 9: Finalization
+##### Increment 16: Final Code Cleanup and Documentation Review
+*   **Goal:** Review the entire crate for code quality, consistency, and documentation.
 *   **Steps:**
-    *   Step 1: Read `module/core/derive_tools_meta/src/derive/not.rs`.
-    *   Step 2: Modify `module/core/derive_tools_meta/src/derive/not.rs` to correctly generate `Not` implementations for unit, tuple, and named structs.
-    *   Step 3: Modify `module/core/derive_tools_meta/src/derive/not.rs` to return `return_syn_err!` when `StructLike::Enum` is matched.
-    *   Step 4: Create `module/core/derive_tools/tests/inc/not/compile_fail_enum.rs` for compile-fail test.
-    *   Step 5: Update `module/core/derive_tools/tests/inc/mod.rs` to include `not_trybuild` for the compile-fail test.
-    *   Step 6: Clean up unused imports and variables in `module/core/derive_tools_meta/src/derive/not.rs`.
-    *   Step 7: Perform Increment Verification.
-    *   Step 8: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p derive_tools --test not_tests` and analyze output.
-    *   Run `timeout 90 cargo test -p derive_tools --test not_trybuild` and analyze output.
-    *   Run `timeout 90 cargo clippy -p derive_tools -- -D warnings` and analyze output.
-*   **Commit Message:** fix(derive_tools): Fix Not derive and tests, add enum compile-fail
+    1.  **Action:** Run `cargo fmt --all` on the workspace.
+    2.  **Action:** Manually review all test files to ensure they have a Test Matrix doc comment.
+    3.  **Action:** Review all public APIs in `derive_tools/src/lib.rs` and ensure they are documented.
+*   **Commit Message:** `chore(derive_tools): Final cleanup and documentation review`
 
-##### Increment 18: Fix `Index` and `IndexMut` Tests
-*   **Goal:** Fix the `Index` and `IndexMut` derive macros to correctly implement their respective traits for structs and ensure tests pass. Handle unit structs and enums with compile-fail tests.
-*   **Specification Reference:** N/A
+##### Increment 17: Final Workspace Verification
+*   **Goal:** Perform a final, holistic verification of the entire workspace.
 *   **Steps:**
-    *   Step 1: Read `module/core/derive_tools_meta/src/derive/index.rs` and `module/core/derive_tools_meta/src/derive/index_mut.rs`.
-    *   Step 2: Modify `module/core/derive_tools_meta/src/derive/index.rs` to correctly generate `Index` implementations for tuple and named structs.
-    *   Step 3: Modify `module/core/derive_tools_meta/src/derive/index.rs` to return `return_syn_err!` for unit structs and enums.
-    *   Step 4: Create `module/core/derive_tools/tests/inc/index/compile_fail_unit_struct.rs` and `compile_fail_enum.rs` for compile-fail tests.
-    *   Step 5: Modify `module/core/derive_tools_meta/src/derive/index_mut.rs` to correctly generate `IndexMut` implementations for tuple and named structs.
-    *   Step 6: Modify `module/core/derive_tools_meta/src/derive/index_mut.rs` to return `return_syn_err!` for unit structs and enums.
-    *   Step 7: Create `module/core/derive_tools/tests/inc/index_mut/compile_fail_unit_struct.rs` and `compile_fail_enum.rs` for compile-fail tests.
-    *   Step 8: Update `module/core/derive_tools/tests/inc/mod.rs` to include `index_trybuild` and `index_mut_trybuild` for the compile-fail tests.
-    *   Step 9: Clean up unused imports and variables in `module/core/derive_tools_meta/src/derive/index.rs` and `index_mut.rs`.
-    *   Step 10: Perform Increment Verification.
-    *   Step 11: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p derive_tools --test index_tests` and `timeout 90 cargo test -p derive_tools --test index_mut_tests` and analyze output.
-    *   Run `timeout 90 cargo test -p derive_tools --test index_trybuild` and `timeout 90 cargo test -p derive_tools --test index_mut_trybuild` and analyze output.
-    *   Run `timeout 90 cargo clippy -p derive_tools -- -D warnings` and analyze output.
-*   **Commit Message:** fix(derive_tools): Fix Index and IndexMut derives and tests, add compile-fail for unit structs/enums
+    1.  **Action:** Execute `timeout 300 cargo test --workspace --all-features --all-targets`.
+    2.  **Action:** Execute `timeout 300 cargo clippy --workspace --all-features -- -D warnings`.
+    3.  **Verification:** Check that both commands exit with code 0.
+*   **Commit Message:** `chore(workspace): Final verification of all crates`
 
-##### Increment 19: Redesign and Fix `PhantomData` Derive and Tests
-*   **Goal:** Redesign the `PhantomData` derive macro to explicitly return a `syn::Error` when invoked, as `PhantomData` is a struct, not a trait to be derived. Add a compile-fail test and remove `#[derive(PhantomData)]` from other test files. Fix related import and naming conflicts.
-*   **Specification Reference:** N/A
+##### Increment 18: Update Project Changelog
+*   **Goal:** Update the `changelog.md` with a summary of the work completed in this task.
 *   **Steps:**
-    *   Step 1: Read `module/core/derive_tools_meta/src/derive/phantom.rs`.
-    *   Step 2: Modify `module/core/derive_tools_meta/src/derive/phantom.rs` to always return `return_syn_err!` regardless of the input struct type (Unit, Struct, Enum), explicitly stating that `PhantomData` cannot be derived. Remove all internal logic for generating `PhantomData` implementations.
-    *   Step 3: Create `module/core/derive_tools/tests/inc/phantom/compile_fail_derive.rs` to verify that applying `#[derive(PhantomData)]` results in a compilation error.
-    *   Step 4: Update `module/core/derive_tools/tests/inc/mod.rs` to include `phantom_trybuild` for the compile-fail test and remove the commented-out `phantom_tests` module block.
-    *   Step 5: Remove `#[derive(PhantomData)]` attributes from `module/core/derive_tools/tests/inc/phantom/struct_named.rs`, `bounds_mixed.rs`, `bounds_where.rs`, and `name_collisions.rs`.
-    *   Step 6: In `module/core/derive_tools/tests/inc/phantom/struct_named.rs`, `bounds_mixed.rs`, `bounds_where.rs`, and `name_collisions.rs`, change `use the_module::PhantomData;` to `use std::marker::PhantomData;` where appropriate.
-    *   Step 7: In `module/core/derive_tools/tests/inc/phantom_only_test.rs`, correct `#[allow(...)]` attributes from inner to outer. Remove duplicate `PhantomData` import. Alias `NamedStruct1` and `NamedStruct2` imports (e.g., `NamedStruct1 as NamedStruct1Derive`) to resolve `E0252` and `E0255` errors.
-    *   Step 8: Clean up unused imports and variables in `module/core/derive_tools_meta/src/derive/phantom.rs`.
-    *   Step 9: Move `wip/compile_fail_derive.stderr` to `tests/inc/phantom/compile_fail_derive.stderr` to accept the expected compile-fail output.
-    *   Step 10: Perform Increment Verification.
-    *   Step 11: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p derive_tools --test phantom_trybuild` and analyze output to ensure the compile-fail test passes.
-    *   Run `timeout 90 cargo test -p derive_tools --all-targets` and analyze output to ensure all other tests pass and no new errors related to `PhantomData` appear.
-    *   Run `timeout 90 cargo clippy -p derive_tools -- -D warnings` and analyze output to ensure no warnings.
-*   **Commit Message:** fix(derive_tools): Redesign PhantomData derive to error, add compile-fail test, fix imports/naming
-
-##### Increment 20: Final `derive_tools` Verification
-*   **Goal:** Perform a final, holistic verification of the entire `derive_tools` crate to ensure all changes are stable, tests pass, and no new issues have been introduced.
-*   **Specification Reference:** N/A
-*   **Steps:**
-    *   Step 1: Run `timeout 90 cargo test -p derive_tools --all-targets` to ensure all tests pass.
-    *   Step 2: Run `timeout 90 cargo clippy -p derive_tools -- -D warnings` to ensure no lint warnings.
-    *   Step 3: Perform Increment Verification.
-    *   Step 4: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Confirm that `cargo test` output shows all tests passing.
-    *   Confirm that `cargo clippy` output shows no warnings.
-*   **Commit Message:** chore(derive_tools): Final verification and cleanup
+    1.  **Action:** Read `module/core/derive_tools/changelog.md`.
+    2.  **Action:** Prepend a new entry summarizing the restoration of the test suite and the fixing of all derive macros.
+    3.  **Action:** Use `write_to_file` to save the updated changelog.
+*   **Commit Message:** `docs(changelog): Document restoration of derive_tools functionality`
 
 ### Task Requirements
-*   All tests in `derive_tools` must pass.
-*   `cargo clippy` must pass without warnings for `derive_tools` and `derive_tools_meta`.
-*   Compatibility with `macro_tools` v0.55.0 must be maintained.
-*   The `E0207` issue for `IsTransparentComplex` is a known limitation of `macro_tools` and will be addressed in a separate task if `macro_tools` does not resolve it.
+*   All tests in `module/core/derive_tools/tests/` must be re-enabled and passing.
+*   Every primary test file for a derive must have a file-level doc comment containing its relevant Test Matrix rows.
+*   The implementation of each derive must match the `spec.md` for the features covered by the *existing* test suite.
+*   The entire workspace must pass `clippy -D warnings`.
 
 ### Project Requirements
-*   Must use Rust 2021 edition.
-*   All new APIs must be async. (N/A for this task, as it's about fixing existing derives)
-*   Code must adhere to the `design.md` and `codestyle.md` rules.
+*   (Inherited from workspace)
 
 ### Assumptions
-*   The `macro_tools` crate is correctly set up and accessible.
-*   The `test_tools` crate is correctly set up and accessible.
-*   The `trybuild` tool is correctly set up and accessible.
-*   The `timeout` command is available on the system.
+*   The `macro_tools/task.md` proposal is sound and will unblock `const` generics tests.
 
 ### Out of Scope
-*   Implementing new derive macros not currently present in `derive_tools`.
-*   Addressing the `E0207` issue within `macro_tools` itself. This will be a separate task.
-*   Refactoring or optimizing existing code beyond what is necessary to fix tests and lints.
-
-### External System Dependencies (Optional)
-*   N/A
-
-### Notes & Insights
-*   The `E0207` issue with `macro_tools` and const generics is a significant blocker for fully re-enabling `IsTransparentComplex` tests. This will require a separate investigation and potential contribution to `macro_tools` or a workaround if `macro_tools` does not address it.
-*   The `PhantomData` derive was a misunderstanding; it's a struct, not a trait. The macro was repurposed to explicitly error out.
+*   Implementing new features, even if they are defined in `spec.md`. The focus of this task is to fix and restore existing functionality covered by the current test suite.
 
 ### Changelog
-*   [Increment 1 | 2025-07-01 02:54:38 PM UTC] Performed initial analysis of `derive_tools` and `derive_tools_meta` crates, identified existing test failures and lint warnings.
-*   [Increment 2 | 2025-07-01 02:54:38 PM UTC] Planned and documented `AsMut` and `AsRef` tests, created basic test structures and manual implementations, and updated `mod.rs`.
-*   [Increment 3 | 2025-07-01 02:54:38 PM UTC] Fixed `AsMut` derive macro to correctly implement the `AsMut` trait for structs and ensured tests pass.
-*   [Increment 4 | 2025-07-01 02:54:38 PM UTC] Fixed `AsRef` derive macro to correctly implement the `AsRef` trait for structs and ensured tests pass.
-*   [Increment 5 | 2025-07-01 02:54:38 PM UTC] Planned and documented `Deref` tests, created basic test structures and manual implementations, and updated `mod.rs`. `IsTransparentComplex` was commented out due to `E0207`.
-*   [Increment 6 | 2025-07-01 02:54:38 PM UTC] Fixed `Deref` derive macro for basic structs by correcting the generated `deref` method's return type.
-*   [Increment 7 | 2025-07-01 02:54:38 PM UTC] Modified `Deref` derive macro to explicitly return a `syn::Error` when applied to an enum, and added a compile-fail test.
-*   [Increment 8 | 2025-07-01 02:54:38 PM UTC] Explicitly marked `Deref` tests for generics and bounds (`IsTransparentComplex`) as blocked due to the persistent `E0207` issue.
-*   [Increment 9 | 2025-07-01 02:54:38 PM UTC] Planned and documented `DerefMut` tests, created basic test structures and manual implementations, and updated `mod.rs`. `IsTransparentComplex` was commented out.
-*   [Increment 10 | 2025-07-01 02:54:38 PM UTC] Fixed `DerefMut` tests by adding `derive_tools_meta::Deref` to the `DerefMut` derive macro, resolving `E0277` and `E0614`. The `DerefMut` macro was also updated to explicitly reject enums with a `syn::Error`, and a compile-fail test was added.
-*   [Increment 11 | 2025-07-01 02:54:38 PM UTC] Planned and documented `From` tests, created basic test structures and manual implementations, and updated `mod.rs`. `IsTransparentComplex` was commented out.
-*   [Increment 12 | 2025-07-01 02:54:38 PM UTC] Fixed `From` tests. Resolved `E0428` errors by removing duplicate module definitions in `mod.rs`. The `From` derive macro was implicitly working for basic cases.
-*   [Increment 13 | 2025-07-01 02:54:38 PM UTC] Planned and documented `InnerFrom` and `New` tests, created basic test structures, manual implementations, and shared test logic files, and updated `mod.rs`.
-*   [Increment 14 | 2025-07-01 02:54:38 PM UTC] Fixed `InnerFrom` tests. Modified the `InnerFrom` derive macro to explicitly return a `syn::Error` for unit structs and enums, and cleaned up unused imports/variables.
-*   [Increment 15 | 2025-07-01 02:54:38 PM UTC] Fixed `New` tests. Modified the `New` derive macro to correctly generate `new()` constructors for unit, tuple, and named structs, and to explicitly return a `syn::Error` for enums. Fixed a `clippy::ptr_arg` warning.
-*   [Increment 16 | 2025-07-01 02:54:38 PM UTC] Planned and documented `Not`, `Index`, and `IndexMut` tests, created basic test structures, manual implementations, and shared test logic files, and updated `mod.rs`.
-*   [Increment 17 | 2025-07-01 02:54:38 PM UTC] Fixed `Not` tests. Modified the `Not` derive macro to correctly generate `Not` implementations for structs and to explicitly return a `syn::Error` for enums.
-*   [Increment 18 | 2025-07-01 02:54:38 PM UTC] Fixed `Index` and `IndexMut` tests. Modified the `Index` and `IndexMut` derive macros to correctly generate implementations for structs and to explicitly return `syn::Error` for unit structs and enums.
-*   [Increment 19 | 2025-07-01 02:54:38 PM UTC] Redesigned `PhantomData` derive to always return a `syn::Error` as it's a struct, not a trait. Added a compile-fail test, removed `#[derive(PhantomData)]` from other test files, and fixed related import and naming conflicts.
-*   [Increment 20 | 2025-07-01 02:55:45 PM UTC] Performed final verification of `derive_tools` crate, ensuring all tests pass and no lint warnings are present.
+*   [YYYY-MM-DD] Initialized V4 of the task plan. Restructured to use atomic, test-driven increments with localized context and dynamic dependency handling.
