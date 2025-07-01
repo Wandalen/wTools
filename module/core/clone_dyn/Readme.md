@@ -31,13 +31,10 @@ pub trait Trait2 : Trait1
   fn f2( &self );
 }
 
-fn main()
-{
-  // Example usage of Trait1 and Trait2 with cloning
-  let obj1: Box<dyn Trait1> = Box::new(10i32);
-  let cloned_obj1 = obj1.clone();
-  // ... further usage ...
-}
+// Example usage of Trait1 and Trait2 with cloning
+let obj1: Box<dyn Trait1> = Box::new(10i32);
+let cloned_obj1 = obj1.clone();
+// ... further usage ...
 ```
 
 <details>
