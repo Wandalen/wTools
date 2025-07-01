@@ -125,7 +125,7 @@
     *   Step 5: Perform Increment Verification.
     *   Step 6: Perform Crate Conformance Check.
 *   **Increment Verification:**
-    *   Execute `timeout 90 cargo test -p derive_tools --test tests -- as_ref_manual_test` and `timeout 90 cargo test -p tests -- as_ref_test`. Verify both pass.
+    *   Execute `timeout 90 cargo test -p derive_tools --test tests -- as_ref_manual_test` and `timeout 90 cargo test -p derive_tools --test tests -- as_ref_test`. Verify both pass.
 *   **Commit Message:** `fix(derive_tools): Re-enable and fix as_ref tests`
 
 ... (The plan will continue in this detailed, granular fashion for all other test modules, with each having its own planning, documentation, and fixing increments) ...
