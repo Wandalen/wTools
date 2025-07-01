@@ -41,8 +41,7 @@ pub use derive_tools_meta::InnerFrom;
 pub use derive_tools_meta::New;
 #[ cfg( feature = "derive_not" ) ]
 pub use derive_tools_meta::Not;
-#[ cfg( feature = "derive_phantom" ) ]
-pub use derive_tools_meta::PhantomData;
+
 #[ cfg( feature = "derive_variadic_from" ) ]
 pub use derive_tools_meta::VariadicFrom;
 #[ cfg( feature = "derive_as_mut" ) ]
