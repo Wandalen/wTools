@@ -39,9 +39,9 @@ mod as_mut_manual_test;
 #[ cfg( feature = "derive_as_mut" ) ]
 mod as_mut_test;
 
-// mod as_ref_manual_test;
-// #[ cfg( feature = "derive_as_ref" ) ]
-// mod as_ref_test;
+mod as_ref_manual_test;
+#[ cfg( feature = "derive_as_ref" ) ]
+mod as_ref_test;
 
 // #[ cfg( feature = "derive_deref" ) ]
 // #[ path = "deref" ]
