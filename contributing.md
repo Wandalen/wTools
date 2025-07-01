@@ -1,6 +1,6 @@
 # Contributing to `wTools`
 
-We welcome contributions to the `variadic_from` project! By contributing, you help improve this crate for everyone.
+We welcome contributions to the `wTools` project! By contributing, you help improve this repository for everyone.
 
 ## How to Contribute
 
