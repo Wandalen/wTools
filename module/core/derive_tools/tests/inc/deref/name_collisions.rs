@@ -13,7 +13,7 @@ pub mod FromPair {}
 pub mod FromBin {}
 
 #[ allow( dead_code ) ]
-// #[ derive( Deref ) ]
+#[ derive( Deref ) ]
 struct NameCollisions
 {
   a : i32,

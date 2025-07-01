@@ -56,57 +56,57 @@ mod deref_tests
   mod basic_test;
   mod basic_manual_test;
 
-//   //
+//
 
-//   mod struct_unit;
-//   mod struct_unit_manual;
-//   mod struct_tuple;
-//   mod struct_tuple_manual;
-//   mod struct_tuple_empty;
-//   mod struct_tuple_empty_manual;
-//   mod struct_named;
-//   mod struct_named_manual;
-//   mod struct_named_empty;
-//   mod struct_named_empty_manual;
+  mod struct_unit;
+  mod struct_unit_manual;
+  mod struct_tuple;
+  mod struct_tuple_manual;
+  mod struct_tuple_empty;
+  mod struct_tuple_empty_manual;
+  mod struct_named;
+  mod struct_named_manual;
+  mod struct_named_empty;
+  mod struct_named_empty_manual;
 
-//   mod enum_unit;
-//   mod enum_unit_manual;
-//   mod enum_tuple;
-//   mod enum_tuple_manual;
-//   mod enum_tuple_empty;
-//   mod enum_tuple_empty_manual;
-//   mod enum_named;
-//   mod enum_named_manual;
-//   mod enum_named_empty;
-//   mod enum_named_empty_manual;
+  mod enum_unit;
+  mod enum_unit_manual;
+  mod enum_tuple;
+  mod enum_tuple_manual;
+  mod enum_tuple_empty;
+  mod enum_tuple_empty_manual;
+  mod enum_named;
+  mod enum_named_manual;
+  mod enum_named_empty;
+  mod enum_named_empty_manual;
 
-//   //
+  //
 
-//   mod generics_lifetimes;
-//   mod generics_lifetimes_manual;
+  mod generics_lifetimes;
+  mod generics_lifetimes_manual;
 
-//   mod generics_types;
-//   mod generics_types_manual;
-//   mod generics_types_default;
-//   mod generics_types_default_manual;
+  mod generics_types;
+  mod generics_types_manual;
+  mod generics_types_default;
+  mod generics_types_default_manual;
 
-//   mod generics_constants;
-//   mod generics_constants_manual;
-//   mod generics_constants_default;
-//   mod generics_constants_default_manual;
+  mod generics_constants;
+  mod generics_constants_manual;
+  mod generics_constants_default;
+  mod generics_constants_default_manual;
 
-//   //
+  //
 
-//   mod bounds_inlined;
-//   mod bounds_inlined_manual;
-//   mod bounds_where;
-//   mod bounds_where_manual;
-//   mod bounds_mixed;
-//   mod bounds_mixed_manual;
+  mod bounds_inlined;
+  mod bounds_inlined_manual;
+  mod bounds_where;
+  mod bounds_where_manual;
+  mod bounds_mixed;
+  mod bounds_mixed_manual;
 
-//   //
+  //
 
-//   mod name_collisions;
+  mod name_collisions;
 }
 #[ cfg( feature = "derive_deref_mut" ) ]
 #[ path = "deref_mut" ]
@@ -476,6 +476,50 @@ mod phantom_tests
   {
     mod basic_test;
     mod basic_manual_test;
+
+    mod struct_unit;
+    mod struct_unit_manual;
+    mod struct_tuple;
+    mod struct_tuple_manual;
+    mod struct_tuple_empty;
+    mod struct_tuple_empty_manual;
+    mod struct_named;
+    mod struct_named_manual;
+    mod struct_named_empty;
+    mod struct_named_empty_manual;
+
+    mod enum_unit;
+    mod enum_unit_manual;
+    mod enum_tuple;
+    mod enum_tuple_manual;
+    mod enum_tuple_empty;
+    mod enum_tuple_empty_manual;
+    mod enum_named;
+    mod enum_named_manual;
+    mod enum_named_empty;
+    mod enum_named_empty_manual;
+
+    mod generics_lifetimes;
+    mod generics_lifetimes_manual;
+
+    mod generics_types;
+    mod generics_types_manual;
+    mod generics_types_default;
+    mod generics_types_default_manual;
+
+    mod generics_constants;
+    mod generics_constants_manual;
+    mod generics_constants_default;
+    mod generics_constants_default_manual;
+
+    mod bounds_inlined;
+    mod bounds_inlined_manual;
+    mod bounds_where;
+    mod bounds_where_manual;
+    mod bounds_mixed;
+    mod bounds_mixed_manual;
+
+    mod name_collisions;
   }
 
   only_for_terminal_module!
@@ -487,6 +531,20 @@ mod phantom_tests
       println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
       let t = test_tools::compiletime::TestCases::new();
       t.compile_fail( "tests/inc/deref/compile_fail_enum.rs" );
+      t.compile_fail( "tests/inc/deref/struct_unit.rs" );
+      t.compile_fail( "tests/inc/deref/struct_tuple.rs" );
+      t.compile_fail( "tests/inc/deref/struct_tuple_empty.rs" );
+      t.compile_fail( "tests/inc/deref/struct_named_empty.rs" );
+      t.compile_fail( "tests/inc/deref/enum_unit.rs" );
+      t.compile_fail( "tests/inc/deref/enum_tuple.rs" );
+      t.compile_fail( "tests/inc/deref/enum_named.rs" );
+      t.compile_fail( "tests/inc/deref/generics_lifetimes.rs" );
+      t.compile_fail( "tests/inc/deref/generics_types.rs" );
+      t.compile_fail( "tests/inc/deref/generics_constants.rs" );
+      t.compile_fail( "tests/inc/deref/bounds_inlined.rs" );
+      t.compile_fail( "tests/inc/deref/bounds_where.rs" );
+      t.compile_fail( "tests/inc/deref/bounds_mixed.rs" );
+      t.compile_fail( "tests/inc/deref/name_collisions.rs" );
     }
   }
 //       t.compile_fail( "tests/inc/index_mut/compiletime/struct_named_empty.rs" );

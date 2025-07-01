@@ -659,17 +659,13 @@ pub mod orphan
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
-  #[ doc( inline ) ]
-  pub use private::
-  {
-    GenericsWithWhere,
-  };
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use super::super::generic_params;
 

@@ -7,6 +7,7 @@ mod private
 {
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
+  use crate::qt;
 
   /// Checks if the given iterator of attributes contains an attribute named `debug`.
   ///
@@ -172,6 +173,43 @@ mod private
       // Default case
       _ => false,
     }
+  }
+
+  /// Checks if the given iterator of attributes contains an attribute named `deref`.
+  ///
+  /// This function iterates over an input sequence of `syn::Attribute`, typically associated with a struct,
+  /// enum, or other item in a Rust Abstract Syntax Tree ( AST ), and determines whether any of the attributes
+  /// is exactly named `deref`.
+  ///
+  /// # Parameters
+  /// - `attrs` : An iterator over `syn::Attribute`. This could be obtained from parsing Rust code
+  ///   with the `syn` crate, where the iterator represents attributes applied to a Rust item ( like a struct or function ).
+  ///
+  /// # Returns
+  /// - `Ok( true )` if the `deref` attribute is present.
+  /// - `Ok( false )` if the `deref` attribute is not found.
+  /// - `Err( syn::Error )` if an unknown or improperly formatted attribute is encountered.
+  ///
+  /// # Errors
+  /// qqq: doc
+  pub fn has_deref< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> syn::Result< bool >
+  {
+    for attr in attrs
+    {
+      if let Some( ident ) = attr.path().get_ident()
+      {
+        let ident_string = format!( "{ident}" );
+        if ident_string == "deref"
+        {
+          return Ok( true )
+        }
+      }
+      else
+      {
+        return_syn_err!( "Unknown structure attribute:\n{}", qt!{ attr } );
+      }
+    }
+    Ok( false )
   }
 
   ///
@@ -459,6 +497,7 @@ pub mod own
     // equation,
     has_debug,
     is_standard,
+    has_deref,
   };
 }
 
