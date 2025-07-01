@@ -1,0 +1,13 @@
+error[E0432]: unresolved import `the_module`
+ --> tests/inc/phantom/compile_fail_derive.rs:1:5
+  |
+1 | use the_module::PhantomData;
+  |     ^^^^^^^^^^ use of unresolved module or unlinked crate `the_module`
+  |
+  = help: if you wanted to use a crate named `the_module`, use `cargo add the_module` to add it to your `Cargo.toml`
+
+error[E0601]: `main` function not found in crate `$CRATE`
+  --> tests/inc/phantom/compile_fail_derive.rs:18:2
+   |
+18 | }
+   |  ^ consider adding a `main` function to `$DIR/tests/inc/phantom/compile_fail_derive.rs`

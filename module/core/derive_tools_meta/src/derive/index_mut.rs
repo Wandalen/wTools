@@ -13,7 +13,6 @@ use macro_tools::
   Spanned,
 };
 
-use super::field_attributes::{ FieldAttributes };
 use super::item_attributes::{ ItemAttributes };
 
 ///
@@ -24,7 +23,7 @@ pub fn index_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::Toke
   let original_input = input.clone();
   let parsed = syn::parse::< StructLike >( input )?;
   let has_debug = attr::has_debug( parsed.attrs().iter() )?;
-  let item_attrs = ItemAttributes::from_attrs( parsed.attrs().iter() )?;
+  let _item_attrs = ItemAttributes::from_attrs( parsed.attrs().iter() )?;
   let item_name = &parsed.ident();
 
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
@@ -34,7 +33,7 @@ pub fn index_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::Toke
   {
     StructLike::Unit( ref _item ) =>
     {
-      return_syn_err!( parsed.span(), "Expects a structure with one field" );
+      return_syn_err!( parsed.span(), "IndexMut can be applied only to a structure with one field" );
     },
     StructLike::Struct( ref item ) =>
     {
@@ -52,26 +51,7 @@ pub fn index_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::Toke
     },
     StructLike::Enum( ref item ) =>
     {
-      let variants_result : Result< Vec< proc_macro2::TokenStream > > = item.variants.iter().map( | variant |
-      {
-        variant_generate
-        (
-          item_name,
-          &item_attrs,
-          &generics_impl,
-          &generics_ty,
-          &generics_where,
-          variant,
-          &original_input,
-        )
-      }).collect();
-
-      let variants = variants_result?;
-
-      qt!
-      {
-        #( #variants )*
-      }
+      return_syn_err!( item.span(), "IndexMut can be applied only to a structure" );
     },
   };
 
@@ -91,10 +71,10 @@ pub fn index_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::Toke
 /// impl IndexMut< usize > for IsTransparent
 /// {
 ///   fn index_mut( &mut self, index : usize ) -> &mut bool
-///   {
-///     &mut self.0
-///   }
-/// }
+/// ///   {
+/// ///     &mut self.0
+/// ///   }
+/// /// }
 /// ```
 fn generate
 (
@@ -131,115 +111,4 @@ fn generate
       }
     }
   }
-}
-
-/// Generates `IndexMut` implementation for enum variants.
-///
-/// Example of generated code:
-/// ```text
-/// impl IndexMut< usize > for MyEnum
-/// {
-///   fn index_mut( &mut self, index : usize ) -> &mut i32
-///   {
-///     &mut self.0
-///   }
-/// }
-/// ```
-fn variant_generate
-(
-  item_name : &syn::Ident,
-  item_attrs : &ItemAttributes,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  variant : &syn::Variant,
-  original_input : &proc_macro::TokenStream,
-)
--> Result< proc_macro2::TokenStream >
-{
-  let variant_name = &variant.ident;
-  let fields = &variant.fields;
-  let attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
-
-  if !attrs.enabled.value( item_attrs.enabled.value( true ) )
-  {
-    return Ok( qt!{} )
-  }
-
-  if fields.is_empty()
-  {
-    return Ok( qt!{} )
-  }
-
-  if fields.len() != 1
-  {
-    return_syn_err!( fields.span(), "Expects a single field to derive IndexMut" );
-  }
-
-  let field = fields.iter().next().expect( "Expects a single field to derive IndexMut" );
-  let field_type = &field.ty;
-  let field_name = &field.ident;
-
-  let body = if let Some( field_name ) = field_name
-  {
-    qt!{ &mut self.#field_name }
-  }
-  else
-  {
-    qt!{ &mut self.0 }
-  };
-
-  if attrs.debug.value( false )
-  {
-    let debug = format!
-    (
-      r"
-#[ automatically_derived ]
-impl< {} > core::ops::IndexMut< usize > for {}< {} >
-where
-  {}
-{{
-  type Output = {};
-  #[ inline ]
-  fn index_mut( &mut self, _index : usize ) -> &mut {}
-  {{
-    {}
-  }}
-}}
-      ",
-      qt!{ #generics_impl },
-      item_name,
-      qt!{ #generics_ty },
-      qt!{ #generics_where },
-      qt!{ #field_type },
-      qt!{ #field_type },
-      body,
-    );
-    let about = format!
-    (
-r"derive : IndexMut
-item : {item_name}
-field : {variant_name}",
-    );
-    diag::report_print( about, original_input, debug.to_string() );
-  }
-
-  Ok
-  (
-    qt!
-    {
-      #[ automatically_derived ]
-      impl< #generics_impl > core::ops::IndexMut< usize > for #item_name< #generics_ty >
-      where
-        #generics_where
-      {
-        type Output = #field_type;
-        #[ inline ]
-        fn index_mut( &mut self, _index : usize ) -> &mut #field_type
-        {
-          #body
-        }
-      }
-    }
-  )
 }

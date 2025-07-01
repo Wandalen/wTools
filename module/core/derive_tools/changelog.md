@@ -49,3 +49,11 @@
 * [Increment 14] Implemented and fixed `InnerFrom` derive macro.
 
 * [Increment 15] Implemented and fixed `New` derive macro.
+
+* [Increment 16] Planned and documented `Not`, `Index`, `IndexMut` tests.
+
+* [Increment 17] Implemented and fixed `Not` derive macro.
+
+* [Increment 18] Implemented and fixed `Index` and `IndexMut` derive macros.
+
+* [Increment 19] Redesigned `PhantomData` derive macro to return an error when invoked, and added a compile-fail test to verify this behavior.
