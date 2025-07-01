@@ -27,3 +27,5 @@
 *   [2025-07-01 11:24 UTC] Re-enabled and fixed `as_ref` tests.
 
 *   [2025-07-01 11:25 UTC] Updated test command syntax in plan to correctly target internal test modules.
+
+*   [2025-07-01 11:26 UTC] Updated test command syntax in plan to correctly target internal test modules.
