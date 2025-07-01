@@ -12,7 +12,7 @@
 ### Progress
 *   **Roadmap Milestone:** M1: Core Derive Macro Functionality
 *   **Primary Target Crate:** `module/core/derive_tools`
-*   **Overall Progress:** 14/20 increments complete
+*   **Overall Progress:** 15/20 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Initial Analysis and Setup
     *   ✅ Increment 2: Plan and Document `AsMut` and `AsRef` Tests
@@ -28,7 +28,7 @@
     *   ✅ Increment 12: Fix `From` Tests
     *   ✅ Increment 13: Plan and Document `InnerFrom` and `New` Tests
     *   ✅ Increment 14: Fix `InnerFrom` Tests
-    *   ⚫ Increment 15: Fix `New` Tests
+    *   ✅ Increment 15: Fix `New` Tests
     *   ⚫ Increment 16: Plan and Document `Not`, `Index`, `IndexMut` Tests
     *   ⚫ Increment 17: Fix `Not` Tests
     *   ⚫ Increment 18: Fix `Index` and `IndexMut` Tests
