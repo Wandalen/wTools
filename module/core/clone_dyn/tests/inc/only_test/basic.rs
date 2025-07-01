@@ -1,3 +1,4 @@
+use super::*;
 // ## Test Matrix for `only_test/basic.rs`
 //
 // This file contains basic tests for `clone_into_box` and `clone` functions.

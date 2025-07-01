@@ -12,9 +12,9 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/clone_dyn`
-*   **Overall Progress:** 0/2 increments complete
+*   **Overall Progress:** 1/2 increments complete
 *   **Increment Status:**
-    *   ⚫ Increment 1: Fix Test Context and Path Resolution
+    *   ✅ Increment 1: Fix Test Context and Path Resolution
     *   ⚫ Increment 2: Final Verification and Cleanup
 
 ### Permissions & Boundaries
@@ -92,5 +92,6 @@
 *   Using a fully qualified path or an established alias for proc-macro attributes (`#[the_module::my_macro]`) is a robust pattern that prevents resolution issues when tests are included and run by other crates in the workspace.
 
 ### Changelog
+*   [Increment 1 | 2025-07-01 21:37 UTC] Applied fixes for `the_module`, `a_id`, and `clone_dyn` attribute resolution errors in test files.
 *   [Initial] Plan created to address test failures in `clone_dyn`.
 *   [v2] Refined plan to be more efficient, combining fixes into a single increment before a dedicated verification increment.

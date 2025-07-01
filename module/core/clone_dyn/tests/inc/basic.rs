@@ -2,9 +2,9 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-use the_module::clone_dyn;
 
-#[ clone_dyn ]
+
+#[ the_module::clone_dyn ]
 trait Trait1
 {
   fn val( &self ) -> i32;

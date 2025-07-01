@@ -27,12 +27,21 @@ pub fn clone_dyn( attr_input : proc_macro::TokenStream, item_input : proc_macro:
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
   = generic_params::decompose( &item_parsed.generics );
 
-  let extra : macro_tools::GenericsWithWhere = parse_quote!
+  let extra_where_clause : syn::WhereClause = parse_quote!
   {
     where
       Self : clone_dyn::CloneDyn,
   };
-  item_parsed.generics = generic_params::merge( &item_parsed.generics, &extra.into() );
+  if let Some( mut existing_where_clause ) = item_parsed.generics.where_clause
+  {
+    existing_where_clause.predicates.extend( extra_where_clause.predicates );
+    item_parsed.generics.where_clause = Some( existing_where_clause );
+  }
+  else
+  {
+    item_parsed.generics.where_clause = Some( extra_where_clause );
+  }
+  
 
   let result = qt!
   {
