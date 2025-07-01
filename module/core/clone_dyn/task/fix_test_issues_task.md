@@ -1,44 +1,96 @@
-# Change Proposal for `clone_dyn`
+# Task Plan: Fix `clone_dyn` Test Suite Issues (v2)
 
-### Task ID
-*   TASK-20250701-111230-FixCloneDynTestIssues
+### Goal
+*   To fix the compilation errors and test failures within the `clone_dyn` crate's test suite, specifically addressing issues related to unresolved modules (`the_module`), missing macros (`a_id`), and unrecognized attributes (`clone_dyn`), as detailed in `task/fix_test_issues_task.md`. The successful completion of this task will unblock the `derive_tools` crate's test suite.
 
-### Requesting Context
-*   **Requesting Crate/Project:** `derive_tools`
-*   **Driving Feature/Task:** Fixing `derive_tools` compatibility and re-enabling all tests. The `clone_dyn` tests are currently causing compilation failures when `derive_tools`'s test suite is run.
-*   **Link to Requester's Plan:** `module/core/derive_tools/task.md`
-*   **Date Proposed:** 2025-07-01
+### Ubiquitous Language (Vocabulary)
+*   **`clone_dyn` Ecosystem:** The set of three related crates: `clone_dyn` (facade), `clone_dyn_meta` (proc-macro), and `clone_dyn_types` (core traits/logic).
+*   **`the_module`:** An alias used in integration tests to refer to the crate under test (in this case, `clone_dyn`).
+*   **`a_id`:** An assertion macro provided by `test_tools` for comparing values in tests.
+*   **Shared Test (`only_test/basic.rs`):** A file containing test logic included by other test files to avoid code duplication.
 
-### Overall Goal of Proposed Change
-*   To fix the compilation errors and test failures within the `clone_dyn` crate's test suite, specifically addressing issues related to unresolved modules (`the_module`), missing macros (`a_id`), and unrecognized attributes (`clone_dyn`). This will allow `derive_tools`'s test suite to compile and run without errors caused by `clone_dyn`'s tests.
+### Progress
+*   **Roadmap Milestone:** N/A
+*   **Primary Editable Crate:** `module/core/clone_dyn`
+*   **Overall Progress:** 0/2 increments complete
+*   **Increment Status:**
+    *   ⚫ Increment 1: Fix Test Context and Path Resolution
+    *   ⚫ Increment 2: Final Verification and Cleanup
 
-### Problem Statement / Justification
-*   When running `cargo test -p derive_tools --all-targets`, the build fails due to errors originating from `clone_dyn`'s tests. These errors include `E0433: failed to resolve: use of unresolved module or unlinked crate 'the_module'`, `cannot find macro 'a_id' in this scope`, and `cannot find attribute 'clone_dyn' in this scope`. These issues prevent `derive_tools` from compiling its test suite, blocking progress on its own task.
+### Permissions & Boundaries
+*   **Mode:** code
+*   **Run workspace-wise commands:** false
+*   **Add transient comments:** false
+*   **Additional Editable Crates:**
+    *   `module/core/clone_dyn_meta`
+    *   `module/core/clone_dyn_types`
 
-### Proposed Solution / Specific Changes
-*   **API Changes (if any):** None. This task focuses on internal test fixes.
-*   **Behavioral Changes (if any):** None.
-*   **Internal Changes (high-level, if necessary to explain public API):**
-    *   Investigate and resolve the `E0433` error related to `the_module`. This likely involves correcting `use` paths or ensuring `the_module` is correctly linked/aliased in `clone_dyn`'s `Cargo.toml` or test files.
-    *   Investigate and resolve the `cannot find macro 'a_id'` errors. This suggests a missing import for the `a_id` macro, possibly from `test_tools` or a local definition.
-    *   Investigate and resolve the `cannot find attribute 'clone_dyn'` error. This indicates a misuse of the `clone_dyn` attribute or a missing `use` statement for it.
-    *   Ensure all tests within `clone_dyn` compile and pass.
+### Relevant Context
+*   **Control Files to Reference:**
+    *   `module/core/clone_dyn/task/fix_test_issues_task.md`
+*   **Files to Include:**
+    *   `module/core/clone_dyn/tests/tests.rs`
+    *   `module/core/clone_dyn/tests/inc/mod.rs`
+    *   `module/core/clone_dyn/tests/inc/basic.rs`
+    *   `module/core/clone_dyn/tests/inc/only_test/basic.rs`
+    *   `module/core/clone_dyn/tests/inc/parametrized.rs`
 
-### Expected Behavior & Usage Examples (from Requester's Perspective)
-*   After this task is completed, running `cargo test -p derive_tools --all-targets` should no longer report compilation errors or test failures originating from `module/core/clone_dyn/tests/`.
+### Crate Conformance Check Procedure
+*   **Step 1: Run Tests.** Execute `timeout 120 cargo test -p clone_dyn --all-targets`. If this fails, fix all test errors before proceeding.
+*   **Step 2: Run Linter (Conditional).** Only if Step 1 passes, execute `timeout 120 cargo clippy -p clone_dyn --features full -- -D warnings`.
 
-### Acceptance Criteria (for this proposed change)
-*   `cargo test` executed within the `module/core/clone_dyn` directory (e.g., `timeout 120 cargo test -p clone_dyn --all-targets`) completes successfully with no errors or warnings.
+### Increments
 
-### Potential Impact & Considerations
-*   **Breaking Changes:** None expected, as this focuses on internal test fixes.
-*   **Dependencies:** May require adjustments to `clone_dyn`'s `Cargo.toml` to correctly link `the_module` or `test_tools` if they are external dependencies.
-*   **Performance:** No significant impact expected.
-*   **Security:** No security implications.
-*   **Testing:** All existing tests in `clone_dyn` should pass after the fixes.
+##### Increment 1: Fix Test Context and Path Resolution
+*   **Goal:** Atomically apply all necessary fixes to resolve the `the_module`, `a_id`, and `clone_dyn` attribute resolution errors.
+*   **Specification Reference:** `task/fix_test_issues_task.md`
+*   **Steps:**
+    1.  **Analyze:** Read the content of `tests/inc/only_test/basic.rs`, `tests/inc/basic.rs`, and `tests/inc/parametrized.rs` to confirm the current state.
+    2.  **Propagate Context:** Use `insert_content` to add `use super::*;` to the top of `module/core/clone_dyn/tests/inc/only_test/basic.rs`. This will resolve the `the_module` and `a_id` errors by making the alias and macro available from the parent test module.
+    3.  **Fix Attribute Path in `basic.rs`:**
+        *   Use `search_and_replace` to remove the line `use the_module::clone_dyn;` from `module/core/clone_dyn/tests/inc/basic.rs`.
+        *   Use `search_and_replace` to replace `#[ clone_dyn ]` with `#[ the_module::clone_dyn ]` in `module/core/clone_dyn/tests/inc/basic.rs`. Using the established `the_module` alias is consistent with the rest of the test suite.
+    4.  **Fix Attribute Path in `parametrized.rs`:**
+        *   Use `search_and_replace` to replace `#[ clone_dyn ]` with `#[ the_module::clone_dyn ]` in `module/core/clone_dyn/tests/inc/parametrized.rs`.
+*   **Increment Verification:**
+    *   Execute `timeout 120 cargo test -p clone_dyn --all-targets`. The command should now pass with no compilation errors or test failures.
+*   **Commit Message:** "fix(clone_dyn): Resolve path and context issues in test suite"
 
-### Alternatives Considered (Optional)
-*   None, as fixing the underlying issues in `clone_dyn` is the most direct approach.
+##### Increment 2: Final Verification and Cleanup
+*   **Goal:** Perform a final, holistic review and verification of the entire `clone_dyn` ecosystem to ensure all changes are correct and no regressions were introduced.
+*   **Specification Reference:** `task/fix_test_issues_task.md`
+*   **Steps:**
+    1.  Execute `timeout 120 cargo test -p clone_dyn --all-targets`.
+    2.  Execute `timeout 120 cargo clippy -p clone_dyn --features full -- -D warnings`.
+    3.  Execute `timeout 120 cargo clippy -p clone_dyn_meta --features full -- -D warnings`.
+    4.  Execute `timeout 120 cargo clippy -p clone_dyn_types --features full -- -D warnings`.
+    5.  Self-critique: Review all changes against the task requirements. The fixes should be minimal, correct, and robust.
+*   **Increment Verification:**
+    *   All test and clippy commands pass with exit code 0.
+*   **Commit Message:** "chore(clone_dyn): Final verification of test suite fixes"
 
-### Notes & Open Questions
-*   N/A
+### Task Requirements
+*   All tests in `clone_dyn` must pass.
+*   The `derive_tools` test suite must compile without errors originating from `clone_dyn`.
+*   All code must be warning-free under `clippy` with `-D warnings`.
+
+### Project Requirements
+*   (Inherited from previous plan)
+
+### Assumptions
+*   The errors reported in `fix_test_issues_task.md` are accurate and are the only blockers from `clone_dyn`.
+
+### Out of Scope
+*   Refactoring any logic beyond what is necessary to fix the specified test issues.
+*   Making changes to the `derive_tools` crate.
+
+### External System Dependencies
+*   None.
+
+### Notes & Insights
+*   Using a crate-level alias (`the_module`) is a good pattern for integration tests, but it must be correctly propagated to all included files.
+*   Using a fully qualified path or an established alias for proc-macro attributes (`#[the_module::my_macro]`) is a robust pattern that prevents resolution issues when tests are included and run by other crates in the workspace.
+
+### Changelog
+*   [Initial] Plan created to address test failures in `clone_dyn`.
+*   [v2] Refined plan to be more efficient, combining fixes into a single increment before a dedicated verification increment.
