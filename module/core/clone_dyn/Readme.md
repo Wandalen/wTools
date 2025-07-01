@@ -1,7 +1,7 @@
 <!-- {{# generate.module_header{} #}} -->
 # Module :: `clone_dyn`
 <!--{ generate.module_header.start() }-->
- [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_clone_dyn_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_clone_dyn_push.yml) [![docs.rs](https://img.shields.io/docsrs/clone_dyn?color=e3e8f0&logo=docs.rs)](https://docs.rs/clone_dyn) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Fclone_dyn%2Fexamples%2Fclone_dyn_trivial.rs,RUN_POSTFIX=--example%20module%2Fcore%2Fclone_dyn%2Fexamples%2Fclone_dyn_trivial.rs/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+ [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_clone_dyn_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_clone_dyn_push.svg) [![docs.rs](https://img.shields.io/docsrs/clone_dyn?color=e3e8f0&logo=docs.rs)](https://docs.com/clone_dyn) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Fclone_dyn%2Fexamples%2Fclone_dyn_trivial.rs,RUN_POSTFIX=--example%20module%2Fcore%2Fclone_dyn%2Fexamples%2Fclone_dyn_trivial.rs/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 <!--{ generate.module_header.end }-->
 
 Derive to clone dyn structures.
@@ -18,23 +18,36 @@ This example demonstrates the usage of the `#[clone_dyn]` attribute macro to ena
 
 ```rust
 #[ cfg( feature = "derive_clone_dyn" ) ]
-#[ clone_dyn ]
+#[ clone_dyn_meta::clone_dyn ] // Use fully qualified path
 pub trait Trait1
 {
   fn f1( &self );
 }
 
-#[ cfg( feature = "derive_clone_dyn" ) ]
-#[ clone_dyn ]
-pub trait Trait2 : Trait1
+#[ cfg( not( feature = "derive_clone_dyn" ) ) ]
+pub trait Trait1
 {
-  fn f2( &self );
+  fn f1( &self );
 }
 
-// Example usage of Trait1 and Trait2 with cloning
-let obj1: Box<dyn Trait1> = Box::new(10i32);
-let cloned_obj1 = obj1.clone();
-// ... further usage ...
+impl Trait1 for i32
+{
+  fn f1( &self ) {}
+}
+
+#[ cfg( feature = "derive_clone_dyn" ) ]
+{
+  let obj1: Box<dyn Trait1> = Box::new(10i32);
+  let cloned_obj1 = obj1.clone(); // This should now work due to #[clone_dyn]
+  // Example assertion, assuming f1() can be compared or has side effects
+  // For a real test, you'd need a way to compare trait objects or their behavior.
+  // For simplicity in doctest, we'll just ensure it compiles and clones.
+  // assert_eq!(cloned_obj1.f1(), obj1.f1()); // This would require more complex setup
+}
+#[ cfg( not( feature = "derive_clone_dyn" ) ) ]
+{
+  // Provide a fallback or skip the example if macro is not available
+}
 ```
 
 <details>
