@@ -16,6 +16,7 @@ pub mod FromBin {}
 #[ derive( Deref ) ]
 struct NameCollisions
 {
+  #[ deref ]
   a : i32,
   b : String,
 }

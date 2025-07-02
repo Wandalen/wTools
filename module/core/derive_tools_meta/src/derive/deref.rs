@@ -1,7 +1,6 @@
 use macro_tools::
 {
   diag,
-  generic_params,
   struct_like::StructLike,
   Result,
   qt,
@@ -11,6 +10,8 @@ use macro_tools::
   Spanned,
 };
 use macro_tools::diag::prelude::*;
+
+use macro_tools::quote::ToTokens;
 
 
 ///
@@ -23,8 +24,9 @@ pub fn deref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
   let has_debug = attr::has_debug( parsed.attrs().iter() )?;
   let item_name = &parsed.ident();
 
-  let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
-  = generic_params::decompose( parsed.generics() );
+  let ( generics_impl, generics_ty, generics_where_option )
+  = parsed.generics().split_for_impl();
+
 
   let result = match parsed
   {
@@ -69,9 +71,9 @@ pub fn deref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
       generate
       (
         item_name,
-        &generics_impl,
-        &generics_ty,
-        &generics_where,
+        &generics_impl, // Pass as reference
+        &generics_ty, // Pass as reference
+        generics_where_option,
         &field_type,
         field_name.as_ref(),
         &original_input,
@@ -108,9 +110,9 @@ pub fn deref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
 fn generate
 (
   item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  generics_impl : &syn::ImplGenerics<'_>, // Use ImplGenerics with explicit lifetime
+  generics_ty : &syn::TypeGenerics<'_>, // Use TypeGenerics with explicit lifetime
+  generics_where: Option< &syn::WhereClause >, // Use WhereClause
   field_type : &syn::Type,
   field_name : Option< &syn::Ident >,
   original_input : &proc_macro::TokenStream,
@@ -126,13 +128,21 @@ fn generate
     qt!{ &self.0 }
   };
 
+  let where_clause_tokens = if let Some( generics_where ) = generics_where
+  {
+    qt!{ where #generics_where }
+  }
+  else
+  {
+    proc_macro2::TokenStream::new()
+  };
+
   let debug = format!
   (
     r"
 #[ automatically_derived ]
-impl< {} > core::ops::Deref for {}< {} >
-where
-  {}
+impl {} core::ops::Deref for {} {}
+{}
 {{
   type Target = {};
   #[ inline ]
@@ -144,8 +154,8 @@ where
     ",
     qt!{ #generics_impl },
     item_name,
-    qt!{ #generics_ty },
-    qt!{ #generics_where },
+    generics_ty.to_token_stream().to_string(), // Use generics_ty directly for debug
+    where_clause_tokens.to_string(),
     qt!{ #field_type },
     qt!{ #field_type },
     body,
@@ -162,9 +172,7 @@ field_name : {field_name:?}",
   qt!
   {
     #[ automatically_derived ]
-    impl< #generics_impl > core::ops::Deref for #item_name< #generics_ty >
-    where
-      #generics_where
+    impl #generics_impl ::core::ops::Deref for #item_name #generics_ty #generics_where
     {
       type Target = #field_type;
       #[ inline( always ) ]
