@@ -13,7 +13,7 @@
 *   **Overall Progress:** 1/1 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Remove `#[automatically_derived]` from debug output.
-    *   ⚫ Finalization Increment: Final review and verification.
+    *   ⏳ Finalization Increment: Final review and verification.
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -62,8 +62,9 @@
 *   **Goal:** Perform a final, holistic review and verification of the entire task's output, ensuring all requirements are met and no regressions were introduced.
 *   **Specification Reference:** N/A
 *   **Steps:**
-    *   Step 1: Perform Crate Conformance Check.
-    *   Step 2: Self-critique against all requirements and expected behaviors.
+    *   Step 1: Execute `timeout 90 cargo clean -p derive_tools_meta` via `execute_command`.
+    *   Step 2: Perform Crate Conformance Check.
+    *   Step 3: Self-critique against all requirements and expected behaviors.
 *   **Increment Verification:**
     *   Step 1: Execute `timeout 90 cargo test -p derive_tools_meta --all-targets` via `execute_command`.
     *   Step 2: Execute `timeout 90 cargo clippy -p derive_tools_meta -- -D warnings` via `execute_command`.
