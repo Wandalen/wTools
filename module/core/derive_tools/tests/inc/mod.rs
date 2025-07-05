@@ -16,24 +16,24 @@ use core::ops::Deref;
 
 // = own tests
 
-// mod all_manual_test;
-// #[ cfg
-// (
-//   all
-//   (
-//     feature = "derive_as_mut",
-//     feature = "derive_as_ref",
-//     feature = "derive_deref",
-//     feature = "derive_deref_mut",
-//     feature = "derive_from",
-//     feature = "derive_index",
-//     feature = "derive_index_mut",
-//     feature = "derive_inner_from",
-//     feature = "derive_not",
-//     feature = "derive_phantom"
-//   )
-// )]
-// mod all_test;
+mod all_manual_test;
+#[ cfg
+(
+  all
+  (
+    feature = "derive_as_mut",
+    feature = "derive_as_ref",
+    feature = "derive_deref",
+    feature = "derive_deref_mut",
+    feature = "derive_from",
+    feature = "derive_index",
+    feature = "derive_index_mut",
+    feature = "derive_inner_from",
+    feature = "derive_not",
+    feature = "derive_phantom"
+  )
+)]
+mod all_test;
 
 // mod basic_test;
 

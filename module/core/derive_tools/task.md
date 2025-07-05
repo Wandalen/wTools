@@ -23,7 +23,7 @@
 ### Progress
 *   **Roadmap Milestone:** M1: Core API Implementation
 *   **Primary Editable Crate:** `module/core/derive_tools`
-*   **Overall Progress:** 13/18 increments complete
+*   **Overall Progress:** 14/18 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Re-enable and Fix Deref
     *   ✅ Increment 2: Re-enable and Fix DerefMut
@@ -38,8 +38,8 @@
     *   ✅ Increment 11: Re-enable and Fix AsRef
     *   ✅ Increment 12: Re-enable and Fix `derive_tools_meta` trybuild tests
     *   ✅ Increment 13: Re-enable and Fix `derive_tools` trybuild tests
-    *   ⏳ Increment 14: Re-enable and Fix `derive_tools` all tests
-    *   ⚫ Increment 15: Re-enable and Fix `derive_tools` all manual tests
+    *   ✅ Increment 14: Re-enable and Fix `derive_tools` all tests
+    *   ⏳ Increment 15: Re-enable and Fix `derive_tools` all manual tests
     *   ⚫ Increment 16: Re-enable and Fix `derive_tools` basic tests
     *   ⚫ Increment 17: Re-enable and Fix `derive_tools` basic manual tests
     *   ⚫ Increment 18: Finalization
@@ -283,10 +283,12 @@
 *   **Specification Reference:** N/A
 *   **Steps:**
     *   Step 1: Uncomment `all_test` in `module/core/derive_tools/tests/inc/mod.rs`.
-    *   Step 2: Run `cargo test -p derive_tools --test tests` and analyze output.
-    *   Step 3: Fix any compilation errors or test failures.
-    *   Step 4: Perform Increment Verification.
-    *   Step 5: Perform Crate Conformance Check.
+    *   Step 2: Create `module/core/derive_tools/tests/inc/all_test.rs`.
+    *   Step 3: Add `use super::derives::a_id;` to `module/core/derive_tools/tests/inc/only_test/all.rs`.
+    *   Step 4: Run `cargo test -p derive_tools --test tests` and analyze output.
+    *   Step 5: Fix any compilation errors or test failures.
+    *   Step 6: Perform Increment Verification.
+    *   Step 7: Perform Crate Conformance Check.
 *   **Increment Verification:**
     *   Execute `timeout 90 cargo test -p derive_tools --test tests` and ensure `all_test` passes.
 *   **Commit Message:** fix(derive_tools): Re-enable and fix all tests
@@ -382,6 +384,7 @@
 *   Debugging procedural macros often requires inspecting generated code and comparing it to expected manual implementations.
 
 ### Changelog
+*   [Increment 14 | 2025-07-05 09:22 UTC] Re-enabled and fixed `derive_tools` all tests, including creating `all_test.rs` and fixing `a_id` macro import in `only_test/all.rs`.
 *   [Increment 13 | 2025-07-05 09:17 UTC] Re-enabled and fixed `derive_tools` trybuild tests, including `deref_trybuild` and `deref_mut_trybuild`.
 *   [Increment 12 | 2025-07-05 09:15 UTC] Marked `derive_tools_meta` trybuild tests as N/A, as no dedicated trybuild tests were found for the meta crate.
 *   [Increment 11 | 2025-07-05 09:13 UTC] Re-ran tests after correcting `as_ref` test files.
