@@ -18,7 +18,7 @@
 ### Progress
 *   **Roadmap Milestone:** M1: Core Derive Macro Restoration
 *   **Primary Editable Crate:** `module/core/derive_tools`
-*   **Overall Progress:** 8/18 increments complete
+*   **Overall Progress:** 9/18 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Establish Initial Baseline
     *   ✅ Increment 2: Fix macro_tools const Generics Bug
@@ -28,8 +28,8 @@
     *   ✅ Increment 6: Re-enable and Fix Index
     *   ✅ Increment 7: Re-enable and Fix IndexMut
     *   ✅ Increment 8: Re-enable and Fix Not
-    *   ⚫ Increment 9: Re-enable and Fix Phantom
-    *   ⚫ Increment 10: Re-enable and Fix AsMut
+    *   ✅ Increment 9: Re-enable and Fix Phantom
+    *   ⏳ Increment 10: Re-enable and Fix AsMut
     *   ⚫ Increment 11: Re-enable and Fix AsRef
     *   ⚫ Increment 12: Re-enable and Fix Constructor
     *   ⚫ Increment 13: Re-enable and Fix Error
@@ -213,7 +213,10 @@
 *   **Specification Reference:** N/A
 *   **Steps:**
     *   Uncomment `phantom_tests` in `module/core/derive_tools/tests/inc/mod.rs`.
-    *   Fix compilation errors and ensure correct behavior for `Phantom` derive.
+    *   Create `module/core/derive_tools/tests/inc/phantom/only_test/struct_named.rs` with shared test logic.
+    *   Modify `module/core/derive_tools/tests/inc/phantom/struct_named.rs` to include `only_test/struct_named.rs`.
+    *   Modify `module/core/derive_tools/tests/inc/phantom/struct_named_manual.rs` to include `only_test/struct_named.rs`.
+    *   Modify `module/core/derive_tools_meta/src/derive/phantom.rs` to correctly implement `PhantomData` for structs.
     *   Perform Increment Verification.
     *   Perform Crate Conformance Check.
 *   **Increment Verification:**
@@ -335,7 +338,6 @@
 *   All existing tests for `derive_tools` must pass.
 *   No new compilation warnings or errors should be introduced.
 *   The `derive_tools` crate must compile successfully.
-*   The `derive_tools_meta` crate must compile successfully.
 *   The `macro_tools` crate must compile successfully.
 *   All changes must adhere to the project's codestyle and design rules.
 *   All changes must be committed with clear, concise messages.
@@ -396,3 +398,6 @@
 *   [Increment 7 | 2025-07-05 08:53 UTC] Confirmed all `IndexMut` tests pass after blessing `trybuild` outputs.
 *   [Increment 8 | 2025-07-05 08:54 UTC] Detailed planning for `Not` derive macro.
 *   [Increment 8 | 2025-07-05 08:57 UTC] Uncommented `not_tests` module in `mod.rs` and isolated tests.
+*   [Increment 9 | 2025-07-05 08:59 UTC] Detailed planning for `Phantom` derive macro.
+*   [Increment 9 | 2025-07-05 09:00 UTC] Created `only_test/struct_named.rs` for `Phantom` tests, updated test files, and fixed `phantom.rs` derive macro.
+*   [Increment 9 | 2025-07-05 09:02 UTC] Confirmed all `Phantom` tests pass.

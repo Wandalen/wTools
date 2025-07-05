@@ -65,3 +65,5 @@
 *   [2025-07-01] Fixed `macro_tools` `const` generics bug.
 
 *   [Increment 7 | 2025-07-05 08:54 UTC] Re-enabled and fixed `IndexMut` derive macro, including `Index` trait implementation and `trybuild` tests.
+
+*   [Increment 8 | 2025-07-05 08:59 UTC] Re-enabled and fixed `Not` derive macro, including handling multiple boolean fields and isolating tests.
