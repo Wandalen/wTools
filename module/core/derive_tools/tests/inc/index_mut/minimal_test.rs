@@ -1,6 +1,6 @@
 use super::*;
 use test_tools::prelude::*;
-use core::ops::IndexMut as _;
+use core::ops::{ Index, IndexMut };
 use derive_tools::IndexMut;
 
 #[ derive( IndexMut ) ]

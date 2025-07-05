@@ -428,7 +428,7 @@ mod index_mut_tests
   // mod struct_named; 
   // mod struct_multiple_named_field; 
   // mod struct_multiple_named_item; 
-  // mod basic_manual_test;
+  mod basic_manual_test;
   // mod struct_named_manual;
   // mod struct_multiple_named_manual;
   // mod struct_tuple;

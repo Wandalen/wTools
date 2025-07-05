@@ -23,7 +23,7 @@
 ### Progress
 *   **Roadmap Milestone:** M1: Core API Implementation
 *   **Primary Editable Crate:** `module/core/derive_tools`
-*   **Overall Progress:** 16/18 increments complete
+*   **Overall Progress:** 17/18 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Re-enable and Fix Deref
     *   ✅ Increment 2: Re-enable and Fix DerefMut
@@ -41,8 +41,8 @@
     *   ✅ Increment 14: Re-enable and Fix `derive_tools` all tests
     *   ✅ Increment 15: Re-enable and Fix `derive_tools` all manual tests
     *   ✅ Increment 16: Re-enable and Fix `derive_tools` basic tests
-    *   ⏳ Increment 17: Re-enable and Fix `derive_tools` basic manual tests
-    *   ⚫ Increment 18: Finalization
+    *   ✅ Increment 17: Re-enable and Fix `derive_tools` basic manual tests
+    *   ⏳ Increment 18: Finalization
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -388,6 +388,7 @@
 *   Debugging procedural macros often requires inspecting generated code and comparing it to expected manual implementations.
 
 ### Changelog
+*   [Increment 17 | 2025-07-05 09:42 UTC] Re-enabled and fixed `derive_tools` basic manual tests.
 *   [Increment 16 | 2025-07-05 09:37 UTC] Re-ran tests after correcting `IndexMut` imports.
 *   [Increment 16 | 2025-07-05 09:36 UTC] Corrected `IndexMut` import in `index_mut/basic_test.rs` and `minimal_test.rs`.
 *   [Increment 16 | 2025-07-05 09:36 UTC] Corrected `IndexMut` import in `index_mut/basic_test.rs` and `minimal_test.rs`.
