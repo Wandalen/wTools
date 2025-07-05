@@ -77,6 +77,7 @@ pub fn deref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
         &field_type,
         field_name.as_ref(),
         &original_input,
+        has_debug,
       )
     },
     StructLike::Enum( ref item ) =>
@@ -106,6 +107,7 @@ pub fn deref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
 /// ///     &self.0
 /// ///   }
 /// /// }
+#[ allow( clippy::too_many_arguments ) ]
 /// ```
 fn generate
 (
@@ -116,6 +118,7 @@ fn generate
   field_type : &syn::Type,
   field_name : Option< &syn::Ident >,
   original_input : &proc_macro::TokenStream,
+  has_debug : bool,
 )
 -> proc_macro2::TokenStream
 {
@@ -167,7 +170,13 @@ item : {item_name}
 field_type : {field_type:?}
 field_name : {field_name:?}",
   );
-  diag::report_print( about, original_input, debug.to_string() );
+  if has_debug
+  {
+    if has_debug
+  {
+    diag::report_print( about, original_input, debug.to_string() );
+  }
+  }
 
   qt!
   {
@@ -175,7 +184,6 @@ field_name : {field_name:?}",
     impl #generics_impl ::core::ops::Deref for #item_name #generics_ty #generics_where
     {
       type Target = #field_type;
-      #[ inline( always ) ]
       #[ inline( always ) ]
       fn deref( &self ) -> & #field_type
       {
