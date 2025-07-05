@@ -6,7 +6,7 @@ use former::Former;
 
 /// Generic enum with a unit variant, using Former.
 #[derive(Debug, PartialEq, Former)]
-#[former(standalone_constructors, debug)]
+#[former(standalone_constructors)]
 pub enum GenericOption<T: core::fmt::Debug + PartialEq + Clone> // Minimal bounds for T
 {
   #[scalar] // Treat Value(T) as a scalar constructor for the enum
