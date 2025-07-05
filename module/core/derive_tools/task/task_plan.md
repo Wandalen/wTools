@@ -15,7 +15,7 @@
     *   ✅ Increment 1: Targeted Diagnostics - Identify compilation errors
     *   ✅ Increment 2: Fix E0597, unused_assignments warning, and typo in derive_tools_meta
     *   ✅ Increment 3: Enable Conditional Debug Output and Fix Related Errors/Lints
-    *   ⚫ Increment 4: Finalization
+    *   ⏳ Increment 4: Finalization
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -92,6 +92,18 @@
     *   Step 1: `cargo check`, `cargo test`, and `cargo clippy` pass without errors or warnings.
     *   Step 2: Debug output is observed during `cargo test` for items with `#[debug]`, and absent for others.
 *   **Commit Message:** "feat(debug): Enable conditional debug output for derive macros"
+
+##### Increment 4: Finalization
+*   **Goal:** To perform a final, holistic review and verification of the entire task's output, ensuring all errors are fixed and the crates are fully compliant.
+*   **Specification Reference:** N/A
+*   **Steps:**
+    *   Step 1: Perform a final self-critique against all requirements.
+    *   Step 2: Execute the full `Crate Conformance Check Procedure`.
+    *   Step 3: Execute `git status` to ensure the working directory is clean.
+*   **Increment Verification:**
+    *   Step 1: All checks in the `Crate Conformance Check Procedure` pass successfully based on `execute_command` output.
+    *   Step 2: `git status` output shows a clean working tree.
+*   **Commit Message:** "chore(ci): Final verification of derive_tools fixes"
 
 ### Task Requirements
 *   All fixes must adhere to the project's existing code style.
