@@ -315,7 +315,8 @@ fn generate_struct_body_tokens(
     else
     {
         // Tuple struct
-        generate_tuple_struct_fields_tokens(all_fields, field_index)
+        let fields_tokens = generate_tuple_struct_fields_tokens(all_fields, field_index);
+        qt!{ Self( #fields_tokens ) } // Wrap the generated fields with Self(...)
     };
 
     if has_debug { // Use has_debug directly

@@ -97,7 +97,7 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
           &generics_impl,
           &generics_ty,
           &generics_where,
-          &variant,
+          variant,
           &original_input,
         )
       }).collect();
