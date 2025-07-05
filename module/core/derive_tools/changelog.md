@@ -83,3 +83,5 @@
 *   fix(derive_tools): Re-enable and fix all manual tests
 
 *   fix(derive_tools): Re-enable and fix basic tests
+
+*   fix(derive_tools): Re-enable and fix basic manual tests
