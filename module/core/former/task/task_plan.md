@@ -13,10 +13,10 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/macro_tools`
-*   **Overall Progress:** 1/2 increments complete
+*   **Overall Progress:** 2/2 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Expose `GenericsWithWhere` and fix usage in `former_meta`
-    *   ⚫ Increment 2: Finalization
+    *   ✅ Increment 2: Finalization
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -103,3 +103,4 @@
 *   [Plan Refinement | 2025-07-05 17:25 UTC] The plan was further refined to correct the export location, include the fix in the consumer crate, and align the finalization step with project constraints.
 *   [Plan Elaboration | 2025-07-05 17:26 UTC] Elaborated the detailed steps for Increment 1.
 *   [Increment 1 | 2025-07-05 17:35 UTC] Fixed compilation error by updating `macro_tools::GenericsWithWhere` to `macro_tools::generic_params::GenericsWithWhere` in `former_meta`.
+*   [Increment 2 | 2025-07-05 17:38 UTC] Resolved compilation errors in `former_types` by removing incorrect test module includes and enabling required features for `component_model_types`.
