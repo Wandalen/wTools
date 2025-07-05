@@ -5,7 +5,7 @@ use super::*;
 
 /// Enum with a unit variant and a struct-like variant, using Former.
 #[derive(Debug, PartialEq, former::Former)]
-#[former(standalone_constructors, debug)] // Attribute present, added debug
+#[former(standalone_constructors)] // Attribute present, added debug
 pub enum MixedEnum
 {
   SimpleUnit,
