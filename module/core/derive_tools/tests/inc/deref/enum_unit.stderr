@@ -1,0 +1,24 @@
+error: Deref cannot be derived for enums. It is only applicable to structs with a single field or a field with `#[deref]` attribute.
+  --> tests/inc/deref/enum_unit.rs:4:1
+   |
+4  | / #[ allow( dead_code) ]
+5  | | #[ derive( Deref ) ]
+6  | | enum EnumUnit
+...  |
+9  | |   B,
+10 | | }
+   | |_^
+
+warning: unused import: `core::ops::Deref`
+ --> tests/inc/deref/enum_unit.rs:1:5
+  |
+1 | use core::ops::Deref;
+  |     ^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+error[E0601]: `main` function not found in crate `$CRATE`
+  --> tests/inc/deref/enum_unit.rs:12:40
+   |
+12 | include!( "./only_test/enum_unit.rs" );
+   |                                        ^ consider adding a `main` function to `$DIR/tests/inc/deref/enum_unit.rs`

@@ -5,7 +5,7 @@ use core::convert::AsMut;
 struct StructNamed
 {
   field1 : i32,
-  field2 : i32,
+  
 }
 
 impl AsMut< i32 > for StructNamed

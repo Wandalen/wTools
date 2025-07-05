@@ -4,7 +4,7 @@ use super::*;
 
 // #[ derive( Debug, PartialEq, the_module::From ) ]
 // // // // // // // // // #[ from( off ) ]
-// #[ debug ]
+
 pub enum GetData
 {
   Nothing,

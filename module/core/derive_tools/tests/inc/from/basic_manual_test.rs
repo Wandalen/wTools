@@ -22,6 +22,7 @@ impl From< bool > for IsTransparentSimple
 }
 
 #[ derive( Debug, Clone, Copy, PartialEq ) ]
+#[ allow( dead_code ) ]
 pub struct IsTransparentComplex< 'a, 'b : 'a, T, U : ToString + ?Sized, const N : usize >( &'a T, core::marker::PhantomData< &'b U > )
 where
   'a : 'b,
@@ -47,9 +48,9 @@ fn from_test()
   let exp = IsTransparentSimple( true );
   a_id!( got, exp );
 
-  // Test for IsTransparentComplex (commented out due to const generics issue)
-  // let got_tmp = "hello".to_string();
-  // let got = IsTransparentComplex::< '_, '_, String, str, 0 >::from( &got_tmp );
-  // let exp = IsTransparentComplex::< '_, '_, String, str, 0 >( &got_tmp, core::marker::PhantomData );
-  // a_id!( got, exp );
+  // Test for IsTransparentComplex
+  let got_tmp = "hello".to_string();
+  let got = IsTransparentComplex::< '_, '_, String, str, 0 >::from( &got_tmp );
+  let exp = IsTransparentComplex::< '_, '_, String, str, 0 >( &got_tmp, core::marker::PhantomData );
+  a_id!( got, exp );
 }

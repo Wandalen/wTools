@@ -13,11 +13,11 @@ use derive_tools_meta::From;
 use test_tools::a_id;
 
 #[ derive( Debug, Clone, Copy, PartialEq, From ) ]
-// #[ debug ]
+
 pub struct IsTransparentSimple( bool );
 
 #[ derive( Debug, Clone, Copy, PartialEq, From ) ]
-// #[ debug ]
+
 pub struct IsTransparentComplex< 'a, 'b : 'a, T, U : ToString + ?Sized >( #[ from ] &'a T, core::marker::PhantomData< &'b U > )
 where
   'a : 'b,

@@ -129,6 +129,22 @@ only_for_terminal_module!
       t.compile_fail( "tests/inc/deref_mut/compile_fail_enum.rs" );
     }
   }
+only_for_terminal_module!
+  {
+    #[ test_tools::nightly ]
+    #[ test ]
+    fn deref_trybuild()
+    {
+      println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+      let t = test_tools::compiletime::TestCases::new();
+      t.compile_fail( "tests/inc/deref/struct_tuple.rs" ); // T1.3
+      t.compile_fail( "tests/inc/deref/struct_named.rs" ); // T1.5
+      t.compile_fail( "tests/inc/deref/enum_unit.rs" ); // T1.6
+      t.compile_fail( "tests/inc/deref/struct_unit.rs" ); // T1.7
+      t.compile_fail( "tests/inc/deref/compile_fail_complex_struct.rs" ); // T1.4
+      // assert!( false );
+    }
+  }
 // #[ cfg( feature = "derive_deref_mut" ) ]
 // #[ path = "deref_mut" ]
 // mod deref_mut_tests
@@ -449,21 +465,7 @@ mod index_mut_tests
 
       t.compile_fail( "tests/inc/index_mut/compiletime/struct.rs" );
       t.compile_fail( "tests/inc/index_mut/compiletime/struct_unit.rs" );
-  only_for_terminal_module!
-  {
-    #[ test_tools::nightly ]
-    #[ test ]
-    fn deref_trybuild()
-    {
-      println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-      let t = test_tools::compiletime::TestCases::new();
-      t.compile_fail( "tests/inc/deref/struct_tuple.rs" ); // T1.3
-      t.compile_fail( "tests/inc/deref/struct_named.rs" ); // T1.5
-      t.compile_fail( "tests/inc/deref/enum_unit.rs" ); // T1.6
-      t.compile_fail( "tests/inc/deref/struct_unit.rs" ); // T1.7
-      t.compile_fail( "tests/inc/deref/compile_fail_complex_struct.rs" ); // T1.4
-    }
-  }
+  
       t.compile_fail( "tests/inc/index_mut/compiletime/struct_named_empty.rs" );
       t.compile_fail( "tests/inc/index_mut/compiletime/enum.rs" );
     }
