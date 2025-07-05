@@ -97,7 +97,7 @@ pub fn as_ref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// To learn more about the feature, study the module [`derive_tools::Deref`](https://docs.rs/derive_tools/latest/derive_tools/deref/index.html).
 ///
-#[ proc_macro_derive( Deref, attributes( deref ) ) ]
+#[ proc_macro_derive( Deref, attributes( deref, debug ) ) ]
 pub fn deref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   derive::deref::deref( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
@@ -303,3 +303,5 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 {
   derive::variadic_from::variadic_from( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
 }
+
+

@@ -194,7 +194,7 @@ parse_display = [ "parse-display" ]
 [dependencies]
 
 ## external
-derive_more = { version = "~1.0.0-beta.6", optional = true, default-features = false, features = [ "debug" ] }
+derive_more = { version = "~1.0.0-beta.6", optional = true, default-features = false }
 strum = { version = "~0.25", optional = true, default-features = false }
 # strum_macros = { version = "~0.25.3", optional = true, default-features = false }
 parse-display = { version = "~0.8.2", optional = true, default-features = false }
@@ -209,7 +209,7 @@ clone_dyn = { workspace = true, optional = true, features = [ "clone_dyn_types",
 [dev-dependencies]
 
 derive_tools_meta = { workspace = true, features = ["enabled"] }
-macro_tools = { workspace = true, features = ["enabled", "diag"] }
+macro_tools = { workspace = true, features = ["enabled", "diag", "attr"] }
 test_tools = { workspace = true }
 
 [build-dependencies]
