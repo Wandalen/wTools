@@ -115,7 +115,7 @@ impl Parser
             } else if is_boundary_delimiter { // Empty segment specifically due to ';;'
                  if start_index == i { // Handles `;; cmd` or `cmd ;;;; cmd`
                     return Err(ParseError {
-                        kind: ErrorKind::Syntax("Empty instruction segment due to ';;'".to_string()),
+                        kind: ErrorKind::Syntax("Empty instruction segment due0 to ';;'".to_string()),
                         location: Some(item_ref.source_location()),
                     });
                 }
@@ -188,6 +188,8 @@ impl Parser
         }
     }).collect();
 
+    eprintln!("DEBUG: significant_items: {:?}", significant_items);
+
     if significant_items.is_empty()
     {
       return Err( ParseError {
@@ -210,41 +212,58 @@ impl Parser
     let mut command_path_slices = Vec::new();
     let mut items_cursor = 0;
 
-    // Phase 1: Consume Command Path
-    // The command path consists of identifiers. Any other token type terminates the command path.
-    if let Some(first_item) = significant_items.get(items_cursor) {
-        match &first_item.kind {
-            UnilangTokenKind::Identifier(s) => {
-                command_path_slices.push(s.clone());
-                items_cursor += 1;
-            },
-            _ => {
-                // If the first item is not an identifier, it's an error or an empty command.
-                // For now, we'll treat it as an empty command path and let argument parsing handle it.
-                // This might need refinement based on specific requirements for "empty" commands.
+    eprintln!("DEBUG: Initial items_cursor: {}", items_cursor);
+
+    // Handle optional leading dot
+    if let Some(first_item) = significant_items.get(0) {
+        if let UnilangTokenKind::Delimiter(d) = &first_item.kind {
+            if d == "." {
+                items_cursor += 1; // Consume the leading dot
+                eprintln!("DEBUG: Consumed leading dot. items_cursor: {}", items_cursor);
             }
         }
     }
 
-    // Continue consuming command path segments if they are dot-separated identifiers
-    // This loop should only run if the command path is already started and the next token is a '.'
-    while items_cursor + 1 < significant_items.len() {
+    // Consume command path segments (identifiers separated by dots)
+    while items_cursor < significant_items.len() {
         let current_item = significant_items[items_cursor];
-        let next_item = significant_items[items_cursor + 1];
+        eprintln!("DEBUG: Loop start. items_cursor: {}, current_item: {:?}", items_cursor, current_item);
 
-        if current_item.kind == UnilangTokenKind::Delimiter(".".to_string()) {
-            if let UnilangTokenKind::Identifier(s) = &next_item.kind {
-                command_path_slices.push(s.clone());
-                items_cursor += 2; // Consume '.' and the identifier
+        if let UnilangTokenKind::Identifier(s) = &current_item.kind {
+            command_path_slices.push(s.clone());
+            items_cursor += 1; // Consume the identifier
+            eprintln!("DEBUG: Added identifier to command_path_slices: {:?}. items_cursor: {}", command_path_slices, items_cursor);
+
+            // After an identifier, expect an optional dot for multi-segment commands
+            if items_cursor < significant_items.len() {
+                let next_item = significant_items[items_cursor];
+                eprintln!("DEBUG: Checking next_item: {:?}", next_item);
+                if let UnilangTokenKind::Delimiter(d) = &next_item.kind {
+                    if d == "." {
+                        items_cursor += 1; // Consume the dot
+                        eprintln!("DEBUG: Consumed dot delimiter. items_cursor: {}", items_cursor);
+                    } else {
+                        // Next item is a delimiter but not a dot (e.g., "::"), so command path ends
+                        eprintln!("DEBUG: Next item is a non-dot delimiter. Breaking command path parsing.");
+                        break;
+                    }
+                } else {
+                    // Next item is not a delimiter (e.g., an argument), so command path ends
+                    eprintln!("DEBUG: Next item is not a delimiter. Breaking command path parsing.");
+                    break;
+                }
             } else {
-                // Unexpected token after '.', terminate command path
+                // End of items, command path ends
+                eprintln!("DEBUG: End of items. Breaking command path parsing.");
                 break;
             }
         } else {
-            // Not a dot-separated identifier, terminate command path
+            // Not an identifier, so command path ends
+            eprintln!("DEBUG: Current item is not an identifier. Breaking command path parsing.");
             break;
         }
     }
+    eprintln!("DEBUG: Final command_path_slices before arguments: {:?}", command_path_slices);
 
     let mut help_requested = false;
     if items_cursor < significant_items.len() {
