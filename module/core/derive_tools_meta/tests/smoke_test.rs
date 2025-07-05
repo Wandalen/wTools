@@ -1,3 +1,4 @@
+//! Smoke tests for the `derive_tools_meta` crate.
 
 #[ test ]
 fn local_smoke_test()

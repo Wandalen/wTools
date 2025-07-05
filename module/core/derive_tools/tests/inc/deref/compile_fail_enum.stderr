@@ -1,0 +1,10 @@
+error: Deref cannot be derived for enums. It is only applicable to structs with a single field.
+  --> tests/inc/deref/compile_fail_enum.rs:11:1
+   |
+11 | / #[ allow( dead_code ) ]
+12 | | #[ derive( derive_tools_meta::Deref ) ]
+13 | | enum MyEnum
+...  |
+16 | |   Variant2( i32 ),
+17 | | }
+   | |_^

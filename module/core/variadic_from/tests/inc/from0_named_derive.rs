@@ -2,7 +2,7 @@
 use super::*;
 use the_module::exposed::*;
 
-#[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
+// #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
 struct Struct1;
 
 impl From< () > for Struct1

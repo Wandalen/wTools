@@ -1,119 +1,64 @@
-use super::*;
 use macro_tools::
 {
-  attr,
   diag,
   generic_params,
-  item_struct,
   struct_like::StructLike,
   Result,
+  qt,
+  attr,
+  syn,
+  proc_macro2,
+  return_syn_err,
+  Spanned,
 };
 
-#[ path = "from/field_attributes.rs" ]
-mod field_attributes;
-use field_attributes::*;
-#[ path = "from/item_attributes.rs" ]
-mod item_attributes;
-use item_attributes::*;
+use super::field_attributes::{ FieldAttributes };
+use super::item_attributes::{ ItemAttributes };
 
-//
-
-// zzz : qqq : implement
+///
+/// Derive macro to implement New when-ever it's possible to do automatically.
+///
 pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
-  // use macro_tools::quote::ToTokens;
-
   let original_input = input.clone();
   let parsed = syn::parse::< StructLike >( input )?;
   let has_debug = attr::has_debug( parsed.attrs().iter() )?;
-  let item_attrs = ItemAttributes::from_attrs( parsed.attrs().iter() )?;
+  let _item_attrs = ItemAttributes::from_attrs( parsed.attrs().iter() )?;
   let item_name = &parsed.ident();
 
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
-  = generic_params::decompose( &parsed.generics() );
+  = generic_params::decompose( parsed.generics() );
 
   let result = match parsed
   {
-    StructLike::Unit( ref item ) | StructLike::Struct( ref item ) =>
+    StructLike::Unit( ref _item ) =>
     {
-
-      let mut field_types = item_struct::field_types( &item );
-      let field_names = item_struct::field_names( &item );
-
-      match ( field_types.len(), field_names )
+      generate_unit( item_name, &generics_impl, &generics_ty, &generics_where )
+    },
+    StructLike::Struct( ref item ) =>
+    {
+      let fields_result : Result< Vec< ( syn::Ident, syn::Type ) > > = item.fields.iter().map( | field |
       {
-        ( 0, _ ) =>
-        generate_unit
-        (
-          item_name,
-          &generics_impl,
-          &generics_ty,
-          &generics_where,
-        ),
-        ( 1, Some( mut field_names ) ) =>
-        generate_single_field_named
-        (
-          item_name,
-          &generics_impl,
-          &generics_ty,
-          &generics_where,
-          field_names.next().unwrap(),
-          &field_types.next().unwrap(),
-        ),
-        ( 1, None ) =>
-        generate_single_field
-        (
-          item_name,
-          &generics_impl,
-          &generics_ty,
-          &generics_where,
-          &field_types.next().unwrap(),
-        ),
-        ( _, Some( field_names ) ) =>
-        generate_multiple_fields_named
-        (
-          item_name,
-          &generics_impl,
-          &generics_ty,
-          &generics_where,
-          field_names,
-          field_types,
-        ),
-        ( _, None ) =>
-        generate_multiple_fields
-        (
-          item_name,
-          &generics_impl,
-          &generics_ty,
-          &generics_where,
-          field_types,
-        ),
-      }
+        let _attrs = FieldAttributes::from_attrs( field.attrs.iter() )?;
+        let field_name = field.ident.clone().expect( "Expected named field" );
+        let field_type = field.ty.clone();
+        Ok( ( field_name, field_type ) )
+      }).collect();
 
+      let fields = fields_result?;
+
+      generate_struct
+      (
+        item_name,
+        &generics_impl,
+        &generics_ty,
+        &generics_where,
+        &fields,
+      )
     },
     StructLike::Enum( ref item ) =>
     {
-
-      let variants_result : Result< Vec< proc_macro2::TokenStream > > = item.variants.iter().map( | variant |
-      {
-        variant_generate
-        (
-          item_name,
-          &item_attrs,
-          &generics_impl,
-          &generics_ty,
-          &generics_where,
-          variant,
-          &original_input,
-        )
-      }).collect();
-
-      let variants = variants_result?;
-
-      qt!
-      {
-        #( #variants )*
-      }
+      return_syn_err!( item.span(), "New can be applied only to a structure" );
     },
   };
 
@@ -126,8 +71,18 @@ pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
   Ok( result )
 }
 
-// zzz : qqq : implement
-// qqq : document, add example of generated code
+/// Generates `New` implementation for unit structs.
+///
+/// Example of generated code:
+/// ```text
+/// impl New for MyUnit
+/// {
+///   fn new() -> Self
+///   {
+///     Self
+///   }
+/// }
+/// ```
 fn generate_unit
 (
   item_name : &syn::Ident,
@@ -139,261 +94,71 @@ fn generate_unit
 {
   qt!
   {
-    // impl UnitStruct
-    impl< #generics_impl > #item_name< #generics_ty >
-    where
-      #generics_where
-    {
-      #[ inline( always ) ]
-      pub fn new() -> Self
-      {
-        Self
-      }
-    }
-  }
-}
-
-// zzz : qqq : implement
-// qqq : document, add example of generated code
-fn generate_single_field_named
-(
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  field_name : &syn::Ident,
-  field_type : &syn::Type,
-)
--> proc_macro2::TokenStream
-{
-  qt!
-  {
     #[ automatically_derived ]
-    // impl MyStruct
-    impl< #generics_impl > #item_name< #generics_ty >
+    impl< #generics_impl > crate::New for #item_name< #generics_ty >
     where
       #generics_where
     {
       #[ inline( always ) ]
-      // pub fn new( src : i32 ) -> Self
-      pub fn new( src : #field_type ) -> Self
+      fn new() -> Self
       {
-        // Self { a : src }
-        Self { #field_name: src }
+        Self {}
       }
     }
   }
 }
 
-// zzz : qqq : implement
-// qqq : document, add example of generated code
-fn generate_single_field
+/// Generates `New` implementation for structs with fields.
+///
+/// Example of generated code:
+/// ```text
+/// impl New for MyStruct
+/// {
+///   fn new( field1: i32, field2: i32 ) -> Self
+///   {
+///     Self { field1, field2 }
+///   }
+/// }
+/// ```
+fn generate_struct
 (
   item_name : &syn::Ident,
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  field_type : &syn::Type,
+  fields : &[ ( syn::Ident, syn::Type ) ],
 )
 -> proc_macro2::TokenStream
 {
+  let fields_init = fields.iter().map( | ( field_name, _field_type ) | {
+    qt!{ #field_name }
+  }).collect::< Vec< _ > >();
 
-  qt!
+  let fields_params = fields.iter().map( | ( field_name, field_type ) | {
+    qt!{ #field_name : #field_type }
+  }).collect::< Vec< _ > >();
+
+  let body = if fields.is_empty()
   {
-    #[automatically_derived]
-    // impl IsTransparent
-    impl< #generics_impl > #item_name< #generics_ty >
-    where
-      #generics_where
-    {
-      #[ inline( always ) ]
-      // pub fn new( src : bool ) -> Self
-      pub fn new( src : #field_type ) -> Self
-      {
-        // Self( src )
-        Self( src )
-      }
-    }
-  }
-}
-
-// zzz : qqq : implement
-// qqq : document, add example of generated code
-fn generate_multiple_fields_named< 'a >
-(
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  field_names : impl macro_tools::IterTrait< 'a, &'a syn::Ident >,
-  field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
-)
--> proc_macro2::TokenStream
-{
-
-  let val_type = field_names
-  .clone()
-  .zip( field_types )
-  .enumerate()
-  .map(| ( _index, ( field_name, field_type ) ) |
-  {
-    qt! { #field_name : #field_type }
-  });
-
-  qt!
-  {
-    // impl StructNamedFields
-    impl< #generics_impl > #item_name< #generics_ty >
-    where
-      #generics_where
-    {
-      #[ inline( always ) ]
-      // pub fn new( src : ( i32, bool ) ) -> Self
-      pub fn new( #( #val_type ),* ) -> Self
-      {
-        // StructNamedFields{ a : src.0, b : src.1 }
-        #item_name { #( #field_names ),* }
-      }
-    }
-  }
-
-}
-
-// zzz : qqq : implement
-// qqq : document, add example of generated code
-fn generate_multiple_fields< 'a >
-(
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  field_types : impl macro_tools::IterTrait< 'a, &'a macro_tools::syn::Type >,
-)
--> proc_macro2::TokenStream
-{
-
-  let params = ( 0..field_types.len() )
-  .map( | index |
-  {
-    let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
-    qt!( src.#index )
-  });
-
-  qt!
-  {
-    // impl StructWithManyFields
-    impl< #generics_impl > #item_name< #generics_ty >
-    where
-      #generics_where
-    {
-      #[ inline( always ) ]
-      // pub fn new( src : (i32, bool) ) -> Self
-      pub fn new( src : ( #( #field_types ),* ) ) -> Self
-      {
-        // StructWithManyFields( src.0, src.1 )
-        #item_name( #( #params ),* )
-      }
-    }
-  }
-}
-
-// zzz : qqq : implement
-// qqq : document, add example of generated code
-fn variant_generate
-(
-  item_name : &syn::Ident,
-  item_attrs : &ItemAttributes,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  variant : &syn::Variant,
-  original_input : &proc_macro::TokenStream,
-)
--> Result< proc_macro2::TokenStream >
-{
-  let variant_name = &variant.ident;
-  let fields = &variant.fields;
-  let attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
-
-  if !attrs.config.enabled.value( item_attrs.config.enabled.value( true ) )
-  {
-    return Ok( qt!{} )
-  }
-
-  if fields.len() == 0
-  {
-    return Ok( qt!{} )
-  }
-
-  let ( args, use_src ) = if fields.len() == 1
-  {
-    let field = fields.iter().next().unwrap();
-    (
-      qt!{ #field },
-      qt!{ src },
-    )
+    qt!{ Self {} }
   }
   else
   {
-    let src_i = ( 0..fields.len() ).map( | e |
-    {
-      let i = syn::Index::from( e );
-      qt!{ src.#i, }
-    });
-    (
-      qt!{ #fields },
-      qt!{ #( #src_i )* },
-      // qt!{ src.0, src.1 },
-    )
+    qt!{ Self { #( #fields_init ),* } }
   };
 
-  // qqq : make `debug` working for all branches
-  if attrs.config.debug.value( false )
+  qt!
   {
-    let debug = format!
-    (
-      r#"
-#[ automatically_derived ]
-impl< {0} > {item_name}< {1} >
-where
-  {2}
-{{
-  #[ inline ]
-  pub fn new( src : {args} ) -> Self
-  {{
-    Self::{variant_name}( {use_src} )
-  }}
-}}
-      "#,
-      format!( "{}", qt!{ #generics_impl } ),
-      format!( "{}", qt!{ #generics_ty } ),
-      format!( "{}", qt!{ #generics_where } ),
-    );
-    let about = format!
-    (
-r#"derive : New
-item : {item_name}
-field : {variant_name}"#,
-    );
-    diag::report_print( about, original_input, debug );
-  }
-
-  Ok
-  (
-    qt!
+    #[ automatically_derived ]
+    impl< #generics_impl > crate::New for #item_name< #generics_ty >
+    where
+      #generics_where
     {
-      #[ automatically_derived ]
-      impl< #generics_impl > #item_name< #generics_ty >
-      where
-        #generics_where
+      #[ inline( always ) ]
+      fn new( #( #fields_params ),* ) -> Self
       {
-        #[ inline ]
-        pub fn new( src : #args ) -> Self
-        {
-          Self::#variant_name( #use_src )
-        }
+        #body
       }
     }
-  )
-
+  }
 }

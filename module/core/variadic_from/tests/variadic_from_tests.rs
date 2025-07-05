@@ -1,3 +1,4 @@
+//! This module contains tests for the `variadic_from` crate.
 
 #[ allow( unused_imports ) ]
 use variadic_from as the_module;

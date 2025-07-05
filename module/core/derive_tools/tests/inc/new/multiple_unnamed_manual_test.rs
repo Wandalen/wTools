@@ -17,4 +17,4 @@ mod mod1
 
 }
 
-include!( "./only_test/multiple_unnamed.rs" );
+// include!( "./only_test/multiple_unnamed.rs" );

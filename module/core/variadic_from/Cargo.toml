@@ -44,12 +44,14 @@ use_alloc = [ "no_std" ]
 enabled = []
 
 type_variadic_from = []
-derive_variadic_from = [ "type_variadic_from", "derive_tools_meta/derive_variadic_from" ]
+derive_variadic_from = [ "type_variadic_from" ]
 
 [dependencies]
 
 ## internal
-derive_tools_meta = { workspace = true, features = [ "enabled", "derive_variadic_from" ] }
+variadic_from_meta = { path = "../variadic_from_meta" }
 
 [dev-dependencies]
+
+
 test_tools = { workspace = true }

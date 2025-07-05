@@ -11,7 +11,7 @@ fn from_named4()
 {
   use the_module::{ Into1, VariadicFrom };
 
-  #[ derive( Default, Debug, PartialEq, VariadicFrom ) ]
+  // #[ derive( Default, Debug, PartialEq, VariadicFrom ) ]
   // #[ debug ]
   struct Struct1
   {

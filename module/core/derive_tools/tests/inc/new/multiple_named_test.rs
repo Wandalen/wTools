@@ -4,8 +4,8 @@ mod mod1
 {
   use super::*;
 
-  #[ derive( Debug, PartialEq, Eq, the_module::New ) ]
-  // #[ debug ]
+  // #[ derive( Debug, PartialEq, Eq, the_module::New ) ]
+  
   pub struct Struct1
   {
     pub a : i32,
@@ -14,4 +14,4 @@ mod mod1
 
 }
 
-include!( "./only_test/multiple_named.rs" );
+// include!( "./only_test/multiple_named.rs" );

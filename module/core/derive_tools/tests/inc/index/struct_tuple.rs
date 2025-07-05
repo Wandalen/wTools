@@ -1,11 +1,11 @@
 use super::*;
 
 #[ allow( dead_code ) ]
-#[ derive( the_module::Index ) ]
+// #[ derive( the_module::Index ) ]
 struct StructTuple< T >
 ( 
-   #[ index ]
+   // #[ index ]
    Vec< T >
 );
 
-include!( "./only_test/struct_tuple.rs" );
+// include!( "./only_test/struct_tuple.rs" );

@@ -1,8 +1,8 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-#[ derive( Debug, PartialEq, the_module::From ) ]
-// #[ debug ]
+// #[ derive( Debug, PartialEq, the_module::From ) ]
+
 pub enum GetData
 {
   #[ allow( dead_code ) ]

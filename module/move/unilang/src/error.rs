@@ -28,6 +28,9 @@ pub enum Error
   /// An error that occurred during JSON deserialization.
   #[ error( "JSON Deserialization Error: {0}" ) ]
   Json( #[ from ] serde_json::Error ),
+  /// An error that occurred during parsing.
+  #[ error( "Parse Error: {0}" ) ]
+  Parse( #[ from ] unilang_instruction_parser::error::ParseError ),
 }
 
 impl From< ErrorData > for Error

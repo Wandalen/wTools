@@ -20,7 +20,7 @@ mod private
   /// Usage:
   ///
   /// ```
-  /// let parsed_generics : macro_tools::GenericsWithWhere
+  /// let parsed_generics : macro_tools::generic_params::GenericsWithWhere
   /// = syn::parse_str( "< T : Clone, U : Default = Default1 > where T : Default" ).unwrap();
   /// assert!( parsed_generics.generics.params.len() == 2 );
   /// assert!( parsed_generics.generics.where_clause.is_some() );
@@ -648,6 +648,7 @@ pub mod own
     names,
     decompose,
     GenericsRef,
+    GenericsWithWhere,
   };
 }
 
@@ -659,17 +660,13 @@ pub mod orphan
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
-  #[ doc( inline ) ]
-  pub use private::
-  {
-    GenericsWithWhere,
-  };
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use super::super::generic_params;
 

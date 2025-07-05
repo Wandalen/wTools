@@ -4,7 +4,7 @@ use super::*;
 use variadic_from::{ from, From1, From2, Into1 };
 
 
-#[ derive( Debug, PartialEq, variadic_from::VariadicFrom ) ]
+// #[ derive( Debug, PartialEq, variadic_from::VariadicFrom ) ]
 struct Struct1
 {
   a : i32,

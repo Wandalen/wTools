@@ -7,6 +7,7 @@ mod private
 {
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
+  use crate::qt;
 
   /// Checks if the given iterator of attributes contains an attribute named `debug`.
   ///
@@ -174,6 +175,189 @@ mod private
     }
   }
 
+  /// Checks if the given iterator of attributes contains an attribute named `deref`.
+  ///
+  /// This function iterates over an input sequence of `syn::Attribute`, typically associated with a struct,
+  /// enum, or other item in a Rust Abstract Syntax Tree ( AST ), and determines whether any of the attributes
+  /// is exactly named `deref`.
+  ///
+  /// # Parameters
+  /// - `attrs` : An iterator over `syn::Attribute`. This could be obtained from parsing Rust code
+  ///   with the `syn` crate, where the iterator represents attributes applied to a Rust item ( like a struct or function ).
+  ///
+  /// # Returns
+  /// - `Ok( true )` if the `deref` attribute is present.
+  /// - `Ok( false )` if the `deref` attribute is not found.
+  /// - `Err( syn::Error )` if an unknown or improperly formatted attribute is encountered.
+  ///
+  /// # Errors
+  /// qqq: doc
+  pub fn has_deref< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> syn::Result< bool >
+  {
+    for attr in attrs
+    {
+      if let Some( ident ) = attr.path().get_ident()
+      {
+        let ident_string = format!( "{ident}" );
+        if ident_string == "deref"
+        {
+          return Ok( true )
+        }
+      }
+      else
+      {
+        return_syn_err!( "Unknown structure attribute:\n{}", qt!{ attr } );
+      }
+    }
+    Ok( false )
+  }
+
+  /// Checks if the given iterator of attributes contains an attribute named `deref_mut`.
+  ///
+  /// This function iterates over an input sequence of `syn::Attribute`, typically associated with a struct,
+  /// enum, or other item in a Rust Abstract Syntax Tree ( AST ), and determines whether any of the attributes
+  /// is exactly named `deref_mut`.
+  ///
+  /// # Parameters
+  /// - `attrs` : An iterator over `syn::Attribute`. This could be obtained from parsing Rust code
+  ///   with the `syn` crate, where the iterator represents attributes applied to a Rust item ( like a struct or function ).
+  ///
+  /// # Returns
+  /// - `Ok( true )` if the `deref_mut` attribute is present.
+  /// - `Ok( false )` if the `deref_mut` attribute is not found.
+  /// - `Err( syn::Error )` if an unknown or improperly formatted attribute is encountered.
+  ///
+  /// # Errors
+  /// qqq: doc
+  pub fn has_deref_mut< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> syn::Result< bool >
+  {
+    for attr in attrs
+    {
+      if let Some( ident ) = attr.path().get_ident()
+      {
+        let ident_string = format!( "{ident}" );
+        if ident_string == "deref_mut"
+        {
+          return Ok( true )
+        }
+      }
+      else
+      {
+        return_syn_err!( "Unknown structure attribute:\n{}", qt!{ attr } );
+      }
+    }
+    Ok( false )
+  }
+
+  /// Checks if the given iterator of attributes contains an attribute named `from`.
+  ///
+  /// This function iterates over an input sequence of `syn::Attribute`, typically associated with a struct,
+  /// enum, or other item in a Rust Abstract Syntax Tree ( AST ), and determines whether any of the attributes
+  /// is exactly named `from`.
+  ///
+  /// # Parameters
+  /// - `attrs` : An iterator over `syn::Attribute`. This could be obtained from parsing Rust code
+  ///   with the `syn` crate, where the iterator represents attributes applied to a Rust item ( like a struct or function ).
+  ///
+  /// # Returns
+  /// - `Ok( true )` if the `from` attribute is present.
+  /// - `Ok( false )` if the `from` attribute is not found.
+  /// - `Err( syn::Error )` if an unknown or improperly formatted attribute is encountered.
+  ///
+  /// # Errors
+  /// qqq: doc
+  pub fn has_from< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> syn::Result< bool >
+  {
+    for attr in attrs
+    {
+      if let Some( ident ) = attr.path().get_ident()
+      {
+        let ident_string = format!( "{ident}" );
+        if ident_string == "from"
+        {
+          return Ok( true )
+        }
+      }
+      else
+      {
+        return_syn_err!( "Unknown structure attribute:\n{}", qt!{ attr } );
+      }
+    }
+    Ok( false )
+  }
+
+  /// Checks if the given iterator of attributes contains an attribute named `index_mut`.
+  ///
+  /// This function iterates over an input sequence of `syn::Attribute`, typically associated with a struct,
+  /// enum, or other item in a Rust Abstract Syntax Tree ( AST ), and determines whether any of the attributes
+  /// is exactly named `index_mut`.
+  ///
+  /// # Parameters
+  /// - `attrs` : An iterator over `syn::Attribute`. This could be obtained from parsing Rust code
+  ///   with the `syn` crate, where the iterator represents attributes applied to a Rust item ( like a struct or function ).
+  ///
+  /// # Returns
+  /// - `Ok( true )` if the `index_mut` attribute is present.
+  /// - `Ok( false )` if the `index_mut` attribute is not found.
+  /// - `Err( syn::Error )` if an unknown or improperly formatted attribute is encountered.
+  ///
+  /// # Errors
+  /// qqq: doc
+  pub fn has_index_mut< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> syn::Result< bool >
+  {
+    for attr in attrs
+    {
+      if let Some( ident ) = attr.path().get_ident()
+      {
+        let ident_string = format!( "{ident}" );
+        if ident_string == "index_mut"
+        {
+          return Ok( true )
+        }
+      }
+      else
+      {
+        return_syn_err!( "Unknown structure attribute:\n{}", qt!{ attr } );
+      }
+    }
+    Ok( false )
+  }
+  /// Checks if the given iterator of attributes contains an attribute named `as_mut`.
+  ///
+  /// This function iterates over an input sequence of `syn::Attribute`, typically associated with a struct,
+  /// enum, or other item in a Rust Abstract Syntax Tree ( AST ), and determines whether any of the attributes
+  /// is exactly named `as_mut`.
+  ///
+  /// # Parameters
+  /// - `attrs` : An iterator over `syn::Attribute`. This could be obtained from parsing Rust code
+  ///   with the `syn` crate, where the iterator represents attributes applied to a Rust item ( like a struct or function ).
+  ///
+  /// # Returns
+  /// - `Ok( true )` if the `as_mut` attribute is present.
+  /// - `Ok( false )` if the `as_mut` attribute is not found.
+  /// - `Err( syn::Error )` if an unknown or improperly formatted attribute is encountered.
+  ///
+  /// # Errors
+  /// qqq: doc
+  pub fn has_as_mut< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> syn::Result< bool >
+  {
+    for attr in attrs
+    {
+      if let Some( ident ) = attr.path().get_ident()
+      {
+        let ident_string = format!( "{ident}" );
+        if ident_string == "as_mut"
+        {
+          return Ok( true )
+        }
+      }
+      else
+      {
+        return_syn_err!( "Unknown structure attribute:\n{}", qt!{ attr } );
+      }
+    }
+    Ok( false )
+  }
   ///
   /// Attribute which is inner.
   ///
@@ -412,25 +596,14 @@ mod private
   where
     Self : Sized,
   {
-    /// The keyword that identifies the component.
-    ///
-    /// This constant is used to match the attribute to the corresponding component.
+    /// The keyword that identifies the component.\n    ///    /// This constant is used to match the attribute to the corresponding component.
     /// Each implementor of this trait must provide a unique keyword for its type.
     const KEYWORD : &'static str;
 
-    /// Constructs the component from the given meta attribute.
-    ///
-    /// This method is responsible for parsing the provided `syn::Attribute` and
+    /// Constructs the component from the given meta attribute.\n    ///    /// This method is responsible for parsing the provided `syn::Attribute` and
     /// returning an instance of the component. If the attribute cannot be parsed
-    /// into the component, an error should be returned.
-    ///
-    /// # Parameters
-    ///
-    /// - `attr` : A reference to the `syn::Attribute` from which the component is to be constructed.
-    ///
-    /// # Returns
-    ///
-    /// A `syn::Result` containing the constructed component if successful, or an error if the parsing fails.
+    /// into the component, an error should be returned.\n    ///    /// # Parameters\n    ///    
+    /// - `attr` : A reference to the `syn::Attribute` from which the component is to be constructed.\n    ///    /// # Returns\n    ///    /// A `syn::Result` containing the constructed component if successful, or an error if the parsing fails.
     /// 
     /// # Errors
     /// qqq: doc
@@ -459,6 +632,11 @@ pub mod own
     // equation,
     has_debug,
     is_standard,
+    has_deref,
+    has_deref_mut,
+    has_from,
+    has_index_mut,
+    has_as_mut,
   };
 }
 

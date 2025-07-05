@@ -12,8 +12,8 @@ pub mod FromBin {}
 
 // qqq : add collision tests for 4 outher branches
 
-#[ derive( Debug, PartialEq, the_module::From ) ]
-// #[ debug ]
+// #[ derive( Debug, PartialEq, the_module::From ) ]
+
 pub enum GetData
 {
   #[ allow( dead_code ) ]

@@ -1,51 +1,59 @@
+use macro_tools::
+{
+  diag,
+  generic_params,
+  item_struct,
+  struct_like::StructLike,
+  Result,
+  qt,
+  attr,
+  syn,
+  proc_macro2,
+  return_syn_err,
+  Spanned,
+};
 
-use super::*;
-use macro_tools::{ attr, diag, item_struct, Result };
 
-//
+use super::item_attributes::{ ItemAttributes };
 
+///
+/// Derive macro to implement `InnerFrom` when-ever it's possible to do automatically.
+///
 pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   let original_input = input.clone();
-  let parsed = syn::parse::< syn::ItemStruct >( input )?;
-  let has_debug = attr::has_debug( parsed.attrs.iter() )?;
-  let item_name = &parsed.ident;
+  let parsed = syn::parse::< StructLike >( input )?;
+  let has_debug = attr::has_debug( parsed.attrs().iter() )?;
+  let _item_attrs = ItemAttributes::from_attrs( parsed.attrs().iter() )?;
+  let item_name = &parsed.ident();
 
-  let mut field_types = item_struct::field_types( &parsed );
-  let field_names = item_struct::field_names( &parsed );
-  let result =
-  match ( field_types.len(), field_names )
+  let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
+  = generic_params::decompose( parsed.generics() );
+
+  let result = match parsed
   {
-    ( 0, _ ) => unit( item_name ),
-    ( 1, Some( mut field_names ) ) =>
+    StructLike::Unit( ref _item ) =>
     {
-      let field_name = field_names.next().unwrap();
-      let field_type = field_types.next().unwrap();
-      from_impl_named( item_name, field_type, field_name )
-    }
-    ( 1, None ) =>
+      return_syn_err!( parsed.span(), "Expects a structure with one field" );
+    },
+    StructLike::Struct( ref item ) =>
     {
-      let field_type = field_types.next().unwrap();
-      from_impl( item_name, field_type )
-    }
-    ( _, Some( field_names ) ) =>
+      let field_type = item_struct::first_field_type( item )?;
+      let field_name = item_struct::first_field_name( item ).ok().flatten();
+      generate
+      (
+        item_name,
+        &generics_impl,
+        &generics_ty,
+        &generics_where,
+        &field_type,
+        field_name.as_ref(),
+      )
+    },
+    StructLike::Enum( ref item ) =>
     {
-      let params : Vec< proc_macro2::TokenStream > = field_names
-      .map( | field_name | qt! { src.#field_name } )
-      .collect();
-      from_impl_multiple_fields( item_name, field_types, &params )
-    }
-    ( _, None ) =>
-    {
-      let params : Vec< proc_macro2::TokenStream > = ( 0..field_types.len() )
-      .map( | index |
-      {
-        let index : proc_macro2::TokenStream = index.to_string().parse().unwrap();
-        qt! { src.#index }
-      })
-      .collect();
-      from_impl_multiple_fields( item_name, field_types, &params )
-    }
+      return_syn_err!( item.span(), "InnerFrom can be applied only to a structure" );
+    },
   };
 
   if has_debug
@@ -57,206 +65,49 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
   Ok( result )
 }
 
-// qqq  : document, add example of generated code
-/// Generates `From` implementation for the inner type regarding bounded type
-/// Works with structs with a single named field
+/// Generates `InnerFrom` implementation for structs.
 ///
-/// # Example
-///
-/// ## Input
-/// ```rust
-/// # use derive_tools_meta::InnerFrom;
-/// #[ derive( InnerFrom ) ]
-/// pub struct Struct
+/// Example of generated code:
+/// ```text
+/// impl InnerFrom< bool > for IsTransparent
 /// {
-///   value : bool,
-/// }
-/// ```
-///
-/// ## Output
-/// ```rust
-/// pub struct Struct
-/// {
-///   value : bool,
-/// }
-/// #[ allow( non_local_definitions ) ]
-/// #[ automatically_derived ]
-/// impl From< Struct > for bool
-/// {
-///   #[ inline( always ) ]
-///   fn from( src : Struct ) -> Self
+///   fn inner_from( src : bool ) -> Self
 ///   {
-///     src.value
+///     Self( src )
 ///   }
 /// }
 /// ```
-///
-fn from_impl_named
+fn generate
 (
   item_name : &syn::Ident,
+  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
   field_type : &syn::Type,
-  field_name : &syn::Ident,
-) -> proc_macro2::TokenStream
+  field_name : Option< &syn::Ident >,
+)
+-> proc_macro2::TokenStream
 {
-  qt!
+  let body = if let Some( field_name ) = field_name
   {
-    #[ allow( non_local_definitions ) ]
-    #[ automatically_derived ]
-    impl From< #item_name > for #field_type
-    {
-      #[ inline( always ) ]
-      // fm from( src : MyStruct ) -> Self
-      fn from( src : #item_name ) -> Self
-      {
-        src.#field_name
-      }
-    }
+    qt!{ Self { #field_name : src } }
   }
-}
+  else
+  {
+    qt!{ Self( src ) }
+  };
 
-// qqq  : document, add example of generated code -- done
-/// Generates `From` implementation for the only contained type regarding the bounded type
-///
-/// # Example
-///
-/// ## Input
-/// ```rust
-/// # use derive_tools_meta::InnerFrom;
-/// #[ derive( InnerFrom ) ]
-/// pub struct Struct( bool );
-/// ```
-///
-/// ## Output
-/// ```rust
-/// pub struct Struct( bool );
-/// #[ allow( non_local_definitions ) ]
-/// #[ automatically_derived ]
-/// impl From< Struct > for bool
-/// {
-///   #[ inline( always ) ]
-///   fn from( src : Struct ) -> Self
-///   {
-///     src.0
-///   }
-/// }
-/// ```
-///
-fn from_impl
-(
-  item_name : &syn::Ident,
-  field_type : &syn::Type,
-) -> proc_macro2::TokenStream
-{
   qt!
   {
-    #[ allow( non_local_definitions ) ]
     #[ automatically_derived ]
-    impl From< #item_name > for #field_type
+    impl< #generics_impl > crate::InnerFrom< #field_type > for #item_name< #generics_ty >
+    where
+      #generics_where
     {
       #[ inline( always ) ]
-      // fn from( src : IsTransparent ) -> Self
-      fn from( src : #item_name ) -> Self
+      fn inner_from( src : #field_type ) -> Self
       {
-        src.0
-      }
-    }
-  }
-}
-
-// qqq  : document, add example of generated code -- done
-/// Generates `From` implementation for the tuple type containing all the inner types regarding the bounded type
-/// Can generate implementations both for structs with named fields and tuple structs.
-///
-/// # Example
-///
-/// ## Input
-/// ```rust
-/// # use derive_tools_meta::InnerFrom;
-/// #[ derive( InnerFrom ) ]
-/// pub struct Struct( bool, i32 );
-/// ```
-///
-/// ## Output
-/// ```rust
-/// pub struct Struct( bool, i32 );
-/// #[ allow( non_local_definitions ) ]
-/// #[ automatically_derived ]
-/// impl From< Struct > for ( bool, i32 )
-/// {
-///   #[ inline( always ) ]
-///   fn from( src : Struct ) -> Self
-///   {
-///     ( src.0, src.1 )
-///   }
-/// }
-/// ```
-///
-fn from_impl_multiple_fields< 'a >
-(
-  item_name : &syn::Ident,
-  field_types : impl macro_tools::IterTrait< 'a, &'a macro_tools::syn::Type >,
-  params : &Vec< proc_macro2::TokenStream >,
-) -> proc_macro2::TokenStream
-{
-  qt!
-  {
-    #[ allow( non_local_definitions ) ]
-    #[ automatically_derived ]
-    impl From< #item_name > for ( #( #field_types ), *)
-    {
-      #[ inline( always ) ]
-      // fn from( src : StructWithManyFields ) -> Self
-      fn from( src : #item_name ) -> Self
-      {
-        ( #( #params ), * )
-      }
-    }
-  }
-}
-
-// qqq  : document, add example of generated code -- done
-/// Generates `From` implementation for the unit type regarding the bound type
-///
-/// # Example
-///
-/// ## Input
-/// ```rust
-/// # use derive_tools_meta::InnerFrom;
-/// #[ derive( InnerFrom ) ]
-/// pub struct Struct;
-/// ```
-///
-/// ## Output
-/// ```rust
-/// use std::convert::From;
-/// pub struct Struct;
-/// #[ allow( non_local_definitions ) ]
-/// #[ allow( clippy::unused_imports ) ]
-/// #[ automatically_derived]
-/// impl From< Struct > for ()
-/// {
-///   #[ inline( always ) ]
-///   fn from( src : Struct ) -> ()
-///   {
-///     ()
-///   }
-/// }
-/// ```
-///
-fn unit( item_name : &syn::Ident ) -> proc_macro2::TokenStream
-{
-  qt!
-  {
-    #[ allow( non_local_definitions ) ]
-    #[ allow( clippy::unused_imports ) ]
-    #[ automatically_derived ]
-    impl From< #item_name > for ()
-    {
-      #[ inline( always ) ]
-      // fn from( src : UnitStruct ) -> ()
-      fn from( src : #item_name ) -> ()
-      {
-        ()
+        #body
       }
     }
   }

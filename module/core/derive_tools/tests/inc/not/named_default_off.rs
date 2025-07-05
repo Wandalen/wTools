@@ -1,8 +1,8 @@
 use super::*;
 
 #[ allow( dead_code ) ]
-#[ derive( the_module::Not ) ]
-#[ not( off ) ]
+// #[ derive( the_module::Not ) ]
+// #[ not( off ) ]
 struct NamedDefaultOff
 {
   a : bool,

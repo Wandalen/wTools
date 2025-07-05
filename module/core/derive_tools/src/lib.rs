@@ -6,6 +6,7 @@
 
 // // xxx : implement derive new
 //
+/*
 // #[ derive( Debug, PartialEq, Default ) ]
 // pub struct Property< Name >
 // {
@@ -27,10 +28,34 @@
 //     Self { name : name.into(), description : description.into(), code : code.into() }
 //   }
 // }
+*/
 
 // #[ cfg( feature = "enabled" ) ]
 // pub mod wtools;
 
+#[ cfg( feature = "derive_from" ) ]
+pub use derive_tools_meta::From;
+#[ cfg( feature = "derive_inner_from" ) ]
+pub use derive_tools_meta::InnerFrom;
+#[ cfg( feature = "derive_new" ) ]
+pub use derive_tools_meta::New;
+#[ cfg( feature = "derive_not" ) ]
+pub use derive_tools_meta::Not;
+
+#[ cfg( feature = "derive_variadic_from" ) ]
+pub use derive_tools_meta::VariadicFrom;
+#[ cfg( feature = "derive_as_mut" ) ]
+pub use derive_tools_meta::AsMut;
+#[ cfg( feature = "derive_as_ref" ) ]
+pub use derive_tools_meta::AsRef;
+#[ cfg( feature = "derive_deref" ) ]
+pub use derive_tools_meta::Deref;
+#[ cfg( feature = "derive_deref_mut" ) ]
+pub use derive_tools_meta::DerefMut;
+#[ cfg( feature = "derive_index" ) ]
+pub use derive_tools_meta::Index;
+#[ cfg( feature = "derive_index_mut" ) ]
+pub use derive_tools_meta::IndexMut;
 #[ cfg( feature = "derive_more" ) ]
 #[ allow( unused_imports ) ]
 mod derive_more
@@ -183,6 +208,9 @@ pub mod exposed
   #[ cfg( feature = "derive_inner_from" ) ]
   pub use ::derive_tools_meta::InnerFrom;
 
+  #[ doc( inline ) ]
+  #[ cfg( feature = "derive_new" ) ]
+  pub use ::derive_tools_meta::New;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

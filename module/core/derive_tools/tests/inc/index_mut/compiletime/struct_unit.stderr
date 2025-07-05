@@ -1,7 +1,5 @@
-error: proc-macro derive panicked
- --> tests/inc/index_mut/compiletime/struct_unit.rs:3:12
+error: IndexMut can be applied only to a structure with one field
+ --> tests/inc/index_mut/compiletime/struct_unit.rs:4:1
   |
-3 | #[ derive( IndexMut ) ]
-  |            ^^^^^^^^
-  |
-  = help: message: not implemented: IndexMut not implemented for Unit
+4 | struct StructUnit;
+  | ^^^^^^^^^^^^^^^^^^

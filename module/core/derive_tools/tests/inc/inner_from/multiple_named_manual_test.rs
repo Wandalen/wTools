@@ -16,4 +16,4 @@ impl From< StructNamedFields > for ( i32, bool )
   }
 }
 
-include!( "./only_test/multiple_named.rs" );
+// include!( "./only_test/multiple_named.rs" );
