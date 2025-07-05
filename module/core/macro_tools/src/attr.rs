@@ -596,26 +596,14 @@ mod private
   where
     Self : Sized,
   {
-    /// The keyword that identifies the component.
-    ///
-    /// This constant is used to match the attribute to the corresponding component.
+    /// The keyword that identifies the component.\n    ///    /// This constant is used to match the attribute to the corresponding component.
     /// Each implementor of this trait must provide a unique keyword for its type.
     const KEYWORD : &'static str;
 
-    /// Constructs the component from the given meta attribute.
-    ///
-    /// This method is responsible for parsing the provided `syn::Attribute` and
+    /// Constructs the component from the given meta attribute.\n    ///    /// This method is responsible for parsing the provided `syn::Attribute` and
     /// returning an instance of the component. If the attribute cannot be parsed
-    /// into the component, an error should be returned.
-    ///
-    /// # Parameters
-    ///
-    
-    /// - `attr` : A reference to the `syn::Attribute` from which the component is to be constructed.
-    ///
-    /// # Returns
-    ///
-    /// A `syn::Result` containing the constructed component if successful, or an error if the parsing fails.
+    /// into the component, an error should be returned.\n    ///    /// # Parameters\n    ///    
+    /// - `attr` : A reference to the `syn::Attribute` from which the component is to be constructed.\n    ///    /// # Returns\n    ///    /// A `syn::Result` containing the constructed component if successful, or an error if the parsing fails.
     /// 
     /// # Errors
     /// qqq: doc

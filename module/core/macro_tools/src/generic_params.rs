@@ -648,6 +648,7 @@ pub mod own
     names,
     decompose,
     GenericsRef,
+    GenericsWithWhere,
   };
 }
 
