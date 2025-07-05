@@ -25,7 +25,7 @@ use derive_tools::Deref;
 
 
 #[ derive( Deref ) ]
-#[ debug ]
+
 struct MyTuple( i32 );
 
 #[ test ]
