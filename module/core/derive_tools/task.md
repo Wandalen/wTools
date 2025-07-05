@@ -23,7 +23,7 @@
 ### Progress
 *   **Roadmap Milestone:** M1: Core API Implementation
 *   **Primary Editable Crate:** `module/core/derive_tools`
-*   **Overall Progress:** 10/18 increments complete
+*   **Overall Progress:** 11/18 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Re-enable and Fix Deref
     *   ✅ Increment 2: Re-enable and Fix DerefMut
@@ -35,7 +35,7 @@
     *   ✅ Increment 8: Re-enable and Fix Not
     *   ✅ Increment 9: Re-enable and Fix Phantom
     *   ✅ Increment 10: Re-enable and Fix AsMut
-    *   ⚫ Increment 11: Re-enable and Fix AsRef
+    *   ✅ Increment 11: Re-enable and Fix AsRef
     *   ⚫ Increment 12: Re-enable and Fix `derive_tools_meta` trybuild tests
     *   ⚫ Increment 13: Re-enable and Fix `derive_tools` trybuild tests
     *   ⚫ Increment 14: Re-enable and Fix `derive_tools` all tests
@@ -238,7 +238,7 @@
 *   **Goal:** Re-enable the `as_ref_tests` module and fix any compilation errors or test failures related to the `AsRef` derive macro.
 *   **Specification Reference:** N/A
 *   **Steps:**
-    *   Step 1: Uncomment `as_ref_tests` in `module/core/derive_tools/tests/inc/mod.rs`.
+    *   Step 1: Uncomment `as_ref_test` in `module/core/derive_tools/tests/inc/mod.rs`.
     *   Step 2: Create `module/core/derive_tools/tests/inc/as_ref/mod.rs`.
     *   Step 3: Create `module/core/derive_tools/tests/inc/as_ref/only_test/struct_named.rs` for shared test logic.
     *   Step 4: Create `module/core/derive_tools/tests/inc/as_ref/basic_test.rs` and `module/core/derive_tools/tests/inc/as_ref/basic_manual_test.rs` and include shared test logic.
@@ -384,6 +384,8 @@
 *   Debugging procedural macros often requires inspecting generated code and comparing it to expected manual implementations.
 
 ### Changelog
+*   [Increment 11 | 2025-07-05 09:13 UTC] Re-ran tests after correcting `as_ref` test files.
+*   feat(derive_tools): Re-enable and fix AsMut derive macro tests
 *   [Increment 10 | 2025-07-05 09:10 UTC] Re-ran tests after removing duplicate `AsMut` import.
 *   [Increment 10 | 2025-07-05 09:09 UTC] Corrected `include!` paths in `as_mut` test files.
 *   [Increment 10 | 2025-07-05 09:09 UTC] Corrected `include!` paths in `as_mut` test files.

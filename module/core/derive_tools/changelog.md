@@ -69,3 +69,5 @@
 *   [Increment 8 | 2025-07-05 08:59 UTC] Re-enabled and fixed `Not` derive macro, including handling multiple boolean fields and isolating tests.
 
 *   [Increment 9 | 2025-07-05 09:03 UTC] Re-enabled and fixed `Phantom` derive macro, including `PhantomData` implementation for structs and updated tests.
+
+*   feat(derive_tools): Re-enable and fix AsMut derive macro tests
