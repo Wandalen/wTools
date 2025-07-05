@@ -37,9 +37,9 @@ use core::ops::Deref;
 
 // mod basic_test;
 
-// mod as_mut_manual_test;
-// #[ cfg( feature = "derive_as_mut" ) ]
-// mod as_mut_test;
+#[ cfg( feature = "derive_as_mut" ) ]
+#[ path = "as_mut/mod.rs" ]
+mod as_mut_test;
 
 // mod as_ref_manual_test;
 // #[ cfg( feature = "derive_as_ref" ) ]
