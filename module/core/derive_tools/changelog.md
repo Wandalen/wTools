@@ -71,3 +71,5 @@
 *   [Increment 9 | 2025-07-05 09:03 UTC] Re-enabled and fixed `Phantom` derive macro, including `PhantomData` implementation for structs and updated tests.
 
 *   feat(derive_tools): Re-enable and fix AsMut derive macro tests
+
+*   feat(derive_tools): Re-enable and fix AsRef derive macro tests
