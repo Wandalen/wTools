@@ -30,14 +30,15 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
 
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where_punctuated )
   = generic_params::decompose( parsed.generics() );
-  let generics_where = if generics_where_punctuated.is_empty() {
+  let where_clause_owned = if generics_where_punctuated.is_empty() {
     None
   } else {
-    Some( &syn::WhereClause {
+    Some( syn::WhereClause {
       where_token: <syn::token::Where as Default>::default(),
       predicates: generics_where_punctuated.clone(),
     })
   };
+  let generics_where = where_clause_owned.as_ref();
 
   if has_debug
   {
