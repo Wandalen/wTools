@@ -174,7 +174,6 @@ field_name : {field_name:?}",
     impl #generics_impl ::core::ops::Deref for #item_name #generics_ty #generics_where
     {
       type Target = #field_type;
-      #[ inline( always ) ]
       fn deref( &self ) -> & #field_type
       {
         #body
