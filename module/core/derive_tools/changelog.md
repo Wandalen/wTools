@@ -77,3 +77,5 @@
 *   chore(derive_tools_meta): Mark trybuild tests as N/A, as none found
 
 *   fix(derive_tools): Re-enable and fix trybuild tests
+
+*   fix(derive_tools): Re-enable and fix all tests

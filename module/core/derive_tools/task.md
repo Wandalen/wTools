@@ -298,10 +298,12 @@
 *   **Specification Reference:** N/A
 *   **Steps:**
     *   Step 1: Uncomment `all_manual_test` in `module/core/derive_tools/tests/inc/mod.rs`.
-    *   Step 2: Run `cargo test -p derive_tools --test tests` and analyze output.
-    *   Step 3: Fix any compilation errors or test failures.
-    *   Step 4: Perform Increment Verification.
-    *   Step 5: Perform Crate Conformance Check.
+    *   Step 2: Create `module/core/derive_tools/tests/inc/all_manual_test.rs`.
+    *   Step 3: Add `use super::derives::a_id;` to `module/core/derive_tools/tests/inc/only_test/all_manual.rs`.
+    *   Step 4: Run `cargo test -p derive_tools --test tests` and analyze output.
+    *   Step 5: Fix any compilation errors or test failures.
+    *   Step 6: Perform Increment Verification.
+    *   Step 7: Perform Crate Conformance Check.
 *   **Increment Verification:**
     *   Execute `timeout 90 cargo test -p derive_tools --test tests` and ensure `all_manual_test` passes.
 *   **Commit Message:** fix(derive_tools): Re-enable and fix all manual tests
