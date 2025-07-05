@@ -73,3 +73,5 @@
 *   feat(derive_tools): Re-enable and fix AsMut derive macro tests
 
 *   feat(derive_tools): Re-enable and fix AsRef derive macro tests
+
+*   chore(derive_tools_meta): Mark trybuild tests as N/A, as none found
