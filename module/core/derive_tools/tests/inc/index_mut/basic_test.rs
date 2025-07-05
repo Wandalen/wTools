@@ -23,7 +23,7 @@ use core::ops::IndexMut as _;
 
 // IM1.2: Tuple struct with one field
 #[ derive( IndexMut ) ]
-pub struct TupleStruct1( pub i32 );
+pub struct TupleStruct1( #[ index_mut ] pub i32 );
 
 // IM1.3: Tuple struct with multiple fields - should not compile
 // #[ derive( IndexMut ) ]
@@ -33,6 +33,7 @@ pub struct TupleStruct1( pub i32 );
 #[ derive( IndexMut ) ]
 pub struct NamedStruct1
 {
+  #[ index_mut ]
   pub field1 : i32,
 }
 

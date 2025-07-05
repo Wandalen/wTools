@@ -2,8 +2,8 @@ use core::ops::Deref;
 use derive_tools::DerefMut;
 
 #[ allow( dead_code ) ]
-// #[ derive ( DerefMut ) ]
-struct StructTuple( String, i32 );
+#[ derive ( DerefMut ) ]
+struct StructTuple( #[ deref_mut ] String, i32 );
 
 impl Deref for StructTuple
 {

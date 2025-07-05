@@ -21,22 +21,22 @@ impl From< bool > for IsTransparentSimple
   }
 }
 
-// #[ derive( Debug, Clone, Copy, PartialEq ) ]
-// pub struct IsTransparentComplex< 'a, 'b : 'a, T, U : ToString + ?Sized, const N : usize >( &'a T, core::marker::PhantomData< &'b U > )
-// where
-//   'a : 'b,
-//   T : AsRef< U >;
+#[ derive( Debug, Clone, Copy, PartialEq ) ]
+pub struct IsTransparentComplex< 'a, 'b : 'a, T, U : ToString + ?Sized, const N : usize >( &'a T, core::marker::PhantomData< &'b U > )
+where
+  'a : 'b,
+  T : AsRef< U >;
 
-// impl< 'a, 'b : 'a, T, U : ToString + ?Sized, const N : usize > From< &'a T > for IsTransparentComplex< 'a, 'b, T, U, N >
-// where
-//   'a : 'b,
-//   T : AsRef< U >
-// {
-//   fn from( src : &'a T ) -> Self
-//   {
-//     Self( src, core::marker::PhantomData )
-//   }
-// }
+impl< 'a, 'b : 'a, T, U : ToString + ?Sized, const N : usize > From< &'a T > for IsTransparentComplex< 'a, 'b, T, U, N >
+where
+  'a : 'b,
+  T : AsRef< U >
+{
+  fn from( src : &'a T ) -> Self
+  {
+    Self( src, core::marker::PhantomData )
+  }
+}
 
 /// Tests the `From` manual implementation for various struct types.
 #[ test ]

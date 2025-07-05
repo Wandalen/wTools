@@ -209,8 +209,8 @@ clone_dyn = { workspace = true, optional = true, features = [ "clone_dyn_types",
 [dev-dependencies]
 
 derive_tools_meta = { workspace = true, features = ["enabled"] }
+macro_tools = { workspace = true, features = ["enabled", "diag"] }
 test_tools = { workspace = true }
 
 [build-dependencies]
 cfg_aliases = "0.1.1"
-

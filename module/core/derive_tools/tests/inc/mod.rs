@@ -443,35 +443,38 @@ mod phantom_tests
 //   }
 // }
 
-// #[ cfg( feature = "derive_index_mut" ) ]
-// #[ path = "index_mut" ]
-// mod index_mut_tests
-// {
-//   #[ allow( unused_imports ) ]
-//   use super::*;
-//   mod struct_named; 
-//   mod struct_multiple_named_field; 
-//   mod struct_multiple_named_item; 
-//   mod struct_named_manual;
-//   mod struct_multiple_named_manual;
-//   mod struct_tuple;
-//   mod struct_multiple_tuple;
-//   mod struct_tuple_manual;
-//   mod struct_multiple_tuple_manual;
-//   mod struct_collisions;
+#[ cfg( feature = "derive_index_mut" ) ]
+#[ path = "index_mut" ]
+mod index_mut_tests
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
+  mod minimal_test; 
+  // mod basic_test; 
+  // mod struct_named; 
+  // mod struct_multiple_named_field; 
+  // mod struct_multiple_named_item; 
+  // mod basic_manual_test;
+  // mod struct_named_manual;
+  // mod struct_multiple_named_manual;
+  // mod struct_tuple;
+  // mod struct_multiple_tuple;
+  // mod struct_tuple_manual;
+  // mod struct_multiple_tuple_manual;
+  // mod struct_collisions;
 
-//   only_for_terminal_module!
-//   {
-//     #[ test_tools::nightly ]
-//     #[ test ]
-//     fn index_mut_trybuild()
-//     {
+  only_for_terminal_module!
+  {
+    #[ test_tools::nightly ]
+    #[ test ]
+    fn index_mut_trybuild()
+    {
 
-//       println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-//       let t = test_tools::compiletime::TestCases::new();
+      println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+      let t = test_tools::compiletime::TestCases::new();
 
-//       t.compile_fail( "tests/inc/index_mut/compiletime/struct.rs" );
-//       t.compile_fail( "tests/inc/index_mut/compiletime/struct_unit.rs" );
+      t.compile_fail( "tests/inc/index_mut/compiletime/struct.rs" );
+      t.compile_fail( "tests/inc/index_mut/compiletime/struct_unit.rs" );
   //   only_for_terminal_module!
 //   {
 //     #[ test_tools::nightly ]
@@ -487,8 +490,8 @@ mod phantom_tests
 //       t.compile_fail( "tests/inc/deref/compile_fail_complex_struct.rs" ); // T1.4
 //     }
 //   }
-//       t.compile_fail( "tests/inc/index_mut/compiletime/struct_named_empty.rs" );
-//       t.compile_fail( "tests/inc/index_mut/compiletime/enum.rs" );
-//     }
-//   }
-// }
+      t.compile_fail( "tests/inc/index_mut/compiletime/struct_named_empty.rs" );
+      t.compile_fail( "tests/inc/index_mut/compiletime/enum.rs" );
+    }
+  }
+}
