@@ -140,7 +140,6 @@ fn generate
   let debug = format!
   (
     r"
-#[ automatically_derived ]
 impl {} core::ops::Deref for {} {}
 {}
 {{
