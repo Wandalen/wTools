@@ -78,7 +78,7 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
           generics_impl : &generics_impl,
           generics_ty : &generics_ty,
           generics_where,
-          variant : &variant, // Changed line 76
+          variant, // Changed line 76
           original_input : &original_input,
         };
         variant_generate( &context )
