@@ -18,7 +18,7 @@
 ### Progress
 *   **Roadmap Milestone:** M1: Core Derive Macro Restoration
 *   **Primary Editable Crate:** `module/core/derive_tools`
-*   **Overall Progress:** 7/18 increments complete
+*   **Overall Progress:** 8/18 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Establish Initial Baseline
     *   ✅ Increment 2: Fix macro_tools const Generics Bug
@@ -27,7 +27,7 @@
     *   ✅ Increment 5: Re-enable and Fix From
     *   ✅ Increment 6: Re-enable and Fix Index
     *   ✅ Increment 7: Re-enable and Fix IndexMut
-    *   ⚫ Increment 8: Re-enable and Fix Not
+    *   ✅ Increment 8: Re-enable and Fix Not
     *   ⚫ Increment 9: Re-enable and Fix Phantom
     *   ⚫ Increment 10: Re-enable and Fix AsMut
     *   ⚫ Increment 11: Re-enable and Fix AsRef
@@ -198,7 +198,10 @@
 *   **Specification Reference:** N/A
 *   **Steps:**
     *   Uncomment `not_tests` in `module/core/derive_tools/tests/inc/mod.rs`.
-    *   Fix compilation errors and ensure correct behavior for `Not` derive.
+    *   Create `module/core/derive_tools/tests/inc/not/only_test/struct_named.rs` with shared test logic.
+    *   Modify `module/core/derive_tools/tests/inc/not/struct_named.rs` to include `only_test/struct_named.rs`.
+    *   Modify `module/core/derive_tools/tests/inc/not/struct_named_manual.rs` to include `only_test/struct_named.rs`.
+    *   Modify `module/core/derive_tools_meta/src/derive/not.rs` to iterate through fields and apply `!` to all boolean fields, copying non-boolean fields as is.
     *   Perform Increment Verification.
     *   Perform Crate Conformance Check.
 *   **Increment Verification:**
@@ -391,3 +394,5 @@
 *   [Increment 7 | 2025-07-05 08:51 UTC] Explicitly imported `IndexMut` in `minimal_test.rs`.
 *   [Increment 7 | 2025-07-05 08:52 UTC] Modified `IndexMut` derive to also implement `Index` trait.
 *   [Increment 7 | 2025-07-05 08:53 UTC] Confirmed all `IndexMut` tests pass after blessing `trybuild` outputs.
+*   [Increment 8 | 2025-07-05 08:54 UTC] Detailed planning for `Not` derive macro.
+*   [Increment 8 | 2025-07-05 08:57 UTC] Uncommented `not_tests` module in `mod.rs` and isolated tests.

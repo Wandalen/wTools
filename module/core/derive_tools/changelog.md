@@ -63,3 +63,5 @@
 *   [2025-07-01] Established initial baseline of test and lint failures for `derive_tools` crate.
 
 *   [2025-07-01] Fixed `macro_tools` `const` generics bug.
+
+*   [Increment 7 | 2025-07-05 08:54 UTC] Re-enabled and fixed `IndexMut` derive macro, including `Index` trait implementation and `trybuild` tests.
