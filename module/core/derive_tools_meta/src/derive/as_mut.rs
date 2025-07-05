@@ -48,7 +48,7 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
           syn::Fields::Unit => return_syn_err!( item.span(), "Expects a structure with one field" ),
       };
 
-      for f in fields.iter()
+      for f in fields
       {
         if attr::has_as_mut( f.attrs.iter() )?
         {
@@ -68,7 +68,7 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       }
       else if fields.len() == 1
       {
-        let f = fields.iter().next().unwrap();
+        let f = fields.iter().next().expect( "Expects a single field to derive AsMut" );
         ( &f.ty, f.ident.as_ref() )
       }
       else
@@ -97,7 +97,7 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
           &generics_impl,
           &generics_ty,
           &generics_where,
-          variant,
+          &variant,
           &original_input,
         )
       }).collect();

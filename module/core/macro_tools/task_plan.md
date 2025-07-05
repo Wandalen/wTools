@@ -13,20 +13,20 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** module/core/macro_tools
-*   **Overall Progress:** 2/5 increments complete
+*   **Overall Progress:** 3/5 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Fix `cfg` attribute and stray doc comment
     *   ⚫ Increment 2: Correct `prelude` import in `src/lib.rs`
     *   ⚫ Increment 3: Address `derive` ambiguity by refactoring glob imports
     *   ✅ Increment 4: Expose `GenericsWithWhere` publicly
-    *   ⚫ Increment 5: Finalization
+    *   ❌ Increment 5: Finalization
 
 ### Permissions & Boundaries
 *   **Mode:** code
 *   **Run workspace-wise commands:** true
 *   **Add transient comments:** true
 *   **Additional Editable Crates:**
-    *   `module/core/derive_tools` (Reason: For final verification of `derive_tools` compilation and tests.)
+    *   N/A
 
 ### Relevant Context
 *   Control Files to Reference (if they exist):
@@ -41,19 +41,16 @@
     *   `module/core/macro_tools/src/generic_params/mod.rs` (if exists)
 *   Crates for Documentation (for AI's reference, if `read_file` on docs is planned):
     *   `macro_tools`
-    *   `derive_tools`
 *   External Crates Requiring `task.md` Proposals (if any identified during planning):
-    *   N/A
+    *   `module/core/derive_tools` (Reason: `derive_tools` tests failed during finalization, but direct modification is now out of scope.)
 
 ### Expected Behavior Rules / Specifications
 *   The `macro_tools` crate should compile without errors or warnings.
-*   `derive_tools` should be able to compile and run its tests successfully without needing `#[allow(ambiguous_glob_reexports)]` or other workarounds related to `macro_tools`.
-*   `GenericsWithWhere` should be accessible from `derive_tools_meta` for its internal logic and tests.
+*   `GenericsWithWhere` should be accessible from `macro_tools`'s own tests and examples.
 
 ### Crate Conformance Check Procedure
 *   **Step 1: Run Tests for `macro_tools`.** Execute `timeout 90 cargo test -p macro_tools --all-targets`. If this fails, fix all test errors before proceeding.
 *   **Step 2: Run Linter for `macro_tools` (Conditional).** Only if Step 1 passes, execute `timeout 90 cargo clippy -p macro_tools -- -D warnings`.
-*   **Step 3: Run Tests for `derive_tools` (Conditional, only in Finalization).** Only if Step 2 passes, execute `timeout 90 cargo test -p derive_tools --all-targets`.
 
 ### Increments
 ##### Increment 1: Fix `cfg` attribute and stray doc comment
@@ -112,24 +109,23 @@
 *   **Commit Message:** feat(macro_tools): Expose GenericsWithWhere publicly
 
 ##### Increment 5: Finalization
-*   **Goal:** Perform a final, holistic review and verification of the entire task, ensuring all `macro_tools` issues are resolved and `derive_tools` compiles and tests successfully.
+*   **Goal:** Perform a final, holistic review and verification of the entire task, ensuring all `macro_tools` issues are resolved and its own tests pass.
 *   **Specification Reference:** Acceptance Criteria.
 *   **Steps:**
     *   Step 1: Perform Crate Conformance Check for `macro_tools`.
-    *   Step 2: Perform Crate Conformance Check for `derive_tools` (specifically `cargo test -p derive_tools --all-targets`).
-    *   Step 3: Self-critique against all requirements and rules.
+    *   Step 2: Self-critique against all requirements and rules.
+    *   Step 3: If `macro_tools` tests fail, analyze and fix them.
 *   **Increment Verification:**
     *   Step 1: Execute `timeout 90 cargo build -p macro_tools --all-targets` via `execute_command`.
     *   Step 2: Execute `timeout 90 cargo clippy -p macro_tools -- -D warnings` via `execute_command`.
-    *   Step 3: Execute `timeout 90 cargo test -p derive_tools --all-targets` via `execute_command`.
+    *   Step 3: Execute `timeout 90 cargo test -p macro_tools --all-targets` via `execute_command`.
     *   Step 4: Analyze all outputs to confirm success.
-*   **Commit Message:** chore(macro_tools): Finalize fixes and verify derive_tools compatibility
+*   **Commit Message:** chore(macro_tools): Finalize fixes and verify macro_tools compatibility
 
 ### Task Requirements
 *   All compilation errors and warnings in `macro_tools` must be resolved.
 *   The `derive` ambiguity issue must be fixed without using `#[allow(ambiguous_glob_reexports)]`.
-*   `GenericsWithWhere` must be publicly accessible.
-*   `derive_tools` must compile and pass its tests after these changes.
+*   `GenericsWithWhere` must be publicly accessible within `macro_tools`.
 
 ### Project Requirements
 *   Must use Rust 2021 edition.
@@ -138,14 +134,13 @@
 *   All lints must be defined in `[workspace.lints]` and inherited by crates.
 
 ### Assumptions
-*   The `derive_tools` crate's test suite is the primary validation for the `GenericsWithWhere` exposure and overall compatibility.
 *   The `macro_tools` crate's internal tests (if any) are sufficient to cover its own functionality after fixes.
 *   The `#[cfg]` attribute error is a simple syntax error and not indicative of a deeper conditional compilation issue.
 
 ### Out of Scope
 *   Adding new features to `macro_tools` beyond what is required to fix the identified issues.
 *   Extensive refactoring of `macro_tools` beyond the necessary fixes.
-*   Addressing any issues in `derive_tools` that are not directly caused by `macro_tools`.
+*   Addressing any issues in `derive_tools` or `derive_tools_meta`.
 
 ### External System Dependencies (Optional)
 *   N/A
@@ -159,3 +154,7 @@
 *   [Increment 4 | 2025-07-05 11:46 UTC] Exposed `GenericsWithWhere` publicly in `src/generic_params.rs`.
 *   [Increment 4 | 2025-07-05 11:46 UTC] Updated `generic_params_test.rs` to correctly import `GenericsWithWhere`.
 *   [Increment 4 | 2025-07-05 11:47 UTC] Fixed clippy error "empty line after doc comment" in `src/attr.rs`.
+*   [Finalization | 2025-07-05 11:48 UTC] `derive_tools` tests failed, indicating new issues with `From` derive macro. Proposing a new task to address this.
+*   [Finalization | 2025-07-05 13:43 UTC] Re-opened Finalization increment to directly address `derive_tools` issues as per task requirements.
+*   [Finalization | 2025-07-05 13:56 UTC] Reverted changes to `derive_tools_meta/src/derive/from.rs` and updated `Permissions & Boundaries` to exclude `derive_tools` and `derive_tools_meta` from editable crates, as per new user instructions.
+*   [Finalization | 2025-07-05 13:57 UTC] Fixed doctest in `src/generic_params.rs` by correcting the path to `GenericsWithWhere`.

@@ -45,16 +45,16 @@ pub fn deref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
         return_syn_err!( item.span(), "Deref cannot be derived for structs with no fields." );
       } else if fields_count == 1 {
         // Single field struct: automatically deref to that field
-        let field = item.fields.iter().next().unwrap();
+        let field = item.fields.iter().next().expect( "Expects a single field to derive Deref" );
         target_field_type = Some( field.ty.clone() );
-        target_field_name = field.ident.clone();
+        target_field_name.clone_from( &field.ident );
       } else {
         // Multi-field struct: require #[deref] attribute on one field
-        for field in item.fields.iter() {
+        for field in &item.fields {
           if attr::has_deref( field.attrs.iter() )? {
             deref_attr_count += 1;
             target_field_type = Some( field.ty.clone() );
-            target_field_name = field.ident.clone();
+            target_field_name.clone_from( &field.ident );
           }
         }
 
@@ -154,8 +154,8 @@ impl {} core::ops::Deref for {} {}
     ",
     qt!{ #generics_impl },
     item_name,
-    generics_ty.to_token_stream().to_string(), // Use generics_ty directly for debug
-    where_clause_tokens.to_string(),
+    generics_ty.to_token_stream(), // Use generics_ty directly for debug
+    where_clause_tokens,
     qt!{ #field_type },
     qt!{ #field_type },
     body,

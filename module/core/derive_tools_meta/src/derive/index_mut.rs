@@ -47,7 +47,7 @@ pub fn index_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::Toke
           syn::Fields::Unit => return_syn_err!( item.span(), "IndexMut can be applied only to a structure with one field" ),
       };
 
-      for f in fields.iter()
+      for f in fields
       {
         if attr::has_index_mut( f.attrs.iter() )?
         {
@@ -67,7 +67,7 @@ pub fn index_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::Toke
       }
       else if fields.len() == 1
       {
-        let f = fields.iter().next().unwrap();
+        let f = fields.iter().next().expect("Expected a single field for IndexMut derive");
         ( &f.ty, f.ident.as_ref() )
       }
       else

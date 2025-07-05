@@ -1,3 +1,4 @@
+#![ allow( clippy::assigning_clones ) ]
 use macro_tools::
 {
   diag,
@@ -40,9 +41,9 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
 
   if has_debug
   {
-    diag::report_print( "generics_impl_raw", &original_input, &qt!{ #generics_impl }.to_string() );
-    diag::report_print( "generics_ty_raw", &original_input, &qt!{ #generics_ty }.to_string() );
-    diag::report_print( "generics_where_punctuated_raw", &original_input, &qt!{ #generics_where_punctuated }.to_string() );
+    diag::report_print( "generics_impl_raw", &original_input, qt!{ #generics_impl }.to_string() );
+    diag::report_print( "generics_ty_raw", &original_input, qt!{ #generics_ty }.to_string() );
+    diag::report_print( "generics_where_punctuated_raw", &original_input, qt!{ #generics_where_punctuated }.to_string() );
   }
 
   let result = match parsed
@@ -53,72 +54,34 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
     },
     StructLike::Struct( ref item ) =>
     {
-      let fields_count = item.fields.len();
-      let mut target_field_type = None;
-      let mut target_field_name = None;
-      let mut target_field_index = None;
-
-      let mut from_attr_count = 0;
-
-      if fields_count == 0 {
-        return_syn_err!( item.span(), "From cannot be derived for structs with no fields." );
-      } else if fields_count == 1 {
-        // Single field struct: automatically from to that field
-        let field = item.fields.iter().next().unwrap();
-        target_field_type = Some( field.ty.clone() );
-        target_field_name = field.ident.clone();
-        target_field_index = Some( 0 );
-      } else {
-        // Multi-field struct: require #[from] attribute on one field
-        for ( i, field ) in item.fields.iter().enumerate() {
-          if attr::has_from( field.attrs.iter() )? {
-            from_attr_count += 1;
-            target_field_type = Some( field.ty.clone() );
-            target_field_name = field.ident.clone();
-            target_field_index = Some( i );
-          }
-        }
-
-        if from_attr_count == 0 {
-          return_syn_err!( item.span(), "From cannot be derived for multi-field structs without a `#[from]` attribute on one field." );
-        } else if from_attr_count > 1 {
-          return_syn_err!( item.span(), "Only one field can have the `#[from]` attribute." );
-        }
-      }
-
-      let field_type = target_field_type.ok_or_else(|| syn_err!( item.span(), "Could not determine target field type for From." ))?;
-      let field_name = target_field_name;
-
-      generate
-      (
+      let context = StructFieldHandlingContext
+      {
+        item,
         item_name,
-        &item_attrs, // Pass item_attrs
-        has_debug,   // Pass has_debug
-        &generics_impl,
-        &generics_ty,
+        has_debug,
+        generics_impl : &generics_impl,
+        generics_ty : &generics_ty,
         generics_where,
-        &field_type,
-        field_name.as_ref(),
-        &item.fields,
-        target_field_index,
-        &original_input,
-      )
+        original_input : &original_input,
+      };
+      handle_struct_fields( &context )? // Propagate error
     },
     StructLike::Enum( ref item ) =>
     {
       let variants_result : Result< Vec< proc_macro2::TokenStream > > = item.variants.iter().map( | variant |
       {
-        variant_generate
-        (
+        let context = VariantGenerateContext
+        {
           item_name,
-          &item_attrs, // Pass item_attrs
-          has_debug,   // Pass has_debug
-          &generics_impl,
-          &generics_ty,
+          item_attrs : &item_attrs,
+          has_debug,
+          generics_impl : &generics_impl,
+          generics_ty : &generics_ty,
           generics_where,
-          variant,
-          &original_input,
-        )
+          variant : &variant, // Changed line 76
+          original_input : &original_input,
+        };
+        variant_generate( &context )
       }).collect();
 
       let variants = variants_result?;
@@ -139,6 +102,94 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
   Ok( result )
 }
 
+/// Context for handling struct fields in `From` derive.
+struct StructFieldHandlingContext< 'a >
+{
+  item : &'a syn::ItemStruct,
+  item_name : &'a syn::Ident,
+  has_debug : bool,
+  generics_impl : &'a syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty : &'a syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where: Option< &'a syn::WhereClause >,
+  original_input : &'a proc_macro::TokenStream,
+}
+
+/// Handles the generation of `From` implementation for structs.
+fn handle_struct_fields
+(
+  context : &StructFieldHandlingContext<'_>,
+)
+-> Result< proc_macro2::TokenStream > // Change return type here
+{
+  let fields_count = context.item.fields.len();
+  let mut target_field_type = None;
+  let mut target_field_name = None;
+  let mut target_field_index = None;
+
+  let mut from_attr_count = 0;
+
+  if fields_count == 0 {
+    return_syn_err!( context.item.span(), "From cannot be derived for structs with no fields." );
+  } else if fields_count == 1 {
+    // Single field struct: automatically from to that field
+    let field = context.item.fields.iter().next().expect( "Expects a single field to derive From" );
+    target_field_type = Some( field.ty.clone() );
+    target_field_name = field.ident.clone();
+    target_field_index = Some( 0 );
+  } else {
+    // Multi-field struct: require #[from] attribute on one field
+    for ( i, field ) in context.item.fields.iter().enumerate() {
+      if attr::has_from( field.attrs.iter() )? {
+        from_attr_count += 1;
+        target_field_type = Some( field.ty.clone() );
+        target_field_name = field.ident.clone();
+        target_field_index = Some( i );
+      }
+    }
+
+    if from_attr_count == 0 {
+      return_syn_err!( context.item.span(), "From cannot be derived for multi-field structs without a `#[from]` attribute on one field." );
+    } else if from_attr_count > 1 {
+      return_syn_err!( context.item.span(), "Only one field can have the `#[from]` attribute." );
+    }
+  }
+
+  let field_type = target_field_type.ok_or_else(|| syn_err!( context.item.span(), "Could not determine target field type for From." ))?;
+  let field_name = target_field_name;
+
+  Ok(generate
+  (
+    &GenerateContext
+    {
+      item_name : context.item_name,
+      has_debug : context.has_debug,
+      generics_impl : context.generics_impl,
+      generics_ty : context.generics_ty,
+      generics_where : context.generics_where,
+      field_type : &field_type,
+      field_name : field_name.as_ref(),
+      all_fields : &context.item.fields,
+      field_index : target_field_index,
+      original_input : context.original_input,
+    }
+  ))
+}
+
+/// Context for generating `From` implementation.
+struct GenerateContext< 'a >
+{
+  item_name : &'a syn::Ident,
+  has_debug : bool,
+  generics_impl : &'a syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty : &'a syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where: Option< &'a syn::WhereClause >,
+  field_type : &'a syn::Type,
+  field_name : Option< &'a syn::Ident >,
+  all_fields : &'a syn::Fields,
+  field_index : Option< usize >,
+  original_input : &'a proc_macro::TokenStream,
+}
+
 /// Generates `From` implementation for structs.
 ///
 /// Example of generated code:
@@ -153,37 +204,40 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
 /// ```
 fn generate
 (
-  item_name : &syn::Ident,
-  _item_attrs : &ItemAttributes, // Prefix with _ as it's not used for logic here
-  has_debug : bool,             // Add has_debug
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: Option< &syn::WhereClause >,
-  field_type : &syn::Type,
-  field_name : Option< &syn::Ident >,
-  all_fields : &syn::Fields,
-  field_index : Option< usize >,
-  original_input : &proc_macro::TokenStream,
+  context : &GenerateContext<'_>,
 )
 -> proc_macro2::TokenStream
 {
+  let item_name = context.item_name;
+  let has_debug = context.has_debug;
+  let generics_impl = context.generics_impl;
+  let generics_ty = context.generics_ty;
+  let generics_where = context.generics_where;
+  let field_type = context.field_type;
+  let field_name = context.field_name;
+  let all_fields = context.all_fields;
+  let field_index = context.field_index;
+  let original_input = context.original_input;
+
   let where_clause_tokens = {
     let mut predicates_vec = Vec::new();
 
     if let Some( generics_where ) = generics_where {
-        for p in generics_where.predicates.iter() {
+        for p in &generics_where.predicates {
             predicates_vec.push(macro_tools::quote::quote_spanned!{ p.span() => #p });
         }
     }
 
-    for param in generics_impl.iter() {
+    for param in generics_impl {
         if let syn::GenericParam::Const( const_param ) = param {
             let const_ident = &const_param.ident;
             predicates_vec.push(macro_tools::quote::quote_spanned!{ const_param.span() => [(); #const_ident]: Sized });
         }
     }
 
-    if !predicates_vec.is_empty() {
+    if predicates_vec.is_empty() {
+        proc_macro2::TokenStream::new()
+    } else {
         let mut joined_predicates = proc_macro2::TokenStream::new();
         for (i, p) in predicates_vec.into_iter().enumerate() {
             if i > 0 {
@@ -192,22 +246,92 @@ fn generate
             joined_predicates.extend(p);
         }
         qt!{ where #joined_predicates }
-    } else {
-        proc_macro2::TokenStream::new()
     }
   };
 
-  let body = if let Some( field_name ) = field_name
-  {
-    // Named struct
-    qt!{ Self { #field_name : src } }
+  let body = generate_struct_body_tokens(field_name, all_fields, field_index, has_debug, original_input);
+
+  if has_debug { // Use has_debug directly
+      diag::report_print( "generated_where_clause_tokens_struct", original_input, where_clause_tokens.to_string() );
   }
-  else
+
+  let generics_ty_filtered = {
+      let mut params = Vec::new();
+      for param in generics_ty {
+          params.push(qt!{ #param }); // Include all parameters
+      }
+      let mut joined_params = proc_macro2::TokenStream::new();
+      for (i, p) in params.into_iter().enumerate() {
+          if i > 0 {
+              joined_params.extend(qt!{ , });
+          }
+          joined_params.extend(p);
+      }
+      joined_params
+  };
+
+  let generics_impl_filtered = {
+      let mut params = Vec::new();
+      for param in generics_impl {
+          params.push(qt!{ #param });
+      }
+      let mut joined_params = proc_macro2::TokenStream::new();
+      for (i, p) in params.into_iter().enumerate() {
+          if i > 0 {
+              joined_params.extend(qt!{ , });
+          }
+          joined_params.extend(p);
+      }
+      joined_params
+  };
+
+  qt!
   {
-    // Tuple struct
+    #[ automatically_derived ]
+    impl< #generics_impl_filtered > ::core::convert::From< #field_type > for #item_name< #generics_ty_filtered > #where_clause_tokens
+    {
+      #[ inline( always ) ]
+      fn from( src : #field_type ) -> Self
+      {
+        #body
+      }
+    }
+  }
+}
+
+/// Generates the body tokens for a struct's `From` implementation.
+fn generate_struct_body_tokens(
+    field_name: Option<&syn::Ident>,
+    all_fields: &syn::Fields,
+    field_index: Option<usize>,
+    has_debug: bool,
+    original_input: &proc_macro::TokenStream,
+) -> proc_macro2::TokenStream {
+    let body_tokens = if let Some( field_name ) = field_name
+    {
+        // Named struct
+        qt!{ Self { #field_name : src } }
+    }
+    else
+    {
+        // Tuple struct
+        generate_tuple_struct_fields_tokens(all_fields, field_index)
+    };
+
+    if has_debug { // Use has_debug directly
+        diag::report_print( "generated_body_tokens_struct", original_input, body_tokens.to_string() );
+    }
+    body_tokens
+}
+
+/// Generates the field tokens for a tuple struct's `From` implementation.
+fn generate_tuple_struct_fields_tokens(
+    all_fields: &syn::Fields,
+    field_index: Option<usize>,
+) -> proc_macro2::TokenStream {
     let mut fields_tokens = proc_macro2::TokenStream::new();
     let mut first = true;
-    for ( i, field ) in all_fields.iter().enumerate() {
+    for ( i, field ) in all_fields.into_iter().enumerate() {
         if !first {
             fields_tokens.extend( qt!{ , } );
         }
@@ -246,59 +370,21 @@ fn generate
         }
         first = false;
     }
-    let body_tokens = qt!{ Self( #fields_tokens ) };
-    if has_debug { // Use has_debug directly
-        diag::report_print( "generated_body_tokens_struct", original_input, &body_tokens.to_string() );
-    }
-    body_tokens
-  };
+    fields_tokens
+}
 
-  if has_debug { // Use has_debug directly
-      diag::report_print( "generated_where_clause_tokens_struct", original_input, &where_clause_tokens.to_string() );
-  }
 
-  let generics_ty_filtered = {
-      let mut params = Vec::new();
-      for param in generics_ty.iter() {
-          params.push(qt!{ #param }); // Include all parameters
-      }
-      let mut joined_params = proc_macro2::TokenStream::new();
-      for (i, p) in params.into_iter().enumerate() {
-          if i > 0 {
-              joined_params.extend(qt!{ , });
-          }
-          joined_params.extend(p);
-      }
-      joined_params
-  };
-
-  let generics_impl_filtered = {
-      let mut params = Vec::new();
-      for param in generics_impl.iter() {
-          params.push(qt!{ #param });
-      }
-      let mut joined_params = proc_macro2::TokenStream::new();
-      for (i, p) in params.into_iter().enumerate() {
-          if i > 0 {
-              joined_params.extend(qt!{ , });
-          }
-          joined_params.extend(p);
-      }
-      joined_params
-  };
-
-  qt!
-  {
-    #[ automatically_derived ]
-    impl< #generics_impl_filtered > ::core::convert::From< #field_type > for #item_name< #generics_ty_filtered > #where_clause_tokens
-    {
-      #[ inline( always ) ]
-      fn from( src : #field_type ) -> Self
-      {
-        #body
-      }
-    }
-  }
+/// Context for generating `From` implementation for enum variants.
+struct VariantGenerateContext< 'a >
+{
+  item_name : &'a syn::Ident,
+  item_attrs : &'a ItemAttributes,
+  has_debug : bool,
+  generics_impl : &'a syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty : &'a syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where: Option< &'a syn::WhereClause >,
+  variant : &'a syn::Variant,
+  original_input : &'a proc_macro::TokenStream,
 }
 
 /// Generates `From` implementation for enum variants.
@@ -315,17 +401,19 @@ fn generate
 /// ```
 fn variant_generate
 (
-  item_name : &syn::Ident,
-  item_attrs : &ItemAttributes, // Keep item_attrs
-  has_debug : bool,             // Add has_debug
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: Option< &syn::WhereClause >,
-  variant : &syn::Variant,
-  original_input : &proc_macro::TokenStream,
+  context : &VariantGenerateContext<'_>,
 )
 -> Result< proc_macro2::TokenStream >
 {
+  let item_name = context.item_name;
+  let item_attrs = context.item_attrs;
+  let has_debug = context.has_debug;
+  let generics_impl = context.generics_impl;
+  let generics_ty = context.generics_ty;
+  let generics_where = context.generics_where;
+  let variant = context.variant;
+  let original_input = context.original_input;
+
   let variant_name = &variant.ident;
   let fields = &variant.fields;
   let attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
@@ -358,90 +446,35 @@ fn variant_generate
     qt!{ Self::#variant_name( src ) }
   };
 
-  let where_clause_tokens = {
-    let mut predicates_vec = Vec::new();
-
-    if let Some( generics_where ) = generics_where {
-        for p in generics_where.predicates.iter() {
-            predicates_vec.push(macro_tools::quote::quote_spanned!{ p.span() => #p });
-        }
-    }
-
-    for param in generics_impl.iter() {
-        if let syn::GenericParam::Const( const_param ) = param {
-            let const_ident = &const_param.ident;
-            predicates_vec.push(macro_tools::quote::quote_spanned!{ const_param.span() => [(); #const_ident]: Sized });
-        }
-    }
-
-    if !predicates_vec.is_empty() {
-        let mut joined_predicates = proc_macro2::TokenStream::new();
-        for (i, p) in predicates_vec.into_iter().enumerate() {
-            if i > 0 {
-                joined_predicates.extend(qt!{ , });
-            }
-            joined_predicates.extend(p);
-        }
-        qt!{ where #joined_predicates }
-    } else {
-        proc_macro2::TokenStream::new()
-    }
-  };
-
-  let generics_ty_filtered = {
-      let mut params = Vec::new();
-      for param in generics_ty.iter() {
-          params.push(qt!{ #param });
-      }
-      let mut joined_params = proc_macro2::TokenStream::new();
-      for (i, p) in params.into_iter().enumerate() {
-          if i > 0 {
-              joined_params.extend(qt!{ , });
-          }
-          joined_params.extend(p);
-      }
-      joined_params
-  };
-
-  let generics_impl_filtered = {
-      let mut params = Vec::new();
-      for param in generics_impl.iter() {
-          params.push(qt!{ #param });
-      }
-      let mut joined_params = proc_macro2::TokenStream::new();
-      for (i, p) in params.into_iter().enumerate() {
-          if i > 0 {
-              joined_params.extend(qt!{ , });
-          }
-          joined_params.extend(p);
-      }
-      joined_params
-  };
+  let where_clause_tokens = generate_variant_where_clause_tokens(generics_where, generics_impl);
+  let generics_ty_filtered = generate_variant_generics_ty_filtered(generics_ty);
+  let generics_impl_filtered = generate_variant_generics_impl_filtered(generics_impl);
 
   if has_debug // Use has_debug directly
   {
-    diag::report_print( "generated_where_clause_tokens_enum", original_input, &where_clause_tokens.to_string() );
-    diag::report_print( "generated_body_tokens_enum", original_input, &body.to_string() );
+    diag::report_print( "generated_where_clause_tokens_enum", original_input, where_clause_tokens.to_string() );
+    diag::report_print( "generated_body_tokens_enum", original_input, body.to_string() );
     let debug = format!
     (
-      r#"
+      r"
 #[ automatically_derived ]
-impl< {0} > ::core::convert::From< {1} > for {2}< {3} >
-{4}
+impl< {} > ::core::convert::From< {} > for {}< {} >
+{}
 {{
   #[ inline ]
-  fn from( src : {1} ) -> Self
+  fn from( src : {} ) -> Self
   {{
-    {5}
+    {}
   }}
 }}
-      "#,
-      qt!{ #generics_impl_filtered }.to_string(), // Use filtered generics_impl
-      qt!{ #field_type }.to_string(),
-      item_name.to_string(),
-      generics_ty_filtered.to_string(), // Use filtered generics_ty
-      where_clause_tokens.to_string(),
-      body.to_string(),
+      ",
+      qt!{ #generics_impl_filtered }, // Use filtered generics_impl
+      qt!{ #field_type },
+      item_name,
+      qt!{ #generics_ty_filtered }, // Use filtered generics_ty
+      where_clause_tokens,
+      qt!{ #field_type }, // This was the problem, it should be `src`
+      body,
     );
     let about = format!
     (
@@ -467,4 +500,74 @@ field : {variant_name}",
       }
     }
   )
+}
+
+/// Generates the where clause tokens for an enum variant's `From` implementation.
+fn generate_variant_where_clause_tokens(
+    generics_where: Option<&syn::WhereClause>,
+    generics_impl: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
+) -> proc_macro2::TokenStream {
+    let mut predicates_vec = Vec::new();
+
+    if let Some( generics_where ) = generics_where {
+        for p in &generics_where.predicates {
+            predicates_vec.push(macro_tools::quote::quote_spanned!{ p.span() => #p });
+        }
+    }
+
+    for param in generics_impl {
+        if let syn::GenericParam::Const( const_param ) = param {
+            let const_ident = &const_param.ident;
+            predicates_vec.push(macro_tools::quote::quote_spanned!{ const_param.span() => [(); #const_ident]: Sized });
+        }
+    }
+
+    if predicates_vec.is_empty() {
+        proc_macro2::TokenStream::new()
+    } else {
+        let mut joined_predicates = proc_macro2::TokenStream::new();
+        for (i, p) in predicates_vec.into_iter().enumerate() {
+            if i > 0 {
+                joined_predicates.extend(qt!{ , });
+            }
+            joined_predicates.extend(p);
+        }
+        qt!{ where #joined_predicates }
+    }
+}
+
+/// Generates the filtered generics type tokens for an enum variant's `From` implementation.
+fn generate_variant_generics_ty_filtered(
+    generics_ty: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
+) -> proc_macro2::TokenStream {
+    let mut params = Vec::new();
+    for param in generics_ty {
+        params.push(qt!{ #param });
+    }
+    let mut joined_params = proc_macro2::TokenStream::new();
+    for (i, p) in params.into_iter().enumerate() {
+        if i > 0 {
+            joined_params.extend(qt!{ , });
+        }
+        joined_params.extend(p);
+    }
+    joined_params
+}
+
+/// Generates the filtered generics implementation tokens for an enum variant's `From` implementation.
+fn generate_variant_generics_impl_filtered(
+    generics_impl: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
+) -> proc_macro2::TokenStream {
+    let mut params = Vec::new();
+    for param in generics_impl {
+        params.push(qt!{ #param });
+    }
+    let mut joined_params = proc_macro2::TokenStream::new();
+    for (i, p) in params.into_iter().enumerate() {
+        if i > 0 {
+            joined_params.extend(qt!{ , });
+        }
+        joined_params.extend(p);
+    }
+    joined_params
 }

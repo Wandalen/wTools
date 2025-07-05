@@ -46,16 +46,16 @@ pub fn deref_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::Toke
         return_syn_err!( item.span(), "DerefMut cannot be derived for structs with no fields." );
       } else if fields_count == 1 {
         // Single field struct: automatically deref_mut to that field
-        let field = item.fields.iter().next().unwrap();
+        let field = item.fields.iter().next().expect( "Expects a single field to derive DerefMut" );
         target_field_type = Some( field.ty.clone() );
-        target_field_name = field.ident.clone();
+        target_field_name.clone_from( &field.ident );
       } else {
         // Multi-field struct: require #[deref_mut] attribute on one field
-        for field in item.fields.iter() {
+        for field in &item.fields {
           if attr::has_deref_mut( field.attrs.iter() )? {
             deref_mut_attr_count += 1;
             target_field_type = Some( field.ty.clone() );
-            target_field_name = field.ident.clone();
+            target_field_name.clone_from( &field.ident );
           }
         }
 

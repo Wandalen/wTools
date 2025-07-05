@@ -20,7 +20,7 @@ mod private
   /// Usage:
   ///
   /// ```
-  /// let parsed_generics : macro_tools::GenericsWithWhere
+  /// let parsed_generics : macro_tools::generic_params::GenericsWithWhere
   /// = syn::parse_str( "< T : Clone, U : Default = Default1 > where T : Default" ).unwrap();
   /// assert!( parsed_generics.generics.params.len() == 2 );
   /// assert!( parsed_generics.generics.where_clause.is_some() );
