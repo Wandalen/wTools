@@ -2,7 +2,7 @@ use macro_tools::
 {
   diag,
   generic_params,
-  item_struct,
+  // item_struct, // Removed unused import
   struct_like::StructLike,
   Result,
   qt,
@@ -38,16 +38,52 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     },
     StructLike::Struct( ref item ) =>
     {
-      let field_type = item_struct::first_field_type( item )?;
-      let field_name = item_struct::first_field_name( item ).ok().flatten();
+      let mut field_type = None;
+      let mut field_name = None;
+      let mut found_field = false;
+
+      let fields = match &item.fields {
+          syn::Fields::Named(fields) => &fields.named,
+          syn::Fields::Unnamed(fields) => &fields.unnamed,
+          syn::Fields::Unit => return_syn_err!( item.span(), "Expects a structure with one field" ),
+      };
+
+      for f in fields.iter()
+      {
+        if attr::has_as_mut( f.attrs.iter() )?
+        {
+          if found_field
+          {
+            return_syn_err!( f.span(), "Multiple `#[as_mut]` attributes are not allowed" );
+          }
+          field_type = Some( &f.ty );
+          field_name = f.ident.as_ref();
+          found_field = true;
+        }
+      }
+
+      let ( field_type, field_name ) = if let Some( ft ) = field_type
+      {
+        ( ft, field_name )
+      }
+      else if fields.len() == 1
+      {
+        let f = fields.iter().next().unwrap();
+        ( &f.ty, f.ident.as_ref() )
+      }
+      else
+      {
+        return_syn_err!( item.span(), "Expected `#[as_mut]` attribute on one field or a single-field struct" );
+      };
+
       generate
       (
         item_name,
         &generics_impl,
         &generics_ty,
         &generics_where,
-        &field_type,
-        field_name.as_ref(),
+        field_type,
+        field_name,
       )
     },
     StructLike::Enum( ref item ) =>
@@ -91,10 +127,10 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
 /// impl AsMut< bool > for IsTransparent
 /// {
 ///   fn as_mut( &mut self ) -> &mut bool
-///   {
-///     &mut self.0
-///   }
-/// }
+/// ///   {
+/// ///     &mut self.0
+/// ///   }
+/// /// }
 /// ```
 fn generate
 (
@@ -139,10 +175,10 @@ fn generate
 /// impl AsMut< i32 > for MyEnum
 /// {
 ///   fn as_mut( &mut self ) -> &mut i32
-///   {
-///     &mut self.0
-///   }
-/// }
+/// ///   {
+/// ///     &mut self.0
+/// ///   }
+/// /// }
 /// ```
 fn variant_generate
 (

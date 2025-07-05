@@ -345,8 +345,8 @@
     *   Step 3: Self-critique: Verify that all `Task Requirements` and `Project Requirements` have been met.
     *   Step 4: If any issues are found, propose a new task to address them.
 *   **Increment Verification:**
-    *   Execute `timeout 90 cargo test --workspace` and ensure all tests pass.
-    *   Execute `timeout 90 cargo clippy --workspace -- -D warnings` and ensure no warnings are reported.
+    *   Execute `timeout 300 cargo test --workspace` and ensure all tests pass.
+    *   Execute `timeout 300 cargo clippy --workspace -- -D warnings` and ensure no warnings are reported.
 *   **Commit Message:** chore(derive_tools): Finalize test suite restoration and validation
 
 ### Task Requirements

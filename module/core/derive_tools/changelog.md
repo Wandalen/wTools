@@ -85,3 +85,5 @@
 *   fix(derive_tools): Re-enable and fix basic tests
 
 *   fix(derive_tools): Re-enable and fix basic manual tests
+
+*   Restored and validated the entire test suite for `derive_tools` crate.

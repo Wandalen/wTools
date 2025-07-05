@@ -2,7 +2,6 @@ use macro_tools::
 {
   diag,
   generic_params,
-  item_struct,
   struct_like::StructLike,
   Result,
   qt,
@@ -10,6 +9,7 @@ use macro_tools::
   syn,
   proc_macro2,
   return_syn_err,
+  syn_err,
   Spanned,
 };
 
@@ -37,8 +37,38 @@ pub fn deref_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::Toke
     },
     StructLike::Struct( ref item ) =>
     {
-      let field_type = item_struct::first_field_type( item )?;
-      let field_name = item_struct::first_field_name( item ).ok().flatten();
+      let fields_count = item.fields.len();
+      let mut target_field_type = None;
+      let mut target_field_name = None;
+      let mut deref_mut_attr_count = 0;
+
+      if fields_count == 0 {
+        return_syn_err!( item.span(), "DerefMut cannot be derived for structs with no fields." );
+      } else if fields_count == 1 {
+        // Single field struct: automatically deref_mut to that field
+        let field = item.fields.iter().next().unwrap();
+        target_field_type = Some( field.ty.clone() );
+        target_field_name = field.ident.clone();
+      } else {
+        // Multi-field struct: require #[deref_mut] attribute on one field
+        for field in item.fields.iter() {
+          if attr::has_deref_mut( field.attrs.iter() )? {
+            deref_mut_attr_count += 1;
+            target_field_type = Some( field.ty.clone() );
+            target_field_name = field.ident.clone();
+          }
+        }
+
+        if deref_mut_attr_count == 0 {
+          return_syn_err!( item.span(), "DerefMut cannot be derived for multi-field structs without a `#[deref_mut]` attribute on one field." );
+        } else if deref_mut_attr_count > 1 {
+          return_syn_err!( item.span(), "Only one field can have the `#[deref_mut]` attribute." );
+        }
+      }
+
+      let field_type = target_field_type.ok_or_else(|| syn_err!( item.span(), "Could not determine target field type for DerefMut." ))?;
+      let field_name = target_field_name;
+
       generate
       (
         item_name,
@@ -98,9 +128,8 @@ fn generate
 
   qt!
   {
-    use core::ops;
     #[ automatically_derived ]
-    impl< #generics_impl > ops::DerefMut for #item_name< #generics_ty >
+    impl #generics_impl ::core::ops::DerefMut for #item_name #generics_ty
     where
       #generics_where
     {
