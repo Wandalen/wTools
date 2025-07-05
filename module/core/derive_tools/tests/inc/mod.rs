@@ -35,7 +35,7 @@ mod all_manual_test;
 )]
 mod all_test;
 
-// mod basic_test;
+mod basic_test;
 
 #[ cfg( feature = "derive_as_mut" ) ]
 #[ path = "as_mut/mod.rs" ]
@@ -424,7 +424,7 @@ mod index_mut_tests
   #[ allow( unused_imports ) ]
   use super::*;
   mod minimal_test; 
-  // mod basic_test; 
+  mod basic_test; 
   // mod struct_named; 
   // mod struct_multiple_named_field; 
   // mod struct_multiple_named_item; 

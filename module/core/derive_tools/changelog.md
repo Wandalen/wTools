@@ -79,3 +79,5 @@
 *   fix(derive_tools): Re-enable and fix trybuild tests
 
 *   fix(derive_tools): Re-enable and fix all tests
+
+*   fix(derive_tools): Re-enable and fix all manual tests

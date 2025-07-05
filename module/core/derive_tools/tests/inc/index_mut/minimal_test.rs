@@ -1,7 +1,7 @@
 use super::*;
 use test_tools::prelude::*;
 use core::ops::IndexMut as _;
-use derive_tools::IndexMut; // Explicitly import IndexMut
+use derive_tools::IndexMut;
 
 #[ derive( IndexMut ) ]
 pub struct TupleStruct1( #[ index_mut ] pub i32 );

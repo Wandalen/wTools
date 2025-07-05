@@ -14,7 +14,7 @@
 #![ allow( dead_code ) ]
 
 use test_tools::prelude::*;
-use the_module::IndexMut;
+use derive_tools::IndexMut;
 use core::ops::IndexMut as _;
 
 // IM1.1: Unit struct - should not compile

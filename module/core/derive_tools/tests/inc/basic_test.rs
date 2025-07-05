@@ -1,6 +1,7 @@
-
-#[ allow( unused_imports ) ]
+#![ allow( unused_imports ) ]
 use super::*;
+use super::derives::{ tests_impls, tests_index };
+use super::derives::a_id;
 
 //
 
@@ -79,7 +80,7 @@ Display ) ]
   #[ cfg( all( feature = "strum", feature = "derive_strum" ) ) ]
   fn enum_with_strum()
   {
-    use the_module::{ EnumIter, IntoEnumIterator };
+    use strum::{ EnumIter, IntoEnumIterator };
 
     #[ derive( EnumIter, Debug, PartialEq ) ]
     enum Foo
