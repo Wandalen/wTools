@@ -13,7 +13,7 @@
 *   **Primary Editable Crate:** `module/move/unilang_instruction_parser`
 *   **Overall Progress:** 0/4 increments complete
 *   **Increment Status:**
-    *   ⚫ Increment 1: Replicate the Bug with a Test
+    *   ✅ Increment 1: Replicate the Bug with a Test
     *   ⚫ Increment 2: Implement the Parser Fix
     *   ⚫ Increment 3: Verify the Fix and Clean Up
     *   ⚫ Increment 4: Finalization
@@ -21,7 +21,7 @@
 ### Permissions & Boundaries
 *   **Mode:** code
 *   **Run workspace-wise commands:** false
-*   **Add transient comments:** true
+*   **Add transient comments:** false
 *   **Additional Editable Crates:**
     *   None
 
@@ -131,3 +131,5 @@
 
 ### Changelog
 *   [Initial] Plan created to address command parsing bug.
+*   [User Feedback] Updated `Permissions & Boundaries` to set `Add transient comments` to `false`.
+*   [Increment 1 | 2025-07-05 10:33 UTC] Created `tests/command_parsing_tests.rs` and added it to `tests/tests.rs`. Confirmed the new tests fail as expected, replicating the bug.
