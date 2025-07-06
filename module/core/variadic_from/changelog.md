@@ -15,3 +15,5 @@
 *   [Increment 3 | 2025-07-06 16:11 UTC] Implemented core `FromN` and `From<Tuple>` generation.
 
 *   [Increment 4 | 2025-07-06 16:13 UTC] Implemented conditional convenience `FromN` generation.
+
+*   **feat**: Implement and validate new test suite for derive macro.

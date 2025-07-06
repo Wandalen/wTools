@@ -18,14 +18,14 @@
 ### Progress
 *   **Roadmap Milestone:** M1: Core API Implementation
 *   **Primary Editable Crate:** `module/core/variadic_from`
-*   **Overall Progress:** 5/7 increments complete
+*   **Overall Progress:** 6/7 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Audit, Cleanup, and Initial Setup
     *   ✅ Increment 2: Refactor Macro Input Parsing using `macro_tools`
     *   ✅ Increment 3: Implement Core `FromN` and `From<Tuple>` Generation
     *   ✅ Increment 4: Implement Conditional Convenience `FromN` Generation
     *   ✅ Increment 5: Implement and Validate the New Test Suite
-    *   ⚫ Increment 6: Implement Compile-Fail Tests
+    *   ✅ Increment 6: Implement Compile-Fail Tests
     *   ⚫ Increment 7: Finalization
 
 ### Permissions & Boundaries
@@ -108,7 +108,7 @@
 *   **Specification Reference:** `spec.md` v1.1 - "Core `FromN` Implementations", "Standard `From` Trait Integration"
 *   **Steps:**
     *   Step 1: Implement `generate_from_n_impls` function in `module/core/variadic_from_meta/src/lib.rs` to generate `From1`, `From2`, and `From3` trait implementations based on the number of fields.
-    *   Step 2: Implement `generate_from_tuple_impl` function in `module/core/variadic_from_meta/src/lib.rs` to generate `From<T>` (for 1 field) or `From<(T1, ..., TN)>` (for 2-3 fields) implementations, delegating to the respective `fromN` methods.
+    *   Step 2: Implement `generate_from_tuple_impl` function in `module/core/variadic_from_meta/src/lib.rs` to generate `From<T>` (for 1 field) or `From<(T1, ..., TN)>` (for 2-3 fields) inplementations, delegating to the respective `fromN` methods.
     *   Step 3: Integrate these new functions into `variadic_from_derive` in `module/core/variadic_from_meta/src/lib.rs`.
     *   Step 4: Perform Increment Verification.
     *   Step 5: Perform Crate Conformance Check.
@@ -151,8 +151,9 @@
     *   Step 1: Add `trybuild` as a dev-dependency to `module/core/variadic_from/Cargo.toml`.
     *   Step 2: Create a new test file (e.g., `module/core/variadic_from/tests/compile_fail.rs`) for `trybuild` tests.
     *   Step 3: Implement compile-fail test cases for structs with 0 fields, >3 fields, and `from!` macro with too many arguments.
-    *   Step 4: Perform Increment Verification.
-    *   Step 5: Perform Crate Conformance Check.
+    *   Step 4: Move generated `.stderr` files from `module/core/variadic_from/wip/` to `module/core/variadic_from/tests/compile_fail/`.
+    *   Step 5: Perform Increment Verification.
+    *   Step 6: Perform Crate Conformance Check.
 *   **Increment Verification:**
     *   Execute `timeout 90 cargo test -p variadic_from --test compile_fail` via `execute_command` and analyze output to ensure `trybuild` tests pass.
 *   **Commit Message:** test(variadic_from): Implement compile-fail tests for derive macro
@@ -209,6 +210,9 @@
 *   The `macro_tools::typ::is_string` function was not resolved, necessitating a custom `is_type_string` helper.
 
 ### Changelog
+* [Increment 6 | 2025-07-06 16:31 UTC] Refactored `module/core/variadic_from/tests/compile_fail.rs` to use `trybuild` correctly with separate test files.
+* [Increment 6 | 2025-07-06 16:30 UTC] Created `module/core/variadic_from/tests/compile_fail.rs` with compile-fail test cases.
+* [Increment 6 | 2025-07-06 16:30 UTC] Added `trybuild` as a dev-dependency to `module/core/variadic_from/Cargo.toml`.
 * [Increment 5 | 2025-07-06 16:27 UTC] Implemented custom `is_type_string` helper in `variadic_from_meta/src/lib.rs` to replace unresolved `macro_tools::typ::is_string`.
 * [Increment 5 | 2025-07-06 16:25 UTC] Corrected import for `is_string` in `variadic_from_meta/src/lib.rs`.
 * [Increment 5 | 2025-07-06 16:24 UTC] Fixed `E0382` errors in `variadic_from_meta/src/lib.rs` by adding `.clone()` to repeated `String` arguments in generated convenience `From2` implementations.
