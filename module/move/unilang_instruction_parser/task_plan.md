@@ -1,7 +1,7 @@
 # Task Plan: Fix Command Parsing in `unilang_instruction_parser`
 
 ### Goal
-*   To fix a critical bug in `unilang_instruction_parser::Parser` where the command name is incorrectly parsed as a positional argument instead of being placed in `command_path_slices`. This will enable correct command identification in the `unilang` crate.
+*   To fix a critical bug in `unilang_instruction_parser::Parser` where the command name is incorrectly parsed as a positional argument instead of being placed in `command_path_slices`. This will enable correct command identification in the `unilang` crate **without introducing regressions**.
 
 ### Ubiquitous Language (Vocabulary)
 *   **`GenericInstruction`**: The struct that represents a parsed command, containing fields for the command path, named arguments, and positional arguments.
@@ -11,17 +11,17 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/move/unilang_instruction_parser`
-*   **Overall Progress:** 0/4 increments complete
+*   **Overall Progress:** 1/4 increments complete
 *   **Increment Status:**
-    *   ⚫ Increment 1: Replicate the Bug with a Test
-    *   ⚫ Increment 2: Implement the Parser Fix
-    *   ⚫ Increment 3: Verify the Fix and Clean Up
+    *   ✅ Increment 1: Replicate the Bug with a Test
+    *   ⚫ Increment 2: Revert Flawed Fix and Analyze Existing Tests
+    *   ⚫ Increment 3: Implement Robust Parser Fix
     *   ⚫ Increment 4: Finalization
 
 ### Permissions & Boundaries
 *   **Mode:** code
 *   **Run workspace-wise commands:** false
-*   **Add transient comments:** true
+*   **Add transient comments:** false
 *   **Additional Editable Crates:**
     *   None
 
@@ -30,8 +30,11 @@
     *   `./task.md` (The original change proposal)
 *   Files to Include (for AI's reference, if `read_file` is planned):
     *   `src/parser_engine.rs`
+    *   `src/config.rs`
     *   `src/instruction.rs`
     *   `tests/syntactic_analyzer_command_tests.rs`
+    *   `tests/argument_parsing_tests.rs`
+    *   `tests/command_parsing_tests.rs`
 *   Crates for Documentation (for AI's reference, if `read_file` on docs is planned):
     *   None
 *   External Crates Requiring `task.md` Proposals (if any identified during planning):
@@ -41,6 +44,7 @@
 *   Rule 1: Given an input string like `.test.command arg1`, the parser must populate `GenericInstruction.command_path_slices` with `["test", "command"]`.
 *   Rule 2: The first element of the input string, if it starts with a `.` or is a valid identifier, should be treated as the command, not a positional argument.
 *   Rule 3: Positional arguments should only be populated with elements that follow the command.
+*   Rule 4: All existing tests in `argument_parsing_tests.rs` must continue to pass after the fix.
 
 ### Crate Conformance Check Procedure
 *   Step 1: Execute `timeout 90 cargo test -p unilang_instruction_parser --all-targets` via `execute_command`.
@@ -51,48 +55,35 @@
 ### Increments
 ##### Increment 1: Replicate the Bug with a Test
 *   **Goal:** Create a new, failing test case that explicitly demonstrates the incorrect parsing of command paths.
-*   **Specification Reference:** `task.md` section "Problem Statement / Justification".
-*   **Steps:**
-    *   Step 1: Create a new test file `tests/command_parsing_tests.rs`.
-    *   Step 2: Add a test function `parses_command_path_correctly` to the new file.
-    *   Step 3: In the test, use the `Parser` to parse the string `.test.command arg1`.
-    *   Step 4: Assert that the resulting `GenericInstruction` has `command_path_slices` equal to `vec!["test", "command"]`.
-    *   Step 5: Assert that the `positional_arguments` are `vec!["arg1"]` and do not contain the command.
-    *   Step 6: Add the new test file to `tests/tests.rs`.
-    *   Step 7: Perform Increment Verification.
-    *   Step 8: Perform Crate Conformance Check (expecting failure on the new test).
-*   **Increment Verification:**
-    *   Step 1: Execute `timeout 90 cargo test -p unilang_instruction_parser --test command_parsing_tests` via `execute_command`.
-    *   Step 2: Analyze the output to confirm that the `parses_command_path_correctly` test fails with an assertion error related to `command_path_slices` or `positional_arguments`.
+*   **Status:** ✅ **Completed**
 *   **Commit Message:** "test(parser): Add failing test for incorrect command path parsing"
 
-##### Increment 2: Implement the Parser Fix
-*   **Goal:** Modify the parser logic to correctly distinguish command paths from arguments.
+##### Increment 2: Revert Flawed Fix and Analyze Existing Tests
+*   **Goal:** Revert the previous, regression-inducing fix and gain a full understanding of all existing test expectations before attempting a new fix.
+*   **Specification Reference:** N/A
+*   **Steps:**
+    *   Step 1: Use `git restore` to revert the changes made to `src/parser_engine.rs` and `src/config.rs` in the previous attempt.
+    *   Step 2: Read the contents of `tests/argument_parsing_tests.rs` and `tests/syntactic_analyzer_command_tests.rs` to fully understand the expected parsing behavior for all argument types.
+    *   Step 3: Perform Increment Verification.
+*   **Increment Verification:**
+    *   Step 1: Execute `timeout 90 cargo test -p unilang_instruction_parser --all-targets` via `execute_command`.
+    *   Step 2: Analyze the output. Expect the new test `command_parsing_tests` to fail (as the bug is now re-introduced) and all other tests (like `argument_parsing_tests`) to pass. This confirms a successful revert.
+*   **Commit Message:** "revert(parser): Revert flawed fix that introduced regressions"
+
+##### Increment 3: Implement Robust Parser Fix
+*   **Goal:** Modify the parser logic to correctly distinguish command paths from arguments, ensuring all existing tests continue to pass.
 *   **Specification Reference:** `task.md` section "Proposed Solution / Specific Changes".
 *   **Steps:**
-    *   Step 1: Read `src/parser_engine.rs`.
-    *   Step 2: Analyze the parsing logic to identify where the first element is being incorrectly handled.
-    *   Step 3: Modify the logic to check if the first token is a command path. If so, populate `command_path_slices` and consume the token.
-    *   Step 4: Ensure subsequent tokens are correctly parsed as arguments.
+    *   Step 1: Based on the analysis from Increment 2, design a modification to the parsing logic in `src/parser_engine.rs`.
+    *   Step 2: The new logic must correctly identify the command token(s) at the start of the input and populate `command_path_slices`.
+    *   Step 3: The logic must then correctly transition to parsing positional and named arguments without regression.
+    *   Step 4: Implement the changes.
     *   Step 5: Perform Increment Verification.
     *   Step 6: Perform Crate Conformance Check.
 *   **Increment Verification:**
-    *   Step 1: Execute `timeout 90 cargo test -p unilang_instruction_parser --test command_parsing_tests` via `execute_command`.
-    *   Step 2: Analyze the output to confirm the `parses_command_path_correctly` test now passes.
-*   **Commit Message:** "fix(parser): Correctly parse command paths instead of treating them as arguments"
-
-##### Increment 3: Verify the Fix and Clean Up
-*   **Goal:** Ensure the fix works correctly and does not introduce any regressions. Clean up test code.
-*   **Specification Reference:** `task.md` section "Acceptance Criteria".
-*   **Steps:**
-    *   Step 1: Run the full test suite for `unilang_instruction_parser`.
-    *   Step 2: Review existing tests, especially in `tests/syntactic_analyzer_command_tests.rs`, to see if any were implicitly relying on the old, buggy behavior. Refactor them if necessary.
-    *   Step 3: Perform Increment Verification.
-    *   Step 4: Perform Crate Conformance Check.
-*   **Increment Verification:**
     *   Step 1: Execute `timeout 90 cargo test -p unilang_instruction_parser --all-targets` via `execute_command`.
-    *   Step 2: Analyze the output to confirm all tests pass.
-*   **Commit Message:** "refactor(tests): Clean up tests after command parsing fix"
+    *   Step 2: Analyze the output to confirm that **all** tests, including the new `command_parsing_tests` and the existing `argument_parsing_tests`, now pass.
+*   **Commit Message:** "fix(parser): Correctly parse command paths without introducing argument parsing regressions"
 
 ##### Increment 4: Finalization
 *   **Goal:** Perform a final review and verification of the entire task's output.
@@ -131,3 +122,6 @@
 
 ### Changelog
 *   [Initial] Plan created to address command parsing bug.
+*   [User Feedback] Updated `Permissions & Boundaries` to set `Add transient comments` to `false`.
+*   [Increment 1 | 2025-07-05 10:33 UTC] Created `tests/command_parsing_tests.rs` and added it to `tests/tests.rs`. Confirmed the new tests fail as expected, replicating the bug.
+*   [Rollback | 2025-07-05 11:26 UTC] Previous fix in `src/parser_engine.rs` and `src/config.rs` caused widespread test regressions. Reverting changes and re-planning the fix with a more robust approach.
