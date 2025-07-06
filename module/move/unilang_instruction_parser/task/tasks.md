@@ -2,7 +2,7 @@
 
 | Task | Status | Priority | Responsible |
 |---|---|---|---|
-| [`investigate_strs_tools_api_task.md`](./investigate_strs_tools_api_task.md) | Not Started | High | @user |
+| [`fix_command_parsing_task.md`](./fix_command_parsing_task.md) | Not Started | High | @user |
 
 ---
 
