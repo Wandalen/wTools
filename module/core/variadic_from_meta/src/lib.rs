@@ -1,7 +1,6 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/variadic_from_meta/latest/variadic_from_meta/" ) ]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 #![ allow( clippy::doc_markdown ) ] // Added to bypass doc_markdown lint for now
 
 use proc_macro;
@@ -10,9 +9,15 @@ use macro_tools::
   quote,
   syn,
   proc_macro2,
+  struct_like::StructLike,
+  struct_like::FieldOrVariant,
+  generic_params::GenericsRef,
+  syn_err,
+  return_syn_err,
+  typ::*,
 };
 use quote::ToTokens;
-use syn::{ parse_macro_input, DeriveInput, Data, Fields, Type };
+use syn::{ parse_macro_input, DeriveInput, Type, Data, Fields }; // Added Fields import
 
 /// Context for generating `VariadicFrom` implementations.
 struct VariadicFromContext<'a>
@@ -31,26 +36,29 @@ impl<'a> VariadicFromContext<'a>
   {
     let name = &ast.ident;
 
-    let Data::Struct( data ) = &ast.data else
+    let ( field_types, field_names_or_indices, is_tuple_struct ) : ( Vec< &Type >, Vec< proc_macro2::TokenStream >, bool ) = match &ast.data
     {
-      return Err( syn::Error::new_spanned( ast, "VariadicFrom can only be derived for structs." ) );
-    };
-
-    let ( field_types, field_names_or_indices, is_tuple_struct ) : ( Vec< &Type >, Vec< proc_macro2::TokenStream >, bool ) = match &data.fields
-    {
-      Fields::Unnamed( fields ) =>
+      Data::Struct( data ) =>
       {
-        let types = fields.unnamed.iter().map( |f| &f.ty ).collect();
-        let indices = ( 0..fields.unnamed.len() ).map( |i| syn::Index::from( i ).to_token_stream() ).collect();
-        ( types, indices, true )
+        let ( field_types, field_names_or_indices, is_tuple_struct ) = match &data.fields
+        {
+          Fields::Named( fields ) =>
+          {
+            let types = fields.named.iter().map( |f| &f.ty ).collect();
+            let names = fields.named.iter().map( |f| f.ident.as_ref().unwrap().to_token_stream() ).collect();
+            ( types, names, false )
+          },
+          Fields::Unnamed( fields ) =>
+          {
+            let types = fields.unnamed.iter().map( |f| &f.ty ).collect();
+            let indices = ( 0..fields.unnamed.len() ).map( |i| syn::Index::from( i ).to_token_stream() ).collect();
+            ( types, indices, true )
+          },
+          Fields::Unit => return_syn_err!( ast, "VariadicFrom can only be derived for structs with named or unnamed fields." ),
+        };
+        ( field_types, field_names_or_indices, is_tuple_struct )
       },
-      Fields::Named( fields ) =>
-      {
-        let types = fields.named.iter().map( |f| &f.ty ).collect();
-        let names = fields.named.iter().map( |f| f.ident.as_ref().unwrap().to_token_stream() ).collect();
-        ( types, names, false )
-      },
-      Fields::Unit => return Err( syn::Error::new_spanned( ast, "VariadicFrom can only be derived for structs with named or unnamed fields." ) ), // Fixed: match_wildcard_for_single_variants
+      _ => return_syn_err!( ast, "VariadicFrom can only be derived for structs." ),
     };
 
     let num_fields = field_types.len();

@@ -23,4 +23,4 @@ workspace = true
 proc-macro = true
 
 [dependencies]
-macro_tools = { workspace = true, features = ["enabled"] }
+macro_tools = { workspace = true, features = ["enabled", "struct_like", "generic_params", "typ", "diag"] }

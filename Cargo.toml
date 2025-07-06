@@ -657,3 +657,6 @@ default-features = false
 # quote = { version = "~1.0.35", default-features = false, features = [] }
 # syn = { version = "~2.0.52", default-features = false, features = [ "full", "extra-traits" ] } # qqq : xxx : optimize set of features
 # const_format = { version = "0.2.32", default-features = false, features = [] }
+
+# [replace]
+# "macro_tools:0.56.0" = { path = "temp_crates/macro_tools_patched" }

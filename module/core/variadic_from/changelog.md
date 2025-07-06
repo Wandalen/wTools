@@ -7,3 +7,5 @@
     *   Generalized `CONTRIBUTING.md` to be about all crates of the `wTools` repository, including updating the title, removing specific crate paths, and generalizing commit message examples.
 
 *   [2025-07-06] Refactored `variadic_from_meta` to align with spec v1.1.
+
+*   [Increment 1 | 2025-07-06 15:54 UTC] Cleaned up test directory and refactored library structure.
