@@ -11,3 +11,5 @@
 *   [Increment 1 | 2025-07-06 15:54 UTC] Cleaned up test directory and refactored library structure.
 
 *   [Increment 2 | 2025-07-06 16:07 UTC] Refactored macro input parsing using `macro_tools`.
+
+*   [Increment 3 | 2025-07-06 16:11 UTC] Implemented core `FromN` and `From<Tuple>` generation.
