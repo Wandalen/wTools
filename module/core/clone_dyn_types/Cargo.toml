@@ -1,6 +1,6 @@
 [package]
 name = "clone_dyn_types"
-version = "0.31.0"
+version = "0.32.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
