@@ -12,8 +12,6 @@ use macro_tools::
   struct_like::StructLike,
   struct_like::FieldOrVariant,
   generic_params::GenericsRef,
-  syn_err,
-  return_syn_err,
   typ::*,
 };
 use quote::ToTokens;
@@ -40,7 +38,7 @@ impl<'a> VariadicFromContext<'a>
     {
       Data::Struct( data ) =>
       {
-        let ( field_types, field_names_or_indices, is_tuple_struct ) = match &data.fields
+        match &data.fields
         {
           Fields::Named( fields ) =>
           {
@@ -54,11 +52,10 @@ impl<'a> VariadicFromContext<'a>
             let indices = ( 0..fields.unnamed.len() ).map( |i| syn::Index::from( i ).to_token_stream() ).collect();
             ( types, indices, true )
           },
-          Fields::Unit => return_syn_err!( ast, "VariadicFrom can only be derived for structs with named or unnamed fields." ),
-        };
-        ( field_types, field_names_or_indices, is_tuple_struct )
+          Fields::Unit => return Err( syn::Error::new_spanned( ast, "VariadicFrom can only be derived for structs with named or unnamed fields." ) ),
+        }
       },
-      _ => return_syn_err!( ast, "VariadicFrom can only be derived for structs." ),
+      _ => return Err( syn::Error::new_spanned( ast, "VariadicFrom can only be derived for structs." ) ),
     };
 
     let num_fields = field_types.len();
@@ -194,7 +191,7 @@ fn generate_from_n_impls( context : &VariadicFromContext<'_> ) -> proc_macro2::T
 }
 
 /// Generates `From<T>` or `From<(T1, ..., TN)>` trait implementations.
-fn generate_from_trait_impl( context : &VariadicFromContext<'_> ) -> proc_macro2::TokenStream
+fn generate_from_tuple_impl( context : &VariadicFromContext<'_> ) -> proc_macro2::TokenStream
 {
   let mut impls = quote! {};
   let name = context.name;
@@ -364,7 +361,7 @@ pub fn variadic_from_derive( input : proc_macro::TokenStream ) -> proc_macro::To
   }
 
   impls.extend( generate_from_n_impls( &context ) );
-  impls.extend( generate_from_trait_impl( &context ) );
+  impls.extend( generate_from_tuple_impl( &context ) );
   impls.extend( generate_convenience_impls( &context ) );
 
   let result = quote!

@@ -9,3 +9,5 @@
 *   [2025-07-06] Refactored `variadic_from_meta` to align with spec v1.1.
 
 *   [Increment 1 | 2025-07-06 15:54 UTC] Cleaned up test directory and refactored library structure.
+
+*   [Increment 2 | 2025-07-06 16:07 UTC] Refactored macro input parsing using `macro_tools`.
