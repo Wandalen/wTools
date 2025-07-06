@@ -9,7 +9,7 @@ use crate::error::{ ParseError, ErrorKind, SourceLocation };
 use crate::instruction::{ GenericInstruction, Argument };
 use crate::item_adapter::{ classify_split, RichItem, UnilangTokenKind, unescape_string_with_errors };
 use std::collections::HashMap;
-use strs_tools::string::split::SplitType;
+use strs_tools::string::split::{ Split, SplitType, SplitOptionsFormer }; // Added SplitOptionsFormer import
 
 /// The main parser for unilang instructions.
 #[derive(Debug)]
@@ -31,19 +31,7 @@ impl Parser
   #[allow(clippy::missing_errors_doc)]
   pub fn parse_single_str<'input>( &'input self, input : &'input str ) -> Result< Vec< GenericInstruction >, ParseError >
   {
-    let mut rich_items_vec : Vec<RichItem<'input>> = Vec::new();
-    let mut split_iterator = self.options.to_split_options_former( input ).perform();
-
-  #[allow(clippy::while_let_on_iterator)]
-    while let Some( split_item ) = split_iterator.next()
-    {
-      if self.options.whitespace_is_separator && (split_item.typ == SplitType::Delimeted || split_item.typ == SplitType::Delimiter) && split_item.string.trim().is_empty()
-      {
-        continue;
-      }
-      let classified_kind = classify_split( &split_item, &self.options );
-      rich_items_vec.push( RichItem { inner: split_item, segment_idx: None, kind: classified_kind } );
-    }
+    let rich_items_vec = self.tokenize_input( input, None )?;
     self.analyze_items_to_instructions( &rich_items_vec )
   }
 
@@ -55,19 +43,39 @@ impl Parser
 
     for ( seg_idx, segment_str ) in input_segments.iter().enumerate()
     {
-      let mut split_iterator = self.options.to_split_options_former( segment_str ).perform();
-      #[allow(clippy::while_let_on_iterator)]
-      while let Some( split_item ) = split_iterator.next()
-      {
-        if self.options.whitespace_is_separator && split_item.typ == SplitType::Delimeted && split_item.string.trim().is_empty()
-        {
-          continue;
-        }
-        let classified_kind = classify_split( &split_item, &self.options );
-        rich_items_accumulator_vec.push( RichItem { inner: split_item, segment_idx: Some( seg_idx ), kind: classified_kind } );
-      }
+      let segment_rich_items = self.tokenize_input( segment_str, Some( seg_idx ) )?;
+      rich_items_accumulator_vec.extend( segment_rich_items );
     }
     self.analyze_items_to_instructions( &rich_items_accumulator_vec )
+  }
+
+  /// Tokenizes the input string using `strs_tools` and classifies each split item.
+  fn tokenize_input<'input>
+  (
+    &'input self,
+    input : &'input str,
+    segment_idx : Option<usize>,
+  ) -> Result<Vec<RichItem<'input>>, ParseError>
+  {
+    let mut rich_items_vec : Vec<RichItem<'input>> = Vec::new();
+
+    let delimiters_as_str_slice: Vec<&str> = self.options.main_delimiters.iter().map(|s| s.as_str()).collect();
+    let split_options_former = SplitOptionsFormer::new( delimiters_as_str_slice )
+    .src( input )
+    .quoting( true )
+    ;
+    let split_iterator = split_options_former.perform();
+
+    for split_item in split_iterator {
+        // Skip empty delimited strings if whitespace is separator, as strs_tools might return them
+        if self.options.whitespace_is_separator && split_item.typ == SplitType::Delimeted && split_item.string.trim().is_empty() {
+            continue;
+        }
+        let classified_kind = classify_split( &split_item, &self.options );
+        rich_items_vec.push( RichItem { inner: split_item, segment_idx, kind: classified_kind } );
+    }
+
+    Ok(rich_items_vec)
   }
 
   /// Analyzes a stream of `RichItem`s, groups them by `;;` or change in `segment_idx`,
@@ -224,42 +232,58 @@ impl Parser
         }
     }
 
-    // Consume command path segments (identifiers separated by dots)
+    // Consume command path segments
     while items_cursor < significant_items.len() {
         let current_item = significant_items[items_cursor];
-        eprintln!("DEBUG: Loop start. items_cursor: {}, current_item: {:?}", items_cursor, current_item);
+        eprintln!("DEBUG: Command path loop. items_cursor: {}, current_item: {:?}", items_cursor, current_item);
+
+        // Check for named argument delimiter first, as it always terminates command path
+        if let UnilangTokenKind::Delimiter(d) = &current_item.kind {
+            if d == "::" {
+                eprintln!("DEBUG: Named argument delimiter. Breaking command path parsing.");
+                break;
+            }
+        }
 
         if let UnilangTokenKind::Identifier(s) = &current_item.kind {
             command_path_slices.push(s.clone());
             items_cursor += 1; // Consume the identifier
             eprintln!("DEBUG: Added identifier to command_path_slices: {:?}. items_cursor: {}", command_path_slices, items_cursor);
 
-            // After an identifier, expect an optional dot for multi-segment commands
+            // After an identifier, if there are more items, check if the next is a delimiter (space or dot)
+            // or another identifier (for space-separated command path segments).
             if items_cursor < significant_items.len() {
                 let next_item = significant_items[items_cursor];
-                eprintln!("DEBUG: Checking next_item: {:?}", next_item);
-                if let UnilangTokenKind::Delimiter(d) = &next_item.kind {
-                    if d == "." {
-                        items_cursor += 1; // Consume the dot
-                        eprintln!("DEBUG: Consumed dot delimiter. items_cursor: {}", items_cursor);
-                    } else {
-                        // Next item is a delimiter but not a dot (e.g., "::"), so command path ends
-                        eprintln!("DEBUG: Next item is a non-dot delimiter. Breaking command path parsing.");
-                        break;
+                match &next_item.kind {
+                    UnilangTokenKind::Delimiter(d) if d == "." || (self.options.whitespace_is_separator && d.trim().is_empty()) => {
+                        items_cursor += 1; // Consume the delimiter
+                        eprintln!("DEBUG: Consumed command path delimiter '{}'. items_cursor: {}", d, items_cursor);
+                        // Continue loop to expect next identifier
+                    },
+                    UnilangTokenKind::Identifier(_) => {
+                        // Another identifier, means it's a space-separated command path segment.
+                        eprintln!("DEBUG: Identifier followed by another identifier (space-separated command path). Continuing.");
+                        // Do not consume here, let the next loop iteration consume it.
+                    },
+                    _ => {
+                        eprintln!("DEBUG: Non-command-path token after identifier. Breaking command path parsing.");
+                        break; // Any other token type means end of command path
                     }
-                } else {
-                    // Next item is not a delimiter (e.g., an argument), so command path ends
-                    eprintln!("DEBUG: Next item is not a delimiter. Breaking command path parsing.");
-                    break;
                 }
+            }
+            // If no more items, command path ends naturally.
+        } else if let UnilangTokenKind::Delimiter(d) = &current_item.kind {
+            // If the current item is a delimiter (space or dot), skip it and continue.
+            if d == "." || (self.options.whitespace_is_separator && d.trim().is_empty()) {
+                items_cursor += 1; // Consume the delimiter
+                eprintln!("DEBUG: Skipping command path delimiter '{}'. items_cursor: {}", d, items_cursor);
             } else {
-                // End of items, command path ends
-                eprintln!("DEBUG: End of items. Breaking command path parsing.");
+                eprintln!("DEBUG: Non-command-path token. Breaking command path parsing.");
                 break;
             }
         } else {
-            // Not an identifier, so command path ends
-            eprintln!("DEBUG: Current item is not an identifier. Breaking command path parsing.");
+            // Any other token type indicates the end of the command path.
+            eprintln!("DEBUG: Non-command-path token. Breaking command path parsing.");
             break;
         }
     }
@@ -290,54 +314,32 @@ impl Parser
 
 
         if let Some((name_str_ref, name_loc)) = current_named_arg_name_data.take() {
-            match &item.kind {
-                UnilangTokenKind::Identifier(val_s) | UnilangTokenKind::QuotedValue(val_s) => {
-                    let name_key = name_str_ref.to_string();
-                    if self.options.error_on_duplicate_named_arguments && named_arguments.contains_key(&name_key) {
-                        return Err(ParseError{ kind: ErrorKind::Syntax(format!("Duplicate named argument: {name_key}")), location: Some(name_loc.clone()) });
-                    }
-
-                    let value_str_to_unescape = val_s;
-                    let base_loc_for_unescape = if let UnilangTokenKind::QuotedValue(_) = &item.kind {
-                        let (prefix_len, postfix_len) = self.options.quote_pairs.iter()
-                            .find(|(p, _postfix)| item.inner.string.starts_with(*p))
-                            .map_or((0,0), |(p, pf)| (p.len(), pf.len()));
-
-                        match item.source_location() {
-                            SourceLocation::StrSpan { start, end } => SourceLocation::StrSpan {
-                                start: start + prefix_len,
-                                end: end - postfix_len
-                            },
-                            SourceLocation::SliceSegment { segment_index, start_in_segment, end_in_segment } => SourceLocation::SliceSegment {
-                                segment_index,
-                                start_in_segment: start_in_segment + prefix_len,
-                                end_in_segment: end_in_segment - postfix_len
-                            },
-                        }
-                    } else {
-                        item.source_location()
-                    };
-
-                    let final_value = if let UnilangTokenKind::QuotedValue(_) = &item.kind {
-                        unescape_string_with_errors(value_str_to_unescape, &base_loc_for_unescape)?
-                    } else {
-                        value_str_to_unescape.to_string()
-                    };
-
-
-                    named_arguments.insert(name_key.clone(), Argument {
-                        name: Some(name_key),
-                        value: final_value,
-                        name_location: Some(name_loc),
-                        value_location: item.source_location(),
-                    });
-                    items_cursor += 1;
-                }
+            let (value_str_raw, value_loc_raw) = match &item.kind {
+                UnilangTokenKind::Identifier(val_s) => (val_s.as_str(), item.source_location()),
+                UnilangTokenKind::QuotedValue(val_s) => {
+                    // For QuotedValue, the `val_s` already contains the inner content without quotes
+                    (val_s.as_str(), item.source_location())
+                },
                 _ => return Err(ParseError{ kind: ErrorKind::Syntax(format!("Expected value for named argument '{name_str_ref}' but found {:?}", item.kind)), location: Some(item.source_location()) }),
+            };
+
+            let final_value = unescape_string_with_errors(value_str_raw, &value_loc_raw)?;
+
+            let name_key = name_str_ref.to_string();
+            if self.options.error_on_duplicate_named_arguments && named_arguments.contains_key(&name_key) {
+                return Err(ParseError{ kind: ErrorKind::Syntax(format!("Duplicate named argument: {name_key}")), location: Some(name_loc.clone()) });
             }
+
+            named_arguments.insert(name_key.clone(), Argument {
+                name: Some(name_key),
+                value: final_value,
+                name_location: Some(name_loc),
+                value_location: item.source_location(),
+            });
+            items_cursor += 1;
         } else {
             match &item.kind {
-                UnilangTokenKind::Identifier(s_val_owned) | UnilangTokenKind::QuotedValue(s_val_owned) => {
+                UnilangTokenKind::Identifier(_s_val_owned) | UnilangTokenKind::QuotedValue(_s_val_owned) => {
                     if items_cursor + 1 < significant_items.len() &&
                        significant_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter("::".to_string())
                     {
@@ -348,28 +350,14 @@ impl Parser
                         if seen_named_argument && self.options.error_on_positional_after_named {
                              return Err(ParseError{ kind: ErrorKind::Syntax("Positional argument encountered after a named argument.".to_string()), location: Some(item.source_location()) });
                         }
+                        let (value_str_raw, value_loc_raw) = match &item.kind {
+                            UnilangTokenKind::Identifier(val_s) => (val_s.as_str(), item.source_location()),
+                            UnilangTokenKind::QuotedValue(val_s) => (val_s.as_str(), item.source_location()),
+                            _ => unreachable!("Should be Identifier or QuotedValue here"), // Filtered by outer match
+                        };
                         positional_arguments.push(Argument{
                             name: None,
-                            value: if let UnilangTokenKind::QuotedValue(_) = &item.kind {
-                                let (prefix_len, postfix_len) = self.options.quote_pairs.iter()
-                                    .find(|(p, _postfix)| item.inner.string.starts_with(*p))
-                                    .map_or((0,0), |(p, pf)| (p.len(), pf.len()));
-
-                                let base_loc_for_unescape = match item.source_location() {
-                                    SourceLocation::StrSpan { start, end } => SourceLocation::StrSpan {
-                                        start: start + prefix_len,
-                                        end: end - postfix_len
-                                    },
-                                    SourceLocation::SliceSegment { segment_index, start_in_segment, end_in_segment } => SourceLocation::SliceSegment {
-                                        segment_index,
-                                        start_in_segment: start_in_segment + prefix_len,
-                                        end_in_segment: end_in_segment - postfix_len
-                                    },
-                                };
-                                unescape_string_with_errors(s_val_owned, &base_loc_for_unescape)?
-                            } else {
-                                s_val_owned.to_string()
-                            },
+                            value: unescape_string_with_errors(value_str_raw, &value_loc_raw)?,
                             name_location: None,
                             value_location: item.source_location(),
                         });
@@ -378,7 +366,7 @@ impl Parser
                 }
                 UnilangTokenKind::Unrecognized(_s) => { // Removed `if s_val_owned.starts_with("--")`
                     // Treat as a positional argument if it's not a delimiter
-                    if !item.inner.string.trim().is_empty() && !self.options.main_delimiters.contains(&item.inner.string) {
+                    if !item.inner.string.trim().is_empty() && !self.options.main_delimiters.iter().any(|d| d == item.inner.string) {
                         if seen_named_argument && self.options.error_on_positional_after_named {
                              return Err(ParseError{ kind: ErrorKind::Syntax("Positional argument encountered after a named argument.".to_string()), location: Some(item.source_location()) });
                         }
