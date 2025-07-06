@@ -13,9 +13,9 @@ Systematically refactor the `variadic_from` and `variadic_from_meta` crates to b
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/variadic_from`
-*   **Overall Progress:** 0/7 increments complete
+*   **Overall Progress:** 1/7 increments complete
 *   **Increment Status:**
-    *   ⚫ Increment 1: Audit, Cleanup, and Initial Setup
+    *   ✅ Increment 1: Audit, Cleanup, and Initial Setup
     *   ⚫ Increment 2: Refactor Macro Input Parsing using `macro_tools`
     *   ⚫ Increment 3: Implement Core `FromN` and `From<Tuple>` Generation
     *   ⚫ Increment 4: Implement Conditional Convenience `FromN` Generation
@@ -61,17 +61,21 @@ Systematically refactor the `variadic_from` and `variadic_from_meta` crates to b
 *   **Goal:** Establish a clean baseline by removing outdated test files and ensuring the project compiles, even if tests fail.
 *   **Specification Reference:** `spec.md` Section 6.6 (Test Organization)
 *   **Steps:**
-    1.  Use `list_files` to inspect the `module/core/variadic_from/tests/inc/` directory.
-    2.  Delete all existing test files inside `module/core/variadic_from/tests/inc/` except for `mod.rs` and the `compile_fail` directory. Specifically, delete `only_test/`, `derive_test.rs`, `variadic_from_derive_test.rs`, `variadic_from_manual_test.rs`, `variadic_from_only_test.rs`.
-    3.  Read `module/core/variadic_from/tests/inc/mod.rs`.
-    4.  Clear the contents of `mod.rs`, leaving only `use super::*;` and `use test_tools::exposed::*;`.
-    5.  Read `module/core/variadic_from/src/lib.rs` and `module/core/variadic_from/src/variadic.rs`.
-    6.  Move the entire `mod variadic { ... }` block from `lib.rs` to a new file `src/variadic.rs`.
-    7.  In `src/lib.rs`, replace the inline module with `pub mod variadic;`.
-    8.  In `src/variadic.rs`, add `use super::*;` at the top.
-    9.  In `src/variadic.rs`, inside the `from!` macro, change `$crate::variadic::` to `::variadic_from::variadic::` to make it callable from outside the crate.
+    1.  Use `list_files` recursively on `module/core/variadic_from/tests/inc/` to confirm the existence of files to be deleted.
+    2.  Delete the `only_test` directory using `execute_command` with `git rm -r module/core/variadic_from/tests/inc/only_test`.
+    3.  Delete `derive_test.rs` using `execute_command` with `git rm module/core/variadic_from/tests/inc/derive_test.rs`. If it doesn't exist, ignore the error.
+    4.  Delete `variadic_from_derive_test.rs` using `execute_command` with `git rm module/core/variadic_from/tests/inc/variadic_from_derive_test.rs`.
+    5.  Delete `variadic_from_manual_test.rs` using `execute_command` with `git rm module/core/variadic_from/tests/inc/variadic_from_manual_test.rs`.
+    6.  Delete `variadic_from_only_test.rs` using `execute_command` with `git rm module/core/variadic_from/tests/inc/variadic_from_only_test.rs`.
+    7.  Use `write_to_file` to clear the contents of `module/core/variadic_from/tests/inc/mod.rs`, leaving only `use super::*;\nuse test_tools::exposed::*;`.
+    8.  Read the content of `module/core/variadic_from/src/lib.rs`.
+    9.  Extract the `mod variadic { ... }` block from the content of `lib.rs`.
+    10. Create a new file `module/core/variadic_from/src/variadic.rs` and write the extracted `mod variadic` block into it, adding `use super::*;` at the top.
+    11. In the `from!` macro definition within `src/variadic.rs`, replace `$crate::variadic::` with `::variadic_from::variadic::`.
+    12. Update `module/core/variadic_from/src/lib.rs` to replace the inline module with `pub mod variadic;`.
+    13. Perform Increment Verification.
 *   **Increment Verification:**
-    *   Execute `timeout 90 cargo build --workspace`. The build should succeed, even if there are warnings about unused code.
+    *   Execute `timeout 90 cargo build -p variadic_from -p variadic_from_meta`. The build must succeed. Analyze output for any errors.
 *   **Commit Message:** `chore(variadic_from): Clean up test directory and refactor lib structure`
 
 ##### Increment 2: Refactor Macro Input Parsing using `macro_tools`
@@ -220,3 +224,4 @@ This sequence should be followed during **Increment 5**. Each step involves addi
 ### Changelog
 *   [New Plan | 2025-07-06 15:41 UTC] Created a new, more detailed plan to address spec compliance, test failures, and explicit `macro_tools` usage.
 *   [Plan Update | 2025-07-06 16:00 UTC] Added a detailed, phased testing sequence to Increment 5 to ensure a methodical and robust validation process.
+*   [Increment 1 | 2025-07-06 15:53 UTC] Cleaned up test directory and refactored library structure.
