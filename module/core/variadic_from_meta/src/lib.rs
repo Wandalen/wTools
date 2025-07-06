@@ -4,6 +4,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 #![ allow( clippy::doc_markdown ) ] // Added to bypass doc_markdown lint for now
 
+use proc_macro;
 use macro_tools::
 {
   quote,
@@ -21,6 +22,7 @@ struct VariadicFromContext<'a>
   field_names_or_indices : Vec<proc_macro2::TokenStream>,
   is_tuple_struct : bool,
   num_fields : usize,
+  generics : &'a syn::Generics,
 }
 
 impl<'a> VariadicFromContext<'a>
@@ -60,6 +62,7 @@ impl<'a> VariadicFromContext<'a>
       field_names_or_indices,
       is_tuple_struct,
       num_fields,
+      generics : &ast.generics,
     })
   }
 
@@ -120,20 +123,21 @@ fn generate_from_n_impls( context : &VariadicFromContext<'_> ) -> proc_macro2::T
   let mut impls = quote! {};
   let name = context.name;
   let num_fields = context.num_fields;
+  let ( impl_generics, ty_generics, where_clause ) = context.generics.split_for_impl();
 
   // Generate new argument names for the `from` function
   let from_fn_args : Vec<proc_macro2::Ident> = (0..num_fields).map(|i| proc_macro2::Ident::new(&format!("__a{}", i + 1), proc_macro2::Span::call_site())).collect();
-  let from_fn_args_ts = from_fn_args.iter().map(|arg| quote! { #arg }).collect::<proc_macro2::TokenStream>();
 
   if num_fields == 1
   {
-    let field_type = &context.field_types[ 0 ]; // Use context.field_types directly
+    let field_type = &context.field_types[ 0 ];
+    let from_fn_arg1 = &from_fn_args[ 0 ];
     let constructor = context.constructor( &from_fn_args );
     impls.extend( quote!
     {
-      impl ::variadic_from::exposed::From1< #field_type > for #name
+      impl #impl_generics ::variadic_from::exposed::From1< #field_type > for #name #ty_generics #where_clause
       {
-        fn from1( #from_fn_args_ts : #field_type ) // Use from_fn_args_ts here
+        fn from1( #from_fn_arg1 : #field_type ) -> Self
         {
           Self #constructor
         }
@@ -142,14 +146,16 @@ fn generate_from_n_impls( context : &VariadicFromContext<'_> ) -> proc_macro2::T
   }
   else if num_fields == 2
   {
-    let field_type1 = &context.field_types[ 0 ]; // Use context.field_types directly
-    let field_type2 = &context.field_types[ 1 ]; // Use context.field_types directly
+    let field_type1 = &context.field_types[ 0 ];
+    let field_type2 = &context.field_types[ 1 ];
+    let from_fn_arg1 = &from_fn_args[ 0 ];
+    let from_fn_arg2 = &from_fn_args[ 1 ];
     let constructor = context.constructor( &from_fn_args );
     impls.extend( quote!
     {
-      impl ::variadic_from::exposed::From2< #field_type1, #field_type2 > for #name
+      impl #impl_generics ::variadic_from::exposed::From2< #field_type1, #field_type2 > for #name #ty_generics #where_clause
       {
-        fn from2( #from_fn_args_ts : #field_type1, a2 : #field_type2 ) // Use from_fn_args_ts here
+        fn from2( #from_fn_arg1 : #field_type1, #from_fn_arg2 : #field_type2 ) -> Self
         {
           Self #constructor
         }
@@ -158,15 +164,18 @@ fn generate_from_n_impls( context : &VariadicFromContext<'_> ) -> proc_macro2::T
   }
   else if num_fields == 3
   {
-    let field_type1 = &context.field_types[ 0 ]; // Use context.field_types directly
-    let field_type2 = &context.field_types[ 1 ]; // Use context.field_types directly
-    let field_type3 = &context.field_types[ 2 ]; // Use context.field_types directly
+    let field_type1 = &context.field_types[ 0 ];
+    let field_type2 = &context.field_types[ 1 ];
+    let field_type3 = &context.field_types[ 2 ];
+    let from_fn_arg1 = &from_fn_args[ 0 ];
+    let from_fn_arg2 = &from_fn_args[ 1 ];
+    let from_fn_arg3 = &from_fn_args[ 2 ];
     let constructor = context.constructor( &from_fn_args );
     impls.extend( quote!
     {
-      impl ::variadic_from::exposed::From3< #field_type1, #field_type2, #field_type3 > for #name
+      impl #impl_generics ::variadic_from::exposed::From3< #field_type1, #field_type2, #field_type3 > for #name #ty_generics #where_clause
       {
-        fn from3( #from_fn_args_ts : #field_type1, a2 : #field_type2, a3 : #field_type3 ) // Use from_fn_args_ts here
+        fn from3( #from_fn_arg1 : #field_type1, #from_fn_arg2 : #field_type2, #from_fn_arg3 : #field_type3 ) -> Self
         {
           Self #constructor
         }
@@ -182,60 +191,68 @@ fn generate_from_trait_impl( context : &VariadicFromContext<'_> ) -> proc_macro2
   let mut impls = quote! {};
   let name = context.name;
   let num_fields = context.num_fields;
+  let ( impl_generics, ty_generics, where_clause ) = context.generics.split_for_impl();
 
   // Generate new argument names for the `from` function
   let from_fn_args : Vec<proc_macro2::Ident> = (0..num_fields).map(|i| proc_macro2::Ident::new(&format!("__a{}", i + 1), proc_macro2::Span::call_site())).collect();
-  let from_fn_args_ts = from_fn_args.iter().map(|arg| quote! { #arg }).collect::<proc_macro2::TokenStream>();
 
   if num_fields == 1
   {
-    let field_type = &context.field_types[ 0 ]; // Use context.field_types directly
-    let from_fn_arg = &from_fn_args[ 0 ];
+    let field_type = &context.field_types[ 0 ];
+    let from_fn_arg1 = &from_fn_args[ 0 ];
     impls.extend( quote!
     {
-      impl From< #field_type > for #name
+      impl #impl_generics From< #field_type > for #name #ty_generics #where_clause
       {
         #[ inline( always ) ]
-        fn from( #from_fn_arg : #field_type ) -> Self
+        fn from( #from_fn_arg1 : #field_type ) -> Self
         {
           // Delegate to From1 trait method
-          Self::from1( #from_fn_arg )
+          Self::from1( #from_fn_arg1 )
         }
       }
     });
   }
   else if num_fields == 2
   {
-    let field_types_iter = context.field_types.iter(); // Fixed: local variable for iterator
-    let tuple_types = quote! { #( #field_types_iter ),* }; // Use field_types_iter here
-    let from_fn_args_pattern = from_fn_args_ts; // Use from_fn_args_ts here
+    let field_type1 = &context.field_types[ 0 ];
+    let field_type2 = &context.field_types[ 1 ];
+    let from_fn_arg1 = &from_fn_args[ 0 ];
+    let from_fn_arg2 = &from_fn_args[ 1 ];
+    let tuple_types = quote! { #field_type1, #field_type2 };
+    let from_fn_args_pattern = quote! { #from_fn_arg1, #from_fn_arg2 };
     impls.extend( quote!
     {
-      impl From< ( #tuple_types ) > for #name
+      impl #impl_generics From< ( #tuple_types ) > for #name #ty_generics #where_clause
       {
         #[ inline( always ) ]
-        fn from( ( #from_fn_args_pattern ) : ( #tuple_types ) ) -> Self // Use from_fn_args_pattern here
+        fn from( ( #from_fn_args_pattern ) : ( #tuple_types ) ) -> Self
         {
           // Delegate to From2 trait method
-          Self::from2( #from_fn_args_pattern )
+          Self::from2( #from_fn_arg1, #from_fn_arg2 )
         }
       }
     });
   }
   else if num_fields == 3
   {
-    let field_types_iter = context.field_types.iter(); // Fixed: local variable for iterator
-    let tuple_types = quote! { #( #field_types_iter ),* }; // Use field_types_iter here
-    let from_fn_args_pattern = from_fn_args_ts; // Use from_fn_args_ts here
+    let field_type1 = &context.field_types[ 0 ];
+    let field_type2 = &context.field_types[ 1 ];
+    let field_type3 = &context.field_types[ 2 ];
+    let from_fn_arg1 = &from_fn_args[ 0 ];
+    let from_fn_arg2 = &from_fn_args[ 1 ];
+    let from_fn_arg3 = &from_fn_args[ 2 ];
+    let tuple_types = quote! { #field_type1, #field_type2, #field_type3 };
+    let from_fn_args_pattern = quote! { #from_fn_arg1, #from_fn_arg2, #from_fn_arg3 };
     impls.extend( quote!
     {
-      impl From< ( #tuple_types ) > for #name
+      impl #impl_generics From< ( #tuple_types ) > for #name #ty_generics #where_clause
       {
         #[ inline( always ) ]
-        fn from( ( #from_fn_args_pattern ) : ( #tuple_types ) ) -> Self // Use from_fn_args_pattern here
+        fn from( ( #from_fn_args_pattern ) : ( #tuple_types ) ) -> Self
         {
           // Delegate to From3 trait method
-          Self::from3( #from_fn_args_pattern )
+          Self::from3( #from_fn_arg1, #from_fn_arg2, #from_fn_arg3 )
         }
       }
     });
@@ -249,17 +266,18 @@ fn generate_convenience_impls( context : &VariadicFromContext<'_> ) -> proc_macr
   let mut impls = quote! {};
   let name = context.name;
   let num_fields = context.num_fields;
+  let ( impl_generics, ty_generics, where_clause ) = context.generics.split_for_impl();
 
   if num_fields == 2
   {
     if context.are_all_field_types_identical()
     {
-      let field_type = &context.field_types[ 0 ]; // Use context.field_types directly
+      let field_type = &context.field_types[ 0 ];
       let from_fn_arg = proc_macro2::Ident::new( "__a1", proc_macro2::Span::call_site() );
       let constructor = context.constructor_uniform( &from_fn_arg );
       impls.extend( quote!
       {
-        impl ::variadic_from::exposed::From1< #field_type > for #name
+        impl #impl_generics ::variadic_from::exposed::From1< #field_type > for #name #ty_generics #where_clause
         {
           fn from1( #from_fn_arg : #field_type ) -> Self
           {
@@ -271,7 +289,7 @@ fn generate_convenience_impls( context : &VariadicFromContext<'_> ) -> proc_macr
   }
   else if num_fields == 3
   {
-    let field_type1 = &context.field_types[ 0 ]; // Use context.field_types directly
+    let field_type1 = &context.field_types[ 0 ];
     let from_fn_arg1 = proc_macro2::Ident::new( "__a1", proc_macro2::Span::call_site() );
     let constructor_uniform_all = context.constructor_uniform( &from_fn_arg1 );
 
@@ -279,7 +297,7 @@ fn generate_convenience_impls( context : &VariadicFromContext<'_> ) -> proc_macr
     {
       impls.extend( quote!
       {
-        impl ::variadic_from::exposed::From1< #field_type1 > for #name
+        impl #impl_generics ::variadic_from::exposed::From1< #field_type1 > for #name #ty_generics #where_clause
         {
           fn from1( #from_fn_arg1 : #field_type1 ) -> Self
           {
@@ -289,7 +307,8 @@ fn generate_convenience_impls( context : &VariadicFromContext<'_> ) -> proc_macr
       });
     }
 
-    let field_type2 = &context.field_types[ 1 ]; // Use context.field_types directly
+    let field_type1 = &context.field_types[ 0 ];
+    let field_type2 = &context.field_types[ 1 ];
     let from_fn_arg1 = proc_macro2::Ident::new( "__a1", proc_macro2::Span::call_site() );
     let from_fn_arg2 = proc_macro2::Ident::new( "__a2", proc_macro2::Span::call_site() );
     let constructor_uniform_last_two = if context.is_tuple_struct {
@@ -305,7 +324,7 @@ fn generate_convenience_impls( context : &VariadicFromContext<'_> ) -> proc_macr
     {
       impls.extend( quote!
       {
-        impl ::variadic_from::exposed::From2< #field_type1, #field_type2 > for #name
+        impl #impl_generics ::variadic_from::exposed::From2< #field_type1, #field_type2 > for #name #ty_generics #where_clause
         {
           fn from2( #from_fn_arg1 : #field_type1, #from_fn_arg2 : #field_type2 ) -> Self
           {
