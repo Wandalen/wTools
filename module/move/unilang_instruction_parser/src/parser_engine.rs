@@ -9,7 +9,7 @@ use crate::error::{ ParseError, ErrorKind, SourceLocation };
 use crate::instruction::{ GenericInstruction, Argument };
 use crate::item_adapter::{ classify_split, RichItem, UnilangTokenKind, unescape_string_with_errors };
 use std::collections::HashMap;
-use strs_tools::string::split::{ SplitType, SplitOptionsFormer };
+use strs_tools::string::split::{ split, SplitType };
 
 /// The main parser for unilang instructions.
 #[derive(Debug)]
@@ -59,12 +59,15 @@ impl Parser
   {
     let mut rich_items_vec : Vec<RichItem<'input>> = Vec::new();
 
-    let delimiters_as_str_slice: Vec<&str> = self.options.main_delimiters.iter().map(|s| s.as_str()).collect();
-    let mut split_options_former = SplitOptionsFormer::new( delimiters_as_str_slice );
-    split_options_former
-    .src( input )
-    .quoting( true );
-    let split_iterator = split_options_former.perform();
+    let mut delimiters_as_str_slice: Vec<&str> = self.options.main_delimiters.iter().map(|s| s.as_str()).collect();
+    if self.options.whitespace_is_separator {
+        delimiters_as_str_slice.push( " " );
+    }
+    let split_iterator = split()
+      .src( input )
+      .delimeter( delimiters_as_str_slice )
+      .quoting( true )
+      .perform();
 
     for split_item in split_iterator {
         // Skip empty delimited strings if whitespace is separator, as strs_tools might return them
@@ -196,8 +199,6 @@ impl Parser
         }
     }).collect();
 
-    eprintln!("DEBUG: significant_items: {:?}", significant_items);
-
     if significant_items.is_empty()
     {
       return Err( ParseError {
@@ -220,14 +221,11 @@ impl Parser
     let mut command_path_slices = Vec::new();
     let mut items_cursor = 0;
 
-    eprintln!("DEBUG: Initial items_cursor: {}", items_cursor);
-
     // Handle optional leading dot
     if let Some(first_item) = significant_items.get(0) {
         if let UnilangTokenKind::Delimiter(d) = &first_item.kind {
             if d == "." {
                 items_cursor += 1; // Consume the leading dot
-                eprintln!("DEBUG: Consumed leading dot. items_cursor: {}", items_cursor);
             }
         }
     }
@@ -235,59 +233,34 @@ impl Parser
     // Consume command path segments
     while items_cursor < significant_items.len() {
         let current_item = significant_items[items_cursor];
-        eprintln!("DEBUG: Command path loop. items_cursor: {}, current_item: {:?}", items_cursor, current_item);
-
-        // Check for named argument delimiter first, as it always terminates command path
-        if let UnilangTokenKind::Delimiter(d) = &current_item.kind {
-            if d == "::" {
-                eprintln!("DEBUG: Named argument delimiter. Breaking command path parsing.");
-                break;
-            }
-        }
 
         if let UnilangTokenKind::Identifier(s) = &current_item.kind {
             command_path_slices.push(s.clone());
-            items_cursor += 1; // Consume the identifier
-            eprintln!("DEBUG: Added identifier to command_path_slices: {:?}. items_cursor: {}", command_path_slices, items_cursor);
+            items_cursor += 1;
 
-            // After an identifier, if there are more items, check if the next is a delimiter (space or dot)
-            // or another identifier (for space-separated command path segments).
-            if items_cursor < significant_items.len() {
-                let next_item = significant_items[items_cursor];
-                match &next_item.kind {
-                    UnilangTokenKind::Delimiter(d) if d == "." || (self.options.whitespace_is_separator && d.trim().is_empty()) => {
-                        items_cursor += 1; // Consume the delimiter
-                        eprintln!("DEBUG: Consumed command path delimiter '{}'. items_cursor: {}", d, items_cursor);
-                        // Continue loop to expect next identifier
-                    },
-                    UnilangTokenKind::Identifier(_) => {
-                        // Another identifier, means it's a space-separated command path segment.
-                        eprintln!("DEBUG: Identifier followed by another identifier (space-separated command path). Continuing.");
-                        // Do not consume here, let the next loop iteration consume it.
-                    },
-                    _ => {
-                        eprintln!("DEBUG: Non-command-path token after identifier. Breaking command path parsing.");
-                        break; // Any other token type means end of command path
+            // After an identifier, we expect either a dot or the end of the command path.
+            // Any other token (including a space delimiter) should terminate the command path.
+            if let Some(next_item) = significant_items.get(items_cursor) {
+                if let UnilangTokenKind::Delimiter(d) = &next_item.kind {
+                    if d == "." {
+                        items_cursor += 1; // Consume the dot
+                    } else {
+                        // Any other delimiter (space, "::", "?") ends the command path.
+                        break;
                     }
+                } else {
+                    // Next item is not a delimiter, so command path ends.
+                    break;
                 }
-            }
-            // If no more items, command path ends naturally.
-        } else if let UnilangTokenKind::Delimiter(d) = &current_item.kind {
-            // If the current item is a delimiter (space or dot), skip it and continue.
-            if d == "." || (self.options.whitespace_is_separator && d.trim().is_empty()) {
-                items_cursor += 1; // Consume the delimiter
-                eprintln!("DEBUG: Skipping command path delimiter '{}'. items_cursor: {}", d, items_cursor);
             } else {
-                eprintln!("DEBUG: Non-command-path token. Breaking command path parsing.");
+                // End of significant items, command path ends naturally.
                 break;
             }
         } else {
-            // Any other token type indicates the end of the command path.
-            eprintln!("DEBUG: Non-command-path token. Breaking command path parsing.");
+            // Any non-identifier token (including unexpected delimiters) indicates the end of the command path.
             break;
         }
     }
-    eprintln!("DEBUG: Final command_path_slices before arguments: {:?}", command_path_slices);
 
     let mut help_requested = false;
     if items_cursor < significant_items.len() {

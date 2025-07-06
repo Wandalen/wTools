@@ -13,10 +13,10 @@
 ### Progress
 *   **Roadmap Milestone:** N/A (This is a bug-fix task to unblock other work)
 *   **Primary Editable Crate:** `module/move/unilang_instruction_parser`
-*   **Overall Progress:** 1/4 increments complete
+*   **Overall Progress:** 2/4 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Replicate the Bug with a Focused Test
-    *   ⚫ Increment 2: Implement the Parser Logic Fix
+    *   ✅ Increment 2: Implement the Parser Logic Fix
     *   ⚫ Increment 3: Verify No Regressions Incrementally
     *   ⚫ Increment 4: Finalization
 
@@ -178,19 +178,64 @@ This section provides the necessary information to correctly use the `strs_tools
 *   **Commit Message:** "test(parser): Add failing test for incorrect command path parsing"
 
 ##### Increment 2: Implement the Parser Logic Fix
-*   **Rationale:** The previous attempt to fix this caused regressions. This time, the fix will be more surgical, modifying the existing state machine in `parser_engine.rs` rather than attempting a wholesale replacement of logic.
+*   **Goal:** To fix the command path parsing by introducing a simple state machine into the `parse_single_instruction_from_rich_items` function.
 *   **Specification Reference:** Expected Behavior Rules 1, 2, & 3.
 *   **Steps:**
-    *   1.  **Analyze:** Read the content of `src/parser_engine.rs`, specifically the `parse_single_instruction_from_rich_items` function.
-    *   2.  **Hypothesize:** The current logic incorrectly identifies all initial `Identifier` tokens as positional arguments. The fix is to introduce a state machine. A simple approach is to use a boolean flag, e.g., `parsing_command_path`, which is initially `true`.
-    *   3.  **Design the Logic Change:**
-        *   While `parsing_command_path` is `true`, consume `Identifier` and `Delimiter(".")` tokens and append them to `command_path_slices`.
-        *   Transition `parsing_command_path` to `false` as soon as a token that cannot be part of a command path is encountered (e.g., `Delimiter("::")`, `QuotedValue`, `Operator("?")`, or a non-dot delimiter).
-        *   Once `parsing_command_path` is `false`, the rest of the function's logic for parsing named and positional arguments can proceed as it currently does.
-    *   4.  **Implement:** Use `search_and_replace` to apply this targeted state-machine logic to `parse_single_instruction_from_rich_items`.
+    *   1.  Read `src/parser_engine.rs`.
+    *   2.  In `parse_single_instruction_from_rich_items`, replace the existing command path parsing logic with a new state-machine-based implementation.
+        *   **Code to be replaced:** The `eprintln!` debugging statements and the `while` loop that currently attempts to parse the command path.
+        *   **New Logic:**
+            ```rust
+            let mut command_path_slices = Vec::new();
+            let mut items_cursor = 0;
+
+            // Handle optional leading dot
+            if let Some(first_item) = significant_items.get(0) {
+                if let UnilangTokenKind::Delimiter(d) = &first_item.kind {
+                    if d == "." {
+                        items_cursor += 1; // Consume the leading dot
+                    }
+                }
+            }
+
+            // Consume command path segments
+            while items_cursor < significant_items.len() {
+                let current_item = significant_items[items_cursor];
+
+                if let UnilangTokenKind::Identifier(s) = &current_item.kind {
+                    command_path_slices.push(s.clone());
+                    items_cursor += 1;
+
+                    // After an identifier, we expect either a dot or the end of the command path.
+                    // Any other token (including a space delimiter) should terminate the command path.
+                    if let Some(next_item) = significant_items.get(items_cursor) {
+                        if let UnilangTokenKind::Delimiter(d) = &next_item.kind {
+                            if d == "." {
+                                items_cursor += 1; // Consume the dot
+                            } else {
+                                // Any other delimiter (space, "::", "?") ends the command path.
+                                break;
+                            }
+                        } else {
+                            // Next item is not a delimiter, so command path ends.
+                            break;
+                        }
+                    } else {
+                        // End of significant items, command path ends naturally.
+                        break;
+                    }
+                } else {
+                    // Any non-identifier token (including unexpected delimiters) indicates the end of the command path.
+                    break;
+                }
+            }
+            ```
+    *   Step 3: Use `search_and_replace` to perform the replacement in `src/parser_engine.rs`.
+    *   Step 4: Remove the `eprintln!` statements from the function as they are no longer needed.
+    *   Step 5: Perform Increment Verification.
 *   **Increment Verification:**
     *   1.  Execute `timeout 90 cargo test -p unilang_instruction_parser --test command_parsing_tests` via `execute_command`.
-    *   2.  Analyze the output. The test from Increment 1 **must now pass**. This verifies the fix in isolation before checking for regressions.
+    *   2.  Analyze the output. The tests from Increment 1 **must now pass**.
 *   **Commit Message:** "fix(parser): Correctly distinguish command paths from arguments"
 
 ##### Increment 3: Verify No Regressions Incrementally
@@ -222,3 +267,4 @@ This section provides the necessary information to correctly use the `strs_tools
 ### Changelog
 *   [Initial] Plan created to methodically fix the command path parsing bug.
 *   [Increment 1] Added a failing test case to replicate the command path parsing bug. Fixed initial compilation errors in the test setup.
+*   [Increment 2] Correctly distinguished command paths from arguments by refining the parsing logic in `parser_engine.rs` and ensuring proper tokenization.
