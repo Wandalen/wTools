@@ -17,3 +17,5 @@
 *   [Increment 4 | 2025-07-06 16:13 UTC] Implemented conditional convenience `FromN` generation.
 
 *   **feat**: Implement and validate new test suite for derive macro.
+
+*   **test**: Implement compile-fail tests for derive macro.

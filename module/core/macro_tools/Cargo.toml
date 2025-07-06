@@ -34,7 +34,7 @@ default = [
   "ct",
   "container_kind",
   "derive",
-  "diag",
+  # "diag", # Reverted: Removed diag from default features
   "equation",
   "generic_args",
   "generic_params",

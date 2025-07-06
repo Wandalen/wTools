@@ -1,14 +1,14 @@
 // tests/inc/derive_test.rs
 
-//! ## Test Matrix for VariadicFrom Derive Macro
+//! ## Test Matrix for `VariadicFrom` Derive Macro
 //!
 //! This matrix outlines the test cases for the `#[derive(VariadicFrom)]` macro, covering various struct types, field counts, and type identity conditions.
 //!
 //! **Test Factors:**
-//! - **Struct Type:** Named struct (`struct Named { a: i32, b: i32 }`) vs. Tuple struct (`struct Tuple(i32, i32)`).
-//! - **Field Count:** 1, 2, or 3 fields.
-//! - **Field Type Identity:** Whether all fields have identical types, or if a subset (e.g., last two) have identical types.
-//! - **Generics:** Presence and handling of generic parameters.
+//! - Struct Type: Named struct (`struct Named { a: i32, b: i32 }`) vs. Tuple struct (`struct Tuple(i32, i32)`).
+//! - Field Count: 1, 2, or 3 fields.
+//! - Field Type Identity: Whether all fields have identical types, or if a subset (e.g., last two) have identical types.
+//! - Generics: Presence and handling of generic parameters.
 //!
 //! **Test Combinations:**
 //!
@@ -236,7 +236,6 @@ fn test_named_struct_3_fields_last_different()
 
   // No convenience From1 or From2 expected
   // let x = Test9::from1( 50 ); // Should not compile
-  // let x = Test9::from2( 50, 60 ); // Should not compile
 }
 
 /// Tests a tuple struct with 3 fields, last one different.
@@ -255,7 +254,6 @@ fn test_tuple_struct_3_fields_last_different()
 
   // No convenience From1 or From2 expected
   // let x = Test10::from1( 50 ); // Should not compile
-  // let x = Test10::from2( 50, 60 ); // Should not compile
 }
 
 /// Tests a named struct with 3 fields, last two identical.
@@ -292,7 +290,7 @@ fn test_tuple_struct_3_fields_last_two_identical()
 {
   #[ derive( VariadicFrom, Debug, PartialEq ) ]
   struct Test12( i32, String, String );
-
+  
   let x = Test12::from3( 10, "a".to_string().clone(), "b".to_string().clone() );
   assert_eq!( x, Test12( 10, "a".to_string(), "b".to_string() ) );
 

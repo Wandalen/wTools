@@ -1,5 +1,3 @@
-use super::*;
-
 /// Trait for converting from one argument.
 pub trait From1< T1 >
 where

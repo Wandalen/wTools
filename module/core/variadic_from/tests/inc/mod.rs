@@ -1,4 +1,7 @@
-use super::*;
-use test_tools::exposed::*;
+// tests/inc/mod.rs
 
-mod derive_test;
+// This file is part of the test suite for the `variadic_from` crate.
+// It re-exports test modules for organization.
+
+// Re-export the derive macro tests.
+pub mod derive_test;

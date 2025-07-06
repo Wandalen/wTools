@@ -49,7 +49,7 @@ derive_variadic_from = [ "type_variadic_from" ]
 [dependencies]
 
 ## internal
-variadic_from_meta = { path = "../variadic_from_meta" }
+variadic_from_meta = { path = "../variadic_from_meta" } # Reverted: removed proc-macro = true
 
 [dev-dependencies]
 
