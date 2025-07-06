@@ -13,3 +13,5 @@
 *   [Increment 2 | 2025-07-06 16:07 UTC] Refactored macro input parsing using `macro_tools`.
 
 *   [Increment 3 | 2025-07-06 16:11 UTC] Implemented core `FromN` and `From<Tuple>` generation.
+
+*   [Increment 4 | 2025-07-06 16:13 UTC] Implemented conditional convenience `FromN` generation.

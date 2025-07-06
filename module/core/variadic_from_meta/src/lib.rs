@@ -93,7 +93,8 @@ impl<'a> VariadicFromContext<'a>
   {
     if self.is_tuple_struct
     {
-      quote! { ( #arg ) } // Fixed: removed repetition for single arg
+      let repeated_args = (0..self.num_fields).map(|_| arg).collect::<Vec<_>>();
+      quote! { ( #( #repeated_args ),* ) }
     }
     else
     {
@@ -120,6 +121,11 @@ impl<'a> VariadicFromContext<'a>
     let first_type = &self.field_types[ start_idx ];
     self.field_types[ start_idx.. ].iter().all( |ty| ty.to_token_stream().to_string() == first_type.to_token_stream().to_string() )
   }
+}
+
+/// Helper function to check if a type is `String`.
+fn is_type_string(ty: &syn::Type) -> bool {
+    ty.to_token_stream().to_string() == quote! { String }.to_string()
 }
 
 /// Generates `FromN` trait implementations.
@@ -317,12 +323,34 @@ fn generate_convenience_impls( context : &VariadicFromContext<'_> ) -> proc_macr
     let from_fn_arg1 = proc_macro2::Ident::new( "__a1", proc_macro2::Span::call_site() );
     let from_fn_arg2 = proc_macro2::Ident::new( "__a2", proc_macro2::Span::call_site() );
     let constructor_uniform_last_two = if context.is_tuple_struct {
-        quote! { ( #from_fn_arg1, #from_fn_arg2, #from_fn_arg2 ) }
+        let arg1 = &from_fn_arg1;
+        let arg2_for_first_use = if is_type_string(&context.field_types[1]) {
+            quote! { #from_fn_arg2.clone() }
+        } else {
+            quote! { #from_fn_arg2 }
+        };
+        let arg2_for_second_use = if is_type_string(&context.field_types[2]) {
+            quote! { #from_fn_arg2.clone() }
+        } else {
+            quote! { #from_fn_arg2 }
+        };
+        quote! { ( #arg1, #arg2_for_first_use, #arg2_for_second_use ) }
     } else {
         let field_name_or_index1 = &context.field_names_or_indices[0];
         let field_name_or_index2 = &context.field_names_or_indices[1];
         let field_name_or_index3 = &context.field_names_or_indices[2];
-        quote! { { #field_name_or_index1 : #from_fn_arg1, #field_name_or_index2 : #from_fn_arg2, #field_name_or_index3 : #from_fn_arg2 } }
+        let arg1 = &from_fn_arg1;
+        let arg2_for_first_use = if is_type_string(&context.field_types[1]) {
+            quote! { #from_fn_arg2.clone() }
+        } else {
+            quote! { #from_fn_arg2 }
+        };
+        let arg2_for_second_use = if is_type_string(&context.field_types[2]) {
+            quote! { #from_fn_arg2.clone() }
+        } else {
+            quote! { #from_fn_arg2 }
+        };
+        quote! { { #field_name_or_index1 : #arg1, #field_name_or_index2 : #arg2_for_first_use, #field_name_or_index3 : #arg2_for_second_use } }
     };
 
     if context.are_field_types_identical_from( 1 )
