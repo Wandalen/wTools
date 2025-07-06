@@ -9,7 +9,7 @@ use crate::error::{ ParseError, ErrorKind, SourceLocation };
 use crate::instruction::{ GenericInstruction, Argument };
 use crate::item_adapter::{ classify_split, RichItem, UnilangTokenKind, unescape_string_with_errors };
 use std::collections::HashMap;
-use strs_tools::string::split::{ Split, SplitType, SplitOptionsFormer }; // Added SplitOptionsFormer import
+use strs_tools::string::split::{ SplitType, SplitOptionsFormer };
 
 /// The main parser for unilang instructions.
 #[derive(Debug)]
@@ -60,10 +60,10 @@ impl Parser
     let mut rich_items_vec : Vec<RichItem<'input>> = Vec::new();
 
     let delimiters_as_str_slice: Vec<&str> = self.options.main_delimiters.iter().map(|s| s.as_str()).collect();
-    let split_options_former = SplitOptionsFormer::new( delimiters_as_str_slice )
+    let mut split_options_former = SplitOptionsFormer::new( delimiters_as_str_slice );
+    split_options_former
     .src( input )
-    .quoting( true )
-    ;
+    .quoting( true );
     let split_iterator = split_options_former.perform();
 
     for split_item in split_iterator {

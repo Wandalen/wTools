@@ -1,103 +1,63 @@
-//! ## Test Matrix for Command Parsing
+//! ## Test Matrix for Command Path Parsing
 //!
-//! | ID   | Input String          | Expected `command_path_slices` | Expected `positional_arguments` |
-//! |------|-----------------------|--------------------------------|---------------------------------|
-//! | T1.1 | `.test.command arg1`  | `["test", "command"]`          | `["arg1"]`                      |
-//! | T1.2 | `command arg1`        | `["command"]`                  | `["arg1"]`                      |
-//! | T1.3 | `.command arg1`       | `["command"]`                  | `["arg1"]`                      |
-//! | T1.4 | `command.sub arg1`    | `["command", "sub"]`           | `["arg1"]`                      |
+//! | ID   | Input String         | Expected `command_path_slices` | Expected `positional_arguments` | Notes                                   |
+//! |------|----------------------|--------------------------------|---------------------------------|-----------------------------------------|
+//! | T1.1 | `.test.command arg1` | `["test", "command"]`          | `["arg1"]`                      | The primary failing case.               |
+//! | T1.2 | `command arg1`       | `["command"]`                  | `["arg1"]`                      | Should already pass.                    |
+//! | T1.3 | `.command arg1`      | `["command"]`                  | `["arg1"]`                      | Should fail.                            |
+//! | T1.4 | `command.sub arg1`   | `["command", "sub"]`           | `["arg1"]`                      | Should fail.                            |
+//! | T1.5 | `command`            | `["command"]`                  | `[]`                            | Should already pass.                    |
 
-use unilang_instruction_parser::prelude::*;
-use unilang_instruction_parser::prelude::*;
+use unilang_instruction_parser::{ Parser, UnilangParserOptions };
 
-/// Tests that the parser correctly identifies and extracts command path slices.
-/// Corresponds to Test Matrix ID: T1.1
-#[ test ]
-fn parses_command_path_correctly()
+fn parse_and_assert( input : &str, expected_path : &[ &str ], expected_args : &[ &str ] )
 {
   let options = UnilangParserOptions::default();
   let parser = Parser::new( options );
-  let input = ".test.command arg1";
-
   let instructions = parser.parse_single_str( input ).unwrap();
   assert_eq!( instructions.len(), 1 );
-
   let instruction = &instructions[ 0 ];
-
-  // Assert command_path_slices
-  assert_eq!( instruction.command_path_slices, vec![ "test", "command" ] );
-
-  // Assert positional_arguments
-  assert_eq!( instruction.positional_arguments.len(), 1 );
-  assert_eq!( instruction.positional_arguments[ 0 ].value, "arg1" );
-  assert_eq!( instruction.positional_arguments[ 0 ].name, None );
+  assert_eq!( instruction.command_path_slices, expected_path );
+  let positional_values: Vec<&str> = instruction.positional_arguments.iter().map(|arg| arg.value.as_str()).collect();
+  assert_eq!( positional_values, expected_args );
 }
 
-/// Tests that the parser correctly identifies and extracts command path slices when command is not prefixed with dot.
-/// Corresponds to Test Matrix ID: T1.2
-#[ test ]
-fn parses_command_path_correctly_without_dot()
+/// Tests the primary failing case.
+/// Test Combination: T1.1
+#[test]
+fn parses_dotted_prefix_command_path_correctly()
 {
-  let options = UnilangParserOptions::default();
-  let parser = Parser::new( options );
-  let input = "command arg1";
-
-  let instructions = parser.parse_single_str( input ).unwrap();
-  assert_eq!( instructions.len(), 1 );
-
-  let instruction = &instructions[ 0 ];
-
-  // Assert command_path_slices
-  assert_eq!( instruction.command_path_slices, vec![ "command" ] );
-
-  // Assert positional_arguments
-  assert_eq!( instruction.positional_arguments.len(), 1 );
-  assert_eq!( instruction.positional_arguments[ 0 ].value, "arg1" );
-  assert_eq!( instruction.positional_arguments[ 0 ].name, None );
+  parse_and_assert( ".test.command arg1", &["test", "command"], &["arg1"] );
 }
 
-/// Tests that the parser correctly identifies and extracts command path slices when command is prefixed with dot.
-/// Corresponds to Test Matrix ID: T1.3
-#[ test ]
-fn parses_command_path_correctly_with_dot_prefix()
+/// Tests a simple command without dots.
+/// Test Combination: T1.2
+#[test]
+fn parses_simple_command_path_correctly()
 {
-  let options = UnilangParserOptions::default();
-  let parser = Parser::new( options );
-  let input = ".command arg1";
-
-  let instructions = parser.parse_single_str( input ).unwrap();
-  assert_eq!( instructions.len(), 1 );
-
-  let instruction = &instructions[ 0 ];
-
-  // Assert command_path_slices
-  assert_eq!( instruction.command_path_slices, vec![ "command" ] );
-
-  // Assert positional_arguments
-  assert_eq!( instruction.positional_arguments.len(), 1 );
-  assert_eq!( instruction.positional_arguments[ 0 ].value, "arg1" );
-  assert_eq!( instruction.positional_arguments[ 0 ].name, None );
+  parse_and_assert( "command arg1", &["command"], &["arg1"] );
 }
 
-/// Tests that the parser correctly identifies and extracts command path slices with sub-commands.
-/// Corresponds to Test Matrix ID: T1.4
-#[ test ]
-fn parses_command_path_with_sub_command()
+/// Tests a command with a leading dot.
+/// Test Combination: T1.3
+#[test]
+fn parses_leading_dot_command_path_correctly()
 {
-  let options = UnilangParserOptions::default();
-  let parser = Parser::new( options );
-  let input = "command.sub arg1";
+  parse_and_assert( ".command arg1", &["command"], &["arg1"] );
+}
 
-  let instructions = parser.parse_single_str( input ).unwrap();
-  assert_eq!( instructions.len(), 1 );
+/// Tests a command with an infix dot.
+/// Test Combination: T1.4
+#[test]
+fn parses_infix_dot_command_path_correctly()
+{
+  parse_and_assert( "command.sub arg1", &["command", "sub"], &["arg1"] );
+}
 
-  let instruction = &instructions[ 0 ];
-
-  // Assert command_path_slices
-  assert_eq!( instruction.command_path_slices, vec![ "command", "sub" ] );
-
-  // Assert positional_arguments
-  assert_eq!( instruction.positional_arguments.len(), 1 );
-  assert_eq!( instruction.positional_arguments[ 0 ].value, "arg1" );
-  assert_eq!( instruction.positional_arguments[ 0 ].name, None );
+/// Tests a command with no arguments.
+/// Test Combination: T1.5
+#[test]
+fn parses_command_only_correctly()
+{
+  parse_and_assert( "command", &["command"], &[] );
 }
