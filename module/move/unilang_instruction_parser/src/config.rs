@@ -1,25 +1,42 @@
 //! Configuration options for the unilang instruction parser.
 //!
 //! This module defines the `UnilangParserOptions` struct, which allows
-//! customization of parsing behavior, including delimiters, operators,
-//! and error handling.
-
-// Removed SplitOptionsFormer import as it's no longer used here.
+//! customization of the parsing behavior, such as delimiters, whitespace
+//! handling, and error policies.
 
 /// Configuration options for the unilang instruction parser.
-#[ derive( Debug, Clone ) ]
+///
+/// This struct allows customization of various aspects of the parsing process.
+#[ derive( Debug, Clone, PartialEq, Eq ) ]
 pub struct UnilangParserOptions
 {
-  /// If true, a positional argument after a named argument will result in a parse error.
-  pub error_on_positional_after_named : bool,
-  /// If true, duplicate named arguments will result in a parse error.
-  pub error_on_duplicate_named_arguments : bool,
-  /// Pairs of quote characters (e.g., `("\"", "\"")`, `("'", "'")`).
-  pub quote_pairs : Vec< ( String, String ) >,
-  /// Main delimiters used for splitting the input string.
-  pub main_delimiters : Vec< String >,
-  /// If true, whitespace is considered a separator.
+  /// A list of strings that are considered main delimiters for tokenization.
+  ///
+  /// These delimiters will split the input string into tokens.
+  pub main_delimiters : Vec< &'static str >,
+  /// A list of strings that are considered operators.
+  pub operators : Vec< &'static str >,
+  /// If `true`, whitespace characters (space, tab, newline, etc.) are treated as delimiters.
+  ///
+  /// If `false`, whitespace is treated as part of an identifier unless explicitly
+  /// listed in `main_delimiters`.
   pub whitespace_is_separator : bool,
+  /// If `true`, a `ParseError` will be returned if a positional argument is
+  /// encountered after a named argument.
+  ///
+  /// If `false`, positional arguments after named arguments are allowed.
+  pub error_on_positional_after_named : bool,
+  /// If `true`, a `ParseError` will be returned if a named argument with the
+  /// same name is encountered multiple times.
+  ///
+  /// If `false`, the last encountered value for a duplicate named argument
+  /// will overwrite previous ones.
+  pub error_on_duplicate_named_arguments : bool,
+  /// A list of character pairs that denote quoted strings.
+  ///
+  /// The first character in the tuple is the opening quote, the second is the closing quote.
+  /// E.g., `[ ( '"', '"' ), ( '\'', '\'' ) ]` for double and single quotes.
+  pub quote_pairs : Vec< ( char, char ) >,
 }
 
 impl Default for UnilangParserOptions
@@ -28,24 +45,12 @@ impl Default for UnilangParserOptions
   {
     Self
     {
-      error_on_positional_after_named : true,
+      main_delimiters : vec![ " ", ";;" ],
+      operators : vec![ "::", "?" ],
+      whitespace_is_separator : true,
+      error_on_positional_after_named : false,
       error_on_duplicate_named_arguments : true,
-      quote_pairs : vec!
-      [
-        ( "\"".to_string(), "\"".to_string() ),
-        ( "'".to_string(), "'".to_string() ),
-      ],
-      main_delimiters : vec!
-      [
-        "::".to_string(),
-        ";;".to_string(),
-        ".".to_string(),
-        "?".to_string(),
-        // Removed spaces and tabs from here, as strs_tools should handle whitespace as separator
-      ],
-      whitespace_is_separator : true, // Reverted to true
+      quote_pairs : vec![ ( '"', '"' ), ( '\'', '\'' ) ],
     }
   }
 }
-
-// Removed the to_split_options_former method.

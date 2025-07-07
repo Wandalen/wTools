@@ -5,7 +5,7 @@
 
 use crate::config::UnilangParserOptions;
 use crate::error::{ ParseError, ErrorKind, SourceLocation };
-use strs_tools::string::split::{ Split, SplitType };
+use strs_tools::string::split::{ Split };
 
 /// Represents a tokenized item with its original `Split` data,
 /// its segment index (if part of a slice of strings), and its classified `UnilangTokenKind`.
@@ -56,45 +56,38 @@ pub fn classify_split<'a>
 ) -> UnilangTokenKind
 {
   let s = split.string;
+  eprintln!("DEBUG: classify_split: s: '{}', split.typ: {:?}", s, split.typ); // DEBUG PRINT
 
-  // eprintln!("DEBUG classify_split: Processing string: \"{}\", type: {:?}", s, split.typ);
-
-  if split.typ == SplitType::Delimiter
+  // 1. Check for known operators
+  if options.operators.contains(&s)
   {
-    // eprintln!("DEBUG classify_split: Classified as Delimiter: \"{}\"", s);
-    return UnilangTokenKind::Delimiter( s.to_string() );
-  }
-
-  // Explicitly check for known operators that are not delimiters
-  if s == "?"
-  {
-    // eprintln!("DEBUG classify_split: Classified as Operator: \"{}\"", s);
     return UnilangTokenKind::Operator( s.to_string() );
   }
 
-  // If strs_tools returned it as Delimeted, it could be a quoted value or a regular identifier/word.
-  if split.typ == SplitType::Delimeted
+  // 2. Check for configured delimiters (must be exact match, not part of a larger string)
+  if options.main_delimiters.contains(&s)
   {
-    for (prefix, postfix) in &options.quote_pairs {
-        // Check if it's a quoted string (strs_tools with quoting(true) will return the whole quoted string as Delimeted)
-        if s.starts_with(prefix) && s.ends_with(postfix) && s.len() >= prefix.len() + postfix.len() {
-            let inner_content = &s[prefix.len()..(s.len() - postfix.len())];
-            // eprintln!("DEBUG classify_split: Classified as QuotedValue: \"{}\"", inner_content);
-            return UnilangTokenKind::QuotedValue(inner_content.to_string());
-        }
-    }
+    return UnilangTokenKind::Delimiter( s.to_string() );
   }
 
-  // Check if it's an identifier (alphanumeric, underscore, etc.)
+  // 3. Check for quoted values (strs_tools with quoting(false) will return the whole quoted string)
+  for (prefix, postfix) in &options.quote_pairs {
+      let is_quoted = s.starts_with(*prefix) && s.ends_with(*postfix) && s.len() >= prefix.len_utf8() + postfix.len_utf8();
+      eprintln!("DEBUG: classify_split: checking quote pair ('{}', '{}'), is_quoted: {}", prefix, postfix, is_quoted); // DEBUG PRINT
+      if is_quoted {
+          return UnilangTokenKind::QuotedValue(s.to_string());
+      }
+  }
+ 
+  // 4. Check if it's an identifier (alphanumeric, underscore, etc.)
   // This is a simplified check. A more robust parser would use a regex or a more
   // detailed character-by-character validation.
   if !s.is_empty() && s.chars().all(|c| c.is_alphanumeric() || c == '_')
   {
-    // eprintln!("DEBUG classify_split: Classified as Identifier: \"{}\"", s);
     return UnilangTokenKind::Identifier( s.to_string() );
   }
 
-  // eprintln!("DEBUG classify_split: Classified as Unrecognized: \"{}\"", s);
+  // 5. Any other unrecognized token.
   UnilangTokenKind::Unrecognized( s.to_string() )
 }
 
@@ -116,7 +109,7 @@ pub enum UnilangTokenKind
 
 /// Unescapes a string, handling common escape sequences.
 ///
-/// Supports `\"`, `\'`, `\\`, `\n`, `\r`, `\t`.
+/// Supports `\"`, `\'`, `\\`, `\n`, `\r`, `\t`, `\b`.
 pub fn unescape_string_with_errors(s: &str, location: &SourceLocation) -> Result<String, ParseError> {
     let mut result = String::with_capacity(s.len());
     let mut chars = s.chars().peekable();
@@ -126,10 +119,11 @@ pub fn unescape_string_with_errors(s: &str, location: &SourceLocation) -> Result
             match chars.next() {
                 Some('"') => result.push('"'),
                 Some('\'') => result.push('\''),
-                Some('\\') => result.push('\\'),
+                Some('\\') => result.push('\\'), // Corrected: unescape \\ to \
                 Some('n') => result.push('\n'),
                 Some('r') => result.push('\r'),
                 Some('t') => result.push('\t'),
+                Some('b') => result.push('\x08'), // Backspace
                 Some(other) => {
                     return Err(ParseError {
                         kind: ErrorKind::Syntax(format!("Invalid escape sequence: \\{}", other)),
