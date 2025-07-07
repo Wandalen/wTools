@@ -97,7 +97,7 @@ fn leading_semicolon_error() {
     let result = parser.parse_single_str(";; cmd1");
     assert!(result.is_err(), "Expected error for leading ';;'");
     if let Err(e) = result {
-        assert!(matches!(e.kind, ErrorKind::Syntax(_)));
+        assert!(matches!(e.kind, ErrorKind::EmptyInstructionSegment));
         assert!(e.to_string().contains("Empty instruction segment"));
     }
 }
@@ -119,7 +119,7 @@ fn multiple_consecutive_semicolons_error() {
     let result = parser.parse_single_str("cmd1 ;;;; cmd2");
     assert!(result.is_err(), "Expected error for 'cmd1 ;;;; cmd2'");
     if let Err(e) = result {
-        assert!(matches!(e.kind, ErrorKind::Syntax(_)));
+        assert!(matches!(e.kind, ErrorKind::EmptyInstructionSegment));
         assert!(e.to_string().contains("Empty instruction segment"));
     }
 }
@@ -130,13 +130,13 @@ fn only_semicolons_error() {
     let result = parser.parse_single_str(";;");
     assert!(result.is_err(), "Expected error for ';;'");
      if let Err(e) = result {
-        assert!(matches!(e.kind, ErrorKind::Syntax(_)));
+        assert!(matches!(e.kind, ErrorKind::EmptyInstructionSegment));
         assert!(e.to_string().contains("Empty instruction segment"));
     }
     let result_double = parser.parse_single_str(";;;;");
     assert!(result_double.is_err(), "Expected error for ';;;;'");
     if let Err(e) = result_double {
-        assert!(matches!(e.kind, ErrorKind::Syntax(_)));
+        assert!(matches!(e.kind, ErrorKind::EmptyInstructionSegment));
         assert!(e.to_string().contains("Empty instruction segment"));
     }
 }

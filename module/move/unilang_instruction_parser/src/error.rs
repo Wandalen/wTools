@@ -48,6 +48,10 @@ pub enum ErrorKind
   /// A general syntax error not covered by more specific kinds.
   /// The string contains a descriptive message.
   Syntax(String),
+  /// An empty instruction segment (e.g., "cmd1 ;; ;; cmd2" or ";; cmd").
+  EmptyInstructionSegment,
+  
+  
   /// An empty instruction segment caused by a trailing delimiter (e.g., "cmd ;;").
   TrailingDelimiter,
   // /// Unterminated quoted string.
@@ -81,6 +85,7 @@ impl fmt::Display for ParseError
     match &self.kind
     {
       ErrorKind::Syntax( msg ) => write!( f, "Syntax error: {msg}" )?,
+      ErrorKind::EmptyInstructionSegment => write!( f, "Syntax error: Empty instruction segment" )?,
       ErrorKind::TrailingDelimiter => write!( f, "Syntax error: Empty instruction segment due to trailing ';;'" )?,
       // ErrorKind::UnterminatedQuote => write!( f, "Syntax error: Unterminated quote" )?,
       // ErrorKind::InvalidEscapeSequence => write!( f, "Syntax error: Invalid escape sequence" )?,

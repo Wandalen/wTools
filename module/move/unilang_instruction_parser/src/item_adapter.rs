@@ -79,10 +79,9 @@ pub fn classify_split<'a>
       }
   }
  
-  // 4. Check if it's an identifier (alphanumeric, underscore, etc.)
-  // This is a simplified check. A more robust parser would use a regex or a more
-  // detailed character-by-character validation.
-  if !s.is_empty() && s.chars().all(|c| c.is_alphanumeric() || c == '_')
+  // 4. Check if it's an identifier (alphanumeric, underscore, or dot)
+  // Relaxed to allow dots, as these are valid in command path segments.
+  if !s.is_empty() && s.chars().all(|c| c.is_alphanumeric() || c == '_' || c == '.')
   {
     return UnilangTokenKind::Identifier( s.to_string() );
   }
