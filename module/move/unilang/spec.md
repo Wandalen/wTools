@@ -1,7 +1,7 @@
 # Unilang Framework Specification
 
-**Version:** 1.8.0
-**Status:** DRAFT
+**Version:** 2.0.0
+**Status:** Final
 
 ---
 
@@ -111,7 +111,7 @@ This section outlines the non-negotiable architectural rules and mandatory depen
 
 To effectively implement `unilang_meta`, the following components from `macro_tools` are recommended:
 
-*   **Core Re-exports (`syn`, `quote`, `proc_macro2`):** Use the versions re-exported by `macro_tools` for guaranteed compatibility.
+*   **Core Re-exports (`syn`, `quote`, `proc-macro2`):** Use the versions re-exported by `macro_tools` for guaranteed compatibility.
 *   **Diagnostics (`diag` module):** Essential for providing clear, professional-grade error messages to the `Integrator`.
     *   **`syn_err!( span, "message" )`**: The primary tool for creating `syn::Error` instances with proper location information.
     *   **`return_syn_err!(...)`**: A convenient macro to exit a parsing function with an error.
@@ -173,14 +173,44 @@ A `command_expression` can be one of the following:
 *   **Full Invocation:** `[namespace_path.]command_name [argument_value...] [named_argument...]`
 *   **Help Request:** `[namespace_path.][command_name] ?` or `[namespace_path.]?`
 
-#### 2.4. Command Expression Examples
+#### 2.4. Parsing Rules and Precedence
 
-(This section is a high-level summary. For detailed examples, see **Appendix B: Command Syntax Cookbook**.)
+To eliminate ambiguity, the parser **must** adhere to the following rules in order.
 
-*   **Basic Command:** `utility1 .ping`
-*   **Command with Arguments:** `utility1 .files.copy from::/src to::/dst`
-*   **Command Sequence:** `utility1 .archive.create ;; .cloud.upload`
-*   **Help Request:** `utility1 .files.copy ?`
+*   **Rule 0: Whitespace Separation**
+    *   Whitespace characters (spaces, tabs) serve only to separate tokens. Multiple consecutive whitespace characters are treated as a single separator. Whitespace is not part of a token's value unless it is inside a quoted string.
+
+*   **Rule 1: Command Path Identification**
+    *   The **Command Path** is the initial sequence of tokens that identifies the command to be executed.
+    *   A command path consists of one or more **segments**.
+    *   Segments **must** be separated by a dot (`.`). Whitespace around the dot is ignored.
+    *   A segment **must** be a valid identifier according to the `Naming Conventions` (Section 2.2).
+    *   The command path is the longest possible sequence of dot-separated identifiers at the beginning of an expression.
+
+*   **Rule 2: End of Command Path & Transition to Arguments**
+    *   The command path definitively ends, and argument parsing begins, upon encountering the **first token** that is not a valid, dot-separated identifier segment.
+    *   This transition is triggered by:
+        *   A named argument separator (`::`).
+        *   A quoted string (`"..."` or `'...'`).
+        *   The help operator (`?`).
+        *   Any other token that does not conform to the identifier naming convention.
+    *   **Example:** In `utility1 .files.copy --force`, the command path is `.files.copy`. The token `--force` is not a valid segment, so it becomes the first positional argument.
+
+*   **Rule 3: Dot (`.`) Operator Rules**
+    *   **Leading Dot:** A single leading dot at the beginning of a command path (e.g., `.files.copy`) is permitted and has no semantic meaning. It is consumed by the parser and does not form part of the command path's segments.
+    *   **Trailing Dot:** A trailing dot after the final command segment (e.g., `.files.copy.`) is a **syntax error**.
+
+*   **Rule 4: Help Operator (`?`)**
+    *   The `?` operator marks the entire instruction for help generation.
+    *   It **must** be the final token in a command expression.
+    *   It **may** be preceded by arguments. If it is, this implies a request for contextual help. The `unilang` framework (not the parser) is responsible for interpreting this context.
+    *   **Valid:** `.files.copy ?`
+    *   **Valid:** `.files.copy from::/src ?`
+    *   **Invalid:** `.files.copy ? from::/src`
+
+*   **Rule 5: Argument Types**
+    *   **Positional Arguments:** Any token that follows the command path and is not a named argument is a positional argument.
+    *   **Named Arguments:** Any pair of tokens matching the `name::value` syntax is a named argument. The `value` can be a single token or a quoted string.
 
 ---
 
@@ -413,7 +443,8 @@ Routines that fail **must** return an `ErrorData` object. The `code` field shoul
     "location_in_input": { "source_type": "single_string", "start_offset": 15, "end_offset": 20 }
   },
   "origin_command": ".files.copy"
-}```
+}
+```
 
 #### 7.2. Standard Output (`OutputData`)
 
@@ -548,18 +579,37 @@ commands:
       - "utility1 .string.echo \"Hello, Unilang!\""
 ```
 
-##### A.2. BNF or Formal Grammar for CLI Syntax (Simplified)
+##### A.2. BNF or Formal Grammar for CLI Syntax (Simplified & Revised)
+
+This grammar reflects the strict parsing rules defined in Section 2.5.
 
 ```bnf
 <invocation> ::= <utility_name> <global_args_opt> <command_sequence>
+
 <command_sequence> ::= <command_expression> <command_separator_opt>
 <command_separator_opt> ::= ";;" <command_sequence> | ""
-<command_expression> ::= <command_full_name> <command_args_opt> <help_operator_opt>
-<command_full_name> ::= <dot_opt> <segment> <dot_segment_opt>
-<dot_segment_opt> ::= "." <segment> | ""
-<command_args_opt> ::= <command_arg> <command_args_opt> | ""
-<command_arg> ::= <named_arg> | <default_arg_value>
-<named_arg> ::= <arg_name> "::" <arg_value>
+
+<command_expression> ::= <command_path> <arguments_and_help_opt>
+                       | <arguments_and_help>
+
+<command_path> ::= <dot_opt> <segment> <path_tail_opt>
+<path_tail_opt> ::= "." <segment> <path_tail_opt> | ""
+<segment> ::= <IDENTIFIER>
+<dot_opt> ::= "." | ""
+
+<arguments_and_help_opt> ::= <arguments_and_help> | ""
+<arguments_and_help> ::= <argument_list> <help_operator_opt> | <help_operator>
+
+<argument_list> ::= <argument> <argument_list_opt>
+<argument_list_opt> ::= <argument_list> | ""
+<argument> ::= <named_arg> | <positional_arg>
+
+<positional_arg> ::= <value>
+<named_arg> ::= <IDENTIFIER> "::" <value>
+<value> ::= <IDENTIFIER> | <QUOTED_STRING>
+
+<help_operator_opt> ::= <help_operator> | ""
+<help_operator> ::= "?"
 ```
 
 #### Appendix B: Command Syntax Cookbook
@@ -641,64 +691,3 @@ This appendix provides a comprehensive set of practical examples for the `unilan
     ```sh
     utility1 .archive ?
     ```
-```
-
----
-# spec_addendum.md
----
-```markdown
-# Specification Addendum
-
-### Purpose
-This document is intended to be completed by the **Developer** during the implementation phase. It is used to capture the final, as-built details of the **Internal Design**, especially where the implementation differs from the initial `Design Recommendations` in `specification.md`.
-
-### Instructions for the Developer
-As you build the system, please use this document to log your key implementation decisions, the final data models, environment variables, and other details. This creates a crucial record for future maintenance, debugging, and onboarding.
-
----
-
-### Finalized Internal Design Decisions
-*A space for the developer to document key implementation choices for the system's internal design, especially where they differ from the initial recommendations in `specification.md`.*
-
--   **Decision 1: PHF Crate Selection:** After evaluation, the `phf` crate (version `X.Y.Z`) was chosen for the static registry implementation due to its robust build-time code generation and minimal runtime overhead.
--   **Decision 2: Runtime Routine Linking:** The `routine_link` mechanism will be implemented using a `HashMap<String, Routine>`. `utility1` integrators will be responsible for registering their linkable functions into this map at startup. Dynamic library loading was deemed too complex for v1.0.
-
-### Finalized Internal Data Models
-*The definitive, as-built schema for all databases, data structures, and objects used internally by the system.*
-
--   **`CommandRegistry` Struct:**
-    ```rust
-    pub struct CommandRegistry {
-        static_commands: phf::Map<&'static str, CommandDefinition>,
-        static_namespaces: phf::Map<&'static str, NamespaceDefinition>,
-        dynamic_commands: HashMap<String, CommandDefinition>,
-        dynamic_namespaces: HashMap<String, NamespaceDefinition>,
-        routines: HashMap<String, Routine>,
-    }
-    ```
-
-### Environment Variables
-*List all environment variables required to run the application. Include the variable name, a brief description of its purpose, and an example value (use placeholders for secrets).*
-
-| Variable | Description | Example |
-| :--- | :--- | :--- |
-| `UTILITY1_CONFIG_PATH` | Overrides the default search path for the user-specific configuration file. | `/etc/utility1/main.toml` |
-| `UTILITY1_LOG_LEVEL` | Sets the logging verbosity for the current invocation. Overrides config file values. | `debug` |
-
-### Finalized Library & Tool Versions
-*List the critical libraries, frameworks, or tools used and their exact locked versions (e.g., from `Cargo.lock`).*
-
--   `rustc`: `1.78.0`
--   `serde`: `1.0.203`
--   `serde_yaml`: `0.9.34`
--   `phf`: `0.11.2`
--   `strs_tools`: `0.19.0`
--   `macro_tools`: `0.57.0`
-
-### Deployment Checklist
-*A step-by-step guide for deploying the application from scratch. This is not applicable for a library, but would be used by an `Integrator`.*
-
-1.  Set up the `.env` file using the template above.
-2.  Run `cargo build --release`.
-3.  Place the compiled binary in `/usr/local/bin`.
-4.  ...
