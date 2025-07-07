@@ -211,54 +211,38 @@ impl Parser
     let mut items_cursor = 0;
 
     // Phase 1: Consume Command Path
-    while items_cursor < significant_items.len() {
-        let current_item = significant_items[items_cursor];
-
-        // This `if let` block is for named argument detection, not path termination.
-        // It should remain as is, as it correctly breaks if a named argument is next.
-        if items_cursor + 1 < significant_items.len() &&
-           significant_items[items_cursor + 1].kind == UnilangTokenKind::Delimiter("::".to_string()) {
-            break; // Break to handle named argument
-        }
-
-        match &current_item.kind {
+    // The command path consists of identifiers. Any other token type terminates the command path.
+    if let Some(first_item) = significant_items.get(items_cursor) {
+        match &first_item.kind {
             UnilangTokenKind::Identifier(s) => {
-                // Existing logic for segment index change
-                #[allow(clippy::collapsible_if)]
-                if !command_path_slices.is_empty() {
-                    if items_cursor > 0 {
-                         let previous_item_in_path_source = significant_items[items_cursor -1];
-                         if current_item.segment_idx != previous_item_in_path_source.segment_idx {
-                             break; // Segment change, end of path
-                         }
-                    }
-                }
                 command_path_slices.push(s.clone());
                 items_cursor += 1;
             },
-            UnilangTokenKind::QuotedValue(_) => {
-                // Quoted values are always arguments, not part of the command path
-                break;
-            },
-            UnilangTokenKind::Unrecognized(s) => {
-                // If an Unrecognized token contains '.' or '/', treat it as a path segment
-                if s.contains('.') || s.contains('/') {
-                    let segments: Vec<String> = s.split(['.', '/']).map(ToString::to_string).collect();
-                    for segment in segments {
-                        if !segment.is_empty() {
-                            command_path_slices.push(segment);
-                        }
-                    }
-                    items_cursor += 1;
-                } else {
-                    // Otherwise, it's an unexpected token, so break
-                    break;
-                }
-            },
             _ => {
-                // Any other token type (including other delimiters/operators) also ends the command path
+                // If the first item is not an identifier, it's an error or an empty command.
+                // For now, we'll treat it as an empty command path and let argument parsing handle it.
+                // This might need refinement based on specific requirements for "empty" commands.
+            }
+        }
+    }
+
+    // Continue consuming command path segments if they are dot-separated identifiers
+    // This loop should only run if the command path is already started and the next token is a '.'
+    while items_cursor + 1 < significant_items.len() {
+        let current_item = significant_items[items_cursor];
+        let next_item = significant_items[items_cursor + 1];
+
+        if current_item.kind == UnilangTokenKind::Delimiter(".".to_string()) {
+            if let UnilangTokenKind::Identifier(s) = &next_item.kind {
+                command_path_slices.push(s.clone());
+                items_cursor += 2; // Consume '.' and the identifier
+            } else {
+                // Unexpected token after '.', terminate command path
                 break;
             }
+        } else {
+            // Not a dot-separated identifier, terminate command path
+            break;
         }
     }
 
@@ -373,18 +357,22 @@ impl Parser
                         items_cursor += 1;
                     }
                 }
-                UnilangTokenKind::Unrecognized(s_val_owned) if s_val_owned.starts_with("--") => {
-                    // Treat as a positional argument
-                    if seen_named_argument && self.options.error_on_positional_after_named {
-                         return Err(ParseError{ kind: ErrorKind::Syntax("Positional argument encountered after a named argument.".to_string()), location: Some(item.source_location()) });
+                UnilangTokenKind::Unrecognized(_s) => { // Removed `if s_val_owned.starts_with("--")`
+                    // Treat as a positional argument if it's not a delimiter
+                    if !item.inner.string.trim().is_empty() && !self.options.main_delimiters.contains(&item.inner.string) {
+                        if seen_named_argument && self.options.error_on_positional_after_named {
+                             return Err(ParseError{ kind: ErrorKind::Syntax("Positional argument encountered after a named argument.".to_string()), location: Some(item.source_location()) });
+                        }
+                        positional_arguments.push(Argument{
+                            name: None,
+                            value: item.inner.string.to_string(),
+                            name_location: None,
+                            value_location: item.source_location(),
+                        });
+                        items_cursor += 1;
+                    } else {
+                        return Err(ParseError{ kind: ErrorKind::Syntax(format!("Unexpected token in arguments: '{}' ({:?})", item.inner.string, item.kind)), location: Some(item.source_location()) });
                     }
-                    positional_arguments.push(Argument{
-                        name: None,
-                        value: s_val_owned.to_string(),
-                        name_location: None,
-                        value_location: item.source_location(),
-                    });
-                    items_cursor += 1;
                 }
                 UnilangTokenKind::Delimiter(d_s) if d_s == "::" => {
                      return Err(ParseError{ kind: ErrorKind::Syntax("Unexpected '::' without preceding argument name or after a previous value.".to_string()), location: Some(item.source_location()) });

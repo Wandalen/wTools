@@ -1,11 +1,15 @@
-use std::fmt::Debug;
-use super::*;
+#![ allow( unused_imports ) ]
+#![ allow( dead_code ) ]
 
-#[ allow( dead_code ) ]
-#[ the_module::phantom ]
-struct BoundsMixed< T: ToString, U >
-where
-  U: Debug,
-{}
+use test_tools::prelude::*;
+use std::marker::PhantomData;
+use core::marker::PhantomData as CorePhantomData;
 
-include!( "./only_test/bounds_mixed.rs" );
+
+pub struct BoundsMixed< T : ToString, U >
+{
+  _phantom : CorePhantomData< ( T, U ) >,
+}
+
+// Shared test logic
+include!( "../phantom_only_test.rs" );

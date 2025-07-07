@@ -68,7 +68,7 @@ specific needs of the broader forming context. It mandates the implementation of
   let former_definition_args = generic_args::merge( &generics.into_generic_args(), &extra ).args;
 
   /* parameters for former: Merge struct generics with the Definition generic parameter. */
-  let extra : macro_tools::GenericsWithWhere = parse_quote!
+  let extra : macro_tools::generic_params::GenericsWithWhere = parse_quote!
   {
     < Definition = #former_definition < #former_definition_args > >
     where
@@ -80,7 +80,7 @@ specific needs of the broader forming context. It mandates the implementation of
   = generic_params::decompose( &extra );
 
   /* parameters for former perform: Similar to former parameters, but specifically for the perform method. */
-  let extra : macro_tools::GenericsWithWhere = parse_quote!
+  let extra : macro_tools::generic_params::GenericsWithWhere = parse_quote!
   {
     < Definition = #former_definition < #former_definition_args > >
     where
@@ -100,7 +100,7 @@ specific needs of the broader forming context. It mandates the implementation of
   = generic_params::decompose( &extra );
 
   /* parameters for definition types: Merge struct generics with Context and Formed parameters. */
-  let extra : macro_tools::GenericsWithWhere = parse_quote!
+  let extra : macro_tools::generic_params::GenericsWithWhere = parse_quote!
   {
     < __Context = (), __Formed = #item < #struct_generics_ty > >
   };
@@ -111,7 +111,7 @@ specific needs of the broader forming context. It mandates the implementation of
   let former_definition_types_phantom = macro_tools::phantom::tuple( &former_definition_types_generics_impl );
 
   /* parameters for definition: Merge struct generics with Context, Formed, and End parameters. */
-  let extra : macro_tools::GenericsWithWhere = parse_quote!
+  let extra : macro_tools::generic_params::GenericsWithWhere = parse_quote!
   {
     < __Context = (), __Formed = #item < #struct_generics_ty >, __End = former::ReturnPreformed >
   };

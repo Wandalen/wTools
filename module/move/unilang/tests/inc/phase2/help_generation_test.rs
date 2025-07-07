@@ -5,6 +5,8 @@
 
 use assert_cmd::Command;
 use predicates::prelude::*;
+// use unilang::registry::CommandRegistry; // Removed unused import
+// use unilang::data::{ CommandDefinition, ArgumentDefinition, Kind }; // Removed unused import
 
 // Test Matrix for Help Generation
 //

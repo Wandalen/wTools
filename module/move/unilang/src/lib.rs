@@ -8,9 +8,9 @@ pub mod types;
 pub mod data;
 pub mod error;
 pub mod loader;
-pub mod parsing;
+
 pub mod registry;
 pub mod semantic;
 pub mod interpreter;
 pub mod help;
-pub mod ca;
+

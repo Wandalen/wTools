@@ -5,6 +5,6 @@ use derive_tools::Deref;
 
 #[ allow( dead_code ) ]
 #[ derive( Deref ) ]
-struct BoundsInlined< T : ToString, U : Debug >( T, U );
+struct BoundsInlined< T : ToString, U : Debug >( #[ deref ] T, U );
 
 include!( "./only_test/bounds_inlined.rs" );

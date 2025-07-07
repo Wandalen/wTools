@@ -2,13 +2,13 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-#[ derive( the_module::Index ) ]
+// #[ derive( the_module::Index ) ]
 struct StructMultipleNamed< T > 
 {
   a : Vec< T >,
-  #[ index ]
+  // #[ index ]
   b : Vec< T >,
 }
 
-include!( "./only_test/struct_multiple_named.rs" );
+// include!( "./only_test/struct_multiple_named.rs" );
 

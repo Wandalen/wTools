@@ -3,7 +3,7 @@ use derive_tools::DerefMut;
 
 #[ allow( dead_code ) ]
 #[ derive( DerefMut ) ]
-struct GenericsTypes< T >( T );
+struct GenericsTypes< T >( #[ deref_mut ] T );
 
 impl< T > Deref for GenericsTypes< T >
 {

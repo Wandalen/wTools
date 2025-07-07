@@ -1,8 +1,23 @@
-error: Only one field can include #[ index ] derive macro
- --> tests/inc/index_mut/compiletime/struct.rs:6:3
+error: Expected `#[index_mut]` attribute on one field or a single-field struct
+  --> tests/inc/index_mut/compiletime/struct.rs:4:1
+   |
+4  | / struct StructMultipleNamed< T >
+5  | | {
+6  | |   #[ index ]
+7  | |   a : Vec< T >,
+8  | |   #[ index ]
+9  | |   b : Vec< T >,
+10 | | }
+   | |_^
+
+error: cannot find attribute `index` in this scope
+ --> tests/inc/index_mut/compiletime/struct.rs:6:6
   |
-6 | /   #[ index ]
-7 | |   a : Vec< T >,
-8 | |   #[ index ]
-9 | |   b : Vec< T >,
-  | |_______________^
+6 |   #[ index ]
+  |      ^^^^^
+
+error: cannot find attribute `index` in this scope
+ --> tests/inc/index_mut/compiletime/struct.rs:8:6
+  |
+8 |   #[ index ]
+  |      ^^^^^

@@ -1,9 +1,22 @@
-#[ allow( clippy::wildcard_imports ) ]
-use super::*;
-use macro_tools::{ attr, diag, generic_params, Result, struct_like::StructLike };
+use macro_tools::
+{
+  diag,
+  struct_like::StructLike,
+  Result,
+  qt,
+  attr,
+  syn,
+  proc_macro2,
+  Spanned,
+};
+use macro_tools::diag::prelude::*;
 
-//
+use macro_tools::quote::ToTokens;
 
+
+///
+/// Derive macro to implement Deref when-ever it's possible to do automatically.
+///
 pub fn deref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   let original_input = input.clone();
@@ -11,44 +24,66 @@ pub fn deref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
   let has_debug = attr::has_debug( parsed.attrs().iter() )?;
   let item_name = &parsed.ident();
 
-  let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
-  = generic_params::decompose( parsed.generics() );
+  let ( generics_impl, generics_ty, generics_where_option )
+  = parsed.generics().split_for_impl();
+
 
   let result = match parsed
   {
-    StructLike::Unit( _ ) =>
+    StructLike::Unit( ref item ) =>
     {
-      generate_unit
-      (
-        item_name,
-        &generics_impl,
-        &generics_ty,
-        &generics_where,
-      )
-    }
+      return_syn_err!( item.span(), "Deref cannot be derived for unit structs. It is only applicable to structs with at least one field." );
+    },
     StructLike::Struct( ref item ) =>
     {
-      generate_struct
+      let fields_count = item.fields.len();
+      let mut target_field_type = None;
+      let mut target_field_name = None;
+      let mut deref_attr_count = 0;
+
+      if fields_count == 0 {
+        return_syn_err!( item.span(), "Deref cannot be derived for structs with no fields." );
+      } else if fields_count == 1 {
+        // Single field struct: automatically deref to that field
+        let field = item.fields.iter().next().expect( "Expects a single field to derive Deref" );
+        target_field_type = Some( field.ty.clone() );
+        target_field_name.clone_from( &field.ident );
+      } else {
+        // Multi-field struct: require #[deref] attribute on one field
+        for field in &item.fields {
+          if attr::has_deref( field.attrs.iter() )? {
+            deref_attr_count += 1;
+            target_field_type = Some( field.ty.clone() );
+            target_field_name.clone_from( &field.ident );
+          }
+        }
+
+        if deref_attr_count == 0 {
+          return_syn_err!( item.span(), "Deref cannot be derived for multi-field structs without a `#[deref]` attribute on one field." );
+        } else if deref_attr_count > 1 {
+          return_syn_err!( item.span(), "Only one field can have the `#[deref]` attribute." );
+        }
+      }
+
+      let field_type = target_field_type.ok_or_else(|| syn_err!( item.span(), "Could not determine target field type for Deref." ))?;
+      let field_name = target_field_name;
+
+      generate
       (
         item_name,
-        &generics_impl,
-        &generics_ty,
-        &generics_where,
-        &item.fields,
+        &generics_impl, // Pass as reference
+        &generics_ty, // Pass as reference
+        generics_where_option,
+        &field_type,
+        field_name.as_ref(),
+        &original_input,
       )
-    }
+    },
     StructLike::Enum( ref item ) =>
     {
-      generate_enum
-      (
-        item_name,
-        &generics_impl,
-        &generics_ty,
-        &generics_where,
-        &item.variants,
-      )
-    }
-  }?;
+      return_syn_err!( item.span(), "Deref cannot be derived for enums. It is only applicable to structs with a single field or a field with `#[deref]` attribute." );
+    },
+  };
 
   if has_debug
   {
@@ -59,490 +94,92 @@ pub fn deref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
   Ok( result )
 }
 
-/// Generates `Deref` implementation for unit structs and enums
+/// Generates `Deref` implementation for structs.
 ///
-/// # Example
-///
-/// ## Input
-/// ```rust
-/// # use derive_tools_meta::Deref;
-/// #[ derive( Deref ) ]
-/// pub struct Struct;
-/// ```
-/// 
-/// ## Output
-/// ```rust
-/// pub struct Struct;
-/// #[ automatically_derived ]
-/// impl ::core::ops::Deref for Struct
+/// Example of generated code:
+/// ```text
+/// impl Deref for IsTransparent
 /// {
-///   type Target = ();
-///   #[ inline( always ) ]
-///   fn deref( &self ) -> &Self::Target
-///   {
-///     &()
-///   }
-/// }
+///   type Target = bool;
+///   fn deref( &self ) -> &bool
+/// ///   {
+/// ///     &self.0
+/// ///   }
+/// /// }
 /// ```
-///
-#[ allow( clippy::unnecessary_wraps ) ]
-fn generate_unit
+fn generate
 (
   item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  generics_impl : &syn::ImplGenerics<'_>, // Use ImplGenerics with explicit lifetime
+  generics_ty : &syn::TypeGenerics<'_>, // Use TypeGenerics with explicit lifetime
+  generics_where: Option< &syn::WhereClause >, // Use WhereClause
+  field_type : &syn::Type,
+  field_name : Option< &syn::Ident >,
+  original_input : &proc_macro::TokenStream,
 )
--> Result< proc_macro2::TokenStream >
+-> proc_macro2::TokenStream
 {
-  Ok
-  (
-    qt!
-    {
-      #[ automatically_derived ]
-      impl< #generics_impl > ::core::ops::Deref for #item_name< #generics_ty >
-      where
-        #generics_where
-      {
-        type Target = ();
-        #[ inline( always ) ]
-        fn deref( &self ) -> &Self::Target
-        {
-          &()
-        }
-      }
-    }
-  )
-}
-
-/// An aggregator function to generate `Deref` implementation for unit, tuple structs and the ones with named fields
-fn generate_struct
-(
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  fields : &syn::Fields,
-)
--> Result< proc_macro2::TokenStream >
-{
-  match fields
+  let body = if let Some( field_name ) = field_name
   {
-
-    syn::Fields::Unit =>
-    generate_unit
-    (
-      item_name,
-      generics_impl,
-      generics_ty,
-      generics_where,
-    ),
-
-    syn::Fields::Unnamed( fields ) =>
-    generate_struct_tuple_fields
-    (
-      item_name,
-      generics_impl,
-      generics_ty,
-      generics_where,
-      fields,
-    ),
-
-    syn::Fields::Named( fields ) =>
-    generate_struct_named_fields
-    (
-      item_name,
-      generics_impl,
-      generics_ty,
-      generics_where,
-      fields,
-    ),
-
+    qt!{ &self.#field_name }
   }
-}
-
-/// Generates `Deref` implementation for structs with tuple fields
-///
-/// # Example
-///
-/// ## Input
-/// ```rust
-/// # use derive_tools_meta::Deref;
-/// #[ derive( Deref ) ]
-/// pub struct Struct( i32, Vec< String > );
-/// ```
-///
-/// ## Output
-/// ```rust
-/// pub struct Struct( i32, Vec< String > );
-/// #[ automatically_derived ]
-/// impl ::core::ops::Deref for Struct
-/// {
-///   type Target = i32;
-///   #[ inline( always ) ]
-///   fn deref( &self ) -> &Self::Target
-///   {
-///     &self.0
-///   }
-/// }
-/// ```
-///
-fn generate_struct_tuple_fields
-(
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  fields : &syn::FieldsUnnamed,
-)
--> Result< proc_macro2::TokenStream >
-{
-  let fields = &fields.unnamed;
-  let field_type = match fields.first()
+  else
   {
-    Some( field ) => &field.ty,
-    None => return generate_unit
-    (
-      item_name,
-      generics_impl,
-      generics_ty,
-      generics_where,
-    ),
+    qt!{ &self.0 }
   };
 
-  Ok
-  (
-    qt!
-    {
-      #[ automatically_derived ]
-      impl< #generics_impl > ::core::ops::Deref for #item_name< #generics_ty >
-      where
-        #generics_where
-      {
-        type Target = #field_type;
-        #[ inline( always ) ]
-        fn deref( &self ) -> &Self::Target
-        {
-          &self.0
-        }
-      }
-    }
-  )
-}
-
-/// Generates `Deref` implementation for structs with named fields
-///
-/// # Example
-///
-/// ## Input
-/// ```rust
-/// # use derive_tools_meta::Deref;
-/// #[ derive( Deref ) ]
-/// pub struct Struct
-/// {
-///   a : i32,
-///   b : Vec< String >,
-/// }
-/// ```
-///
-/// ## Output
-/// ```rust
-/// pub struct Struct
-/// {
-///   a : i32,
-///   b : Vec< String >,
-/// }
-/// #[ automatically_derived ]
-/// impl ::core::ops::Deref for Struct
-/// {
-///   type Target = i32;
-///   #[ inline( always ) ]
-///   fn deref( &self ) -> &Self::Target
-///   {
-///     &self.a
-///   }
-/// }
-/// ```
-///
-fn generate_struct_named_fields
-(
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  fields : &syn::FieldsNamed,
-)
--> Result< proc_macro2::TokenStream >
-{
-  let fields = &fields.named;
-  let ( field_name, field_type ) = match fields.first()
+  let where_clause_tokens = if let Some( generics_where ) = generics_where
   {
-    Some( field ) => ( field.ident.as_ref().unwrap(), &field.ty ),
-    None => return generate_unit
-    (
-      item_name,
-      generics_impl,
-      generics_ty,
-      generics_where,
-    ),
-  };
-
-  Ok
-  (
-    qt!
-    {
-      #[ automatically_derived ]
-      impl< #generics_impl > ::core::ops::Deref for #item_name< #generics_ty >
-      where
-        #generics_where
-      {
-        type Target = #field_type;
-        #[ inline( always ) ]
-        fn deref( &self ) -> &Self::Target
-        {
-          &self.#field_name
-        }
-      }
-    }
-  )
-}
-
-/// An aggregator function to generate `Deref` implementation for unit, tuple enums and the ones with named fields
-fn generate_enum
-(
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  variants : &syn::punctuated::Punctuated<syn::Variant, syn::Token![,]>,
-)
--> Result< proc_macro2::TokenStream >
-{
-  let fields = match variants.first()
-  {
-    Some( variant ) => &variant.fields,
-    None => return generate_unit
-    (
-      item_name,
-      generics_impl,
-      generics_ty,
-      generics_where,
-    ),
-  };
-
-  // error if fields have different types
-  if !variants.iter().skip(1).all(|v| &v.fields == fields)
-  {
-    return Err( syn::Error::new( variants.span(), "Variants must have the same type" ) );
+    qt!{ where #generics_where }
   }
-
-  let idents = variants.iter().map( | v | v.ident.clone() ).collect::< Vec< _ > >();
-
-  match fields
+  else
   {
+    proc_macro2::TokenStream::new()
+  };
 
-    syn::Fields::Unit =>
-    generate_unit
-    (
-      item_name,
-      generics_impl,
-      generics_ty,
-      generics_where,
-    ),
+  let debug = format!
+  (
+    r"
+#[ automatically_derived ]
+impl {} core::ops::Deref for {} {}
+{}
+{{
+  type Target = {};
+  #[ inline ]
+  fn deref( &self ) -> &{}
+  {{
+    {}
+  }}
+}}
+    ",
+    qt!{ #generics_impl },
+    item_name,
+    generics_ty.to_token_stream(), // Use generics_ty directly for debug
+    where_clause_tokens,
+    qt!{ #field_type },
+    qt!{ #field_type },
+    body,
+  );
+  let about = format!
+  (
+r"derive : Deref
+item : {item_name}
+field_type : {field_type:?}
+field_name : {field_name:?}",
+  );
+  diag::report_print( about, original_input, debug.to_string() );
 
-    syn::Fields::Unnamed( ref item ) =>
-    generate_enum_tuple_variants
-    (
-      item_name,
-      generics_impl,
-      generics_ty,
-      generics_where,
-      &idents,
-      item,
-    ),
-
-    syn::Fields::Named( ref item ) =>
-    generate_enum_named_variants
-    (
-      item_name,
-      generics_impl,
-      generics_ty,
-      generics_where,
-      &idents,
-      item,
-    ),
-
+  qt!
+  {
+    #[ automatically_derived ]
+    impl #generics_impl ::core::ops::Deref for #item_name #generics_ty #generics_where
+    {
+      type Target = #field_type;
+      #[ inline( always ) ]
+      fn deref( &self ) -> & #field_type
+      {
+        #body
+      }
+    }
   }
-}
-
-/// Generates `Deref` implementation for enums with tuple fields
-///
-/// # Example
-///
-/// ## Input
-/// ```rust
-/// # use derive_tools_meta::Deref;
-/// #[ derive( Deref ) ]
-/// pub enum E
-/// {
-///   A ( i32, Vec< String > ),
-///   B ( i32, Vec< String > ),
-///   C ( i32, Vec< String > ),
-/// }
-/// ```
-///
-/// ## Output
-/// ```rust
-/// pub enum E
-/// {
-///   A ( i32, Vec< String > ),
-///   B ( i32, Vec< String > ),
-///   C ( i32, Vec< String > ),
-/// }
-/// #[ automatically_derived ]
-/// impl ::core::ops::Deref for E
-/// {
-///   type Target = i32;
-///   #[ inline( always ) ]
-///   fn deref( &self ) -> &Self::Target
-///   {
-///     match self
-///     {
-///       E::A( v, .. ) | E::B( v, .. ) | E::C( v, .. ) => v,
-///     }
-///   }
-/// }
-/// ```
-///
-fn generate_enum_tuple_variants
-(
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  variant_idents : &[ syn::Ident ],
-  fields : &syn::FieldsUnnamed,
-)
--> Result< proc_macro2::TokenStream >
-{
-  let fields = &fields.unnamed;
-  let field_ty = match fields.first()
-  {
-    Some( field ) => &field.ty,
-    None => return generate_unit
-    (
-      item_name,
-      generics_impl,
-      generics_ty,
-      generics_where,
-    ),
-  };
-
-  Ok
-  (
-    qt!
-    {
-      #[ automatically_derived ]
-      impl< #generics_impl > ::core::ops::Deref for #item_name< #generics_ty >
-      where
-        #generics_where
-      {
-        type Target = #field_ty;
-        #[ inline( always ) ]
-        fn deref( &self ) -> &Self::Target
-        {
-          match self
-          {
-            #( #item_name::#variant_idents( v, .. ) )|* => v
-          }
-        }
-      }
-    }
-  )
-}
-
-/// Generates `Deref` implementation for enums with named fields
-///
-/// # Example
-///
-/// ## Input
-/// ```rust
-/// # use derive_tools_meta::Deref;
-/// #[ derive( Deref ) ]
-/// pub enum E
-/// {
-///   A { a : i32, b : Vec< String > },
-///   B { a : i32, b : Vec< String > },
-///   C { a : i32, b : Vec< String > },
-/// }
-/// ```
-///
-/// ## Output
-/// ```rust
-/// pub enum E
-/// {
-///   A { a : i32, b : Vec< String > },
-///   B { a : i32, b : Vec< String > },
-///   C { a : i32, b : Vec< String > },
-/// }
-/// #[ automatically_derived ]
-/// impl ::core::ops::Deref for E
-/// {
-///   type Target = i32;
-///   #[ inline( always ) ]
-///   fn deref( &self ) -> &Self::Target
-///   {
-///     match self
-///     {
-///       E::A { a : v, .. } | E::B { a : v, .. } | E::C { a : v, .. } => v,
-///     }
-///   }
-/// }
-/// ```
-///
-fn generate_enum_named_variants
-(
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  variant_idents : &[ syn::Ident ],
-  fields : &syn::FieldsNamed,
-)
--> Result< proc_macro2::TokenStream >
-{
-  let fields = &fields.named;
-  let ( field_name, field_ty ) = match fields.first()
-  {
-    Some( field ) => ( field.ident.as_ref().unwrap(), &field.ty ),
-    None => return generate_unit
-    (
-      item_name,
-      generics_impl,
-      generics_ty,
-      generics_where,
-    ),
-  };
-
-  Ok
-  (
-    qt!
-    {
-      #[ automatically_derived ]
-      impl< #generics_impl > ::core::ops::Deref for #item_name< #generics_ty >
-      where
-        #generics_where
-      {
-        type Target = #field_ty;
-        #[ inline( always ) ]
-        fn deref( &self ) -> &Self::Target
-        {
-          match self
-          {
-            #( #item_name::#variant_idents{ #field_name : v, ..} )|* => v
-          }
-        }
-      }
-    }
-  )
 }

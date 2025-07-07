@@ -1,11 +1,11 @@
 
 #[ allow( unused_imports ) ]
 use super::*;
-use the_module::prelude::*;
+
 
 //
 
-#[ clone_dyn ]
+#[ the_module::clone_dyn ]
 trait Trait1< T1 : ::core::fmt::Debug, T2 >
 where
   T2 : ::core::fmt::Debug,

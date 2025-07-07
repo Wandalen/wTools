@@ -1,5 +1,5 @@
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind };
-use unilang::parsing::Parser;
+use unilang_instruction_parser::{ Parser, UnilangParserOptions }; // Updated import
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
 use unilang::types::Value;
@@ -7,6 +7,8 @@ use std::path::PathBuf;
 use url::Url;
 use chrono::DateTime;
 use regex::Regex;
+use unilang_instruction_parser::SourceLocation::StrSpan;
+use unilang_instruction_parser::SourceLocation::StrSpan;
 
 fn setup_test_environment( command: CommandDefinition ) -> CommandRegistry
 {
@@ -15,11 +17,30 @@ fn setup_test_environment( command: CommandDefinition ) -> CommandRegistry
   registry
 }
 
-fn analyze_program( program_str: &str, registry: &CommandRegistry ) -> Result< Vec< unilang::semantic::VerifiedCommand >, unilang::error::Error >
+fn analyze_program( command_name: &str, positional_args: Vec<unilang_instruction_parser::Argument>, named_args: std::collections::HashMap<String, unilang_instruction_parser::Argument>, registry: &CommandRegistry ) -> Result< Vec< unilang::semantic::VerifiedCommand >, unilang::error::Error >
 {
-  let program = Parser::new( program_str ).parse();
-  let analyzer = SemanticAnalyzer::new( &program, registry );
-  analyzer.analyze()
+  eprintln!( "--- analyze_program debug ---" );
+  eprintln!( "Command Name: '{}'", command_name );
+  eprintln!( "Positional Args: {:?}", positional_args );
+  eprintln!( "Named Args: {:?}", named_args );
+
+  let instructions = vec!
+  [
+    unilang_instruction_parser::GenericInstruction
+    {
+      command_path_slices : command_name.split( '.' ).map( |s| s.to_string() ).collect(),
+      named_arguments : named_args,
+      positional_arguments : positional_args,
+      help_requested : false,
+      overall_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 }, // Placeholder
+    }
+  ];
+  eprintln!( "Manually Constructed Instructions: {:?}", instructions );
+  let analyzer = SemanticAnalyzer::new( &instructions, registry );
+  let result = analyzer.analyze();
+  eprintln!( "Analyzer Result: {:?}", result );
+  eprintln!( "--- analyze_program end ---" );
+  result
 }
 
 #[test]
@@ -40,14 +61,44 @@ fn test_path_argument_type()
     routine_link : None,
   };
   let registry = setup_test_environment( command );
-  let result = analyze_program( ".test.command ./some/relative/path", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "./some/relative/path".to_string(),
+        name_location : None,
+        value_location : StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "path_arg" ).unwrap();
   assert_eq!( *arg, Value::Path( PathBuf::from( "./some/relative/path" ) ) );
 
   // Test Matrix Row: T1.4
-  let result = analyze_program( ".test.command \"\"", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "".to_string(),
+        name_location : None,
+        value_location : StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_err() );
   let error = result.err().unwrap();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
@@ -75,7 +126,22 @@ fn test_file_argument_type()
   let registry = setup_test_environment( command );
 
   // Test Matrix Row: T1.5
-  let result = analyze_program( &format!( ".test.command {}", file_path ), &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : file_path.to_string(),
+        name_location : None,
+        value_location : StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "file_arg" ).unwrap();
@@ -85,7 +151,22 @@ fn test_file_argument_type()
   let dir_path = "test_dir_for_file_test";
   let _ = std::fs::remove_dir_all( dir_path ); // cleanup before
   std::fs::create_dir( dir_path ).unwrap();
-  let result = analyze_program( &format!( ".test.command {}", dir_path ), &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : dir_path.to_string(),
+        name_location : None,
+        value_location : StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_err() );
   let error = result.err().unwrap();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
@@ -117,7 +198,22 @@ fn test_directory_argument_type()
   let registry = setup_test_environment( command );
 
   // Test Matrix Row: T1.8
-  let result = analyze_program( &format!( ".test.command {}", dir_path ), &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : dir_path.to_string(),
+        name_location : None,
+        value_location : StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "dir_arg" ).unwrap();
@@ -127,7 +223,22 @@ fn test_directory_argument_type()
   let file_path = "test_file_2.txt";
   let _ = std::fs::remove_file( file_path ); // cleanup before
   std::fs::write( file_path, "test" ).unwrap();
-  let result = analyze_program( &format!( ".test.command {}", file_path ), &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : file_path.to_string(),
+        name_location : None,
+        value_location : StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_err() );
   let error = result.err().unwrap();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
@@ -156,20 +267,65 @@ fn test_enum_argument_type()
   let registry = setup_test_environment( command );
 
   // Test Matrix Row: T1.10
-  let result = analyze_program( ".test.command A", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "A".to_string(),
+        name_location : None,
+        value_location : StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "enum_arg" ).unwrap();
   assert_eq!( *arg, Value::Enum( "A".to_string() ) );
 
   // Test Matrix Row: T1.12
-  let result = analyze_program( ".test.command D", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "D".to_string(),
+        name_location : None,
+        value_location : StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_err() );
   let error = result.err().unwrap();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
 
   // Test Matrix Row: T1.13
-  let result = analyze_program( ".test.command a", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "a".to_string(),
+        name_location : None,
+        value_location : StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_err() );
   let error = result.err().unwrap();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
@@ -195,14 +351,44 @@ fn test_url_argument_type()
 
   // Test Matrix Row: T1.14
   let url_str = "https://example.com/path?q=1";
-  let result = analyze_program( &format!( ".test.command {}", url_str ), &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : url_str.to_string(),
+        name_location : None,
+        value_location : StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "url_arg" ).unwrap();
   assert_eq!( *arg, Value::Url( Url::parse( url_str ).unwrap() ) );
 
   // Test Matrix Row: T1.16
-  let result = analyze_program( ".test.command \"not a url\"", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "not a url".to_string(),
+        name_location : None,
+        value_location : StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_err() );
   let error = result.err().unwrap();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
@@ -228,14 +414,44 @@ fn test_datetime_argument_type()
 
   // Test Matrix Row: T1.18
   let dt_str = "2025-06-28T12:00:00Z";
-  let result = analyze_program( &format!( ".test.command {}", dt_str ), &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : dt_str.to_string(),
+        name_location : None,
+        value_location : StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "dt_arg" ).unwrap();
   assert_eq!( *arg, Value::DateTime( DateTime::parse_from_rfc3339( dt_str ).unwrap() ) );
 
   // Test Matrix Row: T1.20
-  let result = analyze_program( ".test.command 2025-06-28", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "2025-06-28".to_string(),
+        name_location : None,
+        value_location : StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_err() );
   let error = result.err().unwrap();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
@@ -261,7 +477,22 @@ fn test_pattern_argument_type()
 
   // Test Matrix Row: T1.22
   let pattern_str = "^[a-z]+$";
-  let result = analyze_program( &format!( ".test.command \"{}\"", pattern_str ), &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : pattern_str.to_string(),
+        name_location : None,
+        value_location : StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "pattern_arg" ).unwrap();
@@ -269,8 +500,25 @@ fn test_pattern_argument_type()
   assert_eq!( arg.to_string(), Value::Pattern( Regex::new( pattern_str ).unwrap() ).to_string() );
 
   // Test Matrix Row: T1.23
-  let result = analyze_program( ".test.command \"[a-z\"", &registry );
+  let result = analyze_program
+  (
+    ".test.command",
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "[a-z".to_string(),
+        name_location : None,
+        value_location : StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_err() );
   let error = result.err().unwrap();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
 }
+</replace>
+</search_and_replace>

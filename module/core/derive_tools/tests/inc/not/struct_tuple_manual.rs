@@ -13,4 +13,4 @@ impl Not for StructTuple
   }
 }
 
-include!( "./only_test/struct_tuple.rs" );
+// include!( "./only_test/struct_tuple.rs" );

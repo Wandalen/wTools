@@ -1,10 +1,11 @@
 use unilang::data::{ ArgumentDefinition, CommandDefinition, OutputData, ErrorData, Kind };
-use unilang::parsing::Parser;
+use unilang_instruction_parser::{ Parser, UnilangParserOptions }; // Updated import
 use unilang::registry::{ CommandRegistry, CommandRoutine };
 use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };
 use unilang::interpreter::{ Interpreter, ExecutionContext };
 use unilang::error::Error;
 // use std::collections::HashMap; // Removed unused import
+use unilang_instruction_parser::SourceLocation::StrSpan;
 
 // --- Test Routines ---
 
@@ -39,10 +40,20 @@ fn setup_registry_with_runtime_command( command_name: &str, routine: CommandRout
   registry
 }
 
-fn analyze_and_run( program_str: &str, registry: &CommandRegistry ) -> Result< Vec< OutputData >, Error >
+fn analyze_and_run( command_name: &str, positional_args: Vec<unilang_instruction_parser::Argument>, named_args: std::collections::HashMap<String, unilang_instruction_parser::Argument>, registry: &CommandRegistry ) -> Result< Vec< OutputData >, Error >
 {
-  let program = Parser::new( program_str ).parse();
-  let analyzer = SemanticAnalyzer::new( &program, registry );
+  let instructions = vec!
+  [
+    unilang_instruction_parser::GenericInstruction
+    {
+      command_path_slices : command_name.split( '.' ).map( |s| s.to_string() ).collect(),
+      named_arguments : named_args,
+      positional_arguments : positional_args,
+      help_requested : false,
+      overall_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 }, // Placeholder
+    }
+  ];
+  let analyzer = SemanticAnalyzer::new( &instructions, registry );
   let verified_commands = analyzer.analyze()?;
   let interpreter = Interpreter::new( &verified_commands, registry );
   let mut context = ExecutionContext::default();
@@ -67,7 +78,13 @@ fn test_runtime_command_execution()
   // Test Matrix Row: T4.3
   let command_name = ".runtime.test";
   let registry = setup_registry_with_runtime_command( command_name, Box::new( test_routine_no_args ), vec![] );
-  let result = analyze_and_run( command_name, &registry );
+  let result = analyze_and_run
+  (
+    command_name,
+    vec![],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   assert_eq!( result.unwrap().len(), 1 );
 }
@@ -90,7 +107,22 @@ fn test_runtime_command_with_arguments()
   assert!( registry.get_routine( command_name ).is_some() );
 
   // Test Matrix Row: T4.5
-  let result = analyze_and_run( &format!( "{} value1", command_name ), &registry );
+  let result = analyze_and_run
+  (
+    command_name,
+    vec!
+    [
+      unilang_instruction_parser::Argument
+      {
+        name : None,
+        value : "value1".to_string(),
+        name_location : None,
+        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result.is_ok() );
   let outputs = result.unwrap();
   assert_eq!( outputs.len(), 1 );
@@ -120,7 +152,13 @@ fn test_runtime_command_duplicate_registration()
   assert!( result2.is_ok() ); // Currently allows overwrite
 
   // Verify that the second routine (error routine) is now active
-  let result_run = analyze_and_run( command_name, &registry );
+  let result_run = analyze_and_run
+  (
+    command_name,
+    vec![],
+    std::collections::HashMap::new(),
+    &registry
+  );
   assert!( result_run.is_err() );
   let error = result_run.err().unwrap();
   assert!( matches!( error, Error::Execution( data ) if data.code == "ROUTINE_ERROR" ) );

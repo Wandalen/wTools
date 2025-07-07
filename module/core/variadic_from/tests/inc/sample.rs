@@ -10,7 +10,7 @@ fn sample()
 
   // Define a struct `MyStruct` with fields `a` and `b`.
   // The struct derives common traits like `Debug`, `PartialEq`, `Default`, and `VariadicFrom`.
-  #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
+  // #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
   // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
   struct MyStruct

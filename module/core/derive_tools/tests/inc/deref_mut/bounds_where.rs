@@ -6,7 +6,7 @@ use derive_tools::DerefMut;
 
 #[ allow( dead_code ) ]
 #[ derive( DerefMut ) ]
-struct BoundsWhere< T, U >( T, U )
+struct BoundsWhere< T, U >( #[ deref_mut ] T, U )
 where
   T : ToString,
   for< 'a > U : Trait< 'a >;

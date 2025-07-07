@@ -1,12 +1,17 @@
-use std::fmt::Debug;
-use super::*;
+#![ allow( unused_imports ) ]
+#![ allow( dead_code ) ]
 
-#[ allow( dead_code ) ]
-#[ the_module::phantom ]
-struct BoundsWhere< T, U >
+use test_tools::prelude::*;
+use std::marker::PhantomData;
+use core::marker::PhantomData as CorePhantomData;
+
+
+pub struct BoundsWhere< T, U >
 where
-  T: ToString,
-  U: Debug,
-{}
+  T : ToString,
+{
+  _phantom : CorePhantomData< ( T, U ) >,
+}
 
-include!( "./only_test/bounds_where.rs" );
+// Shared test logic
+include!( "../phantom_only_test.rs" );

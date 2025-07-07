@@ -1,4 +1,15 @@
 
+// ## Test Matrix for `only_test/basic.rs`
+//
+// This file contains basic tests for `clone_into_box` and `clone` functions.
+//
+// | ID | Description | Target Crate(s) | Test File(s) | Key Logic | Feature Combination | Expected Outcome |
+// |---|---|---|---|---|---|---|
+// | T1.1 | Verify `clone_into_box` for copyable types (`i32`). | `clone_dyn`, `clone_dyn_types` | `only_test/basic.rs` | `clone_into_box` | `clone_dyn_types` | Pass |
+// | T1.2 | Verify `clone_into_box` for clonable types (`String`). | `clone_dyn`, `clone_dyn_types` | `only_test/basic.rs` | `clone_into_box` | `clone_dyn_types` | Pass |
+// | T1.3 | Verify `clone_into_box` for slice types (`&str`, `&[i32]`). | `clone_dyn`, `clone_dyn_types` | `only_test/basic.rs` | `clone_into_box` | `clone_dyn_types` | Pass |
+// | T2.1 | Verify `clone()` helper for various types. | `clone_dyn`, `clone_dyn_types` | `only_test/basic.rs` | `clone` | `clone_dyn_types` | Pass |
+
 #[ test ]
 fn clone_into_box()
 {

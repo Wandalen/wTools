@@ -167,9 +167,9 @@ pub(super) fn former_for_enum
 
   // Diagnostic print for has_debug status (has_debug is now correctly determined by the caller)
   if has_debug {
-    diag::report_print("DEBUG former_for_enum: has_debug is TRUE at start (passed in).", original_input, &quote!{ struct DebugFlagWasTrue; });
+    // diag::report_print("DEBUG former_for_enum: has_debug is TRUE at start (passed in).", original_input, &quote!{ struct DebugFlagWasTrue; });
   } else {
-    diag::report_print("DEBUG former_for_enum: has_debug is FALSE at start (passed in).", original_input, &quote!{ struct DebugFlagWasFalse; });
+    // diag::report_print("DEBUG former_for_enum: has_debug is FALSE at start (passed in).", original_input, &quote!{ struct DebugFlagWasFalse; });
   }
 
   let mut methods = Vec::new();

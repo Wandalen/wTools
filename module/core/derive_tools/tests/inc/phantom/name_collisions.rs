@@ -1,15 +1,15 @@
-use super::*;
+#![ allow( unused_imports ) ]
+#![ allow( dead_code ) ]
 
-pub mod std {}
-pub mod core {}
-pub mod marker {}
+use test_tools::prelude::*;
+use std::marker::PhantomData;
+use core::marker::PhantomData as CorePhantomData;
 
-#[ allow( dead_code ) ]
-#[ the_module::phantom ]
-struct NameCollisions< T >
+
+pub struct NameCollisions< T >
 {
-  a : String,
-  b : i32,
+  _phantom : CorePhantomData< T >,
 }
 
-include!( "./only_test/name_collisions.rs" );
+// Shared test logic
+include!( "../phantom_only_test.rs" );

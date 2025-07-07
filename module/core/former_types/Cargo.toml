@@ -44,6 +44,7 @@ types_former = []
 [dependencies]
 collection_tools = { workspace = true, features = [ "collection_constructors" ] }
 # qqq : optimize also make sure collection_tools expose enough features
+component_model_types = { workspace = true, features = ["enabled", "types_component_assign"] }
 
 
 [dev-dependencies]
