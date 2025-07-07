@@ -116,6 +116,8 @@ mod private
     let path = AbsolutePath::try_from( o.path )?;
     let dir = CrateDir::try_from( path.clone() )?;
 
+    let workspace = Workspace::try_from( dir.clone() )?;
+
     let list = action::list_all
     (
       action::list::ListOptions::former()
@@ -160,7 +162,7 @@ mod private
         .checking_consistency( false )
         .dry( false ).form()
       )?;
-      let l = CrateArchive::read( packed_crate::local_path( name, version, dir )? )?;
+      let l = CrateArchive::read( packed_crate::local_path( name, version, workspace.target_directory() )? )?;
       let r = CrateArchive::download_crates_io( name, version ).unwrap();
 
 

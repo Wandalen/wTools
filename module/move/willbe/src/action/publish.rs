@@ -221,6 +221,7 @@ mod private
 
     let subgraph = graph::remove_not_required_to_publish
     (
+      &workspace,
       &package_map,
       &tmp_subgraph,
       &packages_to_publish,

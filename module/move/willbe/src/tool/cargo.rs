@@ -75,8 +75,14 @@ mod private
     #[ allow( clippy::if_not_else ) ]
     fn to_pack_args( &self ) -> Vec< String >
     {
+      // Building the full path to Cargo.toml
+      let manifest_path = self.path.join( "Cargo.toml" );
+      let normalized_manifest_path = manifest_path.to_string_lossy().replace( '\\', "/" );
       [ "run".to_string(), self.channel.to_string(), "cargo".into(), "package".into() ]
       .into_iter()
+      // clearly show the way to the manifesto
+      .chain( Some( "--manifest-path".to_string() ) )
+      .chain( Some( normalized_manifest_path ) )
       .chain( if self.allow_dirty { Some( "--allow-dirty".to_string() ) } else { None } )
       .chain( if !self.checking_consistency { Some( "--no-verify".to_string() ) } else { None } )
       .chain( self.temp_path.clone().map( | p | vec![ "--target-dir".to_string(), p.to_string_lossy().into() ] ).into_iter().flatten() )

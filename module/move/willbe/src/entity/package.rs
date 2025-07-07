@@ -208,24 +208,44 @@ mod private
 
   //
 
-  /// Determines whether a package needs to be published by comparing `.crate` files from the local and remote package.
+  /// Determines if a package needs to be published by comparing its local `.crate` file against the version on crates.io.
   ///
-  /// This function requires the local package to be previously packed.
+  /// This function first locates the local, pre-packaged `.crate` file and then attempts to download
+  /// the corresponding version from the remote registry. It returns `true` if there are differences
+  /// or if the remote version does not exist (implying a new version to be published).
   ///
-  /// # Returns :
-  /// - `true` if the package needs to be published.
-  /// - `false` if there is no need to publish the package.
+  /// **Prerequisite**: The local package must have been packaged beforehand (e.g., using `cargo package`).
   ///
-  /// Panics if the package is not loaded or local package is not packed.
+  /// # Arguments
+  ///
+  /// * `package` - A reference to the `Package` struct for which the check is being performed.
+  /// * `path` - An optional path to a directory that contains the packaged `.crate` file.
+  ///   If `Some`, this path is used directly. If `None`, the path is constructed using `target_dir`.
+  /// * `target_dir` - The path to the workspace's `target` directory, used to find the
+  ///   local `.crate` file if a specific `path` is not provided.
+  ///
+  /// # Returns
+  ///
+  /// - `Ok(true)` if the local and remote `.crate` files have differences, or if the package
+  ///   version does not exist on crates.io (e.g., a 403 Forbidden error is received).
+  /// - `Ok(false)` if the local and remote packages are identical.
+  ///
   /// # Errors
-  /// qqq: doc
-  pub fn publish_need( package : &Package< '_ >, path : Option< path::PathBuf > ) -> Result< bool, PackageError >
+  ///
+  /// This function will return an error in the following cases:
+  ///
+  /// - `PackageError::LocalPath`: If the path to the local `.crate` file cannot be determined.
+  /// - `PackageError::ReadArchive`: If the local `.crate` file exists but cannot be read.
+  /// - `PackageError::LoadRemotePackage`: If downloading the remote package fails for reasons
+  ///   other than a non-existent version (e.g., network issues).
+  /// - Any error that occurs while trying to read the package's name or version.
+  pub fn publish_need( package : &Package< '_ >, path : Option< path::PathBuf >, target_dir : &std::path::Path ) -> Result< bool, PackageError >
   {
     let name = package.name()?;
     let version = package.version()?;
     let local_package_path = path
     .map( | p | p.join( format!( "package/{name}-{version}.crate" ) ) )
-    .unwrap_or( packed_crate::local_path( name, &version, package.crate_dir() ).map_err( | _ | PackageError::LocalPath )? );
+    .unwrap_or( packed_crate::local_path( name, &version, target_dir ).map_err( | _ | PackageError::LocalPath )? );
 
     let local_package = CrateArchive::read( local_package_path ).map_err( | _ | PackageError::ReadArchive )?;
     let remote_package = match CrateArchive::download_crates_io( name, version )
