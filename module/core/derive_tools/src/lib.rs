@@ -56,6 +56,8 @@ pub use derive_tools_meta::DerefMut;
 pub use derive_tools_meta::Index;
 #[ cfg( feature = "derive_index_mut" ) ]
 pub use derive_tools_meta::IndexMut;
+#[ cfg( feature = "derive_add" ) ]
+pub use derive_tools_meta::Add;
 #[ cfg( feature = "derive_more" ) ]
 #[ allow( unused_imports ) ]
 mod derive_more

@@ -304,4 +304,44 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
   derive::variadic_from::variadic_from( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
 }
 
-
+///
+/// Implement `Add` for a structure.
+///
+/// #Examples
+/// ```
+/// use derive_tools_meta::Add;
+/// 
+/// #[ derive( Add ) ]
+/// struct MyStruct
+/// {
+///   x: i32
+/// };
+/// 
+/// let my_struct1 = MyStruct { x : 3 };
+/// let my_struct2 = MyStruct { x : 3 };
+/// 
+/// let result = ( my_struct1 + my_struct2 );
+/// 
+/// assert_eq!( result.x, 6 );
+/// ```
+///
+/// /// #Examples
+/// ```
+/// use derive_tools_meta::Add;
+/// 
+/// #[ derive( Add ) ]
+/// struct MyStruct( i32 );
+/// 
+/// let my_struct1 = MyStruct ( 3 );
+/// let my_struct2 = MyStruct ( 3 );
+/// 
+/// let result = ( my_struct1 + my_struct2 );
+/// 
+/// assert_eq!( result.0, 6 );
+/// ```
+/// 
+#[ proc_macro_derive( Add ) ]
+pub fn add( input : proc_macro::TokenStream ) -> proc_macro::TokenStream 
+{
+  derive::add::add( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
+} 

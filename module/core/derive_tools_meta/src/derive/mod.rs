@@ -10,6 +10,7 @@ pub mod new;
 pub mod not;
 pub mod phantom;
 pub mod variadic_from;
+pub mod add;
 
 #[ path = "from/field_attributes.rs" ]
 pub mod field_attributes;
