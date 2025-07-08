@@ -395,6 +395,16 @@ mod private
     // This is inside pub mod private, so pub fn makes it pub
     pub fn split_fast( self ) -> SplitFastIterator< 'a, D > { SplitFastIterator::new( &self ) }
   }
+  impl< 'a > core::iter::IntoIterator for SplitOptions< 'a, Vec< &'a str > >
+  {
+    type Item = Split< 'a >;
+    type IntoIter = SplitIterator< 'a >;
+
+    fn into_iter( self ) -> Self::IntoIter
+    {
+      SplitIterator::new( &self )
+    }
+  }
 
   /// Adapter trait to provide split options to iterators.
   pub trait SplitOptionsAdapter< 'a, D > where D : Searcher + Default + Clone
