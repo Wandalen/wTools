@@ -17,21 +17,19 @@
 ### Progress
 *   **Roadmap Milestone:** N/A (Bug fix to unblock `unilang`'s M3.1)
 *   **Primary Editable Crate:** `module/move/unilang_instruction_parser`
-*   **Overall Progress:** 1/6 increments complete
+*   **Overall Progress:** 1/5 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Refactor Token Classification and Simplify Engine
-    *   ⚫ Increment 2: Address `strs_tools` API Issue via MRE and Local Patch
-    *   ⏳ Increment 3: Fix Unescaping and Re-enable Tests
-    *   ⚫ Increment 4: Add Comprehensive, Failing Spec-Adherence Tests
-    *   ⚫ Increment 5: Implement Correct Parser State Machine
-    *   ⚫ Increment 6: Finalization
+    *   ⏳ Increment 2: Fix Unescaping and Re-enable Tests
+    *   ⚫ Increment 3: Add Comprehensive, Failing Spec-Adherence Tests
+    *   ⚫ Increment 4: Implement Correct Parser State Machine
+    *   ⚫ Increment 5: Finalization
 
 ### Permissions & Boundaries
 *   **Mode:** code
 *   **Run workspace-wise commands:** true
 *   **Add transient comments:** true
-*   **Additional Editable Crates:**
-    *   `module/core/strs_tools` (Reason: To apply a local patch for the `strs_tools` API issue.)
+*   **Additional Editable Crates:** None
 
 ### Relevant Context
 *   Control Files to Reference:
@@ -40,8 +38,7 @@
     *   `src/parser_engine.rs`
     *   `src/item_adapter.rs`
     *   `tests/`
-*   External Crates Requiring `task.md` Proposals:
-    *   `module/core/strs_tools` (Reason: `SplitOptions` does not implement `Iterator` for `Vec<&str>` delimiter type.)
+*   External Crates Requiring `task.md` Proposals: None
 
 ### Expected Behavior Rules / Specifications
 *   The parser must correctly implement all rules in `spec.md`, Section 2.4 "Parsing Rules and Precedence".
@@ -63,39 +60,26 @@
 *   **Goal:** To simplify the parser by replacing the manual, error-prone tokenizer in `parser_engine.rs` with the architecturally-mandated `strs_tools` crate. This creates a clean, simple foundation for implementing the correct parsing logic.
 *   **Commit Message:** "refactor(parser): Simplify tokenization via item_adapter"
 
-##### Increment 2: Address `strs_tools` API Issue via MRE and Local Patch
-*   **Goal:** To unblock compilation by addressing the `strs_tools` API iteration issue, allowing the `unilang_instruction_parser` task to proceed.
-*   **Specification Reference:** N/A (External crate bug fix)
-*   **Steps:**
-    1.  Create a Minimal Reproducible Example (MRE) in `module/move/unilang_instruction_parser/tests/strs_tools_mre.rs` that demonstrates the `strs_tools::split()...form().iter().collect()` compilation error.
-    2.  Generate an `External Crate Change Proposal` (`task.md`) in `module/core/strs_tools/task.md` detailing the `strs_tools` API issue and proposing a fix (e.g., ensuring `SplitOptions` correctly implements `Iterator` for `Vec<&str>` delimiter types).
-    3.  Create a temporary local copy of the `strs_tools` crate (e.g., `temp_strs_tools_fix`).
-    4.  Apply the proposed fix to the `temp_strs_tools_fix` local copy.
-    5.  Modify `module/move/unilang_instruction_parser/Cargo.toml` to use a `[patch.crates-io]` directive, pointing `strs_tools` to `temp_strs_tools_fix`.
-    6.  Perform Increment Verification.
-*   **Increment Verification:**
-    1.  Execute `timeout 90 cargo test -p unilang_instruction_parser --test strs_tools_mre` via `execute_command`. This test should now compile and pass (or be ignored if the fix is applied).
-    2.  Execute `timeout 90 cargo build -p unilang_instruction_parser` via `execute_command`. The build should succeed without the `into_iter` error.
-*   **Commit Message:** "fix(deps): Address strs_tools iteration issue with local patch"
-
-##### Increment 3: Fix Unescaping and Re-enable Tests
-*   **Goal:** To resolve the unescaping bug identified in Increment 1, re-enable the disabled tests, and ensure all existing tests pass, creating a stable foundation for further development.
+##### Increment 2: Fix Unescaping and Re-enable Tests
+*   **Goal:** To resolve the unescaping bug identified in Increment 1 by fully delegating unescaping to `strs_tools`, re-enabling the disabled tests, and ensuring all existing tests pass, creating a stable foundation for further development.
 *   **Specification Reference:** N/A (Bug fix)
 *   **Steps:**
-    1.  Use `read_file` to load the current content of `module/move/unilang_instruction_parser/src/parser_engine.rs` and `module/move/unilang_instruction_parser/src/item_adapter.rs`.
-    2.  Modify the content of `parser_engine.rs` in-memory. In the `tokenize_input` function, ensure the `SplitOptionsFormer` is configured with `.quoting(true)`. This delegates all unescaping responsibility to the `strs_tools` crate.
-    3.  Modify the content of `item_adapter.rs` in-memory. Completely remove the `unescape_string_with_errors` function.
-    4.  In the modified `item_adapter.rs` content, update the `classify_split` function to handle `SplitType::Quoted`. When it receives a `Quoted` split, it should classify it as `UnilangTokenKind::QuotedValue` and use the `split.string` directly, as `strs_tools` has already performed the unescaping.
-    5.  Use `write_to_file` to save the updated contents of `src/parser_engine.rs` and `src/item_adapter.rs`.
-    6.  Use `read_file` to load the content of `module/move/unilang_instruction_parser/tests/inc/instruction_test.rs`, which is the likely location of the disabled tests.
-    7.  Use `search_and_replace` to find and remove the `#[ignore]` attributes from the tests mentioned in the changelog: `named_arg_with_quoted_escaped_value_location`, `positional_arg_with_quoted_escaped_value_location`, `unescaping_works_for_named_arg_value`, and `unescaping_works_for_positional_arg_value`.
-    8.  Perform Increment Verification.
+    1.  **Read Source Files:** Use `read_file` to load the current content of `module/move/unilang_instruction_parser/src/parser_engine.rs` and `module/move/unilang_instruction_parser/src/item_adapter.rs`.
+    2.  **Modify `parser_engine.rs`:** In the `tokenize_input` function, modify the `SplitOptionsFormer` to ensure it is configured with `.quoting(true)`. This delegates all unescaping responsibility to the `strs_tools` crate.
+    3.  **Modify `item_adapter.rs`:**
+        *   Completely remove the `unescape_string_with_errors` function as it is now redundant.
+        *   Update the `classify_split` function to correctly handle `SplitType::Quoted`. When it receives a `Quoted` split, it should classify it as `UnilangTokenKind::QuotedValue` and use the `split.string` directly, as `strs_tools` has already performed the unescaping.
+    4.  **Write Source Files:** Use `write_to_file` to save the updated contents of `src/parser_engine.rs` and `src/item_adapter.rs`.
+    5.  **Read Test File:** Use `read_file` to load the content of `module/move/unilang_instruction_parser/tests/inc/instruction_test.rs`.
+    6.  **Re-enable Ignored Tests:** Use `search_and_replace` to find and remove the `#[ignore]` attributes from the following tests: `named_arg_with_quoted_escaped_value_location`, `positional_arg_with_quoted_escaped_value_location`, `unescaping_works_for_named_arg_value`, and `unescaping_works_for_positional_arg_value`.
+    7.  **Perform Increment Verification.**
+    8.  **Perform Crate Conformance Check.**
 *   **Increment Verification:**
     1.  Execute `timeout 90 cargo test -p unilang_instruction_parser --all-targets` via `execute_command`.
     2.  Analyze the output. All tests, including the re-enabled ones, must now pass. If they fail, perform Critical Log Analysis, focusing on the assumption that `strs_tools` is providing correctly unescaped strings.
 *   **Commit Message:** "fix(parser): Correct unescaping logic and re-enable tests"
 
-##### Increment 4: Add Comprehensive, Failing Spec-Adherence Tests
+##### Increment 3: Add Comprehensive, Failing Spec-Adherence Tests
 *   **Goal:** To create a new test suite that codifies the specific parsing rules from `spec.md`, Section 2.4. These tests are designed to fail with the current logic, proving its non-conformance and providing clear targets for the next increment.
 *   **Rationale:** A test-driven approach is the most reliable way to ensure full compliance with a specification. By writing tests that fail first, we define the exact required behavior and can be confident the implementation is correct when the tests pass.
 *   **Steps:**
@@ -112,7 +96,7 @@
     2.  Analyze the output. It is critical that these tests **fail**. The failure messages will confirm that the current parser logic does not adhere to the specification.
 *   **Commit Message:** "test(parser): Add failing tests for spec adherence"
 
-##### Increment 5: Implement Correct Parser State Machine
+##### Increment 4: Implement Correct Parser State Machine
 *   **Goal:** To modify the state machine in `src/parser_engine.rs` to correctly implement the specification rules, making the new tests pass.
 *   **Rationale:** This is the core fix. With a simplified token stream from Increment 1 and clear failing tests from Increment 2, we can now implement the correct parsing logic with confidence.
 *   **Steps:**
@@ -129,7 +113,7 @@
     2.  Analyze the output. All tests in the crate, including the new `spec_adherence_tests`, must now pass.
 *   **Commit Message:** "fix(parser): Refactor engine to align with spec parsing rules"
 
-##### Increment 6: Finalization
+##### Increment 5: Finalization
 *   **Goal:** Perform a final, holistic review and verification of the entire task's output, ensuring all tests pass and the crate is clean.
 *   **Rationale:** This final quality gate ensures that the fixes did not introduce any regressions and that the crate meets all project standards.
 *   **Steps:**

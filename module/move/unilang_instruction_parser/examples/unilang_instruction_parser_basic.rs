@@ -10,7 +10,7 @@ use unilang_instruction_parser::{Parser, UnilangParserOptions};
 fn main() {
     // 1. Create a parser with default options
     let options = UnilangParserOptions::default();
-    let parser = Parser::new_with_options(options); // Use new_with_options for custom options
+    let parser = Parser::new(options); // Use new_with_options for custom options
 
     // 2. Parse a single complex instruction string
     let input_single = "log.level severity::\"debug\" message::'Hello, Unilang!' --verbose";

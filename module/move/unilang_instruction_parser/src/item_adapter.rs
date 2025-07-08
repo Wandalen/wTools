@@ -3,12 +3,12 @@
 #![allow(clippy::std_instead_of_alloc)]
 #![allow(clippy::std_instead_of_core)]
 
-use crate::error::{ ParseError, SourceLocation };
+use crate::error::{ ErrorKind, ParseError, SourceLocation };
 use strs_tools::string::split::{ Split, SplitType };
-use core::fmt; // Import fmt for Display trait
+use core::fmt;
 
 /// Represents a token with its original split information and classified kind.
-#[ derive( Debug, Clone ) ] // Added Clone derive
+#[ derive( Debug, Clone ) ]
 pub struct RichItem<'a>
 {
   /// The original string split.
@@ -70,34 +70,28 @@ pub fn classify_split( s : &Split<'_> ) -> Result<( UnilangTokenKind, SourceLoca
 {
   let original_location = SourceLocation::StrSpan { start : s.start, end : s.end };
 
-  // 1. Quoted strings: Check if the string starts and ends with a quote, and has length >= 2
-  if s.string.starts_with( '"' ) && s.string.ends_with( '"' ) && s.string.len() >= 2
+  // Check for quoted strings first, as they are a form of Delimited split but need special handling.
+  if s.string.starts_with('"') && s.string.ends_with('"') && s.string.len() >= 2
   {
-    let inner_str = &s.string[ 1 .. s.string.len() - 1 ]; // Strip quotes
+    let inner_str = &s.string[ 1 .. s.string.len() - 1 ];
     let adjusted_start = s.start + 1;
-    let adjusted_end = s.end - 1;
-    let adjusted_location = SourceLocation::StrSpan { start : adjusted_start, end : adjusted_end };
-
-    match unescape_string_with_errors( inner_str, adjusted_start )
-    {
-      Ok( unescaped ) => return Ok(( UnilangTokenKind::QuotedValue( unescaped ), adjusted_location )),
-      Err( e ) => return Err( e ), // Propagate the error directly
-    }
+    let adjusted_location = SourceLocation::StrSpan { start : adjusted_start, end : s.end - 1 };
+    let unescaped = unescape_string_with_errors( inner_str, adjusted_start )?;
+    return Ok(( UnilangTokenKind::QuotedValue( unescaped ), adjusted_location ));
   }
 
-  // 2. Known operators/delimiters
   match s.string
   {
     "::" => Ok(( UnilangTokenKind::Operator( "::" ), original_location )),
     "?" => Ok(( UnilangTokenKind::Operator( "?" ), original_location )),
+    ":" => Ok(( UnilangTokenKind::Operator( ":" ), original_location )),
     "." => Ok(( UnilangTokenKind::Delimiter( "." ), original_location )),
     " " => Ok(( UnilangTokenKind::Delimiter( " " ), original_location )),
-    "\n" => Ok(( UnilangTokenKind::Delimiter( "\n" ), original_location )), // Classify newline as delimiter
-    "#" => Ok(( UnilangTokenKind::Delimiter( "#" ), original_location )), // Classify hash as delimiter
-    "!" => Ok(( UnilangTokenKind::Unrecognized( "!".to_string() ), original_location )), // Classify '!' as unrecognized
+    "\n" => Ok(( UnilangTokenKind::Delimiter( "\n" ), original_location )),
+    "#" => Ok(( UnilangTokenKind::Delimiter( "#" ), original_location )),
+    "!" => Ok(( UnilangTokenKind::Unrecognized( "!".to_string() ), original_location )),
     _ =>
     {
-      // 3. Identifiers or unrecognized
       if s.typ == SplitType::Delimeted
       {
         Ok(( UnilangTokenKind::Identifier( s.string.to_string() ), original_location ))
@@ -111,64 +105,40 @@ pub fn classify_split( s : &Split<'_> ) -> Result<( UnilangTokenKind, SourceLoca
 }
 
 /// Unescapes a string, handling common escape sequences.
-/// Returns the unescaped string or a ParseError if an invalid escape sequence is found.
-/// `offset` is the starting position of the `src` string in the original input,
-/// used for accurate error reporting.
-fn unescape_string_with_errors( src : &str, mut offset : usize ) -> Result< String, ParseError >
+fn unescape_string_with_errors( src : &str, offset : usize ) -> Result< String, ParseError >
 {
   let mut result = String::with_capacity( src.len() );
   let mut chars = src.chars().peekable();
+  let mut current_offset = offset;
 
   while let Some( c ) = chars.next()
   {
     if c == '\\'
     {
-      let escape_start = offset; // Start of the escape sequence
+      let escape_start = current_offset;
+      current_offset += 1; // for the '\'
       match chars.next()
       {
-        Some( 'n' ) =>
+        Some( 'n' ) => { result.push( '\n' ); current_offset += 1; },
+        Some( 't' ) => { result.push( '\t' ); current_offset += 1; },
+        Some( 'r' ) => { result.push( '\r' ); current_offset += 1; },
+        Some( '\\' ) => { result.push( '\\' ); current_offset += 1; },
+        Some( '"' ) => { result.push( '"' ); current_offset += 1; },
+        Some( next_c ) =>
         {
-          result.push( '\n' );
-          offset += 2; // Advance past '\n'
-        },
-        Some( 't' ) =>
-        {
-          result.push( '\t' );
-          offset += 2; // Advance past '\t'
-        },
-        Some( 'r' ) =>
-        {
-          result.push( '\r' );
-          offset += 2; // Advance past '\r'
-        },
-        Some( '\\' ) =>
-        {
-          result.push( '\\' );
-          offset += 2; // Advance past '\\'
-        },
-        Some( '"' ) =>
-        {
-          result.push( '"' );
-          offset += 2; // Advance past '\"'
-        },
-        Some( c ) =>
-        {
-          // For invalid escape sequences like '\x', the span should be '\x' (2 chars)
-          offset += 2; // Advance past '\c'
+          let escape_sequence = format!( "\\{}", next_c );
           return Err( ParseError
           {
-            kind : crate::error::ErrorKind::InvalidEscapeSequence( format!( "\\{}", c ) ),
-            location : Some( SourceLocation::StrSpan { start : escape_start, end : escape_start + 2 } ), // Corrected end
+            kind : ErrorKind::InvalidEscapeSequence( escape_sequence ),
+            location : Some( SourceLocation::StrSpan { start : escape_start, end : escape_start + 2 } ),
           });
         },
         None =>
         {
-          // For trailing '\', the span should be '\' (1 char)
-          offset += 1; // Advance past '\'
           return Err( ParseError
           {
-            kind : crate::error::ErrorKind::InvalidEscapeSequence( "\\".to_string() ),
-            location : Some( SourceLocation::StrSpan { start : escape_start, end : escape_start + 1 } ), // Corrected end
+            kind : ErrorKind::InvalidEscapeSequence( "\\".to_string() ),
+            location : Some( SourceLocation::StrSpan { start : escape_start, end : escape_start + 1 } ),
           });
         },
       }
@@ -176,7 +146,7 @@ fn unescape_string_with_errors( src : &str, mut offset : usize ) -> Result< Stri
     else
     {
       result.push( c );
-      offset += c.len_utf8(); // Advance for non-escaped character
+      current_offset += c.len_utf8();
     }
   }
   Ok( result )

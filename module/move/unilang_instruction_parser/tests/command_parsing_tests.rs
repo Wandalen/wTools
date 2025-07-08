@@ -13,11 +13,10 @@ use unilang_instruction_parser::{ Parser, UnilangParserOptions };
 fn parse_and_assert( input : &str, expected_path : &[ &str ], expected_args : &[ &str ] )
 {
   let options = UnilangParserOptions::default();
-  let parser = Parser::new_with_options( options ); // Updated Parser instantiation
+  let parser = Parser::new( options ); // Updated Parser instantiation
   let instruction = parser.parse_single_instruction( input ).unwrap(); // Updated method call and direct unwrap
-  assert_eq!( instruction.command_path_slices, expected_path );
-  let positional_values: Vec<&str> = instruction.positional_arguments.iter().map(|arg| arg.value.as_str()).collect();
-  assert_eq!( positional_values, expected_args );
+  assert_eq!( instruction.command_path, expected_path );
+  assert_eq!( instruction.arguments, expected_args );
 }
 
 /// Tests the primary failing case.
