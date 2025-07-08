@@ -1,5 +1,3 @@
-
-
 //! Test suite for the `strs_tools` crate.
 
 #[ allow( unused_imports ) ]
