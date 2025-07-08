@@ -1,7 +1,7 @@
 #![ allow( clippy::assigning_clones ) ]
 use macro_tools::
 {
-  diag,
+  diag, // Uncommented
   generic_params,
   struct_like::StructLike,
   Result,
@@ -30,14 +30,15 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
 
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where_punctuated )
   = generic_params::decompose( parsed.generics() );
-  let generics_where = if generics_where_punctuated.is_empty() {
+  let where_clause_owned = if generics_where_punctuated.is_empty() {
     None
   } else {
-    Some( &syn::WhereClause {
+    Some( syn::WhereClause {
       where_token: <syn::token::Where as Default>::default(),
       predicates: generics_where_punctuated.clone(),
     })
   };
+  let generics_where = where_clause_owned.as_ref();
 
   if has_debug
   {
@@ -78,7 +79,7 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
           generics_impl : &generics_impl,
           generics_ty : &generics_ty,
           generics_where,
-          variant, // Changed line 76
+          variant,
           original_input : &original_input,
         };
         variant_generate( &context )
@@ -194,13 +195,13 @@ struct GenerateContext< 'a >
 ///
 /// Example of generated code:
 /// ```text
-/// impl From< bool > for IsTransparent
-/// {
-///   fn from( src : bool ) -> Self
-///   {
-///     Self( src )
-///   }
-/// }
+/// /// impl From< bool > for IsTransparent
+/// /// {
+/// ///   fn from( src : bool ) -> Self
+/// ///   {
+/// ///     Self( src )
+/// ///   }
+/// /// }
 /// ```
 fn generate
 (
@@ -252,7 +253,7 @@ fn generate
   let body = generate_struct_body_tokens(field_name, all_fields, field_index, has_debug, original_input);
 
   if has_debug { // Use has_debug directly
-      diag::report_print( "generated_where_clause_tokens_struct", original_input, where_clause_tokens.to_string() );
+      diag::report_print( "generated_where_clause_tokens_struct", original_input, where_clause_tokens.to_string() ); // Uncommented
   }
 
   let generics_ty_filtered = {
@@ -320,7 +321,7 @@ fn generate_struct_body_tokens(
     };
 
     if has_debug { // Use has_debug directly
-        diag::report_print( "generated_body_tokens_struct", original_input, body_tokens.to_string() );
+        diag::report_print( "generated_body_tokens_struct", original_input, body_tokens.to_string() ); // Uncommented
     }
     body_tokens
 }
@@ -453,8 +454,8 @@ fn variant_generate
 
   if has_debug // Use has_debug directly
   {
-    diag::report_print( "generated_where_clause_tokens_enum", original_input, where_clause_tokens.to_string() );
-    diag::report_print( "generated_body_tokens_enum", original_input, body.to_string() );
+    diag::report_print( "generated_where_clause_tokens_enum", original_input, where_clause_tokens.to_string() ); // Uncommented
+    diag::report_print( "generated_body_tokens_enum", original_input, body.to_string() ); // Uncommented
     let debug = format!
     (
       r"
@@ -483,7 +484,7 @@ r"derive : From
 item : {item_name}
 field : {variant_name}",
     );
-    diag::report_print( about, original_input, debug.to_string() );
+    diag::report_print( about, original_input, debug.to_string() ); // Uncommented
   }
 
   Ok
