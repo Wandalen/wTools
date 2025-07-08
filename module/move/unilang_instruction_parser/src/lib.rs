@@ -84,7 +84,7 @@
 //! }
 //! ```
 //!
-
+//! 
 #![ cfg_attr( feature = "no_std", no_std ) ]
 #![ cfg_attr( docsrs, feature( doc_auto_cfg ) ) ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_hr.png" ) ]
@@ -109,7 +109,7 @@ pub mod prelude
 {
   pub use super::config::*;
   pub use super::error::*;
-  pub use super::instruction::*;
+  // pub use super::instruction::*; // Removed ambiguous re-export
   pub use super::item_adapter::*;
   pub use super::parser_engine::*;
 }

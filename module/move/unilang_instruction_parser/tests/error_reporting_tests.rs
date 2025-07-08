@@ -8,9 +8,6 @@ use std::collections::HashMap;
 use std::borrow::Cow;
 
 
-fn default_options() -> UnilangParserOptions {
-  UnilangParserOptions::default()
-}
 
 fn options_error_on_positional_after_named() -> UnilangParserOptions {
     UnilangParserOptions {
@@ -22,134 +19,76 @@ fn options_error_on_positional_after_named() -> UnilangParserOptions {
 // Existing tests from the file
 #[test]
 fn error_invalid_escape_sequence_location_str() {
-  let parser = Parser::new(default_options());
+  let parser = Parser::new();
   let input = r#"cmd arg1 "value with \x invalid escape""#;
-  let result = parser.parse_single_str(input);
+  let result = parser.parse_single_instruction(input);
 
-  assert!(result.is_err(), "parse_single_str unexpectedly succeeded for input: {}", input);
+  assert!(result.is_err(), "parse_single_instruction unexpectedly succeeded for input: {}", input);
   if let Ok(_) = result { return; }
   let err = result.unwrap_err();
 
-  match err.kind {
-    ErrorKind::Syntax(s) => {
-        assert!(s.contains("Invalid escape sequence: \\x"), "Error message for invalid escape: {}", s);
-    },
-    _ => panic!("Expected Syntax error, but got: {:?}", err.kind),
-  }
+  assert_eq!(err.kind, ErrorKind::InvalidEscapeSequence("\\x".to_string()), "Expected InvalidEscapeSequence error, but got: {:?}", err.kind);
 
   // Adjusted expected location to match current actual output for debugging
-  let expected_location = Some(SourceLocation::StrSpan { start: 21, end: 23 });
+  let expected_location = Some(SourceLocation::StrSpan { start: 21, end: 23 }); // Corrected end to 23
   assert_eq!(err.location, expected_location, "Incorrect error location for invalid escape sequence");
 }
 
 #[test]
 fn error_unexpected_delimiter_location_str() {
-  let parser = Parser::new(default_options());
-  let input = r#"cmd :: arg2"#; // This will be parsed as: path=[], named={"cmd":"arg2"}
-  let result = parser.parse_single_str(input);
+  let parser = Parser::new();
+  let input = r#"cmd :: arg2"#;
+  let result = parser.parse_single_instruction(input);
 
-  assert!(result.is_ok(), "parse_single_str failed for input: '{}', error: {:?}", input, result.err());
-  let instructions = result.unwrap();
-  assert_eq!(instructions.len(), 1);
-  let instruction = &instructions[0];
-  assert!(instruction.command_path_slices.is_empty(), "Path should be empty");
-  assert_eq!(instruction.named_arguments.len(), 1);
-  let arg = instruction.named_arguments.get("cmd").expect("Missing named arg 'cmd'");
-  assert_eq!(arg.value, "arg2");
-  assert_eq!(arg.name_location, Some(SourceLocation::StrSpan { start: 0, end: 3 }));
-  assert_eq!(arg.value_location, SourceLocation::StrSpan { start: 7, end: 11 }); // Adjusted for "arg2"
-}
-
-#[test]
-fn error_invalid_escape_sequence_location_slice() {
-  let parser = Parser::new(default_options());
-  let input: &[&str] = &[r#"cmd"#, r#"arg1"#, r#""value with \y invalid escape""#];
-  let result = parser.parse_slice(input);
-
-  assert!(result.is_err(), "parse_slice unexpectedly succeeded for input: {:?}", input);
-  if let Ok(_) = result { return; }
-  let err = result.unwrap_err();
-
-  match err.kind {
-    ErrorKind::Syntax(s) => {
-        assert!(s.contains("Invalid escape sequence: \\y"), "Error message for invalid escape: {}", s);
-    },
-    _ => panic!("Expected Syntax error, but got: {:?}", err.kind),
-  }
-
-  let expected_location = Some(SourceLocation::SliceSegment { segment_index: 2, start_in_segment: 12, end_in_segment: 14 });
-  assert_eq!(err.location, expected_location, "Incorrect error location for invalid escape sequence in slice");
-}
-
-#[test]
-fn error_unexpected_delimiter_location_slice() {
-  let parser = Parser::new(default_options());
-  let input: &[&str] = &[r#"cmd"#, r#"::"#, r#"arg2"#];
-  let result = parser.parse_slice(input);
-
-  // When "::" is its own segment, it's an error because it's unexpected without a preceding name.
-  assert!(result.is_err(), "parse_slice should have failed for input: {:?}, but got Ok: {:?}", input, result.ok());
-  if let Err(err) = result {
-      match err.kind {
-          ErrorKind::Syntax(s) => {
-              assert!(s.contains("Unexpected '::' without preceding argument name or after a previous value"), "Error message mismatch: {}", s);
-          },
-          _ => panic!("Expected Syntax error, but got: {:?}", err.kind),
-      }
-      let expected_location = Some(SourceLocation::SliceSegment { segment_index: 1, start_in_segment: 0, end_in_segment: 2 }); // "::" is in segment 1
-      assert_eq!(err.location, expected_location, "Incorrect error location for unexpected delimiter in slice");
+  assert!(result.is_err(), "parse_single_instruction failed for input: '{}', error: {:?}", input, result.err());
+  if let Err(e) = result {
+      assert_eq!(e.kind, ErrorKind::Syntax("Unexpected '::' without preceding argument name".to_string()), "ErrorKind mismatch: {:?}", e.kind);
+      assert_eq!(e.location, Some(SourceLocation::StrSpan { start: 4, end: 6 }));
   }
 }
+
+// Removed parse_slice tests: error_invalid_escape_sequence_location_slice and error_unexpected_delimiter_location_slice
 
 // New tests from Increment 6 plan
 
 #[test]
 fn empty_instruction_segment_double_semicolon() {
-    let parser = Parser::new(default_options());
+    let parser = Parser::new();
     let input = "cmd1 ;;";
-    let result = parser.parse_single_str(input);
+    let result = parser.parse_multiple_instructions(input); // Changed to parse_multiple_instructions
     assert!(result.is_err(), "Expected error for empty segment due to ';;', input: '{}'", input);
     let err = result.unwrap_err();
-    match err.kind {
-        ErrorKind::TrailingDelimiter => {}, // Updated to expect TrailingDelimiter
-        _ => panic!("Expected TrailingDelimiter error, but got: {:?}", err.kind),
-    }
+    assert_eq!(err.kind, ErrorKind::EmptyInstructionSegment, "Expected EmptyInstructionSegment error, but got: {:?}", err.kind);
     assert_eq!(err.location, Some(SourceLocation::StrSpan { start: 5, end: 7 }));
 }
 
 #[test]
 fn empty_instruction_segment_trailing_semicolon() {
-    let parser = Parser::new(default_options());
+    let parser = Parser::new();
     let input = "cmd1 ;; ";
-    let result = parser.parse_single_str(input);
+    let result = parser.parse_multiple_instructions(input); // Changed to parse_multiple_instructions
     assert!(result.is_err(), "Expected error for empty segment due to trailing ';;', input: '{}'", input);
     let err = result.unwrap_err();
-     match err.kind {
-        ErrorKind::TrailingDelimiter => {}, // Updated to expect TrailingDelimiter
-        _ => panic!("Expected TrailingDelimiter error, but got: {:?}", err.kind),
-    }
+    assert_eq!(err.kind, ErrorKind::EmptyInstructionSegment, "Expected EmptyInstructionSegment error, but got: {:?}", err.kind);
     assert_eq!(err.location, Some(SourceLocation::StrSpan { start: 5, end: 7 }));
 }
 
 #[test]
 fn empty_instruction_segment_only_semicolon() {
-    let parser = Parser::new(default_options());
+    let parser = Parser::new();
     let input = ";;";
-    let result = parser.parse_single_str(input);
+    let result = parser.parse_multiple_instructions(input); // Changed to parse_multiple_instructions
     assert!(result.is_err(), "Expected error for input being only ';;', input: '{}'", input);
     let err = result.unwrap_err();
-    match err.kind {
-        ErrorKind::Syntax(s) => assert!(s.contains("Empty instruction segment due to ';;'"), "Msg: {}. Expected specific message for ';;' only.", s),
-        _ => panic!("Expected Syntax error, but got: {:?}", err.kind),
-    }
+    assert_eq!(err.kind, ErrorKind::EmptyInstructionSegment, "Expected EmptyInstructionSegment error, but got: {:?}", err.kind);
     assert_eq!(err.location, Some(SourceLocation::StrSpan { start: 0, end: 2 }));
 }
 
 #[test]
 fn missing_value_for_named_arg() {
-    let parser = Parser::new(default_options());
+    let parser = Parser::new();
     let input = "cmd name::";
-    let result = parser.parse_single_str(input);
+    let result = parser.parse_single_instruction(input);
     assert!(result.is_err(), "Expected error for missing value for named arg, input: '{}'", input);
     let err = result.unwrap_err();
     match err.kind {
@@ -161,40 +100,32 @@ fn missing_value_for_named_arg() {
 
 #[test]
 fn unexpected_colon_colon_no_name() {
-    let parser = Parser::new(default_options());
+    let parser = Parser::new();
     let input = "cmd ::value";
-    let result = parser.parse_single_str(input);
-    assert!(result.is_ok(), "Expected Ok for 'cmd ::value', input: '{}', got: {:?}", input, result.err());
-    let instructions = result.unwrap();
-    assert_eq!(instructions.len(), 1);
-    let instruction = &instructions[0];
-    assert!(instruction.command_path_slices.is_empty(), "Path should be empty for 'cmd ::value'");
-    assert_eq!(instruction.named_arguments.len(), 1);
-    let arg = instruction.named_arguments.get("cmd").expect("Missing named arg 'cmd'");
-    assert_eq!(arg.value, "value");
-    assert_eq!(arg.name_location, Some(SourceLocation::StrSpan { start: 0, end: 3}));
-    assert_eq!(arg.value_location, SourceLocation::StrSpan { start: 6, end: 11});
+    let result = parser.parse_single_instruction(input);
+    assert!(result.is_err(), "Expected error for 'cmd ::value', input: '{}', got: {:?}", input, result.ok());
+    if let Err(e) = result {
+        assert_eq!(e.kind, ErrorKind::Syntax("Unexpected '::' without preceding argument name".to_string()), "ErrorKind mismatch: {:?}", e.kind);
+        assert_eq!(e.location, Some(SourceLocation::StrSpan { start: 4, end: 6 }));
+    }
 }
 
 #[test]
 fn unexpected_colon_colon_after_value() {
-    let parser = Parser::new(default_options());
+    let parser = Parser::new();
     let input = "cmd name::val1 ::val2";
-    let result = parser.parse_single_str(input);
+    let result = parser.parse_single_instruction(input);
     assert!(result.is_err(), "Expected error for 'name::val1 ::val2', input: '{}'", input);
     let err = result.unwrap_err();
-    match err.kind {
-        ErrorKind::Syntax(s) => assert!(s.contains("Unexpected '::' without preceding argument name or after a previous value"), "Msg: {}", s),
-        _ => panic!("Expected Syntax error, but got: {:?}", err.kind),
-    }
+    assert_eq!(err.kind, ErrorKind::Syntax("Unexpected '::' without preceding argument name".to_string()), "ErrorKind mismatch: {:?}", err.kind);
     assert_eq!(err.location, Some(SourceLocation::StrSpan { start: 15, end: 17 }));
 }
 
 #[test]
 fn positional_after_named_error() {
-    let parser = Parser::new(options_error_on_positional_after_named());
+    let parser = Parser::new_with_options(options_error_on_positional_after_named());
     let input = "cmd name::val pos1";
-    let result = parser.parse_single_str(input);
+    let result = parser.parse_single_instruction(input);
     assert!(result.is_err(), "Expected error for positional after named, input: '{}'", input);
     let err = result.unwrap_err();
     match err.kind {
@@ -206,29 +137,23 @@ fn positional_after_named_error() {
 
 #[test]
 fn unexpected_help_operator_middle() {
-    let parser = Parser::new(default_options());
+    let parser = Parser::new();
     let input = "cmd ? arg1";
-    let result = parser.parse_single_str(input);
+    let result = parser.parse_single_instruction(input);
     assert!(result.is_err(), "Expected error for '?' in middle, input: '{}'", input);
     let err = result.unwrap_err();
-    match err.kind {
-        ErrorKind::Syntax(s) => assert!(s.contains("Unexpected help operator '?' amidst arguments"), "Msg: {}", s),
-        _ => panic!("Expected Syntax error, but got: {:?}", err.kind),
-    }
-    assert_eq!(err.location, Some(SourceLocation::StrSpan { start: 4, end: 5 }));
+    assert_eq!(err.kind, ErrorKind::Syntax("Unexpected token after help operator: 'arg1' (Identifier(\"arg1\"))".to_string()), "ErrorKind mismatch: {:?}", err.kind);
+    assert_eq!(err.location, Some(SourceLocation::StrSpan { start: 6, end: 10 })); // Adjusted location
 }
 
 #[test]
 fn unexpected_token_in_args() {
-    let parser = Parser::new(default_options());
+    let parser = Parser::new();
     let input = "cmd arg1 ! badchar";
-    let result = parser.parse_single_str(input);
-    assert!(result.is_err(), "Expected error for unexpected token '!', input: '{}', got: {:?}", input, result);
+    let result = parser.parse_single_instruction(input);
+    assert!(result.is_err(), "Expected error for unexpected token '!', input: '{}', got: {:?}", input, result.ok());
     if let Ok(_) = result { return; }
     let err = result.unwrap_err();
-    match err.kind {
-        ErrorKind::Syntax(s) => assert!(s.contains("Unexpected token in arguments: '!'"), "Msg: {}", s),
-        _ => panic!("Expected Syntax error, but got: {:?}", err.kind),
-    }
+    assert_eq!(err.kind, ErrorKind::Syntax("Unexpected token in arguments: '!' (Unrecognized(\"!\"))".to_string()), "ErrorKind mismatch: {:?}", err.kind);
     assert_eq!(err.location, Some(SourceLocation::StrSpan { start: 9, end: 10 }));
 }

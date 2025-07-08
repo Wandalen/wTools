@@ -1,144 +1,183 @@
-//! Provides utilities for adapting `strs_tools::string::split::Split` items into `RichItem`s,
-//! which include a classification of the token kind.
-//!
-//! This module also handles unescaping of strings.
+//! Adapters for converting raw string splits into rich, classified tokens.
 
-use crate::config::UnilangParserOptions;
-use crate::error::{ ParseError, ErrorKind, SourceLocation };
-use strs_tools::string::split::{ Split };
+#![allow(clippy::std_instead_of_alloc)]
+#![allow(clippy::std_instead_of_core)]
 
-/// Represents a tokenized item with its original `Split` data,
-/// its segment index (if part of a slice of strings), and its classified `UnilangTokenKind`.
-#[ derive( Debug, Clone ) ]
-pub struct RichItem< 'a >
+use crate::error::{ ParseError, SourceLocation };
+use strs_tools::string::split::{ Split, SplitType };
+use core::fmt; // Import fmt for Display trait
+
+/// Represents a token with its original split information and classified kind.
+#[ derive( Debug, Clone ) ] // Added Clone derive
+pub struct RichItem<'a>
 {
-  /// The original split item from `strs_tools`.
-  pub inner : Split< 'a >,
-  /// The index of the original string segment if parsing from a slice.
-  pub segment_idx : Option< usize >,
+  /// The original string split.
+  pub inner : Split<'a>,
   /// The classified kind of the token.
   pub kind : UnilangTokenKind,
+  /// The source location adjusted for things like quotes.
+  pub adjusted_source_location : SourceLocation,
 }
 
-impl< 'a > RichItem< 'a >
+impl<'a> RichItem<'a>
 {
-  /// Returns the source location of this item.
-  pub fn source_location( &'a self ) -> SourceLocation
+  /// Creates a new `RichItem`.
+  pub fn new( inner : Split<'a>, kind : UnilangTokenKind, adjusted_source_location : SourceLocation ) -> Self
   {
-    if let Some( segment_idx ) = self.segment_idx
+    Self { inner, kind, adjusted_source_location }
+  }
+
+  /// Returns the source location of the item.
+  pub fn source_location( &self ) -> SourceLocation
+  {
+    self.adjusted_source_location.clone()
+  }
+}
+
+/// Represents the classified kind of a unilang token.
+#[ derive( Debug, PartialEq, Eq, Clone ) ]
+pub enum UnilangTokenKind
+{
+  /// An identifier (e.g., a command name, argument name, or unquoted value).
+  Identifier( String ),
+  /// A quoted string value.
+  QuotedValue( String ),
+  /// An operator (e.g., `::`, `?`).
+  Operator( &'static str ),
+  /// A delimiter (e.g., space, dot, newline).
+  Delimiter( &'static str ),
+  /// An unrecognized token, indicating a parsing error.
+  Unrecognized( String ),
+}
+
+impl fmt::Display for UnilangTokenKind
+{
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+  {
+    match self
     {
-      SourceLocation::SliceSegment
+      UnilangTokenKind::Identifier( s ) => write!( f, "{}", s ),
+      UnilangTokenKind::QuotedValue( s ) => write!( f, "\"{}\"", s ),
+      UnilangTokenKind::Operator( s ) => write!( f, "{}", s ),
+      UnilangTokenKind::Delimiter( s ) => write!( f, "{}", s ),
+      UnilangTokenKind::Unrecognized( s ) => write!( f, "{}", s ),
+    }
+  }
+}
+
+/// Classifies a `strs_tools::Split` into a `UnilangTokenKind` and returns its adjusted source location.
+pub fn classify_split( s : &Split<'_> ) -> Result<( UnilangTokenKind, SourceLocation ), ParseError>
+{
+  let original_location = SourceLocation::StrSpan { start : s.start, end : s.end };
+
+  // 1. Quoted strings: Check if the string starts and ends with a quote, and has length >= 2
+  if s.string.starts_with( '"' ) && s.string.ends_with( '"' ) && s.string.len() >= 2
+  {
+    let inner_str = &s.string[ 1 .. s.string.len() - 1 ]; // Strip quotes
+    let adjusted_start = s.start + 1;
+    let adjusted_end = s.end - 1;
+    let adjusted_location = SourceLocation::StrSpan { start : adjusted_start, end : adjusted_end };
+
+    match unescape_string_with_errors( inner_str, adjusted_start )
+    {
+      Ok( unescaped ) => return Ok(( UnilangTokenKind::QuotedValue( unescaped ), adjusted_location )),
+      Err( e ) => return Err( e ), // Propagate the error directly
+    }
+  }
+
+  // 2. Known operators/delimiters
+  match s.string
+  {
+    "::" => Ok(( UnilangTokenKind::Operator( "::" ), original_location )),
+    "?" => Ok(( UnilangTokenKind::Operator( "?" ), original_location )),
+    "." => Ok(( UnilangTokenKind::Delimiter( "." ), original_location )),
+    " " => Ok(( UnilangTokenKind::Delimiter( " " ), original_location )),
+    "\n" => Ok(( UnilangTokenKind::Delimiter( "\n" ), original_location )), // Classify newline as delimiter
+    "#" => Ok(( UnilangTokenKind::Delimiter( "#" ), original_location )), // Classify hash as delimiter
+    "!" => Ok(( UnilangTokenKind::Unrecognized( "!".to_string() ), original_location )), // Classify '!' as unrecognized
+    _ =>
+    {
+      // 3. Identifiers or unrecognized
+      if s.typ == SplitType::Delimeted
       {
-        segment_index : segment_idx,
-        start_in_segment : self.inner.start,
-        end_in_segment : self.inner.end,
+        Ok(( UnilangTokenKind::Identifier( s.string.to_string() ), original_location ))
+      }
+      else
+      {
+        Ok(( UnilangTokenKind::Unrecognized( s.string.to_string() ), original_location ))
+      }
+    }
+  }
+}
+
+/// Unescapes a string, handling common escape sequences.
+/// Returns the unescaped string or a ParseError if an invalid escape sequence is found.
+/// `offset` is the starting position of the `src` string in the original input,
+/// used for accurate error reporting.
+fn unescape_string_with_errors( src : &str, mut offset : usize ) -> Result< String, ParseError >
+{
+  let mut result = String::with_capacity( src.len() );
+  let mut chars = src.chars().peekable();
+
+  while let Some( c ) = chars.next()
+  {
+    if c == '\\'
+    {
+      let escape_start = offset; // Start of the escape sequence
+      match chars.next()
+      {
+        Some( 'n' ) =>
+        {
+          result.push( '\n' );
+          offset += 2; // Advance past '\n'
+        },
+        Some( 't' ) =>
+        {
+          result.push( '\t' );
+          offset += 2; // Advance past '\t'
+        },
+        Some( 'r' ) =>
+        {
+          result.push( '\r' );
+          offset += 2; // Advance past '\r'
+        },
+        Some( '\\' ) =>
+        {
+          result.push( '\\' );
+          offset += 2; // Advance past '\\'
+        },
+        Some( '"' ) =>
+        {
+          result.push( '"' );
+          offset += 2; // Advance past '\"'
+        },
+        Some( c ) =>
+        {
+          // For invalid escape sequences like '\x', the span should be '\x' (2 chars)
+          offset += 2; // Advance past '\c'
+          return Err( ParseError
+          {
+            kind : crate::error::ErrorKind::InvalidEscapeSequence( format!( "\\{}", c ) ),
+            location : Some( SourceLocation::StrSpan { start : escape_start, end : escape_start + 2 } ), // Corrected end
+          });
+        },
+        None =>
+        {
+          // For trailing '\', the span should be '\' (1 char)
+          offset += 1; // Advance past '\'
+          return Err( ParseError
+          {
+            kind : crate::error::ErrorKind::InvalidEscapeSequence( "\\".to_string() ),
+            location : Some( SourceLocation::StrSpan { start : escape_start, end : escape_start + 1 } ), // Corrected end
+          });
+        },
       }
     }
     else
     {
-      SourceLocation::StrSpan
-      {
-        start : self.inner.start,
-        end : self.inner.end,
-      }
+      result.push( c );
+      offset += c.len_utf8(); // Advance for non-escaped character
     }
   }
-}
-
-/// Classifies a `Split` item into a `UnilangTokenKind`.
-///
-/// This function determines if a split string is an identifier, operator, delimiter,
-/// or an unrecognized token based on the parser options.
-pub fn classify_split<'a>
-(
-  split : &'a Split< 'a >,
-  options : &UnilangParserOptions,
-) -> UnilangTokenKind
-{
-  let s = split.string;
-  eprintln!("DEBUG: classify_split: s: '{}', split.typ: {:?}", s, split.typ); // DEBUG PRINT
-
-  // 1. Check for known operators
-  if options.operators.contains(&s)
-  {
-    return UnilangTokenKind::Operator( s.to_string() );
-  }
-
-  // 2. Check for configured delimiters (must be exact match, not part of a larger string)
-  if options.main_delimiters.contains(&s)
-  {
-    return UnilangTokenKind::Delimiter( s.to_string() );
-  }
-
-  // 3. Check for quoted values (strs_tools with quoting(false) will return the whole quoted string)
-  for (prefix, postfix) in &options.quote_pairs {
-      let is_quoted = s.starts_with(*prefix) && s.ends_with(*postfix) && s.len() >= prefix.len_utf8() + postfix.len_utf8();
-      eprintln!("DEBUG: classify_split: checking quote pair ('{}', '{}'), is_quoted: {}", prefix, postfix, is_quoted); // DEBUG PRINT
-      if is_quoted {
-          return UnilangTokenKind::QuotedValue(s.to_string());
-      }
-  }
- 
-  // 4. Check if it's an identifier (alphanumeric, underscore, or dot)
-  // Relaxed to allow dots, as these are valid in command path segments.
-  if !s.is_empty() && s.chars().all(|c| c.is_alphanumeric() || c == '_' || c == '.')
-  {
-    return UnilangTokenKind::Identifier( s.to_string() );
-  }
-
-  // 5. Any other unrecognized token.
-  UnilangTokenKind::Unrecognized( s.to_string() )
-}
-
-/// Represents the classified kind of a token.
-#[ derive( Debug, Clone, PartialEq, Eq ) ]
-pub enum UnilangTokenKind
-{
-  /// An identifier, typically a command name or argument name.
-  Identifier( String ),
-  /// A quoted string value. The inner string is already unescaped.
-  QuotedValue( String ),
-  /// An operator, e.g., `?`.
-  Operator( String ),
-  /// A delimiter, e.g., `::`, `;;`.
-  Delimiter( String ),
-  /// Any other unrecognized token.
-  Unrecognized( String ),
-}
-
-/// Unescapes a string, handling common escape sequences.
-///
-/// Supports `\"`, `\'`, `\\`, `\n`, `\r`, `\t`, `\b`.
-pub fn unescape_string_with_errors(s: &str, location: &SourceLocation) -> Result<String, ParseError> {
-    let mut result = String::with_capacity(s.len());
-    let mut chars = s.chars().peekable();
-
-    while let Some(c) = chars.next() {
-        if c == '\\' {
-            match chars.next() {
-                Some('"') => result.push('"'),
-                Some('\'') => result.push('\''),
-                Some('\\') => result.push('\\'), // Corrected: unescape \\ to \
-                Some('n') => result.push('\n'),
-                Some('r') => result.push('\r'),
-                Some('t') => result.push('\t'),
-                Some('b') => result.push('\x08'), // Backspace
-                Some(other) => {
-                    return Err(ParseError {
-                        kind: ErrorKind::Syntax(format!("Invalid escape sequence: \\{}", other)),
-                        location: Some(location.clone()),
-                    });
-                }
-                None => {
-                    return Err(ParseError {
-                        kind: ErrorKind::Syntax("Incomplete escape sequence at end of string".to_string()),
-                        location: Some(location.clone()),
-                    });
-                }
-            }
-        } else {
-            result.push(c);
-        }
-    }
-    Ok(result)
+  Ok( result )
 }
