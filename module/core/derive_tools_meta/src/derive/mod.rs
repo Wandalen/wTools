@@ -1,3 +1,5 @@
+use macro_tools::syn;
+
 pub mod as_mut;
 pub mod as_ref;
 pub mod deref;
@@ -16,3 +18,9 @@ pub mod add;
 pub mod field_attributes;
 #[ path = "from/item_attributes.rs" ]
 pub mod item_attributes;
+
+enum FieldAccess 
+{
+    Named ( syn::Ident ),
+    Unnamed ( syn::Index ),
+}

@@ -12,10 +12,12 @@ use macro_tools::
   Spanned,
 };
 
-use super::field_attributes::{ FieldAttributes };
-use super::item_attributes::{ ItemAttributes };
+use super::FieldAccess;
+use super::field_attributes::FieldAttributes;
+use super::item_attributes::ItemAttributes;
 
-pub fn add( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream > {
+pub fn add( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream > 
+{
   let original_input = input.clone();
   let parsed = syn::parse::< StructLike >( input )?;
   let item_attrs = ItemAttributes::from_attrs( parsed.attrs().iter() )?;
@@ -23,35 +25,37 @@ pub fn add( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
   = generic_params::decompose( parsed.generics() );
 
-  let result = match parsed {
-    StructLike::Unit( ref _item ) => 
+  let result = match parsed 
+  {
+    StructLike::Unit( ref item ) => 
     {
-      todo!()
+      return_syn_err!( item.span(), "Add cannot be derived for unit structs. It is only applicable to structs with at least one field." );
     },
-     StructLike::Struct( ref item ) =>
+    
+    StructLike::Struct( ref item ) =>
     {
-    let fields_result: Result<Vec<(syn::Ident, syn::Type)>> = item
-        .fields
-        .iter()
-        .enumerate()
-        .map(|(index, field)| {
-          let _attrs = FieldAttributes::from_attrs(field.attrs.iter())?;
-          let field_name = field
-            .ident
-            .clone()
-            .unwrap_or_else(|| {
-              syn::Ident::new(&format!("_{index}"), field.span())
-            });
-          let field_type = field.ty.clone();
-          Ok((field_name, field_type))
-        })
-        .collect();
+
+    let fields_result: Result< Vec < ( FieldAccess, syn::Type )> > = item
+    .fields
+    .iter()
+    .enumerate()
+    .map( | ( index, field ) | {
+        let _attrs = FieldAttributes::from_attrs( field.attrs.iter() )?;
+        let access = match &field.ident 
+        {
+            Some( ident ) => FieldAccess::Named( ident.clone() ),
+            None => FieldAccess::Unnamed( syn::Index::from( index ) ),
+        };
+        let field_type = field.ty.clone();
+        Ok( ( access, field_type ) )
+    })
+    .collect();
 
       let fields = fields_result?;
 
       if fields.is_empty() 
       {
-        return_syn_err!( "Expected at least one field" ); // TODO: change error message
+        return_syn_err!( item.span(), "Add requires at least one field in the struct" );
       }
 
       generate_struct
@@ -76,39 +80,44 @@ pub fn add( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
 
 fn generate_struct
 (
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  fields : &[ ( syn::Ident, syn::Type ) ],
+  item_name: &syn::Ident,
+  generics_impl: &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty: &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  fields: &[ ( FieldAccess, syn::Type ) ],
 ) 
--> proc_macro2::TokenStream
+-> proc_macro2::TokenStream 
 {
-  let additions = fields.iter().map( | ( ident, _ty ) | {
-    qt! 
+  let additions = fields.iter().map( | ( access, _ty ) | 
+  {
+    match access 
     {
-      #ident: self.#ident + other.#ident
+      FieldAccess::Named( ident ) => qt! { #ident: self.#ident + other.#ident },
+      FieldAccess::Unnamed( index ) => qt! { self.#index + other.#index },
     }
   });
 
-  qt!
+  let body = if matches!( fields.first(), Some( ( FieldAccess::Named( _ ), _ ) ) ) 
   {
+    qt! { Self { #( #additions ),* } }
+  } 
+  else 
+  {
+    qt! { Self ( #( #additions ),* ) }
+  };
+
+  qt! {
     #[ automatically_derived ]
     impl< #generics_impl > std::ops::Add for #item_name< #generics_ty >
-    where 
-      #generics_where
+    where #generics_where
     {
       type Output = Self;
 
-      #[ inline ( always )]
-      fn add( self, other : Self ) -> Self::Output
+      # [ inline ( always ) ]
+      fn add( self, other: Self ) -> Self::Output 
       {
-        Self 
-        {
-          #( #additions ),*
-        }
+        #body
       }
     }
   }
 }
-
