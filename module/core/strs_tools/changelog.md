@@ -1,1 +1,2 @@
 * [Increment 1 | 2025-07-08 09:58 UTC] Added a failing test case to `strs_tools` to reproduce the iterator compilation error.
+* [Increment 2 | 2025-07-08 10:01 UTC] Corrected the `IntoIterator` implementation for `SplitOptions` and fixed the test case.

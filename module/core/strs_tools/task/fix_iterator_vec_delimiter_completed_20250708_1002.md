@@ -15,7 +15,7 @@
 *   **Increment Status:**
     *   ✅ Increment 1: Replicate the Failure Locally
     *   ✅ Increment 2: Investigate and Fix the Iterator Implementation
-    *   ⚫ Increment 3: Finalization
+    *   ⏳ Increment 3: Finalization
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -82,7 +82,11 @@
 *   **Goal:** To perform a final, holistic review and verification of the task's output, ensuring all requirements have been met and the `strs_tools` crate is in a clean, compliant state.
 *   **Specification Reference:** N/A
 *   **Steps:**
-    *   Step 1: Plan will be elaborated in the next step.
+    *   Step 1: Perform a self-critique against the `Goal`, `Task Requirements`, and `Project Requirements` in the plan file.
+    *   Step 2: Execute the full `Crate Conformance Check Procedure` for `strs_tools`.
+    *   Step 3: Execute `cargo clean -p strs_tools` followed by `timeout 180 cargo build -p strs_tools`. Analyze the output for any unexpected debug prints from procedural macros.
+    *   Step 4: Execute `git status` to ensure the working directory is clean.
+    *   Step 5: If all checks pass, the task is complete.
 *   **Increment Verification:**
     *   Execute the full `Finalization Increment Verification` procedure as defined in the design rules.
 *   **Commit Message:** "chore(strs_tools): Finalize iterator fix task"
