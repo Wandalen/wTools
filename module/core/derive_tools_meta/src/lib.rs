@@ -363,7 +363,6 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// | T1.5 | Generic                  | `{x: T}`                    | +                | + (if T: Add)          | Test with bounds                     |
 /// | T1.6 | Enum,                    | `enum E { One(i32) }`       | -                | -                      | Unimplemented yet                    |
 /// 
-
 /// ## Input / Expected Output
 ///
 /// | ID   | Input Expression                              | Expected Output / Behavior                          | Notes                                           |
