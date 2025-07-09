@@ -304,42 +304,94 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
   derive::variadic_from::variadic_from( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
 }
 
+/// 
+/// # Specification `#[ derive ( Add ) ]`
 ///
-/// Implement `Add` for a structure.
+/// ## Overview
+/// This macro generates an implementation of the [`core::ops::Add`] trait
+/// for structs whose fields all implement `Add`. It supports both named and tuple-style structs.
 ///
-/// #Examples
+/// ## Supported Structures
+/// - Named structs: `struct My { a : T, b : T }`
+/// - Tuple structs: `struct My( T, T )`
+/// - Enums — **unimplemented**
+/// - Unit structs: `struct My;` — **not supported**
+///
+/// ## Item-Level Attributes
+/// The macro recognizes the following struct-level attributes:
+///
+/// | Attribute                | Target    | Description                                     |
+/// |--------------------------|-----------|-------------------------------------------------|
+/// | `#[ derive( Add ) ]`     | Struct    | Enables generation of `Add` implementation      |
+///
+/// ## Field-Level Attributes 
+///
+/// No field-level attributes supported yet.
+///
+/// ## Generated Output
+/// ```ignore
+/// impl Add for MyStruct 
+/// {
+///     type Output = Self;
+///     fn add(self, other: Self) -> Self::Output 
+///     {
+///         Self 
+///         {
+///             field1: self.field1 + other.field1,
+///             field2: self.field2 + other.field2,
+///             ...
+///         }
+///     }
+/// }
+/// ```
+/// Or for tuple structs:
+/// ```ignore
+/// Self( self.0 + other.0, self.1 + other.1 )
+/// ```
+///
+/// ## Requirements
+/// All fields must implement [`core::ops::Add`].
+///
+/// ## Test Plan
+///
+/// | ID   | Struct Type         | Fields                  | Should Compile?  | Should Work at Runtime?| Notes                                |
+/// |------|---------------------|-------------------------|------------------|------------------------|--------------------------------------|
+/// | T1.1 | Named               | `{x: i32, y: i32}`      | +                | +                      | Basic case                           |
+/// | T1.2 | Tuple               | `(i32)`                 | +                | +                      | Tuple struct                         |
+/// | T1.3 | Unit                | `()`                    | -                | —                      | Should be rejected                   |
+/// | T1.4 | Named with String   | `{x: String}`           | -                | —                      | String doesn't implement `Add<Output = String>` in all cases |
+/// | T1.5 | Generic             | `{x: T}`                | +                | + (if T: Add)          | Test with bounds                     |
+/// | T1.6 | Enum                | `enum E { One(i32) }`   | -                | -                      | Unimplemented yet                      |
+///
+/// ## Example Usage
 /// ```
 /// use derive_tools_meta::Add;
 /// 
 /// #[ derive( Add ) ]
-/// struct MyStruct
+/// struct MyNamedStruct
 /// {
 ///   x: i32
 /// };
 /// 
-/// let my_struct1 = MyStruct { x : 3 };
-/// let my_struct2 = MyStruct { x : 3 };
+/// #[ derive( Add ) ]
+/// struct MyTupleStruct( i32 );
+/// 
+/// let my_struct1 = MyNamedStruct { x : 3 };
+/// let my_struct2 = MyNamedStruct { x : 3 };
 /// 
 /// let result = ( my_struct1 + my_struct2 );
 /// 
 /// assert_eq!( result.x, 6 );
-/// ```
-///
-/// /// #Examples
-/// ```
-/// use derive_tools_meta::Add;
 /// 
-/// #[ derive( Add ) ]
-/// struct MyStruct( i32 );
-/// 
-/// let my_struct1 = MyStruct ( 3 );
-/// let my_struct2 = MyStruct ( 3 );
+/// let my_struct1 = MyTupleStruct ( 3 );
+/// let my_struct2 = MyTupleStruct ( 3 );
 /// 
 /// let result = ( my_struct1 + my_struct2 );
-/// 
 /// assert_eq!( result.0, 6 );
 /// ```
-/// 
+///
+/// ## Future Work
+/// - [ ] Add enum support.
 #[ proc_macro_derive( Add ) ]
 pub fn add( input : proc_macro::TokenStream ) -> proc_macro::TokenStream 
 {
