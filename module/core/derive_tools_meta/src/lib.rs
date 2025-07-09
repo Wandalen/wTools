@@ -354,15 +354,26 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///
 /// ## Test Plan
 ///
-/// | ID   | Struct Type         | Fields                  | Should Compile?  | Should Work at Runtime?| Notes                                |
-/// |------|---------------------|-------------------------|------------------|------------------------|--------------------------------------|
-/// | T1.1 | Named               | `{x: i32, y: i32}`      | +                | +                      | Basic case                           |
-/// | T1.2 | Tuple               | `(i32)`                 | +                | +                      | Tuple struct                         |
-/// | T1.3 | Unit                | `()`                    | -                | —                      | Should be rejected                   |
-/// | T1.4 | Named with String   | `{x: String}`           | -                | —                      | String doesn't implement `Add<Output = String>` in all cases |
-/// | T1.5 | Generic             | `{x: T}`                | +                | + (if T: Add)          | Test with bounds                     |
-/// | T1.6 | Enum                | `enum E { One(i32) }`   | -                | -                      | Unimplemented yet                      |
+/// | ID   | Struct Type              | Fields                      | Should Compile?  | Should Work at Runtime?| Notes                                |
+/// |------|--------------------------|-----------------------------|------------------|------------------------|--------------------------------------|
+/// | T1.1 | Named                    | `{x: i32, y: i32}`          | +                | +                      | Basic case                           |
+/// | T1.2 | Tuple                    | `(i32)`                     | +                | +                      | Tuple struct                         |
+/// | T1.3 | Unit                     | `()`                        | -                | —                      | Should be rejected                   |
+/// | T1.4 | Named with String        | `{x: String}`               | -                | —                      | String doesn't implement `Add<Output = String>` in all cases |
+/// | T1.5 | Generic                  | `{x: T}`                    | +                | + (if T: Add)          | Test with bounds                     |
+/// | T1.6 | Enum,                    | `enum E { One(i32) }`       | -                | -                      | Unimplemented yet                    |
+/// 
+
+/// ## Input / Expected Output
 ///
+/// | ID   | Input Expression                              | Expected Output / Behavior                          | Notes                                           |
+/// |------|-----------------------------------------------|-----------------------------------------------------|-------------------------------------------------|
+/// | T2.1 |  `E::One(3) + E::One(3)`                      | `E::One(6)`                                         | Basic enum case                                 |
+/// | T2.2 | `E::One(i32) + E::Two(i32)`                   | `Error("Mismatched variant")`                       | Mismatched variant                              |
+/// | T2.3 | `S { x: 2, y: 3 } + S { x: 4, y: 1 }`         | `S { x: 6, y: 4 }`                                  | Basic case                                      |
+/// | T2.4 | `Empty {} + Empty {}`                         | Compile error                                       | Struct has zero fields                          |
+/// | T2.5 | `S(String::from("1")) + S(String::from("2"))` | Compile error                                       | String doesn't implement `Add<Output = String>` |
+/// 
 /// ## Example Usage
 /// ```
 /// use derive_tools_meta::Add;
