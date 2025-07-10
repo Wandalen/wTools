@@ -60,53 +60,6 @@ pub mod variadic
       compile_error!( "Too many arguments" );
     };
   }
-  /// Blanket implementation for `From1` for single-element tuples.
-  #[ cfg( feature = "type_variadic_from" ) ]
-  impl< T, All > From1< ( T, ) > for All
-  where
-    All : From1< T >,
-  {
-    fn from1( a1 : ( T, ) ) -> Self
-    {
-      All::from1( a1.0 )
-    }
-  }
-
-  /// Blanket implementation for `From1` for two-element tuples.
-  #[ cfg( feature = "type_variadic_from" ) ]
-  impl< T1, T2, All > From1< ( T1, T2 ) > for All
-  where
-    All : From2< T1, T2 >,
-  {
-    fn from1( a1 : ( T1, T2 ) ) -> Self
-    {
-      All::from2( a1.0, a1.1 )
-    }
-  }
-
-  /// Blanket implementation for `From1` for three-element tuples.
-  #[ cfg( feature = "type_variadic_from" ) ]
-  impl< T1, T2, T3, All > From1< ( T1, T2, T3 ) > for All
-  where
-    All : From3< T1, T2, T3 >,
-  {
-    fn from1( a1 : ( T1, T2, T3 ) ) -> Self
-    {
-      All::from3( a1.0, a1.1, a1.2 )
-    }
-  }
-
-  /// Blanket implementation for `From1` for unit type.
-  #[ cfg( feature = "type_variadic_from" ) ]
-  impl< All > From1< () > for All
-  where
-    All : core::default::Default,
-  {
-    fn from1( _a1 : () ) -> Self
-    {
-      core::default::Default::default()
-    }
-  }
 }
 
 /// Namespace with dependencies.

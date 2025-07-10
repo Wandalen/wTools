@@ -9,6 +9,7 @@ This task plan implements **M3.1: implement_parser_integration** from `roadmap.m
 ### Progress
 *   ✅ Phase 1 Complete (Increments 1-3)
 *   ⏳ Phase 2 In Progress (Increment 4: Migrating Integration Tests)
+*   ⚫ Increment 5: Finalization
 *   Key Milestones Achieved: ✅ Legacy parser removed, `SemanticAnalyzer` adapted, `unilang_cli` migrated.
 *   Current Status: Blocked by external dependency compilation issue.
 
@@ -87,6 +88,19 @@ This task plan implements **M3.1: implement_parser_integration** from `roadmap.m
         2.  Execute `cargo clippy -p unilang -- -D warnings`. There **must be no warnings**.
     *   **Commit Message:** `fix(tests): Migrate all integration tests to the new parsing pipeline`
 
+*   **⚫ Increment 5: Finalization**
+    *   **Goal:** To perform a final, holistic review and verification of the entire task's output, ensuring all requirements are met and the codebase is stable and compliant after the architectural unification. This increment will only be executed once all blocking external dependencies are resolved.
+    *   **Specification Reference:** Overall project quality and adherence to all `spec.md` and `roadmap.md` goals.
+    *   **Steps:**
+        1.  **Self-Critique:** Review the entire `unilang` crate against all `Task Requirements`, `Project Requirements`, `Expected Behavior Rules / Specifications`, `Design Rules`, and `Codestyle Rules`. Document any discrepancies or areas for improvement in `Notes & Insights`.
+        2.  **Full Crate Conformance Check:** Execute the `Crate Conformance Check Procedure` as defined in this plan.
+        3.  **Final Git Status Check:** Execute `git status` to ensure the working directory is clean and all changes are committed.
+    *   **Increment Verification:**
+        1.  All self-critique points are addressed or documented.
+        2.  The `Crate Conformance Check Procedure` (including `cargo test` and `cargo clippy`) passes without errors or warnings.
+        3.  `git status` shows a clean working directory.
+    *   **Commit Message:** `feat(unilang): Finalize architectural unification and verification`
+
 ### Changelog
 *   **Increment 1: Remove Legacy Components**
     *   Removed `module/move/unilang/src/parsing.rs` and `module/move/unilang/src/ca/`.
@@ -130,4 +144,4 @@ This task plan implements **M3.1: implement_parser_integration** from `roadmap.m
     *   **Workaround:** For the current `unilang` task, tests were modified to manually construct `GenericInstruction` instances, bypassing the faulty `unilang_instruction_parser::Parser` for testing purposes. This allows `unilang`'s semantic analysis and interpreter logic to be verified independently.
 *   **Compilation Error in `derive_tools`:** Encountered a compilation error in `module/core/derive_tools/src/lib.rs` (`error: expected item after attributes`). This is an issue in an external dependency that blocks `unilang` from compiling.
     *   **Action:** Created an `External Crate Change Proposal` for this fix: `module/core/derive_tools/task.md`.
-*   **Current Blocked Status:** The `unilang` architectural unification task is currently blocked by the compilation issue in `derive_tools`. Further progress on `unilang` requires this external dependency to be fixed.
+*   **Current Blocked Status:** The `unilang` architectural unification task is currently blocked by the compilation issue in `derive_tools`. Further progress on `unilang`, including the execution of Increment 4 and the Finalization Increment, requires this external dependency to be fixed. The `task.md` proposals for `unilang_instruction_parser` and `derive_tools` must be addressed before this plan can proceed to completion.

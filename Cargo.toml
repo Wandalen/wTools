@@ -127,7 +127,7 @@ default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.derive_tools_meta]
-version = "~0.35.0"
+version = "~0.36.0"
 path = "module/core/derive_tools_meta"
 default-features = false
 # features = [ "enabled" ]
@@ -175,18 +175,18 @@ default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn]
-version = "~0.33.0"
+version = "~0.34.0"
 path = "module/core/clone_dyn"
 default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn_meta]
-version = "~0.31.0"
+version = "~0.32.0"
 path = "module/core/clone_dyn_meta"
 # features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn_types]
-version = "~0.31.0"
+version = "~0.32.0"
 path = "module/core/clone_dyn_types"
 default-features = false
 # features = [ "enabled" ]
@@ -211,7 +211,7 @@ default-features = false
 ## iter
 
 [workspace.dependencies.iter_tools]
-version = "~0.29.0"
+version = "~0.30.0"
 path = "module/core/iter_tools"
 default-features = false
 
@@ -234,12 +234,12 @@ path = "module/core/former"
 default-features = false
 
 [workspace.dependencies.former_meta]
-version = "~2.17.0"
+version = "~2.18.0"
 path = "module/core/former_meta"
 default-features = false
 
 [workspace.dependencies.former_types]
-version = "~2.16.0"
+version = "~2.17.0"
 path = "module/core/former_types"
 default-features = false
 
@@ -299,7 +299,7 @@ default-features = false
 ## macro tools
 
 [workspace.dependencies.macro_tools]
-version = "~0.55.0"
+version = "~0.56.0"
 path = "module/core/macro_tools"
 default-features = false
 
@@ -358,7 +358,7 @@ default-features = false
 ## error
 
 [workspace.dependencies.error_tools]
-version = "~0.22.0"
+version = "~0.23.0"
 path = "module/core/error_tools"
 default-features = false
 
