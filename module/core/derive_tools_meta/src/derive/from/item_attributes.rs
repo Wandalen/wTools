@@ -32,6 +32,8 @@ pub struct ItemAttributes
   /// If true, the macro will be applied.
   ///
   pub on : AttributePropertyOptionalSingletone,
+  /// An optional type representing the error type associated with the item, if specified in the attributes.
+  pub error: Option<syn::Type>,
 }
 
 impl ItemAttributes
@@ -73,6 +75,19 @@ impl ItemAttributes
             // syn_err!( meta.path.span(), "Unknown attribute `#[ from( {} ) ]`", meta.path.to_token_stream() );
           }
           Ok( () )
+        })?;
+      }
+      if attr.path().is_ident( "add" )
+      {
+        attr.parse_nested_meta( | meta |
+        {
+          if meta.path.is_ident( "error" ) 
+          {
+            let value = meta.value()?;
+            let parsed : syn::Type = value.parse()?;
+            result.error = Some( parsed );
+         }
+         Ok( () )
         })?;
       }
       else

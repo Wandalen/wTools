@@ -320,10 +320,16 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// ## Item-Level Attributes
 /// The macro recognizes the following struct-level attributes:
 ///
-/// | Attribute                | Target    | Description                                     |
-/// |--------------------------|-----------|-------------------------------------------------|
-/// | `#[ derive( Add ) ]`     | Struct    | Enables generation of `Add` implementation      |
-///
+/// | Attribute                  | Target        | Description                                                           |
+/// |----------------------------|---------------|-----------------------------------------------------------------------|
+/// | `#[ derive( Add ) ]`       | Struct        | Enables generation of `Add` implementation                            |
+/// | `#[add(error = SomeType)]` | Struct / Enum | Overrides the default error type (`String`) used in `Result<Self, E>` |
+/// 
+/// /// ### Notes:
+/// - `SomeType` must be a valid Rust type (e.g., `MyError`, `Box<dyn std::error::Error>`, etc.).
+/// - If omitted, the default error type is `String`.
+/// - The provided error type must implement `From<String>` or be manually handled in the generated code.
+/// 
 /// ## Field-Level Attributes 
 ///
 /// No field-level attributes supported yet.
@@ -367,7 +373,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///
 /// | ID   | Input Expression                              | Expected Output / Behavior                          | Notes                                           |
 /// |------|-----------------------------------------------|-----------------------------------------------------|-------------------------------------------------|
-/// | T2.1 |  `E::One(3) + E::One(3)`                      | `E::One(6)`                                         | Basic enum case                                 |
+/// | T2.1 | `E::One(3) + E::One(3)`                       | `Ok(E::One(6))`                                     | Basic enum case                                 |
 /// | T2.2 | `E::One(i32) + E::Two(i32)`                   | `Error("Mismatched variant")`                       | Mismatched variant                              |
 /// | T2.3 | `S { x: 2, y: 3 } + S { x: 4, y: 1 }`         | `S { x: 6, y: 4 }`                                  | Basic case                                      |
 /// | T2.4 | `Empty {} + Empty {}`                         | Compile error                                       | Struct has zero fields                          |
@@ -385,6 +391,15 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// 
 /// #[ derive( Add ) ]
 /// struct MyTupleStruct( i32 );
+///
+/// type Er = Box<dyn std::error::Error>;
+/// #[ derive( Add ) ]
+/// #[ add(error = Er)]
+/// enum MyEnum 
+/// {
+///   One,
+///   Two( i32 ),
+/// }
 /// 
 /// let my_struct1 = MyNamedStruct { x : 3 };
 /// let my_struct2 = MyNamedStruct { x : 3 };
@@ -398,11 +413,18 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// 
 /// let result = ( my_struct1 + my_struct2 );
 /// assert_eq!( result.0, 6 );
+/// 
+/// let my_enum1 = MyEnum::Two( 3 );
+/// let my_enum2 = MyEnum::Two( 3 );
+/// 
+/// let result = ( my_enum1 + my_enum2 );
+///
+/// assert!( result.is_ok() );
+/// let value = if let MyEnum::Two( val ) = result.unwrap() { val } else { panic!( "Expected MyEnum::Two variant" ) };
+/// assert_eq!( value, 6 );
 /// ```
 ///
-/// ## Future Work
-/// - [ ] Add enum support.
-#[ proc_macro_derive( Add ) ]
+#[ proc_macro_derive( Add, attributes(add) ) ]
 pub fn add( input : proc_macro::TokenStream ) -> proc_macro::TokenStream 
 {
   derive::add::add( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
