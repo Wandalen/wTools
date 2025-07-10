@@ -13,7 +13,7 @@ use macro_tools::
 };
 use crate::derive::syn::Variant;
 use super::FieldAccess;
-use super::item_attributes::{ ItemAttributes };
+use super::super::item_attributes::{ ItemAttributes };
 
 pub fn add( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream > 
 {
@@ -35,7 +35,7 @@ pub fn add( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
     StructLike::Struct( ref item ) =>
     {
 
-    let fields_result: Result< Vec < ( FieldAccess, syn::Type ) > > = item
+    let fields_result : Result< Vec < ( FieldAccess, syn::Type ) > > = item
     .fields
     .iter()
     .enumerate()
@@ -64,7 +64,6 @@ pub fn add( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
         &generics_where,
         &fields,
       )
-      
     },
     StructLike::Enum( ref item ) =>
     {
@@ -109,96 +108,18 @@ fn generate_enum
 )
 -> proc_macro2::TokenStream 
 {
-  let arms = variants.iter().map( | v |
-  {
-    let variant_ident = &v.ident;
-    let fields : Vec< FieldAccess > = v.fields.iter().enumerate().map( | ( i, f ) | 
-    {
-      match &f.ident 
-      {
-          Some( ident ) => FieldAccess::Named( ident.clone() ),
-          None => FieldAccess::Unnamed( syn::Index::from( i ) ),
-      }
-    }).collect();
+  let op_expr = | a_ident : &syn::Ident, b_ident : &syn::Ident | -> proc_macro2::TokenStream {
+    qt! { #a_ident + #b_ident}
+  };
 
-    let a_vars : Vec< syn::Ident > = fields.iter().enumerate().map( | ( i, _ ) | 
-    {
-      syn::Ident::new( &format!( "a{i}" ), proc_macro2::Span::call_site() )
-    }).collect();
-    let b_vars : Vec < syn::Ident > = fields.iter().enumerate().map( | (  i, _ ) | 
-    {
-      syn::Ident::new( &format!( "b{i}" ), proc_macro2::Span::call_site() )
-    }).collect();
-
-    let a_fields = fields.iter().zip( &a_vars ).map( | ( faccess, var ) | 
-    {
-        match faccess 
-        {
-            FieldAccess::Named( ident ) => qt! { #ident : #var },
-            FieldAccess::Unnamed( _ ) => qt! { #var },
-        }
-    });
-
-    let b_fields = fields.iter().zip( &b_vars ).map( | ( faccess, var ) | 
-    {
-        match faccess 
-        {
-            FieldAccess::Named( ident ) => qt! { #ident: #var },
-            FieldAccess::Unnamed( _ ) => qt! { #var },
-        }
-    });
-    
-    let add_fields = a_vars.iter().zip( &b_vars ).map( | ( a, b ) | 
-    {
-        qt! { #a + #b }
-    });
-
-    let pat_a = match v.fields 
-    {
-        syn::Fields::Named( _ ) => 
-        {
-            qt! { #item_name::#variant_ident { #( #a_fields ), * } }
-        }
-        _ => 
-        {
-            qt! { #item_name::#variant_ident( #( #a_fields ), * ) }
-        }
-    };
-
-    let pat_b = match v.fields 
-    {
-        syn::Fields::Named( _ ) => 
-        {
-            qt! { #item_name::#variant_ident { #( #b_fields ), * } }
-        }
-        _ => 
-        {
-            qt! { #item_name::#variant_ident( #( #b_fields ), * ) }
-        }
-    };
-    let construct = match v.fields 
-    {
-        syn::Fields::Named( _ ) => 
-        {
-            qt! { #item_name::#variant_ident { #( #add_fields ), * } }
-        }
-        _ => 
-        {
-            qt! { #item_name::#variant_ident( #( #add_fields ), * ) }
-        }
-    };
-    qt! 
-    {
-        ( #pat_a, #pat_b ) => Ok( #construct ),
-    }
-  }).collect::< Vec< _ > >();
+  let arms = super::generate_enum_match_arms(item_name, variants, op_expr);
 
   let body = qt!
   {
     match ( self, other )
     {
       #( #arms )*
-      ( a, b ) => Err( format!( "Cannot add different variants" ).into() ), //: {a:?} and {b:?}")),  // TODO: Include variant names in error, e.g., "Cannot add VariantA and VariantB"
+      ( a, b ) => Err( format!( "Cannot add different variants" ).into() ),
     }
   };
   

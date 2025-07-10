@@ -427,5 +427,383 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 #[ proc_macro_derive( Add, attributes(add) ) ]
 pub fn add( input : proc_macro::TokenStream ) -> proc_macro::TokenStream 
 {
-  derive::add::add( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
-} 
+  derive::ops::add( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
+}
+
+/// 
+/// # Specification `#[ derive ( Sub ) ]`
+///
+/// ## Overview
+/// This macro generates an implementation of the [`core::ops::Sub`] trait
+/// for structs whose fields all implement `Sub`. It supports both named and tuple-style structs.
+///
+/// ## Supported Structures
+/// - Named structs: `struct My { a : T, b : T }`
+/// - Tuple structs: `struct My( T, T )`
+/// - Enums — **unimplemented**
+/// - Unit structs: `struct My;` — **not supported**
+///
+/// ## Item-Level Attributes
+/// The macro recognizes the following struct-level attributes:
+///
+/// | Attribute                  | Target        | Description                                                           |
+/// |----------------------------|---------------|-----------------------------------------------------------------------|
+/// | `#[ derive( Sub ) ]`       | Struct        | Enables generation of `Sub` implementation                            |
+/// | `#[sub(error = SomeType)]` | Struct / Enum | Overrides the default error type (`String`) used in `Result<Self, E>` |
+/// 
+/// ### Notes:
+/// - `SomeType` must be a valid Rust type (e.g., `MyError`, `Box<dyn std::error::Error>`, etc.).
+/// - If omitted, the default error type is `String`.
+/// - The provided error type must implement `From<String>` or be manually handled in the generated code.
+/// 
+/// ## Field-Level Attributes 
+///
+/// No field-level attributes supported yet.
+///
+/// ## Generated Output
+/// ```ignore
+/// impl Sub for MyStruct 
+/// {
+///     type Output = Self;
+///     fn sub(self, other: Self) -> Self::Output 
+///     {
+///         Self 
+///         {
+///             field1: self.field1 - other.field1,
+///             field2: self.field2 - other.field2,
+///             ...
+///         }
+///     }
+/// }
+/// ```
+/// Or for tuple structs:
+/// ```ignore
+/// Self( self.0 - other.0, self.1 - other.1 )
+/// ```
+///
+/// ## Requirements
+/// All fields must implement [`core::ops::Sub`].
+///
+/// ## Test Plan
+///
+/// | ID   | Struct Type              | Fields                      | Should Compile?  | Should Work at Runtime?| Notes                                |
+/// |------|--------------------------|-----------------------------|------------------|------------------------|--------------------------------------|
+/// | T1.1 | Named                    | `{x: i32, y: i32}`          | +                | +                      | Basic case                           |
+/// | T1.2 | Tuple                    | `(i32)`                     | +                | +                      | Tuple struct                         |
+/// | T1.3 | Unit                     | `()`                        | -                | —                      | Should be rejected                   |
+/// | T1.4 | Named with String        | `{x: String}`               | -                | —                      | String doesn't implement `Sub<Output = String>` in all cases |
+/// | T1.5 | Generic                  | `{x: T}`                    | +                | + (if T: Sub)          | Test with bounds                     |
+/// | T1.6 | Enum,                    | `enum E { One(i32) }`       | -                | -                      | Unimplemented yet                    |
+/// 
+/// ## Input / Expected Output
+///
+/// | ID   | Input Expression                              | Expected Output / Behavior                          | Notes                                           |
+/// |------|-----------------------------------------------|-----------------------------------------------------|-------------------------------------------------|
+/// | T2.1 | `E::One(3) - E::One(2)`                       | `Ok(E::One(1))`                                     | Basic enum case                                 |
+/// | T2.2 | `E::One(i32) - E::Two(i32)`                   | `Error("Mismatched variant")`                       | Mismatched variant                              |
+/// | T2.3 | `S { x: 4, y: 3 } - S { x: 2, y: 1 }`         | `S { x: 2, y: 2 }`                                  | Basic case                                      |
+/// | T2.4 | `Empty {} - Empty {}`                         | Compile error                                       | Struct has zero fields                          |
+/// | T2.5 | `S(String::from("1")) - S(String::from("2"))` | Compile error                                       | String doesn't implement `Sub<Output = String>` |
+/// 
+/// ## Example Usage
+/// ```
+/// use derive_tools_meta::Sub;
+/// 
+/// #[ derive( Sub ) ]
+/// struct MyNamedStruct
+/// {
+///   x: i32
+/// };
+/// 
+/// #[ derive( Sub ) ]
+/// struct MyTupleStruct( i32 );
+///
+/// type Er = Box<dyn std::error::Error>;
+/// #[ derive( Sub ) ]
+/// #[ sub(error = Er)]
+/// enum MyEnum 
+/// {
+///   One,
+///   Two( i32 ),
+/// }
+/// 
+/// let my_struct1 = MyNamedStruct { x : 4 };
+/// let my_struct2 = MyNamedStruct { x : 3 };
+/// 
+/// let result = ( my_struct1 - my_struct2 );
+/// 
+/// assert_eq!( result.x, 1 );
+/// 
+/// let my_struct1 = MyTupleStruct ( 4 );
+/// let my_struct2 = MyTupleStruct ( 3 );
+/// 
+/// let result = ( my_struct1 - my_struct2 );
+/// assert_eq!( result.0, 1 );
+/// 
+/// let my_enum1 = MyEnum::Two( 4 );
+/// let my_enum2 = MyEnum::Two( 3 );
+/// 
+/// let result = ( my_enum1 - my_enum2 );
+///
+/// assert!( result.is_ok() );
+/// let value = if let MyEnum::Two( val ) = result.unwrap() { val } else { panic!( "Expected MyEnum::Two variant" ) };
+/// assert_eq!( value, 1 );
+/// ```
+///
+#[ proc_macro_derive( Sub, attributes( sub ) ) ]
+pub fn sub( input : proc_macro::TokenStream ) -> proc_macro::TokenStream 
+{
+  derive::ops::sub( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
+}
+
+/// 
+/// # Specification `#[ derive ( Mul ) ]`
+///
+/// ## Overview
+/// This macro generates an implementation of the [`core::ops::Mul`] trait
+/// for structs whose fields all implement `Mul`. It supports both named and tuple-style structs.
+///
+/// ## Supported Structures
+/// - Named structs: `struct My { a : T, b : T }`
+/// - Tuple structs: `struct My( T, T )`
+/// - Enums — **unimplemented**
+/// - Unit structs: `struct My;` — **not supported**
+///
+/// ## Item-Level Attributes
+/// The macro recognizes the following struct-level attributes:
+///
+/// | Attribute                  | Target        | Description                                                           |
+/// |----------------------------|---------------|-----------------------------------------------------------------------|
+/// | `#[ derive( Mul ) ]`       | Struct        | Enables generation of `Mul` implementation                            |
+/// | `#[mul(error = SomeType)]` | Struct / Enum | Overrides the default error type (`String`) used in `Result<Self, E>` |
+/// 
+/// ### Notes:
+/// - `SomeType` must be a valid Rust type (e.g., `MyError`, `Box<dyn std::error::Error>`, etc.).
+/// - If omitted, the default error type is `String`.
+/// - The provided error type must implement `From<String>` or be manually handled in the generated code.
+/// 
+/// ## Field-Level Attributes 
+///
+/// No field-level attributes supported yet.
+///
+/// ## Generated Output
+/// ```ignore
+/// impl Mul for MyStruct 
+/// {
+///     type Output = Self;
+///     fn mul(self, other: Self) -> Self::Output 
+///     {
+///         Self 
+///         {
+///             field1: self.field1 * other.field1,
+///             field2: self.field2 * other.field2,
+///             ...
+///         }
+///     }
+/// }
+/// ```
+/// Or for tuple structs:
+/// ```ignore
+/// Self( self.0 * other.0, self.1 * other.1 )
+/// ```
+///
+/// ## Requirements
+/// All fields must implement [`core::ops::Mul`].
+///
+/// ## Test Plan
+///
+/// | ID   | Struct Type              | Fields                      | Should Compile?  | Should Work at Runtime?| Notes                                |
+/// |------|--------------------------|-----------------------------|------------------|------------------------|--------------------------------------|
+/// | T1.1 | Named                    | `{x: i32, y: i32}`          | +                | +                      | Basic case                           |
+/// | T1.2 | Tuple                    | `(i32)`                     | +                | +                      | Tuple struct                         |
+/// | T1.3 | Unit                     | `()`                        | -                | —                      | Should be rejected                   |
+/// | T1.4 | Named with String        | `{x: String}`               | -                | —                      | String doesn't implement `Mul<Output = String>` in all cases |
+/// | T1.5 | Generic                  | `{x: T}`                    | +                | + (if T: Mul)          | Test with bounds                     |
+/// | T1.6 | Enum,                    | `enum E { One(i32) }`       | -                | -                      | Unimplemented yet                    |
+/// 
+/// ## Input / Expected Output
+///
+/// | ID   | Input Expression                              | Expected Output / Behavior                          | Notes                                           |
+/// |------|-----------------------------------------------|-----------------------------------------------------|-------------------------------------------------|
+/// | T2.1 | `E::One(3) * E::One(3)`                       | `Ok(E::One(9))`                                     | Basic enum case                                 |
+/// | T2.2 | `E::One(i32) * E::Two(i32)`                   | `Error("Mismatched variant")`                       | Mismatched variant                              |
+/// | T2.3 | `S { x: 2, y: 3 } * S { x: 4, y: 1 }`         | `S { x: 8, y: 3 }`                                  | Basic case                                      |
+/// | T2.4 | `Empty {} * Empty {}`                         | Compile error                                       | Struct has zero fields                          |
+/// | T2.5 | `S(String::from("1")) * S(String::from("2"))` | Compile error                                       | String doesn't implement `Mul<Output = String>` |
+/// 
+/// ## Example Usage
+/// ```
+/// use derive_tools_meta::Mul;
+/// 
+/// #[ derive( Mul ) ]
+/// struct MyNamedStruct
+/// {
+///   x: i32
+/// };
+/// 
+/// #[ derive( Mul ) ]
+/// struct MyTupleStruct( i32 );
+///
+/// type Er = Box<dyn std::error::Error>;
+/// #[ derive( Mul ) ]
+/// #[ mul(error = Er)]
+/// enum MyEnum 
+/// {
+///   One,
+///   Two( i32 ),
+/// }
+/// 
+/// let my_struct1 = MyNamedStruct { x : 4 };
+/// let my_struct2 = MyNamedStruct { x : 3 };
+/// 
+/// let result = ( my_struct1 * my_struct2 );
+/// 
+/// assert_eq!( result.x, 12 );
+/// 
+/// let my_struct1 = MyTupleStruct ( 4 );
+/// let my_struct2 = MyTupleStruct ( 3 );
+/// 
+/// let result = ( my_struct1 * my_struct2 );
+/// assert_eq!( result.0, 12 );
+/// 
+/// let my_enum1 = MyEnum::Two( 4 );
+/// let my_enum2 = MyEnum::Two( 3 );
+/// 
+/// let result = ( my_enum1 * my_enum2 );
+///
+/// assert!( result.is_ok() );
+/// let value = if let MyEnum::Two( val ) = result.unwrap() { val } else { panic!( "Expected MyEnum::Two variant" ) };
+/// assert_eq!( value, 12 );
+/// ```
+///
+#[ proc_macro_derive( Mul, attributes( mul ) ) ]
+pub fn mul( input : proc_macro::TokenStream ) -> proc_macro::TokenStream 
+{
+  derive::ops::mul( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
+}
+
+/// 
+/// # Specification `#[ derive ( Div ) ]`
+///
+/// ## Overview
+/// This macro generates an implementation of the [`core::ops::Div`] trait
+/// for structs whose fields all implement `Div`. It supports both named and tuple-style structs.
+///
+/// ## Supported Structures
+/// - Named structs: `struct My { a : T, b : T }`
+/// - Tuple structs: `struct My( T, T )`
+/// - Enums — **unimplemented**
+/// - Unit structs: `struct My;` — **not supported**
+///
+/// ## Item-Level Attributes
+/// The macro recognizes the following struct-level attributes:
+///
+/// | Attribute                  | Target        | Description                                                           |
+/// |----------------------------|---------------|-----------------------------------------------------------------------|
+/// | `#[ derive( Div ) ]`       | Struct        | Enables generation of `Div` implementation                            |
+/// | `#[div(error = SomeType)]` | Struct / Enum | Overrides the default error type (`String`) used in `Result<Self, E>` |
+/// 
+/// ### Notes:
+/// - `SomeType` must be a valid Rust type (e.g., `MyError`, `Box<dyn std::error::Error>`, etc.).
+/// - If omitted, the default error type is `String`.
+/// - The provided error type must implement `From<String>` or be manually handled in the generated code.
+/// 
+/// ## Field-Level Attributes 
+///
+/// No field-level attributes supported yet.
+///
+/// ## Generated Output
+/// ```ignore
+/// impl Div for MyStruct 
+/// {
+///     type Output = Self;
+///     fn div(self, other: Self) -> Self::Output 
+///     {
+///         Self 
+///         {
+///             field1: self.field1 / other.field1,
+///             field2: self.field2 / other.field2,
+///             ...
+///         }
+///     }
+/// }
+/// ```
+/// Or for tuple structs:
+/// ```ignore
+/// Self( self.0 / other.0, self.1 / other.1 )
+/// ```
+///
+/// ## Requirements
+/// All fields must implement [`core::ops::Div`].
+///
+/// ## Test Plan
+///
+/// | ID   | Struct Type              | Fields                      | Should Compile?  | Should Work at Runtime?| Notes                                |
+/// |------|--------------------------|-----------------------------|------------------|------------------------|--------------------------------------|
+/// | T1.1 | Named                    | `{x: i32, y: i32}`          | +                | +                      | Basic case                           |
+/// | T1.2 | Tuple                    | `(i32)`                     | +                | +                      | Tuple struct                         |
+/// | T1.3 | Unit                     | `()`                        | -                | —                      | Should be rejected                   |
+/// | T1.4 | Named with String        | `{x: String}`               | -                | —                      | String doesn't implement `Div<Output = String>` in all cases |
+/// | T1.5 | Generic                  | `{x: T}`                    | +                | + (if T: Div)          | Test with bounds                     |
+/// | T1.6 | Enum,                    | `enum E { One(i32) }`       | -                | -                      | Unimplemented yet                    |
+/// 
+/// ## Input / Expected Output
+///
+/// | ID   | Input Expression                              | Expected Output / Behavior                          | Notes                                           |
+/// |------|-----------------------------------------------|-----------------------------------------------------|-------------------------------------------------|
+/// | T2.1 | `E::One(6) / E::One(3)`                       | `Ok(E::One(2))`                                     | Basic enum case                                 |
+/// | T2.2 | `E::One(i32) / E::Two(i32)`                   | `Error("Mismatched variant")`                       | Mismatched variant                              |
+/// | T2.3 | `S { x: 6, y: 4 } / S { x: 2, y: 2 }`         | `S { x: 3, y: 2 }`                                  | Basic case                                      |
+/// | T2.4 | `Empty {} / Empty {}`                         | Compile error                                       | Struct has zero fields                          |
+/// | T2.5 | `S(String::from("6")) / S(String::from("2"))` | Compile error                                       | String doesn't implement `Div<Output = String>` |
+/// 
+/// ## Example Usage
+/// ```
+/// use derive_tools_meta::Div;
+/// 
+/// #[ derive( Div ) ]
+/// struct MyNamedStruct
+/// {
+///   x: i32
+/// };
+/// 
+/// #[ derive( Div ) ]
+/// struct MyTupleStruct( i32 );
+///
+/// type Er = Box<dyn std::error::Error>;
+/// #[ derive( Div ) ]
+/// #[ div(error = Er)]
+/// enum MyEnum 
+/// {
+///   One,
+///   Two( i32 ),
+/// }
+/// 
+/// let my_struct1 = MyNamedStruct { x : 12 };
+/// let my_struct2 = MyNamedStruct { x : 3 };
+/// 
+/// let result = ( my_struct1 / my_struct2 );
+/// 
+/// assert_eq!( result.x, 4 );
+/// 
+/// let my_struct1 = MyTupleStruct ( 12 );
+/// let my_struct2 = MyTupleStruct ( 3 );
+/// 
+/// let result = ( my_struct1 / my_struct2 );
+/// assert_eq!( result.0, 4 );
+/// 
+/// let my_enum1 = MyEnum::Two( 12 );
+/// let my_enum2 = MyEnum::Two( 3 );
+/// 
+/// let result = ( my_enum1 / my_enum2 );
+///
+/// assert!( result.is_ok() );
+/// let value = if let MyEnum::Two( val ) = result.unwrap() { val } else { panic!( "Expected MyEnum::Two variant" ) };
+/// assert_eq!( value, 4 );
+/// ```
+///
+#[ proc_macro_derive( Div, attributes( div ) ) ]
+pub fn div( input : proc_macro::TokenStream ) -> proc_macro::TokenStream 
+{
+  derive::ops::div( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
+}
