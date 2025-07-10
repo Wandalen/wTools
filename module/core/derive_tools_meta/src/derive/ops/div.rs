@@ -13,7 +13,7 @@ use macro_tools::
 };
 use crate::derive::syn::Variant;
 use super::FieldAccess;
-use super::super::item_attributes::{ ItemAttributes };
+use super::item_attributes::{ ItemAttributes };
 
 pub fn div( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream > 
 {
