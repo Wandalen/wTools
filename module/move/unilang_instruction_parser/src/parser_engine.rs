@@ -48,6 +48,7 @@ impl Parser
     .src( input )
     .delimeter( vec![ " ", "\n", "!", "::", "?", "#" ] )
     .preserving_delimeters( true )
+    .quoting( true )
     .form()
     .split_fast();
 

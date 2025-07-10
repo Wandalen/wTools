@@ -3,7 +3,7 @@
 #![allow(clippy::std_instead_of_alloc)]
 #![allow(clippy::std_instead_of_core)]
 
-use crate::error::{ ErrorKind, ParseError, SourceLocation };
+use crate::error::{ ParseError, SourceLocation };
 use strs_tools::string::split::{ Split, SplitType };
 use core::fmt;
 
@@ -70,14 +70,11 @@ pub fn classify_split( s : &Split<'_> ) -> Result<( UnilangTokenKind, SourceLoca
 {
   let original_location = SourceLocation::StrSpan { start : s.start, end : s.end };
 
-  // Check for quoted strings first, as they are a form of Delimited split but need special handling.
   if s.string.starts_with('"') && s.string.ends_with('"') && s.string.len() >= 2
   {
     let inner_str = &s.string[ 1 .. s.string.len() - 1 ];
-    let adjusted_start = s.start + 1;
-    let adjusted_location = SourceLocation::StrSpan { start : adjusted_start, end : s.end - 1 };
-    let unescaped = unescape_string_with_errors( inner_str, adjusted_start )?;
-    return Ok(( UnilangTokenKind::QuotedValue( unescaped ), adjusted_location ));
+    let adjusted_location = SourceLocation::StrSpan { start : s.start + 1, end : s.end - 1 };
+    return Ok(( UnilangTokenKind::QuotedValue( inner_str.to_string() ), adjusted_location ));
   }
 
   match s.string
@@ -102,52 +99,4 @@ pub fn classify_split( s : &Split<'_> ) -> Result<( UnilangTokenKind, SourceLoca
       }
     }
   }
-}
-
-/// Unescapes a string, handling common escape sequences.
-fn unescape_string_with_errors( src : &str, offset : usize ) -> Result< String, ParseError >
-{
-  let mut result = String::with_capacity( src.len() );
-  let mut chars = src.chars().peekable();
-  let mut current_offset = offset;
-
-  while let Some( c ) = chars.next()
-  {
-    if c == '\\'
-    {
-      let escape_start = current_offset;
-      current_offset += 1; // for the '\'
-      match chars.next()
-      {
-        Some( 'n' ) => { result.push( '\n' ); current_offset += 1; },
-        Some( 't' ) => { result.push( '\t' ); current_offset += 1; },
-        Some( 'r' ) => { result.push( '\r' ); current_offset += 1; },
-        Some( '\\' ) => { result.push( '\\' ); current_offset += 1; },
-        Some( '"' ) => { result.push( '"' ); current_offset += 1; },
-        Some( next_c ) =>
-        {
-          let escape_sequence = format!( "\\{}", next_c );
-          return Err( ParseError
-          {
-            kind : ErrorKind::InvalidEscapeSequence( escape_sequence ),
-            location : Some( SourceLocation::StrSpan { start : escape_start, end : escape_start + 2 } ),
-          });
-        },
-        None =>
-        {
-          return Err( ParseError
-          {
-            kind : ErrorKind::InvalidEscapeSequence( "\\".to_string() ),
-            location : Some( SourceLocation::StrSpan { start : escape_start, end : escape_start + 1 } ),
-          });
-        },
-      }
-    }
-    else
-    {
-      result.push( c );
-      current_offset += c.len_utf8();
-    }
-  }
-  Ok( result )
 }
