@@ -175,6 +175,8 @@ mod private
               end_of_quote_idx = Some( i + c.len_utf8() );
               break;
             }
+            // Handle escape sequences properly
+            // The escape state is set by '\' and consumed by the next character
             is_escaped = c == '\\' && !is_escaped;
           }
 
@@ -357,8 +359,17 @@ mod private
     {
       loop {
         if let Some(offset) = self.just_finished_peeked_quote_end_offset.take() {
-            if self.iterator.current_offset < offset {
-                self.iterator.iterable = &self.iterator.iterable[offset - self.iterator.current_offset..];
+            if self.iterator.current_offset != offset {
+                if offset > self.iterator.current_offset {
+                    // Move forward
+                    self.iterator.iterable = &self.iterator.iterable[offset - self.iterator.current_offset..];
+                } else {
+                    // Move backward - need to recalculate from source
+                    let src_len = self.src.len();
+                    if offset < src_len {
+                        self.iterator.iterable = &self.src[offset..];
+                    }
+                };
                 self.iterator.current_offset = offset;
             }
         }
@@ -396,7 +407,16 @@ mod private
               self.iterator.active_quote_char = Some( first_char_iterable );
               let quoted_segment_from_sfi_opt = self.iterator.next(); self.iterator.active_quote_char = None;
               if let Some( mut quoted_segment ) = quoted_segment_from_sfi_opt {
-                self.just_finished_peeked_quote_end_offset = Some(quoted_segment.end);
+                // Check if there's another quote immediately after this one (consecutive quotes)
+                let quote_pos = quoted_segment.end - expected_postfix.len();
+                if quote_pos < self.src.len() && self.src.chars().nth(quote_pos) == Some('"') && 
+                   quote_pos + 1 < self.src.len() && self.src.chars().nth(quote_pos + 1) != Some(' ') {
+                    // Consecutive quotes - position at the shared quote
+                    self.just_finished_peeked_quote_end_offset = Some(quote_pos);
+                } else {
+                    // Normal case - position after the closing quote
+                    self.just_finished_peeked_quote_end_offset = Some(quoted_segment.end);
+                }
                 if quoted_segment.string.ends_with( expected_postfix ) {
                   if self.flags.contains(SplitFlags::PRESERVING_QUOTING) {
                     let new_start = opening_quote_original_start;
