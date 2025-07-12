@@ -98,7 +98,7 @@
     *   Step 1: Use `read_file` to load `module/core/strs_tools/src/string/split.rs`.
     *   Step 2: In `module/core/strs_tools/src/string/split.rs`, add a new private helper function `fn unescape_str( input: &str ) -> Cow< '_, str >`.
     *   Step 3: Implement the logic for `unescape_str`:
-        *   Search for the `\` character. If it's not found, return `Cow::Borrowed(input)` for efficiency.
+        *   Search for the `\` character. If it's not found, return `Cow::Borrowed(input)`.
         *   If `\` is found, iterate through the input string's characters to build a new `String`.
         *   When a `\` is encountered, inspect the next character to handle valid escape sequences (`\"`, `\\`, `\n`, `\t`, `\r`) by appending their literal counterparts.
         *   If an escape sequence is not one of the recognized ones, append both the `\` and the character that follows it literally.
@@ -135,7 +135,7 @@
     *   Step 1: Create a new test file: `module/core/strs_tools/tests/inc/split_test/quoting_and_unescaping_tests.rs`.
     *   Step 2: Use `read_file` to load `module/core/strs_tools/tests/inc/split_test/mod.rs`.
     *   Step 3: Use `insert_content` to add `pub mod quoting_and_unescaping_tests;` to `module/core/strs_tools/tests/inc/split_test/mod.rs`.
-    *   Step 4: In the new test file (`quoting_and_unescaping_tests.rs`), add a test case that is an exact copy of the MRE from the task description. Assert that the output for the quoted part is a single `Split` item with the correctly unescaped string.
+    *   Step 4: In the new test file, add a test case that is an exact copy of the MRE from the task description. Assert that the output for the quoted part is a single `Split` item with the correctly unescaped string.
     *   Step 5: Add more test cases covering:
         *   Strings with no quotes.
         *   Strings with empty quoted sections (`""`).
@@ -182,7 +182,14 @@
 *   None
 
 ### Notes & Insights
-*   This change will significantly improve the usability of `strs_tools` for parsing command-line-like inputs. The use of `Cow` is a good trade-off between performance (for non-escaped strings) and correctness (for escaped strings).
+*   **Increment 4 (Implement Unescaping Logic):**
+    *   **Issue:** Initial implementation of `unescape_str` caused lifetime errors (`E0597`) when its `Cow::Borrowed` return type was used in `SplitIterator::next` due to borrowing from a temporary `quoted_segment`.
+    *   **Solution:** Forced `unescape_str` to always return `Cow::Owned` by calling `.into_owned()` on its result, breaking the invalid borrow. This required explicit type annotation and a two-step conversion to avoid compiler confusion.
+    *   **Insight:** `Cow` can be tricky with lifetimes, especially when intermediate `Cow::Borrowed` values are created and then used in a context that outlives them. Explicitly converting to `Cow::Owned` can resolve such issues, but it's important to consider performance implications if many small strings are being unescaped.
+*   **Increment 5 (Implement Quoted Segment Logic):**
+    *   **Issue:** New tests for quoting and unescaping failed because `SplitIterator` was incorrectly preserving delimiter segments even when `preserving_delimeters(false)` was set. Additionally, an extra empty string segment was sometimes yielded when `preserving_empty` was true and a quoted segment was encountered.
+    *   **Solution:** Modified the `SplitIterator::next` method to correctly apply the `skip` logic. The `skip` conditions for empty delimited segments and delimiter segments were combined with a logical OR (`||`) and placed at the beginning of the loop to ensure immediate skipping. This prevents unwanted segments from being yielded.
+    *   **Insight:** The order and combination of `skip` conditions are crucial in iterators. A single `skip` flag that is conditionally overwritten can lead to subtle bugs. It's better to combine all skip conditions into a single boolean check at the start of the loop iteration.
 
 ### Changelog
 *   [Increment 5 | 2025-07-12] Removed debug macros from `SplitIterator`.

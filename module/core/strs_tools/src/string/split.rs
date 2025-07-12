@@ -446,14 +446,14 @@ mod private
           } else { effective_split_opt = self.iterator.next(); }
         } else { effective_split_opt = self.iterator.next(); }
         let mut current_split = effective_split_opt?;
-        if let Some(peeked_quote_end) = just_finished_quote_offset_cache {
-          if current_split.typ == SplitType::Delimeted && current_split.string.is_empty() && current_split.start == peeked_quote_end && self.flags.contains(SplitFlags::PRESERVING_EMPTY) && peeked_quote_end < self.src.len() {
-            let char_after_quote = &self.src[peeked_quote_end..];
-            if self.iterator.delimeter.pos(char_after_quote).is_some_and(|(ds, _)| ds == 0) {
-              self.last_yielded_token_was_delimiter = false; continue;
-            }
-          }
+        
+        // Apply skip logic based on flags
+        if (current_split.typ == SplitType::Delimeted && current_split.string.is_empty() && !self.flags.contains(SplitFlags::PRESERVING_EMPTY)) ||
+           (current_split.typ == SplitType::Delimiter && !self.flags.contains(SplitFlags::PRESERVING_DELIMITERS))
+        {
+          continue; // Skip this split and continue to the next iteration of the loop
         }
+        
         if !quote_handled_by_peek && self.flags.contains(SplitFlags::QUOTING) && current_split.typ == SplitType::Delimiter && self.iterator.active_quote_char.is_none() {
           if let Some(_prefix_idx) = self.quoting_prefixes.iter().position(|p| *p == current_split.string.as_ref()) {
             let opening_quote_delimiter = current_split.clone();
@@ -472,13 +472,8 @@ mod private
             current_split.end = current_split.start + current_split.string.len();
           }
         }
-        let mut skip = false;
-        if current_split.typ == SplitType::Delimeted && current_split.string.is_empty() && !self.flags.contains(SplitFlags::PRESERVING_EMPTY) { skip = true; }
-        if current_split.typ == SplitType::Delimiter && !self.flags.contains(SplitFlags::PRESERVING_DELIMITERS) { skip = true; }
-        if !skip {
-          if current_split.typ == SplitType::Delimiter { self.last_yielded_token_was_delimiter = true; }
-          return Some( current_split );
-        }
+        if current_split.typ == SplitType::Delimiter { self.last_yielded_token_was_delimiter = true; }
+        return Some( current_split );
       } 
     } 
   } 
