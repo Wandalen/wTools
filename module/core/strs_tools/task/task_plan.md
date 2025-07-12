@@ -19,7 +19,7 @@
     *   ✅ Increment 3: Fix Compilation Errors
     *   ✅ Increment 4: Implement Unescaping Logic
     *   ✅ Increment 5: Implement Quoted Segment Logic
-    *   ⚫ Increment 6: Add New Tests for Unescaping and Quoting
+    *   ⏳ Increment 6: Add New Tests for Unescaping and Quoting
     *   ⚫ Increment 7: Finalization
 
 ### Permissions & Boundaries
@@ -133,9 +133,10 @@
 *   **Specification Reference:** "Acceptance Criteria" from the proposal.
 *   **Steps:**
     *   Step 1: Create a new test file: `module/core/strs_tools/tests/inc/split_test/quoting_and_unescaping_tests.rs`.
-    *   Step 2: Add this new file as a module in `module/core/strs_tools/tests/inc/split_test/mod.rs`.
-    *   Step 3: In the new test file, add a test case that is an exact copy of the MRE from the task description. Assert that the output for the quoted part is a single `Split` item with the correctly unescaped string.
-    *   Step 4: Add more test cases covering:
+    *   Step 2: Use `read_file` to load `module/core/strs_tools/tests/inc/split_test/mod.rs`.
+    *   Step 3: Use `insert_content` to add `pub mod quoting_and_unescaping_tests;` to `module/core/strs_tools/tests/inc/split_test/mod.rs`.
+    *   Step 4: In the new test file (`quoting_and_unescaping_tests.rs`), add a test case that is an exact copy of the MRE from the task description. Assert that the output for the quoted part is a single `Split` item with the correctly unescaped string.
+    *   Step 5: Add more test cases covering:
         *   Strings with no quotes.
         *   Strings with empty quoted sections (`""`).
         *   Strings with multiple, different escape sequences.
