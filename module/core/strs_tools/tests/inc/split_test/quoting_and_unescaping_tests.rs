@@ -6,7 +6,7 @@ use super::*;
 use std::borrow::Cow;
 
 #[test]
-fn mre_test()
+fn mre_simple_unescape_test()
 {
   let src = r#"instruction "arg1" "arg2 \" "arg3 \\" "#;
   let splits : Vec<_> = strs_tools::string::split()
