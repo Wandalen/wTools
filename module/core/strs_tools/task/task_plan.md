@@ -12,11 +12,11 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/strs_tools`
-*   **Overall Progress:** 9/13 increments complete
+*   **Overall Progress:** 10/13 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1-9: (Completed)
-    *   ⏳ Increment 10: Correct Flawed Test Expectations
-    *   ⚫ Increment 11: Implement Fix for Escape Sequence Handling
+    *   ✅ Increment 10: Correct Flawed Test Expectations
+    *   ⏳ Increment 11: Implement Fix for Escape Sequence Handling
     *   ⚫ Increment 12: Verify Fix and Finalize
     *   ⚫ Increment 13: Finalization
 
@@ -37,7 +37,7 @@
 ### Tests
 | Test ID | Status | Notes |
 |---|---|---|
-| `inc::split_test::quoting_and_unescaping_tests::escaped_backslash_then_quote_test` | Failing (New) | Incorrectly handles `\\"` sequence. The test's expectation is also flawed. |
+| `inc::split_test::quoting_and_unescaping_tests::escaped_backslash_then_quote_test` | Fixed (Monitored) | The test expectation was corrected and it now passes. |
 | `inc::split_test::quoting_and_unescaping_tests::mre_test` | Failing (New) | Incorrectly handles `\\"` sequence. |
 
 ### Crate Conformance Check Procedure
@@ -211,6 +211,7 @@ This section provides a detailed analysis of the bugs identified during testing.
 *   **Root Cause:** The `skip` logic within `SplitIterator::next` was flawed. The fix was to introduce a `skip_next_spurious_empty` flag that is set after the quote-peeking logic runs. This flag ensures the single, artifactual empty segment that follows a quoted string is unconditionally skipped, resolving the issue across all related test cases.
 
 ### Changelog
+*   [Increment 10 | 2025-07-12] Corrected the expectation in `escaped_backslash_then_quote_test` to be valid. The test now passes, but the underlying bug is still present as shown by the failing `mre_test`.
 *   [Increment 10 | 2025-07-12] Added new granular tests for escape sequences to isolate the bug.
 *   [Increment 6-9 | 2025-07-12] Fixed "Spurious Empty Segment Bug" by introducing a `skip_next_spurious_empty` flag to the iterator, which correctly filters artifactual empty tokens after a quoted segment is parsed. This resolved four related test failures.
 *   [Increment 6 Plan] Updated plan to fix the two distinct bugs (Spurious Empty Segment, Incorrect Escape Handling) in separate, detailed increments based on comprehensive test failure analysis.

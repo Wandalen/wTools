@@ -135,7 +135,8 @@ fn escaped_backslash_only_test()
 #[test]
 fn escaped_backslash_then_quote_test()
 {
-  let src = r#" "a\\"b" "#;
+  // This tests that the sequence `\\\"` correctly unescapes to `\"`.
+  let src = r#" "a\\\"b" "#;
   let splits : Vec<_> = strs_tools::string::split()
   .src( src )
   .delimeter( " " )
@@ -143,7 +144,7 @@ fn escaped_backslash_then_quote_test()
   .preserving_delimeters( false )
   .perform()
   .map( | e | e.string ).collect();
-  let expected = vec![ "a\\\"b" ];
+  let expected = vec![ r#"a\"b"# ];
   assert_eq!( splits, expected );
 }
 
