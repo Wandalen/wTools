@@ -1,100 +1,104 @@
-//! Tests focusing on `quoting` and unescaping behavior.
-use strs_tools::string::split::*;
+//!
+//! These tests cover the combined functionality of quoting and unescaping in the `strs_tools::split` iterator.
+//!
 
-// Test case from the original issue description
+use super::*;
+
 #[test]
-fn test_mre_unescaping()
+fn mre_test()
 {
-  let src = r#"sub .asset.get path:"a b""#;
-  let iter = split()
+  let src = r#"instruction "arg1" "arg2 \" "arg3 \\" "#;
+  let splits : Vec<_> = strs_tools::string::split()
   .src( src )
   .delimeter( " " )
   .quoting( true )
-  .preserving_quoting( false )
-  .perform();
-  let splits : Vec<_> = iter.map( | e | e.string ).collect();
-  assert_eq!( splits, vec![ "sub", ".asset.get", "path:a b" ] );
+  .stripping( false )
+  .preserving_delimeters( false )
+  .preserving_empty( false )
+  .perform()
+  .map( | e | e.string ).collect();
+  let expected = vec!
+  [
+    "instruction",
+    "arg1",
+    "arg2 \" ",
+    "arg3 \\",
+  ];
+  assert_eq!( splits, expected );
 }
 
 #[test]
-fn test_no_quotes()
+fn no_quotes_test()
 {
   let src = "a b c";
-  let iter = split()
+  let splits : Vec<_> = strs_tools::string::split()
   .src( src )
   .delimeter( " " )
   .quoting( true )
-  .perform();
-  let splits : Vec<_> = iter.map( | e | e.string ).collect();
-  assert_eq!( splits, vec![ "a", "b", "c" ] );
+  .preserving_delimeters( false )
+  .perform()
+  .map( | e | e.string ).collect();
+  let expected = vec![ "a", "b", "c" ];
+  assert_eq!( splits, expected );
 }
 
 #[test]
-fn test_empty_quoted_sections()
+fn empty_quoted_section_test()
 {
   let src = r#"a "" b"#;
-  let iter = split()
+  let splits : Vec<_> = strs_tools::string::split()
   .src( src )
   .delimeter( " " )
   .quoting( true )
-  .preserving_quoting( false )
-  .perform();
-  let splits : Vec<_> = iter.map( | e | e.string ).collect();
-  assert_eq!( splits, vec![ "a", "", "b" ] );
+  .preserving_empty( true )
+  .preserving_delimeters( false )
+  .perform()
+  .map( | e | e.string ).collect();
+  let expected = vec![ "a", "", "b" ];
+  assert_eq!( splits, expected );
 }
 
 #[test]
-fn test_multiple_escape_sequences()
+fn multiple_escape_sequences_test()
 {
-  let src = r#""\n\t\\\"""#;
-  let iter = split()
+  let src = r#" "a\n\t\"\\" b "#;
+  let splits : Vec<_> = strs_tools::string::split()
   .src( src )
   .delimeter( " " )
   .quoting( true )
-  .preserving_quoting( false )
-  .perform();
-  let splits : Vec<_> = iter.map( | e | e.string ).collect();
-  assert_eq!( splits, vec![ "\n\t\\\"" ] );
+  .preserving_delimeters( false )
+  .perform()
+  .map( | e | e.string ).collect();
+  let expected = vec![ "a\n\t\"\\", "b" ];
+  assert_eq!( splits, expected );
 }
 
 #[test]
-fn test_quoted_at_start()
+fn quoted_at_start_middle_end_test()
 {
-  let src = r#""a b" c"#;
-  let iter = split()
+  let src = r#""start" middle "end""#;
+  let splits : Vec<_> = strs_tools::string::split()
   .src( src )
   .delimeter( " " )
   .quoting( true )
-  .preserving_quoting( false )
-  .perform();
-  let splits : Vec<_> = iter.map( | e | e.string ).collect();
-  assert_eq!( splits, vec![ "a b", "c" ] );
+  .preserving_delimeters( false )
+  .perform()
+  .map( | e | e.string ).collect();
+  let expected = vec![ "start", "middle", "end" ];
+  assert_eq!( splits, expected );
 }
 
 #[test]
-fn test_quoted_at_end()
-{
-  let src = r#"a "b c""#;
-  let iter = split()
-  .src( src )
-  .delimeter( " " )
-  .quoting( true )
-  .preserving_quoting( false )
-  .perform();
-  let splits : Vec<_> = iter.map( | e | e.string ).collect();
-  assert_eq!( splits, vec![ "a", "b c" ] );
-}
-
-#[test]
-fn test_unterminated_quote()
+fn unterminated_quote_test()
 {
   let src = r#"a "b c"#;
-  let iter = split()
+  let splits : Vec<_> = strs_tools::string::split()
   .src( src )
   .delimeter( " " )
   .quoting( true )
-  .preserving_quoting( false )
-  .perform();
-  let splits : Vec<_> = iter.map( | e | e.string ).collect();
-  assert_eq!( splits, vec![ "a", "b c" ] );
+  .preserving_delimeters( false )
+  .perform()
+  .map( | e | e.string ).collect();
+  let expected = vec![ "a", "b c" ];
+  assert_eq!( splits, expected );
 }
