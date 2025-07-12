@@ -1,3 +1,4 @@
+
 # Task Plan: Enhance `strs_tools::split` to Support Unescaping in Quoted Strings
 
 ### Goal
@@ -23,8 +24,8 @@
     *   ✅ Increment 7: Fix `test_m_t3_13_quoting_preserve_all_strip` (combined_options)
     *   ✅ Increment 8: Fix `empty_quoted_section_test`
     *   ✅ Increment 9: Verify Fix for `test_m_t3_13_quoting_preserve_all_strip` (quoting_options)
-    *   ⏳ Increment 10: Focused Debugging for Escape Sequence Handling
-    *   ⚫ Increment 11: Fix `mre_test` (Incorrect Escape Handling)
+    *   ⏳ Increment 10: Design and Implement Fix for Escape Sequence Handling
+    *   ⚫ Increment 11: Verify Fix and Finalize
     *   ⚫ Increment 12: Finalization
 
 ### Permissions & Boundaries
@@ -39,15 +40,13 @@
     *   `./spec.md`
 *   Files to Include (for AI's reference, if `read_file` is planned):
     *   `module/core/strs_tools/src/string/split.rs`
-    *   `module/core/strs_tools/tests/inc/split_test/quoting_options_tests.rs`
     *   `module/core/strs_tools/tests/inc/split_test/quoting_and_unescaping_tests.rs`
-    *   `module/core/strs_tools/tests/inc/split_test/combined_options_tests.rs`
 
 ### Tests
 | Test ID | Status | Notes |
 |---|---|---|
-| `inc::split_test::quoting_and_unescaping_tests::escaped_backslash_then_quote_test` | Failing (Stuck) | Incorrectly handles `\\"` sequence. |
-| `inc::split_test::quoting_and_unescaping_tests::mre_test` | Failing (Stuck) | Incorrectly handles `\\"` sequence. |
+| `inc::split_test::quoting_and_unescaping_tests::escaped_backslash_then_quote_test` | Failing (New) | Incorrectly handles `\\"` sequence. |
+| `inc::split_test::quoting_and_unescaping_tests::mre_test` | Failing (New) | Incorrectly handles `\\"` sequence. |
 
 ### Crate Conformance Check Procedure
 *   Step 1: Execute `timeout 90 cargo test -p strs_tools --all-targets` via `execute_command`.
@@ -59,40 +58,105 @@
 ##### Increment 1-9: (Completed)
 *   **Summary:** Initial setup, API change to `Cow`, compilation fixes, implementation of unescaping and quoting logic, and a successful fix for the "Spurious Empty Segment Bug".
 
-##### Increment 10: Focused Debugging for Escape Sequence Handling
-*   **Goal:** Diagnose the root cause of the `Failing (Stuck)` test `escaped_backslash_then_quote_test` by adding targeted debug logging.
+##### Increment 10: Design and Implement Fix for Escape Sequence Handling
+*   **Goal:** To fix the escape sequence parsing bug by replacing the flawed backslash-counting logic in `SplitFastIterator::next` with a robust state machine.
 *   **Specification Reference:** N/A
+*   **Reference Implementation (Current Flawed Code):**
+    The following code block inside `SplitFastIterator::next` in `module/core/strs_tools/src/string/split.rs` is the source of the bug. It incorrectly uses a look-behind backslash count to determine if a quote is escaped.
+    ```rust
+    if let Some( current_quote_char ) = self.active_quote_char
+    {
+      let mut end_of_quote_idx : Option< usize > = None;
+      let mut search_from = 0;
+      loop
+      {
+        if let Some( pos_in_substring ) = self.iterable[ search_from.. ].find( current_quote_char )
+        {
+          let pos_in_full_string = search_from + pos_in_substring;
+          let mut backslash_count = 0;
+          for c in self.iterable[ ..pos_in_full_string ].chars().rev()
+          {
+            if c == '\\'
+            {
+              backslash_count += 1;
+            }
+            else
+            {
+              break;
+            }
+          }
+          if backslash_count % 2 == 1
+          {
+            search_from = pos_in_full_string + 1;
+            continue;
+          }
+          else
+          {
+            end_of_quote_idx = Some( pos_in_full_string + current_quote_char.len_utf8() );
+            break;
+          }
+        }
+        else
+        {
+          break;
+        }
+      }
+      let ( segment_str, consumed_len ) = if let Some( end_idx ) = end_of_quote_idx
+        { ( &self.iterable[ ..end_idx ], end_idx ) } else { ( self.iterable, self.iterable.len() ) };
+      let split = Split { string: Cow::Borrowed( segment_str ), typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset + segment_str.len() };
+      self.current_offset += consumed_len; self.iterable = &self.iterable[ consumed_len.. ]; return Some( split );
+    }
+    ```
 *   **Steps:**
-    *   Step 1: **Read File:** Read `module/core/strs_tools/src/string/split.rs`.
-    *   Step 2: **Add Debug Logging:** In `SplitFastIterator::next`, inside the `if let Some( current_quote_char ) = self.active_quote_char` block, add `println!` statements to trace the state of `ch`, `prev_char_is_escape`, and the loop's decision.
-    *   Step 3: **Run Focused Test:** Execute `timeout 90 cargo test -p strs_tools --test strs_tools_tests -- inc::split_test::quoting_and_unescaping_tests::escaped_backslash_then_quote_test --nocapture` to run only the stuck test.
-    *   Step 4: **Analyze Output:** Critically analyze the debug output to understand the exact flow of the flawed logic. Formulate a new, precise hypothesis based on the trace.
-    *   Step 5: **Remove Debug Logging:** Once the analysis is complete, remove the `println!` statements.
-*   **Increment Verification:**
-    *   The primary output of this increment is a new, evidence-based hypothesis for the bug, which will be used in the next increment.
-*   **Commit Message:** `chore(strs_tools): Add debug logging for escape sequence parsing`
+    *   Step 1: **Replace Flawed Logic:** In `module/core/strs_tools/src/string/split.rs`, locate the `if let Some( current_quote_char ) = self.active_quote_char` block within the `next` method of the `impl< 'a, D : Searcher > Iterator for SplitFastIterator< 'a, D >` block.
+    *   Step 2: **Delete** the entire content of that `if` block (the `let mut end_of_quote_idx...` line down to the `return Some(split)`) as shown in the "Reference Implementation" section above.
+    *   Step 3: **Insert New Logic:** In its place, insert the following state-machine-based implementation:
+        ```rust
+        if let Some( current_quote_char ) = self.active_quote_char
+        {
+          let mut end_of_quote_idx : Option< usize > = None;
+          let mut is_escaped = false;
+          for ( i, c ) in self.iterable.char_indices()
+          {
+            if c == current_quote_char && !is_escaped
+            {
+              end_of_quote_idx = Some( i + c.len_utf8() );
+              break;
+            }
+            is_escaped = c == '\\' && !is_escaped;
+          }
 
-##### Increment 11: Fix `mre_test` (Incorrect Escape Handling)
-*   **Goal:** To fix the "Incorrect Escape Handling Bug" where an escaped backslash (`\\`) followed by a quote is parsed incorrectly, based on the findings from the debugging increment.
-*   **Specification Reference:** N/A
-*   **Steps:**
-    *   Step 1: **Apply Fix:** Based on the new hypothesis from Increment 10, implement the corrected logic in the `for` loop within `SplitFastIterator::next`.
+          let ( segment_str, consumed_len ) = if let Some( end_idx ) = end_of_quote_idx
+            { ( &self.iterable[ ..end_idx ], end_idx ) } else { ( self.iterable, self.iterable.len() ) };
+          let split = Split { string: Cow::Borrowed( segment_str ), typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset + segment_str.len() };
+          self.current_offset += consumed_len; self.iterable = &self.iterable[ consumed_len.. ]; return Some( split );
+        }
+        ```
 *   **Increment Verification:**
     *   Step 1: Execute `timeout 90 cargo test -p strs_tools --test strs_tools_tests -- --nocapture`.
-    *   Step 2: Analyze the output. The `inc::split_test::quoting_and_unescaping_tests::escaped_backslash_then_quote_test` and `inc::split_test::quoting_and_unescaping_tests::mre_test` must now **pass**. All other tests must also pass.
-*   **Commit Message:** `fix(strs_tools): Correctly handle escaped characters in quoted strings`
+    *   Step 2: Analyze the output. The tests `escaped_backslash_then_quote_test` and `mre_test` must now **pass**.
+*   **Commit Message:** `fix(strs_tools): Implement state machine for escaped quote parsing`
+
+##### Increment 11: Verify Fix and Finalize
+*   **Goal:** To ensure the fix is robust and has not introduced any regressions.
+*   **Specification Reference:** N/A
+*   **Steps:**
+    *   Step 1: Perform the full `Crate Conformance Check Procedure`.
+    *   Step 2: Remove the temporary debug test files `tests/debug_hang_split_issue.rs` and `tests/debug_split_issue.rs`.
+*   **Increment Verification:**
+    *   All steps of the `Crate Conformance Check Procedure` must pass.
+*   **Commit Message:** `chore(strs_tools): Verify escape parsing fix and remove debug files`
 
 ##### Increment 12: Finalization
 *   **Goal:** Perform a final review and verification of the entire task's output.
 *   **Specification Reference:** N/A
 *   **Steps:**
     *   Step 1: Perform a self-critique against all requirements in the plan.
-    *   Step 2: Run the full `Crate Conformance Check Procedure`.
-    *   Step 3: Remove any temporary debug files or newly added tests that are not essential.
-    *   Step 4: Update `changelog.md` with a summary of the changes.
+    *   Step 2: Run the full `Crate Conformance Check Procedure` again.
+    *   Step 3: Update `changelog.md` with a summary of the changes.
+    *   Step 4: `git status` should be clean.
 *   **Increment Verification:**
-    *   Step 1: All steps of the `Crate Conformance Check Procedure` must pass.
-    *   Step 2: `git status` should be clean.
+    *   All steps of the `Crate Conformance Check Procedure` must pass.
 *   **Commit Message:** `chore(strs_tools): Finalize unescaping feature for split iterator`
 
 ### Notes & Insights
@@ -101,7 +165,7 @@ This section provides a detailed analysis of the bugs identified during testing.
 #### **Bug A: Incorrect Escape Handling (`mre_test`)**
 *   **Symptom:** The `mre_test` and `escaped_backslash_then_quote_test` fail. The sequence `\\"` is misinterpreted, causing the quoted string to terminate prematurely.
 *   **Analysis:** The test is sane and its expectation is correct. The failure proves the parser's state machine for handling escape sequences is flawed.
-*   **Root Cause:** The bug is in the `next()` method of the internal `SplitFastIterator`. The logic for tracking the `prev_char_is_escape` state is incorrect, specifically in how it handles a backslash that is itself escaped. The logic needs to be rewritten to correctly model the state transitions.
+*   **Root Cause:** The bug is in the `next()` method of the internal `SplitFastIterator`. The logic for finding the end of a quoted string relies on counting preceding backslashes, which fails for sequences like `\\"`. This logic needs to be replaced with a proper state machine that tracks an `is_escaped` state during character-by-character iteration.
 
 #### **Bug B: Spurious Empty Segment After Quoted String**
 *   **Symptom:** Four tests (`test_m_t3_13...`, `test_m_t3_11...`, `empty_quoted_section_test`) fail with an assertion error showing an extra, unexpected empty string `""` in the output. This occurs immediately after a quoted segment is parsed and only when `preserving_empty(true)` is enabled.
