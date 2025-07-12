@@ -324,6 +324,7 @@ mod private
     pending_opening_quote_delimiter : Option< Split< 'a > >,
     last_yielded_token_was_delimiter : bool,
     just_finished_peeked_quote_end_offset : Option< usize >,
+    skip_next_spurious_empty : bool,
   }
 
   impl< 'a > SplitIterator< 'a >
@@ -339,6 +340,7 @@ mod private
         quoting_prefixes : o.quoting_prefixes().clone(),
         quoting_postfixes : o.quoting_postfixes().clone(), pending_opening_quote_delimiter : None,
         last_yielded_token_was_delimiter : false, just_finished_peeked_quote_end_offset : None,
+        skip_next_spurious_empty : false,
       }
     }
   }
@@ -440,13 +442,23 @@ mod private
         } else { effective_split_opt = self.iterator.next(); }
         let mut current_split = effective_split_opt?;
 
-        if current_split.typ == SplitType::Delimeted && current_split.string.is_empty() && !self.flags.contains(SplitFlags::PRESERVING_EMPTY)
+        if quote_handled_by_peek
         {
+          self.skip_next_spurious_empty = true;
+        }
+
+        if self.skip_next_spurious_empty && current_split.typ == SplitType::Delimeted && current_split.string.is_empty()
+        {
+          self.skip_next_spurious_empty = false;
           continue;
         }
-        if current_split.typ == SplitType::Delimiter && !self.flags.contains(SplitFlags::PRESERVING_DELIMITERS)
+
+        let skip = ( current_split.typ == SplitType::Delimeted && current_split.string.is_empty() && !self.flags.contains( SplitFlags::PRESERVING_EMPTY ) )
+        || ( current_split.typ == SplitType::Delimiter && !self.flags.contains( SplitFlags::PRESERVING_DELIMITERS ) );
+
+        if skip
         {
-            continue;
+          continue;
         }
 
         if !quote_handled_by_peek && self.flags.contains(SplitFlags::QUOTING) && current_split.typ == SplitType::Delimiter && self.iterator.active_quote_char.is_none() {
