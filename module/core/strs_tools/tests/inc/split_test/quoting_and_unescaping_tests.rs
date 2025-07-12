@@ -102,3 +102,62 @@ fn unterminated_quote_test()
   let expected = vec![ "a", "b c" ];
   assert_eq!( splits, expected );
 }
+#[test]
+fn escaped_quote_only_test()
+{
+  let src = r#" "a\"b" "#;
+  let splits : Vec<_> = strs_tools::string::split()
+  .src( src )
+  .delimeter( " " )
+  .quoting( true )
+  .preserving_delimeters( false )
+  .perform()
+  .map( | e | e.string ).collect();
+  let expected = vec![ "a\"b" ];
+  assert_eq!( splits, expected );
+}
+
+#[test]
+fn escaped_backslash_only_test()
+{
+  let src = r#" "a\\b" "#;
+  let splits : Vec<_> = strs_tools::string::split()
+  .src( src )
+  .delimeter( " " )
+  .quoting( true )
+  .preserving_delimeters( false )
+  .perform()
+  .map( | e | e.string ).collect();
+  let expected = vec![ "a\\b" ];
+  assert_eq!( splits, expected );
+}
+
+#[test]
+fn escaped_backslash_then_quote_test()
+{
+  let src = r#" "a\\"b" "#;
+  let splits : Vec<_> = strs_tools::string::split()
+  .src( src )
+  .delimeter( " " )
+  .quoting( true )
+  .preserving_delimeters( false )
+  .perform()
+  .map( | e | e.string ).collect();
+  let expected = vec![ "a\\\"b" ];
+  assert_eq!( splits, expected );
+}
+
+#[test]
+fn consecutive_escaped_backslashes_test()
+{
+  let src = r#" "a\\\\b" "#;
+  let splits : Vec<_> = strs_tools::string::split()
+  .src( src )
+  .delimeter( " " )
+  .quoting( true )
+  .preserving_delimeters( false )
+  .perform()
+  .map( | e | e.string ).collect();
+  let expected = vec![ "a\\\\b" ];
+  assert_eq!( splits, expected );
+}

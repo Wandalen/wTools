@@ -167,12 +167,36 @@ mod private
       if let Some( current_quote_char ) = self.active_quote_char
       {
         let mut end_of_quote_idx : Option< usize > = None;
-        let mut prev_char_is_escape = false;
-        for ( char_idx, ch ) in self.iterable.char_indices()
+        let mut temp_iterable = self.iterable;
+        let mut search_offset = 0;
+        loop
         {
-          if prev_char_is_escape { prev_char_is_escape = false; continue; }
-          if ch == '\\' { prev_char_is_escape = true; continue; }
-          if ch == current_quote_char { end_of_quote_idx = Some( char_idx + ch.len_utf8() ); break; }
+          if let Some( pos ) = temp_iterable.find( current_quote_char )
+          {
+            let mut backslashes = 0;
+            for c in temp_iterable[ ..pos ].chars().rev()
+            {
+              if c == '\\' { backslashes += 1; } else { break; }
+            }
+
+            if backslashes % 2 == 1
+            {
+              let new_start = pos + 1;
+              temp_iterable = &temp_iterable[ new_start.. ];
+              search_offset += new_start;
+              continue;
+            }
+            else
+            {
+              let end_idx = search_offset + pos + current_quote_char.len_utf8();
+              end_of_quote_idx = Some( end_idx );
+              break;
+            }
+          }
+          else
+          {
+            break;
+          }
         }
         let ( segment_str, consumed_len ) = if let Some( end_idx ) = end_of_quote_idx
           { ( &self.iterable[ ..end_idx ], end_idx ) } else { ( self.iterable, self.iterable.len() ) };
