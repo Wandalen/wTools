@@ -3,6 +3,7 @@
 //!
 
 use super::*;
+use std::borrow::Cow;
 
 #[test]
 fn mre_test()
@@ -19,10 +20,10 @@ fn mre_test()
   .map( | e | e.string ).collect();
   let expected = vec!
   [
-    "instruction",
-    "arg1",
-    "arg2 \" ",
-    "arg3 \\",
+    Cow::Borrowed("instruction"),
+    Cow::Borrowed("arg1"),
+    Cow::Borrowed("arg2 \" "),
+    Cow::Borrowed("arg3 \\"),
   ];
   assert_eq!( splits, expected );
 }
@@ -38,7 +39,7 @@ fn no_quotes_test()
   .preserving_delimeters( false )
   .perform()
   .map( | e | e.string ).collect();
-  let expected = vec![ "a", "b", "c" ];
+  let expected = vec![ Cow::Borrowed("a"), Cow::Borrowed("b"), Cow::Borrowed("c") ];
   assert_eq!( splits, expected );
 }
 
@@ -54,7 +55,7 @@ fn empty_quoted_section_test()
   .preserving_delimeters( false )
   .perform()
   .map( | e | e.string ).collect();
-  let expected = vec![ "a", "", "b" ];
+  let expected = vec![ Cow::Borrowed("a"), Cow::Borrowed(""), Cow::Borrowed("b") ];
   assert_eq!( splits, expected );
 }
 
@@ -69,7 +70,7 @@ fn multiple_escape_sequences_test()
   .preserving_delimeters( false )
   .perform()
   .map( | e | e.string ).collect();
-  let expected = vec![ "a\n\t\"\\", "b" ];
+  let expected = vec![ Cow::Borrowed("a\n\t\"\\"), Cow::Borrowed("b") ];
   assert_eq!( splits, expected );
 }
 
@@ -84,7 +85,7 @@ fn quoted_at_start_middle_end_test()
   .preserving_delimeters( false )
   .perform()
   .map( | e | e.string ).collect();
-  let expected = vec![ "start", "middle", "end" ];
+  let expected = vec![ Cow::Borrowed("start"), Cow::Borrowed("middle"), Cow::Borrowed("end") ];
   assert_eq!( splits, expected );
 }
 
@@ -99,7 +100,7 @@ fn unterminated_quote_test()
   .preserving_delimeters( false )
   .perform()
   .map( | e | e.string ).collect();
-  let expected = vec![ "a", "b c" ];
+  let expected = vec![ Cow::Borrowed("a"), Cow::Borrowed("b c") ];
   assert_eq!( splits, expected );
 }
 #[test]
@@ -113,7 +114,7 @@ fn escaped_quote_only_test()
   .preserving_delimeters( false )
   .perform()
   .map( | e | e.string ).collect();
-  let expected = vec![ "a\"b" ];
+  let expected = vec![ Cow::Borrowed("a\"b") ];
   assert_eq!( splits, expected );
 }
 
@@ -128,7 +129,7 @@ fn escaped_backslash_only_test()
   .preserving_delimeters( false )
   .perform()
   .map( | e | e.string ).collect();
-  let expected = vec![ "a\\b" ];
+  let expected = vec![ Cow::Borrowed("a\\b") ];
   assert_eq!( splits, expected );
 }
 
@@ -144,7 +145,7 @@ fn escaped_backslash_then_quote_test()
   .preserving_delimeters( false )
   .perform()
   .map( | e | e.string ).collect();
-  let expected = vec![ r#"a\"b"# ];
+  let expected = vec![ Cow::Borrowed(r#"a\"b"#) ];
   assert_eq!( splits, expected );
 }
 
@@ -159,7 +160,7 @@ fn consecutive_escaped_backslashes_test()
   .preserving_delimeters( false )
   .perform()
   .map( | e | e.string ).collect();
-  let expected = vec![ "a\\\\b" ];
+  let expected = vec![ Cow::Borrowed("a\\\\b") ];
   assert_eq!( splits, expected );
 }
 
@@ -176,7 +177,7 @@ fn test_mre_arg2_isolated()
   .preserving_delimeters( false )
   .perform()
   .map( | e | e.string ).collect();
-  let expected = vec![ r#"arg2 " "# ];
+  let expected = vec![ Cow::Borrowed(r#"arg2 " "#) ];
   assert_eq!( splits, expected );
 }
 
@@ -192,7 +193,7 @@ fn test_mre_arg3_isolated()
   .preserving_delimeters( false )
   .perform()
   .map( | e | e.string ).collect();
-  let expected = vec![ r#"arg3 \"# ];
+  let expected = vec![ Cow::Borrowed(r#"arg3 \"#) ];
   assert_eq!( splits, expected );
 }
 
@@ -208,6 +209,38 @@ fn test_consecutive_escaped_backslashes_and_quote()
   .preserving_delimeters( false )
   .perform()
   .map( | e | e.string ).collect();
-  let expected = vec![ r#"a\\"b"# ];
+  let expected = vec![ Cow::Borrowed(r#"a\\"b"#) ];
+  assert_eq!( splits, expected );
+}
+
+#[test]
+fn mre_from_task_test()
+{
+  let input = r#"cmd key::"value with \"quotes\" and \\slash\\""#;
+  let splits_iter = strs_tools::string::split()
+      .src( input )
+      .delimeter( vec![ " ", "::" ] )
+      .preserving_delimeters( true )
+      .quoting( true )
+      .form()
+      .split();
+
+  let splits: Vec<strs_tools::string::split::Split<'_>> = splits_iter.collect();
+
+  use strs_tools::string::split::Split;
+  use strs_tools::string::split::SplitType::{ Delimiter, Delimeted };
+
+  let expected = vec!
+  [
+    Split { string: Cow::Borrowed("cmd"), typ: Delimeted, start: 0, end: 3 },
+    Split { string: Cow::Borrowed(" "), typ: Delimiter, start: 3, end: 4 },
+    Split { string: Cow::Borrowed("key"), typ: Delimeted, start: 4, end: 7 },
+    Split { string: Cow::Borrowed("::"), typ: Delimiter, start: 7, end: 9 },
+    // This is the crucial part. The current implementation will likely fail here.
+    // Expected unescaped string: "value with \"quotes\" and \\slash\\"
+    // But the current implementation will probably return the raw string with escapes.
+    Split { string: Cow::Borrowed("value with \"quotes\" and \\slash\\"), typ: Delimeted, start: 9, end: 45 },
+  ];
+
   assert_eq!( splits, expected );
 }

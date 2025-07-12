@@ -27,7 +27,7 @@ mod private
   use super::SplitFlags; // Import SplitFlags from parent module
 
   /// Represents a segment of a string after splitting.
-  #[derive(Debug, Clone)]
+  #[derive(Debug, Clone, PartialEq, Eq)]
   pub struct Split< 'a >
   {
     /// The string content of the segment.
