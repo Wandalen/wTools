@@ -390,7 +390,7 @@ mod private
         if self.flags.contains(SplitFlags::QUOTING) && self.iterator.active_quote_char.is_none() && !sfi_should_yield_empty_now {
           if let Some( first_char_iterable ) = self.iterator.iterable.chars().next() {
             if let Some( prefix_idx ) = self.quoting_prefixes.iter().position( |p| self.iterator.iterable.starts_with( p ) ) {
-              quote_handled_by_peek = true; dbg!(&quote_handled_by_peek); // Debug print
+              quote_handled_by_peek = true;
               let prefix_str = self.quoting_prefixes[ prefix_idx ];
               let opening_quote_original_start = self.iterator.current_offset; let prefix_len = prefix_str.len();
               let expected_postfix = self.quoting_postfixes[ prefix_idx ];
@@ -477,7 +477,6 @@ mod private
         if current_split.typ == SplitType::Delimiter && !self.flags.contains(SplitFlags::PRESERVING_DELIMITERS) { skip = true; }
         if !skip {
           if current_split.typ == SplitType::Delimiter { self.last_yielded_token_was_delimiter = true; }
-          dbg!(&current_split.string); // Debug print
           return Some( current_split );
         }
       } 

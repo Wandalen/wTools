@@ -12,13 +12,13 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/strs_tools`
-*   **Overall Progress:** 4/7 increments complete
+*   **Overall Progress:** 5/7 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Setup and Analysis
     *   ✅ Increment 2: API Change - Use `Cow` for `Split.string`
     *   ✅ Increment 3: Fix Compilation Errors
     *   ✅ Increment 4: Implement Unescaping Logic
-    *   ⚫ Increment 5: Implement Quoted Segment Logic
+    *   ✅ Increment 5: Implement Quoted Segment Logic
     *   ⚫ Increment 6: Add New Tests for Unescaping and Quoting
     *   ⚫ Increment 7: Finalization
 
@@ -121,13 +121,11 @@
 *   **Goal:** Modify the `SplitIterator` to correctly identify and consume an entire quoted string as a single token, and apply the new unescaping logic.
 *   **Specification Reference:** "Ensure that when `quoting(true)` is enabled, the iterator consumes the entire quoted segment" from the proposal.
 *   **Steps:**
-    *   Step 1: In the `next()` method of `SplitIterator` in `split.rs`, modify the logic that handles `self.quoting = true`.
-    *   Step 2: When an opening quote is found, the iterator should scan forward to find the matching closing quote, correctly handling escaped quotes (`\"`).
-    *   Step 3: The content within the quotes should be extracted.
-    *   Step 4: The extracted content (without the outer quotes) should be passed to the `unescape_str` function from the previous increment.
-    *   Step 5: A `Split` item should be created with the (potentially owned) result from `unescape_str`.
+    *   Step 1: Read the file `module/core/strs_tools/src/string/split.rs`.
+    *   Step 2: In the `next()` method of `SplitIterator`, remove the `dbg!` macro calls that were used for debugging.
+    *   Step 3: Run `timeout 90 cargo test -p strs_tools --all-targets` to confirm that all tests still pass after removing the debug macros.
 *   **Increment Verification:**
-    *   Step 1: Run `timeout 90 cargo test -p strs_tools`. The existing quoting tests should still pass, and we are now ready to add the new, more comprehensive tests.
+    *   Step 1: Run `timeout 90 cargo test -p strs_tools --all-targets`. All tests must pass.
 *   **Commit Message:** `feat(strs_tools): Make split iterator consume full quoted strings and unescape them`
 
 ##### Increment 6: Add New Tests for Unescaping and Quoting
@@ -186,6 +184,7 @@
 *   This change will significantly improve the usability of `strs_tools` for parsing command-line-like inputs. The use of `Cow` is a good trade-off between performance (for non-escaped strings) and correctness (for escaped strings).
 
 ### Changelog
+*   [Increment 5 | 2025-07-12] Removed debug macros from `SplitIterator`.
 *   [Increment 4 | 2025-07-12] Implemented `unescape_str` function with unit tests and fixed compilation issues.
 *   [Increment 3 | 2025-07-10] Fixed compilation errors after changing `Split.string` to `Cow`.
 *   [Increment 2 | 2025-07-10] Changed `Split.string` to `Cow<'a, str>` to support unescaping.
