@@ -237,9 +237,9 @@ fn mre_from_task_test()
     Split { string: Cow::Borrowed("key"), typ: Delimeted, start: 4, end: 7 },
     Split { string: Cow::Borrowed("::"), typ: Delimiter, start: 7, end: 9 },
     // This is the crucial part. The current implementation will likely fail here.
-    // Expected unescaped string: "value with \"quotes\" and \\slash\\"
-    // But the current implementation will probably return the raw string with escapes.
-    Split { string: Cow::Borrowed("value with \"quotes\" and \\slash\\"), typ: Delimeted, start: 9, end: 45 },
+    // Expected unescaped string: "value with \"quotes\" and \slash\"
+    // The implementation should return an owned string because of unescaping.
+    Split { string: Cow::Owned("value with \"quotes\" and \\slash\\".to_string()), typ: Delimeted, start: 9, end: 45 },
   ];
 
   assert_eq!( splits, expected );

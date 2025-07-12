@@ -11,10 +11,10 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/strs_tools`
-*   **Overall Progress:** 1/3 increments complete
+*   **Overall Progress:** 2/3 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Rename existing MRE test
-    *   ⚫ Increment 2: Correct the failing MRE test
+    *   ✅ Increment 2: Correct the failing MRE test
     *   ⚫ Increment 3: Fix the unescaping implementation
 
 ### Permissions & Boundaries
@@ -106,6 +106,7 @@
 *   The initial MRE test was failing due to incorrect expectation in the test itself, and the lack of unescaping in the implementation.
 
 ### Changelog
+*   [2025-07-12 23:55] Corrected MRE test to expect unescaped string.
 *   [2025-07-12 23:54] Renamed MRE test.
 *   [2025-07-12 23:52] Received feedback to make MRE names unique and fix the failing test.
 *   [2025-07-12 23:51] Added failing MRE test case for quoting and unescaping.
