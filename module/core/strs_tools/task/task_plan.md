@@ -12,13 +12,14 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/strs_tools`
-*   **Overall Progress:** 10/13 increments complete
+*   **Overall Progress:** 10/14 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1-9: (Completed)
     *   ✅ Increment 10: Correct Flawed Test Expectations
-    *   ⏳ Increment 11: Implement Fix for Escape Sequence Handling
-    *   ⚫ Increment 12: Verify Fix and Finalize
-    *   ⚫ Increment 13: Finalization
+    *   ⏳ Increment 11: Add Decomposed MRE Test Cases
+    *   ⚫ Increment 12: Implement Fix for Escape Sequence Handling
+    *   ⚫ Increment 13: Verify Fix and Finalize
+    *   ⚫ Increment 14: Finalization
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -96,7 +97,17 @@
     *   Step 2: Analyze the output. The test `escaped_backslash_then_quote_test` will still fail, but now it will fail with a different, more meaningful error that reflects the parser's inability to handle the `\\\"` sequence correctly. This confirms the test is now a valid target.
 *   **Commit Message:** `test(strs_tools): Correct flawed expectation in escape sequence test`
 
-##### Increment 11: Implement Fix for Escape Sequence Handling
+##### Increment 11: Add Decomposed MRE Test Cases
+*   **Goal:** To add more granular test cases that break down the complex MRE into smaller, isolated parts. This will help validate the fix incrementally.
+*   **Specification Reference:** N/A
+*   **Steps:**
+    *   Step 1: Add three new tests (`test_mre_arg2_isolated`, `test_mre_arg3_isolated`, `test_consecutive_escaped_backslashes_and_quote`) to `module/core/strs_tools/tests/inc/split_test/quoting_and_unescaping_tests.rs`. This has been done.
+*   **Increment Verification:**
+    *   Step 1: Execute `timeout 90 cargo test -p strs_tools --test strs_tools_tests -- --nocapture`.
+    *   Step 2: Analyze the output. The new tests are expected to fail, confirming they are valid targets for the upcoming fix.
+*   **Commit Message:** `test(strs_tools): Add decomposed MRE test cases for escape sequences`
+
+##### Increment 12: Implement Fix for Escape Sequence Handling
 *   **Goal:** To fix the escape sequence parsing bug by replacing the flawed backslash-counting logic in `SplitFastIterator::next` with a robust state machine.
 *   **Specification Reference:** N/A
 *   **Reference Implementation (Current Flawed Code):**
@@ -175,7 +186,7 @@
     *   Step 2: Analyze the output. The tests `escaped_backslash_then_quote_test` and `mre_test` must now **pass**.
 *   **Commit Message:** `fix(strs_tools): Implement state machine for escaped quote parsing`
 
-##### Increment 12: Verify Fix and Finalize
+##### Increment 13: Verify Fix and Finalize
 *   **Goal:** To ensure the fix is robust and has not introduced any regressions.
 *   **Specification Reference:** N/A
 *   **Steps:**
@@ -185,7 +196,7 @@
     *   All steps of the `Crate Conformance Check Procedure` must pass.
 *   **Commit Message:** `chore(strs_tools): Verify escape parsing fix and remove debug files`
 
-##### Increment 13: Finalization
+##### Increment 14: Finalization
 *   **Goal:** Perform a final review and verification of the entire task's output.
 *   **Specification Reference:** N/A
 *   **Steps:**
@@ -211,6 +222,7 @@ This section provides a detailed analysis of the bugs identified during testing.
 *   **Root Cause:** The `skip` logic within `SplitIterator::next` was flawed. The fix was to introduce a `skip_next_spurious_empty` flag that is set after the quote-peeking logic runs. This flag ensures the single, artifactual empty segment that follows a quoted string is unconditionally skipped, resolving the issue across all related test cases.
 
 ### Changelog
+* [User Feedback | 2025-07-12] Confirmed MRE test case is sane. Added new decomposed MRE tests to better isolate the parsing bug.
 *   [Increment 10 | 2025-07-12] Corrected the expectation in `escaped_backslash_then_quote_test` to be valid. The test now passes, but the underlying bug is still present as shown by the failing `mre_test`.
 *   [Increment 10 | 2025-07-12] Added new granular tests for escape sequences to isolate the bug.
 *   [Increment 6-9 | 2025-07-12] Fixed "Spurious Empty Segment Bug" by introducing a `skip_next_spurious_empty` flag to the iterator, which correctly filters artifactual empty tokens after a quoted segment is parsed. This resolved four related test failures.

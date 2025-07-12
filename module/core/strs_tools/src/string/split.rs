@@ -165,47 +165,24 @@ mod private
         return None;
       }
       if let Some( current_quote_char ) = self.active_quote_char
-      {
-        let mut end_of_quote_idx : Option< usize > = None;
-        let mut search_from = 0;
-        loop
         {
-          if let Some( pos_in_substring ) = self.iterable[ search_from.. ].find( current_quote_char )
+          let mut end_of_quote_idx : Option< usize > = None;
+          let mut is_escaped = false;
+          for ( i, c ) in self.iterable.char_indices()
           {
-            let pos_in_full_string = search_from + pos_in_substring;
-            let mut backslash_count = 0;
-            for c in self.iterable[ ..pos_in_full_string ].chars().rev()
+            if c == current_quote_char && !is_escaped
             {
-              if c == '\\'
-              {
-                backslash_count += 1;
-              }
-              else
-              {
-                break;
-              }
-            }
-            if backslash_count % 2 == 1
-            {
-              search_from = pos_in_full_string + 1;
-              continue;
-            }
-            else
-            {
-              end_of_quote_idx = Some( pos_in_full_string + current_quote_char.len_utf8() );
+              end_of_quote_idx = Some( i + c.len_utf8() );
               break;
             }
+            is_escaped = c == '\\' && !is_escaped;
           }
-          else
-          {
-            break;
-          }
+
+          let ( segment_str, consumed_len ) = if let Some( end_idx ) = end_of_quote_idx
+            { ( &self.iterable[ ..end_idx ], end_idx ) } else { ( self.iterable, self.iterable.len() ) };
+          let split = Split { string: Cow::Borrowed( segment_str ), typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset + segment_str.len() };
+          self.current_offset += consumed_len; self.iterable = &self.iterable[ consumed_len.. ]; return Some( split );
         }
-        let ( segment_str, consumed_len ) = if let Some( end_idx ) = end_of_quote_idx
-          { ( &self.iterable[ ..end_idx ], end_idx ) } else { ( self.iterable, self.iterable.len() ) };
-        let split = Split { string: Cow::Borrowed( segment_str ), typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset + segment_str.len() };
-        self.current_offset += consumed_len; self.iterable = &self.iterable[ consumed_len.. ]; return Some( split );
-      }
       if self.iterable.is_empty() && self.counter > 0 { return None; }
       self.counter += 1;
       if self.counter % 2 == 1 {

@@ -162,3 +162,52 @@ fn consecutive_escaped_backslashes_test()
   let expected = vec![ "a\\\\b" ];
   assert_eq!( splits, expected );
 }
+
+
+#[test]
+fn test_mre_arg2_isolated()
+{
+  // Part of the original MRE: "arg2 \" "
+  let src = r#""arg2 \" ""#;
+  let splits : Vec<_> = strs_tools::string::split()
+  .src( src )
+  .delimeter( " " )
+  .quoting( true )
+  .preserving_delimeters( false )
+  .perform()
+  .map( | e | e.string ).collect();
+  let expected = vec![ r#"arg2 " "# ];
+  assert_eq!( splits, expected );
+}
+
+#[test]
+fn test_mre_arg3_isolated()
+{
+  // Part of the original MRE: "arg3 \\"
+  let src = r#""arg3 \\""#;
+  let splits : Vec<_> = strs_tools::string::split()
+  .src( src )
+  .delimeter( " " )
+  .quoting( true )
+  .preserving_delimeters( false )
+  .perform()
+  .map( | e | e.string ).collect();
+  let expected = vec![ r#"arg3 \"# ];
+  assert_eq!( splits, expected );
+}
+
+#[test]
+fn test_consecutive_escaped_backslashes_and_quote()
+{
+  // Tests `\\\\\"` -> `\\"`
+  let src = r#""a\\\\\"b""#;
+  let splits : Vec<_> = strs_tools::string::split()
+  .src( src )
+  .delimeter( " " )
+  .quoting( true )
+  .preserving_delimeters( false )
+  .perform()
+  .map( | e | e.string ).collect();
+  let expected = vec![ r#"a\\"b"# ];
+  assert_eq!( splits, expected );
+}
