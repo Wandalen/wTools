@@ -12,12 +12,12 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/strs_tools`
-*   **Overall Progress:** 3/7 increments complete
+*   **Overall Progress:** 4/7 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Setup and Analysis
     *   ✅ Increment 2: API Change - Use `Cow` for `Split.string`
     *   ✅ Increment 3: Fix Compilation Errors
-    *   ⚫ Increment 4: Implement Unescaping Logic
+    *   ✅ Increment 4: Implement Unescaping Logic
     *   ⚫ Increment 5: Implement Quoted Segment Logic
     *   ⚫ Increment 6: Add New Tests for Unescaping and Quoting
     *   ⚫ Increment 7: Finalization
@@ -95,12 +95,26 @@
 *   **Goal:** Implement the core logic to unescape characters within a string slice.
 *   **Specification Reference:** "Perform unescaping of standard escape sequences" from the proposal.
 *   **Steps:**
-    *   Step 1: Create a new private helper function, e.g., `unescape_str(input: &str) -> Cow<'_, str>`, inside `module/core/strs_tools/src/string/split.rs`.
-    *   Step 2: This function should iterate through the input string. If no escape sequences are found, it should return `Cow::Borrowed(input)`.
-    *   Step 3: If escape sequences (`\"`, `\\`, `\n`, `\t`, `\r`) are found, it should build a new `String`, replace the sequences with their literal counterparts, and return `Cow::Owned(new_string)`.
-    *   Step 4: Add a new private test module in `split.rs` to unit-test the `unescape_str` function with various inputs.
+    *   Step 1: Use `read_file` to load `module/core/strs_tools/src/string/split.rs`.
+    *   Step 2: In `module/core/strs_tools/src/string/split.rs`, add a new private helper function `fn unescape_str( input: &str ) -> Cow< '_, str >`.
+    *   Step 3: Implement the logic for `unescape_str`:
+        *   Search for the `\` character. If it's not found, return `Cow::Borrowed(input)` for efficiency.
+        *   If `\` is found, iterate through the input string's characters to build a new `String`.
+        *   When a `\` is encountered, inspect the next character to handle valid escape sequences (`\"`, `\\`, `\n`, `\t`, `\r`) by appending their literal counterparts.
+        *   If an escape sequence is not one of the recognized ones, append both the `\` and the character that follows it literally.
+        *   Append all other characters as-is.
+        *   Return `Cow::Owned(new_string)`.
+    *   Step 4: In `module/core/strs_tools/src/string/split.rs`, add a new test module `#[cfg(test)] mod unescape_tests { ... }` at the end of the file.
+    *   Step 5: Inside `unescape_tests`, add unit tests for the `unescape_str` function to cover various scenarios:
+        *   A string with no escape sequences.
+        *   Strings with each of the valid escape sequences (`\"`, `\\`, `\n`, `\t`, `\r`).
+        *   A string with a mix of valid escape sequences.
+        *   A string with an unrecognized escape sequence (e.g., `\z`) to ensure it's handled literally.
+        *   An empty string.
+        *   A string ending with a `\`.
 *   **Increment Verification:**
-    *   Step 1: The new unit tests for `unescape_str` must pass when running `timeout 90 cargo test -p strs_tools`.
+    *   Step 1: Execute `timeout 90 cargo test -p strs_tools --all-targets` via `execute_command`.
+    *   Step 2: Analyze the output to confirm that all tests in the `unescape_tests` module pass successfully.
 *   **Commit Message:** `feat(strs_tools): Implement unescaping logic for string splitting`
 
 ##### Increment 5: Implement Quoted Segment Logic
@@ -159,6 +173,7 @@
 ### Assumptions
 *   A breaking change to `Split.string` by using `Cow` is acceptable to provide the most ergonomic API.
 *   The required escape sequences are `\"`, `\\`, `\n`, `\t`, `\r`.
+*   An unrecognized escape sequence (e.g., `\z`) will be treated literally, with the `\` and the following character passed through to the output.
 
 ### Out of Scope
 *   Supporting other types of escape sequences (e.g., unicode `\u{...}`).
@@ -171,5 +186,7 @@
 *   This change will significantly improve the usability of `strs_tools` for parsing command-line-like inputs. The use of `Cow` is a good trade-off between performance (for non-escaped strings) and correctness (for escaped strings).
 
 ### Changelog
+*   [Increment 4 | 2025-07-12] Implemented `unescape_str` function with unit tests and fixed compilation issues.
+*   [Increment 3 | 2025-07-10] Fixed compilation errors after changing `Split.string` to `Cow`.
 *   [Increment 2 | 2025-07-10] Changed `Split.string` to `Cow<'a, str>` to support unescaping.
 *   [Increment 1 | 2025-07-10] Read relevant files for analysis.

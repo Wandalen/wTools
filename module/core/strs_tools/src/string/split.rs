@@ -206,6 +206,115 @@ mod private
     }
   }
 
+  /// Helper function to unescape common escape sequences in a string.
+  /// Returns a `Cow::Borrowed` if no unescaping is needed, otherwise `Cow::Owned`.
+  fn unescape_str( input : &str ) -> Cow< '_, str >
+  {
+    if !input.contains( '\\' )
+    {
+      return Cow::Borrowed( input );
+    }
+
+    let mut output = String::with_capacity( input.len() );
+    let mut chars = input.chars();
+
+    while let Some( ch ) = chars.next()
+    {
+      if ch == '\\'
+      {
+        if let Some( next_ch ) = chars.next()
+        {
+          match next_ch
+          {
+            '"' => output.push( '"' ),
+            '\\' => output.push( '\\' ),
+            'n' => output.push( '\n' ),
+            't' => output.push( '\t' ),
+            'r' => output.push( '\r' ),
+            _ =>
+            {
+              output.push( '\\' );
+              output.push( next_ch );
+            }
+          }
+        }
+        else
+        {
+          output.push( '\\' );
+        }
+      }
+      else
+      {
+        output.push( ch );
+      }
+    }
+
+    Cow::Owned( output )
+  }
+
+  #[cfg(test)]
+  mod unescape_tests
+  {
+    use super::*;
+    use std::borrow::Cow;
+
+    #[test]
+    fn no_escapes()
+    {
+      let input = "hello world";
+      let result = unescape_str( input );
+      assert!( matches!( result, Cow::Borrowed( _ ) ) );
+      assert_eq!( result, "hello world" );
+    }
+
+    #[test]
+    fn valid_escapes()
+    {
+      let input = r#"hello \"world\\, \n\t\r end"#;
+      let expected = "hello \"world\\, \n\t\r end";
+      let result = unescape_str( input );
+      assert!( matches!( result, Cow::Owned( _ ) ) );
+      assert_eq!( result, expected );
+    }
+
+    #[test]
+    fn mixed_escapes()
+    {
+      let input = r#"a\"b\\c\nd"#;
+      let expected = "a\"b\\c\nd";
+      let result = unescape_str( input );
+      assert!( matches!( result, Cow::Owned( _ ) ) );
+      assert_eq!( result, expected );
+    }
+
+    #[test]
+    fn unrecognized_escape()
+    {
+      let input = r"hello \z world";
+      let result = unescape_str( input );
+      assert!( matches!( result, Cow::Owned( _ ) ) );
+      assert_eq!( result, r"hello \z world" );
+    }
+
+    #[test]
+    fn empty_string()
+    {
+      let input = "";
+      let result = unescape_str( input );
+      assert!( matches!( result, Cow::Borrowed( _ ) ) );
+      assert_eq!( result, "" );
+    }
+
+    #[test]
+    fn trailing_backslash()
+    {
+      let input = r"hello\";
+      let result = unescape_str( input );
+      assert!( matches!( result, Cow::Owned( _ ) ) );
+      assert_eq!( result, r"hello\" );
+    }
+  }
+
   /// An iterator that splits a string with advanced options like quoting and preservation.
   #[derive(Debug)]
   #[ allow( clippy::struct_excessive_bools ) ] // This lint is addressed by using SplitFlags
@@ -281,7 +390,8 @@ mod private
         if self.flags.contains(SplitFlags::QUOTING) && self.iterator.active_quote_char.is_none() && !sfi_should_yield_empty_now {
           if let Some( first_char_iterable ) = self.iterator.iterable.chars().next() {
             if let Some( prefix_idx ) = self.quoting_prefixes.iter().position( |p| self.iterator.iterable.starts_with( p ) ) {
-              quote_handled_by_peek = true; let prefix_str = self.quoting_prefixes[ prefix_idx ];
+              quote_handled_by_peek = true; dbg!(&quote_handled_by_peek); // Debug print
+              let prefix_str = self.quoting_prefixes[ prefix_idx ];
               let opening_quote_original_start = self.iterator.current_offset; let prefix_len = prefix_str.len();
               let expected_postfix = self.quoting_postfixes[ prefix_idx ];
               self.iterator.current_offset += prefix_len; self.iterator.iterable = &self.iterator.iterable[ prefix_len.. ];
@@ -298,13 +408,18 @@ mod private
                     let new_end = new_start + new_string.len();
                     effective_split_opt = Some(Split { string: new_string, typ: SplitType::Delimeted, start: new_start, end: new_end });
                   } else {
-                    let new_start = opening_quote_original_start + prefix_len; 
-                    let new_string = if quoted_segment.string.len() >= expected_postfix.len() {
-                      let content_len = quoted_segment.string.len() - expected_postfix.len();
-                      Cow::Owned(quoted_segment.string[0 .. content_len].to_string())
-                    } else { Cow::Borrowed("") };
-                    let new_end = new_start + new_string.len();
-                    effective_split_opt = Some(Split { string: new_string, typ: SplitType::Delimeted, start: new_start, end: new_end });
+                    let new_start = opening_quote_original_start + prefix_len;
+                    let content_len = quoted_segment.string.len() - expected_postfix.len();
+                    let sliced_str = &quoted_segment.string.as_ref()[0 .. content_len];
+                    let unescaped_string = unescape_str( sliced_str ).into_owned();
+                    let new_end = new_start + unescaped_string.len();
+                    effective_split_opt = Some(Split
+                    {
+                      string: Cow::Owned( unescaped_string ),
+                      typ: SplitType::Delimeted,
+                      start: new_start,
+                      end: new_end,
+                    });
                   }
                 } else { // Unclosed quote
                   if self.flags.contains(SplitFlags::PRESERVING_QUOTING) {
@@ -362,6 +477,7 @@ mod private
         if current_split.typ == SplitType::Delimiter && !self.flags.contains(SplitFlags::PRESERVING_DELIMITERS) { skip = true; }
         if !skip {
           if current_split.typ == SplitType::Delimiter { self.last_yielded_token_was_delimiter = true; }
+          dbg!(&current_split.string); // Debug print
           return Some( current_split );
         }
       } 
@@ -393,9 +509,7 @@ mod private
     pub fn split( self ) -> SplitIterator< 'a > { SplitIterator::new( &self ) }
   }
 
-  impl< 'a, D > SplitOptions< 'a, D >
-  where
-    D : Searcher + Default + Clone
+  impl< 'a, D : Searcher + Default + Clone > SplitOptions< 'a, D >
   {
     /// Consumes the options and returns a `SplitFastIterator`.
     // This is inside pub mod private, so pub fn makes it pub

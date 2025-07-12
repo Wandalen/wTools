@@ -331,7 +331,7 @@ fn test_span_content_escaped_quotes_no_preserve() {
   let results: Vec<_> = iter.collect();
   let expected = vec![
     ("cmd", SplitType::Delimeted, 0, 3),
-    (r#"hello \"world\""#, SplitType::Delimeted, 5, 20),
+    (r#"hello "world""#, SplitType::Delimeted, 5, 18),
     ("arg2", SplitType::Delimeted, 22, 26), // Corrected start index from 21 to 22, end from 25 to 26
   ];
   assert_eq!(results.len(), expected.len(), "Number of segments mismatch. Actual: {:?}, Expected: {:?}", results, expected);
