@@ -167,29 +167,32 @@ mod private
       if let Some( current_quote_char ) = self.active_quote_char
       {
         let mut end_of_quote_idx : Option< usize > = None;
-        let mut temp_iterable = self.iterable;
-        let mut search_offset = 0;
+        let mut search_from = 0;
         loop
         {
-          if let Some( pos ) = temp_iterable.find( current_quote_char )
+          if let Some( pos_in_substring ) = self.iterable[ search_from.. ].find( current_quote_char )
           {
-            let mut backslashes = 0;
-            for c in temp_iterable[ ..pos ].chars().rev()
+            let pos_in_full_string = search_from + pos_in_substring;
+            let mut backslash_count = 0;
+            for c in self.iterable[ ..pos_in_full_string ].chars().rev()
             {
-              if c == '\\' { backslashes += 1; } else { break; }
+              if c == '\\'
+              {
+                backslash_count += 1;
+              }
+              else
+              {
+                break;
+              }
             }
-
-            if backslashes % 2 == 1
+            if backslash_count % 2 == 1
             {
-              let new_start = pos + 1;
-              temp_iterable = &temp_iterable[ new_start.. ];
-              search_offset += new_start;
+              search_from = pos_in_full_string + 1;
               continue;
             }
             else
             {
-              let end_idx = search_offset + pos + current_quote_char.len_utf8();
-              end_of_quote_idx = Some( end_idx );
+              end_of_quote_idx = Some( pos_in_full_string + current_quote_char.len_utf8() );
               break;
             }
           }
