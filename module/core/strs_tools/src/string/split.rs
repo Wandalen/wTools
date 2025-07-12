@@ -167,40 +167,17 @@ mod private
       if let Some( current_quote_char ) = self.active_quote_char
       {
         let mut end_of_quote_idx : Option< usize > = None;
-        let mut search_from = 0;
-        loop
+        let mut is_escaped = false;
+        for ( i, c ) in self.iterable.char_indices()
         {
-          if let Some( pos_in_substring ) = self.iterable[ search_from.. ].find( current_quote_char )
+          if c == current_quote_char && !is_escaped
           {
-            let pos_in_full_string = search_from + pos_in_substring;
-            let mut backslash_count = 0;
-            for c in self.iterable[ ..pos_in_full_string ].chars().rev()
-            {
-              if c == '\\'
-              {
-                backslash_count += 1;
-              }
-              else
-              {
-                break;
-              }
-            }
-            if backslash_count % 2 == 1
-            {
-              search_from = pos_in_full_string + 1;
-              continue;
-            }
-            else
-            {
-              end_of_quote_idx = Some( pos_in_full_string + current_quote_char.len_utf8() );
-              break;
-            }
-          }
-          else
-          {
+            end_of_quote_idx = Some( i + c.len_utf8() );
             break;
           }
+          is_escaped = c == '\\' && !is_escaped;
         }
+
         let ( segment_str, consumed_len ) = if let Some( end_idx ) = end_of_quote_idx
           { ( &self.iterable[ ..end_idx ], end_idx ) } else { ( self.iterable, self.iterable.len() ) };
         let split = Split { string: Cow::Borrowed( segment_str ), typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset + segment_str.len() };
@@ -343,7 +320,7 @@ mod private
   #[ allow( clippy::struct_excessive_bools ) ] // This lint is addressed by using SplitFlags
   pub struct SplitIterator< 'a >
   {
-    iterator : SplitFastIterator< 'a, Vec< &'a str > >,
+    iterator : SplitFastIterator< 'a, Vec<&'a str> >,
     src : &'a str,
     flags : SplitFlags,
     quoting_prefixes : Vec< &'a str >,
@@ -356,7 +333,7 @@ mod private
 
   impl< 'a > SplitIterator< 'a >
   {
-    fn new( o : &impl SplitOptionsAdapter< 'a, Vec< &'a str > > ) -> Self
+    fn new( o : &impl SplitOptionsAdapter< 'a, Vec<&'a str> > ) -> Self
     {
       let mut delimeter_list_for_fast_iterator = o.delimeter();
       delimeter_list_for_fast_iterator.retain(|&pat| !pat.is_empty());
@@ -525,7 +502,7 @@ mod private
     quoting_postfixes : Vec< &'a str >,
   }
 
-  impl< 'a > SplitOptions< 'a, Vec< &'a str > >
+  impl< 'a > SplitOptions< 'a, Vec<&'a str> >
   {
     /// Consumes the options and returns a `SplitIterator`.
     #[ must_use ]
@@ -538,7 +515,7 @@ mod private
     // This is inside pub mod private, so pub fn makes it pub
     pub fn split_fast( self ) -> SplitFastIterator< 'a, D > { SplitFastIterator::new( &self ) }
   }
-  impl< 'a > core::iter::IntoIterator for SplitOptions< 'a, Vec< &'a str > >
+  impl< 'a > core::iter::IntoIterator for SplitOptions< 'a, Vec<&'a str> >
   {
     type Item = Split< 'a >;
     type IntoIter = SplitIterator< 'a >;
@@ -624,7 +601,7 @@ mod private
     /// # Panics
     /// Panics if `delimeter` field contains an `OpType::Primitive(None)` which results from `<&str>::default()`,
     /// and `vector()` method on `OpType` is not robust enough to handle it (currently it would unwrap a None).
-    pub fn form( &mut self ) -> SplitOptions< 'a, Vec< &'a str > >
+    pub fn form( &mut self ) -> SplitOptions< 'a, Vec<&'a str> >
     {
       if self.flags.contains(SplitFlags::QUOTING)
       {

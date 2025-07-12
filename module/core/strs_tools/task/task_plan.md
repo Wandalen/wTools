@@ -12,13 +12,13 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/strs_tools`
-*   **Overall Progress:** 10/13 increments complete
+*   **Overall Progress:** 10/14 increments complete
 *   **Increment Status:**
-    *   ✅ Increment 1-9: (Completed)
-    *   ✅ Increment 10: Correct Flawed Test Expectations
-    *   ⏳ Increment 11: Implement Fix for Escape Sequence Handling
-    *   ⚫ Increment 12: Verify Fix and Finalize
-    *   ⚫ Increment 13: Finalization
+    *   ✅ Increment 1-10: (Completed)
+    *   ⏳ Increment 11: Add Decomposed MRE Test Cases
+    *   ⚫ Increment 12: Implement Fix for Escape Sequence Handling
+    *   ⚫ Increment 13: Verify Fix and Finalize
+    *   ⚫ Increment 14: Finalization
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -39,6 +39,7 @@
 |---|---|---|
 | `inc::split_test::quoting_and_unescaping_tests::escaped_backslash_then_quote_test` | Fixed (Monitored) | The test expectation was corrected and it now passes. |
 | `inc::split_test::quoting_and_unescaping_tests::mre_test` | Failing (New) | Incorrectly handles `\\"` sequence. |
+| `inc::split_test::quoting_and_unescaping_tests::test_mre_arg3_isolated` | Failing (New) | New granular test, expected to fail. |
 
 ### Crate Conformance Check Procedure
 *   Step 1: Execute `timeout 90 cargo test -p strs_tools --all-targets` via `execute_command`.
@@ -47,56 +48,20 @@
 *   Step 4: If the command fails, initiate `Linter Fix & Regression Check Procedure`.
 
 ### Increments
-##### Increment 1-9: (Completed)
-*   **Summary:** Initial setup, API change to `Cow`, compilation fixes, implementation of unescaping and quoting logic, and a successful fix for the "Spurious Empty Segment Bug".
+##### Increment 1-10: (Completed)
+*   **Summary:** Initial setup, API change to `Cow`, compilation fixes, implementation of unescaping and quoting logic, a successful fix for the "Spurious Empty Segment Bug", and correction of a flawed test expectation.
 
-##### Increment 10: Correct Flawed Test Expectations
-*   **Goal:** To modify the `escaped_backslash_then_quote_test` to have a correct, sane expectation for how escape sequences should be parsed. This provides a valid target for the parser fix.
+##### Increment 11: Add Decomposed MRE Test Cases
+*   **Goal:** To add more granular, failing tests based on the MRE to precisely target the parsing bug.
 *   **Specification Reference:** N/A
 *   **Steps:**
-    *   Step 1: **Read File:** Read `module/core/strs_tools/tests/inc/split_test/quoting_and_unescaping_tests.rs`.
-    *   Step 2: **Correct the Test:** In `escaped_backslash_then_quote_test`, modify the `src` and `expected` values to represent a logical test case for an escaped backslash followed by an escaped quote.
-        *   **Search for:**
-            ```rust
-            #[test]
-            fn escaped_backslash_then_quote_test()
-            {
-              let src = r#" "a\\"b" "#;
-              let splits : Vec<_> = strs_tools::string::split()
-              .src( src )
-              .delimeter( " " )
-              .quoting( true )
-              .preserving_delimeters( false )
-              .perform()
-              .map( | e | e.string ).collect();
-              let expected = vec![ "a\\\"b" ];
-              assert_eq!( splits, expected );
-            }
-            ```
-        *   **Replace with:**
-            ```rust
-            #[test]
-            fn escaped_backslash_then_quote_test()
-            {
-              // This tests that the sequence `\\\"` correctly unescapes to `\"`.
-              let src = r#" "a\\\"b" "#;
-              let splits : Vec<_> = strs_tools::string::split()
-              .src( src )
-              .delimeter( " " )
-              .quoting( true )
-              .preserving_delimeters( false )
-              .perform()
-              .map( | e | e.string ).collect();
-              let expected = vec![ r#"a\"b"# ];
-              assert_eq!( splits, expected );
-            }
-            ```
+    *   Step 1: **Add new tests:** Add `test_mre_arg2_isolated`, `test_mre_arg3_isolated`, and `test_consecutive_escaped_backslashes_and_quote` to `quoting_and_unescaping_tests.rs`.
 *   **Increment Verification:**
     *   Step 1: Execute `timeout 90 cargo test -p strs_tools --test strs_tools_tests -- --nocapture`.
-    *   Step 2: Analyze the output. The test `escaped_backslash_then_quote_test` will still fail, but now it will fail with a different, more meaningful error that reflects the parser's inability to handle the `\\\"` sequence correctly. This confirms the test is now a valid target.
-*   **Commit Message:** `test(strs_tools): Correct flawed expectation in escape sequence test`
+    *   Step 2: Analyze the output. The new test `test_mre_arg3_isolated` should fail, confirming it correctly targets the bug.
+*   **Commit Message:** `test(strs_tools): Add granular tests for escaped backslash handling`
 
-##### Increment 11: Implement Fix for Escape Sequence Handling
+##### Increment 12: Implement Fix for Escape Sequence Handling
 *   **Goal:** To fix the escape sequence parsing bug by replacing the flawed backslash-counting logic in `SplitFastIterator::next` with a robust state machine.
 *   **Specification Reference:** N/A
 *   **Reference Implementation (Current Flawed Code):**
@@ -172,20 +137,20 @@
         ```
 *   **Increment Verification:**
     *   Step 1: Execute `timeout 90 cargo test -p strs_tools --test strs_tools_tests -- --nocapture`.
-    *   Step 2: Analyze the output. The tests `escaped_backslash_then_quote_test` and `mre_test` must now **pass**.
+    *   Step 2: Analyze the output. All tests, including the new granular ones and `mre_test`, must now **pass**.
 *   **Commit Message:** `fix(strs_tools): Implement state machine for escaped quote parsing`
 
-##### Increment 12: Verify Fix and Finalize
+##### Increment 13: Verify Fix and Finalize
 *   **Goal:** To ensure the fix is robust and has not introduced any regressions.
 *   **Specification Reference:** N/A
 *   **Steps:**
     *   Step 1: Perform the full `Crate Conformance Check Procedure`.
-    *   Step 2: Remove the temporary debug test files `tests/debug_hang_split_issue.rs` and `tests/debug_split_issue.rs`.
+    *   Step 2: Remove the temporary debug test files `tests/debug_hang_split_issue.rs` and `tests/debug_split_issue.rs` if they exist.
 *   **Increment Verification:**
     *   All steps of the `Crate Conformance Check Procedure` must pass.
 *   **Commit Message:** `chore(strs_tools): Verify escape parsing fix and remove debug files`
 
-##### Increment 13: Finalization
+##### Increment 14: Finalization
 *   **Goal:** Perform a final review and verification of the entire task's output.
 *   **Specification Reference:** N/A
 *   **Steps:**
@@ -211,8 +176,8 @@ This section provides a detailed analysis of the bugs identified during testing.
 *   **Root Cause:** The `skip` logic within `SplitIterator::next` was flawed. The fix was to introduce a `skip_next_spurious_empty` flag that is set after the quote-peeking logic runs. This flag ensures the single, artifactual empty segment that follows a quoted string is unconditionally skipped, resolving the issue across all related test cases.
 
 ### Changelog
+*   [Increment 11 | 2025-07-12] Added new granular tests for escape sequences to isolate the bug.
 *   [Increment 10 | 2025-07-12] Corrected the expectation in `escaped_backslash_then_quote_test` to be valid. The test now passes, but the underlying bug is still present as shown by the failing `mre_test`.
-*   [Increment 10 | 2025-07-12] Added new granular tests for escape sequences to isolate the bug.
 *   [Increment 6-9 | 2025-07-12] Fixed "Spurious Empty Segment Bug" by introducing a `skip_next_spurious_empty` flag to the iterator, which correctly filters artifactual empty tokens after a quoted segment is parsed. This resolved four related test failures.
 *   [Increment 6 Plan] Updated plan to fix the two distinct bugs (Spurious Empty Segment, Incorrect Escape Handling) in separate, detailed increments based on comprehensive test failure analysis.
 *   [Increment 5 | 2025-07-12] Removed debug macros from `SplitIterator`.
