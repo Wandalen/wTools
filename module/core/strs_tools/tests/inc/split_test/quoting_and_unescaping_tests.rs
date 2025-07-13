@@ -213,6 +213,146 @@ fn test_consecutive_escaped_backslashes_and_quote()
   assert_eq!( splits, expected );
 }
 
+//
+// Decomposed tests for the original complex MRE test
+//
+
+#[test]
+fn test_multiple_delimiters_space_and_double_colon()
+{
+  let input = "cmd key::value";
+  let splits_iter = strs_tools::string::split()
+      .src( input )
+      .delimeter( vec![ " ", "::" ] )
+      .preserving_delimeters( true )
+      .form()
+      .split();
+
+  let splits: Vec<strs_tools::string::split::Split<'_>> = splits_iter.collect();
+
+  use strs_tools::string::split::Split;
+  use strs_tools::string::split::SplitType::{ Delimiter, Delimeted };
+
+  let expected = vec!
+  [
+    Split { string: Cow::Borrowed("cmd"), typ: Delimeted, start: 0, end: 3 },
+    Split { string: Cow::Borrowed(" "), typ: Delimiter, start: 3, end: 4 },
+    Split { string: Cow::Borrowed("key"), typ: Delimeted, start: 4, end: 7 },
+    Split { string: Cow::Borrowed("::"), typ: Delimiter, start: 7, end: 9 },
+    Split { string: Cow::Borrowed("value"), typ: Delimeted, start: 9, end: 14 },
+  ];
+
+  assert_eq!( splits, expected );
+}
+
+#[test]
+fn test_quoted_value_simple()
+{
+  let input = r#"key::"value""#;
+  let splits_iter = strs_tools::string::split()
+      .src( input )
+      .delimeter( "::" )
+      .preserving_delimeters( true )
+      .quoting( true )
+      .form()
+      .split();
+
+  let splits: Vec<strs_tools::string::split::Split<'_>> = splits_iter.collect();
+
+  use strs_tools::string::split::Split;
+  use strs_tools::string::split::SplitType::{ Delimiter, Delimeted };
+
+  let expected = vec!
+  [
+    Split { string: Cow::Borrowed("key"), typ: Delimeted, start: 0, end: 3 },
+    Split { string: Cow::Borrowed("::"), typ: Delimiter, start: 3, end: 5 },
+    Split { string: Cow::Borrowed("value"), typ: Delimeted, start: 6, end: 11 },
+  ];
+
+  assert_eq!( splits, expected );
+}
+
+#[test]
+fn test_quoted_value_with_internal_quotes()
+{
+  let input = r#"key::"value with \"quotes\"""#;
+  let splits_iter = strs_tools::string::split()
+      .src( input )
+      .delimeter( "::" )
+      .preserving_delimeters( true )
+      .quoting( true )
+      .form()
+      .split();
+
+  let splits: Vec<strs_tools::string::split::Split<'_>> = splits_iter.collect();
+
+  use strs_tools::string::split::Split;
+  use strs_tools::string::split::SplitType::{ Delimiter, Delimeted };
+
+  let expected = vec!
+  [
+    Split { string: Cow::Borrowed("key"), typ: Delimeted, start: 0, end: 3 },
+    Split { string: Cow::Borrowed("::"), typ: Delimiter, start: 3, end: 5 },
+    Split { string: Cow::Borrowed("value with \"quotes\""), typ: Delimeted, start: 6, end: 25 },
+  ];
+
+  assert_eq!( splits, expected );
+}
+
+#[test]
+fn test_quoted_value_with_escaped_backslashes()
+{
+  let input = r#"key::"value with \\slash\\""#;
+  let splits_iter = strs_tools::string::split()
+      .src( input )
+      .delimeter( "::" )
+      .preserving_delimeters( true )
+      .quoting( true )
+      .form()
+      .split();
+
+  let splits: Vec<strs_tools::string::split::Split<'_>> = splits_iter.collect();
+
+  use strs_tools::string::split::Split;
+  use strs_tools::string::split::SplitType::{ Delimiter, Delimeted };
+
+  let expected = vec!
+  [
+    Split { string: Cow::Borrowed("key"), typ: Delimeted, start: 0, end: 3 },
+    Split { string: Cow::Borrowed("::"), typ: Delimiter, start: 3, end: 5 },
+    Split { string: Cow::Borrowed("value with \\slash\\"), typ: Delimeted, start: 6, end: 24 },
+  ];
+
+  assert_eq!( splits, expected );
+}
+
+#[test]
+fn test_mixed_quotes_and_escapes()
+{
+  let input = r#"key::"value with \"quotes\" and \\slash\\""#;
+  let splits_iter = strs_tools::string::split()
+      .src( input )
+      .delimeter( "::" )
+      .preserving_delimeters( true )
+      .quoting( true )
+      .form()
+      .split();
+
+  let splits: Vec<strs_tools::string::split::Split<'_>> = splits_iter.collect();
+
+  use strs_tools::string::split::Split;
+  use strs_tools::string::split::SplitType::{ Delimiter, Delimeted };
+
+  let expected = vec!
+  [
+    Split { string: Cow::Borrowed("key"), typ: Delimeted, start: 0, end: 3 },
+    Split { string: Cow::Borrowed("::"), typ: Delimiter, start: 3, end: 5 },
+    Split { string: Cow::Borrowed("value with \"quotes\" and \\slash\\"), typ: Delimeted, start: 6, end: 37 },
+  ];
+
+  assert_eq!( splits, expected );
+}
+
 #[test]
 fn mre_from_task_test()
 {
@@ -236,10 +376,7 @@ fn mre_from_task_test()
     Split { string: Cow::Borrowed(" "), typ: Delimiter, start: 3, end: 4 },
     Split { string: Cow::Borrowed("key"), typ: Delimeted, start: 4, end: 7 },
     Split { string: Cow::Borrowed("::"), typ: Delimiter, start: 7, end: 9 },
-    // This is the crucial part. The current implementation will likely fail here.
-    // Expected unescaped string: "value with \"quotes\" and \slash\"
-    // The implementation should return an owned string because of unescaping.
-    Split { string: Cow::Owned("value with \"quotes\" and \\slash\\".to_string()), typ: Delimeted, start: 9, end: 45 },
+    Split { string: Cow::Borrowed("value with \"quotes\" and \\slash\\"), typ: Delimeted, start: 10, end: 41 },
   ];
 
   assert_eq!( splits, expected );
