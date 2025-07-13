@@ -79,14 +79,14 @@ pub fn classify_split( s : &Split<'_> ) -> Result<( UnilangTokenKind, SourceLoca
 
   match s.string
   {
-    "::" => Ok(( UnilangTokenKind::Operator( "::" ), original_location )),
-    "?" => Ok(( UnilangTokenKind::Operator( "?" ), original_location )),
-    ":" => Ok(( UnilangTokenKind::Operator( ":" ), original_location )),
-    "." => Ok(( UnilangTokenKind::Delimiter( "." ), original_location )),
-    " " => Ok(( UnilangTokenKind::Delimiter( " " ), original_location )),
-    "\n" => Ok(( UnilangTokenKind::Delimiter( "\n" ), original_location )),
-    "#" => Ok(( UnilangTokenKind::Delimiter( "#" ), original_location )),
-    "!" => Ok(( UnilangTokenKind::Unrecognized( "!".to_string() ), original_location )),
+    std::borrow::Cow::Borrowed("::") => Ok(( UnilangTokenKind::Operator( "::" ), original_location )),
+    std::borrow::Cow::Borrowed("?") => Ok(( UnilangTokenKind::Operator( "?" ), original_location )),
+    std::borrow::Cow::Borrowed(":") => Ok(( UnilangTokenKind::Operator( ":" ), original_location )),
+    std::borrow::Cow::Borrowed(".") => Ok(( UnilangTokenKind::Delimiter( "." ), original_location )),
+    std::borrow::Cow::Borrowed(" ") => Ok(( UnilangTokenKind::Delimiter( " " ), original_location )),
+    std::borrow::Cow::Borrowed("\n") => Ok(( UnilangTokenKind::Delimiter( "\n" ), original_location )),
+    std::borrow::Cow::Borrowed("#") => Ok(( UnilangTokenKind::Delimiter( "#" ), original_location )),
+    std::borrow::Cow::Borrowed("!") => Ok(( UnilangTokenKind::Unrecognized( "!".to_string() ), original_location )),
     _ =>
     {
       if s.typ == SplitType::Delimeted
