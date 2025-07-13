@@ -11,11 +11,11 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/strs_tools`
-*   **Overall Progress:** 1/5 increments complete
+*   **Overall Progress:** 3/5 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Analyze `bitflags` usage and prepare for replacement.
     *   ✅ Increment 2: Implement custom flag type.
-    *   ⏳ Increment 3: Replace `bitflags` usage in `src/string/split.rs`.
+    *   ✅ Increment 3: Replace `bitflags` usage in `src/string/split.rs`.
     *   ⚫ Increment 4: Remove `bitflags` dependency from `Cargo.toml`.
     *   ⚫ Increment 5: Finalization.
 
@@ -168,3 +168,4 @@
 ### Changelog
 *   [Increment 1 | 2025-07-13 12:07 UTC] Analyzed `bitflags` usage and documented replacement strategy.
 *   [Increment 2 | 2025-07-13 12:18 UTC] Implemented custom flag type for `SplitBehavior` and added tests.
+*   [Increment 3 | 2025-07-13 12:34 UTC] Confirmed `bitflags` usage was already replaced by custom type in `split.rs` and verified compilation and tests.
