@@ -12,7 +12,7 @@ mod private
   #[ cfg( feature = "use_alloc" ) ]
   use alloc::borrow::Cow;
   #[ cfg( not( feature = "use_alloc" ) ) ]
-  
+  #[ allow( clippy::std_instead_of_alloc ) ]
   use std::borrow::Cow;
   use crate::string::parse_request::OpType;
   use super::SplitFlags; // Import SplitFlags from parent module
@@ -241,10 +241,10 @@ mod private
         }
       }
       else
-      {
-        output.push( ch );
+        {
+          output.push( ch );
+        }
       }
-    }
 
     Cow::Owned( output )
   }
@@ -461,26 +461,21 @@ mod private
           } else { effective_split_opt = self.iterator.next(); }
         } else { effective_split_opt = self.iterator.next(); }
         let mut current_split = effective_split_opt?;
-
         if quote_handled_by_peek
         {
           self.skip_next_spurious_empty = true;
         }
-
         if self.skip_next_spurious_empty && current_split.typ == SplitType::Delimeted && current_split.string.is_empty()
         {
           self.skip_next_spurious_empty = false;
           continue;
         }
-
         let skip = ( current_split.typ == SplitType::Delimeted && current_split.string.is_empty() && !self.flags.contains( SplitFlags::PRESERVING_EMPTY ) )
         || ( current_split.typ == SplitType::Delimiter && !self.flags.contains( SplitFlags::PRESERVING_DELIMITERS ) );
-
         if skip
         {
           continue;
         }
-
         if !quote_handled_by_peek && self.flags.contains(SplitFlags::QUOTING) && current_split.typ == SplitType::Delimiter && self.iterator.active_quote_char.is_none() {
           if let Some(_prefix_idx) = self.quoting_prefixes.iter().position(|p| *p == current_split.string.as_ref()) {
             let opening_quote_delimiter = current_split.clone();

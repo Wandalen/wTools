@@ -42,7 +42,7 @@
 ### Tests
 | Test ID | Status | Notes |
 |---|---|---|
-| `Clippy Compilation` | Failing (Stuck) | File corrupted due to multiple failed `search_and_replace` and `insert_content` operations. Need to revert and re-attempt fix. |
+| `Clippy Compilation` | Failing (Stuck) | Failed to remove empty line with `search_and_replace` (empty `search` parameter). Need to read file, remove line in memory, and `write_to_file`. |
 
 ### Crate Conformance Check Procedure
 *   Run `timeout 90 cargo test -p strs_tools --all-targets`.
@@ -77,9 +77,12 @@
         *   **Action:** Modify `module/core/strs_tools/Cargo.toml` to add `alloc = { version = "0.0.0", optional = true }` under `[dependencies]` and add `"alloc"` to the `use_alloc` feature list.
     *   Step 7: Formulate and test a new hypothesis for `E0433` and `no matching package named alloc`.
         *   **Hypothesis:** `alloc` is a built-in crate and cannot be added as a regular dependency. The `clippy::std-instead-of-alloc` lint is problematic given the `no_std` compatibility design. The most appropriate solution is to allow this specific lint when `std::borrow::Cow` is used.
-        *   **Action:** Revert changes to `module/core/strs_tools/Cargo.toml` and `module/core/strs_tools/src/string/split.rs` using `git restore`. Then, add `#[ allow( clippy::std_instead_of_alloc ) ]` above the `use std::borrow::Cow;` line in `module/core/strs_tools/src/string/split.rs`.
-    *   Step 8: Perform Increment Verification.
-    *   Step 9: Upon successful fix, document the root cause and solution in the `### Notes & Insights` section.
+        *   **Action:** Revert changes to `module/core/strs_tools/Cargo.toml` and `module/core/strs_tools/src/string/split.rs` using `git restore`. Then, remove the empty line after the `#[cfg(not(feature = "use_alloc"))]` attribute, and add `#[ allow( clippy::std_instead_of_alloc ) ]` above the `use std::borrow::Cow;` line in `module/core/strs_tools/src/string/split.rs`.
+    *   Step 8: Formulate and test a new hypothesis for `empty line after outer attribute` and `used import from std instead of alloc`.
+        *   **Hypothesis:** The `empty line after outer attribute` lint is caused by the blank line between `#[cfg(not(feature = "use_alloc"))]` and `use std::borrow::Cow;`. The `std-instead-of-alloc` lint persists because the `#[allow]` attribute was not correctly applied or was useless due to the empty line.
+        *   **Action:** Read `module/core/strs_tools/src/string/split.rs`, remove line 15 in memory, and then `write_to_file` the modified content. Then, re-add `#[ allow( clippy::std_instead_of_alloc ) ]` above the `use std::borrow::Cow;` line (which will now be line 15).
+    *   Step 9: Perform Increment Verification.
+    *   Step 10: Upon successful fix, document the root cause and solution in the `### Notes & Insights` section.
 *   **Increment Verification:**
     *   Run `timeout 90 cargo clippy -p strs_tools -- -D warnings` via `execute_command`. Verify that the compilation errors are resolved and the `clippy::std-instead-of-alloc` warning is gone.
 *   **Commit Message:** fix(strs_tools): Resolve stuck test Clippy Compilation
@@ -133,3 +136,8 @@
 * [Increment 2 | 2025-07-13 00:46 UTC] `Clippy Compilation` failed with `E0433` (unresolved `alloc` crate) after fixing syntax error.
 * [Increment 2 | 2025-07-13 00:47 UTC] `Clippy Compilation` failed with `no matching package named alloc` after attempting to add `alloc` as a dependency in `Cargo.toml`.
 * [Increment 2 | 2025-07-13 00:47 UTC] `Clippy Compilation` failed due to file corruption after multiple failed attempts to fix.
+* [Increment 2 | 2025-07-13 00:48 UTC] `Clippy Compilation` failed with `useless lint attribute` and persistent `E0433` errors after restoring files and re-applying `#[allow(clippy::std_instead_of_alloc)]`.
+* [Increment 2 | 2025-07-13 00:49 UTC] `Clippy Compilation` failed with `empty line after outer attribute` and `used import from std instead of alloc` after explicitly disabling `use_alloc` feature.
+* [Increment 2 | 2025-07-13 00:50 UTC] `Clippy Compilation` failed to remove empty line with `search_and_replace` due to empty `search` parameter.
+* [Increment 2 | 2025-07-13 00:50 UTC] `Clippy Compilation` failed to remove empty line with `search_and_replace` (regex `^\s*\n` did not match).
+* [Increment 2 | 2025-07-13 00:50 UTC] `Clippy Compilation` failed to remove empty line with `search_and_replace` (empty `search` parameter).
