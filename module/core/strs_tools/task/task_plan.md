@@ -1,21 +1,23 @@
-# Task Plan: Fix Unescaping and Rename MRE Test
+# Task Plan: Remove `bitflags` dependency from `strs_tools`
 
 ### Goal
-*   To fix the unescaping logic in `strs_tools::string::split` and ensure all MRE tests have unique, descriptive names.
+*   To eliminate the `bitflags` crate dependency from `module/core/strs_tools` by replacing its functionality with a custom implementation, ensuring all existing features and tests continue to pass without regression.
 
 ### Ubiquitous Language (Vocabulary)
-*   **MRE:** Minimal Reproducible Example.
-*   **Split:** A struct representing a segment of a split string.
-*   **Unescaping:** The process of converting escape sequences (e.g., `\"`) into their literal representation (e.g., `"`).
+*   **Bitflags:** The `bitflags` crate, used for creating a type-safe way to work with bitmasks.
+*   **Custom Flag Type:** A new enum or struct that will replace the functionality provided by `bitflags`.
+*   **StrsTools:** The `module/core/strs_tools` crate, the primary target for this task.
 
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/strs_tools`
-*   **Overall Progress:** 2/3 increments complete
+*   **Overall Progress:** 0/5 increments complete
 *   **Increment Status:**
-    *   ✅ Increment 1: Rename existing MRE test
-    *   ✅ Increment 2: Correct the failing MRE test
-    *   ⚫ Increment 3: Fix the unescaping implementation
+    *   ⏳ Increment 1: Analyze `bitflags` usage and prepare for replacement.
+    *   ⚫ Increment 2: Implement custom flag type.
+    *   ⚫ Increment 3: Replace `bitflags` usage in `src/string/split.rs`.
+    *   ⚫ Increment 4: Remove `bitflags` dependency from `Cargo.toml`.
+    *   ⚫ Increment 5: Finalization.
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -25,89 +27,138 @@
     *   N/A
 
 ### Relevant Context
-*   Files to Include:
-    *   `module/core/strs_tools/task/task.md`
-    *   `module/core/strs_tools/tests/inc/split_test/quoting_and_unescaping_tests.rs`
+*   Control Files to Reference (if they exist):
+    *   `./roadmap.md`
+    *   `./spec.md`
+    *   `./spec_addendum.md`
+*   Files to Include (for AI's reference, if `read_file` is planned):
+    *   `module/core/strs_tools/Cargo.toml`
     *   `module/core/strs_tools/src/string/split.rs`
+    *   `module/core/strs_tools/tests/inc/split_test/quoting_and_unescaping_tests.rs`
+*   Crates for Documentation (for AI's reference, if `read_file` on docs is planned):
+    *   `strs_tools`
+*   External Crates Requiring `task.md` Proposals (if any identified during planning):
+    *   N/A
 
 ### Expected Behavior Rules / Specifications
-*   The `split` iterator, when `quoting(true)`, should produce unescaped strings for quoted segments.
-*   All tests should pass after the implementation fix.
+*   The `strs_tools` crate must compile successfully after the changes.
+*   All existing tests for `strs_tools` must pass after the changes.
+*   The functionality of string splitting, quoting, and unescaping must remain identical to its current behavior.
+*   The `bitflags` dependency must be completely removed from `strs_tools/Cargo.toml`.
 
 ### Tests
 | Test ID | Status | Notes |
 |---|---|---|
-| `inc::split_test::quoting_and_unescaping_tests::mre_from_task_test` | Failing (New) | The test fails as expected, because the unescaping logic is not implemented yet. |
 
 ### Crate Conformance Check Procedure
-*   Run `cargo test -p strs_tools`
+*   1. Run Tests: For the `Primary Editable Crate` (`strs_tools`), execute `timeout 90 cargo test -p strs_tools --all-targets`.
+*   2. Analyze Test Output: If any test command fails, initiate the `Critical Log Analysis` procedure and resolve all test failures before proceeding.
+*   3. Run Linter: Only if all tests in the previous step pass, for the `Primary Editable Crate`, execute `timeout 90 cargo clippy -p strs_tools -- -D warnings`.
+*   4. Analyze Linter Output: If any linter command fails, initiate the `Linter Fix & Regression Check Procedure`.
+*   5. Perform Output Cleanliness Check: Execute `cargo clean -p strs_tools` followed by `timeout 90 cargo build -p strs_tools`. Critically analyze the build output for any unexpected debug prints from procedural macros. If any are found, the check fails; initiate the `Critical Log Analysis` procedure.
 
 ### Increments
-##### Increment 1: Rename existing MRE test
-*   **Goal:** Rename the existing `mre_test` to avoid confusion.
-*   **Specification Reference:** User feedback.
+##### Increment 1: Analyze `bitflags` usage and prepare for replacement.
+*   **Goal:** Understand the current usage of `bitflags` within `strs_tools` and identify the specific flags and their contexts to inform the custom implementation.
+*   **Specification Reference:** N/A
 *   **Steps:**
-    1.  Read `module/core/strs_tools/tests/inc/split_test/quoting_and_unescaping_tests.rs`.
-    2.  Rename the test function `mre_test` to `mre_simple_unescape_test`.
-    3.  Write the modified content back.
-    4.  Run tests to confirm everything still works as before (except the known failure).
+    *   Step 1: Use `read_file` to load `module/core/strs_tools/Cargo.toml`, `module/core/strs_tools/src/string/split.rs`, and `module/core/strs_tools/tests/inc/split_test/quoting_and_unescaping_tests.rs`.
+    *   Step 2: Analyze the content of `Cargo.toml` to confirm the `bitflags` dependency.
+    *   Step 3: Analyze `src/string/split.rs` to identify the `bitflags!` macro usage for `SplitBehavior` and how its flags (`AllowEmpty`, `AllowEmptyWithQuotes`, `KeepQuotes`, `KeepOuterQuotes`) are used in the `split` function.
+    *   Step 4: Analyze `quoting_and_unescaping_tests.rs` to see how `SplitBehavior` flags are combined and used in test cases.
+    *   Step 5: Based on the analysis, document in `### Notes & Insights` that a struct with consts and bitwise operations (`|`, `&`) will be the most direct replacement for the `bitflags!` macro. The struct will need to implement `BitOr`, `BitAnd`, `Not`, `From<i32>`, and a `contains` method.
+    *   Step 6: Perform Increment Verification.
+    *   Step 7: Perform Crate Conformance Check.
 *   **Increment Verification:**
-    *   The test `mre_test` should no longer exist.
-    *   The test `mre_simple_unescape_test` should exist and pass.
-*   **Commit Message:** `refactor(tests): Rename MRE test for clarity`
+    *   Step 1: Confirm that the analysis of `bitflags` usage is complete and the chosen replacement strategy is documented in the `### Notes & Insights` section of the plan.
+    *   Step 2: Run `timeout 90 cargo test -p strs_tools --all-targets` via `execute_command` to ensure the current state is clean before making changes. Analyze the output.
+*   **Commit Message:** `chore(strs_tools): Analyze bitflags usage and plan replacement`
 
-##### Increment 2: Correct the failing MRE test
-*   **Goal:** Update the `mre_from_task_test` to reflect the correct expected unescaped output.
-*   **Specification Reference:** `module/core/strs_tools/task/task.md`
+##### Increment 2: Implement custom flag type.
+*   **Goal:** Create a new module and define a custom flag type that replicates the necessary functionality of `bitflags::bitflags!` for `SplitBehavior`.
+*   **Specification Reference:** N/A
 *   **Steps:**
-    1.  Read `module/core/strs_tools/tests/inc/split_test/quoting_and_unescaping_tests.rs`.
-    2.  In `mre_from_task_test`, change the expected `string` for the quoted segment to its unescaped form: `"value with \"quotes\" and \\slash\\"`. This will require using `Cow::Owned`.
-    3.  Adjust the expected `start` and `end` indices to match the `task.md` specification (`9` and `45`).
-    4.  Write the modified content back.
-    5.  Run tests. The test will still fail, but now the failure will be because the implementation doesn't produce an owned, unescaped string.
+    *   Step 1: Add `mod split_behavior;` to `module/core/strs_tools/src/string/mod.rs`.
+    *   Step 2: Create the file `module/core/strs_tools/src/string/split_behavior.rs`.
+    *   Step 3: Implement the custom flag type (e.g., an enum with `#[derive(Debug, Clone, Copy, PartialEq, Eq)]` and `From` implementations for conversions, or a struct with bitwise operations) in `module/core/strs_tools/src/string/split_behavior.rs` to mimic the behavior of `SplitBehavior` from `bitflags`.
+    *   Step 4: Add basic unit tests for the new custom flag type in `module/core/strs_tools/tests/inc/split_test/split_behavior_tests.rs` to ensure it behaves as expected.
+    *   Step 5: Perform Increment Verification.
+    *   Step 6: Perform Crate Conformance Check.
 *   **Increment Verification:**
-    *   The `mre_from_task_test` should be updated with the unescaped string and correct indices.
-    *   The test should still fail, but with a different assertion failure (actual will be borrowed, expected will be owned).
-*   **Commit Message:** `test(strs_tools): Correct MRE test to expect unescaped string`
+    *   Confirm `split_behavior.rs` exists and contains the custom flag type.
+    *   Confirm `split_behavior_tests.rs` exists and contains tests for the new type.
+    *   Execute `timeout 90 cargo test -p strs_tools --test split_behavior_tests` via `execute_command` and analyze output to ensure new tests pass.
+*   **Commit Message:** `feat(strs_tools): Implement custom flag type for SplitBehavior`
 
-##### Increment 3: Fix the unescaping implementation
-*   **Goal:** Modify `SplitIterator` to correctly unescape quoted strings.
-*   **Specification Reference:** `module/core/strs_tools/task/task.md`
+##### Increment 3: Replace `bitflags` usage in `src/string/split.rs`.
+*   **Goal:** Modify `src/string/split.rs` to use the newly created custom flag type instead of the `bitflags` version of `SplitBehavior`.
+*   **Specification Reference:** N/A
 *   **Steps:**
-    1.  Read `module/core/strs_tools/src/string/split.rs`.
-    2.  In the `SplitIterator::next` method, locate the logic that handles quoted segments.
-    3.  When a quoted segment is processed and `preserving_quoting` is false, call the `unescape_str` function on the content of the quote.
-    4.  The result of `unescape_str` will be a `Cow<str>`. If it's `Cow::Owned`, the `Split` struct should contain this owned string.
-    5.  Adjust the `start` and `end` indices of the `Split` to match the original quoted string's boundaries, as per the `task.md` (`9` and `45` in the MRE).
-    6.  Write the modified content back to `split.rs`.
-    7.  Run all tests. All tests should now pass.
+    *   Step 1: Modify `module/core/strs_tools/src/string/split.rs` to import and use the new custom `SplitBehavior` type from `split_behavior.rs`.
+    *   Step 2: Replace all instances of `bitflags!` macro usage and `SplitBehavior` flag access (e.g., `SplitBehavior::AllowEmpty`) with the corresponding new custom flag type and its API.
+    *   Step 3: Adjust any logic in `split.rs` that relied on `bitflags` specific methods (e.g., `contains`, `insert`, `remove`) to use the equivalent functionality provided by the custom flag type.
+    *   Step 4: Perform Increment Verification.
+    *   Step 5: Perform Crate Conformance Check.
 *   **Increment Verification:**
-    *   Run `cargo test -p strs_tools`. All tests, including `mre_from_task_test`, should pass.
-*   **Commit Message:** `fix(strs_tools): Implement unescaping for quoted strings in split iterator`
+    *   Execute `timeout 90 cargo build -p strs_tools` via `execute_command` and analyze output to ensure the crate compiles without errors.
+    *   Execute `timeout 90 cargo test -p strs_tools --all-targets` via `execute_command` and analyze output to ensure all existing tests pass.
+*   **Commit Message:** `refactor(strs_tools): Replace bitflags usage in split.rs`
+
+##### Increment 4: Remove `bitflags` dependency from `Cargo.toml`.
+*   **Goal:** Remove the `bitflags` entry from `strs_tools/Cargo.toml` and verify that the crate still compiles and all tests pass.
+*   **Specification Reference:** N/A
+*   **Steps:**
+    *   Step 1: Read `module/core/strs_tools/Cargo.toml`.
+    *   Step 2: Remove the `bitflags` entry from the `[dependencies]` section of `module/core/strs_tools/Cargo.toml`.
+    *   Step 3: Perform Increment Verification.
+    *   Step 4: Perform Crate Conformance Check.
+*   **Increment Verification:**
+    *   Execute `timeout 90 cargo build -p strs_tools` via `execute_command` and analyze output to ensure the crate compiles without errors.
+    *   Execute `timeout 90 cargo test -p strs_tools --all-targets` via `execute_command` and analyze output to ensure all existing tests pass.
+    *   Confirm that `bitflags` is no longer listed in `module/core/strs_tools/Cargo.toml`.
+*   **Commit Message:** `chore(strs_tools): Remove bitflags dependency`
+
+##### Increment 5: Finalization.
+*   **Goal:** Perform a final, holistic review and verification of the entire task's output, ensuring all requirements are met and the codebase is clean.
+*   **Specification Reference:** N/A
+*   **Steps:**
+    *   Step 1: Self-Critique: Review all changes made during the task against the `Goal`, `Task Requirements`, and `Project Requirements` in the plan file.
+    *   Step 2: Execute Test Quality and Coverage Evaluation.
+    *   Step 3: Full Conformance Check: Execute the full `Crate Conformance Check Procedure` on `strs_tools`.
+    *   Step 4: Final Output Cleanliness Check: Execute `cargo clean -p strs_tools` followed by `timeout 90 cargo build -p strs_tools`. Critically analyze the build output for any unexpected debug prints.
+    *   Step 5: Final Status Check: Execute `git status` to ensure the working directory is clean.
+*   **Increment Verification:**
+    *   Confirm all checks in the steps pass.
+*   **Commit Message:** `chore(strs_tools): Finalize bitflags removal task`
 
 ### Task Requirements
-*   The new test must be based on the MRE in `module/core/strs_tools/task/task.md`.
-*   All tests must pass upon completion.
+*   The `bitflags` crate must be completely removed from the `strs_tools` crate.
+*   All existing tests must pass after the removal.
+*   The functionality of string splitting must remain unchanged.
 
 ### Project Requirements
 *   All code must strictly adhere to the `codestyle` rulebook provided by the user at the start of the task.
+*   Must use Rust 2021 edition.
+*   All new APIs must be async. (N/A for this task as it's a refactor)
 
 ### Assumptions
-*   The `unescape_str` function is correct and can be used.
+*   The `bitflags` usage in `strs_tools` is limited to `src/string/split.rs` and its associated tests.
+*   The functionality provided by `bitflags` can be adequately replicated with a custom Rust enum/struct and bitwise operations.
 
 ### Out of Scope
-*   Large-scale refactoring of the split iterator beyond what's necessary for the fix.
+*   Refactoring or optimizing the string splitting logic beyond replacing the `bitflags` dependency.
+*   Adding new features to the `strs_tools` crate.
 
-### External System Dependencies
+### External System Dependencies (Optional)
 *   N/A
 
 ### Notes & Insights
-*   The `Split` struct now derives `PartialEq` and `Eq`.
-*   The initial MRE test was failing due to incorrect expectation in the test itself, and the lack of unescaping in the implementation.
+*   The `bitflags!` macro is used to define `SplitFlags` with a `u8` representation.
+*   The flags are: `PRESERVING_EMPTY`, `PRESERVING_DELIMITERS`, `PRESERVING_QUOTING`, `STRIPPING`, `QUOTING`.
+*   The replacement will be a newtype struct `SplitFlags(u8)`.
+*   It will have `const` associated items for each flag.
+*   It will implement `BitOr`, `BitAnd`, `Not` for combining flags.
+*   It will have methods `contains`, `insert`, and `remove` to mimic the `bitflags` API used in the code.
 
 ### Changelog
-*   [2025-07-12 23:55] Corrected MRE test to expect unescaped string.
-*   [2025-07-12 23:54] Renamed MRE test.
-*   [2025-07-12 23:52] Received feedback to make MRE names unique and fix the failing test.
-*   [2025-07-12 23:51] Added failing MRE test case for quoting and unescaping.
-*   [2025-07-12 23:47] Approved permissions.
+*   [Increment 1 | 2025-07-13 12:07 UTC] Analyzed `bitflags` usage and documented replacement strategy.
