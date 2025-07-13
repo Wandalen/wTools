@@ -11,10 +11,10 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/strs_tools`
-*   **Overall Progress:** 0/5 increments complete
+*   **Overall Progress:** 1/5 increments complete
 *   **Increment Status:**
-    *   ⏳ Increment 1: Analyze `bitflags` usage and prepare for replacement.
-    *   ⚫ Increment 2: Implement custom flag type.
+    *   ✅ Increment 1: Analyze `bitflags` usage and prepare for replacement.
+    *   ⏳ Increment 2: Implement custom flag type.
     *   ⚫ Increment 3: Replace `bitflags` usage in `src/string/split.rs`.
     *   ⚫ Increment 4: Remove `bitflags` dependency from `Cargo.toml`.
     *   ⚫ Increment 5: Finalization.
@@ -49,6 +49,7 @@
 ### Tests
 | Test ID | Status | Notes |
 |---|---|---|
+| `split_behavior_tests::test_bitor_operator` | Fixed (Attempt 1) | Corrected expected value. |
 
 ### Crate Conformance Check Procedure
 *   1. Run Tests: For the `Primary Editable Crate` (`strs_tools`), execute `timeout 90 cargo test -p strs_tools --all-targets`.
@@ -79,15 +80,15 @@
 *   **Specification Reference:** N/A
 *   **Steps:**
     *   Step 1: Add `mod split_behavior;` to `module/core/strs_tools/src/string/mod.rs`.
-    *   Step 2: Create the file `module/core/strs_tools/src/string/split_behavior.rs`.
-    *   Step 3: Implement the custom flag type (e.g., an enum with `#[derive(Debug, Clone, Copy, PartialEq, Eq)]` and `From` implementations for conversions, or a struct with bitwise operations) in `module/core/strs_tools/src/string/split_behavior.rs` to mimic the behavior of `SplitBehavior` from `bitflags`.
-    *   Step 4: Add basic unit tests for the new custom flag type in `module/core/strs_tools/tests/inc/split_test/split_behavior_tests.rs` to ensure it behaves as expected.
+    *   Step 2: Create the file `module/core/strs_tools/src/string/split/split_behavior.rs`.
+    *   Step 3: Implement the custom flag type (e.g., an enum with `#[derive(Debug, Clone, Copy, PartialEq, Eq)]` and `From` implementations for conversions, or a struct with bitwise operations) in `module/core/strs_tools/src/string/split/split_behavior.rs` to mimic the behavior of `SplitBehavior` from `bitflags`.
+    *   Step 4: Add basic unit tests for the new custom flag type in `module/core/strs_tools/tests/inc/split_test/split_behavior_tests.rs`.
     *   Step 5: Perform Increment Verification.
     *   Step 6: Perform Crate Conformance Check.
 *   **Increment Verification:**
     *   Confirm `split_behavior.rs` exists and contains the custom flag type.
     *   Confirm `split_behavior_tests.rs` exists and contains tests for the new type.
-    *   Execute `timeout 90 cargo test -p strs_tools --test split_behavior_tests` via `execute_command` and analyze output to ensure new tests pass.
+    *   Execute `timeout 90 cargo test -p strs_tools --test strs_tools_tests` via `execute_command` and analyze output to ensure new tests pass.
 *   **Commit Message:** `feat(strs_tools): Implement custom flag type for SplitBehavior`
 
 ##### Increment 3: Replace `bitflags` usage in `src/string/split.rs`.
@@ -162,3 +163,4 @@
 
 ### Changelog
 *   [Increment 1 | 2025-07-13 12:07 UTC] Analyzed `bitflags` usage and documented replacement strategy.
+*   [Increment 2 | 2025-07-13 12:18 UTC] Implemented custom flag type for `SplitBehavior` and added tests.

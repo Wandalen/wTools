@@ -4,6 +4,9 @@
 #![ doc( html_root_url = "https://docs.rs/strs_tools/latest/strs_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+
+
+
 /// String tools.
 #[ cfg( feature = "enabled" ) ]
 pub mod string;

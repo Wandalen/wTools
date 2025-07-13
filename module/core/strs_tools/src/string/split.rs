@@ -1,28 +1,21 @@
 //! Provides tools for splitting strings with advanced options including quoting.
 
-use bitflags::bitflags;
 
-bitflags! {
-    /// Flags to control the behavior of the split iterators.
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-    pub struct SplitFlags: u8 {
-        /// Preserves empty segments.
-        const PRESERVING_EMPTY      = 1 << 0;
-        /// Preserves delimiter segments.
-        const PRESERVING_DELIMITERS = 1 << 1;
-        /// Preserves quoting characters in the output.
-        const PRESERVING_QUOTING    = 1 << 2;
-        /// Strips leading/trailing whitespace from delimited segments.
-        const STRIPPING             = 1 << 3;
-        /// Enables handling of quoted sections.
-        const QUOTING               = 1 << 4;
-    }
-}
+mod split_behavior;
+pub use split_behavior::SplitFlags;
 
 /// Internal implementation details for string splitting.
 mod private
 {
+  #[ cfg( feature = "use_alloc" ) ]
+  use alloc::borrow::Cow;
+  #[ cfg( not( feature = "use_alloc" ) ) ]
   use std::borrow::Cow;
+  
+  
+  
+  
+  
   use crate::string::parse_request::OpType;
   use super::SplitFlags; // Import SplitFlags from parent module
 
@@ -36,7 +29,11 @@ mod private
     pub typ : SplitType,
     /// The starting byte index of the segment in the original string.
     pub start : usize,
+  
+  
+  
     /// The ending byte index of the segment in the original string.
+  
     pub end : usize,
   }
 
@@ -258,7 +255,7 @@ mod private
   mod unescape_tests
   {
     use super::*;
-    use std::borrow::Cow;
+    
 
     #[test]
     fn no_escapes()
@@ -369,7 +366,7 @@ mod private
                     if offset < src_len {
                         self.iterator.iterable = &self.src[offset..];
                     }
-                };
+                }
                 self.iterator.current_offset = offset;
             }
         }
