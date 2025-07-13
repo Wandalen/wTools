@@ -13,10 +13,10 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** module/core/strs_tools
-*   **Overall Progress:** 0/3 increments complete
+*   **Overall Progress:** 1/3 increments complete
 *   **Increment Status:**
-    *   ⏳ Increment 1: Add failing test for unescaping
-    *   ⚫ Increment 2: Implement unescaping fix
+    *   ✅ Increment 1: Add failing test for unescaping
+    *   ⏳ Increment 2: Implement unescaping fix
     *   ⚫ Increment 3: Finalization
 
 ### Permissions & Boundaries
@@ -60,7 +60,7 @@
     *   Step 2: Add a new test function `unescaping_in_quoted_string` to the file. This test should cover both `\"` and `\\` cases.
     *   Step 3: Perform Increment Verification.
 *   **Increment Verification:**
-    *   Step 1: Execute `timeout 90 cargo test -p strs_tools --test basic_split_tests -- --nocapture` via `execute_command`.
+    *   Step 1: Execute `timeout 90 cargo test -p strs_tools --test strs_tools_tests -- --nocapture` via `execute_command`.
     *   Step 2: Analyze the output to confirm that the new test `unescaping_in_quoted_string` fails. The failure message should indicate an assertion error related to incorrect unescaping. This confirms the bug and the validity of the test.
 *   **Commit Message:** `test(strs_tools): Add failing test for unescaping in quoted strings`
 
@@ -69,11 +69,12 @@
 *   **Specification Reference:** `module/core/strs_tools/task/task1.md` - Proposed Solution
 *   **Steps:**
     *   Step 1: Read the content of `module/core/strs_tools/src/string/split.rs`.
-    *   Step 2: In `SplitFastIterator::next`, replace the existing logic for finding the end of a quote with a more robust loop that correctly handles escaped characters (`\` followed by another character).
-    *   Step 3: Perform Increment Verification.
-    *   Step 4: Perform Crate Conformance Check.
+    *   Step 2: In `SplitIterator::next`, comment out `self.skip_next_spurious_empty = true;` to fix the empty quoted string bug.
+    *   Step 3: Analyze the remaining failure in `unescaping_unterminated_quote` and apply a fix.
+    *   Step 4: Perform Increment Verification.
+    *   Step 5: Perform Crate Conformance Check.
 *   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p strs_tools --test basic_split_tests -- --nocapture` via `execute_command`.
+    *   Run `timeout 90 cargo test -p strs_tools --test strs_tools_tests -- --nocapture` via `execute_command`.
     *   Analyze the output to confirm that the `unescaping_in_quoted_string` test now passes.
 *   **Commit Message:** fix(strs_tools): Correctly unescape characters in quoted strings
 
@@ -110,6 +111,8 @@
 
 ### Notes & Insights
 *   This task is being started because the previous task in `task_plan.md` was stuck.
+*   The test `unescaping_in_quoted_string` already exists and passes. The failing tests are `unescaping_empty_string` and `unescaping_unterminated_quote`.
+*   The fix for `unescaping_unterminated_quote` described in the plan seems to be already applied in `SplitFastIterator::next`, yet the test fails. This implies the bug is more subtle or located elsewhere.
 
 You are absolutely right to question them, and I apologize for jumping ahead to a fix. Analyzing the sanity of the tests is the correct next step.
 
@@ -227,7 +230,8 @@ This is the main fix for the unescaping bug. It involves replacing the faulty es
 **Guideline:**
 The current implementation uses a simple boolean toggle to track escaped characters, which is insufficient. You need to replace the entire loop that finds the end of a quoted section with a more robust one that properly skips the character immediately following a backslash (`\`).
 
-**BEFORE:**```rust
+**BEFORE:**
+```rust
 // in module/core/strs_tools/src/string/split.rs, inside SplitFastIterator::next()
 
       if let Some( current_quote_char ) = self.active_quote_char
@@ -287,3 +291,4 @@ After applying both changes:
 2.  Both `unescaping_empty_string` and `unescaping_unterminated_quote` should now pass, along with all other tests.
 
 ### Changelog
+* [Increment 1 | 2025-07-13 02:19:05 UTC] Verified existing failing tests for unescaping.
