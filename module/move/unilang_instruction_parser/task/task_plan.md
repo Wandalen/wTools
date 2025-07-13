@@ -17,18 +17,18 @@
 ### Progress
 *   **Roadmap Milestone:** N/A (Bug fix to unblock `unilang`'s M3.1)
 *   **Primary Editable Crate:** `module/move/unilang_instruction_parser`
-*   **Overall Progress:** 1/6 increments complete
+*   **Overall Progress:** Paused, awaiting `strs_tools` fix
 *   **Increment Status:**
     *   ✅ Increment 1: Refactor Token Classification and Simplify Engine
-    *   ⏳ Increment 2: Create MRE and Local Patch for `strs_tools`
-    *   ⚫ Increment 3: Fix Unescaping and Re-enable Tests
-    *   ⚫ Increment 4: Add Comprehensive, Failing Spec-Adherence Tests
-    *   ⚫ Increment 5: Implement Correct Parser State Machine
-    *   ⚫ Increment 6: Finalization
+    *   ⚫ Increment 2: Create MRE and Local Patch for `strs_tools` (Blocked by `strs_tools` bug)
+    *   ⚫ Increment 3: Fix Unescaping and Re-enable Tests (Blocked by `strs_tools` bug)
+    *   ⚫ Increment 4: Add Comprehensive, Failing Spec-Adherence Tests (Blocked by `strs_tools` bug)
+    *   ⚫ Increment 5: Implement Correct Parser State Machine (Blocked by `strs_tools` bug)
+    *   ⚫ Increment 6: Finalization (Blocked by `strs_tools` bug)
 
 ### Permissions & Boundaries
 *   **Mode:** code
-*   **Run workspace-wise commands:** true
+*   **Run workspace-wise commands:** false
 *   **Add transient comments:** true
 *   **Additional Editable Crates:** None
 
@@ -65,84 +65,60 @@
 ##### Increment 2: Create MRE and Local Patch for `strs_tools`
 *   **Goal:** To isolate the unescaping bug in `strs_tools`, create a local patch with a fix, and configure the project to use this patch, unblocking the parser development.
 *   **Specification Reference:** N/A (Tooling bug fix)
-*   **Steps:**
-    1.  **Create MRE:** Use `write_to_file` to create a standalone file `strs_tools_mre.rs` in the root of the `unilang_instruction_parser` crate. This file will contain a minimal test case demonstrating that `strs_tools::split` with `quoting(true)` does not correctly parse and unescape a quoted string containing escaped quotes.
-    2.  **Create Local `strs_tools` Copy:** Use `execute_command` to copy the `module/core/strs_tools` directory to a temporary location, e.g., `module/move/unilang_instruction_parser/temp_strs_tools_fix`.
-    3.  **Apply Fix to Local Copy:** Use `read_file` and `write_to_file` to modify the `split` implementation within the *local copy* (`temp_strs_tools_fix`) to correctly handle quoted strings and unescaping.
-    4.  **Update `Cargo.toml`:** Use `insert_content` to add a `[patch.crates-io]` section to `module/move/unilang_instruction_parser/Cargo.toml`, pointing `strs_tools` to the local, fixed version.
-    5.  **Verify Patch:** Execute `timeout 90 cargo test -p unilang_instruction_parser` via `execute_command`. The MRE test should now pass, and other tests should build correctly (though they may still fail on logic).
-    6.  **Create `task.md` for `strs_tools`:** Use `write_to_file` to create `module/core/strs_tools/task.md` detailing the bug and the proposed fix, referencing the MRE.
-*   **Increment Verification:**
-    1.  The `[patch.crates-io]` directive must be present in `Cargo.toml`.
-    2.  The command `timeout 90 cargo build -p unilang_instruction_parser` must complete successfully.
-*   **Commit Message:** "chore(build): Add local patch for strs_tools unescaping bug"
+*   **Steps:** (Blocked by `strs_tools` bug)
+*   **Increment Verification:** (Blocked by `strs_tools` bug)
+*   **Commit Message:** (Blocked by `strs_tools` bug)
 
 ##### Increment 3: Fix Unescaping and Re-enable Tests
 *   **Goal:** To resolve the unescaping bug identified in Increment 1 by fully delegating unescaping to the patched `strs_tools`, re-enabling the disabled tests, and ensuring all existing tests pass, creating a stable foundation for further development.
 *   **Specification Reference:** N/A (Bug fix)
-*   **Steps:**
-    1.  **Read Source Files:** Use `read_file` to load the current content of `module/move/unilang_instruction_parser/src/parser_engine.rs` and `module/move/unilang_instruction_parser/src/item_adapter.rs`.
-    2.  **Modify `parser_engine.rs`:** In the `parse_single_instruction` function, ensure the `strs_tools::split` call is configured with `.quoting(true)`.
-    3.  **Modify `item_adapter.rs`:**
-        *   Update the `classify_split` function to correctly handle the output from the *patched* `strs_tools`. It should now correctly receive a single, unescaped token for quoted values.
-    4.  **Write Source Files:** Use `write_to_file` to save the updated contents of `src/parser_engine.rs` and `src/item_adapter.rs`.
-    5.  **Read Test File:** Use `read_file` to load the content of `module/move/unilang_instruction_parser/tests/argument_parsing_tests.rs`.
-    6.  **Perform Increment Verification.**
-    7.  **Perform Crate Conformance Check.**
-*   **Increment Verification:**
-    1.  Execute `timeout 90 cargo test -p unilang_instruction_parser --all-targets` via `execute_command`.
-    2.  Analyze the output. All tests must now pass. If they fail, perform Critical Log Analysis.
-*   **Commit Message:** "fix(parser): Correct unescaping logic and re-enable tests"
+*   **Steps:** (Blocked by `strs_tools` bug)
+*   **Increment Verification:** (Blocked by `strs_tools` bug)
+*   **Commit Message:** (Blocked by `strs_tools` bug)
 
 ##### Increment 4: Add Comprehensive, Failing Spec-Adherence Tests
 *   **Goal:** To create a new test suite that codifies the specific parsing rules from `spec.md`, Section 2.4. These tests are designed to fail with the current logic, proving its non-conformance and providing clear targets for the next increment.
 *   **Rationale:** A test-driven approach is the most reliable way to ensure full compliance with a specification. By writing tests that fail first, we define the exact required behavior and can be confident the implementation is correct when the tests pass.
-*   **Steps:**
-    1.  Use `write_to_file` to create a new file at `module/move/unilang_instruction_parser/tests/spec_adherence_tests.rs`. The content will include:
-        *   A `test_path_ends_at_quoted_string` function that parses `.command "arg"` and asserts the path is `["command"]` and that a positional argument `"arg"` was found.
-        *   A `test_path_ends_at_named_argument_delimiter` function that parses `.command ::arg` and asserts the path is `["command"]` and that a named argument `arg` is being parsed.
-        *   A `test_trailing_dot_is_error` function that parses `command.sub. arg` and asserts that it returns a `ParseError` with `ErrorKind::Syntax`.
-        *   A `test_help_operator_must_be_final` function that parses `.command ? arg` and asserts it returns a `ParseError` with `ErrorKind::Syntax`.
-    2.  Use `read_file` to get the content of `module/move/unilang_instruction_parser/tests/tests.rs`.
-    3.  Use `insert_content` to add `mod spec_adherence_tests;` to `tests/tests.rs`.
-    4.  Perform Increment Verification.
-*   **Increment Verification:**
-    1.  Execute `timeout 90 cargo test -p unilang_instruction_parser --test spec_adherence_tests` via `execute_command`.
-    2.  Analyze the output. It is critical that these tests **fail**. The failure messages will confirm that the current parser logic does not adhere to the specification.
-*   **Commit Message:** "test(parser): Add failing tests for spec adherence"
+*   **Steps:** (Blocked by `strs_tools` bug)
+*   **Increment Verification:** (Blocked by `strs_tools` bug)
+*   **Commit Message:** (Blocked by `strs_tools` bug)
 
 ##### Increment 5: Implement Correct Parser State Machine
 *   **Goal:** To modify the state machine in `src/parser_engine.rs` to correctly implement the specification rules, making the new tests pass.
 *   **Rationale:** This is the core fix. With a simplified token stream from Increment 1 and clear failing tests from Increment 2, we can now implement the correct parsing logic with confidence.
-*   **Steps:**
-    1.  Use `read_file` to load `src/parser_engine.rs`.
-    2.  Refactor the `parse_single_instruction_from_rich_items` function, focusing on the `while let Some(item) = ...` loop and the `match state` block for `ParserState::ParsingCommandPath`.
-    3.  The decision-making logic must be driven by `item.kind` (`UnilangTokenKind`), not the raw string content.
-    4.  If the state is `ParsingCommandPath` and the token `kind` is `Identifier` or `Delimiter(".")`, continue parsing the command path.
-    5.  If the state is `ParsingCommandPath` and the token `kind` is `QuotedValue`, `Operator("::")`, or `Operator("?")`, the state must transition to `ParsingArguments`. The current `item` must then be re-processed by the argument parsing logic in the next loop iteration.
-    6.  Add a check after the loop to handle a trailing dot on the command path, which should result in a `Syntax` error.
-    7.  Use `write_to_file` to save the updated `src/parser_engine.rs`.
-    8.  Perform Increment Verification.
-*   **Increment Verification:**
-    1.  Execute `timeout 90 cargo test -p unilang_instruction_parser --all-targets` via `execute_command`.
-    2.  Analyze the output. All tests in the crate, including the new `spec_adherence_tests`, must now pass.
-*   **Commit Message:** "fix(parser): Refactor engine to align with spec parsing rules"
+*   **Steps:** (Blocked by `strs_tools` bug)
+*   **Increment Verification:** (Blocked by `strs_tools` bug)
+*   **Commit Message:** (Blocked by `strs_tools` bug)
 
 ##### Increment 6: Finalization
 *   **Goal:** Perform a final, holistic review and verification of the entire task's output, ensuring all tests pass and the crate is clean.
 *   **Rationale:** This final quality gate ensures that the fixes did not introduce any regressions and that the crate meets all project standards.
-*   **Steps:**
-    1.  Execute `timeout 90 cargo test -p unilang_instruction_parser --all-targets` via `execute_command`. Analyze the output to confirm all tests pass.
-    2.  Execute `timeout 90 cargo clippy -p unilang_instruction_parser -- -D warnings` via `execute_command`. Analyze the output and fix any reported warnings.
-    3.  Execute `git status` via `execute_command` to ensure there are no uncommitted changes.
-    4.  Perform a self-critique of all changes against the plan's goal and the specification to confirm full compliance.
-    5.  **Cleanup:** Remove the temporary `strs_tools_mre.rs` file.
-    6.  **Cleanup:** Remove the local `temp_strs_tools_fix` directory.
-    7.  **Cleanup:** Revert the `[patch.crates-io]` directive in `module/move/unilang_instruction_parser/Cargo.toml`.
-*   **Increment Verification:**
-    1.  Execute the full `Crate Conformance Check Procedure`.
-    2.  Execute `git status` via `execute_command` and confirm the output shows no uncommitted changes.
-*   **Commit Message:** "chore(parser): Finalize spec adherence refactor"
+*   **Steps:** (Blocked by `strs_tools` bug)
+*   **Increment Verification:** (Blocked by `strs_tools` bug)
+*   **Commit Message:** (Blocked by `strs_tools` bug)
+
+### Task Requirements
+*   [Task-specific Requirement/Restriction 1]
+*   ...
+
+### Project Requirements
+*   (This section is reused and appended to across tasks for the same project. Never remove existing project requirements.)
+*   All code must strictly adhere to the `codestyle` rulebook provided by the user at the start of the task.
+*   [Project-wide requirement 1, e.g., Must use Rust 2021 edition]
+*   [Project-wide constraint 2, e.g., All new APIs must be async]
+*   ...
+
+### Assumptions
+*   [A list of all beliefs or conditions taken as true for the project, making hidden dependencies visible.]
+
+### Out of Scope
+*   [A list of features or functionalities that are intentionally excluded from the current project version to define clear boundaries.]
+
+### External System Dependencies (Optional)
+*   [A list of all external systems, APIs, or services that the project relies on to function.]
+
+### Notes & Insights
+*   **Task Paused:** This task is currently paused, awaiting a fix for the unescaping bug in the `strs_tools` crate. An external change proposal (`module/core/strs_tools/task.md`) has been created to address this dependency.
 
 ### Changelog
 *   [Initial] Plan created to refactor the parser to strictly adhere to the official specification.
