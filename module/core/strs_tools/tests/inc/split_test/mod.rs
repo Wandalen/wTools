@@ -48,3 +48,4 @@ mod indexing_options_tests;
 mod combined_options_tests;
 mod edge_case_tests;
 mod quoting_and_unescaping_tests;
+mod unescape_tests;

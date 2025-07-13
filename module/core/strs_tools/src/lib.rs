@@ -25,6 +25,9 @@ pub mod own
   #[ allow( unused_imports ) ] use super::*;
   pub use orphan::*;
   pub use super::string; // Added
+  #[cfg(test)]
+  pub use crate::string::private::unescape_str;
+  
   
   
   
