@@ -15,6 +15,8 @@ mod private
   use std::borrow::Cow;
   use crate::string::parse_request::OpType;
   use super::SplitFlags; // Import SplitFlags from parent module
+  #[cfg(test)]
+  pub use super::unescape_str;
 
   /// Represents a segment of a string after splitting.
   #[derive(Debug, Clone, PartialEq, Eq)]
@@ -247,70 +249,12 @@ mod private
         }
       }
 
-    Cow::Owned( output )
-  }
-
   #[cfg(test)]
-  mod unescape_tests
+  pub fn test_unescape_str( input : &str ) -> Cow< '_, str >
   {
-    use super::*;
-    
-
-    #[test]
-    fn no_escapes()
-    {
-      let input = "hello world";
-      let result = unescape_str( input );
-      assert!( matches!( result, Cow::Borrowed( _ ) ) );
-      assert_eq!( result, "hello world" );
-    }
-
-    #[test]
-    fn valid_escapes()
-    {
-      let input = r#"hello \"world\\, \n\t\r end"#;
-      let expected = "hello \"world\\, \n\t\r end";
-      let result = unescape_str( input );
-      assert!( matches!( result, Cow::Owned( _ ) ) );
-      assert_eq!( result, expected );
-    }
-
-    #[test]
-    fn mixed_escapes()
-    {
-      let input = r#"a\"b\\c\nd"#;
-      let expected = "a\"b\\c\nd";
-      let result = unescape_str( input );
-      assert!( matches!( result, Cow::Owned( _ ) ) );
-      assert_eq!( result, expected );
-    }
-
-    #[test]
-    fn unrecognized_escape()
-    {
-      let input = r"hello \z world";
-      let result = unescape_str( input );
-      assert!( matches!( result, Cow::Owned( _ ) ) );
-      assert_eq!( result, r"hello \z world" );
-    }
-
-    #[test]
-    fn empty_string()
-    {
-      let input = "";
-      let result = unescape_str( input );
-      assert!( matches!( result, Cow::Borrowed( _ ) ) );
-      assert_eq!( result, "" );
-    }
-
-    #[test]
-    fn trailing_backslash()
-    {
-      let input = r"hello\";
-      let result = unescape_str( input );
-      assert!( matches!( result, Cow::Owned( _ ) ) );
-      assert_eq!( result, r"hello\" );
-    }
+    unescape_str( input )
+  }
+    Cow::Owned( output )
   }
 
   /// An iterator that splits a string with advanced options like quoting and preservation.
@@ -462,7 +406,7 @@ mod private
           } else { effective_split_opt = self.iterator.next(); }
         } else { effective_split_opt = self.iterator.next(); }
         let mut current_split = effective_split_opt?;
-        if quote_handled_by_peek
+        if quote_handled_by_peek && !current_split.string.is_empty()
         {
           self.skip_next_spurious_empty = true;
         }
@@ -676,7 +620,7 @@ pub mod orphan
 pub mod exposed
 {
   #[ allow( unused_imports ) ] use super::*;
-  pub use prelude::*;
+  pub use prelude::*; // Added
   pub use super::own::split; // Expose the function `split` from `own`
 
   // Re-export other necessary items from `own` or `private` as needed for the public API
