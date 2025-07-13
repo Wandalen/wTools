@@ -12,7 +12,6 @@ mod private
   #[ cfg( feature = "use_alloc" ) ]
   use alloc::borrow::Cow;
   #[ cfg( not( feature = "use_alloc" ) ) ]
-  #[ allow( clippy::std_instead_of_alloc ) ]
   use std::borrow::Cow;
   use crate::string::parse_request::OpType;
   use super::SplitFlags; // Import SplitFlags from parent module
