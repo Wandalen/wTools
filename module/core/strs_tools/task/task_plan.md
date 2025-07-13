@@ -1,20 +1,22 @@
-# Task Plan: Fix clippy::std-instead-of-alloc warning in strs_tools
+# Task Plan: Fix unescaping bug in string splitting
 
 ### Goal
-*   To resolve the `clippy::std-instead-of-alloc` warning in the `strs_tools` crate by changing the import of `Cow` from `std::borrow` to `alloc::borrow`.
+*   To fix a bug in `strs_tools::string::split` where quoted strings containing escaped quotes (`\"`) or escaped backslashes (`\\`) are not correctly unescaped when `quoting(true)` is enabled. The goal is for the `Split` struct's `string` field to contain the fully unescaped value. This plan replaces a previously stuck task.
 
 ### Ubiquitous Language (Vocabulary)
-*   `strs_tools`: The Rust crate where the warning needs to be fixed.
-*   `clippy::std-instead-of-alloc`: The specific clippy lint warning.
-*   `Cow`: The `Clone-on-Write` smart pointer type.
+*   `strs_tools`: The Rust crate where the bug needs to be fixed.
+*   `unilang_instruction_parser`: The crate that requested this change.
+*   `split`: The function/module in `strs_tools` responsible for string splitting.
+*   `quoting`: A feature of the `split` function to handle quoted segments.
+*   `unescaping`: The process of removing escape characters (e.g., `\` from `\"`).
 
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** module/core/strs_tools
-*   **Overall Progress:** 0/2 increments complete
+*   **Overall Progress:** 0/3 increments complete
 *   **Increment Status:**
-    *   ⏳ Increment 1: Fix `std-instead-of-alloc` warning
-    *   ⏳ Increment 2: Diagnose and fix `Failing (Stuck)` test: `Clippy Compilation`
+    *   ⏳ Increment 1: Add failing test for unescaping
+    *   ⚫ Increment 2: Implement unescaping fix
     *   ⚫ Increment 3: Finalization
 
 ### Permissions & Boundaries
@@ -26,23 +28,23 @@
 
 ### Relevant Context
 *   Control Files to Reference (if they exist):
-    *   N/A
+    *   `module/core/strs_tools/task/task1.md` (Original Change Proposal)
 *   Files to Include (for AI's reference, if `read_file` is planned):
     *   `module/core/strs_tools/src/string/split.rs`
-    *   `module/core/strs_tools/Cargo.toml`
+    *   `module/core/strs_tools/tests/inc/split_test/basic_split_tests.rs`
 *   Crates for Documentation (for AI's reference, if `read_file` on docs is planned):
     *   `strs_tools`
-*   External Crates Requiring `task.md` Proposals (if any identified during planning):
-    *   N/A
 
 ### Expected Behavior Rules / Specifications
-*   The `strs_tools` crate should compile without the `clippy::std-instead-of-alloc` warning.
-*   All existing tests for `strs_tools` should continue to pass.
+*   Rule 1: When `strs_tools::split` is called with `quoting(true)` on an input string like `".command "hello \\" world""`, the resulting `Split` item for the quoted part should have its `string` field contain `Cow::Owned("hello \" world")`.
+*   Rule 2: For `".command "path\\\\to\\\\file""`, the `Split` item should contain `Cow::Owned("path\\to\\file")`.
+*   Rule 3: All existing tests for `strs_tools` must continue to pass.
 
 ### Tests
 | Test ID | Status | Notes |
 |---|---|---|
-| `Clippy Compilation` | Failing (Stuck) | Failed to remove empty line with `search_and_replace` (empty `search` parameter). Need to read file, remove line in memory, and `write_to_file`. |
+| `inc::split_test::basic_split_tests::unescaping_empty_string` | Failing (New) | `split` returns `[]` instead of `[""]` for empty quoted string `""`. |
+| `inc::split_test::basic_split_tests::unescaping_unterminated_quote` | Failing (New) | Unescaping for `\"` at the end of an unterminated quote is incorrect. |
 
 ### Crate Conformance Check Procedure
 *   Run `timeout 90 cargo test -p strs_tools --all-targets`.
@@ -50,42 +52,30 @@
 *   Perform Output Cleanliness Check: Execute `cargo clean -p strs_tools` followed by `timeout 90 cargo build -p strs_tools`. Critically analyze the build output for any unexpected debug prints from procedural macros.
 
 ### Increments
-##### Increment 1: Fix `std-instead-of-alloc` warning
-*   **Goal:** Change the import of `Cow` from `std::borrow` to `alloc::borrow` in `module/core/strs_tools/src/string/split.rs` and verify the fix.
-*   **Specification Reference:** N/A
+##### Increment 1: Add failing test for unescaping
+*   **Goal:** Add a new test case to `strs_tools` that specifically targets the unescaping bug for `\"` and `\\` within quoted strings, and confirm that it fails as expected.
+*   **Specification Reference:** `module/core/strs_tools/task/task1.md` - Acceptance Criteria
 *   **Steps:**
-    *   Step 1: Use `search_and_replace` to change `use std::borrow::Cow;` to `use alloc::borrow::Cow;` in `module/core/strs_tools/src/string/split.rs`.
-    *   Step 2: Perform Increment Verification.
-    *   Step 3: Perform Crate Conformance Check.
+    *   Step 1: Read the content of `module/core/strs_tools/tests/inc/split_test/basic_split_tests.rs` to understand the existing test structure.
+    *   Step 2: Add a new test function `unescaping_in_quoted_string` to the file. This test should cover both `\"` and `\\` cases.
+    *   Step 3: Perform Increment Verification.
 *   **Increment Verification:**
-    *   Run `timeout 90 cargo clippy -p strs_tools -- -D warnings` via `execute_command`. Verify that the warning is no longer present in the output.
-*   **Commit Message:** fix(strs_tools): Resolve clippy::std-instead-of-alloc warning
+    *   Step 1: Execute `timeout 90 cargo test -p strs_tools --test basic_split_tests -- --nocapture` via `execute_command`.
+    *   Step 2: Analyze the output to confirm that the new test `unescaping_in_quoted_string` fails. The failure message should indicate an assertion error related to incorrect unescaping. This confirms the bug and the validity of the test.
+*   **Commit Message:** `test(strs_tools): Add failing test for unescaping in quoted strings`
 
-##### Increment 2: Diagnose and fix `Failing (Stuck)` test: `Clippy Compilation`
-*   **Goal:** Diagnose and fix the `Failing (Stuck)` test: `Clippy Compilation`.
-*   **Specification Reference:** N/A
+##### Increment 2: Implement unescaping fix
+*   **Goal:** Modify the string splitting logic in `src/string/split.rs` to correctly handle escaped characters within quoted segments, making the new test pass.
+*   **Specification Reference:** `module/core/strs_tools/task/task1.md` - Proposed Solution
 *   **Steps:**
-    *   Step 1: Apply Problem Decomposition. The problem is a syntax error due to `extern crate alloc;` placement. The `extern crate` declaration should be at the crate root or at the very top of the module file, not inside the `mod private` block before its opening brace.
-    *   Step 2: Isolate the test case. The test case is the `cargo clippy` command itself.
-    *   Step 3: Add targeted debug logging. Not applicable for a syntax error.
-    *   Step 4: Review related code changes since the test last passed. The change was adding `extern crate alloc;` at line 8.
-    *   Step 5: Formulate and test a hypothesis.
-        *   **Hypothesis:** The `extern crate alloc;` statement is in the wrong place. It should be at the top of the `split.rs` file, before any `mod` declarations.
-        *   **Action:** Use `search_and_replace` to remove `extern crate alloc;` from line 8. Then, use `insert_content` to add `extern crate alloc;` at line 1 of `module/core/strs_tools/src/string/split.rs`.
-    *   Step 6: Formulate and test a new hypothesis for `E0433`.
-        *   **Hypothesis:** The `alloc` crate is not being correctly linked when the `use_alloc` feature is enabled, leading to `E0433`. Explicitly adding `alloc` as a conditional dependency in `Cargo.toml` might resolve this.
-        *   **Action:** Modify `module/core/strs_tools/Cargo.toml` to add `alloc = { version = "0.0.0", optional = true }` under `[dependencies]` and add `"alloc"` to the `use_alloc` feature list.
-    *   Step 7: Formulate and test a new hypothesis for `E0433` and `no matching package named alloc`.
-        *   **Hypothesis:** `alloc` is a built-in crate and cannot be added as a regular dependency. The `clippy::std-instead-of-alloc` lint is problematic given the `no_std` compatibility design. The most appropriate solution is to allow this specific lint when `std::borrow::Cow` is used.
-        *   **Action:** Revert changes to `module/core/strs_tools/Cargo.toml` and `module/core/strs_tools/src/string/split.rs` using `git restore`. Then, remove the empty line after the `#[cfg(not(feature = "use_alloc"))]` attribute, and add `#[ allow( clippy::std_instead_of_alloc ) ]` above the `use std::borrow::Cow;` line in `module/core/strs_tools/src/string/split.rs`.
-    *   Step 8: Formulate and test a new hypothesis for `empty line after outer attribute` and `used import from std instead of alloc`.
-        *   **Hypothesis:** The `empty line after outer attribute` lint is caused by the blank line between `#[cfg(not(feature = "use_alloc"))]` and `use std::borrow::Cow;`. The `std-instead-of-alloc` lint persists because the `#[allow]` attribute was not correctly applied or was useless due to the empty line.
-        *   **Action:** Read `module/core/strs_tools/src/string/split.rs`, remove line 15 in memory, and then `write_to_file` the modified content. Then, re-add `#[ allow( clippy::std_instead_of_alloc ) ]` above the `use std::borrow::Cow;` line (which will now be line 15).
-    *   Step 9: Perform Increment Verification.
-    *   Step 10: Upon successful fix, document the root cause and solution in the `### Notes & Insights` section.
+    *   Step 1: Read the content of `module/core/strs_tools/src/string/split.rs`.
+    *   Step 2: In `SplitFastIterator::next`, replace the existing logic for finding the end of a quote with a more robust loop that correctly handles escaped characters (`\` followed by another character).
+    *   Step 3: Perform Increment Verification.
+    *   Step 4: Perform Crate Conformance Check.
 *   **Increment Verification:**
-    *   Run `timeout 90 cargo clippy -p strs_tools -- -D warnings` via `execute_command`. Verify that the compilation errors are resolved and the `clippy::std-instead-of-alloc` warning is gone.
-*   **Commit Message:** fix(strs_tools): Resolve stuck test Clippy Compilation
+    *   Run `timeout 90 cargo test -p strs_tools --test basic_split_tests -- --nocapture` via `execute_command`.
+    *   Analyze the output to confirm that the `unescaping_in_quoted_string` test now passes.
+*   **Commit Message:** fix(strs_tools): Correctly unescape characters in quoted strings
 
 ##### Increment 3: Finalization
 *   **Goal:** Perform final review and verification of the entire task.
@@ -95,49 +85,31 @@
     *   Step 2: Execute Test Quality and Coverage Evaluation.
     *   Step 3: Full Conformance Check: Run `Crate Conformance Check Procedure` on all editable crates.
     *   Step 4: Final Output Cleanliness Check.
-    *   Step 5: Dependency Cleanup (if applicable).
-    *   Step 6: Final Status Check: Run `git status`.
+    *   Step 5: Final Status Check: Run `git status`.
 *   **Increment Verification:**
     *   Confirm all checks pass.
-*   **Commit Message:** chore(task): Complete task and update status
+*   **Commit Message:** chore(task): Complete unescaping fix task and update status
 
 ### Task Requirements
-*   The fix must be minimal and targeted only at the reported warning.
-*   No new functionality should be introduced.
+*   The fix must correctly unescape `\"` and `\\` sequences within quoted strings.
+*   A new test case must be added to verify the fix.
+*   All existing tests must pass.
 
 ### Project Requirements
 *   All code must strictly adhere to the `codestyle` rulebook provided by the user at the start of the task.
 
 ### Assumptions
-*   The `alloc` crate is available and compatible with the current Rust toolchain.
+*   The `unescape_str` function in `strs_tools::string::split` is correct and does not need changes; the bug is in the logic that provides input to it.
 
 ### Out of Scope
-*   Addressing any other warnings or errors not explicitly mentioned in the task.
-*   Refactoring or adding new features to `strs_tools`.
+*   Addressing any other bugs or warnings.
+*   Refactoring unrelated code.
 
 ### External System Dependencies (Optional)
 *   N/A
 
 ### Notes & Insights
-*   N/A
+*   This task is being started because the previous task in `task_plan.md` was stuck.
 
 ### Changelog
-* [Increment 1 | 2025-07-13 00:40 UTC] Changed `use std::borrow::Cow;` to `use alloc::borrow::Cow;` in `module/core/strs_tools/src/string/split.rs` to fix clippy warning.
-* [Increment 1 | 2025-07-13 00:40 UTC] Added `extern crate alloc;` to `module/core/strs_tools/src/string/split.rs` to resolve `E0433`.
-* [Increment 1 | 2025-07-13 00:41 UTC] Fixed `E0753` (inner vs outer doc comment) and `empty lines after doc comment` in `module/core/strs_tools/src/string/split.rs`.
-* [Increment 1 | 2025-07-13 00:41 UTC] Removed `extern crate alloc;` from `module/core/strs_tools/src/string/split.rs` to address `unused extern crate` error.
-* [Increment 1 | 2025-07-13 00:41 UTC] Reverted `use alloc::borrow::Cow;` to `use std::borrow::Cow;` in `module/core/strs_tools/src/string/split.rs`.
-* [Increment 1 | 2025-07-13 00:41 UTC] Removed `#[ allow( clippy::std_instead_of_alloc ) ]` from `module/core/strs_tools/src/string/split.rs`.
-* [Increment 1 | 2025-07-13 00:41 UTC] Changed `use std::borrow::Cow;` to `use alloc::borrow::Cow;` for `use_alloc` feature in `module/core/strs_tools/src/string/split.rs`.
-* [Increment 1 | 2025-07-13 00:42 UTC] Removed empty line after `#[ cfg( not( feature = "use_alloc" ) ) ]` in `module/core/strs_tools/src/string/split.rs`.
-* [Increment 1 | 2025-07-13 00:44 UTC] `Clippy Compilation` failed with `E0433` (unresolved `alloc` crate).
-* [Increment 1 | 2025-07-13 00:44 UTC] `Clippy Compilation` failed with syntax errors (`expected ;`, `expected item`) due to incorrect placement of `extern crate alloc;`.
-* [Increment 2 | 2025-07-13 00:45 UTC] `Clippy Compilation` failed with syntax errors (`unknown start of token: \`, `expected one of ! or ::`) due to re-introducing `\n` character in `use` statement during revert.
-* [Increment 2 | 2025-07-13 00:46 UTC] `Clippy Compilation` failed with `E0433` (unresolved `alloc` crate) after fixing syntax error.
-* [Increment 2 | 2025-07-13 00:47 UTC] `Clippy Compilation` failed with `no matching package named alloc` after attempting to add `alloc` as a dependency in `Cargo.toml`.
-* [Increment 2 | 2025-07-13 00:47 UTC] `Clippy Compilation` failed due to file corruption after multiple failed attempts to fix.
-* [Increment 2 | 2025-07-13 00:48 UTC] `Clippy Compilation` failed with `useless lint attribute` and persistent `E0433` errors after restoring files and re-applying `#[allow(clippy::std_instead_of_alloc)]`.
-* [Increment 2 | 2025-07-13 00:49 UTC] `Clippy Compilation` failed with `empty line after outer attribute` and `used import from std instead of alloc` after explicitly disabling `use_alloc` feature.
-* [Increment 2 | 2025-07-13 00:50 UTC] `Clippy Compilation` failed to remove empty line with `search_and_replace` due to empty `search` parameter.
-* [Increment 2 | 2025-07-13 00:50 UTC] `Clippy Compilation` failed to remove empty line with `search_and_replace` (regex `^\s*\n` did not match).
-* [Increment 2 | 2025-07-13 00:50 UTC] `Clippy Compilation` failed to remove empty line with `search_and_replace` (empty `search` parameter).
+*

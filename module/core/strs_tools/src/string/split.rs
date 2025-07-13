@@ -154,24 +154,26 @@ mod private
     type Item = Split< 'a >;
     fn next( &mut self ) -> Option< Self::Item >
     {
-      if self.iterable.is_empty() && ( self.counter > 0 || self.active_quote_char.is_some() )
+      if self.iterable.is_empty() && self.active_quote_char.is_none() && self.counter > 0
       {
         return None;
       }
       if let Some( current_quote_char ) = self.active_quote_char
         {
           let mut end_of_quote_idx : Option< usize > = None;
-          let mut is_escaped = false;
-          for ( i, c ) in self.iterable.char_indices()
+          let mut char_indices = self.iterable.char_indices();
+          'outer: while let Some( ( i, c ) ) = char_indices.next()
           {
-            if c == current_quote_char && !is_escaped
+            if c == '\\'
+            {
+              // Skip the escaped character
+              char_indices.next();
+            }
+            else if c == current_quote_char
             {
               end_of_quote_idx = Some( i + c.len_utf8() );
-              break;
+              break 'outer;
             }
-            // Handle escape sequences properly
-            // The escape state is set by '\' and consumed by the next character
-            is_escaped = c == '\\' && !is_escaped;
           }
 
           let ( segment_str, consumed_len ) = if let Some( end_idx ) = end_of_quote_idx
