@@ -1,21 +1,18 @@
 //! Provides tools for splitting strings with advanced options including quoting.
 
 
+
 mod split_behavior;
 pub use split_behavior::SplitFlags;
 
 /// Internal implementation details for string splitting.
 mod private
 {
+  #[ allow( clippy::struct_excessive_bools ) ]
   #[ cfg( feature = "use_alloc" ) ]
   use alloc::borrow::Cow;
   #[ cfg( not( feature = "use_alloc" ) ) ]
   use std::borrow::Cow;
-  
-  
-  
-  
-  
   use crate::string::parse_request::OpType;
   use super::SplitFlags; // Import SplitFlags from parent module
 
@@ -315,8 +312,9 @@ mod private
   }
 
   /// An iterator that splits a string with advanced options like quoting and preservation.
+  #[ allow( clippy::struct_excessive_bools ) ]
   #[derive(Debug)]
-  #[ allow( clippy::struct_excessive_bools ) ] // This lint is addressed by using SplitFlags
+   // This lint is addressed by using SplitFlags
   pub struct SplitIterator< 'a >
   {
     iterator : SplitFastIterator< 'a, Vec< &'a str > >,
@@ -571,7 +569,7 @@ mod private
   }
 
   /// Former (builder) for creating `SplitOptions`.
-  #[ allow( clippy::struct_excessive_bools ) ] // This lint is addressed by using SplitFlags
+   // This lint is addressed by using SplitFlags
   #[ derive( Debug ) ]
   pub struct SplitOptionsFormer< 'a >
   {

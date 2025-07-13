@@ -14,8 +14,8 @@
 *   **Overall Progress:** 1/5 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Analyze `bitflags` usage and prepare for replacement.
-    *   ⏳ Increment 2: Implement custom flag type.
-    *   ⚫ Increment 3: Replace `bitflags` usage in `src/string/split.rs`.
+    *   ✅ Increment 2: Implement custom flag type.
+    *   ⏳ Increment 3: Replace `bitflags` usage in `src/string/split.rs`.
     *   ⚫ Increment 4: Remove `bitflags` dependency from `Cargo.toml`.
     *   ⚫ Increment 5: Finalization.
 
@@ -95,11 +95,15 @@
 *   **Goal:** Modify `src/string/split.rs` to use the newly created custom flag type instead of the `bitflags` version of `SplitBehavior`.
 *   **Specification Reference:** N/A
 *   **Steps:**
-    *   Step 1: Modify `module/core/strs_tools/src/string/split.rs` to import and use the new custom `SplitBehavior` type from `split_behavior.rs`.
-    *   Step 2: Replace all instances of `bitflags!` macro usage and `SplitBehavior` flag access (e.g., `SplitBehavior::AllowEmpty`) with the corresponding new custom flag type and its API.
-    *   Step 3: Adjust any logic in `split.rs` that relied on `bitflags` specific methods (e.g., `contains`, `insert`, `remove`) to use the equivalent functionality provided by the custom flag type.
-    *   Step 4: Perform Increment Verification.
-    *   Step 5: Perform Crate Conformance Check.
+    *   Step 1: Read `module/core/strs_tools/src/string/split.rs` to identify all instances of `bitflags!` macro invocation, `SplitFlags` definition, and usage.
+    *   Step 2: Remove the `bitflags!` macro invocation and the original `SplitFlags` struct definition from `module/core/strs_tools/src/string/split.rs`.
+    *   Step 3: Replace all instances of `SplitFlags::FLAG_NAME` with `SplitFlags::FLAG_NAME` (the new custom type's constants).
+    *   Step 4: Replace `flags.contains(SplitFlags::FLAG_NAME)` with `flags.contains(SplitFlags::FLAG_NAME)`.
+    *   Step 5: Replace `flags.insert(SplitFlags::FLAG_NAME)` with `flags.insert(SplitFlags::FLAG_NAME)`.
+    *   Step 6: Replace `flags.remove(SplitFlags::FLAG_NAME)` with `flags.remove(SplitFlags::FLAG_NAME)`.
+    *   Step 7: Replace bitwise operations like `|` and `&` with the custom `SplitFlags` operators.
+    *   Step 8: Perform Increment Verification.
+    *   Step 9: Perform Crate Conformance Check.
 *   **Increment Verification:**
     *   Execute `timeout 90 cargo build -p strs_tools` via `execute_command` and analyze output to ensure the crate compiles without errors.
     *   Execute `timeout 90 cargo test -p strs_tools --all-targets` via `execute_command` and analyze output to ensure all existing tests pass.

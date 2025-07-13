@@ -2,7 +2,9 @@ use core::default::Default;
 use std::collections::HashMap;
 
 mod private
+  
 {
+  use crate::string::split::split;
 
   use crate::*;
 
