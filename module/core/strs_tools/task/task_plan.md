@@ -11,12 +11,12 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/strs_tools`
-*   **Overall Progress:** 3/5 increments complete
+*   **Overall Progress:** 4/5 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Analyze `bitflags` usage and prepare for replacement.
     *   ✅ Increment 2: Implement custom flag type.
     *   ✅ Increment 3: Replace `bitflags` usage in `src/string/split.rs`.
-    *   ⚫ Increment 4: Remove `bitflags` dependency from `Cargo.toml`.
+    *   ✅ Increment 4: Remove `bitflags` dependency from `Cargo.toml`.
     *   ⚫ Increment 5: Finalization.
 
 ### Permissions & Boundaries
