@@ -24,6 +24,9 @@ mod private
   ///
   /// # Returns :
   /// Returns a result containing a report indicating the result of the operation.
+  /// # Errors
+  ///
+  /// Returns an error if the `git add` command fails.
   // qqq : should be typed error, apply err_with
   #[ cfg_attr
   ( 
@@ -79,6 +82,9 @@ mod private
   ///
   /// # Returns :
   /// Returns a result containing a report indicating the result of the operation.
+  /// # Errors
+  ///
+  /// Returns an error if the `git commit` command fails.
   // qqq : should be typed error, apply err_with
   #[ cfg_attr
   ( 
@@ -132,7 +138,9 @@ mod private
   ///
   /// # Returns :
   /// Returns a result containing a report indicating the result of the operation.
-
+  /// # Errors
+  ///
+  /// Returns an error if the `git push` command fails.
   // qqq : should be typed error, apply err_with
 
   #[ cfg_attr( feature = "tracing", tracing::instrument( skip( path ), fields( path = %path.as_ref().display() ) ) ) ]
