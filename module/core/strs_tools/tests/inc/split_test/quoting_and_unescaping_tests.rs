@@ -28,6 +28,14 @@ fn mre_simple_unescape_test()
   assert_eq!( splits, expected );
 }
 
+// ---- inc::split_test::quoting_and_unescaping_tests::mre_simple_unescape_test stdout ----
+//
+// thread 'inc::split_test::quoting_and_unescaping_tests::mre_simple_unescape_test' panicked at module/core/strs_tools/tests/inc/split_test/quoting_and_unescaping_tests.rs:28:3:
+// assertion `left == right` failed
+//   left: ["instruction", "arg1", "arg2 \" ", "arg3", "\\\\\""]
+//  right: ["instruction", "arg1", "arg2 \" ", "arg3 \\"]
+
+
 #[test]
 fn no_quotes_test()
 {

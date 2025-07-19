@@ -15,8 +15,58 @@ mod private
   use std::borrow::Cow;
   use crate::string::parse_request::OpType;
   use super::SplitFlags; // Import SplitFlags from parent module
+
+  /// Helper function to unescape common escape sequences in a string.
+  /// Returns a `Cow::Borrowed` if no unescaping is needed, otherwise `Cow::Owned`.
+  fn unescape_str( input : &str ) -> Cow< '_, str >
+  {
+    if !input.contains( '\\' )
+    {
+      return Cow::Borrowed( input );
+    }
+
+    let mut output = String::with_capacity( input.len() );
+    let mut chars = input.chars();
+
+    while let Some( ch ) = chars.next()
+    {
+      if ch == '\\'
+      {
+        if let Some( next_ch ) = chars.next()
+        {
+          match next_ch
+          {
+            '"' => output.push( '"' ),
+            '\\' => output.push( '\\' ),
+            'n' => output.push( '\n' ),
+            't' => output.push( '\t' ),
+            'r' => output.push( '\r' ),
+            _ =>
+            {
+              output.push( '\\' );
+              output.push( next_ch );
+            }
+          }
+        }
+        else
+        {
+          output.push( '\\' );
+        }
+      }
+      else
+        {
+          output.push( ch );
+        }
+      }
+
+    Cow::Owned( output )
+  }
+
   #[cfg(test)]
-  pub use super::unescape_str;
+  pub fn test_unescape_str( input : &str ) -> Cow< '_, str >
+  {
+    unescape_str( input )
+  }
 
   /// Represents a segment of a string after splitting.
   #[derive(Debug, Clone, PartialEq, Eq)]
@@ -28,11 +78,11 @@ mod private
     pub typ : SplitType,
     /// The starting byte index of the segment in the original string.
     pub start : usize,
-  
-  
-  
+
+
+
     /// The ending byte index of the segment in the original string.
-  
+
     pub end : usize,
   }
 
@@ -109,7 +159,7 @@ mod private
     current_offset : usize,
     counter : i32,
     delimeter : D,
-    active_quote_char : Option< char >,
+    // active_quote_char : Option< char >, // Removed
   }
 
   impl< 'a, D : Searcher + Default + Clone > SplitFastIterator< 'a, D >
@@ -122,7 +172,7 @@ mod private
         current_offset : 0,
         delimeter : o.delimeter(),
         counter : 0,
-        active_quote_char : None,
+        // active_quote_char : None, // Removed
       }
     }
 
@@ -132,12 +182,12 @@ mod private
         &mut self,
         iterable: &'a str,
         current_offset: usize,
-        active_quote_char: Option<char>,
+        // active_quote_char: Option<char>, // Removed
         counter: i32,
     ) {
         self.iterable = iterable;
         self.current_offset = current_offset;
-        self.active_quote_char = active_quote_char;
+        // self.active_quote_char = active_quote_char; // Removed
         self.counter = counter;
     }
 
@@ -146,7 +196,7 @@ mod private
     /// Gets the current offset within the original string, for testing purposes.
     pub fn get_test_current_offset(&self) -> usize { self.current_offset }
     /// Gets the currently active quote character, if any, for testing purposes.
-    pub fn get_test_active_quote_char(&self) -> Option<char> { self.active_quote_char }
+    // pub fn get_test_active_quote_char(&self) -> Option<char> { self.active_quote_char } // Removed
     /// Gets the internal counter value, for testing purposes.
     pub fn get_test_counter(&self) -> i32 { self.counter }
   }
@@ -156,33 +206,11 @@ mod private
     type Item = Split< 'a >;
     fn next( &mut self ) -> Option< Self::Item >
     {
-      if self.iterable.is_empty() && self.active_quote_char.is_none() && self.counter > 0
+      if self.iterable.is_empty() && self.counter > 0 // Modified condition
       {
         return None;
       }
-      if let Some( current_quote_char ) = self.active_quote_char
-        {
-          let mut end_of_quote_idx : Option< usize > = None;
-          let mut char_indices = self.iterable.char_indices();
-          'outer: while let Some( ( i, c ) ) = char_indices.next()
-          {
-            if c == '\\'
-            {
-              // Skip the escaped character
-              char_indices.next();
-            }
-            else if c == current_quote_char
-            {
-              end_of_quote_idx = Some( i + c.len_utf8() );
-              break 'outer;
-            }
-          }
-
-          let ( segment_str, consumed_len ) = if let Some( end_idx ) = end_of_quote_idx
-            { ( &self.iterable[ ..end_idx ], end_idx ) } else { ( self.iterable, self.iterable.len() ) };
-          let split = Split { string: Cow::Borrowed( segment_str ), typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset + segment_str.len() };
-          self.current_offset += consumed_len; self.iterable = &self.iterable[ consumed_len.. ]; return Some( split );
-        }
+      // Removed active_quote_char logic
       if self.iterable.is_empty() && self.counter > 0 { return None; }
       self.counter += 1;
       if self.counter % 2 == 1 {
@@ -190,71 +218,23 @@ mod private
           if d_start == 0 { return Some( Split { string: Cow::Borrowed(""), typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset } ); }
           let segment_str = &self.iterable[ ..d_start ];
           let split = Split { string: Cow::Borrowed( segment_str ), typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset + segment_str.len() };
+          // println!("DEBUG: SplitFastIterator returning: {:?}", split); // Removed
           self.current_offset += segment_str.len(); self.iterable = &self.iterable[ d_start.. ]; Some( split )
         } else {
-          if self.iterable.is_empty() { return None; }
+          if self.iterable.is_empty() && self.counter > 1 { return None; }
           let segment_str = self.iterable;
           let split = Split { string: Cow::Borrowed( segment_str ), typ: SplitType::Delimeted, start: self.current_offset, end: self.current_offset + segment_str.len() };
+          // println!("DEBUG: SplitFastIterator returning: {:?}", split); // Removed
           self.current_offset += segment_str.len(); self.iterable = ""; Some( split )
         }
       } else if let Some( ( d_start, d_end ) ) = self.delimeter.pos( self.iterable ) {
         if d_start > 0 { self.iterable = ""; return None; }
         let delimiter_str = &self.iterable[ ..d_end ];
         let split = Split { string: Cow::Borrowed( delimiter_str ), typ: SplitType::Delimiter, start: self.current_offset, end: self.current_offset + delimiter_str.len() };
+        // println!("DEBUG: SplitFastIterator returning: {:?}", split); // Removed
         self.current_offset += delimiter_str.len(); self.iterable = &self.iterable[ d_end.. ]; Some( split )
       } else { None }
     }
-  }
-
-  /// Helper function to unescape common escape sequences in a string.
-  /// Returns a `Cow::Borrowed` if no unescaping is needed, otherwise `Cow::Owned`.
-  fn unescape_str( input : &str ) -> Cow< '_, str >
-  {
-    if !input.contains( '\\' )
-    {
-      return Cow::Borrowed( input );
-    }
-
-    let mut output = String::with_capacity( input.len() );
-    let mut chars = input.chars();
-
-    while let Some( ch ) = chars.next()
-    {
-      if ch == '\\'
-      {
-        if let Some( next_ch ) = chars.next()
-        {
-          match next_ch
-          {
-            '"' => output.push( '"' ),
-            '\\' => output.push( '\\' ),
-            'n' => output.push( '\n' ),
-            't' => output.push( '\t' ),
-            'r' => output.push( '\r' ),
-            _ =>
-            {
-              output.push( '\\' );
-              output.push( next_ch );
-            }
-          }
-        }
-        else
-        {
-          output.push( '\\' );
-        }
-      }
-      else
-        {
-          output.push( ch );
-        }
-      }
-
-  #[cfg(test)]
-  pub fn test_unescape_str( input : &str ) -> Cow< '_, str >
-  {
-    unescape_str( input )
-  }
-    Cow::Owned( output )
   }
 
   /// An iterator that splits a string with advanced options like quoting and preservation.
@@ -272,6 +252,7 @@ mod private
     last_yielded_token_was_delimiter : bool,
     just_finished_peeked_quote_end_offset : Option< usize >,
     skip_next_spurious_empty : bool,
+    active_quote_char : Option< char >, // Moved from SplitFastIterator
   }
 
   impl< 'a > SplitIterator< 'a >
@@ -288,6 +269,7 @@ mod private
         quoting_postfixes : o.quoting_postfixes().clone(), pending_opening_quote_delimiter : None,
         last_yielded_token_was_delimiter : false, just_finished_peeked_quote_end_offset : None,
         skip_next_spurious_empty : false,
+        active_quote_char : None, // Initialize here
       }
     }
   }
@@ -317,16 +299,18 @@ mod private
         if let Some( pending_split ) = self.pending_opening_quote_delimiter.take() {
           if pending_split.typ != SplitType::Delimiter || self.flags.contains(SplitFlags::PRESERVING_DELIMITERS) {
             if self.flags.contains(SplitFlags::QUOTING) && self.quoting_prefixes.contains(&pending_split.string.as_ref()) {
-              if let Some(fcoq) = pending_split.string.chars().next() { self.iterator.active_quote_char = Some(fcoq); }
+              // This logic is now handled by the main quoting block below
+              // if let Some(fcoq) = pending_split.string.chars().next() { self.iterator.active_quote_char = Some(fcoq); }
             }
             self.last_yielded_token_was_delimiter = pending_split.typ == SplitType::Delimiter; return Some( pending_split );
           }
           if self.flags.contains(SplitFlags::QUOTING) && self.quoting_prefixes.contains(&pending_split.string.as_ref()) {
-            if let Some(fcoq) = pending_split.string.chars().next() { self.iterator.active_quote_char = Some(fcoq); }
+            // This logic is now handled by the main quoting block below
+            // if let Some(fcoq) = pending_split.string.chars().next() { self.iterator.active_quote_char = Some(fcoq); }
           }
         }
         if self.last_yielded_token_was_delimiter && self.flags.contains(SplitFlags::PRESERVING_EMPTY) && self.flags.contains(SplitFlags::QUOTING) &&
-           self.iterator.active_quote_char.is_none() && self.quoting_prefixes.iter().any(|p| self.iterator.iterable.starts_with(p)) &&
+           self.active_quote_char.is_none() && self.quoting_prefixes.iter().any(|p| self.iterator.iterable.starts_with(p)) &&
            self.iterator.delimeter.pos(self.iterator.iterable).is_none_or(|(ds, _)| ds != 0) {
           let current_sfi_offset = self.iterator.current_offset;
           let empty_token = Split { string: Cow::Borrowed(""), typ: SplitType::Delimeted, start: current_sfi_offset, end: current_sfi_offset };
@@ -337,76 +321,98 @@ mod private
         let sfi_iterable_starts_with_delimiter = self.iterator.delimeter.pos( self.iterator.iterable ).is_some_and( |(d_start, _)| d_start == 0 );
         let sfi_should_yield_empty_now = self.flags.contains(SplitFlags::PRESERVING_EMPTY) && sfi_next_internal_counter_will_be_odd && sfi_iterable_starts_with_delimiter;
         let effective_split_opt : Option<Split<'a>>; let mut quote_handled_by_peek = false;
-        if self.flags.contains(SplitFlags::QUOTING) && self.iterator.active_quote_char.is_none() && !sfi_should_yield_empty_now {
+
+        // Start of refactored quoting logic
+        if self.flags.contains(SplitFlags::QUOTING) && self.active_quote_char.is_none() && !sfi_should_yield_empty_now {
           if let Some( first_char_iterable ) = self.iterator.iterable.chars().next() {
             if let Some( prefix_idx ) = self.quoting_prefixes.iter().position( |p| self.iterator.iterable.starts_with( p ) ) {
               quote_handled_by_peek = true;
               let prefix_str = self.quoting_prefixes[ prefix_idx ];
-              let opening_quote_original_start = self.iterator.current_offset; let prefix_len = prefix_str.len();
+              let opening_quote_original_start = self.iterator.current_offset;
+              let prefix_len = prefix_str.len();
               let expected_postfix = self.quoting_postfixes[ prefix_idx ];
-              self.iterator.current_offset += prefix_len; self.iterator.iterable = &self.iterator.iterable[ prefix_len.. ];
-              self.iterator.active_quote_char = Some( first_char_iterable );
-              let quoted_segment_from_sfi_opt = self.iterator.next(); self.iterator.active_quote_char = None;
-              if let Some( mut quoted_segment ) = quoted_segment_from_sfi_opt {
-                // Check if there's another quote immediately after this one (consecutive quotes)
-                let quote_pos = quoted_segment.end - expected_postfix.len();
-                if quote_pos < self.src.len() && self.src.chars().nth(quote_pos) == Some('"') && 
-                   quote_pos + 1 < self.src.len() && self.src.chars().nth(quote_pos + 1) != Some(' ') {
-                    // Consecutive quotes - position at the shared quote
-                    self.just_finished_peeked_quote_end_offset = Some(quote_pos);
-                } else {
-                    // Normal case - position after the closing quote
-                    self.just_finished_peeked_quote_end_offset = Some(quoted_segment.end);
+
+              // Consume the opening quote
+              self.iterator.current_offset += prefix_len;
+              self.iterator.iterable = &self.iterator.iterable[ prefix_len.. ];
+              self.active_quote_char = Some( first_char_iterable ); // Set active quote char in SplitIterator
+
+              let mut end_of_quote_idx : Option< usize > = None;
+              let mut chars = self.iterator.iterable.chars();
+              let mut current_char_offset = 0;
+              let mut escaped = false;
+
+              'quote_loop: while let Some( c ) = chars.next()
+              {
+                if escaped
+                {
+                  escaped = false;
+                  current_char_offset += c.len_utf8();
                 }
-                if quoted_segment.string.ends_with( expected_postfix ) {
-                  if self.flags.contains(SplitFlags::PRESERVING_QUOTING) {
-                    let new_start = opening_quote_original_start;
-                    let full_quoted_len = prefix_len + quoted_segment.string.len();
-                    let new_string = if new_start + full_quoted_len <= self.src.len() { Cow::Borrowed(&self.src[ new_start .. ( new_start + full_quoted_len ) ]) }
-                    else { Cow::Borrowed("") };
-                    let new_end = new_start + new_string.len();
-                    effective_split_opt = Some(Split { string: new_string, typ: SplitType::Delimeted, start: new_start, end: new_end });
-                  } else {
-                    let new_start = opening_quote_original_start + prefix_len;
-                    let content_len = quoted_segment.string.len() - expected_postfix.len();
-                    let sliced_str : &str = &quoted_segment.string.as_ref()[0 .. content_len];
-                    let unescaped_string : Cow<'a, str> = unescape_str( sliced_str ).into_owned().into();
-                    let new_end = new_start + unescaped_string.len();
-                    effective_split_opt = Some(Split
-                    {
-                      string: unescaped_string,
-                      typ: SplitType::Delimeted,
-                      start: new_start,
-                      end: new_end,
-                    });
-                  }
-                } else { // Unclosed quote
-                  if self.flags.contains(SplitFlags::PRESERVING_QUOTING) {
-                    let new_start = opening_quote_original_start;
-                    let full_quoted_len = prefix_len + quoted_segment.string.len();
-                    let new_string = if new_start + full_quoted_len <= self.src.len() { Cow::Borrowed(&self.src[ new_start .. ( new_start + full_quoted_len ) ]) }
-                    else { Cow::Borrowed("") };
-                    let new_end = new_start + new_string.len();
-                    effective_split_opt = Some(Split { string: new_string, typ: SplitType::Delimeted, start: new_start, end: new_end });
-                  } else {
-                    quoted_segment.string = unescape_str( &quoted_segment.string ).into_owned().into();
-                    effective_split_opt = Some(quoted_segment);
-                  }
+                else if c == '\\'
+                {
+                  escaped = true;
+                  current_char_offset += c.len_utf8();
                 }
-              } else { // SFI returned None
-                let mut prefix_as_token = Split { string: Cow::Borrowed(prefix_str), typ: SplitType::Delimeted, start: opening_quote_original_start, end: opening_quote_original_start + prefix_len };
-                if !self.flags.contains(SplitFlags::PRESERVING_QUOTING) {
-                  prefix_as_token.string = Cow::Borrowed(""); prefix_as_token.start = opening_quote_original_start + prefix_len; prefix_as_token.end = prefix_as_token.start;
+                else if c == self.active_quote_char.unwrap() // Found unescaped closing quote
+                {
+                  end_of_quote_idx = Some( current_char_offset );
+                  break 'quote_loop;
                 }
-                effective_split_opt = Some( prefix_as_token );
-                if effective_split_opt.is_some() { self.just_finished_peeked_quote_end_offset = Some(opening_quote_original_start + prefix_len); }
+                else
+                {
+                  current_char_offset += c.len_utf8();
+                }
+              }
+
+              let ( quoted_content_str, consumed_len_in_sfi_iterable ) = if let Some( end_idx ) = end_of_quote_idx
+              {
+                // Content is from start of current iterable to end_idx (before the closing quote)
+                ( &self.iterator.iterable[ ..end_idx ], end_idx + expected_postfix.len() ) // Consumed includes the closing quote
+              }
+              else
+              {
+                // No closing quote found, consume the rest of the iterable
+                ( self.iterator.iterable, self.iterator.iterable.len() )
+              };
+
+              if quoted_content_str.is_empty() && end_of_quote_idx.is_some()
+              {
+                self.last_yielded_token_was_delimiter = false;
+              }
+
+              // Advance SFI's internal state based on what was consumed
+              self.iterator.current_offset += consumed_len_in_sfi_iterable;
+              self.iterator.iterable = &self.iterator.iterable[ consumed_len_in_sfi_iterable.. ];
+              self.active_quote_char = None; // Reset active quote char
+
+              if self.flags.contains(SplitFlags::PRESERVING_QUOTING) {
+                let full_quoted_len = prefix_len + quoted_content_str.len() + if end_of_quote_idx.is_some() { expected_postfix.len() } else { 0 };
+                let new_string = if opening_quote_original_start + full_quoted_len <= self.src.len() { Cow::Borrowed(&self.src[ opening_quote_original_start .. ( opening_quote_original_start + full_quoted_len ) ]) }
+                else { Cow::Borrowed("") };
+                let new_end = opening_quote_original_start + new_string.len();
+                effective_split_opt = Some(Split { string: new_string, typ: SplitType::Delimeted, start: opening_quote_original_start, end: new_end });
+              } else {
+                let unescaped_string : Cow<'a, str> = unescape_str( quoted_content_str ).into_owned().into();
+                let new_start = opening_quote_original_start + prefix_len;
+                let new_end = new_start + unescaped_string.len();
+                effective_split_opt = Some(Split
+                {
+                  string: unescaped_string,
+                  typ: SplitType::Delimeted,
+                  start: new_start,
+                  end: new_end,
+                });
               }
               if effective_split_opt.is_some() { self.last_yielded_token_was_delimiter = false; }
             } else { effective_split_opt = self.iterator.next(); }
           } else { effective_split_opt = self.iterator.next(); }
         } else { effective_split_opt = self.iterator.next(); }
+        // End of refactored quoting logic
+
         let mut current_split = effective_split_opt?;
-        if quote_handled_by_peek && !current_split.string.is_empty()
+        // println!("DEBUG: SplitIterator received from SFI: {:?}", current_split); // Removed
+        if quote_handled_by_peek
         {
           self.skip_next_spurious_empty = true;
         }
@@ -417,15 +423,16 @@ mod private
         }
         let skip = ( current_split.typ == SplitType::Delimeted && current_split.string.is_empty() && !self.flags.contains( SplitFlags::PRESERVING_EMPTY ) )
         || ( current_split.typ == SplitType::Delimiter && !self.flags.contains( SplitFlags::PRESERVING_DELIMITERS ) );
+        if current_split.typ == SplitType::Delimiter { self.last_yielded_token_was_delimiter = true; } // Moved this line
         if skip
         {
           continue;
         }
-        if !quote_handled_by_peek && self.flags.contains(SplitFlags::QUOTING) && current_split.typ == SplitType::Delimiter && self.iterator.active_quote_char.is_none() {
+        if !quote_handled_by_peek && self.flags.contains(SplitFlags::QUOTING) && current_split.typ == SplitType::Delimiter && self.active_quote_char.is_none() { // Modified condition
           if let Some(_prefix_idx) = self.quoting_prefixes.iter().position(|p| *p == current_split.string.as_ref()) {
             let opening_quote_delimiter = current_split.clone();
             if self.flags.contains(SplitFlags::PRESERVING_DELIMITERS) { self.pending_opening_quote_delimiter = Some(opening_quote_delimiter.clone()); }
-            if let Some(fcoq) = opening_quote_delimiter.string.chars().next() { self.iterator.active_quote_char = Some(fcoq); }
+            if let Some(fcoq) = opening_quote_delimiter.string.chars().next() { self.active_quote_char = Some(fcoq); } // Set active quote char in SplitIterator
             if !self.flags.contains(SplitFlags::PRESERVING_DELIMITERS) { continue; }
           }
         }
@@ -439,7 +446,6 @@ mod private
             current_split.end = current_split.start + current_split.string.len();
           }
         }
-        if current_split.typ == SplitType::Delimiter { self.last_yielded_token_was_delimiter = true; }
         return Some( current_split );
       }
     }
@@ -604,7 +610,7 @@ pub mod own
     Searcher,
   };
   #[cfg(test)] // Conditionally export SplitFastIterator for tests
-  pub use private::SplitFastIterator;
+  pub use private::{SplitFastIterator, test_unescape_str};
 }
 
 /// Parented namespace of the module.
@@ -633,7 +639,7 @@ pub mod exposed
     Searcher,
   };
   #[cfg(test)]
-  pub use super::own::SplitFastIterator;
+  pub use super::own::{ SplitFastIterator, test_unescape_str };
 }
 
 /// Namespace of the module to include with `use module::*`.
@@ -648,5 +654,5 @@ pub mod prelude
     Searcher,
   };
   #[cfg(test)]
-  pub use private::SplitFastIterator;
+  pub use private::{ SplitFastIterator, test_unescape_str as unescape_str };
 }
