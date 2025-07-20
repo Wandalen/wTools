@@ -35,7 +35,7 @@ impl Parser
   {
     let splits_iter = strs_tools::split()
     .src( input )
-    .delimeter( vec![ " ", "\n", "::", "?", "#", "." ] )
+    .delimeter( vec![ " ", "\n", "\t", "\r", "::", "?", "#", "." ] )
     .preserving_delimeters( true )
     .quoting( true )
     .preserving_quoting( false )
@@ -52,6 +52,7 @@ impl Parser
       .into_iter()
       .filter( |item| !matches!( item.kind, UnilangTokenKind::Delimiter( " " | "\n" ) ) )
       .collect();
+
 
     self.parse_single_instruction_from_rich_items( rich_items )
   }
@@ -94,6 +95,11 @@ impl Parser
 
     for segment in &segments
     {
+        // Filter out empty delimited segments that are not actual content
+        if segment.typ == SplitType::Delimeted && segment.string.trim().is_empty() {
+            continue; // Skip this segment, it's just whitespace or an empty token from stripping
+        }
+
         if segment.typ == SplitType::Delimiter
         {
             if last_was_delimiter // Consecutive delimiters (e.g., "cmd ;;;; cmd")
@@ -104,20 +110,6 @@ impl Parser
         }
         else // Delimited content
         {
-            // If it's an empty delimited segment (e.g., "cmd ;; ;; cmd")
-            // This handles empty segments *between* delimiters.
-            if segment.string.trim().is_empty()
-            {
-                // Only error if it's an empty segment *between* delimiters, not just trailing whitespace
-                if last_was_delimiter { // This means the previous token was a delimiter
-                    return Err( ParseError::new( ErrorKind::EmptyInstructionSegment, SourceLocation::StrSpan { start : segment.start, end : segment.end } ) );
-                } else {
-                    // This is likely trailing whitespace after an instruction, or leading whitespace before the first instruction.
-                    // We should ignore it, as parse_single_instruction will handle its own trimming.
-                    continue;
-                }
-            }
-
             let instruction = self.parse_single_instruction( segment.string.as_ref() )?;
             instructions.push( instruction );
             last_was_delimiter = false;
@@ -128,8 +120,8 @@ impl Parser
     // This handles "TrailingDelimiter" for "cmd ;;" or "cmd ;;   "
     if last_was_delimiter && !instructions.is_empty() // If the last token was a delimiter and we parsed at least one instruction
     {
-        let last_segment = segments.last().unwrap(); // This will be the trailing delimiter
-        return Err( ParseError::new( ErrorKind::TrailingDelimiter, SourceLocation::StrSpan { start : last_segment.start, end : last_segment.end } ) );
+        let last_delimiter_segment = segments.iter().rev().find(|s| s.typ == SplitType::Delimiter).unwrap();
+        return Err( ParseError::new( ErrorKind::TrailingDelimiter, SourceLocation::StrSpan { start : last_delimiter_segment.start, end : last_delimiter_segment.end } ) );
     }
 
     Ok( instructions )
@@ -321,9 +313,13 @@ impl Parser
     // This handles cases like empty string or just whitespace.
     if command_path_slices.is_empty() && !help_operator_found && positional_arguments.is_empty() && named_arguments.is_empty()
     {
-      // Special case: if the original input was just a leading dot, it's not an error.
-      // It results in an an empty command path.
-      if rich_items.len() == 1 && matches!(rich_items[0].kind, UnilangTokenKind::Delimiter(".")) {
+      // If rich_items is empty, it means the input was empty or only whitespace.
+      // This should result in an empty instruction, not an error.
+      if rich_items.is_empty() {
+          // This case is handled by the overall_location calculation below.
+      } else if rich_items.len() == 1 && matches!(rich_items[0].kind, UnilangTokenKind::Delimiter(".")) {
+          // Special case: if the original input was just a leading dot, it's not an error.
+          // It results in an an empty command path.
           // This case is handled by the overall_location calculation below.
       } else {
           return Err( ParseError::new( ErrorKind::Syntax( "Empty instruction".to_string() ), SourceLocation::StrSpan { start : 0, end : 0 } ) );

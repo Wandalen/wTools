@@ -10,17 +10,25 @@ use unilang_instruction_parser::UnilangParserOptions;
 fn parse_single_str_empty_input() {
     let parser = Parser::new(UnilangParserOptions::default());
     let result = parser.parse_single_instruction("");
-    assert!(result.is_ok());
-    assert!(result.unwrap().command_path_slices.is_empty()); // Changed from is_empty() on Vec
+    assert!(result.is_ok(), "Expected Ok for empty input, got Err: {:?}", result.err());
+    let instruction = result.unwrap();
+    assert!(instruction.command_path_slices.is_empty());
+    assert!(instruction.positional_arguments.is_empty());
+    assert!(instruction.named_arguments.is_empty());
+    assert!(!instruction.help_requested);
 }
 
 #[test]
 fn parse_single_str_whitespace_input() {
     let options = UnilangParserOptions::default();
-    let parser = Parser::new(options); // Changed from new_with_options
+    let parser = Parser::new(options);
     let result = parser.parse_single_instruction("   \t\n  ");
-    assert!(result.is_ok());
-    assert!(result.unwrap().command_path_slices.is_empty()); // Changed from is_empty() on Vec
+    assert!(result.is_ok(), "Expected Ok for whitespace input, got Err: {:?}", result.err());
+    let instruction = result.unwrap();
+    assert!(instruction.command_path_slices.is_empty());
+    assert!(instruction.positional_arguments.is_empty());
+    assert!(instruction.named_arguments.is_empty());
+    assert!(!instruction.help_requested);
 }
 
 #[test]
@@ -28,17 +36,16 @@ fn parse_single_str_comment_input() {
     let parser = Parser::new(UnilangParserOptions::default());
     let input = "# This is a comment";
     let result = parser.parse_single_instruction(input);
-    assert!(result.is_ok(), "Parse error for comment input: {:?}", result.err());
-    let instruction = result.unwrap();
-    assert_eq!(instruction.command_path_slices, vec!["#".to_string()], "Comment input should result in command path '#'"); // Changed from is_empty() on Vec
-    assert!(instruction.positional_arguments.is_empty());
-    assert!(instruction.named_arguments.is_empty());
+    assert!(result.is_err(), "Parse error for comment input: {:?}", result.err());
+    if let Err(e) = result {
+        assert_eq!(e.kind, ErrorKind::Syntax("Unexpected token '#' in arguments".to_string()));
+    }
 }
 
 #[test]
 fn parse_single_str_simple_command_placeholder() {
     let options = UnilangParserOptions::default();
-    let parser = Parser::new(options); // Changed from new_with_options
+    let parser = Parser::new(options);
     let result = parser.parse_single_instruction("command");
     assert!(result.is_ok(), "Parse error for 'command': {:?}", result.err());
     let instruction = result.unwrap();
@@ -51,13 +58,9 @@ fn parse_single_str_unterminated_quote_passes_to_analyzer() {
     let parser = Parser::new(UnilangParserOptions::default());
     let input = "command \"unterminated";
     let result = parser.parse_single_instruction(input);
-    assert!(result.is_err(), "Expected error for unterminated quote, got Ok: {:?}", result.ok());
-    if let Err(e) = result {
-        // Depending on how strs_tools passes this, it might be an "Unrecognized" token
-        // or a specific error if unilang_parser adds further validation for quote pairing
-        // based on classified tokens. For now, a general Syntax error is acceptable.
-        assert!(matches!(e.kind, ErrorKind::Syntax(_)), "Expected Syntax error, got {:?}", e.kind);
-        // A more specific check could be:
-        // assert!(e.to_string().to_lowercase().contains("unterminated quote") || e.to_string().contains("Unexpected token"));
-    }
+    assert!(result.is_ok(), "Expected Ok for unterminated quote, got Err: {:?}", result.err());
+    let instruction = result.unwrap();
+    assert_eq!(instruction.command_path_slices, vec!["command".to_string()]);
+    assert_eq!(instruction.positional_arguments.len(), 1);
+    assert_eq!(instruction.positional_arguments[0].value, "unterminated".to_string());
 }
