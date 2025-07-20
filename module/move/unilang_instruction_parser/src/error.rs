@@ -20,7 +20,13 @@ pub struct StrSpan
 pub enum SourceLocation
 {
   /// A span of characters.
-  StrSpan { start : usize, end : usize },
+  /// Represents a span within a string, defined by start and end byte indices.
+  StrSpan {
+    /// The starting byte index of the span.
+    start : usize,
+    /// The ending byte index of the span.
+    end : usize,
+  },
   /// No specific location.
   None,
 }
@@ -31,7 +37,7 @@ impl fmt::Display for SourceLocation
   {
     match self
     {
-      SourceLocation::StrSpan { start, end } => write!( f, "StrSpan {{ start: {}, end: {} }}", start, end ),
+      SourceLocation::StrSpan { start, end } => write!( f, "StrSpan {{ start: {start}, end: {end} }}" ),
       SourceLocation::None => write!( f, "None" ),
     }
   }
@@ -66,6 +72,7 @@ pub struct ParseError
 impl ParseError
 {
   /// Creates a new `ParseError`.
+  #[ must_use ]
   pub fn new( kind : ErrorKind, location : SourceLocation ) -> Self
   {
     Self { kind, location : Some( location ) }
@@ -78,14 +85,14 @@ impl fmt::Display for ParseError
   {
     match &self.kind
     {
-      ErrorKind::InvalidEscapeSequence( s ) => write!( f, "Invalid escape sequence: {}", s )?,
+      ErrorKind::InvalidEscapeSequence( s ) => write!( f, "Invalid escape sequence: {s}" )?,
       ErrorKind::EmptyInstructionSegment => write!( f, "Empty instruction segment" )?,
       ErrorKind::TrailingDelimiter => write!( f, "Trailing delimiter" )?,
       _ => write!( f, "{:?}", self.kind )?,
     }
     if let Some( location ) = &self.location
     {
-      write!( f, " at {}", location )?;
+      write!( f, " at {location}" )?;
     }
     Ok(())
   }

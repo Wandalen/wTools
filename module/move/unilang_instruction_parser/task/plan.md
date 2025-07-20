@@ -23,14 +23,16 @@
 ### Progress
 *   **Roadmap Milestone:** M1: Core API Implementation
 *   **Primary Editable Crate:** `module/move/unilang_instruction_parser`
-*   **Overall Progress:** 2/6 increments complete
+*   **Overall Progress:** 4/8 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Deep Integration with `strs_tools`
     *   ✅ Increment 2: Multi-Instruction Parsing and Error Handling
     *   ✅ Increment 3: Parser Engine Simplification and Refactoring
-    *   ⚫ Increment 4: Comprehensive Test Coverage for `spec.md` Rules
-    *   ⚫ Increment 5: Final Code Review and Documentation
-    *   ⚫ Increment 6: Finalization
+    *   ✅ Increment 4: Reintroduce Parser Engine Helper Functions
+    *   ⏳ Increment 5: Address Doc Tests, Warnings, and Add Test Matrices
+    *   ⚫ Increment 6: Comprehensive Test Coverage for `spec.md` Rules
+    *   ⚫ Increment 7: Final Code Review and Documentation
+    *   ⚫ Increment 8: Finalization
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -49,11 +51,15 @@
     *   `module/move/unilang_instruction_parser/src/item_adapter.rs`
     *   `module/move/unilang_instruction_parser/src/error.rs`
     *   `module/move/unilang_instruction_parser/src/config.rs`
-    *   `module/move/unilang_instruction_parser/tests/parser_config_entry_tests.rs`
-    *   `module/move/unilang_instruction_parser/tests/syntactic_analyzer_command_tests.rs`
     *   `module/move/unilang_instruction_parser/tests/argument_parsing_tests.rs`
+    *   `module/move/unilang_instruction_parser/tests/command_parsing_tests.rs`
+    *   `module/move/unilang_instruction_parser/tests/comprehensive_tests.rs`
+    *   `module/move/unilang_instruction_parser/tests/error_reporting_tests.rs`
+    *   `module/move/unilang_instruction_parser/tests/parser_config_entry_tests.rs`
     *   `module/move/unilang_instruction_parser/tests/spec_adherence_tests.rs`
+    *   `module/move/unilang_instruction_parser/tests/syntactic_analyzer_command_tests.rs`
     *   `module/move/unilang_instruction_parser/tests/temp_unescape_test.rs`
+    *   `module/move/unilang_instruction_parser/tests/tests.rs`
     *   `module/core/strs_tools/src/string/split.rs`
     *   `module/move/unilang/spec.md`
 *   Crates for Documentation (for AI's reference, if `read_file` on docs is planned):
@@ -85,13 +91,15 @@
 | Test ID | Status | Notes |
 |---|---|---|
 | `sa1_1_root_namespace_list` | Fixed (Monitored) | Was failing with "Empty instruction" for input ".". Fixed by removing the problematic error check and adjusting overall location calculation. |
+| `module/move/unilang_instruction_parser/src/lib.rs - (line 33)` | Failing (Stuck) | Doc test fails due to `expected item after doc comment`. This is because the `}` closing the `main` function in the doc test is followed by a doc comment, which is not allowed. |
 
 ### Crate Conformance Check Procedure
 *   1.  **Run Tests:** For the `Primary Editable Crate` (`unilang_instruction_parser`) and `Additional Editable Crate` (`strs_tools`), execute `timeout 90 cargo test -p {crate_name} --all-targets`.
-*   2.  **Analyze Test Output:** If any test command fails, initiate the `Critical Log Analysis` procedure and resolve all test failures before proceeding.
-*   3.  **Run Linter (Conditional):** Only if all tests in the previous step pass, for the `Primary Editable Crate` and `Additional Editable Crate`, execute `timeout 90 cargo clippy -p {crate_name} -- -D warnings`.
-*   4.  **Analyze Linter Output:** If any linter command fails, initiate the `Linter Fix & Regression Check Procedure`.
-*   5.  **Perform Output Cleanliness Check:** Execute `cargo clean -p {crate_name}` followed by `timeout 90 cargo build -p {crate_name}`. Critically analyze the build output for any unexpected debug prints from procedural macros. If any are found, the check fails; initiate the `Critical Log Analysis` procedure.
+*   2.  **Run Doc Tests:** For the `Primary Editable Crate` (`unilang_instruction_parser`), execute `timeout 90 cargo test -p {crate_name} --doc`.
+*   3.  **Analyze Test Output:** If any test command (unit, integration, or doc) fails, initiate the `Critical Log Analysis` procedure and resolve all test failures before proceeding.
+*   4.  **Run Linter (Conditional):** Only if all tests in the previous step pass, for the `Primary Editable Crate` and `Additional Editable Crate`, execute `timeout 90 cargo clippy -p {crate_name} -- -D warnings`.
+*   5.  **Analyze Linter Output:** If any linter command fails, initiate the `Linter Fix & Regression Check Procedure`.
+*   6.  **Perform Output Cleanliness Check:** Execute `cargo clean -p {crate_name}` followed by `timeout 90 cargo build -p {crate_name}`. Critically analyze the build output for any unexpected debug prints from procedural macros. If any are found, the check fails; initiate the `Critical Log Analysis` procedure.
 
 ### Increments
 (Note: The status of each increment is tracked in the `### Progress` section.)
@@ -156,7 +164,24 @@
     *   Run `timeout 90 cargo test -p unilang_instruction_parser --all-targets` to ensure the refactored code compiles and all tests pass.
 *   **Commit Message:** `refactor(unilang_instruction_parser): Reintroduce parser engine helper functions`
 
-##### Increment 5: Comprehensive Test Coverage for `spec.md` Rules
+##### Increment 5: Address Doc Tests, Warnings, and Add Test Matrices
+*   **Goal:** Fix all failing doc tests, resolve all compiler warnings, and add a `Test Matrix` to each existing test file in `module/move/unilang_instruction_parser/tests/`.
+*   **Specification Reference:** N/A (Code quality and documentation).
+*   **Steps:**
+    *   Step 1: Run `timeout 90 cargo test -p unilang_instruction_parser --doc` to identify failing doc tests.
+    *   Step 2: Fix any failing doc tests in `src/lib.rs` or other relevant source files. This includes changing `//!` to `//` for code examples within doc tests and ensuring correct module paths (e.g., `crate::instruction::GenericInstruction`). Also, ensure inner attributes (`#![...]`) are at the top of the file, before any outer doc comments.
+    *   Step 3: Run `timeout 90 cargo clippy -p unilang_instruction_parser -- -D warnings` to identify all warnings.
+    *   Step 4: Resolve all compiler warnings in `src/` and `tests/` directories.
+    *   Step 5: For each test file in `module/move/unilang_instruction_parser/tests/` (excluding `inc/mod.rs`), add a file-level doc comment containing a `Test Matrix` that lists the tests within that file and their purpose. If a test file already has a matrix, ensure it's up-to-date and correctly formatted.
+    *   Step 6: Perform Increment Verification.
+    *   Step 7: Perform Crate Conformance Check.
+*   **Increment Verification:**
+    *   Run `timeout 90 cargo test -p unilang_instruction_parser --doc` to confirm all doc tests pass.
+    *   Run `timeout 90 cargo clippy -p unilang_instruction_parser -- -D warnings` to confirm no warnings.
+    *   Manual review of test files to ensure Test Matrices are present and correctly formatted.
+*   **Commit Message:** `fix(unilang_instruction_parser): Resolve doc test failures, warnings, and add test matrices`
+
+##### Increment 6: Comprehensive Test Coverage for `spec.md` Rules
 *   **Goal:** Ensure comprehensive test coverage for all rules defined in `spec.md`, especially those not fully covered by existing tests. This involves creating new tests in `tests/spec_adherence_tests.rs` based on a detailed `Test Matrix`.
 *   **Specification Reference:** All rules in `spec.md`.
 *   **Steps:**
@@ -170,7 +195,7 @@
     *   Run `timeout 90 cargo test -p unilang_instruction_parser --all-targets` to ensure no regressions.
 *   **Commit Message:** `test(unilang_instruction_parser): Add comprehensive spec.md adherence tests`
 
-##### Increment 6: Final Code Review and Documentation
+##### Increment 7: Final Code Review and Documentation
 *   **Goal:** Conduct a thorough code review of the entire `unilang_instruction_parser` crate, ensuring adherence to all codestyle and design rules. Improve internal and external documentation.
 *   **Specification Reference:** N/A (Code quality and documentation).
 *   **Steps:**
@@ -184,7 +209,7 @@
     *   Manual review of documentation for clarity and completeness.
 *   **Commit Message:** `docs(unilang_instruction_parser): Improve documentation and code quality`
 
-##### Increment 7: Finalization
+##### Increment 8: Finalization
 *   **Goal:** Perform a final, holistic review and verification of the entire task's output, including a self-critique against all requirements and a full run of the Crate Conformance Check.
 *   **Specification Reference:** N/A.
 *   **Steps:**
@@ -203,6 +228,9 @@
 *   Error messages must be clear, precise, and include `SourceLocation` where applicable.
 *   The code must be well-documented and adhere to the provided `codestyle.md` and `design.md` rules.
 *   Achieve 100% test pass rate for all automated tests.
+*   All doc tests must pass.
+*   All warnings must be handled.
+*   Each test file must have a Test Matrix.
 
 ### Project Requirements
 *   All code must strictly adhere to the `codestyle` rulebook provided by the user at the start of the task.
@@ -230,3 +258,4 @@
 *   [Increment 1 | 2025-07-20 14:39 UTC] Integrated `strs_tools` for tokenization and unescaping. Fixed `strs_tools::unescape_str` to correctly handle `\'`. Updated `parse_single_instruction_from_rich_items` to handle empty input and leading dots.
 *   [Increment 2 | 2025-07-20 14:39 UTC] Implemented `parse_multiple_instructions` with error handling for empty instruction segments and trailing delimiters. Refined `ParseError` display. Aligned test expectations in `syntactic_analyzer_command_tests.rs` and `argument_parsing_tests.rs` with `spec.md` rules.
 *   [Increment 3 | 2025-07-20 14:46 UTC] Reverted `parser_engine.rs` to a monolithic function and fixed the "Empty instruction" error for input ".".
+*   [Increment 4 | 2025-07-20 14:47 UTC] Reintroduced `parse_command_path` and `parse_arguments` helper functions into `parser_engine.rs`.

@@ -22,12 +22,14 @@ pub struct RichItem<'a>
 impl<'a> RichItem<'a>
 {
   /// Creates a new `RichItem`.
+  #[ must_use ]
   pub fn new( inner : Split<'a>, kind : UnilangTokenKind, adjusted_source_location : SourceLocation ) -> Self
   {
     Self { inner, kind, adjusted_source_location }
   }
 
   /// Returns the source location of the item.
+  #[ must_use ]
   pub fn source_location( &self ) -> SourceLocation
   {
     self.adjusted_source_location.clone()
@@ -55,16 +57,20 @@ impl fmt::Display for UnilangTokenKind
   {
     match self
     {
-      UnilangTokenKind::Identifier( s ) => write!( f, "{}", s ),
+      UnilangTokenKind::Identifier( s ) => write!( f, "{s}" ),
 
-      UnilangTokenKind::Operator( s ) => write!( f, "{}", s ),
-      UnilangTokenKind::Delimiter( s ) => write!( f, "{}", s ),
-      UnilangTokenKind::Unrecognized( s ) => write!( f, "{}", s ),
+      UnilangTokenKind::Operator( s ) => write!( f, "{s}" ),
+      UnilangTokenKind::Delimiter( s ) => write!( f, "{s}" ),
+      UnilangTokenKind::Unrecognized( s ) => write!( f, "{s}" ),
     }
   }
 }
 
 /// Classifies a `strs_tools::Split` into a `UnilangTokenKind` and returns its adjusted source location.
+/// Classifies a `strs_tools::Split` into a `UnilangTokenKind` and adjusts its `SourceLocation`.
+///
+/// # Errors
+/// Returns a `ParseError` if the split represents an invalid escape sequence.
 pub fn classify_split( s : &Split<'_> ) -> Result<( UnilangTokenKind, SourceLocation ), ParseError>
 {
   let original_location = SourceLocation::StrSpan { start : s.start, end : s.end };

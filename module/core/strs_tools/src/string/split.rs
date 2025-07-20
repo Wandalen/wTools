@@ -205,6 +205,7 @@ mod private
   impl< 'a, D : Searcher > Iterator for SplitFastIterator< 'a, D >
   {
     type Item = Split< 'a >;
+    #[ allow( clippy::too_many_lines ) ]
     fn next( &mut self ) -> Option< Self::Item >
     {
       if self.iterable.is_empty() && self.counter > 0 // Modified condition
@@ -280,6 +281,7 @@ mod private
   impl< 'a > Iterator for SplitIterator< 'a >
   {
     type Item = Split< 'a >;
+    #[ allow( clippy::too_many_lines ) ]
     fn next( &mut self ) -> Option< Self::Item >
     {
       loop {

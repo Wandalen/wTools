@@ -11,6 +11,7 @@ use crate::
 };
 use crate::instruction::{ Argument, GenericInstruction };
 use std::collections::HashMap;
+use alloc::vec::IntoIter;
 use strs_tools::string::split::{ SplitType, Split };
 
 
@@ -25,12 +26,17 @@ pub struct Parser
 impl Parser
 {
   /// Creates a new `Parser` instance with the given options.
+  #[ must_use ]
   pub fn new( options : UnilangParserOptions ) -> Self
   {
     Self { options }
   }
 
   /// Parses a single Unilang instruction from the input string.
+  /// Parses a single Unilang instruction from the input string.
+  ///
+  /// # Errors
+  /// Returns a `ParseError` if the input string cannot be parsed into a valid instruction.
   pub fn parse_single_instruction( &self, input : &str ) -> Result< crate::instruction::GenericInstruction, ParseError >
   {
     let splits_iter = strs_tools::split()
@@ -58,6 +64,15 @@ impl Parser
   }
 
   /// Parses multiple Unilang instructions from the input string, separated by `;;`.
+  /// Parses multiple Unilang instructions from the input string, separated by `;;`.
+  ///
+  /// # Errors
+  /// Returns a `ParseError` if any segment cannot be parsed into a valid instruction,
+  /// or if there are empty instruction segments (e.g., `;;;;`) or trailing delimiters (`cmd;;`).
+  ///
+  /// # Panics
+  /// Panics if `segments.iter().rev().find(|s| s.typ == SplitType::Delimiter).unwrap()` fails,
+  /// which indicates a logic error where a trailing delimiter was expected but not found.
   pub fn parse_multiple_instructions
   (
     &self,
@@ -87,10 +102,10 @@ impl Parser
     // Check if the first segment is an empty delimited segment (e.g., " ;; cmd")
     // or if the input starts with a delimiter (e.g., ";; cmd")
     // This handles "EmptyInstructionSegment" for leading " ;;" or "  ;;"
-    if segments[0].typ == SplitType::Delimiter || (segments[0].typ == SplitType::Delimeted && segments[0].string.trim().is_empty()) {
-        if segments[0].start == 0 { // It's a leading delimiter or empty segment at start
-            return Err( ParseError::new( ErrorKind::EmptyInstructionSegment, SourceLocation::StrSpan { start : segments[0].start, end : segments[0].end } ) );
-        }
+    if (segments[0].typ == SplitType::Delimiter || (segments[0].typ == SplitType::Delimeted && segments[0].string.trim().is_empty()))
+        && segments[0].start == 0
+    {
+        return Err( ParseError::new( ErrorKind::EmptyInstructionSegment, SourceLocation::StrSpan { start : segments[0].start, end : segments[0].end } ) );
     }
 
     for segment in &segments
@@ -150,12 +165,6 @@ impl Parser
     let instruction_start_location = rich_items.first().map_or(0, |item| item.inner.start);
     let instruction_end_location = rich_items.last().map_or(instruction_start_location, |item| item.inner.end);
 
-    let mut command_path_slices = Vec::new();
-    let mut positional_arguments = Vec::new();
-    let mut named_arguments = HashMap::new();
-    let mut help_operator_found = false;
-    let mut last_token_was_dot = false;
-
     let mut items_iter = rich_items.into_iter().peekable();
 
     // Handle optional leading dot as per spec.md Rule 3.1
@@ -167,7 +176,32 @@ impl Parser
         }
     }
 
-    // Phase 1: Parse Command Path
+    let command_path_slices = self.parse_command_path( &mut items_iter, instruction_end_location )?;
+    let ( positional_arguments, named_arguments, help_operator_found ) = self.parse_arguments( &mut items_iter )?;
+
+    Ok( GenericInstruction
+    {
+      command_path_slices,
+      positional_arguments,
+      named_arguments,
+      help_requested : help_operator_found,
+      overall_location : SourceLocation::StrSpan { start : instruction_start_location, end : instruction_end_location },
+    })
+  }
+
+  /// Parses the command path from a peekable iterator of rich items.
+  fn parse_command_path
+  (
+    &self,
+    items_iter : &mut core::iter::Peekable<IntoIter<RichItem<'_>>>,
+    instruction_end_location : usize,
+  )
+  ->
+  Result< Vec< String >, ParseError >
+  {
+    let mut command_path_slices = Vec::new();
+    let mut last_token_was_dot = false;
+
     while let Some( item ) = items_iter.peek()
     {
       match &item.kind
@@ -214,7 +248,22 @@ impl Parser
       return Err(ParseError::new(ErrorKind::Syntax("Command path cannot end with a '.'".to_string()), last_dot_location));
     }
 
-    // Phase 2: Parse Arguments
+    Ok( command_path_slices )
+  }
+
+  /// Parses arguments from a peekable iterator of rich items.
+  fn parse_arguments
+  (
+    &self,
+    items_iter : &mut core::iter::Peekable<IntoIter<RichItem<'_>>>,
+  )
+  ->
+  Result< ( Vec< Argument >, HashMap< String, Argument >, bool ), ParseError >
+  {
+    let mut positional_arguments = Vec::new();
+    let mut named_arguments = HashMap::new();
+    let mut help_operator_found = false;
+
     while let Some( item ) = items_iter.next()
     {
       match item.kind
@@ -237,7 +286,7 @@ impl Parser
                   {
                     if named_arguments.contains_key( arg_name ) && self.options.error_on_duplicate_named_arguments
                     {
-                      return Err( ParseError::new( ErrorKind::Syntax( format!( "Duplicate named argument '{}'", arg_name ) ), value_item.adjusted_source_location.clone() ) );
+                      return Err( ParseError::new( ErrorKind::Syntax( format!( "Duplicate named argument '{arg_name}'" ) ), value_item.adjusted_source_location.clone() ) );
                     }
                     named_arguments.insert( arg_name.clone(), Argument
                     {
@@ -247,12 +296,12 @@ impl Parser
                       value_location : value_item.source_location(),
                     });
                   },
-                  _ => return Err( ParseError::new( ErrorKind::Syntax( format!( "Expected value for named argument '{}'", arg_name ) ), value_item.adjusted_source_location.clone() ) )
+                  _ => return Err( ParseError::new( ErrorKind::Syntax( format!( "Expected value for named argument '{arg_name}'" ) ), value_item.adjusted_source_location.clone() ) )
                 }
               }
               else
               {
-                return Err( ParseError::new( ErrorKind::Syntax( format!( "Expected value for named argument '{}' but found end of instruction", arg_name ) ), item.adjusted_source_location.clone() ) );
+                return Err( ParseError::new( ErrorKind::Syntax( format!( "Expected value for named argument '{arg_name}' but found end of instruction" ) ), item.adjusted_source_location.clone() ) );
               }
             }
             else
@@ -299,13 +348,6 @@ impl Parser
         }
       }
 
-    Ok( GenericInstruction
-    {
-      command_path_slices,
-      positional_arguments,
-      named_arguments,
-      help_requested : help_operator_found,
-      overall_location : SourceLocation::StrSpan { start : instruction_start_location, end : instruction_end_location },
-    })
+    Ok( ( positional_arguments, named_arguments, help_operator_found ) )
   }
 }
