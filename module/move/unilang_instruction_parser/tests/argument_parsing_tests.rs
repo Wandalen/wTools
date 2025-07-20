@@ -34,13 +34,12 @@ fn command_with_only_positional_args_fully_parsed() {
     let result = parser.parse_single_instruction(input);
     assert!(result.is_ok(), "Parse error: {:?}", result.err());
     let instruction = result.unwrap();
-    
+
     // Command path should only be "cmd" as spaces separate command from args
-    assert_eq!(instruction.command_path, vec!["cmd".to_string()]);
-    assert_eq!(instruction.arguments, vec![
-        "pos1".to_string(),
-        "pos2".to_string(),
-    ]);
+    assert_eq!(instruction.command_path_slices, vec!["cmd".to_string()]);
+    assert_eq!(instruction.positional_arguments.len(), 2);
+    assert_eq!(instruction.positional_arguments[0].value, "pos1".to_string());
+    assert_eq!(instruction.positional_arguments[1].value, "pos2".to_string());
     assert!(instruction.named_arguments.is_empty());
 }
 
@@ -51,16 +50,16 @@ fn command_with_only_named_args_fully_parsed() {
     let result = parser.parse_single_instruction(input);
     assert!(result.is_ok(), "Parse error: {:?}", result.err());
     let instruction = result.unwrap();
-    
-    assert_eq!(instruction.command_path, vec!["cmd".to_string()]);
-    assert!(instruction.arguments.is_empty());
+
+    assert_eq!(instruction.command_path_slices, vec!["cmd".to_string()]);
+    assert!(instruction.positional_arguments.is_empty());
     assert_eq!(instruction.named_arguments.len(), 2);
 
     let arg1 = instruction.named_arguments.get("name1").unwrap();
-    assert_eq!(arg1, "val1");
- 
+    assert_eq!(arg1.value, "val1");
+
     let arg2 = instruction.named_arguments.get("name2").unwrap();
-    assert_eq!(arg2, "val2");
+    assert_eq!(arg2.value, "val2");
 }
 
 #[test]
@@ -70,20 +69,20 @@ fn command_with_mixed_args_positional_first_fully_parsed() {
     let result = parser.parse_single_instruction(input);
     assert!(result.is_ok(), "Parse error: {:?}", result.err());
     let instruction = result.unwrap();
-    
-    // Command path should only be "cmd" as spaces separate command from args
-    assert_eq!(instruction.command_path, vec!["cmd".to_string()]);
 
-    assert_eq!(instruction.arguments.len(), 2);
-    assert_eq!(instruction.arguments[0], "pos1".to_string());
-    assert_eq!(instruction.arguments[1], "pos2".to_string());
- 
+    // Command path should only be "cmd" as spaces separate command from args
+    assert_eq!(instruction.command_path_slices, vec!["cmd".to_string()]);
+
+    assert_eq!(instruction.positional_arguments.len(), 2);
+    assert_eq!(instruction.positional_arguments[0].value, "pos1".to_string());
+    assert_eq!(instruction.positional_arguments[1].value, "pos2".to_string());
+
     assert_eq!(instruction.named_arguments.len(), 2);
     let named_arg1 = instruction.named_arguments.get("name1").unwrap();
-    assert_eq!(named_arg1, "val1");
- 
+    assert_eq!(named_arg1.value, "val1");
+
     let named_arg2 = instruction.named_arguments.get("name2").unwrap();
-    assert_eq!(named_arg2, "val2");
+    assert_eq!(named_arg2.value, "val2");
 }
 
 #[test]
@@ -105,12 +104,12 @@ fn command_with_mixed_args_positional_after_named_ok_when_option_not_set() {
     let result = parser.parse_single_instruction(input);
     assert!(result.is_ok(), "Parse error: {:?}", result.err());
     let instruction = result.unwrap();
-    
-    assert_eq!(instruction.command_path, vec!["cmd".to_string()]);
-    assert_eq!(instruction.arguments.len(), 1);
-    assert_eq!(instruction.arguments[0], "pos1".to_string());
+
+    assert_eq!(instruction.command_path_slices, vec!["cmd".to_string()]);
+    assert_eq!(instruction.positional_arguments.len(), 1);
+    assert_eq!(instruction.positional_arguments[0].value, "pos1".to_string());
     assert_eq!(instruction.named_arguments.len(), 1);
-    assert_eq!(instruction.named_arguments.get("name1").unwrap(), "val1");
+    assert_eq!(instruction.named_arguments.get("name1").unwrap().value, "val1");
 }
 
 
@@ -145,7 +144,7 @@ fn named_arg_missing_name_error() {
     assert!(result.is_err());
     if let Err(e) = result {
         assert!(matches!(e.kind, ErrorKind::Syntax(_)));
-        assert!(e.to_string().contains("Unexpected token '::' after command path"));
+        assert!(e.to_string().contains("Unexpected token '::' in arguments"));
     }
 }
 
@@ -168,7 +167,7 @@ fn unescaping_works_for_named_arg_value() {
     let result = parser.parse_single_instruction(input);
     assert!(result.is_ok(), "Parse error: {:?}", result.err());
     let instruction = result.unwrap();
-    assert_eq!(instruction.named_arguments.get("name").unwrap(), "a\\b\"c'd");
+    assert_eq!(instruction.named_arguments.get("name").unwrap().value, "a\\b\"c'd");
 }
 
 #[test]
@@ -178,7 +177,8 @@ fn unescaping_works_for_positional_arg_value() {
     let result = parser.parse_single_instruction(input);
     assert!(result.is_ok(), "Parse error: {:?}", result.err());
     let instruction = result.unwrap();
-    assert_eq!(instruction.arguments[0], "a\\b\"c'd\ne\tf");
+    assert_eq!(instruction.positional_arguments.len(), 1);
+    assert_eq!(instruction.positional_arguments[0].value, "a\\b\"c'd\ne\tf");
 }
 
 #[test]
@@ -200,10 +200,10 @@ fn duplicate_named_arg_last_wins_by_default() {
     let result = parser.parse_single_instruction(input);
     assert!(result.is_ok(), "Parse error for duplicate named (last wins): {:?}", result.err());
     let instruction = result.unwrap();
-    
-    assert_eq!(instruction.command_path, vec!["cmd".to_string()]);
+
+    assert_eq!(instruction.command_path_slices, vec!["cmd".to_string()]);
     assert_eq!(instruction.named_arguments.len(), 1, "CT4.2 Named args count");
-    assert_eq!(instruction.named_arguments.get("name").unwrap(), "val2");
+    assert_eq!(instruction.named_arguments.get("name").unwrap().value, "val2");
 }
 
 #[test]
@@ -213,16 +213,16 @@ fn command_with_path_and_args_complex_fully_parsed() {
     let result = parser.parse_single_instruction(input);
     assert!(result.is_ok(), "Parse error: {:?}", result.err());
     let instruction = result.unwrap();
-    
-    assert_eq!(instruction.command_path, vec!["path".to_string()]);
 
-    assert_eq!(instruction.arguments.len(), 2);
-    assert_eq!(instruction.arguments[0], "sub".to_string());
-    assert_eq!(instruction.arguments[1], "pos1".to_string());
- 
+    assert_eq!(instruction.command_path_slices, vec!["path".to_string()]);
+
+    assert_eq!(instruction.positional_arguments.len(), 2);
+    assert_eq!(instruction.positional_arguments[0].value, "sub".to_string());
+    assert_eq!(instruction.positional_arguments[1].value, "pos1".to_string());
+
     let named_arg = instruction.named_arguments.get("name").unwrap();
     assert_eq!(instruction.named_arguments.len(), 1);
-    assert_eq!(named_arg, "val");
+    assert_eq!(named_arg.value, "val");
 }
 
 #[test]
@@ -232,11 +232,11 @@ fn named_arg_with_quoted_escaped_value_location() {
     let result = parser.parse_single_instruction(input);
     assert!(result.is_ok(), "Parse error: {:?}", result.err());
     let instruction = result.unwrap();
-    
-    assert_eq!(instruction.command_path, vec!["cmd".to_string()]);
+
+    assert_eq!(instruction.command_path_slices, vec!["cmd".to_string()]);
     assert_eq!(instruction.named_arguments.len(), 1);
     let arg = instruction.named_arguments.get("key").unwrap();
-    assert_eq!(arg, "value with \"quotes\" and \\slash\\");
+    assert_eq!(arg.value, "value with \"quotes\" and \\slash\\");
 }
 
 #[test]
@@ -246,8 +246,8 @@ fn positional_arg_with_quoted_escaped_value_location() {
     let result = parser.parse_single_instruction(input);
     assert!(result.is_ok(), "Parse error: {:?}", result.err());
     let instruction = result.unwrap();
-    assert_eq!(instruction.arguments.len(), 1);
-    assert_eq!(instruction.arguments[0], "a\\b\"c'd\ne\tf");
+    assert_eq!(instruction.positional_arguments.len(), 1);
+    assert_eq!(instruction.positional_arguments[0].value, "a\\b\"c'd\ne\tf");
 }
 
 #[test]
@@ -257,11 +257,10 @@ fn malformed_named_arg_name_value_no_delimiter() {
     let result = parser.parse_single_instruction(input);
     assert!(result.is_ok(), "Parse error: {:?}", result.err());
     let instruction = result.unwrap();
-    assert_eq!(instruction.command_path, vec!["cmd".to_string()]);
-    assert_eq!(instruction.arguments, vec![
-        "name".to_string(),
-        "value".to_string(),
-    ]);
+    assert_eq!(instruction.command_path_slices, vec!["cmd".to_string()]);
+    assert_eq!(instruction.positional_arguments.len(), 2);
+    assert_eq!(instruction.positional_arguments[0].value, "name".to_string());
+    assert_eq!(instruction.positional_arguments[1].value, "value".to_string());
     assert!(instruction.named_arguments.is_empty());
 }
 

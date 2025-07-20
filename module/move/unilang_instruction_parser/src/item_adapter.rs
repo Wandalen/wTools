@@ -40,8 +40,7 @@ pub enum UnilangTokenKind
 {
   /// An identifier (e.g., a command name, argument name, or unquoted value).
   Identifier( String ),
-  /// A quoted string value.
-  QuotedValue( String ),
+
   /// An operator (e.g., `::`, `?`).
   Operator( &'static str ),
   /// A delimiter (e.g., space, dot, newline).
@@ -57,7 +56,7 @@ impl fmt::Display for UnilangTokenKind
     match self
     {
       UnilangTokenKind::Identifier( s ) => write!( f, "{}", s ),
-      UnilangTokenKind::QuotedValue( s ) => write!( f, "\"{}\"", s ),
+
       UnilangTokenKind::Operator( s ) => write!( f, "{}", s ),
       UnilangTokenKind::Delimiter( s ) => write!( f, "{}", s ),
       UnilangTokenKind::Unrecognized( s ) => write!( f, "{}", s ),
@@ -70,12 +69,7 @@ pub fn classify_split( s : &Split<'_> ) -> Result<( UnilangTokenKind, SourceLoca
 {
   let original_location = SourceLocation::StrSpan { start : s.start, end : s.end };
 
-  if s.string.starts_with('"') && s.string.ends_with('"') && s.string.len() >= 2
-  {
-    let inner_str = &s.string[ 1 .. s.string.len() - 1 ];
-    let adjusted_location = SourceLocation::StrSpan { start : s.start + 1, end : s.end - 1 };
-    return Ok(( UnilangTokenKind::QuotedValue( inner_str.to_string() ), adjusted_location ));
-  }
+
 
   match s.string
   {

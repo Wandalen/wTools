@@ -11,7 +11,7 @@ fn parse_single_str_empty_input() {
     let parser = Parser::new(UnilangParserOptions::default());
     let result = parser.parse_single_instruction("");
     assert!(result.is_ok());
-    assert!(result.unwrap().command_path.is_empty()); // Changed from is_empty() on Vec
+    assert!(result.unwrap().command_path_slices.is_empty()); // Changed from is_empty() on Vec
 }
 
 #[test]
@@ -20,15 +20,19 @@ fn parse_single_str_whitespace_input() {
     let parser = Parser::new(options); // Changed from new_with_options
     let result = parser.parse_single_instruction("   \t\n  ");
     assert!(result.is_ok());
-    assert!(result.unwrap().command_path.is_empty()); // Changed from is_empty() on Vec
+    assert!(result.unwrap().command_path_slices.is_empty()); // Changed from is_empty() on Vec
 }
 
 #[test]
 fn parse_single_str_comment_input() {
     let parser = Parser::new(UnilangParserOptions::default());
-    let result = parser.parse_single_instruction("# This is a comment");
+    let input = "# This is a comment";
+    let result = parser.parse_single_instruction(input);
     assert!(result.is_ok(), "Parse error for comment input: {:?}", result.err());
-    assert_eq!(result.unwrap().command_path, vec!["#".to_string()], "Comment input should result in command path '#'"); // Changed from is_empty() on Vec
+    let instruction = result.unwrap();
+    assert_eq!(instruction.command_path_slices, vec!["#".to_string()], "Comment input should result in command path '#'"); // Changed from is_empty() on Vec
+    assert!(instruction.positional_arguments.is_empty());
+    assert!(instruction.named_arguments.is_empty());
 }
 
 #[test]
@@ -38,7 +42,7 @@ fn parse_single_str_simple_command_placeholder() {
     let result = parser.parse_single_instruction("command");
     assert!(result.is_ok(), "Parse error for 'command': {:?}", result.err());
     let instruction = result.unwrap();
-    assert_eq!(instruction.command_path, vec!["command".to_string()]);
+    assert_eq!(instruction.command_path_slices, vec!["command".to_string()]);
 }
 
 // #[ignore] // Removed ignore

@@ -9,14 +9,18 @@
 //! | T1.5 | `command`            | `["command"]`                  | `[]`                            | Should already pass.                    |
 
 use unilang_instruction_parser::{ Parser, UnilangParserOptions };
+use unilang_instruction_parser::instruction::Argument;
 
 fn parse_and_assert( input : &str, expected_path : &[ &str ], expected_args : &[ &str ] )
 {
   let options = UnilangParserOptions::default();
   let parser = Parser::new( options ); // Updated Parser instantiation
   let instruction = parser.parse_single_instruction( input ).unwrap(); // Updated method call and direct unwrap
-  assert_eq!( instruction.command_path, expected_path );
-  assert_eq!( instruction.arguments, expected_args );
+  assert_eq!( instruction.command_path_slices, expected_path );
+  assert_eq!( instruction.positional_arguments.len(), expected_args.len() );
+  for (i, expected_arg) in expected_args.iter().enumerate() {
+      assert_eq!(instruction.positional_arguments[i].value, expected_arg.to_string());
+  }
 }
 
 /// Tests the primary failing case.

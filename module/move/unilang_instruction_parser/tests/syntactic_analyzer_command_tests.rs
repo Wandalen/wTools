@@ -10,10 +10,9 @@ fn single_command_path_parsed() {
     let result = parser.parse_single_instruction("cmd");
     assert!(result.is_ok(), "parse_single_instruction failed: {:?}", result.err());
     let instruction = result.unwrap();
-    assert_eq!(instruction.command_path, vec!["cmd".to_string()]);
+    assert_eq!(instruction.command_path_slices, vec!["cmd".to_string()]);
     assert!(instruction.named_arguments.is_empty());
-    assert!(instruction.arguments.is_empty());
-    // assert!(!instruction.help_requested); // Removed
+    assert!(instruction.positional_arguments.is_empty());
 }
 
 #[test]
@@ -23,9 +22,8 @@ fn multi_segment_command_path_parsed() {
     let result = parser.parse_single_instruction(input); // Changed to parse_single_instruction
     assert!(result.is_ok(), "parse_single_instruction failed for input '{}': {:?}", input, result.err());
     let instruction = result.unwrap();
-    assert_eq!(instruction.command_path, vec!["cmd".to_string(), "subcmd".to_string(), "another".to_string()]);
-    assert!(instruction.arguments.is_empty());
-    // assert!(!instruction.help_requested); // Removed
+    assert_eq!(instruction.command_path_slices, vec!["cmd".to_string(), "subcmd".to_string(), "another".to_string()]);
+    assert!(instruction.positional_arguments.is_empty());
 }
 
 #[test]
@@ -34,9 +32,9 @@ fn command_with_help_operator_parsed() {
     let result = parser.parse_single_instruction("cmd ?");
     assert!(result.is_ok(), "parse_single_instruction failed: {:?}", result.err());
     let instruction = result.unwrap();
-    assert_eq!(instruction.command_path, vec!["cmd".to_string()]);
-    // assert!(instruction.help_requested); // Removed
-    assert_eq!(instruction.arguments, vec!["?".to_string()]); // ? is now an argument
+    assert_eq!(instruction.command_path_slices, vec!["cmd".to_string()]);
+    assert_eq!(instruction.positional_arguments.len(), 1);
+    assert_eq!(instruction.positional_arguments[0].value, "?".to_string());
     assert!(instruction.named_arguments.is_empty());
 }
 
@@ -47,9 +45,9 @@ fn command_with_help_operator_and_multi_segment_path() {
     let result = parser.parse_single_instruction(input); // Changed to parse_single_instruction
     assert!(result.is_ok(), "parse_single_instruction failed for input '{}': {:?}", input, result.err());
     let instruction = result.unwrap();
-    assert_eq!(instruction.command_path, vec!["cmd".to_string(), "sub".to_string()]);
-    // assert!(instruction.help_requested); // Removed
-    assert_eq!(instruction.arguments, vec!["?".to_string()]); // ? is now an argument
+    assert_eq!(instruction.command_path_slices, vec!["cmd".to_string(), "sub".to_string()]);
+    assert_eq!(instruction.positional_arguments.len(), 1);
+    assert_eq!(instruction.positional_arguments[0].value, "?".to_string());
     assert!(instruction.named_arguments.is_empty());
 }
 
@@ -59,9 +57,9 @@ fn only_help_operator() {
     let result = parser.parse_single_instruction("?");
     assert!(result.is_ok(), "parse_single_instruction failed for '?': {:?}", result.err());
     let instruction = result.unwrap();
-    assert!(instruction.command_path.is_empty());
-    // assert!(instruction.help_requested); // Removed
-    assert_eq!(instruction.arguments, vec!["?".to_string()]); // ? is now an argument
+    assert!(instruction.command_path_slices.is_empty());
+    assert_eq!(instruction.positional_arguments.len(), 1);
+    assert_eq!(instruction.positional_arguments[0].value, "?".to_string());
     assert!(instruction.named_arguments.is_empty());
 }
 
@@ -75,15 +73,13 @@ fn multiple_commands_separated_by_semicolon_path_and_help_check() {
     let instructions = result.unwrap(); // This will still be a Vec<GenericInstruction> for parse_multiple_instructions
     assert_eq!(instructions.len(), 3);
 
-    assert_eq!(instructions[0].command_path, vec!["cmd1".to_string()]);
-    // assert!(!instructions[0].help_requested); // Removed
+    assert_eq!(instructions[0].command_path_slices, vec!["cmd1".to_string()]);
 
-    assert_eq!(instructions[1].command_path, vec!["cmd2".to_string(), "sub".to_string()]);
-    // assert!(instructions[1].help_requested); // Removed
-    assert_eq!(instructions[1].arguments, vec!["?".to_string()]); // ? is now an argument
+    assert_eq!(instructions[1].command_path_slices, vec!["cmd2".to_string(), "sub".to_string()]);
+    assert_eq!(instructions[1].positional_arguments.len(), 1);
+    assert_eq!(instructions[1].positional_arguments[0].value, "?".to_string());
 
-    assert_eq!(instructions[2].command_path, vec!["cmd3".to_string()]);
-    // assert!(!instructions[2].help_requested); // Removed
+    assert_eq!(instructions[2].command_path_slices, vec!["cmd3".to_string()]);
 }
 
 #[test]
@@ -146,9 +142,9 @@ fn path_stops_at_double_colon_delimiter() {
     let result = parser.parse_single_instruction(input); // Changed to parse_single_instruction
     assert!(result.is_ok(), "Parse failed for input '{}': {:?}", input, result.err());
     let instruction = result.unwrap();
-    assert_eq!(instruction.command_path, vec!["cmd".to_string(), "path".to_string()]);
+    assert_eq!(instruction.command_path_slices, vec!["cmd".to_string(), "path".to_string()]);
     assert_eq!(instruction.named_arguments.len(), 1);
     assert!(instruction.named_arguments.contains_key("arg"));
-    assert_eq!(instruction.named_arguments.get("arg").unwrap(), "val");
-    assert!(instruction.arguments.is_empty());
+    assert_eq!(instruction.named_arguments.get("arg").unwrap().value, "val");
+    assert!(instruction.positional_arguments.is_empty());
 }
