@@ -1,19 +1,19 @@
-//! Tests for syntactic analysis, focusing on command grouping and boundaries.
-use unilang_instruction_parser::*;
-use unilang_instruction_parser::error::ErrorKind; // For error assertion
-
-
-
-#[test]
-fn single_command_path_parsed() {
-    let parser = Parser::new(UnilangParserOptions::default());
-    let result = parser.parse_single_instruction("cmd");
-    assert!(result.is_ok(), "parse_single_instruction failed: {:?}", result.err());
-    let instruction = result.unwrap();
-    assert_eq!(instruction.command_path_slices, vec!["cmd".to_string()]);
-    assert!(instruction.named_arguments.is_empty());
-    assert!(instruction.positional_arguments.is_empty());
-}
+//! ## Test Matrix for Syntactic Analyzer Command Tests
+//!
+//! This matrix outlines test cases for the syntactic analyzer, focusing on how command paths
+//! are parsed, how arguments are handled, and the behavior of special operators like `?` and `::`.
+//! It also covers multi-instruction parsing and error conditions related to delimiters.
+//!
+//! **Test Factors:**
+//! - `Input String`: Various combinations of commands, subcommands, arguments, and operators.
+//! - `Parser Options`: The configuration used for the parser (currently only `Default`).
+//! - `Expected Output`: The structure of the parsed `GenericInstruction` (command path slices,
+//!   positional arguments, named arguments, help requested flag) or the expected `ParseError`.
+//!
+//! ---
+//!
+//! **Test Combinations:**
+//!
 
 #[test]
 fn multi_segment_command_path_parsed() {

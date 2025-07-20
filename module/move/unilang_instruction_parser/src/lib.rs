@@ -1,3 +1,10 @@
+//! This is a parser for Unilang instructions.
+//!
+//! It provides functionality to parse single or multiple instructions from a string,
+//! handling command paths, arguments, and various syntax rules.
+//!
+//! The parser is designed to be robust against various input formats and provides
+//! detailed error reporting for invalid instructions.
 #![ cfg_attr( feature = "no_std", no_std ) ]
 #![ cfg_attr( docsrs, feature( doc_auto_cfg ) ) ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_hr.png" ) ]
@@ -33,10 +40,7 @@ extern crate alloc;
 ///   command path, positional arguments, and named arguments.
 /// - [`Argument`]: Represents a parsed argument (either positional or named).
 /// - [`ParseError`]: Encapsulates parsing errors, including an `ErrorKind` and `SourceLocation`.
-/// - [`SourceLocation`]: Specifies the location of a token or error within the input (either a string span or a slice segment).
-
-
-/// ## Basic Usage Example
+/// - \[`SourceLocation`\]: Specifies the location of a token or error within the input \(either a string span or a slice segment\).\n/// ## Basic Usage Example
 ///
 /// ```rust
 /// use unilang_instruction_parser::{Parser, UnilangParserOptions};

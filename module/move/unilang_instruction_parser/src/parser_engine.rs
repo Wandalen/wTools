@@ -176,7 +176,7 @@ impl Parser
         }
     }
 
-    let command_path_slices = self.parse_command_path( &mut items_iter, instruction_end_location )?;
+    let command_path_slices = Self::parse_command_path( &mut items_iter, instruction_end_location )?;
     let ( positional_arguments, named_arguments, help_operator_found ) = self.parse_arguments( &mut items_iter )?;
 
     Ok( GenericInstruction
@@ -192,7 +192,6 @@ impl Parser
   /// Parses the command path from a peekable iterator of rich items.
   fn parse_command_path
   (
-    &self,
     items_iter : &mut core::iter::Peekable<IntoIter<RichItem<'_>>>,
     instruction_end_location : usize,
   )
@@ -252,6 +251,7 @@ impl Parser
   }
 
   /// Parses arguments from a peekable iterator of rich items.
+  #[ allow( clippy::type_complexity ) ]
   fn parse_arguments
   (
     &self,

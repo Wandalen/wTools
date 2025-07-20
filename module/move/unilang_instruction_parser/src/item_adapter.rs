@@ -57,11 +57,8 @@ impl fmt::Display for UnilangTokenKind
   {
     match self
     {
-      UnilangTokenKind::Identifier( s ) => write!( f, "{s}" ),
-
-      UnilangTokenKind::Operator( s ) => write!( f, "{s}" ),
-      UnilangTokenKind::Delimiter( s ) => write!( f, "{s}" ),
-      UnilangTokenKind::Unrecognized( s ) => write!( f, "{s}" ),
+      UnilangTokenKind::Identifier( s ) | UnilangTokenKind::Unrecognized( s ) => write!( f, "{s}" ),
+      UnilangTokenKind::Operator( s ) | UnilangTokenKind::Delimiter( s ) => write!( f, "{s}" ),
     }
   }
 }
