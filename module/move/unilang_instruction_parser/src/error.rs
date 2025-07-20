@@ -79,6 +79,8 @@ impl fmt::Display for ParseError
     match &self.kind
     {
       ErrorKind::InvalidEscapeSequence( s ) => write!( f, "Invalid escape sequence: {}", s )?,
+      ErrorKind::EmptyInstructionSegment => write!( f, "Empty instruction segment" )?,
+      ErrorKind::TrailingDelimiter => write!( f, "Trailing delimiter" )?,
       _ => write!( f, "{:?}", self.kind )?,
     }
     if let Some( location ) = &self.location

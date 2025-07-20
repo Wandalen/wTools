@@ -13,7 +13,7 @@
 *   **Primary Editable Crate:** `module/move/unilang_instruction_parser`
 *   **Overall Progress:** 1/6 increments complete
 *   **Increment Status:**
-    *   ⏳ Increment 1: Deep Integration with `strs_tools`
+    *   ✅ Increment 1: Deep Integration with `strs_tools`
     *   ⚫ Increment 2: Test Coverage Analysis and Planning
     *   ⚫ Increment 3: Implementation of Missing Tests and Bug Fixes
     *   ⚫ Increment 4: Parser Engine Simplification and Refactoring
@@ -63,6 +63,17 @@
 | `parser_config_entry_tests::parse_single_str_whitespace_input` | Fixed (Monitored) | Test expectation corrected to `Ok` (empty instruction) based on `spec.md` Rule 0. |
 | `parser_config_entry_tests::parse_single_str_comment_input` | Fixed (Monitored) | Test updated to expect error. |
 | `parser_config_entry_tests::parse_single_str_unterminated_quote_passes_to_analyzer` | Fixed (Monitored) | Test updated to expect Ok. |
+| `syntactic_analyzer_command_tests::multi_segment_command_path_parsed` | Fixed (Monitored) | Test expectation corrected: `subcmd` and `another` should be positional arguments, not part of the command path, as they are space-separated. |
+| `syntactic_analyzer_command_tests::command_with_help_operator_parsed` | Fixed (Monitored) | Test expectation corrected: `?` sets `help_requested` flag, not a positional argument. |
+| `syntactic_analyzer_command_tests::command_with_help_operator_and_multi_segment_path` | Fixed (Monitored) | Test expectation corrected: `sub` is positional, `?` sets `help_requested` flag. |
+| `syntactic_analyzer_command_tests::only_help_operator` | Fixed (Monitored) | Test expectation corrected: `?` sets `help_requested` flag, not a positional argument. |
+| `syntactic_analyzer_command_tests::leading_semicolon_error` | Fixed (Monitored) | Test now uses `parse_multiple_instructions` and expects correct error message. |
+| `syntactic_analyzer_command_tests::trailing_semicolon_error_if_empty_segment_is_error` | Fixed (Monitored) | Test now uses `parse_multiple_instructions` and expects correct error message. |
+| `syntactic_analyzer_command_tests::multiple_consecutive_semicolons_error` | Fixed (Monitored) | Test now uses `parse_multiple_instructions` and expects correct error message. |
+| `syntactic_analyzer_command_tests::only_semicolons_error` | Fixed (Monitored) | Test now uses `parse_multiple_instructions` and expects correct error message. |
+| `syntactic_analyzer_command_tests::path_stops_at_double_colon_delimiter` | Fixed (Monitored) | Test expectation corrected: `path` is positional argument, not part of command path. |
+| `syntactic_analyzer_command_tests::multiple_commands_separated_by_semicolon_path_and_help_check` | Fixed (Monitored) | Test expectation corrected: `sub` is positional, `?` sets `help_requested` flag. |
+| `temp_unescape_test::temp_strs_tools_unescaping` | Fixed (Monitored) | `strs_tools` now correctly unescapes `\'`. |
 
 ### Crate Conformance Check Procedure
 *   Step 1: Execute `cargo test -p unilang_instruction_parser --all-targets`. Analyze output for failures. If any, initiate Critical Log Analysis.
@@ -159,6 +170,18 @@
 *   The previous plan was abandoned due to significant architectural drift between the implementation and the crate's public API. This new plan prioritizes fixing the foundation before addressing feature-level bugs.
 
 ### Changelog
+*   [2025-07-20 13:53 UTC] `temp_unescape_test::temp_strs_tools_unescaping` fixed by modifying `strs_tools` to unescape `\'`.
+*   [2025-07-20 13:52 UTC] `syntactic_analyzer_command_tests` error message assertions fixed by updating `ParseError`'s `Display` implementation.
+*   [2025-07-20 13:51 UTC] Test `syntactic_analyzer_command_tests::multi_segment_command_path_parsed` expectation corrected: `subcmd` and `another` should be positional arguments, not part of the command path, as they are space-separated.
+*   [2025-07-20 13:51 UTC] Test `syntactic_analyzer_command_tests::command_with_help_operator_parsed` expectation corrected: `?` sets `help_requested` flag, not a positional argument.
+*   [2025-07-20 13:51 UTC] Test `syntactic_analyzer_command_tests::command_with_help_operator_and_multi_segment_path` expectation corrected: `sub` is positional, `?` sets `help_requested` flag.
+*   [2025-07-20 13:51 UTC] Test `syntactic_analyzer_command_tests::only_help_operator` expectation corrected: `?` sets `help_requested` flag, not a positional argument.
+*   [2025-07-20 13:51 UTC] Test `syntactic_analyzer_command_tests::leading_semicolon_error` now uses `parse_multiple_instructions` and expects correct error message.
+*   [2025-07-20 13:51 UTC] Test `syntactic_analyzer_command_tests::trailing_semicolon_error_if_empty_segment_is_error` now uses `parse_multiple_instructions` and expects correct error message.
+*   [2025-07-20 13:51 UTC] Test `syntactic_analyzer_command_tests::multiple_consecutive_semicolons_error` now uses `parse_multiple_instructions` and expects correct error message.
+*   [2025-07-20 13:51 UTC] Test `syntactic_analyzer_command_tests::only_semicolons_error` now uses `parse_multiple_instructions` and expects correct error message.
+*   [2025-07-20 13:51 UTC] Test `syntactic_analyzer_command_tests::path_stops_at_double_colon_delimiter` expectation corrected: `path` is positional argument, not part of command path.
+*   [2025-07-20 13:51 UTC] Test `syntactic_analyzer_command_tests::multiple_commands_separated_by_semicolon_path_and_help_check` expectation corrected: `sub` is positional, `?` sets `help_requested` flag.
 *   [2025-07-20 13:49 UTC] Test `parser_config_entry_tests::parse_single_str_empty_input` expectation corrected to `Ok` (empty instruction) based on `spec.md` Rule 0 and logical consistency with whitespace.
 *   [2025-07-20 13:48 UTC] Test `parser_config_entry_tests::parse_single_str_whitespace_input` expectation corrected to `Ok` (empty instruction) based on `spec.md` Rule 0.
 *   [2025-07-20 13:46 UTC] Test `parser_config_entry_tests::parse_single_str_whitespace_input` marked as Failing (New).

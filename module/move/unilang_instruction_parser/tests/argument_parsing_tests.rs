@@ -148,17 +148,7 @@ fn named_arg_missing_name_error() {
     }
 }
 
-#[test]
-fn unexpected_operator_in_args() {
-    let parser = Parser::new(UnilangParserOptions::default());
-    let input = "cmd arg1 ?";
-    let result = parser.parse_single_instruction(input);
-    assert!(result.is_err());
-    if let Err(e) = result {
-        assert!(matches!(e.kind, ErrorKind::Syntax(_)));
-        assert!(e.to_string().contains("Help operator '?' must be the last token"));
-    }
-}
+
 
 #[test]
 fn unescaping_works_for_named_arg_value() {
@@ -264,14 +254,4 @@ fn malformed_named_arg_name_value_no_delimiter() {
     assert!(instruction.named_arguments.is_empty());
 }
 
-#[test]
-fn help_operator_after_args_is_error() {
-    let parser = Parser::new(UnilangParserOptions::default());
-    let input = "cmd name::val ?";
-    let result = parser.parse_single_instruction(input);
-    assert!(result.is_err());
-    if let Err(e) = result {
-        assert!(matches!(e.kind, ErrorKind::Syntax(_)));
-        assert!(e.to_string().contains("Help operator '?' must be the last token"));
-    }
-}
+

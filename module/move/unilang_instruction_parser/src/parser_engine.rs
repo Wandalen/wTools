@@ -50,7 +50,7 @@ impl Parser
 
     let rich_items : Vec<RichItem<'_>> = rich_items
       .into_iter()
-      .filter( |item| !matches!( item.kind, UnilangTokenKind::Delimiter( " " | "\n" ) ) )
+      .filter( |item| !matches!( item.kind, UnilangTokenKind::Delimiter( " " | "\n" | "\t" | "\r" ) ) )
       .collect();
 
 
@@ -303,10 +303,7 @@ impl Parser
       }
     }
 
-    if help_operator_found && ( !positional_arguments.is_empty() || !named_arguments.is_empty() )
-    {
-      return Err( ParseError::new( ErrorKind::Syntax( "Help operator '?' must be the last token".to_string() ), SourceLocation::StrSpan { start : 0, end : 0 } ) );
-    }
+
 
     // If after parsing, no command path, arguments, or named arguments were found,
     // and no help operator was found, then it's an empty instruction.

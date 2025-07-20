@@ -41,6 +41,7 @@ mod private
             'n' => output.push( '\n' ),
             't' => output.push( '\t' ),
             'r' => output.push( '\r' ),
+            '\'' => output.push( '\'' ),
             _ =>
             {
               output.push( '\\' );
@@ -310,8 +311,8 @@ mod private
             // if let Some(fcoq) = pending_split.string.chars().next() { self.iterator.active_quote_char = Some(fcoq); }
           }
         }
-        
-        let about_to_process_quote = self.flags.contains(SplitFlags::QUOTING) && self.active_quote_char.is_none() && 
+
+        let about_to_process_quote = self.flags.contains(SplitFlags::QUOTING) && self.active_quote_char.is_none() &&
            self.quoting_prefixes.iter().any(|p| self.iterator.iterable.starts_with(p));
         // Special case: don't generate preserving_empty tokens when the last yielded token was quoted content (empty or not)
         // and we're not about to process a quote. This prevents spurious empty tokens after empty quoted sections.
@@ -319,11 +320,11 @@ mod private
         // For now, focus on the core case: consecutive delimiters only
         // Generate preserving_empty tokens for consecutive delimiters OR before quotes (but not for quoted empty content)
         let has_consecutive_delimiters = self.iterator.delimeter.pos(self.iterator.iterable).is_some_and(|(ds, _)| ds == 0);
-        let preserving_empty_check = self.last_yielded_token_was_delimiter && 
+        let preserving_empty_check = self.last_yielded_token_was_delimiter &&
            self.flags.contains(SplitFlags::PRESERVING_EMPTY) &&
            !last_was_quoted_content &&
            (has_consecutive_delimiters || (about_to_process_quote && !self.iterator.iterable.starts_with("\"\"") && !self.iterator.iterable.starts_with("''") && !self.iterator.iterable.starts_with("``")));
-        
+
         if preserving_empty_check {
           let current_sfi_offset = self.iterator.current_offset;
           let empty_token = Split { string: Cow::Borrowed(""), typ: SplitType::Delimeted, start: current_sfi_offset, end: current_sfi_offset };
@@ -333,7 +334,7 @@ mod private
           self.iterator.counter += 1;
           return Some(empty_token);
         }
-        
+
         self.last_yielded_token_was_delimiter = false;
         let sfi_next_internal_counter_will_be_odd = self.iterator.counter % 2 == 0;
         let sfi_iterable_starts_with_delimiter = self.iterator.delimeter.pos( self.iterator.iterable ).is_some_and( |(d_start, _)| d_start == 0 );
@@ -349,7 +350,7 @@ mod private
               let opening_quote_original_start = self.iterator.current_offset;
               let prefix_len = prefix_str.len();
               let expected_postfix = self.quoting_postfixes[ prefix_idx ];
-              
+
 
               // Consume the opening quote
               self.iterator.current_offset += prefix_len;
@@ -407,7 +408,7 @@ mod private
               {
                 // Content is from start of current iterable to end_idx (before the closing quote)
                 let content = &self.iterator.iterable[ ..end_idx ];
-                
+
                 // Check if this is an adjacent quote scenario (no delimiter follows)
                 let remaining_chars = &self.iterator.iterable[end_idx..];
                 let is_adjacent = if remaining_chars.len() > 1 {
@@ -420,13 +421,13 @@ mod private
                 } else {
                   false
                 };
-                
+
                 let consumed = if is_adjacent {
                   end_idx // Don't consume the quote - it's the start of the next section
                 } else {
                   end_idx + expected_postfix.len() // Normal case - consume the closing quote
                 };
-                
+
                 ( content, consumed )
               }
               else
@@ -444,7 +445,7 @@ mod private
               self.iterator.current_offset += consumed_len_in_sfi_iterable;
               self.iterator.iterable = &self.iterator.iterable[ consumed_len_in_sfi_iterable.. ];
               self.active_quote_char = None; // Reset active quote char
-              
+
 
               if self.flags.contains(SplitFlags::PRESERVING_QUOTING) {
                 let full_quoted_len = prefix_len + quoted_content_str.len() + if end_of_quote_idx.is_some() { expected_postfix.len() } else { 0 };
@@ -464,8 +465,8 @@ mod private
                   end: new_end,
                 });
               }
-              if effective_split_opt.is_some() { 
-                self.last_yielded_token_was_delimiter = false; 
+              if effective_split_opt.is_some() {
+                self.last_yielded_token_was_delimiter = false;
                 self.just_processed_quote = true;
               }
             } else { effective_split_opt = self.iterator.next(); }
@@ -484,7 +485,7 @@ mod private
         }
         let skip = ( current_split.typ == SplitType::Delimeted && current_split.string.is_empty() && !self.flags.contains( SplitFlags::PRESERVING_EMPTY ) )
         || ( current_split.typ == SplitType::Delimiter && !self.flags.contains( SplitFlags::PRESERVING_DELIMITERS ) );
-        if current_split.typ == SplitType::Delimiter { 
+        if current_split.typ == SplitType::Delimiter {
           // Don't set this flag if we just processed a quote, as the quoted content was the last yielded token
           if !self.just_processed_quote {
             self.last_yielded_token_was_delimiter = true;
