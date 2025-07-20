@@ -14,7 +14,7 @@
 *   **Overall Progress:** 1/6 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Deep Integration with `strs_tools`
-    *   ⚫ Increment 2: Test Coverage Analysis and Planning
+    *   ⏳ Increment 2: Test Coverage Analysis and Planning
     *   ⚫ Increment 3: Implementation of Missing Tests and Bug Fixes
     *   ⚫ Increment 4: Parser Engine Simplification and Refactoring
     *   ⚫ Increment 5: Final Polish, Documentation, and Cleanup
@@ -98,51 +98,27 @@
 *   **Steps:**
     1.  Systematically review every rule in `spec.md` Section 2 and Appendix B.
     2.  Map each rule to an existing test case in the project.
-    3.  Identify all rules that are not explicitly and thoroughly tested. Key gaps identified so far include: trailing dots, various help operator usages, behavior of sequential `;;` delimiters, and edge cases with whitespace.
+    3.  Identify all rules that are not explicitly and thoroughly tested.
     4.  Create a comprehensive `Test Matrix` as a markdown table. Each row will represent a missing test case, detailing the input, the specific rule it covers, and the expected outcome (`Ok` or a specific `Err`).
     5.  Update this `task_plan.md` file to include the new `Test Matrix` in a dedicated section.
 *   **Commit Message:** "chore(planning): Analyze test coverage and create Test Matrix for spec adherence"
 
-##### Increment 3: Implementation of Missing Tests and Bug Fixes
-*   **Goal:** To write and pass all the new tests defined in the Test Matrix from Increment 2, fixing any bugs in the parser logic that are uncovered.
-*   **Specification Reference:** `spec.md` Section 2.
-*   **Steps:**
-    1.  Create a new test file: `tests/spec_adherence_tests.rs`.
-    2.  For each entry in the `Test Matrix`, implement the corresponding test case in `spec_adherence_tests.rs`. Initially, expect these tests to fail.
-    3.  Run the new test suite.
-    4.  Iteratively debug and fix the logic in `src/parser_engine.rs` and `src/item_adapter.rs` until all tests in `spec_adherence_tests.rs` and all other existing tests pass.
-*   **Commit Message:** "test(parser): Implement full spec adherence test suite and fix uncovered bugs"
+#### Test Matrix for Missing Test Cases
 
-##### Increment 4: Parser Engine Simplification and Refactoring
-*   **Goal:** With the safety of a complete test suite, refactor the `parser_engine.rs` for simplicity, clarity, and maintainability.
-*   **Specification Reference:** N/A.
-*   **Steps:**
-    1.  Analyze the logic in `parse_single_instruction_from_rich_items` and `parse_multiple_instructions`.
-    2.  Identify areas of unnecessary complexity, suchs as convoluted loops or state management.
-    3.  Refactor the code into smaller, more focused helper functions where appropriate.
-    4.  Improve variable names and add comments to clarify the logic of the parsing state machine.
-    5.  After each significant refactoring step, run the full test suite to ensure no regressions have been introduced.
-*   **Commit Message:** "refactor(parser): Simplify and clarify parser engine logic"
-
-##### Increment 5: Final Polish, Documentation, and Cleanup
-*   **Goal:** To bring the crate to a production-quality standard by fixing all linter warnings, improving documentation, and cleaning up the codebase.
-*   **Specification Reference:** N/A.
-*   **Steps:**
-    1.  Execute `cargo clippy -p unilang_instruction_parser -- -D warnings`.
-    2.  Apply the `Linter Fix & Regression Check Procedure` to resolve every reported clippy warning.
-    3.  Review all public-facing documentation (`lib.rs`, `README.md`, public structs and functions) to ensure it is accurate and reflects the final, stable implementation.
-    4.  Update the examples in `examples/` to be simple and clear.
-    5.  Remove any temporary or debug-related files/code.
-*   **Commit Message:** "chore(parser): Final polish, fix all clippy warnings and update docs"
-
-##### Increment 6: Finalization
-*   **Goal:** To perform a final, holistic review and verification of the entire task's output.
-*   **Specification Reference:** All project requirements.
-*   **Steps:**
-    1.  Perform a self-critique of all changes against the plan's `Goal` and `Expected Behavior Rules`.
-    2.  Execute the full `Crate Conformance Check Procedure` one last time.
-    3.  Execute `git status` to ensure the working directory is clean.
-*   **Commit Message:** "chore(task): Complete stabilization of unilang_instruction_parser"
+| ID | Input | Expected Behavior | Rule(s) Covered | Notes |
+|---|---|---|---|---|
+| TM2.1 | `cmd.sub.another arg` | Path: `["cmd", "sub", "another"]`, Positional: `["arg"]` | 1, 2 | Command path with multiple dot-separated segments followed by a positional argument. |
+| TM2.2 | `cmd arg::val` | Path: `["cmd"]`, Named: `{"arg": "val"}` | 2, 5 | Command path ending with `::` (named argument). |
+| TM2.3 | `cmd "quoted_arg"` | Path: `["cmd"]`, Positional: `["quoted_arg"]` | 2, 5 | Command path ending with a correctly quoted string. |
+| TM2.4 | `cmd #comment` | Error: `Unexpected token '#'` | 2 | Command path ending with `#` (comment operator). |
+| TM2.5 | `cmd.` | Error: `Command path cannot end with a '.'` | 3 | Trailing dot after command path. |
+| TM2.6 | `cmd name::val ?` | Path: `["cmd"]`, Named: `{"name": "val"}`, `help_requested: true` | 4, 5 | Named argument followed by `?`. |
+| TM2.7 | `cmd ? arg` | Error: `Help operator '?' must be the last token` | 4 | Help operator followed by other tokens. |
+| TM2.8 | `cmd name::"value with spaces"` | Path: `["cmd"]`, Named: `{"name": "value with spaces"}` | 5 | Named argument with a simple quoted value (no escapes). |
+| TM2.9 | `cmd msg::"DEPRECATED::message"` | Path: `["cmd"]`, Named: `{"msg": "DEPRECATED::message"}` | 5 | Named argument with quoted value containing `::`. |
+| TM2.10 | `cmd name1::"val1" name2::"val2"` | Path: `["cmd"]`, Named: `{"name1": "val1", "name2": "val2"}` | 5 | Multiple named arguments with simple quoted values. |
+| TM2.11 | `cmd tags::dev,rust,unilang` | Path: `["cmd"]`, Named: `{"tags": "dev,rust,unilang"}` | 5 | Named argument with comma-separated value (syntactically, it's just a string). |
+| TM2.12 | `cmd headers::Content-Type=application/json,Auth-Token=xyz` | Path: `["cmd"]`, Named: `{"headers": "Content-Type=application/json,Auth-Token=xyz"}` | 5 | Named argument with key-value pair string (syntactically, it's just a string). |
 
 ### Task Requirements
 *   Fix all tests and warnings.
@@ -170,6 +146,7 @@
 *   The previous plan was abandoned due to significant architectural drift between the implementation and the crate's public API. This new plan prioritizes fixing the foundation before addressing feature-level bugs.
 
 ### Changelog
+*   [2025-07-20 13:54 UTC] Refactor: Parser now uses `strs_tools` for robust tokenization and unescaping.
 *   [2025-07-20 13:53 UTC] `temp_unescape_test::temp_strs_tools_unescaping` fixed by modifying `strs_tools` to unescape `\'`.
 *   [2025-07-20 13:52 UTC] `syntactic_analyzer_command_tests` error message assertions fixed by updating `ParseError`'s `Display` implementation.
 *   [2025-07-20 13:51 UTC] Test `syntactic_analyzer_command_tests::multi_segment_command_path_parsed` expectation corrected: `subcmd` and `another` should be positional arguments, not part of the command path, as they are space-separated.
