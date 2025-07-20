@@ -16,7 +16,7 @@
 *   **Overall Progress:** 1/6 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Unify Data Structures and Refactor Parser Engine
-    *   ⚫ Increment 2: Implement String Unescaping Logic
+    *   ⏳ Increment 2: Implement String Unescaping Logic
     *   ⚫ Increment 3: Stabilize Core Parsing and Fix Logic Bugs
     *   ⚫ Increment 4: Comprehensive Specification Adherence Testing
     *   ⚫ Increment 5: Final Polish, Documentation, and Cleanup
@@ -72,10 +72,13 @@
 *   **Goal:** To implement and integrate the missing string unescaping functionality, ensuring that all quoted values are correctly processed as per the specification.
 *   **Specification Reference:** `src/instruction.rs` documentation for `Argument::value` (states it is unescaped).
 *   **Steps:**
-    1.  Create a new utility function `unescape_string` in `src/item_adapter.rs`. This function will take a `&str` and return a `Result<String, ParseError>`, handling `\\`, `\"`, `\'`, `\n`, `\t` escape sequences. It should report an `ErrorKind::InvalidEscapeSequence` on failure.
-    2.  In `src/parser_engine.rs`, inside `parse_single_instruction_from_rich_items`, call the new `unescape_string` function on the string value of any token being assigned to an `Argument.value`.
-    3.  Enable the six previously ignored tests related to unescaping in `tests/argument_parsing_tests.rs` and `tests/error_reporting_tests.rs` by removing their `#[ignore]` attributes.
-    4.  Run the tests for those two files specifically to verify the unescaping logic.
+    1.  Read `src/item_adapter.rs`.
+    2.  Add a new public function `unescape_string` to `src/item_adapter.rs`. This function will take a `&str` and a `SourceLocation` and return a `Result<String, ParseError>`. It will handle `\\`, `\"`, `\'`, `\n`, and `\t` escape sequences. If an invalid escape sequence is found, it should return an `Err` with `ErrorKind::InvalidEscapeSequence` and a `SourceLocation` pointing to the invalid sequence.
+    3.  Read `src/parser_engine.rs`.
+    4.  In `parse_single_instruction_from_rich_items`, when creating `Argument` structs for both positional and named arguments, call `item_adapter::unescape_string` on the raw string value before assigning it to the `value` field.
+    5.  Read `tests/argument_parsing_tests.rs` and `tests/error_reporting_tests.rs`.
+    6.  Remove the `#[ignore]` attribute from the six tests related to unescaping.
+    7.  Perform Increment Verification.
 *   **Increment Verification:**
     *   Execute `cargo test -p unilang_instruction_parser --test argument_parsing_tests`.
     *   Execute `cargo test -p unilang_instruction_parser --test error_reporting_tests`.
