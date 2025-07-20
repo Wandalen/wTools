@@ -15,7 +15,6 @@ members = [
   "module/move/sqlx_query",
   "module/move/unilang",
   "module/move/unilang_meta",
-
   "module/move/unitore",
   "module/move/wca",
   "module/move/willbe",
@@ -81,6 +80,10 @@ wildcard_imports = "allow"
 version = "~0.2.0"
 path = "module/core/wtools"
 default-features = false
+
+[workspace.dependencies.unilang_parser]
+version = "~0.1.0"
+path = "module/alias/unilang_parser"
 
 [workspace.dependencies.non_std]
 version = "~0.1.4"
