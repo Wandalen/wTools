@@ -115,10 +115,19 @@ mod private
   ///
   /// # Returns
   /// A Result containing a `PublishPlan` if successful, or an `Error` otherwise.
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if it fails to find packages, read the workspace, or create a temporary directory.
+  ///
+  /// # Panics
+  ///
+  /// Panics if `patterns` is not empty but resolving the first path to a workspace fails,
+  /// or if toposort fails on the dependency graph.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
   pub fn publish_plan
   (
-    patterns : Vec< String >,
+    patterns : &[ String ],
     channel : channel::Channel,
     dry : bool,
     temp : bool
@@ -128,7 +137,7 @@ mod private
   {
     let mut paths = collection::HashSet::new();
     // find all packages by specified folders
-    for pattern in &patterns
+    for pattern in patterns
     {
       let current_path = AbsolutePath::try_from
       (
@@ -175,7 +184,7 @@ mod private
       &graph,
       &packages_to_publish[ .. ]
     );
-    let tmp = subgraph_wanted
+    let tmp_subgraph = subgraph_wanted
     .map
     (
       | _, n |
@@ -212,8 +221,9 @@ mod private
 
     let subgraph = graph::remove_not_required_to_publish
     (
+      &workspace,
       &package_map,
-      &tmp,
+      &tmp_subgraph,
       &packages_to_publish,
       dir.clone(),
     )?;
@@ -246,7 +256,14 @@ mod private
   ///
   /// Publish packages.
   ///
-
+  /// # Errors
+  ///
+  /// Returns an error if any of the publishing steps fail or if cleanup of temporary directories fails.
+  ///
+  /// # Panics
+  ///
+  /// Panics if the report for a successfully published package is missing expected information.
+  #[ allow( clippy::result_large_err ) ]
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
   pub fn publish( plan : publish::PublishPlan )
   ->

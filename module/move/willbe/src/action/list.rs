@@ -438,6 +438,27 @@ mod private
   ///
   /// - `Result<ListReport, (ListReport, Error)>` - A result containing the list report if successful,
   ///   or a tuple containing the list report and error if not successful.
+  /// # Errors
+  ///
+  /// Returns an error if it fails to read the workspace manifest, parse dependencies,
+  /// or if a dependency cycle is detected in topological sort mode.
+  ///
+  /// # Panics
+  ///
+  /// The function may panic if it encounters a package version that cannot be parsed
+  /// into a valid `semver::VersionReq`. This can happen with malformed `Cargo.toml` files.
+  /// 
+  /// # Errors
+  ///
+  /// Returns an error if it fails to read the workspace manifest, parse dependencies,
+  /// or if a dependency cycle is detected in topological sort mode.
+  ///
+  /// # Panics
+  ///
+  /// The function may panic if it encounters a package version that cannot be parsed
+  /// into a valid `semver::VersionReq`. This can happen with malformed `Cargo.toml` files.
+  ///
+  #[ allow( clippy::too_many_lines ) ]
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
   pub fn list_all( args : ListOptions )
   -> ResultWithReport< ListReport, error::untyped::Error > // qqq : should be specific error

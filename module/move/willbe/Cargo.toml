@@ -43,7 +43,6 @@ enabled = [
   "wca/enabled",
   "pth/enabled",
   "process_tools/enabled",
-  "derive_tools/enabled",
   "data_type/enabled",
   "collection_tools/enabled",
   "macro_tools/enabled",
@@ -81,6 +80,7 @@ serde = "1.0" # for CargoMetadata::Package
 parse-display = "0.9" # need because derive_tools don't reexport this correctly
 walkdir = "2.3"
 rustdoc-md = "0.1.0"
+assert_fs = "1.1.3"
 
 ## internal
 # qqq : optimize features
@@ -93,7 +93,7 @@ mod_interface = { workspace = true, features = [ "default" ] }
 wca = { workspace = true, features = [ "default" ] }
 pth = { workspace = true, features = [ "default", "path_utf8" ] }
 process_tools = { workspace = true, features = [ "default" ] }
-derive_tools = { workspace = true, features = [ "derive_display", "derive_from_str", "derive_deref", "derive_from", "derive_as_ref" ] }
+derive_tools = { workspace = true, features = [ "default" ] }  # derive_tools is a basic dependency required for compilation.
 data_type = { workspace = true, features = [ "either" ] }
 collection_tools = { workspace = true, features = [ "collection_constructors", "collection_into_constructors" ] }
 macro_tools = { workspace = true, features = [ "default" ] }

@@ -248,27 +248,49 @@ mod private
     subgraph
   }
 
-  /// Removes nodes that are not required to be published from the graph.
+  /// Filters a dependency graph to retain only the packages that require publishing.
+  ///
+  /// This function traverses the dependency graph starting from the specified `roots`.
+  /// For each package, it determines if a new version needs to be published by
+  /// packaging it locally (`cargo pack`) and comparing it with the latest version on
+  /// crates.io using the `publish_need` function.
+  ///
+  /// A package is retained in the final graph if:
+  /// 1. It has changed since its last publication.
+  /// 2. One of its dependencies requires publishing (thus forcing a version bump).
+  ///
+  /// This helps in creating a minimal publish plan, avoiding unnecessary publications
+  /// of packages that have not changed.
   ///
   /// # Arguments
   ///
-  /// * `package_map` - A reference to a `HashMap` mapping `String` keys to `Package` values.
-  /// * `graph` - A reference to a `Graph` of nodes and edges, where nodes are of type `String` and edges are of type `String`.
-  /// * `roots` - A slice of `String` representing the root nodes of the graph.
+  /// * `workspace` - The workspace context, used to locate the `target` directory for packaging.
+  /// * `package_map` - A map from package names to `Package` details, used for quick lookups.
+  /// * `graph` - The complete dependency graph of the workspace packages.
+  /// * `roots` - A slice of package names that serve as the starting points for the analysis.
+  /// * `temp_path` - An optional path to a temporary directory for `cargo pack` to use,
+  ///   preventing interference between parallel runs.
   ///
   /// # Returns
   ///
-  /// A new `Graph` with the nodes that are not required to be published removed.
+  /// A `Result` containing a new, filtered `Graph` with only the packages that need
+  /// to be published and their inter-dependencies.
   ///
   /// # Errors
-  /// qqq: doc
+  ///
+  /// Returns an `Err` if the `cargo::pack` command fails for any of the packages during the check.
   ///
   /// # Panics
-  /// qqq: doc
+  ///
+  /// This function will panic if:
+  /// - A package name from the graph cannot be found in the `package_map`.
+  /// - The graph is inconsistent and a node index is invalid.
+  /// - The `publish_need` check panics (e.g., due to network issues).
   // qqq : for Bohdan : typed error
   #[ allow( clippy::single_match, clippy::needless_pass_by_value, clippy::implicit_hasher ) ]
   pub fn remove_not_required_to_publish
   (
+    workspace : &Workspace,
     package_map : &HashMap< String, Package< '_ > >,
     graph : &Graph< String, String >,
     roots : &[ String ],
@@ -299,13 +321,13 @@ mod private
         _ = cargo::pack
         (
           cargo::PackOptions::former()
-          .path( package.crate_dir().absolute_path() )
+          .path( package.crate_dir().absolute_path().inner() )
           .option_temp_path( temp_path.clone() )
           .dry( false )
           .allow_dirty( true )
           .form()
         )?;
-        if publish_need( package, temp_path.clone() ).unwrap()
+        if publish_need( package, temp_path.clone(), workspace.target_directory() ).unwrap()
         {
           nodes.insert( n );
         }

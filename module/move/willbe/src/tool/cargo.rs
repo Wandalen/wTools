@@ -75,8 +75,14 @@ mod private
     #[ allow( clippy::if_not_else ) ]
     fn to_pack_args( &self ) -> Vec< String >
     {
+      // Building the full path to Cargo.toml
+      let manifest_path = self.path.join( "Cargo.toml" );
+      let normalized_manifest_path = manifest_path.to_string_lossy().replace( '\\', "/" );
       [ "run".to_string(), self.channel.to_string(), "cargo".into(), "package".into() ]
       .into_iter()
+      // clearly show the way to the manifesto
+      .chain( Some( "--manifest-path".to_string() ) )
+      .chain( Some( normalized_manifest_path ) )
       .chain( if self.allow_dirty { Some( "--allow-dirty".to_string() ) } else { None } )
       .chain( if !self.checking_consistency { Some( "--no-verify".to_string() ) } else { None } )
       .chain( self.temp_path.clone().map( | p | vec![ "--target-dir".to_string(), p.to_string_lossy().into() ] ).into_iter().flatten() )
@@ -91,6 +97,11 @@ mod private
   /// # Args :
   /// - `path` - path to the package directory
   /// - `dry` - a flag that indicates whether to execute the command or not
+  ///
+  // FIX: Added # Errors section for `pack` function
+  /// # Errors
+  ///
+  /// Returns an error if the `rustup ... cargo package` command fails.
   ///
   #[ cfg_attr
   (
@@ -159,14 +170,19 @@ mod private
     }
   }
 
- /// Upload a package to the registry
+  /// Upload a package to the registry
+  // FIX: Added # Errors section for `publish` function
+  /// # Errors
+  ///
+  /// Returns an error if the `cargo publish` command fails after all retry attempts.
+  ///
   #[ cfg_attr
   (
     feature = "tracing",
     track_caller,
     tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
   )]
-  pub fn publish( args : PublishOptions ) -> error::untyped::Result< process::Report >
+  pub fn publish( args : &PublishOptions ) -> error::untyped::Result< process::Report >
   // qqq : use typed error
   {
   

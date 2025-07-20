@@ -390,7 +390,7 @@ mod private
     };
     report.add = git.add;
     report.commit = git.commit;
-    report.publish = match cargo::publish( publish )
+    report.publish = match cargo::publish( &publish )
     {
       Ok( publish ) => Some( publish ),
       Err( e ) =>

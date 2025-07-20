@@ -1,6 +1,6 @@
 use std::*;
 use std::io::Write;
-
+use assert_fs::TempDir;
 use crate::the_module::{ action, channel, package };
 
 enum Dependency
@@ -235,10 +235,9 @@ impl Drop for TestWorkspace
 #[ test ]
 fn kos_plan()
 {
-  let tmp_folder = env::temp_dir().join( "publish_plan_kos_plan" );
-  _ = fs::remove_dir_all( &tmp_folder ).ok();
+  let temp = TempDir::new().unwrap();
   
-  let workspace = TestWorkspace::new( tmp_folder ).unwrap()
+  let workspace = TestWorkspace::new( temp.path() ).unwrap()
   .with_packages(
   [
     TestPackage::new( "a" ),
@@ -256,7 +255,7 @@ fn kos_plan()
   
   let plan = action::publish_plan
   (
-    the_patterns,
+    &the_patterns,
     channel::Channel::Stable,
     false,
     false,

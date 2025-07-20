@@ -99,12 +99,24 @@ mod private
   }
 
   /// Return the differences between a local and remote package versions.
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if there's an issue with path conversion, packing the local crate,
+  /// or if the internal `list` action returns an unexpected format.
+  ///
+  /// # Panics
+  ///
+  /// This function may panic if the internal `list_all` action fails, if it's unable to download
+  /// the package from crates.io, or if a dependency tree walk encounters an unexpected structure.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
   pub fn publish_diff( o : PublishDiffOptions ) -> Result< PublishDiffReport >
   // qqq : don't use 1-prameter Result
   {
     let path = AbsolutePath::try_from( o.path )?;
     let dir = CrateDir::try_from( path.clone() )?;
+
+    let workspace = Workspace::try_from( dir.clone() )?;
 
     let list = action::list_all
     (
@@ -150,7 +162,7 @@ mod private
         .checking_consistency( false )
         .dry( false ).form()
       )?;
-      let l = CrateArchive::read( packed_crate::local_path( name, version, dir )? )?;
+      let l = CrateArchive::read( packed_crate::local_path( name, version, workspace.target_directory() )? )?;
       let r = CrateArchive::download_crates_io( name, version ).unwrap();
 
 
