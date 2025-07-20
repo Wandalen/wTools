@@ -8,7 +8,8 @@ use strs_tools::string::split::{ Split, SplitType };
 use core::fmt;
 
 /// Represents a token with its original split information and classified kind.
-#[ derive( Debug, Clone ) ]
+#[ derive( Debug ) ]
+#[ derive( Clone ) ]
 pub struct RichItem<'a>
 {
   /// The original string split.
@@ -37,7 +38,10 @@ impl<'a> RichItem<'a>
 }
 
 /// Represents the classified kind of a unilang token.
-#[ derive( Debug, PartialEq, Eq, Clone ) ]
+#[ derive( Debug ) ]
+#[ derive( PartialEq ) ]
+#[ derive( Eq ) ]
+#[ derive( Clone ) ]
 pub enum UnilangTokenKind
 {
   /// An identifier (e.g., a command name, argument name, or unquoted value).

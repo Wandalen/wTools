@@ -23,7 +23,7 @@
 ### Progress
 *   **Roadmap Milestone:** M1: Core API Implementation
 *   **Primary Editable Crate:** `module/move/unilang_instruction_parser`
-*   **Overall Progress:** 8/10 increments complete
+*   **Overall Progress:** 9/10 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Deep Integration with `strs_tools`
     *   ✅ Increment 2: Multi-Instruction Parsing and Error Handling
@@ -36,7 +36,7 @@
     *   ✅ Increment 6.1: Focused Debugging: Fix `s6_21_transition_by_non_identifier_token`
     *   ✅ Increment 7: Patch `strs_tools` and Fix Stuck Tests
     *   ✅ Increment 7.1: Focused Debugging: Fix `strs_tools` `Split` struct initialization errors
-    *   ⚫ Increment 8: Final Code Review and Documentation
+    *   ⏳ Increment 8: Final Code Review and Documentation
     *   ⚫ Increment 9: Finalization
 
 ### Permissions & Boundaries
@@ -321,6 +321,8 @@
 *   **[Increment 5.1 | 2025-07-20 19:19 UTC]** The `module/core/strs_tools/tests/smoke_test::debug_strs_tools_trailing_semicolon_space` test was failing because `strs_tools::string::split` produced an extra empty split at the end when there was trailing whitespace after a delimiter, and the `STRIPPING` logic was applied before the `skip` logic. The fix involved moving the `skip` logic to *after* the `STRIPPING` logic in `SplitIterator::next`, ensuring that empty strings resulting from stripping are correctly skipped if `PRESERVING_EMPTY` is false.
 *   **[Increment 6.1 | 2025-07-20 19:34 UTC]** The `s6_21_transition_by_non_identifier_token` test was failing because `parse_command_path` was incorrectly returning an `Invalid identifier` error for `Unrecognized` tokens (like `!`). The fix involved making `parse_command_path` `break` on `Unrecognized` tokens, and reverting `parse_arguments` to only accept `Identifier` for positional arguments.
 *   **[Increment 6.1 | 2025-07-20 19:34 UTC]** The `s6_28_command_path_invalid_identifier_segment` test was failing because `is_valid_identifier` was not correctly disallowing identifiers starting with digits, and `parse_command_path` was not handling `Unrecognized` tokens after a dot correctly. The fix involved updating `is_valid_identifier` to disallow starting with a digit, and making `parse_command_path` return `Invalid identifier` error for `Unrecognized` tokens after a dot.
+*   **[Increment 7.1 | 2025-07-20 20:05 UTC]** Resolved `Split` struct initialization errors in `strs_tools` test files.
+*   **[Increment 8 | 2025-07-20 20:10 UTC]** Reviewed code for adherence to codestyle/design rules, improved doc comments, and ensured no unaddressed markers. Removed debug `println!` statements.
 
 ### Changelog
 *   [Increment 1 | 2025-07-20 14:39 UTC] Integrated `strs_tools` for tokenization and unescaping. Fixed `strs_tools::unescape_str` to correctly handle `\'`. Updated `parse_single_instruction_from_rich_items` to handle empty input and leading dots.
@@ -333,3 +335,4 @@
 *   [Increment 6.1 | 2025-07-20 19:34 UTC] Fixed `s6_21_transition_by_non_identifier_token` and `s6_28_command_path_invalid_identifier_segment` tests.
 *   [Increment 7 | 2025-07-20 19:39 UTC] Reviewed code for adherence to codestyle/design rules, improved doc comments, and ensured no unaddressed markers.
 *   [Increment 7.1 | 2025-07-20 20:05 UTC] Resolved `Split` struct initialization errors in `strs_tools` test files.
+*   [Increment 8 | 2025-07-20 20:10 UTC] Reviewed code for adherence to codestyle/design rules, improved doc comments, and ensured no unaddressed markers. Removed debug `println!` statements.

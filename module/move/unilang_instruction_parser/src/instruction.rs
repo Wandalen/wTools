@@ -8,7 +8,10 @@ use super::error::SourceLocation;
 /// Values are stored as unescaped, owned `String`s. The original source location
 /// of both the name (if applicable) and the value are preserved for error reporting
 /// and potential tooling.
-#[derive(Debug, PartialEq, Clone, Eq)] // Added Eq
+#[ derive( Debug ) ]
+#[ derive( PartialEq ) ]
+#[ derive( Clone ) ]
+#[ derive( Eq ) ]
 pub struct Argument
 {
   /// The name of the argument if it's a named argument (e.g., "name" in "`name::value`").
@@ -32,7 +35,10 @@ pub struct Argument
 /// a collection of named arguments, a list of positional arguments, a flag indicating
 /// if help was requested, and the overall location of the instruction in the source.
 /// All string data (paths, argument names, argument values) is owned.
-#[derive(Debug, PartialEq, Clone, Eq)] // Added Eq
+#[ derive( Debug ) ]
+#[ derive( PartialEq ) ]
+#[ derive( Clone ) ]
+#[ derive( Eq ) ]
 pub struct GenericInstruction
 {
   /// A vector of strings representing the segments of the command path.

@@ -72,7 +72,7 @@ pub mod prelude
 {
   pub use super::config::*;
   pub use super::error::*;
-  // pub use super::instruction::*; // Removed ambiguous re-export
+  pub use super::instruction::{ GenericInstruction, Argument };
   pub use super::item_adapter::*;
   pub use super::parser_engine::*;
 }
