@@ -1,6 +1,6 @@
 [package]
 name = "variadic_from"
-version = "0.31.0"
+version = "0.32.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -49,9 +49,9 @@ derive_variadic_from = [ "type_variadic_from" ]
 [dependencies]
 
 ## internal
-variadic_from_meta = { path = "../variadic_from_meta" }
+variadic_from_meta = { workspace = true }
 
 [dev-dependencies]
 
-
 test_tools = { workspace = true }
+trybuild = { version = "1.0", features = ["diff"] }

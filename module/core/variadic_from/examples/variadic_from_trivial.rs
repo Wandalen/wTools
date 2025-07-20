@@ -10,6 +10,7 @@ fn main(){}
 fn main()
 {
   use variadic_from::exposed::*;
+  use variadic_from_meta::VariadicFrom;
 
   // Define a struct `MyStruct` with a single field `value`.
   // It derives common traits and `VariadicFrom`.
@@ -19,14 +20,14 @@ fn main()
     value : i32,
   }
 
+  // Example with a tuple struct
+  #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
+  struct MyTupleStruct( i32 );
+
   // Test `MyStruct` conversions
   let got : MyStruct = 10.into();
   let exp = MyStruct { value : 10 };
   assert_eq!( got, exp );
-
-  // Example with a tuple struct
-  #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
-  struct MyTupleStruct( i32 );
 
   let got_tuple : MyTupleStruct = 50.into();
   let exp_tuple = MyTupleStruct( 50 );

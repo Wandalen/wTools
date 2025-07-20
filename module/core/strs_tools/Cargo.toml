@@ -24,8 +24,6 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-
-
 [features]
 default = [
   "enabled",
@@ -59,7 +57,6 @@ string_parse = []
 [dependencies]
 lexical = { version = "7.0.4", optional = true }
 component_model_types = { workspace = true, features = ["enabled"] }
-bitflags = "2.5.0"
 
 [dev-dependencies]
 test_tools = { workspace = true }

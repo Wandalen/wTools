@@ -1,6 +1,6 @@
 [package]
 name = "macro_tools"
-version = "0.56.0"
+version = "0.57.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -34,7 +34,7 @@ default = [
   "ct",
   "container_kind",
   "derive",
-  "diag",
+  # "diag", # Reverted: Removed diag from default features
   "equation",
   "generic_args",
   "generic_params",

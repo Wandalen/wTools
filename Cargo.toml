@@ -121,13 +121,13 @@ default-features = false
 ## derive
 
 [workspace.dependencies.derive_tools]
-version = "~0.36.0"
+version = "~0.37.0"
 path = "module/core/derive_tools"
 default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.derive_tools_meta]
-version = "~0.36.0"
+version = "~0.37.0"
 path = "module/core/derive_tools_meta"
 default-features = false
 # features = [ "enabled" ]
@@ -169,8 +169,14 @@ path = "module/alias/fundamental_data_type"
 default-features = false
 
 [workspace.dependencies.variadic_from]
-version = "~0.31.0"
+version = "~0.32.0"
 path = "module/core/variadic_from"
+default-features = false
+# features = [ "enabled" ]
+
+[workspace.dependencies.variadic_from_meta]
+version = "~0.3.0"
+path = "module/core/variadic_from_meta"
 default-features = false
 # features = [ "enabled" ]
 
@@ -229,12 +235,12 @@ path = "module/core/for_each"
 default-features = false
 
 [workspace.dependencies.former]
-version = "~2.18.0"
+version = "~2.19.0"
 path = "module/core/former"
 default-features = false
 
 [workspace.dependencies.former_meta]
-version = "~2.18.0"
+version = "~2.19.0"
 path = "module/core/former_meta"
 default-features = false
 
@@ -268,12 +274,12 @@ version = "~0.13.0"
 path = "module/core/impls_index_meta"
 
 [workspace.dependencies.mod_interface]
-version = "~0.34.0"
+version = "~0.35.0"
 path = "module/core/mod_interface"
 default-features = false
 
 [workspace.dependencies.mod_interface_meta]
-version = "~0.32.0"
+version = "~0.33.0"
 path = "module/core/mod_interface_meta"
 default-features = false
 
@@ -299,7 +305,7 @@ default-features = false
 ## macro tools
 
 [workspace.dependencies.macro_tools]
-version = "~0.56.0"
+version = "~0.57.0"
 path = "module/core/macro_tools"
 default-features = false
 
@@ -466,7 +472,7 @@ default-features = false
 ## ca
 
 [workspace.dependencies.wca]
-version = "~0.25.0"
+version = "~0.26.0"
 path = "module/move/wca"
 
 ## censor
@@ -657,3 +663,12 @@ default-features = false
 # quote = { version = "~1.0.35", default-features = false, features = [] }
 # syn = { version = "~2.0.52", default-features = false, features = [ "full", "extra-traits" ] } # qqq : xxx : optimize set of features
 # const_format = { version = "0.2.32", default-features = false, features = [] }
+
+# [replace]
+# "macro_tools:0.56.0" = { path = "temp_crates/macro_tools_patched" }
+
+
+
+
+
+

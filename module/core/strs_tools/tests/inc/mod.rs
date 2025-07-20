@@ -20,3 +20,5 @@ mod number_test;
 mod parse_test;
 #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 pub mod split_test;
+
+pub mod iterator_vec_delimiter_test;
