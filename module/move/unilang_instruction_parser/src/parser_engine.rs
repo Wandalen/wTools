@@ -69,46 +69,67 @@ impl Parser
     .src( input )
     .delimeter( vec![ ";;" ] )
     .preserving_delimeters( true )
-    .preserving_empty( true )
+    .preserving_empty( false ) // Do not preserve empty segments for whitespace
+    .stripping( true ) // Strip leading/trailing whitespace from delimited segments
     .form()
     .split()
     .collect();
 
     let mut instructions = Vec::new();
-    let mut last_was_delimiter = true;
+    let mut last_was_delimiter = true; // Tracks if the previous segment was a delimiter
+
+    // Handle cases where input is empty or consists only of delimiters/whitespace
+    if segments.is_empty() {
+        return Ok(Vec::new()); // Empty input, no instructions
+    }
+
+    // Check if the first segment is an empty delimited segment (e.g., " ;; cmd")
+    // or if the input starts with a delimiter (e.g., ";; cmd")
+    // This handles "EmptyInstructionSegment" for leading " ;;" or "  ;;"
+    if segments[0].typ == SplitType::Delimiter || (segments[0].typ == SplitType::Delimeted && segments[0].string.trim().is_empty()) {
+        if segments[0].start == 0 { // It's a leading delimiter or empty segment at start
+            return Err( ParseError::new( ErrorKind::EmptyInstructionSegment, SourceLocation::StrSpan { start : segments[0].start, end : segments[0].end } ) );
+        }
+    }
 
     for segment in &segments
     {
-      if segment.typ == SplitType::Delimiter
-      {
-        if last_was_delimiter
+        if segment.typ == SplitType::Delimiter
         {
-          return Err( ParseError::new( ErrorKind::EmptyInstructionSegment, SourceLocation::StrSpan { start : segment.start, end : segment.end } ) );
+            if last_was_delimiter // Consecutive delimiters (e.g., "cmd ;;;; cmd")
+            {
+                return Err( ParseError::new( ErrorKind::EmptyInstructionSegment, SourceLocation::StrSpan { start : segment.start, end : segment.end } ) );
+            }
+            last_was_delimiter = true;
         }
-        last_was_delimiter = true;
-      }
-      else
-      {
-        if segment.string.trim().is_empty() && segment.start == 0 && segment.end == input.len()
+        else // Delimited content
         {
-          // Handle case where input is just "   " or ""
-          return Err( ParseError::new( ErrorKind::Syntax( "Empty instruction".to_string() ), SourceLocation::StrSpan { start : 0, end : 0 } ) );
-        }
-        if segment.string.trim().is_empty() && last_was_delimiter
-        {
-          return Err( ParseError::new( ErrorKind::EmptyInstructionSegment, SourceLocation::StrSpan { start : segment.start, end : segment.end } ) );
-        }
+            // If it's an empty delimited segment (e.g., "cmd ;; ;; cmd")
+            // This handles empty segments *between* delimiters.
+            if segment.string.trim().is_empty()
+            {
+                // Only error if it's an empty segment *between* delimiters, not just trailing whitespace
+                if last_was_delimiter { // This means the previous token was a delimiter
+                    return Err( ParseError::new( ErrorKind::EmptyInstructionSegment, SourceLocation::StrSpan { start : segment.start, end : segment.end } ) );
+                } else {
+                    // This is likely trailing whitespace after an instruction, or leading whitespace before the first instruction.
+                    // We should ignore it, as parse_single_instruction will handle its own trimming.
+                    continue;
+                }
+            }
 
-        let instruction = self.parse_single_instruction( segment.string.as_ref() )?;
-        instructions.push( instruction );
-        last_was_delimiter = false;
-      }
+            let instruction = self.parse_single_instruction( segment.string.as_ref() )?;
+            instructions.push( instruction );
+            last_was_delimiter = false;
+        }
     }
 
-    if last_was_delimiter && !instructions.is_empty()
+    // After the loop, check for a trailing delimiter
+    // This handles "TrailingDelimiter" for "cmd ;;" or "cmd ;;   "
+    if last_was_delimiter && !instructions.is_empty() // If the last token was a delimiter and we parsed at least one instruction
     {
-      let last_segment = segments.last().unwrap();
-      return Err( ParseError::new( ErrorKind::TrailingDelimiter, SourceLocation::StrSpan { start : last_segment.start, end : last_segment.end } ) );
+        let last_segment = segments.last().unwrap(); // This will be the trailing delimiter
+        return Err( ParseError::new( ErrorKind::TrailingDelimiter, SourceLocation::StrSpan { start : last_segment.start, end : last_segment.end } ) );
     }
 
     Ok( instructions )
@@ -130,7 +151,18 @@ impl Parser
     let mut current_instruction_start_location = None;
     let mut last_token_was_dot = false;
 
-    let mut items_iter = rich_items.into_iter().peekable();
+    let mut items_iter = rich_items.clone().into_iter().peekable();
+
+    // Handle optional leading dot as per spec.md Rule 3.1
+    if let Some(first_item) = items_iter.peek() {
+        if let UnilangTokenKind::Delimiter(".") = &first_item.kind {
+            if let SourceLocation::StrSpan { start, end: _ } = first_item.adjusted_source_location.clone() {
+                if start == 0 { // Ensure it's truly a leading dot at the beginning of the input
+                    items_iter.next(); // Consume the leading dot
+                }
+            }
+        }
+    }
 
     // Phase 1: Parse Command Path
     while let Some( item ) = items_iter.peek()
@@ -160,15 +192,7 @@ impl Parser
         },
         UnilangTokenKind::Delimiter( "." ) =>
         {
-          if command_path_slices.is_empty() // This is the first token of the command path
-          {
-            // This is a leading dot. Consume it and do not add to command_path_slices.
-            // It has no semantic meaning.
-            last_token_was_dot = true;
-            items_iter.next(); // Consume item
-            continue; // Continue parsing command path
-          }
-          else if last_token_was_dot // Consecutive dots, e.g., "cmd..sub"
+          if last_token_was_dot // Consecutive dots, e.g., "cmd..sub"
           {
             return Err( ParseError::new( ErrorKind::Syntax( "Unexpected consecutive '.' operator".to_string() ), item.adjusted_source_location.clone() ) );
           }
@@ -292,13 +316,26 @@ impl Parser
       return Err( ParseError::new( ErrorKind::Syntax( "Help operator '?' must be the last token".to_string() ), SourceLocation::StrSpan { start : 0, end : 0 } ) );
     }
 
+    // If after parsing, no command path, arguments, or named arguments were found,
+    // and no help operator was found, then it's an empty instruction.
+    // This handles cases like empty string or just whitespace.
     if command_path_slices.is_empty() && !help_operator_found && positional_arguments.is_empty() && named_arguments.is_empty()
     {
-      return Err( ParseError::new( ErrorKind::Syntax( "Empty instruction".to_string() ), SourceLocation::StrSpan { start : 0, end : 0 } ) );
+      // Special case: if the original input was just a leading dot, it's not an error.
+      // It results in an an empty command path.
+      if rich_items.len() == 1 && matches!(rich_items[0].kind, UnilangTokenKind::Delimiter(".")) {
+          // This case is handled by the overall_location calculation below.
+      } else {
+          return Err( ParseError::new( ErrorKind::Syntax( "Empty instruction".to_string() ), SourceLocation::StrSpan { start : 0, end : 0 } ) );
+      }
     }
 
-    let instruction_end_location = 0; // Placeholder
     let instruction_start_location = current_instruction_start_location.unwrap_or( 0 );
+    let instruction_end_location = if let Some(last_item) = rich_items.last() {
+        last_item.inner.end
+    } else {
+        instruction_start_location // Fallback if no items
+    };
 
     Ok( GenericInstruction
     {

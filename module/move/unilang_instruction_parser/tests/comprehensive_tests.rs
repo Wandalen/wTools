@@ -200,7 +200,6 @@ fn sa1_1_root_namespace_list() {
     assert!(instruction.command_path_slices.is_empty(), "SA1.1 Path for '.' should be empty");
     assert!(instruction.positional_arguments.is_empty(), "SA1.1 Positional args for '.' should be empty");
     assert!(instruction.named_arguments.is_empty(), "SA1.1 Named args for '.' should be empty");
-    // assert!(!instruction.help_requested, "SA1.1 Help requested for '.' should be false"); // Removed
     assert_eq!(instruction.overall_location, SourceLocation::StrSpan { start: 0, end: 1 });
 }
 
