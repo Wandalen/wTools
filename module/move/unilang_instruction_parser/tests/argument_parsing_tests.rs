@@ -35,7 +35,7 @@
 //! | T1.16 | Malformed named arg (no delimiter) | `cmd name value` | Positional | N/A | `(false, false)` | Normal | Malformed (no delimiter) | No | Treated as positional args |
 use unilang_instruction_parser::*;
 // use std::collections::HashMap; // Re-enable for named argument tests
-use unilang_instruction_parser::error::{ErrorKind, SourceLocation};
+use unilang_instruction_parser::error::ErrorKind;
 
 
 

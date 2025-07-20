@@ -64,6 +64,7 @@ mod private
   }
 
   #[cfg(test)]
+  /// Tests the `unescape_str` function.
   pub fn test_unescape_str( input : &str ) -> Cow< '_, str >
   {
     unescape_str( input )

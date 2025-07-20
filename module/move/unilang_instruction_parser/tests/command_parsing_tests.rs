@@ -20,7 +20,7 @@
 //! | T2.5 | Command only | `command`            | `["command"]`                | `[]`                          | Parses command path correctly with no arguments. |
 
 use unilang_instruction_parser::{ Parser, UnilangParserOptions };
-use unilang_instruction_parser::instruction::Argument;
+
 
 fn parse_and_assert( input : &str, expected_path : &[ &str ], expected_args : &[ &str ] )
 {

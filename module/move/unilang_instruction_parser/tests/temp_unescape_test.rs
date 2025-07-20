@@ -14,7 +14,7 @@
 //! | ID | Aspect Tested | Input String | Expected Unescaped String | Notes |
 //! |---|---|---|---|---|
 //! | T6.1 | Basic unescaping | `r#""a\\b\"c\'d\ne\tf""#` | `a\b"c'd\ne\tf` | Verifies handling of common escape sequences. |
-use unilang_instruction_parser::*;
+
 use strs_tools::string::split;
 
 /// Tests basic unescaping of a string containing various escape sequences using `strs_tools`.
@@ -30,7 +30,7 @@ fn temp_strs_tools_unescaping()
     .quoting( true )
     .perform();
 
-    let mut splits = split_iterator.collect::< Vec< _ > >();
+    let splits = split_iterator.collect::< Vec< _ > >();
     assert_eq!(splits.len(), 1);
     let s = &splits[0];
     assert_eq!(s.string, "a\\b\"c'd\ne\tf"); // Expected unescaped by strs_tools

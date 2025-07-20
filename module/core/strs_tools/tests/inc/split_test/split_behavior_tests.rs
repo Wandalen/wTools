@@ -29,7 +29,7 @@
 //! | T2.15 | `into` `u8`                                 | `PRESERVING_EMPTY` | `into<u8>()`        | N/A                 | `1`                     |
 
 use strs_tools::string::split::SplitFlags;
-use std::ops::{ BitOr, BitAnd, Not };
+
 
 /// Tests `contains` method with a single flag.
 /// Test Combination: T2.1

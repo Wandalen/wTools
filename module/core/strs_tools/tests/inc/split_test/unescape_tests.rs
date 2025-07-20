@@ -5,8 +5,6 @@ use strs_tools::string::split::*;
 
 
 
-
-
 #[test]
 fn no_escapes()
 {
@@ -27,7 +25,6 @@ fn valid_escapes()
 }
 
 #[test]
-#[test]
 fn debug_unescape_unterminated_quote_input()
 {
   let input = r#"abc\""#;
@@ -35,6 +32,8 @@ fn debug_unescape_unterminated_quote_input()
   let result = test_unescape_str( input );
   assert_eq!( result, expected );
 }
+
+#[test]
 fn mixed_escapes()
 {
   let input = r#"a\"b\\c\nd"#;

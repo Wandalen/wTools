@@ -40,12 +40,7 @@ use unilang_instruction_parser::error::{ErrorKind, SourceLocation};
 // Removed: use unilang_instruction_parser::error::{ErrorKind, SourceLocation};
 // Removed: use std::collections::HashMap;
 
-fn options_allow_pos_after_named() -> UnilangParserOptions {
-    UnilangParserOptions {
-        error_on_positional_after_named: false,
-        ..Default::default()
-    }
-}
+
 
 fn options_error_on_duplicate_named() -> UnilangParserOptions {
     UnilangParserOptions {
