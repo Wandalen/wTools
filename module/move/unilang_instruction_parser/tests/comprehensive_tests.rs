@@ -1,6 +1,40 @@
-//! Comprehensive test suite for the unilang instruction parser.
-//! Tests are designed based on the Test Matrix in plan.md.
-
+//! ## Test Matrix for Comprehensive Parsing
+//!
+//! This matrix details a comprehensive set of test cases for the Unilang instruction parser,
+//! covering various instruction structures, command path formats, argument types, parser options,
+//! and error conditions.
+//!
+//! **Test Factors:**
+//! - Instruction Structure: Single instruction, Multiple instructions
+//! - Command Path: Simple, Multi-segment, Leading dot, No command path
+//! - Arguments: Positional, Named, Mixed, None
+//! - Argument Value: Unquoted, Quoted, Escaped, Invalid Escape
+//! - Help Operator: Present, Absent
+//! - Parser Options: `error_on_positional_after_named`, `error_on_duplicate_named_arguments`
+//! - Error Conditions: Duplicate named args, Positional after named, Malformed named arg, Comments
+//!
+//! ---
+//!
+//! **Test Combinations:**
+//!
+//! | ID | Aspect Tested | Input String | Instruction Structure | Command Path | Arguments | Argument Value | Help Operator | Parser Options (`pos_after_named`, `dup_named`) | Error Condition | Expected Behavior |
+//! |---|---|---|---|---|---|---|---|---|---|---|
+//! | CT1.1 | Single instruction, unquoted positional arg | `cmd val` | Single | Simple (`cmd`) | Positional | Unquoted | Absent | `(false, false)` | None | Command `cmd`, Positional `val` |
+//! | CT1.2 | Single instruction, multi-path, named arg | `path1 path2 name1::val1` | Single | Simple (`path1`) | Mixed | Unquoted | Absent | `(false, false)` | None | Command `path1`, Positional `path2`, Named `name1::val1` |
+//! | CT1.3 | Single instruction, help operator | `cmd ?` | Single | Simple (`cmd`) | None | N/A | Present | `(false, false)` | None | Command `cmd`, Help requested |
+//! | CT1.4 | Single instruction, quoted positional arg | `cmd "quoted val"` | Single | Simple (`cmd`) | Positional | Quoted | Absent | `(false, false)` | None | Command `cmd`, Positional `"quoted val"` |
+//! | CT1.5 | Single instruction, named arg, escaped val | `cmd name1::"esc\nval"` | Single | Simple (`cmd`) | Named | Escaped | Absent | `(false, false)` | None | Command `cmd`, Named `name1::esc\nval` |
+//! | CT1.6 | Single instruction, named arg, invalid escape | `cmd name1::"bad\xval"` | Single | Simple (`cmd`) | Named | Invalid Escape | Absent | `(false, false)` | None | Command `cmd`, Named `name1::bad\xval` (literal `\x`) |
+//! | CT3.1 | Multi-instruction, basic separator | `cmd1 arg1 ;; cmd2 name::val` | Multiple | Simple (`cmd1`), Simple (`cmd2`) | Positional, Named | Unquoted | Absent | `(false, false)` | None | Two instructions parsed correctly |
+//! | CT4.1 | Duplicate named arg (error) | `cmd name::val1 name::val2` | Single | Simple (`cmd`) | Named | Unquoted | Absent | `(false, true)` | Duplicate named arg | Error: Duplicate named argument 'name' |
+//! | CT4.2 | Duplicate named arg (last wins) | `cmd name::val1 name::val2` | Single | Simple (`cmd`) | Named | Unquoted | Absent | `(false, false)` | None | Last value wins: `val2` |
+//! | CT5.1 | No path, named arg only (error) | `name::val` | Single | No command path | Named | Unquoted | Absent | `(false, false)` | Malformed named arg | Error: Unexpected token '::' in arguments |
+//! | CT6.1 | Command path with dots and args | `cmd.sub.path arg1 name::val` | Single | Multi-segment (`cmd.sub.path`) | Mixed | Unquoted | Absent | `(false, false)` | None | Command `cmd.sub.path`, Positional `arg1`, Named `name::val` |
+//! | SA1.1 | Root namespace list | `.` | Single | Leading dot | None | N/A | Absent | `(false, false)` | None | Empty command path, no args |
+//! | SA1.2 | Root namespace help | `. ?` | Single | Leading dot | None | N/A | Present | `(false, false)` | None | Empty command path, help requested |
+//! | SA2.1 | Whole line comment | `# this is a whole line comment` | Single | N/A | N/A | N/A | Absent | `(false, false)` | Comment | Error: Unexpected token '#' |
+//! | SA2.2 | Comment only line | `#` | Single | N/A | N/A | N/A | Absent | `(false, false)` | Comment | Error: Unexpected token '#' |
+//! | SA2.3 | Inline comment attempt | `cmd arg1 # inline comment` | Single | Simple (`cmd`) | Positional | N/A | Absent | `(false, false)` | Comment | Error: Unexpected token '#' |
 use unilang_instruction_parser::*;
 use unilang_instruction_parser::error::{ErrorKind, SourceLocation};
 // Removed: use unilang_instruction_parser::error::{ErrorKind, SourceLocation};
@@ -20,7 +54,8 @@ fn options_error_on_duplicate_named() -> UnilangParserOptions {
     }
 }
 
-// Test Matrix Row: CT1.1
+/// Tests a single instruction with a single command path and an unquoted positional argument.
+/// Test Combination: CT1.1
 #[test]
 fn ct1_1_single_str_single_path_unquoted_pos_arg() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -35,7 +70,8 @@ fn ct1_1_single_str_single_path_unquoted_pos_arg() {
     // assert!(!instruction.help_requested, "CT1.1 Help requested"); // Removed
 }
 
-// Test Matrix Row: CT1.2
+/// Tests a single instruction with a multi-segment command path and an unquoted named argument.
+/// Test Combination: CT1.2
 #[test]
 fn ct1_2_single_str_multi_path_unquoted_named_arg() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -52,7 +88,8 @@ fn ct1_2_single_str_multi_path_unquoted_named_arg() {
     // assert!(!instruction.help_requested, "CT1.2 Help requested"); // Removed
 }
 
-// Test Matrix Row: CT1.3
+/// Tests a single instruction with a single command path and a help operator, no arguments.
+/// Test Combination: CT1.3
 #[test]
 fn ct1_3_single_str_single_path_help_no_args() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -66,7 +103,8 @@ fn ct1_3_single_str_single_path_help_no_args() {
     assert!(instruction.help_requested, "CT1.3 Help requested should be true"); // Re-enabled
 }
 
-// Test Matrix Row: CT1.4
+/// Tests a single instruction with a single command path and a quoted positional argument.
+/// Test Combination: CT1.4
 #[test]
 fn ct1_4_single_str_single_path_quoted_pos_arg() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -81,7 +119,8 @@ fn ct1_4_single_str_single_path_quoted_pos_arg() {
     // assert!(!instruction.help_requested, "CT1.4 Help requested"); // Removed
 }
 
-// Test Matrix Row: CT1.5
+/// Tests a single instruction with a single command path and a named argument with an escaped value.
+/// Test Combination: CT1.5
 #[test]
 fn ct1_5_single_str_single_path_named_arg_escaped_val() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -97,7 +136,8 @@ fn ct1_5_single_str_single_path_named_arg_escaped_val() {
     // assert!(!instruction.help_requested, "CT1.5 Help requested"); // Removed
 }
 
-// Test Matrix Row: CT1.6
+/// Tests a single instruction with a single command path and a named argument with an invalid escape sequence.
+/// Test Combination: CT1.6
 #[test]
 fn ct1_6_single_str_single_path_named_arg_invalid_escape() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -108,7 +148,8 @@ fn ct1_6_single_str_single_path_named_arg_invalid_escape() {
     assert_eq!(instruction.named_arguments.get("name1").unwrap().value, "bad\\xval".to_string(), "CT1.6 Invalid escape should be literal");
 }
 
-// Test Matrix Row: CT3.1
+/// Tests multiple instructions separated by `;;` with basic command and arguments.
+/// Test Combination: CT3.1
 #[test]
 fn ct3_1_single_str_separator_basic() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -134,7 +175,8 @@ fn ct3_1_single_str_separator_basic() {
     assert_eq!(instr2.named_arguments.get("name").unwrap().value, "val", "CT3.1 Instr2 name value"); // Changed to &str
 }
 
-// Test Matrix Row: CT4.1
+/// Tests that a duplicate named argument results in an error when the option is set.
+/// Test Combination: CT4.1
 #[test]
 fn ct4_1_single_str_duplicate_named_error() {
     let parser = Parser::new(options_error_on_duplicate_named());
@@ -147,7 +189,8 @@ fn ct4_1_single_str_duplicate_named_error() {
     }
 }
 
-// Test Matrix Row: CT4.2
+/// Tests that the last value wins for duplicate named arguments when the option is not set.
+/// Test Combination: CT4.2
 #[test]
 fn ct4_2_single_str_duplicate_named_last_wins() {
     let parser = Parser::new(UnilangParserOptions { error_on_duplicate_named_arguments: false, ..Default::default() }); // Explicitly set to false
@@ -160,7 +203,8 @@ fn ct4_2_single_str_duplicate_named_last_wins() {
     assert_eq!(instruction.named_arguments.get("name").unwrap().value, "val2", "CT4.2 Last value should win"); // Changed to &str
 }
 
-// Test Matrix Row: CT5.1
+/// Tests that an instruction with no command path but only a named argument results in an error.
+/// Test Combination: CT5.1
 #[test]
 fn ct5_1_single_str_no_path_named_arg_only() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -173,7 +217,8 @@ fn ct5_1_single_str_no_path_named_arg_only() {
     }
 }
 
-// Test Matrix Row: CT6.1
+/// Tests a command path with dots and arguments.
+/// Test Combination: CT6.1
 #[test]
 fn ct6_1_command_path_with_dots_and_slashes() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -189,7 +234,8 @@ fn ct6_1_command_path_with_dots_and_slashes() {
     // assert!(!instruction.help_requested, "CT6.1 Help requested"); // Removed
 }
 
-// Test Matrix Row: SA1.1 (Spec Adherence - Root Namespace List)
+/// Tests parsing of a root namespace list instruction (input '.').
+/// Test Combination: SA1.1
 #[test]
 fn sa1_1_root_namespace_list() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -203,7 +249,8 @@ fn sa1_1_root_namespace_list() {
     assert_eq!(instruction.overall_location, SourceLocation::StrSpan { start: 0, end: 1 });
 }
 
-// Test Matrix Row: SA1.2 (Spec Adherence - Root Namespace Help)
+/// Tests parsing of a root namespace help instruction (input '. ?').
+/// Test Combination: SA1.2
 #[test]
 fn sa1_2_root_namespace_help() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -217,7 +264,8 @@ fn sa1_2_root_namespace_help() {
     assert!(instruction.help_requested, "SA1.2 Help requested for '. ?' should be true"); // Re-enabled
 }
 
-// Test Matrix Row: SA2.1 (Spec Adherence - Whole Line Comment)
+/// Tests that a whole line comment results in an error.
+/// Test Combination: SA2.1
 #[test]
 fn sa2_1_whole_line_comment() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -230,7 +278,8 @@ fn sa2_1_whole_line_comment() {
     }
 }
 
-// Test Matrix Row: SA2.2 (Spec Adherence - Comment Only Line)
+/// Tests that a line with only a comment character results in an error.
+/// Test Combination: SA2.2
 #[test]
 fn sa2_2_comment_only_line() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -243,7 +292,8 @@ fn sa2_2_comment_only_line() {
     }
 }
 
-// Test Matrix Row: SA2.3 (Spec Adherence - Inline Comment Attempt)
+/// Tests that an inline comment attempt results in an error.
+/// Test Combination: SA2.3
 #[test]
 fn sa2_3_inline_comment_attempt() {
     let parser = Parser::new(UnilangParserOptions::default());

@@ -485,18 +485,7 @@ mod private
           self.skip_next_spurious_empty = false;
           continue;
         }
-        let skip = ( current_split.typ == SplitType::Delimeted && current_split.string.is_empty() && !self.flags.contains( SplitFlags::PRESERVING_EMPTY ) )
-        || ( current_split.typ == SplitType::Delimiter && !self.flags.contains( SplitFlags::PRESERVING_DELIMITERS ) );
-        if current_split.typ == SplitType::Delimiter {
-          // Don't set this flag if we just processed a quote, as the quoted content was the last yielded token
-          if !self.just_processed_quote {
-            self.last_yielded_token_was_delimiter = true;
-          }
-        }
-        if skip
-        {
-          continue;
-        }
+
         if !quote_handled_by_peek && self.flags.contains(SplitFlags::QUOTING) && current_split.typ == SplitType::Delimiter && self.active_quote_char.is_none() {
           if let Some(_prefix_idx) = self.quoting_prefixes.iter().position(|p| *p == current_split.string.as_ref()) {
             let opening_quote_delimiter = current_split.clone();
@@ -514,6 +503,18 @@ mod private
             current_split.string = Cow::Owned(trimmed_string.to_string());
             current_split.end = current_split.start + current_split.string.len();
           }
+        }
+        let skip = ( current_split.typ == SplitType::Delimeted && current_split.string.is_empty() && !self.flags.contains( SplitFlags::PRESERVING_EMPTY ) )
+        || ( current_split.typ == SplitType::Delimiter && !self.flags.contains( SplitFlags::PRESERVING_DELIMITERS ) );
+        if current_split.typ == SplitType::Delimiter {
+          // Don't set this flag if we just processed a quote, as the quoted content was the last yielded token
+          if !self.just_processed_quote {
+            self.last_yielded_token_was_delimiter = true;
+          }
+        }
+        if skip
+        {
+          continue;
         }
         // Reset the quote flag when returning any token
         self.just_processed_quote = false;

@@ -5,16 +5,34 @@
 //! It also covers multi-instruction parsing and error conditions related to delimiters.
 //!
 //! **Test Factors:**
-//! - `Input String`: Various combinations of commands, subcommands, arguments, and operators.
-//! - `Parser Options`: The configuration used for the parser (currently only `Default`).
-//! - `Expected Output`: The structure of the parsed `GenericInstruction` (command path slices,
-//!   positional arguments, named arguments, help requested flag) or the expected `ParseError`.
+//! - Command Path: Multi-segment, Simple
+//! - Help Operator: Present, Only help operator, Followed by other tokens
+//! - Arguments: Positional, Named, None
+//! - Multi-instruction: Multiple commands, Leading semicolon, Trailing semicolon, Multiple consecutive semicolons, Only semicolons
+//! - Path Termination: Double colon delimiter
 //!
 //! ---
 //!
 //! **Test Combinations:**
 //!
+//! | ID | Aspect Tested | Input String | Command Path | Help Operator | Arguments | Multi-instruction | Path Termination | Expected Behavior |
+//! |---|---|---|---|---|---|---|---|---|
+//! | T5.1 | Multi-segment command path | `cmd subcmd another` | Multi-segment | Absent | Positional | N/A | N/A | Command `cmd`, Positional `subcmd`, `another` |
+//! | T5.2 | Command with help operator | `cmd ?` | Simple | Present | None | N/A | N/A | Command `cmd`, Help requested |
+//! | T5.3 | Command with help operator and multi-segment path | `cmd sub ?` | Simple | Present | Positional | N/A | N/A | Command `cmd`, Positional `sub`, Help requested |
+//! | T5.4 | Only help operator | `?` | None | Only help operator | None | N/A | N/A | Help requested |
+//! | T5.5 | Multiple commands with path and help | `cmd1 ;; cmd2 sub ? ;; cmd3` | Simple | Present | Positional | Multiple commands | N/A | Three instructions parsed, second with help |
+//! | T5.6 | Leading semicolon error | `;; cmd1` | N/A | Absent | N/A | Leading semicolon | N/A | Error: Empty instruction segment |
+//! | T5.7 | Trailing semicolon error | `cmd1 ;;` | N/A | Absent | N/A | Trailing semicolon | N/A | Error: Trailing delimiter |
+//! | T5.8 | Multiple consecutive semicolons error | `cmd1 ;;;; cmd2` | N/A | Absent | N/A | Multiple consecutive semicolons | N/A | Error: Empty instruction segment |
+//! | T5.9 | Only semicolons error | `;;` | N/A | Absent | N/A | Only semicolons | N/A | Error: Empty instruction segment |
+//! | T5.10 | Path stops at double colon delimiter | `cmd path arg::val` | Simple | Absent | Positional, Named | N/A | Double colon | Command `cmd`, Positional `path`, Named `arg::val` |
+use unilang_instruction_parser::*;
+use unilang_instruction_parser::error::ErrorKind;
+use unilang_instruction_parser::UnilangParserOptions;
 
+/// Tests that a multi-segment command path is parsed correctly, with subsequent tokens treated as positional arguments.
+/// Test Combination: T5.1
 #[test]
 fn multi_segment_command_path_parsed() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -28,6 +46,8 @@ fn multi_segment_command_path_parsed() {
     assert_eq!(instruction.positional_arguments[1].value, "another".to_string());
 }
 
+/// Tests that a command followed by a help operator `?` is parsed correctly, setting the `help_requested` flag.
+/// Test Combination: T5.2
 #[test]
 fn command_with_help_operator_parsed() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -40,6 +60,8 @@ fn command_with_help_operator_parsed() {
     assert!(instruction.help_requested); // Corrected: '?' sets help_requested flag
 }
 
+/// Tests that a command with a multi-segment path followed by a help operator `?` is parsed correctly.
+/// Test Combination: T5.3
 #[test]
 fn command_with_help_operator_and_multi_segment_path() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -54,6 +76,8 @@ fn command_with_help_operator_and_multi_segment_path() {
     assert!(instruction.help_requested); // Corrected: '?' sets help_requested flag
 }
 
+/// Tests parsing an input consisting only of the help operator `?`.
+/// Test Combination: T5.4
 #[test]
 fn only_help_operator() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -67,6 +91,8 @@ fn only_help_operator() {
 }
 
 
+/// Tests parsing multiple commands separated by `;;`, including a command with a path and help operator.
+/// Test Combination: T5.5
 #[test]
 fn multiple_commands_separated_by_semicolon_path_and_help_check() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -86,6 +112,8 @@ fn multiple_commands_separated_by_semicolon_path_and_help_check() {
     assert_eq!(instructions[2].command_path_slices, vec!["cmd3".to_string()]);
 }
 
+/// Tests that a leading semicolon `;;` results in an `EmptyInstructionSegment` error.
+/// Test Combination: T5.6
 #[test]
 fn leading_semicolon_error() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -97,6 +125,8 @@ fn leading_semicolon_error() {
     }
 }
 
+/// Tests that a trailing semicolon `;;` results in a `TrailingDelimiter` error.
+/// Test Combination: T5.7
 #[test]
 fn trailing_semicolon_error_if_empty_segment_is_error() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -109,6 +139,8 @@ fn trailing_semicolon_error_if_empty_segment_is_error() {
     }
 }
 
+/// Tests that multiple consecutive semicolons `;;;;` result in an `EmptyInstructionSegment` error.
+/// Test Combination: T5.8
 #[test]
 fn multiple_consecutive_semicolons_error() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -120,6 +152,8 @@ fn multiple_consecutive_semicolons_error() {
     }
 }
 
+/// Tests that an input consisting only of semicolons `;;` or `;;;;` results in an `EmptyInstructionSegment` error.
+/// Test Combination: T5.9
 #[test]
 fn only_semicolons_error() {
     let parser = Parser::new(UnilangParserOptions::default());
@@ -137,8 +171,8 @@ fn only_semicolons_error() {
     }
 }
 
-// Removed parse_slice tests: single_command_slice_input_path_check and multiple_commands_slice_input_path_check
-
+/// Tests that the command path correctly stops at a double colon `::` delimiter, treating subsequent tokens as arguments.
+/// Test Combination: T5.10
 #[test]
 fn path_stops_at_double_colon_delimiter() {
     let parser = Parser::new(UnilangParserOptions::default());
