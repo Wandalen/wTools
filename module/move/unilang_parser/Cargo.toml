@@ -1,5 +1,5 @@
 [package]
-name = "unilang_instruction_parser"
+name = "unilang_parser"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
@@ -10,9 +10,9 @@ keywords = [ "parser", "cli", "unilang", "instructions" ]
 description = """
 Parser for Unilang CLI instruction syntax.
 """
-documentation = "https://docs.rs/unilang_instruction_parser"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/move/unilang_instruction_parser"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/unilang_instruction_parser"
+documentation = "https://docs.rs/unilang_parser"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/move/unilang_parser"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/unilang_parser"
 
 [features]
 default = []
