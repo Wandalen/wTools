@@ -4,7 +4,21 @@ members = [
   "module/alias/*",
   "module/blank/*",
   "module/core/*",
-  "module/move/*",
+  "module/move/crates_tools",
+  "module/move/deterministic_rand",
+  "module/move/graphs_tools",
+  "module/move/gspread",
+  "module/move/optimization_tools",
+  "module/move/plot_interface",
+  "module/move/refiner",
+  "module/move/sqlx_query",
+  "module/move/unilang",
+  "module/move/unilang_meta",
+  "module/move/unilang_parser",
+  "module/move/unitore",
+  "module/move/wca",
+  "module/move/willbe",
+  "module/move/wplot",
   "module/test/*",
   "step",
   "module/move/unilang/tests/dynamic_libs/dummy_lib",
@@ -666,9 +680,3 @@ default-features = false
 
 # [replace]
 # "macro_tools:0.56.0" = { path = "temp_crates/macro_tools_patched" }
-
-
-
-
-
-
