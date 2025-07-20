@@ -136,22 +136,33 @@ impl Parser
   ->
   Result< crate::instruction::GenericInstruction, ParseError >
   {
+    // Handle empty input (after filtering whitespace)
+    if rich_items.is_empty() {
+        return Ok(GenericInstruction {
+            command_path_slices: Vec::new(),
+            positional_arguments: Vec::new(),
+            named_arguments: HashMap::new(),
+            help_requested: false,
+            overall_location: SourceLocation::None, // No specific location for empty input
+        });
+    }
+
+    let instruction_start_location = rich_items.first().map_or(0, |item| item.inner.start);
+    let instruction_end_location = rich_items.last().map_or(instruction_start_location, |item| item.inner.end);
+
     let mut command_path_slices = Vec::new();
     let mut positional_arguments = Vec::new();
     let mut named_arguments = HashMap::new();
     let mut help_operator_found = false;
-    let mut current_instruction_start_location = None;
     let mut last_token_was_dot = false;
 
-    let mut items_iter = rich_items.clone().into_iter().peekable();
+    let mut items_iter = rich_items.into_iter().peekable();
 
     // Handle optional leading dot as per spec.md Rule 3.1
     if let Some(first_item) = items_iter.peek() {
         if let UnilangTokenKind::Delimiter(".") = &first_item.kind {
-            if let SourceLocation::StrSpan { start, end: _ } = first_item.adjusted_source_location.clone() {
-                if start == 0 { // Ensure it's truly a leading dot at the beginning of the input
-                    items_iter.next(); // Consume the leading dot
-                }
+            if first_item.inner.start == 0 { // Ensure it's truly a leading dot at the beginning of the input
+                items_iter.next(); // Consume the leading dot
             }
         }
     }
@@ -159,14 +170,6 @@ impl Parser
     // Phase 1: Parse Command Path
     while let Some( item ) = items_iter.peek()
     {
-      if current_instruction_start_location.is_none()
-      {
-        if let SourceLocation::StrSpan { start, .. } = item.adjusted_source_location.clone()
-        {
-          current_instruction_start_location = Some( start );
-        }
-      }
-
       match &item.kind
       {
         UnilangTokenKind::Identifier( ref s ) =>
@@ -200,7 +203,15 @@ impl Parser
 
     if last_token_was_dot
     {
-      return Err(ParseError::new(ErrorKind::Syntax("Command path cannot end with a '.'".to_string()), SourceLocation::StrSpan { start: 0, end: 0 })); // Location needs fix
+      // Capture the location of the trailing dot for the error message
+      let last_dot_location = if let Some(last_item) = items_iter.peek() { // Peek at the last item if available
+          SourceLocation::StrSpan { start: last_item.inner.start, end: last_item.inner.end }
+      } else {
+          // Fallback if items_iter is empty after consuming the dot.
+          // This might happen if the input was just "cmd."
+          SourceLocation::StrSpan { start: instruction_end_location - 1, end: instruction_end_location } // Approximate, using overall end
+      };
+      return Err(ParseError::new(ErrorKind::Syntax("Command path cannot end with a '.'".to_string()), last_dot_location));
     }
 
     // Phase 2: Parse Arguments
@@ -276,59 +287,17 @@ impl Parser
             });
           }
         },
-        // Quoted values are now handled as Identifiers by strs_tools
-        // UnilangTokenKind::QuotedValue( ref s ) =>
-        // {
-        //   if !named_arguments.is_empty() && self.options.error_on_positional_after_named
-        //   {
-        //     return Err( ParseError::new( ErrorKind::Syntax( "Positional argument after named argument".to_string() ), item.adjusted_source_location.clone() ) );
-        //   }
-        //   positional_arguments.push( Argument
-        //   {
-        //     name : None,
-        //     value : s.clone(),
-        //     name_location : None,
-        //     value_location : item.source_location(),
-        //   });
-        // },
-        UnilangTokenKind::Operator( "?" ) =>
-        {
-          if items_iter.peek().is_some()
+          UnilangTokenKind::Operator( "?" ) =>
           {
-            return Err( ParseError::new( ErrorKind::Syntax( "Help operator '?' must be the last token".to_string() ), item.adjusted_source_location.clone() ) );
-          }
-          help_operator_found = true;
-        },
-        _ => return Err( ParseError::new( ErrorKind::Syntax( format!( "Unexpected token '{}' in arguments", item.inner.string ) ), item.adjusted_source_location.clone() ) ),
+            if items_iter.peek().is_some()
+            {
+              return Err( ParseError::new( ErrorKind::Syntax( "Help operator '?' must be the last token".to_string() ), item.adjusted_source_location.clone() ) );
+            }
+            help_operator_found = true;
+          },
+          _ => return Err( ParseError::new( ErrorKind::Syntax( format!( "Unexpected token '{}' in arguments", item.inner.string ) ), item.adjusted_source_location.clone() ) ),
+        }
       }
-    }
-
-
-
-    // If after parsing, no command path, arguments, or named arguments were found,
-    // and no help operator was found, then it's an empty instruction.
-    // This handles cases like empty string or just whitespace.
-    if command_path_slices.is_empty() && !help_operator_found && positional_arguments.is_empty() && named_arguments.is_empty()
-    {
-      // If rich_items is empty, it means the input was empty or only whitespace.
-      // This should result in an empty instruction, not an error.
-      if rich_items.is_empty() {
-          // This case is handled by the overall_location calculation below.
-      } else if rich_items.len() == 1 && matches!(rich_items[0].kind, UnilangTokenKind::Delimiter(".")) {
-          // Special case: if the original input was just a leading dot, it's not an error.
-          // It results in an an empty command path.
-          // This case is handled by the overall_location calculation below.
-      } else {
-          return Err( ParseError::new( ErrorKind::Syntax( "Empty instruction".to_string() ), SourceLocation::StrSpan { start : 0, end : 0 } ) );
-      }
-    }
-
-    let instruction_start_location = current_instruction_start_location.unwrap_or( 0 );
-    let instruction_end_location = if let Some(last_item) = rich_items.last() {
-        last_item.inner.end
-    } else {
-        instruction_start_location // Fallback if no items
-    };
 
     Ok( GenericInstruction
     {
