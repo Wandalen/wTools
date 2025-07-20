@@ -15,10 +15,11 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/move/unilang_parser` (will become `module/alias/unilang_parser`)
-*   **Overall Progress:** 0/3 increments complete
+*   **Overall Progress:** 2/3 increments complete
 *   **Increment Status:**
-    *   ⚫ Increment 1: Relocate `unilang_parser` and Update References
-    *   ⚫ Increment 2: Create `unilang_instruction_parser` Alias Crate
+    *   ✅ Increment 1: Relocate `unilang_parser` and Update References
+    *   ✅ Increment 2: Create `unilang_instruction_parser` Alias Crate
+    *   ⏳ Increment 2.1: Focused Debugging: `git mv` "source directory is empty" error
     *   ⚫ Increment 3: Finalize and Clean Up
 
 ### Permissions & Boundaries
@@ -55,8 +56,8 @@
     *   `./spec.md`
     *   `./spec_addendum.md`
 *   Files to Include (for AI's reference, if `read_file` is planned):
-    *   `module/move/unilang_parser/Cargo.toml` (will be moved)
-    *   `module/move/unilang_parser/src/lib.rs` (will be moved)
+    *   `module/alias/unilang_parser/Cargo.toml`
+    *   `module/alias/unilang_parser/src/lib.rs`
     *   `module/move/unilang/Cargo.toml`
     *   `module/move/unilang/task/tasks.md`
     *   `Cargo.toml` (workspace root)
@@ -116,6 +117,25 @@
 *   **Increment Verification:**
     *   Run `timeout 90 cargo check --workspace` to ensure the entire workspace can be checked.
 *   **Commit Message:** `feat(unilang_instruction_parser): Create alias crate for unilang_parser`
+
+##### Increment 2.1: Focused Debugging: `git mv` "source directory is empty" error
+*   **Goal:** Diagnose and fix the `git mv` error "fatal: source directory is empty" when moving `module/move/unilang_parser`.
+*   **Specification Reference:** N/A
+*   **Steps:**
+    *   Step 1: Apply Problem Decomposition: The problem is that `git mv` reports the source directory as empty, preventing the move.
+    *   Step 2: Isolate the test case: The specific directory is `module/move/unilang_parser`.
+    *   Step 3: Add targeted debug logging: Use `ls -la module/move/unilang_parser/` to see its contents, including hidden files, and `du -sh module/move/unilang_parser/` to check its size.
+    *   Step 4: Formulate and test a hypothesis:
+        *   Hypothesis 1: The directory is indeed empty, and `ls` is showing a stale cache or a symbolic link.
+        *   Hypothesis 2: The directory contains files, but they are somehow untracked or in a state that `git mv` considers "empty" for its operation (e.g., all files are staged for deletion, or there's a `.git` subdirectory that's causing issues).
+        *   Hypothesis 3: There's a deeper file system corruption or git repository issue.
+    *   Step 5: Based on the output of `ls -la` and `du -sh`, determine the actual state of the directory.
+    *   Step 6: If the directory is not empty, attempt to force `git add` all its contents to ensure they are tracked, then re-attempt `git mv`. If `git add` fails or reports no changes, consider a manual move and then `git add` the new location and `git rm` the old.
+    *   Step 7: Upon successful fix, document the root cause and solution in the `### Notes & Insights` section.
+*   **Increment Verification:**
+    *   Run `ls -F module/alias/unilang_parser/` to confirm the directory exists and contains files.
+    *   Run `ls -F module/move/unilang_parser/` to confirm the old directory is gone.
+*   **Commit Message:** `fix(debug): Resolve git mv 'source directory is empty' error`
 
 ##### Increment 3: Finalize and Clean Up
 *   **Goal:** Perform final verification and clean up any remaining redundant files or references.
@@ -201,3 +221,10 @@
 
 ### Changelog
 *   `[User Feedback | 2025-07-20 21:47 UTC]` User requested moving `unilang_parser` to `module/alias` and making `unilang_instruction_parser` an alias crate.
+*   `[Increment 1 | 2025-07-20 21:47 UTC]` Renamed crate directory `module/move/unilang_parser` to `module/alias/unilang_parser`.
+*   `[Increment 1 | 2025-07-20 21:48 UTC]` Removed `module/move/unilang_parser` from the `members` list in the root `Cargo.toml`.
+*   `[Increment 2 | 2025-07-20 21:48 UTC]` Created directory `module/alias/unilang_instruction_parser`.
+*   `[Increment 2 | 2025-07-20 21:48 UTC]` Created `module/alias/unilang_instruction_parser/Cargo.toml`.
+*   `[Increment 2 | 2025-07-20 21:49 UTC]` Created `module/alias/unilang_instruction_parser/src/lib.rs`.
+*   `[Increment 2 | 2025-07-20 21:49 UTC]` Added `module/alias/unilang_instruction_parser` to the `members` list in the root `Cargo.toml`.
+*   `[Increment 2 | 2025-07-20 21:49 UTC]` Updated path for `unilang_parser` in `module/move/unilang/Cargo.toml`.
