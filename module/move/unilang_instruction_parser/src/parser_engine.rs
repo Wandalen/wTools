@@ -9,22 +9,11 @@ use crate::
   error::{ ErrorKind, ParseError, SourceLocation },
   item_adapter::{ RichItem, UnilangTokenKind },
 };
+use crate::instruction::{ Argument, GenericInstruction };
 use std::collections::HashMap;
 use strs_tools::string::split::{ SplitType, Split };
 
-/// Represents the parsed instruction, including its command path, arguments, and named arguments.
-#[ derive( Debug, PartialEq, Eq, Clone ) ]
-pub struct GenericInstruction
-{
-  /// The command path, e.g., `.` or `cmd.subcmd`.
-  pub command_path : Vec< String >,
-  /// Positional arguments.
-  pub arguments : Vec< String >,
-  /// Named arguments, mapping name to value.
-  pub named_arguments : HashMap< String, String >,
-  /// The source location of the instruction in the original input string.
-  pub source_location : SourceLocation,
-}
+
 
 /// The main parser struct.
 #[ derive( Debug ) ]
@@ -42,7 +31,7 @@ impl Parser
   }
 
   /// Parses a single Unilang instruction from the input string.
-  pub fn parse_single_instruction( &self, input : &str ) -> Result< GenericInstruction, ParseError >
+  pub fn parse_single_instruction( &self, input : &str ) -> Result< crate::instruction::GenericInstruction, ParseError >
   {
     let splits_iter = strs_tools::split()
     .src( input )
@@ -74,7 +63,7 @@ impl Parser
     input : &str,
   )
   ->
-  Result< Vec< GenericInstruction >, ParseError >
+  Result< Vec< crate::instruction::GenericInstruction >, ParseError >
   {
     let splits : Vec< Split<'_> > = strs_tools::split()
     .src( input )
@@ -168,10 +157,10 @@ impl Parser
     rich_items : Vec< RichItem<'_> >,
   )
   ->
-  Result< GenericInstruction, ParseError >
+  Result< crate::instruction::GenericInstruction, ParseError >
   {
-    let mut command_path = Vec::new();
-    let mut arguments = Vec::new();
+    let mut command_path_slices = Vec::new();
+    let mut positional_arguments = Vec::new();
     let mut named_arguments = HashMap::new();
     let mut help_operator_found = false;
     let mut current_instruction_start_location = None;
@@ -192,11 +181,11 @@ impl Parser
 
       match &item.kind
       {
-        UnilangTokenKind::Identifier( s ) =>
+        UnilangTokenKind::Identifier( ref s ) =>
         {
-          if command_path.is_empty() || last_token_was_dot
+          if command_path_slices.is_empty() || last_token_was_dot
           {
-            command_path.push( s.clone() );
+            command_path_slices.push( s.clone() );
             last_token_was_dot = false;
             items_iter.next(); // Consume item
           }
@@ -207,7 +196,7 @@ impl Parser
         },
         UnilangTokenKind::Delimiter( "." ) =>
         {
-          if command_path.is_empty() || last_token_was_dot
+          if command_path_slices.is_empty() || last_token_was_dot
           {
             return Err( ParseError::new( ErrorKind::Syntax( "Unexpected '.' operator".to_string() ), item.adjusted_source_location.clone() ) );
           }
@@ -231,7 +220,7 @@ impl Parser
     {
       match item.kind
       {
-        UnilangTokenKind::Identifier( s ) =>
+        UnilangTokenKind::Identifier( ref s ) =>
         {
           if let Some( next_item ) = items_iter.peek()
           {
@@ -245,13 +234,19 @@ impl Parser
               {
                 match value_item.kind
                 {
-                  UnilangTokenKind::Identifier( val ) | UnilangTokenKind::QuotedValue( val ) =>
+                  UnilangTokenKind::Identifier( ref val ) | UnilangTokenKind::QuotedValue( ref val ) =>
                   {
-                    if named_arguments.contains_key( &arg_name ) && self.options.error_on_duplicate_named_arguments
+                    if named_arguments.contains_key( arg_name ) && self.options.error_on_duplicate_named_arguments
                     {
                       return Err( ParseError::new( ErrorKind::Syntax( format!( "Duplicate named argument '{}'", arg_name ) ), value_item.adjusted_source_location.clone() ) );
                     }
-                    named_arguments.insert( arg_name, val );
+                    named_arguments.insert( arg_name.clone(), Argument
+                    {
+                      name : Some( arg_name.clone() ),
+                      value : val.clone(),
+                      name_location : Some( item.source_location() ),
+                      value_location : value_item.source_location(),
+                    });
                   },
                   _ => return Err( ParseError::new( ErrorKind::Syntax( format!( "Expected value for named argument '{}'", arg_name ) ), value_item.adjusted_source_location.clone() ) )
                 }
@@ -268,7 +263,13 @@ impl Parser
               {
                 return Err( ParseError::new( ErrorKind::Syntax( "Positional argument after named argument".to_string() ), item.adjusted_source_location.clone() ) );
               }
-              arguments.push( s );
+              positional_arguments.push( Argument
+              {
+                name : None,
+                value : s.clone(),
+                name_location : None,
+                value_location : item.source_location(),
+              });
             }
           }
           else
@@ -278,16 +279,28 @@ impl Parser
             {
               return Err( ParseError::new( ErrorKind::Syntax( "Positional argument after named argument".to_string() ), item.adjusted_source_location.clone() ) );
             }
-            arguments.push( s );
+            positional_arguments.push( Argument
+            {
+              name : None,
+              value : s.clone(),
+              name_location : None,
+              value_location : item.source_location(),
+            });
           }
         },
-        UnilangTokenKind::QuotedValue( s ) =>
+        UnilangTokenKind::QuotedValue( ref s ) =>
         {
           if !named_arguments.is_empty() && self.options.error_on_positional_after_named
           {
             return Err( ParseError::new( ErrorKind::Syntax( "Positional argument after named argument".to_string() ), item.adjusted_source_location.clone() ) );
           }
-          arguments.push( s );
+          positional_arguments.push( Argument
+          {
+            name : None,
+            value : s.clone(),
+            name_location : None,
+            value_location : item.source_location(),
+          });
         },
         UnilangTokenKind::Operator( "?" ) =>
         {
@@ -301,12 +314,12 @@ impl Parser
       }
     }
 
-    if help_operator_found && ( !arguments.is_empty() || !named_arguments.is_empty() )
+    if help_operator_found && ( !positional_arguments.is_empty() || !named_arguments.is_empty() )
     {
       return Err( ParseError::new( ErrorKind::Syntax( "Help operator '?' must be the last token".to_string() ), SourceLocation::StrSpan { start : 0, end : 0 } ) );
     }
 
-    if command_path.is_empty() && !help_operator_found && arguments.is_empty() && named_arguments.is_empty()
+    if command_path_slices.is_empty() && !help_operator_found && positional_arguments.is_empty() && named_arguments.is_empty()
     {
       return Err( ParseError::new( ErrorKind::Syntax( "Empty instruction".to_string() ), SourceLocation::StrSpan { start : 0, end : 0 } ) );
     }
@@ -316,10 +329,11 @@ impl Parser
 
     Ok( GenericInstruction
     {
-      command_path,
-      arguments,
+      command_path_slices,
+      positional_arguments,
       named_arguments,
-      source_location : SourceLocation::StrSpan { start : instruction_start_location, end : instruction_end_location },
+      help_requested : help_operator_found,
+      overall_location : SourceLocation::StrSpan { start : instruction_start_location, end : instruction_end_location },
     })
   }
 }

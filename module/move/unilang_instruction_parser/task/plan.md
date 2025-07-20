@@ -1,145 +1,140 @@
-# Project Plan: Fix and Improve `module/move/unilang_instruction_parser`
+# Task Plan: Refactor and Stabilize `unilang_instruction_parser`
 
 ### Goal
-*   Ensure `unilang_instruction_parser` correctly parses instructions according to `module/move/unilang/spec.md`, assuming `strs_tools` dependency functions as specified in its `task.md`.
-*   Fix all remaining test failures and warnings in `unilang_instruction_parser`.
-*   Ensure all tests are enabled and passing.
-*   Maintain concise Readme and useful examples.
+*   To refactor the `unilang_instruction_parser` crate to resolve internal inconsistencies, implement all required functionality according to `spec.md`, and ensure the codebase is robust, fully tested, and maintainable. The final crate will serve as a reliable, specification-compliant parser for the Unilang ecosystem.
+
+### Ubiquitous Language (Vocabulary)
+*   **`spec.md`**: The primary specification document for the Unilang framework.
+*   **`GenericInstruction`**: The structured representation of a single parsed command, as defined in `src/instruction.rs`.
+*   **`Argument`**: The structured representation of a command argument, as defined in `src/instruction.rs`.
+*   **`Parser Engine`**: The core logic within `src/parser_engine.rs` responsible for syntactic analysis.
+*   **`Item Adapter`**: The component in `src/item_adapter.rs` that classifies raw string tokens from `strs_tools`.
+*   **`Unescaping`**: The process of converting escape sequences (e.g., `\"`) into their literal character equivalents (e.g., `"`).
 
 ### Progress
-*   ✅ Initial Plan Created
-*   ✅ Increment 1: Initial Build and Test Check
-*   ✅ Increment 3: Fix Warnings and Test Failures (Trailing Delimiter Bug Fixed)
-*   ✅ Increment 2: Enable Escaped Quote Tests & Verify Fix (Revised)
-*   ✅ Increment 4: Review and Refine Readme
-*   ✅ Increment 5: Organize and Improve Examples
-*   ⚪ Increment 6: Debug and Fix `strs_tools` Escaped Quotes Bug (Superseded by Increment 7 findings and `strs_tools/task.md`)
-*   ⚪ Increment 7: Isolate and Debug Unescaping Issue (Analysis Complete; actionable fix for target crate moved to revised Increment 2)
-*   ✅ Increment 8: Final Checks, Specification Adherence & Cleanup
+*   **Primary Editable Crate:** `module/move/unilang_instruction_parser`
+*   **Overall Progress:** 1/6 increments complete
+*   **Increment Status:**
+    *   ✅ Increment 1: Unify Data Structures and Refactor Parser Engine
+    *   ⚫ Increment 2: Implement String Unescaping Logic
+    *   ⚫ Increment 3: Stabilize Core Parsing and Fix Logic Bugs
+    *   ⚫ Increment 4: Comprehensive Specification Adherence Testing
+    *   ⚫ Increment 5: Final Polish, Documentation, and Cleanup
+    *   ⚫ Increment 6: Finalization
 
-### Target Crate
-*   `module/move/unilang_instruction_parser`
+### Permissions & Boundaries
+*   **Mode:** code
+*   **Run workspace-wise commands:** false
+*   **Add transient comments:** true
+*   **Additional Editable Crates:** None
 
 ### Relevant Context
-*   Files to Include:
+*   Control Files to Reference:
+    *   `module/move/unilang/spec.md`
+    *   `module/move/unilang_instruction_parser/spec_addendum.md`
+*   Files to Include (for AI's reference):
+    *   All files within `module/move/unilang_instruction_parser/src/`
+    *   All files within `module/move/unilang_instruction_parser/tests/`
     *   `module/move/unilang_instruction_parser/Cargo.toml`
-    *   `module/move/unilang_instruction_parser/Readme.md`
-    *   `module/move/unilang_instruction_parser/examples/unilang_instruction_parser_basic.rs`
-    *   `module/move/unilang_instruction_parser/src/config.rs`
-    *   `module/move/unilang_instruction_parser/src/error.rs`
-    *   `module/move/unilang_instruction_parser/src/instruction.rs`
-    *   `module/move/unilang_instruction_parser/src/item_adapter.rs`
-    *   `module/move/unilang_instruction_parser/src/lib.rs`
-    *   `module/move/unilang_instruction_parser/src/parser_engine.rs`
-    *   `module/move/unilang_instruction_parser/tests/argument_parsing_tests.rs`
-    *   `module/move/unilang_instruction_parser/tests/comprehensive_tests.rs`
-    *   `module/move/unilang_instruction_parser/tests/error_reporting_tests.rs`
-    *   `module/move/unilang_instruction_parser/tests/parser_config_entry_tests.rs`
-    *   `module/move/unilang_instruction_parser/tests/syntactic_analyzer_command_tests.rs`
-    *   `module/move/unilang_instruction_parser/tests/tests.rs`
-    *   `module/move/unilang_instruction_parser/tests/inc/mod.rs`
-    *   `module/move/unilang_instruction_parser/tests/debug_unescape_issue.rs`
-    *   `module/core/strs_tools/tests/debug_split_issue.rs` (for understanding interaction if needed)
-    *   `module/core/strs_tools/tests/debug_hang_split_issue.rs` (for understanding interaction if needed)
-    *   `module/move/unilang/spec.md` (Primary specification)
-*   Crates for Documentation:
-    *   `module/move/unilang_instruction_parser`
-    *   `module/core/former` (for example organization reference)
-*   External Crates Requiring `task.md` Proposals:
-    *   `module/core/strs_tools` (Reason: `SplitIterator` needs to correctly handle quoted sections, ignoring internal delimiters. See `module/core/strs_tools/task.md`. Assumed fixed for this plan.)
 
-### Expected Behavior Rules / Specifications (for Target Crate)
-*   All `cargo test` commands for the target crate must pass.
-*   `cargo clippy` for the target crate must report no warnings.
-*   `Readme.md` should be concise, clear, and explain the crate's purpose and basic usage.
-*   Examples should be well-structured, useful, and follow the pattern of `module/core/former/examples`.
-*   Parser must adhere to `module/move/unilang/spec.md`.
+### Expected Behavior Rules / Specifications
+*   The parser **must** produce `instruction::GenericInstruction` and `instruction::Argument` structs as its output.
+*   The parser **must** correctly unescape string values for arguments and subjects according to the specification.
+*   The parser **must** pass all existing and newly created tests.
+*   The parser **must** have no `clippy` warnings with the workspace-defined lints.
+*   The parser's behavior **must** be fully compliant with `module/move/unilang/spec.md`, Section 2.
 
-### Target File Structure (If Applicable, within Target Crate)
-*   `module/move/unilang_instruction_parser/examples/unilang_instruction_parser_basic.rs`
-*   `module/move/unilang_instruction_parser/Readme.md` (modified)
+### Tests
+| Test ID | Status | Notes |
+|---|---|---|
+| | | |
+
+### Crate Conformance Check Procedure
+*   Step 1: Execute `cargo test -p unilang_instruction_parser --all-targets`. Analyze output for failures. If any, initiate Critical Log Analysis.
+*   Step 2: If tests pass, execute `cargo clippy -p unilang_instruction_parser -- -D warnings`. Analyze output for failures. If any, initiate Linter Fix & Regression Check Procedure.
 
 ### Increments
 
-*   ✅ Increment 1: Initial Build and Test Check
-    *   Detailed Plan Step 1: Run `cargo test -p unilang_instruction_parser` to identify failing tests.
-    *   Detailed Plan Step 2: Run `cargo clippy -p unilang_instruction_parser -- -D warnings` to identify warnings.
-    *   Pre-Analysis: Assessed current test and warning status.
-    *   Crucial Design Rules: None specific.
-    *   Relevant Behavior Rules: All `cargo test` commands for the target crate must pass; `cargo clippy` for the target crate must report no warnings.
-    *   Verification Strategy: Analyze `execute_command` output for test failures and warnings.
-    *   Commit Message: "chore(unilang_instruction_parser): Initial build and test check"
+##### Increment 1: Unify Data Structures and Refactor Parser Engine
+*   **Goal:** To refactor the parser engine to eliminate the outdated internal `GenericInstruction` struct and use the official, public-facing data structures from the `instruction` module. This establishes a consistent and correct foundation for future work.
+*   **Specification Reference:** `spec.md` Section 10.2 (Parser Responsibilities), `src/instruction.rs` (as de-facto API contract).
+*   **Steps:**
+    1.  Read the content of `src/parser_engine.rs`.
+    2.  Use `search_and_replace` to remove the local `GenericInstruction` struct definition from `src/parser_engine.rs`.
+    3.  Use `insert_content` to add `use crate::instruction::{ Argument, GenericInstruction };` to `src/parser_engine.rs`.
+    4.  Refactor `parse_single_instruction_from_rich_items` and `parse_multiple_instructions` to construct and return the official `instruction::GenericInstruction` and `instruction::Argument` types. This will involve multiple `search_and_replace` calls to update field names and construction logic (e.g., `command_path` to `command_path_slices`, `arguments` to `positional_arguments`, etc.).
+    5.  Perform Increment Verification.
+*   **Increment Verification:**
+    *   Execute `cargo check -p unilang_instruction_parser`. The command must succeed, confirming the data structure unification and refactoring is syntactically correct.
+*   **Commit Message:** "refactor(parser): Unify data structures to use official instruction types"
 
-*   ✅ Increment 3: Fix Warnings and Test Failures (Trailing Delimiter Bug Fixed)
-    *   Detailed Plan Step 1: Temporarily simplify `analyze_items_to_instructions` in `src/parser_engine.rs` to *only* check for the trailing `;;` condition and return `ErrorKind::TrailingDelimiter` if met, otherwise `Ok(Vec::new())`.
-    *   Detailed Plan Step 2: Run `cargo test -p unilang_instruction_parser --test tests -- empty_instruction_segment_trailing_semicolon_debug -- --nocapture` to verify the simplified logic.
-    *   Pre-Analysis: Previous attempts to fix the trailing delimiter bug have failed. This step aimed to isolate the problem by removing all other parsing logic.
-    *   Crucial Design Rules: None specific.
-    *   Relevant Behavior Rules: The `empty_instruction_segment_trailing_semicolon_debug` test should pass.
-    *   Verification Strategy: Analyze `execute_command` output.
-    *   Commit Message: "fix(unilang_instruction_parser): Debugging trailing semicolon error with simplified parser"
+##### Increment 2: Implement String Unescaping Logic
+*   **Goal:** To implement and integrate the missing string unescaping functionality, ensuring that all quoted values are correctly processed as per the specification.
+*   **Specification Reference:** `src/instruction.rs` documentation for `Argument::value` (states it is unescaped).
+*   **Steps:**
+    1.  Create a new utility function `unescape_string` in `src/item_adapter.rs`. This function will take a `&str` and return a `Result<String, ParseError>`, handling `\\`, `\"`, `\'`, `\n`, `\t` escape sequences. It should report an `ErrorKind::InvalidEscapeSequence` on failure.
+    2.  In `src/parser_engine.rs`, inside `parse_single_instruction_from_rich_items`, call the new `unescape_string` function on the string value of any token being assigned to an `Argument.value`.
+    3.  Enable the six previously ignored tests related to unescaping in `tests/argument_parsing_tests.rs` and `tests/error_reporting_tests.rs` by removing their `#[ignore]` attributes.
+    4.  Run the tests for those two files specifically to verify the unescaping logic.
+*   **Increment Verification:**
+    *   Execute `cargo test -p unilang_instruction_parser --test argument_parsing_tests`.
+    *   Execute `cargo test -p unilang_instruction_parser --test error_reporting_tests`.
+    *   All tests in these files, especially the newly enabled ones, must pass.
+*   **Commit Message:** "feat(parser): Implement and integrate string unescaping logic"
 
-*   ✅ Increment 2: Enable Escaped Quote Tests & Verify Fix (Revised)
-    *   Detailed Plan Step 1: Use `read_file` to get the content of `module/move/unilang_instruction_parser/tests/argument_parsing_tests.rs`.
-    *   Detailed Plan Step 2: Use `read_file` to get the content of `module/move/unilang_instruction_parser/tests/error_reporting_tests.rs`.
-    *   Detailed Plan Step 3: Prepare `apply_diff` operations to remove `#[ignore]` attributes from the following 6 tests:
-        *   In `argument_parsing_tests.rs`: `unescaping_works_for_named_arg_value`, `unescaping_works_for_pos_arg_value`, `unescaping_works_for_subject_value`, `unescaping_works_for_property_key`, `unescaping_works_for_property_value`.
-        *   In `error_reporting_tests.rs`: `positional_arg_with_quoted_escaped_value_location`.
-    *   Detailed Plan Step 4: Apply the diffs using `apply_diff`.
-    *   Detailed Plan Step 5: Use `read_file` to get the content of `module/move/unilang_instruction_parser/src/parser_engine.rs`.
-    *   Detailed Plan Step 6: Analyze `parser_engine.rs` to confirm that `item_adapter::unescape_string_with_errors` is correctly called for the string content of `Split` items of `SplitType::Delimited` when they are identified as quoted arguments or subjects. If not, plan and apply necessary `apply_diff` changes.
-    *   Pre-Analysis: Assuming `strs_tools` now correctly tokenizes strings with escaped quotes (as per `module/core/strs_tools/task.md`). This increment focuses on `unilang_instruction_parser`'s handling and unescaping of these tokens. The 6 tests to un-ignore are: `unescaping_works_for_named_arg_value`, `unescaping_works_for_pos_arg_value`, `unescaping_works_for_subject_value`, `unescaping_works_for_property_key`, `unescaping_works_for_property_value` from `argument_parsing_tests.rs` and `positional_arg_with_quoted_escaped_value_location` from `error_reporting_tests.rs`.
-    *   Crucial Design Rules: Testing: Avoid Writing Automated Tests Unless Asked (ensuring existing tests are enabled).
-    *   Relevant Behavior Rules: All tests are enabled and passing. Parser must adhere to `module/move/unilang/spec.md` regarding unescaping.
-    *   Test Matrix: Not applicable for this increment as we are enabling existing tests, not writing new ones.
-    *   Verification Strategy: Execute `cargo test -p unilang_instruction_parser --test argument_parsing_tests -- --nocapture` and `cargo test -p unilang_instruction_parser --test error_reporting_tests -- --nocapture` via `execute_command`. Analyze output critically.
-    *   Commit Message: "fix(unilang_instruction_parser): Enable and verify escaped quote handling tests"
+##### Increment 3: Stabilize Core Parsing and Fix Logic Bugs
+*   **Goal:** To achieve a fully passing test suite by fixing the logical bugs and inconsistencies in the parser engine, including the known trailing delimiter and span location issues.
+*   **Specification Reference:** `spec.md` Section 2.
+*   **Steps:**
+    1.  Execute the full test suite via `cargo test -p unilang_instruction_parser --all-targets`.
+    2.  For each failing test, apply the `Critical Log Analysis` procedure.
+    3.  **Focus Area 1 (Trailing Delimiter):** Refactor the logic in `parse_multiple_instructions` to be more robust. Simplify the loop and the end-of-input checks to correctly identify and report `ErrorKind::TrailingDelimiter` and `ErrorKind::EmptyInstructionSegment` without panicking or producing incorrect results.
+    4.  **Focus Area 2 (Span Location):** Investigate the `qqq:` comment in `tests/argument_parsing_tests.rs` regarding the incorrect span for `named_arg_with_quoted_escaped_value_location`. Trace the `SourceLocation` from `strs_tools::Split` through `item_adapter::classify_split` to the final `Argument` struct. Correct the logic that calculates or propagates the `end` offset.
+    5.  Iteratively fix bugs until the entire test suite passes.
+*   **Increment Verification:**
+    *   Execute `cargo test -p unilang_instruction_parser --all-targets`. The command must pass with no failing tests.
+*   **Commit Message:** "fix(parser): Stabilize engine, fix trailing delimiter and span location bugs"
 
-*   ✅ Increment 4: Review and Refine Readme
-    *   Detailed Plan Step 1: Read `module/move/unilang_instruction_parser/Readme.md`.
-    *   Detailed Plan Step 2: Draft a concise and clear Readme content that communicates the crate's purpose.
-    *   Detailed Plan Step 3: Use `write_to_file` to update `Readme.md`.
-    *   Pre-Analysis: Assessed current Readme content for clarity and conciseness.
-    *   Crucial Design Rules: Comments and Documentation (focus on rationale, conciseness).
-    *   Relevant Behavior Rules: `Readme.md` should be concise, clear, and explain the crate's purpose and basic usage.
-    *   Verification Strategy: Confirm `write_to_file` success.
-    *   Commit Message: "docs(unilang_instruction_parser): Refine Readme for clarity and conciseness"
+##### Increment 4: Comprehensive Specification Adherence Testing
+*   **Goal:** To guarantee the parser is fully compliant with the language specification by systematically creating and passing tests for every rule defined in `spec.md`.
+*   **Specification Reference:** `spec.md` Section 2.
+*   **Steps:**
+    1.  Create a new test file: `tests/spec_adherence_tests.rs`.
+    2.  Create a checklist of every explicit and implicit rule in `spec.md`, Section 2 (e.g., "Rule 2.3: Trailing dot is a syntax error", "Rule 2.1: Whitespace around dots is ignored", etc.).
+    3.  For each rule on the checklist, review existing tests to see if it's already covered.
+    4.  For any rule not adequately covered, write a new, focused test case in `spec_adherence_tests.rs`.
+    5.  Ensure each new test case asserts the correct behavior (either a specific `Ok(GenericInstruction)` structure or a specific `Err(ParseError)` with the right `ErrorKind`).
+    6.  Run the new test suite and fix any failures in the parser engine until all spec adherence tests pass.
+*   **Increment Verification:**
+    *   Execute `cargo test -p unilang_instruction_parser --test spec_adherence_tests`. The command must pass.
+*   **Commit Message:** "test(parser): Add comprehensive test suite for spec adherence"
 
-*   ✅ Increment 5: Organize and Improve Examples
-    *   Detailed Plan Step 1: Read `module/move/unilang_instruction_parser/examples/unilang_instruction_parser_basic.rs`.
-    *   Detailed Plan Step 2: Review `module/core/former/examples/` for organization patterns.
-    *   Detailed Plan Step 3: Ensure `unilang_instruction_parser_basic.rs` content is simple and illustrative.
-    *   Detailed Plan Step 4: Ensure examples are useful and well-documented.
-    *   Pre-Analysis: Assessed current example quality and organization.
-    *   Crucial Design Rules: Comments and Documentation, Enhancements: Only Implement What’s Requested.
-    *   Relevant Behavior Rules: Examples should be well-structured, useful, and follow the pattern of `module/core/former/examples`.
-    *   Verification Strategy: Run `cargo build -p unilang_instruction_parser --examples` and analyze output.
-    *   Commit Message: "docs(unilang_instruction_parser): Organize and improve examples"
+##### Increment 5: Final Polish, Documentation, and Cleanup
+*   **Goal:** To bring the crate to a production-quality standard by fixing all linter warnings, improving documentation, and cleaning up the codebase.
+*   **Specification Reference:** N/A.
+*   **Steps:**
+    1.  Execute `cargo clippy -p unilang_instruction_parser -- -D warnings`.
+    2.  Apply the `Linter Fix & Regression Check Procedure` to resolve every reported clippy warning.
+    3.  Review all public-facing documentation (`lib.rs`, `README.md`, public structs and functions) to ensure it is accurate, clear, and reflects the now-stable implementation.
+    4.  Update the examples in `examples/` to be simple, clear, and demonstrate the correct and final API usage.
+    5.  Remove any temporary or debug-related files/code that are no longer needed (e.g., `tests/temp_unescape_test.rs` if it exists).
+*   **Increment Verification:**
+    *   Execute `cargo clippy -p unilang_instruction_parser -- -D warnings`. The command must pass with no warnings.
+    *   Execute `cargo test -p unilang_instruction_parser --all-targets`. The command must pass.
+    *   Manually review documentation for clarity and correctness.
+*   **Commit Message:** "chore(parser): Final polish, fix all clippy warnings and update docs"
 
-*   ⚪ Increment 6: Debug and Fix `strs_tools` Escaped Quotes Bug (Superseded)
-    *   Detailed Plan: This increment is superseded by the analysis in Increment 7 and the creation of `module/core/strs_tools/task.md`. The core issue lies in `strs_tools`, which is handled externally.
-
-*   ⚪ Increment 7: Isolate and Debug Unescaping Issue (Analysis Complete)
-    *   Detailed Plan: Analysis confirmed the issue was related to `strs_tools` tokenization and `unilang_instruction_parser`'s unescaping. The `strs_tools` part is covered by `module/core/strs_tools/task.md`. The `unilang_instruction_parser` part (ensuring `parser_engine.rs` calls `unescape_string_with_errors`) is now integrated into the revised Increment 2. Debug test files are preserved.
-
-*   ✅ Increment 8: Final Checks, Specification Adherence & Cleanup
-    *   Detailed Plan Step 1: Execute `cargo clippy -p unilang_instruction_parser -- -D warnings` via `execute_command`. Analyze output. If warnings exist, create sub-steps to fix them (read relevant file, apply diff, re-run clippy).
-    *   Detailed Plan Step 2: Execute `cargo test -p unilang_instruction_parser --all-targets -- --nocapture` via `execute_command`. Analyze output. If tests fail, apply Critical Log Analysis and create sub-steps to fix them.
-    *   Detailed Plan Step 3: Use `read_file` to get the content of `module/move/unilang/spec.md`.
-    *   Detailed Plan Step 4: Use `read_file` to get the content of key source files: `module/move/unilang_instruction_parser/src/parser_engine.rs`, `module/move/unilang_instruction_parser/src/instruction.rs`, `module/move/unilang_instruction_parser/src/item_adapter.rs`, and `module/move/unilang_instruction_parser/src/config.rs`.
-    *   Detailed Plan Step 5: Mentally review the parser's behavior (based on code and test outcomes) against the specifications in `spec.md`. Identify any obvious deviations or specification points not covered by existing tests.
-    *   Detailed Plan Step 6: If significant deviations or critical untested specification points are identified:
-        *   Draft new, focused test case(s) targeting these points. These will likely go into `tests/comprehensive_tests.rs` or a new `tests/spec_adherence_tests.rs` if many are needed.
-        *   Plan `apply_diff` or `append_to_file` to add these tests.
-        *   Execute `cargo test -p unilang_instruction_parser --all-targets -- --nocapture` via `execute_command` to run the new tests.
-        *   If new tests fail, plan and implement fixes in the source code.
-    *   Detailed Plan Step 7: (If any code changes were made in this increment) Re-run `cargo clippy -p unilang_instruction_parser -- -D warnings` and `cargo test -p unilang_instruction_parser --all-targets -- --nocapture` via `execute_command` to ensure no regressions.
-    *   Pre-Analysis: Previous increments are complete. Focus is now on overall crate health, comprehensive testing, and adherence to `spec.md`. The `named_arg_with_quoted_escaped_value_location` test has a `qqq:` comment regarding its span that might need to be addressed if `strs_tools` behavior is confirmed.
-    *   Crucial Design Rules: Adherence to specifications. Testing: Plan with a Test Matrix When Writing Tests (if new tests are added).
-    *   Relevant Behavior Rules: All tests pass, no clippy warnings, behavior matches `spec.md`.
-    *   Test Matrix: (Developed and applied for new tests SA1.1, SA1.2, SA2.1, SA2.2, SA2.3 in `comprehensive_tests.rs`)
-    *   Verification Strategy: Analyze `execute_command` output for `clippy` and `test`. Manual review of code against `spec.md`. Successful execution of any newly added spec-adherence tests.
-    *   Commit Message: "chore(unilang_instruction_parser): Final checks, clippy, all tests pass, spec adherence"
+##### Increment 6: Finalization
+*   **Goal:** To perform a final, holistic review and verification of the entire task's output.
+*   **Specification Reference:** All project requirements.
+*   **Steps:**
+    1.  Perform a self-critique of all changes against the plan's `Goal` and `Expected Behavior Rules`.
+    2.  Execute the full `Crate Conformance Check Procedure` one last time.
+    3.  Execute `git status` to ensure the working directory is clean.
+*   **Increment Verification:**
+    *   All steps of the `Crate Conformance Check Procedure` must pass.
+    *   `git status` must show a clean working tree.
+*   **Commit Message:** "chore(task): Complete refactoring and stabilization of unilang_instruction_parser"
 
 ### Task Requirements
 *   Fix all tests and warnings.
@@ -150,11 +145,24 @@
 *   Examples must be useful for developers.
 
 ### Project Requirements
-*   (No project-wide requirements identified yet)
-*   **New Global Constraint:** Never use `#[allow(clippy::missing_errors_doc)]`.
+*   All code must strictly adhere to the `codestyle` rulebook provided by the user at the start of the task.
+*   Never use `#[allow(clippy::missing_errors_doc)]`.
+
+### Assumptions
+*   The `strs_tools` crate functions correctly as per its own specification for tokenizing quoted strings.
+
+### Out of Scope
+*   Modifying any crate other than `unilang_instruction_parser`.
+*   Implementing features not described in `spec.md`.
+
+### External System Dependencies
+*   None.
 
 ### Notes & Insights
-*   The `task.md` file in the target crate root is ignored for this task.
-*   Debug test files (`debug_unescape_issue.rs`, `debug_split_issue.rs`, `debug_hang_split_issue.rs`) are preserved.
-*   This plan assumes the changes proposed in `module/core/strs_tools/task.md` will be implemented, allowing `unilang_instruction_parser` to proceed.
-*   A `// TODO: qqq:` comment was added to `argument_parsing_tests.rs` for the test `named_arg_with_quoted_escaped_value_location` regarding its `value_location` span expectation, as the parser currently reports `end:46` while the true span seems to be `end:42`. This needs future investigation, possibly related to `strs_tools` behavior for that specific complex input.
+*   The previous plan was abandoned due to significant architectural drift between the implementation and the crate's public API. This new plan prioritizes fixing the foundation before addressing feature-level bugs.
+
+### Changelog
+*   [Increment 1] Refactored `parser_engine.rs` to construct the official `Argument` and `GenericInstruction` structs.
+*   [Increment 1] Updated function signatures in `parser_engine.rs` to use the official `GenericInstruction` type.
+*   [Increment 1] Removed outdated local `GenericInstruction` and imported the official one from the `instruction` module.
+*   [2025-07-20 12:33 UTC] Initial plan created to refactor and stabilize the crate.
