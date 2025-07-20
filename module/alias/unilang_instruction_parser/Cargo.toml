@@ -1,0 +1,21 @@
+[package]
+name = "unilang_instruction_parser"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+readme = "Readme.md"
+authors = [ "Kostiantyn Wandalen <wandalen@obox.systems>" ]
+categories = [ "parsing", "command-line-interface" ]
+keywords = [ "parser", "cli", "unilang", "instructions" ]
+description = """
+Alias crate for `unilang_parser`. Re-exports `unilang_parser` for backward compatibility.
+"""
+documentation = "https://docs.rs/unilang_instruction_parser"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/alias/unilang_instruction_parser"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/alias/unilang_instruction_parser"
+
+[dependencies]
+unilang_parser = { path = "../unilang_parser" }
+
+[lints]
+workspace = true
