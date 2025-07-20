@@ -115,9 +115,7 @@ pub fn classify_split( s : &Split<'_> ) -> Result<( UnilangTokenKind, SourceLoca
     {
       if s.typ == SplitType::Delimeted
       {
-        if s.was_quoted {
-          Ok(( UnilangTokenKind::Identifier( s.string.to_string() ), original_location ))
-        } else if is_valid_identifier(s.string.as_ref()) {
+        if s.was_quoted || is_valid_identifier(s.string.as_ref()) {
           Ok(( UnilangTokenKind::Identifier( s.string.to_string() ), original_location ))
         } else {
           Ok(( UnilangTokenKind::Unrecognized( s.string.to_string() ), original_location ))

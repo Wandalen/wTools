@@ -42,7 +42,7 @@
 *   **Overall Progress:** 1/2 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Fix Compiler Warnings
-    *   ⚫ Increment 2: Finalization
+    *   ⏳ Increment 2: Finalization
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -52,10 +52,10 @@
     *   `module/core/strs_tools` (Reason: Contains warnings that need to be resolved as part of this task.)
 
 ### Relevant Context
-*   Control Files to Reference (if they exist):
+*   Control Files to Reference (if any):
     *   `./roadmap.md`
     *   `./spec.md`
-    *   `./spec_addendum.md`
+    *   `./spec_adendum.md`
 *   Files to Include (for AI's reference, if `read_file` is planned):
     *   `module/move/unilang_instruction_parser/src/lib.rs`
     *   `module/move/unilang_instruction_parser/src/config.rs`
