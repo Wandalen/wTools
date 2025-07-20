@@ -13,7 +13,7 @@
 *   **ParseError:** A custom error type used by the parser to report various parsing failures, including `ErrorKind` and `SourceLocation`.
 *   **ErrorKind:** An enum within `ParseError` that categorizes the type of parsing failure (e.g., `Syntax`, `EmptyInstruction`, `TrailingDelimiter`).
 *   **UnilangTokenKind:** An enum classifying the type of a token (e.g., `Identifier`, `Operator`, `Delimiter`, `Unrecognized`).
-*   **Whitespace Separation:** The rule that whitespace acts as a separator between tokens, not part of the token's value unless explicitly quoted.
+*   **Whitespace Separation:** The rule that whitespace acts as a separator between tokens, not part of the token's value unless the token is explicitly quoted.
 *   **Trailing Dot:** A syntax error where a command path ends with a dot (`.`).
 *   **Empty Instruction Segment:** An error occurring when a segment between `;;` delimiters is empty or contains only whitespace.
 *   **Trailing Delimiter:** An error occurring when the input ends with a `;;` delimiter.
@@ -23,7 +23,7 @@
 ### Progress
 *   **Roadmap Milestone:** M1: Core API Implementation
 *   **Primary Editable Crate:** `module/move/unilang_instruction_parser`
-*   **Overall Progress:** 7/8 increments complete
+*   **Overall Progress:** 8/10 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Deep Integration with `strs_tools`
     *   ✅ Increment 2: Multi-Instruction Parsing and Error Handling
@@ -34,8 +34,10 @@
     *   ✅ Increment 5.2: External Crate Change Proposal: `strs_tools` `Split::was_quoted`
     *   ✅ Increment 6: Comprehensive Test Coverage for `spec.md` Rules
     *   ✅ Increment 6.1: Focused Debugging: Fix `s6_21_transition_by_non_identifier_token`
-    *   ⏳ Increment 7: Final Code Review and Documentation
-    *   ⏳ Increment 8: Finalization
+    *   ✅ Increment 7: Patch `strs_tools` and Fix Stuck Tests
+    *   ✅ Increment 7.1: Focused Debugging: Fix `strs_tools` `Split` struct initialization errors
+    *   ⚫ Increment 8: Final Code Review and Documentation
+    *   ⚫ Increment 9: Finalization
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -104,13 +106,13 @@
 | `s6_24_named_arg_value_with_double_colon` | Fixed (Monitored) | Parser failed to parse named argument value with `::`. Fixed by allowing `Unrecognized` tokens as named argument values in `parser_engine.rs`. |
 | `s6_25_named_arg_value_with_commas` | Fixed (Monitored) | Parser failed to parse named argument value with commas. Fixed by allowing `Unrecognized` tokens as named argument values in `parser_engine.rs`. |
 | `s6_26_named_arg_value_with_key_value_pair` | Fixed (Monitored) | Parser failed to parse named argument value with key-value pairs. Fixed by allowing `Unrecognized` tokens as named argument values in `parser_engine.rs`. |
-| `s6_2_whitespace_in_quoted_positional_arg` | Failing (Stuck) | Parser returns `Unexpected token 'val with spaces'` for a quoted positional argument. This is because `parse_arguments` is not correctly handling `Unrecognized` tokens for positional arguments, and `item_adapter` cannot distinguish quoted strings from invalid identifiers without `strs_tools::Split::was_quoted`. This test requires the `strs_tools` change proposal to be implemented. |
+| `s6_2_whitespace_in_quoted_positional_arg` | Fixed (Monitored) | Parser returns `Unexpected token 'val with spaces'` for a quoted positional argument. This is because `parse_arguments` is not correctly handling `Unrecognized` tokens for positional arguments, and `item_adapter` cannot distinguish quoted strings from invalid identifiers without `strs_tools::Split::was_quoted`. This test requires the `strs_tools` change proposal to be implemented. |
 | `tm2_11_named_arg_with_comma_separated_value` | Fixed (Monitored) | Parser failed to parse named argument value with commas. Fixed by allowing `Unrecognized` tokens as named argument values in `parser_engine.rs`. |
 | `tm2_12_named_arg_with_key_value_pair_string` | Fixed (Monitored) | Parser failed to parse named argument value with key-value pairs. Fixed by allowing `Unrecognized` tokens as named argument values in `parser_engine.rs`. |
 | `tm2_8_named_arg_with_simple_quoted_value` | Fixed (Monitored) | Parser failed to parse simple quoted named argument value. Fixed by allowing `Unrecognized` tokens as named argument values in `parser_engine.rs`. |
 | `tm2_9_named_arg_with_quoted_value_containing_double_colon` | Fixed (Monitored) | Parser failed to parse named argument value with `::`. Fixed by allowing `Unrecognized` tokens as named argument values in `parser_engine.rs`. |
-| `positional_arg_with_quoted_escaped_value_location` | Failing (Stuck) | Parser returns `Unexpected token 'a\b"c'd\ne\tf'` for a quoted positional argument. This is because `parse_arguments` is not correctly handling `Unrecognized` tokens for positional arguments, and `item_adapter` cannot distinguish quoted strings from invalid identifiers without `strs_tools::Split::was_quoted`. This test requires the `strs_tools` change proposal to be implemented. |
-| `unescaping_works_for_positional_arg_value` | Failing (Stuck) | Parser returns `Unexpected token 'a\b"c'd\ne\tf'` for a quoted positional argument. This is because `parse_arguments` is not correctly handling `Unrecognized` tokens for positional arguments, and `item_adapter` cannot distinguish quoted strings from invalid identifiers without `strs_tools::Split::was_quoted`. This test requires the `strs_tools` change proposal to be implemented. |
+| `positional_arg_with_quoted_escaped_value_location` | Fixed (Monitored) | Parser returns `Unexpected token 'a\b"c'd\ne\tf'` for a quoted positional argument. This is because `parse_arguments` is not correctly handling `Unrecognized` tokens for positional arguments, and `item_adapter` cannot distinguish quoted strings from invalid identifiers without `strs_tools::Split::was_quoted`. This test requires the `strs_tools` change proposal to be implemented. |
+| `unescaping_works_for_positional_arg_value` | Fixed (Monitored) | Parser returns `Unexpected token 'a\b"c'd\ne\tf'` for a quoted positional argument. This is because `parse_arguments` is not correctly handling `Unrecognized` tokens for positional arguments, and `item_adapter` cannot distinguish quoted strings from invalid identifiers without `strs_tools::Split::was_quoted`. This test requires the `strs_tools` change proposal to be implemented. |
 
 ### Crate Conformance Check Procedure
 *   1.  **Run Tests:** For the `Primary Editable Crate` (`unilang_instruction_parser`) and `Additional Editable Crate` (`strs_tools`), execute `timeout 90 cargo test -p {crate_name} --all-targets`.
@@ -229,7 +231,40 @@
     *   Step F: Upon successful fix, document the root cause and solution in the `### Notes & Insights` section.
 *   **Commit Message:** `fix(unilang_instruction_parser): Resolve stuck test s6_21_transition_by_non_identifier_token`
 
-##### Increment 7: Final Code Review and Documentation
+##### Increment 7: Patch `strs_tools` and Fix Stuck Tests
+*   **Goal:** To unblock the `Failing (Stuck)` tests by locally patching the `strs_tools` crate with the proposed `was_quoted` feature, and then implementing the necessary logic in `unilang_instruction_parser` to fix the tests.
+*   **Specification Reference:** `spec.md` Rule 2.
+*   **Steps:**
+    *   Step 1: Read `module/core/strs_tools/src/string/split.rs` and `module/move/unilang_instruction_parser/src/item_adapter.rs`.
+    *   Step 2: In `module/core/strs_tools/src/string/split.rs`, modify the `Split` struct to include `pub was_quoted : bool,`.
+    *   Step 3: In the `SplitIterator::next` method within `split.rs`, track when a split is generated from a quoted string and set the `was_quoted` field to `true` on the returned `Split` instance. For all other cases, set it to `false`.
+    *   Step 4: In `module/move/unilang_instruction_parser/src/item_adapter.rs`, modify the `classify_split` function. Add a condition to check `if split.was_quoted`. If it is `true`, classify the token as `UnilangTokenKind::Identifier`, regardless of its content. This ensures quoted strings are treated as single identifiers.
+    *   Step 5: Perform Increment Verification.
+    *   Step 6: Perform Crate Conformance Check.
+*   **Increment Verification:**
+    *   Step 1: Execute `timeout 90 cargo test -p unilang_instruction_parser --test spec_adherence_tests -- --exact s6_2_whitespace_in_quoted_positional_arg` and analyze the output for success.
+    *   Step 2: Execute `timeout 90 cargo test -p unilang_instruction_parser --test argument_parsing_tests -- --exact positional_arg_with_quoted_escaped_value_location` and analyze the output for success.
+    *   Step 3: Execute `timeout 90 cargo test -p unilang_instruction_parser --test temp_unescape_test -- --exact unescaping_works_for_positional_arg_value` and analyze the output for success.
+    *   Step 4: If all tests pass, the verification is successful.
+*   **Commit Message:** `fix(parser): Implement was_quoted in strs_tools and fix quoted argument parsing`
+
+##### Increment 7.1: Focused Debugging: Fix `strs_tools` `Split` struct initialization errors
+*   **Goal:** Diagnose and fix the `Failing (Stuck)` compilation errors in `module/core/strs_tools/src/string/split.rs` related to missing `was_quoted` field initializations.
+*   **Specification Reference:** N/A.
+*   **Steps:**
+    *   Step A: Apply Problem Decomposition. The problem is a compilation error due to missing field initializations. I need to find all `Split` struct instantiations and add `was_quoted: false` to them.
+    *   Step B: Isolate the problem. The problem is in `module/core/strs_tools/src/string/split.rs`.
+    *   Step C: Read `module/core/strs_tools/src/string/split.rs` to get the latest content.
+    *   Step D: Search for all instances of `Split { ... }` and ensure `was_quoted: false` is present.
+    *   Step E: Apply `search_and_replace` for any missing initializations.
+    *   Step F: Perform Increment Verification.
+    *   Step G: Upon successful fix, document the root cause and solution in the `### Notes & Insights` section.
+*   **Increment Verification:**
+    *   Step 1: Execute `timeout 90 cargo build -p strs_tools` and analyze the output for success (no compilation errors).
+    *   Step 2: Execute `timeout 90 cargo test -p strs_tools --all-targets` and analyze the output for success.
+*   **Commit Message:** `fix(strs_tools): Resolve Split struct initialization errors`
+
+##### Increment 8: Final Code Review and Documentation
 *   **Goal:** Conduct a thorough code review of the entire `unilang_instruction_parser` crate, ensuring adherence to all codestyle and design rules. Improve internal and external documentation.
 *   **Specification Reference:** N/A (Code quality and documentation).
 *   **Steps:**
@@ -240,7 +275,7 @@
     *   Step 5: Perform Crate Conformance Check.
 *   **Commit Message:** `docs(unilang_instruction_parser): Improve documentation and code quality`
 
-##### Increment 8: Finalization
+##### Increment 9: Finalization
 *   **Goal:** Perform a final, holistic review and verification of the entire task's output, including a self-critique against all requirements and a full run of the `Crate Conformance Check`.
 *   **Specification Reference:** N/A.
 *   **Steps:**
@@ -248,7 +283,7 @@
     *   Step 2: Execute Test Quality and Coverage Evaluation.
     *   Step 3: Full Conformance Check: Run `Crate Conformance Check Procedure` on all `Editable Crates`.
     *   Step 4: Final Output Cleanliness Check.
-    *   Step 5: Dependency Cleanup (if applicable).
+    *   Step 5: Dependency Cleanup: Since `strs_tools` was directly modified as an editable crate, no `[patch]` section needs to be reverted. This step is complete.
     *   Step 6: Final Status Check: `git status`.
 *   **Commit Message:** `chore(unilang_instruction_parser): Finalize task and verify all requirements`
 
@@ -297,3 +332,4 @@
 *   [Increment 5.2 | 2025-07-20 19:28 UTC] Created change proposal for `strs_tools` to add `Split::was_quoted` field.
 *   [Increment 6.1 | 2025-07-20 19:34 UTC] Fixed `s6_21_transition_by_non_identifier_token` and `s6_28_command_path_invalid_identifier_segment` tests.
 *   [Increment 7 | 2025-07-20 19:39 UTC] Reviewed code for adherence to codestyle/design rules, improved doc comments, and ensured no unaddressed markers.
+*   [Increment 7.1 | 2025-07-20 20:05 UTC] Resolved `Split` struct initialization errors in `strs_tools` test files.

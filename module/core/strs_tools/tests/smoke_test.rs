@@ -31,7 +31,7 @@ fn debug_strs_tools_semicolon_only() {
     use std::borrow::Cow;
 
     let expected = vec![
-        Split { string: Cow::Borrowed(";;"), typ: SplitType::Delimiter, start: 0, end: 2 },
+        Split { string: Cow::Borrowed(";;"), typ: SplitType::Delimiter, start: 0, end: 2, was_quoted: false },
     ];
     assert_eq!(splits, expected);
 }
@@ -55,8 +55,8 @@ fn debug_strs_tools_trailing_semicolon_space() {
     use std::borrow::Cow;
 
     let expected = vec![
-        Split { string: Cow::Borrowed("cmd1"), typ: SplitType::Delimeted, start: 0, end: 4 },
-        Split { string: Cow::Borrowed(";;"), typ: SplitType::Delimiter, start: 5, end: 7 },
+        Split { string: Cow::Borrowed("cmd1"), typ: SplitType::Delimeted, start: 0, end: 4, was_quoted: false },
+        Split { string: Cow::Borrowed(";;"), typ: SplitType::Delimiter, start: 5, end: 7, was_quoted: false },
     ];
     assert_eq!(splits, expected);
 }
@@ -80,7 +80,7 @@ fn debug_strs_tools_only_semicolon() {
     use std::borrow::Cow;
 
     let expected = vec![
-        Split { string: Cow::Borrowed(";;"), typ: SplitType::Delimiter, start: 0, end: 2 },
+        Split { string: Cow::Borrowed(";;"), typ: SplitType::Delimiter, start: 0, end: 2, was_quoted: false },
     ];
     assert_eq!(splits, expected);
 }

@@ -6,7 +6,10 @@
 use core::fmt;
 
 /// Represents a span of characters in the source string.
-#[ derive( Debug, PartialEq, Eq, Clone ) ]
+#[ derive( Debug ) ]
+#[ derive( PartialEq ) ]
+#[ derive( Eq ) ]
+#[ derive( Clone ) ]
 pub struct StrSpan
 {
   /// Starting byte index of the span.
@@ -16,7 +19,10 @@ pub struct StrSpan
 }
 
 /// Represents a location in the source string.
-#[ derive( Debug, PartialEq, Eq, Clone ) ]
+#[ derive( Debug ) ]
+#[ derive( PartialEq ) ]
+#[ derive( Eq ) ]
+#[ derive( Clone ) ]
 pub enum SourceLocation
 {
   /// A span of characters.
@@ -44,7 +50,10 @@ impl fmt::Display for SourceLocation
 }
 
 /// Kinds of parsing errors.
-#[ derive( Debug, PartialEq, Eq, Clone ) ]
+#[ derive( Debug ) ]
+#[ derive( PartialEq ) ]
+#[ derive( Eq ) ]
+#[ derive( Clone ) ]
 pub enum ErrorKind
 {
   /// Syntax error.
@@ -60,7 +69,10 @@ pub enum ErrorKind
 }
 
 /// Represents a parsing error with its kind and location.
-#[ derive( Debug, PartialEq, Eq, Clone ) ]
+#[ derive( Debug ) ]
+#[ derive( PartialEq ) ]
+#[ derive( Eq ) ]
+#[ derive( Clone ) ]
 pub struct ParseError
 {
   /// The kind of error.

@@ -4,7 +4,9 @@
 //! customization of the parsing behavior, such as delimiters, whitespace
 //! handling, and error policies.
 
-#[ derive( Clone, PartialEq, Eq ) ]
+#[ derive( Clone ) ]
+#[ derive( PartialEq ) ]
+#[ derive( Eq ) ]
 /// Configuration options for the Unilang parser.
 #[ derive( Debug ) ]
 pub struct UnilangParserOptions
