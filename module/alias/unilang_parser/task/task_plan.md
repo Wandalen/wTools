@@ -15,10 +15,10 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/move/unilang_parser` (will become `module/alias/unilang_parser`)
-*   **Overall Progress:** 1/3 increments complete
+*   **Overall Progress:** 0/3 increments complete
 *   **Increment Status:**
-    *   ✅ Increment 1: Relocate `unilang_parser` and Update References
-    *   ⏳ Increment 2: Create `unilang_instruction_parser` Alias Crate
+    *   ⚫ Increment 1: Relocate `unilang_parser` and Update References
+    *   ⚫ Increment 2: Create `unilang_instruction_parser` Alias Crate
     *   ⚫ Increment 3: Finalize and Clean Up
 
 ### Permissions & Boundaries
@@ -55,8 +55,8 @@
     *   `./spec.md`
     *   `./spec_addendum.md`
 *   Files to Include (for AI's reference, if `read_file` is planned):
-    *   `module/alias/unilang_parser/Cargo.toml`
-    *   `module/alias/unilang_parser/src/lib.rs`
+    *   `module/move/unilang_parser/Cargo.toml` (will be moved)
+    *   `module/move/unilang_parser/src/lib.rs` (will be moved)
     *   `module/move/unilang/Cargo.toml`
     *   `module/move/unilang/task/tasks.md`
     *   `Cargo.toml` (workspace root)
@@ -201,5 +201,3 @@
 
 ### Changelog
 *   `[User Feedback | 2025-07-20 21:47 UTC]` User requested moving `unilang_parser` to `module/alias` and making `unilang_instruction_parser` an alias crate.
-*   `[Increment 1 | 2025-07-20 21:47 UTC]` Renamed crate directory `module/move/unilang_parser` to `module/alias/unilang_parser`.
-*   `[Increment 1 | 2025-07-20 21:48 UTC]` Removed `module/move/unilang_parser` from the `members` list in the root `Cargo.toml`.

@@ -14,7 +14,7 @@ members = [
   "module/move/sqlx_query",
   "module/move/unilang",
   "module/move/unilang_meta",
-  "module/move/unilang_parser",
+
   "module/move/unitore",
   "module/move/wca",
   "module/move/willbe",
