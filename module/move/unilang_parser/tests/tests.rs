@@ -1,4 +1,4 @@
-//! ## Test Matrix for `unilang_instruction_parser` Test Suite
+//! ## Test Matrix for `unilang_parser` Test Suite
 //!
 //! This matrix provides an overview of the main test modules included in this test suite
 //! and their primary testing focus.
@@ -22,7 +22,7 @@
 //! | T7.7 | `spec_adherence_tests` | Tests adherence to the Unilang specification rules. |
 //! | T7.8 | `temp_unescape_test` | Temporary test for `strs_tools` unescaping behavior. |
 
-// Main test harness for unilang_instruction_parser
+// Main test harness for unilang_parser
 //
 // Individual test files are included as modules
 #[path = "parser_config_entry_tests.rs"]

@@ -27,9 +27,9 @@
 //! | T5.8 | Multiple consecutive semicolons error | `cmd1 ;;;; cmd2` | N/A | Absent | N/A | Multiple consecutive semicolons | N/A | Error: Empty instruction segment |
 //! | T5.9 | Only semicolons error | `;;` | N/A | Absent | N/A | Only semicolons | N/A | Error: Empty instruction segment |
 //! | T5.10 | Path stops at double colon delimiter | `cmd path arg::val` | Simple | Absent | Positional, Named | N/A | Double colon | Command `cmd`, Positional `path`, Named `arg::val` |
-use unilang_instruction_parser::*;
-use unilang_instruction_parser::error::ErrorKind;
-use unilang_instruction_parser::UnilangParserOptions;
+use unilang_parser::*;
+use unilang_parser::error::ErrorKind;
+use unilang_parser::UnilangParserOptions;
 
 /// Tests that a multi-segment command path is parsed correctly, with subsequent tokens treated as positional arguments.
 /// Test Combination: T5.1

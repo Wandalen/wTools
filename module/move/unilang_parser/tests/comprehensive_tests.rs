@@ -35,9 +35,9 @@
 //! | SA2.1 | Whole line comment | `# this is a whole line comment` | Single | N/A | N/A | N/A | Absent | `(false, false)` | Comment | Error: Unexpected token '#' |
 //! | SA2.2 | Comment only line | `#` | Single | N/A | N/A | N/A | Absent | `(false, false)` | Comment | Error: Unexpected token '#' |
 //! | SA2.3 | Inline comment attempt | `cmd arg1 # inline comment` | Single | Simple (`cmd`) | Positional | N/A | Absent | `(false, false)` | Comment | Error: Unexpected token '#' |
-use unilang_instruction_parser::*;
-use unilang_instruction_parser::error::{ErrorKind, SourceLocation};
-// Removed: use unilang_instruction_parser::error::{ErrorKind, SourceLocation};
+use unilang_parser::*;
+use unilang_parser::error::{ErrorKind, SourceLocation};
+// Removed: use unilang_parser::error::{ErrorKind, SourceLocation};
 // Removed: use std::collections::HashMap;
 
 

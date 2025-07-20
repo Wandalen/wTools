@@ -19,9 +19,9 @@
 //! | T1.4 | Simple command       | `"command"`               | Default        | `Ok`, command path `["command"]`                      |
 //! | T1.5 | Unterminated quote   | `"command \"unterminated"`| Default        | `Ok`, command path `["command"]`, positional arg `["unterminated"]` |
 
-use unilang_instruction_parser::*;
-use unilang_instruction_parser::error::ErrorKind; // Added for error assertion
-use unilang_instruction_parser::UnilangParserOptions;
+use unilang_parser::*;
+use unilang_parser::error::ErrorKind; // Added for error assertion
+use unilang_parser::UnilangParserOptions;
 
 // Define default_options function
 

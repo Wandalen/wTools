@@ -1,11 +1,11 @@
-//! Basic usage example for the `unilang_instruction_parser` crate.
+//! Basic usage example for the `unilang_parser` crate.
 //!
 //! This example demonstrates:
 //! - Creating a `Parser` with default options.
 //! - Parsing a single complex instruction string.
 //! - Printing the parsed `GenericInstruction` objects.
 
-use unilang_instruction_parser::{Parser, UnilangParserOptions};
+use unilang_parser::{Parser, UnilangParserOptions};
 
 fn main() {
     // 1. Create a parser with default options

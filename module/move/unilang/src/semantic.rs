@@ -4,7 +4,7 @@
 
 use crate::data::{ CommandDefinition, ErrorData };
 use crate::error::Error;
-use unilang_instruction_parser::{GenericInstruction}; // Removed Argument as ParserArgument
+use unilang_parser::{GenericInstruction}; // Removed Argument as ParserArgument
 use crate::registry::CommandRegistry;
 use crate::types::{ self, Value };
 use std::collections::HashMap;
@@ -85,7 +85,7 @@ impl< 'a > SemanticAnalyzer< 'a >
   ///
   /// This function checks for the correct number and types of arguments,
   /// returning an error if validation fails.
-  
+
   fn bind_arguments( instruction : &GenericInstruction, command_def : &CommandDefinition ) -> Result< HashMap< String, Value >, Error >
   {
     let mut bound_args = HashMap::new();

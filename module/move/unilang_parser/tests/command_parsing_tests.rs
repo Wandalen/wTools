@@ -19,7 +19,7 @@
 //! | T2.4 | Infix dot command with args | `command.sub arg1`   | `["command", "sub"]`         | `["arg1"]`                    | Parses command path with infix dot and positional arguments correctly. |
 //! | T2.5 | Command only | `command`            | `["command"]`                | `[]`                          | Parses command path correctly with no arguments. |
 
-use unilang_instruction_parser::{ Parser, UnilangParserOptions };
+use unilang_parser::{ Parser, UnilangParserOptions };
 
 
 fn parse_and_assert( input : &str, expected_path : &[ &str ], expected_args : &[ &str ] )

@@ -58,9 +58,9 @@
 //! | S6.28 | R1 (Invalid identifier segment) | `cmd.123.sub` | Single | Multi-segment | None | N/A | `.` | Incorrect | None | Syntax Error | `(false, false)` | Error: Invalid identifier `123` |
 //! | S6.29 | R1 (Longest possible sequence) | `cmd.sub arg` | Single | Multi-segment | Positional | Identifier | None | Correct | None | None | `(false, false)` | `cmd.sub`, `arg` |
 //! | S6.30 | R0 (Multiple consecutive whitespace) | `cmd   arg` | Single | Simple | Positional | Identifier | None | Correct | Multiple | None | `(false, false)` | `cmd`, `arg` (single space separation) |
-use unilang_instruction_parser::*;
-use unilang_instruction_parser::error::ErrorKind;
-use unilang_instruction_parser::UnilangParserOptions;
+use unilang_parser::*;
+use unilang_parser::error::ErrorKind;
+use unilang_parser::UnilangParserOptions;
 
 /// Test Combination: T4.1
 /// Command path with multiple dot-separated segments followed by a positional argument.

@@ -26,8 +26,8 @@
 //! | T3.9 | Positional after named (error) | `cmd name::val pos1` | Positional After Named | Middle | `(true)` | `Syntax` | `(14, 18)` | `Positional argument after named argument` |
 //! | T3.10 | Unexpected help operator in middle | `cmd ? arg1` | Unexpected Help Operator | Middle | `(false)` | `Syntax` | `(4, 5)` | `Help operator '?' must be the last token` |
 //! | T3.11 | Unexpected token `!` in args | `cmd arg1 ! badchar` | Unexpected Token | Middle | `(false)` | `Syntax` | `(9, 10)` | `Unexpected token '!' in arguments` |
-use unilang_instruction_parser::*;
-use unilang_instruction_parser::error::{ErrorKind, SourceLocation};
+use unilang_parser::*;
+use unilang_parser::error::{ErrorKind, SourceLocation};
 #[allow(unused_imports)] // HashMap might be used in future error tests
 use std::collections::HashMap;
 #[allow(unused_imports)] // Cow might be used if unescape_string changes signature

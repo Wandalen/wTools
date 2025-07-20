@@ -1,4 +1,4 @@
-use unilang_instruction_parser::{ Parser, UnilangParserOptions };
+use unilang_parser::{ Parser, UnilangParserOptions };
 use unilang::semantic::SemanticAnalyzer;
 use unilang::registry::CommandRegistry;
 use unilang::data::{ CommandDefinition, ArgumentDefinition, Kind };

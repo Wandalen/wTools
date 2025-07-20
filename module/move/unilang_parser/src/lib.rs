@@ -13,7 +13,7 @@
 #![ warn( missing_debug_implementations ) ]
 #![ warn( rust_2018_idioms ) ]
 extern crate alloc;
-/// `unilang_instruction_parser` is a Rust crate designed to parse `unilang` CLI-like instruction strings.
+/// `unilang_parser` is a Rust crate designed to parse `unilang` CLI-like instruction strings.
 /// It leverages `strs_tools` for initial itemization (splitting the input string into lexical tokens)
 /// and then performs syntactic analysis to produce structured `GenericInstruction` objects.
 ///
@@ -44,7 +44,7 @@ extern crate alloc;
 /// ## Basic Usage Example
 ///
 /// ```rust
-/// use unilang_instruction_parser::{Parser, UnilangParserOptions};
+/// use unilang_parser::{Parser, UnilangParserOptions};
 ///
 /// fn main() -> Result<(), Box<dyn std::error::Error>> {
 ///     let options = UnilangParserOptions::default();

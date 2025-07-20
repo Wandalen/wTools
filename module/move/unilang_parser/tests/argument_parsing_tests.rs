@@ -33,9 +33,9 @@
 //! | T1.14 | Named arg with quoted escaped value location | `cmd key::"value with \\"quotes\\" and \\\\slash\\\\"` | Named | N/A | `(false, false)` | Escaped | Correct | No | Value unescaped: `value with "quotes" and \slash\` |
 //! | T1.15 | Positional arg with quoted escaped value location | `cmd "a\\\\b\\\"c'd\\ne\\tf"` | Positional | N/A | `(false, false)` | Escaped | Correct | No | Value unescaped: `a\b"c'd\ne\tf` |
 //! | T1.16 | Malformed named arg (no delimiter) | `cmd name value` | Positional | N/A | `(false, false)` | Normal | Malformed (no delimiter) | No | Treated as positional args |
-use unilang_instruction_parser::*;
+use unilang_parser::*;
 // use std::collections::HashMap; // Re-enable for named argument tests
-use unilang_instruction_parser::error::ErrorKind;
+use unilang_parser::error::ErrorKind;
 
 
 
