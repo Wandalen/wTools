@@ -41,7 +41,7 @@ impl Parser
   {
     let splits_iter = strs_tools::split()
     .src( input )
-    .delimeter( vec![ " ", "\n", "\t", "\r", "::", "?", "#", "." ] )
+    .delimeter( vec![ " ", "\n", "\t", "\r", "::", "?", "#", ".", "!" ] )
     .preserving_delimeters( true )
     .quoting( true )
     .preserving_quoting( false )
@@ -59,7 +59,7 @@ impl Parser
       .filter( |item| !matches!( item.kind, UnilangTokenKind::Delimiter( " " | "\n" | "\t" | "\r" ) ) )
       .collect();
 
-
+    println!("DEBUG: parse_single_instruction rich_items: {rich_items:?}");
     self.parse_single_instruction_from_rich_items( rich_items )
   }
 
@@ -203,6 +203,7 @@ impl Parser
 
     while let Some( item ) = items_iter.peek()
     {
+      println!("DEBUG: parse_command_path peeking: {item:?}, last_token_was_dot: {last_token_was_dot}");
       match &item.kind
       {
         UnilangTokenKind::Identifier( ref s ) =>
@@ -222,11 +223,20 @@ impl Parser
         {
           if last_token_was_dot // Consecutive dots, e.g., "cmd..sub"
           {
-            return Err( ParseError::new( ErrorKind::Syntax( "Unexpected consecutive '.' operator".to_string() ), item.adjusted_source_location.clone() ) );
+            return Err( ParseError::new( ErrorKind::Syntax( "Consecutive dots in command path".to_string() ), item.adjusted_source_location.clone() ) );
           }
           last_token_was_dot = true;
           items_iter.next(); // Consume item
         },
+        UnilangTokenKind::Unrecognized( ref s ) =>
+        {
+          if last_token_was_dot { // If it's unrecognized after a dot, it's an invalid identifier in path
+            return Err( ParseError::new( ErrorKind::Syntax( format!( "Invalid identifier '{s}' in command path" ) ), item.adjusted_source_location.clone() ) );
+          }
+          // If it's unrecognized not after a dot, it ends the command path.
+          // The 'else' is redundant because the 'if' block returns.
+          break;
+        }
         _ =>
         {
           break; // End of command path
@@ -282,11 +292,11 @@ impl Parser
               {
                 match value_item.kind
                 {
-                  UnilangTokenKind::Identifier( ref val ) =>
+                  UnilangTokenKind::Identifier( ref val ) | UnilangTokenKind::Unrecognized( ref val ) =>
                   {
                     if named_arguments.contains_key( arg_name ) && self.options.error_on_duplicate_named_arguments
                     {
-                      return Err( ParseError::new( ErrorKind::Syntax( format!( "Duplicate named argument '{arg_name}'" ) ), value_item.adjusted_source_location.clone() ) );
+                      return Err( ParseError::new( ErrorKind::Syntax( format!( "Duplicate named argument '{arg_name}'" ) ), value_item.source_location() ) );
                     }
                     named_arguments.insert( arg_name.clone(), Argument
                     {
@@ -296,7 +306,7 @@ impl Parser
                       value_location : value_item.source_location(),
                     });
                   },
-                  _ => return Err( ParseError::new( ErrorKind::Syntax( format!( "Expected value for named argument '{arg_name}'" ) ), value_item.adjusted_source_location.clone() ) )
+                  _ => return Err( ParseError::new( ErrorKind::Syntax( format!( "Expected value for named argument '{arg_name}'" ) ), value_item.source_location() ) )
                 }
               }
               else

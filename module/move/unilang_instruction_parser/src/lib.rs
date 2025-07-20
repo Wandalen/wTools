@@ -40,7 +40,8 @@ extern crate alloc;
 ///   command path, positional arguments, and named arguments.
 /// - [`Argument`]: Represents a parsed argument (either positional or named).
 /// - [`ParseError`]: Encapsulates parsing errors, including an `ErrorKind` and `SourceLocation`.
-/// - \[`SourceLocation`\]: Specifies the location of a token or error within the input \(either a string span or a slice segment\).\n/// ## Basic Usage Example
+/// - [`SourceLocation`]: Specifies the location of a token or error within the input (either a string span or a slice segment).
+/// ## Basic Usage Example
 ///
 /// ```rust
 /// use unilang_instruction_parser::{Parser, UnilangParserOptions};

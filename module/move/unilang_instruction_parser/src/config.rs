@@ -30,10 +30,10 @@ impl Default for UnilangParserOptions
     Self
     {
       main_delimiters : vec![ " ", "." ],
-      operators : vec![ "::", "?" ],
+      operators : vec![ "::", "?", "!" ],
       whitespace_is_separator : true,
       error_on_positional_after_named : false,
-      error_on_duplicate_named_arguments : true,
+      error_on_duplicate_named_arguments : false,
       quote_pairs : vec![ ( '"', '"' ), ( '\'', '\'' ) ],
     }
   }

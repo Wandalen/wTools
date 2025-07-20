@@ -63,6 +63,29 @@ impl fmt::Display for UnilangTokenKind
   }
 }
 
+/// Checks if a character is a valid part of a Unilang identifier.
+/// Valid characters are lowercase alphanumeric (`a-z`, `0-9`) and underscore (`_`).
+fn is_valid_identifier_char(c: char) -> bool {
+    c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_'
+}
+
+/// Checks if a string is a valid Unilang identifier.
+/// An identifier must not be empty and must consist only of valid identifier characters.
+fn is_valid_identifier(s: &str) -> bool {
+    if s.is_empty() {
+        return false;
+    }
+    let mut chars = s.chars();
+    if let Some(first_char) = chars.next() {
+        if !first_char.is_ascii_lowercase() && first_char != '_' { // Must start with letter or underscore
+            return false;
+        }
+    } else {
+        return false; // Should not happen if not empty
+    }
+    chars.all(is_valid_identifier_char) // Rest can be alphanumeric or underscore
+}
+
 /// Classifies a `strs_tools::Split` into a `UnilangTokenKind` and returns its adjusted source location.
 /// Classifies a `strs_tools::Split` into a `UnilangTokenKind` and adjusts its `SourceLocation`.
 ///
@@ -72,9 +95,7 @@ pub fn classify_split( s : &Split<'_> ) -> Result<( UnilangTokenKind, SourceLoca
 {
   let original_location = SourceLocation::StrSpan { start : s.start, end : s.end };
 
-
-
-  match s.string
+  let result = match s.string
   {
     std::borrow::Cow::Borrowed("::") => Ok(( UnilangTokenKind::Operator( "::" ), original_location )),
     std::borrow::Cow::Borrowed("?") => Ok(( UnilangTokenKind::Operator( "?" ), original_location )),
@@ -90,12 +111,18 @@ pub fn classify_split( s : &Split<'_> ) -> Result<( UnilangTokenKind, SourceLoca
     {
       if s.typ == SplitType::Delimeted
       {
-        Ok(( UnilangTokenKind::Identifier( s.string.to_string() ), original_location ))
+        if is_valid_identifier(s.string.as_ref()) {
+          Ok(( UnilangTokenKind::Identifier( s.string.to_string() ), original_location ))
+        } else {
+          Ok(( UnilangTokenKind::Unrecognized( s.string.to_string() ), original_location ))
+        }
       }
       else
       {
         Ok(( UnilangTokenKind::Unrecognized( s.string.to_string() ), original_location ))
       }
     }
-  }
+  };
+  println!("DEBUG: classify_split input: {s:?}, output: {result:?}");
+  result
 }

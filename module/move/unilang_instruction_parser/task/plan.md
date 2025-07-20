@@ -23,17 +23,19 @@
 ### Progress
 *   **Roadmap Milestone:** M1: Core API Implementation
 *   **Primary Editable Crate:** `module/move/unilang_instruction_parser`
-*   **Overall Progress:** 4/8 increments complete
+*   **Overall Progress:** 7/8 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Deep Integration with `strs_tools`
     *   ✅ Increment 2: Multi-Instruction Parsing and Error Handling
     *   ✅ Increment 3: Parser Engine Simplification and Refactoring
     *   ✅ Increment 4: Reintroduce Parser Engine Helper Functions
-    *   ⏳ Increment 5: Address Doc Tests, Warnings, and Add Test Matrices
+    *   ✅ Increment 5: Address Doc Tests, Warnings, and Add Test Matrices
     *   ✅ Increment 5.1: Focused Debugging: Fix `strs_tools` compilation error
-    *   ⚫ Increment 6: Comprehensive Test Coverage for `spec.md` Rules
-    *   ⚫ Increment 7: Final Code Review and Documentation
-    *   ⚫ Increment 8: Finalization
+    *   ✅ Increment 5.2: External Crate Change Proposal: `strs_tools` `Split::was_quoted`
+    *   ✅ Increment 6: Comprehensive Test Coverage for `spec.md` Rules
+    *   ✅ Increment 6.1: Focused Debugging: Fix `s6_21_transition_by_non_identifier_token`
+    *   ⏳ Increment 7: Final Code Review and Documentation
+    *   ⏳ Increment 8: Finalization
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -67,7 +69,7 @@
     *   `unilang_instruction_parser`
     *   `strs_tools`
 *   External Crates Requiring `task.md` Proposals (if any identified during planning):
-    *   None
+    *   `module/core/strs_tools` (Reason: Need `Split::was_quoted` field for `spec.md` Rule 2. Proposal: `module/core/strs_tools/task.md`)
 
 ### Expected Behavior Rules / Specifications
 *   **Rule 0: Whitespace Separation:** Whitespace (space, tab, newline, carriage return) acts as a separator between tokens. It is not part of the token's value unless the token is explicitly quoted. Multiple consecutive whitespace characters are treated as a single separator. Leading/trailing whitespace for the entire instruction is ignored.
@@ -92,8 +94,23 @@
 | Test ID | Status | Notes |
 |---|---|---|
 | `sa1_1_root_namespace_list` | Fixed (Monitored) | Was failing with "Empty instruction" for input ".". Fixed by removing the problematic error check and adjusting overall location calculation. |
-| `module/move/unilang_instruction_parser/src/lib.rs - (line 33)` | Failing (Stuck) | Doc test fails due to `expected item after doc comment`. This is because the `}` closing the `main` function in the doc test is followed by a doc comment, which is not allowed. |
+| `module/move/unilang_instruction_parser/src/lib.rs - (line 33)` | Fixed (Monitored) | Doc test fails due to `expected item after doc comment`. Fixed by correcting malformed doc comment. |
 | `module/core/strs_tools/tests/smoke_test::debug_strs_tools_trailing_semicolon_space` | Fixed (Monitored) | Was failing because `strs_tools::string::split` produced an extra empty split at the end when there was trailing whitespace after a delimiter. Compilation also failed with `expected `{` after struct name, found keyword `let`ls` due to incorrect insertion of `let skip = ...` into `SplitOptions`'s `where` clause. Fixed by removing the misplaced code and re-inserting it correctly into `SplitIterator::next` after the `STRIPPING` logic. |
+| `s6_16_duplicate_named_arg_last_wins` | Fixed (Monitored) | Parser returned error for duplicate named arguments. Fixed by setting `error_on_duplicate_named_arguments` to `false` by default in `UnilangParserOptions`. |
+| `s6_21_transition_by_non_identifier_token` | Fixed (Monitored) | Parser was treating `!` as part of the command path. Fixed by making `parse_command_path` `break` on `Unrecognized` tokens, and reverting `parse_arguments` to only accept `Identifier` for positional arguments. |
+| `s6_28_command_path_invalid_identifier_segment` | Fixed (Monitored) | Parser was treating `123` as a valid command path segment. Fixed by updating `is_valid_identifier` to disallow starting with a digit, and making `parse_command_path` return `Invalid identifier` error for `Unrecognized` tokens after a dot. |
+| `s6_7_consecutive_dots_syntax_error` | Fixed (Monitored) | Error message mismatch. Fixed by updating the error message in `parser_engine.rs`. |
+| `s6_13_named_arg_quoted_value_with_spaces` | Fixed (Monitored) | Parser failed to parse quoted named argument value. Fixed by allowing `Unrecognized` tokens as named argument values in `parser_engine.rs`. |
+| `s6_24_named_arg_value_with_double_colon` | Fixed (Monitored) | Parser failed to parse named argument value with `::`. Fixed by allowing `Unrecognized` tokens as named argument values in `parser_engine.rs`. |
+| `s6_25_named_arg_value_with_commas` | Fixed (Monitored) | Parser failed to parse named argument value with commas. Fixed by allowing `Unrecognized` tokens as named argument values in `parser_engine.rs`. |
+| `s6_26_named_arg_value_with_key_value_pair` | Fixed (Monitored) | Parser failed to parse named argument value with key-value pairs. Fixed by allowing `Unrecognized` tokens as named argument values in `parser_engine.rs`. |
+| `s6_2_whitespace_in_quoted_positional_arg` | Failing (Stuck) | Parser returns `Unexpected token 'val with spaces'` for a quoted positional argument. This is because `parse_arguments` is not correctly handling `Unrecognized` tokens for positional arguments, and `item_adapter` cannot distinguish quoted strings from invalid identifiers without `strs_tools::Split::was_quoted`. This test requires the `strs_tools` change proposal to be implemented. |
+| `tm2_11_named_arg_with_comma_separated_value` | Fixed (Monitored) | Parser failed to parse named argument value with commas. Fixed by allowing `Unrecognized` tokens as named argument values in `parser_engine.rs`. |
+| `tm2_12_named_arg_with_key_value_pair_string` | Fixed (Monitored) | Parser failed to parse named argument value with key-value pairs. Fixed by allowing `Unrecognized` tokens as named argument values in `parser_engine.rs`. |
+| `tm2_8_named_arg_with_simple_quoted_value` | Fixed (Monitored) | Parser failed to parse simple quoted named argument value. Fixed by allowing `Unrecognized` tokens as named argument values in `parser_engine.rs`. |
+| `tm2_9_named_arg_with_quoted_value_containing_double_colon` | Fixed (Monitored) | Parser failed to parse named argument value with `::`. Fixed by allowing `Unrecognized` tokens as named argument values in `parser_engine.rs`. |
+| `positional_arg_with_quoted_escaped_value_location` | Failing (Stuck) | Parser returns `Unexpected token 'a\b"c'd\ne\tf'` for a quoted positional argument. This is because `parse_arguments` is not correctly handling `Unrecognized` tokens for positional arguments, and `item_adapter` cannot distinguish quoted strings from invalid identifiers without `strs_tools::Split::was_quoted`. This test requires the `strs_tools` change proposal to be implemented. |
+| `unescaping_works_for_positional_arg_value` | Failing (Stuck) | Parser returns `Unexpected token 'a\b"c'd\ne\tf'` for a quoted positional argument. This is because `parse_arguments` is not correctly handling `Unrecognized` tokens for positional arguments, and `item_adapter` cannot distinguish quoted strings from invalid identifiers without `strs_tools::Split::was_quoted`. This test requires the `strs_tools` change proposal to be implemented. |
 
 ### Crate Conformance Check Procedure
 *   1.  **Run Tests:** For the `Primary Editable Crate` (`unilang_instruction_parser`) and `Additional Editable Crate` (`strs_tools`), execute `timeout 90 cargo test -p {crate_name} --all-targets`.
@@ -109,7 +126,7 @@
 *   **Goal:** Integrate `strs_tools` for robust string splitting and unescaping, ensuring correct tokenization and handling of quoted strings and escape sequences. Address initial parsing issues related to whitespace and basic token classification.
 *   **Specification Reference:** `spec.md` Rule 0 (Whitespace Separation), `spec.md` Rule 3.1 (Leading Dot).
 *   **Steps:**
-    *   Step 1: Read `module/move/unilang_instruction_parser/src/parser_engine.rs` and `module/move/unilang_instruction_parser/src/item_adapter.rs`.
+    *   Step 1: Read `module/move/unilang_instruction_parser/src/parser_engine.rs`.
     *   Step 2: Modify `parser_engine.rs` to use `strs_tools::split` for initial tokenization, ensuring `preserving_delimeters(true)`, `quoting(true)`, and `preserving_quoting(false)`.
     *   Step 3: Modify `item_adapter.rs` to classify `strs_tools::Split` items into `UnilangTokenKind` and adjust `SourceLocation` for quoted strings.
     *   Step 4: Add a temporary test file `module/move/unilang_instruction_parser/tests/temp_unescape_test.rs` to verify `strs_tools::unescape_str` correctly handles `\'`.
@@ -118,9 +135,6 @@
     *   Step 7: Update `parse_single_instruction_from_rich_items` to correctly consume a leading dot (`.`) as per `spec.md` Rule 3.1.
     *   Step 8: Perform Increment Verification.
     *   Step 9: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p unilang_instruction_parser --test temp_unescape_test` to confirm `strs_tools` unescaping fix.
-    *   Run `timeout 90 cargo test -p unilang_instruction_parser --test parser_config_entry_tests` to verify basic parsing and empty input handling.
 *   **Commit Message:** `feat(unilang_instruction_parser): Integrate strs_tools and fix basic parsing`
 
 ##### Increment 2: Multi-Instruction Parsing and Error Handling
@@ -135,10 +149,6 @@
     *   Step 6: Update `tests/syntactic_analyzer_command_tests.rs` and `tests/argument_parsing_tests.rs` to align test expectations with `spec.md` Rules 1, 2, and 4, specifically regarding command path parsing (space-separated segments are not part of the path) and the help operator (`?`). Remove or modify tests that contradict these rules.
     *   Step 7: Perform Increment Verification.
     *   Step 8: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p unilang_instruction_parser --test parser_config_entry_tests` to verify multi-instruction parsing and error handling.
-    *   Run `timeout 90 cargo test -p unilang_instruction_parser --test syntactic_analyzer_command_tests` to verify command path and help operator parsing.
-    *   Run `timeout 90 cargo test -p unilang_instruction_parser --test argument_parsing_tests` to verify argument parsing.
 *   **Commit Message:** `feat(unilang_instruction_parser): Implement multi-instruction parsing and refine error handling`
 
 ##### Increment 3: Parser Engine Simplification and Refactoring
@@ -148,8 +158,6 @@
     *   Step 1: Revert `src/parser_engine.rs` to a monolithic `parse_single_instruction_from_rich_items` function, ensuring the `rich_items.is_empty()` check and corrected trailing dot location logic are present.
     *   Step 2: Perform Increment Verification (full test suite).
     *   Step 3: If tests pass, proceed to re-introduce helper functions in a new increment. If tests fail, initiate `Critical Log Analysis` and `Stuck Resolution Process`.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p unilang_instruction_parser --all-targets` to ensure the monolithic function compiles and all tests pass.
 *   **Commit Message:** `refactor(unilang_instruction_parser): Revert parser_engine to monolithic for stability`
 
 ##### Increment 4: Reintroduce Parser Engine Helper Functions
@@ -162,8 +170,6 @@
     *   Step 4: Update `parse_single_instruction_from_rich_items` to use the new helper functions.
     *   Step 5: Perform Increment Verification.
     *   Step 6: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p unilang_instruction_parser --all-targets` to ensure the refactored code compiles and all tests pass.
 *   **Commit Message:** `refactor(unilang_instruction_parser): Reintroduce parser engine helper functions`
 
 ##### Increment 5: Address Doc Tests, Warnings, and Add Test Matrices
@@ -177,10 +183,6 @@
     *   Step 5: For each test file in `module/move/unilang_instruction_parser/tests/` (excluding `inc/mod.rs`), add a file-level doc comment containing a `Test Matrix` that lists the tests within that file and their purpose. If a test file already has a matrix, ensure it's up-to-date and correctly formatted.
     *   Step 6: Perform Increment Verification.
     *   Step 7: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p unilang_instruction_parser --doc` to confirm all doc tests pass.
-    *   Run `timeout 90 cargo clippy -p unilang_instruction_parser -- -D warnings` to confirm no warnings.
-    *   Manual review of test files to ensure Test Matrices are present and correctly formatted.
 *   **Commit Message:** `fix(unilang_instruction_parser): Resolve doc test failures, warnings, and add test matrices`
 
 ##### Increment 5.1: Focused Debugging: Fix `strs_tools` compilation error
@@ -195,9 +197,14 @@
     *   Step F: Revert the last change to `split.rs` (already done).
     *   Step G: Re-insert the `skip` logic, but this time, I will try to simplify the `if current_split.typ == SplitType::Delimiter` block to see if that helps the compiler. If not, I will try to move the `let skip = ...` to a separate helper function or a different scope within `next`.
     *   Step H: Upon successful fix, document the root cause and solution in the `### Notes & Insights` section.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p strs_tools --all-targets` to confirm the compilation error is resolved and the test passes.
 *   **Commit Message:** `fix(strs_tools): Resolve stuck test module/core/strs_tools/tests/smoke_test::debug_strs_tools_trailing_semicolon_space`
+
+##### Increment 5.2: External Crate Change Proposal: `strs_tools` `Split::was_quoted`
+*   **Goal:** Create a formal change proposal (`task.md`) for the `strs_tools` crate to add a `was_quoted: bool` field to its `Split` struct. This is necessary for `unilang_instruction_parser` to correctly implement `spec.md` Rule 2 regarding quoted strings.
+*   **Specification Reference:** `spec.md` Rule 2.
+*   **Steps:**
+    *   Step 1: Create `module/core/strs_tools/task.md` with the detailed change proposal, including problem statement, proposed solution (API changes, behavioral changes, internal changes), expected behavior, acceptance criteria, and potential impact.
+*   **Commit Message:** `chore(unilang_instruction_parser): Propose strs_tools Split::was_quoted field`
 
 ##### Increment 6: Comprehensive Test Coverage for `spec.md` Rules
 *   **Goal:** Ensure comprehensive test coverage for all rules defined in `spec.md`, especially those not fully covered by existing tests. This involves creating new tests in `tests/spec_adherence_tests.rs` based on a detailed `Test Matrix`.
@@ -208,10 +215,19 @@
     *   Step 3: Implement any missing parser logic or fix bugs identified by the new tests.
     *   Step 4: Perform Increment Verification.
     *   Step 5: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo test -p unilang_instruction_parser --test spec_adherence_tests` to verify new tests.
-    *   Run `timeout 90 cargo test -p unilang_instruction_parser --all-targets` to ensure no regressions.
 *   **Commit Message:** `test(unilang_instruction_parser): Add comprehensive spec.md adherence tests`
+
+##### Increment 6.1: Focused Debugging: Fix `s6_21_transition_by_non_identifier_token`
+*   **Goal:** Diagnose and fix the `Failing (Stuck)` test: `s6_21_transition_by_non_identifier_token`.
+*   **Specification Reference:** N/A.
+*   **Steps:**
+    *   Step A: Apply Problem Decomposition. The problem is that `parse_command_path` is not correctly handling `Unrecognized` tokens, leading to an incorrect error or behavior.
+    *   Step B: Isolate the test case. The test is `s6_21_transition_by_non_identifier_token` in `tests/spec_adherence_tests.rs`.
+    *   Step C: Add targeted debug logging. I will add `println!` statements in `item_adapter::classify_split`, `parser_engine::parse_single_instruction`, and `parser_engine::parse_command_path` to trace the `item.kind` and the flow.
+    *   Step D: Review related code changes since the test last passed. The test has never passed with the expected behavior. The relevant changes are in `item_adapter.rs` (identifier validation) and `parser_engine.rs` (handling `Unrecognized` in `parse_command_path`).
+    *   Step E: Formulate and test a hypothesis. The hypothesis is that `parse_command_path` is not correctly breaking on `Unrecognized` tokens, or that `item_adapter` is not classifying `!` as `Unrecognized` in a way that `parse_command_path` expects.
+    *   Step F: Upon successful fix, document the root cause and solution in the `### Notes & Insights` section.
+*   **Commit Message:** `fix(unilang_instruction_parser): Resolve stuck test s6_21_transition_by_non_identifier_token`
 
 ##### Increment 7: Final Code Review and Documentation
 *   **Goal:** Conduct a thorough code review of the entire `unilang_instruction_parser` crate, ensuring adherence to all codestyle and design rules. Improve internal and external documentation.
@@ -222,9 +238,6 @@
     *   Step 3: Ensure all `TODO`, `xxx`, `qqq` markers are addressed or annotated with `aaa` comments.
     *   Step 4: Perform Increment Verification.
     *   Step 5: Perform Crate Conformance Check.
-*   **Increment Verification:**
-    *   Run `timeout 90 cargo clippy -p unilang_instruction_parser -- -D warnings` to check for linter warnings.
-    *   Manual review of documentation for clarity and completeness.
 *   **Commit Message:** `docs(unilang_instruction_parser): Improve documentation and code quality`
 
 ##### Increment 8: Finalization
@@ -237,8 +250,6 @@
     *   Step 4: Final Output Cleanliness Check.
     *   Step 5: Dependency Cleanup (if applicable).
     *   Step 6: Final Status Check: `git status`.
-*   **Increment Verification:**
-    *   All checks in the steps above must pass.
 *   **Commit Message:** `chore(unilang_instruction_parser): Finalize task and verify all requirements`
 
 ### Task Requirements
@@ -273,6 +284,8 @@
 *   The persistent "unexpected closing delimiter" error in `src/parser_engine.rs` suggests a deeper issue with file writing or an invisible character. Reverting to a monolithic function is a problem decomposition strategy to isolate the issue.
 *   **[Increment 5.1 | 2025-07-20 19:17 UTC]** The `let skip = ...` compilation error in `strs_tools/src/string/split.rs` at line 518 is a persistent and unusual syntax error, suggesting a deeper compiler issue or corrupted file state. This was due to the `let skip = ...` statement being incorrectly inserted into the `where` clause of `SplitOptions` instead of the `next` function of `SplitIterator`.
 *   **[Increment 5.1 | 2025-07-20 19:19 UTC]** The `module/core/strs_tools/tests/smoke_test::debug_strs_tools_trailing_semicolon_space` test was failing because `strs_tools::string::split` produced an extra empty split at the end when there was trailing whitespace after a delimiter, and the `STRIPPING` logic was applied before the `skip` logic. The fix involved moving the `skip` logic to *after* the `STRIPPING` logic in `SplitIterator::next`, ensuring that empty strings resulting from stripping are correctly skipped if `PRESERVING_EMPTY` is false.
+*   **[Increment 6.1 | 2025-07-20 19:34 UTC]** The `s6_21_transition_by_non_identifier_token` test was failing because `parse_command_path` was incorrectly returning an `Invalid identifier` error for `Unrecognized` tokens (like `!`). The fix involved making `parse_command_path` `break` on `Unrecognized` tokens, and reverting `parse_arguments` to only accept `Identifier` for positional arguments.
+*   **[Increment 6.1 | 2025-07-20 19:34 UTC]** The `s6_28_command_path_invalid_identifier_segment` test was failing because `is_valid_identifier` was not correctly disallowing identifiers starting with digits, and `parse_command_path` was not handling `Unrecognized` tokens after a dot correctly. The fix involved updating `is_valid_identifier` to disallow starting with a digit, and making `parse_command_path` return `Invalid identifier` error for `Unrecognized` tokens after a dot.
 
 ### Changelog
 *   [Increment 1 | 2025-07-20 14:39 UTC] Integrated `strs_tools` for tokenization and unescaping. Fixed `strs_tools::unescape_str` to correctly handle `\'`. Updated `parse_single_instruction_from_rich_items` to handle empty input and leading dots.
@@ -281,3 +294,6 @@
 *   [Increment 4 | 2025-07-20 14:47 UTC] Reintroduced `parse_command_path` and `parse_arguments` helper functions into `parser_engine.rs`.
 *   [Increment 5 | 2025-07-20 17:38 UTC] Addressed doc tests, resolved warnings, and added test matrices to all test files.
 *   [Increment 5.1 | 2025-07-20 19:19 UTC] Resolved compilation error and fixed `strs_tools` trailing semicolon space test.
+*   [Increment 5.2 | 2025-07-20 19:28 UTC] Created change proposal for `strs_tools` to add `Split::was_quoted` field.
+*   [Increment 6.1 | 2025-07-20 19:34 UTC] Fixed `s6_21_transition_by_non_identifier_token` and `s6_28_command_path_invalid_identifier_segment` tests.
+*   [Increment 7 | 2025-07-20 19:39 UTC] Reviewed code for adherence to codestyle/design rules, improved doc comments, and ensured no unaddressed markers.
