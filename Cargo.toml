@@ -411,7 +411,7 @@ default-features = false
 ## process tools
 
 [workspace.dependencies.process_tools]
-version = "~0.13.0"
+version = "~0.14.0"
 path = "module/core/process_tools"
 default-features = false
 
