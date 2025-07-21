@@ -397,7 +397,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///   SomeErr
 /// }
 /// #[ derive( Add ) ]
-/// #[ add(error = Er::SomeErr)]
+/// #[ derive_ops(error_expr = Er::SomeErr)]
 /// enum MyEnum 
 /// {
 ///   One,
@@ -427,7 +427,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// assert_eq!( value, 6 );
 /// ```
 ///
-#[ proc_macro_derive( Add, attributes( add ) ) ]
+#[ proc_macro_derive( Add, attributes( derive_ops, add ) ) ]
 pub fn add( input : proc_macro::TokenStream ) -> proc_macro::TokenStream 
 {
   derive::ops::add( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
@@ -521,9 +521,13 @@ pub fn add( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// #[ derive( Sub ) ]
 /// struct MyTupleStruct( i32 );
 ///
-/// type Er = Box<dyn std::error::Error>;
+/// #[derive(Debug)]
+///  enum Er{
+///   SomeErr
+/// }
+/// 
 /// #[ derive( Sub ) ]
-/// #[ sub(error = Er)]
+/// #[ sub(error_expr = Er::SomeErr)]
 /// enum MyEnum 
 /// {
 ///   One,
@@ -553,7 +557,7 @@ pub fn add( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// assert_eq!( value, 1 );
 /// ```
 ///
-#[ proc_macro_derive( Sub, attributes( sub ) ) ]
+#[ proc_macro_derive( Sub, attributes( derive_ops, sub ) ) ]
 pub fn sub( input : proc_macro::TokenStream ) -> proc_macro::TokenStream 
 {
   derive::ops::sub( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
@@ -649,7 +653,7 @@ pub fn sub( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// type Er = Box<dyn std::error::Error>;
 /// #[ derive( Mul ) ]
-/// #[ mul(error = Er)]
+/// #[ mul(error_type = Er)]
 /// enum MyEnum 
 /// {
 ///   One,
@@ -679,7 +683,7 @@ pub fn sub( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// assert_eq!( value, 12 );
 /// ```
 ///
-#[ proc_macro_derive( Mul, attributes( mul ) ) ]
+#[ proc_macro_derive( Mul, attributes( derive_ops, mul ) ) ]
 pub fn mul( input : proc_macro::TokenStream ) -> proc_macro::TokenStream 
 {
   derive::ops::mul( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
@@ -775,7 +779,7 @@ pub fn mul( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// type Er = Box<dyn std::error::Error>;
 /// #[ derive( Div ) ]
-/// #[ div(error = Er)]
+/// #[ derive_ops(error_type = Er)]
 /// enum MyEnum 
 /// {
 ///   One,
@@ -805,7 +809,7 @@ pub fn mul( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// assert_eq!( value, 4 );
 /// ```
 ///
-#[ proc_macro_derive( Div, attributes( div ) ) ]
+#[ proc_macro_derive( Div, attributes( derive_ops, div ) ) ]
 pub fn div( input : proc_macro::TokenStream ) -> proc_macro::TokenStream 
 {
   derive::ops::div( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()

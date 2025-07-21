@@ -12,7 +12,7 @@ use macro_tools::
   Spanned,
 };
 use crate::derive::syn::Variant;
-use super::FieldAccess;
+use super::{ FieldAccess, OpKind };
 use super::item_attributes::{ ItemAttributes };
 
 pub fn mul( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream > 
@@ -77,7 +77,8 @@ pub fn mul( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
           );
         }
         
-        generate_enum(
+        generate_enum
+        (
           item_name,
           &item_attrs,
           &generics_impl,
@@ -108,11 +109,12 @@ fn generate_enum
 )
 -> proc_macro2::TokenStream 
 {
-  let op_expr = | a_ident : &syn::Ident, b_ident : &syn::Ident | -> proc_macro2::TokenStream {
-    qt! { #a_ident * #b_ident}
+  let op_expr = | a_ident : &syn::Ident, b_ident : &syn::Ident | -> proc_macro2::TokenStream 
+  {
+    qt! { #a_ident * #b_ident }
   };
 
-  let error_type: proc_macro2::TokenStream = if let Some( ty ) = &item_attrs.error_type 
+  let error_type: proc_macro2::TokenStream = if let Some( ty ) = &item_attrs.error_type_for( OpKind::Mul )
   {
     qt! { #ty }
   } 
@@ -121,7 +123,7 @@ fn generate_enum
     qt! { String }
   };
 
-  let enum_match = super::generate_enum_match_body( item_name, variants, item_attrs, op_expr );
+  let enum_match = super::generate_enum_match_body( item_name, variants, item_attrs, OpKind::Mul, op_expr );
   let body :  proc_macro2::TokenStream = 
     qt! { #enum_match };
 

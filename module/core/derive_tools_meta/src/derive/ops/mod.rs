@@ -19,8 +19,23 @@ use macro_tools::
 };
 use super::FieldAccess;
 
-fn generate_enum_match_arms< F >( item_name : &syn::Ident, variants : &[ &syn::Variant ], op_expression : F ) -> Vec< TokenStream >
-where F: Fn( &syn::Ident, &syn::Ident ) -> TokenStream,
+#[ derive( Copy, Clone ) ]
+pub enum OpKind 
+{
+  Add,
+  Sub,
+  Mul,
+  Div,
+}
+
+fn generate_enum_match_arms< F >
+( 
+  item_name : &syn::Ident, 
+  variants : &[ &syn::Variant ], 
+  op_expression : F 
+) 
+-> Vec< TokenStream >
+where F : Fn( &syn::Ident, &syn::Ident ) -> TokenStream,
 {
   variants.iter().map( | v |
   {
@@ -104,19 +119,27 @@ where F: Fn( &syn::Ident, &syn::Ident ) -> TokenStream,
     }).collect::< Vec< _ > >()
 }
 
-fn generate_enum_match_body< F >( item_name : &syn::Ident, variants : &[ &syn::Variant ], item_attrs : &ItemAttributes, op_expression : F ) -> proc_macro2::TokenStream
-where F: Fn( &syn::Ident, &syn::Ident ) -> TokenStream,
+fn generate_enum_match_body< F >
+( 
+  item_name : &syn::Ident, 
+  variants : &[ &syn::Variant ], 
+  item_attrs : &ItemAttributes, 
+  op : OpKind, 
+  op_expression : F 
+) 
+-> proc_macro2::TokenStream
+where F : Fn( &syn::Ident, &syn::Ident ) -> TokenStream,
 {
   let arms = generate_enum_match_arms( item_name, variants, op_expression );
   
-  if let Some( error_expr ) = &item_attrs.error_expr 
+  if let Some( error_expr ) = item_attrs.error_expr_for( op ) 
   {
     qt! 
     {
       match ( self, other ) 
       {
-          #( #arms )*
-          _ => Err( #error_expr ),
+        #( #arms )*
+        _ => Err( #error_expr ),
       }
     }
   } 
@@ -124,7 +147,7 @@ where F: Fn( &syn::Ident, &syn::Ident ) -> TokenStream,
   {
     qt! 
     {
-      match ( self, other ) 
+     match ( self, other ) 
       {
         #( #arms )*
         _ => Err( "Mismatched variants".into() ),
