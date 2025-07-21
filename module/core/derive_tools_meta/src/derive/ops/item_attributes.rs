@@ -133,7 +133,7 @@ fn handle_meta( result : &mut ItemAttributes, meta : &ParseNestedMeta< '_ >, op 
   else if meta.path.is_ident( "error_type" ) 
   {
     let value = meta.value()?;
-    let ty: Type = value.parse()?;
+    let ty : Type = value.parse()?;
     match op 
     {
       Operation::Add => result.add_error_type = Some( ty ),
