@@ -392,9 +392,12 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// #[ derive( Add ) ]
 /// struct MyTupleStruct( i32 );
 ///
-/// type Er = Box<dyn std::error::Error>;
+/// #[derive(Debug)]
+///  enum Er{
+///   SomeErr
+/// }
 /// #[ derive( Add ) ]
-/// #[ add(error = Er)]
+/// #[ add(error = Er::SomeErr)]
 /// enum MyEnum 
 /// {
 ///   One,
@@ -424,7 +427,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// assert_eq!( value, 6 );
 /// ```
 ///
-#[ proc_macro_derive( Add, attributes(add) ) ]
+#[ proc_macro_derive( Add, attributes( add ) ) ]
 pub fn add( input : proc_macro::TokenStream ) -> proc_macro::TokenStream 
 {
   derive::ops::add( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()

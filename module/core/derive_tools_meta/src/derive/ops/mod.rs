@@ -9,6 +9,7 @@ pub use sub::sub;
 pub use mul::mul;
 pub use div::div;
 
+use item_attributes::{ ItemAttributes };
 use proc_macro2::TokenStream;
 use macro_tools::
 {
@@ -101,4 +102,33 @@ where F: Fn( &syn::Ident, &syn::Ident ) -> TokenStream,
     };
     qt! { ( #pat_a, #pat_b ) => Ok( #construct ), }
     }).collect::< Vec< _ > >()
+}
+
+fn generate_enum_match_body< F >( item_name : &syn::Ident, variants : &[ &syn::Variant ], item_attrs : &ItemAttributes, op_expression : F ) -> proc_macro2::TokenStream
+where F: Fn( &syn::Ident, &syn::Ident ) -> TokenStream,
+{
+  let arms = generate_enum_match_arms( item_name, variants, op_expression );
+  
+  if let Some( error_expr ) = &item_attrs.error_expr 
+  {
+    qt! 
+    {
+      match ( self, other ) 
+      {
+          #( #arms )*
+          _ => Err( #error_expr ),
+      }
+    }
+  } 
+  else 
+  {
+    qt! 
+    {
+      match ( self, other ) 
+      {
+        #( #arms )*
+        _ => Err( "Mismatched variants".into() ),
+      }
+    }
+  }
 }

@@ -112,18 +112,7 @@ fn generate_enum
     qt! { #a_ident * #b_ident}
   };
 
-  let arms = super::generate_enum_match_arms(item_name, variants, op_expr);
-
-  let body = qt!
-  {
-    match ( self, other )
-    {
-      #( #arms )*
-      ( a, b ) => Err( format!( "Cannot multiply different variants" ).into() ),
-    }
-  };
-  
-  let error_type: proc_macro2::TokenStream = if let Some( ty ) = &item_attrs.error 
+  let error_type: proc_macro2::TokenStream = if let Some( ty ) = &item_attrs.error_type 
   {
     qt! { #ty }
   } 
@@ -131,7 +120,12 @@ fn generate_enum
   {
     qt! { String }
   };
-   qt! 
+
+  let enum_match = super::generate_enum_match_body( item_name, variants, item_attrs, op_expr );
+  let body :  proc_macro2::TokenStream = 
+    qt! { #enum_match };
+
+    qt! 
    {
       #[ automatically_derived ]
       impl< #generics_impl > std::ops::Mul for #item_name< #generics_ty >
@@ -170,11 +164,11 @@ fn generate_struct
 
   let body = if matches!( fields.first(), Some( ( FieldAccess::Named( _ ), _ ) ) ) 
   {
-    qt! { Self { #( #muls ),* } }
+    qt! { Self { #( #muls ), * } }
   } 
   else 
   {
-    qt! { Self ( #( #muls ),* ) }
+    qt! { Self ( #( #muls ), * ) }
   };
 
   qt! 
@@ -186,7 +180,7 @@ fn generate_struct
       type Output = Self;
 
       # [ inline ( always ) ]
-      fn mul( self, other: Self ) -> Self::Output 
+      fn mul( self, other : Self ) -> Self::Output 
       {
         #body
       }

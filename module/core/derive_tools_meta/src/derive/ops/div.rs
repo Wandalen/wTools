@@ -112,18 +112,7 @@ fn generate_enum
     qt! { #a_ident / #b_ident}
   };
 
-  let arms = super::generate_enum_match_arms(item_name, variants, op_expr);
-
-  let body = qt!
-  {
-    match ( self, other )
-    {
-      #( #arms )*
-      ( a, b ) => Err( format!( "Cannot div different variants" ).into() ),
-    }
-  };
-  
-  let error_type: proc_macro2::TokenStream = if let Some( ty ) = &item_attrs.error 
+  let error_type: proc_macro2::TokenStream = if let Some( ty ) = &item_attrs.error_type 
   {
     qt! { #ty }
   } 
@@ -131,6 +120,11 @@ fn generate_enum
   {
     qt! { String }
   };
+
+  let enum_match = super::generate_enum_match_body( item_name, variants, item_attrs, op_expr );
+  let body :  proc_macro2::TokenStream = 
+    qt! { #enum_match };
+
    qt! 
    {
       #[ automatically_derived ]
@@ -170,11 +164,11 @@ fn generate_struct
 
   let body = if matches!( fields.first(), Some( ( FieldAccess::Named( _ ), _ ) ) ) 
   {
-    qt! { Self { #( #divs ),* } }
+    qt! { Self { #( #divs ), * } }
   } 
   else 
   {
-    qt! { Self ( #( #divs ),* ) }
+    qt! { Self ( #( #divs ), * ) }
   };
 
   qt! 
@@ -186,7 +180,7 @@ fn generate_struct
       type Output = Self;
 
       # [ inline ( always ) ]
-      fn div( self, other: Self ) -> Self::Output 
+      fn div( self, other : Self ) -> Self::Output 
       {
         #body
       }

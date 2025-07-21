@@ -108,22 +108,12 @@ fn generate_enum
 )
 -> proc_macro2::TokenStream 
 {
-  let op_expr = | a_ident : &syn::Ident, b_ident : &syn::Ident | -> proc_macro2::TokenStream {
-    qt! { #a_ident + #b_ident}
-  };
-
-  let arms = super::generate_enum_match_arms(item_name, variants, op_expr);
-
-  let body = qt!
+  let op_expr = | a_ident : &syn::Ident, b_ident : &syn::Ident | -> proc_macro2::TokenStream 
   {
-    match ( self, other )
-    {
-      #( #arms )*
-      ( a, b ) => Err( format!( "Cannot add different variants" ).into() ),
-    }
+    qt! { #a_ident + #b_ident }
   };
-  
-  let error_type: proc_macro2::TokenStream = if let Some( ty ) = &item_attrs.error 
+
+  let error_type: proc_macro2::TokenStream = if let Some( ty ) = &item_attrs.error_type 
   {
     qt! { #ty }
   } 
@@ -131,6 +121,11 @@ fn generate_enum
   {
     qt! { String }
   };
+
+  let enum_match = super::generate_enum_match_body( item_name, variants, item_attrs, op_expr );
+  let body :  proc_macro2::TokenStream = 
+    qt! { #enum_match };
+
    qt! 
    {
       #[ automatically_derived ]
@@ -148,6 +143,7 @@ fn generate_enum
     }
   }
 }
+
 
 fn generate_struct
 (
@@ -170,11 +166,11 @@ fn generate_struct
 
   let body = if matches!( fields.first(), Some( ( FieldAccess::Named( _ ), _ ) ) ) 
   {
-    qt! { Self { #( #additions ),* } }
+    qt! { Self { #( #additions ), * } }
   } 
   else 
   {
-    qt! { Self ( #( #additions ),* ) }
+    qt! { Self ( #( #additions ), * ) }
   };
 
   qt! 
@@ -186,7 +182,7 @@ fn generate_struct
       type Output = Self;
 
       # [ inline ( always ) ]
-      fn add( self, other: Self ) -> Self::Output 
+      fn add( self, other : Self ) -> Self::Output 
       {
         #body
       }
