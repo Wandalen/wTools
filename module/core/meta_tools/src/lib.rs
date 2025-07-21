@@ -4,75 +4,26 @@
 #![ doc( html_root_url = "https://docs.rs/meta_tools/latest/meta_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Namespace with dependencies.
+#![ warn( dead_code ) ]
 
-#[ cfg( feature = "enabled" ) ]
-pub mod dependency
-{
-
-  pub use ::mod_interface;
-  #[ cfg( feature = "meta_for_each" ) ]
-  pub use ::for_each;
-  #[ cfg( feature = "meta_impls_index" ) ]
-  pub use ::impls_index;
-  #[ cfg( feature = "meta_idents_concat" ) ]
-  pub use ::paste;
-
-}
-
-mod private {}
-
-//
-
-// // qqq : meta interface should be optional dependancy. please fix writing equivalent code manually
-// #[ cfg( feature = "enabled" ) ]
-// mod_interface::mod_interface!
-// {
-//   // #![ debug ]
-//
-//   layer meta;
-//
-// }
-
+// Declare the top-level modules
+pub mod dependency;
 pub mod meta;
+pub mod own;
+pub mod orphan;
+pub mod exposed;
+pub mod prelude;
 
+// Re-export the exposed parts of these modules directly
 #[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
-pub use own::*;
-
-/// Own namespace of the module.
+pub use dependency::exposed::*;
 #[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
-pub mod own
-{
-  use super::*;
-  pub use meta::orphan::*;
-}
-
-/// Orphan namespace of the module.
+pub use meta::exposed::*;
 #[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
-  use super::*;
-  pub use exposed::*;
-}
-
-/// Exposed namespace of the module.
+pub use own::exposed::*;
 #[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
-  use super::*;
-  pub use prelude::*;
-  pub use meta::exposed::*;
-}
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
+pub use orphan::exposed::*;
 #[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
-  use super::*;
-  pub use meta::prelude::*;
-}
+pub use exposed::exposed::*;
+#[ cfg( feature = "enabled" ) ]
+pub use prelude::exposed::*;

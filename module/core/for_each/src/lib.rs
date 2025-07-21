@@ -4,6 +4,8 @@
 #![ doc( html_root_url = "https://docs.rs/for_each/latest/for_each/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+#![ allow( clippy::empty_line_after_doc_comments ) ]
+#![ allow( clippy::doc_markdown ) ]
 /// Define a private namespace for all its items.
 #[ cfg( feature = "enabled" ) ]
 mod private

@@ -1,25 +1,21 @@
-# Task Plan: Convert `unilang_instruction_parser` to Alias and Relocate `unilang_parser`
+# Task Plan: Relocate `unilang_parser` back to `module/move`
 
 ### Goal
-*   Move the `unilang_parser` crate from `module/move` to `module/alias`.
-*   Create a new alias crate named `unilang_instruction_parser` in `module/alias` that re-exports `unilang_parser`.
+*   Move the `unilang_parser` crate from `module/alias` back to `module/move`.
 *   Ensure all workspace references are updated and the project builds and tests successfully.
 
 ### Ubiquitous Language (Vocabulary)
-*   **Old Location:** `module/move/unilang_parser`
-*   **New Location:** `module/alias/unilang_parser`
-*   **Alias Crate:** `unilang_instruction_parser` (will be created in `module/alias`)
-*   **Target Crate:** `unilang_parser`
+*   **Old Location:** `module/alias/unilang_parser`
+*   **New Location:** `module/move/unilang_parser`
 *   **Workspace:** The root `wTools` directory containing multiple Rust crates.
 
 ### Progress
 *   **Roadmap Milestone:** N/A
-*   **Primary Editable Crate:** `module/move/unilang_parser` (will become `module/alias/unilang_parser`)
-*   **Overall Progress:** 2/3 increments complete
+*   **Primary Editable Crate:** `module/alias/unilang_parser` (will become `module/move/unilang_parser`)
+*   **Overall Progress:** 0/3 increments complete
 *   **Increment Status:**
-    *   ✅ Increment 1: Relocate `unilang_parser` and Update References
-    *   ✅ Increment 2: Create `unilang_instruction_parser` Alias Crate
-    *   ⏳ Increment 2.1: Focused Debugging: `git mv` "source directory is empty" error
+    *   ⚫ Increment 1: Relocate `unilang_parser` and Update References
+    *   ⚫ Increment 2: Update Alias Crate `unilang_instruction_parser`
     *   ⚫ Increment 3: Finalize and Clean Up
 
 ### Permissions & Boundaries
@@ -48,7 +44,7 @@
     *   `module/core/variadic_from_meta` (Reason: Might depend on `unilang_parser`)
     *   `module/move/willbe` (Reason: Might depend on `unilang_parser`)
     *   `module/alias/cargo_will` (Reason: Might depend on `unilang_parser`)
-    *   `module/alias/unilang_instruction_parser` (Reason: New alias crate to be created)
+    *   `module/alias/unilang_instruction_parser` (Reason: Alias crate to be updated)
 
 ### Relevant Context
 *   Control Files to Reference (if they exist):
@@ -56,11 +52,13 @@
     *   `./spec.md`
     *   `./spec_addendum.md`
 *   Files to Include (for AI's reference, if `read_file` is planned):
-    *   `module/alias/unilang_parser/Cargo.toml`
-    *   `module/alias/unilang_parser/src/lib.rs`
+    *   `module/alias/unilang_parser/Cargo.toml` (will be moved)
+    *   `module/alias/unilang_parser/src/lib.rs` (will be moved)
     *   `module/move/unilang/Cargo.toml`
     *   `module/move/unilang/task/tasks.md`
     *   `Cargo.toml` (workspace root)
+    *   `module/alias/unilang_instruction_parser/Cargo.toml`
+    *   `module/alias/unilang_instruction_parser/src/lib.rs`
 *   Crates for Documentation (for AI's reference, if `read_file` on docs is planned):
     *   `unilang_parser`
     *   `unilang_instruction_parser` (alias)
@@ -68,12 +66,11 @@
     *   N/A
 
 ### Expected Behavior Rules / Specifications
-*   The `unilang_parser` crate directory must be moved from `module/move/unilang_parser` to `module/alias/unilang_parser`.
-*   A new crate `module/alias/unilang_instruction_parser` must be created.
-*   The `module/alias/unilang_instruction_parser` crate must re-export `unilang_parser`.
-*   All `Cargo.toml` files and source code references must be updated to reflect the new locations and alias.
+*   The `unilang_parser` crate directory must be moved from `module/alias/unilang_parser` to `module/move/unilang_parser`.
+*   The `module/alias/unilang_instruction_parser` crate must be updated to correctly re-export `unilang_parser` from its new location.
+*   All `Cargo.toml` files and source code references must be updated to reflect the new location.
 *   The project must compile and pass all tests (`cargo test --workspace`) without errors or new warnings after the changes.
-*   The `tasks.md` file must be updated to reflect the new alias structure.
+*   The `tasks.md` file must be updated to reflect the new structure.
 
 ### Tests
 | Test ID | Status | Notes |
@@ -90,70 +87,52 @@
 ### Increments
 (Note: The status of each increment is tracked in the `### Progress` section.)
 ##### Increment 1: Relocate `unilang_parser` and Update References
-*   **Goal:** Move `unilang_parser` to `module/alias` and update direct path references.
+*   **Goal:** Move `unilang_parser` back to `module/move` and update direct path references.
 *   **Specification Reference:** User feedback.
 *   **Steps:**
-    *   Step 1: Use `git mv` to rename the directory `module/move/unilang_parser` to `module/alias/unilang_parser`.
+    *   Step 1: Use `git mv` to rename the directory `module/alias/unilang_parser` to `module/move/unilang_parser`.
     *   Step 2: Read the root `Cargo.toml` file.
     *   Step 3: Update the `members` list in the root `Cargo.toml` to reflect the new path for `unilang_parser`.
-    *   Step 4: Search for all `Cargo.toml` files in the workspace that contain the string `module/move/unilang_parser`.
-    *   Step 5: For each identified `Cargo.toml` file, replace `module/move/unilang_parser` with `module/alias/unilang_parser`.
-    *   Step 6: Perform Increment Verification.
-    *   Step 7: Perform Crate Conformance Check.
+    *   Step 4: Update the `[workspace.dependencies.unilang_parser]` path in the root `Cargo.toml`.
+    *   Step 5: Search for all `Cargo.toml` files in the workspace that contain the string `module/alias/unilang_parser`.
+    *   Step 6: For each identified `Cargo.toml` file, replace `module/alias/unilang_parser` with `module/move/unilang_parser`.
+    *   Step 7: Perform Increment Verification.
+    *   Step 8: Perform Crate Conformance Check.
 *   **Increment Verification:**
     *   Run `timeout 90 cargo check --workspace` to ensure the entire workspace can be checked.
-*   **Commit Message:** `refactor(unilang_parser): Relocate to module/alias and update path references`
+*   **Commit Message:** `refactor(unilang_parser): Relocate to module/move and update path references`
 
-##### Increment 2: Create `unilang_instruction_parser` Alias Crate
-*   **Goal:** Create the `unilang_instruction_parser` alias crate that re-exports `unilang_parser`.
+##### Increment 2: Update Alias Crate `unilang_instruction_parser`
+*   **Goal:** Update the `unilang_instruction_parser` alias crate to correctly re-export `unilang_parser` from its new location.
 *   **Specification Reference:** User feedback.
 *   **Steps:**
-    *   Step 1: Create a new directory `module/alias/unilang_instruction_parser`.
-    *   Step 2: Create `module/alias/unilang_instruction_parser/Cargo.toml` with `name = "unilang_instruction_parser"` and a dependency on `unilang_parser`.
-    *   Step 3: Create `module/alias/unilang_instruction_parser/src/lib.rs` and add `pub use unilang_parser::*;` to re-export the target crate.
-    *   Step 4: Add `module/alias/unilang_instruction_parser` to the `members` list in the root `Cargo.toml`.
+    *   Step 1: Read `module/alias/unilang_instruction_parser/Cargo.toml`.
+    *   Step 2: Update the `path` for `unilang_parser` dependency in `module/alias/unilang_instruction_parser/Cargo.toml` from `../unilang_parser` to `../../move/unilang_parser`.
+    *   Step 3: Read `module/alias/unilang_instruction_parser/src/lib.rs`.
+    *   Step 4: Update the `pub use` statement in `module/alias/unilang_instruction_parser/src/lib.rs` to `pub use unilang_parser::*;` (if not already).
     *   Step 5: Perform Increment Verification.
     *   Step 6: Perform Crate Conformance Check.
 *   **Increment Verification:**
     *   Run `timeout 90 cargo check --workspace` to ensure the entire workspace can be checked.
-*   **Commit Message:** `feat(unilang_instruction_parser): Create alias crate for unilang_parser`
-
-##### Increment 2.1: Focused Debugging: `git mv` "source directory is empty" error
-*   **Goal:** Diagnose and fix the `git mv` error "fatal: source directory is empty" when moving `module/move/unilang_parser`.
-*   **Specification Reference:** N/A
-*   **Steps:**
-    *   Step 1: Apply Problem Decomposition: The problem is that `git mv` reports the source directory as empty, preventing the move.
-    *   Step 2: Isolate the test case: The specific directory is `module/move/unilang_parser`.
-    *   Step 3: Add targeted debug logging: Use `ls -la module/move/unilang_parser/` to see its contents, including hidden files, and `du -sh module/move/unilang_parser/` to check its size.
-    *   Step 4: Formulate and test a hypothesis:
-        *   Hypothesis 1: The directory is indeed empty, and `ls` is showing a stale cache or a symbolic link.
-        *   Hypothesis 2: The directory contains files, but they are somehow untracked or in a state that `git mv` considers "empty" for its operation (e.g., all files are staged for deletion, or there's a `.git` subdirectory that's causing issues).
-        *   Hypothesis 3: There's a deeper file system corruption or git repository issue.
-    *   Step 5: Based on the output of `ls -la` and `du -sh`, determine the actual state of the directory.
-    *   Step 6: If the directory is not empty, attempt to force `git add` all its contents to ensure they are tracked, then re-attempt `git mv`. If `git add` fails or reports no changes, consider a manual move and then `git add` the new location and `git rm` the old.
-    *   Step 7: Upon successful fix, document the root cause and solution in the `### Notes & Insights` section.
-*   **Increment Verification:**
-    *   Run `ls -F module/alias/unilang_parser/` to confirm the directory exists and contains files.
-    *   Run `ls -F module/move/unilang_parser/` to confirm the old directory is gone.
-*   **Commit Message:** `fix(debug): Resolve git mv 'source directory is empty' error`
+*   **Commit Message:** `refactor(unilang_instruction_parser): Update alias crate for relocated unilang_parser`
 
 ##### Increment 3: Finalize and Clean Up
 *   **Goal:** Perform final verification and clean up any remaining redundant files or references.
 *   **Specification Reference:** User feedback.
 *   **Steps:**
-    *   Step 1: Search for any remaining source code references to `unilang_instruction_parser` that are not part of the new alias crate and update them to `unilang_parser`. (This should ideally be minimal after previous steps).
-    *   Step 2: Update the `tasks.md` file in `module/move/unilang/task/tasks.md` to reflect the new alias structure and completed tasks.
+    *   Step 1: Search for any remaining source code references to `module/alias/unilang_parser` that are not part of the new alias crate and update them to `module/move/unilang_parser`. (This should ideally be minimal after previous steps).
+    *   Step 2: Update the `tasks.md` file in `module/move/unilang/task/tasks.md` to reflect the new structure.
     *   Step 3: Perform Increment Verification.
     *   Step 4: Perform Crate Conformance Check.
 *   **Increment Verification:**
     *   Run `timeout 90 cargo test --workspace` to ensure all tests pass. (Note: This may still fail due to external system dependencies.)
     *   Run `timeout 90 cargo clippy --workspace -- -D warnings` to ensure no new lints. (Note: This may still fail due to external system dependencies.)
     *   Run `git status` to ensure the working directory is clean.
-*   **Commit Message:** `chore(unilang_parser): Finalize alias conversion and cleanup`
+*   **Commit Message:** `chore(unilang_parser): Finalize relocation and cleanup`
 
 ### Task Requirements
-*   `unilang_parser` must be moved to `module/alias`.
-*   `unilang_instruction_parser` must become an alias crate re-exporting `unilang_parser`.
+*   `unilang_parser` must be moved to `module/move`.
+*   `unilang_instruction_parser` must remain an alias crate re-exporting `unilang_parser`.
 *   All references must be updated.
 *   The project must compile and pass all tests without errors or new warnings.
 
@@ -220,11 +199,4 @@
 *   N/A
 
 ### Changelog
-*   `[User Feedback | 2025-07-20 21:47 UTC]` User requested moving `unilang_parser` to `module/alias` and making `unilang_instruction_parser` an alias crate.
-*   `[Increment 1 | 2025-07-20 21:47 UTC]` Renamed crate directory `module/move/unilang_parser` to `module/alias/unilang_parser`.
-*   `[Increment 1 | 2025-07-20 21:48 UTC]` Removed `module/move/unilang_parser` from the `members` list in the root `Cargo.toml`.
-*   `[Increment 2 | 2025-07-20 21:48 UTC]` Created directory `module/alias/unilang_instruction_parser`.
-*   `[Increment 2 | 2025-07-20 21:48 UTC]` Created `module/alias/unilang_instruction_parser/Cargo.toml`.
-*   `[Increment 2 | 2025-07-20 21:49 UTC]` Created `module/alias/unilang_instruction_parser/src/lib.rs`.
-*   `[Increment 2 | 2025-07-20 21:49 UTC]` Added `module/alias/unilang_instruction_parser` to the `members` list in the root `Cargo.toml`.
-*   `[Increment 2 | 2025-07-20 21:49 UTC]` Updated path for `unilang_parser` in `module/move/unilang/Cargo.toml`.
+*   `[User Feedback | 2025-07-20 22:05 UTC]` User requested moving `unilang_parser` back to `module/move`.

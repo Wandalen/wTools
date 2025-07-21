@@ -40,25 +40,33 @@ use_alloc = [ "test_tools/use_alloc" ]
 enabled = [ "test_tools/enabled" ]
 # nightly = [ "test_tools/nightly" ]
 
-# [lib]
-# name = "wtest_basic"
-# path = "src/test/wtest_basic_lib.rs"
-#
-# [[test]]
-# name = "wtest_basic_test"
-# path = "tests/test/wtest_basic_tests.rs"
-#
-# [[test]]
-# name = "wtest_basic_smoke_test"
-# path = "tests/_integration_test/smoke_test.rs"
-#
-# [[example]]
-# name = "wtest_basic_trivial"
-# path = "examples/wtest_basic_trivial/src/main.rs"
+[lib]
+name = "wtest_basic"
+path = "src/test/wtest_basic_lib.rs"
+
+[[test]]
+name = "wtest_basic_test"
+path = "tests/test/wtest_basic_tests.rs"
+
+[[test]]
+name = "wtest_basic_smoke_test"
+path = "tests/_integration_test/smoke_test.rs"
+
+[[example]]
+name = "wtest_basic_trivial"
+path = "examples/wtest_basic_trivial_sample/src/main.rs"
 
 [dependencies]
 
 test_tools = { workspace = true, default-features = true }
+meta_tools = { workspace = true, features = [ "enabled" ] }
+mod_interface = { workspace = true }
+mod_interface_meta = { workspace = true, features = [ "enabled" ] }
+mem_tools = { workspace = true }
+typing_tools = { workspace = true }
+data_type = { workspace = true }
+diagnostics_tools = { workspace = true }
+impls_index = { workspace = true }
 
 # ## external
 #
@@ -70,11 +78,11 @@ test_tools = { workspace = true, default-features = true }
 #
 # ## internal
 #
-# meta_tools = { workspace = true, features = [ "full" ] }
-# mem_tools = { workspace = true, features = [ "full" ] }
-# typing_tools = { workspace = true, features = [ "full" ] }
-# data_type = { workspace = true, features = [ "full" ] }
-# diagnostics_tools = { workspace = true, features = [ "full" ] }
+# # meta_tools = { workspace = true, features = [ "full" ] } # Already added above
+# # mem_tools = { workspace = true, features = [ "full" ] } # Already added above
+# # typing_tools = { workspace = true, features = [ "full" ] } # Already added above
+# # data_type = { workspace = true, features = [ "full" ] } # Already added above
+# # diagnostics_tools = { workspace = true, features = [ "full" ] } # Already added above
 
 [dev-dependencies]
 test_tools = { workspace = true }

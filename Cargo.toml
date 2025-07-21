@@ -1,32 +1,17 @@
 [workspace]
 resolver = "2"
 members = [
-  "module/alias/unilang_instruction_parser",
   "module/alias/*",
-  "module/blank/*",
   "module/core/*",
-  "module/move/crates_tools",
-  "module/move/deterministic_rand",
-  "module/move/graphs_tools",
-  "module/move/gspread",
-  "module/move/optimization_tools",
-  "module/move/plot_interface",
-  "module/move/refiner",
-  "module/move/sqlx_query",
-  "module/move/unilang",
-  "module/move/unilang_meta",
-  "module/move/unitore",
-  "module/move/wca",
-  "module/move/willbe",
-  "module/move/wplot",
-  "module/test/*",
+  "module/move/*",
+  "module/step/*",
   "step",
-  "module/move/unilang/tests/dynamic_libs/dummy_lib",
 ]
 exclude = [
   "-*",
-  "module/move/_video_experiment",
   "module/move/cargo_will",
+  "module/blank/*",
+  "module/postponed/*",
 ]
 # default-members = [ "module/core/wtools" ]
 
@@ -81,10 +66,6 @@ version = "~0.2.0"
 path = "module/core/wtools"
 default-features = false
 
-[workspace.dependencies.unilang_parser]
-version = "~0.1.0"
-path = "module/alias/unilang_parser"
-
 [workspace.dependencies.non_std]
 version = "~0.1.4"
 path = "module/alias/non_std"
@@ -97,6 +78,9 @@ path = "module/alias/std_tools"
 version = "~0.1.4"
 path = "module/alias/std_x"
 
+[workspace.dependencies.unilang_parser]
+version = "~0.1.0"
+path = "module/move/unilang_parser"
 
 ## data_type
 
@@ -105,18 +89,18 @@ version = "~0.14.0"
 path = "module/core/data_type"
 default-features = false
 
-# [workspace.dependencies.type_constructor_meta]
-# version = "~0.2.0"
-# path = "module/core/type_constructor_meta"
-# default-features = false
-#
-# [workspace.dependencies.type_constructor_make_meta]
-# version = "~0.2.0"
-# path = "module/core/type_constructor_make_meta"
-#
-# [workspace.dependencies.type_constructor_derive_pair_meta]
-# version = "~0.1.0"
-# path = "module/core/type_constructor_derive_pair_meta"
+[workspace.dependencies.type_constructor_meta]
+version = "~0.2.0"
+path = "module/core/type_constructor_meta"
+default-features = false
+
+[workspace.dependencies.type_constructor_make_meta]
+version = "~0.2.0"
+path = "module/core/type_constructor_make_meta"
+
+[workspace.dependencies.type_constructor_derive_pair_meta]
+version = "~0.1.0"
+path = "module/core/type_constructor_derive_pair_meta"
 
 [workspace.dependencies.interval_adapter]
 version = "~0.29.0"
@@ -176,10 +160,10 @@ default-features = false
 # features = [ "enabled" ]
 # # xxx : remove features, maybe
 
-# [workspace.dependencies.type_constructor]
-# version = "~0.3.0"
-# path = "module/core/type_constructor"
-# default-features = false
+[workspace.dependencies.type_constructor]
+version = "~0.3.0"
+path = "module/postponed/type_constructor"
+default-features = false
 
 [workspace.dependencies.fundamental_data_type]
 version = "~0.2.0"
@@ -477,15 +461,15 @@ version = "~0.3.0"
 path = "module/move/graphs_tools"
 default-features = false
 
-# [workspace.dependencies.automata_tools]
-# version = "~0.2.0"
-# path = "module/move/automata_tools"
-# default-features = false
-#
-# [workspace.dependencies.wautomata]
-# version = "~0.2.0"
-# path = "module/alias/wautomata"
-# default-features = false
+[workspace.dependencies.automata_tools]
+version = "~0.2.0"
+path = "module/postponed/automata_tools"
+default-features = false
+
+[workspace.dependencies.wautomata]
+version = "~0.2.0"
+path = "module/postponed/wautomata"
+default-features = false
 
 ## ca
 
@@ -556,12 +540,19 @@ path = "module/move/llm_tools"
 
 ## steps
 
-[workspace.dependencies.integration_test]
-path = "module/step/integration_test"
+[workspace.dependencies.procedural_macro]
+version = "~0.1.0"
+path = "module/template/template_procedural_macro"
 default-features = true
 
-[workspace.dependencies.smoke_test]
-path = "module/step/smoke_test"
+[workspace.dependencies.procedural_macro_meta]
+version = "~0.1.0"
+path = "module/template/template_procedural_macro_meta"
+default-features = true
+
+[workspace.dependencies.procedural_macro_runtime]
+version = "~0.1.0"
+path = "module/template/template_procedural_macro_runtime"
 default-features = true
 
 

@@ -125,7 +125,7 @@ fn is_type_string(ty: &syn::Type) -> bool {
 }
 
 /// Generates `FromN` trait implementations.
-#[ allow( clippy::similar_names, clippy::cloned_ref_to_slice_refs ) ]
+#[ allow( clippy::similar_names ) ]
 fn generate_from_n_impls( context : &VariadicFromContext<'_>, from_fn_args : &[ proc_macro2::Ident ] ) -> proc_macro2::TokenStream
 {
   let mut impls = quote! {};

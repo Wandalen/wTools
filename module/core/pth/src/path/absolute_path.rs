@@ -167,7 +167,7 @@ mod private
 
       if !is_absolute( &path )
       {
-        return Err( io::Error::new( io::ErrorKind::Other, format!( "Path expected to be absolute, but it's not {path:?}" ) ) );
+        return Err( io::Error::other( format!( "Path expected to be absolute, but it's not {}", path.display() ) ) );
       }
 
       Ok( Self( path ) )
