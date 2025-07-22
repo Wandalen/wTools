@@ -30,12 +30,17 @@ mod all_manual_test;
     feature = "derive_index_mut",
     feature = "derive_inner_from",
     feature = "derive_not",
-    feature = "derive_phantom"
+    feature = "derive_phantom",
+    feature = "derive_add"
   )
 )]
 mod all_test;
 
 mod basic_test;
+
+#[ cfg( feature = "derive_add" ) ]
+#[ path = "add/mod.rs" ]
+mod add;
 
 #[ cfg( feature = "derive_as_mut" ) ]
 #[ path = "as_mut/mod.rs" ]
