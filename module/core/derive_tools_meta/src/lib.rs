@@ -314,16 +314,19 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// ## Supported Structures
 /// - Named structs: `struct My { a : T, b : T }`
 /// - Tuple structs: `struct My( T, T )`
-/// - Enums — **unimplemented**
+/// - Enums enum My { One( T ) }
 /// - Unit structs: `struct My;` — **not supported**
 ///
 /// ## Item-Level Attributes
 /// The macro recognizes the following struct-level attributes:
 ///
-/// | Attribute                  | Target        | Description                                                           |
-/// |----------------------------|---------------|-----------------------------------------------------------------------|
-/// | `#[ derive( Add ) ]`       | Struct        | Enables generation of `Add` implementation                            |
-/// | `#[add(error = SomeType)]` | Struct / Enum | Overrides the default error type (`String`) used in `Result<Self, E>` |
+/// | Attribute                              | Target        | Description                                                                                          |
+/// |----------------------------------------|---------------|------------------------------------------------------------------------------------------------------|
+/// | `#[ derive( Add ) ]`                   | Struct        | Enables generation of `Add` implementation                                                           |
+/// | `#[add(error_type = SomeType)]`        | Enum          | Overrides the default error type (`String`) used in `Result<Self, E>`(should implement From<String>) |
+/// | `#[add(error_expr = SomeExpr)]`        | Enum          | Overrides the default error string with provided expression                                          |
+/// | `#[derive_ops(error_type = SomeType)]` | Enum          | Overrides the default error type for all math derives (should implement From<String>)                |
+/// | `#[derive_ops(error_expr = SomeExpr)]` | Enum          | Overrides the default error string with provided expression for all math derives                     |
 /// 
 /// /// ### Notes:
 /// - `SomeType` must be a valid Rust type (e.g., `MyError`, `Box<dyn std::error::Error>`, etc.).
@@ -358,27 +361,6 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// ## Requirements
 /// All fields must implement [`core::ops::Add`].
 ///
-/// ## Test Plan
-///
-/// | ID   | Struct Type              | Fields                      | Should Compile?  | Should Work at Runtime?| Notes                                |
-/// |------|--------------------------|-----------------------------|------------------|------------------------|--------------------------------------|
-/// | T1.1 | Named                    | `{x: i32, y: i32}`          | +                | +                      | Basic case                           |
-/// | T1.2 | Tuple                    | `(i32)`                     | +                | +                      | Tuple struct                         |
-/// | T1.3 | Unit                     | `()`                        | -                | —                      | Should be rejected                   |
-/// | T1.4 | Named with String        | `{x: String}`               | -                | —                      | String doesn't implement `Add<Output = String>` in all cases |
-/// | T1.5 | Generic                  | `{x: T}`                    | +                | + (if T: Add)          | Test with bounds                     |
-/// | T1.6 | Enum,                    | `enum E { One(i32) }`       | -                | -                      | Unimplemented yet                    |
-/// 
-/// ## Input / Expected Output
-///
-/// | ID   | Input Expression                              | Expected Output / Behavior                          | Notes                                           |
-/// |------|-----------------------------------------------|-----------------------------------------------------|-------------------------------------------------|
-/// | T2.1 | `E::One(3) + E::One(3)`                       | `Ok(E::One(6))`                                     | Basic enum case                                 |
-/// | T2.2 | `E::One(i32) + E::Two(i32)`                   | `Error("Mismatched variant")`                       | Mismatched variant                              |
-/// | T2.3 | `S { x: 2, y: 3 } + S { x: 4, y: 1 }`         | `S { x: 6, y: 4 }`                                  | Basic case                                      |
-/// | T2.4 | `Empty {} + Empty {}`                         | Compile error                                       | Struct has zero fields                          |
-/// | T2.5 | `S(String::from("1")) + S(String::from("2"))` | Compile error                                       | String doesn't implement `Add<Output = String>` |
-/// 
 /// ## Example Usage
 /// ```
 /// use derive_tools_meta::Add;
@@ -449,10 +431,13 @@ pub fn add( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// ## Item-Level Attributes
 /// The macro recognizes the following struct-level attributes:
 ///
-/// | Attribute                  | Target        | Description                                                           |
-/// |----------------------------|---------------|-----------------------------------------------------------------------|
-/// | `#[ derive( Sub ) ]`       | Struct        | Enables generation of `Sub` implementation                            |
-/// | `#[sub(error = SomeType)]` | Struct / Enum | Overrides the default error type (`String`) used in `Result<Self, E>` |
+/// | Attribute                              | Target        | Description                                                                                          |
+/// |----------------------------------------|---------------|------------------------------------------------------------------------------------------------------|
+/// | `#[ derive( Sub ) ]`                   | Struct        | Enables generation of `Sub` implementation                                                           |
+/// | `#[sub(error_type = SomeType)]`        | Enum          | Overrides the default error type (`String`) used in `Result<Self, E>`(should implement From<String>) |
+/// | `#[sub(error_expr = SomeExpr)]`        | Enum          | Overrides the default error string with provided expression                                          |
+/// | `#[derive_ops(error_type = SomeType)]` | Enum          | Overrides the default error type for all math derives (should implement From<String>)                |
+/// | `#[derive_ops(error_expr = SomeExpr)]` | Enum          | Overrides the default error string with provided expression for all math derives                     |
 /// 
 /// ### Notes:
 /// - `SomeType` must be a valid Rust type (e.g., `MyError`, `Box<dyn std::error::Error>`, etc.).
@@ -487,27 +472,6 @@ pub fn add( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// ## Requirements
 /// All fields must implement [`core::ops::Sub`].
 ///
-/// ## Test Plan
-///
-/// | ID   | Struct Type              | Fields                      | Should Compile?  | Should Work at Runtime?| Notes                                |
-/// |------|--------------------------|-----------------------------|------------------|------------------------|--------------------------------------|
-/// | T1.1 | Named                    | `{x: i32, y: i32}`          | +                | +                      | Basic case                           |
-/// | T1.2 | Tuple                    | `(i32)`                     | +                | +                      | Tuple struct                         |
-/// | T1.3 | Unit                     | `()`                        | -                | —                      | Should be rejected                   |
-/// | T1.4 | Named with String        | `{x: String}`               | -                | —                      | String doesn't implement `Sub<Output = String>` in all cases |
-/// | T1.5 | Generic                  | `{x: T}`                    | +                | + (if T: Sub)          | Test with bounds                     |
-/// | T1.6 | Enum,                    | `enum E { One(i32) }`       | -                | -                      | Unimplemented yet                    |
-/// 
-/// ## Input / Expected Output
-///
-/// | ID   | Input Expression                              | Expected Output / Behavior                          | Notes                                           |
-/// |------|-----------------------------------------------|-----------------------------------------------------|-------------------------------------------------|
-/// | T2.1 | `E::One(3) - E::One(2)`                       | `Ok(E::One(1))`                                     | Basic enum case                                 |
-/// | T2.2 | `E::One(i32) - E::Two(i32)`                   | `Error("Mismatched variant")`                       | Mismatched variant                              |
-/// | T2.3 | `S { x: 4, y: 3 } - S { x: 2, y: 1 }`         | `S { x: 2, y: 2 }`                                  | Basic case                                      |
-/// | T2.4 | `Empty {} - Empty {}`                         | Compile error                                       | Struct has zero fields                          |
-/// | T2.5 | `S(String::from("1")) - S(String::from("2"))` | Compile error                                       | String doesn't implement `Sub<Output = String>` |
-/// 
 /// ## Example Usage
 /// ```
 /// use derive_tools_meta::Sub;
@@ -579,11 +543,14 @@ pub fn sub( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// ## Item-Level Attributes
 /// The macro recognizes the following struct-level attributes:
 ///
-/// | Attribute                  | Target        | Description                                                           |
-/// |----------------------------|---------------|-----------------------------------------------------------------------|
-/// | `#[ derive( Mul ) ]`       | Struct        | Enables generation of `Mul` implementation                            |
-/// | `#[mul(error = SomeType)]` | Struct / Enum | Overrides the default error type (`String`) used in `Result<Self, E>` |
-/// 
+/// | Attribute                              | Target        | Description                                                                                          |
+/// |----------------------------------------|---------------|------------------------------------------------------------------------------------------------------|
+/// | `#[ derive( Mul ) ]`                   | Struct        | Enables generation of `Mul` implementation                                                           |
+/// | `#[mul(error_type = SomeType)]`        | Enum          | Overrides the default error type (`String`) used in `Result<Self, E>`(should implement From<String>) |
+/// | `#[mul(error_expr = SomeExpr)]`        | Enum          | Overrides the default error string with provided expression                                          |
+/// | `#[derive_ops(error_type = SomeType)]` | Enum          | Overrides the default error type for all math derives (should implement From<String>)                |
+/// | `#[derive_ops(error_expr = SomeExpr)]` | Enum          | Overrides the default error string with provided expression for all math derives                     |
+///  
 /// ### Notes:
 /// - `SomeType` must be a valid Rust type (e.g., `MyError`, `Box<dyn std::error::Error>`, etc.).
 /// - If omitted, the default error type is `String`.
@@ -617,27 +584,6 @@ pub fn sub( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// ## Requirements
 /// All fields must implement [`core::ops::Mul`].
 ///
-/// ## Test Plan
-///
-/// | ID   | Struct Type              | Fields                      | Should Compile?  | Should Work at Runtime?| Notes                                |
-/// |------|--------------------------|-----------------------------|------------------|------------------------|--------------------------------------|
-/// | T1.1 | Named                    | `{x: i32, y: i32}`          | +                | +                      | Basic case                           |
-/// | T1.2 | Tuple                    | `(i32)`                     | +                | +                      | Tuple struct                         |
-/// | T1.3 | Unit                     | `()`                        | -                | —                      | Should be rejected                   |
-/// | T1.4 | Named with String        | `{x: String}`               | -                | —                      | String doesn't implement `Mul<Output = String>` in all cases |
-/// | T1.5 | Generic                  | `{x: T}`                    | +                | + (if T: Mul)          | Test with bounds                     |
-/// | T1.6 | Enum,                    | `enum E { One(i32) }`       | -                | -                      | Unimplemented yet                    |
-/// 
-/// ## Input / Expected Output
-///
-/// | ID   | Input Expression                              | Expected Output / Behavior                          | Notes                                           |
-/// |------|-----------------------------------------------|-----------------------------------------------------|-------------------------------------------------|
-/// | T2.1 | `E::One(3) * E::One(3)`                       | `Ok(E::One(9))`                                     | Basic enum case                                 |
-/// | T2.2 | `E::One(i32) * E::Two(i32)`                   | `Error("Mismatched variant")`                       | Mismatched variant                              |
-/// | T2.3 | `S { x: 2, y: 3 } * S { x: 4, y: 1 }`         | `S { x: 8, y: 3 }`                                  | Basic case                                      |
-/// | T2.4 | `Empty {} * Empty {}`                         | Compile error                                       | Struct has zero fields                          |
-/// | T2.5 | `S(String::from("1")) * S(String::from("2"))` | Compile error                                       | String doesn't implement `Mul<Output = String>` |
-/// 
 /// ## Example Usage
 /// ```
 /// use derive_tools_meta::Mul;
@@ -705,10 +651,13 @@ pub fn mul( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// ## Item-Level Attributes
 /// The macro recognizes the following struct-level attributes:
 ///
-/// | Attribute                  | Target        | Description                                                           |
-/// |----------------------------|---------------|-----------------------------------------------------------------------|
-/// | `#[ derive( Div ) ]`       | Struct        | Enables generation of `Div` implementation                            |
-/// | `#[div(error = SomeType)]` | Struct / Enum | Overrides the default error type (`String`) used in `Result<Self, E>` |
+/// | Attribute                              | Target        | Description                                                                                          |
+/// |----------------------------------------|---------------|------------------------------------------------------------------------------------------------------|
+/// | `#[ derive( Div ) ]`                   | Struct        | Enables generation of `Div` implementation                                                           |
+/// | `#[div(error_type = SomeType)]`        | Enum          | Overrides the default error type (`String`) used in `Result<Self, E>`(should implement From<String>) |
+/// | `#[div(error_expr = SomeExpr)]`        | Enum          | Overrides the default error string with provided expression                                          |
+/// | `#[derive_ops(error_type = SomeType)]` | Enum          | Overrides the default error type for all math derives (should implement From<String>)                |
+/// | `#[derive_ops(error_expr = SomeExpr)]` | Enum          | Overrides the default error string with provided expression for all math derives                     |
 /// 
 /// ### Notes:
 /// - `SomeType` must be a valid Rust type (e.g., `MyError`, `Box<dyn std::error::Error>`, etc.).
@@ -742,27 +691,6 @@ pub fn mul( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// ## Requirements
 /// All fields must implement [`core::ops::Div`].
-///
-/// ## Test Plan
-///
-/// | ID   | Struct Type              | Fields                      | Should Compile?  | Should Work at Runtime?| Notes                                |
-/// |------|--------------------------|-----------------------------|------------------|------------------------|--------------------------------------|
-/// | T1.1 | Named                    | `{x: i32, y: i32}`          | +                | +                      | Basic case                           |
-/// | T1.2 | Tuple                    | `(i32)`                     | +                | +                      | Tuple struct                         |
-/// | T1.3 | Unit                     | `()`                        | -                | —                      | Should be rejected                   |
-/// | T1.4 | Named with String        | `{x: String}`               | -                | —                      | String doesn't implement `Div<Output = String>` in all cases |
-/// | T1.5 | Generic                  | `{x: T}`                    | +                | + (if T: Div)          | Test with bounds                     |
-/// | T1.6 | Enum,                    | `enum E { One(i32) }`       | -                | -                      | Unimplemented yet                    |
-/// 
-/// ## Input / Expected Output
-///
-/// | ID   | Input Expression                              | Expected Output / Behavior                          | Notes                                           |
-/// |------|-----------------------------------------------|-----------------------------------------------------|-------------------------------------------------|
-/// | T2.1 | `E::One(6) / E::One(3)`                       | `Ok(E::One(2))`                                     | Basic enum case                                 |
-/// | T2.2 | `E::One(i32) / E::Two(i32)`                   | `Error("Mismatched variant")`                       | Mismatched variant                              |
-/// | T2.3 | `S { x: 6, y: 4 } / S { x: 2, y: 2 }`         | `S { x: 3, y: 2 }`                                  | Basic case                                      |
-/// | T2.4 | `Empty {} / Empty {}`                         | Compile error                                       | Struct has zero fields                          |
-/// | T2.5 | `S(String::from("6")) / S(String::from("2"))` | Compile error                                       | String doesn't implement `Div<Output = String>` |
 /// 
 /// ## Example Usage
 /// ```
