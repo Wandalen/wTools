@@ -67,7 +67,7 @@ pub fn div( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
     },
     StructLike::Enum( ref item ) =>
     {
-        let non_empty_variants: Vec< &Variant > = item.variants.iter().filter( | variant| !variant.fields.is_empty() ).collect();
+        let non_empty_variants : Vec< &Variant > = item.variants.iter().filter( | variant| !variant.fields.is_empty() ).collect();
         if non_empty_variants.is_empty() 
         {
           return_syn_err!

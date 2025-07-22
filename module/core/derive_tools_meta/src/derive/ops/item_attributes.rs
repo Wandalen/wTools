@@ -156,7 +156,7 @@ pub fn extract_type_from_expr( expr : &syn::Expr ) -> Option< syn::Type >
     let segments = &expr_path.path.segments;  
     if segments.is_empty() 
     {
-        None
+      None
     }
     else 
     {
@@ -169,8 +169,8 @@ pub fn extract_type_from_expr( expr : &syn::Expr ) -> Option< syn::Type >
       new_path.segments.push( first );  
       Some( syn::Type::Path( syn::TypePath 
       {
-        qself: None,
-        path: new_path,
+        qself : None,
+        path : new_path,
       }))
     }
   },
