@@ -4,7 +4,6 @@ members = [
   "module/alias/*",
   "module/core/*",
   "module/move/*",
-  "module/step/*",
 ]
 exclude = [
   "-*",
@@ -12,6 +11,7 @@ exclude = [
   "module/alias/cargo_will",
   "module/blank/*",
   "module/postponed/*",
+  "module/step/*",
   "module/move/unitore",
   "module/move/gspread",
   "module/move/optimization_tools",
@@ -21,6 +21,19 @@ exclude = [
   "module/move/unilang",
   "module/core/program_tools",
   "module/move/graphs_tools",
+  "module/alias/fundamental_data_type",
+  "module/alias/proc_macro_tools",
+  "module/alias/multilayer",
+  "module/alias/instance_of",
+  "module/alias/werror",
+  "module/core/wtools",
+  "module/alias/wproc_macro",
+  "module/alias/wtest_basic",
+  "module/alias/wtest",
+  "module/core/meta_tools",
+  "module/core/for_each",
+  "module/core/reflect_tools",
+  "module/core/format_tools",
   "step",
 ]
 # default-members = [ "module/core/wtools" ]
