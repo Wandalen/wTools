@@ -102,7 +102,7 @@ version = "~0.1.4"
 path = "module/alias/std_x"
 
 [workspace.dependencies.unilang_parser]
-version = "~0.1.0"
+version = "~0.2.0"
 path = "module/move/unilang_parser"
 
 ## data_type
