@@ -171,7 +171,7 @@ impl< 'a > SemanticAnalyzer< 'a >
           let parsed_value = types::parse_value( &raw_value_str, &arg_def.kind )
           .map_err( |e| ErrorData {
             code : "INVALID_ARGUMENT_TYPE".to_string(),
-            message : format!( "Invalid value for argument '{}': {}. Expected {:?}.", arg_def.name, e.reason, e.expected_kind ),
+            message : format!( "Invalid value for argument '{}': {}. Expected {:?}.", arg_def.name, e.reason, arg_def.kind ),
           } )?;
 
           for rule in &arg_def.validation_rules
@@ -186,6 +186,18 @@ impl< 'a > SemanticAnalyzer< 'a >
           }
           bound_args.insert( arg_def.name.clone(), parsed_value );
         }
+      }
+      else if arg_def.is_default_arg && arg_def.default_value.is_some()
+      {
+        // If it's a default argument and a default value is provided, use it.
+        let default_value_str = arg_def.default_value.as_ref().unwrap();
+        eprintln!( "Using default value for argument '{}': '{}' as {:?}", arg_def.name, default_value_str, arg_def.kind );
+        let parsed_value = types::parse_value( default_value_str, &arg_def.kind )
+        .map_err( |e| ErrorData {
+          code : "INVALID_DEFAULT_VALUE_TYPE".to_string(),
+          message : format!( "Invalid default value for argument '{}': {}. Expected {:?}.", arg_def.name, e.reason, arg_def.kind ),
+        } )?;
+        bound_args.insert( arg_def.name.clone(), parsed_value );
       }
       else if !arg_def.optional
       {
