@@ -23,6 +23,22 @@ pub struct CommandDefinition
   pub arguments : Vec< ArgumentDefinition >,
   /// An optional link to the routine that executes this command.
   pub routine_link : Option< String >,
+  /// The namespace of the command.
+  pub namespace: String,
+  /// A short hint for the command.
+  pub hint: String,
+  /// The status of the command.
+  pub status: String,
+  /// The version of the command.
+  pub version: Option<String>,
+  /// Tags associated with the command.
+  pub tags: Vec<String>,
+  /// Aliases for the command.
+  pub aliases: Vec<String>,
+  /// Permissions required to execute the command.
+  pub permissions: Vec<String>,
+  /// Indicates if the command is idempotent.
+  pub idempotent: bool,
 }
 
 ///
@@ -46,6 +62,20 @@ pub struct ArgumentDefinition
   pub multiple : bool,
   /// Custom validation rules for the argument.
   pub validation_rules : Vec< String >,
+  /// A short hint for the argument.
+  pub hint: String,
+  /// Indicates if the argument is a default argument.
+  pub is_default_arg: bool,
+  /// The default value of the argument.
+  pub default_value: Option<String>,
+  /// Aliases for the argument.
+  pub aliases: Vec<String>,
+  /// Tags associated with the argument.
+  pub tags: Vec<String>,
+  /// Indicates if the argument is interactive.
+  pub interactive: bool,
+  /// Indicates if the argument is sensitive.
+  pub sensitive: bool,
 }
 
 ///

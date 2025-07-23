@@ -37,8 +37,13 @@ impl< 'a > HelpGenerator< 'a >
   {
     let command = self.registry.commands.get( command_name )?;
     let mut help = String::new();
-    writeln!( &mut help, "Usage: {}", command.name ).unwrap();
-    writeln!( &mut help, "\n  {}\n", command.description ).unwrap();
+    writeln!( &mut help, "Usage: {} (v{})", command.name, command.version.as_deref().unwrap_or("N/A") ).unwrap();
+    if !command.aliases.is_empty() {
+        writeln!( &mut help, "Aliases: {}", command.aliases.join(", ") ).unwrap();
+    }
+    writeln!( &mut help, "\n  {}", command.hint ).unwrap();
+    writeln!( &mut help, "  {}\n", command.description ).unwrap();
+    writeln!( &mut help, "Status: {}", command.status ).unwrap();
 
     if !command.arguments.is_empty()
     {

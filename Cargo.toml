@@ -18,7 +18,7 @@ exclude = [
   "module/move/refiner",
   "module/move/wplot",
   "module/move/plot_interface",
-  "module/move/unilang",
+
   "module/core/program_tools",
   "module/move/graphs_tools",
   "module/alias/fundamental_data_type",

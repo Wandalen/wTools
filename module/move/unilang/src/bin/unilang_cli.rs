@@ -139,9 +139,10 @@ fn main() -> Result< (), unilang::error::Error >
 
   let parser = Parser::new(UnilangParserOptions::default());
   let command_input_str = args[1..].join(" ");
-  let instructions = parser.parse_single_str(&command_input_str)?;
+  let instruction = parser.parse_single_instruction(&command_input_str)?;
+  let instructions = &[instruction][..];
 
-  let semantic_analyzer = SemanticAnalyzer::new( &instructions, &registry );
+  let semantic_analyzer = SemanticAnalyzer::new( instructions, &registry );
 
   let result = semantic_analyzer.analyze()
   .and_then( | verified_commands |

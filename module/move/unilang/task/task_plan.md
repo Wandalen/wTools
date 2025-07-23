@@ -18,14 +18,15 @@
 ### Progress
 *   **Roadmap Milestone:** M3.1 & M3.2
 *   **Primary Editable Crate:** `module/move/unilang`
-*   **Overall Progress:** 0/6 increments complete
+*   **Overall Progress:** 2/7 increments complete
 *   **Increment Status:**
-    *   ⚫ Increment 1: Remove Legacy Components
-    *   ⚫ Increment 2: Refactor Core Data Models
-    *   ⚫ Increment 3: Adapt `SemanticAnalyzer` to New Parser & Data Models
-    *   ⚫ Increment 4: Refactor `unilang_cli` Binary with Correct Parsing
-    *   ⚫ Increment 5: Migrate Integration Tests Incrementally
-    *   ⚫ Increment 6: Finalization
+    *   ✅ Increment 1: Remove Legacy Components
+    *   ✅ Increment 2: Refactor Core Data Models
+    *   ✅ Increment 3: Fix `unilang_cli` Compilation Error
+    *   ⚫ Increment 4: Adapt `SemanticAnalyzer` to New Parser & Data Models
+    *   ⚫ Increment 5: Refactor `unilang_cli` Binary with Correct Parsing
+    *   ⚫ Increment 6: Migrate Integration Tests Incrementally
+    *   ⚫ Increment 7: Finalization
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -43,7 +44,7 @@ This section provides the necessary API information for dependencies, as direct 
 
 *   **Main Entry Point:** `unilang_instruction_parser::Parser`
     *   `Parser::new(UnilangParserOptions::default()) -> Self`: Creates a new parser with default settings.
-    *   `parser.parse_single_str(&str) -> Result<Vec<GenericInstruction>, ParseError>`: Parses a single, complete command string. **This is the primary method to use for the CLI binary after joining arguments.**
+    *   `parser.parse_single_instruction(&str) -> Result<GenericInstruction, ParseError>`: Parses a single, complete command string. **This is the primary method to use for the CLI binary after joining arguments.**
     *   `parser.parse_slice(&[&str]) -> Result<Vec<GenericInstruction>, ParseError>`: Parses a slice of strings, treating each element as a separate instruction. **Do not use this for CLI arguments from the shell.**
 
 *   **Output Data Structure:** `unilang_instruction_parser::GenericInstruction`
@@ -115,7 +116,7 @@ This section provides the necessary API information for dependencies, as direct 
 *   The legacy parser must be completely removed.
 *   `CommandDefinition` and `ArgumentDefinition` in `src/data.rs` must be updated to include all fields from the latest specification.
 *   The `SemanticAnalyzer` must be refactored to accept `&[GenericInstruction]` and use the updated data models.
-*   The `unilang_cli` binary must join its command-line arguments into a single string and use `parser.parse_single_str()`.
+*   The `unilang_cli` binary must join its command-line arguments into a single string and use `parser.parse_single_instruction()`.
 *   All existing tests must be migrated to the new parsing pipeline and must pass.
 
 ### Crate Conformance Check Procedure
@@ -138,16 +139,30 @@ This section provides the necessary API information for dependencies, as direct 
 
 ##### Increment 2: Refactor Core Data Models
 *   **Goal:** Update the core `CommandDefinition` and `ArgumentDefinition` structs to match the full specification, and adapt the `HelpGenerator` to use the new fields.
+*   **Specification Reference:** The fields listed in this increment's steps serve as the specification.
 *   **Steps:**
-    1.  In `src/data.rs`, add the following fields to `CommandDefinition`: `namespace: String`, `hint: String`, `status: String`, `version: Option<String>`, `tags: Vec<String>`, `aliases: Vec<String>`, `permissions: Vec<String>`, `idempotent: bool`.
-    2.  In `src/data.rs`, add the following fields to `ArgumentDefinition`: `hint: String`, `is_default_arg: bool`, `default_value: Option<String>`, `aliases: Vec<String>`, `tags: Vec<String>`, `interactive: bool`, `sensitive: bool`.
-    3.  Update the `former` derives and any manual constructors for these structs.
-    4.  In `src/help.rs`, update `HelpGenerator::command` to display information from the new fields (e.g., aliases, status).
+    1.  Read `module/move/unilang/src/data.rs` and `module/move/unilang/src/help.rs` to get the current implementation.
+    2.  In `src/data.rs`, modify the `CommandDefinition` struct to add the following public fields: `namespace: String`, `hint: String`, `status: String`, `version: Option<String>`, `tags: Vec<String>`, `aliases: Vec<String>`, `permissions: Vec<String>`, `idempotent: bool`.
+    3.  In `src/data.rs`, modify the `ArgumentDefinition` struct to add the following public fields: `hint: String`, `is_default_arg: bool`, `default_value: Option<String>`, `aliases: Vec<String>`, `tags: Vec<String>`, `interactive: bool`, `sensitive: bool`.
+    4.  Ensure the `#[derive(former::Former)]` is present on both structs. The `former` crate will automatically handle the builder pattern for the new public fields.
+    5.  In `src/help.rs`, update the `HelpGenerator::command` function to incorporate and display information from the new fields. For example, list aliases alongside the command name and display the status and hint.
+    6.  Perform Increment Verification.
 *   **Increment Verification:**
     1.  Execute `cargo build -p unilang` via `execute_command`. The build must succeed.
 *   **Commit Message:** "feat(unilang): Update core data models to align with spec v1.3"
 
-##### Increment 3: Adapt `SemanticAnalyzer` to New Parser & Data Models
+##### Increment 3: Fix `unilang_cli` Compilation Error
+*   **Goal:** Diagnose and fix the compilation error in `src/bin/unilang_cli.rs` related to `parse_single_str`.
+*   **Specification Reference:** N/A
+*   **Steps:**
+    1.  Read `module/move/unilang/src/bin/unilang_cli.rs`.
+    2.  Replace `parser.parse_single_str` with `parser.parse_single_instruction`.
+    3.  Perform Increment Verification.
+*   **Increment Verification:**
+    1.  Execute `cargo build -p unilang` via `execute_command`. The build must succeed.
+*   **Commit Message:** "fix(unilang): Resolve compilation error in unilang_cli.rs"
+
+##### Increment 4: Adapt `SemanticAnalyzer` to New Parser & Data Models
 *   **Goal:** To update the `SemanticAnalyzer` to consume `Vec<GenericInstruction>` and operate on the newly refactored data models.
 *   **Steps:**
     1.  Update `module/move/unilang/src/semantic.rs`: replace legacy imports with `use unilang_instruction_parser::{GenericInstruction, Argument as ParserArgument};`.
@@ -158,21 +173,21 @@ This section provides the necessary API information for dependencies, as direct 
     1.  Execute `cargo build -p unilang` via `execute_command`. The library must build successfully.
 *   **Commit Message:** "refactor(unilang): Adapt SemanticAnalyzer to new parser and data models"
 
-##### Increment 4: Refactor `unilang_cli` Binary with Correct Parsing
+##### Increment 5: Refactor `unilang_cli` Binary with Correct Parsing
 *   **Goal:** To update the main CLI binary to use the new, unified parsing pipeline with the correct argument handling strategy.
 *   **Steps:**
     1.  Update `src/bin/unilang_cli.rs` to use `unilang_instruction_parser::Parser`.
     2.  **Crucially, modify the parsing logic:**
         *   Take the arguments from `env::args().skip(1)`.
         *   `join` the arguments with a space to reconstruct the original command string.
-        *   Pass this single string to `parser.parse_single_str()`.
+        *   Pass this single string to `parser.parse_single_instruction()`.
     3.  Update the sample command definitions in `main` to use the new `CommandDefinition` fields and the `former` builder pattern.
 *   **Increment Verification:**
     1.  Execute `cargo build --bin unilang_cli` via `execute_command`. The build must succeed.
     2.  Execute a simple command: `target/debug/unilang_cli add a::1 b::2`. The command should execute correctly.
 *   **Commit Message:** "refactor(cli): Migrate unilang_cli to use correct parsing pipeline"
 
-##### Increment 5: Migrate Integration Tests Incrementally
+##### Increment 6: Migrate Integration Tests Incrementally
 *   **Goal:** To methodically update all integration tests to use the new parsing pipeline and verify the full system behavior.
 *   **Steps:**
     1.  **Fix Core Logic Tests First:**
@@ -188,7 +203,7 @@ This section provides the necessary API information for dependencies, as direct 
     1.  Execute `timeout 90 cargo test -p unilang --all-targets` via `execute_command`. All tests **must pass**.
 *   **Commit Message:** "fix(tests): Migrate all integration tests to the new parsing pipeline"
 
-##### Increment 6: Finalization
+##### Increment 7: Finalization
 *   **Goal:** Perform a final, holistic review and verification of the entire task's output.
 *   **Steps:**
     1.  Perform a self-critique of all changes against the plan's goal and requirements.
@@ -201,3 +216,8 @@ This section provides the necessary API information for dependencies, as direct 
 
 ### Changelog
 *   [Initial] Plan created to unify the parsing architecture by removing the legacy parser, integrating `unilang_instruction_parser`, and updating core data models.
+*   [Increment 1] Acknowledged that legacy components were already removed. The plan is now in sync with the codebase.
+*   [Increment 2] Modified `data.rs` to add new fields to `CommandDefinition` and `ArgumentDefinition`.
+*   [Increment 2] Updated `help.rs` to display new fields from `CommandDefinition`.
+*   [Increment 3] Added a focused debugging increment to fix the `parse_single_str` compilation error in `unilang_cli.rs`.
+*   [Increment 3] Fixed `parse_single_str` to `parse_single_instruction` and correctly passed the slice to `SemanticAnalyzer::new` in `unilang_cli.rs`.
