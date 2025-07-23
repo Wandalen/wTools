@@ -2,17 +2,39 @@
 resolver = "2"
 members = [
   "module/alias/*",
-  "module/blank/*",
   "module/core/*",
   "module/move/*",
-  "module/test/*",
-  "step",
-  "module/move/unilang/tests/dynamic_libs/dummy_lib",
 ]
 exclude = [
   "-*",
-  "module/move/_video_experiment",
   "module/move/cargo_will",
+  "module/alias/cargo_will",
+  "module/blank/*",
+  "module/postponed/*",
+  "module/step/*",
+  "module/move/unitore",
+  "module/move/gspread",
+  "module/move/optimization_tools",
+  "module/move/refiner",
+  "module/move/wplot",
+  "module/move/plot_interface",
+  "module/move/unilang",
+  "module/core/program_tools",
+  "module/move/graphs_tools",
+  "module/alias/fundamental_data_type",
+  "module/alias/proc_macro_tools",
+  "module/alias/multilayer",
+  "module/alias/instance_of",
+  "module/alias/werror",
+  "module/core/wtools",
+  "module/alias/wproc_macro",
+  "module/alias/wtest_basic",
+  "module/alias/wtest",
+  "module/core/meta_tools",
+  "module/core/for_each",
+  "module/core/reflect_tools",
+  "module/core/format_tools",
+  "step",
 ]
 # default-members = [ "module/core/wtools" ]
 
@@ -79,26 +101,29 @@ path = "module/alias/std_tools"
 version = "~0.1.4"
 path = "module/alias/std_x"
 
+[workspace.dependencies.unilang_parser]
+version = "~0.2.0"
+path = "module/move/unilang_parser"
 
 ## data_type
 
 [workspace.dependencies.data_type]
-version = "~0.13.0"
+version = "~0.14.0"
 path = "module/core/data_type"
 default-features = false
 
-# [workspace.dependencies.type_constructor_meta]
-# version = "~0.2.0"
-# path = "module/core/type_constructor_meta"
-# default-features = false
-#
-# [workspace.dependencies.type_constructor_make_meta]
-# version = "~0.2.0"
-# path = "module/core/type_constructor_make_meta"
-#
-# [workspace.dependencies.type_constructor_derive_pair_meta]
-# version = "~0.1.0"
-# path = "module/core/type_constructor_derive_pair_meta"
+[workspace.dependencies.type_constructor_meta]
+version = "~0.2.0"
+path = "module/core/type_constructor_meta"
+default-features = false
+
+[workspace.dependencies.type_constructor_make_meta]
+version = "~0.2.0"
+path = "module/core/type_constructor_make_meta"
+
+[workspace.dependencies.type_constructor_derive_pair_meta]
+version = "~0.1.0"
+path = "module/core/type_constructor_derive_pair_meta"
 
 [workspace.dependencies.interval_adapter]
 version = "~0.29.0"
@@ -158,10 +183,10 @@ default-features = false
 # features = [ "enabled" ]
 # # xxx : remove features, maybe
 
-# [workspace.dependencies.type_constructor]
-# version = "~0.3.0"
-# path = "module/core/type_constructor"
-# default-features = false
+[workspace.dependencies.type_constructor]
+version = "~0.3.0"
+path = "module/postponed/type_constructor"
+default-features = false
 
 [workspace.dependencies.fundamental_data_type]
 version = "~0.2.0"
@@ -376,7 +401,7 @@ path = "module/alias/werror"
 ## string tools
 
 [workspace.dependencies.strs_tools]
-version = "~0.19.0"
+version = "~0.21.0"
 path = "module/core/strs_tools"
 default-features = false
 
@@ -398,7 +423,7 @@ path = "module/alias/file_tools"
 default-features = false
 
 [workspace.dependencies.pth]
-version = "~0.23.0"
+version = "~0.24.0"
 path = "module/core/pth"
 default-features = false
 
@@ -411,7 +436,7 @@ default-features = false
 ## process tools
 
 [workspace.dependencies.process_tools]
-version = "~0.13.0"
+version = "~0.14.0"
 path = "module/core/process_tools"
 default-features = false
 
@@ -459,15 +484,15 @@ version = "~0.3.0"
 path = "module/move/graphs_tools"
 default-features = false
 
-# [workspace.dependencies.automata_tools]
-# version = "~0.2.0"
-# path = "module/move/automata_tools"
-# default-features = false
-#
-# [workspace.dependencies.wautomata]
-# version = "~0.2.0"
-# path = "module/alias/wautomata"
-# default-features = false
+[workspace.dependencies.automata_tools]
+version = "~0.2.0"
+path = "module/postponed/automata_tools"
+default-features = false
+
+[workspace.dependencies.wautomata]
+version = "~0.2.0"
+path = "module/postponed/wautomata"
+default-features = false
 
 ## ca
 
@@ -485,7 +510,7 @@ path = "module/move/wcensor"
 ## willbe
 
 [workspace.dependencies.willbe]
-version = "~0.20.0"
+version = "~0.23.0"
 path = "module/move/willbe"
 
 
@@ -524,7 +549,7 @@ version = "~0.6.0"
 path = "module/move/deterministic_rand"
 
 [workspace.dependencies.crates_tools]
-version = "~0.15.0"
+version = "~0.16.0"
 path = "module/move/crates_tools"
 
 [workspace.dependencies.assistant]
@@ -538,12 +563,19 @@ path = "module/move/llm_tools"
 
 ## steps
 
-[workspace.dependencies.integration_test]
-path = "module/step/integration_test"
+[workspace.dependencies.procedural_macro]
+version = "~0.1.0"
+path = "module/template/template_procedural_macro"
 default-features = true
 
-[workspace.dependencies.smoke_test]
-path = "module/step/smoke_test"
+[workspace.dependencies.procedural_macro_meta]
+version = "~0.1.0"
+path = "module/template/template_procedural_macro_meta"
+default-features = true
+
+[workspace.dependencies.procedural_macro_runtime]
+version = "~0.1.0"
+path = "module/template/template_procedural_macro_runtime"
 default-features = true
 
 
@@ -666,9 +698,3 @@ default-features = false
 
 # [replace]
 # "macro_tools:0.56.0" = { path = "temp_crates/macro_tools_patched" }
-
-
-
-
-
-

@@ -1,10 +1,10 @@
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind };
-use unilang_instruction_parser::{ Parser, UnilangParserOptions }; // Updated import
+use unilang_parser::{ Parser, UnilangParserOptions }; // Updated import
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
 use unilang::types::Value;
 use std::collections::HashMap;
-use unilang_instruction_parser::SourceLocation::StrSpan;
+use unilang_parser::SourceLocation::StrSpan;
 
 fn setup_test_environment( command: CommandDefinition ) -> CommandRegistry
 {
@@ -13,17 +13,17 @@ fn setup_test_environment( command: CommandDefinition ) -> CommandRegistry
   registry
 }
 
-fn analyze_program( command_name: &str, positional_args: Vec<unilang_instruction_parser::Argument>, named_args: std::collections::HashMap<String, unilang_instruction_parser::Argument>, registry: &CommandRegistry ) -> Result< Vec< unilang::semantic::VerifiedCommand >, unilang::error::Error >
+fn analyze_program( command_name: &str, positional_args: Vec<unilang_parser::Argument>, named_args: std::collections::HashMap<String, unilang_parser::Argument>, registry: &CommandRegistry ) -> Result< Vec< unilang::semantic::VerifiedCommand >, unilang::error::Error >
 {
   let instructions = vec!
   [
-    unilang_instruction_parser::GenericInstruction
+    unilang_parser::GenericInstruction
     {
       command_path_slices : command_name.split( '.' ).map( |s| s.to_string() ).collect(),
       named_arguments : named_args,
       positional_arguments : positional_args,
       help_requested : false,
-      overall_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 }, // Placeholder
+      overall_location : unilang_parser::StrSpan { start : 0, end : 0 }, // Placeholder
     }
   ];
   let analyzer = SemanticAnalyzer::new( &instructions, registry );
@@ -53,12 +53,12 @@ fn test_list_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "val1,val2,val3".to_string(),
         name_location : None,
-        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+        value_location : unilang_parser::StrSpan { start : 0, end : 0 },
       }
     ],
     std::collections::HashMap::new(),
@@ -89,12 +89,12 @@ fn test_list_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "1,2,3".to_string(),
         name_location : None,
-        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+        value_location : unilang_parser::StrSpan { start : 0, end : 0 },
       }
     ],
     std::collections::HashMap::new(),
@@ -125,12 +125,12 @@ fn test_list_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "val1;val2;val3".to_string(),
         name_location : None,
-        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+        value_location : unilang_parser::StrSpan { start : 0, end : 0 },
       }
     ],
     std::collections::HashMap::new(),
@@ -161,12 +161,12 @@ fn test_list_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "".to_string(),
         name_location : None,
-        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+        value_location : unilang_parser::StrSpan { start : 0, end : 0 },
       }
     ],
     std::collections::HashMap::new(),
@@ -197,12 +197,12 @@ fn test_list_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "1,invalid,3".to_string(),
         name_location : None,
-        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+        value_location : unilang_parser::StrSpan { start : 0, end : 0 },
       }
     ],
     std::collections::HashMap::new(),
@@ -236,12 +236,12 @@ fn test_map_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "key1=val1,key2=val2".to_string(),
         name_location : None,
-        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+        value_location : unilang_parser::StrSpan { start : 0, end : 0 },
       }
     ],
     std::collections::HashMap::new(),
@@ -275,12 +275,12 @@ fn test_map_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "num1=1,num2=2".to_string(),
         name_location : None,
-        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+        value_location : unilang_parser::StrSpan { start : 0, end : 0 },
       }
     ],
     std::collections::HashMap::new(),
@@ -314,12 +314,12 @@ fn test_map_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "key1:val1;key2:val2".to_string(),
         name_location : None,
-        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+        value_location : unilang_parser::StrSpan { start : 0, end : 0 },
       }
     ],
     std::collections::HashMap::new(),
@@ -353,12 +353,12 @@ fn test_map_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "".to_string(),
         name_location : None,
-        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+        value_location : unilang_parser::StrSpan { start : 0, end : 0 },
       }
     ],
     std::collections::HashMap::new(),
@@ -389,12 +389,12 @@ fn test_map_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "key1=val1,key2".to_string(),
         name_location : None,
-        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+        value_location : unilang_parser::StrSpan { start : 0, end : 0 },
       }
     ],
     std::collections::HashMap::new(),
@@ -424,12 +424,12 @@ fn test_map_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "key1=val1,key2=invalid".to_string(),
         name_location : None,
-        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+        value_location : unilang_parser::StrSpan { start : 0, end : 0 },
       }
     ],
     std::collections::HashMap::new(),

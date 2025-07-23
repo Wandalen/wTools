@@ -4,7 +4,7 @@
 
 use unilang::registry::CommandRegistry;
 use unilang::data::{ CommandDefinition, ArgumentDefinition, Kind, ErrorData, OutputData };
-use unilang_instruction_parser::{Parser, UnilangParserOptions};
+use unilang_parser::{Parser, UnilangParserOptions};
 use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };
 use unilang::interpreter::{ Interpreter, ExecutionContext };
 use std::env;

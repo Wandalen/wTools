@@ -1,5 +1,5 @@
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind };
-use unilang_instruction_parser::{ Parser, UnilangParserOptions }; // Updated import
+use unilang_parser::{ Parser, UnilangParserOptions }; // Updated import
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
 use unilang::types::Value;
@@ -7,8 +7,8 @@ use std::path::PathBuf;
 use url::Url;
 use chrono::DateTime;
 use regex::Regex;
-use unilang_instruction_parser::SourceLocation::StrSpan;
-use unilang_instruction_parser::SourceLocation::StrSpan;
+use unilang_parser::SourceLocation::StrSpan;
+use unilang_parser::SourceLocation::StrSpan;
 
 fn setup_test_environment( command: CommandDefinition ) -> CommandRegistry
 {
@@ -17,7 +17,7 @@ fn setup_test_environment( command: CommandDefinition ) -> CommandRegistry
   registry
 }
 
-fn analyze_program( command_name: &str, positional_args: Vec<unilang_instruction_parser::Argument>, named_args: std::collections::HashMap<String, unilang_instruction_parser::Argument>, registry: &CommandRegistry ) -> Result< Vec< unilang::semantic::VerifiedCommand >, unilang::error::Error >
+fn analyze_program( command_name: &str, positional_args: Vec<unilang_parser::Argument>, named_args: std::collections::HashMap<String, unilang_parser::Argument>, registry: &CommandRegistry ) -> Result< Vec< unilang::semantic::VerifiedCommand >, unilang::error::Error >
 {
   eprintln!( "--- analyze_program debug ---" );
   eprintln!( "Command Name: '{}'", command_name );
@@ -26,13 +26,13 @@ fn analyze_program( command_name: &str, positional_args: Vec<unilang_instruction
 
   let instructions = vec!
   [
-    unilang_instruction_parser::GenericInstruction
+    unilang_parser::GenericInstruction
     {
       command_path_slices : command_name.split( '.' ).map( |s| s.to_string() ).collect(),
       named_arguments : named_args,
       positional_arguments : positional_args,
       help_requested : false,
-      overall_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 }, // Placeholder
+      overall_location : unilang_parser::StrSpan { start : 0, end : 0 }, // Placeholder
     }
   ];
   eprintln!( "Manually Constructed Instructions: {:?}", instructions );
@@ -66,7 +66,7 @@ fn test_path_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "./some/relative/path".to_string(),
@@ -88,7 +88,7 @@ fn test_path_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "".to_string(),
@@ -131,7 +131,7 @@ fn test_file_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : file_path.to_string(),
@@ -146,7 +146,7 @@ fn test_file_argument_type()
   let verified_command = result.unwrap().remove( 0 );
   let arg = verified_command.arguments.get( "file_arg" ).unwrap();
   assert_eq!( *arg, Value::File( PathBuf::from( file_path ) ) );
-  
+
   // Test Matrix Row: T1.6
   let dir_path = "test_dir_for_file_test";
   let _ = std::fs::remove_dir_all( dir_path ); // cleanup before
@@ -156,7 +156,7 @@ fn test_file_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : dir_path.to_string(),
@@ -170,7 +170,7 @@ fn test_file_argument_type()
   assert!( result.is_err() );
   let error = result.err().unwrap();
   assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
-  
+
   // Cleanup
   let _ = std::fs::remove_file( file_path );
   let _ = std::fs::remove_dir_all( dir_path );
@@ -203,7 +203,7 @@ fn test_directory_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : dir_path.to_string(),
@@ -228,7 +228,7 @@ fn test_directory_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : file_path.to_string(),
@@ -272,7 +272,7 @@ fn test_enum_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "A".to_string(),
@@ -294,7 +294,7 @@ fn test_enum_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "D".to_string(),
@@ -315,7 +315,7 @@ fn test_enum_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "a".to_string(),
@@ -356,7 +356,7 @@ fn test_url_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : url_str.to_string(),
@@ -378,7 +378,7 @@ fn test_url_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "not a url".to_string(),
@@ -419,7 +419,7 @@ fn test_datetime_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : dt_str.to_string(),
@@ -441,7 +441,7 @@ fn test_datetime_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "2025-06-28".to_string(),
@@ -482,7 +482,7 @@ fn test_pattern_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : pattern_str.to_string(),
@@ -505,7 +505,7 @@ fn test_pattern_argument_type()
     ".test.command",
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "[a-z".to_string(),

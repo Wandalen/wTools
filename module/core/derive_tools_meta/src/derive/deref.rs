@@ -172,10 +172,7 @@ field_name : {field_name:?}",
   );
   if has_debug
   {
-    if has_debug
-  {
     diag::report_print( about, original_input, debug.to_string() );
-  }
   }
 
   qt!

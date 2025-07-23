@@ -3,7 +3,7 @@
 //!
 
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, OutputData, ErrorData };
-use unilang_instruction_parser::{ Parser, UnilangParserOptions }; // Updated imports
+use unilang_parser::{ Parser, UnilangParserOptions }; // Updated imports
 use unilang::registry::CommandRegistry;
 use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };
 use unilang::interpreter::{ Interpreter, ExecutionContext };
@@ -100,7 +100,7 @@ fn semantic_analyzer_tests()
 fn interpreter_tests()
 {
   let mut registry = CommandRegistry::new();
-  
+
   // Dummy routine for cmd1
   let cmd1_routine = Box::new( | _cmd: VerifiedCommand, _ctx: ExecutionContext | -> Result<OutputData, ErrorData> {
     Ok( OutputData { content: "cmd1 executed".to_string(), format: "text".to_string() } )

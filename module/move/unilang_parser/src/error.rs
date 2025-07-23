@@ -1,0 +1,113 @@
+//! Defines error types for the unilang instruction parser.
+
+#![allow(clippy::std_instead_of_alloc)]
+#![allow(clippy::std_instead_of_core)]
+
+use core::fmt;
+
+/// Represents a span of characters in the source string.
+#[ derive( Debug ) ]
+#[ derive( PartialEq ) ]
+#[ derive( Eq ) ]
+#[ derive( Clone ) ]
+pub struct StrSpan
+{
+  /// Starting byte index of the span.
+  pub start : usize,
+  /// Ending byte index of the span (exclusive).
+  pub end : usize,
+}
+
+/// Represents a location in the source string.
+#[ derive( Debug ) ]
+#[ derive( PartialEq ) ]
+#[ derive( Eq ) ]
+#[ derive( Clone ) ]
+pub enum SourceLocation
+{
+  /// A span of characters.
+  /// Represents a span within a string, defined by start and end byte indices.
+  StrSpan {
+    /// The starting byte index of the span.
+    start : usize,
+    /// The ending byte index of the span.
+    end : usize,
+  },
+  /// No specific location.
+  None,
+}
+
+impl fmt::Display for SourceLocation
+{
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+  {
+    match self
+    {
+      SourceLocation::StrSpan { start, end } => write!( f, "StrSpan {{ start: {start}, end: {end} }}" ),
+      SourceLocation::None => write!( f, "None" ),
+    }
+  }
+}
+
+/// Kinds of parsing errors.
+#[ derive( Debug ) ]
+#[ derive( PartialEq ) ]
+#[ derive( Eq ) ]
+#[ derive( Clone ) ]
+pub enum ErrorKind
+{
+  /// Syntax error.
+  Syntax( String ),
+  /// Invalid escape sequence in a string.
+  InvalidEscapeSequence( String ),
+  /// An instruction segment is empty (e.g., `;;` with nothing between).
+  EmptyInstructionSegment,
+  /// Trailing delimiter error.
+  TrailingDelimiter,
+  /// Unknown error.
+  Unknown,
+}
+
+/// Represents a parsing error with its kind and location.
+#[ derive( Debug ) ]
+#[ derive( PartialEq ) ]
+#[ derive( Eq ) ]
+#[ derive( Clone ) ]
+pub struct ParseError
+{
+  /// The kind of error.
+  pub kind : ErrorKind,
+  /// The location in the source string where the error occurred.
+  pub location : Option< SourceLocation >,
+}
+
+impl ParseError
+{
+  /// Creates a new `ParseError`.
+  #[ must_use ]
+  pub fn new( kind : ErrorKind, location : SourceLocation ) -> Self
+  {
+    Self { kind, location : Some( location ) }
+  }
+}
+
+impl fmt::Display for ParseError
+{
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+  {
+    match &self.kind
+    {
+      ErrorKind::InvalidEscapeSequence( s ) => write!( f, "Invalid escape sequence: {s}" )?,
+      ErrorKind::EmptyInstructionSegment => write!( f, "Empty instruction segment" )?,
+      ErrorKind::TrailingDelimiter => write!( f, "Trailing delimiter" )?,
+      _ => write!( f, "{:?}", self.kind )?,
+    }
+    if let Some( location ) = &self.location
+    {
+      write!( f, " at {location}" )?;
+    }
+    Ok(())
+  }
+}
+
+impl std::error::Error for ParseError {}

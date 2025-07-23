@@ -1,11 +1,11 @@
 use unilang::data::{ ArgumentDefinition, CommandDefinition, OutputData, ErrorData, Kind };
-use unilang_instruction_parser::{ Parser, UnilangParserOptions }; // Updated import
+use unilang_parser::{ Parser, UnilangParserOptions }; // Updated import
 use unilang::registry::{ CommandRegistry, CommandRoutine };
 use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };
 use unilang::interpreter::{ Interpreter, ExecutionContext };
 use unilang::error::Error;
 // use std::collections::HashMap; // Removed unused import
-use unilang_instruction_parser::SourceLocation::StrSpan;
+use unilang_parser::SourceLocation::StrSpan;
 
 // --- Test Routines ---
 
@@ -40,17 +40,17 @@ fn setup_registry_with_runtime_command( command_name: &str, routine: CommandRout
   registry
 }
 
-fn analyze_and_run( command_name: &str, positional_args: Vec<unilang_instruction_parser::Argument>, named_args: std::collections::HashMap<String, unilang_instruction_parser::Argument>, registry: &CommandRegistry ) -> Result< Vec< OutputData >, Error >
+fn analyze_and_run( command_name: &str, positional_args: Vec<unilang_parser::Argument>, named_args: std::collections::HashMap<String, unilang_parser::Argument>, registry: &CommandRegistry ) -> Result< Vec< OutputData >, Error >
 {
   let instructions = vec!
   [
-    unilang_instruction_parser::GenericInstruction
+    unilang_parser::GenericInstruction
     {
       command_path_slices : command_name.split( '.' ).map( |s| s.to_string() ).collect(),
       named_arguments : named_args,
       positional_arguments : positional_args,
       help_requested : false,
-      overall_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 }, // Placeholder
+      overall_location : unilang_parser::StrSpan { start : 0, end : 0 }, // Placeholder
     }
   ];
   let analyzer = SemanticAnalyzer::new( &instructions, registry );
@@ -112,12 +112,12 @@ fn test_runtime_command_with_arguments()
     command_name,
     vec!
     [
-      unilang_instruction_parser::Argument
+      unilang_parser::Argument
       {
         name : None,
         value : "value1".to_string(),
         name_location : None,
-        value_location : unilang_instruction_parser::StrSpan { start : 0, end : 0 },
+        value_location : unilang_parser::StrSpan { start : 0, end : 0 },
       }
     ],
     std::collections::HashMap::new(),
@@ -141,7 +141,7 @@ fn test_runtime_command_duplicate_registration()
     arguments: vec![],
     routine_link : Some( format!( "{}_link", command_name ) ),
   };
-  
+
   // First registration (should succeed)
   let result1 = registry.command_add_runtime( &command_def.clone(), Box::new( test_routine_no_args ) );
   assert!( result1.is_ok() );
