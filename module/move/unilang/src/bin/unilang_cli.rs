@@ -57,25 +57,57 @@ fn main() -> Result< (), unilang::error::Error >
   // Register sample commands
   let echo_def = CommandDefinition::former()
   .name( "echo" )
-  .description( "Echoes a message." )
+  .namespace( ".system" )
+  .hint( "Echoes a message." )
+  .description( "Echoes a message back to the console. Useful for testing connectivity or displaying simple text." )
+  .status( "stable" )
+  .version( "1.0.0" )
+  .tags( vec![ "utility".to_string(), "debug".to_string() ] )
+  .aliases( vec![ "e".to_string() ] )
+  .permissions( vec![ "public".to_string() ] )
+  .idempotent( true )
   .form();
   registry.command_add_runtime( &echo_def, Box::new( echo_routine ) )
   .expect( "Failed to register echo command" );
 
   let add_def = CommandDefinition::former()
   .name( "add" )
-  .description( "Adds two integers." )
+  .namespace( ".math" )
+  .hint( "Adds two integers." )
+  .description( "Performs addition on two integer arguments and returns the sum." )
+  .status( "stable" )
+  .version( "1.0.0" )
+  .tags( vec![ "math".to_string(), "arithmetic".to_string() ] )
+  .aliases( vec![ "plus".to_string() ] )
+  .permissions( vec![ "public".to_string() ] )
+  .idempotent( true )
   .arguments
   (
     vec!
     [
       ArgumentDefinition::former()
       .name( "a" )
+      .hint( "The first integer operand." )
       .kind( Kind::Integer )
+      .is_default_arg( false )
+      .optional( false )
+      .multiple( false )
+      .validation_rules( vec![ "min:0".to_string() ] )
+      .tags( vec![ "operand".to_string() ] )
+      .interactive( false )
+      .sensitive( false )
       .form(),
       ArgumentDefinition::former()
       .name( "b" )
+      .hint( "The second integer operand." )
       .kind( Kind::Integer )
+      .is_default_arg( false )
+      .optional( false )
+      .multiple( false )
+      .validation_rules( vec![ "min:0".to_string() ] )
+      .tags( vec![ "operand".to_string() ] )
+      .interactive( false )
+      .sensitive( false )
       .form(),
     ]
   )
@@ -85,14 +117,30 @@ fn main() -> Result< (), unilang::error::Error >
 
   let cat_def = CommandDefinition::former()
   .name( "cat" )
-  .description( "Prints content of a file." )
+  .namespace( ".files" )
+  .hint( "Prints content of a file." )
+  .description( "Reads the content of a specified file and prints it to the console." )
+  .status( "stable" )
+  .version( "1.0.0" )
+  .tags( vec![ "file".to_string(), "io".to_string() ] )
+  .aliases( vec![ "type".to_string() ] )
+  .permissions( vec![ "public".to_string() ] )
+  .idempotent( true )
   .arguments
   (
     vec!
     [
       ArgumentDefinition::former()
       .name( "path" )
+      .hint( "The path to the file to read." )
       .kind( Kind::Path )
+      .is_default_arg( false )
+      .optional( false )
+      .multiple( false )
+      .validation_rules( vec![ "file_exists".to_string() ] )
+      .tags( vec![ "input".to_string(), "file".to_string() ] )
+      .interactive( false )
+      .sensitive( false )
       .form(),
     ]
   )

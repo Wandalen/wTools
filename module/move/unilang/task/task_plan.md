@@ -18,13 +18,13 @@
 ### Progress
 *   **Roadmap Milestone:** M3.1 & M3.2
 *   **Primary Editable Crate:** `module/move/unilang`
-*   **Overall Progress:** 3/7 increments complete
+*   **Overall Progress:** 4/7 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Remove Legacy Components
     *   ✅ Increment 2: Refactor Core Data Models
     *   ✅ Increment 3: Fix `unilang_cli` Compilation Error
     *   ✅ Increment 4: Adapt `SemanticAnalyzer` to New Parser & Data Models
-    *   ⚫ Increment 5: Refactor `unilang_cli` Binary with Correct Parsing
+    *   ✅ Increment 5: Refactor `unilang_cli` Binary with Correct Parsing
     *   ⚫ Increment 6: Migrate Integration Tests Incrementally
     *   ⚫ Increment 7: Finalization
 
@@ -222,3 +222,4 @@ This section provides the necessary API information for dependencies, as direct 
 *   [Increment 3] Added a focused debugging increment to fix the `parse_single_str` compilation error in `unilang_cli.rs`.
 *   [Increment 3] Fixed `parse_single_str` to `parse_single_instruction` and correctly passed the slice to `SemanticAnalyzer::new` in `unilang_cli.rs`.
 *   [Increment 4] Adapted `SemanticAnalyzer::bind_arguments` to handle `is_default_arg` and `default_value`.
+*   [Increment 5] Refactored `unilang_cli` binary to use new `CommandDefinition` fields and `former` builder pattern.
