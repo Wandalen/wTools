@@ -58,16 +58,16 @@ include!( "scalar_generic_tuple_common_types.rs" );
 // mod scalar_generic_tuple_derive;  // Disable due to persistent angle bracket parsing issue
 // mod scalar_generic_tuple_manual;
 // mod scalar_generic_tuple_only_test;
-// mod tuple_multi_default_derive;
-// mod tuple_multi_default_manual;
+mod tuple_multi_default_derive;
+mod tuple_multi_default_manual;
 // mod tuple_multi_default_only_test;
-// mod tuple_multi_scalar_derive;
-// mod tuple_multi_scalar_manual;
+mod tuple_multi_scalar_derive;
+mod tuple_multi_scalar_manual;
 // mod tuple_multi_scalar_only_test;
-// mod tuple_multi_standalone_args_derive;
+mod tuple_multi_standalone_args_derive;
 // mod tuple_multi_standalone_args_manual;
 // mod tuple_multi_standalone_args_only_test;
-// mod tuple_multi_standalone_derive;
+mod tuple_multi_standalone_derive;
 // mod tuple_multi_standalone_manual;
 // mod tuple_multi_standalone_only_test;
 // mod usecase1_derive;
@@ -95,4 +95,4 @@ mod tuple_zero_fields_derive; // Re-enabled after fixing _only_test.rs and deriv
 mod tuple_zero_fields_manual; // Re-enabled after fixing _only_test.rs
                               // Note: tuple_zero_fields_only_test.rs is included by the manual and derive files.
 
-// pub mod compile_fail;  // Temporarily disable to test main functionality
+// pub mod compile_fail;

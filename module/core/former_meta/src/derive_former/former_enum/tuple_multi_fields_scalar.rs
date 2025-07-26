@@ -17,6 +17,11 @@ pub fn handle( _ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro
   let field_names_clone_1 = field_names.clone();
   let field_names_clone_2 = field_names.clone();
   
+  // Additional clones for standalone constructor
+  let field_types_clone_3 = field_types.clone();
+  let field_names_clone_3 = field_names.clone();
+  let field_names_clone_4 = field_names.clone();
+  
   let generics_ref = GenericsRef::new( _ctx.generics );
   let ty_generics = generics_ref.ty_generics_tokens_if_any();
 
@@ -28,6 +33,25 @@ pub fn handle( _ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro
       #enum_name #ty_generics ::#variant_name( #( #field_names_clone_2.into() ),* )
     }
   };
+
+  // Generate standalone constructor if requested
+  if _ctx.struct_attrs.standalone_constructors.value(false) {
+    // Check if all fields have arg_for_constructor - if so, generate scalar standalone constructor
+    let all_fields_constructor_args = fields.iter().all(|f| f.is_constructor_arg);
+    
+    if all_fields_constructor_args {
+      // Scalar standalone constructor - takes arguments for all fields
+      let standalone_method = quote!
+      {
+        #[ inline( always ) ]
+        #vis fn #method_name( #( #field_names_clone_3 : impl Into< #field_types_clone_3 > ),* ) -> #enum_name #ty_generics
+        {
+          #enum_name #ty_generics ::#variant_name( #( #field_names_clone_4.into() ),* )
+        }
+      };
+      _ctx.standalone_constructors.push( standalone_method );
+    }
+  }
 
   Ok( result )
 }
