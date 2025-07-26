@@ -214,7 +214,13 @@ impl Parser
         {
           if command_path_slices.is_empty() || last_token_was_dot
           {
-            command_path_slices.push( s.clone() );
+            if s.contains('-') {
+    return Err(ParseError::new(
+        ErrorKind::Syntax(format!("Invalid character '-' in command path segment '{}'", s)),
+        item.adjusted_source_location.clone(),
+    ));
+}
+command_path_slices.push( s.clone() );
             last_token_was_dot = false;
             items_iter.next(); // Consume item
           }

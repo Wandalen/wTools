@@ -12,10 +12,10 @@
 ### Progress
 *   **Roadmap Milestone:** M2: Core Parser Refinement
 *   **Primary Editable Crate:** `module/move/unilang_parser`
-*   **Overall Progress:** 1/3 increments complete
+*   **Overall Progress:** 2/3 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Fix Invalid Token Handling in Arguments
-    *   ⚫ Increment 2: Implement and Test Kebab-Case Argument Support
+    *   ✅ Increment 2: Implement and Test Kebab-Case Argument Support
     *   ⚫ Increment 3: Finalization
 
 ### Permissions & Boundaries
@@ -45,6 +45,7 @@
 |---|---|---|
 | `error_reporting_tests::unexpected_token_in_args` | Fixed (Monitored) | This was the primary bug. Fixed in attempt 1. |
 | `spec_adherence_tests::s6_28_command_path_invalid_identifier_segment` | Fixed (Monitored) | Regression introduced by the first fix attempt, now resolved. |
+| `command_parsing_tests.rs` (compilation error) | Fixed (Monitored) | Doc comments were misplaced by inserting new test at line 0, now resolved. |
 
 ### Crate Conformance Check Procedure
 *   Run `timeout 90 cargo test -p unilang_parser --all-targets`.

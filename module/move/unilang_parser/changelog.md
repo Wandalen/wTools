@@ -1,4 +1,6 @@
 # Changelog
+* [2025-07-26] fix(parser): Reject unrecognized tokens (e.g., `!`) in argument lists.
+* [2025-07-26] feat(parser): Add support for kebab-case in argument names as per spec.
 
 * [Increment 1 | 2025-07-05 10:34 UTC] Added failing test for incorrect command path parsing.
 * [Increment 2 | 2025-07-05 10:58 UTC] Correctly parse command paths instead of treating them as arguments.

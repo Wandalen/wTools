@@ -319,3 +319,17 @@ fn malformed_named_arg_name_value_no_delimiter() {
     assert_eq!(instruction.positional_arguments[1].value, "value".to_string());
     assert!(instruction.named_arguments.is_empty());
 }
+
+/// Tests that a named argument with kebab-case is parsed correctly.
+#[test]
+fn parses_kebab_case_named_argument() {
+    let parser = Parser::new(UnilangParserOptions::default());
+    let input = "cmd my-arg::value another-arg::true";
+    let result = parser.parse_single_instruction(input);
+    assert!(result.is_ok(), "Parse error: {:?}", result.err());
+    let instruction = result.unwrap();
+    assert_eq!(instruction.command_path_slices, vec!["cmd".to_string()]);
+    assert_eq!(instruction.named_arguments.len(), 2);
+    assert_eq!(instruction.named_arguments.get("my-arg").unwrap().value, "value");
+    assert_eq!(instruction.named_arguments.get("another-arg").unwrap().value, "true");
+}

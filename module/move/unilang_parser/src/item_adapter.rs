@@ -71,25 +71,11 @@ impl fmt::Display for UnilangTokenKind
 
 /// Checks if a character is a valid part of a Unilang identifier.
 /// Valid characters are lowercase alphanumeric (`a-z`, `0-9`) and underscore (`_`).
-fn is_valid_identifier_char(c: char) -> bool {
-    c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_'
-}
-
-/// Checks if a string is a valid Unilang identifier.
-/// An identifier must not be empty and must consist only of valid identifier characters.
 fn is_valid_identifier(s: &str) -> bool {
-    if s.is_empty() {
-        return false;
-    }
-    let mut chars = s.chars();
-    if let Some(first_char) = chars.next() {
-        if !first_char.is_ascii_lowercase() && first_char != '_' { // Must start with letter or underscore
-            return false;
-        }
-    } else {
-        return false; // Should not happen if not empty
-    }
-    chars.all(is_valid_identifier_char) // Rest can be alphanumeric or underscore
+    !s.is_empty()
+        && s.chars().next().map_or(false, |c| c.is_ascii_lowercase() || c == '_')
+        && !s.ends_with('-')
+        && s.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_' || c == '-')
 }
 
 /// Classifies a `strs_tools::Split` into a `UnilangTokenKind` and returns its adjusted source location.

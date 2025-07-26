@@ -1,4 +1,5 @@
 //! ## Test Matrix for Command Path Parsing
+
 //!
 //! This matrix details the test cases for parsing command paths, covering various dot usages and argument presence.
 //!
@@ -73,3 +74,16 @@ fn parses_command_only_correctly()
 {
   parse_and_assert( "command", &["command"], &[] );
 }
+/// Tests that a command path with a hyphen (kebab-case) is rejected.
+#[test]
+fn rejects_kebab_case_in_command_path() {
+    let parser = Parser::new(UnilangParserOptions::default());
+    let input = "cmd.my-sub.command arg1";
+    let result = parser.parse_single_instruction(input);
+    assert!(result.is_err(), "Expected error for kebab-case in command path");
+    if let Err(e) = result {
+        assert!(matches!(e.kind, ErrorKind::Syntax(_)));
+        assert!(e.to_string().contains("Invalid character '-' in command path segment 'my-sub'"));
+    }
+}
+use unilang_parser::error::ErrorKind;
