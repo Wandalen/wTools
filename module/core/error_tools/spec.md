@@ -170,23 +170,23 @@ The core design principles are:
 ```mermaid
 graph TD
     subgraph "Developer"
-        A[Library Developer]
-        B[Application Developer]
+        A["Library Developer"]
+        B["Application Developer"]
     end
 
     subgraph "error_tools Crate"
         direction LR
-        F[Facade API]
-        T[Typed Backend (thiserror)]
-        U[Untyped Backend (anyhow)]
+        F["Facade API"]
+        T["Typed Backend (thiserror)"]
+        U["Untyped Backend (anyhow)"]
         F -- "Uses" --> T
         F -- "Uses" --> U
     end
 
     subgraph "External Dependencies"
         direction LR
-        D1[thiserror crate]
-        D2[anyhow crate]
+        D1["thiserror crate"]
+        D2["anyhow crate"]
     end
 
     A -- "Uses API for Typed Errors" --> F
@@ -195,21 +195,22 @@ graph TD
     U -- "Wraps" --> D2
 ```
 
-#### 12.2. C4 System Context Diagram```mermaid
+#### 12.2. C4 System Context Diagram
+```mermaid
 graph TD
     subgraph "Users"
-        Dev[Developer]
+        Dev["Developer"]
     end
 
     subgraph "System: error_tools"
-        ET[error_tools Crate]
+        ET["error_tools Crate"]
     end
 
     subgraph "External Systems"
-        RC[Rust Compiler / Cargo]
-        CR[crates.io]
-        AH[anyhow Crate]
-        TH[thiserror Crate]
+        RC["Rust Compiler / Cargo"]
+        CR["crates.io"]
+        AH["anyhow Crate"]
+        TH["thiserror Crate"]
     end
 
     Dev -- "Writes code using" --> ET
