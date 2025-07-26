@@ -396,7 +396,7 @@ pub(super) fn former_for_enum(
     }
   };
 
-  if has_debug {
+  if has_debug || enum_name == "EnumScalarGeneric" {
     let about = format!("derive : Former\nenum : {enum_name}");
     diag::report_print(about, original_input, &result);
   }

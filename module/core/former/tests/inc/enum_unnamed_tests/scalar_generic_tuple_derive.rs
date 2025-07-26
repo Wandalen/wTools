@@ -13,12 +13,13 @@
 
 // File: module/core/former/tests/inc/former_enum_tests/scalar_generic_tuple_derive.rs
 
-use super::*; // Imports testing infrastructure and potentially other common items
+// Types are imported from mod.rs via include!
 
 
 // --- Enum Definition with Bounds and #[scalar] Variants ---
 // Apply Former derive here. This is what we are testing.
-#[derive(Debug, PartialEq, Clone, former::Former)]
+#[derive(Debug, PartialEq, Clone)]
+#[derive(former::Former)]
 pub enum EnumScalarGeneric<T: Bound>
 {
   #[scalar] // Enabled for Rule 1d testing

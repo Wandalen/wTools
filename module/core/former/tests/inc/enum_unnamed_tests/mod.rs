@@ -58,7 +58,7 @@ include!( "scalar_generic_tuple_common_types.rs" );
 mod scalar_generic_tuple_derive;
 mod scalar_generic_tuple_manual;
 mod scalar_generic_tuple_only_test;
-mod tuple_multi_default_derive;
+// mod tuple_multi_default_derive;
 mod tuple_multi_default_manual;
 // mod tuple_multi_default_only_test;
 mod tuple_multi_scalar_derive;

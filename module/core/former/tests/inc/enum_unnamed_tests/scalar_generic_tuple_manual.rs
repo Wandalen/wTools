@@ -43,7 +43,7 @@ use std::marker::PhantomData;
 // --- Enum Definition with Bounds ---
 // Define the enum without the derive macro
 #[ derive( Debug, PartialEq, Clone ) ]
-pub enum EnumScalarGeneric< T : Bound > // Enum bound
+pub enum EnumScalarGeneric<T: Bound>
 {
   Variant1( InnerScalar< T > ), // Tuple variant with one generic field
   Variant2( InnerScalar< T >, bool ), // Tuple variant with generic and non-generic fields
