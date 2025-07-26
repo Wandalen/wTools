@@ -65,7 +65,7 @@
 ### Tests
 | Test ID | Status | Notes |
 |---|---|---|
-| `tuple_zero_fields_*.rs` | Not Started | |
+| `tuple_zero_fields_*.rs` | Failing (New) | `test_zero_field_default_static_constructor` failed. |
 | `compile_fail/tuple_zero_subform_scalar_error.rs` | Not Started | |
 | `scalar_generic_tuple_*.rs` | Not Started | |
 | `basic_*.rs` | Not Started | |

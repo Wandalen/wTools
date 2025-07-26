@@ -1,11 +1,11 @@
 use super::*;
 use macro_tools::{ Result, quote::quote };
 
-pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
+pub fn handle( _ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
 {
-  let variant_name = &ctx.variant.ident;
-  let enum_name = ctx.enum_name;
-  let vis = ctx.vis;
+  let variant_name = & _ctx.variant.ident;
+  let enum_name = _ctx.enum_name;
+  let vis = _ctx.vis;
 
   let result = quote!
   {

@@ -1,7 +1,7 @@
 use super::*;
-use macro_tools::{ Result, quote::quote, syn };
+use macro_tools::{ Result, quote::quote };
 
-pub fn handle( ctx : &mut EnumVariantHandlerContext ) -> Result< proc_macro2::TokenStream >
+pub fn handle( _ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
 {
   // This file is for common emitters, not a direct handler.
   // It will contain helper functions.

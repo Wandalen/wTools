@@ -172,8 +172,8 @@ pub(super) fn former_for_enum(
   }
 
   let mut methods = Vec::new();
-  let mut end_impls = Vec::new();
-  let mut standalone_constructors = Vec::new();
+  let mut end_impls = TokenStream::new();
+  let mut standalone_constructors = TokenStream::new();
   let merged_where_clause = generics.where_clause.as_ref();
 
   for variant in &data_enum.variants {
@@ -278,7 +278,7 @@ pub(super) fn former_for_enum(
               "Zero-field struct variants require `#[scalar]` attribute for direct construction.",
             ));
           }
-          let generated = struct_zero_fields_handler::handle(&mut ctx);
+          let generated = struct_zero_fields_handler::handle(&mut ctx)?;
           ctx.methods.push(generated); // Collect generated tokens
         }
         _len => {
@@ -287,14 +287,14 @@ pub(super) fn former_for_enum(
               let generated = struct_single_field_scalar::handle(&mut ctx)?;
               ctx.methods.push(generated); // Collect generated tokens
             } else {
-              let generated = struct_multi_fields_scalar::handle(&mut ctx);
+              let generated = struct_multi_fields_scalar::handle(&mut ctx)?;
               ctx.methods.push(generated); // Collect generated tokens
             }
           } else if fields.named.len() == 1 {
             let generated = struct_single_field_subform::handle(&mut ctx)?;
             ctx.methods.push(generated); // Collect generated tokens
           } else {
-            let generated = struct_multi_fields_subform::handle(&mut ctx);
+            let generated = struct_multi_fields_subform::handle(&mut ctx)?;
             ctx.methods.push(generated); // Collect generated tokens
           }
         }
@@ -342,17 +342,19 @@ pub(super) fn former_for_enum(
       }
     }
   } else {
+    if has_debug {
+      diag::report_print(format!("DEBUG: Methods collected before final quote for {enum_name}"), original_input, &quote!{ #methods });
+    }
     quote! {
-      #( #end_impls )*
+      #end_impls
 
-      #[ automatically_derived ]
       impl #impl_generics #enum_name #ty_generics
       #where_clause
       {
-          #( #methods )*
+          #( #methods.iter() )*
       }
 
-      #( #standalone_constructors )*
+      // // #standalone_constructors
     }
   };
 
