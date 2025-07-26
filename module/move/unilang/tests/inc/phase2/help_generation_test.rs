@@ -5,7 +5,7 @@
 
 use assert_cmd::Command;
 use predicates::prelude::*;
-use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind };
+use unilang::data::{};
 use predicates::Predicate;
 
 fn contains_all_unordered(expected_lines: Vec<&str>) -> impl Predicate<str> + '_ {

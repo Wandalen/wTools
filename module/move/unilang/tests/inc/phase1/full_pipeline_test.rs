@@ -3,7 +3,7 @@
 //!
 
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, OutputData, ErrorData, ArgumentAttributes };
-use unilang_parser::{ Parser, UnilangParserOptions, GenericInstruction, SourceLocation };
+use unilang_parser::{ Parser, UnilangParserOptions, GenericInstruction };
 use unilang::registry::CommandRegistry;
 use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };
 use unilang::interpreter::{ Interpreter, ExecutionContext };
