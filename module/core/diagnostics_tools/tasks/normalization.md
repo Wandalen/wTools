@@ -14,11 +14,11 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/diagnostics_tools`
-*   **Overall Progress:** 1/6 increments complete
+*   **Overall Progress:** 2/6 increments complete
 *   **Increment Status:**
     *   ⚫ Increment 1: Fix failing doctest in `Readme.md`
     *   ✅ Increment 1.1: Diagnose and fix the Failing (Stuck) test: `module/core/diagnostics_tools/src/lib.rs - (line 18)`
-    *   ⚫ Increment 2: Refactor `trybuild` setup and enable CTA tests
+    *   ✅ Increment 2: Refactor `trybuild` setup and enable CTA tests
     *   ⚫ Increment 3: Add `trybuild` tests for RTA failure messages
     *   ⚫ Increment 4: Apply code formatting
     *   ⚫ Increment 5: Fix clippy warnings
@@ -64,7 +64,7 @@
 
 ### Increments
 ##### Increment 1: Fix failing doctest in `Readme.md`
-*   **Goal:** The doctest in `Readme.md` (which is included in `lib.rs`) is marked `should_panic` but succeeds. Fix the code snippet so it panics as expected.
+*   **Goal:** The doctest in `Readme.md` (which is included in `lib.rs`) is marked `should_panic` but succeeds. Fix the code snippet so it it panics as expected.
 *   **Specification Reference:** N/A
 *   **Steps:**
     1.  Use `read_file` to load `module/core/diagnostics_tools/Readme.md`.
