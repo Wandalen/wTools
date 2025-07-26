@@ -18,7 +18,8 @@ exclude = [
   "module/move/refiner",
   "module/move/wplot",
   "module/move/plot_interface",
-
+  "module/move/unilang_parser", # Explicitly exclude unilang_parser
+  "module/alias/unilang_instruction_parser", # Explicitly exclude unilang_instruction_parser
   "module/core/program_tools",
   "module/move/graphs_tools",
   "module/alias/fundamental_data_type",
@@ -54,26 +55,18 @@ discord_url = "https://discord.gg/m3YfbXpUUY"
 
 # Denies non-idiomatic code for Rust 2018 edition.
 rust_2018_idioms = { level = "deny", priority = -1 }
-# Denies using features that may break in future Rust versions.
 future_incompatible = { level = "deny", priority = -1 }
-# Warns if public items lack documentation.
 missing_docs = "warn"
-# Warns for public types not implementing Debug.
 missing_debug_implementations = "warn"
-# Denies all unsafe code usage.
 unsafe-code = "warn"
 
 [workspace.lints.clippy]
 # Denies restrictive lints, limiting certain language features/patterns.
 #restriction = { level = "deny", priority = -1 }
-# Denies pedantic lints, enforcing strict coding styles and conventions.
 pedantic = { level = "warn", priority = -1 }
-# Denies undocumented unsafe blocks.
 undocumented_unsafe_blocks = "deny"
 # xxx : check
-# Warns if core could be used instead of std, but didn't
 std_instead_of_core = "warn"
-# Warns if alloc could be used instead of std, but didn't
 std_instead_of_alloc = "warn"
 # xxx : document
 single_call_fn = "allow"
@@ -103,7 +96,7 @@ path = "module/alias/std_x"
 
 [workspace.dependencies.unilang_parser]
 version = "~0.2.0"
-path = "module/move/unilang_parser"
+path = "module/move/unilang_parser" # Point to original unilang_parser
 
 ## data_type
 
@@ -695,6 +688,3 @@ default-features = false
 # quote = { version = "~1.0.35", default-features = false, features = [] }
 # syn = { version = "~2.0.52", default-features = false, features = [ "full", "extra-traits" ] } # qqq : xxx : optimize set of features
 # const_format = { version = "0.2.32", default-features = false, features = [] }
-
-# [replace]
-# "macro_tools:0.56.0" = { path = "temp_crates/macro_tools_patched" }

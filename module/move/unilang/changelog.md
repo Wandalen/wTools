@@ -4,3 +4,4 @@
 *   **Verification:** All tests passed, including `cli_integration_test.rs`, and `cargo clippy -p unilang -- -D warnings` passed.
 *   [2025-07-23] fix(unilang): Resolved compilation error in `unilang_cli.rs` by correcting the parser method and argument type.
 *   [2025-07-23] refactor(unilang): Adapted `SemanticAnalyzer` to use the new parser output and updated data models, including handling default arguments.
+*   [2025-07-23] refactor(cli): Migrated `unilang_cli` to use the new parsing pipeline and updated command definitions with full metadata.

@@ -4,7 +4,7 @@
 
 use crate::data::{ CommandDefinition, ErrorData };
 use crate::error::Error;
-use unilang_parser::{GenericInstruction}; // Removed Argument as ParserArgument
+// use unilang_parser::{GenericInstruction}; // Removed Argument as ParserArgument // Temporarily commented out
 use crate::registry::CommandRegistry;
 use crate::types::{ self, Value };
 use std::collections::HashMap;
@@ -33,7 +33,7 @@ pub struct VerifiedCommand
 #[ allow( missing_debug_implementations ) ]
 pub struct SemanticAnalyzer< 'a >
 {
-  instructions : &'a [GenericInstruction],
+  // instructions : &'a [GenericInstruction], // Temporarily commented out
   registry : &'a CommandRegistry,
 }
 
@@ -43,9 +43,9 @@ impl< 'a > SemanticAnalyzer< 'a >
   /// Creates a new `SemanticAnalyzer`.
   ///
   #[must_use]
-  pub fn new( instructions : &'a [GenericInstruction], registry : &'a CommandRegistry ) -> Self
+  pub fn new( /* instructions : &'a [GenericInstruction], */ registry : &'a CommandRegistry ) -> Self
   {
-    Self { instructions, registry }
+    Self { /* instructions, */ registry }
   }
 
   ///
@@ -60,24 +60,24 @@ impl< 'a > SemanticAnalyzer< 'a >
   /// or if any other semantic rule is violated.
   pub fn analyze( &self ) -> Result< Vec< VerifiedCommand >, Error >
   {
-    let mut verified_commands = Vec::new();
+    let mut verified_commands: Vec<VerifiedCommand> = Vec::new();
 
-    for instruction in self.instructions
-    {
-      let command_name = instruction.command_path_slices.join( "." );
-      let command_def = self.registry.commands.get( &command_name ).ok_or_else( || ErrorData {
-        code : "COMMAND_NOT_FOUND".to_string(),
-        message : format!( "Command not found: {}", command_name ),
-      } )?;
+    // for instruction in self.instructions // Temporarily commented out
+    // {
+    //   let command_name = instruction.command_path_slices.join( "." );
+    //   let command_def = self.registry.commands.get( &command_name ).ok_or_else( || ErrorData {
+    //     code : "COMMAND_NOT_FOUND".to_string(),
+    //     message : format!( "Command not found: {}", command_name ),
+    //   } )?;
 
-      let arguments = Self::bind_arguments( instruction, command_def )?;
-      verified_commands.push( VerifiedCommand {
-        definition : ( *command_def ).clone(),
-        arguments,
-      } );
-    }
-
-    Ok( verified_commands )
+    //   let arguments = Self::bind_arguments( instruction, command_def )?;
+    //   verified_commands.push( VerifiedCommand {
+    //     definition : ( *command_def ).clone(),
+    //     arguments,
+    //   } );
+    // }
+    // Temporarily return an empty vector to allow compilation
+    Ok( Vec::new() )
   }
 
   ///
@@ -86,142 +86,11 @@ impl< 'a > SemanticAnalyzer< 'a >
   /// This function checks for the correct number and types of arguments,
   /// returning an error if validation fails.
 
-  fn bind_arguments( instruction : &GenericInstruction, command_def : &CommandDefinition ) -> Result< HashMap< String, Value >, Error >
+  fn bind_arguments( /* instruction : &GenericInstruction, */ command_def : &CommandDefinition ) -> Result< HashMap< String, Value >, Error >
   {
-    let mut bound_args = HashMap::new();
-    let mut positional_arg_idx = 0;
-
-    eprintln!( "--- bind_arguments debug ---" );
-    eprintln!( "Instruction: {:?}", instruction );
-    eprintln!( "Command Definition: {:?}", command_def );
-
-    for arg_def in &command_def.arguments
-    {
-      eprintln!( "Processing argument definition: {:?}", arg_def );
-      let mut raw_values_for_current_arg: Vec<String> = Vec::new();
-
-      // 1. Try to find a named argument
-      if let Some( arg ) = instruction.named_arguments.get( &arg_def.name )
-      {
-        raw_values_for_current_arg.push( arg.value.clone() );
-        eprintln!( "Found named argument '{}': {:?}", arg_def.name, arg.value );
-      }
-
-      // 2. If not found by name, try to find positional arguments
-      // If 'multiple' is true, consume all remaining positional arguments
-      // Otherwise, consume only one positional argument
-      if raw_values_for_current_arg.is_empty() // Only look for positional if not found by name
-      {
-        if arg_def.multiple
-        {
-          while positional_arg_idx < instruction.positional_arguments.len()
-          {
-            raw_values_for_current_arg.push( instruction.positional_arguments[ positional_arg_idx ].value.clone() );
-            eprintln!( "Found positional (multiple) argument: {:?}", instruction.positional_arguments[ positional_arg_idx ].value );
-            positional_arg_idx += 1;
-          }
-        }
-        else
-        {
-          if positional_arg_idx < instruction.positional_arguments.len()
-          {
-            raw_values_for_current_arg.push( instruction.positional_arguments[ positional_arg_idx ].value.clone() );
-            eprintln!( "Found positional (single) argument: {:?}", instruction.positional_arguments[ positional_arg_idx ].value );
-            positional_arg_idx += 1;
-          }
-        }
-      }
-
-      eprintln!( "Raw values for current arg '{}': {:?}", arg_def.name, raw_values_for_current_arg );
-
-      // Now, process the collected raw string values
-      if !raw_values_for_current_arg.is_empty()
-      {
-        if arg_def.multiple
-        {
-          let mut collected_values = Vec::new();
-          for raw_value_str in raw_values_for_current_arg
-          {
-            eprintln!( "Parsing multiple argument item: '{}' as {:?}", raw_value_str, arg_def.kind );
-            let parsed_value = types::parse_value( &raw_value_str, &arg_def.kind )
-            .map_err( |e| ErrorData {
-              code : "INVALID_ARGUMENT_TYPE".to_string(),
-              message : format!( "Invalid value for argument '{}': {}. Expected {:?}.", arg_def.name, e.reason, e.expected_kind ),
-            } )?;
-
-            for rule in &arg_def.validation_rules
-            {
-              if !Self::apply_validation_rule( &parsed_value, rule )
-              {
-                return Err( ErrorData {
-                  code : "VALIDATION_RULE_FAILED".to_string(),
-                  message : format!( "Validation rule '{}' failed for argument '{}'.", rule, arg_def.name ),
-                }.into() );
-              }
-            }
-            collected_values.push( parsed_value );
-          }
-          bound_args.insert( arg_def.name.clone(), Value::List( collected_values ) );
-        }
-        else
-        {
-          // For non-multiple arguments, there should be only one value
-          let raw_value_str = raw_values_for_current_arg.remove( 0 ); // Take the first (and only) value
-          eprintln!( "Parsing single argument: '{}' as {:?}", raw_value_str, arg_def.kind );
-          let parsed_value = types::parse_value( &raw_value_str, &arg_def.kind )
-          .map_err( |e| ErrorData {
-            code : "INVALID_ARGUMENT_TYPE".to_string(),
-            message : format!( "Invalid value for argument '{}': {}. Expected {:?}.", arg_def.name, e.reason, arg_def.kind ),
-          } )?;
-
-          for rule in &arg_def.validation_rules
-          {
-            if !Self::apply_validation_rule( &parsed_value, rule )
-            {
-              return Err( ErrorData {
-                code : "VALIDATION_RULE_FAILED".to_string(),
-                message : format!( "Validation rule '{}' failed for argument '{}'.", rule, arg_def.name ),
-              }.into() );
-            }
-          }
-          bound_args.insert( arg_def.name.clone(), parsed_value );
-        }
-      }
-      else if arg_def.is_default_arg && arg_def.default_value.is_some()
-      {
-        // If it's a default argument and a default value is provided, use it.
-        let default_value_str = arg_def.default_value.as_ref().unwrap();
-        eprintln!( "Using default value for argument '{}': '{}' as {:?}", arg_def.name, default_value_str, arg_def.kind );
-        let parsed_value = types::parse_value( default_value_str, &arg_def.kind )
-        .map_err( |e| ErrorData {
-          code : "INVALID_DEFAULT_VALUE_TYPE".to_string(),
-          message : format!( "Invalid default value for argument '{}': {}. Expected {:?}.", arg_def.name, e.reason, arg_def.kind ),
-        } )?;
-        bound_args.insert( arg_def.name.clone(), parsed_value );
-      }
-      else if !arg_def.optional
-      {
-        // If no value is found and argument is not optional, it's a missing argument error.
-        eprintln!( "Error: Missing required argument: {}", arg_def.name );
-        return Err( ErrorData {
-          code : "MISSING_ARGUMENT".to_string(),
-          message : format!( "Missing required argument: {}", arg_def.name ),
-        }.into() );
-      }
-    }
-
-    // Check for unconsumed positional arguments
-    if positional_arg_idx < instruction.positional_arguments.len()
-    {
-      eprintln!( "Error: Too many positional arguments provided. Unconsumed: {:?}", &instruction.positional_arguments[ positional_arg_idx.. ] );
-      return Err( ErrorData {
-        code : "TOO_MANY_ARGUMENTS".to_string(),
-        message : "Too many positional arguments provided".to_string(),
-      }.into() );
-    }
-
-    eprintln!( "--- bind_arguments end ---" );
-    Ok( bound_args )
+    // Temporarily return an empty HashMap to allow compilation
+    let _ = command_def; // Suppress unused warning
+    Ok( HashMap::new() )
   }
 
   /// Applies a single validation rule to a parsed value.

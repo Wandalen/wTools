@@ -5,8 +5,12 @@
 
 use assert_cmd::Command;
 use predicates::prelude::*;
-// use unilang::registry::CommandRegistry; // Removed unused import
-// use unilang::data::{ CommandDefinition, ArgumentDefinition, Kind }; // Removed unused import
+use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind };
+fn contains_all_unordered(expected_lines: Vec<&str>) -> impl predicate::Predicate<str> {
+    predicate::function(move |s: &str| {
+        expected_lines.iter().all(|line| s.contains(line))
+    })
+}
 
 // Test Matrix for Help Generation
 //
@@ -33,10 +37,13 @@ fn test_cli_no_args_help()
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
   cmd.assert()
   .success()
-  .stdout( predicate::str::contains( "Available Commands:" )
-  .and( predicate::str::contains( "  echo            Echoes a message." ) )
-  .and( predicate::str::contains( "  add             Adds two integers." ) )
-  .and( predicate::str::contains( "  cat             Prints content of a file." ) ) )
+  .stdout( contains_all_unordered( vec!
+  [
+    "Available Commands:",
+    "  echo            Echoes a message back to the console. Useful for testing connectivity or displaying simple text.",
+    "  add             Performs addition on two integer arguments and returns the sum.",
+    "  cat             Reads the content of a specified file and prints it to the console.",
+  ] ) )
   .stderr( predicate::str::ends_with( "unilang_cli <command> [args...]\n" ) );
 }
 
@@ -48,10 +55,13 @@ fn test_cli_global_help_flag()
   cmd.arg( "--help" );
   cmd.assert()
   .success()
-  .stdout( predicate::str::contains( "Available Commands:" )
-  .and( predicate::str::contains( "  echo            Echoes a message." ) )
-  .and( predicate::str::contains( "  add             Adds two integers." ) )
-  .and( predicate::str::contains( "  cat             Prints content of a file." ) ) )
+  .stdout( contains_all_unordered( vec!
+  [
+    "Available Commands:",
+    "  echo            Echoes a message back to the console. Useful for testing connectivity or displaying simple text.",
+    "  add             Performs addition on two integer arguments and returns the sum.",
+    "  cat             Reads the content of a specified file and prints it to the console.",
+  ] ) )
   .stderr( "" ); // No stderr for successful help
 }
 
@@ -63,10 +73,13 @@ fn test_cli_global_help_command()
   cmd.arg( "help" );
   cmd.assert()
   .success()
-  .stdout( predicate::str::contains( "Available Commands:" )
-  .and( predicate::str::contains( "  echo            Echoes a message." ) )
-  .and( predicate::str::contains( "  add             Adds two integers." ) )
-  .and( predicate::str::contains( "  cat             Prints content of a file." ) ) )
+  .stdout( contains_all_unordered( vec!
+  [
+    "Available Commands:",
+    "  echo            Echoes a message back to the console. Useful for testing connectivity or displaying simple text.",
+    "  add             Performs addition on two integer arguments and returns the sum.",
+    "  cat             Reads the content of a specified file and prints it to the console.",
+  ] ) )
   .stderr( "" ); // No stderr for successful help
 }
 
@@ -78,7 +91,10 @@ fn test_cli_specific_command_help_echo()
   cmd.args( &vec![ "help", "echo" ] );
   cmd.assert()
   .success()
-  .stdout( predicate::str::contains( "Usage: echo\n\n  Echoes a message." ) )
+  .stdout( predicate::str::contains( "Usage: echo (v1.0.0)" )
+  .and( predicate::str::contains( "Aliases: e" ) )
+  .and( predicate::str::contains( "Echoes a message." ) )
+  .and( predicate::str::contains( "Status: stable" ) ) )
   .stderr( "" );
 }
 
@@ -90,7 +106,13 @@ fn test_cli_specific_command_help_add()
   cmd.args( &vec![ "help", "add" ] );
   cmd.assert()
   .success()
-  .stdout( predicate::str::contains( "Usage: add\n\n  Adds two integers.\n\n\nArguments:\n  a                (Kind: Integer)\n  b                (Kind: Integer)\n" ) )
+  .stdout( predicate::str::contains( "Usage: add (v1.0.0)" )
+  .and( predicate::str::contains( "Aliases: plus" ) )
+  .and( predicate::str::contains( "Adds two integers." ) )
+  .and( predicate::str::contains( "Status: stable" ) )
+  .and( predicate::str::contains( "Arguments:" ) )
+  .and( predicate::str::contains( "  a                The first integer operand. (Kind: Integer), Rules: [min:0]" ) )
+  .and( predicate::str::contains( "  b                The second integer operand. (Kind: Integer), Rules: [min:0]" ) ) )
   .stderr( "" );
 }
 
@@ -113,5 +135,5 @@ fn test_cli_invalid_help_usage()
   cmd.args( &vec![ "help", "arg1", "arg2" ] );
   cmd.assert()
   .failure()
-  .stderr( predicate::str::contains( "Error: Invalid usage of help command." ) );
+  .stderr( predicate::str::contains( "Error: Invalid usage of help command. Use `help` or `help <command_name>`." ) );
 }

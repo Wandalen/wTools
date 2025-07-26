@@ -27,6 +27,18 @@
     *   ✅ Increment 5: Refactor `unilang_cli` Binary with Correct Parsing
     *   ⚫ Increment 6: Migrate Integration Tests Incrementally
     *   ⚫ Increment 7: Finalization
+### Tests
+| Test ID | Status | Notes |
+|---|---|---|
+| `cli_integration_test::test_cli_echo_command` | Failing (New) | Fails because parsing logic in `unilang_cli.rs` is commented out. |
+| `cli_integration_test::test_cli_add_command_valid` | Failing (New) | Fails because parsing logic in `unilang_cli.rs` is commented out. |
+| `cli_integration_test::test_cli_add_command_missing_arg` | Failing (New) | Fails because parsing logic in `unilang_cli.rs` is commented out. |
+| `cli_integration_test::test_cli_add_command_invalid_arg_type` | Failing (New) | Fails because parsing logic in `unilang_cli.rs` is commented out. |
+| `cli_integration_test::test_cli_unknown_command` | Failing (New) | Fails because parsing logic in `unilang_cli.rs` is commented out. |
+| `help_generation_test::test_cli_global_help_command` | Failing (New) | Help output changed due to `HelpGenerator` updates. |
+| `help_generation_test::test_cli_no_args_help` | Failing (New) | Help output changed due to `HelpGenerator` updates. |
+| `help_generation_test::test_cli_global_help_flag` | Failing (New) | Help output changed due to `HelpGenerator` updates. |
+| `help_generation_test::test_cli_specific_command_help_add` | Failing (New) | Help output changed due to `HelpGenerator` updates. |
 
 ### Permissions & Boundaries
 *   **Mode:** code
