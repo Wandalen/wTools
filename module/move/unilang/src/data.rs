@@ -68,25 +68,6 @@ pub struct ArgumentAttributes
 /// Each argument has a name, a description, a data type, and can be
 /// marked as optional.
 #[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
-#[ allow( clippy::struct_excessive_bools ) ]
 #[ derive( Debug, Clone, serde::Serialize, serde::Deserialize, former::Former ) ]
 pub struct ArgumentDefinition
 {

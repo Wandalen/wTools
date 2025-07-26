@@ -56,7 +56,6 @@ impl< 'a > Interpreter< 'a >
   ///
   /// This method currently does not return errors directly from command execution,
   /// but it is designed to propagate `Error` from command routines in future implementations.
-  #[allow( clippy::needless_pass_by_value )] // context is passed by value for future extensibility
   pub fn run( &self, context : &mut ExecutionContext ) -> Result< Vec< OutputData >, Error >
   {
     let mut results = Vec::new();
