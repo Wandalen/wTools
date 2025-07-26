@@ -1,3 +1,4 @@
+//! Tests for runtime assertions.
 #[test]
 fn a_id_run() {
   let result = std::panic::catch_unwind(|| {
