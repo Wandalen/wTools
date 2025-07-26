@@ -41,7 +41,7 @@ impl Parser
   {
     let splits_iter = strs_tools::split()
     .src( input )
-    .delimeter( vec![ " ", "\n", "\t", "\r", "::", "?", "#", "!" ] )
+    .delimeter( vec![ " ", "\n", "\t", "\r", "::", "?", "#", ".", "!" ] )
     .preserving_delimeters( true )
     .quoting( true )
     .preserving_quoting( false )
@@ -262,6 +262,7 @@ impl Parser
 
   /// Parses arguments from a peekable iterator of rich items.
   #[ allow( clippy::type_complexity ) ]
+  #[ allow( clippy::too_many_lines ) ]
   fn parse_arguments
   (
     &self,
@@ -294,6 +295,43 @@ impl Parser
                 {
                   UnilangTokenKind::Identifier( ref val ) | UnilangTokenKind::Unrecognized( ref val ) =>
                   {
+                    let mut current_value = val.clone();
+                    let mut current_value_end_location = match value_item.source_location() {
+                        SourceLocation::StrSpan { end, .. } => end,
+                        SourceLocation::None => 0, // Default or handle error appropriately
+                    };
+
+                    // Loop to consume subsequent path segments
+                    loop {
+                        let Some(peeked_dot) = items_iter.peek() else { break; };
+                        if let UnilangTokenKind::Delimiter(".") = &peeked_dot.kind {
+                            let _dot_item = items_iter.next().unwrap(); // Consume the dot
+                            let Some(peeked_segment) = items_iter.peek() else { break; };
+                            if let UnilangTokenKind::Identifier(ref s) = &peeked_segment.kind {
+                                current_value.push('.');
+                                current_value.push_str(s);
+                                current_value_end_location = match peeked_segment.source_location() {
+                                    SourceLocation::StrSpan { end, .. } => end,
+                                    SourceLocation::None => current_value_end_location, // Keep previous if None
+                                };
+                                items_iter.next(); // Consume the segment
+                            } else if let UnilangTokenKind::Unrecognized(ref s) = &peeked_segment.kind {
+                                current_value.push('.');
+                                current_value.push_str(s);
+                                current_value_end_location = match peeked_segment.source_location() {
+                                    SourceLocation::StrSpan { end, .. } => end,
+                                    SourceLocation::None => current_value_end_location, // Keep previous if None
+                                };
+                                items_iter.next(); // Consume the segment
+                            } else {
+                                // Not a valid path segment after dot, break
+                                break;
+                            }
+                        } else {
+                            break; // Next item is not a dot, end of path segments
+                        }
+                    }
+
                     if named_arguments.contains_key( arg_name ) && self.options.error_on_duplicate_named_arguments
                     {
                       return Err( ParseError::new( ErrorKind::Syntax( format!( "Duplicate named argument '{arg_name}'" ) ), value_item.source_location() ) );
@@ -301,9 +339,15 @@ impl Parser
                     named_arguments.insert( arg_name.clone(), Argument
                     {
                       name : Some( arg_name.clone() ),
-                      value : val.clone(),
+                      value : current_value,
                       name_location : Some( item.source_location() ),
-                      value_location : value_item.source_location(),
+                      value_location : SourceLocation::StrSpan {
+                        start: match value_item.source_location() {
+                            SourceLocation::StrSpan { start, .. } => start,
+                            SourceLocation::None => 0,
+                        },
+                        end: current_value_end_location,
+                    },
                     });
                   },
                   _ => return Err( ParseError::new( ErrorKind::Syntax( format!( "Expected value for named argument '{arg_name}'" ) ), value_item.source_location() ) )

@@ -37,6 +37,30 @@ pub enum SourceLocation
   None,
 }
 
+impl SourceLocation
+{
+  /// Returns the start index of the source location.
+  #[ must_use ]
+  pub fn start( &self ) -> usize
+  {
+    match self
+    {
+      SourceLocation::StrSpan { start, .. } => *start,
+      SourceLocation::None => 0,
+    }
+  }
+
+  /// Returns the end index of the source location.
+  #[ must_use ]
+  pub fn end( &self ) -> usize
+  {
+    match self
+    {
+      SourceLocation::StrSpan { end, .. } => *end,
+      SourceLocation::None => 0,
+    }
+  }
+}
 impl fmt::Display for SourceLocation
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result

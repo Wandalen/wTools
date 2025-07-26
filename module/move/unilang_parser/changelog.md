@@ -10,3 +10,4 @@
 * [2025-07-20 13:58 UTC] Test: Implemented comprehensive spec adherence test suite and fixed uncovered bugs.
 *   [2025-07-20 14:46 UTC] Reverted `parser_engine.rs` to a monolithic function and fixed the "Empty instruction" error for input ".".
 * [Increment 1.2 | 2025-07-26 05:57:37 UTC] Fixed `unilang_parser::tests::path_parsing_test::test_parse_path_with_dots` by removing `.` from the delimiters in `strs_tools::split` configuration in `module/move/unilang_parser/src/parser_engine.rs`.
+* [Increment 2 | 2025-07-26 05:58:17 UTC] Correctly parsed paths with dots by modifying `strs_tools::split` configuration in `module/move/unilang_parser/src/parser_engine.rs`. Confirmed fix with `unilang_parser` and `unilang` integration tests.
