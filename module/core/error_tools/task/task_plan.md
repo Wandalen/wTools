@@ -17,7 +17,7 @@
 *   **Increment Status:**
     *   ✅ Increment 1: Fix Build Issues and Add Core Documentation
     *   ✅ Increment 2: Create `untyped` (anyhow) Usage Example
-    *   ⚫ Increment 3: Create `typed` (thiserror) Usage Example
+    *   ⏳ Increment 3: Create `typed` (thiserror) Usage Example
     *   ⚫ Increment 4: Update `Readme.md` with New Content and Examples
     *   ⚫ Increment 5: Clean up `error_tools_trivial.rs` Example
     *   ⚫ Increment 6: Finalization
@@ -371,3 +371,4 @@
 
 ### Changelog
 *   [Increment 1 | 2025-07-26 21:27 UTC] Resolved package collision in `unilang_instruction_parser/Cargo.toml`. Removed problematic imports from `test_tools/src/lib.rs`. Added missing documentation to `error/mod.rs`.
+*   [Increment 2 | 2025-07-26 21:30 UTC] Created `untyped` (anyhow) usage example in `examples/replace_anyhow.rs`.
