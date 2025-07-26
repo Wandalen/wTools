@@ -4,9 +4,9 @@
 
 use crate::data::{ CommandDefinition, ErrorData };
 use crate::error::Error;
-use unilang_parser::{GenericInstruction, Argument as ParserArgument};
+use unilang_parser::GenericInstruction;
 use crate::registry::CommandRegistry;
-use crate::types::{ self, Value, parse_value }; // Import parse_value
+use crate::types::{ Value, parse_value }; // Import parse_value
 use std::collections::HashMap;
 use regex::Regex; // Added for validation rules
 
@@ -67,7 +67,7 @@ impl< 'a > SemanticAnalyzer< 'a >
       let command_name = instruction.command_path_slices.join( "." );
       let command_def = self.registry.commands.get( &command_name ).ok_or_else( || ErrorData {
         code : "COMMAND_NOT_FOUND".to_string(),
-        message : format!( "Command not found: {}", command_name ),
+        message : format!( "Command not found: {command_name}" ),
       } )?;
 
       let arguments = Self::bind_arguments( instruction, command_def )?;
@@ -81,10 +81,8 @@ impl< 'a > SemanticAnalyzer< 'a >
 
   ///
   /// Binds the arguments from a statement to the command definition.
-  ///
   /// This function checks for the correct number and types of arguments,
   /// returning an error if validation fails.
-
   fn bind_arguments( instruction : &GenericInstruction, command_def : &CommandDefinition ) -> Result< HashMap< String, Value >, Error >
   {
     let mut bound_arguments = HashMap::new();
@@ -117,7 +115,7 @@ impl< 'a > SemanticAnalyzer< 'a >
       // If not found by name or alias, try positional
       if !value_found && positional_idx < instruction.positional_arguments.len()
       {
-        if arg_def.multiple
+        if arg_def.attributes.multiple
         {
           let mut values = Vec::new();
           while positional_idx < instruction.positional_arguments.len()
@@ -141,14 +139,14 @@ impl< 'a > SemanticAnalyzer< 'a >
       // Handle missing required arguments or default values
       if !value_found
       {
-        if !arg_def.optional
+        if !arg_def.attributes.optional
         {
           return Err( Error::Execution( ErrorData {
             code : "MISSING_ARGUMENT".to_string(),
             message : format!( "Missing required argument: {}", arg_def.name ),
           } ) );
         }
-        else if arg_def.is_default_arg
+        else if arg_def.attributes.is_default_arg
         {
           if let Some( default_value ) = &arg_def.default_value
           {

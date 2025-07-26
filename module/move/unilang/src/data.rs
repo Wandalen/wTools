@@ -42,10 +42,51 @@ pub struct CommandDefinition
 }
 
 ///
+/// Attributes for an argument, encapsulating its boolean properties.
+///
+#[ derive( Debug, Clone, serde::Serialize, serde::Deserialize, former::Former ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ derive( Default ) ]
+pub struct ArgumentAttributes
+{
+  /// If `true`, the argument is not required for the command to execute.
+  pub optional : bool,
+  /// If `true`, the argument can be specified multiple times.
+  pub multiple : bool,
+  /// Indicates if the argument is a default argument.
+  pub is_default_arg: bool,
+  /// Indicates if the argument is interactive.
+  pub interactive: bool,
+  /// Indicates if the argument is sensitive.
+  pub sensitive: bool,
+}
+
+
+///
 /// Defines an argument for a command.
 ///
 /// Each argument has a name, a description, a data type, and can be
 /// marked as optional.
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
 #[ derive( Debug, Clone, serde::Serialize, serde::Deserialize, former::Former ) ]
 pub struct ArgumentDefinition
 {
@@ -55,27 +96,18 @@ pub struct ArgumentDefinition
   pub description : String,
   /// The expected data type of the argument.
   pub kind : Kind,
-  /// If `true`, the argument is not required for the command to execute.
-  // #[ former( default ) ]
-  pub optional : bool,
-  /// If `true`, the argument can be specified multiple times.
-  pub multiple : bool,
+  /// Attributes for the argument.
+  pub attributes : ArgumentAttributes,
   /// Custom validation rules for the argument.
   pub validation_rules : Vec< String >,
   /// A short hint for the argument.
   pub hint: String,
-  /// Indicates if the argument is a default argument.
-  pub is_default_arg: bool,
   /// The default value of the argument.
   pub default_value: Option<String>,
   /// Aliases for the argument.
   pub aliases: Vec<String>,
   /// Tags associated with the argument.
   pub tags: Vec<String>,
-  /// Indicates if the argument is interactive.
-  pub interactive: bool,
-  /// Indicates if the argument is sensitive.
-  pub sensitive: bool,
 }
 
 ///

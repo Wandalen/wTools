@@ -284,7 +284,7 @@ impl Parser
       {
         UnilangTokenKind::Unrecognized( ref s ) =>
         {
-          return Err( ParseError::new( ErrorKind::Syntax( format!( "Unexpected token '{}' in arguments", s ) ), item.adjusted_source_location.clone() ) );
+          return Err( ParseError::new( ErrorKind::Syntax( format!( "Unexpected token '{s}' in arguments" ) ), item.adjusted_source_location.clone() ) );
         },
 
         UnilangTokenKind::Identifier( ref s ) =>

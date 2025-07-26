@@ -2,9 +2,10 @@
 //! It demonstrates how to initialize the command registry,
 //! parse command-line arguments, and execute commands.
 
+use unilang::data::ArgumentAttributes;
 use unilang::registry::CommandRegistry;
 use unilang::data::{ CommandDefinition, ArgumentDefinition, Kind, ErrorData, OutputData };
-use unilang_parser::{Parser, UnilangParserOptions, GenericInstruction};
+use unilang_parser::{Parser, UnilangParserOptions};
 use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };
 use unilang::interpreter::{ Interpreter, ExecutionContext };
 use std::env;
@@ -48,6 +49,7 @@ fn cat_routine( verified_command : VerifiedCommand, _context : ExecutionContext 
   Ok( OutputData { content, format: "text".to_string() } )
 }
 
+#[ allow( clippy::too_many_lines ) ]
 fn main() -> Result< (), unilang::error::Error >
 {
   let args : Vec< String > = env::args().collect();
@@ -89,25 +91,17 @@ fn main() -> Result< (), unilang::error::Error >
       .name( "a" )
       .hint( "The first integer operand." )
       .kind( Kind::Integer )
-      .is_default_arg( false )
-      .optional( false )
-      .multiple( false )
+      .attributes( ArgumentAttributes::former().is_default_arg( false ).optional( false ).multiple( false ).interactive( false ).sensitive( false ).form() )
       .validation_rules( vec![ "min:0".to_string() ] )
       .tags( vec![ "operand".to_string() ] )
-      .interactive( false )
-      .sensitive( false )
       .form(),
       ArgumentDefinition::former()
       .name( "b" )
       .hint( "The second integer operand." )
       .kind( Kind::Integer )
-      .is_default_arg( false )
-      .optional( false )
-      .multiple( false )
+      .attributes( ArgumentAttributes::former().is_default_arg( false ).optional( false ).multiple( false ).interactive( false ).sensitive( false ).form() )
       .validation_rules( vec![ "min:0".to_string() ] )
       .tags( vec![ "operand".to_string() ] )
-      .interactive( false )
-      .sensitive( false )
       .form(),
     ]
   )
@@ -134,13 +128,9 @@ fn main() -> Result< (), unilang::error::Error >
       .name( "path" )
       .hint( "The path to the file to read." )
       .kind( Kind::Path )
-      .is_default_arg( false )
-      .optional( false )
-      .multiple( false )
+      .attributes( ArgumentAttributes::former().is_default_arg( false ).optional( false ).multiple( false ).interactive( false ).sensitive( false ).form() )
       .validation_rules( vec![] )
       .tags( vec![ "input".to_string(), "file".to_string() ] )
-      .interactive( false )
-      .sensitive( false )
       .form(),
     ]
   )

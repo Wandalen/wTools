@@ -53,11 +53,11 @@ impl< 'a > HelpGenerator< 'a >
         let mut arg_info = String::new();
         write!( &mut arg_info, "  {:<15} {}", arg.name, arg.description ).unwrap();
         write!( &mut arg_info, " (Kind: {})", arg.kind ).unwrap();
-        if arg.optional
+        if arg.attributes.optional
         {
           write!( &mut arg_info, ", Optional" ).unwrap();
         }
-        if arg.multiple
+        if arg.attributes.multiple
         {
           write!( &mut arg_info, ", Multiple" ).unwrap();
         }

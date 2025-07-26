@@ -141,7 +141,7 @@ pub struct TypeError
 /// specified `Kind` or if it fails validation for that `Kind`.
 pub fn parse_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
 {
-  let result = match kind
+  match kind
   {
     Kind::String | Kind::Integer | Kind::Float | Kind::Boolean | Kind::Enum( _ ) =>
     {
@@ -167,8 +167,7 @@ pub fn parse_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
     {
       parse_json_value( input, kind )
     },
-  };
-  result
+  }
 }
 
 fn parse_primitive_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
@@ -224,7 +223,7 @@ fn parse_path_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
       }
       else
       {
-        Err( TypeError { expected_kind: kind.clone(), reason: format!( "File not found at path: {}", input ) } )
+        Err( TypeError { expected_kind: kind.clone(), reason: format!( "File not found at path: {input}" ) } )
       }
     },
     Kind::Directory =>
@@ -239,7 +238,7 @@ fn parse_path_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
       }
       else
       {
-        Err( TypeError { expected_kind: kind.clone(), reason: format!( "Directory not found at path: {}", input ) } )
+        Err( TypeError { expected_kind: kind.clone(), reason: format!( "Directory not found at path: {input}" ) } )
       }
     },
     _ => unreachable!( "Called parse_path_value with non-path kind: {:?}", kind ),
