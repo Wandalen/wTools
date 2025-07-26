@@ -66,9 +66,18 @@ use std::path::PathBuf;
 pub enum DataError
 {
   #[ error( "I/O error for file: {0}" ) ]
-  Io( #[ from ] std::io::Error, PathBuf ),
+  Io( std::io::Error, PathBuf ),
   #[ error( "Parsing error: {0}" ) ]
   Parse( String ),
+}
+
+// Manual implementation of From trait for DataError
+impl From< std::io::Error > for DataError
+{
+  fn from( err : std::io::Error ) -> Self
+  {
+    DataError::Io( err, PathBuf::new() )
+  }
 }
 
 fn process_data( path : &PathBuf ) -> Result< i32, DataError >

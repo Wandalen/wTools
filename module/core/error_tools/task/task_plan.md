@@ -13,14 +13,14 @@
 ### Progress
 *   **Roadmap Milestone:** M2: Improved Documentation and Usability
 *   **Primary Editable Crate:** `module/core/error_tools`
-*   **Overall Progress:** 5/6 increments complete
+*   **Overall Progress:** 6/6 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Fix Build Issues and Add Core Documentation
     *   ✅ Increment 2: Create `untyped` (anyhow) Usage Example
     *   ✅ Increment 3: Create `typed` (thiserror) Usage Example
     *   ✅ Increment 4: Update `Readme.md` with New Content and Examples
     *   ✅ Increment 5: Clean up `error_tools_trivial.rs` Example
-    *   ⚫ Increment 6: Finalization
+    *   ✅ Increment 6: Finalization
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -53,6 +53,7 @@
 | `test_tools::E0308` | Fixed (Monitored) | Mismatched error types in `test_tools` resolved by re-adding `error_tools` prelude import. |
 | `error_tools::missing_docs` | Fixed (Monitored) | Missing documentation for `ErrWith` trait, its methods, and `ResultWithReport` type alias added. |
 | `error_tools_trivial::unused_imports` | Fixed (Monitored) | Unused import `format_err` removed from `error_tools_trivial.rs`. |
+| `module/core/error_tools/src/lib.rs - (line 63)` | Fixed (Monitored) | Doctest failed due to `impl From` block incorrectly placed inside enum definition; moved outside. |
 
 ### Crate Conformance Check Procedure
 *   **Step 1: Run build and tests.** Execute `timeout 90 cargo test -p error_tools`.
@@ -162,31 +163,6 @@
           content.trim().parse::< i32 >()
             .map_err( | _ | DataError::Parse( "Could not parse content as integer".into() ) )
         }
-
-        fn main()
-        {
-          // Create dummy files for the example
-          _ = std::fs::write( "data.txt", "123" );
-          _ = std::fs::write( "invalid_data.txt", "abc" );
-
-          let path1 = PathBuf::from( "data.txt" );
-          match process_data( &path1 )
-          {
-            Ok( num ) => println!( "Processed data: {}", num ),
-            Err( e ) => println!( "An error occurred: {}", e ),
-          }
-
-          let path2 = PathBuf::from( "invalid_data.txt" );
-          match process_data( &path2 )
-          {
-            Ok( _ ) => (),
-            Err( e ) => println!( "Correctly handled parsing error: {}", e ),
-          }
-
-          // Clean up dummy files
-          _ = std::fs::remove_file( "data.txt" );
-          _ = std::fs::remove_file( "invalid_data.txt" );
-        }
         ```
     *   **Step 3.2: Perform Increment Verification.**
 *   **Increment Verification:**
@@ -267,9 +243,18 @@
         pub enum DataError
         {
           #[ error( "I/O error for file: {0}" ) ]
-          Io( #[ from ] std::io::Error, PathBuf ),
+          Io( std::io::Error, PathBuf ),
           #[ error( "Parsing error: {0}" ) ]
           Parse( String ),
+        }
+
+        // Manual implementation of From trait for DataError
+        impl From< std::io::Error > for DataError
+        {
+          fn from( err : std::io::Error ) -> Self
+          {
+            DataError::Io( err, PathBuf::new() )
+          }
         }
 
         fn process_data( path : &PathBuf ) -> Result< i32, DataError >
@@ -376,3 +361,4 @@
 *   [Increment 3 | 2025-07-26 21:31 UTC] Created `typed` (thiserror) usage example in `examples/replace_thiserror.rs`.
 *   [Increment 4 | 2025-07-26 21:32 UTC] Updated `Readme.md` with new content and examples.
 *   [Increment 5 | 2025-07-26 21:34 UTC] Cleaned up `error_tools_trivial.rs` example.
+*   [Increment 6 | 2025-07-26 21:37 UTC] Fixed doctest failure in `Readme.md` by correcting `impl From` placement.
