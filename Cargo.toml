@@ -18,8 +18,8 @@ exclude = [
   "module/move/refiner",
   "module/move/wplot",
   "module/move/plot_interface",
-  "module/move/unilang_parser", # Explicitly exclude unilang_parser
-  "module/alias/unilang_instruction_parser", # Explicitly exclude unilang_instruction_parser
+  # "module/move/unilang_parser", # Explicitly exclude unilang_parser
+  # "module/alias/unilang_instruction_parser", # Explicitly exclude unilang_instruction_parser
   "module/core/program_tools",
   "module/move/graphs_tools",
   "module/alias/fundamental_data_type",
