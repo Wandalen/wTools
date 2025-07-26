@@ -19,7 +19,7 @@
     *   ⚫ Increment 1: Fix failing doctest in `Readme.md`
     *   ✅ Increment 1.1: Diagnose and fix the Failing (Stuck) test: `module/core/diagnostics_tools/src/lib.rs - (line 18)`
     *   ✅ Increment 2: Refactor `trybuild` setup and enable CTA tests
-    *   ⚫ Increment 3: Add `trybuild` tests for RTA failure messages
+    *   ⏳ Increment 3: Add `trybuild` tests for RTA failure messages
     *   ⚫ Increment 4: Apply code formatting
     *   ⚫ Increment 5: Fix clippy warnings
     *   ⚫ Increment 6: Finalization
@@ -82,11 +82,11 @@
     *   **Step A: Apply Problem Decomposition.** The plan must include an explicit step to analyze the failing test and determine if it can be broken down into smaller, more focused tests, or if its setup can be simplified. This is a mandatory first step in analysis.
     *   **Step B: Isolate the test case.**
         1.  Temporarily modify the `Readme.md` doctest to use a direct `panic!` call instead of `a_id!`. This will verify if the `should_panic` attribute itself is working.
-        2.  Execute `cargo test --doc --package diagnostics_tools --features diagnostics_runtime_assertions` via `execute_command`.
+        2.  Execute `cargo test --doc --package diagnostics_tools` via `execute_command`.
         3.  Analyze the output. If it panics, the `should_panic` attribute is working, and the issue is with `a_id!`. If it still doesn't panic, the issue is with the doctest environment or `should_panic` itself.
     *   **Step C: Add targeted debug logging.**
         1.  If `panic!` works, investigate `a_id!`. Add debug prints inside the `a_id!` macro (in `src/diag/rta.rs`) to see what `pretty_assertions::assert_eq!` is actually doing.
-        2.  Execute `cargo test --doc --package diagnostics_tools --features diagnostics_runtime_assertions` via `execute_command`.
+        2.  Execute `cargo test --doc --package diagnostics_tools` via `execute_command`.
         3.  Analyze the output for debug logs.
     *   **Step D: Review related code changes since the test last passed.** (N/A, this is a new task, test was failing from start)
     *   **Step E: Formulate and test a hypothesis.**
@@ -94,7 +94,7 @@
         2.  Propose a fix for `a_id!` or the doctest.
     *   Upon successful fix, document the root cause and solution in the `### Notes & Insights` section.
 *   **Increment Verification:**
-    *   Execute `cargo test --doc --package diagnostics_tools --features diagnostics_runtime_assertions` via `execute_command`.
+    *   Execute `cargo test --doc --package diagnostics_tools` via `execute_command`.
     *   Analyze the output to confirm the specific test ID now passes.
 *   **Commit Message:** `fix(test): Resolve stuck test module/core/diagnostics_tools/src/lib.rs - (line 18)`
 

@@ -58,36 +58,6 @@ tests_impls!
     a_id!( 1, v, "not equal 1 == {}", v );
   }
 
-  #[ allow( unused_macros ) ]
-  fn a_id_run()
-  {
-    use std::path::PathBuf;
-    let t = test_tools::compiletime::TestCases::new();
-    let relative_path = "diagnostics_tools/tests/inc/snipet/rta_id.rs";
-    let absolute_path = std::env::current_dir().unwrap();
-    let current_dir_str = absolute_path.to_string_lossy();
-
-    let trimmed_path = if let Some( index ) = current_dir_str.find( "core/" )
-    {
-      &current_dir_str[ 0..index + "core/".len() ]
-    }
-    else
-    {
-      relative_path
-    };
-
-    let res = trimmed_path.to_string() + relative_path;
-
-    t.pass( res );
-    // t.pass( "tests/inc/snipet/rta_id_fail.rs" );
-    // zzz : make testing utility to check output and use
-
-    // let ins1 = ( 13, 15, 16 );
-    // let ins2 = ( 13, 15, 17 );
-    // a_id!( ins1, ins2 );
-
-  }
-
   //
 
   fn a_not_id_pass()
@@ -112,35 +82,6 @@ tests_impls!
   {
     let v = 1;
     a_not_id!( 1, v, "equal 1 == {}", v );
-  }
-
-  #[ allow( unused_macros ) ]
-  fn a_not_id_run()
-  {
-    use std::path::PathBuf;
-    let t = test_tools::compiletime::TestCases::new();
-    let relative_path = "diagnostics_tools/tests/inc/snipet/rta_id.rs";
-    let absolute_path = std::env::current_dir().unwrap();
-    let current_dir_str = absolute_path.to_string_lossy();
-
-    let trimmed_path = if let Some( index ) = current_dir_str.find( "core/" )
-    {
-      &current_dir_str[ 0..index + "core/".len() ]
-    }
-    else
-    {
-      relative_path
-    };
-
-    let res = trimmed_path.to_string() + relative_path;
-
-    t.pass( res );
-    // t.pass( "tests/inc/snipet/rta_not_id_fail.rs" );
-    // zzz : make testing utility to check output and use
-
-    // let ins1 = ( 13, 15, 16 );
-    // let ins2 = ( 13, 15, 16 );
-    // a_not_id!( ins1, ins2 );
   }
 
   //
@@ -369,7 +310,7 @@ tests_impls!
 
     #[ cfg( debug_assertions ) ]
     assert_eq!( x, 1 );
-    #[ cfg( not( debug_assertions ) ) ]
+    #[ cfg( not( debug_assertions ) ]
     assert_eq!( x, 0 );
 
   }
@@ -530,13 +471,13 @@ tests_index!
   a_id_fail_simple,
   a_id_fail_with_msg,
   a_id_fail_with_msg_template,
-  a_id_run,
+
 
   a_not_id_pass,
   a_not_id_fail_simple,
   a_not_id_fail_with_msg,
   a_not_id_fail_with_msg_template,
-  a_not_id_run,
+
 
   a_dbg_true_pass,
   a_dbg_true_fail_simple,

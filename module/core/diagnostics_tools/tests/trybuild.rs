@@ -7,4 +7,6 @@ fn main()
   t.compile_fail( "tests/inc/snipet/cta_true_fail.rs" );
   t.compile_fail( "tests/inc/snipet/cta_type_same_align_fail.rs" );
   t.compile_fail( "tests/inc/snipet/cta_type_same_size_fail.rs" );
+  t.run_fail( "tests/inc/snipet/rta_id_fail.rs" );
+  t.run_fail( "tests/inc/snipet/rta_not_id_fail.rs" );
 }

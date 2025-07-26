@@ -51,7 +51,7 @@ diagnostics_memory_layout = [] #
 pretty_assertions = { workspace = true, optional = true }
 
 [dev-dependencies]
-trybuild = { workspace = true }
+trybuild = "1.0.106"
 test_tools = { workspace = true }
 
 
