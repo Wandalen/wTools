@@ -199,7 +199,7 @@ fn main() -> Result<(), unilang::error::Error> {
 
   // New alias resolution logic
   let mut alias_map: HashMap<String, String> = HashMap::new();
-  for (command_name, command_def) in registry.commands.iter() {
+  for (command_name, command_def) in &registry.commands {
     for alias in &command_def.aliases {
       alias_map.insert(alias.clone(), command_name.clone());
     }
@@ -207,12 +207,12 @@ fn main() -> Result<(), unilang::error::Error> {
 
   if let Some(canonical_name) = alias_map.get(&command_name_or_alias) {
     command_name_or_alias = canonical_name.clone();
-    processed_args[1] = canonical_name.clone(); // Replace alias with canonical name in args
+    processed_args[1].clone_from(canonical_name); // Replace alias with canonical name in args
   }
 
   let command_name = &command_name_or_alias; // Use the resolved command name
 
-  let command_name = &args[1];
+
   if command_name == "--help" || command_name == "help" {
     if args.len() == 2 {
       println!("{}", help_generator.list_commands());
