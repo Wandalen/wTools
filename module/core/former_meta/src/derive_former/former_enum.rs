@@ -114,6 +114,7 @@ mod struct_zero_fields_handler;
 mod tuple_multi_fields_scalar;
 mod tuple_single_field_scalar;
 mod tuple_single_field_subform;
+mod tuple_multi_fields_subform;
 mod tuple_zero_fields_handler;
 mod unit_variant_handler;
 

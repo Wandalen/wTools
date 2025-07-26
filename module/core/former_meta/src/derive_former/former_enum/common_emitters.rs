@@ -1,15 +1,10 @@
-// qqq : Implement shared emitter functions
-
 use super::*;
-use macro_tools::{
-  quote::{quote},
-};
-use proc_macro2::TokenStream; // Corrected import for TokenStream
-                              // use super::EnumVariantHandlerContext;
+use macro_tools::{ Result, quote::quote, syn };
 
-#[allow(dead_code)] // Suppress warning about unused function
-pub(crate) fn generate_direct_constructor_for_variant(_ctx: &EnumVariantHandlerContext<'_>) -> TokenStream {
-  // qqq : Implement
-  quote! {}
+pub fn handle( ctx : &mut EnumVariantHandlerContext ) -> Result< proc_macro2::TokenStream >
+{
+  // This file is for common emitters, not a direct handler.
+  // It will contain helper functions.
+  // For now, return an empty TokenStream.
+  Ok( quote!{} )
 }
-// qqq : Add other placeholder functions as needed

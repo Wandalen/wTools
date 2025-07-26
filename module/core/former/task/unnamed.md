@@ -13,10 +13,10 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/former_meta`
-*   **Overall Progress:** 0/13 increments complete
+*   **Overall Progress:** 1/13 increments complete
 *   **Increment Status:**
-    *   ⏳ Increment 1: Initial Analysis and Handler File Setup
-    *   ⚫ Increment 2: Implement Zero-Field Tuple Variant - Scalar Constructor (Rules 1b, 3b)
+    *   ✅ Increment 1: Initial Analysis and Handler File Setup
+    *   ⏳ Increment 2: Implement Zero-Field Tuple Variant - Scalar Constructor (Rules 1b, 3b)
     *   ⚫ Increment 3: Implement Zero-Field Tuple Variant - `#[subform_scalar]` Compile-Fail (Rule 2b)
     *   ⚫ Increment 4: Implement Single-Field Tuple Variant - Scalar Constructor (Rule 1d)
     *   ⚫ Increment 5: Implement Single-Field Tuple Variant - Subform Constructor (Rules 2d, 3d)

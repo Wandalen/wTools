@@ -4,16 +4,17 @@ use macro_tools::{ Result, quote::quote };
 pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
 {
   let variant_name = &ctx.variant.ident;
-  let enum_name = ctx.enum_name;
   let vis = ctx.vis;
-  let field_type = &ctx.variant_field_info[ 0 ].ty;
+  let fields = &ctx.variant_field_info;
+
+  let field_types = fields.iter().map( | f | &f.ty );
 
   let result = quote!
   {
     #[ inline( always ) ]
-    #vis fn #variant_name( _0 : impl Into< #field_type > ) -> #enum_name
+    #vis fn #variant_name() -> ( #( < #field_types as former::Former >::Former ),* )
     {
-      #enum_name::#variant_name( _0.into() )
+      ( #( < #field_types as former::Former >::former() ),* )
     }
   };
 
