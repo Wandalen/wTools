@@ -152,10 +152,7 @@
     *   Step 3: Run `timeout 90 cargo clippy -p unilang_parser -- -D warnings`.
     *   Step 4: Run `timeout 90 cargo clippy -p unilang`.
     *   Step 5: Revert the temporary change to `Cargo.toml` (uncomment `unilang_parser` from `exclude`).
-    *   Step 6: Remove the temporary test file `module/move/unilang_parser/tests/path_parsing_test.rs`.
-    *   Step 7: Remove the temporary test file `module/move/unilang_parser/tests/tests.rs`.
-    *   Step 8: Revert changes to `module/move/wca/benches/bench.rs`.
-    *   Step 9: Run `git status` to ensure the working directory is clean.
+    *   Step 6: Run `git status` to ensure the working directory is clean.
 *   **Increment Verification:**
     *   All checks in the Crate Conformance Check procedure must pass.
     *   The temporary changes to `Cargo.toml` and test files must be reverted/removed.
