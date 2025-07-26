@@ -1,4 +1,4 @@
-use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind };
+use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes };
 use unilang_parser::{ Parser, UnilangParserOptions, SourceLocation, GenericInstruction, Argument as ParserArgument }; // Updated import
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
@@ -51,16 +51,18 @@ fn test_json_string_argument_type()
       name: "json_arg".to_string(),
       description: "A JSON string argument".to_string(),
       kind: Kind::JsonString,
-      optional: false,
-      multiple: false,
+      attributes: ArgumentAttributes::former()
+        .optional( false )
+        .multiple( false )
+        .is_default_arg( false )
+        .interactive( false )
+        .sensitive( false )
+        .form(),
       validation_rules: vec![],
       hint: "".to_string(),
-      is_default_arg: false,
       default_value: None,
       aliases: vec![],
       tags: vec![],
-      interactive: false,
-      sensitive: false,
     }],
     routine_link : None,
     namespace: "".to_string(),
@@ -129,16 +131,18 @@ fn test_object_argument_type()
       name: "object_arg".to_string(),
       description: "An object argument".to_string(),
       kind: Kind::Object,
-      optional: false,
-      multiple: false,
+      attributes: ArgumentAttributes::former()
+        .optional( false )
+        .multiple( false )
+        .is_default_arg( false )
+        .interactive( false )
+        .sensitive( false )
+        .form(),
       validation_rules: vec![],
       hint: "".to_string(),
-      is_default_arg: false,
       default_value: None,
       aliases: vec![],
       tags: vec![],
-      interactive: false,
-      sensitive: false,
     }],
     routine_link : None,
     namespace: "".to_string(),
@@ -207,16 +211,18 @@ fn test_multiple_argument()
       name: "multiple_arg".to_string(),
       description: "A multiple string argument".to_string(),
       kind: Kind::String,
-      optional: false,
-      multiple: true,
+      attributes: ArgumentAttributes::former()
+        .optional( false )
+        .multiple( true )
+        .is_default_arg( false )
+        .interactive( false )
+        .sensitive( false )
+        .form(),
       validation_rules: vec![],
       hint: "".to_string(),
-      is_default_arg: false,
       default_value: None,
       aliases: vec![],
       tags: vec![],
-      interactive: false,
-      sensitive: false,
     }],
     routine_link : None,
     namespace: "".to_string(),
@@ -270,16 +276,18 @@ fn test_validated_argument()
       name: "validated_arg".to_string(),
       description: "A validated integer argument".to_string(),
       kind: Kind::Integer,
-      optional: false,
-      multiple: false,
+      attributes: ArgumentAttributes::former()
+        .optional( false )
+        .multiple( false )
+        .is_default_arg( false )
+        .interactive( false )
+        .sensitive( false )
+        .form(),
       validation_rules: vec!["min:10".to_string(), "max:100".to_string()],
       hint: "".to_string(),
-      is_default_arg: false,
       default_value: None,
       aliases: vec![],
       tags: vec![],
-      interactive: false,
-      sensitive: false,
     }],
     routine_link : None,
     namespace: "".to_string(),
@@ -365,16 +373,18 @@ fn test_default_argument()
       name: "default_arg".to_string(),
       description: "An argument with a default value".to_string(),
       kind: Kind::String,
-      optional: true,
-      multiple: false,
+      attributes: ArgumentAttributes::former()
+        .optional( true )
+        .multiple( false )
+        .is_default_arg( true )
+        .interactive( false )
+        .sensitive( false )
+        .form(),
       validation_rules: vec![],
       hint: "".to_string(),
-      is_default_arg: true,
       default_value: Some( "default_value_string".to_string() ),
       aliases: vec![],
       tags: vec![],
-      interactive: false,
-      sensitive: false,
     }],
     routine_link : None,
     namespace: "".to_string(),

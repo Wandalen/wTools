@@ -96,146 +96,157 @@ fn test_load_from_yaml_str_all_scalar_types()
         - name: arg_string
           description: A string argument
           kind: String
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: String hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
         - name: arg_integer
           description: An integer argument
           kind: Integer
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: Integer hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
         - name: arg_float
           description: A float argument
           kind: Float
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: Float hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
         - name: arg_boolean
           description: A boolean argument
           kind: Boolean
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: Boolean hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
         - name: arg_path
           description: A path argument
           kind: Path
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: Path hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
         - name: arg_file
           description: A file argument
           kind: File
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: File hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
         - name: arg_directory
           description: A directory argument
           kind: Directory
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: Directory hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
         - name: arg_enum
           description: An enum argument
           kind: Enum(one,two,three)
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: Enum hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
         - name: arg_url
           description: A URL argument
           kind: Url
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: Url hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
         - name: arg_datetime
           description: A DateTime argument
           kind: DateTime
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: DateTime hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
         - name: arg_pattern
           description: A Pattern argument
           kind: Pattern
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: Pattern hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
       namespace: .test
       hint: Scalar command hint
       status: experimental
@@ -276,12 +287,12 @@ fn test_load_from_yaml_str_all_scalar_types()
   assert_eq!( command.idempotent, false );
 
   assert_eq!( command.arguments[ 0 ].hint, "String hint" );
-  assert_eq!( command.arguments[ 0 ].is_default_arg, false );
+  assert_eq!( command.arguments[ 0 ].attributes.is_default_arg, false );
   assert_eq!( command.arguments[ 0 ].default_value, None );
   assert_eq!( command.arguments[ 0 ].aliases, Vec::<String>::new() );
   assert_eq!( command.arguments[ 0 ].tags, Vec::<String>::new() );
-  assert_eq!( command.arguments[ 0 ].interactive, false );
-  assert_eq!( command.arguments[ 0 ].sensitive, false );
+  assert_eq!( command.arguments[ 0 ].attributes.interactive, false );
+  assert_eq!( command.arguments[ 0 ].attributes.sensitive, false );
 }
 
 #[ test ]
@@ -295,55 +306,59 @@ fn test_load_from_yaml_str_collection_types()
         - name: arg_list_string
           description: A list of strings
           kind: List(String)
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: List string hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
         - name: arg_list_integer_custom_delimiter
           description: A list of integers with custom delimiter
           kind: List(Integer,;)
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: List integer hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
         - name: arg_map_string_integer
           description: A map of string to integer
           kind: Map(String,Integer)
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: Map string integer hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
         - name: arg_map_string_string_custom_delimiters
           description: A map of string to string with custom delimiters
           kind: Map(String,String,;,=)
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: Map string string hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
       namespace: .test
       hint: Collection command hint
       status: stable
@@ -377,12 +392,12 @@ fn test_load_from_yaml_str_collection_types()
   assert_eq!( command.idempotent, true );
 
   assert_eq!( command.arguments[ 0 ].hint, "List string hint" );
-  assert_eq!( command.arguments[ 0 ].is_default_arg, false );
+  assert_eq!( command.arguments[ 0 ].attributes.is_default_arg, false );
   assert_eq!( command.arguments[ 0 ].default_value, None );
   assert_eq!( command.arguments[ 0 ].aliases, Vec::<String>::new() );
   assert_eq!( command.arguments[ 0 ].tags, Vec::<String>::new() );
-  assert_eq!( command.arguments[ 0 ].interactive, false );
-  assert_eq!( command.arguments[ 0 ].sensitive, false );
+  assert_eq!( command.arguments[ 0 ].attributes.interactive, false );
+  assert_eq!( command.arguments[ 0 ].attributes.sensitive, false );
 }
 
 #[ test ]
@@ -396,68 +411,73 @@ fn test_load_from_yaml_str_complex_types_and_attributes()
         - name: arg_json_string
           description: A JSON string argument
           kind: JsonString
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: Json string hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
         - name: arg_object
           description: An object argument
           kind: Object
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: Object hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
         - name: arg_multiple
           description: A multiple string argument
           kind: String
-          optional: false
-          multiple: true
+          attributes:
+            optional: false
+            multiple: true
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: Multiple string hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
         - name: arg_validated
           description: A validated integer argument
           kind: Integer
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            is_default_arg: false
+            interactive: false
+            sensitive: false
           validation_rules: ["min:10", "max:100"]
           hint: Validated integer hint
-          is_default_arg: false
           default_value: null
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
         - name: arg_default
           description: An argument with a default value
           kind: String
-          optional: true
-          multiple: false
+          attributes:
+            optional: true
+            multiple: false
+            is_default_arg: true
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: Default value hint
-          is_default_arg: true
           default_value: "default_string"
           aliases: []
           tags: []
-          interactive: false
-          sensitive: false
       namespace: .test
       hint: Complex command hint
       status: stable
@@ -478,9 +498,9 @@ fn test_load_from_yaml_str_complex_types_and_attributes()
   assert_eq!( command.arguments.len(), 5 );
   assert_eq!( command.arguments[ 0 ].kind, Kind::JsonString );
   assert_eq!( command.arguments[ 1 ].kind, Kind::Object );
-  assert!( command.arguments[ 2 ].multiple );
+  assert!( command.arguments[ 2 ].attributes.multiple );
   assert_eq!( command.arguments[ 3 ].validation_rules, vec![ "min:10".to_string(), "max:100".to_string() ] );
-  assert_eq!( command.arguments[ 4 ].is_default_arg, true );
+  assert_eq!( command.arguments[ 4 ].attributes.is_default_arg, true );
   assert_eq!( command.arguments[ 4 ].default_value, Some( "default_string".to_string() ) );
 
   assert_eq!( command.namespace, ".test" );
@@ -493,12 +513,12 @@ fn test_load_from_yaml_str_complex_types_and_attributes()
   assert_eq!( command.idempotent, false );
 
   assert_eq!( command.arguments[ 0 ].hint, "Json string hint" );
-  assert_eq!( command.arguments[ 0 ].is_default_arg, false );
+  assert_eq!( command.arguments[ 0 ].attributes.is_default_arg, false );
   assert_eq!( command.arguments[ 0 ].default_value, None );
   assert_eq!( command.arguments[ 0 ].aliases, Vec::<String>::new() );
   assert_eq!( command.arguments[ 0 ].tags, Vec::<String>::new() );
-  assert_eq!( command.arguments[ 0 ].interactive, false );
-  assert_eq!( command.arguments[ 0 ].sensitive, false );
+  assert_eq!( command.arguments[ 0 ].attributes.interactive, false );
+  assert_eq!( command.arguments[ 0 ].attributes.sensitive, false );
 }
 
 #[ test ]
@@ -596,17 +616,17 @@ fn test_load_from_json_str_all_scalar_types()
         "name": "scalar_command_json",
         "description": "Command with scalar arguments from JSON",
         "arguments": [
-          { "name": "arg_string", "description": "A string argument", "kind": "String", "optional": false, "multiple": false, "validation_rules": [], "hint": "String hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false },
-          { "name": "arg_integer", "description": "An integer argument", "kind": "Integer", "optional": false, "multiple": false, "validation_rules": [], "hint": "Integer hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false },
-          { "name": "arg_float", "description": "A float argument", "kind": "Float", "optional": false, "multiple": false, "validation_rules": [], "hint": "Float hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false },
-          { "name": "arg_boolean", "description": "A boolean argument", "kind": "Boolean", "optional": false, "multiple": false, "validation_rules": [], "hint": "Boolean hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false },
-          { "name": "arg_path", "description": "A path argument", "kind": "Path", "optional": false, "multiple": false, "validation_rules": [], "hint": "Path hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false },
-          { "name": "arg_file", "description": "A file argument", "kind": "File", "optional": false, "multiple": false, "validation_rules": [], "hint": "File hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false },
-          { "name": "arg_directory", "description": "A directory argument", "kind": "Directory", "optional": false, "multiple": false, "validation_rules": [], "hint": "Directory hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false },
-          { "name": "arg_enum", "description": "An enum argument", "kind": "Enum(one,two,three)", "optional": false, "multiple": false, "validation_rules": [], "hint": "Enum hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false },
-          { "name": "arg_url", "description": "A URL argument", "kind": "Url", "optional": false, "multiple": false, "validation_rules": [], "hint": "Url hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false },
-          { "name": "arg_datetime", "description": "A DateTime argument", "kind": "DateTime", "optional": false, "multiple": false, "validation_rules": [], "hint": "DateTime hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false },
-          { "name": "arg_pattern", "description": "A Pattern argument", "kind": "Pattern", "optional": false, "multiple": false, "validation_rules": [], "hint": "Pattern hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false }
+          { "name": "arg_string", "description": "A string argument", "kind": "String", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "String hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_integer", "description": "An integer argument", "kind": "Integer", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Integer hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_float", "description": "A float argument", "kind": "Float", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Float hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_boolean", "description": "A boolean argument", "kind": "Boolean", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Boolean hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_path", "description": "A path argument", "kind": "Path", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Path hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_file", "description": "A file argument", "kind": "File", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "File hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_directory", "description": "A directory argument", "kind": "Directory", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Directory hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_enum", "description": "An enum argument", "kind": "Enum(one,two,three)", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Enum hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_url", "description": "A URL argument", "kind": "Url", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Url hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_datetime", "description": "A DateTime argument", "kind": "DateTime", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "DateTime hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_pattern", "description": "A Pattern argument", "kind": "Pattern", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Pattern hint", "default_value": null, "aliases": [], "tags": [] }
         ],
         "namespace": ".test",
         "hint": "Scalar command hint",
@@ -650,12 +670,12 @@ fn test_load_from_json_str_all_scalar_types()
   assert_eq!( command.idempotent, false );
 
   assert_eq!( command.arguments[ 0 ].hint, "String hint" );
-  assert_eq!( command.arguments[ 0 ].is_default_arg, false );
+  assert_eq!( command.arguments[ 0 ].attributes.is_default_arg, false );
   assert_eq!( command.arguments[ 0 ].default_value, None );
   assert_eq!( command.arguments[ 0 ].aliases, Vec::<String>::new() );
   assert_eq!( command.arguments[ 0 ].tags, Vec::<String>::new() );
-  assert_eq!( command.arguments[ 0 ].interactive, false );
-  assert_eq!( command.arguments[ 0 ].sensitive, false );
+  assert_eq!( command.arguments[ 0 ].attributes.interactive, false );
+  assert_eq!( command.arguments[ 0 ].attributes.sensitive, false );
 }
 
 #[ test ]
@@ -668,10 +688,10 @@ fn test_load_from_json_str_collection_types()
         "name": "collection_command_json",
         "description": "Command with collection arguments from JSON",
         "arguments": [
-          { "name": "arg_list_string", "description": "A list of strings", "kind": "List(String)", "optional": false, "multiple": false, "validation_rules": [], "hint": "List string hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false },
-          { "name": "arg_list_integer_custom_delimiter", "description": "A list of integers with custom delimiter", "kind": "List(Integer,;)", "optional": false, "multiple": false, "validation_rules": [], "hint": "List integer hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false },
-          { "name": "arg_map_string_integer", "description": "A map of string to integer", "kind": "Map(String,Integer)", "optional": false, "multiple": false, "validation_rules": [], "hint": "Map string integer hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false },
-          { "name": "arg_map_string_string_custom_delimiters", "description": "A map of string to string with custom delimiters", "kind": "Map(String,String,;,=)", "optional": false, "multiple": false, "validation_rules": [], "hint": "Map string string hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false }
+          { "name": "arg_list_string", "description": "A list of strings", "kind": "List(String)", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "List string hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_list_integer_custom_delimiter", "description": "A list of integers with custom delimiter", "kind": "List(Integer,;)", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "List integer hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_map_string_integer", "description": "A map of string to integer", "kind": "Map(String,Integer)", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Map string integer hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_map_string_string_custom_delimiters", "description": "A map of string to string with custom delimiters", "kind": "Map(String,String,;,=)", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Map string string hint", "default_value": null, "aliases": [], "tags": [] }
         ],
         "namespace": ".test",
         "hint": "Collection command hint",
@@ -708,12 +728,12 @@ fn test_load_from_json_str_collection_types()
   assert_eq!( command.idempotent, true );
 
   assert_eq!( command.arguments[ 0 ].hint, "List string hint" );
-  assert_eq!( command.arguments[ 0 ].is_default_arg, false );
+  assert_eq!( command.arguments[ 0 ].attributes.is_default_arg, false );
   assert_eq!( command.arguments[ 0 ].default_value, None );
   assert_eq!( command.arguments[ 0 ].aliases, Vec::<String>::new() );
   assert_eq!( command.arguments[ 0 ].tags, Vec::<String>::new() );
-  assert_eq!( command.arguments[ 0 ].interactive, false );
-  assert_eq!( command.arguments[ 0 ].sensitive, false );
+  assert_eq!( command.arguments[ 0 ].attributes.interactive, false );
+  assert_eq!( command.arguments[ 0 ].attributes.sensitive, false );
 }
 
 #[ test ]
@@ -726,11 +746,11 @@ fn test_load_from_json_str_complex_types_and_attributes()
         "name": "complex_command_json",
         "description": "Command with complex types and attributes from JSON",
         "arguments": [
-          { "name": "arg_json_string", "description": "A JSON string argument", "kind": "JsonString", "optional": false, "multiple": false, "validation_rules": [], "hint": "Json string hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false },
-          { "name": "arg_object", "description": "An object argument", "kind": "Object", "optional": false, "multiple": false, "validation_rules": [], "hint": "Object hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false },
-          { "name": "arg_multiple", "description": "A multiple string argument", "kind": "String", "optional": false, "multiple": true, "validation_rules": [], "hint": "Multiple string hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false },
-          { "name": "arg_validated", "description": "A validated integer argument", "kind": "Integer", "optional": false, "multiple": false, "validation_rules": ["min:10", "max:100"], "hint": "Validated integer hint", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false },
-          { "name": "arg_default", "description": "An argument with a default value", "kind": "String", "optional": true, "multiple": false, "validation_rules": [], "hint": "Default value hint", "is_default_arg": true, "default_value": "default_string", "aliases": [], "tags": [], "interactive": false, "sensitive": false }
+          { "name": "arg_json_string", "description": "A JSON string argument", "kind": "JsonString", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Json string hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_object", "description": "An object argument", "kind": "Object", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Object hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_multiple", "description": "A multiple string argument", "kind": "String", "attributes": { "optional": false, "multiple": true, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Multiple string hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_validated", "description": "A validated integer argument", "kind": "Integer", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": ["min:10", "max:100"], "hint": "Validated integer hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_default", "description": "An argument with a default value", "kind": "String", "attributes": { "optional": true, "multiple": false, "is_default_arg": true, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Default value hint", "is_default_arg": true, "default_value": "default_string", "aliases": [], "tags": [] }
         ],
         "namespace": ".test",
         "hint": "Complex command hint",
@@ -754,9 +774,9 @@ fn test_load_from_json_str_complex_types_and_attributes()
   assert_eq!( command.arguments.len(), 5 );
   assert_eq!( command.arguments[ 0 ].kind, Kind::JsonString );
   assert_eq!( command.arguments[ 1 ].kind, Kind::Object );
-  assert!( command.arguments[ 2 ].multiple );
+  assert!( command.arguments[ 2 ].attributes.multiple );
   assert_eq!( command.arguments[ 3 ].validation_rules, vec![ "min:10".to_string(), "max:100".to_string() ] );
-  assert_eq!( command.arguments[ 4 ].is_default_arg, true );
+  assert_eq!( command.arguments[ 4 ].attributes.is_default_arg, true );
   assert_eq!( command.arguments[ 4 ].default_value, Some( "default_string".to_string() ) );
 
   assert_eq!( command.namespace, ".test" );
@@ -769,12 +789,12 @@ fn test_load_from_json_str_complex_types_and_attributes()
   assert_eq!( command.idempotent, false );
 
   assert_eq!( command.arguments[ 0 ].hint, "Json string hint" );
-  assert_eq!( command.arguments[ 0 ].is_default_arg, false );
+  assert_eq!( command.arguments[ 0 ].attributes.is_default_arg, false );
   assert_eq!( command.arguments[ 0 ].default_value, None );
   assert_eq!( command.arguments[ 0 ].aliases, Vec::<String>::new() );
   assert_eq!( command.arguments[ 0 ].tags, Vec::<String>::new() );
-  assert_eq!( command.arguments[ 0 ].interactive, false );
-  assert_eq!( command.arguments[ 0 ].sensitive, false );
+  assert_eq!( command.arguments[ 0 ].attributes.interactive, false );
+  assert_eq!( command.arguments[ 0 ].attributes.sensitive, false );
 }
 
 #[ test ]
@@ -871,7 +891,7 @@ fn test_load_from_json_str_invalid_json()
         "name": "invalid_command_json",
         "description": "This is not valid json",
         "arguments": [
-          { "name": "arg1", "kind": "String", "optional": false, "multiple": false, "validation_rules": [], "hint": "", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false }
+          { "name": "arg1", "kind": "String", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "", "default_value": null, "aliases": [], "tags": [] }
         ],
         "namespace": "",
         "hint": "",

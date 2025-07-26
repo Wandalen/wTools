@@ -1,4 +1,4 @@
-use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind };
+use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes };
 use unilang_parser::{ Parser, UnilangParserOptions, SourceLocation, GenericInstruction, Argument as ParserArgument }; // Updated import
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
@@ -52,16 +52,18 @@ fn test_path_argument_type()
       name: "path_arg".to_string(),
       description: "A path argument".to_string(),
       kind: Kind::Path,
-      optional: false,
-      multiple: false,
+      attributes: ArgumentAttributes::former()
+        .optional( false )
+        .multiple( false )
+        .is_default_arg( false )
+        .interactive( false )
+        .sensitive( false )
+        .form(),
       validation_rules: vec![],
       hint: "".to_string(),
-      is_default_arg: false,
       default_value: None,
       aliases: vec![],
       tags: vec![],
-      interactive: false,
-      sensitive: false,
     }],
     routine_link : None,
     namespace: "".to_string(),
@@ -130,16 +132,18 @@ fn test_file_argument_type()
       name: "file_arg".to_string(),
       description: "A file argument".to_string(),
       kind: Kind::File,
-      optional: false,
-      multiple: false,
+      attributes: ArgumentAttributes::former()
+        .optional( false )
+        .multiple( false )
+        .is_default_arg( false )
+        .interactive( false )
+        .sensitive( false )
+        .form(),
       validation_rules: vec![],
       hint: "".to_string(),
-      is_default_arg: false,
       default_value: None,
       aliases: vec![],
       tags: vec![],
-      interactive: false,
-      sensitive: false,
     }],
     routine_link : None,
     namespace: "".to_string(),
@@ -217,16 +221,18 @@ fn test_directory_argument_type()
       name: "dir_arg".to_string(),
       description: "A directory argument".to_string(),
       kind: Kind::Directory,
-      optional: false,
-      multiple: false,
+      attributes: ArgumentAttributes::former()
+        .optional( false )
+        .multiple( false )
+        .is_default_arg( false )
+        .interactive( false )
+        .sensitive( false )
+        .form(),
       validation_rules: vec![],
       hint: "".to_string(),
-      is_default_arg: false,
       default_value: None,
       aliases: vec![],
       tags: vec![],
-      interactive: false,
-      sensitive: false,
     }],
     routine_link : None,
     namespace: "".to_string(),
@@ -301,16 +307,18 @@ fn test_enum_argument_type()
       name: "enum_arg".to_string(),
       description: "An enum argument".to_string(),
       kind: Kind::Enum( vec!["A".to_string(), "B".to_string(), "C".to_string()] ),
-      optional: false,
-      multiple: false,
+      attributes: ArgumentAttributes::former()
+        .optional( false )
+        .multiple( false )
+        .is_default_arg( false )
+        .interactive( false )
+        .sensitive( false )
+        .form(),
       validation_rules: vec![],
       hint: "".to_string(),
-      is_default_arg: false,
       default_value: None,
       aliases: vec![],
       tags: vec![],
-      interactive: false,
-      sensitive: false,
     }],
     routine_link : None,
     namespace: "".to_string(),
@@ -399,16 +407,18 @@ fn test_url_argument_type()
       name: "url_arg".to_string(),
       description: "A URL argument".to_string(),
       kind: Kind::Url,
-      optional: false,
-      multiple: false,
+      attributes: ArgumentAttributes::former()
+        .optional( false )
+        .multiple( false )
+        .is_default_arg( false )
+        .interactive( false )
+        .sensitive( false )
+        .form(),
       validation_rules: vec![],
       hint: "".to_string(),
-      is_default_arg: false,
       default_value: None,
       aliases: vec![],
       tags: vec![],
-      interactive: false,
-      sensitive: false,
     }],
     routine_link : None,
     namespace: "".to_string(),
@@ -477,16 +487,18 @@ fn test_datetime_argument_type()
       name: "dt_arg".to_string(),
       description: "A DateTime argument".to_string(),
       kind: Kind::DateTime,
-      optional: false,
-      multiple: false,
+      attributes: ArgumentAttributes::former()
+        .optional( false )
+        .multiple( false )
+        .is_default_arg( false )
+        .interactive( false )
+        .sensitive( false )
+        .form(),
       validation_rules: vec![],
       hint: "".to_string(),
-      is_default_arg: false,
       default_value: None,
       aliases: vec![],
       tags: vec![],
-      interactive: false,
-      sensitive: false,
     }],
     routine_link : None,
     namespace: "".to_string(),
@@ -555,16 +567,18 @@ fn test_pattern_argument_type()
       name: "pattern_arg".to_string(),
       description: "A Pattern argument".to_string(),
       kind: Kind::Pattern,
-      optional: false,
-      multiple: false,
+      attributes: ArgumentAttributes::former()
+        .optional( false )
+        .multiple( false )
+        .is_default_arg( false )
+        .interactive( false )
+        .sensitive( false )
+        .form(),
       validation_rules: vec![],
       hint: "".to_string(),
-      is_default_arg: false,
       default_value: None,
       aliases: vec![],
       tags: vec![],
-      interactive: false,
-      sensitive: false,
     }],
     routine_link : None,
     namespace: "".to_string(),
@@ -634,16 +648,18 @@ fn test_default_argument()
       name: "default_arg".to_string(),
       description: "An argument with a default value".to_string(),
       kind: Kind::String,
-      optional: true,
-      multiple: false,
+      attributes: ArgumentAttributes::former()
+        .optional( true )
+        .multiple( false )
+        .is_default_arg( true )
+        .interactive( false )
+        .sensitive( false )
+        .form(),
       validation_rules: vec![],
       hint: "".to_string(),
-      is_default_arg: true,
       default_value: Some( "default_value_string".to_string() ),
       aliases: vec![],
       tags: vec![],
-      interactive: false,
-      sensitive: false,
     }],
     routine_link : None,
     namespace: "".to_string(),

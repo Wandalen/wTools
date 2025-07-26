@@ -2,7 +2,7 @@
 //! Integration tests for the full Phase 1 pipeline.
 //!
 
-use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, OutputData, ErrorData };
+use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, OutputData, ErrorData, ArgumentAttributes };
 use unilang_parser::{ Parser, UnilangParserOptions, GenericInstruction, SourceLocation };
 use unilang::registry::CommandRegistry;
 use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };
@@ -32,31 +32,35 @@ fn semantic_analyzer_tests()
         name : "arg1".to_string(),
         description : "A string argument".to_string(),
         kind : Kind::String,
-        optional : false,
-        multiple : false,
+        attributes : ArgumentAttributes::former()
+          .optional( false )
+          .multiple( false )
+          .is_default_arg( false )
+          .interactive( false )
+          .sensitive( false )
+          .form(),
         validation_rules : vec![],
         hint: "".to_string(),
-        is_default_arg: false,
         default_value: None,
         aliases: vec![],
         tags: vec![],
-        interactive: false,
-        sensitive: false,
       },
       ArgumentDefinition {
         name : "arg2".to_string(),
         description : "An integer argument".to_string(),
         kind : Kind::Integer,
-        optional : true,
-        multiple : false,
+        attributes : ArgumentAttributes::former()
+          .optional( true )
+          .multiple( false )
+          .is_default_arg( false )
+          .interactive( false )
+          .sensitive( false )
+          .form(),
         validation_rules : vec![],
         hint: "".to_string(),
-        is_default_arg: false,
         default_value: None,
         aliases: vec![],
         tags: vec![],
-        interactive: false,
-        sensitive: false,
       },
     ],
     routine_link : None,
@@ -214,16 +218,18 @@ fn help_generator_tests()
       name : "arg1".to_string(),
       description : "A string argument".to_string(),
       kind : Kind::String,
-      optional : false,
-      multiple : false,
+      attributes : ArgumentAttributes::former()
+        .optional( false )
+        .multiple( false )
+        .is_default_arg( false )
+        .interactive( false )
+        .sensitive( false )
+        .form(),
       validation_rules : vec![],
       hint: "".to_string(),
-      is_default_arg: false,
       default_value: None,
       aliases: vec![],
       tags: vec![],
-      interactive: false,
-      sensitive: false,
     } ],
     routine_link : None,
     namespace: "".to_string(),

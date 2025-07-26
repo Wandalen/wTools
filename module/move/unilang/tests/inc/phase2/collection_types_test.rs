@@ -1,4 +1,4 @@
-use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind };
+use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes };
 use unilang_parser::{ Parser, UnilangParserOptions, SourceLocation, GenericInstruction, Argument as ParserArgument }; // Updated import
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
@@ -63,16 +63,18 @@ fn test_list_string_kind()
       name: "list_arg".to_string(),
       description: "A list of strings".to_string(),
       kind: Kind::List( Box::new( Kind::String ), None ),
-      optional: false,
-      multiple: false,
+      attributes: ArgumentAttributes::former()
+        .optional( false )
+        .multiple( false )
+        .is_default_arg( false )
+        .interactive( false )
+        .sensitive( false )
+        .form(),
       validation_rules: vec![],
       hint: "".to_string(),
-      is_default_arg: false,
       default_value: None,
       aliases: vec![],
       tags: vec![],
-      interactive: false,
-      sensitive: false,
     }],
     routine_link : None,
     namespace: "".to_string(),
@@ -118,16 +120,18 @@ fn test_list_integer_custom_delimiter_kind()
       name: "list_arg".to_string(),
       description: "A list of integers with custom delimiter".to_string(),
       kind: Kind::List( Box::new( Kind::Integer ), Some( ';' ) ),
-      optional: false,
-      multiple: false,
+      attributes: ArgumentAttributes::former()
+        .optional( false )
+        .multiple( false )
+        .is_default_arg( false )
+        .interactive( false )
+        .sensitive( false )
+        .form(),
       validation_rules: vec![],
       hint: "".to_string(),
-      is_default_arg: false,
       default_value: None,
       aliases: vec![],
       tags: vec![],
-      interactive: false,
-      sensitive: false,
     }],
     routine_link : None,
     namespace: "".to_string(),
@@ -173,16 +177,18 @@ fn test_map_string_integer_kind()
       name: "map_arg".to_string(),
       description: "A map of string to integer".to_string(),
       kind: Kind::Map( Box::new( Kind::String ), Box::new( Kind::Integer ), None, Some( ':' ) ),
-      optional: false,
-      multiple: false,
+      attributes: ArgumentAttributes::former()
+        .optional( false )
+        .multiple( false )
+        .is_default_arg( false )
+        .interactive( false )
+        .sensitive( false )
+        .form(),
       validation_rules: vec![],
       hint: "".to_string(),
-      is_default_arg: false,
       default_value: None,
       aliases: vec![],
       tags: vec![],
-      interactive: false,
-      sensitive: false,
     }],
     routine_link : None,
     namespace: "".to_string(),
@@ -231,16 +237,18 @@ fn test_map_string_string_custom_delimiters_kind()
       name: "map_arg".to_string(),
       description: "A map of string to string with custom delimiters".to_string(),
       kind: Kind::Map( Box::new( Kind::String ), Box::new( Kind::String ), Some( ';' ), Some( '=' ) ),
-      optional: false,
-      multiple: false,
+      attributes: ArgumentAttributes::former()
+        .optional( false )
+        .multiple( false )
+        .is_default_arg( false )
+        .interactive( false )
+        .sensitive( false )
+        .form(),
       validation_rules: vec![],
       hint: "".to_string(),
-      is_default_arg: false,
       default_value: None,
       aliases: vec![],
       tags: vec![],
-      interactive: false,
-      sensitive: false,
     }],
     routine_link : None,
     namespace: "".to_string(),

@@ -7,6 +7,7 @@ use unilang::
     Kind,
     OutputData,
     ErrorData,
+    ArgumentAttributes,
   },
   registry::CommandRegistry,
   semantic::
@@ -121,16 +122,18 @@ fn test_register_command_with_arguments()
         name : "arg1".to_string(),
         description : "An integer argument".to_string(),
         kind : Kind::Integer,
-        optional : false,
-        multiple : false,
+        attributes : ArgumentAttributes::former()
+          .optional( false )
+          .multiple( false )
+          .is_default_arg( false )
+          .interactive( false )
+          .sensitive( false )
+          .form(),
         validation_rules : vec![],
         hint: "Integer argument hint".to_string(),
-        is_default_arg: false,
         default_value: None,
         aliases: vec![],
         tags: vec![],
-        interactive: false,
-        sensitive: false,
       },
     ],
     routine_link : Some( "arg_test_routine".to_string() ),
@@ -207,16 +210,18 @@ fn test_execute_command_with_missing_argument()
         name : "required_arg".to_string(),
         description : "A required argument".to_string(),
         kind : Kind::String,
-        optional : false,
-        multiple : false,
+        attributes : ArgumentAttributes::former()
+          .optional( false )
+          .multiple( false )
+          .is_default_arg( false )
+          .interactive( false )
+          .sensitive( false )
+          .form(),
         validation_rules : vec![],
         hint: "Required argument hint".to_string(),
-        is_default_arg: false,
         default_value: None,
         aliases: vec![],
         tags: vec![],
-        interactive: false,
-        sensitive: false,
       },
     ],
     routine_link : Some( "dummy_routine".to_string() ),
@@ -250,16 +255,18 @@ fn test_execute_command_with_invalid_arg_type()
         name : "int_arg".to_string(),
         description : "An integer argument".to_string(),
         kind : Kind::Integer,
-        optional : false,
-        multiple : false,
+        attributes : ArgumentAttributes::former()
+          .optional( false )
+          .multiple( false )
+          .is_default_arg( false )
+          .interactive( false )
+          .sensitive( false )
+          .form(),
         validation_rules : vec![],
         hint: "Integer argument hint".to_string(),
-        is_default_arg: false,
         default_value: None,
         aliases: vec![],
         tags: vec![],
-        interactive: false,
-        sensitive: false,
       },
     ],
     routine_link : Some( "dummy_routine".to_string() ),

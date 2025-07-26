@@ -3,6 +3,7 @@
 | Task | Status | Priority | Responsible |
 |---|---|---|---|
 | [`implement_parser_rules_task.md`](./implement_parser_rules_task.md) | Not Started | High | @AI |
+| [`refactor_unilang_unified_architecture_completed_20250726.md`](./refactor_unilang_unified_architecture_completed_20250726.md) | Completed | High | @AI |
 | [`architectural_unification_task.md`](./architectural_unification_task.md) | Not Started | High | @user |
 | [`clarify_parsing_spec_task.completed.md`](./clarify_parsing_spec_task.completed.md) | Completed | High | @AI |
 | [`stabilize_unilang_parser_completed_20250720T201301.md`](../../alias/unilang_parser/task/stabilize_unilang_parser_completed_20250720T201301.md) | Completed | High | @AI |
