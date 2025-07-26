@@ -283,5 +283,5 @@ fn test_execute_command_with_invalid_arg_type()
   } );
   let result = analyze_and_run( "invalid_type_cmd", vec![], named_args, &registry );
   assert!( result.is_err() );
-  assert!( matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "TYPE_ERROR" ) );
+  assert!( matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
 }

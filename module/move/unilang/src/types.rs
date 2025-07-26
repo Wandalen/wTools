@@ -214,19 +214,33 @@ fn parse_path_value( input: &str, kind: &Kind ) -> Result< Value, TypeError >
     Kind::Path => Ok( Value::Path( path ) ),
     Kind::File =>
     {
-      if path.is_dir()
+      if path.is_file()
       {
-        return Err( TypeError { expected_kind: kind.clone(), reason: "Expected a file, but found a directory".to_string() } );
+        Ok( Value::File( path ) )
       }
-      Ok( Value::File( path ) )
+      else if path.is_dir()
+      {
+        Err( TypeError { expected_kind: kind.clone(), reason: "Expected a file, but found a directory".to_string() } )
+      }
+      else
+      {
+        Err( TypeError { expected_kind: kind.clone(), reason: format!( "File not found at path: {}", input ) } )
+      }
     },
     Kind::Directory =>
     {
-      if path.is_file()
+      if path.is_dir()
       {
-        return Err( TypeError { expected_kind: kind.clone(), reason: "Expected a directory, but found a file".to_string() } );
+        Ok( Value::Directory( path ) )
       }
-      Ok( Value::Directory( path ) )
+      else if path.is_file()
+      {
+        Err( TypeError { expected_kind: kind.clone(), reason: "Expected a directory, but found a file".to_string() } )
+      }
+      else
+      {
+        Err( TypeError { expected_kind: kind.clone(), reason: format!( "Directory not found at path: {}", input ) } )
+      }
     },
     _ => unreachable!( "Called parse_path_value with non-path kind: {:?}", kind ),
   }

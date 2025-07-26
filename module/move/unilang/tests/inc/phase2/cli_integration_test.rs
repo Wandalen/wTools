@@ -68,7 +68,7 @@ fn test_cli_add_command_invalid_arg_type()
   cmd.args( &vec![ "add", "a::a", "b::b" ] );
   cmd.assert()
   .failure()
-  .stderr( predicate::str::contains( "Error: Execution Error: invalid digit found in string (Code: TYPE_ERROR)" ) );
+  .stderr( predicate::str::contains( "Error: Execution Error: invalid digit found in string (Code: INVALID_ARGUMENT_TYPE)" ) );
 }
 
 #[ test ]

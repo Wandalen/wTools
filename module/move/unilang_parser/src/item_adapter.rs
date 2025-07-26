@@ -73,7 +73,7 @@ impl fmt::Display for UnilangTokenKind
 /// Valid characters are lowercase alphanumeric (`a-z`, `0-9`) and underscore (`_`).
 fn is_valid_identifier(s: &str) -> bool {
     !s.is_empty()
-        && s.chars().next().map_or(false, |c| c.is_ascii_lowercase() || c == '_')
+        && s.chars().next().is_some_and(|c| c.is_ascii_lowercase() || c == '_')
         && !s.ends_with('-')
         && s.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_' || c == '-')
 }

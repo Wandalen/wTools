@@ -37,7 +37,7 @@ impl From< crate::types::TypeError > for Error
 {
   fn from( error : crate::types::TypeError ) -> Self
   {
-    Error::Execution( crate::data::ErrorData { code: "TYPE_ERROR".to_string(), message: error.reason } )
+    Error::Execution( crate::data::ErrorData { code: "INVALID_ARGUMENT_TYPE".to_string(), message: error.reason } )
   }
 }
 

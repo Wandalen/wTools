@@ -152,6 +152,7 @@ impl Parser
   Result< crate::instruction::GenericInstruction, ParseError >
   {
     // Handle empty input (after filtering whitespace)
+
     if rich_items.is_empty() {
         return Ok(GenericInstruction {
             command_path_slices: Vec::new(),
@@ -177,6 +178,7 @@ impl Parser
     }
 
     let command_path_slices = Self::parse_command_path( &mut items_iter, instruction_end_location )?;
+
     let ( positional_arguments, named_arguments, help_operator_found ) = self.parse_arguments( &mut items_iter )?;
 
     Ok( GenericInstruction
@@ -206,21 +208,18 @@ impl Parser
       println!("DEBUG: parse_command_path peeking: {item:?}, last_token_was_dot: {last_token_was_dot}");
       match &item.kind
       {
-        UnilangTokenKind::Number( ref s ) =>
-          {
-            return Err( ParseError::new( ErrorKind::Syntax( format!( "Invalid identifier '{s}' in command path" ) ), item.adjusted_source_location.clone() ) );
-          }
-          UnilangTokenKind::Identifier( ref s ) =>
+
+        UnilangTokenKind::Identifier( ref s ) =>
         {
           if command_path_slices.is_empty() || last_token_was_dot
           {
             if s.contains('-') {
-    return Err(ParseError::new(
-        ErrorKind::Syntax(format!("Invalid character '-' in command path segment '{}'", s)),
-        item.adjusted_source_location.clone(),
-    ));
-}
-command_path_slices.push( s.clone() );
+              return Err(ParseError::new(
+                  ErrorKind::Syntax(format!("Invalid character '-' in command path segment '{s}'")),
+                  item.adjusted_source_location.clone(),
+              ));
+            }
+            command_path_slices.push( s.clone() );
             last_token_was_dot = false;
             items_iter.next(); // Consume item
           }
@@ -238,34 +237,28 @@ command_path_slices.push( s.clone() );
           last_token_was_dot = true;
           items_iter.next(); // Consume item
         },
-        UnilangTokenKind::Unrecognized( ref s ) =>
+        UnilangTokenKind::Unrecognized( ref s ) | UnilangTokenKind::Number( ref s ) =>
         {
-          if last_token_was_dot { // If it's unrecognized after a dot, it's an invalid identifier in path
+          if last_token_was_dot
+          {
             return Err( ParseError::new( ErrorKind::Syntax( format!( "Invalid identifier '{s}' in command path" ) ), item.adjusted_source_location.clone() ) );
           }
-          // If it's unrecognized not after a dot, it ends the command path.
-          // The 'else' is redundant because the 'if' block returns.
-          break;
-        }
+          break; // End of command path
+        },
         _ =>
         {
           break; // End of command path
-        }
+        },
       }
     }
 
     if last_token_was_dot
     {
-      // Capture the location of the trailing dot for the error message
-      let last_dot_location = if let Some(last_item) = items_iter.peek() { // Peek at the last item if available
-          SourceLocation::StrSpan { start: last_item.inner.start, end: last_item.inner.end }
-      } else {
-          // Fallback if items_iter is empty after consuming the dot.
-          // This might happen if the input was just "cmd."
-          SourceLocation::StrSpan { start: instruction_end_location - 1, end: instruction_end_location } // Approximate, using overall end
-      };
-      return Err(ParseError::new(ErrorKind::Syntax("Command path cannot end with a '.'".to_string()), last_dot_location));
+      // If the last token was a dot, and we are at the end of the command path,
+      // it's a trailing dot error. The location should be the end of the instruction.
+      return Err(ParseError::new(ErrorKind::Syntax("Command path cannot end with a '.'".to_string()), SourceLocation::StrSpan { start: instruction_end_location - 1, end: instruction_end_location }));
     }
+
 
     Ok( command_path_slices )
   }
@@ -290,14 +283,11 @@ command_path_slices.push( s.clone() );
       match item.kind
       {
         UnilangTokenKind::Unrecognized( ref s ) =>
-            {
-              return Err( ParseError::new( ErrorKind::Syntax( format!( "Unexpected token '{}' in arguments", s ) ), item.adjusted_source_location.clone() ) );
-            }
-            UnilangTokenKind::Number( ref s ) =>
-          {
-            return Err( ParseError::new( ErrorKind::Syntax( format!( "Invalid identifier '{s}' in command path" ) ), item.adjusted_source_location.clone() ) );
-          }
-          UnilangTokenKind::Identifier( ref s ) =>
+        {
+          return Err( ParseError::new( ErrorKind::Syntax( format!( "Unexpected token '{}' in arguments", s ) ), item.adjusted_source_location.clone() ) );
+        },
+
+        UnilangTokenKind::Identifier( ref s ) =>
         {
           if let Some( next_item ) = items_iter.peek()
           {
@@ -376,7 +366,10 @@ command_path_slices.push( s.clone() );
                     },
                     });
                   },
-                  _ => return Err( ParseError::new( ErrorKind::Syntax( format!( "Expected value for named argument '{arg_name}'" ) ), value_item.source_location() ) )
+                  _ =>
+                  {
+                    return Err( ParseError::new( ErrorKind::Syntax( format!( "Expected value for named argument '{arg_name}'" ) ), value_item.source_location() ) )
+                  }
                 }
               }
               else
@@ -416,6 +409,21 @@ command_path_slices.push( s.clone() );
             });
           }
         },
+        UnilangTokenKind::Number( ref s ) =>
+        {
+          // Positional argument
+          if !named_arguments.is_empty() && self.options.error_on_positional_after_named
+          {
+            return Err( ParseError::new( ErrorKind::Syntax( "Positional argument after named argument".to_string() ), item.adjusted_source_location.clone() ) );
+          }
+          positional_arguments.push( Argument
+          {
+            name : None,
+            value : s.clone(),
+            name_location : None,
+            value_location : item.source_location(),
+          });
+        },
         UnilangTokenKind::Operator( "?" ) =>
         {
           if items_iter.peek().is_some()
@@ -424,9 +432,13 @@ command_path_slices.push( s.clone() );
           }
           help_operator_found = true;
         },
-        _ => return Err( ParseError::new( ErrorKind::Syntax( format!( "Unexpected token '{}' in arguments", item.inner.string ) ), item.adjusted_source_location.clone() ) ),
+        _ =>
+        {
+          return Err( ParseError::new( ErrorKind::Syntax( format!( "Unexpected token '{}' in arguments", item.inner.string ) ), item.adjusted_source_location.clone() ) );
+        },
       }
     }
+
 
     Ok( ( positional_arguments, named_arguments, help_operator_found ) )
   }

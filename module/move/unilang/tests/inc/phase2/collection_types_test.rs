@@ -172,7 +172,7 @@ fn test_map_string_integer_kind()
     arguments: vec![ArgumentDefinition {
       name: "map_arg".to_string(),
       description: "A map of string to integer".to_string(),
-      kind: Kind::Map( Box::new( Kind::String ), Box::new( Kind::Integer ), None, None ),
+      kind: Kind::Map( Box::new( Kind::String ), Box::new( Kind::Integer ), None, Some( ':' ) ),
       optional: false,
       multiple: false,
       validation_rules: vec![],

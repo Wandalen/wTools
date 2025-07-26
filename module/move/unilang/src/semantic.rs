@@ -117,10 +117,25 @@ impl< 'a > SemanticAnalyzer< 'a >
       // If not found by name or alias, try positional
       if !value_found && positional_idx < instruction.positional_arguments.len()
       {
-        let parser_arg = &instruction.positional_arguments[ positional_idx ];
-        bound_arguments.insert( arg_def.name.clone(), parse_value( &parser_arg.value, &arg_def.kind )? );
-        value_found = true;
-        positional_idx += 1;
+        if arg_def.multiple
+        {
+          let mut values = Vec::new();
+          while positional_idx < instruction.positional_arguments.len()
+          {
+            let parser_arg = &instruction.positional_arguments[ positional_idx ];
+            values.push( parse_value( &parser_arg.value, &arg_def.kind )? );
+            positional_idx += 1;
+          }
+          bound_arguments.insert( arg_def.name.clone(), Value::List( values ) );
+          value_found = true;
+        }
+        else
+        {
+          let parser_arg = &instruction.positional_arguments[ positional_idx ];
+          bound_arguments.insert( arg_def.name.clone(), parse_value( &parser_arg.value, &arg_def.kind )? );
+          value_found = true;
+          positional_idx += 1;
+        }
       }
 
       // Handle missing required arguments or default values
