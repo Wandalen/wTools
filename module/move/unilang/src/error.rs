@@ -28,9 +28,17 @@ pub enum Error
   /// An error that occurred during JSON deserialization.
   #[ error( "JSON Deserialization Error: {0}" ) ]
   Json( #[ from ] serde_json::Error ),
-  // /// An error that occurred during parsing. // Temporarily commented out
-  // #[ error( "Parse Error: {0}" ) ] // Temporarily commented out
-  // Parse( #[ from ] unilang_parser::error::ParseError ), // Temporarily commented out
+  /// An error that occurred during parsing.
+  #[ error( "Parse Error: {0}" ) ]
+  Parse( #[ from ] unilang_parser::error::ParseError ),
+}
+
+impl From< crate::types::TypeError > for Error
+{
+  fn from( error : crate::types::TypeError ) -> Self
+  {
+    Error::Execution( crate::data::ErrorData { code: "TYPE_ERROR".to_string(), message: error.reason } )
+  }
 }
 
 impl From< ErrorData > for Error

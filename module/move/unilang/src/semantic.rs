@@ -4,9 +4,9 @@
 
 use crate::data::{ CommandDefinition, ErrorData };
 use crate::error::Error;
-// use unilang_parser::{GenericInstruction}; // Removed Argument as ParserArgument // Temporarily commented out
+use unilang_parser::{GenericInstruction, Argument as ParserArgument};
 use crate::registry::CommandRegistry;
-use crate::types::{ self, Value };
+use crate::types::{ self, Value, parse_value }; // Import parse_value
 use std::collections::HashMap;
 use regex::Regex; // Added for validation rules
 
@@ -33,7 +33,7 @@ pub struct VerifiedCommand
 #[ allow( missing_debug_implementations ) ]
 pub struct SemanticAnalyzer< 'a >
 {
-  // instructions : &'a [GenericInstruction], // Temporarily commented out
+  instructions : &'a [GenericInstruction],
   registry : &'a CommandRegistry,
 }
 
@@ -43,9 +43,9 @@ impl< 'a > SemanticAnalyzer< 'a >
   /// Creates a new `SemanticAnalyzer`.
   ///
   #[must_use]
-  pub fn new( /* instructions : &'a [GenericInstruction], */ registry : &'a CommandRegistry ) -> Self
+  pub fn new( instructions : &'a [GenericInstruction], registry : &'a CommandRegistry ) -> Self
   {
-    Self { /* instructions, */ registry }
+    Self { instructions, registry }
   }
 
   ///
@@ -62,22 +62,21 @@ impl< 'a > SemanticAnalyzer< 'a >
   {
     let mut verified_commands: Vec<VerifiedCommand> = Vec::new();
 
-    // for instruction in self.instructions // Temporarily commented out
-    // {
-    //   let command_name = instruction.command_path_slices.join( "." );
-    //   let command_def = self.registry.commands.get( &command_name ).ok_or_else( || ErrorData {
-    //     code : "COMMAND_NOT_FOUND".to_string(),
-    //     message : format!( "Command not found: {}", command_name ),
-    //   } )?;
+    for instruction in self.instructions
+    {
+      let command_name = instruction.command_path_slices.join( "." );
+      let command_def = self.registry.commands.get( &command_name ).ok_or_else( || ErrorData {
+        code : "COMMAND_NOT_FOUND".to_string(),
+        message : format!( "Command not found: {}", command_name ),
+      } )?;
 
-    //   let arguments = Self::bind_arguments( instruction, command_def )?;
-    //   verified_commands.push( VerifiedCommand {
-    //     definition : ( *command_def ).clone(),
-    //     arguments,
-    //   } );
-    // }
-    // Temporarily return an empty vector to allow compilation
-    Ok( Vec::new() )
+      let arguments = Self::bind_arguments( instruction, command_def )?;
+      verified_commands.push( VerifiedCommand {
+        definition : ( *command_def ).clone(),
+        arguments,
+      } );
+    }
+    Ok( verified_commands )
   }
 
   ///
@@ -86,11 +85,93 @@ impl< 'a > SemanticAnalyzer< 'a >
   /// This function checks for the correct number and types of arguments,
   /// returning an error if validation fails.
 
-  fn bind_arguments( /* instruction : &GenericInstruction, */ command_def : &CommandDefinition ) -> Result< HashMap< String, Value >, Error >
+  fn bind_arguments( instruction : &GenericInstruction, command_def : &CommandDefinition ) -> Result< HashMap< String, Value >, Error >
   {
-    // Temporarily return an empty HashMap to allow compilation
-    let _ = command_def; // Suppress unused warning
-    Ok( HashMap::new() )
+    let mut bound_arguments = HashMap::new();
+    let mut positional_idx = 0;
+
+    for arg_def in &command_def.arguments
+    {
+      let mut value_found = false;
+
+      // Try to find by named argument
+      if let Some( parser_arg ) = instruction.named_arguments.get( &arg_def.name )
+      {
+        bound_arguments.insert( arg_def.name.clone(), parse_value( &parser_arg.value, &arg_def.kind )? );
+        value_found = true;
+      }
+      else
+      {
+        // Try to find by alias
+        for alias in &arg_def.aliases
+        {
+          if let Some( parser_arg ) = instruction.named_arguments.get( alias )
+          {
+            bound_arguments.insert( arg_def.name.clone(), parse_value( &parser_arg.value, &arg_def.kind )? );
+            value_found = true;
+            break;
+          }
+        }
+      }
+
+      // If not found by name or alias, try positional
+      if !value_found && positional_idx < instruction.positional_arguments.len()
+      {
+        let parser_arg = &instruction.positional_arguments[ positional_idx ];
+        bound_arguments.insert( arg_def.name.clone(), parse_value( &parser_arg.value, &arg_def.kind )? );
+        value_found = true;
+        positional_idx += 1;
+      }
+
+      // Handle missing required arguments or default values
+      if !value_found
+      {
+        if !arg_def.optional
+        {
+          return Err( Error::Execution( ErrorData {
+            code : "MISSING_ARGUMENT".to_string(),
+            message : format!( "Missing required argument: {}", arg_def.name ),
+          } ) );
+        }
+        else if arg_def.is_default_arg
+        {
+          if let Some( default_value ) = &arg_def.default_value
+          {
+            bound_arguments.insert( arg_def.name.clone(), parse_value( default_value, &arg_def.kind )? );
+            value_found = true;
+          }
+        }
+      }
+
+      // Apply validation rules if value was found
+      if value_found
+      {
+        if let Some( value ) = bound_arguments.get( &arg_def.name )
+        {
+          for rule in &arg_def.validation_rules
+          {
+            if !Self::apply_validation_rule( value, rule )
+            {
+              return Err( Error::Execution( ErrorData {
+                code : "VALIDATION_RULE_FAILED".to_string(),
+                message : format!( "Validation rule '{rule}' failed for argument '{}' with value '{value:?}'", arg_def.name ),
+              } ) );
+            }
+          }
+        }
+      }
+    }
+
+    // Check for too many positional arguments
+    if positional_idx < instruction.positional_arguments.len()
+    {
+      return Err( Error::Execution( ErrorData {
+        code : "TOO_MANY_ARGUMENTS".to_string(),
+        message : "Too many positional arguments provided.".to_string(),
+      } ) );
+    }
+
+    Ok( bound_arguments )
   }
 
   /// Applies a single validation rule to a parsed value.

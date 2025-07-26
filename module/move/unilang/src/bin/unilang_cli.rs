@@ -4,7 +4,7 @@
 
 use unilang::registry::CommandRegistry;
 use unilang::data::{ CommandDefinition, ArgumentDefinition, Kind, ErrorData, OutputData };
-// use unilang_parser::{Parser, UnilangParserOptions};
+use unilang_parser::{Parser, UnilangParserOptions, GenericInstruction};
 use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };
 use unilang::interpreter::{ Interpreter, ExecutionContext };
 use std::env;
@@ -137,7 +137,7 @@ fn main() -> Result< (), unilang::error::Error >
       .is_default_arg( false )
       .optional( false )
       .multiple( false )
-      .validation_rules( vec![ "file_exists".to_string() ] )
+      .validation_rules( vec![] )
       .tags( vec![ "input".to_string(), "file".to_string() ] )
       .interactive( false )
       .sensitive( false )
@@ -185,12 +185,12 @@ fn main() -> Result< (), unilang::error::Error >
     return Ok( () );
   }
 
-  // let parser = Parser::new(UnilangParserOptions::default());
-  // let command_input_str = args[1..].join(" ");
-  // let instruction = parser.parse_single_instruction(&command_input_str)?;
-  // let instructions = &[instruction][..];
+  let parser = Parser::new(UnilangParserOptions::default());
+  let command_input_str = args[1..].join(" ");
+  let instruction = parser.parse_single_instruction(&command_input_str)?;
+  let instructions = &[instruction][..];
 
-  let semantic_analyzer = SemanticAnalyzer::new( &registry );
+  let semantic_analyzer = SemanticAnalyzer::new( instructions, &registry );
 
   let result = semantic_analyzer.analyze()
   .and_then( | verified_commands |

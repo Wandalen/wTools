@@ -206,7 +206,7 @@ impl Parser
       println!("DEBUG: parse_command_path peeking: {item:?}, last_token_was_dot: {last_token_was_dot}");
       match &item.kind
       {
-        UnilangTokenKind::Identifier( ref s ) =>
+        UnilangTokenKind::Identifier( ref s ) | UnilangTokenKind::Number( ref s ) =>
         {
           if command_path_slices.is_empty() || last_token_was_dot
           {
@@ -279,7 +279,7 @@ impl Parser
     {
       match item.kind
       {
-        UnilangTokenKind::Identifier( ref s ) =>
+        UnilangTokenKind::Identifier( ref s ) | UnilangTokenKind::Number( ref s ) | UnilangTokenKind::Unrecognized( ref s ) =>
         {
           if let Some( next_item ) = items_iter.peek()
           {
@@ -293,7 +293,7 @@ impl Parser
               {
                 match value_item.kind
                 {
-                  UnilangTokenKind::Identifier( ref val ) | UnilangTokenKind::Unrecognized( ref val ) =>
+                  UnilangTokenKind::Identifier( ref val ) | UnilangTokenKind::Unrecognized( ref val ) | UnilangTokenKind::Number( ref val ) =>
                   {
                     let mut current_value = val.clone();
                     let mut current_value_end_location = match value_item.source_location() {
@@ -316,6 +316,14 @@ impl Parser
                                 };
                                 items_iter.next(); // Consume the segment
                             } else if let UnilangTokenKind::Unrecognized(ref s) = &peeked_segment.kind {
+                                current_value.push('.');
+                                current_value.push_str(s);
+                                current_value_end_location = match peeked_segment.source_location() {
+                                    SourceLocation::StrSpan { end, .. } => end,
+                                    SourceLocation::None => current_value_end_location, // Keep previous if None
+                                };
+                                items_iter.next(); // Consume the segment
+                            } else if let UnilangTokenKind::Number(ref s) = &peeked_segment.kind {
                                 current_value.push('.');
                                 current_value.push_str(s);
                                 current_value_end_location = match peeked_segment.source_location() {
@@ -390,17 +398,17 @@ impl Parser
             });
           }
         },
-          UnilangTokenKind::Operator( "?" ) =>
+        UnilangTokenKind::Operator( "?" ) =>
+        {
+          if items_iter.peek().is_some()
           {
-            if items_iter.peek().is_some()
-            {
-              return Err( ParseError::new( ErrorKind::Syntax( "Help operator '?' must be the last token".to_string() ), item.adjusted_source_location.clone() ) );
-            }
-            help_operator_found = true;
-          },
-          _ => return Err( ParseError::new( ErrorKind::Syntax( format!( "Unexpected token '{}' in arguments", item.inner.string ) ), item.adjusted_source_location.clone() ) ),
-        }
+            return Err( ParseError::new( ErrorKind::Syntax( "Help operator '?' must be the last token".to_string() ), item.adjusted_source_location.clone() ) );
+          }
+          help_operator_found = true;
+        },
+        _ => return Err( ParseError::new( ErrorKind::Syntax( format!( "Unexpected token '{}' in arguments", item.inner.string ) ), item.adjusted_source_location.clone() ) ),
       }
+    }
 
     Ok( ( positional_arguments, named_arguments, help_operator_found ) )
   }

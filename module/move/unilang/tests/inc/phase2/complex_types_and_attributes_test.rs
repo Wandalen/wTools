@@ -1,5 +1,5 @@
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind };
-// use unilang_parser::{ Parser, UnilangParserOptions, SourceLocation }; // Updated import // Temporarily commented out
+use unilang_parser::{ Parser, UnilangParserOptions, SourceLocation, GenericInstruction, Argument as ParserArgument }; // Updated import
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
 use unilang::types::Value;
@@ -15,34 +15,33 @@ fn setup_test_environment( command: CommandDefinition ) -> CommandRegistry
   registry
 }
 
-fn analyze_program( command_name: &str, /* positional_args: Vec<unilang_parser::Argument>, named_args: std::collections::HashMap<String, unilang_parser::Argument>, */ registry: &CommandRegistry ) -> Result< Vec< unilang::semantic::VerifiedCommand >, unilang::error::Error >
+fn analyze_program( command_name: &str, positional_args: Vec<unilang_parser::Argument>, named_args: std::collections::HashMap<String, unilang_parser::Argument>, registry: &CommandRegistry ) -> Result< Vec< unilang::semantic::VerifiedCommand >, unilang::error::Error >
 {
-  // eprintln!( "--- analyze_program debug ---" ); // Temporarily commented out
-  // eprintln!( "Command Name: '{}'", command_name ); // Temporarily commented out
-  // eprintln!( "Positional Args: {:?}", positional_args ); // Temporarily commented out
-  // eprintln!( "Named Args: {:?}", named_args ); // Temporarily commented out
+  // eprintln!( "--- analyze_program debug ---" );
+  // eprintln!( "Command Name: '{}'", command_name );
+  // eprintln!( "Positional Args: {:?}", positional_args );
+  // eprintln!( "Named Args: {:?}", named_args );
 
-  // let instructions = vec! // Temporarily commented out
-  // [ // Temporarily commented out
-  //   unilang_parser::GenericInstruction // Temporarily commented out
-  //   { // Temporarily commented out
-  //     command_path_slices : command_name.split( '.' ).map( |s| s.to_string() ).collect(), // Temporarily commented out
-  //     named_arguments : named_args, // Temporarily commented out
-  //     positional_arguments : positional_args, // Temporarily commented out
-  //     help_requested : false, // Temporarily commented out
-  //     overall_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Placeholder // Temporarily commented out
-  //   } // Temporarily commented out
-  // ]; // Temporarily commented out
-  // eprintln!( "Manually Constructed Instructions: {:?}", instructions ); // Temporarily commented out
-  let analyzer = SemanticAnalyzer::new( /* &instructions, */ registry );
+  let instructions = vec!
+  [
+    unilang_parser::GenericInstruction
+    {
+      command_path_slices : command_name.split( '.' ).map( |s| s.to_string() ).collect(),
+      named_arguments : named_args,
+      positional_arguments : positional_args,
+      help_requested : false,
+      overall_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Placeholder
+    }
+  ];
+  // eprintln!( "Manually Constructed Instructions: {:?}", instructions );
+  let analyzer = SemanticAnalyzer::new( &instructions, registry );
   let result = analyzer.analyze();
-  // eprintln!( "Analyzer Result: {:?}", result ); // Temporarily commented out
-  // eprintln!( "--- analyze_program end ---" ); // Temporarily commented out
+  // eprintln!( "Analyzer Result: {:?}", result );
+  // eprintln!( "--- analyze_program end ---" );
   result
 }
 
 #[test]
-#[ignore = "Temporarily ignored due to unilang_parser dependency issues."]
 fn test_json_string_argument_type()
 {
   let command = CommandDefinition {
@@ -80,48 +79,47 @@ fn test_json_string_argument_type()
   let result = analyze_program
   (
     ".test.command",
-    // vec! // Temporarily commented out
-    // [ // Temporarily commented out
-    //   unilang_parser::Argument // Temporarily commented out
-    //   { // Temporarily commented out
-    //     name : None, // Temporarily commented out
-    //     value : json_str.to_string(), // Temporarily commented out
-    //     name_location : None, // Temporarily commented out
-    //     value_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Temporarily commented out
-    //   } // Temporarily commented out
-    // ], // Temporarily commented out
-    // std::collections::HashMap::new(), // Temporarily commented out
+    vec!
+    [
+      unilang_parser::Argument
+      {
+        name : None,
+        value : json_str.to_string(),
+        name_location : None,
+        value_location : SourceLocation::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
     &registry
   );
-  // assert!( result.is_ok() ); // Temporarily commented out
-  // let verified_command = result.unwrap().remove( 0 ); // Temporarily commented out
-  // let arg = verified_command.arguments.get( "json_arg" ).unwrap(); // Temporarily commented out
-  // assert_eq!( *arg, Value::JsonString( json_str.to_string() ) ); // Temporarily commented out
+  assert!( result.is_ok() );
+  let verified_command = result.unwrap().remove( 0 );
+  let arg = verified_command.arguments.get( "json_arg" ).unwrap();
+  assert_eq!( *arg, Value::JsonString( json_str.to_string() ) );
 
   // Test Matrix Row: T1.2
   let result = analyze_program
   (
     ".test.command",
-    // vec! // Temporarily commented out
-    // [ // Temporarily commented out
-    //   unilang_parser::Argument // Temporarily commented out
-    //   { // Temporarily commented out
-    //     name : None, // Temporarily commented out
-    //     value : "not a json".to_string(), // Temporarily commented out
-    //     name_location : None, // Temporarily commented out
-    //     value_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Temporarily commented out
-    //   } // Temporarily commented out
-    // ], // Temporarily commented out
-    // std::collections::HashMap::new(), // Temporarily commented out
+    vec!
+    [
+      unilang_parser::Argument
+      {
+        name : None,
+        value : "not a json".to_string(),
+        name_location : None,
+        value_location : SourceLocation::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
     &registry
   );
-  // assert!( result.is_err() ); // Temporarily commented out
-  // let error = result.err().unwrap(); // Temporarily commented out
-  // assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) ); // Temporarily commented out
+  assert!( result.is_err() );
+  let error = result.err().unwrap();
+  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
 }
 
 #[test]
-#[ignore = "Temporarily ignored due to unilang_parser dependency issues."]
 fn test_object_argument_type()
 {
   let command = CommandDefinition {
@@ -159,48 +157,47 @@ fn test_object_argument_type()
   let result = analyze_program
   (
     ".test.command",
-    // vec! // Temporarily commented out
-    // [ // Temporarily commented out
-    //   unilang_parser::Argument // Temporarily commented out
-    //   { // Temporarily commented out
-    //     name : None, // Temporarily commented out
-    //     value : object_str.to_string(), // Temporarily commented out
-    //     name_location : None, // Temporarily commented out
-    //     value_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Temporarily commented out
-    //   } // Temporarily commented out
-    // ], // Temporarily commented out
-    // std::collections::HashMap::new(), // Temporarily commented out
+    vec!
+    [
+      unilang_parser::Argument
+      {
+        name : None,
+        value : object_str.to_string(),
+        name_location : None,
+        value_location : SourceLocation::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
     &registry
   );
-  // assert!( result.is_ok() ); // Temporarily commented out
-  // let verified_command = result.unwrap().remove( 0 ); // Temporarily commented out
-  // let arg = verified_command.arguments.get( "object_arg" ).unwrap(); // Temporarily commented out
-  // assert_eq!( *arg, Value::Object( serde_json::from_str( object_str ).unwrap() ) ); // Temporarily commented out
+  assert!( result.is_ok() );
+  let verified_command = result.unwrap().remove( 0 );
+  let arg = verified_command.arguments.get( "object_arg" ).unwrap();
+  assert_eq!( *arg, Value::Object( serde_json::from_str( object_str ).unwrap() ) );
 
   // Test Matrix Row: T1.4
   let result = analyze_program
   (
     ".test.command",
-    // vec! // Temporarily commented out
-    // [ // Temporarily commented out
-    //   unilang_parser::Argument // Temporarily commented out
-    //   { // Temporarily commented out
-    //     name : None, // Temporarily commented out
-    //     value : "not an object".to_string(), // Temporarily commented out
-    //     name_location : None, // Temporarily commented out
-    //     value_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Temporarily commented out
-    //   } // Temporarily commented out
-    // ], // Temporarily commented out
-    // std::collections::HashMap::new(), // Temporarily commented out
+    vec!
+    [
+      unilang_parser::Argument
+      {
+        name : None,
+        value : "not an object".to_string(),
+        name_location : None,
+        value_location : SourceLocation::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
     &registry
   );
-  // assert!( result.is_err() ); // Temporarily commented out
-  // let error = result.err().unwrap(); // Temporarily commented out
-  // assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) ); // Temporarily commented out
+  assert!( result.is_err() );
+  let error = result.err().unwrap();
+  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
 }
 
 #[test]
-#[ignore = "Temporarily ignored due to unilang_parser dependency issues."]
 fn test_multiple_argument()
 {
   let command = CommandDefinition {
@@ -237,34 +234,33 @@ fn test_multiple_argument()
   let result = analyze_program
   (
     ".test.command",
-    // vec! // Temporarily commented out
-    // [ // Temporarily commented out
-    //   unilang_parser::Argument // Temporarily commented out
-    //   { // Temporarily commented out
-    //     name : None, // Temporarily commented out
-    //     value : "val1".to_string(), // Temporarily commented out
-    //     name_location : None, // Temporarily commented out
-    //     value_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Temporarily commented out
-    //   }, // Temporarily commented out
-    //   unilang_parser::Argument // Temporarily commented out
-    //   { // Temporarily commented out
-    //     name : None, // Temporarily commented out
-    //     value : "val2".to_string(), // Temporarily commented out
-    //     name_location : None, // Temporarily commented out
-    //     value_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Temporarily commented out
-    //   }, // Temporarily commented out
-    // ], // Temporarily commented out
-    // std::collections::HashMap::new(), // Temporarily commented out
+    vec!
+    [
+      unilang_parser::Argument
+      {
+        name : None,
+        value : "val1".to_string(),
+        name_location : None,
+        value_location : SourceLocation::StrSpan { start : 0, end : 0 },
+      },
+      unilang_parser::Argument
+      {
+        name : None,
+        value : "val2".to_string(),
+        name_location : None,
+        value_location : SourceLocation::StrSpan { start : 0, end : 0 },
+      },
+    ],
+    std::collections::HashMap::new(),
     &registry
   );
-  // assert!( result.is_ok() ); // Temporarily commented out
-  // let verified_command = result.unwrap().remove( 0 ); // Temporarily commented out
-  // let arg = verified_command.arguments.get( "multiple_arg" ).unwrap(); // Temporarily commented out
-  // assert_eq!( *arg, Value::List( vec![ Value::String( "val1".to_string() ), Value::String( "val2".to_string() ) ] ) ); // Temporarily commented out
+  assert!( result.is_ok() );
+  let verified_command = result.unwrap().remove( 0 );
+  let arg = verified_command.arguments.get( "multiple_arg" ).unwrap();
+  assert_eq!( *arg, Value::List( vec![ Value::String( "val1".to_string() ), Value::String( "val2".to_string() ) ] ) );
 }
 
 #[test]
-#[ignore = "Temporarily ignored due to unilang_parser dependency issues."]
 fn test_validated_argument()
 {
   let command = CommandDefinition {
@@ -301,66 +297,65 @@ fn test_validated_argument()
   let result = analyze_program
   (
     ".test.command",
-    // vec! // Temporarily commented out
-    // [ // Temporarily commented out
-    //   unilang_parser::Argument // Temporarily commented out
-    //   { // Temporarily commented out
-    //     name : None, // Temporarily commented out
-    //     value : "50".to_string(), // Temporarily commented out
-    //     name_location : None, // Temporarily commented out
-    //     value_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Temporarily commented out
-    //   } // Temporarily commented out
-    // ], // Temporarily commented out
-    // std::collections::HashMap::new(), // Temporarily commented out
+    vec!
+    [
+      unilang_parser::Argument
+      {
+        name : None,
+        value : "50".to_string(),
+        name_location : None,
+        value_location : SourceLocation::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
     &registry
   );
-  // assert!( result.is_ok() ); // Temporarily commented out
+  assert!( result.is_ok() );
 
   // Test Matrix Row: T1.7 (min violation)
   let result = analyze_program
   (
     ".test.command",
-    // vec! // Temporarily commented out
-    // [ // Temporarily commented out
-    //   unilang_parser::Argument // Temporarily commented out
-    //   { // Temporarily commented out
-    //     name : None, // Temporarily commented out
-    //     value : "5".to_string(), // Temporarily commented out
-    //     name_location : None, // Temporarily commented out
-    //     value_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Temporarily commented out
-    //   } // Temporarily commented out
-    // ], // Temporarily commented out
-    // std::collections::HashMap::new(), // Temporarily commented out
+    vec!
+    [
+      unilang_parser::Argument
+      {
+        name : None,
+        value : "5".to_string(),
+        name_location : None,
+        value_location : SourceLocation::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
     &registry
   );
-  // assert!( result.is_err() ); // Temporarily commented out
-  // let error = result.err().unwrap(); // Temporarily commented out
-  // assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "VALIDATION_RULE_FAILED" ) ); // Temporarily commented out
+  assert!( result.is_err() );
+  let error = result.err().unwrap();
+  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "VALIDATION_RULE_FAILED" ) );
 
   // Test Matrix Row: T1.8 (max violation)
   let result = analyze_program
   (
     ".test.command",
-    // vec! // Temporarily commented out
-    // [ // Temporarily commented out
-    //   unilang_parser::Argument // Temporarily commented out
-    //   { // Temporarily commented out
-    //     name : None, // Temporarily commented out
-    //     value : "150".to_string(), // Temporarily commented out
-    //     name_location : None, // Temporarily commented out
-    //     value_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Temporarily commented out
-    //   } // Temporarily commented out
-    // ], // Temporarily commented out
-    // std::collections::HashMap::new(), // Temporarily commented out
+    vec!
+    [
+      unilang_parser::Argument
+      {
+        name : None,
+        value : "150".to_string(),
+        name_location : None,
+        value_location : SourceLocation::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
     &registry
   );
-  // assert!( result.is_err() ); // Temporarily commented out
-  // let error = result.err().unwrap(); // Temporarily commented out
-  // assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "VALIDATION_RULE_FAILED" ) ); // Temporarily commented out
+  assert!( result.is_err() );
+  let error = result.err().unwrap();
+  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "VALIDATION_RULE_FAILED" ) );
 }
 
 #[test]
-#[ignore = "Temporarily ignored due to unilang_parser dependency issues."]
 fn test_default_argument()
 {
   let command = CommandDefinition {
@@ -397,34 +392,34 @@ fn test_default_argument()
   let result = analyze_program
   (
     ".test.command",
-    // vec![], // Temporarily commented out
-    // std::collections::HashMap::new(), // Temporarily commented out
+    vec![],
+    std::collections::HashMap::new(),
     &registry
   );
-  // assert!( result.is_ok() ); // Temporarily commented out
-  // let verified_command = result.unwrap().remove( 0 ); // Temporarily commented out
-  // let arg = verified_command.arguments.get( "default_arg" ).unwrap(); // Temporarily commented out
-  // assert_eq!( *arg, Value::String( "default_value_string".to_string() ) ); // Temporarily commented out
+  assert!( result.is_ok() );
+  let verified_command = result.unwrap().remove( 0 );
+  let arg = verified_command.arguments.get( "default_arg" ).unwrap();
+  assert_eq!( *arg, Value::String( "default_value_string".to_string() ) );
 
   // Test Matrix Row: T1.10 (value provided, override default)
   let result = analyze_program
   (
     ".test.command",
-    // vec! // Temporarily commented out
-    // [ // Temporarily commented out
-    //   unilang_parser::Argument // Temporarily commented out
-    //   { // Temporarily commented out
-    //     name : None, // Temporarily commented out
-    //     value : "provided_value".to_string(), // Temporarily commented out
-    //     name_location : None, // Temporarily commented out
-    //     value_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Temporarily commented out
-    //   } // Temporarily commented out
-    // ], // Temporarily commented out
-    // std::collections::HashMap::new(), // Temporarily commented out
+    vec!
+    [
+      unilang_parser::Argument
+      {
+        name : None,
+        value : "provided_value".to_string(),
+        name_location : None,
+        value_location : SourceLocation::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
     &registry
   );
-  // assert!( result.is_ok() ); // Temporarily commented out
-  // let verified_command = result.unwrap().remove( 0 ); // Temporarily commented out
-  // let arg = verified_command.arguments.get( "default_arg" ).unwrap(); // Temporarily commented out
-  // assert_eq!( *arg, Value::String( "provided_value".to_string() ) ); // Temporarily commented out
+  assert!( result.is_ok() );
+  let verified_command = result.unwrap().remove( 0 );
+  let arg = verified_command.arguments.get( "default_arg" ).unwrap();
+  assert_eq!( *arg, Value::String( "provided_value".to_string() ) );
 }

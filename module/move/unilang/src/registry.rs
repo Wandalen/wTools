@@ -58,8 +58,10 @@ impl CommandRegistry
   {
     if self.commands.contains_key( &command_def.name )
     {
-      // For now, we'll allow overwriting. A more strict policy would return an error.
-      // xxx: Add a policy for overwriting runtime commands vs compile-time commands.
+      return Err( Error::Execution( ErrorData {
+        code : "COMMAND_ALREADY_EXISTS".to_string(),
+        message : format!( "Command '{}' already exists.", command_def.name ),
+      } ) );
     }
     self.commands.insert( command_def.name.clone(), command_def.clone() ); // Cloned command_def
     self.routines.insert( command_def.name.clone(), routine );

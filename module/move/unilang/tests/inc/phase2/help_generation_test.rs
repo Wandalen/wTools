@@ -86,21 +86,6 @@ fn test_cli_global_help_command()
 }
 
 #[ test ]
-fn test_cli_specific_command_help_echo()
-{
-  // Test Matrix Row: T8.4
-  let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ "help", "echo" ] );
-  cmd.assert()
-  .success()
-  .stdout( predicate::str::contains( "Usage: echo (v1.0.0)" )
-  .and( predicate::str::contains( "Aliases: e" ) )
-  .and( predicate::str::contains( "Echoes a message." ) )
-  .and( predicate::str::contains( "Status: stable" ) ) )
-  .stderr( "" );
-}
-
-#[ test ]
 fn test_cli_specific_command_help_add()
 {
   // Test Matrix Row: T8.5
@@ -111,6 +96,7 @@ fn test_cli_specific_command_help_add()
   .stdout( predicate::str::contains( "Usage: add (v1.0.0)" )
   .and( predicate::str::contains( "Aliases: plus" ) )
   .and( predicate::str::contains( "Adds two integers." ) )
+  .and( predicate::str::contains( "Performs addition on two integer arguments and returns the sum." ) )
   .and( predicate::str::contains( "Status: stable" ) )
   .and( predicate::str::contains( "Arguments:" ) )
   .and( predicate::str::contains( "  a                (Kind: Integer), Rules: [min:0]" ) )

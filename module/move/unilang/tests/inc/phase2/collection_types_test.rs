@@ -1,5 +1,5 @@
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind };
-// use unilang_parser::{ Parser, UnilangParserOptions, SourceLocation }; // Updated import // Temporarily commented out
+use unilang_parser::{ Parser, UnilangParserOptions, SourceLocation, GenericInstruction, Argument as ParserArgument }; // Updated import
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
 
@@ -26,34 +26,33 @@ fn setup_test_environment( command: CommandDefinition ) -> CommandRegistry
   registry
 }
 
-fn analyze_program( command_name: &str, /* positional_args: Vec<unilang_parser::Argument>, named_args: std::collections::HashMap<String, unilang_parser::Argument>, */ registry: &CommandRegistry ) -> Result< Vec< unilang::semantic::VerifiedCommand >, unilang::error::Error >
+fn analyze_program( command_name: &str, positional_args: Vec<unilang_parser::Argument>, named_args: std::collections::HashMap<String, unilang_parser::Argument>, registry: &CommandRegistry ) -> Result< Vec< unilang::semantic::VerifiedCommand >, unilang::error::Error >
 {
-  // eprintln!( "--- analyze_program debug ---" ); // Temporarily commented out
-  // eprintln!( "Command Name: '{}'", command_name ); // Temporarily commented out
-  // eprintln!( "Positional Args: {:?}", positional_args ); // Temporarily commented out
-  // eprintln!( "Named Args: {:?}", named_args ); // Temporarily commented out
+  // eprintln!( "--- analyze_program debug ---" );
+  // eprintln!( "Command Name: '{}'", command_name );
+  // eprintln!( "Positional Args: {:?}", positional_args );
+  // eprintln!( "Named Args: {:?}", named_args );
 
-  // let instructions = vec! // Temporarily commented out
-  // [ // Temporarily commented out
-  //   unilang_parser::GenericInstruction // Temporarily commented out
-  //   { // Temporarily commented out
-  //     command_path_slices : command_name.split( '.' ).map( |s| s.to_string() ).collect(), // Temporarily commented out
-  //     named_arguments : named_args, // Temporarily commented out
-  //     positional_arguments : positional_args, // Temporarily commented out
-  //     help_requested : false, // Temporarily commented out
-  //     overall_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Placeholder // Temporarily commented out
-  //   } // Temporarily commented out
-  // ]; // Temporarily commented out
-  // eprintln!( "Manually Constructed Instructions: {:?}", instructions ); // Temporarily commented out
-  let analyzer = SemanticAnalyzer::new( /* &instructions, */ registry );
+  let instructions = vec!
+  [
+    unilang_parser::GenericInstruction
+    {
+      command_path_slices : command_name.split( '.' ).map( |s| s.to_string() ).collect(),
+      named_arguments : named_args,
+      positional_arguments : positional_args,
+      help_requested : false,
+      overall_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Placeholder
+    }
+  ];
+  // eprintln!( "Manually Constructed Instructions: {:?}", instructions );
+  let analyzer = SemanticAnalyzer::new( &instructions, registry );
   let result = analyzer.analyze();
-  // eprintln!( "Analyzer Result: {:?}", result ); // Temporarily commented out
-  // eprintln!( "--- analyze_program end ---" ); // Temporarily commented out
+  // eprintln!( "Analyzer Result: {:?}", result );
+  // eprintln!( "--- analyze_program end ---" );
   result
 }
 
 #[ test ]
-#[ignore = "Temporarily ignored due to unilang_parser dependency issues."]
 fn test_list_string_kind()
 {
   // Test Matrix Row: T1.1
@@ -89,27 +88,26 @@ fn test_list_string_kind()
   let result = analyze_program
   (
     ".test.command",
-    // vec! // Temporarily commented out
-    // [ // Temporarily commented out
-    //   unilang_parser::Argument // Temporarily commented out
-    //   { // Temporarily commented out
-    //     name : None, // Temporarily commented out
-    //     value : "a,b,c".to_string(), // Temporarily commented out
-    //     name_location : None, // Temporarily commented out
-    //     value_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Temporarily commented out
-    //   } // Temporarily commented out
-    // ], // Temporarily commented out
-    // std::collections::HashMap::new(), // Temporarily commented out
+    vec!
+    [
+      unilang_parser::Argument
+      {
+        name : None,
+        value : "a,b,c".to_string(),
+        name_location : None,
+        value_location : SourceLocation::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
     &registry
   );
-  // assert!( result.is_ok() ); // Temporarily commented out
-  // let verified_command = result.unwrap().remove( 0 ); // Temporarily commented out
-  // let arg = verified_command.arguments.get( "list_arg" ).unwrap(); // Temporarily commented out
-  // assert_eq!( *arg, unilang::types::Value::List( vec![ unilang::types::Value::String( "a".to_string() ), unilang::types::Value::String( "b".to_string() ), unilang::types::Value::String( "c".to_string() ) ] ) ); // Temporarily commented out
+  assert!( result.is_ok() );
+  let verified_command = result.unwrap().remove( 0 );
+  let arg = verified_command.arguments.get( "list_arg" ).unwrap();
+  assert_eq!( *arg, unilang::types::Value::List( vec![ unilang::types::Value::String( "a".to_string() ), unilang::types::Value::String( "b".to_string() ), unilang::types::Value::String( "c".to_string() ) ] ) );
 }
 
 #[ test ]
-#[ignore = "Temporarily ignored due to unilang_parser dependency issues."]
 fn test_list_integer_custom_delimiter_kind()
 {
   // Test Matrix Row: T1.2
@@ -145,27 +143,26 @@ fn test_list_integer_custom_delimiter_kind()
   let result = analyze_program
   (
     ".test.command",
-    // vec! // Temporarily commented out
-    // [ // Temporarily commented out
-    //   unilang_parser::Argument // Temporarily commented out
-    //   { // Temporarily commented out
-    //     name : None, // Temporarily commented out
-    //     value : "1;2;3".to_string(), // Temporarily commented out
-    //     name_location : None, // Temporarily commented out
-    //     value_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Temporarily commented out
-    //   } // Temporarily commented out
-    // ], // Temporarily commented out
-    // std::collections::HashMap::new(), // Temporarily commented out
+    vec!
+    [
+      unilang_parser::Argument
+      {
+        name : None,
+        value : "1;2;3".to_string(),
+        name_location : None,
+        value_location : SourceLocation::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
     &registry
   );
-  // assert!( result.is_ok() ); // Temporarily commented out
-  // let verified_command = result.unwrap().remove( 0 ); // Temporarily commented out
-  // let arg = verified_command.arguments.get( "list_arg" ).unwrap(); // Temporarily commented out
-  // assert_eq!( *arg, unilang::types::Value::List( vec![ unilang::types::Value::Integer( 1 ), unilang::types::Value::Integer( 2 ), unilang::types::Value::Integer( 3 ) ] ) ); // Temporarily commented out
+  assert!( result.is_ok() );
+  let verified_command = result.unwrap().remove( 0 );
+  let arg = verified_command.arguments.get( "list_arg" ).unwrap();
+  assert_eq!( *arg, unilang::types::Value::List( vec![ unilang::types::Value::Integer( 1 ), unilang::types::Value::Integer( 2 ), unilang::types::Value::Integer( 3 ) ] ) );
 }
 
 #[ test ]
-#[ignore = "Temporarily ignored due to unilang_parser dependency issues."]
 fn test_map_string_integer_kind()
 {
   // Test Matrix Row: T1.3
@@ -201,30 +198,29 @@ fn test_map_string_integer_kind()
   let result = analyze_program
   (
     ".test.command",
-    // vec! // Temporarily commented out
-    // [ // Temporarily commented out
-    //   unilang_parser::Argument // Temporarily commented out
-    //   { // Temporarily commented out
-    //     name : None, // Temporarily commented out
-    //     value : "a:1,b:2".to_string(), // Temporarily commented out
-    //     name_location : None, // Temporarily commented out
-    //     value_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Temporarily commented out
-    //   } // Temporarily commented out
-    // ], // Temporarily commented out
-    // std::collections::HashMap::new(), // Temporarily commented out
+    vec!
+    [
+      unilang_parser::Argument
+      {
+        name : None,
+        value : "a:1,b:2".to_string(),
+        name_location : None,
+        value_location : SourceLocation::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
     &registry
   );
-  // assert!( result.is_ok() ); // Temporarily commented out
-  // let verified_command = result.unwrap().remove( 0 ); // Temporarily commented out
-  // let arg = verified_command.arguments.get( "map_arg" ).unwrap(); // Temporarily commented out
-  // let mut expected_map = std::collections::HashMap::new(); // Temporarily commented out
-  // expected_map.insert( "a".to_string(), unilang::types::Value::Integer( 1 ) ); // Temporarily commented out
-  // expected_map.insert( "b".to_string(), unilang::types::Value::Integer( 2 ) ); // Temporarily commented out
-  // assert_eq!( *arg, unilang::types::Value::Map( expected_map ) ); // Temporarily commented out
+  assert!( result.is_ok() );
+  let verified_command = result.unwrap().remove( 0 );
+  let arg = verified_command.arguments.get( "map_arg" ).unwrap();
+  let mut expected_map = std::collections::HashMap::new();
+  expected_map.insert( "a".to_string(), unilang::types::Value::Integer( 1 ) );
+  expected_map.insert( "b".to_string(), unilang::types::Value::Integer( 2 ) );
+  assert_eq!( *arg, unilang::types::Value::Map( expected_map ) );
 }
 
 #[ test ]
-#[ignore = "Temporarily ignored due to unilang_parser dependency issues."]
 fn test_map_string_string_custom_delimiters_kind()
 {
   // Test Matrix Row: T1.4
@@ -260,24 +256,24 @@ fn test_map_string_string_custom_delimiters_kind()
   let result = analyze_program
   (
     ".test.command",
-    // vec! // Temporarily commented out
-    // [ // Temporarily commented out
-    //   unilang_parser::Argument // Temporarily commented out
-    //   { // Temporarily commented out
-    //     name : None, // Temporarily commented out
-    //     value : "a=1;b=2".to_string(), // Temporarily commented out
-    //     name_location : None, // Temporarily commented out
-    //     value_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Temporarily commented out
-    //   } // Temporarily commented out
-    // ], // Temporarily commented out
-    // std::collections::HashMap::new(), // Temporarily commented out
+    vec!
+    [
+      unilang_parser::Argument
+      {
+        name : None,
+        value : "a=1;b=2".to_string(),
+        name_location : None,
+        value_location : SourceLocation::StrSpan { start : 0, end : 0 },
+      }
+    ],
+    std::collections::HashMap::new(),
     &registry
   );
-  // assert!( result.is_ok() ); // Temporarily commented out
-  // let verified_command = result.unwrap().remove( 0 ); // Temporarily commented out
-  // let arg = verified_command.arguments.get( "map_arg" ).unwrap(); // Temporarily commented out
-  // let mut expected_map = std::collections::HashMap::new(); // Temporarily commented out
-  // expected_map.insert( "a".to_string(), unilang::types::Value::String( "1".to_string() ) ); // Temporarily commented out
-  // expected_map.insert( "b".to_string(), unilang::types::Value::String( "2".to_string() ) ); // Temporarily commented out
-  // assert_eq!( *arg, unilang::types::Value::Map( expected_map ) ); // Temporarily commented out
+  assert!( result.is_ok() );
+  let verified_command = result.unwrap().remove( 0 );
+  let arg = verified_command.arguments.get( "map_arg" ).unwrap();
+  let mut expected_map = std::collections::HashMap::new();
+  expected_map.insert( "a".to_string(), unilang::types::Value::String( "1".to_string() ) );
+  expected_map.insert( "b".to_string(), unilang::types::Value::String( "2".to_string() ) );
+  assert_eq!( *arg, unilang::types::Value::Map( expected_map ) );
 }

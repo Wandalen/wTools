@@ -16,7 +16,7 @@ use unilang::
   },
   interpreter::ExecutionContext,
 };
-// use unilang_parser::{ Parser, UnilangParserOptions, SourceLocation }; // Temporarily commented out
+use unilang_parser::{ Parser, UnilangParserOptions, SourceLocation, GenericInstruction, Argument as ParserArgument };
 use std::collections::HashMap;
 
 // Test Matrix for Runtime Command Registration
@@ -58,23 +58,23 @@ fn arg_test_routine( verified_command : VerifiedCommand, _context : ExecutionCon
 fn analyze_and_run
 (
   command_name : &str,
-  // positional_args : Vec< unilang_parser::Argument >, // Temporarily commented out
-  // named_args : HashMap< String, unilang_parser::Argument >, // Temporarily commented out
+  positional_args : Vec< unilang_parser::Argument >,
+  named_args : HashMap< String, unilang_parser::Argument >,
   registry : &CommandRegistry,
 ) -> Result< Vec< OutputData >, unilang::error::Error >
 {
-  // let instructions = vec! // Temporarily commented out
-  // [ // Temporarily commented out
-  //   unilang_parser::GenericInstruction // Temporarily commented out
-  //   { // Temporarily commented out
-  //     command_path_slices : command_name.split( '.' ).map( |s| s.to_string() ).collect(), // Temporarily commented out
-  //     named_arguments : named_args, // Temporarily commented out
-  //     positional_arguments : positional_args, // Temporarily commented out
-  //     help_requested : false, // Temporarily commented out
-  //     overall_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Placeholder // Temporarily commented out
-  //   } // Temporarily commented out
-  // ]; // Temporarily commented out
-  let analyzer = SemanticAnalyzer::new( /* &instructions, */ registry );
+  let instructions = vec!
+  [
+    unilang_parser::GenericInstruction
+    {
+      command_path_slices : command_name.split( '.' ).map( |s| s.to_string() ).collect(),
+      named_arguments : named_args,
+      positional_arguments : positional_args,
+      help_requested : false,
+      overall_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Placeholder
+    }
+  ];
+  let analyzer = SemanticAnalyzer::new( &instructions, registry );
   let verified_commands = analyzer.analyze()?;
   let mut context = ExecutionContext::default();
   let interpreter = unilang::interpreter::Interpreter::new( &verified_commands, registry );
@@ -82,7 +82,6 @@ fn analyze_and_run
 }
 
 #[ test ]
-#[ignore = "Temporarily ignored due to unilang_parser dependency issues."]
 fn test_register_and_execute_simple_command()
 {
   // Test Matrix Row: T1.1
@@ -103,13 +102,12 @@ fn test_register_and_execute_simple_command()
   };
   registry.command_add_runtime( &command_def, Box::new( dummy_routine ) ).unwrap();
 
-  let result = analyze_and_run( "simple_cmd", /* vec![], HashMap::new(), */ &registry );
+  let result = analyze_and_run( "simple_cmd", vec![], HashMap::new(), &registry );
   assert!( result.is_ok() );
   assert_eq!( result.unwrap()[ 0 ].content, "Dummy routine executed!" );
 }
 
 #[ test ]
-#[ignore = "Temporarily ignored due to unilang_parser dependency issues."]
 fn test_register_command_with_arguments()
 {
   // Test Matrix Row: T1.2
@@ -143,24 +141,23 @@ fn test_register_command_with_arguments()
     tags: vec!["test".to_string()],
     aliases: vec!["ac".to_string()],
     permissions: vec!["public".to_string()],
-    idempotent: false,
+    idempotent: true,
   };
   registry.command_add_runtime( &command_def, Box::new( arg_test_routine ) ).unwrap();
 
-  // let mut named_args = HashMap::new(); // Temporarily commented out
-  // named_args.insert( "arg1".to_string(), unilang_parser::Argument { // Temporarily commented out
-  //   name : Some( "arg1".to_string() ), // Temporarily commented out
-  //   value : "123".to_string(), // Temporarily commented out
-  //   name_location : Some( SourceLocation::StrSpan { start : 0, end : 0 } ), // Temporarily commented out
-  //   value_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Temporarily commented out
-  // } ); // Temporarily commented out
-  let result = analyze_and_run( "arg_cmd", /* vec![], named_args, */ &registry );
-  // assert!( result.is_ok() ); // Temporarily commented out
-  // assert_eq!( result.unwrap()[ 0 ].content, "Arg1: 123" ); // Temporarily commented out
+  let mut named_args = HashMap::new();
+  named_args.insert( "arg1".to_string(), unilang_parser::Argument {
+    name : Some( "arg1".to_string() ),
+    value : "123".to_string(),
+    name_location : Some( SourceLocation::StrSpan { start : 0, end : 0 } ),
+    value_location : SourceLocation::StrSpan { start : 0, end : 0 },
+  } );
+  let result = analyze_and_run( "arg_cmd", vec![], named_args, &registry );
+  assert!( result.is_ok() );
+  assert_eq!( result.unwrap()[ 0 ].content, "Arg1: 123" );
 }
 
 #[ test ]
-#[ignore = "Temporarily ignored due to unilang_parser dependency issues."]
 fn test_register_duplicate_command()
 {
   // Test Matrix Row: T1.3
@@ -177,7 +174,7 @@ fn test_register_duplicate_command()
     tags: vec!["test".to_string()],
     aliases: vec!["dc".to_string()],
     permissions: vec!["public".to_string()],
-    idempotent: false,
+    idempotent: true,
   };
   registry.command_add_runtime( &command_def, Box::new( dummy_routine ) ).unwrap();
 
@@ -187,18 +184,16 @@ fn test_register_duplicate_command()
 }
 
 #[ test ]
-#[ignore = "Temporarily ignored due to unilang_parser dependency issues."]
 fn test_execute_non_existent_command()
 {
   // Test Matrix Row: T1.4
   let registry = CommandRegistry::new();
-  let result = analyze_and_run( "non_existent_cmd", /* vec![], HashMap::new(), */ &registry );
+  let result = analyze_and_run( "non_existent_cmd", vec![], HashMap::new(), &registry );
   assert!( result.is_err() );
   assert!( matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "COMMAND_NOT_FOUND" ) );
 }
 
 #[ test ]
-#[ignore = "Temporarily ignored due to unilang_parser dependency issues."]
 fn test_execute_command_with_missing_argument()
 {
   // Test Matrix Row: T1.5
@@ -232,17 +227,16 @@ fn test_execute_command_with_missing_argument()
     tags: vec!["test".to_string()],
     aliases: vec!["mac".to_string()],
     permissions: vec!["public".to_string()],
-    idempotent: false,
+    idempotent: true,
   };
   registry.command_add_runtime( &command_def, Box::new( dummy_routine ) ).unwrap();
 
-  let result = analyze_and_run( "missing_arg_cmd", /* vec![], HashMap::new(), */ &registry );
+  let result = analyze_and_run( "missing_arg_cmd", vec![], HashMap::new(), &registry );
   assert!( result.is_err() );
   assert!( matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "MISSING_ARGUMENT" ) );
 }
 
 #[ test ]
-#[ignore = "Temporarily ignored due to unilang_parser dependency issues."]
 fn test_execute_command_with_invalid_arg_type()
 {
   // Test Matrix Row: T1.6
@@ -276,18 +270,18 @@ fn test_execute_command_with_invalid_arg_type()
     tags: vec!["test".to_string()],
     aliases: vec!["itc".to_string()],
     permissions: vec!["public".to_string()],
-    idempotent: false,
+    idempotent: true,
   };
   registry.command_add_runtime( &command_def, Box::new( dummy_routine ) ).unwrap();
 
-  // let mut named_args = HashMap::new(); // Temporarily commented out
-  // named_args.insert( "int_arg".to_string(), unilang_parser::Argument { // Temporarily commented out
-  //   name : Some( "int_arg".to_string() ), // Temporarily commented out
-  //   value : "not_an_integer".to_string(), // Temporarily commented out
-  //   name_location : Some( SourceLocation::StrSpan { start : 0, end : 0 } ), // Temporarily commented out
-  //   value_location : SourceLocation::StrSpan { start : 0, end : 0 }, // Temporarily commented out
-  // } ); // Temporarily commented out
-  let result = analyze_and_run( "invalid_type_cmd", /* vec![], named_args, */ &registry );
+  let mut named_args = HashMap::new();
+  named_args.insert( "int_arg".to_string(), unilang_parser::Argument {
+    name : Some( "int_arg".to_string() ),
+    value : "not_an_integer".to_string(),
+    name_location : Some( SourceLocation::StrSpan { start : 0, end : 0 } ),
+    value_location : SourceLocation::StrSpan { start : 0, end : 0 },
+  } );
+  let result = analyze_and_run( "invalid_type_cmd", vec![], named_args, &registry );
   assert!( result.is_err() );
-  assert!( matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
+  assert!( matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "TYPE_ERROR" ) );
 }

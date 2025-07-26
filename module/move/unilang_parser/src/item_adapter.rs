@@ -46,6 +46,8 @@ pub enum UnilangTokenKind
 {
   /// An identifier (e.g., a command name, argument name, or unquoted value).
   Identifier( String ),
+  /// A number literal.
+  Number( String ),
 
   /// An operator (e.g., `::`, `?`).
   Operator( &'static str ),
@@ -61,7 +63,7 @@ impl fmt::Display for UnilangTokenKind
   {
     match self
     {
-      UnilangTokenKind::Identifier( s ) | UnilangTokenKind::Unrecognized( s ) => write!( f, "{s}" ),
+      UnilangTokenKind::Identifier( s ) | UnilangTokenKind::Unrecognized( s ) | UnilangTokenKind::Number( s ) => write!( f, "{s}" ),
       UnilangTokenKind::Operator( s ) | UnilangTokenKind::Delimiter( s ) => write!( f, "{s}" ),
     }
   }
@@ -115,7 +117,11 @@ pub fn classify_split( s : &Split<'_> ) -> Result<( UnilangTokenKind, SourceLoca
     {
       if s.typ == SplitType::Delimeted
       {
-        if s.was_quoted || is_valid_identifier(s.string.as_ref()) {
+        if s.was_quoted {
+          Ok(( UnilangTokenKind::Identifier( s.string.to_string() ), original_location ))
+        } else if s.string.parse::<i64>().is_ok() {
+          Ok(( UnilangTokenKind::Number( s.string.to_string() ), original_location ))
+        } else if is_valid_identifier(s.string.as_ref()) {
           Ok(( UnilangTokenKind::Identifier( s.string.to_string() ), original_location ))
         } else {
           Ok(( UnilangTokenKind::Unrecognized( s.string.to_string() ), original_location ))
