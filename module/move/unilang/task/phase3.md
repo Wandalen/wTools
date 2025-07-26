@@ -13,9 +13,9 @@
 ### Progress
 *   **Roadmap Milestone:** Phase 3: Architectural Unification
 *   **Primary Editable Crate:** `module/move/unilang`
-*   **Overall Progress:** 0/12 increments complete
+*   **Overall Progress:** 1/12 increments complete
 *   **Increment Status:**
-    *   ⚫ Increment 1: Pre-computation - Reconcile Data Models and Plan Tests
+    *   ✅ Increment 1: Pre-computation - Reconcile Data Models and Plan Tests
     *   ⚫ Increment 2: Refactor `SemanticAnalyzer` to Consume `GenericInstruction`
     *   ⚫ Increment 3: Update `unilang_cli` Binary and Core Integration Tests
     *   ⚫ Increment 4: Implement Full Data Models in `unilang/src/data.rs`
@@ -206,6 +206,7 @@
 
 ### Notes & Insights
 *   **Data Model Discrepancy:** Initial analysis revealed a significant inconsistency between `spec.md`, `data.rs`, and `unilang_cli.rs`. The `data.rs` structs are missing many fields required by the spec and used by the CLI's builder. This plan prioritizes fixing this by making `data.rs` the source of truth first.
+*   **`CommandDefinition.status` Type:** The `spec.md` defines `status` as an `Enum`, but `data.rs` currently uses `String`. For now, the plan will keep it as `String` to avoid widespread changes, but this is noted as a potential future refinement to align strictly with the `Enum` type.
 
 ### Test Matrix for New Features
 | ID | Feature | Test Case | Expected Behavior |
@@ -214,6 +215,9 @@
 | T-HELP-1 | Help - Aliases | `unilang_cli help echo` | Help output contains a line like "Aliases: e". |
 | T-HELP-2 | Help - Status | `unilang_cli help echo` | Help output contains a line like "Status: stable". |
 | T-HELP-3 | Help - Version | `unilang_cli help echo` | Help output contains the version string, e.g., "(v1.0.0)". |
+| T-ARG-ATTR-1 | Argument Attributes - Interactive | Command with `interactive: true` argument, argument missing | Modality prompts user for input (conceptual). |
+| T-ARG-ATTR-2 | Argument Attributes - Sensitive | Command with `sensitive: true` argument, value provided | Value is masked/redacted in logs/UI (conceptual). |
 
 ### Changelog
 *   [Initial] Created a highly elaborated task plan for Phase 3, enforcing strict TDD and providing explicit implementation details.
+*   [Increment 1 | 2025-07-26T12:59:59.681Z] Completed pre-computation, reconciled data models, and updated test plan.
