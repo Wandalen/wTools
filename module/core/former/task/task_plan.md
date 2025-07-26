@@ -13,12 +13,12 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/former_meta`
-*   **Overall Progress:** 1/13 increments complete
+*   **Overall Progress:** 2/13 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Initial Analysis and Handler File Setup
-    *   ⏳ Increment 2: Implement Zero-Field Tuple Variant - Scalar Constructor (Rules 1b, 3b)
-    *   ⚫ Increment 3: Implement Zero-Field Tuple Variant - `#[subform_scalar]` Compile-Fail (Rule 2b)
-    *   ⚫ Increment 4: Implement Single-Field Tuple Variant - Scalar Constructor (Rule 1d)
+    *   ✅ Increment 2: Implement Zero-Field Tuple Variant - Scalar Constructor (Rules 1b, 3b)
+    *   ✅ Increment 3: Implement Zero-Field Tuple Variant - `#[subform_scalar]` Compile-Fail (Rule 2b)
+    *   ⏳ Increment 4: Implement Single-Field Tuple Variant - Scalar Constructor (Rule 1d)
     *   ⚫ Increment 5: Implement Single-Field Tuple Variant - Subform Constructor (Rules 2d, 3d)
     *   ⚫ Increment 6: Implement Multi-Field Tuple Variant - Scalar Constructor (Rule 1f)
     *   ⚫ Increment 7: Implement Multi-Field Tuple Variant - Implicit Variant Former (Rule 3f)
@@ -65,8 +65,8 @@
 ### Tests
 | Test ID | Status | Notes |
 |---|---|---|
-| `tuple_zero_fields_*.rs` | Failing (New) | `test_zero_field_default_static_constructor` failed. |
-| `compile_fail/tuple_zero_subform_scalar_error.rs` | Not Started | |
+| `tuple_zero_fields_*.rs` | Fixed (Monitored) | `test_zero_field_default_static_constructor` passed unexpectedly. |
+| `compile_fail/tuple_zero_subform_scalar_error.rs` | Fixed (Monitored) | Test failed with expected compile error. |
 | `scalar_generic_tuple_*.rs` | Not Started | |
 | `basic_*.rs` | Not Started | |
 | `generics_shared_tuple_*.rs` | Not Started | |
