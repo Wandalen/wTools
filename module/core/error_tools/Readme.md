@@ -55,6 +55,7 @@ For library code or situations where you want to define a clear, structured cont
 #### Example
 
 Here, we define a custom `DataError` enum. The `#[derive(Error)]` macro comes directly from `error_tools`.
+**Note:** When using `#[derive(Error)]` or other `thiserror` macros, `thiserror` must be explicitly present in the namespace. This can be achieved by adding `use error_tools::dependency::thiserror;` or `use thiserror;` in your module, depending on your project's setup.
 
 ```rust
 // In your code:

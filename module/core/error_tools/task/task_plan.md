@@ -497,8 +497,6 @@
         ```
     *   **Step 8.3: Add `err_with_coverage_test` to `tests/inc/mod.rs`.**
     *   **Step 8.4: Perform Increment Verification.**
-*   **Increment Verification:**
-    *   Execute `timeout 90 cargo test -p error_tools`. The command must pass without any errors or warnings.
 *   **Commit Message:** `feat(tests): Improve coverage for ErrWith trait`
 
 ##### Increment 9: Finalization (Re-run)
