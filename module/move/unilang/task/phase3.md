@@ -13,13 +13,13 @@
 ### Progress
 *   **Roadmap Milestone:** Phase 3: Architectural Unification
 *   **Primary Editable Crate:** `module/move/unilang`
-*   **Overall Progress:** 3/12 increments complete
+*   **Overall Progress:** 4/12 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Pre-computation - Reconcile Data Models and Plan Tests
     *   ✅ Increment 2: Refactor `SemanticAnalyzer` to Consume `GenericInstruction`
     *   ✅ Increment 3: Update `unilang_cli` Binary and Core Integration Tests
     *   ⏳ Increment 4: Implement Full Data Models in `unilang/src/data.rs`
-    *   ⚫ Increment 5: Update All Code to Use New Data Models
+    *   ⏳ Increment 5: Update All Code to Use New Data Models
     *   ⚫ Increment 6: Write Failing Integration Test for Command Aliasing
     *   ⚫ Increment 7: Implement Command Alias Resolution in CLI
     *   ⚫ Increment 8: Update `HelpGenerator` and Write Failing Help Tests
@@ -60,6 +60,7 @@
 |---|---|---|
 | `full_pipeline_test` | Fixed (Monitored) | Was `Failing (New)`, now passing. |
 | `cli_integration_test` | Fixed (Monitored) | Was `Failing (New)`, now passing. |
+| `diagnostics_tools` doctest | Failing (New) | `error: cannot find macro a_id in this scope` |
 
 ### Crate Conformance Check Procedure
 *   Run `timeout 180 cargo test --workspace` and verify it passes with no warnings.
@@ -225,3 +226,4 @@
 *   [Increment 1 | 2025-07-26T12:59:59.681Z] Completed pre-computation, reconciled data models, and updated test plan.
 *   [Increment 2 | 2025-07-26T13:02:39.110Z] Refactored SemanticAnalyzer to use unilang_parser::GenericInstruction.
 *   [Increment 3 | 2025-07-26T13:04:14.149Z] Updated unilang_cli binary and core integration tests.
+*   [Increment 5 | 2025-07-26T13:07:09.424Z] Updated all call sites to use new data models.
