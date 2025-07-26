@@ -1,7 +1,7 @@
 # Task Plan: Improve `error_tools` Readme and Examples
 
 ### Goal
-*   Refactor `error_tools` to provide a clear, unified API that wraps `anyhow` and `thiserror`.
+*   Refactor `error_tools` to provide a clear, unified API that wraps `anyhow` and `thiserror`, while maintaining its existing `mod_interface` structure.
 *   Create a user-friendly `Readme.md` that explains this unified approach with runnable examples, making the crate easy to adopt.
 
 ### Ubiquitous Language (Vocabulary)
@@ -15,7 +15,7 @@
 *   **Primary Editable Crate:** `module/core/error_tools`
 *   **Overall Progress:** 1/6 increments complete
 *   **Increment Status:**
-    *   ✅ Increment 1: Refactor Public API for Simplicity
+    *   ✅ Increment 1: Fix Build Issues and Add Core Documentation
     *   ⚫ Increment 2: Create `untyped` (anyhow) Usage Example
     *   ⚫ Increment 3: Create `typed` (thiserror) Usage Example
     *   ⚫ Increment 4: Update `Readme.md` with New Content and Examples
@@ -36,19 +36,21 @@
     *   `module/core/error_tools/src/error/typed.rs`
     *   `module/core/error_tools/Readme.md`
     *   `module/core/error_tools/examples/error_tools_trivial.rs`
+    *   `module/alias/unilang_instruction_parser/Cargo.toml` (for build fix)
+    *   `module/core/test_tools/src/lib.rs` (for build fix)
 
 ### Expected Behavior Rules / Specifications
 *   Rule 1: The `Readme.md` must clearly explain the unified interface concept for `anyhow` and `thiserror`.
 *   Rule 2: The `Readme.md` must show simple, correct `use` statements (e.g., `use error_tools::prelude::*;`) that enable all documented features, including macros.
 *   Rule 3: All code examples in the `Readme.md` must correspond to a runnable example file in the `examples/` directory.
-*   Rule 4: The crate's public API must be simple and intuitive, removing the complex `own`/`orphan`/`exposed` structure in favor of direct `pub use` statements.
+*   Rule 4: The crate's public API must maintain its existing `mod_interface` structure, ensuring `private` namespaces and `own`/`orphan`/`exposed` modules are present and correctly configured.
 
 ### Tests
 | Test ID | Status | Notes |
 |---|---|---|
 | Build Failure | Fixed (Monitored) | Package collision resolved by correcting path in `unilang_instruction_parser/Cargo.toml`. |
 | `test_tools::E0432` | Fixed (Monitored) | Unresolved imports in `test_tools` fixed by removing references to `orphan` and `exposed` modules. |
-| `test_tools::E0308` | Fixed (Monitored) | Mismatched error types in `test_tools` resolved by removing `error_tools` prelude import. |
+| `test_tools::E0308` | Fixed (Monitored) | Mismatched error types in `test_tools` resolved by re-adding `error_tools` prelude import. |
 | `error_tools::missing_docs` | Fixed (Monitored) | Missing documentation for `ErrWith` trait, its methods, and `ResultWithReport` type alias added. |
 
 ### Crate Conformance Check Procedure
@@ -58,162 +60,25 @@
 *   **Step 4: Check examples (if they exist).** This step will be populated as examples are created.
 
 ### Increments
-##### Increment 1: Refactor Public API for Simplicity
-*   **Goal:** Radically simplify the module structure and public API to be more intuitive, removing the custom `own`/`orphan`/`exposed` system. This change is guided by the design rule "Structuring: Organize by Feature or Layer" to create a more conventional and understandable API.
-*   **Specification Reference:** Rule 4
+##### Increment 1: Fix Build Issues and Add Core Documentation
+*   **Goal:** Resolve the package collision build issue and add missing documentation to core error handling traits and types, ensuring the crate compiles and tests cleanly.
+*   **Specification Reference:** N/A (build fix), `error_tools::missing_docs` (documentation)
 *   **Steps:**
-    *   **Step 1.1: Read `error/mod.rs` for context.** Use `read_file` on `module/core/error_tools/src/error/mod.rs` to ensure the `ErrWith` trait is preserved.
-    *   **Step 1.2: Simplify `untyped.rs`.** Use `write_to_file` on `module/core/error_tools/src/error/untyped.rs` with the following content:
-        ```rust
-        //! Untyped error handling, a facade for `anyhow`.
-        #![ allow( clippy::wildcard_imports ) ]
-        pub use ::anyhow::{ anyhow, bail, ensure, format_err, Context, Error, Ok, Result };
-        ```
-    *   **Step 1.3: Simplify `typed.rs`.** Use `write_to_file` on `module/core/error_tools/src/error/typed.rs` with the following content:
-        ```rust
-        //! Typed error handling, a facade for `thiserror`.
-        pub use ::thiserror::Error;
-        ```
-    *   **Step 1.4: Simplify `error/mod.rs`.** Use `write_to_file` on `module/core/error_tools/src/error/mod.rs` with the following content, which preserves the `ErrWith` trait while simplifying the module structure.
-        ```rust
-        //! Core error handling utilities.
-
-        /// Assertions.
-        #[ cfg( feature = "enabled" ) ]
-        pub mod assert;
-
-        #[ cfg( feature = "enabled" ) ]
-        #[ cfg( feature = "error_typed" ) ]
-        /// Typed error handling, a facade for `thiserror`.
-        pub mod typed;
-
-        #[ cfg( feature = "enabled" ) ]
-        #[ cfg( feature = "error_untyped" ) ]
-        /// Untyped error handling, a facade for `anyhow`.
-        pub mod untyped;
-
-        /// Define a private namespace for all its items.
-        mod private
-        {
-          pub use core::error::Error as ErrorTrait;
-          /// Trait to add extra context or information to an error.
-          pub trait ErrWith< ReportErr, ReportOk, E >
-          {
-            /// Wraps an error with additional context generated by a closure.
-            fn err_with< F >( self, f : F ) -> core::result::Result< ReportOk, ( ReportErr, E ) >
-            where
-              F : FnOnce() -> ReportErr;
-            /// Wraps an error with additional context provided by a reference.
-            fn err_with_report( self, report : &ReportErr ) -> core::result::Result< ReportOk, ( ReportErr, E ) >
-            where
-              ReportErr : Clone;
-          }
-          impl< ReportErr, ReportOk, E, IntoError > ErrWith< ReportErr, ReportOk, E > for core::result::Result< ReportOk, IntoError >
-          where
-            IntoError : Into< E >,
-          {
-            #[ inline ]
-            fn err_with< F >( self, f : F ) -> core::result::Result< ReportOk, ( ReportErr, E ) >
-            where
-              F : FnOnce() -> ReportErr,
-            {
-              self.map_err( | error | ( f(), error.into() ) )
-            }
-            #[ inline( always ) ]
-            fn err_with_report( self, report : &ReportErr ) -> core::result::Result< ReportOk, ( ReportErr, E ) >
-            where
-              ReportErr : Clone,
-              Self : Sized,
-            {
-              self.map_err( | error | ( report.clone(), error.into() ) )
-            }
-          }
-          /// A type alias for a `Result` that contains an error which is a tuple of a report and an original error.
-          pub type ResultWithReport< Report, Error > = Result< Report, ( Report, Error ) >;
-        }
-
-        #[ cfg( feature = "enabled" ) ]
-        pub use private::{ ErrWith, ResultWithReport, ErrorTrait };
-        ```
-    *   **Step 1.5: Simplify `lib.rs`.** Use `write_to_file` on `module/core/error_tools/src/lib.rs` with the following content to define a clear `prelude`.
-        ```rust
-        #![ cfg_attr( feature = "no_std", no_std ) ]
-        #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
-        #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
-        #![ doc( html_root_url = "https://docs.rs/error_tools/latest/error_tools/" ) ]
-        #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
-        #![ allow( clippy::mod_module_files ) ]
-
-        /// Core error handling utilities.
-        #[ cfg( feature = "enabled" ) ]
-        pub mod error;
-
-        /// Namespace with dependencies.
-        #[ cfg( feature = "enabled" ) ]
-        pub mod dependency
-        {
-          #[ doc( inline ) ]
-          #[ cfg( feature = "error_typed" ) ]
-          pub use ::thiserror;
-          #[ doc( inline ) ]
-          #[ cfg( feature = "error_untyped" ) ]
-          pub use ::anyhow;
-        }
-
-        /// Prelude to use essentials: `use error_tools::prelude::*`.
-        #[ cfg( feature = "enabled" ) ]
-        pub mod prelude
-        {
-          #[ doc( inline ) ]
-          #[ allow( unused_imports ) ]
-          pub use super::error::*;
-          #[ doc( inline ) ]
-          #[ cfg( feature = "error_untyped" ) ]
-          pub use super::error::untyped::*;
-          #[ doc( inline ) ]
-          #[ cfg( feature = "error_typed" ) ]
-          pub use super::error::typed::*;
-        }
-
-        #[ doc( inline ) ]
-        #[ cfg( feature = "enabled" ) ]
-        pub use prelude::*;
-        ```
-    *   **Step 1.6: Update `namespace_test.rs`.** Use `write_to_file` on `module/core/error_tools/tests/inc/namespace_test.rs` with the following content to fix the test after refactoring.
-        ```rust
-        use super::*;
-
-        #[ test ]
-        fn exposed_main_namespace()
-        {
-          the_module::error::assert::debug_assert_id!( 1, 1 );
-          use the_module::prelude::*;
-          assert::debug_assert_id!( 1, 1 );
-        }
-        ```    *   **Step 1.7: Perform Increment Verification.**
-*   **Increment Verification:**
-    *   Execute `timeout 90 cargo test -p error_tools`. The command must pass without any warnings.
-*   **Commit Message:** `refactor(error_tools): Simplify public API and module structure`
-
-##### Increment 1.1: Diagnose and Fix Build Failure: Package Collision
-*   **Goal:** Diagnose and fix the `Failing (Stuck)` build issue: `Package collision in lockfile for clone_dyn_types`.
-*   **Specification Reference:** N/A
-*   **Steps:**
-    *   **Step 1.1.1: Apply Problem Decomposition.** The problem is a package collision. I need to find where `clone_dyn_types` is being referenced from two different paths.
-    *   **Step 1.1.2: Inspect `Cargo.toml` files.** Read `Cargo.toml` for `module/core/error_tools` and the root `Cargo.toml` to identify any `path` dependencies that might be pointing to the old `wTools` directory.
-        *   Use `read_file` on `module/core/error_tools/Cargo.toml`.
-        *   Use `read_file` on `Cargo.toml` (root workspace).
-    *   **Step 1.1.3: Analyze `Cargo.lock` for `clone_dyn_types` entries.** Use `read_file` on `Cargo.lock` and search for `clone_dyn_types` to see the conflicting paths.
-    *   **Step 1.1.4: Formulate Hypothesis and Propose Fix.** Based on the inspection, identify the conflicting path dependency. The hypothesis is that one of the `Cargo.toml` files has an absolute path or an incorrect relative path to `clone_dyn_types` that points outside the current `wTools2` workspace. The fix will be to correct this path to be relative within `wTools2`.
-    *   **Step 1.1.5: Apply the fix.** If a conflicting path is found, use `search_and_replace` to correct it.
-    *   **Step 1.1.6: Re-run `cargo clean` and `cargo update`.**
-        *   Execute `cargo clean`.
-        *   Execute `cargo update`.
-    *   **Step 1.1.7: Re-run tests.** Execute `timeout 90 cargo test -p error_tools`.
-    *   **Step 1.1.8: Upon successful fix, document the root cause and solution in the `### Notes & Insights` section.**
+    *   **Step 1.1: Correct conflicting path in `unilang_instruction_parser/Cargo.toml`.** Use `search_and_replace` to change `unilang_parser = { path = "/home/user1/pro/lib/wTools/module/move/unilang_parser" }` to `unilang_parser = { path = "../../move/unilang_parser" }`.
+    *   **Step 1.2: Remove problematic imports from `test_tools/src/lib.rs`.** Use `search_and_replace` to remove references to `error_tools::orphan`, `error_tools::exposed`, and `error_tools::prelude` from `module/core/test_tools/src/lib.rs`.
+        *   Replace `error_tools::orphan::*, collection_tools::orphan::*, impls_index::orphan::*, mem_tools::orphan::*, typing_tools::orphan::*, diagnostics_tools::orphan::*,` with `collection_tools::orphan::*, impls_index::orphan::*, mem_tools::orphan::*, typing_tools::orphan::*, diagnostics_tools::orphan::*,`
+        *   Replace `error_tools::exposed::*, collection_tools::exposed::*, impls_index::exposed::*, mem_tools::exposed::*, typing_tools::exposed::*, diagnostics_tools::exposed::*,` with `collection_tools::exposed::*, impls_index::exposed::*, mem_tools::exposed::*, typing_tools::exposed::*, diagnostics_tools::exposed::*,`
+        *   Replace `error_tools::prelude::*, collection_tools::prelude::*, impls_index::prelude::*, mem_tools::prelude::*, typing_tools::prelude::*, diagnostics_tools::prelude::*,` with `collection_tools::prelude::*, impls_index::prelude::*, mem_tools::prelude::*, typing_tools::prelude::*, diagnostics_tools::prelude::*,`
+    *   **Step 1.3: Add documentation to `error/mod.rs`.**
+        *   Add `/// Trait to add extra context or information to an error.` above `pub trait ErrWith< ReportErr, ReportOk, E >`.
+        *   Add `/// Wraps an error with additional context generated by a closure.` above `fn err_with< F >( self, f : F ) -> core::result::Result< ReportOk, ( ReportErr, E ) >`.
+        *   Add `/// Wraps an error with additional context provided by a reference.` above `fn err_with_report( self, report : &ReportErr ) -> core::result::Result< ReportOk, ( ReportErr, E ) >`.
+        *   Add `/// A type alias for a `Result` that contains an error which is a tuple of a report and an original error.` above `pub type ResultWithReport< Report, Error > = Result< Report, ( Report, Error ) >;`.
+    *   **Step 1.4: Clean and update Cargo.** Execute `cargo clean && cargo update`.
+    *   **Step 1.5: Perform Increment Verification.**
 *   **Increment Verification:**
     *   Execute `timeout 90 cargo test -p error_tools`. The command must pass without any errors or warnings.
-*   **Commit Message:** `fix(build): Resolve package collision for clone_dyn_types`
+*   **Commit Message:** `fix(build): Resolve package collision and add core documentation`
 
 ##### Increment 2: Create `untyped` (anyhow) Usage Example
 *   **Goal:** Create a clear, runnable example demonstrating how to use the `untyped` module as a facade for `anyhow`.
@@ -321,7 +186,8 @@
           _ = std::fs::remove_file( "data.txt" );
           _ = std::fs::remove_file( "invalid_data.txt" );
         }
-        ```    *   **Step 3.2: Perform Increment Verification.**
+        ```
+    *   **Step 3.2: Perform Increment Verification.**
 *   **Increment Verification:**
     *   Execute `timeout 90 cargo run --example replace_thiserror`.
 *   **Commit Message:** `feat(examples): Add typed (thiserror) usage example`
@@ -500,9 +366,6 @@
 
 ### Notes & Insights
 *   This task will significantly improve the crate's approachability for new users by providing clear documentation and a more conventional API.
-*   **Root Cause of Build Failure:** The package collision for `clone_dyn_types` was caused by an absolute path reference in `module/alias/unilang_instruction_parser/Cargo.toml` pointing to the old `wTools` directory.
-*   **Solution:** Replaced the absolute path with a relative path: `unilang_parser = { path = "../../move/unilang_parser" }`. This resolved the conflict and allowed the build to proceed.
 
 ### Changelog
-*   [Increment 1 | 2025-07-26 21:17 UTC] Refactored `error_tools` public API, simplifying `untyped.rs`, `typed.rs`, `error/mod.rs`, and `lib.rs`. Updated `namespace_test.rs`.
-*   [Increment 1.1 | 2025-07-26 21:17 UTC] Diagnosed and fixed build failure due to package collision for `clone_dyn_types` by correcting an absolute path in `module/alias/unilang_instruction_parser/Cargo.toml`. Added missing documentation to `error/mod.rs`.
+*   [Increment 1 | 2025-07-26 21:27 UTC] Resolved package collision in `unilang_instruction_parser/Cargo.toml`. Removed problematic imports from `test_tools/src/lib.rs`. Added missing documentation to `error/mod.rs`.
