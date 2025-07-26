@@ -41,7 +41,7 @@ impl Parser
   {
     let splits_iter = strs_tools::split()
     .src( input )
-    .delimeter( vec![ " ", "\n", "\t", "\r", "::", "?", "#", ".", "!" ] )
+    .delimeter( vec![ " ", "\n", "\t", "\r", "::", "?", "#", "!" ] )
     .preserving_delimeters( true )
     .quoting( true )
     .preserving_quoting( false )
