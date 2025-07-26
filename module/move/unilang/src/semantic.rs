@@ -58,7 +58,7 @@ impl<'a> SemanticAnalyzer<'a> {
     let mut verified_commands: Vec<VerifiedCommand> = Vec::new();
 
     for instruction in self.instructions {
-      let command_name = instruction.command_path_slices.join(".");
+      let command_name = format!(".{}", instruction.command_path_slices.join("."));
       let command_def = self.registry.commands.get(&command_name).ok_or_else(|| ErrorData {
         code: "COMMAND_NOT_FOUND".to_string(),
         message: format!("Command not found: {command_name}"),

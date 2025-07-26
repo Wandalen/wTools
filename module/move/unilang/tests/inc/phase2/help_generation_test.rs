@@ -39,9 +39,9 @@ fn test_cli_no_args_help() {
     .success()
     .stdout(contains_all_unordered(vec![
       "Available Commands:",
-      "  echo            Echoes a message back to the console. Useful for testing connectivity or displaying simple text.",
-      "  add             Performs addition on two integer arguments and returns the sum.",
-      "  cat             Reads the content of a specified file and prints it to the console.",
+      "  .system.echo    Echoes a message back to the console. Useful for testing connectivity or displaying simple text.",
+      "  .math.add       Performs addition on two integer arguments and returns the sum.",
+      "  .files.cat      Reads the content of a specified file and prints it to the console.",
     ]))
     .stderr(predicate::str::ends_with("unilang_cli <command> [args...]\n"));
 }
@@ -56,9 +56,9 @@ fn test_cli_global_help_flag() {
     .success()
     .stdout(contains_all_unordered(vec![
       "Available Commands:",
-      "  echo            Echoes a message back to the console. Useful for testing connectivity or displaying simple text.",
-      "  add             Performs addition on two integer arguments and returns the sum.",
-      "  cat             Reads the content of a specified file and prints it to the console.",
+      "  .system.echo    Echoes a message back to the console. Useful for testing connectivity or displaying simple text.",
+      "  .math.add       Performs addition on two integer arguments and returns the sum.",
+      "  .files.cat      Reads the content of a specified file and prints it to the console.",
     ]))
     .stderr(""); // No stderr for successful help
 }
@@ -73,9 +73,9 @@ fn test_cli_global_help_command() {
     .success()
     .stdout(contains_all_unordered(vec![
       "Available Commands:",
-      "  echo            Echoes a message back to the console. Useful for testing connectivity or displaying simple text.",
-      "  add             Performs addition on two integer arguments and returns the sum.",
-      "  cat             Reads the content of a specified file and prints it to the console.",
+      "  .system.echo    Echoes a message back to the console. Useful for testing connectivity or displaying simple text.",
+      "  .math.add       Performs addition on two integer arguments and returns the sum.",
+      "  .files.cat      Reads the content of a specified file and prints it to the console.",
     ]))
     .stderr(""); // No stderr for successful help
 }
@@ -84,12 +84,12 @@ fn test_cli_global_help_command() {
 fn test_cli_specific_command_help_add() {
   // Test Matrix Row: T8.5
   let mut cmd = Command::cargo_bin("unilang_cli").unwrap();
-  cmd.args(&vec!["help", "add"]);
+  cmd.args(&vec!["help", ".math.add"]);
   cmd
     .assert()
     .success()
     .stdout(
-      predicate::str::contains("Usage: add (v1.0.0)")
+      predicate::str::contains("Usage: .math.add (v1.0.0)")
         .and(predicate::str::contains("Aliases: plus"))
         .and(predicate::str::contains("Adds two integers."))
         .and(predicate::str::contains(

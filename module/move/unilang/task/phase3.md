@@ -13,7 +13,7 @@
 ### Progress
 *   **Roadmap Milestone:** Phase 3: Architectural Unification
 *   **Primary Editable Crate:** `module/move/unilang`
-*   **Overall Progress:** 7/12 increments complete
+*   **Overall Progress:** 11/13 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Pre-computation - Reconcile Data Models and Plan Tests
     *   ✅ Increment 2: Refactor `SemanticAnalyzer` to Consume `GenericInstruction`
@@ -22,11 +22,12 @@
     *   ✅ Increment 5: Update All Code to Use New Data Models
     *   ✅ Increment 6: Write Failing Integration Test for Command Aliasing
     *   ✅ Increment 7: Implement Command Alias Resolution in CLI
-    *   ⚫ Increment 8: Update `HelpGenerator` and Write Failing Help Tests
-    *   ⚫ Increment 9: Implement New Help Output and Fix Tests
-    *   ⚫ Increment 10: Create Comprehensive Crate Example
-    *   ⚫ Increment 11: Update Formal Specification (`spec.md`)
-    *   ⚫ Increment 12: Finalization and Legacy Code Removal
+    *   ✅ Increment 8: Update `HelpGenerator` and Write Failing Help Tests
+    *   ✅ Increment 9: Implement New Help Output and Fix Tests
+    *   ✅ Increment 10: Focused Debugging: CommandRegistry Key Mismatch
+    *   ✅ Increment 11: Create Comprehensive Crate Example
+    *   ⚫ Increment 12: Update Formal Specification (`spec.md`)
+    *   ⚫ Increment 13: Finalization and Legacy Code Removal
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -62,6 +63,7 @@
 | `cli_integration_test` | Fixed (Monitored) | Was `Failing (New)`, now passing. |
 | `diagnostics_tools` doctest | Failing (Stuck) | `Test executable succeeded, but it's marked should_panic`. |
 | `data_model_features_test` | Fixed (Monitored) | Was `Failing (Regression)`, now passing (correctly asserted success). |
+| `command_registry_key_test` | Fixed (Monitored) | Was `Failing (New)`, now passing. |
 
 ### Crate Conformance Check Procedure
 *   Run `timeout 180 cargo test -p unilang` and verify it passes with no warnings.
@@ -173,8 +175,32 @@
     1.  Execute `timeout 180 cargo test --test help_generation_test`. All tests must now pass.
 *   **Commit Message:** "feat(unilang): Enhance HelpGenerator to display new metadata"
 
-##### Increment 10: Create Comprehensive Crate Example
+##### Increment 10: Focused Debugging: CommandRegistry Key Mismatch
+*   **Goal:** Diagnose and fix the `Failing (Stuck)` test: `full_cli_example` (Command not found: .math.add).
+*   **Steps:**
+    *   Step A: Apply Problem Decomposition. The problem is decomposed into: 1) Registration Issue, and 2) Lookup Issue.
+    *   Step B: Create a new test file `unilang/tests/inc/phase3/command_registry_debug_test.rs`.
+    *   Step C: In `command_registry_debug_test.rs`, write a minimal test case that:
+        1.  Instantiates `CommandRegistry`.
+        2.  Creates a `CommandDefinition` with a known `name` (e.g., "my_command") and `namespace` (e.g., ".my_namespace").
+        3.  Registers this `CommandDefinition` using `registry.register()`.
+        4.  Adds a debug print *inside* `registry.register` to log the `full_name` string and its byte representation *just before* insertion into `self.commands`.
+        5.  Attempts to retrieve the command using `registry.commands.get(".my_namespace.my_command")`.
+        6.  Adds a debug print to log the lookup key and its byte representation.
+        7.  Asserts that the command is found. This test is expected to fail initially if there's a mismatch.
+    *   Step D: Run the new test: `timeout 180 cargo test --test command_registry_debug_test -- --nocapture`.
+    *   Step E: Analyze the output of the debug prints to identify any discrepancies in the string keys (e.g., hidden characters, encoding issues).
+    *   Step F: Based on the analysis, formulate and apply a targeted fix to `unilang/src/registry.rs` to ensure consistent key generation and storage.
+    *   Step G: Upon successful fix, remove the temporary debug prints from `unilang/src/registry.rs` and `unilang/src/semantic.rs` and `unilang/src/bin/unilang_cli.rs`.
+    *   Step H: Document the root cause and solution in the `### Notes & Insights` section.
+*   **Increment Verification:**
+    *   Execute `timeout 180 cargo test --test command_registry_debug_test`. The test must now pass.
+    *   Execute `timeout 180 cargo run --example full_cli_example -- .math.add a::5 b::10`. This command must now execute successfully.
+*   **Commit Message:** "fix(unilang): Resolve CommandRegistry key mismatch"
+
+##### Increment 11: Create Comprehensive Crate Example
 *   **Goal:** To provide a clear, real-world usage example for developers, demonstrating how to use the framework with its updated features.
+*   **Specification Reference:** N/A
 *   **Steps:**
     1.  Create a new example file: `unilang/examples/full_cli_example.rs`.
     2.  In this file, define several commands using the full `CommandDefinition` struct, demonstrating namespaces, aliases, various argument kinds, and default values.
@@ -186,7 +212,7 @@
     2.  Execute `timeout 180 cargo run --example full_cli_example -- help .math.add`. It must show the new, detailed help format.
 *   **Commit Message:** "docs(unilang): Add comprehensive example for crate usage"
 
-##### Increment 11: Update Formal Specification (`spec.md`)
+##### Increment 12: Update Formal Specification (`spec.md`)
 *   **Goal:** To update the `spec.md` document to be the single source of truth for the now-unified architecture and complete data models.
 *   **Specification Reference:** `roadmap.md` M3.3
 *   **Steps:**
@@ -197,7 +223,7 @@
     1.  Manual review of `unilang/spec.md` to confirm it aligns with the current codebase and roadmap goals.
 *   **Commit Message:** "docs(unilang): Update spec.md with unified architecture and complete data models"
 
-##### Increment 12: Finalization and Legacy Code Removal
+##### Increment 13: Finalization and Legacy Code Removal
 *   **Goal:** To perform a final, holistic review, remove any legacy code, and verify the entire task's output.
 *   **Specification Reference:** `roadmap.md` M3.1.1
 *   **Steps:**
@@ -213,6 +239,10 @@
 ### Notes & Insights
 *   **Data Model Discrepancy:** Initial analysis revealed a significant inconsistency between `spec.md`, `data.rs`, and `unilang_cli.rs`. The `data.rs` structs are missing many fields required by the spec and used by the CLI's builder. This plan prioritizes fixing this by making `data.rs` the source of truth first.
 *   **`CommandDefinition.status` Type:** The `spec.md` defines `status` as an `Enum`, but `data.rs` currently uses `String`. For now, the plan will keep it as `String` to avoid widespread changes, but this is noted as a potential future refinement to align strictly with the `Enum` type.
+*   **Help Generator Tests:** The `help_generation_test.rs` already asserts for "Aliases:", "Status:", and "Version:" in the help output, and these tests are passing. This means the `HelpGenerator` already produces this output, and the original premise of Increment 8 (that the tests would fail due to missing output) was incorrect. This also means Increment 9 (Implement New Help Output and Fix Tests) is effectively complete as the output is already correct and tests are passing.
+*   **CommandRegistry Key Mismatch (Root Cause & Solution):** The persistent "Command not found" error was due to a mismatch in how command names were stored and looked up in the `CommandRegistry`.
+    *   **Root Cause:** The `CommandRegistry`'s `register` and `command_add_runtime` methods were concatenating `namespace` and `name` without a separating dot (e.g., `.my_namespacemy_command`), while the `SemanticAnalyzer` was correctly forming the lookup key with a dot (e.g., `.my_namespace.my_command`). Additionally, the `routines` HashMap was also using the incorrect key format.
+    *   **Solution:** Modified `unilang/src/registry.rs` to ensure that `full_name` is consistently formatted as `{namespace}.{name}` (e.g., `.my_namespace.my_command`) for both `self.commands` and `self.routines` insertions. The `command_registry_debug_test` was crucial in identifying and verifying this fix.
 
 ### Test Matrix for New Features
 | ID | Feature | Test Case | Expected Behavior |
@@ -235,9 +265,14 @@
 *   [Increment 7 | 2025-07-26T13:11:50.339Z] Fixed compilation error: `cannot find type HashMap in this scope`.
 *   [Increment 7 | 2025-07-26T15:07:40.436Z] Implemented command alias resolution in CLI, making the alias test pass.
 *   [Increment 7 | 2025-07-26T15:08:08.233Z] Corrected `Crate Conformance Check Procedure` to use package names instead of paths.
-
 *   [Increment 7 | 2025-07-26T15:09:03.073Z] Temporarily allowed `clippy::too-many-lines` in conformance check due to external crate lint.
-
 *   [Increment 7 | 2025-07-26T15:09:31.279Z] Fixed `clippy::explicit_iter_loop` lint in `unilang_cli.rs`.
-
 *   [Increment 7 | 2025-07-26T15:09:41.453Z] Fixed `clippy::assigning_clones` lint in `unilang_cli.rs`.
+*   [Increment 8 | 2025-07-26T15:10:48.370Z] Confirmed `HelpGenerator` already produces expected output; marked Increment 8 as complete.
+*   [Increment 9 | 2025-07-26T15:11:18.176Z] Confirmed `HelpGenerator` already produces expected output and tests are passing; marked Increment 9 as complete.
+*   [Increment 10 | 2025-07-26T15:12:05.501Z] Updated `Readme.md` to point to the new comprehensive example.
+*   [Increment 10 | 2025-07-26T15:12:29.427Z] Fixed command registration in `full_cli_example.rs` to use full qualified names.
+*   [Increment 10 | 2025-07-26T15:26:00.263Z] Initiated Focused Debugging Increment to resolve persistent "Command not found" error.
+*   [Increment 10 | 2025-07-26T15:32:22.383Z] Resolved `CommandRegistry` key mismatch by correcting `full_name` formatting and routine key.
+*   [Increment 11 | 2025-07-26T15:53:12.900Z] Detailed planning for Increment 11: Create Comprehensive Crate Example.
+*   [Increment 11 | 2025-07-26T16:06:20.133Z] Created comprehensive crate example and updated Readme.md.

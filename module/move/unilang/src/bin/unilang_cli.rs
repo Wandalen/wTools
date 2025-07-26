@@ -91,7 +91,6 @@ fn main() -> Result<(), unilang::error::Error> {
   // Register sample commands
   let echo_def = CommandDefinition::former()
     .name("echo")
-    .namespace(".system")
     .hint("Echoes a message.")
     .description("Echoes a message back to the console. Useful for testing connectivity or displaying simple text.")
     .status("stable")
@@ -102,12 +101,13 @@ fn main() -> Result<(), unilang::error::Error> {
     .idempotent(true)
     .form();
   registry
+
     .command_add_runtime(&echo_def, Box::new(echo_routine))
     .expect("Failed to register echo command");
 
   let add_def = CommandDefinition::former()
+
     .name("add")
-    .namespace(".math")
     .hint("Adds two integers.")
     .description("Performs addition on two integer arguments and returns the sum.")
     .status("stable")
@@ -150,14 +150,15 @@ fn main() -> Result<(), unilang::error::Error> {
         .tags(vec!["operand".to_string()])
         .form(),
     ])
+
     .form();
   registry
+
     .command_add_runtime(&add_def, Box::new(add_routine))
     .expect("Failed to register add command");
 
   let cat_def = CommandDefinition::former()
     .name("cat")
-    .namespace(".files")
     .hint("Prints content of a file.")
     .description("Reads the content of a specified file and prints it to the console.")
     .status("stable")
@@ -182,10 +183,13 @@ fn main() -> Result<(), unilang::error::Error> {
       .validation_rules(vec![])
       .tags(vec!["input".to_string(), "file".to_string()])
       .form()])
+
     .form();
   registry
+
     .command_add_runtime(&cat_def, Box::new(cat_routine))
     .expect("Failed to register cat command");
+
 
   let help_generator = HelpGenerator::new(&registry);
 
@@ -217,8 +221,11 @@ fn main() -> Result<(), unilang::error::Error> {
     if args.len() == 2 {
       println!("{}", help_generator.list_commands());
     } else if args.len() == 3 {
-      let specific_command_name = &args[2];
-      if let Some(help_message) = help_generator.command(specific_command_name) {
+      let mut specific_command_name = args[2].clone();
+      if let Some(canonical_name) = alias_map.get(&specific_command_name) {
+        specific_command_name = canonical_name.clone();
+      }
+      if let Some(help_message) = help_generator.command(&specific_command_name) {
         println!("{help_message}");
       } else {
         eprintln!("Error: Command '{specific_command_name}' not found for help.");

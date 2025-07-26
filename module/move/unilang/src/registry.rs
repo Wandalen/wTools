@@ -39,7 +39,9 @@ impl CommandRegistry {
   ///
   /// If a command with the same name already exists, it will be overwritten.
   pub fn register(&mut self, command: CommandDefinition) {
-    self.commands.insert(command.name.clone(), command);
+
+    let full_name = format!("{}.{}", command.namespace, command.name);
+    self.commands.insert(full_name, command);
   }
 
   ///
@@ -50,15 +52,19 @@ impl CommandRegistry {
   /// Returns an `Error::Registration` if a command with the same name
   /// is already registered and cannot be overwritten (e.g., if it was
   /// a compile-time registered command).
+
   pub fn command_add_runtime(&mut self, command_def: &CommandDefinition, routine: CommandRoutine) -> Result<(), Error> {
-    if self.commands.contains_key(&command_def.name) {
+    let full_name = format!("{}.{}", command_def.namespace, command_def.name);
+    if self.commands.contains_key(&full_name) {
       return Err(Error::Execution(ErrorData {
         code: "COMMAND_ALREADY_EXISTS".to_string(),
-        message: format!("Command '{}' already exists.", command_def.name),
+        message: format!("Command '{}' already exists.", full_name),
       }));
+
     }
-    self.commands.insert(command_def.name.clone(), command_def.clone()); // Cloned command_def
-    self.routines.insert(command_def.name.clone(), routine);
+
+    self.commands.insert(full_name.clone(), command_def.clone()); // Cloned command_def
+    self.routines.insert(full_name.clone(), routine);
     Ok(())
   }
 

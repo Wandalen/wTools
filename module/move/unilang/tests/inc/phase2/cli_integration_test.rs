@@ -104,5 +104,5 @@ fn test_cli_unknown_command() {
   cmd
     .assert()
     .failure()
-    .stderr(predicate::str::contains("Error: Execution Error: Command not found: unknown"));
+    .stderr(predicate::str::contains("Error: Execution Error: Command not found: .unknown"));
 }
