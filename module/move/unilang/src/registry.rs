@@ -40,7 +40,16 @@ impl CommandRegistry {
   /// If a command with the same name already exists, it will be overwritten.
   pub fn register(&mut self, command: CommandDefinition) {
 
-    let full_name = format!("{}.{}", command.namespace, command.name);
+    let full_name = if let Some(ns) = &command.namespace {
+        if ns.starts_with('.') {
+            format!("{}.{}", ns, command.name)
+        } else {
+            format!(".{}.{}", ns, command.name)
+        }
+    } else {
+        format!(".{}", command.name)
+    };
+
     self.commands.insert(full_name, command);
   }
 
@@ -52,13 +61,21 @@ impl CommandRegistry {
   /// Returns an `Error::Registration` if a command with the same name
   /// is already registered and cannot be overwritten (e.g., if it was
   /// a compile-time registered command).
-
   pub fn command_add_runtime(&mut self, command_def: &CommandDefinition, routine: CommandRoutine) -> Result<(), Error> {
-    let full_name = format!("{}.{}", command_def.namespace, command_def.name);
+
+    let full_name = if let Some(ns) = &command_def.namespace {
+        if ns.starts_with('.') {
+            format!("{}.{}", ns, command_def.name)
+        } else {
+            format!(".{}.{}", ns, command_def.name)
+        }
+    } else {
+        format!(".{}", command_def.name)
+    };
     if self.commands.contains_key(&full_name) {
       return Err(Error::Execution(ErrorData {
         code: "COMMAND_ALREADY_EXISTS".to_string(),
-        message: format!("Command '{}' already exists.", full_name),
+        message: format!("Command '{full_name}' already exists."),
       }));
 
     }

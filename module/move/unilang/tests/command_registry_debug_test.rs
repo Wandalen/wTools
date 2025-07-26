@@ -52,7 +52,15 @@ fn test_command_registry_key_mismatch() {
     })).expect("Failed to register command with dummy routine");
 
     // Attempt to retrieve the command using the fully qualified name
-    let lookup_key = format!("{}.{}", command_def.namespace, command_def.name);
+    let lookup_key = if let Some(ns) = &command_def.namespace {
+        if ns.starts_with('.') {
+            format!("{}.{}", ns, command_def.name)
+        } else {
+            format!(".{}.{}", ns, command_def.name)
+        }
+    } else {
+        format!(".{}", command_def.name)
+    };
     println!("DEBUG: Lookup key: '{}' (bytes: {:?})", lookup_key, lookup_key.as_bytes());
 
     let retrieved_command = registry.commands.get(&lookup_key);

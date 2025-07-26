@@ -58,7 +58,11 @@ impl<'a> Interpreter<'a> {
       // println!( "Executing: {command:?}" );
 
       // Look up the routine from the registry
-      let full_command_name = format!("{}.{}", command.definition.namespace, command.definition.name);
+      let full_command_name = if let Some(ns) = &command.definition.namespace {
+        format!(".{}.{}", ns, command.definition.name)
+      } else {
+        format!(".{}", command.definition.name)
+      };
       let routine = self.registry.get_routine(&full_command_name).ok_or_else(|| {
         Error::Execution(ErrorData {
           code: "UNILANG_INTERNAL_ERROR".to_string(),

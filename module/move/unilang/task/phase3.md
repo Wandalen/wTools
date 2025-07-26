@@ -13,7 +13,7 @@
 ### Progress
 *   **Roadmap Milestone:** Phase 3: Architectural Unification
 *   **Primary Editable Crate:** `module/move/unilang`
-*   **Overall Progress:** 11/13 increments complete
+*   **Overall Progress:** 12/13 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Pre-computation - Reconcile Data Models and Plan Tests
     *   ✅ Increment 2: Refactor `SemanticAnalyzer` to Consume `GenericInstruction`
@@ -26,8 +26,8 @@
     *   ✅ Increment 9: Implement New Help Output and Fix Tests
     *   ✅ Increment 10: Focused Debugging: CommandRegistry Key Mismatch
     *   ✅ Increment 11: Create Comprehensive Crate Example
-    *   ⚫ Increment 12: Update Formal Specification (`spec.md`)
-    *   ⚫ Increment 13: Finalization and Legacy Code Removal
+    *   ✅ Increment 12: Update Formal Specification (`spec.md`)
+    *   ⏳ Increment 13: Finalization and Legacy Code Removal
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -216,9 +216,11 @@
 *   **Goal:** To update the `spec.md` document to be the single source of truth for the now-unified architecture and complete data models.
 *   **Specification Reference:** `roadmap.md` M3.3
 *   **Steps:**
-    1.  In `unilang/spec.md`, update the tables in sections 3.2 and 3.3 to include all the newly added fields for `CommandDefinition` and `ArgumentDefinition`.
-    2.  Revise section 2.1 to formally document the three-phase processing pipeline (Syntactic Analysis -> Semantic Analysis -> Execution).
-    3.  Add new top-level sections (e.g., "Global Arguments", "Extensibility Model", "Cross-Cutting Concerns") as placeholders or with initial content as described in the roadmap.
+    1.  Read the current content of `module/move/unilang/spec.md`.
+    2.  Update the tables in sections 3.2 and 3.3 to include all the newly added fields for `CommandDefinition` and `ArgumentDefinition` as implemented in `unilang/src/data.rs`.
+    3.  Revise section 2.1 to formally document the three-phase processing pipeline (Syntactic Analysis -> Semantic Analysis -> Execution).
+    4.  Add new top-level sections (e.g., "Global Arguments", "Extensibility Model", "Cross-Cutting Concerns") as placeholders or with initial content as described in the roadmap.
+    5.  Write the updated content back to `module/move/unilang/spec.md`.
 *   **Increment Verification:**
     1.  Manual review of `unilang/spec.md` to confirm it aligns with the current codebase and roadmap goals.
 *   **Commit Message:** "docs(unilang): Update spec.md with unified architecture and complete data models"
@@ -227,11 +229,16 @@
 *   **Goal:** To perform a final, holistic review, remove any legacy code, and verify the entire task's output.
 *   **Specification Reference:** `roadmap.md` M3.1.1
 *   **Steps:**
-    1.  Execute `git rm -r module/move/unilang/src/ca/` if the directory exists.
-    2.  Search for and remove any `mod ca;` declarations in `unilang/src/lib.rs` or other modules.
-    3.  Perform a final self-critique of all changes against the plan's `Goal`.
-    4.  Execute the full Crate Conformance Check procedure one last time.
-    5.  Run `git status` to ensure the working directory is clean.
+    1.  Check if the directory `module/move/unilang/src/ca/` exists using `list_files`.
+    2.  If `module/move/unilang/src/ca/` exists, execute `git rm -r module/move/unilang/src/ca/`.
+    3.  Search for and remove any `mod ca;` declarations in `unilang/src/lib.rs`.
+    4.  Perform a final self-critique of all changes against the plan's `Goal`.
+    5.  Execute the full Crate Conformance Check procedure one last time.
+        *   Run `timeout 180 cargo test -p unilang` and verify it passes with no warnings.
+        *   Run `timeout 180 cargo test -p unilang_parser` and verify it passes with no warnings.
+        *   Run `timeout 180 cargo clippy -p unilang -- -D warnings -A clippy::too-many-lines` and verify it passes with no warnings.
+        *   Run `timeout 180 cargo clippy -p unilang_parser -- -D warnings -A clippy::too-many-lines` and verify it passes with no warnings.
+    6.  Run `git status` to ensure the working directory is clean.
 *   **Increment Verification:**
     1.  All steps of the Crate Conformance Check must pass.
 *   **Commit Message:** "chore(unilang): Finalize architectural unification and remove legacy code"
@@ -276,3 +283,6 @@
 *   [Increment 10 | 2025-07-26T15:32:22.383Z] Resolved `CommandRegistry` key mismatch by correcting `full_name` formatting and routine key.
 *   [Increment 11 | 2025-07-26T15:53:12.900Z] Detailed planning for Increment 11: Create Comprehensive Crate Example.
 *   [Increment 11 | 2025-07-26T16:06:20.133Z] Created comprehensive crate example and updated Readme.md.
+*   [Increment 12 | 2025-07-26T16:07:10.133Z] Detailed planning for Increment 12: Update Formal Specification (`spec.md`).
+*   [Increment 12 | 2025-07-26T16:08:53.133Z] Updated spec.md with unified architecture and complete data models.
+*   [Increment 13 | 2025-07-26T16:09:18.133Z] Detailed planning for Increment 13: Finalization and Legacy Code Removal.

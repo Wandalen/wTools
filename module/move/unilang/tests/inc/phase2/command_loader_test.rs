@@ -65,7 +65,7 @@ fn test_load_from_yaml_str_simple_command() {
   assert_eq!(command.description, "Says hello");
   assert!(command.arguments.is_empty());
   assert_eq!(command.routine_link, Some("dummy_hello_routine".to_string()));
-  assert_eq!(command.namespace, ".system");
+  assert_eq!(command.namespace, Some(".system".to_string()));
   assert_eq!(command.hint, "Says hello");
   assert_eq!(command.status, "stable");
   assert_eq!(command.version, Some("1.0.0".to_string()));
@@ -267,7 +267,7 @@ fn test_load_from_yaml_str_all_scalar_types() {
   assert_eq!(command.arguments[9].kind, Kind::DateTime);
   assert_eq!(command.arguments[10].kind, Kind::Pattern);
 
-  assert_eq!(command.namespace, ".test");
+  assert_eq!(command.namespace, Some(".test".to_string()));
   assert_eq!(command.hint, "Scalar command hint");
   assert_eq!(command.status, "experimental");
   assert_eq!(command.version, Some("0.1.0".to_string()));
@@ -374,7 +374,7 @@ fn test_load_from_yaml_str_collection_types() {
     Kind::Map(Box::new(Kind::String), Box::new(Kind::String), Some(';'), Some('='))
   );
 
-  assert_eq!(command.namespace, ".test");
+  assert_eq!(command.namespace, Some(".test".to_string()));
   assert_eq!(command.hint, "Collection command hint");
   assert_eq!(command.status, "stable");
   assert_eq!(command.version, Some("1.0.0".to_string()));
@@ -494,7 +494,7 @@ fn test_load_from_yaml_str_complex_types_and_attributes() {
   assert_eq!(command.arguments[4].attributes.is_default_arg, true);
   assert_eq!(command.arguments[4].default_value, Some("default_string".to_string()));
 
-  assert_eq!(command.namespace, ".test");
+  assert_eq!(command.namespace, Some(".test".to_string()));
   assert_eq!(command.hint, "Complex command hint");
   assert_eq!(command.status, "stable");
   assert_eq!(command.version, Some("1.0.0".to_string()));
@@ -544,8 +544,8 @@ fn test_load_from_yaml_str_multiple_commands() {
 
   assert!(registry.commands.contains_key(".group1.command1"));
   assert!(registry.commands.contains_key(".group1.command2"));
-  assert_eq!(registry.commands.get(".group1.command1").unwrap().namespace, ".group1");
-  assert_eq!(registry.commands.get(".group1.command2").unwrap().namespace, ".group1");
+  assert_eq!(registry.commands.get(".group1.command1").unwrap().namespace, Some(".group1".to_string()));
+  assert_eq!(registry.commands.get(".group1.command2").unwrap().namespace, Some(".group1".to_string()));
 }
 
 #[test]
@@ -578,7 +578,7 @@ fn test_load_from_json_str_simple_command() {
   assert_eq!(command.description, "Says hello from JSON");
   assert!(command.arguments.is_empty());
   assert_eq!(command.routine_link, Some("dummy_hello_json_routine".to_string()));
-  assert_eq!(command.namespace, ".system");
+  assert_eq!(command.namespace, Some(".system".to_string()));
   assert_eq!(command.hint, "Says hello from JSON");
   assert_eq!(command.status, "stable");
   assert_eq!(command.version, Some("1.0.0".to_string()));
@@ -642,7 +642,7 @@ fn test_load_from_json_str_all_scalar_types() {
   assert_eq!(command.arguments[9].kind, Kind::DateTime);
   assert_eq!(command.arguments[10].kind, Kind::Pattern);
 
-  assert_eq!(command.namespace, ".test");
+  assert_eq!(command.namespace, Some(".test".to_string()));
   assert_eq!(command.hint, "Scalar command hint");
   assert_eq!(command.status, "experimental");
   assert_eq!(command.version, Some("0.1.0".to_string()));
@@ -702,7 +702,7 @@ fn test_load_from_json_str_collection_types() {
     Kind::Map(Box::new(Kind::String), Box::new(Kind::String), Some(';'), Some('='))
   );
 
-  assert_eq!(command.namespace, ".test");
+  assert_eq!(command.namespace, Some(".test".to_string()));
   assert_eq!(command.hint, "Collection command hint");
   assert_eq!(command.status, "stable");
   assert_eq!(command.version, Some("1.0.0".to_string()));
@@ -762,7 +762,7 @@ fn test_load_from_json_str_complex_types_and_attributes() {
   assert_eq!(command.arguments[4].attributes.is_default_arg, true);
   assert_eq!(command.arguments[4].default_value, Some("default_string".to_string()));
 
-  assert_eq!(command.namespace, ".test");
+  assert_eq!(command.namespace, Some(".test".to_string()));
   assert_eq!(command.hint, "Complex command hint");
   assert_eq!(command.status, "stable");
   assert_eq!(command.version, Some("1.0.0".to_string()));
@@ -818,8 +818,8 @@ fn test_load_from_json_str_multiple_commands() {
 
   assert!(registry.commands.contains_key(".group1.command1_json"));
   assert!(registry.commands.contains_key(".group1.command2_json"));
-  assert_eq!(registry.commands.get(".group1.command1_json").unwrap().namespace, ".group1");
-  assert_eq!(registry.commands.get(".group1.command2_json").unwrap().namespace, ".group1");
+  assert_eq!(registry.commands.get(".group1.command1_json").unwrap().namespace, Some(".group1".to_string()));
+  assert_eq!(registry.commands.get(".group1.command2_json").unwrap().namespace, Some(".group1".to_string()));
 }
 
 #[test]

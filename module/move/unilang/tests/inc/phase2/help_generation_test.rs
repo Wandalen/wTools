@@ -39,9 +39,10 @@ fn test_cli_no_args_help() {
     .success()
     .stdout(contains_all_unordered(vec![
       "Available Commands:",
-      "  .system.echo    Echoes a message back to the console. Useful for testing connectivity or displaying simple text.",
-      "  .math.add       Performs addition on two integer arguments and returns the sum.",
-      "  .files.cat      Reads the content of a specified file and prints it to the console.",
+      "  .math.add       Adds two numbers.",
+      "  .math.sub       Subtracts two numbers.",
+      "  .greet          Greets the specified person.",
+      "  .config.set     Sets a configuration value.",
     ]))
     .stderr(predicate::str::ends_with("unilang_cli <command> [args...]\n"));
 }
@@ -56,9 +57,10 @@ fn test_cli_global_help_flag() {
     .success()
     .stdout(contains_all_unordered(vec![
       "Available Commands:",
-      "  .system.echo    Echoes a message back to the console. Useful for testing connectivity or displaying simple text.",
-      "  .math.add       Performs addition on two integer arguments and returns the sum.",
-      "  .files.cat      Reads the content of a specified file and prints it to the console.",
+      "  .math.add       Adds two numbers.",
+      "  .math.sub       Subtracts two numbers.",
+      "  .greet          Greets the specified person.",
+      "  .config.set     Sets a configuration value.",
     ]))
     .stderr(""); // No stderr for successful help
 }
@@ -73,9 +75,10 @@ fn test_cli_global_help_command() {
     .success()
     .stdout(contains_all_unordered(vec![
       "Available Commands:",
-      "  .system.echo    Echoes a message back to the console. Useful for testing connectivity or displaying simple text.",
-      "  .math.add       Performs addition on two integer arguments and returns the sum.",
-      "  .files.cat      Reads the content of a specified file and prints it to the console.",
+      "  .math.add       Adds two numbers.",
+      "  .math.sub       Subtracts two numbers.",
+      "  .greet          Greets the specified person.",
+      "  .config.set     Sets a configuration value.",
     ]))
     .stderr(""); // No stderr for successful help
 }
@@ -89,16 +92,13 @@ fn test_cli_specific_command_help_add() {
     .assert()
     .success()
     .stdout(
-      predicate::str::contains("Usage: .math.add (v1.0.0)")
-        .and(predicate::str::contains("Aliases: plus"))
-        .and(predicate::str::contains("Adds two integers."))
-        .and(predicate::str::contains(
-          "Performs addition on two integer arguments and returns the sum.",
-        ))
+      predicate::str::contains("Usage: add (v1.0.0)")
+        .and(predicate::str::contains("Aliases: sum, plus"))
+        .and(predicate::str::contains("Adds two numbers."))
         .and(predicate::str::contains("Status: stable"))
         .and(predicate::str::contains("Arguments:"))
-        .and(predicate::str::contains("  a                (Kind: Integer), Rules: [min:0]"))
-        .and(predicate::str::contains("  b                (Kind: Integer), Rules: [min:0]")),
+        .and(predicate::str::contains("  a                (Kind: Integer)"))
+        .and(predicate::str::contains("  b                (Kind: Integer)")),
     )
     .stderr("");
 }

@@ -148,7 +148,7 @@ The interpretation of a `unilang` CLI string by `utility1` **must** proceed thro
 1.  **Phase 1: Syntactic Analysis (String to `GenericInstruction`)**
     *   **Responsibility:** `unilang_instruction_parser` crate.
     *   **Process:** The parser consumes the input and, based on the `unilang` grammar (Appendix A.2), identifies command paths, positional arguments, named arguments (`key::value`), and operators (`;;`, `?`).
-    *   **Output:** A `Vec<parser::GenericInstruction>`. This phase has no knowledge of command definitions; it is purely syntactic.
+    *   **Output:** A `Vec<unilang_parser::GenericInstruction>`. This phase has no knowledge of command definitions; it is purely syntactic.
 
 2.  **Phase 2: Semantic Analysis (`GenericInstruction` to `VerifiedCommand`)**
     *   **Responsibility:** `unilang` crate.
@@ -234,22 +234,32 @@ A namespace is a first-class entity to improve discoverability and help generati
 
 | Field | Type | Mandatory | Description |
 | :--- | :--- | :--- | :--- |
+| `description` | `String` | Yes | A brief, one-line description of what the command does. |
 | `name` | `String` | Yes | The final segment of the command's name (e.g., `copy`). The full path is derived from its registered namespace. |
 | `namespace` | `String` | Yes | The `FullName` of the parent namespace this command belongs to (e.g., `.files`). |
 | `hint` | `String` | No | A human-readable explanation of the command's purpose. |
 | `arguments` | `Vec<ArgumentDefinition>` | No | A list of arguments the command accepts. |
 | `routine` | `Routine` | Yes (for static) | A direct reference to the executable code (e.g., a function pointer). |
-| `routine_link` | `String` | No | For commands loaded from a `Command Manifest`, this is a string that links to a pre-compiled, registered routine. |
+| `routine_link` | `Option<String>` | No | For commands loaded from a `Command Manifest`, this is a string that links to a pre-compiled, registered routine. |
 | `permissions` | `Vec<String>` | No | A list of permission identifiers required for execution. |
-| `status` | `Enum` | No (Default: `Stable`) | Lifecycle state: `Experimental`, `Stable`, `Deprecated`. |
+| `status` | `String` | No (Default: `Stable`) | Lifecycle state: `Experimental`, `Stable`, `Deprecated`. |
 | `deprecation_message` | `String` | No | If `status` is `Deprecated`, explains the reason and suggests alternatives. |
 | `http_method_hint`| `String` | No | A suggested HTTP method (`GET`, `POST`, etc.) for the Web API modality. |
 | `idempotent` | `bool` | No (Default: `false`) | If `true`, the command can be safely executed multiple times. |
 | `examples` | `Vec<String>` | No | Illustrative usage examples for help text. |
-| `version` | `String` | No | The SemVer version of the individual command (e.g., "1.0.2"). |
+| `aliases` | `Vec<String>` | No | A list of alternative names for the command. |
+| `tags` | `Vec<String>` | No | Keywords for grouping or filtering commands (e.g., "filesystem", "networking"). |
+| `idempotent` | `bool` | No (Default: `false`) | If `true`, the command can be safely executed multiple times. |
+| `version` | `Option<String>` | No | The SemVer version of the individual command (e.g., "1.0.2"). |
 | `tags` | `Vec<String>` | No | Keywords for grouping or filtering commands (e.g., "filesystem", "networking"). |
 
 #### 3.3. `ArgumentDefinition` Anatomy
+| `hint` | `String` | No | A human-readable description of the argument's purpose. |
+| `default_value` | `Option<String>` | No | A string representation of the value to use if an optional argument is not provided. It will be parsed on-demand. |
+| `aliases` | `Vec<String>` | No | A list of alternative short names (e.g., `s` for `source`). |
+| `tags` | `Vec<String>` | No | Keywords for UI grouping (e.g., "Basic", "Advanced"). |
+| `interactive` | `bool` | No (Default: `false`) | If `true`, modalities may prompt for input if the value is missing. |
+| `sensitive` | `bool` | No (Default: `false`) | If `true`, the value must be protected (masked in UIs, redacted in logs). |
 
 | Field | Type | Mandatory | Description |
 | :--- | :--- | :--- | :--- |

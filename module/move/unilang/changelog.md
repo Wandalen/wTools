@@ -11,3 +11,4 @@
 * [2025-07-26] Phase 3: Updated unilang_cli binary and core integration tests.
 * [2025-07-26] Phase 3: Updated all call sites to use new data models.
 * [2025-07-26] Implemented command alias resolution in CLI.
+*   [2025-07-26] Added a comprehensive example (`examples/full_cli_example.rs`) demonstrating full framework usage and updated `Readme.md` to reference it.

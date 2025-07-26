@@ -5,257 +5,335 @@
 use std::collections::HashMap;
 use unilang::data::ArgumentAttributes;
 use unilang::registry::CommandRegistry;
-use unilang::data::{CommandDefinition, ArgumentDefinition, Kind, ErrorData, OutputData};
+use unilang::data::{CommandDefinition, ArgumentDefinition, OutputData};
+use unilang::data::Kind as ArgumentKind;
 use unilang_parser::{Parser, UnilangParserOptions};
-use unilang::semantic::{SemanticAnalyzer, VerifiedCommand};
+use unilang::semantic::SemanticAnalyzer;
 use unilang::interpreter::{Interpreter, ExecutionContext};
-use std::env;
+
 use unilang::help::HelpGenerator;
+use unilang::registry::CommandRoutine; // Import CommandRoutine
+use unilang::types::Value; // Import Value
 
-/// Sample routine for the "echo" command.
-#[allow(clippy::unnecessary_wraps)]
-fn echo_routine(_verified_command: VerifiedCommand, _context: ExecutionContext) -> Result<OutputData, ErrorData> {
-  println!("Echo command executed!");
-  Ok(OutputData {
-    content: "Echo command executed!".to_string(),
-    format: "text".to_string(),
-  })
+fn main()
+{
+  if let Err(err) = run() {
+    eprintln!("Error: {err}");
+    std::process::exit(1);
+  }
 }
 
-/// Sample routine for the "add" command.
-#[allow(clippy::needless_pass_by_value)]
-fn add_routine(verified_command: VerifiedCommand, _context: ExecutionContext) -> Result<OutputData, ErrorData> {
-  let a = verified_command
-    .arguments
-    .get("a")
-    .ok_or_else(|| ErrorData {
-      code: "MISSING_ARGUMENT".to_string(),
-      message: "Argument 'a' not found".to_string(),
-    })?
-    .as_integer()
-    .ok_or_else(|| ErrorData {
-      code: "INVALID_ARGUMENT_TYPE".to_string(),
-      message: "Argument 'a' is not an integer".to_string(),
-    })?;
-  let b = verified_command
-    .arguments
-    .get("b")
-    .ok_or_else(|| ErrorData {
-      code: "MISSING_ARGUMENT".to_string(),
-      message: "Argument 'b' not found".to_string(),
-    })?
-    .as_integer()
-    .ok_or_else(|| ErrorData {
-      code: "INVALID_ARGUMENT_TYPE".to_string(),
-      message: "Argument 'b' is not an integer".to_string(),
-    })?;
-  println!("Result: {}", a + b);
-  Ok(OutputData {
-    content: format!("Result: {}", a + b),
-    format: "text".to_string(),
-  })
-}
-
-/// Sample routine for the "cat" command.
-#[allow(clippy::needless_pass_by_value)]
-fn cat_routine(verified_command: VerifiedCommand, _context: ExecutionContext) -> Result<OutputData, ErrorData> {
-  let path = verified_command
-    .arguments
-    .get("path")
-    .ok_or_else(|| ErrorData {
-      code: "MISSING_ARGUMENT".to_string(),
-      message: "Argument 'path' not found".to_string(),
-    })?
-    .as_path()
-    .ok_or_else(|| ErrorData {
-      code: "INVALID_ARGUMENT_TYPE".to_string(),
-      message: "Argument 'path' is not a path".to_string(),
-    })?;
-  let content = std::fs::read_to_string(path).map_err(|e| ErrorData {
-    code: "FILE_READ_ERROR".to_string(),
-    message: format!("Failed to read file: {e}"),
-  })?;
-  println!("{content}");
-  Ok(OutputData {
-    content,
-    format: "text".to_string(),
-  })
-}
-
-#[allow(clippy::too_many_lines)]
-fn main() -> Result<(), unilang::error::Error> {
-  let args: Vec<String> = env::args().collect();
-
+fn run() -> Result<(), unilang::error::Error>
+{
+  // 1. Initialize Command Registry
   let mut registry = CommandRegistry::new();
 
-  // Register sample commands
+  // 2. Define and Register Commands with Routines
+
+  // .math.add command
+  let math_add_def = CommandDefinition::former()
+    .name( "add" )
+    .namespace( "math".to_string() )
+
+
+    .hint( "Adds two numbers." )
+    .status( "stable" )
+    .version( "1.0.0" )
+    .aliases( vec![ "sum".to_string(), "plus".to_string() ] )
+    .arguments
+    (
+      vec!
+      [
+        ArgumentDefinition::former()
+        .name( "a" )
+        .kind( ArgumentKind::Integer )
+        .hint( "First number." )
+        .end(),
+        ArgumentDefinition::former()
+        .name( "b" )
+        .kind( ArgumentKind::Integer )
+        .hint( "Second number." )
+        .end(),
+      ]
+    )
+    .end();
+
+  let math_add_routine : CommandRoutine = Box::new( | cmd, _ctx |
+  {
+    let a = cmd.arguments.get("a").unwrap();
+    let b = cmd.arguments.get("b").unwrap();
+    if let (Value::Integer(val_a), Value::Integer(val_b)) = (a, b) {
+      let result = val_a + val_b;
+      println!( "Result: {result}" );
+      return Ok( OutputData { content : result.to_string(), format : "text".to_string() } );
+    }
+
+
+    unreachable!();
+  });
+  registry.command_add_runtime( &math_add_def, math_add_routine )?;
+
+  // .math.sub command
+  let math_sub_def = CommandDefinition::former()
+    .name( "sub" )
+    .namespace( "math".to_string() )
+
+
+    .hint( "Subtracts two numbers." )
+    .status( "beta" )
+    .version( "0.9.0" )
+    .aliases( vec![ "minus".to_string() ] )
+    .arguments
+    (
+      vec!
+      [
+        ArgumentDefinition::former()
+        .name( "x" )
+        .kind( ArgumentKind::Integer )
+        .hint( "Minuend." )
+        .end(),
+        ArgumentDefinition::former()
+        .name( "y" )
+        .kind( ArgumentKind::Integer )
+        .hint( "Subtrahend." )
+        .end(),
+      ]
+    )
+    .end();
+
+  let math_sub_routine : CommandRoutine = Box::new( | cmd, _ctx |
+  {
+    let x = cmd.arguments.get("x").unwrap();
+
+    let y = cmd.arguments.get("y").unwrap();
+
+    if let (Value::Integer(val_x), Value::Integer(val_y)) = (x, y) {
+      let result = val_x - val_y;
+      println!( "Result: {result}" );
+      return Ok( OutputData { content : result.to_string(), format : "text".to_string() } );
+    }
+    unreachable!();
+  });
+  registry.command_add_runtime( &math_sub_def, math_sub_routine )?;
+
+  // .greet command
+  let greet_def = CommandDefinition::former()
+    .name( "greet" )
+
+
+
+
+
+    .hint( "Greets the specified person." )
+    .status( "stable" )
+    .version( "1.0.0" )
+    .arguments
+    (
+      vec!
+      [
+        ArgumentDefinition::former()
+        .name( "name" )
+        .kind( ArgumentKind::String )
+        .hint( "Name of the person to greet." )
+        .default_value( "World".to_string() )
+        .end(),
+      ]
+    )
+    .end();
+
+  let greet_routine : CommandRoutine = Box::new( | cmd, _ctx |
+  {
+
+    let name = cmd.arguments.get("name").map_or_else(|| "World".to_string(), ToString::to_string);
+    let result = format!( "Hello, {name}!" );
+
+    println!( "{result}" );
+    Ok( OutputData { content : result, format : "text".to_string() } )
+  });
+  registry.command_add_runtime( &greet_def, greet_routine )?;
+
+  // .config.set command
+  let config_set_def = CommandDefinition::former()
+    .name( "set" )
+    .namespace( "config".to_string() )
+
+
+    .hint( "Sets a configuration value." )
+    .status( "experimental" )
+    .version( "0.1.0" )
+    .arguments
+    (
+      vec!
+      [
+        ArgumentDefinition::former()
+        .name( "key" )
+        .kind( ArgumentKind::String )
+        .hint( "Configuration key." )
+        .end(),
+        ArgumentDefinition::former()
+        .name( "value" )
+        .kind( ArgumentKind::String )
+        .hint( "Configuration value." )
+        .attributes( ArgumentAttributes::former().interactive( true ).sensitive( true ).end() )
+        .end(),
+      ]
+    )
+    .end();
+
+
+  let config_set_routine : CommandRoutine = Box::new( | cmd, _ctx |
+  {
+    let key = cmd.arguments.get("key").unwrap();
+
+    let value = cmd.arguments.get("value").unwrap();
+    let result = format!( "Setting config: {key} = {value}" );
+    println!( "{result}" );
+    Ok( OutputData { content : result, format : "text".to_string() } )
+  });
+  registry.command_add_runtime( &config_set_def, config_set_routine )?;
+
+  // .system.echo command
   let echo_def = CommandDefinition::former()
-    .name("echo")
-    .hint("Echoes a message.")
-    .description("Echoes a message back to the console. Useful for testing connectivity or displaying simple text.")
-    .status("stable")
-    .version("1.0.0")
-    .tags(vec!["utility".to_string(), "debug".to_string()])
-    .aliases(vec!["e".to_string()])
-    .permissions(vec!["public".to_string()])
-    .idempotent(true)
+    .name( "echo" )
+    .namespace( "system".to_string() )
+    .description( "Echoes a message".to_string() )
+    .hint( "Print a message to stdout".to_string() )
+    .status( "stable".to_string() )
+    .version( "1.0.0".to_string() )
+    .tags( vec![] )
+    .aliases( vec![ "e".to_string() ] )
+    .permissions( vec![] )
+    .idempotent( true )
+    .arguments( vec![] )
+    .routine_link( ".system.echo".to_string() )
     .form();
-  registry
 
-    .command_add_runtime(&echo_def, Box::new(echo_routine))
-    .expect("Failed to register echo command");
+  let echo_routine : CommandRoutine = Box::new( | _cmd, _ctx |
+  {
+    println!( "Echo command executed!" );
+    Ok( OutputData { content : "Echo command executed!\n".to_string(), format : "text".to_string() } )
+  });
+  registry.command_add_runtime( &echo_def, echo_routine )?;
 
-  let add_def = CommandDefinition::former()
-
-    .name("add")
-    .hint("Adds two integers.")
-    .description("Performs addition on two integer arguments and returns the sum.")
-    .status("stable")
-    .version("1.0.0")
-    .tags(vec!["math".to_string(), "arithmetic".to_string()])
-    .aliases(vec!["plus".to_string()])
-    .permissions(vec!["public".to_string()])
-    .idempotent(true)
-    .arguments(vec![
-      ArgumentDefinition::former()
-        .name("a")
-        .hint("The first integer operand.")
-        .kind(Kind::Integer)
-        .attributes(
-          ArgumentAttributes::former()
-            .is_default_arg(false)
-            .optional(false)
-            .multiple(false)
-            .interactive(false)
-            .sensitive(false)
-            .form(),
-        )
-        .validation_rules(vec!["min:0".to_string()])
-        .tags(vec!["operand".to_string()])
-        .form(),
-      ArgumentDefinition::former()
-        .name("b")
-        .hint("The second integer operand.")
-        .kind(Kind::Integer)
-        .attributes(
-          ArgumentAttributes::former()
-            .is_default_arg(false)
-            .optional(false)
-            .multiple(false)
-            .interactive(false)
-            .sensitive(false)
-            .form(),
-        )
-        .validation_rules(vec!["min:0".to_string()])
-        .tags(vec!["operand".to_string()])
-        .form(),
-    ])
-
-    .form();
-  registry
-
-    .command_add_runtime(&add_def, Box::new(add_routine))
-    .expect("Failed to register add command");
-
+  // .files.cat command  
   let cat_def = CommandDefinition::former()
-    .name("cat")
-    .hint("Prints content of a file.")
-    .description("Reads the content of a specified file and prints it to the console.")
-    .status("stable")
-    .version("1.0.0")
-    .tags(vec!["file".to_string(), "io".to_string()])
-    .aliases(vec!["type".to_string()])
-    .permissions(vec!["public".to_string()])
-    .idempotent(true)
-    .arguments(vec![ArgumentDefinition::former()
-      .name("path")
-      .hint("The path to the file to read.")
-      .kind(Kind::Path)
-      .attributes(
-        ArgumentAttributes::former()
-          .is_default_arg(false)
-          .optional(false)
-          .multiple(false)
-          .interactive(false)
-          .sensitive(false)
-          .form(),
-      )
-      .validation_rules(vec![])
-      .tags(vec!["input".to_string(), "file".to_string()])
-      .form()])
-
+    .name( "cat" )
+    .namespace( "files".to_string() )
+    .description( "Read and display file contents".to_string() )
+    .hint( "Print file contents to stdout".to_string() )
+    .status( "stable".to_string() )
+    .version( "1.0.0".to_string() )
+    .tags( vec![] )
+    .aliases( vec![] )
+    .permissions( vec![] )
+    .idempotent( true )
+    .arguments( vec![
+      ArgumentDefinition::former()
+        .name( "path" )
+        .description( "The path to the file to read".to_string() )
+        .hint( "File path".to_string() )
+        .kind( ArgumentKind::String )
+        .aliases( vec![] )
+        .tags( vec![] )
+        .attributes( ArgumentAttributes::former()
+          .optional( false )
+          .interactive( false )
+          .sensitive( false )
+          .form()
+        )
+        .form()
+    ] )
+    .routine_link( ".files.cat".to_string() )
     .form();
-  registry
 
-    .command_add_runtime(&cat_def, Box::new(cat_routine))
-    .expect("Failed to register cat command");
+  let cat_routine : CommandRoutine = Box::new( | cmd, _ctx |
+  {
+    let path = cmd.arguments.get("path").unwrap();
+    if let Value::String(path_str) = path {
+      if let Ok(contents) = std::fs::read_to_string(path_str) {
+        println!( "{contents}" );
+        Ok( OutputData { content : contents, format : "text".to_string() } )
+      } else {
+        let error_msg = format!("Failed to read file: {path_str}");
+        Err( unilang::data::ErrorData { 
+          code: "FILE_READ_ERROR".to_string(), 
+          message: error_msg 
+        } )
+      }
+    } else {
+      Err( unilang::data::ErrorData { 
+        code: "INVALID_ARGUMENT_TYPE".to_string(), 
+        message: "Path must be a string".to_string() 
+      } )
+    }
+  });
+  registry.command_add_runtime( &cat_def, cat_routine )?;
 
-
-  let help_generator = HelpGenerator::new(&registry);
-
-  if args.len() < 2 {
-    println!("{}", help_generator.list_commands());
-    eprintln!("Usage: {0} <command> [args...]", args[0]);
+  // 3. Parse Command Line Arguments
+  let args : Vec< String > = std::env::args().skip( 1 ).collect();
+  
+  // Handle case when no arguments are provided
+  if args.is_empty() {
+    let help_generator = HelpGenerator::new(&registry);
+    let help_text = help_generator.list_commands();
+    println!("{help_text}");
     return Ok(());
   }
-  let mut processed_args = args.clone();
-  let mut command_name_or_alias = processed_args[1].clone();
+  
+  let parser = Parser::new( UnilangParserOptions::default() );
 
-  // New alias resolution logic
-  let mut alias_map: HashMap<String, String> = HashMap::new();
-  for (command_name, command_def) in &registry.commands {
-    for alias in &command_def.aliases {
-      alias_map.insert(alias.clone(), command_name.clone());
+  // Build alias map for CLI resolution
+  let mut alias_map : HashMap< String, String > = HashMap::new();
+  for (full_name, cmd_def) in &registry.commands
+  {
+    for alias in &cmd_def.aliases
+    {
+      alias_map.insert( alias.clone(), full_name.clone() );
     }
   }
 
-  if let Some(canonical_name) = alias_map.get(&command_name_or_alias) {
-    command_name_or_alias = canonical_name.clone();
-    processed_args[1].clone_from(canonical_name); // Replace alias with canonical name in args
+  let mut processed_args = args.clone();
+  if let Some( first_arg ) = processed_args.first_mut()
+  {
+    if let Some( canonical_name ) = alias_map.get( first_arg )
+    {
+      *first_arg = canonical_name.clone();
+    }
   }
 
-  let command_name = &command_name_or_alias; // Use the resolved command name
 
+  // Handle 'help' command manually
+  if processed_args.first().is_some_and(|arg| arg == "help") {
+    let help_generator = HelpGenerator::new(&registry);
+    if let Some(command_name) = processed_args.get(1) {
 
-  if command_name == "--help" || command_name == "help" {
-    if args.len() == 2 {
-      println!("{}", help_generator.list_commands());
-    } else if args.len() == 3 {
-      let mut specific_command_name = args[2].clone();
-      if let Some(canonical_name) = alias_map.get(&specific_command_name) {
-        specific_command_name = canonical_name.clone();
-      }
-      if let Some(help_message) = help_generator.command(&specific_command_name) {
-        println!("{help_message}");
+      if let Some(help_text) = help_generator.command(command_name) {
+        println!("{help_text}");
       } else {
-        eprintln!("Error: Command '{specific_command_name}' not found for help.");
+        eprintln!("Error: Command '{command_name}' not found for help.");
         std::process::exit(1);
       }
     } else {
-      eprintln!("Error: Invalid usage of help command. Use `help` or `help <command_name>`.");
-      std::process::exit(1);
+      println!("{}", help_generator.list_commands());
     }
     return Ok(());
   }
 
-  let parser = Parser::new(UnilangParserOptions::default());
-  let command_input_str = processed_args[1..].join(" ");
-  let instruction = parser.parse_single_instruction(&command_input_str)?;
+  let command_input_str = processed_args.join( " " );
+  let instruction = parser.parse_single_instruction( &command_input_str )?;
   let instructions = &[instruction][..];
 
-  let semantic_analyzer = SemanticAnalyzer::new(instructions, &registry);
+  // 4. Semantic Analysis
+  let semantic_analyzer = SemanticAnalyzer::new( instructions, &registry );
+  let commands = semantic_analyzer.analyze()?;
 
-  let result = semantic_analyzer.analyze().and_then(|verified_commands| {
-    let mut context = ExecutionContext::default();
-    let interpreter = Interpreter::new(&verified_commands, &registry);
-    interpreter.run(&mut context)
-  });
+  // 5. Interpret and Execute
+  let interpreter = Interpreter::new( &commands, &registry );
+  let mut context = ExecutionContext::default();
+  interpreter.run( &mut context )?;
 
-  match result {
-    Ok(_) => Ok(()),
-    Err(e) => {
-      eprintln!("Error: {e}");
-      std::process::exit(1);
-    }
-  }
+  Ok( () )
 }
+
+
+

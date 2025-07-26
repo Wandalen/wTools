@@ -23,7 +23,7 @@ pub struct CommandDefinition {
   /// An optional link to the routine that executes this command.
   pub routine_link: Option<String>,
   /// The namespace of the command.
-  pub namespace: String,
+  pub namespace: Option<String>,
   /// A short hint for the command.
   pub hint: String,
   /// The status of the command.
@@ -257,6 +257,12 @@ pub struct ErrorData {
   pub message: String,
 }
 
+impl core::fmt::Display for ErrorData {
+  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    write!(f, "{} (Code: {})", self.message, self.code)
+  }
+}
+
 impl From<Kind> for String {
   fn from(kind: Kind) -> Self {
     match kind {
@@ -307,8 +313,3 @@ impl core::convert::TryFrom<String> for Kind {
   }
 }
 
-impl core::fmt::Display for ErrorData {
-  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-    write!(f, "{} (Code: {})", self.message, self.code)
-  }
-}
