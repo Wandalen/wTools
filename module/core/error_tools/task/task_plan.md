@@ -3,6 +3,7 @@
 ### Goal
 *   Refactor `error_tools` to provide a clear, unified API that wraps `anyhow` and `thiserror`, while maintaining its existing `mod_interface` structure.
 *   Create a user-friendly `Readme.md` that explains this unified approach with runnable examples, making the crate easy to adopt.
+*   Ensure comprehensive examples and full test coverage for the `error_tools` crate.
 
 ### Ubiquitous Language (Vocabulary)
 *   **`error_tools`:** The crate to be documented and refactored.
@@ -13,7 +14,7 @@
 ### Progress
 *   **Roadmap Milestone:** M2: Improved Documentation and Usability
 *   **Primary Editable Crate:** `module/core/error_tools`
-*   **Overall Progress:** 6/6 increments complete
+*   **Overall Progress:** 9/9 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Fix Build Issues and Add Core Documentation
     *   ✅ Increment 2: Create `untyped` (anyhow) Usage Example
@@ -21,6 +22,9 @@
     *   ✅ Increment 4: Update `Readme.md` with New Content and Examples
     *   ✅ Increment 5: Clean up `error_tools_trivial.rs` Example
     *   ✅ Increment 6: Finalization
+    *   ✅ Increment 7: Add Comprehensive Examples for `error_tools`
+    *   ✅ Increment 8: Improve Test Coverage for `error_tools`
+    *   ✅ Increment 9: Finalization (Re-run)
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -44,6 +48,8 @@
 *   Rule 2: The `Readme.md` must show simple, correct `use` statements (e.g., `use error_tools::prelude::*;`) that enable all documented features, including macros.
 *   Rule 3: All code examples in the `Readme.md` must correspond to a runnable example file in the `examples/` directory.
 *   Rule 4: The crate's public API must maintain its existing `mod_interface` structure, ensuring `private` namespaces and `own`/`orphan`/`exposed` modules are present and correctly configured.
+*   Rule 5: All significant functionalities of `error_tools` must have corresponding runnable examples in the `examples/` directory.
+*   Rule 6: Test coverage for `error_tools` must be comprehensive, covering all public API functions and critical internal logic.
 
 ### Tests
 | Test ID | Status | Notes |
@@ -54,6 +60,11 @@
 | `error_tools::missing_docs` | Fixed (Monitored) | Missing documentation for `ErrWith` trait, its methods, and `ResultWithReport` type alias added. |
 | `error_tools_trivial::unused_imports` | Fixed (Monitored) | Unused import `format_err` removed from `error_tools_trivial.rs`. |
 | `module/core/error_tools/src/lib.rs - (line 63)` | Fixed (Monitored) | Doctest failed due to `impl From` block incorrectly placed inside enum definition; moved outside. |
+| `module/core/error_tools/examples/err_with_example.rs` | Fixed (Monitored) | Example fixed by explicitly qualifying `Result` and its variants, and removing `error_tools::prelude::*` import. |
+| `err_with_example::unused_imports` | Fixed (Monitored) | Unused imports `ErrorTrait` and `ResultWithReport` removed from `err_with_example.rs`. |
+| `module/core/error_tools/tests/inc/err_with_coverage_test.rs` | Fixed (Monitored) | Test fixed by explicitly qualifying `Result` and its variants, and comparing `io::Error` by kind and string. |
+| `replace_thiserror::missing_docs` | Fixed (Monitored) | Missing documentation for `DataError` enum and its variants added to `replace_thiserror.rs`. |
+| `cargo fmt --check` | Fixed (Monitored) | Formatting issues resolved by running `cargo fmt`. |
 
 ### Crate Conformance Check Procedure
 *   **Step 1: Run build and tests.** Execute `timeout 90 cargo test -p error_tools`.
@@ -149,12 +160,20 @@
         pub enum DataError
         {
           #[ error( "I/O error for file: {0}" ) ]
-          Io( #[ from ] std::io::Error, PathBuf ),
+          Io( std::io::Error, PathBuf ),
           #[ error( "Parsing error: {0}" ) ]
           Parse( String ),
         }
 
-        // A function that can return our custom error.
+        // Manual implementation of From trait for DataError
+        impl From< std::io::Error > for DataError
+        {
+          fn from( err : std::io::Error ) -> Self
+          {
+            DataError::Io( err, PathBuf::new() )
+          }
+        }
+
         fn process_data( path : &PathBuf ) -> Result< i32, DataError >
         {
           let content = std::fs::read_to_string( path )
@@ -332,6 +351,168 @@
     *   All steps in the `Crate Conformance Check Procedure` must pass.
 *   **Commit Message:** `chore(task): Finalize readme and examples improvements`
 
+##### Increment 7: Add Comprehensive Examples for `error_tools`
+*   **Goal:** Add new examples to cover various use cases of `error_tools`, especially focusing on the `ErrWith` trait and other utilities not fully demonstrated by the current `anyhow` and `thiserror` replacements.
+*   **Specification Reference:** Rule 5
+*   **Steps:**
+    *   **Step 7.1: Create `err_with_example.rs`.** Use `write_to_file` to create `module/core/error_tools/examples/err_with_example.rs` with the following content:
+        ```rust
+        //! A runnable example demonstrating the `ErrWith` trait.
+
+        use error_tools::error::{ ErrWith, ResultWithReport, ErrorTrait };
+        use std::io;
+
+        fn might_fail_io( fail : bool ) -> io::Result< u32 >
+        {
+          if fail
+          {
+            Err( io::Error::new( io::ErrorKind::Other, "simulated I/O error" ) )
+          }
+          else
+          {
+            std::result::Result::Ok( 42 )
+          }
+        }
+
+        fn process_data( input : &str ) -> std::result::Result< String, ( String, Box< dyn std::error::Error > ) >
+        {
+          let num = input.parse::< u32 >()
+            .err_with( || "Failed to parse input".to_string() )?;
+
+          let result = might_fail_io( num % 2 != 0 )
+            .err_with_report( &format!( "Processing number {}", num ) )?;
+
+          std::result::Result::Ok( format!( "Processed result: {}", result ) )
+        }
+
+        fn main()
+        {
+          println!( "--- Successful case ---" );
+          match process_data( "100" )
+          {
+            std::result::Result::Ok( msg ) => println!( "Success: {}", msg ),
+            std::result::Result::Err( ( report, err ) ) => println!( "Error: {} - {:?}", report, err ),
+          }
+
+          println!( "\n--- Parsing error case ---" );
+          match process_data( "abc" )
+          {
+            std::result::Result::Ok( msg ) => println!( "Success: {}", msg ),
+            std::result::Result::Err( ( report, err ) ) => println!( "Error: {} - {:?}", report, err ),
+          }
+
+          println!( "\n--- I/O error case ---" );
+          match process_data( "1" )
+          {
+            std::result::Result::Ok( msg ) => println!( "Success: {}", msg ),
+            std::result::Result::Err( ( report, err ) ) => println!( "Error: {} - {:?}", report, err ),
+          }
+        }
+        ```
+    *   **Step 7.2: Perform Increment Verification.**
+*   **Increment Verification:**
+    *   Execute `timeout 90 cargo run --example err_with_example`.
+*   **Commit Message:** `feat(examples): Add comprehensive err_with_example`
+
+##### Increment 8: Improve Test Coverage for `error_tools`
+*   **Goal:** Analyze current test coverage and add new tests to cover any missing branches, edge cases, or specific functionalities of `error_tools`.
+*   **Specification Reference:** Rule 6
+*   **Steps:**
+    *   **Step 8.1: Analyze current test coverage.** (This step is conceptual for the AI, as direct coverage analysis tools are not available. It implies reviewing the code and identifying gaps.)
+    *   **Step 8.2: Add new test file for `ErrWith` trait.** Use `write_to_file` to create `module/core/error_tools/tests/inc/err_with_coverage_test.rs` with the following content:
+        ```rust
+        //! ## Test Matrix for `ErrWith` Trait Coverage
+        //!
+        //! | ID   | Scenario                               | Expected Behavior                               |
+        //! |------|----------------------------------------|-------------------------------------------------|
+        //! | T8.1 | `err_with` on `Ok` result              | Returns `Ok` with original value                |
+        //! | T8.2 | `err_with` on `Err` result             | Returns `Err` with custom report and original error |
+        //! | T8.3 | `err_with_report` on `Ok` result       | Returns `Ok` with original value                |
+        //! | T8.4 | `err_with_report` on `Err` result      | Returns `Err` with cloned report and original error |
+        //! | T8.5 | `ResultWithReport` type alias usage    | Correctly defines a Result with tuple error     |
+        //!
+        use super::*;
+        use error_tools::error::{ ErrWith, ResultWithReport };
+        use std::io;
+
+        /// Tests `err_with` on an `Ok` result.
+        /// Test Combination: T8.1
+        #[ test ]
+        fn test_err_with_on_ok()
+        {
+          let result : std::result::Result< u32, io::Error > = std::result::Result::Ok( 10 );
+          let processed : std::result::Result< u32, ( String, io::Error ) > = result.err_with( || "context".to_string() );
+          assert!( processed.is_ok() );
+          assert_eq!( processed.unwrap(), 10 );
+        }
+
+        /// Tests `err_with` on an `Err` result.
+        /// Test Combination: T8.2
+        #[ test ]
+        fn test_err_with_on_err()
+        {
+          let error = io::Error::new( io::ErrorKind::NotFound, "file not found" );
+          let result : std::result::Result< u32, io::Error > = std::result::Result::Err( error );
+          let processed : std::result::Result< u32, ( String, io::Error ) > = result.err_with( || "custom report".to_string() );
+          assert_eq!( processed.map_err( |(r, e) : (String, io::Error)| (r, e.kind(), e.to_string()) ), std::result::Result::Err( ( "custom report".to_string(), io::ErrorKind::NotFound, "file not found".to_string() ) ) );
+        }
+
+        /// Tests `err_with_report` on an `Ok` result.
+        /// Test Combination: T8.3
+        #[ test ]
+        fn test_err_with_report_on_ok()
+        {
+          let result : std::result::Result< u32, io::Error > = std::result::Result::Ok( 20 );
+          let report = "fixed report".to_string();
+          let processed : std::result::Result< u32, ( String, io::Error ) > = result.err_with_report( &report );
+          assert!( processed.is_ok() );
+          assert_eq!( processed.unwrap(), 20 );
+        }
+
+        /// Tests `err_with_report` on an `Err` result.
+        /// Test Combination: T8.4
+        #[ test ]
+        fn test_err_with_report_on_err()
+        {
+          let error = io::Error::new( io::ErrorKind::PermissionDenied, "access denied" );
+          let result : std::result::Result< u32, io::Error > = std::result::Result::Err( error );
+          let report = "security issue".to_string();
+          let processed : std::result::Result< u32, ( String, io::Error ) > = result.err_with_report( &report );
+          assert_eq!( processed.map_err( |(r, e) : (String, io::Error)| (r, e.kind(), e.to_string()) ), std::result::Result::Err( ( "security issue".to_string(), io::ErrorKind::PermissionDenied, "access denied".to_string() ) ) );
+        }
+
+        /// Tests `ResultWithReport` type alias usage.
+        /// Test Combination: T8.5
+        #[ test ]
+        fn test_result_with_report_alias()
+        {
+          type MyResult = ResultWithReport< String, io::Error >;
+          let ok_val : MyResult = std::result::Result::Ok( "30".to_string() );
+          assert!( ok_val.is_ok() );
+          assert_eq!( ok_val.unwrap(), "30".to_string() );
+
+          let err_val : MyResult = std::result::Result::Err( ( "report".to_string(), io::Error::new( io::ErrorKind::BrokenPipe, "pipe broken" ) ) );
+          assert_eq!( err_val.map_err( |(r, e) : (String, io::Error)| (r, e.kind(), e.to_string()) ), std::result::Result::Err( ( "report".to_string(), io::ErrorKind::BrokenPipe, "pipe broken".to_string() ) ) );
+        }
+        ```
+    *   **Step 8.3: Add `err_with_coverage_test` to `tests/inc/mod.rs`.**
+    *   **Step 8.4: Perform Increment Verification.**
+*   **Increment Verification:**
+    *   Execute `timeout 90 cargo test -p error_tools`. The command must pass without any errors or warnings.
+*   **Commit Message:** `feat(tests): Improve coverage for ErrWith trait`
+
+##### Increment 9: Finalization (Re-run)
+*   **Goal:** Perform a final, holistic review and verification of the entire task's output, including new examples and improved test coverage.
+*   **Specification Reference:** N/A
+*   **Steps:**
+    *   **Step 9.1: Self-Critique.** Review all changes against the `Goal` and `Expected Behavior Rules`.
+    *   **Step 9.2: Full Conformance Check.** Run the full, updated `Crate Conformance Check Procedure`.
+    *   **Step 9.3: Verify all examples run.** Execute `timeout 90 cargo run --example error_tools_trivial`. Execute `timeout 90 cargo run --example replace_anyhow`. Execute `timeout 90 cargo run --example replace_thiserror`. Execute `timeout 90 cargo run --example err_with_example`.
+*   **Increment Verification:**
+    *   All steps in the `Crate Conformance Check Procedure` must pass.
+    *   All example runs must succeed.
+*   **Commit Message:** `chore(task): Finalize all improvements and verify coverage`
+
 ### Task Requirements
 *   The `Readme.md` must be the primary focus and deliverable.
 *   All examples must be runnable and reflect the documentation.
@@ -362,3 +543,6 @@
 *   [Increment 4 | 2025-07-26 21:32 UTC] Updated `Readme.md` with new content and examples.
 *   [Increment 5 | 2025-07-26 21:34 UTC] Cleaned up `error_tools_trivial.rs` example.
 *   [Increment 6 | 2025-07-26 21:37 UTC] Fixed doctest failure in `Readme.md` by correcting `impl From` placement.
+*   [Increment 7 | 2025-07-26 21:47 UTC] Added comprehensive `err_with_example.rs` example and fixed type mismatch issues.
+*   [Increment 8 | 2025-07-26 21:50 UTC] Added `err_with_coverage_test.rs` for `ErrWith` trait coverage.
+*   [Increment 9 | 2025-07-26 21:55 UTC] Performed final conformance checks and verified all examples run successfully.

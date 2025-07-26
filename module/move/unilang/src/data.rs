@@ -312,4 +312,3 @@ impl core::convert::TryFrom<String> for Kind {
     s.parse()
   }
 }
-

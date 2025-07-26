@@ -198,8 +198,8 @@ pub mod exposed {
 
   #[doc(inline)]
   pub use {
-    collection_tools::exposed::*, impls_index::exposed::*, mem_tools::exposed::*,
-    typing_tools::exposed::*, diagnostics_tools::exposed::*,
+    collection_tools::exposed::*, impls_index::exposed::*, mem_tools::exposed::*, typing_tools::exposed::*,
+    diagnostics_tools::exposed::*,
   };
 }
 
@@ -217,7 +217,7 @@ pub mod prelude {
 
   #[doc(inline)]
   pub use {
-    collection_tools::prelude::*, impls_index::prelude::*, mem_tools::prelude::*,
-    typing_tools::prelude::*, diagnostics_tools::prelude::*,
+    collection_tools::prelude::*, impls_index::prelude::*, mem_tools::prelude::*, typing_tools::prelude::*,
+    diagnostics_tools::prelude::*,
   };
 }

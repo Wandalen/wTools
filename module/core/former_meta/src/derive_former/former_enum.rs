@@ -117,9 +117,9 @@ mod struct_single_field_scalar;
 mod struct_single_field_subform;
 mod struct_zero_fields_handler;
 mod tuple_multi_fields_scalar;
+mod tuple_multi_fields_subform;
 mod tuple_single_field_scalar;
 mod tuple_single_field_subform;
-mod tuple_multi_fields_subform;
 mod tuple_zero_fields_handler;
 mod unit_variant_handler;
 
@@ -348,7 +348,11 @@ pub(super) fn former_for_enum(
     }
   } else {
     if has_debug {
-      diag::report_print(format!("DEBUG: Methods collected before final quote for {enum_name}"), original_input, &quote!{ #( #methods )* });
+      diag::report_print(
+        format!("DEBUG: Methods collected before final quote for {enum_name}"),
+        original_input,
+        &quote! { #( #methods )* },
+      );
     }
     quote! {
       #( #end_impls )*

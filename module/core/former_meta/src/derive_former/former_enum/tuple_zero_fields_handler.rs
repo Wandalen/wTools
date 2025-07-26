@@ -1,9 +1,8 @@
 use super::*;
-use macro_tools::{ Result, quote::quote, ident::cased_ident_from_ident, syn_err };
+use macro_tools::{Result, quote::quote, ident::cased_ident_from_ident, syn_err};
 use convert_case::Case;
 
-pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
-{
+pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::TokenStream> {
   let variant_name = &ctx.variant.ident;
   let method_name = cased_ident_from_ident(variant_name, Case::Snake);
   let enum_name = ctx.enum_name;
@@ -18,8 +17,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   }
 
   // For zero-field tuple variants, Rules 1b and 3b both generate the same direct constructor
-  let result = quote!
-  {
+  let result = quote! {
     #[ inline( always ) ]
     #vis fn #method_name() -> #enum_name
     {
@@ -27,5 +25,5 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
     }
   };
 
-  Ok( result )
+  Ok(result)
 }
