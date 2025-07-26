@@ -58,13 +58,13 @@ impl FunctionStep
   }
 }
 
-  /// Manually implemented standalone subformer starter for the Break variant.
-  #[ inline( always ) ]
-  pub fn break_variant()
-  -> BreakFormer< BreakFormerDefinition< (), Self, FunctionStepBreakEnd > >
-  {
-    BreakFormer::begin( None, None, FunctionStepBreakEnd::default() )
-  }
+// Manually implemented standalone subformer starter for the Break variant.
+#[ inline( always ) ]
+pub fn break_variant()
+-> BreakFormer< BreakFormerDefinition< (), FunctionStep, FunctionStepBreakEnd > >
+{
+  BreakFormer::begin( None, None, FunctionStepBreakEnd::default() )
+}
 
 // --- FormingEnd Implementations for End Structs ---
 

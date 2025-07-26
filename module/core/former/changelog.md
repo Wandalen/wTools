@@ -3,3 +3,4 @@
 *   [Increment 1 | 2025-07-05 19:05 UTC] Commented out `#[derive(Debug)]` attributes in `former_meta` and `macro_tools` (no direct instances found, but verified compilation).
 *   [Increment 2 | 2025-07-05 19:06 UTC] Performed final verification of `former`, `former_meta`, `former_types`, and `macro_tools` crates. All checks passed.
 * [Increment 1 | 2025-07-26 17:06 UTC] Setup handler files for unnamed enum variants.
+* [Increment 3 | 2025-07-26 20:01 UTC] Added compile error for `#[subform_scalar]` on zero-field tuple variants.

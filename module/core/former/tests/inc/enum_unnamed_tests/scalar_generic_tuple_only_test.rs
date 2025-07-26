@@ -21,28 +21,14 @@
 
 // File: module/core/former/tests/inc/former_enum_tests/scalar_generic_tuple_only_test.rs
 
+#[ allow( unused_imports ) ]
 use super::*; // Imports items from the parent file (either manual or derive)
+use super::{ Bound, MyType, InnerScalar }; // Explicitly import common types
+use crate::inc::enum_unnamed_tests::scalar_generic_tuple_derive::EnumScalarGeneric as EnumScalarGenericDerive;
+use crate::inc::enum_unnamed_tests::scalar_generic_tuple_manual::EnumScalarGeneric as EnumScalarGenericManual;
 // use std::marker::PhantomData; // Keep PhantomData import needed for manual test case construction
 
-// Define a simple bound for testing generics
-pub trait Bound : core::fmt::Debug + Default + Clone + PartialEq {}
 
-// Define a concrete type satisfying the bound
-#[ derive( Debug, Default, Clone, PartialEq ) ]
-pub struct MyType( String );
-impl Bound for MyType {}
-
-// Define an inner generic struct to be used within the enum variants
-#[ derive( Debug, Clone, PartialEq, Default ) ] // Removed former::Former derive
-pub struct InnerScalar< T : Bound >
-{
-  pub data : T,
-}
-// Implement Into manually for testing the constructor signature
-impl< T : Bound > From< T > for InnerScalar< T >
-{
-  fn from( data : T ) -> Self { Self { data } }
-}
 
 
 #[ test ]
@@ -54,15 +40,15 @@ fn scalar_on_single_generic_tuple_variant()
   let inner_data = InnerScalar { data: MyType( "value1".to_string() ) };
   // Expect a direct static constructor `variant_1` taking `impl Into<InnerScalar<MyType>>`
   // FIX: Changed call to snake_case
-  let got = EnumScalarGeneric::< MyType >::variant_1( inner_data.clone() );
+  let got = EnumScalarGenericDerive::< MyType >::variant_1( inner_data.clone() );
 
-  let expected = EnumScalarGeneric::< MyType >::Variant1( inner_data );
+  let expected = EnumScalarGenericDerive::< MyType >::Variant1( inner_data );
   assert_eq!( got, expected );
 
   // Test with Into
   // FIX: Changed call to snake_case
-  let got_into = EnumScalarGeneric::< MyType >::variant_1( MyType( "value1_into".to_string() ) );
-   let expected_into = EnumScalarGeneric::< MyType >::Variant1( InnerScalar { data: MyType( "value1_into".to_string() ) } );
+  let got_into = EnumScalarGenericDerive::< MyType >::variant_1( MyType( "value1_into".to_string() ) );
+   let expected_into = EnumScalarGenericDerive::< MyType >::Variant1( InnerScalar { data: MyType( "value1_into".to_string() ) } );
   assert_eq!( got_into, expected_into );
 }
 
@@ -74,19 +60,19 @@ fn scalar_on_multi_generic_tuple_variant()
   // Test Matrix Row: T14.3, T14.4 (Implicitly, as this tests the behavior expected by the matrix)
   let inner_data = InnerScalar { data: MyType( "value2".to_string() ) };
   // Expect a former builder `variant_2` with setters `_0` and `_1`
-  let got = EnumScalarGeneric::< MyType >::variant_2()
+  let got = EnumScalarGenericDerive::< MyType >::variant_2()
     ._0( inner_data.clone() )
     ._1( true )
     .form();
 
-  let expected = EnumScalarGeneric::< MyType >::Variant2( inner_data, true );
+  let expected = EnumScalarGenericDerive::< MyType >::Variant2( inner_data, true );
   assert_eq!( got, expected );
 
   // Test with Into
-  let got_into = EnumScalarGeneric::< MyType >::variant_2()
+  let got_into = EnumScalarGenericDerive::< MyType >::variant_2()
     ._0( MyType( "value2_into".to_string() ) )
     ._1( false )
     .form();
-  let expected_into = EnumScalarGeneric::< MyType >::Variant2( InnerScalar { data: MyType( "value2_into".to_string() ) }, false );
+  let expected_into = EnumScalarGenericDerive::< MyType >::Variant2( InnerScalar { data: MyType( "value2_into".to_string() ) }, false );
   assert_eq!( got_into, expected_into );
 }

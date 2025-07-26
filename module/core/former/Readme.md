@@ -5,13 +5,15 @@
  [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_former_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_former_push.yml) [![docs.rs](https://img.shields.io/docsrs/former?color=e3e8f0&logo=docs.rs)](https://docs.rs/former) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Fformer%2Fexamples%2Fformer_trivial.rs,RUN_POSTFIX=--example%20module%2Fcore%2Fformer%2Fexamples%2Fformer_trivial.rs/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 <!--{ generate.module_header.end }-->
 
-A flexible implementation of the Builder pattern supporting nested builders and collection-specific subformers.
+A flexible implementation of the Builder pattern supporting nested builders, collection-specific subformers, and comprehensive enum variant constructors.
 
 ## What is `Former`?
 
 The `former` crate provides a powerful derive macro, `#[ derive( Former ) ]`, that automatically implements the **Builder pattern** for your Rust structs and enums.
 
-Its primary goal is to **simplify the construction of complex objects**, especially those with numerous fields, optional values, default settings, collections, or nested structures, making your initialization code more readable and maintainable.
+Its primary goal is to **simplify the construction of complex objects**, especially those with numerous fields, optional values, default settings, collections, nested structures, or complex enum variants, making your initialization code more readable and maintainable.
+
+For **enums**, `former` automatically generates constructors for each variant, intelligently choosing between direct constructors, subformers, and standalone functions based on the variant structure and applied attributes.
 
 ## Why Use `Former`?
 
@@ -19,6 +21,11 @@ Compared to manually implementing the Builder pattern or using other builder cra
 
 *   **Reduced Boilerplate:** `#[ derive( Former ) ]` automatically generates the builder struct, storage, and setters, saving you significant repetitive coding effort.
 *   **Fluent & Readable API:** Construct objects step-by-step using clear, chainable methods (`.field_name( value )`).
+*   **Intelligent Enum Support:** Automatically generates appropriate constructors for enum variants:
+    *   **Unit variants** get direct constructors (e.g., `Status::active()`)
+    *   **Simple variants** get scalar constructors (e.g., `Message::text("hello")`)
+    *   **Complex variants** get subformers for step-by-step construction
+    *   **Flexible attributes** (`#[scalar]`, `#[subform_scalar]`, `#[standalone_constructors]`) for fine-grained control
 *   **Effortless Defaults & Optionals:** Fields automatically use their `Default` implementation if not set. `Option< T >` fields are handled seamlessly – you only set them if you have a `Some( value )`. Custom defaults can be specified easily with `#[ former( default = ... ) ]`.
 *   **Powerful Collection & Nested Struct Handling:** `former` truly shines with its **subformer** system. Easily build `Vec`, `HashMap`, `HashSet`, and other collections element-by-element, or configure nested structs using their own dedicated formers within the parent's builder chain. This is often more complex to achieve with other solutions.
 
@@ -300,20 +307,82 @@ For scenarios where you want a direct constructor function instead of always sta
 # }
 ``` -->
 
+## Vocabulary & Terminology
+
+Understanding the terminology used in `former` will help you leverage its full potential, especially when working with enums and variants:
+
+### Core Concepts
+
+*   **Former:** A builder object that accumulates field values and produces the final instance via `.form()`.
+*   **Storage:** Internal structure that holds the building state, containing options for each field.
+*   **Subformer:** A specialized former for building nested structures, collections, or complex field types.
+*   **FormingEnd:** A mechanism that controls what happens when `.form()` is called on a (sub)former.
+
+### Variant Types (for Enums)
+
+*   **Unit Variant:** An enum variant with no associated data (e.g., `Status::Active`).
+*   **Tuple Variant:** An enum variant with unnamed fields in parentheses (e.g., `Message::Error(String)`, `Point::Coords(i32, i32)`).
+*   **Struct Variant:** An enum variant with named fields in braces (e.g., `Request::Get { url: String, headers: Vec<String> }`).
+
+### Variant Field Categories
+
+*   **Zero-Field Variant:** A variant with no fields - can be unit (`Status::Active`) or empty tuple (`Status::Active()`).
+*   **Single-Field Variant:** A variant with exactly one field (e.g., `Message::Text(String)` or `User::Profile { name: String }`).
+*   **Multi-Field Variant:** A variant with multiple fields (e.g., `Point::Coords(i32, i32)` or `Request::Post { url: String, body: String }`).
+
+### Constructor Types
+
+*   **Scalar Constructor:** A method that takes direct values and immediately returns the enum instance (e.g., `Message::text("hello")` → `Message::Text("hello")`).
+*   **Subform Constructor:** A method that returns a former/builder for constructing the variant step-by-step, useful for complex variants.
+*   **Direct Constructor:** Simple constructor for variants with no fields (e.g., `Status::active()` → `Status::Active`).
+
+### Enum Constructor Patterns
+
+*   **Method-style Constructor:** Instance methods on the enum type (e.g., `MyEnum::variant_name(...)`).
+*   **Standalone Constructor:** Top-level functions generated when `#[standalone_constructors]` is used (e.g., `variant_name(...)`).
+
+### Variant Attributes
+
+*   **`#[scalar]`:** Forces generation of a scalar constructor that takes field values directly and returns the enum instance.
+*   **`#[subform_scalar]`:** For single-field variants where the field type implements `Former` - generates a method returning the field's former.
+*   **`#[standalone_constructors]`:** Applied to the enum itself, generates top-level constructor functions for each variant.
+*   **`#[arg_for_constructor]`:** Applied to individual fields, includes them as parameters in standalone constructors.
+
+### Advanced Concepts
+
+*   **Implicit Variant Former:** An automatically generated former for variants with multiple fields, providing individual field setters.
+*   **End-of-forming Logic:** Custom behavior when a former completes, enabling advanced patterns like validation or transformation.
+*   **Context Propagation:** Mechanism for passing data through nested formers in complex builder hierarchies.
+
 ## Key Features Overview
 
 *   **Automatic Builder Generation:** `#[ derive( Former ) ]` for structs and enums.
 *   **Fluent API:** Chainable setter methods for a clean construction flow.
+*   **Comprehensive Enum Support:** Full support for all enum variant types:
+    *   **Unit variants:** Direct constructors (e.g., `MyEnum::variant()`)
+    *   **Tuple variants:** Scalar constructors or subformers based on field count and attributes
+    *   **Struct variants:** Subformers with individual field setters or scalar constructors
+    *   **Zero, single, and multi-field variants** with different behavioral patterns
+*   **Flexible Constructor Generation:**
+    *   **Method-style constructors:** `MyEnum::variant_name(...)` on the enum type
+    *   **Standalone constructors:** Top-level functions when `#[standalone_constructors]` is used
+    *   **Scalar constructors:** Direct value-to-instance conversion with `#[scalar]`
+    *   **Subform constructors:** Builder pattern for complex variants
 *   **Defaults & Optionals:** Seamless handling of `Default` values and `Option< T >` fields. Custom defaults via `#[ former( default = ... ) ]`.
 *   **Subformers:** Powerful mechanism for building nested structures and collections:
-    *   `#[ subform_scalar ]`: For fields whose type also derives `Former`.
-    *   `#[ subform_collection ]`: For collections like `Vec`, `HashMap`, `HashSet`, etc., providing methods like `.add()` or `.insert()`.
-    *   `#[ subform_entry ]`: For collections where each entry is built individually using its own former.
+    *   `#[ subform_scalar ]`: For fields whose type also derives `Former`, or for single-field enum variants
+    *   `#[ subform_collection ]`: For collections like `Vec`, `HashMap`, `HashSet`, etc., providing methods like `.add()` or `.insert()`
+    *   `#[ subform_entry ]`: For collections where each entry is built individually using its own former
+*   **Variant-Specific Attributes:**
+    *   `#[ scalar ]`: Forces scalar constructor generation for enum variants
+    *   `#[ subform_scalar ]`: Enables subformer delegation for compatible variants
+    *   `#[ standalone_constructors ]`: Generates top-level constructor functions
+    *   `#[ arg_for_constructor ]`: Controls parameter inclusion in standalone constructors
 *   **Customization:**
-    *   Rename setters: `#[ scalar( name = ... ) ]`, `#[ subform_... ( name = ... ) ]`.
-    *   Disable default setters: `#[ scalar( setter = false ) ]`, `#[ subform_... ( setter = false ) ]`.
-    *   Define custom setters directly in `impl Former`.
-    *   Specify collection definitions: `#[ subform_collection( definition = ... ) ]`.
+    *   Rename setters: `#[ scalar( name = ... ) ]`, `#[ subform_... ( name = ... ) ]`
+    *   Disable default setters: `#[ scalar( setter = false ) ]`, `#[ subform_... ( setter = false ) ]`
+    *   Define custom setters directly in `impl Former`
+    *   Specify collection definitions: `#[ subform_collection( definition = ... ) ]`
 *   **Advanced Control:**
     *   Storage-only fields: `#[ storage_fields( ... ) ]`.
     *   Custom mutation logic: `#[ mutator( custom ) ]` + `impl FormerMutator`.

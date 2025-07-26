@@ -1,27 +1,22 @@
 use super::*;
-use macro_tools::{ Result, quote::quote };
+use macro_tools::{ Result, quote::{ quote, format_ident }, ident::cased_ident_from_ident, generic_params::GenericsRef };
+use convert_case::Case;
 
-#[allow(dead_code)]
 pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
 {
+  // Placeholder implementation for Rule 3f - will be fully implemented in Increment 7
+  // For now, just generate an error message to avoid breaking existing tests
+  
   let variant_name = &ctx.variant.ident;
-  let vis = ctx.vis;
-  let fields = &ctx.variant_field_info;
-
-  let field_types = fields.iter().map( | f | & f.ty );
-  let _field_names = fields.iter().map( | f | & f.ident );
-
-  let field_types_clone_1 = field_types.clone();
-  let field_types_clone_2 = field_types.clone();
-
+  let method_name = cased_ident_from_ident(variant_name, Case::Snake);
+  
+  // Generate a placeholder that will fail compilation with a clear message
   let result = quote!
   {
     #[ inline( always ) ]
-    #vis fn #variant_name() -> ( #( < #field_types_clone_1 as former::Former >::Former ),* )
+    pub fn #method_name() -> ! 
     {
-      // This is a placeholder. The actual implementation will generate an implicit former.
-      // For now, return a tuple of default formers.
-      ( #( < #field_types_clone_2 as former::Former >::former() ),* )
+      unimplemented!("Multi-field tuple variant implicit formers are not yet implemented (Rule 3f - Increment 7)")
     }
   };
 

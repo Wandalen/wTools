@@ -17,6 +17,7 @@
 //!   to set fields and call `.form()` results in the correct `FunctionStep` enum instances.
 
 use super::*;
+use former;
 
 // Define the inner structs
 #[derive(Debug, Clone, PartialEq, former::Former)]
@@ -27,9 +28,9 @@ pub struct Run { pub command : String }
 
 // Derive Former on the simplified enum - This should generate static methods
 #[ derive( Debug, Clone, PartialEq, former::Former ) ]
-// #[ debug ]
+#[ debug ]
 #[ former( standalone_constructors ) ]
-enum FunctionStep
+pub enum FunctionStep
 {
   #[ subform_scalar ]
   Break( Break ),

@@ -36,13 +36,8 @@ use former::{
 };
 use std::marker::PhantomData;
 
-// --- Bound, Types, and Inner Struct ---
-// Are defined in the included _only_test.rs file
-// pub trait Bound : core::fmt::Debug + Default + Clone + PartialEq {}
-// #[ derive( Debug, Default, Clone, PartialEq ) ] pub struct MyType( String ); impl Bound for MyType {}
-#[ derive( Debug, Clone, PartialEq, Default ) ] // Removed former::Former derive
-pub struct InnerScalar< T : Bound > { pub data : T, }
-impl< T : Bound > From< T > for InnerScalar< T > { fn from( data : T ) -> Self { Self { data } } }
+
+
 
 
 // --- Enum Definition with Bounds ---

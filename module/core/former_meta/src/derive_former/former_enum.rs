@@ -265,8 +265,14 @@ pub(super) fn former_for_enum(
               "#[subform_scalar] cannot be used on tuple variants with multiple fields.",
             ));
           }
-          let generated = tuple_multi_fields_scalar::handle(&mut ctx)?;
-          ctx.methods.push(generated); // Collect generated tokens
+          if ctx.variant_attrs.scalar.is_some() {
+            let generated = tuple_multi_fields_scalar::handle(&mut ctx)?;
+            ctx.methods.push(generated); // Collect generated tokens
+          } else {
+            // Rule 3f: Multi-field tuple variants without attributes get implicit variant former
+            let generated = tuple_multi_fields_subform::handle(&mut ctx)?;
+            ctx.methods.push(generated); // Collect generated tokens
+          }
         }
       },
       syn::Fields::Named(fields) => match fields.named.len() {
