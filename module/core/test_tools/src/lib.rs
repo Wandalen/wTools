@@ -164,7 +164,7 @@ pub mod own {
 
   #[doc(inline)]
   pub use {
-    error_tools::orphan::*, collection_tools::orphan::*, impls_index::orphan::*, mem_tools::orphan::*, typing_tools::orphan::*,
+    collection_tools::orphan::*, impls_index::orphan::*, mem_tools::orphan::*, typing_tools::orphan::*,
     diagnostics_tools::orphan::*,
   };
 }
@@ -198,8 +198,8 @@ pub mod exposed {
 
   #[doc(inline)]
   pub use {
-    error_tools::exposed::*, collection_tools::exposed::*, impls_index::exposed::*, mem_tools::exposed::*,
-    typing_tools::exposed::*, diagnostics_tools::exposed::*,
+    collection_tools::exposed::*, impls_index::exposed::*, mem_tools::exposed::*, typing_tools::exposed::*,
+    diagnostics_tools::exposed::*,
   };
 }
 
@@ -217,7 +217,7 @@ pub mod prelude {
 
   #[doc(inline)]
   pub use {
-    error_tools::prelude::*, collection_tools::prelude::*, impls_index::prelude::*, mem_tools::prelude::*,
-    typing_tools::prelude::*, diagnostics_tools::prelude::*,
+    collection_tools::prelude::*, impls_index::prelude::*, mem_tools::prelude::*, typing_tools::prelude::*,
+    diagnostics_tools::prelude::*,
   };
 }

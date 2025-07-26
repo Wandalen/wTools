@@ -544,8 +544,14 @@ fn test_load_from_yaml_str_multiple_commands() {
 
   assert!(registry.commands.contains_key(".group1.command1"));
   assert!(registry.commands.contains_key(".group1.command2"));
-  assert_eq!(registry.commands.get(".group1.command1").unwrap().namespace, Some(".group1".to_string()));
-  assert_eq!(registry.commands.get(".group1.command2").unwrap().namespace, Some(".group1".to_string()));
+  assert_eq!(
+    registry.commands.get(".group1.command1").unwrap().namespace,
+    Some(".group1".to_string())
+  );
+  assert_eq!(
+    registry.commands.get(".group1.command2").unwrap().namespace,
+    Some(".group1".to_string())
+  );
 }
 
 #[test]
@@ -818,8 +824,14 @@ fn test_load_from_json_str_multiple_commands() {
 
   assert!(registry.commands.contains_key(".group1.command1_json"));
   assert!(registry.commands.contains_key(".group1.command2_json"));
-  assert_eq!(registry.commands.get(".group1.command1_json").unwrap().namespace, Some(".group1".to_string()));
-  assert_eq!(registry.commands.get(".group1.command2_json").unwrap().namespace, Some(".group1".to_string()));
+  assert_eq!(
+    registry.commands.get(".group1.command1_json").unwrap().namespace,
+    Some(".group1".to_string())
+  );
+  assert_eq!(
+    registry.commands.get(".group1.command2_json").unwrap().namespace,
+    Some(".group1".to_string())
+  );
 }
 
 #[test]

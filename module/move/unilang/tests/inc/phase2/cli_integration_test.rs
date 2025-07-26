@@ -101,8 +101,7 @@ fn test_cli_unknown_command() {
   // Test Matrix Row: T6.7
   let mut cmd = Command::cargo_bin("unilang_cli").unwrap();
   cmd.args(&vec![".unknown", "arg1", "arg2"]);
-  cmd
-    .assert()
-    .failure()
-    .stderr(predicate::str::contains("Error: Execution Error: Command not found: .unknown"));
+  cmd.assert().failure().stderr(predicate::str::contains(
+    "Error: Execution Error: Command not found: .unknown",
+  ));
 }

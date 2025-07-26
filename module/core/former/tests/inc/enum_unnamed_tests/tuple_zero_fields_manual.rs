@@ -30,7 +30,7 @@ pub struct InnerForSubform {
 #[derive(Debug, PartialEq)]
 pub enum EnumWithZeroFieldTuple {
   VariantZeroDefault(), // Zero-field tuple variant
-  VariantZeroScalar(), // Conceptually, this is the one that would have #[scalar] in derive
+  VariantZeroScalar(),  // Conceptually, this is the one that would have #[scalar] in derive
 }
 
 impl EnumWithZeroFieldTuple {
