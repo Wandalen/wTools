@@ -93,6 +93,11 @@
 // ```
 //
 #![allow(clippy::wildcard_imports)] // Keep if present
+#![allow(clippy::unnecessary_wraps)] // Temporary for placeholder handlers
+#![allow(clippy::used_underscore_binding)] // Temporary for placeholder handlers
+#![allow(clippy::no_effect_underscore_binding)] // Temporary for placeholder handlers
+#![allow(dead_code)] // Temporary for placeholder handlers
+#![allow(unused_variables)] // Temporary for placeholder handlers
 
 use super::*;
 use macro_tools::{
@@ -172,8 +177,8 @@ pub(super) fn former_for_enum(
   }
 
   let mut methods = Vec::new();
-  let mut end_impls = TokenStream::new();
-  let mut standalone_constructors = TokenStream::new();
+  let mut end_impls = Vec::new();
+  let mut standalone_constructors = Vec::new();
   let merged_where_clause = generics.where_clause.as_ref();
 
   for variant in &data_enum.variants {
@@ -343,18 +348,18 @@ pub(super) fn former_for_enum(
     }
   } else {
     if has_debug {
-      diag::report_print(format!("DEBUG: Methods collected before final quote for {enum_name}"), original_input, &quote!{ #methods });
+      diag::report_print(format!("DEBUG: Methods collected before final quote for {enum_name}"), original_input, &quote!{ #( #methods )* });
     }
     quote! {
-      #end_impls
+      #( #end_impls )*
 
       impl #impl_generics #enum_name #ty_generics
       #where_clause
       {
-          #( #methods.iter() )*
+          #( #methods )*
       }
 
-      // // #standalone_constructors
+      #( #standalone_constructors )*
     }
   };
 

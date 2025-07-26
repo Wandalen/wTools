@@ -1,8 +1,8 @@
 use super::*;
 use test_tools::exposed::*;
 
-// #[cfg(feature = "derive_former")]
-// mod struct_tests; // Temporarily commented out for focused testing
+#[cfg(feature = "derive_former")]
+mod struct_tests; // Temporarily commented out for focused testing
 
 // Tests for enum variants.
 // These are categorized by the kind of variant fields.

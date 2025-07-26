@@ -24,7 +24,7 @@ use super::*; // Imports testing infrastructure and potentially other common ite
 // #[ debug ] // Uncomment to see generated code later
 pub enum EnumScalarGeneric< T : Bound > // Enum bound
 {
-  // #[ scalar ] // Removed #[scalar] for default behavior test
+  #[ scalar ] // Enabled for Rule 1d testing
   Variant1( InnerScalar< T > ), // Tuple variant with one generic field
 
   // qqq : xxx : attribute 'scalar ' is for direct constructor EnumScalarGeneric::variant2( a, b ) or simply variant2( a, b )

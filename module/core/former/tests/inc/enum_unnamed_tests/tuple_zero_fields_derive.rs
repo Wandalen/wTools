@@ -29,9 +29,9 @@ pub struct InnerForSubform {
 #[former(standalone_constructors, debug)] // Added standalone_constructors and debug
                                           // #[ derive( Default ) ] // Do not derive Default here, it caused issues before.
 pub enum EnumWithZeroFieldTuple {
-  VariantZeroDefault, // Default behavior (Rule 3b)
+  VariantZeroDefault(), // Default behavior (Rule 3b) - zero-field tuple variant
   #[scalar]
-  VariantZeroScalar, // #[scalar] attribute (Rule 1b)
+  VariantZeroScalar(), // #[scalar] attribute (Rule 1b) - zero-field tuple variant
 }
 
 // Include the shared test logic

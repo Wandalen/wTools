@@ -1,16 +1,27 @@
 use super::*;
-use macro_tools::{ Result, quote::quote };
+use macro_tools::{ Result, quote::quote, ident::cased_ident_from_ident, syn_err };
+use convert_case::Case;
 
-pub fn handle( _ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
+pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
 {
-  let variant_name = & _ctx.variant.ident;
-  let enum_name = _ctx.enum_name;
-  let vis = _ctx.vis;
+  let variant_name = &ctx.variant.ident;
+  let method_name = cased_ident_from_ident(variant_name, Case::Snake);
+  let enum_name = ctx.enum_name;
+  let vis = ctx.vis;
 
+  // Rule 2b: #[subform_scalar] on zero-field tuple variants should cause a compile error
+  if ctx.variant_attrs.subform_scalar.is_some() {
+    return Err(syn_err!(
+      ctx.variant,
+      "#[subform_scalar] cannot be used on zero-field tuple variants."
+    ));
+  }
+
+  // For zero-field tuple variants, Rules 1b and 3b both generate the same direct constructor
   let result = quote!
   {
     #[ inline( always ) ]
-    #vis fn #variant_name() -> #enum_name
+    #vis fn #method_name() -> #enum_name
     {
       #enum_name::#variant_name()
     }

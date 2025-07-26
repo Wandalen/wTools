@@ -1,17 +1,20 @@
 use super::*;
-use macro_tools::{ Result, quote::quote };
+use macro_tools::{ Result, quote::quote, ident::cased_ident_from_ident };
+use convert_case::Case;
 
-pub fn handle( _ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
+pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
 {
-  let variant_name = & _ctx.variant.ident;
-  let enum_name = _ctx.enum_name;
-  let vis = _ctx.vis;
-  let field_type = & _ctx.variant_field_info[ 0 ].ty;
+  let variant_name = &ctx.variant.ident;
+  let method_name = cased_ident_from_ident(variant_name, Case::Snake);
+  let enum_name = ctx.enum_name;
+  let vis = ctx.vis;
+  let field_type = &ctx.variant_field_info[0].ty;
 
+  // Rule 1d: #[scalar] on single-field tuple variants generates scalar constructor
   let result = quote!
   {
     #[ inline( always ) ]
-    #vis fn #variant_name( _0 : impl Into< #field_type > ) -> #enum_name
+    #vis fn #method_name( _0 : impl Into< #field_type > ) -> #enum_name
     {
       #enum_name::#variant_name( _0.into() )
     }

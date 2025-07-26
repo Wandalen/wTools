@@ -29,20 +29,20 @@ pub struct InnerForSubform {
 // Define the enum without the derive macro
 #[derive(Debug, PartialEq)]
 pub enum EnumWithZeroFieldTuple {
-  VariantZeroDefault,
-  VariantZeroScalar, // Conceptually, this is the one that would have #[scalar] in derive
+  VariantZeroDefault(), // Zero-field tuple variant
+  VariantZeroScalar(), // Conceptually, this is the one that would have #[scalar] in derive
 }
 
 impl EnumWithZeroFieldTuple {
   #[inline(always)]
   pub fn variant_zero_default() -> Self {
-    Self::VariantZeroDefault
+    Self::VariantZeroDefault()
   }
 
   #[inline(always)]
   pub fn variant_zero_scalar() -> Self {
     // Manual equivalent of scalar behavior
-    Self::VariantZeroScalar
+    Self::VariantZeroScalar()
   }
 }
 
@@ -50,13 +50,13 @@ impl EnumWithZeroFieldTuple {
 #[inline(always)]
 pub fn variant_zero_default() -> EnumWithZeroFieldTuple {
   // Name matches derive output
-  EnumWithZeroFieldTuple::VariantZeroDefault
+  EnumWithZeroFieldTuple::VariantZeroDefault()
 }
 
 #[inline(always)]
 pub fn variant_zero_scalar() -> EnumWithZeroFieldTuple {
   // Name matches derive output
-  EnumWithZeroFieldTuple::VariantZeroScalar
+  EnumWithZeroFieldTuple::VariantZeroScalar()
 }
 
 // Include the shared test logic

@@ -52,9 +52,9 @@
 // mod generics_shared_tuple_derive;
 // mod generics_shared_tuple_manual;
 // mod generics_shared_tuple_only_test;
-// mod scalar_generic_tuple_derive;
-// mod scalar_generic_tuple_manual;
-// mod scalar_generic_tuple_only_test;
+// mod scalar_generic_tuple_derive; // Re-comment until all dependencies ready
+// mod scalar_generic_tuple_manual; // Re-comment until all dependencies ready
+// mod scalar_generic_tuple_only_test; // Re-comment until all dependencies ready
 // mod tuple_multi_default_derive;
 // mod tuple_multi_default_manual;
 // mod tuple_multi_default_only_test;
@@ -92,4 +92,4 @@ mod tuple_zero_fields_derive; // Re-enabled after fixing _only_test.rs and deriv
 mod tuple_zero_fields_manual; // Re-enabled after fixing _only_test.rs
                               // Note: tuple_zero_fields_only_test.rs is included by the manual and derive files.
 
-// pub mod compile_fail;
+pub mod compile_fail;
