@@ -13,12 +13,12 @@
 ### Progress
 *   **Roadmap Milestone:** Phase 3: Architectural Unification
 *   **Primary Editable Crate:** `module/move/unilang`
-*   **Overall Progress:** 2/12 increments complete
+*   **Overall Progress:** 3/12 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Pre-computation - Reconcile Data Models and Plan Tests
     *   ✅ Increment 2: Refactor `SemanticAnalyzer` to Consume `GenericInstruction`
-    *   ⚫ Increment 3: Update `unilang_cli` Binary and Core Integration Tests
-    *   ⚫ Increment 4: Implement Full Data Models in `unilang/src/data.rs`
+    *   ✅ Increment 3: Update `unilang_cli` Binary and Core Integration Tests
+    *   ⏳ Increment 4: Implement Full Data Models in `unilang/src/data.rs`
     *   ⚫ Increment 5: Update All Code to Use New Data Models
     *   ⚫ Increment 6: Write Failing Integration Test for Command Aliasing
     *   ⚫ Increment 7: Implement Command Alias Resolution in CLI
@@ -59,6 +59,7 @@
 | Test ID | Status | Notes |
 |---|---|---|
 | `full_pipeline_test` | Fixed (Monitored) | Was `Failing (New)`, now passing. |
+| `cli_integration_test` | Fixed (Monitored) | Was `Failing (New)`, now passing. |
 
 ### Crate Conformance Check Procedure
 *   Run `timeout 180 cargo test --workspace` and verify it passes with no warnings.
@@ -155,6 +156,7 @@
 *   **Steps:**
     1.  In `unilang/tests/inc/phase2/help_generation_test.rs`, update the assertions to check for the presence of "Aliases:", "Status:", and "Version:" in the help output.
     2.  Run the test suite. The `help_generation_test` is now expected to fail because the `HelpGenerator` does not yet produce this output.
+    3.  Update the `unilang/tests/inc/phase2/help_generation_test.rs` to use `unilang_parser::Parser` to generate `GenericInstruction`s for its test cases, fixing any compilation errors in the test file.
 *   **Increment Verification:**
     1.  Execute `timeout 180 cargo test --test help_generation_test`. The tests must fail with assertion errors related to the missing new fields.
 *   **Commit Message:** "test(unilang): Update help tests to expect new metadata fields"
@@ -222,3 +224,4 @@
 *   [Initial] Created a highly elaborated task plan for Phase 3, enforcing strict TDD and providing explicit implementation details.
 *   [Increment 1 | 2025-07-26T12:59:59.681Z] Completed pre-computation, reconciled data models, and updated test plan.
 *   [Increment 2 | 2025-07-26T13:02:39.110Z] Refactored SemanticAnalyzer to use unilang_parser::GenericInstruction.
+*   [Increment 3 | 2025-07-26T13:04:14.149Z] Updated unilang_cli binary and core integration tests.

@@ -7,3 +7,4 @@
 *   [2025-07-23] refactor(cli): Migrated `unilang_cli` to use the new parsing pipeline and updated command definitions with full metadata.
 * [Increment 1.1 | 2025-07-26 05:54:26 UTC] Fixed `unilang::tests::inc::phase2::help_generation_test::test_cli_specific_command_help_add` by adding `use predicates::Predicate;`, explicitly capturing the lifetime with `+ '_`, and updating the expected output for argument descriptions.
 * [2025-07-26] Phase 3: Reconciled data models and created comprehensive test plan.
+* [2025-07-26] Phase 3: Refactored SemanticAnalyzer to use unilang_parser::GenericInstruction.
