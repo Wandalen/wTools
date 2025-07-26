@@ -133,7 +133,7 @@
 *   **Steps:**
     1.  Uncomment the `scalar_generic_tuple_derive` and `scalar_generic_tuple_manual` modules in `enum_unnamed_tests/mod.rs`.
     2.  Run `cargo test --package former --test tests -- --nocapture scalar_on_single_generic_tuple_variant`. Expect failure.
-    3.  Implement the logic in `tuple_single_field_scalar.rs` to generate a constructor that takes the inner type as an argument.
+    3.  Implement the logic in `module/core/former_meta/src/derive_former/former_enum/tuple_single_field_scalar.rs` to generate a constructor that takes the inner type as an argument.
     4.  Update dispatch logic in `former_enum.rs`.
     5.  Run the test again. Expect success.
     6.  Update the `### Tests` table with the status `Passed`.

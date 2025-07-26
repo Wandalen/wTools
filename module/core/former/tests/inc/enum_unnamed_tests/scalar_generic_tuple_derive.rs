@@ -19,7 +19,6 @@ use super::*; // Imports testing infrastructure and potentially other common ite
 // --- Enum Definition with Bounds and #[scalar] Variants ---
 // Apply Former derive here. This is what we are testing.
 #[derive(Debug, PartialEq, Clone, former::Former)]
-// #[debug] // Uncomment to see generated code later
 pub enum EnumScalarGeneric<T: Bound>
 {
   #[scalar] // Enabled for Rule 1d testing

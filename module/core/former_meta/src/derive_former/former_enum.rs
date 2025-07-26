@@ -315,6 +315,29 @@ pub(super) fn former_for_enum(
 
   let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
 
+  if has_debug {
+    diag::report_print(
+      format!("DEBUG: Raw generics for {enum_name}"),
+      original_input,
+      &quote! { #generics },
+    );
+    diag::report_print(
+      format!("DEBUG: impl_generics for {enum_name}"),
+      original_input,
+      &quote! { #impl_generics },
+    );
+    diag::report_print(
+      format!("DEBUG: ty_generics for {enum_name}"),
+      original_input,
+      &quote! { #ty_generics },
+    );
+    diag::report_print(
+      format!("DEBUG: where_clause for {enum_name}"),
+      original_input,
+      &quote! { #where_clause },
+    );
+  }
+
   let result = if enum_name == "GenericOption" {
     quote! {
       #[automatically_derived]
