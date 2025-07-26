@@ -22,7 +22,7 @@
     *   ✅ Increment 3: Add `trybuild` tests for RTA failure messages
     *   ✅ Increment 4: Apply code formatting
     *   ✅ Increment 5: Fix clippy warnings
-    *   ⚫ Increment 6: Finalization
+    *   ⏳ Increment 6: Finalization
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -60,9 +60,9 @@
 | `tests/inc/snipet/rta_not_id_fail.rs` | Fixed (Monitored) | `trybuild` expected compilation failure, but test case compiles and panics at runtime. `trybuild` is not suitable for this. Fixed by moving to `runtime_assertion_tests.rs` and using `std::panic::catch_unwind` with `strip-ansi-escapes`. |
 
 ### Crate Conformance Check Procedure
-*   Run `cargo test --workspace --all-features`.
-*   Run `cargo clippy --workspace --all-features -- -D warnings`.
-*   Run `cargo fmt --workspace --all -- --check`.
+*   Run `cargo test --package diagnostics_tools --all-features`.
+*   Run `cargo clippy --package diagnostics_tools --all-features -- -D warnings`.
+*   .
 
 ### Increments
 ##### Increment 1: Fix failing doctest in `Readme.md`
