@@ -11,11 +11,11 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/move/unilang_parser`
-*   **Overall Progress:** 0/3 increments complete
+*   **Overall Progress:** 2/3 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1.1: Focused Debuging: Fix `unilang::tests::inc::phase2::help_generation_test::test_cli_specific_command_help_add`
     *   ✅ Increment 1: Analyze Current Parsing Logic and Add Failing Test
-    *   ⚫ Increment 2: Implement Path-Aware Parsing Logic
+    *   ✅ Increment 2: Implement Path-Aware Parsing Logic
     *   ⚫ Increment 3: Finalization
 
 ### Permissions & Boundaries
@@ -48,6 +48,8 @@
 |---|---|---|
 | `unilang::tests::inc::phase2::help_generation_test::test_cli_specific_command_help_add` | Fixed (Monitored) | Was stuck, fixed in Inc 1.1. Root cause was a lifetime issue with `Predicate` and then an outdated expected stdout. |
 | `unilang_parser::tests::path_parsing_test::test_parse_path_with_dots` | Fixed (Monitored) | Was stuck, fixed in Inc 1.2. Root cause was `.` being treated as a delimiter in `strs_tools::split`. |
+| `unilang::tests::inc::phase2::cli_integration_test::test_cli_cat_command_valid_file` | Fixed (Monitored) | Was ignored, now passing after `unilang_parser` fix. |
+| `unilang::tests::inc::phase2::cli_integration_test::test_cli_cat_command_non_existent_file` | Fixed (Monitored) | Was ignored, now passing after `unilang_parser` fix. |
 
 ### Crate Conformance Check Procedure
 *   Run `timeout 90 cargo test -p unilang_parser --all-targets`.
@@ -147,8 +149,10 @@
 *   [Increment 1.1 | 2025-07-26 05:54:05 UTC] `unilang::tests::inc::phase2::help_generation_test::test_cli_specific_command_help_add` is now passing after fixing the lifetime issue and updating the expected output.
 *   [Increment 1 | 2025-07-26 05:56:05 UTC] `unilang_parser::tests::path_parsing_test::test_parse_path_with_dots` timed out when running `cargo test -p unilang_parser --workspace`.
 *   [Increment 1.2 | 2025-07-26 05:57:02 UTC] `unilang_parser::tests::path_parsing_test::test_parse_path_with_dots` is now passing after removing `.` from delimiters in `strs_tools::split` configuration.
+*   [Increment 2 | 2025-07-26 05:57:48 UTC] `unilang::tests::inc::phase2::cli_integration_test::test_cli_cat_command_valid_file` and `test_cli_cat_command_non_existent_file` are now passing, confirming the fix in `unilang_parser` resolves the original issue.
 
 ### Changelog
 *   [Increment 0 | 2025-07-26 05:49:13 UTC] Initialized task plan.
 *   [Increment 1.1 | 2025-07-26 05:54:26 UTC] Fixed `unilang::tests::inc::phase2::help_generation_test::test_cli_specific_command_help_add` by adding `use predicates::Predicate;`, explicitly capturing the lifetime with `+ '_`, and updating the expected output for argument descriptions.
 *   [Increment 1.2 | 2025-07-26 05:57:13 UTC] Fixed `unilang_parser::tests::path_parsing_test::test_parse_path_with_dots` by removing `.` from the delimiters in `strs_tools::split` configuration in `module/move/unilang_parser/src/parser_engine.rs`.
+*   [Increment 2 | 2025-07-26 05:57:52 UTC] Confirmed `unilang::tests::inc::phase2::cli_integration_test::test_cli_cat_command_valid_file` and `test_cli_cat_command_non_existent_file` are passing after the `unilang_parser` fix.
