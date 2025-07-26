@@ -1,19 +1,18 @@
-//! qqq : write proper description
-fn main() {
-  #[cfg(not(feature = "no_std"))]
-  {
-    let err = f1();
-    println!("{err:#?}");
-    // < Err(
-    // <    BasicError {
-    // <        msg: "Some error",
-    // <    },
-    // < )
-  }
+//! A trivial example for `error_tools`.
+
+use error_tools::untyped::{ Result };
+
+fn get_message() -> Result< &'static str >
+{
+  Ok( "Hello, world!" )
+  // Err( format_err!( "An unexpected error!" ) )
 }
 
-#[cfg(not(feature = "no_std"))]
-fn f1() -> error_tools::untyped::Result<()> {
-  let _read = std::fs::read_to_string("Cargo.toml")?;
-  Err(error_tools::untyped::format_err!("Some error"))
+fn main()
+{
+  match get_message()
+  {
+    Ok( msg ) => println!( "Success: {}", msg ),
+    Err( e ) => println!( "Error: {:?}", e ),
+  }
 }
