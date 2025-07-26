@@ -48,12 +48,14 @@ impl EnumWithZeroFieldTuple {
 
 // Standalone constructors (matching derive macro output)
 #[inline(always)]
+#[allow(dead_code)] // Suppress unused warning for demonstration function
 pub fn variant_zero_default() -> EnumWithZeroFieldTuple {
   // Name matches derive output
   EnumWithZeroFieldTuple::VariantZeroDefault()
 }
 
 #[inline(always)]
+#[allow(dead_code)] // Suppress unused warning for demonstration function
 pub fn variant_zero_scalar() -> EnumWithZeroFieldTuple {
   // Name matches derive output
   EnumWithZeroFieldTuple::VariantZeroScalar()
