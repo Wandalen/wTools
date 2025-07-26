@@ -11,7 +11,8 @@ Diagnostics tools.
 
 <!-- {{# generate.module{} #}} -->
 
-```rust
+```rust should_panic
+use diagnostics_tools::a_id;
 fn a_id_panic_test()
 {
   a_id!( 1, 2 );
@@ -43,4 +44,3 @@ git clone https://github.com/Wandalen/wTools
 cd wTools
 cd examples/diagnostics_tools_trivial
 cargo run
-```

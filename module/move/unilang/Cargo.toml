@@ -67,6 +67,9 @@ path = "tests/inc/phase2/cli_integration_test.rs"
 [[test]]
 name = "help_generation_test"
 path = "tests/inc/phase2/help_generation_test.rs"
+[[test]]
+name = "data_model_features_test"
+path = "tests/inc/phase3/data_model_features_test.rs"
 
 
 

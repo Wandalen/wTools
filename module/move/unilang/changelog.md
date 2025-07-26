@@ -9,3 +9,4 @@
 * [2025-07-26] Phase 3: Reconciled data models and created comprehensive test plan.
 * [2025-07-26] Phase 3: Refactored SemanticAnalyzer to use unilang_parser::GenericInstruction.
 * [2025-07-26] Phase 3: Updated unilang_cli binary and core integration tests.
+* [2025-07-26] Phase 3: Updated all call sites to use new data models.

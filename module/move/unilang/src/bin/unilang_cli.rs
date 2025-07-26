@@ -2,6 +2,7 @@
 //! It demonstrates how to initialize the command registry,
 //! parse command-line arguments, and execute commands.
 
+use std::collections::HashMap;
 use unilang::data::ArgumentAttributes;
 use unilang::registry::CommandRegistry;
 use unilang::data::{ CommandDefinition, ArgumentDefinition, Kind, ErrorData, OutputData };
@@ -146,6 +147,23 @@ fn main() -> Result< (), unilang::error::Error >
     eprintln!( "Usage: {0} <command> [args...]", args[ 0 ] );
     return Ok( () );
   }
+  let mut processed_args = args.clone();
+  let mut command_name_or_alias = processed_args[1].clone();
+
+  // New alias resolution logic
+  let mut alias_map: HashMap<String, String> = HashMap::new();
+  for (command_name, command_def) in registry.commands.iter() {
+      for alias in &command_def.aliases {
+          alias_map.insert(alias.clone(), command_name.clone());
+      }
+  }
+
+  if let Some(canonical_name) = alias_map.get(&command_name_or_alias) {
+      command_name_or_alias = canonical_name.clone();
+      processed_args[1] = canonical_name.clone(); // Replace alias with canonical name in args
+  }
+
+  let command_name = &command_name_or_alias; // Use the resolved command name
 
   let command_name = &args[ 1 ];
   if command_name == "--help" || command_name == "help"
@@ -176,7 +194,7 @@ fn main() -> Result< (), unilang::error::Error >
   }
 
   let parser = Parser::new(UnilangParserOptions::default());
-  let command_input_str = args[1..].join(" ");
+  let command_input_str = processed_args[1..].join(" ");
   let instruction = parser.parse_single_instruction(&command_input_str)?;
   let instructions = &[instruction][..];
 
