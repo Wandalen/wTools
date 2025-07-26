@@ -206,7 +206,11 @@ impl Parser
       println!("DEBUG: parse_command_path peeking: {item:?}, last_token_was_dot: {last_token_was_dot}");
       match &item.kind
       {
-        UnilangTokenKind::Identifier( ref s ) | UnilangTokenKind::Number( ref s ) =>
+        UnilangTokenKind::Number( ref s ) =>
+          {
+            return Err( ParseError::new( ErrorKind::Syntax( format!( "Invalid identifier '{s}' in command path" ) ), item.adjusted_source_location.clone() ) );
+          }
+          UnilangTokenKind::Identifier( ref s ) =>
         {
           if command_path_slices.is_empty() || last_token_was_dot
           {
@@ -279,7 +283,15 @@ impl Parser
     {
       match item.kind
       {
-        UnilangTokenKind::Identifier( ref s ) | UnilangTokenKind::Number( ref s ) | UnilangTokenKind::Unrecognized( ref s ) =>
+        UnilangTokenKind::Unrecognized( ref s ) =>
+            {
+              return Err( ParseError::new( ErrorKind::Syntax( format!( "Unexpected token '{}' in arguments", s ) ), item.adjusted_source_location.clone() ) );
+            }
+            UnilangTokenKind::Number( ref s ) =>
+          {
+            return Err( ParseError::new( ErrorKind::Syntax( format!( "Invalid identifier '{s}' in command path" ) ), item.adjusted_source_location.clone() ) );
+          }
+          UnilangTokenKind::Identifier( ref s ) =>
         {
           if let Some( next_item ) = items_iter.peek()
           {
