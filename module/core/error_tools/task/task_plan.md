@@ -13,12 +13,12 @@
 ### Progress
 *   **Roadmap Milestone:** M2: Improved Documentation and Usability
 *   **Primary Editable Crate:** `module/core/error_tools`
-*   **Overall Progress:** 2/6 increments complete
+*   **Overall Progress:** 4/6 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Fix Build Issues and Add Core Documentation
     *   ✅ Increment 2: Create `untyped` (anyhow) Usage Example
-    *   ⏳ Increment 3: Create `typed` (thiserror) Usage Example
-    *   ⚫ Increment 4: Update `Readme.md` with New Content and Examples
+    *   ✅ Increment 3: Create `typed` (thiserror) Usage Example
+    *   ✅ Increment 4: Update `Readme.md` with New Content and Examples
     *   ⚫ Increment 5: Clean up `error_tools_trivial.rs` Example
     *   ⚫ Increment 6: Finalization
 
@@ -372,3 +372,5 @@
 ### Changelog
 *   [Increment 1 | 2025-07-26 21:27 UTC] Resolved package collision in `unilang_instruction_parser/Cargo.toml`. Removed problematic imports from `test_tools/src/lib.rs`. Added missing documentation to `error/mod.rs`.
 *   [Increment 2 | 2025-07-26 21:30 UTC] Created `untyped` (anyhow) usage example in `examples/replace_anyhow.rs`.
+*   [Increment 3 | 2025-07-26 21:31 UTC] Created `typed` (thiserror) usage example in `examples/replace_thiserror.rs`.
+*   [Increment 4 | 2025-07-26 21:32 UTC] Updated `Readme.md` with new content and examples.
