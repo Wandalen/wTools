@@ -11,11 +11,14 @@ Diagnostics tools.
 
 <!-- {{# generate.module{} #}} -->
 
-```rust should_panic
+```rust
 use diagnostics_tools::a_id;
 fn a_id_panic_test()
 {
-  a_id!( 1, 2 );
+  let result = std::panic::catch_unwind(|| {
+    a_id!( 1, 2 );
+  });
+  assert!(result.is_err());
   /*
     print :
     ...

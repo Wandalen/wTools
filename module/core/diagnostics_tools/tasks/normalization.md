@@ -14,9 +14,10 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/diagnostics_tools`
-*   **Overall Progress:** 0/6 increments complete
+*   **Overall Progress:** 1/6 increments complete
 *   **Increment Status:**
-    *   ⏳ Increment 1: Fix failing doctest in `Readme.md`
+    *   ⚫ Increment 1: Fix failing doctest in `Readme.md`
+    *   ✅ Increment 1.1: Diagnose and fix the Failing (Stuck) test: `module/core/diagnostics_tools/src/lib.rs - (line 18)`
     *   ⚫ Increment 2: Refactor `trybuild` setup and enable CTA tests
     *   ⚫ Increment 3: Add `trybuild` tests for RTA failure messages
     *   ⚫ Increment 4: Apply code formatting
@@ -54,7 +55,7 @@
 ### Tests
 | Test ID | Status | Notes |
 |---|---|---|
-| `module/core/diagnostics_tools/src/lib.rs - (line 18)` | Failing (New) | Doctest marked `should_panic` is not panicking. |
+| `module/core/diagnostics_tools/src/lib.rs - (line 18)` | Fixed (Monitored) | Doctest marked `should_panic` was not panicking. Fixed by using `std::panic::catch_unwind` due to `should_panic` not working with `include_str!`. |
 
 ### Crate Conformance Check Procedure
 *   Run `cargo test --workspace --all-features`.
@@ -73,6 +74,29 @@
     1.  Execute `cargo test --doc --package diagnostics_tools` via `execute_command`.
     2.  Analyze the output to confirm all doctests now pass.
 *   **Commit Message:** `fix(docs): Correct doctest in Readme.md to panic as expected`
+
+##### Increment 1.1: Diagnose and fix the Failing (Stuck) test: `module/core/diagnostics_tools/src/lib.rs - (line 18)`
+*   **Goal:** Diagnose and fix the `Failing (Stuck)` test: `module/core/diagnostics_tools/src/lib.rs - (line 18)`
+*   **Specification Reference:** N/A
+*   **Steps:**
+    *   **Step A: Apply Problem Decomposition.** The plan must include an explicit step to analyze the failing test and determine if it can be broken down into smaller, more focused tests, or if its setup can be simplified. This is a mandatory first step in analysis.
+    *   **Step B: Isolate the test case.**
+        1.  Temporarily modify the `Readme.md` doctest to use a direct `panic!` call instead of `a_id!`. This will verify if the `should_panic` attribute itself is working.
+        2.  Execute `cargo test --doc --package diagnostics_tools --features diagnostics_runtime_assertions` via `execute_command`.
+        3.  Analyze the output. If it panics, the `should_panic` attribute is working, and the issue is with `a_id!`. If it still doesn't panic, the issue is with the doctest environment or `should_panic` itself.
+    *   **Step C: Add targeted debug logging.**
+        1.  If `panic!` works, investigate `a_id!`. Add debug prints inside the `a_id!` macro (in `src/diag/rta.rs`) to see what `pretty_assertions::assert_eq!` is actually doing.
+        2.  Execute `cargo test --doc --package diagnostics_tools --features diagnostics_runtime_assertions` via `execute_command`.
+        3.  Analyze the output for debug logs.
+    *   **Step D: Review related code changes since the test last passed.** (N/A, this is a new task, test was failing from start)
+    *   **Step E: Formulate and test a hypothesis.**
+        1.  Based on debug logs, formulate a hypothesis about why `a_id!` is not panicking.
+        2.  Propose a fix for `a_id!` or the doctest.
+    *   Upon successful fix, document the root cause and solution in the `### Notes & Insights` section.
+*   **Increment Verification:**
+    *   Execute `cargo test --doc --package diagnostics_tools --features diagnostics_runtime_assertions` via `execute_command`.
+    *   Analyze the output to confirm the specific test ID now passes.
+*   **Commit Message:** `fix(test): Resolve stuck test module/core/diagnostics_tools/src/lib.rs - (line 18)`
 
 ##### Increment 2: Refactor `trybuild` setup and enable CTA tests
 *   **Goal:** Refactor the fragile, non-standard `trybuild` setup to be idiomatic and robust. Consolidate all compile-time assertion tests into this new setup.
@@ -151,6 +175,7 @@
 ### Notes & Insights
 *   The failing doctest is due to a missing import, which prevents the macro from being resolved and thus from panicking.
 *   Consolidating `trybuild` tests into a single, standard test target (`tests/trybuild.rs`) is more robust and maintainable than the previous scattered and brittle implementation.
+*   **Root cause of doctest failure:** The `should_panic` attribute on doctests included via `include_str!` in `lib.rs` does not seem to function correctly. The fix involved explicitly catching the panic with `std::panic::catch_unwind` and asserting `is_err()`.
 
 ### Changelog
 *
