@@ -17,7 +17,7 @@ use unilang::
   },
   interpreter::ExecutionContext,
 };
-use unilang_parser::{ SourceLocation, GenericInstruction };
+use unilang_parser::{ SourceLocation };
 use std::collections::HashMap;
 
 // Test Matrix for Runtime Command Registration

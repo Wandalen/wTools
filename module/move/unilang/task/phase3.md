@@ -13,10 +13,10 @@
 ### Progress
 *   **Roadmap Milestone:** Phase 3: Architectural Unification
 *   **Primary Editable Crate:** `module/move/unilang`
-*   **Overall Progress:** 1/12 increments complete
+*   **Overall Progress:** 2/12 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Pre-computation - Reconcile Data Models and Plan Tests
-    *   ⚫ Increment 2: Refactor `SemanticAnalyzer` to Consume `GenericInstruction`
+    *   ✅ Increment 2: Refactor `SemanticAnalyzer` to Consume `GenericInstruction`
     *   ⚫ Increment 3: Update `unilang_cli` Binary and Core Integration Tests
     *   ⚫ Increment 4: Implement Full Data Models in `unilang/src/data.rs`
     *   ⚫ Increment 5: Update All Code to Use New Data Models
@@ -58,7 +58,7 @@
 ### Tests
 | Test ID | Status | Notes |
 |---|---|---|
-| | | |
+| `full_pipeline_test` | Fixed (Monitored) | Was `Failing (New)`, now passing. |
 
 ### Crate Conformance Check Procedure
 *   Run `timeout 180 cargo test --workspace` and verify it passes with no warnings.
@@ -221,3 +221,4 @@
 ### Changelog
 *   [Initial] Created a highly elaborated task plan for Phase 3, enforcing strict TDD and providing explicit implementation details.
 *   [Increment 1 | 2025-07-26T12:59:59.681Z] Completed pre-computation, reconciled data models, and updated test plan.
+*   [Increment 2 | 2025-07-26T13:02:39.110Z] Refactored SemanticAnalyzer to use unilang_parser::GenericInstruction.
