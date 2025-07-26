@@ -1,237 +1,78 @@
-# Task Plan: Architectural Unification (Elaborated)
+# Task: Clarify Command Path and Argument Parsing Specification
 
 ### Goal
-*   To refactor the `unilang` crate by removing the legacy parser, fully integrating the `unilang_instruction_parser` crate, and updating the core data models to align with the formal specification. This task is the core of the `unilang` framework's current development phase.
-
-### Task Relationships
-*   **Prerequisite:** This task is **blocked by** and depends on the successful completion of:
-    *   `unilang_instruction_parser/task/fix_command_parsing_task.md`: The parser must be fixed before it can be integrated.
-*   **Unblocks:** Successful completion of this task will **unblock**:
-    *   `unilang_meta/task/implement_command_macro_task.md`: The macro needs a stable, correctly implemented `unilang` core to target.
+*   To explicitly define the rules for parsing command paths and arguments in `spec_addendum.md`, resolving ambiguities regarding the role of spaces and identifiers in distinguishing between command path segments and arguments. This clarification is crucial for consistent and correct parser implementation.
 
 ### Ubiquitous Language (Vocabulary)
-*   **`SemanticAnalyzer`**: The core component of `unilang` that validates instructions.
-*   **`GenericInstruction`**: The output of the `unilang_instruction_parser`, which will become the input for the `SemanticAnalyzer`.
-*   **`CommandDefinition` / `ArgumentDefinition`**: The core data models in `src/data.rs`.
-*   **Legacy Parser**: The old parsing logic located in `unilang/src/parsing.rs` and `unilang/src/ca/`, which will be deleted.
+*   **Command Path**: The hierarchical name of a command (e.g., `cmd subcmd`).
+*   **Command Path Segment**: An individual part of the command path (e.g., `cmd`, `subcmd`).
+*   **Argument**: A value passed to a command, either positional or named.
+*   **Space Delimiter**: A whitespace character used to separate tokens.
+*   **Dot Delimiter**: A `.` character used to separate command path segments.
 
 ### Progress
-*   **Roadmap Milestone:** M3.1 & M3.2
+*   **Roadmap Milestone:** M2: Core Parser Refinement
 *   **Primary Editable Crate:** `module/move/unilang`
-*   **Overall Progress:** 4/7 increments complete
+*   **Overall Progress:** 1/1 increments complete
 *   **Increment Status:**
-    *   ✅ Increment 1: Remove Legacy Components
-    *   ✅ Increment 2: Refactor Core Data Models
-    *   ✅ Increment 3: Fix `unilang_cli` Compilation Error
-    *   ✅ Increment 4: Adapt `SemanticAnalyzer` to New Parser & Data Models
-    *   ✅ Increment 5: Refactor `unilang_cli` Binary with Correct Parsing
-    *   ⚫ Increment 6: Migrate Integration Tests Incrementally
-    *   ⚫ Increment 7: Finalization
-### Tests
-| Test ID | Status | Notes |
-|---|---|---|
-| `cli_integration_test::test_cli_echo_command` | Failing (New) | Fails because parsing logic in `unilang_cli.rs` is commented out. |
-| `cli_integration_test::test_cli_add_command_valid` | Failing (New) | Fails because parsing logic in `unilang_cli.rs` is commented out. |
-| `cli_integration_test::test_cli_add_command_missing_arg` | Failing (New) | Fails because parsing logic in `unilang_cli.rs` is commented out. |
-| `cli_integration_test::test_cli_add_command_invalid_arg_type` | Failing (New) | Fails because parsing logic in `unilang_cli.rs` is commented out. |
-| `cli_integration_test::test_cli_unknown_command` | Failing (New) | Fails because parsing logic in `unilang_cli.rs` is commented out. |
-| `help_generation_test::test_cli_global_help_command` | Failing (New) | Help output changed due to `HelpGenerator` updates. |
-| `help_generation_test::test_cli_no_args_help` | Failing (New) | Help output changed due to `HelpGenerator` updates. |
-| `help_generation_test::test_cli_global_help_flag` | Failing (New) | Help output changed due to `HelpGenerator` updates. |
-| `help_generation_test::test_cli_specific_command_help_add` | Failing (New) | Help output changed due to `HelpGenerator` updates. |
+    *   ✅ Increment 1: Define Command Path and Argument Parsing Rules
 
 ### Permissions & Boundaries
-*   **Mode:** code
-*   **Run workspace-wise commands:** true
+*   **Mode:** architect
+*   **Run workspace-wise commands:** false
 *   **Add transient comments:** true
 *   **Additional Editable Crates:** None
 
----
-
-### Dependency API Guides
-
-This section provides the necessary API information for dependencies, as direct access to their source code is unavailable.
-
-#### 1. `unilang_instruction_parser` API Guide
-
-*   **Main Entry Point:** `unilang_instruction_parser::Parser`
-    *   `Parser::new(UnilangParserOptions::default()) -> Self`: Creates a new parser with default settings.
-    *   `parser.parse_single_instruction(&str) -> Result<GenericInstruction, ParseError>`: Parses a single, complete command string. **This is the primary method to use for the CLI binary after joining arguments.**
-    *   `parser.parse_slice(&[&str]) -> Result<Vec<GenericInstruction>, ParseError>`: Parses a slice of strings, treating each element as a separate instruction. **Do not use this for CLI arguments from the shell.**
-
-*   **Output Data Structure:** `unilang_instruction_parser::GenericInstruction`
-    ```rust
-    // This is the primary input to the SemanticAnalyzer.
-    pub struct GenericInstruction {
-        // A vector of strings representing the command path.
-        // e.g., for ".files.copy", this will be `vec!["files", "copy"]`.
-        pub command_path_slices: Vec<String>,
-
-        // A map of named arguments.
-        // e.g., for "src::file.txt", the key is "src".
-        pub named_arguments: HashMap<String, Argument>,
-
-        // A vector of positional arguments in order of appearance.
-        pub positional_arguments: Vec<Argument>,
-
-        // True if a '?' was found after the command path.
-        pub help_requested: bool,
-
-        // The location of the instruction in the source string.
-        pub overall_location: SourceLocation,
-    }
-    ```
-
-*   **Argument Structure:** `unilang_instruction_parser::Argument`
-    ```rust
-    // Represents a single parsed argument.
-    pub struct Argument {
-        // The name of the argument (e.g., "src"). None for positional args.
-        pub name: Option<String>,
-
-        // The raw, unescaped string value of the argument.
-        pub value: String,
-
-        // Location information for names and values.
-        pub name_location: Option<SourceLocation>,
-        pub value_location: SourceLocation,
-    }
-    ```
-
-#### 2. `former` Crate API Guide
-
-*   **Usage:** The `unilang` data structures use `#[derive(former::Former)]`. This automatically generates a builder struct named `[StructName]Former`.
-*   **Builder Pattern:**
-    1.  Start the builder with `StructName::former()`.
-    2.  Set fields using methods with the same name as the fields (e.g., `.name("...")`, `.description("...")`).
-    3.  Finalize the builder and get the struct instance by calling `.form()`.
-*   **Example:**
-    ```rust
-    // This is how you will need to update the code in unilang_cli.rs
-    let echo_def = CommandDefinition::former()
-      .name("echo")
-      .namespace(".system") // Example of a new field
-      .hint("Echoes a message.")
-      .form();
-    ```
-
-#### 3. `thiserror` Crate API Guide
-
-*   **Usage:** Used in `src/error.rs` to simplify error type implementation.
-*   `#[derive(Error)]`: Implements the `std::error::Error` trait.
-*   `#[error("...")]`: Defines the `Display` implementation for the error enum variant.
-*   `#[from]`: Automatically implements `From<SourceError> for MyError`, allowing for easy error conversion with the `?` operator.
-
----
+### Relevant Context
+*   Control Files to Reference:
+    *   `module/move/unilang/spec.md` (if it exists)
+    *   `module/move/unilang/spec_addendum.md`
 
 ### Expected Behavior Rules / Specifications
-*   The legacy parser must be completely removed.
-*   `CommandDefinition` and `ArgumentDefinition` in `src/data.rs` must be updated to include all fields from the latest specification.
-*   The `SemanticAnalyzer` must be refactored to accept `&[GenericInstruction]` and use the updated data models.
-*   The `unilang_cli` binary must join its command-line arguments into a single string and use `parser.parse_single_instruction()`.
-*   All existing tests must be migrated to the new parsing pipeline and must pass.
+*   (This task will define these rules in `spec_addendum.md`)
+
+### Tests
+| Test ID | Status | Notes |
+|---|---|---|
 
 ### Crate Conformance Check Procedure
-*   Step 1: Execute `timeout 90 cargo test -p unilang --all-targets` via `execute_command`.
-*   Step 2: Analyze `execute_command` output. If it fails, initiate Critical Log Analysis.
-*   Step 3: If tests pass, execute `timeout 90 cargo clippy -p unilang -- -D warnings` via `execute_command`.
-*   Step 4: Analyze `execute_command` output. If it fails, initiate Linter Fix & Regression Check Procedure.
+*   (N/A for this specification task)
 
 ### Increments
 
-##### Increment 1: Remove Legacy Components
-*   **Goal:** To purge the old parser (`unilang::parsing`) and command aggregator (`unilang::ca`) modules. This is a clean first step that creates a clear "point of no return".
+##### Increment 1: Define Command Path and Argument Parsing Rules
+*   **Goal:** Refine `spec_addendum.md` to clearly define how command paths are parsed and how they transition into argument parsing.
+*   **Specification Reference:** New specification to be created.
 *   **Steps:**
-    1.  Delete `module/move/unilang/src/parsing.rs` and `module/move/unilang/src/ca/`.
-    2.  Update `module/move/unilang/src/lib.rs` to remove the `mod` declarations for `parsing` and `ca`.
+    *   Step 1: Read `module/move/unilang/spec_addendum.md`.
+    *   Step 2: Append the new parsing rules to `spec_addendum.md`.
+    *   Step 3: Perform Increment Verification.
 *   **Increment Verification:**
-    1.  Execute `cargo check -p unilang` via `execute_command`.
-    2.  **Expected Outcome:** The command **must fail** with compilation errors, confirming the legacy dependencies have been severed.
-*   **Commit Message:** "refactor(unilang): Remove legacy parser and command aggregator modules"
+    *   1.  Read `module/move/unilang/spec_addendum.md` and verify the new section and rules are present and correctly formatted.
+*   **Commit Message:** "docs(spec): Clarify command path and argument parsing rules"
 
-##### Increment 2: Refactor Core Data Models
-*   **Goal:** Update the core `CommandDefinition` and `ArgumentDefinition` structs to match the full specification, and adapt the `HelpGenerator` to use the new fields.
-*   **Specification Reference:** The fields listed in this increment's steps serve as the specification.
-*   **Steps:**
-    1.  Read `module/move/unilang/src/data.rs` and `module/move/unilang/src/help.rs` to get the current implementation.
-    2.  In `src/data.rs`, modify the `CommandDefinition` struct to add the following public fields: `namespace: String`, `hint: String`, `status: String`, `version: Option<String>`, `tags: Vec<String>`, `aliases: Vec<String>`, `permissions: Vec<String>`, `idempotent: bool`.
-    3.  In `src/data.rs`, modify the `ArgumentDefinition` struct to add the following public fields: `hint: String`, `is_default_arg: bool`, `default_value: Option<String>`, `aliases: Vec<String>`, `tags: Vec<String>`, `interactive: bool`, `sensitive: bool`.
-    4.  Ensure the `#[derive(former::Former)]` is present on both structs. The `former` crate will automatically handle the builder pattern for the new public fields.
-    5.  In `src/help.rs`, update the `HelpGenerator::command` function to incorporate and display information from the new fields. For example, list aliases alongside the command name and display the status and hint.
-    6.  Perform Increment Verification.
-*   **Increment Verification:**
-    1.  Execute `cargo build -p unilang` via `execute_command`. The build must succeed.
-*   **Commit Message:** "feat(unilang): Update core data models to align with spec v1.3"
+### Task Requirements
+*   The new specification must be clear and unambiguous.
+*   It must resolve the current conflicts observed in `argument_parsing_tests.rs` and `syntactic_analyzer_command_tests.rs`.
 
-##### Increment 3: Fix `unilang_cli` Compilation Error
-*   **Goal:** Diagnose and fix the compilation error in `src/bin/unilang_cli.rs` related to `parse_single_str`.
-*   **Specification Reference:** N/A
-*   **Steps:**
-    1.  Read `module/move/unilang/src/bin/unilang_cli.rs`.
-    2.  Replace `parser.parse_single_str` with `parser.parse_single_instruction`.
-    3.  Perform Increment Verification.
-*   **Increment Verification:**
-    1.  Execute `cargo build -p unilang` via `execute_command`. The build must succeed.
-*   **Commit Message:** "fix(unilang): Resolve compilation error in unilang_cli.rs"
+### Project Requirements
+*   All code must strictly adhere to the `codestyle` rulebook provided by the user at the start of the task.
 
-##### Increment 4: Adapt `SemanticAnalyzer` to New Parser & Data Models
-*   **Goal:** To update the `SemanticAnalyzer` to consume `Vec<GenericInstruction>` and operate on the newly refactored data models.
-*   **Steps:**
-    1.  Update `module/move/unilang/src/semantic.rs`: replace legacy imports with `use unilang_instruction_parser::{GenericInstruction, Argument as ParserArgument};`.
-    2.  Refactor `SemanticAnalyzer::new` to take `instructions: &'a [GenericInstruction]`.
-    3.  Refactor `SemanticAnalyzer::analyze` to loop over `self.instructions` and resolve command names from `instruction.command_path_slices`.
-    4.  Refactor `bind_arguments` to work with `GenericInstruction` and the updated `ArgumentDefinition` struct, correctly handling new fields like `aliases` and `is_default_arg`.
-*   **Increment Verification:**
-    1.  Execute `cargo build -p unilang` via `execute_command`. The library must build successfully.
-*   **Commit Message:** "refactor(unilang): Adapt SemanticAnalyzer to new parser and data models"
+### Assumptions
+*   The user will approve the new specification.
+*   The `Primary Editable Crate` is `module/move/unilang`.
+*   `spec.md` does not exist, and only `spec_addendum.md` should be modified.
 
-##### Increment 5: Refactor `unilang_cli` Binary with Correct Parsing
-*   **Goal:** To update the main CLI binary to use the new, unified parsing pipeline with the correct argument handling strategy.
-*   **Steps:**
-    1.  Update `src/bin/unilang_cli.rs` to use `unilang_instruction_parser::Parser`.
-    2.  **Crucially, modify the parsing logic:**
-        *   Take the arguments from `env::args().skip(1)`.
-        *   `join` the arguments with a space to reconstruct the original command string.
-        *   Pass this single string to `parser.parse_single_instruction()`.
-    3.  Update the sample command definitions in `main` to use the new `CommandDefinition` fields and the `former` builder pattern.
-*   **Increment Verification:**
-    1.  Execute `cargo build --bin unilang_cli` via `execute_command`. The build must succeed.
-    2.  Execute a simple command: `target/debug/unilang_cli add a::1 b::2`. The command should execute correctly.
-*   **Commit Message:** "refactor(cli): Migrate unilang_cli to use correct parsing pipeline"
+### Out of Scope
+*   Implementing any parser changes based on the new specification. This task is purely for documentation.
 
-##### Increment 6: Migrate Integration Tests Incrementally
-*   **Goal:** To methodically update all integration tests to use the new parsing pipeline and verify the full system behavior.
-*   **Steps:**
-    1.  **Fix Core Logic Tests First:**
-        *   Start with `tests/inc/phase1/full_pipeline_test.rs` and other tests in `tests/inc/phase2/` that call `SemanticAnalyzer` directly.
-        *   Update their test setup to use `unilang_instruction_parser::Parser`.
-        *   Update assertions to check the structure of `VerifiedCommand` and `ErrorData`.
-        *   Run these specific tests until they pass.
-    2.  **Fix End-to-End CLI Tests:**
-        *   Once the core logic is verified, fix `tests/inc/phase2/cli_integration_test.rs`.
-        *   Update the `assert_cmd` assertions to match the new, correct `stderr` and `stdout` formats.
-        *   Run this test file until it passes.
-*   **Increment Verification:**
-    1.  Execute `timeout 90 cargo test -p unilang --all-targets` via `execute_command`. All tests **must pass**.
-*   **Commit Message:** "fix(tests): Migrate all integration tests to the new parsing pipeline"
+### External System Dependencies
+*   None
 
-##### Increment 7: Finalization
-*   **Goal:** Perform a final, holistic review and verification of the entire task's output.
-*   **Steps:**
-    1.  Perform a self-critique of all changes against the plan's goal and requirements.
-    2.  Run the Crate Conformance Check one last time.
-    3.  Execute `git status` to ensure the working directory is clean.
-*   **Increment Verification:**
-    1.  Execute the full `Crate Conformance Check Procedure`.
-    2.  Execute `git status` via `execute_command` and confirm the output shows no uncommitted changes.
-*   **Commit Message:** "feat(unilang): Finalize architectural unification and verification"
+### Notes & Insights
+*   This clarification is essential to unblock the parser bug fix.
 
 ### Changelog
-*   [Initial] Plan created to unify the parsing architecture by removing the legacy parser, integrating `unilang_instruction_parser`, and updating core data models.
-*   [Increment 1] Acknowledged that legacy components were already removed. The plan is now in sync with the codebase.
-*   [Increment 2] Modified `data.rs` to add new fields to `CommandDefinition` and `ArgumentDefinition`.
-*   [Increment 2] Updated `help.rs` to display new fields from `CommandDefinition`.
-*   [Increment 3] Added a focused debugging increment to fix the `parse_single_str` compilation error in `unilang_cli.rs`.
-*   [Increment 3] Fixed `parse_single_str` to `parse_single_instruction` and correctly passed the slice to `SemanticAnalyzer::new` in `unilang_cli.rs`.
-*   [Increment 4] Adapted `SemanticAnalyzer::bind_arguments` to handle `is_default_arg` and `default_value`.
-*   [Increment 5] Refactored `unilang_cli` binary to use new `CommandDefinition` fields and `former` builder pattern.
+*   [User Feedback | 2025-07-07 20:21 UTC] Task interrupted due to ambiguity in command path/argument parsing. Initiating Stuck Resolution Process.
+*   [AI | 2025-07-26 05:41:54 UTC] Permissions approved. Proceeding with detailed planning.
+*   [AI | 2025-07-26 05:42:26 UTC] Appended parsing rules to `spec_addendum.md`.
