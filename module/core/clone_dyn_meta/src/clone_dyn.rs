@@ -1,50 +1,31 @@
-
 use macro_tools::prelude::*;
-use macro_tools::
-{
-  Result,
-  AttributePropertyOptionalSingletone,
-  AttributePropertyComponent,
-  diag,
-  generic_params,
-  ct,
-};
-use component_model_types::{ Assign };
+use macro_tools::{Result, AttributePropertyOptionalSingletone, AttributePropertyComponent, diag, generic_params, ct};
+use component_model_types::{Assign};
 
 //
 
-pub fn clone_dyn( attr_input : proc_macro::TokenStream, item_input : proc_macro::TokenStream )
--> Result< proc_macro2::TokenStream >
-{
-
-  let attrs = syn::parse::< ItemAttributes >( attr_input )?;
+pub fn clone_dyn(attr_input: proc_macro::TokenStream, item_input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream> {
+  let attrs = syn::parse::<ItemAttributes>(attr_input)?;
   let original_input = item_input.clone();
-  let mut item_parsed = syn::parse::< syn::ItemTrait >( item_input )?;
+  let mut item_parsed = syn::parse::<syn::ItemTrait>(item_input)?;
 
-  let has_debug = attrs.debug.value( false );
+  let has_debug = attrs.debug.value(false);
   let item_name = &item_parsed.ident;
 
-  let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
-  = generic_params::decompose( &item_parsed.generics );
+  let (_generics_with_defaults, generics_impl, generics_ty, generics_where) = generic_params::decompose(&item_parsed.generics);
 
-  let extra_where_clause : syn::WhereClause = parse_quote!
-  {
+  let extra_where_clause: syn::WhereClause = parse_quote! {
     where
       Self : clone_dyn::CloneDyn,
   };
-  if let Some( mut existing_where_clause ) = item_parsed.generics.where_clause
-  {
-    existing_where_clause.predicates.extend( extra_where_clause.predicates );
-    item_parsed.generics.where_clause = Some( existing_where_clause );
+  if let Some(mut existing_where_clause) = item_parsed.generics.where_clause {
+    existing_where_clause.predicates.extend(extra_where_clause.predicates);
+    item_parsed.generics.where_clause = Some(existing_where_clause);
+  } else {
+    item_parsed.generics.where_clause = Some(extra_where_clause);
   }
-  else
-  {
-    item_parsed.generics.where_clause = Some( extra_where_clause );
-  }
-  
 
-  let result = qt!
-  {
+  let result = qt! {
     #item_parsed
 
     #[ allow( non_local_definitions ) ]
@@ -89,87 +70,71 @@ pub fn clone_dyn( attr_input : proc_macro::TokenStream, item_input : proc_macro:
 
   };
 
-  if has_debug
-  {
-    let about = format!( "macro : CloneDny\ntrait : {item_name}" );
-    diag::report_print( about, &original_input, &result );
+  if has_debug {
+    let about = format!("macro : CloneDny\ntrait : {item_name}");
+    diag::report_print(about, &original_input, &result);
   }
 
-  Ok( result )
+  Ok(result)
 }
 
-impl syn::parse::Parse for ItemAttributes
-{
-  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-  {
+impl syn::parse::Parse for ItemAttributes {
+  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
     let mut result = Self::default();
 
-    let error = | ident : &syn::Ident | -> syn::Error
-    {
-      let known = ct::concatcp!
-      (
+    let error = |ident: &syn::Ident| -> syn::Error {
+      let known = ct::concatcp!(
         "Known properties of attribute `clone_dyn` are : ",
         AttributePropertyDebug::KEYWORD,
         ".",
       );
-      syn_err!
-      (
+      syn_err!(
         ident,
         r"Expects an attribute of format '#[ clone_dyn( {} ) ]'
   {known}
   But got: '{}'
 ",
         AttributePropertyDebug::KEYWORD,
-        qt!{ #ident }
+        qt! { #ident }
       )
     };
 
-    while !input.is_empty()
-    {
+    while !input.is_empty() {
       let lookahead = input.lookahead1();
-      if lookahead.peek( syn::Ident )
-      {
-        let ident : syn::Ident = input.parse()?;
-        match ident.to_string().as_str()
-        {
-          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
-          _ => return Err( error( &ident ) ),
+      if lookahead.peek(syn::Ident) {
+        let ident: syn::Ident = input.parse()?;
+        match ident.to_string().as_str() {
+          AttributePropertyDebug::KEYWORD => result.assign(AttributePropertyDebug::from(true)),
+          _ => return Err(error(&ident)),
         }
-      }
-      else
-      {
-        return Err( lookahead.error() );
+      } else {
+        return Err(lookahead.error());
       }
 
       // Optional comma handling
-      if input.peek( syn::Token![ , ] )
-      {
-        input.parse::< syn::Token![ , ] >()?;
+      if input.peek(syn::Token![ , ]) {
+        input.parse::<syn::Token![ , ]>()?;
       }
     }
 
-    Ok( result )
+    Ok(result)
   }
 }
 // == attributes
 
 /// Represents the attributes of a struct. Aggregates all its attributes.
-#[ derive( Debug, Default ) ]
-pub struct ItemAttributes
-{
+#[derive(Debug, Default)]
+pub struct ItemAttributes {
   /// Attribute for customizing generated code.
-  pub debug : AttributePropertyDebug,
+  pub debug: AttributePropertyDebug,
 }
 
-
-
-impl< IntoT > Assign< AttributePropertyDebug, IntoT > for ItemAttributes
+impl<IntoT> Assign<AttributePropertyDebug, IntoT> for ItemAttributes
 where
-  IntoT : Into< AttributePropertyDebug >,
+  IntoT: Into<AttributePropertyDebug>,
 {
-  #[ inline( always ) ]
-  fn assign( &mut self, prop : IntoT )
-  {
+  #[inline(always)]
+  fn assign(&mut self, prop: IntoT) {
     self.debug = prop.into();
   }
 }
@@ -177,14 +142,13 @@ where
 // == attribute properties
 
 /// Marker type for attribute property to specify whether to provide a generated code as a hint.
-#[ derive( Debug, Default, Clone, Copy ) ]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct AttributePropertyDebugMarker;
 
-impl AttributePropertyComponent for AttributePropertyDebugMarker
-{
-  const KEYWORD : &'static str = "debug";
+impl AttributePropertyComponent for AttributePropertyDebugMarker {
+  const KEYWORD: &'static str = "debug";
 }
 
 /// Specifies whether to provide a generated code as a hint.
 /// Defaults to `false`, which means no debug is provided unless explicitly requested.
-pub type AttributePropertyDebug = AttributePropertyOptionalSingletone< AttributePropertyDebugMarker >;
+pub type AttributePropertyDebug = AttributePropertyOptionalSingletone<AttributePropertyDebugMarker>;

@@ -1,28 +1,29 @@
 // File: module/core/former_meta/src/derive_former/former_struct.rs
 
-#![ allow( clippy::wildcard_imports ) ]
+#![allow(clippy::wildcard_imports)]
 use super::*; // Use items from parent module (derive_former.rs)
 use iter_tools::Itertools;
-use macro_tools::
-{
-  generic_params, generic_args, derive, Result,
-  proc_macro2::TokenStream, quote::{ format_ident, quote },
+use macro_tools::{
+  generic_params,
+  generic_args,
+  derive,
+  Result,
+  proc_macro2::TokenStream,
+  quote::{format_ident, quote},
   ident, // Added for ident_maybe_raw
 };
 
 /// Generate the Former ecosystem for a struct.
-#[ allow( clippy::too_many_lines ) ]
-pub fn former_for_struct
-(
-  ast : &syn::DeriveInput,
-  _data_struct : &syn::DataStruct,
-  original_input : &macro_tools::proc_macro2::TokenStream,
-  item_attributes : &ItemAttributes, // Changed: Accept parsed ItemAttributes
-  _has_debug : bool, // This is the correctly determined has_debug - now unused locally
-) -> Result< TokenStream >
-{
+#[allow(clippy::too_many_lines)]
+pub fn former_for_struct(
+  ast: &syn::DeriveInput,
+  _data_struct: &syn::DataStruct,
+  original_input: &macro_tools::proc_macro2::TokenStream,
+  item_attributes: &ItemAttributes, // Changed: Accept parsed ItemAttributes
+  _has_debug: bool,                 // This is the correctly determined has_debug - now unused locally
+) -> Result<TokenStream> {
   use macro_tools::IntoGenericArgs;
-  use convert_case::{ Case, Casing }; // Added for snake_case naming // Space before ;
+  use convert_case::{Case, Casing}; // Added for snake_case naming // Space before ;
 
   // Use the passed-in item_attributes
   let struct_attrs = item_attributes;
@@ -32,16 +33,15 @@ pub fn former_for_struct
   /* names: Generate identifiers for the Former components based on the struct name. */
   let vis = &ast.vis; // Visibility of the original struct.
   let item = &ast.ident; // Name of the original struct.
-  let former = format_ident!( "{item}Former" ); // e.g., MyStructFormer
-  let former_storage = format_ident!( "{item}FormerStorage" ); // e.g., MyStructFormerStorage
-  let former_definition = format_ident!( "{item}FormerDefinition" ); // e.g., MyStructFormerDefinition
-  let former_definition_types = format_ident!( "{item}FormerDefinitionTypes" ); // e.g., MyStructFormerDefinitionTypes
-  let as_subformer = format_ident!( "{item}AsSubformer" ); // e.g., MyStructAsSubformer
-  let as_subformer_end = format_ident!( "{item}AsSubformerEnd" ); // e.g., MyStructAsSubformerEnd
+  let former = format_ident!("{item}Former"); // e.g., MyStructFormer
+  let former_storage = format_ident!("{item}FormerStorage"); // e.g., MyStructFormerStorage
+  let former_definition = format_ident!("{item}FormerDefinition"); // e.g., MyStructFormerDefinition
+  let former_definition_types = format_ident!("{item}FormerDefinitionTypes"); // e.g., MyStructFormerDefinitionTypes
+  let as_subformer = format_ident!("{item}AsSubformer"); // e.g., MyStructAsSubformer
+  let as_subformer_end = format_ident!("{item}AsSubformerEnd"); // e.g., MyStructAsSubformerEnd
 
   // Generate documentation string for the AsSubformerEnd trait.
-  let as_subformer_end_doc = format!
-  (
+  let as_subformer_end_doc = format!(
     r"
 Represents an end condition for former of [`${item}`], tying the lifecycle of forming processes to a broader context.
 
@@ -52,36 +52,32 @@ specific needs of the broader forming context. It mandates the implementation of
 
   /* parameters for structure: Decompose the original struct's generics. */
   let generics = &ast.generics;
-  let
-  (
+  let (
     struct_generics_with_defaults, // Generics with defaults (e.g., `<T = i32>`). Used for struct definition.
     struct_generics_impl,          // Generics for `impl` block (e.g., `<T: Clone>`). Bounds, no defaults.
     struct_generics_ty,            // Generics for type usage (e.g., `<T>`). Names only.
-    struct_generics_where          // Where clause predicates (e.g., `T: Send`).
-  ) = generic_params::decompose( generics );
+    struct_generics_where,         // Where clause predicates (e.g., `T: Send`).
+  ) = generic_params::decompose(generics);
 
   /* parameters for definition: Merge struct generics with default definition parameters. */
-  let extra : macro_tools::syn::AngleBracketedGenericArguments = parse_quote!
-  {
+  let extra: macro_tools::syn::AngleBracketedGenericArguments = parse_quote! {
     < (), #item < #struct_generics_ty >, former::ReturnPreformed > // Default Context, Formed, End
   };
-  let former_definition_args = generic_args::merge( &generics.into_generic_args(), &extra ).args;
+  let former_definition_args = generic_args::merge(&generics.into_generic_args(), &extra).args;
 
   /* parameters for former: Merge struct generics with the Definition generic parameter. */
-  let extra : macro_tools::generic_params::GenericsWithWhere = parse_quote!
-  {
+  let extra: macro_tools::generic_params::GenericsWithWhere = parse_quote! {
     < Definition = #former_definition < #former_definition_args > >
     where
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty > >,
   };
-  let extra = generic_params::merge( generics, &extra.into() );
-  let ( former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where )
-  = generic_params::decompose( &extra );
+  let extra = generic_params::merge(generics, &extra.into());
+  let (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where) =
+    generic_params::decompose(&extra);
 
   /* parameters for former perform: Similar to former parameters, but specifically for the perform method. */
-  let extra : macro_tools::generic_params::GenericsWithWhere = parse_quote!
-  {
+  let extra: macro_tools::generic_params::GenericsWithWhere = parse_quote! {
     < Definition = #former_definition < #former_definition_args > >
     where
       Definition : former::FormerDefinition
@@ -95,61 +91,69 @@ specific needs of the broader forming context. It mandates the implementation of
         Formed = #item < #struct_generics_ty >,
       >, // Angle bracket on new line
   };
-  let extra = generic_params::merge( generics, &extra.into() );
-  let ( _former_perform_generics_with_defaults, former_perform_generics_impl, former_perform_generics_ty, former_perform_generics_where )
-  = generic_params::decompose( &extra );
+  let extra = generic_params::merge(generics, &extra.into());
+  let (
+    _former_perform_generics_with_defaults,
+    former_perform_generics_impl,
+    former_perform_generics_ty,
+    former_perform_generics_where,
+  ) = generic_params::decompose(&extra);
 
   /* parameters for definition types: Merge struct generics with Context and Formed parameters. */
-  let extra : macro_tools::generic_params::GenericsWithWhere = parse_quote!
-  {
+  let extra: macro_tools::generic_params::GenericsWithWhere = parse_quote! {
     < __Context = (), __Formed = #item < #struct_generics_ty > >
   };
-  let former_definition_types_generics = generic_params::merge( generics, &extra.into() );
-  let ( former_definition_types_generics_with_defaults, former_definition_types_generics_impl, former_definition_types_generics_ty, former_definition_types_generics_where )
-  = generic_params::decompose( &former_definition_types_generics );
+  let former_definition_types_generics = generic_params::merge(generics, &extra.into());
+  let (
+    former_definition_types_generics_with_defaults,
+    former_definition_types_generics_impl,
+    former_definition_types_generics_ty,
+    former_definition_types_generics_where,
+  ) = generic_params::decompose(&former_definition_types_generics);
   // Generate PhantomData tuple type based on the impl generics.
-  let former_definition_types_phantom = macro_tools::phantom::tuple( &former_definition_types_generics_impl );
+  let former_definition_types_phantom = macro_tools::phantom::tuple(&former_definition_types_generics_impl);
 
   /* parameters for definition: Merge struct generics with Context, Formed, and End parameters. */
-  let extra : macro_tools::generic_params::GenericsWithWhere = parse_quote!
-  {
+  let extra: macro_tools::generic_params::GenericsWithWhere = parse_quote! {
     < __Context = (), __Formed = #item < #struct_generics_ty >, __End = former::ReturnPreformed >
   };
-  let generics_of_definition = generic_params::merge( generics, &extra.into() );
-  let ( former_definition_generics_with_defaults, former_definition_generics_impl, former_definition_generics_ty, former_definition_generics_where )
-  = generic_params::decompose( &generics_of_definition );
+  let generics_of_definition = generic_params::merge(generics, &extra.into());
+  let (
+    former_definition_generics_with_defaults,
+    former_definition_generics_impl,
+    former_definition_generics_ty,
+    former_definition_generics_where,
+  ) = generic_params::decompose(&generics_of_definition);
   // Generate PhantomData tuple type based on the impl generics.
-  let former_definition_phantom = macro_tools::phantom::tuple( &former_definition_generics_impl );
+  let former_definition_phantom = macro_tools::phantom::tuple(&former_definition_generics_impl);
 
   /* struct attributes: Generate documentation and extract perform method details. */
-  let ( _doc_former_mod, doc_former_struct ) = doc_generate( item );
-  let ( perform, perform_output, perform_generics ) = struct_attrs.performer()?;
+  let (_doc_former_mod, doc_former_struct) = doc_generate(item);
+  let (perform, perform_output, perform_generics) = struct_attrs.performer()?;
 
   /* fields: Process struct fields and storage_fields attribute. */
-  let fields = derive::named_fields( ast )?;
+  let fields = derive::named_fields(ast)?;
   // Create FormerField representation for actual struct fields.
-  let formed_fields : Vec< _ > = fields
-  .iter()
-  .map( | field | FormerField::from_syn( field, true, true ) )
-  .collect::< Result< _ > >()?;
+  let formed_fields: Vec<_> = fields
+    .iter()
+    .map(|field| FormerField::from_syn(field, true, true))
+    .collect::<Result<_>>()?;
   // Create FormerField representation for storage-only fields.
-  let storage_fields : Vec< _ > = struct_attrs
-  .storage_fields()
-  .iter()
-  .map( | field | FormerField::from_syn( field, true, false ) )
-  .collect::< Result< _ > >()?;
+  let storage_fields: Vec<_> = struct_attrs
+    .storage_fields()
+    .iter()
+    .map(|field| FormerField::from_syn(field, true, false))
+    .collect::<Result<_>>()?;
 
   // <<< Start of changes for constructor arguments >>>
   // Identify fields marked as constructor arguments
-  let constructor_args_fields : Vec< _ > = formed_fields
+  let constructor_args_fields: Vec<_> = formed_fields
   .iter()
   .filter( | f | f.attrs.arg_for_constructor.value( false ) ) // Use the parsed attribute
   .collect();
 
   // Generate constructor function parameters
-  let constructor_params = constructor_args_fields
-  .iter()
-  .map( | f | // Space around |
+  let constructor_params = constructor_args_fields.iter().map(| f | // Space around |
   {
     let ident = f.ident;
     let ty = f.non_optional_ty; // Use non-optional type for the argument
@@ -159,9 +163,7 @@ specific needs of the broader forming context. It mandates the implementation of
   });
 
   // Generate initial storage assignments for constructor arguments
-  let constructor_storage_assignments = constructor_args_fields
-  .iter()
-  .map( | f | // Space around |
+  let constructor_storage_assignments = constructor_args_fields.iter().map(| f | // Space around |
   {
     let ident = f.ident;
     // Use raw identifier for parameter name if needed
@@ -181,20 +183,15 @@ specific needs of the broader forming context. It mandates the implementation of
   });
 
   // Combine all storage assignments
-  let all_storage_assignments = constructor_storage_assignments
-  .chain( non_constructor_storage_assignments );
+  let all_storage_assignments = constructor_storage_assignments.chain(non_constructor_storage_assignments);
 
   // Determine if we need to initialize storage (if there are args)
-  let initial_storage_code = if constructor_args_fields.is_empty()
-  {
+  let initial_storage_code = if constructor_args_fields.is_empty() {
     // No args, begin with None storage
     quote! { ::core::option::Option::None }
-  }
-  else
-  {
+  } else {
     // Has args, create initial storage instance
-    quote!
-    {
+    quote! {
       ::core::option::Option::Some
       ( // Paren on new line
         #former_storage :: < #struct_generics_ty > // Add generics to storage type
@@ -206,22 +203,17 @@ specific needs of the broader forming context. It mandates the implementation of
   };
   // <<< End of changes for constructor arguments >>>
 
-
   // Generate code snippets for each field (storage init, storage field def, preform logic, setters).
-  let
-  (
-    storage_field_none, // Code for initializing storage field to None.
+  let (
+    storage_field_none,     // Code for initializing storage field to None.
     storage_field_optional, // Code for the storage field definition (e.g., `pub field: Option<Type>`).
-    storage_field_name, // Code for the field name (e.g., `field,`). Used in final struct construction.
-    storage_field_preform, // Code for unwrapping/defaulting the field in `preform`.
-    former_field_setter, // Code for the setter method(s) for the field.
-  )
-  :
-  ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
-  = formed_fields // Combine actual fields and storage-only fields for processing.
-  .iter()
-  .chain( storage_fields.iter() )
-  .map( | field | // Space around |
+    storage_field_name,     // Code for the field name (e.g., `field,`). Used in final struct construction.
+    storage_field_preform,  // Code for unwrapping/defaulting the field in `preform`.
+    former_field_setter,    // Code for the setter method(s) for the field.
+  ): (Vec<_>, Vec<_>, Vec<_>, Vec<_>, Vec<_>) = formed_fields // Combine actual fields and storage-only fields for processing.
+    .iter()
+    .chain(storage_fields.iter())
+    .map(| field | // Space around |
   {(
     field.storage_fields_none(),
     field.storage_field_optional(),
@@ -240,59 +232,61 @@ specific needs of the broader forming context. It mandates the implementation of
       &former_generics_where,
       &former_storage,
     ), // Paren on new line
-  )}).multiunzip();
+  )})
+    .multiunzip();
 
   // Collect results, separating setters and namespace code (like End structs).
-  let results : Result< Vec< _ > > = former_field_setter.into_iter().collect();
-  let ( former_field_setter, namespace_code ) : ( Vec< _ >, Vec< _ > ) = results?.into_iter().unzip();
+  let results: Result<Vec<_>> = former_field_setter.into_iter().collect();
+  let (former_field_setter, namespace_code): (Vec<_>, Vec<_>) = results?.into_iter().unzip();
   // Collect preform logic results.
-  let storage_field_preform : Vec< _ > = storage_field_preform.into_iter().collect::< Result< _ > >()?;
+  let storage_field_preform: Vec<_> = storage_field_preform.into_iter().collect::<Result<_>>()?;
   // Generate mutator implementation code.
-  let former_mutator_code = mutator( item, original_input, &struct_attrs.mutator, &former_definition_types, &former_definition_types_generics_impl, &former_definition_types_generics_ty, &former_definition_types_generics_where )?;
+  let former_mutator_code = mutator(
+    item,
+    original_input,
+    &struct_attrs.mutator,
+    &former_definition_types,
+    &former_definition_types_generics_impl,
+    &former_definition_types_generics_ty,
+    &former_definition_types_generics_where,
+  )?;
 
   // <<< Start of updated code for standalone constructor (Option 2) >>>
-  let standalone_constructor_code = if struct_attrs.standalone_constructors.value( false )
-  {
+  let standalone_constructor_code = if struct_attrs.standalone_constructors.value(false) {
     // Generate constructor name (snake_case)
-    let constructor_name_str = item.to_string().to_case( Case::Snake );
-    let constructor_name_ident_temp = format_ident!( "{}", constructor_name_str, span = item.span() );
-    let constructor_name = ident::ident_maybe_raw( &constructor_name_ident_temp );
+    let constructor_name_str = item.to_string().to_case(Case::Snake);
+    let constructor_name_ident_temp = format_ident!("{}", constructor_name_str, span = item.span());
+    let constructor_name = ident::ident_maybe_raw(&constructor_name_ident_temp);
 
     // Determine if all fields are constructor arguments
     // Note: We only consider fields that are part of the final struct (`formed_fields`)
-    let all_fields_are_args = formed_fields.iter().all( | f | f.attrs.arg_for_constructor.value( false ) ); // Space around |
+    let all_fields_are_args = formed_fields.iter().all(|f| f.attrs.arg_for_constructor.value(false)); // Space around |
 
     // Determine return type and body based on Option 2 rule
-    let ( return_type, constructor_body ) = if all_fields_are_args
-    {
+    let (return_type, constructor_body) = if all_fields_are_args {
       // Return Self
       let return_type = quote! { #item< #struct_generics_ty > };
-      let construction_args = formed_fields.iter().map( | f | // Space around |
+      let construction_args = formed_fields.iter().map(| f | // Space around |
       {
         let field_ident = f.ident;
         let param_name = ident::ident_maybe_raw( field_ident );
         quote! { #field_ident : #param_name.into() }
       });
       let body = quote! { #item { #( #construction_args ),* } };
-      ( return_type, body )
-    }
-    else
-    {
+      (return_type, body)
+    } else {
       // Return Former
-      let former_return_type = quote!
-      {
+      let former_return_type = quote! {
         #former < #struct_generics_ty #former_definition< #former_definition_args > >
       };
-      let former_body = quote!
-      {
+      let former_body = quote! {
         #former::begin( #initial_storage_code, None, former::ReturnPreformed )
       };
-      ( former_return_type, former_body )
+      (former_return_type, former_body)
     };
 
     // Generate the constructor function
-    quote!
-    {
+    quote! {
       /// Standalone constructor function for #item.
       #[ inline( always ) ]
       #vis fn #constructor_name < #struct_generics_impl >
@@ -307,18 +301,14 @@ specific needs of the broader forming context. It mandates the implementation of
         #constructor_body // Use determined body
       }
     }
-  }
-  else
-  {
+  } else {
     // If #[standalone_constructors] is not present, generate nothing.
-    quote!{}
+    quote! {}
   };
   // <<< End of updated code for standalone constructor (Option 2) >>>
 
-
   // Assemble the final generated code using quote!
-  let result = quote!
-  {
+  let result = quote! {
 
     // = formed: Implement the `::former()` static method on the original struct.
     #[ automatically_derived ]
@@ -710,5 +700,5 @@ specific needs of the broader forming context. It mandates the implementation of
     #( #namespace_code )*
 
   };
-  Ok( result )
+  Ok(result)
 }

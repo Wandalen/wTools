@@ -15,38 +15,34 @@ use super::*;
 
 /// Enum with only unit variants for testing.
 #[derive(Debug, PartialEq)]
-pub enum Status // Made enum public
+pub enum Status
+// Made enum public
 {
   Pending, // Variants are public by default if enum is public
   Complete,
 }
 
 // Manual implementation of static constructors
-impl Status
-{
+impl Status {
   #[inline(always)]
-  pub fn pending() -> Self
-  {
+  pub fn pending() -> Self {
     Self::Pending
   }
 
   #[inline(always)]
-  pub fn complete() -> Self
-  {
+  pub fn complete() -> Self {
     Self::Complete
   }
 }
 
 // Manual implementation of standalone constructors (moved before include!)
 #[inline(always)]
-pub fn pending() -> Status
-{
+pub fn pending() -> Status {
   Status::Pending
 }
 
 #[inline(always)]
-pub fn complete() -> Status
-{
+pub fn complete() -> Status {
   Status::Complete
 }
 

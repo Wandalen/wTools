@@ -1,7 +1,7 @@
 //! For experimenting.
-#![ allow( unused_imports ) ]
+#![allow(unused_imports)]
 
-include!( "../../../../module/step/meta/src/module/terminal.rs" );
+include!("../../../../module/step/meta/src/module/terminal.rs");
 
 use former as the_module;
 

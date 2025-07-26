@@ -1,11 +1,9 @@
-
 use super::*;
-use the_module::{ qt, Result };
+use the_module::{qt, Result};
 
 //
 
-tests_impls!
-{
+tests_impls! {
 
   fn pair() -> Result< () >
   {
@@ -152,8 +150,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   pair,
   many,
 }

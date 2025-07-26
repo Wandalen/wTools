@@ -32,45 +32,38 @@
 //! with the hierarchical forming logic managed by `FormingEnd`.
 //!
 
-#[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
+#[cfg(any(not(feature = "derive_former"), not(feature = "enabled")))]
 fn main() {}
-#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
-fn main()
-{
+#[cfg(all(feature = "derive_former", feature = "enabled"))]
+fn main() {
   use former::Former;
 
-  #[ derive( Debug, PartialEq, Former ) ]
+  #[derive(Debug, PartialEq, Former)]
   #[ storage_fields( a : i32, b : Option< String > ) ]
-  #[ mutator( custom ) ]
-  pub struct Struct1
-  {
-    c : String,
+  #[mutator(custom)]
+  pub struct Struct1 {
+    c: String,
   }
 
   // = former mutator
 
-  impl< Context, Formed > former::FormerMutator
-  for Struct1FormerDefinitionTypes< Context, Formed >
-  {
+  impl<Context, Formed> former::FormerMutator for Struct1FormerDefinitionTypes<Context, Formed> {
     //! Mutates the context and storage of the entity just before the formation process completes.
-    #[ inline ]
-    fn form_mutation( storage : &mut Self::Storage, _context : &mut ::core::option::Option< Self::Context > )
-    {
-      storage.a.get_or_insert_with( Default::default );
-      storage.b.get_or_insert_with( Default::default );
-      storage.c = Some( format!( "{:?} - {}", storage.a.unwrap(), storage.b.as_ref().unwrap() ) );
+    #[inline]
+    fn form_mutation(storage: &mut Self::Storage, _context: &mut ::core::option::Option<Self::Context>) {
+      storage.a.get_or_insert_with(Default::default);
+      storage.b.get_or_insert_with(Default::default);
+      storage.c = Some(format!("{:?} - {}", storage.a.unwrap(), storage.b.as_ref().unwrap()));
     }
   }
 
-  let got = Struct1::former().a( 13 ).b( "abc" ).c( "def" ).form();
-  let exp = Struct1
-  {
-    c : "13 - abc".to_string(),
+  let got = Struct1::former().a(13).b("abc").c("def").form();
+  let exp = Struct1 {
+    c: "13 - abc".to_string(),
   };
-  assert_eq!( got, exp );
-  dbg!( got );
+  assert_eq!(got, exp);
+  dbg!(got);
   // > got = Struct1 {
   // >  c : "13 - abc",
   // > }
-
 }

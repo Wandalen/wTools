@@ -26,30 +26,19 @@
 //! defined in other crates.
 //!
 
-use macro_tools::
-{
-  ct,
-  syn_err,
-  return_syn_err,
-  qt,
-  Result,
-  AttributeComponent,
-  AttributePropertyComponent,
-  AttributePropertyBoolean,
-  AttributePropertySingletone,
-  Assign,
+use macro_tools::{
+  ct, syn_err, return_syn_err, qt, Result, AttributeComponent, AttributePropertyComponent, AttributePropertyBoolean,
+  AttributePropertySingletone, Assign,
 };
 
 /// Represents the attributes of a struct. Aggregates all its attributes.
-#[ derive( Debug, Default ) ]
-pub struct ItemAttributes
-{
+#[derive(Debug, Default)]
+pub struct ItemAttributes {
   /// Attribute for customizing the mutation process.
-  pub mutator : AttributeMutator,
+  pub mutator: AttributeMutator,
 }
 
-impl ItemAttributes
-{
+impl ItemAttributes {
   /// Constructs a `ItemAttributes` instance from an iterator of attributes.
   ///
   /// This function parses the provided attributes and assigns them to the
@@ -58,76 +47,62 @@ impl ItemAttributes
   /// # Errors
   ///
   /// Returns a `syn::Error` if an attribute cannot be parsed or if an unknown attribute is encountered.
-  pub fn from_attrs< 'a >( attrs : impl Iterator< Item = & 'a syn::Attribute > ) -> Result< Self >
-  {
+  pub fn from_attrs<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> Result<Self> {
     let mut result = Self::default();
 
     // Closure to generate an error message for unknown attributes.
-    let error = | attr : & syn::Attribute | -> syn::Error
-    {
-      let known_attributes = ct::str::format!
-      (
-        "Known attributes are: {}, {}.",
-        "debug",
-        AttributeMutator::KEYWORD,
-      );
-      syn_err!
-      (
+    let error = |attr: &syn::Attribute| -> syn::Error {
+      let known_attributes = ct::str::format!("Known attributes are: {}, {}.", "debug", AttributeMutator::KEYWORD,);
+      syn_err!(
         attr,
         "Expects an attribute of format '#[ attribute( key1 = val1, key2 = val2 ) ]'\n  {known_attributes}\n  But got: '{}'",
         qt! { #attr }
       )
     };
 
-    for attr in attrs
-    {
-      let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
-      let key_str = format!( "{key_ident}" );
+    for attr in attrs {
+      let key_ident = attr.path().get_ident().ok_or_else(|| error(attr))?;
+      let key_str = format!("{key_ident}");
       // if attr::is_standard( & key_str )
       // {
       //   continue;
       // }
-      if < str as core::convert::AsRef< str > >::as_ref( &key_str ) == AttributeMutator::KEYWORD
-      {
-        result.assign( AttributeMutator::from_meta( attr )? );
-      }
-      else
-      {
+      if <str as core::convert::AsRef<str>>::as_ref(&key_str) == AttributeMutator::KEYWORD {
+        result.assign(AttributeMutator::from_meta(attr)?);
+      } else {
         // _ => return Err( error( attr ) ),
       }
     }
 
-    Ok( result )
+    Ok(result)
   }
 }
 
 /// Marker type for attribute property to specify whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-#[ derive( Debug, Default, Clone, Copy ) ]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct AttributePropertyDebugMarker;
 
-impl AttributePropertyComponent for AttributePropertyDebugMarker
-{
-  const KEYWORD : & 'static str = "debug";
+impl AttributePropertyComponent for AttributePropertyDebugMarker {
+  const KEYWORD: &'static str = "debug";
 }
 
 /// Specifies whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-pub type AttributePropertyDebug = AttributePropertySingletone< AttributePropertyDebugMarker >;
+pub type AttributePropertyDebug = AttributePropertySingletone<AttributePropertyDebugMarker>;
 
 /// Marker type for attribute property to indicate whether a custom code should be generated.
 /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
-#[ derive( Debug, Default, Clone, Copy ) ]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct AttributePropertyCustomMarker;
 
-impl AttributePropertyComponent for AttributePropertyCustomMarker
-{
-  const KEYWORD : & 'static str = "custom";
+impl AttributePropertyComponent for AttributePropertyCustomMarker {
+  const KEYWORD: &'static str = "custom";
 }
 
 /// Indicates whether a custom code should be generated.
 /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
-pub type AttributePropertyCustom = AttributePropertyBoolean< AttributePropertyCustomMarker >;
+pub type AttributePropertyCustom = AttributePropertyBoolean<AttributePropertyCustomMarker>;
 
 /// Represents attributes for customizing the mutation process in a forming operation.
 ///
@@ -136,96 +111,78 @@ pub type AttributePropertyCustom = AttributePropertyBoolean< AttributePropertyCu
 /// ```ignore
 /// #[ mutator( custom = true, debug = true ) ]
 /// ```
-#[ derive( Debug, Default ) ]
-pub struct AttributeMutator
-{
+#[derive(Debug, Default)]
+pub struct AttributeMutator {
   /// Indicates whether a custom mutator should be generated.
   /// Defaults to `false`, meaning no custom mutator is generated unless explicitly requested.
-  pub custom : AttributePropertyCustom,
+  pub custom: AttributePropertyCustom,
   /// Specifies whether to print code generated for the field.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub debug : AttributePropertyDebug,
+  pub debug: AttributePropertyDebug,
 }
 
-impl AttributeComponent for AttributeMutator
-{
-  const KEYWORD : & 'static str = "mutator";
+impl AttributeComponent for AttributeMutator {
+  const KEYWORD: &'static str = "mutator";
 
   /// Parses a `syn::Attribute` into an `AttributeMutator`.
-  fn from_meta( attr : & syn::Attribute ) -> Result< Self >
-  {
-    match attr.meta
-    {
-      syn::Meta::List( ref meta_list ) =>
-      {
-        syn::parse2::< AttributeMutator >( meta_list.tokens.clone() )
-      },
-      syn::Meta::Path( ref _path ) =>
-      {
-        Ok( AttributeMutator::default() )
-      },
-      syn::Meta::NameValue( _ ) => return_syn_err!
-      (
+  fn from_meta(attr: &syn::Attribute) -> Result<Self> {
+    match attr.meta {
+      syn::Meta::List(ref meta_list) => syn::parse2::<AttributeMutator>(meta_list.tokens.clone()),
+      syn::Meta::Path(ref _path) => Ok(AttributeMutator::default()),
+      syn::Meta::NameValue(_) => return_syn_err!(
         attr,
-        "Expects an attribute of format `#[ mutator( custom = true ) ]`. \nGot: {}", format!( "{}", qt! { #attr } ),
+        "Expects an attribute of format `#[ mutator( custom = true ) ]`. \nGot: {}",
+        format!("{}", qt! { #attr }),
       ),
     }
   }
 }
 
 // Implement `Assign` trait to allow assigning `AttributeMutator` to `ItemAttributes`.
-impl< IntoT > Assign< AttributeMutator, IntoT > for ItemAttributes
+impl<IntoT> Assign<AttributeMutator, IntoT> for ItemAttributes
 where
-  IntoT : Into< AttributeMutator >,
+  IntoT: Into<AttributeMutator>,
 {
-  #[ inline( always ) ]
-  fn assign( & mut self, component : IntoT )
-  {
+  #[inline(always)]
+  fn assign(&mut self, component: IntoT) {
     self.mutator = component.into();
   }
 }
 
 // Implement `Assign` trait to allow assigning `AttributePropertyDebug` to `AttributeMutator`.
-impl< IntoT > Assign< AttributePropertyDebug, IntoT > for AttributeMutator
+impl<IntoT> Assign<AttributePropertyDebug, IntoT> for AttributeMutator
 where
-  IntoT : Into< AttributePropertyDebug >,
+  IntoT: Into<AttributePropertyDebug>,
 {
-  #[ inline( always ) ]
-  fn assign( & mut self, component : IntoT )
-  {
+  #[inline(always)]
+  fn assign(&mut self, component: IntoT) {
     self.debug = component.into();
   }
 }
 
 // Implement `Assign` trait to allow assigning `AttributePropertyCustom` to `AttributeMutator`.
-impl< IntoT > Assign< AttributePropertyCustom, IntoT > for AttributeMutator
+impl<IntoT> Assign<AttributePropertyCustom, IntoT> for AttributeMutator
 where
-  IntoT : Into< AttributePropertyCustom >,
+  IntoT: Into<AttributePropertyCustom>,
 {
-  #[ inline( always ) ]
-  fn assign( & mut self, component : IntoT )
-  {
+  #[inline(always)]
+  fn assign(&mut self, component: IntoT) {
     self.custom = component.into();
   }
 }
 
-impl syn::parse::Parse for AttributeMutator
-{
-  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-  {
+impl syn::parse::Parse for AttributeMutator {
+  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
     let mut result = Self::default();
 
-    let error = | ident : & syn::Ident | -> syn::Error
-    {
-      let known = ct::str::format!
-      (
+    let error = |ident: &syn::Ident| -> syn::Error {
+      let known = ct::str::format!(
         "Known entries of attribute {} are: {}, {}.",
         AttributeMutator::KEYWORD,
         AttributePropertyCustom::KEYWORD,
         AttributePropertyDebug::KEYWORD,
       );
-      syn_err!
-      (
+      syn_err!(
         ident,
         r"Expects an attribute of format '#[ mutator( custom = false ) ]'
   {known}
@@ -235,60 +192,50 @@ impl syn::parse::Parse for AttributeMutator
       )
     };
 
-    while !input.is_empty()
-    {
+    while !input.is_empty() {
       let lookahead = input.lookahead1();
-      if lookahead.peek( syn::Ident )
-      {
-        let ident : syn::Ident = input.parse()?;
+      if lookahead.peek(syn::Ident) {
+        let ident: syn::Ident = input.parse()?;
 
-        match ident.to_string().as_str()
-        {
-          AttributePropertyCustom::KEYWORD => result.assign( AttributePropertyCustom::parse( input )? ),
-          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
-          _ => return Err( error( & ident ) ),
+        match ident.to_string().as_str() {
+          AttributePropertyCustom::KEYWORD => result.assign(AttributePropertyCustom::parse(input)?),
+          AttributePropertyDebug::KEYWORD => result.assign(AttributePropertyDebug::from(true)),
+          _ => return Err(error(&ident)),
         }
-      }
-      else
-      {
-        return Err( lookahead.error() );
+      } else {
+        return Err(lookahead.error());
       }
 
       // Optional comma handling
-      if input.peek( syn::Token![,] )
-      {
-        input.parse::< syn::Token![,] >()?;
+      if input.peek(syn::Token![,]) {
+        input.parse::<syn::Token![,]>()?;
       }
     }
 
-    Ok( result )
+    Ok(result)
   }
 }
 
-#[ cfg( all( feature = "enabled", feature = "attr_prop",  debug_assertions )  ) ]
-fn main()
-{
-}
+#[cfg(all(feature = "enabled", feature = "attr_prop", debug_assertions))]
+fn main() {}
 
-#[ cfg( test ) ]
-mod test
-{
+#[cfg(test)]
+mod test {
   use super::*;
 
-  #[ test ]
-  fn test_attribute_parsing_and_properties()
-  {
+  #[test]
+  fn test_attribute_parsing_and_properties() {
     // Parse an attribute and construct a `ItemAttributes` instance.
-    let input : syn::Attribute = syn::parse_quote!( #[ mutator( custom = true ) ] );
-    let attrs : ItemAttributes = ItemAttributes::from_attrs( core::iter::once( & input ) ).unwrap();
-    println!( "{attrs:?}" );
+    let input: syn::Attribute = syn::parse_quote!( #[ mutator( custom = true ) ] );
+    let attrs: ItemAttributes = ItemAttributes::from_attrs(core::iter::once(&input)).unwrap();
+    println!("{attrs:?}");
 
     // Test `AttributePropertyBoolean` functionality.
-    let attr : AttributePropertyBoolean< AttributePropertyDebugMarker > = AttributePropertyBoolean::default();
-    assert!( !attr.internal() );
-    let attr : AttributePropertyBoolean< AttributePropertyDebugMarker > = true.into();
-    assert!( attr.internal() );
-    let attr : AttributePropertyBoolean< AttributePropertyDebugMarker > = false.into();
-    assert!( !attr.internal() );
+    let attr: AttributePropertyBoolean<AttributePropertyDebugMarker> = AttributePropertyBoolean::default();
+    assert!(!attr.internal());
+    let attr: AttributePropertyBoolean<AttributePropertyDebugMarker> = true.into();
+    assert!(attr.internal());
+    let attr: AttributePropertyBoolean<AttributePropertyDebugMarker> = false.into();
+    assert!(!attr.internal());
   }
 }

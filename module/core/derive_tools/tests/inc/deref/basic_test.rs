@@ -16,21 +16,16 @@
 //!
 // Original content of basic_test.rs will follow here.
 
-
-
 use core::ops::Deref;
 use derive_tools::Deref;
 // use macro_tools::attr; // Removed
 
+#[derive(Deref)]
 
+struct MyTuple(i32);
 
-#[ derive( Deref ) ]
-
-struct MyTuple( i32 );
-
-#[ test ]
-fn basic_tuple_deref()
-{
-  let x = MyTuple( 10 );
-  assert_eq!( *x, 10 );
+#[test]
+fn basic_tuple_deref() {
+  let x = MyTuple(10);
+  assert_eq!(*x, 10);
 }

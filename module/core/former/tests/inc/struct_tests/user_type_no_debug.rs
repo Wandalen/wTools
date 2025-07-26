@@ -1,4 +1,4 @@
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
 
 // #[ allow( unused_imports ) ]
@@ -22,8 +22,7 @@ use super::*;
 
 //
 
-tests_impls!
-{
+tests_impls! {
   fn test_user_type_with_no_debug()
   {
     #[ derive( Default, PartialEq ) ]
@@ -54,7 +53,6 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   test_user_type_with_no_debug,
 }

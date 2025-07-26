@@ -3,9 +3,8 @@
 //!
 
 /// Define a private namespace for all its items.
-mod private
-{
-  #[ allow( clippy::wildcard_imports ) ]
+mod private {
+  #[allow(clippy::wildcard_imports)]
   use crate::*;
   use core::fmt;
 
@@ -23,105 +22,85 @@ mod private
   /// let ts : proc_macro2::TokenStream = qt! { let x = 10; };
   /// let tokens = tokens::Tokens::new( ts );
   /// ```
-  #[ derive( Default ) ]
-  pub struct Tokens
-  {
+  #[derive(Default)]
+  pub struct Tokens {
     /// `proc_macro2::TokenStream`
-    pub inner : proc_macro2::TokenStream,
+    pub inner: proc_macro2::TokenStream,
   }
 
-  impl Tokens
-  {
+  impl Tokens {
     /// Constructor from `proc_macro2::TokenStream`.
-    #[ must_use ]
-    pub fn new( inner : proc_macro2::TokenStream ) -> Self
-    {
+    #[must_use]
+    pub fn new(inner: proc_macro2::TokenStream) -> Self {
       Tokens { inner }
     }
   }
 
-  impl syn::parse::Parse for Tokens
-  {
-    fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-    {
-      let inner : proc_macro2::TokenStream = input.parse()?;
-      Ok( Tokens::new( inner ) )
+  impl syn::parse::Parse for Tokens {
+    fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
+      let inner: proc_macro2::TokenStream = input.parse()?;
+      Ok(Tokens::new(inner))
     }
   }
 
-  impl quote::ToTokens for Tokens
-  {
-    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
-    {
-      self.inner.to_tokens( tokens );
+  impl quote::ToTokens for Tokens {
+    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+      self.inner.to_tokens(tokens);
     }
   }
 
-  impl fmt::Debug for Tokens
-  {
-    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
-    {
-      write!( f, "{}", self.inner )
+  impl fmt::Debug for Tokens {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+      write!(f, "{}", self.inner)
     }
   }
 
-  impl core::fmt::Display for Tokens
-  {
-    fn fmt( &self, f : &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
-    {
-      write!( f, "{}", self.inner )
+  impl core::fmt::Display for Tokens {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+      write!(f, "{}", self.inner)
     }
   }
-
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+#[doc(inline)]
+#[allow(unused_imports)]
 pub use own::*;
 
 /// Own namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod own
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod own {
+  #[allow(clippy::wildcard_imports)]
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod orphan {
+  #[allow(clippy::wildcard_imports)]
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod exposed {
+  #[allow(clippy::wildcard_imports)]
   use super::*;
 
   pub use super::super::tokens;
   // pub use super::own as tokens;
 
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use prelude::*;
-  #[ doc( inline ) ]
-  pub use private::
-  {
-    Tokens,
-  };
+  #[doc(inline)]
+  pub use private::{Tokens};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[allow(unused_imports)]
+pub mod prelude {
   use super::*;
 }
-

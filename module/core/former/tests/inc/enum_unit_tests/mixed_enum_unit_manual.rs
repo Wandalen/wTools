@@ -4,26 +4,24 @@ use super::*;
 
 /// Enum with a unit variant and a struct-like variant.
 #[derive(Debug, PartialEq)]
-pub enum MixedEnum
-{
+pub enum MixedEnum {
   SimpleUnit,
   #[allow(dead_code)] // This variant is not constructed by these specific unit tests
-  Complex { data: String }, // data field for the complex variant
+  Complex {
+    data: String,
+  }, // data field for the complex variant
 }
 
-impl MixedEnum
-{
+impl MixedEnum {
   #[inline(always)]
-  pub fn simple_unit() -> Self
-  {
+  pub fn simple_unit() -> Self {
     Self::SimpleUnit
   }
 }
 
 // Standalone constructor for the unit variant
 #[inline(always)]
-pub fn simple_unit() -> MixedEnum
-{
+pub fn simple_unit() -> MixedEnum {
   MixedEnum::SimpleUnit
 }
 

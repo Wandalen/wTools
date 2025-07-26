@@ -3,9 +3,8 @@
 //!
 
 /// Define a private namespace for all its items.
-mod private
-{
-  #[ allow( clippy::wildcard_imports ) ]
+mod private {
+  #[allow(clippy::wildcard_imports)]
   use crate::*;
   use interval_adapter::BoundExt;
 
@@ -25,17 +24,14 @@ mod private
   /// ```
   /// # Panics
   /// qqq: doc
-  #[ must_use ]
-  pub fn type_rightmost( ty : &syn::Type ) -> Option< String >
-  {
-    if let syn::Type::Path( path ) = ty
-    {
+  #[must_use]
+  pub fn type_rightmost(ty: &syn::Type) -> Option<String> {
+    if let syn::Type::Path(path) = ty {
       let last = &path.path.segments.last();
-      if last.is_none()
-      {
+      if last.is_none() {
         return None;
       }
-      return Some( last.unwrap().ident.to_string() );
+      return Some(last.unwrap().ident.to_string());
     }
     None
   }
@@ -58,41 +54,46 @@ mod private
   /// ```
   /// # Panics
   /// qqq: doc
-  #[ allow( clippy::cast_possible_wrap, clippy::needless_pass_by_value ) ]
-  pub fn type_parameters( ty : &syn::Type, range : impl NonIterableInterval ) -> Vec< &syn::Type >
-  {
-    if let syn::Type::Path( syn::TypePath{ path : syn::Path { ref segments, .. }, .. } ) = ty
+  #[allow(clippy::cast_possible_wrap, clippy::needless_pass_by_value)]
+  pub fn type_parameters(ty: &syn::Type, range: impl NonIterableInterval) -> Vec<&syn::Type> {
+    if let syn::Type::Path(syn::TypePath {
+      path: syn::Path { ref segments, .. },
+      ..
+    }) = ty
     {
       let last = &segments.last();
-      if last.is_none()
-      {
-        return vec![ ty ]
+      if last.is_none() {
+        return vec![ty];
       }
       let args = &last.unwrap().arguments;
-      if let syn::PathArguments::AngleBracketed( ref args2 ) = args
-      {
+      if let syn::PathArguments::AngleBracketed(ref args2) = args {
         let args3 = &args2.args;
         let left = range.left().into_left_closed();
         let mut right = range.right().into_right_closed();
         let len = args3.len();
-        if right == isize::MAX
-        {
+        if right == isize::MAX {
           right = len as isize;
         }
         // dbg!( left );
         // dbg!( right );
         // dbg!( len );
-        let selected : Vec< &syn::Type > = args3
-        .iter()
-        .skip_while( | e | !matches!( e, syn::GenericArgument::Type( _ ) ) )
-        .skip( usize::try_from( left.max( 0 ) ).unwrap() )
-        .take( usize::try_from( ( right - left + 1 ).min( len as isize - left ).max( 0 ) ).unwrap() )
-        .map( | e | if let syn::GenericArgument::Type( ty ) = e { ty } else { unreachable!( "Expects Type" ) } )
-        .collect();
+        let selected: Vec<&syn::Type> = args3
+          .iter()
+          .skip_while(|e| !matches!(e, syn::GenericArgument::Type(_)))
+          .skip(usize::try_from(left.max(0)).unwrap())
+          .take(usize::try_from((right - left + 1).min(len as isize - left).max(0)).unwrap())
+          .map(|e| {
+            if let syn::GenericArgument::Type(ty) = e {
+              ty
+            } else {
+              unreachable!("Expects Type")
+            }
+          })
+          .collect();
         return selected;
       }
     }
-    vec![ ty ]
+    vec![ty]
   }
 
   /// Checks if a given [`syn::Type`] is an `Option` type.
@@ -109,10 +110,9 @@ mod private
   /// assert!( macro_tools::typ::is_optional( &parsed_type ) );
   /// ```
   ///
-  #[ must_use ]
-  pub fn is_optional( ty : &syn::Type ) -> bool
-  {
-    typ::type_rightmost( ty ) == Some( "Option".to_string() )
+  #[must_use]
+  pub fn is_optional(ty: &syn::Type) -> bool {
+    typ::type_rightmost(ty) == Some("Option".to_string())
   }
 
   /// Extracts the first generic parameter from a given `syn::Type` if any exists.
@@ -121,7 +121,7 @@ mod private
   /// It is particularly useful when working with complex types in macro expansions and needs
   /// to extract specific type information for further processing.
   ///
-///
+  ///
   /// # Example
   /// ```rust
   /// let type_string = "Result< Option< i32 >, Error >";
@@ -131,67 +131,54 @@ mod private
   /// ```
   /// # Errors
   /// qqq: docs
-  pub fn parameter_first( ty : &syn::Type ) -> Result< &syn::Type >
-  {
-    typ::type_parameters( ty, 0 ..= 0 )
-    .first()
-    .copied()
-    .ok_or_else( || syn_err!( ty, "Expects at least one parameter here:\n  {}", qt!{ #ty } ) )
+  pub fn parameter_first(ty: &syn::Type) -> Result<&syn::Type> {
+    typ::type_parameters(ty, 0..=0)
+      .first()
+      .copied()
+      .ok_or_else(|| syn_err!(ty, "Expects at least one parameter here:\n  {}", qt! { #ty }))
   }
-
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+#[doc(inline)]
+#[allow(unused_imports)]
 pub use own::*;
 
 /// Own namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod own
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod own {
+  #[allow(clippy::wildcard_imports)]
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use orphan::*;
-  #[ doc( inline ) ]
-  pub use private::
-  {
-    type_rightmost,
-    type_parameters,
-    is_optional,
-    parameter_first,
-  };
+  #[doc(inline)]
+  pub use private::{type_rightmost, type_parameters, is_optional, parameter_first};
 }
 
 /// Orphan namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod orphan {
+  #[allow(clippy::wildcard_imports)]
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod exposed {
+  #[allow(clippy::wildcard_imports)]
   use super::*;
 
   pub use super::super::typ;
 
   // pub use super::own as typ;
 
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[allow(unused_imports)]
+pub mod prelude {
   use super::*;
 }
-

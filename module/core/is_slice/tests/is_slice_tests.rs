@@ -5,7 +5,7 @@
 // #![ feature( type_name_of_val ) ]
 // #![ feature( trace_macros ) ]
 // #![ feature( meta_idents_concat ) ]
-#![ allow( unused_imports ) ]
+#![allow(unused_imports)]
 
 use is_slice as the_module;
 mod inc;

@@ -6,53 +6,52 @@
 //! using a custom `FormingEnd` implementation. This pattern is useful for scenarios where the formation process
 //! involves aggregation or transformation of input elements into a different type or form.
 
-#[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
+#[cfg(not(all(
+  feature = "enabled",
+  feature = "derive_former",
+  any(feature = "use_alloc", not(feature = "no_std"))
+)))]
 fn main() {}
 
-#[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
-fn main()
-{
+#[cfg(all(
+  feature = "enabled",
+  feature = "derive_former",
+  any(feature = "use_alloc", not(feature = "no_std"))
+))]
+fn main() {
   // Define a struct `Sum` that will act as a custom former definition.
   struct Sum;
 
   // Implement `FormerDefinitionTypes` for `Sum`.
   // This trait defines the types used during the forming process.
-  impl former::FormerDefinitionTypes for Sum
-  {
+  impl former::FormerDefinitionTypes for Sum {
     type Storage = Vec<i32>; // Collection for the integers.
-    type Formed = i32;       // The final type after forming, which is a single integer.
-    type Context = ();       // No additional context is used in this example.
+    type Formed = i32; // The final type after forming, which is a single integer.
+    type Context = (); // No additional context is used in this example.
   }
 
   // Implement `FormerMutator` for `Sum`.
   // This trait could include custom mutation logic applied during the forming process, but it's empty in this example.
-  impl former::FormerMutator for Sum
-  {
-  }
+  impl former::FormerMutator for Sum {}
 
   // Implement `FormerDefinition` for `Sum`.
   // This trait links the custom types to the former.
-  impl former::FormerDefinition for Sum
-  {
-    type Types = Sum;        // Associate the `FormerDefinitionTypes` with `Sum`.
-    type End = Sum;          // Use `Sum` itself as the end handler.
+  impl former::FormerDefinition for Sum {
+    type Types = Sum; // Associate the `FormerDefinitionTypes` with `Sum`.
+    type End = Sum; // Use `Sum` itself as the end handler.
     type Storage = Vec<i32>; // Specify the storage type.
-    type Formed = i32;       // Specify the final formed type.
-    type Context = ();       // Specify the context type, not used here.
+    type Formed = i32; // Specify the final formed type.
+    type Context = (); // Specify the context type, not used here.
   }
 
   // Implement `FormingEnd` for `Sum`.
   // This trait handles the final step of the forming process.
-  impl former::FormingEnd<Sum> for Sum
-  {
-    fn call
-    (
+  impl former::FormingEnd<Sum> for Sum {
+    fn call(
       &self,
-      storage: < Sum as former::FormerDefinitionTypes >::Storage,
-      _context: Option< < Sum as former::FormerDefinitionTypes >::Context>
-    )
-    -> < Sum as former::FormerDefinitionTypes >::Formed
-    {
+      storage: <Sum as former::FormerDefinitionTypes>::Storage,
+      _context: Option<<Sum as former::FormerDefinitionTypes>::Context>,
+    ) -> <Sum as former::FormerDefinitionTypes>::Formed {
       // Sum all integers in the storage vector.
       storage.iter().sum()
     }
@@ -68,5 +67,5 @@ fn main()
   assert_eq!(got, exp); // Assert the result is as expected.
 
   dbg!(got); // Debug print the result to verify the output.
-  // > got = 13
+             // > got = 13
 }

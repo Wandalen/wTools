@@ -10,13 +10,11 @@
 
 // Import necessary traits and modules from the `rayon` and `deterministic_rand` crates.
 use rayon::prelude::*;
-use deterministic_rand::{ distributions::Uniform, Rng, Hrng };
+use deterministic_rand::{distributions::Uniform, Rng, Hrng};
 
-fn main()
-{
-
+fn main() {
   // Define a range for random number generation between -1.0 and 1.0.
-  let range = Uniform::new( -1.0f64, 1.0 );
+  let range = Uniform::new(-1.0f64, 1.0);
 
   // Create a master hierarchical random number generator (HRNG).
   let manager = Hrng::master();
@@ -59,13 +57,12 @@ fn main()
   .sum::< u64 >();
 
   // Calculate an approximation of Pi using the Monte Carlo method.
-  let got_pi = 4. * ( got as f64 ) / ( ( 10_000 * 1000 ) as f64 );
+  let got_pi = 4. * (got as f64) / ((10_000 * 1000) as f64);
 
   // If determinism is enabled, assert that the calculated value of Pi matches the expected result.
-  #[ cfg( feature = "determinism" ) ]
-  assert_eq!( got_pi, 3.1410448 );
+  #[cfg(feature = "determinism")]
+  assert_eq!(got_pi, 3.1410448);
 
   // Print the calculated value of Pi.
-  println!( "PI = {got_pi}" );
-
+  println!("PI = {got_pi}");
 }

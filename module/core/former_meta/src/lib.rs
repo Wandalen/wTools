@@ -1,13 +1,15 @@
 //#![ feature( proc_macro_totokens ) ] // Enable unstable proc_macro_totokens feature
-#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
-#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
-#![ doc( html_root_url = "https://docs.rs/former_derive_meta/latest/former_derive_meta/" ) ]
+#![doc(html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png")]
+#![doc(
+  html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
+)]
+#![doc(html_root_url = "https://docs.rs/former_derive_meta/latest/former_derive_meta/")]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use macro_tools::prelude::*;
 
-#[ cfg( feature = "derive_former" ) ]
+#[cfg(feature = "derive_former")]
 mod derive_former;
 
 /// Derive macro for generating a `Former` struct, applying a Builder Pattern to the annotated struct.
@@ -73,8 +75,8 @@ mod derive_former;
 /// ```
 ///
 /// This pattern enables fluent and customizable construction of `UserProfile` instances, allowing for easy setting and modification of its fields.
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_former" ) ]
+#[cfg(feature = "enabled")]
+#[cfg(feature = "derive_former")]
 #[
   proc_macro_derive
   (
@@ -89,14 +91,10 @@ mod derive_former;
     )
   )
 ]
-pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
-{
-  let result = derive_former::former( input );
-  match result
-  {
-    Ok( stream ) => stream.into(),
-    Err( err ) => err.to_compile_error().into(),
+pub fn former(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+  let result = derive_former::former(input);
+  match result {
+    Ok(stream) => stream.into(),
+    Err(err) => err.to_compile_error().into(),
   }
 }
-
-

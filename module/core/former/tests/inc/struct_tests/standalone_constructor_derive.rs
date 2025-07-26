@@ -3,7 +3,7 @@
 //! Uses consistent names matching the manual version for testing.
 //!
 
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use ::former::prelude::*;
 use ::former::Former; // Import derive macro
 
@@ -11,31 +11,33 @@ use ::former::Former; // Import derive macro
 
 /// Struct using derive for standalone constructors without arguments.
 // Attributes to be implemented by the derive macro
-#[ derive( Debug, PartialEq, Default, Clone, Former ) ]
-#[ standalone_constructors ] // New attribute
-pub struct TestStructNoArgs // Consistent name
+#[derive(Debug, PartialEq, Default, Clone, Former)]
+#[standalone_constructors] // New attribute
+pub struct TestStructNoArgs
+// Consistent name
 {
   /// A simple field.
-  pub field1 : i32,
+  pub field1: i32,
 }
 
 // === Struct Definition: With Args ===
 
 /// Struct using derive for standalone constructors with arguments.
 // Attributes to be implemented by the derive macro
-#[ derive( Debug, PartialEq, Default, Clone, Former ) ]
-#[ standalone_constructors ] // New attribute
-pub struct TestStructWithArgs // Consistent name
+#[derive(Debug, PartialEq, Default, Clone, Former)]
+#[standalone_constructors] // New attribute
+pub struct TestStructWithArgs
+// Consistent name
 {
   /// Field A (constructor arg - attribute removed for now).
-  #[ arg_for_constructor ] // <<< Uncommented
-  pub a : String,
+  #[arg_for_constructor] // <<< Uncommented
+  pub a: String,
   /// Field B (constructor arg - attribute removed for now).
-  #[ arg_for_constructor ] // <<< Uncommented
-  pub b : bool,
+  #[arg_for_constructor] // <<< Uncommented
+  pub b: bool,
   /// Field C (optional, not constructor arg).
-  pub c : Option< f32 >,
+  pub c: Option<f32>,
 }
 
 // === Include Test Logic ===
-include!( "standalone_constructor_only_test.rs" ); // Include the single test file
+include!("standalone_constructor_only_test.rs"); // Include the single test file

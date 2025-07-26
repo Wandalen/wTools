@@ -1,4 +1,4 @@
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
 
 // #[ allow( unused_imports ) ]
@@ -22,8 +22,7 @@ use super::*;
 
 //
 
-tests_impls!
-{
+tests_impls! {
 
   fn with_u8()
   {
@@ -136,8 +135,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   with_u8,
   with_u16,
   with_u32,

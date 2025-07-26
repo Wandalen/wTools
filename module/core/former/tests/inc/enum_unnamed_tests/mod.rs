@@ -90,6 +90,6 @@
 // - Verifies Rules 1b (scalar), 3b (default), and 4a (standalone_constructors).
 mod tuple_zero_fields_derive; // Re-enabled after fixing _only_test.rs and derive attributes
 mod tuple_zero_fields_manual; // Re-enabled after fixing _only_test.rs
-// Note: tuple_zero_fields_only_test.rs is included by the manual and derive files.
+                              // Note: tuple_zero_fields_only_test.rs is included by the manual and derive files.
 
 // pub mod compile_fail;

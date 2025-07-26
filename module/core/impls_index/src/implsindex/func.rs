@@ -1,9 +1,8 @@
 /// Define a private namespace for all its items.
-mod private
-{
+mod private {
 
   /// Get name of a function.
-  #[ macro_export ]
+  #[macro_export]
   macro_rules! fn_name
   {
 
@@ -28,7 +27,7 @@ mod private
   }
 
   /// Macro to rename function.
-  #[ macro_export ]
+  #[macro_export]
   macro_rules! fn_rename
   {
 
@@ -84,7 +83,7 @@ mod private
   }
 
   /// Split functions.
-  #[ macro_export ]
+  #[macro_export]
   macro_rules! fns
   {
 
@@ -161,7 +160,7 @@ mod private
   }
 
   /// Split functions.
-  #[ macro_export ]
+  #[macro_export]
   macro_rules! fns2
   {
 
@@ -221,30 +220,28 @@ mod private
 }
 
 /// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
+#[allow(unused_imports)]
+pub mod exposed {
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[allow(unused_imports)]
+pub mod prelude {
   use super::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+  #[doc(inline)]
+  #[allow(unused_imports)]
   pub use private::fn_rename;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+  #[doc(inline)]
+  #[allow(unused_imports)]
   pub use private::fn_name;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+  #[doc(inline)]
+  #[allow(unused_imports)]
   pub use private::fns;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+  #[doc(inline)]
+  #[allow(unused_imports)]
   pub use private::fns2;
   // pub use private::ignore_macro;
 }

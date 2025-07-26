@@ -1,11 +1,10 @@
-#![ allow( unused_imports ) ]
+#![allow(unused_imports)]
 use super::*;
 
 //
 
-#[ cfg( feature = "error_untyped" ) ]
-test_tools::tests_impls!
-{
+#[cfg(feature = "error_untyped")]
+test_tools::tests_impls! {
   fn basic()
   {
     // test.case( "from parse usize error" );
@@ -19,8 +18,7 @@ test_tools::tests_impls!
 
 //
 
-#[ cfg( feature = "error_untyped" ) ]
-test_tools::tests_index!
-{
+#[cfg(feature = "error_untyped")]
+test_tools::tests_index! {
   basic,
 }

@@ -1,5 +1,5 @@
 /// Mechanism to include tests only to terminal crate.
-#[ macro_export ]
+#[macro_export]
 macro_rules! only_for_terminal_module
 {
   ( $( $Any : tt )* ) =>
@@ -10,10 +10,7 @@ macro_rules! only_for_terminal_module
 
 /// Mechanism to include tests only to aggregating crate.
 /// It exclude code in terminal module ( crate ), but include for aggregating module ( crate ).
-#[ macro_export ]
-macro_rules! only_for_aggregating_module
-{
-  ( $( $Any : tt )* ) =>
-  {
-  }
+#[macro_export]
+macro_rules! only_for_aggregating_module {
+  ( $( $Any : tt )* ) => {};
 }

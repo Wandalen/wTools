@@ -1,14 +1,13 @@
 // qqq : Implement logic for Struct { f1:T1, ... } with #[subform_scalar] or default
 
 use super::*;
-use macro_tools::{ quote, syn };
+use macro_tools::{quote, syn};
 use super::EnumVariantHandlerContext;
 use proc_macro2::TokenStream; // Import TokenStream
-use convert_case::{ Case, Casing }; // Import Case and Casing from convert_case
+use convert_case::{Case, Casing}; // Import Case and Casing from convert_case
 
 #[allow(dead_code)] // Suppress warning about unused function
-pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> TokenStream
-{
+pub(crate) fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> TokenStream {
   // This handler is specifically for Struct { f1: T1, ... } variants with #[subform_scalar] or default behavior.
   // The main dispatch should ensure this is only called for such variants.
 
@@ -20,12 +19,11 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> TokenStr
   let variant_former_name = format_ident!("{}{}Former", enum_ident, variant_ident);
 
   // Convert variant identifier to snake_case for the method name using convert_case
-  let method_ident_string = variant_ident.to_string().to_case( Case::Snake );
-  let method_ident = syn::Ident::new( &method_ident_string, variant_ident.span() ); // Create new Ident with correct span
+  let method_ident_string = variant_ident.to_string().to_case(Case::Snake);
+  let method_ident = syn::Ident::new(&method_ident_string, variant_ident.span()); // Create new Ident with correct span
 
   // Generate the static method: Enum::variant_name() -> VariantFormer<...>
-  let generated_method = quote!
-  {
+  let generated_method = quote! {
     #[ inline( always ) ]
     pub fn #method_ident() -> #variant_former_name // Return type is the implicit variant former
     {
@@ -37,10 +35,8 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> TokenStr
   let mut generated_tokens = generated_method;
 
   // Generate standalone constructor if #[standalone_constructors] is present on the enum
-  if ctx.struct_attrs.standalone_constructors.is_some()
-  {
-    let generated_standalone = quote!
-    {
+  if ctx.struct_attrs.standalone_constructors.is_some() {
+    let generated_standalone = quote! {
       #[ inline( always ) ]
       #vis fn #method_ident() -> #variant_former_name // Return type is the implicit variant former
       {

@@ -54,153 +54,152 @@ use super::*;
 
 // = basic
 
-#[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
-mod a_basic_manual;
-#[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+#[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
 mod a_basic;
-mod a_primitives_manual;
+#[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
+mod a_basic_manual;
 mod a_primitives;
+mod a_primitives_manual;
 mod tuple_struct;
 
-#[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
-mod subform_collection_basic_scalar;
-#[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
-mod subform_collection_basic_manual;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_collection_basic;
+#[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
+mod subform_collection_basic_manual;
+#[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
+mod subform_collection_basic_scalar;
 
 // = attribute
 
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-mod attribute_default_collection;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-mod attribute_default_primitive;
-mod attribute_default_conflict;
-mod attribute_storage_with_end;
-mod attribute_storage_with_mutator;
-mod attribute_perform;
-mod attribute_setter;
 mod attribute_alias;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod attribute_default_collection;
+mod attribute_default_conflict;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod attribute_default_primitive;
 mod attribute_feature;
 mod attribute_multiple;
+mod attribute_perform;
+mod attribute_setter;
+mod attribute_storage_with_end;
+mod attribute_storage_with_mutator;
 
 // = name collision
 
+mod keyword_field_derive;
+mod keyword_subform_derive;
 mod name_collision_former_hashmap_without_parameter;
 mod name_collision_former_vector_without_parameter;
 mod name_collisions;
-mod keyword_field_derive;
-mod keyword_subform_derive;
 
 // = parametrization
 
 mod parametrized_dyn_manual; // xxx2 : qqq2 : fix the issue
 
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-mod parametrized_struct_manual;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-mod parametrized_struct_imm;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-mod parametrized_struct_where;
 mod parametrized_field;
 mod parametrized_field_where;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod parametrized_struct_imm;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod parametrized_struct_manual;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod parametrized_struct_where;
 
-mod parametrized_slice_manual;
 mod parametrized_slice;
+mod parametrized_slice_manual;
 
 // = etc
 
-mod unsigned_primitive_types;
 mod default_user_type;
-mod user_type_no_default;
+mod unsigned_primitive_types;
 mod user_type_no_debug;
+mod user_type_no_default;
 mod visibility;
 
 // = collection former
 
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-mod collection_former_common;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-mod collection_former_btree_map;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-mod collection_former_btree_set;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod collection_former_binary_heap;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod collection_former_btree_map;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod collection_former_btree_set;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod collection_former_common;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod collection_former_hashmap;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod collection_former_hashset;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod collection_former_linked_list;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod collection_former_vec;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod collection_former_vec_deque;
 
 // = subform collection
 
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-mod subform_collection_playground;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_collection;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-mod subform_collection_manual;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-mod subform_collection_implicit;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-mod subform_collection_setter_off;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-mod subform_collection_named;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_collection_custom;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_collection_implicit;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_collection_manual;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_collection_named;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_collection_playground;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_collection_setter_off;
 
 // = subform scalar
 
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-mod subform_scalar_manual;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_scalar;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_scalar_manual;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_scalar_name;
 
 // = subform entry
 
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry_manual;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry_named;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry_named_manual;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry_setter_off;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry_setter_on;
 
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry_hashmap;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry_hashmap_custom;
 
 // = subform all : scalar, subform_scalar, subform_entry, subform_collection
 
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_all;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-mod subform_all_private;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_all_parametrized;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_all_private;
 
 // = standalone constructor
 
-mod standalone_constructor_manual;
 mod standalone_constructor_derive;
+mod standalone_constructor_manual;
 
 // = compile-time
 
-only_for_terminal_module!
-{
+only_for_terminal_module! {
 
   // stable have different information about error
   // that's why these tests are active only for nightly

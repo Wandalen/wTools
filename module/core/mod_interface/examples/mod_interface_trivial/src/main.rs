@@ -25,46 +25,56 @@ pub mod child;
 mod private {}
 
 // Integrate the interface defined in the `child` module.
-crate::mod_interface!
-{
+crate::mod_interface! {
   /// Use the child layer.
   use super::child;
 }
 
-
-fn main()
-{
-
+fn main() {
   // `prelude_thing` is in `child::prelude`, propagates everywhere.
-  assert!( child::prelude_thing(), "prelude thing of child is there" );
-  assert!( prelude_thing(), "Accessible in parent's root via prelude propagation" );
-  assert!( own::prelude_thing(), "Accessible in parent's own via prelude propagation" );
-  assert!( orphan::prelude_thing(), "Accessible in parent's orphan via prelude propagation" );
-  assert!( exposed::prelude_thing(), "Accessible in parent's exposed via prelude propagation" );
-  assert!( prelude::prelude_thing(), "Accessible in parent's prelude via prelude propagation" );
+  assert!(child::prelude_thing(), "prelude thing of child is there");
+  assert!(prelude_thing(), "Accessible in parent's root via prelude propagation");
+  assert!(own::prelude_thing(), "Accessible in parent's own via prelude propagation");
+  assert!(
+    orphan::prelude_thing(),
+    "Accessible in parent's orphan via prelude propagation"
+  );
+  assert!(
+    exposed::prelude_thing(),
+    "Accessible in parent's exposed via prelude propagation"
+  );
+  assert!(
+    prelude::prelude_thing(),
+    "Accessible in parent's prelude via prelude propagation"
+  );
 
   // `exposed_thing` is in `child::exposed`, propagates to all ancestors except their prelude.
-  assert!( child::exposed_thing(), "exposed thing of child is there" );
-  assert!( exposed_thing(), "Accessible in parent's root via exposed propagation" );
-  assert!( own::exposed_thing(), "Accessible in parent's own via exposed propagation" );
-  assert!( orphan::exposed_thing(), "Accessible in parent's orphan via exposed propagation" );
-  assert!( exposed::exposed_thing(), "Accessible in parent's exposed via exposed propagation" );
+  assert!(child::exposed_thing(), "exposed thing of child is there");
+  assert!(exposed_thing(), "Accessible in parent's root via exposed propagation");
+  assert!(own::exposed_thing(), "Accessible in parent's own via exposed propagation");
+  assert!(
+    orphan::exposed_thing(),
+    "Accessible in parent's orphan via exposed propagation"
+  );
+  assert!(
+    exposed::exposed_thing(),
+    "Accessible in parent's exposed via exposed propagation"
+  );
   // assert!( prelude::exposed_thing(), "but not in parent's prelude" ); // Fails: Exposed items don't reach parent's prelude
 
   // `orphan_thing` is in `child::orphan`, propagates only to the immediate parent's root and `own`.
-  assert!( child::orphan_thing(), "orphan thing of child is there" );
-  assert!( orphan_thing(), "Accessible in parent's root via orphan propagation" );
-  assert!( own::orphan_thing(), "Accessible in parent's own via orphan propagation" );
+  assert!(child::orphan_thing(), "orphan thing of child is there");
+  assert!(orphan_thing(), "Accessible in parent's root via orphan propagation");
+  assert!(own::orphan_thing(), "Accessible in parent's own via orphan propagation");
   // assert!( orphan::orphan_thing(), "but not in parent's orphan" ); // Fails: Orphan items don't reach parent's orphan
   // assert!( exposed::orphan_thing(), "and not in parent's exposed" ); // Fails: Orphan items don't reach parent's exposed
   // assert!( prelude::orphan_thing(), "and not in parent's prelude" ); // Fails: Orphan items don't reach parent's prelude
 
   // `my_thing` is in `child::own`, does not propagate.
-  assert!( child::my_thing(), "own thing of child is only there" );
+  assert!(child::my_thing(), "own thing of child is only there");
   // assert!( my_thing(), "and not here" ); // Fails: Own items don't propagate to parent's root
   // assert!( own::my_thing(), "and not here" ); // Fails: Own items don't propagate to parent's own
   // assert!( orphan::my_thing(), "and not here" ); // Fails: Own items don't propagate to parent's orphan
   // assert!( exposed::my_thing(), "and not here" ); // Fails: Own items don't propagate to parent's exposed
   // assert!( prelude::my_thing(), "and not here" ); // Fails: Own items don't propagate to parent's prelude
-
 }

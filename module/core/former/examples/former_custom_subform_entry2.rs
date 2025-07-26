@@ -23,112 +23,119 @@
 //!
 
 // Ensure the example only compiles when the appropriate features are enabled.
-#[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
+#[cfg(not(all(
+  feature = "enabled",
+  feature = "derive_former",
+  any(feature = "use_alloc", not(feature = "no_std"))
+)))]
 fn main() {}
-#[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
-fn main()
-{
+#[cfg(all(
+  feature = "enabled",
+  feature = "derive_former",
+  any(feature = "use_alloc", not(feature = "no_std"))
+))]
+fn main() {
   use collection_tools::HashMap;
   use former::Former;
 
   // Child struct with Former derived for builder pattern support
-  #[ derive( Clone, Debug, PartialEq, Former ) ]
+  #[derive(Clone, Debug, PartialEq, Former)]
   // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
-  pub struct Child
-  {
-    name : String,
-    description : String,
+  pub struct Child {
+    name: String,
+    description: String,
   }
 
   // Parent struct to hold children
-  #[ derive( Debug, PartialEq, Former ) ]
+  #[derive(Debug, PartialEq, Former)]
   // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
-  pub struct Parent
-  {
+  pub struct Parent {
     // Use `debug` to gennerate sketch of setter.
-    #[ subform_entry( setter = false ) ]
-    child : HashMap< String, Child >,
+    #[subform_entry(setter = false)]
+    child: HashMap<String, Child>,
   }
 
   // Use ChildFormer as custom subformer for ParentFormer to add children by name.
-  impl< Definition > ParentFormer< Definition >
+  impl<Definition> ParentFormer<Definition>
   where
-    Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
+    Definition: former::FormerDefinition<Storage = <Parent as former::EntityToStorage>::Storage>,
   {
-
     /// Adds a named child entity to the `Parent`'s `child` field using a custom subformer setup.
     /// This method simplifies the process of dynamically adding child entities with specified names,
     /// providing a basic yet powerful example of custom subformer implementation.
     ///
-    #[ inline( always ) ]
-    pub fn child1( self, name : &str ) -> ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
-    {
-      let on_end = | substorage : ChildFormerStorage, super_former : core::option::Option< Self > | -> Self
-      {
+    #[inline(always)]
+    pub fn child1(self, name: &str) -> ChildAsSubformer<Self, impl ChildAsSubformerEnd<Self>> {
+      let on_end = |substorage: ChildFormerStorage, super_former: core::option::Option<Self>| -> Self {
         let mut super_former = super_former.unwrap();
-        let preformed = former::StoragePreform::preform( substorage );
+        let preformed = former::StoragePreform::preform(substorage);
 
-        if super_former.storage.child.is_none()
-        {
-          super_former.storage.child = Some( HashMap::default() );
+        if super_former.storage.child.is_none() {
+          super_former.storage.child = Some(HashMap::default());
         }
 
         // add instance to the collection
-        super_former.storage.child.as_mut().unwrap()
-        .entry( preformed.name.clone() )
-        .or_insert( preformed.clone() );
+        super_former
+          .storage
+          .child
+          .as_mut()
+          .unwrap()
+          .entry(preformed.name.clone())
+          .or_insert(preformed.clone());
 
         super_former
       };
-      let subformer = ChildAsSubformer::< Self, _ >::begin( None, Some( self ), former::FormingEndClosure::new( on_end ) );
-      subformer.name( name )
+      let subformer = ChildAsSubformer::<Self, _>::begin(None, Some(self), former::FormingEndClosure::new(on_end));
+      subformer.name(name)
     }
 
     /// Dynamically adds named child entities to the `Parent` structure using a custom subformer.
     /// Unlike traditional methods that might use predefined setters like `_child_subform_entry`, this function
     /// explicitly constructs a subformer setup through a closure to provide greater flexibility and control.
     ///
-    #[ inline( always ) ]
-    pub fn child2( self, name : &str ) -> ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
-    {
-      let on_end = | substorage : ChildFormerStorage, super_former : core::option::Option< Self > | -> Self
-      {
+    #[inline(always)]
+    pub fn child2(self, name: &str) -> ChildAsSubformer<Self, impl ChildAsSubformerEnd<Self>> {
+      let on_end = |substorage: ChildFormerStorage, super_former: core::option::Option<Self>| -> Self {
         let mut super_former = super_former.unwrap();
-        let preformed = former::StoragePreform::preform( substorage );
+        let preformed = former::StoragePreform::preform(substorage);
 
-        if super_former.storage.child.is_none()
-        {
-          super_former.storage.child = Some( HashMap::default() );
+        if super_former.storage.child.is_none() {
+          super_former.storage.child = Some(HashMap::default());
         }
 
         // add instance to the collection
-        super_former.storage.child.as_mut().unwrap()
-        .entry( preformed.name.clone() )
-        .or_insert( preformed.clone() );
+        super_former
+          .storage
+          .child
+          .as_mut()
+          .unwrap()
+          .entry(preformed.name.clone())
+          .or_insert(preformed.clone());
 
         // custom logic to add two instances to the collection
-        super_former.storage.child.as_mut().unwrap()
-        .entry( format!( "{}_2", preformed.name ) )
-        .or_insert( preformed.clone() );
+        super_former
+          .storage
+          .child
+          .as_mut()
+          .unwrap()
+          .entry(format!("{}_2", preformed.name))
+          .or_insert(preformed.clone());
 
         super_former
       };
-      let subformer = ChildAsSubformer::< Self, _ >::begin( None, Some( self ), former::FormingEndClosure::new( on_end ) );
-      subformer.name( name )
+      let subformer = ChildAsSubformer::<Self, _>::begin(None, Some(self), former::FormingEndClosure::new(on_end));
+      subformer.name(name)
     }
-
   }
 
   // Required to define how `value` is converted into pair `( key, value )`
-  impl former::ValToEntry< HashMap< String, Child > > for Child
-  {
-    type Entry = ( String, Child );
-    #[ inline( always ) ]
-    fn val_to_entry( self ) -> Self::Entry
-    {
-      ( self.name.clone(), self )
+  impl former::ValToEntry<HashMap<String, Child>> for Child {
+    type Entry = (String, Child);
+    #[inline(always)]
+    fn val_to_entry(self) -> Self::Entry {
+      (self.name.clone(), self)
     }
   }
 
@@ -141,7 +148,7 @@ fn main()
     .end()
   .form();
 
-  dbg!( &ca );
+  dbg!(&ca);
   // > &ca = Parent {
   // >     child: {
   // >         "echo": Child {
@@ -158,5 +165,4 @@ fn main()
   // >         },
   // >     },
   // > }
-
 }

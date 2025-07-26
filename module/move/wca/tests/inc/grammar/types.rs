@@ -1,10 +1,9 @@
 use super::*;
-use the_module::{ TryCast, Type, Value };
+use the_module::{TryCast, Type, Value};
 
 //
 
-tests_impls!
-{
+tests_impls! {
   fn number()
   {
     // basic
@@ -118,7 +117,7 @@ tests_impls!
     let numbers = numbers.unwrap();
     a_id!
     (
-      Value::List( vec![ Value::Number( 100.0 ), Value::Number( 3.14 ) ] ), numbers 
+      Value::List( vec![ Value::Number( 100.0 ), Value::Number( 3.14 ) ] ), numbers
     );
 
     let inner_numbers : Vec< i32 > = numbers.clone().into();
@@ -145,8 +144,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   number,
   string,
   path,

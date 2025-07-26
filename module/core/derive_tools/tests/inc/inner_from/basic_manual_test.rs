@@ -10,8 +10,8 @@
 //! | IF1.4 | Named       | 1      | Should implement `InnerFrom` from the inner field  |
 //! | IF1.5 | Named       | >1     | Should not compile (InnerFrom requires one field) |
 
-#![ allow( unused_imports ) ]
-#![ allow( dead_code ) ]
+#![allow(unused_imports)]
+#![allow(dead_code)]
 
 use test_tools::prelude::*;
 
@@ -19,13 +19,11 @@ use test_tools::prelude::*;
 // pub struct UnitStruct;
 
 // IF1.2: Tuple struct with one field
-pub struct TupleStruct1( pub i32 );
+pub struct TupleStruct1(pub i32);
 
-impl From< i32 > for TupleStruct1
-{
-  fn from( src : i32 ) -> Self
-  {
-    Self( src )
+impl From<i32> for TupleStruct1 {
+  fn from(src: i32) -> Self {
+    Self(src)
   }
 }
 
@@ -33,16 +31,13 @@ impl From< i32 > for TupleStruct1
 // pub struct TupleStruct2( pub i32, pub i32 );
 
 // IF1.4: Named struct with one field
-pub struct NamedStruct1
-{
-  pub field1 : i32,
+pub struct NamedStruct1 {
+  pub field1: i32,
 }
 
-impl From< i32 > for NamedStruct1
-{
-  fn from( src : i32 ) -> Self
-  {
-    Self { field1 : src }
+impl From<i32> for NamedStruct1 {
+  fn from(src: i32) -> Self {
+    Self { field1: src }
   }
 }
 
@@ -54,4 +49,4 @@ impl From< i32 > for NamedStruct1
 // }
 
 // Shared test logic
-include!( "../inner_from_only_test.rs" );
+include!("../inner_from_only_test.rs");

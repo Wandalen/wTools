@@ -4,42 +4,31 @@
 //! In the example showcases a custom alternative setter, `word_exclaimed`, which appends an exclamation mark to the input string before storing it. This approach allows for additional processing or validation of the input data without compromising the simplicity of the builder pattern.
 //!
 
-#[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
+#[cfg(any(not(feature = "derive_former"), not(feature = "enabled")))]
 fn main() {}
 
-#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
-fn main()
-{
+#[cfg(all(feature = "derive_former", feature = "enabled"))]
+fn main() {
   use former::Former;
 
   /// Structure with a custom setter.
-  #[ derive( Debug, Former ) ]
-  pub struct StructWithCustomSetters
-  {
-    word : String,
+  #[derive(Debug, Former)]
+  pub struct StructWithCustomSetters {
+    word: String,
   }
 
-  impl StructWithCustomSettersFormer
-  {
-
+  impl StructWithCustomSettersFormer {
     // Custom alternative setter for `word`
-    pub fn word_exclaimed( mut self, value : impl Into< String > ) -> Self
-    {
-      debug_assert!( self.storage.word.is_none() );
-      self.storage.word = Some( format!( "{}!", value.into() ) );
+    pub fn word_exclaimed(mut self, value: impl Into<String>) -> Self {
+      debug_assert!(self.storage.word.is_none());
+      self.storage.word = Some(format!("{}!", value.into()));
       self
     }
-
   }
 
-  let example = StructWithCustomSetters::former()
-  .word( "Hello" )
-  .form();
-  assert_eq!( example.word, "Hello".to_string() );
+  let example = StructWithCustomSetters::former().word("Hello").form();
+  assert_eq!(example.word, "Hello".to_string());
 
-  let example = StructWithCustomSetters::former()
-  .word_exclaimed( "Hello" )
-  .form();
-  assert_eq!( example.word, "Hello!".to_string() );
-
+  let example = StructWithCustomSetters::former().word_exclaimed("Hello").form();
+  assert_eq!(example.word, "Hello!".to_string());
 }

@@ -1,18 +1,7 @@
 use super::*;
-use the_module::
-{
-  parser::Parser,
-  VerifiedCommand,
-  CommandsAggregator,
-  HelpVariants,
-  Type,
-  Error,
-  ValidationError,
-};
+use the_module::{parser::Parser, VerifiedCommand, CommandsAggregator, HelpVariants, Type, Error, ValidationError};
 
-
-tests_impls!
-{
+tests_impls! {
   fn simple()
   {
     let ca = CommandsAggregator::former()
@@ -244,8 +233,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   simple,
   with_only_general_help,
   dot_command,

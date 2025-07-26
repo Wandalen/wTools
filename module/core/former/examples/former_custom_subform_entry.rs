@@ -21,63 +21,62 @@
 //! These setters ensure that developers can precisely and efficiently set properties, manage collections, and configure complex structures within their applications.
 //!
 
-#[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
+#[cfg(not(all(
+  feature = "enabled",
+  feature = "derive_former",
+  any(feature = "use_alloc", not(feature = "no_std"))
+)))]
 fn main() {}
 
 // Ensure the example only compiles when the appropriate features are enabled.
-#[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
-fn main()
-{
+#[cfg(all(
+  feature = "enabled",
+  feature = "derive_former",
+  any(feature = "use_alloc", not(feature = "no_std"))
+))]
+fn main() {
   use collection_tools::HashMap;
   use former::Former;
 
   // Child struct with Former derived for builder pattern support
-  #[ derive( Debug, PartialEq, Former ) ]
+  #[derive(Debug, PartialEq, Former)]
   // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
-  pub struct Child
-  {
-    name : String,
-    description : String,
+  pub struct Child {
+    name: String,
+    description: String,
   }
 
   // Parent struct to hold children
-  #[ derive( Debug, PartialEq, Former ) ]
+  #[derive(Debug, PartialEq, Former)]
   // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
-  pub struct Parent
-  {
+  pub struct Parent {
     // Use `debug` to gennerate sketch of setter.
-    #[ subform_entry( setter = false ) ]
-    child : HashMap< String, Child >,
+    #[subform_entry(setter = false)]
+    child: HashMap<String, Child>,
   }
 
   /// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
   /// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
   /// integrating them into the formation process of the parent entity.
   ///
-  impl< Definition > ParentFormer< Definition >
+  impl<Definition> ParentFormer<Definition>
   where
-    Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
+    Definition: former::FormerDefinition<Storage = <Parent as former::EntityToStorage>::Storage>,
   {
-
-    #[ inline( always ) ]
-    pub fn child( self, name : &str ) -> ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
-    {
-      self._child_subform_entry::< ChildFormer< _ >, _, >()
-      .name( name )
+    #[inline(always)]
+    pub fn child(self, name: &str) -> ChildAsSubformer<Self, impl ChildAsSubformerEnd<Self>> {
+      self._child_subform_entry::<ChildFormer<_>, _>().name(name)
     }
-
   }
 
   // Required to define how `value` is converted into pair `( key, value )`
-  impl former::ValToEntry< HashMap< String, Child > > for Child
-  {
-    type Entry = ( String, Child );
-    #[ inline( always ) ]
-    fn val_to_entry( self ) -> Self::Entry
-    {
-      ( self.name.clone(), self )
+  impl former::ValToEntry<HashMap<String, Child>> for Child {
+    type Entry = (String, Child);
+    #[inline(always)]
+    fn val_to_entry(self) -> Self::Entry {
+      (self.name.clone(), self)
     }
   }
 
@@ -90,7 +89,7 @@ fn main()
     .end()
   .form();
 
-  dbg!( &ca );
+  dbg!(&ca);
   // > &ca = Parent {
   // >     child: {
   // >          "echo": Child {

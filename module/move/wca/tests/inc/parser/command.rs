@@ -1,10 +1,9 @@
 use super::*;
-use the_module::parser::{ ParsedCommand, Parser };
+use the_module::parser::{ParsedCommand, Parser};
 
 //
 
-tests_impls!
-{
+tests_impls! {
   fn basic()
   {
     let parser = Parser;
@@ -147,7 +146,7 @@ tests_impls!
       },
       parser.parse( [ ".command", "prop:", "value with spaces" ] ).unwrap().commands[ 0 ]
     );
-    
+
     a_id!
     (
       ParsedCommand
@@ -355,7 +354,7 @@ tests_impls!
       },
       parser.parse( [ ".command." ] ).unwrap().commands[ 0 ]
     );
-    
+
     a_id!
     (
       ParsedCommand
@@ -366,7 +365,7 @@ tests_impls!
       },
       parser.parse( [ ".?" ] ).unwrap().commands[ 0 ]
     );
-    
+
     a_id!
     (
       ParsedCommand
@@ -382,8 +381,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   basic,
   with_spaces_in_value,
   not_only_alphanumeric_symbols,

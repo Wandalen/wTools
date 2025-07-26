@@ -1,25 +1,22 @@
-
 // To avoid conflicts with test_tools it's important to import only those names which are needed.
 use test_tools::a_id;
 
-use super::
-{
+use super::{
   the_module,
   // only_for_terminal_module,
   // a_id,
 };
 
 mod func_test;
-mod impls_basic_test;
 mod impls1_test;
 mod impls2_test;
 mod impls3_test;
+mod impls_basic_test;
 
 mod index_test;
 mod tests_index_test;
 
-only_for_terminal_module!
-{
+only_for_terminal_module! {
 
   // stable have different information about error
   // that's why these tests are active only for nightly

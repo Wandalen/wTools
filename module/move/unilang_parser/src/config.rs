@@ -4,39 +4,33 @@
 //! customization of the parsing behavior, such as delimiters, whitespace
 //! handling, and error policies.
 
-#[ derive( Clone ) ]
-#[ derive( PartialEq ) ]
-#[ derive( Eq ) ]
+#[derive(Clone, PartialEq, Eq)]
 /// Configuration options for the Unilang parser.
-#[ derive( Debug ) ]
-pub struct UnilangParserOptions
-{
+#[derive(Debug)]
+pub struct UnilangParserOptions {
   /// A list of main delimiters used to split the input string into initial tokens.
-  pub main_delimiters : Vec< &'static str >,
+  pub main_delimiters: Vec<&'static str>,
   /// A list of operators recognized by the parser.
-  pub operators : Vec< &'static str >,
+  pub operators: Vec<&'static str>,
   /// If `true`, whitespace characters are treated as separators between tokens.
-  pub whitespace_is_separator : bool,
+  pub whitespace_is_separator: bool,
   /// If `true`, a `ParseError` is returned if a positional argument appears after a named argument.
-  pub error_on_positional_after_named : bool,
+  pub error_on_positional_after_named: bool,
   /// If `true`, a `ParseError` is returned if a named argument is duplicated. Otherwise, the last one wins.
-  pub error_on_duplicate_named_arguments : bool,
+  pub error_on_duplicate_named_arguments: bool,
   /// A list of character pairs used for quoting (e.g., `('"', '"')` for double quotes).
-  pub quote_pairs : Vec< ( char, char ) >,
+  pub quote_pairs: Vec<(char, char)>,
 }
 
-impl Default for UnilangParserOptions
-{
-  fn default() -> Self
-  {
-    Self
-    {
-      main_delimiters : vec![ " ", "." ],
-      operators : vec![ "::", "?", "!" ],
-      whitespace_is_separator : true,
-      error_on_positional_after_named : false,
-      error_on_duplicate_named_arguments : false,
-      quote_pairs : vec![ ( '"', '"' ), ( '\'', '\'' ) ],
+impl Default for UnilangParserOptions {
+  fn default() -> Self {
+    Self {
+      main_delimiters: vec![" ", "."],
+      operators: vec!["::", "?", "!"],
+      whitespace_is_separator: true,
+      error_on_positional_after_named: false,
+      error_on_duplicate_named_arguments: false,
+      quote_pairs: vec![('"', '"'), ('\'', '\'')],
     }
   }
 }

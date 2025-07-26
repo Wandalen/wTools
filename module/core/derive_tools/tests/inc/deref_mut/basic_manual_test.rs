@@ -10,24 +10,20 @@
 use super::*;
 use test_tools::a_id;
 
-#[ derive( Debug, Clone, Copy, PartialEq ) ]
-pub struct IsTransparentSimple( bool );
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct IsTransparentSimple(bool);
 
-impl core::ops::Deref for IsTransparentSimple
-{
+impl core::ops::Deref for IsTransparentSimple {
   type Target = bool;
-  #[ inline( always ) ]
-  fn deref( &self ) -> &Self::Target
-  {
+  #[inline(always)]
+  fn deref(&self) -> &Self::Target {
     &self.0
   }
 }
 
-impl core::ops::DerefMut for IsTransparentSimple
-{
-  #[ inline( always ) ]
-  fn deref_mut( &mut self ) -> &mut Self::Target
-  {
+impl core::ops::DerefMut for IsTransparentSimple {
+  #[inline(always)]
+  fn deref_mut(&mut self) -> &mut Self::Target {
     &mut self.0
   }
 }
@@ -64,15 +60,14 @@ impl core::ops::DerefMut for IsTransparentSimple
 // }
 
 /// Tests the `DerefMut` manual implementation for various struct types.
-#[ test ]
-fn deref_mut_test()
-{
+#[test]
+fn deref_mut_test() {
   // Test for IsTransparentSimple
-  let mut got = IsTransparentSimple( true );
+  let mut got = IsTransparentSimple(true);
   let exp = true;
-  a_id!( *got, exp );
+  a_id!(*got, exp);
   *got = false;
-  a_id!( *got, false );
+  a_id!(*got, false);
 
   // Test for IsTransparentComplex (commented out due to const generics issue)
   // let mut got_tmp = "hello".to_string();

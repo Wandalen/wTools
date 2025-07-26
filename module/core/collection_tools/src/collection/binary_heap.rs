@@ -1,9 +1,9 @@
-#[ allow( unused_imports, clippy::wildcard_imports ) ]
+#[allow(unused_imports, clippy::wildcard_imports)]
 use super::*;
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-#[ allow( clippy::pub_use ) ]
+#[doc(inline)]
+#[allow(unused_imports)]
+#[allow(clippy::pub_use)]
 pub use alloc::collections::binary_heap::*;
 
 /// Creates a `BinaryHeap` from a list of elements.
@@ -51,8 +51,8 @@ pub use alloc::collections::binary_heap::*;
 /// assert_eq!( heap.peek(), Some( &7 ) ); // The largest value is at the top of the heap
 /// ```
 ///
-#[ cfg( feature = "collection_constructors" ) ]
-#[ macro_export( local_inner_macros ) ]
+#[cfg(feature = "collection_constructors")]
+#[macro_export(local_inner_macros)]
 macro_rules! heap
 {
   (
@@ -140,8 +140,8 @@ macro_rules! heap
 /// assert_eq!( fruits.peek(), Some( &"cherry".to_string() ) ); // The lexicographically largest value is at the top
 /// ```
 ///
-#[ cfg( feature = "collection_into_constructors" ) ]
-#[ macro_export( local_inner_macros ) ]
+#[cfg(feature = "collection_into_constructors")]
+#[macro_export(local_inner_macros)]
 macro_rules! into_heap
 {
   (

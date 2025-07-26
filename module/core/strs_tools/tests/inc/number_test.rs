@@ -1,8 +1,7 @@
 use super::*;
 //
 
-tests_impls!
-{
+tests_impls! {
   #[ test ]
   fn basic()
   {
@@ -53,7 +52,6 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   basic,
 }

@@ -38,7 +38,7 @@
 //! | C5.3  | N/A         | N/A         | "Too many arguments"                         | `from!` macro invoked with too many arguments.                     |
 //!
 
-#![ allow( unused_imports ) ]
+#![allow(unused_imports)]
 use super::*;
 use variadic_from::exposed::*;
 use variadic_from_meta::VariadicFrom;
@@ -47,98 +47,102 @@ use variadic_from_meta::VariadicFrom;
 
 /// Tests a named struct with 1 field.
 /// Test Combination: T1.1
-#[ test ]
-fn test_named_struct_1_field()
-{
-  #[ derive( VariadicFrom, Debug, PartialEq ) ]
-  struct Test1
-  {
-    a : i32,
+#[test]
+fn test_named_struct_1_field() {
+  #[derive(VariadicFrom, Debug, PartialEq)]
+  struct Test1 {
+    a: i32,
   }
 
-  let x = Test1::from1( 10 );
-  assert_eq!( x, Test1 { a : 10 } );
+  let x = Test1::from1(10);
+  assert_eq!(x, Test1 { a: 10 });
 
-  let x = Test1::from( 20 );
-  assert_eq!( x, Test1 { a : 20 } );
+  let x = Test1::from(20);
+  assert_eq!(x, Test1 { a: 20 });
 }
 
 /// Tests a tuple struct with 1 field.
 /// Test Combination: T1.2
-#[ test ]
-fn test_tuple_struct_1_field()
-{
-  #[ derive( VariadicFrom, Debug, PartialEq ) ]
-  struct Test2( i32 );
+#[test]
+fn test_tuple_struct_1_field() {
+  #[derive(VariadicFrom, Debug, PartialEq)]
+  struct Test2(i32);
 
-  let x = Test2::from1( 10 );
-  assert_eq!( x, Test2( 10 ) );
+  let x = Test2::from1(10);
+  assert_eq!(x, Test2(10));
 
-  let x = Test2::from( 20 );
-  assert_eq!( x, Test2( 20 ) );
+  let x = Test2::from(20);
+  assert_eq!(x, Test2(20));
 }
 
 // Phase 2: Two-Field Structs
 
 /// Tests a named struct with 2 identical fields.
 /// Test Combination: T2.1
-#[ test ]
-fn test_named_struct_2_identical_fields()
-{
-  #[ derive( VariadicFrom, Debug, PartialEq ) ]
-  struct Test3
-  {
-    a : i32,
-    b : i32,
+#[test]
+fn test_named_struct_2_identical_fields() {
+  #[derive(VariadicFrom, Debug, PartialEq)]
+  struct Test3 {
+    a: i32,
+    b: i32,
   }
 
-  let x = Test3::from2( 10, 20 );
-  assert_eq!( x, Test3 { a : 10, b : 20 } );
+  let x = Test3::from2(10, 20);
+  assert_eq!(x, Test3 { a: 10, b: 20 });
 
-  let x = Test3::from( ( 30, 40 ) );
-  assert_eq!( x, Test3 { a : 30, b : 40 } );
+  let x = Test3::from((30, 40));
+  assert_eq!(x, Test3 { a: 30, b: 40 });
 
   // Test convenience From1
-  let x = Test3::from1( 50 );
-  assert_eq!( x, Test3 { a : 50, b : 50 } );
+  let x = Test3::from1(50);
+  assert_eq!(x, Test3 { a: 50, b: 50 });
 }
 
 /// Tests a tuple struct with 2 identical fields.
 /// Test Combination: T2.2
-#[ test ]
-fn test_tuple_struct_2_identical_fields()
-{
-  #[ derive( VariadicFrom, Debug, PartialEq ) ]
-  struct Test4( i32, i32 );
+#[test]
+fn test_tuple_struct_2_identical_fields() {
+  #[derive(VariadicFrom, Debug, PartialEq)]
+  struct Test4(i32, i32);
 
-  let x = Test4::from2( 10, 20 );
-  assert_eq!( x, Test4( 10, 20 ) );
+  let x = Test4::from2(10, 20);
+  assert_eq!(x, Test4(10, 20));
 
-  let x = Test4::from( ( 30, 40 ) );
-  assert_eq!( x, Test4( 30, 40 ) );
+  let x = Test4::from((30, 40));
+  assert_eq!(x, Test4(30, 40));
 
   // Test convenience From1
-  let x = Test4::from1( 50 );
-  assert_eq!( x, Test4( 50, 50 ) );
+  let x = Test4::from1(50);
+  assert_eq!(x, Test4(50, 50));
 }
 
 /// Tests a named struct with 2 different fields.
 /// Test Combination: T2.3
-#[ test ]
-fn test_named_struct_2_different_fields()
-{
-  #[ derive( VariadicFrom, Debug, PartialEq ) ]
-  struct Test5
-  {
-    a : i32,
-    b : String,
+#[test]
+fn test_named_struct_2_different_fields() {
+  #[derive(VariadicFrom, Debug, PartialEq)]
+  struct Test5 {
+    a: i32,
+    b: String,
   }
 
-  let x = Test5::from2( 10, "hello".to_string() );
-  assert_eq!( x, Test5 { a : 10, b : "hello".to_string() } );
+  let x = Test5::from2(10, "hello".to_string());
+  assert_eq!(
+    x,
+    Test5 {
+      a: 10,
+      b: "hello".to_string()
+    }
+  );
 
-  let x = Test5::from( ( 20, "world".to_string() ) );
-  assert_eq!( x, Test5 { a : 20, b : "world".to_string() } );
+  let x = Test5::from((20, "world".to_string()));
+  assert_eq!(
+    x,
+    Test5 {
+      a: 20,
+      b: "world".to_string()
+    }
+  );
 
   // No convenience From1 expected
   // let x = Test5::from1( 50 ); // Should not compile
@@ -146,17 +150,16 @@ fn test_named_struct_2_different_fields()
 
 /// Tests a tuple struct with 2 different fields.
 /// Test Combination: T2.4
-#[ test ]
-fn test_tuple_struct_2_different_fields()
-{
-  #[ derive( VariadicFrom, Debug, PartialEq ) ]
-  struct Test6( i32, String );
+#[test]
+fn test_tuple_struct_2_different_fields() {
+  #[derive(VariadicFrom, Debug, PartialEq)]
+  struct Test6(i32, String);
 
-  let x = Test6::from2( 10, "hello".to_string() );
-  assert_eq!( x, Test6( 10, "hello".to_string() ) );
+  let x = Test6::from2(10, "hello".to_string());
+  assert_eq!(x, Test6(10, "hello".to_string()));
 
-  let x = Test6::from( ( 20, "world".to_string() ) );
-  assert_eq!( x, Test6( 20, "world".to_string() ) );
+  let x = Test6::from((20, "world".to_string()));
+  assert_eq!(x, Test6(20, "world".to_string()));
 
   // No convenience From1 expected
   // let x = Test6::from1( 50 ); // Should not compile
@@ -166,73 +169,82 @@ fn test_tuple_struct_2_different_fields()
 
 /// Tests a named struct with 3 identical fields.
 /// Test Combination: T3.1
-#[ test ]
-fn test_named_struct_3_identical_fields()
-{
-  #[ derive( VariadicFrom, Debug, PartialEq ) ]
-  struct Test7
-  {
-    a : i32,
-    b : i32,
-    c : i32,
+#[test]
+fn test_named_struct_3_identical_fields() {
+  #[derive(VariadicFrom, Debug, PartialEq)]
+  struct Test7 {
+    a: i32,
+    b: i32,
+    c: i32,
   }
 
-  let x = Test7::from3( 10, 20, 30 );
-  assert_eq!( x, Test7 { a : 10, b : 20, c : 30 } );
+  let x = Test7::from3(10, 20, 30);
+  assert_eq!(x, Test7 { a: 10, b: 20, c: 30 });
 
-  let x = Test7::from( ( 40, 50, 60 ) );
-  assert_eq!( x, Test7 { a : 40, b : 50, c : 60 } );
+  let x = Test7::from((40, 50, 60));
+  assert_eq!(x, Test7 { a: 40, b: 50, c: 60 });
 
   // Test convenience From1
-  let x = Test7::from1( 70 );
-  assert_eq!( x, Test7 { a : 70, b : 70, c : 70 } );
+  let x = Test7::from1(70);
+  assert_eq!(x, Test7 { a: 70, b: 70, c: 70 });
 
   // Test convenience From2
-  let x = Test7::from2( 80, 90 );
-  assert_eq!( x, Test7 { a : 80, b : 90, c : 90 } );
+  let x = Test7::from2(80, 90);
+  assert_eq!(x, Test7 { a: 80, b: 90, c: 90 });
 }
 
 /// Tests a tuple struct with 3 identical fields.
 /// Test Combination: T3.2
-#[ test ]
-fn test_tuple_struct_3_identical_fields()
-{
-  #[ derive( VariadicFrom, Debug, PartialEq ) ]
-  struct Test8( i32, i32, i32 );
+#[test]
+fn test_tuple_struct_3_identical_fields() {
+  #[derive(VariadicFrom, Debug, PartialEq)]
+  struct Test8(i32, i32, i32);
 
-  let x = Test8::from3( 10, 20, 30 );
-  assert_eq!( x, Test8( 10, 20, 30 ) );
+  let x = Test8::from3(10, 20, 30);
+  assert_eq!(x, Test8(10, 20, 30));
 
-  let x = Test8( 40, 50, 60 );
-  assert_eq!( x, Test8( 40, 50, 60 ) );
+  let x = Test8(40, 50, 60);
+  assert_eq!(x, Test8(40, 50, 60));
 
   // Test convenience From1
-  let x = Test8::from1( 70 );
-  assert_eq!( x, Test8( 70, 70, 70 ) );
+  let x = Test8::from1(70);
+  assert_eq!(x, Test8(70, 70, 70));
 
   // Test convenience From2
-  let x = Test8::from2( 80, 90 );
-  assert_eq!( x, Test8( 80, 90, 90 ) );
+  let x = Test8::from2(80, 90);
+  assert_eq!(x, Test8(80, 90, 90));
 }
 
 /// Tests a named struct with 3 fields, last one different.
 /// Test Combination: T3.3
-#[ test ]
-fn test_named_struct_3_fields_last_different()
-{
-  #[ derive( VariadicFrom, Debug, PartialEq ) ]
-  struct Test9
-  {
-    a : i32,
-    b : i32,
-    c : String,
+#[test]
+fn test_named_struct_3_fields_last_different() {
+  #[derive(VariadicFrom, Debug, PartialEq)]
+  struct Test9 {
+    a: i32,
+    b: i32,
+    c: String,
   }
 
-  let x = Test9::from3( 10, 20, "hello".to_string().clone() );
-  assert_eq!( x, Test9 { a : 10, b : 20, c : "hello".to_string() } );
+  let x = Test9::from3(10, 20, "hello".to_string().clone());
+  assert_eq!(
+    x,
+    Test9 {
+      a: 10,
+      b: 20,
+      c: "hello".to_string()
+    }
+  );
 
-  let x = Test9::from( ( 30, 40, "world".to_string().clone() ) );
-  assert_eq!( x, Test9 { a : 30, b : 40, c : "world".to_string() } );
+  let x = Test9::from((30, 40, "world".to_string().clone()));
+  assert_eq!(
+    x,
+    Test9 {
+      a: 30,
+      b: 40,
+      c: "world".to_string()
+    }
+  );
 
   // No convenience From1 or From2 expected
   // let x = Test9::from1( 50 ); // Should not compile
@@ -240,17 +252,16 @@ fn test_named_struct_3_fields_last_different()
 
 /// Tests a tuple struct with 3 fields, last one different.
 /// Test Combination: T3.4
-#[ test ]
-fn test_tuple_struct_3_fields_last_different()
-{
-  #[ derive( VariadicFrom, Debug, PartialEq ) ]
-  struct Test10( i32, i32, String );
+#[test]
+fn test_tuple_struct_3_fields_last_different() {
+  #[derive(VariadicFrom, Debug, PartialEq)]
+  struct Test10(i32, i32, String);
 
-  let x = Test10::from3( 10, 20, "hello".to_string().clone() );
-  assert_eq!( x, Test10( 10, 20, "hello".to_string() ) );
+  let x = Test10::from3(10, 20, "hello".to_string().clone());
+  assert_eq!(x, Test10(10, 20, "hello".to_string()));
 
-  let x = Test10::from( ( 30, 40, "world".to_string().clone() ) );
-  assert_eq!( x, Test10( 30, 40, "world".to_string() ) );
+  let x = Test10::from((30, 40, "world".to_string().clone()));
+  assert_eq!(x, Test10(30, 40, "world".to_string()));
 
   // No convenience From1 or From2 expected
   // let x = Test10::from1( 50 ); // Should not compile
@@ -258,26 +269,45 @@ fn test_tuple_struct_3_fields_last_different()
 
 /// Tests a named struct with 3 fields, last two identical.
 /// Test Combination: T3.5
-#[ test ]
-fn test_named_struct_3_fields_last_two_identical()
-{
-  #[ derive( VariadicFrom, Debug, PartialEq ) ]
-  struct Test11
-  {
-    a : i32,
-    b : String,
-    c : String,
+#[test]
+fn test_named_struct_3_fields_last_two_identical() {
+  #[derive(VariadicFrom, Debug, PartialEq)]
+  struct Test11 {
+    a: i32,
+    b: String,
+    c: String,
   }
 
-  let x = Test11::from3( 10, "a".to_string().clone(), "b".to_string().clone() );
-  assert_eq!( x, Test11 { a : 10, b : "a".to_string(), c : "b".to_string() } );
+  let x = Test11::from3(10, "a".to_string().clone(), "b".to_string().clone());
+  assert_eq!(
+    x,
+    Test11 {
+      a: 10,
+      b: "a".to_string(),
+      c: "b".to_string()
+    }
+  );
 
-  let x = Test11::from( ( 20, "c".to_string().clone(), "d".to_string().clone() ) );
-  assert_eq!( x, Test11 { a : 20, b : "c".to_string(), c : "d".to_string() } );
+  let x = Test11::from((20, "c".to_string().clone(), "d".to_string().clone()));
+  assert_eq!(
+    x,
+    Test11 {
+      a: 20,
+      b: "c".to_string(),
+      c: "d".to_string()
+    }
+  );
 
   // Test convenience From2
-  let x = Test11::from2( 30, "e".to_string().clone() );
-  assert_eq!( x, Test11 { a : 30, b : "e".to_string(), c : "e".to_string() } );
+  let x = Test11::from2(30, "e".to_string().clone());
+  assert_eq!(
+    x,
+    Test11 {
+      a: 30,
+      b: "e".to_string(),
+      c: "e".to_string()
+    }
+  );
 
   // No convenience From1 expected
   // let x = Test11::from1( 50 ); // Should not compile
@@ -285,21 +315,20 @@ fn test_named_struct_3_fields_last_two_identical()
 
 /// Tests a tuple struct with 3 fields, last two identical.
 /// Test Combination: T3.6
-#[ test ]
-fn test_tuple_struct_3_fields_last_two_identical()
-{
-  #[ derive( VariadicFrom, Debug, PartialEq ) ]
-  struct Test12( i32, String, String );
-  
-  let x = Test12::from3( 10, "a".to_string().clone(), "b".to_string().clone() );
-  assert_eq!( x, Test12( 10, "a".to_string(), "b".to_string() ) );
+#[test]
+fn test_tuple_struct_3_fields_last_two_identical() {
+  #[derive(VariadicFrom, Debug, PartialEq)]
+  struct Test12(i32, String, String);
 
-  let x = Test12::from( ( 20, "c".to_string().clone(), "d".to_string().clone() ) );
-  assert_eq!( x, Test12( 20, "c".to_string(), "d".to_string() ) );
+  let x = Test12::from3(10, "a".to_string().clone(), "b".to_string().clone());
+  assert_eq!(x, Test12(10, "a".to_string(), "b".to_string()));
+
+  let x = Test12::from((20, "c".to_string().clone(), "d".to_string().clone()));
+  assert_eq!(x, Test12(20, "c".to_string(), "d".to_string()));
 
   // Test convenience From2
-  let x = Test12::from2( 30, "e".to_string().clone() );
-  assert_eq!( x, Test12( 30, "e".to_string(), "e".to_string() ) );
+  let x = Test12::from2(30, "e".to_string().clone());
+  assert_eq!(x, Test12(30, "e".to_string(), "e".to_string()));
 
   // No convenience From1 expected
   // let x = Test12::from1( 50 ); // Should not compile
@@ -309,46 +338,44 @@ fn test_tuple_struct_3_fields_last_two_identical()
 
 /// Tests a named struct with 1 generic field.
 /// Test Combination: T4.1
-#[ test ]
-fn test_named_struct_1_generic_field()
-{
-  #[ derive( VariadicFrom, Debug, PartialEq ) ]
-  struct Test13< T >
+#[test]
+fn test_named_struct_1_generic_field() {
+  #[derive(VariadicFrom, Debug, PartialEq)]
+  struct Test13<T>
   where
-    T : Clone + core::fmt::Debug + PartialEq,
+    T: Clone + core::fmt::Debug + PartialEq,
   {
-    a : T,
+    a: T,
   }
 
-  let x = Test13::from1( 10 );
-  assert_eq!( x, Test13 { a : 10 } );
+  let x = Test13::from1(10);
+  assert_eq!(x, Test13 { a: 10 });
 
-  let x = Test13::from( 20 );
-  assert_eq!( x, Test13 { a : 20 } );
+  let x = Test13::from(20);
+  assert_eq!(x, Test13 { a: 20 });
 
-  let x = Test13::from1( "hello".to_string() );
-  assert_eq!( x, Test13 { a : "hello".to_string() } );
+  let x = Test13::from1("hello".to_string());
+  assert_eq!(x, Test13 { a: "hello".to_string() });
 }
 
 /// Tests a tuple struct with 2 generic fields.
 /// Test Combination: T4.2
-#[ test ]
-fn test_tuple_struct_2_generic_fields()
-{
-  #[ derive( VariadicFrom, Debug, PartialEq ) ]
-  struct Test14< T, U >
+#[test]
+fn test_tuple_struct_2_generic_fields() {
+  #[derive(VariadicFrom, Debug, PartialEq)]
+  struct Test14<T, U>
   where
-    T : Clone + core::fmt::Debug + PartialEq,
-    U : Clone + core::fmt::Debug + PartialEq,
-  ( T, U ) : Into< ( T, U ) >,
+    T: Clone + core::fmt::Debug + PartialEq,
+    U: Clone + core::fmt::Debug + PartialEq,
+    (T, U): Into<(T, U)>,
   {
-    a : T,
-    b : U,
+    a: T,
+    b: U,
   }
 
-  let x = Test14::from2( 10, "hello" );
-  assert_eq!( x, Test14 { a : 10, b : "hello" } );
+  let x = Test14::from2(10, "hello");
+  assert_eq!(x, Test14 { a: 10, b: "hello" });
 
-  let x = Test14::from( ( 20, "world" ) );
-  assert_eq!( x, Test14 { a : 20, b : "world" } );
+  let x = Test14::from((20, "world"));
+  assert_eq!(x, Test14 { a: 20, b: "world" });
 }

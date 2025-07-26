@@ -14,6 +14,3 @@
 //! if they appear within what is identified as an argument value.
 //!
 //! This test ensures that the fix correctly handles such paths and prevents regression.
-
-
-

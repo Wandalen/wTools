@@ -4,80 +4,84 @@ use strs_tools::string::split::*;
 // Test Matrix ID: Quote_Q_F_PQ_T
 // Tests quoting(false) with preserving_quoting(true).
 #[test]
-fn test_quoting_disabled_preserving_quotes_true()
-{
+fn test_quoting_disabled_preserving_quotes_true() {
   let src = "a 'b' c";
   let iter = split()
-  .src( src )
-  .delimeter( " " )
-  .quoting( false )
-  .preserving_delimeters( false )
-  .preserving_empty( false )
-  .preserving_quoting( true )
-  .stripping( true )
-  .perform();
-  assert_eq!( iter.map( | e | String::from( e.string ) ).collect::< Vec< _ > >(), vec![ "a", "'b'", "c" ] );
+    .src(src)
+    .delimeter(" ")
+    .quoting(false)
+    .preserving_delimeters(false)
+    .preserving_empty(false)
+    .preserving_quoting(true)
+    .stripping(true)
+    .perform();
+  assert_eq!(
+    iter.map(|e| String::from(e.string)).collect::<Vec<_>>(),
+    vec!["a", "'b'", "c"]
+  );
 }
 
 // Test Matrix ID: Quote_Q_F_PQ_F
 // Tests quoting(false) with preserving_quoting(false).
 #[test]
-fn test_quoting_disabled_preserving_quotes_false()
-{
+fn test_quoting_disabled_preserving_quotes_false() {
   let src = "a 'b' c";
   let iter = split()
-  .src( src )
-  .delimeter( " " )
-  .quoting( false )
-  .preserving_delimeters( false )
-  .preserving_empty( false )
-  .preserving_quoting( false )
-  .stripping( true )
-  .perform();
-  assert_eq!( iter.map( | e | String::from( e.string ) ).collect::< Vec< _ > >(), vec![ "a", "'b'", "c" ] );
+    .src(src)
+    .delimeter(" ")
+    .quoting(false)
+    .preserving_delimeters(false)
+    .preserving_empty(false)
+    .preserving_quoting(false)
+    .stripping(true)
+    .perform();
+  assert_eq!(
+    iter.map(|e| String::from(e.string)).collect::<Vec<_>>(),
+    vec!["a", "'b'", "c"]
+  );
 }
 
 // Test Matrix ID: Quote_Q_T_PQ_T
 // Tests quoting(true) with preserving_quoting(true).
 #[test]
-fn test_quoting_enabled_preserving_quotes_true()
-{
+fn test_quoting_enabled_preserving_quotes_true() {
   let src = "a 'b' c";
   let iter = split()
-  .src( src )
-  .delimeter( " " )
-  .quoting( true )
-  .preserving_delimeters( false )
-  .preserving_empty( false )
-  .preserving_quoting( true )
-  .stripping( true )
-  .perform();
-  assert_eq!( iter.map( | e | String::from( e.string ) ).collect::< Vec< _ > >(), vec![ "a", "'b'", "c" ] );
+    .src(src)
+    .delimeter(" ")
+    .quoting(true)
+    .preserving_delimeters(false)
+    .preserving_empty(false)
+    .preserving_quoting(true)
+    .stripping(true)
+    .perform();
+  assert_eq!(
+    iter.map(|e| String::from(e.string)).collect::<Vec<_>>(),
+    vec!["a", "'b'", "c"]
+  );
 }
 
 // Test Matrix ID: Quote_Q_T_PQ_F
 // Tests quoting(true) with preserving_quoting(false).
 #[test]
-fn test_quoting_enabled_preserving_quotes_false()
-{
+fn test_quoting_enabled_preserving_quotes_false() {
   let src = "a 'b' c";
   let iter = split()
-  .src( src )
-  .delimeter( " " )
-  .quoting( true )
-  .preserving_delimeters( false )
-  .preserving_empty( false )
-  .preserving_quoting( false )
-  .stripping( true )
-  .perform();
-  assert_eq!( iter.map( | e | String::from( e.string ) ).collect::< Vec< _ > >(), vec![ "a", "b", "c" ] );
+    .src(src)
+    .delimeter(" ")
+    .quoting(true)
+    .preserving_delimeters(false)
+    .preserving_empty(false)
+    .preserving_quoting(false)
+    .stripping(true)
+    .perform();
+  assert_eq!(iter.map(|e| String::from(e.string)).collect::<Vec<_>>(), vec!["a", "b", "c"]);
 }
 
 // Test Matrix ID: T3.11
 // Description: src="a 'b c' d", del=" ", PE=T, PD=T, S=F, Q=T
 #[test]
-fn test_m_t3_11_quoting_preserve_all_no_strip()
-{
+fn test_m_t3_11_quoting_preserve_all_no_strip() {
   let src = "a 'b c' d";
   let iter = split()
   .src( src )
@@ -91,13 +95,19 @@ fn test_m_t3_11_quoting_preserve_all_no_strip()
   let expected = vec![
     ("a", SplitType::Delimeted, 0, 1),
     (" ", SplitType::Delimiter, 1, 2),
-    ("", SplitType::Delimeted, 2, 2),         // Empty segment before opening quote
+    ("", SplitType::Delimeted, 2, 2),      // Empty segment before opening quote
     ("'b c'", SplitType::Delimeted, 2, 7), // Quotes preserved
     (" ", SplitType::Delimiter, 7, 8),
     ("d", SplitType::Delimeted, 8, 9),
   ];
   let results: Vec<_> = iter.collect();
-  assert_eq!(results.len(), expected.len(), "Number of segments mismatch. Actual: {:?}, Expected: {:?}", results, expected);
+  assert_eq!(
+    results.len(),
+    expected.len(),
+    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
+    results,
+    expected
+  );
   for (i, split_item) in results.iter().enumerate() {
     assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
     assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
@@ -109,8 +119,7 @@ fn test_m_t3_11_quoting_preserve_all_no_strip()
 // Test Matrix ID: T3.12
 // Description: src="a 'b c' d", del=" ", PE=F, PD=F, S=T, Q=T
 #[test]
-fn test_m_t3_12_quoting_no_preserve_strip()
-{
+fn test_m_t3_12_quoting_no_preserve_strip() {
   let src = "a 'b c' d";
   let iter = split()
   .src( src )
@@ -137,8 +146,7 @@ fn test_m_t3_12_quoting_no_preserve_strip()
 // Test Matrix ID: T3.13
 // Description: src="a 'b c' d", del=" ", PE=T, PD=T, S=T, Q=T
 #[test]
-fn test_m_t3_13_quoting_preserve_all_strip()
-{
+fn test_m_t3_13_quoting_preserve_all_strip() {
   let src = "a 'b c' d";
   let iter = split()
   .src( src )
@@ -158,7 +166,13 @@ fn test_m_t3_13_quoting_preserve_all_strip()
     ("d", SplitType::Delimeted, 8, 9),     // Stripping "d" is "d"
   ];
   let results: Vec<_> = iter.collect();
-  assert_eq!(results.len(), expected.len(), "Number of segments mismatch. Actual: {:?}, Expected: {:?}", results, expected);
+  assert_eq!(
+    results.len(),
+    expected.len(),
+    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
+    results,
+    expected
+  );
   for (i, split_item) in results.iter().enumerate() {
     assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
     assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
@@ -170,8 +184,7 @@ fn test_m_t3_13_quoting_preserve_all_strip()
 // Test Matrix ID: T3.14
 // Description: src="a 'b c' d", del=" ", PE=F, PD=F, S=F, Q=T
 #[test]
-fn test_m_t3_14_quoting_no_preserve_no_strip()
-{
+fn test_m_t3_14_quoting_no_preserve_no_strip() {
   let src = "a 'b c' d";
   let iter = split()
   .src( src )
@@ -189,8 +202,14 @@ fn test_m_t3_14_quoting_no_preserve_no_strip()
   ];
   // With PE=F, the empty "" before "'b c'" should be skipped.
   let results: Vec<_> = iter.collect();
-  assert_eq!(results.len(), expected.len(), "Number of segments mismatch. Actual: {:?}, Expected: {:?}", results, expected);
-   for (i, split_item) in results.iter().enumerate() {
+  assert_eq!(
+    results.len(),
+    expected.len(),
+    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
+    results,
+    expected
+  );
+  for (i, split_item) in results.iter().enumerate() {
     assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
     assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
     assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
@@ -201,8 +220,7 @@ fn test_m_t3_14_quoting_no_preserve_no_strip()
 // Test Matrix ID: T3.15
 // Description: src="a 'b c' d", del=" ", PE=T, PD=T, S=F, Q=F (Quoting disabled)
 #[test]
-fn test_m_t3_15_no_quoting_preserve_all_no_strip()
-{
+fn test_m_t3_15_no_quoting_preserve_all_no_strip() {
   let src = "a 'b c' d";
   let iter = split()
   .src( src )
@@ -249,7 +267,13 @@ fn test_span_content_basic_no_preserve() {
     ("hello world", SplitType::Delimeted, 10, 21), // Span of "hello world"
     ("arg2", SplitType::Delimeted, 23, 27),
   ];
-  assert_eq!(results.len(), expected.len(), "Number of segments mismatch. Actual: {:?}, Expected: {:?}", results, expected);
+  assert_eq!(
+    results.len(),
+    expected.len(),
+    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
+    results,
+    expected
+  );
   for (i, split_item) in results.iter().enumerate() {
     assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
     assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
@@ -264,13 +288,13 @@ fn test_span_content_basic_no_preserve() {
 fn test_span_content_basic_preserve() {
   let src = r#"cmd arg1 "hello world" arg2"#;
   let iter = split()
-  .src(src)
-  .delimeter(" ")
-  .quoting(true)
-  .preserving_quoting(true)
-  .preserving_delimeters(false)
-  .stripping(false)
-  .perform();
+    .src(src)
+    .delimeter(" ")
+    .quoting(true)
+    .preserving_quoting(true)
+    .preserving_delimeters(false)
+    .stripping(false)
+    .perform();
   let results: Vec<_> = iter.collect();
   let expected = vec![
     ("cmd", SplitType::Delimeted, 0, 3),
@@ -278,7 +302,13 @@ fn test_span_content_basic_preserve() {
     (r#""hello world""#, SplitType::Delimeted, 9, 22), // Span of "\"hello world\""
     ("arg2", SplitType::Delimeted, 23, 27),
   ];
-  assert_eq!(results.len(), expected.len(), "Number of segments mismatch. Actual: {:?}, Expected: {:?}", results, expected);
+  assert_eq!(
+    results.len(),
+    expected.len(),
+    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
+    results,
+    expected
+  );
   for (i, split_item) in results.iter().enumerate() {
     assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
     assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
@@ -293,20 +323,26 @@ fn test_span_content_basic_preserve() {
 fn test_span_content_internal_delimiters_no_preserve() {
   let src = r#"cmd "val: ue" arg2"#;
   let iter = split()
-  .src(src)
-  .delimeter(" ")
-  .quoting(true)
-  .preserving_quoting(false)
-  .preserving_delimeters(false)
-  .stripping(false)
-  .perform();
+    .src(src)
+    .delimeter(" ")
+    .quoting(true)
+    .preserving_quoting(false)
+    .preserving_delimeters(false)
+    .stripping(false)
+    .perform();
   let results: Vec<_> = iter.collect();
   let expected = vec![
     ("cmd", SplitType::Delimeted, 0, 3),
     ("val: ue", SplitType::Delimeted, 5, 12), // Span of "val: ue"
     ("arg2", SplitType::Delimeted, 14, 18),
   ];
-  assert_eq!(results.len(), expected.len(), "Number of segments mismatch. Actual: {:?}, Expected: {:?}", results, expected);
+  assert_eq!(
+    results.len(),
+    expected.len(),
+    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
+    results,
+    expected
+  );
   for (i, split_item) in results.iter().enumerate() {
     assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
     assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
@@ -321,20 +357,26 @@ fn test_span_content_internal_delimiters_no_preserve() {
 fn test_span_content_escaped_quotes_no_preserve() {
   let src = r#"cmd "hello \"world\"" arg2"#;
   let iter = split()
-  .src(src)
-  .delimeter(" ")
-  .quoting(true)
-  .preserving_quoting(false)
-  .preserving_delimeters(false)
-  .stripping(false)
-  .perform();
+    .src(src)
+    .delimeter(" ")
+    .quoting(true)
+    .preserving_quoting(false)
+    .preserving_delimeters(false)
+    .stripping(false)
+    .perform();
   let results: Vec<_> = iter.collect();
   let expected = vec![
     ("cmd", SplitType::Delimeted, 0, 3),
     (r#"hello "world""#, SplitType::Delimeted, 5, 18),
     ("arg2", SplitType::Delimeted, 22, 26), // Corrected start index from 21 to 22, end from 25 to 26
   ];
-  assert_eq!(results.len(), expected.len(), "Number of segments mismatch. Actual: {:?}, Expected: {:?}", results, expected);
+  assert_eq!(
+    results.len(),
+    expected.len(),
+    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
+    results,
+    expected
+  );
   for (i, split_item) in results.iter().enumerate() {
     assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
     assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
@@ -349,20 +391,26 @@ fn test_span_content_escaped_quotes_no_preserve() {
 fn test_span_content_empty_quote_no_preserve() {
   let src = r#"cmd "" arg2"#;
   let iter = split()
-  .src(src)
-  .delimeter(" ")
-  .quoting(true)
-  .preserving_quoting(false)
-  .preserving_delimeters(false)
-  .stripping(false)
-  .perform();
+    .src(src)
+    .delimeter(" ")
+    .quoting(true)
+    .preserving_quoting(false)
+    .preserving_delimeters(false)
+    .stripping(false)
+    .perform();
   let results: Vec<_> = iter.collect();
   let expected = vec![
     ("cmd", SplitType::Delimeted, 0, 3),
     // ("", SplitType::Delimeted, 5, 5), // This should be skipped if preserving_empty is false (default)
     ("arg2", SplitType::Delimeted, 7, 11),
   ];
-  assert_eq!(results.len(), expected.len(), "Number of segments mismatch. Actual: {:?}, Expected: {:?}", results, expected);
+  assert_eq!(
+    results.len(),
+    expected.len(),
+    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
+    results,
+    expected
+  );
   for (i, split_item) in results.iter().enumerate() {
     assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
     assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
@@ -377,20 +425,26 @@ fn test_span_content_empty_quote_no_preserve() {
 fn test_span_content_empty_quote_preserve() {
   let src = r#"cmd "" arg2"#;
   let iter = split()
-  .src(src)
-  .delimeter(" ")
-  .quoting(true)
-  .preserving_quoting(true)
-  .preserving_delimeters(false)
-  .stripping(false)
-  .perform();
+    .src(src)
+    .delimeter(" ")
+    .quoting(true)
+    .preserving_quoting(true)
+    .preserving_delimeters(false)
+    .stripping(false)
+    .perform();
   let results: Vec<_> = iter.collect();
   let expected = vec![
     ("cmd", SplitType::Delimeted, 0, 3),
     (r#""""#, SplitType::Delimeted, 4, 6), // Span of "\"\""
     ("arg2", SplitType::Delimeted, 7, 11),
   ];
-  assert_eq!(results.len(), expected.len(), "Number of segments mismatch. Actual: {:?}, Expected: {:?}", results, expected);
+  assert_eq!(
+    results.len(),
+    expected.len(),
+    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
+    results,
+    expected
+  );
   for (i, split_item) in results.iter().enumerate() {
     assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
     assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
@@ -405,19 +459,25 @@ fn test_span_content_empty_quote_preserve() {
 fn test_span_content_quote_at_start_no_preserve() {
   let src = r#""hello world" cmd"#;
   let iter = split()
-  .src(src)
-  .delimeter(" ")
-  .quoting(true)
-  .preserving_quoting(false)
-  .preserving_delimeters(false)
-  .stripping(false)
-  .perform();
+    .src(src)
+    .delimeter(" ")
+    .quoting(true)
+    .preserving_quoting(false)
+    .preserving_delimeters(false)
+    .stripping(false)
+    .perform();
   let results: Vec<_> = iter.collect();
   let expected = vec![
     ("hello world", SplitType::Delimeted, 1, 12),
     ("cmd", SplitType::Delimeted, 14, 17),
   ];
-  assert_eq!(results.len(), expected.len(), "Number of segments mismatch. Actual: {:?}, Expected: {:?}", results, expected);
+  assert_eq!(
+    results.len(),
+    expected.len(),
+    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
+    results,
+    expected
+  );
   for (i, split_item) in results.iter().enumerate() {
     assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
     assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
@@ -432,19 +492,25 @@ fn test_span_content_quote_at_start_no_preserve() {
 fn test_span_content_quote_at_end_no_preserve() {
   let src = r#"cmd "hello world""#;
   let iter = split()
-  .src(src)
-  .delimeter(" ")
-  .quoting(true)
-  .preserving_quoting(false)
-  .preserving_delimeters(false)
-  .stripping(false)
-  .perform();
+    .src(src)
+    .delimeter(" ")
+    .quoting(true)
+    .preserving_quoting(false)
+    .preserving_delimeters(false)
+    .stripping(false)
+    .perform();
   let results: Vec<_> = iter.collect();
   let expected = vec![
     ("cmd", SplitType::Delimeted, 0, 3),
     ("hello world", SplitType::Delimeted, 5, 16),
   ];
-  assert_eq!(results.len(), expected.len(), "Number of segments mismatch. Actual: {:?}, Expected: {:?}", results, expected);
+  assert_eq!(
+    results.len(),
+    expected.len(),
+    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
+    results,
+    expected
+  );
   for (i, split_item) in results.iter().enumerate() {
     assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
     assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
@@ -459,13 +525,13 @@ fn test_span_content_quote_at_end_no_preserve() {
 fn test_span_content_unclosed_quote_no_preserve() {
   let src = r#"cmd "hello world"#; // No closing quote
   let iter = split()
-  .src(src)
-  .delimeter(" ")
-  .quoting(true)
-  .preserving_quoting(false)
-  .preserving_delimeters(false)
-  .stripping(false)
-  .perform();
+    .src(src)
+    .delimeter(" ")
+    .quoting(true)
+    .preserving_quoting(false)
+    .preserving_delimeters(false)
+    .stripping(false)
+    .perform();
   let results: Vec<_> = iter.collect();
   let expected = vec![
     ("cmd", SplitType::Delimeted, 0, 3),
@@ -473,7 +539,13 @@ fn test_span_content_unclosed_quote_no_preserve() {
     // Current logic in split.rs (after the diff) should yield content after prefix.
     ("hello world", SplitType::Delimeted, 5, 16),
   ];
-   assert_eq!(results.len(), expected.len(), "Number of segments mismatch. Actual: {:?}, Expected: {:?}", results, expected);
+  assert_eq!(
+    results.len(),
+    expected.len(),
+    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
+    results,
+    expected
+  );
   for (i, split_item) in results.iter().enumerate() {
     assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
     assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
@@ -488,19 +560,25 @@ fn test_span_content_unclosed_quote_no_preserve() {
 fn test_span_content_unclosed_quote_preserve() {
   let src = r#"cmd "hello world"#; // No closing quote
   let iter = split()
-  .src(src)
-  .delimeter(" ")
-  .quoting(true)
-  .preserving_quoting(true)
-  .preserving_delimeters(false)
-  .stripping(false)
-  .perform();
+    .src(src)
+    .delimeter(" ")
+    .quoting(true)
+    .preserving_quoting(true)
+    .preserving_delimeters(false)
+    .stripping(false)
+    .perform();
   let results: Vec<_> = iter.collect();
   let expected = vec![
     ("cmd", SplitType::Delimeted, 0, 3),
     (r#""hello world"#, SplitType::Delimeted, 4, 16), // Includes the opening quote
   ];
-  assert_eq!(results.len(), expected.len(), "Number of segments mismatch. Actual: {:?}, Expected: {:?}", results, expected);
+  assert_eq!(
+    results.len(),
+    expected.len(),
+    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
+    results,
+    expected
+  );
   for (i, split_item) in results.iter().enumerate() {
     assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
     assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);

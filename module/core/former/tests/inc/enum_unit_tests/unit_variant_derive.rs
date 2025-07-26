@@ -14,14 +14,13 @@
 use super::*;
 
 /// Enum with only unit variants for testing.
-#[ derive( Debug, PartialEq, former::Former ) ]
-#[ former( standalone_constructors ) ] // Added standalone_constructors attribute
+#[derive(Debug, PartialEq, former::Former)]
+#[former(standalone_constructors)] // Added standalone_constructors attribute
 #[allow(dead_code)] // Enum itself might not be directly used, but its Former methods are
-enum Status
-{
+enum Status {
   Pending,
   Complete,
 }
 
 // Include the test logic
-include!( "unit_variant_only_test.rs" );
+include!("unit_variant_only_test.rs");

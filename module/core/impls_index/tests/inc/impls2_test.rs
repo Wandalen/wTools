@@ -1,19 +1,15 @@
 // use test_tools::exposed::*;
 use super::*;
 use the_module::exposed::impls2;
-use the_module::exposed::{ index };
+use the_module::exposed::{index};
 
 //
 
-#[ test ]
-fn impls_basic()
-{
-
+#[test]
+fn impls_basic() {
   // test.case( "impls2 basic" );
   {
-
-    impls2!
-    {
+    impls2! {
       fn f1()
       {
         println!( "f1" );
@@ -31,14 +27,11 @@ fn impls_basic()
 
     f1();
     f2();
-
   }
 
   // test.case( "impls2 as" );
   {
-
-    impls2!
-    {
+    impls2! {
       fn f1()
       {
         println!( "f1" );
@@ -56,14 +49,11 @@ fn impls_basic()
 
     f1b();
     f2b();
-
   }
 
   // test.case( "impls2 as index" );
   {
-
-    impls2!
-    {
+    impls2! {
       fn f1()
       {
         println!( "f1" );
@@ -75,8 +65,7 @@ fn impls_basic()
     };
 
     // trace_macros!( true );
-    index!
-    {
+    index! {
       f1,
       f2 as f2b,
     }
@@ -84,14 +73,11 @@ fn impls_basic()
 
     f1();
     f2b();
-
   }
 
   // test.case( "macro" );
   {
-
-    impls2!
-    {
+    impls2! {
       fn f1()
       {
         macro_rules! macro1
@@ -105,9 +91,7 @@ fn impls_basic()
     // trace_macros!( true );
     f1!();
     // trace_macros!( false );
-
   }
-
 }
 
 //

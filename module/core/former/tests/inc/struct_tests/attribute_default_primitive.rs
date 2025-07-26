@@ -1,30 +1,28 @@
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
 
 use collection_tools::HashMap;
 use collection_tools::HashSet;
 
-#[ derive( Debug, PartialEq, the_module::Former ) ]
-pub struct Struct1
-{
-  #[ former( default = 31 ) ]
-  pub int_1 : i32,
-  #[ former( default = "abc" ) ]
-  string_1 : String,
-  #[ former( default = 31 ) ]
-  int_optional_1 : Option< i32 >,
-  #[ former( default = "abc" ) ]
-  string_optional_1 : Option< String >,
+#[derive(Debug, PartialEq, the_module::Former)]
+pub struct Struct1 {
+  #[former(default = 31)]
+  pub int_1: i32,
+  #[former(default = "abc")]
+  string_1: String,
+  #[former(default = 31)]
+  int_optional_1: Option<i32>,
+  #[former(default = "abc")]
+  string_optional_1: Option<String>,
 
-  vec_1 : Vec< String >,
-  hashmap_1 : HashMap< String, String >,
-  hashset_1 : HashSet< String >,
+  vec_1: Vec<String>,
+  hashmap_1: HashMap<String, String>,
+  hashset_1: HashSet<String>,
 }
 
 //
 
-tests_impls!
-{
+tests_impls! {
   fn test_complex()
   {
     let command = Struct1::former().form();
@@ -45,7 +43,6 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   test_complex,
 }

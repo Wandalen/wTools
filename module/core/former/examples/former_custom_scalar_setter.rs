@@ -21,62 +21,71 @@
 //! These setters ensure that developers can precisely and efficiently set properties, manage collections, and configure complex structures within their applications.
 //!
 
-#[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
+#[cfg(not(all(
+  feature = "enabled",
+  feature = "derive_former",
+  any(feature = "use_alloc", not(feature = "no_std"))
+)))]
 fn main() {}
 
 // Ensure the example only compiles when the appropriate features are enabled.
-#[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
-fn main()
-{
+#[cfg(all(
+  feature = "enabled",
+  feature = "derive_former",
+  any(feature = "use_alloc", not(feature = "no_std"))
+))]
+fn main() {
   use collection_tools::HashMap;
   use former::Former;
 
   // Child struct with Former derived for builder pattern support
-  #[ derive( Debug, PartialEq, Former ) ]
+  #[derive(Debug, PartialEq, Former)]
   // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
-  pub struct Child
-  {
-    name : String,
-    description : String,
+  pub struct Child {
+    name: String,
+    description: String,
   }
 
   // Parent struct to hold children
-  #[ derive( Debug, PartialEq, Former ) ]
+  #[derive(Debug, PartialEq, Former)]
   // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
-  pub struct Parent
-  {
+  pub struct Parent {
     // Use `debug` to gennerate sketch of setter.
-    #[ scalar( setter = false ) ]
-    children : HashMap< String, Child >,
+    #[scalar(setter = false)]
+    children: HashMap<String, Child>,
   }
 
-  impl< Definition > ParentFormer< Definition >
+  impl<Definition> ParentFormer<Definition>
   where
-    Definition : former::FormerDefinition< Storage = ParentFormerStorage >,
+    Definition: former::FormerDefinition<Storage = ParentFormerStorage>,
   {
-    #[ inline ]
-    pub fn children< Src >( mut self, src : Src ) -> Self
+    #[inline]
+    pub fn children<Src>(mut self, src: Src) -> Self
     where
-      Src : ::core::convert::Into< HashMap< String, Child > >,
+      Src: ::core::convert::Into<HashMap<String, Child>>,
     {
-      debug_assert!( self.storage.children.is_none() );
-      self.storage.children = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
+      debug_assert!(self.storage.children.is_none());
+      self.storage.children = ::core::option::Option::Some(::core::convert::Into::into(src));
       self
     }
   }
 
-  let echo = Child { name : "echo".to_string(), description : "prints all subjects and properties".to_string() };
-  let exit = Child { name : "exit".to_string(), description : "just exit".to_string() };
+  let echo = Child {
+    name: "echo".to_string(),
+    description: "prints all subjects and properties".to_string(),
+  };
+  let exit = Child {
+    name: "exit".to_string(),
+    description: "just exit".to_string(),
+  };
   let mut children = HashMap::new();
-  children.insert( echo.name.clone(), echo );
-  children.insert( exit.name.clone(), exit );
-  let ca = Parent::former()
-  .children( children )
-  .form();
+  children.insert(echo.name.clone(), echo);
+  children.insert(exit.name.clone(), exit);
+  let ca = Parent::former().children(children).form();
 
-  dbg!( &ca );
+  dbg!(&ca);
   // > &ca = Parent {
   // >     child: {
   // >          "echo": Child {

@@ -11,14 +11,13 @@
 //   trybuild_test,
 // }
 
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
 use ::test_tools as the_module;
 
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
-the_module::tests_impls!
-{
+#[cfg(feature = "enabled")]
+#[cfg(not(feature = "no_std"))]
+the_module::tests_impls! {
 
   //
 
@@ -54,10 +53,9 @@ the_module::tests_impls!
 
 //
 
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
-the_module::tests_index!
-{
+#[cfg(feature = "enabled")]
+#[cfg(not(feature = "no_std"))]
+the_module::tests_index! {
   pass1_test,
   fail1_test,
   never_test,

@@ -23,66 +23,72 @@
 //!
 
 // Ensure the example only compiles when the appropriate features are enabled.
-#[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
+#[cfg(not(all(
+  feature = "enabled",
+  feature = "derive_former",
+  any(feature = "use_alloc", not(feature = "no_std"))
+)))]
 fn main() {}
-#[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
-fn main()
-{
+#[cfg(all(
+  feature = "enabled",
+  feature = "derive_former",
+  any(feature = "use_alloc", not(feature = "no_std"))
+))]
+fn main() {
   use collection_tools::HashMap;
   use former::Former;
 
   // Child struct with Former derived for builder pattern support
-  #[ derive( Debug, PartialEq, Former ) ]
+  #[derive(Debug, PartialEq, Former)]
   // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
-  pub struct Child
-  {
-    name : String,
-    description : String,
+  pub struct Child {
+    name: String,
+    description: String,
   }
 
   // Parent struct to hold children
-  #[ derive( Debug, PartialEq, Former ) ]
+  #[derive(Debug, PartialEq, Former)]
   // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
-  pub struct Parent
-  {
+  pub struct Parent {
     // Use `debug` to gennerate sketch of setter.
-    #[ subform_collection( setter = false ) ]
-    children : HashMap< String, Child >,
+    #[subform_collection(setter = false)]
+    children: HashMap<String, Child>,
   }
 
   /// The containr setter provides a collection setter that returns a `CollectionFormer` tailored for managing a collection of child entities. It employs a generic collection definition to facilitate operations on the entire collection, such as adding or updating elements.
-  impl< Definition, > ParentFormer< Definition, >
+  impl<Definition> ParentFormer<Definition>
   where
-    Definition : former::FormerDefinition< Storage = ParentFormerStorage >,
+    Definition: former::FormerDefinition<Storage = ParentFormerStorage>,
   {
-
-    #[ inline( always ) ]
-    pub fn children( self ) -> ParentChildrenFormer< Self, Definition >
-    {
+    #[inline(always)]
+    pub fn children(self) -> ParentChildrenFormer<Self, Definition> {
       self._children_subform_collection()
     }
-
   }
 
-  pub type ParentChildrenFormer< SuperFormer, Definition > =
-  former::CollectionFormer::
-  <
-    ( String, Child ),
-    former::HashMapDefinition< String, Child, SuperFormer, SuperFormer, ParentSubformCollectionChildrenEnd< Definition > >,
+  pub type ParentChildrenFormer<SuperFormer, Definition> = former::CollectionFormer<
+    (String, Child),
+    former::HashMapDefinition<String, Child, SuperFormer, SuperFormer, ParentSubformCollectionChildrenEnd<Definition>>,
   >;
 
-  let echo = Child { name : "echo".to_string(), description : "prints all subjects and properties".to_string() };
-  let exit = Child { name : "exit".to_string(), description : "just exit".to_string() };
+  let echo = Child {
+    name: "echo".to_string(),
+    description: "prints all subjects and properties".to_string(),
+  };
+  let exit = Child {
+    name: "exit".to_string(),
+    description: "just exit".to_string(),
+  };
   let ca = Parent::former()
-  .children()
-    .add( ( echo.name.clone(), echo ) )
-    .add( ( exit.name.clone(), exit ) )
+    .children()
+    .add((echo.name.clone(), echo))
+    .add((exit.name.clone(), exit))
     .end()
-  .form();
+    .form();
 
-  dbg!( &ca );
+  dbg!(&ca);
   // > &ca = Parent {
   // >     child: {
   // >          "echo": Child {

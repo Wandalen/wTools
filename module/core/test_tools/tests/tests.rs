@@ -1,12 +1,12 @@
 //! All test.
 
-#![ allow( unused_imports ) ]
+#![allow(unused_imports)]
 
 // #![ deny( rust_2018_idioms ) ]
 // #![ deny( missing_debug_implementations ) ]
 // #![ deny( missing_docs ) ]
 
-include!( "../../../../module/step/meta/src/module/aggregating.rs" );
+include!("../../../../module/step/meta/src/module/aggregating.rs");
 
 use test_tools as the_module;
 

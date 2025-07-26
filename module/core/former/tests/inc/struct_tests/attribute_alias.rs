@@ -1,12 +1,11 @@
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use test_tools::exposed::*;
 
 //
 
-tests_impls!
-{
+tests_impls! {
   fn test_alias()
   {
     #[ derive( Debug, PartialEq, the_module::Former ) ]
@@ -45,7 +44,6 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   test_alias,
 }

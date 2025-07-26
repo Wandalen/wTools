@@ -1,70 +1,55 @@
-#![ allow( dead_code ) ]
+#![allow(dead_code)]
 
 use super::*;
 
 /// Child
-#[ derive( Debug, Default, PartialEq, the_module::Former ) ]
-pub struct Child
-{
-  name : String,
-  data : bool,
+#[derive(Debug, Default, PartialEq, the_module::Former)]
+pub struct Child {
+  name: String,
+  data: bool,
 }
 
 /// Parent
 
-#[ derive( Debug, Default, PartialEq, the_module::Former ) ]
+#[derive(Debug, Default, PartialEq, the_module::Former)]
 // #[ debug ]
 // #[ derive( Debug, Default, PartialEq ) ]
-pub struct Parent
-{
-  #[ scalar( setter = false ) ]
+pub struct Parent {
+  #[scalar(setter = false)]
   // #[ scalar_subform ]
-  child : Child,
+  child: Child,
 }
 
-impl< Definition > ParentFormer< Definition >
+impl<Definition> ParentFormer<Definition>
 where
-  Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
+  Definition: former::FormerDefinition<Storage = <Parent as former::EntityToStorage>::Storage>,
 {
-
-  #[ inline( always ) ]
-  pub fn _child_subform_scalar< Former2, Definition2 >( self ) ->
-  Former2
+  #[inline(always)]
+  pub fn _child_subform_scalar<Former2, Definition2>(self) -> Former2
   where
-    Definition2 : former::FormerDefinition
-    <
-      End = ParentFormerSubformScalarChildEnd< Definition >,
-      Storage = < Child as former::EntityToStorage >::Storage,
+    Definition2: former::FormerDefinition<
+      End = ParentFormerSubformScalarChildEnd<Definition>,
+      Storage = <Child as former::EntityToStorage>::Storage,
       Formed = Self,
       Context = Self,
     >,
-    Definition2::Types : former::FormerDefinitionTypes
-    <
-      Storage = < Child as former::EntityToStorage >::Storage,
-      Formed = Self,
-      Context = Self,
-    >,
-    Former2 : former::FormerBegin< Definition2 >,
+    Definition2::Types:
+      former::FormerDefinitionTypes<Storage = <Child as former::EntityToStorage>::Storage, Formed = Self, Context = Self>,
+    Former2: former::FormerBegin<Definition2>,
   {
-    Former2::former_begin( None, Some( self ), ParentFormerSubformScalarChildEnd::default() )
+    Former2::former_begin(None, Some(self), ParentFormerSubformScalarChildEnd::default())
   }
-
 }
 
-impl< Definition > ParentFormer< Definition >
+impl<Definition> ParentFormer<Definition>
 where
-  Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
+  Definition: former::FormerDefinition<Storage = <Parent as former::EntityToStorage>::Storage>,
 {
-
-  #[ inline( always ) ]
-  #[ allow( clippy::used_underscore_items ) ]
-  pub fn child( self ) ->
-  ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
-  {
-    self._child_subform_scalar
-    ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
+  #[inline(always)]
+  #[allow(clippy::used_underscore_items)]
+  pub fn child(self) -> ChildAsSubformer<Self, impl ChildAsSubformerEnd<Self>> {
+    self._child_subform_scalar::<<Child as former::EntityToFormer<_>>::Former, _>()
   }
-
 }
 
 // = end
@@ -85,50 +70,33 @@ where
 /// - `super_former`: An optional context of the `ParentFormer`, which will receive the value. The function ensures
 ///   that this context is not `None` and inserts the formed value into the designated field within `Parent`'s storage.
 
-pub struct ParentFormerSubformScalarChildEnd< Definition >
-{
-  _phantom : core::marker::PhantomData< fn( Definition ) >,
+pub struct ParentFormerSubformScalarChildEnd<Definition> {
+  _phantom: core::marker::PhantomData<fn(Definition)>,
 }
 
-impl< Definition > Default
-for ParentFormerSubformScalarChildEnd< Definition >
-{
-  #[ inline( always ) ]
-  fn default() -> Self
-  {
-    Self
-    {
-      _phantom : core::marker::PhantomData,
+impl<Definition> Default for ParentFormerSubformScalarChildEnd<Definition> {
+  #[inline(always)]
+  fn default() -> Self {
+    Self {
+      _phantom: core::marker::PhantomData,
     }
   }
 }
 
-impl< Types2, Definition > former::FormingEnd< Types2, >
-for ParentFormerSubformScalarChildEnd< Definition >
+impl<Types2, Definition> former::FormingEnd<Types2> for ParentFormerSubformScalarChildEnd<Definition>
 where
-  Definition : former::FormerDefinition
-  <
-    Storage = < Parent as former::EntityToStorage >::Storage,
-  >,
-  Types2 : former::FormerDefinitionTypes
-  <
-    Storage = < Child as former::EntityToStorage >::Storage,
-    Formed = ParentFormer< Definition >,
-    Context = ParentFormer< Definition >,
+  Definition: former::FormerDefinition<Storage = <Parent as former::EntityToStorage>::Storage>,
+  Types2: former::FormerDefinitionTypes<
+    Storage = <Child as former::EntityToStorage>::Storage,
+    Formed = ParentFormer<Definition>,
+    Context = ParentFormer<Definition>,
   >,
 {
-  #[ inline( always ) ]
-  fn call
-  (
-    &self,
-    substorage : Types2::Storage,
-    super_former : core::option::Option< Types2::Context >,
-  )
-  -> Types2::Formed
-  {
+  #[inline(always)]
+  fn call(&self, substorage: Types2::Storage, super_former: core::option::Option<Types2::Context>) -> Types2::Formed {
     let mut super_former = super_former.unwrap();
-    debug_assert!( super_former.storage.child.is_none() );
-    super_former.storage.child = Some( ::core::convert::Into::into( former::StoragePreform::preform( substorage ) ) );
+    debug_assert!(super_former.storage.child.is_none());
+    super_former.storage.child = Some(::core::convert::Into::into(former::StoragePreform::preform(substorage)));
     super_former
   }
 }
@@ -137,4 +105,4 @@ where
 
 // == end of generated
 
-include!( "./only_test/subform_scalar.rs" );
+include!("./only_test/subform_scalar.rs");

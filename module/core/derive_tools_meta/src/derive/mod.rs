@@ -11,7 +11,7 @@ pub mod not;
 pub mod phantom;
 pub mod variadic_from;
 
-#[ path = "from/field_attributes.rs" ]
+#[path = "from/field_attributes.rs"]
 pub mod field_attributes;
-#[ path = "from/item_attributes.rs" ]
+#[path = "from/item_attributes.rs"]
 pub mod item_attributes;

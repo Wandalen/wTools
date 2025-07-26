@@ -1,10 +1,9 @@
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use the_module::prelude::*;
 
-tests_impls!
-{
+tests_impls! {
 
   #[ cfg( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
   fn cta_true_pass()
@@ -33,8 +32,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   cta_true_pass,
 
 }

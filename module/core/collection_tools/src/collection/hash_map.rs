@@ -1,16 +1,16 @@
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
 
 // xxx : qqq : wrong
-#[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+#[cfg(all(feature = "no_std", feature = "use_alloc"))]
+#[doc(inline)]
+#[allow(unused_imports)]
 pub use crate::dependency::hashbrown::hash_map::*;
 
-#[ cfg( not( feature = "no_std" ) ) ]
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-#[ allow( clippy::pub_use ) ]
+#[cfg(not(feature = "no_std"))]
+#[doc(inline)]
+#[allow(unused_imports)]
+#[allow(clippy::pub_use)]
 pub use std::collections::hash_map::*;
 
 /// Creates a `HashMap` from a list of key-value pairs.
@@ -73,8 +73,8 @@ pub use std::collections::hash_map::*;
 /// assert_eq!( pairs.get( &2 ), Some( &"banana" ) );
 /// ```
 ///
-#[ cfg( feature = "collection_constructors" ) ]
-#[ macro_export( local_inner_macros ) ]
+#[cfg(feature = "collection_constructors")]
+#[macro_export(local_inner_macros)]
 macro_rules! hmap
 {
   (
@@ -168,8 +168,8 @@ macro_rules! hmap
 /// assert_eq!( pairs.get( &2 ), Some( &"banana".to_string() ) );
 /// ```
 ///
-#[ cfg( feature = "collection_into_constructors" ) ]
-#[ macro_export( local_inner_macros ) ]
+#[cfg(feature = "collection_into_constructors")]
+#[macro_export(local_inner_macros)]
 macro_rules! into_hmap
 {
   (

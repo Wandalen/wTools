@@ -1,37 +1,32 @@
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
 
-#[ derive( Debug, PartialEq, the_module::Former ) ]
-pub struct Struct0
-{
-  pub int_1 : i32,
+#[derive(Debug, PartialEq, the_module::Former)]
+pub struct Struct0 {
+  pub int_1: i32,
 }
 
 // #[ derive( Debug, PartialEq ) ]
 // #[ derive( Debug, PartialEq, the_module::Former ) ] #[ debug ]
-#[ derive( Debug, PartialEq, the_module::Former ) ]
+#[derive(Debug, PartialEq, the_module::Former)]
 #[ perform( fn perform1< 'a >() -> Option< &'a str > ) ]
-pub struct Struct1
-{
-  pub int_1 : i32,
+pub struct Struct1 {
+  pub int_1: i32,
 }
 
 // == begin of generated
 
 // == end of generated
 
-impl Struct1
-{
-  fn perform1< 'a >( &self ) -> Option< &'a str >
-  {
-    Some( "abc" )
+impl Struct1 {
+  fn perform1<'a>(&self) -> Option<&'a str> {
+    Some("abc")
   }
 }
 
 //
 
-tests_impls!
-{
+tests_impls! {
 
   fn basecase()
   {
@@ -63,8 +58,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   basecase,
   basic,
 }

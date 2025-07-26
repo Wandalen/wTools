@@ -6,11 +6,12 @@ use super::*;
 /// Enum with a unit variant and a struct-like variant, using Former.
 #[derive(Debug, PartialEq, former::Former)]
 #[former(standalone_constructors, debug)] // Attribute present, added debug
-pub enum MixedEnum
-{
+pub enum MixedEnum {
   SimpleUnit,
   #[allow(dead_code)] // This variant is not constructed by these specific unit tests
-  Complex { data: i32 }, // Complex variant present
+  Complex {
+    data: i32,
+  }, // Complex variant present
 }
 
 include!("mixed_enum_unit_only_test.rs");

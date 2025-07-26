@@ -1,12 +1,11 @@
 use super::*;
-use macro_tools::{ quote };
+use macro_tools::{quote};
 use proc_macro2::TokenStream; // Corrected import for TokenStream
-// use former_types::FormerDefinition; // Not needed here
+                              // use former_types::FormerDefinition; // Not needed here
 
 /// Handles zero-field struct variants with the `#[scalar]` attribute.
 /// Returns generated tokens for the static method and optionally the standalone constructor.
-pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> TokenStream
-{
+pub(crate) fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> TokenStream {
   // This handler is specifically for variants with #[scalar]
   // The main dispatch should ensure this is only called for scalar zero-field struct variants.
 
@@ -14,8 +13,7 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> TokenStr
   let variant_ident = &ctx.variant.ident; // Use variant.ident field
 
   // Generate the static method: Enum::variant_name() -> Enum
-  let static_method = quote!
-  {
+  let static_method = quote! {
     #[ inline( always ) ]
     pub fn #variant_ident() -> #enum_ident
     {
@@ -27,13 +25,15 @@ pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> TokenStr
 
   // Check for #[standalone_constructors] on the enum
   // Access attributes from the enum's AST
-  let has_standalone_constructors = ctx.ast.attrs.iter().any(|attr| attr.path().is_ident("standalone_constructors"));
+  let has_standalone_constructors = ctx
+    .ast
+    .attrs
+    .iter()
+    .any(|attr| attr.path().is_ident("standalone_constructors"));
 
-  if has_standalone_constructors
-  {
+  if has_standalone_constructors {
     // Generate the standalone constructor: fn variant_name() -> Enum
-    let standalone_constructor = quote!
-    {
+    let standalone_constructor = quote! {
       #[ inline( always ) ]
       pub fn #variant_ident() -> #enum_ident
       {

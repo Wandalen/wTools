@@ -14,13 +14,13 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/diagnostics_tools`
-*   **Overall Progress:** 2/6 increments complete
+*   **Overall Progress:** 4/6 increments complete
 *   **Increment Status:**
     *   ⚫ Increment 1: Fix failing doctest in `Readme.md`
     *   ✅ Increment 1.1: Diagnose and fix the Failing (Stuck) test: `module/core/diagnostics_tools/src/lib.rs - (line 18)`
     *   ✅ Increment 2: Refactor `trybuild` setup and enable CTA tests
-    *   ⏳ Increment 3: Add `trybuild` tests for RTA failure messages
-    *   ⚫ Increment 4: Apply code formatting
+    *   ✅ Increment 3: Add `trybuild` tests for RTA failure messages
+    *   ✅ Increment 4: Apply code formatting
     *   ⚫ Increment 5: Fix clippy warnings
     *   ⚫ Increment 6: Finalization
 
@@ -56,6 +56,8 @@
 | Test ID | Status | Notes |
 |---|---|---|
 | `module/core/diagnostics_tools/src/lib.rs - (line 18)` | Fixed (Monitored) | Doctest marked `should_panic` was not panicking. Fixed by using `std::panic::catch_unwind` due to `should_panic` not working with `include_str!`. |
+| `tests/inc/snipet/rta_id_fail.rs` | Fixed (Monitored) | `trybuild` expected compilation failure, but test case compiles and panics at runtime. `trybuild` is not suitable for this. Fixed by moving to `runtime_assertion_tests.rs` and using `std::panic::catch_unwind` with `strip-ansi-escapes`. |
+| `tests/inc/snipet/rta_not_id_fail.rs` | Fixed (Monitored) | `trybuild` expected compilation failure, but test case compiles and panics at runtime. `trybuild` is not suitable for this. Fixed by moving to `runtime_assertion_tests.rs` and using `std::panic::catch_unwind` with `strip-ansi-escapes`. |
 
 ### Crate Conformance Check Procedure
 *   Run `cargo test --workspace --all-features`.
@@ -112,16 +114,20 @@
     2.  Analyze the output to confirm all `trybuild` tests pass.
 *   **Commit Message:** `refactor(test): Consolidate and simplify trybuild test setup`
 
-##### Increment 3: Add `trybuild` tests for RTA failure messages
-*   **Goal:** Use the new `trybuild` setup to verify the console output of `a_id!` and `a_not_id!` failures, replacing the old, brittle `*_run` tests.
+##### Increment 3: Verify runtime assertion failure messages
+*   **Goal:** Verify the console output of `a_id!` and `a_not_id!` failures using standard Rust tests with `std::panic::catch_unwind`.
 *   **Specification Reference:** N/A
 *   **Steps:**
-    1.  Use `insert_content` on `module/core/diagnostics_tools/tests/trybuild.rs` to add test cases for `tests/inc/snipet/rta_id_fail.rs` and `tests/inc/snipet/rta_not_id_fail.rs`.
-    2.  Use `search_and_replace` on `module/core/diagnostics_tools/tests/inc/rta_test.rs` to remove the `a_id_run` and `a_not_id_run` test functions and their corresponding entries from the `tests_index!` macro.
+    1.  Remove `t.run_fail` calls for `rta_id_fail.rs` and `rta_not_id_fail.rs` from `module/core/diagnostics_tools/tests/trybuild.rs`.
+    2.  Remove `a_id_run` and `a_not_id_run` function definitions from `module/core/diagnostics_tools/tests/inc/rta_test.rs`.
+    3.  Remove `a_id_run` and `a_not_id_run` entries from `tests_index!` in `module/core/diagnostics_tools/tests/inc/rta_test.rs`.
+    4.  Create a new file `module/core/diagnostics_tools/tests/runtime_assertion_tests.rs`.
+    5.  Add `a_id_run` and `a_not_id_run` functions to `runtime_assertion_tests.rs` as standard `#[test]` functions.
+    6.  Modify `module/core/diagnostics_tools/Cargo.toml` to add `runtime_assertion_tests` as a new test target.
 *   **Increment Verification:**
-    1.  Execute `cargo test --test trybuild` via `execute_command`.
+    1.  Execute `cargo test --package diagnostics_tools --all-features` via `execute_command`.
     2.  Analyze the output to confirm the new RTA failure tests pass.
-*   **Commit Message:** `test(rta): Add trybuild tests for assertion failure messages`
+*   **Commit Message:** `test(rta): Verify runtime assertion failure messages`
 
 ##### Increment 4: Apply code formatting
 *   **Goal:** Ensure consistent code formatting across the crate.
@@ -164,6 +170,7 @@
 
 ### Assumptions
 *   The `test_tools` dependency provides a `trybuild`-like testing framework.
+*   `strip-ansi-escapes` crate is available and works as expected.
 
 ### Out of Scope
 *   Adding new features to the crate.
@@ -176,6 +183,8 @@
 *   The failing doctest is due to a missing import, which prevents the macro from being resolved and thus from panicking.
 *   Consolidating `trybuild` tests into a single, standard test target (`tests/trybuild.rs`) is more robust and maintainable than the previous scattered and brittle implementation.
 *   **Root cause of doctest failure:** The `should_panic` attribute on doctests included via `include_str!` in `lib.rs` does not seem to function correctly. The fix involved explicitly catching the panic with `std::panic::catch_unwind` and asserting `is_err()`.
+*   **Problem with `trybuild` for RTA:** `trybuild::TestCases::compile_fail()` expects compilation failures, but RTA tests are designed to compile and then panic at runtime. `trybuild` is not the right tool for verifying runtime panic messages in this way.
+*   **Problem with `std::panic::catch_unwind` payload:** The panic payload from `pretty_assertions` is not a simple `&str` or `String`, requiring `strip-ansi-escapes` and careful string manipulation to assert on the message content.
 
 ### Changelog
-*
+*   [Increment 4 | 2025-07-26 14:35 UTC] Applied `rustfmt` to the crate.

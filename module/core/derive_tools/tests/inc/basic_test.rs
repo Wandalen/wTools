@@ -1,12 +1,11 @@
-#![ allow( unused_imports ) ]
+#![allow(unused_imports)]
 use super::*;
-use super::derives::{ tests_impls, tests_index };
+use super::derives::{tests_impls, tests_index};
 use super::derives::a_id;
 
 //
 
-tests_impls!
-{
+tests_impls! {
 
   #[ cfg( all( feature = "derive_from", feature = "derive_inner_from", feature = "derive_display", feature = "derive_from_str" ) ) ]
   fn samples()
@@ -97,8 +96,7 @@ Display ) ]
 
 //
 
-tests_index!
-{
+tests_index! {
   samples,
   basic,
   enum_with_strum,

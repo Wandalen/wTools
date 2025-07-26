@@ -28,7 +28,7 @@
 /// Look example `former_custom_mutator.rs`
 pub trait FormerMutator
 where
-  Self : crate::FormerDefinitionTypes,
+  Self: crate::FormerDefinitionTypes,
 {
   /// Mutates the context and storage of the entity just before the formation process completes.
   ///
@@ -37,10 +37,8 @@ where
   /// of the entity. `form_mutation` is particularly useful for adjustments or updates that need to reflect
   /// in the entity just before it is finalized and returned.
   ///
-  #[ inline ]
-  fn form_mutation( _storage : &mut Self::Storage, _context : &mut ::core::option::Option< Self::Context > )
-  {
-  }
+  #[inline]
+  fn form_mutation(_storage: &mut Self::Storage, _context: &mut ::core::option::Option<Self::Context>) {}
 }
 
 // impl< Definition > crate::FormerMutator
@@ -58,8 +56,7 @@ where
 /// # Parameters
 /// - `Storage`: The type of the collection being processed.
 /// - `Context`: The type of the context that might be altered or returned upon completion.
-pub trait FormingEnd< Definition : crate::FormerDefinitionTypes >
-{
+pub trait FormingEnd<Definition: crate::FormerDefinitionTypes> {
   /// Called at the end of the subforming process to return the modified or original context.
   ///
   /// # Parameters
@@ -68,18 +65,17 @@ pub trait FormingEnd< Definition : crate::FormerDefinitionTypes >
   ///
   /// # Returns
   /// Returns the transformed or original context based on the implementation.
-  fn call( &self, storage : Definition::Storage, context : core::option::Option< Definition::Context > ) -> Definition::Formed;
+  fn call(&self, storage: Definition::Storage, context: core::option::Option<Definition::Context>) -> Definition::Formed;
 }
 
-impl< Definition, F > FormingEnd< Definition > for F
+impl<Definition, F> FormingEnd<Definition> for F
 where
-  F : Fn( Definition::Storage, core::option::Option< Definition::Context > ) -> Definition::Formed,
-  Definition : crate::FormerDefinitionTypes,
+  F: Fn(Definition::Storage, core::option::Option<Definition::Context>) -> Definition::Formed,
+  Definition: crate::FormerDefinitionTypes,
 {
-  #[ inline( always ) ]
-  fn call( &self, storage : Definition::Storage, context : core::option::Option< Definition::Context > ) -> Definition::Formed
-  {
-    self( storage, context )
+  #[inline(always)]
+  fn call(&self, storage: Definition::Storage, context: core::option::Option<Definition::Context>) -> Definition::Formed {
+    self(storage, context)
   }
 }
 
@@ -88,20 +84,18 @@ where
 /// This struct is particularly useful when the end result of the forming process is simply the formed collection itself,
 /// without needing to integrate or process additional contextual information. It's ideal for scenarios where the final
 /// entity is directly derived from the storage state without further transformations or context-dependent adjustments.
-#[ derive( Debug, Default ) ]
+#[derive(Debug, Default)]
 pub struct ReturnPreformed;
 
-impl< Definition > FormingEnd< Definition >
-for ReturnPreformed
+impl<Definition> FormingEnd<Definition> for ReturnPreformed
 where
-  Definition::Storage : crate::StoragePreform< Preformed = Definition::Formed >,
-  Definition : crate::FormerDefinitionTypes,
+  Definition::Storage: crate::StoragePreform<Preformed = Definition::Formed>,
+  Definition: crate::FormerDefinitionTypes,
 {
   /// Transforms the storage into its final formed state and returns it, bypassing context processing.
-  #[ inline( always ) ]
-  fn call( &self, storage : Definition::Storage, _context : core::option::Option< Definition::Context > ) -> Definition::Formed
-  {
-    crate::StoragePreform::preform( storage )
+  #[inline(always)]
+  fn call(&self, storage: Definition::Storage, _context: core::option::Option<Definition::Context>) -> Definition::Formed {
+    crate::StoragePreform::preform(storage)
   }
 }
 
@@ -111,18 +105,16 @@ where
 /// entity, and no additional processing or transformation of the storage is required. It simplifies use cases where the
 /// storage does not undergo a transformation into a different type at the end of the forming process.
 
-#[ derive( Debug, Default ) ]
+#[derive(Debug, Default)]
 pub struct ReturnStorage;
 
-impl< Definition, T > FormingEnd< Definition >
-for ReturnStorage
+impl<Definition, T> FormingEnd<Definition> for ReturnStorage
 where
-  Definition : crate::FormerDefinitionTypes< Context = (), Storage = T, Formed = T >,
+  Definition: crate::FormerDefinitionTypes<Context = (), Storage = T, Formed = T>,
 {
   /// Returns the storage as the final product of the forming process, ignoring any additional context.
-  #[ inline( always ) ]
-  fn call( &self, storage : Definition::Storage, _context : core::option::Option< () > ) -> Definition::Formed
-  {
+  #[inline(always)]
+  fn call(&self, storage: Definition::Storage, _context: core::option::Option<()>) -> Definition::Formed {
     storage
   }
 }
@@ -132,26 +124,24 @@ where
 /// This implementation is useful in generic or templated scenarios where a `FormingEnd` is required by the interface,
 /// but no meaningful end operation is applicable. It serves a role similar to `core::marker::PhantomData` by filling
 /// generic parameter slots without contributing operational logic.
-#[ derive( Debug, Default ) ]
+#[derive(Debug, Default)]
 pub struct NoEnd;
 
-impl< Definition > FormingEnd< Definition >
-for NoEnd
+impl<Definition> FormingEnd<Definition> for NoEnd
 where
-  Definition : crate::FormerDefinitionTypes,
+  Definition: crate::FormerDefinitionTypes,
 {
   /// Intentionally causes a panic if called, as its use indicates a configuration error.
-  #[ inline( always ) ]
-  fn call( &self, _storage : Definition::Storage, _context : core::option::Option< Definition::Context > ) -> Definition::Formed
-  {
+  #[inline(always)]
+  fn call(&self, _storage: Definition::Storage, _context: core::option::Option<Definition::Context>) -> Definition::Formed {
     unreachable!();
   }
 }
 
-#[ allow( unused_extern_crates ) ]
-#[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
+#[allow(unused_extern_crates)]
+#[cfg(all(feature = "no_std", feature = "use_alloc"))]
 extern crate alloc;
-#[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
+#[cfg(all(feature = "no_std", feature = "use_alloc"))]
 use alloc::boxed::Box;
 
 /// A wrapper around a closure to be used as a `FormingEnd`.
@@ -160,34 +150,30 @@ use alloc::boxed::Box;
 /// `FormingEnd` trait's `call` method signature. It is useful for cases where
 /// a closure needs to be stored or passed around as an object implementing
 /// `FormingEnd`.
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-#[ allow( clippy::type_complexity ) ]
-pub struct FormingEndClosure< Definition : crate::FormerDefinitionTypes >
-{
-  closure : Box< dyn Fn( Definition::Storage, Option< Definition::Context > ) -> Definition::Formed >,
-  _marker : core::marker::PhantomData< Definition::Storage >,
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+#[allow(clippy::type_complexity)]
+pub struct FormingEndClosure<Definition: crate::FormerDefinitionTypes> {
+  closure: Box<dyn Fn(Definition::Storage, Option<Definition::Context>) -> Definition::Formed>,
+  _marker: core::marker::PhantomData<Definition::Storage>,
 }
 
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-impl< T, Definition > From< T > for FormingEndClosure< Definition >
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+impl<T, Definition> From<T> for FormingEndClosure<Definition>
 where
-  T : Fn( Definition::Storage, Option< Definition::Context > ) -> Definition::Formed + 'static,
-  Definition : crate::FormerDefinitionTypes,
+  T: Fn(Definition::Storage, Option<Definition::Context>) -> Definition::Formed + 'static,
+  Definition: crate::FormerDefinitionTypes,
 {
-  #[ inline( always ) ]
-  fn from( closure : T ) -> Self
-  {
-    Self
-    {
-      closure : Box::new( closure ),
-      _marker : core::marker::PhantomData
+  #[inline(always)]
+  fn from(closure: T) -> Self {
+    Self {
+      closure: Box::new(closure),
+      _marker: core::marker::PhantomData,
     }
   }
 }
 
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-impl< Definition : crate::FormerDefinitionTypes > FormingEndClosure< Definition >
-{
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+impl<Definition: crate::FormerDefinitionTypes> FormingEndClosure<Definition> {
   /// Constructs a new `FormingEndClosure` with the provided closure.
   ///
   /// # Parameters
@@ -199,37 +185,30 @@ impl< Definition : crate::FormerDefinitionTypes > FormingEndClosure< Definition 
   /// # Returns
   ///
   /// Returns an instance of `FormingEndClosure` encapsulating the provided closure.
-  pub fn new( closure : impl Fn( Definition::Storage, Option< Definition::Context > ) -> Definition::Formed + 'static ) -> Self
-  {
-    Self
-    {
-      closure : Box::new( closure ),
-      _marker : core::marker::PhantomData
+  pub fn new(closure: impl Fn(Definition::Storage, Option<Definition::Context>) -> Definition::Formed + 'static) -> Self {
+    Self {
+      closure: Box::new(closure),
+      _marker: core::marker::PhantomData,
     }
   }
 }
 
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 use core::fmt;
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-impl< Definition : crate::FormerDefinitionTypes > fmt::Debug for FormingEndClosure< Definition >
-{
-  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
-  {
-    f.debug_struct( "FormingEndClosure" )
-    .field( "closure", &format_args!{ "- closure -" } )
-    .field( "_marker", &self._marker )
-    .finish()
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+impl<Definition: crate::FormerDefinitionTypes> fmt::Debug for FormingEndClosure<Definition> {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    f.debug_struct("FormingEndClosure")
+      .field("closure", &format_args! { "- closure -" })
+      .field("_marker", &self._marker)
+      .finish()
   }
 }
 
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-impl< Definition : crate::FormerDefinitionTypes > FormingEnd< Definition >
-for FormingEndClosure< Definition >
-{
-  fn call( &self, storage : Definition::Storage, context : Option< Definition::Context > ) -> Definition::Formed
-  {
-    ( self.closure )( storage, context )
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+impl<Definition: crate::FormerDefinitionTypes> FormingEnd<Definition> for FormingEndClosure<Definition> {
+  fn call(&self, storage: Definition::Storage, context: Option<Definition::Context>) -> Definition::Formed {
+    (self.closure)(storage, context)
   }
 }
 
@@ -249,11 +228,10 @@ for FormingEndClosure< Definition >
 /// are aligned from the onset, particularly when one former is nested within another, facilitating the creation
 /// of complex hierarchical data structures.
 ///
-pub trait FormerBegin< Definition :  >
+pub trait FormerBegin<Definition>
 where
-  Definition : crate::FormerDefinition,
+  Definition: crate::FormerDefinition,
 {
-
   /// Launches the subforming process with an initial storage and context, setting up an `on_end` completion handler.
   ///
   /// This method initializes the formation process by providing the foundational elements necessary for
@@ -274,11 +252,9 @@ where
   ///
   /// Returns an instance of Former.
   ///
-  fn former_begin
-  (
-    storage : core::option::Option< Definition::Storage >,
-    context : core::option::Option< Definition::Context >,
-    on_end : Definition::End,
+  fn former_begin(
+    storage: core::option::Option<Definition::Storage>,
+    context: core::option::Option<Definition::Context>,
+    on_end: Definition::End,
   ) -> Self;
-
 }

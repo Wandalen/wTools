@@ -53,6 +53,7 @@ pretty_assertions = { workspace = true, optional = true }
 [dev-dependencies]
 trybuild = "1.0.106"
 test_tools = { workspace = true }
+strip-ansi-escapes = "0.1.1"
 
 
 
@@ -60,3 +61,8 @@ test_tools = { workspace = true }
 [[test]]
 name = "trybuild"
 harness = false
+
+
+[[test]]
+name = "runtime_assertion_tests"
+harness = true

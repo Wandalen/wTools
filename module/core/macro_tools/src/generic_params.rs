@@ -3,9 +3,8 @@
 //!
 
 /// Define a private namespace for all its items.
-mod private
-{
-  #[ allow( clippy::wildcard_imports ) ]
+mod private {
+  #[allow(clippy::wildcard_imports)]
   use crate::*;
   use crate::IterTrait;
   // use iter_tools::IterTrait;
@@ -27,19 +26,16 @@ mod private
   /// ```
   ///
 
-  #[ derive( Debug ) ]
-  pub struct GenericsWithWhere
-  {
+  #[derive(Debug)]
+  pub struct GenericsWithWhere {
     /// Syn's generics parameters.
-    pub generics : syn::Generics,
+    pub generics: syn::Generics,
   }
 
-  impl GenericsWithWhere
-  {
+  impl GenericsWithWhere {
     /// Unwraps the `GenericsWithWhere` to retrieve the inner `syn::Generics`.
-    #[ must_use ]
-    pub fn unwrap( self ) -> syn::Generics
-    {
+    #[must_use]
+    pub fn unwrap(self) -> syn::Generics {
       self.generics
     }
 
@@ -79,49 +75,39 @@ mod private
     /// assert!( parsed_only_where.generics.params.is_empty() );
     /// assert!( parsed_only_where.generics.where_clause.is_some() );
     /// ```
-    pub fn parse_from_str( s : &str ) -> syn::Result< GenericsWithWhere >
-    {
-      syn::parse_str::< GenericsWithWhere >( s )
+    pub fn parse_from_str(s: &str) -> syn::Result<GenericsWithWhere> {
+      syn::parse_str::<GenericsWithWhere>(s)
     }
   }
 
-  impl syn::parse::Parse for GenericsWithWhere
-  {
-    fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-    {
-      let generics : syn::Generics = input.parse()?;
-      let where_clause : Option< syn::WhereClause > = input.parse()?;
+  impl syn::parse::Parse for GenericsWithWhere {
+    fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
+      let generics: syn::Generics = input.parse()?;
+      let where_clause: Option<syn::WhereClause> = input.parse()?;
 
       let mut generics_clone = generics.clone();
       generics_clone.where_clause = where_clause;
 
-      Ok( GenericsWithWhere
-      {
-        generics : generics_clone,
+      Ok(GenericsWithWhere {
+        generics: generics_clone,
       })
     }
   }
 
-  impl quote::ToTokens for GenericsWithWhere
-  {
-    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
-    {
-      self.generics.to_tokens( tokens );
+  impl quote::ToTokens for GenericsWithWhere {
+    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+      self.generics.to_tokens(tokens);
     }
   }
 
-  impl From<GenericsWithWhere> for syn::Generics
-  {
-    fn from( g : GenericsWithWhere ) -> Self
-    {
+  impl From<GenericsWithWhere> for syn::Generics {
+    fn from(g: GenericsWithWhere) -> Self {
       g.generics
     }
   }
 
-  impl From<syn::Generics> for GenericsWithWhere
-  {
-    fn from( generics : syn::Generics ) -> Self
-    {
+  impl From<syn::Generics> for GenericsWithWhere {
+    fn from(generics: syn::Generics) -> Self {
       GenericsWithWhere { generics }
     }
   }
@@ -132,24 +118,20 @@ mod private
   /// This is particularly useful in procedural macros for constructing parts of function
   /// signatures, type paths, and where clauses that involve generics.
   #[derive(Debug, Clone, Copy)]
-  pub struct GenericsRef<'a>
-  {
+  pub struct GenericsRef<'a> {
     syn_generics: &'a syn::Generics,
   }
 
-  impl<'a> GenericsRef<'a>
-  {
+  impl<'a> GenericsRef<'a> {
     /// Creates a new `GenericsRef` from a reference to `syn::Generics`.
     #[must_use]
-    pub fn new_borrowed(syn_generics: &'a syn::Generics) -> Self
-    {
+    pub fn new_borrowed(syn_generics: &'a syn::Generics) -> Self {
       Self { syn_generics }
     }
 
     /// Creates a new `GenericsRef` from a reference to `syn::Generics`. Alias for `new_borrowed`.
     #[must_use]
-    pub fn new(syn_generics: &'a syn::Generics) -> Self
-    {
+    pub fn new(syn_generics: &'a syn::Generics) -> Self {
       Self::new_borrowed(syn_generics)
     }
 
@@ -159,10 +141,8 @@ mod private
     /// This is suitable for use in `impl <#impl_generics> Struct ...` contexts.
     /// It includes bounds and lifetimes.
     #[must_use]
-    pub fn impl_generics_tokens_if_any(&self) -> proc_macro2::TokenStream
-    {
-      if self.syn_generics.params.is_empty()
-      {
+    pub fn impl_generics_tokens_if_any(&self) -> proc_macro2::TokenStream {
+      if self.syn_generics.params.is_empty() {
         return quote::quote! {};
       }
       let (impl_g, _, _) = self.syn_generics.split_for_impl();
@@ -175,10 +155,8 @@ mod private
     /// This is suitable for use in type paths like `Struct::<#ty_generics>`.
     /// It includes only the identifiers of the generic parameters (types, lifetimes, consts).
     #[must_use]
-    pub fn ty_generics_tokens_if_any(&self) -> proc_macro2::TokenStream
-    {
-      if self.syn_generics.params.is_empty()
-      {
+    pub fn ty_generics_tokens_if_any(&self) -> proc_macro2::TokenStream {
+      if self.syn_generics.params.is_empty() {
         return quote::quote! {};
       }
       let (_, ty_g, _) = self.syn_generics.split_for_impl();
@@ -188,8 +166,7 @@ mod private
     /// Returns the `where_clause` (e.g., `where T: Trait`) as a `TokenStream`
     /// if a where clause is present in the original generics, otherwise an empty `TokenStream`.
     #[must_use]
-    pub fn where_clause_tokens_if_any(&self) -> proc_macro2::TokenStream
-    {
+    pub fn where_clause_tokens_if_any(&self) -> proc_macro2::TokenStream {
       let (_, _, where_clause) = self.syn_generics.split_for_impl();
       quote::quote! { #where_clause }
     }
@@ -202,10 +179,8 @@ mod private
     ///
     /// * `base_ident`: The identifier of the base type (e.g., `MyType`).
     #[must_use]
-    pub fn type_path_tokens_if_any(&self, base_ident: &syn::Ident) -> proc_macro2::TokenStream
-    {
-      if self.syn_generics.params.is_empty()
-      {
+    pub fn type_path_tokens_if_any(&self, base_ident: &syn::Ident) -> proc_macro2::TokenStream {
+      if self.syn_generics.params.is_empty() {
         quote::quote! { #base_ident }
       } else {
         let (_, ty_g, _) = self.syn_generics.split_for_impl();
@@ -254,47 +229,38 @@ mod private
   /// };
   ///
   /// `assert_eq`!( got, exp );
-  #[ must_use ]
-  #[ allow( clippy::default_trait_access ) ]
-  pub fn merge( a : &syn::Generics, b : &syn::Generics ) -> syn::Generics
-  {
-
-    let mut result = syn::Generics
-    {
-      params : Default::default(),
-      where_clause : None,
-      lt_token : Some( syn::token::Lt::default() ),
-      gt_token : Some( syn::token::Gt::default() ),
+  #[must_use]
+  #[allow(clippy::default_trait_access)]
+  pub fn merge(a: &syn::Generics, b: &syn::Generics) -> syn::Generics {
+    let mut result = syn::Generics {
+      params: Default::default(),
+      where_clause: None,
+      lt_token: Some(syn::token::Lt::default()),
+      gt_token: Some(syn::token::Gt::default()),
     };
 
     // Merge params
-    for param in &a.params
-    {
-      result.params.push( param.clone() );
+    for param in &a.params {
+      result.params.push(param.clone());
     }
-    for param in &b.params
-    {
-      result.params.push( param.clone() );
+    for param in &b.params {
+      result.params.push(param.clone());
     }
 
     // Merge where clauses
-    result.where_clause = match( &a.where_clause, &b.where_clause )
-    {
-      ( Some( a_clause ), Some( b_clause ) ) =>
-      {
-        let mut merged_where_clause = syn::WhereClause
-        {
+    result.where_clause = match (&a.where_clause, &b.where_clause) {
+      (Some(a_clause), Some(b_clause)) => {
+        let mut merged_where_clause = syn::WhereClause {
           where_token: a_clause.where_token,
           predicates: a_clause.predicates.clone(),
         };
-        for predicate in &b_clause.predicates
-        {
-          merged_where_clause.predicates.push( predicate.clone() );
+        for predicate in &b_clause.predicates {
+          merged_where_clause.predicates.push(predicate.clone());
         }
-        Some( merged_where_clause )
-      },
-      ( Some( a_clause ), None ) => Some( a_clause.clone() ),
-      ( None, Some( b_clause ) ) => Some( b_clause.clone() ),
+        Some(merged_where_clause)
+      }
+      (Some(a_clause), None) => Some(a_clause.clone()),
+      (None, Some(b_clause)) => Some(b_clause.clone()),
       _ => None,
     };
 
@@ -329,46 +295,44 @@ mod private
   /// assert_eq!( simplified_generics.params.len(), 4 ); // Contains T, U, 'a, and N
   /// assert!( simplified_generics.where_clause.is_none() ); // Where clause is removed
   /// ```
-  #[ allow( clippy::default_trait_access ) ]
-  #[ must_use ]
-  pub fn only_names( generics : &syn::Generics ) -> syn::Generics
-  {
-    use syn::{ Generics, GenericParam, LifetimeParam, TypeParam, ConstParam };
+  #[allow(clippy::default_trait_access)]
+  #[must_use]
+  pub fn only_names(generics: &syn::Generics) -> syn::Generics {
+    use syn::{Generics, GenericParam, LifetimeParam, TypeParam, ConstParam};
 
-    let result = Generics
-    {
-      params : generics.params.iter().map( | param | match param
-      {
-        GenericParam::Type( TypeParam { ident, .. } ) => GenericParam::Type( TypeParam
-        {
-          attrs : Vec::new(),
-          ident : ident.clone(),
-          colon_token : None,
-          bounds : Default::default(),
-          eq_token : None,
-          default : None,
-        }),
-        GenericParam::Lifetime( LifetimeParam { lifetime, .. } ) => GenericParam::Lifetime( LifetimeParam
-        {
-          attrs : Vec::new(),
-          lifetime : lifetime.clone(),
-          colon_token : None,
-          bounds : Default::default(),
-        }),
-        GenericParam::Const( ConstParam { ident, ty, .. } ) => GenericParam::Const( ConstParam
-        {
-          attrs : Vec::new(),
-          const_token : Default::default(),
-          ident : ident.clone(),
-          colon_token : Default::default(),
-          ty : ty.clone(),
-          eq_token : Default::default(),
-          default : None,
-        }),
-      }).collect(),
-      where_clause : None,
-      lt_token : generics.lt_token,
-      gt_token : generics.gt_token,
+    let result = Generics {
+      params: generics
+        .params
+        .iter()
+        .map(|param| match param {
+          GenericParam::Type(TypeParam { ident, .. }) => GenericParam::Type(TypeParam {
+            attrs: Vec::new(),
+            ident: ident.clone(),
+            colon_token: None,
+            bounds: Default::default(),
+            eq_token: None,
+            default: None,
+          }),
+          GenericParam::Lifetime(LifetimeParam { lifetime, .. }) => GenericParam::Lifetime(LifetimeParam {
+            attrs: Vec::new(),
+            lifetime: lifetime.clone(),
+            colon_token: None,
+            bounds: Default::default(),
+          }),
+          GenericParam::Const(ConstParam { ident, ty, .. }) => GenericParam::Const(ConstParam {
+            attrs: Vec::new(),
+            const_token: Default::default(),
+            ident: ident.clone(),
+            colon_token: Default::default(),
+            ty: ty.clone(),
+            eq_token: Default::default(),
+            default: None,
+          }),
+        })
+        .collect(),
+      where_clause: None,
+      lt_token: generics.lt_token,
+      gt_token: generics.gt_token,
     };
 
     result
@@ -407,15 +371,12 @@ mod private
   ///   &syn::Ident::new( "N", proc_macro2::Span::call_site() )
   /// ]);
   /// ```
-  #[ must_use ]
-  pub fn names( generics : &syn::Generics )
-  -> impl IterTrait< '_, &syn::Ident >
-  {
-    generics.params.iter().map( | param | match param
-    {
-      syn::GenericParam::Type( type_param ) => &type_param.ident,
-      syn::GenericParam::Lifetime( lifetime_def ) => &lifetime_def.lifetime.ident,
-      syn::GenericParam::Const( const_param ) => &const_param.ident,
+  #[must_use]
+  pub fn names(generics: &syn::Generics) -> impl IterTrait<'_, &syn::Ident> {
+    generics.params.iter().map(|param| match param {
+      syn::GenericParam::Type(type_param) => &type_param.ident,
+      syn::GenericParam::Lifetime(lifetime_def) => &lifetime_def.lifetime.ident,
+      syn::GenericParam::Const(const_param) => &const_param.ident,
     })
   }
 
@@ -507,180 +468,145 @@ mod private
   /// }
   /// ```
   ///
-  #[ allow( clippy::type_complexity ) ]
-  #[ must_use ]
-  pub fn decompose
-  (
-    generics : &syn::Generics,
-  )
-  ->
-  (
-    syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-    syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-    syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-    syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  )
-  {
-
+  #[allow(clippy::type_complexity)]
+  #[must_use]
+  pub fn decompose(
+    generics: &syn::Generics,
+  ) -> (
+    syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
+    syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
+    syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
+    syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
+  ) {
     let mut generics_with_defaults = generics.params.clone();
-    punctuated::ensure_trailing_comma( &mut generics_with_defaults );
+    punctuated::ensure_trailing_comma(&mut generics_with_defaults);
 
     let mut generics_for_impl = syn::punctuated::Punctuated::new();
     let mut generics_for_ty = syn::punctuated::Punctuated::new();
 
     // Process each generic parameter
-    for param in &generics.params
-    {
-      match param
-      {
-        syn::GenericParam::Type( type_param ) =>
-        {
+    for param in &generics.params {
+      match param {
+        syn::GenericParam::Type(type_param) => {
           // Retain bounds for generics_for_impl, remove defaults
-          let impl_param = syn::GenericParam::Type( syn::TypeParam
-          {
-            attrs : vec![],
-            ident : type_param.ident.clone(),
-            colon_token : type_param.colon_token,
-            bounds : type_param.bounds.clone(),
-            eq_token : None, // Remove default token
-            default : None, // Remove default value
-          } );
-          generics_for_impl.push_value( impl_param );
-          generics_for_impl.push_punct( syn::token::Comma::default() );
+          let impl_param = syn::GenericParam::Type(syn::TypeParam {
+            attrs: vec![],
+            ident: type_param.ident.clone(),
+            colon_token: type_param.colon_token,
+            bounds: type_param.bounds.clone(),
+            eq_token: None, // Remove default token
+            default: None,  // Remove default value
+          });
+          generics_for_impl.push_value(impl_param);
+          generics_for_impl.push_punct(syn::token::Comma::default());
 
           // Simplify for generics_for_ty by removing all except identifiers
-          let ty_param = syn::GenericParam::Type( syn::TypeParam
-          {
-            attrs : vec![],
-            ident : type_param.ident.clone(),
-            colon_token : None,
-            bounds : syn::punctuated::Punctuated::new(),
-            eq_token : None,
-            default : None,
-          } );
-          generics_for_ty.push_value( ty_param );
-          generics_for_ty.push_punct( syn::token::Comma::default() );
-        },
-        syn::GenericParam::Const( const_param ) =>
-        {
+          let ty_param = syn::GenericParam::Type(syn::TypeParam {
+            attrs: vec![],
+            ident: type_param.ident.clone(),
+            colon_token: None,
+            bounds: syn::punctuated::Punctuated::new(),
+            eq_token: None,
+            default: None,
+          });
+          generics_for_ty.push_value(ty_param);
+          generics_for_ty.push_punct(syn::token::Comma::default());
+        }
+        syn::GenericParam::Const(const_param) => {
           // Simplify const parameters by removing all details except the identifier
-          let impl_param = syn::GenericParam::Const( syn::ConstParam
-          {
-            attrs : vec![],
-            const_token : const_param.const_token,
-            ident : const_param.ident.clone(),
-            colon_token : const_param.colon_token,
-            ty : const_param.ty.clone(),
-            eq_token : None,
-            default : None,
-          } );
-          generics_for_impl.push_value( impl_param );
-          generics_for_impl.push_punct( syn::token::Comma::default() );
-
-          let ty_param = syn::GenericParam::Const( syn::ConstParam
-          {
-            attrs : vec![],
-            const_token : const_param.const_token,
-            ident : const_param.ident.clone(),
-            colon_token : const_param.colon_token,
-            ty : const_param.ty.clone(),
-            eq_token : None,
-            default : None,
+          let impl_param = syn::GenericParam::Const(syn::ConstParam {
+            attrs: vec![],
+            const_token: const_param.const_token,
+            ident: const_param.ident.clone(),
+            colon_token: const_param.colon_token,
+            ty: const_param.ty.clone(),
+            eq_token: None,
+            default: None,
           });
-          generics_for_ty.push_value( ty_param );
-          generics_for_ty.push_punct( syn::token::Comma::default() );
-        },
-        syn::GenericParam::Lifetime( lifetime_param ) =>
-        {
+          generics_for_impl.push_value(impl_param);
+          generics_for_impl.push_punct(syn::token::Comma::default());
+
+          let ty_param = syn::GenericParam::Const(syn::ConstParam {
+            attrs: vec![],
+            const_token: const_param.const_token,
+            ident: const_param.ident.clone(),
+            colon_token: const_param.colon_token,
+            ty: const_param.ty.clone(),
+            eq_token: None,
+            default: None,
+          });
+          generics_for_ty.push_value(ty_param);
+          generics_for_ty.push_punct(syn::token::Comma::default());
+        }
+        syn::GenericParam::Lifetime(lifetime_param) => {
           // Lifetimes are added as-is to generics_for_impl and without bounds to generics_for_ty
-          generics_for_impl.push_value( syn::GenericParam::Lifetime( lifetime_param.clone() ) );
-          generics_for_impl.push_punct( syn::token::Comma::default() );
+          generics_for_impl.push_value(syn::GenericParam::Lifetime(lifetime_param.clone()));
+          generics_for_impl.push_punct(syn::token::Comma::default());
 
-          let ty_param = syn::GenericParam::Lifetime( syn::LifetimeParam
-          {
-            attrs : vec![],
-            lifetime : lifetime_param.lifetime.clone(),
-            colon_token : None,
-            bounds : syn::punctuated::Punctuated::new(),
+          let ty_param = syn::GenericParam::Lifetime(syn::LifetimeParam {
+            attrs: vec![],
+            lifetime: lifetime_param.lifetime.clone(),
+            colon_token: None,
+            bounds: syn::punctuated::Punctuated::new(),
           });
-          generics_for_ty.push_value( ty_param );
-          generics_for_ty.push_punct( syn::token::Comma::default() );
+          generics_for_ty.push_value(ty_param);
+          generics_for_ty.push_punct(syn::token::Comma::default());
         }
       }
     }
 
     // Clone where predicates if present, ensuring they end with a comma
-    let generics_where = if let Some( where_clause ) = &generics.where_clause
-    {
+    let generics_where = if let Some(where_clause) = &generics.where_clause {
       let mut predicates = where_clause.predicates.clone();
-      punctuated::ensure_trailing_comma( &mut predicates );
+      punctuated::ensure_trailing_comma(&mut predicates);
       predicates
-    }
-    else
-    {
+    } else {
       syn::punctuated::Punctuated::new()
     };
 
-    ( generics_with_defaults, generics_for_impl, generics_for_ty, generics_where )
+    (generics_with_defaults, generics_for_impl, generics_for_ty, generics_where)
   }
-
 }
 
-
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+#[doc(inline)]
+#[allow(unused_imports)]
 pub use own::*;
 
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 /// Own namespace of the module.
-pub mod own
-{
-  #[ allow( clippy::wildcard_imports ) ]
+pub mod own {
+  #[allow(clippy::wildcard_imports)]
   use super::*;
 
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use orphan::*;
-  #[ doc( inline ) ]
-  pub use private::
-  {
-    merge,
-    only_names,
-    names,
-    decompose,
-    GenericsRef,
-    GenericsWithWhere,
-  };
+  #[doc(inline)]
+  pub use private::{merge, only_names, names, decompose, GenericsRef, GenericsWithWhere};
 }
 
 /// Orphan namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod orphan {
+  #[allow(clippy::wildcard_imports)]
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod exposed {
+  #[allow(clippy::wildcard_imports)]
   use super::*;
   pub use super::super::generic_params;
 
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::
-  {
-    prelude::*,
-  };
+  #[doc(inline)]
+  #[allow(unused_imports)]
+  pub use super::{prelude::*};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[allow(unused_imports)]
+pub mod prelude {
   use super::*;
 }

@@ -22,8 +22,8 @@ mod unit_variant_manual;
 // Coverage for `keyword_variant_*` tests:
 // - Tests unit variants with keyword identifiers e.g., `MyEnum::r#fn`.
 // - Verifies Rules 1a, 3a, and 4a.
-mod keyword_variant_manual;
-mod keyword_variant_derive; // Known broken
+mod keyword_variant_derive;
+mod keyword_variant_manual; // Known broken
 
 // Coverage for `generic_unit_variant_*` tests:
 // - Tests unit variants within generic enums e.g., `Enum<T>::UnitVariant`.
@@ -33,8 +33,8 @@ mod generic_unit_variant_derive; // Known broken - attempting fix
 // Coverage for `mixed_enum_unit_*` tests:
 // - Tests unit variants in enums that also contain non-unit (e.g., struct/tuple) variants.
 // - Verifies Rules 1a, 3a, and 4a for the unit variants in such mixed enums.
-mod mixed_enum_unit_manual;
-mod mixed_enum_unit_derive; // Configured to test only static method for SimpleUnit
+mod mixed_enum_unit_derive;
+mod mixed_enum_unit_manual; // Configured to test only static method for SimpleUnit
 
 // Coverage for `enum_named_fields_unit_*` tests:
 // - Tests unit variants within an enum where other variants use named field syntax.

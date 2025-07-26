@@ -1,6 +1,4 @@
 // qqq : xxx : write please
 
-#[ cfg( feature = "enabled" ) ]
-fn main()
-{
-}
+#[cfg(feature = "enabled")]
+fn main() {}

@@ -10,20 +10,17 @@ use core::fmt::Write;
 ///
 /// This struct provides methods to create formatted help messages from
 /// `CommandDefinition` instances, which can be displayed to the user.
-#[ allow( missing_debug_implementations ) ]
-pub struct HelpGenerator< 'a >
-{
-  registry : &'a CommandRegistry,
+#[allow(missing_debug_implementations)]
+pub struct HelpGenerator<'a> {
+  registry: &'a CommandRegistry,
 }
 
-impl< 'a > HelpGenerator< 'a >
-{
+impl<'a> HelpGenerator<'a> {
   ///
   /// Creates a new `HelpGenerator`.
   ///
   #[must_use]
-  pub fn new( registry : &'a CommandRegistry ) -> Self
-  {
+  pub fn new(registry: &'a CommandRegistry) -> Self {
     Self { registry }
   }
 
@@ -33,56 +30,54 @@ impl< 'a > HelpGenerator< 'a >
   /// The output is a formatted string containing the command's usage,
   /// description, and a list of its arguments.
   #[must_use]
-  pub fn command( &self, command_name : &str ) -> Option< String >
-  {
-    let command = self.registry.commands.get( command_name )?;
+  pub fn command(&self, command_name: &str) -> Option<String> {
+    let command = self.registry.commands.get(command_name)?;
     let mut help = String::new();
-    writeln!( &mut help, "Usage: {} (v{})", command.name, command.version.as_deref().unwrap_or("N/A") ).unwrap();
+    writeln!(
+      &mut help,
+      "Usage: {} (v{})",
+      command.name,
+      command.version.as_deref().unwrap_or("N/A")
+    )
+    .unwrap();
     if !command.aliases.is_empty() {
-        writeln!( &mut help, "Aliases: {}", command.aliases.join(", ") ).unwrap();
+      writeln!(&mut help, "Aliases: {}", command.aliases.join(", ")).unwrap();
     }
-    writeln!( &mut help, "\n  {}", command.hint ).unwrap();
-    writeln!( &mut help, "  {}\n", command.description ).unwrap();
-    writeln!( &mut help, "Status: {}", command.status ).unwrap();
+    writeln!(&mut help, "\n  {}", command.hint).unwrap();
+    writeln!(&mut help, "  {}\n", command.description).unwrap();
+    writeln!(&mut help, "Status: {}", command.status).unwrap();
 
-    if !command.arguments.is_empty()
-    {
-      writeln!( &mut help, "\nArguments:" ).unwrap();
-      for arg in &command.arguments
-      {
+    if !command.arguments.is_empty() {
+      writeln!(&mut help, "\nArguments:").unwrap();
+      for arg in &command.arguments {
         let mut arg_info = String::new();
-        write!( &mut arg_info, "  {:<15} {}", arg.name, arg.description ).unwrap();
-        write!( &mut arg_info, " (Kind: {})", arg.kind ).unwrap();
-        if arg.attributes.optional
-        {
-          write!( &mut arg_info, ", Optional" ).unwrap();
+        write!(&mut arg_info, "  {:<15} {}", arg.name, arg.description).unwrap();
+        write!(&mut arg_info, " (Kind: {})", arg.kind).unwrap();
+        if arg.attributes.optional {
+          write!(&mut arg_info, ", Optional").unwrap();
         }
-        if arg.attributes.multiple
-        {
-          write!( &mut arg_info, ", Multiple" ).unwrap();
+        if arg.attributes.multiple {
+          write!(&mut arg_info, ", Multiple").unwrap();
         }
-        if !arg.validation_rules.is_empty()
-        {
-          write!( &mut arg_info, ", Rules: [{}]", arg.validation_rules.join( ", " ) ).unwrap();
+        if !arg.validation_rules.is_empty() {
+          write!(&mut arg_info, ", Rules: [{}]", arg.validation_rules.join(", ")).unwrap();
         }
-        writeln!( &mut help, "{arg_info}" ).unwrap();
+        writeln!(&mut help, "{arg_info}").unwrap();
       }
     }
 
-    Some( help )
+    Some(help)
   }
 
   ///
   /// Generates a summary list of all available commands.
   ///
   #[must_use]
-  pub fn list_commands( &self ) -> String
-  {
+  pub fn list_commands(&self) -> String {
     let mut summary = String::new();
-    writeln!( &mut summary, "Available Commands:" ).unwrap();
-    for ( name, command ) in &self.registry.commands
-    {
-      writeln!( &mut summary, "  {:<15} {}", name, command.description ).unwrap();
+    writeln!(&mut summary, "Available Commands:").unwrap();
+    for (name, command) in &self.registry.commands {
+      writeln!(&mut summary, "  {:<15} {}", name, command.description).unwrap();
     }
     summary
   }

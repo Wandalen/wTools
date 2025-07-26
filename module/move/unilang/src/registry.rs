@@ -2,7 +2,7 @@
 //! The command registry for the Unilang framework.
 //!
 
-use crate::data::{ CommandDefinition, ErrorData, OutputData };
+use crate::data::{CommandDefinition, ErrorData, OutputData};
 use crate::semantic::VerifiedCommand;
 use crate::interpreter::ExecutionContext;
 use std::collections::HashMap;
@@ -16,24 +16,21 @@ pub type CommandRoutine = Box<dyn Fn(VerifiedCommand, ExecutionContext) -> Resul
 /// A registry for commands, responsible for storing and managing all
 /// available command definitions.
 ///
-#[ derive( Default ) ] // Removed Debug
-#[ allow( missing_debug_implementations ) ]
-pub struct CommandRegistry
-{
+#[derive(Default)] // Removed Debug
+#[allow(missing_debug_implementations)]
+pub struct CommandRegistry {
   /// A map of command names to their definitions.
-  pub commands : HashMap< String, CommandDefinition >,
+  pub commands: HashMap<String, CommandDefinition>,
   /// A map of command names to their executable routines.
-  routines : HashMap< String, CommandRoutine >,
+  routines: HashMap<String, CommandRoutine>,
 }
 
-impl CommandRegistry
-{
+impl CommandRegistry {
   ///
   /// Creates a new, empty `CommandRegistry`.
   ///
   #[must_use]
-  pub fn new() -> Self
-  {
+  pub fn new() -> Self {
     Self::default()
   }
 
@@ -41,9 +38,8 @@ impl CommandRegistry
   /// Registers a command, adding it to the registry.
   ///
   /// If a command with the same name already exists, it will be overwritten.
-  pub fn register( &mut self, command : CommandDefinition )
-  {
-    self.commands.insert( command.name.clone(), command );
+  pub fn register(&mut self, command: CommandDefinition) {
+    self.commands.insert(command.name.clone(), command);
   }
 
   ///
@@ -54,17 +50,15 @@ impl CommandRegistry
   /// Returns an `Error::Registration` if a command with the same name
   /// is already registered and cannot be overwritten (e.g., if it was
   /// a compile-time registered command).
-  pub fn command_add_runtime( &mut self, command_def: &CommandDefinition, routine: CommandRoutine ) -> Result<(), Error>
-  {
-    if self.commands.contains_key( &command_def.name )
-    {
-      return Err( Error::Execution( ErrorData {
-        code : "COMMAND_ALREADY_EXISTS".to_string(),
-        message : format!( "Command '{}' already exists.", command_def.name ),
-      } ) );
+  pub fn command_add_runtime(&mut self, command_def: &CommandDefinition, routine: CommandRoutine) -> Result<(), Error> {
+    if self.commands.contains_key(&command_def.name) {
+      return Err(Error::Execution(ErrorData {
+        code: "COMMAND_ALREADY_EXISTS".to_string(),
+        message: format!("Command '{}' already exists.", command_def.name),
+      }));
     }
-    self.commands.insert( command_def.name.clone(), command_def.clone() ); // Cloned command_def
-    self.routines.insert( command_def.name.clone(), routine );
+    self.commands.insert(command_def.name.clone(), command_def.clone()); // Cloned command_def
+    self.routines.insert(command_def.name.clone(), routine);
     Ok(())
   }
 
@@ -72,17 +66,15 @@ impl CommandRegistry
   /// Retrieves the routine for a given command name.
   ///
   #[must_use]
-  pub fn get_routine( &self, command_name: &str ) -> Option<&CommandRoutine>
-  {
-    self.routines.get( command_name )
+  pub fn get_routine(&self, command_name: &str) -> Option<&CommandRoutine> {
+    self.routines.get(command_name)
   }
 
   ///
   /// Returns a builder for creating a `CommandRegistry` with a fluent API.
   ///
   #[must_use]
-  pub fn builder() -> CommandRegistryBuilder
-  {
+  pub fn builder() -> CommandRegistryBuilder {
     CommandRegistryBuilder::new()
   }
 }
@@ -92,21 +84,18 @@ impl CommandRegistry
 ///
 /// This provides a convenient way to construct a `CommandRegistry` by
 /// chaining `command` calls.
-#[ allow( missing_debug_implementations ) ]
-#[ derive( Default ) ] // Removed Debug
-pub struct CommandRegistryBuilder
-{
-  registry : CommandRegistry,
+#[allow(missing_debug_implementations)]
+#[derive(Default)] // Removed Debug
+pub struct CommandRegistryBuilder {
+  registry: CommandRegistry,
 }
 
-impl CommandRegistryBuilder
-{
+impl CommandRegistryBuilder {
   ///
   /// Creates a new `CommandRegistryBuilder`.
   ///
   #[must_use]
-  pub fn new() -> Self
-  {
+  pub fn new() -> Self {
     Self::default()
   }
 
@@ -114,9 +103,8 @@ impl CommandRegistryBuilder
   /// Adds a command to the registry being built.
   ///
   #[must_use]
-  pub fn command( mut self, command : CommandDefinition ) -> Self
-  {
-    self.registry.register( command );
+  pub fn command(mut self, command: CommandDefinition) -> Self {
+    self.registry.register(command);
     self
   }
 
@@ -126,22 +114,17 @@ impl CommandRegistryBuilder
   /// # Errors
   ///
   /// Returns an `Error` if the YAML string is invalid or if routine links cannot be resolved.
-  pub fn load_from_yaml_str( mut self, yaml_str: &str ) -> Result< Self, Error >
-  {
-    let command_defs = crate::loader::load_command_definitions_from_yaml_str( yaml_str )?;
-    for command_def in command_defs
-    {
-      if let Some( link ) = &command_def.routine_link
-      {
-        let routine = crate::loader::resolve_routine_link( link )?;
-        self.registry.command_add_runtime( &command_def, routine )?;
-      }
-      else
-      {
-        self.registry.register( command_def );
+  pub fn load_from_yaml_str(mut self, yaml_str: &str) -> Result<Self, Error> {
+    let command_defs = crate::loader::load_command_definitions_from_yaml_str(yaml_str)?;
+    for command_def in command_defs {
+      if let Some(link) = &command_def.routine_link {
+        let routine = crate::loader::resolve_routine_link(link)?;
+        self.registry.command_add_runtime(&command_def, routine)?;
+      } else {
+        self.registry.register(command_def);
       }
     }
-    Ok( self )
+    Ok(self)
   }
 
   ///
@@ -150,30 +133,24 @@ impl CommandRegistryBuilder
   /// # Errors
   ///
   /// Returns an `Error` if the JSON string is invalid or if routine links cannot be resolved.
-  pub fn load_from_json_str( mut self, json_str: &str ) -> Result< Self, Error >
-  {
-    let command_defs = crate::loader::load_command_definitions_from_json_str( json_str )?;
-    for command_def in command_defs
-    {
-      if let Some( link ) = &command_def.routine_link
-      {
-        let routine = crate::loader::resolve_routine_link( link )?;
-        self.registry.command_add_runtime( &command_def, routine )?;
-      }
-      else
-      {
-        self.registry.register( command_def );
+  pub fn load_from_json_str(mut self, json_str: &str) -> Result<Self, Error> {
+    let command_defs = crate::loader::load_command_definitions_from_json_str(json_str)?;
+    for command_def in command_defs {
+      if let Some(link) = &command_def.routine_link {
+        let routine = crate::loader::resolve_routine_link(link)?;
+        self.registry.command_add_runtime(&command_def, routine)?;
+      } else {
+        self.registry.register(command_def);
       }
     }
-    Ok( self )
+    Ok(self)
   }
 
   ///
   /// Builds and returns the `CommandRegistry`.
   ///
   #[must_use]
-  pub fn build( self ) -> CommandRegistry
-  {
+  pub fn build(self) -> CommandRegistry {
     self.registry
   }
 }

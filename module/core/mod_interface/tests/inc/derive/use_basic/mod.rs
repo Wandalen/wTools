@@ -1,4 +1,3 @@
-
 use super::*;
 
 // private layer
@@ -8,8 +7,7 @@ pub mod layer_b;
 
 mod private {}
 
-the_module::mod_interface!
-{
+the_module::mod_interface! {
 
   /// layer_a
   use super::layer_a;
@@ -21,4 +19,4 @@ the_module::mod_interface!
 
 //
 
-include!( "../../only_test/layer_simple_only_test.rs" );
+include!("../../only_test/layer_simple_only_test.rs");

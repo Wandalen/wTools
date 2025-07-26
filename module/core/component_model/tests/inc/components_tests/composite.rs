@@ -1,52 +1,44 @@
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
-#[ allow( unused_imports ) ]
-use component_model::{ Assign, AssignWithType };
+#[allow(unused_imports)]
+use component_model::{Assign, AssignWithType};
 
 ///
 /// Options1
 ///
 
-#[
-  derive
-  (
-    Debug,
-    Default,
-    PartialEq,
-    the_module::ComponentFrom,
-    the_module::Assign,
-    the_module::ComponentsAssign,
-    the_module::FromComponents,
-  )
-]
+#[derive(
+  Debug,
+  Default,
+  PartialEq,
+  the_module::ComponentFrom,
+  the_module::Assign,
+  the_module::ComponentsAssign,
+  the_module::FromComponents,
+)]
 // qqq : make these traits working for generic struct, use `split_for_impl`
-pub struct Options1
-{
-  field1 : i32,
-  field2 : String,
-  field3 : f32,
+pub struct Options1 {
+  field1: i32,
+  field2: String,
+  field3: f32,
 }
 
 ///
 /// Options2
 ///
 
-#[
-  derive
-  (
-    Debug,
-    Default,
-    PartialEq,
-    the_module::ComponentFrom,
-    the_module::Assign,
-    the_module::ComponentsAssign,
-    the_module::FromComponents,
-  )
-]
-pub struct Options2
-{
-  field1 : i32,
-  field2 : String,
+#[derive(
+  Debug,
+  Default,
+  PartialEq,
+  the_module::ComponentFrom,
+  the_module::Assign,
+  the_module::ComponentsAssign,
+  the_module::FromComponents,
+)]
+pub struct Options2 {
+  field1: i32,
+  field2: String,
 }
 
 //
@@ -72,4 +64,4 @@ pub struct Options2
 
 //
 
-include!( "./only_test/composite.rs" );
+include!("./only_test/composite.rs");

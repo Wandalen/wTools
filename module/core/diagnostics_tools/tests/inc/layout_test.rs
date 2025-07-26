@@ -1,13 +1,12 @@
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use the_module::prelude::*;
 
 // qqq : do negative testing /* aaa : Dmytro : done */
 // zzz : continue here
 
-tests_impls!
-{
+tests_impls! {
 
   #[ cfg( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
   fn cta_type_same_size_pass()
@@ -68,22 +67,9 @@ tests_impls!
 // mod aggregating;
 // use crate::only_for_terminal_module;
 
-
-
-    let workspace_root = find_workspace_root( exe_directory ).expect( "No such file or directory" );
-    let current_dir = workspace_root.join( "module/core/diagnostics_tools" );
-
-    t.compile_fail( current_dir.join("tests/inc/snipet/cta_type_same_size_fail.rs") );
-    t.compile_fail( current_dir.join("tests/inc/snipet/cta_type_same_align_fail.rs") );
-    t.compile_fail( current_dir.join("tests/inc/snipet/cta_ptr_same_size_fail.rs") );
-    t.compile_fail( current_dir.join("tests/inc/snipet/cta_mem_same_size_fail.rs") );
-  }
-}
-
 //
 
-tests_index!
-{
+tests_index! {
   cta_type_same_size_pass,
   cta_type_same_align_pass,
   cta_ptr_same_size_pass,

@@ -20,25 +20,29 @@
 //! ```
 //!
 
-use wca::{ CommandsAggregator, Type, VerifiedCommand };
+use wca::{CommandsAggregator, Type, VerifiedCommand};
 
-fn main() -> error_tools::error::untyped::Result< () >
-{
-
+fn main() -> error_tools::error::untyped::Result<()> {
   let ca = CommandsAggregator::former()
-  .command( "echo" )
-  .hint( "prints all subjects and properties" )
-  .subject().kind( Type::String ).optional( true ).end()
-  .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
-  .routine( | o : VerifiedCommand |
-  {
-    println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props );
-  })
-  .end()
-  .perform();
+    .command("echo")
+    .hint("prints all subjects and properties")
+    .subject()
+    .kind(Type::String)
+    .optional(true)
+    .end()
+    .property("property")
+    .hint("simple property")
+    .kind(Type::String)
+    .optional(true)
+    .end()
+    .routine(|o: VerifiedCommand| {
+      println!("= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props);
+    })
+    .end()
+    .perform();
 
-  let args: Vec< String > = std::env::args().skip( 1 ).collect();
-  ca.perform( args.join( " " ) )?;
+  let args: Vec<String> = std::env::args().skip(1).collect();
+  ca.perform(args.join(" "))?;
 
-  Ok( () )
+  Ok(())
 }

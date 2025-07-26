@@ -1,20 +1,19 @@
-#![ no_std ]
-#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
-#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
-#![ doc( html_root_url = "https://docs.rs/clone_dyn_types/latest/clone_dyn_types/" ) ]
+#![no_std]
+#![doc(html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png")]
+#![doc(
+  html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
+)]
+#![doc(html_root_url = "https://docs.rs/clone_dyn_types/latest/clone_dyn_types/")]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Namespace with dependencies.
-#[ cfg( feature = "enabled" ) ]
-pub mod dependency
-{
-}
+#[cfg(feature = "enabled")]
+pub mod dependency {}
 
 /// Define a private namespace for all its items.
 // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-#[ cfg( feature = "enabled" ) ]
-mod private
-{
+#[cfg(feature = "enabled")]
+mod private {
 
   // xxx : ?
   // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
@@ -27,46 +26,41 @@ mod private
 
   /// A trait to upcast a clonable entity and clone it.
   /// It's implemented for all entities which can be cloned.
-  pub trait CloneDyn : Sealed
-  {
-    #[ doc( hidden ) ]
-    fn __clone_dyn( &self, _ : DontCallMe ) -> *mut ();
+  pub trait CloneDyn: Sealed {
+    #[doc(hidden)]
+    fn __clone_dyn(&self, _: DontCallMe) -> *mut ();
   }
 
   // clonable
-  impl< T > CloneDyn for T
+  impl<T> CloneDyn for T
   where
-    T : Clone,
+    T: Clone,
   {
-    #[ inline ]
-    #[ allow( clippy::implicit_return, clippy::as_conversions, clippy::ptr_as_ptr ) ]
-    fn __clone_dyn( &self, _ : DontCallMe ) -> *mut ()
-    {
-      Box::< T >::into_raw( Box::new( self.clone() ) ) as *mut ()
+    #[inline]
+    #[allow(clippy::implicit_return, clippy::as_conversions, clippy::ptr_as_ptr)]
+    fn __clone_dyn(&self, _: DontCallMe) -> *mut () {
+      Box::<T>::into_raw(Box::new(self.clone())) as *mut ()
     }
   }
 
   // slice
-  impl< T > CloneDyn for [ T ]
+  impl<T> CloneDyn for [T]
   where
-    T : Clone,
+    T: Clone,
   {
-    #[ inline ]
-    #[ allow( clippy::implicit_return, clippy::as_conversions, clippy::ptr_as_ptr ) ]
-    fn __clone_dyn( &self, _ : DontCallMe ) -> *mut ()
-    {
-      Box::< [ T ] >::into_raw( self.iter().cloned().collect() ) as *mut ()
+    #[inline]
+    #[allow(clippy::implicit_return, clippy::as_conversions, clippy::ptr_as_ptr)]
+    fn __clone_dyn(&self, _: DontCallMe) -> *mut () {
+      Box::<[T]>::into_raw(self.iter().cloned().collect()) as *mut ()
     }
   }
 
   // str slice
-  impl CloneDyn for str
-  {
-    #[ inline ]
-    #[ allow( clippy::as_conversions, clippy::ptr_as_ptr, clippy::implicit_return ) ]
-    fn __clone_dyn( &self, _ : DontCallMe ) -> *mut ()
-    {
-      Box::< str >::into_raw( Box::from( self ) ) as *mut ()
+  impl CloneDyn for str {
+    #[inline]
+    #[allow(clippy::as_conversions, clippy::ptr_as_ptr, clippy::implicit_return)]
+    fn __clone_dyn(&self, _: DontCallMe) -> *mut () {
+      Box::<str>::into_raw(Box::from(self)) as *mut ()
     }
   }
 
@@ -89,10 +83,10 @@ mod private
   ///
   /// assert_eq!( original.value, cloned.value );
   /// ```
-  #[ inline ]
-  pub fn clone< T >( src : &T ) -> T
+  #[inline]
+  pub fn clone<T>(src: &T) -> T
   where
-    T : CloneDyn,
+    T: CloneDyn,
   {
     // # Safety
     //
@@ -102,10 +96,15 @@ mod private
     // that the `CloneDyn` trait is correctly implemented for the given type `T`, ensuring that `__clone_dyn` returns a
     // valid pointer to a cloned instance of `T`.
     //
-    #[ allow( unsafe_code, clippy::as_conversions, clippy::ptr_as_ptr, clippy::implicit_return, clippy::undocumented_unsafe_blocks ) ]
-    unsafe
-    {
-      *Box::from_raw( < T as CloneDyn >::__clone_dyn( src, DontCallMe ) as *mut T )
+    #[allow(
+      unsafe_code,
+      clippy::as_conversions,
+      clippy::ptr_as_ptr,
+      clippy::implicit_return,
+      clippy::undocumented_unsafe_blocks
+    )]
+    unsafe {
+      *Box::from_raw(<T as CloneDyn>::__clone_dyn(src, DontCallMe) as *mut T)
     }
   }
 
@@ -173,10 +172,10 @@ mod private
   /// let cloned : Box< dyn MyTrait > = clone_into_box( &MyStruct { value : 42 } );
   ///
   /// ```
-  #[ inline ]
-  pub fn clone_into_box< T >( ref_dyn : &T ) -> Box< T >
+  #[inline]
+  pub fn clone_into_box<T>(ref_dyn: &T) -> Box<T>
   where
-    T : ?Sized + CloneDyn,
+    T: ?Sized + CloneDyn,
   {
     // # Safety
     //
@@ -186,86 +185,84 @@ mod private
     // The safety of this function relies on the correct implementation of the `CloneDyn` trait for the given type `T`.
     // Specifically, `__clone_dyn` must return a valid pointer to a cloned instance of `T`.
     //
-    #[ allow( unsafe_code, clippy::implicit_return, clippy::as_conversions, clippy::ptr_cast_constness, clippy::ptr_as_ptr, clippy::multiple_unsafe_ops_per_block, clippy::undocumented_unsafe_blocks, clippy::ref_as_ptr, clippy::borrow_as_ptr ) ]
-    unsafe
-    {
+    #[allow(
+      unsafe_code,
+      clippy::implicit_return,
+      clippy::as_conversions,
+      clippy::ptr_cast_constness,
+      clippy::ptr_as_ptr,
+      clippy::multiple_unsafe_ops_per_block,
+      clippy::undocumented_unsafe_blocks,
+      clippy::ref_as_ptr,
+      clippy::borrow_as_ptr
+    )]
+    unsafe {
       let mut ptr = ref_dyn as *const T;
-      #[ allow( clippy::borrow_as_ptr ) ]
+      #[allow(clippy::borrow_as_ptr)]
       let data_ptr = &mut ptr as *mut *const T as *mut *mut (); // don't change it
-      // qqq : xxx : after atabilization try `&raw mut ptr` instead
-      // let data_ptr = &raw mut ptr as *mut *mut (); // fix clippy
-      *data_ptr = < T as CloneDyn >::__clone_dyn( ref_dyn, DontCallMe );
-      Box::from_raw( ptr as *mut T )
+                                                                // qqq : xxx : after atabilization try `&raw mut ptr` instead
+                                                                // let data_ptr = &raw mut ptr as *mut *mut (); // fix clippy
+      *data_ptr = <T as CloneDyn>::__clone_dyn(ref_dyn, DontCallMe);
+      Box::from_raw(ptr as *mut T)
     }
   }
 
-  #[ doc( hidden ) ]
-  mod sealed
-  {
-    #[ doc( hidden ) ]
-    #[ allow( missing_debug_implementations ) ]
+  #[doc(hidden)]
+  mod sealed {
+    #[doc(hidden)]
+    #[allow(missing_debug_implementations)]
     pub struct DontCallMe;
-    #[ doc( hidden ) ]
+    #[doc(hidden)]
     pub trait Sealed {}
-    impl< T : Clone > Sealed for T {}
-    impl< T : Clone > Sealed for [ T ] {}
+    impl<T: Clone> Sealed for T {}
+    impl<T: Clone> Sealed for [T] {}
     impl Sealed for str {}
   }
-  use sealed::{ DontCallMe, Sealed };
-
+  use sealed::{DontCallMe, Sealed};
 }
 
-#[ cfg( feature = "enabled" ) ]
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-#[ allow( clippy::pub_use ) ]
+#[cfg(feature = "enabled")]
+#[doc(inline)]
+#[allow(unused_imports)]
+#[allow(clippy::pub_use)]
 pub use own::*;
 
 /// Own namespace of the module.
-#[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
-pub mod own
-{
+#[cfg(feature = "enabled")]
+#[allow(unused_imports)]
+pub mod own {
   use super::orphan;
-  #[ doc( inline ) ]
-  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
+  #[doc(inline)]
+  #[allow(clippy::useless_attribute, clippy::pub_use)]
   pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
-#[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
+#[cfg(feature = "enabled")]
+#[allow(unused_imports)]
+pub mod orphan {
   use super::exposed;
-  #[ doc( inline ) ]
-  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
+  #[doc(inline)]
+  #[allow(clippy::useless_attribute, clippy::pub_use)]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
+#[cfg(feature = "enabled")]
+#[allow(unused_imports)]
+pub mod exposed {
   use super::prelude;
-  #[ doc( inline ) ]
-  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
+  #[doc(inline)]
+  #[allow(clippy::useless_attribute, clippy::pub_use)]
   pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[cfg(feature = "enabled")]
+#[allow(unused_imports)]
+pub mod prelude {
   use super::private;
-  #[ doc( inline ) ]
-  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
-  pub use private::
-  {
-    CloneDyn,
-    clone_into_box,
-    clone,
-  };
+  #[doc(inline)]
+  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  pub use private::{CloneDyn, clone_into_box, clone};
 }

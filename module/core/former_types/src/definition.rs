@@ -19,28 +19,26 @@
 /// This trait provides a linkage between the entity and its definition,
 /// allowing the formation logic to understand what definition to apply
 /// during the formation process.
-pub trait EntityToDefinition< Context, Formed, End >
-{
+pub trait EntityToDefinition<Context, Formed, End> {
   /// The specific [`FormerDefinition`] associated with this entity.
-  type Definition : FormerDefinition;
+  type Definition: FormerDefinition;
   /// The specific [`FormerDefinitionTypes`] associated with this entity.
-  type Types : FormerDefinitionTypes;
+  type Types: FormerDefinitionTypes;
 }
 
 /// Provides a mapping between a type of entity and its associated formation type definitions.
-pub trait EntityToDefinitionTypes< Context, Formed >
-{
+pub trait EntityToDefinitionTypes<Context, Formed> {
   /// Specifies the `FormerDefinitionTypes` that define the storage, formed entity, and context types used during formation.
   /// This association is essential for ensuring that the formation process is carried out with the correct type-specific logic.
-  type Types : FormerDefinitionTypes;
+  type Types: FormerDefinitionTypes;
 }
 
 /// Maps a type of entity to its corresponding former.
 /// This trait binds an entity type to a specific former, facilitating the use
 /// of custom formers in complex formation scenarios.
-pub trait EntityToFormer< Definition >
+pub trait EntityToFormer<Definition>
 where
-  Definition : FormerDefinition,
+  Definition: FormerDefinition,
 {
   /// The type of the former used for building the entity.
   type Former;
@@ -52,8 +50,7 @@ where
 /// Maps a type of entity to its storage type.
 /// This trait defines what storage structure is used to hold the interim state
 /// of an entity during its formation.
-pub trait EntityToStorage
-{
+pub trait EntityToStorage {
   /// The storage type used for forming the entity.
   type Storage;
 }
@@ -61,10 +58,9 @@ pub trait EntityToStorage
 /// Defines the fundamental components involved in the formation of an entity.
 /// This trait specifies the types of storage, the formed entity, and the context
 /// used during the formation process.
-pub trait FormerDefinitionTypes : Sized
-{
+pub trait FormerDefinitionTypes: Sized {
   /// The type of storage used to maintain the state during formation.
-  type Storage : Default;
+  type Storage: Default;
 
   /// The type of the entity once fully formed.
   type Formed;
@@ -77,17 +73,16 @@ pub trait FormerDefinitionTypes : Sized
 /// This trait connects the formation types with a specific endpoint, defining
 /// how the formation process concludes, including any necessary transformations
 /// or validations.
-pub trait FormerDefinition : Sized
-{
+pub trait FormerDefinition: Sized {
   /// Encapsulates the types related to the formation process including any mutators.
-  type Types : crate::FormerDefinitionTypes< Storage = Self::Storage, Formed = Self::Formed, Context = Self::Context >
-  + crate::FormerMutator;
+  type Types: crate::FormerDefinitionTypes<Storage = Self::Storage, Formed = Self::Formed, Context = Self::Context>
+    + crate::FormerMutator;
 
   /// Defines the ending condition or operation of the formation process.
-  type End: crate::FormingEnd< Self::Types >;
+  type End: crate::FormingEnd<Self::Types>;
 
   /// The storage type used during the formation.
-  type Storage : Default;
+  type Storage: Default;
 
   /// The type of the entity being formed. It is
   /// generally the structure for which the `Former` is derived, representing the fully formed

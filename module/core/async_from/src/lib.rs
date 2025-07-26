@@ -1,13 +1,13 @@
-
-#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
-#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
-#![ doc( html_root_url = "https://docs.rs/async_from/latest/async_from/" ) ]
+#![doc(html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png")]
+#![doc(
+  html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
+)]
+#![doc(html_root_url = "https://docs.rs/async_from/latest/async_from/")]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Namespace with dependencies.
-#[ cfg( feature = "enabled" ) ]
-pub mod dependency
-{
+#[cfg(feature = "enabled")]
+pub mod dependency {
   pub use ::async_trait;
 }
 
@@ -21,9 +21,8 @@ pub mod dependency
 //   }
 
 /// Define a private namespace for all its items.
-#[ cfg( feature = "enabled" ) ]
-mod private
-{
+#[cfg(feature = "enabled")]
+mod private {
 
   pub use async_trait::async_trait;
   use std::fmt::Debug;
@@ -56,10 +55,9 @@ mod private
   ///   println!( "Converted: {}", num.0 );
   /// }
   /// ```
-  #[ cfg( feature = "async_from" ) ]
-  #[ async_trait ]
-  pub trait AsyncFrom< T > : Sized
-  {
+  #[cfg(feature = "async_from")]
+  #[async_trait]
+  pub trait AsyncFrom<T>: Sized {
     /// Asynchronously converts a value of type `T` into `Self`.
     ///
     /// # Arguments
@@ -69,7 +67,7 @@ mod private
     /// # Returns
     ///
     /// * `Self` - The converted value.
-    async fn async_from( value : T ) -> Self;
+    async fn async_from(value: T) -> Self;
   }
 
   /// Trait for asynchronous conversions into a type `T`.
@@ -100,36 +98,34 @@ mod private
   ///   println!( "Converted: {}", num.0 );
   /// }
   /// ```
-  #[ async_trait ]
-  #[ cfg( feature = "async_from" ) ]
-  pub trait AsyncInto< T > : Sized
-  {
+  #[async_trait]
+  #[cfg(feature = "async_from")]
+  pub trait AsyncInto<T>: Sized {
     /// Asynchronously converts `Self` into a value of type `T`.
     ///
     /// # Returns
     ///
     /// * `T` - The converted value.
-    async fn async_into( self ) -> T;
+    async fn async_into(self) -> T;
   }
 
   /// Blanket implementation of `AsyncInto` for any type that implements `AsyncFrom`.
   ///
   /// This implementation allows any type `T` that implements `AsyncFrom<U>` to also implement `AsyncInto<U>`.
-  #[ async_trait ]
-  #[ cfg( feature = "async_from" ) ]
-  impl< T, U > AsyncInto< U > for T
+  #[async_trait]
+  #[cfg(feature = "async_from")]
+  impl<T, U> AsyncInto<U> for T
   where
-    U : AsyncFrom< T > + Send,
-    T : Send,
+    U: AsyncFrom<T> + Send,
+    T: Send,
   {
     /// Asynchronously converts `Self` into a value of type `U` using `AsyncFrom`.
     ///
     /// # Returns
     ///
     /// * `U` - The converted value.
-    async fn async_into( self ) -> U
-    {
-      U::async_from( self ).await
+    async fn async_into(self) -> U {
+      U::async_from(self).await
     }
   }
 
@@ -167,12 +163,11 @@ mod private
   ///   }
   /// }
   /// ```
-  #[ async_trait ]
-  #[ cfg( feature = "async_try_from" ) ]
-  pub trait AsyncTryFrom< T > : Sized
-  {
+  #[async_trait]
+  #[cfg(feature = "async_try_from")]
+  pub trait AsyncTryFrom<T>: Sized {
     /// The error type returned if the conversion fails.
-    type Error : Debug;
+    type Error: Debug;
 
     /// Asynchronously attempts to convert a value of type `T` into `Self`.
     ///
@@ -183,7 +178,7 @@ mod private
     /// # Returns
     ///
     /// * `Result<Self, Self::Error>` - On success, returns the converted value. On failure, returns an error.
-    async fn async_try_from( value : T ) -> Result< Self, Self::Error >;
+    async fn async_try_from(value: T) -> Result<Self, Self::Error>;
   }
 
   /// Trait for asynchronous fallible conversions into a type `T`.
@@ -221,30 +216,29 @@ mod private
   ///   }
   /// }
   /// ```
-  #[ async_trait ]
-  #[ cfg( feature = "async_try_from" ) ]
-  pub trait AsyncTryInto< T > : Sized
-  {
+  #[async_trait]
+  #[cfg(feature = "async_try_from")]
+  pub trait AsyncTryInto<T>: Sized {
     /// The error type returned if the conversion fails.
-    type Error : Debug;
+    type Error: Debug;
 
     /// Asynchronously attempts to convert `Self` into a value of type `T`.
     ///
     /// # Returns
     ///
     /// * `Result<T, Self::Error>` - On success, returns the converted value. On failure, returns an error.
-    async fn async_try_into( self ) -> Result< T, Self::Error >;
+    async fn async_try_into(self) -> Result<T, Self::Error>;
   }
 
   /// Blanket implementation of `AsyncTryInto` for any type that implements `AsyncTryFrom`.
   ///
   /// This implementation allows any type `T` that implements `AsyncTryFrom<U>` to also implement `AsyncTryInto<U>`.
-  #[ async_trait ]
-  #[ cfg( feature = "async_try_from" ) ]
-  impl< T, U > AsyncTryInto< U > for T
+  #[async_trait]
+  #[cfg(feature = "async_try_from")]
+  impl<T, U> AsyncTryInto<U> for T
   where
-    U : AsyncTryFrom< T > + Send,
-    T : Send,
+    U: AsyncTryFrom<T> + Send,
+    T: Send,
   {
     type Error = U::Error;
 
@@ -253,73 +247,57 @@ mod private
     /// # Returns
     ///
     /// * `Result<U, Self::Error>` - On success, returns the converted value. On failure, returns an error.
-    async fn async_try_into( self ) -> Result< U, Self::Error >
-    {
-      U::async_try_from( self ).await
+    async fn async_try_into(self) -> Result<U, Self::Error> {
+      U::async_try_from(self).await
     }
   }
-
 }
 
-#[ cfg( feature = "enabled" ) ]
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+#[cfg(feature = "enabled")]
+#[doc(inline)]
+#[allow(unused_imports)]
 pub use own::*;
 
 /// Own namespace of the module.
-#[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
-pub mod own
-{
+#[cfg(feature = "enabled")]
+#[allow(unused_imports)]
+pub mod own {
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
-#[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
+#[cfg(feature = "enabled")]
+#[allow(unused_imports)]
+pub mod orphan {
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use exposed::*;
-
 }
 
 /// Exposed namespace of the module.
-#[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
+#[cfg(feature = "enabled")]
+#[allow(unused_imports)]
+pub mod exposed {
   use super::*;
 
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use prelude::*;
 
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use ::async_trait::async_trait;
 
-  #[ cfg( feature = "async_from" ) ]
-  pub use private::
-  {
-    AsyncFrom,
-    AsyncInto,
-  };
+  #[cfg(feature = "async_from")]
+  pub use private::{AsyncFrom, AsyncInto};
 
-  #[ cfg( feature = "async_try_from" ) ]
-  pub use private::
-  {
-    AsyncTryFrom,
-    AsyncTryInto,
-  };
-
+  #[cfg(feature = "async_try_from")]
+  pub use private::{AsyncTryFrom, AsyncTryInto};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[cfg(feature = "enabled")]
+#[allow(unused_imports)]
+pub mod prelude {
   use super::*;
 }

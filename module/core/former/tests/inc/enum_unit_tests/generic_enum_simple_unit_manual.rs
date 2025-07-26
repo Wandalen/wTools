@@ -13,26 +13,23 @@
 // File: module/core/former/tests/inc/enum_unit_tests/generic_enum_simple_unit_manual.rs
 use super::*; // Imports testing infrastructure and potentially other common items
 use core::fmt::Debug; // Import Debug trait for bounds
-// use std::marker::PhantomData; // No longer needed for this simple case
+                      // use std::marker::PhantomData; // No longer needed for this simple case
 
 // --- Enum Definition with Bounds ---
-#[ derive( Debug, PartialEq ) ]
-pub enum EnumOuter< X : Copy + Debug + PartialEq >
-{
+#[derive(Debug, PartialEq)]
+pub enum EnumOuter<X: Copy + Debug + PartialEq> {
   // --- Unit Variant ---
   OtherVariant,
   #[allow(dead_code)] // Re-added to use generic X
-  _Phantom(core::marker::PhantomData::<X>),
+  _Phantom(core::marker::PhantomData<X>),
 }
 
 // --- Manual constructor for OtherVariant ---
-impl< X : Copy + Debug + PartialEq > EnumOuter< X >
-{
-  #[ allow( dead_code ) ]
-  pub fn other_variant() -> Self
-  {
+impl<X: Copy + Debug + PartialEq> EnumOuter<X> {
+  #[allow(dead_code)]
+  pub fn other_variant() -> Self {
     EnumOuter::OtherVariant
   }
 }
 
-include!( "generic_enum_simple_unit_only_test.rs" );
+include!("generic_enum_simple_unit_only_test.rs");

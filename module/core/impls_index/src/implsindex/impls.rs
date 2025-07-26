@@ -1,9 +1,8 @@
 /// Define a private namespace for all its items.
-mod private
-{
+mod private {
 
   /// Index of items.
-  #[ macro_export ]
+  #[macro_export]
   macro_rules! index
   {
 
@@ -32,7 +31,7 @@ mod private
   }
 
   /// Define implementation putting each function under a macro.
-  #[ macro_export ]
+  #[macro_export]
   macro_rules! impls1
   {
 
@@ -93,7 +92,7 @@ mod private
   /// Define implementation putting each function under a macro.
   /// Use [index!] to generate code for each element.
   /// Unlike elements of [`impls_optional`!], elements of [`impls`] are mandatory to be used in [`index`!].
-  #[ macro_export ]
+  #[macro_export]
   macro_rules! impls_optional
   {
 
@@ -149,7 +148,7 @@ mod private
   /// Define implementation putting each function under a macro and adding attribute `#[ test ]`.
   /// Use [index!] to generate code for each element.
   /// Unlike elements of [`test_impls_optional`!], elements of [`test_impls`] are mandatory to be used in [`index`!].
-  #[ macro_export ]
+  #[macro_export]
   macro_rules! tests_impls
   {
 
@@ -218,7 +217,7 @@ mod private
   /// Define implementation putting each function under a macro and adding attribute `#[ test ]`.
   /// Use [index!] to generate code for each element.
   /// Unlike elements of [`test_impls`!], elements of [`test_impls_optional`] are optional to be used in [`index`!].
-  #[ macro_export ]
+  #[macro_export]
   macro_rules! tests_impls_optional
   {
 
@@ -285,7 +284,7 @@ mod private
   }
 
   /// Define implementation putting each function under a macro.
-  #[ macro_export ]
+  #[macro_export]
   macro_rules! impls2
   {
 
@@ -304,7 +303,7 @@ mod private
   }
 
   /// Internal impls1 macro. Don't use.
-  #[ macro_export ]
+  #[macro_export]
   macro_rules! _impls_callback
   {
 
@@ -348,39 +347,25 @@ mod private
   pub use tests_impls_optional; /* qqq : write negative test. discuss please */
   pub use impls2;
   pub use _impls_callback;
-
 }
 
 /// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
+#[allow(unused_imports)]
+pub mod exposed {
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use prelude::*;
 
-  #[ doc( inline ) ]
-  pub use private::
-  {
-    index,
-    tests_index,
-    impls1,
-    impls_optional,
-    tests_impls,
-    tests_impls_optional,
-    impls2,
-    _impls_callback,
-  };
-  #[ doc( inline ) ]
+  #[doc(inline)]
+  pub use private::{index, tests_index, impls1, impls_optional, tests_impls, tests_impls_optional, impls2, _impls_callback};
+  #[doc(inline)]
   pub use ::impls_index_meta::impls3;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use impls3 as impls;
-
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[allow(unused_imports)]
+pub mod prelude {
   use super::*;
 }

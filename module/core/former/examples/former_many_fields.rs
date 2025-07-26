@@ -17,54 +17,55 @@
 //!
 //! The `dbg!` macro is utilized to print the constructed `Structure1` instance, confirming that all fields are correctly assigned, including the handling of optional fields and collections.
 
-#[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
+#[cfg(not(all(
+  feature = "enabled",
+  feature = "derive_former",
+  any(feature = "use_alloc", not(feature = "no_std"))
+)))]
 fn main() {}
 
-#[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
-fn main()
-{
+#[cfg(all(
+  feature = "enabled",
+  feature = "derive_former",
+  any(feature = "use_alloc", not(feature = "no_std"))
+))]
+fn main() {
   use former::Former;
 
-  #[ derive( Debug, PartialEq, Eq, Former ) ]
-  pub struct Structure1
-  {
-    int : i32,
-    string : String,
-    vec : Vec< u32 >,
-    hashmap : collection_tools::HashMap< String, String >,
-    int_optional : core::option::Option< i32 >,
-    string_optional : Option< String >,
+  #[derive(Debug, PartialEq, Eq, Former)]
+  pub struct Structure1 {
+    int: i32,
+    string: String,
+    vec: Vec<u32>,
+    hashmap: collection_tools::HashMap<String, String>,
+    int_optional: core::option::Option<i32>,
+    string_optional: Option<String>,
   }
-  let hashmap = collection_tools::HashMap::from
-  ([
-    ( "k1".to_string(), "v1".to_string() ),
-    ( "k2".to_string(), "v2".to_string() ),
-  ]);
+  let hashmap = collection_tools::HashMap::from([("k1".to_string(), "v1".to_string()), ("k2".to_string(), "v2".to_string())]);
 
   let struct1 = Structure1::former()
-  .int( 13 )
-  .string( "Abcd".to_string() )
-  .vec( vec![ 1, 3 ] )
-  .hashmap( hashmap )
-  .string_optional( "dir1" )
-  .form();
-  dbg!( &struct1 );
+    .int(13)
+    .string("Abcd".to_string())
+    .vec(vec![1, 3])
+    .hashmap(hashmap)
+    .string_optional("dir1")
+    .form();
+  dbg!(&struct1);
 
-// <  &struct1 = Structure1 {
-// <   int_1: 13,
-// <   string_1: "Abcd",
-// <   vec_1: [
-// <       1,
-// <       3,
-// <   ],
-// <   hashmap_1: {
-// <       "k1": "v1",
-// <       "k2": "v2",
-// <   },
-// <   int_optional_1: None,
-// <   string_optional_1: Some(
-// <       "dir1",
-// <   ),
-// < }
-
+  // <  &struct1 = Structure1 {
+  // <   int_1: 13,
+  // <   string_1: "Abcd",
+  // <   vec_1: [
+  // <       1,
+  // <       3,
+  // <   ],
+  // <   hashmap_1: {
+  // <       "k1": "v1",
+  // <       "k2": "v2",
+  // <   },
+  // <   int_optional_1: None,
+  // <   string_optional_1: Some(
+  // <       "dir1",
+  // <   ),
+  // < }
 }
