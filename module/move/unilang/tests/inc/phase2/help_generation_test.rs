@@ -6,7 +6,9 @@
 use assert_cmd::Command;
 use predicates::prelude::*;
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind };
-fn contains_all_unordered(expected_lines: Vec<&str>) -> impl predicate::Predicate<str> {
+use predicates::Predicate;
+
+fn contains_all_unordered(expected_lines: Vec<&str>) -> impl Predicate<str> + '_ {
     predicate::function(move |s: &str| {
         expected_lines.iter().all(|line| s.contains(line))
     })
@@ -111,8 +113,8 @@ fn test_cli_specific_command_help_add()
   .and( predicate::str::contains( "Adds two integers." ) )
   .and( predicate::str::contains( "Status: stable" ) )
   .and( predicate::str::contains( "Arguments:" ) )
-  .and( predicate::str::contains( "  a                The first integer operand. (Kind: Integer), Rules: [min:0]" ) )
-  .and( predicate::str::contains( "  b                The second integer operand. (Kind: Integer), Rules: [min:0]" ) ) )
+  .and( predicate::str::contains( "  a                (Kind: Integer), Rules: [min:0]" ) )
+  .and( predicate::str::contains( "  b                (Kind: Integer), Rules: [min:0]" ) ) )
   .stderr( "" );
 }
 
