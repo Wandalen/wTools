@@ -13,10 +13,10 @@
 ### Progress
 *   **Roadmap Milestone:** M2: Improved Documentation and Usability
 *   **Primary Editable Crate:** `module/core/error_tools`
-*   **Overall Progress:** 1/6 increments complete
+*   **Overall Progress:** 2/6 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Fix Build Issues and Add Core Documentation
-    *   ⚫ Increment 2: Create `untyped` (anyhow) Usage Example
+    *   ✅ Increment 2: Create `untyped` (anyhow) Usage Example
     *   ⚫ Increment 3: Create `typed` (thiserror) Usage Example
     *   ⚫ Increment 4: Update `Readme.md` with New Content and Examples
     *   ⚫ Increment 5: Clean up `error_tools_trivial.rs` Example
@@ -366,6 +366,8 @@
 
 ### Notes & Insights
 *   This task will significantly improve the crate's approachability for new users by providing clear documentation and a more conventional API.
+*   **Root Cause of Build Failure:** The package collision for `clone_dyn_types` was caused by an absolute path reference in `module/alias/unilang_instruction_parser/Cargo.toml` pointing to the old `wTools` directory.
+*   **Solution:** Replaced the absolute path with a relative path: `unilang_parser = { path = "../../move/unilang_parser" }`. This resolved the conflict and allowed the build to proceed.
 
 ### Changelog
 *   [Increment 1 | 2025-07-26 21:27 UTC] Resolved package collision in `unilang_instruction_parser/Cargo.toml`. Removed problematic imports from `test_tools/src/lib.rs`. Added missing documentation to `error/mod.rs`.
