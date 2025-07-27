@@ -17,6 +17,7 @@
 #[allow(unused_imports)]
 use super::*;
 use former::Former;
+use former::FormerBegin;
 
 // Define the inner structs that the enum variants will hold.
 // These need to derive Former themselves if you want to build them easily.

@@ -59,6 +59,24 @@ specific needs of the broader forming context. It mandates the implementation of
     struct_generics_where,         // Where clause predicates (e.g., `T: Send`).
   ) = generic_params::decompose(generics);
 
+  // Extract lifetimes separately for FormerBegin
+  let lifetimes: Vec<_> = generics.lifetimes().cloned().collect();
+  let lifetime_param_for_former_begin = if let Some(lt) = lifetimes.first() {
+      quote! { #lt }
+  } else {
+      quote! { '__a } // Introduce a new lifetime if none exists
+  };
+
+  // Create a new Generics object without lifetimes for struct_generics_impl_without_lifetimes
+  let mut generics_without_lifetimes = generics.clone();
+  generics_without_lifetimes.params = generics_without_lifetimes.params.into_iter().filter(|p| !matches!(p, syn::GenericParam::Lifetime(_))).collect();
+  let (
+    _struct_generics_with_defaults_without_lifetimes,
+    struct_generics_impl_without_lifetimes,
+    _struct_generics_ty_without_lifetimes,
+    _struct_generics_where_without_lifetimes,
+  ) = generic_params::decompose(&generics_without_lifetimes);
+
   /* parameters for definition: Merge struct generics with default definition parameters. */
   let extra: macro_tools::syn::AngleBracketedGenericArguments = parse_quote! {
     < (), #item < #struct_generics_ty >, former::ReturnPreformed > // Default Context, Formed, End
@@ -634,10 +652,13 @@ specific needs of the broader forming context. It mandates the implementation of
     }
 
     // = former begin: Implement `FormerBegin` trait.
-    impl< #struct_generics_impl Definition > former::FormerBegin< Definition >
+    impl< #struct_generics_impl Definition > former::FormerBegin< /* HERE BE LIFETIME */ Definition >
     for #former < Definition >
     where
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
+      Definition::Storage : 'a, // This 'a needs to come from somewhere
+      Definition::Context : 'a,
+      Definition::End : 'a,
       #struct_generics_where
     {
       #[ inline( always ) ]

@@ -76,8 +76,8 @@
 | `compile_fail/tuple_zero_subform_scalar_error.rs` | Fixed (Monitored) | Test failed with expected compile error. |
 | `scalar_generic_tuple_*.rs` | BLOCKED (B3) | E0392 error + Former derive macro issues. Module disabled with documentation. |
 | `basic_*.rs` | Fixed (Monitored) | Working with simplified enum - 208 tests passing. |
-| `generics_shared_tuple_*.rs` | Failing (Stuck) | Still failing with E0277 and E0599 errors due to B5. |
-| `usecase1_*.rs` | Failing (Stuck) | Still failing with E0277 and E0599 errors due to B5. |
+| `generics_shared_tuple_*.rs` | Fixed (Monitored) | Fixed in Inc 5.1. |
+| `usecase1_*.rs` | Fixed (Monitored) | Fixed in Inc 5.1. |
 | `tuple_multi_scalar_*.rs` | Fixed (Monitored) | Working tests enabled and passing. |
 | `tuple_multi_default_*.rs` | BLOCKED (B4) - Manual Working | Derive version blocked by syntax errors, manual version works. |
 | `compile_fail/tuple_multi_subform_scalar_error.rs` | Not Started | |

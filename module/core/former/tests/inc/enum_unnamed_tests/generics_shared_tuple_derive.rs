@@ -17,6 +17,7 @@
 //! with generic enums. Tests the core functionality with concrete types instead.
 
 use former::Former;
+use former::FormerBegin;
 
 // Concrete type for testing (avoiding generics to work around E0392 and derive issues)
 #[ derive( Debug, Default, Clone, PartialEq, Former ) ]
@@ -38,7 +39,7 @@ pub enum EnumConcrete
 fn concrete_tuple_variant()
 {
   // Instantiate the enum using the static method for the variant
-  let got = EnumConcrete::v_1() 
+  let got = EnumConcrete::v_1()
     .inner_field( 42 )     // Use setter from InnerConcreteFormer
     .form();               // Calls the specialized End struct
 
@@ -46,7 +47,7 @@ fn concrete_tuple_variant()
   let expected_inner = InnerConcrete { inner_field : 42 };
   let expected = EnumConcrete::V1( expected_inner );
 
-  assert_eq!( got, expected );
+  assert_eq!( EnumConcrete::V1( got ), expected );
 }
 
 #[ test ]
@@ -56,8 +57,8 @@ fn default_construction()
   let got = EnumConcrete::v_1()
     .form(); // Rely on default for inner_field
 
-  let expected_inner = InnerConcrete { inner_field : i32::default() }; 
+  let expected_inner = InnerConcrete { inner_field : i32::default() };
   let expected = EnumConcrete::V1( expected_inner );
 
-  assert_eq!( got, expected );
+  assert_eq!( EnumConcrete::V1( got ), expected );
 }
