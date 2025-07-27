@@ -53,7 +53,7 @@ mod basic_manual;
 // mod generics_independent_tuple_derive;
 // mod generics_independent_tuple_manual;
 // mod generics_independent_tuple_only_test;
-// mod generics_shared_tuple_derive;  // BLOCKED: Former derive macro parsing errors persist even with concrete types
+mod generics_shared_tuple_derive;
 mod generics_shared_tuple_manual;
 // mod generics_shared_tuple_only_test;
 // mod test_syntax;
@@ -71,7 +71,7 @@ mod tuple_multi_scalar_manual;
 // mod tuple_multi_standalone_derive;
 // // mod tuple_multi_standalone_manual;
 // // mod tuple_multi_standalone_only_test;
-// mod usecase1_derive;  // Former derive syntax issues
+mod usecase1_derive;
 // mod usecase1_manual;  // Import and trait issues
 // mod enum_named_fields_unnamed_derive;
 // mod enum_named_fields_unnamed_manual;

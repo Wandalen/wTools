@@ -1,4 +1,5 @@
 use super::*;
+
 use macro_tools::{ Result, quote::{ quote, format_ident }, ident::cased_ident_from_ident, generic_params::GenericsRef };
 use convert_case::Case;
 
@@ -10,10 +11,12 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   let vis = ctx.vis;
   let field_type = &ctx.variant_field_info[0].ty;
 
-  let generics_ref = GenericsRef::new( ctx.generics );
-  let impl_generics = generics_ref.impl_generics_tokens_if_any();
-  let ty_generics = generics_ref.ty_generics_tokens_if_any();
-  let where_clause = generics_ref.where_clause_tokens_if_any();
+  let ( impl_generics, ty_generics, where_clause ) = ctx.generics.split_for_impl();
+  let enum_type_path = if ctx.generics.type_params().next().is_some() {
+    quote! { #enum_name #ty_generics }
+  } else {
+    quote! { #enum_name }
+  };
 
   // Generate the End struct name for this variant
   // Use the original variant name to avoid issues with raw identifiers
@@ -40,8 +43,9 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   let field_type_generics = &field_type_path.path.segments.last().unwrap().arguments;
 
   let field_former_definition_type = quote! {
-      #field_type_base_ident FormerDefinition #field_type_generics
+      format_ident!("{}{}Definition", field_type_base_ident, "Former") #field_type_generics
   };
+
 
   // Generate the FormingEnd implementation
   let end_impl = quote!
@@ -56,10 +60,12 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
         &self,
         sub_storage: < #field_former_definition_type as former_types::definition::FormerDefinition >::Storage,
         _context: Option< < #field_former_definition_type as former_types::definition::FormerDefinition >::Context >,
-      ) -> #enum_name :: #ty_generics
+      ) -> #enum_name #ty_generics
       {
         let inner = former_types::storage::StoragePreform::preform( sub_storage );
-        #enum_name :: #ty_generics :: #variant_name ( inner )
+        // The enum_type_path is already available in the outer scope (handle function)
+        // so we don't need to redefine it here.
+        #enum_type_path :: #variant_name ( inner )
       }
     }
   };

@@ -13,13 +13,19 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   let ( _impl_generics, ty_generics, where_clause ) = ctx.generics.split_for_impl();
 
   // Rule 1d: #[scalar] on single-field tuple variants generates scalar constructor
+  let enum_type_path = if ctx.generics.type_params().next().is_some() {
+    quote! { #enum_name #ty_generics }
+  } else {
+    quote! { #enum_name }
+  };
+
   let result = quote!
   {
     #[ inline( always ) ]
     #vis fn #method_name ( _0 : impl Into< #field_type > ) -> #enum_name #ty_generics
     #where_clause
     {
-      #enum_name :: #ty_generics :: #variant_name( _0.into() )
+      #enum_type_path :: #variant_name( _0.into() )
     }
   };
 
