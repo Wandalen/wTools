@@ -44,15 +44,15 @@
 include!( "scalar_generic_tuple_common_types.rs" );
 // Uncomment modules as they are addressed in increments.
 
-// mod basic_derive;  // Temporarily disable due to E0404 error
-// mod basic_manual;
+mod basic_derive;  // Temporarily disable due to E0404 error
+mod basic_manual;
 // mod basic_only_test; // This is included by the derive and manual files
 // mod generics_in_tuple_variant_only_test;
 // mod generics_independent_tuple_derive;
 // mod generics_independent_tuple_manual;
 // mod generics_independent_tuple_only_test;
-// mod generics_shared_tuple_derive;
-// mod generics_shared_tuple_manual;
+mod generics_shared_tuple_derive;
+mod generics_shared_tuple_manual;
 // mod generics_shared_tuple_only_test;
 // mod test_syntax;
 // mod scalar_generic_tuple_derive;  // Temporarily disabled due to E0392 false positive during test compilation
@@ -70,7 +70,7 @@ mod tuple_multi_scalar_manual;
 // mod tuple_multi_standalone_derive;
 // // mod tuple_multi_standalone_manual;
 // // mod tuple_multi_standalone_only_test;
-// mod usecase1_derive;
+mod usecase1_derive;
 // mod usecase1_manual;
 // mod usecase1_only_test;
 // mod usecase1;

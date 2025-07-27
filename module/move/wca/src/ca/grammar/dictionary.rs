@@ -7,6 +7,7 @@ mod private
   use indexmap::IndexMap;
   use iter_tools::Itertools;
   use grammar::Command;
+  use crate::ca::Order;
 
   // xxx : `Former` does not handle this situation well
 
@@ -111,5 +112,5 @@ mod private
 
 crate::mod_interface!
 {
-  orphan use Dictionary;
+  exposed use Dictionary;
 }

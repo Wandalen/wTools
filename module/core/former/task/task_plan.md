@@ -19,8 +19,7 @@
     *   ✅ Increment 2: Implement Zero-Field Tuple Variant - Scalar Constructor (Rules 1b, 3b)
     *   ✅ Increment 3: Implement Zero-Field Tuple Variant - `#[subform_scalar]` Compile-Fail (Rule 2b)
     *   ✅ Increment 4: Implement Single-Field Tuple Variant - Scalar Constructor (Rule 1d)
-    *   ⏳ Increment 4: Implement Single-Field Tuple Variant - Scalar Constructor (Rule 1d)
-    *   ⚫ Increment 5: Implement Single-Field Tuple Variant - Subform Constructor (Rules 2d, 3d)
+    *   ⏳ Increment 5: Implement Single-Field Tuple Variant - Subform Constructor (Rules 2d, 3d)
     *   ⚫ Increment 6: Implement Multi-Field Tuple Variant - Scalar Constructor (Rule 1f)
     *   ⚫ Increment 7: Implement Multi-Field Tuple Variant - Implicit Variant Former (Rule 3f)
     *   ⚫ Increment 8: Implement Multi-Field Tuple Variant - `#[subform_scalar]` Compile-Fail (Rule 2f)
@@ -32,8 +31,8 @@
 
 ### Permissions & Boundaries
 *   **Mode:** code
-*   **Run workspace-wise commands:** true
-*   **Add transient comments:** true
+*   **Run workspace-wise commands:** false
+*   **Add transient comments:** false
 *   **Additional Editable Crates:**
     *   `module/core/former` (Reason: To enable and potentially fix tests)
 
@@ -79,6 +78,7 @@
 | `standalone_constructor_tuple_*.rs` | Not Started | |
 | `standalone_constructor_args_tuple_*.rs` | Not Started | |
 | `tuple_multi_standalone_*.rs` | Not Started | |
+| `Crate Conformance Check` | Failing (New) | `wca` crate fails to compile due to `error_tools` integration issues. |
 | `tuple_multi_standalone_args_*.rs` | Not Started | |
 
 ### Crate Conformance Check Procedure
@@ -129,6 +129,23 @@
     *   The `tuple_zero_subform_scalar_error` compile-fail test passes.
 *   **Commit Message:** "fix(former): Add compile error for subform_scalar on zero-field tuple variant"
 
+##### Increment 3.1: Focused Debugging - Fix `wca` Compilation Errors
+*   **Goal:** Diagnose and fix the compilation errors in the `wca` crate, primarily related to `error_tools` integration, to unblock the workspace build.
+*   **Specification Reference:** N/A
+*   **Steps:**
+    1.  **Apply Problem Decomposition:** Analyze the `cargo build --workspace` output to identify the root cause of the `wca` compilation errors. Focus on the `error_tools` related issues.
+    2.  Read `module/move/wca/Cargo.toml` to verify `error_tools` dependency.
+    3.  Read `module/move/wca/src/lib.rs` and `module/move/wca/src/ca/mod.rs` to understand the module structure and imports.
+    4.  Read `module/move/wca/src/ca/tool/mod.rs`, `module/move/wca/src/ca/aggregator.rs`, `module/move/wca/src/ca/help.rs`, `module/move/wca/src/ca/executor/routine.rs`, `module/move/wca/src/ca/executor/executor.rs`, `module/move/wca/src/ca/verifier/verifier.rs`, `module/move/wca/src/ca/parser/parser.rs`, `module/move/wca/src/ca/grammar/types.rs`, and `module/move/wca/src/ca/tool/table.rs` to identify all instances of incorrect `error_tools` usage (e.g., `error::untyped::Error`, `error::typed::Error`, `#[error(...)]` attributes, `error::untyped::format_err!`).
+    5.  Replace `error::untyped::Error` with `error_tools::untyped::Error` and `error::typed::Error` with `error_tools::typed::Error` where appropriate.
+    6.  Replace `#[error(...)]` attributes with `#[error_tools::error(...)]` where `thiserror` is being used via `error_tools`.
+    7.  Replace `error::untyped::format_err!` with `error_tools::untyped::format_err!`.
+    8.  Address the `unresolved import error_tools::orphan` in `module/move/wca/src/ca/tool/mod.rs` by changing `orphan use super::super::tool;` to `use super::super::tool;` if `orphan` is not a valid `mod_interface` keyword or if it's causing the issue.
+    9.  Run `timeout 300 cargo build --workspace`. Expect success.
+*   **Increment Verification:**
+    *   The `cargo build --workspace` command completes successfully with exit code 0 and no compilation errors in `wca`.
+*   **Commit Message:** "fix(wca): Resolve error_tools compilation issues"
+
 ##### Increment 4: Implement Single-Field Tuple Variant - Scalar Constructor (Rule 1d)
 *   **Goal:** Implement the scalar constructor for single-field tuple variants like `MyVariant(i32)` when `#[scalar]` is used.
 *   **Specification Reference:** Rule 1d.
@@ -148,13 +165,16 @@
 *   **Goal:** Implement the subform constructor for single-field tuple variants, which returns a former for the inner type.
 *   **Specification Reference:** Rules 2d, 3d.
 *   **Steps:**
-    1.  Uncomment `basic_derive`, `basic_manual`, `generics_shared_tuple_derive`, `generics_shared_tuple_manual`, and `usecase1_derive` modules in `enum_unnamed_tests/mod.rs`.
-    2.  Run `cargo test --package former --test tests -- --nocapture build_break_variant_static`. Expect failure.
-    3.  Implement logic in `tuple_single_field_subform.rs` to generate a method that returns `T1::Former`. This involves generating the appropriate `End` condition struct and `FormingEnd` implementation.
-    4.  Update dispatch logic.
-    5.  Run all newly enabled tests. Expect success.
-    6.  Update the `### Tests` table with the status `Passed`.
-    7.  Perform Crate Conformance Check.
+    1.  Read `module/core/former/tests/inc/enum_unnamed_tests/mod.rs` to identify the lines to uncomment.
+    2.  Use `search_and_replace` to uncomment `basic_derive`, `basic_manual`, `generics_shared_tuple_derive`, `generics_shared_tuple_manual`, and `usecase1_derive` modules in `enum_unnamed_tests/mod.rs`.
+    3.  Execute `cargo test --package former --test tests -- --nocapture build_break_variant_static`. Expect failure.
+    4.  Read `module/core/former_meta/src/derive_former/former_enum/tuple_single_field_subform.rs` to understand its current state.
+    5.  Read `module/core/former_meta/src/derive_former/former_enum.rs` to understand the dispatch logic.
+    6.  Implement logic in `tuple_single_field_subform.rs` to generate a method that returns `T1::Former`. This involves generating the appropriate `End` condition struct and `FormingEnd` implementation.
+    7.  Update dispatch logic in `former_enum.rs` to call this handler for single-field tuple variants with `#[subform_scalar]` or default.
+    8.  Run all newly enabled tests: `cargo test --package former --test tests -- --nocapture basic_derive`, `cargo test --package former --test tests -- --nocapture basic_manual`, `cargo test --package former --test tests -- --nocapture generics_shared_tuple_derive`, `cargo test --package former --test tests -- --nocapture generics_shared_tuple_manual`, `cargo test --package former --test tests -- --nocapture usecase1_derive`. Expect success.
+    9.  Update the `### Tests` table with the status `Passed` for `basic_*.rs`, `generics_shared_tuple_*.rs`, and `usecase1_*.rs`.
+    10. Perform Crate Conformance Check.
 *   **Increment Verification:**
     *   All subform single-field tuple tests pass.
 *   **Commit Message:** "feat(former): Implement subform constructor for single-field tuple variants"

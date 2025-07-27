@@ -1,19 +1,19 @@
-//! Purpose: Provides shared test assertions and logic for both the derived and manual implementations
-//! of subformer starter methods for an enum with multiple single-field tuple variants, where the
-//! inner types also derive `Former`. It tests that the constructors generated/implemented for this
-//! scenario behave as expected (returning subformers for nested building).
-//!
-//! Coverage:
-//! - Rule 3d (Tuple + Single-Field + Default): Tests that the constructor for single-field tuple variants without specific attributes is a subformer starter method.
-//! - Rule 4b (Option 2 Logic): Tests that the subformer mechanism works correctly for multiple variants, allowing nested building of inner types and returning the outer enum instance via `.form()`.
-//!
-//! Test Relevance/Acceptance Criteria:
-//! - Defines the `FunctionStep` enum structure with multiple single-field tuple variants (`Prompt`, `Break`, `InstructionsApplyToFiles`, `Run`).
-//! - The inner types (`Prompt`, `Break`, etc.) are assumed to also derive `Former`.
-//! - Contains test functions (`enum_variant_subformer_construction`, `enum_variant_manual_construction`) that are included by the derive and manual test files.
-//! - The `enum_variant_subformer_construction` test calls the static methods (e.g., `FunctionStep::prompt()`, `FunctionStep::r#break()`) provided by the including file, uses the returned subformers to set fields, and calls `.form()`.
-//! - The `enum_variant_manual_construction` test demonstrates the equivalent manual construction using `InnerType::former()...form()`.
-//! - Both tests assert that the resulting enum instances match manually constructed expected values. This verifies that both derived and manual implementations correctly provide subformer starters and integrate with the inner types' formers for nested building.
+// Purpose: Provides shared test assertions and logic for both the derived and manual implementations
+// of subformer starter methods for an enum with multiple single-field tuple variants, where the
+// inner types also derive `Former`. It tests that the constructors generated/implemented for this
+// scenario behave as expected (returning subformers for nested building).
+//
+// Coverage:
+// - Rule 3d (Tuple + Single-Field + Default): Tests that the constructor for single-field tuple variants without specific attributes is a subformer starter method.
+// - Rule 4b (Option 2 Logic): Tests that the subformer mechanism works correctly for multiple variants, allowing nested building of inner types and returning the outer enum instance via `.form()`.
+//
+// Test Relevance/Acceptance Criteria:
+// - Defines the `FunctionStep` enum structure with multiple single-field tuple variants (`Prompt`, `Break`, `InstructionsApplyToFiles`, `Run`).
+// - The inner types (`Prompt`, `Break`, etc.) are assumed to also derive `Former`.
+// - Contains test functions (`enum_variant_subformer_construction`, `enum_variant_manual_construction`) that are included by the derive and manual test files.
+// - The `enum_variant_subformer_construction` test calls the static methods (e.g., `FunctionStep::prompt()`, `FunctionStep::r#break()`) provided by the including file, uses the returned subformers to set fields, and calls `.form()`.
+// - The `enum_variant_manual_construction` test demonstrates the equivalent manual construction using `InnerType::former()...form()`.
+// - Both tests assert that the resulting enum instances match manually constructed expected values. This verifies that both derived and manual implementations correctly provide subformer starters and integrate with the inner types' formers for nested building.
 
 // Renamed test to reflect its purpose: testing the subformer construction
 #[ test ]

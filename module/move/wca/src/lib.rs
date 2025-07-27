@@ -13,6 +13,21 @@ pub mod ca;
 mod private {}
 
 crate::mod_interface! {
-  use super::ca;
-  own use super::ca::own::*;
+  exposed use ca::grammar;
+  exposed use ca::parser;
+  exposed use ca::verifier;
+  exposed use ca::executor;
+  exposed use ca::input;
+  exposed use ca::tool;
+  exposed use ca::aggregator;
+  exposed use ca::help;
+  exposed use ca::formatter;
+  
+  // Re-export commonly used types at root level
+  exposed use ca::aggregator::{ CommandsAggregator, Order, Error, ValidationError };
+  exposed use ca::grammar::{ Type, Value, Command, Dictionary, types::TryCast };
+  exposed use ca::verifier::VerifiedCommand;
+  exposed use ca::executor::Executor;
+  exposed use ca::input::{ Input, IntoInput };
+  exposed use ca::help::HelpVariants;
 }

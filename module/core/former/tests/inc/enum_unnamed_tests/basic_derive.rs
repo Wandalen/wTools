@@ -16,20 +16,26 @@
 //! - Asserts that these constructors return the expected subformers and that using the subformers
 //!   to set fields and call `.form()` results in the correct `FunctionStep` enum instances.
 
+use former_meta::Former;
+use former_meta::debug;
+use former_meta::former;
+use former_meta::subform_scalar;
+
+
 use super::*;
-use former;
+
 
 // Define the inner structs
-#[derive(Debug, Clone, PartialEq, former::Former)]
+#[derive(Debug, Clone, PartialEq, Former)]
 pub struct Break { pub condition : bool }
 
-#[derive(Debug, Clone, PartialEq, former::Former)]
+#[derive(Debug, Clone, PartialEq, Former)]
 pub struct Run { pub command : String }
 
 // Derive Former on the simplified enum - This should generate static methods
-#[ derive( Debug, Clone, PartialEq, former::Former ) ]
-#[ debug ]
-#[ former( standalone_constructors ) ]
+#[ derive( Debug, Clone, PartialEq, Former ) ]
+#[ former_meta::debug ]
+#[ former_meta::former( standalone_constructors ) ]
 pub enum FunctionStep
 {
   #[ subform_scalar ]

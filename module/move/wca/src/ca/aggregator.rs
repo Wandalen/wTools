@@ -19,6 +19,8 @@ mod private
   use parser::{ Program, Parser, ParserError };
   use grammar::Dictionary;
   use executor::Context;
+  use input::{ Input, IntoInput };
+  use error_tools::dependency::thiserror;
 
   use std::
   {
@@ -26,13 +28,7 @@ mod private
     collections::HashSet
   };
   use former::StoragePreform;
-  use error::
-  {
-    // Result,
-    untyped::Error as wError, // xxx
-    // only importing Error from this module is used
-    for_lib::Error,
-  };
+  use error_tools::untyped::Error as wError;
   use iter_tools::Itertools;
 
   /// Order of commands and properties.
@@ -47,7 +43,7 @@ mod private
   }
 
   /// Validation errors that can occur in application.
-  #[ derive( Error, Debug ) ]
+  #[ derive( error_tools::Error, Debug ) ]
   pub enum ValidationError
   {
     /// This variant is used to represent parser errors.
@@ -69,7 +65,7 @@ mod private
   }
 
   /// Errors that can occur in application.
-  #[ derive( Error, Debug ) ]
+  #[ derive( error_tools::Error, Debug ) ]
   pub enum Error
   {
     /// This variant is used to represent validation errors.
@@ -287,13 +283,13 @@ mod private
     {
       let Input( ref program ) = program.into_input();
 
-      let raw_program = self.parser.parse( program ).map_err( | e | 
+      let raw_program = self.parser.parse( program ).map_err( | e |
       {
-        Error::Validation( ValidationError::Parser { input : format!( "{program:?}" ), error : e } ) 
+        Error::Validation( ValidationError::Parser { input : format!( "{program:?}" ), error : e } )
       })?;
-      let grammar_program = self.verifier.to_program( &self.dictionary, raw_program ).map_err( | e | 
+      let grammar_program = self.verifier.to_program( &self.dictionary, raw_program ).map_err( | e |
       {
-        Error::Validation( ValidationError::Verifier( e ) ) 
+        Error::Validation( ValidationError::Verifier( e ) )
       })?;
 
       if let Some( callback ) = &self.callback_fn
@@ -312,7 +308,7 @@ crate::mod_interface!
 {
   exposed use CommandsAggregator;
   orphan use CommandsAggregatorFormer;
-  orphan use Error;
-  orphan use ValidationError;
+  exposed use Error;
+  exposed use ValidationError;
   exposed use Order;
 }

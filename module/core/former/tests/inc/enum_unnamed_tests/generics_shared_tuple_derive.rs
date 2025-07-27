@@ -14,6 +14,7 @@
 //! - Asserts that this constructor returns the expected subformer (`InnerG3Former<T>`) and that using the subformer's setter (`.inner_field()`) and `.form()` results in the correct `EnumG3` enum instance.
 //! - Verifies that the bounds (`BoundA`, `BoundB`) are correctly handled by using a type that satisfies both.
 #[ allow( unused_imports ) ]
+use former::Former;
 use super::*; // Imports testing infrastructure and potentially other common items
 
 // --- Dummy Bounds ---
@@ -23,7 +24,7 @@ use super::*; // Imports testing infrastructure and potentially other common ite
 
 // --- Inner Struct Definition with Bounds ---
 // Needs to derive Former for the enum's derive to work correctly for subforming.
-#[ derive( Debug, Clone, Default, PartialEq, former::Former ) ]
+#[ derive( Debug, Clone, Default, PartialEq, former_meta::Former ) ]
 pub struct InnerG3< T : BoundB > // BoundB required by the inner struct
 {
   pub inner_field : T,
@@ -31,7 +32,7 @@ pub struct InnerG3< T : BoundB > // BoundB required by the inner struct
 
 // --- Enum Definition with Bounds ---
 // Apply Former derive here. This is what we are testing.
-#[ derive( Debug, PartialEq, Clone, former::Former ) ]
+#[ derive( Debug, PartialEq, Clone, former_meta::Former ) ]
 // #[ derive( Debug, PartialEq, Clone ) ]
 // #[ debug ] // Uncomment to see generated code later
 pub enum EnumG3< T : BoundA + BoundB > // BoundA required by enum, BoundB required by InnerG3<T>
