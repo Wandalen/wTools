@@ -46,7 +46,7 @@ use super::*;
 include!( "scalar_generic_tuple_common_types.rs" );
 // Uncomment modules as they are addressed in increments.
 
-// mod basic_derive;  // ISSUE: Enum derive has specific compilation error, need to investigate separately
+mod basic_derive;
 mod basic_manual;
 // mod basic_only_test; // This is included by the derive and manual files
 // mod generics_in_tuple_variant_only_test;
