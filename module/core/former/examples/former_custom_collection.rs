@@ -247,7 +247,7 @@ fn main() {
   /// Parent required for the template.
   #[derive(Debug, Default, PartialEq, former::Former)]
   pub struct Parent {
-    #[subform_collection]
+    #[subform_collection( definition = LoggingSetDefinition )]
     children: LoggingSet<i32>,
   }
 

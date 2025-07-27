@@ -16,7 +16,7 @@ fn main() {}
 fn main() {
   #[derive(Debug, PartialEq, former::Former)]
   pub struct StructWithVec {
-    #[subform_collection]
+    #[subform_collection( definition = former::VectorDefinition )]
     vec: Vec<&'static str>,
   }
 

@@ -18,7 +18,7 @@ fn main() {
 
   #[derive(Debug, PartialEq, former::Former)]
   pub struct StructWithSet {
-    #[subform_collection]
+    #[subform_collection( definition = former::HashSetDefinition )]
     set: HashSet<&'static str>,
   }
 

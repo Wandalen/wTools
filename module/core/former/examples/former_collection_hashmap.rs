@@ -18,7 +18,7 @@ fn main() {
 
   #[derive(Debug, PartialEq, former::Former)]
   pub struct StructWithMap {
-    #[subform_collection]
+    #[subform_collection( definition = former::HashMapDefinition )]
     map: HashMap<&'static str, &'static str>,
   }
 

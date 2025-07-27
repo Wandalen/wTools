@@ -682,7 +682,6 @@ with the new content generated during the subforming process.
       #[ automatically_derived ]
       impl< #former_generics_impl > former::FormingEnd
       <
-        // VectorDefinitionTypes
         #subformer_definition_types,
       >
       for #subform_collection_end< Definition >
