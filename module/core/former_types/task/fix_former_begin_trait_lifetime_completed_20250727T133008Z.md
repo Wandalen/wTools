@@ -10,7 +10,7 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/former_types`
-*   **Overall Progress:** 5/5 increments complete
+*   **Overall Progress:** 6/6 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Create MRE Test for Lifetime Error
     *   ✅ Increment 2: Add Lifetime Parameter to `FormerBegin` Trait and Function
@@ -18,6 +18,7 @@
     *   ✅ Increment 3: Update `CollectionFormer` Implementation of `FormerBegin`
     *   ✅ Increment 4: Verify the Fix with MRE and Regression Tests
     *   ✅ Increment 5: Finalization
+    *   ✅ Increment 6: Fix Warnings and Clippy Lints
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -31,6 +32,7 @@
     *   `module/core/former_types/src/forming.rs` (Primary target for the fix)
     *   `module/core/former_types/src/collection.rs` (Will require updates due to the trait change)
     *   `module/core/former_types/tests/inc/mod.rs` (To add the new test module)
+    *   `module/core/former_types/tests/tests.rs` (To add crate documentation)
 *   **File to Create:**
     *   `module/core/former_types/tests/inc/lifetime_mre_test.rs`
 *   **Driving Change Proposal:** `module/core/former_types/task/task.md`
@@ -44,6 +46,7 @@
 *   The `FormerBegin` trait must be generic over a lifetime parameter (`'a`).
 *   The change must resolve the `E0726` error when `#[derive(Former)]` is used on a struct with a lifetime.
 *   Existing tests in `former_types` must continue to pass, ensuring no regressions are introduced.
+*   All `cargo test` and `cargo clippy` runs must complete without warnings or errors.
 
 ### Tests
 | Test ID | Status | Notes |
@@ -51,6 +54,8 @@
 | `lifetime_mre_test::reproduces_error_and_passes_after_fix` | Fixed (Monitored) | Expected to fail compilation initially, but currently passes. Will serve as a regression test for the fix. |
 | `Increment 2 Build` | Fixed (Monitored) | Build failed with syntax error and E0407 after applying changes to `forming.rs`. The `search_and_replace` and `insert_content` operations for the trait definition were incorrect. Still failing after attempting to fix with `search_and_replace` again. Fixed by replacing the entire trait definition with `write_to_file`. |
 | `module/core/former_types/src/collection.rs - collection::private::CollectionAssign::assign (line 248)` | Fixed (Monitored) | Doctest failed with `E0433: failed to resolve: could not find `vec` in `collection_tools``. The path `collection_tools::vec::IntoIter` is incorrect. Fixed by replacing `collection_tools::vec::IntoIter` with `std::vec::IntoIter`. |
+| `unused import: super::*` | Fixed (Monitored) | Warning in `module/core/former_types/tests/inc/lifetime_mre_test.rs` due to `use super::*;`. Fixed by removing the unused import. |
+| `missing documentation for the crate` | Fixed (Monitored) | Warning in `module/core/former_types/tests/tests.rs` due to missing crate-level documentation. Fixed by adding a crate-level doc comment. |
 
 ### Crate Conformance Check Procedure
 *   **Step 1: Run Build.** Execute `timeout 300 cargo build -p former_types`. If this fails, fix all compilation errors before proceeding.
@@ -388,3 +393,16 @@
 *   **Increment Verification:**
     *   All crate conformance checks pass.
 *   **Commit Message:** "chore(former_types): Finalize FormerBegin lifetime fix"
+
+##### Increment 6: Fix Warnings and Clippy Lints
+*   **Goal:** Resolve all remaining compiler warnings and Clippy lints.
+*   **Specification Reference:** User Feedback
+*   **Steps:**
+    1.  Remove `use super::*;` from `module/core/former_types/tests/inc/lifetime_mre_test.rs` to fix the `unused import` warning.
+    2.  Add a crate-level documentation comment to `module/core/former_types/tests/tests.rs` to fix the `missing documentation for the crate` warning.
+    3.  Execute `timeout 300 cargo test -p former_types`.
+    4.  Execute `timeout 300 cargo clippy -p former_types -- -D warnings`.
+    5.  **Critically analyze the output.** Ensure no warnings or errors are present.
+*   **Increment Verification:**
+    *   `cargo test` and `cargo clippy` pass without warnings or errors.
+*   **Commit Message:** "fix(former_types): Resolve compiler warnings and clippy lints"

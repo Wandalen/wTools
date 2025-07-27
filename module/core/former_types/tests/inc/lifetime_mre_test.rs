@@ -1,5 +1,5 @@
 // test_kind: bug_reproducer(E0726)
-use super::*;
+
 use former_types::
 {
   Storage,

@@ -1,3 +1,4 @@
+//! This module contains tests for the `former_types` crate.
 include!("../../../../module/step/meta/src/module/aggregating.rs");
 
 #[allow(unused_imports)]
