@@ -313,10 +313,10 @@ Understanding the terminology used in `former` will help you leverage its full p
 
 ### Core Concepts
 
-*   **Former:** A builder object that accumulates field values and produces the final instance via `.form()`.
-*   **Storage:** Internal structure that holds the building state, containing options for each field.
-*   **Subformer:** A specialized former for building nested structures, collections, or complex field types.
-*   **FormingEnd:** A mechanism that controls what happens when `.form()` is called on a (sub)former.
+*   **`Former`:** A builder object that accumulates field values and produces the final instance via `.form()`.
+*   **`Storage`:** Internal structure that holds the building state, containing options for each field.
+*   **`Subformer`:** A specialized former for building nested structures, collections, or complex field types.
+*   **`FormingEnd`:** A mechanism that controls what happens when `.form()` is called on a (sub)former.
 
 ### Variant Types (for Enums)
 

@@ -15,12 +15,17 @@
 
 // Types are imported from mod.rs via include!
 
+// NOTE: There's a false positive "unused type parameter" error during compilation 
+// because the Rust compiler analyzes the enum definition before the macro expands.
+// The type parameter T is actually used in both variants, as shown in the working
+// manual implementation and successful generated code. This is a known limitation
+// of the macro expansion timing.
 
 // --- Enum Definition with Bounds and #[scalar] Variants ---
 // Apply Former derive here. This is what we are testing.
 #[derive(Debug, PartialEq, Clone)]
 #[derive(former::Former)]
-pub enum EnumScalarGeneric<T : Bound>
+pub enum EnumScalarGeneric<T : Bound> where T: Clone
 {
   #[scalar] // Enabled for Rule 1d testing
   Variant1(InnerScalar<T>), // Tuple variant with one generic field

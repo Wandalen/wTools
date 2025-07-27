@@ -88,11 +88,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   if ctx.struct_attrs.standalone_constructors.value(false) {
     // Strip raw identifier prefix if present
     let method_name_str = method_name.to_string();
-    let base_name = if method_name_str.starts_with("r#") {
-      &method_name_str[2..]
-    } else {
-      &method_name_str
-    };
+    let base_name = method_name_str.strip_prefix("r#").unwrap_or(&method_name_str);
     let standalone_name = format_ident!("{}_variant", base_name);
     
     // Add the standalone constructor as a static method on the enum

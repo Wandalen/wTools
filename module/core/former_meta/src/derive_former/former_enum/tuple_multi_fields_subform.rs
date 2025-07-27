@@ -2,6 +2,7 @@ use super::*;
 use macro_tools::{ Result, quote::quote, ident::cased_ident_from_ident };
 use convert_case::Case;
 
+#[allow(clippy::too_many_lines)]
 pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
 {
   let variant_name = &ctx.variant.ident;
@@ -35,7 +36,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   // Generate the storage struct and its impls
   let storage_impls = quote!
   {
-    pub struct #storage_name #ty_generics
+    pub struct #storage_name #impl_generics
     #where_clause
     {
       #( #field_names : Option< #field_types > ),*
@@ -72,7 +73,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   let definition_types_impls = quote!
   {
     #[ derive( Debug ) ]
-    pub struct #definition_types_name #ty_generics
+    pub struct #definition_types_name #impl_generics
     #where_clause
     {
       _p : std::marker::PhantomData #ty_generics,
@@ -104,7 +105,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   let definition_impls = quote!
   {
     #[ derive( Debug ) ]
-    pub struct #definition_name #ty_generics
+    pub struct #definition_name #impl_generics
     #where_clause
     {
       _p : std::marker::PhantomData #ty_generics,
@@ -133,7 +134,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   // Generate the Former struct and its impls
   let former_impls = quote!
   {
-    pub struct #former_name #ty_generics
+    pub struct #former_name #impl_generics
     #where_clause
     {
       storage : #storage_name #ty_generics,
@@ -187,7 +188,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   let end_impls = quote!
   {
     #[ derive( Debug ) ]
-    pub struct #end_name #ty_generics
+    pub struct #end_name #impl_generics
     #where_clause
     {}
 
@@ -212,7 +213,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
       ) -> #enum_name #ty_generics
       {
         let ( #( #field_names ),* ) = former::StoragePreform::preform( sub_storage );
-        #enum_name #ty_generics :: #variant_name ( #( #field_names ),* )
+        #enum_name :: #variant_name ( #( #field_names ),* )
       }
     }
   };
@@ -231,7 +232,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
     #vis fn #method_name() -> #former_name #ty_generics
     #where_clause
     {
-      #former_name::begin( None, None, #end_name::default() )
+      #former_name::begin( None, None, #end_name::#ty_generics::default() )
     }
   };
 
@@ -243,7 +244,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
         #vis fn #method_name() -> #former_name #ty_generics
         #where_clause
         {
-          #former_name::begin( None, None, #end_name::default() )
+          #former_name::begin( None, None, #end_name::#ty_generics::default() )
         }
       };
       ctx.standalone_constructors.push( standalone_method );
