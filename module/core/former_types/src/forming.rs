@@ -228,9 +228,12 @@ impl<Definition: crate::FormerDefinitionTypes> FormingEnd<Definition> for Formin
 /// are aligned from the onset, particularly when one former is nested within another, facilitating the creation
 /// of complex hierarchical data structures.
 ///
-pub trait FormerBegin<Definition>
+pub trait FormerBegin< 'a, Definition >
 where
   Definition: crate::FormerDefinition,
+  Definition::Storage : 'a,
+  Definition::Context : 'a,
+  Definition::End : 'a,
 {
   /// Launches the subforming process with an initial storage and context, setting up an `on_end` completion handler.
   ///
@@ -252,9 +255,10 @@ where
   ///
   /// Returns an instance of Former.
   ///
-  fn former_begin(
-    storage: core::option::Option<Definition::Storage>,
-    context: core::option::Option<Definition::Context>,
+  fn former_begin
+  (
+    storage: core::option::Option< Definition::Storage >,
+    context: core::option::Option< Definition::Context >,
     on_end: Definition::End,
   ) -> Self;
 }

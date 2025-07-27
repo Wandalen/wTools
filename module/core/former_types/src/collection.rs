@@ -88,6 +88,7 @@ mod private {
   /// and other associative collections.
   pub trait ValToEntry<Collection> {
     /// Represents the type of entry that corresponds to the value within the collection.
+    /// Type `Entry` is defined by the `Collection` trait.
     type Entry;
 
     /// Transforms the instance (value) into an entry compatible with the specified collection.
@@ -269,8 +270,7 @@ mod private {
     /// impl IntoIterator for MyCollection
     /// {
     ///   type Item = i32;
-    ///   // type IntoIter = std::vec::IntoIter< i32 >;
-    ///   type IntoIter = collection_tools::vec::IntoIter< i32 >;
+    ///   type IntoIter = std::vec::IntoIter< i32 >;
     ///   // qqq : zzz : make sure collection_tools has itearators -- done
     ///
     ///   fn into_iter( self ) -> Self::IntoIter
@@ -447,18 +447,22 @@ mod private {
 
   //
 
-  impl<E, Definition> FormerBegin<Definition> for CollectionFormer<E, Definition>
+  impl< 'a, E, Definition > FormerBegin< 'a, Definition > for CollectionFormer< E, Definition >
   where
     Definition: FormerDefinition,
-    Definition::Storage: CollectionAdd<Entry = E>,
+    Definition::Storage: CollectionAdd<Entry = E> + 'a,
+    Definition::Context: 'a,
+    Definition::End : 'a,
   {
     #[inline(always)]
-    fn former_begin(
-      storage: core::option::Option<Definition::Storage>,
-      context: core::option::Option<Definition::Context>,
+    fn former_begin
+    (
+      storage: core::option::Option< Definition::Storage >,
+      context: core::option::Option< Definition::Context >,
       on_end: Definition::End,
-    ) -> Self {
-      Self::begin(storage, context, on_end)
+    ) -> Self
+    {
+      Self::begin( storage, context, on_end )
     }
   }
 }
