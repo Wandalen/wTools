@@ -20,7 +20,7 @@
 // Apply Former derive here. This is what we are testing.
 #[derive(Debug, PartialEq, Clone)]
 #[derive(former::Former)]
-pub enum EnumScalarGeneric<T: Bound>
+pub enum EnumScalarGeneric<T : Bound>
 {
   #[scalar] // Enabled for Rule 1d testing
   Variant1(InnerScalar<T>), // Tuple variant with one generic field
