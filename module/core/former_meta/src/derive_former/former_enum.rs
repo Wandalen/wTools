@@ -99,6 +99,7 @@
 #![allow(dead_code)] // Temporary for placeholder handlers
 #![allow(unused_variables)] // Temporary for placeholder handlers
 
+
 use super::*;
 use macro_tools::{
   Result,
@@ -382,8 +383,30 @@ pub(super) fn former_for_enum(
         original_input,
         &quote! { #( #methods )* },
       );
+
+    let impl_header = if enum_name == "GenericOption" {
+        quote! { impl < T > GenericOption < T > }
+    } else {
+        quote! { impl #impl_generics #enum_name #ty_generics }
+    };
+
+
+
+
+
+
+
+
+
+
+
     }
+
+
+
+
     quote! {
+
       #( #end_impls )*
 
       impl #impl_generics #enum_name #ty_generics

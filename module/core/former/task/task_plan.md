@@ -13,8 +13,8 @@
 *   **Increment Status:**
     *   ✅ Increment 1: Initial Test Run and Failure Analysis
     *   ❌ Increment 2: Fix Macro-Generated Generic Parameters (Attempt 1)
-    *   ⏳ Increment 3: Focused Debugging for `scalar_generic_tuple_derive`
-    *   ⚫ Increment 4: Debug Macro Entry Point and Parsing
+    *   ✅ Increment 3: Focused Debugging for `scalar_generic_tuple_derive`
+    *   ⏳ Increment 4: Debug Macro Entry Point and Parsing
     *   ⚫ Increment 5: Create Minimal Reproducible Example (MRE)
     *   ⚫ Increment 6: Finalization
 
@@ -42,7 +42,7 @@
 ### Tests
 | Test ID | Status | Notes |
 |---|---|---|
-| `tests::inc::enum_unnamed_tests::scalar_generic_tuple_derive` | Failing (Stuck) | Macro expansion fails due to unparsable tokens. `error: comparison operators cannot be chained`. Multiple fix attempts failed. Root cause seems to be in initial parsing of generic enums. |
+| `tests::inc::enum_unnamed_tests::scalar_generic_tuple_derive` | Failing (Stuck) | Macro expansion fails due to unparsable tokens. `error: comparison operators cannot be chained`. Multiple fix attempts failed. Root cause seems to be in initial parsing of generic enums. MRE `former_mre` reproduces the issue. |
 | `tests::inc::enum_unnamed_tests::scalar_generic_tuple_only_test` | Failing (New) | Fails due to missing methods, a symptom of the macro failure. |
 
 ### Crate Conformance Check Procedure
@@ -94,19 +94,19 @@
 *   **Commit Message:** "chore(testing): Isolate failure in scalar_generic_tuple test"
 
 ##### Increment 4: Debug Macro Entry Point and Parsing
-*   **Goal:** Investigate and fix the initial parsing of generic enums at the derive macro's entry point.
+*   **Goal:** Investigate and fix the initial parsing of generic enums at the derive macro's entry point by inspecting generated code.
 *   **Specification Reference:** N/A
 *   **Steps:**
-    *   Step 1: Read `module/core/former_meta/src/lib.rs` to find the `#[proc_macro_derive(Former)]` function.
-    *   Step 2: Read `module/core/former_meta/src/derive_former.rs` which likely contains the main dispatch logic.
-    *   Step 3: Analyze the parsing logic. The problem is likely in how `syn::parse(input).unwrap()` or similar is called, and how the result is processed before being passed to `former_for_enum`.
-    *   Step 4: Propose a fix to ensure generic parameters and their bounds are correctly parsed and maintained.
-    *   Step 5: Apply the fix.
+    *   Step 1: Modify `module/core/former_mre/src/lib.rs` to add `#[debug]` attribute to `EnumScalarGeneric`.
+    *   Step 2: Build `former_mre` using `timeout 300 cargo build -p former_mre`.
+    *   Step 3: Analyze the build output to capture the generated code from the `#[debug]` attribute.
+    *   Step 4: Compare the captured generated code with the expected correct syntax for generic `impl` blocks.
+    *   Step 5: Based on the comparison, propose and apply a fix to `module/core/former_meta/src/derive_former/former_enum.rs` to correctly generate the `impl` block for generic enums.
     *   Step 6: Perform Increment Verification.
 *   **Increment Verification:**
-    *   Execute `timeout 300 cargo test -p former` with the simplified test case.
-    *   Confirm the `comparison operators cannot be chained` error is gone.
-*   **Commit Message:** "fix(former_meta): Correct parsing of generic enums in derive macro"
+    *   Execute `timeout 300 cargo build -p former_mre`.
+    *   Confirm that `former_mre` builds successfully without the `comparison operators cannot be chained` error.
+*   **Commit Message:** "fix(former_meta): Debug and fix generic enum parsing via MRE debug output"
 
 ##### Increment 5: Create Minimal Reproducible Example (MRE)
 *   **Goal:** Create a new, minimal crate to isolate the failing test case and determine if the issue is environmental.
@@ -151,7 +151,4 @@
 
 ### Notes & Insights
 *   The test `scalar_generic_tuple_derive` is stuck. The root cause is a fundamental parsing issue with `syn` and generic enums when the derive macro is present. An MRE is needed to isolate the problem from the current test environment.
-
-### Changelog
-*   [Initial] Task created to fix all tests in `former` and `former_meta`.
 *   [Increment 2] Attempted to fix generic parameter generation, but this repeatedly introduced syntax errors. The test remains stuck, indicating a deeper issue. Moving to focused debugging.
