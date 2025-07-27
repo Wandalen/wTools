@@ -20,66 +20,63 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   let variant_name_string = variant_name.to_string();
   let end_struct_name = format_ident!("{}{}End", enum_name, variant_name_string);
   
+  // Generate the End struct for this variant (for both Rule 2d and 3d)
+  let end_struct = quote!
+  {
+    #[derive(Default, Debug)]
+    pub struct #end_struct_name #impl_generics
+    #where_clause
+    {}
+  };
+  
+  // Generate the FormingEnd implementation  
+  // Looking at the manual test, we need to implement FormingEnd for the field type's definition types
+  let field_definition_type = quote! { < #field_type as former::Former >::Definition };
+  
+  let end_impl = quote!
+  {
+    impl #impl_generics former::FormingEnd< 
+      #field_definition_type 
+    > for #end_struct_name #ty_generics
+    #where_clause
+    {
+      #[ inline( always ) ]
+      fn call(
+        &self,
+        sub_storage: < #field_definition_type as former::FormerDefinition >::Storage,
+        _context: Option< < #field_definition_type as former::FormerDefinition >::Context >,
+      ) -> #enum_name #ty_generics
+      {
+        let inner = former::StoragePreform::preform( sub_storage );
+        #enum_name :: #variant_name ( inner )
+      }
+    }
+  };
+  
+  // Push the End struct and its implementation to the appropriate collections
+  ctx.end_impls.push( end_struct );
+  ctx.end_impls.push( end_impl );
+  
   // Rule 3d.i: When the field type implements Former, return its former
   // and create the infrastructure to convert the formed inner type to the enum variant
   let method = if ctx.variant_attrs.subform_scalar.is_some() {
-    // Rule 2d: #[subform_scalar] means direct delegation
+    // Rule 2d: #[subform_scalar] means configured former with custom End
     quote!
     {
       #[ inline( always ) ]
       #vis fn #method_name() -> < #field_type as former::Former >::Former
       {
-        < #field_type as former::Former >::former()
+        < #field_type as former::Former >::Former::begin( None, None, #end_struct_name :: default() )
       }
     }
   } else {
-    // Rule 3d: Default behavior - return a subformer that builds the enum variant
-    
-    // Generate the End struct for this variant
-    let end_struct = quote!
-    {
-      #[derive(Default, Debug)]
-      pub struct #end_struct_name;
-    };
-    
-    // Generate the FormingEnd implementation  
-    // Looking at the manual test, we need to implement FormingEnd for the field type's definition types
-    let field_former_type = quote! { < #field_type as former::Former >::Former };
-    let field_definition_type = quote! { < #field_type as former::Former >::Definition };
-    
-    let end_impl = quote!
-    {
-      impl #impl_generics former::FormingEnd< 
-        #field_definition_type 
-      > for #end_struct_name
-      #where_clause
-      {
-        fn call(
-          &self,
-          sub_storage: < #field_definition_type as former::FormerDefinition >::Storage,
-          _context: Option< < #field_definition_type as former::FormerDefinition >::Context >,
-        ) -> #enum_name #ty_generics
-        {
-          let inner = former::StoragePreform::preform( sub_storage );
-          #enum_name #ty_generics :: #variant_name ( inner )
-        }
-      }
-    };
-    
-    // Push the End struct and its implementation to the appropriate collections
-    ctx.end_impls.push( end_struct );
-    ctx.end_impls.push( end_impl );
-    
-    // Generate the method that returns the configured former
-    // For Rule 3d, we need to return the field's former configured with our custom End
-    // Based on the manual test pattern, we call T1Former::begin() with our End struct
-    
+    // Rule 3d: Default behavior - return a configured former with custom End
     quote!
     {
       #[ inline( always ) ]
       #vis fn #method_name() -> < #field_type as former::Former >::Former
       {
-        < #field_type as former::Former >::former()
+        < #field_type as former::Former >::Former::begin( None, None, #end_struct_name :: default() )
       }
     }
   };
@@ -97,12 +94,9 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
       #[ inline( always ) ]
       #vis fn #standalone_name() -> < #field_type as former::Former >::Former
       {
-        < #field_type as former::Former >::former()
+        < #field_type as former::Former >::Former::begin( None, None, #end_struct_name :: default() )
       }
     };
-    
-    // Debug: let's see what names are being generated  
-    // eprintln!("DEBUG: Generating standalone constructor: {} for variant: {}", standalone_name, ctx.variant.ident);
     
     ctx.methods.push( standalone_method );
   }

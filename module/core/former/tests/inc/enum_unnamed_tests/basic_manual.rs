@@ -56,15 +56,24 @@ impl FunctionStep
     // Correct: Call associated function `begin` on the Former type
     RunFormer::begin( None, None, FunctionStepRunEnd::default() )
   }
+
+  // Standalone constructors for #[standalone_constructors] attribute
+  #[ inline( always ) ]
+  pub fn break_variant()
+  -> BreakFormer< BreakFormerDefinition< (), Self, FunctionStepBreakEnd > >
+  {
+    BreakFormer::begin( None, None, FunctionStepBreakEnd::default() )
+  }
+
+  #[ inline( always ) ]
+  pub fn run_variant()
+  -> RunFormer< RunFormerDefinition< (), Self, FunctionStepRunEnd > >
+  {
+    RunFormer::begin( None, None, FunctionStepRunEnd::default() )
+  }
 }
 
-// Manually implemented standalone subformer starter for the Break variant.
-#[ inline( always ) ]
-pub fn break_variant()
--> BreakFormer< BreakFormerDefinition< (), FunctionStep, FunctionStepBreakEnd > >
-{
-  BreakFormer::begin( None, None, FunctionStepBreakEnd::default() )
-}
+// Note: break_variant is now implemented as a method on the enum above
 
 // --- FormingEnd Implementations for End Structs ---
 

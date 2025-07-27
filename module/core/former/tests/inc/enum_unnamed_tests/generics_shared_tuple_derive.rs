@@ -24,7 +24,7 @@ use super::*; // Imports testing infrastructure and potentially other common ite
 
 // --- Inner Struct Definition with Bounds ---
 // Needs to derive Former for the enum's derive to work correctly for subforming.
-#[ derive( Debug, Clone, Default, PartialEq, former_meta::Former ) ]
+#[ derive( Debug, Clone, Default, PartialEq, former::Former ) ]
 pub struct InnerG3< T : BoundB > // BoundB required by the inner struct
 {
   pub inner_field : T,
@@ -32,7 +32,7 @@ pub struct InnerG3< T : BoundB > // BoundB required by the inner struct
 
 // --- Enum Definition with Bounds ---
 // Apply Former derive here. This is what we are testing.
-#[ derive( Debug, PartialEq, Clone, former_meta::Former ) ]
+#[ derive( Debug, PartialEq, Clone, former::Former ) ]
 // #[ derive( Debug, PartialEq, Clone ) ]
 // #[ debug ] // Uncomment to see generated code later
 pub enum EnumG3< T : BoundA + BoundB > // BoundA required by enum, BoundB required by InnerG3<T>
