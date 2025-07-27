@@ -635,7 +635,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     // = former begin: Implement `FormerBegin` trait.
     impl< #struct_generics_impl Definition > former::FormerBegin< Definition >
-    for #former < #struct_generics_ty Definition, >
+    for #former < Definition >
     where
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
       #struct_generics_where

@@ -1,7 +1,8 @@
 use super::*;
-use macro_tools::{ Result, quote::quote, ident::cased_ident_from_ident, generic_params::GenericsRef };
+use macro_tools::{ Result, quote::quote, ident::cased_ident_from_ident };
 use convert_case::Case;
 
+#[allow(clippy::too_many_lines)]
 pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
 {
   let variant_name = &ctx.variant.ident;
@@ -9,12 +10,12 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   let enum_name = ctx.enum_name;
   let vis = ctx.vis;
   let fields = &ctx.variant_field_info;
-  
-  let generics_ref = GenericsRef::new( ctx.generics );
-  let impl_generics = generics_ref.impl_generics_tokens_if_any();
-  let ty_generics = generics_ref.ty_generics_tokens_if_any();
-  let where_clause = generics_ref.where_clause_tokens_if_any();
-  
+
+  let ( impl_generics, _, where_clause ) = ctx.generics.split_for_impl();
+
+  // Use proper generics with bounds for type positions
+  let ( _, ty_generics, _ ) = ctx.generics.split_for_impl();
+
   // Generate unique names for the variant former infrastructure
   let variant_name_str = variant_name.to_string();
   let storage_name = format_ident!("{}{}FormerStorage", enum_name, variant_name_str);
@@ -22,50 +23,43 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   let definition_name = format_ident!("{}{}FormerDefinition", enum_name, variant_name_str);
   let former_name = format_ident!("{}{}Former", enum_name, variant_name_str);
   let end_name = format_ident!("{}{}End", enum_name, variant_name_str);
-  
+
   // Generate field types and names
   let field_types: Vec<_> = fields.iter().map(|f| &f.ty).collect();
   let field_indices: Vec<_> = (0..fields.len()).collect();
   let field_names: Vec<_> = field_indices.iter().map(|i| format_ident!("field{}", i)).collect();
   let setter_names: Vec<_> = field_indices.iter().map(|i| format_ident!("_{}", i)).collect();
-  
+
   // Create the preformed tuple type
   let preformed_type = quote! { ( #( #field_types ),* ) };
-  
-  // Generate the storage struct
-  let storage_struct = quote!
+
+  // Generate the storage struct and its impls
+  let storage_impls = quote!
   {
-    pub struct #storage_name
+    pub struct #storage_name #impl_generics
+    #where_clause
     {
       #( #field_names : Option< #field_types > ),*
     }
-  };
-  
-  // Generate Default impl for storage
-  let storage_default = quote!
-  {
-    impl Default for #storage_name
+
+    impl #impl_generics Default for #storage_name #ty_generics
+    #where_clause
     {
       fn default() -> Self
       {
         Self { #( #field_names : None ),* }
       }
     }
-  };
-  
-  // Generate Storage impl
-  let storage_impl = quote!
-  {
-    impl former::Storage for #storage_name
+
+    impl #impl_generics former::Storage for #storage_name #ty_generics
+    #where_clause
     {
       type Preformed = #preformed_type;
     }
-  };
-  
-  // Generate StoragePreform impl
-  let storage_preform = quote!
-  {
-    impl former::StoragePreform for #storage_name
+
+    impl #impl_generics former::StoragePreform for #storage_name #ty_generics
+    where
+      #( #field_types : Default, )*
     {
       fn preform( mut self ) -> Self::Preformed
       {
@@ -74,205 +68,186 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
       }
     }
   };
-  
-  // Generate Definition Types
-  let definition_types = quote!
+
+  // Generate the DefinitionTypes struct and its impls
+  let definition_types_impls = quote!
   {
-    #[ derive( Default, Debug ) ]
-    pub struct #definition_types_name< C = (), F = #enum_name #ty_generics >
-    {
-      _p : std::marker::PhantomData< ( C, F ) >,
-    }
-  };
-  
-  let definition_types_impl = quote!
-  {
-    impl #impl_generics former::FormerDefinitionTypes for #definition_types_name< (), #enum_name #ty_generics >
+    #[ derive( Debug ) ]
+    pub struct #definition_types_name #impl_generics
     #where_clause
     {
-      type Storage = #storage_name;
+      _p : std::marker::PhantomData #ty_generics,
+    }
+
+    impl #impl_generics Default for #definition_types_name #ty_generics
+    #where_clause
+    {
+      fn default() -> Self
+      {
+        Self { _p : std::marker::PhantomData }
+      }
+    }
+
+    impl #impl_generics former::FormerDefinitionTypes for #definition_types_name #ty_generics
+    #where_clause
+    {
+      type Storage = #storage_name #ty_generics;
       type Context = ();
       type Formed = #enum_name #ty_generics;
     }
-  };
-  
-  let definition_types_mutator = quote!
-  {
-    impl #impl_generics former::FormerMutator for #definition_types_name< (), #enum_name #ty_generics >
+
+    impl #impl_generics former::FormerMutator for #definition_types_name #ty_generics
     #where_clause
     {}
   };
-  
-  // Generate Definition
-  let definition = quote!
+
+  // Generate the Definition struct and its impls
+  let definition_impls = quote!
   {
-    #[ derive( Default, Debug ) ]
-    pub struct #definition_name< C = (), F = #enum_name #ty_generics, E = #end_name >
+    #[ derive( Debug ) ]
+    pub struct #definition_name #impl_generics
+    #where_clause
     {
-      _p : std::marker::PhantomData< ( C, F, E ) >,
+      _p : std::marker::PhantomData #ty_generics,
     }
-  };
-  
-  let definition_impl = quote!
-  {
-    impl #impl_generics former::FormerDefinition for #definition_name< (), #enum_name #ty_generics, #end_name >
-    where
-      #end_name : former::FormingEnd< #definition_types_name< (), #enum_name #ty_generics > >,
-      #where_clause
+
+    impl #impl_generics Default for #definition_name #ty_generics
+    #where_clause
     {
-      type Storage = #storage_name;
+      fn default() -> Self
+      {
+        Self { _p : std::marker::PhantomData }
+      }
+    }
+
+    impl #impl_generics former::FormerDefinition for #definition_name #ty_generics
+    #where_clause
+    {
+      type Storage = #storage_name #ty_generics;
       type Context = ();
       type Formed = #enum_name #ty_generics;
-      type Types = #definition_types_name< (), #enum_name #ty_generics >;
-      type End = #end_name;
+      type Types = #definition_types_name #ty_generics;
+      type End = #end_name #ty_generics;
     }
   };
-  
-  // Generate Former struct
-  let former_struct = quote!
+
+  // Generate the Former struct and its impls
+  let former_impls = quote!
   {
-    pub struct #former_name< Definition = #definition_name >
-    where
-      Definition : former::FormerDefinition< Storage = #storage_name >,
+    pub struct #former_name #impl_generics
+    #where_clause
     {
-      storage : Definition::Storage,
-      context : Option< Definition::Context >,
-      on_end : Option< Definition::End >,
+      storage : #storage_name #ty_generics,
+      context : Option< () >,
+      on_end : Option< #end_name #ty_generics >,
     }
-  };
-  
-  // Generate Former impl
-  let former_impl = quote!
-  {
-    impl< Definition > #former_name< Definition >
-    where
-      Definition : former::FormerDefinition< Storage = #storage_name >,
+
+    impl #impl_generics #former_name #ty_generics
+    #where_clause
     {
-      #[ inline( always ) ] 
-      pub fn form( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed 
-      { 
-        self.end() 
+      #[ inline( always ) ]
+      pub fn form( self ) -> #enum_name #ty_generics
+      {
+        self.end()
       }
-      
-      #[ inline( always ) ] 
-      pub fn end( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
+
+      #[ inline( always ) ]
+      pub fn end( mut self ) -> #enum_name #ty_generics
       {
         let on_end = self.on_end.take().unwrap();
         let context = self.context.take();
-        < Definition::Types as former::FormerMutator >::form_mutation( &mut self.storage, &mut self.context );
+        < #definition_types_name #ty_generics as former::FormerMutator >::form_mutation( &mut self.storage, &mut self.context );
         former::FormingEnd::call( &on_end, self.storage, context )
       }
-      
-      #[ inline( always ) ] 
-      pub fn begin( storage : Option< Definition::Storage >, context : Option< Definition::Context >, on_end : Definition::End ) -> Self
-      { 
-        Self { storage : storage.unwrap_or_default(), context, on_end : Some( on_end ) } 
-      }
-      
-      #[ allow( dead_code ) ]
-      #[ inline( always ) ] 
-      pub fn new( on_end : Definition::End ) -> Self 
-      { 
-        Self::begin( None, None, on_end ) 
+
+      #[ inline( always ) ]
+      pub fn begin( storage : Option< #storage_name #ty_generics >, context : Option< () >, on_end : #end_name #ty_generics ) -> Self
+      {
+        Self { storage : storage.unwrap_or_default(), context, on_end : Some( on_end ) }
       }
 
-      // Setters for fields
-      #( 
-        #[ inline ] 
+      #[ allow( dead_code ) ]
+      #[ inline( always ) ]
+      pub fn new( on_end : #end_name #ty_generics ) -> Self
+      {
+        Self::begin( None, None, on_end )
+      }
+
+      #(
+        #[ inline ]
         pub fn #setter_names( mut self, src : impl Into< #field_types > ) -> Self
-        { 
-          self.storage.#field_names = Some( src.into() ); 
-          self 
-        } 
+        {
+          self.storage.#field_names = Some( src.into() );
+          self
+        }
       )*
     }
   };
-  
-  // Generate End struct
-  let end_struct = quote!
+
+  // Generate the End struct and its impl
+  let end_impls = quote!
   {
-    #[ derive( Default, Debug ) ]
-    pub struct #end_name
+    #[ derive( Debug ) ]
+    pub struct #end_name #impl_generics
+    #where_clause
+    {}
+
+    impl #impl_generics Default for #end_name #ty_generics
+    #where_clause
     {
+      fn default() -> Self
+      {
+        Self {}
+      }
     }
-  };
-  
-  // Generate End impl
-  let end_impl = quote!
-  {
-    impl #impl_generics former::FormingEnd< #definition_types_name< (), #enum_name #ty_generics > >
-    for #end_name
+
+    impl #impl_generics former::FormingEnd< #definition_types_name #ty_generics >
+    for #end_name #ty_generics
     #where_clause
     {
       #[ inline( always ) ]
       fn call(
         &self,
-        sub_storage : #storage_name,
+        sub_storage : #storage_name #ty_generics,
         _context : Option< () >,
       ) -> #enum_name #ty_generics
       {
         let ( #( #field_names ),* ) = former::StoragePreform::preform( sub_storage );
-        #enum_name #ty_generics :: #variant_name ( #( #field_names ),* )
+        #enum_name :: #variant_name ( #( #field_names ),* )
       }
     }
   };
-  
+
   // Push all the generated infrastructure to the context
-  ctx.end_impls.push( storage_struct );
-  ctx.end_impls.push( storage_default );
-  ctx.end_impls.push( storage_impl );
-  ctx.end_impls.push( storage_preform );
-  ctx.end_impls.push( definition_types );
-  ctx.end_impls.push( definition_types_impl );
-  ctx.end_impls.push( definition_types_mutator );
-  ctx.end_impls.push( definition );
-  ctx.end_impls.push( definition_impl );
-  ctx.end_impls.push( former_struct );
-  ctx.end_impls.push( former_impl );
-  ctx.end_impls.push( end_struct );
-  ctx.end_impls.push( end_impl );
-  
+  ctx.end_impls.push( storage_impls );
+  ctx.end_impls.push( definition_types_impls );
+  ctx.end_impls.push( definition_impls );
+  ctx.end_impls.push( former_impls );
+  ctx.end_impls.push( end_impls );
+
   // Generate the method that returns the implicit variant former
   let result = quote!
   {
     #[ inline( always ) ]
-    #vis fn #method_name() -> #former_name
+    #vis fn #method_name() -> #former_name #ty_generics
+    #where_clause
     {
-      #former_name::begin( None, None, #end_name::default() )
+      #former_name::begin( None, None, #end_name::#ty_generics::default() )
     }
   };
 
   // Generate standalone constructor if requested
   if ctx.struct_attrs.standalone_constructors.value(false) {
-    // Check if all fields have arg_for_constructor
-    let all_fields_constructor_args = fields.iter().all(|f| f.is_constructor_arg);
-    
-    if all_fields_constructor_args {
-      // Scalar standalone constructor - takes arguments for all fields
-      let field_types: Vec<_> = fields.iter().map(|f| &f.ty).collect();
-      let field_names: Vec<_> = fields.iter().map(|f| &f.ident).collect();
-      
       let standalone_method = quote!
       {
         #[ inline( always ) ]
-        #vis fn #method_name( #( #field_names : impl Into< #field_types > ),* ) -> #enum_name #ty_generics
+        #vis fn #method_name() -> #former_name #ty_generics
+        #where_clause
         {
-          #enum_name #ty_generics :: #variant_name ( #( #field_names.into() ),* )
+          #former_name::begin( None, None, #end_name::#ty_generics::default() )
         }
       };
       ctx.standalone_constructors.push( standalone_method );
-    } else {
-      // Former builder-style standalone constructor - returns the implicit variant former
-      let standalone_method = quote!
-      {
-        #[ inline( always ) ]
-        #vis fn #method_name() -> #former_name
-        {
-          #former_name::begin( None, None, #end_name::default() )
-        }
-      };
-      ctx.standalone_constructors.push( standalone_method );
-    }
   }
 
   Ok( result )

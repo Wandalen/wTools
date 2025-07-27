@@ -9,15 +9,15 @@
 /// Definition of former.
 #[cfg(feature = "enabled")]
 #[cfg(feature = "types_former")]
-mod definition;
+pub mod definition;
 /// Forming process.
 #[cfg(feature = "enabled")]
 #[cfg(feature = "types_former")]
-mod forming;
+pub mod forming;
 /// Storage.
 #[cfg(feature = "enabled")]
 #[cfg(feature = "types_former")]
-mod storage;
+pub mod storage;
 
 /// Interface for collections.
 #[cfg(feature = "enabled")]

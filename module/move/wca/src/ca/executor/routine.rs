@@ -3,6 +3,7 @@ mod private
 {
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
+  use crate::ca::Value;
 
   // aaa : group
   // aaa : done
@@ -143,8 +144,8 @@ mod private
 
   // These type aliases are kept private to hide implementation details and prevent misuse.
   // Exposing them would risk complicating the API and limit future refactoring flexibility.
-  type RoutineWithoutContextFn = dyn Fn( VerifiedCommand ) -> error::untyped::Result< () >;
-  type RoutineWithContextFn = dyn Fn( Context, VerifiedCommand ) -> error::untyped::Result< () >;
+  type RoutineWithoutContextFn = dyn Fn( VerifiedCommand ) -> error_tools::untyped::Result< () >;
+  type RoutineWithContextFn = dyn Fn( Context, VerifiedCommand ) -> error_tools::untyped::Result< () >;
 
   ///
   /// Routine handle.
@@ -240,7 +241,7 @@ mod private
   where
     I : 'static,
     O : IntoResult + 'static,
-    Routine : From< Box< dyn Fn( I ) -> error::untyped::Result< () > > >,
+    Routine : From< Box< dyn Fn( I ) -> error_tools::error::untyped::Result< () > > >,
   {
     fn from( value : Handler< I, O > ) -> Self
     {
@@ -276,34 +277,34 @@ mod private
   }
 
   // without context
-  impl From< Box< dyn Fn( () ) -> error::untyped::Result< () > > > for Routine
+  impl From< Box< dyn Fn( () ) -> error_tools::error::untyped::Result< () > > > for Routine
   {
-    fn from( value : Box< dyn Fn( () ) -> error::untyped::Result< () > > ) -> Self
+    fn from( value : Box< dyn Fn( () ) -> error_tools::error::untyped::Result< () > > ) -> Self
     {
       Self::WithoutContext( Rc::new( move | _ | { value( () )?; Ok( () ) } ) )
     }
   }
 
-  impl From< Box< dyn Fn( VerifiedCommand ) -> error::untyped::Result< () > > > for Routine
+  impl From< Box< dyn Fn( VerifiedCommand ) -> error_tools::error::untyped::Result< () > > > for Routine
   {
-    fn from( value : Box< dyn Fn( VerifiedCommand ) -> error::untyped::Result< () > > ) -> Self
+    fn from( value : Box< dyn Fn( VerifiedCommand ) -> error_tools::error::untyped::Result< () > > ) -> Self
     {
       Self::WithoutContext( Rc::new( move | a | { value( a )?; Ok( () ) } ) )
     }
   }
 
   // with context
-  impl From< Box< dyn Fn( Context ) -> error::untyped::Result< () > > > for Routine
+  impl From< Box< dyn Fn( Context ) -> error_tools::error::untyped::Result< () > > > for Routine
   {
-    fn from( value : Box< dyn Fn( Context ) -> error::untyped::Result< () > > ) -> Self
+    fn from( value : Box< dyn Fn( Context ) -> error_tools::error::untyped::Result< () > > ) -> Self
     {
       Self::WithContext( Rc::new( move | ctx, _ | { value( ctx )?; Ok( () ) } ) )
     }
   }
 
-  impl From< Box< dyn Fn(( Context, VerifiedCommand )) -> error::untyped::Result< () > > > for Routine
+  impl From< Box< dyn Fn(( Context, VerifiedCommand )) -> error_tools::error::untyped::Result< () > > > for Routine
   {
-    fn from( value : Box< dyn Fn(( Context, VerifiedCommand )) -> error::untyped::Result< () > > ) -> Self
+    fn from( value : Box< dyn Fn(( Context, VerifiedCommand )) -> error_tools::error::untyped::Result< () > > ) -> Self
     {
       Self::WithContext( Rc::new( move | ctx, a | { value(( ctx, a ))?; Ok( () ) } ) )
     }
@@ -332,27 +333,27 @@ mod private
 
   trait IntoResult
   {
-    fn into_result( self ) -> error::untyped::Result< () >;
+    fn into_result( self ) -> error_tools::untyped::Result< () >;
   }
 
   // xxx
   // aaa : This is an untyped error because we want to provide a common interface for all commands, while also allowing users to propagate their own specific custom errors.
-  impl IntoResult for core::convert::Infallible { fn into_result( self ) -> error::untyped::Result< () > { Ok( () ) } }
-  impl IntoResult for () { fn into_result( self ) -> error::untyped::Result< () > { Ok( () ) } }
+  impl IntoResult for core::convert::Infallible { fn into_result( self ) -> error_tools::untyped::Result< () > { Ok( () ) } }
+  impl IntoResult for () { fn into_result( self ) -> error_tools::untyped::Result< () > { Ok( () ) } }
   impl< E : core::fmt::Debug + std::fmt::Display + 'static > IntoResult
-  for error::untyped::Result< (), E >
+  for error_tools::untyped::Result< (), E >
   {
-    fn into_result( self ) -> error::untyped::Result< () >
+    fn into_result( self ) -> error_tools::untyped::Result< () >
     {
       use std::any::TypeId;
       // if it's anyhow error we want to have full context(debug), and if it's not(this error) we want to display
-      if TypeId::of::< error::untyped::Error >() == TypeId::of::< E >()
+      if TypeId::of::< error_tools::untyped::Error >() == TypeId::of::< E >()
       {
-        self.map_err( | e | error::untyped::format_err!( "{e:?}" ))
+        self.map_err( | e | error_tools::untyped::format_err!( "{e:?}" ))
       }
       else
       {
-        self.map_err( | e | error::untyped::format_err!( "{e}" ))
+        self.map_err( | e | error_tools::untyped::format_err!( "{e}" ))
       }
       // xxx : aaa : ?
     }
@@ -363,8 +364,8 @@ mod private
 
 crate::mod_interface!
 {
-  orphan use Routine;
-  orphan use Handler;
-  orphan use Args;
-  orphan use Props;
+  exposed use Routine;
+  exposed use Handler;
+  exposed use Args;
+  exposed use Props;
 }

@@ -5,11 +5,13 @@ mod private
 
   use std::collections::HashMap;
   use parser::{ Program, ParsedCommand };
+  use error_tools::untyped::Result;
+  use error_tools::dependency::thiserror;
 
   // use error::{ return_err };
 
   #[ allow( missing_docs ) ]
-  #[ derive( Debug, error::typed::Error ) ]
+  #[ derive( Debug, error_tools::typed::Error ) ]
   pub enum ParserError
   {
     #[ error( "Internal Error: {details}" ) ]
@@ -75,7 +77,7 @@ mod private
     // aaa : use typed error
     fn parse_command( args : &[ String ] ) -> Result< ( ParsedCommand, usize ), ParserError >
     {
-      if args.is_empty() 
+      if args.is_empty()
       {
         return Err( ParserError::InternalError { details: "Try to parse command without input".into() } );
       }
@@ -108,8 +110,8 @@ mod private
       ))
     }
 
-    
-    
+
+
 
     // returns ( subjects, properties, relative_end_pos )
     // aaa : use typed error
@@ -192,6 +194,6 @@ mod private
 
 crate::mod_interface!
 {
-  orphan use Parser;
-  orphan use ParserError;
+  exposed use Parser;
+  exposed use ParserError;
 }

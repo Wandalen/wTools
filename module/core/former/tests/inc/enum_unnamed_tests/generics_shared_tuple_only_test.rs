@@ -1,21 +1,21 @@
-//! Purpose: Provides shared test assertions and logic for verifying the constructors generated
-//! by `#[derive(Former)]` for enums with unnamed (tuple) variants that have shared generic
-//! parameters and bounds, using the default subform behavior. This file is included by both
-//! `generics_shared_tuple_derive.rs` and `generics_shared_tuple_manual.rs`.
-//!
-//! Coverage:
-//! - Rule 3d (Tuple + Single-Field + Default -> Subform): Tests static method `EnumG3::<T>::v_1()`.
-//! - Rule 4b (Option 2 Logic): Tests the use of subformer methods and `.form()`.
-//!
-//! Test Relevance/Acceptance Criteria:
-//! - Defines dummy bounds (`BoundA`, `BoundB`) and a concrete type (`MyType`) that satisfies both.
-//! - Defines test functions (`shared_generics_tuple_variant`, `default_construction`) that invoke the static method
-//!   `EnumG3::<MyType>::v_1()` provided by the including file (either derived or manual).
-//! - This constructor returns a subformer (`InnerG3Former<MyType>`).
-//! - The tests use the subformer setter (`.inner_field()`) and `.form()` to build the final enum instance.
-//! - Asserts that the resulting `EnumG3` enum instances are equal to the expected variants
-//!   (`EnumG3::V1(InnerG3 { ... })`), confirming correct handling of shared generics and bounds.
-//! - Verifies that the bounds (`BoundA`, `BoundB`) are correctly handled by using a type that satisfies both.
+// Purpose: Provides shared test assertions and logic for verifying the constructors generated
+// by `#[derive(Former)]` for enums with unnamed (tuple) variants that have shared generic
+// parameters and bounds, using the default subform behavior. This file is included by both
+// `generics_shared_tuple_derive.rs` and `generics_shared_tuple_manual.rs`.
+//
+// Coverage:
+// - Rule 3d (Tuple + Single-Field + Default -> Subform): Tests static method `EnumG3::<T>::v_1()`.
+// - Rule 4b (Option 2 Logic): Tests the use of subformer methods and `.form()`.
+//
+// Test Relevance/Acceptance Criteria:
+// - Defines dummy bounds (`BoundA`, `BoundB`) and a concrete type (`MyType`) that satisfies both.
+// - Defines test functions (`shared_generics_tuple_variant`, `default_construction`) that invoke the static method
+//   `EnumG3::<MyType>::v_1()` provided by the including file (either derived or manual).
+// - This constructor returns a subformer (`InnerG3Former<MyType>`).
+// - The tests use the subformer setter (`.inner_field()`) and `.form()` to build the final enum instance.
+// - Asserts that the resulting `EnumG3` enum instances are equal to the expected variants
+//   (`EnumG3::V1(InnerG3 { ... })`), confirming correct handling of shared generics and bounds.
+// - Verifies that the bounds (`BoundA`, `BoundB`) are correctly handled by using a type that satisfies both.
 #[ allow( unused_imports ) ]
 use super::*; // Imports items from the parent file (either manual or derive)
 

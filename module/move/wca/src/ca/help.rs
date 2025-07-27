@@ -6,6 +6,7 @@ mod private
   use ca::
   {
     Type,
+    Order,
     formatter::
     {
       HelpFormat,
@@ -19,7 +20,7 @@ mod private
 
   use iter_tools::Itertools;
   use std::rc::Rc;
-  use error::untyped::format_err;
+  use error_tools::untyped::format_err;
   use former::Former;
 
   // aaa : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
@@ -110,9 +111,9 @@ mod private
         LevelOfDetail::None => String::new(),
         _ if command.subjects.is_empty() => String::new(),
         LevelOfDetail::Simple => "< subjects >".into(),
-        LevelOfDetail::Detailed => command.subjects.iter().map( | v | 
+        LevelOfDetail::Detailed => command.subjects.iter().map( | v |
         {
-          format!( "< {}{:?} >", if v.optional { "?" } else { "" }, v.kind ) 
+          format!( "< {}{:?} >", if v.optional { "?" } else { "" }, v.kind )
         }).collect::< Vec< _ > >().join( " " ),
       };
       let properties = match o.property_detailing
@@ -120,21 +121,21 @@ mod private
         LevelOfDetail::None => String::new(),
         _ if command.subjects.is_empty() => String::new(),
         LevelOfDetail::Simple => "< properties >".into(),
-        LevelOfDetail::Detailed => command.properties( dictionary.order ).iter().map( | ( n, v ) | 
+        LevelOfDetail::Detailed => command.properties( dictionary.order ).iter().map( | ( n, v ) |
         {
-          format!( "< {}:{}{:?} >", if v.optional { "?" } else { "" }, n, v.kind ) 
+          format!( "< {}:{}{:?} >", if v.optional { "?" } else { "" }, n, v.kind )
         }).collect::< Vec< _ > >().join( " " ),
       };
 
       let footer = if o.with_footer
       {
-        let full_subjects = command.subjects.iter().map( | subj | 
+        let full_subjects = command.subjects.iter().map( | subj |
         {
-          format!( "- {} [{}{:?}]", subj.hint, if subj.optional { "?" } else { "" }, subj.kind ) 
+          format!( "- {} [{}{:?}]", subj.hint, if subj.optional { "?" } else { "" }, subj.kind )
         }).join( "\n\t" );
         let full_properties = format_table( command.properties( dictionary.order ).into_iter().map( | ( name, value ) |
-        { 
-          [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ] 
+        {
+          [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ]
         })).unwrap().replace( '\n', "\n\t" );
 
         format!

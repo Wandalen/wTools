@@ -6,18 +6,20 @@ mod private
   use verifier::VerifiedCommand;
   use parser::Program;
   use grammar::Dictionary;
+  use error_tools::untyped::Result;
+  use error_tools::dependency::thiserror;
   use executor::{ Routine, Context };
 
   // aaa : for Bohdan : how is it useful? where is it used?
   // aaa : `ExecutorType` has been removed
 
-  #[ derive( Debug, error::typed::Error ) ]
+  #[ derive( Debug, error_tools::typed::Error ) ]
   pub enum CommandError
   {
     #[ error( "Internal command: `.{}` failed with: {}", command.phrase, error ) ]
     Internal { command: VerifiedCommand, error: InternalCommandError },
     #[ error( "Command: `.{}` failed with: {}", command.phrase, error ) ]
-    User { command: VerifiedCommand, error: error::untyped::Error },
+    User { command: VerifiedCommand, error: error_tools::error::untyped::Error },
   }
 
   /// Executor that is responsible for executing the program's commands.
@@ -103,7 +105,7 @@ mod private
   // aaa : should it be typed? it is user command with unknown error type
   // fix clippy error
   fn exec_command( command : VerifiedCommand, routine : Routine, ctx : Context )
-  -> error::untyped::Result< () >
+  -> error_tools::error::untyped::Result< () >
   {
     match routine
     {
@@ -112,7 +114,7 @@ mod private
     }
   }
 
-  #[ derive( Debug, error::typed::Error ) ]
+  #[ derive( Debug, error_tools::typed::Error ) ]
   pub enum InternalCommandError
   {
     #[ error( "Encountered an unrecognized internal command: `.{user_input}`." ) ]
@@ -199,5 +201,5 @@ mod private
 
 crate::mod_interface!
 {
-  prelude use Executor;
+  exposed use Executor;
 }

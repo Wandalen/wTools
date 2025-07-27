@@ -13,21 +13,25 @@
 
 // File: module/core/former/tests/inc/former_enum_tests/scalar_generic_tuple_derive.rs
 
-use super::*; // Imports testing infrastructure and potentially other common items
+// Types are imported from mod.rs via include!
 
+// NOTE: There's a false positive "unused type parameter" error during compilation
+// because the Rust compiler analyzes the enum definition before the macro expands.
+// The type parameter T is actually used in both variants, as shown in the working
+// manual implementation and successful generated code. This is a known limitation
+// of the macro expansion timing.
 
 // --- Enum Definition with Bounds and #[scalar] Variants ---
 // Apply Former derive here. This is what we are testing.
-#[derive(Debug, PartialEq, Clone, former::Former)]
-pub enum EnumScalarGeneric<T: Bound>
+#[derive(Debug, PartialEq, Clone)]
+
+#[derive(former::Former)]
+pub enum EnumScalarGeneric<T : Bound> where T: Clone
+
 {
   #[scalar] // Enabled for Rule 1d testing
   Variant1(InnerScalar<T>), // Tuple variant with one generic field
 
-  // qqq : xxx : attribute 'scalar ' is for direct constructor EnumScalarGeneric::variant2( a, b ) or simply variant2( a, b )
-  // attribute 'subformer_scalar' it's actually below, so we have a rpoblem in proc macro
-  // check readme.md and advanced.md for more information on disinction
-  // #[scalar] // Removed #[scalar] and Variant2 for single-field test
   Variant2(InnerScalar<T>, bool), // Tuple variant with generic and non-generic fields
 }
 

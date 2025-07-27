@@ -19,7 +19,7 @@ use super::*; // Imports testing infrastructure and potentially other common ite
 use std::marker::PhantomData;
 use former_types::
 {
-  Assign, // Needed for manual setter impls if we were doing that deeply
+
   FormingEnd, StoragePreform, FormerDefinition, FormerDefinitionTypes, Storage,
   ReturnPreformed, FormerBegin, FormerMutator, // Added necessary imports
 };

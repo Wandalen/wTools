@@ -99,11 +99,15 @@
 #![allow(dead_code)] // Temporary for placeholder handlers
 #![allow(unused_variables)] // Temporary for placeholder handlers
 
+
 use super::*;
 use macro_tools::{
   Result,
   quote::{format_ident, quote},
+  generic_params::GenericsRef,
+
   syn,
+
 };
 use proc_macro2::TokenStream; // Corrected import for TokenStream
 use super::struct_attrs::ItemAttributes; // Corrected import
@@ -151,7 +155,10 @@ pub(super) struct EnumVariantHandlerContext<'a> {
   pub methods: &'a mut Vec<TokenStream>,
   pub end_impls: &'a mut Vec<TokenStream>,
   pub standalone_constructors: &'a mut Vec<TokenStream>,
+
   pub has_debug: bool,
+
+
 }
 
 #[allow(clippy::too_many_lines)]
@@ -178,6 +185,8 @@ pub(super) fn former_for_enum(
 
   let mut methods = Vec::new();
   let mut end_impls = Vec::new();
+  let generics_ref = GenericsRef::new(generics);
+  let enum_type_path = generics_ref.type_path_tokens_if_any(enum_name);
   let mut standalone_constructors = Vec::new();
   let merged_where_clause = generics.where_clause.as_ref();
 
@@ -311,6 +320,7 @@ pub(super) fn former_for_enum(
         }
       },
     } // End of match
+
   } // End of loop
 
   let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
@@ -338,51 +348,22 @@ pub(super) fn former_for_enum(
     );
   }
 
-  let result = if enum_name == "GenericOption" {
-    quote! {
-      #[automatically_derived]
-      impl< T > GenericOption< T >
-      where
-        T : std::fmt::Debug + PartialEq + Clone,
-      {
-          #[inline(always)]
-          pub fn value( _0 : impl Into< T > ) -> Self
-          {
-            Self::Value( _0.into() )
-          }
-          #[inline(always)]
-          pub fn no_value() -> Self
-          {
-            Self::NoValue
-          }
-      }
+  let result = {
+    let impl_header = quote! { impl #impl_generics #enum_name #ty_generics };
 
-      // TODO: This is a hardcoded fix for the generic enum test case.
-      // A general solution is needed.
-      #[inline(always)]
-      pub fn value< T >( _0 : impl Into< T > ) -> GenericOption< T >
-      where
-        T : std::fmt::Debug + PartialEq + Clone,
-      {
-        GenericOption::Value( _0.into() )
-      }
-
-      #[inline(always)]
-      pub fn no_value< T >() -> GenericOption< T >
-      where
-        T : std::fmt::Debug + PartialEq + Clone,
-      {
-        GenericOption::NoValue
-      }
-    }
-  } else {
     if has_debug {
       diag::report_print(
         format!("DEBUG: Methods collected before final quote for {enum_name}"),
         original_input,
         &quote! { #( #methods )* },
       );
+      diag::report_print(
+        format!("DEBUG: Impl header for {enum_name}"),
+        original_input,
+        &quote! { #impl_header },
+      );
     }
+
     quote! {
       #( #end_impls )*
 

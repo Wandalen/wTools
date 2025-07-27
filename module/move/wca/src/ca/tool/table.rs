@@ -1,9 +1,9 @@
 mod private
 {
   #[ allow( clippy::wildcard_imports ) ]
-  use crate::*;
   use core::fmt::Write;
 
+use error_tools::untyped::Result;
   // use wtools::error::{ Result, err };
   // use error::err;
 
@@ -83,7 +83,7 @@ mod private
     .collect()
   }
 
-  #[ derive( Debug, error::typed::Error ) ]
+  #[ derive( Debug, error_tools::typed::Error ) ]
   #[ error( "Invalid table" ) ]
   pub struct FormatTableError;
 
