@@ -17,18 +17,18 @@
 //!
 //! The `dbg!` macro is utilized to print the constructed `Structure1` instance, confirming that all fields are correctly assigned, including the handling of optional fields and collections.
 
-#[cfg(not(all(
-  feature = "enabled",
-  feature = "derive_former",
-  any(feature = "use_alloc", not(feature = "no_std"))
-)))]
-fn main() {}
+//#[cfg(not(all(
+//  feature = "enabled",
+//  feature = "derive_former",
+//  any(feature = "use_alloc", not(feature = "no_std"))
+//)))]
+//fn main() {}
 
-#[cfg(all(
-  feature = "enabled",
-  feature = "derive_former",
-  any(feature = "use_alloc", not(feature = "no_std"))
-))]
+//#[cfg(all(
+//  feature = "enabled",
+//  feature = "derive_former",
+//  any(feature = "use_alloc", not(feature = "no_std"))
+//))]
 fn main() {
   use former::Former;
 

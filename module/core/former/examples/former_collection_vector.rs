@@ -14,18 +14,19 @@ fn main() {}
   any(feature = "use_alloc", not(feature = "no_std"))
 ))]
 fn main() {
-  #[derive(Debug, PartialEq, former::Former)]
+  #[derive(Debug, PartialEq, Default, former::Former)]
+  #[debug]
   pub struct StructWithVec {
     #[subform_collection( definition = former::VectorDefinition )]
-    vec: Vec<&'static str>,
+    vec: Vec<String>,
   }
 
-  let instance = StructWithVec::former().vec().add("apple").add("banana").end().form();
+  let instance = StructWithVec::former().vec().add("apple".to_string()).add("banana".to_string()).end().form();
 
   assert_eq!(
     instance,
     StructWithVec {
-      vec: vec!["apple", "banana"]
+      vec: vec!["apple".to_string(), "banana".to_string()]
     }
   );
   dbg!(instance);

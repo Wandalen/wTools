@@ -59,7 +59,7 @@ types_former = [ "former_types/types_former" ]
 # types_component_assign = [ "former_types/types_component_assign" ]
 
 [dependencies]
-former_meta = { workspace = true, features = [ "proc-macro-debug" ] } # Added proc-macro-debug feature
+former_meta = { workspace = true, features = [ "proc-macro-debug", "former_diagnostics_print_generated" ] } # Added debug features
 former_types = { workspace = true }
 # collection_tools = { workspace = true, features = [ "collection_constructors" ] }
 

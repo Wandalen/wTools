@@ -664,6 +664,7 @@ specific needs of the broader forming context. It mandates the implementation of
     for #former < Definition >
     where
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
+      Definition : #lifetime_name,
       Definition::Storage : #lifetime_name,
       Definition::Context : #lifetime_name,
       Definition::End : #lifetime_name,

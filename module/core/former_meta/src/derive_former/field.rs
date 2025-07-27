@@ -331,6 +331,9 @@ impl<'a> FormerField<'a> {
         item,
         former,
         former_storage,
+        struct_generics_impl,
+        struct_generics_ty,
+        struct_generics_where,
         former_generics_impl,
         former_generics_ty,
         former_generics_where,
@@ -455,6 +458,9 @@ field : {field_ident}",
     item: &syn::Ident,
     former: &syn::Ident,
     former_storage: &syn::Ident,
+    struct_generics_impl: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
+    struct_generics_ty: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
+    struct_generics_where: &syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
     former_generics_impl: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
     former_generics_ty: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
     former_generics_where: &syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
@@ -464,6 +470,13 @@ field : {field_ident}",
     let field_ident = &self.ident;
     let field_typ = &self.non_optional_ty;
     let params = typ::type_parameters(field_typ, ..);
+    
+    // Generate the correct struct type with or without generics
+    let struct_type = if struct_generics_ty.is_empty() {
+      qt! { #item }
+    } else {
+      qt! { #item< #struct_generics_ty > }
+    };
 
     #[allow(clippy::useless_attribute, clippy::items_after_statements)]
     use convert_case::{Case, Casing};
@@ -494,8 +507,8 @@ field : {field_ident}",
         #def_type // <<< Use the parsed syn::Type directly
         <
           #( #params, )*
-          Self,
-          Self,
+          #former< #former_generics_ty >,
+          #former< #former_generics_ty >,
           #subform_collection_end< Definition >,
         >
       }
@@ -503,7 +516,7 @@ field : {field_ident}",
     } else {
       qt! {
         <
-          #field_typ as former::EntityToDefinition< Self, Self, #subform_collection_end< Definition > >
+          #field_typ as former::EntityToDefinition< #former< #former_generics_ty >, #former< #former_generics_ty >, #subform_collection_end< Definition > >
         >::Definition
       }
       // < Vec< String > as former::EntityToDefinition< Self, Self, Struct1SubformCollectionVec1End > >::Definition
@@ -532,6 +545,7 @@ field : {field_ident}",
         #subformer_definition::Storage : 'a,
         #subformer_definition::Context : 'a,
         #subformer_definition::End : 'a,
+        Definition : 'a,
       {
         Former2::former_begin
         (
@@ -680,10 +694,7 @@ with the new content generated during the subforming process.
       }
 
       #[ automatically_derived ]
-      impl< #former_generics_impl > former::FormingEnd
-      <
-        #subformer_definition_types,
-      >
+      impl< #former_generics_impl > former::FormingEnd< #subformer_definition_types >
       for #subform_collection_end< Definition >
       where
         #former_generics_where
