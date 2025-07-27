@@ -1,7 +1,7 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
 
   use std::fmt::Formatter;
@@ -169,7 +169,7 @@ mod private
     let local_package_files : HashSet< _ > = left.list().into_iter().collect();
     let remote_package_files : HashSet< _ > = right.list().into_iter().collect();
 
-    
+
     let local_only = local_package_files.difference( &remote_package_files );
     let remote_only = remote_package_files.difference( &local_package_files );
     let both = local_package_files.intersection( &remote_package_files );
@@ -187,7 +187,7 @@ mod private
 
     for &path in both
     {
-      
+
       // unwraps are safe because the paths to the files was compared previously
       let local = left.content_bytes( path ).unwrap();
       let remote = right.content_bytes( path ).unwrap();
@@ -216,11 +216,11 @@ mod private
             items.push( item );
           }
         }
-        
+
         report.0.insert( path.to_path_buf(), DiffItem::Content( items ) );
       }
     }
-    
+
     report
   }
 }

@@ -1,6 +1,6 @@
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   // use path::AbsolutePath;
   // use error::{ untyped::Error };

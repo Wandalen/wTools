@@ -1,7 +1,7 @@
 /// Define a private namespace for all its items.
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use entity::test::{ TestPlan, TestOptions, TestsReport, tests_run };
 
@@ -92,7 +92,7 @@ mod private
       // aaa : for Petro : non readable
       // aaa : readable and with actual command
       return Err
-      ( 
+      (
         (
           report,
           format_err!
@@ -102,7 +102,7 @@ Try to install it with `rustup install {}` command(-s)",
             channels_diff.iter().join( ", " ),
             channels_diff.iter().join( " " )
           )
-        ) 
+        )
       )
     }
     report.dry = dry;

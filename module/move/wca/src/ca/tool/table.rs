@@ -1,6 +1,6 @@
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use core::fmt::Write;
 
 use error_tools::untyped::Result;

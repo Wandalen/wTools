@@ -1,7 +1,7 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use std::
   {
@@ -145,8 +145,8 @@ mod private
       let module_name = package.name()?;
       let repository_url = package.repository()?
       .ok_or_else::< error::untyped::Error, _ >
-      ( 
-        || error::untyped::format_err!( "Fail to find repository_url in module`s Cargo.toml" ) 
+      (
+        || error::untyped::format_err!( "Fail to find repository_url in module`s Cargo.toml" )
       )?;
 
       let discord_url = package

@@ -1,7 +1,7 @@
 // module/move/willbe/src/action/crate_doc.rs
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
 
   use process_tools::process;
@@ -101,7 +101,7 @@ mod private
   ///
   /// # Returns
   /// Returns `Ok(CrateDocReport)` if successful, otherwise returns `Err((CrateDocReport, CrateDocError))`.
-  /// 
+  ///
   /// # Errors
   /// Returns an error if the command arguments are invalid, the workspace cannot be loaded
   #[ allow( clippy::too_many_lines, clippy::result_large_err ) ]
@@ -112,13 +112,13 @@ mod private
     output_path_req : Option< PathBuf >,
   ) -> ResultWithReport< CrateDocReport, CrateDocError >
   {
-    let mut report = CrateDocReport 
+    let mut report = CrateDocReport
     {
       crate_dir : Some( crate_dir.clone() ),
       status : format!( "Starting documentation generation for {}", crate_dir.as_ref().display() ),
       ..Default::default()
     };
-  
+
 
     // --- Get crate name early for --package argument and file naming ---
     let manifest_path_for_name = crate_dir.as_ref().join( "Cargo.toml" );

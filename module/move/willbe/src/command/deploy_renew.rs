@@ -1,11 +1,11 @@
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
 
   use wca::VerifiedCommand;
   use error::{ untyped::Context };
-  #[ allow( clippy::wildcard_imports ) ]
+
   use action::deploy_renew::*;
 
   ///

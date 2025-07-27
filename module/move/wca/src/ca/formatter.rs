@@ -1,7 +1,7 @@
 mod private
 {
 
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use iter_tools::Itertools;
   use ca::aggregator::Order;

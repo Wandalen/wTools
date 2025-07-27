@@ -1,7 +1,7 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use std::
   {
@@ -11,7 +11,7 @@ mod private
   use path::Path;
   use collection::HashSet;
   use error::untyped::{ Error };
-  #[ allow( clippy::wildcard_imports ) ]
+
   use process_tools::process::*;
 
   /// The `Channel` enum represents different release channels for rust.

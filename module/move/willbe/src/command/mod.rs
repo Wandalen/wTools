@@ -2,7 +2,7 @@
 /// Define a private namespace for all its items.
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use wca::{ Type, CommandsAggregator, CommandsAggregatorFormer };
 

@@ -1,7 +1,7 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use std::
   {
@@ -612,15 +612,15 @@ ensure that at least one remotest is present in git. ",
   {
     match stability
     {
-      Stability::Experimental => 
+      Stability::Experimental =>
       " [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)".into(),
-      Stability::Stable => 
+      Stability::Stable =>
       " [![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](https://github.com/emersion/stability-badges#stable)".into(),
-      Stability::Deprecated => 
+      Stability::Deprecated =>
       " [![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/emersion/stability-badges#deprecated)".into(),
-      Stability::Unstable => 
+      Stability::Unstable =>
       " [![stability-unstable](https://img.shields.io/badge/stability-unstable-yellow.svg)](https://github.com/emersion/stability-badges#unstable)".into(),
-      Stability::Frozen => 
+      Stability::Frozen =>
       " [![stability-frozen](https://img.shields.io/badge/stability-frozen-blue.svg)](https://github.com/emersion/stability-badges#frozen)".into(),
     }
   }

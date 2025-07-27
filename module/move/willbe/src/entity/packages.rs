@@ -1,7 +1,7 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use std::fmt::Formatter;
   use package::PackageName;
@@ -44,7 +44,7 @@ mod private
     }
   }
 
-  
+
   /// Provides a means to filter both packages and dependencies of an existing package metadata set.
   ///
   /// # Arguments

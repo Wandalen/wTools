@@ -22,7 +22,7 @@ mod private
     algo::toposort as pg_toposort,
   };
   use petgraph::graph::NodeIndex;
-  #[ allow( clippy::wildcard_imports ) ]
+
   use petgraph::prelude::*;
 
   use error::typed::Error;

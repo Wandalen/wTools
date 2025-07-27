@@ -1,6 +1,6 @@
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use ca::help::{ HelpGeneratorOptions, generate_help_content, LevelOfDetail };
   use verifier::VerifiedCommand;

@@ -2,7 +2,7 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
 
   use std::{ fmt, str };
@@ -447,7 +447,7 @@ mod private
   ///
   /// The function may panic if it encounters a package version that cannot be parsed
   /// into a valid `semver::VersionReq`. This can happen with malformed `Cargo.toml` files.
-  /// 
+  ///
   /// # Errors
   ///
   /// Returns an error if it fails to read the workspace manifest, parse dependencies,

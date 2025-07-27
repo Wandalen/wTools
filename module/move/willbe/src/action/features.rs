@@ -1,7 +1,7 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
 
   use std::fmt;
@@ -49,12 +49,12 @@ mod private
         ( | ( feature, dependencies ) |
         {
           // fix clippy
-          let feature = if self.with_features_deps 
+          let feature = if self.with_features_deps
           {
             let deps = dependencies.join( ", " );
             format!( "\t{feature}: [{deps}]" )
-          } 
-          else 
+          }
+          else
           { format!( "\t{feature}" ) };
           writeln!( f, "{feature}" )
         }
@@ -96,7 +96,7 @@ mod private
     packages
     // .iter()
     .for_each
-    ( 
+    (
       | package |
       {
         let features = package.features();

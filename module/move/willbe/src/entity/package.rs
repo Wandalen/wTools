@@ -1,7 +1,7 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use std::hash::Hash;
   use crates_tools::CrateArchive;
@@ -29,7 +29,7 @@ mod private
   #[ derive( Debug, Clone ) ]
   pub enum Package< 'a >
   {
-    
+
     /// `Cargo.toml` file.
     Manifest( Box< Manifest > ), // fix clippy
     /// Cargo package package.

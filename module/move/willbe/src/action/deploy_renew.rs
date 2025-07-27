@@ -1,10 +1,10 @@
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use std::path::Path;
   use error::untyped::Context;
-  #[ allow( clippy::wildcard_imports ) ]
+
   use tool::template::*;
 
   /// Template for creating deploy files.
@@ -17,8 +17,8 @@ mod private
   impl DeployTemplate
   {
     /// Creates am instance of `[TemplateHolder]` for deployment template.
-    /// 
-    /// Used for properly initializing a template 
+    ///
+    /// Used for properly initializing a template
     #[ must_use ]
     #[ allow( clippy::should_implement_trait ) ]
     pub fn default() -> TemplateHolder

@@ -9,7 +9,7 @@
 mod private
 {
 
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
 
   /// Facilitates the conversion of collection entries to their corresponding value representations.
@@ -512,7 +512,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  // #[ allow( clippy::wildcard_imports ) ]
+  //
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -522,7 +522,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  // #[ allow( clippy::wildcard_imports ) ]
+  //
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -532,7 +532,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  // #[ allow( clippy::wildcard_imports ) ]
+  //
   use super::*;
 
   #[ doc( inline ) ]
