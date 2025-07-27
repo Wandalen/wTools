@@ -10,7 +10,7 @@
 ### Progress
 *   **Roadmap Milestone:** N/A
 *   **Primary Editable Crate:** `module/core/former_types`
-*   **Overall Progress:** 6/6 increments complete
+*   **Overall Progress:** 7/7 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Create MRE Test for Lifetime Error
     *   ✅ Increment 2: Add Lifetime Parameter to `FormerBegin` Trait and Function
@@ -19,6 +19,7 @@
     *   ✅ Increment 4: Verify the Fix with MRE and Regression Tests
     *   ✅ Increment 5: Finalization
     *   ✅ Increment 6: Fix Warnings and Clippy Lints
+    *   ✅ Increment 7: Extend Test Coverage and Enforce Codestyle
 
 ### Permissions & Boundaries
 *   **Mode:** code
@@ -47,6 +48,8 @@
 *   The change must resolve the `E0726` error when `#[derive(Former)]` is used on a struct with a lifetime.
 *   Existing tests in `former_types` must continue to pass, ensuring no regressions are introduced.
 *   All `cargo test` and `cargo clippy` runs must complete without warnings or errors.
+*   Test coverage for `FormerBegin` and `CollectionFormer` should be comprehensive, covering various scenarios and edge cases.
+*   All modified and new code must strictly adhere to the project's codestyle rules.
 
 ### Tests
 | Test ID | Status | Notes |
@@ -406,3 +409,36 @@
 *   **Increment Verification:**
     *   `cargo test` and `cargo clippy` pass without warnings or errors.
 *   **Commit Message:** "fix(former_types): Resolve compiler warnings and clippy lints"
+
+##### Increment 7: Extend Test Coverage and Enforce Codestyle
+*   **Goal:** Extend test coverage for `FormerBegin` and `CollectionFormer` and ensure strict adherence to codestyle rules across all modified files.
+*   **Specification Reference:** User Feedback
+*   **Steps:**
+    1.  **Test Coverage Evaluation:**
+        *   Review the `FormerBegin` trait and its implementations (`forming.rs`, `collection.rs`).
+        *   Review `CollectionFormer` and its methods.
+        *   Identify any missing test cases for edge cases, different parameter combinations, or error conditions.
+        *   If gaps are found, add new test functions to `module/core/former_types/tests/inc/lifetime_mre_test.rs` or create new test files as appropriate. Ensure new tests follow "One Aspect Per Test" and "Explicit Parameters to Avoid Fragility" rules.
+        *   Update the `### Tests` table with any new tests and their status.
+    2.  **Codestyle Enforcement:**
+        *   Review `module/core/former_types/src/forming.rs`, `module/core/former_types/src/collection.rs`, `module/core/former_types/tests/inc/lifetime_mre_test.rs`, and `module/core/former_types/tests/tests.rs` against the `codestyle` rulebook.
+        *   Pay close attention to:
+            *   New Lines for Blocks (`{`, `(`, `<` on new lines)
+            *   Indentation (2 spaces)
+            *   Chained Method Calls (aligned)
+            *   Spaces Around Symbols (`:`, `=`, operators, excluding `::`)
+            *   Spaces for Blocks (inside `{}`, `()`, `[]`, `<>`)
+            *   Attributes (spaces inside `[]` and `()`, each on own line)
+            *   Where Clause Formatting (new line, one parameter per line)
+            *   Function Signature Formatting (parameters on new lines, return type on new line)
+            *   Match Expression Formatting (opening brace on new line for multi-line arms)
+            *   Lifetime Annotations (no spaces between `&` and lifetime)
+        *   Apply necessary `search_and_replace` or `write_to_file` operations to fix any violations.
+    3.  Execute `timeout 300 cargo test -p former_types`.
+    4.  Execute `timeout 300 cargo clippy -p former_types -- -D warnings`.
+    5.  **Critically analyze the output.** Ensure no warnings or errors are present.
+*   **Increment Verification:**
+    *   All identified test coverage gaps are addressed with new tests.
+    *   All modified files strictly adhere to the codestyle rules.
+    *   `cargo test` and `cargo clippy` pass without warnings or errors.
+*   **Commit Message:** "refactor(former_types): Extend test coverage and enforce codestyle"
