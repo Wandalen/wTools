@@ -1,7 +1,0 @@
-[package]
-name = "former_mre"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-former = { path = "../former" }

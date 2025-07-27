@@ -25,8 +25,7 @@ pub enum EnumScalarGeneric<T : Bound>
   #[scalar] // Enabled for Rule 1d testing
   Variant1(InnerScalar<T>), // Tuple variant with one generic field
 
-  // TEMP: Removing Variant2 for Increment 3 debugging
-  // Variant2(InnerScalar<T>, bool), // Tuple variant with generic and non-generic fields
+  Variant2(InnerScalar<T>, bool), // Tuple variant with generic and non-generic fields
 }
 
 // --- Include the Test Logic ---

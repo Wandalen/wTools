@@ -263,3 +263,6 @@
 *   Implementing features for named (struct-like) or true unit enum variants.
 *   Refactoring any code outside of the `former_meta` and `former` crates.
 *   Adding new features not specified in the `spec.md` for unnamed variants.
+
+### Notes & Insights
+*   **[2025-07-27] Critical Fix for Generic Enum Variant Constructors:** When generating variant constructors for generic enums, the macro must use turbofish syntax. The pattern `#enum_name #ty_generics :: #variant_name` generates incorrect code like `EnumName < T > :: Variant`. The correct pattern is `#enum_name :: #ty_generics :: #variant_name` which generates `EnumName :: < T > :: Variant`. This was discovered and fixed in `former_meta/src/derive_former/former_enum/tuple_single_field_scalar.rs` line 22. This pattern applies to ALL variant constructor generation for generic enums.
