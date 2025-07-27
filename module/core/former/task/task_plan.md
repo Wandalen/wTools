@@ -18,8 +18,10 @@
     *   ✅ Increment 1: Initial Analysis and Handler File Setup
     *   ✅ Increment 2: Implement Zero-Field Tuple Variant - Scalar Constructor (Rules 1b, 3b)
     *   ✅ Increment 3: Implement Zero-Field Tuple Variant - `#[subform_scalar]` Compile-Fail (Rule 2b)
+    *   ✅ Increment 3.1: Focused Debugging - Fix `wca` Compilation Errors
     *   ✅ Increment 4: Implement Single-Field Tuple Variant - Scalar Constructor (Rule 1d)
     *   ⏳ Increment 5: Implement Single-Field Tuple Variant - Subform Constructor (Rules 2d, 3d)
+    *   ⚫ Increment 5.1: Focused Debugging - Diagnose and fix `Failing (Stuck)` tests: `generics_shared_tuple_*.rs` and `usecase1_*.rs`
     *   ⚫ Increment 6: Implement Multi-Field Tuple Variant - Scalar Constructor (Rule 1f)
     *   ⚫ Increment 7: Implement Multi-Field Tuple Variant - Implicit Variant Former (Rule 3f)
     *   ⚫ Increment 8: Implement Multi-Field Tuple Variant - `#[subform_scalar]` Compile-Fail (Rule 2f)
@@ -68,17 +70,16 @@
 | `tuple_zero_fields_*.rs` | Fixed (Monitored) | `test_zero_field_default_static_constructor` passed unexpectedly. |
 | `compile_fail/tuple_zero_subform_scalar_error.rs` | Fixed (Monitored) | Test failed with expected compile error. |
 | `scalar_generic_tuple_*.rs` | Failing (Stuck) | Compiler issue (E0392) with generic enum and macro expansion. Temporarily disabled. |
-| `scalar_generic_tuple_*.rs` | Not Started | |
-| `basic_*.rs` | Not Started | |
-| `generics_shared_tuple_*.rs` | Not Started | |
-| `usecase1_*.rs` | Not Started | |
+| `basic_*.rs` | Failing (New) | Failed after uncommenting. |
+| `generics_shared_tuple_*.rs` | Failing (Stuck) | Compiler issue (E0392) with generic enum and macro expansion. |
+| `usecase1_*.rs` | Failing (Stuck) | Import and trait issues. |
 | `tuple_multi_scalar_*.rs` | Not Started | |
 | `tuple_multi_default_*.rs` | Not Started | |
 | `compile_fail/tuple_multi_subform_scalar_error.rs` | Not Started | |
 | `standalone_constructor_tuple_*.rs` | Not Started | |
 | `standalone_constructor_args_tuple_*.rs` | Not Started | |
 | `tuple_multi_standalone_*.rs` | Not Started | |
-| `Crate Conformance Check` | Failing (New) | `wca` crate fails to compile due to `error_tools` integration issues. |
+| `Crate Conformance Check` | Fixed (Monitored) | `wca` crate compilation issues resolved. |
 | `tuple_multi_standalone_args_*.rs` | Not Started | |
 
 ### Crate Conformance Check Procedure
@@ -108,7 +109,7 @@
     1.  In `module/core/former/tests/inc/enum_unnamed_tests/mod.rs`, uncomment the `tuple_zero_fields_derive` and `tuple_zero_fields_manual` modules.
     2.  Execute `cargo test --package former --test tests -- --nocapture test_zero_field_default_static_constructor`. Expect failure.
     3.  Implement the logic in `module/core/former_meta/src/derive_former/former_enum/tuple_zero_fields_handler.rs` to generate a direct constructor.
-    4.  Update the dispatch logic in `former_enum.rs` to call this handler for zero-field tuple variants.
+    4.  Update the dispatch logic in `former_enum.rs`.
     5.  Execute `cargo test --package former --test tests -- --nocapture tuple_zero_fields`. Expect success.
     6.  Update the `### Tests` table with the status `Passed`.
     7.  Perform Crate Conformance Check.
@@ -178,6 +179,27 @@
 *   **Increment Verification:**
     *   All subform single-field tuple tests pass.
 *   **Commit Message:** "feat(former): Implement subform constructor for single-field tuple variants"
+
+##### Increment 5.1: Focused Debugging - Diagnose and fix `Failing (Stuck)` tests: `generics_shared_tuple_*.rs` and `usecase1_*.rs`
+*   **Goal:** Diagnose and fix the `Failing (Stuck)` tests: `generics_shared_tuple_*.rs` and `usecase1_*.rs`.
+*   **Specification Reference:** N/A
+*   **Steps:**
+    1.  **Apply Problem Decomposition:** Analyze the `cargo test` output for `generics_shared_tuple_derive.rs` and `usecase1_derive.rs` to identify the root cause of the compilation errors, specifically the "comparison operators cannot be chained" and "proc-macro derive produced unparsable tokens" errors.
+    2.  Read `module/core/former_meta/src/derive_former/former_enum.rs` to review how the enum's `impl` block and variant constructors are generated, paying close attention to the handling of generics.
+    3.  Read `module/core/former_meta/src/derive_former/former_enum/tuple_single_field_subform.rs` to review the variant constructor generation.
+    4.  Formulate a hypothesis about the cause of the unparsable tokens and the "comparison operators cannot be chained" error, focusing on the interaction between `quote!` and `syn::Generics` when generating the enum's type path.
+    5.  **Isolate the test case:** Temporarily comment out `basic_derive` and `basic_manual` in `module/core/former/tests/inc/enum_unnamed_tests/mod.rs` to focus solely on `generics_shared_tuple_derive` and `usecase1_derive`.
+    6.  Add `#[debug]` attribute to `EnumG3` in `module/core/former/tests/inc/enum_unnamed_tests/generics_shared_tuple_derive.rs` and `usecase1_derive.rs` to inspect the generated code.
+    7.  Run `cargo test --package former --test tests -- --nocapture generics_shared_tuple_derive` and `cargo test --package former --test tests -- --nocapture usecase1_derive` and capture the debug output.
+    8.  Compare the generated code with the expected code (from `generics_shared_tuple_manual.rs` and `usecase1_manual.rs`) to pinpoint the exact syntax error.
+    9.  Based on the comparison, modify `former_meta/src/derive_former/former_enum.rs` and/or `former_meta/src/derive_former/former_enum/tuple_single_field_subform.rs` to correct the generated code, ensuring proper handling of generics and turbofish syntax for both the enum `impl` block and variant constructors.
+    10. Remove the `#[debug]` attribute from the test files.
+    11. Uncomment `basic_derive` and `basic_manual` in `module/core/former/tests/inc/enum_unnamed_tests/mod.rs`.
+    12. Run all newly enabled tests: `cargo test --package former --test tests -- --nocapture basic_derive`, `cargo test --package former --test tests -- --nocapture basic_manual`, `cargo test --package former --test tests -- --nocapture generics_shared_tuple_derive`, `cargo test --package former --test tests -- --nocapture generics_shared_tuple_manual`, `cargo test --package former --test tests -- --nocapture usecase1_derive`. Expect success.
+    13. Update the `### Tests` table with the status `Fixed (Monitored)` for `generics_shared_tuple_*.rs` and `usecase1_*.rs`.
+*   **Increment Verification:**
+    *   The `generics_shared_tuple_*.rs` and `usecase1_*.rs` tests pass.
+*   **Commit Message:** "fix(former): Resolve generic enum derive and subform issues"
 
 ##### Increment 6: Implement Multi-Field Tuple Variant - Scalar Constructor (Rule 1f)
 *   **Goal:** Implement the scalar constructor for multi-field tuple variants like `MyVariant(i32, bool)` when `#[scalar]` is used.
@@ -287,4 +309,4 @@
 *   Adding new features not specified in the `spec.md` for unnamed variants.
 
 ### Notes & Insights
-*   **[2025-07-27] Critical Fix for Generic Enum Variant Constructors:** When generating variant constructors for generic enums, the macro must use turbofish syntax. The pattern `#enum_name #ty_generics :: #variant_name` generates incorrect code like `EnumName < T > :: Variant`. The correct pattern is `#enum_name :: #ty_generics :: #variant_name` which generates `EnumName :: < T > :: Variant`. This was discovered and fixed in `former_meta/src/derive_former/former_enum/tuple_single_field_scalar.rs` line 22. This pattern applies to ALL variant constructor generation for generic enums.
+*   **[2025-07-27] Critical Fix for Generic Enum Variant Constructors:** When generating variant constructors for generic enums, the macro must use turbofish syntax. The pattern `#enum_name #ty_generics :: #variant_name` generates incorrect code like `EnumName < T > :: Variant`. The correct pattern is `#enum_name :: < T > :: Variant` which generates `EnumName :: < T > :: Variant`. This was discovered and fixed in `former_meta/src/derive_former/former_enum/tuple_single_field_scalar.rs` line 22. This pattern applies to ALL variant constructor generation for generic enums.

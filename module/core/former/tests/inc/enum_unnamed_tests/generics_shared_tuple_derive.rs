@@ -34,7 +34,7 @@ pub struct InnerG3< T : BoundB > // BoundB required by the inner struct
 // Apply Former derive here. This is what we are testing.
 #[ derive( Debug, PartialEq, Clone, former::Former ) ]
 // #[ derive( Debug, PartialEq, Clone ) ]
-// #[ debug ] // Uncomment to see generated code later
+#[ debug ] // Uncomment to see generated code later
 pub enum EnumG3< T : BoundA + BoundB > // BoundA required by enum, BoundB required by InnerG3<T>
 {
   V1( InnerG3< T > ), // Inner type uses T

@@ -39,21 +39,21 @@
 //!         *   TN.5 (`#[scalar]` + Standalone): Rule 1f, 4 (`standalone_constructor_args_*`)
 //!
 //! Note: The effect of `#[arg_for_constructor]` is covered by Rule 4 in conjunction with the base behavior.
-
+//!
 use super::*;
 
 // Common types for scalar_generic_tuple tests
 include!( "scalar_generic_tuple_common_types.rs" );
 // Uncomment modules as they are addressed in increments.
 
-mod basic_derive;
-mod basic_manual;
+// mod basic_derive;
+// mod basic_manual;
 // mod basic_only_test; // This is included by the derive and manual files
 // mod generics_in_tuple_variant_only_test;
 // mod generics_independent_tuple_derive;
 // mod generics_independent_tuple_manual;
 // mod generics_independent_tuple_only_test;
-// mod generics_shared_tuple_derive;  // E0392: type parameter T is never used (Rust analyzer issue)  
+mod generics_shared_tuple_derive;  // E0392: type parameter T is never used (Rust analyzer issue)
 mod generics_shared_tuple_manual;
 // mod generics_shared_tuple_only_test;
 // mod test_syntax;
@@ -71,7 +71,7 @@ mod tuple_multi_scalar_manual;
 // mod tuple_multi_standalone_derive;
 // // mod tuple_multi_standalone_manual;
 // // mod tuple_multi_standalone_only_test;
-// mod usecase1_derive;  // Import and trait issues
+mod usecase1_derive;  // Import and trait issues
 // mod usecase1_manual;  // Import and trait issues
 // mod enum_named_fields_unnamed_derive;
 // mod enum_named_fields_unnamed_manual;

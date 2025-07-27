@@ -16,10 +16,10 @@
 
 #[allow(unused_imports)]
 use super::*;
-
+use former::Former;
 
 // Define the inner structs that the enum variants will hold.
-// These need to derive former::Former themselves if you want to build them easily.
+// These need to derive Former themselves if you want to build them easily.
 #[derive(Debug, Clone, PartialEq, former::Former)]
 pub struct Prompt { pub content: String }
 
@@ -34,8 +34,8 @@ pub struct Run { pub command: String }
 
 // Derive former::Former on the enum.
 // By default, this should generate subformer starter methods for each variant.
-// #[ debug ]
 #[derive(Debug, Clone, PartialEq, former::Former)]
+#[ debug ]
 pub enum FunctionStep
 {
   Prompt(Prompt),
