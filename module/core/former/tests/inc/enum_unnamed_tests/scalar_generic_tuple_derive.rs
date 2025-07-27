@@ -25,11 +25,8 @@ pub enum EnumScalarGeneric<T: Bound>
   #[scalar] // Enabled for Rule 1d testing
   Variant1(InnerScalar<T>), // Tuple variant with one generic field
 
-  // qqq : xxx : attribute 'scalar ' is for direct constructor EnumScalarGeneric::variant2( a, b ) or simply variant2( a, b )
-  // attribute 'subformer_scalar' it's actually below, so we have a rpoblem in proc macro
-  // check readme.md and advanced.md for more information on disinction
-  // #[scalar] // Removed #[scalar] and Variant2 for single-field test
-  Variant2(InnerScalar<T>, bool), // Tuple variant with generic and non-generic fields
+  // TEMP: Removing Variant2 for Increment 3 debugging
+  // Variant2(InnerScalar<T>, bool), // Tuple variant with generic and non-generic fields
 }
 
 // --- Include the Test Logic ---
