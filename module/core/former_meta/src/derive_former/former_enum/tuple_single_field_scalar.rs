@@ -19,7 +19,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
     #vis fn #method_name ( _0 : impl Into< #field_type > ) -> #enum_name #ty_generics
     #where_clause
     {
-      #enum_name :: #variant_name( _0.into() )
+      #enum_name :: #ty_generics :: #variant_name( _0.into() )
     }
   };
 
