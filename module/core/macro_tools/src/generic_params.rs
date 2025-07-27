@@ -4,7 +4,7 @@
 
 /// Define a private namespace for all its items.
 mod private {
-  #[allow(clippy::wildcard_imports)]
+
   use crate::*;
   use crate::IterTrait;
   // use iter_tools::IterTrait;
@@ -575,7 +575,7 @@ pub use own::*;
 #[allow(unused_imports)]
 /// Own namespace of the module.
 pub mod own {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
 
   #[doc(inline)]
@@ -587,7 +587,7 @@ pub mod own {
 /// Orphan namespace of the module.
 #[allow(unused_imports)]
 pub mod orphan {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   #[doc(inline)]
   pub use exposed::*;
@@ -596,7 +596,7 @@ pub mod orphan {
 /// Exposed namespace of the module.
 #[allow(unused_imports)]
 pub mod exposed {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   pub use super::super::generic_params;
 

@@ -116,7 +116,7 @@ mod private {
 /// Own namespace of the module.
 #[allow(unused_imports)]
 pub mod own {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   #[doc(inline)]
   #[allow(clippy::useless_attribute, clippy::pub_use)]
@@ -131,7 +131,7 @@ pub use own::*;
 /// Shared with parent namespace of the module
 #[allow(unused_imports)]
 pub mod orphan {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   #[doc(inline)]
   #[allow(clippy::useless_attribute, clippy::pub_use)]
@@ -141,7 +141,7 @@ pub mod orphan {
 /// Exposed namespace of the module.
 #[allow(unused_imports)]
 pub mod exposed {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   #[doc(inline)]
   #[allow(clippy::useless_attribute, clippy::pub_use)]
@@ -151,7 +151,7 @@ pub mod exposed {
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[allow(unused_imports)]
 pub mod prelude {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   #[allow(clippy::useless_attribute, clippy::pub_use)]
   pub use private::debug_assert_id;

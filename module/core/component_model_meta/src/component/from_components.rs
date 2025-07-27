@@ -1,4 +1,4 @@
-#[allow(clippy::wildcard_imports)]
+
 use super::*;
 // Use re-exports from macro_tools
 use macro_tools::{attr, diag, item_struct, Result, proc_macro2::TokenStream};

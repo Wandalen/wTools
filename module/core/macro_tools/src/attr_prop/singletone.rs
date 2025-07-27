@@ -12,7 +12,7 @@
 //! This is useful for attributes that need to enable or disable features or flags.
 
 use core::marker::PhantomData;
-#[allow(clippy::wildcard_imports)]
+
 use crate::*;
 // use component_model_types::Assign;
 

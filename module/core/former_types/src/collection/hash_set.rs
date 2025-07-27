@@ -1,5 +1,5 @@
 //! This module provides a builder pattern implementation (`HashSetFormer`) for `HashSet`-like collections. It is designed to extend the builder pattern, allowing for fluent and dynamic construction of sets within custom data structures.
-#[allow(clippy::wildcard_imports)]
+
 use crate::*;
 use collection_tools::HashSet;
 

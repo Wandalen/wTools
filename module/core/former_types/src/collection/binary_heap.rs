@@ -5,7 +5,7 @@
 //! as subformer, enabling fluid and intuitive manipulation of binary heaps via builder patterns.
 //!
 
-#[allow(clippy::wildcard_imports)]
+
 use crate::*;
 #[allow(unused)]
 use collection_tools::BinaryHeap;

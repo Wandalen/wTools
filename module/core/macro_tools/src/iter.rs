@@ -12,7 +12,7 @@ pub use own::*;
 /// Tailoted iterator.
 #[allow(unused_imports)]
 pub mod own {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   #[doc(inline)]
   pub use orphan::*;
@@ -24,7 +24,7 @@ pub mod own {
 /// Orphan namespace of the module.
 #[allow(unused_imports)]
 pub mod orphan {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   #[doc(inline)]
   pub use exposed::*;
@@ -33,7 +33,7 @@ pub mod orphan {
 /// Exposed namespace of the module.
 #[allow(unused_imports)]
 pub mod exposed {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   // pub use super::super::iter;
 

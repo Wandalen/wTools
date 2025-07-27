@@ -4,7 +4,7 @@
 //! this module abstracts the operations on list-like data structures, making them more flexible and easier to integrate as
 //! as subformer, enabling fluid and intuitive manipulation of lists via builder patterns.
 //!
-#[allow(clippy::wildcard_imports)]
+
 use crate::*;
 #[allow(unused)]
 use collection_tools::LinkedList;

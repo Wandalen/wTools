@@ -5,7 +5,7 @@
 //! as subformer, enabling fluid and intuitive manipulation of hashmaps via builder patterns.
 //!
 
-#[allow(clippy::wildcard_imports)]
+
 use crate::*;
 use collection_tools::HashMap;
 

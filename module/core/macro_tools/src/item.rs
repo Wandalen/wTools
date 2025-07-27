@@ -5,7 +5,7 @@
 
 /// Define a private namespace for all its items.
 mod private {
-  #[allow(clippy::wildcard_imports)]
+
   use crate::*;
 
   /// Ensures the last field in a struct has a trailing comma.
@@ -84,7 +84,7 @@ pub use own::*;
 /// Own namespace of the module.
 #[allow(unused_imports)]
 pub mod own {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   #[doc(inline)]
   pub use orphan::*;
@@ -95,7 +95,7 @@ pub mod own {
 /// Orphan namespace of the module.
 #[allow(unused_imports)]
 pub mod orphan {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   #[doc(inline)]
   pub use exposed::*;

@@ -1,5 +1,5 @@
 // File: module/core/former_meta/src/derive_former.rs
-#[allow(clippy::wildcard_imports)]
+
 use super::*;
 use macro_tools::{
   diag, typ, Result,
@@ -14,13 +14,13 @@ mod former_struct;
 use former_struct::former_for_struct;
 
 mod field_attrs;
-#[allow(clippy::wildcard_imports)]
+
 use field_attrs::*;
 mod field;
-#[allow(clippy::wildcard_imports)]
+
 use field::*;
 mod struct_attrs;
-#[allow(clippy::wildcard_imports)]
+
 use struct_attrs::*;
 
 /// Generates the code for implementing the `FormerMutator` trait for a specified former definition type.

@@ -4,7 +4,7 @@
 //!
 
 use core::marker::PhantomData;
-#[allow(clippy::wildcard_imports)]
+
 use crate::*;
 // use component_model_types::Assign;
 

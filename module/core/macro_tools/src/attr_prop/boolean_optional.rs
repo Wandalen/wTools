@@ -3,7 +3,7 @@
 //! Defaults to `false`.
 //!
 use core::marker::PhantomData;
-#[allow(clippy::wildcard_imports)]
+
 use crate::*;
 use components::Assign;
 

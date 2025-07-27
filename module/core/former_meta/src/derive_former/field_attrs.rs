@@ -1,6 +1,6 @@
 // File: module/core/former_meta/src/derive_former/field_attrs.rs
 //! Attributes of a field.
-#[allow(clippy::wildcard_imports)]
+
 use super::*;
 use macro_tools::{
   ct,

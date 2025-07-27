@@ -10,7 +10,7 @@ mod private {
   /// Custom keywords
   ///
   pub mod kw {
-    #[allow(clippy::wildcard_imports)]
+
     use super::*;
     // syn::custom_keyword!( private );
     syn::custom_keyword!(own);
@@ -414,7 +414,7 @@ pub use own::*;
 /// Own namespace of the module.
 #[allow(unused_imports)]
 pub mod own {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   pub use orphan::*;
 }
@@ -422,7 +422,7 @@ pub mod own {
 /// Parented namespace of the module.
 #[allow(unused_imports)]
 pub mod orphan {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   pub use exposed::*;
 }
@@ -430,7 +430,7 @@ pub mod orphan {
 /// Exposed namespace of the module.
 #[allow(unused_imports)]
 pub mod exposed {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   pub use prelude::*;
 

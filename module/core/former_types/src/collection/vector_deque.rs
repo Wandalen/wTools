@@ -4,7 +4,7 @@
 //! this module abstracts the operations on vector deque-like data structures, making them more flexible and easier to integrate as
 //! as subformer, enabling fluid and intuitive manipulation of vector deques via builder patterns.
 //!
-#[allow(clippy::wildcard_imports)]
+
 use crate::*;
 #[allow(unused)]
 use collection_tools::VecDeque;

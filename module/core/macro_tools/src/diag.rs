@@ -4,7 +4,7 @@
 
 /// Define a private namespace for all its items.
 mod private {
-  #[allow(clippy::wildcard_imports)]
+
   use crate::*;
 
   /// Adds indentation and optional prefix/postfix to each line of the given string.
@@ -346,7 +346,7 @@ pub use own::*;
 /// Own namespace of the module.
 #[allow(unused_imports)]
 pub mod own {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
 
   #[doc(inline)]
@@ -356,7 +356,7 @@ pub mod own {
 /// Parented namespace of the module.
 #[allow(unused_imports)]
 pub mod orphan {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   #[doc(inline)]
   pub use exposed::*;
@@ -372,7 +372,7 @@ pub mod orphan {
 /// Exposed namespace of the module.
 #[allow(unused_imports)]
 pub mod exposed {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   pub use super::super::diag;
 
@@ -386,7 +386,7 @@ pub mod exposed {
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[allow(unused_imports)]
 pub mod prelude {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
 
   #[doc(inline)]

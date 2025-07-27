@@ -63,7 +63,7 @@ pub use mod_interface::mod_interface;
 
 /// Define a private namespace for all its items.
 mod private {
-  #[allow(clippy::wildcard_imports)]
+
   use crate::*;
 
   /// Takes the command line arguments and perform associated function(s).

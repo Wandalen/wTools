@@ -4,7 +4,7 @@
 //! this module abstracts the operations on binary tree map-like data structures, making them more flexible and easier to integrate as
 //! as subformer, enabling fluid and intuitive manipulation of binary tree maps via builder patterns.
 //!
-#[allow(clippy::wildcard_imports)]
+
 use crate::*;
 use collection_tools::BTreeMap;
 

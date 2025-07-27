@@ -1,4 +1,4 @@
-#[allow(clippy::wildcard_imports)]
+
 use super::*;
 use macro_tools::{attr, diag, Result, proc_macro2::TokenStream, syn::Index};
 

@@ -1,7 +1,7 @@
 //!
 //! Attributes of the whole item.
 //!
-#[allow(clippy::wildcard_imports)]
+
 use super::*;
 
 use macro_tools::{ct, Result, AttributeComponent, AttributePropertyComponent, AttributePropertyOptionalSingletone};

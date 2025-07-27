@@ -1,8 +1,8 @@
 /// Define a private namespace for all its items.
 mod private {
-  #[allow(clippy::wildcard_imports)]
+
   use crate::*;
-  #[allow(clippy::wildcard_imports)]
+
   use macro_tools::exposed::*;
 
   ///
@@ -201,7 +201,7 @@ pub use own::*;
 /// Own namespace of the module.
 #[allow(unused_imports)]
 pub mod own {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   pub use orphan::*;
 }
@@ -209,7 +209,7 @@ pub mod own {
 /// Parented namespace of the module.
 #[allow(unused_imports)]
 pub mod orphan {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   pub use exposed::*;
 }
@@ -217,7 +217,7 @@ pub mod orphan {
 /// Exposed namespace of the module.
 #[allow(unused_imports)]
 pub mod exposed {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   pub use prelude::*;
   pub use private::{ElementType, Record, Records, Thesis};
@@ -226,7 +226,7 @@ pub mod exposed {
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[allow(unused_imports)]
 pub mod prelude {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   pub use private::{};
 }

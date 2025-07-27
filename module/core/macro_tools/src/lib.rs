@@ -8,7 +8,7 @@
 /// Define a private namespace for all its items.
 #[cfg(feature = "enabled")]
 mod private {
-  #[allow(clippy::wildcard_imports)]
+
   use crate::*;
 
   ///
@@ -95,7 +95,7 @@ pub mod own {
   // use super::*;
 
   mod _all {
-    #[allow(clippy::wildcard_imports)]
+
     use super::super::*;
     pub use orphan::*;
 
@@ -160,7 +160,7 @@ pub mod orphan {
   use super::*;
 
   mod _all {
-    #[allow(clippy::wildcard_imports)]
+
     use super::super::*;
     pub use exposed::*;
   }
@@ -176,7 +176,7 @@ pub mod exposed {
   use super::*;
 
   mod _all {
-    #[allow(clippy::wildcard_imports)]
+
     use super::super::*;
     pub use prelude::*;
 
@@ -239,7 +239,7 @@ pub mod prelude {
   use super::*;
 
   mod _all {
-    #[allow(clippy::wildcard_imports)]
+
     use super::super::*;
     // pub use prelude::*;
 

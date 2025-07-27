@@ -2,7 +2,7 @@
 //! Property of an attribute which simply wraps one of the standard `syn` types and keeps it optional.
 //!
 use core::marker::PhantomData;
-#[allow(clippy::wildcard_imports)]
+
 use crate::*;
 // use component_model_types::Assign;
 

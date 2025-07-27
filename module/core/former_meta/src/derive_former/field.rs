@@ -1,5 +1,5 @@
 // File: module/core/former_meta/src/derive_former/field.rs
-#[allow(clippy::wildcard_imports)]
+
 use super::*;
 use macro_tools::container_kind;
 

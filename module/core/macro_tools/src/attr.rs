@@ -4,7 +4,7 @@
 
 /// Define a private namespace for all its items.
 mod private {
-  #[allow(clippy::wildcard_imports)]
+
   use crate::*;
   use crate::qt;
 
@@ -528,7 +528,7 @@ mod private {
 
     /// Constructs the component from the given meta attribute.\n    ///    /// This method is responsible for parsing the provided `syn::Attribute` and
     /// returning an instance of the component. If the attribute cannot be parsed
-    /// into the component, an error should be returned.\n    ///    /// # Parameters\n    ///    
+    /// into the component, an error should be returned.\n    ///    /// # Parameters\n    ///
     /// - `attr` : A reference to the `syn::Attribute` from which the component is to be constructed.\n    ///    /// # Returns\n    ///    /// A `syn::Result` containing the constructed component if successful, or an error if the parsing fails.
     ///
     /// # Errors
@@ -546,7 +546,7 @@ pub use own::*;
 /// Own namespace of the module.
 #[allow(unused_imports)]
 pub mod own {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   #[doc(inline)]
   pub use orphan::*;
@@ -566,7 +566,7 @@ pub mod own {
 /// Orphan namespace of the module.
 #[allow(unused_imports)]
 pub mod orphan {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   #[doc(inline)]
   pub use exposed::*;
@@ -575,7 +575,7 @@ pub mod orphan {
 /// Exposed namespace of the module.
 #[allow(unused_imports)]
 pub mod exposed {
-  #[allow(clippy::wildcard_imports)]
+
   use super::*;
   pub use super::super::attr;
 
