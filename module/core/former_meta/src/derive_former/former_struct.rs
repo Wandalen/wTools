@@ -66,6 +66,14 @@ specific needs of the broader forming context. It mandates the implementation of
   } else {
       quote! { '__a } // Introduce a new lifetime if none exists
   };
+  
+  // Extract the lifetime name for use in where clauses  
+  let lifetime_name = if let Some(lt) = lifetimes.first() {
+      let lifetime = &lt.lifetime;
+      quote! { #lifetime }
+  } else {
+      quote! { '__a }
+  };
 
   // Create a new Generics object without lifetimes for struct_generics_impl_without_lifetimes
   let mut generics_without_lifetimes = generics.clone();
@@ -652,13 +660,13 @@ specific needs of the broader forming context. It mandates the implementation of
     }
 
     // = former begin: Implement `FormerBegin` trait.
-    impl< #struct_generics_impl Definition > former::FormerBegin< /* HERE BE LIFETIME */ Definition >
+    impl< #lifetime_param_for_former_begin, #struct_generics_impl Definition > former::FormerBegin< #lifetime_param_for_former_begin, Definition >
     for #former < Definition >
     where
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
-      Definition::Storage : 'a, // This 'a needs to come from somewhere
-      Definition::Context : 'a,
-      Definition::End : 'a,
+      Definition::Storage : #lifetime_name,
+      Definition::Context : #lifetime_name,
+      Definition::End : #lifetime_name,
       #struct_generics_where
     {
       #[ inline( always ) ]

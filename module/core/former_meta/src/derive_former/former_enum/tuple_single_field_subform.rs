@@ -47,11 +47,30 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   let field_former_definition_type = format_ident!("{}{}Definition", field_type_base_ident, "Former");
 
 
+  // Generate a custom definition types for the enum result
+  let enum_end_definition_types = format_ident!("{}{}EndDefinitionTypes", enum_name, variant_name_string);
+  
+  let end_definition_types = quote!
+  {
+    #[derive(Default, Debug)]
+    pub struct #enum_end_definition_types #impl_generics
+    #where_clause
+    {}
+    
+    impl #impl_generics former_types::FormerDefinitionTypes for #enum_end_definition_types #ty_generics
+    #where_clause
+    {
+      type Storage = < #field_former_definition_type as former_types::definition::FormerDefinition >::Storage;
+      type Context = < #field_former_definition_type as former_types::definition::FormerDefinition >::Context;
+      type Formed = #enum_name #ty_generics;
+    }
+  };
+
   // Generate the FormingEnd implementation
   let end_impl = quote!
   {
     impl #impl_generics former_types::forming::FormingEnd<
-      < #field_former_definition_type as former_types::definition::FormerDefinition >::Types
+      #enum_end_definition_types #ty_generics
     > for #end_struct_name #ty_generics
     #where_clause
     {
@@ -60,15 +79,16 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
         &self,
         sub_storage: < #field_former_definition_type as former_types::definition::FormerDefinition >::Storage,
         _context: Option< < #field_former_definition_type as former_types::definition::FormerDefinition >::Context >,
-      ) -> < #field_former_definition_type as former_types::definition::FormerDefinition >::Formed
+      ) -> #enum_name #ty_generics
       {
         let inner = former_types::storage::StoragePreform::preform( sub_storage );
-        inner
+        #enum_name::#variant_name( inner )
       }
     }
   };
 
   // Push the End struct and its implementation to the appropriate collections
+  ctx.end_impls.push( end_definition_types );
   ctx.end_impls.push( end_struct );
   ctx.end_impls.push( end_impl );
 
@@ -81,7 +101,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
       #[ inline( always ) ]
       #vis fn #method_name() -> < #field_type as former_types::definition::EntityToFormer< #field_former_definition_type #field_type_generics > >::Former
       {
-        < #field_type as former_types::definition::EntityToFormer< #field_former_definition_type #field_type_generics > >::Former::former_begin( None, None, former_types::forming::ReturnPreformed :: default() )
+        < #field_type as former_types::definition::EntityToFormer< #field_former_definition_type #field_type_generics > >::Former::former_begin( None, None, #end_struct_name::default() )
       }
     }
   } else {
@@ -91,7 +111,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
       #[ inline( always ) ]
       #vis fn #method_name() -> < #field_type as former_types::definition::EntityToFormer< #field_former_definition_type #field_type_generics > >::Former
       {
-        < #field_type as former_types::definition::EntityToFormer< #field_former_definition_type #field_type_generics > >::Former::former_begin( None, None, former_types::forming::ReturnPreformed :: default() )
+        < #field_type as former_types::definition::EntityToFormer< #field_former_definition_type #field_type_generics > >::Former::former_begin( None, None, #end_struct_name::default() )
       }
     }
   };

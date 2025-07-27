@@ -303,9 +303,12 @@ fn main() {
     }
   }
 
-  impl<Definition> former::FormerBegin<Definition> for UserProfileFormer<Definition>
+  impl<'a, Definition> former::FormerBegin<'a, Definition> for UserProfileFormer<Definition>
   where
     Definition: former::FormerDefinition<Storage = UserProfileFormerStorage>,
+    Definition::Storage: 'a,
+    Definition::Context: 'a,
+    Definition::End: 'a,
   {
     #[inline(always)]
     fn former_begin(

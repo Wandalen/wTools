@@ -519,12 +519,9 @@ field : {field_ident}",
 
       #[ doc = #doc ]
       #[ inline( always ) ]
-      pub fn #subform_collection< Former2 >( self ) -> Former2
+      pub fn #subform_collection< 'a, Former2 >( self ) -> Former2
       where
-        Former2 : former::FormerBegin
-        <
-          #subformer_definition,
-        >,
+        Former2 : former::FormerBegin< 'a, #subformer_definition >,
         #subformer_definition : former::FormerDefinition
         <
           // Storage : former::CollectionAdd< Entry = < #field_typ as former::Collection >::Entry >,
@@ -532,6 +529,9 @@ field : {field_ident}",
           Context = #former< #former_generics_ty >,
           End = #subform_collection_end< Definition >,
         >,
+        #subformer_definition::Storage : 'a,
+        #subformer_definition::Context : 'a,
+        #subformer_definition::End : 'a,
       {
         Former2::former_begin
         (
@@ -793,7 +793,7 @@ allowing for dynamic and flexible construction of the `{item}` entity's {field_i
 
       #[ doc = #doc ]
       #[ inline( always ) ]
-      pub fn #subform_entry< Former2, Definition2 >( self ) -> Former2
+      pub fn #subform_entry< 'a, Former2, Definition2 >( self ) -> Former2
       where
         Definition2 : former::FormerDefinition
         <
@@ -808,7 +808,10 @@ allowing for dynamic and flexible construction of the `{item}` entity's {field_i
           Formed = Self,
           Context = Self,
         >,
-        Former2 : former::FormerBegin< Definition2 >,
+        Former2 : former::FormerBegin< 'a, Definition2 >,
+        Definition2::Storage : 'a,
+        Definition2::Context : 'a,
+        Definition2::End : 'a,
       {
         Former2::former_begin
         (
@@ -1081,7 +1084,7 @@ generics, providing a cleaner interface for initiating subform operations on sca
 
       #[ doc = #doc ]
       #[ inline( always ) ]
-      pub fn #subform_scalar< Former2, Definition2 >( self ) ->
+      pub fn #subform_scalar< 'a, Former2, Definition2 >( self ) ->
       Former2
       where
         Definition2 : former::FormerDefinition
@@ -1097,7 +1100,10 @@ generics, providing a cleaner interface for initiating subform operations on sca
           Formed = Self,
           Context = Self,
         >,
-        Former2 : former::FormerBegin< Definition2 >,
+        Former2 : former::FormerBegin< 'a, Definition2 >,
+        Definition2::Storage : 'a,
+        Definition2::Context : 'a,
+        Definition2::End : 'a,
       {
         Former2::former_begin
         (

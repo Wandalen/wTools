@@ -255,9 +255,12 @@ where
   }
 }
 
-impl<Definition> former::FormerBegin<Definition> for Struct1Former<Definition>
+impl<'a, Definition> former::FormerBegin<'a, Definition> for Struct1Former<Definition>
 where
   Definition: former::FormerDefinition<Storage = Struct1FormerStorage>,
+  Definition::Storage: 'a,
+  Definition::Context: 'a,
+  Definition::End: 'a,
 {
   #[inline(always)]
   fn former_begin(

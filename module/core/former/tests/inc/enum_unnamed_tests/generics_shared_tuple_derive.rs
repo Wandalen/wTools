@@ -47,7 +47,7 @@ fn concrete_tuple_variant()
   let expected_inner = InnerConcrete { inner_field : 42 };
   let expected = EnumConcrete::V1( expected_inner );
 
-  assert_eq!( EnumConcrete::V1( got ), expected );
+  assert_eq!( got, expected );
 }
 
 #[ test ]
@@ -60,5 +60,5 @@ fn default_construction()
   let expected_inner = InnerConcrete { inner_field : i32::default() };
   let expected = EnumConcrete::V1( expected_inner );
 
-  assert_eq!( EnumConcrete::V1( got ), expected );
+  assert_eq!( got, expected );
 }

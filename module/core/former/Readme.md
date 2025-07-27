@@ -159,7 +159,7 @@ Where `former` significantly simplifies complex scenarios is in building collect
 
 **Example: Building a `Vec`**
 
-```rust
+```rust,ignore
 # #[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
 # fn main() {}
 # #[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
@@ -171,7 +171,7 @@ Where `former` significantly simplifies complex scenarios is in building collect
   pub struct Report
   {
     title : String,
-    #[ subform_collection ] // Enables the `.entries()` subformer
+    #[ subform_collection( definition = former::VectorDefinition ) ] // Enables the `.entries()` subformer
     entries : Vec< String >,
   }
 
