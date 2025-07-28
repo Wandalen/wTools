@@ -478,6 +478,10 @@ field : {field_ident}",
       qt! { #item< #struct_generics_ty > }
     };
 
+    // Generate the correct former type with or without generics
+    // Note: former_generics_ty always contains at least 'Definition' for formers
+    let former_type_ref = qt! { #former< Definition > };
+
     #[allow(clippy::useless_attribute, clippy::items_after_statements)]
     use convert_case::{Case, Casing};
 
@@ -507,16 +511,16 @@ field : {field_ident}",
         #def_type // <<< Use the parsed syn::Type directly
         <
           #( #params, )*
-          #former< #former_generics_ty >,
-          #former< #former_generics_ty >,
-          #subform_collection_end< Definition >,
+          #former_type_ref,
+          #former_type_ref,
+          #subform_collection_end< Definition >
         >
       }
       // former::VectorDefinition< String, Self, Self, Struct1SubformCollectionVec1End, >
     } else {
       qt! {
         <
-          #field_typ as former::EntityToDefinition< #former< #former_generics_ty >, #former< #former_generics_ty >, #subform_collection_end< Definition > >
+          #field_typ as former::EntityToDefinition< #former_type_ref, #former_type_ref, #subform_collection_end< Definition > >
         >::Definition
       }
       // < Vec< String > as former::EntityToDefinition< Self, Self, Struct1SubformCollectionVec1End > >::Definition
@@ -539,7 +543,7 @@ field : {field_ident}",
         <
           // Storage : former::CollectionAdd< Entry = < #field_typ as former::Collection >::Entry >,
           Storage = #field_typ,
-          Context = #former< #former_generics_ty >,
+          Context = #former_type_ref,
           End = #subform_collection_end< Definition >,
         >,
         #subformer_definition::Storage : 'a,
@@ -574,15 +578,11 @@ field : {field_ident}",
           <
             // Storage : former::CollectionAdd< Entry = < #field_typ as former::Collection >::Entry >,
             Storage = #field_typ,
-            Context = #former< #former_generics_ty >,
+            Context = #former_type_ref,
             End = #subform_collection_end < Definition >,
           >,
         {
-          self.#subform_collection::< former::CollectionFormer::
-          <
-            _,
-            _,
-          > > ()
+          self.#subform_collection::< former::CollectionFormer< _, _ > >()
         }
 
       }
@@ -595,7 +595,7 @@ field : {field_ident}",
         r"
 /// The collection setter provides a collection setter that returns a CollectionFormer tailored for managing a collection of child entities. It employs a generic collection definition to facilitate operations on the entire collection, such as adding or updating elements.
 
-impl< Definition, > {former}< Definition, >
+impl< Definition > {former}< Definition >
 where
   Definition : former::FormerDefinition< Storage = {former_storage} >,
 {{
@@ -650,12 +650,13 @@ with the new content generated during the subforming process.
       let subformer_definition_types_string = format!("{}Types", qt! { #def_type });
       let subformer_definition_types: syn::Type = syn::parse_str(&subformer_definition_types_string)?;
       // <<< End Revert >>>
-      qt! {
-        #subformer_definition_types
-        <
-          #( #params, )*
-          #former< #former_generics_ty >,
-          #former< #former_generics_ty >,
+      // Use the parsed definition types but ensure proper comma handling
+      let element_type = params.first().expect("Expected element type parameter");
+      quote::quote! {
+        #subformer_definition_types<
+          #element_type,
+          #former_type_ref,
+          #former_type_ref
         >
       }
     } else {
@@ -663,8 +664,8 @@ with the new content generated during the subforming process.
         <
           #field_typ as former::EntityToDefinitionTypes
           <
-            #former< #former_generics_ty >,
-            #former< #former_generics_ty >,
+            #former_type_ref,
+            #former_type_ref
           >
         >::Types
       }
@@ -694,7 +695,7 @@ with the new content generated during the subforming process.
       }
 
       #[ automatically_derived ]
-      impl< #former_generics_impl > former::FormingEnd< #subformer_definition_types >
+      impl< Definition > former::FormingEnd< #subformer_definition_types >
       for #subform_collection_end< Definition >
       where
         #former_generics_where
@@ -704,9 +705,9 @@ with the new content generated during the subforming process.
         (
           &self,
           storage : #field_typ,
-          super_former : Option< #former< #former_generics_ty > >,
+          super_former : Option< #former_type_ref >,
         )
-        -> #former< #former_generics_ty >
+        -> #former_type_ref
         {
           let mut super_former = super_former.unwrap();
           if let Some( ref mut field ) = super_former.storage.#field_ident
@@ -754,6 +755,10 @@ with the new content generated during the subforming process.
     let field_ident = self.ident;
     let field_typ = self.non_optional_ty;
     let entry_typ: &syn::Type = typ::parameter_first(field_typ)?;
+
+    // Generate the correct former type with or without generics
+    // Note: former_generics_ty always contains at least 'Definition' for formers
+    let former_type_ref = qt! { #former< Definition > };
 
     let attr = self.attrs.subform_entry.as_ref().unwrap();
     // let params = typ::type_parameters( &self.non_optional_ty, .. );
@@ -964,7 +969,7 @@ formation process of the `{item}`.
         }
       }
 
-      impl< #struct_generics_impl Types2, Definition > former::FormingEnd< Types2, >
+      impl< #struct_generics_impl Types2, Definition > former::FormingEnd< Types2 >
       for #subform_entry_end< Definition >
       where
         Definition : former::FormerDefinition
@@ -974,8 +979,8 @@ formation process of the `{item}`.
         Types2 : former::FormerDefinitionTypes
         <
           Storage = < < #field_typ as former::Collection >::Val as former::EntityToStorage >::Storage,
-          Formed = #former< #former_generics_ty >,
-          Context = #former< #former_generics_ty >,
+          Formed = #former_type_ref,
+          Context = #former_type_ref,
         >,
         #struct_generics_where
       {
@@ -1037,6 +1042,10 @@ formation process of the `{item}`.
     let field_ident = self.ident;
     let field_typ = self.non_optional_ty;
     let attr = self.attrs.subform_scalar.as_ref().unwrap();
+
+    // Generate the correct former type with or without generics
+    // Note: former_generics_ty always contains at least 'Definition' for formers
+    let former_type_ref = qt! { #former< Definition > };
     // let params = typ::type_parameters( &self.non_optional_ty, .. );
 
     // example : `children`
@@ -1265,7 +1274,7 @@ Essentially, this end action integrates the individually formed scalar value bac
             }
           }
 
-          impl< #struct_generics_impl Types2, Definition > former::FormingEnd< Types2, >
+          impl< #struct_generics_impl Types2, Definition > former::FormingEnd< Types2 >
           for #subform_scalar_end< Definition >
           where
             Definition : former::FormerDefinition
@@ -1275,8 +1284,8 @@ Essentially, this end action integrates the individually formed scalar value bac
             Types2 : former::FormerDefinitionTypes
             <
               Storage = < #field_typ as former::EntityToStorage >::Storage,
-              Formed = #former< #former_generics_ty >,
-              Context = #former< #former_generics_ty >,
+              Formed = #former_type_ref,
+              Context = #former_type_ref,
             >,
             #struct_generics_where
           {

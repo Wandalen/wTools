@@ -35,6 +35,7 @@ pub fn mutator(
   former_definition_types_generics_impl: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
   former_definition_types_generics_ty: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
   former_definition_types_generics_where: &syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
+  former_definition_types_ref: &proc_macro2::TokenStream,
 ) -> Result<TokenStream> {
   let former_mutator_code = if mutator.custom.value(false) {
     // If custom mutator is requested via #[ mutator( custom ) ], generate nothing, assuming user provides the impl.
@@ -43,7 +44,7 @@ pub fn mutator(
     // Otherwise, generate a default empty impl.
     quote! {
       impl< #former_definition_types_generics_impl > former::FormerMutator
-      for #former_definition_types < #former_definition_types_generics_ty >
+      for #former_definition_types_ref
       where
         #former_definition_types_generics_where
       {

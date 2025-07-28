@@ -59,6 +59,35 @@ specific needs of the broader forming context. It mandates the implementation of
     struct_generics_where,         // Where clause predicates (e.g., `T: Send`).
   ) = generic_params::decompose(generics);
 
+  // Helper to generate type reference with angle brackets only when needed
+  let struct_type_ref = if struct_generics_ty.is_empty() {
+    quote! { #item }
+  } else {
+    quote! { #item < #struct_generics_ty > }
+  };
+
+  // Helper to generate storage type reference with angle brackets only when needed
+  let storage_type_ref = if struct_generics_ty.is_empty() {
+    quote! { #former_storage }
+  } else {
+    quote! { #former_storage < #struct_generics_ty > }
+  };
+
+  // Helper to generate impl generics only when needed
+  let struct_impl_generics = if struct_generics_impl.is_empty() {
+    quote! {}
+  } else {
+    quote! { < #struct_generics_impl > }
+  };
+
+  // Helper to generate where clause only when needed
+  let struct_where_clause = if struct_generics_where.is_empty() {
+    quote! {}
+  } else {
+    quote! { where #struct_generics_where }
+  };
+
+
   // Extract lifetimes separately for FormerBegin
   let lifetimes: Vec<_> = generics.lifetimes().cloned().collect();
   let lifetime_param_for_former_begin = if let Some(lt) = lifetimes.first() {
@@ -87,7 +116,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
   /* parameters for definition: Merge struct generics with default definition parameters. */
   let extra: macro_tools::syn::AngleBracketedGenericArguments = parse_quote! {
-    < (), #item < #struct_generics_ty >, former::ReturnPreformed > // Default Context, Formed, End
+    < (), #struct_type_ref, former::ReturnPreformed > // Default Context, Formed, End
   };
   let former_definition_args = generic_args::merge(&generics.into_generic_args(), &extra).args;
 
@@ -95,12 +124,35 @@ specific needs of the broader forming context. It mandates the implementation of
   let extra: macro_tools::generic_params::GenericsWithWhere = parse_quote! {
     < Definition = #former_definition < #former_definition_args > >
     where
-      Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
-      Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty > >,
+      Definition : former::FormerDefinition< Storage = #storage_type_ref >,
+      Definition::Types : former::FormerDefinitionTypes< Storage = #storage_type_ref >,
   };
   let extra = generic_params::merge(generics, &extra.into());
   let (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where) =
     generic_params::decompose(&extra);
+
+  // Helper to generate former type reference with angle brackets only when needed
+  // Check if we have any generics beyond just the Definition parameter
+  let has_struct_generics = !struct_generics_ty.is_empty();
+  let former_type_ref = if has_struct_generics {
+    quote! { #former < #struct_generics_ty Definition > }
+  } else {
+    quote! { #former < Definition > }
+  };
+
+  // Helper to generate former impl generics only when needed
+  let former_impl_generics = if struct_generics_impl.is_empty() {
+    quote! { < Definition > }
+  } else {
+    quote! { < #former_generics_impl > }
+  };
+
+  // Helper for FormerBegin impl generics 
+  let former_begin_impl_generics = if struct_generics_impl.is_empty() {
+    quote! { < #lifetime_param_for_former_begin, Definition > }
+  } else {
+    quote! { < #lifetime_param_for_former_begin, #struct_generics_impl Definition > }
+  };
 
   /* parameters for former perform: Similar to former parameters, but specifically for the perform method. */
   let extra: macro_tools::generic_params::GenericsWithWhere = parse_quote! {
@@ -108,13 +160,13 @@ specific needs of the broader forming context. It mandates the implementation of
     where
       Definition : former::FormerDefinition
       < // Angle bracket on new line
-        Storage = #former_storage < #struct_generics_ty >,
-        Formed = #item < #struct_generics_ty >,
+        Storage = #storage_type_ref,
+        Formed = #struct_type_ref,
       >, // Angle bracket on new line
       Definition::Types : former::FormerDefinitionTypes
       < // Angle bracket on new line
-        Storage = #former_storage < #struct_generics_ty >,
-        Formed = #item < #struct_generics_ty >,
+        Storage = #storage_type_ref,
+        Formed = #struct_type_ref,
       >, // Angle bracket on new line
   };
   let extra = generic_params::merge(generics, &extra.into());
@@ -125,9 +177,23 @@ specific needs of the broader forming context. It mandates the implementation of
     former_perform_generics_where,
   ) = generic_params::decompose(&extra);
 
+  // Helper for former perform impl generics
+  let former_perform_impl_generics = if struct_generics_impl.is_empty() {
+    quote! { < Definition > }
+  } else {
+    quote! { < #former_perform_generics_impl > }
+  };
+
+  // Helper for former perform type generics  
+  let former_perform_type_generics = if struct_generics_ty.is_empty() {
+    quote! { < Definition > }
+  } else {
+    quote! { < #former_perform_generics_ty > }
+  };
+
   /* parameters for definition types: Merge struct generics with Context and Formed parameters. */
   let extra: macro_tools::generic_params::GenericsWithWhere = parse_quote! {
-    < __Context = (), __Formed = #item < #struct_generics_ty > >
+    < __Context = (), __Formed = #struct_type_ref >
   };
   let former_definition_types_generics = generic_params::merge(generics, &extra.into());
   let (
@@ -139,9 +205,30 @@ specific needs of the broader forming context. It mandates the implementation of
   // Generate PhantomData tuple type based on the impl generics.
   let former_definition_types_phantom = macro_tools::phantom::tuple(&former_definition_types_generics_impl);
 
+  // Helper for definition types impl generics
+  let former_definition_types_impl_generics = if struct_generics_impl.is_empty() {
+    quote! { < __Context, __Formed > }
+  } else {
+    quote! { < #former_definition_types_generics_impl > }
+  };
+
+  // Helper for definition types where clause
+  let former_definition_types_where_clause = if former_definition_types_generics_where.is_empty() {
+    quote! {}
+  } else {
+    quote! { where #former_definition_types_generics_where }
+  };
+
+  // Helper to generate definition types reference with angle brackets only when needed
+  let former_definition_types_ref = if struct_generics_ty.is_empty() {
+    quote! { #former_definition_types < __Context, __Formed > }
+  } else {
+    quote! { #former_definition_types < #former_definition_types_generics_ty > }
+  };
+
   /* parameters for definition: Merge struct generics with Context, Formed, and End parameters. */
   let extra: macro_tools::generic_params::GenericsWithWhere = parse_quote! {
-    < __Context = (), __Formed = #item < #struct_generics_ty >, __End = former::ReturnPreformed >
+    < __Context = (), __Formed = #struct_type_ref, __End = former::ReturnPreformed >
   };
   let generics_of_definition = generic_params::merge(generics, &extra.into());
   let (
@@ -152,6 +239,82 @@ specific needs of the broader forming context. It mandates the implementation of
   ) = generic_params::decompose(&generics_of_definition);
   // Generate PhantomData tuple type based on the impl generics.
   let former_definition_phantom = macro_tools::phantom::tuple(&former_definition_generics_impl);
+
+  // Helper for definition impl generics
+  let former_definition_impl_generics = if struct_generics_impl.is_empty() {
+    quote! { < __Context, __Formed, __End > }
+  } else {
+    quote! { < #former_definition_generics_impl > }
+  };
+
+  // Helper for definition where clause
+  let former_definition_where_clause = if former_definition_generics_where.is_empty() {
+    quote! {}
+  } else {
+    quote! { where #former_definition_generics_where }
+  };
+
+  // Helper for definition where clause with __End constraint
+  let former_definition_where_clause_with_end = if former_definition_generics_where.is_empty() {
+    quote! {
+      where
+        __End : former::FormingEnd< #former_definition_types_ref >
+    }
+  } else {
+    quote! {
+      where
+        __End : former::FormingEnd< #former_definition_types_ref >,
+        #former_definition_generics_where
+    }
+  };
+
+  // Helper to generate definition reference with angle brackets only when needed
+  let former_definition_ref = if struct_generics_ty.is_empty() {
+    quote! { #former_definition < __Context, __Formed, __End > }
+  } else {
+    quote! { #former_definition < #former_definition_generics_ty > }
+  };
+
+  // Helper for AsSubformer type alias - handles generics properly
+  let as_subformer_definition = if struct_generics_ty.is_empty() {
+    quote! { #former_definition < __Superformer, __Superformer, __End > }
+  } else {
+    quote! { #former_definition < #struct_generics_ty __Superformer, __Superformer, __End > }
+  };
+
+  // Helper for AsSubformer former type reference
+  let as_subformer_former = if struct_generics_ty.is_empty() {
+    quote! { #former < #as_subformer_definition > }
+  } else {
+    quote! { #former < #struct_generics_ty #as_subformer_definition > }
+  };
+
+  // Helper for AsSubformerEnd definition types reference
+  let as_subformer_end_definition_types = if struct_generics_ty.is_empty() {
+    quote! { #former_definition_types < SuperFormer, SuperFormer > }
+  } else {
+    quote! { #former_definition_types < #struct_generics_ty SuperFormer, SuperFormer > }
+  };
+
+  // Helper for AsSubformerEnd where clause
+  let as_subformer_end_where_clause = if struct_generics_where.is_empty() {
+    quote! {
+      where
+        Self : former::FormingEnd
+        < // Angle bracket on new line
+          #as_subformer_end_definition_types
+        > // Angle bracket on new line
+    }
+  } else {
+    quote! {
+      where
+        Self : former::FormingEnd
+        < // Angle bracket on new line
+          #as_subformer_end_definition_types
+        >, // Angle bracket on new line
+        #struct_generics_where
+    }
+  };
 
   /* struct attributes: Generate documentation and extract perform method details. */
   let (_doc_former_mod, doc_former_struct) = doc_generate(item);
@@ -220,7 +383,7 @@ specific needs of the broader forming context. It mandates the implementation of
     quote! {
       ::core::option::Option::Some
       ( // Paren on new line
-        #former_storage :: < #struct_generics_ty > // Add generics to storage type
+        #storage_type_ref // Add generics to storage type
         {
           #( #all_storage_assignments ),*
         }
@@ -275,6 +438,7 @@ specific needs of the broader forming context. It mandates the implementation of
     &former_definition_types_generics_impl,
     &former_definition_types_generics_ty,
     &former_definition_types_generics_where,
+    &former_definition_types_ref,
   )?;
 
   // <<< Start of updated code for standalone constructor (Option 2) >>>
@@ -291,14 +455,14 @@ specific needs of the broader forming context. It mandates the implementation of
     // Determine return type and body based on Option 2 rule
     let (return_type, constructor_body) = if all_fields_are_args {
       // Return Self
-      let return_type = quote! { #item< #struct_generics_ty > };
+      let return_type = quote! { #struct_type_ref };
       let construction_args = formed_fields.iter().map(| f | // Space around |
       {
         let field_ident = f.ident;
         let param_name = ident::ident_maybe_raw( field_ident );
         quote! { #field_ident : #param_name.into() }
       });
-      let body = quote! { #item { #( #construction_args ),* } };
+      let body = quote! { #struct_type_ref { #( #construction_args ),* } };
       (return_type, body)
     } else {
       // Return Former
@@ -338,9 +502,8 @@ specific needs of the broader forming context. It mandates the implementation of
 
     // = formed: Implement the `::former()` static method on the original struct.
     #[ automatically_derived ]
-    impl < #struct_generics_impl > #item < #struct_generics_ty >
-    where
-      #struct_generics_where
+    impl #struct_impl_generics #struct_type_ref
+    #struct_where_clause
     {
       /// Provides a mechanism to initiate the formation process with a default completion behavior.
       #[ inline( always ) ]
@@ -355,24 +518,23 @@ specific needs of the broader forming context. It mandates the implementation of
 
     // = entity to former: Implement former traits linking the struct to its generated components.
     impl< #struct_generics_impl Definition > former::EntityToFormer< Definition >
-    for #item < #struct_generics_ty >
+    for #struct_type_ref
     where
-      Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
+      Definition : former::FormerDefinition< Storage = #storage_type_ref >,
       #struct_generics_where
     {
       type Former = #former < #struct_generics_ty Definition > ;
     }
 
-    impl< #struct_generics_impl > former::EntityToStorage
-    for #item < #struct_generics_ty >
-    where
-      #struct_generics_where
+    impl #struct_impl_generics former::EntityToStorage
+    for #struct_type_ref
+    #struct_where_clause
     {
-      type Storage = #former_storage < #struct_generics_ty >;
+      type Storage = #storage_type_ref;
     }
 
     impl< #struct_generics_impl __Context, __Formed, __End > former::EntityToDefinition< __Context, __Formed, __End >
-    for #item < #struct_generics_ty >
+    for #struct_type_ref
     where
       __End : former::FormingEnd< #former_definition_types < #struct_generics_ty __Context, __Formed > >,
       #struct_generics_where
@@ -382,9 +544,8 @@ specific needs of the broader forming context. It mandates the implementation of
     }
 
     impl< #struct_generics_impl __Context, __Formed > former::EntityToDefinitionTypes< __Context, __Formed >
-    for #item < #struct_generics_ty >
-    where
-      #struct_generics_where
+    for #struct_type_ref
+    #struct_where_clause
     {
       type Types = #former_definition_types < #struct_generics_ty __Context, __Formed >;
     }
@@ -393,16 +554,14 @@ specific needs of the broader forming context. It mandates the implementation of
     /// Defines the generic parameters for formation behavior including context, form, and end conditions.
     #[ derive( Debug ) ]
     #vis struct #former_definition_types < #former_definition_types_generics_with_defaults >
-    where
-      #former_definition_types_generics_where
+    #former_definition_types_where_clause
     {
       _phantom : #former_definition_types_phantom,
     }
 
-    impl < #former_definition_types_generics_impl > ::core::default::Default
-    for #former_definition_types < #former_definition_types_generics_ty >
-    where
-      #former_definition_types_generics_where
+    impl #former_definition_types_impl_generics ::core::default::Default
+    for #former_definition_types_ref
+    #former_definition_types_where_clause
     {
       fn default() -> Self
       {
@@ -413,12 +572,11 @@ specific needs of the broader forming context. It mandates the implementation of
       }
     }
 
-    impl < #former_definition_types_generics_impl > former::FormerDefinitionTypes
-    for #former_definition_types < #former_definition_types_generics_ty >
-    where
-      #former_definition_types_generics_where
+    impl #former_definition_types_impl_generics former::FormerDefinitionTypes
+    for #former_definition_types_ref
+    #former_definition_types_where_clause
     {
-      type Storage = #former_storage < #struct_generics_ty >;
+      type Storage = #storage_type_ref;
       type Formed = __Formed;
       type Context = __Context;
     }
@@ -427,16 +585,14 @@ specific needs of the broader forming context. It mandates the implementation of
     /// Holds the definition types used during the formation process.
     #[ derive( Debug ) ]
     #vis struct #former_definition < #former_definition_generics_with_defaults >
-    where
-      #former_definition_generics_where
+    #former_definition_where_clause
     {
       _phantom : #former_definition_phantom,
     }
 
-    impl < #former_definition_generics_impl > ::core::default::Default
-    for #former_definition < #former_definition_generics_ty >
-    where
-      #former_definition_generics_where
+    impl #former_definition_impl_generics ::core::default::Default
+    for #former_definition_ref
+    #former_definition_where_clause
     {
       fn default() -> Self
       {
@@ -447,15 +603,13 @@ specific needs of the broader forming context. It mandates the implementation of
       }
     }
 
-    impl < #former_definition_generics_impl > former::FormerDefinition
-    for #former_definition < #former_definition_generics_ty >
-    where
-      __End : former::FormingEnd< #former_definition_types < #former_definition_types_generics_ty > >,
-      #former_definition_generics_where
+    impl #former_definition_impl_generics former::FormerDefinition
+    for #former_definition_ref
+    #former_definition_where_clause_with_end
     {
-      type Types = #former_definition_types < #former_definition_types_generics_ty >;
+      type Types = #former_definition_types_ref;
       type End = __End;
-      type Storage = #former_storage < #struct_generics_ty >;
+      type Storage = #storage_type_ref;
       type Formed = __Formed;
       type Context = __Context;
     }
@@ -476,10 +630,9 @@ specific needs of the broader forming context. It mandates the implementation of
       )*
     }
 
-    impl < #struct_generics_impl > ::core::default::Default
-    for #former_storage < #struct_generics_ty >
-    where
-      #struct_generics_where
+    impl #struct_impl_generics ::core::default::Default
+    for #storage_type_ref
+    #struct_where_clause
     {
       #[ inline( always ) ]
       fn default() -> Self
@@ -491,23 +644,21 @@ specific needs of the broader forming context. It mandates the implementation of
       }
     }
 
-    impl < #struct_generics_impl > former::Storage
-    for #former_storage < #struct_generics_ty >
-    where
-      #struct_generics_where
+    impl #struct_impl_generics former::Storage
+    for #storage_type_ref
+    #struct_where_clause
     {
-      type Preformed = #item < #struct_generics_ty >;
+      type Preformed = #struct_type_ref;
     }
 
-    impl < #struct_generics_impl > former::StoragePreform
-    for #former_storage < #struct_generics_ty >
-    where
-      #struct_generics_where
+    impl #struct_impl_generics former::StoragePreform
+    for #storage_type_ref
+    #struct_where_clause
     {
       fn preform( mut self ) -> Self::Preformed
       {
         #( #storage_field_preform )*
-        let result = #item :: < #struct_generics_ty >
+        let result = #struct_type_ref
         {
           #( #storage_field_name )*
         };
@@ -530,7 +681,7 @@ specific needs of the broader forming context. It mandates the implementation of
     }
 
     #[ automatically_derived ]
-    impl < #former_generics_impl > #former < #former_generics_ty >
+    impl #former_impl_generics #former_type_ref
     where
       #former_generics_where
     {
@@ -631,10 +782,10 @@ specific needs of the broader forming context. It mandates the implementation of
     }
 
     // = former :: preform: Implement `preform` for direct storage transformation.
-    impl< #former_generics_impl > #former< #former_generics_ty >
+    impl #former_impl_generics #former_type_ref
     where
-      Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty >, Formed = #item < #struct_generics_ty > >,
-      Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty >, Formed = #item < #struct_generics_ty > >,
+      Definition : former::FormerDefinition< Storage = #storage_type_ref, Formed = #struct_type_ref >,
+      Definition::Types : former::FormerDefinitionTypes< Storage = #storage_type_ref, Formed = #struct_type_ref >,
       #former_generics_where
     {
       /// Executes the transformation from the former's storage state to the preformed object.
@@ -646,7 +797,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     // = former :: perform: Implement `perform` if specified by attributes.
     #[ automatically_derived ]
-    impl < #former_perform_generics_impl > #former < #former_perform_generics_ty >
+    impl #former_perform_impl_generics #former #former_perform_type_generics
     where
       #former_perform_generics_where
     {
@@ -660,10 +811,10 @@ specific needs of the broader forming context. It mandates the implementation of
     }
 
     // = former begin: Implement `FormerBegin` trait.
-    impl< #lifetime_param_for_former_begin, #struct_generics_impl Definition > former::FormerBegin< #lifetime_param_for_former_begin, Definition >
+    impl #former_begin_impl_generics former::FormerBegin< #lifetime_param_for_former_begin, Definition >
     for #former < Definition >
     where
-      Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
+      Definition : former::FormerDefinition< Storage = #storage_type_ref >,
       Definition : #lifetime_name,
       Definition::Storage : #lifetime_name,
       Definition::Context : #lifetime_name,
@@ -689,40 +840,19 @@ specific needs of the broader forming context. It mandates the implementation of
 
     // = subformer: Define the `AsSubformer` type alias.
     /// Provides a specialized former for structure using predefined settings for superformer and end conditions.
-    // #vis type #as_subformer < #struct_generics_impl __Superformer, __End > = #former
-    #vis type #as_subformer < #struct_generics_ty __Superformer, __End > = #former
-    < // Angle bracket on new line
-      #struct_generics_ty
-      #former_definition
-      < // Angle bracket on new line
-        #struct_generics_ty
-        __Superformer,
-        __Superformer,
-        __End,
-      >, // Angle bracket on new line
-    >; // Angle bracket on new line
+    #vis type #as_subformer < #struct_generics_ty __Superformer, __End > = #as_subformer_former;
 
 
     // = as subformer end: Define the `AsSubformerEnd` trait.
     #[ doc = #as_subformer_end_doc ]
     pub trait #as_subformer_end < #struct_generics_impl SuperFormer >
-    where
-      #struct_generics_where
-      Self : former::FormingEnd
-      < // Angle bracket on new line
-        #former_definition_types < #struct_generics_ty SuperFormer, SuperFormer >,
-      >, // Angle bracket on new line
+    #as_subformer_end_where_clause
     {
     }
 
     impl< #struct_generics_impl SuperFormer, __T > #as_subformer_end < #struct_generics_ty SuperFormer >
     for __T
-    where
-      #struct_generics_where
-      Self : former::FormingEnd
-      < // Angle bracket on new line
-        #former_definition_types < #struct_generics_ty SuperFormer, SuperFormer >,
-      >, // Angle bracket on new line
+    #as_subformer_end_where_clause
     {
     }
 
