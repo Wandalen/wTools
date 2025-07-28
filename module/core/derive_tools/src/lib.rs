@@ -64,8 +64,6 @@ pub use derive_tools_meta::{ Mul, Div };
 #[ allow( unused_imports ) ]
 mod derive_more
 {
-  // #[ cfg( feature = "derive_add" ) ]
-  // pub use ::derive_more::{ Add, Sub };
   #[ cfg( feature = "derive_add_assign" ) ]
   pub use ::derive_more::{ AddAssign, SubAssign };
   #[ cfg( feature = "derive_constructor" ) ]
@@ -78,8 +76,6 @@ mod derive_more
   // pub use ::derive_more::Iterator;
   #[ cfg( feature = "derive_into_iterator" ) ]
   pub use ::derive_more::IntoIterator;
-  // #[ cfg( feature = "derive_mul" ) ]
-  // pub use ::derive_more::{ Mul, Div };
   #[ cfg( feature = "derive_mul_assign" ) ]
   pub use ::derive_more::{ MulAssign, DivAssign };
   #[ cfg( feature = "derive_sum" ) ]
