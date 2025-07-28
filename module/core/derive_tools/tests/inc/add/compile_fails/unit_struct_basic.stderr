@@ -1,0 +1,11 @@
+error: Add cannot be derived for unit structs. It is only applicable to structs with at least one field.
+ --> tests/inc/add/compile_fails/unit_struct_basic.rs
+  |
+  | pub struct UnitStruct;
+  | ^^^
+
+error: Sub cannot be derived for unit structs. It is only applicable to structs with at least one field.
+ --> tests/inc/add/compile_fails/unit_struct_basic.rs
+  |
+  | pub struct UnitStruct;
+  | ^^^

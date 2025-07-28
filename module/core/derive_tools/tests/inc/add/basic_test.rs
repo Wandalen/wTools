@@ -32,16 +32,33 @@ pub struct NamedStruct { x : i32, y : i32 }
 pub struct TupleStruct( i32 );
 
 // // T1.3: Unit struct (should not compile)
-// #[derive(Add, Sub)]
-// pub struct UnitStruct;
-
+#[test]
+fn unit_struct_basic_fails() {
+    let t = test_tools::compiletime::TestCases::new();
+    let mut test_file = std::env::current_dir().unwrap();
+    test_file.push(std::path::Path::new("tests/inc/add"));
+    test_file.push(std::path::Path::new("compile_fails/unit_struct_basic.rs"));
+    t.compile_fail(test_file);
+}
 // // T1.4: Named struct with String (should not compile)
-// #[derive(Add, Sub)]
-// pub struct StringStruct { x: String }
+#[test]
+fn string_field_basic_fails() {
+    let t = test_tools::compiletime::TestCases::new();
+    let mut test_file = std::env::current_dir().unwrap();
+    test_file.push(std::path::Path::new("tests/inc/add"));
+    test_file.push(std::path::Path::new("compile_fails/string_field_basic.rs"));
+    t.compile_fail(test_file);
+}
 
 // // T1.5: Generic struct (should not compile)
-// #[derive(Add, Sub)]
-// pub struct GenericStruct<T> { x: T }
+#[test]
+fn generic_struct_basic_fails() {
+    let t = test_tools::compiletime::TestCases::new();
+    let mut test_file = std::env::current_dir().unwrap();
+    test_file.push(std::path::Path::new("tests/inc/add"));
+    test_file.push(std::path::Path::new("compile_fails/generic_struct_basic.rs"));
+    t.compile_fail(test_file);
+}
 
 // T1.6: Generic struct T: Add/Sub
 #[ derive( Add, Sub, Clone ) ]

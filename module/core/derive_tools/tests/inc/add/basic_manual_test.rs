@@ -77,64 +77,35 @@ impl Sub for TupleStruct
 }
 
 // T1.3: Unit struct (should not compile)
-// pub struct UnitStruct;
-
-// impl std::ops::Add for UnitStruct {
-//     type Output = Self;
-//     fn add(self, _rhs: Self) -> Self::Output {
-//         self.0 + _rhs.0
-//     }
-// }
-
-// impl std::ops::Sub for UnitStruct {
-//     type Output = Self;
-//     fn sub(self, _rhs: Self) -> Self::Output {
-//         self.0 - _rhs.0
-
-//     }
-// }
+#[test]
+fn unit_struct_manual_fails() {
+    let t = test_tools::compiletime::TestCases::new();
+    let mut test_file = std::env::current_dir().unwrap();
+    test_file.push(std::path::Path::new("tests/inc/add"));
+    test_file.push(std::path::Path::new("compile_fails/unit_struct_manual.rs"));
+    println!("Test file: {test_file:?}");
+    t.compile_fail(test_file);
+}
 
 // T1.4: Named struct with String (should not compile)
-// pub struct StringStruct { x: String }
-
-// impl std::ops::Add for StringStruct {
-//     type Output = Self;
-//     fn add(self, rhs: Self) -> Self::Output {
-//         StringStruct {
-//             x: self.x + rhs.x, // will not compile with rhs: String. Could compile with &String or &str
-//         }
-//     }
-// }
-
-// impl std::ops::Sub for StringStruct {
-//     type Output = Self;
-//     fn sub(self, rhs: Self) -> Self::Output {
-//         StringStruct {
-//             x: self.x - rhs.x,
-//         }
-//     }
-// }
+#[test]
+fn string_field_manual_fails() {
+    let t = test_tools::compiletime::TestCases::new();
+    let mut test_file = std::env::current_dir().unwrap();
+    test_file.push(std::path::Path::new("tests/inc/add"));
+    test_file.push(std::path::Path::new("compile_fails/string_field_manual.rs"));
+    t.compile_fail(test_file);
+}
 
 // T1.5: Generic struct (should not compile)
-// pub struct GenericStruct<T> { x: T }
-
-// impl<T> std::ops::Add for GenericStruct<T> {
-//     type Output = Self;
-//     fn add(self, rhs: Self) -> Self::Output {
-//         GenericStruct {
-//             x: self.x + rhs.x, // Will not compile unless T: Add
-//         }
-//     }
-// }
-
-// impl<T> std::ops::Sub for GenericStruct<T> {
-//     type Output = Self;
-//     fn sub(self, rhs: Self) -> Self::Output {
-//         GenericStruct {
-//             x: self.x - rhs.x, // Will not compile unless T: Sub
-//         }
-//     }
-// }
+#[test]
+fn generic_struct_manual_fails() {
+    let t = test_tools::compiletime::TestCases::new();
+    let mut test_file = std::env::current_dir().unwrap();
+    test_file.push(std::path::Path::new("tests/inc/add"));
+    test_file.push(std::path::Path::new("compile_fails/generic_struct_manual.rs"));
+    t.compile_fail(test_file);
+}
 
 // T1.6: Generic struct T: Add/Sub
 #[ derive( Clone ) ]
