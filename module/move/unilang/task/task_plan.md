@@ -17,7 +17,7 @@
 *   **Increment Status:**
     *   ✅ Increment 1: Audit Existing Codebase and Test Structure
     *   ✅ Increment 2: Audit Core Refactoring (Increments 1-5)
-    *   ⚫ Increment 3: Audit Feature Implementation (Increments 6-10)
+    *   ⏳ Increment 3: Audit Feature Implementation (Increments 6-10)
     *   ⚫ Increment 4: Audit Documentation and Examples (Increments 11-12)
     *   ⚫ Increment 5: Focused Debugging for `diagnostics_tools` Doctest
     *   ⚫ Increment 6: Enhance Test Coverage for Data Models
@@ -116,13 +116,22 @@
 *   **Goal:** To verify the completion and correctness of the feature work (aliasing, help generation, bug fixes) from Increments 6-10 of the original plan.
 *   **Specification Reference:** `phase3.md` (Increments 6-10)
 *   **Steps:**
-    1.  **Audit Aliasing:** Read `unilang/tests/inc/phase3/data_model_features_test.rs` and `unilang/src/bin/unilang_cli.rs`. Verify that the alias test exists and that the resolution logic is implemented as described.
-    2.  **Audit Help Generator:** Read `unilang/src/help.rs` and `unilang/tests/inc/phase2/help_generation_test.rs`. Verify that the help output includes the new metadata fields and that tests assert this.
-    3.  **Audit Registry Fix:** Read `unilang/src/registry.rs`. Verify that the key generation logic for `commands` and `routines` is consistent and correct, as described in the original plan's notes.
-    4.  Document any discrepancies.
+    1.  **Audit Aliasing:**
+        *   Read `module/move/unilang/tests/inc/phase3/data_model_features_test.rs`.
+        *   Read `module/move/unilang/src/bin/unilang_cli.rs`.
+        *   Verify that the alias test exists and that the resolution logic is implemented as described in the original plan (lines 152-154 of `phase3.md`).
+    2.  **Audit Help Generator:**
+        *   Read `module/move/unilang/src/help.rs`.
+        *   Read `module/move/unilang/tests/inc/phase2/help_generation_test.rs`.
+        *   Verify that the help output includes the new metadata fields (`Aliases:`, `Status:`, `Version:`) and that tests assert this. (Note: The original plan's `Notes & Insights` already stated these tests were passing, so this is a re-verification).
+    3.  **Audit Registry Fix:**
+        *   Read `module/move/unilang/src/registry.rs`.
+        *   Verify that the key generation logic for `commands` and `routines` is consistent and correct, as described in the original plan's notes (lines 250-252 of `phase3.md`).
+    4.  Use `insert_content` to add any discrepancies or incomplete work found during the audit to `### Notes & Insights`.
+    5.  Perform Increment Verification.
 *   **Increment Verification:**
-    1.  The audit is complete and findings are documented.
-    2.  Run `timeout 180 cargo test -p unilang --test data_model_features_test --test help_generation_test`. All tests must pass.
+    1.  Confirm that all audit steps were executed and findings documented.
+    2.  Execute `timeout 180 cargo test -p unilang --test data_model_features_test --test help_generation_test -- --nocapture`. All tests must pass.
 *   **Commit Message:** "chore(audit): Verify completion of feature implementations"
 
 ##### Increment 4: Audit Documentation and Examples (Increments 11-12)
