@@ -167,7 +167,7 @@ fn test_default_is_admin_is_equivalent_to_explicit_false()
 {
   let user_default = create_user( "Default" );
   let user_explicit = create_user( "Explicit", false );
-  
+
   // Verification: The resulting objects should be identical
   assert_eq!( user_default, user_explicit );
 }

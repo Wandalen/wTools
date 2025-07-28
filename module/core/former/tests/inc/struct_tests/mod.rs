@@ -98,7 +98,12 @@ mod name_collisions;
 
 mod parametrized_dyn_manual; // xxx2 : qqq2 : fix the issue
 
-// mod parametrized_field;  // BLOCKED: E0726 implicit elided lifetime not allowed here
+// mod parametrized_field;  // Fixed: Manual implementation working, derive still has issues
+// mod test_lifetime_only;  // Test for lifetime-only structs
+mod test_lifetime_minimal;  // Minimal lifetime test without debug
+// mod minimal_lifetime;  // Minimal test for debugging lifetime issues
+// mod debug_lifetime_minimal;
+// mod debug_simple_lifetime;  // Debug test for lifetime issue
 // mod parametrized_field_where;  // BLOCKED: E0726 implicit elided lifetime not allowed here
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod parametrized_struct_imm;  // BLOCKED: E0277 Hash/Eq trait bound issues with Definition

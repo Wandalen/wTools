@@ -1,0 +1,13 @@
+[package]
+name = "debug_decompose"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "debug_decompose_test"
+path = "debug_decompose_test.rs"
+
+[dependencies]
+syn = { version = "2.0", features = ["full", "parsing", "quote"] }
+quote = "1.0"
+macro_tools = { path = "../../macro_tools" }

@@ -228,7 +228,9 @@ impl<'a> FormerField<'a> {
               }
 
               // default if `impl Default`, otherwise - panic
-              ( &::core::marker::PhantomData::< #ty > ).maybe_default()
+              // Use explicit type parameter to avoid tokenization issues with lifetimes
+              let phantom: ::core::marker::PhantomData< #ty > = ::core::marker::PhantomData;
+              ( &phantom ).maybe_default()
             }
           }
         }
@@ -396,6 +398,10 @@ impl<'a> FormerField<'a> {
     let field_ident = self.ident;
     let typ = self.non_optional_ty;
     let setter_name = self.scalar_setter_name();
+    
+    // Check if the type is a reference
+    let is_reference = matches!(typ, syn::Type::Reference(_));
+    
     let attr = self.attrs.scalar.as_ref();
 
     if attr.is_some() && attr.unwrap().debug.value(false) {
@@ -432,16 +438,31 @@ field : {field_ident}",
 
     let doc = format!("Scalar setter for the '{field_ident}' field.",);
 
-    qt! {
-      #[ doc = #doc ]
-      #[ inline ]
-      pub fn #setter_name< Src >( mut self, src : Src ) -> Self
-      where
-        Src : ::core::convert::Into< #typ >,
-      {
-        debug_assert!( self.storage.#field_ident.is_none() );
-        self.storage.#field_ident = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
-        self
+    if is_reference {
+      // For reference types, accept the value directly without Into conversion
+      qt! {
+        #[ doc = #doc ]
+        #[ inline ]
+        pub fn #setter_name( mut self, src : #typ ) -> Self
+        {
+          debug_assert!( self.storage.#field_ident.is_none() );
+          self.storage.#field_ident = ::core::option::Option::Some( src );
+          self
+        }
+      }
+    } else {
+      // For non-reference types, use Into conversion as before
+      qt! {
+        #[ doc = #doc ]
+        #[ inline ]
+        pub fn #setter_name< Src >( mut self, src : Src ) -> Self
+        where
+          Src : ::core::convert::Into< #typ >,
+        {
+          debug_assert!( self.storage.#field_ident.is_none() );
+          self.storage.#field_ident = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
+          self
+        }
       }
     }
   }
