@@ -13,10 +13,10 @@
 ### Progress
 *   **Roadmap Milestone:** Phase 3: Architectural Unification (Audit & Completion)
 *   **Primary Editable Crate:** `module/move/unilang`
-*   **Overall Progress:** 1/12 increments complete
+*   **Overall Progress:** 2/12 increments complete
 *   **Increment Status:**
     *   ✅ Increment 1: Audit Existing Codebase and Test Structure
-    *   ⚫ Increment 2: Audit Core Refactoring (Increments 1-5)
+    *   ✅ Increment 2: Audit Core Refactoring (Increments 1-5)
     *   ⚫ Increment 3: Audit Feature Implementation (Increments 6-10)
     *   ⚫ Increment 4: Audit Documentation and Examples (Increments 11-12)
     *   ⚫ Increment 5: Focused Debugging for `diagnostics_tools` Doctest
@@ -60,6 +60,7 @@
 | Test ID | Status | Notes |
 |---|---|---|
 | `diagnostics_tools` doctest | Failing (New) | From previous plan: `Test executable succeeded, but it's marked should_panic`. |
+| `unilang::tests::inc::phase1::full_pipeline_test` | Fixed (Monitored) | Was `Failing (New)`. Test target issue resolved by running `cargo test -p unilang --test tests`. |
 
 ### Crate Conformance Check Procedure
 *   Run `timeout 180 cargo test -p unilang -- --nocapture` and verify it passes with no warnings.
@@ -90,14 +91,25 @@
 *   **Goal:** To verify the completion and correctness of the core refactoring work described in Increments 1-5 of the original `phase3.md` plan.
 *   **Specification Reference:** `phase3.md` (Increments 1-5)
 *   **Steps:**
-    1.  **Audit `SemanticAnalyzer`:** Read `unilang/src/semantic.rs` and `unilang/tests/inc/phase1/full_pipeline_test.rs`. Verify that `SemanticAnalyzer` consumes `GenericInstruction` and that the tests correctly use the `unilang_parser`.
-    2.  **Audit `unilang_cli`:** Read `unilang/src/bin/unilang_cli.rs`. Verify that it uses `unilang_parser` and `SemanticAnalyzer` correctly.
-    3.  **Audit Data Models:** Read `unilang/src/data.rs`. Compare the `CommandDefinition` and `ArgumentDefinition` structs against `spec.md` to ensure all fields are present.
-    4.  **Audit Call Sites:** Perform a project-wide search for `CommandDefinition::former()` to ensure call sites have been updated with the new fields.
-    5.  Document any discrepancies or incomplete work in `### Notes & Insights`.
+    1.  **Audit `SemanticAnalyzer`:**
+        *   Read `module/move/unilang/src/semantic.rs`.
+        *   Read `module/move/unilang/tests/inc/phase1/full_pipeline_test.rs`.
+        *   Verify that `SemanticAnalyzer`'s `new` method accepts `&[GenericInstruction]` and that `analyze` iterates over it.
+        *   Verify that `full_pipeline_test.rs` uses `unilang_parser::Parser` to generate `GenericInstruction`s.
+    2.  **Audit `unilang_cli`:**
+        *   Read `module/move/unilang/src/bin/unilang_cli.rs`.
+        *   Verify that it instantiates `unilang_parser::Parser` and feeds `GenericInstruction`s to `SemanticAnalyzer`.
+    3.  **Audit Data Models:**
+        *   Read `module/move/unilang/src/data.rs`.
+        *   Read `module/move/unilang_meta/spec.md`.
+        *   Compare `CommandDefinition` and `ArgumentDefinition` structs in `data.rs` against sections 3.2 and 3.3 of `spec.md` to ensure all fields are present.
+    4.  **Audit Call Sites:**
+        *   Perform a `search_files` for `CommandDefinition::former()` within `module/move/unilang/src/` with `file_pattern` `*.rs`.
+    5.  Use `insert_content` to add any discrepancies or incomplete work found during the audit to `### Notes & Insights`.
+    6.  Perform Increment Verification.
 *   **Increment Verification:**
-    1.  The audit is complete and findings are documented.
-    2.  Run `timeout 180 cargo test -p unilang --test full_pipeline_test --test cli_integration_test`. All tests must pass.
+    1.  Confirm that all audit steps were executed and findings documented.
+    2.  Execute `timeout 180 cargo test -p unilang --test tests -- --nocapture`. All tests must pass.
 *   **Commit Message:** "chore(audit): Verify completion of core refactoring"
 
 ##### Increment 3: Audit Feature Implementation (Increments 6-10)
@@ -224,7 +236,11 @@
 *   **Audit Finding (Structure):** The `unilang` crate source has a flat module structure (`data`, `error`, `help`, etc.) and a single binary `unilang_cli`. The legacy `ca` module mentioned in the original plan does not appear to be declared in `src/lib.rs`.
 *   **Audit Finding (Dependencies):** `Cargo.toml` shows a dependency on `unilang_parser` with a comment indicating it was "Temporarily removed due to Cargo resolution issues". This is a critical point to investigate during the audit of the core refactoring.
 *   **Audit Finding (Tests):** Tests are well-organized into `phase1`, `phase2`, and `phase3` modules, reflecting the project's roadmap. This structure will be useful for auditing progress.
+*   **Audit Finding (Data Models):** `CommandDefinition` in `module/move/unilang/src/data.rs` is missing `deprecation_message`, `http_method_hint`, and `examples` fields compared to `module/move/unilang_meta/spec.md`. The `namespace` and `version` fields are `Option<String>` in `data.rs` but `String` in `spec.md`. The `status` discrepancy is already noted.
+*   **Audit Finding (Call Sites):** The `CommandDefinition::former()` calls in `module/move/unilang/src/bin/unilang_cli.rs` for `math_add_def`, `math_sub_def`, `greet_def`, and `config_set_def` are not fully updated with all new fields (`tags`, `permissions`, `idempotent`, and `namespace`/`aliases` for `greet_def`). This indicates Increment 5 of the original plan was incomplete.
 
 ### Changelog
 *   [Initial] Created a new, comprehensive plan to audit, enhance, and finalize Phase 3.
 *   [Increment 1 | 2025-07-28T17:54:17.725Z] Reviewed unilang crate structure and tests.
+*   [Increment 2 | 2025-07-28T17:56:34.391Z] Identified `full_pipeline_test` as not being a direct test target.
+*   [Increment 2 | 2025-07-28T17:57:44.823Z] Verified core refactoring (SemanticAnalyzer, unilang_cli, Data Models, Call Sites) and confirmed all tests pass.
