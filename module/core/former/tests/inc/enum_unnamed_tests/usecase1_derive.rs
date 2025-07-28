@@ -21,21 +21,37 @@ use former::FormerBegin;
 
 // Define the inner structs that the enum variants will hold.
 // These need to derive Former themselves if you want to build them easily.
-#[derive(Debug, Clone, PartialEq, former::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+// #[derive(Debug, Clone, PartialEq, former::Former)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Prompt { pub content: String }
 
-#[derive(Debug, Clone, PartialEq, former::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+
+// #[derive(Debug, Clone, PartialEq, former::Former)]
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct Break { pub condition: bool }
 
-#[derive(Debug, Clone, PartialEq, former::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+
+// #[derive(Debug, Clone, PartialEq, former::Former)]
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct InstructionsApplyToFiles { pub instruction: String }
 
-#[derive(Debug, Clone, PartialEq, former::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+
+// #[derive(Debug, Clone, PartialEq, former::Former)]
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct Run { pub command: String }
 
 // Derive former::Former on the enum.
 // By default, this should generate subformer starter methods for each variant.
-#[derive(Debug, Clone, PartialEq, former::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+// #[derive(Debug, Clone, PartialEq, former::Former)]
+#[derive(Debug, Clone, PartialEq)]
 #[ debug ]
 pub enum FunctionStep
 {

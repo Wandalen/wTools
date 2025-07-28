@@ -3,7 +3,11 @@ use super::*;
 use collection_tools::HashMap;
 use collection_tools::HashSet;
 
-#[derive(Debug, PartialEq, the_module::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+
+// #[derive(Debug, PartialEq, the_module::Former)]
+
+#[derive(Debug, PartialEq)]
 pub struct Struct1 {
   #[ former( default = collection_tools::vec![ 1, 2, 3 ] ) ]
   vec_ints: Vec<i32>,

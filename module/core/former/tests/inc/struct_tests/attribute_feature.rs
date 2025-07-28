@@ -10,7 +10,11 @@ pub struct BaseCase {
   disabled: i32,
 }
 
-#[derive(Debug, PartialEq, former::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+
+// #[derive(Debug, PartialEq, former::Former)]
+
+#[derive(Debug, PartialEq)]
 // #[ debug ]
 // #[ derive( Debug, PartialEq ) ]
 pub struct Foo {

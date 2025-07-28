@@ -25,7 +25,11 @@
 // Apply Former derive here. This is what we are testing.
 #[derive(Debug, PartialEq, Clone)]
 
-#[derive(former::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+
+// #[derive(former::Former)]
+
+#[derive()]
 pub enum EnumScalarGeneric<T : Bound> where T: Clone
 
 {

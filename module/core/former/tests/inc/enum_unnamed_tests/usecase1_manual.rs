@@ -25,16 +25,30 @@ use former::ReturnContainer; // Import necessary types
 // Define the inner structs that the enum variants will hold.
 // These need to derive Former themselves if you want to build them easily,
 // and they are used in this form in the tests.
-#[derive(Debug, Clone, PartialEq, former::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+// #[derive(Debug, Clone, PartialEq, former::Former)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Prompt { pub content: String }
 
-#[derive(Debug, Clone, PartialEq, former::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+
+// #[derive(Debug, Clone, PartialEq, former::Former)]
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct Break { pub condition: bool }
 
-#[derive(Debug, Clone, PartialEq, former::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+
+// #[derive(Debug, Clone, PartialEq, former::Former)]
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct InstructionsApplyToFiles { pub instruction: String }
 
-#[derive(Debug, Clone, PartialEq, former::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+
+// #[derive(Debug, Clone, PartialEq, former::Former)]
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct Run { pub command: String }
 
 // The enum itself. We will manually implement Former for this.

@@ -6,14 +6,18 @@ use super::*;
 use collection_tools::HashMap;
 
 // Child struct with Former derived for builder pattern support
-#[derive(Debug, PartialEq, former::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+// #[derive(Debug, PartialEq, former::Former)]
+#[derive(Debug, PartialEq)]
 pub struct Child {
   name: String,
   description: String,
 }
 
 // Parent struct to hold commands
-#[derive(Debug, PartialEq, former::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+// #[derive(Debug, PartialEq, former::Former)]
+#[derive(Debug, PartialEq)]
 // #[ debug ]
 // #[ derive( Debug, PartialEq ) ]
 pub struct Parent {

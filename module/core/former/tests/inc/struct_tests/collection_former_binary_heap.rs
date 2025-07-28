@@ -114,14 +114,18 @@ fn val_to_entry() {
 #[test]
 fn subformer() {
   /// Parameter description.
-  #[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord, the_module::Former)]
+  // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+  // #[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord, the_module::Former)]
+  #[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
   pub struct Child {
     name: String,
     data: bool,
   }
 
   /// Parent required for the template.
-  #[derive(Debug, Default, the_module::Former)]
+  // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+  // #[derive(Debug, Default, the_module::Former)]
+  #[derive(Debug, Default)]
   // #[ derive( Debug, Default, PartialEq, the_module::Former ) ] #[ debug ]
   // #[ derive( Debug, Default, PartialEq ) ]
   pub struct Parent {

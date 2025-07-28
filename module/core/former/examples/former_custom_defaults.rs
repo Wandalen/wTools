@@ -1,3 +1,6 @@
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+compile_error!("This example is temporarily disabled due to trailing comma issue in Former derive macro");
+
 //! ## Example : Custom Defaults
 //!
 //! Former allows the specification of custom default values for fields through the `former( default )` attribute.

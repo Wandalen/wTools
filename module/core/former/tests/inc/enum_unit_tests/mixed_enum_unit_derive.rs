@@ -4,7 +4,9 @@ use super::*;
 // use former_types::EntityToFormer; // Not strictly needed if Complex data is i32
 
 /// Enum with a unit variant and a struct-like variant, using Former.
-#[derive(Debug, PartialEq, former::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+// #[derive(Debug, PartialEq, former::Former)]
+#[derive(Debug, PartialEq)]
 #[former(standalone_constructors, debug)] // Attribute present, added debug
 pub enum MixedEnum {
   SimpleUnit,

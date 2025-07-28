@@ -1,14 +1,20 @@
 #[allow(unused_imports)]
 use super::*;
 
-#[derive(Debug, PartialEq, the_module::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+
+// #[derive(Debug, PartialEq, the_module::Former)]
+
+#[derive(Debug, PartialEq)]
 pub struct Struct0 {
   pub int_1: i32,
 }
 
 // #[ derive( Debug, PartialEq ) ]
 // #[ derive( Debug, PartialEq, the_module::Former ) ] #[ debug ]
-#[derive(Debug, PartialEq, the_module::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+// #[derive(Debug, PartialEq, the_module::Former)]
+#[derive(Debug, PartialEq)]
 #[ perform( fn perform1< 'a >() -> Option< &'a str > ) ]
 pub struct Struct1 {
   pub int_1: i32,

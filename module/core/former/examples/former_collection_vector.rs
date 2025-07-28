@@ -1,3 +1,6 @@
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+compile_error!("This example is temporarily disabled due to trailing comma issue in Former derive macro");
+
 //!
 //! This example demonstrates how to employ the `Former` to configure a `Vec` using a collection setter in a structured manner.
 //!

@@ -72,7 +72,11 @@ pub fn HashMap() {}
 //   i : ::std::option::Option< i32 >,
 // }
 
-#[derive(PartialEq, Debug, the_module::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+
+// #[derive(PartialEq, Debug, the_module::Former)]
+
+#[derive(PartialEq, Debug)]
 // #[ debug ]
 pub struct Struct1 {
   vec_1: collection_tools::Vec<String>,

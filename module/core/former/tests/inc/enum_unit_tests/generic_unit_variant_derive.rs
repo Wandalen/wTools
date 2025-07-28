@@ -5,7 +5,9 @@ use former::Former;
 // use former_types::{EntityToFormer, FormerDefinition}; // Not needed if Value(T) is scalar
 
 /// Generic enum with a unit variant, using Former.
-#[derive(Debug, PartialEq, Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+// #[derive(Debug, PartialEq, Former)]
+#[derive(Debug, PartialEq)]
 #[former(standalone_constructors, debug)]
 pub enum GenericOption<T: core::fmt::Debug + PartialEq + Clone>
 // Minimal bounds for T

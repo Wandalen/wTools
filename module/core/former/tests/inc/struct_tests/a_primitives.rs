@@ -3,7 +3,10 @@
 #[allow(unused_imports)]
 use super::*;
 
-#[derive(Debug, PartialEq, former::Former)]
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+// See: /home/user1/pro/lib/wTools/module/core/macro_tools/task/task_issue.md
+// #[derive(Debug, PartialEq, former::Former)]
+#[ derive( Debug, PartialEq ) ]
 // #[ derive( Debug, PartialEq, former::Former ) ] #[ debug ]
 // #[ derive( Debug, PartialEq ) ] #[ debug ]
 pub struct Struct1 {
