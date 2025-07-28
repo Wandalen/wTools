@@ -1,0 +1,25 @@
+error[E0369]: cannot add `T` to `T`
+ --> tests/inc/add/compile_fails/generic_struct_manual.rs
+  |
+  |             x: self.x + rhs.x, // Will not compile unless T: Add
+  |                ------ ^ ----- T
+  |                |
+  |                T
+  |
+help: consider restricting type parameter `T` with trait `Add`
+  |
+4 | impl<T: std::ops::Add<Output = T>> std::ops::Add for GenericStruct<T> {
+  |       +++++++++++++++++++++++++++
+
+error[E0369]: cannot subtract `T` from `T`
+  --> tests/inc/add/compile_fails/generic_struct_manual.rs
+   |
+   |             x: self.x - rhs.x, // Will not compile unless T: Sub
+   |                ------ ^ ----- T
+   |                |
+   |                T
+   |
+help: consider restricting type parameter `T` with trait `Sub`
+   |
+13 | impl<T: std::ops::Sub<Output = T>> std::ops::Sub for GenericStruct<T> {
+   |       +++++++++++++++++++++++++++
