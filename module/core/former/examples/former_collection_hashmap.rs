@@ -18,11 +18,10 @@ fn main() {
 
   #[derive(Debug, PartialEq, former::Former)]
   pub struct StructWithMap {
-    #[subform_collection( definition = former::HashMapDefinition )]
     map: HashMap<&'static str, &'static str>,
   }
 
-  let instance = StructWithMap::former().map().add(("a", "b")).add(("c", "d")).end().form();
+  let instance = StructWithMap::former().map(hmap! { "a" => "b", "c" => "d" }).form();
   assert_eq!(
     instance,
     StructWithMap {

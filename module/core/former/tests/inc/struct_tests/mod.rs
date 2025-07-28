@@ -120,24 +120,24 @@ mod visibility;
 
 // = collection former
 
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod collection_former_binary_heap;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_binary_heap;  // BLOCKED: Complex collection type mismatch issues
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_btree_map;  // BLOCKED: Complex collection type mismatch issues
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_btree_set;  // BLOCKED: Complex collection type mismatch issues
+// mod collection_former_btree_map;  // BLOCKED: Complex collection type mismatch issues with subform
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod collection_former_btree_set;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod collection_former_common;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_hashmap;  // BLOCKED: Complex collection type mismatch issues
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_hashset;  // BLOCKED: Complex collection type mismatch issues
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_linked_list;  // BLOCKED: Complex collection type mismatch issues
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_vec;  // BLOCKED: Complex collection type mismatch issues
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_vec_deque;  // BLOCKED: Complex collection type mismatch issues
+// mod collection_former_hashmap;  // BLOCKED: Complex collection type mismatch issues with subform
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod collection_former_hashset;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod collection_former_linked_list;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod collection_former_vec;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod collection_former_vec_deque;
 
 // = subform collection
 
