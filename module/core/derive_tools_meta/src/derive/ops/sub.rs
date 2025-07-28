@@ -108,7 +108,7 @@ pub fn sub( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
 ///
 /// Example of generated code:
 /// ```text
-/// impl Sub for MyStruct 
+/// impl Sub for MyEnum 
 /// {
 ///     type Output = Result<Self, ErrorType>;
 ///     fn sub(self, other: Self) -> Self::Output {

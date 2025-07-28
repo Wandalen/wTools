@@ -107,7 +107,7 @@ pub fn add( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
 ///
 /// Example of generated code:
 /// ```text
-/// impl Add for MyStruct 
+/// impl Add for MyEnum 
 /// {
 ///     type Output = Result<Self, ErrorType>;
 ///     fn add(self, other: Self) -> Self::Output {

@@ -108,7 +108,7 @@ pub fn mul( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
 ///
 /// Example of generated code:
 /// ```text
-/// impl Mul for MyStruct 
+/// impl Mul for MyEnum 
 /// {
 ///     type Output = Result<Self, ErrorType>;
 ///     fn mul(self, other: Self) -> Self::Output {

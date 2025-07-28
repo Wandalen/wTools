@@ -107,7 +107,7 @@ pub fn div( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
 ///
 /// Example of generated code:
 /// ```text
-/// impl Div for MyStruct 
+/// impl Div for MyEnum 
 /// {
 ///     type Output = Result<Self, ErrorType>;
 ///     fn div(self, other: Self) -> Self::Output {
