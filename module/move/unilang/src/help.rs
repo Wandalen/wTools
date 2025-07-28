@@ -31,7 +31,9 @@ impl<'a> HelpGenerator<'a> {
   /// description, and a list of its arguments.
   #[must_use]
   pub fn command(&self, command_name: &str) -> Option<String> {
-    let command = self.registry.commands.get(command_name)?;
+    // Try exact match first, then try with dot prefix
+    let command = self.registry.commands.get(command_name)
+      .or_else(|| self.registry.commands.get(&format!(".{}", command_name)))?;
     let mut help = String::new();
     writeln!(
       &mut help,

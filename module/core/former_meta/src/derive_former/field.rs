@@ -472,7 +472,7 @@ field : {field_ident}",
     let params = typ::type_parameters(field_typ, ..);
     
     // Generate the correct struct type with or without generics
-    let struct_type = if struct_generics_ty.is_empty() {
+    let _struct_type = if struct_generics_ty.is_empty() {
       qt! { #item }
     } else {
       qt! { #item< #struct_generics_ty > }

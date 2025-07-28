@@ -59,7 +59,11 @@ impl<'a> Interpreter<'a> {
 
       // Look up the routine from the registry
       let full_command_name = if let Some(ns) = &command.definition.namespace {
-        format!(".{}.{}", ns, command.definition.name)
+        if ns.starts_with('.') {
+          format!("{}.{}", ns, command.definition.name)
+        } else {
+          format!(".{}.{}", ns, command.definition.name)
+        }
       } else {
         format!(".{}", command.definition.name)
       };

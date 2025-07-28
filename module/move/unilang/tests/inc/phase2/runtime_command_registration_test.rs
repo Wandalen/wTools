@@ -95,7 +95,7 @@ fn test_register_and_execute_simple_command() {
   };
   registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
-  let result = analyze_and_run("simple_cmd", vec![], HashMap::new(), &registry);
+  let result = analyze_and_run("test.simple_cmd", vec![], HashMap::new(), &registry);
   assert!(result.is_ok());
   assert_eq!(result.unwrap()[0].content, "Dummy routine executed!");
 }
@@ -148,7 +148,7 @@ fn test_register_command_with_arguments() {
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     },
   );
-  let result = analyze_and_run("arg_cmd", vec![], named_args, &registry);
+  let result = analyze_and_run("test.arg_cmd", vec![], named_args, &registry);
   assert!(result.is_ok());
   assert_eq!(result.unwrap()[0].content, "Arg1: 123");
 }
@@ -223,7 +223,7 @@ fn test_execute_command_with_missing_argument() {
   };
   registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
-  let result = analyze_and_run("missing_arg_cmd", vec![], HashMap::new(), &registry);
+  let result = analyze_and_run("test.missing_arg_cmd", vec![], HashMap::new(), &registry);
   assert!(result.is_err());
   assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "MISSING_ARGUMENT" ));
 }
@@ -274,7 +274,7 @@ fn test_execute_command_with_invalid_arg_type() {
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     },
   );
-  let result = analyze_and_run("invalid_type_cmd", vec![], named_args, &registry);
+  let result = analyze_and_run("test.invalid_type_cmd", vec![], named_args, &registry);
   assert!(result.is_err());
   assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
 }

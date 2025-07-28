@@ -32,6 +32,7 @@ fn run() -> Result<(), unilang::error::Error> {
   let math_add_def = CommandDefinition::former()
     .name("add")
     .namespace("math".to_string())
+    .description("Adds two numbers.".to_string())
     .hint("Adds two numbers.")
     .status("stable")
     .version("1.0.0")
@@ -70,6 +71,7 @@ fn run() -> Result<(), unilang::error::Error> {
   let math_sub_def = CommandDefinition::former()
     .name("sub")
     .namespace("math".to_string())
+    .description("Subtracts two numbers.".to_string())
     .hint("Subtracts two numbers.")
     .status("beta")
     .version("0.9.0")
@@ -108,6 +110,7 @@ fn run() -> Result<(), unilang::error::Error> {
   // .greet command
   let greet_def = CommandDefinition::former()
     .name("greet")
+    .description("Greets the specified person.".to_string())
     .hint("Greets the specified person.")
     .status("stable")
     .version("1.0.0")
@@ -138,6 +141,7 @@ fn run() -> Result<(), unilang::error::Error> {
   let config_set_def = CommandDefinition::former()
     .name("set")
     .namespace("config".to_string())
+    .description("Sets a configuration value.".to_string())
     .hint("Sets a configuration value.")
     .status("experimental")
     .version("0.1.0")
@@ -257,6 +261,7 @@ fn run() -> Result<(), unilang::error::Error> {
     let help_generator = HelpGenerator::new(&registry);
     let help_text = help_generator.list_commands();
     println!("{help_text}");
+    eprintln!("Usage: unilang_cli <command> [args...]");
     return Ok(());
   }
 
@@ -277,10 +282,20 @@ fn run() -> Result<(), unilang::error::Error> {
     }
   }
 
+  // Handle '--help' flag
+  if processed_args.first().is_some_and(|arg| arg == "--help") {
+    let help_generator = HelpGenerator::new(&registry);
+    println!("{}", help_generator.list_commands());
+    return Ok(());
+  }
+
   // Handle 'help' command manually
   if processed_args.first().is_some_and(|arg| arg == "help") {
     let help_generator = HelpGenerator::new(&registry);
-    if let Some(command_name) = processed_args.get(1) {
+    if processed_args.len() > 2 {
+      eprintln!("Error: Invalid usage of help command. Use `help` or `help <command_name>`.");
+      std::process::exit(1);
+    } else if let Some(command_name) = processed_args.get(1) {
       if let Some(help_text) = help_generator.command(command_name) {
         println!("{help_text}");
       } else {

@@ -1,7 +1,6 @@
 use super::*;
 
 use macro_tools::{ Result, quote::{ quote, format_ident }, ident::cased_ident_from_ident, generic_params::GenericsRef };
-use former_types::forming::FormerBegin;
 use convert_case::Case;
 
 pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >

@@ -109,7 +109,7 @@ specific needs of the broader forming context. It mandates the implementation of
   generics_without_lifetimes.params = generics_without_lifetimes.params.into_iter().filter(|p| !matches!(p, syn::GenericParam::Lifetime(_))).collect();
   let (
     _struct_generics_with_defaults_without_lifetimes,
-    struct_generics_impl_without_lifetimes,
+    _struct_generics_impl_without_lifetimes,
     _struct_generics_ty_without_lifetimes,
     _struct_generics_where_without_lifetimes,
   ) = generic_params::decompose(&generics_without_lifetimes);
