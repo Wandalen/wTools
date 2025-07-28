@@ -105,7 +105,7 @@
         *   Compare `CommandDefinition` and `ArgumentDefinition` structs in `data.rs` against sections 3.2 and 3.3 of `spec.md` to ensure all fields are present.
     4.  **Audit Call Sites:**
         *   Perform a `search_files` for `CommandDefinition::former()` within `module/move/unilang/src/` with `file_pattern` `*.rs`.
-    5.  Use `insert_content` to add any discrepancies or incomplete work found during the `audit` to `### Notes & Insights`.
+    5.  Use `insert_content` to add any discrepancies or incomplete work found during the audit to `### Notes & Insights`.
     6.  Perform Increment Verification.
 *   **Increment Verification:**
     1.  Confirm that all audit steps were executed and findings documented.
