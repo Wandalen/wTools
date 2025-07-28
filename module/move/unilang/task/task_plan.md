@@ -120,15 +120,15 @@
         *   Read `module/move/unilang/tests/inc/phase3/data_model_features_test.rs`.
         *   Read `module/move/unilang/src/bin/unilang_cli.rs`.
         *   Verify that the alias test exists and that the resolution logic is implemented as described in the original plan (lines 152-154 of `phase3.md`).
-    2.  **Audit Help Generator:**
+    3.  **Audit Help Generator:**
         *   Read `module/move/unilang/src/help.rs`.
         *   Read `module/move/unilang/tests/inc/phase2/help_generation_test.rs`.
         *   Verify that the help output includes the new metadata fields (`Aliases:`, `Status:`, `Version:`) and that tests assert this. (Note: The original plan's `Notes & Insights` already stated these tests were passing, so this is a re-verification).
-    3.  **Audit Registry Fix:**
+    4.  **Audit Registry Fix:**
         *   Read `module/move/unilang/src/registry.rs`.
         *   Verify that the key generation logic for `commands` and `routines` is consistent and correct, as described in the original plan's notes (lines 250-252 of `phase3.md`).
-    4.  Use `insert_content` to add any discrepancies or incomplete work found during the audit to `### Notes & Insights`.
-    5.  Perform Increment Verification.
+    5.  Use `insert_content` to add any discrepancies or incomplete work found during the audit to `### Notes & Insights`.
+    6.  Perform Increment Verification.
 *   **Increment Verification:**
     1.  Confirm that all audit steps were executed and findings documented.
     2.  Execute `timeout 180 cargo test -p unilang --test data_model_features_test --test help_generation_test -- --nocapture`. All tests must pass.
