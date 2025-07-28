@@ -1,6 +1,16 @@
 extern crate alloc;
-use macro_tools::{ Result, syn };
-use syn::{ Expr, Type, meta::ParseNestedMeta };
+use macro_tools::
+{ 
+  Result, 
+  syn 
+};
+use syn::
+{ 
+  Expr, 
+  Type, 
+  meta::ParseNestedMeta 
+};
+
 use super::OpKind;
 use alloc::string::ToString;
 

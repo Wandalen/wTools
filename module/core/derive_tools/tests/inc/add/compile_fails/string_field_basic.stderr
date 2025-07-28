@@ -1,16 +1,16 @@
 error[E0308]: mismatched types
  --> tests/inc/add/compile_fails/string_field_basic.rs
   |
-  | #[derive(Add, Sub)]
-  |          ^^^ expected `&str`, found `String`
+  | #[ derive( Add, Sub ) ]
+  |            ^^^ expected `&str`, found `String`
   |
   = note: this error originates in the derive macro `Add` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0369]: cannot subtract `String` from `String`
  --> tests/inc/add/compile_fails/string_field_basic.rs
   |
-  | #[derive(Add, Sub)]
-  |               ^^^
+  | #[ derive( Add, Sub ) ]
+  |                 ^^^
   |
 note: the foreign item type `String` doesn't implement `Sub`
  --> $RUST/alloc/src/string.rs

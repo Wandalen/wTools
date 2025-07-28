@@ -1,3 +1,6 @@
+use crate::derive::syn::Variant;
+use super::item_attributes::ItemAttributes;
+
 use macro_tools::
 {
   diag,
@@ -11,9 +14,12 @@ use macro_tools::
   return_syn_err,
   Spanned,
 };
-use crate::derive::syn::Variant;
-use super::{ FieldAccess, OpKind };
-use super::item_attributes::{ ItemAttributes };
+
+use super::
+{ 
+  FieldAccess, 
+  OpKind 
+};
 
 pub fn mul( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream > 
 {

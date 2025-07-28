@@ -9,7 +9,7 @@ pub use sub::sub;
 pub use mul::mul;
 pub use div::div;
 
-use item_attributes::{ ItemAttributes };
+use item_attributes::ItemAttributes;
 use proc_macro2::TokenStream;
 use macro_tools::
 {

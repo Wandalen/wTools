@@ -1,11 +1,11 @@
 error[E0609]: no field `0` on type `UnitStruct`
  --> tests/inc/add/compile_fails/unit_struct_manual.rs
   |
-  |         self.0 + _rhs.0
-  |              ^ unknown field
+  |     self.0 + _rhs.0
+  |          ^ unknown field
 
 error[E0609]: no field `0` on type `UnitStruct`
  --> tests/inc/add/compile_fails/unit_struct_manual.rs
   |
-  |         self.0 + _rhs.0
-  |                       ^ unknown field
+  |     self.0 + _rhs.0
+  |                   ^ unknown field
