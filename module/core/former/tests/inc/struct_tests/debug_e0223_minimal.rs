@@ -4,14 +4,9 @@
 use super::*;
 
 #[derive(Default, Debug, PartialEq, former::Former)]
-#[debug]
 pub struct MinimalStruct {
   #[subform_collection( definition = former::VectorDefinition )]
   vec_1: Vec<String>,
-  #[subform_collection( definition = former::HashMapDefinition )]  
-  hashmap_1: collection_tools::HashMap<String, String>,
-  #[subform_collection( definition = former::HashSetDefinition )]
-  hashset_1: collection_tools::HashSet<String>,
 }
 
 #[test]

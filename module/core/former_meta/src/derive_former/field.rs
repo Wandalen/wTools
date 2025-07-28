@@ -827,6 +827,7 @@ allowing for dynamic and flexible construction of the `{item}` entity's {field_i
         Definition2::Storage : 'a,
         Definition2::Context : 'a,
         Definition2::End : 'a,
+        Definition : 'a,
       {
         Former2::former_begin
         (
@@ -1123,6 +1124,7 @@ generics, providing a cleaner interface for initiating subform operations on sca
         Definition2::Storage : 'a,
         Definition2::Context : 'a,
         Definition2::End : 'a,
+        Definition : 'a,
       {
         Former2::former_begin
         (

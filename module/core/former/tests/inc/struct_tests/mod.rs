@@ -61,13 +61,13 @@ mod a_basic_manual;
 mod a_primitives;
 mod a_primitives_manual;
 mod tuple_struct;
-// mod debug_e0223_minimal;
+mod debug_e0223_minimal;
 mod debug_e0223_manual;
 
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_collection_basic;  // BLOCKED: E0106 missing lifetime specifier in derive macro
+// mod subform_collection_basic;  // BLOCKED: Complex collection type mismatch issues
 // #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
-// mod subform_collection_basic_manual;  // BLOCKED: E0106 missing lifetime specifier for FormerBegin in manual code
+// mod subform_collection_basic_manual;  // BLOCKED: FormerBegin lifetime parameter in manual code
 #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
 mod subform_collection_basic_scalar;
 
@@ -89,7 +89,7 @@ mod attribute_storage_with_mutator;
 // = name collision
 
 mod keyword_field_derive;
-// mod keyword_subform_derive;  // BLOCKED: E0106 missing lifetime specifier in derive macro
+mod keyword_subform_derive;
 mod name_collision_former_hashmap_without_parameter;
 mod name_collision_former_vector_without_parameter;
 mod name_collisions;
@@ -121,78 +121,78 @@ mod visibility;
 // = collection former
 
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_binary_heap;  // BLOCKED: E0106 missing lifetime specifier in derive macro
+// mod collection_former_binary_heap;  // BLOCKED: Complex collection type mismatch issues
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_btree_map;  // BLOCKED: E0106 missing lifetime specifier in derive macro  
+// mod collection_former_btree_map;  // BLOCKED: Complex collection type mismatch issues
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_btree_set;  // BLOCKED: E0106 missing lifetime specifier in derive macro
+// mod collection_former_btree_set;  // BLOCKED: Complex collection type mismatch issues
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod collection_former_common;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_hashmap;  // BLOCKED: E0106 missing lifetime specifier in derive macro
+// mod collection_former_hashmap;  // BLOCKED: Complex collection type mismatch issues
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_hashset;  // BLOCKED: E0106 missing lifetime specifier in derive macro
+// mod collection_former_hashset;  // BLOCKED: Complex collection type mismatch issues
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_linked_list;  // BLOCKED: E0106 missing lifetime specifier in derive macro
+// mod collection_former_linked_list;  // BLOCKED: Complex collection type mismatch issues
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_vec;  // BLOCKED: E0106 missing lifetime specifier in derive macro
+// mod collection_former_vec;  // BLOCKED: Complex collection type mismatch issues
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_vec_deque;  // BLOCKED: E0106 missing lifetime specifier in derive macro
+// mod collection_former_vec_deque;  // BLOCKED: Complex collection type mismatch issues
 
 // = subform collection
 
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_collection;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_collection_custom;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_collection_implicit;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_collection;  // BLOCKED: E0106 missing lifetime specifier in derive macro
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_collection_custom;  // BLOCKED: E0106 missing lifetime specifier in derive macro
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_collection_implicit;  // BLOCKED: E0106 missing lifetime specifier in derive macro
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_collection_manual;  // BLOCKED: E0106 missing lifetime specifier for FormerBegin in manual code
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_collection_named;  // BLOCKED: E0106 missing lifetime specifier in derive macro
+// mod subform_collection_manual;  // BLOCKED: FormerBegin lifetime parameter in manual code
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_collection_named;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod subform_collection_playground;  // BLOCKED: E0277 Hash/Eq trait bound issues with Definition
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_collection_setter_off;  // BLOCKED: E0106 missing lifetime specifier in derive macro
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_collection_setter_off;
 
 // = subform scalar
 
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_scalar;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_scalar;  // BLOCKED: E0106 missing lifetime specifier in derive macro
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_scalar_manual;  // BLOCKED: E0106 missing lifetime specifier for FormerBegin in manual code
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_scalar_name;  // BLOCKED: E0106 missing lifetime specifier in derive macro
+// mod subform_scalar_manual;  // BLOCKED: FormerBegin lifetime parameter in manual code
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_scalar_name;
 
 // = subform entry
 
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_entry;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry;  // BLOCKED: E0106 missing lifetime specifier in derive macro
+// mod subform_entry_manual;  // BLOCKED: FormerBegin lifetime parameter in manual code
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_entry_named;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry_manual;  // BLOCKED: E0106 missing lifetime specifier for FormerBegin in manual code
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry_named;  // BLOCKED: E0106 missing lifetime specifier in derive macro
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry_named_manual;  // BLOCKED: E0106 missing lifetime specifier for FormerBegin in manual code
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry_setter_off;  // BLOCKED: E0106 missing lifetime specifier in derive macro
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry_setter_on;  // BLOCKED: E0106 missing lifetime specifier in derive macro
+// mod subform_entry_named_manual;  // BLOCKED: FormerBegin lifetime parameter in manual code
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_entry_setter_off;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_entry_setter_on;
 
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_entry_hashmap;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry_hashmap;  // BLOCKED: E0106 missing lifetime specifier in derive macro
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry_hashmap_custom;  // BLOCKED: E0106 missing lifetime specifier for FormerBegin in manual code
+// mod subform_entry_hashmap_custom;  // BLOCKED: FormerBegin lifetime parameter in manual code
 
 // = subform all : scalar, subform_scalar, subform_entry, subform_collection
 
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_all;  // BLOCKED: E0106 missing lifetime specifier in derive macro
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_all;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod subform_all_parametrized;  // BLOCKED: E0726 implicit elided lifetime not allowed here + E0277 FormerDefinition trait issues
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_all_private;  // BLOCKED: E0106 missing lifetime specifier in derive macro
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_all_private;
 
 // = standalone constructor
 
