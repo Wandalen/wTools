@@ -103,6 +103,29 @@ pub fn add( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
   Ok( result )
 }
 
+/// Generates `Add` implementation for enum variants.
+///
+/// Example of generated code:
+/// ```text
+/// impl Add for MyStruct 
+/// {
+///     type Output = Result<Self, ErrorType>;
+///     fn add(self, other: Self) -> Self::Output {
+///         match (self, other) {
+///             (MyEnum::NamedVariant { x: a0, y: a1 }, MyEnum::NamedVariant { x: b0, y: b1 }) => Ok(
+///                 MyEnum::NamedVariant {
+///                     x: a0 + b0,
+///                     y: a1 + b1,
+///                 }
+///             ),
+///             (MyEnum::TupleVariant(a0), MyEnum::TupleVariant(b0)) => Ok(
+///                 MyEnum::TupleVariant(a0 + b0)
+///             ),
+///             _ => Err("Mismatched variants".into()),
+///         }
+///     }
+/// }
+/// ```
 fn generate_enum
 (
   item_name : &syn::Ident,
@@ -150,7 +173,24 @@ fn generate_enum
   }
 }
 
-
+/// Generates `Add` implementation for enum variants.
+///
+/// Example of generated code:
+/// ```text
+/// impl Add for MyStruct 
+/// {
+///     type Output = Self;
+///     fn add(self, other: Self) -> Self::Output 
+///     {
+///         Self 
+///         {
+///             field1: self.field1 + other.field1,
+///             field2: self.field2 + other.field2,
+///             ...
+///         }
+///     }
+/// }
+/// ```
 fn generate_struct
 (
   item_name : &syn::Ident,
