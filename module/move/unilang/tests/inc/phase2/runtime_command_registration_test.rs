@@ -84,18 +84,21 @@ fn test_register_and_execute_simple_command() {
     description: "A simple test command".to_string(),
     arguments: vec![],
     routine_link: Some("dummy_routine".to_string()),
-    namespace: Some(".test".to_string()),
+    namespace: ".test".to_string(),
     hint: "Simple command hint".to_string(),
     status: "stable".to_string(),
-    version: Some("1.0.0".to_string()),
+    version: "1.0.0".to_string(),
     tags: vec!["test".to_string()],
     aliases: vec!["sc".to_string()],
     permissions: vec!["public".to_string()],
     idempotent: true,
+    deprecation_message: "".to_string(),
+    examples: vec![],
+    http_method_hint: "".to_string(),
   };
   registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
-  let result = analyze_and_run("simple_cmd", vec![], HashMap::new(), &registry);
+  let result = analyze_and_run("test.simple_cmd", vec![], HashMap::new(), &registry);
   assert!(result.is_ok());
   assert_eq!(result.unwrap()[0].content, "Dummy routine executed!");
 }
@@ -125,14 +128,17 @@ fn test_register_command_with_arguments() {
       tags: vec![],
     }],
     routine_link: Some("arg_test_routine".to_string()),
-    namespace: Some(".test".to_string()),
+    namespace: ".test".to_string(),
     hint: "Arg command hint".to_string(),
     status: "stable".to_string(),
-    version: Some("1.0.0".to_string()),
+    version: "1.0.0".to_string(),
     tags: vec!["test".to_string()],
     aliases: vec!["ac".to_string()],
     permissions: vec!["public".to_string()],
     idempotent: true,
+    deprecation_message: "".to_string(),
+    examples: vec![],
+    http_method_hint: "".to_string(),
   };
   registry
     .command_add_runtime(&command_def, Box::new(arg_test_routine))
@@ -148,7 +154,7 @@ fn test_register_command_with_arguments() {
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     },
   );
-  let result = analyze_and_run("arg_cmd", vec![], named_args, &registry);
+  let result = analyze_and_run("test.arg_cmd", vec![], named_args, &registry);
   assert!(result.is_ok());
   assert_eq!(result.unwrap()[0].content, "Arg1: 123");
 }
@@ -162,14 +168,17 @@ fn test_register_duplicate_command() {
     description: "A command to be duplicated".to_string(),
     arguments: vec![],
     routine_link: None,
-    namespace: Some(".test".to_string()),
+    namespace: ".test".to_string(),
     hint: "Duplicate command hint".to_string(),
     status: "stable".to_string(),
-    version: Some("1.0.0".to_string()),
+    version: "1.0.0".to_string(),
     tags: vec!["test".to_string()],
     aliases: vec!["dc".to_string()],
     permissions: vec!["public".to_string()],
     idempotent: true,
+    deprecation_message: "".to_string(),
+    examples: vec![],
+    http_method_hint: "".to_string(),
   };
   registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
@@ -212,18 +221,21 @@ fn test_execute_command_with_missing_argument() {
       tags: vec![],
     }],
     routine_link: Some("dummy_routine".to_string()),
-    namespace: Some(".test".to_string()),
+    namespace: ".test".to_string(),
     hint: "Missing arg command hint".to_string(),
     status: "stable".to_string(),
-    version: Some("1.0.0".to_string()),
+    version: "1.0.0".to_string(),
     tags: vec!["test".to_string()],
     aliases: vec!["mac".to_string()],
     permissions: vec!["public".to_string()],
     idempotent: true,
+    deprecation_message: "".to_string(),
+    examples: vec![],
+    http_method_hint: "".to_string(),
   };
   registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
-  let result = analyze_and_run("missing_arg_cmd", vec![], HashMap::new(), &registry);
+  let result = analyze_and_run("test.missing_arg_cmd", vec![], HashMap::new(), &registry);
   assert!(result.is_err());
   assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "MISSING_ARGUMENT" ));
 }
@@ -253,14 +265,17 @@ fn test_execute_command_with_invalid_arg_type() {
       tags: vec![],
     }],
     routine_link: Some("dummy_routine".to_string()),
-    namespace: Some(".test".to_string()),
+    namespace: ".test".to_string(),
     hint: "Invalid type command hint".to_string(),
     status: "stable".to_string(),
-    version: Some("1.0.0".to_string()),
+    version: "1.0.0".to_string(),
     tags: vec!["test".to_string()],
     aliases: vec!["itc".to_string()],
     permissions: vec!["public".to_string()],
     idempotent: true,
+    deprecation_message: "".to_string(),
+    examples: vec![],
+    http_method_hint: "".to_string(),
   };
   registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
@@ -274,7 +289,7 @@ fn test_execute_command_with_invalid_arg_type() {
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     },
   );
-  let result = analyze_and_run("invalid_type_cmd", vec![], named_args, &registry);
+  let result = analyze_and_run("test.invalid_type_cmd", vec![], named_args, &registry);
   assert!(result.is_err());
   assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
 }

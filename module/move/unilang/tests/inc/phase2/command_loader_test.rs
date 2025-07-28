@@ -55,6 +55,9 @@ fn test_load_from_yaml_str_simple_command() {
       aliases: [ "hi" ]
       permissions: [ "public" ]
       idempotent: true
+      deprecation_message: ""
+      examples: []
+      http_method_hint: ""
   "#;
 
   let registry = CommandRegistry::builder().load_from_yaml_str(yaml_str).unwrap().build();
@@ -65,10 +68,10 @@ fn test_load_from_yaml_str_simple_command() {
   assert_eq!(command.description, "Says hello");
   assert!(command.arguments.is_empty());
   assert_eq!(command.routine_link, Some("dummy_hello_routine".to_string()));
-  assert_eq!(command.namespace, Some(".system".to_string()));
+  assert_eq!(command.namespace, ".system".to_string());
   assert_eq!(command.hint, "Says hello");
   assert_eq!(command.status, "stable");
-  assert_eq!(command.version, Some("1.0.0".to_string()));
+  assert_eq!(command.version, "1.0.0".to_string());
   assert_eq!(command.tags, vec!["greeting".to_string()]);
   assert_eq!(command.aliases, vec!["hi".to_string()]);
   assert_eq!(command.permissions, vec!["public".to_string()]);
@@ -245,6 +248,9 @@ fn test_load_from_yaml_str_all_scalar_types() {
       aliases: [ "s_cmd" ]
       permissions: [ "dev" ]
       idempotent: false
+      deprecation_message: ""
+      examples: []
+      http_method_hint: ""
   "#;
 
   let registry = CommandRegistry::builder().load_from_yaml_str(yaml_str).unwrap().build();
@@ -267,10 +273,10 @@ fn test_load_from_yaml_str_all_scalar_types() {
   assert_eq!(command.arguments[9].kind, Kind::DateTime);
   assert_eq!(command.arguments[10].kind, Kind::Pattern);
 
-  assert_eq!(command.namespace, Some(".test".to_string()));
+  assert_eq!(command.namespace, ".test".to_string());
   assert_eq!(command.hint, "Scalar command hint");
   assert_eq!(command.status, "experimental");
-  assert_eq!(command.version, Some("0.1.0".to_string()));
+  assert_eq!(command.version, "0.1.0".to_string());
   assert_eq!(command.tags, vec!["test".to_string(), "scalar".to_string()]);
   assert_eq!(command.aliases, vec!["s_cmd".to_string()]);
   assert_eq!(command.permissions, vec!["dev".to_string()]);
@@ -356,6 +362,9 @@ fn test_load_from_yaml_str_collection_types() {
       aliases: [ "c_cmd" ]
       permissions: [ "public" ]
       idempotent: true
+      deprecation_message: ""
+      examples: []
+      http_method_hint: ""
   "#;
 
   let registry = CommandRegistry::builder().load_from_yaml_str(yaml_str).unwrap().build();
@@ -374,10 +383,10 @@ fn test_load_from_yaml_str_collection_types() {
     Kind::Map(Box::new(Kind::String), Box::new(Kind::String), Some(';'), Some('='))
   );
 
-  assert_eq!(command.namespace, Some(".test".to_string()));
+  assert_eq!(command.namespace, ".test".to_string());
   assert_eq!(command.hint, "Collection command hint");
   assert_eq!(command.status, "stable");
-  assert_eq!(command.version, Some("1.0.0".to_string()));
+  assert_eq!(command.version, "1.0.0".to_string());
   assert_eq!(command.tags, vec!["test".to_string(), "collection".to_string()]);
   assert_eq!(command.aliases, vec!["c_cmd".to_string()]);
   assert_eq!(command.permissions, vec!["public".to_string()]);
@@ -477,6 +486,9 @@ fn test_load_from_yaml_str_complex_types_and_attributes() {
       aliases: [ "comp_cmd" ]
       permissions: [ "public" ]
       idempotent: false
+      deprecation_message: ""
+      examples: []
+      http_method_hint: ""
   "#;
 
   let registry = CommandRegistry::builder().load_from_yaml_str(yaml_str).unwrap().build();
@@ -494,10 +506,10 @@ fn test_load_from_yaml_str_complex_types_and_attributes() {
   assert_eq!(command.arguments[4].attributes.is_default_arg, true);
   assert_eq!(command.arguments[4].default_value, Some("default_string".to_string()));
 
-  assert_eq!(command.namespace, Some(".test".to_string()));
+  assert_eq!(command.namespace, ".test".to_string());
   assert_eq!(command.hint, "Complex command hint");
   assert_eq!(command.status, "stable");
-  assert_eq!(command.version, Some("1.0.0".to_string()));
+  assert_eq!(command.version, "1.0.0".to_string());
   assert_eq!(command.tags, vec!["test".to_string(), "complex".to_string()]);
   assert_eq!(command.aliases, vec!["comp_cmd".to_string()]);
   assert_eq!(command.permissions, vec!["public".to_string()]);
@@ -527,6 +539,9 @@ fn test_load_from_yaml_str_multiple_commands() {
       aliases: []
       permissions: []
       idempotent: false
+      deprecation_message: ""
+      examples: []
+      http_method_hint: ""
     - name: command2
       description: Second command
       arguments: []
@@ -538,6 +553,9 @@ fn test_load_from_yaml_str_multiple_commands() {
       aliases: []
       permissions: []
       idempotent: false
+      deprecation_message: ""
+      examples: []
+      http_method_hint: ""
   "#;
 
   let registry = CommandRegistry::builder().load_from_yaml_str(yaml_str).unwrap().build();
@@ -546,11 +564,11 @@ fn test_load_from_yaml_str_multiple_commands() {
   assert!(registry.commands.contains_key(".group1.command2"));
   assert_eq!(
     registry.commands.get(".group1.command1").unwrap().namespace,
-    Some(".group1".to_string())
+    ".group1".to_string()
   );
   assert_eq!(
     registry.commands.get(".group1.command2").unwrap().namespace,
-    Some(".group1".to_string())
+    ".group1".to_string()
   );
 }
 
@@ -571,7 +589,10 @@ fn test_load_from_json_str_simple_command() {
         "tags": [ "greeting" ],
         "aliases": [ "hi_json" ],
         "permissions": [ "public" ],
-        "idempotent": true
+        "idempotent": true,
+        "deprecation_message": "",
+        "examples": [],
+        "http_method_hint": ""
       }
     ]
   "#;
@@ -584,10 +605,10 @@ fn test_load_from_json_str_simple_command() {
   assert_eq!(command.description, "Says hello from JSON");
   assert!(command.arguments.is_empty());
   assert_eq!(command.routine_link, Some("dummy_hello_json_routine".to_string()));
-  assert_eq!(command.namespace, Some(".system".to_string()));
+  assert_eq!(command.namespace, ".system".to_string());
   assert_eq!(command.hint, "Says hello from JSON");
   assert_eq!(command.status, "stable");
-  assert_eq!(command.version, Some("1.0.0".to_string()));
+  assert_eq!(command.version, "1.0.0".to_string());
   assert_eq!(command.tags, vec!["greeting".to_string()]);
   assert_eq!(command.aliases, vec!["hi_json".to_string()]);
   assert_eq!(command.permissions, vec!["public".to_string()]);
@@ -623,7 +644,10 @@ fn test_load_from_json_str_all_scalar_types() {
         "tags": [ "test", "scalar" ],
         "aliases": [ "s_cmd_json" ],
         "permissions": [ "dev" ],
-        "idempotent": false
+        "idempotent": false,
+        "deprecation_message": "",
+        "examples": [],
+        "http_method_hint": ""
       }
     ]
   "#;
@@ -648,10 +672,10 @@ fn test_load_from_json_str_all_scalar_types() {
   assert_eq!(command.arguments[9].kind, Kind::DateTime);
   assert_eq!(command.arguments[10].kind, Kind::Pattern);
 
-  assert_eq!(command.namespace, Some(".test".to_string()));
+  assert_eq!(command.namespace, ".test".to_string());
   assert_eq!(command.hint, "Scalar command hint");
   assert_eq!(command.status, "experimental");
-  assert_eq!(command.version, Some("0.1.0".to_string()));
+  assert_eq!(command.version, "0.1.0".to_string());
   assert_eq!(command.tags, vec!["test".to_string(), "scalar".to_string()]);
   assert_eq!(command.aliases, vec!["s_cmd_json".to_string()]);
   assert_eq!(command.permissions, vec!["dev".to_string()]);
@@ -687,7 +711,10 @@ fn test_load_from_json_str_collection_types() {
         "tags": [ "test", "collection" ],
         "aliases": [ "c_cmd_json" ],
         "permissions": [ "public" ],
-        "idempotent": true
+        "idempotent": true,
+        "deprecation_message": "",
+        "examples": [],
+        "http_method_hint": ""
       }
     ]
   "#;
@@ -708,10 +735,10 @@ fn test_load_from_json_str_collection_types() {
     Kind::Map(Box::new(Kind::String), Box::new(Kind::String), Some(';'), Some('='))
   );
 
-  assert_eq!(command.namespace, Some(".test".to_string()));
+  assert_eq!(command.namespace, ".test".to_string());
   assert_eq!(command.hint, "Collection command hint");
   assert_eq!(command.status, "stable");
-  assert_eq!(command.version, Some("1.0.0".to_string()));
+  assert_eq!(command.version, "1.0.0".to_string());
   assert_eq!(command.tags, vec!["test".to_string(), "collection".to_string()]);
   assert_eq!(command.aliases, vec!["c_cmd_json".to_string()]);
   assert_eq!(command.permissions, vec!["public".to_string()]);
@@ -748,7 +775,10 @@ fn test_load_from_json_str_complex_types_and_attributes() {
         "tags": [ "test", "complex" ],
         "aliases": [ "comp_cmd_json" ],
         "permissions": [ "public" ],
-        "idempotent": false
+        "idempotent": false,
+        "deprecation_message": "",
+        "examples": [],
+        "http_method_hint": ""
       }
     ]
   "#;
@@ -768,10 +798,10 @@ fn test_load_from_json_str_complex_types_and_attributes() {
   assert_eq!(command.arguments[4].attributes.is_default_arg, true);
   assert_eq!(command.arguments[4].default_value, Some("default_string".to_string()));
 
-  assert_eq!(command.namespace, Some(".test".to_string()));
+  assert_eq!(command.namespace, ".test".to_string());
   assert_eq!(command.hint, "Complex command hint");
   assert_eq!(command.status, "stable");
-  assert_eq!(command.version, Some("1.0.0".to_string()));
+  assert_eq!(command.version, "1.0.0".to_string());
   assert_eq!(command.tags, vec!["test".to_string(), "complex".to_string()]);
   assert_eq!(command.aliases, vec!["comp_cmd_json".to_string()]);
   assert_eq!(command.permissions, vec!["public".to_string()]);
@@ -802,7 +832,10 @@ fn test_load_from_json_str_multiple_commands() {
         "tags": [],
         "aliases": [],
         "permissions": [],
-        "idempotent": false
+        "idempotent": false,
+        "deprecation_message": "",
+        "examples": [],
+        "http_method_hint": ""
       },
       {
         "name": "command2_json",
@@ -815,7 +848,10 @@ fn test_load_from_json_str_multiple_commands() {
         "tags": [],
         "aliases": [],
         "permissions": [],
-        "idempotent": false
+        "idempotent": false,
+        "deprecation_message": "",
+        "examples": [],
+        "http_method_hint": ""
       }
     ]
   "#;
@@ -826,11 +862,11 @@ fn test_load_from_json_str_multiple_commands() {
   assert!(registry.commands.contains_key(".group1.command2_json"));
   assert_eq!(
     registry.commands.get(".group1.command1_json").unwrap().namespace,
-    Some(".group1".to_string())
+    ".group1".to_string()
   );
   assert_eq!(
     registry.commands.get(".group1.command2_json").unwrap().namespace,
-    Some(".group1".to_string())
+    ".group1".to_string()
   );
 }
 
@@ -861,6 +897,9 @@ fn test_load_from_yaml_str_invalid_yaml() {
       aliases: []
       permissions: []
       idempotent: false
+      deprecation_message: ""
+      examples: []
+      http_method_hint: ""
     - This line is malformed
   "#;
 
@@ -888,7 +927,10 @@ fn test_load_from_json_str_invalid_json() {
         "tags": [],
         "aliases": [],
         "permissions": [],
-        "idempotent": false
+        "idempotent": false,
+        "deprecation_message": "",
+        "examples": [],
+        "http_method_hint": ""
       },
       { This is malformed json }
     ]
@@ -927,6 +969,9 @@ fn test_load_from_yaml_str_invalid_kind() {
       aliases: []
       permissions: []
       idempotent: false
+      deprecation_message: ""
+      examples: []
+      http_method_hint: ""
   "#;
 
   let result = CommandRegistry::builder().load_from_yaml_str(yaml_str);
@@ -944,7 +989,7 @@ fn test_load_from_json_str_invalid_kind() {
         "name": "command_with_invalid_kind_json",
         "description": "Command with an invalid kind from JSON",
         "arguments": [
-          { "name": "arg1", "kind": "NonExistentKind", "optional": false, "multiple": false, "validation_rules": [], "hint": "", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false }
+          { "name": "arg1", "kind": "NonExistentKind", "optional": false, "multiple": false, "validation_rules": [], "hint": "", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false, "deprecation_message": "", "examples": [], "http_method_hint": "" }
         ],
         "namespace": "",
         "hint": "",
@@ -953,7 +998,10 @@ fn test_load_from_json_str_invalid_kind() {
         "tags": [],
         "aliases": [],
         "permissions": [],
-        "idempotent": false
+        "idempotent": false,
+        "deprecation_message": "",
+        "examples": [],
+        "http_method_hint": ""
       }
     ]
   "#;
@@ -991,6 +1039,9 @@ fn test_load_from_yaml_str_invalid_list_format() {
       aliases: []
       permissions: []
       idempotent: false
+      deprecation_message: ""
+      examples: []
+      http_method_hint: ""
   "#;
 
   let result = CommandRegistry::builder().load_from_yaml_str(yaml_str);
@@ -1026,6 +1077,9 @@ fn test_load_from_yaml_str_invalid_map_format() {
       aliases: []
       permissions: []
       idempotent: false
+      deprecation_message: ""
+      examples: []
+      http_method_hint: ""
   "#;
 
   let result = CommandRegistry::builder().load_from_yaml_str(yaml_str);
@@ -1061,6 +1115,9 @@ fn test_load_from_yaml_str_invalid_enum_format() {
       aliases: []
       permissions: []
       idempotent: false
+      deprecation_message: ""
+      examples: []
+      http_method_hint: ""
   "#;
 
   let result = CommandRegistry::builder().load_from_yaml_str(yaml_str);

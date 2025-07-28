@@ -95,8 +95,8 @@ specific needs of the broader forming context. It mandates the implementation of
   } else {
       quote! { '__a } // Introduce a new lifetime if none exists
   };
-  
-  // Extract the lifetime name for use in where clauses  
+
+  // Extract the lifetime name for use in where clauses
   let lifetime_name = if let Some(lt) = lifetimes.first() {
       let lifetime = &lt.lifetime;
       quote! { #lifetime }
@@ -109,7 +109,7 @@ specific needs of the broader forming context. It mandates the implementation of
   generics_without_lifetimes.params = generics_without_lifetimes.params.into_iter().filter(|p| !matches!(p, syn::GenericParam::Lifetime(_))).collect();
   let (
     _struct_generics_with_defaults_without_lifetimes,
-    struct_generics_impl_without_lifetimes,
+    _struct_generics_impl_without_lifetimes,
     _struct_generics_ty_without_lifetimes,
     _struct_generics_where_without_lifetimes,
   ) = generic_params::decompose(&generics_without_lifetimes);
@@ -147,7 +147,7 @@ specific needs of the broader forming context. It mandates the implementation of
     quote! { < #former_generics_impl > }
   };
 
-  // Helper for FormerBegin impl generics 
+  // Helper for FormerBegin impl generics
   let former_begin_impl_generics = if struct_generics_impl.is_empty() {
     quote! { < #lifetime_param_for_former_begin, Definition > }
   } else {
@@ -184,7 +184,7 @@ specific needs of the broader forming context. It mandates the implementation of
     quote! { < #former_perform_generics_impl > }
   };
 
-  // Helper for former perform type generics  
+  // Helper for former perform type generics
   let former_perform_type_generics = if struct_generics_ty.is_empty() {
     quote! { < Definition > }
   } else {
@@ -430,14 +430,16 @@ specific needs of the broader forming context. It mandates the implementation of
   // Collect preform logic results.
   let storage_field_preform: Vec<_> = storage_field_preform.into_iter().collect::<Result<_>>()?;
   // Generate mutator implementation code.
-  let former_mutator_code = mutator(
+  let _former_mutator_code = mutator( // Changed to _former_mutator_code
     item,
     original_input,
     &struct_attrs.mutator,
     &former_definition_types,
-    &former_definition_types_generics_impl,
-    &former_definition_types_generics_ty,
-    &former_definition_types_generics_where,
+    &FormerDefinitionTypesGenerics { // Pass the new struct
+      impl_generics: &former_definition_types_generics_impl,
+      ty_generics: &former_definition_types_generics_ty,
+      where_clause: &former_definition_types_generics_where,
+    },
     &former_definition_types_ref,
   )?;
 
@@ -466,13 +468,13 @@ specific needs of the broader forming context. It mandates the implementation of
       (return_type, body)
     } else {
       // Return Former
-      let former_return_type = quote! {
+      let _former_return_type = quote! { // Changed to _former_return_type
         #former < #struct_generics_ty #former_definition< #former_definition_args > >
       };
       let former_body = quote! {
         #former::begin( #initial_storage_code, None, former::ReturnPreformed )
       };
-      (former_return_type, former_body)
+      (former_type_ref.clone(), former_body) // Cloned former_type_ref
     };
 
     // Generate the constructor function
@@ -581,6 +583,21 @@ specific needs of the broader forming context. It mandates the implementation of
       type Context = __Context;
     }
 
+    // Add FormerMutator implementation here
+    impl #former_definition_types_impl_generics former::FormerMutator
+    for #former_definition_types_ref
+    #former_definition_types_where_clause
+    {
+      #[ inline( always ) ]
+      fn form_mutation
+      (
+        _storage : &mut Self::Storage,
+        _context : &mut Option< Self::Context >,
+      )
+      {
+      }
+    }
+
     // = definition: Define the FormerDefinition struct.
     /// Holds the definition types used during the formation process.
     #[ derive( Debug ) ]
@@ -613,9 +630,6 @@ specific needs of the broader forming context. It mandates the implementation of
       type Formed = __Formed;
       type Context = __Context;
     }
-
-    // = former mutator: Implement the FormerMutator trait.
-    #former_mutator_code
 
     // = storage: Define the FormerStorage struct.
     #[ doc = "Stores potential values for fields during the formation process." ]

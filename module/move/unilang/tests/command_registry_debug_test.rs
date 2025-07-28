@@ -55,7 +55,8 @@ fn test_command_registry_key_mismatch() {
     .expect("Failed to register command with dummy routine");
 
   // Attempt to retrieve the command using the fully qualified name
-  let lookup_key = if let Some(ns) = &command_def.namespace {
+  let lookup_key = if !command_def.namespace.is_empty() {
+    let ns = &command_def.namespace;
     if ns.starts_with('.') {
       format!("{}.{}", ns, command_def.name)
     } else {

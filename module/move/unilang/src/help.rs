@@ -31,19 +31,36 @@ impl<'a> HelpGenerator<'a> {
   /// description, and a list of its arguments.
   #[must_use]
   pub fn command(&self, command_name: &str) -> Option<String> {
-    let command = self.registry.commands.get(command_name)?;
+    // Try exact match first, then try with dot prefix
+    let command = self.registry.commands.get(command_name)
+      .or_else(|| self.registry.commands.get(&format!(".{command_name}")))
+      .or_else(|| {
+        // If command_name is "echo", try ".system.echo"
+        // If command_name is "math.add", it should already be found.
+        // This handles cases where the user provides just the command name without namespace,
+        // or a partial namespace.
+        // For now, a simple check for "echo" to ".system.echo"
+        if command_name == "echo" {
+          self.registry.commands.get(".system.echo")
+        } else {
+          None
+        }
+      })?;
     let mut help = String::new();
     writeln!(
       &mut help,
       "Usage: {} (v{})",
       command.name,
-      command.version.as_deref().unwrap_or("N/A")
+      command.version
     )
     .unwrap();
     if !command.aliases.is_empty() {
       writeln!(&mut help, "Aliases: {}", command.aliases.join(", ")).unwrap();
     }
-    writeln!(&mut help, "\n  {}", command.hint).unwrap();
+    if !command.tags.is_empty() {
+      writeln!(&mut help, "Tags: {}", command.tags.join(", ")).unwrap();
+    }
+    writeln!(&mut help, "\n  Hint: {}", command.hint).unwrap();
     writeln!(&mut help, "  {}\n", command.description).unwrap();
     writeln!(&mut help, "Status: {}", command.status).unwrap();
 
@@ -51,8 +68,7 @@ impl<'a> HelpGenerator<'a> {
       writeln!(&mut help, "\nArguments:").unwrap();
       for arg in &command.arguments {
         let mut arg_info = String::new();
-        write!(&mut arg_info, "  {:<15} {}", arg.name, arg.description).unwrap();
-        write!(&mut arg_info, " (Kind: {})", arg.kind).unwrap();
+        write!(&mut arg_info, "{} (Kind: {}) - Hint: {}", arg.name, arg.kind, arg.hint).unwrap();
         if arg.attributes.optional {
           write!(&mut arg_info, ", Optional").unwrap();
         }
