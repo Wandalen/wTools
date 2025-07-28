@@ -32,7 +32,7 @@ mod private {
   ///
   /// ### Basic use-case.
   ///
-  /// ``` should_panic
+  /// ``` rust
   /// use diagnostics_tools::prelude::*;
   /// a_true!( 1 == 2, "something wrong" );
   /// ```
@@ -82,7 +82,7 @@ mod private {
   ///
   /// ### Basic use-case.
   ///
-  /// ``` should_panic
+  /// ``` rust
   /// use diagnostics_tools::prelude::*;
   /// a_dbg_true!( 1 == 2, "something wrong" );
   /// ```

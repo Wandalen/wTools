@@ -696,4 +696,7 @@ default-features = false
 # proc-macro2 = { version = "~1.0.78", default-features = false, features = [] }
 # quote = { version = "~1.0.35", default-features = false, features = [] }
 # syn = { version = "~2.0.52", default-features = false, features = [ "full", "extra-traits" ] } # qqq : xxx : optimize set of features
+
+[patch.crates-io]
+former_meta = { path = "module/core/former_meta" }
 # const_format = { version = "0.2.32", default-features = false, features = [] }

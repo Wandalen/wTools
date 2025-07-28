@@ -14,18 +14,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("=== Simple Command ===");
     let cmd = parser.parse_single_instruction("system.info")?;
     println!("Command path: {:?}", cmd.command_path_slices);
-    println!("Arguments: {:?}", cmd.arguments);
-    
+    println!("Arguments: {:?}", cmd.positional_arguments);
+
     // Command with positional arguments
     println!("\n=== Command with Positional Arguments ===");
     let cmd = parser.parse_single_instruction("log.write \"Error occurred\" 5")?;
     println!("Command path: {:?}", cmd.command_path_slices);
-    println!("Positional arguments: {:?}", cmd.arguments);
-    
+    println!("Positional arguments: {:?}", cmd.positional_arguments);
+
     // Verify the parsing results
     assert_eq!(cmd.command_path_slices, ["log", "write"]);
-    assert_eq!(cmd.arguments.len(), 2);
-    
+    assert_eq!(cmd.positional_arguments.len(), 2);
+
     println!("\n✓ Basic command parsing successful!");
     Ok(())
 }

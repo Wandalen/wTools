@@ -58,14 +58,15 @@ impl<'a> Interpreter<'a> {
       // println!( "Executing: {command:?}" );
 
       // Look up the routine from the registry
-      let full_command_name = if let Some(ns) = &command.definition.namespace {
+      let full_command_name = if command.definition.namespace.is_empty() {
+        format!(".{}", command.definition.name)
+      } else {
+        let ns = &command.definition.namespace;
         if ns.starts_with('.') {
           format!("{}.{}", ns, command.definition.name)
         } else {
           format!(".{}.{}", ns, command.definition.name)
         }
-      } else {
-        format!(".{}", command.definition.name)
       };
       let routine = self.registry.get_routine(&full_command_name).ok_or_else(|| {
         Error::Execution(ErrorData {

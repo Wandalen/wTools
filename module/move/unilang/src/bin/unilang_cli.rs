@@ -31,12 +31,18 @@ fn run() -> Result<(), unilang::error::Error> {
   // .math.add command
   let math_add_def = CommandDefinition::former()
     .name("add")
-    .namespace("math".to_string())
+    .namespace(".math".to_string()) // Changed to String
     .description("Adds two numbers.".to_string())
     .hint("Adds two numbers.")
     .status("stable")
-    .version("1.0.0")
+    .version("1.0.0".to_string())
     .aliases(vec!["sum".to_string(), "plus".to_string()])
+    .tags(vec!["math".to_string(), "calculation".to_string()])
+    .permissions(vec![]) // Added
+    .idempotent(true) // Added
+    .deprecation_message(String::new()) // Added
+    .http_method_hint(String::new()) // Added
+    .examples(vec![]) // Added
     .arguments(vec![
       ArgumentDefinition::former()
         .name("a")
@@ -70,12 +76,17 @@ fn run() -> Result<(), unilang::error::Error> {
   // .math.sub command
   let math_sub_def = CommandDefinition::former()
     .name("sub")
-    .namespace("math".to_string())
+    .namespace(".math".to_string()) // Changed to String
     .description("Subtracts two numbers.".to_string())
     .hint("Subtracts two numbers.")
     .status("beta")
-    .version("0.9.0")
+    .version("0.9.0".to_string())
     .aliases(vec!["minus".to_string()])
+    .permissions(vec![]) // Added
+    .idempotent(true) // Added
+    .deprecation_message(String::new()) // Added
+    .http_method_hint(String::new()) // Added
+    .examples(vec![]) // Added
     .arguments(vec![
       ArgumentDefinition::former()
         .name("x")
@@ -110,10 +121,17 @@ fn run() -> Result<(), unilang::error::Error> {
   // .greet command
   let greet_def = CommandDefinition::former()
     .name("greet")
+    .namespace(String::new()) // Changed to String (global namespace)
     .description("Greets the specified person.".to_string())
     .hint("Greets the specified person.")
     .status("stable")
-    .version("1.0.0")
+    .version("1.0.0".to_string())
+    .aliases(vec!["hi".to_string()]) // Added alias for testing
+    .permissions(vec![]) // Added
+    .idempotent(true) // Added
+    .deprecation_message(String::new()) // Added
+    .http_method_hint(String::new()) // Added
+    .examples(vec!["greet John".to_string(), "greet".to_string()]) // Added
     .arguments(vec![ArgumentDefinition::former()
       .name("name")
       .kind(ArgumentKind::String)
@@ -126,7 +144,7 @@ fn run() -> Result<(), unilang::error::Error> {
     let name = cmd
       .arguments
       .get("name")
-      .map_or_else(|| "World".to_string(), ToString::to_string);
+      .map_or_else(|| "World".to_string(), std::string::ToString::to_string); // Fixed redundant closure
     let result = format!("Hello, {name}!");
 
     println!("{result}");
@@ -140,11 +158,17 @@ fn run() -> Result<(), unilang::error::Error> {
   // .config.set command
   let config_set_def = CommandDefinition::former()
     .name("set")
-    .namespace("config".to_string())
+    .namespace(".config".to_string()) // Changed to String
     .description("Sets a configuration value.".to_string())
     .hint("Sets a configuration value.")
     .status("experimental")
-    .version("0.1.0")
+    .version("0.1.0".to_string())
+    .aliases(vec![]) // Added
+    .permissions(vec![]) // Added
+    .idempotent(false) // Added
+    .deprecation_message(String::new()) // Added
+    .http_method_hint(String::new()) // Added
+    .examples(vec![]) // Added
     .arguments(vec![
       ArgumentDefinition::former()
         .name("key")
@@ -176,16 +200,26 @@ fn run() -> Result<(), unilang::error::Error> {
   // .system.echo command
   let echo_def = CommandDefinition::former()
     .name("echo")
-    .namespace("system".to_string())
+    .namespace(".system".to_string()) // Changed to String
     .description("Echoes a message".to_string())
-    .hint("Print a message to stdout".to_string())
+    .hint("Echoes back the provided arguments.".to_string())
     .status("stable".to_string())
     .version("1.0.0".to_string())
-    .tags(vec![])
+    .tags(vec!["utility".to_string()]) // Added tag for testing
     .aliases(vec!["e".to_string()])
-    .permissions(vec![])
+    .permissions(vec!["admin".to_string()]) // Added permission for testing
     .idempotent(true)
-    .arguments(vec![])
+    .deprecation_message(String::new()) // Added
+    .http_method_hint(String::new()) // Added
+    .examples(vec!["system.echo \"Hello\"".to_string()]) // Added
+    .arguments(vec![
+      ArgumentDefinition::former()
+        .name("arg1")
+        .kind(ArgumentKind::String)
+        .hint("The first argument to echo.")
+        .attributes(ArgumentAttributes::former().optional(true).form())
+        .end(),
+    ])
     .routine_link(".system.echo".to_string())
     .form();
 
@@ -201,22 +235,25 @@ fn run() -> Result<(), unilang::error::Error> {
   // .files.cat command
   let cat_def = CommandDefinition::former()
     .name("cat")
-    .namespace("files".to_string())
+    .namespace(".files".to_string()) // Changed to String
     .description("Read and display file contents".to_string())
     .hint("Print file contents to stdout".to_string())
     .status("stable".to_string())
     .version("1.0.0".to_string())
-    .tags(vec![])
-    .aliases(vec![])
-    .permissions(vec![])
+    .tags(vec!["filesystem".to_string()]) // Added tag for testing
+    .aliases(vec!["type".to_string()]) // Added alias for testing
+    .permissions(vec!["read_file".to_string()]) // Added permission for testing
     .idempotent(true)
+    .deprecation_message(String::new()) // Added
+    .http_method_hint(String::new()) // Added
+    .examples(vec!["files.cat path::/etc/hosts".to_string()]) // Added
     .arguments(vec![ArgumentDefinition::former()
       .name("path")
       .description("The path to the file to read".to_string())
       .hint("File path".to_string())
       .kind(ArgumentKind::String)
-      .aliases(vec![])
-      .tags(vec![])
+      .aliases(vec!["p".to_string()]) // Added alias for testing
+      .tags(vec!["required".to_string()]) // Added tag for testing
       .attributes(
         ArgumentAttributes::former()
           .optional(false)

@@ -64,6 +64,10 @@
 | `diagnostics_tools` doctest | Failing (Stuck) | `Test executable succeeded, but it's marked should_panic`. |
 | `data_model_features_test` | Fixed (Monitored) | Was `Failing (Regression)`, now passing (correctly asserted success). |
 | `command_registry_key_test` | Fixed (Monitored) | Was `Failing (New)`, now passing. |
+| `command_registry_debug_test` | Failing (New) | Mismatched types in lookup key construction. |
+| `command_loader_test` | Failing (New) | Type mismatch in assertions for namespace and version. |
+| `complex_types_and_attributes_test` | Failing (New) | Missing fields in `CommandDefinition` initializer and type mismatches. |
+| `runtime_command_registration_test` | Failing (New) | Type mismatches in `CommandDefinition` initializer. |
 
 ### Crate Conformance Check Procedure
 *   Run `timeout 180 cargo test -p unilang` and verify it passes with no warnings.
@@ -286,3 +290,4 @@
 *   [Increment 12 | 2025-07-26T16:07:10.133Z] Detailed planning for Increment 12: Update Formal Specification (`spec.md`).
 *   [Increment 12 | 2025-07-26T16:08:53.133Z] Updated spec.md with unified architecture and complete data models.
 *   [Increment 13 | 2025-07-26T16:09:18.133Z] Detailed planning for Increment 13: Finalization and Legacy Code Removal.
+*   [Increment 13 | 2025-07-28T21:30:43.520Z] `cargo test -p unilang` failed. Updated `### Tests` section with failing tests: `command_registry_debug_test`, `command_loader_test`, `complex_types_and_attributes_test`, `runtime_command_registration_test`.

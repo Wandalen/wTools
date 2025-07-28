@@ -9,6 +9,7 @@
 //! Run this example with: `cargo run --example unilang_parser_basic`
 
 use unilang_parser::{Parser, UnilangParserOptions};
+// Removed: use unilang_parser::Argument; // This import is no longer strictly needed for the `unwrap_or` fix, but keep it for clarity if `Argument` is used elsewhere.
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("=== Unilang Parser Basic Usage Examples ===\n");
@@ -21,44 +22,44 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("1. Single Instruction with Mixed Arguments:");
     let input_single = "log.level severity::\"debug\" message::'Hello, Unilang!' --verbose";
     println!("   Input: {}", input_single);
-    
+
     let instruction = parser.parse_single_instruction(input_single)?;
-    
+
     println!("   Command path: {:?}", instruction.command_path_slices);
-    println!("   Positional args: {:?}", instruction.arguments);
+    println!("   Positional args: {:?}", instruction.positional_arguments);
     println!("   Named arguments: {:?}", instruction.named_arguments);
-    println!("   Help requested: {}", instruction.help_invoked);
+    println!("   Help requested: {:?}", instruction.help_requested);
 
     // Example 2: Accessing specific argument values
     println!("\n2. Accessing Specific Arguments:");
     if let Some(severity) = instruction.named_arguments.get("severity") {
-        println!("   Severity level: {}", severity);
+        println!("   Severity level: {:?}", severity);
     }
     if let Some(message) = instruction.named_arguments.get("message") {
-        println!("   Log message: {}", message);
+        println!("   Log message: {:?}", message);
     }
 
     // Example 3: Multiple instructions (command sequence)
     println!("\n3. Multiple Instructions (Command Sequence):");
     let input_multiple = "system.info ? ;; file.read path::\"/etc/hosts\" --binary ;; user.add 'John Doe' email::john.doe@example.com";
     println!("   Input: {}", input_multiple);
-    
+
     let instructions = parser.parse_multiple_instructions(input_multiple)?;
-    
+
     println!("   Parsed {} instructions:", instructions.len());
     for (i, instruction) in instructions.iter().enumerate() {
         println!("   Instruction {}: {:?}", i + 1, instruction.command_path_slices);
-        
+
         // Show specific details for each instruction
         match i {
-            0 => println!("     -> Help request for system.info: {}", instruction.help_invoked),
+            0 => println!("     -> Help request for system.info: {:?}", instruction.help_requested),
             1 => {
-                println!("     -> File path: {}", instruction.named_arguments.get("path").unwrap_or(&"unknown".to_string()));
-                println!("     -> Binary mode: {}", instruction.arguments.contains(&"--binary".to_string()));
+                println!("     -> File path: {}", instruction.named_arguments.get("path").map(|arg| &arg.value).unwrap_or(&"unknown".to_string()));
+                println!("     -> Binary mode: {}", instruction.positional_arguments.iter().any(|arg| arg.value == "--binary"));
             },
             2 => {
-                println!("     -> User name: {}", instruction.arguments.get(0).unwrap_or(&"unknown".to_string()));
-                println!("     -> Email: {}", instruction.named_arguments.get("email").unwrap_or(&"unknown".to_string()));
+                println!("     -> User name: {}", instruction.positional_arguments.get(0).map(|arg| &arg.value).unwrap_or(&"unknown".to_string()));
+                println!("     -> Email: {}", instruction.named_arguments.get("email").map(|arg| &arg.value).unwrap_or(&"unknown".to_string()));
             },
             _ => {}
         }
@@ -67,10 +68,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Example 4: Command path analysis
     println!("\n4. Command Path Analysis:");
     let complex_path = parser.parse_single_instruction("system.network.diagnostics.ping host::\"example.com\" count::5")?;
-    
+
     println!("   Full command path: {:?}", complex_path.command_path_slices);
     println!("   Namespace: {:?}", &complex_path.command_path_slices[..complex_path.command_path_slices.len()-1]);
-    println!("   Command name: {}", complex_path.command_path_slices.last().unwrap_or(&""));
+    println!("   Command name: {}", complex_path.command_path_slices.last().unwrap_or(&"".to_string()));
     println!("   Joined path: {}", complex_path.command_path_slices.join("."));
 
     // Example 5: Help operator demonstration
@@ -79,13 +80,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "file.copy ?",                              // Basic help
         "database.query sql::\"SELECT * FROM users\" ?",  // Contextual help
     ];
-    
+
     for help_cmd in help_examples {
         println!("   Help command: {}", help_cmd);
         let help_instruction = parser.parse_single_instruction(help_cmd)?;
-        
+
         println!("     Command: {:?}", help_instruction.command_path_slices);
-        println!("     Help requested: {}", help_instruction.help_invoked);
+        println!("     Help requested: {:?}", help_instruction.help_requested);
         if !help_instruction.named_arguments.is_empty() {
             println!("     Context args: {:?}", help_instruction.named_arguments);
         }

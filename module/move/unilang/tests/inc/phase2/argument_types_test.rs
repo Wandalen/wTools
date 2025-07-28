@@ -64,14 +64,17 @@ fn test_path_argument_type() {
       tags: vec![],
     }],
     routine_link: None,
-    namespace: None,
+    namespace: "".to_string(),
     hint: "".to_string(),
     status: "".to_string(),
-    version: None,
+    version: "".to_string(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
+    deprecation_message: "".to_string(),
+    examples: vec![],
+    http_method_hint: "".to_string(),
   };
   let registry = setup_test_environment(command);
   let result = analyze_program(
@@ -133,14 +136,17 @@ fn test_file_argument_type() {
       tags: vec![],
     }],
     routine_link: None,
-    namespace: None,
+    namespace: "".to_string(),
     hint: "".to_string(),
     status: "".to_string(),
-    version: None,
+    version: "".to_string(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
+    deprecation_message: "".to_string(),
+    examples: vec![],
+    http_method_hint: "".to_string(),
   };
   let registry = setup_test_environment(command);
 
@@ -211,14 +217,17 @@ fn test_directory_argument_type() {
       tags: vec![],
     }],
     routine_link: None,
-    namespace: None,
+    namespace: "".to_string(),
     hint: "".to_string(),
     status: "".to_string(),
-    version: None,
+    version: "".to_string(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
+    deprecation_message: "".to_string(),
+    examples: vec![],
+    http_method_hint: "".to_string(),
   };
   let registry = setup_test_environment(command);
 
@@ -286,14 +295,17 @@ fn test_enum_argument_type() {
       tags: vec![],
     }],
     routine_link: None,
-    namespace: None,
+    namespace: "".to_string(),
     hint: "".to_string(),
     status: "".to_string(),
-    version: None,
+    version: "".to_string(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
+    deprecation_message: "".to_string(),
+    examples: vec![],
+    http_method_hint: "".to_string(),
   };
   let registry = setup_test_environment(command);
 
@@ -370,14 +382,17 @@ fn test_url_argument_type() {
       tags: vec![],
     }],
     routine_link: None,
-    namespace: None,
+    namespace: "".to_string(),
     hint: "".to_string(),
     status: "".to_string(),
-    version: None,
+    version: "".to_string(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
+    deprecation_message: "".to_string(),
+    examples: vec![],
+    http_method_hint: "".to_string(),
   };
   let registry = setup_test_environment(command);
 
@@ -439,14 +454,17 @@ fn test_datetime_argument_type() {
       tags: vec![],
     }],
     routine_link: None,
-    namespace: None,
+    namespace: "".to_string(),
     hint: "".to_string(),
     status: "".to_string(),
-    version: None,
+    version: "".to_string(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
+    deprecation_message: "".to_string(),
+    examples: vec![],
+    http_method_hint: "".to_string(),
   };
   let registry = setup_test_environment(command);
 
@@ -508,14 +526,17 @@ fn test_pattern_argument_type() {
       tags: vec![],
     }],
     routine_link: None,
-    namespace: None,
+    namespace: "".to_string(),
     hint: "".to_string(),
     status: "".to_string(),
-    version: None,
+    version: "".to_string(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
+    deprecation_message: "".to_string(),
+    examples: vec![],
+    http_method_hint: "".to_string(),
   };
   let registry = setup_test_environment(command);
 
@@ -578,14 +599,17 @@ fn test_default_argument() {
       tags: vec![],
     }],
     routine_link: None,
-    namespace: None,
+    namespace: "".to_string(),
     hint: "".to_string(),
     status: "".to_string(),
-    version: None,
+    version: "".to_string(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
+    deprecation_message: "".to_string(),
+    examples: vec![],
+    http_method_hint: "".to_string(),
   };
   let registry = setup_test_environment(command);
 
