@@ -95,7 +95,7 @@
         *   Read `module/move/unilang/src/semantic.rs`.
         *   Read `module/move/unilang/tests/inc/phase1/full_pipeline_test.rs`.
         *   Verify that `SemanticAnalyzer`'s `new` method accepts `&[GenericInstruction]` and that `analyze` iterates over it.
-        *   Verify that `full_pipeline_test.rs` uses `unilang_parser::Parser` to generate `GenericInstruction`s.
+        *   Verify that `full_pipeline.rs` uses `unilang_parser::Parser` to generate `GenericInstruction`s.
     2.  **Audit `unilang_cli`:**
         *   Read `module/move/unilang/src/bin/unilang_cli.rs`.
         *   Verify that it instantiates `unilang_parser::Parser` and feeds `GenericInstruction`s to `SemanticAnalyzer`.
