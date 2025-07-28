@@ -546,9 +546,9 @@ field : {field_ident}",
           Context = #former_type_ref,
           End = #subform_collection_end< Definition >,
         >,
-        #subformer_definition::Storage : 'a,
-        #subformer_definition::Context : 'a,
-        #subformer_definition::End : 'a,
+        < #subformer_definition as former::FormerDefinition >::Storage : 'a,
+        < #subformer_definition as former::FormerDefinition >::Context : 'a,
+        < #subformer_definition as former::FormerDefinition >::End : 'a,
         Definition : 'a,
       {
         Former2::former_begin

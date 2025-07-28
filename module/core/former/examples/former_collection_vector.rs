@@ -15,18 +15,21 @@ fn main() {}
 ))]
 fn main() {
   use former::Former;
+  use former as the_module;
 
-  #[derive(Debug, PartialEq, Default, Former)]
-  pub struct StructWithVec {
-    vec: Vec<String>,
+  #[derive(Default, Debug, PartialEq, Former)]
+  #[debug]
+  pub struct Struct1 {
+    #[subform_collection( definition = former::VectorDefinition )]
+    vec_1: Vec<String>,
   }
 
-  let instance = StructWithVec::former().vec(vec!["apple".to_string(), "banana".to_string()]).form();
+  let instance = Struct1::former().vec_1().add("apple".to_string()).add("banana".to_string()).end().form();
 
   assert_eq!(
     instance,
-    StructWithVec {
-      vec: vec!["apple".to_string(), "banana".to_string()]
+    Struct1 {
+      vec_1: vec!["apple".to_string(), "banana".to_string()],
     }
   );
   dbg!(instance);

@@ -7,7 +7,7 @@ use super::*;
 // use std::collections::HashSet;
 
 #[derive(Default, Debug, PartialEq, former::Former)]
-// #[ derive( Default, Debug, PartialEq, former::Former ) ] #[ debug ]
+#[debug]
 // #[ derive( Default, Debug, PartialEq ) ]
 pub struct Struct1 {
   #[ subform_collection( definition = former::VectorDefinition ) ]

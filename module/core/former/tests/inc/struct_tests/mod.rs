@@ -61,6 +61,8 @@ mod a_basic_manual;
 mod a_primitives;
 mod a_primitives_manual;
 mod tuple_struct;
+// mod debug_e0223_minimal;
+mod debug_e0223_manual;
 
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod subform_collection_basic;  // BLOCKED: E0106 missing lifetime specifier in derive macro
