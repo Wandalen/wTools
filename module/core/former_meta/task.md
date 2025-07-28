@@ -1,44 +1,40 @@
-# Change Proposal for `former_meta`
+# Change Proposal for former_meta
 
 ### Task ID
-*   `TASK-20250524-FORMER-META-COMPILATION-FIX`
+*   TASK-20250728-220103-FixFormerMetaClippy
 
 ### Requesting Context
-*   **Requesting Crate/Project:** `module/move/unilang_instruction_parser` (and potentially other workspace crates)
-*   **Driving Feature/Task:** Final verification of `unilang_instruction_parser` requires a clean workspace build, which is currently blocked by compilation errors and warnings in `former_meta`.
-*   **Link to Requester's Plan:** `../../move/unilang_instruction_parser/plan.md`
-*   **Date Proposed:** 2025-05-24
+*   **Requesting Crate/Project:** `unilang`
+*   **Driving Feature/Task:** Phase 3: Unifying Framework Architecture (Finalization Increment)
+*   **Link to Requester's Plan:** `module/move/unilang/task/phase3.md`
+*   **Date Proposed:** 2025-07-28
 
 ### Overall Goal of Proposed Change
-*   Resolve compilation error `E0554` and clippy warnings in `former_meta` to allow successful compilation on stable Rust.
+*   To resolve `clippy` warnings and errors in the `former_meta` crate, specifically `manual_let_else`, `too_many_arguments`, and `used_underscore_binding`, to ensure a clean build and adherence to linting standards when `former_meta` is used as a dependency.
 
 ### Problem Statement / Justification
-*   During `cargo test --workspace`, `former_meta` fails to compile with `error[E0554]: #![feature]` may not be used on the stable release channel` due to `#![ feature( proc_macro_totokens ) ]` being used. This unstable feature is not available on stable Rust, blocking compilation for any dependent crates.
-*   Additionally, `former_meta` generates clippy warnings: `unused import: quote::quote_spanned`, `unreachable expression`, and `unused variable: attr_property`. These warnings prevent clean builds when `-D warnings` is enabled.
+*   The `unilang` crate, during its final conformance checks, encounters `clippy` errors and warnings originating from the `former_meta` dependency. These lints prevent `unilang` from achieving a clean build with `-D warnings` enabled, hindering its ability to pass all quality gates. Resolving these issues in `former_meta` is crucial for `unilang`'s build integrity and overall project quality.
 
 ### Proposed Solution / Specific Changes
-*   **File:** `src/lib.rs`
-    *   **Change:** Remove or conditionally compile `#![ feature( proc_macro_totokens ) ]`. If `proc_macro_totokens` is strictly necessary, `former_meta` should require a nightly toolchain, or an alternative stable API should be used.
-*   **File:** `src/derive_former/former_enum/unit_variant_handler.rs`
-    *   **Change:** Remove `quote::quote_spanned` import if unused.
-    *   **Change:** Refactor `return diag::return_syn_err!( ... )` to avoid `unreachable expression` warning.
-    *   **Change:** Prefix `attr_property` with `_` if it's intentionally unused, or use it.
+*   **API Changes (if any):** None. These are internal code style and lint fixes.
+*   **Behavioral Changes (if any):** None.
+*   **Internal Changes (high-level, if necessary to explain public API):**
+    *   **`clippy::manual_let_else`:** Rewrite `if let syn::Type::Path(type_path) = field_type { type_path } else { return Err(...) };` to `let syn::Type::Path(field_type_path) = field_type else { return Err(...) };` in `src/derive_former/former_enum/tuple_single_field_subform.rs`.
+    *   **`clippy::too_many_arguments`:** Refactor the `mutator` function in `src/derive_former.rs` to reduce its argument count. This might involve grouping related arguments into a new struct or passing a context object.
+    *   **`clippy::used_underscore_binding`:** Remove the underscore prefix from `_item` and `_original_input` in `src/derive_former.rs` if they are indeed used, or ensure they are not used if the underscore prefix is intended to mark them as unused. Given the error, they are being used, so the prefix should be removed.
 
 ### Expected Behavior & Usage Examples (from Requester's Perspective)
-*   `cargo build -p former_meta` and `cargo clippy -p former_meta -- -D warnings` should complete successfully on a stable Rust toolchain.
-*   Dependent crates like `unilang_instruction_parser` should be able to compile without errors or warnings originating from `former_meta`.
+*   The `former_meta` crate should compile without `clippy` warnings or errors when `unilang` runs its conformance checks. No changes in `unilang`'s usage of `former_meta` are expected.
 
 ### Acceptance Criteria (for this proposed change)
-*   `cargo build -p former_meta` exits with code 0.
-*   `cargo clippy -p former_meta -- -D warnings` exits with code 0 and no warnings.
-*   The functionality of `former_meta` remains unchanged.
+*   `cargo clippy -p former_meta -- -D warnings` (or equivalent for the `former_meta` crate) runs successfully with exit code 0 and no warnings.
 
 ### Potential Impact & Considerations
-*   **Breaking Changes:** No breaking changes are anticipated if the `proc_macro_totokens` feature can be removed or replaced without affecting core functionality.
+*   **Breaking Changes:** None anticipated, as changes are internal lint fixes.
 *   **Dependencies:** No new dependencies.
-*   **Performance:** No significant performance impact.
+*   **Performance:** No significant performance impact expected.
 *   **Security:** No security implications.
-*   **Testing:** Existing tests for `former_meta` should continue to pass.
+*   **Testing:** Existing tests in `former_meta` should continue to pass. New tests are not required as this is a lint fix.
 
 ### Notes & Open Questions
-*   Clarification is needed on the necessity of `proc_macro_totokens`. If it's critical, the crate might need to explicitly state nightly toolchain requirement.
+*   The `too_many_arguments` lint might require a small refactoring to group arguments, which should be done carefully to maintain readability.

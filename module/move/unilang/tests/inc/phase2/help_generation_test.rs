@@ -94,11 +94,13 @@ fn test_cli_specific_command_help_add() {
     .stdout(
       predicate::str::contains("Usage: add (v1.0.0)")
         .and(predicate::str::contains("Aliases: sum, plus"))
-        .and(predicate::str::contains("Adds two numbers."))
+        .and(predicate::str::contains("Tags: math, calculation")) // Added this line
+        .and(predicate::str::contains("Hint: Adds two numbers.")) // Modified this line
+        .and(predicate::str::contains("Adds two numbers.")) // Modified this line
         .and(predicate::str::contains("Status: stable"))
         .and(predicate::str::contains("Arguments:"))
-        .and(predicate::str::contains("  a                (Kind: Integer)"))
-        .and(predicate::str::contains("  b                (Kind: Integer)")),
+        .and(predicate::str::contains("a (Kind: Integer) - Hint: First number.")) // Modified this line
+        .and(predicate::str::contains("b (Kind: Integer) - Hint: Second number.")), // Modified this line
     )
     .stderr("");
 }

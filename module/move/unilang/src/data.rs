@@ -23,13 +23,13 @@ pub struct CommandDefinition {
   /// An optional link to the routine that executes this command.
   pub routine_link: Option<String>,
   /// The namespace of the command.
-  pub namespace: Option<String>,
+  pub namespace: String, // Changed from Option<String> to String
   /// A short hint for the command.
   pub hint: String,
   /// The status of the command.
   pub status: String,
   /// The version of the command.
-  pub version: Option<String>,
+  pub version: String,
   /// Tags associated with the command.
   pub tags: Vec<String>,
   /// Aliases for the command.
@@ -38,6 +38,12 @@ pub struct CommandDefinition {
   pub permissions: Vec<String>,
   /// Indicates if the command is idempotent.
   pub idempotent: bool,
+  /// If `status` is `Deprecated`, explains the reason and suggests alternatives.
+  pub deprecation_message: String, // Added
+  /// A suggested HTTP method (`GET`, `POST`, etc.) for the Web API modality.
+  pub http_method_hint: String, // Added
+  /// Illustrative usage examples for help text.
+  pub examples: Vec<String>, // Added
 }
 
 ///

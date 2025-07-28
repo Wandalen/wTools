@@ -293,6 +293,7 @@ impl<'a> FormerField<'a> {
   ///
   #[inline]
   #[allow(clippy::too_many_arguments)]
+    #[allow(unused_variables)]
   pub fn former_field_setter(
     &self,
     item: &syn::Ident,
@@ -473,6 +474,7 @@ field : {field_ident}",
   /// See `tests/inc/former_tests/subform_collection_manual.rs` for example of generated code.
   ///
   #[inline]
+    #[allow(unused_variables)]
   #[allow(clippy::too_many_lines, clippy::too_many_arguments)]
   pub fn subform_collection_setter(
     &self,
@@ -491,9 +493,9 @@ field : {field_ident}",
     let field_ident = &self.ident;
     let field_typ = &self.non_optional_ty;
     let params = typ::type_parameters(field_typ, ..);
-    
+
     // Generate the correct struct type with or without generics
-    let struct_type = if struct_generics_ty.is_empty() {
+    let _struct_type = if struct_generics_ty.is_empty() {
       qt! { #item }
     } else {
       qt! { #item< #struct_generics_ty > }
@@ -759,6 +761,7 @@ with the new content generated during the subforming process.
   ///
   /// See `tests/inc/former_tests/subform_entry_manual.rs` for example of generated code.
   ///
+    #[allow(unused_variables)]
   #[inline]
   #[allow(clippy::format_in_format_args, clippy::too_many_lines, clippy::too_many_arguments)]
   pub fn subform_entry_setter(
@@ -1046,6 +1049,8 @@ formation process of the `{item}`.
   #[allow(
     clippy::format_in_format_args,
     clippy::unnecessary_wraps,
+    unused_variables,
+
     clippy::too_many_lines,
     clippy::too_many_arguments
   )]

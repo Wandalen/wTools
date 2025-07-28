@@ -1,7 +1,6 @@
 use super::*;
 
 use macro_tools::{ Result, quote::{ quote, format_ident }, ident::cased_ident_from_ident, generic_params::GenericsRef };
-use former_types::forming::FormerBegin;
 use convert_case::Case;
 
 pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
@@ -36,9 +35,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   };
 
   // Construct the FormerDefinition type for the field_type
-  let field_type_path = if let syn::Type::Path(type_path) = field_type {
-      type_path
-  } else {
+  let syn::Type::Path(field_type_path) = field_type else {
       return Err(syn::Error::new_spanned(field_type, "Field type must be a path to derive Former"));
   };
 
@@ -49,20 +46,35 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
 
   // Generate a custom definition types for the enum result
   let enum_end_definition_types = format_ident!("{}{}EndDefinitionTypes", enum_name, variant_name_string);
-  
+
   let end_definition_types = quote!
   {
     #[derive(Default, Debug)]
     pub struct #enum_end_definition_types #impl_generics
     #where_clause
     {}
-    
+
     impl #impl_generics former_types::FormerDefinitionTypes for #enum_end_definition_types #ty_generics
     #where_clause
     {
       type Storage = < #field_former_definition_type as former_types::definition::FormerDefinition >::Storage;
       type Context = < #field_former_definition_type as former_types::definition::FormerDefinition >::Context;
       type Formed = #enum_name #ty_generics;
+    }
+
+    // Add FormerMutator implementation here
+    impl #impl_generics former_types::FormerMutator
+    for #enum_end_definition_types #ty_generics
+    #where_clause
+    {
+      #[ inline( always ) ]
+      fn form_mutation
+      (
+        _storage : &mut Self::Storage,
+        _context : &mut Option< Self::Context >,
+      )
+      {
+      }
     }
   };
 

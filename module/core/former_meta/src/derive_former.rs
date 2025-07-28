@@ -4,7 +4,7 @@ use super::*;
 use macro_tools::{
   diag, typ, Result,
   proc_macro2::TokenStream,
-  quote::{format_ident, quote},
+  quote::{format_ident, quote, ToTokens},
   syn::spanned::Spanned,
 };
 
@@ -23,18 +23,31 @@ mod struct_attrs;
 
 use struct_attrs::*;
 
+/// Represents the generic parameters for a `FormerDefinitionTypes`.
+pub struct FormerDefinitionTypesGenerics<'a> {
+  pub impl_generics: &'a syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
+  pub ty_generics: &'a syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
+  pub where_clause: &'a syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
+}
+
+impl ToTokens for FormerDefinitionTypesGenerics<'_> {
+  fn to_tokens(&self, tokens: &mut TokenStream) {
+    self.impl_generics.to_tokens(tokens);
+    self.ty_generics.to_tokens(tokens);
+    self.where_clause.to_tokens(tokens);
+  }
+}
+
 /// Generates the code for implementing the `FormerMutator` trait for a specified former definition type.
 /// If the `custom` attribute is not specified, a default empty implementation is generated.
 /// If the `debug` attribute is specified, it prints an example of a custom mutator implementation.
 #[allow(clippy::format_in_format_args, clippy::unnecessary_wraps)]
 pub fn mutator(
-  _item: &syn::Ident, // Prefixed as it's only used when former_diagnostics_print_generated is active
-  _original_input: &macro_tools::proc_macro2::TokenStream, // Prefixed
+  item: &syn::Ident,
+  original_input: &macro_tools::proc_macro2::TokenStream,
   mutator: &AttributeMutator,
   former_definition_types: &syn::Ident,
-  former_definition_types_generics_impl: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
-  former_definition_types_generics_ty: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
-  former_definition_types_generics_where: &syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
+  generics: &FormerDefinitionTypesGenerics<'_>,
   former_definition_types_ref: &proc_macro2::TokenStream,
 ) -> Result<TokenStream> {
   let former_mutator_code = if mutator.custom.value(false) {
@@ -43,10 +56,10 @@ pub fn mutator(
   } else {
     // Otherwise, generate a default empty impl.
     quote! {
-      impl< #former_definition_types_generics_impl > former::FormerMutator
+      impl< #generics.impl_generics > former::FormerMutator
       for #former_definition_types_ref
       where
-        #former_definition_types_generics_where
+        #generics.where_clause
       {
       }
     }
@@ -59,35 +72,35 @@ pub fn mutator(
     {
       let debug = format!(
         r"
-= Example of custom mutator
+ = Example of custom mutator
 
-impl< {} > former::FormerMutator
-for {former_definition_types} < {} >
-where
-  {}
-{{
-  /// Mutates the context and storage of the entity just before the formation process completes.
-  #[ inline ]
-  fn form_mutation
-  (
-    storage : &mut Self::Storage,
-    context : &mut Option< Self::Context >,
-  )
-  {{
-    // Example: Set a default value if field 'a' wasn't provided
-    // storage.a.get_or_insert_with( Default::default );
-  }}
-}}
-      ",
-        format!("{}", quote! { #former_definition_types_generics_impl }),
-        format!("{}", quote! { #former_definition_types_generics_ty }),
-        format!("{}", quote! { #former_definition_types_generics_where }),
+ impl< {} > former::FormerMutator
+ for {former_definition_types} < {} >
+ where
+   {}
+ {{
+   /// Mutates the context and storage of the entity just before the formation process completes.
+   #[ inline ]
+   fn form_mutation
+   (
+     storage : &mut Self::Storage,
+     context : &mut Option< Self::Context >,
+   )
+   {{
+     // Example: Set a default value if field 'a' wasn't provided
+     // storage.a.get_or_insert_with( Default::default );
+   }}
+ }}
+       ",
+        format!("{}", quote! { #generics.impl_generics }),
+        format!("{}", quote! { #generics.ty_generics }),
+        format!("{}", quote! { #generics.where_clause }),
       );
       let about = format!(
         r"derive : Former
-    item : {_item}", // Use prefixed name
+    item : {item}",
       );
-      diag::report_print(about, _original_input, debug); // Use prefixed name
+      diag::report_print(about, original_input, debug);
     }
   }
 
