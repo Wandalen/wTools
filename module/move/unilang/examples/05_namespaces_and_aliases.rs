@@ -30,9 +30,9 @@ fn main() -> Result<(), unilang::error::Error> {
         .deprecation_message("".to_string())
         .http_method_hint("GET".to_string())
         .examples(vec![
-            "math.add 1 2 3".to_string(),
-            "sum 10 20".to_string(),
-            "+ 5 7".to_string()
+            "math.add numbers::1,2,3".to_string(),
+            "sum numbers::10,20".to_string(),
+            "+ numbers::5,7".to_string()
         ])
         .arguments(vec![
             ArgumentDefinition::former()
@@ -304,15 +304,15 @@ fn main() -> Result<(), unilang::error::Error> {
 
     println!("\n=== Usage Examples ===");
     println!("# Using full namespace:");
-    println!("cargo run --bin unilang_cli math.add 1 2 3 4");
-    println!("cargo run --bin unilang_cli text.upper 'hello world'");
-    println!("cargo run --bin unilang_cli file.list /tmp");
+    println!("cargo run --bin unilang_cli math.add numbers::1,2,3,4");
+    println!("cargo run --bin unilang_cli text.upper text::'hello world'");
+    println!("cargo run --bin unilang_cli file.list path::/tmp");
     
     println!("\n# Using aliases:");
-    println!("cargo run --bin unilang_cli sum 10 20 30");
-    println!("cargo run --bin unilang_cli + 5 7");
-    println!("cargo run --bin unilang_cli caps 'make me big'");
-    println!("cargo run --bin unilang_cli ls .");
+    println!("cargo run --bin unilang_cli sum numbers::10,20,30");
+    println!("cargo run --bin unilang_cli + numbers::5,7");
+    println!("cargo run --bin unilang_cli caps text::'make me big'");
+    println!("cargo run --bin unilang_cli ls path::.");
 
     println!("\n# Getting help for specific commands:");
     println!("cargo run --bin unilang_cli help math.add");

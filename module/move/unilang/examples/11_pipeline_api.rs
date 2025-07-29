@@ -29,8 +29,8 @@ fn main() -> Result<(), unilang::error::Error> {
     
     // Process single commands with default context
     let test_commands = vec![
-        "calc.add 15 25",
-        "text.reverse 'Hello World'",
+        "calc.add a::15 b::25",
+        "text.reverse text::'Hello World'",
         "util.timestamp",
         "help calc.add", // This will fail since help isn't implemented as a command
         "invalid.command", // This will fail
@@ -59,8 +59,8 @@ fn main() -> Result<(), unilang::error::Error> {
     println!("===============================");
 
     let batch_commands = vec![
-        "calc.add 10 20",
-        "calc.multiply 5 6",
+        "calc.add a::10 b::20",
+        "calc.multiply a::5 b::6",
         "text.reverse 'batch processing'",
         "util.timestamp",
     ];
@@ -89,8 +89,8 @@ fn main() -> Result<(), unilang::error::Error> {
     println!("=============================================");
 
     let sequence_commands = vec![
-        "calc.add 1 2",
-        "calc.multiply 3 4",
+        "calc.add a::1 b::2",
+        "calc.multiply a::3 b::4",
         "invalid.command", // This will cause early termination
         "text.reverse 'this will not run'",
     ];
@@ -115,12 +115,12 @@ fn main() -> Result<(), unilang::error::Error> {
     println!("=================================");
 
     let validation_tests = vec![
-        "calc.add 10 20",           // Valid
-        "text.reverse hello",       // Valid
+        "calc.add a::10 b::20",           // Valid
+        "text.reverse text::hello",       // Valid
         "util.timestamp",           // Valid
         "invalid.command",          // Invalid - command not found
         "calc.add",                 // Invalid - missing arguments
-        "calc.add 10 20 30",       // Invalid - too many arguments
+        "calc.add a::10 b::20 c::30",       // Invalid - too many arguments
     ];
 
     println!("Validating commands without execution:");
@@ -149,7 +149,7 @@ fn main() -> Result<(), unilang::error::Error> {
     
     // Create a new registry for convenience functions since pipeline took ownership
     let convenience_registry = setup_demo_registry()?;
-    let result = process_single_command("calc.add 100 200", &convenience_registry, ExecutionContext::default());
+    let result = process_single_command("calc.add a::100 b::200", &convenience_registry, ExecutionContext::default());
     if result.success {
         println!("✅ Single command result: {}", result.outputs[0].content);
     }
@@ -170,7 +170,7 @@ fn main() -> Result<(), unilang::error::Error> {
         ("calc.divide 10 0", "Division by zero"),
         ("text.process", "Missing required argument"),
         ("nonexistent.command", "Command not found"),
-        ("calc.add abc def", "Type conversion error"),
+        ("calc.add a::abc b::def", "Type conversion error"),
     ];
 
     for (cmd, expected_error_type) in &error_test_commands {
@@ -190,7 +190,7 @@ fn main() -> Result<(), unilang::error::Error> {
     println!("\n⚡ SECTION 7: Performance Comparison");
     println!("====================================");
 
-    let repeated_command = "calc.add 1 1";
+    let repeated_command = "calc.add a::1 b::1";
     let iterations = 10;
 
     // Using pipeline (reuses parser and registry)
@@ -264,7 +264,7 @@ fn setup_calc_commands(registry: &mut CommandRegistry) -> Result<(), unilang::er
         .idempotent(true)
         .deprecation_message("".to_string())
         .http_method_hint("GET".to_string())
-        .examples(vec!["calc.add 10 20".to_string()])
+        .examples(vec!["calc.add a::10 b::20".to_string()])
         .arguments(vec![
             ArgumentDefinition::former()
                 .name("a")

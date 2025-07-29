@@ -29,7 +29,7 @@ fn main() -> Result<(), unilang::error::Error> {
         .idempotent(true)
         .deprecation_message("".to_string())
         .http_method_hint("GET".to_string())
-        .examples(vec!["greet Alice".to_string(), "greet".to_string()])
+        .examples(vec!["greet name::\"Alice\"".to_string(), "greet".to_string()])
         .arguments(vec![
             ArgumentDefinition::former()
                 .name("name")
@@ -81,7 +81,7 @@ fn main() -> Result<(), unilang::error::Error> {
 
     println!("\n=== Example Complete ===");
     println!("To test this command, run:");
-    println!("  cargo run --bin unilang_cli greet Alice");
+    println!("  cargo run --bin unilang_cli greet name::\"Alice\"");
     println!("  cargo run --bin unilang_cli greet");
     
     Ok(())

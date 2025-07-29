@@ -59,11 +59,11 @@ fn main() -> Result<(), unilang::error::Error> {
     let user_commands = vec![
         "help",
         "util.echo 'Starting file operations...'",
-        "file.list /tmp --format table",
-        "text.analyze 'The quick brown fox jumps over the lazy dog' --metrics words,chars,vowels",
-        "file.sync --source ./src --target ./backup --dry-run --exclude '*.tmp|*.log'",
-        "network.ping google.com --count 3 --timeout 5000",
-        "util.timestamp --format iso",
+        "file.list path::/tmp format::table",
+        "text.analyze text::'The quick brown fox jumps over the lazy dog' metrics::words,chars,vowels",
+        "file.sync source::./src target::./backup dry-run::true exclude::'*.tmp|*.log'",
+        "network.ping host::google.com count::3 timeout::5000",
+        "util.timestamp format::iso",
         "invalid.command", // This should fail
         "file.list", // Missing required argument
         "text.analyze", // Missing required argument
@@ -92,9 +92,9 @@ fn main() -> Result<(), unilang::error::Error> {
 
     let batch_script = vec![
         "util.echo 'Batch processing started'",
-        "util.timestamp --format unix",
-        "text.analyze 'Batch processing example' --metrics all",
-        "file.list . --format json",
+        "util.timestamp format::unix",
+        "text.analyze text::'Batch processing example' metrics::all",
+        "file.list path::. format::json",
         "util.echo 'Batch processing completed'",
     ];
 
@@ -239,8 +239,8 @@ fn setup_file_commands(registry: &mut CommandRegistry) -> Result<(), unilang::er
         .deprecation_message("".to_string())
         .http_method_hint("GET".to_string())
         .examples(vec![
-            "file.list /home/user --format table".to_string(),
-            "ls . --format json".to_string()
+            "file.list path::/home/user format::table".to_string(),
+            "ls path::. format::json".to_string()
         ])
         .arguments(vec![
             ArgumentDefinition::former()
@@ -329,8 +329,8 @@ fn setup_file_commands(registry: &mut CommandRegistry) -> Result<(), unilang::er
         .deprecation_message("".to_string())
         .http_method_hint("POST".to_string())
         .examples(vec![
-            "file.sync --source ./docs --target ./backup/docs --dry-run".to_string(),
-            "sync -s /home/user -t /backup --exclude '*.tmp|*.log'".to_string()
+            "file.sync source::./docs target::./backup/docs dry-run::true".to_string(),
+            "sync source::/home/user target::/backup exclude::'*.tmp|*.log'".to_string()
         ])
         .arguments(vec![
             ArgumentDefinition::former()
@@ -435,8 +435,8 @@ fn setup_text_commands(registry: &mut CommandRegistry) -> Result<(), unilang::er
         .deprecation_message("".to_string())
         .http_method_hint("POST".to_string())
         .examples(vec![
-            "text.analyze 'Hello world' --metrics words,chars".to_string(),
-            "stats 'The quick brown fox' --metrics all".to_string()
+            "text.analyze text::'Hello world' metrics::words,chars".to_string(),
+            "stats text::'The quick brown fox' metrics::all".to_string()
         ])
         .arguments(vec![
             ArgumentDefinition::former()
@@ -554,8 +554,8 @@ fn setup_network_commands(registry: &mut CommandRegistry) -> Result<(), unilang:
         .deprecation_message("".to_string())
         .http_method_hint("GET".to_string())
         .examples(vec![
-            "network.ping google.com --count 4".to_string(),
-            "ping 8.8.8.8 --timeout 3000".to_string()
+            "network.ping host::google.com count::4".to_string(),
+            "ping host::8.8.8.8 timeout::3000".to_string()
         ])
         .arguments(vec![
             ArgumentDefinition::former()
@@ -683,8 +683,8 @@ fn setup_utility_commands(registry: &mut CommandRegistry) -> Result<(), unilang:
         .deprecation_message("".to_string())
         .http_method_hint("GET".to_string())
         .examples(vec![
-            "util.timestamp --format iso".to_string(),
-            "time --format unix".to_string()
+            "util.timestamp format::iso".to_string(),
+            "time format::unix".to_string()
         ])
         .arguments(vec![
             ArgumentDefinition::former()

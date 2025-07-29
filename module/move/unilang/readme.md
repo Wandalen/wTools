@@ -213,7 +213,7 @@ let greet_cmd = CommandDefinition::former()
     .idempotent(true)
     .deprecation_message("".to_string())
     .http_method_hint("GET".to_string())
-    .examples(vec!["greet Alice".to_string()])
+    .examples(vec!["greet name::\"Alice\"".to_string()])
     .arguments(vec![
         ArgumentDefinition::former()
             .name("name")
@@ -253,18 +253,18 @@ use unilang::interpreter::ExecutionContext;
 let pipeline = Pipeline::new(registry);
 
 // Process single command
-let result = pipeline.process_command_simple("greet Alice");
+let result = pipeline.process_command_simple("greet name::\"Alice\"");
 if result.success {
     println!("Output: {}", result.outputs[0].content);
 }
 
 // Process batch of commands
-let commands = vec!["greet Alice", "greet Bob", "greet Charlie"];
+let commands = vec!["greet name::\"Alice\"", "greet name::\"Bob\"", "greet name::\"Charlie\""];
 let batch_result = pipeline.process_batch(&commands, ExecutionContext::default());
 println!("Success rate: {:.1}%", batch_result.success_rate());
 
 // Validate command without execution
-match pipeline.validate_command("greet Alice") {
+match pipeline.validate_command("greet name::\"Alice\"") {
     Ok(()) => println!("Command is valid"),
     Err(e) => println!("Invalid command: {}", e),
 }
@@ -302,7 +302,7 @@ cargo build --bin unilang_cli
 
 # Execute commands
 ./target/debug/unilang_cli math.add 10 20
-./target/debug/unilang_cli greet Alice
+./target/debug/unilang_cli greet name::\"Alice\"
 ./target/debug/unilang_cli system.echo "Hello, World!"
 
 # Get command help

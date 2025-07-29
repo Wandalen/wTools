@@ -24,8 +24,8 @@ fn main() -> Result<(), unilang::error::Error> {
   deprecation_message: ""
   http_method_hint: "POST"
   examples:
-    - "system.backup --source /home/user --dest /backup/user.tar.gz"
-    - "bak -s ~/documents -d backup.zip --compress gzip"
+    - "system.backup source::/home/user destination::/backup/user.tar.gz"
+    - "bak source::~/documents destination::backup.zip compress::gzip"
   arguments:
     - name: "source"
       description: "Source file or directory to backup"
@@ -97,8 +97,8 @@ fn main() -> Result<(), unilang::error::Error> {
   deprecation_message: ""
   http_method_hint: "POST"
   examples:
-    - "system.restore --archive backup.tar.gz --target /restore/location"
-    - "restore -a ~/backup.zip -t . --verify"
+    - "system.restore archive::backup.tar.gz target::/restore/location"
+    - "restore archive::~/backup.zip target::. verify::true"
   arguments:
     - name: "archive"
       description: "Backup archive to restore from"
@@ -161,8 +161,8 @@ fn main() -> Result<(), unilang::error::Error> {
     "deprecation_message": "",
     "http_method_hint": "GET",
     "examples": [
-      "system.monitor --interval 5 --metrics cpu,memory",
-      "monitor -i 1 -m all --format json"
+      "system.monitor interval::5 metrics::cpu,memory",
+      "monitor interval::1 metrics::all format::json"
     ],
     "arguments": [
       {
@@ -249,8 +249,8 @@ fn main() -> Result<(), unilang::error::Error> {
     "deprecation_message": "",
     "http_method_hint": "POST",
     "examples": [
-      "app.deploy --env production --version 2.1.0",
-      "deploy -e staging -v latest --rollback-on-failure"
+      "app.deploy env::production version::2.1.0",
+      "deploy env::staging version::latest rollback-on-failure::true"
     ],
     "arguments": [
       {

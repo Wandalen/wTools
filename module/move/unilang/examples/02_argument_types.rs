@@ -27,8 +27,8 @@ fn main() -> Result<(), unilang::error::Error> {
         .deprecation_message("".to_string())
         .http_method_hint("POST".to_string())
         .examples(vec![
-            "types_demo --text hello --number 42 --flag true".to_string(),
-            "types_demo --url https://example.com --path /tmp/file".to_string()
+            "types_demo text::hello number::42 flag::true".to_string(),
+            "types_demo url::https://example.com path::/tmp/file".to_string()
         ])
         .arguments(vec![
             // String argument
@@ -192,14 +192,14 @@ fn main() -> Result<(), unilang::error::Error> {
 
     println!("\n=== Example Usage ===");
     println!("cargo run --bin unilang_cli types_demo \\");
-    println!("  --text 'Hello World' \\");
-    println!("  --number 42 \\");
-    println!("  --decimal 3.14 \\");
-    println!("  --flag true \\");
-    println!("  --path '/tmp/test' \\");
-    println!("  --url 'https://example.com' \\");
-    println!("  --level info \\");
-    println!("  --pattern '^[a-z]+$'");
+    println!("  text::'Hello World' \\");
+    println!("  number::42 \\");
+    println!("  decimal::3.14 \\");
+    println!("  flag::true \\");
+    println!("  path::/tmp/test \\");
+    println!("  url::https://example.com \\");
+    println!("  level::info \\");
+    println!("  pattern::'^[a-z]+$'");
 
     Ok(())
 }

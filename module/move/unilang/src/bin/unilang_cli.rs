@@ -131,7 +131,7 @@ fn run() -> Result<(), unilang::error::Error> {
     .idempotent(true) // Added
     .deprecation_message(String::new()) // Added
     .http_method_hint(String::new()) // Added
-    .examples(vec!["greet John".to_string(), "greet".to_string()]) // Added
+    .examples(vec!["greet name::\"John\"".to_string(), "greet".to_string()]) // Added
     .arguments(vec![ArgumentDefinition::former()
       .name("name")
       .kind(ArgumentKind::String)
@@ -301,10 +301,11 @@ fn run() -> Result<(), unilang::error::Error> {
     println!("{help_text}");
     eprintln!("Usage: unilang_cli <command> [args...]");
     eprintln!("Examples:");
-    eprintln!("  unilang_cli greet \"Alice\"");
-    eprintln!("  unilang_cli math.add 10 20");
+    eprintln!("  unilang_cli greet name::\"Alice\"");
+    eprintln!("  unilang_cli math.add a::10 b::20");
+    eprintln!("  unilang_cli config.set key::\"theme\" value::\"dark\"");
     eprintln!("  unilang_cli help greet");
-    eprintln!("Note: String arguments must be quoted, e.g., \"Alice\" not Alice");
+    eprintln!("Note: Arguments use name::value syntax. String values must be quoted.");
     return Ok(());
   }
 

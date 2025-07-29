@@ -27,8 +27,8 @@ fn main() -> Result<(), unilang::error::Error> {
         .deprecation_message("".to_string())
         .http_method_hint("POST".to_string())
         .examples(vec![
-            "validation.validate --age 25 --name Alice --email alice@example.com".to_string(),
-            "validation.validate --score 85.5 --password secretkey123".to_string(),
+            "validation.validate age::25 name::Alice email::alice@example.com".to_string(),
+            "validation.validate score::85.5 password::secretkey123".to_string(),
         ])
         .arguments(vec![
             // Numeric validation with min/max
@@ -182,15 +182,15 @@ fn main() -> Result<(), unilang::error::Error> {
 
     println!("\n=== Example Usage ===");
     println!("# Valid examples:");
-    println!("cargo run --bin unilang_cli validation.validate --age 25 --name Alice");
-    println!("cargo run --bin unilang_cli validation.validate --score 95.5 --email alice@example.com");
-    println!("cargo run --bin unilang_cli validation.validate --password mypass123 --website https://example.com");
+    println!("cargo run --bin unilang_cli validation.validate age::25 name::Alice");
+    println!("cargo run --bin unilang_cli validation.validate score::95.5 email::alice@example.com");
+    println!("cargo run --bin unilang_cli validation.validate password::mypass123 website::https://example.com");
     
     println!("\n# These will fail validation:");
-    println!("cargo run --bin unilang_cli validation.validate --age 150  # Age too high");
-    println!("cargo run --bin unilang_cli validation.validate --name A    # Name too short");
-    println!("cargo run --bin unilang_cli validation.validate --email invalid-email  # Bad email format");
-    println!("cargo run --bin unilang_cli validation.validate --password short  # Password too short");
+    println!("cargo run --bin unilang_cli validation.validate age::150  # Age too high");
+    println!("cargo run --bin unilang_cli validation.validate name::A    # Name too short");
+    println!("cargo run --bin unilang_cli validation.validate email::invalid-email  # Bad email format");
+    println!("cargo run --bin unilang_cli validation.validate password::short  # Password too short");
 
     Ok(())
 }

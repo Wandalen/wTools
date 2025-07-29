@@ -1,5 +1,5 @@
 //! # Collection Types Demo
-//! 
+//!
 //! This example demonstrates how to work with List and Map argument types,
 //! including custom delimiters and nested structures.
 
@@ -27,8 +27,8 @@ fn main() -> Result<(), unilang::error::Error> {
         .deprecation_message("".to_string())
         .http_method_hint("POST".to_string())
         .examples(vec![
-            "collections.list_demo --numbers 1,2,3,4".to_string(),
-            "collections.list_demo --words apple|banana|cherry".to_string(),
+            "collections.list_demo numbers::1,2,3,4".to_string(),
+            "collections.list_demo words::apple|banana|cherry".to_string(),
         ])
         .arguments(vec![
             // List of integers with comma delimiter
@@ -71,7 +71,7 @@ fn main() -> Result<(), unilang::error::Error> {
 
     let list_routine = Box::new(|cmd: unilang::semantic::VerifiedCommand, _ctx| {
         println!("Processing list arguments:");
-        
+
         for (name, value) in &cmd.arguments {
             match value {
                 Value::List(items) => {
@@ -83,7 +83,7 @@ fn main() -> Result<(), unilang::error::Error> {
                 _ => println!("  {}: {:?} (not a list)", name, value),
             }
         }
-        
+
         Ok(OutputData {
             content: "List arguments processed".to_string(),
             format: "text".to_string(),
@@ -107,8 +107,8 @@ fn main() -> Result<(), unilang::error::Error> {
         .deprecation_message("".to_string())
         .http_method_hint("POST".to_string())
         .examples(vec![
-            "collections.map_demo --config name=John,age=30,city=NYC".to_string(),
-            "collections.map_demo --scores Alice:95|Bob:87|Carol:92".to_string(),
+            "collections.map_demo config::name=John,age=30,city=NYC".to_string(),
+            "collections.map_demo scores::Alice:95|Bob:87|Carol:92".to_string(),
         ])
         .arguments(vec![
             // Map with comma entry delimiter and equals key-value delimiter
@@ -116,8 +116,8 @@ fn main() -> Result<(), unilang::error::Error> {
                 .name("config")
                 .description("Configuration key-value pairs".to_string())
                 .kind(Kind::Map(
-                    Box::new(Kind::String), 
-                    Box::new(Kind::String), 
+                    Box::new(Kind::String),
+                    Box::new(Kind::String),
                     Some(','), // entry delimiter
                     Some('=')  // key-value delimiter
                 ))
@@ -133,8 +133,8 @@ fn main() -> Result<(), unilang::error::Error> {
                 .name("scores")
                 .description("Student scores as name-value pairs".to_string())
                 .kind(Kind::Map(
-                    Box::new(Kind::String), 
-                    Box::new(Kind::Integer), 
+                    Box::new(Kind::String),
+                    Box::new(Kind::Integer),
                     Some('|'), // entry delimiter
                     Some(':')  // key-value delimiter
                 ))
@@ -150,8 +150,8 @@ fn main() -> Result<(), unilang::error::Error> {
                 .name("metadata")
                 .description("Generic metadata pairs".to_string())
                 .kind(Kind::Map(
-                    Box::new(Kind::String), 
-                    Box::new(Kind::String), 
+                    Box::new(Kind::String),
+                    Box::new(Kind::String),
                     None, // default entry delimiter
                     None  // default key-value delimiter
                 ))
@@ -166,7 +166,7 @@ fn main() -> Result<(), unilang::error::Error> {
 
     let map_routine = Box::new(|cmd: unilang::semantic::VerifiedCommand, _ctx| {
         println!("Processing map arguments:");
-        
+
         for (name, value) in &cmd.arguments {
             match value {
                 Value::Map(map) => {
@@ -178,7 +178,7 @@ fn main() -> Result<(), unilang::error::Error> {
                 _ => println!("  {}: {:?} (not a map)", name, value),
             }
         }
-        
+
         Ok(OutputData {
             content: "Map arguments processed".to_string(),
             format: "text".to_string(),
@@ -194,7 +194,7 @@ fn main() -> Result<(), unilang::error::Error> {
     println!("  • List(ItemType) - Default space-separated");
     println!("  • List(ItemType, delimiter) - Custom delimiter");
     println!("  • Multiple values can be handled positionally");
-    
+
     println!("\nMap Types:");
     println!("  • Map(KeyType, ValueType) - Default delimiters");
     println!("  • Map(KeyType, ValueType, entry_delim, kv_delim) - Custom delimiters");
@@ -202,13 +202,13 @@ fn main() -> Result<(), unilang::error::Error> {
 
     println!("\n=== Example Usage ===");
     println!("# List examples:");
-    println!("cargo run --bin unilang_cli collections.list_demo --numbers 1,2,3,4,5");
-    println!("cargo run --bin unilang_cli collections.list_demo --words apple|banana|cherry");
-    println!("cargo run --bin unilang_cli collections.list_demo --files file1.txt file2.txt file3.txt");
-    
+    println!("cargo run --bin unilang_cli collections.list_demo numbers::1,2,3,4,5");
+    println!("cargo run --bin unilang_cli collections.list_demo words::apple|banana|cherry");
+    println!("cargo run --bin unilang_cli collections.list_demo files::file1.txt files::file2.txt files::file3.txt");
+
     println!("\n# Map examples:");
-    println!("cargo run --bin unilang_cli collections.map_demo --config name=John,age=30,city=NYC");
-    println!("cargo run --bin unilang_cli collections.map_demo --scores Alice:95|Bob:87|Carol:92");
+    println!("cargo run --bin unilang_cli collections.map_demo config::name=John,age=30,city=NYC");
+    println!("cargo run --bin unilang_cli collections.map_demo scores::Alice:95|Bob:87|Carol:92");
 
     Ok(())
 }
