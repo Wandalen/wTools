@@ -57,13 +57,14 @@ use super::*;
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
 // #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
 // mod a_basic;
-// #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
-// mod a_basic_manual;
+#[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
+mod a_basic_manual;
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
 // mod a_primitives;
-// mod a_primitives_manual;
-// mod tuple_struct;
-// mod debug_e0223_minimal;
-// mod debug_e0223_manual;
+mod a_primitives_manual;
+mod tuple_struct;
+mod debug_e0223_minimal;
+mod debug_e0223_manual;
 
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod subform_collection_basic;  // BLOCKED: Complex collection type mismatch issues
