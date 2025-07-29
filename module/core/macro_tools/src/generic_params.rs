@@ -485,7 +485,9 @@ mod private {
     let mut generics_for_ty = syn::punctuated::Punctuated::new();
 
     // Process each generic parameter
-    for param in &generics.params {
+    let params_count = generics.params.len();
+    for (idx, param) in generics.params.iter().enumerate() {
+      let is_last = idx == params_count - 1;
       match param {
         syn::GenericParam::Type(type_param) => {
           // Retain bounds for generics_for_impl, remove defaults
@@ -498,7 +500,9 @@ mod private {
             default: None,  // Remove default value
           });
           generics_for_impl.push_value(impl_param);
-          generics_for_impl.push_punct(syn::token::Comma::default());
+          if !is_last {
+            generics_for_impl.push_punct(syn::token::Comma::default());
+          }
 
           // Simplify for generics_for_ty by removing all except identifiers
           let ty_param = syn::GenericParam::Type(syn::TypeParam {
@@ -510,7 +514,9 @@ mod private {
             default: None,
           });
           generics_for_ty.push_value(ty_param);
-          generics_for_ty.push_punct(syn::token::Comma::default());
+          if !is_last {
+            generics_for_ty.push_punct(syn::token::Comma::default());
+          }
         }
         syn::GenericParam::Const(const_param) => {
           // Simplify const parameters by removing all details except the identifier
@@ -524,7 +530,9 @@ mod private {
             default: None,
           });
           generics_for_impl.push_value(impl_param);
-          generics_for_impl.push_punct(syn::token::Comma::default());
+          if !is_last {
+            generics_for_impl.push_punct(syn::token::Comma::default());
+          }
 
           let ty_param = syn::GenericParam::Const(syn::ConstParam {
             attrs: vec![],
@@ -536,12 +544,16 @@ mod private {
             default: None,
           });
           generics_for_ty.push_value(ty_param);
-          generics_for_ty.push_punct(syn::token::Comma::default());
+          if !is_last {
+            generics_for_ty.push_punct(syn::token::Comma::default());
+          }
         }
         syn::GenericParam::Lifetime(lifetime_param) => {
           // Lifetimes are added as-is to generics_for_impl and without bounds to generics_for_ty
           generics_for_impl.push_value(syn::GenericParam::Lifetime(lifetime_param.clone()));
-          generics_for_impl.push_punct(syn::token::Comma::default());
+          if !is_last {
+            generics_for_impl.push_punct(syn::token::Comma::default());
+          }
 
           let ty_param = syn::GenericParam::Lifetime(syn::LifetimeParam {
             attrs: vec![],
@@ -550,7 +562,9 @@ mod private {
             bounds: syn::punctuated::Punctuated::new(),
           });
           generics_for_ty.push_value(ty_param);
-          generics_for_ty.push_punct(syn::token::Comma::default());
+          if !is_last {
+            generics_for_ty.push_punct(syn::token::Comma::default());
+          }
         }
       }
     }
