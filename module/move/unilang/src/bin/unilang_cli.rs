@@ -131,20 +131,21 @@ fn run() -> Result<(), unilang::error::Error> {
     .idempotent(true) // Added
     .deprecation_message(String::new()) // Added
     .http_method_hint(String::new()) // Added
-    .examples(vec!["greet John".to_string(), "greet".to_string()]) // Added
+    .examples(vec!["greet name::\"John\"".to_string(), "greet".to_string()]) // Added
     .arguments(vec![ArgumentDefinition::former()
       .name("name")
       .kind(ArgumentKind::String)
       .hint("Name of the person to greet.")
       .default_value("World".to_string())
+      .attributes(ArgumentAttributes::former().optional(true).is_default_arg(true).end())
       .end()])
     .end();
 
   let greet_routine: CommandRoutine = Box::new(|cmd, _ctx| {
-    let name = cmd
-      .arguments
-      .get("name")
-      .map_or_else(|| "World".to_string(), std::string::ToString::to_string); // Fixed redundant closure
+    let name = match cmd.arguments.get("name") {
+      Some(Value::String(s)) => s.clone(),
+      _ => "World".to_string(),
+    };
     let result = format!("Hello, {name}!");
 
     println!("{result}");
@@ -299,6 +300,12 @@ fn run() -> Result<(), unilang::error::Error> {
     let help_text = help_generator.list_commands();
     println!("{help_text}");
     eprintln!("Usage: unilang_cli <command> [args...]");
+    eprintln!("Examples:");
+    eprintln!("  unilang_cli greet name::\"Alice\"");
+    eprintln!("  unilang_cli math.add a::10 b::20");
+    eprintln!("  unilang_cli config.set key::\"theme\" value::\"dark\"");
+    eprintln!("  unilang_cli help greet");
+    eprintln!("Note: Arguments use name::value syntax. String values must be quoted.");
     return Ok(());
   }
 
