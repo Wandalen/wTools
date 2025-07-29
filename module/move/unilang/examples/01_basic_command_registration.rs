@@ -3,7 +3,7 @@
 //! This example demonstrates how to register commands in the Unilang command registry
 //! and execute them using the basic CLI functionality.
 
-use std::collections::HashMap;
+
 use unilang::data::{CommandDefinition, ArgumentDefinition, Kind, ArgumentAttributes, OutputData};
 use unilang::registry::CommandRegistry;
 use unilang::types::Value;
@@ -36,7 +36,7 @@ fn main() -> Result<(), unilang::error::Error> {
                 .description("Name of the person to greet".to_string())
                 .kind(Kind::String)
                 .hint("Person's name")
-                .default_value(Some("World".to_string()))
+                .default_value("World".to_string())
                 .attributes(
                     ArgumentAttributes::former()
                         .optional(true)

@@ -1,5 +1,5 @@
 //! # Full Pipeline Demo
-//! 
+//!
 //! This example demonstrates the complete Unilang pipeline from command
 //! registration through parsing, semantic analysis, and execution,
 //! showing how all components work together.
@@ -72,7 +72,7 @@ fn main() -> Result<(), unilang::error::Error> {
     for (i, command_str) in user_commands.iter().enumerate() {
         println!("\n--- Command {} ---", i + 1);
         println!("User input: '{}'", command_str);
-        
+
         // Handle help command specially
         if command_str == &"help" {
             println!("📋 Showing help:");
@@ -115,14 +115,14 @@ fn main() -> Result<(), unilang::error::Error> {
 
     if !all_instructions.is_empty() {
         let analyzer = SemanticAnalyzer::new(&all_instructions, &registry);
-        
+
         match analyzer.analyze() {
             Ok(verified_commands) => {
                 println!("✓ Semantic analysis passed for {} commands", verified_commands.len());
-                
+
                 let interpreter = Interpreter::new(&verified_commands, &registry);
                 let mut context = ExecutionContext::default();
-                
+
                 match interpreter.run(&mut context) {
                     Ok(outputs) => {
                         println!("✅ Batch execution completed successfully");
@@ -178,22 +178,23 @@ fn process_command(
     parser: &Parser,
     registry: &CommandRegistry,
 ) -> Result<(), unilang::error::Error> {
-    
+
     // Step 1: Parsing
     match parser.parse_single_instruction(command_str) {
         Ok(instruction) => {
             println!("✓ Parsing successful");
-            
+
             // Step 2: Semantic Analysis
-            let analyzer = SemanticAnalyzer::new(&[instruction], registry);
+            let instructions = [instruction];
+            let analyzer = SemanticAnalyzer::new(&instructions, registry);
             match analyzer.analyze() {
                 Ok(verified_commands) => {
                     println!("✓ Semantic analysis successful");
-                    
+
                     // Step 3: Execution
                     let interpreter = Interpreter::new(&verified_commands, registry);
                     let mut context = ExecutionContext::default();
-                    
+
                     match interpreter.run(&mut context) {
                         Ok(outputs) => {
                             println!("✅ Execution successful");
@@ -217,7 +218,7 @@ fn process_command(
             println!("❌ Parsing failed: {}", error);
         }
     }
-    
+
     Ok(())
 }
 
@@ -247,7 +248,7 @@ fn setup_file_commands(registry: &mut CommandRegistry) -> Result<(), unilang::er
                 .description("Directory path to list".to_string())
                 .kind(Kind::Directory)
                 .hint("Target directory")
-                .default_value(Some(".".to_string()))
+                .default_value(".".to_string())
                 .attributes(ArgumentAttributes::former().optional(true).is_default_arg(true).end())
                 .validation_rules(vec![])
                 .aliases(vec!["p".to_string(), "dir".to_string()])
@@ -258,7 +259,7 @@ fn setup_file_commands(registry: &mut CommandRegistry) -> Result<(), unilang::er
                 .description("Output format".to_string())
                 .kind(Kind::Enum(vec!["table".to_string(), "list".to_string(), "json".to_string()]))
                 .hint("Display format")
-                .default_value(Some("list".to_string()))
+                .default_value("list".to_string())
                 .attributes(ArgumentAttributes::former().optional(true).is_default_arg(true).end())
                 .validation_rules(vec![])
                 .aliases(vec!["f".to_string()])
@@ -267,18 +268,20 @@ fn setup_file_commands(registry: &mut CommandRegistry) -> Result<(), unilang::er
         ])
         .end();
 
-    let list_routine = Box::new(|cmd, _ctx| {
-        let path = cmd.arguments.get("path").and_then(|v| if let Value::String(s) = v { Some(s) } else { None }).unwrap_or(&".".to_string());
-        let format = cmd.arguments.get("format").and_then(|v| if let Value::String(s) = v { Some(s) } else { None }).unwrap_or(&"list".to_string());
-        
+    let list_routine = Box::new(|cmd: unilang::semantic::VerifiedCommand, _ctx| {
+        let default_path = ".".to_string();
+        let path = cmd.arguments.get("path").and_then(|v| if let Value::String(s) = v { Some(s) } else { None }).unwrap_or(&default_path);
+        let default_format = "list".to_string();
+        let format = cmd.arguments.get("format").and_then(|v| if let Value::String(s) = v { Some(s) } else { None }).unwrap_or(&default_format);
+
         println!("📁 Listing directory: {} (format: {})", path, format);
-        
+
         match std::fs::read_dir(path) {
             Ok(entries) => {
-                let files: Vec<String> = entries.filter_map(|e| 
+                let files: Vec<String> = entries.filter_map(|e|
                     e.ok().and_then(|entry| entry.file_name().to_str().map(|s| s.to_string()))
                 ).collect();
-                
+
                 match format.as_str() {
                     "json" => println!("{}", serde_json::to_string_pretty(&files).unwrap_or_default()),
                     "table" => {
@@ -296,7 +299,7 @@ fn setup_file_commands(registry: &mut CommandRegistry) -> Result<(), unilang::er
                         }
                     }
                 }
-                
+
                 Ok(OutputData {
                     content: files.join("\n"),
                     format: format.clone(),
@@ -355,7 +358,7 @@ fn setup_file_commands(registry: &mut CommandRegistry) -> Result<(), unilang::er
                 .description("Show what would be done without making changes".to_string())
                 .kind(Kind::Boolean)
                 .hint("Simulation mode")
-                .default_value(Some("false".to_string()))
+                .default_value("false".to_string())
                 .attributes(ArgumentAttributes::former().optional(true).is_default_arg(true).end())
                 .validation_rules(vec![])
                 .aliases(vec!["dry".to_string(), "simulate".to_string()])
@@ -374,14 +377,16 @@ fn setup_file_commands(registry: &mut CommandRegistry) -> Result<(), unilang::er
         ])
         .end();
 
-    let sync_routine = Box::new(|cmd, _ctx| {
-        let source = cmd.arguments.get("source").and_then(|v| if let Value::String(s) = v { Some(s) } else { None }).unwrap_or(&"".to_string());
-        let target = cmd.arguments.get("target").and_then(|v| if let Value::String(s) = v { Some(s) } else { None }).unwrap_or(&"".to_string());
-        let dry_run = cmd.arguments.get("dry_run").and_then(|v| if let Value::Boolean(b) = v { Some(*b) } else { None }).unwrap_or(false);
-        
+    let sync_routine = Box::new(|cmd: unilang::semantic::VerifiedCommand, _ctx| {
+        let default_source = "".to_string();
+        let default_target = "".to_string();
+        let source = cmd.arguments.get("source").and_then(|v| if let Value::String(s) = v { Some(s) } else { None }).unwrap_or(&default_source);
+        let target = cmd.arguments.get("target").and_then(|v| if let Value::String(s) = v { Some(s) } else { None }).unwrap_or(&default_target);
+        let dry_run = cmd.arguments.get("dry_run").and_then(|v| if let Value::Boolean(b) = v { Some(b) } else { None }).unwrap_or(&false);
+
         let exclude_patterns = cmd.arguments.get("exclude")
             .and_then(|v| if let Value::List(list) = v {
-                Some(list.iter().filter_map(|item| 
+                Some(list.iter().filter_map(|item|
                     if let Value::String(s) = item { Some(s.clone()) } else { None }
                 ).collect::<Vec<_>>())
             } else { None })
@@ -390,12 +395,12 @@ fn setup_file_commands(registry: &mut CommandRegistry) -> Result<(), unilang::er
         println!("🔄 File Sync Operation");
         println!("Source: {}", source);
         println!("Target: {}", target);
-        println!("Dry Run: {}", if dry_run { "Yes" } else { "No" });
+        println!("Dry Run: {}", if *dry_run { "Yes" } else { "No" });
         if !exclude_patterns.is_empty() {
             println!("Exclusions: {:?}", exclude_patterns);
         }
 
-        if dry_run {
+        if *dry_run {
             println!("📋 DRY RUN - No files will be modified");
             println!("  • Would copy files from {} to {}", source, target);
             println!("  • Would exclude patterns: {:?}", exclude_patterns);
@@ -449,7 +454,7 @@ fn setup_text_commands(registry: &mut CommandRegistry) -> Result<(), unilang::er
                 .description("Metrics to calculate".to_string())
                 .kind(Kind::List(Box::new(Kind::String), Some(',')))
                 .hint("Comma-separated metric names")
-                .default_value(Some("words,chars".to_string()))
+                .default_value("words,chars".to_string())
                 .attributes(ArgumentAttributes::former().optional(true).is_default_arg(true).end())
                 .validation_rules(vec!["min_length:1".to_string()])
                 .aliases(vec!["m".to_string(), "stats".to_string()])
@@ -458,12 +463,13 @@ fn setup_text_commands(registry: &mut CommandRegistry) -> Result<(), unilang::er
         ])
         .end();
 
-    let analyze_routine = Box::new(|cmd, _ctx| {
-        let text = cmd.arguments.get("text").and_then(|v| if let Value::String(s) = v { Some(s) } else { None }).unwrap_or(&"".to_string());
-        
+    let analyze_routine = Box::new(|cmd: unilang::semantic::VerifiedCommand, _ctx| {
+        let default_text = "".to_string();
+        let text = cmd.arguments.get("text").and_then(|v| if let Value::String(s) = v { Some(s) } else { None }).unwrap_or(&default_text);
+
         let metrics = cmd.arguments.get("metrics")
             .and_then(|v| if let Value::List(list) = v {
-                Some(list.iter().filter_map(|item| 
+                Some(list.iter().filter_map(|item|
                     if let Value::String(s) = item { Some(s.clone()) } else { None }
                 ).collect::<Vec<_>>())
             } else { None })
@@ -478,22 +484,39 @@ fn setup_text_commands(registry: &mut CommandRegistry) -> Result<(), unilang::er
 
         for metric in &metrics {
             match metric.as_str() {
-                "words" | "all" => {
+                "all" => {
+                    let word_count = text.split_whitespace().count();
+                    results.insert("words".to_string(), word_count.to_string());
+                    println!("Words: {}", word_count);
+                    
+                    let char_count = text.chars().count();
+                    results.insert("chars".to_string(), char_count.to_string());
+                    println!("Characters: {}", char_count);
+                    
+                    let vowel_count = text.chars().filter(|c| "aeiouAEIOU".contains(*c)).count();
+                    results.insert("vowels".to_string(), vowel_count.to_string());
+                    println!("Vowels: {}", vowel_count);
+                    
+                    let sentence_count = text.matches(['.', '!', '?']).count();
+                    results.insert("sentences".to_string(), sentence_count.to_string());
+                    println!("Sentences: {}", sentence_count);
+                }
+                "words" => {
                     let word_count = text.split_whitespace().count();
                     results.insert("words".to_string(), word_count.to_string());
                     println!("Words: {}", word_count);
                 }
-                "chars" | "all" => {
+                "chars" => {
                     let char_count = text.chars().count();
                     results.insert("chars".to_string(), char_count.to_string());
                     println!("Characters: {}", char_count);
                 }
-                "vowels" | "all" => {
+                "vowels" => {
                     let vowel_count = text.chars().filter(|c| "aeiouAEIOU".contains(*c)).count();
                     results.insert("vowels".to_string(), vowel_count.to_string());
                     println!("Vowels: {}", vowel_count);
                 }
-                "sentences" | "all" => {
+                "sentences" => {
                     let sentence_count = text.matches(['.', '!', '?']).count();
                     results.insert("sentences".to_string(), sentence_count.to_string());
                     println!("Sentences: {}", sentence_count);
@@ -503,7 +526,7 @@ fn setup_text_commands(registry: &mut CommandRegistry) -> Result<(), unilang::er
         }
 
         let result_json = serde_json::to_string(&results).unwrap_or_default();
-        
+
         Ok(OutputData {
             content: result_json,
             format: "json".to_string(),
@@ -550,7 +573,7 @@ fn setup_network_commands(registry: &mut CommandRegistry) -> Result<(), unilang:
                 .description("Number of ping packets to send".to_string())
                 .kind(Kind::Integer)
                 .hint("Packet count")
-                .default_value(Some("4".to_string()))
+                .default_value("4".to_string())
                 .attributes(ArgumentAttributes::former().optional(true).is_default_arg(true).end())
                 .validation_rules(vec!["min:1".to_string(), "max:100".to_string()])
                 .aliases(vec!["c".to_string(), "packets".to_string()])
@@ -561,7 +584,7 @@ fn setup_network_commands(registry: &mut CommandRegistry) -> Result<(), unilang:
                 .description("Timeout in milliseconds".to_string())
                 .kind(Kind::Integer)
                 .hint("Timeout (ms)")
-                .default_value(Some("5000".to_string()))
+                .default_value("5000".to_string())
                 .attributes(ArgumentAttributes::former().optional(true).is_default_arg(true).end())
                 .validation_rules(vec!["min:100".to_string(), "max:60000".to_string()])
                 .aliases(vec!["t".to_string(), "wait".to_string()])
@@ -570,10 +593,11 @@ fn setup_network_commands(registry: &mut CommandRegistry) -> Result<(), unilang:
         ])
         .end();
 
-    let ping_routine = Box::new(|cmd, _ctx| {
-        let host = cmd.arguments.get("host").and_then(|v| if let Value::String(s) = v { Some(s) } else { None }).unwrap_or(&"localhost".to_string());
-        let count = cmd.arguments.get("count").and_then(|v| if let Value::Integer(i) = v { Some(*i) } else { None }).unwrap_or(4);
-        let timeout = cmd.arguments.get("timeout").and_then(|v| if let Value::Integer(i) = v { Some(*i) } else { None }).unwrap_or(5000);
+    let ping_routine = Box::new(|cmd: unilang::semantic::VerifiedCommand, _ctx| {
+        let default_host = "localhost".to_string();
+        let host = cmd.arguments.get("host").and_then(|v| if let Value::String(s) = v { Some(s) } else { None }).unwrap_or(&default_host);
+        let count = cmd.arguments.get("count").and_then(|v| if let Value::Integer(i) = v { Some(i) } else { None }).unwrap_or(&4);
+        let timeout = cmd.arguments.get("timeout").and_then(|v| if let Value::Integer(i) = v { Some(i) } else { None }).unwrap_or(&5000);
 
         println!("🌐 Ping Test Results");
         println!("Target: {}", host);
@@ -581,7 +605,7 @@ fn setup_network_commands(registry: &mut CommandRegistry) -> Result<(), unilang:
         println!("─────────────────────");
 
         // Simulate ping results
-        for i in 1..=count {
+        for i in 1..=*count {
             let response_time = 20 + (i * 3); // Simulated response time
             println!("Ping {}: Reply from {} time={}ms", i, host, response_time);
         }
@@ -631,10 +655,11 @@ fn setup_utility_commands(registry: &mut CommandRegistry) -> Result<(), unilang:
         ])
         .end();
 
-    let echo_routine = Box::new(|cmd, _ctx| {
-        let message = cmd.arguments.get("message").and_then(|v| if let Value::String(s) = v { Some(s) } else { None }).unwrap_or(&"".to_string());
+    let echo_routine = Box::new(|cmd: unilang::semantic::VerifiedCommand, _ctx| {
+        let default_message = "".to_string();
+        let message = cmd.arguments.get("message").and_then(|v| if let Value::String(s) = v { Some(s) } else { None }).unwrap_or(&default_message);
         println!("🔊 {}", message);
-        
+
         Ok(OutputData {
             content: message.clone(),
             format: "text".to_string(),
@@ -667,7 +692,7 @@ fn setup_utility_commands(registry: &mut CommandRegistry) -> Result<(), unilang:
                 .description("Timestamp format".to_string())
                 .kind(Kind::Enum(vec!["iso".to_string(), "unix".to_string(), "human".to_string()]))
                 .hint("Output format")
-                .default_value(Some("human".to_string()))
+                .default_value("human".to_string())
                 .attributes(ArgumentAttributes::former().optional(true).is_default_arg(true).end())
                 .validation_rules(vec![])
                 .aliases(vec!["f".to_string(), "fmt".to_string()])
@@ -676,9 +701,10 @@ fn setup_utility_commands(registry: &mut CommandRegistry) -> Result<(), unilang:
         ])
         .end();
 
-    let timestamp_routine = Box::new(|cmd, _ctx| {
-        let format = cmd.arguments.get("format").and_then(|v| if let Value::String(s) = v { Some(s) } else { None }).unwrap_or(&"human".to_string());
-        
+    let timestamp_routine = Box::new(|cmd: unilang::semantic::VerifiedCommand, _ctx| {
+        let default_format = "human".to_string();
+        let format = cmd.arguments.get("format").and_then(|v| if let Value::String(s) = v { Some(s) } else { None }).unwrap_or(&default_format);
+
         let now = std::time::SystemTime::now();
         let timestamp = match format.as_str() {
             "unix" => {
@@ -696,7 +722,7 @@ fn setup_utility_commands(registry: &mut CommandRegistry) -> Result<(), unilang:
         };
 
         println!("🕐 Current time ({}): {}", format, timestamp);
-        
+
         Ok(OutputData {
             content: timestamp,
             format: "text".to_string(),

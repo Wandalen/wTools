@@ -150,8 +150,16 @@ fn main() -> Result<(), unilang::error::Error> {
                 Value::Integer(i) => println!("  {}: {} (Integer)", name, i),
                 Value::Float(f) => println!("  {}: {} (Float)", name, f),
                 Value::Boolean(b) => println!("  {}: {} (Boolean)", name, b),
+                Value::Path(p) => println!("  {}: {:?} (Path)", name, p),
+                Value::File(f) => println!("  {}: {:?} (File)", name, f),
+                Value::Directory(d) => println!("  {}: {:?} (Directory)", name, d),
+                Value::Enum(e) => println!("  {}: '{}' (Enum)", name, e),
+                Value::Url(u) => println!("  {}: {} (Url)", name, u),
+                Value::DateTime(dt) => println!("  {}: {} (DateTime)", name, dt),
+                Value::Pattern(p) => println!("  {}: {} (Pattern)", name, p),
                 Value::List(items) => println!("  {}: {:?} (List)", name, items),
                 Value::Map(map) => println!("  {}: {:?} (Map)", name, map),
+                Value::JsonString(json) => println!("  {}: {} (JsonString)", name, json),
                 Value::Object(obj) => println!("  {}: {:?} (Object)", name, obj),
             }
         }

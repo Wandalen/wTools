@@ -16,7 +16,7 @@ pub type CommandRoutine = Box<dyn Fn(VerifiedCommand, ExecutionContext) -> Resul
 /// A registry for commands, responsible for storing and managing all
 /// available command definitions.
 ///
-#[derive(Default)] // Removed Debug
+#[derive(Default)] // Removed Clone since CommandRoutine can't be cloned
 #[allow(missing_debug_implementations)]
 pub struct CommandRegistry {
   /// A map of command names to their definitions.

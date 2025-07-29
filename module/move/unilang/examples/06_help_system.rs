@@ -55,7 +55,7 @@ fn main() -> Result<(), unilang::error::Error> {
                 .description("Output file path where processed results will be written. If not specified, results are written to stdout.".to_string())
                 .kind(Kind::Path)
                 .hint("Destination file path")
-                .default_value(Some("-".to_string())) // stdout
+                .default_value("-".to_string()) // stdout
                 .attributes(
                     ArgumentAttributes::former()
                         .optional(true)
@@ -78,7 +78,7 @@ fn main() -> Result<(), unilang::error::Error> {
                     "text".to_string()
                 ]))
                 .hint("Data serialization format")
-                .default_value(Some("json".to_string()))
+                .default_value("json".to_string())
                 .attributes(
                     ArgumentAttributes::former()
                         .optional(true)
@@ -106,7 +106,7 @@ fn main() -> Result<(), unilang::error::Error> {
                 .description("Enable data validation during processing. When enabled, validates input data structure and content before processing.".to_string())
                 .kind(Kind::Boolean)
                 .hint("Enable validation checks")
-                .default_value(Some("false".to_string()))
+                .default_value("false".to_string())
                 .attributes(
                     ArgumentAttributes::former()
                         .optional(true)
@@ -123,7 +123,7 @@ fn main() -> Result<(), unilang::error::Error> {
                 .description("Number of records to process in each batch. Larger batches use more memory but may be faster. Set to 0 for unlimited batch size.".to_string())
                 .kind(Kind::Integer)
                 .hint("Records per batch (0=unlimited)")
-                .default_value(Some("1000".to_string()))
+                .default_value("1000".to_string())
                 .attributes(
                     ArgumentAttributes::former()
                         .optional(true)
@@ -156,7 +156,7 @@ fn main() -> Result<(), unilang::error::Error> {
                 .description("Number of processing threads to use. Higher values may improve performance on multi-core systems but use more resources.".to_string())
                 .kind(Kind::Integer)
                 .hint("Thread count for parallel processing")
-                .default_value(Some("1".to_string()))
+                .default_value("1".to_string())
                 .attributes(
                     ArgumentAttributes::former()
                         .optional(true)

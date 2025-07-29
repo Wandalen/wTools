@@ -1,15 +1,15 @@
-//! # Semantic Analysis Demo
+//! # Semantic Analysis Demo (Simplified)
 //! 
 //! This example demonstrates the semantic analysis phase, showing how
 //! parsed commands are validated against the registry and converted
 //! to verified commands ready for execution.
 
-use std::collections::HashMap;
+
 use unilang::data::{CommandDefinition, ArgumentDefinition, Kind, ArgumentAttributes, OutputData};
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
 use unilang::types::Value;
-use unilang_parser::{Parser, UnilangParserOptions, GenericInstruction, GenericArgument};
+use unilang_parser::{Parser, UnilangParserOptions};
 
 fn main() -> Result<(), unilang::error::Error> {
     println!("=== Semantic Analysis Demo ===\n");
@@ -58,7 +58,7 @@ fn main() -> Result<(), unilang::error::Error> {
                 .description("Mathematical operation to perform".to_string())
                 .kind(Kind::Enum(vec!["add".to_string(), "subtract".to_string(), "multiply".to_string(), "divide".to_string()]))
                 .hint("Operation type")
-                .default_value(Some("add".to_string()))
+                .default_value("add".to_string())
                 .attributes(
                     ArgumentAttributes::former()
                         .optional(true)
@@ -73,15 +73,15 @@ fn main() -> Result<(), unilang::error::Error> {
         .end();
 
     let math_routine = Box::new(|cmd: unilang::semantic::VerifiedCommand, _ctx| {
-        let x = cmd.arguments.get("x").and_then(|v| if let Value::Integer(i) = v { Some(*i) } else { None }).unwrap_or(0);
-        let y = cmd.arguments.get("y").and_then(|v| if let Value::Integer(i) = v { Some(*i) } else { None }).unwrap_or(0);
+        let x = cmd.arguments.get("x").and_then(|v| if let Value::Integer(i) = v { Some(i) } else { None }).unwrap_or(&0);
+        let y = cmd.arguments.get("y").and_then(|v| if let Value::Integer(i) = v { Some(i) } else { None }).unwrap_or(&0);
         let op = cmd.arguments.get("operation").and_then(|v| if let Value::String(s) = v { Some(s.as_str()) } else { None }).unwrap_or("add");
 
         let result = match op {
             "add" => x + y,
             "subtract" => x - y,
             "multiply" => x * y,
-            "divide" => if y != 0 { x / y } else { 0 },
+            "divide" => if *y != 0 { x / y } else { 0 },
             _ => 0,
         };
 
@@ -126,7 +126,7 @@ fn main() -> Result<(), unilang::error::Error> {
                 .description("List of operations to apply".to_string())
                 .kind(Kind::List(Box::new(Kind::String), Some(',')))
                 .hint("Comma-separated operations")
-                .default_value(Some("none".to_string()))
+                .default_value("none".to_string())
                 .attributes(
                     ArgumentAttributes::former()
                         .optional(true)
@@ -146,14 +146,14 @@ fn main() -> Result<(), unilang::error::Error> {
             .unwrap_or_default();
 
         let operations = cmd.arguments.get("operations")
-            .and_then(|v| if let Value::List(list) = v { 
+            .and_then(|v| if let Value::List(list) = v {
                 Some(list.iter().filter_map(|item| 
                     if let Value::String(s) = item { Some(s.clone()) } else { None }
-                ).collect::<Vec<_>>()) 
+                ).collect::<Vec<_>>())
             } else { None })
             .unwrap_or_else(|| vec!["none".to_string()]);
 
-        let mut result = input;
+        let mut result = input.clone();
         for op in &operations {
             result = match op.as_str() {
                 "upper" => result.to_uppercase(),
@@ -177,123 +177,61 @@ fn main() -> Result<(), unilang::error::Error> {
 
     println!("✓ Registered test commands for semantic analysis");
 
-    // Step 2: Create sample parsed instructions manually (simulating parser output)
-    let test_cases = vec![
-        // Valid case 1: Math command with named arguments
-        GenericInstruction {
-            command_path_slices: vec!["".to_string(), "math".to_string(), "calculate".to_string()],
-            positional_arguments: vec![],
-            named_arguments: {
-                let mut map = HashMap::new();
-                map.insert("x".to_string(), GenericArgument { value: "15".to_string() });
-                map.insert("y".to_string(), GenericArgument { value: "3".to_string() });
-                map.insert("operation".to_string(), GenericArgument { value: "multiply".to_string() });
-                map
-            },
-        },
-
-        // Valid case 2: Math command with positional arguments and alias
-        GenericInstruction {
-            command_path_slices: vec!["".to_string(), "math".to_string(), "calculate".to_string()],
-            positional_arguments: vec![
-                GenericArgument { value: "20".to_string() },
-                GenericArgument { value: "4".to_string() },
-            ],
-            named_arguments: {
-                let mut map = HashMap::new();
-                map.insert("op".to_string(), GenericArgument { value: "divide".to_string() }); // Using alias
-                map
-            },
-        },
-
-        // Valid case 3: Text command with default values
-        GenericInstruction {
-            command_path_slices: vec!["".to_string(), "text".to_string(), "process".to_string()],
-            positional_arguments: vec![
-                GenericArgument { value: "Hello World".to_string() },
-            ],
-            named_arguments: HashMap::new(),
-        },
-
-        // Valid case 4: Text command with list argument
-        GenericInstruction {
-            command_path_slices: vec!["".to_string(), "text".to_string(), "process".to_string()],
-            positional_arguments: vec![
-                GenericArgument { value: "Test String".to_string() },
-            ],
-            named_arguments: {
-                let mut map = HashMap::new();
-                map.insert("operations".to_string(), GenericArgument { value: "upper,reverse,trim".to_string() });
-                map
-            },
-        },
-
-        // Invalid case 1: Non-existent command
-        GenericInstruction {
-            command_path_slices: vec!["".to_string(), "nonexistent".to_string(), "command".to_string()],
-            positional_arguments: vec![],
-            named_arguments: HashMap::new(),
-        },
-
-        // Invalid case 2: Missing required argument
-        GenericInstruction {
-            command_path_slices: vec!["".to_string(), "math".to_string(), "calculate".to_string()],
-            positional_arguments: vec![],
-            named_arguments: {
-                let mut map = HashMap::new();
-                map.insert("x".to_string(), GenericArgument { value: "10".to_string() });
-                // Missing 'y' argument
-                map
-            },
-        },
-
-        // Invalid case 3: Validation rule failure
-        GenericInstruction {
-            command_path_slices: vec!["".to_string(), "math".to_string(), "calculate".to_string()],
-            positional_arguments: vec![],
-            named_arguments: {
-                let mut map = HashMap::new();
-                map.insert("x".to_string(), GenericArgument { value: "2000".to_string() }); // Exceeds max:1000
-                map.insert("y".to_string(), GenericArgument { value: "5".to_string() });
-                map
-            },
-        },
+    // Step 2: Demonstrate semantic analysis using the parser
+    println!("\n=== Semantic Analysis Test Cases ===");
+    
+    let parser = Parser::new(UnilangParserOptions::default());
+    let test_command_strings = vec![
+        // Valid cases
+        ("math.calculate --x 15 --y 3 --operation multiply", "Valid named arguments"),
+        ("math.calculate 20 4 --op divide", "Positional args with alias"),
+        ("text.process 'Hello World'", "Default values used"),
+        ("text.process 'Test String' --operations upper,reverse,trim", "List argument"),
+        
+        // Invalid cases
+        ("nonexistent.command", "Non-existent command"),
+        ("math.calculate --x 10", "Missing required argument"),
+        ("math.calculate --x 2000 --y 5", "Validation rule failure"),
     ];
 
-    // Step 3: Perform semantic analysis on each test case
-    println!("\n=== Semantic Analysis Test Cases ===");
+    for (i, (cmd_str, description)) in test_command_strings.iter().enumerate() {
+        println!("\n--- Test Case {}: {} ---", i + 1, description);
+        println!("Command: '{}'", cmd_str);
 
-    for (i, instruction) in test_cases.iter().enumerate() {
-        println!("\n--- Test Case {} ---", i + 1);
-        println!("Command: {}", instruction.command_path_slices.join("."));
-        println!("Positional args: {:?}", instruction.positional_arguments.iter().map(|a| &a.value).collect::<Vec<_>>());
-        println!("Named args: {:?}", instruction.named_arguments.iter().map(|(k, v)| (k, &v.value)).collect::<HashMap<_, _>>());
-
-        let analyzer = SemanticAnalyzer::new(&[instruction.clone()], &registry);
-        
-        match analyzer.analyze() {
-            Ok(verified_commands) => {
-                println!("✅ Semantic analysis PASSED");
-                for verified_cmd in &verified_commands {
-                    println!("  Command: {} v{}", verified_cmd.definition.name, verified_cmd.definition.version);
-                    println!("  Namespace: {}", verified_cmd.definition.namespace);
-                    println!("  Verified arguments:");
-                    for (name, value) in &verified_cmd.arguments {
-                        println!("    {}: {:?}", name, value);
+        match parser.parse_single_instruction(cmd_str) {
+            Ok(instruction) => {
+                println!("✓ Parsing successful");
+                
+                let instructions = [instruction];
+                let analyzer = SemanticAnalyzer::new(&instructions, &registry);
+                match analyzer.analyze() {
+                    Ok(verified_commands) => {
+                        println!("✅ Semantic analysis PASSED");
+                        for verified_cmd in &verified_commands {
+                            println!("  Command: {} v{}", verified_cmd.definition.name, verified_cmd.definition.version);
+                            println!("  Namespace: {}", verified_cmd.definition.namespace);
+                            println!("  Verified arguments:");
+                            for (name, value) in &verified_cmd.arguments {
+                                println!("    {}: {:?}", name, value);
+                            }
+                        }
+                    }
+                    Err(error) => {
+                        println!("❌ Semantic analysis FAILED");
+                        println!("  Error: {}", error);
                     }
                 }
             }
             Err(error) => {
-                println!("❌ Semantic analysis FAILED");
+                println!("❌ Parsing FAILED");
                 println!("  Error: {}", error);
             }
         }
     }
 
-    // Step 4: Demonstrate the complete pipeline with actual parser
+    // Step 3: Demonstrate the complete pipeline with actual parser
     println!("\n=== Complete Pipeline Demo ===");
-    
-    let parser = Parser::new(UnilangParserOptions::default());
+
     let test_commands = vec![
         "math.calculate --x 100 --y 25 --operation divide",
         "text.process 'semantic analysis demo' --operations upper,reverse",
@@ -302,16 +240,17 @@ fn main() -> Result<(), unilang::error::Error> {
 
     for cmd_str in test_commands {
         println!("\n🔍 Analyzing: '{}'", cmd_str);
-        
+
         match parser.parse_single_instruction(cmd_str) {
             Ok(instruction) => {
                 println!("✓ Parsing successful");
-                
-                let analyzer = SemanticAnalyzer::new(&[instruction], &registry);
+
+                let instructions = [instruction];
+                let analyzer = SemanticAnalyzer::new(&instructions, &registry);
                 match analyzer.analyze() {
                     Ok(verified_commands) => {
                         println!("✓ Semantic analysis successful");
-                        
+
                         // Execute the verified command
                         for verified_cmd in verified_commands {
                             if let Some(routine) = registry.get_routine(&format!(".{}.{}", verified_cmd.definition.namespace.trim_start_matches('.'), verified_cmd.definition.name)) {

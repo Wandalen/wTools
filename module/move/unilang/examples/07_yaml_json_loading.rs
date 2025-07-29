@@ -1,5 +1,5 @@
 //! # YAML and JSON Command Loading
-//! 
+//!
 //! This example demonstrates how to load command definitions from external
 //! YAML and JSON files, allowing for declarative command specification.
 
@@ -328,12 +328,12 @@ fn main() -> Result<(), unilang::error::Error> {
     // Step 5: Combine both registries
     println!("\n🔗 Combining registries...");
     let mut combined_registry = CommandRegistry::new();
-    
+
     // Add YAML commands
     for (name, command) in yaml_registry.commands {
         combined_registry.commands.insert(name, command);
     }
-    
+
     // Add JSON commands
     for (name, command) in json_registry.commands {
         combined_registry.commands.insert(name, command);
@@ -343,7 +343,7 @@ fn main() -> Result<(), unilang::error::Error> {
 
     // Step 6: Display help for loaded commands
     let help_generator = HelpGenerator::new(&combined_registry);
-    
+
     println!("\n=== Commands Loaded from External Files ===");
     println!("{}", help_generator.list_commands());
 
@@ -374,7 +374,7 @@ fn main() -> Result<(), unilang::error::Error> {
     println!("  • Supports comments");
     println!("  • Less verbose than JSON");
     println!("  • Better for complex configurations");
-    
+
     println!("\nJSON advantages:");
     println!("  • Ubiquitous format support");
     println!("  • Strict syntax validation");
@@ -386,7 +386,7 @@ fn main() -> Result<(), unilang::error::Error> {
     println!("cargo run --bin unilang_cli system.backup --help");
     println!("cargo run --bin unilang_cli system.monitor --help");
     println!("cargo run --bin unilang_cli app.deploy --help");
-    
+
     println!("\n# Using aliases:");
     println!("cargo run --bin unilang_cli bak --help");
     println!("cargo run --bin unilang_cli watch --help");

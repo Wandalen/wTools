@@ -44,7 +44,7 @@ fn test_cli_no_args_help() {
       "  .greet          Greets the specified person.",
       "  .config.set     Sets a configuration value.",
     ]))
-    .stderr(predicate::str::ends_with("unilang_cli <command> [args...]\n"));
+    .stderr(predicate::str::contains("Usage: unilang_cli <command> [args...]"));
 }
 
 #[test]

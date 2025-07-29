@@ -229,7 +229,7 @@ fn main() -> Result<(), unilang::error::Error> {
                 .description("Directory path to list".to_string())
                 .kind(Kind::Directory)
                 .hint("Valid directory path")
-                .default_value(Some(".".to_string()))
+                .default_value(".".to_string())
                 .attributes(
                     ArgumentAttributes::former()
                         .optional(true)

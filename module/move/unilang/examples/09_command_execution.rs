@@ -4,7 +4,6 @@
 //! verified commands are interpreted and executed with proper context
 //! and error handling.
 
-use std::collections::HashMap;
 use unilang::data::{CommandDefinition, ArgumentDefinition, Kind, ArgumentAttributes, OutputData, ErrorData};
 use unilang::registry::CommandRegistry;
 use unilang::semantic::{SemanticAnalyzer, VerifiedCommand};
@@ -40,7 +39,7 @@ fn main() -> Result<(), unilang::error::Error> {
                 .description("Name to greet".to_string())
                 .kind(Kind::String)
                 .hint("Person's name")
-                .default_value(Some("World".to_string()))
+                .default_value("World".to_string())
                 .attributes(
                     ArgumentAttributes::former()
                         .optional(true)
@@ -55,9 +54,10 @@ fn main() -> Result<(), unilang::error::Error> {
         .end();
 
     let hello_routine = Box::new(|cmd: VerifiedCommand, _ctx: ExecutionContext| {
+        let default_name = "World".to_string();
         let name = cmd.arguments.get("name")
             .and_then(|v| if let Value::String(s) = v { Some(s) } else { None })
-            .unwrap_or(&"World".to_string());
+            .unwrap_or(&default_name);
 
         let greeting = format!("Hello, {}! 👋", name);
         println!("{}", greeting);
@@ -91,7 +91,7 @@ fn main() -> Result<(), unilang::error::Error> {
                 .description("Show detailed information".to_string())
                 .kind(Kind::Boolean)
                 .hint("Enable verbose output")
-                .default_value(Some("false".to_string()))
+                .default_value("false".to_string())
                 .attributes(
                     ArgumentAttributes::former()
                         .optional(true)
@@ -107,15 +107,15 @@ fn main() -> Result<(), unilang::error::Error> {
 
     let status_routine = Box::new(|cmd: VerifiedCommand, ctx: ExecutionContext| {
         let verbose = cmd.arguments.get("verbose")
-            .and_then(|v| if let Value::Boolean(b) = v { Some(*b) } else { None })
-            .unwrap_or(false);
+            .and_then(|v| if let Value::Boolean(b) = v { Some(b) } else { None })
+            .unwrap_or(&false);
 
         println!("🖥️  System Status Report");
         println!("========================");
         println!("Status: Online ✅");
         println!("Uptime: 5 days, 3 hours");
         
-        if verbose {
+        if *verbose {
             println!("\nDetailed Information:");
             println!("  • Memory Usage: 4.2GB / 16GB");
             println!("  • CPU Usage: 23%");
@@ -127,7 +127,7 @@ fn main() -> Result<(), unilang::error::Error> {
         // Demonstrate context usage (in real applications, context would contain useful data)
         println!("\nExecution Context: {:?}", ctx);
 
-        let content = if verbose {
+        let content = if *verbose {
             "Detailed system status: All systems operational"
         } else {
             "System status: Online"
@@ -182,14 +182,14 @@ fn main() -> Result<(), unilang::error::Error> {
 
     let divide_routine = Box::new(|cmd: VerifiedCommand, _ctx: ExecutionContext| {
         let dividend = cmd.arguments.get("dividend")
-            .and_then(|v| if let Value::Float(f) = v { Some(*f) } else { None })
-            .unwrap_or(0.0);
+            .and_then(|v| if let Value::Float(f) = v { Some(f) } else { None })
+            .unwrap_or(&0.0);
 
         let divisor = cmd.arguments.get("divisor")
-            .and_then(|v| if let Value::Float(f) = v { Some(*f) } else { None })
-            .unwrap_or(0.0);
+            .and_then(|v| if let Value::Float(f) = v { Some(f) } else { None })
+            .unwrap_or(&0.0);
 
-        if divisor == 0.0 {
+        if *divisor == 0.0 {
             return Err(ErrorData {
                 code: "DIVISION_BY_ZERO".to_string(),
                 message: format!("Cannot divide {} by zero. Division by zero is undefined.", dividend),
@@ -263,7 +263,7 @@ fn main() -> Result<(), unilang::error::Error> {
         let numbers = cmd.arguments.get("numbers")
             .and_then(|v| if let Value::List(list) = v {
                 Some(list.iter().filter_map(|item| 
-                    if let Value::Float(f) = item { Some(*f) } else { None }
+                    if let Value::Float(f) = item { Some(f) } else { None }
                 ).collect::<Vec<_>>())
             } else { None })
             .unwrap_or_default();
@@ -277,25 +277,25 @@ fn main() -> Result<(), unilang::error::Error> {
 
         // Calculate statistics
         let count = numbers.len();
-        let sum: f64 = numbers.iter().sum();
+        let sum: f64 = numbers.iter().map(|x| **x).sum();
         let mean = sum / count as f64;
         
         let mut sorted = numbers.clone();
         sorted.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
         
         let median = if count % 2 == 0 {
-            (sorted[count / 2 - 1] + sorted[count / 2]) / 2.0
+            (*sorted[count / 2 - 1] + *sorted[count / 2]) / 2.0
         } else {
-            sorted[count / 2]
+            *sorted[count / 2]
         };
 
-        let min = sorted[0];
-        let max = sorted[count - 1];
+        let min = *sorted[0];
+        let max = *sorted[count - 1];
         let range = max - min;
 
         // Calculate standard deviation
         let variance: f64 = numbers.iter()
-            .map(|x| (x - mean).powi(2))
+            .map(|x| (**x - mean).powi(2))
             .sum::<f64>() / count as f64;
         let std_dev = variance.sqrt();
 
@@ -349,7 +349,8 @@ fn main() -> Result<(), unilang::error::Error> {
 
         match parser.parse_single_instruction(command_str) {
             Ok(instruction) => {
-                let analyzer = SemanticAnalyzer::new(&[instruction], &registry);
+                let instructions = [instruction];
+                let analyzer = SemanticAnalyzer::new(&instructions, &registry);
                 
                 match analyzer.analyze() {
                     Ok(verified_commands) => {

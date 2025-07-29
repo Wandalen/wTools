@@ -14,8 +14,11 @@ Unilang is a command framework that allows you to define commands declaratively 
 - **🔍 Robust Parsing**: Convert text input to structured instructions using the unilang_parser
 - **🧠 Semantic Analysis**: Validate commands against registry with type checking and constraint enforcement
 - **⚡ Flexible Execution**: Execute commands with proper context and error handling
+- **🚀 High-Level Pipeline API**: Simplified workflow helpers for common usage patterns
 - **📚 Automatic Help**: Generate comprehensive help documentation from command definitions
 - **🛡️ Error Management**: Structured error handling with meaningful error codes and messages
+- **📦 Batch Processing**: Execute multiple commands with comprehensive result tracking
+- **🔐 Command Validation**: Validate commands without execution for safety checks
 
 ## Data Types & Validation
 
@@ -171,11 +174,27 @@ See the complete Unilang pipeline in action:
 cargo run --example 10_full_pipeline
 ```
 
-## Quick Start Example
+### 11. High-Level Pipeline API
+**File**: [`examples/11_pipeline_api.rs`](examples/11_pipeline_api.rs)
 
+Master the high-level Pipeline API for simplified workflows:
+- Single command processing with error handling
+- Batch processing with success tracking
+- Sequence processing with fail-fast behavior
+- Command validation without execution
+- Performance optimization through component reuse
+
+```bash
+cargo run --example 11_pipeline_api
+```
+
+## Quick Start Examples
+
+### Basic Command Registration
 ```rust
 use unilang::registry::CommandRegistry;
 use unilang::data::{CommandDefinition, ArgumentDefinition, Kind, OutputData};
+use unilang::types::Value;
 
 // Create registry
 let mut registry = CommandRegistry::new();
@@ -183,19 +202,37 @@ let mut registry = CommandRegistry::new();
 // Define command
 let greet_cmd = CommandDefinition::former()
     .name("greet")
-    .description("Greets a person")
+    .namespace("".to_string())
+    .description("Greets a person".to_string())
+    .hint("Simple greeting")
+    .status("stable")
+    .version("1.0.0")
+    .aliases(vec![])
+    .tags(vec![])
+    .permissions(vec![])
+    .idempotent(true)
+    .deprecation_message("".to_string())
+    .http_method_hint("GET".to_string())
+    .examples(vec!["greet Alice".to_string()])
     .arguments(vec![
         ArgumentDefinition::former()
             .name("name")
             .kind(Kind::String)
             .hint("Person to greet")
+            .description("Name of person to greet".to_string())
+            .attributes(Default::default())
+            .validation_rules(vec![])
+            .aliases(vec![])
+            .tags(vec![])
             .end()
     ])
     .end();
 
 // Define routine
 let routine = Box::new(|cmd, _ctx| {
-    let name = cmd.arguments.get("name").unwrap();
+    let name = cmd.arguments.get("name")
+        .and_then(|v| if let Value::String(s) = v { Some(s) } else { None })
+        .unwrap_or(&"World".to_string());
     println!("Hello, {}!", name);
     Ok(OutputData {
         content: format!("Hello, {}!", name),
@@ -205,6 +242,51 @@ let routine = Box::new(|cmd, _ctx| {
 
 // Register command
 registry.command_add_runtime(&greet_cmd, routine)?;
+```
+
+### High-Level Pipeline API
+```rust
+use unilang::pipeline::Pipeline;
+use unilang::interpreter::ExecutionContext;
+
+// Create pipeline with registry
+let pipeline = Pipeline::new(registry);
+
+// Process single command
+let result = pipeline.process_command_simple("greet Alice");
+if result.success {
+    println!("Output: {}", result.outputs[0].content);
+}
+
+// Process batch of commands
+let commands = vec!["greet Alice", "greet Bob", "greet Charlie"];
+let batch_result = pipeline.process_batch(&commands, ExecutionContext::default());
+println!("Success rate: {:.1}%", batch_result.success_rate());
+
+// Validate command without execution
+match pipeline.validate_command("greet Alice") {
+    Ok(()) => println!("Command is valid"),
+    Err(e) => println!("Invalid command: {}", e),
+}
+```
+
+### External Configuration Loading
+```rust
+use unilang::registry::CommandRegistry;
+
+let yaml_config = r#"
+- name: "hello"
+  namespace: ""
+  description: "Hello world command"
+  arguments:
+    - name: "target"
+      kind: "String"
+      hint: "Who to greet"
+"#;
+
+let registry = CommandRegistry::builder()
+    .load_from_yaml_str(yaml_config)?
+    .build();
 ```
 
 ## CLI Usage
@@ -265,17 +347,167 @@ cargo build --bin unilang_cli
 - **ArgumentDefinition**: Argument specification with validation rules
 - **Kind**: Type system for arguments with validation support
 - **VerifiedCommand**: Validated command ready for execution
+- **OutputData**: Structured command execution results
+- **ErrorData**: Structured error information with codes and messages
 
 ### Core Systems
 - **CommandRegistry**: Central command storage and management
 - **SemanticAnalyzer**: Command validation and verification
 - **Interpreter**: Command execution engine
 - **HelpGenerator**: Automatic documentation generation
+- **Pipeline**: High-level workflow orchestration
+
+### Pipeline API
+- **Pipeline**: Main high-level interface for command processing
+- **CommandResult**: Single command execution result with success/error info
+- **BatchResult**: Batch processing results with statistics
+- **Convenience Functions**: One-off processing helpers
+
+### Processing Modes
+- **Single Command**: Process one command with full error handling
+- **Batch Processing**: Process multiple commands independently
+- **Sequence Processing**: Process commands with fail-fast behavior
+- **Validation Only**: Validate commands without execution
 
 ### Error Handling
 - **Structured Errors**: Machine-readable error codes with human descriptions
 - **Validation Errors**: Constraint violation reporting
 - **Execution Errors**: Runtime error handling
+- **Pipeline Errors**: High-level workflow error management
+
+## API Reference
+
+### Pipeline API
+
+The Pipeline API provides high-level interfaces for common Unilang workflows:
+
+#### Pipeline Structure
+```rust
+pub struct Pipeline {
+    // Internal parser and registry
+}
+
+impl Pipeline {
+    pub fn new(registry: CommandRegistry) -> Self;
+    pub fn with_parser_options(registry: CommandRegistry, options: UnilangParserOptions) -> Self;
+    
+    // Single command processing
+    pub fn process_command(&self, command_str: &str, context: ExecutionContext) -> CommandResult;
+    pub fn process_command_simple(&self, command_str: &str) -> CommandResult;
+    
+    // Batch processing
+    pub fn process_batch(&self, commands: &[&str], context: ExecutionContext) -> BatchResult;
+    pub fn process_sequence(&self, commands: &[&str], context: ExecutionContext) -> BatchResult;
+    
+    // Validation
+    pub fn validate_command(&self, command_str: &str) -> Result<(), Error>;
+    pub fn validate_batch(&self, commands: &[&str]) -> Vec<Result<(), Error>>;
+    
+    // Registry access
+    pub fn registry(&self) -> &CommandRegistry;
+    pub fn registry_mut(&mut self) -> &mut CommandRegistry;
+}
+```
+
+#### Result Types
+```rust
+pub struct CommandResult {
+    pub command: String,           // Original command string
+    pub outputs: Vec<OutputData>,  // Command outputs
+    pub success: bool,             // Whether command succeeded
+    pub error: Option<String>,     // Error message if failed
+}
+
+pub struct BatchResult {
+    pub results: Vec<CommandResult>,  // Individual command results
+    pub total_commands: usize,        // Total commands processed
+    pub successful_commands: usize,   // Number that succeeded
+    pub failed_commands: usize,       // Number that failed
+}
+
+impl BatchResult {
+    pub fn all_succeeded(&self) -> bool;
+    pub fn any_failed(&self) -> bool;
+    pub fn success_rate(&self) -> f64;
+}
+```
+
+#### Convenience Functions
+```rust
+// Process single command without creating Pipeline
+pub fn process_single_command(
+    command_str: &str,
+    registry: &CommandRegistry,
+    context: ExecutionContext,
+) -> CommandResult;
+
+// Validate single command without creating Pipeline
+pub fn validate_single_command(
+    command_str: &str,
+    registry: &CommandRegistry,
+) -> Result<(), Error>;
+```
+
+### Usage Patterns
+
+#### Basic Command Processing
+```rust
+use unilang::pipeline::Pipeline;
+
+let pipeline = Pipeline::new(registry);
+let result = pipeline.process_command_simple("command arg1 arg2");
+
+if result.success {
+    println!("Success: {}", result.outputs[0].content);
+} else {
+    eprintln!("Error: {}", result.error.unwrap());
+}
+```
+
+#### Batch Processing with Error Handling
+```rust
+let commands = vec!["cmd1", "cmd2", "cmd3"];
+let batch_result = pipeline.process_batch(&commands, ExecutionContext::default());
+
+println!("Processed {}/{} commands successfully", 
+    batch_result.successful_commands, batch_result.total_commands);
+
+for result in &batch_result.results {
+    if let Some(error) = &result.error {
+        eprintln!("Command '{}' failed: {}", result.command, error);
+    }
+}
+```
+
+#### Command Validation
+```rust
+// Validate before execution
+match pipeline.validate_command("risky_command --dangerous-flag") {
+    Ok(()) => {
+        let result = pipeline.process_command_simple("risky_command --dangerous-flag");
+        // Process result
+    }
+    Err(e) => {
+        eprintln!("Invalid command: {}", e);
+    }
+}
+```
+
+#### Performance-Optimized Processing
+```rust
+// Reuse pipeline for multiple commands (faster)
+let pipeline = Pipeline::new(registry);
+for cmd in commands {
+    let result = pipeline.process_command_simple(cmd);
+    // Handle result
+}
+
+// vs. one-off processing (slower due to repeated setup)
+for cmd in commands {
+    let result = process_single_command(cmd, &registry, ExecutionContext::default());
+    // Handle result
+}
+```
 
 ## Testing
 
@@ -292,6 +524,12 @@ cargo test phase3
 
 # Run integration tests
 cargo test --test cli_integration_test
+
+# Run pipeline API tests
+cargo test pipeline
+
+# Run examples as tests
+cargo test --examples
 ```
 
 ## Contributing
