@@ -204,7 +204,7 @@ fn main() -> Result<(), unilang::error::Error> {
     println!("# List examples:");
     println!("cargo run --bin unilang_cli collections.list_demo numbers::1,2,3,4,5");
     println!("cargo run --bin unilang_cli collections.list_demo words::apple|banana|cherry");
-    println!("cargo run --bin unilang_cli collections.list_demo files::file1.txt files::file2.txt files::file3.txt");
+    println!("cargo run --bin unilang_cli collections.list_demo files::'file1.txt file2.txt file3.txt'");
 
     println!("\n# Map examples:");
     println!("cargo run --bin unilang_cli collections.map_demo config::name=John,age=30,city=NYC");
