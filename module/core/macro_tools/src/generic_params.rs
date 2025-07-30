@@ -747,6 +747,14 @@ mod private {
       }
     }
 
+    // Remove any trailing punctuation from impl and ty generics to prevent trailing commas
+    while generics_for_impl.trailing_punct() {
+      generics_for_impl.pop_punct();
+    }
+    while generics_for_ty.trailing_punct() {
+      generics_for_ty.pop_punct();
+    }
+
     // Clone where predicates if present, ensuring they end with a comma
     let generics_where = if let Some(where_clause) = &generics.where_clause {
       let mut predicates = where_clause.predicates.clone();

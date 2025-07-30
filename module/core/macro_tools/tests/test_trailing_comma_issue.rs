@@ -1,3 +1,5 @@
+//! Test for trailing comma issue fix in generic_params::decompose
+
 use macro_tools::generic_params;
 use quote::quote;
 use syn::parse_quote;

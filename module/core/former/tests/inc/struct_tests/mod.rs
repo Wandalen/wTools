@@ -104,11 +104,10 @@ mod name_collision_former_vector_without_parameter;
 mod parametrized_dyn_manual; // xxx2 : qqq2 : fix the issue
 
 // mod parametrized_field;  // Fixed: Manual implementation working, derive still has issues
-// mod test_lifetime_only;  // Test for lifetime-only structs
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// mod test_lifetime_minimal;  // Minimal lifetime test without debug
-// mod minimal_lifetime;  // Minimal test for debugging lifetime issues
-// mod debug_lifetime_minimal;
+// mod test_lifetime_only;  // Test for lifetime-only structs - BLOCKED: Still issues with lifetime parameter generation
+// mod test_lifetime_minimal;  // Minimal lifetime test without debug - BLOCKED: Still issues with lifetime parameter generation
+// mod minimal_lifetime;  // Minimal test for debugging lifetime issues - BLOCKED: Still issues with lifetime parameter generation
+// mod debug_lifetime_minimal;  // Still disabled - has debug attribute
 // mod debug_simple_lifetime;  // Debug test for lifetime issue
 // mod parametrized_field_where;  // BLOCKED: E0726 implicit elided lifetime not allowed here
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]

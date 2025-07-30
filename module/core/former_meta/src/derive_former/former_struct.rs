@@ -13,29 +13,6 @@ use macro_tools::{
   ident, // Added for ident_maybe_raw
 };
 
-/// Build a generic list by properly combining base generics with additional parameters
-fn build_generics_with_params(
-  base_generics: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
-  additional_params: &[syn::GenericParam],
-) -> syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma> {
-  let mut result = base_generics.clone();
-  
-  // Only add comma if base is not empty and we have additional params
-  if !result.is_empty() && !additional_params.is_empty() {
-    result.push_punct(syn::token::Comma::default());
-  }
-  
-  // Add additional params
-  for (i, param) in additional_params.iter().enumerate() {
-    result.push_value(param.clone());
-    // Add comma between additional params (but not after the last one)
-    if i < additional_params.len() - 1 {
-      result.push_punct(syn::token::Comma::default());
-    }
-  }
-  
-  result
-}
 
 /// Generate the Former ecosystem for a struct.
 #[allow(clippy::too_many_lines)]
@@ -82,6 +59,11 @@ specific needs of the broader forming context. It mandates the implementation of
     struct_generics_ty,            // Generics for type usage (e.g., `<T>`). Names only.
     struct_generics_where,         // Where clause predicates (e.g., `T: Send`).
   ) = generic_params::decompose(generics);
+  
+  // Use new generic utilities to classify generics
+  let generics_ref = generic_params::GenericsRef::new(generics);
+  let classification = generics_ref.classification();
+  let has_only_lifetimes = classification.has_only_lifetimes;
 
   // Helper for generics with trailing comma when not empty (for cases where we need it)
   let _struct_generics_ty_with_comma = if struct_generics_ty.is_empty() {
@@ -142,15 +124,15 @@ specific needs of the broader forming context. It mandates the implementation of
       quote! { 'a }
   };
 
-  // Create a new Generics object without lifetimes for struct_generics_impl_without_lifetimes
-  let mut generics_without_lifetimes = generics.clone();
-  generics_without_lifetimes.params = generics_without_lifetimes.params.into_iter().filter(|p| !matches!(p, syn::GenericParam::Lifetime(_))).collect();
-  let (
-    _struct_generics_with_defaults_without_lifetimes,
-    struct_generics_impl_without_lifetimes,
-    _struct_generics_ty_without_lifetimes,
-    _struct_generics_where_without_lifetimes,
-  ) = generic_params::decompose(&generics_without_lifetimes);
+  // Get generics without lifetimes using new utilities
+  let struct_generics_impl_without_lifetimes = generic_params::filter_params(
+    &struct_generics_impl,
+    generic_params::filter_non_lifetimes
+  );
+  let _struct_generics_ty_without_lifetimes = generic_params::filter_params(
+    &struct_generics_ty,
+    generic_params::filter_non_lifetimes
+  );
 
   // Helper for generics without lifetimes with trailing comma
   let _struct_generics_impl_without_lifetimes_with_comma = if struct_generics_impl_without_lifetimes.is_empty() {
@@ -168,15 +150,28 @@ specific needs of the broader forming context. It mandates the implementation of
   let former_definition_args = generic_args::merge(&generics.into_generic_args(), &extra).args;
 
   /* parameters for former: Merge struct generics with the Definition generic parameter. */
-  let extra: macro_tools::generic_params::GenericsWithWhere = parse_quote! {
-    < Definition = #former_definition < #former_definition_args > >
-    where
-      Definition : former::FormerDefinition< Storage = #storage_type_ref >,
-      Definition::Types : former::FormerDefinitionTypes< Storage = #storage_type_ref >,
+  // For lifetime-only structs, we need special handling
+  let (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where) = if has_only_lifetimes {
+    // For lifetime-only structs, Former should have: <'a, Definition = ...>
+    let extra: macro_tools::generic_params::GenericsWithWhere = parse_quote! {
+      < Definition = #former_definition < #former_definition_args > >
+      where
+        Definition : former::FormerDefinition< Storage = #storage_type_ref >,
+        Definition::Types : former::FormerDefinitionTypes< Storage = #storage_type_ref >,
+    };
+    let merged = generic_params::merge(generics, &extra.into());
+    generic_params::decompose(&merged)
+  } else {
+    // For structs with type/const params, use the existing approach
+    let extra: macro_tools::generic_params::GenericsWithWhere = parse_quote! {
+      < Definition = #former_definition < #former_definition_args > >
+      where
+        Definition : former::FormerDefinition< Storage = #storage_type_ref >,
+        Definition::Types : former::FormerDefinitionTypes< Storage = #storage_type_ref >,
+    };
+    let merged = generic_params::merge(generics, &extra.into());
+    generic_params::decompose(&merged)
   };
-  let extra = generic_params::merge(generics, &extra.into());
-  let (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where) =
-    generic_params::decompose(&extra);
 
   // Helper to generate former type reference with angle brackets only when needed
   // Check if we have any non-lifetime generics for the Former type
@@ -184,16 +179,31 @@ specific needs of the broader forming context. It mandates the implementation of
   let has_non_lifetime_generics = !struct_generics_impl_without_lifetimes.is_empty();
   
   // Build proper generic list for former type reference
-  let former_type_ref_generics = build_generics_with_params(
-    &struct_generics_impl_without_lifetimes,
-    &[parse_quote! { Definition }],
-  );
+  // For lifetime-only structs, we need to include the lifetimes in the Former type
+  let former_type_ref_generics = if has_only_lifetimes {
+    // Include struct lifetimes + Definition
+    generic_params::params_with_additional(
+      &struct_generics_impl,
+      &[parse_quote! { Definition }],
+    )
+  } else {
+    // For mixed or no generics, use non-lifetime generics + Definition
+    generic_params::params_with_additional(
+      &struct_generics_impl_without_lifetimes,
+      &[parse_quote! { Definition }],
+    )
+  };
   let former_type_ref = quote! { #former < #former_type_ref_generics > };
   
   // Helper for the full former type with concrete definition parameters
-  let former_type_full = if has_non_lifetime_generics {
+  let former_type_full = if has_only_lifetimes {
+    // For lifetime-only structs: Former<'a, Definition>
+    quote! { #former < #struct_generics_impl, #former_definition < #former_definition_args > > }
+  } else if has_non_lifetime_generics {
+    // For mixed generics: Former<T, U, Definition>
     quote! { #former < #struct_generics_impl_without_lifetimes, #former_definition < #former_definition_args > > }
   } else {
+    // For no generics: Former<Definition>
     quote! { #former < #former_definition < #former_definition_args > > }
   };
 
@@ -207,8 +217,11 @@ specific needs of the broader forming context. It mandates the implementation of
   // Helper for FormerBegin impl generics
   let former_begin_impl_generics = if struct_generics_impl.is_empty() {
     quote! { < #lifetime_param_for_former_begin, Definition > }
+  } else if has_only_lifetimes {
+    // For lifetime-only structs, use struct lifetimes + Definition
+    quote! { < #struct_generics_impl, Definition > }
   } else {
-    // Struct already has lifetimes, use them
+    // For mixed generics, use FormerBegin lifetime + non-lifetime generics + Definition
     quote! { < #lifetime_param_for_former_begin, #struct_generics_impl_without_lifetimes, Definition > }
   };
 
@@ -602,19 +615,20 @@ specific needs of the broader forming context. It mandates the implementation of
   // <<< End of updated code for standalone constructor (Option 2) >>>
 
   // Build generic lists for EntityToFormer impl
-  let entity_to_former_impl_generics = build_generics_with_params(
+  let entity_to_former_impl_generics = generic_params::params_with_additional(
     &struct_generics_impl,
     &[parse_quote! { Definition }],
   );
   
   // Build generic lists for EntityToFormer type Former
-  let entity_to_former_ty_generics = build_generics_with_params(
+  // We always need to include the struct's generic parameters (including lifetimes)
+  let entity_to_former_ty_generics = generic_params::params_with_additional(
     &struct_generics_ty,
     &[parse_quote! { Definition }],
   );
   
   // Build generic lists for EntityToDefinition impl
-  let entity_to_definition_impl_generics = build_generics_with_params(
+  let entity_to_definition_impl_generics = generic_params::params_with_additional(
     &struct_generics_impl,
     &[
       parse_quote! { __Context },
@@ -624,7 +638,7 @@ specific needs of the broader forming context. It mandates the implementation of
   );
   
   // Build generic lists for definition types in trait bounds
-  let definition_types_ty_generics = build_generics_with_params(
+  let definition_types_ty_generics = generic_params::params_with_additional(
     &struct_generics_ty,
     &[
       parse_quote! { __Context },
@@ -633,7 +647,7 @@ specific needs of the broader forming context. It mandates the implementation of
   );
   
   // Build generic lists for definition in associated types
-  let definition_ty_generics = build_generics_with_params(
+  let definition_ty_generics = generic_params::params_with_additional(
     &struct_generics_ty,
     &[
       parse_quote! { __Context },
@@ -643,7 +657,7 @@ specific needs of the broader forming context. It mandates the implementation of
   );
   
   // Build generic lists for EntityToDefinitionTypes impl
-  let entity_to_definition_types_impl_generics = build_generics_with_params(
+  let entity_to_definition_types_impl_generics = generic_params::params_with_additional(
     &struct_generics_impl,
     &[
       parse_quote! { __Context },

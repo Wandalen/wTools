@@ -2,6 +2,8 @@
 //! Full coverage tests for generic_params::decompose function
 //!
 
+#![allow(unused_variables)]
+
 use macro_tools::generic_params;
 use quote::quote;
 use syn::parse_quote;
@@ -87,7 +89,7 @@ fn test_d1_2_single_lifetime() {
 #[test]
 fn test_d1_3_single_lifetime_with_bounds() {
     let generics: syn::Generics = parse_quote! { <'a: 'static> };
-    let (with_defaults, impl_gen, ty_gen, where_gen) = generic_params::decompose(&generics);
+    let (with_defaults, impl_gen, ty_gen, _where_gen) = generic_params::decompose(&generics);
     
     assert!(with_defaults.trailing_punct());
     assert!(!impl_gen.trailing_punct());

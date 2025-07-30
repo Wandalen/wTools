@@ -5,8 +5,7 @@ use super::*;
 
 // #[derive(Debug, PartialEq, the_module::Former)]
 
-#[derive(Debug, PartialEq)]
-#[debug]
+#[derive(Debug, PartialEq, the_module::Former)]
 pub struct Minimal<'a> {
   value: &'a str,
 }
@@ -14,5 +13,6 @@ pub struct Minimal<'a> {
 #[test]
 fn basic() {
   let data = "test";
-  let _instance = Minimal { value: data };
+  let instance = Minimal::former().value(data).form();
+  assert_eq!(instance.value, "test");
 }

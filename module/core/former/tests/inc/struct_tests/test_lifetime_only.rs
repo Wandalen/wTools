@@ -6,7 +6,7 @@ use super::*;
 
 // #[derive(Debug, PartialEq, the_module::Former)]
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, the_module::Former)]
 #[debug]
 pub struct WithLifetime<'a> {
   name: &'a str,
@@ -22,9 +22,9 @@ pub struct WithLifetime<'a> {
 
 // == end of generated
 
-// #[test]
-// fn basic() {
-//   let data = "test";
-//   let instance = WithLifetime::former().name(data).form();
-//   assert_eq!(instance.name, "test");
-// }
+#[test]
+fn basic() {
+  let data = "test";
+  let instance = WithLifetime::former().name(data).form();
+  assert_eq!(instance.name, "test");
+}

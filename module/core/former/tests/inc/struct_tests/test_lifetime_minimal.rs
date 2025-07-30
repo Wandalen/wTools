@@ -5,7 +5,7 @@ use super::*;
 
 // #[derive(Debug, PartialEq, the_module::Former)]
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, the_module::Former)]
 pub struct LifetimeStruct<'a> {
   data: &'a str,
 }

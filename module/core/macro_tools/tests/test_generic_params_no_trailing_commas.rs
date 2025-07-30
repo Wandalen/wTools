@@ -1,3 +1,5 @@
+//! Tests for generic parameters without trailing commas
+
 use macro_tools::generic_params;
 use quote::quote;
 use syn::parse_quote;
