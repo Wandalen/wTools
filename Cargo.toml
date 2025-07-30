@@ -154,7 +154,7 @@ default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.derive_tools_meta]
-version = "~0.37.0"
+version = "~0.38.0"
 path = "module/core/derive_tools_meta"
 default-features = false
 # features = [ "enabled" ]
