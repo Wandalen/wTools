@@ -6,11 +6,12 @@
 use unilang::registry::CommandRegistry;
 use unilang::help::HelpGenerator;
 
-fn main() -> Result<(), unilang::error::Error> {
-    println!("=== YAML and JSON Command Loading Demo ===\n");
+fn main() -> Result< (), unilang::error::Error >
+{
+  println!( "=== YAML and JSON Command Loading Demo ===\n" );
 
-    // Step 1: Define commands in YAML format
-    let yaml_commands = r#"
+  // Step 1: Define commands in YAML format
+  let yaml_commands = r#"
 - name: "backup"
   namespace: ".system"
   description: "Creates a backup of specified files and directories"
@@ -144,8 +145,8 @@ fn main() -> Result<(), unilang::error::Error> {
       tags: ["verification", "integrity"]
 "#;
 
-    // Step 2: Define commands in JSON format
-    let json_commands = r#"
+  // Step 2: Define commands in JSON format
+  let json_commands = r#"
 [
   {
     "name": "monitor",
@@ -309,92 +310,96 @@ fn main() -> Result<(), unilang::error::Error> {
 ]
 "#;
 
-    // Step 3: Load commands from YAML
-    println!("📋 Loading commands from YAML...");
-    let yaml_registry = CommandRegistry::builder()
-        .load_from_yaml_str(yaml_commands)?
-        .build();
+  // Step 3: Load commands from YAML
+  println!( "📋 Loading commands from YAML..." );
+  let yaml_registry = CommandRegistry::builder()
+  .load_from_yaml_str( yaml_commands )?
+  .build();
 
-    println!("✓ Loaded {} commands from YAML", yaml_registry.commands.len());
+  println!( "✓ Loaded {} commands from YAML", yaml_registry.commands.len() );
 
-    // Step 4: Load commands from JSON
-    println!("\n📋 Loading commands from JSON...");
-    let json_registry = CommandRegistry::builder()
-        .load_from_json_str(json_commands)?
-        .build();
+  // Step 4: Load commands from JSON
+  println!( "\n📋 Loading commands from JSON..." );
+  let json_registry = CommandRegistry::builder()
+  .load_from_json_str( json_commands )?
+  .build();
 
-    println!("✓ Loaded {} commands from JSON", json_registry.commands.len());
+  println!( "✓ Loaded {} commands from JSON", json_registry.commands.len() );
 
-    // Step 5: Combine both registries
-    println!("\n🔗 Combining registries...");
-    let mut combined_registry = CommandRegistry::new();
+  // Step 5: Combine both registries
+  println!( "\n🔗 Combining registries..." );
+  let mut combined_registry = CommandRegistry::new();
 
-    // Add YAML commands
-    for (name, command) in yaml_registry.commands {
-        combined_registry.commands.insert(name, command);
-    }
+  // Add YAML commands
+  for ( name, command ) in yaml_registry.commands
+  {
+    combined_registry.commands.insert( name, command );
+  }
 
-    // Add JSON commands
-    for (name, command) in json_registry.commands {
-        combined_registry.commands.insert(name, command);
-    }
+  // Add JSON commands
+  for ( name, command ) in json_registry.commands
+  {
+    combined_registry.commands.insert( name, command );
+  }
 
-    println!("✓ Combined registry has {} total commands", combined_registry.commands.len());
+  println!( "✓ Combined registry has {} total commands", combined_registry.commands.len() );
 
-    // Step 6: Display help for loaded commands
-    let help_generator = HelpGenerator::new(&combined_registry);
+  // Step 6: Display help for loaded commands
+  let help_generator = HelpGenerator::new( &combined_registry );
 
-    println!("\n=== Commands Loaded from External Files ===");
-    println!("{}", help_generator.list_commands());
+  println!( "\n=== Commands Loaded from External Files ===" );
+  println!( "{}", help_generator.list_commands() );
 
-    // Step 7: Show detailed help for specific commands
-    println!("\n=== YAML-Loaded Command Details ===");
-    if let Some(backup_help) = help_generator.command("system.backup") {
-        println!("{}", backup_help);
-    }
+  // Step 7: Show detailed help for specific commands
+  println!( "\n=== YAML-Loaded Command Details ===" );
+  if let Some( backup_help ) = help_generator.command( "system.backup" )
+  {
+    println!( "{}", backup_help );
+  }
 
-    println!("\n=== JSON-Loaded Command Details ===");
-    if let Some(monitor_help) = help_generator.command("system.monitor") {
-        println!("{}", monitor_help);
-    }
+  println!( "\n=== JSON-Loaded Command Details ===" );
+  if let Some( monitor_help ) = help_generator.command( "system.monitor" )
+  {
+    println!( "{}", monitor_help );
+  }
 
-    println!("\n=== External Definition Benefits ===");
-    println!("✨ Loading from YAML/JSON provides:");
-    println!("  • Separation of command definitions from code");
-    println!("  • Easy configuration management");
-    println!("  • Version control for command specs");
-    println!("  • Non-programmer friendly editing");
-    println!("  • Dynamic command loading");
-    println!("  • Easier maintenance of large command sets");
-    println!("  • Consistent structure validation");
+  println!( "\n=== External Definition Benefits ===" );
+  println!( "✨ Loading from YAML/JSON provides:" );
+  println!( "  • Separation of command definitions from code" );
+  println!( "  • Easy configuration management" );
+  println!( "  • Version control for command specs" );
+  println!( "  • Non-programmer friendly editing" );
+  println!( "  • Dynamic command loading" );
+  println!( "  • Easier maintenance of large command sets" );
+  println!( "  • Consistent structure validation" );
 
-    println!("\n=== File Format Comparison ===");
-    println!("YAML advantages:");
-    println!("  • Human-readable and editable");
-    println!("  • Supports comments");
-    println!("  • Less verbose than JSON");
-    println!("  • Better for complex configurations");
+  println!( "\n=== File Format Comparison ===" );
+  println!( "YAML advantages:" );
+  println!( "  • Human-readable and editable" );
+  println!( "  • Supports comments" );
+  println!( "  • Less verbose than JSON" );
+  println!( "  • Better for complex configurations" );
 
-    println!("\nJSON advantages:");
-    println!("  • Ubiquitous format support");
-    println!("  • Strict syntax validation");
-    println!("  • Better tooling support");
-    println!("  • Faster parsing performance");
+  println!( "\nJSON advantages:" );
+  println!( "  • Ubiquitous format support" );
+  println!( "  • Strict syntax validation" );
+  println!( "  • Better tooling support" );
+  println!( "  • Faster parsing performance" );
 
-    println!("\n=== Usage Examples ===");
-    println!("# Test the loaded commands:");
-    println!("cargo run --bin unilang_cli system.backup --help");
-    println!("cargo run --bin unilang_cli system.monitor --help");
-    println!("cargo run --bin unilang_cli app.deploy --help");
+  println!( "\n=== Usage Examples ===" );
+  println!( "# Test the loaded commands:" );
+  println!( "cargo run --bin unilang_cli system.backup --help" );
+  println!( "cargo run --bin unilang_cli system.monitor --help" );
+  println!( "cargo run --bin unilang_cli app.deploy --help" );
 
-    println!("\n# Using aliases:");
-    println!("cargo run --bin unilang_cli bak --help");
-    println!("cargo run --bin unilang_cli watch --help");
-    println!("cargo run --bin unilang_cli release --help");
+  println!( "\n# Using aliases:" );
+  println!( "cargo run --bin unilang_cli bak --help" );
+  println!( "cargo run --bin unilang_cli watch --help" );
+  println!( "cargo run --bin unilang_cli release --help" );
 
-    println!("\n💡 Note: Since these commands were loaded without routine_link,");
-    println!("   they use placeholder routines. In a real application, you would");
-    println!("   specify routine_link values to connect to actual implementations.");
+  println!( "\n💡 Note: Since these commands were loaded without routine_link," );
+  println!( "   they use placeholder routines. In a real application, you would" );
+  println!( "   specify routine_link values to connect to actual implementations." );
 
-    Ok(())
+  Ok(())
 }

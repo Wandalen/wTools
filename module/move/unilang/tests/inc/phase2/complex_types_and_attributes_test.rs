@@ -240,10 +240,7 @@ fn test_multiple_argument() {
   assert!(result.is_ok());
   let verified_command = result.unwrap().remove(0);
   let arg = verified_command.arguments.get("multiple_arg").unwrap();
-  assert_eq!(
-    *arg,
-    Value::List(vec![Value::String("val1".to_string()), Value::String("val2".to_string())])
-  );
+  assert_eq!(*arg, Value::List(vec![Value::String("val1".to_string()), Value::String("val2".to_string())]));
 }
 
 #[test]

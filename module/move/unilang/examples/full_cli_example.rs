@@ -4,12 +4,12 @@
 //! pipeline, including argument parsing, semantic analysis, and command execution.
 
 use std::collections::HashMap;
-use unilang::data::{ CommandDefinition, ArgumentDefinition, ArgumentAttributes, OutputData };
+use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, OutputData };
 use unilang::data::Kind as ArgumentKind;
+use unilang::error::Error;
+use unilang::interpreter::Interpreter;
 use unilang::registry::{ CommandRegistry, CommandRoutine };
 use unilang::semantic::SemanticAnalyzer;
-use unilang::interpreter::Interpreter;
-use unilang::error::Error;
 use unilang::types::Value;
 use unilang_parser::{ Parser, UnilangParserOptions };
 
@@ -29,7 +29,7 @@ Result< (), Error >
   .hint( "Adds two numbers." )
   .status( "stable" )
   .version( "1.0.0" )
-  .aliases( vec! [ "sum".to_string(), "plus".to_string() ] )
+  .aliases( vec![ "sum".to_string(), "plus".to_string() ] )
   .arguments
   (
     vec!
@@ -73,7 +73,7 @@ Result< (), Error >
   .hint( "Subtracts two numbers." )
   .status( "beta" )
   .version( "0.9.0" )
-  .aliases( vec! [ "minus".to_string() ] )
+  .aliases( vec![ "minus".to_string() ] )
   .arguments
   (
     vec!
@@ -234,7 +234,7 @@ Result< (), Error >
   }
 
   let input_str = processed_args.join( " " );
-  let instructions = vec! [ parser.parse_single_instruction( &input_str )? ];
+  let instructions = vec![ parser.parse_single_instruction( &input_str )? ];
 
   // 4. Semantic Analysis
   let semantic_analyzer = SemanticAnalyzer::new( &instructions, &registry );

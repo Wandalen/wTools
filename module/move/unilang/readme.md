@@ -390,19 +390,19 @@ pub struct Pipeline {
 impl Pipeline {
     pub fn new(registry: CommandRegistry) -> Self;
     pub fn with_parser_options(registry: CommandRegistry, options: UnilangParserOptions) -> Self;
-    
+
     // Single command processing
     pub fn process_command(&self, command_str: &str, context: ExecutionContext) -> CommandResult;
     pub fn process_command_simple(&self, command_str: &str) -> CommandResult;
-    
+
     // Batch processing
     pub fn process_batch(&self, commands: &[&str], context: ExecutionContext) -> BatchResult;
     pub fn process_sequence(&self, commands: &[&str], context: ExecutionContext) -> BatchResult;
-    
+
     // Validation
     pub fn validate_command(&self, command_str: &str) -> Result<(), Error>;
     pub fn validate_batch(&self, commands: &[&str]) -> Vec<Result<(), Error>>;
-    
+
     // Registry access
     pub fn registry(&self) -> &CommandRegistry;
     pub fn registry_mut(&mut self) -> &mut CommandRegistry;
@@ -469,7 +469,7 @@ if result.success {
 let commands = vec!["cmd1", "cmd2", "cmd3"];
 let batch_result = pipeline.process_batch(&commands, ExecutionContext::default());
 
-println!("Processed {}/{} commands successfully", 
+println!("Processed {}/{} commands successfully",
     batch_result.successful_commands, batch_result.total_commands);
 
 for result in &batch_result.results {
@@ -542,4 +542,4 @@ cargo test --examples
 
 ## License
 
-MIT License - see LICENSE file for details.
+MIT License - see license file for details.
