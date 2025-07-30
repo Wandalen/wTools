@@ -11,9 +11,7 @@ use ::former::Former; // Import derive macro
 
 /// Struct using derive for standalone constructors without arguments.
 // Attributes to be implemented by the derive macro
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, PartialEq, Default, Clone, Former)]
-#[derive(Debug, PartialEq, Default, Clone)]
+#[derive(Debug, PartialEq, Default, Clone, Former)]
 #[standalone_constructors] // New attribute
 pub struct TestStructNoArgs
 // Consistent name
@@ -26,9 +24,7 @@ pub struct TestStructNoArgs
 
 /// Struct using derive for standalone constructors with arguments.
 // Attributes to be implemented by the derive macro
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, PartialEq, Default, Clone, Former)]
-#[derive(Debug, PartialEq, Default, Clone)]
+#[derive(Debug, PartialEq, Default, Clone, Former)]
 #[standalone_constructors] // New attribute
 pub struct TestStructWithArgs
 // Consistent name

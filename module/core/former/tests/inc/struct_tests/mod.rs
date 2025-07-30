@@ -54,13 +54,13 @@ use super::*;
 
 // = basic
 
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
-// mod a_basic;
+// Test re-enabled to verify proper fix
+#[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
+mod a_basic;
 #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
 mod a_basic_manual;
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// mod a_primitives;
+// Test re-enabled to verify proper fix
+mod a_primitives;
 mod a_primitives_manual;
 mod tuple_struct;
 mod debug_e0223_minimal;
@@ -76,13 +76,13 @@ mod debug_e0223_manual;
 
 // = attribute
 
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// mod attribute_alias;
+// Test re-enabled to verify proper fix
+mod attribute_alias;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod attribute_default_collection;
 // mod attribute_default_conflict;
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod attribute_default_primitive;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod attribute_default_primitive;
 // mod attribute_feature;
 // mod attribute_multiple;
 // mod attribute_perform;
@@ -96,7 +96,7 @@ mod debug_e0223_manual;
 // mod keyword_field_derive;
 // mod keyword_subform_derive;
 // mod name_collision_former_hashmap_without_parameter;
-// mod name_collision_former_vector_without_parameter;
+mod name_collision_former_vector_without_parameter;
 // mod name_collisions;
 
 // = parametrization
@@ -123,12 +123,12 @@ mod parametrized_slice_manual;
 
 // = etc
 
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// mod default_user_type;
-// mod unsigned_primitive_types;
-// mod user_type_no_debug;
-// mod user_type_no_default;
-// mod visibility;
+// Test re-enabled to verify proper fix
+mod default_user_type;
+mod unsigned_primitive_types;
+mod user_type_no_debug;
+mod user_type_no_default;
+mod visibility;
 
 // = collection former
 
@@ -213,8 +213,7 @@ mod parametrized_slice_manual;
 
 // = standalone constructor
 
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// mod standalone_constructor_derive;
+// mod standalone_constructor_derive;  // BLOCKED: Requires standalone_constructors attribute implementation
 mod standalone_constructor_manual;
 
 // = compile-time

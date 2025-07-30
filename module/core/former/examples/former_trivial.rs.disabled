@@ -1,10 +1,10 @@
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
 compile_error!("This example is temporarily disabled due to trailing comma issue in Former derive macro");
 
-//! ## Example : Trivial
-//!
-//! The provided code snippet illustrates a basic use-case of the Former, which is used to apply the builder pattern for to construct complex objects step-by-step, ensuring they are always in a valid state and hiding internal structures.
-//!
+// ## Example : Trivial
+//
+// The provided code snippet illustrates a basic use-case of the Former, which is used to apply the builder pattern for to construct complex objects step-by-step, ensuring they are always in a valid state and hiding internal structures.
+//
 
 #[cfg(any(not(feature = "derive_former"), not(feature = "enabled")))]
 fn main() {}

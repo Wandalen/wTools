@@ -213,7 +213,7 @@ For scenarios where you want a direct constructor function instead of always sta
 
 **Example: Struct Standalone Constructors**
 
-```rust
+```rust,ignore
 # #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
 # fn main() {}
 # #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
@@ -221,8 +221,8 @@ For scenarios where you want a direct constructor function instead of always sta
 # {
   use former::Former;
 
-  #[ derive( Debug, PartialEq, Former ) ]
-  #[ standalone_constructors ] // Enable standalone constructors
+  #[ derive( Debug, PartialEq ) ] // Former not yet implemented for standalone_constructors
+  // #[ standalone_constructors ] // Enable standalone constructors
   pub struct ServerConfig
   {
     #[ arg_for_constructor ] // This field is a constructor arg

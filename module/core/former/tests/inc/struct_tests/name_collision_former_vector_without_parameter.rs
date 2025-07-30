@@ -18,11 +18,7 @@ struct Vec {
   f1: i32,
 }
 
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-
-// #[derive(Debug, PartialEq, Former)]
-
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Former)]
 pub struct Struct1 {
   f2: Vec,
   i: ::std::option::Option<i32>,
@@ -44,7 +40,6 @@ tests_impls! {
 
 //
 
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// tests_index! {
-//   basic,
-// }
+tests_index! {
+  basic,
+}
