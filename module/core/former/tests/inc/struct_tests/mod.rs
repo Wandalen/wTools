@@ -106,7 +106,7 @@ mod parametrized_dyn_manual; // xxx2 : qqq2 : fix the issue
 // mod parametrized_field;  // Fixed: Manual implementation working, derive still has issues
 // mod test_lifetime_only;  // Test for lifetime-only structs - BLOCKED: Still issues with lifetime parameter generation
 // mod test_lifetime_minimal;  // Minimal lifetime test without debug - BLOCKED: Still issues with lifetime parameter generation
-// mod minimal_lifetime;  // Minimal test for debugging lifetime issues - BLOCKED: Still issues with lifetime parameter generation
+// mod minimal_lifetime;  // Minimal test for debugging lifetime issues - xxx : parsing error with lifetime-only structs
 // mod debug_lifetime_minimal;  // Still disabled - has debug attribute
 // mod debug_simple_lifetime;  // Debug test for lifetime issue
 // mod parametrized_field_where;  // BLOCKED: E0726 implicit elided lifetime not allowed here
