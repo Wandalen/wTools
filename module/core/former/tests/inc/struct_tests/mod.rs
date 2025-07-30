@@ -72,7 +72,7 @@ mod debug_e0223_manual;
 // mod subform_collection_basic_manual;  // BLOCKED: FormerBegin lifetime parameter in manual code
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
 // #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
-// mod subform_collection_basic_scalar;
+// mod subform_collection_basic_scalar;  // BLOCKED: Import issues
 
 // = attribute
 
@@ -103,7 +103,7 @@ mod name_collision_former_vector_without_parameter;
 
 mod parametrized_dyn_manual; // xxx2 : qqq2 : fix the issue
 
-// mod parametrized_field;  // Fixed: Manual implementation working, derive still has issues
+// mod parametrized_field;  // BLOCKED: Same parsing error as lifetime-only structs
 // mod test_lifetime_only;  // Test for lifetime-only structs - BLOCKED: Still issues with lifetime parameter generation
 // mod test_lifetime_minimal;  // Minimal lifetime test without debug - BLOCKED: Still issues with lifetime parameter generation
 // mod minimal_lifetime;  // Minimal test for debugging lifetime issues - xxx : parsing error with lifetime-only structs

@@ -58,17 +58,49 @@ pub struct Minimal<'a> {
 }
 ```
 
-## Next Steps
+## Investigation Results
 
-1. **Use cargo expand with more verbose output**: Try to get the exact token stream that's causing the issue.
+### Completed Analysis
 
-2. **Check token adjacency**: Look for places where lifetimes might appear next to other tokens without proper spacing.
+1. **✅ cargo expand analysis**: The expanded code is completely valid and well-formed. All structs, impls, and trait implementations generate correctly.
 
-3. **Review all uses of struct_generics_with_defaults**: The trailing comma might be causing issues in specific contexts.
+2. **✅ Token adjacency check**: No issues found with token spacing or adjacency in the generated code.
 
-4. **Test with different lifetime names**: Check if the issue is specific to `'a` or affects all lifetimes.
+3. **✅ Lifetime name testing**: The issue occurs with any lifetime name (`'a`, `'b`, etc.), not specific to `'a`.
 
-5. **Consider alternative approaches**: If the issue persists, consider generating lifetime-only structs differently, perhaps by avoiding certain macro patterns that might confuse the parser.
+4. **✅ Trailing comma review**: The trailing comma in `struct_generics_with_defaults` does not cause the parsing error.
+
+5. **✅ FormerBegin lifetime consistency**: Fixed potential issue where different lifetimes were used in impl generics vs trait parameters.
+
+### Current Status: UNRESOLVED
+
+The parsing error persists despite all attempts to fix it. The error occurs during macro expansion, but the final expanded code is syntactically correct. This suggests a deeper issue in the procedural macro infrastructure or token stream processing.
+
+### Key Findings
+
+- **Error Pattern**: `error: expected 'while', 'for', 'loop' or '{' after a label` consistently occurs
+- **Scope**: Only affects structs with lifetime parameters (e.g., `struct Foo<'a>`)
+- **Expanded Code**: The final generated code is completely valid when inspected with `cargo expand`
+- **Compiler Behavior**: The error occurs during compilation, not in the final code
+
+### Hypothesis
+
+This appears to be a complex interaction between:
+1. The procedural macro token stream generation
+2. How the Rust parser processes lifetime tokens during macro expansion
+3. Potential issues in the `quote!` macro when generating certain token patterns
+
+### Recommended Next Steps
+
+1. **Deep Token Stream Analysis**: Use `proc-macro2` debugging tools to inspect the exact token stream being generated.
+
+2. **Minimal Procedural Macro**: Create a minimal proc macro that only handles lifetime-only structs to isolate the issue.
+
+3. **Rust Compiler Investigation**: This may be a compiler bug or limitation that should be reported to the Rust team.
+
+4. **Alternative Implementation Strategy**: Consider a completely different approach for lifetime-only structs, perhaps using a separate code path that avoids the problematic patterns.
+
+5. **Workaround Documentation**: For now, document this as a known limitation where lifetime-only structs are not supported by the `Former` derive.
 
 ## Related Files
 

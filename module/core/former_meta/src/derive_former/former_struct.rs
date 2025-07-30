@@ -217,25 +217,23 @@ specific needs of the broader forming context. It mandates the implementation of
     quote! { < #former_generics_impl > }
   };
 
-  // Helper for FormerBegin impl generics
-  // Check if struct already has a lifetime 'a that would conflict
+  // Helper for FormerBegin impl generics and determine the lifetime to use in the trait
   let has_lifetime_a = lifetimes.iter().any(|lt| lt.lifetime.to_string() == "'a");
   
-  
-  let former_begin_impl_generics = if struct_generics_impl.is_empty() {
-    quote! { < #lifetime_param_for_former_begin, Definition > }
+  let (former_begin_impl_generics, former_begin_trait_lifetime) = if struct_generics_impl.is_empty() {
+    (quote! { < #lifetime_param_for_former_begin, Definition > }, lifetime_param_for_former_begin.clone())
   } else if has_only_lifetimes {
-    // For lifetime-only structs, check if we have a conflict with 'a
+    // For lifetime-only structs, use the struct's actual lifetime consistently
     if has_lifetime_a {
-      // If struct already has 'a, just use the struct generics + Definition
-      quote! { < #struct_generics_impl, Definition > }
+      // If struct has 'a, use it everywhere
+      (quote! { < #struct_generics_impl, Definition > }, quote! { 'a })
     } else {
-      // Otherwise, add FormerBegin's 'a + struct lifetimes + Definition
-      quote! { < #lifetime_param_for_former_begin, #struct_generics_impl, Definition > }
+      // If struct has a different lifetime, use FormerBegin's 'a + struct lifetimes
+      (quote! { < #lifetime_param_for_former_begin, #struct_generics_impl, Definition > }, lifetime_param_for_former_begin.clone())
     }
   } else {
     // For mixed generics, use FormerBegin lifetime + non-lifetime generics + Definition
-    quote! { < #lifetime_param_for_former_begin, #struct_generics_impl_without_lifetimes, Definition > }
+    (quote! { < #lifetime_param_for_former_begin, #struct_generics_impl_without_lifetimes, Definition > }, lifetime_param_for_former_begin.clone())
   };
 
   /* parameters for former perform: Similar to former parameters, but specifically for the perform method. */
@@ -1008,13 +1006,13 @@ specific needs of the broader forming context. It mandates the implementation of
     }
 
     // = former begin: Implement `FormerBegin` trait.
-    impl #former_begin_impl_generics former::FormerBegin< #lifetime_param_for_former_begin, Definition >
+    impl #former_begin_impl_generics former::FormerBegin< #former_begin_trait_lifetime, Definition >
     for #former_type_ref
     where
       Definition : former::FormerDefinition< Storage = #storage_type_ref >,
-      Definition::Storage : 'a,
-      Definition::Context : 'a,
-      Definition::End : 'a,
+      Definition::Storage : #former_begin_trait_lifetime,
+      Definition::Context : #former_begin_trait_lifetime,
+      Definition::End : #former_begin_trait_lifetime,
     {
       #[ inline( always ) ]
       fn former_begin
