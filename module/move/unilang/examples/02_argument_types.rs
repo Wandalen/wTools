@@ -1,5 +1,5 @@
 //! # Argument Types Demo
-//! 
+//!
 //! This example demonstrates all the supported argument types in Unilang,
 //! including basic types, collections, and complex validation.
 
@@ -143,7 +143,7 @@ fn main() -> Result<(), unilang::error::Error> {
 
     let types_routine = Box::new(|cmd: unilang::semantic::VerifiedCommand, _ctx| {
         println!("Processing arguments:");
-        
+
         for (name, value) in &cmd.arguments {
             match value {
                 Value::String(s) => println!("  {}: '{}' (String)", name, s),
@@ -163,7 +163,7 @@ fn main() -> Result<(), unilang::error::Error> {
                 Value::Object(obj) => println!("  {}: {:?} (Object)", name, obj),
             }
         }
-        
+
         Ok(OutputData {
             content: "Arguments processed successfully".to_string(),
             format: "text".to_string(),
@@ -201,5 +201,5 @@ fn main() -> Result<(), unilang::error::Error> {
     println!("  level::info \\");
     println!("  pattern::'^[a-z]+$'");
 
-    Ok(())
+    Ok( () )
 }

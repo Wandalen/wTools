@@ -210,5 +210,5 @@ fn main() -> Result<(), unilang::error::Error> {
     println!("cargo run --bin unilang_cli collections.map_demo config::name=John,age=30,city=NYC");
     println!("cargo run --bin unilang_cli collections.map_demo scores::Alice:95|Bob:87|Carol:92");
 
-    Ok(())
+    Ok( () )
 }
