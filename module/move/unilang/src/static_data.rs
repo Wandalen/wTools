@@ -6,7 +6,7 @@
 mod private
 {
   ///
-  /// Static, const-compatible version of CommandDefinition.
+  /// Static, const-compatible version of `CommandDefinition`.
   ///
   /// Uses &'static str and &'static [...] instead of String and Vec
   /// to enable compile-time storage in PHF maps.
@@ -46,7 +46,7 @@ mod private
   }
 
   ///
-  /// Static, const-compatible version of ArgumentDefinition.
+  /// Static, const-compatible version of `ArgumentDefinition`.
   ///
   #[ derive( Debug, Clone ) ]
   pub struct StaticArgumentDefinition
@@ -70,7 +70,7 @@ mod private
   }
 
   ///
-  /// Static, const-compatible version of ArgumentAttributes.
+  /// Static, const-compatible version of `ArgumentAttributes`.
   ///
   #[ derive( Debug, Clone ) ]
   pub struct StaticArgumentAttributes
@@ -126,7 +126,7 @@ mod private
   }
 
   ///
-  /// Static, const-compatible version of ValidationRule.
+  /// Static, const-compatible version of `ValidationRule`.
   ///
   #[ derive( Debug, Clone ) ]
   pub enum StaticValidationRule
@@ -156,17 +156,17 @@ mod private
         namespace : static_cmd.namespace.to_string(),
         description : static_cmd.description.to_string(),
         hint : static_cmd.hint.to_string(),
-        arguments : static_cmd.arguments.iter().map( | arg | arg.into() ).collect(),
-        routine_link : static_cmd.routine_link.map( | s | s.to_string() ),
+        arguments : static_cmd.arguments.iter().map( std::convert::Into::into ).collect(),
+        routine_link : static_cmd.routine_link.map( str::to_string ),
         status : static_cmd.status.to_string(),
         version : static_cmd.version.to_string(),
-        tags : static_cmd.tags.iter().map( | s | s.to_string() ).collect(),
-        aliases : static_cmd.aliases.iter().map( | s | s.to_string() ).collect(),
-        permissions : static_cmd.permissions.iter().map( | s | s.to_string() ).collect(),
+        tags : static_cmd.tags.iter().map( | &s | s.to_string() ).collect(),
+        aliases : static_cmd.aliases.iter().map( | &s | s.to_string() ).collect(),
+        permissions : static_cmd.permissions.iter().map( | &s | s.to_string() ).collect(),
         idempotent : static_cmd.idempotent,
         deprecation_message : static_cmd.deprecation_message.to_string(),
         http_method_hint : static_cmd.http_method_hint.to_string(),
-        examples : static_cmd.examples.iter().map( | s | s.to_string() ).collect(),
+        examples : static_cmd.examples.iter().map( | &s | s.to_string() ).collect(),
       }
     }
   }
@@ -182,9 +182,9 @@ mod private
         attributes : ( &static_arg.attributes ).into(),
         hint : static_arg.hint.to_string(),
         description : static_arg.description.to_string(),
-        validation_rules : static_arg.validation_rules.iter().map( | rule | rule.into() ).collect(),
-        aliases : static_arg.aliases.iter().map( | s | s.to_string() ).collect(),
-        tags : static_arg.tags.iter().map( | s | s.to_string() ).collect(),
+        validation_rules : static_arg.validation_rules.iter().map( std::convert::Into::into ).collect(),
+        aliases : static_arg.aliases.iter().map( | &s | s.to_string() ).collect(),
+        tags : static_arg.tags.iter().map( | &s | s.to_string() ).collect(),
       }
     }
   }
@@ -197,7 +197,7 @@ mod private
       {
         optional : static_attrs.optional,
         multiple : static_attrs.multiple,
-        default : static_attrs.default.map( | s | s.to_string() ),
+        default : static_attrs.default.map( str::to_string ),
         sensitive : static_attrs.sensitive,
         interactive : static_attrs.interactive,
       }
@@ -217,7 +217,7 @@ mod private
         StaticKind::Path => crate::data::Kind::Path,
         StaticKind::File => crate::data::Kind::File,
         StaticKind::Directory => crate::data::Kind::Directory,
-        StaticKind::Enum( choices ) => crate::data::Kind::Enum( choices.iter().map( | s | s.to_string() ).collect() ),
+        StaticKind::Enum( choices ) => crate::data::Kind::Enum( choices.iter().map( | &s | s.to_string() ).collect() ),
         StaticKind::Url => crate::data::Kind::Url,
         StaticKind::DateTime => crate::data::Kind::DateTime,
         StaticKind::Pattern => crate::data::Kind::Pattern,
@@ -240,7 +240,7 @@ mod private
         StaticValidationRule::Max( value ) => crate::data::ValidationRule::Max( *value ),
         StaticValidationRule::MinLength( value ) => crate::data::ValidationRule::MinLength( *value ),
         StaticValidationRule::MaxLength( value ) => crate::data::ValidationRule::MaxLength( *value ),
-        StaticValidationRule::Pattern( pattern ) => crate::data::ValidationRule::Pattern( pattern.to_string() ),
+        StaticValidationRule::Pattern( pattern ) => crate::data::ValidationRule::Pattern( (*pattern).to_string() ),
         StaticValidationRule::MinItems( value ) => crate::data::ValidationRule::MinItems( *value ),
       }
     }
