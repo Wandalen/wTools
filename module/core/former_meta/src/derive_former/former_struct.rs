@@ -109,15 +109,13 @@ specific needs of the broader forming context. It mandates the implementation of
 
   // Extract lifetimes separately for FormerBegin
   let lifetimes: Vec<_> = generics.lifetimes().cloned().collect();
-  // FormerBegin trait always expects 'a as its lifetime parameter
-  let lifetime_param_for_former_begin = quote! { 'a };
-
-  // Extract the lifetime name for use in where clauses
-  let struct_lifetime_for_where = if let Some(lt) = lifetimes.first() {
-      let lifetime = &lt.lifetime;
-      quote! { #lifetime }
+  
+  // Use the struct's first lifetime for FormerBegin, or 'a if no lifetimes
+  let (lifetime_param_for_former_begin, struct_lifetime_for_where) = if let Some(first_lifetime) = lifetimes.first() {
+    let lifetime = &first_lifetime.lifetime;
+    (quote! { #lifetime }, quote! { #lifetime })
   } else {
-      quote! { 'a }
+    (quote! { 'a }, quote! { 'a })
   };
 
   // Get generics without lifetimes using new utilities
@@ -217,24 +215,15 @@ specific needs of the broader forming context. It mandates the implementation of
     quote! { < #former_generics_impl > }
   };
 
-  // Helper for FormerBegin impl generics
-  // Check if struct already has a lifetime 'a that would conflict
-  let has_lifetime_a = lifetimes.iter().any(|lt| lt.lifetime.to_string() == "'a");
-  
+  // FormerBegin impl generics - much simpler now that we use actual struct lifetimes
   let former_begin_impl_generics = if struct_generics_impl.is_empty() {
     quote! { < #lifetime_param_for_former_begin, Definition > }
   } else if has_only_lifetimes {
-    // For lifetime-only structs, check if we have a conflict with 'a
-    if has_lifetime_a {
-      // If struct already has 'a, just use the struct generics + Definition
-      quote! { < #struct_generics_impl, Definition > }
-    } else {
-      // Otherwise, add FormerBegin's 'a + struct lifetimes + Definition
-      quote! { < #lifetime_param_for_former_begin, #struct_generics_impl, Definition > }
-    }
+    // For lifetime-only structs, use struct lifetimes + Definition
+    quote! { < #struct_generics_impl, Definition > }
   } else {
-    // For mixed generics, use FormerBegin lifetime + non-lifetime generics + Definition
-    quote! { < #lifetime_param_for_former_begin, #struct_generics_impl_without_lifetimes, Definition > }
+    // For mixed generics, use all struct generics + Definition  
+    quote! { < #struct_generics_impl, Definition > }
   };
 
   /* parameters for former perform: Similar to former parameters, but specifically for the perform method. */
