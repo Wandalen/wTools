@@ -133,29 +133,34 @@ mod visibility;
 
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_binary_heap;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod collection_former_binary_heap;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod collection_former_btree_map;  // BLOCKED: Complex collection type mismatch issues with subform
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_btree_set;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod collection_former_btree_set;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod collection_former_common;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod collection_former_hashmap;  // BLOCKED: Complex collection type mismatch issues with subform
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_hashset;  // Requires #[subform_collection(...)] attribute
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod collection_former_hashset;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_linked_list;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod collection_former_linked_list;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_vec;  // Requires #[subform_collection(...)] attribute
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod collection_former_vec;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_vec_deque;  // Requires #[subform_collection(...)] attribute
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod collection_former_vec_deque;
 
 // = subform collection
 
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_collection;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_collection;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod subform_collection_custom;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
@@ -171,9 +176,8 @@ mod visibility;
 
 // = subform scalar
 
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_scalar;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_scalar;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod subform_scalar_manual;  // BLOCKED: FormerBegin lifetime parameter in manual code
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
@@ -181,9 +185,8 @@ mod visibility;
 
 // = subform entry
 
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_entry;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod subform_entry_manual;  // BLOCKED: FormerBegin lifetime parameter in manual code
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
@@ -202,9 +205,8 @@ mod visibility;
 
 // = subform all : scalar, subform_scalar, subform_entry, subform_collection
 
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_all;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_all;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod subform_all_parametrized;  // BLOCKED: E0726 implicit elided lifetime not allowed here + E0277 FormerDefinition trait issues
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]

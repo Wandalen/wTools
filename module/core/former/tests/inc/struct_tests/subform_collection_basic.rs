@@ -6,11 +6,7 @@ use super::*;
 // use std::collections::HashMap;
 // use std::collections::HashSet;
 
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-
-// #[derive(Default, Debug, PartialEq, former::Former)]
-
-#[derive(Default, Debug, PartialEq)]
+#[derive(Default, Debug, PartialEq, former::Former)]
 #[debug]
 // #[ derive( Default, Debug, PartialEq ) ]
 pub struct Struct1 {

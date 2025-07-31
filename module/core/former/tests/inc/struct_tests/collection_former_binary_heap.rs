@@ -114,20 +114,14 @@ fn val_to_entry() {
 #[test]
 fn subformer() {
   /// Parameter description.
-  // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-  // #[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord, the_module::Former)]
-  #[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
+  #[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord, the_module::Former)]
   pub struct Child {
     name: String,
     data: bool,
   }
 
   /// Parent required for the template.
-  // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-  // #[derive(Debug, Default, the_module::Former)]
-  #[derive(Debug, Default)]
-  // #[ derive( Debug, Default, PartialEq, the_module::Former ) ] #[ debug ]
-  // #[ derive( Debug, Default, PartialEq ) ]
+  #[derive(Debug, Default, the_module::Former)]
   pub struct Parent {
     #[ subform_collection( definition = former::BinaryHeapDefinition ) ]
     children: BinaryHeap<Child>,
