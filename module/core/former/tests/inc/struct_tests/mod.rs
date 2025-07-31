@@ -98,7 +98,7 @@ mod attribute_storage_with_mutator;
 mod keyword_field_derive;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod keyword_subform_derive;
-// mod name_collision_former_hashmap_without_parameter;  // Has compilation issues
+mod name_collision_former_hashmap_without_parameter;
 mod name_collision_former_vector_without_parameter;
 // mod name_collisions;  // Name collision with std types
 
