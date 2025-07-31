@@ -141,6 +141,16 @@ fn generate_text_report(results: &[BenchmarkResult], output_path: &Path) -> Resu
     report.push_str("==============================================\n\n");
 
     report.push_str(&format!("Generated: {}\n", chrono::Utc::now().format("%Y-%m-%d %H:%M:%S UTC")));
+    
+    // Add version information
+    let rust_version = std::process::Command::new("rustc")
+        .args(&["--version"])
+        .output()
+        .map(|output| String::from_utf8_lossy(&output.stdout).trim().to_string())
+        .unwrap_or_else(|_| "Unable to determine Rust version".to_string());
+    report.push_str(&format!("Unilang Version: 0.4.0 (current codebase)\n"));
+    report.push_str(&format!("Rust Version: {}\n", rust_version));
+    
     report.push_str(&format!("Test Range: 10^1 to 10^6 commands ({} to {} commands)\n",
                             results.first().map(|r| r.command_count).unwrap_or(0),
                             results.last().map(|r| r.command_count).unwrap_or(0)));
@@ -394,7 +404,8 @@ fn exponential_performance_benchmark() {
         .unwrap_or_else(|_| "target".to_string());
     let output_dir = Path::new(&target_dir).join("benchmark_results");
 
-    // Create output directory
+    // Always remove and recreate directory to ensure fresh results
+    let _ = fs::remove_dir_all(&output_dir);
     fs::create_dir_all(&output_dir).expect("Failed to create output directory");
 
     // Define exponential command counts: 10^1 to 10^6 (reduced to avoid memory issues)

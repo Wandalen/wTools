@@ -91,6 +91,18 @@ path = "benchmark/true_exponential_benchmark.rs"
 name = "parsing_benchmark_test"
 path = "benchmark/parsing_benchmark_test.rs"
 
+[[test]]
+name = "clap_comparison_benchmark"
+path = "benchmark/clap_comparison_benchmark.rs"
+
+[[test]]
+name = "framework_comparison"
+path = "benchmark/framework_comparison.rs"
+
+[[test]]
+name = "comprehensive_framework_comparison"
+path = "benchmark/comprehensive_framework_comparison.rs"
+
 # stress_test_bin is a binary, not a test - no [[test]] entry needed
 
 
@@ -107,6 +119,8 @@ test_tools = { workspace = true }
 assert_cmd = "2.0"
 predicates = "2.1"
 assert_fs = "1.0"
-
+clap = "4.4"
+pico-args = "0.5"
+chrono = "0.4"
 
 criterion = "0.5"
