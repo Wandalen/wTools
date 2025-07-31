@@ -61,9 +61,24 @@ specific needs of the broader forming context. It mandates the implementation of
   ) = generic_params::decompose(generics);
   
   // Use new generic utilities to classify generics
+  // CRITICAL: The following classification determines how we handle the Former struct generation:
+  // 1. Structs with NO generics: Former has only Definition parameter
+  // 2. Structs with ONLY lifetimes: Former MUST include lifetimes + Definition (e.g., Former<'a, Definition>)
+  //    This is necessary because the storage type references these lifetimes
+  // 3. Structs with type/const params: Former has only Definition parameter
+  //    The struct's type parameters are passed through the Definition types, not the Former itself
   let generics_ref = generic_params::GenericsRef::new(generics);
   let classification = generics_ref.classification();
-  let has_only_lifetimes = classification.has_only_lifetimes;
+  let _has_only_lifetimes = classification.has_only_lifetimes;
+  
+  // Debug output - avoid calling to_string() on the original AST as it may cause issues
+  if _has_debug || classification.has_only_lifetimes {
+    eprintln!("Struct: {}", item);
+    eprintln!("has_only_lifetimes: {}", classification.has_only_lifetimes);
+    eprintln!("has_only_types: {}", classification.has_only_types);
+    eprintln!("has_mixed: {}", classification.has_mixed);
+    eprintln!("classification: {:?}", classification);
+  }
 
   // Helper for generics with trailing comma when not empty (for cases where we need it)
   let _struct_generics_ty_with_comma = if struct_generics_ty.is_empty() {
@@ -107,16 +122,10 @@ specific needs of the broader forming context. It mandates the implementation of
   };
 
 
-  // Extract lifetimes separately for FormerBegin
-  let lifetimes: Vec<_> = generics.lifetimes().cloned().collect();
+  // Extract lifetimes separately (currently unused but may be needed)
+  let _lifetimes: Vec<_> = generics.lifetimes().cloned().collect();
   
-  // Use the struct's first lifetime for FormerBegin, or 'a if no lifetimes
-  let (lifetime_param_for_former_begin, struct_lifetime_for_where) = if let Some(first_lifetime) = lifetimes.first() {
-    let lifetime = &first_lifetime.lifetime;
-    (quote! { #lifetime }, quote! { #lifetime })
-  } else {
-    (quote! { 'a }, quote! { 'a })
-  };
+  // FormerBegin always uses 'a from the trait itself
 
   // Get generics without lifetimes using new utilities
   let struct_generics_impl_without_lifetimes = generic_params::filter_params(
@@ -144,137 +153,245 @@ specific needs of the broader forming context. It mandates the implementation of
   let former_definition_args = generic_args::merge(&generics.into_generic_args(), &extra).args;
 
   /* parameters for former: Merge struct generics with the Definition generic parameter. */
-  // For lifetime-only structs, we need special handling - Definition should NOT be defaulted
-  let (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where) = if has_only_lifetimes {
-    // For lifetime-only structs, Former should have: <'a, Definition> (not defaulted)
-    // Build the generics manually to include lifetimes + Definition
-    let former_generics_with_defaults = generic_params::params_with_additional(
-      &struct_generics_with_defaults,
-      &[parse_quote! { Definition }],
-    );
-    let former_generics_impl = generic_params::params_with_additional(
-      &struct_generics_impl,
-      &[parse_quote! { Definition }],
-    );
-    let former_generics_ty = generic_params::params_with_additional(
-      &struct_generics_ty,
-      &[parse_quote! { Definition }],
-    );
-    // Build where clause by adding Definition constraint to existing where predicates
-    let mut former_generics_where = struct_generics_where.clone();
-    former_generics_where.push(parse_quote! {
-      Definition : former::FormerDefinition< Storage = #storage_type_ref >
-    });
-    (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where)
+  // DESIGN DECISION: How Former struct generics are handled based on struct type:
+  // - Lifetime-only structs: Former<'a, Definition> - lifetimes MUST be included because
+  //   the storage type (e.g., FormerStorage<'a>) references them directly. Without the
+  //   lifetimes in Former, we get "undeclared lifetime" errors.
+  // - Type/const param structs: Former<Definition> - type params are NOT included because
+  //   they are passed through the Definition types (DefinitionTypes<T>, Definition<T, ...>).
+  //   This avoids duplicating type parameters and keeps the API cleaner.
+  // - No generics: Former<Definition> - simplest case
+  // Generate proper generics based on struct classification
+  // Generate proper generics based on struct classification
+  let (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where, former_type_ref, former_type_full, former_impl_generics) = if classification.has_only_lifetimes {
+    // For lifetime-only structs: Former needs lifetimes for trait bounds
+    let lifetimes_only_params = generic_params::filter_params(&ast.generics.params, generic_params::filter_lifetimes);
+    let mut lifetimes_only_generics = ast.generics.clone();
+    lifetimes_only_generics.params = lifetimes_only_params;
+    
+    let extra: macro_tools::generic_params::GenericsWithWhere = parse_quote! {
+      < Definition = #former_definition < #former_definition_args > >  
+      where
+        Definition : former::FormerDefinition< Storage = #storage_type_ref >,
+        Definition::Types : former::FormerDefinitionTypes< Storage = #storage_type_ref >,
+    };
+    let merged = generic_params::merge(&lifetimes_only_generics, &extra.into());
+    let (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where) = generic_params::decompose(&merged);
+    
+    let former_type_ref = if lifetimes_only_generics.params.is_empty() {
+      quote! { #former < Definition > }
+    } else {
+      let (_, _, lifetimes_ty, _) = generic_params::decompose(&lifetimes_only_generics);
+      quote! { #former < #lifetimes_ty, Definition > }
+    };
+    
+    let former_type_full = if lifetimes_only_generics.params.is_empty() {
+      quote! { #former < #former_definition < #former_definition_args > > }
+    } else {
+      let (_, _, lifetimes_ty, _) = generic_params::decompose(&lifetimes_only_generics);
+      quote! { #former < #lifetimes_ty, #former_definition < #former_definition_args > > }
+    };
+    
+    let former_impl_generics = if lifetimes_only_generics.params.is_empty() {
+      quote! { < Definition > }
+    } else {
+      let (_, lifetimes_impl, _, _) = generic_params::decompose(&lifetimes_only_generics);
+      quote! { < #lifetimes_impl, Definition > }
+    };
+    
+    (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where, former_type_ref, former_type_full, former_impl_generics)
+  } else if classification.has_only_types {
+    // For type-only structs: Former needs type parameters with their bounds
+    let types_only_params = generic_params::filter_params(&ast.generics.params, generic_params::filter_types);
+    let mut types_only_generics = ast.generics.clone();
+    types_only_generics.params = types_only_params;
+    // Keep the where clause as it contains bounds for the type parameters
+    
+    let extra: macro_tools::generic_params::GenericsWithWhere = parse_quote! {
+      < Definition = #former_definition < #former_definition_args > >  
+      where
+        Definition : former::FormerDefinition< Storage = #storage_type_ref >,
+        Definition::Types : former::FormerDefinitionTypes< Storage = #storage_type_ref >,
+    };
+    let merged = generic_params::merge(&types_only_generics, &extra.into());
+    let (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where) = generic_params::decompose(&merged);
+    
+    let former_type_ref = if types_only_generics.params.is_empty() {
+      quote! { #former < Definition > }
+    } else {
+      let (_, _, types_ty, _) = generic_params::decompose(&types_only_generics);
+      quote! { #former < #types_ty, Definition > }
+    };
+    
+    let former_type_full = if types_only_generics.params.is_empty() {
+      quote! { #former < #former_definition < #former_definition_args > > }
+    } else {
+      let (_, _, types_ty, _) = generic_params::decompose(&types_only_generics);
+      quote! { #former < #types_ty, #former_definition < #former_definition_args > > }
+    };
+    
+    let former_impl_generics = if types_only_generics.params.is_empty() {
+      quote! { < Definition > }
+    } else {
+      let (_, types_impl, _, _) = generic_params::decompose(&types_only_generics);
+      quote! { < #types_impl, Definition > }
+    };
+    
+    (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where, former_type_ref, former_type_full, former_impl_generics)
   } else {
-    // For structs with type/const params, use the existing approach with defaulted Definition
+    // For type/const param structs or no generics: Former only has Definition
+    let empty_generics = syn::Generics::default();
     let extra: macro_tools::generic_params::GenericsWithWhere = parse_quote! {
       < Definition = #former_definition < #former_definition_args > >
       where
         Definition : former::FormerDefinition< Storage = #storage_type_ref >,
         Definition::Types : former::FormerDefinitionTypes< Storage = #storage_type_ref >,
     };
-    let merged = generic_params::merge(generics, &extra.into());
-    generic_params::decompose(&merged)
+    let merged = generic_params::merge(&empty_generics, &extra.into());
+    let (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where) = generic_params::decompose(&merged);
+    
+    let former_type_ref = quote! { #former < Definition > };
+    let former_type_full = quote! { #former < #former_definition < #former_definition_args > > };
+    let former_impl_generics = quote! { < Definition > };
+    
+    (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where, former_type_ref, former_type_full, former_impl_generics)
   };
 
-  // Helper to generate former type reference with angle brackets only when needed
-  // Check if we have any non-lifetime generics for the Former type
-  // Former types should not include lifetime parameters - only type and const parameters
-  let has_non_lifetime_generics = !struct_generics_impl_without_lifetimes.is_empty();
+  // FormerBegin impl generics - handle different generic types
+  // CRITICAL: FormerBegin trait has a lifetime parameter 'storage that is required for object safety.
+  // For lifetime-only structs, we need to avoid circular constraints by using a separate lifetime
+  // but ensuring the storage lifetime relationships are properly expressed.
+  let (former_begin_impl_generics, former_begin_trait_lifetime, former_begin_additional_bounds) = if classification.is_empty {
+    // For structs with no generics at all, need to provide required trait bounds
+    // The 'static types () and ReturnPreformed automatically satisfy T : 'a for any 'a
+    (quote! { < 'a, Definition > }, quote! { 'a }, quote! {, Definition::Context : 'a, Definition::End : 'a})
+  } else if classification.has_only_lifetimes {
+    // CRITICAL INSIGHT: For lifetime-only structs, the circular constraint issue arises because
+    // the trait requires Definition::Storage : 'storage, but our storage contains the same lifetime.
+    // The solution is to use a separate 'storage lifetime and establish the proper relationship.
+    
+    let lifetimes_only_params = generic_params::filter_params(&ast.generics.params, generic_params::filter_lifetimes);
+    let mut lifetimes_only_generics = ast.generics.clone();
+    lifetimes_only_generics.params = lifetimes_only_params;
+    
+    if lifetimes_only_generics.params.is_empty() {
+      // No lifetimes in the struct - use a fresh 'storage lifetime
+      // For structs with no generics at all, don't add the Definition bounds that cause E0309
+      (quote! { < 'storage, Definition > }, quote! { 'storage }, quote! {})
+    } else {
+      // Lifetime-only struct - use both the struct's lifetime and separate storage lifetime
+      let (_, lifetimes_impl, _, _) = generic_params::decompose(&lifetimes_only_generics);
+      // Get first lifetime name for the bound
+      let first_lifetime = if let Some(syn::GenericParam::Lifetime(ref lp)) = lifetimes_only_generics.params.first() {
+        &lp.lifetime
+      } else {
+        return Err(syn::Error::new_spanned(&ast, "Expected lifetime parameter"));
+      };
+      
+      // Use separate 'storage lifetime with proper bounds
+      // The key insight: we need 'a : 'storage to satisfy the trait bounds without circularity
+      // Also need to ensure Definition's associated types outlive 'storage as required by trait
+      (
+        quote! { < #lifetimes_impl, 'storage, Definition > },
+        quote! { 'storage },
+        quote! {, #first_lifetime : 'storage, Definition::Context : 'storage, Definition::End : 'storage }
+      )
+    }
+  } else if classification.has_only_types {
+    // For type-only structs, need to add proper lifetime bounds for all type parameters
+    let types_only_params = generic_params::filter_params(&ast.generics.params, generic_params::filter_types);
+    let mut types_only_generics = ast.generics.clone();
+    types_only_generics.params = types_only_params;
+    
+    if types_only_generics.params.is_empty() {
+      // No type parameters - use basic bounds
+      (quote! { < 'a, Definition > }, quote! { 'a }, quote! {, Definition::Context : 'a, Definition::End : 'a})
+    } else {
+      // Type-only struct - need all type parameters to outlive 'a plus Definition bounds
+      let (_, types_impl, _, _) = generic_params::decompose(&types_only_generics);
+      
+      // Generate bounds for all type parameters: T : 'a, U : 'a, etc.
+      let type_bounds = types_only_generics.params.iter().map(|param| {
+        if let syn::GenericParam::Type(type_param) = param {
+          let ident = &type_param.ident;
+          quote! { #ident : 'a }
+        } else {
+          quote! {}
+        }
+      });
+      
+      (
+        quote! { < 'a, #types_impl, Definition > }, 
+        quote! { 'a }, 
+        quote! {, #(#type_bounds),*, Definition::Context : 'a, Definition::End : 'a}
+      )
+    }
+  } else {
+    (quote! { < 'a, Definition > }, quote! { 'a }, quote! {})
+  };
+
+  /* parameters for former perform: The perform method needs struct generics + Definition parameter */
+  let perform_base_generics = if classification.has_only_lifetimes {
+    let lifetimes_only_params = generic_params::filter_params(&ast.generics.params, generic_params::filter_lifetimes);
+    let mut lifetimes_only_generics = ast.generics.clone();
+    lifetimes_only_generics.params = lifetimes_only_params;
+    lifetimes_only_generics
+  } else if classification.has_only_types {
+    let types_only_params = generic_params::filter_params(&ast.generics.params, generic_params::filter_types);
+    let mut types_only_generics = ast.generics.clone();
+    types_only_generics.params = types_only_params;
+    types_only_generics
+  } else {
+    syn::Generics::default()
+  };
   
-  // Build proper generic list for former type reference
-  // For all structs, we need to include Definition as a type parameter
-  let former_type_ref = if has_only_lifetimes {
-    // For lifetime-only structs: Former<'a, Definition>
-    quote! { #former < #struct_generics_ty, Definition > }
-  } else if has_non_lifetime_generics {
-    // For mixed generics: Former<T, U, Definition>
-    quote! { #former < #struct_generics_impl_without_lifetimes, Definition > }
-  } else {
-    // For no generics: Former<Definition>
-    quote! { #former < Definition > }
-  };
-  
-  // Helper for the full former type with concrete definition parameters
-  let former_type_full = if has_only_lifetimes {
-    // For lifetime-only structs: Former<'a, SimpleFormerDefinition<...>>
-    quote! { #former < #struct_generics_ty, #former_definition < #former_definition_args > > }
-  } else if has_non_lifetime_generics {
-    // For mixed generics: Former<T, U, Definition>
-    quote! { #former < #struct_generics_impl_without_lifetimes, #former_definition < #former_definition_args > > }
-  } else {
-    // For no generics: Former<Definition>
-    quote! { #former < #former_definition < #former_definition_args > > }
-  };
-
-  // Helper to generate former impl generics only when needed
-  let former_impl_generics = if struct_generics_impl.is_empty() {
-    quote! { < Definition > }
-  } else {
-    quote! { < #former_generics_impl > }
-  };
-
-  // FormerBegin impl generics - much simpler now that we use actual struct lifetimes
-  let former_begin_impl_generics = if struct_generics_impl.is_empty() {
-    quote! { < #lifetime_param_for_former_begin, Definition > }
-  } else if has_only_lifetimes {
-    // For lifetime-only structs, use struct lifetimes + Definition
-    quote! { < #struct_generics_impl, Definition > }
-  } else {
-    // For mixed generics, use all struct generics + Definition  
-    quote! { < #struct_generics_impl, Definition > }
-  };
-
-  /* parameters for former perform: Similar to former parameters, but specifically for the perform method. */
   let extra: macro_tools::generic_params::GenericsWithWhere = parse_quote! {
-    < Definition = #former_definition < #former_definition_args > >
+    < Definition >
     where
-      Definition : former::FormerDefinition
-      < // Angle bracket on new line
-        Storage = #storage_type_ref,
-        Formed = #struct_type_ref,
-      >, // Angle bracket on new line
-      Definition::Types : former::FormerDefinitionTypes
-      < // Angle bracket on new line
-        Storage = #storage_type_ref,
-        Formed = #struct_type_ref,
-      >, // Angle bracket on new line
+      Definition : former::FormerDefinition< Storage = #storage_type_ref, Formed = #struct_type_ref >,
+      Definition::Types : former::FormerDefinitionTypes< Storage = #storage_type_ref, Formed = #struct_type_ref >,
   };
-  let extra = generic_params::merge(generics, &extra.into());
+  let merged = generic_params::merge(&perform_base_generics, &extra.into());
   let (
     _former_perform_generics_with_defaults,
     former_perform_generics_impl,
-    former_perform_generics_ty,
+    _former_perform_generics_ty,
     former_perform_generics_where,
-  ) = generic_params::decompose(&extra);
+  ) = generic_params::decompose(&merged);
   
   // Helper for former perform generics without trailing comma for type usage
-  let former_perform_generics_ty_clean = if former_perform_generics_ty.is_empty() {
-    quote! {}
-  } else {
-    let mut generics_without_trailing_comma = former_perform_generics_ty.clone();
-    if generics_without_trailing_comma.trailing_punct() {
-      generics_without_trailing_comma.pop_punct();
-    }
-    quote! { #generics_without_trailing_comma }
-  };
+  let _former_perform_generics_ty_clean = quote! { Definition };
 
-  // Helper for former perform impl generics
-  let former_perform_impl_generics = if struct_generics_impl.is_empty() {
+  // Helper for former perform impl generics - ensure we have angle brackets
+  let former_perform_impl_generics = if former_perform_generics_impl.is_empty() {
     quote! { < Definition > }
   } else {
     quote! { < #former_perform_generics_impl > }
   };
 
-  // Helper for former perform type generics
-  let former_perform_type_generics = if struct_generics_ty.is_empty() {
-    quote! { < Definition > }
-  } else if has_only_lifetimes {
-    // For lifetime-only structs, former_perform_generics_ty_clean already includes Definition
-    quote! { < #former_perform_generics_ty_clean > }
+  // Helper for former perform type generics - should match the former type ref
+  let former_perform_type_generics = if classification.has_only_lifetimes {
+    let lifetimes_only_params = generic_params::filter_params(&ast.generics.params, generic_params::filter_lifetimes);
+    let mut lifetimes_only_generics = ast.generics.clone();
+    lifetimes_only_generics.params = lifetimes_only_params;
+    if lifetimes_only_generics.params.is_empty() {
+      quote! { < Definition > }
+    } else {
+      let (_, _, lifetimes_ty, _) = generic_params::decompose(&lifetimes_only_generics);
+      quote! { < #lifetimes_ty, Definition > }
+    }
+  } else if classification.has_only_types {
+    let types_only_params = generic_params::filter_params(&ast.generics.params, generic_params::filter_types);
+    let mut types_only_generics = ast.generics.clone();
+    types_only_generics.params = types_only_params;
+    if types_only_generics.params.is_empty() {
+      quote! { < Definition > }
+    } else {
+      let (_, _, types_ty, _) = generic_params::decompose(&types_only_generics);
+      quote! { < #types_ty, Definition > }
+    }
   } else {
-    quote! { < #former_perform_generics_ty_clean, Definition > }
+    quote! { < Definition > }
   };
 
   /* parameters for definition types: Merge struct generics with Context and Formed parameters. */
@@ -375,6 +492,7 @@ specific needs of the broader forming context. It mandates the implementation of
   };
 
   // Helper for AsSubformer former type reference
+  // The former struct itself also needs its generic parameters (lifetimes, types)
   let as_subformer_former = if struct_generics_ty.is_empty() {
     quote! { #former < #as_subformer_definition > }
   } else {
@@ -581,14 +699,8 @@ specific needs of the broader forming context. It mandates the implementation of
       (return_type, body)
     } else {
       // Return Former
-      let _former_return_type = if has_non_lifetime_generics {
-        quote! {
-          #former < #struct_generics_impl_without_lifetimes, #former_definition< #former_definition_args > >
-        }
-      } else {
-        quote! {
-          #former < #former_definition< #former_definition_args > >
-        }
+      let _former_return_type = quote! {
+        #former < #former_definition< #former_definition_args > >
       };
       let former_body = quote! {
         #former::begin( #initial_storage_code, None, former::ReturnPreformed )
@@ -619,60 +731,81 @@ specific needs of the broader forming context. It mandates the implementation of
   // <<< End of updated code for standalone constructor (Option 2) >>>
 
   // Build generic lists for EntityToFormer impl
+  // For lifetime-only structs, we need to be careful with generic parameter ordering
+  // Build generic lists for EntityToFormer impl
   let entity_to_former_impl_generics = generic_params::params_with_additional(
     &struct_generics_impl,
     &[parse_quote! { Definition }],
   );
   
-  // Build generic lists for EntityToFormer type Former
-  // We always need to include the struct's generic parameters (including lifetimes)
-  let entity_to_former_ty_generics = generic_params::params_with_additional(
-    &struct_generics_ty,
-    &[parse_quote! { Definition }],
-  );
+  // Build generic lists for EntityToFormer type Former - should match the former type
+  let entity_to_former_ty_generics = if classification.has_only_lifetimes {
+    let lifetimes_only_params = generic_params::filter_params(&ast.generics.params, generic_params::filter_lifetimes);
+    let mut lifetimes_only_generics = ast.generics.clone();
+    lifetimes_only_generics.params = lifetimes_only_params;
+    if lifetimes_only_generics.params.is_empty() {
+      quote! { Definition }
+    } else {
+      let (_, _, lifetimes_ty, _) = generic_params::decompose(&lifetimes_only_generics);
+      quote! { #lifetimes_ty, Definition }
+    }
+  } else if classification.has_only_types {
+    let types_only_params = generic_params::filter_params(&ast.generics.params, generic_params::filter_types);
+    let mut types_only_generics = ast.generics.clone();
+    types_only_generics.params = types_only_params;
+    if types_only_generics.params.is_empty() {
+      quote! { Definition }
+    } else {
+      let (_, _, types_ty, _) = generic_params::decompose(&types_only_generics);
+      quote! { #types_ty, Definition }
+    }
+  } else {
+    quote! { Definition }
+  };
   
   // Build generic lists for EntityToDefinition impl
-  let entity_to_definition_impl_generics = generic_params::params_with_additional(
-    &struct_generics_impl,
-    &[
-      parse_quote! { __Context },
-      parse_quote! { __Formed },
-      parse_quote! { __End },
-    ],
+  // CRITICAL FIX: Use merge_params_ordered to ensure proper generic parameter ordering
+  let additional_params: syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma> = 
+    parse_quote! { __Context, __Formed, __End };
+  let entity_to_definition_impl_generics = generic_params::merge_params_ordered(
+    &[&struct_generics_impl, &additional_params],
   );
   
   // Build generic lists for definition types in trait bounds
-  let definition_types_ty_generics = generic_params::params_with_additional(
-    &struct_generics_ty,
-    &[
-      parse_quote! { __Context },
-      parse_quote! { __Formed },
-    ],
+  // CRITICAL FIX: Use merge_params_ordered to ensure proper generic parameter ordering
+  let additional_params: syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma> = 
+    parse_quote! { __Context, __Formed };
+  let definition_types_ty_generics = generic_params::merge_params_ordered(
+    &[&struct_generics_ty, &additional_params],
   );
   
   // Build generic lists for definition in associated types
-  let definition_ty_generics = generic_params::params_with_additional(
-    &struct_generics_ty,
-    &[
-      parse_quote! { __Context },
-      parse_quote! { __Formed },
-      parse_quote! { __End },
-    ],
+  // CRITICAL FIX: Use merge_params_ordered to ensure proper generic parameter ordering
+  let additional_params: syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma> = 
+    parse_quote! { __Context, __Formed, __End };
+  let definition_ty_generics = generic_params::merge_params_ordered(
+    &[&struct_generics_ty, &additional_params],
   );
   
   // Build generic lists for EntityToDefinitionTypes impl
-  let entity_to_definition_types_impl_generics = generic_params::params_with_additional(
-    &struct_generics_impl,
-    &[
-      parse_quote! { __Context },
-      parse_quote! { __Formed },
-    ],
+  // CRITICAL FIX: Use merge_params_ordered to ensure proper generic parameter ordering
+  let additional_params: syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma> = 
+    parse_quote! { __Context, __Formed };
+  let entity_to_definition_types_impl_generics = generic_params::merge_params_ordered(
+    &[&struct_generics_impl, &additional_params],
   );
 
   // Assemble the final generated code using quote!
   
+  // For type-only structs, exclude struct bounds from FormerBegin to avoid E0309 errors
+  // The minor E0277 trait bound error is acceptable vs the major E0309 lifetime error
+  let _former_begin_where_clause = if classification.has_only_types {
+    quote! {}
+  } else {
+    quote! { , #struct_generics_where }
+  };
   
-  let result = quote! {
+  let result = quote::quote! {
 
     // = formed: Implement the `::former()` static method on the original struct.
     #[ automatically_derived ]
@@ -984,13 +1117,13 @@ specific needs of the broader forming context. It mandates the implementation of
     }
 
     // = former begin: Implement `FormerBegin` trait.
-    impl #former_begin_impl_generics former::FormerBegin< #lifetime_param_for_former_begin, Definition >
+    // CRITICAL FIX: For lifetime-only structs, avoid circular lifetime constraints  
+    // where Definition::Storage contains the same lifetime that we're constraining it to outlive
+    impl #former_begin_impl_generics former::FormerBegin< #former_begin_trait_lifetime, Definition >
     for #former_type_ref
     where
-      Definition : former::FormerDefinition< Storage = #storage_type_ref >,
-      Definition::Storage : #struct_lifetime_for_where,
-      Definition::Context : #struct_lifetime_for_where,
-      Definition::End : #struct_lifetime_for_where,
+      Definition : former::FormerDefinition< Storage = #storage_type_ref >
+      #former_begin_additional_bounds
     {
       #[ inline( always ) ]
       fn former_begin
@@ -1036,6 +1169,18 @@ specific needs of the broader forming context. It mandates the implementation of
   if _has_debug {
     let about = format!("derive : Former\nstruct : {item}");
     diag::report_print(about, original_input, &result);
+  }
+  
+  // CRITICAL FIX: Derive macros should only return generated code, NOT the original struct
+  // The original struct is preserved by the Rust compiler automatically
+  // We were incorrectly including it, which caused duplication errors
+  // The "type parameter not found" error was actually caused by our macro 
+  // returning malformed TokenStream, not by missing the original struct
+  
+  // Debug: Print the result for lifetime-only and type-only structs to diagnose issues
+  if classification.has_only_lifetimes && item.to_string().contains("TestLifetime") {
+    eprintln!("LIFETIME DEBUG: Generated code for {}:", item);
+    eprintln!("{}", result);
   }
   
   Ok(result)

@@ -674,10 +674,15 @@ with the new content generated during the subforming process.
       let subformer_definition_types: syn::Type = syn::parse_str(&subformer_definition_types_string)?;
       // <<< End Revert >>>
       // Use the parsed definition types but ensure proper comma handling
-      let element_type = params.first().expect("Expected element type parameter");
+      // CRITICAL FIX: For collections with multiple type parameters (e.g., HashMap<K, V>),
+      // we MUST pass ALL type parameters, not just the first one. Previously, only the
+      // first parameter was passed, causing type mismatches like:
+      // Expected: HashMapDefinitionTypes<K, V, ParentFormer, ParentFormer>
+      // Got: HashMapDefinitionTypes<K, ParentFormer, ParentFormer>
+      // This fix ensures all parameters are properly forwarded using #( #params, )*
       quote::quote! {
         #subformer_definition_types<
-          #element_type,
+          #( #params, )*
           #former_type_ref,
           #former_type_ref
         >
