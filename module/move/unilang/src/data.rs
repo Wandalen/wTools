@@ -308,16 +308,18 @@ mod private
   impl ErrorData
   {
     ///
-    /// Creates a new ErrorData with no source error.
+    /// Creates a new `ErrorData` with no source error.
     ///
+    #[must_use]
     pub fn new( code: String, message: String ) -> Self
     {
       Self { code, message, source: None }
     }
 
     ///
-    /// Creates a new ErrorData with a source error for chaining.
+    /// Creates a new `ErrorData` with a source error for chaining.
     ///
+    #[must_use]
     pub fn with_source( code: String, message: String, source: ErrorData ) -> Self
     {
       Self { code, message, source: Some( Box::new( source ) ) }

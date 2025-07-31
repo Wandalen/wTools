@@ -58,7 +58,6 @@ impl Parser
     .filter( | item | !matches!( item.kind, UnilangTokenKind::Delimiter( " " | "\n" | "\t" | "\r" ) ) )
     .collect();
 
-    println!( "DEBUG: parse_single_instruction rich_items: {rich_items:?}" );
     self.parse_single_instruction_from_rich_items( rich_items )
   }
 
@@ -236,7 +235,6 @@ impl Parser
 
     while let Some( item ) = items_iter.peek()
     {
-      println!( "DEBUG: parse_command_path peeking: {item:?}, last_token_was_dot: {last_token_was_dot}" );
       match &item.kind
       {
         UnilangTokenKind::Identifier( ref s ) =>

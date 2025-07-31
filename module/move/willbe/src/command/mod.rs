@@ -4,7 +4,8 @@ mod private
 {
 
   use crate::*;
-  use wca::{ Type, CommandsAggregator, CommandsAggregatorFormer };
+  use wca::{ Type, CommandsAggregator };
+  use wca::aggregator::CommandsAggregatorFormer;
 
   ///
   /// Form CA commands grammar.

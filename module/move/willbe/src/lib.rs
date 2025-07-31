@@ -101,6 +101,12 @@ mod_interface! {
 
   own use run;
 
+  /// Error handling facade.
+  use ::error_tools as error;
+  
+  /// Thiserror crate for derive macros.
+  use ::error_tools::dependency::thiserror;
+
   /// Entities of which spaces consists of.
   layer entity;
 

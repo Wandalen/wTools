@@ -59,10 +59,6 @@ thiserror = "1.0"
 name = "unilang_cli"
 path = "src/bin/unilang_cli.rs"
 
-[[bin]]
-name = "stress_test_bin"
-path = "tests/stress_test_bin.rs"
-
 [[test]]
 name = "command_loader_test"
 path = "tests/inc/phase2/command_loader_test.rs"

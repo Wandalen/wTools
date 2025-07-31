@@ -58,7 +58,7 @@ fn test_cli_add_command_missing_arg()
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
   cmd.args( &vec![ ".math.add", "a::1" ] );
   cmd.assert().failure().stderr( predicate::str::contains(
-    "Error: Execution Error: Missing required argument: b",
+    "Error: Execution Error: Argument Error: The required argument 'b' is missing",
   ) );
 }
 
@@ -69,7 +69,7 @@ fn test_cli_add_command_invalid_arg_type()
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
   cmd.args( &vec![ ".math.add", "a::a", "b::b" ] );
   cmd.assert().failure().stderr( predicate::str::contains(
-    "Error: Execution Error: invalid digit found in string (Code: INVALID_ARGUMENT_TYPE)",
+    "Error: Execution Error: Type Error: invalid digit found in string. Please provide a valid value for this type.",
   ) );
 }
 
@@ -109,6 +109,6 @@ fn test_cli_unknown_command()
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
   cmd.args( &vec![ ".unknown", "arg1", "arg2" ] );
   cmd.assert().failure().stderr( predicate::str::contains(
-    "Error: Execution Error: Command not found: .unknown",
+    "Error: Execution Error: Command Error: The command '.unknown' was not found",
   ) );
 }

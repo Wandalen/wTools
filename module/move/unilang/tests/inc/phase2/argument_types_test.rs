@@ -106,7 +106,7 @@ fn test_path_argument_type() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
 }
 
 #[test]
@@ -182,7 +182,7 @@ fn test_file_argument_type() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
 
   // Cleanup
   let _ = std::fs::remove_file(file_path);
@@ -262,7 +262,7 @@ fn test_directory_argument_type() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
 
   // Cleanup
   let _ = std::fs::remove_dir_all(dir_path);
@@ -336,7 +336,7 @@ fn test_enum_argument_type() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
 
   // Test Matrix Row: T1.13
   let result = analyze_program(
@@ -352,7 +352,7 @@ fn test_enum_argument_type() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
 }
 
 #[test]
@@ -423,7 +423,7 @@ fn test_url_argument_type() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
 }
 
 #[test]
@@ -494,7 +494,7 @@ fn test_datetime_argument_type() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
 }
 
 #[test]
@@ -566,7 +566,7 @@ fn test_pattern_argument_type() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
 }
 
 #[test]

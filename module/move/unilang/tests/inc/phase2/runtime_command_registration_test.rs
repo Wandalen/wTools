@@ -41,12 +41,12 @@ fn arg_test_routine(verified_command: VerifiedCommand, _context: ExecutionContex
     .arguments
     .get("arg1")
     .ok_or_else(|| ErrorData::new(
-      "MISSING_ARGUMENT".to_string(),
+      "UNILANG_ARGUMENT_MISSING".to_string(),
       "Argument 'arg1' not found".to_string(),
     ))?
     .as_integer()
     .ok_or_else(|| ErrorData::new(
-      "INVALID_ARGUMENT_TYPE".to_string(),
+      "UNILANG_TYPE_MISMATCH".to_string(),
       "Argument 'arg1' is not an integer".to_string(),
     ))?;
   Ok(OutputData {
@@ -183,7 +183,7 @@ fn test_register_duplicate_command() {
 
   let result = registry.command_add_runtime(&command_def, Box::new(dummy_routine));
   assert!(result.is_err());
-  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "COMMAND_ALREADY_EXISTS" ));
+  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "UNILANG_COMMAND_ALREADY_EXISTS" ));
 }
 
 #[test]
@@ -192,7 +192,7 @@ fn test_execute_non_existent_command() {
   let registry = CommandRegistry::new();
   let result = analyze_and_run("non_existent_cmd", vec![], HashMap::new(), &registry);
   assert!(result.is_err());
-  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "COMMAND_NOT_FOUND" ));
+  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "UNILANG_COMMAND_NOT_FOUND" ));
 }
 
 #[test]
@@ -235,7 +235,7 @@ fn test_execute_command_with_missing_argument() {
 
   let result = analyze_and_run("test.missing_arg_cmd", vec![], HashMap::new(), &registry);
   assert!(result.is_err());
-  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "MISSING_ARGUMENT" ));
+  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "UNILANG_ARGUMENT_MISSING" ));
 }
 
 #[test]
@@ -288,5 +288,5 @@ fn test_execute_command_with_invalid_arg_type() {
   );
   let result = analyze_and_run("test.invalid_type_cmd", vec![], named_args, &registry);
   assert!(result.is_err());
-  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
+  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
 }

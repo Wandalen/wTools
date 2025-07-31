@@ -143,6 +143,5 @@ pub fn classify_split( s : &Split< '_ > ) -> Result< ( UnilangTokenKind, SourceL
       }
     }
   };
-  println!( "DEBUG: classify_split input: {s:?}, output: {result:?}" );
   result
 }

@@ -101,7 +101,7 @@ fn semantic_analyzer_tests()
   let instructions = &[ instruction ][ .. ];
   let analyzer = SemanticAnalyzer::new( instructions, &registry );
   let error = analyzer.analyze().unwrap_err();
-  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "COMMAND_NOT_FOUND" ) );
+  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_COMMAND_NOT_FOUND" ) );
 
   // T3.3
   let input = "test_cmd";
@@ -109,7 +109,7 @@ fn semantic_analyzer_tests()
   let instructions = &[ instruction ][ .. ];
   let analyzer = SemanticAnalyzer::new( instructions, &registry );
   let error = analyzer.analyze().unwrap_err();
-  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "MISSING_ARGUMENT" ) );
+  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_ARGUMENT_MISSING" ) );
 
   // T3.4 - Updated to test a clear type mismatch for the second argument
   let input = "test_cmd hello not-an-integer";
@@ -117,7 +117,7 @@ fn semantic_analyzer_tests()
   let instructions = &[ instruction ][ .. ];
   let analyzer = SemanticAnalyzer::new( instructions, &registry );
   let error = analyzer.analyze().unwrap_err();
-  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
+  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ) );
 
   // T3.5
   let input = "test_cmd \"hello\" 123 456";
@@ -125,7 +125,7 @@ fn semantic_analyzer_tests()
   let instructions = &[ instruction ][ .. ];
   let analyzer = SemanticAnalyzer::new( instructions, &registry );
   let error = analyzer.analyze().unwrap_err();
-  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "TOO_MANY_ARGUMENTS" ) );
+  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TOO_MANY_ARGUMENTS" ) );
 }
 
 ///

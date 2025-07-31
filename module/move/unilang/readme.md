@@ -594,4 +594,4 @@ See [CONTRIBUTING.md](https://github.com/Wandalen/wTools/blob/master/CONTRIBUTIN
 
 ## License
 
-Licensed under MIT license ([LICENSE](LICENSE) or https://opensource.org/licenses/MIT)
+Licensed under MIT license ([LICENSE](LICENSE) or <https://opensource.org/licenses/MIT>)
