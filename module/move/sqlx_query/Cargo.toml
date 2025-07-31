@@ -7,7 +7,7 @@ authors = [
   "Viktor Dudnik <viktor.d@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/sqlx_query"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/move/sqlx_query"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/sqlx_query"

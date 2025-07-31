@@ -13,6 +13,7 @@ use macro_tools::{
   ident, // Added for ident_maybe_raw
 };
 
+
 /// Generate the Former ecosystem for a struct.
 #[allow(clippy::too_many_lines)]
 pub fn former_for_struct(
@@ -58,6 +59,24 @@ specific needs of the broader forming context. It mandates the implementation of
     struct_generics_ty,            // Generics for type usage (e.g., `<T>`). Names only.
     struct_generics_where,         // Where clause predicates (e.g., `T: Send`).
   ) = generic_params::decompose(generics);
+  
+  // Use new generic utilities to classify generics
+  let generics_ref = generic_params::GenericsRef::new(generics);
+  let classification = generics_ref.classification();
+  let has_only_lifetimes = classification.has_only_lifetimes;
+
+  // Helper for generics with trailing comma when not empty (for cases where we need it)
+  let _struct_generics_ty_with_comma = if struct_generics_ty.is_empty() {
+    quote! {}
+  } else {
+    quote! { #struct_generics_ty , }
+  };
+  
+  let _struct_generics_impl_with_comma = if struct_generics_impl.is_empty() {
+    quote! {}
+  } else {
+    quote! { #struct_generics_impl , }
+  };
 
   // Helper to generate type reference with angle brackets only when needed
   let struct_type_ref = if struct_generics_ty.is_empty() {
@@ -90,29 +109,33 @@ specific needs of the broader forming context. It mandates the implementation of
 
   // Extract lifetimes separately for FormerBegin
   let lifetimes: Vec<_> = generics.lifetimes().cloned().collect();
-  let lifetime_param_for_former_begin = if let Some(lt) = lifetimes.first() {
-      quote! { #lt }
+  
+  // Use the struct's first lifetime for FormerBegin, or 'a if no lifetimes
+  let (lifetime_param_for_former_begin, struct_lifetime_for_where) = if let Some(first_lifetime) = lifetimes.first() {
+    let lifetime = &first_lifetime.lifetime;
+    (quote! { #lifetime }, quote! { #lifetime })
   } else {
-      quote! { '__a } // Introduce a new lifetime if none exists
+    (quote! { 'a }, quote! { 'a })
   };
 
-  // Extract the lifetime name for use in where clauses
-  let lifetime_name = if let Some(lt) = lifetimes.first() {
-      let lifetime = &lt.lifetime;
-      quote! { #lifetime }
-  } else {
-      quote! { '__a }
-  };
+  // Get generics without lifetimes using new utilities
+  let struct_generics_impl_without_lifetimes = generic_params::filter_params(
+    &struct_generics_impl,
+    generic_params::filter_non_lifetimes
+  );
+  let _struct_generics_ty_without_lifetimes = generic_params::filter_params(
+    &struct_generics_ty,
+    generic_params::filter_non_lifetimes
+  );
 
-  // Create a new Generics object without lifetimes for struct_generics_impl_without_lifetimes
-  let mut generics_without_lifetimes = generics.clone();
-  generics_without_lifetimes.params = generics_without_lifetimes.params.into_iter().filter(|p| !matches!(p, syn::GenericParam::Lifetime(_))).collect();
-  let (
-    _struct_generics_with_defaults_without_lifetimes,
-    _struct_generics_impl_without_lifetimes,
-    _struct_generics_ty_without_lifetimes,
-    _struct_generics_where_without_lifetimes,
-  ) = generic_params::decompose(&generics_without_lifetimes);
+  // Helper for generics without lifetimes with trailing comma
+  let _struct_generics_impl_without_lifetimes_with_comma = if struct_generics_impl_without_lifetimes.is_empty() {
+    quote! {}
+  } else {
+    // Since macro_tools decompose is now fixed, we add trailing comma when needed
+    quote! { #struct_generics_impl_without_lifetimes , }
+  };
+  
 
   /* parameters for definition: Merge struct generics with default definition parameters. */
   let extra: macro_tools::syn::AngleBracketedGenericArguments = parse_quote! {
@@ -121,23 +144,68 @@ specific needs of the broader forming context. It mandates the implementation of
   let former_definition_args = generic_args::merge(&generics.into_generic_args(), &extra).args;
 
   /* parameters for former: Merge struct generics with the Definition generic parameter. */
-  let extra: macro_tools::generic_params::GenericsWithWhere = parse_quote! {
-    < Definition = #former_definition < #former_definition_args > >
-    where
-      Definition : former::FormerDefinition< Storage = #storage_type_ref >,
-      Definition::Types : former::FormerDefinitionTypes< Storage = #storage_type_ref >,
+  // For lifetime-only structs, we need special handling - Definition should NOT be defaulted
+  let (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where) = if has_only_lifetimes {
+    // For lifetime-only structs, Former should have: <'a, Definition> (not defaulted)
+    // Build the generics manually to include lifetimes + Definition
+    let former_generics_with_defaults = generic_params::params_with_additional(
+      &struct_generics_with_defaults,
+      &[parse_quote! { Definition }],
+    );
+    let former_generics_impl = generic_params::params_with_additional(
+      &struct_generics_impl,
+      &[parse_quote! { Definition }],
+    );
+    let former_generics_ty = generic_params::params_with_additional(
+      &struct_generics_ty,
+      &[parse_quote! { Definition }],
+    );
+    // Build where clause by adding Definition constraint to existing where predicates
+    let mut former_generics_where = struct_generics_where.clone();
+    former_generics_where.push(parse_quote! {
+      Definition : former::FormerDefinition< Storage = #storage_type_ref >
+    });
+    (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where)
+  } else {
+    // For structs with type/const params, use the existing approach with defaulted Definition
+    let extra: macro_tools::generic_params::GenericsWithWhere = parse_quote! {
+      < Definition = #former_definition < #former_definition_args > >
+      where
+        Definition : former::FormerDefinition< Storage = #storage_type_ref >,
+        Definition::Types : former::FormerDefinitionTypes< Storage = #storage_type_ref >,
+    };
+    let merged = generic_params::merge(generics, &extra.into());
+    generic_params::decompose(&merged)
   };
-  let extra = generic_params::merge(generics, &extra.into());
-  let (former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where) =
-    generic_params::decompose(&extra);
 
   // Helper to generate former type reference with angle brackets only when needed
-  // Check if we have any generics beyond just the Definition parameter
-  let has_struct_generics = !struct_generics_ty.is_empty();
-  let former_type_ref = if has_struct_generics {
-    quote! { #former < #struct_generics_ty Definition > }
+  // Check if we have any non-lifetime generics for the Former type
+  // Former types should not include lifetime parameters - only type and const parameters
+  let has_non_lifetime_generics = !struct_generics_impl_without_lifetimes.is_empty();
+  
+  // Build proper generic list for former type reference
+  // For all structs, we need to include Definition as a type parameter
+  let former_type_ref = if has_only_lifetimes {
+    // For lifetime-only structs: Former<'a, Definition>
+    quote! { #former < #struct_generics_ty, Definition > }
+  } else if has_non_lifetime_generics {
+    // For mixed generics: Former<T, U, Definition>
+    quote! { #former < #struct_generics_impl_without_lifetimes, Definition > }
   } else {
+    // For no generics: Former<Definition>
     quote! { #former < Definition > }
+  };
+  
+  // Helper for the full former type with concrete definition parameters
+  let former_type_full = if has_only_lifetimes {
+    // For lifetime-only structs: Former<'a, SimpleFormerDefinition<...>>
+    quote! { #former < #struct_generics_ty, #former_definition < #former_definition_args > > }
+  } else if has_non_lifetime_generics {
+    // For mixed generics: Former<T, U, Definition>
+    quote! { #former < #struct_generics_impl_without_lifetimes, #former_definition < #former_definition_args > > }
+  } else {
+    // For no generics: Former<Definition>
+    quote! { #former < #former_definition < #former_definition_args > > }
   };
 
   // Helper to generate former impl generics only when needed
@@ -147,11 +215,15 @@ specific needs of the broader forming context. It mandates the implementation of
     quote! { < #former_generics_impl > }
   };
 
-  // Helper for FormerBegin impl generics
+  // FormerBegin impl generics - much simpler now that we use actual struct lifetimes
   let former_begin_impl_generics = if struct_generics_impl.is_empty() {
     quote! { < #lifetime_param_for_former_begin, Definition > }
+  } else if has_only_lifetimes {
+    // For lifetime-only structs, use struct lifetimes + Definition
+    quote! { < #struct_generics_impl, Definition > }
   } else {
-    quote! { < #lifetime_param_for_former_begin, #struct_generics_impl Definition > }
+    // For mixed generics, use all struct generics + Definition  
+    quote! { < #struct_generics_impl, Definition > }
   };
 
   /* parameters for former perform: Similar to former parameters, but specifically for the perform method. */
@@ -176,6 +248,17 @@ specific needs of the broader forming context. It mandates the implementation of
     former_perform_generics_ty,
     former_perform_generics_where,
   ) = generic_params::decompose(&extra);
+  
+  // Helper for former perform generics without trailing comma for type usage
+  let former_perform_generics_ty_clean = if former_perform_generics_ty.is_empty() {
+    quote! {}
+  } else {
+    let mut generics_without_trailing_comma = former_perform_generics_ty.clone();
+    if generics_without_trailing_comma.trailing_punct() {
+      generics_without_trailing_comma.pop_punct();
+    }
+    quote! { #generics_without_trailing_comma }
+  };
 
   // Helper for former perform impl generics
   let former_perform_impl_generics = if struct_generics_impl.is_empty() {
@@ -187,8 +270,11 @@ specific needs of the broader forming context. It mandates the implementation of
   // Helper for former perform type generics
   let former_perform_type_generics = if struct_generics_ty.is_empty() {
     quote! { < Definition > }
+  } else if has_only_lifetimes {
+    // For lifetime-only structs, former_perform_generics_ty_clean already includes Definition
+    quote! { < #former_perform_generics_ty_clean > }
   } else {
-    quote! { < #former_perform_generics_ty > }
+    quote! { < #former_perform_generics_ty_clean, Definition > }
   };
 
   /* parameters for definition types: Merge struct generics with Context and Formed parameters. */
@@ -202,6 +288,9 @@ specific needs of the broader forming context. It mandates the implementation of
     former_definition_types_generics_ty,
     former_definition_types_generics_where,
   ) = generic_params::decompose(&former_definition_types_generics);
+  
+  // No need to clean up trailing commas - decompose doesn't add them
+  
   // Generate PhantomData tuple type based on the impl generics.
   let former_definition_types_phantom = macro_tools::phantom::tuple(&former_definition_types_generics_impl);
 
@@ -237,6 +326,9 @@ specific needs of the broader forming context. It mandates the implementation of
     former_definition_generics_ty,
     former_definition_generics_where,
   ) = generic_params::decompose(&generics_of_definition);
+  
+  // No need to clean up trailing commas - decompose doesn't add them
+  
   // Generate PhantomData tuple type based on the impl generics.
   let former_definition_phantom = macro_tools::phantom::tuple(&former_definition_generics_impl);
 
@@ -279,21 +371,42 @@ specific needs of the broader forming context. It mandates the implementation of
   let as_subformer_definition = if struct_generics_ty.is_empty() {
     quote! { #former_definition < __Superformer, __Superformer, __End > }
   } else {
-    quote! { #former_definition < #struct_generics_ty __Superformer, __Superformer, __End > }
+    quote! { #former_definition < #struct_generics_ty, __Superformer, __Superformer, __End > }
   };
 
   // Helper for AsSubformer former type reference
   let as_subformer_former = if struct_generics_ty.is_empty() {
     quote! { #former < #as_subformer_definition > }
   } else {
-    quote! { #former < #struct_generics_ty #as_subformer_definition > }
+    quote! { #former < #struct_generics_ty, #as_subformer_definition > }
   };
 
   // Helper for AsSubformerEnd definition types reference
   let as_subformer_end_definition_types = if struct_generics_ty.is_empty() {
     quote! { #former_definition_types < SuperFormer, SuperFormer > }
   } else {
-    quote! { #former_definition_types < #struct_generics_ty SuperFormer, SuperFormer > }
+    quote! { #former_definition_types < #struct_generics_ty, SuperFormer, SuperFormer > }
+  };
+  
+  // Helper for AsSubformer type alias with proper generics handling
+  let as_subformer_alias = if struct_generics_ty.is_empty() {
+    quote! { #vis type #as_subformer < __Superformer, __End > = #as_subformer_former; }
+  } else {
+    quote! { #vis type #as_subformer < #struct_generics_ty, __Superformer, __End > = #as_subformer_former; }
+  };
+  
+  // Helper for AsSubformerEnd trait declaration with proper generics
+  let as_subformer_end_trait = if struct_generics_ty.is_empty() {
+    quote! { pub trait #as_subformer_end < SuperFormer > }
+  } else {
+    quote! { pub trait #as_subformer_end < #struct_generics_ty, SuperFormer > }
+  };
+  
+  // Helper for AsSubformerEnd impl declaration with proper generics
+  let as_subformer_end_impl = if struct_generics_ty.is_empty() {
+    quote! { impl< SuperFormer, __T > #as_subformer_end < SuperFormer > }
+  } else {
+    quote! { impl< #struct_generics_impl, SuperFormer, __T > #as_subformer_end < #struct_generics_ty, SuperFormer > }
   };
 
   // Helper for AsSubformerEnd where clause
@@ -468,8 +581,14 @@ specific needs of the broader forming context. It mandates the implementation of
       (return_type, body)
     } else {
       // Return Former
-      let _former_return_type = quote! { // Changed to _former_return_type
-        #former < #struct_generics_ty #former_definition< #former_definition_args > >
+      let _former_return_type = if has_non_lifetime_generics {
+        quote! {
+          #former < #struct_generics_impl_without_lifetimes, #former_definition< #former_definition_args > >
+        }
+      } else {
+        quote! {
+          #former < #former_definition< #former_definition_args > >
+        }
       };
       let former_body = quote! {
         #former::begin( #initial_storage_code, None, former::ReturnPreformed )
@@ -499,7 +618,60 @@ specific needs of the broader forming context. It mandates the implementation of
   };
   // <<< End of updated code for standalone constructor (Option 2) >>>
 
+  // Build generic lists for EntityToFormer impl
+  let entity_to_former_impl_generics = generic_params::params_with_additional(
+    &struct_generics_impl,
+    &[parse_quote! { Definition }],
+  );
+  
+  // Build generic lists for EntityToFormer type Former
+  // We always need to include the struct's generic parameters (including lifetimes)
+  let entity_to_former_ty_generics = generic_params::params_with_additional(
+    &struct_generics_ty,
+    &[parse_quote! { Definition }],
+  );
+  
+  // Build generic lists for EntityToDefinition impl
+  let entity_to_definition_impl_generics = generic_params::params_with_additional(
+    &struct_generics_impl,
+    &[
+      parse_quote! { __Context },
+      parse_quote! { __Formed },
+      parse_quote! { __End },
+    ],
+  );
+  
+  // Build generic lists for definition types in trait bounds
+  let definition_types_ty_generics = generic_params::params_with_additional(
+    &struct_generics_ty,
+    &[
+      parse_quote! { __Context },
+      parse_quote! { __Formed },
+    ],
+  );
+  
+  // Build generic lists for definition in associated types
+  let definition_ty_generics = generic_params::params_with_additional(
+    &struct_generics_ty,
+    &[
+      parse_quote! { __Context },
+      parse_quote! { __Formed },
+      parse_quote! { __End },
+    ],
+  );
+  
+  // Build generic lists for EntityToDefinitionTypes impl
+  let entity_to_definition_types_impl_generics = generic_params::params_with_additional(
+    &struct_generics_impl,
+    &[
+      parse_quote! { __Context },
+      parse_quote! { __Formed },
+    ],
+  );
+
   // Assemble the final generated code using quote!
+  
+  
   let result = quote! {
 
     // = formed: Implement the `::former()` static method on the original struct.
@@ -509,9 +681,9 @@ specific needs of the broader forming context. It mandates the implementation of
     {
       /// Provides a mechanism to initiate the formation process with a default completion behavior.
       #[ inline( always ) ]
-      pub fn former() -> #former < #struct_generics_ty #former_definition< #former_definition_args > >
+      pub fn former() -> #former_type_full
       {
-        #former :: < #struct_generics_ty #former_definition< #former_definition_args > > :: new_coercing( former::ReturnPreformed )
+        #former::begin( None, None, former::ReturnPreformed )
       }
     }
 
@@ -519,13 +691,13 @@ specific needs of the broader forming context. It mandates the implementation of
     #standalone_constructor_code
 
     // = entity to former: Implement former traits linking the struct to its generated components.
-    impl< #struct_generics_impl Definition > former::EntityToFormer< Definition >
+    impl< #entity_to_former_impl_generics > former::EntityToFormer< Definition >
     for #struct_type_ref
     where
       Definition : former::FormerDefinition< Storage = #storage_type_ref >,
       #struct_generics_where
     {
-      type Former = #former < #struct_generics_ty Definition > ;
+      type Former = #former < #entity_to_former_ty_generics > ;
     }
 
     impl #struct_impl_generics former::EntityToStorage
@@ -535,21 +707,21 @@ specific needs of the broader forming context. It mandates the implementation of
       type Storage = #storage_type_ref;
     }
 
-    impl< #struct_generics_impl __Context, __Formed, __End > former::EntityToDefinition< __Context, __Formed, __End >
+    impl< #entity_to_definition_impl_generics > former::EntityToDefinition< __Context, __Formed, __End >
     for #struct_type_ref
     where
-      __End : former::FormingEnd< #former_definition_types < #struct_generics_ty __Context, __Formed > >,
+      __End : former::FormingEnd< #former_definition_types < #definition_types_ty_generics > >,
       #struct_generics_where
     {
-      type Definition = #former_definition < #struct_generics_ty __Context, __Formed, __End >;
-      type Types = #former_definition_types < #struct_generics_ty __Context, __Formed >;
+      type Definition = #former_definition < #definition_ty_generics >;
+      type Types = #former_definition_types < #definition_types_ty_generics >;
     }
 
-    impl< #struct_generics_impl __Context, __Formed > former::EntityToDefinitionTypes< __Context, __Formed >
+    impl< #entity_to_definition_types_impl_generics > former::EntityToDefinitionTypes< __Context, __Formed >
     for #struct_type_ref
     #struct_where_clause
     {
-      type Types = #former_definition_types < #struct_generics_ty __Context, __Formed >;
+      type Types = #former_definition_types < #definition_types_ty_generics >;
     }
 
     // = definition types: Define the FormerDefinitionTypes struct.
@@ -584,19 +756,7 @@ specific needs of the broader forming context. It mandates the implementation of
     }
 
     // Add FormerMutator implementation here
-    impl #former_definition_types_impl_generics former::FormerMutator
-    for #former_definition_types_ref
-    #former_definition_types_where_clause
-    {
-      #[ inline( always ) ]
-      fn form_mutation
-      (
-        _storage : &mut Self::Storage,
-        _context : &mut Option< Self::Context >,
-      )
-      {
-      }
-    }
+    #_former_mutator_code
 
     // = definition: Define the FormerDefinition struct.
     /// Holds the definition types used during the formation process.
@@ -635,8 +795,7 @@ specific needs of the broader forming context. It mandates the implementation of
     #[ doc = "Stores potential values for fields during the formation process." ]
     #[ allow( explicit_outlives_requirements ) ]
     #vis struct #former_storage < #struct_generics_with_defaults >
-    where
-      #struct_generics_where
+    #struct_where_clause
     {
       #(
         /// A field
@@ -672,7 +831,7 @@ specific needs of the broader forming context. It mandates the implementation of
       fn preform( mut self ) -> Self::Preformed
       {
         #( #storage_field_preform )*
-        let result = #struct_type_ref
+        let result = #item
         {
           #( #storage_field_name )*
         };
@@ -826,14 +985,12 @@ specific needs of the broader forming context. It mandates the implementation of
 
     // = former begin: Implement `FormerBegin` trait.
     impl #former_begin_impl_generics former::FormerBegin< #lifetime_param_for_former_begin, Definition >
-    for #former < Definition >
+    for #former_type_ref
     where
       Definition : former::FormerDefinition< Storage = #storage_type_ref >,
-      Definition : #lifetime_name,
-      Definition::Storage : #lifetime_name,
-      Definition::Context : #lifetime_name,
-      Definition::End : #lifetime_name,
-      #struct_generics_where
+      Definition::Storage : #struct_lifetime_for_where,
+      Definition::Context : #struct_lifetime_for_where,
+      Definition::End : #struct_lifetime_for_where,
     {
       #[ inline( always ) ]
       fn former_begin
@@ -854,17 +1011,17 @@ specific needs of the broader forming context. It mandates the implementation of
 
     // = subformer: Define the `AsSubformer` type alias.
     /// Provides a specialized former for structure using predefined settings for superformer and end conditions.
-    #vis type #as_subformer < #struct_generics_ty __Superformer, __End > = #as_subformer_former;
+    #as_subformer_alias
 
 
     // = as subformer end: Define the `AsSubformerEnd` trait.
     #[ doc = #as_subformer_end_doc ]
-    pub trait #as_subformer_end < #struct_generics_impl SuperFormer >
+    #as_subformer_end_trait
     #as_subformer_end_where_clause
     {
     }
 
-    impl< #struct_generics_impl SuperFormer, __T > #as_subformer_end < #struct_generics_ty SuperFormer >
+    #as_subformer_end_impl
     for __T
     #as_subformer_end_where_clause
     {
@@ -874,5 +1031,12 @@ specific needs of the broader forming context. It mandates the implementation of
     #( #namespace_code )*
 
   };
+  
+  // Add debug output if #[debug] attribute is present
+  if _has_debug {
+    let about = format!("derive : Former\nstruct : {item}");
+    diag::report_print(about, original_input, &result);
+  }
+  
   Ok(result)
 }

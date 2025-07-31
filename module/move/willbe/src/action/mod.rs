@@ -15,7 +15,7 @@ crate::mod_interface!
   layer publish;
   /// Return the differences between a local and remote package versions.
   layer publish_diff;
-  /// Generates health table in main Readme.md file of workspace.
+  /// Generates health table in main readme.md file of workspace.
   layer readme_health_table_renew;
   /// Module headers.
   layer readme_modules_headers_renew;

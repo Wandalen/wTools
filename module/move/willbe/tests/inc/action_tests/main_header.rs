@@ -27,7 +27,7 @@ fn tag_shout_stay()
   // Act
   _ = action::readme_header_renew::orphan::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-  let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+  let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
 
   let mut actual = String::new();
 
@@ -47,7 +47,7 @@ fn branch_cell()
   // Act
   _ = action::readme_header_renew::orphan::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-  let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+  let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
 
   let mut actual = String::new();
 
@@ -66,7 +66,7 @@ fn discord_cell()
   // Act
   _ = action::readme_header_renew::orphan::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-  let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+  let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
 
   let mut actual = String::new();
 
@@ -85,7 +85,7 @@ fn gitpod_cell()
   // Act
   _ = action::readme_header_renew::orphan::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-  let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+  let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
 
   let mut actual = String::new();
 
@@ -104,7 +104,7 @@ fn docs_cell()
   // Act
   _ = action::readme_header_renew::orphan::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-  let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+  let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
 
   let mut actual = String::new();
 
@@ -123,7 +123,7 @@ fn without_fool_config()
   // Act
   _ = action::readme_header_renew::orphan::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-  let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+  let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
 
   let mut actual = String::new();
 
@@ -142,13 +142,13 @@ fn idempotency()
 
   // Act
   _ = action::readme_header_renew::orphan::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
-  let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+  let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
   let mut actual1 = String::new();
   _ = file.read_to_string( &mut actual1 ).unwrap();
   drop( file );
 
   _ = action::readme_header_renew::orphan::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
-  let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+  let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
   let mut actual2 = String::new();
   _ = file.read_to_string( &mut actual2 ).unwrap();
   drop( file );

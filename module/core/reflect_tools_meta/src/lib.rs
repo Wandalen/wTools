@@ -5,7 +5,7 @@
 #![doc(html_root_url = "https://docs.rs/clone_dyn_meta/latest/clone_dyn_meta/")]
 // #![ allow( non_snake_case ) ]
 // #![ allow( non_upper_case_globals ) ]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
 
 // #[ cfg( feature = "enabled" ) ]
 // use macro_tools::prelude::*;

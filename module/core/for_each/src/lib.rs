@@ -2,7 +2,7 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/for_each/latest/for_each/" ) ]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
 
 #![ allow( clippy::empty_line_after_doc_comments ) ]
 #![ allow( clippy::doc_markdown ) ]
@@ -11,7 +11,7 @@
 mod private
 {
 
-  #[ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+  #[ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/readme.md" ) ) ]
   #[ macro_export ]
   macro_rules! for_each
   {

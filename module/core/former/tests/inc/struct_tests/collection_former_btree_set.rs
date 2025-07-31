@@ -122,8 +122,6 @@ fn subformer() {
 
   /// Parent required for the template.
   #[derive(Debug, Default, PartialEq, the_module::Former)]
-  // #[ derive( Debug, Default, PartialEq, the_module::Former ) ] #[ debug ]
-  // #[ derive( Debug, Default, PartialEq ) ]
   pub struct Parent {
     #[ subform_collection( definition = former::BTreeSetDefinition ) ]
     children: BTreeSet<Child>,

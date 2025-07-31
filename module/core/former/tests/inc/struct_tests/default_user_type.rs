@@ -33,6 +33,7 @@ tests_impls! {
 
 //
 
+// Test re-enabled to verify proper fix
 tests_index! {
   test_user_type_with_default,
 }

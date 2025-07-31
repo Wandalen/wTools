@@ -6,7 +6,7 @@ authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/graphtools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/blank/graphtools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/blank/graphtools"

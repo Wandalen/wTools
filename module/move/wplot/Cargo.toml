@@ -7,10 +7,10 @@ authors = [
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>"
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/wplot"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/move/wplot"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/wplot/Readme.md"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/wplot/readme.md"
 description = """
 Plot interface.
 """
@@ -27,7 +27,7 @@ all-features = false
 include = [
   "/rust/impl/plot",
   "/Cargo.toml",
-  "/Readme.md",
+  "/readme.md",
   "/License",
 ]
 

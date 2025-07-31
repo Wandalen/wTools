@@ -6,7 +6,7 @@ authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>"
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/unitore"
 description = """
 Feed reader with the ability to set updates frequency.

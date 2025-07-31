@@ -34,7 +34,7 @@ fn default_case() {
 
   // Assets
   assert!(temp_path.join("module").exists());
-  assert!(temp_path.join("Readme.md").exists());
+  assert!(temp_path.join("readme.md").exists());
   assert!(temp_path.join(".gitattributes").exists());
   assert!(temp_path.join(".gitignore").exists());
   assert!(temp_path.join(".gitpod.yml").exists());

@@ -14,8 +14,6 @@ pub struct Child {
 
 // Parent struct to hold commands
 #[derive(Debug, PartialEq, former::Former)]
-// #[ debug ]
-// #[ derive( Debug, PartialEq ) ]
 pub struct Parent {
   #[subform_entry]
   command: HashMap<String, Child>,

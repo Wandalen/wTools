@@ -1,6 +1,7 @@
-//!
-//! This example demonstrates how to effectively employ the `Former` to configure a `HashMap` using a collection setter.
-//!
+
+//
+// This example demonstrates how to effectively employ the `Former` to configure a `HashMap` using a collection setter.
+//
 
 #[cfg(not(all(
   feature = "enabled",

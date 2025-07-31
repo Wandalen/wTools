@@ -44,6 +44,7 @@ tests_impls! {
 
 //
 
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
 tests_index! {
   test_alias,
 }

@@ -2,6 +2,11 @@
 //! Functions and structures to handle and manipulate generic parameters using the `syn` crate. It's designed to support macro-driven code generation by simplifying, merging, extracting, and decomposing `syn::Generics`.
 //!
 
+// Sub-modules
+pub mod classification;
+pub mod filter;
+pub mod combine;
+
 /// Define a private namespace for all its items.
 mod private {
 
@@ -185,6 +190,179 @@ mod private {
       } else {
         let (_, ty_g, _) = self.syn_generics.split_for_impl();
         quote::quote! { #base_ident #ty_g }
+      }
+    }
+
+    /// Get classification of the generics.
+    ///
+    /// This method analyzes the generic parameters and returns a classification
+    /// containing information about the types of parameters present.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use macro_tools::generic_params::{GenericsRef, classify_generics};
+    /// use syn::parse_quote;
+    ///
+    /// let generics: syn::Generics = parse_quote! { <'a, T, const N: usize> };
+    /// let generics_ref = GenericsRef::new(&generics);
+    /// let classification = generics_ref.classification();
+    ///
+    /// assert!(classification.has_mixed);
+    /// assert_eq!(classification.lifetimes.len(), 1);
+    /// assert_eq!(classification.types.len(), 1);
+    /// assert_eq!(classification.consts.len(), 1);
+    /// ```
+    #[must_use]
+    pub fn classification(&self) -> super::classification::GenericsClassification<'a> {
+      super::classification::classify_generics(self.syn_generics)
+    }
+    
+    /// Get impl generics without lifetimes.
+    ///
+    /// This method returns the impl generics token stream with lifetime parameters filtered out,
+    /// keeping only type and const parameters.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use macro_tools::generic_params::GenericsRef;
+    /// use syn::parse_quote;
+    ///
+    /// let generics: syn::Generics = parse_quote! { <'a, T: Clone, const N: usize> };
+    /// let generics_ref = GenericsRef::new(&generics);
+    /// let impl_no_lifetimes = generics_ref.impl_generics_no_lifetimes();
+    ///
+    /// // Result will be: <T: Clone, const N: usize>
+    /// ```
+    #[must_use]
+    pub fn impl_generics_no_lifetimes(&self) -> proc_macro2::TokenStream {
+      let filtered = super::filter::filter_params(&self.syn_generics.params, super::filter::filter_non_lifetimes);
+      if filtered.is_empty() {
+        quote::quote! {}
+      } else {
+        quote::quote! { < #filtered > }
+      }
+    }
+    
+    /// Get type generics without lifetimes.
+    ///
+    /// This method returns the type generics token stream with lifetime parameters filtered out,
+    /// keeping only type and const parameters (simplified for type usage).
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use macro_tools::generic_params::GenericsRef;
+    /// use syn::parse_quote;
+    ///
+    /// let generics: syn::Generics = parse_quote! { <'a, T, const N: usize> };
+    /// let generics_ref = GenericsRef::new(&generics);
+    /// let ty_no_lifetimes = generics_ref.ty_generics_no_lifetimes();
+    ///
+    /// // Result will be: <T, N>
+    /// ```
+    #[must_use]
+    pub fn ty_generics_no_lifetimes(&self) -> proc_macro2::TokenStream {
+      let (_, _, ty_params, _) = decompose(self.syn_generics);
+      let filtered = super::filter::filter_params(&ty_params, super::filter::filter_non_lifetimes);
+      if filtered.is_empty() {
+        quote::quote! {}
+      } else {
+        quote::quote! { < #filtered > }
+      }
+    }
+    
+    /// Check if generics contain only lifetime parameters.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use macro_tools::generic_params::GenericsRef;
+    /// use syn::parse_quote;
+    ///
+    /// let generics: syn::Generics = parse_quote! { <'a, 'b> };
+    /// let generics_ref = GenericsRef::new(&generics);
+    /// assert!(generics_ref.has_only_lifetimes());
+    ///
+    /// let generics2: syn::Generics = parse_quote! { <'a, T> };
+    /// let generics_ref2 = GenericsRef::new(&generics2);
+    /// assert!(!generics_ref2.has_only_lifetimes());
+    /// ```
+    #[must_use]
+    pub fn has_only_lifetimes(&self) -> bool {
+      self.classification().has_only_lifetimes
+    }
+    
+    /// Check if generics contain only type parameters.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use macro_tools::generic_params::GenericsRef;
+    /// use syn::parse_quote;
+    ///
+    /// let generics: syn::Generics = parse_quote! { <T, U> };
+    /// let generics_ref = GenericsRef::new(&generics);
+    /// assert!(generics_ref.has_only_types());
+    ///
+    /// let generics2: syn::Generics = parse_quote! { <T, const N: usize> };
+    /// let generics_ref2 = GenericsRef::new(&generics2);
+    /// assert!(!generics_ref2.has_only_types());
+    /// ```
+    #[must_use]
+    pub fn has_only_types(&self) -> bool {
+      self.classification().has_only_types
+    }
+    
+    /// Check if generics contain only const parameters.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use macro_tools::generic_params::GenericsRef;
+    /// use syn::parse_quote;
+    ///
+    /// let generics: syn::Generics = parse_quote! { <const N: usize, const M: i32> };
+    /// let generics_ref = GenericsRef::new(&generics);
+    /// assert!(generics_ref.has_only_consts());
+    /// ```
+    #[must_use]
+    pub fn has_only_consts(&self) -> bool {
+      self.classification().has_only_consts
+    }
+    
+    /// Get type path without lifetime parameters.
+    ///
+    /// This method returns a token stream representing a path to a type with
+    /// lifetime parameters filtered out from the generic arguments.
+    ///
+    /// # Arguments
+    ///
+    /// * `base_ident` - The identifier of the base type
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use macro_tools::generic_params::GenericsRef;
+    /// use syn::{parse_quote, Ident};
+    /// use quote::format_ident;
+    ///
+    /// let generics: syn::Generics = parse_quote! { <'a, T, const N: usize> };
+    /// let generics_ref = GenericsRef::new(&generics);
+    /// let base = format_ident!("MyType");
+    /// let path = generics_ref.type_path_no_lifetimes(&base);
+    ///
+    /// // Result will be: MyType::<T, N>
+    /// ```
+    #[must_use]
+    pub fn type_path_no_lifetimes(&self, base_ident: &syn::Ident) -> proc_macro2::TokenStream {
+      let ty_no_lifetimes = self.ty_generics_no_lifetimes();
+      if self.syn_generics.params.is_empty() || 
+         self.syn_generics.params.iter().all(|p| matches!(p, syn::GenericParam::Lifetime(_))) {
+        quote::quote! { #base_ident }
+      } else {
+        quote::quote! { #base_ident #ty_no_lifetimes }
       }
     }
   }
@@ -485,7 +663,9 @@ mod private {
     let mut generics_for_ty = syn::punctuated::Punctuated::new();
 
     // Process each generic parameter
-    for param in &generics.params {
+    let params_count = generics.params.len();
+    for (idx, param) in generics.params.iter().enumerate() {
+      let is_last = idx == params_count - 1;
       match param {
         syn::GenericParam::Type(type_param) => {
           // Retain bounds for generics_for_impl, remove defaults
@@ -498,7 +678,9 @@ mod private {
             default: None,  // Remove default value
           });
           generics_for_impl.push_value(impl_param);
-          generics_for_impl.push_punct(syn::token::Comma::default());
+          if !is_last {
+            generics_for_impl.push_punct(syn::token::Comma::default());
+          }
 
           // Simplify for generics_for_ty by removing all except identifiers
           let ty_param = syn::GenericParam::Type(syn::TypeParam {
@@ -510,7 +692,9 @@ mod private {
             default: None,
           });
           generics_for_ty.push_value(ty_param);
-          generics_for_ty.push_punct(syn::token::Comma::default());
+          if !is_last {
+            generics_for_ty.push_punct(syn::token::Comma::default());
+          }
         }
         syn::GenericParam::Const(const_param) => {
           // Simplify const parameters by removing all details except the identifier
@@ -524,7 +708,9 @@ mod private {
             default: None,
           });
           generics_for_impl.push_value(impl_param);
-          generics_for_impl.push_punct(syn::token::Comma::default());
+          if !is_last {
+            generics_for_impl.push_punct(syn::token::Comma::default());
+          }
 
           let ty_param = syn::GenericParam::Const(syn::ConstParam {
             attrs: vec![],
@@ -536,12 +722,16 @@ mod private {
             default: None,
           });
           generics_for_ty.push_value(ty_param);
-          generics_for_ty.push_punct(syn::token::Comma::default());
+          if !is_last {
+            generics_for_ty.push_punct(syn::token::Comma::default());
+          }
         }
         syn::GenericParam::Lifetime(lifetime_param) => {
           // Lifetimes are added as-is to generics_for_impl and without bounds to generics_for_ty
           generics_for_impl.push_value(syn::GenericParam::Lifetime(lifetime_param.clone()));
-          generics_for_impl.push_punct(syn::token::Comma::default());
+          if !is_last {
+            generics_for_impl.push_punct(syn::token::Comma::default());
+          }
 
           let ty_param = syn::GenericParam::Lifetime(syn::LifetimeParam {
             attrs: vec![],
@@ -550,9 +740,19 @@ mod private {
             bounds: syn::punctuated::Punctuated::new(),
           });
           generics_for_ty.push_value(ty_param);
-          generics_for_ty.push_punct(syn::token::Comma::default());
+          if !is_last {
+            generics_for_ty.push_punct(syn::token::Comma::default());
+          }
         }
       }
+    }
+
+    // Remove any trailing punctuation from impl and ty generics to prevent trailing commas
+    while generics_for_impl.trailing_punct() {
+      generics_for_impl.pop_punct();
+    }
+    while generics_for_ty.trailing_punct() {
+      generics_for_ty.pop_punct();
     }
 
     // Clone where predicates if present, ensuring they end with a comma
@@ -567,7 +767,6 @@ mod private {
     (generics_with_defaults, generics_for_impl, generics_for_ty, generics_where)
   }
 }
-
 #[doc(inline)]
 #[allow(unused_imports)]
 pub use own::*;
@@ -581,7 +780,29 @@ pub mod own {
   #[doc(inline)]
   pub use orphan::*;
   #[doc(inline)]
-  pub use private::{merge, only_names, names, decompose, GenericsRef, GenericsWithWhere};
+  pub use private::{
+    merge, only_names, names, decompose, GenericsRef, GenericsWithWhere,
+  };
+  
+  // Classification utilities
+  #[doc(inline)]
+  pub use super::classification::{
+    GenericsClassification, classify_generics,
+    DecomposedClassified, decompose_classified,
+  };
+  
+  // Filter utilities
+  #[doc(inline)]
+  pub use super::filter::{
+    filter_params,
+    filter_lifetimes, filter_types, filter_consts, filter_non_lifetimes,
+  };
+  
+  // Combination utilities
+  #[doc(inline)]
+  pub use super::combine::{
+    merge_params_ordered, params_with_additional, params_from_components,
+  };
 }
 
 /// Orphan namespace of the module.
@@ -601,8 +822,7 @@ pub mod exposed {
   pub use super::super::generic_params;
 
   #[doc(inline)]
-  #[allow(unused_imports)]
-  pub use super::{prelude::*};
+  pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

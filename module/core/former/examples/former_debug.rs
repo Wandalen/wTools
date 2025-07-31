@@ -1,7 +1,8 @@
-//!
-//! This is a demonstration of attribute debug.
-//! The attribute `#[ debug ]` outputs generated code into the console during compilation.
-//!
+
+//
+// This is a demonstration of attribute debug.
+// The attribute `#[ debug ]` outputs generated code into the console during compilation.
+//
 
 #[cfg(any(not(feature = "derive_former"), not(feature = "enabled")))]
 fn main() {}

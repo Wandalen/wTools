@@ -11,8 +11,6 @@ struct Child {
 
 /// Parent required for the template.
 #[derive(Debug, Default, PartialEq, the_module::Former)]
-// #[ derive( Debug, Default, PartialEq, the_module::Former ) ] #[ debug ]
-// #[ derive( Debug, Default, PartialEq ) ]
 struct Parent {
   #[ scalar( name = children3 ) ]
   #[ subform_collection( name = children2 ) ]

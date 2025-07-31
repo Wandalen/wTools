@@ -1,10 +1,11 @@
-//! ## Example : Custom Definition
-//!
-//! Define a custom former definition and custom forming logic, and apply them to a collection.
-//!
-//! The example showcases how to accumulate elements into a collection and then transform them into a single result
-//! using a custom `FormingEnd` implementation. This pattern is useful for scenarios where the formation process
-//! involves aggregation or transformation of input elements into a different type or form.
+
+// ## Example : Custom Definition
+//
+// Define a custom former definition and custom forming logic, and apply them to a collection.
+//
+// The example showcases how to accumulate elements into a collection and then transform them into a single result
+// using a custom `FormingEnd` implementation. This pattern is useful for scenarios where the formation process
+// involves aggregation or transformation of input elements into a different type or form.
 
 //#[cfg(not(all(
 //  feature = "enabled",

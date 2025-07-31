@@ -7,7 +7,7 @@ authors = [
   "Bogdan Balushkin <bohdan.b@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/crates_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/move/crates_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/crates_tools"

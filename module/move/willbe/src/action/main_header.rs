@@ -176,7 +176,7 @@ mod private
     }
   }
 
-  /// Generate header in main Readme.md.
+  /// Generate header in main readme.md.
   /// The location of header is defined by a tag :
   /// ``` md
   /// <!--{ generate.main_header.start() }-->

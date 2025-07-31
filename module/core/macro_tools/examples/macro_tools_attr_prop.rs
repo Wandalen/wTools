@@ -26,11 +26,20 @@
 //! defined in other crates.
 //!
 
+#[ cfg( not( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ) ]
+fn main() 
+{
+  println!( "This example requires the 'enabled', 'attr_prop', 'ct', and 'components' features to be enabled." );
+  println!( "Try running with: cargo run --example macro_tools_attr_prop --all-features" );
+}
+
+#[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
 use macro_tools::{
   ct, syn_err, return_syn_err, qt, Result, AttributeComponent, AttributePropertyComponent, AttributePropertyBoolean,
   AttributePropertySingletone, Assign,
 };
 
+#[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
 /// Represents the attributes of a struct. Aggregates all its attributes.
 #[derive(Debug, Default)]
 pub struct ItemAttributes {
@@ -38,6 +47,7 @@ pub struct ItemAttributes {
   pub mutator: AttributeMutator,
 }
 
+#[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
 impl ItemAttributes {
   /// Constructs a `ItemAttributes` instance from an iterator of attributes.
   ///
@@ -78,32 +88,39 @@ impl ItemAttributes {
   }
 }
 
+#[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
 /// Marker type for attribute property to specify whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
 #[derive(Debug, Default, Clone, Copy)]
 pub struct AttributePropertyDebugMarker;
 
+#[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
 impl AttributePropertyComponent for AttributePropertyDebugMarker {
   const KEYWORD: &'static str = "debug";
 }
 
+#[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
 /// Specifies whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
 pub type AttributePropertyDebug = AttributePropertySingletone<AttributePropertyDebugMarker>;
 
+#[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
 /// Marker type for attribute property to indicate whether a custom code should be generated.
 /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
 #[derive(Debug, Default, Clone, Copy)]
 pub struct AttributePropertyCustomMarker;
 
+#[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
 impl AttributePropertyComponent for AttributePropertyCustomMarker {
   const KEYWORD: &'static str = "custom";
 }
 
+#[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
 /// Indicates whether a custom code should be generated.
 /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
 pub type AttributePropertyCustom = AttributePropertyBoolean<AttributePropertyCustomMarker>;
 
+#[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
 /// Represents attributes for customizing the mutation process in a forming operation.
 ///
 /// ## Example of code
@@ -121,6 +138,7 @@ pub struct AttributeMutator {
   pub debug: AttributePropertyDebug,
 }
 
+#[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
 impl AttributeComponent for AttributeMutator {
   const KEYWORD: &'static str = "mutator";
 
@@ -138,6 +156,7 @@ impl AttributeComponent for AttributeMutator {
   }
 }
 
+#[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
 // Implement `Assign` trait to allow assigning `AttributeMutator` to `ItemAttributes`.
 impl<IntoT> Assign<AttributeMutator, IntoT> for ItemAttributes
 where
@@ -149,6 +168,7 @@ where
   }
 }
 
+#[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
 // Implement `Assign` trait to allow assigning `AttributePropertyDebug` to `AttributeMutator`.
 impl<IntoT> Assign<AttributePropertyDebug, IntoT> for AttributeMutator
 where
@@ -160,6 +180,7 @@ where
   }
 }
 
+#[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
 // Implement `Assign` trait to allow assigning `AttributePropertyCustom` to `AttributeMutator`.
 impl<IntoT> Assign<AttributePropertyCustom, IntoT> for AttributeMutator
 where
@@ -171,6 +192,7 @@ where
   }
 }
 
+#[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
 impl syn::parse::Parse for AttributeMutator {
   fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
     let mut result = Self::default();
@@ -216,8 +238,28 @@ impl syn::parse::Parse for AttributeMutator {
   }
 }
 
-#[cfg(all(feature = "enabled", feature = "attr_prop", debug_assertions))]
-fn main() {}
+#[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
+fn main() 
+{
+  println!( "=== Attribute Properties Example ===" );
+  println!();
+  
+  // Example of parsing an attribute
+  let input: syn::Attribute = syn::parse_quote!( #[ mutator( custom = true, debug ) ] );
+  match ItemAttributes::from_attrs(core::iter::once(&input)) {
+    Ok(attrs) => {
+      println!( "Successfully parsed attribute: {:#?}", attrs );
+      println!( "Custom property: {}", attrs.mutator.custom.internal() );
+      println!( "Debug property: {}", attrs.mutator.debug.internal() );
+    }
+    Err(e) => {
+      println!( "Error parsing attribute: {}", e );
+    }
+  }
+  
+  println!();
+  println!( "=== End of Example ===" );
+}
 
 #[cfg(test)]
 mod test {

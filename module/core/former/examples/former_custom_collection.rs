@@ -1,9 +1,9 @@
-//! Example `former_custom_collection.rs`
-//!
-//! This example demonstrates how to define and use a custom collection with former.
-//! The custom collection implemented here is a `LoggingSet`, which extends the basic `HashSet` behavior
-//! by logging each addition. This example illustrates how to integrate such custom collections with the
-//! Former trait system for use in structured data types.
+// Example `former_custom_collection.rs`
+//
+// This example demonstrates how to define and use a custom collection with former.
+// The custom collection implemented here is a `LoggingSet`, which extends the basic `HashSet` behavior
+// by logging each addition. This example illustrates how to integrate such custom collections with the
+// Former trait system for use in structured data types.
 
 // qqq : replace !no_std with !no_std || use_alloc when collection_tools reexports iterators -- done
 #[cfg(not(all(

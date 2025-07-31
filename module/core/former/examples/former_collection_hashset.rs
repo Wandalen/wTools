@@ -1,6 +1,7 @@
-//!
-//! This example demonstrates the use of the `Former` to build a `collection_tools::HashSet` through subforming.
-//!
+
+//
+// This example demonstrates the use of the `Former` to build a `collection_tools::HashSet` through subforming.
+//
 
 #[cfg(not(all(
   feature = "enabled",

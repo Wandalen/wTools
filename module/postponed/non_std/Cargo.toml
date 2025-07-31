@@ -7,7 +7,7 @@ authors = [
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/non_std"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/alias/non_std"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/alias/non_std"
@@ -27,7 +27,7 @@ all-features = false
 include = [
   "/rust/impl/non_std_lib.rs",
   "/Cargo.toml",
-  "/Readme.md",
+  "/readme.md",
   "/License",
 ]
 

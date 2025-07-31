@@ -32,7 +32,7 @@ fn tags_should_stay() {
   _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
   // _ = action::main_header::action( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
 
-  let mut file = std::fs::File::open(temp.path().join("test_module").join("Readme.md")).unwrap();
+  let mut file = std::fs::File::open(temp.path().join("test_module").join("readme.md")).unwrap();
 
   let mut actual = String::new();
 
@@ -50,7 +50,7 @@ fn default_stability() {
 
   // Act
   _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
-  let mut file = std::fs::File::open(temp.path().join("test_module").join("Readme.md")).unwrap();
+  let mut file = std::fs::File::open(temp.path().join("test_module").join("readme.md")).unwrap();
 
   let mut actual = String::new();
 
@@ -68,7 +68,7 @@ fn docs() {
 
   // Act
   _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
-  let mut file = std::fs::File::open(temp.path().join("test_module").join("Readme.md")).unwrap();
+  let mut file = std::fs::File::open(temp.path().join("test_module").join("readme.md")).unwrap();
 
   let mut actual = String::new();
 
@@ -86,7 +86,7 @@ fn no_gitpod() {
 
   // Act
   _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
-  let mut file = std::fs::File::open(temp.path().join("test_module").join("Readme.md")).unwrap();
+  let mut file = std::fs::File::open(temp.path().join("test_module").join("readme.md")).unwrap();
 
   let mut actual = String::new();
 
@@ -102,7 +102,7 @@ fn with_gitpod() {
 
   // Act
   _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
-  let mut file = std::fs::File::open(temp.path().join("module").join("test_module").join("Readme.md")).unwrap();
+  let mut file = std::fs::File::open(temp.path().join("module").join("test_module").join("readme.md")).unwrap();
 
   let mut actual = String::new();
 
@@ -119,7 +119,7 @@ fn discord() {
 
   // Act
   _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
-  let mut file = std::fs::File::open(temp.path().join("test_module").join("Readme.md")).unwrap();
+  let mut file = std::fs::File::open(temp.path().join("test_module").join("readme.md")).unwrap();
 
   let mut actual = String::new();
 
@@ -136,7 +136,7 @@ fn status() {
 
   // Act
   _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
-  let mut file = std::fs::File::open(temp.path().join("test_module").join("Readme.md")).unwrap();
+  let mut file = std::fs::File::open(temp.path().join("test_module").join("readme.md")).unwrap();
 
   let mut actual = String::new();
 
@@ -153,13 +153,13 @@ fn idempotency() {
 
   // Act
   _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
-  let mut file = std::fs::File::open(temp.path().join("test_module").join("Readme.md")).unwrap();
+  let mut file = std::fs::File::open(temp.path().join("test_module").join("readme.md")).unwrap();
   let mut actual1 = String::new();
   _ = file.read_to_string(&mut actual1).unwrap();
   drop(file);
 
   _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
-  let mut file = std::fs::File::open(temp.path().join("test_module").join("Readme.md")).unwrap();
+  let mut file = std::fs::File::open(temp.path().join("test_module").join("readme.md")).unwrap();
   let mut actual2 = String::new();
   _ = file.read_to_string(&mut actual2).unwrap();
   drop(file);
@@ -174,9 +174,9 @@ fn with_many_members_and_varius_config() {
 
   _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
 
-  let mut file_b = std::fs::File::open(temp.path().join("b").join("Readme.md")).unwrap();
-  let mut file_c = std::fs::File::open(temp.path().join("c").join("Readme.md")).unwrap();
-  let mut file_d = std::fs::File::open(temp.path().join("d").join("Readme.md")).unwrap();
+  let mut file_b = std::fs::File::open(temp.path().join("b").join("readme.md")).unwrap();
+  let mut file_c = std::fs::File::open(temp.path().join("c").join("readme.md")).unwrap();
+  let mut file_d = std::fs::File::open(temp.path().join("d").join("readme.md")).unwrap();
 
   let mut actual_b = String::new();
   let mut actual_c = String::new();
