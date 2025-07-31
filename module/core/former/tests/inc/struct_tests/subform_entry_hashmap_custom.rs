@@ -43,7 +43,10 @@ where
       Context = Self,
     >,
     Definition2::End: former::FormingEnd<Definition2::Types>,
-    Former2: former::FormerBegin<Definition2>,
+    for<'a> Former2: former::FormerBegin<'a, Definition2>,
+    Definition2::Storage: 'static,
+    Definition2::Context: 'static,
+    Definition2::End: 'static,
   {
     let on_end = |substorage: ChildFormerStorage, super_former: core::option::Option<Self>| -> Self {
       let mut super_former = super_former.unwrap();

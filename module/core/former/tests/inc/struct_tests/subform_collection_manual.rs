@@ -31,9 +31,16 @@ where
   Definition: former::FormerDefinition<Storage = ParentFormerStorage>,
 {
   #[inline(always)]
-  pub fn _children_subform_collection<Former2>(self) -> Former2
+  pub fn _children_subform_collection<'a, Former2>(self) -> Former2
   where
-    Former2: former::FormerBegin<former::VectorDefinition<Child, Self, Self, ParentSubformCollectionChildrenEnd<Definition>>>,
+    Former2: former::FormerBegin<'a, former::VectorDefinition<Child, Self, Self, ParentSubformCollectionChildrenEnd<Definition>>>,
+    former::VectorDefinition<Child, Self, Self, ParentSubformCollectionChildrenEnd<Definition>>: former::FormerDefinition<
+      Storage = Vec<Child>,
+      Context = Self,
+      End = ParentSubformCollectionChildrenEnd<Definition>,
+    >,
+    ParentSubformCollectionChildrenEnd<Definition>: former::FormingEnd<<Vec<Child> as former::EntityToDefinitionTypes<Self, Self>>::Types>,
+    Definition: 'a,
   {
     Former2::former_begin(None, Some(self), ParentSubformCollectionChildrenEnd::<Definition>::default())
   }
@@ -42,8 +49,15 @@ where
   pub fn children(
     self,
   ) -> former::CollectionFormer<Child, former::VectorDefinition<Child, Self, Self, ParentSubformCollectionChildrenEnd<Definition>>>
+  where
+    former::VectorDefinition<Child, Self, Self, ParentSubformCollectionChildrenEnd<Definition>>: former::FormerDefinition<
+      Storage = Vec<Child>,
+      Context = Self,
+      End = ParentSubformCollectionChildrenEnd<Definition>,
+    >,
+    ParentSubformCollectionChildrenEnd<Definition>: former::FormingEnd<<Vec<Child> as former::EntityToDefinitionTypes<Self, Self>>::Types>,
   {
-    self._children_subform_collection::< former::CollectionFormer::< Child, former::VectorDefinition< Child, Self, Self, ParentSubformCollectionChildrenEnd< Definition >, > > >()
+    self._children_subform_collection::<former::CollectionFormer<Child, former::VectorDefinition<Child, Self, Self, ParentSubformCollectionChildrenEnd<Definition>>>>()
   }
 }
 

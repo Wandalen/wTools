@@ -41,7 +41,10 @@ where
     >,
     Definition2::Types:
       former::FormerDefinitionTypes<Storage = <Child as former::EntityToStorage>::Storage, Formed = Self, Context = Self>,
-    Former2: former::FormerBegin<Definition2>,
+    for<'a> Former2: former::FormerBegin<'a, Definition2>,
+    Definition2::Storage: 'static,
+    Definition2::Context: 'static,
+    Definition2::End: 'static,
   {
     Former2::former_begin(None, Some(self), ParentFormerSubformScalarChildEnd::default())
   }
