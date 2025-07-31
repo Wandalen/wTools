@@ -202,8 +202,8 @@ mod subform_entry;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry_named;
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry_named_manual;  // BLOCKED: Missing ParentFormer types and subform_entry attribute
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_entry_named_manual;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry_setter_off;
