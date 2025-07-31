@@ -215,7 +215,7 @@ mod private
       }
 
       let joined = results.join( "\n" );
-      Ok( Cow::Owned( joined ) )
+      std::io::Result::Ok( Cow::Owned( joined ) )
     }
   }
 

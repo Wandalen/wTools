@@ -157,7 +157,7 @@ impl Pipeline
   ///
   /// let result = pipeline.process_command("help", context);
   /// ```
-  pub fn process_command( &self, command_str : &str, mut context : ExecutionContext ) -> CommandResult
+  #[must_use] pub fn process_command( &self, command_str : &str, mut context : ExecutionContext ) -> CommandResult
   {
     let command = command_str.to_string();
 
@@ -172,7 +172,7 @@ impl Pipeline
           command,
           outputs : vec![],
           success : false,
-          error : Some( format!( "Parse error: {}", error ) ),
+          error : Some( format!( "Parse error: {error}" ) ),
         };
       }
     };
@@ -190,7 +190,7 @@ impl Pipeline
           command,
           outputs : vec![],
           success : false,
-          error : Some( format!( "Semantic analysis error: {}", error ) ),
+          error : Some( format!( "Semantic analysis error: {error}" ) ),
         };
       }
     };
@@ -211,7 +211,7 @@ impl Pipeline
         command,
         outputs : vec![],
         success : false,
-        error : Some( format!( "Execution error: {}", error ) ),
+        error : Some( format!( "Execution error: {error}" ) ),
       },
     }
   }
@@ -221,7 +221,7 @@ impl Pipeline
   ///
   /// This is a convenience method that creates a default execution context
   /// for simple use cases.
-  pub fn process_command_simple( &self, command_str : &str ) -> CommandResult
+  #[must_use] pub fn process_command_simple( &self, command_str : &str ) -> CommandResult
   {
     self.process_command( command_str, ExecutionContext::default() )
   }
@@ -251,7 +251,7 @@ impl Pipeline
   /// let batch_result = pipeline.process_batch(&commands, context);
   /// println!("Success rate: {:.1}%", batch_result.success_rate());
   /// ```
-  pub fn process_batch( &self, commands : &[ &str ], context : ExecutionContext ) -> BatchResult
+  #[must_use] pub fn process_batch( &self, commands : &[ &str ], context : ExecutionContext ) -> BatchResult
   {
     let mut results = Vec::new();
     let mut successful = 0;
@@ -292,7 +292,7 @@ impl Pipeline
   /// # Arguments
   /// * `commands` - Slice of command strings to process
   /// * `context` - The execution context (will be moved and mutated)
-  pub fn process_sequence( &self, commands : &[ &str ], context : ExecutionContext ) -> BatchResult
+  #[must_use] pub fn process_sequence( &self, commands : &[ &str ], context : ExecutionContext ) -> BatchResult
   {
     let mut results = Vec::new();
     let mut successful = 0;
@@ -352,7 +352,7 @@ impl Pipeline
   ///
   /// Returns a vector of validation results, one for each command.
   /// This is useful for batch validation scenarios.
-  pub fn validate_batch( &self, commands : &[ &str ] ) -> Vec< Result< (), Error > >
+  #[must_use] pub fn validate_batch( &self, commands : &[ &str ] ) -> Vec< Result< (), Error > >
   {
     commands.iter()
     .map( | &cmd_str | self.validate_command( cmd_str ) )
@@ -377,7 +377,7 @@ impl Pipeline
 /// let context = ExecutionContext::default();
 /// let result = process_single_command("help", &registry, context);
 /// ```
-pub fn process_single_command
+#[must_use] pub fn process_single_command
 (
   command_str : &str,
   registry : &CommandRegistry,
@@ -401,7 +401,7 @@ CommandResult
         command,
         outputs : vec![],
         success : false,
-        error : Some( format!( "Parse error: {}", error ) ),
+        error : Some( format!( "Parse error: {error}" ) ),
       };
     }
   };
@@ -419,7 +419,7 @@ CommandResult
         command,
         outputs : vec![],
         success : false,
-        error : Some( format!( "Semantic analysis error: {}", error ) ),
+        error : Some( format!( "Semantic analysis error: {error}" ) ),
       };
     }
   };
@@ -441,7 +441,7 @@ CommandResult
       command,
       outputs : vec![],
       success : false,
-      error : Some( format!( "Execution error: {}", error ) ),
+      error : Some( format!( "Execution error: {error}" ) ),
     },
   }
 }
@@ -506,7 +506,7 @@ mod tests
     // Add a simple test command
     let test_command = CommandDefinition::former()
     .name( "test" )
-    .namespace( "".to_string() )
+    .namespace( String::new() )
     .description( "Test command".to_string() )
     .hint( "Test command" )
     .status( "stable" )
@@ -515,7 +515,7 @@ mod tests
     .tags( vec![] )
     .permissions( vec![] )
     .idempotent( true )
-    .deprecation_message( "".to_string() )
+    .deprecation_message( String::new() )
     .http_method_hint( "GET".to_string() )
     .examples( vec![] )
     .arguments( vec!
@@ -621,7 +621,7 @@ mod tests
     assert_eq!( batch_result.failed_commands, 1 );
     assert!( !batch_result.all_succeeded() );
     assert!( batch_result.any_failed() );
-    assert!( ( batch_result.success_rate() - 66.666666 ).abs() < 0.001 );
+    assert!( ( batch_result.success_rate() - 66.666_666 ).abs() < 0.001 );
   }
 
   #[ test ]

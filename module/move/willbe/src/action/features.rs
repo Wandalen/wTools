@@ -11,6 +11,8 @@ mod private
   use former::Former;
   use error::untyped::Context;
   // use workspace::Workspace;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{self, Ok, Err};
 
   /// Options available for the .features command
   #[ derive( Debug, Former ) ]
@@ -103,7 +105,7 @@ mod private
         report.inner.insert( package.name().to_owned(), features.to_owned() );
       }
     );
-    Ok( report )
+    error::untyped::Result::Ok( report )
   }
 }
 

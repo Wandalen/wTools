@@ -10,7 +10,7 @@ use regex::Regex;
 
 fn setup_test_environment(command: CommandDefinition) -> CommandRegistry {
   let mut registry = CommandRegistry::new();
-  registry.commands.insert(command.name.clone(), command);
+  registry.register(command);
   registry
 }
 
@@ -26,7 +26,7 @@ fn analyze_program(
   // eprintln!( "Named Args: {:?}", named_args );
 
   let instructions = vec![unilang_parser::GenericInstruction {
-    command_path_slices: command_name.split('.').map(|s| s.to_string()).collect(),
+    command_path_slices: command_name.split('.').map(std::string::ToString::to_string).collect(),
     named_arguments: named_args,
     positional_arguments: positional_args,
     help_requested: false,
@@ -34,10 +34,10 @@ fn analyze_program(
   }];
   // eprintln!( "Manually Constructed Instructions: {:?}", instructions );
   let analyzer = SemanticAnalyzer::new(&instructions, registry);
-  let result = analyzer.analyze();
+  
   // eprintln!( "Analyzer Result: {:?}", result );
   // eprintln!( "--- analyze_program end ---" );
-  result
+  analyzer.analyze()
 }
 
 #[test]
@@ -58,22 +58,22 @@ fn test_path_argument_type() {
         ..Default::default()
       },
       validation_rules: vec![],
-      hint: "".to_string(),
+      hint: String::new(),
       aliases: vec![],
       tags: vec![],
     }],
     routine_link: None,
-    namespace: "".to_string(),
-    hint: "".to_string(),
-    status: "".to_string(),
-    version: "".to_string(),
+    namespace: String::new(),
+    hint: String::new(),
+    status: String::new(),
+    version: String::new(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   let registry = setup_test_environment(command);
   let result = analyze_program(
@@ -97,7 +97,7 @@ fn test_path_argument_type() {
     ".test.command",
     vec![unilang_parser::Argument {
       name: None,
-      value: "".to_string(),
+      value: String::new(),
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
@@ -106,7 +106,7 @@ fn test_path_argument_type() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
 }
 
 #[test]
@@ -129,22 +129,22 @@ fn test_file_argument_type() {
         ..Default::default()
       },
       validation_rules: vec![],
-      hint: "".to_string(),
+      hint: String::new(),
       aliases: vec![],
       tags: vec![],
     }],
     routine_link: None,
-    namespace: "".to_string(),
-    hint: "".to_string(),
-    status: "".to_string(),
-    version: "".to_string(),
+    namespace: String::new(),
+    hint: String::new(),
+    status: String::new(),
+    version: String::new(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   let registry = setup_test_environment(command);
 
@@ -182,7 +182,7 @@ fn test_file_argument_type() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
 
   // Cleanup
   let _ = std::fs::remove_file(file_path);
@@ -209,22 +209,22 @@ fn test_directory_argument_type() {
         ..Default::default()
       },
       validation_rules: vec![],
-      hint: "".to_string(),
+      hint: String::new(),
       aliases: vec![],
       tags: vec![],
     }],
     routine_link: None,
-    namespace: "".to_string(),
-    hint: "".to_string(),
-    status: "".to_string(),
-    version: "".to_string(),
+    namespace: String::new(),
+    hint: String::new(),
+    status: String::new(),
+    version: String::new(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   let registry = setup_test_environment(command);
 
@@ -262,7 +262,7 @@ fn test_directory_argument_type() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
 
   // Cleanup
   let _ = std::fs::remove_dir_all(dir_path);
@@ -286,22 +286,22 @@ fn test_enum_argument_type() {
         ..Default::default()
       },
       validation_rules: vec![],
-      hint: "".to_string(),
+      hint: String::new(),
       aliases: vec![],
       tags: vec![],
     }],
     routine_link: None,
-    namespace: "".to_string(),
-    hint: "".to_string(),
-    status: "".to_string(),
-    version: "".to_string(),
+    namespace: String::new(),
+    hint: String::new(),
+    status: String::new(),
+    version: String::new(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   let registry = setup_test_environment(command);
 
@@ -336,7 +336,7 @@ fn test_enum_argument_type() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
 
   // Test Matrix Row: T1.13
   let result = analyze_program(
@@ -352,7 +352,7 @@ fn test_enum_argument_type() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
 }
 
 #[test]
@@ -372,22 +372,22 @@ fn test_url_argument_type() {
         ..Default::default()
       },
       validation_rules: vec![],
-      hint: "".to_string(),
+      hint: String::new(),
       aliases: vec![],
       tags: vec![],
     }],
     routine_link: None,
-    namespace: "".to_string(),
-    hint: "".to_string(),
-    status: "".to_string(),
-    version: "".to_string(),
+    namespace: String::new(),
+    hint: String::new(),
+    status: String::new(),
+    version: String::new(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   let registry = setup_test_environment(command);
 
@@ -423,7 +423,7 @@ fn test_url_argument_type() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
 }
 
 #[test]
@@ -443,22 +443,22 @@ fn test_datetime_argument_type() {
         ..Default::default()
       },
       validation_rules: vec![],
-      hint: "".to_string(),
+      hint: String::new(),
       aliases: vec![],
       tags: vec![],
     }],
     routine_link: None,
-    namespace: "".to_string(),
-    hint: "".to_string(),
-    status: "".to_string(),
-    version: "".to_string(),
+    namespace: String::new(),
+    hint: String::new(),
+    status: String::new(),
+    version: String::new(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   let registry = setup_test_environment(command);
 
@@ -494,7 +494,7 @@ fn test_datetime_argument_type() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
 }
 
 #[test]
@@ -514,22 +514,22 @@ fn test_pattern_argument_type() {
         ..Default::default()
       },
       validation_rules: vec![],
-      hint: "".to_string(),
+      hint: String::new(),
       aliases: vec![],
       tags: vec![],
     }],
     routine_link: None,
-    namespace: "".to_string(),
-    hint: "".to_string(),
-    status: "".to_string(),
-    version: "".to_string(),
+    namespace: String::new(),
+    hint: String::new(),
+    status: String::new(),
+    version: String::new(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   let registry = setup_test_environment(command);
 
@@ -566,7 +566,7 @@ fn test_pattern_argument_type() {
   );
   assert!(result.is_err());
   let error = result.err().unwrap();
-  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
+  assert!(matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
 }
 
 #[test]
@@ -587,22 +587,22 @@ fn test_default_argument() {
         ..Default::default()
       },
       validation_rules: vec![],
-      hint: "".to_string(),
+      hint: String::new(),
       aliases: vec![],
       tags: vec![],
     }],
     routine_link: None,
-    namespace: "".to_string(),
-    hint: "".to_string(),
-    status: "".to_string(),
-    version: "".to_string(),
+    namespace: String::new(),
+    hint: String::new(),
+    status: String::new(),
+    version: String::new(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   let registry = setup_test_environment(command);
 

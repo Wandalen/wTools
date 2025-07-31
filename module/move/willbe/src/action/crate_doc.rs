@@ -22,6 +22,8 @@ mod private
   use toml_edit::Document;
   use rustdoc_md::rustdoc_json_types::Crate as RustdocCrate;
   use rustdoc_md::rustdoc_json_to_markdown;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{self, Ok, Err};
 
   /// Represents errors specific to the crate documentation generation process.
   #[ derive( Debug, Error ) ]

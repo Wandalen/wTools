@@ -140,7 +140,7 @@ mod private
         }
       }
 
-      Ok( () )
+      std::fmt::Result::Ok( () )
     }
   }
 

@@ -1,4 +1,4 @@
-//! ## Test Matrix for CommandRegistry Key Mismatch Debugging
+//! ## Test Matrix for `CommandRegistry` Key Mismatch Debugging
 //!
 //! This test file is created as part of a focused debugging increment to diagnose
 //! why commands are not being found in the `CommandRegistry` despite seemingly
@@ -10,7 +10,7 @@
 //! |---|---|---|---|
 //! | T-REG-1 | Register and retrieve command with namespace | Command should be found using its fully qualified name. | Print registered key and lookup key with byte representations. |
 
-use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData };
+use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind };
 use unilang::registry::CommandRegistry;
 
 /// Tests that a command with a namespace can be registered and retrieved using its fully qualified name.
@@ -59,8 +59,9 @@ fn test_command_registry_key_mismatch()
   .expect( "Failed to register command with dummy routine" );
 
   // Attempt to retrieve the command using the fully qualified name
-  let lookup_key = if !command_def.namespace.is_empty()
-  {
+  let lookup_key = if command_def.namespace.is_empty() {
+    format!( ".{}", command_def.name )
+  } else {
     let ns = &command_def.namespace;
     if ns.starts_with( '.' )
     {
@@ -70,21 +71,16 @@ fn test_command_registry_key_mismatch()
     {
       format!( ".{}.{}", ns, command_def.name )
     }
-  }
-  else
-  {
-    format!( ".{}", command_def.name )
   };
   println!( "DEBUG: Lookup key: '{}' (bytes: {:?})", lookup_key, lookup_key.as_bytes() );
 
-  let retrieved_command = registry.commands.get( &lookup_key );
+  let retrieved_command = registry.command( &lookup_key );
 
   // Assert that the command is found
   assert!
   (
     retrieved_command.is_some(),
-    "Command '{}' was not found in the registry.",
-    lookup_key
+    "Command '{lookup_key}' was not found in the registry."
   );
   assert_eq!( retrieved_command.unwrap().name, command_def.name );
 
@@ -93,7 +89,6 @@ fn test_command_registry_key_mismatch()
   assert!
   (
     retrieved_routine.is_some(),
-    "Routine for command '{}' was not found in the registry.",
-    lookup_key
+    "Routine for command '{lookup_key}' was not found in the registry."
   );
 }

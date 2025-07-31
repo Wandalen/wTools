@@ -1,6 +1,6 @@
 [package]
 name = "unilang"
-version = "0.2.0"
+version = "0.4.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -15,6 +15,7 @@ Define your command-line utility interface once and get consistent interaction a
 """
 categories = [ "command-line-interface", "command-line-utilities" ]
 keywords = [ "wtools", "CLI", "CUI", "user-interface" ]
+# Note: stress_test_bin in tests/ causes a harmless warning about duplicate targets
 
 [lints]
 workspace = true
@@ -38,6 +39,7 @@ serde_yaml = "0.9"
 url = "2.5.0"
 chrono = { version = "0.4.38", features = ["serde"] }
 regex = "1.10.4"
+phf = { version = "0.11", features = ["macros"] }
 
 ## internal
 error_tools = { workspace = true, features = [ "enabled", "error_typed", "error_untyped" ] }
@@ -71,9 +73,20 @@ path = "tests/inc/phase2/help_generation_test.rs"
 name = "data_model_features_test"
 path = "tests/inc/phase3/data_model_features_test.rs"
 
+[[test]]
+name = "performance_stress_test"
+path = "tests/inc/phase4/performance_stress_test.rs"
+
+# stress_test_bin is a binary, not a test - no [[test]] entry needed
 
 
 
+
+
+[build-dependencies]
+phf_codegen = "0.11"
+serde = "1.0"
+serde_yaml = "0.9"
 
 [dev-dependencies]
 test_tools = { workspace = true }

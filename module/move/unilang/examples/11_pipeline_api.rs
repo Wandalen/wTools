@@ -17,7 +17,7 @@ fn main() -> Result< (), unilang::error::Error >
   // Step 1: Set up a registry with example commands
   let registry = setup_demo_registry()?;
 
-  println!( "✅ Set up registry with {} commands", registry.commands.len() );
+  println!( "✅ Set up registry with {} commands", registry.commands().len() );
 
   // ========================================
   // SECTION 1: BASIC PIPELINE USAGE
@@ -40,7 +40,7 @@ fn main() -> Result< (), unilang::error::Error >
 
   for cmd in &test_commands
   {
-    println!( "\n📝 Processing: '{}'", cmd );
+    println!( "\n📝 Processing: '{cmd}'" );
     let result = pipeline.process_command_simple( cmd );
 
     if result.success
@@ -89,7 +89,7 @@ fn main() -> Result< (), unilang::error::Error >
     println!( "  {}: {} '{}'", i + 1, status, result.command );
     if let Some( error ) = &result.error
     {
-      println!( "     Error: {}", error );
+      println!( "     Error: {error}" );
     }
   }
 
@@ -140,11 +140,11 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "Validating commands without execution:" );
   for cmd in &validation_tests
   {
-    print!( "  '{}' -> ", cmd );
+    print!( "  '{cmd}' -> " );
     match pipeline.validate_command( cmd )
     {
       Ok( () ) => println!( "✅ Valid" ),
-      Err( e ) => println!( "❌ Invalid: {}", e ),
+      Err( e ) => println!( "❌ Invalid: {e}" ),
     }
   }
 
@@ -175,7 +175,7 @@ fn main() -> Result< (), unilang::error::Error >
   match validate_single_command( "text.reverse 'hello'", &convenience_registry )
   {
     Ok( () ) => println!( "✅ Command validation passed" ),
-    Err( e ) => println!( "❌ Command validation failed: {}", e ),
+    Err( e ) => println!( "❌ Command validation failed: {e}" ),
   }
 
   // ========================================
@@ -194,16 +194,13 @@ fn main() -> Result< (), unilang::error::Error >
 
   for ( cmd, expected_error_type ) in &error_test_commands
   {
-    println!( "\n🧪 Testing {}: '{}'", expected_error_type, cmd );
+    println!( "\n🧪 Testing {expected_error_type}: '{cmd}'" );
     let result = pipeline.process_command_simple( cmd );
 
-    if !result.success
-    {
-      println!( "   ❌ Expected failure: {}", result.error.as_ref().unwrap() );
-    }
-    else
-    {
+    if result.success {
       println!( "   ⚠️  Unexpected success" );
+    } else {
+      println!( "   ❌ Expected failure: {}", result.error.as_ref().unwrap() );
     }
   }
 
@@ -232,9 +229,9 @@ fn main() -> Result< (), unilang::error::Error >
   }
   let convenience_duration = start.elapsed();
 
-  println!( "Performance comparison ({} iterations):", iterations );
-  println!( "  Pipeline (reused): {:?}", pipeline_duration );
-  println!( "  Convenience func:  {:?}", convenience_duration );
+  println!( "Performance comparison ({iterations} iterations):" );
+  println!( "  Pipeline (reused): {pipeline_duration:?}" );
+  println!( "  Convenience func:  {convenience_duration:?}" );
   println!( "  Ratio: {:.2}x", convenience_duration.as_nanos() as f64 / pipeline_duration.as_nanos() as f64 );
 
   println!( "\n=== Pipeline API Features Summary ===" );
@@ -289,7 +286,7 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   .tags( vec![ "math".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
   .examples( vec![ "calc.add a::10 b::20".to_string() ] )
   .arguments( vec!
@@ -322,7 +319,7 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     let a = cmd.arguments.get( "a" ).and_then( | v | if let Value::Integer( i ) = v { Some( i ) } else { None } ).unwrap_or( &0 );
     let b = cmd.arguments.get( "b" ).and_then( | v | if let Value::Integer( i ) = v { Some( i ) } else { None } ).unwrap_or( &0 );
     let result = a + b;
-    println!( "🧮 {} + {} = {}", a, b, result );
+    println!( "🧮 {a} + {b} = {result}" );
 
     Ok( OutputData
     {
@@ -345,7 +342,7 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   .tags( vec![ "math".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
   .examples( vec![ "calc.multiply 5 6".to_string() ] )
   .arguments( vec!
@@ -378,7 +375,7 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     let a = cmd.arguments.get( "a" ).and_then( | v | if let Value::Integer( i ) = v { Some( i ) } else { None } ).unwrap_or( &0 );
     let b = cmd.arguments.get( "b" ).and_then( | v | if let Value::Integer( i ) = v { Some( i ) } else { None } ).unwrap_or( &0 );
     let result = a * b;
-    println!( "🧮 {} × {} = {}", a, b, result );
+    println!( "🧮 {a} × {b} = {result}" );
 
     Ok( OutputData
     {
@@ -401,7 +398,7 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   .tags( vec![ "math".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
   .examples( vec![ "calc.divide 20 4".to_string() ] )
   .arguments( vec!
@@ -436,15 +433,14 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
 
     if *divisor == 0
     {
-      return Err( unilang::data::ErrorData
-      {
-        code : "DIVISION_BY_ZERO".to_string(),
-        message : "Cannot divide by zero".to_string(),
-      });
+      return Err( unilang::data::ErrorData::new(
+        "DIVISION_BY_ZERO".to_string(),
+        "Cannot divide by zero".to_string(),
+      ));
     }
 
     let result = dividend / divisor;
-    println!( "🧮 {} ÷ {} = {}", dividend, divisor, result );
+    println!( "🧮 {dividend} ÷ {divisor} = {result}" );
 
     Ok( OutputData
     {
@@ -472,7 +468,7 @@ fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   .tags( vec![ "text".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "POST".to_string() )
   .examples( vec![ "text.reverse 'hello world'".to_string() ] )
   .arguments( vec!
@@ -492,10 +488,10 @@ fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
 
   let reverse_routine = Box::new( | cmd : unilang::semantic::VerifiedCommand, _ctx |
   {
-    let default_text = "".to_string();
+    let default_text = String::new();
     let text = cmd.arguments.get( "text" ).and_then( | v | if let Value::String( s ) = v { Some( s ) } else { None } ).unwrap_or( &default_text );
     let reversed : String = text.chars().rev().collect();
-    println!( "🔄 '{}' → '{}'", text, reversed );
+    println!( "🔄 '{text}' → '{reversed}'" );
 
     Ok( OutputData
     {
@@ -523,7 +519,7 @@ fn setup_util_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   .tags( vec![ "utility".to_string(), "time".to_string() ] )
   .permissions( vec![] )
   .idempotent( false ) // Time changes
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
   .examples( vec![ "util.timestamp".to_string() ] )
   .arguments( vec![] )
@@ -534,7 +530,7 @@ fn setup_util_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     let now = std::time::SystemTime::now();
     let duration = now.duration_since( std::time::UNIX_EPOCH ).unwrap();
     let timestamp = duration.as_secs();
-    println!( "🕐 Current timestamp: {}", timestamp );
+    println!( "🕐 Current timestamp: {timestamp}" );
 
     Ok( OutputData
     {

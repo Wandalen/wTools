@@ -21,6 +21,8 @@ mod private
     untyped::format_err,
   };
   use package::PackageName;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{self, Ok, Err};
 
   #[ derive( Debug, Error ) ]
   pub enum TestError

@@ -43,15 +43,15 @@ impl ToTokens for FormerDefinitionTypesGenerics<'_> {
 /// If the `debug` attribute is specified, it prints an example of a custom mutator implementation.
 #[allow(clippy::format_in_format_args, clippy::unnecessary_wraps)]
 pub fn mutator(
-  item: &syn::Ident,
-  original_input: &macro_tools::proc_macro2::TokenStream,
+  _item: &syn::Ident,
+  _original_input: &macro_tools::proc_macro2::TokenStream,
   mutator: &AttributeMutator,
-  former_definition_types: &syn::Ident,
+  _former_definition_types: &syn::Ident,
   generics: &FormerDefinitionTypesGenerics<'_>,
   former_definition_types_ref: &proc_macro2::TokenStream,
 ) -> Result<TokenStream> {
   let impl_generics = generics.impl_generics;
-  let ty_generics = generics.ty_generics;
+  let _ty_generics = generics.ty_generics;
   let where_clause = generics.where_clause;
   
   let former_mutator_code = if mutator.custom.value(false) {

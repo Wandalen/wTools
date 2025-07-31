@@ -2,6 +2,9 @@
 //! The command registry for the Unilang framework.
 //!
 
+// Include the generated static commands PHF map
+include!(concat!(env!("OUT_DIR"), "/static_commands.rs"));
+
 /// Internal namespace.
 mod private
 {
@@ -17,13 +20,17 @@ pub type CommandRoutine = Box< dyn Fn( crate::semantic::VerifiedCommand, Executi
 ///
 /// A registry for commands, responsible for storing and managing all
 /// available command definitions.
+/// 
+/// Uses a hybrid model: static commands are stored in a PHF map for zero overhead,
+/// while dynamic commands are stored in a `HashMap` for runtime flexibility.
 ///
 #[ derive( Default ) ] // Removed Clone since CommandRoutine can't be cloned
 #[ allow( missing_debug_implementations ) ]
 pub struct CommandRegistry
 {
-  /// A map of command names to their definitions.
-  pub commands : HashMap< String, CommandDefinition >,
+  /// A map of dynamically registered command names to their definitions.
+  /// Static commands are stored in the `STATIC_COMMANDS` PHF map.
+  dynamic_commands : HashMap< String, CommandDefinition >,
   /// A map of command names to their executable routines.
   routines : HashMap< String, CommandRoutine >,
 }
@@ -40,12 +47,37 @@ impl CommandRegistry
   }
 
   ///
-  /// Registers a command, adding it to the registry.
+  /// Retrieves a command definition by name using hybrid lookup.
+  /// 
+  /// First checks the static PHF map for compile-time commands, then
+  /// falls back to the dynamic `HashMap` for runtime-registered commands.
+  ///
+  #[ must_use ]
+  pub fn command( &self, name : &str ) -> Option< CommandDefinition >
+  {
+    // First check static commands (PHF map)
+    if let Some( static_cmd ) = super::STATIC_COMMANDS.get( name )
+    {
+      return Some( (*static_cmd).into() );
+    }
+
+    // Fall back to dynamic commands
+    self.dynamic_commands.get( name ).cloned()
+  }
+
+  ///
+  /// Registers a command, adding it to the dynamic registry.
   ///
   /// If a command with the same name already exists, it will be overwritten.
+  /// Note: Static commands cannot be overwritten and will take precedence in lookups.
   pub fn register( &mut self, command : CommandDefinition )
   {
-    let full_name = if command.namespace.is_empty()
+    let full_name = if command.name.starts_with( '.' )
+    {
+      // Command name is already in full format
+      command.name.clone()
+    }
+    else if command.namespace.is_empty()
     {
       format!( ".{}", command.name )
     }
@@ -62,7 +94,7 @@ impl CommandRegistry
       }
     };
 
-    self.commands.insert( full_name, command );
+    self.dynamic_commands.insert( full_name, command );
   }
 
   ///
@@ -75,7 +107,12 @@ impl CommandRegistry
   /// a compile-time registered command).
   pub fn command_add_runtime( &mut self, command_def : &CommandDefinition, routine : CommandRoutine ) -> Result< (), Error >
   {
-    let full_name = if command_def.namespace.is_empty()
+    let full_name = if command_def.name.starts_with( '.' )
+    {
+      // Command name is already in full format
+      command_def.name.clone()
+    }
+    else if command_def.namespace.is_empty()
     {
       format!( ".{}", command_def.name )
     }
@@ -91,16 +128,16 @@ impl CommandRegistry
         format!( ".{}.{}", ns, command_def.name )
       }
     };
-    if self.commands.contains_key( &full_name )
+    // Check if command exists in either static or dynamic registries
+    if super::STATIC_COMMANDS.contains_key( &full_name ) || self.dynamic_commands.contains_key( &full_name )
     {
-      return Err( Error::Execution( ErrorData
-      {
-        code : "COMMAND_ALREADY_EXISTS".to_string(),
-        message : format!( "Command '{full_name}' already exists." ),
-      }));
+      return Err( Error::Execution( ErrorData::new(
+        "UNILANG_COMMAND_ALREADY_EXISTS".to_string(),
+        format!( "Registration Error: Command '{full_name}' already exists. Use a different name or remove the existing command first." ),
+      )));
     }
 
-    self.commands.insert( full_name.clone(), command_def.clone() ); // Cloned command_def
+    self.dynamic_commands.insert( full_name.clone(), command_def.clone() ); // Cloned command_def
     self.routines.insert( full_name.clone(), routine );
     Ok(())
   }
@@ -112,6 +149,32 @@ impl CommandRegistry
   pub fn get_routine( &self, command_name : &str ) -> Option< &CommandRoutine >
   {
     self.routines.get( command_name )
+  }
+
+  ///
+  /// Returns a collection of all command definitions (both static and dynamic).
+  /// 
+  /// This is provided for backward compatibility and introspection.
+  /// Static commands are converted from the PHF map.
+  ///
+  #[ must_use ]
+  pub fn commands( &self ) -> HashMap< String, CommandDefinition >
+  {
+    let mut all_commands = HashMap::new();
+
+    // Add static commands
+    for ( name, static_cmd ) in super::STATIC_COMMANDS.entries()
+    {
+      all_commands.insert( (*name).to_string(), (*static_cmd).into() );
+    }
+
+    // Add dynamic commands (they can override static ones in this view)
+    for ( name, cmd ) in &self.dynamic_commands
+    {
+      all_commands.insert( name.clone(), cmd.clone() );
+    }
+
+    all_commands
   }
 
   ///

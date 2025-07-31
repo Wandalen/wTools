@@ -48,11 +48,11 @@ mod private
 
           // Unwrap safely because of the `Package` type guarantee
           // Ok( data[ "package" ][ "name" ].as_str().unwrap().to_string() )
-          Ok( data[ "package" ][ "name" ].as_str().unwrap() )
+          Result::Ok( data[ "package" ][ "name" ].as_str().unwrap() )
         }
         Self::WorkspacePackageRef( package ) =>
         {
-          Ok( package.name() )
+          Result::Ok( package.name() )
         }
       }
     }
@@ -72,7 +72,7 @@ mod private
         Self::Manifest( _ ) =>
         {
           // Unwrap safely because of the `Package` type guarantee
-          Ok
+          Result::Ok
           (
             self.package_metadata()
             .and_then( | m | m.get( "stability" ) )
@@ -83,7 +83,7 @@ mod private
         }
         Self::WorkspacePackageRef( package ) =>
         {
-          Ok
+          Result::Ok
           (
             package
             .metadata()[ "stability" ]
@@ -109,7 +109,7 @@ mod private
           let data = &manifest.data;
 
           // Unwrap safely because of the `Package` type guarantee
-          Ok
+          Result::Ok
           (
             data[ "package" ]
             .get( "repository" )
@@ -119,7 +119,7 @@ mod private
         }
         Self::WorkspacePackageRef( package ) =>
         {
-          Ok( package.repository().cloned() )
+          Result::Ok( package.repository().cloned() )
         }
       }
     }
@@ -135,7 +135,7 @@ mod private
         Self::Manifest( _ ) =>
         {
           // let data = manifest.data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
-          Ok
+          Result::Ok
           (
             self.package_metadata()
             .and_then( | m | m.get( "discord_url" ) )
@@ -145,7 +145,7 @@ mod private
         }
         Self::WorkspacePackageRef( package ) =>
         {
-          Ok( package.metadata()[ "discord_url" ].as_str().map( std::string::ToString::to_string ) )
+          Result::Ok( package.metadata()[ "discord_url" ].as_str().map( std::string::ToString::to_string ) )
         }
       }
     }

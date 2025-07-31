@@ -40,17 +40,17 @@ fn arg_test_routine(verified_command: VerifiedCommand, _context: ExecutionContex
   let arg1 = verified_command
     .arguments
     .get("arg1")
-    .ok_or_else(|| ErrorData {
-      code: "MISSING_ARGUMENT".to_string(),
-      message: "Argument 'arg1' not found".to_string(),
-    })?
+    .ok_or_else(|| ErrorData::new(
+      "UNILANG_ARGUMENT_MISSING".to_string(),
+      "Argument 'arg1' not found".to_string(),
+    ))?
     .as_integer()
-    .ok_or_else(|| ErrorData {
-      code: "INVALID_ARGUMENT_TYPE".to_string(),
-      message: "Argument 'arg1' is not an integer".to_string(),
-    })?;
+    .ok_or_else(|| ErrorData::new(
+      "UNILANG_TYPE_MISMATCH".to_string(),
+      "Argument 'arg1' is not an integer".to_string(),
+    ))?;
   Ok(OutputData {
-    content: format!("Arg1: {}", arg1),
+    content: format!("Arg1: {arg1}"),
     format: "text".to_string(),
   })
 }
@@ -62,7 +62,7 @@ fn analyze_and_run(
   registry: &CommandRegistry,
 ) -> Result<Vec<OutputData>, unilang::error::Error> {
   let instructions = vec![unilang_parser::GenericInstruction {
-    command_path_slices: command_name.split('.').map(|s| s.to_string()).collect(),
+    command_path_slices: command_name.split('.').map(std::string::ToString::to_string).collect(),
     named_arguments: named_args,
     positional_arguments: positional_args,
     help_requested: false,
@@ -92,9 +92,9 @@ fn test_register_and_execute_simple_command() {
     aliases: vec!["sc".to_string()],
     permissions: vec!["public".to_string()],
     idempotent: true,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
@@ -135,9 +135,9 @@ fn test_register_command_with_arguments() {
     aliases: vec!["ac".to_string()],
     permissions: vec!["public".to_string()],
     idempotent: true,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   registry
     .command_add_runtime(&command_def, Box::new(arg_test_routine))
@@ -175,15 +175,15 @@ fn test_register_duplicate_command() {
     aliases: vec!["dc".to_string()],
     permissions: vec!["public".to_string()],
     idempotent: true,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
   let result = registry.command_add_runtime(&command_def, Box::new(dummy_routine));
   assert!(result.is_err());
-  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "COMMAND_ALREADY_EXISTS" ));
+  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "UNILANG_COMMAND_ALREADY_EXISTS" ));
 }
 
 #[test]
@@ -192,7 +192,7 @@ fn test_execute_non_existent_command() {
   let registry = CommandRegistry::new();
   let result = analyze_and_run("non_existent_cmd", vec![], HashMap::new(), &registry);
   assert!(result.is_err());
-  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "COMMAND_NOT_FOUND" ));
+  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "UNILANG_COMMAND_NOT_FOUND" ));
 }
 
 #[test]
@@ -227,15 +227,15 @@ fn test_execute_command_with_missing_argument() {
     aliases: vec!["mac".to_string()],
     permissions: vec!["public".to_string()],
     idempotent: true,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
   let result = analyze_and_run("test.missing_arg_cmd", vec![], HashMap::new(), &registry);
   assert!(result.is_err());
-  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "MISSING_ARGUMENT" ));
+  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "UNILANG_ARGUMENT_MISSING" ));
 }
 
 #[test]
@@ -270,9 +270,9 @@ fn test_execute_command_with_invalid_arg_type() {
     aliases: vec!["itc".to_string()],
     permissions: vec!["public".to_string()],
     idempotent: true,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
@@ -288,5 +288,5 @@ fn test_execute_command_with_invalid_arg_type() {
   );
   let result = analyze_and_run("test.invalid_type_cmd", vec![], named_args, &registry);
   assert!(result.is_err());
-  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ));
+  assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ));
 }

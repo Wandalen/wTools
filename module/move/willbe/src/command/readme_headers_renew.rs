@@ -6,6 +6,8 @@ mod private
   // use action;
   // use error::{ err };
   use std::fmt::{ Display, Formatter };
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{self, Ok, Err};
 
   #[ derive( Debug, Default ) ]
   struct ReadmeHeadersRenewReport

@@ -76,7 +76,7 @@ mod private
           self.found_files.len(),
           self.touched_files.len()
         )?;
-        return Ok(())
+        return std::fmt::Result::Ok(())
       }
       writeln!( f, "Touched files :" )?;
       let mut count = self.found_files.len();
@@ -92,7 +92,7 @@ mod private
       {
         writeln!( f, "Other {count} files contains non-UTF-8 characters." )?;
       }
-      Ok( () )
+      std::fmt::Result::Ok( () )
     }
   }
 
@@ -152,7 +152,7 @@ mod private
       let discord_url = package
       .discord_url()?
       .or_else( || default_discord_url.cloned() );
-      Ok
+      Result::Ok
         (
           Self
           {
@@ -212,7 +212,7 @@ mod private
       {
         String::new()
       };
-      Ok( format!
+      Result::Ok( format!
       (
         "{} \
         [![rust-status](https://github.com/{}/actions/workflows/module_{}_push.yml/badge.svg)](https://github.com/{}/actions/workflows/module_{}_push.yml) \
@@ -336,7 +336,7 @@ mod private
       file.write_all( content.as_bytes() ).err_with_report( &report )?;
       report.touched_files.insert( path.as_ref().to_path_buf() );
     }
-    Ok( report )
+    ResultWithReport::Ok( report )
   }
 
   #[ allow( clippy::uninlined_format_args ) ]
@@ -364,7 +364,7 @@ mod private
         header
       )
     );
-    Ok( result )
+    error::untyped::Result::Ok( result )
   }
 }
 

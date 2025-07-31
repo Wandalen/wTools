@@ -20,6 +20,8 @@ mod private
     list::{ ListFormat, ListOptions },
   };
   use former::Former;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{self, Ok, Err};
 
   #[ derive( Former ) ]
   #[ allow( clippy::struct_excessive_bools ) ]

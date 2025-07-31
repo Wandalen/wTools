@@ -43,7 +43,7 @@ fn semantic_analyzer_tests()
           ..Default::default()
         },
         validation_rules : vec![],
-        hint : "".to_string(),
+        hint : String::new(),
         aliases : vec![],
         tags : vec![],
       },
@@ -60,23 +60,23 @@ fn semantic_analyzer_tests()
           ..Default::default()
         },
         validation_rules : vec![],
-        hint : "".to_string(),
+        hint : String::new(),
         aliases : vec![],
         tags : vec![],
       },
     ],
     routine_link : None,
-    namespace : "".to_string(),
-    hint : "".to_string(),
-    status : "".to_string(),
-    version : "".to_string(),
+    namespace : String::new(),
+    hint : String::new(),
+    status : String::new(),
+    version : String::new(),
     tags : vec![],
     aliases : vec![],
     permissions : vec![],
     idempotent : false,
-    deprecation_message : "".to_string(),
+    deprecation_message : String::new(),
     examples : vec![],
-    http_method_hint : "".to_string(),
+    http_method_hint : String::new(),
   });
 
   let parser = Parser::new( UnilangParserOptions::default() );
@@ -101,7 +101,7 @@ fn semantic_analyzer_tests()
   let instructions = &[ instruction ][ .. ];
   let analyzer = SemanticAnalyzer::new( instructions, &registry );
   let error = analyzer.analyze().unwrap_err();
-  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "COMMAND_NOT_FOUND" ) );
+  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_COMMAND_NOT_FOUND" ) );
 
   // T3.3
   let input = "test_cmd";
@@ -109,7 +109,7 @@ fn semantic_analyzer_tests()
   let instructions = &[ instruction ][ .. ];
   let analyzer = SemanticAnalyzer::new( instructions, &registry );
   let error = analyzer.analyze().unwrap_err();
-  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "MISSING_ARGUMENT" ) );
+  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_ARGUMENT_MISSING" ) );
 
   // T3.4 - Updated to test a clear type mismatch for the second argument
   let input = "test_cmd hello not-an-integer";
@@ -117,7 +117,7 @@ fn semantic_analyzer_tests()
   let instructions = &[ instruction ][ .. ];
   let analyzer = SemanticAnalyzer::new( instructions, &registry );
   let error = analyzer.analyze().unwrap_err();
-  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "INVALID_ARGUMENT_TYPE" ) );
+  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TYPE_MISMATCH" ) );
 
   // T3.5
   let input = "test_cmd \"hello\" 123 456";
@@ -125,7 +125,7 @@ fn semantic_analyzer_tests()
   let instructions = &[ instruction ][ .. ];
   let analyzer = SemanticAnalyzer::new( instructions, &registry );
   let error = analyzer.analyze().unwrap_err();
-  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "TOO_MANY_ARGUMENTS" ) );
+  assert!( matches!( error, unilang::error::Error::Execution( data ) if data.code == "UNILANG_TOO_MANY_ARGUMENTS" ) );
 }
 
 ///
@@ -157,20 +157,20 @@ fn interpreter_tests()
     &CommandDefinition
     {
       name : "cmd1".to_string(),
-      description : "".to_string(),
+      description : String::new(),
       arguments : vec![],
       routine_link : Some( "cmd1_routine_link".to_string() ),
-      namespace : "".to_string(),
-      hint : "".to_string(),
-      status : "".to_string(),
-      version : "".to_string(),
+      namespace : String::new(),
+      hint : String::new(),
+      status : String::new(),
+      version : String::new(),
       tags : vec![],
       aliases : vec![],
       permissions : vec![],
       idempotent : false,
-      deprecation_message : "".to_string(),
+      deprecation_message : String::new(),
       examples : vec![],
-      http_method_hint : "".to_string(),
+      http_method_hint : String::new(),
     },
     cmd1_routine,
   )
@@ -193,20 +193,20 @@ fn interpreter_tests()
     &CommandDefinition
     {
       name : "cmd2".to_string(),
-      description : "".to_string(),
+      description : String::new(),
       arguments : vec![],
       routine_link : Some( "cmd2_routine_link".to_string() ),
-      namespace : "".to_string(),
-      hint : "".to_string(),
-      status : "".to_string(),
-      version : "".to_string(),
+      namespace : String::new(),
+      hint : String::new(),
+      status : String::new(),
+      version : String::new(),
       tags : vec![],
       aliases : vec![],
       permissions : vec![],
       idempotent : false,
-      deprecation_message : "".to_string(),
+      deprecation_message : String::new(),
       examples : vec![],
-      http_method_hint : "".to_string(),
+      http_method_hint : String::new(),
     },
     cmd2_routine,
   )
@@ -273,23 +273,23 @@ fn help_generator_tests()
           ..Default::default()
         },
         validation_rules : vec![],
-        hint : "".to_string(),
+        hint : String::new(),
         aliases : vec![],
         tags : vec![],
       }
     ],
     routine_link : None,
-    namespace : "".to_string(),
-    hint : "".to_string(),
-    status : "".to_string(),
-    version : "".to_string(),
+    namespace : String::new(),
+    hint : String::new(),
+    status : String::new(),
+    version : String::new(),
     tags : vec![],
     aliases : vec![],
     permissions : vec![],
     idempotent : false,
-    deprecation_message : "".to_string(),
+    deprecation_message : String::new(),
     examples : vec![],
-    http_method_hint : "".to_string(),
+    http_method_hint : String::new(),
   };
   registry.register( cmd_with_args_def.clone() );
 
@@ -299,17 +299,17 @@ fn help_generator_tests()
     description : "A simple command".to_string(),
     arguments : vec![],
     routine_link : None,
-    namespace : "".to_string(),
-    hint : "".to_string(),
-    status : "".to_string(),
-    version : "".to_string(),
+    namespace : String::new(),
+    hint : String::new(),
+    status : String::new(),
+    version : String::new(),
     tags : vec![],
     aliases : vec![],
     permissions : vec![],
     idempotent : false,
-    deprecation_message : "".to_string(),
+    deprecation_message : String::new(),
     examples : vec![],
-    http_method_hint : "".to_string(),
+    http_method_hint : String::new(),
   };
   registry.register( cmd_without_args_def.clone() );
 

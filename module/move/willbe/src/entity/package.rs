@@ -10,6 +10,9 @@ mod private
     // Result,
     typed::Error,
   };
+  
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{self, Ok, Err};
 
   /// A wrapper type for representing the name of a package.
   ///
@@ -73,7 +76,7 @@ mod private
         return Err( PackageError::NotAPackage );
       }
 
-      Ok( Self::Manifest( Box::new( package ) ) ) // fix clippy
+      Result::Ok( Self::Manifest( Box::new( package ) ) ) // fix clippy
     }
   }
 
@@ -89,7 +92,7 @@ mod private
         return Err( PackageError::NotAPackage );
       }
 
-      Ok( Self::Manifest( Box::new( package ) ) ) // fix clippy
+      Result::Ok( Self::Manifest( Box::new( package ) ) ) // fix clippy
     }
   }
 
@@ -104,7 +107,7 @@ mod private
         return Err( PackageError::NotAPackage );
       }
 
-      Ok( Self::Manifest( Box::new( value ) ) ) // fix clippy
+      Result::Ok( Self::Manifest( Box::new( value ) ) ) // fix clippy
     }
   }
 
@@ -160,11 +163,11 @@ mod private
           let data = &package.data;
 
           // Unwrap safely because of the `Package` type guarantee
-          Ok( data[ "package" ][ "version" ].as_str().unwrap().to_string() )
+          Result::Ok( data[ "package" ][ "version" ].as_str().unwrap().to_string() )
         }
         Self::WorkspacePackageRef( package ) =>
         {
-          Ok( package.version().to_string() )
+          Result::Ok( package.version().to_string() )
         }
       }
     }
@@ -252,11 +255,11 @@ mod private
     {
       Ok( archive ) => archive,
       // qqq : fix. we don't have to know about the http status code
-      Err( ureq::Error::Status( 403, _ ) ) => return Ok( true ),
+      Err( ureq::Error::Status( 403, _ ) ) => return Result::Ok( true ),
       _ => return Err( PackageError::LoadRemotePackage ),
     };
 
-    Ok( diff::crate_diff( &local_package, &remote_package ).exclude( diff::PUBLISH_IGNORE_LIST ).has_changes() )
+    Result::Ok( diff::crate_diff( &local_package, &remote_package ).exclude( diff::PUBLISH_IGNORE_LIST ).has_changes() )
   }
 
 }

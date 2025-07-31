@@ -80,7 +80,7 @@ fn test_external_usage_with_specific_imports()
     
     Ok( OutputData
     {
-      content : format!( "Hello, {}!", name ),
+      content : format!( "Hello, {name}!" ),
       format : "text".to_string(),
     })
   });

@@ -30,7 +30,7 @@ fn main() -> Result< (), unilang::error::Error >
   .tags( vec![ "math".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
   .examples( vec![ "math.calculate --x 10 --y 5 --operation add".to_string() ] )
   .arguments( vec!
@@ -87,7 +87,7 @@ fn main() -> Result< (), unilang::error::Error >
       _ => 0,
     };
 
-    println!( "Calculation: {} {} {} = {}", x, op, y, result );
+    println!( "Calculation: {x} {op} {y} = {result}" );
 
     Ok( OutputData
     {
@@ -110,7 +110,7 @@ fn main() -> Result< (), unilang::error::Error >
   .tags( vec![ "text".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "POST".to_string() )
   .examples( vec![ "text.process 'hello world' --operations upper,reverse".to_string() ] )
   .arguments( vec!
@@ -172,8 +172,8 @@ fn main() -> Result< (), unilang::error::Error >
       };
     }
 
-    println!( "Text processing: '{}' -> '{}'", input, result );
-    println!( "Operations applied: {:?}", operations );
+    println!( "Text processing: '{input}' -> '{result}'" );
+    println!( "Operations applied: {operations:?}" );
 
     Ok( OutputData
     {
@@ -207,7 +207,7 @@ fn main() -> Result< (), unilang::error::Error >
   for ( i, ( cmd_str, description ) ) in test_command_strings.iter().enumerate()
   {
     println!( "\n--- Test Case {}: {} ---", i + 1, description );
-    println!( "Command: '{}'", cmd_str );
+    println!( "Command: '{cmd_str}'" );
 
     match parser.parse_single_instruction( cmd_str )
     {
@@ -229,21 +229,21 @@ fn main() -> Result< (), unilang::error::Error >
               println!( "  Verified arguments:" );
               for ( name, value ) in &verified_cmd.arguments
               {
-                println!( "    {}: {:?}", name, value );
+                println!( "    {name}: {value:?}" );
               }
             }
           },
           Err( error ) =>
           {
             println!( "❌ Semantic analysis FAILED" );
-            println!( "  Error: {}", error );
+            println!( "  Error: {error}" );
           }
         }
       },
       Err( error ) =>
       {
         println!( "❌ Parsing FAILED" );
-        println!( "  Error: {}", error );
+        println!( "  Error: {error}" );
       }
     }
   }
@@ -260,7 +260,7 @@ fn main() -> Result< (), unilang::error::Error >
 
   for cmd_str in test_commands
   {
-    println!( "\n🔍 Analyzing: '{}'", cmd_str );
+    println!( "\n🔍 Analyzing: '{cmd_str}'" );
 
     match parser.parse_single_instruction( cmd_str )
     {
@@ -285,15 +285,15 @@ fn main() -> Result< (), unilang::error::Error >
                 match routine( verified_cmd, context )
                 {
                   Ok( output ) => println!( "✓ Execution successful: {}", output.content ),
-                  Err( e ) => println!( "❌ Execution failed: {}", e ),
+                  Err( e ) => println!( "❌ Execution failed: {e}" ),
                 }
               }
             }
           },
-          Err( e ) => println!( "❌ Semantic analysis failed: {}", e ),
+          Err( e ) => println!( "❌ Semantic analysis failed: {e}" ),
         }
       },
-      Err( e ) => println!( "❌ Parsing failed: {}", e ),
+      Err( e ) => println!( "❌ Parsing failed: {e}" ),
     }
   }
 

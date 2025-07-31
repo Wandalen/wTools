@@ -25,7 +25,7 @@ fn main() -> Result< (), unilang::error::Error >
   .tags( vec![ "collections".to_string(), "demo".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "POST".to_string() )
   .examples( vec!
   [
@@ -85,10 +85,10 @@ fn main() -> Result< (), unilang::error::Error >
           println!( "  {} (List with {} items):", name, items.len() );
           for ( i, item ) in items.iter().enumerate()
           {
-            println!( "    [{}]: {:?}", i, item );
+            println!( "    [{i}]: {item:?}" );
           }
         },
-        _ => println!( "  {}: {:?} (not a list)", name, value ),
+        _ => println!( "  {name}: {value:?} (not a list)" ),
       }
     }
 
@@ -113,7 +113,7 @@ fn main() -> Result< (), unilang::error::Error >
   .tags( vec![ "collections".to_string(), "demo".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "POST".to_string() )
   .examples( vec!
   [
@@ -191,10 +191,10 @@ fn main() -> Result< (), unilang::error::Error >
           println!( "  {} (Map with {} entries):", name, map.len() );
           for ( key, val ) in map
           {
-            println!( "    '{}' => {:?}", key, val );
+            println!( "    '{key}' => {val:?}" );
           }
         },
-        _ => println!( "  {}: {:?} (not a map)", name, value ),
+        _ => println!( "  {name}: {value:?} (not a map)" ),
       }
     }
 

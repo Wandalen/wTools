@@ -102,7 +102,7 @@ impl TryFrom< &SourceFile > for String
   fn try_from( src : &SourceFile ) -> Result< String, Self::Error >
   {
     let src2 : &str = src.try_into()?;
-    Ok( src2.into() )
+    Result::Ok( src2.into() )
   }
 }
 
@@ -124,7 +124,7 @@ impl TryFrom< AbsolutePath > for SourceFile
   #[ inline( always ) ]
   fn try_from( src : AbsolutePath ) -> Result< Self, Self::Error >
   {
-    Ok( Self( src ) )
+    Result::Ok( Self( src ) )
   }
 }
 
@@ -244,7 +244,7 @@ impl AsCode for SourceFile
 {
   fn as_code( &self ) -> std::io::Result< Cow< '_, str > >
   {
-    Ok( Cow::Owned( std::fs::read_to_string( self.as_ref() )? ) )
+    std::io::Result::Ok( Cow::Owned( std::fs::read_to_string( self.as_ref() )? ) )
   }
 }
 

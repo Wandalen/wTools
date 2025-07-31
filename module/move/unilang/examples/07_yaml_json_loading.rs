@@ -316,7 +316,7 @@ fn main() -> Result< (), unilang::error::Error >
   .load_from_yaml_str( yaml_commands )?
   .build();
 
-  println!( "✓ Loaded {} commands from YAML", yaml_registry.commands.len() );
+  println!( "✓ Loaded {} commands from YAML", yaml_registry.commands().len() );
 
   // Step 4: Load commands from JSON
   println!( "\n📋 Loading commands from JSON..." );
@@ -324,25 +324,25 @@ fn main() -> Result< (), unilang::error::Error >
   .load_from_json_str( json_commands )?
   .build();
 
-  println!( "✓ Loaded {} commands from JSON", json_registry.commands.len() );
+  println!( "✓ Loaded {} commands from JSON", json_registry.commands().len() );
 
   // Step 5: Combine both registries
   println!( "\n🔗 Combining registries..." );
   let mut combined_registry = CommandRegistry::new();
 
   // Add YAML commands
-  for ( name, command ) in yaml_registry.commands
+  for ( _name, command ) in yaml_registry.commands()
   {
-    combined_registry.commands.insert( name, command );
+    combined_registry.register( command );
   }
 
   // Add JSON commands
-  for ( name, command ) in json_registry.commands
+  for ( _name, command ) in json_registry.commands()
   {
-    combined_registry.commands.insert( name, command );
+    combined_registry.register( command );
   }
 
-  println!( "✓ Combined registry has {} total commands", combined_registry.commands.len() );
+  println!( "✓ Combined registry has {} total commands", combined_registry.commands().len() );
 
   // Step 6: Display help for loaded commands
   let help_generator = HelpGenerator::new( &combined_registry );
@@ -354,13 +354,13 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "\n=== YAML-Loaded Command Details ===" );
   if let Some( backup_help ) = help_generator.command( "system.backup" )
   {
-    println!( "{}", backup_help );
+    println!( "{backup_help}" );
   }
 
   println!( "\n=== JSON-Loaded Command Details ===" );
   if let Some( monitor_help ) = help_generator.command( "system.monitor" )
   {
-    println!( "{}", monitor_help );
+    println!( "{monitor_help}" );
   }
 
   println!( "\n=== External Definition Benefits ===" );

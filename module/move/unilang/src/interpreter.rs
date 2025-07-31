@@ -92,11 +92,10 @@ impl< 'a > Interpreter< 'a >
       };
       let routine = self.registry.get_routine( &full_command_name ).ok_or_else( ||
       {
-        Error::Execution( ErrorData
-        {
-          code : "UNILANG_INTERNAL_ERROR".to_string(),
-          message : format!( "Routine not found for command: {}", command.definition.name ),
-        })
+        Error::Execution( ErrorData::new(
+          "UNILANG_INTERNAL_ERROR".to_string(),
+          format!( "Internal Error: No executable routine found for command '{}'. This is a system error, please report it.", command.definition.name ),
+        ))
       })?;
 
       // Execute the routine

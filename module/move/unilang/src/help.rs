@@ -39,8 +39,8 @@ impl< 'a > HelpGenerator< 'a >
   pub fn command( &self, command_name : &str ) -> Option< String >
   {
     // Try exact match first, then try with dot prefix
-    let command = self.registry.commands.get( command_name )
-    .or_else( || self.registry.commands.get( &format!( ".{command_name}" ) ) )
+    let command = self.registry.command( command_name )
+    .or_else( || self.registry.command( &format!( ".{command_name}" ) ) )
     .or_else( ||
     {
       // If command_name is "echo", try ".system.echo"
@@ -50,7 +50,7 @@ impl< 'a > HelpGenerator< 'a >
       // For now, a simple check for "echo" to ".system.echo"
       if command_name == "echo"
       {
-        self.registry.commands.get( ".system.echo" )
+        self.registry.command( ".system.echo" )
       }
       else
       {
@@ -83,21 +83,49 @@ impl< 'a > HelpGenerator< 'a >
       writeln!( &mut help, "\nArguments:" ).unwrap();
       for arg in &command.arguments
       {
-        let mut arg_info = String::new();
-        write!( &mut arg_info, "{} (Kind: {}) - Hint: {}", arg.name, arg.kind, arg.hint ).unwrap();
-        if arg.attributes.optional
-        {
-          write!( &mut arg_info, ", Optional" ).unwrap();
+        // Improved formatting: Multi-line, clear hierarchy, eliminate redundant text
+        
+        // Argument name on its own line
+        write!( &mut help, "{}", arg.name ).unwrap();
+        
+        // Type and status indicators on separate line with clear formatting
+        write!( &mut help, " (Type: {})", arg.kind ).unwrap();
+        
+        // Add status indicators
+        let mut status_parts = Vec::new();
+        if arg.attributes.optional {
+          status_parts.push("Optional");
         }
-        if arg.attributes.multiple
-        {
-          write!( &mut arg_info, ", Multiple" ).unwrap();
+        if arg.attributes.multiple {
+          status_parts.push("Multiple");
         }
-        if !arg.validation_rules.is_empty()
-        {
-          write!( &mut arg_info, ", Rules: [{}]", arg.validation_rules.iter().map(|r| format!("{:?}", r)).collect::<Vec<_>>().join( ", " ) ).unwrap();
+        if !status_parts.is_empty() {
+          write!( &mut help, " - {}", status_parts.join(", ") ).unwrap();
         }
-        writeln!( &mut help, "{arg_info}" ).unwrap();
+        writeln!( &mut help ).unwrap();
+        
+        // Description and hint on separate lines with indentation for readability
+        if !arg.description.is_empty() {
+          writeln!( &mut help, "  {}", arg.description ).unwrap();
+          // If hint is different from description, show it too
+          if !arg.hint.is_empty() && arg.hint != arg.description {
+            writeln!( &mut help, "  ({})", arg.hint ).unwrap();
+          }
+        } else if !arg.hint.is_empty() {
+          writeln!( &mut help, "  {}", arg.hint ).unwrap();
+        }
+        
+        // Validation rules on separate line if present
+        if !arg.validation_rules.is_empty() {
+          writeln!( 
+            &mut help, 
+            "  Rules: [{}]", 
+            arg.validation_rules.iter().map(|r| format!("{r:?}")).collect::<Vec<_>>().join( ", " ) 
+          ).unwrap();
+        }
+        
+        // Empty line between arguments for better separation
+        writeln!( &mut help ).unwrap();
       }
     }
 
@@ -112,7 +140,7 @@ impl< 'a > HelpGenerator< 'a >
   {
     let mut summary = String::new();
     writeln!( &mut summary, "Available Commands:" ).unwrap();
-    for ( name, command ) in &self.registry.commands
+    for ( name, command ) in &self.registry.commands()
     {
       writeln!( &mut summary, "  {:<15} {}", name, command.description ).unwrap();
     }

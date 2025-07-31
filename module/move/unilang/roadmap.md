@@ -1,131 +1,123 @@
 # Unilang Crate/Framework Implementation Roadmap
 
-This roadmap outlines the development plan for the **`unilang` crate/framework**, based on the formal Unilang specification (v1.3). It addresses the current architectural state and provides a clear path toward a robust, feature-complete v1.0 release.
+### Current Status (as of 2025-07-31)
+The project has successfully completed its foundational phases (1-3), culminating in a critical architectural refactoring that unified the parsing pipeline and data models. The framework is now stable and robust. The next phase will focus on implementing the mandatory performance requirement for a zero-overhead static command registry, which is the cornerstone for building large-scale, high-performance utilities.
 
 **Legend:**
 *   ⚫ : Not Started
 *   ⏳ : In Progress
 *   ✅ : Done
-*   ❌ : Blocked / Needs Revisit
 *   🏁 : Phase Complete / Major Milestone
 
 ---
 
 ### Phase 1: Core `unilang` Language Engine & CLI Foundations 🏁
-*This phase establishes the `unilang` parsing pipeline, core data structures, command registration, basic type handling, execution flow, initial help capabilities, and error reporting, primarily enabling a functional CLI.*
-
-*   **1. Foundational Setup:**
-    *   [✅] **1.1. Establish Testing Strategy & Framework:** (Unit & Integration test setup for the crate).
-*   **2. CLI Input Processing - Phase 1: Lexical and Syntactic Analysis (Spec 1.1.1):**
-    *   [✅] **2.1. Implement Lexer:** For `unilang` CLI syntax.
-    *   [✅] **2.2. Implement Parser:** To build an AST or "Generic Instructions".
-    *   [✅] **2.3. Global Argument Identification & Extraction Logic:** (Framework for integrators to define and extract their global arguments).
-*   **3. Core Data Structures & Command Registry (Spec 0.2, 2, 2.4):**
-    *   [✅] **3.1. Define Core Data Structures:** `CommandDefinition`, `ArgumentDefinition`, `Namespace`, `OutputData`, `ErrorData`.
-    *   [✅] **3.2. Implement Unified Command Registry:**
-        *   [✅] Core registry data structure.
-        *   [✅] Provide Compile-Time Registration Mechanisms (e.g., builder API, helper macros).
-        *   [✅] Basic Namespace Handling Logic.
-*   **4. CLI Input Processing - Phase 2: Semantic Analysis & Command Binding (Spec 1.1.2):**
-    *   [✅] **4.1. Command Resolution Logic.**
-    *   [✅] **4.2. Argument Binding Logic.**
-    *   [✅] **4.3. Basic Argument Type System (`kind` - Spec 2.2.2):**
-        *   [✅] Implement parsing/validation for `String`, `Integer`, `Float`, `Boolean`.
-        *   [✅] Support core attributes: `optional`, `default_value`, `is_default_arg`.
-    *   [✅] **4.4. `VerifiedCommand` Object Generation.**
-    *   [✅] **4.5. Implement Standard `UNILANG_*` Error Code Usage:** Ensure `ErrorData` (from 3.1) utilizes defined codes for parsing/semantic errors (Spec 4.2).
-*   **5. Interpreter / Execution Engine - Core (Spec 5):**
-    *   [✅] **5.1. Define `ExecutionContext` Structure (basic version, Spec 4.7).**
-    *   [✅] **5.2. Implement Routine Invocation mechanism.**
-    *   [✅] **5.3. Basic Handling of Routine Results (`OutputData`, `ErrorData`):** Pass through for modality handling.
-    *   [✅] **5.4. Command Separator (`;;`) Processing:** Parser support (from 2.2) and Interpreter support for sequential execution.
-*   **6. Basic Help Generation & Output (Spec 3.2.6, 4.2.1):**
-    *   [✅] **6.1. Logic to generate structured help data (JSON) from `CommandDefinition`s.**
-    *   [✅] **6.2. Framework support for `.system.help.globals ?` (or similar) based on integrator-defined globals (structured JSON output).**
-    *   [✅] **6.3. Provide default text formatters for structured help, `OutputData`, and `ErrorData` for basic CLI display.**
+*   **Goal:** Establish the `unilang` parsing pipeline, core data structures, command registration, basic type handling, execution flow, initial help capabilities, and error reporting to enable a functional CLI.
+*   **Outcome:** A working, foundational `unilang` crate capable of handling basic CLI commands from parsing to execution.
+*   **Status:** All milestones are complete.
 
 ### Phase 2: Enhanced Type System, Runtime Commands & CLI Maturity 🏁
-*This phase expands the `unilang` crate's type system, provides APIs for runtime command management, and matures CLI support.*
+*   **Goal:** Expand the `unilang` crate's type system, provide APIs for runtime command management, and mature CLI support.
+*   **Outcome:** A feature-rich framework capable of handling complex data types, dynamic command loading, and advanced CLI interactions.
+*   **Status:** All milestones are complete.
 
-*   **1. Advanced Built-in Argument Types (`kind` - Spec 2.2.2):**
-    *   [✅] **1.1. Implement parsing/validation for:** `Path`, `File`, `Directory` (incl. URI utilities, absolute path resolution utilities - Spec 4.1), `Enum`, `URL`, `DateTime`, `Pattern`.
-    *   [✅] **1.2. Implement `List<Type>`:** (incl. comma-separated CLI parsing helpers).
-    *   [✅] **1.3. Implement `Map<KeyType,ValueType>`:** (incl. `key=value,...` CLI parsing helpers).
-    *   [✅] **1.4. Implement `JsonString` / `Object` types.**
-    *   [✅] **1.5. Implement `multiple: true` attribute logic for arguments.**
-    *   [✅] **1.6. Implement `validation_rules` attribute processing (framework for basic rules like regex, min/max, with clear extension points for integrators).**
-*   **2. Runtime Command Registration & Management (Spec 4.5.B, Appendix A.3.2):**
-    *   [✅] **2.1. Expose Crate API:** For `command_add_runtime`.
-    *   [✅] **2.2. Expose Crate API:** For `command_remove_runtime` (optional).
-    *   [✅] **2.3. Provide Parsers (e.g., for YAML/JSON) for `CommandDefinition`s that integrators can use.**
-    *   [✅] **2.4. Framework Support for `routine_link` Resolution:** (e.g., helpers for integrators to map these links to their compile-time routines or other dispatch mechanisms).
-*   **3. CLI Modality Enhancements (Integrator Focused):**
-    *   [✅] **3.1. Framework support for `output_format` global argument (Spec 3.2.4):**
-        *   [✅] Provide JSON and YAML serializers for `OutputData`, `ErrorData`, and structured help.
-    *   [✅] **3.2. Shell Completion Generation Logic (Spec 3.2.5):**
-        *   [✅] Implement logic for a command like `.system.completion.generate shell_type::bash`.
-    *   [✅] **3.3. Framework hooks for Interactive Argument Prompting (`interactive: true` - Spec 2.2.1, 5.2):** (e.g., a way for semantic analysis to signal a need for prompting, which the CLI modality would handle).
-    *   [✅] **3.4. Framework support for `on_error::continue` global argument in Interpreter (Spec 5.1.3).**
-*   **4. `ExecutionContext` Enhancements (Spec 4.7):**
-    *   [✅] **4.1. Standardize fields and access methods for effective global args and a logger instance.**
+### Phase 3: Architectural Unification & Enhancement 🏁
+*   **Goal:** Correct the project's architecture by removing legacy components, integrating `unilang_parser` as the single source of truth, and fully aligning data models with the specification.
+*   **Outcome:** A stable, maintainable codebase with a unified architecture, ready for the implementation of core functional requirements.
+*   **Status:** All milestones are complete.
 
----
+### Phase 4: Zero-Overhead Static Command Registry ⏳
+*   **Goal:** To implement the mandatory performance NFR for a zero-overhead static command system, enabling utilities with thousands of commands to start instantly.
+*   **Outcome:** A framework with a hybrid command registry where all compile-time commands are stored in a Perfect Hash Function (PHF), eliminating runtime registration costs and ensuring sub-millisecond command resolution.
 
-### Phase 3: Architectural Unification
-*This phase is critical for correcting the project's architecture by removing legacy components and integrating the correct, modern parser as the single source of truth.*
-
-*   [⚫] **M3.0: design_architectural_unification_task**
-    *   **Deliverable:** A detailed `task_plan.md` for the parser migration.
-    *   **Description:** Analyze the codebase to map out all locations that depend on the legacy `unilang::parsing` module. Create a detailed, step-by-step plan for migrating each component (semantic analyzer, CLI binary, tests) to the `unilang_instruction_parser` crate. Define the verification strategy for each step.
-*   [⚫] **M3.1: implement_parser_integration**
-    *   **Prerequisites:** M3.0
-    *   **Deliverable:** A codebase where `unilang_instruction_parser` is the sole parser.
-    *   **Tasks:**
-        *   [⚫] **3.1.1:** Remove the legacy `unilang::parsing` module and the redundant `src/ca/` directory.
-        *   [⚫] **3.1.2:** Refactor `unilang::semantic::SemanticAnalyzer` to consume `Vec<unilang_instruction_parser::GenericInstruction>` and produce `VerifiedCommand`s.
-        *   [⚫] **3.1.3:** Refactor the `unilang_cli` binary (`src/bin/unilang_cli.rs`) to use the `unilang_instruction_parser` directly for its input processing.
-        *   [⚫] **3.1.4:** Migrate all existing integration tests (`full_pipeline_test.rs`, `cli_integration_test.rs`, etc.) to use the new unified parsing pipeline and assert on the new behavior.
-*   [⚫] **M3.2: refactor_data_models**
-    *   **Prerequisites:** M3.1
-    *   **Deliverable:** Core data models in `src/data.rs` are fully aligned with the formal specification.
-    *   **Tasks:**
-        *   [⚫] **3.2.1:** Add `status`, `tags`, `idempotent`, `version` fields to the `CommandDefinition` struct.
-        *   [⚫] **3.2.2:** Add `aliases`, `tags`, `interactive`, `sensitive` fields to the `ArgumentDefinition` struct.
-        *   [⚫] **3.2.3:** Update the `HelpGenerator` to display information from the new data fields.
-        *   [⚫] **3.2.4:** Create new integration tests to verify the behavior and help output of the new fields (e.g., a command with `aliases`).
-*   [⚫] **M3.3: update_formal_specification**
-    *   **Prerequisites:** M3.2
-    *   **Deliverable:** An updated `spec.md` document.
-    *   **Tasks:**
-        *   [⚫] **3.3.1:** Revise `spec.md` to formally document the multi-phase processing pipeline (Lexical -> Semantic -> Execution).
-        *   [⚫] **3.3.2:** Add sections to `spec.md` defining Global Arguments, the Extensibility Model, and Cross-Cutting Concerns like Security and Configuration.
-        *   [⚫] **3.3.3:** Update the data model tables in `spec.md` to reflect the complete `CommandDefinition` and `ArgumentDefinition` structs.
-
-### Phase 4: Advanced Features & Modalities
-*This phase builds on the stable architecture to implement advanced framework features that enable powerful, multi-modal utilities.*
-
-*   [⚫] **M4.0: implement_global_arguments**
-    *   **Prerequisites:** M3.3
-    *   **Deliverable:** Framework support for global arguments.
-*   [⚫] **M4.1: implement_web_api_modality_framework**
-    *   **Prerequisites:** M3.3
-    *   **Deliverable:** Utilities and guides for generating a Web API.
-    *   **Tasks:**
-        *   [⚫] **4.1.1:** Implement OpenAPI v3+ specification generation logic.
-        *   [⚫] **4.1.2:** Provide HTTP request-to-command mapping utilities.
-*   [⚫] **M4.2: implement_extension_module_macros**
-    *   **Prerequisites:** M3.3
-    *   **Deliverable:** Procedural macros in `unilang_meta` to simplify command definition.
-
-### Phase 5: Release Candidate Preparation
-*This phase focuses on stability, performance, developer experience, and documentation to prepare for a v1.0 release.*
-
-*   [⚫] **M5.0: conduct_performance_tuning**
+*   [⚫] **M4.1: design_hybrid_registry_architecture:**
+    *   **Spec Reference:** FR-PERF-1, NFR-Performance
+    *   **Deliverable:** A detailed task plan for implementing a zero-overhead static command registry.
+    *   **Description:** Design a build-time mechanism (using `build.rs` and the `phf` crate) to generate a Perfect Hash Function (PHF) map for all compile-time command definitions. This plan will outline the steps to refactor the `CommandRegistry` into a hybrid model (static PHF for compile-time commands + dynamic HashMap for runtime commands).
+*   [⚫] **M4.2: implement_build_time_phf_generation:**
+    *   **Prerequisites:** M4.1
+    *   **Deliverable:** A `build.rs` script that generates a `.rs` file containing the static PHF maps for commands and routines.
+    *   **Description:** Implement the build script that scans the source code (or a manifest) for static command definitions and uses the `phf_codegen` crate to construct the perfect hash maps.
+*   [⚫] **M4.3: refactor_command_registry_to_hybrid_model:**
     *   **Prerequisites:** M4.2
-    *   **Deliverable:** Performance benchmarks and identified optimizations.
-*   [⚫] **M5.1: write_integrator_documentation**
-    *   **Prerequisites:** M4.2
-    *   **Deliverable:** Comprehensive guides and tutorials for developers.
-*   [⚫] **M5.2: finalize_api_for_v1**
-    *   **Prerequisites:** M5.1
-    *   **Deliverable:** A stable, well-documented v1.0 API.
+    *   **Deliverable:** An updated `CommandRegistry` that uses the generated PHF for static commands.
+    *   **Tasks:**
+        *   [⚫] **4.3.1:** Modify the `CommandRegistry` struct to hold both the static PHF (included via `include!`) and the dynamic `HashMap`.
+        *   [⚫] **4.3.2:** Refactor all lookup methods (`get_command`, `get_routine`) to query the static PHF first before falling back to the dynamic `HashMap`.
+*   [⚫] **M4.4: implement_performance_stress_test:**
+    *   **Prerequisites:** M4.3
+    *   **Spec Reference:** FR-PERF-1
+    *   **Deliverable:** A new integration test that proves the performance non-functional requirement is met.
+    *   **Tasks:**
+        *   [⚫] **4.4.1:** Create a test that programmatically generates source code for over 1,000 static command definitions.
+        *   [⚫] **4.4.2:** Use this generated code in a test binary to trigger the `build.rs` PHF generation.
+        *   [⚫] **4.4.3:** Measure and assert that the resulting binary's startup time is negligible and not proportional to the number of commands.
+        *   [⚫] **4.4.4:** Measure and assert that the p99 latency for command resolution is under 1ms.
+
+### Phase 5: Core API Enhancements & Modality Support
+*   **Goal:** To implement the remaining mandatory functional requirements from Spec v2.2.0, ensuring the framework fully supports REPL and interactive CLI modalities.
+*   **Outcome:** A functionally complete API that provides all necessary hooks for building sophisticated, user-friendly command-line applications.
+
+*   [⚫] **M5.1: refactor_pipeline_for_reusability_and_add_repl_example:**
+    *   **Spec Reference:** FR-REPL-1
+    *   **Deliverable:** A new example file (`repl_example.rs`) demonstrating the reusability of framework components in a loop.
+    *   **Description:** Audit the core pipeline components (`Parser`, `SemanticAnalyzer`, `Interpreter`) to ensure they are stateless and can be reused. Create an example that simulates a REPL by repeatedly taking input and invoking the full pipeline using the same long-lived `Pipeline` instance.
+*   [⚫] **M5.2: implement_interactive_argument_signaling:**
+    *   **Spec Reference:** FR-INTERACTIVE-1
+    *   **Deliverable:** The `SemanticAnalyzer` correctly returns a specific error for interactive prompts.
+    *   **Tasks:**
+        *   [⚫] **5.2.1:** In `semantic.rs`, modify the `bind_arguments` logic to check for missing mandatory arguments that have `interactive: true`.
+        *   [⚫] **5.2.2:** When this condition is met, return an `Error::Execution` with the specific `ErrorData` code `UNILANG_ARGUMENT_INTERACTIVE_REQUIRED`.
+*   [⚫] **M5.3: create_interactive_prompting_test:**
+    *   **Prerequisites:** M5.2
+    *   **Deliverable:** A new unit test for the `SemanticAnalyzer` and an example in the CLI binary.
+    *   **Tasks:**
+        *   [⚫] **5.3.1:** Write a test that defines a command with a mandatory interactive argument, analyzes an instruction that omits it, and asserts that the returned error has the code `UNILANG_ARGUMENT_INTERACTIVE_REQUIRED`.
+        *   [⚫] **5.3.2:** Update `unilang_cli.rs` to demonstrate how to catch this specific error and print a user-friendly prompt.
+
+### Phase 6: Advanced Features & Web Modality
+*   **Goal:** Build on the stable and performant architecture to implement advanced framework features, including a Web API modality and a superior developer experience through procedural macros.
+*   **Outcome:** A versatile, multi-modal framework that significantly reduces boilerplate for developers.
+
+*   [⚫] **M6.1: design_web_api_modality:**
+    *   **Deliverable:** A plan for mapping `unilang` commands to HTTP endpoints.
+*   [⚫] **M6.2: implement_openapi_generator:**
+    *   **Prerequisites:** M6.1
+    *   **Deliverable:** A function that generates an OpenAPI v3+ specification from the `CommandRegistry`.
+*   [⚫] **M6.3: implement_http_to_command_mapper:**
+    *   **Prerequisites:** M6.1
+    *   **Deliverable:** A utility/adapter that converts an incoming HTTP request into a `unilang` command invocation.
+*   [⚫] **M6.4: create_web_api_example:**
+    *   **Prerequisites:** M6.3
+    *   **Deliverable:** An example application that serves a `unilang` registry as a REST API.
+*   [⚫] **M6.5: design_procedural_macros:**
+    *   **Deliverable:** An API design for the `#[command]` procedural macro in the `unilang_meta` crate.
+*   [⚫] **M6.6: implement_command_macro:**
+    *   **Prerequisites:** M6.5
+    *   **Deliverable:** A working `#[command]` macro that generates `CommandDefinition` structs from Rust functions.
+
+### Phase 7: Release Candidate Preparation
+*   **Goal:** Focus on stability, developer experience, and documentation to prepare for a v1.0 release.
+*   **Outcome:** A polished, production-ready v1.0.0-rc.1 release of the `unilang` framework.
+
+*   [⚫] **M7.1: write_core_concepts_guide:**
+    *   **Deliverable:** A comprehensive guide in the documentation explaining the core architecture and philosophy of `unilang`.
+*   [⚫] **M7.2: write_modality_tutorials:**
+    *   **Prerequisites:** M6.4
+    *   **Deliverable:** Tutorials for building a CLI, REPL, and a Web API with `unilang`.
+*   [⚫] **M7.3: conduct_api_review_and_stabilization:**
+    *   **Deliverable:** A final review of the public API, with any necessary breaking changes made before the 1.0 release.
+*   [⚫] **M7.4: publish_v1_release_candidate:**
+    *   **Prerequisites:** M7.3
+    *   **Deliverable:** `unilang` v1.0.0-rc.1 published to crates.io.
+
+### Phase 8: Post-v1.0 Ecosystem & Advanced Features
+*   **Goal:** Expand the `unilang` ecosystem with new modalities, improved tooling, and advanced integration capabilities.
+*   **Outcome:** A mature and extensible framework that solidifies its position as a universal command-line tool.
+
+*   [⚫] **M8.1: implement_tui_modality_framework:**
+    *   **Deliverable:** Utilities and an example for building interactive Textual User Interfaces.
+*   [⚫] **M8.2: implement_dynamic_routine_loading:**
+    *   **Deliverable:** A robust implementation for `routine_link` that can load routines from dynamic libraries.
+*   [⚫] **M8.3: design_plugin_system:**
+    *   **Deliverable:** A formal specification for a plugin system, allowing third-party crates to provide `unilang` commands to a host application.

@@ -4,6 +4,8 @@ mod private
   use crate::*;
   // use action;
   use error::untyped::{ Error };
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{self, Ok, Err};
 
   /// Generates header to main readme.md file.
   ///

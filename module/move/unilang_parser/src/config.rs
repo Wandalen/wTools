@@ -21,6 +21,8 @@ pub struct UnilangParserOptions
   pub error_on_duplicate_named_arguments : bool,
   /// A list of character pairs used for quoting (e.g., `('"', '"')` for double quotes).
   pub quote_pairs : Vec< ( char, char ) >,
+  /// Verbosity level for debug output (0 = quiet, 1 = normal, 2 = debug).
+  pub verbosity : u8,
 }
 
 impl Default for UnilangParserOptions
@@ -35,6 +37,7 @@ impl Default for UnilangParserOptions
       error_on_positional_after_named : false,
       error_on_duplicate_named_arguments : false,
       quote_pairs : vec![ ( '"', '"' ), ( '\'', '\'' ) ],
+      verbosity : 1, // Default to normal verbosity
     }
   }
 }

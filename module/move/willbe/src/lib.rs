@@ -101,6 +101,10 @@ mod_interface! {
 
   own use run;
 
+  /// Error handling facade.
+  layer error;
+  orphan use super::error;
+
   /// Entities of which spaces consists of.
   layer entity;
 
@@ -114,3 +118,6 @@ mod_interface! {
   layer action;
 
 }
+
+// Re-export thiserror outside of mod_interface since it doesn't have the required structure
+pub use ::error_tools::dependency::thiserror;

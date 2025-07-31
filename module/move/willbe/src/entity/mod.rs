@@ -2,6 +2,9 @@ mod private {}
 
 crate::mod_interface!
 {
+  /// Errors handling.
+  use crate::error;
+  
   /// Rust toolchain channel: stable/nightly.
   layer channel;
   orphan use super::channel;

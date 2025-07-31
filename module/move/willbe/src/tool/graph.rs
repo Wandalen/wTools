@@ -28,6 +28,8 @@ mod private
   use error::typed::Error;
 
   use package::{ Package, publish_need };
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{self, Ok, Err};
   // qqq : for Bohdan : bad : tools can't depend on entitties!
 
   #[ derive( Debug, Error ) ]

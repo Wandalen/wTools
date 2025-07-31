@@ -63,10 +63,36 @@ impl< 'a > SemanticAnalyzer< 'a >
   /// or if any other semantic rule is violated.
   pub fn analyze( &self ) -> Result< Vec< VerifiedCommand >, Error >
   {
+    // Catch panics and convert them to user-friendly errors
+    let result = std::panic::catch_unwind( core::panic::AssertUnwindSafe( || {
+      self.analyze_internal()
+    }));
+
+    match result
+    {
+      Ok( analysis_result ) => analysis_result,
+      Err( _panic_info ) => Err( Error::Execution( ErrorData::new(
+        "UNILANG_INTERNAL_ERROR".to_string(),
+        "Internal Error: An unexpected system error occurred during command analysis. This may indicate a bug in the framework.".to_string(),
+      )))
+    }
+  }
+
+  ///
+  /// Internal analysis implementation that can panic.
+  ///
+  fn analyze_internal( &self ) -> Result< Vec< VerifiedCommand >, Error >
+  {
     let mut verified_commands : Vec< VerifiedCommand > = Vec::new();
 
     for instruction in self.instructions
     {
+      // Handle special case: single dot "." should show help
+      if instruction.command_path_slices.is_empty()
+      {
+        return self.generate_help_listing();
+      }
+      
       let command_name = if instruction.command_path_slices[ 0 ].is_empty()
       {
         format!( ".{}", instruction.command_path_slices[ 1.. ].join( "." ) )
@@ -76,16 +102,29 @@ impl< 'a > SemanticAnalyzer< 'a >
         format!( ".{}", instruction.command_path_slices.join( "." ) )
       };
 
-      let command_def = self.registry.commands.get( &command_name ).ok_or_else( || ErrorData
-      {
-        code : "COMMAND_NOT_FOUND".to_string(),
-        message : format!( "Command not found: {command_name}" ),
-      })?;
+      let command_def = self.registry.command( &command_name ).ok_or_else( || ErrorData::new(
+        "UNILANG_COMMAND_NOT_FOUND".to_string(),
+        format!( "Command Error: The command '{command_name}' was not found. Use '.' to see all available commands or check for typos." ),
+      ))?;
 
-      let arguments = Self::bind_arguments( instruction, command_def )?;
+      // Check if help was requested for this command
+      if instruction.help_requested
+      {
+        // Generate help for this specific command
+        let help_generator = crate::help::HelpGenerator::new( self.registry );
+        let help_content = help_generator.command( &command_name )
+          .unwrap_or( format!( "No help available for command '{command_name}'" ) );
+        
+        return Err( Error::Execution( ErrorData::new(
+          "HELP_REQUESTED".to_string(),
+          help_content,
+        )));
+      }
+
+      let arguments = Self::bind_arguments( instruction, &command_def )?;
       verified_commands.push( VerifiedCommand
       {
-        definition : ( *command_def ).clone(),
+        definition : command_def,
         arguments,
       });
     }
@@ -154,11 +193,10 @@ impl< 'a > SemanticAnalyzer< 'a >
       {
         if !arg_def.attributes.optional
         {
-          return Err( Error::Execution( ErrorData
-          {
-            code : "MISSING_ARGUMENT".to_string(),
-            message : format!( "Missing required argument: {}", arg_def.name ),
-          }));
+          return Err( Error::Execution( ErrorData::new(
+            "UNILANG_ARGUMENT_MISSING".to_string(),
+            format!( "Argument Error: The required argument '{}' is missing. Please provide a value for this argument.", arg_def.name ),
+          )));
         }
         else if let Some( default_value ) = &arg_def.attributes.default
         {
@@ -176,15 +214,14 @@ impl< 'a > SemanticAnalyzer< 'a >
           {
             if !Self::apply_validation_rule( value, rule )
             {
-              return Err( Error::Execution( ErrorData
-              {
-                code : "VALIDATION_RULE_FAILED".to_string(),
-                message : format!
+              return Err( Error::Execution( ErrorData::new(
+                "UNILANG_VALIDATION_RULE_FAILED".to_string(),
+                format!
                 (
-                  "Validation rule '{rule:?}' failed for argument '{}' with value '{value:?}'",
+                  "Validation Error: The value provided for argument '{}' does not meet the required criteria. Please check the value and try again.",
                   arg_def.name
                 ),
-              }));
+              )));
             }
           }
         }
@@ -194,11 +231,10 @@ impl< 'a > SemanticAnalyzer< 'a >
     // Check for too many positional arguments
     if positional_idx < instruction.positional_arguments.len()
     {
-      return Err( Error::Execution( ErrorData
-      {
-        code : "TOO_MANY_ARGUMENTS".to_string(),
-        message : "Too many positional arguments provided.".to_string(),
-      }));
+      return Err( Error::Execution( ErrorData::new(
+        "UNILANG_TOO_MANY_ARGUMENTS".to_string(),
+        "Argument Error: Too many arguments provided for this command. Please check the command usage and remove extra arguments.".to_string(),
+      )));
     }
 
     Ok( bound_arguments )
@@ -256,6 +292,42 @@ impl< 'a > SemanticAnalyzer< 'a >
         _ => false,
       },
     }
+  }
+
+  ///
+  /// Generates a help listing showing all available commands with descriptions.
+  /// This is called when a user enters just "." as a command.
+  ///
+  fn generate_help_listing( &self ) -> Result< Vec< VerifiedCommand >, Error >
+  {
+    // Create a synthetic help output
+    let all_commands = self.registry.commands();
+    let mut help_content = String::new();
+    
+    if all_commands.is_empty()
+    {
+      help_content.push_str("No commands are currently available.\n");
+    }
+    else
+    {
+      help_content.push_str("Available commands:\n\n");
+      
+      // Sort commands by name for consistent display
+      let mut sorted_commands: Vec<_> = all_commands.iter().collect();
+      sorted_commands.sort_by_key(|(name, _)| *name);
+      
+      for (name, cmd_def) in sorted_commands
+      {
+        help_content.push_str(&format!("  {:<20} {}\n", name, cmd_def.description));
+      }
+      help_content.push_str("\nUse '<command> ?' to get detailed help for a specific command.\n");
+    }
+
+    // Return a special error that can be handled by the CLI to display help
+    Err( Error::Execution( ErrorData::new(
+      "HELP_REQUESTED".to_string(),
+      help_content,
+    )))
   }
 }
 

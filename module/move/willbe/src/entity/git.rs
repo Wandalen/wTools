@@ -33,7 +33,7 @@ mod private
       if let Some( commit ) = commit { writeln!( f, "{commit}" )? }
       if let Some( push ) = push { writeln!( f, "{push}" )? }
 
-      Ok( () )
+      std::fmt::Result::Ok( () )
     }
   }
 
@@ -63,7 +63,7 @@ mod private
   {
     use tool::git;
     let mut report = ExtendedGitReport::default();
-    if o.items.is_empty() { return Ok( report ); }
+    if o.items.is_empty() { return error::untyped::Result::Ok( report ); }
     let items : error::untyped::Result< Vec< _ > > = o
     .items
     .iter()
@@ -79,7 +79,7 @@ mod private
     let res = git::commit( &o.git_root, &o.message, o.dry ).map_err( | e | format_err!( "{report}\n{e}" ) )?;
     report.commit = Some( res );
 
-    Ok( report )
+    error::untyped::Result::Ok( report )
   }
 }
 

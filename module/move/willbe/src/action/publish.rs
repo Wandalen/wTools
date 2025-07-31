@@ -29,7 +29,7 @@ mod private
       if self.packages.is_empty()
       {
         write!( f, "Nothing to publish" )?;
-        return Ok( () );
+        return std::fmt::Result::Ok( () );
       }
 
       writeln!( f, "Actions :" )?;
@@ -102,7 +102,7 @@ mod private
         }
       }
 
-      Ok( () )
+      std::fmt::Result::Ok( () )
     }
   }
 
@@ -285,7 +285,7 @@ mod private
       fs::remove_dir_all( dir ).err_with_report( &report )?;
     }
 
-    Ok( report )
+    Result::Ok( report )
   }
 }
 

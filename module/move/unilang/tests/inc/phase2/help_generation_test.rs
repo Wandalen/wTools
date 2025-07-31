@@ -92,7 +92,7 @@ fn test_cli_specific_command_help_add()
 {
   // Test Matrix Row: T8.5
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ "help", ".math.add" ] );
+  cmd.args( vec![ "help", ".math.add" ] );
   cmd
   .assert()
   .success()
@@ -104,8 +104,10 @@ fn test_cli_specific_command_help_add()
     .and( predicate::str::contains( "Adds two numbers." ) ) // Modified this line
     .and( predicate::str::contains( "Status: stable" ) )
     .and( predicate::str::contains( "Arguments:" ) )
-    .and( predicate::str::contains( "a (Kind: Integer) - Hint: First number." ) ) // Modified this line
-    .and( predicate::str::contains( "b (Kind: Integer) - Hint: Second number." ) ), // Modified this line
+    .and( predicate::str::contains( "a (Type: Integer)" ) ) // Updated for new format
+    .and( predicate::str::contains( "First number." ) ) // Description on separate line
+    .and( predicate::str::contains( "b (Type: Integer)" ) ) // Updated for new format
+    .and( predicate::str::contains( "Second number." ) ), // Description on separate line
   )
   .stderr( "" );
 }
@@ -115,7 +117,7 @@ fn test_cli_help_non_existent_command()
 {
   // Test Matrix Row: T8.6
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ "help", "non_existent" ] );
+  cmd.args( vec![ "help", "non_existent" ] );
   cmd
   .assert()
   .failure()
@@ -127,7 +129,7 @@ fn test_cli_invalid_help_usage()
 {
   // Test Matrix Row: T8.7
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ "help", "arg1", "arg2" ] );
+  cmd.args( vec![ "help", "arg1", "arg2" ] );
   cmd.assert().failure().stderr( predicate::str::contains(
     "Error: Invalid usage of help command. Use `help` or `help <command_name>`.",
   ) );

@@ -31,7 +31,7 @@ fn main() -> Result< (), unilang::error::Error >
   setup_network_commands( &mut registry )?;
   setup_utility_commands( &mut registry )?;
 
-  println!( "✅ Registry setup complete with {} commands", registry.commands.len() );
+  println!( "✅ Registry setup complete with {} commands", registry.commands().len() );
 
   // ========================================
   // PHASE 2: HELP SYSTEM DEMONSTRATION
@@ -46,7 +46,7 @@ fn main() -> Result< (), unilang::error::Error >
   if let Some( detailed_help ) = help_generator.command( "file.sync" )
   {
     println!( "\n--- Detailed Help Example ---" );
-    println!( "{}", detailed_help );
+    println!( "{detailed_help}" );
   }
 
   // ========================================
@@ -75,7 +75,7 @@ fn main() -> Result< (), unilang::error::Error >
   for ( i, command_str ) in user_commands.iter().enumerate()
   {
     println!( "\n--- Command {} ---", i + 1 );
-    println!( "User input: '{}'", command_str );
+    println!( "User input: '{command_str}'" );
 
     // Handle help command specially
     if command_str == &"help"
@@ -113,12 +113,12 @@ fn main() -> Result< (), unilang::error::Error >
     {
       Ok( instruction ) =>
       {
-        println!( "✓ Parsed: {}", cmd_str );
+        println!( "✓ Parsed: {cmd_str}" );
         all_instructions.push( instruction );
       },
       Err( e ) =>
       {
-        println!( "❌ Parse failed for '{}': {}", cmd_str, e );
+        println!( "❌ Parse failed for '{cmd_str}': {e}" );
       }
     }
   }
@@ -145,13 +145,13 @@ fn main() -> Result< (), unilang::error::Error >
           },
           Err( error ) =>
           {
-            println!( "❌ Batch execution failed: {}", error );
+            println!( "❌ Batch execution failed: {error}" );
           }
         }
       },
       Err( error ) =>
       {
-        println!( "❌ Batch semantic analysis failed: {}", error );
+        println!( "❌ Batch semantic analysis failed: {error}" );
       }
     }
   }
@@ -235,19 +235,19 @@ Result< (), unilang::error::Error >
             },
             Err( error ) =>
             {
-              println!( "❌ Execution failed: {}", error );
+              println!( "❌ Execution failed: {error}" );
             }
           }
         },
         Err( error ) =>
         {
-          println!( "❌ Semantic analysis failed: {}", error );
+          println!( "❌ Semantic analysis failed: {error}" );
         }
       }
     },
     Err( error ) =>
     {
-      println!( "❌ Parsing failed: {}", error );
+      println!( "❌ Parsing failed: {error}" );
     }
   }
 
@@ -269,7 +269,7 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   .tags( vec![ "filesystem".to_string(), "utility".to_string() ] )
   .permissions( vec![ "read_directory".to_string() ] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
   .examples( vec!
   [
@@ -316,14 +316,14 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     let default_format = "list".to_string();
     let format = cmd.arguments.get( "format" ).and_then( | v | if let Value::String( s ) = v { Some( s ) } else { None } ).unwrap_or( &default_format );
 
-    println!( "📁 Listing directory: {} (format: {})", path, format );
+    println!( "📁 Listing directory: {path} (format: {format})" );
 
     match std::fs::read_dir( path )
     {
       Ok( entries ) =>
       {
         let files : Vec< String > = entries.filter_map( | e |
-          e.ok().and_then( | entry | entry.file_name().to_str().map( | s | s.to_string() ) )
+          e.ok().and_then( | entry | entry.file_name().to_str().map( std::string::ToString::to_string ) )
         ).collect();
 
         match format.as_str()
@@ -336,7 +336,7 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
             println!( "├─────────────────────────────┤" );
             for file in &files
             {
-              println!( "│ {:<27} │", file );
+              println!( "│ {file:<27} │" );
             }
             println!( "└─────────────────────────────┘" );
           },
@@ -344,7 +344,7 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
           {
             for file in &files
             {
-              println!( "  {}", file );
+              println!( "  {file}" );
             }
           }
         }
@@ -355,11 +355,10 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
           format : format.clone(),
         })
       },
-      Err( e ) => Err( ErrorData
-      {
-        code : "DIRECTORY_READ_ERROR".to_string(),
-        message : format!( "Cannot read directory '{}': {}", path, e ),
-      })
+      Err( e ) => Err( ErrorData::new(
+        "DIRECTORY_READ_ERROR".to_string(),
+        format!( "Cannot read directory '{path}': {e}" ),
+      ))
     }
   });
 
@@ -377,7 +376,7 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   .tags( vec![ "filesystem".to_string(), "backup".to_string(), "sync".to_string() ] )
   .permissions( vec![ "read_file".to_string(), "write_file".to_string() ] )
   .idempotent( false )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "POST".to_string() )
   .examples( vec!
   [
@@ -435,8 +434,8 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
 
   let sync_routine = Box::new( | cmd : unilang::semantic::VerifiedCommand, _ctx |
   {
-    let default_source = "".to_string();
-    let default_target = "".to_string();
+    let default_source = String::new();
+    let default_target = String::new();
     let source = cmd.arguments.get( "source" ).and_then( | v | if let Value::String( s ) = v { Some( s ) } else { None } ).unwrap_or( &default_source );
     let target = cmd.arguments.get( "target" ).and_then( | v | if let Value::String( s ) = v { Some( s ) } else { None } ).unwrap_or( &default_target );
     let dry_run = cmd.arguments.get( "dry_run" ).and_then( | v | if let Value::Boolean( b ) = v { Some( b ) } else { None } ).unwrap_or( &false );
@@ -453,19 +452,19 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     .unwrap_or_default();
 
     println!( "🔄 File Sync Operation" );
-    println!( "Source: {}", source );
-    println!( "Target: {}", target );
+    println!( "Source: {source}" );
+    println!( "Target: {target}" );
     println!( "Dry Run: {}", if *dry_run { "Yes" } else { "No" } );
     if !exclude_patterns.is_empty()
     {
-      println!( "Exclusions: {:?}", exclude_patterns );
+      println!( "Exclusions: {exclude_patterns:?}" );
     }
 
     if *dry_run
     {
       println!( "📋 DRY RUN - No files will be modified" );
-      println!( "  • Would copy files from {} to {}", source, target );
-      println!( "  • Would exclude patterns: {:?}", exclude_patterns );
+      println!( "  • Would copy files from {source} to {target}" );
+      println!( "  • Would exclude patterns: {exclude_patterns:?}" );
     }
     else
     {
@@ -474,7 +473,7 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
 
     Ok( OutputData
     {
-      content : format!( "Sync from {} to {} completed", source, target ),
+      content : format!( "Sync from {source} to {target} completed" ),
       format : "text".to_string(),
     })
   });
@@ -498,7 +497,7 @@ fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   .tags( vec![ "text".to_string(), "analysis".to_string(), "nlp".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "POST".to_string() )
   .examples( vec!
   [
@@ -536,7 +535,7 @@ fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
 
   let analyze_routine = Box::new( | cmd : unilang::semantic::VerifiedCommand, _ctx |
   {
-    let default_text = "".to_string();
+    let default_text = String::new();
     let text = cmd.arguments.get( "text" ).and_then( | v | if let Value::String( s ) = v { Some( s ) } else { None } ).unwrap_or( &default_text );
 
     let metrics = cmd.arguments.get( "metrics" )
@@ -551,8 +550,8 @@ fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
     .unwrap_or_else( || vec![ "words".to_string(), "chars".to_string() ] );
 
     println!( "📊 Text Analysis Results" );
-    println!( "Text: '{}'", text );
-    println!( "Metrics: {:?}", metrics );
+    println!( "Text: '{text}'" );
+    println!( "Metrics: {metrics:?}" );
     println!( "─────────────────────" );
 
     let mut results = HashMap::new();
@@ -565,43 +564,43 @@ fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
         {
           let word_count = text.split_whitespace().count();
           results.insert( "words".to_string(), word_count.to_string() );
-          println!( "Words: {}", word_count );
+          println!( "Words: {word_count}" );
 
           let char_count = text.chars().count();
           results.insert( "chars".to_string(), char_count.to_string() );
-          println!( "Characters: {}", char_count );
+          println!( "Characters: {char_count}" );
 
           let vowel_count = text.chars().filter( | c | "aeiouAEIOU".contains( *c ) ).count();
           results.insert( "vowels".to_string(), vowel_count.to_string() );
-          println!( "Vowels: {}", vowel_count );
+          println!( "Vowels: {vowel_count}" );
 
           let sentence_count = text.matches( [ '.', '!', '?' ] ).count();
           results.insert( "sentences".to_string(), sentence_count.to_string() );
-          println!( "Sentences: {}", sentence_count );
+          println!( "Sentences: {sentence_count}" );
         },
         "words" =>
         {
           let word_count = text.split_whitespace().count();
           results.insert( "words".to_string(), word_count.to_string() );
-          println!( "Words: {}", word_count );
+          println!( "Words: {word_count}" );
         },
         "chars" =>
         {
           let char_count = text.chars().count();
           results.insert( "chars".to_string(), char_count.to_string() );
-          println!( "Characters: {}", char_count );
+          println!( "Characters: {char_count}" );
         },
         "vowels" =>
         {
           let vowel_count = text.chars().filter( | c | "aeiouAEIOU".contains( *c ) ).count();
           results.insert( "vowels".to_string(), vowel_count.to_string() );
-          println!( "Vowels: {}", vowel_count );
+          println!( "Vowels: {vowel_count}" );
         },
         "sentences" =>
         {
           let sentence_count = text.matches( [ '.', '!', '?' ] ).count();
           results.insert( "sentences".to_string(), sentence_count.to_string() );
-          println!( "Sentences: {}", sentence_count );
+          println!( "Sentences: {sentence_count}" );
         },
         _ => {},
       }
@@ -635,7 +634,7 @@ fn setup_network_commands( registry : &mut CommandRegistry ) -> Result< (), unil
   .tags( vec![ "network".to_string(), "connectivity".to_string(), "diagnostic".to_string() ] )
   .permissions( vec![ "network_access".to_string() ] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
   .examples( vec!
   [
@@ -693,19 +692,19 @@ fn setup_network_commands( registry : &mut CommandRegistry ) -> Result< (), unil
     let timeout = cmd.arguments.get( "timeout" ).and_then( | v | if let Value::Integer( i ) = v { Some( i ) } else { None } ).unwrap_or( &5000 );
 
     println!( "🌐 Ping Test Results" );
-    println!( "Target: {}", host );
-    println!( "Packets: {}, Timeout: {}ms", count, timeout );
+    println!( "Target: {host}" );
+    println!( "Packets: {count}, Timeout: {timeout}ms" );
     println!( "─────────────────────" );
 
     // Simulate ping results
     for i in 1..=*count
     {
       let response_time = 20 + ( i * 3 ); // Simulated response time
-      println!( "Ping {}: Reply from {} time={}ms", i, host, response_time );
+      println!( "Ping {i}: Reply from {host} time={response_time}ms" );
     }
 
-    let summary = format!( "Sent {} packets to {}, simulated successful pings", count, host );
-    println!( "\n✅ {}", summary );
+    let summary = format!( "Sent {count} packets to {host}, simulated successful pings" );
+    println!( "\n✅ {summary}" );
 
     Ok( OutputData
     {
@@ -734,7 +733,7 @@ fn setup_utility_commands( registry : &mut CommandRegistry ) -> Result< (), unil
   .tags( vec![ "utility".to_string(), "output".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
   .examples( vec![ "util.echo 'Hello, World!'".to_string() ] )
   .arguments( vec!
@@ -754,9 +753,9 @@ fn setup_utility_commands( registry : &mut CommandRegistry ) -> Result< (), unil
 
   let echo_routine = Box::new( | cmd : unilang::semantic::VerifiedCommand, _ctx |
   {
-    let default_message = "".to_string();
+    let default_message = String::new();
     let message = cmd.arguments.get( "message" ).and_then( | v | if let Value::String( s ) = v { Some( s ) } else { None } ).unwrap_or( &default_message );
-    println!( "🔊 {}", message );
+    println!( "🔊 {message}" );
 
     Ok( OutputData
     {
@@ -779,7 +778,7 @@ fn setup_utility_commands( registry : &mut CommandRegistry ) -> Result< (), unil
   .tags( vec![ "utility".to_string(), "time".to_string() ] )
   .permissions( vec![] )
   .idempotent( false ) // Time changes
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
   .examples( vec!
   [
@@ -830,7 +829,7 @@ fn setup_utility_commands( registry : &mut CommandRegistry ) -> Result< (), unil
       }
     };
 
-    println!( "🕐 Current time ({}): {}", format, timestamp );
+    println!( "🕐 Current time ({format}): {timestamp}" );
 
     Ok( OutputData
     {

@@ -16,6 +16,8 @@ mod private
   use channel::Channel;
   use error::untyped::bail;
   use optimization::Optimization;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{self, Ok, Err};
 
   #[ derive( Former, Debug ) ]
   #[ allow( clippy::struct_excessive_bools ) ]
