@@ -114,16 +114,15 @@ fn test_register_command_with_arguments() {
       name: "arg1".to_string(),
       description: "An integer argument".to_string(),
       kind: Kind::Integer,
-      attributes: ArgumentAttributes::former()
-        .optional(false)
-        .multiple(false)
-        .is_default_arg(false)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "Integer argument hint".to_string(),
-      default_value: None,
       aliases: vec![],
       tags: vec![],
     }],
@@ -207,16 +206,15 @@ fn test_execute_command_with_missing_argument() {
       name: "required_arg".to_string(),
       description: "A required argument".to_string(),
       kind: Kind::String,
-      attributes: ArgumentAttributes::former()
-        .optional(false)
-        .multiple(false)
-        .is_default_arg(false)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "Required argument hint".to_string(),
-      default_value: None,
       aliases: vec![],
       tags: vec![],
     }],
@@ -251,16 +249,15 @@ fn test_execute_command_with_invalid_arg_type() {
       name: "int_arg".to_string(),
       description: "An integer argument".to_string(),
       kind: Kind::Integer,
-      attributes: ArgumentAttributes::former()
-        .optional(false)
-        .multiple(false)
-        .is_default_arg(false)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "Integer argument hint".to_string(),
-      default_value: None,
       aliases: vec![],
       tags: vec![],
     }],

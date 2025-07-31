@@ -1,15 +1,18 @@
 //! Tests for data model features and their integration with help generation.
 //!
-//! This module contains tests that verify the correct storage and display of
-//! new fields in `CommandDefinition` and `ArgumentDefinition`, such as
-//! `hint`, `status`, `version`, `tags`, and `aliases`, within the generated help output.
+//! This module contains integration tests that invoke the `unilang_cli` binary
+//! with help flags/commands and assert on the content and format of the generated help output.
 use assert_cmd::Command;
 use predicates::prelude::*;
-//
-// Integration tests for new data model features.
-//
 
-// ## Test Matrix for Data Model Features
+use predicates::Predicate;
+
+fn contains_all_unordered( expected_lines : Vec< &str > ) -> impl Predicate< str > + '_
+{
+  predicate::function( move | s : &str | expected_lines.iter().all( | line | s.contains( line ) ) )
+}
+
+// Test Matrix for Data Model Features
 //
 // This matrix outlines the tests for various fields and attributes of `CommandDefinition` and `ArgumentDefinition`.
 // | ID   | Aspect Tested | Command Field | Argument Field | Expected Behavior |
@@ -107,4 +110,3 @@ fn test_command_status_in_help()
   .stdout( predicate::str::contains( "Status: stable" ) )
   .stderr( "" );
 }
-

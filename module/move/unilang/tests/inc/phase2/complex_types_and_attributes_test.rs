@@ -1,4 +1,4 @@
-use unilang::data::{ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes};
+use unilang::data::{ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes, ValidationRule};
 use unilang_parser::{SourceLocation};
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
@@ -45,16 +45,15 @@ fn test_json_string_argument_type() {
       name: "json_arg".to_string(),
       description: "A JSON string argument".to_string(),
       kind: Kind::JsonString,
-      attributes: ArgumentAttributes::former()
-        .optional(false)
-        .multiple(false)
-        .is_default_arg(false)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "".to_string(),
-      default_value: None,
       aliases: vec![],
       tags: vec![],
     }],
@@ -117,16 +116,15 @@ fn test_object_argument_type() {
       name: "object_arg".to_string(),
       description: "An object argument".to_string(),
       kind: Kind::Object,
-      attributes: ArgumentAttributes::former()
-        .optional(false)
-        .multiple(false)
-        .is_default_arg(false)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "".to_string(),
-      default_value: None,
       aliases: vec![],
       tags: vec![],
     }],
@@ -189,16 +187,15 @@ fn test_multiple_argument() {
       name: "multiple_arg".to_string(),
       description: "A multiple string argument".to_string(),
       kind: Kind::String,
-      attributes: ArgumentAttributes::former()
-        .optional(false)
-        .multiple(true)
-        .is_default_arg(false)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: true,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "".to_string(),
-      default_value: None,
       aliases: vec![],
       tags: vec![],
     }],
@@ -240,10 +237,7 @@ fn test_multiple_argument() {
   assert!(result.is_ok());
   let verified_command = result.unwrap().remove(0);
   let arg = verified_command.arguments.get("multiple_arg").unwrap();
-  assert_eq!(
-    *arg,
-    Value::List(vec![Value::String("val1".to_string()), Value::String("val2".to_string())])
-  );
+  assert_eq!(*arg, Value::List(vec![Value::String("val1".to_string()), Value::String("val2".to_string())]));
 }
 
 #[test]
@@ -255,16 +249,18 @@ fn test_validated_argument() {
       name: "validated_arg".to_string(),
       description: "A validated integer argument".to_string(),
       kind: Kind::Integer,
-      attributes: ArgumentAttributes::former()
-        .optional(false)
-        .multiple(false)
-        .is_default_arg(false)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
-      validation_rules: vec!["min:10".to_string(), "max:100".to_string()],
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      },
+      validation_rules: vec![
+        ValidationRule::Min(10.0),
+        ValidationRule::Max(100.0)
+      ],
       hint: "".to_string(),
-      default_value: None,
       aliases: vec![],
       tags: vec![],
     }],
@@ -339,16 +335,16 @@ fn test_default_argument() {
       name: "default_arg".to_string(),
       description: "An argument with a default value".to_string(),
       kind: Kind::String,
-      attributes: ArgumentAttributes::former()
-        .optional(true)
-        .multiple(false)
-        .is_default_arg(true)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        default: Some("default_value_string".to_string()),
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "".to_string(),
-      default_value: Some("default_value_string".to_string()),
       aliases: vec![],
       tags: vec![],
     }],
