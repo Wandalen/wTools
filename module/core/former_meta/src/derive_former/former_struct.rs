@@ -217,23 +217,24 @@ specific needs of the broader forming context. It mandates the implementation of
     quote! { < #former_generics_impl > }
   };
 
-  // Helper for FormerBegin impl generics and determine the lifetime to use in the trait
+  // Helper for FormerBegin impl generics
+  // Check if struct already has a lifetime 'a that would conflict
   let has_lifetime_a = lifetimes.iter().any(|lt| lt.lifetime.to_string() == "'a");
   
-  let (former_begin_impl_generics, former_begin_trait_lifetime) = if struct_generics_impl.is_empty() {
-    (quote! { < #lifetime_param_for_former_begin, Definition > }, lifetime_param_for_former_begin.clone())
+  let former_begin_impl_generics = if struct_generics_impl.is_empty() {
+    quote! { < #lifetime_param_for_former_begin, Definition > }
   } else if has_only_lifetimes {
-    // For lifetime-only structs, use the struct's actual lifetime consistently
+    // For lifetime-only structs, check if we have a conflict with 'a
     if has_lifetime_a {
-      // If struct has 'a, use it everywhere
-      (quote! { < #struct_generics_impl, Definition > }, quote! { 'a })
+      // If struct already has 'a, just use the struct generics + Definition
+      quote! { < #struct_generics_impl, Definition > }
     } else {
-      // If struct has a different lifetime, use FormerBegin's 'a + struct lifetimes
-      (quote! { < #lifetime_param_for_former_begin, #struct_generics_impl, Definition > }, lifetime_param_for_former_begin.clone())
+      // Otherwise, add FormerBegin's 'a + struct lifetimes + Definition
+      quote! { < #lifetime_param_for_former_begin, #struct_generics_impl, Definition > }
     }
   } else {
     // For mixed generics, use FormerBegin lifetime + non-lifetime generics + Definition
-    (quote! { < #lifetime_param_for_former_begin, #struct_generics_impl_without_lifetimes, Definition > }, lifetime_param_for_former_begin.clone())
+    quote! { < #lifetime_param_for_former_begin, #struct_generics_impl_without_lifetimes, Definition > }
   };
 
   /* parameters for former perform: Similar to former parameters, but specifically for the perform method. */
@@ -853,7 +854,7 @@ specific needs of the broader forming context. It mandates the implementation of
       fn preform( mut self ) -> Self::Preformed
       {
         #( #storage_field_preform )*
-        let result = #struct_type_ref
+        let result = #item
         {
           #( #storage_field_name )*
         };
@@ -1006,13 +1007,13 @@ specific needs of the broader forming context. It mandates the implementation of
     }
 
     // = former begin: Implement `FormerBegin` trait.
-    impl #former_begin_impl_generics former::FormerBegin< #former_begin_trait_lifetime, Definition >
+    impl #former_begin_impl_generics former::FormerBegin< #lifetime_param_for_former_begin, Definition >
     for #former_type_ref
     where
       Definition : former::FormerDefinition< Storage = #storage_type_ref >,
-      Definition::Storage : #former_begin_trait_lifetime,
-      Definition::Context : #former_begin_trait_lifetime,
-      Definition::End : #former_begin_trait_lifetime,
+      Definition::Storage : 'a,
+      Definition::Context : 'a,
+      Definition::End : 'a,
     {
       #[ inline( always ) ]
       fn former_begin

@@ -79,36 +79,36 @@ mod debug_e0223_manual;
 // Test re-enabled to verify proper fix
 mod attribute_alias;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod attribute_default_collection;
-// mod attribute_default_conflict;
+// mod attribute_default_collection;  // Requires #[former(...)] attribute implementation
+// mod attribute_default_conflict;  // Requires #[former(...)] attribute implementation
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod attribute_default_primitive;
-// mod attribute_feature;
-// mod attribute_multiple;
-// mod attribute_perform;
-// mod attribute_setter;
+// mod attribute_feature;  // Requires #[former(...)] attribute implementation
+// mod attribute_multiple;  // Requires #[former(...)] attribute implementation
+// mod attribute_perform;  // Requires #[perform(...)] attribute implementation
+// mod attribute_setter;  // Requires #[scalar(...)] attribute implementation
 // mod attribute_storage_with_end;
 // mod attribute_storage_with_mutator;
 
 // = name collision
 
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose  
-// mod keyword_field_derive;
-// mod keyword_subform_derive;
-// mod name_collision_former_hashmap_without_parameter;
+// mod keyword_field_derive;  // Former derive disabled
+// mod keyword_subform_derive;  // Requires subform attributes
+// mod name_collision_former_hashmap_without_parameter;  // Has compilation issues
 mod name_collision_former_vector_without_parameter;
-// mod name_collisions;
+// mod name_collisions;  // Former derive disabled
 
 // = parametrization
 
 mod parametrized_dyn_manual; // xxx2 : qqq2 : fix the issue
 
-// mod parametrized_field;  // BLOCKED: Same parsing error as lifetime-only structs
-// mod test_lifetime_only;  // Test for lifetime-only structs - BLOCKED: Still issues with lifetime parameter generation
-// mod test_lifetime_minimal;  // Minimal lifetime test without debug - BLOCKED: Still issues with lifetime parameter generation
-// mod minimal_lifetime;  // Minimal test for debugging lifetime issues - xxx : parsing error with lifetime-only structs
-// mod debug_lifetime_minimal;  // Still disabled - has debug attribute
-// mod debug_simple_lifetime;  // Debug test for lifetime issue
+// mod parametrized_field;  // BLOCKED: E0726 implicit elided lifetime + complex generic bounds
+mod test_lifetime_only;
+mod test_lifetime_minimal;
+mod minimal_lifetime;
+// mod debug_lifetime_minimal;  // Has #[debug] attribute
+// mod debug_simple_lifetime;  // Has #[debug] attribute
 // mod parametrized_field_where;  // BLOCKED: E0726 implicit elided lifetime not allowed here
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod parametrized_struct_imm;  // BLOCKED: E0277 Hash/Eq trait bound issues with Definition
@@ -143,13 +143,13 @@ mod visibility;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod collection_former_hashmap;  // BLOCKED: Complex collection type mismatch issues with subform
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_hashset;
+// mod collection_former_hashset;  // Requires #[subform_collection(...)] attribute
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod collection_former_linked_list;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_vec;
+// mod collection_former_vec;  // Requires #[subform_collection(...)] attribute
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_vec_deque;
+// mod collection_former_vec_deque;  // Requires #[subform_collection(...)] attribute
 
 // = subform collection
 

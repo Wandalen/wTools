@@ -4,9 +4,7 @@ use super::*;
 
 /// Parameter description.
 #[allow(explicit_outlives_requirements)]
-// xxx : Re-enable when parsing error is fixed for structs with lifetimes
-// #[derive(Debug, PartialEq, the_module::Former)]
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, the_module::Former)]
 pub struct Child<'child, T: ?Sized + 'child> {
   name: String,
   arg: &'child T,
