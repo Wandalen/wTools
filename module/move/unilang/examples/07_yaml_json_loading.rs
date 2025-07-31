@@ -354,13 +354,13 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "\n=== YAML-Loaded Command Details ===" );
   if let Some( backup_help ) = help_generator.command( "system.backup" )
   {
-    println!( "{}", backup_help );
+    println!( "{backup_help}" );
   }
 
   println!( "\n=== JSON-Loaded Command Details ===" );
   if let Some( monitor_help ) = help_generator.command( "system.monitor" )
   {
-    println!( "{}", monitor_help );
+    println!( "{monitor_help}" );
   }
 
   println!( "\n=== External Definition Benefits ===" );

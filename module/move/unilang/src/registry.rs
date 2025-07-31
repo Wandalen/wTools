@@ -22,14 +22,14 @@ pub type CommandRoutine = Box< dyn Fn( crate::semantic::VerifiedCommand, Executi
 /// available command definitions.
 /// 
 /// Uses a hybrid model: static commands are stored in a PHF map for zero overhead,
-/// while dynamic commands are stored in a HashMap for runtime flexibility.
+/// while dynamic commands are stored in a `HashMap` for runtime flexibility.
 ///
 #[ derive( Default ) ] // Removed Clone since CommandRoutine can't be cloned
 #[ allow( missing_debug_implementations ) ]
 pub struct CommandRegistry
 {
   /// A map of dynamically registered command names to their definitions.
-  /// Static commands are stored in the STATIC_COMMANDS PHF map.
+  /// Static commands are stored in the `STATIC_COMMANDS` PHF map.
   dynamic_commands : HashMap< String, CommandDefinition >,
   /// A map of command names to their executable routines.
   routines : HashMap< String, CommandRoutine >,
@@ -50,7 +50,7 @@ impl CommandRegistry
   /// Retrieves a command definition by name using hybrid lookup.
   /// 
   /// First checks the static PHF map for compile-time commands, then
-  /// falls back to the dynamic HashMap for runtime-registered commands.
+  /// falls back to the dynamic `HashMap` for runtime-registered commands.
   ///
   #[ must_use ]
   pub fn command( &self, name : &str ) -> Option< CommandDefinition >
@@ -165,7 +165,7 @@ impl CommandRegistry
     // Add static commands
     for ( name, static_cmd ) in super::STATIC_COMMANDS.entries()
     {
-      all_commands.insert( name.to_string(), (*static_cmd).into() );
+      all_commands.insert( (*name).to_string(), (*static_cmd).into() );
     }
 
     // Add dynamic commands (they can override static ones in this view)

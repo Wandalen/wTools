@@ -22,7 +22,7 @@ fn analyze_program(
   // eprintln!( "Named Args: {:?}", named_args );
 
   let instructions = vec![unilang_parser::GenericInstruction {
-    command_path_slices: command_name.split('.').map(|s| s.to_string()).collect(),
+    command_path_slices: command_name.split('.').map(std::string::ToString::to_string).collect(),
     named_arguments: named_args,
     positional_arguments: positional_args,
     help_requested: false,
@@ -30,10 +30,10 @@ fn analyze_program(
   }];
   // eprintln!( "Manually Constructed Instructions: {:?}", instructions );
   let analyzer = SemanticAnalyzer::new(&instructions, registry);
-  let result = analyzer.analyze();
+  
   // eprintln!( "Analyzer Result: {:?}", result );
   // eprintln!( "--- analyze_program end ---" );
-  result
+  analyzer.analyze()
 }
 
 #[test]
@@ -53,22 +53,22 @@ fn test_json_string_argument_type() {
         ..Default::default()
       },
       validation_rules: vec![],
-      hint: "".to_string(),
+      hint: String::new(),
       aliases: vec![],
       tags: vec![],
     }],
     routine_link: None,
-    namespace: "".to_string(),
-    hint: "".to_string(),
-    status: "".to_string(),
-    version: "".to_string(),
+    namespace: String::new(),
+    hint: String::new(),
+    status: String::new(),
+    version: String::new(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   let registry = setup_test_environment(command);
 
@@ -124,22 +124,22 @@ fn test_object_argument_type() {
         ..Default::default()
       },
       validation_rules: vec![],
-      hint: "".to_string(),
+      hint: String::new(),
       aliases: vec![],
       tags: vec![],
     }],
     routine_link: None,
-    namespace: "".to_string(),
-    hint: "".to_string(),
-    status: "".to_string(),
-    version: "".to_string(),
+    namespace: String::new(),
+    hint: String::new(),
+    status: String::new(),
+    version: String::new(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   let registry = setup_test_environment(command);
 
@@ -195,22 +195,22 @@ fn test_multiple_argument() {
         ..Default::default()
       },
       validation_rules: vec![],
-      hint: "".to_string(),
+      hint: String::new(),
       aliases: vec![],
       tags: vec![],
     }],
     routine_link: None,
-    namespace: "".to_string(),
-    hint: "".to_string(),
-    status: "".to_string(),
-    version: "".to_string(),
+    namespace: String::new(),
+    hint: String::new(),
+    status: String::new(),
+    version: String::new(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   let registry = setup_test_environment(command);
 
@@ -260,22 +260,22 @@ fn test_validated_argument() {
         ValidationRule::Min(10.0),
         ValidationRule::Max(100.0)
       ],
-      hint: "".to_string(),
+      hint: String::new(),
       aliases: vec![],
       tags: vec![],
     }],
     routine_link: None,
-    namespace: "".to_string(),
-    hint: "".to_string(),
-    status: "".to_string(),
-    version: "".to_string(),
+    namespace: String::new(),
+    hint: String::new(),
+    status: String::new(),
+    version: String::new(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   let registry = setup_test_environment(command);
 
@@ -344,22 +344,22 @@ fn test_default_argument() {
         ..Default::default()
       },
       validation_rules: vec![],
-      hint: "".to_string(),
+      hint: String::new(),
       aliases: vec![],
       tags: vec![],
     }],
     routine_link: None,
-    namespace: "".to_string(),
-    hint: "".to_string(),
-    status: "".to_string(),
-    version: "".to_string(),
+    namespace: String::new(),
+    hint: String::new(),
+    status: String::new(),
+    version: String::new(),
     tags: vec![],
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   let registry = setup_test_environment(command);
 

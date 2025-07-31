@@ -109,7 +109,7 @@ impl TryFrom< &CrateDir > for String
   fn try_from( src : &CrateDir ) -> Result< String, Self::Error >
   {
     let src2 : &str = src.try_into()?;
-    Ok( src2.into() )
+    Result::Ok( src2.into() )
   }
 }
 
@@ -150,7 +150,7 @@ impl TryFrom< AbsolutePath > for CrateDir
       let err =  io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {}", crate_dir_path.display() ) );
       return Err( PathError::Io( err ) );
     }
-    Ok( Self( crate_dir_path ) )
+    Result::Ok( Self( crate_dir_path ) )
   }
 }
 

@@ -135,9 +135,9 @@ utilizes a defined end strategy to finalize the object creation.
 #[allow(clippy::too_many_lines)]
 pub fn former(input: proc_macro::TokenStream) -> Result<TokenStream> {
   let original_input: TokenStream = input.clone().into();
-  eprintln!("ENTRY DEBUG: Input token stream: {}", original_input);
+  // Debug output removed - was causing noise in builds
   let ast = syn::parse::<syn::DeriveInput>(input)?;
-  eprintln!("ENTRY DEBUG: Parsed AST successfully, struct name: {}", ast.ident);
+  // Debug output removed - was causing noise in builds
 
   // Parse ItemAttributes ONCE here from all attributes on the item
   let item_attributes = struct_attrs::ItemAttributes::from_attrs(ast.attrs.iter())?;
@@ -161,22 +161,22 @@ pub fn former(input: proc_macro::TokenStream) -> Result<TokenStream> {
   }?;
 
   // Validate that the generated result is syntactically correct
-  eprintln!("RESULT DEBUG: Generated result length: {} chars", result.to_string().len());
+  // Debug output removed - was causing noise in builds
   
-  // The E0106 issue is somewhere in the complex generated code.
-  // Basic impl blocks and EntityToFormer trait work fine.
-  // Let's restore full generation to investigate further.
-  
-  // Write generated code to file for detailed analysis
-  std::fs::write("/tmp/generated_former_code.rs", result.to_string()).ok();
-  eprintln!("RESULT DEBUG: Generated code written to /tmp/generated_former_code.rs");
+  // Write generated code to file for detailed analysis (only in debug mode)
+  if has_debug {
+    std::fs::write("/tmp/generated_former_code.rs", result.to_string()).ok();
+  }
   
   // Try to parse the result to check for syntax errors
   match syn::parse2::<syn::File>(result.clone()) {
-    Ok(_) => eprintln!("RESULT DEBUG: Generated code is syntactically valid"),
+    Ok(_) => {}, // Debug output removed - was causing noise in builds
     Err(e) => {
-      eprintln!("RESULT DEBUG: Generated code has syntax error: {}", e);
-      eprintln!("RESULT DEBUG: Generated code: {}", result);
+      // Only show detailed error info in debug mode, otherwise just return error
+      if has_debug {
+        eprintln!("RESULT DEBUG: Generated code has syntax error: {}", e);
+        eprintln!("RESULT DEBUG: Generated code: {}", result);
+      }
       return Err(syn::Error::new(ast.span(), format!("Generated malformed code: {}", e)));
     }
   }

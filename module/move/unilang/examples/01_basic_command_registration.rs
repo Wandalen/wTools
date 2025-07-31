@@ -9,8 +9,8 @@
 //! This is the simplest possible example - a "Hello World" style greeting command.
 //!
 //! ## What You'll Learn:
-//! - How to create and configure a CommandRegistry
-//! - How to define a CommandDefinition with arguments
+//! - How to create and configure a `CommandRegistry`
+//! - How to define a `CommandDefinition` with arguments
 //! - How to implement command execution logic
 //! - How to register commands for runtime execution
 
@@ -36,7 +36,7 @@ fn main() -> Result< (), unilang::error::Error >
   // - Metadata like version, status, aliases
   let greet_command = CommandDefinition::former()
   .name( "greet" )                              // The command name users will type
-  .namespace( "".to_string() )                  // Empty = global namespace (no prefix needed)
+  .namespace( String::new() )                  // Empty = global namespace (no prefix needed)
   .description( "A simple greeting command".to_string() )
   .hint( "Greets a person by name" )           // Short hint shown in command lists
   .status( "stable" )                           // Can be: stable, beta, experimental, deprecated
@@ -45,7 +45,7 @@ fn main() -> Result< (), unilang::error::Error >
   .tags( vec![ "greeting".to_string(), "demo".to_string() ] )  // For categorization
   .permissions( vec![] )                        // Empty = no special permissions needed
   .idempotent( true )                          // Safe to run multiple times
-  .deprecation_message( "".to_string() )        // Used when status is "deprecated"
+  .deprecation_message( String::new() )        // Used when status is "deprecated"
   .http_method_hint( "GET".to_string() )        // Hint for REST API generation
   .examples( vec![ 
     "greet name::\"Alice\"".to_string(),        // Example with argument
@@ -97,10 +97,10 @@ fn main() -> Result< (), unilang::error::Error >
     };
 
     // Format the greeting message
-    let greeting = format!( "Hello, {}!", name );
+    let greeting = format!( "Hello, {name}!" );
     
     // Print to console (for CLI mode)
-    println!( "{}", greeting );
+    println!( "{greeting}" );
 
     // Return the output data
     // This allows the same command to work in different contexts (CLI, API, etc.)

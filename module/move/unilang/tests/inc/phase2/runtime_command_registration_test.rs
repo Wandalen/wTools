@@ -50,7 +50,7 @@ fn arg_test_routine(verified_command: VerifiedCommand, _context: ExecutionContex
       "Argument 'arg1' is not an integer".to_string(),
     ))?;
   Ok(OutputData {
-    content: format!("Arg1: {}", arg1),
+    content: format!("Arg1: {arg1}"),
     format: "text".to_string(),
   })
 }
@@ -62,7 +62,7 @@ fn analyze_and_run(
   registry: &CommandRegistry,
 ) -> Result<Vec<OutputData>, unilang::error::Error> {
   let instructions = vec![unilang_parser::GenericInstruction {
-    command_path_slices: command_name.split('.').map(|s| s.to_string()).collect(),
+    command_path_slices: command_name.split('.').map(std::string::ToString::to_string).collect(),
     named_arguments: named_args,
     positional_arguments: positional_args,
     help_requested: false,
@@ -92,9 +92,9 @@ fn test_register_and_execute_simple_command() {
     aliases: vec!["sc".to_string()],
     permissions: vec!["public".to_string()],
     idempotent: true,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
@@ -135,9 +135,9 @@ fn test_register_command_with_arguments() {
     aliases: vec!["ac".to_string()],
     permissions: vec!["public".to_string()],
     idempotent: true,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   registry
     .command_add_runtime(&command_def, Box::new(arg_test_routine))
@@ -175,9 +175,9 @@ fn test_register_duplicate_command() {
     aliases: vec!["dc".to_string()],
     permissions: vec!["public".to_string()],
     idempotent: true,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
@@ -227,9 +227,9 @@ fn test_execute_command_with_missing_argument() {
     aliases: vec!["mac".to_string()],
     permissions: vec!["public".to_string()],
     idempotent: true,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
@@ -270,9 +270,9 @@ fn test_execute_command_with_invalid_arg_type() {
     aliases: vec!["itc".to_string()],
     permissions: vec!["public".to_string()],
     idempotent: true,
-    deprecation_message: "".to_string(),
+    deprecation_message: String::new(),
     examples: vec![],
-    http_method_hint: "".to_string(),
+    http_method_hint: String::new(),
   };
   registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 

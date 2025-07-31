@@ -22,7 +22,7 @@ fn main() -> Result< (), unilang::error::Error >
   // 1. Simple successful command
   let hello_command = CommandDefinition::former()
   .name( "hello" )
-  .namespace( "".to_string() )
+  .namespace( String::new() )
   .description( "Prints a greeting message".to_string() )
   .hint( "Simple greeting" )
   .status( "stable" )
@@ -31,7 +31,7 @@ fn main() -> Result< (), unilang::error::Error >
   .tags( vec![ "greeting".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
   .examples( vec![ "hello Alice".to_string() ] )
   .arguments( vec!
@@ -60,8 +60,8 @@ fn main() -> Result< (), unilang::error::Error >
     .and_then( | v | if let Value::String( s ) = v { Some( s ) } else { None } )
     .unwrap_or( &default_name );
 
-    let greeting = format!( "Hello, {}! 👋", name );
-    println!( "{}", greeting );
+    let greeting = format!( "Hello, {name}! 👋" );
+    println!( "{greeting}" );
 
     Ok( OutputData
     {
@@ -84,7 +84,7 @@ fn main() -> Result< (), unilang::error::Error >
   .tags( vec![ "system".to_string(), "monitoring".to_string() ] )
   .permissions( vec![ "read_system".to_string() ] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
   .examples( vec![ "system.status --verbose".to_string() ] )
   .arguments( vec!
@@ -128,7 +128,7 @@ fn main() -> Result< (), unilang::error::Error >
     }
 
     // Demonstrate context usage (in real applications, context would contain useful data)
-    println!( "\nExecution Context: {:?}", ctx );
+    println!( "\nExecution Context: {ctx:?}" );
 
     let content = if *verbose
     {
@@ -160,7 +160,7 @@ fn main() -> Result< (), unilang::error::Error >
   .tags( vec![ "math".to_string(), "arithmetic".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
   .examples( vec![ "math.divide 10 2".to_string(), "math.divide 15 0".to_string() ] )
   .arguments( vec!
@@ -202,7 +202,7 @@ fn main() -> Result< (), unilang::error::Error >
     {
       return Err( ErrorData::new(
         "DIVISION_BY_ZERO".to_string(),
-        format!( "Cannot divide {} by zero. Division by zero is undefined.", dividend ),
+        format!( "Cannot divide {dividend} by zero. Division by zero is undefined." ),
       ));
     }
 
@@ -232,8 +232,8 @@ fn main() -> Result< (), unilang::error::Error >
       ));
     }
 
-    let output = format!( "{} ÷ {} = {}", dividend, divisor, result );
-    println!( "🧮 {}", output );
+    let output = format!( "{dividend} ÷ {divisor} = {result}" );
+    println!( "🧮 {output}" );
 
     Ok( OutputData
     {
@@ -256,7 +256,7 @@ fn main() -> Result< (), unilang::error::Error >
   .tags( vec![ "data".to_string(), "statistics".to_string(), "analysis".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "POST".to_string() )
   .examples( vec![ "data.analyze --numbers 1,5,3,9,2,7,4".to_string() ] )
   .arguments( vec!
@@ -301,11 +301,11 @@ fn main() -> Result< (), unilang::error::Error >
     let mean = sum / count as f64;
 
     let mut sorted = numbers.clone();
-    sorted.sort_by( | a, b | a.partial_cmp( b ).unwrap_or( std::cmp::Ordering::Equal ) );
+    sorted.sort_by( | a, b | a.partial_cmp( b ).unwrap_or( core::cmp::Ordering::Equal ) );
 
     let median = if count % 2 == 0
     {
-      ( *sorted[ count / 2 - 1 ] + *sorted[ count / 2 ] ) / 2.0
+      f64::midpoint(*sorted[ count / 2 - 1 ], *sorted[ count / 2 ])
     }
     else
     {
@@ -324,20 +324,19 @@ fn main() -> Result< (), unilang::error::Error >
 
     println!( "📊 Statistical Analysis Results" );
     println!( "================================" );
-    println!( "Dataset: {:?}", numbers );
-    println!( "Count: {}", count );
-    println!( "Sum: {:.2}", sum );
-    println!( "Mean: {:.2}", mean );
-    println!( "Median: {:.2}", median );
-    println!( "Min: {:.2}", min );
-    println!( "Max: {:.2}", max );
-    println!( "Range: {:.2}", range );
-    println!( "Std Dev: {:.2}", std_dev );
+    println!( "Dataset: {numbers:?}" );
+    println!( "Count: {count}" );
+    println!( "Sum: {sum:.2}" );
+    println!( "Mean: {mean:.2}" );
+    println!( "Median: {median:.2}" );
+    println!( "Min: {min:.2}" );
+    println!( "Max: {max:.2}" );
+    println!( "Range: {range:.2}" );
+    println!( "Std Dev: {std_dev:.2}" );
 
     let result = format!
     (
-      "count={}, mean={:.2}, median={:.2}, min={:.2}, max={:.2}, std_dev={:.2}",
-      count, mean, median, min, max, std_dev
+      "count={count}, mean={mean:.2}, median={median:.2}, min={min:.2}, max={max:.2}, std_dev={std_dev:.2}"
     );
 
     Ok( OutputData
@@ -372,7 +371,7 @@ fn main() -> Result< (), unilang::error::Error >
   for ( i, ( command_str, description ) ) in test_cases.iter().enumerate()
   {
     println!( "\n--- Test Case {}: {} ---", i + 1, description );
-    println!( "🔍 Executing: '{}'", command_str );
+    println!( "🔍 Executing: '{command_str}'" );
 
     match parser.parse_single_instruction( command_str )
     {
@@ -401,19 +400,19 @@ fn main() -> Result< (), unilang::error::Error >
               Err( error ) =>
               {
                 println!( "❌ Execution failed with error:" );
-                println!( "  {}", error );
+                println!( "  {error}" );
               }
             }
           },
           Err( error ) =>
           {
-            println!( "❌ Semantic analysis failed: {}", error );
+            println!( "❌ Semantic analysis failed: {error}" );
           }
         }
       },
       Err( error ) =>
       {
-        println!( "❌ Parsing failed: {}", error );
+        println!( "❌ Parsing failed: {error}" );
       }
     }
   }
@@ -437,7 +436,7 @@ fn main() -> Result< (), unilang::error::Error >
     match parser.parse_single_instruction( cmd_str )
     {
       Ok( instruction ) => all_instructions.push( instruction ),
-      Err( e ) => println!( "❌ Failed to parse '{}': {}", cmd_str, e ),
+      Err( e ) => println!( "❌ Failed to parse '{cmd_str}': {e}" ),
     }
   }
 
@@ -463,13 +462,13 @@ fn main() -> Result< (), unilang::error::Error >
           },
           Err( error ) =>
           {
-            println!( "❌ Batch execution failed: {}", error );
+            println!( "❌ Batch execution failed: {error}" );
           }
         }
       },
       Err( error ) =>
       {
-        println!( "❌ Batch verification failed: {}", error );
+        println!( "❌ Batch verification failed: {error}" );
       }
     }
   }

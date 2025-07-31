@@ -43,7 +43,7 @@ fn test_cli_add_command_valid()
 {
   // Test Matrix Row: T6.2
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ ".math.add", "a::1", "b::2" ] );
+  cmd.args( vec![ ".math.add", "a::1", "b::2" ] );
   cmd
   .assert()
   .success()
@@ -56,7 +56,7 @@ fn test_cli_add_command_missing_arg()
 {
   // Test Matrix Row: T6.3
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ ".math.add", "a::1" ] );
+  cmd.args( vec![ ".math.add", "a::1" ] );
   cmd.assert().failure().stderr( predicate::str::contains(
     "Error: Execution Error: Argument Error: The required argument 'b' is missing",
   ) );
@@ -67,7 +67,7 @@ fn test_cli_add_command_invalid_arg_type()
 {
   // Test Matrix Row: T6.4
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ ".math.add", "a::a", "b::b" ] );
+  cmd.args( vec![ ".math.add", "a::a", "b::b" ] );
   cmd.assert().failure().stderr( predicate::str::contains(
     "Error: Execution Error: Type Error: invalid digit found in string. Please provide a valid value for this type.",
   ) );
@@ -78,7 +78,7 @@ fn test_cli_cat_command_non_existent_file()
 {
   // Test Matrix Row: T6.5
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ ".files.cat", "path::non_existent.txt" ] );
+  cmd.args( vec![ ".files.cat", "path::non_existent.txt" ] );
   cmd
   .assert()
   .failure()
@@ -94,7 +94,7 @@ fn test_cli_cat_command_valid_file()
   fs::write( &file_path, "Hello, world!" ).unwrap();
 
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ ".files.cat", &format!( "path::{}", file_path.to_str().unwrap() ) ] );
+  cmd.args( vec![ ".files.cat", &format!( "path::{}", file_path.to_str().unwrap() ) ] );
   cmd
   .assert()
   .success()
@@ -107,7 +107,7 @@ fn test_cli_unknown_command()
 {
   // Test Matrix Row: T6.7
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ ".unknown", "arg1", "arg2" ] );
+  cmd.args( vec![ ".unknown", "arg1", "arg2" ] );
   cmd.assert().failure().stderr( predicate::str::contains(
     "Error: Execution Error: Command Error: The command '.unknown' was not found",
   ) );

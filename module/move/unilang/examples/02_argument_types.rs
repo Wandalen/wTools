@@ -16,7 +16,7 @@ fn main() -> Result< (), unilang::error::Error >
   // Step 1: Command with various basic argument types
   let types_demo = CommandDefinition::former()
   .name( "types_demo" )
-  .namespace( "".to_string() )
+  .namespace( String::new() )
   .description( "Demonstrates all supported argument types".to_string() )
   .hint( "Shows how different data types work" )
   .status( "stable" )
@@ -25,7 +25,7 @@ fn main() -> Result< (), unilang::error::Error >
   .tags( vec![ "demo".to_string(), "types".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "POST".to_string() )
   .examples( vec!
   [
@@ -152,21 +152,21 @@ fn main() -> Result< (), unilang::error::Error >
     {
       match value
       {
-        Value::String( s ) => println!( "  {}: '{}' (String)", name, s ),
-        Value::Integer( i ) => println!( "  {}: {} (Integer)", name, i ),
-        Value::Float( f ) => println!( "  {}: {} (Float)", name, f ),
-        Value::Boolean( b ) => println!( "  {}: {} (Boolean)", name, b ),
-        Value::Path( p ) => println!( "  {}: {:?} (Path)", name, p ),
-        Value::File( f ) => println!( "  {}: {:?} (File)", name, f ),
-        Value::Directory( d ) => println!( "  {}: {:?} (Directory)", name, d ),
-        Value::Enum( e ) => println!( "  {}: '{}' (Enum)", name, e ),
-        Value::Url( u ) => println!( "  {}: {} (Url)", name, u ),
-        Value::DateTime( dt ) => println!( "  {}: {} (DateTime)", name, dt ),
-        Value::Pattern( p ) => println!( "  {}: {} (Pattern)", name, p ),
-        Value::List( items ) => println!( "  {}: {:?} (List)", name, items ),
-        Value::Map( map ) => println!( "  {}: {:?} (Map)", name, map ),
-        Value::JsonString( json ) => println!( "  {}: {} (JsonString)", name, json ),
-        Value::Object( obj ) => println!( "  {}: {:?} (Object)", name, obj ),
+        Value::String( s ) => println!( "  {name}: '{s}' (String)" ),
+        Value::Integer( i ) => println!( "  {name}: {i} (Integer)" ),
+        Value::Float( f ) => println!( "  {name}: {f} (Float)" ),
+        Value::Boolean( b ) => println!( "  {name}: {b} (Boolean)" ),
+        Value::Path( p ) => println!( "  {name}: {p:?} (Path)" ),
+        Value::File( f ) => println!( "  {name}: {f:?} (File)" ),
+        Value::Directory( d ) => println!( "  {name}: {d:?} (Directory)" ),
+        Value::Enum( e ) => println!( "  {name}: '{e}' (Enum)" ),
+        Value::Url( u ) => println!( "  {name}: {u} (Url)" ),
+        Value::DateTime( dt ) => println!( "  {name}: {dt} (DateTime)" ),
+        Value::Pattern( p ) => println!( "  {name}: {p} (Pattern)" ),
+        Value::List( items ) => println!( "  {name}: {items:?} (List)" ),
+        Value::Map( map ) => println!( "  {name}: {map:?} (Map)" ),
+        Value::JsonString( json ) => println!( "  {name}: {json} (JsonString)" ),
+        Value::Object( obj ) => println!( "  {name}: {obj:?} (Object)" ),
       }
     }
 

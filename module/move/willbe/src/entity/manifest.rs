@@ -63,7 +63,7 @@ mod private
       let data = read.parse::< toml_edit::Document >()
       .map_err( | e | io::Error::new( io::ErrorKind::InvalidData, e ) )?;
 
-      Ok
+      Result::Ok
       (
         Manifest
         {
@@ -125,7 +125,7 @@ mod private
     {
       fs::write( &self.manifest_file, self.data.to_string() )?;
 
-      Ok( () )
+      std::io::Result::Ok( () )
     }
 
     /// Check that the current manifest is the manifest of the package (can also be a virtual workspace).

@@ -7,7 +7,7 @@
 //! ## Help System Overview
 //!
 //! The Unilang help system automatically generates user-friendly documentation
-//! from CommandDefinition metadata. It provides two main modes:
+//! from `CommandDefinition` metadata. It provides two main modes:
 //!
 //! 1. **Command List Mode** (`list_commands()`): Shows a summary of all available
 //!    commands with their basic information, aliases, and status.
@@ -99,7 +99,7 @@ fn main() -> Result< (), unilang::error::Error >
   .idempotent( false ) // Processing may have side effects
   
   // Deprecation message - use when phasing out commands (empty = not deprecated)
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   
   // HTTP method hint for REST API integration scenarios
   .http_method_hint( "POST".to_string() )
@@ -386,9 +386,9 @@ fn main() -> Result< (), unilang::error::Error >
             "***".to_string()
           }
         },
-        _ => format!( "{:?}", value ),
+        _ => format!( "{value:?}" ),
       };
-      println!( "  {}: {}", name, display_value );
+      println!( "  {name}: {display_value}" );
     }
 
     println!( "✅ Data processing completed successfully" );
@@ -409,7 +409,7 @@ fn main() -> Result< (), unilang::error::Error >
   // of documentation complexity.
   let simple_command = CommandDefinition::former()
   .name( "ping" )
-  .namespace( "".to_string() ) // Global namespace - command appears as just "ping"
+  .namespace( String::new() ) // Global namespace - command appears as just "ping"
   .description( "Test connectivity".to_string() )
   .hint( "Simple connectivity test" )
   .status( "stable" )
@@ -418,7 +418,7 @@ fn main() -> Result< (), unilang::error::Error >
   .tags( vec![ "network".to_string() ] )
   .permissions( vec![] ) // No special permissions needed
   .idempotent( true )    // Safe to run multiple times
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
   .examples( vec![ "ping".to_string() ] ) // Simple usage
   .arguments( vec![] ) // No arguments - demonstrates minimal command
@@ -465,7 +465,7 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "\n=== Detailed Command Help ===" );
   if let Some( detailed_help ) = help_generator.command( "data.process" )
   {
-    println!( "{}", detailed_help );
+    println!( "{detailed_help}" );
   }
 
   // Show help for simple command to demonstrate format consistency
@@ -473,7 +473,7 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "\n=== Simple Command Help ===" );
   if let Some( simple_help ) = help_generator.command( "ping" )
   {
-    println!( "{}", simple_help );
+    println!( "{simple_help}" );
   }
 
   // Educational summary of what the help system provides

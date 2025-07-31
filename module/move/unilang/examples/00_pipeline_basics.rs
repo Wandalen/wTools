@@ -58,7 +58,7 @@ fn main() -> Result<(), unilang::Error> {
         if let (Some(Value::Integer(a)), Some(Value::Integer(b))) = 
             (cmd.arguments.get("a"), cmd.arguments.get("b")) {
             let result = a + b;
-            println!("{} + {} = {}", a, b, result);
+            println!("{a} + {b} = {result}");
             
             Ok(OutputData {
                 content: result.to_string(),
@@ -89,7 +89,7 @@ fn main() -> Result<(), unilang::Error> {
     let result = pipeline.process_command_simple("math.add a::5");
     println!("Command: math.add a::5 (missing b)");
     println!("Success: {}", result.success);
-    println!("Output: {:?}", result.outputs.get(0).map(|o| &o.content));
+    println!("Output: {:?}", result.outputs.first().map(|o| &o.content));
     println!("Error: {:?}\n", result.error);
     
     // Error case - invalid command
@@ -128,7 +128,7 @@ fn main() -> Result<(), unilang::Error> {
     let sequence_result = pipeline.process_sequence(&commands, ExecutionContext::default());
     println!("Stopped after {} commands", sequence_result.results.len());
     println!("Last command successful: {}", 
-        sequence_result.results.last().map(|r| r.success).unwrap_or(false));
+        sequence_result.results.last().is_some_and(|r| r.success));
     
     Ok(())
 }

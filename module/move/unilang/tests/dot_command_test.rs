@@ -2,7 +2,7 @@
 //! Tests for dot command behavior to prevent regression of panic issue.
 //! 
 //! This test specifically covers the issue where entering just "." would cause
-//! a panic due to an empty command_path_slices vector.
+//! a panic due to an empty `command_path_slices` vector.
 //!
 
 use unilang::registry::CommandRegistry;

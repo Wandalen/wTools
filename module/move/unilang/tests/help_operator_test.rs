@@ -16,7 +16,7 @@ fn test_help_operator_shows_help_not_error()
   registry.register( CommandDefinition
   {
     name: "run_file".to_string(),
-    namespace: "".to_string(),
+    namespace: String::new(),
     description: "Run prompts from a file".to_string(),
     hint: "Load and execute prompts".to_string(),
     arguments: vec![
@@ -43,8 +43,8 @@ fn test_help_operator_shows_help_not_error()
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
-    deprecation_message: "".to_string(),
-    http_method_hint: "".to_string(),
+    deprecation_message: String::new(),
+    http_method_hint: String::new(),
     examples: vec![],
   });
 
@@ -132,8 +132,8 @@ fn test_help_operator_with_multiple_required_args()
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
-    deprecation_message: "".to_string(),
-    http_method_hint: "".to_string(),
+    deprecation_message: String::new(),
+    http_method_hint: String::new(),
     examples: vec![],
   });
 
@@ -175,7 +175,7 @@ fn test_help_operator_takes_precedence_over_validation()
   registry.register( CommandDefinition
   {
     name: "set_port".to_string(),
-    namespace: "".to_string(),
+    namespace: String::new(),
     description: "Set server port".to_string(),
     hint: "Configure port".to_string(),
     arguments: vec![
@@ -205,8 +205,8 @@ fn test_help_operator_takes_precedence_over_validation()
     aliases: vec![],
     permissions: vec![],
     idempotent: true,
-    deprecation_message: "".to_string(),
-    http_method_hint: "".to_string(),
+    deprecation_message: String::new(),
+    http_method_hint: String::new(),
     examples: vec![],
   });
 
@@ -246,7 +246,7 @@ fn test_normal_command_without_help_operator_still_validates()
   registry.register( CommandDefinition
   {
     name: "run_file".to_string(),
-    namespace: "".to_string(),
+    namespace: String::new(),
     description: "Run prompts from a file".to_string(),
     hint: "Load and execute prompts".to_string(),
     arguments: vec![
@@ -273,8 +273,8 @@ fn test_normal_command_without_help_operator_still_validates()
     aliases: vec![],
     permissions: vec![],
     idempotent: false,
-    deprecation_message: "".to_string(),
-    http_method_hint: "".to_string(),
+    deprecation_message: String::new(),
+    http_method_hint: String::new(),
     examples: vec![],
   });
 

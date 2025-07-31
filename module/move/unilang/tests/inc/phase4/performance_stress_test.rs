@@ -12,7 +12,7 @@ use std::path::Path;
 /// Generates a YAML string with the specified number of unique command definitions.
 /// 
 /// Each command will have basic metadata and a few arguments to test realistic scenarios.
-pub fn generate_stress_yaml( count : usize ) -> String
+#[must_use] pub fn generate_stress_yaml( count : usize ) -> String
 {
   let mut yaml = String::new();
   yaml.push_str( "---\n" );
@@ -93,7 +93,7 @@ fn test_performance_stress_setup()
   // Set the environment variable so build.rs uses our stress commands
   env::set_var( "UNILANG_STATIC_COMMANDS_PATH", stress_yaml_path.to_str().unwrap() );
   
-  println!( "Generated {} commands for stress testing", test_count );
+  println!( "Generated {test_count} commands for stress testing" );
   println!( "Stress commands written to: {}", stress_yaml_path.display() );
   
   // Verify the file was created
@@ -119,7 +119,7 @@ fn test_performance_stress_full()
   let yaml_content = generate_stress_yaml( test_count );
   fs::write( &stress_yaml_path, yaml_content ).expect( "Failed to write stress test YAML" );
   
-  println!( "Generated {} commands for performance test", test_count );
+  println!( "Generated {test_count} commands for performance test" );
   
   // Run the stress test binary with the custom command set
   let start_time = Instant::now();
@@ -137,11 +137,11 @@ fn test_performance_stress_full()
   let stderr = String::from_utf8_lossy( &output.stderr );
   
   println!( "=== Stress Test Output ===" );
-  println!( "{}", stdout );
+  println!( "{stdout}" );
   if !stderr.is_empty()
   {
     println!( "=== Stderr ===" );
-    println!( "{}", stderr );
+    println!( "{stderr}" );
   }
   
   // Verify the binary executed successfully
@@ -165,26 +165,24 @@ fn test_performance_stress_full()
   
   // Verify performance requirements
   println!( "=== Performance Assertions ===" );
-  println!( "Total execution time: {:?}", total_execution_time );
-  println!( "P99 latency: {:.2} microseconds", p99_micros );
+  println!( "Total execution time: {total_execution_time:?}" );
+  println!( "P99 latency: {p99_micros:.2} microseconds" );
   
   // NFR-Performance: p99 latency must be < 1 millisecond (1000 microseconds)
   assert!( 
     p99_micros < 1000.0, 
-    "Performance requirement FAILED: p99 latency ({:.2} μs) >= 1000 μs (1ms)", 
-    p99_micros 
+    "Performance requirement FAILED: p99 latency ({p99_micros:.2} μs) >= 1000 μs (1ms)" 
   );
   
   // Additional startup time check - total execution should be reasonable
   assert!( 
     total_execution_time.as_millis() < 10000, 
-    "Startup time too high: {:?} > 10 seconds", 
-    total_execution_time 
+    "Startup time too high: {total_execution_time:?} > 10 seconds" 
   );
   
   println!( "✅ All performance requirements MET!" );
-  println!( "   - P99 command resolution latency: {:.2} μs < 1000 μs", p99_micros );
-  println!( "   - Total execution time: {:?} < 10s", total_execution_time );
+  println!( "   - P99 command resolution latency: {p99_micros:.2} μs < 1000 μs" );
+  println!( "   - Total execution time: {total_execution_time:?} < 10s" );
   
   // Clean up
   let _ = fs::remove_file( stress_yaml_path );

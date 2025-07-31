@@ -28,7 +28,7 @@ fn main() -> Result< (), unilang::error::Error >
   .tags( vec![ "arithmetic".to_string(), "basic".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
   .examples( vec!
   [
@@ -72,7 +72,7 @@ fn main() -> Result< (), unilang::error::Error >
       }
 
       let calculation = format!( "{} = {}", num_strs.join( " + " ), sum );
-      println!( "Result: {}", calculation );
+      println!( "Result: {calculation}" );
 
       Ok( OutputData
       {
@@ -104,7 +104,7 @@ fn main() -> Result< (), unilang::error::Error >
   .tags( vec![ "arithmetic".to_string(), "basic".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
   .examples( vec!
   [
@@ -148,7 +148,7 @@ fn main() -> Result< (), unilang::error::Error >
       }
 
       let calculation = format!( "{} = {}", num_strs.join( " × " ), product );
-      println!( "Result: {}", calculation );
+      println!( "Result: {calculation}" );
 
       Ok( OutputData
       {
@@ -181,7 +181,7 @@ fn main() -> Result< (), unilang::error::Error >
   .tags( vec![ "text-processing".to_string(), "formatting".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "POST".to_string() )
   .examples( vec!
   [
@@ -209,8 +209,8 @@ fn main() -> Result< (), unilang::error::Error >
     if let Some( Value::String( text ) ) = cmd.arguments.get( "text" )
     {
       let upper_text = text.to_uppercase();
-      println!( "Original: {}", text );
-      println!( "Uppercase: {}", upper_text );
+      println!( "Original: {text}" );
+      println!( "Uppercase: {upper_text}" );
 
       Ok( OutputData
       {
@@ -222,7 +222,7 @@ fn main() -> Result< (), unilang::error::Error >
     {
       Ok( OutputData
       {
-        content : "".to_string(),
+        content : String::new(),
         format : "text".to_string(),
       })
     }
@@ -243,7 +243,7 @@ fn main() -> Result< (), unilang::error::Error >
   .tags( vec![ "filesystem".to_string(), "utility".to_string() ] )
   .permissions( vec![ "read_directory".to_string() ] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "GET".to_string() )
   .examples( vec!
   [
@@ -278,7 +278,7 @@ fn main() -> Result< (), unilang::error::Error >
       _ => ".".to_string(),
     };
 
-    println!( "Listing directory: {}", path );
+    println!( "Listing directory: {path}" );
 
     match std::fs::read_dir( &path )
     {
@@ -292,7 +292,7 @@ fn main() -> Result< (), unilang::error::Error >
             if let Some( name ) = entry.file_name().to_str()
             {
               files.push( name.to_string() );
-              println!( "  {}", name );
+              println!( "  {name}" );
             }
           }
         }
@@ -305,7 +305,7 @@ fn main() -> Result< (), unilang::error::Error >
       },
       Err( e ) =>
       {
-        let error_msg = format!( "Failed to list directory '{}': {}", path, e );
+        let error_msg = format!( "Failed to list directory '{path}': {e}" );
         Err( unilang::data::ErrorData::new(
           "DIRECTORY_READ_ERROR".to_string(),
           error_msg,

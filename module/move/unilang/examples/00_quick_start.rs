@@ -53,10 +53,10 @@ fn main() -> Result<(), unilang::Error> {
             _ => "World".to_string(),
         };
         
-        println!("Hello, {}!", name);
+        println!("Hello, {name}!");
         
         Ok(OutputData {
-            content: format!("Hello, {}!", name),
+            content: format!("Hello, {name}!"),
             format: "text".to_string(),
         })
     });

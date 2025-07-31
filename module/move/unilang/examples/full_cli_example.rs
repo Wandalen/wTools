@@ -65,7 +65,7 @@ Result< (), Error >
     if let ( Value::Integer( val_a ), Value::Integer( val_b ) ) = ( a, b )
     {
       let result = val_a + val_b;
-      println!( "Result: {}", result );
+      println!( "Result: {result}" );
       return Ok( OutputData
       {
         content : result.to_string(),
@@ -119,7 +119,7 @@ Result< (), Error >
     if let ( Value::Integer( val_x ), Value::Integer( val_y ) ) = ( x, y )
     {
       let result = val_x - val_y;
-      println!( "Result: {}", result );
+      println!( "Result: {result}" );
       return Ok( OutputData
       {
         content : result.to_string(),
@@ -162,11 +162,9 @@ Result< (), Error >
   {
     let name = cmd
     .arguments
-    .get( "name" )
-    .map( | v | v.to_string() )
-    .unwrap_or_else( || "World".to_string() );
-    let result = format!( "Hello, {}!", name );
-    println!( "{}", result );
+    .get( "name" ).map_or_else(|| "World".to_string(), std::string::ToString::to_string);
+    let result = format!( "Hello, {name}!" );
+    println!( "{result}" );
     Ok( OutputData
     {
       content : result,
@@ -218,8 +216,8 @@ Result< (), Error >
   {
     let key = cmd.arguments.get( "key" ).unwrap();
     let value = cmd.arguments.get( "value" ).unwrap();
-    let result = format!( "Setting config: {} = {}", key, value );
-    println!( "{}", result );
+    let result = format!( "Setting config: {key} = {value}" );
+    println!( "{result}" );
     Ok( OutputData
     {
       content : result,
@@ -231,18 +229,18 @@ Result< (), Error >
 
   // 3. Parse Command Line Arguments
   // Handle 'help' command manually
-  if args.first().map_or( false, | arg | arg == "help" )
+  if args.first().is_some_and( | arg | arg == "help" )
   {
     let help_generator = unilang::help::HelpGenerator::new( &registry );
     if let Some( command_name ) = args.get( 1 )
     {
       if let Some( help_text ) = help_generator.command( command_name )
       {
-        println!( "{}", help_text );
+        println!( "{help_text}" );
       }
       else
       {
-        println!( "Command '{}' not found.", command_name );
+        println!( "Command '{command_name}' not found." );
       }
     }
     else

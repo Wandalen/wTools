@@ -77,7 +77,7 @@ fn test_load_from_yaml_str_simple_command()
   assert_eq!( command.tags, vec![ "greeting".to_string() ] );
   assert_eq!( command.aliases, vec![ "hi".to_string() ] );
   assert_eq!( command.permissions, vec![ "public".to_string() ] );
-  assert_eq!( command.idempotent, true );
+  assert!( command.idempotent );
   assert!( registry.get_routine( ".system.hello" ).is_some() );
 }
 
@@ -271,15 +271,15 @@ fn test_load_from_yaml_str_all_scalar_types()
   assert_eq!( command.tags, vec![ "test".to_string(), "scalar".to_string() ] );
   assert_eq!( command.aliases, vec![ "s_cmd".to_string() ] );
   assert_eq!( command.permissions, vec![ "dev".to_string() ] );
-  assert_eq!( command.idempotent, false );
+  assert!( !command.idempotent );
 
   assert_eq!( command.arguments[ 0 ].hint, "String hint" );
   // is_default_arg field no longer exists
   assert_eq!( command.arguments[ 0 ].attributes.default, None );
   assert_eq!( command.arguments[ 0 ].aliases, Vec::< String >::new() );
   assert_eq!( command.arguments[ 0 ].tags, Vec::< String >::new() );
-  assert_eq!( command.arguments[ 0 ].attributes.interactive, false );
-  assert_eq!( command.arguments[ 0 ].attributes.sensitive, false );
+  assert!( !command.arguments[ 0 ].attributes.interactive );
+  assert!( !command.arguments[ 0 ].attributes.sensitive );
 }
 
 #[ test ]
@@ -378,15 +378,15 @@ fn test_load_from_yaml_str_collection_types()
   assert_eq!( command.tags, vec![ "test".to_string(), "collection".to_string() ] );
   assert_eq!( command.aliases, vec![ "c_cmd".to_string() ] );
   assert_eq!( command.permissions, vec![ "public".to_string() ] );
-  assert_eq!( command.idempotent, true );
+  assert!( command.idempotent );
 
   assert_eq!( command.arguments[ 0 ].hint, "List string hint" );
   // is_default_arg field no longer exists
   assert_eq!( command.arguments[ 0 ].attributes.default, None );
   assert_eq!( command.arguments[ 0 ].aliases, Vec::< String >::new() );
   assert_eq!( command.arguments[ 0 ].tags, Vec::< String >::new() );
-  assert_eq!( command.arguments[ 0 ].attributes.interactive, false );
-  assert_eq!( command.arguments[ 0 ].attributes.sensitive, false );
+  assert!( !command.arguments[ 0 ].attributes.interactive );
+  assert!( !command.arguments[ 0 ].attributes.sensitive );
 }
 
 #[ test ]
@@ -497,15 +497,15 @@ fn test_load_from_yaml_str_complex_types_and_attributes()
   assert_eq!( command.tags, vec![ "test".to_string(), "complex".to_string() ] );
   assert_eq!( command.aliases, vec![ "comp_cmd".to_string() ] );
   assert_eq!( command.permissions, vec![ "public".to_string() ] );
-  assert_eq!( command.idempotent, false );
+  assert!( !command.idempotent );
 
   assert_eq!( command.arguments[ 0 ].hint, "Json string hint" );
   // is_default_arg field no longer exists
   assert_eq!( command.arguments[ 0 ].attributes.default, None );
   assert_eq!( command.arguments[ 0 ].aliases, Vec::< String >::new() );
   assert_eq!( command.arguments[ 0 ].tags, Vec::< String >::new() );
-  assert_eq!( command.arguments[ 0 ].attributes.interactive, false );
-  assert_eq!( command.arguments[ 0 ].attributes.sensitive, false );
+  assert!( !command.arguments[ 0 ].attributes.interactive );
+  assert!( !command.arguments[ 0 ].attributes.sensitive );
 }
 
 #[ test ]
@@ -598,7 +598,7 @@ fn test_load_from_json_str_simple_command()
   assert_eq!( command.tags, vec![ "greeting".to_string() ] );
   assert_eq!( command.aliases, vec![ "hi_json".to_string() ] );
   assert_eq!( command.permissions, vec![ "public".to_string() ] );
-  assert_eq!( command.idempotent, true );
+  assert!( command.idempotent );
   assert!( registry.get_routine( ".system.hello_json" ).is_some() );
 }
 
@@ -666,15 +666,15 @@ fn test_load_from_json_str_all_scalar_types()
   assert_eq!( command.tags, vec![ "test".to_string(), "scalar".to_string() ] );
   assert_eq!( command.aliases, vec![ "s_cmd_json".to_string() ] );
   assert_eq!( command.permissions, vec![ "dev".to_string() ] );
-  assert_eq!( command.idempotent, false );
+  assert!( !command.idempotent );
 
   assert_eq!( command.arguments[ 0 ].hint, "String hint" );
   // is_default_arg field no longer exists
   assert_eq!( command.arguments[ 0 ].attributes.default, None );
   assert_eq!( command.arguments[ 0 ].aliases, Vec::< String >::new() );
   assert_eq!( command.arguments[ 0 ].tags, Vec::< String >::new() );
-  assert_eq!( command.arguments[ 0 ].attributes.interactive, false );
-  assert_eq!( command.arguments[ 0 ].attributes.sensitive, false );
+  assert!( !command.arguments[ 0 ].attributes.interactive );
+  assert!( !command.arguments[ 0 ].attributes.sensitive );
 }
 
 #[ test ]
@@ -730,15 +730,15 @@ fn test_load_from_json_str_collection_types()
   assert_eq!( command.tags, vec![ "test".to_string(), "collection".to_string() ] );
   assert_eq!( command.aliases, vec![ "c_cmd_json".to_string() ] );
   assert_eq!( command.permissions, vec![ "public".to_string() ] );
-  assert_eq!( command.idempotent, true );
+  assert!( command.idempotent );
 
   assert_eq!( command.arguments[ 0 ].hint, "List string hint" );
   // is_default_arg field no longer exists
   assert_eq!( command.arguments[ 0 ].attributes.default, None );
   assert_eq!( command.arguments[ 0 ].aliases, Vec::< String >::new() );
   assert_eq!( command.arguments[ 0 ].tags, Vec::< String >::new() );
-  assert_eq!( command.arguments[ 0 ].attributes.interactive, false );
-  assert_eq!( command.arguments[ 0 ].attributes.sensitive, false );
+  assert!( !command.arguments[ 0 ].attributes.interactive );
+  assert!( !command.arguments[ 0 ].attributes.sensitive );
 }
 
 #[ test ]
@@ -794,15 +794,15 @@ fn test_load_from_json_str_complex_types_and_attributes()
   assert_eq!( command.tags, vec![ "test".to_string(), "complex".to_string() ] );
   assert_eq!( command.aliases, vec![ "comp_cmd_json".to_string() ] );
   assert_eq!( command.permissions, vec![ "public".to_string() ] );
-  assert_eq!( command.idempotent, false );
+  assert!( !command.idempotent );
 
   assert_eq!( command.arguments[ 0 ].hint, "Json string hint" );
   // is_default_arg field no longer exists
   assert_eq!( command.arguments[ 0 ].attributes.default, None );
   assert_eq!( command.arguments[ 0 ].aliases, Vec::< String >::new() );
   assert_eq!( command.arguments[ 0 ].tags, Vec::< String >::new() );
-  assert_eq!( command.arguments[ 0 ].attributes.interactive, false );
-  assert_eq!( command.arguments[ 0 ].attributes.sensitive, false );
+  assert!( !command.arguments[ 0 ].attributes.interactive );
+  assert!( !command.arguments[ 0 ].attributes.sensitive );
 }
 
 #[ test ]

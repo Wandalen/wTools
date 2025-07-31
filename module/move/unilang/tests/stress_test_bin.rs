@@ -1,7 +1,7 @@
 //!
 //! Binary for performance stress testing of static command registry.
 //! 
-//! This binary initializes the CommandRegistry with static commands and
+//! This binary initializes the `CommandRegistry` with static commands and
 //! performs intensive lookups to measure p99 latency.
 //!
 
@@ -16,16 +16,16 @@ fn main()
   let registry = CommandRegistry::new();
   let init_time = start_time.elapsed();
   
-  println!( "Registry initialization time: {:?}", init_time );
+  println!( "Registry initialization time: {init_time:?}" );
   
   // Perform many command lookups to measure p99 latency
   let lookup_count = 10_000;
   let mut latencies = Vec::with_capacity( lookup_count );
   
   // Test commands from our generated set
-  let test_commands = (0..1000).map( |i| format!( ".perf.cmd_{}", i ) ).collect::<Vec<_>>();
+  let test_commands = (0..1000).map( |i| format!( ".perf.cmd_{i}" ) ).collect::<Vec<_>>();
   
-  println!( "Starting {} command lookups...", lookup_count );
+  println!( "Starting {lookup_count} command lookups..." );
   
   for i in 0..lookup_count
   {
@@ -48,17 +48,17 @@ fn main()
   let total_time = start_time.elapsed();
   
   println!( "Performance Results:" );
-  println!( "  Total execution time: {:?}", total_time );
-  println!( "  Registry init time: {:?}", init_time );
-  println!( "  Total lookups: {}", lookup_count );
-  println!( "  Latency p50: {:?}", p50 );
-  println!( "  Latency p95: {:?}", p95 );
-  println!( "  Latency p99: {:?}", p99 );
-  println!( "  Latency max: {:?}", max );
+  println!( "  Total execution time: {total_time:?}" );
+  println!( "  Registry init time: {init_time:?}" );
+  println!( "  Total lookups: {lookup_count}" );
+  println!( "  Latency p50: {p50:?}" );
+  println!( "  Latency p95: {p95:?}" );
+  println!( "  Latency p99: {p99:?}" );
+  println!( "  Latency max: {max:?}" );
   
   // Output the p99 latency in microseconds for easy parsing
   let p99_micros = p99.as_nanos() as f64 / 1000.0;
-  println!( "P99_LATENCY_MICROS: {:.2}", p99_micros );
+  println!( "P99_LATENCY_MICROS: {p99_micros:.2}" );
   
   // Check if we meet the requirement (< 1ms = 1000 microseconds)
   if p99_micros < 1000.0

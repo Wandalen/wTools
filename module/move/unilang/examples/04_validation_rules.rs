@@ -13,7 +13,7 @@
 //! If validation fails at step 2, the command will not execute and an error
 //! will be returned to the user explaining which validation rule was violated.
 //!
-//! ## ValidationRule Enum Variants
+//! ## `ValidationRule` Enum Variants
 //!
 //! The `ValidationRule` enum provides these constraint types:
 //!
@@ -62,7 +62,7 @@ fn main() -> Result< (), unilang::error::Error >
   .tags( vec![ "validation".to_string(), "demo".to_string() ] )
   .permissions( vec![] )
   .idempotent( true )
-  .deprecation_message( "".to_string() )
+  .deprecation_message( String::new() )
   .http_method_hint( "POST".to_string() )
   .examples( vec!
   [
@@ -327,9 +327,9 @@ fn main() -> Result< (), unilang::error::Error >
       {
         // Special case: hide sensitive argument values for security
         Value::String( s ) if name == "password" => "*".repeat( s.len() ),
-        _ => format!( "{:?}", value ),
+        _ => format!( "{value:?}" ),
       };
-      println!( "  {}: {}", name, value_str );
+      println!( "  {name}: {value_str}" );
     }
 
     // At this point, you can safely use the validated arguments in your business logic:

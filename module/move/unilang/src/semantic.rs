@@ -64,7 +64,7 @@ impl< 'a > SemanticAnalyzer< 'a >
   pub fn analyze( &self ) -> Result< Vec< VerifiedCommand >, Error >
   {
     // Catch panics and convert them to user-friendly errors
-    let result = std::panic::catch_unwind( std::panic::AssertUnwindSafe( || {
+    let result = std::panic::catch_unwind( core::panic::AssertUnwindSafe( || {
       self.analyze_internal()
     }));
 
@@ -113,7 +113,7 @@ impl< 'a > SemanticAnalyzer< 'a >
         // Generate help for this specific command
         let help_generator = crate::help::HelpGenerator::new( self.registry );
         let help_content = help_generator.command( &command_name )
-          .unwrap_or( format!( "No help available for command '{}'", command_name ) );
+          .unwrap_or( format!( "No help available for command '{command_name}'" ) );
         
         return Err( Error::Execution( ErrorData::new(
           "HELP_REQUESTED".to_string(),

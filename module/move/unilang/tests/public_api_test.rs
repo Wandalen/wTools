@@ -186,7 +186,7 @@ fn test_complete_workflow()
     
     Ok( OutputData
     {
-      content : format!( "Hello, {}!", name ),
+      content : format!( "Hello, {name}!" ),
       format : "text".to_string(),
     })
   });
@@ -206,7 +206,7 @@ fn test_complete_workflow()
 }
 
 /// Tests that namespace re-exports work correctly.
-/// This ensures the mod_interface pattern is properly implemented.
+/// This ensures the `mod_interface` pattern is properly implemented.
 #[ test ]
 fn test_namespace_structure()
 {

@@ -156,7 +156,7 @@ mod private
         namespace : static_cmd.namespace.to_string(),
         description : static_cmd.description.to_string(),
         hint : static_cmd.hint.to_string(),
-        arguments : static_cmd.arguments.iter().map( std::convert::Into::into ).collect(),
+        arguments : static_cmd.arguments.iter().map( core::convert::Into::into ).collect(),
         routine_link : static_cmd.routine_link.map( str::to_string ),
         status : static_cmd.status.to_string(),
         version : static_cmd.version.to_string(),
@@ -182,7 +182,7 @@ mod private
         attributes : ( &static_arg.attributes ).into(),
         hint : static_arg.hint.to_string(),
         description : static_arg.description.to_string(),
-        validation_rules : static_arg.validation_rules.iter().map( std::convert::Into::into ).collect(),
+        validation_rules : static_arg.validation_rules.iter().map( core::convert::Into::into ).collect(),
         aliases : static_arg.aliases.iter().map( | &s | s.to_string() ).collect(),
         tags : static_arg.tags.iter().map( | &s | s.to_string() ).collect(),
       }

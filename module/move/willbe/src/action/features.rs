@@ -105,7 +105,7 @@ mod private
         report.inner.insert( package.name().to_owned(), features.to_owned() );
       }
     );
-    Ok( report )
+    error::untyped::Result::Ok( report )
   }
 }
 
