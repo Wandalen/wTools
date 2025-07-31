@@ -263,9 +263,8 @@ fn test_common_use_patterns()
   // Pattern 3: Import for error handling
   use unilang::ErrorData;
   
-  let _error_data = ErrorData
-  {
-    code : "TEST001".to_string(),
-    message : "Test error".to_string(),
-  };
+  let _error_data = ErrorData::new(
+    "TEST001".to_string(),
+    "Test error".to_string(),
+  );
 }

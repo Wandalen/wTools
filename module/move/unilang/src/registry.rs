@@ -131,11 +131,10 @@ impl CommandRegistry
     // Check if command exists in either static or dynamic registries
     if super::STATIC_COMMANDS.contains_key( &full_name ) || self.dynamic_commands.contains_key( &full_name )
     {
-      return Err( Error::Execution( ErrorData
-      {
-        code : "COMMAND_ALREADY_EXISTS".to_string(),
-        message : format!( "Command '{full_name}' already exists." ),
-      }));
+      return Err( Error::Execution( ErrorData::new(
+        "UNILANG_COMMAND_ALREADY_EXISTS".to_string(),
+        format!( "Registration Error: Command '{full_name}' already exists. Use a different name or remove the existing command first." ),
+      )));
     }
 
     self.dynamic_commands.insert( full_name.clone(), command_def.clone() ); // Cloned command_def

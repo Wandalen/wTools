@@ -355,11 +355,10 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
           format : format.clone(),
         })
       },
-      Err( e ) => Err( ErrorData
-      {
-        code : "DIRECTORY_READ_ERROR".to_string(),
-        message : format!( "Cannot read directory '{}': {}", path, e ),
-      })
+      Err( e ) => Err( ErrorData::new(
+        "DIRECTORY_READ_ERROR".to_string(),
+        format!( "Cannot read directory '{}': {}", path, e ),
+      ))
     }
   });
 

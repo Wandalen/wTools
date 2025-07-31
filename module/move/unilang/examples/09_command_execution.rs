@@ -200,40 +200,36 @@ fn main() -> Result< (), unilang::error::Error >
 
     if *divisor == 0.0
     {
-      return Err( ErrorData
-      {
-        code : "DIVISION_BY_ZERO".to_string(),
-        message : format!( "Cannot divide {} by zero. Division by zero is undefined.", dividend ),
-      });
+      return Err( ErrorData::new(
+        "DIVISION_BY_ZERO".to_string(),
+        format!( "Cannot divide {} by zero. Division by zero is undefined.", dividend ),
+      ));
     }
 
     if divisor.abs() < f64::EPSILON && dividend.abs() > f64::EPSILON
     {
-      return Err( ErrorData
-      {
-        code : "DIVISION_BY_NEAR_ZERO".to_string(),
-        message : "Division by very small number may result in numerical instability".to_string(),
-      });
+      return Err( ErrorData::new(
+        "DIVISION_BY_NEAR_ZERO".to_string(),
+        "Division by very small number may result in numerical instability".to_string(),
+      ));
     }
 
     let result = dividend / divisor;
 
     if result.is_infinite()
     {
-      return Err( ErrorData
-      {
-        code : "RESULT_OVERFLOW".to_string(),
-        message : "Division result is infinite (overflow)".to_string(),
-      });
+      return Err( ErrorData::new(
+        "RESULT_OVERFLOW".to_string(),
+        "Division result is infinite (overflow)".to_string(),
+      ));
     }
 
     if result.is_nan()
     {
-      return Err( ErrorData
-      {
-        code : "INVALID_RESULT".to_string(),
-        message : "Division result is not a number (NaN)".to_string(),
-      });
+      return Err( ErrorData::new(
+        "INVALID_RESULT".to_string(),
+        "Division result is not a number (NaN)".to_string(),
+      ));
     }
 
     let output = format!( "{} ÷ {} = {}", dividend, divisor, result );
@@ -293,11 +289,10 @@ fn main() -> Result< (), unilang::error::Error >
 
     if numbers.is_empty()
     {
-      return Err( ErrorData
-      {
-        code : "NO_DATA".to_string(),
-        message : "No valid numbers provided for analysis".to_string(),
-      });
+      return Err( ErrorData::new(
+        "NO_DATA".to_string(),
+        "No valid numbers provided for analysis".to_string(),
+      ));
     }
 
     // Calculate statistics

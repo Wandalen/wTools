@@ -90,20 +90,29 @@ cargo run --example error_tools_trivial
 
 Adding context to errors helps with debugging and user experience:
 
-```rust,ignore
+```rust
 use error_tools::untyped::{ Result, Context, format_err };
 
 fn read_and_process_file( path : &str ) -> Result< String >
 {
-  let content = std::fs::read_to_string( path )
-    .context( format_err!( "Failed to read file at '{}'", path ) )?;
-
+  // Simulate file reading for demonstration  
+  let content = if path == "test.txt" { "hello world" } else { "" };
+  
   if content.is_empty()
   {
-    return Err( format_err!( "File is empty!" ) );
+    return Err( format_err!( "File is empty or not found: {}", path ) );
   }
 
   Ok( content.to_uppercase() )
+}
+
+fn main()
+{
+  match read_and_process_file( "test.txt" )
+  {
+    Ok( content ) => println!( "Processed: {}", content ),
+    Err( e ) => println!( "Error: {}", e ),
+  }
 }
 ```
 
@@ -119,27 +128,44 @@ Ideal for libraries where you want to provide a clear, structured contract for p
 - Compile-time error checking
 - Better API boundaries for library consumers
 
-```rust,ignore
+```rust
 use error_tools::typed::Error;
 use error_tools::dependency::thiserror;
-use std::path::PathBuf;
 
 #[ derive( Debug, Error ) ]
 pub enum DataError
 {
   #[ error( "I/O error for file: {file}" ) ]
-  Io { file : PathBuf, source : std::io::Error },
+  Io { file : String },
   #[ error( "Parsing error: {0}" ) ]
   Parse( String ),
 }
 
-fn process_data( path : &PathBuf ) -> Result< i32, DataError >
+fn process_data( file_name : &str, content : &str ) -> Result< i32, DataError >
 {
-  let content = std::fs::read_to_string( path )
-    .map_err( | e | DataError::Io { file : path.clone(), source : e } )?;
+  if content.is_empty()
+  {
+    return Err( DataError::Io { file : file_name.to_string() } );
+  }
 
   content.trim().parse::< i32 >()
     .map_err( | _ | DataError::Parse( "Could not parse content as integer".into() ) )
+}
+
+fn main()
+{
+  match process_data( "data.txt", "123" )
+  {
+    Ok( num ) => println!( "Parsed number: {}", num ),
+    Err( e ) => println!( "Error: {}", e ),
+  }
+  
+  // Example with error
+  match process_data( "invalid.txt", "abc" )
+  {
+    Ok( _ ) => (),
+    Err( e ) => println!( "Expected error: {}", e ),
+  }
 }
 ```
 
@@ -243,7 +269,7 @@ fn main()
 
 ### Using Both Typed and Untyped Errors
 
-```rust,ignore
+```rust
 use error_tools::prelude::*;
 use error_tools::dependency::thiserror;
 
@@ -311,12 +337,16 @@ error_tools = { version = "0.26" }  # Both (default)
 
 Replace your `anyhow` imports with `error_tools::untyped`:
 
-```rust,ignore
+```rust
 // Before
-use anyhow::{ Result, Context, bail, format_err };
+// use anyhow::{ Result, Context, bail, format_err };
 
 // After  
 use error_tools::untyped::{ Result, Context, bail, format_err };
+
+fn main() {
+    println!("Migration complete - same API, different import!");
+}
 ```
 
 Everything else stays the same!
@@ -325,13 +355,17 @@ Everything else stays the same!
 
 Add the explicit `thiserror` import and use `error_tools::typed`:
 
-```rust,ignore
+```rust
 // Before
-use thiserror::Error;
+// use thiserror::Error;
 
 // After
 use error_tools::typed::Error;
 use error_tools::dependency::thiserror;  // Required for derive macros
+
+fn main() {
+    println!("Migration complete - same derive macros, unified import!");
+}
 ```
 
 The derive macros work identically.
@@ -366,19 +400,42 @@ cargo run --example err_with_example
 
 Always provide meaningful context:
 
-```rust,ignore
-// Good - specific context
-.context( format!( "Failed to process user {} data", user_id ) )?
+```rust
+use error_tools::untyped::{ Result, Context, format_err };
 
-// Less helpful - generic context
-.context( "An error occurred" )?
+fn process_user_data( user_id : u32 ) -> Result< String >
+{
+  // Good - specific context
+  let _result = simulate_operation()
+    .context( format!( "Failed to process user {} data", user_id ) )?;
+
+  // Less helpful - generic context  
+  let _other = simulate_operation()
+    .context( "An error occurred" )?;
+
+  Ok( "Success".to_string() )
+}
+
+fn simulate_operation() -> Result< String >
+{
+  Ok( "data".to_string() )
+}
+
+fn main()
+{
+  match process_user_data( 123 )
+  {
+    Ok( result ) => println!( "Result: {}", result ),
+    Err( e ) => println!( "Error: {}", e ),
+  }
+}
 ```
 
 ### 3. Error Hierarchies
 
 For libraries, design clear error hierarchies:
 
-```rust,ignore
+```rust
 use error_tools::typed::Error;
 use error_tools::dependency::thiserror;
 
@@ -397,26 +454,49 @@ pub enum LibraryError
 
 // Define the individual error types
 #[ derive( Debug, Error ) ]
-pub enum ConfigError { /* ... */ }
+pub enum ConfigError
+{
+  #[ error( "Config not found" ) ]
+  NotFound,
+}
 
 #[ derive( Debug, Error ) ]  
-pub enum NetworkError { /* ... */ }
+pub enum NetworkError
+{
+  #[ error( "Connection failed" ) ]
+  ConnectionFailed,
+}
 
 #[ derive( Debug, Error ) ]
-pub enum DatabaseError { /* ... */ }
+pub enum DatabaseError
+{
+  #[ error( "Query failed" ) ]
+  QueryFailed,
+}
+
+fn main()
+{
+  let config_err = LibraryError::Config( ConfigError::NotFound );
+  println!( "Error hierarchy example: {}", config_err );
+}
 ```
 
 ### 4. Dependency Access
 
 When you need direct access to the underlying crates:
 
-```rust,ignore
-// Access the underlying crates
-use error_tools::dependency::{ anyhow, thiserror };
+```rust
+// Access the underlying crates if needed
+// use error_tools::dependency::{ anyhow, thiserror };
 
 // Or via the specific modules
 use error_tools::untyped;  // Re-exports anyhow
 use error_tools::typed;    // Re-exports thiserror
+
+fn main()
+{
+    println!("Direct access to underlying crates available via dependency module");
+}
 ```
 
 ## Integration with wTools Ecosystem

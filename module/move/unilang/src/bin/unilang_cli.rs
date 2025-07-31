@@ -325,20 +325,18 @@ fn run() -> Result< (), unilang::error::Error >
       else
       {
         let error_msg = format!( "Failed to read file: {path_str}" );
-        Err( unilang::data::ErrorData
-        {
-          code : "FILE_READ_ERROR".to_string(),
-          message : error_msg,
-        })
+        Err( unilang::data::ErrorData::new(
+          "FILE_READ_ERROR".to_string(),
+          error_msg,
+        ))
       }
     }
     else
     {
-      Err( unilang::data::ErrorData
-      {
-        code : "INVALID_ARGUMENT_TYPE".to_string(),
-        message : "Path must be a string".to_string(),
-      })
+      Err( unilang::data::ErrorData::new(
+        "INVALID_ARGUMENT_TYPE".to_string(),
+        "Path must be a string".to_string(),
+      ))
     }
   });
   registry.command_add_runtime( &cat_def, cat_routine )?;
@@ -425,7 +423,15 @@ fn run() -> Result< (), unilang::error::Error >
 
   // 4. Semantic Analysis
   let semantic_analyzer = SemanticAnalyzer::new( instructions, &registry );
-  let commands = semantic_analyzer.analyze()?;
+  let commands = match semantic_analyzer.analyze() {
+    Ok(commands) => commands,
+    Err(unilang::error::Error::Execution(error_data)) if error_data.code == "HELP_REQUESTED" => {
+      // Special handling for help requests - print the help and exit successfully
+      println!("{}", error_data.message);
+      return Ok(());
+    },
+    Err(e) => return Err(e),
+  };
 
   // 5. Interpret and Execute
   let interpreter = Interpreter::new( &commands, &registry );

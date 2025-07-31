@@ -195,7 +195,7 @@ The parser **must** adhere to the following rules in order:
 *   **Rule 0: Whitespace Separation**: Whitespace separates tokens and is not part of a token's value unless inside a quoted string.
 *   **Rule 1: Command Path Identification**: The command path is the longest possible sequence of dot-separated identifiers at the beginning of an expression.
 *   **Rule 2: Transition to Arguments**: The command path ends upon encountering the first token that is not a valid, dot-separated identifier segment (e.g., `::`, a quoted string, `?`).
-*   **Rule 3: Dot (`.`) Operator Rules**: A single leading dot is permitted and ignored. A trailing dot is a syntax error.
+*   **Rule 3: Dot (`.`) Operator Rules**: A single leading dot is permitted and ignored. A trailing dot is a syntax error. **Special Case**: A standalone dot (`.`) **must** be interpreted as a help command that displays all available commands with concise descriptions.
 *   **Rule 4: Help Operator (`?`)**: The `?` operator marks the instruction for help generation and **must** be the final token.
 *   **Rule 5: Argument Types**: Any token after the command path that is not a named argument is a positional argument. A named argument **must** use the `name::value` syntax.
 
@@ -457,6 +457,31 @@ Routines that fail **must** return an `ErrorData` object. The `code` field **mus
 
 *   **Standard Codes:** `UNILANG_COMMAND_NOT_FOUND`, `UNILANG_ARGUMENT_INVALID`, `UNILANG_ARGUMENT_MISSING`, `UNILANG_TYPE_MISMATCH`, `UNILANG_VALIDATION_RULE_FAILED`, `UNILANG_PERMISSION_DENIED`, `UNILANG_EXECUTION_ERROR`, `UNILANG_IO_ERROR`, `UNILANG_INTERNAL_ERROR`, `UNILANG_EXTERNAL_DEPENDENCY_ERROR`.
 *   **New Code for Interactive Prompting:** `UNILANG_ARGUMENT_INTERACTIVE_REQUIRED` - To be used when a mandatory argument marked `interactive: true` is not provided. This is not a failure state but a signal to the modality to prompt for input.
+
+#### 9.1.1. User-Friendly Error Messages
+
+All error messages **must** be designed for end-user consumption and **must** follow these principles:
+
+*   **Clear and Actionable**: Error messages **must** explain what went wrong and suggest how to fix it.
+*   **Avoid Technical Jargon**: Messages **must** use plain language that non-developers can understand.
+*   **Consistent Format**: All error messages **must** follow a consistent structure: `[Error Type]: [What happened]. [Suggestion for fix]`.
+*   **Context-Aware**: Error messages **must** include relevant context such as the command being executed and the specific argument that caused the issue.
+
+#### 9.1.2. Error Chain Display
+
+When multiple errors occur in sequence (error chains), the framework **must** display them in a hierarchical format:
+
+*   **Most Recent First**: The most recent error **must** be displayed first with full detail.
+*   **Root Cause Last**: The chain **must** be displayed from most recent to root cause.
+*   **Clear Hierarchy**: Each level in the error chain **must** be visually distinguished (e.g., indentation).
+*   **Panic Prevention**: Internal panics **must** be caught and converted to user-friendly error messages with error code `UNILANG_INTERNAL_ERROR`.
+
+Example error chain format:
+```
+Command Error: Failed to execute command '.files.copy'
+  ↳ Argument Error: Invalid file path for argument 'source'
+    ↳ File System Error: File '/nonexistent/path.txt' does not exist
+```
 
 #### 9.2. Standard Output (`OutputData`)
 

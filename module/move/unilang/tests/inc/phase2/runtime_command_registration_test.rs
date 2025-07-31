@@ -40,15 +40,15 @@ fn arg_test_routine(verified_command: VerifiedCommand, _context: ExecutionContex
   let arg1 = verified_command
     .arguments
     .get("arg1")
-    .ok_or_else(|| ErrorData {
-      code: "MISSING_ARGUMENT".to_string(),
-      message: "Argument 'arg1' not found".to_string(),
-    })?
+    .ok_or_else(|| ErrorData::new(
+      "MISSING_ARGUMENT".to_string(),
+      "Argument 'arg1' not found".to_string(),
+    ))?
     .as_integer()
-    .ok_or_else(|| ErrorData {
-      code: "INVALID_ARGUMENT_TYPE".to_string(),
-      message: "Argument 'arg1' is not an integer".to_string(),
-    })?;
+    .ok_or_else(|| ErrorData::new(
+      "INVALID_ARGUMENT_TYPE".to_string(),
+      "Argument 'arg1' is not an integer".to_string(),
+    ))?;
   Ok(OutputData {
     content: format!("Arg1: {}", arg1),
     format: "text".to_string(),

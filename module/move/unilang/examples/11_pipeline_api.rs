@@ -436,11 +436,10 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
 
     if *divisor == 0
     {
-      return Err( unilang::data::ErrorData
-      {
-        code : "DIVISION_BY_ZERO".to_string(),
-        message : "Cannot divide by zero".to_string(),
-      });
+      return Err( unilang::data::ErrorData::new(
+        "DIVISION_BY_ZERO".to_string(),
+        "Cannot divide by zero".to_string(),
+      ));
     }
 
     let result = dividend / divisor;

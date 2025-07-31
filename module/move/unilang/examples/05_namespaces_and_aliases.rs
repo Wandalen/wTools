@@ -306,11 +306,10 @@ fn main() -> Result< (), unilang::error::Error >
       Err( e ) =>
       {
         let error_msg = format!( "Failed to list directory '{}': {}", path, e );
-        Err( unilang::data::ErrorData
-        {
-          code : "DIRECTORY_READ_ERROR".to_string(),
-          message : error_msg,
-        })
+        Err( unilang::data::ErrorData::new(
+          "DIRECTORY_READ_ERROR".to_string(),
+          error_msg,
+        ))
       }
     }
   });

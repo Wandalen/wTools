@@ -285,13 +285,60 @@ mod private
     pub code : String,
     /// A human-readable message explaining the error.
     pub message : String,
+    /// Optional source error for error chaining.
+    pub source : Option< Box< ErrorData > >,
   }
 
   impl core::fmt::Display for ErrorData
   {
     fn fmt( &self, f : &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
     {
-      write!( f, "{} (Code: {})", self.message, self.code )
+      writeln!( f, "{}", self.message )?;
+      
+      // Display error chain if present
+      if let Some( source ) = &self.source
+      {
+        Self::fmt_error_chain( f, source, 1 )?;
+      }
+      
+      Ok(())
+    }
+  }
+
+  impl ErrorData
+  {
+    ///
+    /// Creates a new ErrorData with no source error.
+    ///
+    pub fn new( code: String, message: String ) -> Self
+    {
+      Self { code, message, source: None }
+    }
+
+    ///
+    /// Creates a new ErrorData with a source error for chaining.
+    ///
+    pub fn with_source( code: String, message: String, source: ErrorData ) -> Self
+    {
+      Self { code, message, source: Some( Box::new( source ) ) }
+    }
+
+    ///
+    /// Formats the error chain recursively with proper indentation.
+    ///
+    fn fmt_error_chain( f : &mut core::fmt::Formatter< '_ >, error : &ErrorData, depth : usize ) -> core::fmt::Result
+    {
+      // Create indentation
+      let indent = "  ".repeat( depth );
+      writeln!( f, "{}↳ {}", indent, error.message )?;
+      
+      // Recursively display deeper sources
+      if let Some( source ) = &error.source
+      {
+        Self::fmt_error_chain( f, source, depth + 1 )?;
+      }
+      
+      Ok(())
     }
   }
 
