@@ -3,19 +3,14 @@
 use super::*;
 
 /// Parameter description.
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, Default, PartialEq, the_module::Former)]
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, PartialEq, the_module::Former)]
 pub struct Child {
   name: String,
   data: bool,
 }
 
 /// Parent required for the template.
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, Default, PartialEq, the_module::Former)]
-#[derive(Debug, Default, PartialEq)]
-// #[ derive( Debug, Default, PartialEq ) ]
+#[derive(Debug, Default, PartialEq, the_module::Former)]
 pub struct Parent {
   // #[ subform_collection( definition = former::VectorDefinition ) ]
   // #[ subform_entry ]
@@ -42,7 +37,7 @@ where
       Context = Self,
     >,
     Definition2::End: former::FormingEnd<Definition2::Types>,
-    Former2: former::FormerBegin<Definition2>,
+    for<'a> Former2: former::FormerBegin<'a, Definition2>,
   {
     let on_end = |substorage: ChildFormerStorage, super_former: core::option::Option<Self>| -> Self {
       let mut super_former = super_former.unwrap();
@@ -111,7 +106,7 @@ where
     >,
     Definition2::Types:
       former::FormerDefinitionTypes<Storage = <Child as former::EntityToStorage>::Storage, Formed = Self, Context = Self>,
-    Former2: former::FormerBegin<Definition2>,
+    for<'a> Former2: former::FormerBegin<'a, Definition2>,
   {
     Former2::former_begin(None, Some(self), ParentSubformEntryChildrenEnd::default())
   }
