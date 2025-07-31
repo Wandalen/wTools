@@ -3,14 +3,17 @@
 //! This module defines the parsing and validation logic for the various argument types (`kind`) supported by `unilang`.
 //! It is responsible for converting raw string inputs from the command line into strongly-typed Rust values.
 
-use crate::data::Kind;
-use std::path::PathBuf; // Removed `Path`
-use url::Url;
-use chrono::{DateTime, FixedOffset};
-use regex::Regex;
-use core::fmt;
-use std::collections::HashMap; // Added for Map Value
-use serde_json; // Added for JsonString and Object Value
+/// Internal namespace.
+mod private
+{
+  use crate::data::Kind;
+  use std::path::PathBuf; // Removed `Path`
+  use url::Url;
+  use chrono::{DateTime, FixedOffset};
+  use regex::Regex;
+  use core::fmt;
+  use std::collections::HashMap; // Added for Map Value
+  use serde_json; // Added for JsonString and Object Value
 
 /// Represents a parsed and validated value of a specific kind.
 #[derive(Debug, Clone)]
@@ -295,4 +298,17 @@ fn parse_json_value(input: &str, kind: &Kind) -> Result<Value, TypeError> {
       }),
     _ => unreachable!("Called parse_json_value with non-JSON kind: {:?}", kind),
   }
+}
+
+}
+
+mod_interface::mod_interface!
+{
+  exposed use private::Value;
+  exposed use private::TypeError;
+  exposed use private::parse_value;
+  
+  prelude use private::Value;
+  prelude use private::TypeError;
+  prelude use private::parse_value;
 }

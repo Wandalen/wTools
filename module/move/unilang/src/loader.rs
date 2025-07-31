@@ -2,12 +2,15 @@
 //! Handles loading command definitions from external files (YAML/JSON).
 //!
 
-use crate::
+/// Internal namespace.
+mod private
 {
-  data::{ CommandDefinition, OutputData },
-  error::Error,
-  registry::CommandRoutine,
-};
+  use crate::
+  {
+    data::{ CommandDefinition, OutputData },
+    error::Error,
+    registry::CommandRoutine,
+  };
 
 ///
 /// Loads command definitions from a YAML string.
@@ -60,4 +63,16 @@ pub fn resolve_routine_link( _link : &str ) -> Result< CommandRoutine, Error >
       format : String::new(),
     })
   }) )
+}
+
+}
+
+mod_interface::mod_interface!
+{
+  exposed use private::load_command_definitions_from_yaml_str;
+  exposed use private::load_command_definitions_from_json_str;
+  exposed use private::resolve_routine_link;
+  
+  prelude use private::load_command_definitions_from_yaml_str;
+  prelude use private::load_command_definitions_from_json_str;
 }

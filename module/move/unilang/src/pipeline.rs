@@ -5,12 +5,15 @@
 //! Unilang components to handle common use cases, making it easier to
 //! integrate Unilang into applications.
 
-use crate::data::OutputData;
-use crate::error::Error;
-use crate::interpreter::{ ExecutionContext, Interpreter };
-use crate::registry::CommandRegistry;
-use crate::semantic::SemanticAnalyzer;
-use unilang_parser::{ Parser, UnilangParserOptions };
+/// Internal namespace.
+mod private
+{
+  use crate::data::OutputData;
+  use crate::error::Error;
+  use crate::interpreter::{ ExecutionContext, Interpreter };
+  use crate::registry::CommandRegistry;
+  use crate::semantic::SemanticAnalyzer;
+  use unilang_parser::{ Parser, UnilangParserOptions };
 
 ///
 /// Result of processing a single command through the pipeline.
@@ -470,12 +473,31 @@ Result< (), Error >
   Ok(())
 }
 
+}
+
+mod_interface::mod_interface!
+{
+  exposed use private::CommandResult;
+  exposed use private::BatchResult;
+  exposed use private::Pipeline;
+  exposed use private::process_single_command;
+  exposed use private::validate_single_command;
+  
+  prelude use private::CommandResult;
+  prelude use private::BatchResult;
+  prelude use private::Pipeline;
+  prelude use private::process_single_command;
+}
+
 #[ cfg( test ) ]
 mod tests
 {
   use super::*;
   use crate::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind };
   use crate::types::Value;
+  use crate::registry::CommandRegistry;
+  use crate::interpreter::ExecutionContext;
+  use crate::data::OutputData;
 
   fn create_test_registry() -> CommandRegistry
   {
@@ -503,13 +525,16 @@ mod tests
       .description( "Test message".to_string() )
       .kind( Kind::String )
       .hint( "Message to echo" )
-      .default_value( "hello".to_string() )
       .attributes
       (
-        ArgumentAttributes::former()
-        .optional( true )
-        .is_default_arg( true )
-        .end()
+        ArgumentAttributes
+        {
+          optional: true,
+          multiple: false,
+          default: Some( "hello".to_string() ),
+          sensitive: false,
+          interactive: false,
+        }
       )
       .validation_rules( vec![] )
       .aliases( vec![] )

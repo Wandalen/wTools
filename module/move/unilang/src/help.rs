@@ -2,8 +2,11 @@
 //! The help generation components for the Unilang framework.
 //!
 
-use crate::registry::CommandRegistry;
-use core::fmt::Write;
+/// Internal namespace.
+mod private
+{
+  use crate::registry::CommandRegistry;
+  use core::fmt::Write;
 
 ///
 /// Generates help information for commands.
@@ -92,7 +95,7 @@ impl< 'a > HelpGenerator< 'a >
         }
         if !arg.validation_rules.is_empty()
         {
-          write!( &mut arg_info, ", Rules: [{}]", arg.validation_rules.join( ", " ) ).unwrap();
+          write!( &mut arg_info, ", Rules: [{}]", arg.validation_rules.iter().map(|r| format!("{:?}", r)).collect::<Vec<_>>().join( ", " ) ).unwrap();
         }
         writeln!( &mut help, "{arg_info}" ).unwrap();
       }
@@ -115,4 +118,13 @@ impl< 'a > HelpGenerator< 'a >
     }
     summary
   }
+}
+
+}
+
+mod_interface::mod_interface!
+{
+  exposed use private::HelpGenerator;
+  
+  prelude use private::HelpGenerator;
 }

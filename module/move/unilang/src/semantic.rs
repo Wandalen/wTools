@@ -2,13 +2,16 @@
 //! The semantic analyzer for the Unilang framework.
 //!
 
-use crate::data::{ CommandDefinition, ErrorData };
-use crate::error::Error;
-use crate::registry::CommandRegistry;
-use crate::types::{ parse_value, Value }; // Import parse_value
-use regex::Regex; // Added for validation rules
-use std::collections::HashMap;
-use unilang_parser::GenericInstruction;
+/// Internal namespace.
+mod private
+{
+  use crate::data::{ CommandDefinition, ErrorData };
+  use crate::error::Error;
+  use crate::registry::CommandRegistry;
+  use crate::types::{ parse_value, Value }; // Import parse_value
+  use regex::Regex; // Added for validation rules
+  use std::collections::HashMap;
+  use unilang_parser::GenericInstruction;
 
 ///
 /// Represents a command that has been verified against the command registry.
@@ -157,13 +160,10 @@ impl< 'a > SemanticAnalyzer< 'a >
             message : format!( "Missing required argument: {}", arg_def.name ),
           }));
         }
-        else if arg_def.attributes.is_default_arg
+        else if let Some( default_value ) = &arg_def.attributes.default
         {
-          if let Some( default_value ) = &arg_def.default_value
-          {
-            bound_arguments.insert( arg_def.name.clone(), parse_value( default_value, &arg_def.kind )? );
-            value_found = true;
-          }
+          bound_arguments.insert( arg_def.name.clone(), parse_value( default_value, &arg_def.kind )? );
+          value_found = true;
         }
       }
 
@@ -181,7 +181,7 @@ impl< 'a > SemanticAnalyzer< 'a >
                 code : "VALIDATION_RULE_FAILED".to_string(),
                 message : format!
                 (
-                  "Validation rule '{rule}' failed for argument '{}' with value '{value:?}'",
+                  "Validation rule '{rule:?}' failed for argument '{}' with value '{value:?}'",
                   arg_def.name
                 ),
               }));
@@ -206,51 +206,66 @@ impl< 'a > SemanticAnalyzer< 'a >
 
   /// Applies a single validation rule to a parsed value.
   #[ allow( clippy::cast_precision_loss ) ] // Allow casting i64 to f64 for min/max comparison
-  fn apply_validation_rule( value : &Value, rule : &str ) -> bool
+  fn apply_validation_rule( value : &Value, rule : &crate::data::ValidationRule ) -> bool
   {
-    if let Some( min_val_str ) = rule.strip_prefix( "min:" )
+    use crate::data::ValidationRule;
+    match rule
     {
-      let min_val : f64 = min_val_str.parse().unwrap_or( f64::MIN );
-      match value
+      ValidationRule::Min( min_val ) => match value
       {
-        Value::Integer( i ) => *i as f64 >= min_val,
-        Value::Float( f ) => *f >= min_val,
+        Value::Integer( i ) => *i as f64 >= *min_val,
+        Value::Float( f ) => *f >= *min_val,
         _ => false, // Rule not applicable or type mismatch
-      }
-    }
-    else if let Some( max_val_str ) = rule.strip_prefix( "max:" )
-    {
-      let max_val : f64 = max_val_str.parse().unwrap_or( f64::MAX );
-      match value
+      },
+      ValidationRule::Max( max_val ) => match value
       {
-        Value::Integer( i ) => *i as f64 <= max_val,
-        Value::Float( f ) => *f <= max_val,
+        Value::Integer( i ) => *i as f64 <= *max_val,
+        Value::Float( f ) => *f <= *max_val,
         _ => false, // Rule not applicable or type mismatch
-      }
-    }
-    else if let Some( pattern_str ) = rule.strip_prefix( "regex:" )
-    {
-      let regex = Regex::new( pattern_str ).unwrap(); // Panics if regex is invalid, should be caught earlier
-      match value
+      },
+      ValidationRule::MinLength( min_len ) => match value
       {
-        Value::String( s ) => regex.is_match( s ),
-        _ => false, // Rule not applicable or type mismatch
-      }
-    }
-    else if let Some( min_len_str ) = rule.strip_prefix( "min_length:" )
-    {
-      let min_len : usize = min_len_str.parse().unwrap_or( 0 );
-      match value
-      {
-        Value::String( s ) => s.len() >= min_len,
-        Value::List( l ) => l.len() >= min_len,
+        Value::String( s ) => s.len() >= *min_len,
+        Value::List( l ) => l.len() >= *min_len,
         _ => false,
-      }
-    }
-    else
-    {
-      // Unknown rule, treat as failure or log warning
-      false
+      },
+      ValidationRule::MaxLength( max_len ) => match value
+      {
+        Value::String( s ) => s.len() <= *max_len,
+        Value::List( l ) => l.len() <= *max_len,
+        _ => false,
+      },
+      ValidationRule::Pattern( pattern_str ) => match value
+      {
+        Value::String( s ) => 
+        {
+          if let Ok( regex ) = Regex::new( pattern_str )
+          {
+            regex.is_match( s )
+          }
+          else
+          {
+            false
+          }
+        },
+        _ => false, // Rule not applicable or type mismatch
+      },
+      ValidationRule::MinItems( min_items ) => match value
+      {
+        Value::List( l ) => l.len() >= *min_items,
+        _ => false,
+      },
     }
   }
+}
+
+}
+
+mod_interface::mod_interface!
+{
+  exposed use private::VerifiedCommand;
+  exposed use private::SemanticAnalyzer;
+  
+  prelude use private::VerifiedCommand;
+  prelude use private::SemanticAnalyzer;
 }

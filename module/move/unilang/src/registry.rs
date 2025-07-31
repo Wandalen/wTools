@@ -2,10 +2,13 @@
 //! The command registry for the Unilang framework.
 //!
 
-use crate::data::{ CommandDefinition, ErrorData, OutputData };
-use crate::error::Error; // Import Error for Result type
-use crate::interpreter::ExecutionContext;
-use std::collections::HashMap;
+/// Internal namespace.
+mod private
+{
+  use crate::data::{ CommandDefinition, ErrorData, OutputData };
+  use crate::error::Error; // Import Error for Result type
+  use crate::interpreter::ExecutionContext;
+  use std::collections::HashMap;
 
 /// Type alias for a command routine.
 /// A routine takes a `VerifiedCommand` and an `ExecutionContext`, and returns a `Result` of `OutputData` or `ErrorData`.
@@ -210,4 +213,17 @@ impl CommandRegistryBuilder
   {
     self.registry
   }
+}
+
+}
+
+mod_interface::mod_interface!
+{
+  exposed use private::CommandRoutine;
+  exposed use private::CommandRegistry;
+  exposed use private::CommandRegistryBuilder;
+  
+  prelude use private::CommandRoutine;
+  prelude use private::CommandRegistry;
+  prelude use private::CommandRegistryBuilder;
 }

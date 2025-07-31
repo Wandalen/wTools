@@ -2,9 +2,12 @@
 //! The interpreter for the Unilang framework.
 //!
 
-use crate::data::{ ErrorData, OutputData };
-use crate::error::Error;
-use crate::semantic::VerifiedCommand;
+/// Internal namespace.
+mod private
+{
+  use crate::data::{ ErrorData, OutputData };
+  use crate::error::Error;
+  use crate::semantic::VerifiedCommand;
 
 ///
 /// The execution context for a command.
@@ -107,4 +110,15 @@ impl< 'a > Interpreter< 'a >
     }
     Ok( results )
   }
+}
+
+}
+
+mod_interface::mod_interface!
+{
+  exposed use private::ExecutionContext;
+  exposed use private::Interpreter;
+  
+  prelude use private::ExecutionContext;
+  prelude use private::Interpreter;
 }
