@@ -9,7 +9,8 @@ fn main() {}
 
 #[cfg(all(feature = "derive_former", feature = "enabled"))]
 fn main() {
-  use former::Former;
+  #[cfg(feature = "enabled")]
+  use former_meta::Former;
 
   #[derive(Debug, PartialEq, Former)]
   // Use `#[ debug ]` to expand and debug generate code.

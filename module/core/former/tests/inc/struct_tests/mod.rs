@@ -105,7 +105,7 @@ mod name_collisions;
 
 // = parametrization
 
-mod parametrized_dyn_manual; // xxx2 : qqq2 : fix the issue
+// mod parametrized_dyn_manual; // xxx2 : qqq2 : fix the issue
 
 // mod parametrized_field;  // BLOCKED: E0726 implicit elided lifetime + complex generic bounds
 mod test_lifetime_only;

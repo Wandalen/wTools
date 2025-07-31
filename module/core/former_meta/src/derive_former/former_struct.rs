@@ -264,7 +264,7 @@ specific needs of the broader forming context. It mandates the implementation of
   let (former_begin_impl_generics, former_begin_trait_lifetime, former_begin_additional_bounds) = if classification.is_empty {
     // For structs with no generics at all, need to provide required trait bounds
     // The 'static types () and ReturnPreformed automatically satisfy T : 'a for any 'a
-    (quote! { < 'a, Definition > }, quote! { 'a }, quote! {, Definition::Context : 'a, Definition::End : 'a})
+    (quote! { < 'a, Definition > }, quote! { 'a }, quote! { Definition::Context : 'a, Definition::End : 'a})
   } else if classification.has_only_lifetimes {
     // CRITICAL INSIGHT: For lifetime-only structs, the circular constraint issue arises because
     // the trait requires Definition::Storage : 'storage, but our storage contains the same lifetime.
@@ -294,7 +294,7 @@ specific needs of the broader forming context. It mandates the implementation of
       (
         quote! { < #lifetimes_impl, 'storage, Definition > },
         quote! { 'storage },
-        quote! {, #first_lifetime : 'storage, Definition::Context : 'storage, Definition::End : 'storage }
+        quote! { #first_lifetime : 'storage, Definition::Context : 'storage, Definition::End : 'storage }
       )
     }
   } else if classification.has_only_types {
@@ -305,7 +305,7 @@ specific needs of the broader forming context. It mandates the implementation of
     
     if types_only_generics.params.is_empty() {
       // No type parameters - use basic bounds
-      (quote! { < 'a, Definition > }, quote! { 'a }, quote! {, Definition::Context : 'a, Definition::End : 'a})
+      (quote! { < 'a, Definition > }, quote! { 'a }, quote! { Definition::Context : 'a, Definition::End : 'a})
     } else {
       // Type-only struct - need all type parameters to outlive 'a plus Definition bounds
       let (_, types_impl, _, _) = generic_params::decompose(&types_only_generics);
@@ -323,7 +323,7 @@ specific needs of the broader forming context. It mandates the implementation of
       (
         quote! { < 'a, #types_impl, Definition > }, 
         quote! { 'a }, 
-        quote! {, #(#type_bounds),*, Definition::Context : 'a, Definition::End : 'a}
+        quote! { #(#type_bounds),*, Definition::Context : 'a, Definition::End : 'a}
       )
     }
   } else {
@@ -805,6 +805,37 @@ specific needs of the broader forming context. It mandates the implementation of
     quote! { , #struct_generics_where }
   };
   
+  // Build proper where clause for FormerBegin trait implementation
+  let former_begin_final_where_clause = if struct_generics_where.is_empty() {
+    if former_begin_additional_bounds.is_empty() {
+      quote! {
+        where
+          Definition : former::FormerDefinition< Storage = #storage_type_ref >
+      }
+    } else {
+      quote! {
+        where
+          Definition : former::FormerDefinition< Storage = #storage_type_ref >,
+          #former_begin_additional_bounds
+      }
+    }
+  } else {
+    if former_begin_additional_bounds.is_empty() {
+      quote! {
+        where
+          Definition : former::FormerDefinition< Storage = #storage_type_ref >,
+          #struct_generics_where
+      }
+    } else {
+      // struct_generics_where already has a trailing comma from decompose
+      quote! {
+        where
+          Definition : former::FormerDefinition< Storage = #storage_type_ref >,
+          #struct_generics_where #former_begin_additional_bounds
+      }
+    }
+  };
+  
   let result = quote::quote! {
 
     // = formed: Implement the `::former()` static method on the original struct.
@@ -1121,9 +1152,7 @@ specific needs of the broader forming context. It mandates the implementation of
     // where Definition::Storage contains the same lifetime that we're constraining it to outlive
     impl #former_begin_impl_generics former::FormerBegin< #former_begin_trait_lifetime, Definition >
     for #former_type_ref
-    where
-      Definition : former::FormerDefinition< Storage = #storage_type_ref >
-      #former_begin_additional_bounds
+    #former_begin_final_where_clause
     {
       #[ inline( always ) ]
       fn former_begin

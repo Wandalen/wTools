@@ -36,7 +36,8 @@ fn main() {}
 ))]
 fn main() {
   use collection_tools::HashMap;
-  use former::Former;
+  #[cfg(feature = "enabled")]
+  use former_meta::Former;
 
   // Child struct with Former derived for builder pattern support
   #[derive(Clone, Debug, PartialEq, Former)]

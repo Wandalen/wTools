@@ -53,22 +53,27 @@ where
   on_end: Option<Definition::End>,
 }
 
-impl<'child, T: ?Sized + 'child> ChildFormer<'child, T>
+impl<'child, T: ?Sized + 'child> ChildFormer<'child, T, ChildFormerDefinition<'child, T, (), Child<'child, T>, former::ReturnPreformed>>
 where
   T: 'child,
 {
-  pub fn new() -> ChildFormer<'child, T, ChildFormerDefinition<'child, T, (), Child<'child, T>, former::ReturnPreformed>>
+  pub fn new() -> Self
   {
     ChildFormer::begin(None, None, former::ReturnPreformed)
   }
+}
 
-  pub fn begin<Context, End>(
-    storage: Option<ChildFormerStorage<'child, T>>,
-    context: Option<Context>,
-    on_end: End,
-  ) -> ChildFormer<'child, T, ChildFormerDefinition<'child, T, Context, Child<'child, T>, End>>
-  where
-    End: former::FormingEnd<ChildFormerDefinitionTypes<'child, T, Context, Child<'child, T>>>,
+// Generic implementations for ChildFormer
+impl<'child, T: ?Sized + 'child, Definition> ChildFormer<'child, T, Definition>
+where
+  T: 'child,
+  Definition: former::FormerDefinition<Storage = ChildFormerStorage<'child, T>>,
+{
+  pub fn begin(
+    storage: Option<Definition::Storage>,
+    context: Option<Definition::Context>,
+    on_end: Definition::End,
+  ) -> Self
   {
     let storage = storage.unwrap_or_default();
     ChildFormer {
@@ -88,15 +93,13 @@ where
     self
   }
 
-  pub fn end(mut self) -> Child<'child, T> {
-    let storage = self.storage;
-    Child {
-      name: storage.name.unwrap_or_default(),
-      arg: storage.arg.expect("arg field is required"),
-    }
+  pub fn end(mut self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
+    let on_end = self.on_end.take().unwrap();
+    let context = self.context.take();
+    former::FormingEnd::<Definition::Types>::call(&on_end, self.storage, context)
   }
 
-  pub fn form(self) -> Child<'child, T> {
+  pub fn form(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
     self.end()
   }
 }
@@ -144,5 +147,29 @@ impl<'child, T: ?Sized + 'child> Child<'child, T> {
   }
 }
 
-// DISABLED: Has lifetime regression issues - commenting out temporarily
-// include!("./only_test/parametrized_field.rs");
+// Add FormerBegin implementation
+impl<'a, 'child, T: ?Sized + 'child, Definition> former::FormerBegin<'a, Definition> 
+for ChildFormer<'child, T, Definition>
+where
+  Definition: former::FormerDefinition<Storage = ChildFormerStorage<'child, T>>,
+  'child: 'a,
+  T: 'a,
+  Definition::Context: 'a,
+  Definition::End: 'a,
+{
+  #[inline(always)]
+  fn former_begin(
+    storage: ::core::option::Option<Definition::Storage>,
+    context: ::core::option::Option<Definition::Context>,
+    on_end: Definition::End,
+  ) -> Self {
+    let storage = storage.unwrap_or_default();
+    ChildFormer {
+      storage,
+      context,
+      on_end: Some(on_end),
+    }
+  }
+}
+
+include!("./only_test/parametrized_field.rs");
