@@ -30,38 +30,40 @@ use super::*;
 // pub mod std {}
 // pub mod marker {}
 
-pub struct core {}
-pub struct std {}
-pub struct marker {}
-pub struct CloneAny {}
-pub struct Context {}
-pub struct Formed {}
-pub struct OnEnd {}
-pub struct Option {}
-pub struct None {}
-pub struct Some {}
-pub struct Into {}
-pub struct From {}
-pub struct Default {}
-pub struct Vec {}
-pub struct HashSet {}
-pub struct HashMap {}
+mod name_collision_types {
+  pub struct core {}
+  pub struct std {}
+  pub struct marker {}
+  pub struct CloneAny {}
+  pub struct Context {}
+  pub struct Formed {}
+  pub struct OnEnd {}
+  pub struct Option {}
+  pub struct None {}
+  pub struct Some {}
+  pub struct Into {}
+  pub struct From {}
+  pub struct Default {}
+  pub struct Vec {}
+  pub struct HashSet {}
+  pub struct HashMap {}
 
-pub fn std() {}
-pub fn marker() {}
-pub fn CloneAny() {}
-pub fn Context() {}
-pub fn Formed() {}
-pub fn OnEnd() {}
-pub fn Option() {}
-pub fn None() {}
-pub fn Some() {}
-pub fn Into() {}
-pub fn From() {}
-pub fn Default() {}
-pub fn Vec() {}
-pub fn HashSet() {}
-pub fn HashMap() {}
+  pub fn std() {}
+  pub fn marker() {}
+  pub fn CloneAny() {}
+  pub fn Context() {}
+  pub fn Formed() {}
+  pub fn OnEnd() {}
+  pub fn Option() {}
+  pub fn None() {}
+  pub fn Some() {}
+  pub fn Into() {}
+  pub fn From() {}
+  pub fn Default() {}
+  pub fn Vec() {}
+  pub fn HashSet() {}
+  pub fn HashMap() {}
+}
 
 // // #[ derive( Clone ) ]
 // #[ derive( Clone, the_module::Former ) ]

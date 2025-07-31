@@ -22,4 +22,47 @@ Enable the test by fixing trait bound propagation in parametrized structs.
 High - generic parameter support is core functionality
 
 ## Status
-Blocked - E0277 Hash/Eq trait bound issues
+INVESTIGATED - Multiple macro issues identified
+
+## Investigation Results
+The test fails with multiple compilation errors indicating fundamental issues with generic parameter handling in the macro:
+
+**Error 1: Generic Arguments Order**
+```
+error: generic arguments must come before the first constraint
+pub struct Child<K: core::hash::Hash + core::cmp::Eq> {
+```
+
+**Error 2: Undeclared Lifetime**
+```
+error[E0261]: use of undeclared lifetime name `'a`
+```
+The macro is trying to use lifetime `'a` that doesn't exist in the struct definition.
+
+**Error 3: Generic Parameter Not Found** 
+```
+error[E0412]: cannot find type `K` in this scope
+```
+The macro isn't properly handling the generic parameter `K`.
+
+**Error 4: Trait Bounds Not Propagated**
+```
+error[E0277]: the trait bound `K: Hash` is not satisfied
+```
+The `K: core::hash::Hash + core::cmp::Eq` constraints aren't being propagated to generated code.
+
+**Root Causes:**
+1. Macro's generic parameter parsing doesn't handle trait bounds properly
+2. Lifetime inference is incorrectly trying to inject `'a` 
+3. Generic parameters with constraints are not being recognized in scope
+4. Trait bounds from struct definition not propagated to macro-generated code
+
+**Solution Required:**
+Fix the macro's generic parameter parsing to:
+1. Properly handle `<K: Trait + Trait>` syntax
+2. Not inject spurious lifetimes
+3. Propagate trait bounds to generated FormerDefinition types
+4. Ensure generic parameters are in scope for generated code
+
+## Status
+Blocked - requires macro-level fix for generic parameter parsing and trait bound propagation

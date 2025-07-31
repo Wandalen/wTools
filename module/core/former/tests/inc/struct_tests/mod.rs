@@ -101,7 +101,7 @@ mod keyword_field_derive;
 mod keyword_subform_derive;
 mod name_collision_former_hashmap_without_parameter;
 mod name_collision_former_vector_without_parameter;
-// mod name_collisions;  // BLOCKED: Name collision with std types causes E0308 type conflicts
+mod name_collisions;
 
 // = parametrization
 

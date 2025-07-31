@@ -22,4 +22,28 @@ Resolve type mismatch issues to get HashMap working with subform collections.
 High - HashMap is a critical collection type
 
 ## Status
-Blocked - requires investigation
+INVESTIGATED - Root cause identified
+
+## Investigation Results
+The issue is in the macro's type parameter generation for `HashMapDefinition` with `subform_collection`.
+
+**Error Details:**
+- Expected: `ParentFormer<Definition>`
+- Found: `Child`
+- The macro generates `FormingEnd` implementations that expect `ParentFormer<Definition>` in the collection but the actual collection contains `Child` objects
+
+**Root Cause:**
+`HashMapDefinition` with `subform_collection` has incompatible type parameter mapping. The macro expects:
+```rust
+FormingEnd<HashMapDefinitionTypes<_, ParentFormer<Definition>, _, Hmap<u32, ParentFormer<_>>>>
+```
+But it finds:
+```rust
+FormingEnd<HashMapDefinitionTypes<_, Child, _, ParentFormer<_>>
+```
+
+**Solution Required:**
+This appears to be a fundamental issue in the macro's handling of HashMap with subform_collection. The type parameter mapping needs to be fixed at the macro generation level.
+
+## Status
+Blocked - requires macro-level fix for HashMapDefinition type parameter mapping
