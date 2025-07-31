@@ -72,7 +72,8 @@ mod debug_e0223_manual;
 // mod subform_collection_basic_manual;  // BLOCKED: FormerBegin lifetime parameter in manual code
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
 // #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
-// mod subform_collection_basic_scalar;  // BLOCKED: Import issues
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_collection_basic_scalar;
 
 // = attribute
 
@@ -100,7 +101,7 @@ mod keyword_field_derive;
 mod keyword_subform_derive;
 mod name_collision_former_hashmap_without_parameter;
 mod name_collision_former_vector_without_parameter;
-// mod name_collisions;  // Name collision with std types
+// mod name_collisions;  // BLOCKED: Name collision with std types causes E0308 type conflicts
 
 // = parametrization
 
@@ -144,7 +145,8 @@ mod collection_former_binary_heap;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod collection_former_btree_set;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_common;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod collection_former_common;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod collection_former_hashmap;  // BLOCKED: Complex collection type mismatch issues with subform
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
@@ -165,7 +167,8 @@ mod collection_former_vec_deque;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_collection;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_collection_custom;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_collection_custom;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_collection_implicit;

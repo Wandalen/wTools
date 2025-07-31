@@ -207,9 +207,7 @@ pub type LoggingSetAsSubformer<K, Context, Formed, End> =
 // == use custom collection
 
 /// Parent required for the template.
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, Default, PartialEq, the_module::Former)]
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, PartialEq, the_module::Former)]
 pub struct Parent {
   #[subform_collection]
   children: LoggingSet<i32>,
