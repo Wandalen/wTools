@@ -1,3 +1,4 @@
+// DISABLED: Has lifetime regression issues - commenting out temporarily
 //
 // // xxx2 : qqq2 :
 // // - uncomment code
