@@ -1,6 +1,7 @@
 // This example tests Former with a minimal lifetime struct.
 
-use former::Former;
+#[cfg(feature = "enabled")]
+use former_meta::Former;
 
 #[derive(Debug, Former)]
 pub struct Minimal<'a> {

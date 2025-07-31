@@ -38,7 +38,8 @@ fn main() {}
   any(feature = "use_alloc", not(feature = "no_std"))
 ))]
 fn main() {
-  use former::Former;
+  #[cfg(feature = "enabled")]
+  use former_meta::Former;
 
   // Child struct with Former derived for builder pattern support
   #[derive(Debug, PartialEq, Former)]

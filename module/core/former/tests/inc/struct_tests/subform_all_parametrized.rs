@@ -4,10 +4,7 @@ use super::*;
 
 /// Parameter description.
 #[allow(explicit_outlives_requirements)]
-// DISABLED: Has lifetime regression issues - commenting out temporarily
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, PartialEq, the_module::Former)]
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, the_module::Former)]
 // #[ derive( Debug, PartialEq ) ]
 pub struct Child<'child, T>
 where
@@ -18,10 +15,7 @@ where
 }
 
 /// Parent required for the template.
-// DISABLED: Has lifetime regression issues - commenting out temporarily
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, Default, PartialEq, the_module::Former)]
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, PartialEq, the_module::Former)]
 // #[ derive( Debug, Default, PartialEq, the_module::Former ) ] #[ debug ]
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent<'child> {

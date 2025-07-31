@@ -1,5 +1,6 @@
 
-use former::Former;
+#[cfg(feature = "enabled")]
+use former_meta::Former;
 
 #[derive(Debug, PartialEq, Former)]
 pub struct Simple<'a> {

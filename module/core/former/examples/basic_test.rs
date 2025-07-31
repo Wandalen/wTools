@@ -1,6 +1,7 @@
 // This example tests Former with a basic struct.
 
-use former::Former;
+#[cfg(feature = "enabled")]
+use former_meta::Former;
 
 #[derive(Debug, PartialEq, Former)]
 pub struct Basic {

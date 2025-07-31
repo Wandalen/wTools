@@ -295,9 +295,9 @@ where
   }
 
   #[inline(always)]
-  pub fn properties_set<Former2>(self) -> Former2
+  pub fn properties_set<'a, Former2>(self) -> Former2
   where
-    Former2: former::FormerBegin<former::HashMapDefinition<K, Property<K>, Self, Self, ChildFormerPropertiesEnd>>,
+    Former2: former::FormerBegin<'a, former::HashMapDefinition<K, Property<K>, Self, Self, ChildFormerPropertiesEnd>>,
   {
     Former2::former_begin(None, Some(self), ChildFormerPropertiesEnd)
   }
@@ -353,7 +353,25 @@ where
   }
 }
 
+// Add FormerBegin implementation
+impl<'a, K, Definition> former::FormerBegin<'a, Definition> 
+for ChildFormer<K, Definition>
+where
+  K: core::hash::Hash + core::cmp::Eq + 'a,
+  Definition: former::FormerDefinition<Storage = ChildFormerStorage<K>>,
+  Definition::Context: 'a,
+  Definition::End: 'a,
+{
+  #[inline(always)]
+  fn former_begin(
+    storage: ::core::option::Option<Definition::Storage>,
+    context: ::core::option::Option<Definition::Context>,
+    on_end: Definition::End,
+  ) -> Self {
+    Self::begin(storage, context, on_end)
+  }
+}
+
 // == end of generated
 
-// DISABLED: Has lifetime regression issues - commenting out temporarily
-// include!("./only_test/parametrized_struct.rs");
+include!("./only_test/parametrized_struct.rs");

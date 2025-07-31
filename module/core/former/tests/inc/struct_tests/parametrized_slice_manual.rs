@@ -238,7 +238,24 @@ where
   }
 }
 
+// Add FormerBegin implementation
+impl<'a, 'storage, Definition> former::FormerBegin<'storage, Definition> for Struct1Former<'a, Definition>
+where
+  Definition: former::FormerDefinition<Storage = Struct1FormerStorage<'a>>,
+  'a: 'storage,
+  Definition::Context: 'storage,
+  Definition::End: 'storage,
+{
+  #[inline(always)]
+  fn former_begin(
+    storage: ::core::option::Option<Definition::Storage>,
+    context: ::core::option::Option<Definition::Context>,
+    on_end: Definition::End,
+  ) -> Self {
+    Self::begin(storage, context, on_end)
+  }
+}
+
 // === end of generated
 
-// DISABLED: Has lifetime regression issues - commenting out temporarily
-// include!("./only_test/string_slice.rs");
+include!("./only_test/string_slice.rs");

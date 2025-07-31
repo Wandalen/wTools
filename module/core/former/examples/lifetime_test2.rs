@@ -2,7 +2,8 @@
 // The FormerBegin trait expects lifetime 'a, but the struct uses 'x.
 // The derive macro now properly handles this by substituting lifetimes.
 
-use former::Former;
+#[cfg(feature = "enabled")]
+use former_meta::Former;
 
 #[derive(Debug, PartialEq, Former)]
 pub struct Other<'x> {
