@@ -64,8 +64,8 @@ fn test_load_from_yaml_str_simple_command()
 
   let registry = CommandRegistry::builder().load_from_yaml_str( yaml_str ).unwrap().build();
 
-  assert!( registry.commands.contains_key( ".system.hello" ) );
-  let command = registry.commands.get( ".system.hello" ).unwrap();
+  assert!( registry.commands().contains_key( ".system.hello" ) );
+  let command = registry.command(".system.hello").unwrap();
   assert_eq!( command.name, "hello" );
   assert_eq!( command.description, "Says hello" );
   assert!( command.arguments.is_empty() );
@@ -246,8 +246,8 @@ fn test_load_from_yaml_str_all_scalar_types()
 
   let registry = CommandRegistry::builder().load_from_yaml_str( yaml_str ).unwrap().build();
 
-  assert!( registry.commands.contains_key( ".test.scalar_command" ) );
-  let command = registry.commands.get( ".test.scalar_command" ).unwrap();
+  assert!( registry.commands().contains_key( ".test.scalar_command" ) );
+  let command = registry.command(".test.scalar_command").unwrap();
   assert_eq!( command.arguments.len(), 11 );
   assert_eq!( command.arguments[ 0 ].kind, Kind::String );
   assert_eq!( command.arguments[ 1 ].kind, Kind::Integer );
@@ -357,8 +357,8 @@ fn test_load_from_yaml_str_collection_types()
 
   let registry = CommandRegistry::builder().load_from_yaml_str( yaml_str ).unwrap().build();
 
-  assert!( registry.commands.contains_key( ".test.collection_command" ) );
-  let command = registry.commands.get( ".test.collection_command" ).unwrap();
+  assert!( registry.commands().contains_key( ".test.collection_command" ) );
+  let command = registry.command(".test.collection_command").unwrap();
   assert_eq!( command.arguments.len(), 4 );
   assert_eq!( command.arguments[ 0 ].kind, Kind::List( Box::new( Kind::String ), None ) );
   assert_eq!( command.arguments[ 1 ].kind, Kind::List( Box::new( Kind::Integer ), Some( ';' ) ) );
@@ -477,8 +477,8 @@ fn test_load_from_yaml_str_complex_types_and_attributes()
 
   let registry = CommandRegistry::builder().load_from_yaml_str( yaml_str ).unwrap().build();
 
-  assert!( registry.commands.contains_key( ".test.complex_command" ) );
-  let command = registry.commands.get( ".test.complex_command" ).unwrap();
+  assert!( registry.commands().contains_key( ".test.complex_command" ) );
+  let command = registry.command(".test.complex_command").unwrap();
   assert_eq!( command.arguments.len(), 5 );
   assert_eq!( command.arguments[ 0 ].kind, Kind::JsonString );
   assert_eq!( command.arguments[ 1 ].kind, Kind::Object );
@@ -545,14 +545,14 @@ fn test_load_from_yaml_str_multiple_commands()
 
   let registry = CommandRegistry::builder().load_from_yaml_str( yaml_str ).unwrap().build();
 
-  assert!( registry.commands.contains_key( ".group1.command1" ) );
-  assert!( registry.commands.contains_key( ".group1.command2" ) );
+  assert!( registry.commands().contains_key( ".group1.command1" ) );
+  assert!( registry.commands().contains_key( ".group1.command2" ) );
   assert_eq!(
-    registry.commands.get( ".group1.command1" ).unwrap().namespace,
+    registry.command(".group1.command1").unwrap().namespace,
     ".group1".to_string()
   );
   assert_eq!(
-    registry.commands.get( ".group1.command2" ).unwrap().namespace,
+    registry.command(".group1.command2").unwrap().namespace,
     ".group1".to_string()
   );
 }
@@ -585,8 +585,8 @@ fn test_load_from_json_str_simple_command()
 
   let registry = CommandRegistry::builder().load_from_json_str( json_str ).unwrap().build();
 
-  assert!( registry.commands.contains_key( ".system.hello_json" ) );
-  let command = registry.commands.get( ".system.hello_json" ).unwrap();
+  assert!( registry.commands().contains_key( ".system.hello_json" ) );
+  let command = registry.command(".system.hello_json").unwrap();
   assert_eq!( command.name, "hello_json" );
   assert_eq!( command.description, "Says hello from JSON" );
   assert!( command.arguments.is_empty() );
@@ -641,8 +641,8 @@ fn test_load_from_json_str_all_scalar_types()
 
   let registry = CommandRegistry::builder().load_from_json_str( json_str ).unwrap().build();
 
-  assert!( registry.commands.contains_key( ".test.scalar_command_json" ) );
-  let command = registry.commands.get( ".test.scalar_command_json" ).unwrap();
+  assert!( registry.commands().contains_key( ".test.scalar_command_json" ) );
+  let command = registry.command(".test.scalar_command_json").unwrap();
   assert_eq!( command.arguments.len(), 11 );
   assert_eq!( command.arguments[ 0 ].kind, Kind::String );
   assert_eq!( command.arguments[ 1 ].kind, Kind::Integer );
@@ -709,8 +709,8 @@ fn test_load_from_json_str_collection_types()
 
   let registry = CommandRegistry::builder().load_from_json_str( json_str ).unwrap().build();
 
-  assert!( registry.commands.contains_key( ".test.collection_command_json" ) );
-  let command = registry.commands.get( ".test.collection_command_json" ).unwrap();
+  assert!( registry.commands().contains_key( ".test.collection_command_json" ) );
+  let command = registry.command(".test.collection_command_json").unwrap();
   assert_eq!( command.arguments.len(), 4 );
   assert_eq!( command.arguments[ 0 ].kind, Kind::List( Box::new( Kind::String ), None ) );
   assert_eq!( command.arguments[ 1 ].kind, Kind::List( Box::new( Kind::Integer ), Some( ';' ) ) );
@@ -774,8 +774,8 @@ fn test_load_from_json_str_complex_types_and_attributes()
 
   let registry = CommandRegistry::builder().load_from_json_str( json_str ).unwrap().build();
 
-  assert!( registry.commands.contains_key( ".test.complex_command_json" ) );
-  let command = registry.commands.get( ".test.complex_command_json" ).unwrap();
+  assert!( registry.commands().contains_key( ".test.complex_command_json" ) );
+  let command = registry.command(".test.complex_command_json").unwrap();
   assert_eq!( command.arguments.len(), 5 );
   assert_eq!( command.arguments[ 0 ].kind, Kind::JsonString );
   assert_eq!( command.arguments[ 1 ].kind, Kind::Object );
@@ -848,14 +848,14 @@ fn test_load_from_json_str_multiple_commands()
 
   let registry = CommandRegistry::builder().load_from_json_str( json_str ).unwrap().build();
 
-  assert!( registry.commands.contains_key( ".group1.command1_json" ) );
-  assert!( registry.commands.contains_key( ".group1.command2_json" ) );
+  assert!( registry.commands().contains_key( ".group1.command1_json" ) );
+  assert!( registry.commands().contains_key( ".group1.command2_json" ) );
   assert_eq!(
-    registry.commands.get( ".group1.command1_json" ).unwrap().namespace,
+    registry.command(".group1.command1_json").unwrap().namespace,
     ".group1".to_string()
   );
   assert_eq!(
-    registry.commands.get( ".group1.command2_json" ).unwrap().namespace,
+    registry.command(".group1.command2_json").unwrap().namespace,
     ".group1".to_string()
   );
 }

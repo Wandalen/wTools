@@ -76,16 +76,16 @@ impl< 'a > SemanticAnalyzer< 'a >
         format!( ".{}", instruction.command_path_slices.join( "." ) )
       };
 
-      let command_def = self.registry.commands.get( &command_name ).ok_or_else( || ErrorData
+      let command_def = self.registry.command( &command_name ).ok_or_else( || ErrorData
       {
         code : "COMMAND_NOT_FOUND".to_string(),
         message : format!( "Command not found: {command_name}" ),
       })?;
 
-      let arguments = Self::bind_arguments( instruction, command_def )?;
+      let arguments = Self::bind_arguments( instruction, &command_def )?;
       verified_commands.push( VerifiedCommand
       {
-        definition : ( *command_def ).clone(),
+        definition : command_def,
         arguments,
       });
     }

@@ -366,7 +366,7 @@ fn run() -> Result< (), unilang::error::Error >
 
   // Build alias map for CLI resolution
   let mut alias_map : HashMap< String, String > = HashMap::new();
-  for ( full_name, cmd_def ) in &registry.commands
+  for ( full_name, cmd_def ) in &registry.commands()
   {
     for alias in &cmd_def.aliases
     {

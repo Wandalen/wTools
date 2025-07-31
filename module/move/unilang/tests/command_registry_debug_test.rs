@@ -77,7 +77,7 @@ fn test_command_registry_key_mismatch()
   };
   println!( "DEBUG: Lookup key: '{}' (bytes: {:?})", lookup_key, lookup_key.as_bytes() );
 
-  let retrieved_command = registry.commands.get( &lookup_key );
+  let retrieved_command = registry.command( &lookup_key );
 
   // Assert that the command is found
   assert!

@@ -17,7 +17,7 @@ fn main() -> Result< (), unilang::error::Error >
   // Step 1: Set up a registry with example commands
   let registry = setup_demo_registry()?;
 
-  println!( "✅ Set up registry with {} commands", registry.commands.len() );
+  println!( "✅ Set up registry with {} commands", registry.commands().len() );
 
   // ========================================
   // SECTION 1: BASIC PIPELINE USAGE

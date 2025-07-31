@@ -256,7 +256,7 @@ Result< (), Error >
 
   // Build alias map for CLI resolution
   let mut alias_map : HashMap< String, String > = HashMap::new();
-  for cmd_def in registry.commands.values()
+  for cmd_def in registry.commands().values()
   {
     for alias in &cmd_def.aliases
     {

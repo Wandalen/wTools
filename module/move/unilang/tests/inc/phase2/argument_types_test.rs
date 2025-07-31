@@ -10,7 +10,7 @@ use regex::Regex;
 
 fn setup_test_environment(command: CommandDefinition) -> CommandRegistry {
   let mut registry = CommandRegistry::new();
-  registry.commands.insert(command.name.clone(), command);
+  registry.register(command);
   registry
 }
 

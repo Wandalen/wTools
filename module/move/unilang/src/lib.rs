@@ -17,6 +17,9 @@ mod_interface::mod_interface!
   /// Core data structures and types.
   layer data;
   
+  /// Static data structures for compile-time commands.
+  layer static_data;
+  
   /// Error handling utilities.
   layer error;
   

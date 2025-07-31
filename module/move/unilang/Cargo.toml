@@ -38,6 +38,7 @@ serde_yaml = "0.9"
 url = "2.5.0"
 chrono = { version = "0.4.38", features = ["serde"] }
 regex = "1.10.4"
+phf = { version = "0.11", features = ["macros"] }
 
 ## internal
 error_tools = { workspace = true, features = [ "enabled", "error_typed", "error_untyped" ] }
@@ -57,6 +58,10 @@ thiserror = "1.0"
 name = "unilang_cli"
 path = "src/bin/unilang_cli.rs"
 
+[[bin]]
+name = "stress_test_bin"
+path = "tests/stress_test_bin.rs"
+
 [[test]]
 name = "command_loader_test"
 path = "tests/inc/phase2/command_loader_test.rs"
@@ -71,9 +76,18 @@ path = "tests/inc/phase2/help_generation_test.rs"
 name = "data_model_features_test"
 path = "tests/inc/phase3/data_model_features_test.rs"
 
+[[test]]
+name = "performance_stress_test"
+path = "tests/inc/phase4/performance_stress_test.rs"
 
 
 
+
+
+[build-dependencies]
+phf_codegen = "0.11"
+serde = "1.0"
+serde_yaml = "0.9"
 
 [dev-dependencies]
 test_tools = { workspace = true }

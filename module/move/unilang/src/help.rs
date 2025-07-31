@@ -39,8 +39,8 @@ impl< 'a > HelpGenerator< 'a >
   pub fn command( &self, command_name : &str ) -> Option< String >
   {
     // Try exact match first, then try with dot prefix
-    let command = self.registry.commands.get( command_name )
-    .or_else( || self.registry.commands.get( &format!( ".{command_name}" ) ) )
+    let command = self.registry.command( command_name )
+    .or_else( || self.registry.command( &format!( ".{command_name}" ) ) )
     .or_else( ||
     {
       // If command_name is "echo", try ".system.echo"
@@ -50,7 +50,7 @@ impl< 'a > HelpGenerator< 'a >
       // For now, a simple check for "echo" to ".system.echo"
       if command_name == "echo"
       {
-        self.registry.commands.get( ".system.echo" )
+        self.registry.command( ".system.echo" )
       }
       else
       {
@@ -112,7 +112,7 @@ impl< 'a > HelpGenerator< 'a >
   {
     let mut summary = String::new();
     writeln!( &mut summary, "Available Commands:" ).unwrap();
-    for ( name, command ) in &self.registry.commands
+    for ( name, command ) in &self.registry.commands()
     {
       writeln!( &mut summary, "  {:<15} {}", name, command.description ).unwrap();
     }

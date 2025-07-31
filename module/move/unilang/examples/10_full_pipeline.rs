@@ -31,7 +31,7 @@ fn main() -> Result< (), unilang::error::Error >
   setup_network_commands( &mut registry )?;
   setup_utility_commands( &mut registry )?;
 
-  println!( "✅ Registry setup complete with {} commands", registry.commands.len() );
+  println!( "✅ Registry setup complete with {} commands", registry.commands().len() );
 
   // ========================================
   // PHASE 2: HELP SYSTEM DEMONSTRATION

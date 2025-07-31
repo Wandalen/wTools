@@ -120,7 +120,7 @@ fn main() -> Result< (), unilang::error::Error >
   // Step 5: Verify Registration
   // Let's list all registered commands to confirm our command is there
   println!( "\nRegistered commands:" );
-  for ( name, cmd ) in &registry.commands
+  for ( name, cmd ) in &registry.commands()
   {
     println!( "  {} - {}", name, cmd.description );
   }
