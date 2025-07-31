@@ -285,7 +285,7 @@ mod private
       fs::remove_dir_all( dir ).err_with_report( &report )?;
     }
 
-    Ok( report )
+    Result::Ok( report )
   }
 }
 

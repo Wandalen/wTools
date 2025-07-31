@@ -128,7 +128,7 @@ mod private
 
       let discord_url = workspace.discord_url();
 
-      Ok
+      Result::Ok
       (
         Self
         {
@@ -156,7 +156,7 @@ mod private
       )
       .unwrap_or_default();
 
-      Ok
+      Result::Ok
       (
         format!
         (
@@ -271,7 +271,7 @@ mod private
     file.write_all( content.as_bytes() ).err_with_report( &report )?;
     report.touched_file = read_me_path.to_path_buf();
     report.success = true;
-    Ok( report )
+    Result::Ok( report )
   }
 }
 

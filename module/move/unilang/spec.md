@@ -511,6 +511,26 @@ The unilang framework **must** provide control over debug output and verbosity l
     - Runtime configuration
 *   **Thread Safety**: Verbosity control **must** be thread-safe and respect per-instance settings in multi-threaded environments.
 
+#### 9.5. Help System Formatting
+
+The help system **must** provide clear, readable output that is optimized for human consumption and easy scanning.
+
+*   **Multi-line Format**: Command help output **must** use a multi-line format that separates different types of information visually:
+    - Command header line with name and version
+    - Description section with proper spacing
+    - Arguments section with clear visual hierarchy
+*   **Argument Display**: Each argument **must** be displayed with:
+    - Argument name on its own line or prominently displayed
+    - Type and requirement status clearly indicated
+    - Description text separated from technical details
+    - Optional and multiple indicators separated from core information
+*   **Readability Principles**: Help text **must** follow these formatting principles:
+    - No single line should contain more than 80 characters when possible
+    - Technical information (Kind, validation rules) should be visually distinct from user-facing descriptions
+    - Redundant words like "Hint:" should be eliminated when the context is clear
+    - Visual hierarchy should guide the eye from most important to least important information
+*   **Consistent Spacing**: The help system **must** use consistent indentation and spacing to create visual groupings and improve readability.
+
 ---
 ## Part II: Internal Design (Design Recommendations)
 *This part of the specification describes the recommended internal architecture and implementation strategies. These are best-practice starting points, and the development team has the flexibility to modify them as needed.*

@@ -62,7 +62,9 @@ fn test_argument_hint_in_help()
   cmd
   .assert()
   .success()
-  .stdout( predicate::str::contains( "arg1 (Kind: String) - Hint: The first argument to echo." ) )
+  // Updated to match improved formatting: argument name with type, description on separate line
+  .stdout( predicate::str::contains( "arg1 (Type: String)" ) )
+  .stdout( predicate::str::contains( "The first argument to echo." ) )
   .stderr( "" );
 }
 

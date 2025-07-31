@@ -104,8 +104,10 @@ fn test_cli_specific_command_help_add()
     .and( predicate::str::contains( "Adds two numbers." ) ) // Modified this line
     .and( predicate::str::contains( "Status: stable" ) )
     .and( predicate::str::contains( "Arguments:" ) )
-    .and( predicate::str::contains( "a (Kind: Integer) - Hint: First number." ) ) // Modified this line
-    .and( predicate::str::contains( "b (Kind: Integer) - Hint: Second number." ) ), // Modified this line
+    .and( predicate::str::contains( "a (Type: Integer)" ) ) // Updated for new format
+    .and( predicate::str::contains( "First number." ) ) // Description on separate line
+    .and( predicate::str::contains( "b (Type: Integer)" ) ) // Updated for new format
+    .and( predicate::str::contains( "Second number." ) ), // Description on separate line
   )
   .stderr( "" );
 }

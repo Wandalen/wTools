@@ -164,7 +164,7 @@ mod private
       if self.changed_files.is_empty()
       {
         write!( f, "Files were not changed during bumping the version" )?;
-        return Ok( () )
+        return std::fmt::Result::Ok( () )
       }
 
       let files = changed_files.iter().map( | f | f.as_ref().display() ).join( ",\n    " );
@@ -175,7 +175,7 @@ mod private
         _ => writeln!( f, "Bump failed" )
       }?;
 
-      Ok( () )
+      std::fmt::Result::Ok( () )
     }
   }
 
@@ -405,7 +405,7 @@ mod private
       manifest.store()?;
     }
 
-    Ok( report )
+    Result::Ok( report )
   }
 }
 

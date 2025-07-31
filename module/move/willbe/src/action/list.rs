@@ -483,8 +483,7 @@ mod private
 
       let package = workspace
       .package_find_by_manifest( manifest_file )
-      .ok_or_else( || format_err!( "Package not found in the workspace" ) )
-      .err_with_report( report )?;
+      .ok_or_else( || format_err!( "Package not found in the workspace" ) )?;
       let version = if args.info.contains( &PackageAdditionalInfo::Version )
       {
         Some( package.version().to_string() )
@@ -499,9 +498,8 @@ mod private
       }
       else
       {
-        Ok( None )
-      }
-      .err_with_report( report )?;
+        Result::Ok( None )
+      }?;
       let mut package_report = tool::ListNodeReport
       {
         name : package.name().to_string(),
@@ -535,7 +533,7 @@ mod private
       ListFormat::Tree if is_package =>
       {
         let mut visited = collection::HashSet::new();
-        tree_package_report( manifest.manifest_file, &mut report, &mut visited )?;
+        tree_package_report( manifest.manifest_file, &mut report, &mut visited ).err_with_report( &report )?;
         let ListReport::Tree( tree ) = report else { unreachable!() };
         let printer = merge_build_dependencies( tree );
         let rep : Vec< ListNodeReport > = printer
@@ -565,7 +563,7 @@ mod private
         .collect();
         for package in packages
         {
-          tree_package_report( package.manifest_file().unwrap(), &mut report, &mut visited )?;
+          tree_package_report( package.manifest_file().unwrap(), &mut report, &mut visited ).err_with_report( &report )?;
         }
         let ListReport::Tree( tree ) = report else { unreachable!() };
         let printer = merge_build_dependencies( tree );
@@ -659,7 +657,7 @@ mod private
                   // aaa : is it safe to use unwrap here? // aaa : should be safe, but now returns an error
                 }
               }
-              Ok::< String, PathError >( name )
+              std::result::Result::< String, crate::entity::files::PathError >::Ok( name )
             }
           )
           .collect::< Result< _, _ > >()
@@ -720,7 +718,7 @@ mod private
       }
     }
 
-    Ok( report )
+    Result::Ok( report )
   }
 
   fn merge_build_dependencies( mut report: Vec< tool::TreePrinter > ) -> Vec< tool::TreePrinter >
