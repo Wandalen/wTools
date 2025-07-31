@@ -3,7 +3,7 @@
 //! This example demonstrates all the supported argument types in Unilang,
 //! including basic types, collections, and complex validation.
 
-use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData };
+use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData, ValidationRule };
 use unilang::registry::CommandRegistry;
 use unilang::types::Value;
 
@@ -35,112 +35,112 @@ fn main() -> Result< (), unilang::error::Error >
   .arguments( vec!
   [
     // String argument
-    ArgumentDefinition::former()
-    .name( "text" )
-    .description( "A text string argument".to_string() )
-    .kind( Kind::String )
-    .hint( "Any text string" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec![ "min_length:3".to_string() ] )
-    .aliases( vec![ "t".to_string() ] )
-    .tags( vec![ "string".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "text".to_string(),
+      description: "A text string argument".to_string(),
+      kind: Kind::String,
+      hint: "Any text string".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![ ValidationRule::MinLength(3) ],
+      aliases: vec![ "t".to_string() ],
+      tags: vec![ "string".to_string() ],
+    },
 
     // Integer argument
-    ArgumentDefinition::former()
-    .name( "number" )
-    .description( "An integer number".to_string() )
-    .kind( Kind::Integer )
-    .hint( "Whole number" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec![ "min:0".to_string(), "max:100".to_string() ] )
-    .aliases( vec![ "n".to_string() ] )
-    .tags( vec![ "numeric".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "number".to_string(),
+      description: "An integer number".to_string(),
+      kind: Kind::Integer,
+      hint: "Whole number".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![ ValidationRule::Min(0.0), ValidationRule::Max(100.0) ],
+      aliases: vec![ "n".to_string() ],
+      tags: vec![ "numeric".to_string() ],
+    },
 
     // Float argument
-    ArgumentDefinition::former()
-    .name( "decimal" )
-    .description( "A floating-point number".to_string() )
-    .kind( Kind::Float )
-    .hint( "Decimal number" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec![ "min:0.0".to_string() ] )
-    .aliases( vec![ "d".to_string() ] )
-    .tags( vec![ "numeric".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "decimal".to_string(),
+      description: "A floating-point number".to_string(),
+      kind: Kind::Float,
+      hint: "Decimal number".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![ ValidationRule::Min(0.0) ],
+      aliases: vec![ "d".to_string() ],
+      tags: vec![ "numeric".to_string() ],
+    },
 
     // Boolean argument
-    ArgumentDefinition::former()
-    .name( "flag" )
-    .description( "A boolean flag".to_string() )
-    .kind( Kind::Boolean )
-    .hint( "True or false value" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "f".to_string() ] )
-    .tags( vec![ "boolean".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "flag".to_string(),
+      description: "A boolean flag".to_string(),
+      kind: Kind::Boolean,
+      hint: "True or false value".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "f".to_string() ],
+      tags: vec![ "boolean".to_string() ],
+    },
 
     // Path argument
-    ArgumentDefinition::former()
-    .name( "path" )
-    .description( "A file system path".to_string() )
-    .kind( Kind::Path )
-    .hint( "File or directory path" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "p".to_string() ] )
-    .tags( vec![ "filesystem".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "path".to_string(),
+      description: "A file system path".to_string(),
+      kind: Kind::Path,
+      hint: "File or directory path".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "p".to_string() ],
+      tags: vec![ "filesystem".to_string() ],
+    },
 
     // URL argument
-    ArgumentDefinition::former()
-    .name( "url" )
-    .description( "A web URL".to_string() )
-    .kind( Kind::Url )
-    .hint( "Valid HTTP/HTTPS URL" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec![ "regex:^https?://".to_string() ] )
-    .aliases( vec![ "u".to_string() ] )
-    .tags( vec![ "web".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "url".to_string(),
+      description: "A web URL".to_string(),
+      kind: Kind::Url,
+      hint: "Valid HTTP/HTTPS URL".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![ ValidationRule::Pattern("^https?://".to_string()) ],
+      aliases: vec![ "u".to_string() ],
+      tags: vec![ "web".to_string() ],
+    },
 
     // DateTime argument
-    ArgumentDefinition::former()
-    .name( "timestamp" )
-    .description( "A date and time".to_string() )
-    .kind( Kind::DateTime )
-    .hint( "ISO 8601 datetime" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "ts".to_string() ] )
-    .tags( vec![ "time".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "timestamp".to_string(),
+      description: "A date and time".to_string(),
+      kind: Kind::DateTime,
+      hint: "ISO 8601 datetime".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "ts".to_string() ],
+      tags: vec![ "time".to_string() ],
+    },
 
     // Enum argument
-    ArgumentDefinition::former()
-    .name( "level" )
-    .description( "A predefined choice".to_string() )
-    .kind( Kind::Enum( vec![ "debug".to_string(), "info".to_string(), "warn".to_string(), "error".to_string() ] ) )
-    .hint( "Log level choice" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "l".to_string() ] )
-    .tags( vec![ "choice".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "level".to_string(),
+      description: "A predefined choice".to_string(),
+      kind: Kind::Enum( vec![ "debug".to_string(), "info".to_string(), "warn".to_string(), "error".to_string() ] ),
+      hint: "Log level choice".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "l".to_string() ],
+      tags: vec![ "choice".to_string() ],
+    },
 
     // Pattern/Regex argument
-    ArgumentDefinition::former()
-    .name( "pattern" )
-    .description( "A regular expression pattern".to_string() )
-    .kind( Kind::Pattern )
-    .hint( "Regex pattern string" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "regex".to_string() ] )
-    .tags( vec![ "pattern".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "pattern".to_string(),
+      description: "A regular expression pattern".to_string(),
+      kind: Kind::Pattern,
+      hint: "Regex pattern string".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "regex".to_string() ],
+      tags: vec![ "pattern".to_string() ],
+    },
   ])
   .end();
 

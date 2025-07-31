@@ -4,7 +4,7 @@
 //! verified commands are interpreted and executed with proper context
 //! and error handling.
 
-use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, ErrorData, Kind, OutputData };
+use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, ErrorData, Kind, OutputData, ValidationRule };
 use unilang::registry::CommandRegistry;
 use unilang::semantic::{ SemanticAnalyzer, VerifiedCommand };
 use unilang::interpreter::{ ExecutionContext, Interpreter };
@@ -36,23 +36,20 @@ fn main() -> Result< (), unilang::error::Error >
   .examples( vec![ "hello Alice".to_string() ] )
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "name" )
-    .description( "Name to greet".to_string() )
-    .kind( Kind::String )
-    .hint( "Person's name" )
-    .default_value( "World".to_string() )
-    .attributes
-    (
-      ArgumentAttributes::former()
-      .optional( true )
-      .is_default_arg( true )
-      .end()
-    )
-    .validation_rules( vec![ "min_length:1".to_string() ] )
-    .aliases( vec![ "n".to_string() ] )
-    .tags( vec![ "personal".to_string() ] )
-    .end()
+    ArgumentDefinition {
+      name: "name".to_string(),
+      description: "Name to greet".to_string(),
+      kind: Kind::String,
+      hint: "Person's name".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        default: Some("World".to_string()),
+        ..Default::default()
+      },
+      validation_rules: vec![ ValidationRule::MinLength(1) ],
+      aliases: vec![ "n".to_string() ],
+      tags: vec![ "personal".to_string() ],
+    }
   ])
   .end();
 
@@ -92,23 +89,20 @@ fn main() -> Result< (), unilang::error::Error >
   .examples( vec![ "system.status --verbose".to_string() ] )
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "verbose" )
-    .description( "Show detailed information".to_string() )
-    .kind( Kind::Boolean )
-    .hint( "Enable verbose output" )
-    .default_value( "false".to_string() )
-    .attributes
-    (
-      ArgumentAttributes::former()
-      .optional( true )
-      .is_default_arg( true )
-      .end()
-    )
-    .validation_rules( vec![] )
-    .aliases( vec![ "v".to_string() ] )
-    .tags( vec![ "output".to_string() ] )
-    .end()
+    ArgumentDefinition {
+      name: "verbose".to_string(),
+      description: "Show detailed information".to_string(),
+      kind: Kind::Boolean,
+      hint: "Enable verbose output".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        default: Some("false".to_string()),
+        ..Default::default()
+      },
+      validation_rules: vec![],
+      aliases: vec![ "v".to_string() ],
+      tags: vec![ "output".to_string() ],
+    }
   ])
   .end();
 
@@ -171,26 +165,26 @@ fn main() -> Result< (), unilang::error::Error >
   .examples( vec![ "math.divide 10 2".to_string(), "math.divide 15 0".to_string() ] )
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "dividend" )
-    .description( "Number to be divided".to_string() )
-    .kind( Kind::Float )
-    .hint( "Dividend (numerator)" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "a".to_string(), "numerator".to_string() ] )
-    .tags( vec![ "required".to_string() ] )
-    .end(),
-    ArgumentDefinition::former()
-    .name( "divisor" )
-    .description( "Number to divide by".to_string() )
-    .kind( Kind::Float )
-    .hint( "Divisor (denominator)" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "b".to_string(), "denominator".to_string() ] )
-    .tags( vec![ "required".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "dividend".to_string(),
+      description: "Number to be divided".to_string(),
+      kind: Kind::Float,
+      hint: "Dividend (numerator)".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "a".to_string(), "numerator".to_string() ],
+      tags: vec![ "required".to_string() ],
+    },
+    ArgumentDefinition {
+      name: "divisor".to_string(),
+      description: "Number to divide by".to_string(),
+      kind: Kind::Float,
+      hint: "Divisor (denominator)".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "b".to_string(), "denominator".to_string() ],
+      tags: vec![ "required".to_string() ],
+    },
   ])
   .end();
 
@@ -271,16 +265,16 @@ fn main() -> Result< (), unilang::error::Error >
   .examples( vec![ "data.analyze --numbers 1,5,3,9,2,7,4".to_string() ] )
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "numbers" )
-    .description( "List of numbers to analyze".to_string() )
-    .kind( Kind::List( Box::new( Kind::Float ), Some( ',' ) ) )
-    .hint( "Comma-separated numbers" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![ "min_length:2".to_string() ] )
-    .aliases( vec![ "data".to_string(), "values".to_string() ] )
-    .tags( vec![ "required".to_string(), "numeric".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "numbers".to_string(),
+      description: "List of numbers to analyze".to_string(),
+      kind: Kind::List( Box::new( Kind::Float ), Some( ',' ) ),
+      hint: "Comma-separated numbers".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![ ValidationRule::MinItems(2) ],
+      aliases: vec![ "data".to_string(), "values".to_string() ],
+      tags: vec![ "required".to_string(), "numeric".to_string() ],
+    },
   ])
   .end();
 

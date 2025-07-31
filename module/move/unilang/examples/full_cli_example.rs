@@ -4,7 +4,7 @@
 //! pipeline, including argument parsing, semantic analysis, and command execution.
 
 use std::collections::HashMap;
-use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, OutputData };
+use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, OutputData, ValidationRule };
 use unilang::data::Kind as ArgumentKind;
 use unilang::error::Error;
 use unilang::interpreter::Interpreter;
@@ -34,16 +34,26 @@ Result< (), Error >
   (
     vec!
     [
-      ArgumentDefinition::former()
-      .name( "a" )
-      .kind( ArgumentKind::Integer )
-      .hint( "First number." )
-      .end(),
-      ArgumentDefinition::former()
-      .name( "b" )
-      .kind( ArgumentKind::Integer )
-      .hint( "Second number." )
-      .end(),
+      ArgumentDefinition {
+        name: "a".to_string(),
+        description: String::new(),
+        kind: ArgumentKind::Integer,
+        hint: "First number.".to_string(),
+        attributes: ArgumentAttributes::default(),
+        validation_rules: vec![],
+        aliases: vec![],
+        tags: vec![],
+      },
+      ArgumentDefinition {
+        name: "b".to_string(),
+        description: String::new(),
+        kind: ArgumentKind::Integer,
+        hint: "Second number.".to_string(),
+        attributes: ArgumentAttributes::default(),
+        validation_rules: vec![],
+        aliases: vec![],
+        tags: vec![],
+      },
     ]
   )
   .end();
@@ -78,16 +88,26 @@ Result< (), Error >
   (
     vec!
     [
-      ArgumentDefinition::former()
-      .name( "x" )
-      .kind( ArgumentKind::Integer )
-      .hint( "Minuend." )
-      .end(),
-      ArgumentDefinition::former()
-      .name( "y" )
-      .kind( ArgumentKind::Integer )
-      .hint( "Subtrahend." )
-      .end(),
+      ArgumentDefinition {
+        name: "x".to_string(),
+        description: String::new(),
+        kind: ArgumentKind::Integer,
+        hint: "Minuend.".to_string(),
+        attributes: ArgumentAttributes::default(),
+        validation_rules: vec![],
+        aliases: vec![],
+        tags: vec![],
+      },
+      ArgumentDefinition {
+        name: "y".to_string(),
+        description: String::new(),
+        kind: ArgumentKind::Integer,
+        hint: "Subtrahend.".to_string(),
+        attributes: ArgumentAttributes::default(),
+        validation_rules: vec![],
+        aliases: vec![],
+        tags: vec![],
+      },
     ]
   )
   .end();
@@ -121,12 +141,19 @@ Result< (), Error >
   (
     vec!
     [
-      ArgumentDefinition::former()
-      .name( "name" )
-      .kind( ArgumentKind::String )
-      .hint( "Name of the person to greet." )
-      .default_value( "World".to_string() )
-      .end(),
+      ArgumentDefinition {
+        name: "name".to_string(),
+        description: String::new(),
+        kind: ArgumentKind::String,
+        hint: "Name of the person to greet.".to_string(),
+        attributes: ArgumentAttributes {
+          default: Some("World".to_string()),
+          ..Default::default()
+        },
+        validation_rules: vec![],
+        aliases: vec![],
+        tags: vec![],
+      },
     ]
   )
   .end();
@@ -159,17 +186,30 @@ Result< (), Error >
   (
     vec!
     [
-      ArgumentDefinition::former()
-      .name( "key" )
-      .kind( ArgumentKind::String )
-      .hint( "Configuration key." )
-      .end(),
-      ArgumentDefinition::former()
-      .name( "value" )
-      .kind( ArgumentKind::String )
-      .hint( "Configuration value." )
-      .attributes( ArgumentAttributes::former().interactive( true ).sensitive( true ).end() )
-      .end(),
+      ArgumentDefinition {
+        name: "key".to_string(),
+        description: String::new(),
+        kind: ArgumentKind::String,
+        hint: "Configuration key.".to_string(),
+        attributes: ArgumentAttributes::default(),
+        validation_rules: vec![],
+        aliases: vec![],
+        tags: vec![],
+      },
+      ArgumentDefinition {
+        name: "value".to_string(),
+        description: String::new(),
+        kind: ArgumentKind::String,
+        hint: "Configuration value.".to_string(),
+        attributes: ArgumentAttributes {
+          interactive: true,
+          sensitive: true,
+          ..Default::default()
+        },
+        validation_rules: vec![],
+        aliases: vec![],
+        tags: vec![],
+      },
     ]
   )
   .end();

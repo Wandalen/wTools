@@ -35,40 +35,40 @@ fn main() -> Result< (), unilang::error::Error >
   .arguments( vec!
   [
     // List of integers with comma delimiter
-    ArgumentDefinition::former()
-    .name( "numbers" )
-    .description( "A list of numbers separated by commas".to_string() )
-    .kind( Kind::List( Box::new( Kind::Integer ), Some( ',' ) ) )
-    .hint( "Comma-separated integers" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "nums".to_string() ] )
-    .tags( vec![ "numeric".to_string(), "list".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "numbers".to_string(),
+      description: "A list of numbers separated by commas".to_string(),
+      kind: Kind::List( Box::new( Kind::Integer ), Some( ',' ) ),
+      hint: "Comma-separated integers".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "nums".to_string() ],
+      tags: vec![ "numeric".to_string(), "list".to_string() ],
+    },
 
     // List of strings with pipe delimiter
-    ArgumentDefinition::former()
-    .name( "words" )
-    .description( "A list of words separated by pipes".to_string() )
-    .kind( Kind::List( Box::new( Kind::String ), Some( '|' ) ) )
-    .hint( "Pipe-separated strings" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "w".to_string() ] )
-    .tags( vec![ "text".to_string(), "list".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "words".to_string(),
+      description: "A list of words separated by pipes".to_string(),
+      kind: Kind::List( Box::new( Kind::String ), Some( '|' ) ),
+      hint: "Pipe-separated strings".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "w".to_string() ],
+      tags: vec![ "text".to_string(), "list".to_string() ],
+    },
 
     // List with default delimiter (space)
-    ArgumentDefinition::former()
-    .name( "files" )
-    .description( "A list of file paths".to_string() )
-    .kind( Kind::List( Box::new( Kind::Path ), None ) )
-    .hint( "Space-separated paths" )
-    .attributes( ArgumentAttributes::former().optional( true ).multiple( true ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "f".to_string() ] )
-    .tags( vec![ "filesystem".to_string(), "list".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "files".to_string(),
+      description: "A list of file paths".to_string(),
+      kind: Kind::List( Box::new( Kind::Path ), None ),
+      hint: "Space-separated paths".to_string(),
+      attributes: ArgumentAttributes { optional: true, multiple: true, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "f".to_string() ],
+      tags: vec![ "filesystem".to_string(), "list".to_string() ],
+    },
   ])
   .end();
 
@@ -123,58 +123,58 @@ fn main() -> Result< (), unilang::error::Error >
   .arguments( vec!
   [
     // Map with comma entry delimiter and equals key-value delimiter
-    ArgumentDefinition::former()
-    .name( "config" )
-    .description( "Configuration key-value pairs".to_string() )
-    .kind( Kind::Map
-    (
-      Box::new( Kind::String ),
-      Box::new( Kind::String ),
-      Some( ',' ), // entry delimiter
-      Some( '=' )  // key-value delimiter
-    ))
-    .hint( "Format: key=value,key2=value2" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "cfg".to_string() ] )
-    .tags( vec![ "configuration".to_string(), "map".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "config".to_string(),
+      description: "Configuration key-value pairs".to_string(),
+      kind: Kind::Map
+      (
+        Box::new( Kind::String ),
+        Box::new( Kind::String ),
+        Some( ',' ), // entry delimiter
+        Some( '=' )  // key-value delimiter
+      ),
+      hint: "Format: key=value,key2=value2".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "cfg".to_string() ],
+      tags: vec![ "configuration".to_string(), "map".to_string() ],
+    },
 
     // Map with pipe entry delimiter and colon key-value delimiter
-    ArgumentDefinition::former()
-    .name( "scores" )
-    .description( "Student scores as name-value pairs".to_string() )
-    .kind( Kind::Map
-    (
-      Box::new( Kind::String ),
-      Box::new( Kind::Integer ),
-      Some( '|' ), // entry delimiter
-      Some( ':' )  // key-value delimiter
-    ))
-    .hint( "Format: name:score|name2:score2" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "s".to_string() ] )
-    .tags( vec![ "scoring".to_string(), "map".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "scores".to_string(),
+      description: "Student scores as name-value pairs".to_string(),
+      kind: Kind::Map
+      (
+        Box::new( Kind::String ),
+        Box::new( Kind::Integer ),
+        Some( '|' ), // entry delimiter
+        Some( ':' )  // key-value delimiter
+      ),
+      hint: "Format: name:score|name2:score2".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "s".to_string() ],
+      tags: vec![ "scoring".to_string(), "map".to_string() ],
+    },
 
     // Map with default delimiters
-    ArgumentDefinition::former()
-    .name( "metadata" )
-    .description( "Generic metadata pairs".to_string() )
-    .kind( Kind::Map
-    (
-      Box::new( Kind::String ),
-      Box::new( Kind::String ),
-      None, // default entry delimiter
-      None  // default key-value delimiter
-    ))
-    .hint( "Key-value metadata" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "meta".to_string() ] )
-    .tags( vec![ "metadata".to_string(), "map".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "metadata".to_string(),
+      description: "Generic metadata pairs".to_string(),
+      kind: Kind::Map
+      (
+        Box::new( Kind::String ),
+        Box::new( Kind::String ),
+        None, // default entry delimiter
+        None  // default key-value delimiter
+      ),
+      hint: "Key-value metadata".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "meta".to_string() ],
+      tags: vec![ "metadata".to_string(), "map".to_string() ],
+    },
   ])
   .end();
 

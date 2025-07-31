@@ -3,7 +3,7 @@
 //! This example demonstrates how to organize commands using namespaces
 //! and provide aliases for easier command invocation.
 
-use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData };
+use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData, ValidationRule };
 use unilang::registry::CommandRegistry;
 use unilang::help::HelpGenerator;
 use unilang::types::Value;
@@ -38,22 +38,20 @@ fn main() -> Result< (), unilang::error::Error >
   ])
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "numbers" )
-    .description( "Numbers to add together".to_string() )
-    .kind( Kind::List( Box::new( Kind::Integer ), None ) )
-    .hint( "Space-separated integers" )
-    .attributes
-    (
-      ArgumentAttributes::former()
-      .optional( false )
-      .multiple( true )
-      .end()
-    )
-    .validation_rules( vec![ "min_length:2".to_string() ] )
-    .aliases( vec![ "nums".to_string(), "values".to_string() ] )
-    .tags( vec![ "required".to_string() ] )
-    .end()
+    ArgumentDefinition {
+      name: "numbers".to_string(),
+      description: "Numbers to add together".to_string(),
+      kind: Kind::List( Box::new( Kind::Integer ), None ),
+      hint: "Space-separated integers".to_string(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: true,
+        ..Default::default()
+      },
+      validation_rules: vec![ ValidationRule::MinItems(2) ],
+      aliases: vec![ "nums".to_string(), "values".to_string() ],
+      tags: vec![ "required".to_string() ],
+    }
   ])
   .end();
 
@@ -116,22 +114,20 @@ fn main() -> Result< (), unilang::error::Error >
   ])
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "factors" )
-    .description( "Numbers to multiply together".to_string() )
-    .kind( Kind::List( Box::new( Kind::Integer ), None ) )
-    .hint( "Space-separated integers" )
-    .attributes
-    (
-      ArgumentAttributes::former()
-      .optional( false )
-      .multiple( true )
-      .end()
-    )
-    .validation_rules( vec![ "min_length:2".to_string() ] )
-    .aliases( vec![ "nums".to_string() ] )
-    .tags( vec![ "required".to_string() ] )
-    .end()
+    ArgumentDefinition {
+      name: "factors".to_string(),
+      description: "Numbers to multiply together".to_string(),
+      kind: Kind::List( Box::new( Kind::Integer ), None ),
+      hint: "Space-separated integers".to_string(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: true,
+        ..Default::default()
+      },
+      validation_rules: vec![ ValidationRule::MinItems(2) ],
+      aliases: vec![ "nums".to_string() ],
+      tags: vec![ "required".to_string() ],
+    }
   ])
   .end();
 
@@ -195,16 +191,16 @@ fn main() -> Result< (), unilang::error::Error >
   ])
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "text" )
-    .description( "Text to convert to uppercase".to_string() )
-    .kind( Kind::String )
-    .hint( "Any text string" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![ "min_length:1".to_string() ] )
-    .aliases( vec![ "input".to_string(), "str".to_string() ] )
-    .tags( vec![ "required".to_string() ] )
-    .end()
+    ArgumentDefinition {
+      name: "text".to_string(),
+      description: "Text to convert to uppercase".to_string(),
+      kind: Kind::String,
+      hint: "Any text string".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![ ValidationRule::MinLength(1) ],
+      aliases: vec![ "input".to_string(), "str".to_string() ],
+      tags: vec![ "required".to_string() ],
+    }
   ])
   .end();
 
@@ -257,23 +253,20 @@ fn main() -> Result< (), unilang::error::Error >
   ])
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "path" )
-    .description( "Directory path to list".to_string() )
-    .kind( Kind::Directory )
-    .hint( "Valid directory path" )
-    .default_value( ".".to_string() )
-    .attributes
-    (
-      ArgumentAttributes::former()
-      .optional( true )
-      .is_default_arg( true )
-      .end()
-    )
-    .validation_rules( vec![] )
-    .aliases( vec![ "dir".to_string(), "directory".to_string() ] )
-    .tags( vec![ "filesystem".to_string() ] )
-    .end()
+    ArgumentDefinition {
+      name: "path".to_string(),
+      description: "Directory path to list".to_string(),
+      kind: Kind::Directory,
+      hint: "Valid directory path".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        default: Some(".".to_string()),
+        ..Default::default()
+      },
+      validation_rules: vec![],
+      aliases: vec![ "dir".to_string(), "directory".to_string() ],
+      tags: vec![ "filesystem".to_string() ],
+    }
   ])
   .end();
 

@@ -5,7 +5,7 @@
 //! to verified commands ready for execution.
 
 
-use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData };
+use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData, ValidationRule };
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
 use unilang::types::Value;
@@ -35,43 +35,40 @@ fn main() -> Result< (), unilang::error::Error >
   .examples( vec![ "math.calculate --x 10 --y 5 --operation add".to_string() ] )
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "x" )
-    .description( "First number".to_string() )
-    .kind( Kind::Integer )
-    .hint( "First operand" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![ "min:-1000".to_string(), "max:1000".to_string() ] )
-    .aliases( vec![ "first".to_string() ] )
-    .tags( vec![ "numeric".to_string() ] )
-    .end(),
-    ArgumentDefinition::former()
-    .name( "y" )
-    .description( "Second number".to_string() )
-    .kind( Kind::Integer )
-    .hint( "Second operand" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![ "min:-1000".to_string(), "max:1000".to_string() ] )
-    .aliases( vec![ "second".to_string() ] )
-    .tags( vec![ "numeric".to_string() ] )
-    .end(),
-    ArgumentDefinition::former()
-    .name( "operation" )
-    .description( "Mathematical operation to perform".to_string() )
-    .kind( Kind::Enum( vec![ "add".to_string(), "subtract".to_string(), "multiply".to_string(), "divide".to_string() ] ) )
-    .hint( "Operation type" )
-    .default_value( "add".to_string() )
-    .attributes
-    (
-      ArgumentAttributes::former()
-      .optional( true )
-      .is_default_arg( true )
-      .end()
-    )
-    .validation_rules( vec![] )
-    .aliases( vec![ "op".to_string(), "o".to_string() ] )
-    .tags( vec![ "operation".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "x".to_string(),
+      description: "First number".to_string(),
+      kind: Kind::Integer,
+      hint: "First operand".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![ ValidationRule::Min(-1000.0), ValidationRule::Max(1000.0) ],
+      aliases: vec![ "first".to_string() ],
+      tags: vec![ "numeric".to_string() ],
+    },
+    ArgumentDefinition {
+      name: "y".to_string(),
+      description: "Second number".to_string(),
+      kind: Kind::Integer,
+      hint: "Second operand".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![ ValidationRule::Min(-1000.0), ValidationRule::Max(1000.0) ],
+      aliases: vec![ "second".to_string() ],
+      tags: vec![ "numeric".to_string() ],
+    },
+    ArgumentDefinition {
+      name: "operation".to_string(),
+      description: "Mathematical operation to perform".to_string(),
+      kind: Kind::Enum( vec![ "add".to_string(), "subtract".to_string(), "multiply".to_string(), "divide".to_string() ] ),
+      hint: "Operation type".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        default: Some("add".to_string()),
+        ..Default::default()
+      },
+      validation_rules: vec![],
+      aliases: vec![ "op".to_string(), "o".to_string() ],
+      tags: vec![ "operation".to_string() ],
+    },
   ])
   .end();
 
@@ -118,33 +115,30 @@ fn main() -> Result< (), unilang::error::Error >
   .examples( vec![ "text.process 'hello world' --operations upper,reverse".to_string() ] )
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "input" )
-    .description( "Text to process".to_string() )
-    .kind( Kind::String )
-    .hint( "Input text" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![ "min_length:1".to_string() ] )
-    .aliases( vec![ "text".to_string(), "t".to_string() ] )
-    .tags( vec![ "input".to_string() ] )
-    .end(),
-    ArgumentDefinition::former()
-    .name( "operations" )
-    .description( "List of operations to apply".to_string() )
-    .kind( Kind::List( Box::new( Kind::String ), Some( ',' ) ) )
-    .hint( "Comma-separated operations" )
-    .default_value( "none".to_string() )
-    .attributes
-    (
-      ArgumentAttributes::former()
-      .optional( true )
-      .is_default_arg( true )
-      .end()
-    )
-    .validation_rules( vec![ "min_length:1".to_string() ] )
-    .aliases( vec![ "ops".to_string(), "o".to_string() ] )
-    .tags( vec![ "transformation".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "input".to_string(),
+      description: "Text to process".to_string(),
+      kind: Kind::String,
+      hint: "Input text".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![ ValidationRule::MinLength(1) ],
+      aliases: vec![ "text".to_string(), "t".to_string() ],
+      tags: vec![ "input".to_string() ],
+    },
+    ArgumentDefinition {
+      name: "operations".to_string(),
+      description: "List of operations to apply".to_string(),
+      kind: Kind::List( Box::new( Kind::String ), Some( ',' ) ),
+      hint: "Comma-separated operations".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        default: Some("none".to_string()),
+        ..Default::default()
+      },
+      validation_rules: vec![ ValidationRule::MinItems(1) ],
+      aliases: vec![ "ops".to_string(), "o".to_string() ],
+      tags: vec![ "transformation".to_string() ],
+    },
   ])
   .end();
 

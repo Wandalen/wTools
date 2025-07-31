@@ -3,7 +3,7 @@
 //! This example demonstrates how to apply validation rules to command arguments,
 //! including min/max values, string patterns, and length constraints.
 
-use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData };
+use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData, ValidationRule };
 use unilang::registry::CommandRegistry;
 use unilang::types::Value;
 
@@ -35,119 +35,110 @@ fn main() -> Result< (), unilang::error::Error >
   .arguments( vec!
   [
     // Numeric validation with min/max
-    ArgumentDefinition::former()
-    .name( "age" )
-    .description( "Person's age (must be 0-120)".to_string() )
-    .kind( Kind::Integer )
-    .hint( "Age in years" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec!
-    [
-      "min:0".to_string(),
-      "max:120".to_string()
-    ])
-    .aliases( vec![ "a".to_string() ] )
-    .tags( vec![ "personal".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "age".to_string(),
+      description: "Person's age (must be 0-120)".to_string(),
+      kind: Kind::Integer,
+      hint: "Age in years".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![
+        ValidationRule::Min(0.0),
+        ValidationRule::Max(120.0)
+      ],
+      aliases: vec![ "a".to_string() ],
+      tags: vec![ "personal".to_string() ],
+    },
 
     // Float validation with min constraint
-    ArgumentDefinition::former()
-    .name( "score" )
-    .description( "Test score (must be 0.0 or higher)".to_string() )
-    .kind( Kind::Float )
-    .hint( "Score as decimal" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec!
-    [
-      "min:0.0".to_string(),
-      "max:100.0".to_string()
-    ])
-    .aliases( vec![ "s".to_string() ] )
-    .tags( vec![ "academic".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "score".to_string(),
+      description: "Test score (must be 0.0 or higher)".to_string(),
+      kind: Kind::Float,
+      hint: "Score as decimal".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![
+        ValidationRule::Min(0.0),
+        ValidationRule::Max(100.0)
+      ],
+      aliases: vec![ "s".to_string() ],
+      tags: vec![ "academic".to_string() ],
+    },
 
     // String length validation
-    ArgumentDefinition::former()
-    .name( "name" )
-    .description( "Person's name (2-50 characters)".to_string() )
-    .kind( Kind::String )
-    .hint( "Full name" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec!
-    [
-      "min_length:2".to_string(),
-      "max_length:50".to_string() // Note: max_length not implemented in the semantic analyzer, but shown for completeness
-    ])
-    .aliases( vec![ "n".to_string() ] )
-    .tags( vec![ "personal".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "name".to_string(),
+      description: "Person's name (2-50 characters)".to_string(),
+      kind: Kind::String,
+      hint: "Full name".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![
+        ValidationRule::MinLength(2),
+        ValidationRule::MaxLength(50) // Note: max_length not implemented in the semantic analyzer, but shown for completeness
+      ],
+      aliases: vec![ "n".to_string() ],
+      tags: vec![ "personal".to_string() ],
+    },
 
     // Regex pattern validation
-    ArgumentDefinition::former()
-    .name( "email" )
-    .description( "Email address (must match email pattern)".to_string() )
-    .kind( Kind::String )
-    .hint( "Valid email format" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec!
-    [
-      "regex:^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".to_string()
-    ])
-    .aliases( vec![ "e".to_string() ] )
-    .tags( vec![ "contact".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "email".to_string(),
+      description: "Email address (must match email pattern)".to_string(),
+      kind: Kind::String,
+      hint: "Valid email format".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![
+        ValidationRule::Pattern("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".to_string())
+      ],
+      aliases: vec![ "e".to_string() ],
+      tags: vec![ "contact".to_string() ],
+    },
 
     // Multiple validation rules
-    ArgumentDefinition::former()
-    .name( "password" )
-    .description( "Password (8+ chars, must contain letters and numbers)".to_string() )
-    .kind( Kind::String )
-    .hint( "Secure password" )
-    .attributes
-    (
-      ArgumentAttributes::former()
-      .optional( true )
-      .sensitive( true ) // Mark as sensitive
-      .end()
-    )
-    .validation_rules( vec!
-    [
-      "min_length:8".to_string(),
-      "regex:^(?=.*[A-Za-z])(?=.*\\d).+$".to_string() // Must contain letters and digits
-    ])
-    .aliases( vec![ "pwd".to_string() ] )
-    .tags( vec![ "security".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "password".to_string(),
+      description: "Password (8+ chars, must contain letters and numbers)".to_string(),
+      kind: Kind::String,
+      hint: "Secure password".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        sensitive: true, // Mark as sensitive
+        ..Default::default()
+      },
+      validation_rules: vec![
+        ValidationRule::MinLength(8),
+        ValidationRule::Pattern("^(?=.*[A-Za-z])(?=.*\\d).+$".to_string()) // Must contain letters and digits
+      ],
+      aliases: vec![ "pwd".to_string() ],
+      tags: vec![ "security".to_string() ],
+    },
 
     // List with length validation
-    ArgumentDefinition::former()
-    .name( "tags" )
-    .description( "List of tags (2-10 items)".to_string() )
-    .kind( Kind::List( Box::new( Kind::String ), Some( ',' ) ) )
-    .hint( "Comma-separated tags" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec!
-    [
-      "min_length:2".to_string(), // Minimum 2 items in list
-    ])
-    .aliases( vec![ "t".to_string() ] )
-    .tags( vec![ "metadata".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "tags".to_string(),
+      description: "List of tags (2-10 items)".to_string(),
+      kind: Kind::List( Box::new( Kind::String ), Some( ',' ) ),
+      hint: "Comma-separated tags".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![
+        ValidationRule::MinItems(2), // Minimum 2 items in list
+      ],
+      aliases: vec![ "t".to_string() ],
+      tags: vec![ "metadata".to_string() ],
+    },
 
     // URL with pattern validation
-    ArgumentDefinition::former()
-    .name( "website" )
-    .description( "Website URL (must be HTTPS)".to_string() )
-    .kind( Kind::Url )
-    .hint( "HTTPS URL only" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec!
-    [
-      "regex:^https://".to_string() // Must start with https://
-    ])
-    .aliases( vec![ "url".to_string() ] )
-    .tags( vec![ "web".to_string(), "security".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "website".to_string(),
+      description: "Website URL (must be HTTPS)".to_string(),
+      kind: Kind::Url,
+      hint: "HTTPS URL only".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![
+        ValidationRule::Pattern("^https://".to_string()) // Must start with https://
+      ],
+      aliases: vec![ "url".to_string() ],
+      tags: vec![ "web".to_string(), "security".to_string() ],
+    },
   ])
   .end();
 
@@ -193,7 +184,7 @@ fn main() -> Result< (), unilang::error::Error >
   println!( "  • multiple - Argument can be specified multiple times" );
   println!( "  • sensitive - Argument contains sensitive data" );
   println!( "  • interactive - Argument may require user interaction" );
-  println!( "  • is_default_arg - Use default value when not specified" );
+  println!( "  • default - Default value when not specified" );
 
   println!( "\n=== Example Usage ===" );
   println!( "# Valid examples:" );

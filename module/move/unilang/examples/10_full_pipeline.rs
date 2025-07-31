@@ -5,7 +5,7 @@
 //! showing how all components work together.
 
 use std::collections::HashMap;
-use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, ErrorData, Kind, OutputData };
+use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, ErrorData, Kind, OutputData, ValidationRule };
 use unilang::help::HelpGenerator;
 use unilang::interpreter::{ ExecutionContext, Interpreter };
 use unilang::registry::CommandRegistry;
@@ -278,28 +278,34 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   ])
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "path" )
-    .description( "Directory path to list".to_string() )
-    .kind( Kind::Directory )
-    .hint( "Target directory" )
-    .default_value( ".".to_string() )
-    .attributes( ArgumentAttributes::former().optional( true ).is_default_arg( true ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "p".to_string(), "dir".to_string() ] )
-    .tags( vec![ "filesystem".to_string() ] )
-    .end(),
-    ArgumentDefinition::former()
-    .name( "format" )
-    .description( "Output format".to_string() )
-    .kind( Kind::Enum( vec![ "table".to_string(), "list".to_string(), "json".to_string() ] ) )
-    .hint( "Display format" )
-    .default_value( "list".to_string() )
-    .attributes( ArgumentAttributes::former().optional( true ).is_default_arg( true ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "f".to_string() ] )
-    .tags( vec![ "formatting".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "path".to_string(),
+      description: "Directory path to list".to_string(),
+      kind: Kind::Directory,
+      hint: "Target directory".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        default: Some(".".to_string()),
+        ..Default::default()
+      },
+      validation_rules: vec![],
+      aliases: vec![ "p".to_string(), "dir".to_string() ],
+      tags: vec![ "filesystem".to_string() ],
+    },
+    ArgumentDefinition {
+      name: "format".to_string(),
+      description: "Output format".to_string(),
+      kind: Kind::Enum( vec![ "table".to_string(), "list".to_string(), "json".to_string() ] ),
+      hint: "Display format".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        default: Some("list".to_string()),
+        ..Default::default()
+      },
+      validation_rules: vec![],
+      aliases: vec![ "f".to_string() ],
+      tags: vec![ "formatting".to_string() ],
+    },
   ])
   .end();
 
@@ -380,47 +386,50 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   ])
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "source" )
-    .description( "Source directory to sync from".to_string() )
-    .kind( Kind::Directory )
-    .hint( "Source directory path" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "s".to_string(), "src".to_string() ] )
-    .tags( vec![ "required".to_string(), "input".to_string() ] )
-    .end(),
-    ArgumentDefinition::former()
-    .name( "target" )
-    .description( "Target directory to sync to".to_string() )
-    .kind( Kind::Directory )
-    .hint( "Target directory path" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "t".to_string(), "dest".to_string() ] )
-    .tags( vec![ "required".to_string(), "output".to_string() ] )
-    .end(),
-    ArgumentDefinition::former()
-    .name( "dry_run" )
-    .description( "Show what would be done without making changes".to_string() )
-    .kind( Kind::Boolean )
-    .hint( "Simulation mode" )
-    .default_value( "false".to_string() )
-    .attributes( ArgumentAttributes::former().optional( true ).is_default_arg( true ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "dry".to_string(), "simulate".to_string() ] )
-    .tags( vec![ "safety".to_string() ] )
-    .end(),
-    ArgumentDefinition::former()
-    .name( "exclude" )
-    .description( "Patterns to exclude from sync".to_string() )
-    .kind( Kind::List( Box::new( Kind::String ), Some( '|' ) ) )
-    .hint( "Pipe-separated exclusion patterns" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "x".to_string(), "ignore".to_string() ] )
-    .tags( vec![ "filtering".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "source".to_string(),
+      description: "Source directory to sync from".to_string(),
+      kind: Kind::Directory,
+      hint: "Source directory path".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "s".to_string(), "src".to_string() ],
+      tags: vec![ "required".to_string(), "input".to_string() ],
+    },
+    ArgumentDefinition {
+      name: "target".to_string(),
+      description: "Target directory to sync to".to_string(),
+      kind: Kind::Directory,
+      hint: "Target directory path".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "t".to_string(), "dest".to_string() ],
+      tags: vec![ "required".to_string(), "output".to_string() ],
+    },
+    ArgumentDefinition {
+      name: "dry_run".to_string(),
+      description: "Show what would be done without making changes".to_string(),
+      kind: Kind::Boolean,
+      hint: "Simulation mode".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        default: Some("false".to_string()),
+        ..Default::default()
+      },
+      validation_rules: vec![],
+      aliases: vec![ "dry".to_string(), "simulate".to_string() ],
+      tags: vec![ "safety".to_string() ],
+    },
+    ArgumentDefinition {
+      name: "exclude".to_string(),
+      description: "Patterns to exclude from sync".to_string(),
+      kind: Kind::List( Box::new( Kind::String ), Some( '|' ) ),
+      hint: "Pipe-separated exclusion patterns".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "x".to_string(), "ignore".to_string() ],
+      tags: vec![ "filtering".to_string() ],
+    },
   ])
   .end();
 
@@ -498,27 +507,30 @@ fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   ])
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "text" )
-    .description( "Text to analyze".to_string() )
-    .kind( Kind::String )
-    .hint( "Input text string" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![ "min_length:1".to_string() ] )
-    .aliases( vec![ "input".to_string(), "content".to_string() ] )
-    .tags( vec![ "required".to_string(), "input".to_string() ] )
-    .end(),
-    ArgumentDefinition::former()
-    .name( "metrics" )
-    .description( "Metrics to calculate".to_string() )
-    .kind( Kind::List( Box::new( Kind::String ), Some( ',' ) ) )
-    .hint( "Comma-separated metric names" )
-    .default_value( "words,chars".to_string() )
-    .attributes( ArgumentAttributes::former().optional( true ).is_default_arg( true ).end() )
-    .validation_rules( vec![ "min_length:1".to_string() ] )
-    .aliases( vec![ "m".to_string(), "stats".to_string() ] )
-    .tags( vec![ "configuration".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "text".to_string(),
+      description: "Text to analyze".to_string(),
+      kind: Kind::String,
+      hint: "Input text string".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![ ValidationRule::MinLength(1) ],
+      aliases: vec![ "input".to_string(), "content".to_string() ],
+      tags: vec![ "required".to_string(), "input".to_string() ],
+    },
+    ArgumentDefinition {
+      name: "metrics".to_string(),
+      description: "Metrics to calculate".to_string(),
+      kind: Kind::List( Box::new( Kind::String ), Some( ',' ) ),
+      hint: "Comma-separated metric names".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        default: Some("words,chars".to_string()),
+        ..Default::default()
+      },
+      validation_rules: vec![ ValidationRule::MinItems(1) ],
+      aliases: vec![ "m".to_string(), "stats".to_string() ],
+      tags: vec![ "configuration".to_string() ],
+    },
   ])
   .end();
 
@@ -632,38 +644,44 @@ fn setup_network_commands( registry : &mut CommandRegistry ) -> Result< (), unil
   ])
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "host" )
-    .description( "Host to ping (hostname or IP address)".to_string() )
-    .kind( Kind::String )
-    .hint( "Target host" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![ "min_length:1".to_string() ] )
-    .aliases( vec![ "target".to_string(), "address".to_string() ] )
-    .tags( vec![ "required".to_string(), "network".to_string() ] )
-    .end(),
-    ArgumentDefinition::former()
-    .name( "count" )
-    .description( "Number of ping packets to send".to_string() )
-    .kind( Kind::Integer )
-    .hint( "Packet count" )
-    .default_value( "4".to_string() )
-    .attributes( ArgumentAttributes::former().optional( true ).is_default_arg( true ).end() )
-    .validation_rules( vec![ "min:1".to_string(), "max:100".to_string() ] )
-    .aliases( vec![ "c".to_string(), "packets".to_string() ] )
-    .tags( vec![ "configuration".to_string() ] )
-    .end(),
-    ArgumentDefinition::former()
-    .name( "timeout" )
-    .description( "Timeout in milliseconds".to_string() )
-    .kind( Kind::Integer )
-    .hint( "Timeout (ms)" )
-    .default_value( "5000".to_string() )
-    .attributes( ArgumentAttributes::former().optional( true ).is_default_arg( true ).end() )
-    .validation_rules( vec![ "min:100".to_string(), "max:60000".to_string() ] )
-    .aliases( vec![ "t".to_string(), "wait".to_string() ] )
-    .tags( vec![ "configuration".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "host".to_string(),
+      description: "Host to ping (hostname or IP address)".to_string(),
+      kind: Kind::String,
+      hint: "Target host".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![ ValidationRule::MinLength(1) ],
+      aliases: vec![ "target".to_string(), "address".to_string() ],
+      tags: vec![ "required".to_string(), "network".to_string() ],
+    },
+    ArgumentDefinition {
+      name: "count".to_string(),
+      description: "Number of ping packets to send".to_string(),
+      kind: Kind::Integer,
+      hint: "Packet count".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        default: Some("4".to_string()),
+        ..Default::default()
+      },
+      validation_rules: vec![ ValidationRule::Min(1.0), ValidationRule::Max(100.0) ],
+      aliases: vec![ "c".to_string(), "packets".to_string() ],
+      tags: vec![ "configuration".to_string() ],
+    },
+    ArgumentDefinition {
+      name: "timeout".to_string(),
+      description: "Timeout in milliseconds".to_string(),
+      kind: Kind::Integer,
+      hint: "Timeout (ms)".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        default: Some("5000".to_string()),
+        ..Default::default()
+      },
+      validation_rules: vec![ ValidationRule::Min(100.0), ValidationRule::Max(60000.0) ],
+      aliases: vec![ "t".to_string(), "wait".to_string() ],
+      tags: vec![ "configuration".to_string() ],
+    },
   ])
   .end();
 
@@ -721,16 +739,16 @@ fn setup_utility_commands( registry : &mut CommandRegistry ) -> Result< (), unil
   .examples( vec![ "util.echo 'Hello, World!'".to_string() ] )
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "message" )
-    .description( "Message to print".to_string() )
-    .kind( Kind::String )
-    .hint( "Text message" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "text".to_string(), "msg".to_string() ] )
-    .tags( vec![ "required".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "message".to_string(),
+      description: "Message to print".to_string(),
+      kind: Kind::String,
+      hint: "Text message".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "text".to_string(), "msg".to_string() ],
+      tags: vec![ "required".to_string() ],
+    },
   ])
   .end();
 
@@ -770,17 +788,20 @@ fn setup_utility_commands( registry : &mut CommandRegistry ) -> Result< (), unil
   ])
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "format" )
-    .description( "Timestamp format".to_string() )
-    .kind( Kind::Enum( vec![ "iso".to_string(), "unix".to_string(), "human".to_string() ] ) )
-    .hint( "Output format" )
-    .default_value( "human".to_string() )
-    .attributes( ArgumentAttributes::former().optional( true ).is_default_arg( true ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "f".to_string(), "fmt".to_string() ] )
-    .tags( vec![ "formatting".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "format".to_string(),
+      description: "Timestamp format".to_string(),
+      kind: Kind::Enum( vec![ "iso".to_string(), "unix".to_string(), "human".to_string() ] ),
+      hint: "Output format".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        default: Some("human".to_string()),
+        ..Default::default()
+      },
+      validation_rules: vec![],
+      aliases: vec![ "f".to_string(), "fmt".to_string() ],
+      tags: vec![ "formatting".to_string() ],
+    },
   ])
   .end();
 

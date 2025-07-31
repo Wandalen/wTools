@@ -4,7 +4,7 @@
 //! and execute them using the basic CLI functionality.
 
 
-use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData };
+use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData, ValidationRule };
 use unilang::registry::CommandRegistry;
 use unilang::types::Value;
 
@@ -33,26 +33,22 @@ fn main() -> Result< (), unilang::error::Error >
   .examples( vec![ "greet name::\"Alice\"".to_string(), "greet".to_string() ] )
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "name" )
-    .description( "Name of the person to greet".to_string() )
-    .kind( Kind::String )
-    .hint( "Person's name" )
-    .default_value( "World".to_string() )
-    .attributes
-    (
-      ArgumentAttributes::former()
-      .optional( true )
-      .multiple( false )
-      .is_default_arg( true )
-      .interactive( false )
-      .sensitive( false )
-      .end()
-    )
-    .validation_rules( vec![ "min_length:1".to_string() ] )
-    .aliases( vec![ "n".to_string() ] )
-    .tags( vec![ "required".to_string() ] )
-    .end()
+    ArgumentDefinition {
+      name: "name".to_string(),
+      description: "Name of the person to greet".to_string(),
+      kind: Kind::String,
+      hint: "Person's name".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        multiple: false,
+        default: Some("World".to_string()),
+        interactive: false,
+        sensitive: false,
+      },
+      validation_rules: vec![ ValidationRule::MinLength(1) ],
+      aliases: vec![ "n".to_string() ],
+      tags: vec![ "required".to_string() ],
+    }
   ])
   .end();
 

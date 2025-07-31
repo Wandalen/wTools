@@ -3,7 +3,7 @@
 //! This example demonstrates the built-in help generation system,
 //! showing how to create comprehensive documentation for commands.
 
-use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData };
+use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData, ValidationRule };
 use unilang::registry::CommandRegistry;
 use unilang::help::HelpGenerator;
 use unilang::types::Value;
@@ -43,159 +43,140 @@ fn main() -> Result< (), unilang::error::Error >
   ])
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "input" )
-    .description( "Input file or directory path. Can be a single file, directory, or glob pattern. Multiple inputs will be processed in order.".to_string() )
-    .kind( Kind::Path )
-    .hint( "Source data location" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "i".to_string(), "source".to_string(), "src".to_string() ] )
-    .tags( vec![ "required".to_string(), "input".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "input".to_string(),
+      description: "Input file or directory path. Can be a single file, directory, or glob pattern. Multiple inputs will be processed in order.".to_string(),
+      kind: Kind::Path,
+      hint: "Source data location".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "i".to_string(), "source".to_string(), "src".to_string() ],
+      tags: vec![ "required".to_string(), "input".to_string() ],
+    },
 
-    ArgumentDefinition::former()
-    .name( "output" )
-    .description( "Output file path where processed results will be written. If not specified, results are written to stdout.".to_string() )
-    .kind( Kind::Path )
-    .hint( "Destination file path" )
-    .default_value( "-".to_string() ) // stdout
-    .attributes
-    (
-      ArgumentAttributes::former()
-      .optional( true )
-      .is_default_arg( true )
-      .end()
-    )
-    .validation_rules( vec![] )
-    .aliases( vec![ "o".to_string(), "dest".to_string(), "destination".to_string() ] )
-    .tags( vec![ "output".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "output".to_string(),
+      description: "Output file path where processed results will be written. If not specified, results are written to stdout.".to_string(),
+      kind: Kind::Path,
+      hint: "Destination file path".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        default: Some("-".to_string()), // stdout
+        ..Default::default()
+      },
+      validation_rules: vec![],
+      aliases: vec![ "o".to_string(), "dest".to_string(), "destination".to_string() ],
+      tags: vec![ "output".to_string() ],
+    },
 
-    ArgumentDefinition::former()
-    .name( "format" )
-    .description( "Output format for the processed data. Controls how the data is serialized and structured in the output.".to_string() )
-    .kind( Kind::Enum( vec!
-    [
-      "json".to_string(),
-      "csv".to_string(),
-      "xml".to_string(),
-      "yaml".to_string(),
-      "text".to_string()
-    ]) )
-    .hint( "Data serialization format" )
-    .default_value( "json".to_string() )
-    .attributes
-    (
-      ArgumentAttributes::former()
-      .optional( true )
-      .is_default_arg( true )
-      .end()
-    )
-    .validation_rules( vec![] )
-    .aliases( vec![ "f".to_string(), "fmt".to_string() ] )
-    .tags( vec![ "formatting".to_string(), "serialization".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "format".to_string(),
+      description: "Output format for the processed data. Controls how the data is serialized and structured in the output.".to_string(),
+      kind: Kind::Enum( vec![
+        "json".to_string(),
+        "csv".to_string(),
+        "xml".to_string(),
+        "yaml".to_string(),
+        "text".to_string()
+      ]),
+      hint: "Data serialization format".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        default: Some("json".to_string()),
+        ..Default::default()
+      },
+      validation_rules: vec![],
+      aliases: vec![ "f".to_string(), "fmt".to_string() ],
+      tags: vec![ "formatting".to_string(), "serialization".to_string() ],
+    },
 
-    ArgumentDefinition::former()
-    .name( "filter" )
-    .description( "Filter expression to apply to the data. Supports field comparisons, size limits, and pattern matching. Use quotes for complex expressions.".to_string() )
-    .kind( Kind::Pattern )
-    .hint( "Filter criteria (e.g., 'size>1000', 'name=*.log')" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec![ "min_length:3".to_string() ] )
-    .aliases( vec![ "where".to_string(), "condition".to_string() ] )
-    .tags( vec![ "filtering".to_string(), "query".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "filter".to_string(),
+      description: "Filter expression to apply to the data. Supports field comparisons, size limits, and pattern matching. Use quotes for complex expressions.".to_string(),
+      kind: Kind::Pattern,
+      hint: "Filter criteria (e.g., 'size>1000', 'name=*.log')".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![ ValidationRule::MinLength(3) ],
+      aliases: vec![ "where".to_string(), "condition".to_string() ],
+      tags: vec![ "filtering".to_string(), "query".to_string() ],
+    },
 
-    ArgumentDefinition::former()
-    .name( "validate" )
-    .description( "Enable data validation during processing. When enabled, validates input data structure and content before processing.".to_string() )
-    .kind( Kind::Boolean )
-    .hint( "Enable validation checks" )
-    .default_value( "false".to_string() )
-    .attributes
-    (
-      ArgumentAttributes::former()
-      .optional( true )
-      .is_default_arg( true )
-      .end()
-    )
-    .validation_rules( vec![] )
-    .aliases( vec![ "v".to_string(), "check".to_string() ] )
-    .tags( vec![ "validation".to_string(), "quality".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "validate".to_string(),
+      description: "Enable data validation during processing. When enabled, validates input data structure and content before processing.".to_string(),
+      kind: Kind::Boolean,
+      hint: "Enable validation checks".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        default: Some("false".to_string()),
+        ..Default::default()
+      },
+      validation_rules: vec![],
+      aliases: vec![ "v".to_string(), "check".to_string() ],
+      tags: vec![ "validation".to_string(), "quality".to_string() ],
+    },
 
-    ArgumentDefinition::former()
-    .name( "batch_size" )
-    .description( "Number of records to process in each batch. Larger batches use more memory but may be faster. Set to 0 for unlimited batch size.".to_string() )
-    .kind( Kind::Integer )
-    .hint( "Records per batch (0=unlimited)" )
-    .default_value( "1000".to_string() )
-    .attributes
-    (
-      ArgumentAttributes::former()
-      .optional( true )
-      .is_default_arg( true )
-      .end()
-    )
-    .validation_rules( vec![ "min:0".to_string(), "max:100000".to_string() ] )
-    .aliases( vec![ "batch".to_string(), "chunk".to_string() ] )
-    .tags( vec![ "performance".to_string(), "memory".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "batch_size".to_string(),
+      description: "Number of records to process in each batch. Larger batches use more memory but may be faster. Set to 0 for unlimited batch size.".to_string(),
+      kind: Kind::Integer,
+      hint: "Records per batch (0=unlimited)".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        default: Some("1000".to_string()),
+        ..Default::default()
+      },
+      validation_rules: vec![ ValidationRule::Min(0.0), ValidationRule::Max(100000.0) ],
+      aliases: vec![ "batch".to_string(), "chunk".to_string() ],
+      tags: vec![ "performance".to_string(), "memory".to_string() ],
+    },
 
-    ArgumentDefinition::former()
-    .name( "config" )
-    .description( "Configuration key-value pairs for advanced processing options. Format: key=value,key2=value2".to_string() )
-    .kind( Kind::Map
-    (
-      Box::new( Kind::String ),
-      Box::new( Kind::String ),
-      Some( ',' ),
-      Some( '=' )
-    ))
-    .hint( "Advanced configuration options" )
-    .attributes( ArgumentAttributes::former().optional( true ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![ "cfg".to_string(), "options".to_string() ] )
-    .tags( vec![ "configuration".to_string(), "advanced".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "config".to_string(),
+      description: "Configuration key-value pairs for advanced processing options. Format: key=value,key2=value2".to_string(),
+      kind: Kind::Map(
+        Box::new( Kind::String ),
+        Box::new( Kind::String ),
+        Some( ',' ),
+        Some( '=' )
+      ),
+      hint: "Advanced configuration options".to_string(),
+      attributes: ArgumentAttributes { optional: true, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![ "cfg".to_string(), "options".to_string() ],
+      tags: vec![ "configuration".to_string(), "advanced".to_string() ],
+    },
 
-    ArgumentDefinition::former()
-    .name( "threads" )
-    .description( "Number of processing threads to use. Higher values may improve performance on multi-core systems but use more resources.".to_string() )
-    .kind( Kind::Integer )
-    .hint( "Thread count for parallel processing" )
-    .default_value( "1".to_string() )
-    .attributes
-    (
-      ArgumentAttributes::former()
-      .optional( true )
-      .is_default_arg( true )
-      .end()
-    )
-    .validation_rules( vec![ "min:1".to_string(), "max:16".to_string() ] )
-    .aliases( vec![ "t".to_string(), "parallel".to_string(), "workers".to_string() ] )
-    .tags( vec![ "performance".to_string(), "concurrency".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "threads".to_string(),
+      description: "Number of processing threads to use. Higher values may improve performance on multi-core systems but use more resources.".to_string(),
+      kind: Kind::Integer,
+      hint: "Thread count for parallel processing".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        default: Some("1".to_string()),
+        ..Default::default()
+      },
+      validation_rules: vec![ ValidationRule::Min(1.0), ValidationRule::Max(16.0) ],
+      aliases: vec![ "t".to_string(), "parallel".to_string(), "workers".to_string() ],
+      tags: vec![ "performance".to_string(), "concurrency".to_string() ],
+    },
 
-    ArgumentDefinition::former()
-    .name( "api_key" )
-    .description( "API key for external service integration. Keep this secure and do not log or display.".to_string() )
-    .kind( Kind::String )
-    .hint( "Secret API authentication key" )
-    .attributes
-    (
-      ArgumentAttributes::former()
-      .optional( true )
-      .sensitive( true ) // Mark as sensitive
-      .interactive( true ) // May prompt user
-      .end()
-    )
-    .validation_rules( vec![ "min_length:16".to_string() ] )
-    .aliases( vec![ "key".to_string(), "auth".to_string() ] )
-    .tags( vec![ "authentication".to_string(), "security".to_string() ] )
-    .end(),
+    ArgumentDefinition {
+      name: "api_key".to_string(),
+      description: "API key for external service integration. Keep this secure and do not log or display.".to_string(),
+      kind: Kind::String,
+      hint: "Secret API authentication key".to_string(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        sensitive: true, // Mark as sensitive
+        interactive: true, // May prompt user
+        ..Default::default()
+      },
+      validation_rules: vec![ ValidationRule::MinLength(16) ],
+      aliases: vec![ "key".to_string(), "auth".to_string() ],
+      tags: vec![ "authentication".to_string(), "security".to_string() ],
+    },
   ])
   .end();
 

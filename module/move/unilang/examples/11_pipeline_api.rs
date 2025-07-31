@@ -4,7 +4,7 @@
 //! common Unilang workflows by combining parsing, semantic analysis, and
 //! execution into convenient helper functions.
 
-use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData };
+use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData, ValidationRule };
 use unilang::interpreter::ExecutionContext;
 use unilang::pipeline::{ Pipeline, process_single_command, validate_single_command };
 use unilang::registry::CommandRegistry;
@@ -294,26 +294,26 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   .examples( vec![ "calc.add a::10 b::20".to_string() ] )
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "a" )
-    .description( "First number".to_string() )
-    .kind( Kind::Integer )
-    .hint( "First addend" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![] )
-    .tags( vec![] )
-    .end(),
-    ArgumentDefinition::former()
-    .name( "b" )
-    .description( "Second number".to_string() )
-    .kind( Kind::Integer )
-    .hint( "Second addend" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![] )
-    .tags( vec![] )
-    .end(),
+    ArgumentDefinition {
+      name: "a".to_string(),
+      description: "First number".to_string(),
+      kind: Kind::Integer,
+      hint: "First addend".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![],
+      tags: vec![],
+    },
+    ArgumentDefinition {
+      name: "b".to_string(),
+      description: "Second number".to_string(),
+      kind: Kind::Integer,
+      hint: "Second addend".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![],
+      tags: vec![],
+    },
   ])
   .end();
 
@@ -350,26 +350,26 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   .examples( vec![ "calc.multiply 5 6".to_string() ] )
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "a" )
-    .description( "First number".to_string() )
-    .kind( Kind::Integer )
-    .hint( "Multiplicand" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![] )
-    .tags( vec![] )
-    .end(),
-    ArgumentDefinition::former()
-    .name( "b" )
-    .description( "Second number".to_string() )
-    .kind( Kind::Integer )
-    .hint( "Multiplier" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![] )
-    .tags( vec![] )
-    .end(),
+    ArgumentDefinition {
+      name: "a".to_string(),
+      description: "First number".to_string(),
+      kind: Kind::Integer,
+      hint: "Multiplicand".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![],
+      tags: vec![],
+    },
+    ArgumentDefinition {
+      name: "b".to_string(),
+      description: "Second number".to_string(),
+      kind: Kind::Integer,
+      hint: "Multiplier".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![],
+      tags: vec![],
+    },
   ])
   .end();
 
@@ -406,26 +406,26 @@ fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   .examples( vec![ "calc.divide 20 4".to_string() ] )
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "dividend" )
-    .description( "Number to be divided".to_string() )
-    .kind( Kind::Integer )
-    .hint( "Dividend" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![] )
-    .tags( vec![] )
-    .end(),
-    ArgumentDefinition::former()
-    .name( "divisor" )
-    .description( "Number to divide by".to_string() )
-    .kind( Kind::Integer )
-    .hint( "Divisor" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![] )
-    .aliases( vec![] )
-    .tags( vec![] )
-    .end(),
+    ArgumentDefinition {
+      name: "dividend".to_string(),
+      description: "Number to be divided".to_string(),
+      kind: Kind::Integer,
+      hint: "Dividend".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![],
+      tags: vec![],
+    },
+    ArgumentDefinition {
+      name: "divisor".to_string(),
+      description: "Number to divide by".to_string(),
+      kind: Kind::Integer,
+      hint: "Divisor".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![],
+      aliases: vec![],
+      tags: vec![],
+    },
   ])
   .end();
 
@@ -477,16 +477,16 @@ fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
   .examples( vec![ "text.reverse 'hello world'".to_string() ] )
   .arguments( vec!
   [
-    ArgumentDefinition::former()
-    .name( "text" )
-    .description( "Text to reverse".to_string() )
-    .kind( Kind::String )
-    .hint( "Input text" )
-    .attributes( ArgumentAttributes::former().optional( false ).end() )
-    .validation_rules( vec![ "min_length:1".to_string() ] )
-    .aliases( vec![] )
-    .tags( vec![] )
-    .end(),
+    ArgumentDefinition {
+      name: "text".to_string(),
+      description: "Text to reverse".to_string(),
+      kind: Kind::String,
+      hint: "Input text".to_string(),
+      attributes: ArgumentAttributes { optional: false, ..Default::default() },
+      validation_rules: vec![ ValidationRule::MinLength(1) ],
+      aliases: vec![],
+      tags: vec![],
+    },
   ])
   .end();
 
