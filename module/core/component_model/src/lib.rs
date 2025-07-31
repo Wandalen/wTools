@@ -4,7 +4,7 @@
   html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
 )]
 #![doc(html_root_url = "https://docs.rs/component_model/latest/component_model/")]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
 // qqq : uncomment it
 
 // xxx : introduce body( struct/enum ) attribute `standalone_constructors` which create stand-alone, top-level constructors for struct/enum. for struct it's always single function, for enum it's as many functions as enum has vartianys. if there is no `arg_for_constructor` then constructors expect exaclty zero arguments. start from implementations without respect of attribute attribute `arg_for_constructor`. by default `standalone_constructors` is false

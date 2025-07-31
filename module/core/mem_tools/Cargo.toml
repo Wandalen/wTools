@@ -7,7 +7,7 @@ authors = [
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/mem_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/mem_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/mem_tools"
@@ -27,7 +27,7 @@ all-features = false
 include = [
   "/rust/impl/mem",
   "/Cargo.toml",
-  "/Readme.md",
+  "/readme.md",
   "/License",
 ]
 

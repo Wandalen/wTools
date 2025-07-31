@@ -50,16 +50,20 @@ pub fn mutator(
   generics: &FormerDefinitionTypesGenerics<'_>,
   former_definition_types_ref: &proc_macro2::TokenStream,
 ) -> Result<TokenStream> {
+  let impl_generics = generics.impl_generics;
+  let ty_generics = generics.ty_generics;
+  let where_clause = generics.where_clause;
+  
   let former_mutator_code = if mutator.custom.value(false) {
     // If custom mutator is requested via #[ mutator( custom ) ], generate nothing, assuming user provides the impl.
     quote! {}
   } else {
     // Otherwise, generate a default empty impl.
     quote! {
-      impl< #generics.impl_generics > former::FormerMutator
+      impl< #impl_generics > former::FormerMutator
       for #former_definition_types_ref
       where
-        #generics.where_clause
+        #where_clause
       {
       }
     }
@@ -92,9 +96,9 @@ pub fn mutator(
    }}
  }}
        ",
-        format!("{}", quote! { #generics.impl_generics }),
-        format!("{}", quote! { #generics.ty_generics }),
-        format!("{}", quote! { #generics.where_clause }),
+        format!("{}", quote! { #impl_generics }),
+        format!("{}", quote! { #ty_generics }),
+        format!("{}", quote! { #where_clause }),
       );
       let about = format!(
         r"derive : Former

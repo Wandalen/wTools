@@ -226,7 +226,7 @@ mod private
     }
   }
 
-  /// Generate header in modules Readme.md.
+  /// Generate header in modules readme.md.
   /// The location of header is defined by a tag :
   /// ``` md
   /// <!--{ generate.module_header.start() }-->

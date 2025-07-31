@@ -767,19 +767,7 @@ specific needs of the broader forming context. It mandates the implementation of
     }
 
     // Add FormerMutator implementation here
-    impl #former_definition_types_impl_generics former::FormerMutator
-    for #former_definition_types_ref
-    #former_definition_types_where_clause
-    {
-      #[ inline( always ) ]
-      fn form_mutation
-      (
-        _storage : &mut Self::Storage,
-        _context : &mut Option< Self::Context >,
-      )
-      {
-      }
-    }
+    #_former_mutator_code
 
     // = definition: Define the FormerDefinition struct.
     /// Holds the definition types used during the formation process.
@@ -1054,5 +1042,12 @@ specific needs of the broader forming context. It mandates the implementation of
     #( #namespace_code )*
 
   };
+  
+  // Add debug output if #[debug] attribute is present
+  if _has_debug {
+    let about = format!("derive : Former\nstruct : {item}");
+    diag::report_print(about, original_input, &result);
+  }
+  
   Ok(result)
 }

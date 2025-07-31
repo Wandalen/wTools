@@ -5,7 +5,7 @@ mod private
   // use action;
   use error::untyped::{ Error };
 
-  /// Generates header to main Readme.md file.
+  /// Generates header to main readme.md file.
   ///
   /// # Errors
   /// qqq: doc

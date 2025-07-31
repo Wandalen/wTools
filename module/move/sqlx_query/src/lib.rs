@@ -17,13 +17,13 @@
 //! depending on `sqlx_compiletime_checks` has been enabled during the build.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/../../../", "Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/../../../", "readme.md" ) ) ]
 
 /// Define a private namespace for all its items.
 #[cfg(feature = "enabled")]
 mod private {
 
-  #[ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/../../../", "Readme.md" ) ) ]
+  #[ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/../../../", "readme.md" ) ) ]
   #[macro_export]
   macro_rules! query
   {

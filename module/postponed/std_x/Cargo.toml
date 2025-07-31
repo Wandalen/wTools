@@ -7,7 +7,7 @@ authors = [
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/std_x"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/alias/std_x"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/alias/std_x"
@@ -27,7 +27,7 @@ all-features = false
 include = [
   "/rust/impl/std_x_lib.rs",
   "/Cargo.toml",
-  "/Readme.md",
+  "/readme.md",
   "/License",
 ]
 # rustdoc-args = []

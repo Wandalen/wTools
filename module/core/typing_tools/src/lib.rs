@@ -12,7 +12,7 @@
 //! Collection of general purpose tools for type checking.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
 
 /// Collection of general purpose tools for type checking.
 #[cfg(feature = "enabled")]

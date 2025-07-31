@@ -6,10 +6,10 @@ authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/unilang"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/move/unilang"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/unilang/Readme.md"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/unilang/readme.md"
 description = """
 Define your command-line utility interface once and get consistent interaction across multiple modalities — CLI, GUI, TUI, AUI, Web APIs, and more—essentially for free.
 """

@@ -7,7 +7,7 @@ authors = [
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/time_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/time_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/time_tools"
@@ -28,7 +28,7 @@ all-features = false
 # include = [
 #   "/rust/impl/time",
 #   "/Cargo.toml",
-#   "/Readme.md",
+#   "/readme.md",
 #   "/License",
 # ]
 

@@ -7,7 +7,7 @@ authors = [
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/cargo-will"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/alias/cargo-will"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/alias/cargo-will"

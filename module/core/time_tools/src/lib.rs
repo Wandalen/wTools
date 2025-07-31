@@ -12,7 +12,7 @@
 //! Collection of time tools.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
 
 /// Operates over current time.
 #[cfg(feature = "time_now")]

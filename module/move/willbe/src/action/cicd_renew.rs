@@ -306,8 +306,8 @@ mod private
 
     file_write
     (
-      &workflow_root.join( "Readme.md" ),
-      include_str!( "../../template/workflow/Readme.md" )
+      &workflow_root.join( "readme.md" ),
+      include_str!( "../../template/workflow/readme.md" )
     )?;
 
     Ok( () )
