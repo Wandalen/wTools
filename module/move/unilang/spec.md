@@ -196,7 +196,10 @@ The parser **must** adhere to the following rules in order:
 *   **Rule 1: Command Path Identification**: The command path is the longest possible sequence of dot-separated identifiers at the beginning of an expression.
 *   **Rule 2: Transition to Arguments**: The command path ends upon encountering the first token that is not a valid, dot-separated identifier segment (e.g., `::`, a quoted string, `?`).
 *   **Rule 3: Dot (`.`) Operator Rules**: A single leading dot is permitted and ignored. A trailing dot is a syntax error. **Special Case**: A standalone dot (`.`) **must** be interpreted as a help command that displays all available commands with concise descriptions.
-*   **Rule 4: Help Operator (`?`)**: The `?` operator marks the instruction for help generation and **must** be the final token.
+*   **Rule 4: Help Operator (`?`)**: The `?` operator marks the instruction for help generation and **must** be the final token. When a command is followed by `?`, the framework **must** display help for that command without attempting to validate or execute it. This means:
+    - Missing required arguments **must not** generate errors when `?` is present
+    - The help system **must** take precedence over argument validation
+    - The framework **must** return a special error code `HELP_REQUESTED` that modalities can handle appropriately
 *   **Rule 5: Argument Types**: Any token after the command path that is not a named argument is a positional argument. A named argument **must** use the `name::value` syntax.
 
 ### 5. Core Data Structures & Usage Examples
@@ -491,6 +494,21 @@ Successful routines **must** return an `OutputData` object containing the `conte
 
 *   **Permissions:** The `permissions` field on a `CommandDefinition` declares the rights needed for execution. The `utility1` `Interpreter` is responsible for checking these permissions before invoking a `Routine`.
 *   **Sensitive Data:** Arguments marked `sensitive: true` **must** be protected. Their values **must not** be displayed in logs or user interfaces unless explicitly required by a secure context.
+
+#### 9.4. Verbosity Control
+
+The unilang framework **must** provide control over debug output and verbosity levels to allow integrators to manage the amount of diagnostic information displayed.
+
+*   **Debug Output Control**: The parser and other framework components **must not** emit debug output unless explicitly enabled through a verbosity control mechanism.
+*   **Verbosity Levels**: The framework **must** support at least three verbosity levels:
+    - `quiet` or `0`: No debug output, only errors and essential information
+    - `normal` or `1`: Standard output without debug information (default)
+    - `debug` or `2`: Full debug output including parser traces
+*   **Configuration**: Integrators **must** be able to set the verbosity level through:
+    - Parser options during initialization
+    - Environment variables (e.g., `UNILANG_VERBOSITY`)
+    - Runtime configuration
+*   **Thread Safety**: Verbosity control **must** be thread-safe and respect per-instance settings in multi-threaded environments.
 
 ---
 ## Part II: Internal Design (Design Recommendations)

@@ -14,9 +14,7 @@ crate::mod_interface!
   // own use ::collection_tools::own::*;
 
   /// Errors handling.
-  // layer error;
-  // orphan use super::error;
-  // use crate::error;
+  use crate::error;
 
   /// Operate over files.
   layer files;

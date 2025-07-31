@@ -360,7 +360,16 @@ fn run() -> Result< (), unilang::error::Error >
     return Ok( () );
   }
 
-  let parser = Parser::new( UnilangParserOptions::default() );
+  // Check for verbosity environment variable
+  let verbosity = std::env::var("UNILANG_VERBOSITY")
+    .ok()
+    .and_then(|v| v.parse::<u8>().ok())
+    .unwrap_or(1); // Default to normal verbosity
+  
+  let mut parser_options = UnilangParserOptions::default();
+  parser_options.verbosity = verbosity;
+  
+  let parser = Parser::new( parser_options );
 
   // Build alias map for CLI resolution
   let mut alias_map : HashMap< String, String > = HashMap::new();

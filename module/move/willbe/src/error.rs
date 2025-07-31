@@ -21,6 +21,10 @@ pub mod orphan {
 pub mod exposed {
   pub use ::error_tools::*;
   pub use ::error_tools::prelude::*;
+  #[cfg(feature = "error_typed")]
+  pub use ::error_tools::typed;
+  #[cfg(feature = "error_untyped")]
+  pub use ::error_tools::untyped;
 }
 
 /// Prelude of the module.
@@ -30,3 +34,7 @@ pub mod prelude {
 
 // Direct re-exports for common usage
 pub use ::error_tools::*;
+#[cfg(feature = "error_typed")]
+pub use ::error_tools::typed;
+#[cfg(feature = "error_untyped")]
+pub use ::error_tools::untyped;

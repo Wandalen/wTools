@@ -3,6 +3,9 @@ mod private {}
 
 crate::mod_interface!
 {
+  /// Errors handling.
+  use crate::error;
+  
   /// Generate documentation for a crate.
   layer crate_doc; // Added new layer
   /// Deploy new.
