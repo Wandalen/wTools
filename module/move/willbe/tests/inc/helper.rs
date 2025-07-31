@@ -65,7 +65,7 @@ impl ProjectBuilder {
       write!(file, "{content}")?; // fix clippy
     }
 
-    Ok(project_path.to_path_buf())
+    std::io::Result::Ok(project_path.to_path_buf())
   }
 }
 

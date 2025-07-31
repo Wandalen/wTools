@@ -4,7 +4,7 @@ use assert_fs::prelude::*;
 use assert_fs::TempDir;
 use the_module::{
   Workspace,
-  dependency::{self, DependenciesOptions, DependenciesSort},
+  entity::dependency::{self, DependenciesOptions, DependenciesSort},
   CrateDir,
   package::Package,
   path::AbsolutePath,
