@@ -35,16 +35,15 @@ fn semantic_analyzer_tests()
         name : "arg1".to_string(),
         description : "A string argument".to_string(),
         kind : Kind::String,
-        attributes : ArgumentAttributes::former()
-        .optional( false )
-        .multiple( false )
-        .is_default_arg( false )
-        .interactive( false )
-        .sensitive( false )
-        .form(),
+        attributes : ArgumentAttributes {
+          optional: false,
+          multiple: false,
+          interactive: false,
+          sensitive: false,
+          ..Default::default()
+        },
         validation_rules : vec![],
         hint : "".to_string(),
-        default_value : None,
         aliases : vec![],
         tags : vec![],
       },
@@ -53,16 +52,15 @@ fn semantic_analyzer_tests()
         name : "arg2".to_string(),
         description : "An integer argument".to_string(),
         kind : Kind::Integer,
-        attributes : ArgumentAttributes::former()
-        .optional( true )
-        .multiple( false )
-        .is_default_arg( false )
-        .interactive( false )
-        .sensitive( false )
-        .form(),
+        attributes : ArgumentAttributes {
+          optional: true,
+          multiple: false,
+          interactive: false,
+          sensitive: false,
+          ..Default::default()
+        },
         validation_rules : vec![],
         hint : "".to_string(),
-        default_value : None,
         aliases : vec![],
         tags : vec![],
       },
@@ -267,16 +265,15 @@ fn help_generator_tests()
         name : "arg1".to_string(),
         description : "A string argument".to_string(),
         kind : Kind::String,
-        attributes : ArgumentAttributes::former()
-        .optional( false )
-        .multiple( false )
-        .is_default_arg( false )
-        .interactive( false )
-        .sensitive( false )
-        .form(),
+        attributes : ArgumentAttributes {
+          optional: false,
+          multiple: false,
+          interactive: false,
+          sensitive: false,
+          ..Default::default()
+        },
         validation_rules : vec![],
         hint : "".to_string(),
-        default_value : None,
         aliases : vec![],
         tags : vec![],
       }

@@ -107,7 +107,8 @@ mod private
   ///
   /// The `Kind` enum defines all supported data types and their validation rules,
   /// enabling robust type checking and conversion throughout the system.
-  #[ derive( Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize ) ]
+  #[ derive( Debug, Clone, PartialEq, Eq, serde::Serialize ) ]
+  #[ serde( untagged ) ]
   pub enum Kind
   {
     /// A simple text string.
@@ -145,7 +146,7 @@ mod private
   }
 
   /// Validation rule for argument values.
-  #[ derive( Debug, Clone, serde::Serialize, serde::Deserialize ) ]
+  #[ derive( Debug, Clone, PartialEq, serde::Serialize ) ]
   pub enum ValidationRule
   {
     /// Minimum value for numeric types.
@@ -362,6 +363,77 @@ mod private
     fn try_from( s : String ) -> Result< Self, Self::Error >
     {
       s.parse()
+    }
+  }
+
+  impl< 'de > serde::Deserialize< 'de > for Kind
+  {
+    fn deserialize< D >( deserializer : D ) -> Result< Self, D::Error >
+    where
+      D : serde::Deserializer< 'de >,
+    {
+      let s = String::deserialize( deserializer )?;
+      s.parse().map_err( serde::de::Error::custom )
+    }
+  }
+
+  impl core::str::FromStr for ValidationRule
+  {
+    type Err = Error;
+
+    fn from_str( s : &str ) -> Result< Self, Self::Err >
+    {
+      let s = s.trim();
+      if s.starts_with( "min:" )
+      {
+        let value_str = &s[ 4.. ];
+        let value : f64 = value_str.parse().map_err( | e | Error::Registration( format!( "Invalid min value: {}", e ) ) )?;
+        Ok( ValidationRule::Min( value ) )
+      }
+      else if s.starts_with( "max:" )
+      {
+        let value_str = &s[ 4.. ];
+        let value : f64 = value_str.parse().map_err( | e | Error::Registration( format!( "Invalid max value: {}", e ) ) )?;
+        Ok( ValidationRule::Max( value ) )
+      }
+      else if s.starts_with( "minlength:" )
+      {
+        let value_str = &s[ 10.. ];
+        let value : usize = value_str.parse().map_err( | e | Error::Registration( format!( "Invalid minlength value: {}", e ) ) )?;
+        Ok( ValidationRule::MinLength( value ) )
+      }
+      else if s.starts_with( "maxlength:" )
+      {
+        let value_str = &s[ 10.. ];
+        let value : usize = value_str.parse().map_err( | e | Error::Registration( format!( "Invalid maxlength value: {}", e ) ) )?;
+        Ok( ValidationRule::MaxLength( value ) )
+      }
+      else if s.starts_with( "pattern:" )
+      {
+        let pattern = &s[ 8.. ];
+        Ok( ValidationRule::Pattern( pattern.to_string() ) )
+      }
+      else if s.starts_with( "minitems:" )
+      {
+        let value_str = &s[ 9.. ];
+        let value : usize = value_str.parse().map_err( | e | Error::Registration( format!( "Invalid minitems value: {}", e ) ) )?;
+        Ok( ValidationRule::MinItems( value ) )
+      }
+      else
+      {
+        Err( Error::Registration( format!( "Unknown validation rule: {}", s ) ) )
+      }
+    }
+  }
+
+  impl< 'de > serde::Deserialize< 'de > for ValidationRule
+  {
+    fn deserialize< D >( deserializer : D ) -> Result< Self, D::Error >
+    where
+      D : serde::Deserializer< 'de >,
+    {
+      let s = String::deserialize( deserializer )?;
+      s.parse().map_err( serde::de::Error::custom )
     }
   }
 }

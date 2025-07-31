@@ -50,16 +50,15 @@ fn test_path_argument_type() {
       name: "path_arg".to_string(),
       description: "A path argument".to_string(),
       kind: Kind::Path,
-      attributes: ArgumentAttributes::former()
-        .optional(false)
-        .multiple(false)
-        .is_default_arg(false)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "".to_string(),
-      default_value: None,
       aliases: vec![],
       tags: vec![],
     }],
@@ -122,16 +121,15 @@ fn test_file_argument_type() {
       name: "file_arg".to_string(),
       description: "A file argument".to_string(),
       kind: Kind::File,
-      attributes: ArgumentAttributes::former()
-        .optional(false)
-        .multiple(false)
-        .is_default_arg(false)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "".to_string(),
-      default_value: None,
       aliases: vec![],
       tags: vec![],
     }],
@@ -203,16 +201,15 @@ fn test_directory_argument_type() {
       name: "dir_arg".to_string(),
       description: "A directory argument".to_string(),
       kind: Kind::Directory,
-      attributes: ArgumentAttributes::former()
-        .optional(false)
-        .multiple(false)
-        .is_default_arg(false)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "".to_string(),
-      default_value: None,
       aliases: vec![],
       tags: vec![],
     }],
@@ -281,16 +278,15 @@ fn test_enum_argument_type() {
       name: "enum_arg".to_string(),
       description: "An enum argument".to_string(),
       kind: Kind::Enum(vec!["A".to_string(), "B".to_string(), "C".to_string()]),
-      attributes: ArgumentAttributes::former()
-        .optional(false)
-        .multiple(false)
-        .is_default_arg(false)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "".to_string(),
-      default_value: None,
       aliases: vec![],
       tags: vec![],
     }],
@@ -368,16 +364,15 @@ fn test_url_argument_type() {
       name: "url_arg".to_string(),
       description: "A URL argument".to_string(),
       kind: Kind::Url,
-      attributes: ArgumentAttributes::former()
-        .optional(false)
-        .multiple(false)
-        .is_default_arg(false)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "".to_string(),
-      default_value: None,
       aliases: vec![],
       tags: vec![],
     }],
@@ -440,16 +435,15 @@ fn test_datetime_argument_type() {
       name: "dt_arg".to_string(),
       description: "A DateTime argument".to_string(),
       kind: Kind::DateTime,
-      attributes: ArgumentAttributes::former()
-        .optional(false)
-        .multiple(false)
-        .is_default_arg(false)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "".to_string(),
-      default_value: None,
       aliases: vec![],
       tags: vec![],
     }],
@@ -512,16 +506,15 @@ fn test_pattern_argument_type() {
       name: "pattern_arg".to_string(),
       description: "A Pattern argument".to_string(),
       kind: Kind::Pattern,
-      attributes: ArgumentAttributes::former()
-        .optional(false)
-        .multiple(false)
-        .is_default_arg(false)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "".to_string(),
-      default_value: None,
       aliases: vec![],
       tags: vec![],
     }],
@@ -585,16 +578,16 @@ fn test_default_argument() {
       name: "default_arg".to_string(),
       description: "An argument with a default value".to_string(),
       kind: Kind::String,
-      attributes: ArgumentAttributes::former()
-        .optional(true)
-        .multiple(false)
-        .is_default_arg(true)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: true,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        default: Some("default_value_string".to_string()),
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "".to_string(),
-      default_value: Some("default_value_string".to_string()),
       aliases: vec![],
       tags: vec![],
     }],

@@ -153,8 +153,11 @@ fn run() -> Result< (), unilang::error::Error >
     .name( "name" )
     .kind( ArgumentKind::String )
     .hint( "Name of the person to greet." )
-    .default_value( "World".to_string() )
-    .attributes( ArgumentAttributes::former().optional( true ).is_default_arg( true ).end() )
+    .attributes( ArgumentAttributes {
+      optional: true,
+      default: Some("World".to_string()),
+      ..Default::default()
+    })
     .end()
   ])
   .end();
@@ -202,7 +205,11 @@ fn run() -> Result< (), unilang::error::Error >
     .name( "value" )
     .kind( ArgumentKind::String )
     .hint( "Configuration value." )
-    .attributes( ArgumentAttributes::former().interactive( true ).sensitive( true ).end() )
+    .attributes( ArgumentAttributes {
+      interactive: true,
+      sensitive: true,
+      ..Default::default()
+    })
     .end(),
   ])
   .end();
@@ -243,7 +250,10 @@ fn run() -> Result< (), unilang::error::Error >
     .name( "arg1" )
     .kind( ArgumentKind::String )
     .hint( "The first argument to echo." )
-    .attributes( ArgumentAttributes::former().optional( true ).form() )
+    .attributes( ArgumentAttributes {
+      optional: true,
+      ..Default::default()
+    })
     .end(),
   ])
   .routine_link( ".system.echo".to_string() )
@@ -286,11 +296,12 @@ fn run() -> Result< (), unilang::error::Error >
     .tags( vec![ "required".to_string() ] ) // Added tag for testing
     .attributes
     (
-      ArgumentAttributes::former()
-      .optional( false )
-      .interactive( false )
-      .sensitive( false )
-      .form(),
+      ArgumentAttributes {
+        optional: false,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      }
     )
     .form()
   ])

@@ -4,7 +4,7 @@
 //! files (YAML/JSON) and resolving routine links.
 use unilang::
 {
-  data::Kind,
+  data::{Kind, ValidationRule},
   registry::CommandRegistry,
 };
 // use unilang_parser::SourceLocation; // Temporarily commented out
@@ -95,12 +95,10 @@ fn test_load_from_yaml_str_all_scalar_types()
           attributes:
             optional: false
             multiple: false
-            is_default_arg: false
             interactive: false
             sensitive: false
           validation_rules: []
           hint: String hint
-          default_value: null
           aliases: []
           tags: []
         - name: arg_integer
@@ -114,7 +112,6 @@ fn test_load_from_yaml_str_all_scalar_types()
             sensitive: false
           validation_rules: []
           hint: Integer hint
-          default_value: null
           aliases: []
           tags: []
         - name: arg_float
@@ -128,7 +125,6 @@ fn test_load_from_yaml_str_all_scalar_types()
             sensitive: false
           validation_rules: []
           hint: Float hint
-          default_value: null
           aliases: []
           tags: []
         - name: arg_boolean
@@ -142,7 +138,6 @@ fn test_load_from_yaml_str_all_scalar_types()
             sensitive: false
           validation_rules: []
           hint: Boolean hint
-          default_value: null
           aliases: []
           tags: []
         - name: arg_path
@@ -156,7 +151,6 @@ fn test_load_from_yaml_str_all_scalar_types()
             sensitive: false
           validation_rules: []
           hint: Path hint
-          default_value: null
           aliases: []
           tags: []
         - name: arg_file
@@ -170,7 +164,6 @@ fn test_load_from_yaml_str_all_scalar_types()
             sensitive: false
           validation_rules: []
           hint: File hint
-          default_value: null
           aliases: []
           tags: []
         - name: arg_directory
@@ -184,7 +177,6 @@ fn test_load_from_yaml_str_all_scalar_types()
             sensitive: false
           validation_rules: []
           hint: Directory hint
-          default_value: null
           aliases: []
           tags: []
         - name: arg_enum
@@ -198,7 +190,6 @@ fn test_load_from_yaml_str_all_scalar_types()
             sensitive: false
           validation_rules: []
           hint: Enum hint
-          default_value: null
           aliases: []
           tags: []
         - name: arg_url
@@ -212,7 +203,6 @@ fn test_load_from_yaml_str_all_scalar_types()
             sensitive: false
           validation_rules: []
           hint: Url hint
-          default_value: null
           aliases: []
           tags: []
         - name: arg_datetime
@@ -226,7 +216,6 @@ fn test_load_from_yaml_str_all_scalar_types()
             sensitive: false
           validation_rules: []
           hint: DateTime hint
-          default_value: null
           aliases: []
           tags: []
         - name: arg_pattern
@@ -240,7 +229,6 @@ fn test_load_from_yaml_str_all_scalar_types()
             sensitive: false
           validation_rules: []
           hint: Pattern hint
-          default_value: null
           aliases: []
           tags: []
       namespace: .test
@@ -286,8 +274,8 @@ fn test_load_from_yaml_str_all_scalar_types()
   assert_eq!( command.idempotent, false );
 
   assert_eq!( command.arguments[ 0 ].hint, "String hint" );
-  assert_eq!( command.arguments[ 0 ].attributes.is_default_arg, false );
-  assert_eq!( command.arguments[ 0 ].default_value, None );
+  // is_default_arg field no longer exists
+  assert_eq!( command.arguments[ 0 ].attributes.default, None );
   assert_eq!( command.arguments[ 0 ].aliases, Vec::< String >::new() );
   assert_eq!( command.arguments[ 0 ].tags, Vec::< String >::new() );
   assert_eq!( command.arguments[ 0 ].attributes.interactive, false );
@@ -313,7 +301,6 @@ fn test_load_from_yaml_str_collection_types()
             sensitive: false
           validation_rules: []
           hint: List string hint
-          default_value: null
           aliases: []
           tags: []
         - name: arg_list_integer_custom_delimiter
@@ -327,7 +314,6 @@ fn test_load_from_yaml_str_collection_types()
             sensitive: false
           validation_rules: []
           hint: List integer hint
-          default_value: null
           aliases: []
           tags: []
         - name: arg_map_string_integer
@@ -341,7 +327,6 @@ fn test_load_from_yaml_str_collection_types()
             sensitive: false
           validation_rules: []
           hint: Map string integer hint
-          default_value: null
           aliases: []
           tags: []
         - name: arg_map_string_string_custom_delimiters
@@ -355,7 +340,6 @@ fn test_load_from_yaml_str_collection_types()
             sensitive: false
           validation_rules: []
           hint: Map string string hint
-          default_value: null
           aliases: []
           tags: []
       namespace: .test
@@ -397,8 +381,8 @@ fn test_load_from_yaml_str_collection_types()
   assert_eq!( command.idempotent, true );
 
   assert_eq!( command.arguments[ 0 ].hint, "List string hint" );
-  assert_eq!( command.arguments[ 0 ].attributes.is_default_arg, false );
-  assert_eq!( command.arguments[ 0 ].default_value, None );
+  // is_default_arg field no longer exists
+  assert_eq!( command.arguments[ 0 ].attributes.default, None );
   assert_eq!( command.arguments[ 0 ].aliases, Vec::< String >::new() );
   assert_eq!( command.arguments[ 0 ].tags, Vec::< String >::new() );
   assert_eq!( command.arguments[ 0 ].attributes.interactive, false );
@@ -424,7 +408,6 @@ fn test_load_from_yaml_str_complex_types_and_attributes()
             sensitive: false
           validation_rules: []
           hint: Json string hint
-          default_value: null
           aliases: []
           tags: []
         - name: arg_object
@@ -438,7 +421,6 @@ fn test_load_from_yaml_str_complex_types_and_attributes()
             sensitive: false
           validation_rules: []
           hint: Object hint
-          default_value: null
           aliases: []
           tags: []
         - name: arg_multiple
@@ -452,7 +434,6 @@ fn test_load_from_yaml_str_complex_types_and_attributes()
             sensitive: false
           validation_rules: []
           hint: Multiple string hint
-          default_value: null
           aliases: []
           tags: []
         - name: arg_validated
@@ -466,7 +447,6 @@ fn test_load_from_yaml_str_complex_types_and_attributes()
             sensitive: false
           validation_rules: ["min:10", "max:100"]
           hint: Validated integer hint
-          default_value: null
           aliases: []
           tags: []
         - name: arg_default
@@ -475,12 +455,11 @@ fn test_load_from_yaml_str_complex_types_and_attributes()
           attributes:
             optional: true
             multiple: false
-            is_default_arg: true
             interactive: false
             sensitive: false
+            default: "default_string"
           validation_rules: []
           hint: Default value hint
-          default_value: "default_string"
           aliases: []
           tags: []
       namespace: .test
@@ -506,10 +485,10 @@ fn test_load_from_yaml_str_complex_types_and_attributes()
   assert!( command.arguments[ 2 ].attributes.multiple );
   assert_eq!(
     command.arguments[ 3 ].validation_rules,
-    vec![ "min:10".to_string(), "max:100".to_string() ]
+    vec![ ValidationRule::Min(10.0), ValidationRule::Max(100.0) ]
   );
-  assert_eq!( command.arguments[ 4 ].attributes.is_default_arg, true );
-  assert_eq!( command.arguments[ 4 ].default_value, Some( "default_string".to_string() ) );
+  // is_default_arg field no longer exists
+  assert_eq!( command.arguments[ 4 ].attributes.default, Some( "default_string".to_string() ) );
 
   assert_eq!( command.namespace, ".test".to_string() );
   assert_eq!( command.hint, "Complex command hint" );
@@ -521,8 +500,8 @@ fn test_load_from_yaml_str_complex_types_and_attributes()
   assert_eq!( command.idempotent, false );
 
   assert_eq!( command.arguments[ 0 ].hint, "Json string hint" );
-  assert_eq!( command.arguments[ 0 ].attributes.is_default_arg, false );
-  assert_eq!( command.arguments[ 0 ].default_value, None );
+  // is_default_arg field no longer exists
+  assert_eq!( command.arguments[ 0 ].attributes.default, None );
   assert_eq!( command.arguments[ 0 ].aliases, Vec::< String >::new() );
   assert_eq!( command.arguments[ 0 ].tags, Vec::< String >::new() );
   assert_eq!( command.arguments[ 0 ].attributes.interactive, false );
@@ -633,7 +612,7 @@ fn test_load_from_json_str_all_scalar_types()
         "name": "scalar_command_json",
         "description": "Command with scalar arguments from JSON",
         "arguments": [
-          { "name": "arg_string", "description": "A string argument", "kind": "String", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "String hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_string", "description": "A string argument", "kind": "String", "attributes": { "optional": false, "multiple": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "String hint", "aliases": [], "tags": [] },
           { "name": "arg_integer", "description": "An integer argument", "kind": "Integer", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Integer hint", "default_value": null, "aliases": [], "tags": [] },
           { "name": "arg_float", "description": "A float argument", "kind": "Float", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Float hint", "default_value": null, "aliases": [], "tags": [] },
           { "name": "arg_boolean", "description": "A boolean argument", "kind": "Boolean", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Boolean hint", "default_value": null, "aliases": [], "tags": [] },
@@ -690,8 +669,8 @@ fn test_load_from_json_str_all_scalar_types()
   assert_eq!( command.idempotent, false );
 
   assert_eq!( command.arguments[ 0 ].hint, "String hint" );
-  assert_eq!( command.arguments[ 0 ].attributes.is_default_arg, false );
-  assert_eq!( command.arguments[ 0 ].default_value, None );
+  // is_default_arg field no longer exists
+  assert_eq!( command.arguments[ 0 ].attributes.default, None );
   assert_eq!( command.arguments[ 0 ].aliases, Vec::< String >::new() );
   assert_eq!( command.arguments[ 0 ].tags, Vec::< String >::new() );
   assert_eq!( command.arguments[ 0 ].attributes.interactive, false );
@@ -754,8 +733,8 @@ fn test_load_from_json_str_collection_types()
   assert_eq!( command.idempotent, true );
 
   assert_eq!( command.arguments[ 0 ].hint, "List string hint" );
-  assert_eq!( command.arguments[ 0 ].attributes.is_default_arg, false );
-  assert_eq!( command.arguments[ 0 ].default_value, None );
+  // is_default_arg field no longer exists
+  assert_eq!( command.arguments[ 0 ].attributes.default, None );
   assert_eq!( command.arguments[ 0 ].aliases, Vec::< String >::new() );
   assert_eq!( command.arguments[ 0 ].tags, Vec::< String >::new() );
   assert_eq!( command.arguments[ 0 ].attributes.interactive, false );
@@ -774,9 +753,9 @@ fn test_load_from_json_str_complex_types_and_attributes()
         "arguments": [
           { "name": "arg_json_string", "description": "A JSON string argument", "kind": "JsonString", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Json string hint", "default_value": null, "aliases": [], "tags": [] },
           { "name": "arg_object", "description": "An object argument", "kind": "Object", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Object hint", "default_value": null, "aliases": [], "tags": [] },
-          { "name": "arg_multiple", "description": "A multiple string argument", "kind": "String", "attributes": { "optional": false, "multiple": true, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Multiple string hint", "default_value": null, "aliases": [], "tags": [] },
+          { "name": "arg_multiple", "description": "A multiple string argument", "kind": "String", "attributes": { "optional": false, "multiple": true, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Multiple string hint", "aliases": [], "tags": [] },
           { "name": "arg_validated", "description": "A validated integer argument", "kind": "Integer", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": ["min:10", "max:100"], "hint": "Validated integer hint", "default_value": null, "aliases": [], "tags": [] },
-          { "name": "arg_default", "description": "An argument with a default value", "kind": "String", "attributes": { "optional": true, "multiple": false, "is_default_arg": true, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "Default value hint", "is_default_arg": true, "default_value": "default_string", "aliases": [], "tags": [] }
+          { "name": "arg_default", "description": "An argument with a default value", "kind": "String", "attributes": { "optional": true, "multiple": false, "interactive": false, "sensitive": false, "default": "default_string" }, "validation_rules": [], "hint": "Default value hint", "aliases": [], "tags": [] }
         ],
         "namespace": ".test",
         "hint": "Complex command hint",
@@ -803,10 +782,10 @@ fn test_load_from_json_str_complex_types_and_attributes()
   assert!( command.arguments[ 2 ].attributes.multiple );
   assert_eq!(
     command.arguments[ 3 ].validation_rules,
-    vec![ "min:10".to_string(), "max:100".to_string() ]
+    vec![ ValidationRule::Min(10.0), ValidationRule::Max(100.0) ]
   );
-  assert_eq!( command.arguments[ 4 ].attributes.is_default_arg, true );
-  assert_eq!( command.arguments[ 4 ].default_value, Some( "default_string".to_string() ) );
+  // is_default_arg field no longer exists
+  assert_eq!( command.arguments[ 4 ].attributes.default, Some( "default_string".to_string() ) );
 
   assert_eq!( command.namespace, ".test".to_string() );
   assert_eq!( command.hint, "Complex command hint" );
@@ -818,8 +797,8 @@ fn test_load_from_json_str_complex_types_and_attributes()
   assert_eq!( command.idempotent, false );
 
   assert_eq!( command.arguments[ 0 ].hint, "Json string hint" );
-  assert_eq!( command.arguments[ 0 ].attributes.is_default_arg, false );
-  assert_eq!( command.arguments[ 0 ].default_value, None );
+  // is_default_arg field no longer exists
+  assert_eq!( command.arguments[ 0 ].attributes.default, None );
   assert_eq!( command.arguments[ 0 ].aliases, Vec::< String >::new() );
   assert_eq!( command.arguments[ 0 ].tags, Vec::< String >::new() );
   assert_eq!( command.arguments[ 0 ].attributes.interactive, false );
@@ -891,12 +870,13 @@ fn test_load_from_yaml_str_invalid_yaml()
       arguments:
         - name: arg1
           kind: String
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: ""
-          is_default_arg: false
-          default_value: null
           aliases: []
           tags: []
           interactive: false
@@ -931,7 +911,7 @@ fn test_load_from_json_str_invalid_json()
         "name": "invalid_command_json",
         "description": "This is not valid json",
         "arguments": [
-          { "name": "arg1", "kind": "String", "attributes": { "optional": false, "multiple": false, "is_default_arg": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "", "default_value": null, "aliases": [], "tags": [] }
+          { "name": "arg1", "kind": "String", "attributes": { "optional": false, "multiple": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "", "aliases": [], "tags": [] }
         ],
         "namespace": "",
         "hint": "",
@@ -965,12 +945,13 @@ fn test_load_from_yaml_str_invalid_kind()
       arguments:
         - name: arg1
           kind: NonExistentKind
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: ""
-          is_default_arg: false
-          default_value: null
           aliases: []
           tags: []
           interactive: false
@@ -1004,7 +985,7 @@ fn test_load_from_json_str_invalid_kind()
         "name": "command_with_invalid_kind_json",
         "description": "Command with an invalid kind from JSON",
         "arguments": [
-          { "name": "arg1", "kind": "NonExistentKind", "optional": false, "multiple": false, "validation_rules": [], "hint": "", "is_default_arg": false, "default_value": null, "aliases": [], "tags": [], "interactive": false, "sensitive": false, "deprecation_message": "", "examples": [], "http_method_hint": "" }
+          { "name": "arg1", "kind": "NonExistentKind", "attributes": { "optional": false, "multiple": false, "interactive": false, "sensitive": false }, "validation_rules": [], "hint": "", "aliases": [], "tags": [] }
         ],
         "namespace": "",
         "hint": "",
@@ -1037,12 +1018,13 @@ fn test_load_from_yaml_str_invalid_list_format()
       arguments:
         - name: arg1
           kind: List()
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: ""
-          is_default_arg: false
-          default_value: null
           aliases: []
           tags: []
           interactive: false
@@ -1076,12 +1058,13 @@ fn test_load_from_yaml_str_invalid_map_format()
       arguments:
         - name: arg1
           kind: Map(String)
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: ""
-          is_default_arg: false
-          default_value: null
           aliases: []
           tags: []
           interactive: false
@@ -1115,12 +1098,13 @@ fn test_load_from_yaml_str_invalid_enum_format()
       arguments:
         - name: arg1
           kind: Enum()
-          optional: false
-          multiple: false
+          attributes:
+            optional: false
+            multiple: false
+            interactive: false
+            sensitive: false
           validation_rules: []
           hint: ""
-          is_default_arg: false
-          default_value: null
           aliases: []
           tags: []
           interactive: false

@@ -37,7 +37,7 @@ fn test_command_registry_key_mismatch()
     .name( "arg1" )
     .hint( "A test argument." )
     .kind( Kind::String )
-    .attributes( ArgumentAttributes::former().form() )
+    .attributes( ArgumentAttributes::default() )
     .form()
   ])
   .form();
