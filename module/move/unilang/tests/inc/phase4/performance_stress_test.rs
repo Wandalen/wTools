@@ -80,7 +80,7 @@ fn test_stress_yaml_generation()
 fn test_performance_stress_setup()
 {
   // This test sets up the stress test environment
-  let test_count = 1000;
+  let test_count = 1_000_000;
   
   // Set environment variable for custom commands path
   let out_dir = env::var( "OUT_DIR" ).unwrap_or_else( |_| "/tmp".to_string() );
@@ -111,7 +111,7 @@ fn test_performance_stress_full()
   use std::time::Instant;
   
   // Generate stress test environment
-  let test_count = 1000;
+  let test_count = 1_000_000;
   let temp_dir = env::temp_dir();
   let stress_yaml_path = temp_dir.join( "unilang_stress_commands.yaml" );
   

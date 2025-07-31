@@ -19,11 +19,11 @@ fn main()
   println!( "Registry initialization time: {init_time:?}" );
   
   // Perform many command lookups to measure p99 latency
-  let lookup_count = 10_000;
+  let lookup_count = 1_000_000;
   let mut latencies = Vec::with_capacity( lookup_count );
   
-  // Test commands from our generated set
-  let test_commands = (0..1000).map( |i| format!( ".perf.cmd_{i}" ) ).collect::<Vec<_>>();
+  // Test commands from our generated set (1 million commands)
+  let test_commands = (0..1_000_000).map( |i| format!( ".perf.cmd_{i}" ) ).collect::<Vec<_>>();
   
   println!( "Starting {lookup_count} command lookups..." );
   

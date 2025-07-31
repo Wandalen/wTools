@@ -461,71 +461,97 @@ impl Parser
                     // Continue building the path starting with "."
                     // Look for the next token after "."
                     if let Some( next_item ) = items_iter.peek() {
-                      if let UnilangTokenKind::Unrecognized( ref s ) = &next_item.kind {
-                        // This handles cases like "./examples" where "/examples" is unrecognized
-                        current_value.push_str( s );
-                        current_value_end_location = match next_item.source_location() {
-                          SourceLocation::StrSpan { end, .. } => end,
-                          SourceLocation::None => current_value_end_location,
-                        };
-                        items_iter.next(); // Consume the unrecognized token
+                      match &next_item.kind {
+                        UnilangTokenKind::Unrecognized( ref s ) => {
+                          // This handles cases like "./examples" where "/examples" is unrecognized
+                          current_value.push_str( s );
+                          current_value_end_location = match next_item.source_location() {
+                            SourceLocation::StrSpan { end, .. } => end,
+                            SourceLocation::None => current_value_end_location,
+                          };
+                          items_iter.next(); // Consume the unrecognized token
+                        }
+                        UnilangTokenKind::Delimiter( "." ) => {
+                          // This handles "../" patterns
+                          current_value.push( '.' );
+                          current_value_end_location = match next_item.source_location() {
+                            SourceLocation::StrSpan { end, .. } => end,
+                            SourceLocation::None => current_value_end_location,
+                          };
+                          items_iter.next(); // Consume the second dot
+                          
+                          // Look for the next token after ".."
+                          if let Some( third_item ) = items_iter.peek() {
+                            if let UnilangTokenKind::Unrecognized( ref s ) = &third_item.kind {
+                              current_value.push_str( s );
+                              current_value_end_location = match third_item.source_location() {
+                                SourceLocation::StrSpan { end, .. } => end,
+                                SourceLocation::None => current_value_end_location,
+                              };
+                              items_iter.next(); // Consume the unrecognized token
+                            }
+                          }
+                        }
+                        _ => {
+                          // Other cases - not a file path, just leave as is
+                        }
+                      }
 
-                        // Continue with the normal path-building loop
-                        loop
+                      // Continue with the normal path-building loop for any additional dots
+                      loop
+                      {
+                        let Some( peeked_dot ) = items_iter.peek() else
                         {
-                          let Some( peeked_dot ) = items_iter.peek() else
+                          break;
+                        };
+                        if let UnilangTokenKind::Delimiter( "." ) = &peeked_dot.kind
+                        {
+                          let _dot_item = items_iter.next().unwrap(); // Consume the dot
+                          let Some( peeked_segment ) = items_iter.peek() else
                           {
                             break;
                           };
-                          if let UnilangTokenKind::Delimiter( "." ) = &peeked_dot.kind
+                          if let UnilangTokenKind::Identifier( ref s ) = &peeked_segment.kind
                           {
-                            let _dot_item = items_iter.next().unwrap(); // Consume the dot
-                            let Some( peeked_segment ) = items_iter.peek() else
+                            current_value.push( '.' );
+                            current_value.push_str( s );
+                            current_value_end_location = match peeked_segment.source_location()
                             {
-                              break;
+                              SourceLocation::StrSpan { end, .. } => end,
+                              SourceLocation::None => current_value_end_location,
                             };
-                            if let UnilangTokenKind::Identifier( ref s ) = &peeked_segment.kind
+                            items_iter.next(); // Consume the segment
+                          }
+                          else if let UnilangTokenKind::Unrecognized( ref s ) = &peeked_segment.kind
+                          {
+                            current_value.push( '.' );
+                            current_value.push_str( s );
+                            current_value_end_location = match peeked_segment.source_location()
                             {
-                              current_value.push( '.' );
-                              current_value.push_str( s );
-                              current_value_end_location = match peeked_segment.source_location()
-                              {
-                                SourceLocation::StrSpan { end, .. } => end,
-                                SourceLocation::None => current_value_end_location,
-                              };
-                              items_iter.next(); // Consume the segment
-                            }
-                            else if let UnilangTokenKind::Unrecognized( ref s ) = &peeked_segment.kind
+                              SourceLocation::StrSpan { end, .. } => end,
+                              SourceLocation::None => current_value_end_location,
+                            };
+                            items_iter.next(); // Consume the segment
+                          }
+                          else if let UnilangTokenKind::Number( ref s ) = &peeked_segment.kind
+                          {
+                            current_value.push( '.' );
+                            current_value.push_str( s );
+                            current_value_end_location = match peeked_segment.source_location()
                             {
-                              current_value.push( '.' );
-                              current_value.push_str( s );
-                              current_value_end_location = match peeked_segment.source_location()
-                              {
-                                SourceLocation::StrSpan { end, .. } => end,
-                                SourceLocation::None => current_value_end_location,
-                              };
-                              items_iter.next(); // Consume the segment
-                            }
-                            else if let UnilangTokenKind::Number( ref s ) = &peeked_segment.kind
-                            {
-                              current_value.push( '.' );
-                              current_value.push_str( s );
-                              current_value_end_location = match peeked_segment.source_location()
-                              {
-                                SourceLocation::StrSpan { end, .. } => end,
-                                SourceLocation::None => current_value_end_location,
-                              };
-                              items_iter.next(); // Consume the segment
-                            }
-                            else
-                            {
-                              break;
-                            }
+                              SourceLocation::StrSpan { end, .. } => end,
+                              SourceLocation::None => current_value_end_location,
+                            };
+                            items_iter.next(); // Consume the segment
                           }
                           else
                           {
                             break;
                           }
+                        }
+                        else
+                        {
+                          break;
                         }
                       }
                     }
