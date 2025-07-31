@@ -14,7 +14,7 @@ mod private
     untyped::{ Error, bail },
     // Result,
   };
-  use collection::HashMap;
+  use collection_tools::collection::HashMap;
   // Explicit import for Result and its variants for pattern matching
   use std::result::Result::Ok;
 

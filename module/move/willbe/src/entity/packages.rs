@@ -4,8 +4,8 @@ mod private
 
   use crate::*;
   use std::fmt::Formatter;
-  use package::PackageName;
-  use collection::{ HashMap, HashSet };
+  use crate::entity::package::PackageName;
+  use collection_tools::collection::{ HashMap, HashSet };
 
   // use workspace::WorkspacePackageRef< '_ >;
   // use Dependency;

@@ -4,7 +4,7 @@ mod private
 
   use crate::*;
   use macros::kw;
-  use collection::BTreeMap;
+  use collection_tools::collection::BTreeMap;
   use serde_json::Value;
 
   use std::

@@ -8,7 +8,7 @@ mod private
   use error::untyped::bail;
   // use error::Result;
   // qqq : group dependencies
-  use iter::Itertools;
+  use iter_tools::iter::Itertools;
   use template::
   {
     TemplateFileDescriptor, TemplateFiles, TemplateFilesBuilder, TemplateParameters, TemplateValues

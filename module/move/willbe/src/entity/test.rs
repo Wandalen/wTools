@@ -20,7 +20,7 @@ mod private
     Error,
     untyped::format_err,
   };
-  use package::PackageName;
+  use crate::entity::package::PackageName;
   // Explicit import for Result and its variants for pattern matching
   use std::result::Result::{self, Ok, Err};
 

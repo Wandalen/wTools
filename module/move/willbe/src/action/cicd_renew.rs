@@ -9,8 +9,8 @@ mod private
     io::{ Write, Read },
   };
 
-  use path::Path;
-  use collection::BTreeMap;
+  use pth::Path;
+  use collection_tools::collection::BTreeMap;
   use convert_case::{ Casing, Case };
   use handlebars::{ RenderError, TemplateError };
   use toml_edit::Document;

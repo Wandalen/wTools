@@ -8,7 +8,7 @@ mod private
   use wca::VerifiedCommand;
   use error::untyped::Error; // Use untyped::Error for the command return
   use entity::{ Workspace, WorkspaceInitError, PathError }; // Import Workspace, WorkspaceInitError, PathError
-  use path::{ AbsolutePath, CurrentPath }; // Import AbsolutePath and CurrentPath from pth
+  use pth::{ AbsolutePath, CurrentPath }; // Import AbsolutePath and CurrentPath from pth
   // Explicit import for Result and its variants for pattern matching
   use std::result::Result::{Ok, Err};
 

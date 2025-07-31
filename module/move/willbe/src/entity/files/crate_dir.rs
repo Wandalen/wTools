@@ -27,7 +27,7 @@ use std::
 // {
 //   Result,
 // };
-use path::{ AbsolutePath, Utf8Path, Utf8PathBuf };
+use pth::{ AbsolutePath, Utf8Path, Utf8PathBuf };
 
 /// Path to crate directory
 #[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]

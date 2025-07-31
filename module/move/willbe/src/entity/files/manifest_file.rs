@@ -23,7 +23,7 @@ use std::
   io,
 };
 
-use path::{ AbsolutePath, Utf8Path, Utf8PathBuf };
+use pth::{ AbsolutePath, Utf8Path, Utf8PathBuf };
 
 // use error::
 // {

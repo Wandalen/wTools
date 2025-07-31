@@ -9,11 +9,11 @@ mod private
     fs::{ OpenOptions, File },
     io::{ Write, Read, Seek, SeekFrom },
   };
-  use path::{ Path, PathBuf };
+  use pth::{ Path, PathBuf };
   use convert_case::Casing;
   use toml_edit::Document;
   use regex::bytes::Regex;
-  use collection::HashMap;
+  use collection_tools::collection::HashMap;
 
   use error::
   {
@@ -26,8 +26,8 @@ mod private
       format_err,
     }
   };
-  use manifest::repo_url;
-  // use path::AbsolutePath;
+  use crate::entity::manifest::repo_url;
+  // use pth::AbsolutePath;
   // Explicit import for Result and its variants for pattern matching
   use std::result::Result::{Ok, Err};
 

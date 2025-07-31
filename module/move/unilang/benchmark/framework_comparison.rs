@@ -1,3 +1,8 @@
+//! Framework comparison benchmark for Unilang vs Clap runtime performance.
+//!
+//! This benchmark focuses on runtime performance comparison between Unilang
+//! and Clap frameworks across different command scales.
+
 use std::time::Instant;
 
 // Import both unilang and clap for comparison
@@ -5,6 +10,7 @@ use unilang::prelude::*;
 use clap::{Arg, Command};
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 struct FrameworkBenchmarkResult {
     framework: String,
     command_count: usize,
@@ -125,10 +131,17 @@ fn benchmark_clap_performance(command_count: usize) -> FrameworkBenchmarkResult 
         .about("Clap benchmark application");
 
     for i in 0..command_count {
-        let cmd_name = format!("cmd_{}", i);
-        let cmd_desc = format!("Performance test command {}", i);
-        let subcommand = Command::new(&cmd_name)
-            .about(&cmd_desc)
+        // Use simple static names for the first few, then fallback to generated ones
+        let (cmd_name, cmd_desc) = match i {
+            0 => ("cmd_0", "Performance test command 0"),
+            1 => ("cmd_1", "Performance test command 1"),
+            2 => ("cmd_2", "Performance test command 2"),
+            3 => ("cmd_3", "Performance test command 3"),
+            _ => ("cmd_dynamic", "Performance test command dynamic"),
+        };
+
+        let subcommand = Command::new(cmd_name)
+            .about(cmd_desc)
             .arg(Arg::new("input")
                 .short('i') 
                 .long("input")

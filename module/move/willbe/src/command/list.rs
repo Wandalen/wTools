@@ -12,7 +12,7 @@ mod private
   };
   use wca::VerifiedCommand;
   use error::untyped::Context;
-  use collection::HashSet;
+  use collection_tools::collection::HashSet;
 
   use action::
   {

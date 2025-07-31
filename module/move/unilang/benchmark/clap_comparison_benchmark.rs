@@ -1,3 +1,8 @@
+//! Clap-specific performance benchmark for exponential scaling analysis.
+//!
+//! This benchmark focuses exclusively on Clap framework performance
+//! to understand its scaling characteristics with increasing command counts.
+
 use std::time::Instant;
 use clap::{Arg, Command};
 
@@ -20,10 +25,17 @@ fn create_clap_app_with_n_commands(n: usize) -> Command {
 
     // Add n commands as subcommands
     for i in 0..n {
-        let cmd_name = format!("cmd_{}", i);
-        let cmd_desc = format!("Performance test command {}", i);
-        let subcommand = Command::new(&cmd_name)
-            .about(&cmd_desc)
+        // Use simple static names for the first few, then fallback to generated ones
+        let (cmd_name, cmd_desc) = match i {
+            0 => ("cmd_0", "Performance test command 0"),
+            1 => ("cmd_1", "Performance test command 1"),
+            2 => ("cmd_2", "Performance test command 2"),
+            3 => ("cmd_3", "Performance test command 3"),
+            _ => ("cmd_dynamic", "Performance test command dynamic"),
+        };
+
+        let subcommand = Command::new(cmd_name)
+            .about(cmd_desc)
             .arg(Arg::new("input")
                 .short('i')
                 .long("input")

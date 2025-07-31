@@ -9,7 +9,7 @@ mod private
   // qqq : for Petro : no asterisks imports
   // qqq : for Petro : bad : not clear what is imported, there are multiple filles with name test
 
-  use collection::HashSet;
+  use collection_tools::collection::HashSet;
   use std::{ env, fs };
 
   use former::Former;
@@ -22,7 +22,7 @@ mod private
     },
     // Result
   };
-  use iter::Itertools;
+  use iter_tools::iter::Itertools;
 
   /// Used to store arguments for running tests.
   ///

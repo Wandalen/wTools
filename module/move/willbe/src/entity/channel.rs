@@ -8,8 +8,8 @@ mod private
     fmt::Formatter,
     ffi::OsString,
   };
-  use path::Path;
-  use collection::HashSet;
+  use pth::Path;
+  use collection_tools::collection::HashSet;
   use error::untyped::{ Error };
 
   use process_tools::process::*;

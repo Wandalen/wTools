@@ -5,11 +5,11 @@ mod private
   use crate::*;
 
   use std::fmt::Formatter;
-  use path::PathBuf;
-  use collection::HashMap;
+  use pth::PathBuf;
+  use collection_tools::collection::HashMap;
   use colored::Colorize;
   use crates_tools::CrateArchive;
-  use collection::HashSet;
+  use collection_tools::collection::HashSet;
   use similar::{ TextDiff, ChangeTag };
 
   // use similar::*; // qqq : for Bohdan : bad

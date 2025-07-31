@@ -33,7 +33,7 @@ crate::mod_interface!
   layer git;
   orphan use super::git;
 
-  /// To manipulate manifest data.
+  /// To manipulate manifest data.  
   layer manifest;
   orphan use super::manifest;
 

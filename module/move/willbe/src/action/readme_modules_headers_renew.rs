@@ -16,10 +16,10 @@ mod private
       SeekFrom,
     }
   };
-  use collection::BTreeSet;
-  // use path::AbsolutePath;
+  use collection_tools::collection::BTreeSet;
+  // use pth::AbsolutePath;
   use action::readme_health_table_renew::{ Stability, stability_generate, find_example_file };
-  use package::Package;
+  use crate::entity::package::Package;
   use error::
   {
     // err,
@@ -37,7 +37,7 @@ mod private
   // use rayon::scope_fifo;
   use regex::Regex;
   use entity::{ WorkspaceInitError, PathError };
-  use package::PackageError;
+  use crate::entity::package::PackageError;
   use error::typed::Error;
   use workspace_md_extension::WorkspaceMdExtension;
   // use error::ErrWith;

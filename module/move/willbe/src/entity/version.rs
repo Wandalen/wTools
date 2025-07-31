@@ -15,8 +15,8 @@ mod private
   use semver::Version as SemVersion;
 
   use error::untyped::Result;
-  use manifest::Manifest;
-  use package::Package;
+  use crate::entity::manifest::Manifest;
+  use crate::entity::package::Package;
   use { error::untyped::format_err, iter::Itertools };
 
   /// Wrapper for a `SemVer` structure

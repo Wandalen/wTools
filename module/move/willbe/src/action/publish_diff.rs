@@ -4,8 +4,8 @@ mod private
 {
 
   use crate::*;
-  use path::PathBuf;
-  use collection::HashMap;
+  use pth::PathBuf;
+  use collection_tools::collection::HashMap;
   use std::fmt;
   use colored::Colorize;
   use crates_tools::CrateArchive;

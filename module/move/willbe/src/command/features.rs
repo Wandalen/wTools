@@ -6,7 +6,7 @@ mod private
   use action::features::FeaturesOptions;
   use std::fs;
   use std::path::PathBuf;
-  // // use path::AbsolutePath;
+  // // use pth::AbsolutePath;
   use wca::VerifiedCommand;
   // use error::Result;
   // qqq : group dependencies

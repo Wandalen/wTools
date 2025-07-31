@@ -9,7 +9,7 @@ mod private
   use error::untyped::Context; // xxx
   use former::Former;
   use std::fmt::Write;
-  use channel::Channel;
+  use crate::entity::channel::Channel;
   // Explicit import for Result and its variants for pattern matching
   use std::result::Result::{Ok, Err};
 

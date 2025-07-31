@@ -5,9 +5,9 @@ mod private
   use crate::*;
 
   use std::fmt;
-  use collection::{ BTreeMap, HashMap };
+  use collection_tools::collection::{ BTreeMap, HashMap };
 
-  // // use path::AbsolutePath;
+  // // use pth::AbsolutePath;
   use former::Former;
   use error::untyped::Context;
   // use workspace::Workspace;

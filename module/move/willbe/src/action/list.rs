@@ -525,7 +525,7 @@ mod private
         ListReport::Empty => ListReport::Tree( vec![ printer ] ),
         ListReport::List( _ ) => unreachable!(),
       };
-      Ok( () )
+      Ok::< (), error::untyped::Error >( () )
     };
 
     match args.format

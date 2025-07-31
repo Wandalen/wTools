@@ -7,7 +7,7 @@ crate::mod_interface!
   use crate::error;
   
   /// Generate documentation for a crate.
-  layer crate_doc; // Added new layer
+  layer crate_doc;
   /// Deploy new.
   layer deploy_renew;
   /// List packages.

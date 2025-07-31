@@ -14,8 +14,8 @@ mod private
     fmt::Debug,
     hash::Hash,
   };
-  use collection::{ HashMap, HashSet, VecDeque };
-  use path::PathBuf;
+  use collection_tools::collection::{ HashMap, HashSet, VecDeque };
+  use pth::PathBuf;
   use petgraph::
   {
     graph::Graph,
@@ -27,7 +27,7 @@ mod private
 
   use error::typed::Error;
 
-  use package::{ Package, publish_need };
+  use crate::entity::package::{ Package, publish_need };
   // Explicit import for Result and its variants for pattern matching
   use std::result::Result::{Ok, Err};
   // qqq : for Bohdan : bad : tools can't depend on entitties!

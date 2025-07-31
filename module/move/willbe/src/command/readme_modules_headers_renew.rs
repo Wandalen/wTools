@@ -2,7 +2,7 @@ mod private
 {
 
   use crate::*;
-  // use path::AbsolutePath;
+  // use pth::AbsolutePath;
   // use error::{ untyped::Error };
   // Explicit import for Result and its variants for pattern matching
   use std::result::Result::{Ok, Err};

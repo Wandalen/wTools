@@ -61,12 +61,12 @@
 
 #![allow(ambiguous_glob_imports)]
 
-pub use mod_interface::mod_interface;
+use mod_interface::meta::mod_interface;
 
 /// Define a private namespace for all its items.
 mod private {
 
-  use crate::*;
+  use crate::{ error, entity, command };
 
   /// Takes the command line arguments and perform associated function(s).
   /// If no arguments are provided, the function identifies this as an ambiguous state and prompts the user with a help message, suggesting possible commands they might want to execute.
@@ -101,11 +101,10 @@ mod private {
 
 mod_interface! {
 
-  own use run;
+  own use private::run;
 
   /// Error handling facade.
   layer error;
-  orphan use super::error;
 
   /// Entities of which spaces consists of.
   layer entity;
