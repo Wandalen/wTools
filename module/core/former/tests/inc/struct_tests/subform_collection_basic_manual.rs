@@ -263,9 +263,9 @@ where
   }
 
   #[inline(always)]
-  pub fn _vec_1_assign<Former2>(self) -> Former2
+  pub fn _vec_1_assign<'a, Former2>(self) -> Former2
   where
-    Former2: former::FormerBegin<former::VectorDefinition<String, Self, Self, Struct1SubformCollectionVec1End<Definition>>>,
+    Former2: former::FormerBegin<'a, former::VectorDefinition<String, Self, Self, Struct1SubformCollectionVec1End<Definition>>>,
     former::VectorDefinition<String, Self, Self, Struct1SubformCollectionVec1End<Definition>>: former::FormerDefinition<
       // Storage : former::CollectionAdd< Entry = < collection_tools::Vec< String > as former::Collection >::Entry >,
       Storage = Vec<String>,
@@ -279,7 +279,7 @@ where
   }
 
   #[inline(always)]
-  pub fn vec_1(
+  pub fn vec_1<'a>(
     self,
   ) -> former::CollectionFormer<String, former::VectorDefinition<String, Self, Self, Struct1SubformCollectionVec1End<Definition>>>
   where
@@ -292,7 +292,7 @@ where
     Struct1SubformCollectionVec1End<Definition>:
       former::FormingEnd<<collection_tools::Vec<String> as former::EntityToDefinitionTypes<Self, Self>>::Types>,
   {
-    self._vec_1_assign::< former::CollectionFormer::
+    self._vec_1_assign::<'a, former::CollectionFormer::
     <
       String,
       former::VectorDefinition< String, Self, Self, Struct1SubformCollectionVec1End< Definition > >,
@@ -300,10 +300,10 @@ where
   }
 
   #[inline(always)]
-  pub fn _hashmap_1_assign<Former2>(self) -> Former2
+  pub fn _hashmap_1_assign<'a, Former2>(self) -> Former2
   where
     Former2:
-      former::FormerBegin<former::HashMapDefinition<String, String, Self, Self, Struct1SubformCollectionHashmap1End<Definition>>>,
+      former::FormerBegin<'a, former::HashMapDefinition<String, String, Self, Self, Struct1SubformCollectionHashmap1End<Definition>>>,
     former::HashMapDefinition<String, String, Self, Self, Struct1SubformCollectionHashmap1End<Definition>>:
       former::FormerDefinition<
         // Storage : former::CollectionAdd< Entry = < collection_tools::HashMap< String, String > as former::Collection >::Entry >,
@@ -318,7 +318,7 @@ where
   }
 
   #[inline(always)]
-  pub fn hashmap_1(
+  pub fn hashmap_1<'a>(
     self,
   ) -> former::CollectionFormer<
     (String, String),
@@ -335,16 +335,16 @@ where
     Struct1SubformCollectionHashmap1End<Definition>:
       former::FormingEnd<<collection_tools::HashMap<String, String> as former::EntityToDefinitionTypes<Self, Self>>::Types>,
   {
-    self._hashmap_1_assign::<former::CollectionFormer<
+    self._hashmap_1_assign::<'a, former::CollectionFormer<
       (String, String),
       former::HashMapDefinition<String, String, Self, Self, Struct1SubformCollectionHashmap1End<Definition>>,
     >>()
   }
 
   #[inline(always)]
-  pub fn _hashset_1_assign<Former2>(self) -> Former2
+  pub fn _hashset_1_assign<'a, Former2>(self) -> Former2
   where
-    Former2: former::FormerBegin<former::HashSetDefinition<String, Self, Self, Struct1SubformCollectionHashset1End<Definition>>>,
+    Former2: former::FormerBegin<'a, former::HashSetDefinition<String, Self, Self, Struct1SubformCollectionHashset1End<Definition>>>,
     former::HashSetDefinition<String, Self, Self, Struct1SubformCollectionHashset1End<Definition>>: former::FormerDefinition<
       // Storage : former::CollectionAdd< Entry = < collection_tools::HashSet< String > as former::Collection >::Entry >,
       Storage = collection_tools::HashSet<String>,
@@ -358,7 +358,7 @@ where
   }
 
   #[inline(always)]
-  pub fn hashset_1(
+  pub fn hashset_1<'a>(
     self,
   ) -> former::CollectionFormer<
     String,
@@ -374,7 +374,7 @@ where
     Struct1SubformCollectionHashset1End<Definition>:
       former::FormingEnd<<collection_tools::HashSet<String> as former::EntityToDefinitionTypes<Self, Self>>::Types>,
   {
-    self._hashset_1_assign::<former::CollectionFormer<
+    self._hashset_1_assign::<'a, former::CollectionFormer<
       String,
       former::HashSetDefinition<String, Self, Self, Struct1SubformCollectionHashset1End<Definition>>,
     >>()
