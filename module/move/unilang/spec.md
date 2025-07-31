@@ -499,7 +499,8 @@ Successful routines **must** return an `OutputData` object containing the `conte
 
 The unilang framework **must** provide control over debug output and verbosity levels to allow integrators to manage the amount of diagnostic information displayed.
 
-*   **Debug Output Control**: The parser and other framework components **must not** emit debug output unless explicitly enabled through a verbosity control mechanism.
+*   **Runtime Debug Output Control**: The parser and other framework components **must not** emit debug output unless explicitly enabled through a verbosity control mechanism.
+*   **Compile-time Debug Output Control**: The framework **must not** emit any debug output during compilation or macro expansion by default. All compile-time debug output **must** be disabled in production builds unless explicitly enabled through compile-time features.
 *   **Verbosity Levels**: The framework **must** support at least three verbosity levels:
     - `quiet` or `0`: No debug output, only errors and essential information
     - `normal` or `1`: Standard output without debug information (default)

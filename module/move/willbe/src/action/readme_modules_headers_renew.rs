@@ -336,7 +336,7 @@ mod private
       file.write_all( content.as_bytes() ).err_with_report( &report )?;
       report.touched_files.insert( path.as_ref().to_path_buf() );
     }
-    Ok( report )
+    Ok::< _, ModulesHeadersRenewError >( report )
   }
 
   #[ allow( clippy::uninlined_format_args ) ]

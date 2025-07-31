@@ -25,6 +25,10 @@ pub mod exposed {
   pub use ::error_tools::typed;
   #[cfg(feature = "error_untyped")]
   pub use ::error_tools::untyped;
+  
+  // Re-export standard library Result and Option
+  pub use std::result::Result;
+  pub use std::option::Option;
 }
 
 /// Prelude of the module.
@@ -38,3 +42,7 @@ pub use ::error_tools::*;
 pub use ::error_tools::typed;
 #[cfg(feature = "error_untyped")]
 pub use ::error_tools::untyped;
+
+// Re-export standard library Result and Option for pattern matching
+pub use std::result::Result;
+pub use std::option::Option;

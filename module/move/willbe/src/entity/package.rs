@@ -10,6 +10,9 @@ mod private
     // Result,
     typed::Error,
   };
+  
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{self, Ok, Err};
 
   /// A wrapper type for representing the name of a package.
   ///

@@ -28,6 +28,8 @@ mod private
   };
   use manifest::repo_url;
   // use path::AbsolutePath;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{self, Ok, Err};
 
   static TAG_TEMPLATE: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
   static CLOSE_TAG: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();

@@ -188,6 +188,32 @@ let result = pipeline.process_command_simple( ".my-command arg1::value" );
 // result contains the execution outcome
 ```
 
+### 6. Verbosity Control
+Control debug output levels for cleaner CLI experiences:
+
+```rust
+use unilang::prelude::*;
+use unilang_parser::UnilangParserOptions;
+
+// Set verbosity programmatically
+let mut parser_options = UnilangParserOptions::default();
+parser_options.verbosity = 0; // 0 = quiet, 1 = normal, 2 = debug
+
+let pipeline = Pipeline::with_parser_options( registry, parser_options );
+```
+
+Or use environment variable:
+```sh
+# Quiet mode - suppress all debug output
+UNILANG_VERBOSITY=0 my_cli_app .command
+
+# Normal mode (default) - standard output only
+UNILANG_VERBOSITY=1 my_cli_app .command
+
+# Debug mode - include parser traces
+UNILANG_VERBOSITY=2 my_cli_app .command
+```
+
 ## Examples
 
 ### Working with Different Argument Types
@@ -412,6 +438,10 @@ unilang supports flexible command-line syntax:
 
 # List all commands (just dot)
 .
+
+# Get help for any command
+.command ?              # Shows help for 'command'
+.namespace.command ?    # Shows help for namespaced command
 ```
 
 ## Advanced Features
@@ -465,6 +495,8 @@ assert_eq!(batch_result.success_rate(), 0.0);
 
 ### Help System
 
+unilang provides a comprehensive help system with two ways to access help:
+
 ```rust
 use unilang::prelude::*;
 let registry = CommandRegistry::new();
@@ -479,6 +511,16 @@ assert!(commands_list.len() > 0); // Always contains header
 let help = help_gen.command( "greet" );
 assert!(help.is_none()); // No commands registered yet
 ```
+
+The help operator (`?`) provides instant help without argument validation:
+```sh
+# Shows help even if required arguments are missing
+.command ?                    # Help for command
+.run_file ?                   # Help instead of "missing file argument"
+.config.set ?                 # Help instead of "missing key and value"
+```
+
+This ensures users can always get help, even when they don't know the required arguments.
 
 ## Full CLI Example
 

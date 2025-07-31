@@ -11,6 +11,8 @@ mod private
   use former::Former;
   use error::untyped::Context;
   // use workspace::Workspace;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{self, Ok, Err};
 
   /// Options available for the .features command
   #[ derive( Debug, Former ) ]
