@@ -160,9 +160,9 @@ fn test_documentation_of_debug_output_requirement()
   // should be emitted by default
   
   // These are the verbosity levels as documented
-  const VERBOSITY_QUIET: u8 = 0;    // No debug output
+  const _VERBOSITY_QUIET: u8 = 0;    // No debug output
   const VERBOSITY_NORMAL: u8 = 1;   // Default, no debug output  
-  const VERBOSITY_DEBUG: u8 = 2;    // Full debug output
+  const _VERBOSITY_DEBUG: u8 = 2;    // Full debug output
   
   // Verify that the default verbosity level produces no debug output
   assert_eq!(VERBOSITY_NORMAL, 1, "Default verbosity should be 1 (normal)");

@@ -244,7 +244,7 @@ impl AsCode for SourceFile
 {
   fn as_code( &self ) -> std::io::Result< Cow< '_, str > >
   {
-    Ok( Cow::Owned( std::fs::read_to_string( self.as_ref() )? ) )
+    std::io::Result::Ok( Cow::Owned( std::fs::read_to_string( self.as_ref() )? ) )
   }
 }
 

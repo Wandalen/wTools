@@ -76,7 +76,7 @@ mod private
           writeln!( f, "File not found or contains non-UTF-8 characters." )?;
         }
       }
-      Ok( () )
+      std::fmt::Result::Ok( () )
     }
   }
 

@@ -46,7 +46,7 @@ mod private
       .exec()?;
       // inout crate dir may refer on crate's manifest dir, not workspace's manifest dir
       crate_dir = ( &metadata.workspace_root ).try_into()?;
-      Ok( Self
+      Result::Ok( Self
       {
         metadata,
         crate_dir,

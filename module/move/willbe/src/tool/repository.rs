@@ -16,15 +16,15 @@ mod private
   {
     if let Some( path ) = readme_in_dir_find( &dir_path.join( ".github" ) )
     {
-      Ok( path )
+      std::io::Result::Ok( path )
     }
     else if let Some( path )  = readme_in_dir_find( dir_path )
     {
-      Ok( path )
+      std::io::Result::Ok( path )
     }
     else if let Some( path )  = readme_in_dir_find( &dir_path.join( "docs" ) )
     {
-      Ok( path )
+      std::io::Result::Ok( path )
     }
     else
     {

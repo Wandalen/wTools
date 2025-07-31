@@ -94,7 +94,7 @@ mod private
       }
       write!( f, "{diff}" )?;
 
-      Ok( () )
+      std::fmt::Result::Ok( () )
     }
   }
 

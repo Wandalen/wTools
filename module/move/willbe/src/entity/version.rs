@@ -29,7 +29,7 @@ mod private
 
     fn from_str( s : &str ) -> std::result::Result< Self, Self::Err >
     {
-      Ok( Self( SemVersion::from_str( s )? ) )
+      std::result::Result::Ok( Self( SemVersion::from_str( s )? ) )
     }
   }
 

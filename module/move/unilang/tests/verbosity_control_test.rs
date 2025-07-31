@@ -68,7 +68,7 @@ fn test_pipeline_with_custom_verbosity()
   let mut quiet_options = UnilangParserOptions::default();
   quiet_options.verbosity = 0;
   
-  let pipeline = Pipeline::with_parser_options( registry, quiet_options );
+  let _pipeline = Pipeline::with_parser_options( registry, quiet_options );
   
   // The pipeline should be created successfully with custom options
   // In a real implementation, this would suppress debug output

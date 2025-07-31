@@ -195,7 +195,8 @@ Control debug output levels for cleaner CLI experiences:
 use unilang::prelude::*;
 use unilang_parser::UnilangParserOptions;
 
-// Set verbosity programmatically
+// Create registry and set verbosity programmatically
+let registry = CommandRegistry::new();
 let mut parser_options = UnilangParserOptions::default();
 parser_options.verbosity = 0; // 0 = quiet, 1 = normal, 2 = debug
 
