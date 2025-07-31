@@ -3,9 +3,7 @@ use super::*;
 use collection_tools::{Vec, HashMap}; // Use standard collections
 
 // Inner struct for subform_entry test
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, Default, PartialEq, Clone, former::Former)]
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, former::Former)]
 pub struct SubEntry {
   key: String, // Key will be set by ValToEntry
   value: i32,
@@ -21,17 +19,13 @@ impl former::ValToEntry<HashMap<String, SubEntry>> for SubEntry {
 }
 
 // Inner struct for subform_scalar test
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, Default, PartialEq, Clone, former::Former)]
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, former::Former)]
 pub struct SubScalar {
   data: bool,
 }
 
 // Parent struct with keyword fields using subform attributes
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, Default, PartialEq, former::Former)]
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, PartialEq, former::Former)]
 // #[ debug ] // Uncomment to see generated code
 pub struct KeywordSubformStruct {
   #[subform_collection] // Default definition is VectorDefinition

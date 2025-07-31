@@ -1,11 +1,7 @@
 #[allow(unused_imports)]
 use super::*;
 
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-
-// #[derive(Debug, PartialEq, the_module::Former)]
-
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, the_module::Former)]
 pub struct StructWithCustomSetters {
   ordinary: String,
   #[scalar(setter = false)]

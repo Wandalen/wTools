@@ -79,22 +79,25 @@ mod debug_e0223_manual;
 // Test re-enabled to verify proper fix
 mod attribute_alias;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod attribute_default_collection;  // Requires #[former(...)] attribute implementation
-// mod attribute_default_conflict;  // Requires #[former(...)] attribute implementation
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod attribute_default_collection;
+mod attribute_default_conflict;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod attribute_default_primitive;
-// mod attribute_feature;  // Requires #[former(...)] attribute implementation
-// mod attribute_multiple;  // Requires #[former(...)] attribute implementation
-// mod attribute_perform;  // Requires #[perform(...)] attribute implementation
-// mod attribute_setter;  // Requires #[scalar(...)] attribute implementation
-// mod attribute_storage_with_end;
-// mod attribute_storage_with_mutator;
+mod attribute_feature;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod attribute_multiple;
+mod attribute_perform;
+mod attribute_setter;
+mod attribute_storage_with_end;
+mod attribute_storage_with_mutator;
 
 // = name collision
 
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose  
 mod keyword_field_derive;
-// mod keyword_subform_derive;  // Requires subform attributes
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod keyword_subform_derive;
 // mod name_collision_former_hashmap_without_parameter;  // Has compilation issues
 mod name_collision_former_vector_without_parameter;
 // mod name_collisions;  // Name collision with std types
@@ -107,8 +110,8 @@ mod parametrized_dyn_manual; // xxx2 : qqq2 : fix the issue
 mod test_lifetime_only;
 mod test_lifetime_minimal;
 mod minimal_lifetime;
-// mod debug_lifetime_minimal;  // Has #[debug] attribute
-// mod debug_simple_lifetime;  // Has #[debug] attribute
+mod debug_lifetime_minimal;
+mod debug_simple_lifetime;
 // mod parametrized_field_where;  // BLOCKED: E0726 implicit elided lifetime not allowed here
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod parametrized_struct_imm;  // BLOCKED: E0277 Hash/Eq trait bound issues with Definition
@@ -117,7 +120,7 @@ mod minimal_lifetime;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod parametrized_struct_where;  // BLOCKED: E0277 Hash/Eq trait bound issues with Definition
 
-// mod parametrized_slice;  // BLOCKED: E0726 implicit elided lifetime not allowed here
+mod parametrized_slice;
 mod parametrized_slice_manual;
 
 // = etc
@@ -164,15 +167,18 @@ mod subform_collection;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod subform_collection_custom;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_collection_implicit;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_collection_implicit;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod subform_collection_manual;  // BLOCKED: FormerBegin lifetime parameter in manual code
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_collection_named;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_collection_named;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod subform_collection_playground;  // BLOCKED: E0277 Hash/Eq trait bound issues with Definition
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_collection_setter_off;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_collection_setter_off;
 
 // = subform scalar
 
@@ -181,7 +187,8 @@ mod subform_scalar;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod subform_scalar_manual;  // BLOCKED: FormerBegin lifetime parameter in manual code
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_scalar_name;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_scalar_name;
 
 // = subform entry
 
@@ -190,16 +197,20 @@ mod subform_entry;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod subform_entry_manual;  // BLOCKED: FormerBegin lifetime parameter in manual code
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry_named;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_entry_named;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod subform_entry_named_manual;  // BLOCKED: FormerBegin lifetime parameter in manual code
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry_setter_off;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_entry_setter_off;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry_setter_on;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_entry_setter_on;
 
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry_hashmap;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_entry_hashmap;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod subform_entry_hashmap_custom;  // BLOCKED: FormerBegin lifetime parameter in manual code
 
@@ -210,7 +221,8 @@ mod subform_all;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod subform_all_parametrized;  // BLOCKED: E0726 implicit elided lifetime not allowed here + E0277 FormerDefinition trait issues
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_all_private;
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_all_private;
 
 // = standalone constructor
 
