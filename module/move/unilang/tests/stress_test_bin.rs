@@ -22,20 +22,23 @@ fn main()
   let lookup_count = 1_000_000;
   let mut latencies = Vec::with_capacity( lookup_count );
   
-  // Test commands from our generated set (1 million commands)
-  let test_commands = (0..1_000_000).map( |i| format!( ".perf.cmd_{i}" ) ).collect::<Vec<_>>();
-  
   println!( "Starting {lookup_count} command lookups..." );
   
+  // Generate command names on-the-fly to save memory
   for i in 0..lookup_count
   {
-    let cmd_name = &test_commands[ i % test_commands.len() ];
+    let cmd_name = format!( ".perf.cmd_{}", i % 1_000_000 );
     
     let lookup_start = Instant::now();
-    let _command = registry.command( cmd_name );
+    let _command = registry.command( &cmd_name );
     let lookup_time = lookup_start.elapsed();
     
     latencies.push( lookup_time );
+    
+    // Progress reporting every 100k lookups
+    if i % 100_000 == 0 && i > 0 {
+      println!( "  Completed {} lookups...", i );
+    }
   }
   
   // Calculate statistics
