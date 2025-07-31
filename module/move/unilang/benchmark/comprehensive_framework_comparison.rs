@@ -666,16 +666,16 @@ fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmar
     report.push_str("- Extensive documentation and community support\n");
     report.push_str("- Advanced terminal features and customization\n\n");
     
-    report.push_str("**Nanoclap Strengths:**\n");
+    report.push_str("**Pico-Args Strengths:**\n");
     report.push_str("- Extremely lightweight and fast compilation\n");
     report.push_str("- Minimal binary size overhead\n");
-    report.push_str("- Simple API for basic CLI needs\n");
-    report.push_str("- Low resource consumption\n\n");
+    report.push_str("- Simple API for basic argument parsing\n");
+    report.push_str("- Low resource consumption and minimal dependencies\n\n");
     
     report.push_str("**Use Case Recommendations:**\n");
     report.push_str("- **Choose Unilang** for multi-modal applications needing CLI + Web API + GUI\n");
     report.push_str("- **Choose Clap** for feature-rich CLI applications with complex requirements\n");
-    report.push_str("- **Choose Nanoclap** for simple, lightweight CLI tools with minimal dependencies\n");
+    report.push_str("- **Choose Pico-Args** for simple, lightweight CLI tools with minimal dependencies\n");
 
     fs::write("target/comprehensive_framework_comparison/comprehensive_report.txt", &report)
         .expect("Failed to write comprehensive report");

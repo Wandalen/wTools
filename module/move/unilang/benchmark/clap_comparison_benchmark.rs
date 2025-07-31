@@ -1,5 +1,5 @@
 use std::time::Instant;
-use clap::{Arg, Command, builder::Str};
+use clap::{Arg, Command};
 
 #[allow(dead_code)]
 struct ClapBenchmarkResult {
@@ -22,8 +22,8 @@ fn create_clap_app_with_n_commands(n: usize) -> Command {
     for i in 0..n {
         let cmd_name = format!("cmd_{}", i);
         let cmd_desc = format!("Performance test command {}", i);
-        let subcommand = Command::new(cmd_name.as_str())
-            .about(cmd_desc.as_str())
+        let subcommand = Command::new(&cmd_name)
+            .about(&cmd_desc)
             .arg(Arg::new("input")
                 .short('i')
                 .long("input")

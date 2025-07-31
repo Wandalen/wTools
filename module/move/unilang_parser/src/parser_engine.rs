@@ -422,11 +422,15 @@ impl Parser
 
                     if named_arguments.contains_key( arg_name )
                     {
-                      return Err( ParseError::new
-                      (
-                        ErrorKind::Syntax( format!( "Duplicate named argument '{arg_name}'" ) ),
-                        value_item.source_location(),
-                      ));
+                      if self.options.error_on_duplicate_named_arguments
+                      {
+                        return Err( ParseError::new
+                        (
+                          ErrorKind::Syntax( format!( "Duplicate named argument '{arg_name}'" ) ),
+                          value_item.source_location(),
+                        ));
+                      }
+                      // If not erroring on duplicates, the new value will overwrite the old one
                     }
                     named_arguments.insert
                     (
@@ -558,11 +562,15 @@ impl Parser
 
                     if named_arguments.contains_key( arg_name )
                     {
-                      return Err( ParseError::new
-                      (
-                        ErrorKind::Syntax( format!( "Duplicate named argument '{arg_name}'" ) ),
-                        value_item.source_location(),
-                      ));
+                      if self.options.error_on_duplicate_named_arguments
+                      {
+                        return Err( ParseError::new
+                        (
+                          ErrorKind::Syntax( format!( "Duplicate named argument '{arg_name}'" ) ),
+                          value_item.source_location(),
+                        ));
+                      }
+                      // If not erroring on duplicates, the new value will overwrite the old one
                     }
                     named_arguments.insert
                     (

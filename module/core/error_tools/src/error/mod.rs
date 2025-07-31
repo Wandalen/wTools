@@ -60,3 +60,6 @@ mod private {
 
 #[cfg(feature = "enabled")]
 pub use private::{ErrWith, ResultWithReport, ErrorTrait};
+
+#[cfg(feature = "enabled")]
+pub use assert::*;
