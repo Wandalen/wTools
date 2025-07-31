@@ -262,7 +262,7 @@ path = "module/core/for_each"
 default-features = false
 
 [workspace.dependencies.former]
-version = "~2.20.0"
+version = "~2.21.0"
 path = "module/core/former"
 default-features = false
 
