@@ -28,5 +28,3 @@ cd wTools
 To run the comprehensive example, use the following command:
 `cargo run --example full_cli_example -- help`
 ```
-
-

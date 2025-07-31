@@ -5,13 +5,13 @@
 //!
 //! The parser is designed to be robust against various input formats and provides
 //! detailed error reporting for invalid instructions.
-#![cfg_attr(feature = "no_std", no_std)]
-#![cfg_attr(docsrs, feature(doc_auto_cfg))]
-#![doc(html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_hr.png")]
-#![doc(html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_hr.png")]
-#![warn(missing_docs)]
-#![warn(missing_debug_implementations)]
-#![warn(rust_2018_idioms)]
+#![ cfg_attr( feature = "no_std", no_std ) ]
+#![ cfg_attr( docsrs, feature( doc_auto_cfg ) ) ]
+#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_hr.png" ) ]
+#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_hr.png" ) ]
+#![ warn( missing_docs ) ]
+#![ warn( missing_debug_implementations ) ]
+#![ warn( rust_2018_idioms ) ]
 extern crate alloc;
 /// `unilang_parser` is a Rust crate designed to parse `unilang` CLI-like instruction strings.
 /// It leverages `strs_tools` for initial itemization (splitting the input string into lexical tokens)
@@ -68,10 +68,11 @@ pub mod item_adapter;
 pub mod parser_engine;
 
 /// Prelude for commonly used items.
-pub mod prelude {
+pub mod prelude
+{
   pub use super::config::*;
   pub use super::error::*;
-  pub use super::instruction::{GenericInstruction, Argument};
+  pub use super::instruction::{ GenericInstruction, Argument };
   pub use super::item_adapter::*;
   pub use super::parser_engine::*;
 }

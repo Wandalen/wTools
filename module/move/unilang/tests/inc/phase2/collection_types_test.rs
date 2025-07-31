@@ -61,16 +61,15 @@ fn test_list_string_kind() {
       name: "list_arg".to_string(),
       description: "A list of strings".to_string(),
       kind: Kind::List(Box::new(Kind::String), None),
-      attributes: ArgumentAttributes::former()
-        .optional(false)
-        .multiple(false)
-        .is_default_arg(false)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "".to_string(),
-      default_value: None,
       aliases: vec![],
       tags: vec![],
     }],
@@ -102,14 +101,7 @@ fn test_list_string_kind() {
   assert!(result.is_ok());
   let verified_command = result.unwrap().remove(0);
   let arg = verified_command.arguments.get("list_arg").unwrap();
-  assert_eq!(
-    *arg,
-    unilang::types::Value::List(vec![
-      unilang::types::Value::String("a".to_string()),
-      unilang::types::Value::String("b".to_string()),
-      unilang::types::Value::String("c".to_string())
-    ])
-  );
+  assert_eq!(*arg, unilang::types::Value::List(vec![unilang::types::Value::String("a".to_string()), unilang::types::Value::String("b".to_string()), unilang::types::Value::String("c".to_string())]));
 }
 
 #[test]
@@ -122,16 +114,15 @@ fn test_list_integer_custom_delimiter_kind() {
       name: "list_arg".to_string(),
       description: "A list of integers with custom delimiter".to_string(),
       kind: Kind::List(Box::new(Kind::Integer), Some(';')),
-      attributes: ArgumentAttributes::former()
-        .optional(false)
-        .multiple(false)
-        .is_default_arg(false)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "".to_string(),
-      default_value: None,
       aliases: vec![],
       tags: vec![],
     }],
@@ -163,14 +154,7 @@ fn test_list_integer_custom_delimiter_kind() {
   assert!(result.is_ok());
   let verified_command = result.unwrap().remove(0);
   let arg = verified_command.arguments.get("list_arg").unwrap();
-  assert_eq!(
-    *arg,
-    unilang::types::Value::List(vec![
-      unilang::types::Value::Integer(1),
-      unilang::types::Value::Integer(2),
-      unilang::types::Value::Integer(3)
-    ])
-  );
+  assert_eq!(*arg, unilang::types::Value::List(vec![unilang::types::Value::Integer(1), unilang::types::Value::Integer(2), unilang::types::Value::Integer(3)]));
 }
 
 #[test]
@@ -183,16 +167,15 @@ fn test_map_string_integer_kind() {
       name: "map_arg".to_string(),
       description: "A map of string to integer".to_string(),
       kind: Kind::Map(Box::new(Kind::String), Box::new(Kind::Integer), None, Some(':')),
-      attributes: ArgumentAttributes::former()
-        .optional(false)
-        .multiple(false)
-        .is_default_arg(false)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "".to_string(),
-      default_value: None,
       aliases: vec![],
       tags: vec![],
     }],
@@ -240,16 +223,15 @@ fn test_map_string_string_custom_delimiters_kind() {
       name: "map_arg".to_string(),
       description: "A map of string to string with custom delimiters".to_string(),
       kind: Kind::Map(Box::new(Kind::String), Box::new(Kind::String), Some(';'), Some('=')),
-      attributes: ArgumentAttributes::former()
-        .optional(false)
-        .multiple(false)
-        .is_default_arg(false)
-        .interactive(false)
-        .sensitive(false)
-        .form(),
+      attributes: ArgumentAttributes {
+        optional: false,
+        multiple: false,
+        interactive: false,
+        sensitive: false,
+        ..Default::default()
+      },
       validation_rules: vec![],
       hint: "".to_string(),
-      default_value: None,
       aliases: vec![],
       tags: vec![],
     }],
