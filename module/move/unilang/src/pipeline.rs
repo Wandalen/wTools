@@ -172,7 +172,7 @@ impl Pipeline
           command,
           outputs : vec![],
           success : false,
-          error : Some( format!( "Parse error: {}", error ) ),
+          error : Some( format!( "Parse error: {error}" ) ),
         };
       }
     };
@@ -190,7 +190,7 @@ impl Pipeline
           command,
           outputs : vec![],
           success : false,
-          error : Some( format!( "Semantic analysis error: {}", error ) ),
+          error : Some( format!( "Semantic analysis error: {error}" ) ),
         };
       }
     };
@@ -211,7 +211,7 @@ impl Pipeline
         command,
         outputs : vec![],
         success : false,
-        error : Some( format!( "Execution error: {}", error ) ),
+        error : Some( format!( "Execution error: {error}" ) ),
       },
     }
   }
@@ -401,7 +401,7 @@ CommandResult
         command,
         outputs : vec![],
         success : false,
-        error : Some( format!( "Parse error: {}", error ) ),
+        error : Some( format!( "Parse error: {error}" ) ),
       };
     }
   };
@@ -419,7 +419,7 @@ CommandResult
         command,
         outputs : vec![],
         success : false,
-        error : Some( format!( "Semantic analysis error: {}", error ) ),
+        error : Some( format!( "Semantic analysis error: {error}" ) ),
       };
     }
   };
@@ -441,7 +441,7 @@ CommandResult
       command,
       outputs : vec![],
       success : false,
-      error : Some( format!( "Execution error: {}", error ) ),
+      error : Some( format!( "Execution error: {error}" ) ),
     },
   }
 }
@@ -621,7 +621,7 @@ mod tests
     assert_eq!( batch_result.failed_commands, 1 );
     assert!( !batch_result.all_succeeded() );
     assert!( batch_result.any_failed() );
-    assert!( ( batch_result.success_rate() - 66.666666 ).abs() < 0.001 );
+    assert!( ( batch_result.success_rate() - 66.666_666 ).abs() < 0.001 );
   }
 
   #[ test ]

@@ -10,7 +10,7 @@
 //! |---|---|---|---|
 //! | T-REG-1 | Register and retrieve command with namespace | Command should be found using its fully qualified name. | Print registered key and lookup key with byte representations. |
 
-use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind, OutputData };
+use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, Kind };
 use unilang::registry::CommandRegistry;
 
 /// Tests that a command with a namespace can be registered and retrieved using its fully qualified name.

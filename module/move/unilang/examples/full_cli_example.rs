@@ -4,7 +4,7 @@
 //! pipeline, including argument parsing, semantic analysis, and command execution.
 
 use std::collections::HashMap;
-use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, OutputData, ValidationRule };
+use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, OutputData };
 use unilang::data::Kind as ArgumentKind;
 use unilang::error::Error;
 use unilang::interpreter::Interpreter;

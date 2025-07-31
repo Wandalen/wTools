@@ -95,7 +95,7 @@ impl< 'a > HelpGenerator< 'a >
         }
         if !arg.validation_rules.is_empty()
         {
-          write!( &mut arg_info, ", Rules: [{}]", arg.validation_rules.iter().map(|r| format!("{:?}", r)).collect::<Vec<_>>().join( ", " ) ).unwrap();
+          write!( &mut arg_info, ", Rules: [{}]", arg.validation_rules.iter().map(|r| format!("{r:?}")).collect::<Vec<_>>().join( ", " ) ).unwrap();
         }
         writeln!( &mut help, "{arg_info}" ).unwrap();
       }

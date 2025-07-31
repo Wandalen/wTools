@@ -185,7 +185,7 @@ mod private
         "Object" => Ok( Kind::Object ),
         s if s.starts_with( "Enum(" ) && s.ends_with( ')' ) =>
         {
-          let inner = &s[ 5..s.len() - 1 ];
+          let inner = s.strip_prefix( "Enum(" ).unwrap().strip_suffix( ')' ).unwrap();
           if inner.is_empty()
           {
             return Err( Error::Registration( "Empty enum choices".to_string() ) );
@@ -195,7 +195,7 @@ mod private
         },
         s if s.starts_with( "List(" ) && s.ends_with( ')' ) =>
         {
-          let inner = &s[ 5..s.len() - 1 ];
+          let inner = s.strip_prefix( "List(" ).unwrap().strip_suffix( ')' ).unwrap();
           let parts : Vec< &str > = inner.split( ',' ).collect();
           if parts.is_empty()
           {
@@ -214,7 +214,7 @@ mod private
         },
         s if s.starts_with( "Map(" ) && s.ends_with( ')' ) =>
         {
-          let inner = &s[ 4..s.len() - 1 ];
+          let inner = s.strip_prefix( "Map(" ).unwrap().strip_suffix( ')' ).unwrap();
           let parts : Vec< &str > = inner.split( ',' ).collect();
           if parts.len() < 2
           {
@@ -240,7 +240,7 @@ mod private
           };
           Ok( Kind::Map( Box::new( key_kind ), Box::new( value_kind ), entry_delimiter, kv_delimiter ) )
         },
-        _ => Err( Error::Registration( format!( "Unknown kind: {}", s ) ) ),
+        _ => Err( Error::Registration( format!( "Unknown kind: {s}" ) ) ),
       }
     }
   }
@@ -300,7 +300,7 @@ mod private
     fn fmt( &self, f : &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
     {
       let s : String = self.clone().into();
-      write!( f, "{}", s )
+      write!( f, "{s}" )
     }
   }
 
@@ -386,42 +386,42 @@ mod private
       let s = s.trim();
       if s.starts_with( "min:" )
       {
-        let value_str = &s[ 4.. ];
-        let value : f64 = value_str.parse().map_err( | e | Error::Registration( format!( "Invalid min value: {}", e ) ) )?;
+        let value_str = s.strip_prefix( "min:" ).unwrap();
+        let value : f64 = value_str.parse().map_err( | e | Error::Registration( format!( "Invalid min value: {e}" ) ) )?;
         Ok( ValidationRule::Min( value ) )
       }
       else if s.starts_with( "max:" )
       {
-        let value_str = &s[ 4.. ];
-        let value : f64 = value_str.parse().map_err( | e | Error::Registration( format!( "Invalid max value: {}", e ) ) )?;
+        let value_str = s.strip_prefix( "max:" ).unwrap();
+        let value : f64 = value_str.parse().map_err( | e | Error::Registration( format!( "Invalid max value: {e}" ) ) )?;
         Ok( ValidationRule::Max( value ) )
       }
       else if s.starts_with( "minlength:" )
       {
-        let value_str = &s[ 10.. ];
-        let value : usize = value_str.parse().map_err( | e | Error::Registration( format!( "Invalid minlength value: {}", e ) ) )?;
+        let value_str = s.strip_prefix( "minlength:" ).unwrap();
+        let value : usize = value_str.parse().map_err( | e | Error::Registration( format!( "Invalid minlength value: {e}" ) ) )?;
         Ok( ValidationRule::MinLength( value ) )
       }
       else if s.starts_with( "maxlength:" )
       {
-        let value_str = &s[ 10.. ];
-        let value : usize = value_str.parse().map_err( | e | Error::Registration( format!( "Invalid maxlength value: {}", e ) ) )?;
+        let value_str = s.strip_prefix( "maxlength:" ).unwrap();
+        let value : usize = value_str.parse().map_err( | e | Error::Registration( format!( "Invalid maxlength value: {e}" ) ) )?;
         Ok( ValidationRule::MaxLength( value ) )
       }
       else if s.starts_with( "pattern:" )
       {
-        let pattern = &s[ 8.. ];
+        let pattern = s.strip_prefix( "pattern:" ).unwrap();
         Ok( ValidationRule::Pattern( pattern.to_string() ) )
       }
       else if s.starts_with( "minitems:" )
       {
-        let value_str = &s[ 9.. ];
-        let value : usize = value_str.parse().map_err( | e | Error::Registration( format!( "Invalid minitems value: {}", e ) ) )?;
+        let value_str = s.strip_prefix( "minitems:" ).unwrap();
+        let value : usize = value_str.parse().map_err( | e | Error::Registration( format!( "Invalid minitems value: {e}" ) ) )?;
         Ok( ValidationRule::MinItems( value ) )
       }
       else
       {
-        Err( Error::Registration( format!( "Unknown validation rule: {}", s ) ) )
+        Err( Error::Registration( format!( "Unknown validation rule: {s}" ) ) )
       }
     }
   }
