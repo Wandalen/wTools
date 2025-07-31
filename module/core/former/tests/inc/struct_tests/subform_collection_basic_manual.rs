@@ -274,6 +274,7 @@ where
     >,
     Struct1SubformCollectionVec1End<Definition>:
       former::FormingEnd<<collection_tools::Vec<String> as former::EntityToDefinitionTypes<Self, Self>>::Types>,
+    Definition: 'a,
   {
     Former2::former_begin(None, Some(self), Struct1SubformCollectionVec1End::<Definition>::default())
   }
@@ -291,6 +292,7 @@ where
     >,
     Struct1SubformCollectionVec1End<Definition>:
       former::FormingEnd<<collection_tools::Vec<String> as former::EntityToDefinitionTypes<Self, Self>>::Types>,
+    Definition: 'a,
   {
     self._vec_1_assign::<'a, former::CollectionFormer::
     <
@@ -313,6 +315,7 @@ where
       >,
     Struct1SubformCollectionHashmap1End<Definition>:
       former::FormingEnd<<collection_tools::HashMap<String, String> as former::EntityToDefinitionTypes<Self, Self>>::Types>,
+    Definition: 'a,
   {
     Former2::former_begin(None, Some(self), Struct1SubformCollectionHashmap1End::<Definition>::default())
   }
@@ -334,6 +337,7 @@ where
       >,
     Struct1SubformCollectionHashmap1End<Definition>:
       former::FormingEnd<<collection_tools::HashMap<String, String> as former::EntityToDefinitionTypes<Self, Self>>::Types>,
+    Definition: 'a,
   {
     self._hashmap_1_assign::<'a, former::CollectionFormer<
       (String, String),
@@ -353,6 +357,7 @@ where
     >,
     Struct1SubformCollectionHashset1End<Definition>:
       former::FormingEnd<<collection_tools::HashSet<String> as former::EntityToDefinitionTypes<Self, Self>>::Types>,
+    Definition: 'a,
   {
     Former2::former_begin(None, Some(self), Struct1SubformCollectionHashset1End::<Definition>::default())
   }
@@ -373,6 +378,7 @@ where
     >,
     Struct1SubformCollectionHashset1End<Definition>:
       former::FormingEnd<<collection_tools::HashSet<String> as former::EntityToDefinitionTypes<Self, Self>>::Types>,
+    Definition: 'a,
   {
     self._hashset_1_assign::<'a, former::CollectionFormer<
       String,

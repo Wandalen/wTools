@@ -68,8 +68,8 @@ mod debug_e0223_manual;
 
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_collection_basic;
-// #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
-// mod subform_collection_basic_manual;  // BLOCKED: Lifetime bound errors - Definition parameter lifetime issues
+#[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
+mod subform_collection_basic_manual;
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
 // #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
@@ -116,8 +116,8 @@ mod debug_simple_lifetime;
 // mod parametrized_field_where;  // BLOCKED: E0726 implicit elided lifetime not allowed here
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod parametrized_struct_imm;  // Re-enabled to test fix
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod parametrized_struct_manual;  // BLOCKED: Complex manual implementation with hanging issues
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod parametrized_struct_manual;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod parametrized_struct_where;  // BLOCKED: E0277 Hash/Eq trait bound issues with Definition
 
@@ -173,7 +173,7 @@ mod subform_collection_custom;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_collection_implicit;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_collection_manual;  // BLOCKED: Type errors - cannot find ParentFormer
+// mod subform_collection_manual;  // BLOCKED: Missing ParentFormer types and scalar attribute
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_collection_named;
@@ -188,7 +188,7 @@ mod subform_collection_setter_off;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_scalar;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_scalar_manual;  // BLOCKED: Attribute error - cannot find scalar attribute
+// mod subform_scalar_manual;  // BLOCKED: Missing ParentFormer types and scalar attribute
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_scalar_name;
@@ -198,12 +198,12 @@ mod subform_scalar_name;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry_manual;  // BLOCKED: Lifetime bound errors - Definition parameter lifetime issues
+// mod subform_entry_manual;  // BLOCKED: Complex lifetime errors with higher-ranked trait bounds
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry_named;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry_named_manual;  // BLOCKED: Attribute error - cannot find subform_entry attribute
+// mod subform_entry_named_manual;  // BLOCKED: Missing ParentFormer types and subform_entry attribute
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry_setter_off;
@@ -215,7 +215,7 @@ mod subform_entry_setter_on;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry_hashmap;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry_hashmap_custom;  // BLOCKED: Attribute error - cannot find subform_entry attribute
+// mod subform_entry_hashmap_custom;  // BLOCKED: Missing ParentFormer types and subform_entry attribute
 
 // = subform all : scalar, subform_scalar, subform_entry, subform_collection
 
