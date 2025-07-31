@@ -193,14 +193,15 @@ The interpretation of a `unilang` CLI string **must** proceed through the follow
 The parser **must** adhere to the following rules in order:
 
 *   **Rule 0: Whitespace Separation**: Whitespace separates tokens and is not part of a token's value unless inside a quoted string.
-*   **Rule 1: Command Path Identification**: The command path is the longest possible sequence of dot-separated identifiers at the beginning of an expression.
-*   **Rule 2: Transition to Arguments**: The command path ends upon encountering the first token that is not a valid, dot-separated identifier segment (e.g., `::`, a quoted string, `?`).
+*   **Rule 1: Command Path Identification**: The command path is the longest possible sequence of dot-separated identifiers at the beginning of an expression. Valid identifier segments **must** consist only of lowercase alphanumeric characters (`a-z`, `0-9`) and underscores (`_`).
+*   **Rule 2: Transition to Arguments**: The command path ends upon encountering the first token that is not a valid, dot-separated identifier segment (e.g., `::`, a quoted string, `?`, or any token containing characters outside the valid identifier character set such as `/`, `-`, uppercase letters, etc.).
 *   **Rule 3: Dot (`.`) Operator Rules**: A single leading dot is permitted and ignored. A trailing dot is a syntax error. **Special Case**: A standalone dot (`.`) **must** be interpreted as a help command that displays all available commands with concise descriptions.
 *   **Rule 4: Help Operator (`?`)**: The `?` operator marks the instruction for help generation and **must** be the final token. When a command is followed by `?`, the framework **must** display help for that command without attempting to validate or execute it. This means:
     - Missing required arguments **must not** generate errors when `?` is present
     - The help system **must** take precedence over argument validation
     - The framework **must** return a special error code `HELP_REQUESTED` that modalities can handle appropriately
-*   **Rule 5: Argument Types**: Any token after the command path that is not a named argument is a positional argument. A named argument **must** use the `name::value` syntax.
+*   **Rule 5: File Path Handling**: File paths in argument values (including those starting with `./`, `../`, `/`, or `~`) **must** be treated as argument values, not as part of the command path. The presence of `/` or other filesystem path characters **must** immediately terminate command path parsing.
+*   **Rule 6: Argument Types**: Any token after the command path that is not a named argument is a positional argument. A named argument **must** use the `name::value` syntax.
 
 ### 5. Core Data Structures & Usage Examples
 

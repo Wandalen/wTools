@@ -5,7 +5,7 @@ mod private
   // use path::AbsolutePath;
   // use error::{ untyped::Error };
   // Explicit import for Result and its variants for pattern matching
-  use std::result::Result::{self, Ok, Err};
+  use std::result::Result::{Ok, Err};
 
   /// Generate headers for workspace members
   ///

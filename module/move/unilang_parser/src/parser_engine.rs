@@ -420,7 +420,117 @@ impl Parser
                       }
                     }
 
-                    if named_arguments.contains_key( arg_name ) && self.options.error_on_duplicate_named_arguments
+                    if named_arguments.contains_key( arg_name )
+                    {
+                      return Err( ParseError::new
+                      (
+                        ErrorKind::Syntax( format!( "Duplicate named argument '{arg_name}'" ) ),
+                        value_item.source_location(),
+                      ));
+                    }
+                    named_arguments.insert
+                    (
+                      arg_name.clone(),
+                      Argument
+                      {
+                        name : Some( arg_name.clone() ),
+                        value : current_value,
+                        name_location : Some( item.source_location() ),
+                        value_location : SourceLocation::StrSpan
+                        {
+                          start : match value_item.source_location()
+                          {
+                            SourceLocation::StrSpan { start, .. } => start,
+                            SourceLocation::None => 0,
+                          },
+                          end : current_value_end_location,
+                        },
+                      },
+                    );
+                  }
+                  UnilangTokenKind::Delimiter( "." ) =>
+                  {
+                    // Handle file paths that start with "./" or "../"
+                    let mut current_value = ".".to_string();
+                    let mut current_value_end_location = match value_item.source_location()
+                    {
+                      SourceLocation::StrSpan { end, .. } => end,
+                      SourceLocation::None => 0,
+                    };
+
+                    // Continue building the path starting with "."
+                    // Look for the next token after "."
+                    if let Some( next_item ) = items_iter.peek() {
+                      if let UnilangTokenKind::Unrecognized( ref s ) = &next_item.kind {
+                        // This handles cases like "./examples" where "/examples" is unrecognized
+                        current_value.push_str( s );
+                        current_value_end_location = match next_item.source_location() {
+                          SourceLocation::StrSpan { end, .. } => end,
+                          SourceLocation::None => current_value_end_location,
+                        };
+                        items_iter.next(); // Consume the unrecognized token
+
+                        // Continue with the normal path-building loop
+                        loop
+                        {
+                          let Some( peeked_dot ) = items_iter.peek() else
+                          {
+                            break;
+                          };
+                          if let UnilangTokenKind::Delimiter( "." ) = &peeked_dot.kind
+                          {
+                            let _dot_item = items_iter.next().unwrap(); // Consume the dot
+                            let Some( peeked_segment ) = items_iter.peek() else
+                            {
+                              break;
+                            };
+                            if let UnilangTokenKind::Identifier( ref s ) = &peeked_segment.kind
+                            {
+                              current_value.push( '.' );
+                              current_value.push_str( s );
+                              current_value_end_location = match peeked_segment.source_location()
+                              {
+                                SourceLocation::StrSpan { end, .. } => end,
+                                SourceLocation::None => current_value_end_location,
+                              };
+                              items_iter.next(); // Consume the segment
+                            }
+                            else if let UnilangTokenKind::Unrecognized( ref s ) = &peeked_segment.kind
+                            {
+                              current_value.push( '.' );
+                              current_value.push_str( s );
+                              current_value_end_location = match peeked_segment.source_location()
+                              {
+                                SourceLocation::StrSpan { end, .. } => end,
+                                SourceLocation::None => current_value_end_location,
+                              };
+                              items_iter.next(); // Consume the segment
+                            }
+                            else if let UnilangTokenKind::Number( ref s ) = &peeked_segment.kind
+                            {
+                              current_value.push( '.' );
+                              current_value.push_str( s );
+                              current_value_end_location = match peeked_segment.source_location()
+                              {
+                                SourceLocation::StrSpan { end, .. } => end,
+                                SourceLocation::None => current_value_end_location,
+                              };
+                              items_iter.next(); // Consume the segment
+                            }
+                            else
+                            {
+                              break;
+                            }
+                          }
+                          else
+                          {
+                            break;
+                          }
+                        }
+                      }
+                    }
+
+                    if named_arguments.contains_key( arg_name )
                     {
                       return Err( ParseError::new
                       (

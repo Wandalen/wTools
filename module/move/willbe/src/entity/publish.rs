@@ -17,7 +17,7 @@ mod private
   };
   use error::ErrWith;
   // Explicit import for Result and its variants for pattern matching
-  use std::result::Result::{self, Ok, Err};
+  use std::result::Result::{Ok, Err};
 
   /// Represents instructions for publishing a package.
   #[ derive( Debug, Clone ) ]

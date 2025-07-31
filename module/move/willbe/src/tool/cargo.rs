@@ -20,7 +20,7 @@ mod private
   // qqq : for Bohdan : bad : tools can't depend on entitties!
   use crate::channel::Channel;
   // Explicit import for Result and its variants for pattern matching
-  use std::result::Result::{self, Ok, Err};
+  use std::result::Result::{Ok, Err};
 
   // aaa : documentation /// aaa : documented
 

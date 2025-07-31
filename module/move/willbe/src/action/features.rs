@@ -12,7 +12,7 @@ mod private
   use error::untyped::Context;
   // use workspace::Workspace;
   // Explicit import for Result and its variants for pattern matching
-  use std::result::Result::{self, Ok, Err};
+  use std::result::Result::{self, Ok};
 
   /// Options available for the .features command
   #[ derive( Debug, Former ) ]

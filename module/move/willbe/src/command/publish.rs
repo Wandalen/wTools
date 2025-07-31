@@ -11,7 +11,7 @@ mod private
   use std::fmt::Write;
   use channel::Channel;
   // Explicit import for Result and its variants for pattern matching
-  use std::result::Result::{self, Ok, Err};
+  use std::result::Result::{Ok, Err};
 
   #[ derive( Former ) ]
   #[ allow( clippy::struct_excessive_bools ) ]

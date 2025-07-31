@@ -24,7 +24,7 @@ mod private
     .follow_links( false )
     .build().unwrap()
     .into_iter()
-    .filter_map( Result::ok )
+    .filter_map( std::result::Result::ok )
     .map( | s | s.path().to_path_buf() )
     .collect()
   }

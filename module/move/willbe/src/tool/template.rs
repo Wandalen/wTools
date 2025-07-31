@@ -15,7 +15,7 @@ mod private
   };
   use error::untyped::Context;
   // Explicit import for Result and its variants for pattern matching
-  use std::result::Result::{self, Ok, Err};
+  use std::result::Result::Ok;
 
   /// Container for templates.
   ///

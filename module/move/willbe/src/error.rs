@@ -20,10 +20,7 @@ pub mod orphan {
 /// Exposed namespace of the module.
 pub mod exposed {
   pub use ::error_tools::*;
-  pub use ::error_tools::prelude::*;
-  #[cfg(feature = "error_typed")]
   pub use ::error_tools::typed;
-  #[cfg(feature = "error_untyped")]
   pub use ::error_tools::untyped;
   
   // Re-export standard library Result and Option
@@ -38,9 +35,7 @@ pub mod prelude {
 
 // Direct re-exports for common usage
 pub use ::error_tools::*;
-#[cfg(feature = "error_typed")]
 pub use ::error_tools::typed;
-#[cfg(feature = "error_untyped")]
 pub use ::error_tools::untyped;
 
 // Re-export standard library Result and Option for pattern matching

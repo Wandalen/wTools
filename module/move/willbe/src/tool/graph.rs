@@ -29,7 +29,7 @@ mod private
 
   use package::{ Package, publish_need };
   // Explicit import for Result and its variants for pattern matching
-  use std::result::Result::{self, Ok, Err};
+  use std::result::Result::{Ok, Err};
   // qqq : for Bohdan : bad : tools can't depend on entitties!
 
   #[ derive( Debug, Error ) ]

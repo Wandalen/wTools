@@ -16,7 +16,7 @@ mod private
   };
   use collection::HashMap;
   // Explicit import for Result and its variants for pattern matching
-  use std::result::Result::{self, Ok, Err};
+  use std::result::Result::Ok;
 
   #[ derive( Debug, PartialEq, Eq, Clone ) ]
   /// Parser value enum

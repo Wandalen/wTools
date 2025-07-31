@@ -59,6 +59,8 @@
 // if you publish a crate and after you try to publish another which depends on the first willbe don't see any changes and don't publish second
 // for example publishing impl_index -> after publising test_tools make willbe struggle to see that publishing of test_tools is required
 
+#![allow(ambiguous_glob_imports)]
+
 pub use mod_interface::mod_interface;
 
 /// Define a private namespace for all its items.
