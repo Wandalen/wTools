@@ -1,3 +1,8 @@
+//! Build script for unilang crate.
+//! 
+//! Generates static command definitions from YAML manifest using Perfect Hash Functions (PHF)
+//! for zero-overhead command lookup at runtime.
+
 use std::env;
 use std::fs::File;
 use std::io::{ BufWriter, Write };
@@ -16,15 +21,10 @@ fn main()
     .unwrap_or_else(|_| "unilang.commands.yaml".to_string());
 
   // Read and parse the YAML manifest
-  let yaml_content = match std::fs::read_to_string(&manifest_path)
-  {
-    Ok(content) => content,
-    Err(_) =>
-    {
-      // If manifest doesn't exist, create empty PHF
-      generate_empty_phf(&dest_path);
-      return;
-    }
+  let Ok(yaml_content) = std::fs::read_to_string(&manifest_path) else {
+    // If manifest doesn't exist, create empty PHF
+    generate_empty_phf(&dest_path);
+    return;
   };
 
   let command_definitions: Vec<serde_yaml::Value> = match serde_yaml::from_str(&yaml_content)
@@ -32,7 +32,7 @@ fn main()
     Ok(definitions) => definitions,
     Err(e) =>
     {
-      panic!("Failed to parse YAML manifest: {}", e);
+      panic!("Failed to parse YAML manifest: {e}");
     }
   };
 
@@ -47,6 +47,10 @@ fn generate_empty_phf(dest_path: &Path)
   writeln!(f, "use phf::{{phf_map, Map}};").unwrap();
   writeln!(f, "use crate::static_data::StaticCommandDefinition;").unwrap();
   writeln!(f).unwrap();
+  writeln!(f, "/// Perfect Hash Function map of static command definitions.").unwrap();
+  writeln!(f, "/// ").unwrap();
+  writeln!(f, "/// This map provides zero-overhead lookup of compile-time registered commands.").unwrap();
+  writeln!(f, "/// Commands are keyed by their full name (namespace.command).").unwrap();
   writeln!(f, "pub static STATIC_COMMANDS: Map<&'static str, &'static StaticCommandDefinition> = phf_map! {{}};").unwrap();
 }
 
@@ -57,7 +61,21 @@ fn generate_static_commands(dest_path: &Path, command_definitions: &[serde_yaml:
   // Write header and imports
   writeln!(f, "// Generated static commands").unwrap();
   writeln!(f, "use phf::{{phf_map, Map}};").unwrap();
-  writeln!(f, "use crate::static_data::{{StaticCommandDefinition, StaticArgumentDefinition, StaticArgumentAttributes, StaticKind, StaticValidationRule}};").unwrap();
+  
+  // Only import types we'll actually use
+  if command_definitions.is_empty() {
+    writeln!(f, "use crate::static_data::StaticCommandDefinition;").unwrap();
+  } else {
+    // Check if we have any commands with arguments
+    let has_arguments = command_definitions.iter()
+      .any(|cmd| cmd["arguments"].as_sequence().is_some_and(|args| !args.is_empty()));
+    
+    if has_arguments {
+      writeln!(f, "use crate::static_data::{{StaticCommandDefinition, StaticArgumentDefinition, StaticArgumentAttributes, StaticKind}};").unwrap();
+    } else {
+      writeln!(f, "use crate::static_data::StaticCommandDefinition;").unwrap();
+    }
+  }
   writeln!(f).unwrap();
 
   // Generate const data for each command
@@ -67,6 +85,10 @@ fn generate_static_commands(dest_path: &Path, command_definitions: &[serde_yaml:
   }
 
   // Generate the PHF map
+  writeln!(f, "/// Perfect Hash Function map of static command definitions.").unwrap();
+  writeln!(f, "/// ").unwrap();
+  writeln!(f, "/// This map provides zero-overhead lookup of compile-time registered commands.").unwrap();
+  writeln!(f, "/// Commands are keyed by their full name (namespace.command).").unwrap();
   writeln!(f, "pub static STATIC_COMMANDS: Map<&'static str, &'static StaticCommandDefinition> = phf_map! {{").unwrap();
 
   for (i, cmd_value) in command_definitions.iter().enumerate()
@@ -76,14 +98,14 @@ fn generate_static_commands(dest_path: &Path, command_definitions: &[serde_yaml:
     
     let full_name = if namespace.is_empty()
     {
-      format!(".{}", name)
+      format!(".{name}")
     }
     else
     {
-      format!("{}.{}", namespace, name)
+      format!("{namespace}.{name}")
     };
 
-    writeln!(f, "  \"{}\" => &CMD_{},", full_name, i).unwrap();
+    writeln!(f, "  \"{full_name}\" => &CMD_{i},").unwrap();
   }
 
   writeln!(f, "}};").unwrap();
@@ -111,10 +133,10 @@ fn generate_command_const(f: &mut BufWriter<File>, index: usize, cmd_value: &ser
         generate_argument_const(f, index, arg_i, arg_value);
       }
 
-      writeln!(f, "const CMD_{}_ARGS: &[StaticArgumentDefinition] = &[", index).unwrap();
+      writeln!(f, "const CMD_{index}_ARGS: &[StaticArgumentDefinition] = &[").unwrap();
       for arg_i in 0..arguments.len()
       {
-        writeln!(f, "  CMD_{}_ARG_{},", index, arg_i).unwrap();
+        writeln!(f, "  CMD_{index}_ARG_{arg_i},").unwrap();
       }
       writeln!(f, "];").unwrap();
       writeln!(f).unwrap();
@@ -122,13 +144,13 @@ fn generate_command_const(f: &mut BufWriter<File>, index: usize, cmd_value: &ser
   }
 
   // Generate arrays for aliases, tags, permissions, examples
-  generate_string_array(f, &format!("CMD_{}_ALIASES", index), &cmd_value["aliases"]);
-  generate_string_array(f, &format!("CMD_{}_TAGS", index), &cmd_value["tags"]);
-  generate_string_array(f, &format!("CMD_{}_PERMISSIONS", index), &cmd_value["permissions"]);
-  generate_string_array(f, &format!("CMD_{}_EXAMPLES", index), &cmd_value["examples"]);
+  generate_string_array(f, &format!("CMD_{index}_ALIASES"), &cmd_value["aliases"]);
+  generate_string_array(f, &format!("CMD_{index}_TAGS"), &cmd_value["tags"]);
+  generate_string_array(f, &format!("CMD_{index}_PERMISSIONS"), &cmd_value["permissions"]);
+  generate_string_array(f, &format!("CMD_{index}_EXAMPLES"), &cmd_value["examples"]);
 
   // Generate the main command const
-  writeln!(f, "const CMD_{}: StaticCommandDefinition = StaticCommandDefinition {{", index).unwrap();
+  writeln!(f, "const CMD_{index}: StaticCommandDefinition = StaticCommandDefinition {{").unwrap();
   writeln!(f, "  name: \"{}\",", escape_string(name)).unwrap();
   writeln!(f, "  namespace: \"{}\",", escape_string(namespace)).unwrap();
   writeln!(f, "  description: \"{}\",", escape_string(description)).unwrap();
@@ -143,7 +165,7 @@ fn generate_command_const(f: &mut BufWriter<File>, index: usize, cmd_value: &ser
     }
     else
     {
-      writeln!(f, "  arguments: CMD_{}_ARGS,", index).unwrap();
+      writeln!(f, "  arguments: CMD_{index}_ARGS,").unwrap();
     }
   }
   else
@@ -154,13 +176,13 @@ fn generate_command_const(f: &mut BufWriter<File>, index: usize, cmd_value: &ser
   writeln!(f, "  routine_link: None,").unwrap();
   writeln!(f, "  status: \"{}\",", escape_string(status)).unwrap();
   writeln!(f, "  version: \"{}\",", escape_string(version)).unwrap();
-  writeln!(f, "  tags: CMD_{}_TAGS,", index).unwrap();
-  writeln!(f, "  aliases: CMD_{}_ALIASES,", index).unwrap();
-  writeln!(f, "  permissions: CMD_{}_PERMISSIONS,", index).unwrap();
-  writeln!(f, "  idempotent: {},", idempotent).unwrap();
+  writeln!(f, "  tags: CMD_{index}_TAGS,").unwrap();
+  writeln!(f, "  aliases: CMD_{index}_ALIASES,").unwrap();
+  writeln!(f, "  permissions: CMD_{index}_PERMISSIONS,").unwrap();
+  writeln!(f, "  idempotent: {idempotent},").unwrap();
   writeln!(f, "  deprecation_message: \"{}\",", escape_string(deprecation_message)).unwrap();
   writeln!(f, "  http_method_hint: \"{}\",", escape_string(http_method_hint)).unwrap();
-  writeln!(f, "  examples: CMD_{}_EXAMPLES,", index).unwrap();
+  writeln!(f, "  examples: CMD_{index}_EXAMPLES,").unwrap();
   writeln!(f, "}};").unwrap();
   writeln!(f).unwrap();
 }
@@ -177,7 +199,7 @@ fn generate_argument_const(f: &mut BufWriter<File>, cmd_index: usize, arg_index:
   {
     if !validation_rules.is_empty()
     {
-      writeln!(f, "const CMD_{}_ARG_{}_VALIDATION: &[StaticValidationRule] = &[", cmd_index, arg_index).unwrap();
+      writeln!(f, "const CMD_{cmd_index}_ARG_{arg_index}_VALIDATION: &[StaticValidationRule] = &[").unwrap();
       for _rule in validation_rules
       {
         // For now, we'll keep validation rules empty since they're complex to parse
@@ -188,8 +210,8 @@ fn generate_argument_const(f: &mut BufWriter<File>, cmd_index: usize, arg_index:
   }
 
   // Generate aliases and tags arrays
-  generate_string_array(f, &format!("CMD_{}_ARG_{}_ALIASES", cmd_index, arg_index), &arg_value["aliases"]);
-  generate_string_array(f, &format!("CMD_{}_ARG_{}_TAGS", cmd_index, arg_index), &arg_value["tags"]);
+  generate_string_array(f, &format!("CMD_{cmd_index}_ARG_{arg_index}_ALIASES"), &arg_value["aliases"]);
+  generate_string_array(f, &format!("CMD_{cmd_index}_ARG_{arg_index}_TAGS"), &arg_value["tags"]);
 
   // Generate attributes
   let attributes = &arg_value["attributes"];
@@ -199,9 +221,9 @@ fn generate_argument_const(f: &mut BufWriter<File>, cmd_index: usize, arg_index:
   let sensitive = attributes["sensitive"].as_bool().unwrap_or(false);
   let interactive = attributes["interactive"].as_bool().unwrap_or(false);
 
-  writeln!(f, "const CMD_{}_ARG_{}_ATTRS: StaticArgumentAttributes = StaticArgumentAttributes {{", cmd_index, arg_index).unwrap();
-  writeln!(f, "  optional: {},", optional).unwrap();
-  writeln!(f, "  multiple: {},", multiple).unwrap();
+  writeln!(f, "const CMD_{cmd_index}_ARG_{arg_index}_ATTRS: StaticArgumentAttributes = StaticArgumentAttributes {{").unwrap();
+  writeln!(f, "  optional: {optional},").unwrap();
+  writeln!(f, "  multiple: {multiple},").unwrap();
   if let Some(default) = default_value
   {
     writeln!(f, "  default: Some(\"{}\"),", escape_string(default)).unwrap();
@@ -210,14 +232,13 @@ fn generate_argument_const(f: &mut BufWriter<File>, cmd_index: usize, arg_index:
   {
     writeln!(f, "  default: None,").unwrap();
   }
-  writeln!(f, "  sensitive: {},", sensitive).unwrap();
-  writeln!(f, "  interactive: {},", interactive).unwrap();
+  writeln!(f, "  sensitive: {sensitive},").unwrap();
+  writeln!(f, "  interactive: {interactive},").unwrap();
   writeln!(f, "}};").unwrap();
 
   // Generate kind
   let static_kind = match kind_str
   {
-    "String" => "StaticKind::String",
     "Integer" => "StaticKind::Integer",
     "Float" => "StaticKind::Float",
     "Boolean" => "StaticKind::Boolean",
@@ -229,19 +250,19 @@ fn generate_argument_const(f: &mut BufWriter<File>, cmd_index: usize, arg_index:
     "Pattern" => "StaticKind::Pattern",
     "JsonString" => "StaticKind::JsonString",
     "Object" => "StaticKind::Object",
-    _ => "StaticKind::String", // Default fallback
+    _ => "StaticKind::String", // Default fallback, includes "String"
   };
 
   // Generate the argument const
-  writeln!(f, "const CMD_{}_ARG_{}: StaticArgumentDefinition = StaticArgumentDefinition {{", cmd_index, arg_index).unwrap();
+  writeln!(f, "const CMD_{cmd_index}_ARG_{arg_index}: StaticArgumentDefinition = StaticArgumentDefinition {{").unwrap();
   writeln!(f, "  name: \"{}\",", escape_string(name)).unwrap();
-  writeln!(f, "  kind: {},", static_kind).unwrap();
-  writeln!(f, "  attributes: CMD_{}_ARG_{}_ATTRS,", cmd_index, arg_index).unwrap();
+  writeln!(f, "  kind: {static_kind},").unwrap();
+  writeln!(f, "  attributes: CMD_{cmd_index}_ARG_{arg_index}_ATTRS,").unwrap();
   writeln!(f, "  hint: \"{}\",", escape_string(hint)).unwrap();
   writeln!(f, "  description: \"{}\",", escape_string(description)).unwrap();
   writeln!(f, "  validation_rules: &[],").unwrap(); // Keep empty for now
-  writeln!(f, "  aliases: CMD_{}_ARG_{}_ALIASES,", cmd_index, arg_index).unwrap();
-  writeln!(f, "  tags: CMD_{}_ARG_{}_TAGS,", cmd_index, arg_index).unwrap();
+  writeln!(f, "  aliases: CMD_{cmd_index}_ARG_{arg_index}_ALIASES,").unwrap();
+  writeln!(f, "  tags: CMD_{cmd_index}_ARG_{arg_index}_TAGS,").unwrap();
   writeln!(f, "}};").unwrap();
   writeln!(f).unwrap();
 }
@@ -252,11 +273,11 @@ fn generate_string_array(f: &mut BufWriter<File>, const_name: &str, yaml_value: 
   {
     if array.is_empty()
     {
-      writeln!(f, "const {}: &[&str] = &[];", const_name).unwrap();
+      writeln!(f, "const {const_name}: &[&str] = &[];").unwrap();
     }
     else
     {
-      writeln!(f, "const {}: &[&str] = &[", const_name).unwrap();
+      writeln!(f, "const {const_name}: &[&str] = &[").unwrap();
       for item in array
       {
         if let Some(s) = item.as_str()
@@ -269,7 +290,7 @@ fn generate_string_array(f: &mut BufWriter<File>, const_name: &str, yaml_value: 
   }
   else
   {
-    writeln!(f, "const {}: &[&str] = &[];", const_name).unwrap();
+    writeln!(f, "const {const_name}: &[&str] = &[];").unwrap();
   }
 }
 

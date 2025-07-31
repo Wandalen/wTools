@@ -15,6 +15,7 @@ Define your command-line utility interface once and get consistent interaction a
 """
 categories = [ "command-line-interface", "command-line-utilities" ]
 keywords = [ "wtools", "CLI", "CUI", "user-interface" ]
+# Note: stress_test_bin in tests/ causes a harmless warning about duplicate targets
 
 [lints]
 workspace = true
@@ -79,6 +80,8 @@ path = "tests/inc/phase3/data_model_features_test.rs"
 [[test]]
 name = "performance_stress_test"
 path = "tests/inc/phase4/performance_stress_test.rs"
+
+# stress_test_bin is a binary, not a test - no [[test]] entry needed
 
 
 

@@ -63,32 +63,53 @@ Perfect for applications where you need flexible error handling without defining
 - Perfect for rapid prototyping and applications
 
 ```rust
-use error_tools::untyped::{ Result, Context, format_err };
+use error_tools::untyped::{ Result, format_err };
 
-fn read_config_file( path : &str ) -> Result< String >
+fn get_message() -> Result< &'static str >
 {
-  let content = std::fs::read_to_string( path )
-    .context( format!( "Failed to read config file at '{}'", path ) )?;
-
-  if content.trim().is_empty()
-  {
-    return Err( format_err!( "Configuration file is empty" ) );
-  }
-
-  Ok( content )
+  Ok( "Hello, world!" )
+  // Err( format_err!( "An unexpected error!" ) )
 }
 
-fn main() -> Result<()>
+fn main()
 {
-  let config = read_config_file( "app.toml" )
-    .context( "Failed to load application configuration" )?;
-  
-  println!( "Loaded config: {} bytes", config.len() );
-  Ok(())
+  match get_message()
+  {
+    Ok( msg ) => println!( "Success: {}", msg ),
+    Err( e ) => println!( "Error: {:?}", e ),
+  }
 }
 ```
 
-### 2. Typed Errors (Library-Focused)
+Run this example:
+```sh
+cargo run --example error_tools_trivial
+```
+
+### 2. Working with Context
+
+Adding context to errors helps with debugging and user experience:
+
+```rust,ignore
+use error_tools::untyped::{ Result, Context, format_err };
+
+fn read_and_process_file( path : &str ) -> Result< String >
+{
+  let content = std::fs::read_to_string( path )
+    .context( format_err!( "Failed to read file at '{}'", path ) )?;
+
+  if content.is_empty()
+  {
+    return Err( format_err!( "File is empty!" ) );
+  }
+
+  Ok( content.to_uppercase() )
+}
+```
+
+> See the full runnable example in [`examples/replace_anyhow.rs`](./examples/replace_anyhow.rs).
+
+### 3. Typed Errors (Library-Focused)
 
 Ideal for libraries where you want to provide a clear, structured contract for possible errors. This is a facade over `thiserror`.
 
@@ -98,62 +119,38 @@ Ideal for libraries where you want to provide a clear, structured contract for p
 - Compile-time error checking
 - Better API boundaries for library consumers
 
-```rust
+```rust,ignore
 use error_tools::typed::Error;
 use error_tools::dependency::thiserror;
 use std::path::PathBuf;
 
 #[ derive( Debug, Error ) ]
-pub enum ConfigError
+pub enum DataError
 {
-  #[ error( "Configuration file not found: {path}" ) ]
-  NotFound { path : PathBuf },
-  
-  #[ error( "Invalid configuration format in {path}: {reason}" ) ]
-  InvalidFormat { path : PathBuf, reason : String },
-  
-  #[ error( "Permission denied accessing {path}" ) ]
-  PermissionDenied { path : PathBuf },
-  
-  #[ error( "I/O error: {0}" ) ]
-  Io( #[from] std::io::Error ),
+  #[ error( "I/O error for file: {file}" ) ]
+  Io { file : PathBuf, source : std::io::Error },
+  #[ error( "Parsing error: {0}" ) ]
+  Parse( String ),
 }
 
-fn load_config( path : &PathBuf ) -> Result< String, ConfigError >
+fn process_data( path : &PathBuf ) -> Result< i32, DataError >
 {
-  match std::fs::read_to_string( path )
-  {
-    Ok( content ) => 
-    {
-      if content.trim().is_empty()
-      {
-        Err( ConfigError::InvalidFormat
-        {
-          path : path.clone(),
-          reason : "File is empty".to_string(),
-        })
-      }
-      else
-      {
-        Ok( content )
-      }
-    }
-    Err( err ) => match err.kind()
-    {
-      std::io::ErrorKind::NotFound => Err( ConfigError::NotFound { path : path.clone() } ),
-      std::io::ErrorKind::PermissionDenied => Err( ConfigError::PermissionDenied { path : path.clone() } ),
-      _ => Err( ConfigError::Io( err ) ),
-    }
-  }
+  let content = std::fs::read_to_string( path )
+    .map_err( | e | DataError::Io { file : path.clone(), source : e } )?;
+
+  content.trim().parse::< i32 >()
+    .map_err( | _ | DataError::Parse( "Could not parse content as integer".into() ) )
 }
 ```
 
-### 3. Enhanced Error Context with ErrWith
+> See the full runnable example in [`examples/replace_thiserror.rs`](./examples/replace_thiserror.rs).
+
+### 4. Enhanced Error Context with ErrWith
 
 The `ErrWith` trait provides additional utilities for adding context to errors:
 
 ```rust
-use error_tools::{ ErrWith, Result };
+use error_tools::{ ErrWith };
 
 fn process_user_data( user_id : u32, data : &str ) -> Result< String, ( String, Box< dyn std::error::Error > ) >
 {
@@ -179,9 +176,20 @@ fn perform_calculation( input : i32 ) -> std::result::Result< i32, &'static str 
     Ok( input * 2 )
   }
 }
+
+fn main()
+{
+  match process_user_data( 123, "42" )
+  {
+    Ok( result ) => println!( "Success: {}", result ),
+    Err( ( report, err ) ) => println!( "Error: {} - {:?}", report, err ),
+  }
+}
 ```
 
-### 4. Debug Assertions
+> See the full runnable example in [`examples/err_with_example.rs`](./examples/err_with_example.rs).
+
+### 5. Debug Assertions
 
 Additional debugging utilities for development:
 
@@ -195,6 +203,85 @@ fn validate_data( expected : &str, actual : &str )
   
   // Negative assertion
   debug_assert_ni!( expected, "", "Expected data should not be empty" );
+}
+
+fn main()
+{
+  validate_data( "test", "test" );
+  println!( "Debug assertions passed!" );
+}
+```
+
+## Examples
+
+### Basic Error Handling
+
+```rust
+use error_tools::untyped::Result;
+
+fn might_fail( should_fail : bool ) -> Result< String >
+{
+  if should_fail
+  {
+    Err( error_tools::untyped::format_err!( "Something went wrong" ) )
+  }
+  else
+  {
+    Ok( "Success!".to_string() )
+  }
+}
+
+fn main()
+{
+  match might_fail( false )
+  {
+    Ok( msg ) => println!( "Result: {}", msg ),
+    Err( e ) => println!( "Error: {}", e ),
+  }
+}
+```
+
+### Using Both Typed and Untyped Errors
+
+```rust,ignore
+use error_tools::prelude::*;
+use error_tools::dependency::thiserror;
+
+// Typed error for library API
+#[ derive( Debug, Error ) ]
+pub enum ConfigError
+{
+  #[ error( "Configuration file not found" ) ]
+  NotFound,
+  #[ error( "Invalid format: {0}" ) ]
+  InvalidFormat( String ),
+}
+
+// Function returning typed error
+fn load_config_typed() -> Result< String, ConfigError >
+{
+  Err( ConfigError::NotFound )
+}
+
+// Function returning untyped error
+fn load_config_untyped() -> error_tools::untyped::Result< String >
+{
+  Err( error_tools::untyped::format_err!( "Configuration loading failed" ) )
+}
+
+fn main()
+{
+  // Handle typed error
+  if let Err( e ) = load_config_typed()
+  {
+    println!( "Typed error: {}", e );
+  }
+
+  // Handle untyped error  
+  if let Err( e ) = load_config_untyped()
+  {
+    println!( "Untyped error: {}", e );
+  }
 }
 ```
 
@@ -224,7 +311,7 @@ error_tools = { version = "0.26" }  # Both (default)
 
 Replace your `anyhow` imports with `error_tools::untyped`:
 
-```rust
+```rust,ignore
 // Before
 use anyhow::{ Result, Context, bail, format_err };
 
@@ -238,7 +325,7 @@ Everything else stays the same!
 
 Add the explicit `thiserror` import and use `error_tools::typed`:
 
-```rust
+```rust,ignore
 // Before
 use thiserror::Error;
 
@@ -248,95 +335,6 @@ use error_tools::dependency::thiserror;  // Required for derive macros
 ```
 
 The derive macros work identically.
-
-## Examples
-
-### Real-World Application Error Handling
-
-```rust
-use error_tools::untyped::{ Result, Context };
-
-struct DatabaseConfig
-{
-  url : String,
-  timeout : u64,
-}
-
-fn load_database_config( path : &str ) -> Result< DatabaseConfig >
-{
-  let content = std::fs::read_to_string( path )
-    .with_context( || format!( "Failed to read database config from {}", path ) )?;
-
-  let parsed : toml::Value = toml::from_str( &content )
-    .context( "Failed to parse TOML configuration" )?;
-
-  let url = parsed.get( "database_url" )
-    .and_then( |v| v.as_str() )
-    .ok_or_else( || format_err!( "Missing 'database_url' in configuration" ) )?
-    .to_string();
-
-  let timeout = parsed.get( "timeout" )
-    .and_then( |v| v.as_integer() )
-    .unwrap_or( 30 ) as u64;
-
-  Ok( DatabaseConfig { url, timeout } )
-}
-```
-
-### Library Error Design
-
-```rust
-use error_tools::typed::Error;
-use error_tools::dependency::thiserror;
-
-#[ derive( Debug, Error ) ]
-pub enum HttpClientError
-{
-  #[ error( "Network request failed: {url}" ) ]
-  NetworkError
-  {
-    url : String,
-    #[ source ]
-    source : reqwest::Error,
-  },
-
-  #[ error( "Server returned error {status}: {message}" ) ]
-  ServerError
-  {
-    status : u16,
-    message : String,
-  },
-
-  #[ error( "Request timeout after {timeout}s" ) ]
-  Timeout { timeout : u64 },
-
-  #[ error( "Invalid URL: {0}" ) ]
-  InvalidUrl( String ),
-}
-
-pub struct HttpClient
-{
-  client : reqwest::Client,
-  base_url : String,
-}
-
-impl HttpClient
-{
-  pub fn get( &self, path : &str ) -> Result< String, HttpClientError >
-  {
-    let url = format!( "{}/{}", self.base_url.trim_end_matches('/'), path.trim_start_matches('/') );
-    
-    // URL validation
-    if !url.starts_with( "http" )
-    {
-      return Err( HttpClientError::InvalidUrl( url ) );
-    }
-
-    // This is a simplified example - in real code you'd use async
-    todo!( "Implement actual HTTP request" )
-  }
-}
-```
 
 ## Complete Examples
 
@@ -368,7 +366,7 @@ cargo run --example err_with_example
 
 Always provide meaningful context:
 
-```rust
+```rust,ignore
 // Good - specific context
 .context( format!( "Failed to process user {} data", user_id ) )?
 
@@ -380,7 +378,10 @@ Always provide meaningful context:
 
 For libraries, design clear error hierarchies:
 
-```rust
+```rust,ignore
+use error_tools::typed::Error;
+use error_tools::dependency::thiserror;
+
 #[ derive( Debug, Error ) ]
 pub enum LibraryError
 {
@@ -393,13 +394,23 @@ pub enum LibraryError
   #[ error( "Database error: {0}" ) ]
   Database( #[from] DatabaseError ),
 }
+
+// Define the individual error types
+#[ derive( Debug, Error ) ]
+pub enum ConfigError { /* ... */ }
+
+#[ derive( Debug, Error ) ]  
+pub enum NetworkError { /* ... */ }
+
+#[ derive( Debug, Error ) ]
+pub enum DatabaseError { /* ... */ }
 ```
 
 ### 4. Dependency Access
 
 When you need direct access to the underlying crates:
 
-```rust
+```rust,ignore
 // Access the underlying crates
 use error_tools::dependency::{ anyhow, thiserror };
 
