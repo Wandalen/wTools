@@ -95,7 +95,7 @@ mod attribute_storage_with_mutator;
 
 // = name collision
 
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose  
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
 mod keyword_field_derive;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod keyword_subform_derive;
@@ -117,7 +117,7 @@ mod debug_simple_lifetime;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod parametrized_struct_imm;  // Re-enabled to test fix
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod parametrized_struct_manual;  // BLOCKED: Still has compilation issues with FormerBegin lifetime
+mod parametrized_struct_manual;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod parametrized_struct_where;  // BLOCKED: E0277 Hash/Eq trait bound issues with Definition
 
