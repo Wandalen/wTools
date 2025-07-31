@@ -4,6 +4,7 @@ use super::*;
 
 /// Parameter description.
 #[allow(explicit_outlives_requirements)]
+// DISABLED: Has lifetime regression issues - commenting out temporarily
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
 // #[derive(Debug, PartialEq, the_module::Former)]
 #[derive(Debug, PartialEq)]
@@ -17,6 +18,7 @@ where
 }
 
 /// Parent required for the template.
+// DISABLED: Has lifetime regression issues - commenting out temporarily
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
 // #[derive(Debug, Default, PartialEq, the_module::Former)]
 #[derive(Debug, Default, PartialEq)]

@@ -135,7 +135,9 @@ utilizes a defined end strategy to finalize the object creation.
 #[allow(clippy::too_many_lines)]
 pub fn former(input: proc_macro::TokenStream) -> Result<TokenStream> {
   let original_input: TokenStream = input.clone().into();
+  eprintln!("ENTRY DEBUG: Input token stream: {}", original_input);
   let ast = syn::parse::<syn::DeriveInput>(input)?;
+  eprintln!("ENTRY DEBUG: Parsed AST successfully, struct name: {}", ast.ident);
 
   // Parse ItemAttributes ONCE here from all attributes on the item
   let item_attributes = struct_attrs::ItemAttributes::from_attrs(ast.attrs.iter())?;
@@ -157,6 +159,27 @@ pub fn former(input: proc_macro::TokenStream) -> Result<TokenStream> {
       Err(syn::Error::new(ast.span(), "Former derive does not support unions"))
     }
   }?;
+
+  // Validate that the generated result is syntactically correct
+  eprintln!("RESULT DEBUG: Generated result length: {} chars", result.to_string().len());
+  
+  // The E0106 issue is somewhere in the complex generated code.
+  // Basic impl blocks and EntityToFormer trait work fine.
+  // Let's restore full generation to investigate further.
+  
+  // Write generated code to file for detailed analysis
+  std::fs::write("/tmp/generated_former_code.rs", result.to_string()).ok();
+  eprintln!("RESULT DEBUG: Generated code written to /tmp/generated_former_code.rs");
+  
+  // Try to parse the result to check for syntax errors
+  match syn::parse2::<syn::File>(result.clone()) {
+    Ok(_) => eprintln!("RESULT DEBUG: Generated code is syntactically valid"),
+    Err(e) => {
+      eprintln!("RESULT DEBUG: Generated code has syntax error: {}", e);
+      eprintln!("RESULT DEBUG: Generated code: {}", result);
+      return Err(syn::Error::new(ast.span(), format!("Generated malformed code: {}", e)));
+    }
+  }
 
   // If the top-level `#[debug]` attribute was found, print the final generated code,
   // but only if the `former_diagnostics_print_generated` feature is enabled.

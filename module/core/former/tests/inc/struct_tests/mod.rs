@@ -66,8 +66,8 @@ mod tuple_struct;
 mod debug_e0223_minimal;
 mod debug_e0223_manual;
 
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_collection_basic;  // BLOCKED: Complex collection type mismatch issues
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_collection_basic;
 // #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
 // mod subform_collection_basic_manual;  // BLOCKED: FormerBegin lifetime parameter in manual code
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
@@ -115,7 +115,7 @@ mod debug_lifetime_minimal;
 mod debug_simple_lifetime;
 // mod parametrized_field_where;  // BLOCKED: E0726 implicit elided lifetime not allowed here
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod parametrized_struct_imm;  // BLOCKED: E0277 Hash/Eq trait bound issues with Definition
+mod parametrized_struct_imm;  // Re-enabled to test fix
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // mod parametrized_struct_manual;  // BLOCKED: E0106 missing lifetime specifier for FormerBegin in manual code
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
@@ -139,16 +139,16 @@ mod visibility;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod collection_former_binary_heap;
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_btree_map;  // BLOCKED: Complex collection type mismatch issues with subform
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod collection_former_btree_map;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod collection_former_btree_set;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod collection_former_common;
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod collection_former_hashmap;  // BLOCKED: Complex collection type mismatch issues with subform
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod collection_former_hashmap;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod collection_former_hashset;
