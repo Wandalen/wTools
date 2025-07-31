@@ -113,7 +113,7 @@ specific needs of the broader forming context. It mandates the implementation of
   let lifetime_param_for_former_begin = quote! { 'a };
 
   // Extract the lifetime name for use in where clauses
-  let _lifetime_name = if let Some(lt) = lifetimes.first() {
+  let struct_lifetime_for_where = if let Some(lt) = lifetimes.first() {
       let lifetime = &lt.lifetime;
       quote! { #lifetime }
   } else {
@@ -1011,9 +1011,9 @@ specific needs of the broader forming context. It mandates the implementation of
     for #former_type_ref
     where
       Definition : former::FormerDefinition< Storage = #storage_type_ref >,
-      Definition::Storage : 'a,
-      Definition::Context : 'a,
-      Definition::End : 'a,
+      Definition::Storage : #struct_lifetime_for_where,
+      Definition::Context : #struct_lifetime_for_where,
+      Definition::End : #struct_lifetime_for_where,
     {
       #[ inline( always ) ]
       fn former_begin

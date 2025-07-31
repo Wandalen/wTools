@@ -2,12 +2,12 @@
 use former::Former;
 
 #[derive(Debug, PartialEq, Former)]
-pub struct Other<'x> {
-  data: &'x str,
+pub struct Simple<'a> {
+  name: &'a str,
 }
 
 fn main() {
   let s = "hello";
-  let instance = Other::former().data(s).form();
+  let instance = Simple::former().name(s).form();
   println!("{:?}", instance);
 }

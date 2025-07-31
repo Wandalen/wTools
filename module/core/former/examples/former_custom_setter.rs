@@ -1,5 +1,3 @@
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-compile_error!("This example is temporarily disabled due to trailing comma issue in Former derive macro");
 
 // With help of `Former`, it is possible to define multiple versions of a setter for a single field, providing the flexibility to include custom logic within the setter methods.
 //

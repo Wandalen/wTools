@@ -93,11 +93,11 @@ mod attribute_default_primitive;
 // = name collision
 
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose  
-// mod keyword_field_derive;  // Former derive disabled
+mod keyword_field_derive;
 // mod keyword_subform_derive;  // Requires subform attributes
 // mod name_collision_former_hashmap_without_parameter;  // Has compilation issues
 mod name_collision_former_vector_without_parameter;
-// mod name_collisions;  // Former derive disabled
+// mod name_collisions;  // Name collision with std types
 
 // = parametrization
 

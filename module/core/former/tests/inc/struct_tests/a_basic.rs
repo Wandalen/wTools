@@ -10,9 +10,7 @@ pub struct Struct1 {
 }
 
 // Test with a struct that has lifetime parameters
-// xxx : Still has issues with lifetime-only structs - needs additional fix
-// #[derive(Debug, PartialEq, former::Former)]
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, former::Former)]
 pub struct TestLifetime<'a> {
   value: &'a str,
 }
