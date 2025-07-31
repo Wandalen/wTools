@@ -1,5 +1,4 @@
 // use macro_tools::proc_macro2::TokenStream;
-use crate::*;
 use macro_tools::{Result, attr, diag, qt, proc_macro2, syn};
 
 //

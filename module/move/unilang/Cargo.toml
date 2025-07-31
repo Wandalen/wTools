@@ -78,6 +78,19 @@ path = "tests/inc/phase3/data_model_features_test.rs"
 name = "performance_stress_test"
 path = "tests/inc/phase4/performance_stress_test.rs"
 
+# Benchmark tests
+[[test]]
+name = "exponential_benchmark"
+path = "benchmark/exponential_benchmark.rs"
+
+[[test]]
+name = "true_exponential_benchmark"
+path = "benchmark/true_exponential_benchmark.rs"
+
+[[test]]
+name = "parsing_benchmark_test"
+path = "benchmark/parsing_benchmark_test.rs"
+
 # stress_test_bin is a binary, not a test - no [[test]] entry needed
 
 

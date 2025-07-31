@@ -50,6 +50,8 @@ enabled = []
 time_now = [
   "enabled"
 ]
+chrono = []
+time_chrono = []
 
 # [lib]
 # name = "time_tools"

@@ -3,7 +3,7 @@
 use strs_tools::*;
 
 fn main() {
-  #[cfg(all(feature = "string_split", not(feature = "no_std")))]
+  #[cfg(all(feature = "split", not(feature = "no_std")))]
   {
     /* delimeter exists */
     let src = "abc def";

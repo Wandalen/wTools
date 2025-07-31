@@ -218,6 +218,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
     error_on_positional_after_named : true,
     error_on_duplicate_named_arguments : true,
     quote_pairs : vec![ ( '"', '"' ), ( '\'', '\'' ) ],
+    verbosity : 0,
   });
 
   let test_cmd = "test.command pos1 pos2 name::value";

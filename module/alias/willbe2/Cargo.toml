@@ -30,6 +30,7 @@ default = [ "enabled" ]
 full = [ "enabled" ]
 # use_alloc = [ "no_std" ]
 enabled = []
+no_std = []
 
 [dependencies]
 # willbe = { workspace = true }

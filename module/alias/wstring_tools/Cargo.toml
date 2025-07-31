@@ -33,6 +33,7 @@ include = [
 
 [features]
 default = [
+  "enabled",
   "indentation",
   # "isolate",
   # "parse_request",
@@ -40,12 +41,14 @@ default = [
   "parse_number",
 ]
 full = [
+  "enabled",
   "indentation",
   # "isolate",
   # "parse_request",
   # "split",
   "parse_number",
 ]
+enabled = []
 # use_std = [ "strs_tools/use_std" ]
 no_std = [ "strs_tools/no_std" ]
 use_alloc = [ "strs_tools/use_alloc" ]

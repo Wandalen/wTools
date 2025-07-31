@@ -37,6 +37,7 @@ fn main()
     error_on_positional_after_named : true,
     error_on_duplicate_named_arguments : true,
     quote_pairs : vec![ ( '"', '"' ), ( '\'', '\'' ) ],
+    verbosity : 0,
   };
   let strict_parser = Parser::new( strict_options );
 
@@ -115,6 +116,7 @@ fn main()
     error_on_duplicate_named_arguments : true,
     error_on_positional_after_named : false, // Allow mixed order
     quote_pairs : vec![ ( '"', '"' ), ( '\'', '\'' ) ],
+    verbosity : 0,
   };
   let partial_parser = Parser::new( partial_strict );
 
