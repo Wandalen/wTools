@@ -101,7 +101,7 @@ fn main() -> Result< (), unilang::Error >
   let pipeline = Pipeline::new( registry );
   
   // Execute a command
-  let result = pipeline.process_command_simple( "greet name::Alice" );
+  let result = pipeline.process_command_simple( ".greet name::Alice" );
   println!( "Success: {}", result.success );
   println!( "Output: {}", result.outputs[ 0 ].content );
   
@@ -184,7 +184,7 @@ The execution flow: Parse → Validate → Execute
 use unilang::prelude::*;
 let registry = CommandRegistry::new();
 let pipeline = Pipeline::new( registry );
-let result = pipeline.process_command_simple( "my-command arg1::value" );
+let result = pipeline.process_command_simple( ".my-command arg1::value" );
 // result contains the execution outcome
 ```
 
@@ -396,19 +396,22 @@ unilang supports flexible command-line syntax:
 
 ```sh
 # Named arguments (recommended)
-command arg1::value1 arg2::value2
+.command arg1::value1 arg2::value2
 
 # Positional arguments
-command value1 value2
+.command value1 value2
 
 # Mixed (positional first, then named)
-command value1 arg2::value2
+.command value1 arg2::value2
 
 # With namespaces
-namespace.command arg::value
+.namespace.command arg::value
 
 # Using aliases
-cmd arg::value  # If 'cmd' is an alias for 'command'
+.cmd arg::value  # If 'cmd' is an alias for 'command'
+
+# List all commands (just dot)
+.
 ```
 
 ## Advanced Features
@@ -450,9 +453,9 @@ let pipeline = Pipeline::new(registry);
 // Process multiple commands efficiently
 let commands = vec!
 [
-  "file.create name::test.txt",
-  "file.write name::test.txt content::'Hello'",
-  "file.list pattern::*.txt",
+  ".file.create name::test.txt",
+  ".file.write name::test.txt content::'Hello'",
+  ".file.list pattern::*.txt",
 ];
 
 let batch_result = pipeline.process_batch( &commands, ExecutionContext::default() );
@@ -482,14 +485,14 @@ assert!(help.is_none()); // No commands registered yet
 For a complete example showing all features, check out:
 
 ```sh
-# Run the full CLI example
-cargo run --example full_cli_example -- greet name::Alice
+# Run the full CLI example with dot-prefixed command
+cargo run --example full_cli_example -- .greet name::Alice
 
-# See available commands
-cargo run --example full_cli_example -- help
+# See available commands (just dot shows all commands with help)
+cargo run --example full_cli_example -- .
 
 # Get help for a specific command
-cargo run --example full_cli_example -- help greet
+cargo run --example full_cli_example -- .help .greet
 ```
 
 ## API Modes
@@ -503,7 +506,7 @@ High-level API that handles the full command execution pipeline:
 use unilang::prelude::*;
 let registry = CommandRegistry::new();
 let pipeline = Pipeline::new( registry );
-let result = pipeline.process_command_simple( "command arg::value" );
+let result = pipeline.process_command_simple( ".command arg::value" );
 // Result will indicate command not found since no commands are registered
 assert!(!result.success);
 ```
@@ -514,7 +517,7 @@ Lower-level access to individual components:
 ```rust,ignore
 use unilang::prelude::*;
 # let registry = CommandRegistry::new();
-# let input = "example";
+# let input = ".example";
 # let mut context = ExecutionContext::default();
 // Parse
 let parser = Parser::new( Default::default() );
@@ -550,7 +553,7 @@ unilang provides comprehensive error handling:
 use unilang::prelude::*;
 let registry = CommandRegistry::new();
 let pipeline = Pipeline::new(registry);
-let input = "example";
+let input = ".example";
 match pipeline.process_command_simple( input )
 {
   result if result.success =>
