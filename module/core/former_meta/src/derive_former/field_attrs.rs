@@ -461,7 +461,7 @@ impl AttributeScalarSetter {
   /// Should setter be generated or not?
   #[allow(dead_code)]
   pub fn setter(&self) -> bool {
-    self.setter.is_none() || self.setter.unwrap()
+    self.setter.unwrap_or(true)
   }
 }
 
@@ -593,7 +593,7 @@ pub struct AttributeSubformScalarSetter {
 impl AttributeSubformScalarSetter {
   /// Should setter be generated or not?
   pub fn setter(&self) -> bool {
-    self.setter.is_none() || self.setter.unwrap()
+    self.setter.unwrap_or(true)
   }
 }
 
@@ -727,7 +727,7 @@ pub struct AttributeSubformCollectionSetter {
 impl AttributeSubformCollectionSetter {
   /// Should setter be generated or not?
   pub fn setter(&self) -> bool {
-    self.setter.is_none() || self.setter.unwrap()
+    self.setter.unwrap_or(true)
   }
 }
 
@@ -876,7 +876,7 @@ pub struct AttributeSubformEntrySetter {
 impl AttributeSubformEntrySetter {
   /// Should setter be generated or not?
   pub fn setter(&self) -> bool {
-    self.setter.as_ref().is_none() || self.setter.as_ref().unwrap()
+    self.setter.unwrap_or(true)
   }
 }
 

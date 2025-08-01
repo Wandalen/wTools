@@ -1,7 +1,9 @@
-// Test if derive macros work with lifetime-only structs
+//! Test if derive macros work with lifetime-only structs
 
+/// Test struct for minimal derive functionality.
 #[derive(Debug, PartialEq, Clone)]
 pub struct MinimalTest<'a> {
+    /// Test data field.
     data: &'a str,
 }
 

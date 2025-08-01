@@ -195,11 +195,6 @@ pub(super) fn former_for_enum(
                                       // qqq : Ensure ItemAttributes and FieldAttributes are accessible/imported
 
   // Diagnostic print for has_debug status (has_debug is now correctly determined by the caller)
-  if has_debug {
-    // diag::report_print("DEBUG former_for_enum: has_debug is TRUE at start (passed in).", original_input, &quote!{ struct DebugFlagWasTrue; });
-  } else {
-    // diag::report_print("DEBUG former_for_enum: has_debug is FALSE at start (passed in).", original_input, &quote!{ struct DebugFlagWasFalse; });
-  }
 
   let mut methods = Vec::new();
   let mut end_impls = Vec::new();
@@ -343,6 +338,7 @@ pub(super) fn former_for_enum(
 
   let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
 
+  #[cfg(feature = "former_diagnostics_print_generated")]
   if has_debug {
     diag::report_print(
       format!("DEBUG: Raw generics for {enum_name}"),
@@ -369,6 +365,7 @@ pub(super) fn former_for_enum(
   let result = {
     let impl_header = quote! { impl #impl_generics #enum_name #ty_generics };
 
+    #[cfg(feature = "former_diagnostics_print_generated")]
     if has_debug {
       diag::report_print(
         format!("DEBUG: Methods collected before final quote for {enum_name}"),
@@ -395,6 +392,7 @@ pub(super) fn former_for_enum(
     }
   };
 
+  #[cfg(feature = "former_diagnostics_print_generated")]
   if has_debug {
     let about = format!("derive : Former\nenum : {enum_name}");
     diag::report_print(about, original_input, &result);

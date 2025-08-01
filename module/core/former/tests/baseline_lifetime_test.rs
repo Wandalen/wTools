@@ -1,7 +1,9 @@
-// Baseline test - same struct without derive macro to ensure it compiles
+//! Baseline test - same struct without derive macro to ensure it compiles
 
+/// Baseline test struct for comparison.
 #[derive(Debug, PartialEq)]
 pub struct BaselineTest<'a> {
+    /// Test data field.
     data: &'a str,
 }
 

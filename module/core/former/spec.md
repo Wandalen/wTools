@@ -103,7 +103,56 @@ The `#[derive(Former)]` macro generates a consistent set of components to implem
 ### 4. Diagnostics & Debugging
 
 *   **Error Handling Strategy:** The macro must produce clear, concise, and actionable compile-time errors. Errors must be associated with the specific `span` of the code that caused the issue. The `trybuild` crate must be used to create a suite of compile-fail tests to verify error-handling behavior.
-*   **Debugging Aids:** The `#[debug]` item-level attribute must be provided. When present, the macro will print the final generated `TokenStream` to the console during compilation.
+
+*   **Debug Attribute Requirements:** Following the design principle "Proc Macros: Must Implement a 'debug' Attribute", the `#[debug]` item-level attribute must be provided with comprehensive debugging capabilities.
+
+#### 4.1. Debug Attribute Specification
+
+**Attribute Usage:**
+```rust
+// Standalone debug attribute
+#[derive(Former)]
+#[debug]  // <-- Enables comprehensive debug output
+pub struct MyStruct { field: String }
+
+// Within #[former(...)] container
+#[derive(Former)]
+#[former(debug, standalone_constructors)]  // <-- Debug with other attributes
+pub struct MyStruct { field: String }
+```
+
+**Debug Output Requirements:**
+When `#[debug]` is present and the `former_diagnostics_print_generated` feature is enabled, the macro must provide detailed information in four phases:
+
+1. **Input Analysis Phase**:
+   - Target type information (name, kind, visibility)
+   - Generic parameters analysis (lifetimes, types, consts, where clauses)
+   - Field/variant analysis with types and attributes
+   - Complete attribute configuration breakdown
+
+2. **Generic Classification Phase**:
+   - Classification results (lifetime-only, type-only, mixed, empty)
+   - Generated generic components (impl_generics, ty_generics, where_clause)
+   - Strategy explanation for code generation decisions
+
+3. **Generated Components Analysis Phase**:
+   - Core component breakdown (FormerStorage, FormerDefinition, Former, etc.)
+   - Trait implementation overview
+   - Formation process workflow explanation
+   - Attribute-driven customizations impact
+
+4. **Complete Generated Code Phase**:
+   - Final TokenStream output for compilation
+   - Integration points with existing code
+
+**Feature Flag Integration:**
+Debug output must be gated behind the `former_diagnostics_print_generated` feature flag to ensure zero impact on normal compilation.
+
+**Development Workflow Integration:**
+- Zero runtime cost (analysis only during compilation)
+- Conditional compilation (debug code only with feature flag)
+- IDE-friendly output format
+- CI/CD pipeline compatibility
 
 ### 5. Lifecycle & Evolution
 

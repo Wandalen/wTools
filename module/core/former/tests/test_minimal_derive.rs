@@ -1,10 +1,12 @@
-// Test if the issue is with derive mechanism itself
+//! Test if the issue is with derive mechanism itself
 
 // Try with a proc macro that generates nothing
-extern crate former_meta;
+// extern crate former_meta; // Unused - commented out
 
+/// Test struct for working derive functionality.
 #[derive(Debug, PartialEq)]
 pub struct WorkingTest<'a> {
+    /// Test data field.
     data: &'a str,
 }
 

@@ -1,7 +1,11 @@
+//! Test for type-only struct with Former derive.
+
 use former::Former;
 
+/// Test struct for type-only Former functionality.
 #[derive(Debug, PartialEq, Former)]
 pub struct TypeOnlyTest<T> {
+    /// Generic data field.
     data: T,
 }
 

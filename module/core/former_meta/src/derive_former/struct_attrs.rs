@@ -196,13 +196,9 @@ impl ItemAttributes {
         match &attr.meta {
           syn::Meta::List(meta_list) => {
             let tokens_inside_former = meta_list.tokens.clone();
-            // panic!("DEBUG PANIC: Inside #[former] parsing. Tokens: '{}'", tokens_inside_former.to_string());
 
             // Use the Parse impl for ItemAttributes to parse contents of #[former(...)]
             let parsed_former_attrs = syn::parse2::<ItemAttributes>(tokens_inside_former)?;
-
-            // Temporary panic to see what was parsed by ItemAttributes::parse
-            // panic!("DEBUG PANIC: Parsed inner attributes. Debug: {:?}, Standalone: {:?}", parsed_former_attrs.debug.is_some(), parsed_former_attrs.standalone_constructors.is_some());
 
             // Assign only the flags that are meant to be inside #[former]
             result.debug.assign(parsed_former_attrs.debug);
@@ -289,7 +285,7 @@ impl ItemAttributes {
   /// it clones and iterates over its fields. If `storage_fields` is `None`, it returns an empty iterator.
   ///
   // pub fn storage_fields( &self ) -> impl Iterator< Item = syn::Field >
-  pub fn storage_fields(&self) -> &syn::punctuated::Punctuated<syn::Field, syn::token::Comma> {
+  pub fn storage_fields<'a>(&'a self) -> &'a syn::punctuated::Punctuated<syn::Field, syn::token::Comma> {
     self.storage_fields.as_ref().map_or_else(
       // qqq : find better solutioin. avoid leaking
       || &*Box::leak(Box::new(syn::punctuated::Punctuated::new())),
