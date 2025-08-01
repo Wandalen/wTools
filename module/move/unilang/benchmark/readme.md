@@ -1,5 +1,5 @@
-<!-- Last updated: 2025-07-31 23:35:53 UTC -->
-# # 🚀 Unilang Performance Benchmarks
+<!-- Last updated: 2025-08-01 00:06:57 UTC -->
+# 🚀 Unilang Performance Benchmarks
 
 This directory contains comprehensive performance benchmarks for the unilang framework, measuring build-time and runtime performance across exponentially increasing command counts from **10¹ to 10⁵** (10 to 100,000 commands).
 
@@ -13,7 +13,7 @@ cargo test run_all_benchmarks --release -- --nocapture
 # Comprehensive 3-way framework comparison (recommended)
 cargo test comprehensive_framework_comparison_benchmark --release -- --nocapture
 
-# Fast unilang-only runtime benchmark  
+# Fast unilang-only runtime benchmark
 cargo test exponential_performance_benchmark --release -- --nocapture
 
 # True build+runtime benchmark (takes 15+ minutes)
@@ -36,25 +36,31 @@ cargo test true_exponential_benchmark --release -- --nocapture
 
 | Commands | Build Time | Binary Size | Startup | Lookup | Throughput |
 |----------|------------|-------------|---------|--------|-----------|
-| **10**   | ~0s | ~0 KB | ~178.1 μs | ~25.5 μs | ~39K/sec |
-| **100**   | ~0s | ~0 KB | ~130.2 μs | ~25.5 μs | ~39K/sec |
-| **1K**   | ~0s | ~0 KB | ~3595.9 μs | ~25.6 μs | ~39K/sec |
+| **10**   | ~0s | ~0 KB | ~143.5 μs | ~25.1 μs | ~40K/sec |
+| **100**   | ~0s | ~0 KB | ~227.3 μs | ~24.8 μs | ~40K/sec |
+| **1K**   | ~0s | ~0 KB | ~2566.1 μs | ~25.4 μs | ~39K/sec |
+| **10K**   | ~0s | ~0 KB | ~16374.1 μs | ~25.6 μs | ~39K/sec |
+| **100K**   | ~0s | ~0 KB | ~151018.2 μs | ~25.5 μs | ~39K/sec |
 
 ### Clap Scaling Performance
 
 | Commands | Build Time | Binary Size | Startup | Lookup | Throughput |
 |----------|------------|-------------|---------|--------|-----------|
-| **10**   | ~7s | ~0 KB | ~32.2 μs | ~13.8 μs | ~72K/sec |
-| **100**   | ~7s | ~0 KB | ~72.0 μs | ~90.1 μs | ~11K/sec |
-| **1K**   | ~7s | ~0 KB | ~4612.0 μs | ~1130.1 μs | ~885/sec |
+| **10**   | ~6s | ~0 KB | ~47.1 μs | ~12.6 μs | ~79K/sec |
+| **100**   | ~6s | ~0 KB | ~207.9 μs | ~87.8 μs | ~11K/sec |
+| **1K**   | ~6s | ~0 KB | ~2209.2 μs | ~1068.1 μs | ~937/sec |
+| **10K**   | ~6s | ~0 KB | ~15016.1 μs | ~17307.6 μs | ~58/sec |
+| **100K**   | ~6s | ~0 KB | ~179964.6 μs | ~221694.0 μs | ~5/sec |
 
 ### Pico-Args Scaling Performance
 
 | Commands | Build Time | Binary Size | Startup | Lookup | Throughput |
 |----------|------------|-------------|---------|--------|-----------|
-| **10**   | ~1s | ~0 KB | ~3.8 μs | ~201 ns | ~3M/sec |
-| **100**   | ~1s | ~0 KB | ~16.8 μs | ~129 ns | ~3M/sec |
-| **1K**   | ~1s | ~0 KB | ~176.8 μs | ~184 ns | ~3M/sec |
+| **10**   | ~1s | ~0 KB | ~2.4 μs | ~163 ns | ~4M/sec |
+| **100**   | ~1s | ~0 KB | ~24.0 μs | ~186 ns | ~3M/sec |
+| **1K**   | ~1s | ~0 KB | ~112.7 μs | ~121 ns | ~4M/sec |
+| **10K**   | ~1s | ~0 KB | ~1133.5 μs | ~95 ns | ~6M/sec |
+| **100K**   | ~1s | ~0 KB | ~25367.5 μs | ~92 ns | ~6M/sec |
 
 ## 🔧 Available Benchmarks
 
@@ -79,7 +85,7 @@ cargo test true_exponential_benchmark --release -- --nocapture
 ```bash
 # Framework comparisons
 cargo test comprehensive_framework_comparison_benchmark --release -- --nocapture
-cargo test framework_comparison_benchmark --release -- --nocapture  
+cargo test framework_comparison_benchmark --release -- --nocapture
 cargo test clap_exponential_performance_benchmark --release -- --nocapture
 
 # Unilang benchmarks
@@ -112,7 +118,7 @@ All benchmarks generate detailed reports in `target/` subdirectories:
 
 ### Key Output Locations
 - **`target/comprehensive_framework_comparison/`** - 3-way comparison reports & CSV
-- **`target/framework_comparison/`** - 2-way comparison analysis  
+- **`target/framework_comparison/`** - 2-way comparison analysis
 - **`target/benchmark_results/`** - Fast benchmark data & graphs
 - **`target/true_benchmark_results/`** - Build+runtime reports
 - **`target/clap_benchmark_results/`** - Clap standalone results
@@ -147,7 +153,7 @@ All benchmarks generate detailed reports in `target/` subdirectories:
 **Unilang demonstrates exceptional performance characteristics:**
 
 1. **Best Runtime Scalability** - O(1) performance regardless of command count
-2. **Predictable Build Times** - O(N) scaling as expected for static generation  
+2. **Predictable Build Times** - O(N) scaling as expected for static generation
 3. **Sub-microsecond Startup** - Perfect for high-frequency usage
 4. **Enterprise Ready** - Practical for applications with thousands of commands
 5. **Multi-modal Support** - Universal framework for CLI/GUI/Web APIs
