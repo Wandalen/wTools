@@ -26,7 +26,7 @@ fn main() {
 
   // Example 1: Simple struct with debug - shows basic input analysis
   #[derive(Debug, PartialEq, Former)]
-  #[debug] // <-- Uncomment to see comprehensive debug output
+  // #[debug] // <-- Commented out - debug attribute only for temporary debugging
   pub struct UserProfile {
     age: i32,
     username: String,
@@ -35,7 +35,7 @@ fn main() {
 
   // Example 2: Generic struct with debug - shows generic parameter analysis
   #[derive(Debug, PartialEq, Former)]
-  #[debug] // <-- Shows how generics and trait bounds are processed
+  // #[debug] // <-- Commented out - debug attribute only for temporary debugging
   pub struct GenericContainer<T, U>
   where
     T: Clone + std::fmt::Debug,
@@ -48,7 +48,7 @@ fn main() {
 
   // Example 3: Lifetime parameters with debug - shows lifetime handling
   #[derive(Debug, PartialEq, Former)]
-  #[debug] // <-- Shows lifetime parameter classification and propagation
+  // #[debug] // <-- Commented out - debug attribute only for temporary debugging
   pub struct LifetimeStruct<'a> {
     name: &'a str,
     data: String,
@@ -56,7 +56,7 @@ fn main() {
 
   // Example 4: Struct with storage fields and debug
   #[derive(Debug, PartialEq, Former)]
-  #[debug] // <-- Shows complete ecosystem generation
+  // #[debug] // <-- Commented out - debug attribute only for temporary debugging
   #[storage_fields(temp_id: u64, processing_state: bool)]
   pub struct StorageStruct {
     id: u64,

@@ -1,4 +1,6 @@
-// Example former_custom_subform_scalar.rs
+//! Example demonstrating custom subform scalar setters for complex scalar field configuration.
+
+#![allow(missing_docs)]
 
 //
 // ## Example : Custom Subform Scalar Setter

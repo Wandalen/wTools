@@ -1,4 +1,6 @@
-// This example tests Former with a minimal lifetime struct.
+//! This example tests Former with a minimal lifetime struct.
+
+#![allow(missing_docs, dead_code)]
 
 #[cfg(feature = "enabled")]
 use former_meta::Former;

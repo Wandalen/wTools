@@ -1,4 +1,8 @@
 
+//! Example demonstrating custom default values for struct fields using Former.
+
+#![allow(missing_docs)]
+
 // ## Example : Custom Defaults
 //
 // Former allows the specification of custom default values for fields through the `former( default )` attribute.

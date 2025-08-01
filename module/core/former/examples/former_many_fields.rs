@@ -1,4 +1,8 @@
 
+//! Example demonstrating Former with complex structs containing multiple field types and collections.
+
+#![allow(missing_docs)]
+
 //
 // Utilizing the Former Crate for Struct Initialization
 //

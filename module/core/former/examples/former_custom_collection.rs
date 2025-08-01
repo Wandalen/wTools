@@ -1,5 +1,7 @@
-// Example `former_custom_collection.rs`
-//
+//! Example demonstrating custom collection types with logging functionality using Former.
+
+#![allow(missing_docs)]
+
 // This example demonstrates how to define and use a custom collection with former.
 // The custom collection implemented here is a `LoggingSet`, which extends the basic `HashSet` behavior
 // by logging each addition. This example illustrates how to integrate such custom collections with the

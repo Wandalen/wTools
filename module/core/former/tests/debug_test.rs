@@ -1,4 +1,6 @@
-// Test file to verify the comprehensive #[debug] attribute implementation
+//! Test file to verify the comprehensive #[debug] attribute implementation
+
+#![allow(missing_docs)]
 
 #[ cfg( not( feature = "no_std" ) ) ]
 #[ cfg( feature = "derive_former" ) ]
@@ -9,7 +11,7 @@ fn test_debug_attribute()
 
   // Simple struct with debug attribute
   #[ derive( Debug, PartialEq, Former ) ]
-  #[ debug ]
+  // #[ debug ] // <-- Commented out - debug attribute only for temporary debugging
   pub struct DebugStruct 
   {
     field: String,
@@ -17,7 +19,7 @@ fn test_debug_attribute()
 
   // Generic struct with debug attribute  
   #[ derive( Debug, PartialEq, Former ) ]
-  #[ debug ]
+  // #[ debug ] // <-- Commented out - debug attribute only for temporary debugging
   pub struct GenericDebugStruct< T >
   where
     T: Clone,
@@ -28,7 +30,7 @@ fn test_debug_attribute()
 
   // Complex struct with lifetime parameters and debug
   #[ derive( Debug, PartialEq, Former ) ]
-  #[ debug ]
+  // #[ debug ] // <-- Commented out - debug attribute only for temporary debugging
   pub struct LifetimeDebugStruct< 'a, T >
   where
     T: Clone + 'a,
@@ -39,7 +41,7 @@ fn test_debug_attribute()
 
   // Struct with storage fields and debug
   #[ derive( Debug, PartialEq, Former ) ]
-  #[ debug ]
+  // #[ debug ] // <-- Commented out - debug attribute only for temporary debugging
   #[ storage_fields( temp_value: i32 ) ]
   pub struct StorageFieldsDebugStruct
   {

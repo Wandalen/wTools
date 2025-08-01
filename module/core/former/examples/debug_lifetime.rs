@@ -1,3 +1,7 @@
+//! Example demonstrating lifetime debugging with Former-derived structs.
+
+#![allow(missing_docs)]
+
 #[cfg(feature = "enabled")]
 use former_meta::Former;
 

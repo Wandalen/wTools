@@ -1,4 +1,8 @@
 
+//! Example demonstrating HashSet construction using Former with subforming capabilities.
+
+#![allow(missing_docs)]
+
 //
 // This example demonstrates the use of the `Former` to build a `collection_tools::HashSet` through subforming.
 //

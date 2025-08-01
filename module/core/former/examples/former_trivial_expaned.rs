@@ -1,5 +1,7 @@
 
-#[allow(dead_code)]
+//! This example demonstrates the expanded output of the Former derive macro.
+
+#![allow(dead_code, missing_docs)]
 
 // ## Example : Trivial
 //

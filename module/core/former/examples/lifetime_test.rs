@@ -1,4 +1,8 @@
 
+//! This example tests Former with lifetime parameters.
+
+#![allow(missing_docs)]
+
 #[cfg(feature = "enabled")]
 use former_meta::Former;
 
