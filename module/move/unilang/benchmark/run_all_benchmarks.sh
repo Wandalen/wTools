@@ -12,7 +12,11 @@ echo ""
 cd "$(dirname "$0")/.."
 
 # Run all benchmarks via the run_all_benchmarks test
-cargo test run_all_benchmarks --release -- --nocapture
+echo "🏁 Starting comprehensive benchmark suite..."
+echo "This will run ALL benchmarks and update documentation"
+echo ""
+
+cargo test run_all_benchmarks --release --features benchmarks -- --nocapture --ignored
 
 echo ""
 echo "✅ All benchmarks completed successfully!"

@@ -34,8 +34,7 @@ fn run_benchmark_suite(suite: &BenchmarkSuite) -> Result<std::time::Duration, St
     let start_time = Instant::now();
     
     let output = Command::new("cargo")
-        .args(&["test", &suite.test_name, "--release", "--", "--nocapture"])
-        .current_dir("../")  // Run from the unilang root directory
+        .args(&["test", &suite.test_name, "--release", "--features", "benchmarks", "--", "--nocapture", "--ignored"])
         .output()
         .map_err(|e| format!("Failed to execute benchmark {}: {}", suite.name, e))?;
     
@@ -66,43 +65,71 @@ fn run_benchmark_suite(suite: &BenchmarkSuite) -> Result<std::time::Duration, St
 fn update_readme_with_results() -> Result<(), String> {
     println!("📝 Updating README with latest benchmark results...");
     
-    // Check if result files exist and update README accordingly
-    let results_dirs = [
-        "target/comprehensive_framework_comparison",
-        "target/framework_comparison", 
-        "target/benchmark_results",
-        "target/true_benchmark_results",
-        "target/clap_benchmark_results",
-    ];
+    // Read the latest comprehensive results if available
+    let comprehensive_results_path = "target/comprehensive_framework_comparison/comprehensive_results.csv";
+    let mut performance_data = String::new();
     
-    let mut updated_sections = Vec::new();
-    
-    for dir in &results_dirs {
-        if Path::new(dir).exists() {
-            updated_sections.push(format!("- Updated results from {}", dir));
+    if Path::new(comprehensive_results_path).exists() {
+        match fs::read_to_string(comprehensive_results_path) {
+            Ok(csv_content) => {
+                println!("✅ Found comprehensive benchmark results, updating performance tables...");
+                
+                // Parse CSV and extract key metrics for different command counts
+                let lines: Vec<&str> = csv_content.lines().collect();
+                if lines.len() > 1 {
+                    // Skip header line and parse data
+                    let mut unilang_data = Vec::new();
+                    let mut clap_data = Vec::new();
+                    let mut pico_data = Vec::new();
+                    
+                    for line in lines.iter().skip(1) {
+                        let fields: Vec<&str> = line.split(',').collect();
+                        if fields.len() >= 7 { // framework,commands,build_time,binary_size,init_time,lookup_time,throughput
+                            let framework = fields[0].trim();
+                            let commands = fields[1].trim();
+                            let build_time = fields[2].trim();
+                            let binary_size = fields[3].trim(); 
+                            let init_time = fields[4].trim();
+                            let lookup_time = fields[5].trim();
+                            let throughput = fields[6].trim();
+                            
+                            let row = format!("| **{}** | ~{}s | ~{} KB | ~{} μs | ~{} μs | ~{}/sec |",
+                                            commands, build_time, binary_size, init_time, lookup_time, throughput);
+                            
+                            match framework {
+                                "unilang" => unilang_data.push(row),
+                                "clap" => clap_data.push(row),
+                                "pico-args" => pico_data.push(row),
+                                _ => {}
+                            }
+                        }
+                    }
+                    
+                    // Build performance tables
+                    performance_data = format!(
+                        "### Unilang Scaling Performance\n\n| Commands | Build Time | Binary Size | Startup | Lookup | Throughput |\n|----------|------------|-------------|---------|--------|-----------|\n{}\n\n### Clap Scaling Performance\n\n| Commands | Build Time | Binary Size | Startup | Lookup | Throughput |\n|----------|------------|-------------|---------|--------|-----------|\n{}\n\n### Pico-Args Scaling Performance\n\n| Commands | Build Time | Binary Size | Startup | Lookup | Throughput |\n|----------|------------|-------------|---------|--------|-----------|\n{}\n",
+                        unilang_data.join("\n"),
+                        clap_data.join("\n"), 
+                        pico_data.join("\n")
+                    );
+                }
+            }
+            Err(_) => {
+                println!("⚠️  Could not read comprehensive results file");
+            }
         }
     }
     
-    if !updated_sections.is_empty() {
-        println!("✅ README updated with results from:");
-        for section in updated_sections {
-            println!("   {}", section);
-        }
-    } else {
-        println!("⚠️  No result directories found to update README");
-    }
-    
-    // Update the README timestamp
+    // Update the README timestamp and performance data
     let readme_path = "benchmark/readme.md";
     if Path::new(readme_path).exists() {
         let now = chrono::Utc::now();
         let timestamp = format!("<!-- Last updated: {} UTC -->\n", now.format("%Y-%m-%d %H:%M:%S"));
         
-        // Add timestamp to the top of the README
         let content = fs::read_to_string(readme_path)
             .map_err(|e| format!("Failed to read README: {}", e))?;
         
-        let updated_content = if content.starts_with("<!--") {
+        let mut updated_content = if content.starts_with("<!--") {
             // Replace existing timestamp
             let lines: Vec<&str> = content.lines().collect();
             if lines.len() > 1 {
@@ -115,10 +142,46 @@ fn update_readme_with_results() -> Result<(), String> {
             format!("{}{}", timestamp, content)
         };
         
+        // If we have new performance data, update the performance tables section
+        if !performance_data.is_empty() {
+            // Find and replace the performance tables section
+            if let Some(start_pos) = updated_content.find("### Unilang Scaling Performance") {
+                if let Some(end_pos) = updated_content[start_pos..].find("## 🔧 Available Benchmarks") {
+                    let before = &updated_content[..start_pos];
+                    let after = &updated_content[start_pos + end_pos..];
+                    updated_content = format!("{}{}\n{}", before, performance_data, after);
+                    println!("✅ Performance tables updated with live benchmark data");
+                }
+            }
+        }
+        
         fs::write(readme_path, updated_content)
             .map_err(|e| format!("Failed to write README: {}", e))?;
         
-        println!("✅ README timestamp updated");
+        println!("✅ README updated successfully");
+    }
+    
+    // Check other result directories
+    let results_dirs = [
+        "target/comprehensive_framework_comparison",
+        "target/framework_comparison", 
+        "target/benchmark_results",
+        "target/true_benchmark_results",
+        "target/clap_benchmark_results",
+    ];
+    
+    let mut found_dirs = Vec::new();
+    for dir in &results_dirs {
+        if Path::new(dir).exists() {
+            found_dirs.push(*dir);
+        }
+    }
+    
+    if !found_dirs.is_empty() {
+        println!("📊 Updated benchmark results found in:");
+        for dir in found_dirs {
+            println!("   - {}", dir);
+        }
     }
     
     Ok(())
@@ -129,6 +192,7 @@ mod tests {
     use super::*;
 
     #[test]
+    #[ignore = "Long running benchmark suite - run explicitly with: cargo test run_all_benchmarks --release --features benchmarks -- --nocapture --ignored"]
     fn run_all_benchmarks() {
         println!("🏁 COMPREHENSIVE BENCHMARK SUITE");
         println!("================================");
@@ -168,7 +232,7 @@ mod tests {
             ),
             BenchmarkSuite::new(
                 "True Exponential Benchmark",
-                "true_exponential_benchmark",
+                "true_exponential_performance_benchmark",
                 "~15 min", 
                 "Build + runtime benchmark (most accurate)"
             ),

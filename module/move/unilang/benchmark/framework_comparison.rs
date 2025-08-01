@@ -363,6 +363,7 @@ mod tests {
     use super::*;
 
     #[test]
+    #[ignore = "Long running benchmark - run explicitly"]
     fn framework_comparison_benchmark() {
         println!("🚀 Starting Framework Comparison Benchmark");
         println!("===========================================");

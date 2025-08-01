@@ -399,6 +399,7 @@ print("  - 04_performance_overview.png")
 }
 
 #[test]
+#[ignore = "Long running benchmark - run explicitly"]
 fn exponential_performance_benchmark() {
     let target_dir = std::env::var("CARGO_TARGET_DIR")
         .unwrap_or_else(|_| "target".to_string());

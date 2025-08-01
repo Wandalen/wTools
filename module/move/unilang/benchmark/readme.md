@@ -1,4 +1,4 @@
-<!-- Last updated: 2025-08-01 00:06:57 UTC -->
+<!-- Last updated: 2025-08-01 21:54:24 UTC -->
 # 🚀 Unilang Performance Benchmarks
 
 This directory contains comprehensive performance benchmarks for the unilang framework, measuring build-time and runtime performance across exponentially increasing command counts from **10¹ to 10⁵** (10 to 100,000 commands).
@@ -33,31 +33,31 @@ cargo run --release --bin comprehensive_benchmark --features benchmarks
 
 | Commands | Build Time | Binary Size | Startup | Lookup | Throughput |
 |----------|------------|-------------|---------|--------|-----------|
-| **10**   | ~0s | ~0 KB | ~143.5 μs | ~25.1 μs | ~40K/sec |
-| **100**   | ~0s | ~0 KB | ~227.3 μs | ~24.8 μs | ~40K/sec |
-| **1K**   | ~0s | ~0 KB | ~2566.1 μs | ~25.4 μs | ~39K/sec |
-| **10K**   | ~0s | ~0 KB | ~16374.1 μs | ~25.6 μs | ~39K/sec |
-| **100K**   | ~0s | ~0 KB | ~151018.2 μs | ~25.5 μs | ~39K/sec |
+| **10** | ~68s | ~0 KB | ~143.47 μs | ~25129.79 μs | ~44816/sec |
+| **100** | ~69s | ~0 KB | ~227.32 μs | ~24823.81 μs | ~42440/sec |
+| **1000** | ~70s | ~0 KB | ~2566.06 μs | ~25449.52 μs | ~45456/sec |
+| **10000** | ~70s | ~0 KB | ~16374.08 μs | ~25568.67 μs | ~42632/sec |
+| **100000** | ~69s | ~0 KB | ~151018.20 μs | ~25545.22 μs | ~42336/sec |
 
 ### Clap Scaling Performance
 
 | Commands | Build Time | Binary Size | Startup | Lookup | Throughput |
 |----------|------------|-------------|---------|--------|-----------|
-| **10**   | ~6s | ~0 KB | ~47.1 μs | ~12.6 μs | ~79K/sec |
-| **100**   | ~6s | ~0 KB | ~207.9 μs | ~87.8 μs | ~11K/sec |
-| **1K**   | ~6s | ~0 KB | ~2209.2 μs | ~1068.1 μs | ~937/sec |
-| **10K**   | ~6s | ~0 KB | ~15016.1 μs | ~17307.6 μs | ~58/sec |
-| **100K**   | ~6s | ~0 KB | ~179964.6 μs | ~221694.0 μs | ~5/sec |
+| **10** | ~5947s | ~0 KB | ~47.06 μs | ~12571.03 μs | ~29792/sec |
+| **100** | ~6166s | ~0 KB | ~207.91 μs | ~87808.54 μs | ~150497/sec |
+| **1000** | ~5942s | ~0 KB | ~2209.22 μs | ~1068133.23 μs | ~1219576/sec |
+| **10000** | ~5996s | ~0 KB | ~15016.10 μs | ~17307575.47 μs | ~19091775/sec |
+| **100000** | ~6118s | ~0 KB | ~179964.60 μs | ~221693997.55 μs | ~236730586/sec |
 
 ### Pico-Args Scaling Performance
 
 | Commands | Build Time | Binary Size | Startup | Lookup | Throughput |
 |----------|------------|-------------|---------|--------|-----------|
-| **10**   | ~1s | ~0 KB | ~2.4 μs | ~163 ns | ~4M/sec |
-| **100**   | ~1s | ~0 KB | ~24.0 μs | ~186 ns | ~3M/sec |
-| **1K**   | ~1s | ~0 KB | ~112.7 μs | ~121 ns | ~4M/sec |
-| **10K**   | ~1s | ~0 KB | ~1133.5 μs | ~95 ns | ~6M/sec |
-| **100K**   | ~1s | ~0 KB | ~25367.5 μs | ~92 ns | ~6M/sec |
+| **10** | ~551s | ~0 KB | ~2.36 μs | ~163.20 μs | ~208/sec |
+| **100** | ~540s | ~0 KB | ~24.03 μs | ~186.43 μs | ~240/sec |
+| **1000** | ~554s | ~0 KB | ~112.69 μs | ~121.43 μs | ~144/sec |
+| **10000** | ~552s | ~0 KB | ~1133.46 μs | ~94.87 μs | ~128/sec |
+| **100000** | ~582s | ~0 KB | ~25367.48 μs | ~92.38 μs | ~120/sec |
 
 ## 🔧 Available Benchmarks
 
@@ -80,14 +80,32 @@ cargo run --release --bin comprehensive_benchmark --features benchmarks
 ### Usage Commands
 
 ```bash
-# Recommended: Use shell scripts for complete benchmarks
+# 🏆 RECOMMENDED: Complete benchmark suite with documentation updates
+cargo test run_all_benchmarks --release --features benchmarks -- --nocapture --ignored
+
+# Shell script alternatives:
 ./benchmark/run_all_benchmarks.sh                    # All benchmarks (30+ min)
 ./benchmark/run_comprehensive_benchmark.sh           # 3-way comparison (8-10 min)
 
-# Alternative methods:
-cargo run --release --bin comprehensive_benchmark --features benchmarks  # Direct binary
-# Note: Individual benchmark tests have been removed to prevent accidental execution with 'cargo test'
+# Individual benchmarks (all ignored by default to prevent accidental runs):
+cargo test exponential_performance_benchmark --release --features benchmarks -- --ignored --nocapture        # ~2 min
+cargo test framework_comparison_benchmark --release --features benchmarks -- --ignored --nocapture            # ~3 min  
+cargo test comprehensive_framework_comparison_benchmark --release --features benchmarks -- --ignored --nocapture  # ~8 min
+cargo test clap_exponential_performance_benchmark --release --features benchmarks -- --ignored --nocapture    # ~2 min
+cargo test true_exponential_performance_benchmark --release --features benchmarks -- --ignored --nocapture    # ~15 min
+cargo test benchmark_1000_command_parsing_delay --release --features benchmarks -- --ignored --nocapture      # ~30 sec
+
+# Verification commands:
+cargo test --release                                 # Fast - doesn't run benchmarks
+./benchmark/test_benchmark_system.sh                # Quick system test
 ```
+
+**✅ Key Features:**
+- **Regular `cargo test` is fast** - benchmarks are ignored by default
+- **Benchmarks run when explicitly requested** with `--ignored` flag  
+- **Updates both temp files AND readme.md** with live performance data
+- **Generates comprehensive CSV reports** in target directories
+- **Real performance testing** with actual runtime measurements
 
 ## 🎯 Framework Selection Guide
 

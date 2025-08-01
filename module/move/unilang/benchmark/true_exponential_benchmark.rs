@@ -292,6 +292,7 @@ fn generate_true_benchmark_report(results: &[TrueBenchmarkResult], output_path: 
 }
 
 #[test]
+#[ignore = "Long running benchmark - run explicitly"]
 fn true_exponential_performance_benchmark() {
     let target_dir = std::env::var("CARGO_TARGET_DIR")
         .unwrap_or_else(|_| "target".to_string());
