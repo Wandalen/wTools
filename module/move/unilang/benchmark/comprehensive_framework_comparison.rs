@@ -4,39 +4,41 @@
 //! exponentially increasing command counts, providing detailed metrics for
 //! framework selection decisions.
 
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 use std::time::Instant;
-#[cfg(feature = "benchmarks")]
-use std::process::{Command, Stdio};
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
+use std::process::{ Command, Stdio };
+#[ cfg( feature = "benchmarks" ) ]
 use std::fs;
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 use std::path::Path;
 
 // Import all frameworks for comparison
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 use unilang::prelude::*;
 
-#[cfg(feature = "benchmarks")]
-use clap::{Arg, Command as ClapCommand};
-#[cfg(feature = "benchmarks")]  
+#[ cfg( feature = "benchmarks" ) ]
+use clap::{ Arg, Command as ClapCommand };
+#[ cfg( feature = "benchmarks" ) ]  
 use pico_args::Arguments;
 
-#[derive(Debug, Clone)]
-#[cfg(feature = "benchmarks")]
-struct ComprehensiveBenchmarkResult {
-    framework: String,
-    command_count: usize,
-    compile_time_ms: f64,
-    binary_size_kb: u64,
-    init_time_us: f64,
-    avg_lookup_ns: f64,
-    p99_lookup_ns: u64,
-    commands_per_second: f64,
+#[ derive( Debug, Clone ) ]
+#[ cfg( feature = "benchmarks" ) ]
+struct ComprehensiveBenchmarkResult
+{
+    framework : String,
+    command_count : usize,
+    compile_time_ms : f64,
+    binary_size_kb : u64,
+    init_time_us : f64,
+    avg_lookup_ns : f64,
+    p99_lookup_ns : u64,
+    commands_per_second : f64,
 }
 
-#[cfg(feature = "benchmarks")]
-fn benchmark_unilang_comprehensive(command_count: usize) -> ComprehensiveBenchmarkResult {
+#[ cfg( feature = "benchmarks" ) ]
+fn benchmark_unilang_comprehensive( command_count : usize ) -> ComprehensiveBenchmarkResult
+{
     println!("🦀 Benchmarking unilang with {} commands (comprehensive)", command_count);
 
     // Create command registry with N commands
@@ -44,48 +46,54 @@ fn benchmark_unilang_comprehensive(command_count: usize) -> ComprehensiveBenchma
     let mut registry = CommandRegistry::new();
     
     // Add N commands to registry
-    for i in 0..command_count {
-        let cmd = CommandDefinition {
-            name: format!("cmd_{}", i),
-            namespace: ".perf".to_string(),
-            description: format!("Performance test command {}", i),
-            hint: "Performance test".to_string(),
-            arguments: vec![
-                ArgumentDefinition {
-                    name: "input".to_string(),
-                    description: "Input parameter".to_string(),
-                    kind: Kind::String,
-                    hint: "Input value".to_string(),
-                    attributes: ArgumentAttributes::default(),
-                    validation_rules: vec![],
-                    aliases: vec!["i".to_string()],
-                    tags: vec![],
+    for i in 0..command_count
+    {
+        let cmd = CommandDefinition
+        {
+            name : format!( "cmd_{}", i ),
+            namespace : ".perf".to_string(),
+            description : format!( "Performance test command {}", i ),
+            hint : "Performance test".to_string(),
+            arguments : vec!
+            [
+                ArgumentDefinition
+                {
+                    name : "input".to_string(),
+                    description : "Input parameter".to_string(),
+                    kind : Kind::String,
+                    hint : "Input value".to_string(),
+                    attributes : ArgumentAttributes::default(),
+                    validation_rules : vec![],
+                    aliases : vec![ "i".to_string() ],
+                    tags : vec![],
                 },
-                ArgumentDefinition {
-                    name: "verbose".to_string(),
-                    description: "Enable verbose output".to_string(),
-                    kind: Kind::Boolean,
-                    hint: "Verbose flag".to_string(),
-                    attributes: ArgumentAttributes {
-                        optional: true,
-                        default: Some("false".to_string()),
+                ArgumentDefinition
+                {
+                    name : "verbose".to_string(),
+                    description : "Enable verbose output".to_string(),
+                    kind : Kind::Boolean,
+                    hint : "Verbose flag".to_string(),
+                    attributes : ArgumentAttributes
+                    {
+                        optional : true,
+                        default : Some( "false".to_string() ),
                         ..Default::default()
                     },
-                    validation_rules: vec![],
-                    aliases: vec!["v".to_string()],
-                    tags: vec![],
+                    validation_rules : vec![],
+                    aliases : vec![ "v".to_string() ],
+                    tags : vec![],
                 },
             ],
-            routine_link: None,
-            status: "stable".to_string(),
-            version: "1.0.0".to_string(),
-            tags: vec![],
-            aliases: vec![],
-            permissions: vec![],
-            idempotent: true,
-            deprecation_message: String::new(),
-            http_method_hint: String::new(),
-            examples: vec![],
+            routine_link : None,
+            status : "stable".to_string(),
+            version : "1.0.0".to_string(),
+            tags : vec![],
+            aliases : vec![],
+            permissions : vec![],
+            idempotent : true,
+            deprecation_message : String::new(),
+            http_method_hint : String::new(),
+            examples : vec![],
         };
         
         registry.register(cmd);
@@ -130,8 +138,9 @@ fn benchmark_unilang_comprehensive(command_count: usize) -> ComprehensiveBenchma
     // Measure compile time by building a test project
     let (compile_time_ms, binary_size_kb) = measure_unilang_compile_time(command_count);
 
-    ComprehensiveBenchmarkResult {
-        framework: "unilang".to_string(),
+    ComprehensiveBenchmarkResult
+    {
+        framework : "unilang".to_string(),
         command_count,
         compile_time_ms,
         binary_size_kb,
@@ -142,8 +151,9 @@ fn benchmark_unilang_comprehensive(command_count: usize) -> ComprehensiveBenchma
     }
 }
 
-#[cfg(feature = "benchmarks")]
-fn benchmark_clap_comprehensive(command_count: usize) -> ComprehensiveBenchmarkResult {
+#[ cfg( feature = "benchmarks" ) ]
+fn benchmark_clap_comprehensive( command_count : usize ) -> ComprehensiveBenchmarkResult
+{
     println!("🗡️  Benchmarking clap with {} commands (comprehensive)", command_count);
 
     // Create clap app with N subcommands
@@ -238,8 +248,9 @@ fn benchmark_clap_comprehensive(command_count: usize) -> ComprehensiveBenchmarkR
     }
 }
 
-#[cfg(feature = "benchmarks")]
-fn benchmark_pico_args_comprehensive(command_count: usize) -> ComprehensiveBenchmarkResult {
+#[ cfg( feature = "benchmarks" ) ]
+fn benchmark_pico_args_comprehensive( command_count : usize ) -> ComprehensiveBenchmarkResult
+{
     println!("⚡ Benchmarking pico-args with {} commands (comprehensive)", command_count);
 
     // pico-args doesn't have initialization in the same way, so we simulate parsing setup
@@ -310,7 +321,7 @@ fn benchmark_pico_args_comprehensive(command_count: usize) -> ComprehensiveBench
     }
 }
 
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 fn measure_unilang_compile_time(command_count: usize) -> (f64, u64) {
     let work_dir = format!("target/compile_test_unilang_{}", command_count);
     let _ = fs::remove_dir_all(&work_dir);
@@ -402,7 +413,7 @@ fn main() {{
     (compile_time_ms, binary_size_kb)
 }
 
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 fn measure_clap_compile_time(command_count: usize) -> (f64, u64) {
     let work_dir = format!("target/compile_test_clap_{}", command_count);
     let _ = fs::remove_dir_all(&work_dir);
@@ -485,7 +496,7 @@ fn main() {{
     (compile_time_ms, binary_size_kb)
 }
 
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 fn measure_pico_args_compile_time(command_count: usize) -> (f64, u64) {
     let work_dir = format!("target/compile_test_pico_args_{}", command_count);
     let _ = fs::remove_dir_all(&work_dir);
@@ -561,7 +572,7 @@ fn main() {{
     (compile_time_ms, binary_size_kb)
 }
 
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmarkResult>]) {
     // Always remove and recreate directory to ensure fresh results
     let output_dir = "target/comprehensive_framework_comparison";
@@ -740,7 +751,7 @@ fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmar
     println!("  - benchmark/readme.md (updated with latest results)");
 }
 
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 fn average_benchmark_results(results: &[ComprehensiveBenchmarkResult]) -> ComprehensiveBenchmarkResult {
     let count = results.len() as f64;
     
@@ -776,7 +787,7 @@ fn average_benchmark_results(results: &[ComprehensiveBenchmarkResult]) -> Compre
     }
 }
 
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 fn calculate_std_dev(values: &[f64], mean: f64) -> f64 {
     if values.len() <= 1 {
         return 0.0;
@@ -791,10 +802,10 @@ fn calculate_std_dev(values: &[f64], mean: f64) -> f64 {
 
 #[cfg(test)]
 mod tests {
-    #[cfg(feature = "benchmarks")]
+    #[ cfg( feature = "benchmarks" ) ]
     use super::*;
 
-    #[cfg(feature = "benchmarks")]
+    #[ cfg( feature = "benchmarks" ) ]
     #[test]
     fn comprehensive_framework_comparison_benchmark() {
         println!("🚀 Starting Comprehensive Framework Comparison Benchmark");
@@ -898,7 +909,7 @@ mod tests {
     }
 }
 
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 fn update_readme_with_results(results: &[Vec<ComprehensiveBenchmarkResult>]) -> Result<(), Box<dyn std::error::Error>> {
     let readme_path = "benchmark/readme.md";
     let content = fs::read_to_string(readme_path)?;
@@ -959,7 +970,7 @@ fn update_readme_with_results(results: &[Vec<ComprehensiveBenchmarkResult>]) -> 
     Ok(())
 }
 
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 fn generate_scaling_table(data: &[&ComprehensiveBenchmarkResult], framework_name: &str) -> String {
     let mut table = String::new();
     table.push_str(&format!("### {} Scaling Performance\n\n", framework_name));
@@ -984,7 +995,7 @@ fn generate_scaling_table(data: &[&ComprehensiveBenchmarkResult], framework_name
     table
 }
 
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 fn update_table_in_content(content: &str, section_header: &str, new_table: &str) -> Result<String, Box<dyn std::error::Error>> {
     let lines: Vec<&str> = content.lines().collect();
     let mut result = Vec::new();
@@ -1024,7 +1035,7 @@ fn update_table_in_content(content: &str, section_header: &str, new_table: &str)
     Ok(result.join("\n"))
 }
 
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 fn format_command_count(count: usize) -> String {
     if count >= 1000 {
         format!("{}K", count / 1000)
@@ -1033,7 +1044,7 @@ fn format_command_count(count: usize) -> String {
     }
 }
 
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 fn format_duration(seconds: f64) -> String {
     if seconds < 60.0 {
         format!("~{:.0}s", seconds)
@@ -1042,7 +1053,7 @@ fn format_duration(seconds: f64) -> String {
     }
 }
 
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 fn format_size(kb: u64) -> String {
     if kb < 1024 {
         format!("~{} KB", kb)
@@ -1051,12 +1062,12 @@ fn format_size(kb: u64) -> String {
     }
 }
 
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 fn format_time_microseconds(us: f64) -> String {
     format!("~{:.1} μs", us)
 }
 
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 fn format_time_nanoseconds(ns: f64) -> String {
     if ns < 1000.0 {
         format!("~{:.0} ns", ns)
@@ -1065,7 +1076,7 @@ fn format_time_nanoseconds(ns: f64) -> String {
     }
 }
 
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 fn format_throughput(cmds_per_sec: f64) -> String {
     if cmds_per_sec >= 1_000_000.0 {
         format!("~{:.0}M/sec", cmds_per_sec / 1_000_000.0)
@@ -1076,7 +1087,7 @@ fn format_throughput(cmds_per_sec: f64) -> String {
     }
 }
 
-#[cfg(feature = "benchmarks")]
+#[ cfg( feature = "benchmarks" ) ]
 fn run_comprehensive_benchmark() {
     println!("🚀 Starting Comprehensive Framework Comparison Benchmark");
     println!("========================================================");
@@ -1172,7 +1183,7 @@ fn run_comprehensive_benchmark() {
 }
 
 fn main() {
-    #[cfg(feature = "benchmarks")]
+    #[ cfg( feature = "benchmarks" ) ]
     {
         run_comprehensive_benchmark();
     }
