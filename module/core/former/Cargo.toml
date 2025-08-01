@@ -58,6 +58,9 @@ derive_former = [ "former_meta/derive_former", "types_former" ]
 types_former = [ "former_types/types_former" ]
 # types_component_assign = [ "former_types/types_component_assign" ]
 
+# Debug and diagnostics features
+former_diagnostics_print_generated = [ "former_meta/former_diagnostics_print_generated" ]
+
 [dependencies]
 former_meta = { workspace = true } # Debug features disabled to prevent compile-time output
 former_types = { workspace = true }

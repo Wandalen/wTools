@@ -90,15 +90,17 @@ impl ToTokens for FormerDefinitionTypesGenerics<'_> {
 /// - **Custom vs Default Logic**: Clear separation prevents accidentally overriding user's custom implementations
 #[allow(clippy::format_in_format_args, clippy::unnecessary_wraps)]
 pub fn mutator(
-  _item: &syn::Ident,
-  _original_input: &macro_tools::proc_macro2::TokenStream,
+  #[allow(unused_variables)] item: &syn::Ident,
+  #[allow(unused_variables)] original_input: &macro_tools::proc_macro2::TokenStream,
   mutator: &AttributeMutator,
-  _former_definition_types: &syn::Ident,
+  #[allow(unused_variables)] former_definition_types: &syn::Ident,
   generics: &FormerDefinitionTypesGenerics<'_>,
   former_definition_types_ref: &proc_macro2::TokenStream,
 ) -> Result<TokenStream> {
+  #[allow(unused_variables)] // Some variables only used with feature flag
   let impl_generics = generics.impl_generics;
-  let _ty_generics = generics.ty_generics;
+  #[allow(unused_variables)]
+  let ty_generics = generics.ty_generics;
   let where_clause = generics.where_clause;
   
   let former_mutator_code = if mutator.custom.value(false) {

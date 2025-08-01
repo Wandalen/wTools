@@ -257,6 +257,7 @@ specific needs of the broader forming context. It mandates the implementation of
   let _has_only_lifetimes = classification.has_only_lifetimes;
   
   // Debug output - avoid calling to_string() on the original AST as it may cause issues
+  #[cfg(feature = "former_diagnostics_print_generated")]
   if _has_debug || classification.has_only_lifetimes {
     eprintln!("Struct: {}", item);
     eprintln!("has_only_lifetimes: {}", classification.has_only_lifetimes);
@@ -1392,6 +1393,7 @@ specific needs of the broader forming context. It mandates the implementation of
   // returning malformed TokenStream, not by missing the original struct
   
   // Debug: Print the result for lifetime-only and type-only structs to diagnose issues
+  #[cfg(feature = "former_diagnostics_print_generated")]
   if classification.has_only_lifetimes && item.to_string().contains("TestLifetime") {
     eprintln!("LIFETIME DEBUG: Generated code for {}:", item);
     eprintln!("{}", result);
