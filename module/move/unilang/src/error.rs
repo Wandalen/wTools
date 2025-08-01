@@ -8,14 +8,14 @@ mod private
   use crate::data::ErrorData;
   use serde_json;
   use serde_yaml;
-  use thiserror::Error;
+  use error_tools::dependency::thiserror;
 
   ///
   /// The main error type for the Unilang framework.
   ///
   /// This enum consolidates all possible errors that can occur within the
   /// framework, providing a single, consistent error handling mechanism.
-  #[ derive( Error, Debug ) ]
+  #[ derive( thiserror::Error, Debug ) ]
   pub enum Error
   {
     /// An error that occurred during semantic analysis or execution,

@@ -54,7 +54,6 @@ log = "0.4"
 #closure = "0.3"
 textdistance = { version = "1.0", optional = true } # fuzzy commands search
 indexmap = "2.2.6"
-thiserror = "1.0"
 
 # Benchmark dependencies (needed for benchmark binaries)
 clap = { version = "4.4", optional = true }
