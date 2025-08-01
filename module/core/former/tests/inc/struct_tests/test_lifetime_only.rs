@@ -7,7 +7,7 @@ use super::*;
 // #[derive(Debug, PartialEq, the_module::Former)]
 
 #[derive(Debug, PartialEq, the_module::Former)]
-#[debug]
+// #[debug] // Commented out - debug attribute only for temporary debugging
 pub struct WithLifetime<'a> {
   name: &'a str,
 }

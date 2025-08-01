@@ -3,7 +3,7 @@
 use former::Former;
 
 #[derive(Debug, PartialEq, Former)]
-#[debug]
+// #[debug] // Commented out - debug attribute only for temporary debugging
 pub struct Minimal<'a> {
     value: &'a str,
 }

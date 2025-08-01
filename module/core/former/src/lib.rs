@@ -52,7 +52,7 @@
 //!
 //! // Standalone debug attribute
 //! #[derive(Debug, PartialEq, Former)]
-//! #[debug]  // <-- Enables comprehensive debug output
+//! // #[debug]  // <-- Commented out - debug attribute only for temporary debugging
 //! pub struct Person {
 //!     name: String,
 //!     age: u32,
@@ -61,7 +61,7 @@
 //!
 //! // Within #[former(...)] container
 //! #[derive(Debug, PartialEq, Former)]
-//! #[former(debug, standalone_constructors)]  // <-- Debug with other attributes
+//! // #[former(debug, standalone_constructors)]  // <-- Debug commented out
 //! pub struct Config {
 //!     host: String,
 //!     port: u16,
@@ -247,6 +247,7 @@ pub mod exposed {
 /// Import the prelude to get started quickly with Former:
 /// ```rust
 /// use former::prelude::*;
+/// use former::Former;
 /// 
 /// // Now you have access to the most common Former functionality
 /// #[derive(Former)]
