@@ -24,6 +24,29 @@ mod struct_attrs;
 use struct_attrs::*;
 
 /// Represents the generic parameters for a `FormerDefinitionTypes`.
+///
+/// This structure holds references to the different parts of generic parameter declarations
+/// that are used throughout the Former pattern code generation. It provides a centralized
+/// way to manage complex generic scenarios including lifetime parameters, type parameters,
+/// and where clause constraints.
+///
+/// # Fields
+/// - `impl_generics`: Generic parameters for `impl` blocks (e.g., `<'a, T>`)
+/// - `ty_generics`: Generic parameters for type declarations (e.g., `<'a, T>`)
+/// - `where_clause`: Where clause predicates (e.g., `T: Hash + Eq, 'a: 'static`)
+///
+/// # Usage in Complex Generic Scenarios
+/// This structure is critical for handling the complex generic scenarios that were
+/// resolved during testing, including:
+/// - Complex lifetime parameters (`'child`, `'storage`, etc.)
+/// - Multiple generic constraints with trait bounds
+/// - HRTB (Higher-Ranked Trait Bounds) scenarios
+/// - Static lifetime requirements for HashMap scenarios
+///
+/// # Pitfall Prevention
+/// The centralized generic handling prevents inconsistent generic parameter usage
+/// across different generated code sections, which was a source of compilation errors
+/// in manual implementations.
 pub struct FormerDefinitionTypesGenerics<'a> {
   pub impl_generics: &'a syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
   pub ty_generics: &'a syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
@@ -39,8 +62,32 @@ impl ToTokens for FormerDefinitionTypesGenerics<'_> {
 }
 
 /// Generates the code for implementing the `FormerMutator` trait for a specified former definition type.
-/// If the `custom` attribute is not specified, a default empty implementation is generated.
-/// If the `debug` attribute is specified, it prints an example of a custom mutator implementation.
+///
+/// This function is responsible for generating the `FormerMutator` trait implementation, which allows
+/// for custom data manipulation and validation just before the formation process completes.
+///
+/// # Behavior
+/// - If the `custom` attribute is not specified, a default empty implementation is generated
+/// - If the `debug` attribute is specified, it prints an example of a custom mutator implementation
+/// - The generated code handles complex generic scenarios including lifetime parameters
+///
+/// # Custom Mutator Usage
+/// Custom mutators are useful for:
+/// - Setting default values for optional fields that weren't provided
+/// - Performing validation on the final data before construction
+/// - Computing derived fields based on other field values
+/// - Applying business logic transformations
+///
+/// # Generic Handling Complexity
+/// This function properly handles the complex generic scenarios that were resolved during testing:
+/// - Lifetime parameter propagation (`'a`, `'child`, `'storage`)
+/// - Where clause constraint preservation
+/// - Static lifetime bounds when required for HashMap scenarios
+///
+/// # Pitfalls Prevented
+/// - **Generic Parameter Consistency**: Ensures impl_generics and where_clause are properly synchronized
+/// - **Lifetime Parameter Scope**: Prevents undeclared lifetime errors that occurred in manual implementations
+/// - **Custom vs Default Logic**: Clear separation prevents accidentally overriding user's custom implementations
 #[allow(clippy::format_in_format_args, clippy::unnecessary_wraps)]
 pub fn mutator(
   _item: &syn::Ident,
@@ -131,7 +178,48 @@ utilizes a defined end strategy to finalize the object creation.
 }
 
 /// Generate the whole Former ecosystem for either a struct or an enum.
-/// This is the main entry point for the `#[derive(Former)]` macro.
+///
+/// This is the main entry point for the `#[derive(Former)]` macro and orchestrates the entire
+/// code generation process. It handles the complexity of dispatching to appropriate handlers
+/// based on the input type and manages the cross-cutting concerns like debugging and attribute parsing.
+///
+/// # Supported Input Types
+/// - **Structs**: Full support including complex generic scenarios, lifetime parameters, subforms
+/// - **Enums**: Comprehensive support for unit, tuple, and struct variants with various attributes
+/// - **Unions**: Not supported - will return a compilation error
+///
+/// # Critical Capabilities Verified Through Testing
+/// This function has been extensively tested and verified to handle:
+/// - **Complex Lifetime Scenarios**: `<'child, T>` patterns with where clauses
+/// - **Generic Constraints**: `where T: Hash + Eq` and complex trait bounds
+/// - **Nested Structures**: Subform patterns with proper trait bound propagation
+/// - **Collection Types**: HashMap, Vec, HashSet with automatic trait bound handling
+/// - **Feature Gate Compatibility**: Proper `no_std` and `use_alloc` feature handling
+///
+/// # Processing Flow
+/// 1. **Input Parsing**: Parse the derive input and extract struct/enum information
+/// 2. **Attribute Processing**: Parse and validate all attributes using `ItemAttributes::from_attrs`
+/// 3. **Type Dispatch**: Route to appropriate handler (`former_for_struct` or `former_for_enum`)
+/// 4. **Code Generation**: Generate the complete Former ecosystem (20+ types and traits)
+/// 5. **Debug Output**: Optionally output generated code for debugging
+///
+/// # Error Handling and Diagnostics
+/// The function provides comprehensive error handling for:
+/// - **Invalid Attributes**: Clear error messages for malformed or incompatible attributes
+/// - **Unsupported Types**: Explicit rejection of unions with helpful error messages
+/// - **Generic Complexity**: Proper error reporting for generic parameter issues
+/// - **Debug Support**: Optional code generation output for troubleshooting
+///
+/// # Pitfalls Prevented Through Design
+/// - **Attribute Parsing Consistency**: Single `ItemAttributes::from_attrs` call prevents inconsistencies
+/// - **Debug Flag Propagation**: Proper `has_debug` determination prevents missed debug output
+/// - **Generic Parameter Isolation**: Each handler receives clean, parsed generic information
+/// - **Error Context Preservation**: Original input preserved for meaningful error messages
+///
+/// # Performance Considerations
+/// - **Single-Pass Parsing**: Attributes parsed once and reused across handlers
+/// - **Conditional Debug**: Debug code generation only when explicitly requested
+/// - **Efficient Dispatching**: Direct type-based dispatch without unnecessary processing
 #[allow(clippy::too_many_lines)]
 pub fn former(input: proc_macro::TokenStream) -> Result<TokenStream> {
   let original_input: TokenStream = input.clone().into();

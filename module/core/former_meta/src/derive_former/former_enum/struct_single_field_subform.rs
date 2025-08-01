@@ -1,8 +1,180 @@
+//! # Struct Single-Field Subform Handler - Implicit Variant Former Generation
+//!
+//! This handler specializes in generating implicit variant formers for struct enum variants 
+//! with a single named field, creating sophisticated builder patterns that enable field-by-field
+//! construction with comprehensive pitfall prevention for single-field scenarios.
+//!
+//! ## Variant Type Specialization
+//!
+//! **Target Pattern**: `Variant { field: T }`
+//! **Generated Constructor**: `Enum::variant() -> VariantFormer<...>`
+//! **Construction Style**: Single-field builder pattern with setter method and termination
+//!
+//! ## Key Behavioral Characteristics
+//!
+//! ### Attribute-Driven Activation
+//! - **Default Behavior**: Single-field struct variants automatically get implicit variant formers
+//! - **`#[scalar]` Override**: Forces direct constructor generation instead (handled elsewhere)
+//! - **`#[subform_scalar]` Support**: Supported and generates same implicit variant former
+//! - **Field-Level Attributes**: Individual field attributes respected in generated setter
+//!
+//! ### Generated Infrastructure Components
+//! 1. **`{Enum}{Variant}FormerStorage`**: Single-field optional storage for incremental construction
+//! 2. **`{Enum}{Variant}FormerDefinitionTypes`**: Type system integration for Former trait
+//! 3. **`{Enum}{Variant}FormerDefinition`**: Definition linking storage, context, and formed type
+//! 4. **`{Enum}{Variant}Former`**: Main builder struct with field setter and termination methods
+//! 5. **Entity Trait Implementations**: Complete Former ecosystem integration
+//!
+//! ## Critical Pitfalls Resolved
+//!
+//! ### 1. Single-Field Storage Specialization (Critical Prevention)
+//! **Issue Resolved**: Manual implementations treating single-field variants like multi-field variants
+//! **Root Cause**: Single-field struct variants have different construction patterns than multi-field
+//! **Solution**: Specialized single-field storage generation with proper Optional<T> wrapping
+//! **Prevention**: Optimized single-field handling while maintaining Former pattern consistency
+//!
+//! ```rust
+//! // Manual Implementation Pitfall:
+//! struct VariantFormerStorage {
+//!     field: String,  // ❌ Should be Option<String>
+//! }
+//! impl Default for VariantFormerStorage {
+//!     fn default() -> Self {
+//!         Self { field: String::new() }  // ❌ Wrong default handling
+//!     }
+//! }
+//!
+//! // Generated Solution:
+//! struct VariantFormerStorage {
+//!     field: Option<String>,  // ✅ Proper optional wrapping
+//! }
+//! impl Default for VariantFormerStorage {
+//!     fn default() -> Self {
+//!         Self { field: None }  // ✅ Correct optional default
+//!     }
+//! }
+//! ```
+//!
+//! ### 2. Generic Parameter Context (Critical Prevention)
+//! **Issue Resolved**: Manual implementations losing generic parameter context in single-field scenarios
+//! **Root Cause**: Single-field variants still require full generic parameter propagation
+//! **Solution**: Complete generic parameter preservation through all generated components
+//! **Prevention**: Uses `GenericsRef` for consistent generic handling regardless of field count
+//!
+//! ### 3. Setter Method Type Safety (Prevention)
+//! **Issue Resolved**: Manual implementations not properly handling Into<T> conversions for setters
+//! **Root Cause**: Field setters need flexible type acceptance while maintaining type safety
+//! **Solution**: Generated setter uses `impl Into<FieldType>` for maximum flexibility
+//! **Prevention**: Type-safe conversion handling with automatic type coercion
+//!
+//! ```rust
+//! // Manual Implementation Pitfall:
+//! impl VariantFormer {
+//!     pub fn field(mut self, value: String) -> Self {  // ❌ Too restrictive
+//!         self.storage.field = Some(value);
+//!         self
+//!     }
+//! }
+//!
+//! // Generated Solution:
+//! impl VariantFormer {
+//!     pub fn field(mut self, value: impl Into<String>) -> Self {  // ✅ Flexible input
+//!         self.storage.field = Some(value.into());
+//!         self
+//!     }
+//! }
+//! ```
+//!
+//! ### 4. StoragePreform Implementation (Critical Prevention)
+//! **Issue Resolved**: Manual implementations not properly handling single-field preform logic
+//! **Root Cause**: Single-field preform requires special handling for unwrap_or_default()
+//! **Solution**: Specialized preform implementation for single-field variant construction
+//! **Prevention**: Safe unwrapping with proper default value handling
+//!
+//! ### 5. Former Trait Integration (Critical Prevention)
+//! **Issue Resolved**: Manual implementations missing required trait implementations
+//! **Root Cause**: Single-field variants still need complete Former ecosystem integration
+//! **Solution**: Full trait implementation suite for single-field scenarios
+//! **Prevention**: Ensures compatibility with Former-based APIs regardless of field count
+//!
+//! ## Generated Code Architecture
+//!
+//! ### Single-Field Storage Infrastructure
+//! ```rust
+//! pub struct EnumVariantFormerStorage<T> 
+//! where T: Default
+//! {
+//!     pub field: Option<T>,       // Single optional field storage
+//! }
+//!
+//! impl<T> StoragePreform for EnumVariantFormerStorage<T> {
+//!     fn preform(mut self) -> Self::Preformed {
+//!         let field = self.field.unwrap_or_default();
+//!         Enum::Variant { field }
+//!     }
+//! }
+//! ```
+//!
+//! ### Builder Implementation
+//! ```rust
+//! impl<T> EnumVariantFormer<T> {
+//!     pub fn field(mut self, value: impl Into<T>) -> Self {
+//!         self.storage.field = Some(value.into());
+//!         self
+//!     }
+//!     
+//!     pub fn form(self) -> Enum<T> {
+//!         self.end()
+//!     }
+//! }
+//! ```
+//!
+//! ## Integration Notes
+//! - **Standalone Constructors**: Supports `#[standalone_constructors]` for top-level function generation
+//! - **Context Handling**: Integrates with Former's context system for advanced construction scenarios
+//! - **Performance**: Single-field optimization maintains zero-cost abstraction guarantees
+//! - **Type Safety**: Complete type safety through Former trait system integration
+
 use super::*;
 
 use macro_tools::{ Result, quote::{ quote, format_ident }, ident::cased_ident_from_ident, generic_params::GenericsRef };
 use convert_case::Case;
 
+/// Generates comprehensive implicit variant former infrastructure for single-field struct enum variants.
+///
+/// This function creates a complete builder ecosystem for struct variants with a single named field,
+/// implementing specialized pitfall prevention mechanisms for single-field construction patterns,
+/// storage optimization, and Former trait integration.
+///
+/// ## Generated Infrastructure
+///
+/// ### Core Components Generated:
+/// 1. **Storage Struct**: `{Enum}{Variant}FormerStorage` with single optional field wrapping
+/// 2. **Definition Types**: `{Enum}{Variant}FormerDefinitionTypes` for type system integration
+/// 3. **Definition**: `{Enum}{Variant}FormerDefinition` linking all components
+/// 4. **Former Builder**: `{Enum}{Variant}Former` with single field setter and termination methods
+/// 5. **Entity Traits**: Complete Former ecosystem trait implementations
+///
+/// ## Single-Field Specialization
+///
+/// - **Optimized Storage**: Single optional field storage with specialized default handling
+/// - **Type-Safe Setter**: Generated setter accepts `impl Into<FieldType>` for maximum flexibility
+/// - **Efficient Preform**: Specialized preform logic for single-field variant construction
+/// - **Complete Integration**: Full Former trait hierarchy implementation for ecosystem compatibility
+///
+/// ## Generated Method Signature
+/// ```rust
+/// impl<T> Enum<T> {
+///     pub fn variant() -> VariantFormer<T> { /* ... */ }
+/// }
+/// ```
+///
+/// ## Parameters
+/// - `ctx`: Mutable context containing variant information, generics, and output collections
+///
+/// ## Returns
+/// - `Ok(TokenStream)`: Generated enum method that returns the single-field variant former
+/// - `Err(syn::Error)`: If variant processing fails due to invalid configuration
 pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
 {
   let variant_name = &ctx.variant.ident;

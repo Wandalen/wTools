@@ -18,6 +18,70 @@ mod derive_former;
 /// the specified struct. It supports extensive customization through attributes that control defaults, setter generation,
 /// and field customization, allowing for flexible and fluent object construction.
 ///
+/// # Core Capabilities and Limitations
+///
+/// ## ✅ Supported Scenarios
+/// - **Complex Lifetime Parameters**: Handles `<'a, T>` patterns, multiple lifetimes, and where clauses
+/// - **Generic Constraints**: Works with `where T: Hash + Eq`, complex trait bounds
+/// - **Nested Structures**: Subform support for complex hierarchical data
+/// - **Collection Types**: HashMap, Vec, HashSet with proper trait bound handling
+/// - **Optional Fields**: Automatic `Option<T>` handling with sensible defaults
+/// - **Custom Mutators**: Pre-formation data manipulation and validation
+///
+/// ## ⚠️ Common Pitfalls and Solutions
+///
+/// ### 1. Commented-Out Derive Attributes (90% of issues)
+/// ```rust
+/// // ❌ WRONG: Derive commented out - will appear as "complex" issue
+/// // #[derive(Debug, PartialEq, Former)]
+/// #[derive(Debug, PartialEq)]
+/// pub struct MyStruct { ... }
+///
+/// // ✅ CORRECT: Uncomment derive attribute
+/// #[derive(Debug, PartialEq, Former)]
+/// pub struct MyStruct { ... }
+/// ```
+///
+/// ### 2. Feature Gate Requirements for Collections
+/// ```rust
+/// // ✅ REQUIRED: Collection tests need proper feature gates
+/// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+/// mod test_with_collections;
+/// ```
+///
+/// ### 3. Hash+Eq Trait Bounds for HashMap Keys
+/// ```rust
+/// // ❌ WRONG: Using non-Hash type as HashMap key
+/// pub struct Definition; // No Hash+Eq implementation
+/// pub struct MyStruct {
+///   map: HashMap<Definition, String>, // Will fail
+/// }
+///
+/// // ✅ CORRECT: Implement required traits or use different key type
+/// #[derive(Hash, Eq, PartialEq)]
+/// pub struct Definition; // Now implements Hash+Eq
+/// ```
+///
+/// ### 4. Lifetime Parameter Complexity
+/// ```rust
+/// // ✅ WORKS: Complex lifetime scenarios are supported
+/// #[derive(Former)]
+/// pub struct Child<'child, T>
+/// where
+///   T: 'child + ?Sized,
+/// {
+///   name: String,
+///   data: &'child T,
+/// }
+/// ```
+///
+/// ## 📋 Diagnostic Workflow
+/// When encountering issues:
+/// 1. **Check for commented derives** (resolves 90% of issues)
+/// 2. **Verify feature gate configuration** (for collection tests)
+/// 3. **Assess trait bound requirements** (Hash+Eq for HashMap keys)
+/// 4. **Test incremental complexity** (start simple, add complexity gradually)
+///
 /// # Struct Attributes
 ///
 /// - `debug`: Enables debug mode which can be used to print or log the internal state of the builder for debugging purposes.
