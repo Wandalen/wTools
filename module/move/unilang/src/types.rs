@@ -16,8 +16,9 @@ mod private
   use serde_json; // Added for JsonString and Object Value
 
 /// Represents a parsed and validated value of a specific kind.
-#[derive(Debug, Clone)]
-pub enum Value {
+#[ derive( Debug, Clone ) ]
+pub enum Value
+{
   /// A sequence of characters.
   String(String),
   /// A whole number.
@@ -50,10 +51,12 @@ pub enum Value {
   Object(serde_json::Value),
 }
 
-impl Value {
+impl Value
+{
   /// Returns a reference to the inner `i64` if the value is `Integer`, otherwise `None`.
-  #[must_use]
-  pub fn as_integer(&self) -> Option<&i64> {
+  #[ must_use ]
+  pub fn as_integer( &self ) -> Option< &i64 >
+  {
     if let Self::Integer(v) = self {
       Some(v)
     } else {
@@ -62,8 +65,9 @@ impl Value {
   }
 
   /// Returns a reference to the inner `PathBuf` if the value is `Path`, `File`, or `Directory`, otherwise `None`.
-  #[must_use]
-  pub fn as_path(&self) -> Option<&PathBuf> {
+  #[ must_use ]
+  pub fn as_path( &self ) -> Option< &PathBuf >
+  {
     match self {
       Self::Path(v) | Self::File(v) | Self::Directory(v) => Some(v),
       _ => None,
@@ -71,8 +75,10 @@ impl Value {
   }
 }
 
-impl PartialEq for Value {
-  fn eq(&self, other: &Self) -> bool {
+impl PartialEq for Value
+{
+  fn eq( &self, other : &Self ) -> bool
+  {
     match (self, other) {
       (Self::String(l), Self::String(r)) | (Self::Enum(l), Self::Enum(r)) | (Self::JsonString(l), Self::JsonString(r)) => l == r, // Merged match arms
       (Self::Integer(l), Self::Integer(r)) => l == r,
@@ -90,8 +96,10 @@ impl PartialEq for Value {
   }
 }
 
-impl fmt::Display for Value {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Display for Value
+{
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+  {
     match self {
       Value::String(s) | Value::Enum(s) | Value::JsonString(s) => write!(f, "{s}"), // Merged match arms
       Value::Integer(i) => write!(f, "{i}"),
@@ -109,12 +117,13 @@ impl fmt::Display for Value {
 }
 
 /// An error that can occur during type parsing or validation.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct TypeError {
+#[ derive( Debug, Clone, PartialEq, Eq ) ]
+pub struct TypeError
+{
   /// The expected kind of the value.
-  pub expected_kind: Kind,
+  pub expected_kind : Kind,
   /// A message describing the reason for the failure.
-  pub reason: String,
+  pub reason : String,
 }
 
 /// Parses a raw string input into a `Value` based on the specified `Kind`.
@@ -123,7 +132,8 @@ pub struct TypeError {
 ///
 /// Returns a `TypeError` if the input string cannot be parsed into the
 /// specified `Kind` or if it fails validation for that `Kind`.
-pub fn parse_value(input: &str, kind: &Kind) -> Result<Value, TypeError> {
+pub fn parse_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
+{
   match kind {
     Kind::String | Kind::Integer | Kind::Float | Kind::Boolean | Kind::Enum(_) => parse_primitive_value(input, kind),
     Kind::Path | Kind::File | Kind::Directory => parse_path_value(input, kind),
@@ -134,7 +144,8 @@ pub fn parse_value(input: &str, kind: &Kind) -> Result<Value, TypeError> {
   }
 }
 
-fn parse_primitive_value(input: &str, kind: &Kind) -> Result<Value, TypeError> {
+fn parse_primitive_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
+{
   match kind {
     Kind::String => Ok(Value::String(input.to_string())),
     Kind::Integer => input.parse::<i64>().map(Value::Integer).map_err(|e| TypeError {
@@ -167,7 +178,8 @@ fn parse_primitive_value(input: &str, kind: &Kind) -> Result<Value, TypeError> {
   }
 }
 
-fn parse_path_value(input: &str, kind: &Kind) -> Result<Value, TypeError> {
+fn parse_path_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
+{
   if input.is_empty() {
     return Err(TypeError {
       expected_kind: kind.clone(),
@@ -211,7 +223,8 @@ fn parse_path_value(input: &str, kind: &Kind) -> Result<Value, TypeError> {
   }
 }
 
-fn parse_url_datetime_pattern_value(input: &str, kind: &Kind) -> Result<Value, TypeError> {
+fn parse_url_datetime_pattern_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
+{
   match kind {
     Kind::Url => Url::parse(input).map(Value::Url).map_err(|e| TypeError {
       expected_kind: kind.clone(),
@@ -231,7 +244,8 @@ fn parse_url_datetime_pattern_value(input: &str, kind: &Kind) -> Result<Value, T
   }
 }
 
-fn parse_list_value(input: &str, kind: &Kind) -> Result<Value, TypeError> {
+fn parse_list_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
+{
   let Kind::List(item_kind, delimiter_opt) = kind else {
     unreachable!("Called parse_list_value with non-list kind: {:?}", kind)
   };
@@ -248,7 +262,8 @@ fn parse_list_value(input: &str, kind: &Kind) -> Result<Value, TypeError> {
   Ok(Value::List(parsed_items))
 }
 
-fn parse_map_value(input: &str, kind: &Kind) -> Result<Value, TypeError> {
+fn parse_map_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
+{
   let Kind::Map(_key_kind, value_kind, entry_delimiter_opt, kv_delimiter_opt) = kind else {
     unreachable!("Called parse_map_value with non-map kind: {:?}", kind)
   };
@@ -280,7 +295,8 @@ fn parse_map_value(input: &str, kind: &Kind) -> Result<Value, TypeError> {
   Ok(Value::Map(parsed_map))
 }
 
-fn parse_json_value(input: &str, kind: &Kind) -> Result<Value, TypeError> {
+fn parse_json_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
+{
   match kind {
     Kind::JsonString => {
       // Validate that it's a valid JSON string, but store it as a raw string.

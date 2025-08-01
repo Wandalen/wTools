@@ -153,9 +153,10 @@ fn run() -> Result< (), unilang::error::Error >
     .name( "name" )
     .kind( ArgumentKind::String )
     .hint( "Name of the person to greet." )
-    .attributes( ArgumentAttributes {
-      optional: true,
-      default: Some("World".to_string()),
+    .attributes( ArgumentAttributes
+    {
+      optional : true,
+      default : Some( "World".to_string() ),
       ..Default::default()
     })
     .end()
@@ -205,9 +206,10 @@ fn run() -> Result< (), unilang::error::Error >
     .name( "value" )
     .kind( ArgumentKind::String )
     .hint( "Configuration value." )
-    .attributes( ArgumentAttributes {
-      interactive: true,
-      sensitive: true,
+    .attributes( ArgumentAttributes
+    {
+      interactive : true,
+      sensitive : true,
       ..Default::default()
     })
     .end(),
@@ -250,8 +252,9 @@ fn run() -> Result< (), unilang::error::Error >
     .name( "arg1" )
     .kind( ArgumentKind::String )
     .hint( "The first argument to echo." )
-    .attributes( ArgumentAttributes {
-      optional: true,
+    .attributes( ArgumentAttributes
+    {
+      optional : true,
       ..Default::default()
     })
     .end(),
@@ -296,10 +299,11 @@ fn run() -> Result< (), unilang::error::Error >
     .tags( vec![ "required".to_string() ] ) // Added tag for testing
     .attributes
     (
-      ArgumentAttributes {
-        optional: false,
-        interactive: false,
-        sensitive: false,
+      ArgumentAttributes
+      {
+        optional : false,
+        interactive : false,
+        sensitive : false,
         ..Default::default()
       }
     )
@@ -361,10 +365,10 @@ fn run() -> Result< (), unilang::error::Error >
   }
 
   // Check for verbosity environment variable
-  let verbosity = std::env::var("UNILANG_VERBOSITY")
-    .ok()
-    .and_then(|v| v.parse::<u8>().ok())
-    .unwrap_or(1); // Default to normal verbosity
+  let verbosity = std::env::var( "UNILANG_VERBOSITY" )
+  .ok()
+  .and_then( | v | v.parse::< u8 >().ok() )
+  .unwrap_or( 1 ); // Default to normal verbosity
   
   let mut parser_options = UnilangParserOptions::default();
   parser_options.verbosity = verbosity;
@@ -432,14 +436,16 @@ fn run() -> Result< (), unilang::error::Error >
 
   // 4. Semantic Analysis
   let semantic_analyzer = SemanticAnalyzer::new( instructions, &registry );
-  let commands = match semantic_analyzer.analyze() {
-    Ok(commands) => commands,
-    Err(unilang::error::Error::Execution(error_data)) if error_data.code == "HELP_REQUESTED" => {
+  let commands = match semantic_analyzer.analyze()
+  {
+    Ok( commands ) => commands,
+    Err( unilang::error::Error::Execution( error_data ) ) if error_data.code == "HELP_REQUESTED" =>
+    {
       // Special handling for help requests - print the help and exit successfully
-      println!("{}", error_data.message);
-      return Ok(());
+      println!( "{}", error_data.message );
+      return Ok( () );
     },
-    Err(e) => return Err(e),
+    Err( e ) => return Err( e ),
   };
 
   // 5. Interpret and Execute

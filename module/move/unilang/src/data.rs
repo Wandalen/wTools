@@ -310,19 +310,19 @@ mod private
     ///
     /// Creates a new `ErrorData` with no source error.
     ///
-    #[must_use]
-    pub fn new( code: String, message: String ) -> Self
+    #[ must_use ]
+    pub fn new( code : String, message : String ) -> Self
     {
-      Self { code, message, source: None }
+      Self { code, message, source : None }
     }
 
     ///
     /// Creates a new `ErrorData` with a source error for chaining.
     ///
-    #[must_use]
-    pub fn with_source( code: String, message: String, source: ErrorData ) -> Self
+    #[ must_use ]
+    pub fn with_source( code : String, message : String, source : ErrorData ) -> Self
     {
-      Self { code, message, source: Some( Box::new( source ) ) }
+      Self { code, message, source : Some( Box::new( source ) ) }
     }
 
     ///
