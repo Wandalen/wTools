@@ -4,7 +4,7 @@
 
 set -e
 
-echo "🏁 Running ALL Benchmarks and Updating Documentation" 
+echo "🏁 Running ALL Benchmarks and Updating Documentation"
 echo "===================================================="
 echo "This will take approximately 30+ minutes"
 echo ""
@@ -20,7 +20,7 @@ echo "📊 All results and documentation updated!"
 echo ""
 echo "Key output files:"
 echo "  - target/comprehensive_framework_comparison/ (3-way comparison)"
-echo "  - target/framework_comparison/ (2-way comparison)"  
+echo "  - target/framework_comparison/ (2-way comparison)"
 echo "  - target/benchmark_results/ (fast benchmarks)"
 echo "  - target/true_benchmark_results/ (build+runtime)"
 echo "  - benchmark/readme.md (updated with latest results)"

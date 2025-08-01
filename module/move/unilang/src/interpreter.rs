@@ -48,8 +48,7 @@ impl< 'a > Interpreter< 'a >
     commands : & 'a [ VerifiedCommand ],
     registry : & 'a crate::registry::CommandRegistry,
   )
-  ->
-  Self
+  -> Self
   {
     Self { commands, registry }
   }
@@ -64,8 +63,7 @@ impl< 'a > Interpreter< 'a >
     &self,
     context : &mut ExecutionContext,
   )
-  ->
-  Result< Vec< OutputData >, Error >
+  -> Result< Vec< OutputData >, Error >
   {
     let mut results = Vec::new();
     for command in self.commands

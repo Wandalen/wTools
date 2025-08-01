@@ -139,11 +139,72 @@ All benchmarks generate detailed reports in `target/` subdirectories:
 - **Framework comparison** → Comprehensive comparison (~8 min)
 - **CI/CD pipelines** → Subset of benchmarks (10, 1K, 10K commands)
 
+## 🎯 **How to Run Benchmarks - Complete Guide**
+
+### Quick Verification (Instant)
+```bash
+# Shows existing results without running new benchmarks
+./benchmark/run_demo.sh
+```
+
+### Main Benchmarks
+```bash
+# 🏆 Recommended: 3-way framework comparison (8-10 minutes)
+./benchmark/run_comprehensive_benchmark.sh
+
+# 🚀 Complete benchmark suite (30+ minutes)
+./benchmark/run_all_benchmarks.sh
+
+# 🔧 Direct binary execution (alternative method)
+cargo run --release --bin comprehensive_benchmark --features benchmarks
+```
+
+## 📊 **Generated Reports & Metrics**
+
+### Primary Output Files
+| File | Location | Content |
+|------|----------|---------|
+| **CSV Data** | `target/comprehensive_framework_comparison/comprehensive_results.csv` | Raw metrics for all frameworks and command counts |
+| **Detailed Report** | `target/comprehensive_framework_comparison/comprehensive_report.txt` | Formatted comparison tables, analysis, and recommendations |
+| **Updated Documentation** | `benchmark/readme.md` | Performance tables automatically updated with latest results |
+
+### Key Metrics Tracked
+| Metric Category | Measurements | Purpose |
+|-----------------|--------------|---------|
+| **Compile Time** | Build duration (ms) | Development productivity |
+| **Binary Size** | Executable size (KB) | Distribution overhead |
+| **Initialization** | Startup time (μs) | Command launch speed |
+| **Lookup Performance** | Parsing speed (ns) | Runtime efficiency |
+| **Throughput** | Commands/second | Bulk processing capacity |
+| **Scalability** | Performance across 10¹-10⁵ commands | Framework limits |
+
+### Output Directory Structure
+```
+target/
+├── comprehensive_framework_comparison/  # 3-way comparison results
+│   ├── comprehensive_results.csv       # Raw data
+│   └── comprehensive_report.txt        # Formatted analysis
+├── framework_comparison/               # 2-way comparison
+├── benchmark_results/                  # Fast benchmarks  
+├── true_benchmark_results/            # Build+runtime tests
+└── clap_benchmark_results/            # Clap standalone
+```
+
+## ⚡ **Benchmark Features**
+
+1. **Statistical Rigor**: 5 repetitions per measurement with averages and standard deviations
+2. **Power-of-10 Testing**: Tests 10¹, 10², 10³, 10⁴, 10⁵ commands (10 to 100,000)
+3. **Three-Way Comparison**: Unilang vs Clap vs Pico-Args
+4. **Comprehensive Metrics**: Compile time, binary size, runtime performance
+5. **Automatic Documentation**: Updates readme.md with latest results
+6. **Version Tracking**: Records exact framework versions used
+
 ## 📚 Additional Resources
 
 - **[`benchmark_instructions.md`](benchmark_instructions.md)** - Quick start guide with examples
 - **[`simple_true_benchmark.md`](simple_true_benchmark.md)** - Manual benchmark tutorial
 - **[Framework versions and dependencies](comprehensive_framework_comparison.rs)** - Version tracking details
+- **[`run_demo.sh`](run_demo.sh)** - Quick verification script
 
 ## 🚀 Key Takeaways
 
