@@ -172,8 +172,8 @@ mod subform_collection_custom;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_collection_implicit;
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_collection_manual;  // BLOCKED: Missing ParentFormer types and scalar attribute
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_collection_manual;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_collection_named;
@@ -187,8 +187,8 @@ mod subform_collection_setter_off;
 
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_scalar;
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_scalar_manual;  // BLOCKED: Missing ParentFormer types and scalar attribute
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_scalar_manual;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_scalar_name;
@@ -214,8 +214,8 @@ mod subform_entry_setter_on;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry_hashmap;
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry_hashmap_custom;  // BLOCKED: Missing ParentFormer types and subform_entry attribute
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_entry_hashmap_custom;
 
 // = subform all : scalar, subform_scalar, subform_entry, subform_collection
 
