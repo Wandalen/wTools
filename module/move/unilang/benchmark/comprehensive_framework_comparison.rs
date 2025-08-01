@@ -4,17 +4,26 @@
 //! exponentially increasing command counts, providing detailed metrics for
 //! framework selection decisions.
 
+#[cfg(feature = "benchmarks")]
 use std::time::Instant;
+#[cfg(feature = "benchmarks")]
 use std::process::{Command, Stdio};
+#[cfg(feature = "benchmarks")]
 use std::fs;
+#[cfg(feature = "benchmarks")]
 use std::path::Path;
 
 // Import all frameworks for comparison
+#[cfg(feature = "benchmarks")]
 use unilang::prelude::*;
+
+#[cfg(feature = "benchmarks")]
 use clap::{Arg, Command as ClapCommand};
+#[cfg(feature = "benchmarks")]  
 use pico_args::Arguments;
 
 #[derive(Debug, Clone)]
+#[cfg(feature = "benchmarks")]
 struct ComprehensiveBenchmarkResult {
     framework: String,
     command_count: usize,
@@ -26,6 +35,7 @@ struct ComprehensiveBenchmarkResult {
     commands_per_second: f64,
 }
 
+#[cfg(feature = "benchmarks")]
 fn benchmark_unilang_comprehensive(command_count: usize) -> ComprehensiveBenchmarkResult {
     println!("🦀 Benchmarking unilang with {} commands (comprehensive)", command_count);
 
@@ -86,8 +96,8 @@ fn benchmark_unilang_comprehensive(command_count: usize) -> ComprehensiveBenchma
 
     // Benchmark lookups using pipeline
     let pipeline = Pipeline::new(registry);
-    let test_commands: Vec<String> = (0..1000)
-        .map(|i| format!(".perf.cmd_{} input::test verbose::true", i % command_count))
+    let test_commands: Vec<String> = (0..command_count)
+        .map(|i| format!(".perf.cmd_{} input::test verbose::true", i))
         .collect();
 
     // Warmup
@@ -132,6 +142,7 @@ fn benchmark_unilang_comprehensive(command_count: usize) -> ComprehensiveBenchma
     }
 }
 
+#[cfg(feature = "benchmarks")]
 fn benchmark_clap_comprehensive(command_count: usize) -> ComprehensiveBenchmarkResult {
     println!("🗡️  Benchmarking clap with {} commands (comprehensive)", command_count);
 
@@ -171,12 +182,11 @@ fn benchmark_clap_comprehensive(command_count: usize) -> ComprehensiveBenchmarkR
     let init_time_us = init_time.as_nanos() as f64 / 1000.0;
 
     // Benchmark parsing
-    let test_commands: Vec<Vec<String>> = (0..1000)
+    let test_commands: Vec<Vec<String>> = (0..command_count)
         .map(|i| {
-            let cmd_idx = i % command_count;
             vec![
                 "benchmark".to_string(),
-                format!("cmd_{}", cmd_idx),
+                format!("cmd_{}", i),
                 "--input".to_string(),
                 "test".to_string(),
                 "--verbose".to_string(),
@@ -228,6 +238,7 @@ fn benchmark_clap_comprehensive(command_count: usize) -> ComprehensiveBenchmarkR
     }
 }
 
+#[cfg(feature = "benchmarks")]
 fn benchmark_pico_args_comprehensive(command_count: usize) -> ComprehensiveBenchmarkResult {
     println!("⚡ Benchmarking pico-args with {} commands (comprehensive)", command_count);
 
@@ -243,12 +254,11 @@ fn benchmark_pico_args_comprehensive(command_count: usize) -> ComprehensiveBench
     let init_time_us = init_time.as_nanos() as f64 / 1000.0;
 
     // Benchmark parsing (pico-args uses different API pattern)
-    let test_args: Vec<Vec<String>> = (0..1000)
+    let test_args: Vec<Vec<String>> = (0..command_count)
         .map(|i| {
-            let cmd_idx = i % command_count;
             vec![
                 "benchmark".to_string(),
-                format!("--cmd-{}", cmd_idx),
+                format!("--cmd-{}", i),
                 "test_value".to_string(),
             ]
         })
@@ -256,8 +266,9 @@ fn benchmark_pico_args_comprehensive(command_count: usize) -> ComprehensiveBench
 
     // Warmup
     for args_vec in test_args.iter().take(100) {
-        let mut args = Arguments::from_vec(args_vec.iter().map(|s| s.into()).collect());
-        let _: Option<String> = args.opt_value_from_str("cmd-0").unwrap_or(None);
+        let args = Arguments::from_vec(args_vec.iter().map(|s| s.into()).collect());
+        // Pico-args benchmarks by trying to parse all arguments
+        let _remaining = args.finish();
     }
 
     // Benchmark
@@ -266,8 +277,9 @@ fn benchmark_pico_args_comprehensive(command_count: usize) -> ComprehensiveBench
 
     for args_vec in &test_args {
         let lookup_start = Instant::now();
-        let mut args = Arguments::from_vec(args_vec.iter().map(|s| s.into()).collect());
-        let _: Option<String> = args.opt_value_from_str("cmd-0").unwrap_or(None);
+        let args = Arguments::from_vec(args_vec.iter().map(|s| s.into()).collect());
+        // Pico-args benchmarks by trying to parse all arguments
+        let _remaining = args.finish();
         let lookup_time = lookup_start.elapsed();
         lookup_times.push(lookup_time.as_nanos() as u64);
     }
@@ -298,6 +310,7 @@ fn benchmark_pico_args_comprehensive(command_count: usize) -> ComprehensiveBench
     }
 }
 
+#[cfg(feature = "benchmarks")]
 fn measure_unilang_compile_time(command_count: usize) -> (f64, u64) {
     let work_dir = format!("target/compile_test_unilang_{}", command_count);
     let _ = fs::remove_dir_all(&work_dir);
@@ -389,6 +402,7 @@ fn main() {{
     (compile_time_ms, binary_size_kb)
 }
 
+#[cfg(feature = "benchmarks")]
 fn measure_clap_compile_time(command_count: usize) -> (f64, u64) {
     let work_dir = format!("target/compile_test_clap_{}", command_count);
     let _ = fs::remove_dir_all(&work_dir);
@@ -471,6 +485,7 @@ fn main() {{
     (compile_time_ms, binary_size_kb)
 }
 
+#[cfg(feature = "benchmarks")]
 fn measure_pico_args_compile_time(command_count: usize) -> (f64, u64) {
     let work_dir = format!("target/compile_test_pico_args_{}", command_count);
     let _ = fs::remove_dir_all(&work_dir);
@@ -546,6 +561,7 @@ fn main() {{
     (compile_time_ms, binary_size_kb)
 }
 
+#[cfg(feature = "benchmarks")]
 fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmarkResult>]) {
     // Always remove and recreate directory to ensure fresh results
     let output_dir = "target/comprehensive_framework_comparison";
@@ -724,6 +740,7 @@ fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmar
     println!("  - benchmark/readme.md (updated with latest results)");
 }
 
+#[cfg(feature = "benchmarks")]
 fn average_benchmark_results(results: &[ComprehensiveBenchmarkResult]) -> ComprehensiveBenchmarkResult {
     let count = results.len() as f64;
     
@@ -759,6 +776,7 @@ fn average_benchmark_results(results: &[ComprehensiveBenchmarkResult]) -> Compre
     }
 }
 
+#[cfg(feature = "benchmarks")]
 fn calculate_std_dev(values: &[f64], mean: f64) -> f64 {
     if values.len() <= 1 {
         return 0.0;
@@ -773,8 +791,10 @@ fn calculate_std_dev(values: &[f64], mean: f64) -> f64 {
 
 #[cfg(test)]
 mod tests {
+    #[cfg(feature = "benchmarks")]
     use super::*;
 
+    #[cfg(feature = "benchmarks")]
     #[test]
     fn comprehensive_framework_comparison_benchmark() {
         println!("🚀 Starting Comprehensive Framework Comparison Benchmark");
@@ -878,6 +898,7 @@ mod tests {
     }
 }
 
+#[cfg(feature = "benchmarks")]
 fn update_readme_with_results(results: &[Vec<ComprehensiveBenchmarkResult>]) -> Result<(), Box<dyn std::error::Error>> {
     let readme_path = "benchmark/readme.md";
     let content = fs::read_to_string(readme_path)?;
@@ -938,6 +959,7 @@ fn update_readme_with_results(results: &[Vec<ComprehensiveBenchmarkResult>]) -> 
     Ok(())
 }
 
+#[cfg(feature = "benchmarks")]
 fn generate_scaling_table(data: &[&ComprehensiveBenchmarkResult], framework_name: &str) -> String {
     let mut table = String::new();
     table.push_str(&format!("### {} Scaling Performance\n\n", framework_name));
@@ -962,6 +984,7 @@ fn generate_scaling_table(data: &[&ComprehensiveBenchmarkResult], framework_name
     table
 }
 
+#[cfg(feature = "benchmarks")]
 fn update_table_in_content(content: &str, section_header: &str, new_table: &str) -> Result<String, Box<dyn std::error::Error>> {
     let lines: Vec<&str> = content.lines().collect();
     let mut result = Vec::new();
@@ -1001,6 +1024,7 @@ fn update_table_in_content(content: &str, section_header: &str, new_table: &str)
     Ok(result.join("\n"))
 }
 
+#[cfg(feature = "benchmarks")]
 fn format_command_count(count: usize) -> String {
     if count >= 1000 {
         format!("{}K", count / 1000)
@@ -1009,6 +1033,7 @@ fn format_command_count(count: usize) -> String {
     }
 }
 
+#[cfg(feature = "benchmarks")]
 fn format_duration(seconds: f64) -> String {
     if seconds < 60.0 {
         format!("~{:.0}s", seconds)
@@ -1017,6 +1042,7 @@ fn format_duration(seconds: f64) -> String {
     }
 }
 
+#[cfg(feature = "benchmarks")]
 fn format_size(kb: u64) -> String {
     if kb < 1024 {
         format!("~{} KB", kb)
@@ -1025,10 +1051,12 @@ fn format_size(kb: u64) -> String {
     }
 }
 
+#[cfg(feature = "benchmarks")]
 fn format_time_microseconds(us: f64) -> String {
     format!("~{:.1} μs", us)
 }
 
+#[cfg(feature = "benchmarks")]
 fn format_time_nanoseconds(ns: f64) -> String {
     if ns < 1000.0 {
         format!("~{:.0} ns", ns)
@@ -1037,6 +1065,7 @@ fn format_time_nanoseconds(ns: f64) -> String {
     }
 }
 
+#[cfg(feature = "benchmarks")]
 fn format_throughput(cmds_per_sec: f64) -> String {
     if cmds_per_sec >= 1_000_000.0 {
         format!("~{:.0}M/sec", cmds_per_sec / 1_000_000.0)
@@ -1046,3 +1075,113 @@ fn format_throughput(cmds_per_sec: f64) -> String {
         format!("~{:.0}/sec", cmds_per_sec)
     }
 }
+
+#[cfg(feature = "benchmarks")]
+fn run_comprehensive_benchmark() {
+    println!("🚀 Starting Comprehensive Framework Comparison Benchmark");
+    println!("========================================================");
+    println!("Testing Unilang vs Clap vs Pico-Args with compile time metrics");
+    println!("Testing all powers of 10 from 10¹ to 10⁵ with 5 repetitions each\n");
+
+    let command_counts = vec![10, 100, 1000, 10000, 100000];
+    let repetitions = 5;
+    let mut all_results = Vec::new();
+
+    for &count in &command_counts {
+        println!("--- Testing with {} commands ({} repetitions) ---", count, repetitions);
+        
+        // Collect multiple runs for statistical analysis
+        let mut unilang_runs = Vec::new();
+        let mut clap_runs = Vec::new();
+        let mut pico_args_runs = Vec::new();
+        
+        for rep in 1..=repetitions {
+            println!("  Repetition {}/{}", rep, repetitions);
+            
+            let unilang_result = benchmark_unilang_comprehensive(count);
+            let clap_result = benchmark_clap_comprehensive(count);
+            let pico_args_result = benchmark_pico_args_comprehensive(count);
+            
+            unilang_runs.push(unilang_result);
+            clap_runs.push(clap_result);
+            pico_args_runs.push(pico_args_result);
+        }
+        
+        // Calculate averages for this command count
+        let unilang_avg = average_benchmark_results(&unilang_runs);
+        let clap_avg = average_benchmark_results(&clap_runs);
+        let pico_args_avg = average_benchmark_results(&pico_args_runs);
+        
+        all_results.push(vec![unilang_avg, clap_avg, pico_args_avg]);
+    }
+
+    // Generate comprehensive comparison report
+    generate_comprehensive_comparison_report(&all_results);
+
+    println!("🎉 Comprehensive framework comparison completed!");
+    println!("\n📊 **Quick Summary (5-run averages):**");
+    println!();
+    println!("| Commands | Metric | Unilang | Clap | Pico-Args | Winner |");
+    println!("|----------|--------|---------|------|-----------|--------|");
+    
+    for (i, result_set) in all_results.iter().enumerate() {
+        let unilang = &result_set[0];
+        let clap = &result_set[1];
+        let pico_args = &result_set[2];
+        
+        let cmd_display = if command_counts[i] >= 1000 {
+            format!("{}K", command_counts[i] / 1000)
+        } else {
+            command_counts[i].to_string()
+        };
+        
+        // Compile time winner
+        let min_compile = unilang.compile_time_ms.min(clap.compile_time_ms.min(pico_args.compile_time_ms));
+        let compile_winner = if (unilang.compile_time_ms - min_compile).abs() < 1.0 { "🦀 Unilang" }
+                           else if (clap.compile_time_ms - min_compile).abs() < 1.0 { "🗡️ Clap" }
+                           else { "⚡ Pico-Args" };
+        
+        println!("| {:>8} | Compile | {:.0}ms | {:.0}ms | {:.0}ms | {} |",
+                 cmd_display, unilang.compile_time_ms, clap.compile_time_ms, pico_args.compile_time_ms, compile_winner);
+        
+        // Runtime winner
+        let min_runtime = unilang.init_time_us.min(clap.init_time_us.min(pico_args.init_time_us));
+        let runtime_winner = if (unilang.init_time_us - min_runtime).abs() < 1.0 { "🦀 Unilang" }
+                            else if (clap.init_time_us - min_runtime).abs() < 1.0 { "🗡️ Clap" }
+                            else { "⚡ Pico-Args" };
+        
+        println!("| {:>8} | Runtime | {:.1}μs | {:.1}μs | {:.1}μs | {} |",
+                 "", unilang.init_time_us, clap.init_time_us, pico_args.init_time_us, runtime_winner);
+        
+        // Throughput winner  
+        let max_throughput = unilang.commands_per_second.max(clap.commands_per_second.max(pico_args.commands_per_second));
+        let throughput_winner = if (unilang.commands_per_second - max_throughput).abs() < 1000.0 { "🦀 Unilang" }
+                               else if (clap.commands_per_second - max_throughput).abs() < 1000.0 { "🗡️ Clap" }
+                               else { "⚡ Pico-Args" };
+        
+        println!("| {:>8} | Thrghpt | {:.0}/s | {:.0}/s | {:.0}/s | {} |",
+                 "", unilang.commands_per_second, clap.commands_per_second, pico_args.commands_per_second, throughput_winner);
+    }
+
+    if let Err(e) = update_readme_with_results(&all_results) {
+        eprintln!("❌ Failed to update README: {}", e);
+    }
+
+    println!("\n✅ All three frameworks show excellent performance characteristics!");
+    println!("📖 See detailed analysis in target/comprehensive_framework_comparison/comprehensive_report.txt");
+}
+
+fn main() {
+    #[cfg(feature = "benchmarks")]
+    {
+        run_comprehensive_benchmark();
+    }
+    
+    #[cfg(not(feature = "benchmarks"))]
+    {
+        eprintln!("Error: Benchmarks not enabled!");
+        eprintln!("Run with: cargo run --release --bin comprehensive_benchmark --features benchmarks");
+        std::process::exit(1); 
+    }
+}
+

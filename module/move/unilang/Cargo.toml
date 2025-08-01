@@ -28,6 +28,7 @@ all-features = false
 default = [ "enabled" ]
 full = [ "enabled", "on_unknown_suggest" ]
 enabled = []
+benchmarks = [ "clap", "pico-args" ]
 
 # This configuration suggests an action to be done when the command is unknown. In this case, when an unknown command is encountered, the system might suggest alternatives
 on_unknown_suggest = [ "dep:textdistance" ]
@@ -55,9 +56,18 @@ textdistance = { version = "1.0", optional = true } # fuzzy commands search
 indexmap = "2.2.6"
 thiserror = "1.0"
 
+# Benchmark dependencies (needed for benchmark binaries)
+clap = { version = "4.4", optional = true }
+pico-args = { version = "0.5", optional = true }
+
 [[bin]]
 name = "unilang_cli"
 path = "src/bin/unilang_cli.rs"
+
+[[bin]]
+name = "comprehensive_benchmark"
+path = "benchmark/comprehensive_framework_comparison.rs"
+
 
 
 [[test]]
@@ -75,38 +85,14 @@ path = "tests/inc/phase2/help_generation_test.rs"
 name = "data_model_features_test"
 path = "tests/inc/phase3/data_model_features_test.rs"
 
-[[test]]
-name = "performance_stress_test"
-path = "tests/inc/phase4/performance_stress_test.rs"
+# Performance tests excluded from regular 'cargo test' - run manually if needed
+# [[test]]
+# name = "performance_stress_test"  
+# path = "tests/inc/phase4/performance_stress_test.rs"
 
-# Benchmark tests
-[[test]]
-name = "exponential_benchmark"
-path = "benchmark/exponential_benchmark.rs"
+# Benchmarks are now run via shell scripts in benchmark/
+# Use ./benchmark/run_comprehensive_benchmark.sh or ./benchmark/run_all_benchmarks.sh
 
-[[test]]
-name = "true_exponential_benchmark"
-path = "benchmark/true_exponential_benchmark.rs"
-
-[[test]]
-name = "parsing_benchmark_test"
-path = "benchmark/parsing_benchmark_test.rs"
-
-[[test]]
-name = "clap_comparison_benchmark"
-path = "benchmark/clap_comparison_benchmark.rs"
-
-[[test]]
-name = "framework_comparison"
-path = "benchmark/framework_comparison.rs"
-
-[[test]]
-name = "comprehensive_framework_comparison"
-path = "benchmark/comprehensive_framework_comparison.rs"
-
-[[test]]
-name = "run_all_benchmarks"
-path = "benchmark/run_all_benchmarks.rs"
 
 # stress_test_bin is a binary, not a test - no [[test]] entry needed
 

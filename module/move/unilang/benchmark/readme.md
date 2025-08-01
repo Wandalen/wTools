@@ -7,17 +7,14 @@ This directory contains comprehensive performance benchmarks for the unilang fra
 
 ```bash
 # 🏁 Run ALL benchmarks and update documentation (30+ minutes)
-cargo test run_all_benchmarks --release -- --nocapture
+./benchmark/run_all_benchmarks.sh
 
 # Or run individual benchmarks:
-# Comprehensive 3-way framework comparison (recommended)
-cargo test comprehensive_framework_comparison_benchmark --release -- --nocapture
+# Comprehensive 3-way framework comparison (recommended, 8-10 minutes)
+./benchmark/run_comprehensive_benchmark.sh
 
-# Fast unilang-only runtime benchmark
-cargo test exponential_performance_benchmark --release -- --nocapture
-
-# True build+runtime benchmark (takes 15+ minutes)
-cargo test true_exponential_benchmark --release -- --nocapture
+# Direct binary execution (alternative):
+cargo run --release --bin comprehensive_benchmark --features benchmarks
 ```
 
 ## 📊 Key Performance Results
@@ -83,15 +80,13 @@ cargo test true_exponential_benchmark --release -- --nocapture
 ### Usage Commands
 
 ```bash
-# Framework comparisons
-cargo test comprehensive_framework_comparison_benchmark --release -- --nocapture
-cargo test framework_comparison_benchmark --release -- --nocapture
-cargo test clap_exponential_performance_benchmark --release -- --nocapture
+# Recommended: Use shell scripts for complete benchmarks
+./benchmark/run_all_benchmarks.sh                    # All benchmarks (30+ min)
+./benchmark/run_comprehensive_benchmark.sh           # 3-way comparison (8-10 min)
 
-# Unilang benchmarks
-cargo test true_exponential_benchmark --release -- --nocapture
-cargo test exponential_performance_benchmark --release -- --nocapture
-cargo test benchmark_1000_command_parsing_delay --release -- --nocapture
+# Alternative methods:
+cargo run --release --bin comprehensive_benchmark --features benchmarks  # Direct binary
+# Note: Individual benchmark tests have been removed to prevent accidental execution with 'cargo test'
 ```
 
 ## 🎯 Framework Selection Guide
@@ -128,6 +123,8 @@ All benchmarks generate detailed reports in `target/` subdirectories:
 - **`benchmark_results.csv`** - Raw performance measurements
 - **`performance_report.txt`** - Detailed scaling analysis
 - **`generate_plots.py`** - Python script for performance graphs
+- **[`run_all_benchmarks.sh`](run_all_benchmarks.sh)** - Complete benchmark runner script
+- **[`run_comprehensive_benchmark.sh`](run_comprehensive_benchmark.sh)** - 3-way comparison script
 
 ## ⚠️ Important Notes
 
