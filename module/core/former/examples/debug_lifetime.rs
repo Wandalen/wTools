@@ -1,8 +1,12 @@
+//! Example demonstrating lifetime debugging with Former-derived structs.
+
+#![allow(missing_docs)]
+
 #[cfg(feature = "enabled")]
 use former_meta::Former;
 
 #[derive(Debug, PartialEq, Former)]
-#[debug]
+// #[debug] // Commented out - debug attribute only for temporary debugging
 pub struct Test<'a> {
   data: &'a str,
 }

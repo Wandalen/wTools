@@ -1,4 +1,6 @@
-// Example former_custom_scalar_setter.rs
+//! Example demonstrating custom scalar setters for direct HashMap assignment with Former.
+
+#![allow(missing_docs)]
 
 // ## Example : Custom Scalar Setter
 //

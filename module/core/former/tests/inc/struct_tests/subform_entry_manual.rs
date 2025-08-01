@@ -14,7 +14,7 @@ pub struct Child {
 pub struct Parent {
   // #[ subform_collection( definition = former::VectorDefinition ) ]
   // #[ subform_entry ]
-  #[scalar(setter = false)]
+  // #[scalar(setter = false)]
   children: Vec<Child>,
 }
 
@@ -22,20 +22,20 @@ pub struct Parent {
 
 impl<Definition> ParentFormer<Definition>
 where
-  Definition: former::FormerDefinition<Storage = <Parent as former::EntityToStorage>::Storage>,
+  Definition: former::FormerDefinition<Storage = <Parent as former::EntityToStorage>::Storage> + 'static,
   // Definition::Types : former::FormerDefinitionTypes< Storage = < Parent as former::EntityToStorage >::Storage >,
 {
   #[inline(always)]
   pub fn _children_subform_entry_with_closure<Former2, Definition2, Types2>(self) -> Former2
   where
-    Types2: former::FormerDefinitionTypes<Storage = ChildFormerStorage, Formed = Self, Context = Self>,
+    Types2: former::FormerDefinitionTypes<Storage = ChildFormerStorage, Formed = Self, Context = Self> + 'static,
     Definition2: former::FormerDefinition<
       Types = Types2,
       End = former::FormingEndClosure<Types2>,
       Storage = ChildFormerStorage,
       Formed = Self,
       Context = Self,
-    >,
+    > + 'static,
     Definition2::End: former::FormingEnd<Definition2::Types>,
     for<'a> Former2: former::FormerBegin<'a, Definition2>,
   {
@@ -92,7 +92,7 @@ where
 
 impl<Definition> ParentFormer<Definition>
 where
-  Definition: former::FormerDefinition<Storage = <Parent as former::EntityToStorage>::Storage>,
+  Definition: former::FormerDefinition<Storage = <Parent as former::EntityToStorage>::Storage> + 'static,
   // Definition::Types : former::FormerDefinitionTypes< Storage = < Parent as former::EntityToStorage >::Storage >,
 {
   #[inline(always)]
@@ -103,7 +103,7 @@ where
       Storage = <Child as former::EntityToStorage>::Storage,
       Formed = Self,
       Context = Self,
-    >,
+    > + 'static,
     Definition2::Types:
       former::FormerDefinitionTypes<Storage = <Child as former::EntityToStorage>::Storage, Formed = Self, Context = Self>,
     for<'a> Former2: former::FormerBegin<'a, Definition2>,

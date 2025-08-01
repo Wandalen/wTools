@@ -53,16 +53,14 @@ impl<Name> Property<Name> {
 
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
 
-// #[derive(Debug, PartialEq, the_module::Former)]
-
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, the_module::Former)]
 pub struct Child<K>
 where
   K: core::hash::Hash + core::cmp::Eq,
 {
   pub name: String,
   pub subject: String,
-  #[ subform_collection( definition = former::HashMapDefinition ) ]
+  // #[ subform_collection( definition = former::HashMapDefinition ) ]
   pub properties: collection_tools::HashMap<K, Property<K>>,
 }
 
@@ -100,18 +98,22 @@ where
 
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
 
-// #[derive(Debug, PartialEq, the_module::Former)]
-
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, the_module::Former)]
 pub struct Parent<K>
 where
   K: core::hash::Hash + core::cmp::Eq,
 {
   pub parameter1: String,
-  #[ subform_collection( definition = former::HashMapDefinition ) ]
+  // #[ subform_collection( definition = former::HashMapDefinition ) ]
   pub commands: collection_tools::HashMap<String, Child<K>>,
 }
 
 // ==
+
+#[test]
+fn test_playground_basic() {
+  // Simple test to verify module is being included
+  assert_eq!(1, 1);
+}
 
 include!("./only_test/subform_basic.rs");

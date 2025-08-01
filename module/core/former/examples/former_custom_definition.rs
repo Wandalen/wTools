@@ -1,4 +1,8 @@
 
+//! This example demonstrates how to create custom former definitions with ending callbacks.
+
+#![allow(missing_docs)]
+
 // ## Example : Custom Definition
 //
 // Define a custom former definition and custom forming logic, and apply them to a collection.

@@ -1,7 +1,7 @@
 
-//
-// This example demonstrates how to employ the `Former` to configure a `Vec` using a collection setter in a structured manner.
-//
+//! This example demonstrates how to employ the `Former` to configure a `Vec` using a collection setter in a structured manner.
+
+#![allow(missing_docs)]
 
 #[cfg(not(all(
   feature = "enabled",
@@ -17,7 +17,7 @@ fn main() {}
 fn main() {
   #[cfg(feature = "enabled")]
   use former_meta::Former;
-  use former as the_module;
+  // use former as the_module; // Commented out - unused import
 
   #[derive(Default, Debug, PartialEq, Former)]
   pub struct Struct1 {

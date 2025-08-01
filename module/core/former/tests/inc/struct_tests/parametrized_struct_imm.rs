@@ -29,7 +29,7 @@ impl<Name> Property<Name> {
 // the struct definition line itself, suggesting interference from the
 // derive macro expansion.
 #[derive(Debug, PartialEq, the_module::Former)]
-#[debug]
+// #[debug] // Commented out - debug attribute only for temporary debugging
 pub struct Child<T> where T: core::hash::Hash + core::cmp::Eq {
   pub name: String,
   // #[ subform_collection( definition = former::HashMapDefinition ) ]

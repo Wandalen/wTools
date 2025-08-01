@@ -23,6 +23,7 @@ impl<Name> Property<Name> {
   }
 }
 
+
 // #[ derive( Debug, PartialEq, the_module::Former ) ]
 // #[ derive( Debug, PartialEq, the_module::Former ) ] #[ debug ]
 #[derive(Debug, PartialEq)]
@@ -280,7 +281,8 @@ where
   #[inline(always)]
   pub fn end(mut self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
     let on_end = self.on_end.take().unwrap();
-    let context = self.context.take();
+    let mut context = self.context.take();
+    <Definition::Types as former::FormerMutator>::form_mutation(&mut self.storage, &mut context);
     former::FormingEnd::<Definition::Types>::call(&on_end, self.storage, context)
   }
 
@@ -295,19 +297,44 @@ where
   }
 
   #[inline(always)]
-  pub fn properties_set<'a, Former2>(self) -> Former2
+  pub fn _properties_assign<'a, Former2>(self) -> Former2
   where
-    Former2: former::FormerBegin<'a, former::HashMapDefinition<K, Property<K>, Self, Self, ChildFormerPropertiesEnd>>,
+    K: 'a,
+    Definition: 'a,
+    Former2: former::FormerBegin<'a, former::HashMapDefinition<K, Property<K>, Self, Self, ChildFormerPropertiesEnd<Definition>>>,
+    former::HashMapDefinition<K, Property<K>, Self, Self, ChildFormerPropertiesEnd<Definition>>: former::FormerDefinition<
+      Storage = collection_tools::HashMap<K, Property<K>>,
+      Context = ChildFormer<K, Definition>,
+      End = ChildFormerPropertiesEnd<Definition>,
+    >,
+    ChildFormerPropertiesEnd<Definition>:
+      former::FormingEnd<<collection_tools::HashMap<K, Property<K>> as former::EntityToDefinitionTypes<Self, Self>>::Types>,
   {
-    Former2::former_begin(None, Some(self), ChildFormerPropertiesEnd)
+    Former2::former_begin(None, Some(self), ChildFormerPropertiesEnd::<Definition>::default())
   }
 
   #[inline(always)]
-  pub fn properties(
+  pub fn properties<'a>(
     self,
-  ) -> former::CollectionFormer<(K, Property<K>), former::HashMapDefinition<K, Property<K>, Self, Self, ChildFormerPropertiesEnd>>
+  ) -> former::CollectionFormer<
+    (K, Property<K>),
+    former::HashMapDefinition<K, Property<K>, Self, Self, ChildFormerPropertiesEnd<Definition>>,
+  >
+  where
+    K: 'a,
+    Definition: 'a,
+    former::HashMapDefinition<K, Property<K>, Self, Self, ChildFormerPropertiesEnd<Definition>>: former::FormerDefinition<
+      Storage = collection_tools::HashMap<K, Property<K>>,
+      Context = ChildFormer<K, Definition>,
+      End = ChildFormerPropertiesEnd<Definition>,
+    >,
+    ChildFormerPropertiesEnd<Definition>:
+      former::FormingEnd<<collection_tools::HashMap<K, Property<K>> as former::EntityToDefinitionTypes<Self, Self>>::Types>,
   {
-    self.properties_set::< former::CollectionFormer::< ( K, Property< K >, ), former::HashMapDefinition< K, Property< K >, Self, Self, ChildFormerPropertiesEnd > >>()
+    self._properties_assign::<'a, former::CollectionFormer<
+      (K, Property<K>),
+      former::HashMapDefinition<K, Property<K>, Self, Self, ChildFormerPropertiesEnd<Definition>>,
+    >>()
   }
 }
 
@@ -325,17 +352,25 @@ where
   }
 }
 
-#[allow(non_camel_case_types)]
-pub struct ChildFormerPropertiesEnd;
+pub struct ChildFormerPropertiesEnd<Definition> {
+  _phantom: core::marker::PhantomData<(Definition,)>,
+}
 
-#[automatically_derived]
+impl<Definition> Default for ChildFormerPropertiesEnd<Definition> {
+  fn default() -> Self {
+    Self {
+      _phantom: core::marker::PhantomData,
+    }
+  }
+}
+
 impl<K, Definition>
   former::FormingEnd<former::HashMapDefinitionTypes<K, Property<K>, ChildFormer<K, Definition>, ChildFormer<K, Definition>>>
-  for ChildFormerPropertiesEnd
+  for ChildFormerPropertiesEnd<Definition>
 where
   K: core::hash::Hash + core::cmp::Eq,
   Definition: former::FormerDefinition<Storage = ChildFormerStorage<K>>,
-  // Definition::Types : former::FormerDefinitionTypes< Storage = ChildFormerStorage< K, > >,
+  Definition::Types: former::FormerDefinitionTypes<Storage = ChildFormerStorage<K>>,
 {
   #[inline(always)]
   fn call(
@@ -353,9 +388,7 @@ where
   }
 }
 
-// Add FormerBegin implementation
-impl<'a, K, Definition> former::FormerBegin<'a, Definition> 
-for ChildFormer<K, Definition>
+impl<'a, K, Definition> former::FormerBegin<'a, Definition> for ChildFormer<K, Definition>
 where
   K: core::hash::Hash + core::cmp::Eq + 'a,
   Definition: former::FormerDefinition<Storage = ChildFormerStorage<K>>,
@@ -368,7 +401,8 @@ where
     context: ::core::option::Option<Definition::Context>,
     on_end: Definition::End,
   ) -> Self {
-    Self::begin(storage, context, on_end)
+    debug_assert!(storage.is_none());
+    Self::begin(None, context, on_end)
   }
 }
 

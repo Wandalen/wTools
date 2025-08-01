@@ -1,4 +1,6 @@
-// former_custom_mutator.rs
+//! Example demonstrating custom mutation logic using the FormerMutator trait with storage-specific fields.
+
+#![allow(missing_docs)]
 
 // This example illustrates how to use the `FormerMutator` trait for implementing custom mutations
 // and demonstrates the concept of storage-specific fields in the forming process.

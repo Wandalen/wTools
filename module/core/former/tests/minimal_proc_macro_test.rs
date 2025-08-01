@@ -1,17 +1,20 @@
-// Test to isolate proc macro issue with lifetime-only structs
+//! Test to isolate proc macro issue with lifetime-only structs
 
 // Custom attribute macro that does nothing - just to test the issue
-use former::Former;
+// use former::Former; // Unused - commented out
 
-// This works fine - no derive
+/// Test struct without derive to ensure compilation works.
 #[allow(dead_code)]
+#[derive(Debug)]
 pub struct WorksWithoutDerive<'a> {
+    /// Test data field.
     data: &'a str,
 }
 
-// This should work - standard derives
+/// Test struct with standard derives.
 #[derive(Debug, Clone)]
 pub struct WorksWithStandardDerives<'a> {
+    /// Test data field.
     data: &'a str,
 }
 

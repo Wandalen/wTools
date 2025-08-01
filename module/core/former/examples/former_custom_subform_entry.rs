@@ -1,4 +1,6 @@
-// Example former_custom_subform_entry.rs
+//! Example demonstrating custom subform entry setters for managing individual collection elements.
+
+#![allow(missing_docs)]
 
 // ## Example : Custom Subform Entry Setter
 //

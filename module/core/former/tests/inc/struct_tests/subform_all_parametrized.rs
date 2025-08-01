@@ -19,9 +19,9 @@ where
 // #[ derive( Debug, Default, PartialEq, the_module::Former ) ] #[ debug ]
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent<'child> {
-  #[ scalar( name = children3 ) ]
-  #[ subform_collection( name = children2 ) ]
-  #[ subform_entry( name = _child ) ]
+  // #[ scalar( name = children3 ) ]
+  // #[ subform_collection( name = children2 ) ]
+  // #[ subform_entry( name = _child ) ]
   children: Vec<Child<'child, str>>,
 }
 

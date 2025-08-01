@@ -1,9 +1,11 @@
-// Simple test to isolate the E0106 lifetime issue
+//! Simple test to isolate the E0106 lifetime issue
 
 use former::Former;
 
+/// Simple test struct with lifetime parameter.
 #[derive(Debug, PartialEq, Former)]
 pub struct SimpleTest<'a> {
+    /// Test data field.
     data: &'a str,
 }
 

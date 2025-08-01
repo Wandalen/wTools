@@ -1,4 +1,8 @@
 
+//! Example demonstrating complete setter override with custom logic using Former.
+
+#![allow(missing_docs)]
+
 //
 // ## Example : Custom Setter Overriding
 //

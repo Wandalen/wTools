@@ -1,3 +1,7 @@
+//! Example demonstrating Former working with custom lifetime names and substitution.
+
+#![allow(missing_docs)]
+
 // This example demonstrates Former working with different lifetime names.
 // The FormerBegin trait expects lifetime 'a, but the struct uses 'x.
 // The derive macro now properly handles this by substituting lifetimes.

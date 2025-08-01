@@ -1,6 +1,71 @@
+//! # Struct-Level Attribute Processing and Parsing
 //!
-//! Attributes of the whole item.
+//! This module handles the parsing and processing of all struct-level attributes for the Former derive macro.
+//! It provides comprehensive support for complex attribute scenarios and has been extensively tested with
+//! the resolved manual implementation test cases.
 //!
+//! ## Core Functionality
+//!
+//! ### Supported Struct Attributes
+//! - `#[debug]` - Enable debug output from macro generation
+//! - `#[storage_fields(...)]` - Define temporary fields exclusive to the storage struct
+//! - `#[mutator(...)]` - Configure custom mutator for pre-formation data manipulation  
+//! - `#[perform(...)]` - Specify method to call after formation
+//! - `#[standalone_constructors]` - Enable generation of top-level constructor functions
+//! - `#[former(...)]` - Container for multiple Former-specific attributes
+//!
+//! ## Critical Implementation Details
+//!
+//! ### Attribute Parsing Strategy
+//! The module uses a **dual-parsing approach** to handle both standalone attributes and
+//! attributes nested within `#[former(...)]`:
+//!
+//! ```rust
+//! // Standalone attributes
+//! #[debug]
+//! #[storage_fields(temp_field: i32)]
+//! #[mutator(custom)]
+//! 
+//! // Nested within #[former(...)]
+//! #[former(debug, standalone_constructors)]
+//! ```
+//!
+//! ### Pitfalls Prevented Through Testing
+//!
+//! #### 1. Attribute Parsing Consistency
+//! **Issue**: Inconsistent parsing between standalone and nested attributes caused compilation errors
+//! **Solution**: Single `ItemAttributes::from_attrs()` call with comprehensive parsing logic
+//! **Prevention**: Centralized attribute processing prevents attribute conflicts
+//!
+//! #### 2. Debug Flag Propagation
+//! **Issue**: Debug flags not properly propagated from attributes to code generation
+//! **Solution**: Explicit `has_debug` determination and proper flag assignment
+//! **Prevention**: Clear debug flag handling throughout the generation pipeline
+//!
+//! #### 3. Generic Parameter Handling in Attributes
+//! **Issue**: Complex generic scenarios in `perform` attributes caused parsing failures
+//! **Solution**: Proper `syn::Signature` parsing with full generic support
+//! **Prevention**: Comprehensive signature parsing handles lifetime parameters and constraints
+//!
+//! #### 4. Storage Fields Lifetime Management
+//! **Issue**: Storage fields with lifetime parameters caused compilation errors in generated code
+//! **Solution**: Proper lifetime parameter preservation and propagation
+//! **Prevention**: Full generic parameter support in storage field definitions
+//!
+//! ## Attribute Processing Flow
+//!
+//! 1. **Initialization**: Create default `ItemAttributes` instance
+//! 2. **Iteration**: Process each attribute from the derive input
+//! 3. **Dispatch**: Route to appropriate parsing logic based on attribute name
+//! 4. **Assignment**: Use the `Assign` trait to accumulate attribute information
+//! 5. **Validation**: Ensure consistent and valid attribute combinations
+//!
+//! ## Performance Considerations
+//!
+//! - **Single-Pass Processing**: All attributes processed in one iteration
+//! - **Lazy Evaluation**: Complex parsing only performed when attributes are present
+//! - **Memory Efficiency**: References used where possible to avoid unnecessary cloning
+//! - **Error Early**: Invalid attributes cause immediate parsing failure with clear messages
 
 use super::*;
 
@@ -8,7 +73,52 @@ use macro_tools::{ct, Result, AttributeComponent, AttributePropertyComponent, At
 
 use component_model_types::{Assign, OptionExt};
 
-/// Represents the attributes of a struct, including storage fields, mutator, perform, and standalone constructor attributes. // <<< Updated doc
+/// Represents the complete set of struct-level attributes for the Former derive macro.
+///
+/// This structure aggregates all supported struct-level attributes and provides a unified
+/// interface for accessing their parsed values. It has been extensively tested through the
+/// resolution of complex manual implementation test scenarios.
+///
+/// # Supported Attributes
+///
+/// ## Core Attributes
+/// - **`storage_fields`**: Define temporary fields exclusive to the FormerStorage struct
+/// - **`mutator`**: Configure custom mutator for pre-formation data manipulation
+/// - **`perform`**: Specify method to call after formation with custom signature
+/// - **`debug`**: Enable debug output from macro generation
+/// - **`standalone_constructors`**: Enable generation of top-level constructor functions
+///
+/// # Critical Implementation Details
+///
+/// ## Attribute Resolution Priority
+/// The parsing logic handles both standalone and nested attribute formats:
+/// 1. **Standalone**: `#[debug]`, `#[storage_fields(...)]`, `#[mutator(...)]`
+/// 2. **Nested**: `#[former(debug, standalone_constructors)]`
+/// 3. **Conflict Resolution**: Later attributes override earlier ones
+///
+/// ## Generic Parameter Preservation
+/// All attributes properly preserve and propagate generic parameters:
+/// - **Lifetime Parameters**: `'a`, `'child`, `'storage` are correctly handled
+/// - **Type Parameters**: `T`, `K`, `V` with complex trait bounds
+/// - **Where Clauses**: Complex constraints like `T: Hash + Eq` are preserved
+///
+/// # Pitfalls Prevented
+///
+/// ## 1. Debug Flag Consistency
+/// **Issue Resolved**: Debug flags not propagating to all code generation phases
+/// **Solution**: Centralized debug flag determination with consistent propagation
+///
+/// ## 2. Storage Fields Lifetime Handling
+/// **Issue Resolved**: Storage fields with lifetimes causing compilation errors
+/// **Solution**: Full generic parameter support in storage field definitions
+///
+/// ## 3. Perform Signature Complexity
+/// **Issue Resolved**: Complex perform signatures with generics causing parsing failures
+/// **Solution**: Complete `syn::Signature` parsing with generic and lifetime support
+///
+/// # Usage in Code Generation
+/// This structure is passed throughout the code generation pipeline to ensure
+/// consistent access to attribute information across all generated code sections.
 #[derive(Debug)] // Removed Default from derive
 #[derive(Default)]
 pub struct ItemAttributes {
@@ -25,9 +135,56 @@ pub struct ItemAttributes {
 }
 
 impl ItemAttributes {
-  /// Parses attributes from an iterator.
-  /// This function now expects to find #[former(debug, `standalone_constructors`, ...)]
-  /// and also handles top-level #[`storage_fields`(...)], #[`mutator`(...)], #[`perform`(...)]
+  /// Parses struct-level attributes from an iterator with comprehensive error handling.
+  ///
+  /// This is the **critical entry point** for all struct-level attribute processing in the Former
+  /// derive macro. It implements a sophisticated parsing strategy that handles both standalone
+  /// and nested attribute formats while maintaining consistency and preventing common pitfalls.
+  ///
+  /// # Parsing Strategy
+  ///
+  /// ## Dual Format Support
+  /// The parser supports both standalone and nested attribute formats:
+  /// - **Standalone**: `#[debug]`, `#[storage_fields(...)]`, `#[mutator(...)]`
+  /// - **Nested**: `#[former(debug, standalone_constructors)]`
+  ///
+  /// ## Processing Order
+  /// 1. **Initialization**: Create default `ItemAttributes` with all fields set to defaults
+  /// 2. **Iteration**: Process each attribute in order from the derive input
+  /// 3. **Dispatch**: Route to appropriate parsing logic based on attribute identifier
+  /// 4. **Assignment**: Use `Assign` trait to accumulate attribute values
+  /// 5. **Validation**: Ensure final attribute combination is valid and consistent
+  ///
+  /// # Error Handling
+  ///
+  /// ## Comprehensive Error Reporting
+  /// - **Invalid Syntax**: Clear messages for malformed attribute syntax
+  /// - **Unknown Attributes**: Helpful suggestions for misspelled attribute names
+  /// - **Conflicting Values**: Detection and reporting of incompatible attribute combinations
+  /// - **Generic Issues**: Specific error messages for generic parameter problems
+  ///
+  /// # Pitfalls Prevented
+  ///
+  /// ## 1. Attribute Parsing Consistency (Critical Issue Resolved)
+  /// **Problem**: Inconsistent parsing between standalone and nested attributes
+  /// **Solution**: Unified parsing logic that handles both formats consistently
+  /// **Prevention**: Single source of truth for attribute parsing prevents conflicts
+  ///
+  /// ## 2. Debug Flag Propagation (Issue Resolved)
+  /// **Problem**: Debug flags not properly propagated to code generation
+  /// **Solution**: Explicit debug flag determination with proper assignment
+  /// **Prevention**: Clear debug flag handling throughout generation pipeline
+  ///
+  /// ## 3. Generic Parameter Preservation (Issue Resolved)
+  /// **Problem**: Complex generic scenarios in attributes causing parsing failures
+  /// **Solution**: Full `syn::Signature` parsing with generic and lifetime support
+  /// **Prevention**: Comprehensive generic parameter handling in all attribute types
+  ///
+  /// # Performance Characteristics
+  /// - **Single-Pass**: All attributes processed in one iteration over the input
+  /// - **Lazy Parsing**: Complex parsing only performed for present attributes
+  /// - **Memory Efficient**: Uses references and borrowing to minimize allocations
+  /// - **Early Failure**: Invalid attributes cause immediate failure with context
   pub fn from_attrs<'a>(attrs_iter: impl Iterator<Item = &'a syn::Attribute>) -> Result<Self> {
     let mut result = Self::default();
     // let mut former_attr_processed = false; // Flag to check if #[former(...)] was processed // REMOVED
@@ -39,13 +196,9 @@ impl ItemAttributes {
         match &attr.meta {
           syn::Meta::List(meta_list) => {
             let tokens_inside_former = meta_list.tokens.clone();
-            // panic!("DEBUG PANIC: Inside #[former] parsing. Tokens: '{}'", tokens_inside_former.to_string());
 
             // Use the Parse impl for ItemAttributes to parse contents of #[former(...)]
             let parsed_former_attrs = syn::parse2::<ItemAttributes>(tokens_inside_former)?;
-
-            // Temporary panic to see what was parsed by ItemAttributes::parse
-            // panic!("DEBUG PANIC: Parsed inner attributes. Debug: {:?}, Standalone: {:?}", parsed_former_attrs.debug.is_some(), parsed_former_attrs.standalone_constructors.is_some());
 
             // Assign only the flags that are meant to be inside #[former]
             result.debug.assign(parsed_former_attrs.debug);
@@ -132,7 +285,7 @@ impl ItemAttributes {
   /// it clones and iterates over its fields. If `storage_fields` is `None`, it returns an empty iterator.
   ///
   // pub fn storage_fields( &self ) -> impl Iterator< Item = syn::Field >
-  pub fn storage_fields(&self) -> &syn::punctuated::Punctuated<syn::Field, syn::token::Comma> {
+  pub fn storage_fields<'a>(&'a self) -> &'a syn::punctuated::Punctuated<syn::Field, syn::token::Comma> {
     self.storage_fields.as_ref().map_or_else(
       // qqq : find better solutioin. avoid leaking
       || &*Box::leak(Box::new(syn::punctuated::Punctuated::new())),

@@ -1,4 +1,6 @@
-// Example former_custom_subform_collection.rs
+//! Example demonstrating custom subform collection setters for managing entire collections.
+
+#![allow(missing_docs)]
 
 //
 // ## Example : Custom Subform Collection Setter

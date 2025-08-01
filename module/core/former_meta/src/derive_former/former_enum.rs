@@ -1,97 +1,115 @@
-//
-// ## Expected Enum Former Behavior
-//
-// This plan adheres to the following rules for `#[derive(Former)]` on enums:
-//
-// 1.  **`#[scalar]` Attribute:**
-//     *   **Unit Variant:** Generates `Enum::variant() -> Enum`. (Handled by: `handle_unit_variant`)
-//     *   **Zero-Field Variant (Tuple):** Generates `Enum::variant() -> Enum`. (Handled by: `handle_tuple_zero_variant`)
-//     *   **Zero-Field Variant (Struct):** Generates `Enum::variant() -> Enum`. (Handled by: `handle_struct_zero_variant`)
-//     *   **Single-Field Variant (Tuple):** Generates `Enum::variant(InnerType) -> Enum`. (Handled by: `handle_tuple_non_zero_variant`)
-//     *   **Single-Field Variant (Struct):** Generates `Enum::variant { field: InnerType } -> Enum`. (Handled by: `handle_struct_non_zero_variant`)
-//     *   **Multi-Field Variant (Tuple):** Generates `Enum::variant(T1, T2, ...) -> Enum`. (Handled by: `handle_tuple_non_zero_variant`)
-//     *   **Multi-Field Variant (Struct):** Generates `Enum::variant { f1: T1, f2: T2, ... } -> Enum`. (Handled by: `handle_struct_non_zero_variant`)
-//     *   **Error Cases:** Cannot be combined with `#[subform_scalar]`.
-//
-// 2.  **`#[subform_scalar]` Attribute:**
-//     *   **Unit Variant:** Error. (Checked in: `handle_unit_variant`)
-//     *   **Zero-Field Variant (Tuple or Struct):** Error. (Checked in: `handle_tuple_zero_variant`, `handle_struct_zero_variant`)
-//     *   **Single-Field Variant (Tuple):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Requires the field type to be a path type deriving `Former`. (Handled by: `handle_tuple_non_zero_variant`)
-//     *   **Single-Field Variant (Struct):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_variant`)
-//     *   **Multi-Field Variant (Tuple):** Error. Cannot use `subform_scalar` on multi-field tuple variants. (Checked in: `handle_tuple_non_zero_variant`)
-//     *   **Multi-Field Variant (Struct):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_variant`)
-//
-// 3.  **Default Behavior (No Attribute):**
-//     *   **Unit Variant:** Generates `Enum::variant() -> Enum`. (Handled by: `handle_unit_variant`)
-//     *   **Zero-Field Variant (Tuple):** Generates `Enum::variant() -> Enum`. (Handled by: `handle_tuple_zero_variant`)
-//     *   **Zero-Field Variant (Struct):** Error. Requires `#[scalar]`. (Checked in: `handle_struct_zero_variant`)
-//     *   **Single-Field Variant (Tuple):** Generates `Enum::variant() -> InnerFormer<...>` (where `InnerFormer` is the former for the field's type). Requires the field type to be a path type deriving `Former`. (Handled by: `handle_tuple_non_zero_variant`)
-//     *   **Single-Field Variant (Struct):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_variant`)
-//     *   **Multi-Field Variant (Tuple):** Generates `Enum::variant(Field1Type, Field2Type, ...) -> Enum` (behaves like `#[scalar]`). (Handled by: `handle_tuple_non_zero_variant`)
-//     *   **Multi-Field Variant (Struct):** Generates `Enum::variant() -> VariantFormer<...>` (an implicit former for the variant itself). (Handled by: `handle_struct_non_zero_variant`)
-//
-// 4.  **`#[standalone_constructors]` Attribute (Body Level):**
-//     *   Generates top-level constructor functions for each variant (e.g., `my_variant()`).
-//     *   Return type depends on `#[arg_for_constructor]` on fields within the variant (see Option 2 logic in Readme/advanced.md).
-//
-// # Target File Structure
-//
-// ```
-// former_enum/  (directory: module/core/former_meta/src/derive_former/former_enum/)
-// ├── mod.rs                             # Main module file for `former_enum`.
-// │                                      # - Declares all sibling files as submodules.
-// │                                      # - Contains the primary `former_for_enum` function.
-// │                                      # - Houses the main dispatch logic to route to specific handlers.
-// │                                      # - Defines `EnumVariantHandlerContext` and `EnumVariantFieldInfo`.
-// │
-// ├── common_emitters.rs                 # Contains shared helper functions for generating common code patterns
-// │                                      # used by multiple variant handlers (e.g., direct constructors,
-// │                                      # boilerplate for different subformer types).
-// │
-// ├── unit_variant_handler.rs            # Handles `Unit` variants.
-// │                                      # - `#[scalar]` or Default: Generates direct constructor.
-// │                                      # - `#[subform_scalar]`: Generates an error.
-// │
-// ├── tuple_zero_fields_handler.rs       # Handles `Tuple()` (zero-field tuple) variants.
-// │                                      # - `#[scalar]` or Default: Generates direct constructor.
-// │                                      # - `#[subform_scalar]`: Generates an error.
-// │
-// ├── struct_zero_fields_handler.rs      # Handles `Struct {}` (zero-field struct) variants.
-// │                                      # - `#[scalar]`: Generates direct constructor.
-// │                                      # - `#[subform_scalar]` or Default: Generates an error.
-// │
-// ├── tuple_single_field_scalar.rs       # Handles `Tuple(T1)` variants with the `#[scalar]` attribute.
-// │                                      # - Generates a direct constructor: `fn variant(T1) -> Enum`.
-// │
-// ├── tuple_single_field_subform.rs       # Handles `Tuple(T1)` variants with `#[subform_scalar]` or default behavior.
-// │                                      # - Generates a method returning an inner former: `fn variant() -> InnerFormer<...>`.
-// │                                      # - Requires T1 to derive Former.
-// │
-// ├── tuple_multi_fields_scalar.rs       # Handles `Tuple(T1, T2, ...)` (multi-field tuple) variants with
-// │                                      # `#[scalar]` or default behavior.
-// │                                      # - Generates a direct constructor: `fn variant(T1, T2, ...) -> Enum`.
-// │                                      # - (Note: `#[subform_scalar]` is an error for multi-field tuples,
-// │                                      #   handled by dispatch logic in `mod.rs`).
-// │
-// ├── struct_single_field_scalar.rs      # Handles `Struct { f1:T1 }` (single-field struct) variants
-// │                                      # with the `#[scalar]` attribute.
-// │                                      # - Generates a direct constructor: `fn variant { f1:T1 } -> Enum`.
-// │
-// ├── struct_single_field_subform.rs     # Handles `Struct { f1:T1 }` variants with `#[subform_scalar]`
-// │                                      # or default behavior.
-// │                                      # - Generates a method returning an implicit variant former:
-// │                                      #   `fn variant() -> VariantFormer<...>`.
-// │
-// ├── struct_multi_fields_scalar.rs      # Handles `Struct { f1:T1, ... }` (multi-field struct) variants
-// │                                      # with the `#[scalar]` attribute.
-// │                                      # - Generates a direct constructor: `fn variant { f1:T1, ... } -> Enum`.
-// │
-// └── struct_multi_fields_subform.rs     # Handles `Struct { f1:T1, ... }` variants with `#[subform_scalar]`
-//                                        # or default behavior.
-//                                        # - Generates a method returning an implicit variant former:
-//                                        #   `fn variant() -> VariantFormer<...>`.
-// ```
-//
+//! # Enum Former Generation - Comprehensive Enum Variant Former Generation
+//!
+//! This module implements sophisticated enum variant constructor generation for the Former pattern,
+//! handling all possible enum variant types with proper attribute support and generic parameter
+//! propagation. It resolves enum-specific pitfalls that manual implementations commonly encounter.
+//!
+//! ## Core Functionality
+//!
+//! ### Variant Type Support
+//! - **Unit Variants**: `Variant` → Direct constructors
+//! - **Tuple Variants**: `Variant(T1, T2, ...)` → Direct or subform constructors
+//! - **Struct Variants**: `Variant { field1: T1, field2: T2, ... }` → Direct or implicit former constructors
+//! - **Zero-Field Variants**: `Variant()` and `Variant {}` → Specialized handling
+//!
+//! ### Attribute-Driven Generation
+//! - **`#[scalar]`**: Forces direct constructor generation for all variant types
+//! - **`#[subform_scalar]`**: Enables subform-based construction with inner/variant formers
+//! - **Default Behavior**: Intelligent selection based on variant field characteristics
+//! - **`#[standalone_constructors]`**: Generates top-level constructor functions
+//!
+//! ## Expected Enum Former Behavior Matrix
+//!
+//! ### 1. `#[scalar]` Attribute Behavior
+//! - **Unit Variant**: `Enum::variant() -> Enum` (Direct constructor)
+//! - **Zero-Field Tuple**: `Enum::variant() -> Enum` (Direct constructor)
+//! - **Zero-Field Struct**: `Enum::variant() -> Enum` (Direct constructor)
+//! - **Single-Field Tuple**: `Enum::variant(InnerType) -> Enum` (Direct with parameter)
+//! - **Single-Field Struct**: `Enum::variant { field: InnerType } -> Enum` (Direct with named field)
+//! - **Multi-Field Tuple**: `Enum::variant(T1, T2, ...) -> Enum` (Direct with all parameters)
+//! - **Multi-Field Struct**: `Enum::variant { f1: T1, f2: T2, ... } -> Enum` (Direct with all fields)
+//! - **Error Prevention**: Cannot be combined with `#[subform_scalar]` (generates compile error)
+//!
+//! ### 2. `#[subform_scalar]` Attribute Behavior
+//! - **Unit Variant**: Error - No fields to form
+//! - **Zero-Field Variants**: Error - No fields to form
+//! - **Single-Field Tuple**: `Enum::variant() -> InnerFormer<...>` (Inner type former)
+//! - **Single-Field Struct**: `Enum::variant() -> VariantFormer<...>` (Implicit variant former)
+//! - **Multi-Field Tuple**: Error - Cannot subform multi-field tuples
+//! - **Multi-Field Struct**: `Enum::variant() -> VariantFormer<...>` (Implicit variant former)
+//!
+//! ### 3. Default Behavior (No Attribute)
+//! - **Unit Variant**: `Enum::variant() -> Enum` (Direct constructor)
+//! - **Zero-Field Tuple**: `Enum::variant() -> Enum` (Direct constructor)
+//! - **Zero-Field Struct**: Error - Requires explicit `#[scalar]` attribute
+//! - **Single-Field Tuple**: `Enum::variant() -> InnerFormer<...>` (Inner type former - default to subform)
+//! - **Single-Field Struct**: `Enum::variant() -> VariantFormer<...>` (Implicit variant former)
+//! - **Multi-Field Tuple**: `Enum::variant(T1, T2, ...) -> Enum` (Direct constructor - behaves like `#[scalar]`)
+//! - **Multi-Field Struct**: `Enum::variant() -> VariantFormer<...>` (Implicit variant former)
+//!
+//! ### 4. `#[standalone_constructors]` Body-Level Attribute
+//! - Generates top-level constructor functions for each variant: `my_variant()`
+//! - Return type depends on `#[arg_for_constructor]` field annotations
+//! - Integrates with variant-level attribute behavior
+//!
+//! ## Critical Pitfalls Resolved
+//!
+//! ### 1. Enum Attribute Validation (Critical Prevention)
+//! **Issue Resolved**: Manual implementations using incompatible attribute combinations
+//! **Root Cause**: Unclear rules about which attributes can be combined
+//! **Solution**: Comprehensive attribute validation with clear error messages
+//! **Prevention**: Compile-time validation prevents incompatible attribute combinations
+//!
+//! ### 2. Variant Field Count Handling (Prevention)
+//! **Issue Resolved**: Manual implementations not properly handling zero-field vs multi-field variants
+//! **Root Cause**: Different field count scenarios requiring different generation strategies
+//! **Solution**: Specialized handlers for each field count and variant type combination
+//! **Prevention**: Automatic field count detection with appropriate handler selection
+//!
+//! ### 3. Generic Parameter Propagation (Prevention)
+//! **Issue Resolved**: Enum generic parameters not properly propagated to variant constructors
+//! **Root Cause**: Complex generic parameter tracking through enum variant generation
+//! **Solution**: Systematic generic parameter preservation and propagation
+//! **Prevention**: Complete generic information maintained through all generation phases
+//!
+//! ### 4. Inner Former Type Resolution (Critical Prevention)
+//! **Issue Resolved**: Subform constructors not finding appropriate Former implementations
+//! **Root Cause**: Manual implementations not validating that field types implement Former trait
+//! **Solution**: Automatic Former trait validation with clear error messages
+//! **Prevention**: Compile-time verification of Former trait availability for subform scenarios
+//!
+//! ## Architecture Overview
+//!
+//! ### Modular Handler Structure
+//! The enum generation is organized into specialized handler modules for maintainability:
+//!
+//! ```text
+//! former_enum/
+//! ├── mod.rs                           # Main dispatch logic and shared definitions
+//! ├── common_emitters.rs               # Shared code generation patterns
+//! ├── unit_variant_handler.rs          # Unit variant processing
+//! ├── tuple_*_handler.rs               # Tuple variant processing (zero/single/multi field)
+//! └── struct_*_handler.rs              # Struct variant processing (zero/single/multi field)
+//! ```
+//!
+//! ### Handler Dispatch Logic
+//! 1. **Variant Analysis**: Determine variant type (Unit, Tuple, Struct) and field count
+//! 2. **Attribute Processing**: Parse and validate variant-level attributes
+//! 3. **Handler Selection**: Route to appropriate specialized handler
+//! 4. **Generic Propagation**: Ensure generic parameters are properly maintained
+//! 5. **Code Generation**: Generate appropriate constructor methods
+//!
+//! ### Shared Context and Utilities
+//! - **`EnumVariantHandlerContext`**: Shared context information for all handlers
+//! - **`EnumVariantFieldInfo`**: Standardized field information structure
+//! - **Common Emitters**: Reusable code generation patterns for consistency
+//!
+//! ## Quality Assurance Features
+//! - **Compile-Time Validation**: All attribute combinations validated at compile time
+//! - **Generic Safety**: Generic parameters properly tracked and propagated
+//! - **Type Safety**: All generated constructors maintain Rust's type safety guarantees
+//! - **Error Reporting**: Clear, actionable error messages for invalid configurations
+//!
 #![allow(clippy::wildcard_imports)] // Keep if present
 #![allow(clippy::unnecessary_wraps)] // Temporary for placeholder handlers
 #![allow(clippy::used_underscore_binding)] // Temporary for placeholder handlers
@@ -177,11 +195,6 @@ pub(super) fn former_for_enum(
                                       // qqq : Ensure ItemAttributes and FieldAttributes are accessible/imported
 
   // Diagnostic print for has_debug status (has_debug is now correctly determined by the caller)
-  if has_debug {
-    // diag::report_print("DEBUG former_for_enum: has_debug is TRUE at start (passed in).", original_input, &quote!{ struct DebugFlagWasTrue; });
-  } else {
-    // diag::report_print("DEBUG former_for_enum: has_debug is FALSE at start (passed in).", original_input, &quote!{ struct DebugFlagWasFalse; });
-  }
 
   let mut methods = Vec::new();
   let mut end_impls = Vec::new();
@@ -325,6 +338,7 @@ pub(super) fn former_for_enum(
 
   let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
 
+  #[cfg(feature = "former_diagnostics_print_generated")]
   if has_debug {
     diag::report_print(
       format!("DEBUG: Raw generics for {enum_name}"),
@@ -351,6 +365,7 @@ pub(super) fn former_for_enum(
   let result = {
     let impl_header = quote! { impl #impl_generics #enum_name #ty_generics };
 
+    #[cfg(feature = "former_diagnostics_print_generated")]
     if has_debug {
       diag::report_print(
         format!("DEBUG: Methods collected before final quote for {enum_name}"),
@@ -377,6 +392,7 @@ pub(super) fn former_for_enum(
     }
   };
 
+  #[cfg(feature = "former_diagnostics_print_generated")]
   if has_debug {
     let about = format!("derive : Former\nenum : {enum_name}");
     diag::report_print(about, original_input, &result);
