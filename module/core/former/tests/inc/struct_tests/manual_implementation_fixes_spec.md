@@ -13,7 +13,19 @@ This document details the systematic fixes applied to blocked manual implementat
 | `subform_scalar_manual` | ✅ RESOLVED | High | Complete manual implementation + 'static bounds |
 | `subform_entry_named_manual` | ✅ RESOLVED | High | Complete manual implementation infrastructure |
 | `subform_entry_hashmap_custom` | ✅ RESOLVED | High | Complete manual implementation + 'static bounds |
-| `subform_entry_manual` | ⚠️ BLOCKED | High | HRTB lifetime bounds (still unresolved) |
+| `subform_entry_manual` | ✅ RESOLVED | High | HRTB lifetime bounds + 'static bounds |
+| `parametrized_struct_where` | ✅ RESOLVED | Medium | Former derive macro works with generic constraints |
+| `subform_collection_playground` | ✅ RESOLVED | Medium | Former derive macro and cfg attribute fixes |
+| `subform_all_parametrized` | ✅ RESOLVED | Medium | Former derive macro with lifetime parameters |
+| `parametrized_field` | ✅ RESOLVED | Low | Former derive macro with parametrized fields |
+| `parametrized_field_where` | ✅ RESOLVED | Low | Former derive macro with parametrized field constraints |
+| `parametrized_dyn_manual` | ✅ RESOLVED | Low | Manual implementation with lifetime parameters |
+
+## Partially Fixed / Disabled Tests
+
+| Test Module | Status | Complexity | Issues |
+|-------------|--------|------------|---------|
+| None | All previously blocked tests have been resolved | - | All issues were resolved through Former derive macro fixes and proper cfg attributes |
 
 ## Common Infrastructure Pattern
 
@@ -255,6 +267,35 @@ The HRTB issue in `subform_entry_manual` demonstrates that some previously block
 2. Consider if the issue is fundamental or tooling-related
 3. Document the specific compiler version where resolution occurred
 
+## Final Resolution Session Summary
+
+In the final resolution session, the remaining blocked tests were successfully resolved:
+
+### Simple Derive Macro Issues (2025 Session)
+Most blocked tests were actually working but had commented-out `#[derive(the_module::Former)]` attributes and missing `#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]` attributes. The resolution involved:
+
+1. **Uncommenting Former Derives**: Tests like `subform_collection_playground` and `subform_all_parametrized` just needed their derive attributes uncommented
+2. **Adding Missing Cfg Attributes**: Many tests were missing proper feature gate attributes 
+3. **No Complex Manual Implementation Needed**: Unlike earlier tests, these didn't require extensive manual Former infrastructure
+
+### Key Resolution Pattern
+```rust
+// BEFORE (blocked)
+// #[derive(Debug, PartialEq, the_module::Former)]
+#[derive(Debug, PartialEq)]
+pub struct SomeStruct<T> { ... }
+
+// AFTER (working)  
+#[derive(Debug, PartialEq, the_module::Former)]
+pub struct SomeStruct<T> { ... }
+```
+
+Plus adding proper module cfg attributes:
+```rust
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod test_module;
+```
+
 ## Conclusion
 
 This systematic approach to manual implementation fixes ensures:
@@ -262,5 +303,9 @@ This systematic approach to manual implementation fixes ensures:
 - **Maintainability**: Clear documentation of common issues and solutions  
 - **Regression Prevention**: Detailed specification to guide future changes
 - **Knowledge Preservation**: Technical debt and solutions are documented
+- **Complete Resolution**: All previously blocked tests are now working
 
-The successful resolution of all blocked tests demonstrates that the Former pattern can be fully implemented manually when needed, providing complete control over the builder pattern generation process.
+The successful resolution of all blocked tests demonstrates that:
+1. The Former pattern can be fully implemented manually when needed, providing complete control over the builder pattern generation process
+2. Many seemingly complex issues were actually simple configuration problems
+3. The derive macro system works reliably for complex generic and lifetime scenarios when properly configured

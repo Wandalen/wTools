@@ -107,19 +107,19 @@ mod name_collisions;
 
 // mod parametrized_dyn_manual; // xxx2 : qqq2 : fix the issue
 
-// mod parametrized_field;  // BLOCKED: E0726 implicit elided lifetime + complex generic bounds
+// mod parametrized_field;  // BLOCKED: Undeclared lifetime 'child in derive macro + ?Sized trait bound issues
 mod test_lifetime_only;
 mod test_lifetime_minimal;
 mod minimal_lifetime;
 mod debug_lifetime_minimal;
 mod debug_simple_lifetime;
-// mod parametrized_field_where;  // BLOCKED: E0726 implicit elided lifetime not allowed here
+// mod parametrized_field_where;  // BLOCKED: Undeclared lifetime 'child in derive macro + ?Sized trait bound issues
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod parametrized_struct_imm;  // Re-enabled to test fix
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod parametrized_struct_manual;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod parametrized_struct_where;  // BLOCKED: E0277 Hash/Eq trait bound issues with Definition
+// mod parametrized_struct_where;  // BLOCKED: Derive macro uses Definition as generic K, but Definition doesn't implement Hash+Eq
 
 mod parametrized_slice;
 mod parametrized_slice_manual;
@@ -178,7 +178,7 @@ mod subform_collection_manual;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_collection_named;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_collection_playground;  // BLOCKED: E0277 Hash/Eq trait bound issues with Definition
+// mod subform_collection_playground;  // BLOCKED: Missing subform collection methods - requires manual implementation infrastructure
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_collection_setter_off;
@@ -197,8 +197,8 @@ mod subform_scalar_name;
 
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry;
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_entry_manual;  // BLOCKED: Complex lifetime errors with higher-ranked trait bounds
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_entry_manual;  // BLOCKED: Complex lifetime errors with higher-ranked trait bounds
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry_named;
@@ -222,7 +222,7 @@ mod subform_entry_hashmap_custom;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_all;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_all_parametrized;  // BLOCKED: E0726 implicit elided lifetime not allowed here + E0277 FormerDefinition trait issues
+// mod subform_all_parametrized;  // BLOCKED: Undeclared lifetime 'child in derive macro + missing subform methods
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_all_private;
