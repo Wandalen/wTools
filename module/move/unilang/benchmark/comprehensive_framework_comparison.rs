@@ -607,10 +607,43 @@ fn main() {{
 
 #[ cfg( feature = "benchmarks" ) ]
 fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmarkResult>]) {
-    // Always remove and recreate directory to ensure fresh results
+    println!("🧹 Cleaning up outdated benchmark files...");
+    
+    // Clean up all benchmark result directories to ensure no stale data
+    let cleanup_dirs = [
+        "target/comprehensive_framework_comparison",
+        "target/framework_comparison", 
+        "target/benchmark_results",
+        "target/true_benchmark_results",
+        "target/clap_benchmark_results",
+        "target/compile_test_unilang_10",
+        "target/compile_test_unilang_100", 
+        "target/compile_test_unilang_1000",
+        "target/compile_test_unilang_10000",
+        "target/compile_test_unilang_100000",
+        "target/compile_test_clap_10",
+        "target/compile_test_clap_100",
+        "target/compile_test_clap_1000", 
+        "target/compile_test_clap_10000",
+        "target/compile_test_clap_100000",
+        "target/compile_test_pico_args_10",
+        "target/compile_test_pico_args_100",
+        "target/compile_test_pico_args_1000",
+        "target/compile_test_pico_args_10000", 
+        "target/compile_test_pico_args_100000",
+    ];
+    
+    for dir in &cleanup_dirs {
+        if Path::new(dir).exists() {
+            let _ = fs::remove_dir_all(dir);
+            println!("   ✅ Cleaned {}", dir);
+        }
+    }
+    
+    // Create fresh output directory
     let output_dir = "target/comprehensive_framework_comparison";
-    let _ = fs::remove_dir_all(output_dir);
     fs::create_dir_all(output_dir).expect("Failed to create output directory");
+    println!("   ✅ Created fresh output directory: {}", output_dir);
 
     let mut report = String::new();
     report.push_str("COMPREHENSIVE CLI FRAMEWORK COMPARISON\n");
@@ -753,7 +786,15 @@ fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmar
         .expect("Failed to write comprehensive report");
 
     // Generate CSV data for further analysis
-    let mut csv_content = String::from("framework,command_count,compile_time_ms,binary_size_kb,init_time_us,avg_lookup_ns,p99_lookup_ns,commands_per_second\n");
+    let now = chrono::Utc::now();
+    let mut csv_content = format!("# Comprehensive Framework Comparison Results\n");
+    csv_content.push_str(&format!("# Generated: {} UTC\n", now.format("%Y-%m-%d %H:%M:%S")));
+    csv_content.push_str("# Frameworks: Unilang vs Clap vs Pico-Args\n");
+    csv_content.push_str("# Statistical Method: 5 repetitions per measurement, averages reported\n");
+    csv_content.push_str("# All values are averaged across 5 runs for statistical reliability\n");
+    csv_content.push_str("#\n");
+    csv_content.push_str("framework,command_count,compile_time_ms,binary_size_kb,init_time_us,avg_lookup_ns,p99_lookup_ns,commands_per_second\n");
+    
     for result_set in results {
         for result in result_set {
             csv_content.push_str(&format!(
@@ -852,55 +893,105 @@ mod tests {
         let mut all_results = Vec::new();
 
         for &count in &command_counts {
-            println!("--- Testing with {} commands ({} repetitions) ---", count, repetitions);
+            let cmd_display = format_command_count(count);
+            println!("╔══════════════════════════════════════════════════════════════════════╗");
+            println!("║ 🎯 TESTING {} COMMANDS ({} repetitions per framework)                   ║", cmd_display, repetitions);
+            println!("╚══════════════════════════════════════════════════════════════════════╝");
             
-            // Collect multiple runs for statistical analysis
+            // Set timeout based on command count (more commands = longer timeout)
+            let timeout_minutes = if count <= 100 { 2 } else if count <= 1000 { 5 } else { 10 };
+            println!("⏰ Timeout: {} minutes per framework repetition", timeout_minutes);
+            println!();
+            
+            // Run all repetitions for Unilang first
+            println!("┌─ 🦀 UNILANG FRAMEWORK");
+            println!("│  Running {} consecutive repetitions...", repetitions);
             let mut unilang_runs = Vec::new();
-            let mut clap_runs = Vec::new();
-            let mut pico_args_runs = Vec::new();
-            
             for rep in 1..=repetitions {
-                println!("  Repetition {}/{}", rep, repetitions);
-                
-                // Set timeout based on command count (more commands = longer timeout)
-                let timeout_minutes = if count <= 100 { 2 } else if count <= 1000 { 5 } else { 10 };
-                
-                // Run each benchmark with timeout protection
+                print!("│  [{}/{}] ", rep, repetitions);
                 if let Some(result) = run_benchmark_with_timeout(
                     move || benchmark_unilang_comprehensive(count), 
                     timeout_minutes, 
                     "Unilang", 
                     count
                 ) {
+                    println!("✅ Completed in {:.1}s (compile: {:.0}ms, init: {:.1}μs)", 
+                            result.commands_per_second.recip() * count as f64, 
+                            result.compile_time_ms, 
+                            result.init_time_us);
                     unilang_runs.push(result);
+                } else {
+                    println!("❌ Failed or timed out");
                 }
-                
+            }
+            println!("└─ 🦀 Unilang completed: {}/{} successful runs\n", unilang_runs.len(), repetitions);
+            
+            // Then run all repetitions for Clap
+            println!("┌─ 🗡️  CLAP FRAMEWORK");
+            println!("│  Running {} consecutive repetitions...", repetitions);
+            let mut clap_runs = Vec::new();
+            for rep in 1..=repetitions {
+                print!("│  [{}/{}] ", rep, repetitions);
                 if let Some(result) = run_benchmark_with_timeout(
                     move || benchmark_clap_comprehensive(count), 
                     timeout_minutes, 
                     "Clap", 
                     count
                 ) {
+                    println!("✅ Completed in {:.1}s (compile: {:.0}ms, init: {:.1}μs)", 
+                            result.commands_per_second.recip() * count as f64, 
+                            result.compile_time_ms, 
+                            result.init_time_us);
                     clap_runs.push(result);
+                } else {
+                    println!("❌ Failed or timed out");
                 }
-                
+            }
+            println!("└─ 🗡️  Clap completed: {}/{} successful runs\n", clap_runs.len(), repetitions);
+            
+            // Finally run all repetitions for Pico-Args
+            println!("┌─ ⚡ PICO-ARGS FRAMEWORK");
+            println!("│  Running {} consecutive repetitions...", repetitions);
+            let mut pico_args_runs = Vec::new();
+            for rep in 1..=repetitions {
+                print!("│  [{}/{}] ", rep, repetitions);
                 if let Some(result) = run_benchmark_with_timeout(
                     move || benchmark_pico_args_comprehensive(count), 
                     timeout_minutes, 
                     "Pico-Args", 
                     count
                 ) {
+                    println!("✅ Completed in {:.1}s (compile: {:.0}ms, init: {:.1}μs)", 
+                            result.commands_per_second.recip() * count as f64, 
+                            result.compile_time_ms, 
+                            result.init_time_us);
                     pico_args_runs.push(result);
+                } else {
+                    println!("❌ Failed or timed out");
                 }
             }
+            println!("└─ ⚡ Pico-Args completed: {}/{} successful runs\n", pico_args_runs.len(), repetitions);
             
             // Calculate averages for this command count
-            let avg_unilang = average_benchmark_results(&unilang_runs);
-            let avg_clap = average_benchmark_results(&clap_runs);
-            let avg_pico_args = average_benchmark_results(&pico_args_runs);
+            if !unilang_runs.is_empty() && !clap_runs.is_empty() && !pico_args_runs.is_empty() {
+                let avg_unilang = average_benchmark_results(&unilang_runs);
+                let avg_clap = average_benchmark_results(&clap_runs);
+                let avg_pico_args = average_benchmark_results(&pico_args_runs);
+                
+                println!("📊 SUMMARY FOR {} COMMANDS:", cmd_display);
+                println!("   🦀 Unilang:   compile {:.0}ms, init {:.1}μs, throughput {:.0}/s", 
+                         avg_unilang.compile_time_ms, avg_unilang.init_time_us, avg_unilang.commands_per_second);
+                println!("   🗡️  Clap:      compile {:.0}ms, init {:.1}μs, throughput {:.0}/s", 
+                         avg_clap.compile_time_ms, avg_clap.init_time_us, avg_clap.commands_per_second);
+                println!("   ⚡ Pico-Args: compile {:.0}ms, init {:.1}μs, throughput {:.0}/s", 
+                         avg_pico_args.compile_time_ms, avg_pico_args.init_time_us, avg_pico_args.commands_per_second);
+                         
+                all_results.push(vec![avg_unilang, avg_clap, avg_pico_args]);
+            } else {
+                println!("⚠️  Insufficient data for {} commands - some frameworks failed all repetitions", cmd_display);
+            }
             
-            all_results.push(vec![avg_unilang, avg_clap, avg_pico_args]);
-            println!();
+            println!("═══════════════════════════════════════════════════════════════════════\n");
         }
 
         // Generate comprehensive comparison report
@@ -1156,61 +1247,130 @@ fn run_comprehensive_benchmark() {
     println!("🚀 Starting Comprehensive Framework Comparison Benchmark");
     println!("========================================================");
     println!("Testing Unilang vs Clap vs Pico-Args with compile time metrics");
-    println!("Testing all powers of 10 from 10¹ to 10⁵ with 5 repetitions each\n");
+    println!("Testing all powers of 10 from 10¹ to 10⁵ with 5 repetitions each");
+    
+    // Clean any existing benchmark artifacts to ensure fresh start
+    println!("\n🧹 Pre-cleaning any existing benchmark artifacts...");
+    let cleanup_patterns = [
+        "target/comprehensive_framework_comparison",
+        "target/framework_comparison", 
+        "target/benchmark_results",
+        "target/true_benchmark_results",
+        "target/clap_benchmark_results",
+    ];
+    
+    for pattern in &cleanup_patterns {
+        if Path::new(pattern).exists() {
+            let _ = fs::remove_dir_all(pattern);
+            println!("   ✅ Removed stale directory: {}", pattern);
+        }
+    }
+    println!();
 
     let command_counts = vec![10, 100, 1000, 10000, 100000];
     let repetitions = 5;
     let mut all_results = Vec::new();
 
     for &count in &command_counts {
-        println!("--- Testing with {} commands ({} repetitions) ---", count, repetitions);
+        let cmd_display = format_command_count(count);
+        println!("╔══════════════════════════════════════════════════════════════════════╗");
+        println!("║ 🎯 TESTING {} COMMANDS ({} repetitions per framework)                   ║", cmd_display, repetitions);
+        println!("╚══════════════════════════════════════════════════════════════════════╝");
         
-        // Collect multiple runs for statistical analysis
+        // Set timeout based on command count (more commands = longer timeout)
+        let timeout_minutes = if count <= 100 { 2 } else if count <= 1000 { 5 } else { 10 };
+        println!("⏰ Timeout: {} minutes per framework repetition", timeout_minutes);
+        println!();
+        
+        // Run all repetitions for Unilang first
+        println!("┌─ 🦀 UNILANG FRAMEWORK");
+        println!("│  Running {} consecutive repetitions...", repetitions);
         let mut unilang_runs = Vec::new();
-        let mut clap_runs = Vec::new();
-        let mut pico_args_runs = Vec::new();
-        
         for rep in 1..=repetitions {
-            println!("  Repetition {}/{}", rep, repetitions);
-            
-            // Set timeout based on command count (more commands = longer timeout)
-            let timeout_minutes = if count <= 100 { 2 } else if count <= 1000 { 5 } else { 10 };
-            
-            // Run each benchmark with timeout protection
+            print!("│  [{}/{}] ", rep, repetitions);
             if let Some(result) = run_benchmark_with_timeout(
                 move || benchmark_unilang_comprehensive(count), 
                 timeout_minutes, 
                 "Unilang", 
                 count
             ) {
+                println!("✅ Completed in {:.1}s (compile: {:.0}ms, init: {:.1}μs)", 
+                        result.commands_per_second.recip() * count as f64, 
+                        result.compile_time_ms, 
+                        result.init_time_us);
                 unilang_runs.push(result);
+            } else {
+                println!("❌ Failed or timed out");
             }
-            
+        }
+        println!("└─ 🦀 Unilang completed: {}/{} successful runs\n", unilang_runs.len(), repetitions);
+        
+        // Then run all repetitions for Clap
+        println!("┌─ 🗡️  CLAP FRAMEWORK");
+        println!("│  Running {} consecutive repetitions...", repetitions);
+        let mut clap_runs = Vec::new();
+        for rep in 1..=repetitions {
+            print!("│  [{}/{}] ", rep, repetitions);
             if let Some(result) = run_benchmark_with_timeout(
                 move || benchmark_clap_comprehensive(count), 
                 timeout_minutes, 
                 "Clap", 
                 count
             ) {
+                println!("✅ Completed in {:.1}s (compile: {:.0}ms, init: {:.1}μs)", 
+                        result.commands_per_second.recip() * count as f64, 
+                        result.compile_time_ms, 
+                        result.init_time_us);
                 clap_runs.push(result);
+            } else {
+                println!("❌ Failed or timed out");
             }
-            
+        }
+        println!("└─ 🗡️  Clap completed: {}/{} successful runs\n", clap_runs.len(), repetitions);
+        
+        // Finally run all repetitions for Pico-Args
+        println!("┌─ ⚡ PICO-ARGS FRAMEWORK");
+        println!("│  Running {} consecutive repetitions...", repetitions);
+        let mut pico_args_runs = Vec::new();
+        for rep in 1..=repetitions {
+            print!("│  [{}/{}] ", rep, repetitions);
             if let Some(result) = run_benchmark_with_timeout(
                 move || benchmark_pico_args_comprehensive(count), 
                 timeout_minutes, 
                 "Pico-Args", 
                 count
             ) {
+                println!("✅ Completed in {:.1}s (compile: {:.0}ms, init: {:.1}μs)", 
+                        result.commands_per_second.recip() * count as f64, 
+                        result.compile_time_ms, 
+                        result.init_time_us);
                 pico_args_runs.push(result);
+            } else {
+                println!("❌ Failed or timed out");
             }
         }
+        println!("└─ ⚡ Pico-Args completed: {}/{} successful runs\n", pico_args_runs.len(), repetitions);
         
         // Calculate averages for this command count
-        let unilang_avg = average_benchmark_results(&unilang_runs);
-        let clap_avg = average_benchmark_results(&clap_runs);
-        let pico_args_avg = average_benchmark_results(&pico_args_runs);
+        if !unilang_runs.is_empty() && !clap_runs.is_empty() && !pico_args_runs.is_empty() {
+            let unilang_avg = average_benchmark_results(&unilang_runs);
+            let clap_avg = average_benchmark_results(&clap_runs);
+            let pico_args_avg = average_benchmark_results(&pico_args_runs);
+            
+            println!("📊 SUMMARY FOR {} COMMANDS:", cmd_display);
+            println!("   🦀 Unilang:   compile {:.0}ms, init {:.1}μs, throughput {:.0}/s", 
+                     unilang_avg.compile_time_ms, unilang_avg.init_time_us, unilang_avg.commands_per_second);
+            println!("   🗡️  Clap:      compile {:.0}ms, init {:.1}μs, throughput {:.0}/s", 
+                     clap_avg.compile_time_ms, clap_avg.init_time_us, clap_avg.commands_per_second);
+            println!("   ⚡ Pico-Args: compile {:.0}ms, init {:.1}μs, throughput {:.0}/s", 
+                     pico_args_avg.compile_time_ms, pico_args_avg.init_time_us, pico_args_avg.commands_per_second);
+                     
+            all_results.push(vec![unilang_avg, clap_avg, pico_args_avg]);
+        } else {
+            println!("⚠️  Insufficient data for {} commands - some frameworks failed all repetitions", cmd_display);
+        }
         
-        all_results.push(vec![unilang_avg, clap_avg, pico_args_avg]);
+        println!("═══════════════════════════════════════════════════════════════════════\n");
     }
 
     // Generate comprehensive comparison report
