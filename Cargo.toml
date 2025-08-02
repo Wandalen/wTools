@@ -103,7 +103,7 @@ version = "~0.1.4"
 path = "module/alias/std_x"
 
 [workspace.dependencies.unilang_parser]
-version = "~0.4.0"
+version = "~0.5.0"
 path = "module/move/unilang_parser" # Point to original unilang_parser
 
 
@@ -262,17 +262,17 @@ path = "module/core/for_each"
 default-features = false
 
 [workspace.dependencies.former]
-version = "~2.21.0"
+version = "~2.22.0"
 path = "module/core/former"
 default-features = false
 
 [workspace.dependencies.former_meta]
-version = "~2.21.0"
+version = "~2.22.0"
 path = "module/core/former_meta"
 default-features = false
 
 [workspace.dependencies.former_types]
-version = "~2.19.0"
+version = "~2.20.0"
 path = "module/core/former_types"
 default-features = false
 
@@ -391,7 +391,7 @@ default-features = false
 ## error
 
 [workspace.dependencies.error_tools]
-version = "~0.26.0"
+version = "~0.27.0"
 path = "module/core/error_tools"
 default-features = false
 
