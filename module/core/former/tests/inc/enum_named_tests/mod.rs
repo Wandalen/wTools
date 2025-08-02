@@ -131,7 +131,7 @@
 //! // mod standalone_constructor_args_named_derive;
 //! // mod standalone_constructor_args_named_manual; // Removed
 //! // mod standalone_constructor_args_named_only_test;
-//! mod standalone_constructor_args_named_single_manual; // Added
-//! mod standalone_constructor_args_named_multi_manual; // Added
-//!
 //! // pub mod compile_fail;
+
+mod standalone_constructor_args_named_single_manual; // Added - now contains both variants
+// mod standalone_constructor_args_named_multi_manual; // Disabled - merged into single manual

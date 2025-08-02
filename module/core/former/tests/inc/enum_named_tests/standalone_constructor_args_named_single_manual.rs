@@ -30,7 +30,7 @@ use std::marker::PhantomData;
 
 // === Enum Definition ===
 
-/// Enum for manual testing of standalone constructors with arguments (single named variant).
+/// Enum for manual testing of standalone constructors with arguments (combined variants).
 #[ derive( Debug, PartialEq, Clone ) ]
 pub enum TestEnumArgs // New name
 {
@@ -38,6 +38,12 @@ pub enum TestEnumArgs // New name
   StructVariantArgs // New name
   {
     field : String,
+  },
+  /// A struct variant with multiple fields (intended as constructor args).
+  MultiStructArgs
+  {
+    a : i32,
+    b : bool,
   },
 }
 
@@ -203,6 +209,13 @@ for TestEnumArgsStructVariantArgsEnd
 pub fn struct_variant_args( field : impl Into< String > ) -> TestEnumArgs // Changed return type
 {
   TestEnumArgs::StructVariantArgs { field : field.into() } // Direct construction
+}
+
+/// Manual standalone constructor for TestEnumArgs::MultiStructArgs (takes args).
+/// Returns Self directly as per Option 2.
+pub fn multi_struct_args( a : impl Into< i32 >, b : impl Into< bool > ) -> TestEnumArgs 
+{
+  TestEnumArgs::MultiStructArgs { a : a.into(), b : b.into() } // Direct construction
 }
 
 // === Include Test Logic ===

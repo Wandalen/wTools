@@ -45,6 +45,7 @@ The macro generates a static constructor method on the enum for each variant. Th
 
 **Note on Rule 3f:** This rule is updated to reflect the implemented and tested behavior. The previous specification incorrectly stated this case would generate a scalar constructor. The actual behavior is to generate a subformer for the variant itself.
 
+
 #### 2.2. Standalone Constructor Behavior
 
 When the `#[standalone_constructors]` attribute is applied to an item, the return type of the generated top-level function(s) is determined by the usage of `#[arg_for_constructor]` on its fields:
