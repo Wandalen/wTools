@@ -239,7 +239,7 @@ As you implement or modify the `former_meta` crate, please fill out the sections
 - **Prevention**: Always run `cargo test --all-features --lib test_name --no-run` before marking fixes complete
 - **Resolution**: Establish mandatory verification checkpoints in development workflow
 
-#### 2. Commented-Out Derive Attributes 
+#### 2. Commented-Out Derive Attributes
 **Issue**: Tests appear blocked but just have commented `#[derive(Former)]` attributes
 - **Detection**: Search for `// #[derive.*Former` patterns in test files
 - **Resolution**: Uncomment derive attributes (90% of "blocked" test issues)
@@ -268,7 +268,7 @@ As you implement or modify the `former_meta` crate, please fill out the sections
 
 #### Common Resolution Patterns
 - **90%**: Simple derive attribute uncommented
-- **5%**: Feature gate configuration fixed  
+- **5%**: Feature gate configuration fixed
 - **5%**: Actual blocking issues requiring architectural changes
 
 #### Manual vs. Derive Decision Tree
@@ -293,7 +293,7 @@ pub struct MyStruct<T> { ... }
 ```bash
 # Mandatory verification sequence
 cargo test --all-features --lib test_name --no-run  # Compilation
-cargo test --all-features --lib test_name           # Execution  
+cargo test --all-features --lib test_name           # Execution
 cargo test --all-features --quiet                   # Full suite
 ```
 
@@ -330,7 +330,7 @@ Manual implementation only needed when:
 
 #### Pre-Release Verification
 - [ ] All BLOCKED comments verified against actual test compilation
-- [ ] Feature gate patterns standardized across all test modules  
+- [ ] Feature gate patterns standardized across all test modules
 - [ ] Documentation updated to reflect current reality
 - [ ] Full test suite passes with `cargo test --all-features --quiet`
 - [ ] No commented-out derives in production test files

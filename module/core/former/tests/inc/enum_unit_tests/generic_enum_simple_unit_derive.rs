@@ -14,14 +14,13 @@
 // File: module/core/former/tests/inc/enum_unit_tests/generic_enum_simple_unit_derive.rs
 use super::*; // Imports testing infrastructure and potentially other common items
 use core::fmt::Debug; // Import Debug trait for bounds
-                      // use std::marker::PhantomData; // No longer needed for this simple case
+#[allow(unused_imports)]
+use ::former::prelude::*;
+use ::former::Former;
 
 // --- Enum Definition with Bounds ---
 // Apply Former derive here. This is what we are testing.
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, PartialEq, former::Former)]
-#[derive(Debug, PartialEq)]
-// #[ debug ]
+#[derive(Debug, PartialEq, Former)]
 pub enum EnumOuter<X: Copy + Debug + PartialEq>
 // Enum bound: Copy + Debug + PartialEq
 {
