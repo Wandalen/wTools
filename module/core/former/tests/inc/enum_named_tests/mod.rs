@@ -135,4 +135,5 @@
 
 mod standalone_constructor_args_named_single_manual; // Added - now contains both variants
 // mod standalone_constructor_args_named_multi_manual; // Disabled - merged into single manual
-mod enum_named_fields_named_manual; // Try enabling this manual test
+mod enum_named_fields_named_manual; // Enabled - 1 test passing
+// mod generics_shared_struct_manual; // Disabled - has compilation errors
