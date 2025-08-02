@@ -90,6 +90,7 @@ use macro_tools::{
   proc_macro2::TokenStream,
   quote::{format_ident, quote},
   ident, // Added for ident_maybe_raw
+  syn, parse_quote
 };
 
 
@@ -1022,7 +1023,7 @@ specific needs of the broader forming context. It mandates the implementation of
     }
   };
   
-  let result = quote::quote! {
+  let result = quote! {
 
     // = formed: Implement the `::former()` static method on the original struct.
     #[ automatically_derived ]

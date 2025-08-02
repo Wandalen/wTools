@@ -69,7 +69,7 @@
 // File: module/core/former_meta/src/derive_former/field.rs
 
 use super::*;
-use macro_tools::container_kind;
+use macro_tools::{container_kind, syn, qt, syn_err, Result, quote};
 
 /// Comprehensive field definition and analysis for Former pattern generation.
 ///
@@ -963,7 +963,7 @@ with the new content generated during the subforming process.
       // Expected: HashMapDefinitionTypes<K, V, ParentFormer, ParentFormer>
       // Got: HashMapDefinitionTypes<K, ParentFormer, ParentFormer>
       // This fix ensures all parameters are properly forwarded using #( #params, )*
-      quote::quote! {
+      quote! {
         #subformer_definition_types<
           #( #params, )*
           #former_type_ref,

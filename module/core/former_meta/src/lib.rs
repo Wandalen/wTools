@@ -77,7 +77,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
 
 #[allow(unused_imports)]
-use macro_tools::prelude::*;
+use macro_tools::{Result, diag};
 
 #[cfg(feature = "derive_former")]
 mod derive_former;

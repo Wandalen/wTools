@@ -16,7 +16,7 @@
 // Uncomment modules as they are addressed in increments.
 
 // Coverage for `unit_variant_*` tests is described in the Test Matrix at the top of this file.
-// mod unit_variant_derive; // Disabled - enum Former derive not yet implemented
+mod unit_variant_derive; // Enabled - enum Former derive now implemented
 mod unit_variant_manual;
 
 // Coverage for `keyword_variant_*` tests:

@@ -137,3 +137,4 @@ mod standalone_constructor_args_named_single_manual; // Added - now contains bot
 // mod standalone_constructor_args_named_multi_manual; // Disabled - merged into single manual
 mod enum_named_fields_named_manual; // Enabled - 1 test passing
 // mod generics_shared_struct_manual; // Disabled - has compilation errors
+// mod generics_independent_struct_manual; // Disabled - has duplicate definitions and complex errors

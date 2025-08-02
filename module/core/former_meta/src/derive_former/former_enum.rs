@@ -119,15 +119,9 @@
 
 
 use super::*;
-use macro_tools::{
-  Result,
-  quote::{format_ident, quote},
-  generic_params::GenericsRef,
-
-  syn,
-
-};
-use proc_macro2::TokenStream; // Corrected import for TokenStream
+use macro_tools::{Result, generic_params::GenericsRef, syn, proc_macro2, diag};
+use macro_tools::quote::{format_ident, quote};
+use macro_tools::proc_macro2::TokenStream;
 use super::struct_attrs::ItemAttributes; // Corrected import
 use super::field_attrs::FieldAttributes; // Corrected import
 

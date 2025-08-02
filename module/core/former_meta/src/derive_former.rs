@@ -1,12 +1,10 @@
 // File: module/core/former_meta/src/derive_former.rs
 
 use super::*;
-use macro_tools::{
-  diag, typ, Result,
-  proc_macro2::TokenStream,
-  quote::{format_ident, quote, ToTokens},
-  syn::spanned::Spanned,
-};
+use macro_tools::{Result, diag, typ, syn, proc_macro2};
+use macro_tools::proc_macro2::TokenStream;
+use macro_tools::quote::{format_ident, quote, ToTokens};
+use macro_tools::syn::spanned::Spanned;
 
 mod former_enum;
 use former_enum::former_for_enum;

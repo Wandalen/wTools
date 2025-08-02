@@ -69,7 +69,7 @@
 
 use super::*;
 
-use macro_tools::{ct, Result, AttributeComponent, AttributePropertyComponent, AttributePropertyOptionalSingletone};
+use macro_tools::{ct, Result, AttributeComponent, AttributePropertyComponent, AttributePropertyOptionalSingletone, syn, quote, return_syn_err, syn_err, qt, Token};
 
 use component_model_types::{Assign, OptionExt};
 

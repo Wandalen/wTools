@@ -118,7 +118,8 @@
 //! - **Unit Semantics**: Maintains proper Rust unit variant semantics and syntax
 
 use super::*;
-use macro_tools::{Result, quote::quote};
+use macro_tools::{Result, quote::quote, ident::cased_ident_from_ident, syn_err};
+use convert_case::Case;
 
 /// Generates direct constructor for unit enum variants with comprehensive attribute validation.
 ///
@@ -166,8 +167,40 @@ use macro_tools::{Result, quote::quote};
 /// ## Implementation Status
 /// This handler is currently a placeholder implementation that will be completed in future increments
 /// as the enum Former generation system is fully developed.
-pub fn handle(_ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::TokenStream> {
-  // Placeholder for unit_variant_handler.rs
-  // This will be implemented in a later increment.
-  Ok(quote! {})
+pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::TokenStream> {
+  let variant_name = &ctx.variant.ident;
+  let method_name = cased_ident_from_ident(variant_name, Case::Snake);
+  let enum_name = ctx.enum_name;
+  let vis = ctx.vis;
+
+  // Rule 2a: #[subform_scalar] on unit variants should cause a compile error
+  if ctx.variant_attrs.subform_scalar.is_some() {
+    return Err(syn_err!(
+      ctx.variant,
+      "#[subform_scalar] cannot be used on unit variants."
+    ));
+  }
+
+  // Generate standalone constructor if #[standalone_constructors] is present
+  if ctx.struct_attrs.standalone_constructors.is_some() {
+    let standalone_constructor = quote! {
+      #[ inline( always ) ]
+      #vis fn #method_name() -> #enum_name
+      {
+        #enum_name::#variant_name
+      }
+    };
+    ctx.standalone_constructors.push(standalone_constructor);
+  }
+
+  // For unit variants, Rules 1a and 3a both generate the same direct constructor
+  let result = quote! {
+    #[ inline( always ) ]
+    #vis fn #method_name() -> #enum_name
+    {
+      #enum_name::#variant_name
+    }
+  };
+
+  Ok(result)
 }

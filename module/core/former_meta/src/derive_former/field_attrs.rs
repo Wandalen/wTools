@@ -80,6 +80,7 @@ use macro_tools::{
   // syn::parse::{ Parse, ParseStream }, // Removed unused imports
   proc_macro2::TokenStream, // Import TokenStream
                             // syn::spanned::Spanned, // No longer needed here
+  syn, return_syn_err, syn_err, Token, qt
 };
 
 use component_model_types::{Assign, OptionExt};
