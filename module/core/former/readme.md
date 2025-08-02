@@ -388,7 +388,3 @@ Understanding the terminology used in `former` will help you leverage its full p
 *   **[API Documentation (docs.rs)](https://docs.rs/former):** Get detailed information on all public types, traits, and functions.
 *   **[Repository (GitHub)](https://github.com/Wandalen/wTools/tree/master/module/core/former):** View the source code, contribute, or report issues.
 
-## Developer Resources
-
-*   **[Testing Guide](TESTING_GUIDE.md):** Guidelines for developers working on the Former test suite, particularly enum-related tests.
-*   **[Implementation Status](IMPLEMENTATION_STATUS.md):** Current status of Former derive macro implementation, including known limitations and areas needing work.
