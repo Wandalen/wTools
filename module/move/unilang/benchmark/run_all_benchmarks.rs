@@ -4,7 +4,7 @@
 //! Usage: cargo test run_all_benchmarks --release -- --nocapture
 
 use std::process::Command;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 use std::fs;
 use std::path::Path;
 
@@ -41,34 +41,50 @@ fn run_true_exponential_benchmark() {
 fn run_comprehensive_benchmark_impl() {
     println!("🚀 Running Comprehensive Framework Comparison Benchmark");
     println!("This will generate performance data and update the readme.md");
+    println!("⏰ Benchmark timeout: 20 minutes (will be terminated if it exceeds this time)");
     
-    // Call the comprehensive benchmark binary directly
-    let output = Command::new("cargo")
+    let start_time = Instant::now();
+    let timeout_duration = Duration::from_secs(20 * 60); // 20 minutes timeout
+    
+    // Call the comprehensive benchmark binary directly with timeout
+    let mut child = match Command::new("cargo")
         .args(&["run", "--release", "--bin", "comprehensive_benchmark", "--features", "benchmarks"])
-        .output();
-        
-    match output {
-        Ok(result) => {
-            if result.status.success() {
-                println!("✅ Comprehensive benchmark completed successfully");
-                let stdout = String::from_utf8_lossy(&result.stdout);
-                // Print last few lines of meaningful output
-                let lines: Vec<&str> = stdout.lines().collect();
-                if lines.len() > 10 {
-                    println!("Last benchmark output:");
-                    for line in lines.iter().rev().take(5).rev() {
-                        if !line.trim().is_empty() && !line.contains("Compiling") && !line.contains("Finished") {
-                            println!("  {}", line);
-                        }
-                    }
-                }
-            } else {
-                let stderr = String::from_utf8_lossy(&result.stderr);
-                println!("⚠️  Benchmark completed with issues: {}", stderr);
-            }
-        }
+        .spawn() {
+        Ok(child) => child,
         Err(e) => {
-            println!("❌ Failed to run comprehensive benchmark: {}", e);
+            println!("❌ Failed to start comprehensive benchmark: {}", e);
+            return;
+        }
+    };
+    
+    // Monitor the process with timeout
+    loop {
+        match child.try_wait() {
+            Ok(Some(status)) => {
+                let elapsed = start_time.elapsed();
+                if status.success() {
+                    println!("✅ Comprehensive benchmark completed successfully in {:.1} minutes", elapsed.as_secs_f64() / 60.0);
+                } else {
+                    println!("⚠️  Benchmark completed with issues (exit code: {:?}) after {:.1} minutes", status.code(), elapsed.as_secs_f64() / 60.0);
+                }
+                break;
+            }
+            Ok(None) => {
+                // Process is still running, check timeout
+                if start_time.elapsed() > timeout_duration {
+                    println!("⏰ Benchmark timeout reached (20 minutes), terminating process...");
+                    let _ = child.kill();
+                    let _ = child.wait();
+                    println!("❌ Benchmark was terminated due to timeout");
+                    break;
+                }
+                // Wait a bit before checking again
+                std::thread::sleep(Duration::from_secs(5));
+            }
+            Err(e) => {
+                println!("❌ Error monitoring benchmark process: {}", e);
+                break;
+            }
         }
     }
 }
@@ -222,35 +238,39 @@ mod tests {
         let mut failed_benchmarks = Vec::new();
         
         // Run benchmarks directly instead of calling tests to avoid infinite loops
-        let benchmark_functions = vec![
-            ("Fast Exponential Benchmark", "~2 min", run_exponential_benchmark as fn()),
-            ("Parsing Performance Benchmark", "~30 sec", run_parsing_benchmark as fn()),
-            ("Clap Standalone Benchmark", "~2 min", run_clap_benchmark as fn()),
-            ("Two-Way Framework Comparison", "~3 min", run_framework_comparison as fn()),
-            ("Comprehensive Framework Comparison", "~8 min", run_comprehensive_benchmark as fn()),
-            ("True Exponential Benchmark", "~15 min", run_true_exponential_benchmark as fn()),
-        ];
+        // Since all benchmarks now call the comprehensive benchmark, just run it once
+        println!("🚀 Running Comprehensive Framework Comparison (~20 min)...");
+        println!("⏰ Benchmark timeout: 25 minutes maximum");
         
-        // Run each benchmark function directly
-        for (name, duration_estimate, benchmark_fn) in &benchmark_functions {
-            println!("🚀 Running {} ({})...", name, duration_estimate);
-            let start_time = Instant::now();
-            
-            // Catch panics to prevent one benchmark from stopping the entire suite
-            let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(benchmark_fn));
-            
-            let duration = start_time.elapsed();
-            match result {
-                Ok(_) => {
-                    println!("✅ {} completed in {:.1}s", name, duration.as_secs_f64());
-                    results.push((name.to_string(), duration));
-                }
-                Err(_) => {
-                    println!("❌ {} failed or panicked", name);
-                    failed_benchmarks.push(name.to_string());
-                }
+        let start_time = Instant::now();
+        let individual_timeout = Duration::from_secs(25 * 60); // 25 minutes total
+        
+        // Use a separate thread to run the benchmark with timeout
+        let (tx, rx) = std::sync::mpsc::channel();
+        
+        std::thread::spawn(move || {
+            // Catch panics to prevent benchmark from stopping
+            let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                run_comprehensive_benchmark_impl();
+            }));
+            let _ = tx.send(result);
+        });
+        
+        // Wait for completion or timeout
+        match rx.recv_timeout(individual_timeout) {
+            Ok(Ok(_)) => {
+                let final_duration = start_time.elapsed();
+                println!("✅ Comprehensive benchmark completed in {:.1} minutes", final_duration.as_secs_f64() / 60.0);
+                results.push(("Comprehensive Framework Comparison".to_string(), final_duration));
             }
-            println!();
+            Ok(Err(_)) => {
+                println!("❌ Comprehensive benchmark failed or panicked");
+                failed_benchmarks.push("Comprehensive Framework Comparison".to_string());
+            }
+            Err(_) => {
+                println!("⏰ Comprehensive benchmark timed out after 25 minutes");
+                failed_benchmarks.push("Comprehensive Framework Comparison (timeout)".to_string());
+            }
         }
         
         let total_duration = total_start.elapsed();
@@ -296,7 +316,7 @@ mod tests {
         println!("   - All result files refreshed");
         println!();
         
-        let total_benchmarks = benchmark_functions.len();
+        let total_benchmarks = 1; // Just running the comprehensive benchmark now
         let success_rate = results.len() as f64 / total_benchmarks as f64 * 100.0;
         println!("🎯 Success rate: {:.1}% ({}/{} benchmarks)", 
                  success_rate, results.len(), total_benchmarks);

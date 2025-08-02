@@ -5,7 +5,7 @@
 //! framework selection decisions.
 
 #[ cfg( feature = "benchmarks" ) ]
-use std::time::Instant;
+use std::time::{Duration, Instant};
 #[ cfg( feature = "benchmarks" ) ]
 use std::process::{ Command, Stdio };
 #[ cfg( feature = "benchmarks" ) ]
@@ -21,6 +21,39 @@ use unilang::prelude::*;
 use clap::{ Arg, Command as ClapCommand };
 #[ cfg( feature = "benchmarks" ) ]  
 use pico_args::Arguments;
+
+// Timeout wrapper for individual benchmark functions
+#[ cfg( feature = "benchmarks" ) ]
+fn run_benchmark_with_timeout<F>(
+    benchmark_fn: F, 
+    timeout_minutes: u64, 
+    benchmark_name: &str, 
+    command_count: usize
+) -> Option<ComprehensiveBenchmarkResult>
+where 
+    F: FnOnce() -> ComprehensiveBenchmarkResult + Send + 'static,
+{
+    let (tx, rx) = std::sync::mpsc::channel();
+    let timeout_duration = Duration::from_secs(timeout_minutes * 60);
+    
+    std::thread::spawn(move || {
+        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(benchmark_fn));
+        let _ = tx.send(result);
+    });
+    
+    match rx.recv_timeout(timeout_duration) {
+        Ok(Ok(result)) => Some(result),
+        Ok(Err(_)) => {
+            println!("❌ {} benchmark panicked for {} commands", benchmark_name, command_count);
+            None
+        }
+        Err(_) => {
+            println!("⏰ {} benchmark timed out after {} minutes for {} commands", 
+                     benchmark_name, timeout_minutes, command_count);
+            None
+        }
+    }
+}
 
 #[ derive( Debug, Clone ) ]
 #[ cfg( feature = "benchmarks" ) ]
@@ -829,13 +862,36 @@ mod tests {
             for rep in 1..=repetitions {
                 println!("  Repetition {}/{}", rep, repetitions);
                 
-                let unilang_result = benchmark_unilang_comprehensive(count);
-                let clap_result = benchmark_clap_comprehensive(count);
-                let pico_args_result = benchmark_pico_args_comprehensive(count);
+                // Set timeout based on command count (more commands = longer timeout)
+                let timeout_minutes = if count <= 100 { 2 } else if count <= 1000 { 5 } else { 10 };
                 
-                unilang_runs.push(unilang_result);
-                clap_runs.push(clap_result);
-                pico_args_runs.push(pico_args_result);
+                // Run each benchmark with timeout protection
+                if let Some(result) = run_benchmark_with_timeout(
+                    move || benchmark_unilang_comprehensive(count), 
+                    timeout_minutes, 
+                    "Unilang", 
+                    count
+                ) {
+                    unilang_runs.push(result);
+                }
+                
+                if let Some(result) = run_benchmark_with_timeout(
+                    move || benchmark_clap_comprehensive(count), 
+                    timeout_minutes, 
+                    "Clap", 
+                    count
+                ) {
+                    clap_runs.push(result);
+                }
+                
+                if let Some(result) = run_benchmark_with_timeout(
+                    move || benchmark_pico_args_comprehensive(count), 
+                    timeout_minutes, 
+                    "Pico-Args", 
+                    count
+                ) {
+                    pico_args_runs.push(result);
+                }
             }
             
             // Calculate averages for this command count
@@ -1117,13 +1173,36 @@ fn run_comprehensive_benchmark() {
         for rep in 1..=repetitions {
             println!("  Repetition {}/{}", rep, repetitions);
             
-            let unilang_result = benchmark_unilang_comprehensive(count);
-            let clap_result = benchmark_clap_comprehensive(count);
-            let pico_args_result = benchmark_pico_args_comprehensive(count);
+            // Set timeout based on command count (more commands = longer timeout)
+            let timeout_minutes = if count <= 100 { 2 } else if count <= 1000 { 5 } else { 10 };
             
-            unilang_runs.push(unilang_result);
-            clap_runs.push(clap_result);
-            pico_args_runs.push(pico_args_result);
+            // Run each benchmark with timeout protection
+            if let Some(result) = run_benchmark_with_timeout(
+                move || benchmark_unilang_comprehensive(count), 
+                timeout_minutes, 
+                "Unilang", 
+                count
+            ) {
+                unilang_runs.push(result);
+            }
+            
+            if let Some(result) = run_benchmark_with_timeout(
+                move || benchmark_clap_comprehensive(count), 
+                timeout_minutes, 
+                "Clap", 
+                count
+            ) {
+                clap_runs.push(result);
+            }
+            
+            if let Some(result) = run_benchmark_with_timeout(
+                move || benchmark_pico_args_comprehensive(count), 
+                timeout_minutes, 
+                "Pico-Args", 
+                count
+            ) {
+                pico_args_runs.push(result);
+            }
         }
         
         // Calculate averages for this command count
