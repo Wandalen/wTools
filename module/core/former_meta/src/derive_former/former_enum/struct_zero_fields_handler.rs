@@ -105,7 +105,8 @@
 //! - **Explicit Clarity**: Requires explicit attributes to eliminate ambiguity
 
 use super::*;
-use macro_tools::{Result, quote::quote};
+use macro_tools::{Result, quote::quote, ident::cased_ident_from_ident, syn_err};
+use convert_case::Case;
 
 /// Generates direct constructor for zero-field struct enum variants with mandatory `#[scalar]` attribute.
 ///
@@ -153,8 +154,48 @@ use macro_tools::{Result, quote::quote};
 /// ## Implementation Status
 /// This handler is currently a placeholder implementation that will be completed in future increments
 /// as the enum Former generation system is fully developed.
-pub fn handle(_ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::TokenStream> {
-  // Placeholder for struct_zero_fields_handler.rs
-  // This will be implemented in a later increment.
-  Ok(quote! {})
+pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::TokenStream> {
+  let variant_name = &ctx.variant.ident;
+  let method_name = cased_ident_from_ident(variant_name, Case::Snake);
+  let enum_name = ctx.enum_name;
+  let vis = ctx.vis;
+
+  // Rule: Zero-field struct variants require #[scalar] attribute for direct construction
+  if ctx.variant_attrs.scalar.is_none() {
+    return Err(syn_err!(
+      ctx.variant,
+      "Zero-field struct variants require `#[scalar]` attribute for direct construction."
+    ));
+  }
+
+  // Rule: #[subform_scalar] on zero-field struct variants should cause a compile error
+  if ctx.variant_attrs.subform_scalar.is_some() {
+    return Err(syn_err!(
+      ctx.variant,
+      "#[subform_scalar] cannot be used on zero-field struct variants."
+    ));
+  }
+
+  // Generate standalone constructor if #[standalone_constructors] is present
+  if ctx.struct_attrs.standalone_constructors.is_some() {
+    let standalone_constructor = quote! {
+      #[ inline( always ) ]
+      #vis fn #method_name() -> #enum_name
+      {
+        #enum_name::#variant_name {}
+      }
+    };
+    ctx.standalone_constructors.push(standalone_constructor);
+  }
+
+  // Generate direct constructor method for zero-field struct variant
+  let result = quote! {
+    #[ inline( always ) ]
+    #vis fn #method_name() -> #enum_name
+    {
+      #enum_name::#variant_name {}
+    }
+  };
+
+  Ok(result)
 }
