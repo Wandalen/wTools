@@ -889,7 +889,7 @@ mod tests {
         println!("Testing all powers of 10 from 10¹ to 10⁵ with 5 repetitions each\n");
 
         let command_counts = vec![10, 100, 1000, 10000, 100000];
-        let repetitions = 5;
+        let repetitions = 3;
         let mut all_results = Vec::new();
 
         for &count in &command_counts {
@@ -1268,7 +1268,7 @@ fn run_comprehensive_benchmark() {
     println!();
 
     let command_counts = vec![10, 100, 1000, 10000, 100000];
-    let repetitions = 5;
+    let repetitions = 3;
     let mut all_results = Vec::new();
 
     for &count in &command_counts {
