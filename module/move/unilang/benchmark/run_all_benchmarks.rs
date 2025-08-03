@@ -8,35 +8,6 @@ use std::time::{Duration, Instant};
 use std::fs;
 use std::path::Path;
 
-// Simple benchmark runner functions that call the comprehensive benchmark directly
-fn run_exponential_benchmark() {
-    run_comprehensive_benchmark_impl();
-}
-
-fn run_parsing_benchmark() {
-    println!("⚠️  Running comprehensive benchmark instead of individual parsing benchmark");
-    run_comprehensive_benchmark_impl();
-}
-
-fn run_clap_benchmark() {
-    println!("⚠️  Running comprehensive benchmark instead of individual clap benchmark");
-    run_comprehensive_benchmark_impl();
-}
-
-fn run_framework_comparison() {
-    println!("⚠️  Running comprehensive benchmark instead of individual framework comparison");
-    run_comprehensive_benchmark_impl();
-}
-
-fn run_comprehensive_benchmark() {
-    run_comprehensive_benchmark_impl();
-}
-
-fn run_true_exponential_benchmark() {
-    println!("⚠️  Running comprehensive benchmark instead of true exponential benchmark");
-    run_comprehensive_benchmark_impl();
-}
-
 #[cfg(feature = "benchmarks")]
 fn run_comprehensive_benchmark_impl() {
     println!("🚀 Running Comprehensive Framework Comparison Benchmark");

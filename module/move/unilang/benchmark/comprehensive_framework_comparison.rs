@@ -653,7 +653,7 @@ fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmar
     report.push_str(&format!("Generated: {} UTC\n", now.format("%Y-%m-%d %H:%M:%S")));
     report.push_str("Frameworks: Unilang vs Clap vs Pico-Args\n");
     report.push_str("Metrics: Compile Time, Binary Size, Runtime Performance\n");
-    report.push_str("Statistical Method: 5 repetitions per measurement, averages reported\n");
+    report.push_str("Statistical Method: 3 repetitions per measurement, averages reported\n");
     report.push_str("Command Counts: 10¹, 10², 10³, 10⁴, 10⁵ (powers of 10)\n\n");
     
     // Add version information
@@ -790,7 +790,7 @@ fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmar
     let mut csv_content = format!("# Comprehensive Framework Comparison Results\n");
     csv_content.push_str(&format!("# Generated: {} UTC\n", now.format("%Y-%m-%d %H:%M:%S")));
     csv_content.push_str("# Frameworks: Unilang vs Clap vs Pico-Args\n");
-    csv_content.push_str("# Statistical Method: 5 repetitions per measurement, averages reported\n");
+    csv_content.push_str("# Statistical Method: 3 repetitions per measurement, averages reported\n");
     csv_content.push_str("# All values are averaged across 5 runs for statistical reliability\n");
     csv_content.push_str("#\n");
     csv_content.push_str("framework,command_count,compile_time_ms,binary_size_kb,init_time_us,avg_lookup_ns,p99_lookup_ns,commands_per_second\n");
@@ -886,7 +886,7 @@ mod tests {
         println!("🚀 Starting Comprehensive Framework Comparison Benchmark");
         println!("========================================================");
         println!("Testing Unilang vs Clap vs Pico-Args with compile time metrics");
-        println!("Testing all powers of 10 from 10¹ to 10⁵ with 5 repetitions each\n");
+        println!("Testing all powers of 10 from 10¹ to 10⁵ with 3 repetitions each\n");
 
         let command_counts = vec![10, 100, 1000, 10000, 100000];
         let repetitions = 3;
@@ -1247,7 +1247,7 @@ fn run_comprehensive_benchmark() {
     println!("🚀 Starting Comprehensive Framework Comparison Benchmark");
     println!("========================================================");
     println!("Testing Unilang vs Clap vs Pico-Args with compile time metrics");
-    println!("Testing all powers of 10 from 10¹ to 10⁵ with 5 repetitions each");
+    println!("Testing all powers of 10 from 10¹ to 10⁵ with 3 repetitions each");
     
     // Clean any existing benchmark artifacts to ensure fresh start
     println!("\n🧹 Pre-cleaning any existing benchmark artifacts...");

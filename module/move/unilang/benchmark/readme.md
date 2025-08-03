@@ -246,7 +246,7 @@ target/
 
 ## ⚡ **Benchmark Features**
 
-1. **Statistical Rigor**: 5 repetitions per measurement with averages and standard deviations
+1. **Statistical Rigor**: 3 repetitions per measurement with averages and standard deviations
 2. **Power-of-10 Testing**: Tests 10¹, 10², 10³, 10⁴, 10⁵ commands (10 to 100,000)
 3. **Three-Way Comparison**: Unilang vs Clap vs Pico-Args
 4. **Comprehensive Metrics**: Compile time, binary size, runtime performance
