@@ -373,7 +373,7 @@ name = "benchmark"
 path = "src/main.rs"
 
 [dependencies]
-unilang = {{ path = "../../../" }}
+unilang = {{ path = "../../" }}
 "#);
     
     fs::write(format!("{}/Cargo.toml", work_dir), cargo_toml)

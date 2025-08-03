@@ -67,6 +67,10 @@ path = "src/bin/unilang_cli.rs"
 name = "comprehensive_benchmark"
 path = "benchmark/comprehensive_framework_comparison.rs"
 
+[[bin]]
+name = "throughput_benchmark"
+path = "benchmark/throughput_benchmark.rs"
+
 
 
 [[test]]
@@ -113,6 +117,7 @@ path = "benchmark/clap_comparison_benchmark.rs"
 [[test]]
 name = "true_exponential_benchmark"
 path = "benchmark/true_exponential_benchmark.rs"
+
 
 
 # stress_test_bin is a binary, not a test - no [[test]] entry needed

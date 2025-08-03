@@ -1,4 +1,4 @@
-<!-- Last updated: 2025-08-02 20:54:32 UTC -->
+<!-- Last updated: 2025-08-02 21:17:18 UTC -->
 # 🚀 Unilang Performance Benchmarks
 
 This directory contains comprehensive performance benchmarks for the unilang framework, measuring build-time and runtime performance across exponentially increasing command counts from **10¹ to 10⁵** (10 to 100,000 commands).
@@ -9,12 +9,18 @@ This directory contains comprehensive performance benchmarks for the unilang fra
 # 🏁 Run ALL benchmarks and update documentation (30+ minutes)
 ./benchmark/run_all_benchmarks.sh
 
+# ⚡ QUICK THROUGHPUT BENCHMARK (30-60 seconds) - recommended for daily use
+cargo run --release --bin throughput_benchmark --features benchmarks
+
 # Or run individual benchmarks:
-# Comprehensive 3-way framework comparison (recommended, 8-10 minutes)
+# Comprehensive 3-way framework comparison (8-10 minutes)
 ./benchmark/run_comprehensive_benchmark.sh
 
 # Direct binary execution (alternative):
 cargo run --release --bin comprehensive_benchmark --features benchmarks
+
+# Test-based execution:
+cargo test throughput_performance_benchmark --release --features benchmarks -- --ignored --nocapture
 ```
 
 ## 📊 Key Performance Results
@@ -73,6 +79,7 @@ cargo run --release --bin comprehensive_benchmark --features benchmarks
 
 | Benchmark | File | Duration | Purpose |
 |-----------|------|----------|---------|
+| **⚡ Throughput-Only** | [`throughput_benchmark.rs`](throughput_benchmark.rs) | ~30-60 sec | **Quick daily testing** (runtime only) |
 | **True Exponential** | [`true_exponential_benchmark.rs`](true_exponential_benchmark.rs) | ~15 min | Build + runtime (most accurate) |
 | **Fast Exponential** | [`exponential_benchmark.rs`](exponential_benchmark.rs) | ~2 min | Runtime-only (quick checks) |
 | **Parsing Focus** | [`parsing_benchmark_test.rs`](parsing_benchmark_test.rs) | ~30 sec | Parser optimization |
@@ -88,6 +95,7 @@ cargo test run_all_benchmarks --release --features benchmarks -- --nocapture --i
 ./benchmark/run_comprehensive_benchmark.sh           # 3-way comparison (8-10 min)
 
 # Individual benchmarks (all ignored by default to prevent accidental runs):
+cargo run --release --bin throughput_benchmark --features benchmarks                                          # ⚡ ~30-60 sec (RECOMMENDED DAILY)
 cargo test exponential_performance_benchmark --release --features benchmarks -- --ignored --nocapture        # ~2 min
 cargo test framework_comparison_benchmark --release --features benchmarks -- --ignored --nocapture            # ~3 min  
 cargo test comprehensive_framework_comparison_benchmark --release --features benchmarks -- --ignored --nocapture  # ~8 min
@@ -101,11 +109,39 @@ cargo test --release                                 # Fast - doesn't run benchm
 ```
 
 **✅ Key Features:**
+- **⚡ Quick Throughput Benchmark** - 30-60 seconds for daily performance validation
 - **Regular `cargo test` is fast** - benchmarks are ignored by default
 - **Benchmarks run when explicitly requested** with `--ignored` flag  
 - **Updates both temp files AND readme.md** with live performance data
 - **Generates comprehensive CSV reports** in target directories
 - **Real performance testing** with actual runtime measurements
+
+## ⚡ Throughput Benchmark (Recommended for Daily Use)
+
+**Quick Performance Validation in 30-60 seconds:**
+
+```bash
+cargo run --release --bin throughput_benchmark --features benchmarks
+```
+
+**Benefits:**
+- 🚀 **Fast execution** - Results in under a minute
+- 🎯 **Focus on runtime** - No compilation testing delays  
+- 📊 **Extended sampling** - More statistical reliability per command count
+- 🔄 **Perfect for CI/CD** - Quick regression detection
+- 📈 **Live comparison** - Unilang vs Clap vs Pico-Args side-by-side
+
+**Sample Output:**
+```
+🏆 Winner for 1K commands: ⚡ Pico-Args (6,419,585 cmd/sec)
+📊 Init: 1544.0μs, Avg: 26369ns, P99: 43720ns, Throughput: 37820/s
+```
+
+**When to use:**
+- Daily development workflow validation
+- Before committing performance-sensitive changes
+- CI/CD pipeline integration
+- Quick sanity checks after optimization
 
 ## 🎯 Framework Selection Guide
 
