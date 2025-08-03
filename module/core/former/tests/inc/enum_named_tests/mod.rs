@@ -141,5 +141,6 @@ mod minimal_struct_zero_test; // Enabled - testing struct_zero_fields_handler
 mod struct_zero_derive_test; // Enabled - testing struct_zero_fields_handler with standalone constructors
 mod struct_single_scalar_test; // Enabled - testing struct_single_field_scalar handler
 mod struct_multi_scalar_test; // Enabled - testing struct_multi_fields_scalar handler
+mod struct_single_subform_test; // Enabled - testing struct_single_field_subform handler
 // mod generics_shared_struct_manual; // Disabled - has compilation errors
 // mod generics_independent_struct_manual; // Disabled - has duplicate definitions and complex errors
