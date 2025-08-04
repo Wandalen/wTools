@@ -100,7 +100,7 @@ mod tuple_zero_fields_manual; // Re-enabled after fixing _only_test.rs
 mod tuple_single_scalar_test; // Enabled - testing tuple_single_field_scalar handler
 mod tuple_multi_scalar_test; // Enabled - testing tuple_multi_fields_scalar handler
 mod tuple_multi_default_test; // Re-enabled - fixed tuple_multi_fields_subform handler syntax
-// mod tuple_single_default_test; // Disabled - single-field subform handler needs complete rewrite
-// mod tuple_single_subform_test; // Disabled - tuple_single_field_subform handler complex
+mod tuple_single_default_test; // FIXED - single-field subform handler rewritten to mirror struct pattern
+mod tuple_single_subform_test; // FIXED - tuple_single_field_subform handler rewritten
 
 // pub mod compile_fail;

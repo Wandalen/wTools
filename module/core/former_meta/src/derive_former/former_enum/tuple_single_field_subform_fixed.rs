@@ -27,7 +27,7 @@
 
 use super::*;
 
-use macro_tools::{ Result, quote::{ quote, format_ident }, ident::cased_ident_from_ident };
+use macro_tools::{ Result, quote::{ quote, format_ident }, ident::cased_ident_from_ident, generic_params::GenericsRef };
 use convert_case::Case;
 
 /// Generates implicit variant former infrastructure for single-field tuple enum variants.
@@ -67,11 +67,11 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
 
   // Generate unique names for the variant former infrastructure
   let variant_name_str = variant_name.to_string();
-  let storage_name = format_ident!("{}{}FormerStorage", enum_name, variant_name_str);
-  let definition_types_name = format_ident!("{}{}FormerDefinitionTypes", enum_name, variant_name_str);
-  let definition_name = format_ident!("{}{}FormerDefinition", enum_name, variant_name_str);
-  let former_name = format_ident!("{}{}Former", enum_name, variant_name_str);
-  let end_name = format_ident!("{}{}End", enum_name, variant_name_str);
+  let storage_name = format_ident!(\"{}{}FormerStorage\", enum_name, variant_name_str);
+  let definition_types_name = format_ident!(\"{}{}FormerDefinitionTypes\", enum_name, variant_name_str);
+  let definition_name = format_ident!(\"{}{}FormerDefinition\", enum_name, variant_name_str);
+  let former_name = format_ident!(\"{}{}Former\", enum_name, variant_name_str);
+  let end_name = format_ident!(\"{}{}End\", enum_name, variant_name_str);
 
   // Generate proper PhantomData type based on whether we have generics
   let phantom_data_type = if ctx.generics.type_params().next().is_some() {

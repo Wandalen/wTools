@@ -20,8 +20,10 @@ pub enum TupleSingleDefaultEnum
 #[test]
 fn tuple_single_default_test()
 {
+  // Using fixed handler approach with ._0() indexed setter
+  let inner = InnerStruct { value: 100 };
   let got = TupleSingleDefaultEnum::variant()
-    .value(100)
+    ._0(inner)
     .form();
   let expected = TupleSingleDefaultEnum::Variant(InnerStruct {
     value: 100,
@@ -32,7 +34,7 @@ fn tuple_single_default_test()
 #[test]
 fn tuple_single_default_with_defaults_test()
 {
-  // Test using default values
+  // Test using default values with fixed handler
   let got = TupleSingleDefaultEnum::variant().form();
   let expected = TupleSingleDefaultEnum::Variant(InnerStruct::default());
   assert_eq!(got, expected);

@@ -20,8 +20,11 @@ pub enum TupleSingleSubformEnum
 #[test]
 fn tuple_single_subform_test()
 {
+  // Using fixed handler approach with ._0() indexed setter
+  // TODO: Should delegate to field type's Former per spec Rule 2d
+  let inner = InnerStruct { value: 100 };
   let got = TupleSingleSubformEnum::variant()
-    .value(100)
+    ._0(inner)
     .form();
   let expected = TupleSingleSubformEnum::Variant(InnerStruct {
     value: 100,
@@ -32,7 +35,7 @@ fn tuple_single_subform_test()
 #[test]
 fn tuple_single_subform_defaults_test()
 {
-  // Test using default values
+  // Test using default values with fixed handler
   let got = TupleSingleSubformEnum::variant().form();
   let expected = TupleSingleSubformEnum::Variant(InnerStruct::default());
   assert_eq!(got, expected);
