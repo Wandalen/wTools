@@ -217,6 +217,16 @@ use convert_case::Case;
 /// **Workaround**: Explicit `#[scalar]` attribute required for primitive types
 /// **Proper Solution Needed**: Either implement proper Former integration or add smart routing
 ///
+/// ## Development Impact and Context
+/// This handler represents the most significant blocking issue in enum derive implementation.
+/// It prevents the natural usage pattern where developers expect single-field tuple variants
+/// with primitives to work by default. The requirement for explicit `#[scalar]` attributes
+/// creates a poor developer experience and breaks the principle of sensible defaults.
+/// 
+/// **Testing Impact**: Multiple test files remain disabled due to this issue.
+/// **User Impact**: Forces manual attribute specification for the most common variant pattern.
+/// **Architectural Impact**: Highlights need for compile-time Former trait detection.
+///
 /// ## Parameters
 /// - `ctx`: Mutable context containing variant information, generics, and output collections
 ///

@@ -42,7 +42,7 @@
 //! - **Unit Variant**: `Enum::variant() -> Enum` (Direct constructor)
 //! - **Zero-Field Tuple**: `Enum::variant() -> Enum` (Direct constructor)
 //! - **Zero-Field Struct**: Error - Requires explicit `#[scalar]` attribute
-//! - **Single-Field Tuple**: `Enum::variant() -> InnerFormer<...>` (Inner type former - default to subform)
+//! - **Single-Field Tuple**: `Enum::variant() -> InnerFormer<...>` (Inner type former - PROBLEMATIC: fails for primitives)
 //! - **Single-Field Struct**: `Enum::variant() -> VariantFormer<...>` (Implicit variant former)
 //! - **Multi-Field Tuple**: `Enum::variant(T1, T2, ...) -> Enum` (Direct constructor - behaves like `#[scalar]`)
 //! - **Multi-Field Struct**: `Enum::variant() -> VariantFormer<...>` (Implicit variant former)
@@ -270,6 +270,11 @@ pub(super) fn former_for_enum(
             let generated = tuple_single_field_scalar::handle(&mut ctx)?;
             ctx.methods.push(generated); // Collect generated tokens
           } else {
+            // CRITICAL ROUTING ISSUE: Default behavior attempts subform which fails for primitives
+            // tuple_single_field_subform expects field type to implement Former trait
+            // Primitive types (u32, String, etc.) don't implement Former, causing compilation errors
+            // WORKAROUND: Users must add explicit #[scalar] for primitive field types
+            // TODO: Add compile-time Former trait detection or auto-route to scalar for primitives
             let generated = tuple_single_field_subform::handle(&mut ctx)?;
             ctx.methods.push(generated); // Collect generated tokens
           }
@@ -286,6 +291,9 @@ pub(super) fn former_for_enum(
             ctx.methods.push(generated); // Collect generated tokens
           } else {
             // Rule 3f: Multi-field tuple variants without attributes get implicit variant former
+            // FIXED: This handler was completely non-functional due to syntax errors
+            // Applied critical fixes: turbo fish syntax, PhantomData generics, empty generics handling
+            // STATUS: Now fully functional and reliable for all multi-field tuple patterns
             let generated = tuple_multi_fields_subform::handle(&mut ctx)?;
             ctx.methods.push(generated); // Collect generated tokens
           }

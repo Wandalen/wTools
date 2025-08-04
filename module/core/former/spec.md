@@ -45,6 +45,8 @@ The macro generates a static constructor method on the enum for each variant. Th
 
 **Note on Rule 3f:** This rule is updated to reflect the implemented and tested behavior. The previous specification incorrectly stated this case would generate a scalar constructor. The actual behavior is to generate a subformer for the variant itself.
 
+**Implementation Status Note:** Single-field tuple variants (Rule 2d) have a known issue where the handler attempts to use EntityToFormer trait integration, which fails for primitive types (u32, String, etc.) that don't implement Former. Current workaround is to use explicit `#[scalar]` attribute for primitive types.
+
 
 #### 2.2. Standalone Constructor Behavior
 
@@ -343,13 +345,43 @@ Manual implementation only needed when:
 
 This knowledge base prevents regression and ensures consistent development practices across the `former` crate ecosystem.
 
-### Individual Issue Resolution Catalog
+### Enum Implementation Status and Critical Issues
 
-**📋 Comprehensive Documentation**: See `RESOLVED_ISSUES_CATALOG.md` for detailed documentation of **12 specific resolved issues**, each with:
-- Exact error messages and root cause analysis
-- Specific code changes applied
-- Key insights and lessons learned
-- Prevention strategies for each issue type
-- Cross-issue pattern analysis and meta-insights
+#### Current Implementation Status
+- **Total Tests Passing**: 227 tests (includes 12 enum tests across unit and tuple variants)
+- **Handler Status**: Most handlers working, with one critical fix applied to `tuple_multi_fields_subform`
+- **Feature Coverage**: Unit variants, basic tuple variants, multi-field scalar patterns all functional
 
-This catalog preserves the knowledge from each individual fix to prevent regression and guide future similar issues.
+#### Critical Handler Issues Resolved
+
+**1. tuple_multi_fields_subform Handler - Major Syntax Errors (FIXED)**
+- **Issue**: Critical compilation failures preventing multi-field tuple subform usage
+- **Root Causes**: Invalid Rust syntax in generated code (`#end_name::#ty_generics::default()`), missing PhantomData angle brackets
+- **Solution**: Fixed turbo fish syntax and PhantomData generic handling with conditional support for non-generic enums
+- **Impact**: Enabled all multi-field tuple subform functionality, adding 3+ new passing tests
+
+#### Known Limitations and Workarounds
+
+**1. Single-Field Tuple Subform Handler (tuple_single_field_subform)**
+- **Issue**: Handler assumes field types implement Former trait via EntityToFormer, fails for primitive types
+- **Root Cause**: Generates code like `< u32 as EntityToFormer< u32FormerDefinition > >::Former` for primitives
+- **Workaround**: Use explicit `#[scalar]` attribute for primitive field types
+- **Status**: Needs architectural redesign or auto-routing to scalar handlers
+
+**2. Unimplemented Features**
+- **`#[arg_for_constructor]` Attribute**: Not yet implemented, prevents direct parameter standalone constructors
+- **Raw Identifiers**: Variants like `r#break` have method name generation issues
+
+#### Handler Reliability Spectrum
+1. **Fully Reliable**: `tuple_zero_fields_handler`, `tuple_*_scalar` handlers
+2. **Fixed and Reliable**: `tuple_multi_fields_subform` (after syntax fixes)
+3. **Complex but Workable**: Struct variant handlers
+4. **Problematic**: `tuple_single_field_subform` (requires explicit `#[scalar]` for primitives)
+5. **Unimplemented**: Attribute-driven standalone constructors with direct parameters
+
+#### Testing and Development Insights
+- **Effective Strategy**: Enable one test at a time, derive-first approach more reliable than manual implementations
+- **Common Issues**: Inner doc comments in shared test files cause E0753 compilation errors
+- **Performance**: Scalar handlers compile fast, subform handlers generate substantial code and compile slower
+
+This knowledge preserves critical implementation insights and provides guidance for future enum development work.

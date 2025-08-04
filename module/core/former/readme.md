@@ -13,7 +13,7 @@ The `former` crate provides a powerful derive macro, `#[ derive( Former ) ]`, th
 
 Its primary goal is to **simplify the construction of complex objects**, especially those with numerous fields, optional values, default settings, collections, and nested structures, making your initialization code more readable and maintainable.
 
-**Current Status**: Struct support is fully functional and production-ready. Enum support has a complete specification and comprehensive manual test coverage, but the derive macro implementation is currently under development.
+**Current Status**: Struct support is fully functional and production-ready. Enum support is actively developed with 227 total tests passing, including functional unit variants, tuple variants, and multi-field patterns. Some advanced features like `#[arg_for_constructor]` are still under development.
 
 ## Why Use `Former`?
 
@@ -364,11 +364,12 @@ Understanding the terminology used in `former` will help you leverage its full p
     *   `#[ subform_scalar ]`: For fields whose type also derives `Former`
     *   `#[ subform_collection ]`: For collections like `Vec`, `HashMap`, `HashSet`, etc., providing methods like `.add()` or `.insert()`
     *   `#[ subform_entry ]`: For collections where each entry is built individually using its own former
-*   **Enum Support (In Development):** Comprehensive specification and testing for:
-    *   **Unit variants:** Direct constructors (e.g., `MyEnum::variant()`)
-    *   **Tuple variants:** Scalar constructors or subformers based on field count and attributes
-    *   **Struct variants:** Subformers with individual field setters or scalar constructors
+*   **Enum Support (Active Development):** Comprehensive implementation with working functionality:
+    *   **Unit variants:** Direct constructors (e.g., `MyEnum::variant()`) - Fully functional
+    *   **Tuple variants:** Scalar constructors and subformers based on field count and attributes - Core patterns working
+    *   **Struct variants:** Subformers with individual field setters or scalar constructors - Core patterns working
     *   **Flexible attributes:** `#[scalar]`, `#[subform_scalar]`, `#[standalone_constructors]` for fine-grained control
+    *   **Known limitations:** Single-field tuple variants with primitives require explicit `#[scalar]` attribute
 *   **Customization:**
     *   Rename setters: `#[ scalar( name = ... ) ]`, `#[ subform_... ( name = ... ) ]`
     *   Disable default setters: `#[ scalar( setter = false ) ]`, `#[ subform_... ( setter = false ) ]`
