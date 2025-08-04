@@ -201,11 +201,11 @@ For scenarios where you want a direct constructor function instead of always sta
 
 *   **Enable:** Add `#[ standalone_constructors ]` to your struct or enum definition.
 *   **Function Name:** A function named after your type (in `snake_case`) will be generated (e.g., `my_struct()` for `struct MyStruct`). For enums, functions are named after variants (e.g., `my_variant()` for `enum E { MyVariant }`).
-*   **Arguments:** By default, the constructor takes no arguments and returns the `Former` type.
-*   **Specify Arguments:** Mark specific fields with `#[ arg_for_constructor ]` to make them required arguments for the standalone constructor.
-*   **Return Type (Option 2 Logic):**
-    *   If **all** fields of the struct/variant are marked with `#[ arg_for_constructor ]`, the standalone constructor returns the instance directly (`Self`).
-    *   If **zero or some** fields are marked, the standalone constructor returns the `Former` type, pre-initialized with the provided arguments.
+*   **Arguments:** By default, all fields become constructor arguments.
+*   **Exclude Arguments:** Mark specific fields with `#[ former_ignore ]` to exclude them from constructor arguments.
+*   **Return Type Logic:**
+    *   If **no** fields are marked with `#[ former_ignore ]`, the standalone constructor takes all fields as arguments and returns the instance directly (`Self`).
+    *   If **any** fields are marked with `#[ former_ignore ]`, the standalone constructor takes only non-ignored fields as arguments and returns the `Former` type.
 
 **Example: Struct Standalone Constructors**
 
@@ -221,17 +221,16 @@ For scenarios where you want a direct constructor function instead of always sta
   // #[ standalone_constructors ] // Enable standalone constructors
   pub struct ServerConfig
   {
-    #[ arg_for_constructor ] // This field is a constructor arg
-    host : String,
-    #[ arg_for_constructor ] // This field is also a constructor arg
-    port : u16,
-    timeout : Option< u32 >, // This field is NOT a constructor arg
+    host : String,     // Will be constructor arg
+    port : u16,        // Will be constructor arg  
+    #[ former_ignore ] // This field is NOT a constructor arg
+    timeout : Option< u32 >,
   }
 
-  // Not all fields are args, so `server_config` returns the Former
+  // Some fields ignored, so `server_config` returns the Former
   let config_former = server_config( "localhost".to_string(), 8080u16 ); // Added u16 suffix
 
-  // Set the remaining field and form
+  // Set the ignored field and form
   let config = config_former
   .timeout( 5000u32 ) // Added u32 suffix
   .form();
@@ -244,13 +243,11 @@ For scenarios where you want a direct constructor function instead of always sta
   #[ standalone_constructors ]
   pub struct Point
   {
-    #[ arg_for_constructor ]
-    x : i32,
-    #[ arg_for_constructor ]
-    y : i32,
+    x : i32,  // Will be constructor arg
+    y : i32,  // Will be constructor arg
   }
 
-  // ALL fields are args, so `point` returns Self directly
+  // NO fields ignored, so `point` returns Self directly
   let p = point( 10, 20 );
   assert_eq!( p.x, 10 );
   assert_eq!( p.y, 20 );
@@ -342,7 +339,7 @@ Understanding the terminology used in `former` will help you leverage its full p
 *   **`#[scalar]`:** Forces generation of a scalar constructor that takes field values directly and returns the enum instance.
 *   **`#[subform_scalar]`:** For single-field variants where the field type implements `Former` - generates a method returning the field's former.
 *   **`#[standalone_constructors]`:** Applied to the enum itself, generates top-level constructor functions for each variant.
-*   **`#[arg_for_constructor]`:** Applied to individual fields, includes them as parameters in standalone constructors.
+*   **`#[former_ignore]`:** Applied to individual fields, excludes them from being parameters in standalone constructors.
 
 ### Advanced Concepts
 
@@ -369,7 +366,7 @@ Understanding the terminology used in `former` will help you leverage its full p
     *   **Tuple variants:** Scalar constructors and subformers based on field count and attributes - Core patterns working
     *   **Struct variants:** Subformers with individual field setters or scalar constructors - Core patterns working
     *   **Flexible attributes:** `#[scalar]`, `#[subform_scalar]`, `#[standalone_constructors]` for fine-grained control
-    *   **Known limitations:** Single-field tuple variants with primitives require explicit `#[scalar]` attribute
+    *   **Known limitations:** Single-field tuple variants with primitives require explicit `#[scalar]` attribute, `#[former_ignore]` not yet implemented
 *   **Customization:**
     *   Rename setters: `#[ scalar( name = ... ) ]`, `#[ subform_... ( name = ... ) ]`
     *   Disable default setters: `#[ scalar( setter = false ) ]`, `#[ subform_... ( setter = false ) ]`

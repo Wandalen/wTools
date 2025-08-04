@@ -50,10 +50,10 @@ The macro generates a static constructor method on the enum for each variant. Th
 
 #### 2.2. Standalone Constructor Behavior
 
-When the `#[standalone_constructors]` attribute is applied to an item, the return type of the generated top-level function(s) is determined by the usage of `#[arg_for_constructor]` on its fields:
+When the `#[standalone_constructors]` attribute is applied to an item, the return type of the generated top-level function(s) is determined by the usage of `#[former_ignore]` on its fields:
 
-*   **Rule SC-1 (Full Construction):** If **all** fields of a struct or enum variant are marked with `#[arg_for_constructor]`, the generated standalone constructor will take all fields as arguments and return the final, constructed instance (`Self`).
-*   **Rule SC-2 (Partial Construction):** If **some or none** of the fields of a struct or enum variant are marked with `#[arg_for_constructor]`, the generated standalone constructor will take only the marked fields as arguments and return an instance of the `Former` (`...Former`), pre-initialized with those arguments.
+*   **Rule SC-1 (Full Construction):** If **no** fields of a struct or enum variant are marked with `#[former_ignore]`, the generated standalone constructor will take all fields as arguments and return the final, constructed instance (`Self`).
+*   **Rule SC-2 (Partial Construction):** If **any** fields of a struct or enum variant are marked with `#[former_ignore]`, the generated standalone constructor will take only the non-ignored fields as arguments and return an instance of the `Former` (`...Former`), pre-initialized with those arguments.
 
 #### 2.3. Attribute Reference
 
@@ -78,7 +78,7 @@ The following attributes control the behavior defined in the logic tables above.
 | `#[subform_scalar]` | Generates a method returning a subformer for a nested struct. The field's type must also derive `Former`. |
 | `#[subform_collection]` | Generates a method returning a specialized collection subformer (e.g., `VectorFormer`). |
 | `#[subform_entry]` | Generates a method returning a subformer for a single entry of a collection. |
-| `#[arg_for_constructor]` | Marks a field as a required argument for a `#[standalone_constructors]` function. |
+| `#[former_ignore]` | Excludes a field from being a parameter in `#[standalone_constructors]` functions. The field will use its default value or remain unset. |
 
 ##### 2.3.3. Attribute Precedence and Interaction Rules
 
