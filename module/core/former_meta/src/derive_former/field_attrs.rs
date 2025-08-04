@@ -13,7 +13,7 @@
 //! - `#[subform_scalar(...)]` - Nested scalar subform construction
 //! - `#[subform_collection(...)]` - Collection subform management
 //! - `#[subform_entry(...)]` - HashMap/Map entry subform handling
-//! - `#[arg_for_constructor]` - Mark field as constructor argument
+//! - `#[former_ignore]` - Exclude field from constructor arguments
 //!
 //! ## Critical Implementation Insights
 //!
@@ -100,7 +100,7 @@ use component_model_types::{Assign, OptionExt};
 ///
 /// ## Configuration Attributes
 /// - **`config`**: General field configuration including default values
-/// - **`arg_for_constructor`**: Mark field as required argument for standalone constructors
+/// - **`former_ignore`**: Exclude field from standalone constructor arguments
 ///
 /// ## Setter Type Attributes
 /// - **`scalar`**: Direct scalar value assignment (bypasses Former pattern)
@@ -167,8 +167,8 @@ pub struct FieldAttributes {
   /// Subform entry setter attribute for a field.
   pub subform_entry: Option<AttributeSubformEntrySetter>,
 
-  /// Marks a field as a required argument for standalone constructors.
-  pub arg_for_constructor: AttributePropertyArgForConstructor,
+  /// Excludes a field from standalone constructor arguments.
+  pub former_ignore: AttributePropertyFormerIgnore,
 }
 
 impl FieldAttributes {
@@ -245,7 +245,7 @@ impl FieldAttributes {
       ", ",
       AttributeSubformEntrySetter::KEYWORD,
       ", ",
-      AttributePropertyArgForConstructor::KEYWORD,
+      AttributePropertyFormerIgnore::KEYWORD,
       ".",
     );
 
@@ -271,7 +271,7 @@ impl FieldAttributes {
         AttributeSubformScalarSetter::KEYWORD => result.assign(AttributeSubformScalarSetter::from_meta(attr)?),
         AttributeSubformCollectionSetter::KEYWORD => result.assign(AttributeSubformCollectionSetter::from_meta(attr)?),
         AttributeSubformEntrySetter::KEYWORD => result.assign(AttributeSubformEntrySetter::from_meta(attr)?),
-        AttributePropertyArgForConstructor::KEYWORD => result.assign(AttributePropertyArgForConstructor::from(true)),
+        AttributePropertyFormerIgnore::KEYWORD => result.assign(AttributePropertyFormerIgnore::from(true)),
         _ => {} // Allow unknown attributes
       }
     }
@@ -336,14 +336,14 @@ where
   }
 }
 
-impl<IntoT> Assign<AttributePropertyArgForConstructor, IntoT> for FieldAttributes
+impl<IntoT> Assign<AttributePropertyFormerIgnore, IntoT> for FieldAttributes
 where
-  IntoT: Into<AttributePropertyArgForConstructor>,
+  IntoT: Into<AttributePropertyFormerIgnore>,
 {
   #[inline(always)]
   fn assign(&mut self, component: IntoT) {
     let component = component.into();
-    self.arg_for_constructor.assign(component);
+    self.former_ignore.assign(component);
   }
 }
 
@@ -1069,15 +1069,15 @@ pub type AttributePropertyDefinition = AttributePropertyOptionalSyn<syn::Type, D
 
 // =
 
-/// Marker type for attribute property marking a field as a constructor argument.
+/// Marker type for attribute property excluding a field from constructor arguments.
 /// Defaults to `false`.
 #[derive(Debug, Default, Clone, Copy)] // <<< Added Clone
-pub struct ArgForConstructorMarker;
+pub struct FormerIgnoreMarker;
 
-impl AttributePropertyComponent for ArgForConstructorMarker {
-  const KEYWORD: &'static str = "arg_for_constructor";
+impl AttributePropertyComponent for FormerIgnoreMarker {
+  const KEYWORD: &'static str = "former_ignore";
 }
 
-/// Indicates whether a field should be an argument for standalone constructors.
-/// Defaults to `false`. Parsed as a singletone attribute (`#[arg_for_constructor]`).
-pub type AttributePropertyArgForConstructor = AttributePropertyOptionalSingletone<ArgForConstructorMarker>;
+/// Indicates whether a field should be excluded from standalone constructor arguments.
+/// Defaults to `false`. Parsed as a singletone attribute (`#[former_ignore]`).
+pub type AttributePropertyFormerIgnore = AttributePropertyOptionalSingletone<FormerIgnoreMarker>;

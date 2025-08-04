@@ -49,7 +49,7 @@
 //!
 //! ### 4. `#[standalone_constructors]` Body-Level Attribute
 //! - Generates top-level constructor functions for each variant: `my_variant()`
-//! - Return type depends on `#[arg_for_constructor]` field annotations
+//! - Return type depends on `#[former_ignore]` field annotations
 //! - Integrates with variant-level attribute behavior
 //!
 //! ## Critical Pitfalls Resolved
@@ -206,7 +206,7 @@ pub(super) fn former_for_enum(
         .iter()
         .map(|field| {
           let attrs = FieldAttributes::from_attrs(field.attrs.iter())?;
-          let is_constructor_arg = attrs.arg_for_constructor.value(false);
+          let is_constructor_arg = !attrs.former_ignore.value(false);
           Ok(EnumVariantFieldInfo {
             ident: field
               .ident
@@ -224,7 +224,7 @@ pub(super) fn former_for_enum(
         .enumerate()
         .map(|(index, field)| {
           let attrs = FieldAttributes::from_attrs(field.attrs.iter())?;
-          let is_constructor_arg = attrs.arg_for_constructor.value(false);
+          let is_constructor_arg = !attrs.former_ignore.value(false);
           Ok(EnumVariantFieldInfo {
             ident: format_ident!("_{}", index),
             ty: field.ty.clone(),

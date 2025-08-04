@@ -756,7 +756,7 @@ specific needs of the broader forming context. It mandates the implementation of
   // Identify fields marked as constructor arguments
   let constructor_args_fields: Vec<_> = formed_fields
   .iter()
-  .filter( | f | f.attrs.arg_for_constructor.value( false ) ) // Use the parsed attribute
+  .filter( | f | !f.attrs.former_ignore.value( false ) ) // Use the parsed attribute
   .collect();
 
   // Generate constructor function parameters
@@ -782,7 +782,7 @@ specific needs of the broader forming context. It mandates the implementation of
   let non_constructor_storage_assignments = formed_fields
   .iter()
   .chain( storage_fields.iter() ) // Include storage-only fields
-  .filter( | f | !f.attrs.arg_for_constructor.value( false ) ) // Filter out constructor args
+  .filter( | f | f.attrs.former_ignore.value( false ) ) // Filter out constructor args
   .map( | f | // Space around |
   {
     let ident = f.ident;
@@ -870,7 +870,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     // Determine if all fields are constructor arguments
     // Note: We only consider fields that are part of the final struct (`formed_fields`)
-    let all_fields_are_args = formed_fields.iter().all(|f| f.attrs.arg_for_constructor.value(false)); // Space around |
+    let all_fields_are_args = formed_fields.iter().all(|f| !f.attrs.former_ignore.value(false)); // Space around |
 
     // Determine return type and body based on Option 2 rule
     let (return_type, constructor_body) = if all_fields_are_args {

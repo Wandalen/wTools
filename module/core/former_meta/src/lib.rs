@@ -205,7 +205,7 @@ mod derive_former;
 /// - `perform`: Specifies a custom method to be invoked automatically at the end of the build process.
 /// - `storage_fields`: Specifies fields that should be treated as part of the storage for the former.
 /// - `mutator`: Defines a custom mutator class or function to manipulate the data just before the object is finalized.
-/// - `standalone_constructors`: Generates top-level constructor functions (e.g., `my_struct()`, `my_variant()`). Return type depends on `arg_for_constructor` (see Option 2 logic in Readme/advanced.md).
+/// - `standalone_constructors`: Generates top-level constructor functions (e.g., `my_struct()`, `my_variant()`). Return type depends on `former_ignore` (see Option 2 logic in Readme/advanced.md).
 ///
 /// # Field Attributes
 ///
@@ -213,7 +213,7 @@ mod derive_former;
 /// - `scalar`: Indicates that the field is a scalar value, enabling direct assignment without the need for a sub-former. Affects the *associated method* constructor for enum variants.
 /// - `collection`: Marks the field as a collection that can use specific former methods to manage its contents.
 /// - `subform`: Specifies that the field should utilize a nested former, facilitating the construction of complex nested structures.
-/// - `arg_for_constructor`: Marks a field as a required argument for the standalone constructor. Affects constructor signature and return type (see Option 2 logic in Readme/advanced.md).
+/// - `former_ignore`: Excludes a field from being an argument for the standalone constructor. Affects constructor signature and return type (see Option 2 logic in Readme/advanced.md).
 ///
 /// # Usage Examples
 ///
@@ -397,7 +397,7 @@ mod derive_former;
       former, scalar, subform_scalar, subform_collection, subform_entry, // field attributes
       // <<< Added the new attributes here >>>
       standalone_constructors, // Add struct-level attribute
-      arg_for_constructor      // Add field-level attribute
+      former_ignore            // Add field-level attribute
     )
   )
 ]

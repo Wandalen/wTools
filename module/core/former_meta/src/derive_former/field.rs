@@ -175,7 +175,7 @@ impl<'a> FormerField<'a> {
   /// Parses and validates all field-level attributes using `FieldAttributes::from_attrs()`:
   /// - Configuration attributes (`#[former(default = ...)]`)
   /// - Setter type attributes (`#[scalar]`, `#[subform_collection]`, etc.)
-  /// - Constructor argument markers (`#[arg_for_constructor]`)
+  /// - Constructor argument exclusion markers (`#[former_ignore]`)
   ///
   /// ## 2. Type Analysis and Classification
   /// Performs comprehensive type analysis to determine field characteristics:
