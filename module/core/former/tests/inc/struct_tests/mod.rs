@@ -229,12 +229,13 @@ mod subform_all_private;
 
 // = standalone constructor
 
-// mod standalone_constructor_derive;  // Temporarily disabled due to compilation issues
-mod standalone_constructor_manual;
-// mod former_ignore_test;  // Temporarily disabled
-// mod simple_former_ignore_test;  // Temporarily disabled
-// mod standalone_constructor_new_test;  // Temporarily disabled
+// mod standalone_constructor_derive;  // Conflicts with manual - different behavior
+// mod standalone_constructor_manual;  // Temporarily disabled - conflicts with new spec
+// mod former_ignore_test;  // Redundant with new test
+// mod simple_former_ignore_test;  // Redundant with new test
+// mod standalone_constructor_new_test;  // Redundant with new test
 mod basic_former_ignore_test;
+mod standalone_constructor_former_ignore_test;
 
 // = compile-time
 

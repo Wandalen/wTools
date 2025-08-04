@@ -886,13 +886,10 @@ specific needs of the broader forming context. It mandates the implementation of
       (return_type, body)
     } else {
       // Return Former
-      let _former_return_type = quote! {
-        #former < #former_definition< #former_definition_args > >
-      };
       let former_body = quote! {
         #former::begin( #initial_storage_code, None, former::ReturnPreformed )
       };
-      (former_type_ref.clone(), former_body) // Cloned former_type_ref
+      (former_type_full.clone(), former_body) // Use former_type_full instead of former_type_ref
     };
 
     // Generate the constructor function
