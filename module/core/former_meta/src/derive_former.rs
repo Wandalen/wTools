@@ -1,6 +1,6 @@
 // File: module/core/former_meta/src/derive_former.rs
 
-use super::*;
+// Removed unused import
 use macro_tools::{Result, diag, typ, syn, proc_macro2};
 use macro_tools::proc_macro2::TokenStream;
 use macro_tools::quote::{format_ident, quote, ToTokens};
@@ -20,6 +20,12 @@ use field::*;
 mod struct_attrs;
 
 use struct_attrs::*;
+mod trait_detection;
+
+// trait_detection module available but not directly used here
+mod raw_identifier_utils;
+
+// raw_identifier_utils module available but not directly used here
 
 /// Represents the generic parameters for a `FormerDefinitionTypes`.
 ///

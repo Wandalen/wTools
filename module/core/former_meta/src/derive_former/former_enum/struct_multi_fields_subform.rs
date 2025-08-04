@@ -128,8 +128,8 @@
 
 use super::*;
 
-use macro_tools::{ Result, quote::{ quote, format_ident }, ident::cased_ident_from_ident, generic_params::GenericsRef };
-use convert_case::Case;
+use macro_tools::{ Result, quote::{ quote, format_ident }, generic_params::GenericsRef };
+use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 // use iter_tools::Itertools; // Removed unused import
 
 /// Generates comprehensive implicit variant former infrastructure for multi-field struct enum variants.
@@ -170,7 +170,7 @@ use convert_case::Case;
 pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
 {
   let variant_name = &ctx.variant.ident;
-  let method_name = cased_ident_from_ident(variant_name, Case::Snake);
+  let method_name = variant_to_method_name(variant_name);
   let enum_name = ctx.enum_name;
   let vis = ctx.vis;
   let fields = &ctx.variant_field_info;

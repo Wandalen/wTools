@@ -21,7 +21,7 @@ pub mod enum_unnamed_tests;
 /// Includes zero-field struct variants.
 pub mod enum_named_tests;
 
-// #[cfg(feature = "derive_former")]
-// /// Tests for complex enum scenarios, combinations of features, or advanced use cases
-// /// not fitting neatly into unit/unnamed/named categories.
-// pub mod enum_complex_tests;
+#[cfg(feature = "derive_former")]
+/// Tests for complex enum scenarios, combinations of features, or advanced use cases
+/// not fitting neatly into unit/unnamed/named categories.
+pub mod enum_complex_tests;

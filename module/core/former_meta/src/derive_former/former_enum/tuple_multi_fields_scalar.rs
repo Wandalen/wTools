@@ -124,8 +124,8 @@
 //! - **Field Flexibility**: Each field accepts flexible input types through Into<T> conversion
 
 use super::*;
-use macro_tools::{ Result, quote::quote, ident::cased_ident_from_ident, generic_params::GenericsRef };
-use convert_case::Case;
+use macro_tools::{ Result, quote::quote, generic_params::GenericsRef };
+use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 
 /// Generates direct scalar constructor for multi-field tuple enum variants with `#[scalar]` attribute.
 ///
@@ -168,7 +168,7 @@ use convert_case::Case;
 pub fn handle( _ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
 {
   let variant_name = & _ctx.variant.ident;
-  let method_name = cased_ident_from_ident(variant_name, Case::Snake);
+  let method_name = variant_to_method_name(variant_name);
   let enum_name = _ctx.enum_name;
   let vis = _ctx.vis;
   let fields = & _ctx.variant_field_info;

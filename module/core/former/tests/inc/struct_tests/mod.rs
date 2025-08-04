@@ -230,10 +230,10 @@ mod subform_all_private;
 // = standalone constructor
 
 // mod standalone_constructor_derive;  // Conflicts with manual - different behavior
-// mod standalone_constructor_manual;  // Temporarily disabled - conflicts with new spec
-// mod former_ignore_test;  // Redundant with new test
-// mod simple_former_ignore_test;  // Redundant with new test
-// mod standalone_constructor_new_test;  // Redundant with new test
+// mod standalone_constructor_manual;  // Old behavior - conflicts with new spec
+mod former_ignore_test;
+mod simple_former_ignore_test;
+mod standalone_constructor_new_test;
 mod basic_former_ignore_test;
 mod standalone_constructor_former_ignore_test;
 
