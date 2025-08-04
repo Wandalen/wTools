@@ -17,18 +17,18 @@
 //!   with manually constructed variants.
 // File: module/core/former/tests/inc/former_enum_tests/unit_tests/enum_named_fields_unit_derive.rs
 use super::*;
+#[allow(unused_imports)]
+use ::former::prelude::*;
+use ::former::Former;
 
 // Define the enum with unit variants for testing.
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, PartialEq, former::Former)]
-#[derive(Debug, PartialEq)]
-// #[ debug ]
-#[standalone_constructors]
+#[derive(Debug, PartialEq, Former)]
+#[former(standalone_constructors)]
 pub enum EnumWithNamedFields {
   // --- Unit Variant ---
   // Expect: unit_variant_default() -> Enum (Default is scalar for unit)
   UnitVariantDefault, // Renamed from UnitVariant
-  #[scalar] // Expect: unit_variant_scalar() -> Enum
+  // #[scalar] // Scalar is default for unit variants, attribute not needed
   UnitVariantScalar, // New
 }
 

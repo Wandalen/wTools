@@ -42,14 +42,14 @@
 //! - **Unit Variant**: `Enum::variant() -> Enum` (Direct constructor)
 //! - **Zero-Field Tuple**: `Enum::variant() -> Enum` (Direct constructor)
 //! - **Zero-Field Struct**: Error - Requires explicit `#[scalar]` attribute
-//! - **Single-Field Tuple**: `Enum::variant() -> InnerFormer<...>` (Inner type former - default to subform)
+//! - **Single-Field Tuple**: `Enum::variant() -> InnerFormer<...>` (Inner type former - PROBLEMATIC: fails for primitives)
 //! - **Single-Field Struct**: `Enum::variant() -> VariantFormer<...>` (Implicit variant former)
 //! - **Multi-Field Tuple**: `Enum::variant(T1, T2, ...) -> Enum` (Direct constructor - behaves like `#[scalar]`)
 //! - **Multi-Field Struct**: `Enum::variant() -> VariantFormer<...>` (Implicit variant former)
 //!
 //! ### 4. `#[standalone_constructors]` Body-Level Attribute
 //! - Generates top-level constructor functions for each variant: `my_variant()`
-//! - Return type depends on `#[arg_for_constructor]` field annotations
+//! - Return type depends on `#[former_ignore]` field annotations
 //! - Integrates with variant-level attribute behavior
 //!
 //! ## Critical Pitfalls Resolved
@@ -118,16 +118,9 @@
 #![allow(unused_variables)] // Temporary for placeholder handlers
 
 
-use super::*;
-use macro_tools::{
-  Result,
-  quote::{format_ident, quote},
-  generic_params::GenericsRef,
-
-  syn,
-
-};
-use proc_macro2::TokenStream; // Corrected import for TokenStream
+use macro_tools::{Result, generic_params::GenericsRef, syn, proc_macro2};
+use macro_tools::quote::{format_ident, quote};
+use macro_tools::proc_macro2::TokenStream;
 use super::struct_attrs::ItemAttributes; // Corrected import
 use super::field_attrs::FieldAttributes; // Corrected import
 
@@ -212,7 +205,7 @@ pub(super) fn former_for_enum(
         .iter()
         .map(|field| {
           let attrs = FieldAttributes::from_attrs(field.attrs.iter())?;
-          let is_constructor_arg = attrs.arg_for_constructor.value(false);
+          let is_constructor_arg = !attrs.former_ignore.value(false);
           Ok(EnumVariantFieldInfo {
             ident: field
               .ident
@@ -230,7 +223,7 @@ pub(super) fn former_for_enum(
         .enumerate()
         .map(|(index, field)| {
           let attrs = FieldAttributes::from_attrs(field.attrs.iter())?;
-          let is_constructor_arg = attrs.arg_for_constructor.value(false);
+          let is_constructor_arg = !attrs.former_ignore.value(false);
           Ok(EnumVariantFieldInfo {
             ident: format_ident!("_{}", index),
             ty: field.ty.clone(),
@@ -276,6 +269,11 @@ pub(super) fn former_for_enum(
             let generated = tuple_single_field_scalar::handle(&mut ctx)?;
             ctx.methods.push(generated); // Collect generated tokens
           } else {
+            // CRITICAL ROUTING ISSUE: Default behavior attempts subform which fails for primitives
+            // tuple_single_field_subform expects field type to implement Former trait
+            // Primitive types (u32, String, etc.) don't implement Former, causing compilation errors
+            // WORKAROUND: Users must add explicit #[scalar] for primitive field types
+            // TODO: Add compile-time Former trait detection or auto-route to scalar for primitives
             let generated = tuple_single_field_subform::handle(&mut ctx)?;
             ctx.methods.push(generated); // Collect generated tokens
           }
@@ -292,6 +290,9 @@ pub(super) fn former_for_enum(
             ctx.methods.push(generated); // Collect generated tokens
           } else {
             // Rule 3f: Multi-field tuple variants without attributes get implicit variant former
+            // FIXED: This handler was completely non-functional due to syntax errors
+            // Applied critical fixes: turbo fish syntax, PhantomData generics, empty generics handling
+            // STATUS: Now fully functional and reliable for all multi-field tuple patterns
             let generated = tuple_multi_fields_subform::handle(&mut ctx)?;
             ctx.methods.push(generated); // Collect generated tokens
           }

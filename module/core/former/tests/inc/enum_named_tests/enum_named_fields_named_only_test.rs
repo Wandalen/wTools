@@ -1,24 +1,24 @@
-//! Purpose: Provides shared test assertions and logic for both the derived and manual implementations
-//! of constructors for named (struct-like) variants with varying field counts and attributes
-//! (`#[scalar]`, `#[subform_scalar]`), including static methods and standalone constructors.
-//!
-//! Coverage:
-//! - Rule 1c (Struct + Zero-Field + `#[scalar]`): Tests the static method `variant_zero_scalar()`.
-//! - Rule 1e (Struct + Single-Field + `#[scalar]`): Tests the static method `variant_one_scalar()`.
-//! - Rule 2e (Struct + Single-Field + `#[subform_scalar]`): Tests the static method `variant_one_subform()` which returns a former for the inner type.
-//! - Rule 3e (Struct + Single-Field + Default): Tests the static method `variant_one_default()` which returns a former for the inner type.
-//! - Rule 1g (Struct + Multi-Field + `#[scalar]`): Tests the static method `variant_two_scalar()`.
-//! - Rule 3g (Struct + Multi-Field + Default): Tests the static method `variant_two_default()` which returns a former for the variant. (Note: This variant is commented out in the enum definition in the manual file).
-//! - Rule 4a (#[standalone_constructors]): Tests the existence and functionality of standalone constructor functions (e.g., `standalone_variant_zero_scalar()`, `standalone_variant_one_default()`, etc.).
-//! - Rule 4b (Option 2 Logic): Tests the return types and usage of standalone constructors based on field attributes and whether they return scalars or formers.
-//!
-//! Test Relevance/Acceptance Criteria:
-//! - Defines the `EnumWithNamedFields` enum structure with named variants covering zero, one, and two fields.
-//! - Defines the `InnerForSubform` struct used in some variants.
-//! - Contains test functions that are included by the derive and manual test files.
-//! - Calls the static methods (e.g., `EnumWithNamedFields::variant_zero_scalar()`, `EnumWithNamedFields::variant_one_scalar()`) and standalone constructors (e.g., `standalone_variant_zero_scalar()`) provided by the including file.
-//! - Uses setters and `.form()` where former builders are expected.
-//! - Asserts that the returned values match the expected enum instances or former types, verifying that both derived and manual implementations correctly provide constructors for named variants with different attributes and field counts.
+// Purpose: Provides shared test assertions and logic for both the derived and manual implementations
+// of constructors for named (struct-like) variants with varying field counts and attributes
+// (`#[scalar]`, `#[subform_scalar]`), including static methods and standalone constructors.
+//
+// Coverage:
+// - Rule 1c (Struct + Zero-Field + `#[scalar]`): Tests the static method `variant_zero_scalar()`.
+// - Rule 1e (Struct + Single-Field + `#[scalar]`): Tests the static method `variant_one_scalar()`.
+// - Rule 2e (Struct + Single-Field + `#[subform_scalar]`): Tests the static method `variant_one_subform()` which returns a former for the inner type.
+// - Rule 3e (Struct + Single-Field + Default): Tests the static method `variant_one_default()` which returns a former for the inner type.
+// - Rule 1g (Struct + Multi-Field + `#[scalar]`): Tests the static method `variant_two_scalar()`.
+// - Rule 3g (Struct + Multi-Field + Default): Tests the static method `variant_two_default()` which returns a former for the variant. (Note: This variant is commented out in the enum definition in the manual file).
+// - Rule 4a (#[standalone_constructors]): Tests the existence and functionality of standalone constructor functions (e.g., `standalone_variant_zero_scalar()`, `standalone_variant_one_default()`, etc.).
+// - Rule 4b (Option 2 Logic): Tests the return types and usage of standalone constructors based on field attributes and whether they return scalars or formers.
+//
+// Test Relevance/Acceptance Criteria:
+// - Defines the `EnumWithNamedFields` enum structure with named variants covering zero, one, and two fields.
+// - Defines the `InnerForSubform` struct used in some variants.
+// - Contains test functions that are included by the derive and manual test files.
+// - Calls the static methods (e.g., `EnumWithNamedFields::variant_zero_scalar()`, `EnumWithNamedFields::variant_one_scalar()`) and standalone constructors (e.g., `standalone_variant_zero_scalar()`) provided by the including file.
+// - Uses setters and `.form()` where former builders are expected.
+// - Asserts that the returned values match the expected enum instances or former types, verifying that both derived and manual implementations correctly provide constructors for named variants with different attributes and field counts.
 
 // File: module/core/former/tests/inc/former_enum_tests/named_tests/enum_named_fields_named_only_test.rs
 use super::*; // Imports EnumWithNamedFields and InnerForSubform

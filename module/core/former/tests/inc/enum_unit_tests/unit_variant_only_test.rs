@@ -40,13 +40,13 @@ use super::*;
 fn unit_variant_constructors()
 {
   // Test the Status::Pending constructor (expects direct constructor)
-  let got_pending = crate::inc::enum_unit_tests::unit_variant_manual::Status::pending();
-  let exp_pending = crate::inc::enum_unit_tests::unit_variant_manual::Status::Pending;
+  let got_pending = Status::pending();
+  let exp_pending = Status::Pending;
   assert_eq!( got_pending, exp_pending );
 
   // Test the Status::Complete constructor (expects direct constructor)
-  let got_complete = crate::inc::enum_unit_tests::unit_variant_manual::Status::complete();
-  let exp_complete = crate::inc::enum_unit_tests::unit_variant_manual::Status::Complete;
+  let got_complete = Status::complete();
+  let exp_complete = Status::Complete;
   assert_eq!( got_complete, exp_complete );
 }
 
@@ -54,12 +54,12 @@ fn unit_variant_constructors()
 fn unit_variant_standalone_constructors()
 {
   // Test the top-level pending() standalone constructor
-  let got_pending = crate::inc::enum_unit_tests::unit_variant_manual::pending();
-  let exp_pending = crate::inc::enum_unit_tests::unit_variant_manual::Status::Pending; // Use full path to Status
+  let got_pending = pending();
+  let exp_pending = Status::Pending;
   assert_eq!( got_pending, exp_pending );
 
   // Test the top-level complete() standalone constructor
-  let got_complete = crate::inc::enum_unit_tests::unit_variant_manual::complete();
-  let exp_complete = crate::inc::enum_unit_tests::unit_variant_manual::Status::Complete; // Use full path to Status
+  let got_complete = complete();
+  let exp_complete = Status::Complete;
   assert_eq!( got_complete, exp_complete );
 }

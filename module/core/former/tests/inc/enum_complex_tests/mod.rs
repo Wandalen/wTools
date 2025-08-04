@@ -1,5 +1,4 @@
-// mod subform_collection_test;
-// qqq : xxx : make it working
+mod subform_collection_test;
 
 #[cfg(feature = "derive_former")]
 #[test_tools::nightly]

@@ -101,7 +101,8 @@
 //! - **Naming Consistency**: Uses actual field name for parameter to maintain clarity
 
 use super::*;
-use macro_tools::{Result, quote::quote};
+use macro_tools::{Result, quote::quote, syn_err};
+use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 
 /// Generates direct scalar constructor for single-field struct enum variants with `#[scalar]` attribute.
 ///
@@ -145,8 +146,55 @@ use macro_tools::{Result, quote::quote};
 /// ## Implementation Status
 /// This handler is currently a placeholder implementation that will be completed in future increments
 /// as the enum Former generation system is fully developed.
-pub fn handle(_ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::TokenStream> {
-  // Placeholder for struct_single_field_scalar.rs
-  // This will be implemented in a later increment.
-  Ok(quote! {})
+pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::TokenStream> {
+  let variant_name = &ctx.variant.ident;
+  let method_name = variant_to_method_name(variant_name);
+  let enum_name = ctx.enum_name;
+  let vis = ctx.vis;
+
+  // Extract field information from the single-field struct variant
+  let fields = &ctx.variant.fields;
+  if fields.len() != 1 {
+    return Err(syn_err!(
+      ctx.variant,
+      "struct_single_field_scalar handler expects exactly one field"
+    ));
+  }
+
+  let field = fields.iter().next().unwrap();
+  let field_name = field.ident.as_ref().ok_or_else(|| {
+    syn_err!(field, "Struct variant field must have a name")
+  })?;
+  let field_type = &field.ty;
+
+  // Rule: This handler is for #[scalar] variants only
+  if ctx.variant_attrs.scalar.is_none() {
+    return Err(syn_err!(
+      ctx.variant,
+      "struct_single_field_scalar handler requires #[scalar] attribute"
+    ));
+  }
+
+  // Generate standalone constructor if #[standalone_constructors] is present
+  if ctx.struct_attrs.standalone_constructors.is_some() {
+    let standalone_constructor = quote! {
+      #[ inline( always ) ]
+      #vis fn #method_name(#field_name: impl Into<#field_type>) -> #enum_name
+      {
+        #enum_name::#variant_name { #field_name: #field_name.into() }
+      }
+    };
+    ctx.standalone_constructors.push(standalone_constructor);
+  }
+
+  // Generate direct constructor method for single-field struct variant
+  let result = quote! {
+    #[ inline( always ) ]
+    #vis fn #method_name(#field_name: impl Into<#field_type>) -> #enum_name
+    {
+      #enum_name::#variant_name { #field_name: #field_name.into() }
+    }
+  };
+
+  Ok(result)
 }

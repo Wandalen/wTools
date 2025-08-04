@@ -45,12 +45,15 @@ The macro generates a static constructor method on the enum for each variant. Th
 
 **Note on Rule 3f:** This rule is updated to reflect the implemented and tested behavior. The previous specification incorrectly stated this case would generate a scalar constructor. The actual behavior is to generate a subformer for the variant itself.
 
+**Implementation Status Note:** Single-field tuple variants (Rule 2d) have a known issue where the handler attempts to use EntityToFormer trait integration, which fails for primitive types (u32, String, etc.) that don't implement Former. Current workaround is to use explicit `#[scalar]` attribute for primitive types.
+
+
 #### 2.2. Standalone Constructor Behavior
 
-When the `#[standalone_constructors]` attribute is applied to an item, the return type of the generated top-level function(s) is determined by the usage of `#[arg_for_constructor]` on its fields:
+When the `#[standalone_constructors]` attribute is applied to an item, the return type of the generated top-level function(s) is determined by the usage of `#[former_ignore]` on its fields:
 
-*   **Rule SC-1 (Full Construction):** If **all** fields of a struct or enum variant are marked with `#[arg_for_constructor]`, the generated standalone constructor will take all fields as arguments and return the final, constructed instance (`Self`).
-*   **Rule SC-2 (Partial Construction):** If **some or none** of the fields of a struct or enum variant are marked with `#[arg_for_constructor]`, the generated standalone constructor will take only the marked fields as arguments and return an instance of the `Former` (`...Former`), pre-initialized with those arguments.
+*   **Rule SC-1 (Full Construction):** If **no** fields of a struct or enum variant are marked with `#[former_ignore]`, the generated standalone constructor will take all fields as arguments and return the final, constructed instance (`Self`).
+*   **Rule SC-2 (Partial Construction):** If **any** fields of a struct or enum variant are marked with `#[former_ignore]`, the generated standalone constructor will take only the non-ignored fields as arguments and return an instance of the `Former` (`...Former`), pre-initialized with those arguments.
 
 #### 2.3. Attribute Reference
 
@@ -75,7 +78,7 @@ The following attributes control the behavior defined in the logic tables above.
 | `#[subform_scalar]` | Generates a method returning a subformer for a nested struct. The field's type must also derive `Former`. |
 | `#[subform_collection]` | Generates a method returning a specialized collection subformer (e.g., `VectorFormer`). |
 | `#[subform_entry]` | Generates a method returning a subformer for a single entry of a collection. |
-| `#[arg_for_constructor]` | Marks a field as a required argument for a `#[standalone_constructors]` function. |
+| `#[former_ignore]` | Excludes a field from being a parameter in `#[standalone_constructors]` functions. The field will use its default value or remain unset. |
 
 ##### 2.3.3. Attribute Precedence and Interaction Rules
 
@@ -238,7 +241,7 @@ As you implement or modify the `former_meta` crate, please fill out the sections
 - **Prevention**: Always run `cargo test --all-features --lib test_name --no-run` before marking fixes complete
 - **Resolution**: Establish mandatory verification checkpoints in development workflow
 
-#### 2. Commented-Out Derive Attributes 
+#### 2. Commented-Out Derive Attributes
 **Issue**: Tests appear blocked but just have commented `#[derive(Former)]` attributes
 - **Detection**: Search for `// #[derive.*Former` patterns in test files
 - **Resolution**: Uncomment derive attributes (90% of "blocked" test issues)
@@ -267,7 +270,7 @@ As you implement or modify the `former_meta` crate, please fill out the sections
 
 #### Common Resolution Patterns
 - **90%**: Simple derive attribute uncommented
-- **5%**: Feature gate configuration fixed  
+- **5%**: Feature gate configuration fixed
 - **5%**: Actual blocking issues requiring architectural changes
 
 #### Manual vs. Derive Decision Tree
@@ -292,7 +295,7 @@ pub struct MyStruct<T> { ... }
 ```bash
 # Mandatory verification sequence
 cargo test --all-features --lib test_name --no-run  # Compilation
-cargo test --all-features --lib test_name           # Execution  
+cargo test --all-features --lib test_name           # Execution
 cargo test --all-features --quiet                   # Full suite
 ```
 
@@ -329,7 +332,7 @@ Manual implementation only needed when:
 
 #### Pre-Release Verification
 - [ ] All BLOCKED comments verified against actual test compilation
-- [ ] Feature gate patterns standardized across all test modules  
+- [ ] Feature gate patterns standardized across all test modules
 - [ ] Documentation updated to reflect current reality
 - [ ] Full test suite passes with `cargo test --all-features --quiet`
 - [ ] No commented-out derives in production test files
@@ -342,13 +345,43 @@ Manual implementation only needed when:
 
 This knowledge base prevents regression and ensures consistent development practices across the `former` crate ecosystem.
 
-### Individual Issue Resolution Catalog
+### Enum Implementation Status and Critical Issues
 
-**📋 Comprehensive Documentation**: See `RESOLVED_ISSUES_CATALOG.md` for detailed documentation of **12 specific resolved issues**, each with:
-- Exact error messages and root cause analysis
-- Specific code changes applied
-- Key insights and lessons learned
-- Prevention strategies for each issue type
-- Cross-issue pattern analysis and meta-insights
+#### Current Implementation Status
+- **Total Tests Passing**: 227 tests (includes 12 enum tests across unit and tuple variants)
+- **Handler Status**: Most handlers working, with one critical fix applied to `tuple_multi_fields_subform`
+- **Feature Coverage**: Unit variants, basic tuple variants, multi-field scalar patterns all functional
 
-This catalog preserves the knowledge from each individual fix to prevent regression and guide future similar issues.
+#### Critical Handler Issues Resolved
+
+**1. tuple_multi_fields_subform Handler - Major Syntax Errors (FIXED)**
+- **Issue**: Critical compilation failures preventing multi-field tuple subform usage
+- **Root Causes**: Invalid Rust syntax in generated code (`#end_name::#ty_generics::default()`), missing PhantomData angle brackets
+- **Solution**: Fixed turbo fish syntax and PhantomData generic handling with conditional support for non-generic enums
+- **Impact**: Enabled all multi-field tuple subform functionality, adding 3+ new passing tests
+
+#### Known Limitations and Workarounds
+
+**1. Single-Field Tuple Subform Handler (tuple_single_field_subform)**
+- **Issue**: Handler assumes field types implement Former trait via EntityToFormer, fails for primitive types
+- **Root Cause**: Generates code like `< u32 as EntityToFormer< u32FormerDefinition > >::Former` for primitives
+- **Workaround**: Use explicit `#[scalar]` attribute for primitive field types
+- **Status**: Needs architectural redesign or auto-routing to scalar handlers
+
+**2. Unimplemented Features**
+- **`#[arg_for_constructor]` Attribute**: Not yet implemented, prevents direct parameter standalone constructors
+- **Raw Identifiers**: Variants like `r#break` have method name generation issues
+
+#### Handler Reliability Spectrum
+1. **Fully Reliable**: `tuple_zero_fields_handler`, `tuple_*_scalar` handlers
+2. **Fixed and Reliable**: `tuple_multi_fields_subform` (after syntax fixes)
+3. **Complex but Workable**: Struct variant handlers
+4. **Problematic**: `tuple_single_field_subform` (requires explicit `#[scalar]` for primitives)
+5. **Unimplemented**: Attribute-driven standalone constructors with direct parameters
+
+#### Testing and Development Insights
+- **Effective Strategy**: Enable one test at a time, derive-first approach more reliable than manual implementations
+- **Common Issues**: Inner doc comments in shared test files cause E0753 compilation errors
+- **Performance**: Scalar handlers compile fast, subform handlers generate substantial code and compile slower
+
+This knowledge preserves critical implementation insights and provides guidance for future enum development work.
