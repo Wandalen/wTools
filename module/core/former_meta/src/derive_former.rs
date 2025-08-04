@@ -26,6 +26,7 @@ mod trait_detection;
 mod raw_identifier_utils;
 
 // raw_identifier_utils module available but not directly used here
+mod attribute_validation;
 
 /// Represents the generic parameters for a `FormerDefinitionTypes`.
 ///

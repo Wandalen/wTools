@@ -68,19 +68,16 @@
 //! - **Reference Usage**: Extensive use of references to minimize memory allocation
 //! - **Clone Implementation**: Strategic Clone implementation for reuse scenarios
 
-use super::*;
 use macro_tools::{
   ct,
   Result,
   AttributeComponent,
   AttributePropertyComponent,
   AttributePropertyOptionalBoolean,
-  AttributePropertyOptionalSyn, // <<< Reverted to use this
+  AttributePropertyOptionalSyn,
   AttributePropertyOptionalSingletone,
-  // syn::parse::{ Parse, ParseStream }, // Removed unused imports
-  proc_macro2::TokenStream, // Import TokenStream
-                            // syn::spanned::Spanned, // No longer needed here
-  syn, return_syn_err, syn_err, Token, qt
+  proc_macro2::TokenStream,
+  syn, return_syn_err, syn_err, qt
 };
 
 use component_model_types::{Assign, OptionExt};

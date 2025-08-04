@@ -120,6 +120,7 @@
 use super::*;
 use macro_tools::{Result, quote::quote, syn_err};
 use crate::derive_former::raw_identifier_utils::variant_to_method_name;
+use crate::derive_former::attribute_validation::{validate_variant_attributes, get_field_count, get_variant_type};
 
 /// Generates direct constructor for unit enum variants with comprehensive attribute validation.
 ///
@@ -173,13 +174,10 @@ pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::To
   let enum_name = ctx.enum_name;
   let vis = ctx.vis;
 
-  // Rule 2a: #[subform_scalar] on unit variants should cause a compile error
-  if ctx.variant_attrs.subform_scalar.is_some() {
-    return Err(syn_err!(
-      ctx.variant,
-      "#[subform_scalar] cannot be used on unit variants."
-    ));
-  }
+  // Comprehensive attribute validation
+  let field_count = get_field_count(&ctx.variant.fields);
+  let variant_type = get_variant_type(&ctx.variant.fields);
+  validate_variant_attributes(ctx.variant, &ctx.variant_attrs, field_count, variant_type)?;
 
   // Generate standalone constructor if #[standalone_constructors] is present
   if ctx.struct_attrs.standalone_constructors.is_some() {

@@ -49,10 +49,10 @@ include!( "scalar_generic_tuple_common_types.rs" );
 mod basic_derive; // Re-enabled - simple scalar constructor test
 // mod basic_manual; // Disabled - missing former types
 // mod basic_only_test; // This is included by the derive and manual files
-// mod generics_in_tuple_variant_only_test;
-// mod generics_independent_tuple_derive;
-// mod generics_independent_tuple_manual;
-// mod generics_independent_tuple_only_test;
+// mod generics_in_tuple_variant_only_test; // Disabled - type resolution issues
+// mod generics_independent_tuple_derive; // Disabled - generic parsing issues
+// mod generics_independent_tuple_manual; // Disabled - missing imports
+// mod generics_independent_tuple_only_test; // Disabled - type resolution issues
 // mod generics_shared_tuple_derive;  // TEMP: FormingEnd trait signature compatibility issue
 
 // mod generics_shared_tuple_manual; // Disabled - complex issues  

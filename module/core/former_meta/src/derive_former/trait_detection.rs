@@ -9,7 +9,7 @@
 //! - Zero runtime overhead
 //! - Fallback to safe default approaches
 
-use macro_tools::{ Result, syn, quote::quote, proc_macro2 };
+use macro_tools::{ syn, quote::quote, proc_macro2 };
 
 /// Generates compile-time trait detection code for the Former trait.
 /// 
@@ -76,7 +76,7 @@ pub fn generate_smart_routing(
 
 /// Generates a const assertion that can be used to provide better error messages
 /// when trait requirements aren't met.
-pub fn generate_former_assertion(field_type: &syn::Type, context: &str) -> proc_macro2::TokenStream {
+pub fn generate_former_assertion(field_type: &syn::Type, _context: &str) -> proc_macro2::TokenStream {
     quote! {
         const _: fn() = || {
             fn assert_former_impl<T: ::former::Former>() {}
