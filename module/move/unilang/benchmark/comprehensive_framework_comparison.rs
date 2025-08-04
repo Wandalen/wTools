@@ -409,7 +409,7 @@ fn main() {{
         registry.register(cmd);
     }}
     
-    println!("Registry initialized with {} commands", command_count);
+    println!("Registry initialized with {{}} commands", registry.len());
 }}
 "#, command_count, command_count, command_count);
     
@@ -492,7 +492,7 @@ fn main() {{
         app = app.subcommand(subcommand);
     }}
     
-    println!("App initialized with {} commands", command_count);
+    println!("App initialized with {{}} commands", app.get_subcommands().count());
 }}
 "#, command_count, command_count, command_count);
     
@@ -568,7 +568,7 @@ fn main() {{
         let _: Option<String> = args.opt_value_from_str(&key).unwrap_or(None);
     }}
     
-    println!("Processed {} argument patterns", command_count);
+    println!("Processed {{}} argument patterns", {});
 }}
 "#, command_count, command_count, command_count);
     
