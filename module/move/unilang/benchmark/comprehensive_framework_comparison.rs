@@ -409,9 +409,9 @@ fn main() {{
         registry.register(cmd);
     }}
     
-    println!("Registry initialized with {{}} commands", registry.len());
+    println!("Registry initialized with {{}} commands", registry.commands().len());
 }}
-"#, command_count, command_count, command_count);
+"#, command_count, command_count);
     
     fs::write(format!("{}/src/main.rs", work_dir), main_rs)
         .expect("Failed to write main.rs");
@@ -494,7 +494,7 @@ fn main() {{
     
     println!("App initialized with {{}} commands", app.get_subcommands().count());
 }}
-"#, command_count, command_count, command_count);
+"#, command_count, command_count);
     
     fs::write(format!("{}/src/main.rs", work_dir), main_rs)
         .expect("Failed to write main.rs");
