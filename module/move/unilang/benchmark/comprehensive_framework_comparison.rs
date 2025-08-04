@@ -72,7 +72,7 @@ struct ComprehensiveBenchmarkResult
 #[ cfg( feature = "benchmarks" ) ]
 fn benchmark_unilang_comprehensive( command_count : usize ) -> ComprehensiveBenchmarkResult
 {
-    println!("🦀 Benchmarking unilang with {} commands (comprehensive)", command_count);
+    print!("🦀 Benchmarking unilang with {} commands (comprehensive)", command_count);
 
     // Create command registry with N commands
     let init_start = Instant::now();
@@ -165,7 +165,7 @@ fn benchmark_unilang_comprehensive( command_count : usize ) -> ComprehensiveBenc
     let p99_lookup_ns = lookup_times[(lookup_times.len() as f64 * 0.99) as usize];
     let commands_per_second = test_commands.len() as f64 / total_time.as_secs_f64();
 
-    println!("  ⏱️  Init: {:.2} μs, Lookup: {:.1} ns, Throughput: {:.0} cmd/sec", 
+    println!("\n  ⏱️  Init: {:.2} μs, Lookup: {:.1} ns, Throughput: {:.0} cmd/sec", 
              init_time_us, avg_lookup_ns, commands_per_second);
 
     // Measure compile time by building a test project
@@ -187,7 +187,7 @@ fn benchmark_unilang_comprehensive( command_count : usize ) -> ComprehensiveBenc
 #[ cfg( feature = "benchmarks" ) ]
 fn benchmark_clap_comprehensive( command_count : usize ) -> ComprehensiveBenchmarkResult
 {
-    println!("🗡️  Benchmarking clap with {} commands (comprehensive)", command_count);
+    print!("🗡️  Benchmarking clap with {} commands (comprehensive)", command_count);
 
     // Create clap app with N subcommands
     let init_start = Instant::now();
@@ -263,7 +263,7 @@ fn benchmark_clap_comprehensive( command_count : usize ) -> ComprehensiveBenchma
     let p99_lookup_ns = lookup_times[(lookup_times.len() as f64 * 0.99) as usize];
     let commands_per_second = test_commands.len() as f64 / total_time.as_secs_f64();
 
-    println!("  ⏱️  Init: {:.2} μs, Lookup: {:.1} ns, Throughput: {:.0} cmd/sec", 
+    println!("\n  ⏱️  Init: {:.2} μs, Lookup: {:.1} ns, Throughput: {:.0} cmd/sec", 
              init_time_us, avg_lookup_ns, commands_per_second);
 
     // Measure compile time by building a test project
@@ -284,7 +284,7 @@ fn benchmark_clap_comprehensive( command_count : usize ) -> ComprehensiveBenchma
 #[ cfg( feature = "benchmarks" ) ]
 fn benchmark_pico_args_comprehensive( command_count : usize ) -> ComprehensiveBenchmarkResult
 {
-    println!("⚡ Benchmarking pico-args with {} commands (comprehensive)", command_count);
+    print!("⚡ Benchmarking pico-args with {} commands (comprehensive)", command_count);
 
     // pico-args doesn't have initialization in the same way, so we simulate parsing setup
     let init_start = Instant::now();
@@ -336,7 +336,7 @@ fn benchmark_pico_args_comprehensive( command_count : usize ) -> ComprehensiveBe
     let p99_lookup_ns = lookup_times[(lookup_times.len() as f64 * 0.99) as usize];
     let commands_per_second = test_args.len() as f64 / total_time.as_secs_f64();
 
-    println!("  ⏱️  Init: {:.2} μs, Lookup: {:.1} ns, Throughput: {:.0} cmd/sec", 
+    println!("\n  ⏱️  Init: {:.2} μs, Lookup: {:.1} ns, Throughput: {:.0} cmd/sec", 
              init_time_us, avg_lookup_ns, commands_per_second);
 
     // Measure compile time by building a test project
