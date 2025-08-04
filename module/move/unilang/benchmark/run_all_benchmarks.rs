@@ -88,19 +88,29 @@ fn update_readme_with_results() -> Result<(), String> {
                     let mut clap_data = Vec::new();
                     let mut pico_data = Vec::new();
                     
-                    for line in lines.iter().skip(1) {
+                    for line in lines.iter() {
+                        // Skip comment lines, empty lines, and header line
+                        if line.trim().starts_with('#') || line.trim().is_empty() || line.trim().starts_with("framework,") {
+                            continue;
+                        }
                         let fields: Vec<&str> = line.split(',').collect();
-                        if fields.len() >= 7 { // framework,commands,build_time,binary_size,init_time,lookup_time,throughput
+                        if fields.len() >= 8 { // framework,command_count,compile_time_ms,binary_size_kb,init_time_us,avg_lookup_ns,p99_lookup_ns,commands_per_second
                             let framework = fields[0].trim();
                             let commands = fields[1].trim();
                             let build_time = fields[2].trim();
                             let binary_size = fields[3].trim(); 
                             let init_time = fields[4].trim();
                             let lookup_time = fields[5].trim();
-                            let throughput = fields[6].trim();
+                            let throughput = fields[7].trim(); // commands_per_second is at index 7
                             
-                            let row = format!("| **{}** | ~{}s | ~{} KB | ~{} μs | ~{} μs | ~{}/sec |",
-                                            commands, build_time, binary_size, init_time, lookup_time, throughput);
+                            // Convert units: CSV has ms,kb,us,ns,commands_per_sec  
+                            // README expects: s,KB,μs,μs,/sec
+                            let build_time_s = build_time.parse::<f64>().unwrap_or(0.0) / 1000.0; // ms to s
+                            let lookup_time_us = lookup_time.parse::<f64>().unwrap_or(0.0) / 1000.0; // ns to μs
+                            let init_time_val = init_time.parse::<f64>().unwrap_or(0.0); // already in μs
+                            
+                            let row = format!("| **{}** | ~{:.1}s | ~{} KB | ~{:.1} μs | ~{:.1} μs | ~{}/sec |",
+                                            commands, build_time_s, binary_size, init_time_val, lookup_time_us, throughput);
                             
                             match framework {
                                 "unilang" => unilang_data.push(row),
