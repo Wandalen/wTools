@@ -175,6 +175,48 @@ use convert_case::Case;
 /// }
 /// ```
 ///
+/// ## CRITICAL IMPLEMENTATION ISSUES (Currently Problematic) ⚠️
+///
+/// ### 1. EntityToFormer Trait Dependency Issue
+/// **Problem**: Handler assumes field type implements Former trait via EntityToFormer
+/// **Root Cause**: Generated code like `< u32 as EntityToFormer< u32FormerDefinition > >::Former`
+/// **Reality**: Primitive types (u32, String, etc.) don't implement Former
+/// **Impact**: Single-field tuple variants with primitives fail to compile
+/// **Current Workaround**: Use explicit `#[scalar]` attribute to force scalar behavior
+///
+/// ### 2. Invalid Former Definition Type Generation
+/// **Problem**: Generates non-existent types like `u32FormerDefinition`
+/// **Root Cause**: `format_ident!("{}{}Definition", field_type_base_ident, "Former")`
+/// **Reality**: No such definitions exist for primitive types
+/// **Impact**: Compilation errors for all primitive field types
+///
+/// ### 3. Design Pattern Mismatch
+/// **Problem**: Different pattern from struct single-field subform (which works)
+/// **Struct Pattern**: Generates enum variant former with field setters
+/// **Tuple Pattern**: Attempts to delegate to field type's Former implementation
+/// **Insight**: Tuple handler should mirror struct handler pattern for consistency
+///
+/// ### 4. Routing Logic Gap
+/// **Problem**: Default behavior for single-field tuple variants attempts subform
+/// **Reality**: Most single-field tuple variants use primitive types
+/// **Needed**: Auto-detection of Former capability or fallback to scalar
+/// **Current Routing**:
+/// ```rust
+/// 1 => {
+///   if ctx.variant_attrs.scalar.is_some() {
+///     tuple_single_field_scalar::handle(&mut ctx)?;  // WORKS
+///   } else {
+///     tuple_single_field_subform::handle(&mut ctx)?; // FAILS for primitives
+///   }
+/// }
+/// ```
+///
+/// ## Handler Reliability Status: PROBLEMATIC ❌
+/// **Working Cases**: Field types that implement Former (custom structs with #[derive(Former)])
+/// **Failing Cases**: Primitive types (u32, String, bool, etc.) - most common usage
+/// **Workaround**: Explicit `#[scalar]` attribute required for primitive types
+/// **Proper Solution Needed**: Either implement proper Former integration or add smart routing
+///
 /// ## Parameters
 /// - `ctx`: Mutable context containing variant information, generics, and output collections
 ///

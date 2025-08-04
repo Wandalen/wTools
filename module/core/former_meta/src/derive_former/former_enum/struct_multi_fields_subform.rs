@@ -497,14 +497,10 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
 
   // Generate standalone constructor if requested
   if ctx.struct_attrs.standalone_constructors.value(false) {
-    let constructor_name_str = method_name.to_string();
-    let base_name = constructor_name_str.strip_prefix("r#").unwrap_or(&constructor_name_str);
-    let standalone_name = format_ident!("{}_variant", base_name);
-
     let standalone_method = quote!
     {
       #[ inline( always ) ]
-      #vis fn #standalone_name() -> #variant_former_name #ty_generics
+      #vis fn #method_name() -> #variant_former_name #ty_generics
       {
         #variant_former_name::new( former_types::forming::ReturnPreformed::default() )
       }
