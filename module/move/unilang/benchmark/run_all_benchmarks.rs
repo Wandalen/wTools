@@ -220,11 +220,11 @@ mod tests {
         
         // Run benchmarks directly instead of calling tests to avoid infinite loops
         // Since all benchmarks now call the comprehensive benchmark, just run it once
-        println!("🚀 Running Comprehensive Framework Comparison (~20 min)...");
-        println!("⏰ Benchmark timeout: 25 minutes maximum");
+        println!("🚀 Running Comprehensive Framework Comparison (~5 min test)...");
+        println!("⏰ Benchmark timeout: 5 minutes maximum for testing");
         
         let start_time = Instant::now();
-        let individual_timeout = Duration::from_secs(25 * 60); // 25 minutes total
+        let individual_timeout = Duration::from_secs(5 * 60); // 5 minutes for testing
         
         // Use a separate thread to run the benchmark with timeout
         let (tx, rx) = std::sync::mpsc::channel();
@@ -249,14 +249,15 @@ mod tests {
                 failed_benchmarks.push("Comprehensive Framework Comparison".to_string());
             }
             Err(_) => {
-                println!("⏰ Comprehensive benchmark timed out after 25 minutes");
+                println!("⏰ Comprehensive benchmark timed out after 5 minutes");
                 failed_benchmarks.push("Comprehensive Framework Comparison (timeout)".to_string());
             }
         }
         
         let total_duration = total_start.elapsed();
         
-        // Update documentation with results
+        // Always update documentation with results (even if benchmark timed out, there might be partial results)
+        println!("📝 Updating README with any available benchmark results...");
         match update_readme_with_results() {
             Ok(()) => println!("✅ Documentation updated successfully"),
             Err(error) => println!("⚠️  Documentation update failed: {}", error),
