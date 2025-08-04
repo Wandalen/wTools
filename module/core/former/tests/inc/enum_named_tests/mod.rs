@@ -134,9 +134,9 @@
 //! // pub mod compile_fail;
 
 mod standalone_constructor_args_named_single_manual; // Added - now contains both variants
-// mod standalone_constructor_args_named_multi_manual; // Disabled - merged into single manual
+// mod standalone_constructor_args_named_multi_manual; // Disabled - variant name conflicts and missing functions
 // mod enum_named_fields_named_manual; // Disabled - name conflict with derive test
-// mod enum_named_fields_named_derive; // Disabled - trait conflict issues in macro
+// mod enum_named_fields_named_derive; // Disabled - trait conflicts in macro expansion
 mod minimal_struct_zero_test; // Enabled - testing struct_zero_fields_handler
 mod struct_zero_derive_test; // Enabled - testing struct_zero_fields_handler with standalone constructors
 mod struct_single_scalar_test; // Enabled - testing struct_single_field_scalar handler

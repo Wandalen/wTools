@@ -28,7 +28,7 @@ mod keyword_variant_manual; // Known broken - let's try to fix it
 // Coverage for `generic_unit_variant_*` tests:
 // - Tests unit variants within generic enums e.g., `Enum<T>::UnitVariant`.
 // - Verifies Rules 1a, 3a, and 4a in a generic context.
-// mod generic_unit_variant_derive; // Disabled - attribute parsing issues
+// mod generic_unit_variant_derive; // Disabled - generic parsing syntax errors
 
 // Coverage for `mixed_enum_unit_*` tests:
 // - Tests unit variants in enums that also contain non-unit (e.g., struct/tuple) variants.
@@ -46,7 +46,7 @@ mod enum_named_fields_unit_manual;
 // - Tests a simple unit variant within a generic enum e.g., `EnumOuter<X>::OtherVariant`.
 // - Verifies Rules 1a, 3a, and 4a.
 // Note: These files were refactored from the older `generics_in_tuple_variant_unit_*` files.
-// mod generic_enum_simple_unit_derive; // Disabled - generic parsing issues
+// mod generic_enum_simple_unit_derive; // Disabled - generic parsing syntax errors
 mod generic_enum_simple_unit_manual;
 // Note: keyword_variant_unit_derive was removed as redundant (Increment 11)
 // Note: standalone_constructor_unit_derive was removed as redundant (Increment 12)

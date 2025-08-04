@@ -47,8 +47,8 @@ include!( "scalar_generic_tuple_common_types.rs" );
 // Uncomment modules as they are addressed in increments.
 
 mod basic_derive; // Re-enabled - simple scalar constructor test
-// mod basic_manual; // Disabled - missing former types
-// mod basic_only_test; // This is included by the derive and manual files
+// mod basic_manual; // Disabled - missing Former types for variants (BreakFormer, RunFormer, etc.)
+// mod basic_only_test; // Disabled - missing parent enum definitions (FunctionStep, Break, Run)
 // mod generics_in_tuple_variant_only_test; // Disabled - type resolution issues
 // mod generics_independent_tuple_derive; // Disabled - generic parsing issues
 // mod generics_independent_tuple_manual; // Disabled - missing imports
@@ -61,11 +61,11 @@ mod basic_derive; // Re-enabled - simple scalar constructor test
 // mod scalar_generic_tuple_derive;  // Disabled - requires manual version
 // mod scalar_generic_tuple_manual;  // Disabled because it includes the derive version
 mod tuple_multi_default_derive;  // Re-enabled - multi-field subform handler fixed
-// mod tuple_multi_default_manual; // Disabled - complex issues
-// mod tuple_multi_default_only_test;
+mod tuple_multi_default_manual;
+// mod tuple_multi_default_only_test; // Disabled - import issues with super::TestEnum
 mod tuple_multi_scalar_derive; // Re-enabled - scalar handlers work fine
 // mod tuple_multi_scalar_manual; // Disabled - testing individual patterns first
-// mod tuple_multi_scalar_only_test;
+// mod tuple_multi_scalar_only_test; // Disabled - import issues with super::TestEnum
 // mod tuple_multi_standalone_args_derive; // Disabled - #[arg_for_constructor] attribute not implemented yet
 // // mod tuple_multi_standalone_args_manual;
 // // mod tuple_multi_standalone_args_only_test;
@@ -80,10 +80,10 @@ mod tuple_multi_standalone_derive; // Re-enabled - testing standalone constructo
 // mod enum_named_fields_unnamed_only_test;
 // mod generics_in_tuple_variant_tuple_derive;
 // mod generics_in_tuple_variant_tuple_manual;
-// mod keyword_variant_tuple_derive; // Disabled - macro can't handle raw identifiers
-// mod keyword_variant_tuple_only_test;
-// mod standalone_constructor_tuple_derive; // Disabled - single-field subform handler issues
-// mod standalone_constructor_tuple_only_test;
+// mod keyword_variant_tuple_derive; // Disabled - raw identifier macro expansion issues 
+// mod keyword_variant_tuple_only_test; // Disabled - raw identifier macro expansion issues
+// mod standalone_constructor_tuple_derive; // Disabled - *_only_test.rs inner doc comment issues
+// mod standalone_constructor_tuple_only_test; // Disabled - inner doc comment issues
 // mod standalone_constructor_args_tuple_derive;
 // mod standalone_constructor_args_tuple_single_manual; // Added
 // mod standalone_constructor_args_tuple_multi_manual; // Added

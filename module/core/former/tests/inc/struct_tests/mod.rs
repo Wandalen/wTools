@@ -70,9 +70,7 @@ mod debug_e0223_manual;
 mod subform_collection_basic;
 #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
 mod subform_collection_basic_manual;
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
-#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+#[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
 mod subform_collection_basic_scalar;
 
 // = attribute
@@ -229,7 +227,7 @@ mod subform_all_private;
 
 // = standalone constructor
 
-// mod standalone_constructor_derive;  // Conflicts with manual - different behavior
+mod standalone_constructor_derive;
 // mod standalone_constructor_manual;  // Old behavior - conflicts with new spec
 mod former_ignore_test;
 mod simple_former_ignore_test;

@@ -29,7 +29,7 @@ use ::former::prelude::*;
 use ::former::Former;
 
 // Define the inner struct needed for subform tests directly in this file
-#[derive(Debug, PartialEq, Default, Clone)] // No Former derive needed for manual test
+#[derive(Debug, PartialEq, Default, Clone, Former)] // Former derive needed for subform tests
 pub struct InnerForSubform {
     pub value: i64,
 }
