@@ -1,4 +1,4 @@
-# Task Plan: Implement Phase 5: Core API Enhancements &amp; Modality Support (v4 - Wasm Compatible)
+# Task Plan: Implement Phase 5: Core API Enhancements and Modality Support (v4 - Wasm Compatible)
 
 ### Goal
 *   To implement the remaining mandatory functional requirements from Spec v2.2.0, ensuring the framework fully supports REPL and interactive CLI modalities, resulting in a functionally complete API for building sophisticated command-line applications. **A core goal is to ensure the `unilang` library is `no_std`/Wasm compatible, allowing it to be used in a web browser environment.**
@@ -12,7 +12,7 @@
 *   **Wasm:** WebAssembly, a binary instruction format that allows code to run in web browsers.
 
 ### Progress
-*   **Roadmap Milestone:** Phase 5: Core API Enhancements &amp; Modality Support
+*   **Roadmap Milestone:** Phase 5: Core API Enhancements and Modality Support
 *   **Primary Editable Crate:** `unilang`
 *   **Overall Progress:** 0/5 increments complete
 *   **Increment Status:**
@@ -22,7 +22,7 @@
     *   ⚫ Increment 4: Create Tests and CLI Example for Interactive Prompting
     *   ⚫ Increment 5: Finalization
 
-### Permissions &amp; Boundaries
+### Permissions and Boundaries
 *   **Mode:** `code`
 *   **Run workspace-wise commands:** `false`
 *   **Add transient comments:** `true`
@@ -467,7 +467,7 @@
 ### External System Dependencies
 *   None.
 
-### Notes &amp; Insights
+### Notes and Insights
 *   The Wasm compatibility requirement is a significant architectural driver. By addressing it early, we ensure the framework remains flexible for future modalities. The abstraction in the REPL example is a key pattern for maintaining this flexibility.
 
 ### Changelog

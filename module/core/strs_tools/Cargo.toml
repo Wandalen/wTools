@@ -69,3 +69,12 @@ bytecount = { workspace = true, optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "string_operations"
+harness = false
+
+[[bench]]
+name = "memory_usage"
+harness = false
