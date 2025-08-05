@@ -63,22 +63,12 @@ cargo test throughput_performance_benchmark --release --features benchmarks -- -
 
 ## 🔧 Available Benchmarks
 
-### Framework Comparisons
+### Core Benchmarks
 
 | Benchmark | File | Duration | Purpose |
 |-----------|------|----------|---------|
-| **3-Way Comparison** 🏆 | [`comprehensive_framework_comparison.rs`](comprehensive_framework_comparison.rs) | ~8 min | Complete comparison with compile metrics |
-| **2-Way Comparison** | [`framework_comparison.rs`](framework_comparison.rs) | ~3 min | Runtime-only Unilang vs Clap |
-| **Clap Standalone** | [`clap_comparison_benchmark.rs`](clap_comparison_benchmark.rs) | ~2 min | Pure clap performance |
-
-### Unilang-Specific Benchmarks
-
-| Benchmark | File | Duration | Purpose |
-|-----------|------|----------|---------|
+| **🏆 Comprehensive Comparison** | [`comprehensive_framework_comparison.rs`](comprehensive_framework_comparison.rs) | ~8 min | Complete 3-way comparison with build + runtime metrics |
 | **⚡ Throughput-Only** | [`throughput_benchmark.rs`](throughput_benchmark.rs) | ~30-60 sec | **Quick daily testing** (runtime only) |
-| **True Exponential** | [`true_exponential_benchmark.rs`](true_exponential_benchmark.rs) | ~15 min | Build + runtime (most accurate) |
-| **Fast Exponential** | [`exponential_benchmark.rs`](exponential_benchmark.rs) | ~2 min | Runtime-only (quick checks) |
-| **Parsing Focus** | [`parsing_benchmark_test.rs`](parsing_benchmark_test.rs) | ~30 sec | Parser optimization |
 
 ### Usage Commands
 
@@ -90,14 +80,10 @@ cargo test run_all_benchmarks --release --features benchmarks -- --nocapture --i
 ./benchmark/run_all_benchmarks.sh                    # All benchmarks (30+ min)
 ./benchmark/run_comprehensive_benchmark.sh           # 3-way comparison (8-10 min)
 
-# Individual benchmarks (all ignored by default to prevent accidental runs):
+# Individual benchmarks:
 cargo run --release --bin throughput_benchmark --features benchmarks                                          # ⚡ ~30-60 sec (RECOMMENDED DAILY)
-cargo test exponential_performance_benchmark --release --features benchmarks -- --ignored --nocapture        # ~2 min
-cargo test framework_comparison_benchmark --release --features benchmarks -- --ignored --nocapture            # ~3 min  
+cargo run --release --bin throughput_benchmark --features benchmarks -- --quick                              # ⚡ ~10-15 sec (QUICK MODE)
 cargo test comprehensive_framework_comparison_benchmark --release --features benchmarks -- --ignored --nocapture  # ~8 min
-cargo test clap_exponential_performance_benchmark --release --features benchmarks -- --ignored --nocapture    # ~2 min
-cargo test true_exponential_performance_benchmark --release --features benchmarks -- --ignored --nocapture    # ~15 min
-cargo test benchmark_1000_command_parsing_delay --release --features benchmarks -- --ignored --nocapture      # ~30 sec
 
 # Verification commands:
 cargo test --release                                 # Fast - doesn't run benchmarks
@@ -105,19 +91,22 @@ cargo test --release                                 # Fast - doesn't run benchm
 ```
 
 **✅ Key Features:**
-- **⚡ Quick Throughput Benchmark** - 30-60 seconds for daily performance validation
-- **Regular `cargo test` is fast** - benchmarks are ignored by default
-- **Benchmarks run when explicitly requested** with `--ignored` flag  
+- **⚡ Quick Throughput Benchmark** - 10-60 seconds for daily performance validation (with `--quick` mode)
+- **🏆 Comprehensive Comparison** - Complete 3-way framework analysis with build metrics
 - **Updates both temp files AND readme.md** with live performance data
 - **Generates comprehensive CSV reports** in target directories
-- **Real performance testing** with actual runtime measurements
+- **Real performance testing** with actual build time and runtime measurements
 
 ## ⚡ Throughput Benchmark (Recommended for Daily Use)
 
-**Quick Performance Validation in 30-60 seconds:**
+**Quick Performance Validation in 10-60 seconds:**
 
 ```bash
+# Full mode (30-60 seconds) - Tests all command counts: 10, 100, 1K, 10K, 100K
 cargo run --release --bin throughput_benchmark --features benchmarks
+
+# Quick mode (10-15 seconds) - Tests subset: 10, 100, 1K
+cargo run --release --bin throughput_benchmark --features benchmarks -- --quick
 ```
 
 **Benefits:**
@@ -232,22 +221,21 @@ cargo run --release --bin comprehensive_benchmark --features benchmarks
 ```
 target/
 ├── comprehensive_framework_comparison/  # 3-way comparison results
-│   ├── comprehensive_results.csv       # Raw data
+│   ├── comprehensive_results.csv       # Raw data with build metrics
 │   └── comprehensive_report.txt        # Formatted analysis
-├── framework_comparison/               # 2-way comparison
-├── benchmark_results/                  # Fast benchmarks  
-├── true_benchmark_results/            # Build+runtime tests
-└── clap_benchmark_results/            # Clap standalone
+└── throughput_benchmark/               # Fast runtime-only tests
+    ├── throughput_results.csv          # Raw throughput data
+    └── throughput_report.txt           # Throughput analysis
 ```
 
 ## ⚡ **Benchmark Features**
 
 1. **Statistical Rigor**: 3 repetitions per measurement with averages and standard deviations
 2. **Power-of-10 Testing**: Tests 10¹, 10², 10³, 10⁴, 10⁵ commands (10 to 100,000)
-3. **Three-Way Comparison**: Unilang vs Clap vs Pico-Args
-4. **Comprehensive Metrics**: Compile time, binary size, runtime performance
-5. **Automatic Documentation**: Updates readme.md with latest results
-6. **Version Tracking**: Records exact framework versions used
+3. **Two-Tier System**: Comprehensive (build+runtime) and Throughput-only (runtime) benchmarks
+4. **Three-Way Comparison**: Unilang vs Clap vs Pico-Args across all metrics
+5. **Complete Metrics**: Compile time, binary size, initialization time, lookup performance, throughput
+6. **Automatic Documentation**: Updates readme.md with latest results and timestamps
 
 ## 📚 Additional Resources
 
@@ -255,6 +243,7 @@ target/
 - **[`simple_true_benchmark.md`](simple_true_benchmark.md)** - Manual benchmark tutorial
 - **[Framework versions and dependencies](comprehensive_framework_comparison.rs)** - Version tracking details
 - **[`run_demo.sh`](run_demo.sh)** - Quick verification script
+- **[`test_benchmark_system.sh`](test_benchmark_system.sh)** - System functionality test
 
 ## 🚀 Key Takeaways
 
