@@ -21,8 +21,9 @@ use ::former::Former;
 // --- Enum Definition with Bounds ---
 // Apply Former derive here. This is what we are testing.
 #[derive(Debug, PartialEq, Former)]
-pub enum EnumOuter<X: Copy + Debug + PartialEq>
-// Enum bound: Copy + Debug + PartialEq
+pub enum EnumOuter<X> 
+where
+  X: Copy + Debug + PartialEq,
 {
   // --- Unit Variant ---
   OtherVariant,

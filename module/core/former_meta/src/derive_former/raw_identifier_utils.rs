@@ -76,6 +76,24 @@ pub fn field_to_param_name(field_ident: &syn::Ident) -> syn::Ident {
     ident::ident_maybe_raw(field_ident)
 }
 
+/// Strips the raw identifier prefix for safe use in compound identifiers.
+///
+/// When building compound identifiers like `EnumVariantFormerStorage`, we need to strip
+/// the `r#` prefix from variant names to avoid invalid identifiers like `EnumR#BreakFormerStorage`.
+///
+/// # Examples
+/// - `r#break` -> `break` 
+/// - `r#use` -> `use`
+/// - `MyVariant` -> `MyVariant` (unchanged)
+pub fn strip_raw_prefix_for_compound_ident(ident: &syn::Ident) -> String {
+    let ident_str = ident.to_string();
+    if ident_str.starts_with("r#") {
+        ident_str[2..].to_string()
+    } else {
+        ident_str
+    }
+}
+
 /// Creates a constructor name from a struct/enum name, handling raw identifiers.
 pub fn type_to_constructor_name(type_ident: &syn::Ident) -> syn::Ident {
     let type_str = type_ident.to_string();

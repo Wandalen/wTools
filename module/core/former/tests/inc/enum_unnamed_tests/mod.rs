@@ -57,14 +57,14 @@ mod basic_derive; // Re-enabled - simple scalar constructor test
 
 // mod generics_shared_tuple_manual; // Disabled - complex issues  
 // mod generics_shared_tuple_only_test;
-// mod test_syntax;
+mod test_syntax; // Re-enabled - just syntax test without Former derive
 // mod scalar_generic_tuple_derive;  // Disabled - requires manual version
 // mod scalar_generic_tuple_manual;  // Disabled because it includes the derive version
 mod tuple_multi_default_derive;  // Re-enabled - multi-field subform handler fixed
 mod tuple_multi_default_manual;
-// mod tuple_multi_default_only_test; // Disabled - import issues with super::TestEnum
+mod tuple_multi_default_only_test; // Re-enabled - fixed import scope issue
 mod tuple_multi_scalar_derive; // Re-enabled - scalar handlers work fine
-// mod tuple_multi_scalar_manual; // Disabled - testing individual patterns first
+mod tuple_multi_scalar_manual; // Re-enabled - manual implementation without derive
 // mod tuple_multi_scalar_only_test; // Disabled - import issues with super::TestEnum
 // mod tuple_multi_standalone_args_derive; // Disabled - #[arg_for_constructor] attribute not implemented yet
 // // mod tuple_multi_standalone_args_manual;
@@ -80,10 +80,10 @@ mod tuple_multi_standalone_derive; // Re-enabled - testing standalone constructo
 // mod enum_named_fields_unnamed_only_test;
 // mod generics_in_tuple_variant_tuple_derive;
 // mod generics_in_tuple_variant_tuple_manual;
-// mod keyword_variant_tuple_derive; // Disabled - raw identifier macro expansion issues 
-// mod keyword_variant_tuple_only_test; // Disabled - raw identifier macro expansion issues
-// mod standalone_constructor_tuple_derive; // Disabled - *_only_test.rs inner doc comment issues
-// mod standalone_constructor_tuple_only_test; // Disabled - inner doc comment issues
+// mod keyword_variant_tuple_derive; // Disabled - derive works but test scope issues remain
+// mod keyword_variant_tuple_only_test; // Disabled - test scope issues remain
+mod standalone_constructor_tuple_derive; // Re-enabled - fixed inner doc comment issues
+// mod standalone_constructor_tuple_only_test; // Disabled - scope issues with included files
 // mod standalone_constructor_args_tuple_derive;
 // mod standalone_constructor_args_tuple_single_manual; // Added
 // mod standalone_constructor_args_tuple_multi_manual; // Added

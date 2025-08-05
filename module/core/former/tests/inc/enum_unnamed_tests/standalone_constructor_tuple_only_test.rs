@@ -1,17 +1,17 @@
-//! Purpose: Provides shared test assertions and logic for both the derived and manual implementations of standalone former builder functions for tuple variants without `#[arg_for_constructor]` fields. It tests that standalone constructors generated/implemented when the enum has `#[standalone_constructors]` and no variant fields have `#[arg_for_constructor]` behave as expected (former builder style).
-//!
-//! Coverage:
-//! - Rule 4a (#[standalone_constructors]): Tests the existence and functionality of top-level constructor functions (`variant1`, `variant2`).
-//! - Rule 4b (Option 2 Logic): Tests that these standalone constructors return former builders for the variants.
-//! - Rule 3d (Tuple + Single-Field + Default): Implicitly tested via `Variant1`.
-//! - Rule 3f (Tuple + Multi-Field + Default): Implicitly tested via `Variant2`.
-//!
-//! Test Relevance/Acceptance Criteria:
-//! - Defines the `TestEnum` enum structure with `Variant1(u32)` and `Variant2(u32, String)`.
-//! - Contains test functions (`variant1_test`, `variant2_test`) that are included by the derive and manual test files.
-//! - Calls the standalone constructor functions (`variant1()`, `variant2()`).
-//! - Uses the returned former builders' setters (`._0()`, `._1()`) and calls `.form()`.
-//! - Asserts that the resulting enum instances match manually constructed expected values (`TestEnum::Variant1(value)`, `TestEnum::Variant2(value1, value2)`). This verifies that both derived and manual standalone constructors correctly return former builders and allow setting fields via setters.
+// Purpose: Provides shared test assertions and logic for both the derived and manual implementations of standalone former builder functions for tuple variants without `#[arg_for_constructor]` fields. It tests that standalone constructors generated/implemented when the enum has `#[standalone_constructors]` and no variant fields have `#[arg_for_constructor]` behave as expected (former builder style).
+//
+// Coverage:
+// - Rule 4a (#[standalone_constructors]): Tests the existence and functionality of top-level constructor functions (`variant1`, `variant2`).
+// - Rule 4b (Option 2 Logic): Tests that these standalone constructors return former builders for the variants.
+// - Rule 3d (Tuple + Single-Field + Default): Implicitly tested via `Variant1`.
+// - Rule 3f (Tuple + Multi-Field + Default): Implicitly tested via `Variant2`.
+//
+// Test Relevance/Acceptance Criteria:
+// - Defines the `TestEnum` enum structure with `Variant1(u32)` and `Variant2(u32, String)`.
+// - Contains test functions (`variant1_test`, `variant2_test`) that are included by the derive and manual test files.
+// - Calls the standalone constructor functions (`variant1()`, `variant2()`).
+// - Uses the returned former builders' setters (`._0()`, `._1()`) and calls `.form()`.
+// - Asserts that the resulting enum instances match manually constructed expected values (`TestEnum::Variant1(value)`, `TestEnum::Variant2(value1, value2)`). This verifies that both derived and manual standalone constructors correctly return former builders and allow setting fields via setters.
 
 #[ cfg( test ) ]
 mod tests

@@ -24,4 +24,31 @@ pub enum TestEnum
   Variant2( u32, String ),
 }
 
-include!( "standalone_constructor_tuple_only_test.rs" );
+// Temporarily inline the test to debug scope issues
+#[test]
+fn variant1_test()
+{
+  // Test the standalone constructor for Variant1 (single field, no #[arg_for_constructor])
+  let value = 123;
+  let got = variant_1() // Call the standalone constructor
+    ._0( value ) // Use the setter for the field
+    .form(); // Form the final enum instance
+
+  let expected = TestEnum::Variant1( value );
+  assert_eq!( got, expected );
+}
+
+#[test] 
+fn variant2_test()
+{
+  // Test the standalone constructor for Variant2 (multi field, no #[arg_for_constructor])
+  let value1 = 456;
+  let value2 = "abc".to_string(); 
+  let got = variant_2() // Call the standalone constructor
+    ._0( value1 ) // Use the setter for the first field
+    ._1( value2.clone() ) // Use the setter for the second field
+    .form(); // Form the final enum instance
+
+  let expected = TestEnum::Variant2( value1, value2 );
+  assert_eq!( got, expected );
+}

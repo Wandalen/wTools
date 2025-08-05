@@ -15,7 +15,7 @@
 #[ cfg( test ) ]
 mod tests
 {
-  use super::TestEnum;
+  // TestEnum should be available from the including scope
 
   #[ test ]
   fn variant_test()

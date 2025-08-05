@@ -66,7 +66,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   let ( impl_generics, ty_generics, where_clause ) = ctx.generics.split_for_impl();
 
   // Generate unique names for the variant former infrastructure
-  let variant_name_str = variant_name.to_string();
+  let variant_name_str = crate::derive_former::raw_identifier_utils::strip_raw_prefix_for_compound_ident(variant_name);
   let storage_name = format_ident!("{}{}FormerStorage", enum_name, variant_name_str);
   let definition_types_name = format_ident!("{}{}FormerDefinitionTypes", enum_name, variant_name_str);
   let definition_name = format_ident!("{}{}FormerDefinition", enum_name, variant_name_str);

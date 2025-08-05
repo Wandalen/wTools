@@ -207,10 +207,11 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   };
 
   // Generate the implicit former for the variant
-  let variant_former_name = format_ident!("{}{}Former", enum_name, variant_name);
-  let variant_former_storage_name = format_ident!("{}{}FormerStorage", enum_name, variant_name);
-  let variant_former_definition_name = format_ident!("{}{}FormerDefinition", enum_name, variant_name);
-  let variant_former_definition_types_name = format_ident!("{}{}FormerDefinitionTypes", enum_name, variant_name);
+  let variant_name_str = crate::derive_former::raw_identifier_utils::strip_raw_prefix_for_compound_ident(variant_name);
+  let variant_former_name = format_ident!("{}{}Former", enum_name, variant_name_str);
+  let variant_former_storage_name = format_ident!("{}{}FormerStorage", enum_name, variant_name_str);
+  let variant_former_definition_name = format_ident!("{}{}FormerDefinition", enum_name, variant_name_str);
+  let variant_former_definition_types_name = format_ident!("{}{}FormerDefinitionTypes", enum_name, variant_name_str);
 
   // Generate the storage struct for the variant's fields
   let storage_field_optional = quote! { pub #field_name : ::core::option::Option< #field_type > };
