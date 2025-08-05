@@ -31,15 +31,11 @@ fn keyword_variant_scalar_test()
 }
 
 #[ test ]
-fn keyword_variant_subform_test()
+fn keyword_variant_scalar_break_test()
 {
-  // Test the subform variant with a keyword identifier using working positional setter pattern
+  // Test the scalar variant r#break with a keyword identifier
   let expected_inner = Break { value : 20 };
-  // Note: Using _0() positional setter since tuple subform handler uses this approach
-  // The test originally expected .value() delegation but current implementation uses positional setters
-  let got = KeywordVariantEnum::r#break() // Use the derived static method, returns a variant former
-    ._0( expected_inner.clone() )         // Use the positional setter for tuple field access  
-    .form();                              // Form the final enum instance
+  let got = KeywordVariantEnum::r#break( expected_inner.clone() ); // Use the derived static method (scalar)
 
   let expected = KeywordVariantEnum::r#break( expected_inner ); // Manually construct the expected variant
 

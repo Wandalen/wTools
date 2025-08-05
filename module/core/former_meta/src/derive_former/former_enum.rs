@@ -118,7 +118,7 @@
 #![allow(unused_variables)] // Temporary for placeholder handlers
 
 
-use macro_tools::{Result, generic_params::GenericsRef, syn, proc_macro2};
+use macro_tools::{Result, generic_params::GenericsRef, syn, proc_macro2, diag};
 use macro_tools::quote::{format_ident, quote};
 use macro_tools::proc_macro2::TokenStream;
 use super::struct_attrs::ItemAttributes; // Corrected import
