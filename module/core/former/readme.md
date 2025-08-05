@@ -5,15 +5,15 @@
  [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_former_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_former_push.yml) [![docs.rs](https://img.shields.io/docsrs/former?color=e3e8f0&logo=docs.rs)](https://docs.rs/former) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Fformer%2Fexamples%2Fformer_trivial.rs,RUN_POSTFIX=--example%20module%2Fcore%2Fformer%2Fexamples%2Fformer_trivial.rs/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 <!--{ generate.module_header.end }-->
 
-A flexible implementation of the Builder pattern supporting nested builders, collection-specific subformers, and comprehensive enum variant constructors.
+A flexible implementation of the Builder pattern supporting nested builders and collection-specific subformers. Comprehensive struct support with enum support under active development.
 
 ## What is `Former`?
 
 The `former` crate provides a powerful derive macro, `#[ derive( Former ) ]`, that automatically implements the **Builder pattern** for your Rust structs and enums.
 
-Its primary goal is to **simplify the construction of complex objects**, especially those with numerous fields, optional values, default settings, collections, nested structures, or complex enum variants, making your initialization code more readable and maintainable.
+Its primary goal is to **simplify the construction of complex objects**, especially those with numerous fields, optional values, default settings, collections, and nested structures, making your initialization code more readable and maintainable.
 
-For **enums**, `former` automatically generates constructors for each variant, intelligently choosing between direct constructors, subformers, and standalone functions based on the variant structure and applied attributes.
+**Current Status**: Struct support is fully functional and production-ready. Enum support is actively developed with 227 total tests passing, including functional unit variants, tuple variants, and multi-field patterns. Some advanced features like `#[arg_for_constructor]` are still under development.
 
 ## Why Use `Former`?
 
@@ -21,11 +21,7 @@ Compared to manually implementing the Builder pattern or using other builder cra
 
 *   **Reduced Boilerplate:** `#[ derive( Former ) ]` automatically generates the builder struct, storage, and setters, saving you significant repetitive coding effort.
 *   **Fluent & Readable API:** Construct objects step-by-step using clear, chainable methods (`.field_name( value )`).
-*   **Intelligent Enum Support:** Automatically generates appropriate constructors for enum variants:
-    *   **Unit variants** get direct constructors (e.g., `Status::active()`)
-    *   **Simple variants** get scalar constructors (e.g., `Message::text("hello")`)
-    *   **Complex variants** get subformers for step-by-step construction
-    *   **Flexible attributes** (`#[scalar]`, `#[subform_scalar]`, `#[standalone_constructors]`) for fine-grained control
+*   **Comprehensive Struct Support:** Fully implemented builder pattern for structs with automatic generation of setters, defaults, and subformers
 *   **Effortless Defaults & Optionals:** Fields automatically use their `Default` implementation if not set. `Option< T >` fields are handled seamlessly – you only set them if you have a `Some( value )`. Custom defaults can be specified easily with `#[ former( default = ... ) ]`.
 *   **Powerful Collection & Nested Struct Handling:** `former` truly shines with its **subformer** system. Easily build `Vec`, `HashMap`, `HashSet`, and other collections element-by-element, or configure nested structs using their own dedicated formers within the parent's builder chain. This is often more complex to achieve with other solutions.
 
@@ -205,11 +201,11 @@ For scenarios where you want a direct constructor function instead of always sta
 
 *   **Enable:** Add `#[ standalone_constructors ]` to your struct or enum definition.
 *   **Function Name:** A function named after your type (in `snake_case`) will be generated (e.g., `my_struct()` for `struct MyStruct`). For enums, functions are named after variants (e.g., `my_variant()` for `enum E { MyVariant }`).
-*   **Arguments:** By default, the constructor takes no arguments and returns the `Former` type.
-*   **Specify Arguments:** Mark specific fields with `#[ arg_for_constructor ]` to make them required arguments for the standalone constructor.
-*   **Return Type (Option 2 Logic):**
-    *   If **all** fields of the struct/variant are marked with `#[ arg_for_constructor ]`, the standalone constructor returns the instance directly (`Self`).
-    *   If **zero or some** fields are marked, the standalone constructor returns the `Former` type, pre-initialized with the provided arguments.
+*   **Arguments:** By default, all fields become constructor arguments.
+*   **Exclude Arguments:** Mark specific fields with `#[ former_ignore ]` to exclude them from constructor arguments.
+*   **Return Type Logic:**
+    *   If **no** fields are marked with `#[ former_ignore ]`, the standalone constructor takes all fields as arguments and returns the instance directly (`Self`).
+    *   If **any** fields are marked with `#[ former_ignore ]`, the standalone constructor takes only non-ignored fields as arguments and returns the `Former` type.
 
 **Example: Struct Standalone Constructors**
 
@@ -225,17 +221,16 @@ For scenarios where you want a direct constructor function instead of always sta
   // #[ standalone_constructors ] // Enable standalone constructors
   pub struct ServerConfig
   {
-    #[ arg_for_constructor ] // This field is a constructor arg
-    host : String,
-    #[ arg_for_constructor ] // This field is also a constructor arg
-    port : u16,
-    timeout : Option< u32 >, // This field is NOT a constructor arg
+    host : String,     // Will be constructor arg
+    port : u16,        // Will be constructor arg  
+    #[ former_ignore ] // This field is NOT a constructor arg
+    timeout : Option< u32 >,
   }
 
-  // Not all fields are args, so `server_config` returns the Former
+  // Some fields ignored, so `server_config` returns the Former
   let config_former = server_config( "localhost".to_string(), 8080u16 ); // Added u16 suffix
 
-  // Set the remaining field and form
+  // Set the ignored field and form
   let config = config_former
   .timeout( 5000u32 ) // Added u32 suffix
   .form();
@@ -248,13 +243,11 @@ For scenarios where you want a direct constructor function instead of always sta
   #[ standalone_constructors ]
   pub struct Point
   {
-    #[ arg_for_constructor ]
-    x : i32,
-    #[ arg_for_constructor ]
-    y : i32,
+    x : i32,  // Will be constructor arg
+    y : i32,  // Will be constructor arg
   }
 
-  // ALL fields are args, so `point` returns Self directly
+  // NO fields ignored, so `point` returns Self directly
   let p = point( 10, 20 );
   assert_eq!( p.x, 10 );
   assert_eq!( p.y, 20 );
@@ -346,7 +339,7 @@ Understanding the terminology used in `former` will help you leverage its full p
 *   **`#[scalar]`:** Forces generation of a scalar constructor that takes field values directly and returns the enum instance.
 *   **`#[subform_scalar]`:** For single-field variants where the field type implements `Former` - generates a method returning the field's former.
 *   **`#[standalone_constructors]`:** Applied to the enum itself, generates top-level constructor functions for each variant.
-*   **`#[arg_for_constructor]`:** Applied to individual fields, includes them as parameters in standalone constructors.
+*   **`#[former_ignore]`:** Applied to individual fields, excludes them from being parameters in standalone constructors.
 
 ### Advanced Concepts
 
@@ -356,28 +349,24 @@ Understanding the terminology used in `former` will help you leverage its full p
 
 ## Key Features Overview
 
-*   **Automatic Builder Generation:** `#[ derive( Former ) ]` for structs and enums.
+*   **Automatic Builder Generation:** `#[ derive( Former ) ]` for structs (enums under development).
 *   **Fluent API:** Chainable setter methods for a clean construction flow.
-*   **Comprehensive Enum Support:** Full support for all enum variant types:
-    *   **Unit variants:** Direct constructors (e.g., `MyEnum::variant()`)
-    *   **Tuple variants:** Scalar constructors or subformers based on field count and attributes
-    *   **Struct variants:** Subformers with individual field setters or scalar constructors
-    *   **Zero, single, and multi-field variants** with different behavioral patterns
-*   **Flexible Constructor Generation:**
-    *   **Method-style constructors:** `MyEnum::variant_name(...)` on the enum type
-    *   **Standalone constructors:** Top-level functions when `#[standalone_constructors]` is used
-    *   **Scalar constructors:** Direct value-to-instance conversion with `#[scalar]`
-    *   **Subform constructors:** Builder pattern for complex variants
+*   **Production-Ready Struct Support:** Complete implementation with all features working:
+    *   **Field setters:** Individual setter methods for each field
+    *   **Default handling:** Automatic use of `Default` trait or custom defaults
+    *   **Optional fields:** Seamless `Option<T>` support
+    *   **Subformers:** Nested builders for complex field types
 *   **Defaults & Optionals:** Seamless handling of `Default` values and `Option< T >` fields. Custom defaults via `#[ former( default = ... ) ]`.
-*   **Subformers:** Powerful mechanism for building nested structures and collections:
-    *   `#[ subform_scalar ]`: For fields whose type also derives `Former`, or for single-field enum variants
+*   **Collection & Nested Struct Support:** Powerful subformer system for building complex structures:
+    *   `#[ subform_scalar ]`: For fields whose type also derives `Former`
     *   `#[ subform_collection ]`: For collections like `Vec`, `HashMap`, `HashSet`, etc., providing methods like `.add()` or `.insert()`
     *   `#[ subform_entry ]`: For collections where each entry is built individually using its own former
-*   **Variant-Specific Attributes:**
-    *   `#[ scalar ]`: Forces scalar constructor generation for enum variants
-    *   `#[ subform_scalar ]`: Enables subformer delegation for compatible variants
-    *   `#[ standalone_constructors ]`: Generates top-level constructor functions
-    *   `#[ arg_for_constructor ]`: Controls parameter inclusion in standalone constructors
+*   **Enum Support (Active Development):** Comprehensive implementation with working functionality:
+    *   **Unit variants:** Direct constructors (e.g., `MyEnum::variant()`) - Fully functional
+    *   **Tuple variants:** Scalar constructors and subformers based on field count and attributes - Core patterns working
+    *   **Struct variants:** Subformers with individual field setters or scalar constructors - Core patterns working
+    *   **Flexible attributes:** `#[scalar]`, `#[subform_scalar]`, `#[standalone_constructors]` for fine-grained control
+    *   **Known limitations:** Single-field tuple variants with primitives require explicit `#[scalar]` attribute, `#[former_ignore]` not yet implemented
 *   **Customization:**
     *   Rename setters: `#[ scalar( name = ... ) ]`, `#[ subform_... ( name = ... ) ]`
     *   Disable default setters: `#[ scalar( setter = false ) ]`, `#[ subform_... ( setter = false ) ]`
@@ -391,7 +380,9 @@ Understanding the terminology used in `former` will help you leverage its full p
 
 ## Where to Go Next
 
+*   **[Technical Specification](spec.md):** Complete behavioral specification defining the Former macro's rules and expected behavior.
 *   **[Advanced Usage & Concepts](https://github.com/Wandalen/wTools/tree/master/module/core/former/advanced.md):** Dive deeper into subformers, customization options, storage, context, definitions, mutators, and custom collections.
 *   **[Examples Directory](https://github.com/Wandalen/wTools/tree/master/module/core/former/examples):** Explore practical, runnable examples showcasing various features.
 *   **[API Documentation (docs.rs)](https://docs.rs/former):** Get detailed information on all public types, traits, and functions.
 *   **[Repository (GitHub)](https://github.com/Wandalen/wTools/tree/master/module/core/former):** View the source code, contribute, or report issues.
+

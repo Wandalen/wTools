@@ -122,7 +122,8 @@
 //! - **Struct Syntax**: Maintains proper struct variant construction syntax for clarity
 
 use super::*;
-use macro_tools::{Result, quote::quote};
+use macro_tools::{Result, quote::quote, syn_err};
+use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 
 /// Generates direct scalar constructor for multi-field struct enum variants with `#[scalar]` attribute.
 ///
@@ -168,8 +169,63 @@ use macro_tools::{Result, quote::quote};
 /// ## Implementation Status
 /// This handler is currently a placeholder implementation that will be completed in future increments
 /// as the enum Former generation system is fully developed.
-pub fn handle(_ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::TokenStream> {
-  // Placeholder for struct_multi_fields_scalar.rs
-  // This will be implemented in a later increment.
-  Ok(quote! {})
+pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::TokenStream> {
+  let variant_name = &ctx.variant.ident;
+  let method_name = variant_to_method_name(variant_name);
+  let enum_name = ctx.enum_name;
+  let vis = ctx.vis;
+
+  // Extract field information from the multi-field struct variant
+  let fields = &ctx.variant.fields;
+  if fields.len() < 2 {
+    return Err(syn_err!(
+      ctx.variant,
+      "struct_multi_fields_scalar handler expects at least two fields"
+    ));
+  }
+
+  // Rule: This handler is for #[scalar] variants only
+  if ctx.variant_attrs.scalar.is_none() {
+    return Err(syn_err!(
+      ctx.variant,
+      "struct_multi_fields_scalar handler requires #[scalar] attribute"
+    ));
+  }
+
+  // Collect field names and types
+  let field_params: Vec<_> = fields.iter().map(|field| {
+    let field_name = field.ident.as_ref().ok_or_else(|| {
+      syn_err!(field, "Struct variant field must have a name")
+    })?;
+    let field_type = &field.ty;
+    Ok(quote! { #field_name: impl Into<#field_type> })
+  }).collect::<Result<Vec<_>>>()?;
+
+  let field_assigns: Vec<_> = fields.iter().map(|field| {
+    let field_name = field.ident.as_ref().unwrap();
+    quote! { #field_name: #field_name.into() }
+  }).collect();
+
+  // Generate standalone constructor if #[standalone_constructors] is present
+  if ctx.struct_attrs.standalone_constructors.is_some() {
+    let standalone_constructor = quote! {
+      #[ inline( always ) ]
+      #vis fn #method_name(#(#field_params),*) -> #enum_name
+      {
+        #enum_name::#variant_name { #(#field_assigns),* }
+      }
+    };
+    ctx.standalone_constructors.push(standalone_constructor);
+  }
+
+  // Generate direct constructor method for multi-field struct variant
+  let result = quote! {
+    #[ inline( always ) ]
+    #vis fn #method_name(#(#field_params),*) -> #enum_name
+    {
+      #enum_name::#variant_name { #(#field_assigns),* }
+    }
+  };
+
+  Ok(result)
 }

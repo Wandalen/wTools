@@ -1,13 +1,13 @@
 //! Derive implementation for testing unit variants in enums with mixed variant kinds.
 
 use super::*;
-// use former_types::EntityToFormer; // Not strictly needed if Complex data is i32
+#[allow(unused_imports)]
+use ::former::prelude::*;
+use ::former::Former;
 
 /// Enum with a unit variant and a struct-like variant, using Former.
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, PartialEq, former::Former)]
-#[derive(Debug, PartialEq)]
-#[former(standalone_constructors, debug)] // Attribute present, added debug
+#[derive(Debug, PartialEq, Former)]
+#[former(standalone_constructors)] // Enable standalone constructors
 pub enum MixedEnum {
   SimpleUnit,
   #[allow(dead_code)] // This variant is not constructed by these specific unit tests

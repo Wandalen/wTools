@@ -109,8 +109,8 @@
 //! - **Naming Consistency**: Uses standardized `_0` parameter naming for tuple field convention
 
 use super::*;
-use macro_tools::{ Result, quote::quote, ident::cased_ident_from_ident };
-use convert_case::Case;
+use macro_tools::{ Result, quote::quote };
+use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 
 /// Generates direct scalar constructor for single-field tuple enum variants with `#[scalar]` attribute.
 ///
@@ -151,7 +151,7 @@ use convert_case::Case;
 pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
 {
   let variant_name = &ctx.variant.ident;
-  let method_name = cased_ident_from_ident(variant_name, Case::Snake);
+  let method_name = variant_to_method_name(variant_name);
   let enum_name = ctx.enum_name;
   let vis = ctx.vis;
   let field_type = &ctx.variant_field_info[0].ty;

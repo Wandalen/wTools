@@ -118,7 +118,9 @@
 //! - **Unit Semantics**: Maintains proper Rust unit variant semantics and syntax
 
 use super::*;
-use macro_tools::{Result, quote::quote};
+use macro_tools::{Result, quote::quote, syn_err};
+use crate::derive_former::raw_identifier_utils::variant_to_method_name;
+use crate::derive_former::attribute_validation::{validate_variant_attributes, get_field_count, get_variant_type};
 
 /// Generates direct constructor for unit enum variants with comprehensive attribute validation.
 ///
@@ -166,8 +168,37 @@ use macro_tools::{Result, quote::quote};
 /// ## Implementation Status
 /// This handler is currently a placeholder implementation that will be completed in future increments
 /// as the enum Former generation system is fully developed.
-pub fn handle(_ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::TokenStream> {
-  // Placeholder for unit_variant_handler.rs
-  // This will be implemented in a later increment.
-  Ok(quote! {})
+pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::TokenStream> {
+  let variant_name = &ctx.variant.ident;
+  let method_name = variant_to_method_name(variant_name);
+  let enum_name = ctx.enum_name;
+  let vis = ctx.vis;
+
+  // Comprehensive attribute validation
+  let field_count = get_field_count(&ctx.variant.fields);
+  let variant_type = get_variant_type(&ctx.variant.fields);
+  validate_variant_attributes(ctx.variant, &ctx.variant_attrs, field_count, variant_type)?;
+
+  // Generate standalone constructor if #[standalone_constructors] is present
+  if ctx.struct_attrs.standalone_constructors.is_some() {
+    let standalone_constructor = quote! {
+      #[ inline( always ) ]
+      #vis fn #method_name() -> #enum_name
+      {
+        #enum_name::#variant_name
+      }
+    };
+    ctx.standalone_constructors.push(standalone_constructor);
+  }
+
+  // For unit variants, Rules 1a and 3a both generate the same direct constructor
+  let result = quote! {
+    #[ inline( always ) ]
+    #vis fn #method_name() -> #enum_name
+    {
+      #enum_name::#variant_name
+    }
+  };
+
+  Ok(result)
 }

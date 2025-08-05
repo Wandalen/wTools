@@ -1,4 +1,4 @@
-// mod unit_subform_scalar_error;
+mod unit_subform_scalar_error; // Re-enabled - compile_fail test module
 
 #[cfg(feature = "derive_former")]
 #[test_tools::nightly]

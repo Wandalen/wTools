@@ -12,14 +12,15 @@
 //! - Asserts that these constructors produce the correct `Status` enum instances by comparing with manually constructed variants.
 // File: module/core/former/tests/inc/former_enum_tests/unit_variant_derive.rs
 use super::*;
+#[allow(unused_imports)]
+use ::former::prelude::*;
+use ::former::Former; // Import derive macro
 
 /// Enum with only unit variants for testing.
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, PartialEq, former::Former)]
-#[derive(Debug, PartialEq)]
-#[former(standalone_constructors)] // Added standalone_constructors attribute
+#[derive(Debug, PartialEq, Former)]
+#[standalone_constructors] // Added standalone_constructors attribute
 #[allow(dead_code)] // Enum itself might not be directly used, but its Former methods are
-enum Status {
+pub enum Status {
   Pending,
   Complete,
 }

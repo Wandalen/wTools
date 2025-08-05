@@ -67,9 +67,7 @@
 //! - **Memory Efficiency**: References used where possible to avoid unnecessary cloning
 //! - **Error Early**: Invalid attributes cause immediate parsing failure with clear messages
 
-use super::*;
-
-use macro_tools::{ct, Result, AttributeComponent, AttributePropertyComponent, AttributePropertyOptionalSingletone};
+use macro_tools::{ct, Result, AttributeComponent, AttributePropertyComponent, AttributePropertyOptionalSingletone, syn, return_syn_err, syn_err, qt, Token, proc_macro2::TokenStream};
 
 use component_model_types::{Assign, OptionExt};
 

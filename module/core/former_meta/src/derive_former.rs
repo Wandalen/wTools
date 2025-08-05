@@ -1,12 +1,10 @@
 // File: module/core/former_meta/src/derive_former.rs
 
-use super::*;
-use macro_tools::{
-  diag, typ, Result,
-  proc_macro2::TokenStream,
-  quote::{format_ident, quote, ToTokens},
-  syn::spanned::Spanned,
-};
+// Removed unused import
+use macro_tools::{Result, diag, typ, syn, proc_macro2};
+use macro_tools::proc_macro2::TokenStream;
+use macro_tools::quote::{format_ident, quote, ToTokens};
+use macro_tools::syn::spanned::Spanned;
 
 mod former_enum;
 use former_enum::former_for_enum;
@@ -22,6 +20,13 @@ use field::*;
 mod struct_attrs;
 
 use struct_attrs::*;
+mod trait_detection;
+
+// trait_detection module available but not directly used here
+mod raw_identifier_utils;
+
+// raw_identifier_utils module available but not directly used here
+mod attribute_validation;
 
 /// Represents the generic parameters for a `FormerDefinitionTypes`.
 ///

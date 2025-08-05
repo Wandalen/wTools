@@ -27,11 +27,8 @@
 
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
 
-// #[derive(former::Former)]
-
-#[derive()]
+#[derive(former::Former)]
 pub enum EnumScalarGeneric<T : Bound> where T: Clone
-
 {
   #[scalar] // Enabled for Rule 1d testing
   Variant1(InnerScalar<T>), // Tuple variant with one generic field

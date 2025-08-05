@@ -69,7 +69,7 @@
 // File: module/core/former_meta/src/derive_former/field.rs
 
 use super::*;
-use macro_tools::container_kind;
+use macro_tools::{container_kind, syn, qt, syn_err, Result, quote};
 
 /// Comprehensive field definition and analysis for Former pattern generation.
 ///
@@ -175,7 +175,7 @@ impl<'a> FormerField<'a> {
   /// Parses and validates all field-level attributes using `FieldAttributes::from_attrs()`:
   /// - Configuration attributes (`#[former(default = ...)]`)
   /// - Setter type attributes (`#[scalar]`, `#[subform_collection]`, etc.)
-  /// - Constructor argument markers (`#[arg_for_constructor]`)
+  /// - Constructor argument exclusion markers (`#[former_ignore]`)
   ///
   /// ## 2. Type Analysis and Classification
   /// Performs comprehensive type analysis to determine field characteristics:
@@ -963,7 +963,7 @@ with the new content generated during the subforming process.
       // Expected: HashMapDefinitionTypes<K, V, ParentFormer, ParentFormer>
       // Got: HashMapDefinitionTypes<K, ParentFormer, ParentFormer>
       // This fix ensures all parameters are properly forwarded using #( #params, )*
-      quote::quote! {
+      quote! {
         #subformer_definition_types<
           #( #params, )*
           #former_type_ref,

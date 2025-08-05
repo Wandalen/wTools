@@ -90,6 +90,7 @@ use macro_tools::{
   proc_macro2::TokenStream,
   quote::{format_ident, quote},
   ident, // Added for ident_maybe_raw
+  syn, parse_quote
 };
 
 
@@ -755,7 +756,7 @@ specific needs of the broader forming context. It mandates the implementation of
   // Identify fields marked as constructor arguments
   let constructor_args_fields: Vec<_> = formed_fields
   .iter()
-  .filter( | f | f.attrs.arg_for_constructor.value( false ) ) // Use the parsed attribute
+  .filter( | f | !f.attrs.former_ignore.value( false ) ) // Use the parsed attribute
   .collect();
 
   // Generate constructor function parameters
@@ -781,7 +782,7 @@ specific needs of the broader forming context. It mandates the implementation of
   let non_constructor_storage_assignments = formed_fields
   .iter()
   .chain( storage_fields.iter() ) // Include storage-only fields
-  .filter( | f | !f.attrs.arg_for_constructor.value( false ) ) // Filter out constructor args
+  .filter( | f | f.attrs.former_ignore.value( false ) ) // Filter out constructor args
   .map( | f | // Space around |
   {
     let ident = f.ident;
@@ -869,7 +870,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     // Determine if all fields are constructor arguments
     // Note: We only consider fields that are part of the final struct (`formed_fields`)
-    let all_fields_are_args = formed_fields.iter().all(|f| f.attrs.arg_for_constructor.value(false)); // Space around |
+    let all_fields_are_args = formed_fields.iter().all(|f| !f.attrs.former_ignore.value(false)); // Space around |
 
     // Determine return type and body based on Option 2 rule
     let (return_type, constructor_body) = if all_fields_are_args {
@@ -885,13 +886,10 @@ specific needs of the broader forming context. It mandates the implementation of
       (return_type, body)
     } else {
       // Return Former
-      let _former_return_type = quote! {
-        #former < #former_definition< #former_definition_args > >
-      };
       let former_body = quote! {
         #former::begin( #initial_storage_code, None, former::ReturnPreformed )
       };
-      (former_type_ref.clone(), former_body) // Cloned former_type_ref
+      (former_type_full.clone(), former_body) // Use former_type_full instead of former_type_ref
     };
 
     // Generate the constructor function
@@ -1022,7 +1020,7 @@ specific needs of the broader forming context. It mandates the implementation of
     }
   };
   
-  let result = quote::quote! {
+  let result = quote! {
 
     // = formed: Implement the `::former()` static method on the original struct.
     #[ automatically_derived ]

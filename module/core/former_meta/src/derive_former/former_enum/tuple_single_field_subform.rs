@@ -1,177 +1,51 @@
-//! # Tuple Single-Field Subform Handler - Inner Former Integration
+//! # Tuple Single-Field Subform Handler - Fixed Implementation
 //!
-//! This handler specializes in generating inner former constructors for tuple enum variants 
-//! with a single unnamed field, creating sophisticated integration with the field type's Former
-//! implementation while providing comprehensive pitfall prevention for Former trait resolution
-//! and custom end handling.
+//! This is a FIXED implementation of the tuple single-field subform handler that generates
+//! proper variant formers instead of attempting to delegate to EntityToFormer trait.
+//! This approach mirrors the working struct_single_field_subform pattern.
 //!
-//! ## Variant Type Specialization
+//! ## Key Differences from Original
 //!
-//! **Target Pattern**: `Variant(T)` where `T` implements `Former`
-//! **Generated Constructor**: `Enum::variant() -> T::Former` (configured with custom end)
-//! **Construction Style**: Field type's Former with custom end handler for enum variant construction
+//! ### Original Problematic Approach:
+//! - Attempted to use `< T as EntityToFormer< TFormerDefinition > >::Former`
+//! - Failed for primitive types that don't implement Former
+//! - Generated non-existent definition types like `u32FormerDefinition`
+//! - Required complex Former trait integration
 //!
-//! ## Key Behavioral Characteristics
+//! ### Fixed Approach:
+//! - Generates complete variant former infrastructure (`VariantFormer`)
+//! - Works with any field type (primitives, structs, etc.)
+//! - Mirrors the reliable struct_single_field_subform pattern
+//! - Provides indexed setter (._0) for tuple field access
 //!
-//! ### Attribute-Driven Activation
-//! - **Default Behavior**: Single-field tuple variants without `#[scalar]` get inner type formers
-//! - **`#[subform_scalar]` Support**: Explicitly enables inner former integration (same behavior)
-//! - **`#[scalar]` Override**: Forces direct constructor generation (handled elsewhere)
-//! - **Field Type Constraint**: Field type must implement Former trait for this handler
-//!
-//! ### Generated Infrastructure Components
-//! 1. **Custom End Handler**: `{Enum}{Variant}End` for converting inner type to enum variant
-//! 2. **End Definition Types**: `{Enum}{Variant}EndDefinitionTypes` for type system integration
-//! 3. **FormingEnd Implementation**: Proper integration with Former's ending system
-//! 4. **Method Integration**: Enum method that returns configured inner former
-//!
-//! ## Critical Pitfalls Resolved
-//!
-//! ### 1. Former Trait Resolution (Critical Prevention)
-//! **Issue Resolved**: Manual implementations not properly resolving field type's Former implementation
-//! **Root Cause**: Complex Former trait resolution requiring proper type path and generic handling
-//! **Solution**: Automatic Former trait resolution with proper generic parameter propagation
-//! **Prevention**: Generated code ensures field type's Former trait is properly accessible
-//!
-//! ```rust
-//! // Manual Implementation Pitfall:
-//! impl MyEnum {
-//!     fn variant() -> String::Former {  // ❌ Incorrect Former trait usage
-//!         String::former()
-//!     }
-//! }
-//!
-//! // Generated Solution:
-//! impl<T> MyEnum<T> {
-//!     fn variant() -> <T as EntityToFormer<TFormerDefinition>>::Former {  // ✅ Proper trait resolution
-//!         <T as EntityToFormer<TFormerDefinition>>::Former::former_begin(
-//!             None, None, MyEnumVariantEnd::default()
-//!         )
-//!     }
-//! }
-//! ```
-//!
-//! ### 2. Custom End Handler Generation (Critical Prevention)
-//! **Issue Resolved**: Manual implementations not providing proper end handling for inner formers
-//! **Root Cause**: Inner formers need custom end handlers to convert to enum variants
-//! **Solution**: Generated custom End struct with proper FormingEnd implementation
-//! **Prevention**: Ensures inner former completion properly constructs enum variant
-//!
-//! ### 3. FormerDefinition Type Resolution (Critical Prevention)
-//! **Issue Resolved**: Manual implementations not properly determining field type's Former definition
-//! **Root Cause**: Former definition type naming requires systematic pattern matching
-//! **Solution**: Automatic generation of definition type names based on field type
-//! **Prevention**: Consistent definition type resolution eliminates naming mismatches
-//!
-//! ```rust
-//! // Manual Implementation Pitfall:
-//! let former = MyFieldType::former();  // ❌ No custom end handling
-//!
-//! // Generated Solution:
-//! let former = <MyFieldType as EntityToFormer<MyFieldTypeFormerDefinition>>::Former
-//!     ::former_begin(None, None, CustomEnd::default());  // ✅ Proper end integration
-//! ```
-//!
-//! ### 4. Generic Parameter Context Preservation (Critical Prevention)
-//! **Issue Resolved**: Manual implementations losing enum generic context when calling inner formers
-//! **Root Cause**: Inner former calls need enum's generic parameters for proper type resolution
-//! **Solution**: Complete generic parameter preservation through custom end handler types
-//! **Prevention**: Ensures enum generic parameters are properly maintained through inner former chain
-//!
-//! ### 5. FormingEnd Type Integration (Prevention)
-//! **Issue Resolved**: Manual implementations not properly implementing FormingEnd for custom ends
-//! **Root Cause**: FormingEnd trait requires specific type associations and call method implementation
-//! **Solution**: Generated FormingEnd implementation with proper type conversions
-//! **Prevention**: Ensures seamless integration with Former ecosystem's ending system
-//!
-//! ## Generated Code Architecture
-//!
-//! ### Custom End Handler
-//! ```rust
-//! #[derive(Default, Debug)]
-//! pub struct EnumVariantEnd<T> 
-//! where T: Former
-//! {
-//!     // Marker struct for custom end handling
-//! }
-//!
-//! impl<T> FormingEnd<EnumVariantEndDefinitionTypes<T>> for EnumVariantEnd<T> {
-//!     fn call(&self, sub_storage: Storage, _context: Option<Context>) -> Enum<T> {
-//!         let inner = StoragePreform::preform(sub_storage);
-//!         Enum::Variant(inner)
-//!     }
-//! }
-//! ```
-//!
-//! ### End Definition Types
-//! ```rust
-//! impl<T> FormerDefinitionTypes for EnumVariantEndDefinitionTypes<T> {
-//!     type Storage = <TFormerDefinition as FormerDefinition>::Storage;
-//!     type Context = <TFormerDefinition as FormerDefinition>::Context;
-//!     type Formed = Enum<T>;
-//! }
-//! ```
-//!
-//! ### Generated Method
-//! ```rust
-//! impl<T> Enum<T> {
-//!     pub fn variant() -> <T as EntityToFormer<TFormerDefinition>>::Former {
-//!         <T as EntityToFormer<TFormerDefinition>>::Former::former_begin(
-//!             None, None, EnumVariantEnd::default()
-//!         )
-//!     }
-//! }
-//! ```
-//!
-//! ## Integration Notes
-//! - **Former Ecosystem**: Complete integration with existing Former trait hierarchy
-//! - **Type Safety**: Compile-time verification of Former trait implementation for field types
-//! - **Context Handling**: Proper context propagation through inner former to enum construction
-//! - **Generic Safety**: Complete generic parameter preservation through Former chain
-//! - **End Customization**: Custom end handling ensures proper enum variant construction from inner type
+//! ## Generated Infrastructure:
+//! - `{Enum}{Variant}FormerStorage`: Storage with `field0: Option<T>`
+//! - `{Enum}{Variant}FormerDefinitionTypes`: Type system integration
+//! - `{Enum}{Variant}FormerDefinition`: Definition linking all components
+//! - `{Enum}{Variant}Former`: Builder with `._0(value)` setter
+//! - `{Enum}{Variant}End`: Custom end handler for tuple variant construction
 
 use super::*;
 
-use macro_tools::{ Result, quote::{ quote, format_ident }, ident::cased_ident_from_ident, generic_params::GenericsRef };
-use convert_case::Case;
+use macro_tools::{ Result, quote::{ quote, format_ident } };
+use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 
-/// Generates inner former integration infrastructure for single-field tuple enum variants.
+/// Generates implicit variant former infrastructure for single-field tuple enum variants.
 ///
-/// This function creates sophisticated integration with the field type's Former implementation,
-/// providing comprehensive pitfall prevention for Former trait resolution, custom end handling,
-/// and generic parameter preservation through the Former chain.
-///
-/// ## Generated Infrastructure
-///
-/// ### Core Components Generated:
-/// 1. **Custom End Handler**: `{Enum}{Variant}End` for converting inner type to enum variant
-/// 2. **End Definition Types**: `{Enum}{Variant}EndDefinitionTypes` for type system integration
-/// 3. **FormingEnd Implementation**: Proper integration with Former's ending system
-/// 4. **Method Integration**: Enum method returning configured field type former
-///
-/// ## Former Integration Features
-///
-/// - **Trait Resolution**: Automatic Former trait resolution with proper generic handling
-/// - **Custom End**: Generated end handler ensures proper enum variant construction
-/// - **Type Safety**: Compile-time verification of Former trait implementation for field types
-/// - **Generic Preservation**: Complete generic parameter maintenance through Former chain
+/// This function creates a complete builder ecosystem for tuple variants with a single unnamed field,
+/// implementing the same pattern as struct_single_field_subform but adapted for tuple field access.
 ///
 /// ## Generated Method Signature
 /// ```rust
 /// impl<T> Enum<T> {
-///     pub fn variant() -> <T as EntityToFormer<TFormerDefinition>>::Former {
-///         // Returns field type's former configured with custom end
-///     }
+///     pub fn variant() -> VariantFormer<T> { /* ... */ }
 /// }
 /// ```
 ///
-/// ## Generated End Handler
+/// ## Generated Setter Method
 /// ```rust
-/// impl<T> FormingEnd<EndDefinitionTypes<T>> for EnumVariantEnd<T> {
-///     fn call(&self, sub_storage: Storage, _context: Option<Context>) -> Enum<T> {
-///         let inner = StoragePreform::preform(sub_storage);
-///         Enum::Variant(inner)
-///     }
+/// impl<T> VariantFormer<T> {
+///     pub fn _0(self, src: impl Into<T>) -> Self { /* ... */ }
 /// }
 /// ```
 ///
@@ -179,152 +53,246 @@ use convert_case::Case;
 /// - `ctx`: Mutable context containing variant information, generics, and output collections
 ///
 /// ## Returns
-/// - `Ok(TokenStream)`: Generated enum method that returns configured field type former
-/// - `Err(syn::Error)`: If variant processing fails or field type path is invalid
+/// - `Ok(TokenStream)`: Generated enum method that returns the tuple variant former
+/// - `Err(syn::Error)`: If variant processing fails due to invalid configuration
 pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
 {
   let variant_name = &ctx.variant.ident;
-  let method_name = cased_ident_from_ident(variant_name, Case::Snake);
+  let method_name = variant_to_method_name(variant_name);
   let enum_name = ctx.enum_name;
   let vis = ctx.vis;
   let field_type = &ctx.variant_field_info[0].ty;
 
-  let generics_ref = GenericsRef::new(ctx.generics);
   let ( impl_generics, ty_generics, where_clause ) = ctx.generics.split_for_impl();
-  let enum_type_path = if ctx.generics.type_params().next().is_some() {
-    let ty_generics_tokens = generics_ref.ty_generics_tokens_if_any();
-    quote! { #enum_name :: #ty_generics_tokens }
+
+  // Generate unique names for the variant former infrastructure
+  let variant_name_str = variant_name.to_string();
+  let storage_name = format_ident!("{}{}FormerStorage", enum_name, variant_name_str);
+  let definition_types_name = format_ident!("{}{}FormerDefinitionTypes", enum_name, variant_name_str);
+  let definition_name = format_ident!("{}{}FormerDefinition", enum_name, variant_name_str);
+  let former_name = format_ident!("{}{}Former", enum_name, variant_name_str);
+  let end_name = format_ident!("{}{}End", enum_name, variant_name_str);
+
+  // Generate proper PhantomData type based on whether we have generics
+  let phantom_data_type = if ctx.generics.type_params().next().is_some() {
+    quote! { std::marker::PhantomData< #ty_generics > }
   } else {
-    quote! { #enum_name }
+    quote! { std::marker::PhantomData< () > }
   };
 
-  // Generate the End struct name for this variant
-  // Use the original variant name to avoid issues with raw identifiers
-  let variant_name_string = variant_name.to_string();
-  let end_struct_name = format_ident!("{}{}End", enum_name, variant_name_string);
-
-  // Generate the End struct for this variant (for both Rule 2d and 3d)
-  let end_struct = quote!
+  // Generate the storage struct and its impls
+  let storage_impls = quote!
   {
-    #[derive(Default, Debug)]
-    pub struct #end_struct_name #impl_generics
-    #where_clause
-    {}
-  };
-
-  // Construct the FormerDefinition type for the field_type
-  let syn::Type::Path(field_type_path) = field_type else {
-      return Err(syn::Error::new_spanned(field_type, "Field type must be a path to derive Former"));
-  };
-
-  let field_type_base_ident = &field_type_path.path.segments.last().unwrap().ident;
-  let field_type_generics = &field_type_path.path.segments.last().unwrap().arguments;
-  let field_former_definition_type = format_ident!("{}{}Definition", field_type_base_ident, "Former");
-
-
-  // Generate a custom definition types for the enum result
-  let enum_end_definition_types = format_ident!("{}{}EndDefinitionTypes", enum_name, variant_name_string);
-
-  let end_definition_types = quote!
-  {
-    #[derive(Default, Debug)]
-    pub struct #enum_end_definition_types #impl_generics
-    #where_clause
-    {}
-
-    impl #impl_generics former_types::FormerDefinitionTypes for #enum_end_definition_types #ty_generics
+    pub struct #storage_name #impl_generics
     #where_clause
     {
-      type Storage = < #field_former_definition_type as former_types::definition::FormerDefinition >::Storage;
-      type Context = < #field_former_definition_type as former_types::definition::FormerDefinition >::Context;
-      type Formed = #enum_name #ty_generics;
+      field0 : Option< #field_type >,
     }
 
-    // Add FormerMutator implementation here
-    impl #impl_generics former_types::FormerMutator
-    for #enum_end_definition_types #ty_generics
+    impl #impl_generics Default for #storage_name #ty_generics
     #where_clause
     {
-      #[ inline( always ) ]
-      fn form_mutation
-      (
-        _storage : &mut Self::Storage,
-        _context : &mut Option< Self::Context >,
-      )
+      fn default() -> Self
       {
+        Self { field0 : None }
+      }
+    }
+
+    impl #impl_generics former::Storage for #storage_name #ty_generics
+    #where_clause
+    {
+      type Preformed = #field_type;
+    }
+
+    impl #impl_generics former::StoragePreform for #storage_name #ty_generics
+    where
+      #field_type : Default,
+    {
+      fn preform( mut self ) -> Self::Preformed
+      {
+        self.field0.take().unwrap_or_default()
       }
     }
   };
 
-  // Generate the FormingEnd implementation
-  let end_impl = quote!
+  // Generate the DefinitionTypes struct and its impls
+  let definition_types_impls = quote!
   {
-    impl #impl_generics former_types::forming::FormingEnd<
-      #enum_end_definition_types #ty_generics
-    > for #end_struct_name #ty_generics
+    #[ derive( Debug ) ]
+    pub struct #definition_types_name #impl_generics
+    #where_clause
+    {
+      _p : #phantom_data_type,
+    }
+
+    impl #impl_generics Default for #definition_types_name #ty_generics
+    #where_clause
+    {
+      fn default() -> Self
+      {
+        Self { _p : std::marker::PhantomData }
+      }
+    }
+
+    impl #impl_generics former::FormerDefinitionTypes for #definition_types_name #ty_generics
+    #where_clause
+    {
+      type Storage = #storage_name #ty_generics;
+      type Context = ();
+      type Formed = #enum_name #ty_generics;
+    }
+
+    impl #impl_generics former::FormerMutator for #definition_types_name #ty_generics
+    #where_clause
+    {}
+  };
+
+  // Generate the Definition struct and its impls
+  let definition_impls = quote!
+  {
+    #[ derive( Debug ) ]
+    pub struct #definition_name #impl_generics
+    #where_clause
+    {
+      _p : #phantom_data_type,
+    }
+
+    impl #impl_generics Default for #definition_name #ty_generics
+    #where_clause
+    {
+      fn default() -> Self
+      {
+        Self { _p : std::marker::PhantomData }
+      }
+    }
+
+    impl #impl_generics former::FormerDefinition for #definition_name #ty_generics
+    #where_clause
+    {
+      type Storage = #storage_name #ty_generics;
+      type Context = ();
+      type Formed = #enum_name #ty_generics;
+      type Types = #definition_types_name #ty_generics;
+      type End = #end_name #ty_generics;
+    }
+  };
+
+  // Generate the Former struct and its impls
+  let former_impls = quote!
+  {
+    pub struct #former_name #impl_generics
+    #where_clause
+    {
+      storage : #storage_name #ty_generics,
+      context : Option< () >,
+      on_end : Option< #end_name #ty_generics >,
+    }
+
+    impl #impl_generics #former_name #ty_generics
+    #where_clause
+    {
+      #[ inline( always ) ]
+      pub fn form( self ) -> #enum_name #ty_generics
+      {
+        self.end()
+      }
+
+      #[ inline( always ) ]
+      pub fn end( mut self ) -> #enum_name #ty_generics
+      {
+        let on_end = self.on_end.take().unwrap();
+        let context = self.context.take();
+        < #definition_types_name #ty_generics as former::FormerMutator >::form_mutation( &mut self.storage, &mut self.context );
+        former::FormingEnd::call( &on_end, self.storage, context )
+      }
+
+      #[ inline( always ) ]
+      pub fn begin( storage : Option< #storage_name #ty_generics >, context : Option< () >, on_end : #end_name #ty_generics ) -> Self
+      {
+        Self { storage : storage.unwrap_or_default(), context, on_end : Some( on_end ) }
+      }
+
+      #[ allow( dead_code ) ]
+      #[ inline( always ) ]
+      pub fn new( on_end : #end_name #ty_generics ) -> Self
+      {
+        Self::begin( None, None, on_end )
+      }
+
+      #[ inline ]
+      pub fn _0( mut self, src : impl Into< #field_type > ) -> Self
+      {
+        self.storage.field0 = Some( src.into() );
+        self
+      }
+    }
+  };
+
+  // Generate the End struct and its impl
+  let end_impls = quote!
+  {
+    #[ derive( Debug ) ]
+    pub struct #end_name #impl_generics
+    #where_clause
+    {}
+
+    impl #impl_generics Default for #end_name #ty_generics
+    #where_clause
+    {
+      fn default() -> Self
+      {
+        Self {}
+      }
+    }
+
+    impl #impl_generics former::FormingEnd< #definition_types_name #ty_generics >
+    for #end_name #ty_generics
     #where_clause
     {
       #[ inline( always ) ]
       fn call(
         &self,
-        sub_storage: < #field_former_definition_type as former_types::definition::FormerDefinition >::Storage,
-        _context: Option< < #field_former_definition_type as former_types::definition::FormerDefinition >::Context >,
+        sub_storage : #storage_name #ty_generics,
+        _context : Option< () >,
       ) -> #enum_name #ty_generics
       {
-        let inner = former_types::storage::StoragePreform::preform( sub_storage );
-        #enum_name::#variant_name( inner )
+        let field0 = former::StoragePreform::preform( sub_storage );
+        #enum_name :: #variant_name ( field0 )
       }
     }
   };
 
-  // Push the End struct and its implementation to the appropriate collections
-  ctx.end_impls.push( end_definition_types );
-  ctx.end_impls.push( end_struct );
-  ctx.end_impls.push( end_impl );
+  // Push all the generated infrastructure to the context
+  ctx.end_impls.push( storage_impls );
+  ctx.end_impls.push( definition_types_impls );
+  ctx.end_impls.push( definition_impls );
+  ctx.end_impls.push( former_impls );
+  ctx.end_impls.push( end_impls );
 
-  // Rule 3d.i: When the field type implements Former, return its former
-  // and create the infrastructure to convert the formed inner type to the enum variant
-  let method = if ctx.variant_attrs.subform_scalar.is_some() {
-    // Rule 2d: #[subform_scalar] means configured former with custom End
-    quote!
+  // Generate the method that returns the implicit variant former
+  let result = quote!
+  {
+    #[ inline( always ) ]
+    #vis fn #method_name() -> #former_name #ty_generics
+    #where_clause
     {
-      #[ inline( always ) ]
-      #vis fn #method_name() -> < #field_type as former_types::definition::EntityToFormer< #field_former_definition_type #field_type_generics > >::Former
-      {
-        < #field_type as former_types::definition::EntityToFormer< #field_former_definition_type #field_type_generics > >::Former::former_begin( None, None, #end_struct_name::default() )
-      }
-    }
-  } else {
-    // Rule 3d: Default behavior - return a configured former with custom End
-    quote!
-    {
-      #[ inline( always ) ]
-      #vis fn #method_name() -> < #field_type as former_types::definition::EntityToFormer< #field_former_definition_type #field_type_generics > >::Former
-      {
-        < #field_type as former_types::definition::EntityToFormer< #field_former_definition_type #field_type_generics > >::Former::former_begin( None, None, #end_struct_name::default() )
-      }
+      #former_name::begin( None, None, #end_name #ty_generics ::default() )
     }
   };
 
-  // Generate standalone constructor if requested (for both Rule 2d and 3d)
+  // Generate standalone constructor if requested
   if ctx.struct_attrs.standalone_constructors.value(false) {
-    // Strip raw identifier prefix if present
-    let method_name_str = method_name.to_string();
-    let base_name = method_name_str.strip_prefix("r#").unwrap_or(&method_name_str);
-    let standalone_name = format_ident!("{}_variant", base_name);
-
-    // Add the standalone constructor as a static method on the enum
-    let standalone_method = quote!
-    {
-      #[ inline( always ) ]
-      #vis fn #standalone_name() -> < #field_type as former_types::definition::EntityToFormer< #field_former_definition_type #field_type_generics > >::Former
+      let standalone_method = quote!
       {
-        < #field_type as former_types::definition::EntityToFormer< #field_former_definition_type #field_type_generics > >::Former::former_begin( None, None, former_types::forming::ReturnPreformed :: default() )
-      }
-    };
-
-    ctx.methods.push( standalone_method );
+        #[ inline( always ) ]
+        #vis fn #method_name() -> #former_name #ty_generics
+        #where_clause
+        {
+          #former_name::begin( None, None, #end_name #ty_generics ::default() )
+        }
+      };
+      ctx.standalone_constructors.push( standalone_method );
   }
 
-  Ok( method )
+  Ok( result )
 }

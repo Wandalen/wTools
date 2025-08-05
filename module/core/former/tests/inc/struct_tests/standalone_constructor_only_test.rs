@@ -7,18 +7,13 @@
 // Use the items defined in the including file (manual or derive)
 use super::*;
 
-/// Tests the standalone constructor for a struct with no arguments.
+/// Tests the standalone constructor for a struct with no ignored fields.
+/// According to new specification: no #[former_ignore] fields means constructor returns Self directly.
 #[ test ]
 fn no_args_test() // Generic test name
 {
-  // Call the constructor function (manual or derived)
-  // Assumes `test_struct_no_args` is defined in the including scope
-  let former = test_struct_no_args();
-
-  // Use the former to build the struct
-  let instance = former
-  .field1( 42 ) // Set the field using the regular setter
-  .form();
+  // Call the constructor function - it now takes all fields as arguments and returns Self
+  let instance = test_struct_no_args(42);
 
   // Define the expected struct instance (using the consistent struct name)
   let expected = TestStructNoArgs
