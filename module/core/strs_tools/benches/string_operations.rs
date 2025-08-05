@@ -1,9 +1,9 @@
 use criterion::{ black_box, criterion_group, criterion_main, BenchmarkId, Criterion, Throughput };
 use strs_tools::string::split;
 
-// Test data generation constants
-const TEST_SIZES : &[ usize ] = &[ 100, 1_000, 10_000, 100_000, 1_000_000 ];
-const DELIMITER_COUNTS : &[ usize ] = &[ 1, 5, 10, 25, 50 ];
+// Test data generation constants - reduced for faster benchmarking
+const TEST_SIZES : &[ usize ] = &[ 100, 1_000, 10_000 ];
+const DELIMITER_COUNTS : &[ usize ] = &[ 1, 5, 10 ];
 
 // Common delimiters used in real-world scenarios
 const SINGLE_DELIMITERS : &[ &str ] = &[ " ", ",", ".", ":", ";", "\n" ];
@@ -18,29 +18,59 @@ const MULTI_DELIMITERS : &[ &[ &str ] ] = &[
 /// Generate test data with specified size and delimiter density
 fn generate_test_data( size : usize, delimiter_density : f32 ) -> String
 {
-  let mut result = String::with_capacity( size );
+  if size == 0 { return String::new(); }
+  
+  let mut result = String::with_capacity( size + 100 ); // Extra capacity for safety
   let words = [ "namespace", "command", "arg", "value", "option", "flag", "param", "config" ];
   let delimiters = [ ":", ".", "!", " ", ",", ";", "\t" ];
   
   let mut rng_state = 12345u64; // Simple LCG for reproducible results
+  let mut iterations = 0;
+  let max_iterations = size.saturating_mul( 2 ).max( 1000 ); // Safety limit to prevent infinite loops
   
-  while result.len() < size
+  while result.len() < size && iterations < max_iterations
   {
     // Add a word
     let word_idx = ( rng_state % words.len() as u64 ) as usize;
-    result.push_str( words[ word_idx ] );
+    let word = words[ word_idx ];
+    
+    // Check if adding this word would exceed size significantly
+    if result.len() + word.len() <= size + 50 // Allow some overage
+    {
+      result.push_str( word );
+    }
+    
     rng_state = rng_state.wrapping_mul( 1103515245 ).wrapping_add( 12345 );
     
     // Maybe add delimiter based on density
-    if ( rng_state as f32 / u64::MAX as f32 ) < delimiter_density
+    if result.len() < size && ( rng_state as f32 / u64::MAX as f32 ) < delimiter_density
     {
       let delim_idx = ( rng_state % delimiters.len() as u64 ) as usize;
-      result.push_str( delimiters[ delim_idx ] );
+      let delimiter = delimiters[ delim_idx ];
+      
+      if result.len() + delimiter.len() <= size + 50
+      {
+        result.push_str( delimiter );
+      }
+      
       rng_state = rng_state.wrapping_mul( 1103515245 ).wrapping_add( 12345 );
     }
+    
+    iterations += 1;
   }
   
-  result.truncate( size );
+  // Ensure we have at least some content for very small sizes
+  if result.is_empty() && size > 0
+  {
+    result.push_str( "test" );
+  }
+  
+  // Truncate to exact size if we went over
+  if result.len() > size
+  {
+    result.truncate( size );
+  }
+  
   result
 }
 
