@@ -111,7 +111,32 @@ rustup install nightly
 rustup default nightly
 ```
 
-### Benchmark Commands
+### Automated Benchmark Runner
+
+**Recommended**: Use the automated benchmark runner for consistent results and automatic documentation:
+
+```bash
+# Run baseline benchmarks only
+cargo run --bin benchmark_runner -- --baseline
+
+# Run SIMD benchmarks with automatic documentation
+cargo run --bin benchmark_runner -- --simd --append-changes --change-type "Optimization" --description "SIMD implementation"
+
+# Compare baseline vs SIMD with automatic documentation
+cargo run --bin benchmark_runner -- --compare --append-changes --change-type "Optimization" --description "SIMD vs scalar comparison"
+```
+
+**Automation Features**:
+- **Auto-documentation**: `--append-changes` automatically updates `benchmark/changes.md`
+- **Performance extraction**: Parses benchmark output and extracts key metrics
+- **Structured logging**: Color-coded output with clear progress indicators
+- **Error handling**: Comprehensive error checking and validation
+- **Backup creation**: Automatic backup of changes.md before modifications
+
+### Manual Benchmark Commands
+
+For manual benchmarking without automation:
+
 ```bash
 # Basic benchmarks
 cargo bench --features simd
@@ -164,8 +189,77 @@ required-features = ["simd"]
 - **Performance**: Consistent improvements across different input patterns
 - **Compatibility**: Graceful fallback on unsupported hardware
 
+## Historical Performance Tracking
+
+### Performance Change Documentation
+
+**CRITICAL**: All major changes that influence performance MUST be documented in `benchmark/changes.md`. This includes:
+
+- **Performance optimizations** (SIMD implementations, algorithm improvements)
+- **Feature additions** that affect benchmark results
+- **Bug fixes** that change performance characteristics  
+- **Dependency updates** that impact throughput
+- **Compiler/toolchain changes** affecting generated code
+- **Performance regressions** and their root cause analysis
+
+### Documentation Process
+
+When implementing changes that affect performance:
+
+1. **Before implementing**: Run baseline benchmarks and record results
+2. **After implementing**: Run benchmarks again and measure impact
+3. **Document in changes.md**: Add entry with before/after measurements
+4. **Update this readme**: Refresh performance tables if significantly changed
+5. **Validate results**: Ensure consistency across multiple benchmark runs
+
+### Benchmark Data Integrity
+
+- **Environment consistency**: Always benchmark on the same hardware/OS configuration
+- **Multiple runs**: Average results across at least 3 benchmark runs
+- **Statistical significance**: Use criterion.rs confidence intervals
+- **Baseline preservation**: Maintain baseline measurements for comparison
+
+### Adding New Performance Change Entries
+
+To append a new entry to `benchmark/changes.md`:
+
+1. **Add entry at the end** of the "Change History" section (newest first order)
+2. **Use the standard template** provided in the file header
+3. **Include quantified measurements** with before/after data
+4. **Document the environment** (platform, Rust version, test conditions)
+
+**Quick append example**:
+```bash
+# At the end of benchmark/changes.md, add:
+## 2025-XX-XX - SIMD Optimization Implementation
+
+**Change Type**: Optimization
+**Description**: Implemented SIMD string splitting using aho-corasick
+
+**Performance Impact**:
+- Single delimiter split: 147 MiB/s → 882 MiB/s (6.0x improvement)
+- Multi delimiter split: 120 MiB/s → 720 MiB/s (6.0x improvement)
+
+**Benchmark Evidence**:
+[Paste benchmark output here]
+
+**Environment**: Linux x86_64, Rust stable, AVX2 enabled
+**Related Files**: src/string/split/simd.rs, benches/string_operations.rs
+**Validation**: All tests pass, consistent 6x improvement across data sizes
+```
+
+### Automated Updates
+
+The performance tables in this readme should be updated when:
+- Major SIMD optimizations are implemented (>10% improvement)
+- New benchmark suites are added
+- Significant performance regressions are discovered and fixed
+- Quarterly performance reviews are conducted
+
+**See `benchmark/changes.md` for complete historical performance data and change analysis.**
+
 ---
 
-*Benchmarks last updated: [Automatically updated by benchmark runs]*  
-*Platform: x86_64-unknown-linux-gnu with AVX2 support*  
-*Compiler: rustc 1.75.0*
+*Benchmarks last updated: 2025-08-05 (Baseline measurements established)*  
+*Platform: Linux 6.8.0-64-generic x86_64*  
+*Next update: After SIMD optimization implementation*

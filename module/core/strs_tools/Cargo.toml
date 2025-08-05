@@ -67,6 +67,9 @@ memchr = { workspace = true, optional = true }
 aho-corasick = { workspace = true, optional = true }
 bytecount = { workspace = true, optional = true }
 
+# Benchmark runner dependencies  
+chrono = { version = "0.4", features = ["serde"] }
+
 [dev-dependencies]
 test_tools = { workspace = true }
 criterion = { version = "0.5", features = ["html_reports"] }
