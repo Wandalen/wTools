@@ -45,3 +45,36 @@ strs_tools = { version = "0.x", features = ["simd"] }
 - [x] **Zero breaking changes** to existing strs_tools usage
 - [x] **SIMD instruction utilization** verified through profiling
 - [x] **Cross-platform compatibility** maintained
+
+### Benchmarking Requirements
+
+#### Integration Validation
+After strs_tools SIMD implementation, validate integration with unilang:
+
+```bash
+# Navigate to unilang directory
+cd /home/user1/pro/lib/wTools2/module/move/unilang
+
+# Update strs_tools dependency to SIMD-enabled version
+# Then run integration benchmarks
+cargo bench strs_tools_integration --features benchmarks
+
+# Run throughput benchmark to measure string processing improvement
+cargo run --release --bin throughput_benchmark --features benchmarks
+
+# Run comprehensive benchmark for detailed analysis
+cargo run --release --bin comprehensive_benchmark --features benchmarks
+```
+
+#### Expected Integration Results
+- **String tokenization**: 3-6x improvement in delimiter-based parsing operations
+- **Pattern matching**: 2-4x improvement in command validation
+- **Overall pipeline**: 15-25% improvement in string processing-heavy workloads
+- **SIMD utilization**: AVX2/SSE4.2 instruction usage in parsing hot paths
+
+#### Automated Documentation Updates
+Ensure `benchmark/readme.md` includes:
+1. **strs_tools integration metrics** showing SIMD impact on unilang string operations
+2. **String processing throughput** comparison before/after SIMD optimization
+3. **SIMD instruction utilization** analysis for parsing operations
+4. **Integration notes** describing strs_tools SIMD feature enablement and impact

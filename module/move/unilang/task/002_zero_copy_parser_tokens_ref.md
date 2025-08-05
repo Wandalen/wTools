@@ -39,3 +39,35 @@ Convert parser tokens from owned strings (`String`) to zero-copy string slices (
 - [x] **No breaking changes** to Unilang public API
 - [x] **Performance validation** showing expected parsing improvements
 - [x] **Memory safety** with proper lifetime management
+
+### Benchmarking Requirements
+
+#### Integration Validation
+After zero-copy parser implementation, validate integration with unilang:
+
+```bash
+# Navigate to unilang directory
+cd /home/user1/pro/lib/wTools2/module/move/unilang
+
+# Run integration benchmarks with zero-copy parser
+cargo bench parser_integration --features benchmarks
+
+# Run throughput benchmark to measure end-to-end improvement
+cargo run --release --bin throughput_benchmark --features benchmarks
+
+# Run comprehensive benchmark for detailed analysis
+cargo run --release --bin comprehensive_benchmark --features benchmarks
+```
+
+#### Expected Integration Results
+- **Parsing phase**: 8-15x improvement in token processing within unilang pipeline
+- **Overall throughput**: Significant contribution to closing 167x performance gap
+- **Memory efficiency**: 40-60% reduction in parsing-related allocations
+- **Pipeline latency**: Major reduction in parsing bottleneck
+
+#### Automated Documentation Updates
+Ensure `benchmark/readme.md` includes:
+1. **Parser integration metrics** showing zero-copy impact on full unilang pipeline
+2. **Memory allocation analysis** documenting parsing allocation reduction
+3. **Throughput comparison** before/after zero-copy parser integration
+4. **Integration notes** describing lifetime management and API compatibility

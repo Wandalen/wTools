@@ -204,6 +204,61 @@ fn bench_simd_tokenization(b: &mut Bencher) {
 - [x] **Correctness validation** with comprehensive test suite
 - [x] **Memory safety** with zero unsafe code (use safe SIMD crates)
 
+### Benchmarking Requirements
+
+#### Performance Validation
+After implementation, run comprehensive benchmarking to validate SIMD improvements:
+
+```bash
+# Navigate to unilang directory
+cd /home/user1/pro/lib/wTools2/module/move/unilang
+
+# Run tokenization-specific benchmarks
+cargo bench simd_tokenization --features benchmarks
+
+# Run throughput benchmark to measure pipeline impact
+cargo run --release --bin throughput_benchmark --features benchmarks
+
+# Run comprehensive benchmark for detailed analysis
+cargo run --release --bin comprehensive_benchmark --features benchmarks
+```
+
+#### Expected Benchmark Results
+- **Tokenization improvement**: 3-6x in pure tokenization speed (1GB/s → 6GB/s)
+- **Pipeline impact**: 15-25% reduction in total parsing time
+- **SIMD utilization**: AVX2 instruction usage verified through profiling
+- **Memory efficiency**: Zero additional allocations in SIMD path
+
+#### Automated Benchmark Documentation
+The implementation must include automated updating of `benchmark/readme.md`:
+
+1. **Create tokenization benchmark section** showing scalar vs SIMD performance
+2. **Update parsing pipeline metrics** with SIMD tokenization impact
+3. **Document SIMD instruction utilization** and CPU requirements
+4. **Add memory usage analysis** showing allocation reduction
+
+#### Validation Commands
+```bash
+# SIMD-specific performance testing
+cargo bench tokenization_simd --features benchmarks
+
+# CPU feature detection validation
+cargo test simd_feature_detection --release --features benchmarks
+
+# Correctness validation (SIMD vs scalar output)
+cargo test tokenization_correctness --release --features benchmarks
+
+# Integration testing with full pipeline
+cargo test integration_simd_tokenization --release --features benchmarks
+```
+
+#### Success Metrics Documentation
+Update `benchmark/readme.md` with:
+- Before/after tokenization throughput (GB/s comparison)
+- SIMD instruction usage statistics and CPU requirements
+- Impact on full parsing pipeline performance
+- Memory allocation reduction analysis
+
 ### Advanced Optimizations
 
 #### Custom SIMD Routines

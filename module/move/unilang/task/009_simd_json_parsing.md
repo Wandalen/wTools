@@ -219,6 +219,64 @@ fn parse_with_buffer(input: &str) -> Result<SerdeValue, ParseError> {
 - [x] **Memory safety** with proper buffer management
 - [x] **CPU feature detection** with runtime optimization selection
 
+### Benchmarking Requirements
+
+#### Performance Validation
+After implementation, run comprehensive benchmarking to validate SIMD JSON improvements:
+
+```bash
+# Navigate to unilang directory
+cd /home/user1/pro/lib/wTools2/module/move/unilang
+
+# Run JSON-specific benchmarks
+cargo bench simd_json --features benchmarks
+
+# Run throughput benchmark to measure pipeline impact
+cargo run --release --bin throughput_benchmark --features benchmarks
+
+# Run comprehensive benchmark for detailed JSON workload analysis
+cargo run --release --bin comprehensive_benchmark --features benchmarks
+```
+
+#### Expected Benchmark Results
+- **Small JSON (< 1KB)**: 4x improvement (~400MB/s → ~1.6GB/s)
+- **Medium JSON (1-10KB)**: 8x improvement (~400MB/s → ~3.2GB/s) 
+- **Large JSON (> 10KB)**: 15x improvement (~400MB/s → ~6.0GB/s)
+- **Pipeline impact**: 2-15x overall improvement depending on JSON payload density
+
+#### Automated Benchmark Documentation
+The implementation must include automated updating of `benchmark/readme.md`:
+
+1. **Create JSON parsing benchmark section** showing serde_json vs simd-json performance
+2. **Update value parsing metrics** with SIMD JSON impact across payload sizes
+3. **Document SIMD instruction utilization** and CPU requirements for JSON workloads
+4. **Add memory buffer management analysis** showing allocation patterns
+
+#### Validation Commands
+```bash
+# JSON-specific performance testing
+cargo bench json_parsing_simd --features benchmarks
+
+# CPU feature detection for JSON SIMD
+cargo test simd_json_features --release --features benchmarks
+
+# Correctness validation (serde_json vs simd-json output)
+cargo test json_parsing_correctness --release --features benchmarks
+
+# Memory safety validation with large JSON payloads
+cargo test json_memory_safety --release --features benchmarks
+
+# Integration testing with JSON-heavy workloads
+cargo test integration_simd_json --release --features benchmarks
+```
+
+#### Success Metrics Documentation
+Update `benchmark/readme.md` with:
+- Before/after JSON parsing throughput across different payload sizes
+- SIMD instruction usage for JSON workloads and CPU requirements
+- Impact on end-to-end pipeline performance for JSON-heavy vs JSON-light workloads
+- Memory buffer management efficiency and allocation reduction
+
 ### Feature Flags
 
 ```toml

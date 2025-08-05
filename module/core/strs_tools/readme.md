@@ -66,3 +66,19 @@ git clone https://github.com/Wandalen/wTools
 cd wTools/module/core/strs_tools
 cargo run --example strs_tools_trivial
 ```
+
+## Architecture & Rule Compliance
+
+This crate follows strict Design and Codestyle Rulebook compliance:
+
+- **Explicit Lifetimes**: All function signatures with references use explicit lifetime parameters
+- **mod_interface Pattern**: Uses `mod_interface!` macro instead of manual namespace definitions  
+- **Workspace Dependencies**: All external deps inherit from workspace for version consistency
+- **Universal Formatting**: Consistent 2-space indentation and proper attribute spacing
+- **Testing Architecture**: All tests in `tests/` directory, never in `src/`
+- **Error Handling**: Uses `error_tools` exclusively, no `anyhow` or `thiserror`
+- **Documentation Strategy**: Entry files use `include_str!` to avoid documentation duplication
+
+### SIMD Optimization
+
+Optional SIMD dependencies (memchr, aho-corasick, bytecount) are available via the `simd` feature for enhanced performance on supported platforms.

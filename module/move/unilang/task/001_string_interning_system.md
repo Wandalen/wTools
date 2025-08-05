@@ -110,6 +110,54 @@ string-interner = "0.15"  # Optional: specialized interner crate
 - [x] **Zero regression** in command name resolution accuracy
 - [x] **Benchmark integration** showing end-to-end improvement
 
+### Benchmarking Requirements
+
+#### Performance Validation
+After implementation, run comprehensive benchmarking to validate improvements:
+
+```bash
+# Navigate to unilang directory
+cd /home/user1/pro/lib/wTools2/module/move/unilang
+
+# Run throughput benchmark to measure end-to-end improvement
+cargo run --release --bin throughput_benchmark --features benchmarks
+
+# Run comprehensive benchmark for detailed analysis
+cargo run --release --bin comprehensive_benchmark --features benchmarks
+```
+
+#### Expected Benchmark Results
+- **Throughput improvement**: 5-10x in command processing (38K → 190K-380K cmd/sec)
+- **Memory efficiency**: Bounded growth with LRU cache
+- **Latency reduction**: P99 latency under 500μs for command resolution
+
+#### Automated Benchmark Documentation
+The implementation must include automated updating of `benchmark/readme.md`:
+
+1. **Create benchmark results section** for string interning performance
+2. **Update throughput comparison** showing before/after command rates
+3. **Document memory usage patterns** with interning cache behavior
+4. **Add integration notes** describing impact on full pipeline performance
+
+#### Validation Commands
+```bash
+# Performance regression testing
+cargo bench string_interning --features benchmarks
+
+# Memory usage validation  
+cargo run --release --example memory_profiling --features benchmarks
+
+# Integration testing with full pipeline
+cargo test integration_string_interning --release --features benchmarks
+```
+
+#### Success Metrics Documentation
+Update `benchmark/readme.md` with:
+- Before/after throughput measurements
+- Memory usage analysis with cache hit rates
+- Integration impact on end-to-end command processing
+- Performance stability over extended runs
+
 ### Related Tasks
 
 - Task 002: Zero-copy parser tokens (synergistic effect)

@@ -28,6 +28,44 @@ The library's public API is exposed through a deliberate, four-tiered namespace 
 
 *   **`private` (Internal):** Contains all implementation details. It is not part of the public API.
 *   **`own`:** Contains the primary, owned types of a module (e.g., `SplitIterator`). This is for developers who want to be explicit and avoid name clashes.
+
+### 1.4. Architecture Compliance & Rule Violations Documentation
+
+#### CRITICAL INSIGHTS FROM RULE COMPLIANCE ANALYSIS:
+
+**1. mod_interface Pattern Migration (PARTIAL - BREAKING CHANGE RISK)**
+- The codebase was converted from manual namespace patterns to `mod_interface!` macro usage
+- **PITFALL**: This changes the public API structure - functions move from `strs_tools::string::split()` to `strs_tools::split()`
+- **INSIGHT**: Backward compatibility requires careful configuration of `mod_interface!` exposed/own/prelude sections
+- **CURRENT STATE**: Main architecture converted but test compatibility needs resolution
+
+**2. Explicit Lifetime Requirements (CRITICAL)**
+- **RULE VIOLATION**: Functions like `unescape_str(input: &str) -> Cow<'_, str>` use implicit lifetimes
+- **CORRECT FORM**: Must be `fn unescape_str<'a>(input: &'a str) -> Cow<'a, str>`
+- **PITFALL**: Rust allows `'_` as shorthand but Design Rulebook requires explicit lifetime parameters
+- **IMPACT**: Affects ~15 function signatures across split.rs, isolate.rs, parse_request.rs
+
+**3. Workspace Dependency Management (FIXED)**
+- **VIOLATION**: SIMD dependencies (memchr, aho-corasick, bytecount, lexical) were declared locally instead of inheriting from workspace
+- **INSIGHT**: All dependencies MUST be declared in workspace Cargo.toml first, then inherited with `{ workspace = true }`
+- **SECURITY CONCERN**: Undeclared workspace dependencies can lead to version inconsistencies
+
+**4. Universal Formatting Rules (PARTIALLY FIXED)**
+- **VIOLATION**: Attributes like `#[cfg(feature = "enabled")]` missing proper spacing
+- **CORRECT FORM**: `#[ cfg( feature = "enabled" ) ]` with spaces inside brackets and around parentheses
+- **PITFALL**: This applies to ALL Rust code including in documentation and tests
+- **PERFORMANCE IMPACT**: Inconsistent formatting can slow down compilation and IDE performance
+
+**5. Documentation Inclusion Strategy (FIXED)**
+- **RULE**: All entry files (lib.rs, bin files) MUST use `#![ doc = include_str!(...) ]` instead of duplicating docs
+- **PITFALL**: Never duplicate documentation between readme.md and source files
+- **INSIGHT**: This ensures single source of truth for documentation and reduces maintenance burden
+
+**6. Clippy vs Design Rulebook Conflicts (CRITICAL INSIGHT)**
+- **CONFLICT**: Clippy's `elidable_lifetime_names` lint conflicts with Design Rulebook's explicit lifetime requirement
+- **RESOLUTION**: Design Rulebook takes precedence - use `#[allow(clippy::elidable_lifetime_names)]` 
+- **ARCHITECTURAL DECISION**: Explicit lifetimes improve maintainability and code clarity over compiler optimization
+- **PATTERN**: When linting tools conflict with architectural rules, architectural consistency wins
     *   *Usage Example:* `use strs_tools::string::split::own::SplitIterator;`
 *   **`exposed`:** Re-exports the `own` namespace under the module's name (e.g., `pub use super::own as split`). This is the intended entry point for qualified path usage.
     *   *Usage Example:* `strs_tools::string::split::split()`

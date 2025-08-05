@@ -59,13 +59,13 @@ string_split = [ "enabled" ] # Removed circular dependency on string_parse_reque
 string_parse = []
 
 [dependencies]
-lexical = { version = "7.0.4", optional = true }
+lexical = { workspace = true, optional = true }
 component_model_types = { workspace = true, features = ["enabled"] }
 
 # SIMD optimization dependencies (optional)
-memchr = { version = "2.7", optional = true }
-aho-corasick = { version = "1.1", optional = true }
-bytecount = { version = "0.6", optional = true }
+memchr = { workspace = true, optional = true }
+aho-corasick = { workspace = true, optional = true }
+bytecount = { workspace = true, optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }

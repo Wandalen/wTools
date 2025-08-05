@@ -130,6 +130,81 @@ Ok((UnilangTokenKind::Identifier(s.string), original_location))
 - [x] **Memory safety validation** with no unsafe code
 - [x] **Full test coverage** with existing parser tests passing
 
+### Benchmarking Requirements
+
+#### Performance Validation
+After implementation, run comprehensive benchmarking to validate zero-copy improvements:
+
+```bash
+# Navigate to unilang_parser directory
+cd /home/user1/pro/lib/wTools2/module/move/unilang_parser
+
+# Run parser-specific benchmarks
+cargo bench --features benchmarks
+
+# Run token creation benchmarks
+cargo bench token_creation --features benchmarks
+cargo bench full_parsing --features benchmarks
+cargo bench memory_allocation --features benchmarks
+```
+
+#### Expected Benchmark Results
+- **Token creation**: 15x improvement (~120ns → ~8ns per token)
+- **Full parsing**: 12x improvement (~25.3μs → ~2.1μs per command)
+- **Memory allocation**: 94% reduction (10-28 → 1 allocation per command)
+- **Throughput**: 12x improvement (~40K → ~476K commands/sec)
+
+#### Automated Benchmark Documentation
+The implementation must include automated updating of `benchmark/readme.md`:
+
+1. **Create zero-copy benchmark sections** showing owned vs borrowed token performance
+2. **Update parsing pipeline metrics** with allocation reduction analysis
+3. **Document memory safety validation** and lifetime management overhead
+4. **Add throughput comparison** showing commands/sec improvements
+
+#### Validation Commands
+```bash
+# Zero-copy specific performance testing
+cargo bench zero_copy_tokens --features benchmarks
+
+# Memory allocation analysis
+cargo bench memory_allocation --features benchmarks
+
+# Correctness validation (owned vs borrowed output)
+cargo test token_correctness --release --features benchmarks
+
+# Memory safety validation
+cargo test --features benchmarks -- --test-threads=1
+
+# Integration testing with unilang
+cd ../../unilang
+cargo bench parser_integration --features benchmarks
+```
+
+#### Success Metrics Documentation
+Update `benchmark/readme.md` with:
+- Before/after token creation performance (ns per token)
+- Memory allocation reduction analysis (allocations per command)
+- Full parsing pipeline throughput improvements (commands/sec)
+- Memory safety validation results and lifetime management overhead
+
+#### Integration Testing with Unilang
+```bash
+# Test zero-copy parser impact on unilang
+cd ../../unilang
+
+# Run throughput benchmark with optimized parser
+cargo run --release --bin throughput_benchmark --features benchmarks
+
+# Validate end-to-end pipeline improvements
+cargo run --release --bin comprehensive_benchmark --features benchmarks
+```
+
+#### Expected Integration Impact
+- **Overall unilang pipeline**: 8-12x improvement in parsing-heavy workloads
+- **Memory pressure**: 90%+ reduction in parser allocations
+- **Latency**: P99 parsing latency under 6μs (vs 67μs before)
+
 ### Dependencies
 
 This task requires coordination with:
