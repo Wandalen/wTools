@@ -729,7 +729,7 @@ fn main() {
             println!("  cargo run --release --bin throughput_benchmark --features benchmarks");
             println!();
             println!("  # Quick benchmark (subset: 10, 100, 1K commands only)");
-            println!("  cargo run --release --bin throughput_benchmark --features benchmarks --quick");
+            println!("  cargo run --release --bin throughput_benchmark --features benchmarks -- --quick");
             println!();
             println!("FEATURES:");
             println!("  ⚡ Fast execution - Results in seconds, not minutes");
