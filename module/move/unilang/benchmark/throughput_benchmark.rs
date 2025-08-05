@@ -96,8 +96,13 @@ fn benchmark_unilang_throughput(command_count: usize) -> ThroughputResult {
         .map(|i| format!(".perf.cmd_{} input::test_{} verbose::true", i, i))
         .collect();
 
-    // Extended test set for better statistical sampling
-    let iterations = (command_count * 10).max(1000).min(50000);
+    // Extended test set for better statistical sampling - reduced for large command counts
+    let iterations = match command_count {
+        n if n <= 100 => (n * 10).max(1000),
+        n if n <= 1000 => n * 5,
+        n if n <= 10000 => n,
+        _ => command_count / 2, // For 100K+, use fewer iterations
+    }.min(50000);
     let test_set: Vec<&String> = (0..iterations)
         .map(|i| &test_commands[i % test_commands.len()])
         .collect();
@@ -185,8 +190,13 @@ fn benchmark_clap_throughput(command_count: usize) -> ThroughputResult {
     let init_time = init_start.elapsed();
     let init_time_us = init_time.as_nanos() as f64 / 1000.0;
 
-    // Generate test commands
-    let iterations = (command_count * 10).max(1000).min(50000);
+    // Generate test commands - optimized for large command counts
+    let iterations = match command_count {
+        n if n <= 100 => (n * 10).max(1000),
+        n if n <= 1000 => n * 5,
+        n if n <= 10000 => n,
+        _ => command_count / 2, // For 100K+, use fewer iterations
+    }.min(50000);
     let test_commands: Vec<Vec<String>> = (0..iterations)
         .map(|i| {
             let cmd_idx = i % command_count;
@@ -258,8 +268,13 @@ fn benchmark_pico_args_throughput(command_count: usize) -> ThroughputResult {
     let init_time = init_start.elapsed();
     let init_time_us = init_time.as_nanos() as f64 / 1000.0;
 
-    // Generate test arguments
-    let iterations = (command_count * 10).max(1000).min(50000);
+    // Generate test arguments - optimized for large command counts
+    let iterations = match command_count {
+        n if n <= 100 => (n * 10).max(1000),
+        n if n <= 1000 => n * 5,
+        n if n <= 10000 => n,
+        _ => command_count / 2, // For 100K+, use fewer iterations
+    }.min(50000);
     let test_args: Vec<Vec<String>> = (0..iterations)
         .map(|i| {
             let cmd_idx = i % command_count;
@@ -315,6 +330,135 @@ fn benchmark_pico_args_throughput(command_count: usize) -> ThroughputResult {
         commands_per_second,
         iterations_tested: iterations,
     }
+}
+
+#[cfg(feature = "benchmarks")]
+fn update_readme_with_throughput_results(results: &[Vec<ThroughputResult>]) -> Result<(), String> {
+    use std::fs;
+    use std::path::Path;
+    
+    println!("📝 Updating README with latest throughput benchmark results...");
+    
+    // Convert throughput results to the format expected by README
+    let mut performance_data = String::new();
+    
+    if !results.is_empty() {
+        let mut unilang_data = Vec::new();
+        let mut clap_data = Vec::new();
+        let mut pico_data = Vec::new();
+        
+        for result_set in results {
+            if let Some(unilang) = result_set.iter().find(|r| r.framework == "unilang") {
+                let cmd_display = if unilang.command_count >= 1000 {
+                    format!("{}K", unilang.command_count / 1000)
+                } else {
+                    unilang.command_count.to_string()
+                };
+                
+                // Convert to same units as comprehensive benchmark
+                let build_time_s = 0.0; // Throughput benchmark doesn't measure build time
+                let binary_size_kb = 0;  // Throughput benchmark doesn't measure binary size
+                let init_time_val = unilang.init_time_us;
+                let lookup_time_us = unilang.avg_lookup_ns / 1000.0; // ns to μs
+                let throughput = unilang.commands_per_second as u64;
+                
+                let row = format!("| **{}** | ~{:.1}s* | ~{} KB* | ~{:.1} μs | ~{:.1} μs | ~{}/sec |",
+                                cmd_display, build_time_s, binary_size_kb, init_time_val, lookup_time_us, throughput);
+                unilang_data.push(row);
+            }
+            
+            if let Some(clap) = result_set.iter().find(|r| r.framework == "clap") {
+                let cmd_display = if clap.command_count >= 1000 {
+                    format!("{}K", clap.command_count / 1000)
+                } else {
+                    clap.command_count.to_string()
+                };
+                
+                let build_time_s = 0.0;
+                let binary_size_kb = 0;
+                let init_time_val = clap.init_time_us;
+                let lookup_time_us = clap.avg_lookup_ns / 1000.0;
+                let throughput = clap.commands_per_second as u64;
+                
+                let row = if throughput == 0 {
+                    format!("| **{}** | ~{:.1}s* | ~{} KB* | N/A* | N/A* | N/A* |", cmd_display, build_time_s, binary_size_kb)
+                } else {
+                    format!("| **{}** | ~{:.1}s* | ~{} KB* | ~{:.1} μs | ~{:.1} μs | ~{}/sec |",
+                            cmd_display, build_time_s, binary_size_kb, init_time_val, lookup_time_us, throughput)
+                };
+                clap_data.push(row);
+            }
+            
+            if let Some(pico_args) = result_set.iter().find(|r| r.framework == "pico-args") {
+                let cmd_display = if pico_args.command_count >= 1000 {
+                    format!("{}K", pico_args.command_count / 1000)
+                } else {
+                    pico_args.command_count.to_string()
+                };
+                
+                let build_time_s = 0.0;
+                let binary_size_kb = 0;
+                let init_time_val = pico_args.init_time_us;
+                let lookup_time_us = pico_args.avg_lookup_ns / 1000.0;
+                let throughput = pico_args.commands_per_second as u64;
+                
+                let row = format!("| **{}** | ~{:.1}s* | ~{} KB* | ~{:.1} μs | ~{:.1} μs | ~{}/sec |",
+                                cmd_display, build_time_s, binary_size_kb, init_time_val, lookup_time_us, throughput);
+                pico_data.push(row);
+            }
+        }
+        
+        // Build performance tables with note about throughput-only data
+        performance_data = format!(
+            "### Unilang Scaling Performance\n\n| Commands | Build Time | Binary Size | Startup | Lookup | Throughput |\n|----------|------------|-------------|---------|--------|-----------|\n{}\n\n### Clap Scaling Performance\n\n| Commands | Build Time | Binary Size | Startup | Lookup | Throughput |\n|----------|------------|-------------|---------|--------|-----------|\n{}\n\n### Pico-Args Scaling Performance\n\n| Commands | Build Time | Binary Size | Startup | Lookup | Throughput |\n|----------|------------|-------------|---------|--------|-----------|\n{}\n\n*Note: Build time and binary size data unavailable from throughput-only benchmark. Run comprehensive benchmark for complete metrics.*\n",
+            unilang_data.join("\n"),
+            clap_data.join("\n"), 
+            pico_data.join("\n")
+        );
+    }
+    
+    // Update the README timestamp and performance data
+    let readme_path = "benchmark/readme.md";
+    if Path::new(readme_path).exists() {
+        let now = chrono::Utc::now();
+        let timestamp = format!("<!-- Last updated: {} UTC -->\n", now.format("%Y-%m-%d %H:%M:%S"));
+        
+        let content = fs::read_to_string(readme_path)
+            .map_err(|e| format!("Failed to read README: {}", e))?;
+        
+        let mut updated_content = if content.starts_with("<!--") {
+            // Replace existing timestamp
+            let lines: Vec<&str> = content.lines().collect();
+            if lines.len() > 1 {
+                format!("{}\n{}", timestamp.trim(), lines[1..].join("\n"))
+            } else {
+                format!("{}\n{}", timestamp, content)
+            }
+        } else {
+            // Add new timestamp
+            format!("{}{}", timestamp, content)
+        };
+        
+        // If we have new performance data, update the performance tables section
+        if !performance_data.is_empty() {
+            // Find and replace the performance tables section
+            if let Some(start_pos) = updated_content.find("### Unilang Scaling Performance") {
+                if let Some(end_pos) = updated_content[start_pos..].find("## 🔧 Available Benchmarks") {
+                    let before = &updated_content[..start_pos];
+                    let after = &updated_content[start_pos + end_pos..];
+                    updated_content = format!("{}{}\n{}", before, performance_data, after);
+                    println!("✅ Performance tables updated with throughput benchmark data");
+                }
+            }
+        }
+        
+        fs::write(readme_path, updated_content)
+            .map_err(|e| format!("Failed to write README: {}", e))?;
+        
+        println!("✅ README updated successfully with throughput results");
+    }
+    
+    Ok(())
 }
 
 #[cfg(feature = "benchmarks")]
@@ -467,7 +611,7 @@ fn run_throughput_benchmark() {
     println!("Focus: Command parsing throughput (no compilation testing)");
     println!("Duration: ~30-60 seconds\n");
 
-    let command_counts = vec![10, 100, 1000, 10000];
+    let command_counts = vec![10, 100, 1000, 10000, 100000];
     let mut all_results = Vec::new();
 
     for &count in &command_counts {
@@ -477,7 +621,26 @@ fn run_throughput_benchmark() {
         println!("╚════════════════════════════════════════════╝");
 
         let unilang_result = benchmark_unilang_throughput(count);
-        let clap_result = benchmark_clap_throughput(count);
+        
+        // Skip Clap for 100K commands as it becomes extremely slow
+        let clap_result = if count >= 100000 {
+            println!("🗡️  Skipping Clap with {} commands (too slow for throughput testing)", count);
+            ThroughputResult {
+                framework: "clap".to_string(),
+                command_count: count,
+                init_time_us: 0.0,
+                avg_lookup_ns: 0.0,
+                p50_lookup_ns: 0,
+                p95_lookup_ns: 0,
+                p99_lookup_ns: 0,
+                max_lookup_ns: 0,
+                commands_per_second: 0.0,
+                iterations_tested: 0,
+            }
+        } else {
+            benchmark_clap_throughput(count)
+        };
+        
         let pico_args_result = benchmark_pico_args_throughput(count);
 
         // Quick comparison
@@ -495,6 +658,12 @@ fn run_throughput_benchmark() {
 
     // Generate comprehensive report
     generate_throughput_report(&all_results);
+
+    // Update README with latest results
+    match update_readme_with_throughput_results(&all_results) {
+        Ok(()) => println!("✅ README updated with throughput benchmark results"),
+        Err(error) => println!("⚠️  README update failed: {}", error),
+    }
 
     println!("🎉 Throughput benchmark completed!");
     println!("\n📊 **Quick Summary:**");
