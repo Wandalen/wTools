@@ -7,6 +7,16 @@
 //! - `variant_to_method_name`: Converts variant names to method names with raw identifier support
 //! - `strip_raw_prefix`: Safely strips the `r#` prefix when it's safe to do so
 //! - `preserve_raw_identifier`: Preserves raw identifiers when necessary
+//! - `strip_raw_prefix_for_compound_ident`: **CRITICAL** - Strips r# for use in compound identifiers
+//!
+//! ## Critical Bug ⚠️
+//! 
+//! **Issue**: Enum variant handlers concatenate raw identifiers without stripping `r#` prefix
+//! - **Symptom**: Panic with error like `"KeywordVariantEnumr#breakFormerStorage"` is not a valid identifier
+//! - **Root Cause**: Direct string concatenation of raw identifiers in type name generation
+//! - **Affected**: All enum variant handlers processing keyword identifiers
+//! - **Workaround**: Use `strip_raw_prefix_for_compound_ident()` before concatenation
+//! - **Status**: Utility implemented but needs integration across all enum handlers
 
 use macro_tools::{ syn, quote::format_ident, ident };
 use convert_case::{Case, Casing};

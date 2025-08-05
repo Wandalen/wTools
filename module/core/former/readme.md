@@ -378,6 +378,43 @@ Understanding the terminology used in `former` will help you leverage its full p
     *   Custom end-of-forming logic: Implement `FormingEnd`.
     *   Custom collection support: Implement `Collection` traits.
 
+## Troubleshooting
+
+### Common Issues
+
+**"Missing Former types" Error**
+- **Symptom**: Errors like `BreakFormer not found` or `RunFormerDefinition not found`
+- **Cause**: Required struct types don't have `#[derive(Former)]` enabled
+- **Solution**: Check for commented-out `// #[derive(Debug, Clone, PartialEq, former::Former)]` and uncomment them
+- **Note**: Historical "trailing comma issue" has been resolved - Former derive works correctly now
+
+**Raw Identifier Compilation Errors**
+- **Symptom**: Panic with error like `"KeywordVariantEnumr#breakFormerStorage" is not a valid identifier`
+- **Cause**: Bug in enum variant handling with raw identifiers (e.g., `r#break`, `r#move`)
+- **Workaround**: Use explicit `#[scalar]` attribute on variants with keyword identifiers
+- **Status**: Known issue with utility functions available but not fully integrated
+
+**Inner Doc Comment Errors (E0753)**
+- **Symptom**: `inner doc comments are not permitted here` when compiling tests
+- **Cause**: Files with `//!` comments included via `include!()` macro 
+- **Solution**: Replace `//!` with regular `//` comments in included test files
+
+**Test Import/Scope Issues**
+- **Symptom**: `TestEnum not found` or similar import errors in test files
+- **Solution**: Update import paths to use full crate paths (e.g., `use crate::inc::module::TestEnum`)
+- **Architecture**: `*_only_test.rs` files are included by `derive.rs`/`manual.rs`, not standalone modules
+
+**Enum Field Method Not Found**
+- **Symptom**: Method like `.field_name()` not found on enum variant former
+- **Cause**: Current enum Former implementation uses positional setters, not field delegation
+- **Workaround**: Use positional setters like `._0(value)` instead of `.field_name(value)`
+- **Alternative**: Mark complex variants as `#[scalar]` for direct construction
+
+**Standalone Constructor Conflicts**
+- **Symptom**: "Old behavior conflicts" in manual implementations
+- **Cause**: Manual implementations following outdated patterns
+- **Solution**: Update standalone constructors to return `Self` directly when no fields are marked with `#[former_ignore]`
+
 ## Where to Go Next
 
 *   **[Technical Specification](spec.md):** Complete behavioral specification defining the Former macro's rules and expected behavior.

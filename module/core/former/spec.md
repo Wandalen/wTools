@@ -47,6 +47,11 @@ The macro generates a static constructor method on the enum for each variant. Th
 
 **Implementation Status Note:** Single-field tuple variants (Rule 2d) have a known issue where the handler attempts to use EntityToFormer trait integration, which fails for primitive types (u32, String, etc.) that don't implement Former. Current workaround is to use explicit `#[scalar]` attribute for primitive types.
 
+**Enum Former Delegation Limitation:** Current enum Former implementation generates positional setters (e.g., `._0()`, `._1()`) for tuple fields rather than delegating to inner struct Former methods. This means:
+- Test expecting `.field_name()` methods on enum variant formers will fail
+- Complex enum-to-struct Former delegation is not fully implemented
+- Workaround: Use positional setters or mark variants as `#[scalar]` for direct construction
+
 
 #### 2.2. Standalone Constructor Behavior
 
@@ -54,6 +59,8 @@ When the `#[standalone_constructors]` attribute is applied to an item, the retur
 
 *   **Rule SC-1 (Full Construction):** If **no** fields of a struct or enum variant are marked with `#[former_ignore]`, the generated standalone constructor will take all fields as arguments and return the final, constructed instance (`Self`).
 *   **Rule SC-2 (Partial Construction):** If **any** fields of a struct or enum variant are marked with `#[former_ignore]`, the generated standalone constructor will take only the non-ignored fields as arguments and return an instance of the `Former` (`...Former`), pre-initialized with those arguments.
+
+**⚠️ Breaking Change Notice**: This specification represents the current behavior. Previous versions may have implemented different patterns where standalone constructors always returned `Former` instances. Manual implementations following the old pattern need to be updated to match the new specification for consistency.
 
 #### 2.3. Attribute Reference
 
@@ -220,6 +227,22 @@ As you implement or modify the `former_meta` crate, please fill out the sections
     2.  `_derive.rs`: A file that uses `#[derive(Former)]` on an identical data structure.
     3.  `_only_test.rs`: A file containing only `#[test]` functions that is `include!`d by both the `_manual.rs` and `_derive.rs` files. This guarantees that the exact same assertions are run against both the hand-written and macro-generated implementations, ensuring their behavior is identical.
 
+#### Disabled Test Classification System
+
+When enabling disabled tests, issues fall into these systematic categories:
+
+| Category | Description | Typical Resolution | Difficulty |
+|----------|-------------|-------------------|-----------|
+| **CATEGORY 1** | Missing Former types | Re-enable commented `#[derive(Former)]` | Easy |
+| **CATEGORY 2** | Generic parsing issues | Macro improvements needed | Hard |
+| **CATEGORY 3** | Import/scope issues | Fix import paths and module structure | Easy |
+| **CATEGORY 4** | Trait conflicts | Resolve conflicting trait implementations | Medium |
+| **CATEGORY 5** | Unimplemented attributes | Implement missing attribute support | Hard |
+| **CATEGORY 6** | Lifetime issues | Complex lifetime parameter problems | Hard |
+| **CATEGORY 7** | Infrastructure gaps | Missing supporting methods/traits | Medium |
+
+**Recommended Order**: Start with Categories 1 and 3 (easy wins), then 4 and 7 (medium), finally 2, 5, and 6 (requires deeper architectural work).
+
 ### Finalized Library & Tool Versions
 *List the critical libraries, frameworks, or tools used and their exact locked versions from `Cargo.lock`.*
 
@@ -246,6 +269,34 @@ As you implement or modify the `former_meta` crate, please fill out the sections
 - **Detection**: Search for `// #[derive.*Former` patterns in test files
 - **Resolution**: Uncomment derive attributes (90% of "blocked" test issues)
 - **Prevention**: Use feature flags instead of commenting out derives during debugging
+
+#### 3. Raw Identifier Bug in Enum Variant Handlers ⚠️
+**Issue**: Former derive panics when generating method names for enum variants with raw identifiers (e.g., `r#break`)
+- **Symptom**: Error like `"KeywordVariantEnumr#breakFormerStorage"` is not a valid identifier
+- **Root Cause**: Macro concatenates raw identifier strings directly without stripping `r#` prefix
+- **Workaround**: Use `raw_identifier_utils::strip_raw_prefix_for_compound_ident()` in variant name processing
+- **Affected**: All enum variant handlers when processing keyword identifiers
+- **Status**: Utility functions available but not fully integrated across all handlers
+
+#### 4. Inner Doc Comments in Included Files ⚠️
+**Issue**: Files with `//!` inner doc comments cannot be safely included with `include!()`
+- **Symptom**: Compilation error E0753 - inner doc comments not at crate root
+- **Root Cause**: `include!()` places inner doc comments in middle of including file
+- **Resolution**: Replace `//!` with regular `//` comments in files intended for inclusion
+- **Affected**: All `*_only_test.rs` files that use `include!()` pattern
+
+#### 5. Test Architecture Misunderstanding
+**Issue**: Enabling `*_only_test.rs` files as standalone modules causes name conflicts
+- **Symptom**: Multiple definition errors for types already imported via `use super::*`
+- **Understanding**: `*_only_test.rs` files are designed for `include!()` not as modules
+- **Resolution**: Never enable `*_only_test.rs` as `mod` declarations - they are included by derive/manual files
+- **Pattern**: `derive.rs` + `manual.rs` both `include!("only_test.rs")` for shared test logic
+
+#### 6. Trailing Comma Issue Resolution ✅
+**Issue**: Historical "trailing comma issue in macro_tools::generic_params::decompose" 
+- **Status**: **RESOLVED** - Former derive now works correctly with generic parameters
+- **Action**: Commented-out `#[derive(Former)]` attributes can be safely re-enabled
+- **Impact**: Resolved major category of "missing Former types" test failures
 
 #### 3. Stale BLOCKED Comments
 **Issue**: Comments claiming tests are blocked when they actually work with current macro

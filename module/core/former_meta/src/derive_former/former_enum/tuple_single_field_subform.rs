@@ -24,6 +24,15 @@
 //! - `{Enum}{Variant}FormerDefinition`: Definition linking all components
 //! - `{Enum}{Variant}Former`: Builder with `._0(value)` setter
 //! - `{Enum}{Variant}End`: Custom end handler for tuple variant construction
+//!
+//! ## Known Issues ⚠️
+//!
+//! **Raw Identifier Bug**: This handler (like others) has a bug with raw identifiers:
+//! - Symptom: Panic with "KeywordVariantEnumr#breakFormerStorage" is not a valid identifier
+//! - Cause: Direct string concatenation of variant names containing `r#` prefix
+//! - Location: Line where `variant_name_str` is used without stripping `r#`
+//! - Workaround: Use `raw_identifier_utils::strip_raw_prefix_for_compound_ident()`
+//! - Status: Utility functions available but integration needed across all handlers
 
 use super::*;
 
