@@ -756,7 +756,20 @@ specific needs of the broader forming context. It mandates the implementation of
   // Identify fields marked as constructor arguments
   let constructor_args_fields: Vec<_> = formed_fields
   .iter()
-  .filter( | f | !f.attrs.former_ignore.value( false ) ) // Use the parsed attribute
+  .filter( | f | {
+    // If #[former_ignore] is present, exclude the field
+    if f.attrs.former_ignore.value(false) {
+      false
+    }
+    // If #[arg_for_constructor] is present, include the field
+    else if f.attrs.arg_for_constructor.value(false) {
+      true  
+    }
+    // Default behavior: include the field (inverted former_ignore logic)
+    else {
+      true
+    }
+  })
   .collect();
 
   // Generate constructor function parameters
@@ -870,7 +883,14 @@ specific needs of the broader forming context. It mandates the implementation of
 
     // Determine if all fields are constructor arguments
     // Note: We only consider fields that are part of the final struct (`formed_fields`)
-    let all_fields_are_args = formed_fields.iter().all(|f| !f.attrs.former_ignore.value(false)); // Space around |
+    let all_fields_are_args = formed_fields.iter().all(|f| {
+      // Field is arg if it's not ignored AND (default behavior OR explicitly marked)
+      if f.attrs.former_ignore.value(false) {
+        false  // Explicitly ignored
+      } else {
+        true   // Default: include (or explicitly marked with arg_for_constructor)
+      }
+    }); // Space around |
 
     // Determine return type and body based on Option 2 rule
     let (return_type, constructor_body) = if all_fields_are_args {
@@ -879,8 +899,20 @@ specific needs of the broader forming context. It mandates the implementation of
       let construction_args = formed_fields.iter().map(| f | // Space around |
       {
         let field_ident = f.ident;
-        let param_name = ident::ident_maybe_raw( field_ident );
-        quote! { #field_ident : #param_name.into() }
+        // Check if this field is a constructor argument (same logic as filter above)
+        let is_constructor_arg = if f.attrs.former_ignore.value(false) {
+          false  // Explicitly ignored
+        } else {
+          true   // Default: include (or explicitly marked with arg_for_constructor)
+        };
+        
+        if is_constructor_arg {
+          let param_name = ident::ident_maybe_raw( field_ident );
+          quote! { #field_ident : #param_name.into() }
+        } else {
+          // Use default value for ignored fields
+          quote! { #field_ident : ::core::default::Default::default() }
+        }
       });
       let body = quote! { #struct_type_ref { #( #construction_args ),* } };
       (return_type, body)

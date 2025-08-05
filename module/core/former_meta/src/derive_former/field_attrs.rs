@@ -166,6 +166,9 @@ pub struct FieldAttributes {
 
   /// Excludes a field from standalone constructor arguments.
   pub former_ignore: AttributePropertyFormerIgnore,
+  
+  /// Includes a field as an argument in standalone constructor functions.
+  pub arg_for_constructor: AttributePropertyArgForConstructor,
 }
 
 impl FieldAttributes {
@@ -269,6 +272,7 @@ impl FieldAttributes {
         AttributeSubformCollectionSetter::KEYWORD => result.assign(AttributeSubformCollectionSetter::from_meta(attr)?),
         AttributeSubformEntrySetter::KEYWORD => result.assign(AttributeSubformEntrySetter::from_meta(attr)?),
         AttributePropertyFormerIgnore::KEYWORD => result.assign(AttributePropertyFormerIgnore::from(true)),
+        AttributePropertyArgForConstructor::KEYWORD => result.assign(AttributePropertyArgForConstructor::from(true)),
         _ => {} // Allow unknown attributes
       }
     }
@@ -341,6 +345,17 @@ where
   fn assign(&mut self, component: IntoT) {
     let component = component.into();
     self.former_ignore.assign(component);
+  }
+}
+
+impl<IntoT> Assign<AttributePropertyArgForConstructor, IntoT> for FieldAttributes
+where
+  IntoT: Into<AttributePropertyArgForConstructor>,
+{
+  #[inline(always)]
+  fn assign(&mut self, component: IntoT) {
+    let component = component.into();
+    self.arg_for_constructor.assign(component);
   }
 }
 
@@ -1078,3 +1093,18 @@ impl AttributePropertyComponent for FormerIgnoreMarker {
 /// Indicates whether a field should be excluded from standalone constructor arguments.
 /// Defaults to `false`. Parsed as a singletone attribute (`#[former_ignore]`).
 pub type AttributePropertyFormerIgnore = AttributePropertyOptionalSingletone<FormerIgnoreMarker>;
+
+// =
+
+/// Marker type for attribute property including a field as a constructor argument.
+/// Defaults to `false`.
+#[derive(Debug, Default, Clone, Copy)]
+pub struct ArgForConstructorMarker;
+
+impl AttributePropertyComponent for ArgForConstructorMarker {
+  const KEYWORD: &'static str = "arg_for_constructor";
+}
+
+/// Indicates whether a field should be included as an argument in standalone constructor functions.
+/// Defaults to `false`. Parsed as a singletone attribute (`#[arg_for_constructor]`).
+pub type AttributePropertyArgForConstructor = AttributePropertyOptionalSingletone<ArgForConstructorMarker>;
