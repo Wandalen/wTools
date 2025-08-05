@@ -1,4 +1,4 @@
-<!-- Last updated: 2025-08-04 21:05:02 UTC -->
+<!-- Last updated: 2025-08-05 06:20:11 UTC -->
 # # # # 🚀 Unilang Performance Benchmarks
 
 This directory contains comprehensive performance benchmarks for the unilang framework, measuring build-time and runtime performance across exponentially increasing command counts from **10¹ to 10⁵** (10 to 100,000 commands).
@@ -39,31 +39,25 @@ cargo test throughput_performance_benchmark --release --features benchmarks -- -
 
 | Commands | Build Time | Binary Size | Startup | Lookup | Throughput |
 |----------|------------|-------------|---------|--------|-----------|
-| **10** | ~0.0s* | ~0 KB* | ~357.8 μs | ~24.8 μs | ~40335/sec |
-| **100** | ~0.0s* | ~0 KB* | ~106.0 μs | ~25.4 μs | ~39294/sec |
-| **1K** | ~0.0s* | ~0 KB* | ~1560.4 μs | ~26.9 μs | ~37092/sec |
-| **10K** | ~0.0s* | ~0 KB* | ~15280.9 μs | ~26.9 μs | ~37036/sec |
-| **100K** | ~0.0s* | ~0 KB* | ~176145.9 μs | ~27.7 μs | ~36068/sec |
+| **10** | ~0.0s* | ~0 KB* | ~288.4 μs | ~24.6 μs | ~40628/sec |
+| **100** | ~0.0s* | ~0 KB* | ~104.1 μs | ~25.2 μs | ~39578/sec |
+| **1K** | ~0.0s* | ~0 KB* | ~1459.3 μs | ~25.9 μs | ~38499/sec |
 
 ### Clap Scaling Performance
 
 | Commands | Build Time | Binary Size | Startup | Lookup | Throughput |
 |----------|------------|-------------|---------|--------|-----------|
-| **10** | ~0.0s* | ~0 KB* | ~116.2 μs | ~11.4 μs | ~87337/sec |
-| **100** | ~0.0s* | ~0 KB* | ~91.6 μs | ~80.4 μs | ~12435/sec |
-| **1K** | ~0.0s* | ~0 KB* | ~1929.5 μs | ~980.5 μs | ~1019/sec |
-| **10K** | ~0.0s* | ~0 KB* | ~24051.4 μs | ~16224.1 μs | ~61/sec |
-| **100K** | ~0.0s* | ~0 KB* | N/A* | N/A* | N/A* |
+| **10** | ~0.0s* | ~0 KB* | ~100.8 μs | ~11.2 μs | ~89015/sec |
+| **100** | ~0.0s* | ~0 KB* | ~90.3 μs | ~77.5 μs | ~12895/sec |
+| **1K** | ~0.0s* | ~0 KB* | ~1735.5 μs | ~924.6 μs | ~1081/sec |
 
 ### Pico-Args Scaling Performance
 
 | Commands | Build Time | Binary Size | Startup | Lookup | Throughput |
 |----------|------------|-------------|---------|--------|-----------|
-| **10** | ~0.0s* | ~0 KB* | ~1.4 μs | ~0.1 μs | ~6488408/sec |
-| **100** | ~0.0s* | ~0 KB* | ~8.9 μs | ~0.1 μs | ~6535904/sec |
-| **1K** | ~0.0s* | ~0 KB* | ~101.2 μs | ~0.1 μs | ~6323950/sec |
-| **10K** | ~0.0s* | ~0 KB* | ~1281.6 μs | ~0.1 μs | ~6209745/sec |
-| **100K** | ~0.0s* | ~0 KB* | ~91440.8 μs | ~0.1 μs | ~6197033/sec |
+| **10** | ~0.0s* | ~0 KB* | ~1.5 μs | ~0.1 μs | ~6613712/sec |
+| **100** | ~0.0s* | ~0 KB* | ~9.3 μs | ~0.1 μs | ~6589308/sec |
+| **1K** | ~0.0s* | ~0 KB* | ~60.4 μs | ~0.1 μs | ~6446904/sec |
 
 *Note: Build time and binary size data unavailable from throughput-only benchmark. Run comprehensive benchmark for complete metrics.*
 

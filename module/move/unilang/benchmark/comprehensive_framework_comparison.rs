@@ -482,8 +482,19 @@ fn main() {{
 
     // Add {} subcommands
     for i in 0..{} {{
-        let subcommand = Command::new(format!("cmd_{{}}", i))
-            .about(format!("Performance test command {{}}", i))
+        // Use static strings for lifetime compatibility
+        let (cmd_name, cmd_desc) = match i {{
+            0 => ("cmd_0", "Performance test command 0"),
+            1 => ("cmd_1", "Performance test command 1"),
+            2 => ("cmd_2", "Performance test command 2"),
+            3 => ("cmd_3", "Performance test command 3"),
+            4 => ("cmd_4", "Performance test command 4"),
+            5 => ("cmd_5", "Performance test command 5"),
+            _ => ("cmd_dynamic", "Performance test command dynamic"),
+        }};
+        
+        let subcommand = Command::new(cmd_name)
+            .about(cmd_desc)
             .arg(Arg::new("input")
                 .short('i')
                 .long("input")

@@ -605,13 +605,24 @@ fn generate_throughput_report(results: &[Vec<ThroughputResult>]) {
 
 #[cfg(feature = "benchmarks")]
 fn run_throughput_benchmark() {
+    // Parse command line arguments
+    let args: Vec<String> = std::env::args().collect();
+    let quick_mode = args.len() > 1 && (args[1] == "--quick" || args[1] == "-q");
+    
     println!("🚀 Starting Throughput-Only Performance Benchmark");
     println!("=================================================");
     println!("Testing Unilang vs Clap vs Pico-Args runtime performance");
     println!("Focus: Command parsing throughput (no compilation testing)");
-    println!("Duration: ~30-60 seconds\n");
-
-    let command_counts = vec![10, 100, 1000, 10000, 100000];
+    
+    let (command_counts, duration_desc) = if quick_mode {
+        println!("⚡ QUICK MODE: Testing subset for rapid feedback");
+        (vec![10, 100, 1000], "~10-15 seconds")
+    } else {
+        println!("📊 FULL MODE: Testing complete range (use --quick for faster results)");
+        (vec![10, 100, 1000, 10000, 100000], "~30-60 seconds")
+    };
+    
+    println!("Duration: {}\n", duration_desc);
     let mut all_results = Vec::new();
 
     for &count in &command_counts {
@@ -699,6 +710,37 @@ fn run_throughput_benchmark() {
 fn main() {
     #[cfg(feature = "benchmarks")]
     {
+        let args: Vec<String> = std::env::args().collect();
+        
+        // Check for help argument
+        if args.len() > 1 && (args[1] == "--help" || args[1] == "-h") {
+            println!("🚀 Unilang Throughput Benchmark");
+            println!("===============================");
+            println!();
+            println!("USAGE:");
+            println!("  cargo run --release --bin throughput_benchmark --features benchmarks [OPTIONS]");
+            println!();
+            println!("OPTIONS:");
+            println!("  --quick, -q    Run quick mode (10, 100, 1K commands only) ~10-15 seconds");
+            println!("  --help, -h     Show this help message");
+            println!();
+            println!("EXAMPLES:");
+            println!("  # Full benchmark (all command counts: 10, 100, 1K, 10K, 100K)");
+            println!("  cargo run --release --bin throughput_benchmark --features benchmarks");
+            println!();
+            println!("  # Quick benchmark (subset: 10, 100, 1K commands only)");
+            println!("  cargo run --release --bin throughput_benchmark --features benchmarks --quick");
+            println!();
+            println!("FEATURES:");
+            println!("  ⚡ Fast execution - Results in seconds, not minutes");
+            println!("  🎯 Runtime focus - No compilation testing delays");  
+            println!("  📊 Extended sampling - Statistical reliability per command count");
+            println!("  🔄 Perfect for CI/CD - Quick regression detection");
+            println!("  📈 Live comparison - Unilang vs Clap vs Pico-Args side-by-side");
+            println!("  📝 Auto-updates README - Fresh performance tables in benchmark/readme.md");
+            return;
+        }
+        
         run_throughput_benchmark();
     }
     
@@ -706,6 +748,7 @@ fn main() {
     {
         eprintln!("Error: Benchmarks not enabled!");
         eprintln!("Run with: cargo run --release --bin throughput_benchmark --features benchmarks");
+        eprintln!("Add --help for usage information");
         std::process::exit(1); 
     }
 }
