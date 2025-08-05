@@ -19,6 +19,7 @@ struct Args
   change_type : Option< String >,
   description : Option< String >,
   help : bool,
+  quick : bool,
 }
 
 /// Performance metrics extracted from benchmark output
@@ -220,12 +221,13 @@ impl BenchmarkRunner
     Ok( ( output.status.success(), combined_output ) )
   }
   
-  fn run_baseline_benchmarks( &self ) -> io::Result< ( bool, String ) >
+  fn run_baseline_benchmarks( &self, quick : bool ) -> io::Result< ( bool, String ) >
   {
     self.log_info( "Running baseline (scalar) benchmarks..." );
     
+    let benchmark_name = if quick { "quick_test" } else { "string_operations" };
     let args = [
-      "bench", "--bench", "string_operations", 
+      "bench", "--bench", benchmark_name, 
       "--", "--sample-size", "10", "--measurement-time", "1"
     ];
     
@@ -439,6 +441,7 @@ fn parse_args() -> Args
           i += 1;
         }
       }
+      "--quick" => parsed.quick = true,
       "--help" => parsed.help = true,
       _ =>
       {
@@ -486,14 +489,18 @@ OPTIONS:
     --baseline                  Run baseline (scalar) benchmarks only
     --simd                     Run SIMD benchmarks only  
     --compare                  Run comparison benchmarks
+    --quick                    Use quick test benchmark (faster for testing)
     --append-changes           Auto-append results to benchmark/changes.md
     --change-type TYPE         Change type: Infrastructure/Feature/Optimization/Bug Fix/Refactor/Regression
     --description "DESC"       Description of the change being benchmarked
     --help                     Show this help message
 
 EXAMPLES:
-    # Run baseline benchmarks
+    # Run baseline benchmarks (full suite)
     cargo run --bin benchmark_runner -- --baseline
+
+    # Run quick test (faster for development)
+    cargo run --bin benchmark_runner -- --baseline --quick
 
     # Run SIMD benchmarks and document the optimization
     cargo run --bin benchmark_runner -- --simd --append-changes --change-type "Optimization" --description "SIMD implementation using aho-corasick"
@@ -529,7 +536,7 @@ fn main() -> io::Result< () >
   
   if args.baseline
   {
-    let ( bench_success, bench_output ) = runner.run_baseline_benchmarks()?;
+    let ( bench_success, bench_output ) = runner.run_baseline_benchmarks( args.quick )?;
     success = bench_success;
     output = bench_output;
     benchmark_type = "Baseline".to_string();

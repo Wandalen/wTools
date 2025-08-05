@@ -81,3 +81,7 @@ harness = false
 [[bench]]
 name = "memory_usage"
 harness = false
+
+[[bench]]
+name = "quick_test"
+harness = false

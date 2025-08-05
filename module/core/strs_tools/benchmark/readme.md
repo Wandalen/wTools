@@ -116,14 +116,17 @@ rustup default nightly
 **Recommended**: Use the automated benchmark runner for consistent results and automatic documentation:
 
 ```bash
-# Run baseline benchmarks only
+# Run baseline benchmarks (full suite - slower)
 cargo run --bin benchmark_runner -- --baseline
+
+# Run quick test benchmarks (faster for development/testing)
+cargo run --bin benchmark_runner -- --baseline --quick
 
 # Run SIMD benchmarks with automatic documentation
 cargo run --bin benchmark_runner -- --simd --append-changes --change-type "Optimization" --description "SIMD implementation"
 
-# Compare baseline vs SIMD with automatic documentation
-cargo run --bin benchmark_runner -- --compare --append-changes --change-type "Optimization" --description "SIMD vs scalar comparison"
+# Compare baseline vs SIMD and auto-document (use --quick for faster testing)
+cargo run --bin benchmark_runner -- --compare --quick --append-changes --change-type "Optimization" --description "SIMD vs scalar comparison"
 ```
 
 **Automation Features**:
