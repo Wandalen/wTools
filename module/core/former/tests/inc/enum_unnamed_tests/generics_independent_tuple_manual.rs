@@ -16,10 +16,10 @@ use super::*; // Imports testing infrastructure and potentially other common ite
 use std::marker::PhantomData;
 use former_types::
 {
-  Assign,
   FormingEnd, StoragePreform, FormerDefinition, FormerDefinitionTypes, Storage,
   ReturnPreformed, FormerBegin, FormerMutator,
 };
+// use component_model_types::Assign; // Not available in test context
 
 // --- Dummy Bounds ---
 // Defined in _only_test.rs

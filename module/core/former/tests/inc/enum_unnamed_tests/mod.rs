@@ -51,11 +51,11 @@ mod basic_manual; // Re-enabled - fixed missing Former types by enabling derive
 // mod basic_only_test; // Test file is included by basic_manual.rs, not a standalone module
 // mod generics_in_tuple_variant_only_test; // Disabled - type resolution issues
 // mod generics_independent_tuple_derive; // Disabled - complex generic syntax errors need fixing
-// mod generics_independent_tuple_manual; // Disabled - missing imports
-// mod generics_independent_tuple_only_test; // Disabled - type resolution issues
+mod generics_independent_tuple_manual; // Re-enabled - testing manual implementation
+// mod generics_independent_tuple_only_test; // Disabled - conflicts with manual file types (included test)
 // mod generics_shared_tuple_derive;  // Disabled - enum Former delegation not fully implemented
 
-// mod generics_shared_tuple_manual; // Disabled - complex issues  
+mod generics_shared_tuple_manual; // Re-enabled - testing manual implementation with shared generics  
 // mod generics_shared_tuple_only_test;
 mod test_syntax; // Re-enabled - just syntax test without Former derive
 // mod scalar_generic_tuple_derive;  // Disabled - requires manual version
