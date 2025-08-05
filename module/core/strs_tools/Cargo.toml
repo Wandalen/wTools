@@ -41,7 +41,11 @@ full = [
   "string_parse_request",
   "string_parse_number",
   "string_split",
+  "simd",
 ]
+
+# Performance optimization features
+simd = ["memchr", "aho-corasick", "bytecount"]
 
 no_std = []
 use_alloc = [ "no_std" ]
@@ -55,8 +59,29 @@ string_split = [ "enabled" ] # Removed circular dependency on string_parse_reque
 string_parse = []
 
 [dependencies]
-lexical = { version = "7.0.4", optional = true }
+lexical = { workspace = true, optional = true }
 component_model_types = { workspace = true, features = ["enabled"] }
+
+# SIMD optimization dependencies (optional)
+memchr = { workspace = true, optional = true }
+aho-corasick = { workspace = true, optional = true }
+bytecount = { workspace = true, optional = true }
+
+# Benchmark runner dependencies  
+chrono = { version = "0.4", features = ["serde"] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "string_operations"
+harness = false
+
+[[bench]]
+name = "memory_usage"
+harness = false
+
+[[bench]]
+name = "quick_test"
+harness = false

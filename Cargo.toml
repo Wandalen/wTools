@@ -697,6 +697,20 @@ default-features = false
 # quote = { version = "~1.0.35", default-features = false, features = [] }
 # syn = { version = "~2.0.52", default-features = false, features = [ "full", "extra-traits" ] } # qqq : xxx : optimize set of features
 
+## External - SIMD optimization dependencies for strs_tools
+
+[workspace.dependencies.lexical]
+version = "7.0.4"
+
+[workspace.dependencies.memchr]
+version = "2.7"
+
+[workspace.dependencies.aho-corasick]
+version = "1.1"
+
+[workspace.dependencies.bytecount]
+version = "0.6"
+
 [patch.crates-io]
 former_meta = { path = "module/core/former_meta" }
 # const_format = { version = "0.2.32", default-features = false, features = [] }

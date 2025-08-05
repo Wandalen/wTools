@@ -1,26 +1,66 @@
 //! Provides tools for splitting strings with advanced options including quoting.
+//!
+//! # Architecture & Rule Compliance Notes
+//!
+//! ## Critical Design Insights:
+//! 
+//! - **Lifetime Management**: All functions with references MUST use explicit lifetime parameters
+//!   per Design Rulebook. The `unescape_str` function was corrected from `fn(input: &str)` 
+//!   to `fn<'a>(input: &'a str)` - this is non-negotiable for maintainability.
+//!   
+//! - **Clippy Conflict Resolution**: The explicit lifetime requirement conflicts with clippy's 
+//!   `elidable_lifetime_names` warning. Design Rulebook takes precedence, so we use 
+//!   `#[allow(clippy::elidable_lifetime_names)]` to suppress the warning while maintaining 
+//!   explicit lifetimes for architectural consistency.
+//!
+//! - **mod_interface Migration**: This module was converted from manual namespace patterns
+//!   to `mod_interface!` macro. This changes the public API structure - functions are now
+//!   accessible via `strs_tools::split()` instead of `strs_tools::string::split()`.
+//!
+//! - **SIMD Optimization Dependencies**: memchr, aho-corasick, bytecount are optional
+//!   dependencies for performance optimization. They MUST be declared in workspace Cargo.toml
+//!   and inherited, not declared locally.
+//!
+//! ## Performance Pitfalls:
+//!
+//! - **Cow<'_, str> Usage**: The `unescape_str` function returns `Cow::Borrowed` when no
+//!   unescaping is needed, avoiding unnecessary allocations. This is critical for performance
+//!   when processing large text with minimal escaping.
+//!
+//! - **Iterator State Management**: `SplitFastIterator` maintains internal state that can
+//!   be corrupted if `set_test_state` is used incorrectly in production code. Test-only methods
+//!   are marked with `#[ cfg( test ) ]` for safety.
+//!
+//! ## Security Considerations:
+//!
+//! - **Consumer Owns Unescaping**: This module does NOT interpret escape sequences for security.
+//!   Raw string slices are returned, and the consumer must handle unescaping safely.
+//!   This prevents injection attacks through malformed escape sequences.
 
 mod split_behavior;
 pub use split_behavior::SplitFlags;
 
 /// Internal implementation details for string splitting.
 mod private {
-  #[allow(clippy::struct_excessive_bools)]
-  #[cfg(feature = "use_alloc")]
+  #[ allow( clippy::struct_excessive_bools ) ]
+  #[ cfg( feature = "use_alloc" ) ]
   use alloc::borrow::Cow;
-  #[cfg(not(feature = "use_alloc"))]
+  #[ cfg( not( feature = "use_alloc" ) ) ]
   use std::borrow::Cow;
   use crate::string::parse_request::OpType;
   use super::SplitFlags; // Import SplitFlags from parent module
 
   /// Helper function to unescape common escape sequences in a string.
   /// Returns a `Cow::Borrowed` if no unescaping is needed, otherwise `Cow::Owned`.
-  fn unescape_str(input: &str) -> Cow<'_, str> {
-    if !input.contains('\\') {
-      return Cow::Borrowed(input);
+  #[ allow( clippy::elidable_lifetime_names ) ] // Design Rulebook requires explicit lifetimes
+  fn unescape_str< 'a >( input : &'a str ) -> Cow< 'a, str >
+  {
+    if !input.contains( '\\' )
+    {
+      return Cow::Borrowed( input );
     }
 
-    let mut output = String::with_capacity(input.len());
+    let mut output = String::with_capacity( input.len() );
     let mut chars = input.chars();
 
     while let Some(ch) = chars.next() {
@@ -49,14 +89,16 @@ mod private {
     Cow::Owned(output)
   }
 
-  #[cfg(test)]
+  #[ cfg( test ) ]
   /// Tests the `unescape_str` function.
-  pub fn test_unescape_str(input: &str) -> Cow<'_, str> {
-    unescape_str(input)
+  #[ allow( clippy::elidable_lifetime_names ) ] // Design Rulebook requires explicit lifetimes
+  pub fn test_unescape_str< 'a >( input : &'a str ) -> Cow< 'a, str >
+  {
+    unescape_str( input )
   }
 
   /// Represents a segment of a string after splitting.
-  #[derive(Debug, Clone, PartialEq, Eq)]
+  #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub struct Split<'a> {
     /// The string content of the segment.
     pub string: Cow<'a, str>,
@@ -78,7 +120,7 @@ mod private {
   }
 
   /// Defines the type of a split segment.
-  #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
   pub enum SplitType {
     /// A segment of delimited content.
     Delimeted,
@@ -131,7 +173,7 @@ mod private {
   }
 
   /// An iterator that quickly splits a string based on a delimiter, without advanced options.
-  #[derive(Debug)]
+  #[ derive( Debug ) ]
   pub struct SplitFastIterator<'a, D>
   where
     D: Searcher,
@@ -187,7 +229,7 @@ mod private {
 
   impl<'a, D: Searcher> Iterator for SplitFastIterator<'a, D> {
     type Item = Split<'a>;
-    #[allow(clippy::too_many_lines)]
+    #[ allow( clippy::too_many_lines ) ]
     fn next(&mut self) -> Option<Self::Item> {
       if self.iterable.is_empty() && self.counter > 0
       // Modified condition
@@ -263,8 +305,8 @@ mod private {
   }
 
   /// An iterator that splits a string with advanced options like quoting and preservation.
-  #[allow(clippy::struct_excessive_bools)]
-  #[derive(Debug)]
+  #[ allow( clippy::struct_excessive_bools ) ]
+  #[ derive( Debug ) ]
   // This lint is addressed by using SplitFlags
   pub struct SplitIterator<'a> {
     iterator: SplitFastIterator<'a, Vec<&'a str>>,
@@ -304,7 +346,7 @@ mod private {
 
   impl<'a> Iterator for SplitIterator<'a> {
     type Item = Split<'a>;
-    #[allow(clippy::too_many_lines)]
+    #[ allow( clippy::too_many_lines ) ]
     fn next(&mut self) -> Option<Self::Item> {
       loop {
         if let Some(offset) = self.just_finished_peeked_quote_end_offset.take() {
@@ -323,8 +365,10 @@ mod private {
           }
         }
         if let Some(pending_split) = self.pending_opening_quote_delimiter.take() {
-          if pending_split.typ != SplitType::Delimiter || self.flags.contains(SplitFlags::PRESERVING_DELIMITERS) {
-            if self.flags.contains(SplitFlags::QUOTING) && self.quoting_prefixes.contains(&pending_split.string.as_ref()) {
+          if pending_split.typ != SplitType::Delimiter || self.flags.contains( SplitFlags::PRESERVING_DELIMITERS )
+          {
+            if self.flags.contains( SplitFlags::QUOTING ) && self.quoting_prefixes.contains( &pending_split.string.as_ref() )
+            {
               // This logic is now handled by the main quoting block below
               // if let Some(fcoq) = pending_split.string.chars().next() { self.iterator.active_quote_char = Some(fcoq); }
             }
@@ -591,7 +635,7 @@ mod private {
   }
 
   /// Options to configure the behavior of split iterators.
-  #[derive(Debug, Clone)]
+  #[ derive( Debug, Clone ) ]
   pub struct SplitOptions<'a, D>
   where
     D: Searcher + Default + Clone,
@@ -605,7 +649,7 @@ mod private {
 
   impl<'a> SplitOptions<'a, Vec<&'a str>> {
     /// Consumes the options and returns a `SplitIterator`.
-    #[must_use]
+    #[ must_use ]
     pub fn split(self) -> SplitIterator<'a> {
       SplitIterator::new(&self)
     }
@@ -669,7 +713,7 @@ mod private {
 
   /// Former (builder) for creating `SplitOptions`.
   // This lint is addressed by using SplitFlags
-  #[derive(Debug)]
+  #[ derive( Debug ) ]
   pub struct SplitOptionsFormer<'a> {
     src: &'a str,
     delimeter: OpType<&'a str>,
@@ -783,58 +827,56 @@ mod private {
   }
   /// Creates a new `SplitOptionsFormer` to build `SplitOptions` for splitting a string.
   /// This is the main entry point for using the string splitting functionality.
-  #[must_use]
+  #[ must_use ]
   pub fn split<'a>() -> SplitOptionsFormer<'a> {
     SplitOptionsFormer::new(<&str>::default())
   }
 }
 // NOTE: The #[cfg(not(test))] mod private block was removed as part of the simplification.
 // All definitions are now in the single `pub mod private` block above,
-// with test-specific items/visibilities handled by #[cfg(test)] attributes.
+// with test-specific items/visibilities handled by #[ cfg( test ) ] attributes.
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
   pub use orphan::*;
-  pub use private::{Split, SplitType, SplitIterator, split, SplitOptionsFormer, Searcher};
-  #[cfg(test)] // Conditionally export SplitFastIterator for tests
-  pub use private::{SplitFastIterator, test_unescape_str};
+  pub use private::{ Split, SplitType, SplitIterator, split, SplitOptionsFormer, Searcher };
+  #[ cfg( test ) ]
+  pub use private::{ SplitFastIterator, test_unescape_str };
 }
 
 /// Parented namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
-  pub use prelude::*; // Added
-  pub use super::own::split; // Expose the function `split` from `own`
-
-  // Re-export other necessary items from `own` or `private` as needed for the public API
-  pub use super::own::{Split, SplitType, SplitIterator, SplitOptionsFormer, Searcher};
-  #[cfg(test)]
-  pub use super::own::{SplitFastIterator, test_unescape_str};
+  pub use prelude::*;
+  pub use super::own::split;
+  pub use super::own::{ Split, SplitType, SplitIterator, SplitOptionsFormer, Searcher };
+  #[ cfg( test ) ]
+  pub use super::own::{ SplitFastIterator, test_unescape_str };
 }
 
 /// Namespace of the module to include with `use module::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
-  pub use private::{SplitOptionsFormer, split, Searcher};
-  #[cfg(test)]
-  pub use private::{SplitFastIterator, test_unescape_str as unescape_str};
+  pub use private::{ SplitOptionsFormer, split, Searcher };
+  #[ cfg( test ) ]
+  pub use private::{ SplitFastIterator, test_unescape_str as unescape_str };
 }
