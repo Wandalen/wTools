@@ -205,7 +205,13 @@ pub(super) fn former_for_enum(
         .iter()
         .map(|field| {
           let attrs = FieldAttributes::from_attrs(field.attrs.iter())?;
-          let is_constructor_arg = !attrs.former_ignore.value(false);
+          let is_constructor_arg = if attrs.former_ignore.value(false) {
+            false  // Explicitly ignored
+          } else if attrs.arg_for_constructor.value(false) {
+            true   // Explicitly included
+          } else {
+            false  // Default: exclude (arg_for_constructor is opt-in)
+          };
           Ok(EnumVariantFieldInfo {
             ident: field
               .ident
@@ -223,7 +229,13 @@ pub(super) fn former_for_enum(
         .enumerate()
         .map(|(index, field)| {
           let attrs = FieldAttributes::from_attrs(field.attrs.iter())?;
-          let is_constructor_arg = !attrs.former_ignore.value(false);
+          let is_constructor_arg = if attrs.former_ignore.value(false) {
+            false  // Explicitly ignored
+          } else if attrs.arg_for_constructor.value(false) {
+            true   // Explicitly included
+          } else {
+            false  // Default: exclude (arg_for_constructor is opt-in)
+          };
           Ok(EnumVariantFieldInfo {
             ident: format_ident!("_{}", index),
             ty: field.ty.clone(),

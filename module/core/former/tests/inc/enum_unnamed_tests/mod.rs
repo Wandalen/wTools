@@ -66,7 +66,7 @@ mod tuple_multi_default_only_test; // Re-enabled - fixed import scope issue
 mod tuple_multi_scalar_derive; // Re-enabled - scalar handlers work fine
 mod tuple_multi_scalar_manual; // Re-enabled - manual implementation without derive
 mod tuple_multi_scalar_only_test; // Re-enabled - fixed import scope issue
-// mod tuple_multi_standalone_args_derive; // Disabled - needs enum-specific #[arg_for_constructor] logic
+mod tuple_multi_standalone_args_derive; // Re-enabled - enum #[arg_for_constructor] logic now implemented!
 // // mod tuple_multi_standalone_args_manual;
 // // mod tuple_multi_standalone_args_only_test;
 mod tuple_multi_standalone_derive; // Re-enabled - testing standalone constructor functionality
@@ -84,7 +84,7 @@ mod keyword_variant_tuple_derive; // Re-enabled - testing raw identifier handlin
 // mod keyword_variant_tuple_only_test; // Test file is included by keyword_variant_tuple_derive.rs, not a standalone module
 mod standalone_constructor_tuple_derive; // Re-enabled - fixed inner doc comment issues
 mod standalone_constructor_tuple_only_test; // Re-enabled - fixed scope issues with proper imports
-// mod standalone_constructor_args_tuple_derive; // Disabled - needs enum-specific #[arg_for_constructor] logic
+mod standalone_constructor_args_tuple_derive; // Re-enabled - enum #[arg_for_constructor] logic now implemented!
 // mod standalone_constructor_args_tuple_single_manual; // Added
 // mod standalone_constructor_args_tuple_multi_manual; // Added
 // mod standalone_constructor_args_tuple_only_test;

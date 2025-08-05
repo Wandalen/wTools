@@ -397,7 +397,8 @@ mod derive_former;
       former, scalar, subform_scalar, subform_collection, subform_entry, // field attributes
       // <<< Added the new attributes here >>>
       standalone_constructors, // Add struct-level attribute
-      former_ignore            // Add field-level attribute
+      former_ignore,           // Add field-level attribute
+      arg_for_constructor      // Add field-level attribute for constructor inclusion
     )
   )
 ]
