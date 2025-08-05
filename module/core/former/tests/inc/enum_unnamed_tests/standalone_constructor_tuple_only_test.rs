@@ -16,7 +16,8 @@
 #[ cfg( test ) ]
 mod tests
 {
-  // use super::TestEnum; // Assuming TestEnum is available from the including file
+  use crate::inc::enum_unnamed_tests::standalone_constructor_tuple_derive::TestEnum;
+  use crate::inc::enum_unnamed_tests::standalone_constructor_tuple_derive::{ variant_1, variant_2 };
 
   #[ test ]
   fn variant1_test()
@@ -24,7 +25,7 @@ mod tests
     // Test Matrix Row: T16.1 (Implicitly, as this tests the behavior expected by the matrix)
     // Tests the standalone constructor for Variant1 (single field, no #[arg_for_constructor])
     let value = 123;
-    let got = variant1() // Call the standalone constructor
+    let got = variant_1() // Call the standalone constructor (note underscore naming)
       ._0( value ) // Use the setter for the field
       .form(); // Form the final enum instance
 
@@ -39,7 +40,7 @@ mod tests
     // Tests the standalone constructor for Variant2 (multi field, no #[arg_for_constructor])
     let value1 = 456;
     let value2 = "abc".to_string();
-    let got = variant2() // Call the standalone constructor
+    let got = variant_2() // Call the standalone constructor (note underscore naming)
       ._0( value1 ) // Use the setter for the first field
       ._1( value2.clone() ) // Use the setter for the second field
       .form(); // Form the final enum instance

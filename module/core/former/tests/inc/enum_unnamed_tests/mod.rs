@@ -47,13 +47,13 @@ include!( "scalar_generic_tuple_common_types.rs" );
 // Uncomment modules as they are addressed in increments.
 
 mod basic_derive; // Re-enabled - simple scalar constructor test
-// mod basic_manual; // Disabled - missing Former types for variants (BreakFormer, RunFormer, etc.)
-// mod basic_only_test; // Disabled - missing parent enum definitions (FunctionStep, Break, Run)
+mod basic_manual; // Re-enabled - fixed missing Former types by enabling derive
+// mod basic_only_test; // Test file is included by basic_manual.rs, not a standalone module
 // mod generics_in_tuple_variant_only_test; // Disabled - type resolution issues
 // mod generics_independent_tuple_derive; // Disabled - generic parsing issues
 // mod generics_independent_tuple_manual; // Disabled - missing imports
 // mod generics_independent_tuple_only_test; // Disabled - type resolution issues
-// mod generics_shared_tuple_derive;  // TEMP: FormingEnd trait signature compatibility issue
+// mod generics_shared_tuple_derive;  // Disabled - enum Former delegation not fully implemented
 
 // mod generics_shared_tuple_manual; // Disabled - complex issues  
 // mod generics_shared_tuple_only_test;
@@ -65,25 +65,25 @@ mod tuple_multi_default_manual;
 mod tuple_multi_default_only_test; // Re-enabled - fixed import scope issue
 mod tuple_multi_scalar_derive; // Re-enabled - scalar handlers work fine
 mod tuple_multi_scalar_manual; // Re-enabled - manual implementation without derive
-// mod tuple_multi_scalar_only_test; // Disabled - import issues with super::TestEnum
+mod tuple_multi_scalar_only_test; // Re-enabled - fixed import scope issue
 // mod tuple_multi_standalone_args_derive; // Disabled - #[arg_for_constructor] attribute not implemented yet
 // // mod tuple_multi_standalone_args_manual;
 // // mod tuple_multi_standalone_args_only_test;
 mod tuple_multi_standalone_derive; // Re-enabled - testing standalone constructor functionality
 // // mod tuple_multi_standalone_manual;
-// mod usecase1_derive;  // TEMP: FormingEnd trait signature compatibility issue
+// mod usecase1_derive;  // Disabled - complex enum-to-struct Former delegation not fully implemented
 // // mod tuple_multi_standalone_only_test;
 
 // mod usecase1_manual;  // Import and trait issues
-// mod enum_named_fields_unnamed_derive; // Disabled - inner doc comments issue in included file
-// mod enum_named_fields_unnamed_manual;
-// mod enum_named_fields_unnamed_only_test;
+mod enum_named_fields_unnamed_derive; // Re-enabled - fixed inner doc comments issue
+// mod enum_named_fields_unnamed_manual; // Disabled - CATEGORY 1: missing Former types (FunctionStep, BreakFormerDefinitionTypes, etc.)
+// mod enum_named_fields_unnamed_only_test; // Test file is included by derive/manual files, not standalone
 // mod generics_in_tuple_variant_tuple_derive;
 // mod generics_in_tuple_variant_tuple_manual;
-// mod keyword_variant_tuple_derive; // Disabled - derive works but test scope issues remain
-// mod keyword_variant_tuple_only_test; // Disabled - test scope issues remain
+// mod keyword_variant_tuple_derive; // Disabled - raw identifier handling issue in Former derive (r#break variant fails)
+// mod keyword_variant_tuple_only_test; // Test file is included by keyword_variant_tuple_derive.rs, not a standalone module
 mod standalone_constructor_tuple_derive; // Re-enabled - fixed inner doc comment issues
-// mod standalone_constructor_tuple_only_test; // Disabled - scope issues with included files
+mod standalone_constructor_tuple_only_test; // Re-enabled - fixed scope issues with proper imports
 // mod standalone_constructor_args_tuple_derive;
 // mod standalone_constructor_args_tuple_single_manual; // Added
 // mod standalone_constructor_args_tuple_multi_manual; // Added

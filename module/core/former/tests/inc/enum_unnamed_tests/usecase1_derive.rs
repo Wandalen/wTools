@@ -21,38 +21,26 @@ use former::FormerBegin;
 
 // Define the inner structs that the enum variants will hold.
 // These need to derive Former themselves if you want to build them easily.
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, Clone, PartialEq, former::Former)]
-#[derive(Debug, Clone, PartialEq)]
+// Re-enabled Former derive - trailing comma issue appears to be fixed
+#[derive(Debug, Clone, PartialEq, Default, former::Former)]
 pub struct Prompt { pub content: String }
 
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-
-// #[derive(Debug, Clone, PartialEq, former::Former)]
-
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default, former::Former)]
 pub struct Break { pub condition: bool }
 
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+// Re-enabled Former derive - trailing comma issue appears to be fixed
 
-// #[derive(Debug, Clone, PartialEq, former::Former)]
-
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default, former::Former)]
 pub struct InstructionsApplyToFiles { pub instruction: String }
 
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-
-// #[derive(Debug, Clone, PartialEq, former::Former)]
-
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default, former::Former)]
 pub struct Run { pub command: String }
 
 // Derive former::Former on the enum.
 // By default, this should generate subformer starter methods for each variant.
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, Clone, PartialEq, former::Former)]
-#[derive(Debug, Clone, PartialEq)]
-#[ debug ]
+// Re-enabled Former derive - trailing comma issue appears to be fixed
+#[derive(Debug, Clone, PartialEq, former::Former)]
+// #[ debug ]
 pub enum FunctionStep
 {
   Prompt(Prompt),

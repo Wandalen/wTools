@@ -103,7 +103,7 @@ mod name_collisions;
 
 // = parametrization
 
-// mod parametrized_dyn_manual; // xxx2 : qqq2 : fix the issue
+// mod parametrized_dyn_manual; // Disabled - CATEGORY 6: lifetime issue with borrowed data escaping
 
 // mod parametrized_field;  // BLOCKED: Undeclared lifetime 'child in derive macro + ?Sized trait bound issues
 mod test_lifetime_only;
@@ -228,7 +228,7 @@ mod subform_all_private;
 // = standalone constructor
 
 mod standalone_constructor_derive;
-// mod standalone_constructor_manual;  // Old behavior - conflicts with new spec
+mod standalone_constructor_manual;  // Re-enabled - testing old behavior conflicts
 mod former_ignore_test;
 mod simple_former_ignore_test;
 mod standalone_constructor_new_test;

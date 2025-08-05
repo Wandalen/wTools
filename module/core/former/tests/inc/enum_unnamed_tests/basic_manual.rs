@@ -20,21 +20,16 @@ use super::*;
 use former::StoragePreform;
 
 // --- Inner Struct Definitions ---
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, Clone, PartialEq, former::Former)]
-#[derive(Debug, Clone, PartialEq)]
+// Re-enabled Former derive - testing if trailing comma issue is fixed
+#[derive(Debug, Clone, PartialEq, former::Former)]
 pub struct Break { pub condition: bool }
 
-// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-
-// #[derive(Debug, Clone, PartialEq, former::Former)]
-
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, former::Former)]
 pub struct Run { pub command: String }
 
 // --- Enum Definition ---
 #[derive(Debug, Clone, PartialEq)]
-enum FunctionStep
+pub enum FunctionStep
 {
   Break(Break),
   Run(Run),

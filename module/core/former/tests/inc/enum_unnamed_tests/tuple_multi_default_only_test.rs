@@ -15,7 +15,7 @@
 #[ cfg( test ) ]
 mod tests
 {
-  // TestEnum should be available from the including scope
+  use crate::inc::enum_unnamed_tests::tuple_multi_default_derive::TestEnum;
 
   #[ test ]
   fn variant_test()

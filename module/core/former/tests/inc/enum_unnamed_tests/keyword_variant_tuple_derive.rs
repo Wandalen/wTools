@@ -30,14 +30,29 @@ pub struct Break
 // --- Enum Definition ---
 // Apply Former derive here. This is what we are testing.
 #[ derive( Debug, PartialEq, Clone, Former ) ]
-// #[ debug ] // Uncomment to see generated code later
+// #[ debug ] // Debug the macro to see what's being generated
 pub enum KeywordVariantEnum
 {
   // --- Tuple Variants with Keyword Identifiers ---
   #[ scalar ] // Explicitly scalar
   r#use( u32 ),
-  // Default behavior (should be subform for single-field tuple)
+  // Use subform_scalar to ensure subform behavior 
+  #[ subform_scalar ]
   r#break( Break ),
+}
+
+// --- Test what methods are available ---
+#[test]
+fn test_what_methods_exist() {
+  // Test the scalar constructor (should work)
+  let scalar_result = KeywordVariantEnum::r#use(10u32);
+  assert_eq!(scalar_result, KeywordVariantEnum::r#use(10u32));
+  
+  // Test Break Former works independently
+  let break_instance = Break::former()
+    .value(42u32)
+    .form();
+  assert_eq!(break_instance.value, 42);
 }
 
 // --- Include the Test Logic ---

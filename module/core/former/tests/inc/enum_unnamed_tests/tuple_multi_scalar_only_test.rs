@@ -15,7 +15,7 @@
 #[ cfg( test ) ]
 mod tests
 {
-  use super::TestEnum;
+  use crate::inc::enum_unnamed_tests::tuple_multi_scalar_derive::TestEnum;
 
   #[ test ]
   fn variant_test()

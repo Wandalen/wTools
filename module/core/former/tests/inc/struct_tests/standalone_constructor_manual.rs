@@ -135,8 +135,9 @@ where
 
 // === Standalone Constructor (Manual): No Args ===
 /// Manual standalone constructor for `TestStructNoArgs`.
-pub fn test_struct_no_args() -> TestStructNoArgsFormer<TestStructNoArgsFormerDefinition<(), TestStructNoArgs, ReturnPreformed>> {
-  TestStructNoArgsFormer::new(ReturnPreformed)
+/// New spec: takes field arguments and returns Self directly.
+pub fn test_struct_no_args(field1: i32) -> TestStructNoArgs {
+  TestStructNoArgs { field1 }
 }
 
 // === Struct Definition: With Args ===
