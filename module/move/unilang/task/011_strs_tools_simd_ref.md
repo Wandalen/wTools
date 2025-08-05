@@ -48,6 +48,8 @@ strs_tools = { version = "0.x", features = ["simd"] }
 
 ### Benchmarking Requirements
 
+> 💡 **Dependency Integration Insight**: SIMD optimizations in dependencies like strs_tools show compounding effects. Test feature flag combinations and validate that SIMD features are properly enabled in the dependency chain.
+
 #### Integration Validation
 After strs_tools SIMD implementation, validate integration with unilang:
 

@@ -3,6 +3,23 @@
 //! This benchmark focuses exclusively on runtime throughput testing across
 //! different command counts, without compile-time measurements. Designed for
 //! quick performance validation and regression testing.
+//!
+//! ## Key Benchmarking Insights from Unilang Development:
+//! 
+//! 1. **Two-Tier Strategy**: Fast throughput (30-60s) for daily validation,
+//!    comprehensive (8+ min) for complete analysis with build metrics.
+//!
+//! 2. **Statistical Rigor**: 3+ repetitions per measurement with P50/P95/P99
+//!    percentiles to detect variance and eliminate measurement noise.
+//!
+//! 3. **Power-of-10 Scaling**: Tests 10¹ to 10⁵ commands to reveal scalability
+//!    characteristics invisible at small scales (Unilang: O(1), Clap: O(N)).
+//!
+//! 4. **Comparative Analysis**: 3-way comparison (Unilang vs Clap vs Pico-Args)
+//!    established baseline and revealed 167x performance gap for optimization.
+//!
+//! 5. **Quick Mode**: --quick flag tests subset (10, 100, 1K) for 10-15s
+//!    developer workflow integration without disrupting productivity.
 
 #[cfg(feature = "benchmarks")]
 use std::time::Instant;

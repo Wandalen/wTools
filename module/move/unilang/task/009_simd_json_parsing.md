@@ -221,6 +221,8 @@ fn parse_with_buffer(input: &str) -> Result<SerdeValue, ParseError> {
 
 ### Benchmarking Requirements
 
+> 💡 **JSON Parsing Insight**: Performance varies dramatically by payload size (4x small → 25x large). Test realistic JSON structures, not just flat objects. Memory buffer management is critical - mutable requirements can add significant overhead if not handled properly.
+
 #### Performance Validation
 After implementation, run comprehensive benchmarking to validate SIMD JSON improvements:
 
@@ -254,17 +256,24 @@ The implementation must include automated updating of `benchmark/readme.md`:
 
 #### Validation Commands
 ```bash
-# JSON-specific performance testing
-cargo bench json_parsing_simd --features benchmarks
+# JSON-specific performance testing - CRITICAL: test payload size scaling
+# Small (< 1KB), Medium (1-10KB), Large (> 10KB) show different characteristics
+cargo bench json_small_payloads --features benchmarks  # Expected: 4x improvement
+cargo bench json_medium_payloads --features benchmarks # Expected: 8x improvement  
+cargo bench json_large_payloads --features benchmarks  # Expected: 15-25x improvement
+
+# Test realistic JSON structures (not just flat objects)
+cargo bench json_nested_objects --features benchmarks
+cargo bench json_arrays --features benchmarks
 
 # CPU feature detection for JSON SIMD
 cargo test simd_json_features --release --features benchmarks
 
-# Correctness validation (serde_json vs simd-json output)
+# Correctness validation (serde_json vs simd-json output) - must be identical
 cargo test json_parsing_correctness --release --features benchmarks
 
-# Memory safety validation with large JSON payloads
-cargo test json_memory_safety --release --features benchmarks
+# Memory buffer management validation - measure allocation overhead
+cargo bench json_buffer_management --features benchmarks
 
 # Integration testing with JSON-heavy workloads
 cargo test integration_simd_json --release --features benchmarks

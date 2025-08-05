@@ -206,6 +206,8 @@ fn bench_simd_tokenization(b: &mut Bencher) {
 
 ### Benchmarking Requirements
 
+> 💡 **SIMD Insight from Unilang**: Test multiple input sizes (1KB, 10KB, 100KB, 1MB+) as SIMD shows different performance characteristics across scales. Always include both scalar and SIMD paths in same benchmark to validate instruction utilization. Verify AVX2/SSE4.2 usage with profiling tools.
+
 #### Performance Validation
 After implementation, run comprehensive benchmarking to validate SIMD improvements:
 
@@ -239,17 +241,23 @@ The implementation must include automated updating of `benchmark/readme.md`:
 
 #### Validation Commands
 ```bash
-# SIMD-specific performance testing
-cargo bench tokenization_simd --features benchmarks
+# SIMD-specific performance testing - CRITICAL: test multiple input sizes
+for size in 1KB 10KB 100KB 1MB; do
+  cargo bench tokenization_simd_${size} --features benchmarks
+done
 
-# CPU feature detection validation
+# CPU feature detection validation - ensure graceful fallback
 cargo test simd_feature_detection --release --features benchmarks
 
-# Correctness validation (SIMD vs scalar output)
+# Correctness validation (SIMD vs scalar output) - must be identical
 cargo test tokenization_correctness --release --features benchmarks
 
 # Integration testing with full pipeline
 cargo test integration_simd_tokenization --release --features benchmarks
+
+# Profile SIMD instruction usage (validate AVX2 utilization)
+perf record cargo bench tokenization_simd --features benchmarks
+perf report | grep -E "vmm|vp|vz"  # Check for AVX2 instructions
 ```
 
 #### Success Metrics Documentation

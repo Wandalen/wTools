@@ -274,6 +274,8 @@ lazy_static! {
 
 ### Benchmarking Requirements
 
+> 💡 **Cross-Platform SIMD Insight**: Test both x86_64 (AVX2) and ARM64 (NEON) targets. Pattern compilation overhead can dominate small inputs - measure and cache compiled patterns. Always validate graceful fallback on unsupported hardware.
+
 #### Performance Validation
 After implementation, run comprehensive benchmarking to validate SIMD improvements:
 
@@ -306,15 +308,20 @@ The implementation must include automated updating of `benchmark/readme.md`:
 
 #### Validation Commands
 ```bash
-# SIMD-specific performance testing
+# SIMD-specific performance testing - measure pattern compilation overhead
 cargo bench simd_string_ops --features simd
+cargo bench pattern_compilation_overhead --features simd  # Critical for small inputs
 
-# Cross-platform validation
-cargo bench --features simd --target x86_64-unknown-linux-gnu
-cargo bench --features simd --target aarch64-unknown-linux-gnu
+# Cross-platform validation - both architectures required
+cargo bench --features simd --target x86_64-unknown-linux-gnu   # Test AVX2 path
+cargo bench --features simd --target aarch64-unknown-linux-gnu  # Test NEON path
 
-# Pattern compilation and caching benchmarks
-cargo bench pattern_cache --features simd
+# Pattern compilation and caching benchmarks - cache hit/miss scenarios
+cargo bench pattern_cache_hits --features simd
+cargo bench pattern_cache_misses --features simd
+
+# Hardware fallback testing - disable SIMD features at runtime
+RUST_FLAGS="-C target-feature=-avx2,-sse4.2" cargo bench --features simd
 
 # Memory usage analysis
 cargo test memory_efficiency --release --features simd

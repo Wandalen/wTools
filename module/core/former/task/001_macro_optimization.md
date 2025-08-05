@@ -161,6 +161,8 @@ pub struct OptimizedStruct {
 
 ### Benchmarking Requirements
 
+> 💡 **Macro Optimization Insight**: Compile-time improvements are often more valuable than runtime gains for developer productivity. Use `-Z timings` and `time` commands to measure build impact. Test both incremental and clean builds as macro changes affect caching differently.
+
 #### Performance Validation
 After implementation, run comprehensive benchmarking to validate former optimizations:
 
@@ -196,17 +198,22 @@ The implementation must include automated updating of `benchmark/readme.md`:
 # Former-specific performance testing
 cargo bench former_optimization --features performance
 
-# Compile time measurement
-cargo build --features performance -Z timings
+# Compile time measurement - CRITICAL: test both clean and incremental builds
+cargo clean && time cargo build --features performance -Z timings  # Clean build
+touch src/lib.rs && time cargo build --features performance        # Incremental build
 
-# Memory allocation analysis
+# Macro expansion time measurement (specific to macro changes)
+cargo +nightly rustc -- -Z time-passes --features performance
+
+# Memory allocation analysis - focus on builder usage patterns
 cargo bench memory_allocation --features performance
 
-# API compatibility validation
+# API compatibility validation - must not break existing usage
 cargo test --features performance --release
 
-# Cross-crate integration testing
-cargo test builder_functionality --features performance
+# Cross-crate integration testing - validate dependent crates still compile
+cd ../../move/unilang
+cargo clean && time cargo build --release  # With optimized former
 ```
 
 #### Success Metrics Documentation

@@ -132,6 +132,8 @@ Ok((UnilangTokenKind::Identifier(s.string), original_location))
 
 ### Benchmarking Requirements
 
+> 💡 **Zero-Copy Memory Insight**: Track allocations per operation, not just total memory usage. Use multiple repetitions (3+) as allocation patterns can vary. Validate that borrowing eliminates 90%+ allocations while maintaining identical parsing results.
+
 #### Performance Validation
 After implementation, run comprehensive benchmarking to validate zero-copy improvements:
 
@@ -164,17 +166,22 @@ The implementation must include automated updating of `benchmark/readme.md`:
 
 #### Validation Commands
 ```bash
-# Zero-copy specific performance testing
+# Zero-copy specific performance testing - measure allocations per operation
 cargo bench zero_copy_tokens --features benchmarks
 
-# Memory allocation analysis
-cargo bench memory_allocation --features benchmarks
+# Memory allocation analysis - CRITICAL: track allocations per command, not total
+# Before: 10-28 allocations per command
+# After: 1 allocation per command (94% reduction target)
+valgrind --tool=massif cargo bench memory_allocation --features benchmarks
 
-# Correctness validation (owned vs borrowed output)
+# Correctness validation (owned vs borrowed output) - must be identical
 cargo test token_correctness --release --features benchmarks
 
-# Memory safety validation
+# Memory safety validation - single threaded to catch lifetime issues
 cargo test --features benchmarks -- --test-threads=1
+
+# Address sanitizer validation (lifetime safety)
+RUSTFLAGS="-Z sanitizer=address" cargo test --features benchmarks --target x86_64-unknown-linux-gnu
 
 # Integration testing with unilang
 cd ../../unilang

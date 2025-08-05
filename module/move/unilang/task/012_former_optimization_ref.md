@@ -59,6 +59,8 @@ former = { version = "2.22", features = ["performance"] }
 
 ### Benchmarking Requirements
 
+> 💡 **Macro Integration Insight**: Former optimizations primarily improve developer experience through faster compilation. Measure both build time impact and runtime builder performance. Test with unilang's heavy former usage patterns.
+
 #### Integration Validation
 After former optimization implementation, validate integration with unilang:
 

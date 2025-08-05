@@ -112,6 +112,8 @@ string-interner = "0.15"  # Optional: specialized interner crate
 
 ### Benchmarking Requirements
 
+> 💡 **Key Insight from Unilang Development**: Use two-tier benchmarking - fast throughput tests (30-60s) for daily validation and comprehensive tests (8+ min) for complete analysis. Test cache hit/miss scenarios separately as they show dramatically different performance characteristics.
+
 #### Performance Validation
 After implementation, run comprehensive benchmarking to validate improvements:
 
@@ -141,14 +143,18 @@ The implementation must include automated updating of `benchmark/readme.md`:
 
 #### Validation Commands
 ```bash
-# Performance regression testing
+# Performance regression testing - use statistical rigor (3+ repetitions)
 cargo bench string_interning --features benchmarks
 
-# Memory usage validation  
+# Memory usage validation - track both cache hits and misses
 cargo run --release --example memory_profiling --features benchmarks
 
 # Integration testing with full pipeline
 cargo test integration_string_interning --release --features benchmarks
+
+# CRITICAL: Test cache scenarios separately
+# Cache miss (new strings): Tests allocation reduction benefits
+# Cache hit (repeated strings): Tests lookup performance improvements
 ```
 
 #### Success Metrics Documentation

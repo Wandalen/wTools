@@ -63,6 +63,8 @@ cargo test throughput_performance_benchmark --release --features benchmarks -- -
 
 ## 🔧 Available Benchmarks
 
+> 💡 **Benchmarking Best Practices Learned**: Use two-tier approach (fast + comprehensive), test multiple input sizes for SIMD optimizations, track allocations per operation for zero-copy validation, and always include statistical rigor with 3+ repetitions and percentile analysis.
+
 ### Core Benchmarks
 
 | Benchmark | File | Duration | Purpose |
@@ -177,6 +179,13 @@ All benchmarks generate detailed reports in `target/` subdirectories:
 - **Performance validation** → True exponential benchmark (~15 min)
 - **Framework comparison** → Comprehensive comparison (~8 min)
 - **CI/CD pipelines** → Subset of benchmarks (10, 1K, 10K commands)
+
+### Common Benchmarking Pitfalls to Avoid
+- ❌ **Single input size testing** - SIMD optimizations show different characteristics across scales
+- ❌ **Microbenchmark isolation** - Test full pipeline integration, not just components
+- ❌ **Missing statistical validation** - Single measurements hide performance variance  
+- ❌ **Runtime-only testing** - Macro optimizations require compile-time measurement
+- ❌ **Ignoring allocation tracking** - Zero-copy benefits require per-operation allocation analysis
 
 ## 🎯 **How to Run Benchmarks - Complete Guide**
 

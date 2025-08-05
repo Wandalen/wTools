@@ -42,6 +42,8 @@ Convert parser tokens from owned strings (`String`) to zero-copy string slices (
 
 ### Benchmarking Requirements
 
+> 💡 **Integration Insight**: Test parser integration with realistic command patterns, not just synthetic data. Measure end-to-end impact on unilang pipeline, as zero-copy benefits compound with other optimizations.
+
 #### Integration Validation
 After zero-copy parser implementation, validate integration with unilang:
 
