@@ -45,7 +45,11 @@ default = [
 ]
 full = [
   "default",
+  "performance",
 ]
+
+# Performance optimization features
+performance = ["former_meta/performance"]
 enabled = [ "former_meta/enabled", "former_types/enabled" ]
 
 derive_former = [ "former_meta/derive_former", "types_former" ]

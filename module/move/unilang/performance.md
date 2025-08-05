@@ -162,7 +162,7 @@ memchr = "2.7"          # Explicit usage (already available via regex)
 
 ### Unilang Core Optimizations
 - [**Task 001**](task/001_string_interning_system.md) - Implement string interning for command names
-- [**Task 002**](task/002_zero_copy_parser_tokens.md) - Convert parser tokens to use string slices
+- [**Task 002**](task/002_zero_copy_parser_tokens_ref.md) - Convert parser tokens to use string slices (ref)
 - [**Task 003**](task/003_command_name_caching.md) - Cache command name construction
 - [**Task 004**](task/004_simd_tokenization.md) - Replace string splitting with SIMD operations
 
@@ -176,10 +176,15 @@ memchr = "2.7"          # Explicit usage (already available via regex)
 - [**Task 009**](task/009_simd_json_parsing.md) - Integrate simd-json for value parsing
 - [**Task 010**](task/010_enum_pattern_matching.md) - Multi-pattern matching for enums
 
-### Dependencies Optimizations
-- [**Task 011**](task/011_strs_tools_simd.md) - Add SIMD support to strs_tools crate
-- [**Task 012**](task/012_former_optimization.md) - Optimize former macro expansion
+### Dependencies Optimizations (References)
+- [**Task 011**](task/011_strs_tools_simd_ref.md) - Add SIMD support to strs_tools crate (ref)
+- [**Task 012**](task/012_former_optimization_ref.md) - Optimize former macro expansion (ref)
 - [**Task 013**](task/013_error_tools_streamline.md) - Streamline error handling overhead
+
+### Dependency Task Implementations
+- [**strs_tools SIMD**](../../core/strs_tools/task/001_simd_optimization.md) - Full SIMD implementation for string operations
+- [**unilang_parser Zero-Copy**](../../move/unilang_parser/task/001_zero_copy_tokens.md) - Full zero-copy token implementation
+- [**former Optimization**](../../core/former/task/001_macro_optimization.md) - Full former macro optimization
 
 ## Expected Performance Outcomes
 
