@@ -4,8 +4,6 @@
 //! exponentially increasing command counts, providing detailed metrics for
 //! framework selection decisions.
 
-#![feature(test)]
-extern crate test;
 
 #[ cfg( feature = "benchmarks" ) ]
 use std::time::{Duration, Instant};
@@ -1486,17 +1484,24 @@ fn run_comprehensive_benchmark() {
 }
 
 #[cfg(feature = "benchmarks")]
-#[bench]
-fn comprehensive_benchmark(b: &mut test::Bencher) {
-    // Run the comprehensive benchmark once per iteration
-    b.iter(|| {
-        run_comprehensive_benchmark()
+use criterion::{criterion_group, criterion_main, Criterion};
+
+#[cfg(feature = "benchmarks")]
+fn comprehensive_benchmark(c: &mut Criterion) {
+    c.bench_function("comprehensive_benchmark", |b| {
+        b.iter(|| run_comprehensive_benchmark())
     });
 }
 
+#[cfg(feature = "benchmarks")]
+criterion_group!(benches, comprehensive_benchmark);
+#[cfg(feature = "benchmarks")]
+criterion_main!(benches);
+
 #[cfg(not(feature = "benchmarks"))]
-#[bench]
-fn comprehensive_benchmark(_b: &mut test::Bencher) {
-    panic!("Benchmarks not enabled! Run with: cargo bench --features benchmarks");
+fn main() {
+    eprintln!("Error: Benchmarks not enabled!");
+    eprintln!("Run with: cargo bench --features benchmarks");
+    std::process::exit(1);
 }
 

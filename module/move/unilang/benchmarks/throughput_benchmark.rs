@@ -4,9 +4,6 @@
 //! different command counts, without compile-time measurements. Designed for
 //! quick performance validation and regression testing.
 
-#![feature(test)]
-extern crate test;
-
 //! ## Key Benchmarking Insights from Unilang Development:
 //! 
 //! 1. **Two-Tier Strategy**: Fast throughput (30-60s) for daily validation,
@@ -916,18 +913,25 @@ fn run_throughput_benchmark() {
 }
 
 #[cfg(feature = "benchmarks")]
-#[bench]
-fn throughput_benchmark(b: &mut test::Bencher) {
-    // Run the throughput benchmark once per iteration
-    b.iter(|| {
-        run_throughput_benchmark()
+use criterion::{criterion_group, criterion_main, Criterion};
+
+#[cfg(feature = "benchmarks")]
+fn throughput_benchmark(c: &mut Criterion) {
+    c.bench_function("throughput_benchmark", |b| {
+        b.iter(|| run_throughput_benchmark())
     });
 }
 
+#[cfg(feature = "benchmarks")]
+criterion_group!(benches, throughput_benchmark);
+#[cfg(feature = "benchmarks")]
+criterion_main!(benches);
+
 #[cfg(not(feature = "benchmarks"))]
-#[bench]
-fn throughput_benchmark(_b: &mut test::Bencher) {
-    panic!("Benchmarks not enabled! Run with: cargo bench --features benchmarks");
+fn main() {
+    eprintln!("Error: Benchmarks not enabled!");
+    eprintln!("Run with: cargo bench --features benchmarks");
+    std::process::exit(1);
 }
 
 #[cfg(test)]

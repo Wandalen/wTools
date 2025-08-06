@@ -26,98 +26,134 @@ The project has successfully completed its foundational phases (1-3), culminatin
 *   **Outcome:** A stable, maintainable codebase with a unified architecture, ready for the implementation of core functional requirements.
 *   **Status:** All milestones are complete.
 
-### Phase 4: Zero-Overhead Static Command Registry ⏳
+### Phase 4: Zero-Overhead Static Command Registry
 *   **Goal:** To implement the mandatory performance NFR for a zero-overhead static command system, enabling utilities with thousands of commands to start instantly.
 *   **Outcome:** A framework with a hybrid command registry where all compile-time commands are stored in a Perfect Hash Function (PHF), eliminating runtime registration costs and ensuring sub-millisecond command resolution.
 
-*   [⚫] **M4.1: design_hybrid_registry_architecture:**
+*   [⚫] **M4.1: registry_design_hybrid_architecture:**
     *   **Spec Reference:** FR-PERF-1, NFR-Performance
     *   **Deliverable:** A detailed task plan for implementing a zero-overhead static command registry.
-    *   **Description:** Design a build-time mechanism (using `build.rs` and the `phf` crate) to generate a Perfect Hash Function (PHF) map for all compile-time command definitions. This plan will outline the steps to refactor the `CommandRegistry` into a hybrid model (static PHF for compile-time commands + dynamic HashMap for runtime commands).
-*   [⚫] **M4.2: implement_build_time_phf_generation:**
+    *   **Description:** Design a build-time mechanism (using `build.rs` and the `phf` crate) to generate a Perfect Hash Function (PHF) map from a command manifest. This plan will outline the steps to refactor the `CommandRegistry` into a hybrid model.
+*   [⚫] **M4.2: phf_implement_build_time_generation:**
     *   **Prerequisites:** M4.1
-    *   **Deliverable:** A `build.rs` script that generates a `.rs` file containing the static PHF maps for commands and routines.
-    *   **Description:** Implement the build script that scans the source code (or a manifest) for static command definitions and uses the `phf_codegen` crate to construct the perfect hash maps.
-*   [⚫] **M4.3: refactor_command_registry_to_hybrid_model:**
+    *   **Deliverable:** A `build.rs` script that generates a `.rs` file containing the static PHF map from `unilang.commands.yaml`.
+    *   **Description:** Implement the build script that parses the YAML manifest and uses `phf_codegen` to construct the perfect hash map.
+*   [⚫] **M4.3: registry_refactor_to_hybrid_model:**
     *   **Prerequisites:** M4.2
-    *   **Deliverable:** An updated `CommandRegistry` that uses the generated PHF for static commands.
-    *   **Tasks:**
-        *   [⚫] **4.3.1:** Modify the `CommandRegistry` struct to hold both the static PHF (included via `include!`) and the dynamic `HashMap`.
-        *   [⚫] **4.3.2:** Refactor all lookup methods (`get_command`, `get_routine`) to query the static PHF first before falling back to the dynamic `HashMap`.
-*   [⚫] **M4.4: implement_performance_stress_test:**
+    *   **Deliverable:** An updated `CommandRegistry` that uses the generated PHF for static commands and a `HashMap` for dynamic commands.
+    *   **Description:** Refactor all lookup methods to query the static PHF first before falling back to the dynamic `HashMap`.
+*   [⚫] **M4.4: test_implement_performance_stress_harness:**
     *   **Prerequisites:** M4.3
     *   **Spec Reference:** FR-PERF-1
-    *   **Deliverable:** A new integration test that proves the performance non-functional requirement is met.
-    *   **Tasks:**
-        *   [⚫] **4.4.1:** Create a test that programmatically generates source code for over 1,000 static command definitions.
-        *   [⚫] **4.4.2:** Use this generated code in a test binary to trigger the `build.rs` PHF generation.
-        *   [⚫] **4.4.3:** Measure and assert that the resulting binary's startup time is negligible and not proportional to the number of commands.
-        *   [⚫] **4.4.4:** Measure and assert that the p99 latency for command resolution is under 1ms.
+    *   **Deliverable:** A new integration test that generates a large YAML manifest (1000+ commands) and a test binary that proves the performance NFRs are met.
+    *   **Description:** The test will generate the manifest, compile a test binary against it, and then execute the binary to measure and assert that startup time is negligible and p99 command resolution latency is under 1ms.
 
 ### Phase 5: Core API Enhancements & Modality Support
-*   **Goal:** To implement the remaining mandatory functional requirements from Spec v2.2.0, ensuring the framework fully supports REPL and interactive CLI modalities.
-*   **Outcome:** A functionally complete API that provides all necessary hooks for building sophisticated, user-friendly command-line applications.
+*   **Goal:** To implement the remaining mandatory functional requirements from Spec v2.2.0, ensuring the framework fully supports REPL, interactive CLI, and WebAssembly (WASM) modalities.
+*   **Outcome:** A functionally complete and validated API for building sophisticated, user-friendly command-line applications that can run in native and web environments.
 
-*   [⚫] **M5.1: refactor_pipeline_for_reusability_and_add_repl_example:**
+*   [⚫] **M5.1: pipeline_refactor_for_reusability:**
     *   **Spec Reference:** FR-REPL-1
-    *   **Deliverable:** A new example file (`repl_example.rs`) demonstrating the reusability of framework components in a loop.
-    *   **Description:** Audit the core pipeline components (`Parser`, `SemanticAnalyzer`, `Interpreter`) to ensure they are stateless and can be reused. Create an example that simulates a REPL by repeatedly taking input and invoking the full pipeline using the same long-lived `Pipeline` instance.
-*   [⚫] **M5.2: implement_interactive_argument_signaling:**
+    *   **Deliverable:** An audited and confirmed stateless core pipeline and a new example file (`repl_example.rs`).
+    *   **Description:** Audit the core pipeline components (`Parser`, `SemanticAnalyzer`, `Interpreter`) to ensure they are stateless and can be reused in a REPL loop.
+*   [⚫] **M5.2: argument_implement_interactive_signaling:**
     *   **Spec Reference:** FR-INTERACTIVE-1
-    *   **Deliverable:** The `SemanticAnalyzer` correctly returns a specific error for interactive prompts.
-    *   **Tasks:**
-        *   [⚫] **5.2.1:** In `semantic.rs`, modify the `bind_arguments` logic to check for missing mandatory arguments that have `interactive: true`.
-        *   [⚫] **5.2.2:** When this condition is met, return an `Error::Execution` with the specific `ErrorData` code `UNILANG_ARGUMENT_INTERACTIVE_REQUIRED`.
-*   [⚫] **M5.3: create_interactive_prompting_test:**
+    *   **Deliverable:** The `SemanticAnalyzer` correctly returns the `UNILANG_ARGUMENT_INTERACTIVE_REQUIRED` error for missing interactive arguments.
+    *   **Description:** Modify the `bind_arguments` logic to check for the `interactive: true` attribute on missing mandatory arguments and return the specific error code.
+*   [⚫] **M5.3: test_create_interactive_prompting_verification:**
     *   **Prerequisites:** M5.2
-    *   **Deliverable:** A new unit test for the `SemanticAnalyzer` and an example in the CLI binary.
-    *   **Tasks:**
-        *   [⚫] **5.3.1:** Write a test that defines a command with a mandatory interactive argument, analyzes an instruction that omits it, and asserts that the returned error has the code `UNILANG_ARGUMENT_INTERACTIVE_REQUIRED`.
-        *   [⚫] **5.3.2:** Update `unilang_cli.rs` to demonstrate how to catch this specific error and print a user-friendly prompt.
+    *   **Deliverable:** A new unit test for the `SemanticAnalyzer` and an updated CLI binary demonstrating how to catch the interactive signal.
+*   [⚫] **M5.4: example_create_wasm_repl:**
+    *   **Prerequisites:** M5.1
+    *   **Spec Reference:** NFR-PLATFORM-1
+    *   **Deliverable:** A working, browser-based REPL example compiled to WebAssembly.
+    *   **Description:** Create a minimal web application that uses the `unilang` WASM package to provide a fully client-side REPL, proving the WASM compatibility NFR.
 
-### Phase 6: Advanced Features & Web Modality
-*   **Goal:** Build on the stable and performant architecture to implement advanced framework features, including a Web API modality and a superior developer experience through procedural macros.
-*   **Outcome:** A versatile, multi-modal framework that significantly reduces boilerplate for developers.
+### Phase 6: Performance Hardening & SIMD Optimization
+*   **Goal:** To meet the stringent performance NFRs by systematically eliminating bottlenecks identified in the performance analysis, with a focus on reducing string allocations and leveraging SIMD instructions.
+*   **Outcome:** A framework with throughput competitive with minimalist parsers like `pico-args`, achieved through zero-copy techniques, string interning, and SIMD-accelerated operations.
 
-*   [⚫] **M6.1: design_web_api_modality:**
-    *   **Deliverable:** A plan for mapping `unilang` commands to HTTP endpoints.
-*   [⚫] **M6.2: implement_openapi_generator:**
+*   [⚫] **M6.1: optimization_implement_string_interning:**
+    *   **Spec Reference:** `performance.md` (Task 001)
+    *   **Deliverable:** A string interning system integrated into the `SemanticAnalyzer` to cache command names and other common strings.
+*   [⚫] **M6.2: token_refactor_to_zero_copy:**
     *   **Prerequisites:** M6.1
-    *   **Deliverable:** A function that generates an OpenAPI v3+ specification from the `CommandRegistry`.
-*   [⚫] **M6.3: implement_http_to_command_mapper:**
-    *   **Prerequisites:** M6.1
-    *   **Deliverable:** A utility/adapter that converts an incoming HTTP request into a `unilang` command invocation.
-*   [⚫] **M6.4: create_web_api_example:**
+    *   **Spec Reference:** `performance.md` (Task 002)
+    *   **Deliverable:** The `unilang_parser` crate updated to use `&str` tokens, and the `unilang` crate updated to consume them, eliminating major allocation overhead.
+*   [⚫] **M6.3: parser_integrate_simd_json:**
+    *   **Prerequisites:** M6.2
+    *   **Spec Reference:** `performance.md` (Task 009)
+    *   **Deliverable:** The type system's JSON parsing logic updated to use the `simd-json` crate for a 4-25x performance improvement on JSON-heavy workloads.
+*   [⚫] **M6.4: benchmark_audit_performance_final:**
     *   **Prerequisites:** M6.3
+    *   **Deliverable:** An updated `performance.md` with final benchmark results proving all performance NFRs are met.
+
+### Phase 7: Modularity & Lightweight Core Refactoring
+*   **Goal:** To fulfill the modularity NFRs by refactoring the crate to use granular feature flags for all non-essential functionality, creating a minimal core profile that is as lightweight as `pico-args`.
+*   **Outcome:** A highly modular framework where users can opt-in to features, ensuring minimal binary size and dependency footprint for simple use cases.
+
+*   [⚫] **M7.1: dependency_audit_features:**
+    *   **Spec Reference:** NFR-MODULARITY-1, NFR-MODULARITY-2
+    *   **Deliverable:** A dependency graph mapping features to the libraries they introduce.
+    *   **Description:** Analyze `Cargo.toml` and the codebase to identify all dependencies that can be made optional.
+*   [⚫] **M7.2: feature_gate_implement_granular:**
+    *   **Prerequisites:** M7.1
+    *   **Deliverable:** An updated `Cargo.toml` and codebase where all non-essential functionality is gated by feature flags (e.g., `declarative_loading`, `chrono_types`).
+*   [⚫] **M7.3: profile_create_minimal_core:**
+    *   **Prerequisites:** M7.2
+    *   **Deliverable:** A working `unilang` crate when compiled with `--no-default-features`.
+*   [⚫] **M7.4: footprint_verify_lightweight:**
+    *   **Prerequisites:** M7.3
+    *   **Deliverable:** Benchmark results comparing the compile time and dependency count of the minimal `unilang` profile against `pico-args`.
+
+### Phase 8: Advanced Features - Web Modality
+*   **Goal:** To implement a full Web API modality, building on the now stable, performant, and modular architecture.
+*   **Outcome:** A versatile, multi-modal framework that can serve its command registry as a RESTful API.
+
+*   [⚫] **M8.1: modality_design_web_api:**
+    *   **Deliverable:** A plan for mapping `unilang` commands to HTTP endpoints.
+*   [⚫] **M8.2: generator_implement_openapi:**
+    *   **Prerequisites:** M8.1
+    *   **Deliverable:** A function that generates an OpenAPI v3+ specification from the `CommandRegistry`.
+*   [⚫] **M8.3: mapper_implement_http_to_command:**
+    *   **Prerequisites:** M8.1
+    *   **Deliverable:** A utility/adapter that converts an incoming HTTP request into a `unilang` command invocation.
+*   [⚫] **M8.4: example_create_web_api:**
+    *   **Prerequisites:** M8.3
     *   **Deliverable:** An example application that serves a `unilang` registry as a REST API.
-*   [⚫] **M6.5: design_procedural_macros:**
+
+### Phase 9: Advanced Features - Developer Experience
+*   **Goal:** To significantly improve the developer experience by providing procedural macros that reduce boilerplate code.
+*   **Outcome:** A framework that is not only powerful but also ergonomic for developers to use.
+
+*   [⚫] **M9.1: macro_design_procedural:**
     *   **Deliverable:** An API design for the `#[command]` procedural macro in the `unilang_meta` crate.
-*   [⚫] **M6.6: implement_command_macro:**
-    *   **Prerequisites:** M6.5
+*   [⚫] **M9.2: macro_implement_command:**
+    *   **Prerequisites:** M9.1
     *   **Deliverable:** A working `#[command]` macro that generates `CommandDefinition` structs from Rust functions.
 
-### Phase 7: Release Candidate Preparation
+### Phase 10: Release Candidate Preparation
 *   **Goal:** Focus on stability, developer experience, and documentation to prepare for a v1.0 release.
 *   **Outcome:** A polished, production-ready v1.0.0-rc.1 release of the `unilang` framework.
 
-*   [⚫] **M7.1: write_core_concepts_guide:**
+*   [⚫] **M10.1: guide_write_core_concepts:**
     *   **Deliverable:** A comprehensive guide in the documentation explaining the core architecture and philosophy of `unilang`.
-*   [⚫] **M7.2: write_modality_tutorials:**
-    *   **Prerequisites:** M6.4
+*   [⚫] **M10.2: tutorial_write_modality:**
+    *   **Prerequisites:** M8.4
     *   **Deliverable:** Tutorials for building a CLI, REPL, and a Web API with `unilang`.
-*   [⚫] **M7.3: conduct_api_review_and_stabilization:**
+*   [⚫] **M10.3: api_conduct_final_review:**
     *   **Deliverable:** A final review of the public API, with any necessary breaking changes made before the 1.0 release.
-*   [⚫] **M7.4: publish_v1_release_candidate:**
-    *   **Prerequisites:** M7.3
+*   [⚫] **M10.4: release_publish_v1_candidate:**
+    *   **Prerequisites:** M10.3
     *   **Deliverable:** `unilang` v1.0.0-rc.1 published to crates.io.
 
-### Phase 8: Post-v1.0 Ecosystem & Advanced Features
+### Phase 11: Post-v1.0 Ecosystem & Advanced Features
 *   **Goal:** Expand the `unilang` ecosystem with new modalities, improved tooling, and advanced integration capabilities.
 *   **Outcome:** A mature and extensible framework that solidifies its position as a universal command-line tool.
 
-*   [⚫] **M8.1: implement_tui_modality_framework:**
+*   [⚫] **M11.1: modality_implement_tui_framework:**
     *   **Deliverable:** Utilities and an example for building interactive Textual User Interfaces.
-*   [⚫] **M8.2: implement_dynamic_routine_loading:**
+*   [⚫] **M11.2: routine_implement_dynamic_loading:**
     *   **Deliverable:** A robust implementation for `routine_link` that can load routines from dynamic libraries.
-*   [⚫] **M8.3: design_plugin_system:**
+*   [⚫] **M11.3: system_design_plugin:**
     *   **Deliverable:** A formal specification for a plugin system, allowing third-party crates to provide `unilang` commands to a host application.

@@ -2,14 +2,14 @@
 
 ## Executive Summary
 
-SIMD optimization provides **dramatic performance improvements** for string processing operations, with improvements ranging from **13.6x to 212.9x faster** depending on operation complexity.
+SIMD optimization provides **dramatic performance improvements** for string processing operations, with improvements ranging from **13.0x to 203.5x faster** depending on operation complexity.
 
 ## Key Results
 
-- **Multi-delimiter splitting**: 71.5x average improvement
-- **Large input processing**: 19.0x improvement on 500KB inputs
-- **Complex patterns**: 212.9x improvement with 8 delimiters
-- **Peak SIMD throughput**: 77.2 MiB/s vs 812.9 MiB/s scalar
+- **Multi-delimiter splitting**: 68.4x average improvement
+- **Large input processing**: 18.1x improvement on 500KB inputs
+- **Complex patterns**: 203.5x improvement with 8 delimiters
+- **Peak SIMD throughput**: 83.9 MiB/s vs 747.3 MiB/s scalar
 
 ## How to Run
 
@@ -33,5 +33,5 @@ Benchmarks automatically update the following files:
 
 ---
 
-*Last updated: 2025-08-06 12:45 UTC*
+*Last updated: 2025-08-06 12:56 UTC*
 *All documentation automatically generated during benchmark execution*

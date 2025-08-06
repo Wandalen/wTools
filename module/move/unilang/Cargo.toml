@@ -28,7 +28,7 @@ all-features = false
 default = [ "enabled", "simd" ]
 full = [ "enabled", "on_unknown_suggest", "simd" ]
 enabled = []
-benchmarks = [ "simd" ]
+benchmarks = [ "simd", "clap", "pico-args", "criterion" ]
 
 # Performance optimizations - SIMD enabled by default for maximum performance
 # Can be disabled with: cargo build --no-default-features --features enabled
@@ -67,6 +67,9 @@ indexmap = "2.2.6"
 simd-json = { version = "0.13", optional = true } # SIMD-optimized JSON parsing
 
 # Benchmark dependencies moved to dev-dependencies to avoid production inclusion
+clap = { version = "4.4", optional = true }
+pico-args = { version = "0.5", optional = true }
+criterion = { version = "0.5", optional = true }
 
 [[bin]]
 name = "unilang_cli"
@@ -96,14 +99,16 @@ path = "tests/inc/phase3/data_model_features_test.rs"
 # name = "performance_stress_test"
 # path = "tests/inc/phase4/performance_stress_test.rs"
 
-# Benchmark definitions using native Rust benchmarks
+# Criterion-based benchmarks for cargo bench
 [[bench]]
 name = "comprehensive_benchmark"
 path = "benchmarks/comprehensive_framework_comparison.rs"
+harness = false
 
 [[bench]]
 name = "throughput_benchmark"
 path = "benchmarks/throughput_benchmark.rs"
+harness = false
 
 [[test]]
 name = "run_all_benchmarks"
