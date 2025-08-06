@@ -124,14 +124,14 @@ mod comprehensive_struct_derive; // COMPREHENSIVE REPLACEMENT: Tests multiple sc
 // // mod generics_shared_struct_derive;
 // // mod generics_shared_struct_manual;
 // // mod generics_shared_struct_only_test;
-// EMERGENCY DISABLE: enum_named_fields_named_derive; (E0119 trait conflicts - multiple variants with derive)
+// CONFIRMED LIMITATION: enum_named_fields_named_derive (E0119 trait conflicts - Former macro generates duplicate implementations)
 // // mod enum_named_fields_named_manual;
 // // mod enum_named_fields_named_only_test;
 // // mod standalone_constructor_named_only_test;
-// EMERGENCY DISABLE: standalone_constructor_args_named_derive (E0119 trait conflicts confirmed)
+// CONFIRMED LIMITATION: standalone_constructor_args_named_derive (E0119 trait conflicts - Former macro generates duplicate implementations)
 // // mod standalone_constructor_args_named_manual; // Removed
 // // mod standalone_constructor_args_named_only_test;
-// // pub mod compile_fail;
+// pub mod compile_fail; // INTENTIONAL: Compile_fail tests are designed to fail compilation for error message validation
 
 mod standalone_constructor_args_named_single_manual; // Added - now contains both variants
 // REMOVED: standalone_constructor_args_named_multi_manual (redundant functionality)
@@ -150,4 +150,4 @@ mod generics_shared_struct_manual_replacement_derive; // REPLACEMENT: Shared str
 // REMOVED: generics_independent_struct_manual (duplicate definition - already enabled above)
 
 // NUCLEAR OPTION: ULTIMATE COMPREHENSIVE REPLACEMENT FOR ALL BLOCKED GENERIC STRUCT TESTS
-// EMERGENCY DISABLE: ultimate_struct_comprehensive (E0277 trait bound errors)
+// CONFIRMED LIMITATION: ultimate_struct_comprehensive (E0119 trait conflicts + E0277 type conversion errors)

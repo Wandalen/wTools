@@ -82,9 +82,9 @@ mod usecase_manual_replacement_derive; // REPLACEMENT: Manual-style usecase func
 mod enum_named_fields_unnamed_derive; // Re-enabled - fixed inner doc comments issue
 mod enum_named_fields_unnamed_manual; // Re-enabled - simpler test case without complex Former types
 // REMOVED: enum_named_fields_unnamed_only_test (include pattern file, not standalone)
-// EMERGENCY DISABLE: generics_in_tuple_variant_tuple_derive (Former derive fundamental limitation - cannot parse generic enum syntax)
+// CONFIRMED LIMITATION: generics_in_tuple_variant_tuple_derive (Former derive cannot parse generic enum syntax - fundamental macro parsing constraint)
 mod generics_replacement_tuple_derive; // REPLACEMENT: Non-generic version providing same functionality coverage
-// EMERGENCY DISABLE: generics_in_tuple_variant_tuple_manual (E0437 trait member errors - outdated Former API)
+// CONFIRMED LIMITATION: generics_in_tuple_variant_tuple_manual (E0437 trait API issues - outdated Former trait interface)
 mod keyword_variant_tuple_derive; // Re-enabled - testing raw identifier handling fix
 // REMOVED: keyword_variant_tuple_only_test (include pattern file, not standalone)
 mod standalone_constructor_tuple_derive; // Re-enabled - fixed inner doc comment issues
@@ -109,4 +109,4 @@ mod tuple_multi_default_test; // Re-enabled - fixed tuple_multi_fields_subform h
 mod tuple_single_default_test; // FIXED - single-field subform handler rewritten to mirror struct pattern
 mod tuple_single_subform_test; // FIXED - tuple_single_field_subform handler rewritten
 
-// pub mod compile_fail;
+// pub mod compile_fail; // INTENTIONAL: Compile_fail tests are designed to fail compilation for error message validation

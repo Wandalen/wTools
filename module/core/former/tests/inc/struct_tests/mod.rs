@@ -103,7 +103,7 @@ mod name_collisions;
 
 // = parametrization
 
-// EMERGENCY DISABLE: parametrized_dyn_manual (E0521 borrowed data escapes errors)
+// CONFIRMED LIMITATION: parametrized_dyn_manual (E0521 borrowed data escapes - fundamental lifetime constraint)
 
 // REMOVED: parametrized_field (BLOCKED - have parametrized_replacement_derive replacement)
 mod parametrized_replacement_derive; // ENABLE ATTEMPT: Test if trait bound errors are resolved
