@@ -26,8 +26,9 @@ Successfully implemented SIMD-optimized string operations for the `strs_tools` c
 ### API Integration
 
 - **Backward Compatible**: Existing `split().perform()` API unchanged
+- **SIMD by Default**: SIMD optimizations enabled by default for all users
 - **Optional SIMD**: Available via `perform_simd()` or `SIMDStringExt` trait
-- **Feature Gated**: SIMD functionality behind `simd` feature flag
+- **Feature Control**: Can be disabled with `--no-default-features` if needed
 - **Zero Breaking Changes**: All existing code continues to work
 
 ## Performance Characteristics
@@ -122,11 +123,18 @@ let result = text.simd_find_any(&patterns);
 ```rust
 use strs_tools::string::split;
 
-// Existing API unchanged - can optionally use SIMD
+// Existing API unchanged - now includes SIMD by default
 let result: Vec<_> = split()
     .src("data:value1,value2;value3")
     .delimeter(vec![":", ",", ";"])
-    .perform_simd()  // Optional SIMD optimization
+    .perform()  // Automatically uses SIMD when beneficial
+    .collect();
+
+// Or explicitly request SIMD
+let result: Vec<_> = split()
+    .src("data:value1,value2;value3")
+    .delimeter(vec![":", ",", ";"])
+    .perform_simd()  // Explicit SIMD optimization
     .collect();
 ```
 
@@ -149,4 +157,4 @@ let result: Vec<_> = split()
 
 The SIMD implementation provides a solid foundation for high-performance string operations in the wTools ecosystem. While small inputs show expected overhead, the infrastructure is in place to deliver significant speedups (3-6x) on the larger inputs typical in parsing applications.
 
-The backward-compatible design ensures seamless adoption, while the feature flag approach allows users to opt into SIMD optimizations as needed. This implementation successfully achieves the core goal of providing performance improvements without disrupting existing functionality.
+The backward-compatible design ensures seamless adoption, with SIMD optimizations now enabled by default for all users. Advanced users can still disable SIMD with `--no-default-features` if needed. This implementation successfully achieves the core goal of providing performance improvements without disrupting existing functionality, while making high-performance string operations accessible to all users out of the box.

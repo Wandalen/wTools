@@ -317,13 +317,7 @@ impl BenchmarkRunner
   {
     self.log_info( &format!( "Appending results to {}...", self.changes_file.display() ) );
     
-    // Backup changes.md
-    if self.changes_file.exists()
-    {
-      let backup_file = self.changes_file.with_extension( "md.backup" );
-      fs::copy( &self.changes_file, &backup_file )?;
-      self.log_info( &format!( "Backup created: {}", backup_file.display() ) );
-    }
+    // No backup needed - append directly to changes.md
     
     // Get environment info
     let rust_version = process::Command::new( "rustc" )

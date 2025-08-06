@@ -348,3 +348,147 @@ stable_operations/multi_delim/large
 - src/string/split/ - String splitting implementation
 
 **Validation**: Automated benchmark run with consistent measurement methodology
+
+
+## 2025-08-06 - Enable SIMD optimizations by default - users now get SIMD acceleration out of the box
+
+**Change Type**: Configuration  
+**Description**: Enable SIMD optimizations by default - users now get SIMD acceleration out of the box
+
+**Performance Impact**:
+- Performance metrics extracted from benchmark run
+
+**Benchmark Evidence**:
+```
+stable_operations/single_colon/small
+                        time:   [15.194 µs 16.870 µs 18.902 µs]
+                        thrpt:  [5.0455 MiB/s 5.6529 MiB/s 6.2765 MiB/s]
+                 change:
+                        time:   [+2.7442% +8.8332% +16.327%] (p = 0.02 < 0.05)
+                        thrpt:  [-14.035% -8.1163% -2.6709%]
+                        Performance has regressed.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high severe
+stable_operations/multi_delim/small
+                        time:   [58.273 µs 58.333 µs 58.430 µs]
+                        thrpt:  [1.6322 MiB/s 1.6349 MiB/s 1.6366 MiB/s]
+                 change:
+                        time:   [-2.4312% -2.1372% -1.7585%] (p = 0.00 < 0.05)
+                        thrpt:  [+1.7899% +2.1838% +2.4918%]
+                        Performance has improved.
+Found 2 outliers among 10 measurements (20.00%)
+  1 (10.00%) high mild
+  1 (10.00%) high severe
+stable_operations/single_colon/medium
+                        time:   [48.118 µs 48.132 µs 48.142 µs]
+                        thrpt:  [19.809 MiB/s 19.814 MiB/s 19.819 MiB/s]
+                 change:
+                        time:   [-3.5957% -3.5594% -3.5229%] (p = 0.00 < 0.05)
+                        thrpt:  [+3.6516% +3.6908% +3.7298%]
+                        Performance has improved.
+stable_operations/multi_delim/medium
+                        time:   [790.09 µs 790.40 µs 790.70 µs]
+                        thrpt:  [1.2061 MiB/s 1.2066 MiB/s 1.2070 MiB/s]
+                 change:
+                        time:   [-2.6214% -2.4900% -2.3917%] (p = 0.00 < 0.05)
+                        thrpt:  [+2.4503% +2.5536% +2.6920%]
+                        Performance has improved.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high mild
+stable_operations/single_colon/large
+                        time:   [601.26 µs 601.96 µs 603.30 µs]
+                        thrpt:  [15.808 MiB/s 15.843 MiB/s 15.861 MiB/s]
+                 change:
+                        time:   [-2.6549% -2.4210% -2.1559%] (p = 0.00 < 0.05)
+                        thrpt:  [+2.2034% +2.4811% +2.7273%]
+                        Performance has improved.
+stable_operations/multi_delim/large
+                        time:   [83.429 ms 83.441 ms 83.456 ms]
+                        thrpt:  [117.02 KiB/s 117.04 KiB/s 117.05 KiB/s]
+                 change:
+                        time:   [-2.7715% -2.6840% -2.5900%] (p = 0.00 < 0.05)
+                        thrpt:  [+2.6589% +2.7581% +2.8505%]
+                        Performance has improved.
+Found 1 outliers among 10 measurements (10.00%)
+[Output truncated - see full logs for complete results]
+```
+
+**Environment**:
+- Platform: linux aarch64
+- Rust: rustc 1.88.0 (6b00bc388 2025-06-23)
+- Date: 2025-08-06 06:21:21 UTC
+- Test conditions: criterion.rs, 10 samples, 1s measurement time  
+- Benchmark type: Baseline
+
+**Root Cause Analysis**: Performance change due to configuration implementation
+
+**Related Files**:
+- benches/string_operations.rs - Main benchmark suite
+- src/string/split/ - String splitting implementation
+
+**Validation**: Automated benchmark run with consistent measurement methodology
+
+
+## 2025-08-06 - Updated benchmark runner to avoid creating backup files
+
+**Change Type**: Configuration  
+**Description**: Updated benchmark runner to avoid creating backup files
+
+**Performance Impact**:
+- Performance metrics extracted from benchmark run
+
+**Benchmark Evidence**:
+```
+minimal_split           time:   [1.2047 µs 1.2052 µs 1.2060 µs]
+                        change: [-1.7726% -1.6443% -1.5400%] (p = 0.00 < 0.05)
+                        Performance has improved.
+
+
+   Compiling strs_tools v0.23.0 (/home/user1/pro/lib/wTools2/module/core/strs_tools)
+warning: missing documentation for the crate
+  --> module/core/strs_tools/benches/minimal_test.rs:1:1
+   |
+1  | / use criterion::{ black_box, criterion_group, criterion_main, Criterion };
+2  | | use strs_tools::string::split;
+3  | |
+4  | | /// Ultra-minimal benchmark that cannot hang
+...  |
+21 | | criterion_group!( benches, bench_minimal_split );
+22 | | criterion_main!( benches );
+   | |___________________________^
+   |
+   = note: requested on the command line with `-W missing-docs`
+
+warning: missing documentation for a function
+  --> module/core/strs_tools/benches/minimal_test.rs:21:1
+   |
+21 | criterion_group!( benches, bench_minimal_split );
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: this warning originates in the macro `$crate::criterion_group` which comes from the expansion of the macro `criterion_group` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `strs_tools` (bench "minimal_test") generated 2 warnings
+    Finished `bench` profile [optimized] target(s) in 1.00s
+     Running benches/minimal_test.rs (/home/user1/pro/lib/wTools2/target/release/deps/minimal_test-b5d9e7ac6e13c8a5)
+Gnuplot not found, using plotters backend
+Benchmarking minimal_split
+Benchmarking minimal_split: Warming up for 3.0000 s
+Benchmarking minimal_split: Collecting 10 samples in estimated 1.0000 s (830k iterations)
+Benchmarking minimal_split: Analyzing
+
+```
+
+**Environment**:
+- Platform: linux aarch64
+- Rust: rustc 1.88.0 (6b00bc388 2025-06-23)
+- Date: 2025-08-06 06:23:24 UTC
+- Test conditions: criterion.rs, 10 samples, 1s measurement time  
+- Benchmark type: Baseline
+
+**Root Cause Analysis**: Performance change due to configuration implementation
+
+**Related Files**:
+- benches/string_operations.rs - Main benchmark suite
+- src/string/split/ - String splitting implementation
+
+**Validation**: Automated benchmark run with consistent measurement methodology
