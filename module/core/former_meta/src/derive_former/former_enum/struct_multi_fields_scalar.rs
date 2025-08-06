@@ -99,7 +99,7 @@
 //! ```
 //!
 //! ### Standalone Constructor (Optional)
-//! ```rust
+//! ```rust,ignore
 //! // Generated when #[standalone_constructors] is present
 //! pub fn variant(
 //!     field1: impl Into<T>,
@@ -149,7 +149,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// - **Standalone Support**: Optional top-level constructor function generation
 ///
 /// ## Generated Method Signature
-/// ```rust
+/// ```rust,ignore
 /// impl<T, U, V> Enum<T, U, V> {
 ///     pub fn variant(
 ///         field1: impl Into<T>,

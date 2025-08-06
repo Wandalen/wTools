@@ -34,7 +34,7 @@ mod private {
   ///
   /// ``` rust
   /// use diagnostics_tools::prelude::*;
-  /// a_true!( 1 == 2, "something wrong" );
+  /// a_false!( ( 1 == 2 ) );
   /// ```
   #[macro_export]
   macro_rules! a_false
@@ -84,7 +84,7 @@ mod private {
   ///
   /// ``` rust
   /// use diagnostics_tools::prelude::*;
-  /// a_dbg_true!( 1 == 2, "something wrong" );
+  /// a_dbg_false!( ( 1 == 2 ) );
   /// ```
   #[macro_export]
   macro_rules! a_dbg_false

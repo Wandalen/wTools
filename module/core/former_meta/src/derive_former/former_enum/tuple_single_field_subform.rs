@@ -121,7 +121,7 @@ fn generate_delegated_former(
 /// implementing the same pattern as struct_single_field_subform but adapted for tuple field access.
 ///
 /// ## Generated Method Signature
-/// ```rust
+/// ```rust,ignore
 /// impl<T> Enum<T> {
 ///     pub fn variant() -> VariantFormer<T> { /* ... */ }
 /// }

@@ -17,7 +17,7 @@ use macro_tools::{ syn, quote::quote, proc_macro2 };
 /// implements the Former trait, allowing for intelligent handler selection.
 ///
 /// ## Generated Code Pattern
-/// ```rust
+/// ```rust,ignore
 /// trait FormerDetector<T> {
 ///     fn has_former() -> bool { false }
 /// }

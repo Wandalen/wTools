@@ -69,7 +69,7 @@
 //! **Solution**: Each parameter accepts `impl Into<FieldType>` for maximum flexibility
 //! **Prevention**: Type-safe conversion handling with automatic type coercion
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! fn variant(s: String, v: Vec<i32>) -> MyEnum {  // ❌ Too restrictive
 //!     MyEnum::Variant(s, v)
@@ -149,7 +149,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// - **Standalone Support**: Optional top-level constructor function generation
 ///
 /// ## Generated Method Signature
-/// ```rust
+/// ```rust,ignore
 /// impl<T, U, V> Enum<T, U, V> {
 ///     pub fn variant(
 ///         _0: impl Into<T>,

@@ -222,14 +222,14 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// - **Default Safety**: Proper Default trait constraints for safe field unwrapping
 ///
 /// ## Generated Method Signature
-/// ```rust
+/// ```rust,ignore
 /// impl<T, U, V> Enum<T, U, V> {
 ///     pub fn variant() -> VariantFormer<T, U, V> { /* ... */ }
 /// }
 /// ```
 ///
 /// ## Generated Setter Methods
-/// ```rust
+/// ```rust,ignore
 /// impl<T, U, V> VariantFormer<T, U, V> {
 ///     pub fn _0(self, src: impl Into<T>) -> Self { /* ... */ }
 ///     pub fn _1(self, src: impl Into<U>) -> Self { /* ... */ }

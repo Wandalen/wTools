@@ -120,7 +120,7 @@ mod derive_former;
 /// ```
 ///
 /// ### 3. Hash+Eq Trait Bounds for HashMap Keys
-/// ```rust
+/// ```rust,ignore
 /// // ❌ WRONG: Using non-Hash type as HashMap key
 /// pub struct Definition; // No Hash+Eq implementation
 /// pub struct MyStruct {
