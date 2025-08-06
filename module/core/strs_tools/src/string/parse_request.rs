@@ -14,7 +14,7 @@ mod private {
   ///
   /// Wrapper types to make transformation.
   ///
-  #[derive(Debug, Clone, PartialEq, Eq)]
+  #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub enum OpType<T> {
     /// Wrapper over single element of type `<T>`.
     Primitive(T),
@@ -42,7 +42,7 @@ mod private {
     }
   }
 
-  #[allow(clippy::from_over_into)]
+  #[ allow( clippy::from_over_into ) ]
   impl<T> Into<Vec<T>> for OpType<T> {
     fn into(self) -> Vec<T> {
       match self {
@@ -57,7 +57,7 @@ mod private {
     /// `Vector`.
     /// # Panics
     /// qqq: doc
-    #[must_use]
+    #[ must_use ]
     pub fn append(mut self, item: OpType<T>) -> OpType<T> {
       let mut mut_item = item;
       match self {
@@ -107,8 +107,8 @@ mod private {
   ///
   /// Parsed request data.
   ///
-  #[allow(dead_code)]
-  #[derive(Debug, Default, PartialEq, Eq)]
+  #[ allow( dead_code ) ]
+  #[ derive( Debug, Default, PartialEq, Eq ) ]
   pub struct Request<'a> {
     /// Original request string.
     pub original: &'a str,
@@ -127,7 +127,7 @@ mod private {
   }
 
   /// Newtype for the source string slice in `ParseOptions`.
-  #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ]
   pub struct ParseSrc<'a>(pub &'a str);
 
   // impl Default for ParseSrc<'_>
@@ -139,7 +139,7 @@ mod private {
   // }
 
   /// Newtype for the key-value delimiter string slice in `ParseOptions`.
-  #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)] // Moved derive here
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ] // Moved derive here
   pub struct ParseKeyValDelimeter<'a>(pub &'a str);
 
   // impl Default for ParseKeyValDelimeter<'_> // Removed manual impl
@@ -151,7 +151,7 @@ mod private {
   // }
 
   /// Newtype for the commands delimiter string slice in `ParseOptions`.
-  #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)] // Moved derive here
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ] // Moved derive here
   pub struct ParseCommandsDelimeter<'a>(pub &'a str);
 
   // impl Default for ParseCommandsDelimeter<'_> // Removed manual impl
@@ -163,7 +163,7 @@ mod private {
   // }
 
   /// Newtype for the quoting boolean flag in `ParseOptions`.
-  #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)] // Moved derive here
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ] // Moved derive here
   pub struct ParseQuoting(pub bool);
 
   // impl Default for ParseQuoting // Removed manual impl
@@ -175,7 +175,7 @@ mod private {
   // }
 
   /// Newtype for the unquoting boolean flag in `ParseOptions`.
-  #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)] // Moved derive here
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ] // Moved derive here
   pub struct ParseUnquoting(pub bool);
 
   // impl Default for ParseUnquoting // Removed manual impl
@@ -187,7 +187,7 @@ mod private {
   // }
 
   /// Newtype for the `parsing_arrays` boolean flag in `ParseOptions`.
-  #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)] // Moved derive here
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ] // Moved derive here
   pub struct ParseParsingArrays(pub bool);
 
   // impl Default for ParseParsingArrays // Removed manual impl
@@ -199,7 +199,7 @@ mod private {
   // }
 
   /// Newtype for the `several_values` boolean flag in `ParseOptions`.
-  #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ]
   pub struct ParseSeveralValues(pub bool);
 
   // impl Default for ParseSeveralValues
@@ -211,7 +211,7 @@ mod private {
   // }
 
   /// Newtype for the `subject_win_paths_maybe` boolean flag in `ParseOptions`.
-  #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ]
   pub struct ParseSubjectWinPathsMaybe(pub bool);
 
   // impl Default for ParseSubjectWinPathsMaybe
@@ -471,7 +471,7 @@ mod private {
   ///
   ///
   ///
-  #[must_use]
+  #[ must_use ]
   pub fn request_parse<'a>() -> ParseOptions<'a> // Return ParseOptions directly
   {
     ParseOptions::default()

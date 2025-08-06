@@ -3,7 +3,7 @@
 use core::ops::{BitOr, BitAnd, Not};
 
 /// Flags to control the behavior of the split iterators.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[ derive( Debug, Clone, Copy, PartialEq, Eq, Default ) ]
 pub struct SplitFlags(pub u8);
 
 impl SplitFlags {

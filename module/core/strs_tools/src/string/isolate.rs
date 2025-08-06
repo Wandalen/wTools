@@ -5,30 +5,30 @@ pub mod private {
   use super::*;
 
   /// Newtype for the source string slice.
-  #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ]
   pub struct Src<'a>(pub &'a str);
 
   /// Newtype for the delimiter string slice.
-  #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ]
   pub struct Delimeter<'a>(pub &'a str);
 
   /// Newtype for the quote boolean flag.
-  #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ]
   pub struct Quote(pub bool);
 
   /// Newtype for the left boolean flag.
-  #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ]
   pub struct Left(pub bool);
 
   /// Newtype for the none boolean flag.
-  #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+  #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ]
   pub struct NoneFlag(pub bool);
 
   ///
   /// Options for isolate.
   ///
-  #[allow(dead_code)]
-  #[derive(Debug)] // Removed Assign derive
+  #[ allow( dead_code ) ]
+  #[ derive( Debug ) ] // Removed Assign derive
   pub struct IsolateOptions<'a> {
     /// Source string slice.
     pub src: Src<'a>,
@@ -59,7 +59,7 @@ pub mod private {
 
   impl<'a> IsolateOptions<'a> {
     /// Do isolate.
-    #[must_use]
+    #[ must_use ]
     pub fn isolate(&self) -> (&'a str, Option<&'a str>, &'a str) {
       let times = self.times + 1;
       let result;
@@ -146,7 +146,7 @@ pub mod private {
   ///
   ///
   ///
-  #[must_use]
+  #[ must_use ]
   pub fn isolate<'a>() -> IsolateOptions<'a> {
     IsolateOptions::default()
   }
@@ -158,7 +158,7 @@ pub mod private {
   ///
   ///
   ///
-  #[must_use]
+  #[ must_use ]
   pub fn isolate_left<'a>() -> IsolateOptions<'a> {
     IsolateOptions {
       left: Left(true),
@@ -173,7 +173,7 @@ pub mod private {
   ///
   ///
   ///
-  #[must_use]
+  #[ must_use ]
   pub fn isolate_right<'a>() -> IsolateOptions<'a> {
     IsolateOptions {
       left: Left(false),

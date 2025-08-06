@@ -118,7 +118,7 @@
 //! - **Unit Semantics**: Maintains proper Rust unit variant semantics and syntax
 
 use super::*;
-use macro_tools::{Result, quote::quote, syn_err};
+use macro_tools::{Result, quote::quote};
 use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 use crate::derive_former::attribute_validation::{validate_variant_attributes, get_field_count, get_variant_type};
 

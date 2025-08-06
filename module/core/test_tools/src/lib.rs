@@ -135,6 +135,11 @@ pub use ::{error_tools, collection_tools, impls_index, mem_tools, typing_tools, 
 
 #[cfg(feature = "enabled")]
 #[cfg(not(feature = "doctest"))]
+#[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
+pub use error_tools::error;
+
+#[cfg(feature = "enabled")]
+#[cfg(not(feature = "doctest"))]
 #[cfg(all(feature = "standalone_build", not(feature = "normal_build")))]
 pub use implsindex as impls_index;
 
@@ -164,6 +169,7 @@ pub mod own {
 
   #[doc(inline)]
   pub use {
+    error_tools::{debug_assert_id, debug_assert_identical, debug_assert_ni, debug_assert_not_identical, ErrWith},
     collection_tools::orphan::*, impls_index::orphan::*, mem_tools::orphan::*, typing_tools::orphan::*,
     diagnostics_tools::orphan::*,
   };
@@ -198,6 +204,7 @@ pub mod exposed {
 
   #[doc(inline)]
   pub use {
+    error_tools::{debug_assert_id, debug_assert_identical, debug_assert_ni, debug_assert_not_identical, ErrWith},
     collection_tools::exposed::*, impls_index::exposed::*, mem_tools::exposed::*, typing_tools::exposed::*,
     diagnostics_tools::exposed::*,
   };
@@ -217,6 +224,7 @@ pub mod prelude {
 
   #[doc(inline)]
   pub use {
+    error_tools::{debug_assert_id, debug_assert_identical, debug_assert_ni, debug_assert_not_identical, ErrWith},
     collection_tools::prelude::*, impls_index::prelude::*, mem_tools::prelude::*, typing_tools::prelude::*,
     diagnostics_tools::prelude::*,
   };

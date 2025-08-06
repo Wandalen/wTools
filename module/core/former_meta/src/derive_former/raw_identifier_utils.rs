@@ -82,6 +82,7 @@ fn is_rust_keyword(s: &str) -> bool {
 /// 
 /// This is similar to `ident::ident_maybe_raw` but specifically designed for
 /// parameter name generation in constructor contexts.
+#[allow(dead_code)]
 pub fn field_to_param_name(field_ident: &syn::Ident) -> syn::Ident {
     ident::ident_maybe_raw(field_ident)
 }
@@ -105,6 +106,7 @@ pub fn strip_raw_prefix_for_compound_ident(ident: &syn::Ident) -> String {
 }
 
 /// Creates a constructor name from a struct/enum name, handling raw identifiers.
+#[allow(dead_code)]
 pub fn type_to_constructor_name(type_ident: &syn::Ident) -> syn::Ident {
     let type_str = type_ident.to_string();
     
@@ -132,7 +134,7 @@ pub fn type_to_constructor_name(type_ident: &syn::Ident) -> syn::Ident {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use quote::format_ident;
+    use macro_tools::quote::format_ident;
 
     #[test]
     fn test_variant_to_method_name_normal() {
