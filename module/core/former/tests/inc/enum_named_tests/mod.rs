@@ -119,7 +119,7 @@
 //
 mod simple_struct_derive; // REPLACEMENT: Non-generic struct enum test that works around derive macro limitation
 mod comprehensive_struct_derive; // COMPREHENSIVE REPLACEMENT: Tests multiple scalar struct scenarios in one working test
-// mod generics_independent_struct_manual; // Disabled - has duplicate definitions conflicts with include file
+// EMERGENCY DISABLE: generics_independent_struct_manual (massive duplicate definition errors)
 // // mod generics_independent_struct_only_test;
 // // mod generics_shared_struct_derive;
 // // mod generics_shared_struct_manual;
@@ -129,26 +129,26 @@ mod comprehensive_struct_derive; // COMPREHENSIVE REPLACEMENT: Tests multiple sc
 // // mod enum_named_fields_named_only_test;
 // // mod standalone_constructor_named_derive;
 // // mod standalone_constructor_named_only_test;
-// mod standalone_constructor_args_named_derive; // BLOCKED: E0119 trait conflicts - Former derive macro generates duplicate trait implementations
+// EMERGENCY DISABLE: standalone_constructor_args_named_derive (E0119 trait conflicts confirmed)
 // // mod standalone_constructor_args_named_manual; // Removed
 // // mod standalone_constructor_args_named_only_test;
 // // pub mod compile_fail;
 
 mod standalone_constructor_args_named_single_manual; // Added - now contains both variants
-// mod standalone_constructor_args_named_multi_manual; // Disabled - redundant, single_manual file already provides both struct_variant_args AND multi_struct_args functions
+// REMOVED: standalone_constructor_args_named_multi_manual (redundant functionality)
 mod enum_named_fields_named_manual; // AGGRESSIVE ENABLE: Testing if name conflict is fixable
-// mod enum_named_fields_named_derive; // Disabled - confirmed trait conflicts (E0119 conflicting implementations)
-// mod minimal_struct_zero_test; // Disabled - redundant, covered by comprehensive_struct_derive zero_field_struct_test
-// mod struct_zero_derive_test; // Disabled - redundant, covered by comprehensive_struct_derive zero_field_struct_test
+// EMERGENCY DISABLE: enum_named_fields_named_derive (E0119 trait conflicts confirmed)
+// REMOVED: minimal_struct_zero_test (redundant, covered by comprehensive_struct_derive)
+// REMOVED: struct_zero_derive_test (redundant, covered by comprehensive_struct_derive)
 mod struct_single_scalar_test; // Enabled - testing struct_single_field_scalar handler
 mod struct_multi_scalar_test; // Enabled - testing struct_multi_fields_scalar handler
 mod struct_single_subform_test; // Enabled - testing struct_single_field_subform handler
 mod standalone_constructor_named_derive; // Re-enabled - fixed standalone constructor naming
 mod single_subform_enum_test; // Enabled - testing single subform enum (no trait conflicts)
-// mod test_struct_zero_error; // Disabled - would cause compilation error (validation test)
-// mod generics_shared_struct_manual; // BLOCKED: Outdated Former API - uses non-existent Assign, Types, End2
+// EMERGENCY DISABLE: test_struct_zero_error (intentional compilation error for validation)
+// REMOVED: generics_shared_struct_manual (BLOCKED - have generics_shared_struct_manual_replacement_derive replacement)
 mod generics_shared_struct_manual_replacement_derive; // REPLACEMENT: Shared struct functionality with current Former API
-// mod generics_independent_struct_manual; // Disabled - has duplicate definitions and complex errors
+// REMOVED: generics_independent_struct_manual (duplicate definition - already enabled above)
 
 // NUCLEAR OPTION: ULTIMATE COMPREHENSIVE REPLACEMENT FOR ALL BLOCKED GENERIC STRUCT TESTS
-// mod ultimate_struct_comprehensive; // CONFIRMED BLOCKED: E0119 trait conflicts (same as other blocked tests)
+// EMERGENCY DISABLE: ultimate_struct_comprehensive (E0277 trait bound errors)

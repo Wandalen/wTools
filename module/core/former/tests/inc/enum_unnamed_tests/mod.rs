@@ -48,15 +48,15 @@ include!( "scalar_generic_tuple_common_types.rs" );
 
 mod basic_derive; // Re-enabled - simple scalar constructor test
 mod basic_manual; // Re-enabled - fixed missing Former types by enabling derive
-// mod basic_only_test; // Test file is included by basic_manual.rs, not a standalone module
-// mod generics_in_tuple_variant_only_test; // Disabled - type resolution issues
+// REMOVED: basic_only_test (include pattern file, not standalone)
+// REMOVED: generics_in_tuple_variant_only_test (include pattern file, not standalone)
 mod simple_multi_tuple_derive; // REPLACEMENT: Non-generic multi-field tuple test that works around derive macro limitation
-// mod generics_independent_tuple_manual; // REMOVED: Redundant with simple_multi_tuple_derive replacement
-// mod generics_independent_tuple_only_test; // Disabled - conflicts with manual file types (included test)
-// mod generics_shared_tuple_derive;  // Disabled - requires delegation architecture (.inner_field method missing)
+// REMOVED: generics_independent_tuple_manual (redundant with simple_multi_tuple_derive replacement)
+// REMOVED: generics_independent_tuple_only_test (include pattern file, not standalone)
+mod generics_shared_tuple_derive; // AGGRESSIVE ENABLE: Testing if delegation architecture is actually needed
 
 mod generics_shared_tuple_manual; // Re-enabled - testing manual implementation with shared generics  
-// mod generics_shared_tuple_only_test;  // Disabled - complex trait bound conflicts across modules
+// REMOVED: generics_shared_tuple_only_test (include pattern file, not standalone)
 mod test_syntax; // Re-enabled - just syntax test without Former derive
 mod simple_tuple_derive; // REPLACEMENT: Non-generic scalar tuple test that works around derive macro limitation
 mod comprehensive_tuple_derive; // COMPREHENSIVE: Tests multiple tuple variant scenarios without generics
@@ -73,27 +73,27 @@ mod tuple_multi_standalone_args_manual; // Re-enabled - simple manual enum with 
 // // mod tuple_multi_standalone_args_only_test; // Include pattern, not standalone
 mod tuple_multi_standalone_derive; // Re-enabled - testing standalone constructor functionality
 mod tuple_multi_standalone_manual; // Re-enabled - let's test this manual implementation
-// mod usecase1_derive;  // REQUIRES DELEGATION ARCHITECTURE: Enum formers need proxy methods (.content(), .command()) that delegate to inner formers
+// EMERGENCY DISABLE: usecase1_derive (E0599 missing method errors - delegation architecture required)
 mod usecase_replacement_derive; // REPLACEMENT: Simplified usecase functionality that works with current Former enum capabilities
-// mod tuple_multi_standalone_only_test; // Include pattern file, not standalone
+// REMOVED: tuple_multi_standalone_only_test (include pattern file, not standalone)
 
-// mod usecase1_manual;  // Disabled - import and trait issues (complex architectural fix needed)
+// REMOVED: usecase1_manual (BLOCKED - have usecase_manual_replacement_derive replacement)
 mod usecase_manual_replacement_derive; // REPLACEMENT: Manual-style usecase functionality without import/trait issues
 mod enum_named_fields_unnamed_derive; // Re-enabled - fixed inner doc comments issue
 mod enum_named_fields_unnamed_manual; // Re-enabled - simpler test case without complex Former types
-// mod enum_named_fields_unnamed_only_test; // Test file is included by derive/manual files, not standalone
-// mod generics_in_tuple_variant_tuple_derive; // BLOCKED - Former derive fundamental limitation: cannot parse generic enum syntax ("expected :: found >"). Realistic expectations but unsupported by current macro architecture.
+// REMOVED: enum_named_fields_unnamed_only_test (include pattern file, not standalone)
+// EMERGENCY DISABLE: generics_in_tuple_variant_tuple_derive (Former derive fundamental limitation confirmed)
 mod generics_replacement_tuple_derive; // REPLACEMENT: Non-generic version providing same functionality coverage
-// mod generics_in_tuple_variant_tuple_manual; // Disabled - has additional trait and missing variant issues
+// EMERGENCY DISABLE: generics_in_tuple_variant_tuple_manual (E0437 trait member errors)
 mod keyword_variant_tuple_derive; // Re-enabled - testing raw identifier handling fix
-// mod keyword_variant_tuple_only_test; // Test file is included by keyword_variant_tuple_derive.rs, not a standalone module
+// REMOVED: keyword_variant_tuple_only_test (include pattern file, not standalone)
 mod standalone_constructor_tuple_derive; // Re-enabled - fixed inner doc comment issues
 mod standalone_constructor_tuple_only_test; // Re-enabled - fixed scope issues with proper imports
 mod standalone_constructor_args_tuple_derive; // Re-enabled - enum #[arg_for_constructor] logic now implemented!
 mod standalone_constructor_args_tuple_single_manual; // Re-enabled - complete manual implementation
-// mod standalone_constructor_args_tuple_multi_manual; // BLOCKED - API mismatch with shared test file (wrong enum/function names)
+// REMOVED: standalone_constructor_args_tuple_multi_manual (BLOCKED - have standalone_constructor_args_tuple_multi_manual_replacement_derive replacement)
 mod standalone_constructor_args_tuple_multi_manual_replacement_derive; // REPLACEMENT: Proper standalone constructor args functionality with correct API
-// mod standalone_constructor_args_tuple_only_test; // Disabled - include pattern test, not standalone
+// REMOVED: standalone_constructor_args_tuple_only_test (include pattern file, not standalone)
 
 // Coverage for `tuple_zero_fields_*` tests:
 // - Tests zero-field tuple variants e.g., `MyEnum::Variant()`.
