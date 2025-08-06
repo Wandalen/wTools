@@ -39,6 +39,82 @@ use super::*;
 use macro_tools::{ Result, quote::{ quote, format_ident } };
 use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 
+/// Determines if a single-field tuple variant should delegate to the inner type's Former
+/// instead of using a variant-specific former.
+/// 
+/// SAFE DELEGATION CRITERIA:
+/// 1. Field type name matches variant name (e.g., `Prompt(Prompt)`)
+/// 2. Field type is a simple path (not primitive, not generic)
+/// 3. Field type is not a known primitive (String, u32, bool, etc.)
+/// 
+/// This conservative approach prevents delegation to types that don't implement Former,
+/// which would cause derive macro expansion failures.
+fn is_delegation_candidate(variant_name: &syn::Ident, field_type: &syn::Type) -> bool {
+  // Only attempt delegation for simple path types
+  if let syn::Type::Path(type_path) = field_type {
+    if let Some(last_segment) = type_path.path.segments.last() {
+      let type_name = &last_segment.ident;
+      
+      // SAFETY CHECK 1: Field type name must match variant name exactly
+      if type_name != variant_name {
+        return false;
+      }
+      
+      // SAFETY CHECK 2: Reject known primitives that don't implement Former
+      let type_str = type_name.to_string();
+      let known_primitives = [
+        "u8", "u16", "u32", "u64", "u128", "usize",
+        "i8", "i16", "i32", "i64", "i128", "isize", 
+        "f32", "f64", "bool", "char",
+        "String", "str",
+        "Vec", "HashMap", "HashSet", "BTreeMap", "BTreeSet",
+        "Option", "Result"
+      ];
+      if known_primitives.contains(&&*type_str) {
+        return false;
+      }
+      
+      // SAFETY CHECK 3: Reject generic types (they have angle brackets)
+      if last_segment.arguments != syn::PathArguments::None {
+        return false;
+      }
+      
+      // SAFETY CHECK 4: Must be a simple single-segment path
+      if type_path.path.segments.len() != 1 {
+        return false;
+      }
+      
+      // All safety checks passed - attempt delegation
+      return true;
+    }
+  }
+  false
+}
+
+/// Generates delegation code that returns the inner type's Former.
+/// The delegation returns the inner Former directly so that .form() returns the inner type,
+/// which can then be manually wrapped in the enum variant by the caller.
+fn generate_delegated_former(
+  ctx: &EnumVariantHandlerContext<'_>,
+  _variant_name: &syn::Ident, 
+  field_type: &syn::Type,
+  method_name: &syn::Ident,
+  vis: &syn::Visibility,
+) -> proc_macro2::TokenStream {
+  quote! {
+    // DELEGATION: Return inner type's Former directly
+    // The caller will wrap the result in the enum variant manually
+    #[ inline( always ) ]
+    #vis fn #method_name() -> <#field_type as ::former::Former>::Former
+    {
+      // Return the inner type's former directly
+      // When .form() is called, it returns the inner type (e.g., Prompt)
+      // Test code then manually wraps: FunctionStep::Prompt(prompt_step)
+      <#field_type as ::former::Former>::former()
+    }
+  }
+}
+
 /// Generates implicit variant former infrastructure for single-field tuple enum variants.
 ///
 /// This function creates a complete builder ecosystem for tuple variants with a single unnamed field,
@@ -278,7 +354,8 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   ctx.end_impls.push( former_impls );
   ctx.end_impls.push( end_impls );
 
-  // Generate the method that returns the implicit variant former
+  // STABLE APPROACH: Always use variant former (delegation disabled for now)
+  // TODO: Implement proper trait detection or compile-time feature detection for delegation
   let result = quote!
   {
     #[ inline( always ) ]

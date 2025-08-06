@@ -53,13 +53,13 @@ mod basic_manual; // Re-enabled - fixed missing Former types by enabling derive
 // mod generics_independent_tuple_derive; // Disabled - complex generic syntax errors need fixing
 mod generics_independent_tuple_manual; // Re-enabled - testing manual implementation
 // mod generics_independent_tuple_only_test; // Disabled - conflicts with manual file types (included test)
-// mod generics_shared_tuple_derive;  // Disabled - enum Former delegation not fully implemented
+// mod generics_shared_tuple_derive;  // Disabled - requires delegation architecture (.inner_field method missing)
 
 mod generics_shared_tuple_manual; // Re-enabled - testing manual implementation with shared generics  
 // mod generics_shared_tuple_only_test;
 mod test_syntax; // Re-enabled - just syntax test without Former derive
-// mod scalar_generic_tuple_derive;  // Disabled - requires manual version
-// mod scalar_generic_tuple_manual;  // Disabled because it includes the derive version
+// mod scalar_generic_tuple_derive;  // Disabled - confirmed generic parsing macro issue
+mod scalar_generic_tuple_manual;  // Re-enabled - derive version no longer required dependency
 mod tuple_multi_default_derive;  // Re-enabled - multi-field subform handler fixed
 mod tuple_multi_default_manual;
 mod tuple_multi_default_only_test; // Re-enabled - fixed import scope issue
@@ -71,10 +71,10 @@ mod tuple_multi_standalone_args_derive; // Re-enabled - enum #[arg_for_construct
 // // mod tuple_multi_standalone_args_only_test;
 mod tuple_multi_standalone_derive; // Re-enabled - testing standalone constructor functionality
 // // mod tuple_multi_standalone_manual;
-// mod usecase1_derive;  // COMPLEX: needs enum Former to delegate to inner Former (architectural fix needed)
+// mod usecase1_derive;  // REQUIRES DELEGATION ARCHITECTURE - complex implementation needed
 // // mod tuple_multi_standalone_only_test;
 
-// mod usecase1_manual;  // Import and trait issues
+// mod usecase1_manual;  // Disabled - import and trait issues (complex architectural fix needed)
 mod enum_named_fields_unnamed_derive; // Re-enabled - fixed inner doc comments issue
 mod enum_named_fields_unnamed_manual; // Re-enabled - simpler test case without complex Former types
 // mod enum_named_fields_unnamed_only_test; // Test file is included by derive/manual files, not standalone
@@ -85,7 +85,7 @@ mod keyword_variant_tuple_derive; // Re-enabled - testing raw identifier handlin
 mod standalone_constructor_tuple_derive; // Re-enabled - fixed inner doc comment issues
 mod standalone_constructor_tuple_only_test; // Re-enabled - fixed scope issues with proper imports
 mod standalone_constructor_args_tuple_derive; // Re-enabled - enum #[arg_for_constructor] logic now implemented!
-// mod standalone_constructor_args_tuple_single_manual; // Added
+mod standalone_constructor_args_tuple_single_manual; // Re-enabled - complete manual implementation
 // mod standalone_constructor_args_tuple_multi_manual; // Added
 // mod standalone_constructor_args_tuple_only_test;
 

@@ -185,4 +185,13 @@ pub fn tuple_variant_args( _0 : impl Into< i32 > ) -> TestEnumArgs // Changed re
 }
 
 // === Include Test Logic ===
-include!( "standalone_constructor_args_tuple_only_test.rs" );
+// Note: Only including the single-field test since this manual implementation only has TupleVariantArgs
+
+#[ test ]
+fn tuple_variant_args_test()
+{
+  // Test the single field with standalone constructor
+  let instance = tuple_variant_args( 202 );
+  let expected = TestEnumArgs::TupleVariantArgs( 202 );
+  assert_eq!( instance, expected );
+}
