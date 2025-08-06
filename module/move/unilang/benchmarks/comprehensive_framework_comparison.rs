@@ -825,10 +825,14 @@ fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmar
     fs::write("target/comprehensive_framework_comparison/comprehensive_results.csv", &csv_content)
         .expect("Failed to write CSV results");
 
-    // Update README with latest results
-    update_readme_with_results(results).unwrap_or_else(|e| {
-        println!("Warning: Failed to update README: {}", e);
-    });
+    // Update README with latest results and display diff
+    match update_readme_with_results(results) {
+        Ok((old_content, new_content)) => {
+            println!("✅ benchmarks/readme.md updated with comprehensive results");
+            display_md_file_diff("benchmarks/readme.md", &old_content, &new_content);
+        }
+        Err(e) => println!("⚠️  Failed to update README: {}", e),
+    }
 
     println!("\n🎯 Comprehensive framework comparison reports saved to:");
     println!("  - target/comprehensive_framework_comparison/comprehensive_report.txt");
@@ -1076,9 +1080,43 @@ mod tests {
 }
 
 #[ cfg( feature = "benchmarks" ) ]
-fn update_readme_with_results(results: &[Vec<ComprehensiveBenchmarkResult>]) -> Result<(), Box<dyn std::error::Error>> {
+fn display_md_file_diff(file_path: &str, old_content: &str, new_content: &str) {
+    println!("\n📄 Diff for {}:", file_path);
+    println!("═══════════════════════════════════════════════");
+    
+    let old_lines: Vec<&str> = old_content.lines().collect();
+    let new_lines: Vec<&str> = new_content.lines().collect();
+    
+    let mut changes_found = false;
+    let max_lines = old_lines.len().max(new_lines.len());
+    
+    for i in 0..max_lines {
+        let old_line = old_lines.get(i).unwrap_or(&"");
+        let new_line = new_lines.get(i).unwrap_or(&"");
+        
+        if old_line != new_line {
+            changes_found = true;
+            if !old_line.is_empty() {
+                println!("- {}", old_line);
+            }
+            if !new_line.is_empty() {
+                println!("+ {}", new_line);
+            }
+        }
+    }
+    
+    if !changes_found {
+        println!("  (No changes detected)");
+    }
+    
+    println!("═══════════════════════════════════════════════");
+}
+
+#[ cfg( feature = "benchmarks" ) ]
+fn update_readme_with_results(results: &[Vec<ComprehensiveBenchmarkResult>]) -> Result<(String, String), Box<dyn std::error::Error>> {
     let readme_path = "benchmarks/readme.md";
-    let content = fs::read_to_string(readme_path)?;
+    let old_content = fs::read_to_string(readme_path)?;
+    let content = old_content.clone();
     
     // Parse results into framework-specific data
     let mut unilang_data = Vec::new();
@@ -1132,8 +1170,8 @@ fn update_readme_with_results(results: &[Vec<ComprehensiveBenchmarkResult>]) -> 
         updated_content = format!("{}{}", timestamp_comment, updated_content);
     }
     
-    fs::write(readme_path, updated_content)?;
-    Ok(())
+    fs::write(readme_path, &updated_content)?;
+    Ok((old_content, updated_content))
 }
 
 #[ cfg( feature = "benchmarks" ) ]
@@ -1432,25 +1470,29 @@ fn run_comprehensive_benchmark() {
                  "", unilang.commands_per_second, clap.commands_per_second, pico_args.commands_per_second, throughput_winner);
     }
 
-    if let Err(e) = update_readme_with_results(&all_results) {
-        eprintln!("❌ Failed to update README: {}", e);
+    match update_readme_with_results(&all_results) {
+        Ok((old_content, new_content)) => {
+            println!("✅ benchmarks/readme.md updated with comprehensive results");
+            display_md_file_diff("benchmarks/readme.md", &old_content, &new_content);
+        }
+        Err(e) => eprintln!("❌ Failed to update README: {}", e),
     }
 
     println!("\n✅ All three frameworks show excellent performance characteristics!");
     println!("📖 See detailed analysis in target/comprehensive_framework_comparison/comprehensive_report.txt");
 }
 
-fn main() {
-    #[ cfg( feature = "benchmarks" ) ]
-    {
-        run_comprehensive_benchmark();
-    }
-    
-    #[cfg(not(feature = "benchmarks"))]
-    {
-        eprintln!("Error: Benchmarks not enabled!");
-        eprintln!("Run with: cargo run --release --bin comprehensive_benchmark --features benchmarks");
-        std::process::exit(1); 
-    }
+#[cfg(feature = "benchmarks")]
+#[test]
+#[ignore]
+fn comprehensive_benchmark_test() {
+    run_comprehensive_benchmark();
+}
+
+#[cfg(not(feature = "benchmarks"))]
+#[test]
+#[ignore] 
+fn comprehensive_benchmark_test() {
+    panic!("Benchmarks not enabled! Run with: cargo test comprehensive_benchmark_test --release --features benchmarks -- --ignored");
 }
 

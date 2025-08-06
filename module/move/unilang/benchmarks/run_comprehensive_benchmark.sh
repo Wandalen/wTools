@@ -12,7 +12,7 @@ echo ""
 cd "$(dirname "$0")/.."
 
 # Run the comprehensive benchmark directly  
-cargo run --release --bin comprehensive_benchmark --features benchmarks
+cargo test comprehensive_benchmark_test --release --features benchmarks -- --ignored --nocapture
 
 echo ""
 echo "✅ Benchmark completed successfully!"

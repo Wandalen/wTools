@@ -480,11 +480,11 @@ fn benchmark_pico_args_throughput(command_count: usize) -> ThroughputResult {
 }
 
 #[cfg(feature = "benchmarks")]
-fn update_benchmarks_readme(results: &[Vec<ThroughputResult>]) -> Result<(), String> {
+fn update_benchmarks_readme(results: &[Vec<ThroughputResult>]) -> Result<(Option<String>, String), String> {
     use std::fs;
     use std::path::Path;
     
-    println!("📝 Updating README with latest throughput benchmark results...");
+    println!("📝 Updating benchmarks/readme.md with latest throughput results...");
     
     // Convert throughput results to the format expected by README
     let mut performance_data = String::new();
@@ -570,8 +570,10 @@ fn update_benchmarks_readme(results: &[Vec<ThroughputResult>]) -> Result<(), Str
         let now = chrono::Utc::now();
         let timestamp = format!("<!-- Last updated: {} UTC -->\n", now.format("%Y-%m-%d %H:%M:%S"));
         
-        let content = fs::read_to_string(readme_path)
+        // Cache the old content for diff display
+        let old_content = fs::read_to_string(readme_path)
             .map_err(|e| format!("Failed to read README: {}", e))?;
+        let content = old_content.clone();
         
         let mut updated_content = if content.starts_with("<!--") {
             // Replace existing timestamp
@@ -599,13 +601,47 @@ fn update_benchmarks_readme(results: &[Vec<ThroughputResult>]) -> Result<(), Str
             }
         }
         
-        fs::write(readme_path, updated_content)
+        fs::write(readme_path, &updated_content)
             .map_err(|e| format!("Failed to write README: {}", e))?;
         
-        println!("✅ README updated successfully with throughput results");
+        println!("✅ benchmarks/readme.md updated successfully with throughput results");
+        return Ok((Some(old_content), updated_content));
     }
     
-    Ok(())
+    Ok((None, "No README file found or updated".to_string()))
+}
+
+#[cfg(feature = "benchmarks")]
+fn display_md_file_diff(file_path: &str, old_content: &str, new_content: &str) {
+    println!("\n📄 Diff for {}:", file_path);
+    println!("═══════════════════════════════════════════════");
+    
+    let old_lines: Vec<&str> = old_content.lines().collect();
+    let new_lines: Vec<&str> = new_content.lines().collect();
+    
+    let mut changes_found = false;
+    let max_lines = old_lines.len().max(new_lines.len());
+    
+    for i in 0..max_lines {
+        let old_line = old_lines.get(i).unwrap_or(&"");
+        let new_line = new_lines.get(i).unwrap_or(&"");
+        
+        if old_line != new_line {
+            changes_found = true;
+            if !old_line.is_empty() {
+                println!("- {}", old_line);
+            }
+            if !new_line.is_empty() {
+                println!("+ {}", new_line);
+            }
+        }
+    }
+    
+    if !changes_found {
+        println!("  (No changes detected)");
+    }
+    
+    println!("═══════════════════════════════════════════════");
 }
 
 #[cfg(feature = "benchmarks")]
@@ -828,9 +864,14 @@ fn run_throughput_benchmark() {
     // Generate comprehensive report
     generate_throughput_report(&all_results);
 
-    // Update README with latest results
+    // Update README with latest results and display diff
     match update_benchmarks_readme(&all_results) {
-        Ok(()) => println!("✅ benchmarks/readme.md updated with throughput results"),
+        Ok((old_content, new_content)) => {
+            println!("✅ benchmarks/readme.md updated with throughput results");
+            if let Some(old) = old_content {
+                display_md_file_diff("benchmarks/readme.md", &old, &new_content);
+            }
+        }
         Err(error) => println!("⚠️  benchmarks/readme.md update failed: {}", error),
     }
 
@@ -871,50 +912,18 @@ fn run_throughput_benchmark() {
     println!("\n✨ For detailed analysis, see: target/throughput_benchmark/throughput_report.txt");
 }
 
-fn main() {
-    #[cfg(feature = "benchmarks")]
-    {
-        let args: Vec<String> = std::env::args().collect();
-        
-        // Check for help argument
-        if args.len() > 1 && (args[1] == "--help" || args[1] == "-h") {
-            println!("🚀 Unilang Throughput Benchmark");
-            println!("===============================");
-            println!();
-            println!("USAGE:");
-            println!("  cargo run --release --bin throughput_benchmark --features benchmarks [OPTIONS]");
-            println!();
-            println!("OPTIONS:");
-            println!("  --quick, -q    Run quick mode (10, 100, 1K commands only) ~10-15 seconds");
-            println!("  --help, -h     Show this help message");
-            println!();
-            println!("EXAMPLES:");
-            println!("  # Full benchmark (all command counts: 10, 100, 1K, 10K, 100K)");
-            println!("  cargo run --release --bin throughput_benchmark --features benchmarks");
-            println!();
-            println!("  # Quick benchmark (subset: 10, 100, 1K commands only)");
-            println!("  cargo run --release --bin throughput_benchmark --features benchmarks -- --quick");
-            println!();
-            println!("FEATURES:");
-            println!("  ⚡ Fast execution - Results in seconds, not minutes");
-            println!("  🎯 Runtime focus - No compilation testing delays");  
-            println!("  📊 Extended sampling - Statistical reliability per command count");
-            println!("  🔄 Perfect for CI/CD - Quick regression detection");
-            println!("  📈 Live comparison - Unilang vs Clap vs Pico-Args side-by-side");
-            println!("  📝 Auto-updates README - Fresh performance tables in benchmark/readme.md");
-            return;
-        }
-        
-        run_throughput_benchmark();
-    }
-    
-    #[cfg(not(feature = "benchmarks"))]
-    {
-        eprintln!("Error: Benchmarks not enabled!");
-        eprintln!("Run with: cargo run --release --bin throughput_benchmark --features benchmarks");
-        eprintln!("Add --help for usage information");
-        std::process::exit(1); 
-    }
+#[cfg(feature = "benchmarks")]
+#[test]
+#[ignore]
+fn throughput_benchmark_test() {
+    run_throughput_benchmark();
+}
+
+#[cfg(not(feature = "benchmarks"))]
+#[test]
+#[ignore]
+fn throughput_benchmark_test() {
+    panic!("Benchmarks not enabled! Run with: cargo test throughput_benchmark_test --release --features benchmarks -- --ignored");
 }
 
 #[cfg(test)]

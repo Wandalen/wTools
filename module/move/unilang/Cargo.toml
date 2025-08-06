@@ -28,7 +28,7 @@ all-features = false
 default = [ "enabled", "simd" ]
 full = [ "enabled", "on_unknown_suggest", "simd" ]
 enabled = []
-benchmarks = [ "clap", "pico-args", "simd" ]
+benchmarks = [ "simd" ]
 
 # Performance optimizations - SIMD enabled by default for maximum performance
 # Can be disabled with: cargo build --no-default-features --features enabled
@@ -66,21 +66,13 @@ indexmap = "2.2.6"
 # Performance optimization dependencies
 simd-json = { version = "0.13", optional = true } # SIMD-optimized JSON parsing
 
-# Benchmark dependencies (needed for benchmark binaries)
-clap = { version = "4.4", optional = true }
-pico-args = { version = "0.5", optional = true }
+# Benchmark dependencies moved to dev-dependencies to avoid production inclusion
 
 [[bin]]
 name = "unilang_cli"
 path = "src/bin/unilang_cli.rs"
 
-[[bin]]
-name = "comprehensive_benchmark"
-path = "benchmarks/comprehensive_framework_comparison.rs"
-
-[[bin]]
-name = "throughput_benchmark"
-path = "benchmarks/throughput_benchmark.rs"
+# Benchmark binaries removed - functionality moved to test targets
 
 
 
@@ -101,10 +93,18 @@ path = "tests/inc/phase3/data_model_features_test.rs"
 
 # Performance tests excluded from regular 'cargo test' - run manually if needed
 # [[test]]
-# name = "performance_stress_test"  
+# name = "performance_stress_test"
 # path = "tests/inc/phase4/performance_stress_test.rs"
 
 # Benchmark tests (ignored by default to prevent accidental long runs)
+[[test]]
+name = "comprehensive_benchmark"
+path = "benchmarks/comprehensive_framework_comparison.rs"
+
+[[test]]
+name = "throughput_benchmark"  
+path = "benchmarks/throughput_benchmark.rs"
+
 [[test]]
 name = "run_all_benchmarks"
 path = "benchmarks/run_all_benchmarks.rs"

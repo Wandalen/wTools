@@ -6,18 +6,17 @@
 
 Based on recent benchmark runs, SIMD optimizations provide the following improvements over scalar implementations:
 
-| Test Category | Input Size | Typical Improvement | Performance Notes |
-|---------------|------------|--------------------|--------------------|
-| Multi-delimiter | 2KB | 10-15x faster | Quick parsing tasks |
-| Multi-delimiter | 50KB | 100-200x faster | **Dramatic improvement** for large data |
-| Large input processing | 500KB | 10-20x faster | File processing scenarios |
-| Pattern complexity | 8 delimiters | 50-300x faster | **Best case** for multi-pattern matching |
+| Test Category | Input Size | Improvement | Detailed Metrics |
+|---------------|------------|-------------|------------------|
+| Multi-delimiter 2KB | 2KB | 13.1x faster | Scalar: 2.62ms, SIMD: 0.19ms (12 MiB/s) |
+| Multi-delimiter 10KB | 10KB | 29.5x faster | Scalar: 13.67ms, SIMD: 0.45ms (25 MiB/s) |
+| Multi-delimiter 50KB | 50KB | 132.5x faster | Scalar: 95.27ms, SIMD: 0.69ms (82 MiB/s) |
 
 ## Bottleneck Analysis
 
 ### Critical Performance Factors
 1. **Multi-delimiter operations** show the largest SIMD benefits
-2. **Input size scaling** - benefits increase with data size
+2. **Input size scaling** - benefits increase with data size  
 3. **Pattern complexity** - more delimiters = greater SIMD advantage
 
 ### Real-World Impact
@@ -27,5 +26,5 @@ Based on recent benchmark runs, SIMD optimizations provide the following improve
 
 ---
 
-*Generated: 2025-08-06 10:29 UTC*
+*Generated: 2025-08-06 11:09 UTC*
 *This file updated after each benchmark run*

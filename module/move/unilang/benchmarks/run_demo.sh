@@ -27,10 +27,10 @@ fi
 
 echo ""
 echo "🚀 To run full benchmarks:"
-echo "  ./benchmark/run_comprehensive_benchmark.sh    # 3-way comparison (8-10 min)"
-echo "  ./benchmark/run_all_benchmarks.sh             # All benchmarks (30+ min)"
+echo "  ./benchmarks/run_comprehensive_benchmark.sh    # 3-way comparison (8-10 min)"
+echo "  ./benchmarks/run_all_benchmarks.sh             # All benchmarks (30+ min)"
 echo ""
 echo "📂 Results will be generated in:"
 echo "  - target/comprehensive_framework_comparison/comprehensive_results.csv"
 echo "  - target/comprehensive_framework_comparison/comprehensive_report.txt"
-echo "  - benchmark/readme.md (updated tables)"
+echo "  - benchmarks/readme.md (updated tables)"
