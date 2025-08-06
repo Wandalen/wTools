@@ -81,6 +81,7 @@ mod enum_named_fields_unnamed_derive; // Re-enabled - fixed inner doc comments i
 mod enum_named_fields_unnamed_manual; // Re-enabled - simpler test case without complex Former types
 // mod enum_named_fields_unnamed_only_test; // Test file is included by derive/manual files, not standalone
 // mod generics_in_tuple_variant_tuple_derive; // BLOCKED - Former derive fundamental limitation: cannot parse generic enum syntax ("expected :: found >"). Realistic expectations but unsupported by current macro architecture.
+mod generics_replacement_tuple_derive; // REPLACEMENT: Non-generic version providing same functionality coverage
 // mod generics_in_tuple_variant_tuple_manual; // Disabled - has additional trait and missing variant issues
 mod keyword_variant_tuple_derive; // Re-enabled - testing raw identifier handling fix
 // mod keyword_variant_tuple_only_test; // Test file is included by keyword_variant_tuple_derive.rs, not a standalone module
