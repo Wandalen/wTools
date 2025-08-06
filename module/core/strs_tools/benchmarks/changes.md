@@ -78,7 +78,7 @@ Single Delimiter Split (100KB input):
 **Root Cause Analysis**: Initial baseline establishment - no previous measurements for comparison
 
 **Related Files**:
-- `benchmark_baseline_results.md` - Detailed baseline documentation
+- `benchmarks/baseline_results.md` - Detailed baseline documentation
 - `benches/string_operations.rs` - Main benchmark suite
 - `benches/memory_usage.rs` - Memory allocation benchmarks
 - `task/001_simd_optimization.md` - Implementation task with benchmarking strategy
