@@ -225,7 +225,7 @@ impl BenchmarkRunner
   {
     self.log_info( "Running baseline (scalar) benchmarks..." );
     
-    let benchmark_name = if quick { "quick_test" } else { "string_operations" };
+    let benchmark_name = if quick { "minimal_test" } else { "stable_test" };
     let args = [
       "bench", "--bench", benchmark_name, 
       "--", "--sample-size", "10", "--measurement-time", "1"
