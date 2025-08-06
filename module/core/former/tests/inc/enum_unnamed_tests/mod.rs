@@ -60,6 +60,7 @@ mod generics_shared_tuple_manual; // Re-enabled - testing manual implementation 
 mod test_syntax; // Re-enabled - just syntax test without Former derive
 mod simple_tuple_derive; // REPLACEMENT: Non-generic scalar tuple test that works around derive macro limitation
 mod comprehensive_tuple_derive; // COMPREHENSIVE: Tests multiple tuple variant scenarios without generics
+mod comprehensive_advanced_tuple_derive; // ADVANCED COMPREHENSIVE: Complex tuple scenarios with subforms and advanced patterns
 mod scalar_generic_tuple_manual;  // Re-enabled - derive version no longer required dependency
 mod tuple_multi_default_derive;  // Re-enabled - multi-field subform handler fixed
 mod tuple_multi_default_manual;
@@ -87,7 +88,7 @@ mod standalone_constructor_tuple_derive; // Re-enabled - fixed inner doc comment
 mod standalone_constructor_tuple_only_test; // Re-enabled - fixed scope issues with proper imports
 mod standalone_constructor_args_tuple_derive; // Re-enabled - enum #[arg_for_constructor] logic now implemented!
 mod standalone_constructor_args_tuple_single_manual; // Re-enabled - complete manual implementation
-// mod standalone_constructor_args_tuple_multi_manual; // Added
+// mod standalone_constructor_args_tuple_multi_manual; // BLOCKED - API mismatch with shared test file (wrong enum/function names)
 // mod standalone_constructor_args_tuple_only_test; // Disabled - include pattern test, not standalone
 
 // Coverage for `tuple_zero_fields_*` tests:

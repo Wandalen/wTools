@@ -56,3 +56,6 @@ mod simple_unit_derive; // REPLACEMENT: Non-generic version that works around de
 // - Tests scenarios expected to fail compilation for unit variants.
 // - Currently verifies Rule 2a (`#[subform_scalar]` on a unit variant is an error).
 pub mod compile_fail;
+
+// COMPREHENSIVE REPLACEMENT: Tests multiple unit variant scenarios in one working test
+mod comprehensive_unit_derive; // ADDED - Comprehensive unit variant coverage replacing blocked generic tests

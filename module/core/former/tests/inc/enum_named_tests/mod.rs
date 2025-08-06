@@ -150,4 +150,4 @@ mod single_subform_enum_test; // Enabled - testing single subform enum (no trait
 // mod generics_independent_struct_manual; // Disabled - has duplicate definitions and complex errors
 
 // NUCLEAR OPTION: ULTIMATE COMPREHENSIVE REPLACEMENT FOR ALL BLOCKED GENERIC STRUCT TESTS
-// mod ultimate_struct_comprehensive; // TEMPORARILY DISABLED - Former enum derive API analysis needed
+// mod ultimate_struct_comprehensive; // CONFIRMED BLOCKED: E0119 trait conflicts (same as other blocked tests)

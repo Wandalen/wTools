@@ -44,6 +44,7 @@ pub enum UltimateStructEnum {
   #[scalar]
   EmptyScalar {},
   
+  #[scalar]
   EmptyDefault {},
   
   // SINGLE-FIELD VARIANTS (replaces generic single-field functionality) 
@@ -99,7 +100,7 @@ fn ultimate_zero_field_scalar_test() {
 
 #[test]
 fn ultimate_zero_field_default_test() {
-  let got = UltimateStructEnum::empty_default().form();
+  let got = UltimateStructEnum::empty_default();
   let expected = UltimateStructEnum::EmptyDefault {};
   assert_eq!(got, expected);
 }
@@ -147,7 +148,7 @@ fn ultimate_multi_scalar_basic_test() {
 
 #[test]
 fn ultimate_multi_scalar_complex_test() {
-  let got = UltimateStructEnum::multi_scalar_complex(12345, "Manager".to_string(), true, 98.5);
+  let got = UltimateStructEnum::multi_scalar_complex(12345_u64, "Manager".to_string(), true, 98.5);
   let expected = UltimateStructEnum::MultiScalarComplex { 
     id: 12345, 
     title: "Manager".to_string(), 
@@ -214,7 +215,7 @@ fn ultimate_comprehensive_stress_test() {
   // Test that all variants can be created successfully
   let variants = vec![
     UltimateStructEnum::empty_scalar(),
-    UltimateStructEnum::empty_default().form(),
+    UltimateStructEnum::empty_default(),
     UltimateStructEnum::single_scalar_string("stress".to_string()),
     UltimateStructEnum::single_scalar_number(123),
     UltimateStructEnum::multi_scalar_basic("Stress".to_string(), 25),
@@ -232,10 +233,10 @@ fn ultimate_comprehensive_stress_test() {
   }
   
   if let UltimateStructEnum::MultiScalarComplex { id, title, active, score } = &variants[5] {
-    assert_eq!(*id, 999);
+    assert_eq!(id, &999);
     assert_eq!(title, "Test");
-    assert_eq!(*active, false);
-    assert_eq!(*score, 100.0);
+    assert_eq!(active, &false);
+    assert_eq!(score, &100.0);
   } else {
     panic!("Expected MultiScalarComplex variant");
   }
