@@ -2,12 +2,10 @@ use core::default::Default;
 use std::collections::HashMap;
 
 mod private {
-  #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+  #[ cfg( all( feature = "string_split", feature = "string_isolate", not( feature = "no_std" ) ) ) ]
   use crate::string::split::split;
 
-  use crate::*;
-
-  #[ cfg( all( feature = "string_isolate", not( feature = "no_std" ) ) ) ]
+  #[ cfg( all( feature = "string_split", feature = "string_isolate", not( feature = "no_std" ) ) ) ]
   use string::{
     isolate::isolate_right, // Keep the import for the function
   };
@@ -271,6 +269,7 @@ mod private {
     #[allow(clippy::assigning_clones, clippy::too_many_lines, clippy::collapsible_if)]
     /// # Panics
     /// Panics if `map_entries.1` is `None` when `join.push_str` is called.
+    #[ cfg( all( feature = "string_split", feature = "string_isolate", not( feature = "no_std" ) ) ) ]
     pub fn parse(&mut self) -> Request<'a> // Changed to inherent method, takes &mut self
     {
       let mut result = Request {
@@ -474,6 +473,7 @@ mod private {
   ///
   ///
   #[ must_use ]
+  #[ cfg( all( feature = "string_split", feature = "string_isolate", not( feature = "no_std" ) ) ) ]
   pub fn request_parse<'a>() -> ParseOptions<'a> // Return ParseOptions directly
   {
     ParseOptions::default()
@@ -495,8 +495,9 @@ pub mod own {
     Request,
     ParseOptions,
     // ParseOptionsAdapter, // Removed
-    request_parse,
   };
+  #[ cfg( all( feature = "string_split", feature = "string_isolate", not( feature = "no_std" ) ) ) ]
+  pub use private::request_parse;
 }
 
 /// Parented namespace of the module.
@@ -515,10 +516,8 @@ pub mod exposed {
   pub use prelude::*; // Added
   pub use super::own as parse_request;
 
-  pub use private::{
-    // ParseOptionsAdapter, // Removed
-    request_parse,
-  };
+  #[ cfg( all( feature = "string_split", feature = "string_isolate", not( feature = "no_std" ) ) ) ]
+  pub use private::request_parse;
 }
 
 /// Namespace of the module to include with `use module::*`.

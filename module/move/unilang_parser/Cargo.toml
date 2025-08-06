@@ -19,7 +19,7 @@ default = []
 no_std = []
 
 [dependencies]
-strs_tools = { workspace = true, features = ["string_parse_request"] }
+strs_tools = { workspace = true, features = ["string_parse_request", "string_split"] }
 error_tools = { workspace = true, features = [ "enabled", "error_typed" ] }
 iter_tools = { workspace = true, features = [ "enabled" ] }
 

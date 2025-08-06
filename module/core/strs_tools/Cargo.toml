@@ -47,6 +47,7 @@ full = [
 
 # Performance optimization features
 simd = ["memchr", "aho-corasick", "bytecount", "lazy_static"]
+no_simd = []  # Feature to disable SIMD optimizations
 
 no_std = []
 use_alloc = [ "no_std" ]
