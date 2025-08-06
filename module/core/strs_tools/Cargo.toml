@@ -36,7 +36,6 @@ default = [
 ]
 full = [
   "enabled",
-  "use_alloc",
   "string_indentation",
   "string_isolate",
   "string_parse_request",

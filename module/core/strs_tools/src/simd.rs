@@ -4,6 +4,20 @@
 //! searching, and character counting. It automatically falls back to scalar
 //! implementations when SIMD is not available or disabled.
 
+#[ cfg( not( feature = "no_std" ) ) ]
+extern crate std;
+
+#[ cfg( feature = "use_alloc" ) ]
+extern crate alloc;
+
+#[ cfg( feature = "use_alloc" ) ]
+use alloc::string::String;
+#[ cfg( all( feature = "use_alloc", feature = "simd" ) ) ]
+use alloc::format;
+
+#[ cfg( not( feature = "no_std" ) ) ]
+use std::string::String;
+
 #[ cfg( feature = "simd" ) ]
 use memchr::{ memchr, memmem };
 #[ cfg( feature = "simd" ) ]
@@ -11,13 +25,14 @@ use aho_corasick::AhoCorasick;
 #[ cfg( feature = "simd" ) ]
 use bytecount;
 
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 pub use crate::string::split::{ SIMDSplitIterator, simd_split_cached };
 
 /// SIMD-optimized string search operations.
 #[ derive( Debug ) ]
-pub struct SIMDStringSearch;
+pub struct SimdStringSearch;
 
-impl SIMDStringSearch 
+impl SimdStringSearch 
 {
   /// SIMD-optimized substring search.
   /// 
@@ -130,13 +145,14 @@ impl SIMDStringSearch
 /// Extension trait for strings providing SIMD-optimized operations.
 /// 
 /// This trait adds convenience methods for SIMD operations directly on string types.
-pub trait SIMDStringExt 
+pub trait SimdStringExt 
 {
   /// SIMD-optimized string splitting.
   /// 
   /// # Errors
   /// 
   /// Returns an error string if SIMD is not available or pattern compilation fails.
+  #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
   fn simd_split( &self, delimiters: &[ &str ] ) -> Result< SIMDSplitIterator<'_>, String >;
   
   /// SIMD-optimized substring search.
@@ -152,8 +168,9 @@ pub trait SIMDStringExt
   fn simd_find_byte( &self, byte: u8 ) -> Option< usize >;
 }
 
-impl SIMDStringExt for str 
+impl SimdStringExt for str 
 {
+  #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
   fn simd_split( &self, delimiters: &[ &str ] ) -> Result< SIMDSplitIterator<'_>, String > 
   {
     #[ cfg( feature = "simd" ) ]
@@ -170,27 +187,28 @@ impl SIMDStringExt for str
   
   fn simd_find( &self, needle: &str ) -> Option< usize > 
   {
-    SIMDStringSearch::find( self, needle )
+    SimdStringSearch::find( self, needle )
   }
   
   fn simd_count( &self, ch: char ) -> usize 
   {
-    SIMDStringSearch::count_char( self, ch )
+    SimdStringSearch::count_char( self, ch )
   }
   
   fn simd_find_any( &self, needles: &[ &str ] ) -> Option< ( usize, usize ) > 
   {
-    SIMDStringSearch::find_any( self, needles )
+    SimdStringSearch::find_any( self, needles )
   }
   
   fn simd_find_byte( &self, byte: u8 ) -> Option< usize > 
   {
-    SIMDStringSearch::find_byte( self, byte )
+    SimdStringSearch::find_byte( self, byte )
   }
 }
 
-impl SIMDStringExt for String 
+impl SimdStringExt for String 
 {
+  #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
   fn simd_split( &self, delimiters: &[ &str ] ) -> Result< SIMDSplitIterator<'_>, String > 
   {
     self.as_str().simd_split( delimiters )

@@ -7,7 +7,7 @@ use std::time::Instant;
 use strs_tools::string::split;
 
 #[ cfg( feature = "simd" ) ]
-use strs_tools::simd::SIMDStringExt;
+use strs_tools::simd::SimdStringExt;
 
 fn main() 
 {

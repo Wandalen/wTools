@@ -6,7 +6,7 @@ mod private {
   use crate::string::split::split;
 
   #[ cfg( all( feature = "string_split", feature = "string_isolate", not( feature = "no_std" ) ) ) ]
-  use string::{
+  use crate::string::{
     isolate::isolate_right, // Keep the import for the function
   };
   use super::*;

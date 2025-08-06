@@ -76,11 +76,11 @@ path = "src/bin/unilang_cli.rs"
 
 [[bin]]
 name = "comprehensive_benchmark"
-path = "benchmark/comprehensive_framework_comparison.rs"
+path = "benchmarks/comprehensive_framework_comparison.rs"
 
 [[bin]]
 name = "throughput_benchmark"
-path = "benchmark/throughput_benchmark.rs"
+path = "benchmarks/throughput_benchmark.rs"
 
 
 
@@ -107,7 +107,7 @@ path = "tests/inc/phase3/data_model_features_test.rs"
 # Benchmark tests (ignored by default to prevent accidental long runs)
 [[test]]
 name = "run_all_benchmarks"
-path = "benchmark/run_all_benchmarks.rs"
+path = "benchmarks/run_all_benchmarks.rs"
 
 # Removed benchmark test entries for deleted files:
 # - exponential_benchmark.rs (redundant with throughput)

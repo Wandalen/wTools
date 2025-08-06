@@ -833,7 +833,7 @@ fn generate_comprehensive_comparison_report(results: &[Vec<ComprehensiveBenchmar
     println!("\n🎯 Comprehensive framework comparison reports saved to:");
     println!("  - target/comprehensive_framework_comparison/comprehensive_report.txt");
     println!("  - target/comprehensive_framework_comparison/comprehensive_results.csv");
-    println!("  - benchmark/readme.md (updated with latest results)");
+    println!("  - benchmarks/readme.md (updated with latest results)");
 }
 
 #[ cfg( feature = "benchmarks" ) ]
@@ -1077,7 +1077,7 @@ mod tests {
 
 #[ cfg( feature = "benchmarks" ) ]
 fn update_readme_with_results(results: &[Vec<ComprehensiveBenchmarkResult>]) -> Result<(), Box<dyn std::error::Error>> {
-    let readme_path = "benchmark/readme.md";
+    let readme_path = "benchmarks/readme.md";
     let content = fs::read_to_string(readme_path)?;
     
     // Parse results into framework-specific data
