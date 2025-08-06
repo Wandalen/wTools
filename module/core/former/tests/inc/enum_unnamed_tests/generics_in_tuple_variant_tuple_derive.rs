@@ -20,7 +20,7 @@ use std::marker::PhantomData; // Import PhantomData
 
 // --- Inner Struct Definition with Bounds ---
 // Needs to derive Former for the enum's derive to work correctly for subforming.
-#[derive(Debug, PartialEq)] // xxx: Former derive disabled - trailing comma issue // Added Former derive
+#[derive(Debug, PartialEq)] // xxx: Former derive disabled - trailing comma issue
 pub struct InnerGeneric< T : Debug + Copy + Default + PartialEq > // Added Copy bound here too
 {
   pub inner_field : T,

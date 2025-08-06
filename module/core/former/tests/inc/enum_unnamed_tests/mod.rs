@@ -67,7 +67,7 @@ mod tuple_multi_scalar_derive; // Re-enabled - scalar handlers work fine
 mod tuple_multi_scalar_manual; // Re-enabled - manual implementation without derive
 mod tuple_multi_scalar_only_test; // Re-enabled - fixed import scope issue
 mod tuple_multi_standalone_args_derive; // Re-enabled - enum #[arg_for_constructor] logic now implemented!
-// // mod tuple_multi_standalone_args_manual;
+mod tuple_multi_standalone_args_manual; // Re-enabled - simple manual enum with regular comments
 // // mod tuple_multi_standalone_args_only_test;
 mod tuple_multi_standalone_derive; // Re-enabled - testing standalone constructor functionality
 // // mod tuple_multi_standalone_manual;
@@ -78,8 +78,8 @@ mod tuple_multi_standalone_derive; // Re-enabled - testing standalone constructo
 mod enum_named_fields_unnamed_derive; // Re-enabled - fixed inner doc comments issue
 mod enum_named_fields_unnamed_manual; // Re-enabled - simpler test case without complex Former types
 // mod enum_named_fields_unnamed_only_test; // Test file is included by derive/manual files, not standalone
-// mod generics_in_tuple_variant_tuple_derive;
-// mod generics_in_tuple_variant_tuple_manual;
+// mod generics_in_tuple_variant_tuple_derive; // Disabled - confirmed generic parsing macro issue (expected :: found >)
+// mod generics_in_tuple_variant_tuple_manual; // Disabled - inner doc comments issue with include!()
 mod keyword_variant_tuple_derive; // Re-enabled - testing raw identifier handling fix
 // mod keyword_variant_tuple_only_test; // Test file is included by keyword_variant_tuple_derive.rs, not a standalone module
 mod standalone_constructor_tuple_derive; // Re-enabled - fixed inner doc comment issues
@@ -87,7 +87,7 @@ mod standalone_constructor_tuple_only_test; // Re-enabled - fixed scope issues w
 mod standalone_constructor_args_tuple_derive; // Re-enabled - enum #[arg_for_constructor] logic now implemented!
 mod standalone_constructor_args_tuple_single_manual; // Re-enabled - complete manual implementation
 // mod standalone_constructor_args_tuple_multi_manual; // Added
-// mod standalone_constructor_args_tuple_only_test;
+// mod standalone_constructor_args_tuple_only_test; // Disabled - include pattern test, not standalone
 
 // Coverage for `tuple_zero_fields_*` tests:
 // - Tests zero-field tuple variants e.g., `MyEnum::Variant()`.
