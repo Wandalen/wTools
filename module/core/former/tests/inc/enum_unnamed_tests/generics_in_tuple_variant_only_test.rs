@@ -22,7 +22,7 @@
 // - Verifies that the bounds (`Copy`, `Debug`, `Default`, `PartialEq`) are correctly handled by using types that satisfy them.
 #[ allow( unused_imports ) ]
 use super::*; // Should import EnumOuter and InnerGeneric from either the manual or derive file
-use std::fmt::Debug; // Removed redundant import (E0252 fix)
+// use std::fmt::Debug; // Disabled - imported from super::* already
 
 #[ test ]
 fn basic_construction()
