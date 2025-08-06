@@ -8,12 +8,12 @@ Based on recent benchmark runs, SIMD optimizations provide the following improve
 
 | Test Category | Input Size | Improvement | Detailed Metrics |
 |---------------|------------|-------------|------------------|
-| Multi-delimiter 2KB | 2KB | 13.3x faster | Scalar: 2.55ms, SIMD: 0.19ms (12 MiB/s) |
-| Multi-delimiter 10KB | 10KB | 29.9x faster | Scalar: 13.32ms, SIMD: 0.44ms (25 MiB/s) |
-| Multi-delimiter 50KB | 50KB | 134.4x faster | Scalar: 92.86ms, SIMD: 0.68ms (80 MiB/s) |
-| Large input 100KB | 100KB | 16.1x faster | Scalar: 151.57ms, SIMD: 9.26ms (12 MiB/s) |
-| Large input 500KB | 500KB | 18.6x faster | Scalar: 814.37ms, SIMD: 42.89ms (13 MiB/s) |
-| Pattern complexity - 8 delims | 10KB | 208.8x faster | Scalar: 244.11ms, SIMD: 1.15ms (10 MiB/s) |
+| Multi-delimiter 2KB | 2KB | 13.6x faster | Scalar: 2.46ms, SIMD: 0.18ms (11 MiB/s) |
+| Multi-delimiter 10KB | 10KB | 30.5x faster | Scalar: 12.84ms, SIMD: 0.42ms (24 MiB/s) |
+| Multi-delimiter 50KB | 50KB | 137.0x faster | Scalar: 89.47ms, SIMD: 0.65ms (77 MiB/s) |
+| Large input 100KB | 100KB | 16.4x faster | Scalar: 146.04ms, SIMD: 8.93ms (11 MiB/s) |
+| Large input 500KB | 500KB | 19.0x faster | Scalar: 784.65ms, SIMD: 41.32ms (12 MiB/s) |
+| Pattern complexity - 8 delims | 10KB | 212.9x faster | Scalar: 235.20ms, SIMD: 1.10ms (9 MiB/s) |
 
 ## Bottleneck Analysis
 
@@ -29,5 +29,5 @@ Based on recent benchmark runs, SIMD optimizations provide the following improve
 
 ---
 
-*Generated: 2025-08-06 12:37 UTC*
+*Generated: 2025-08-06 12:45 UTC*
 *This file updated after each benchmark run*

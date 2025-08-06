@@ -10,14 +10,14 @@ This directory contains comprehensive performance benchmarks for the unilang fra
 ./benchmark/run_all_benchmarks.sh
 
 # ⚡ QUICK THROUGHPUT BENCHMARK (30-60 seconds) - recommended for daily use
-cargo test throughput_benchmark_test --release --features benchmarks -- --ignored --nocapture
+cargo bench throughput_benchmark --features benchmarks
 
 # Or run individual benchmarks:
 # Comprehensive 3-way framework comparison (8-10 minutes)
 ./benchmark/run_comprehensive_benchmark.sh
 
 # Direct test execution (alternative):
-cargo test comprehensive_benchmark_test --release --features benchmarks -- --ignored --nocapture
+cargo bench comprehensive_benchmark --features benchmarks
 
 # Test-based execution:
 cargo test throughput_performance_benchmark --release --features benchmarks -- --ignored --nocapture
@@ -89,8 +89,8 @@ cargo test run_all_benchmarks --release --features benchmarks -- --nocapture --i
 ./benchmark/run_comprehensive_benchmark.sh           # 3-way comparison (8-10 min)
 
 # Individual benchmarks:
-cargo test throughput_benchmark_test --release --features benchmarks -- --ignored --nocapture                                          # ⚡ ~30-60 sec (RECOMMENDED DAILY)
-cargo test throughput_benchmark_test --release --features benchmarks -- --ignored --nocapture -- --quick                              # ⚡ ~10-15 sec (QUICK MODE)
+cargo bench throughput_benchmark --features benchmarks                                          # ⚡ ~30-60 sec (RECOMMENDED DAILY)
+cargo bench throughput_benchmark --features benchmarks -- --quick                              # ⚡ ~10-15 sec (QUICK MODE)
 cargo test comprehensive_framework_comparison_benchmark --release --features benchmarks -- --ignored --nocapture  # ~8 min
 
 # Verification commands:
@@ -117,10 +117,10 @@ cargo test --release                                 # Fast - doesn't run benchm
 
 ```bash
 # Full mode (30-60 seconds) - Tests all command counts: 10, 100, 1K, 10K, 100K
-cargo test throughput_benchmark_test --release --features benchmarks -- --ignored --nocapture
+cargo bench throughput_benchmark --features benchmarks
 
 # Quick mode (10-15 seconds) - Tests subset: 10, 100, 1K
-cargo test throughput_benchmark_test --release --features benchmarks -- --ignored --nocapture -- --quick
+cargo bench throughput_benchmark --features benchmarks -- --quick
 ```
 
 **Benefits:**
@@ -216,7 +216,7 @@ All benchmarks generate detailed reports in `target/` subdirectories:
 ./benchmark/run_all_benchmarks.sh
 
 # 🔧 Direct binary execution (alternative method)
-cargo test comprehensive_benchmark_test --release --features benchmarks -- --ignored --nocapture
+cargo bench comprehensive_benchmark --features benchmarks
 ```
 
 ## 📊 **Generated Reports & Metrics**

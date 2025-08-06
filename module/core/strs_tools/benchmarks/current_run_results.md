@@ -1,6 +1,6 @@
 # Latest Benchmark Execution Results
 
-*Generated: 2025-08-06 12:37 UTC*
+*Generated: 2025-08-06 12:45 UTC*
 
 ## Benchmark Execution Summary
 
@@ -25,34 +25,34 @@ The benchmark system tests three critical bottlenecks:
 
 ### Detailed Timing Data
 **Multi-delimiter 2KB** (2KB)
-- Scalar: 2.550ms (783.2 MiB/s)
-- SIMD: 0.187ms (11.5 MiB/s)
-- **Improvement: 13.3x faster**
+- Scalar: 2.457ms (812.9 MiB/s)
+- SIMD: 0.181ms (11.1 MiB/s)
+- **Improvement: 13.6x faster**
 
 **Multi-delimiter 10KB** (10KB)
-- Scalar: 13.325ms (750.4 MiB/s)
-- SIMD: 0.437ms (24.8 MiB/s)
-- **Improvement: 29.9x faster**
+- Scalar: 12.838ms (778.9 MiB/s)
+- SIMD: 0.421ms (23.9 MiB/s)
+- **Improvement: 30.5x faster**
 
 **Multi-delimiter 50KB** (50KB)
-- Scalar: 92.857ms (538.4 MiB/s)
-- SIMD: 0.677ms (80.1 MiB/s)
-- **Improvement: 134.4x faster**
+- Scalar: 89.468ms (558.8 MiB/s)
+- SIMD: 0.652ms (77.2 MiB/s)
+- **Improvement: 137.0x faster**
 
 **Large input 100KB** (100KB)
-- Scalar: 151.570ms (659.8 MiB/s)
-- SIMD: 9.265ms (11.7 MiB/s)
-- **Improvement: 16.1x faster**
+- Scalar: 146.037ms (684.7 MiB/s)
+- SIMD: 8.927ms (11.3 MiB/s)
+- **Improvement: 16.4x faster**
 
 **Large input 500KB** (500KB)
-- Scalar: 814.374ms (613.9 MiB/s)
-- SIMD: 42.889ms (12.6 MiB/s)
-- **Improvement: 18.6x faster**
+- Scalar: 784.647ms (637.2 MiB/s)
+- SIMD: 41.324ms (12.2 MiB/s)
+- **Improvement: 19.0x faster**
 
 **Pattern complexity - 8 delims** (10KB)
-- Scalar: 244.114ms (42.0 MiB/s)
-- SIMD: 1.145ms (9.7 MiB/s)
-- **Improvement: 208.8x faster**
+- Scalar: 235.203ms (43.6 MiB/s)
+- SIMD: 1.103ms (9.3 MiB/s)
+- **Improvement: 212.9x faster**
 
 
 ## Performance Characteristics
