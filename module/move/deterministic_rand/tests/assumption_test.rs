@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 use rand::Rng;
 use deterministic_rand::Hrng;
 

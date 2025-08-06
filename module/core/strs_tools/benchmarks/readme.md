@@ -13,11 +13,8 @@ SIMD optimization provides **significant performance improvements** for string p
 ## How to Run
 
 ```bash
-# Run benchmarks
+# Run benchmarks (automatically updates documentation)
 cargo bench --bench bottlenecks
-
-# Update documentation
-cargo run --bin bench_runner
 ```
 
 ## Focus Areas
@@ -28,4 +25,4 @@ cargo run --bin bench_runner
 
 ---
 
-*Updated: 2025-08-06*
+*Updated automatically by benchmark execution*

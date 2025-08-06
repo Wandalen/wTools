@@ -1,4 +1,6 @@
 
+#![allow(missing_docs)]
+
 #[ allow( unused_imports ) ]
 use fundamental_data_type as the_module;
 #[ allow( unused_imports ) ]

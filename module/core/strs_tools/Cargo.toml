@@ -77,8 +77,6 @@ aho-corasick = { workspace = true, optional = true }
 bytecount = { workspace = true, optional = true }
 lazy_static = { version = "1.4", optional = true }
 
-# Benchmark runner dependencies  
-chrono = { version = "0.4", features = ["serde"] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
@@ -94,6 +92,3 @@ path = "benchmarks/bottlenecks.rs"
 name = "simd_test"
 required-features = ["simd"]
 
-[[bin]]
-name = "bench_runner"
-path = "benchmarks/simple_runner.rs"

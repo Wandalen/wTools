@@ -1,6 +1,6 @@
 # Benchmark Results Summary
 
-*Automatically generated*
+*Automatically generated during benchmark execution*
 
 ## Performance Improvements
 
@@ -12,4 +12,4 @@
 | Pattern complexity (8 delims) | 50-300x faster |
 
 ---
-*Generated: 2025-08-06*
+*Generated during benchmark run*

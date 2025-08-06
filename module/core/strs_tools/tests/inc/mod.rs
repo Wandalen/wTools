@@ -5,6 +5,7 @@
 // #[ cfg( feature = "string" ) ]
 // mod inc;
 
+#![allow(unexpected_cfgs)]
 #[allow(unused_imports)]
 use test_tools::exposed::*;
 #[allow(unused_imports)]

@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 #[allow(unused_imports)]
 use winterval as the_module;
 #[allow(unused_imports)]

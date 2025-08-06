@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 use std::path::Path;
 #[cfg(feature = "enabled")]
 use crates_tools::CrateArchive;

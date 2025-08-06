@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 include!("../../../../module/step/meta/src/module/terminal.rs");
 
 #[allow(unused_imports)]

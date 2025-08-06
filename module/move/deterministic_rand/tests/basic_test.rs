@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 use rand::distributions::Uniform;
 use rayon::prelude::*;
 

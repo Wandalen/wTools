@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 #![cfg_attr(feature = "no_std", no_std)]
 
 #[allow(unused_imports)]

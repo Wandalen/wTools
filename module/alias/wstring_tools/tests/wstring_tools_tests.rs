@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 #[allow(unused_imports)]
 use wstring_tools as the_module;
 

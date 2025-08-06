@@ -2,10 +2,12 @@ use core::default::Default;
 use std::collections::HashMap;
 
 mod private {
+  #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
   use crate::string::split::split;
 
   use crate::*;
 
+  #[ cfg( all( feature = "string_isolate", not( feature = "no_std" ) ) ) ]
   use string::{
     isolate::isolate_right, // Keep the import for the function
   };
