@@ -1,4 +1,4 @@
-//! Test for tuple_multi_fields_scalar handler
+//! Test for `tuple_multi_fields_scalar` handler
 use super::*;
 #[allow(unused_imports)]
 use ::former::prelude::*;

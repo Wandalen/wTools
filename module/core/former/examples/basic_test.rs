@@ -13,5 +13,5 @@ pub struct Basic {
 
 fn main() {
   let instance = Basic::former().data(42).form();
-  println!("{:?}", instance);
+  println!("{instance:?}");
 }

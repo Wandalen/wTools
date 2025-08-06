@@ -1,4 +1,4 @@
-//! Test for struct_single_field_scalar handler
+//! Test for `struct_single_field_scalar` handler
 use super::*;
 #[allow(unused_imports)]
 use ::former::prelude::*;

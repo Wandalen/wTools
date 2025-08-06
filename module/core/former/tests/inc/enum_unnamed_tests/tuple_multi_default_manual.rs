@@ -3,13 +3,13 @@
 //! implementation corresponding to the default behavior when no specific variant attribute is applied.
 //!
 //! Coverage:
-//! - Rule 3f (Tuple + Multi-Field + Default): Manually implements the implicit variant former for a multi-field tuple variant, returning a former with setters like ._0() and ._1().
+//! - Rule 3f (Tuple + Multi-Field + Default): Manually implements the implicit variant former for a multi-field tuple variant, returning a former with setters like ._`0()` and ._`1()`.
 //!
 //! Test Relevance/Acceptance Criteria:
 //! - Defines an enum `TestEnum` with a multi-field tuple variant `Variant(u32, String)`.
-//! - Provides a hand-written static method `TestEnum::variant()` that returns a former with setters ._0() and ._1() and a .form() method.
+//! - Provides a hand-written static method `TestEnum::variant()` that returns a former with setters ._`0()` and ._`1()` and a .`form()` method.
 //! - Includes shared test logic from `tuple_multi_default_only_test.rs`.
-//! - The included test calls this manually implemented static method, uses the setters, and calls .form(). This verifies the manual implementation of the default implicit variant former for a multi-field tuple variant.
+//! - The included test calls this manually implemented static method, uses the setters, and calls .`form()`. This verifies the manual implementation of the default implicit variant former for a multi-field tuple variant.
 
 // File: module/core/former/tests/inc/former_enum_tests/tuple_multi_default_manual.rs
 
@@ -23,7 +23,7 @@ use former::{
   FormerBegin,
   FormerMutator,
 };
-use std::marker::PhantomData;
+use core::marker::PhantomData;
 
 // Define the enum without the derive macro
 #[ derive( Debug, PartialEq ) ]
@@ -33,19 +33,13 @@ pub enum TestEnum
 }
 
 // --- Manual Former Setup for Variant ---
+#[derive(Default)]
 pub struct TestEnumVariantFormerStorage
 {
   field0 : Option< u32 >,
   field1 : Option< String >,
 }
 
-impl Default for TestEnumVariantFormerStorage
-{
-  fn default() -> Self
-  {
-    Self { field0 : None, field1 : None }
-  }
-}
 
 impl Storage for TestEnumVariantFormerStorage
 {

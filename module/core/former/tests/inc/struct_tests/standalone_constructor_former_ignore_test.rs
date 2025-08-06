@@ -1,4 +1,4 @@
-//! Test specifically for #[former_ignore] behavior in standalone constructors
+//! Test specifically for #[`former_ignore`] behavior in standalone constructors
 
 #[allow(unused_imports)]
 use ::former::prelude::*;

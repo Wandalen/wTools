@@ -50,15 +50,15 @@ mod basic_derive; // Re-enabled - simple scalar constructor test
 mod basic_manual; // Re-enabled - fixed missing Former types by enabling derive
 // mod basic_only_test; // Test file is included by basic_manual.rs, not a standalone module
 // mod generics_in_tuple_variant_only_test; // Disabled - type resolution issues
-// mod generics_independent_tuple_derive; // Disabled - complex generic syntax errors need fixing
+// mod generics_independent_tuple_derive; // Disabled - complex generic parsing issues in derive macro
 mod generics_independent_tuple_manual; // Re-enabled - testing manual implementation
 // mod generics_independent_tuple_only_test; // Disabled - conflicts with manual file types (included test)
 // mod generics_shared_tuple_derive;  // Disabled - requires delegation architecture (.inner_field method missing)
 
 mod generics_shared_tuple_manual; // Re-enabled - testing manual implementation with shared generics  
-// mod generics_shared_tuple_only_test;
+// mod generics_shared_tuple_only_test;  // Disabled - complex trait bound conflicts across modules
 mod test_syntax; // Re-enabled - just syntax test without Former derive
-// mod scalar_generic_tuple_derive;  // Disabled - confirmed generic parsing macro issue
+// mod scalar_generic_tuple_derive;  // Disabled - confirmed generic parsing macro issue (expected :: found >)
 mod scalar_generic_tuple_manual;  // Re-enabled - derive version no longer required dependency
 mod tuple_multi_default_derive;  // Re-enabled - multi-field subform handler fixed
 mod tuple_multi_default_manual;

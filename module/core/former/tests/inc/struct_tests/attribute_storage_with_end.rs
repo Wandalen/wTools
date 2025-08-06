@@ -27,10 +27,10 @@ impl Default for Struct1CustomEnd {
 impl<Context> former::FormingEnd<Struct1FormerDefinitionTypes<Context, Struct1>> for Struct1CustomEnd {
   #[inline(always)]
   fn call(&self, storage: Struct1FormerStorage, super_former: Option<Context>) -> Struct1 {
-    let a = if let Some(a) = storage.a { a } else { Default::default() };
-    let b = if let Some(b) = storage.b { b } else { Default::default() };
+    let a = storage.a.unwrap_or_default();
+    let b = storage.b.unwrap_or_default();
     Struct1 {
-      c: format!("{:?} - {}", a, b),
+      c: format!("{a:?} - {b}"),
     }
   }
 }

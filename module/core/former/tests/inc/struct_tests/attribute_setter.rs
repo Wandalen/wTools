@@ -47,7 +47,7 @@ fn basic() {
   let got = StructWithCustomSetters::former().ordinary_exclamaited("val1").form();
   let exp = StructWithCustomSetters {
     ordinary: "val1!".to_string(),
-    magic: "".to_string(),
+    magic: String::new(),
   };
   a_id!(got, exp);
 }

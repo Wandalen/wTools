@@ -34,7 +34,7 @@ use former::{
   FormerBegin,
   FormerMutator,
 };
-use std::marker::PhantomData;
+use core::marker::PhantomData;
 
 
 

@@ -122,7 +122,7 @@ impl former::StoragePreform for Struct1FormerStorage {
     } else {
       {
         trait MaybeDefault<T> {
-          fn maybe_default(self: &Self) -> T {
+          fn maybe_default(&self) -> T {
             panic!("Field 'int_1' isn't initialized")
           }
         }
@@ -132,16 +132,16 @@ impl former::StoragePreform for Struct1FormerStorage {
         where
           T: ::core::default::Default,
         {
-          fn maybe_default(self: &Self) -> T {
+          fn maybe_default(&self) -> T {
             T::default()
           }
         }
 
-        (&::core::marker::PhantomData::<i32>).maybe_default()
+        ::core::marker::PhantomData::<i32>.maybe_default()
       }
     };
     let result = Struct1 { int_1 };
-    return result;
+    result
   }
 }
 
@@ -168,7 +168,7 @@ where
   #[inline(always)]
   pub fn perform(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
     let result = self.form();
-    return result;
+    result
   }
 
   #[inline(always)]
@@ -195,7 +195,7 @@ where
     }
     Self {
       storage: storage.unwrap(),
-      context: context,
+      context,
       on_end: ::core::option::Option::Some(on_end),
     }
   }
@@ -214,7 +214,7 @@ where
     }
     Self {
       storage: storage.unwrap(),
-      context: context,
+      context,
       on_end: ::core::option::Option::Some(::core::convert::Into::into(on_end)),
     }
   }

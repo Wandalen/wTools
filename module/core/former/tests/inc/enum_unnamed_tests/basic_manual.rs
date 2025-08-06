@@ -2,10 +2,11 @@
 //! with unnamed (tuple) variants, including static methods and a standalone subformer starter,
 //! to serve as a reference for verifying the `#[derive(Former)]` macro's behavior.
 //!
+#![allow(dead_code)] // Test structures are intentionally unused
 //! Coverage:
 //! - Rule 3d (Tuple + Default -> Subform): Manual implementation of static method `FunctionStep::run()`.
 //! - Rule 2d (Tuple + `#[subform_scalar]` -> InnerFormer): Manual implementation of static method `FunctionStep::r#break()`.
-//! - Rule 4a (#[standalone_constructors]): Manual implementation of the standalone subformer starter `break_variant()`.
+//! - Rule 4a (#[`standalone_constructors`]): Manual implementation of the standalone subformer starter `break_variant()`.
 //! - Rule 4b (Option 2 Logic): Manual implementation of `FormingEnd` for the variant end types.
 //!
 //! Test Relevance/Acceptance Criteria:
@@ -47,7 +48,7 @@ impl FunctionStep
   -> BreakFormer< BreakFormerDefinition< (), Self, FunctionStepBreakEnd > >
   {
     // Correct: Call associated function `begin` on the Former type
-    BreakFormer::begin( None, None, FunctionStepBreakEnd::default() )
+    BreakFormer::begin( None, None, FunctionStepBreakEnd )
   }
 
   #[ inline( always ) ]
@@ -55,7 +56,7 @@ impl FunctionStep
   -> RunFormer< RunFormerDefinition< (), Self, FunctionStepRunEnd > >
   {
     // Correct: Call associated function `begin` on the Former type
-    RunFormer::begin( None, None, FunctionStepRunEnd::default() )
+    RunFormer::begin( None, None, FunctionStepRunEnd )
   }
 
   // Standalone constructors for #[standalone_constructors] attribute
@@ -63,14 +64,14 @@ impl FunctionStep
   pub fn break_variant()
   -> BreakFormer< BreakFormerDefinition< (), Self, FunctionStepBreakEnd > >
   {
-    BreakFormer::begin( None, None, FunctionStepBreakEnd::default() )
+    BreakFormer::begin( None, None, FunctionStepBreakEnd )
   }
 
   #[ inline( always ) ]
   pub fn run_variant()
   -> RunFormer< RunFormerDefinition< (), Self, FunctionStepRunEnd > >
   {
-    RunFormer::begin( None, None, FunctionStepRunEnd::default() )
+    RunFormer::begin( None, None, FunctionStepRunEnd )
   }
 }
 

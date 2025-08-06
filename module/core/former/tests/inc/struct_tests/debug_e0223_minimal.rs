@@ -1,4 +1,4 @@
-//! Test case for debugging E0223 error in subform_collection
+//! Test case for debugging E0223 error in `subform_collection`
 //! This is a minimal reproduction test
 
 use super::*;

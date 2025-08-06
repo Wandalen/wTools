@@ -1,5 +1,5 @@
 
-//! Example demonstrating HashSet construction using Former with subforming capabilities.
+//! Example demonstrating `HashSet` construction using Former with subforming capabilities.
 
 #![allow(missing_docs)]
 

@@ -38,7 +38,7 @@ fn main() {
   // #[debug] // <-- Commented out - debug attribute only for temporary debugging
   pub struct GenericContainer<T, U>
   where
-    T: Clone + std::fmt::Debug,
+    T: Clone + core::fmt::Debug,
     U: Default,
   {
     primary: T,
@@ -74,7 +74,7 @@ fn main() {
     .bio_optional("Software Developer".to_string())
     .form();
 
-  println!("1. Simple UserProfile: {:?}", profile);
+  println!("1. Simple UserProfile: {profile:?}");
 
   // Build example 2: Generic struct
   let generic: GenericContainer<String, i32> = GenericContainer::former()
@@ -83,7 +83,7 @@ fn main() {
     .metadata("example metadata".to_string())
     .form();
 
-  println!("2. Generic Container: {:?}", generic);
+  println!("2. Generic Container: {generic:?}");
 
   // Build example 3: Lifetime struct
   let name = "lifetime_example";
@@ -92,7 +92,7 @@ fn main() {
     .data("owned data".to_string())
     .form();
 
-  println!("3. Lifetime Struct: {:?}", lifetime_struct);
+  println!("3. Lifetime Struct: {lifetime_struct:?}");
 
   // Build example 4: Storage struct
   let storage_struct = StorageStruct::former()
@@ -101,7 +101,7 @@ fn main() {
     .tags(vec!["storage".to_string(), "debug".to_string()])
     .form();
 
-  println!("4. Storage Struct: {:?}", storage_struct);
+  println!("4. Storage Struct: {storage_struct:?}");
 
   println!();
   println!("=== Debug Information ===");

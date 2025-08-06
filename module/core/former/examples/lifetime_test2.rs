@@ -17,5 +17,5 @@ pub struct Other<'x> {
 fn main() {
   let s = "hello";
   let instance = Other::former().data(s).form();
-  println!("{:?}", instance);
+  println!("{instance:?}");
 }

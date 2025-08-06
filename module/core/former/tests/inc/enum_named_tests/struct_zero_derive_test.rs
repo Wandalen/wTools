@@ -1,4 +1,4 @@
-//! Test for struct_zero_fields_handler with standalone constructors
+//! Test for `struct_zero_fields_handler` with standalone constructors
 use super::*;
 #[allow(unused_imports)]
 use ::former::prelude::*;

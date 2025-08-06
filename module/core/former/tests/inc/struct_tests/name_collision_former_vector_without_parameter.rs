@@ -21,7 +21,7 @@ struct Vec {
 #[derive(Debug, PartialEq, Former)]
 pub struct Struct1 {
   f2: Vec,
-  i: ::std::option::Option<i32>,
+  i: ::core::option::Option<i32>,
 }
 
 tests_impls! {

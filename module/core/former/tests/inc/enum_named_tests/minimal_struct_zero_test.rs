@@ -1,4 +1,4 @@
-//! Minimal test for struct_zero_fields_handler to verify it's working
+//! Minimal test for `struct_zero_fields_handler` to verify it's working
 use super::*;
 #[allow(unused_imports)]
 use ::former::prelude::*;

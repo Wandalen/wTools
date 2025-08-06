@@ -9,15 +9,11 @@ pub struct MinimalStructManual {
 }
 
 // Manual implementation of what the Former macro should generate
+#[derive(Default)]
 pub struct MinimalStructManualFormerStorage {
   pub vec_1: Option<Vec<String>>,
 }
 
-impl Default for MinimalStructManualFormerStorage {
-  fn default() -> Self {
-    Self { vec_1: None }
-  }
-}
 
 impl former::Storage for MinimalStructManualFormerStorage {
   type Preformed = MinimalStructManual;

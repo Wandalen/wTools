@@ -15,11 +15,11 @@
 //!     - Unsigned primitive types
 //!   - **Collections Handling:**
 //!     - Basic scalar setters for collections
-//!     - Standard collections (Vec, HashMap, HashSet, BTreeMap, BTreeSet, LinkedList, BinaryHeap)
+//!     - Standard collections (Vec, `HashMap`, `HashSet`, `BTreeMap`, `BTreeSet`, `LinkedList`, `BinaryHeap`)
 //!     - Collection interface traits
 //!   - **Subform Setters:**
 //!     - `#[subform_collection]` (implicit, explicit definition, named, custom, setter on/off)
-//!     - `#[subform_entry]` (implicit, manual, named, setter on/off, HashMap specific)
+//!     - `#[subform_entry]` (implicit, manual, named, setter on/off, `HashMap` specific)
 //!     - `#[subform_scalar]` (implicit, manual, named)
 //!     - Combinations of subform attributes on a single field
 //!   - **Attributes:**

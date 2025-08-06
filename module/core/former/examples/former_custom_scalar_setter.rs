@@ -1,4 +1,4 @@
-//! Example demonstrating custom scalar setters for direct HashMap assignment with Former.
+//! Example demonstrating custom scalar setters for direct `HashMap` assignment with Former.
 
 #![allow(missing_docs)]
 

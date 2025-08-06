@@ -16,7 +16,7 @@
 //!   that the shared tests compare against.
 #[ allow( unused_imports ) ]
 use super::*; // Imports testing infrastructure and potentially other common items
-use std::marker::PhantomData;
+use core::marker::PhantomData;
 use former_types::
 {
 

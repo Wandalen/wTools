@@ -106,7 +106,7 @@ impl former::StoragePreform for Struct1FormerStorage {
     } else {
       {
         trait MaybeDefault<T> {
-          fn maybe_default(self: &Self) -> T {
+          fn maybe_default(&self) -> T {
             panic!("Field 'vec_1' isn't initialized")
           }
         }
@@ -117,12 +117,12 @@ impl former::StoragePreform for Struct1FormerStorage {
         where
           T: core::default::Default,
         {
-          fn maybe_default(self: &Self) -> T {
+          fn maybe_default(&self) -> T {
             T::default()
           }
         }
 
-        (&core::marker::PhantomData::<Vec<String>>).maybe_default()
+        core::marker::PhantomData::<Vec<String>>.maybe_default()
       }
     };
 
@@ -131,7 +131,7 @@ impl former::StoragePreform for Struct1FormerStorage {
     } else {
       {
         trait MaybeDefault<T> {
-          fn maybe_default(self: &Self) -> T {
+          fn maybe_default(&self) -> T {
             panic!("Field 'hashmap_1' isn't initialized")
           }
         }
@@ -142,12 +142,12 @@ impl former::StoragePreform for Struct1FormerStorage {
         where
           T: core::default::Default,
         {
-          fn maybe_default(self: &Self) -> T {
+          fn maybe_default(&self) -> T {
             T::default()
           }
         }
 
-        (&core::marker::PhantomData::<collection_tools::HashMap<String, String>>).maybe_default()
+        core::marker::PhantomData::<collection_tools::HashMap<String, String>>.maybe_default()
       }
     };
 
@@ -156,7 +156,7 @@ impl former::StoragePreform for Struct1FormerStorage {
     } else {
       {
         trait MaybeDefault<T> {
-          fn maybe_default(self: &Self) -> T {
+          fn maybe_default(&self) -> T {
             panic!("Field 'hashset_1' isn't initialized")
           }
         }
@@ -167,12 +167,12 @@ impl former::StoragePreform for Struct1FormerStorage {
         where
           T: core::default::Default,
         {
-          fn maybe_default(self: &Self) -> T {
+          fn maybe_default(&self) -> T {
             T::default()
           }
         }
 
-        (&core::marker::PhantomData::<collection_tools::HashSet<String>>).maybe_default()
+        core::marker::PhantomData::<collection_tools::HashSet<String>>.maybe_default()
       }
     };
 
@@ -182,7 +182,7 @@ impl former::StoragePreform for Struct1FormerStorage {
       hashset_1,
     };
 
-    return result;
+    result
   }
 }
 
@@ -226,7 +226,7 @@ where
     }
     Self {
       storage: storage.unwrap(),
-      context: context,
+      context,
       on_end: core::option::Option::Some(on_end),
     }
   }
@@ -245,7 +245,7 @@ where
     }
     Self {
       storage: storage.unwrap(),
-      context: context,
+      context,
       on_end: core::option::Option::Some(core::convert::Into::into(on_end)),
     }
   }
@@ -406,7 +406,7 @@ where
   #[inline(always)]
   pub fn perform(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
     let result = self.form();
-    return result;
+    result
   }
 }
 

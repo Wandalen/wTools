@@ -107,7 +107,7 @@ impl<'a> former::StoragePreform for Struct1FormerStorage<'a> {
     } else {
       {
         trait MaybeDefault<T> {
-          fn maybe_default(self: &Self) -> T {
+          fn maybe_default(&self) -> T {
             panic!("Field 'string_slice_1' isn't initialized")
           }
         }
@@ -117,7 +117,7 @@ impl<'a> former::StoragePreform for Struct1FormerStorage<'a> {
         where
           T: ::core::default::Default,
         {
-          fn maybe_default(self: &Self) -> T {
+          fn maybe_default(&self) -> T {
             T::default()
           }
         }
@@ -179,7 +179,7 @@ where
     }
     Self {
       storage: storage.unwrap(),
-      context: context,
+      context,
       on_end: ::core::option::Option::Some(on_end),
     }
   }
@@ -198,7 +198,7 @@ where
     }
     Self {
       storage: storage.unwrap(),
-      context: context,
+      context,
       on_end: ::core::option::Option::Some(::core::convert::Into::into(on_end)),
     }
   }

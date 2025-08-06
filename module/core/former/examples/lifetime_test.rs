@@ -14,5 +14,5 @@ pub struct Simple<'a> {
 fn main() {
   let s = "hello";
   let instance = Simple::former().name(s).form();
-  println!("{:?}", instance);
+  println!("{instance:?}");
 }

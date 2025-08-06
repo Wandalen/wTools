@@ -24,14 +24,14 @@
 #[ allow( unused_imports ) ]
 use super::*; // Imports items from the parent file (either manual or derive)
 use super::{ Bound, MyType, InnerScalar }; // Explicitly import common types
-// use crate::inc::enum_unnamed_tests::scalar_generic_tuple_derive::EnumScalarGeneric as EnumScalarGenericDerive; // Disabled - derive version has generic parsing issues
+// use crate::inc::enum_unnamed_tests::scalar_generic_tuple_derive::EnumScalarGeneric as EnumScalarGenericDerive; // Disabled - generic parsing macro issue
 use crate::inc::enum_unnamed_tests::scalar_generic_tuple_manual::EnumScalarGeneric as EnumScalarGenericManual;
 // use std::marker::PhantomData; // Keep PhantomData import needed for manual test case construction
 
 
 
 
-/* DISABLED - Derive version has generic parsing issues
+/* DISABLED - Generic parsing macro issue in derive
 #[ test ]
 fn scalar_on_single_generic_tuple_variant()
 {
@@ -54,7 +54,7 @@ fn scalar_on_single_generic_tuple_variant()
 }
 */
 
-/* DISABLED - Derive version has generic parsing issues
+/* DISABLED - Generic parsing macro issue in derive
 #[ test ]
 fn scalar_on_multi_generic_tuple_variant()
 {

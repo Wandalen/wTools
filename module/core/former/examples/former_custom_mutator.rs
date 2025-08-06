@@ -1,4 +1,4 @@
-//! Example demonstrating custom mutation logic using the FormerMutator trait with storage-specific fields.
+//! Example demonstrating custom mutation logic using the `FormerMutator` trait with storage-specific fields.
 
 #![allow(missing_docs)]
 

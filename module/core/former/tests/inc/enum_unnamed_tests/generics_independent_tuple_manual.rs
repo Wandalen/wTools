@@ -13,7 +13,7 @@
 //! - This file is included by `generics_independent_tuple_only_test.rs` to provide the manual implementations
 //!   that the shared tests compare against.
 use super::*; // Imports testing infrastructure and potentially other common items
-use std::marker::PhantomData;
+use core::marker::PhantomData;
 use former_types::
 {
   FormingEnd, StoragePreform, FormerDefinition, FormerDefinitionTypes, Storage,
