@@ -58,23 +58,26 @@ pub fn path() -> std::io::Result<std::path::PathBuf> {
 
 use former::Former;
 use std::{
-  path::{Path, PathBuf},
+  path::PathBuf,
   // process::Command,
 };
 
 #[derive(Debug, Default, Former)]
+#[allow(dead_code)]
 pub struct SourceFile {
   file_path: PathBuf,
   data: GetData,
 }
 
 #[derive(Debug, Default, Former)]
+#[allow(dead_code)]
 pub struct Entry {
   source_file: SourceFile,
   typ: EntryType,
 }
 
 #[derive(Debug, Default, Former)]
+#[allow(dead_code)]
 pub struct CargoFile {
   file_path: PathBuf,
   data: GetData,
@@ -82,6 +85,7 @@ pub struct CargoFile {
 
 #[derive(Debug, Default, Former)]
 // #[ debug ]
+#[allow(dead_code)]
 pub struct Program {
   write_path: Option<PathBuf>,
   read_path: Option<PathBuf>,
@@ -91,6 +95,7 @@ pub struct Program {
 }
 
 #[derive(Debug, Default, Former)]
+#[allow(dead_code)]
 pub struct ProgramRun {
   // #[ embed ]
   program: Program,
@@ -98,6 +103,7 @@ pub struct ProgramRun {
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub enum GetData {
   FromStr(&'static str),
   FromBin(&'static [u8]),
@@ -112,6 +118,7 @@ impl Default for GetData {
 }
 
 #[derive(Debug, Default)]
+#[allow(dead_code)]
 pub struct ProgramCall {
   action: ProgramAction,
   current_path: Option<PathBuf>,
@@ -120,6 +127,7 @@ pub struct ProgramCall {
 }
 
 #[derive(Debug, Default)]
+#[allow(dead_code)]
 pub enum ProgramAction {
   #[default]
   Run,
@@ -128,6 +136,7 @@ pub enum ProgramAction {
 }
 
 #[derive(Debug, Default)]
+#[allow(dead_code)]
 pub enum EntryType {
   #[default]
   Bin,

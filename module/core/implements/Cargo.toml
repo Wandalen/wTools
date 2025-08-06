@@ -30,6 +30,7 @@ full = [ "enabled" ]
 no_std = []
 use_alloc = [ "no_std" ]
 enabled = []
+nightly = []
 
 [dependencies]
 

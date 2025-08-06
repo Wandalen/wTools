@@ -66,7 +66,7 @@ use mod_interface::meta::mod_interface;
 /// Define a private namespace for all its items.
 mod private {
 
-  use crate::{ error, entity, command };
+  use crate::{ error, command };
 
   /// Takes the command line arguments and perform associated function(s).
   /// If no arguments are provided, the function identifies this as an ambiguous state and prompts the user with a help message, suggesting possible commands they might want to execute.
