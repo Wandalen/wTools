@@ -132,7 +132,7 @@ use macro_tools::{
 /// **Solution**: Systematic classification using `GenericsRef::classification()`
 /// **Prevention**: Automated generic parameter placement based on usage patterns
 /// **Example**:
-/// ```rust
+/// ```rust,ignore
 /// // ❌ MANUAL IMPLEMENTATION ERROR: Wrong generic placement
 /// pub struct MyStructFormer<T, Definition> { ... } // T shouldn't be here
 /// 
@@ -146,7 +146,7 @@ use macro_tools::{
 /// **Solution**: Proper lifetime parameter propagation through all trait implementations
 /// **Prevention**: Automated inclusion of all required lifetime parameters
 /// **Example**:
-/// ```rust
+/// ```rust,ignore
 /// // ❌ MANUAL IMPLEMENTATION ERROR: Missing lifetime parameter
 /// impl<Definition> FormerBegin<Definition> for MyStructFormer<Definition>
 /// 
@@ -161,7 +161,7 @@ use macro_tools::{
 /// **Solution**: Automatic Option wrapping with proper default handling
 /// **Prevention**: Consistent storage field generation with preform logic
 /// **Example**:
-/// ```rust
+/// ```rust,ignore
 /// // ❌ MANUAL IMPLEMENTATION ERROR: Direct field storage
 /// pub struct MyStructFormerStorage { field: String } // Should be Option<String>
 /// 

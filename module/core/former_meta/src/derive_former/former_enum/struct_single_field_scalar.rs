@@ -33,7 +33,7 @@
 //! **Solution**: Generated constructor using proper struct field naming with Into<T> conversion support
 //! **Prevention**: Automated struct field parameter generation with type safety guarantees
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! impl MyEnum {
 //!     fn variant(value: String) -> Self {  // ❌ Parameter name doesn't match field name
@@ -76,7 +76,7 @@
 //! ## Generated Code Architecture
 //!
 //! ### Direct Struct Constructor Pattern
-//! ```rust
+//! ```rust,ignore
 //! impl<T> Enum<T> where T: Clone {
 //!     pub fn variant(field: impl Into<T>) -> Enum<T> {
 //!         Enum::Variant { field: field.into() }
@@ -85,7 +85,7 @@
 //! ```
 //!
 //! ### Standalone Constructor (Optional)
-//! ```rust
+//! ```rust,ignore
 //! // Generated when #[standalone_constructors] is present
 //! pub fn variant(field: impl Into<T>) -> Enum<T> {
 //!     Enum::Variant { field: field.into() }
@@ -128,7 +128,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// - **Standalone Support**: Optional top-level constructor function generation
 ///
 /// ## Generated Method Signature
-/// ```rust
+/// ```rust,ignore
 /// impl<T> Enum<T> where T: Clone {
 ///     pub fn variant(field: impl Into<T>) -> Enum<T> {
 ///         Enum::Variant { field: field.into() }

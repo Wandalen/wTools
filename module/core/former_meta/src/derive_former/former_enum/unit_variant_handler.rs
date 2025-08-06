@@ -33,7 +33,7 @@
 //! **Solution**: Compile-time validation that rejects `#[subform_scalar]` on unit variants
 //! **Prevention**: Clear error messages prevent invalid attribute usage
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! #[subform_scalar]  // ❌ Invalid for unit variants
 //! Variant,
@@ -48,7 +48,7 @@
 //! **Solution**: Proper unit variant construction with direct variant name
 //! **Prevention**: Generated code uses correct unit construction syntax
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! MyEnum::Variant()  // ❌ Incorrect syntax for unit variant
 //! MyEnum::Variant{}  // ❌ Incorrect syntax for unit variant
@@ -63,7 +63,7 @@
 //! **Solution**: Complete generic parameter preservation through `GenericsRef` infrastructure
 //! **Prevention**: Ensures all generic constraints are properly maintained
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! impl MyEnum {
 //!     fn variant() -> MyEnum {  // ❌ Missing generic parameters
@@ -94,7 +94,7 @@
 //! ## Generated Code Architecture
 //!
 //! ### Direct Unit Constructor Pattern
-//! ```rust
+//! ```rust,ignore
 //! impl<T, U> Enum<T, U> where T: Clone, U: Default {
 //!     pub fn variant() -> Enum<T, U> {
 //!         Enum::Variant

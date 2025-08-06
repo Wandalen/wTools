@@ -101,7 +101,7 @@ mod derive_former;
 /// ## ⚠️ Common Pitfalls and Solutions
 ///
 /// ### 1. Commented-Out Derive Attributes (90% of issues)
-/// ```rust
+/// ```rust,ignore
 /// // ❌ WRONG: Derive commented out - will appear as "complex" issue
 /// // #[derive(Debug, PartialEq, Former)]
 /// #[derive(Debug, PartialEq)]
@@ -113,7 +113,7 @@ mod derive_former;
 /// ```
 ///
 /// ### 2. Feature Gate Requirements for Collections
-/// ```rust
+/// ```rust,ignore
 /// // ✅ REQUIRED: Collection tests need proper feature gates
 /// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 /// mod test_with_collections;
@@ -133,7 +133,7 @@ mod derive_former;
 /// ```
 ///
 /// ### 4. Lifetime Parameter Complexity
-/// ```rust
+/// ```rust,ignore
 /// // ✅ WORKS: Complex lifetime scenarios are supported
 /// #[derive(Former)]
 /// pub struct Child<'child, T>
@@ -161,7 +161,7 @@ mod derive_former;
 /// error[E0277]: the trait bound `MyType: Hash` is not satisfied
 /// ```
 /// **Solution**: Implement required traits for HashMap keys:
-/// ```rust, ignore
+/// ```rust,ignore
 /// #[derive(Hash, Eq, PartialEq)]
 /// struct MyType { /* fields */ }
 /// ```
@@ -171,7 +171,7 @@ mod derive_former;
 /// error[E0106]: missing lifetime specifier
 /// ```
 /// **Solution**: Add proper lifetime parameters:
-/// ```rust, ignore
+/// ```rust,ignore
 /// #[derive(Former)]
 /// struct MyStruct<'a> {
 ///     reference: &'a str,
@@ -179,7 +179,7 @@ mod derive_former;
 /// ```
 ///
 /// #### Commented Derive Issues
-/// ```rust, ignore
+/// ```rust,ignore
 /// // ❌ WRONG: This will appear as a "complex" compilation error
 /// // #[derive(Debug, PartialEq, Former)]
 /// #[derive(Debug, PartialEq)]
@@ -191,7 +191,7 @@ mod derive_former;
 /// ```
 ///
 /// #### Collection Feature Gate Issues
-/// ```rust, ignore
+/// ```rust,ignore
 /// // ✅ REQUIRED: Add feature gates for collection tests
 /// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 /// mod collection_tests {
@@ -219,7 +219,7 @@ mod derive_former;
 ///
 /// ## Basic Structure Building
 ///
-/// ```rust, ignore
+/// ```rust,ignore
 /// use former::Former;
 ///
 /// #[derive(Debug, PartialEq, Former)]
@@ -238,7 +238,7 @@ mod derive_former;
 ///
 /// ## Collection Handling
 ///
-/// ```rust, ignore
+/// ```rust,ignore
 /// use former::Former;
 /// use std::collections::HashMap;
 ///
@@ -258,7 +258,7 @@ mod derive_former;
 ///
 /// ## Complex Generic Scenarios
 ///
-/// ```rust, ignore
+/// ```rust,ignore
 /// use former::Former;
 ///
 /// #[derive(Debug, Former)]
@@ -279,7 +279,7 @@ mod derive_former;
 ///
 /// ## Custom Validation with Mutators
 ///
-/// ```rust, ignore
+/// ```rust,ignore
 /// use former::Former;
 ///
 /// #[derive(Debug, Former)]
@@ -308,7 +308,7 @@ mod derive_former;
 ///
 /// ### Debug Attribute Usage
 ///
-/// ```rust, ignore
+/// ```rust,ignore
 /// use former::Former;
 ///
 /// // Standalone debug attribute

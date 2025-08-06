@@ -20,7 +20,7 @@
 //! The module uses a **dual-parsing approach** to handle both standalone attributes and
 //! attributes nested within `#[former(...)]`:
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Standalone attributes
 //! #[debug]
 //! #[storage_fields(temp_field: i32)]

@@ -195,7 +195,7 @@ impl<'a> FormerField<'a> {
   /// **Problem**: Manual implementations incorrectly handling `Option<T>` fields
   /// **Prevention**: Systematic optional detection with proper inner type extraction
   /// **Example**:
-  /// ```rust
+  /// ```rust,ignore
   /// // Field: Option<HashMap<K, V>>
   /// // ✅ Correctly detected: is_optional = true, non_optional_ty = HashMap<K, V>
   /// ```
@@ -204,7 +204,7 @@ impl<'a> FormerField<'a> {
   /// **Problem**: Collection fields not recognized, leading to wrong setter generation
   /// **Prevention**: Comprehensive container kind detection
   /// **Example**:
-  /// ```rust
+  /// ```rust,ignore
   /// // Field: Vec<Child>
   /// // ✅ Correctly classified: of_type = ContainerKind::Vector
   /// ```
@@ -213,7 +213,7 @@ impl<'a> FormerField<'a> {
   /// **Problem**: Complex generic types losing parameter information during processing
   /// **Prevention**: Complete type preservation with `non_optional_ty` tracking
   /// **Example**:
-  /// ```rust
+  /// ```rust,ignore
   /// // Field: Option<HashMap<K, V>> where K: Hash + Eq
   /// // ✅ Full generic information preserved in non_optional_ty
   /// ```
@@ -222,7 +222,7 @@ impl<'a> FormerField<'a> {
   /// **Problem**: Tuple struct fields causing crashes due to missing identifiers
   /// **Prevention**: Explicit identifier validation with clear error messages
   /// **Example**:
-  /// ```rust
+  /// ```rust,ignore
   /// // ❌ Would cause error: struct TupleStruct(String);
   /// // ✅ Clear error message: "Expected that each field has key, but some does not"
   /// ```

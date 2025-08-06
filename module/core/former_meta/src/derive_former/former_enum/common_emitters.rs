@@ -54,7 +54,7 @@
 //! ## Utility Categories
 //!
 //! ### Generic Parameter Utilities
-//! ```rust
+//! ```rust,ignore
 //! // Placeholder for future generic parameter handling utilities
 //! pub fn standardize_generic_context(generics: &syn::Generics) -> GenericContext {
 //!     // Standardized generic parameter processing
@@ -62,7 +62,7 @@
 //! ```
 //!
 //! ### Type Path Construction
-//! ```rust
+//! ```rust,ignore
 //! // Placeholder for future type path construction utilities  
 //! pub fn build_enum_type_path(
 //!     enum_name: &syn::Ident,
@@ -73,7 +73,7 @@
 //! ```
 //!
 //! ### Method Naming Standardization
-//! ```rust
+//! ```rust,ignore
 //! // Placeholder for future method naming utilities
 //! pub fn generate_method_name(variant_name: &syn::Ident) -> syn::Ident {
 //!     // Standardized method name generation
@@ -81,7 +81,7 @@
 //! ```
 //!
 //! ### Attribute Processing Utilities
-//! ```rust
+//! ```rust,ignore
 //! // Placeholder for future attribute processing utilities
 //! pub fn validate_variant_attributes(attrs: &FieldAttributes) -> Result<()> {
 //!     // Consistent attribute validation patterns

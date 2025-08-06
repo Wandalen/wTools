@@ -11,7 +11,7 @@
 //! - Improved documentation generation
 //!
 //! ## Usage Examples
-//! ```rust
+//! ```rust,ignore
 //! #[derive(Former)]
 //! enum MyEnum {
 //!     // Works with Former-implementing types
