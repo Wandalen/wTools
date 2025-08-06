@@ -134,7 +134,7 @@
 // // pub mod compile_fail;
 
 mod standalone_constructor_args_named_single_manual; // Added - now contains both variants
-// mod standalone_constructor_args_named_multi_manual; // Disabled - variant name conflicts and missing functions
+// mod standalone_constructor_args_named_multi_manual; // Disabled - variant name conflicts (MultiStructArgs vs StructVariantArgs) and missing functions
 // mod enum_named_fields_named_manual; // Disabled - name conflict with derive test (EnumWithNamedFieldsManual vs EnumWithNamedFields)
 // mod enum_named_fields_named_derive; // Disabled - confirmed trait conflicts (E0119 conflicting implementations)
 mod minimal_struct_zero_test; // Enabled - testing struct_zero_fields_handler

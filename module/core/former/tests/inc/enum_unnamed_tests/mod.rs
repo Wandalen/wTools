@@ -68,9 +68,9 @@ mod tuple_multi_scalar_manual; // Re-enabled - manual implementation without der
 mod tuple_multi_scalar_only_test; // Re-enabled - fixed import scope issue
 mod tuple_multi_standalone_args_derive; // Re-enabled - enum #[arg_for_constructor] logic now implemented!
 mod tuple_multi_standalone_args_manual; // Re-enabled - simple manual enum with regular comments
-// // mod tuple_multi_standalone_args_only_test;
+// // mod tuple_multi_standalone_args_only_test; // Include pattern, not standalone
 mod tuple_multi_standalone_derive; // Re-enabled - testing standalone constructor functionality
-// // mod tuple_multi_standalone_manual;
+mod tuple_multi_standalone_manual; // Re-enabled - let's test this manual implementation
 // mod usecase1_derive;  // REQUIRES DELEGATION ARCHITECTURE - complex implementation needed
 // // mod tuple_multi_standalone_only_test;
 
@@ -79,7 +79,7 @@ mod enum_named_fields_unnamed_derive; // Re-enabled - fixed inner doc comments i
 mod enum_named_fields_unnamed_manual; // Re-enabled - simpler test case without complex Former types
 // mod enum_named_fields_unnamed_only_test; // Test file is included by derive/manual files, not standalone
 // mod generics_in_tuple_variant_tuple_derive; // Disabled - confirmed generic parsing macro issue (expected :: found >)
-// mod generics_in_tuple_variant_tuple_manual; // Disabled - inner doc comments issue with include!()
+// mod generics_in_tuple_variant_tuple_manual; // Disabled - has additional trait and missing variant issues
 mod keyword_variant_tuple_derive; // Re-enabled - testing raw identifier handling fix
 // mod keyword_variant_tuple_only_test; // Test file is included by keyword_variant_tuple_derive.rs, not a standalone module
 mod standalone_constructor_tuple_derive; // Re-enabled - fixed inner doc comment issues
