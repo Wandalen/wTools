@@ -5,7 +5,7 @@
 //! Coverage:
 //! - Rule 3b (Tuple + Zero-Field + Default): Tests static method `EnumWithNamedFields::variant_zero_unnamed_default()`.
 //! - Rule 1b (Tuple + Zero-Field + `#[scalar]`): Tests static method `EnumWithNamedFields::variant_zero_unnamed_scalar()`.
-//! - Rule 4a (#[standalone_constructors]): Verifies generation of top-level constructor functions (though not explicitly tested in `_only_test.rs`).
+//! - Rule 4a (#[`standalone_constructors`]): Verifies generation of top-level constructor functions (though not explicitly tested in `_only_test.rs`).
 //!
 //! Test Relevance/Acceptance Criteria:
 //! - Defines an enum `EnumWithNamedFields` with two zero-field unnamed variants: `VariantZeroUnnamedDefault()` and `VariantZeroUnnamedScalar()`.

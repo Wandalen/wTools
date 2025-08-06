@@ -1,3 +1,4 @@
+#![allow(dead_code)] // Test structures are intentionally unused
 use super::*;
 
 #[derive(Debug, PartialEq, Clone)]

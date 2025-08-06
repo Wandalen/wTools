@@ -1,4 +1,4 @@
-//! Simple test for #[former_ignore] attribute - minimal test to verify basic functionality
+//! Simple test for #[`former_ignore`] attribute - minimal test to verify basic functionality
 
 #[allow(unused_imports)]
 use ::former::prelude::*;
@@ -7,7 +7,7 @@ use ::former::Former;
 #[test]
 fn simple_former_ignore_test()
 {
-  /// Test struct with standalone constructors and former_ignore attribute
+  /// Test struct with standalone constructors and `former_ignore` attribute
   #[derive(Debug, PartialEq, Former)]
   #[standalone_constructors]
   pub struct SimpleConfig

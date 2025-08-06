@@ -1,3 +1,4 @@
+#![allow(dead_code)] // Test structures are intentionally unused
 use super::*;
 use test_tools::exposed::*;
 

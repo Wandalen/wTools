@@ -4,7 +4,7 @@
 //! on verifying the derive-based implementation for a single-field named variant.
 //!
 //! Coverage:
-//! - Rule 4a (#[standalone_constructors]): Verifies the generation of the top-level constructor function (`struct_variant`).
+//! - Rule 4a (#[`standalone_constructors`]): Verifies the generation of the top-level constructor function (`struct_variant`).
 //! - Rule 4b (Option 2 Logic): Verifies that when no fields in a named variant have `#[arg_for_constructor]`, the standalone constructor returns a former builder for the variant.
 //! - Rule 1e (Struct + Single-Field + `#[scalar]`): Implicitly relevant as `StructVariant` is a single-field named variant.
 //! - Rule 3e (Struct + Single-Field + Default): Implicitly relevant as `StructVariant` is a single-field named variant.

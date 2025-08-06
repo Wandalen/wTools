@@ -17,7 +17,7 @@ impl<Name> Property<Name> {
     Code: core::convert::Into<isize>,
   {
     Self {
-      name: name.into(),
+      name,
       code: code.into(),
     }
   }
@@ -41,7 +41,7 @@ where
 #[automatically_derived]
 impl<K> Child<K>
 where
-  K: core::hash::Hash + std::cmp::Eq,
+  K: core::hash::Hash + core::cmp::Eq,
 {
   #[inline(always)]
   pub fn former() -> ChildFormer<K, ChildFormerDefinition<K, (), Child<K>, former::ReturnPreformed>> {
@@ -52,14 +52,14 @@ where
 #[derive(Debug)]
 pub struct ChildFormerDefinitionTypes<K, __Context = (), __Formed = Child<K>>
 where
-  K: core::hash::Hash + std::cmp::Eq,
+  K: core::hash::Hash + core::cmp::Eq,
 {
   _phantom: core::marker::PhantomData<(K, __Context, __Formed)>,
 }
 
 impl<K, __Context, __Formed> ::core::default::Default for ChildFormerDefinitionTypes<K, __Context, __Formed>
 where
-  K: core::hash::Hash + std::cmp::Eq,
+  K: core::hash::Hash + core::cmp::Eq,
 {
   fn default() -> Self {
     Self {
@@ -70,7 +70,7 @@ where
 
 impl<K, __Context, __Formed> former::FormerDefinitionTypes for ChildFormerDefinitionTypes<K, __Context, __Formed>
 where
-  K: core::hash::Hash + std::cmp::Eq,
+  K: core::hash::Hash + core::cmp::Eq,
 {
   type Storage = ChildFormerStorage<K>;
   type Formed = __Formed;
@@ -78,21 +78,21 @@ where
 }
 
 impl<K, Context, Formed> former::FormerMutator for ChildFormerDefinitionTypes<K, Context, Formed> where
-  K: core::hash::Hash + std::cmp::Eq
+  K: core::hash::Hash + core::cmp::Eq
 {
 }
 
 #[derive(Debug)]
 pub struct ChildFormerDefinition<K, __Context = (), __Formed = Child<K>, __End = former::ReturnPreformed>
 where
-  K: core::hash::Hash + std::cmp::Eq,
+  K: core::hash::Hash + core::cmp::Eq,
 {
   _phantom: core::marker::PhantomData<(K, __Context, __Formed, __End)>,
 }
 
 impl<K, __Context, __Formed, __End> ::core::default::Default for ChildFormerDefinition<K, __Context, __Formed, __End>
 where
-  K: core::hash::Hash + std::cmp::Eq,
+  K: core::hash::Hash + core::cmp::Eq,
 {
   fn default() -> Self {
     Self {
@@ -104,7 +104,7 @@ where
 impl<K, __Context, __Formed, __End> former::FormerDefinition for ChildFormerDefinition<K, __Context, __Formed, __End>
 where
   __End: former::FormingEnd<ChildFormerDefinitionTypes<K, __Context, __Formed>>,
-  K: core::hash::Hash + std::cmp::Eq,
+  K: core::hash::Hash + core::cmp::Eq,
 {
   type Types = ChildFormerDefinitionTypes<K, __Context, __Formed>;
   type End = __End;
@@ -117,7 +117,7 @@ where
 
 pub struct ChildFormerStorage<K>
 where
-  K: core::hash::Hash + std::cmp::Eq,
+  K: core::hash::Hash + core::cmp::Eq,
 {
   pub name: ::core::option::Option<String>,
 
@@ -126,7 +126,7 @@ where
 
 impl<K> ::core::default::Default for ChildFormerStorage<K>
 where
-  K: core::hash::Hash + std::cmp::Eq,
+  K: core::hash::Hash + core::cmp::Eq,
 {
   #[inline(always)]
   fn default() -> Self {
@@ -139,14 +139,14 @@ where
 
 impl<K> former::Storage for ChildFormerStorage<K>
 where
-  K: core::hash::Hash + std::cmp::Eq,
+  K: core::hash::Hash + core::cmp::Eq,
 {
   type Preformed = Child<K>;
 }
 
 impl<K> former::StoragePreform for ChildFormerStorage<K>
 where
-  K: core::hash::Hash + std::cmp::Eq,
+  K: core::hash::Hash + core::cmp::Eq,
 {
   // type Preformed = Child< K, >;
 
@@ -158,7 +158,7 @@ where
     } else {
       {
         trait MaybeDefault<T> {
-          fn maybe_default(self: &Self) -> T {
+          fn maybe_default(&self) -> T {
             panic!("Field 'name' isn't initialized")
           }
         }
@@ -167,11 +167,11 @@ where
         where
           T: ::core::default::Default,
         {
-          fn maybe_default(self: &Self) -> T {
+          fn maybe_default(&self) -> T {
             T::default()
           }
         }
-        (&::core::marker::PhantomData::<String>).maybe_default()
+        ::core::marker::PhantomData::<String>.maybe_default()
       }
     };
 
@@ -180,7 +180,7 @@ where
     } else {
       {
         trait MaybeDefault<T> {
-          fn maybe_default(self: &Self) -> T {
+          fn maybe_default(&self) -> T {
             panic!("Field 'properties' isn't initialized")
           }
         }
@@ -189,16 +189,16 @@ where
         where
           T: ::core::default::Default,
         {
-          fn maybe_default(self: &Self) -> T {
+          fn maybe_default(&self) -> T {
             T::default()
           }
         }
-        (&::core::marker::PhantomData::<collection_tools::HashMap<K, Property<K>>>).maybe_default()
+        ::core::marker::PhantomData::<collection_tools::HashMap<K, Property<K>>>.maybe_default()
       }
     };
 
     let result = Child::<K> { name, properties };
-    return result;
+    result
   }
 }
 
@@ -222,7 +222,7 @@ where
   #[inline(always)]
   pub fn perform(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
     let result = self.form();
-    return result;
+    result
   }
 
   #[inline(always)]
@@ -249,7 +249,7 @@ where
     }
     Self {
       storage: storage.unwrap(),
-      context: context,
+      context,
       on_end: ::core::option::Option::Some(on_end),
     }
   }
@@ -268,7 +268,7 @@ where
     }
     Self {
       storage: storage.unwrap(),
-      context: context,
+      context,
       on_end: ::core::option::Option::Some(::core::convert::Into::into(on_end)),
     }
   }

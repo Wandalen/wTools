@@ -78,7 +78,6 @@ where
 /// - `substorage`: Storage type specific to the `Child`, containing the newly formed scalar value.
 /// - `super_former`: An optional context of the `ParentFormer`, which will receive the value. The function ensures
 ///   that this context is not `None` and inserts the formed value into the designated field within `Parent`'s storage.
-
 pub struct ParentFormerSubformScalarChildEnd<Definition> {
   _phantom: core::marker::PhantomData<fn(Definition)>,
 }
@@ -216,7 +215,7 @@ impl former::StoragePreform for ParentFormerStorage {
       Default::default()
     };
     let result = Parent { child };
-    return result;
+    result
   }
 }
 
@@ -316,7 +315,7 @@ where
   #[inline(always)]
   pub fn perform(self) -> Definition::Formed {
     let result = self.form();
-    return result;
+    result
   }
 }
 
@@ -450,7 +449,7 @@ impl former::StoragePreform for ChildFormerStorage {
       Default::default()
     };
     let result = Child { name, data };
-    return result;
+    result
   }
 }
 
@@ -564,7 +563,7 @@ where
   #[inline(always)]
   pub fn perform(self) -> Definition::Formed {
     let result = self.form();
-    return result;
+    result
   }
 }
 

@@ -152,7 +152,7 @@ where
   #[inline(always)]
   pub fn perform(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
     let result = self.form();
-    return result;
+    result
   }
 
   #[inline(always)]

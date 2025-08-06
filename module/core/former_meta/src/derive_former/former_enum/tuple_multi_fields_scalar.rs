@@ -199,17 +199,36 @@ pub fn handle( _ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro
 
   // Generate standalone constructor if requested
   if _ctx.struct_attrs.standalone_constructors.value(false) {
-    // Check if all fields have arg_for_constructor - if so, generate scalar standalone constructor
-    let all_fields_constructor_args = fields.iter().all(|f| f.is_constructor_arg);
+    // For scalar variants, always generate constructor.
+    // Check if we should use only fields marked with arg_for_constructor, or all fields
+    let constructor_fields: Vec<_> = fields.iter().filter(|f| f.is_constructor_arg).collect();
     
-    if all_fields_constructor_args {
-      // Scalar standalone constructor - takes arguments for all fields
+    if constructor_fields.is_empty() {
+      // No fields marked with arg_for_constructor - use all fields (scalar behavior)
       let standalone_method = quote!
       {
         #[ inline( always ) ]
         #vis fn #method_name( #( #field_names_clone_3 : impl Into< #field_types_clone_3 > ),* ) -> #enum_name #ty_generics
         {
           #enum_name #ty_generics ::#variant_name( #( #field_names_clone_4.into() ),* )
+        }
+      };
+      _ctx.standalone_constructors.push( standalone_method );
+    } else {
+      // Some fields marked with arg_for_constructor - use only those fields
+      let constructor_field_types = constructor_fields.iter().map(|f| &f.ty);
+      let constructor_field_names = constructor_fields.iter().map(|f| &f.ident);
+      let constructor_field_types_clone = constructor_field_types.clone();
+      let constructor_field_names_clone = constructor_field_names.clone();
+      
+      let standalone_method = quote!
+      {
+        #[ inline( always ) ]
+        #vis fn #method_name( #( #constructor_field_names : impl Into< #constructor_field_types > ),* ) -> #enum_name #ty_generics
+        {
+          // TODO: Handle mixing of constructor args with default values for non-constructor fields
+          // For now, this will only work if all fields have arg_for_constructor
+          #enum_name #ty_generics ::#variant_name( #( #constructor_field_names_clone.into() ),* )
         }
       };
       _ctx.standalone_constructors.push( standalone_method );

@@ -3,7 +3,7 @@
 //! within the variant have `#[arg_for_constructor]`. This file focuses on verifying the derive-based implementation.
 //!
 //! Coverage:
-//! - Rule 4a (#[standalone_constructors]): Verifies the generation of the top-level constructor function (`variant`).
+//! - Rule 4a (#[`standalone_constructors`]): Verifies the generation of the top-level constructor function (`variant`).
 //! - Rule 4b (Option 2 Logic): Verifies that when all fields in a multi-field tuple variant have `#[arg_for_constructor]`, the standalone constructor takes arguments for those fields and returns the final enum instance (scalar style).
 //! - Rule 3f (Tuple + Multi-Field + Default): Implicitly relevant as `Variant` is a multi-field tuple variant.
 //!

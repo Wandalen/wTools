@@ -13,5 +13,5 @@ pub struct Minimal<'a> {
 fn main() {
   let s = "hello";
   let instance = Minimal::former().data(s).form();
-  println!("{:?}", instance);
+  println!("{instance:?}");
 }

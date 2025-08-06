@@ -9,7 +9,7 @@ use ::former_types::
   FormerDefinitionTypes, FormerMutator, FormerDefinition,
   FormingEnd, ReturnPreformed,
 };
-use std::marker::PhantomData;
+use core::marker::PhantomData;
 
 // === Enum Definition ===
 
@@ -24,7 +24,7 @@ pub enum TestEnumArgs // New name
 // === Manual Former Implementation for TupleVariantArgs ===
 
 // Storage
-/// Storage for TestEnumArgsTupleVariantArgsFormer.
+/// Storage for `TestEnumArgsTupleVariantArgsFormer`.
 #[ derive( Debug, Default ) ]
 pub struct TestEnumArgsTupleVariantArgsFormerStorage
 {
@@ -49,7 +49,7 @@ impl StoragePreform for TestEnumArgsTupleVariantArgsFormerStorage
 }
 
 // Definition Types
-/// Definition types for TestEnumArgsTupleVariantArgsFormer.
+/// Definition types for `TestEnumArgsTupleVariantArgsFormer`.
 #[ derive( Debug, Default ) ]
 pub struct TestEnumArgsTupleVariantArgsFormerDefinitionTypes< Context = (), Formed = TestEnumArgs >
 {
@@ -71,7 +71,7 @@ for TestEnumArgsTupleVariantArgsFormerDefinitionTypes< Context, Formed >
 }
 
 // Definition
-/// Definition for TestEnumArgsTupleVariantArgsFormer.
+/// Definition for `TestEnumArgsTupleVariantArgsFormer`.
 #[ derive( Debug, Default ) ]
 pub struct TestEnumArgsTupleVariantArgsFormerDefinition
 < Context = (), Formed = TestEnumArgs, End = TestEnumArgsTupleVariantArgsEnd >
@@ -92,7 +92,7 @@ where
 }
 
 // Former
-/// Manual Former implementation for TestEnumArgs::TupleVariantArgs.
+/// Manual Former implementation for `TestEnumArgs::TupleVariantArgs`.
 #[ derive( Debug ) ]
 pub struct TestEnumArgsTupleVariantArgsFormer
 < Definition = TestEnumArgsTupleVariantArgsFormerDefinition >
@@ -154,7 +154,7 @@ where
 }
 
 // End Struct for TupleVariantArgs
-/// End handler for TestEnumArgsTupleVariantArgsFormer.
+/// End handler for `TestEnumArgsTupleVariantArgsFormer`.
 #[ derive( Debug, Default ) ]
 pub struct TestEnumArgsTupleVariantArgsEnd;
 
@@ -177,12 +177,22 @@ for TestEnumArgsTupleVariantArgsEnd
 
 // === Standalone Constructors (Manual - Argument Taking) ===
 
-/// Manual standalone constructor for TestEnumArgs::TupleVariantArgs (takes arg).
+/// Manual standalone constructor for `TestEnumArgs::TupleVariantArgs` (takes arg).
 /// Returns Self directly as per Option 2.
+#[allow(clippy::just_underscores_and_digits)] // _0 is conventional for tuple field access
 pub fn tuple_variant_args( _0 : impl Into< i32 > ) -> TestEnumArgs // Changed return type
 {
   TestEnumArgs::TupleVariantArgs( _0.into() ) // Direct construction
 }
 
 // === Include Test Logic ===
-include!( "standalone_constructor_args_tuple_only_test.rs" );
+// Note: Only including the single-field test since this manual implementation only has TupleVariantArgs
+
+#[ test ]
+fn tuple_variant_args_test()
+{
+  // Test the single field with standalone constructor
+  let instance = tuple_variant_args( 202 );
+  let expected = TestEnumArgs::TupleVariantArgs( 202 );
+  assert_eq!( instance, expected );
+}

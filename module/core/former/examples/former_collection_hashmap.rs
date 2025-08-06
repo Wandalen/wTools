@@ -1,5 +1,5 @@
 
-//! Example demonstrating how to configure a HashMap using collection setters with Former.
+//! Example demonstrating how to configure a `HashMap` using collection setters with Former.
 
 #![allow(missing_docs)]
 

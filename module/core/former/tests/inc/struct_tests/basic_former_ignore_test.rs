@@ -1,4 +1,4 @@
-//! Basic test to verify the Former derive works with new #[former_ignore] attribute
+//! Basic test to verify the Former derive works with new #[`former_ignore`] attribute
 
 #[allow(unused_imports)]
 use ::former::prelude::*;
@@ -7,7 +7,7 @@ use ::former::Former;
 #[test]
 fn basic_former_ignore_test()
 {
-  /// Test struct with former_ignore attribute (not using standalone constructors)
+  /// Test struct with `former_ignore` attribute (not using standalone constructors)
   #[derive(Debug, PartialEq, Former)]
   pub struct BasicConfig
   {
@@ -23,5 +23,5 @@ fn basic_former_ignore_test()
     .form();
 
   assert_eq!(config.name, "test");
-  assert_eq!(config.internal_flag, true);
+  assert!(config.internal_flag);
 }

@@ -17,11 +17,9 @@ fn tuple_variant_args_test() // New test name
 #[ test ]
 fn multi_tuple_variant_args_test()
 {
-  // Based on derive file, `MultiTupleArgs` has no #[arg_for_constructor] fields.
-  // Option 2 dictates constructor takes 0 args and returns Former.
-  let former = multi_tuple_args(); // Call with no args
-  let instance = former.form(); // Form the instance
-  // The default values will be used since no args were provided to the former
-  let expected = TestEnumArgs::MultiTupleArgs( i32::default(), bool::default() );
+  // Based on derive file, `MultiTupleArgs` has #[scalar] attribute and no #[arg_for_constructor] fields.
+  // Scalar behavior: constructor takes ALL fields as arguments and returns enum directly
+  let instance = multi_tuple_args( 42, true ); // Call with all field arguments
+  let expected = TestEnumArgs::MultiTupleArgs( 42, true );
   assert_eq!( instance, expected );
 }

@@ -8,7 +8,7 @@
 use super::*;
 
 /// Tests the standalone constructor for a struct with no ignored fields.
-/// According to new specification: no #[former_ignore] fields means constructor returns Self directly.
+/// According to new specification: no #[`former_ignore`] fields means constructor returns Self directly.
 #[ test ]
 fn no_args_test() // Generic test name
 {

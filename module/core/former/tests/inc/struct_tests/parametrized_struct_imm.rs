@@ -17,7 +17,7 @@ impl<Name> Property<Name> {
     Code: core::convert::Into<isize>,
   {
     Self {
-      name: name.into(),
+      name,
       code: code.into(),
     }
   }

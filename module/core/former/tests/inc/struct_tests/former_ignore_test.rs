@@ -1,13 +1,13 @@
-//! Test for new #[former_ignore] attribute functionality
+//! Test for new #[`former_ignore`] attribute functionality
 //! 
-//! This test verifies that the new #[former_ignore] attribute works correctly with
-//! standalone constructors, implementing the inverted logic from the old #[arg_for_constructor].
+//! This test verifies that the new #[`former_ignore`] attribute works correctly with
+//! standalone constructors, implementing the inverted logic from the old #[`arg_for_constructor`].
 
 #[allow(unused_imports)]
 use ::former::prelude::*;
 use ::former::Former;
 
-/// Test struct with standalone constructors and former_ignore attribute
+/// Test struct with standalone constructors and `former_ignore` attribute
 #[derive(Debug, PartialEq, Former)]
 #[standalone_constructors]
 pub struct ServerConfig

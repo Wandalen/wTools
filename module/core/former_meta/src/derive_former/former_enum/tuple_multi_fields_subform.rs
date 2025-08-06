@@ -485,6 +485,27 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
 
   // Generate standalone constructor if requested
   if ctx.struct_attrs.standalone_constructors.value(false) {
+    // Check if all fields have arg_for_constructor - if so, generate scalar standalone constructor
+    let all_fields_constructor_args = fields.iter().all(|f| f.is_constructor_arg);
+    
+    if all_fields_constructor_args {
+      // Scalar standalone constructor - takes arguments for all fields and returns the enum directly
+      let field_types = fields.iter().map(|f| &f.ty);
+      let field_names = fields.iter().map(|f| &f.ident);
+      let field_types_clone = field_types.clone();
+      let field_names_clone = field_names.clone();
+      
+      let standalone_method = quote!
+      {
+        #[ inline( always ) ]
+        #vis fn #method_name( #( #field_names : impl Into< #field_types > ),* ) -> #enum_name #ty_generics
+        {
+          #enum_name #ty_generics ::#variant_name( #( #field_names_clone.into() ),* )
+        }
+      };
+      ctx.standalone_constructors.push( standalone_method );
+    } else {
+      // Subform standalone constructor - returns a Former for building
       let standalone_method = quote!
       {
         #[ inline( always ) ]
@@ -495,6 +516,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
         }
       };
       ctx.standalone_constructors.push( standalone_method );
+    }
   }
 
   Ok( result )

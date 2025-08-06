@@ -1,8 +1,8 @@
-//! Test for new #[former_ignore] standalone constructor behavior
+//! Test for new #[`former_ignore`] standalone constructor behavior
 //! 
 //! This test verifies the new specification rules:
-//! - If NO fields have #[former_ignore]: Constructor takes all fields as parameters and returns Self directly
-//! - If ANY fields have #[former_ignore]: Constructor takes only non-ignored fields as parameters and returns Former
+//! - If NO fields have #[`former_ignore`]: Constructor takes all fields as parameters and returns Self directly
+//! - If ANY fields have #[`former_ignore`]: Constructor takes only non-ignored fields as parameters and returns Former
 
 #[allow(unused_imports)]
 use ::former::prelude::*;

@@ -2,6 +2,7 @@
 //! Manual implementation for testing standalone constructors.
 //! Uses consistent names matching the derive version for testing.
 //!
+#![allow(dead_code)] // Test structures are intentionally unused
 
 #[allow(unused_imports)]
 use ::former::prelude::*;
@@ -75,6 +76,7 @@ where
 
 // Former
 /// Manual Former for `TestStructNoArgs`.
+#[allow(dead_code)] // Test structure for demonstration purposes
 #[derive(Debug)]
 pub struct TestStructNoArgsFormer<Definition = TestStructNoArgsFormerDefinition>
 where

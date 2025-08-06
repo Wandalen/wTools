@@ -29,6 +29,7 @@ pub struct Break
 
 // --- Enum Definition ---
 // Apply Former derive here. This is what we are testing.
+#[allow(non_camel_case_types)] // Allow raw identifiers like r#use, r#break for keyword testing
 #[ derive( Debug, PartialEq, Clone, Former ) ]
 // #[ debug ] // Debug the macro to see what's being generated
 pub enum KeywordVariantEnum
