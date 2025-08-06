@@ -147,6 +147,7 @@ mod standalone_constructor_named_derive; // Re-enabled - fixed standalone constr
 mod single_subform_enum_test; // Enabled - testing single subform enum (no trait conflicts)
 // mod test_struct_zero_error; // Disabled - would cause compilation error (validation test)
 // mod generics_shared_struct_manual; // BLOCKED: Outdated Former API - uses non-existent Assign, Types, End2
+mod generics_shared_struct_manual_replacement_derive; // REPLACEMENT: Shared struct functionality with current Former API
 // mod generics_independent_struct_manual; // Disabled - has duplicate definitions and complex errors
 
 // NUCLEAR OPTION: ULTIMATE COMPREHENSIVE REPLACEMENT FOR ALL BLOCKED GENERIC STRUCT TESTS
