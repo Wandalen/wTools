@@ -3,7 +3,10 @@
 //! This benchmark focuses exclusively on runtime throughput testing across
 //! different command counts, without compile-time measurements. Designed for
 //! quick performance validation and regression testing.
-//!
+
+#![feature(test)]
+extern crate test;
+
 //! ## Key Benchmarking Insights from Unilang Development:
 //! 
 //! 1. **Two-Tier Strategy**: Fast throughput (30-60s) for daily validation,
@@ -913,17 +916,18 @@ fn run_throughput_benchmark() {
 }
 
 #[cfg(feature = "benchmarks")]
-#[test]
-#[ignore]
-fn throughput_benchmark_test() {
-    run_throughput_benchmark();
+#[bench]
+fn throughput_benchmark(b: &mut test::Bencher) {
+    // Run the throughput benchmark once per iteration
+    b.iter(|| {
+        run_throughput_benchmark()
+    });
 }
 
 #[cfg(not(feature = "benchmarks"))]
-#[test]
-#[ignore]
-fn throughput_benchmark_test() {
-    panic!("Benchmarks not enabled! Run with: cargo test throughput_benchmark_test --release --features benchmarks -- --ignored");
+#[bench]
+fn throughput_benchmark(_b: &mut test::Bencher) {
+    panic!("Benchmarks not enabled! Run with: cargo bench --features benchmarks");
 }
 
 #[cfg(test)]

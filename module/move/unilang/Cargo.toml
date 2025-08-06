@@ -96,13 +96,13 @@ path = "tests/inc/phase3/data_model_features_test.rs"
 # name = "performance_stress_test"
 # path = "tests/inc/phase4/performance_stress_test.rs"
 
-# Benchmark tests (ignored by default to prevent accidental long runs)
-[[test]]
+# Benchmark definitions using native Rust benchmarks
+[[bench]]
 name = "comprehensive_benchmark"
 path = "benchmarks/comprehensive_framework_comparison.rs"
 
-[[test]]
-name = "throughput_benchmark"  
+[[bench]]
+name = "throughput_benchmark"
 path = "benchmarks/throughput_benchmark.rs"
 
 [[test]]
