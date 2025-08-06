@@ -893,6 +893,7 @@ fn calculate_std_dev(values: &[f64], mean: f64) -> f64 {
 #[cfg(test)]
 mod tests {
     #[ cfg( feature = "benchmarks" ) ]
+    #[allow(unused_imports)]
     use super::*;
 
     #[ cfg( feature = "benchmarks" ) ]
@@ -1486,6 +1487,7 @@ fn run_comprehensive_benchmark() {
 #[cfg(feature = "benchmarks")]
 use criterion::{criterion_group, criterion_main, Criterion};
 
+/// Criterion benchmark function for comprehensive framework comparison
 #[cfg(feature = "benchmarks")]
 fn comprehensive_benchmark(c: &mut Criterion) {
     c.bench_function("comprehensive_benchmark", |b| {

@@ -915,6 +915,7 @@ fn run_throughput_benchmark() {
 #[cfg(feature = "benchmarks")]
 use criterion::{criterion_group, criterion_main, Criterion};
 
+/// Criterion benchmark function for throughput testing
 #[cfg(feature = "benchmarks")]
 fn throughput_benchmark(c: &mut Criterion) {
     c.bench_function("throughput_benchmark", |b| {
@@ -937,6 +938,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     #[cfg(feature = "benchmarks")]
+    #[allow(unused_imports)]
     use super::*;
 
     #[cfg(feature = "benchmarks")]
