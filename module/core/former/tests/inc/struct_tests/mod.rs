@@ -176,7 +176,8 @@ mod subform_collection_manual;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_collection_named;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-// mod subform_collection_playground;  // BLOCKED: Missing subform collection methods (.add()) - requires manual implementation infrastructure
+// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+// mod subform_collection_playground; // CONFIRMED BLOCKED: Missing subform collection methods (.add()) and method signature mismatches
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_collection_setter_off;
