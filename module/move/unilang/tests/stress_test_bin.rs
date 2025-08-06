@@ -59,18 +59,29 @@ fn main()
   println!( "  Latency p99: {p99:?}" );
   println!( "  Latency max: {max:?}" );
   
-  // Output the p99 latency in microseconds for easy parsing
+  // Output metrics in standardized format for test parsing
   let p99_micros = p99.as_nanos() as f64 / 1000.0;
-  println!( "P99_LATENCY_MICROS: {p99_micros:.2}" );
+  let startup_micros = init_time.as_nanos() as f64 / 1000.0;
   
-  // Check if we meet the requirement (< 1ms = 1000 microseconds)
-  if p99_micros < 1000.0
+  println!( "P99_LATENCY_MICROS: {p99_micros:.2}" );
+  println!( "STARTUP_TIME_MICROS: {startup_micros:.2}" );
+  
+  // Check if we meet both requirements
+  let p99_ok = p99_micros < 1000.0;
+  let startup_ok = startup_micros < 5000.0; // < 5ms startup
+  
+  if p99_ok && startup_ok
   {
-    println!( "✅ Performance requirement MET: p99 < 1ms" );
+    println!( "✅ All performance requirements MET!" );
   }
   else
   {
-    println!( "❌ Performance requirement FAILED: p99 >= 1ms" );
+    if !p99_ok {
+      println!( "❌ P99 latency requirement FAILED: {p99_micros:.2} μs >= 1000 μs" );
+    }
+    if !startup_ok {
+      println!( "❌ Startup time requirement FAILED: {startup_micros:.2} μs >= 5000 μs" );
+    }
   }
   
   println!( "Ready" );

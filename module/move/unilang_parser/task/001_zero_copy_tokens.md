@@ -134,83 +134,171 @@ Ok((UnilangTokenKind::Identifier(s.string), original_location))
 
 > 💡 **Zero-Copy Memory Insight**: Track allocations per operation, not just total memory usage. Use multiple repetitions (3+) as allocation patterns can vary. Validate that borrowing eliminates 90%+ allocations while maintaining identical parsing results.
 
-#### Performance Validation
-After implementation, run comprehensive benchmarking to validate zero-copy improvements:
+Following the established benchmarking patterns from `unilang`, this task must implement comprehensive performance measurement infrastructure.
 
-```bash
-# Navigate to unilang_parser directory
-cd /home/user1/pro/lib/wTools2/module/move/unilang_parser
+#### Benchmark Infrastructure Setup
 
-# Run parser-specific benchmarks
-cargo bench --features benchmarks
+**Inherit from unilang benchmarking patterns** by creating similar structure:
 
-# Run token creation benchmarks
-cargo bench token_creation --features benchmarks
-cargo bench full_parsing --features benchmarks
-cargo bench memory_allocation --features benchmarks
+```toml
+# Add to unilang_parser/Cargo.toml
+[features]
+default = ["enabled"]
+enabled = []
+benchmarks = ["criterion"]
+
+# Benchmark dependencies (dev-only to avoid production bloat)  
+criterion = { version = "0.5", optional = true }
+
+# Criterion-based benchmarks for cargo bench
+[[bench]]
+name = "zero_copy_benchmark"
+path = "benchmarks/zero_copy_tokens.rs"
+harness = false
+
+[[bench]]
+name = "parsing_throughput"
+path = "benchmarks/parsing_throughput.rs" 
+harness = false
 ```
 
-#### Expected Benchmark Results
-- **Token creation**: 15x improvement (~120ns → ~8ns per token)
-- **Full parsing**: 12x improvement (~25.3μs → ~2.1μs per command)
-- **Memory allocation**: 94% reduction (10-28 → 1 allocation per command)
-- **Throughput**: 12x improvement (~40K → ~476K commands/sec)
+#### Two-Tier Benchmarking Strategy
 
-#### Automated Benchmark Documentation
-The implementation must include automated updating of `benchmark/readme.md`:
+Following unilang's proven approach:
 
-1. **Create zero-copy benchmark sections** showing owned vs borrowed token performance
-2. **Update parsing pipeline metrics** with allocation reduction analysis
-3. **Document memory safety validation** and lifetime management overhead
-4. **Add throughput comparison** showing commands/sec improvements
+1. **⚡ Throughput Benchmark** (`parsing_throughput.rs`) - 10-30 seconds
+   - Quick daily validation of parsing performance
+   - Focus on tokens/sec and allocations per operation
+   - Multiple input sizes: 10, 100, 1K, 10K tokens
 
-#### Validation Commands
+2. **🏆 Comprehensive Benchmark** (`zero_copy_benchmark.rs`) - 5-8 minutes
+   - Before/after comparison (owned vs zero-copy)
+   - Statistical analysis with P50/P95/P99 percentiles
+   - Memory allocation tracking per operation
+   - Lifetime overhead measurement
+
+#### Benchmark Implementation Files
+
+**Create benchmarks/ directory structure:**
+
+```
+unilang_parser/
+├── benchmarks/
+│   ├── zero_copy_tokens.rs         # Comprehensive owned vs zero-copy
+│   ├── parsing_throughput.rs       # Quick daily validation
+│   ├── readme.md                   # Auto-updated results
+│   └── run_benchmarks.sh          # Shell script runner
+├── Cargo.toml                      # Benchmark features
+└── src/                           # Parser implementation
+```
+
+#### Automated Documentation Generation
+
+**Inherit unilang's documentation automation patterns:**
+
+```rust
+// In benchmarks/parsing_throughput.rs
+#[cfg(feature = "benchmarks")]
+fn update_benchmark_readme(results: &[BenchmarkResult]) -> Result<(String, String), String> {
+    let readme_path = "benchmarks/readme.md";
+    let old_content = fs::read_to_string(readme_path)?;
+    
+    let updated_content = generate_benchmark_tables(results)?;
+    fs::write(readme_path, &updated_content)?;
+    
+    Ok((old_content, updated_content))
+}
+
+#[cfg(feature = "benchmarks")]
+fn display_benchmark_diff(old_content: &str, new_content: &str) {
+    println!("\n📄 Diff for benchmarks/readme.md:");
+    println!("═══════════════════════════════════");
+    // Line-by-line diff implementation like unilang
+}
+```
+
+#### Standard Usage Commands
+
+**Match unilang's command patterns:**
+
 ```bash
-# Zero-copy specific performance testing - measure allocations per operation
-cargo bench zero_copy_tokens --features benchmarks
+# Quick daily validation (10-30 seconds)
+cargo bench parsing_throughput --features benchmarks
 
-# Memory allocation analysis - CRITICAL: track allocations per command, not total
-# Before: 10-28 allocations per command
-# After: 1 allocation per command (94% reduction target)
-valgrind --tool=massif cargo bench memory_allocation --features benchmarks
+# Comprehensive analysis (5-8 minutes)  
+cargo bench zero_copy_benchmark --features benchmarks
 
-# Correctness validation (owned vs borrowed output) - must be identical
-cargo test token_correctness --release --features benchmarks
+# All benchmarks
+cargo bench --features benchmarks
 
-# Memory safety validation - single threaded to catch lifetime issues
-cargo test --features benchmarks -- --test-threads=1
-
-# Address sanitizer validation (lifetime safety)
-RUSTFLAGS="-Z sanitizer=address" cargo test --features benchmarks --target x86_64-unknown-linux-gnu
+# Shell script alternative
+./benchmarks/run_benchmarks.sh
 
 # Integration testing with unilang
 cd ../../unilang
-cargo bench parser_integration --features benchmarks
+cargo bench --features benchmarks  # Should show improved parser performance
 ```
 
-#### Success Metrics Documentation
-Update `benchmark/readme.md` with:
-- Before/after token creation performance (ns per token)
-- Memory allocation reduction analysis (allocations per command)
-- Full parsing pipeline throughput improvements (commands/sec)
-- Memory safety validation results and lifetime management overhead
+#### Performance Validation Metrics
 
-#### Integration Testing with Unilang
+**Before Implementation (Owned Strings):**
+- **Token creation**: ~120ns per token (15 allocations)
+- **Full parsing**: ~25.3μs per command (10-28 allocations)
+- **Throughput**: ~40K commands/sec
+- **Memory**: High allocation pressure
+
+**After Implementation (Zero-Copy):**
+- **Token creation**: ~8ns per token (1 allocation - 15x improvement)
+- **Full parsing**: ~2.1μs per command (1 allocation - 12x improvement)  
+- **Throughput**: ~476K commands/sec (12x improvement)
+- **Memory**: 94% allocation reduction
+
+#### Statistical Rigor Requirements
+
+**Follow unilang's proven methodology:**
+
+- **Multiple repetitions**: 3+ runs per measurement
+- **Percentile analysis**: P50, P95, P99 latency tracking
+- **Power-of-10 scaling**: Test 10, 100, 1K, 10K token counts
+- **Allocation tracking**: Per-operation, not just total memory
+- **Diff display**: Show exactly what changed in documentation
+
+#### Memory Safety Validation
+
 ```bash
-# Test zero-copy parser impact on unilang
+# Address sanitizer validation (critical for lifetime safety)
+RUSTFLAGS="-Z sanitizer=address" cargo test --features benchmarks --target x86_64-unknown-linux-gnu
+
+# Memory allocation analysis  
+valgrind --tool=massif cargo bench parsing_throughput --features benchmarks
+
+# Lifetime validation (single-threaded to catch issues)
+cargo test --features benchmarks -- --test-threads=1
+
+# Correctness validation (owned vs borrowed must be identical)
+cargo test parsing_correctness --release --features benchmarks
+```
+
+#### Integration Impact Measurement
+
+**Validate unilang pipeline improvements:**
+
+```bash
+# Test parser improvements in unilang context
 cd ../../unilang
 
-# Run throughput benchmark with optimized parser
-cargo run --release --bin throughput_benchmark --features benchmarks
+# Quick throughput test (should show 8-12x parsing improvement)
+cargo bench throughput_benchmark --features benchmarks
 
-# Validate end-to-end pipeline improvements
-cargo run --release --bin comprehensive_benchmark --features benchmarks
+# Comprehensive analysis (should show reduced parser allocations)
+cargo bench comprehensive_benchmark --features benchmarks
 ```
 
-#### Expected Integration Impact
-- **Overall unilang pipeline**: 8-12x improvement in parsing-heavy workloads
+**Expected unilang integration results:**
+- **Overall pipeline**: 8-12x improvement in parsing-heavy workloads
+- **P99 parsing latency**: Under 6μs (vs 67μs before)
 - **Memory pressure**: 90%+ reduction in parser allocations
-- **Latency**: P99 parsing latency under 6μs (vs 67μs before)
+- **Throughput scaling**: Better performance at high command counts
 
 ### Dependencies
 

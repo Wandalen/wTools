@@ -193,6 +193,15 @@ impl< 'a > SemanticAnalyzer< 'a >
       {
         if !arg_def.attributes.optional
         {
+          // Check for interactive arguments that require special handling
+          if arg_def.attributes.interactive
+          {
+            return Err( Error::Execution( ErrorData::new(
+              "UNILANG_ARGUMENT_INTERACTIVE_REQUIRED".to_string(),
+              format!( "Interactive Argument Required: The argument '{}' is marked as interactive and must be provided interactively. The application should prompt the user for this value.", arg_def.name ),
+            )));
+          }
+          
           return Err( Error::Execution( ErrorData::new(
             "UNILANG_ARGUMENT_MISSING".to_string(),
             format!( "Argument Error: The required argument '{}' is missing. Please provide a value for this argument.", arg_def.name ),

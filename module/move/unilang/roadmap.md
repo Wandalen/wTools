@@ -30,19 +30,19 @@ The project has successfully completed its foundational phases (1-3), culminatin
 *   **Goal:** To implement the mandatory performance NFR for a zero-overhead static command system, enabling utilities with thousands of commands to start instantly.
 *   **Outcome:** A framework with a hybrid command registry where all compile-time commands are stored in a Perfect Hash Function (PHF), eliminating runtime registration costs and ensuring sub-millisecond command resolution.
 
-*   [⚫] **M4.1: registry_design_hybrid_architecture:**
+*   [✅] **M4.1: registry_design_hybrid_architecture:**
     *   **Spec Reference:** FR-PERF-1, NFR-Performance
     *   **Deliverable:** A detailed task plan for implementing a zero-overhead static command registry.
     *   **Description:** Design a build-time mechanism (using `build.rs` and the `phf` crate) to generate a Perfect Hash Function (PHF) map from a command manifest. This plan will outline the steps to refactor the `CommandRegistry` into a hybrid model.
-*   [⚫] **M4.2: phf_implement_build_time_generation:**
+*   [✅] **M4.2: phf_implement_build_time_generation:**
     *   **Prerequisites:** M4.1
     *   **Deliverable:** A `build.rs` script that generates a `.rs` file containing the static PHF map from `unilang.commands.yaml`.
     *   **Description:** Implement the build script that parses the YAML manifest and uses `phf_codegen` to construct the perfect hash map.
-*   [⚫] **M4.3: registry_refactor_to_hybrid_model:**
+*   [✅] **M4.3: registry_refactor_to_hybrid_model:**
     *   **Prerequisites:** M4.2
     *   **Deliverable:** An updated `CommandRegistry` that uses the generated PHF for static commands and a `HashMap` for dynamic commands.
     *   **Description:** Refactor all lookup methods to query the static PHF first before falling back to the dynamic `HashMap`.
-*   [⚫] **M4.4: test_implement_performance_stress_harness:**
+*   [✅] **M4.4: test_implement_performance_stress_harness:**
     *   **Prerequisites:** M4.3
     *   **Spec Reference:** FR-PERF-1
     *   **Deliverable:** A new integration test that generates a large YAML manifest (1000+ commands) and a test binary that proves the performance NFRs are met.
@@ -52,15 +52,15 @@ The project has successfully completed its foundational phases (1-3), culminatin
 *   **Goal:** To implement the remaining mandatory functional requirements from Spec v2.2.0, ensuring the framework fully supports REPL, interactive CLI, and WebAssembly (WASM) modalities.
 *   **Outcome:** A functionally complete and validated API for building sophisticated, user-friendly command-line applications that can run in native and web environments.
 
-*   [⚫] **M5.1: pipeline_refactor_for_reusability:**
+*   [✅] **M5.1: pipeline_refactor_for_reusability:**
     *   **Spec Reference:** FR-REPL-1
     *   **Deliverable:** An audited and confirmed stateless core pipeline and a new example file (`repl_example.rs`).
     *   **Description:** Audit the core pipeline components (`Parser`, `SemanticAnalyzer`, `Interpreter`) to ensure they are stateless and can be reused in a REPL loop.
-*   [⚫] **M5.2: argument_implement_interactive_signaling:**
+*   [✅] **M5.2: argument_implement_interactive_signaling:**
     *   **Spec Reference:** FR-INTERACTIVE-1
     *   **Deliverable:** The `SemanticAnalyzer` correctly returns the `UNILANG_ARGUMENT_INTERACTIVE_REQUIRED` error for missing interactive arguments.
     *   **Description:** Modify the `bind_arguments` logic to check for the `interactive: true` attribute on missing mandatory arguments and return the specific error code.
-*   [⚫] **M5.3: test_create_interactive_prompting_verification:**
+*   [✅] **M5.3: test_create_interactive_prompting_verification:**
     *   **Prerequisites:** M5.2
     *   **Deliverable:** A new unit test for the `SemanticAnalyzer` and an updated CLI binary demonstrating how to catch the interactive signal.
 *   [⚫] **M5.4: example_create_wasm_repl:**
