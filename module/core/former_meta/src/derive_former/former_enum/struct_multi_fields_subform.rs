@@ -33,7 +33,7 @@
 //! **Solution**: Systematic generic parameter preservation through all generated components
 //! **Prevention**: Uses `GenericsRef` for consistent generic parameter handling across all generated items
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! impl MyEnum {
 //!     fn variant() -> VariantFormer {  // ❌ Generic parameters lost
@@ -55,7 +55,7 @@
 //! **Solution**: Automatic Optional<T> wrapping with proper unwrap_or_default() handling in preform
 //! **Prevention**: Generated storage always uses `Option<FieldType>` with safe defaults
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! struct VariantFormerStorage {
 //!     field1: String,  // ❌ Should be Option<String>
@@ -90,7 +90,7 @@
 //! ## Generated Code Architecture
 //!
 //! ### Storage Infrastructure
-//! ```rust
+//! ```rust,ignore
 //! pub struct EnumVariantFormerStorage<T, U> 
 //! where T: Clone, U: Default
 //! {
@@ -100,7 +100,7 @@
 //! ```
 //!
 //! ### Former Definition System
-//! ```rust
+//! ```rust,ignore
 //! pub struct EnumVariantFormerDefinitionTypes<T, U> { /* ... */ }
 //! pub struct EnumVariantFormerDefinition<T, U> { /* ... */ }
 //! 
@@ -112,7 +112,7 @@
 //! ```
 //!
 //! ### Builder Implementation
-//! ```rust
+//! ```rust,ignore
 //! impl<T, U> EnumVariantFormer<T, U> {
 //!     pub fn field1(mut self, value: impl Into<T>) -> Self { /* ... */ }
 //!     pub fn field2(mut self, value: impl Into<U>) -> Self { /* ... */ }
@@ -155,7 +155,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// - **Context Preservation**: Proper context handling for advanced Former scenarios
 ///
 /// ## Generated Method Signature
-/// ```rust
+/// ```rust,ignore
 /// impl<T, U> Enum<T, U> {
 ///     pub fn variant() -> VariantFormer<T, U> { /* ... */ }
 /// }

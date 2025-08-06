@@ -146,7 +146,7 @@ use crate::derive_former::attribute_validation::{validate_variant_attributes, ge
 /// - **Naming Consistency**: Systematic snake_case conversion for method naming
 ///
 /// ## Generated Method Signature
-/// ```rust
+/// ```rust,ignore
 /// impl<T, U> Enum<T, U> where T: Clone, U: Default {
 ///     pub fn variant() -> Enum<T, U> {
 ///         Enum::Variant

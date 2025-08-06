@@ -33,7 +33,7 @@
 //! **Solution**: Specialized single-field storage generation with proper Optional<T> wrapping
 //! **Prevention**: Optimized single-field handling while maintaining Former pattern consistency
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! struct VariantFormerStorage {
 //!     field: String,  // ❌ Should be Option<String>
@@ -67,7 +67,7 @@
 //! **Solution**: Generated setter uses `impl Into<FieldType>` for maximum flexibility
 //! **Prevention**: Type-safe conversion handling with automatic type coercion
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! impl VariantFormer {
 //!     pub fn field(mut self, value: String) -> Self {  // ❌ Too restrictive
@@ -100,7 +100,7 @@
 //! ## Generated Code Architecture
 //!
 //! ### Single-Field Storage Infrastructure
-//! ```rust
+//! ```rust,ignore
 //! pub struct EnumVariantFormerStorage<T> 
 //! where T: Default
 //! {
@@ -116,7 +116,7 @@
 //! ```
 //!
 //! ### Builder Implementation
-//! ```rust
+//! ```rust,ignore
 //! impl<T> EnumVariantFormer<T> {
 //!     pub fn field(mut self, value: impl Into<T>) -> Self {
 //!         self.storage.field = Some(value.into());
@@ -163,7 +163,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// - **Complete Integration**: Full Former trait hierarchy implementation for ecosystem compatibility
 ///
 /// ## Generated Method Signature
-/// ```rust
+/// ```rust,ignore
 /// impl<T> Enum<T> {
 ///     pub fn variant() -> VariantFormer<T> { /* ... */ }
 /// }

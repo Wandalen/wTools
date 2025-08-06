@@ -33,7 +33,7 @@
 //! **Solution**: Compile-time validation that requires explicit `#[scalar]` attribute
 //! **Prevention**: Clear error messages enforce explicit attribute usage for clarity
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! Variant {},  // ❌ Ambiguous - requires explicit attribute
 //!
@@ -60,7 +60,7 @@
 //! **Solution**: Complete generic parameter preservation through `GenericsRef` infrastructure
 //! **Prevention**: Ensures all generic constraints are properly maintained
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! impl MyEnum {
 //!     fn variant() -> MyEnum {  // ❌ Missing generic parameters
@@ -85,7 +85,7 @@
 //! ## Generated Code Architecture
 //!
 //! ### Direct Struct Constructor Pattern
-//! ```rust
+//! ```rust,ignore
 //! impl<T, U> Enum<T, U> where T: Clone, U: Default {
 //!     pub fn variant() -> Enum<T, U> {
 //!         Enum::Variant {}
@@ -132,7 +132,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// - **Naming Consistency**: Systematic snake_case conversion for method naming
 ///
 /// ## Generated Method Signature
-/// ```rust
+/// ```rust,ignore
 /// impl<T, U> Enum<T, U> where T: Clone, U: Default {
 ///     pub fn variant() -> Enum<T, U> {
 ///         Enum::Variant {}

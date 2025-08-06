@@ -33,14 +33,14 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// ## Generated Strategies
 ///
 /// ### For Former-implementing types:
-/// ```rust
+/// ```rust,ignore
 /// impl<T: Former> Enum<T> {
 ///     pub fn variant() -> T::Former { /* delegate to field's Former */ }
 /// }
 /// ```
 ///
 /// ### For primitive types:
-/// ```rust
+/// ```rust,ignore
 /// impl<T> Enum<T> {
 ///     pub fn variant() -> VariantFormer<T> { /* custom variant former */ }
 /// }

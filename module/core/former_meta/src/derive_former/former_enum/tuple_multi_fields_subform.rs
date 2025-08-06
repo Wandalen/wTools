@@ -36,7 +36,7 @@
 //! **Issue**: When enum has no generics, generated `PhantomData< >` with empty angle brackets
 //! **Root Cause**: Generic parameter expansion produces empty tokens for non-generic enums
 //! **Solution**: Conditional PhantomData type based on presence of generics:
-//! ```rust
+//! ```rust,ignore
 //! let phantom_data_type = if ctx.generics.type_params().next().is_some() {
 //!   quote! { std::marker::PhantomData< #ty_generics > }
 //! } else {
@@ -76,7 +76,7 @@
 //! **Solution**: Automatic generation of indexed field names (`field0`, `field1`, etc.) and setters (`_0`, `_1`, etc.)
 //! **Prevention**: Consistent indexing pattern eliminates field access errors and naming conflicts
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! struct VariantFormerStorage {
 //!     field1: Option<String>,  // ❌ Should be field0 for first tuple element
@@ -96,7 +96,7 @@
 //! **Solution**: Specialized preform implementation that maintains field order and provides safe defaults
 //! **Prevention**: Automated tuple construction with proper field ordering and default handling
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! fn preform(self) -> Self::Preformed {
 //!     let field1 = self.field1.unwrap_or_default();  // ❌ Wrong field order
@@ -133,7 +133,7 @@
 //! ## Generated Code Architecture
 //!
 //! ### Indexed Storage Infrastructure
-//! ```rust
+//! ```rust,ignore
 //! pub struct EnumVariantFormerStorage<T, U, V> 
 //! where T: Default, U: Default, V: Default
 //! {
@@ -155,7 +155,7 @@
 //! ```
 //!
 //! ### Builder Implementation with Indexed Setters
-//! ```rust
+//! ```rust,ignore
 //! impl<T, U, V> EnumVariantFormer<T, U, V> {
 //!     pub fn _0(mut self, src: impl Into<T>) -> Self {
 //!         self.storage.field0 = Some(src.into());
@@ -177,7 +177,7 @@
 //! ```
 //!
 //! ### Custom End Handler
-//! ```rust
+//! ```rust,ignore
 //! impl<T, U, V> FormingEnd<DefinitionTypes> for EnumVariantEnd<T, U, V> {
 //!     fn call(&self, sub_storage: Storage, _context: Option<()>) -> Enum<T, U, V> {
 //!         let (field0, field1, field2) = StoragePreform::preform(sub_storage);

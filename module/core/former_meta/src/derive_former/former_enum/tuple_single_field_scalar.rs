@@ -32,7 +32,7 @@
 //! **Solution**: Generated parameter with Into<T> conversion support for maximum flexibility
 //! **Prevention**: Automated parameter handling with type safety guarantees
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! impl MyEnum {
 //!     fn variant(field: String) -> Self {  // ❌ Fixed type, no generics, no Into<T>
@@ -66,7 +66,7 @@
 //! **Solution**: Parameter accepts `impl Into<FieldType>` for maximum flexibility
 //! **Prevention**: Type-safe conversion handling with automatic type coercion
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! fn variant(s: String) -> MyEnum {  // ❌ Only accepts String
 //!     MyEnum::Variant(s)
@@ -87,7 +87,7 @@
 //! ## Generated Code Architecture
 //!
 //! ### Direct Constructor Pattern
-//! ```rust
+//! ```rust,ignore
 //! impl<T> Enum<T> where T: Clone {
 //!     pub fn variant(_0: impl Into<T>) -> Enum<T> {
 //!         Enum::Variant(_0.into())
@@ -134,7 +134,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// - **Naming Consistency**: Maintains tuple field naming conventions
 ///
 /// ## Generated Method Signature
-/// ```rust
+/// ```rust,ignore
 /// impl<T> Enum<T> where T: Clone {
 ///     pub fn variant(_0: impl Into<T>) -> Enum<T> {
 ///         Enum::Variant(_0.into())

@@ -33,7 +33,7 @@
 //! **Solution**: Generated constructor using proper struct field naming with Into<T> conversion support
 //! **Prevention**: Automated struct field parameter generation with type safety guarantees
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! impl MyEnum {
 //!     fn variant(field1: String, field2: i32) -> Self {  // ❌ Positional parameters for struct variant
@@ -82,7 +82,7 @@
 //! ## Generated Code Architecture
 //!
 //! ### Direct Struct Constructor Pattern
-//! ```rust
+//! ```rust,ignore
 //! impl<T, U, V> Enum<T, U, V> {
 //!     pub fn variant(
 //!         field1: impl Into<T>,

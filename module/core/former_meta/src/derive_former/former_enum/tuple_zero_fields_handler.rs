@@ -32,7 +32,7 @@
 //! **Solution**: Compile-time validation that rejects `#[subform_scalar]` on zero-field tuple variants
 //! **Prevention**: Clear error messages prevent invalid attribute usage
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! #[subform_scalar]  // ❌ Invalid for zero-field variants
 //! Variant(),
@@ -53,7 +53,7 @@
 //! **Solution**: Complete generic parameter preservation through `GenericsRef` infrastructure
 //! **Prevention**: Ensures all generic constraints are properly maintained
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! impl MyEnum {
 //!     fn variant() -> MyEnum {  // ❌ Missing generic parameters
@@ -84,7 +84,7 @@
 //! ## Generated Code Architecture
 //!
 //! ### Direct Constructor Pattern
-//! ```rust
+//! ```rust,ignore
 //! impl<T, U> Enum<T, U> where T: Clone, U: Default {
 //!     pub fn variant() -> Enum<T, U> {
 //!         Enum::Variant()
@@ -131,7 +131,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// - **Naming Consistency**: Systematic snake_case conversion for method naming
 ///
 /// ## Generated Method Signature
-/// ```rust
+/// ```rust,ignore
 /// impl<T, U> Enum<T, U> where T: Clone, U: Default {
 ///     pub fn variant() -> Enum<T, U> {
 ///         Enum::Variant()

@@ -32,7 +32,7 @@
 //! **Solution**: Systematic parameter generation with Into<T> conversion support
 //! **Prevention**: Automated parameter list construction with type safety guarantees
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! impl MyEnum {
 //!     fn variant(field0: String, field1: i32) -> Self {  // ❌ Fixed types, no generics
@@ -93,7 +93,7 @@
 //! ## Generated Code Architecture
 //!
 //! ### Direct Constructor Pattern
-//! ```rust
+//! ```rust,ignore
 //! impl<T, U, V> Enum<T, U, V> {
 //!     pub fn variant(
 //!         _0: impl Into<T>,
@@ -106,7 +106,7 @@
 //! ```
 //!
 //! ### Standalone Constructor (Optional)
-//! ```rust
+//! ```rust,ignore
 //! // Generated when #[standalone_constructors] is present
 //! pub fn variant(
 //!     _0: impl Into<T>,

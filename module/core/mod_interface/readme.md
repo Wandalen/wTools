@@ -54,7 +54,7 @@ This example shows a parent module using a `child` layer, demonstrating how item
 
 For a module to be used as a layer, it must contain the necessary exposure levels (`private`, `own`, `orphan`, `exposed`, `prelude`). The `mod_interface!` macro helps generate these.
 
-```rust
+```rust,ignore
 use mod_interface::mod_interface;
 
 // Define a module named `child`.
@@ -150,7 +150,7 @@ crate::mod_interface!
 <details>
 <summary>Click to see the code expanded by the macro</summary>
 
-```rust
+```rust,ignore
 use mod_interface::mod_interface;
 
 // Define a module named `child`

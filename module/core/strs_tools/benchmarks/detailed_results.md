@@ -1,12 +1,11 @@
-# Detailed Benchmark Results
+# Benchmark Results Summary
 
-*Automatically generated from benchmark execution*
+*Automatically generated*
 
-## All Benchmark Results
+## Performance Improvements
 
-| Benchmark | Scalar Time | SIMD Time | Improvement | Scalar Throughput | SIMD Throughput |
-|-----------|-------------|-----------|-------------|-------------------|------------------|
-| unknown | - | - | - | - | - |
+| Test | Improvement |
+|------|-------------|
 
 ---
-*Generated: 2025-08-06 07:42 UTC*
+*Generated: 2025-08-06 08:34 UTC*

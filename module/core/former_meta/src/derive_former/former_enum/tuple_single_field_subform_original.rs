@@ -33,7 +33,7 @@
 //! **Solution**: Automatic Former trait resolution with proper generic parameter propagation
 //! **Prevention**: Generated code ensures field type's Former trait is properly accessible
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! impl MyEnum {
 //!     fn variant() -> String::Former {  // ❌ Incorrect Former trait usage
@@ -63,7 +63,7 @@
 //! **Solution**: Automatic generation of definition type names based on field type
 //! **Prevention**: Consistent definition type resolution eliminates naming mismatches
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! let former = MyFieldType::former();  // ❌ No custom end handling
 //!
@@ -87,7 +87,7 @@
 //! ## Generated Code Architecture
 //!
 //! ### Custom End Handler
-//! ```rust
+//! ```rust,ignore
 //! #[derive(Default, Debug)]
 //! pub struct EnumVariantEnd<T> 
 //! where T: Former
@@ -104,7 +104,7 @@
 //! ```
 //!
 //! ### End Definition Types
-//! ```rust
+//! ```rust,ignore
 //! impl<T> FormerDefinitionTypes for EnumVariantEndDefinitionTypes<T> {
 //!     type Storage = <TFormerDefinition as FormerDefinition>::Storage;
 //!     type Context = <TFormerDefinition as FormerDefinition>::Context;
@@ -113,7 +113,7 @@
 //! ```
 //!
 //! ### Generated Method
-//! ```rust
+//! ```rust,ignore
 //! impl<T> Enum<T> {
 //!     pub fn variant() -> <T as EntityToFormer<TFormerDefinition>>::Former {
 //!         <T as EntityToFormer<TFormerDefinition>>::Former::former_begin(
@@ -157,7 +157,7 @@ use convert_case::Case;
 /// - **Generic Preservation**: Complete generic parameter maintenance through Former chain
 ///
 /// ## Generated Method Signature
-/// ```rust
+/// ```rust,ignore
 /// impl<T> Enum<T> {
 ///     pub fn variant() -> <T as EntityToFormer<TFormerDefinition>>::Former {
 ///         // Returns field type's former configured with custom end
@@ -166,7 +166,7 @@ use convert_case::Case;
 /// ```
 ///
 /// ## Generated End Handler
-/// ```rust
+/// ```rust,ignore
 /// impl<T> FormingEnd<EndDefinitionTypes<T>> for EnumVariantEnd<T> {
 ///     fn call(&self, sub_storage: Storage, _context: Option<Context>) -> Enum<T> {
 ///         let inner = StoragePreform::preform(sub_storage);
@@ -201,7 +201,7 @@ use convert_case::Case;
 /// **Reality**: Most single-field tuple variants use primitive types
 /// **Needed**: Auto-detection of Former capability or fallback to scalar
 /// **Current Routing**:
-/// ```rust
+/// ```rust,ignore
 /// 1 => {
 ///   if ctx.variant_attrs.scalar.is_some() {
 ///     tuple_single_field_scalar::handle(&mut ctx)?;  // WORKS

@@ -36,14 +36,14 @@ use convert_case::Case;
 /// implementing the same pattern as struct_single_field_subform but adapted for tuple field access.
 ///
 /// ## Generated Method Signature
-/// ```rust
+/// ```rust,ignore
 /// impl<T> Enum<T> {
 ///     pub fn variant() -> VariantFormer<T> { /* ... */ }
 /// }
 /// ```
 ///
 /// ## Generated Setter Method
-/// ```rust
+/// ```rust,ignore
 /// impl<T> VariantFormer<T> {
 ///     pub fn _0(self, src: impl Into<T>) -> Self { /* ... */ }
 /// }

@@ -128,7 +128,7 @@ fn generate_delegated_former(
 /// ```
 ///
 /// ## Generated Setter Method
-/// ```rust
+/// ```rust,ignore
 /// impl<T> VariantFormer<T> {
 ///     pub fn _0(self, src: impl Into<T>) -> Self { /* ... */ }
 /// }
