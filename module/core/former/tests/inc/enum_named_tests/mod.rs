@@ -129,14 +129,14 @@ mod comprehensive_struct_derive; // COMPREHENSIVE REPLACEMENT: Tests multiple sc
 // // mod enum_named_fields_named_only_test;
 // // mod standalone_constructor_named_derive;
 // // mod standalone_constructor_named_only_test;
-// // mod standalone_constructor_args_named_derive;
+// mod standalone_constructor_args_named_derive; // BLOCKED: E0119 trait conflicts - Former derive macro generates duplicate trait implementations
 // // mod standalone_constructor_args_named_manual; // Removed
 // // mod standalone_constructor_args_named_only_test;
 // // pub mod compile_fail;
 
 mod standalone_constructor_args_named_single_manual; // Added - now contains both variants
-// mod standalone_constructor_args_named_multi_manual; // Disabled - variant name conflicts (MultiStructArgs vs StructVariantArgs) and missing functions
-// mod enum_named_fields_named_manual; // Disabled - name conflict with derive test (EnumWithNamedFieldsManual vs EnumWithNamedFields)
+// mod standalone_constructor_args_named_multi_manual; // Disabled - redundant, single_manual file already provides both struct_variant_args AND multi_struct_args functions
+mod enum_named_fields_named_manual; // AGGRESSIVE ENABLE: Testing if name conflict is fixable
 // mod enum_named_fields_named_derive; // Disabled - confirmed trait conflicts (E0119 conflicting implementations)
 // mod minimal_struct_zero_test; // Disabled - redundant, covered by comprehensive_struct_derive zero_field_struct_test
 // mod struct_zero_derive_test; // Disabled - redundant, covered by comprehensive_struct_derive zero_field_struct_test

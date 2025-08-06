@@ -105,7 +105,7 @@ mod name_collisions;
 
 // mod parametrized_dyn_manual; // Disabled - CATEGORY 6: lifetime issue with borrowed data escaping
 
-// mod parametrized_field;  // BLOCKED: Undeclared lifetime 'child in derive macro + ?Sized trait bound issues
+// mod parametrized_field; // BLOCKED: Former derive macro cannot handle lifetimes + ?Sized traits (E0261, E0277, E0309)
 mod test_lifetime_only;
 mod test_lifetime_minimal;
 mod minimal_lifetime;
