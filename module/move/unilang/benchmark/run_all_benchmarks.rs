@@ -3,6 +3,7 @@
 //! 
 //! Usage: cargo test run_all_benchmarks --release -- --nocapture
 
+#[cfg(feature = "benchmarks")]
 use std::process::Command;
 use std::time::{Duration, Instant};
 use std::fs;
