@@ -15,11 +15,13 @@ repository = "https://github.com/Wandalen/wTools/tree/master/module/move/unilang
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/unilang_parser"
 
 [features]
-default = []
+default = ["simd"]
+simd = []  # SIMD optimizations enabled by default
+no_simd = []  # Feature to disable SIMD optimizations
 no_std = []
 
 [dependencies]
-strs_tools = { workspace = true, features = ["string_parse_request", "string_split"] }
+strs_tools = { workspace = true, features = ["string_parse_request", "string_split", "simd"] }
 error_tools = { workspace = true, features = [ "enabled", "error_typed" ] }
 iter_tools = { workspace = true, features = [ "enabled" ] }
 

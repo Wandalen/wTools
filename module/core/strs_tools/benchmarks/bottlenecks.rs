@@ -90,6 +90,7 @@ fn bench_multi_delimiter_bottleneck( c: &mut Criterion )
   }
   
   group.finish();
+  update_benchmark_docs();
 }
 
 /// Benchmark 2: Large input processing (scalability bottleneck)
@@ -169,6 +170,7 @@ fn bench_large_input_bottleneck( c: &mut Criterion )
   }
   
   group.finish();
+  update_benchmark_docs();
 }
 
 /// Benchmark 3: Pattern complexity impact (algorithmic bottleneck)

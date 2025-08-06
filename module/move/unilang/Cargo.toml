@@ -25,10 +25,22 @@ features = [ "full", "error_tools/enabled", "strs_tools/enabled", "mod_interface
 all-features = false
 
 [features]
-default = [ "enabled" ]
-full = [ "enabled", "on_unknown_suggest" ]
+default = [ "enabled", "simd" ]
+full = [ "enabled", "on_unknown_suggest", "simd" ]
 enabled = []
-benchmarks = [ "clap", "pico-args" ]
+benchmarks = [ "clap", "pico-args", "simd" ]
+
+# Performance optimizations - SIMD enabled by default for maximum performance
+# This enables:
+# - SIMD JSON parsing (simd-json: 4-25x faster than serde_json)
+# - SIMD string operations in strs_tools (memchr, aho-corasick, bytecount)
+# - SIMD tokenization in unilang_parser
+simd = [ "simd-json", "unilang_parser/simd" ]  # Enable SIMD optimizations
+
+# Feature to disable SIMD optimizations if needed (for compatibility or debugging)
+# Usage: cargo build --no-default-features --features enabled
+# Or: cargo build --features no_simd
+no_simd = [ "unilang_parser/no_simd" ]  # Feature to disable SIMD optimizations
 
 # This configuration suggests an action to be done when the command is unknown. In this case, when an unknown command is encountered, the system might suggest alternatives
 on_unknown_suggest = [ "dep:textdistance" ]
@@ -47,13 +59,16 @@ error_tools = { workspace = true, features = [ "enabled", "error_typed", "error_
 mod_interface = { workspace = true, features = [ "enabled" ] }
 iter_tools = { workspace = true, features = [ "enabled" ] }
 former = { workspace = true, features = [ "enabled", "derive_former" ] }
-unilang_parser = { workspace = true } # Temporarily removed due to Cargo resolution issues. See module/move/unilang_parser/task.md
+unilang_parser = { workspace = true } # SIMD features controlled by main unilang features
 
 ## external
 log = "0.4"
 #closure = "0.3"
 textdistance = { version = "1.0", optional = true } # fuzzy commands search
 indexmap = "2.2.6"
+
+# Performance optimization dependencies
+simd-json = { version = "0.13", optional = true } # SIMD-optimized JSON parsing
 
 # Benchmark dependencies (needed for benchmark binaries)
 clap = { version = "4.4", optional = true }
