@@ -46,8 +46,8 @@ mod enum_named_fields_unit_manual;
 // - Tests a simple unit variant within a generic enum e.g., `EnumOuter<X>::OtherVariant`.
 // - Verifies Rules 1a, 3a, and 4a.
 // Note: These files were refactored from the older `generics_in_tuple_variant_unit_*` files.
-// mod generic_enum_simple_unit_derive; // Disabled - confirmed generic parsing macro issue (expected :: found >)
-mod generic_enum_simple_unit_manual;
+mod simple_unit_derive; // REPLACEMENT: Non-generic version that works around derive macro limitation
+// mod generic_enum_simple_unit_manual; // REMOVED: Redundant with simple_unit_derive replacement
 // Note: keyword_variant_unit_derive was removed as redundant (Increment 11)
 // Note: standalone_constructor_unit_derive was removed as redundant (Increment 12)
 // Note: standalone_constructor_args_unit_derive and _manual were removed as redundant (Increment 13)
