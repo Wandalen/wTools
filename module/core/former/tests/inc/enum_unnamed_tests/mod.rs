@@ -73,7 +73,7 @@ mod tuple_multi_standalone_args_manual; // Re-enabled - simple manual enum with 
 // // mod tuple_multi_standalone_args_only_test; // Include pattern, not standalone
 mod tuple_multi_standalone_derive; // Re-enabled - testing standalone constructor functionality
 mod tuple_multi_standalone_manual; // Re-enabled - let's test this manual implementation
-// EMERGENCY DISABLE: usecase1_derive (E0599 missing method errors - delegation architecture required)
+// EMERGENCY DISABLE: usecase1_derive (E0599 missing method errors - delegation architecture still required)
 mod usecase_replacement_derive; // REPLACEMENT: Simplified usecase functionality that works with current Former enum capabilities
 // REMOVED: tuple_multi_standalone_only_test (include pattern file, not standalone)
 
@@ -82,9 +82,9 @@ mod usecase_manual_replacement_derive; // REPLACEMENT: Manual-style usecase func
 mod enum_named_fields_unnamed_derive; // Re-enabled - fixed inner doc comments issue
 mod enum_named_fields_unnamed_manual; // Re-enabled - simpler test case without complex Former types
 // REMOVED: enum_named_fields_unnamed_only_test (include pattern file, not standalone)
-// EMERGENCY DISABLE: generics_in_tuple_variant_tuple_derive (Former derive fundamental limitation confirmed)
+// EMERGENCY DISABLE: generics_in_tuple_variant_tuple_derive (Former derive fundamental limitation - cannot parse generic enum syntax)
 mod generics_replacement_tuple_derive; // REPLACEMENT: Non-generic version providing same functionality coverage
-// EMERGENCY DISABLE: generics_in_tuple_variant_tuple_manual (E0437 trait member errors)
+// EMERGENCY DISABLE: generics_in_tuple_variant_tuple_manual (E0437 trait member errors - outdated Former API)
 mod keyword_variant_tuple_derive; // Re-enabled - testing raw identifier handling fix
 // REMOVED: keyword_variant_tuple_only_test (include pattern file, not standalone)
 mod standalone_constructor_tuple_derive; // Re-enabled - fixed inner doc comment issues

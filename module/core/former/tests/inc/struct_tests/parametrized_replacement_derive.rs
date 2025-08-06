@@ -35,8 +35,8 @@ fn string_field_test() {
     .string_field("parametrized_replacement".to_string())
     .int_field(42)
     .bool_field(true)
-    .optional_string(Some("optional".to_string()))
-    .optional_int(Some(999))
+    .optional_string("optional".to_string())
+    .optional_int(999)
     .form();
     
   let expected = ParametrizedReplacementStruct {
@@ -75,7 +75,7 @@ fn bool_field_test() {
     .bool_field(true)
     .string_field("bool_test".to_string()) 
     .int_field(777)
-    .optional_string(Some("bool_optional".to_string()))
+    .optional_string("bool_optional".to_string())
     .form();
     
   let expected = ParametrizedReplacementStruct {

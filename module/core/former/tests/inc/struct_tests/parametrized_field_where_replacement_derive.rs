@@ -53,7 +53,7 @@ fn parametrized_field_where_string_test() {
   let got = StringParametrizedParent::former()
     .description("string_param_test".to_string())
     .child_data(child.clone())
-    .count(1)
+    .count(1usize)
     .form();
     
   let expected = StringParametrizedParent {
@@ -76,7 +76,7 @@ fn parametrized_field_where_int_test() {
   let got = IntParametrizedParent::former()
     .description("int_param_test".to_string())
     .child_data(child.clone())
-    .count(2)
+    .count(2usize)
     .form();
     
   let expected = IntParametrizedParent {
@@ -99,7 +99,7 @@ fn parametrized_field_where_generic_string_test() {
   let got = ParametrizedParent::former()
     .description("generic_string_test".to_string())
     .child_data(child.clone())
-    .count(3)
+    .count(3usize)
     .form();
     
   let expected = ParametrizedParent {
@@ -122,7 +122,7 @@ fn parametrized_field_where_generic_int_test() {
   let got = ParametrizedParent::former()
     .description("generic_int_test".to_string())
     .child_data(child.clone())
-    .count(0)
+    .count(0usize)
     .form();
     
   let expected = ParametrizedParent {
@@ -146,7 +146,7 @@ fn parametrized_field_where_nested_building_test() {
         .active(true)
         .form()
     )
-    .count(5)
+    .count(5usize)
     .form();
     
   assert_eq!(got.description, "nested_building");
@@ -181,19 +181,19 @@ fn parametrized_field_where_complex_generics_test() {
   let string_parent = ParametrizedParent::former()
     .description("string_complex".to_string())
     .child_data(string_child.clone())
-    .count(1)
+    .count(1usize)
     .form();
     
   let int_parent = ParametrizedParent::former()
     .description("int_complex".to_string())
     .child_data(int_child.clone())
-    .count(2)
+    .count(2usize)
     .form();
     
   let bool_parent = ParametrizedParent::former()
     .description("bool_complex".to_string())
     .child_data(bool_child.clone())
-    .count(3)
+    .count(3usize)
     .form();
   
   // Verify all parametrized types work correctly
@@ -221,7 +221,7 @@ fn parametrized_field_where_comprehensive_test() {
   let vec_parent = ParametrizedParent::former()
     .description("vec_param_test".to_string())
     .child_data(vec_child.clone())
-    .count(10)
+    .count(10usize)
     .form();
     
   assert_eq!(vec_parent.child_data.value, vec![1, 2, 3, 4, 5]);
@@ -238,7 +238,7 @@ fn parametrized_field_where_comprehensive_test() {
   let option_parent = ParametrizedParent::former()
     .description("option_param_test".to_string())
     .child_data(option_child.clone())
-    .count(99)
+    .count(99usize)
     .form();
     
   assert_eq!(option_parent.child_data.value, Some("optional_value".to_string()));

@@ -106,22 +106,22 @@ mod name_collisions;
 // EMERGENCY DISABLE: parametrized_dyn_manual (E0521 borrowed data escapes errors)
 
 // REMOVED: parametrized_field (BLOCKED - have parametrized_replacement_derive replacement)
-// EMERGENCY DISABLE: parametrized_replacement_derive (E0277 trait bound errors)
+mod parametrized_replacement_derive; // ENABLE ATTEMPT: Test if trait bound errors are resolved
 mod test_lifetime_only;
 mod test_lifetime_minimal;
 mod minimal_lifetime;
 mod debug_lifetime_minimal;
 mod debug_simple_lifetime;
 // REMOVED: parametrized_field_where (BLOCKED - have parametrized_field_where_replacement_derive replacement)
-// EMERGENCY DISABLE: parametrized_field_where_replacement_derive (E0277 trait bound errors)
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod parametrized_field_where_replacement_derive; // ENABLE ATTEMPT: Test if trait bound errors are resolved
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod parametrized_struct_imm;  // Re-enabled to test fix
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod parametrized_struct_manual;
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // REMOVED: parametrized_struct_where (BLOCKED - have parametrized_struct_where_replacement_derive replacement)
-// EMERGENCY DISABLE: parametrized_struct_where_replacement_derive (E0277 trait bound errors)
-// EMERGENCY DISABLE: parametrized_struct_replacement_derive (E0277 trait bound errors)
+mod parametrized_struct_where_replacement_derive; // ENABLE ATTEMPT: Test if trait bound errors are resolved
+// EMERGENCY DISABLE: parametrized_struct_replacement_derive (E0277 EntityToStorage trait bounds - HashMap subform collections not supported)
 
 mod parametrized_slice;
 mod parametrized_slice_manual;
@@ -203,7 +203,7 @@ mod subform_scalar_name;
 mod subform_entry;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // REMOVED: subform_entry_manual (BLOCKED - have subform_entry_manual_replacement_derive replacement)
-// EMERGENCY DISABLE: subform_entry_manual_replacement_derive (E0599 missing method errors)
+// EMERGENCY DISABLE: subform_entry_manual_replacement_derive (E0599 missing method errors - HashMap subform entry not supported)
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry_named;
@@ -228,7 +228,7 @@ mod subform_entry_hashmap_custom;
 mod subform_all;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // REMOVED: subform_all_parametrized (BLOCKED - have subform_all_replacement_derive replacement)
-// EMERGENCY DISABLE: subform_all_replacement_derive (E0277 trait bound errors)
+// EMERGENCY DISABLE: subform_all_replacement_derive (E0277 EntityToStorage/HashMap subform issues - fundamental Former limitation)
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_all_private;

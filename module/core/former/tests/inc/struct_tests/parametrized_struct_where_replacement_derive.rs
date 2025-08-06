@@ -115,9 +115,9 @@ impl Default for IntParametrizedChild {
 
 #[test]
 fn parametrized_struct_where_simple_property_test() {
-  let prop = SimpleProperty::new("test_prop", 42);
+  let prop = SimpleProperty::new("test_prop", 42isize);
   assert_eq!(prop.name, "test_prop");
-  assert_eq!(prop.code, 42);
+  assert_eq!(prop.code, 42isize);
   
   let prop2 = SimpleProperty::new("another_prop".to_string(), -1_isize);
   assert_eq!(prop2.name, "another_prop");
@@ -126,9 +126,9 @@ fn parametrized_struct_where_simple_property_test() {
 
 #[test]
 fn parametrized_struct_where_string_property_test() {
-  let string_prop = ParametrizedProperty::<String>::new("string_prop".to_string(), 100);
+  let string_prop = ParametrizedProperty::<String>::new("string_prop".to_string(), 100isize);
   assert_eq!(string_prop.name, "string_prop");
-  assert_eq!(string_prop.code, 100);
+  assert_eq!(string_prop.code, 100isize);
   
   let got = StringParametrizedChild::former()
     .name("string_child".to_string())
@@ -147,9 +147,9 @@ fn parametrized_struct_where_string_property_test() {
 
 #[test]
 fn parametrized_struct_where_int_property_test() {
-  let int_prop = ParametrizedProperty::<i32>::new(123, 200);
+  let int_prop = ParametrizedProperty::<i32>::new(123, 200isize);
   assert_eq!(int_prop.name, 123);
-  assert_eq!(int_prop.code, 200);
+  assert_eq!(int_prop.code, 200isize);
   
   let got = IntParametrizedChild::former()
     .name("int_child".to_string())
@@ -168,7 +168,7 @@ fn parametrized_struct_where_int_property_test() {
 
 #[test]
 fn parametrized_struct_where_generic_child_test() {
-  let string_prop = ParametrizedProperty::<String>::new("generic_prop".to_string(), 300);
+  let string_prop = ParametrizedProperty::<String>::new("generic_prop".to_string(), 300isize);
   
   let got = ParametrizedChild::former()
     .name("generic_child".to_string())
@@ -188,7 +188,7 @@ fn parametrized_struct_where_generic_child_test() {
 #[test]
 fn parametrized_struct_where_complex_generics_test() {
   // Test with bool parametrization
-  let bool_prop = ParametrizedProperty::<bool>::new(true, 400);
+  let bool_prop = ParametrizedProperty::<bool>::new(true, 400isize);
   let bool_child = ParametrizedChild::former()
     .name("bool_child".to_string())
     .properties(vec![bool_prop.clone()])
@@ -196,10 +196,10 @@ fn parametrized_struct_where_complex_generics_test() {
     .form();
   
   assert_eq!(bool_child.properties[0].name, true);
-  assert_eq!(bool_child.properties[0].code, 400);
+  assert_eq!(bool_child.properties[0].code, 400isize);
   
   // Test with Option<String> parametrization
-  let option_prop = ParametrizedProperty::<Option<String>>::new(Some("optional".to_string()), 500);
+  let option_prop = ParametrizedProperty::<Option<String>>::new(Some("optional".to_string()), 500isize);
   let option_child = ParametrizedChild::former()
     .name("option_child".to_string())
     .properties(vec![option_prop.clone()])
@@ -207,16 +207,16 @@ fn parametrized_struct_where_complex_generics_test() {
     .form();
   
   assert_eq!(option_child.properties[0].name, Some("optional".to_string()));
-  assert_eq!(option_child.properties[0].code, 500);
+  assert_eq!(option_child.properties[0].code, 500isize);
 }
 
 #[test]
 fn parametrized_struct_where_multiple_properties_test() {
   // Test struct with multiple parametrized properties
   let props = vec![
-    ParametrizedProperty::<String>::new("prop1".to_string(), 1),
-    ParametrizedProperty::<String>::new("prop2".to_string(), 2),
-    ParametrizedProperty::<String>::new("prop3".to_string(), 3),
+    ParametrizedProperty::<String>::new("prop1".to_string(), 1isize),
+    ParametrizedProperty::<String>::new("prop2".to_string(), 2isize),
+    ParametrizedProperty::<String>::new("prop3".to_string(), 3isize),
   ];
   
   let got = StringParametrizedChild::former()
@@ -240,38 +240,38 @@ fn parametrized_struct_where_comprehensive_validation_test() {
   // Test comprehensive parametrized struct functionality without complex bounds
   
   // Create various property types
-  let simple_prop = SimpleProperty::new("simple", 1000);
-  let string_prop = ParametrizedProperty::<String>::new("string".to_string(), 2000);
-  let int_prop = ParametrizedProperty::<i32>::new(42, 3000);
+  let simple_prop = SimpleProperty::new("simple", 1000isize);
+  let string_prop = ParametrizedProperty::<String>::new("string".to_string(), 2000isize);
+  let int_prop = ParametrizedProperty::<i32>::new(42, 3000isize);
   
   // Create children with different parametrizations
   let string_child = StringParametrizedChild::former()
     .name("comprehensive_string".to_string())
-    .properties(vec![ParametrizedProperty::<String>::new("comp_str".to_string(), 4000)])
+    .properties(vec![ParametrizedProperty::<String>::new("comp_str".to_string(), 4000isize)])
     .active(true)
     .form();
     
   let int_child = IntParametrizedChild::former()
     .name("comprehensive_int".to_string())
-    .properties(vec![ParametrizedProperty::<i32>::new(999, 5000)])
+    .properties(vec![ParametrizedProperty::<i32>::new(999, 5000isize)])
     .active(false)
     .form();
   
   // Validate all work independently
   assert_eq!(simple_prop.name, "simple");
-  assert_eq!(simple_prop.code, 1000);
+  assert_eq!(simple_prop.code, 1000isize);
   
   assert_eq!(string_prop.name, "string");
-  assert_eq!(string_prop.code, 2000);
+  assert_eq!(string_prop.code, 2000isize);
   
   assert_eq!(int_prop.name, 42);
-  assert_eq!(int_prop.code, 3000);
+  assert_eq!(int_prop.code, 3000isize);
   
   assert_eq!(string_child.name, "comprehensive_string");
   assert_eq!(string_child.properties[0].name, "comp_str");
-  assert_eq!(string_child.properties[0].code, 4000);
+  assert_eq!(string_child.properties[0].code, 4000isize);
   
   assert_eq!(int_child.name, "comprehensive_int");
   assert_eq!(int_child.properties[0].name, 999);
-  assert_eq!(int_child.properties[0].code, 5000);
+  assert_eq!(int_child.properties[0].code, 5000isize);
 }

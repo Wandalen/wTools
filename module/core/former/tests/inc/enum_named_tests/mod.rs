@@ -124,10 +124,9 @@ mod comprehensive_struct_derive; // COMPREHENSIVE REPLACEMENT: Tests multiple sc
 // // mod generics_shared_struct_derive;
 // // mod generics_shared_struct_manual;
 // // mod generics_shared_struct_only_test;
-// // mod enum_named_fields_named_derive;
+// EMERGENCY DISABLE: enum_named_fields_named_derive; (E0119 trait conflicts - multiple variants with derive)
 // // mod enum_named_fields_named_manual;
 // // mod enum_named_fields_named_only_test;
-// // mod standalone_constructor_named_derive;
 // // mod standalone_constructor_named_only_test;
 // EMERGENCY DISABLE: standalone_constructor_args_named_derive (E0119 trait conflicts confirmed)
 // // mod standalone_constructor_args_named_manual; // Removed
