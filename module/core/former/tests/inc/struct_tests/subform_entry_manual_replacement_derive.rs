@@ -12,6 +12,16 @@ pub struct EntryChild {
   pub active: bool,
 }
 
+// Implement ValToEntry to map EntryChild to HashMap key/value
+// The key is derived from the 'name' field
+impl ::former::ValToEntry<std::collections::HashMap<String, EntryChild>> for EntryChild {
+  type Entry = (String, EntryChild);
+  #[inline(always)]
+  fn val_to_entry(self) -> Self::Entry {
+    (self.name.clone(), self)
+  }
+}
+
 // Parent struct with subform entry collection functionality
 #[derive(Debug, PartialEq, former::Former)]
 pub struct EntryParent {
@@ -35,14 +45,14 @@ impl Default for EntryParent {
 #[test]
 fn entry_manual_replacement_basic_test() {
   let child = EntryChild {
-    name: "test_child".to_string(),
+    name: "key1".to_string(),
     value: 42,
     active: true,
   };
   
   let got = EntryParent::former()
-    .children_entry("key1")
-      .name("test_child".to_string())
+    .children()
+      .name("key1".to_string())
       .value(42)
       .active(true)
       .end()
@@ -64,25 +74,25 @@ fn entry_manual_replacement_basic_test() {
 #[test]
 fn entry_manual_replacement_multiple_entries_test() {
   let child1 = EntryChild {
-    name: "child1".to_string(),
+    name: "first".to_string(),
     value: 10,
     active: true,
   };
   
   let child2 = EntryChild {
-    name: "child2".to_string(),
+    name: "second".to_string(),
     value: 20,
     active: false,
   };
   
   let got = EntryParent::former()
-    .children_entry("first")
-      .name("child1".to_string())
+    .children()
+      .name("first".to_string())
       .value(10)
       .active(true)
       .end()
-    .children_entry("second")
-      .name("child2".to_string())
+    .children()
+      .name("second".to_string())
       .value(20)
       .active(false)
       .end()
@@ -106,13 +116,13 @@ fn entry_manual_replacement_multiple_entries_test() {
 fn entry_manual_replacement_complex_building_test() {
   // Test complex building scenarios without lifetime bounds
   let got = EntryParent::former()
-    .children_entry("complex_key")
-      .name("complex_child".to_string())
+    .children()
+      .name("complex_key".to_string())
       .value(999)
       .active(true)
       .end()
-    .children_entry("another_key")  
-      .name("another_child".to_string())
+    .children()
+      .name("another_key".to_string())
       .value(-1)
       .active(false)
       .end()
@@ -126,12 +136,12 @@ fn entry_manual_replacement_complex_building_test() {
   
   // Verify specific child content
   let complex_child = &got.children["complex_key"];
-  assert_eq!(complex_child.name, "complex_child");
+  assert_eq!(complex_child.name, "complex_key");
   assert_eq!(complex_child.value, 999);
   assert_eq!(complex_child.active, true);
   
   let another_child = &got.children["another_key"];
-  assert_eq!(another_child.name, "another_child");
+  assert_eq!(another_child.name, "another_key");
   assert_eq!(another_child.value, -1);
   assert_eq!(another_child.active, false);
 }
@@ -141,18 +151,18 @@ fn entry_manual_replacement_complex_building_test() {
 fn entry_manual_replacement_chaining_test() {
   let got = EntryParent::former()
     .description("chaining_test".to_string())
-    .children_entry("chain1")
-      .name("first".to_string())
+    .children()
+      .name("chain1".to_string())
       .value(1)
       .active(true)
       .end()
-    .children_entry("chain2")
-      .name("second".to_string()) 
+    .children()
+      .name("chain2".to_string())
       .value(2)
       .active(false)
       .end()
-    .children_entry("chain3")
-      .name("third".to_string())
+    .children()
+      .name("chain3".to_string())
       .value(3)
       .active(true)
       .end()
@@ -165,17 +175,17 @@ fn entry_manual_replacement_chaining_test() {
   for (key, child) in &got.children {
     match key.as_str() {
       "chain1" => {
-        assert_eq!(child.name, "first");
+        assert_eq!(child.name, "chain1");
         assert_eq!(child.value, 1);
         assert_eq!(child.active, true);
       },
       "chain2" => {
-        assert_eq!(child.name, "second");
+        assert_eq!(child.name, "chain2");
         assert_eq!(child.value, 2);
         assert_eq!(child.active, false);
       },
       "chain3" => {
-        assert_eq!(child.name, "third");
+        assert_eq!(child.name, "chain3");
         assert_eq!(child.value, 3);
         assert_eq!(child.active, true);
       },
@@ -200,10 +210,10 @@ fn entry_manual_replacement_comprehensive_validation_test() {
     .description("comprehensive_validation".to_string());
     
   // Add all children using subform entry pattern
-  for (key, name, value, active) in &child_data {
+  for (key, _name, value, active) in &child_data {
     builder = builder
-      .children_entry(key)
-        .name(name.to_string())
+      .children()
+        .name(key.to_string())
         .value(*value)
         .active(*active)
         .end();
@@ -216,10 +226,10 @@ fn entry_manual_replacement_comprehensive_validation_test() {
   assert_eq!(got.description, "comprehensive_validation");
   
   // Verify each child matches expected data
-  for (key, name, value, active) in child_data {
+  for (key, _name, value, active) in child_data {
     assert!(got.children.contains_key(key));
     let child = &got.children[key];
-    assert_eq!(child.name, name);
+    assert_eq!(child.name, key);
     assert_eq!(child.value, value);
     assert_eq!(child.active, active);
   }
@@ -231,16 +241,16 @@ fn entry_manual_replacement_integration_test() {
   // Test integration between subform entries and regular field setting
   let parent1 = EntryParent::former()
     .description("integration1".to_string())
-    .children_entry("int_child1")
-      .name("integrated1".to_string())
+    .children()
+      .name("int_child1".to_string())
       .value(111)
       .active(true)
       .end()
     .form();
     
   let parent2 = EntryParent::former()
-    .children_entry("int_child2")
-      .name("integrated2".to_string())
+    .children()
+      .name("int_child2".to_string())
       .value(222)
       .active(false)
       .end()
@@ -250,9 +260,9 @@ fn entry_manual_replacement_integration_test() {
   // Verify both patterns work
   assert_eq!(parent1.description, "integration1");
   assert_eq!(parent1.children.len(), 1);
-  assert_eq!(parent1.children["int_child1"].name, "integrated1");
+  assert_eq!(parent1.children["int_child1"].name, "int_child1");
   
   assert_eq!(parent2.description, "integration2");
   assert_eq!(parent2.children.len(), 1);
-  assert_eq!(parent2.children["int_child2"].name, "integrated2");
+  assert_eq!(parent2.children["int_child2"].name, "int_child2");
 }

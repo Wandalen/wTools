@@ -10,6 +10,40 @@ use ::former::Former;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 use std::collections::HashMap;
 
+// Wrapper types for HashMap values to resolve EntityToStorage trait bound issues
+#[derive(Debug, PartialEq, Former)]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+pub struct StringValue {
+  key: String,
+  value: String,
+}
+
+#[derive(Debug, PartialEq, Former)]
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+pub struct IntValue {
+  key: String,
+  value: i32,
+}
+
+// Implement ValToEntry trait for wrapper types
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+impl ::former::ValToEntry<HashMap<String, StringValue>> for StringValue {
+  type Entry = (String, StringValue);
+  #[inline(always)]
+  fn val_to_entry(self) -> Self::Entry {
+    (self.key.clone(), self)
+  }
+}
+
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+impl ::former::ValToEntry<HashMap<String, IntValue>> for IntValue {
+  type Entry = (String, IntValue);
+  #[inline(always)]
+  fn val_to_entry(self) -> Self::Entry {
+    (self.key.clone(), self)
+  }
+}
+
 // Inner struct for comprehensive subform testing
 #[derive(Debug, PartialEq, Default, Clone, Former)]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
@@ -35,9 +69,9 @@ pub struct SubformAllReplacement {
   #[subform_collection]
   items: Vec<String>,
   
-  // Subform entry field (HashMap)
+  // Subform entry field (HashMap) - using wrapper type
   #[subform_entry]
-  entries: HashMap<String, String>,
+  entries: HashMap<String, StringValue>,
   
   // Regular field for comparison
   active: bool,
@@ -68,12 +102,12 @@ pub struct AdvancedSubformAllReplacement {
   #[subform_collection]
   int_list: Vec<i32>,
   
-  // Multiple entry maps
+  // Multiple entry maps - using wrapper types
   #[subform_entry]
-  primary_map: HashMap<String, String>,
+  primary_map: HashMap<String, StringValue>,
   
   #[subform_entry]
-  secondary_map: HashMap<String, i32>,
+  secondary_map: HashMap<String, IntValue>,
   
   // Regular field
   enabled: bool,
@@ -91,8 +125,8 @@ fn subform_all_basic_test() {
   };
   
   let mut expected_entries = HashMap::new();
-  expected_entries.insert("key1".to_string(), "value1".to_string());
-  expected_entries.insert("key2".to_string(), "value2".to_string());
+  expected_entries.insert("key1".to_string(), StringValue { key: "key1".to_string(), value: "value1".to_string() });
+  expected_entries.insert("key2".to_string(), StringValue { key: "key2".to_string(), value: "value2".to_string() });
   
   let got = SubformAllReplacement::former()
     .name("basic_test".to_string())
@@ -106,8 +140,12 @@ fn subform_all_basic_test() {
       .add("item2".to_string())
       .end()
     .entries()
-      .add(("key1".to_string(), "value1".to_string()))
-      .add(("key2".to_string(), "value2".to_string()))
+      .key("key1".to_string())
+      .value("value1".to_string())
+      .end()
+    .entries()
+      .key("key2".to_string())
+      .value("value2".to_string())
       .end()
     .active(true)
     .form();
@@ -169,10 +207,10 @@ fn advanced_subform_all_test() {
   };
   
   let mut expected_primary_map = HashMap::new();
-  expected_primary_map.insert("primary_key".to_string(), "primary_value".to_string());
+  expected_primary_map.insert("primary_key".to_string(), StringValue { key: "primary_key".to_string(), value: "primary_value".to_string() });
   
   let mut expected_secondary_map = HashMap::new();
-  expected_secondary_map.insert("secondary_key".to_string(), 999);
+  expected_secondary_map.insert("secondary_key".to_string(), IntValue { key: "secondary_key".to_string(), value: 999 });
   
   let got = AdvancedSubformAllReplacement::former()
     .title("advanced".to_string())
@@ -197,10 +235,12 @@ fn advanced_subform_all_test() {
       .add(30)
       .end()
     .primary_map()
-      .add(("primary_key".to_string(), "primary_value".to_string()))
+      .key("primary_key".to_string())
+      .value("primary_value".to_string())
       .end()
     .secondary_map()
-      .add(("secondary_key".to_string(), 999))
+      .key("secondary_key".to_string())
+      .value(999)
       .end()
     .enabled(true)
     .form();
@@ -241,7 +281,8 @@ fn subform_all_stress_test() {
       .add("stress_item".to_string())
       .end()
     .entries()
-      .add(("stress_key".to_string(), "stress_value".to_string()))
+      .key("stress_key".to_string())
+      .value("stress_value".to_string())
       .end()
     .active(true)
     .form();

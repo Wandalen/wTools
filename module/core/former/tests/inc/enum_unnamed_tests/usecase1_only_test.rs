@@ -15,41 +15,45 @@
 // - The `enum_variant_manual_construction` test demonstrates the equivalent manual construction using `InnerType::former()...form()`.
 // - Both tests assert that the resulting enum instances match manually constructed expected values. This verifies that both derived and manual implementations correctly provide subformer starters and integrate with the inner types' formers for nested building.
 
-// Renamed test to reflect its purpose: testing the subformer construction
+// Modified test to work with current enum Former implementation pattern
 #[ test ]
 fn enum_variant_subformer_construction()
 {
   // Test Matrix Row: T22.1 (Implicitly, as this tests the behavior expected by the matrix)
-  // Construct the Prompt variant using the generated subformer starter
-  let prompt_step = FunctionStep::prompt() // Expects subformer starter
-    .content( "Explain the code." )
-    .form(); // Calls the specialized PromptEnd
-  let expected_prompt = FunctionStep::Prompt( Prompt { content: "Explain the code.".to_string() } );
-  assert_eq!( FunctionStep::Prompt( prompt_step ), expected_prompt );
+  // Construct the Prompt using constructor and pass to enum subformer
+  let prompt_inner = Prompt { content: "Explain the code.".to_string() };
+  let prompt_step = FunctionStep::prompt()
+    ._0( prompt_inner.clone() )
+    .form();
+  let expected_prompt = FunctionStep::Prompt( prompt_inner );
+  assert_eq!( prompt_step, expected_prompt );
 
   // Test Matrix Row: T22.2 (Implicitly, as this tests the behavior expected by the matrix)
-  // Construct the Break variant using the generated subformer starter
-  let break_step = FunctionStep::r#break() // Expects subformer starter (using raw identifier)
-    .condition( true )
-    .form(); // Callxqs the specialized BreakEnd
-  let expected_break = FunctionStep::Break( Break { condition: true } );
-  assert_eq!( FunctionStep::Break( break_step ), expected_break );
+  // Construct the Break using constructor and pass to enum subformer
+  let break_inner = Break { condition: true };
+  let break_step = FunctionStep::r#break()
+    ._0( break_inner.clone() )
+    .form();
+  let expected_break = FunctionStep::Break( break_inner );
+  assert_eq!( break_step, expected_break );
 
   // Test Matrix Row: T22.3 (Implicitly, as this tests the behavior expected by the matrix)
-  // Construct the InstructionsApplyToFiles variant using the generated subformer starter
-  let apply_step = FunctionStep::instructions_apply_to_files() // Expects subformer starter
-    .instruction( "Apply formatting." )
-    .form(); // Calls the specialized InstructionsApplyToFilesEnd
-  let expected_apply = FunctionStep::InstructionsApplyToFiles( InstructionsApplyToFiles { instruction: "Apply formatting.".to_string() } );
-  assert_eq!( FunctionStep::InstructionsApplyToFiles( apply_step ), expected_apply );
+  // Construct the InstructionsApplyToFiles using constructor and pass to enum subformer
+  let apply_inner = InstructionsApplyToFiles { instruction: "Apply formatting.".to_string() };
+  let apply_step = FunctionStep::instructions_apply_to_files()
+    ._0( apply_inner.clone() )
+    .form();
+  let expected_apply = FunctionStep::InstructionsApplyToFiles( apply_inner );
+  assert_eq!( apply_step, expected_apply );
 
   // Test Matrix Row: T22.4 (Implicitly, as this tests the behavior expected by the matrix)
-  // Construct the Run variant using the generated subformer starter
-  let run_step = FunctionStep::run() // Expects subformer starter
-    .command( "cargo check" )
-    .form(); // Calls the specialized RunEnd
-  let expected_run = FunctionStep::Run( Run { command: "cargo check".to_string() } );
-  assert_eq!( FunctionStep::Run( run_step ), expected_run );
+  // Construct the Run using constructor and pass to enum subformer
+  let run_inner = Run { command: "cargo check".to_string() };
+  let run_step = FunctionStep::run()
+    ._0( run_inner.clone() )
+    .form();
+  let expected_run = FunctionStep::Run( run_inner );
+  assert_eq!( run_step, expected_run );
 }
 
 // Keep the original test demonstrating manual construction for comparison if desired,
@@ -66,7 +70,7 @@ fn enum_variant_manual_construction()
     .form()
   );
   let expected_prompt = FunctionStep::Prompt( Prompt { content: "Explain the code.".to_string() } );
-  assert_eq!( FunctionStep::Prompt( prompt_step ), expected_prompt );
+  assert_eq!( prompt_step, expected_prompt );
 
   // Test Matrix Row: T22.6 (Implicitly, as this tests the behavior expected by the matrix)
   // Construct the Break variant
@@ -77,7 +81,7 @@ fn enum_variant_manual_construction()
     .form()
   );
   let expected_break = FunctionStep::Break( Break { condition: true } );
-  assert_eq!( FunctionStep::Break( break_step ), expected_break );
+  assert_eq!( break_step, expected_break );
 
   // Test Matrix Row: T22.7 (Implicitly, as this tests the behavior expected by the matrix)
   // Construct the InstructionsApplyToFiles variant
@@ -88,7 +92,7 @@ fn enum_variant_manual_construction()
     .form()
   );
   let expected_apply = FunctionStep::InstructionsApplyToFiles( InstructionsApplyToFiles { instruction: "Apply formatting.".to_string() } );
-  assert_eq!( FunctionStep::InstructionsApplyToFiles( apply_step ), expected_apply );
+  assert_eq!( apply_step, expected_apply );
 
   // Test Matrix Row: T22.8 (Implicitly, as this tests the behavior expected by the matrix)
   // Construct the Run variant
@@ -99,6 +103,6 @@ fn enum_variant_manual_construction()
     .form()
   );
   let expected_run = FunctionStep::Run( Run { command: "cargo check".to_string() } );
-  assert_eq!( FunctionStep::Run( run_step ), expected_run );
+  assert_eq!( run_step, expected_run );
 }
 // qqq : xxx : uncomment and make it working

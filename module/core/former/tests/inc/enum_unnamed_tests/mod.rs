@@ -73,7 +73,7 @@ mod tuple_multi_standalone_args_manual; // Re-enabled - simple manual enum with 
 // // mod tuple_multi_standalone_args_only_test; // Include pattern, not standalone
 mod tuple_multi_standalone_derive; // Re-enabled - testing standalone constructor functionality
 mod tuple_multi_standalone_manual; // Re-enabled - let's test this manual implementation
-// EMERGENCY DISABLE: usecase1_derive (E0599 missing method errors - delegation architecture still required)
+mod usecase1_derive; // Re-enabled to test enum Former pattern fixes
 mod usecase_replacement_derive; // REPLACEMENT: Simplified usecase functionality that works with current Former enum capabilities
 // REMOVED: tuple_multi_standalone_only_test (include pattern file, not standalone)
 

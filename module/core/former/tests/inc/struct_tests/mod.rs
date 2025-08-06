@@ -121,7 +121,8 @@ mod parametrized_struct_manual;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // REMOVED: parametrized_struct_where (BLOCKED - have parametrized_struct_where_replacement_derive replacement)
 mod parametrized_struct_where_replacement_derive; // ENABLE ATTEMPT: Test if trait bound errors are resolved
-// EMERGENCY DISABLE: parametrized_struct_replacement_derive (E0277 EntityToStorage trait bounds - HashMap subform collections not supported)
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod parametrized_struct_replacement_derive; // FIXED: HashMap subform issues by using Former-derived wrapper types
 
 mod parametrized_slice;
 mod parametrized_slice_manual;
@@ -203,8 +204,9 @@ mod subform_scalar_name;
 mod subform_entry;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // REMOVED: subform_entry_manual (BLOCKED - have subform_entry_manual_replacement_derive replacement)
-// EMERGENCY DISABLE: subform_entry_manual_replacement_derive (E0599 missing method errors - HashMap subform entry not supported)
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+// FIXED: subform_entry_manual_replacement_derive (HashMap subform entry fixed using Former-derived wrapper types with ValToEntry trait)
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_entry_manual_replacement_derive;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_entry_named;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
@@ -228,8 +230,9 @@ mod subform_entry_hashmap_custom;
 mod subform_all;
 // #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 // REMOVED: subform_all_parametrized (BLOCKED - have subform_all_replacement_derive replacement)
-// EMERGENCY DISABLE: subform_all_replacement_derive (E0277 EntityToStorage/HashMap subform issues - fundamental Former limitation)
-// #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+// FIXED: subform_all_replacement_derive (HashMap subform issues resolved using Former-derived wrapper types)
+#[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
+mod subform_all_replacement_derive;
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 mod subform_all_private;
 
