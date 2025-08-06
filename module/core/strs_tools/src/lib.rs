@@ -43,6 +43,10 @@
 #[ cfg( feature = "enabled" ) ]
 pub mod string;
 
+/// SIMD-optimized string operations.
+#[ cfg( all( feature = "enabled", feature = "simd" ) ) ]
+pub mod simd;
+
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
@@ -56,6 +60,8 @@ pub mod own {
   use super::*;
   pub use orphan::*;
   pub use super::string;
+  #[ cfg( feature = "simd" ) ]
+  pub use super::simd;
   #[ cfg( test ) ]
   pub use super::string::orphan::*;
 }

@@ -78,7 +78,7 @@ name = "string_operations"
 harness = false
 
 [[bench]]
-name = "memory_usage" 
+name = "memory_usage"
 harness = false
 ```
 

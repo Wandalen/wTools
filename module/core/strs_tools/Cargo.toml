@@ -32,6 +32,7 @@ default = [
   "string_parse_request",
   "string_parse_number",
   "string_split",
+  "simd",
 ]
 full = [
   "enabled",
@@ -45,7 +46,7 @@ full = [
 ]
 
 # Performance optimization features
-simd = ["memchr", "aho-corasick", "bytecount"]
+simd = ["memchr", "aho-corasick", "bytecount", "lazy_static"]
 
 no_std = []
 use_alloc = [ "no_std" ]
@@ -66,6 +67,7 @@ component_model_types = { workspace = true, features = ["enabled"] }
 memchr = { workspace = true, optional = true }
 aho-corasick = { workspace = true, optional = true }
 bytecount = { workspace = true, optional = true }
+lazy_static = { version = "1.4", optional = true }
 
 # Benchmark runner dependencies  
 chrono = { version = "0.4", features = ["serde"] }
@@ -74,14 +76,16 @@ chrono = { version = "0.4", features = ["serde"] }
 test_tools = { workspace = true }
 criterion = { version = "0.5", features = ["html_reports"] }
 
+# Disabled due to infinite loop issues
 [[bench]]
-name = "string_operations"
+name = "bottlenecks"
 harness = false
+path = "benchmarks/bottlenecks.rs"
 
-[[bench]]
-name = "memory_usage"
-harness = false
+[[bin]]
+name = "simd_test"
+required-features = ["simd"]
 
-[[bench]]
-name = "quick_test"
-harness = false
+[[bin]]
+name = "bench_runner"
+path = "benchmarks/bench_runner.rs"

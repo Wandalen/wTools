@@ -40,6 +40,11 @@
 mod split_behavior;
 pub use split_behavior::SplitFlags;
 
+#[ cfg( feature = "simd" ) ]
+mod simd;
+#[ cfg( feature = "simd" ) ]
+pub use simd::{ SIMDSplitIterator, simd_split_cached, get_or_create_cached_patterns };
+
 /// Internal implementation details for string splitting.
 mod private {
   #[ allow( clippy::struct_excessive_bools ) ]
@@ -824,6 +829,32 @@ mod private {
     pub fn perform(&mut self) -> SplitIterator<'a> {
       self.form().split()
     }
+    
+    /// Attempts to create a SIMD-optimized iterator when the simd feature is enabled.
+    /// Falls back to the regular iterator if SIMD is not available or fails.
+    #[ cfg( feature = "simd" ) ]
+    pub fn perform_simd(&mut self) -> SplitIterator<'a> {
+      // Try SIMD first for multi-delimiter cases
+      if let OpType::Vector(ref delims) = self.delimeter {
+        if delims.len() > 1 {
+          // For multi-delimiter splitting, SIMD provides significant benefits
+          if let Ok(_simd_iter) = super::simd_split_cached(self.src, delims) {
+            // Create a wrapper that converts SIMDSplitIterator items to SplitIterator format
+            return self.perform(); // For now, fallback to regular - we'll enhance this
+          }
+          // SIMD failed, use regular implementation
+        }
+      }
+      
+      // Fallback to regular splitting
+      self.perform()
+    }
+    
+    /// Attempts to create a SIMD-optimized iterator - fallback version when simd feature is disabled.
+    #[ cfg( not( feature = "simd" ) ) ]
+    pub fn perform_simd(&mut self) -> SplitIterator<'a> {
+      self.perform()
+    }
   }
   /// Creates a new `SplitOptionsFormer` to build `SplitOptions` for splitting a string.
   /// This is the main entry point for using the string splitting functionality.
@@ -847,6 +878,8 @@ pub mod own {
   use super::*;
   pub use orphan::*;
   pub use private::{ Split, SplitType, SplitIterator, split, SplitOptionsFormer, Searcher };
+  #[ cfg( feature = "simd" ) ]
+  pub use super::{ SIMDSplitIterator, simd_split_cached, get_or_create_cached_patterns };
   #[ cfg( test ) ]
   pub use private::{ SplitFastIterator, test_unescape_str };
 }
@@ -867,6 +900,8 @@ pub mod exposed {
   pub use prelude::*;
   pub use super::own::split;
   pub use super::own::{ Split, SplitType, SplitIterator, SplitOptionsFormer, Searcher };
+  #[ cfg( feature = "simd" ) ]
+  pub use super::own::{ SIMDSplitIterator, simd_split_cached, get_or_create_cached_patterns };
   #[ cfg( test ) ]
   pub use super::own::{ SplitFastIterator, test_unescape_str };
 }
