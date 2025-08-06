@@ -77,31 +77,15 @@ test_tools = { workspace = true }
 criterion = { version = "0.5", features = ["html_reports"] }
 
 # Disabled due to infinite loop issues
-# [[bench]]
-# name = "string_operations"
-# harness = false
-
 [[bench]]
-name = "memory_usage"
+name = "bottlenecks"
 harness = false
-
-[[bench]]
-name = "quick_test"
-harness = false
-
-[[bench]]
-name = "minimal_test"
-harness = false
-
-[[bench]]
-name = "stable_test"
-harness = false
-
-[[bench]]
-name = "simd_comparison"
-harness = false
-required-features = ["simd"]
+path = "benchmarks/bottlenecks.rs"
 
 [[bin]]
 name = "simd_test"
 required-features = ["simd"]
+
+[[bin]]
+name = "bench_runner"
+path = "benchmarks/bench_runner.rs"
