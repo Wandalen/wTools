@@ -31,16 +31,12 @@ enabled = []
 benchmarks = [ "clap", "pico-args", "simd" ]
 
 # Performance optimizations - SIMD enabled by default for maximum performance
+# Can be disabled with: cargo build --no-default-features --features enabled
 # This enables:
 # - SIMD JSON parsing (simd-json: 4-25x faster than serde_json)
 # - SIMD string operations in strs_tools (memchr, aho-corasick, bytecount)
 # - SIMD tokenization in unilang_parser
-simd = [ "simd-json", "unilang_parser/simd" ]  # Enable SIMD optimizations
-
-# Feature to disable SIMD optimizations if needed (for compatibility or debugging)
-# Usage: cargo build --no-default-features --features enabled
-# Or: cargo build --features no_simd
-no_simd = [ "unilang_parser/no_simd" ]  # Feature to disable SIMD optimizations
+simd = [ "simd-json", "unilang_parser/simd" ]  # SIMD optimizations enabled by default
 
 # This configuration suggests an action to be done when the command is unknown. In this case, when an unknown command is encountered, the system might suggest alternatives
 on_unknown_suggest = [ "dep:textdistance" ]

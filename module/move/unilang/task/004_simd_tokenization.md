@@ -242,15 +242,20 @@ The implementation must include automated updating of `benchmark/readme.md`:
 #### Validation Commands
 ```bash
 # SIMD-specific performance testing - CRITICAL: test multiple input sizes
+# SIMD is enabled by default for maximum performance
+# To disable SIMD: cargo build --no-default-features --features enabled
 for size in 1KB 10KB 100KB 1MB; do
   cargo bench tokenization_simd_${size} --features benchmarks
 done
 
-# CPU feature detection validation - ensure graceful fallback
+# CPU feature detection validation - runtime CPU capability detection
 cargo test simd_feature_detection --release --features benchmarks
 
 # Correctness validation (SIMD vs scalar output) - must be identical
 cargo test tokenization_correctness --release --features benchmarks
+
+# Test fallback behavior when SIMD disabled
+cargo test tokenization_no_simd --release --no-default-features --features enabled
 
 # Integration testing with full pipeline
 cargo test integration_simd_tokenization --release --features benchmarks

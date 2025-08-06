@@ -16,12 +16,11 @@ homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/unilang_p
 
 [features]
 default = ["simd"]
-simd = []  # SIMD optimizations enabled by default
-no_simd = []  # Feature to disable SIMD optimizations
+simd = ["strs_tools/simd"]  # SIMD optimizations enabled by default, disable with --no-default-features
 no_std = []
 
 [dependencies]
-strs_tools = { workspace = true, features = ["string_parse_request", "string_split", "simd"] }
+strs_tools = { workspace = true, features = ["string_parse_request", "string_split"] }
 error_tools = { workspace = true, features = [ "enabled", "error_typed" ] }
 iter_tools = { workspace = true, features = [ "enabled" ] }
 
