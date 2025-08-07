@@ -1,4 +1,4 @@
-name : unilang_instruction_parser
+name : variadic_from_meta
 
 on :
   push :
@@ -13,12 +13,12 @@ env :
 
 jobs :
 
-  # unilang_instruction_parser
+  # variadic_from_meta
 
   test :
     uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
     with :
-      manifest_path : 'module/alias/unilang_instruction_parser/Cargo.toml'
-      module_name : 'unilang_instruction_parser'
+      manifest_path : 'module/core/variadic_from_meta/Cargo.toml'
+      module_name : 'variadic_from_meta'
       commit_message : ${{ github.event.head_commit.message }}
       commiter_username:  ${{ github.event.head_commit.committer.username }}

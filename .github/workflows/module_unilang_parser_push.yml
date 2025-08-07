@@ -1,4 +1,4 @@
-name : unilang_instruction_parser
+name : unilang_parser
 
 on :
   push :
@@ -13,12 +13,12 @@ env :
 
 jobs :
 
-  # unilang_instruction_parser
+  # unilang_parser
 
   test :
     uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
     with :
-      manifest_path : 'module/alias/unilang_instruction_parser/Cargo.toml'
-      module_name : 'unilang_instruction_parser'
+      manifest_path : 'module/move/unilang_parser/Cargo.toml'
+      module_name : 'unilang_parser'
       commit_message : ${{ github.event.head_commit.message }}
       commiter_username:  ${{ github.event.head_commit.committer.username }}
