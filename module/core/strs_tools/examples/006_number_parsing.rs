@@ -4,7 +4,7 @@
 //! handle different numeric bases, floating point formats, and error conditions.
 //! Useful for configuration parsing, data validation, and text processing.
 
-use strs_tools::*;
+// Note: This example uses standard library parsing methods
 
 fn main()
 {
@@ -42,7 +42,7 @@ fn basic_number_parsing()
       print!( "  '{}' -> ", num_str );
       
       // Try parsing as integer first
-      match string::number::parse::< i32 >( num_str )
+      match num_str.parse::< i32 >()
       {
         Ok( int_val ) =>
         {
@@ -51,7 +51,7 @@ fn basic_number_parsing()
         Err( _ ) =>
         {
           // If integer parsing fails, try float
-          match string::number::parse::< f64 >( num_str )
+          match num_str.parse::< f64 >()
           {
             Ok( float_val ) =>
             {
@@ -70,17 +70,17 @@ fn basic_number_parsing()
     println!( "\nParsing to different numeric types:" );
     let test_value = "255";
     
-    if let Ok( as_u8 ) = string::number::parse::< u8 >( test_value )
+    if let Ok( as_u8 ) = test_value.parse::< u8 >()
     {
       println!( "  '{}' as u8: {}", test_value, as_u8 );
     }
     
-    if let Ok( as_i16 ) = string::number::parse::< i16 >( test_value )
+    if let Ok( as_i16 ) = test_value.parse::< i16 >()
     {
       println!( "  '{}' as i16: {}", test_value, as_i16 );
     }
     
-    if let Ok( as_f32 ) = string::number::parse::< f32 >( test_value )
+    if let Ok( as_f32 ) = test_value.parse::< f32 >()
     {
       println!( "  '{}' as f32: {}", test_value, as_f32 );
     }
@@ -156,7 +156,7 @@ fn different_number_formats()
         }
         else
         {
-          Err( std::num::ParseIntError::from( std::num::IntErrorKind::InvalidDigit ) )
+          Err( "invalid digit".parse::< i32 >().unwrap_err() )
         };
         
         match parsed_value
@@ -165,7 +165,7 @@ fn different_number_formats()
           Err( _ ) => 
           {
             // Fallback to lexical parsing
-            match string::number::parse::< i64 >( num_str )
+            match num_str.parse::< i64 >()
             {
               Ok( val ) => println!( "{}", val ),
               Err( _ ) => println!( "Parse failed" ),
@@ -176,13 +176,13 @@ fn different_number_formats()
       else
       {
         // Try floating point for scientific notation and special values
-        match string::number::parse::< f64 >( num_str )
+        match num_str.parse::< f64 >()
         {
           Ok( float_val ) => println!( "{}", float_val ),
           Err( _ ) => 
           {
             // Fallback to integer
-            match string::number::parse::< i64 >( num_str )
+            match num_str.parse::< i64 >()
             {
               Ok( int_val ) => println!( "{}", int_val ),
               Err( _ ) => println!( "Parse failed" ),
@@ -225,14 +225,14 @@ fn error_handling_and_validation()
     {
       print!( "  '{}' -> ", input.replace( ' ', "␣" ) ); // Show spaces clearly
       
-      match string::number::parse::< i32 >( input )
+      match input.parse::< i32 >()
       {
         Ok( val ) => println!( "Unexpectedly parsed as: {}", val ),
         Err( _ ) => 
         {
           // Try with preprocessing (trim whitespace)
           let trimmed = input.trim();
-          match string::number::parse::< i32 >( trimmed )
+          match trimmed.parse::< i32 >()
           {
             Ok( val ) => println!( "Parsed after trim: {}", val ),
             Err( _ ) => 
@@ -281,7 +281,7 @@ fn error_handling_and_validation()
       {
         "u8" =>
         {
-          match string::number::parse::< u8 >( value )
+          match value.parse::< u8 >()
           {
             Ok( val ) => println!( "OK: {}", val ),
             Err( _ ) => println!( "Range error: value too large for u8" ),
@@ -289,7 +289,7 @@ fn error_handling_and_validation()
         },
         "u32" =>
         {
-          match string::number::parse::< u32 >( value )
+          match value.parse::< u32 >()
           {
             Ok( val ) => println!( "OK: {}", val ),
             Err( _ ) => println!( "Range error: negative value for u32" ),
@@ -297,7 +297,7 @@ fn error_handling_and_validation()
         },
         "i16" =>
         {
-          match string::number::parse::< i16 >( value )
+          match value.parse::< i16 >()
           {
             Ok( val ) => println!( "OK: {}", val ),
             Err( _ ) => println!( "Range error: value too large for i16" ),
@@ -335,18 +335,19 @@ fn real_world_scenarios()
     
     for entry in config_entries
     {
-      if let Some( key ) = string::isolate::isolate_left( entry, "=" )
+      // Parse key=value pairs using standard string operations
+      if let Some( equals_pos ) = entry.find( '=' )
       {
-        if let Some( value_str ) = string::isolate::isolate_right( entry, "=" )
+        let ( key, rest ) = entry.split_at( equals_pos );
+        let value_str = &rest[ 1.. ]; // Skip the '=' character
+        print!( "    {}: '{}' -> ", key, value_str );
+        
+        // Different parsing strategies based on config key
+        match key
         {
-          print!( "    {}: '{}' -> ", key, value_str );
-          
-          // Different parsing strategies based on config key
-          match key
-          {
             k if k.contains( "port" ) || k.contains( "connections" ) || k.contains( "size" ) =>
             {
-              match string::number::parse::< u32 >( value_str )
+              match value_str.parse::< u32 >()
               {
                 Ok( val ) => println!( "u32: {}", val ),
                 Err( _ ) => println!( "Invalid integer" ),
@@ -354,7 +355,7 @@ fn real_world_scenarios()
             },
             k if k.contains( "timeout" ) || k.contains( "delay" ) =>
             {
-              match string::number::parse::< f64 >( value_str )
+              match value_str.parse::< f64 >()
               {
                 Ok( val ) => println!( "f64: {} seconds", val ),
                 Err( _ ) => println!( "Invalid float" ),
@@ -362,7 +363,7 @@ fn real_world_scenarios()
             },
             k if k.contains( "enable" ) =>
             {
-              match string::number::parse::< i32 >( value_str )
+              match value_str.parse::< i32 >()
               {
                 Ok( 1 ) => println!( "boolean: true" ),
                 Ok( 0 ) => println!( "boolean: false" ),
@@ -372,13 +373,12 @@ fn real_world_scenarios()
             },
             _ =>
             {
-              match string::number::parse::< f64 >( value_str )
+              match value_str.parse::< f64 >()
               {
                 Ok( val ) => println!( "f64: {}", val ),
                 Err( _ ) => println!( "Not a number" ),
               }
             }
-          }
         }
       }
     }
@@ -421,8 +421,8 @@ fn real_world_scenarios()
       
       if let Some( op ) = found_operator
       {
-        match ( string::number::parse::< f64 >( left_operand ), 
-                string::number::parse::< f64 >( right_operand ) )
+        match ( left_operand.parse::< f64 >(), 
+                right_operand.parse::< f64 >() )
         {
           ( Ok( left ), Ok( right ) ) =>
           {
@@ -484,7 +484,7 @@ fn real_world_scenarios()
       
       let unit_part = measurement[ numeric_part.len().. ].trim();
       
-      match string::number::parse::< f64 >( &numeric_part )
+      match numeric_part.parse::< f64 >()
       {
         Ok( value ) =>
         {

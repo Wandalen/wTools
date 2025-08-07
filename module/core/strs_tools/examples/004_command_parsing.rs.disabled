@@ -31,7 +31,9 @@ fn basic_command_parsing()
     println!( "Parsing command: '{}'", command_string );
     
     // Parse the command to extract subject and parameters
-    let parsed = string::parse_request::parse( command_string );
+    let parsed = string::request_parse()
+    .src( command_string )
+    .perform();
     
     println!( "Parsed result:" );
     match parsed
@@ -96,7 +98,7 @@ fn parameter_extraction()
     {
       println!( "\nExample {}: {}", i + 1, cmd );
       
-      match string::parse_request::parse( cmd )
+      match string::request_parse().src( cmd ).perform()
       {
         Ok( request ) =>
         {
@@ -167,7 +169,7 @@ fn complex_command_scenarios()
     
     println!( "Complex command: {}", complex_cmd );
     
-    match string::parse_request::parse( complex_cmd )
+    match string::request_parse().src( complex_cmd ).perform()
     {
       Ok( request ) =>
       {
@@ -217,7 +219,7 @@ fn complex_command_scenarios()
     for bad_cmd in malformed_commands
     {
       println!( "  Testing: '{}'", bad_cmd );
-      match string::parse_request::parse( bad_cmd )
+      match string::request_parse().src( bad_cmd ).perform()
       {
         Ok( _ ) =>
         {
@@ -257,7 +259,7 @@ fn real_world_cli_example()
     {
       println!( "\n{}. {}", i + 1, cmd );
       
-      match string::parse_request::parse( cmd )
+      match string::request_parse().src( cmd ).perform()
       {
         Ok( request ) =>
         {
