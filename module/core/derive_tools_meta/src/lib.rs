@@ -322,6 +322,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///
 /// | Attribute                              | Target        | Description                                                                                          |
 /// |----------------------------------------|---------------|------------------------------------------------------------------------------------------------------|
+/// | `#[ debug ]`                           | Struct/Enum   | Enables generation debug outputs                                                                     |
 /// | `#[ derive( Add ) ]`                   | Struct        | Enables generation of `Add` implementation                                                           |
 /// | `#[add(error_type = SomeType)]`        | Enum          | Overrides the default error type (`String`) used in `Result<Self, E>`(should implement From<String>) |
 /// | `#[add(error_expr = SomeExpr)]`        | Enum          | Overrides the default error string with provided expression                                          |
@@ -409,7 +410,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// assert_eq!( value, 6 );
 /// ```
 ///
-#[ proc_macro_derive( Add, attributes( derive_ops, add ) ) ]
+#[ proc_macro_derive( Add, attributes( derive_ops, add, debug ) ) ]
 pub fn add( input : proc_macro::TokenStream ) -> proc_macro::TokenStream 
 {
   derive::ops::add( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
@@ -433,6 +434,7 @@ pub fn add( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// | Attribute                              | Target        | Description                                                                                          |
 /// |----------------------------------------|---------------|------------------------------------------------------------------------------------------------------|
+/// | `#[ debug ]`                           | Struct/Enum   | Enables generation debug outputs                                                                     |
 /// | `#[ derive( Sub ) ]`                   | Struct        | Enables generation of `Sub` implementation                                                           |
 /// | `#[sub(error_type = SomeType)]`        | Enum          | Overrides the default error type (`String`) used in `Result<Self, E>`(should implement From<String>) |
 /// | `#[sub(error_expr = SomeExpr)]`        | Enum          | Overrides the default error string with provided expression                                          |
@@ -521,7 +523,7 @@ pub fn add( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// assert_eq!( value, 1 );
 /// ```
 ///
-#[ proc_macro_derive( Sub, attributes( derive_ops, sub ) ) ]
+#[ proc_macro_derive( Sub, attributes( derive_ops, sub, debug ) ) ]
 pub fn sub( input : proc_macro::TokenStream ) -> proc_macro::TokenStream 
 {
   derive::ops::sub( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
@@ -545,6 +547,7 @@ pub fn sub( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// | Attribute                              | Target        | Description                                                                                          |
 /// |----------------------------------------|---------------|------------------------------------------------------------------------------------------------------|
+/// | `#[ debug ]`                           | Struct/Enum   | Enables generation debug outputs                                                                     |
 /// | `#[ derive( Mul ) ]`                   | Struct        | Enables generation of `Mul` implementation                                                           |
 /// | `#[mul(error_type = SomeType)]`        | Enum          | Overrides the default error type (`String`) used in `Result<Self, E>`(should implement From<String>) |
 /// | `#[mul(error_expr = SomeExpr)]`        | Enum          | Overrides the default error string with provided expression                                          |
@@ -629,7 +632,7 @@ pub fn sub( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// assert_eq!( value, 12 );
 /// ```
 ///
-#[ proc_macro_derive( Mul, attributes( derive_ops, mul ) ) ]
+#[ proc_macro_derive( Mul, attributes( derive_ops, mul, debug ) ) ]
 pub fn mul( input : proc_macro::TokenStream ) -> proc_macro::TokenStream 
 {
   derive::ops::mul( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
@@ -653,6 +656,7 @@ pub fn mul( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// | Attribute                              | Target        | Description                                                                                          |
 /// |----------------------------------------|---------------|------------------------------------------------------------------------------------------------------|
+/// | `#[ debug ]`                           | Struct/Enum   | Enables generation debug outputs                                                                     |
 /// | `#[ derive( Div ) ]`                   | Struct        | Enables generation of `Div` implementation                                                           |
 /// | `#[div(error_type = SomeType)]`        | Enum          | Overrides the default error type (`String`) used in `Result<Self, E>`(should implement From<String>) |
 /// | `#[div(error_expr = SomeExpr)]`        | Enum          | Overrides the default error string with provided expression                                          |
@@ -737,7 +741,7 @@ pub fn mul( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// assert_eq!( value, 4 );
 /// ```
 ///
-#[ proc_macro_derive( Div, attributes( derive_ops, div ) ) ]
+#[ proc_macro_derive( Div, attributes( derive_ops, div, debug ) ) ]
 pub fn div( input : proc_macro::TokenStream ) -> proc_macro::TokenStream 
 {
   derive::ops::div( input ).unwrap_or_else( macro_tools::syn::Error::into_compile_error ).into()
