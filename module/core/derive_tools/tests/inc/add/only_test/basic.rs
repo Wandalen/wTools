@@ -1,3 +1,4 @@
+// T1.1: Named struct
 #[ test ]
 fn test_named_struct_add_sub() 
 {
@@ -11,6 +12,7 @@ fn test_named_struct_add_sub()
   assert_eq!( diff.y, 2 );
 }
 
+// T1.2: Tuple struct
 #[ test ]
 fn test_tuple_struct_add_sub()
 {
@@ -22,6 +24,7 @@ fn test_tuple_struct_add_sub()
   assert_eq!( diff.0, 5 );
 }
 
+// T1.6: Generic struct T: Add/Sub
 #[ test ]
 fn test_generic_struct_add_sub()
 {
@@ -33,6 +36,7 @@ fn test_generic_struct_add_sub()
   assert_eq!( diff.x, 10 );
 }
 
+// T1.7: Enum - same variant
 #[ test ]
 fn test_enum_e_add_sub()
 {
@@ -54,6 +58,7 @@ fn test_enum_e_add_sub()
   }
 }
 
+// T1.9: Enum with #[error_type] attribute - same variant
 #[ test ]
 fn test_e2_add_same_variant() 
 {
@@ -75,6 +80,7 @@ fn test_e2_add_same_variant()
   }
 }
 
+// T1.9: Enum with #[error_type] attribute - same variant
 #[ test ]
 fn test_e2_sub_same_variant() 
 {
@@ -96,6 +102,7 @@ fn test_e2_sub_same_variant()
   }
 }
 
+// T1.8: Enum - different variants (returns Err)
 #[ test ]
 fn test_e2_add_different_variant()
 {
@@ -109,6 +116,7 @@ fn test_e2_add_different_variant()
   assert!( result.is_err() );
 }
 
+// T1.8: Enum - different variants (returns Err)
 #[ test ]
 fn test_e2_sub_different_variant() 
 {
@@ -122,6 +130,7 @@ fn test_e2_sub_different_variant()
   assert!( result.is_err() );
 }
 
+// T1.10: Enum with #[error_expr] attribute - same variant
 #[ test ]
 fn test_e3_add_same_variant() 
 {
@@ -143,6 +152,7 @@ fn test_e3_add_same_variant()
   }
 }
 
+// T1.10: Enum with #[error_expr] attribute - same variant
 #[ test ]
 fn test_e3_sub_same_variant() 
 {
@@ -164,6 +174,7 @@ fn test_e3_sub_same_variant()
   }
 }
 
+// T1.10: Enum with #[error_expr] attribute - different variants (returns Err(ErrorExpr))
 #[ test ]
 fn test_e3_add_different_variant_returns_error_expression() 
 {
@@ -177,6 +188,7 @@ fn test_e3_add_different_variant_returns_error_expression()
   assert_eq!( result, Err( ErrorExpr::DifferentVariants ) );
 }
 
+// T1.10: Enum with #[error_expr] attribute - different variants (returns Err(ErrorExpr))
 #[ test ]
 fn test_e3_sub_different_variant_returns_error_expression()
 {
@@ -190,6 +202,7 @@ fn test_e3_sub_different_variant_returns_error_expression()
   assert_eq!( result, Err( ErrorExpr::DifferentVariants ) );
 }
 
+// T1.11: Enum with #[derive_ops(error_type)] - different variants
 #[ test ]
 fn test_e4_sub_different_variant_error_type() 
 {
@@ -199,6 +212,7 @@ fn test_e4_sub_different_variant_error_type()
   assert!( result.is_err(), "Expected error when subtracting different variants for E4" );
 }
 
+// T1.12: Enum with #[derive_ops(error_expr)] - different variants (returns Err(ErrorExpr))
 #[ test ]
 fn test_e5_add_different_variant_returns_error_expression() 
 {
@@ -212,6 +226,7 @@ fn test_e5_add_different_variant_returns_error_expression()
   assert_eq!( result, Err( ErrorExpr::DifferentVariants ) );
 }
 
+// T1.12: Enum with #[derive_ops(error_expr)] - different variants (returns Err(ErrorExpr))
 #[ test ]
 fn test_e5_sub_different_variant_returns_error_expression()
 {
