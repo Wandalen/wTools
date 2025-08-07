@@ -3,6 +3,8 @@
 //! Comprehensive benchmarking of SIMD-optimized JSON parsing vs serde_json
 //! across different payload sizes and structures to validate 4-25x performance improvements.
 
+#![ allow( missing_docs ) ]
+
 use criterion::{ black_box, criterion_group, criterion_main, Criterion, BenchmarkId };
 use serde_json::Value as SerdeValue;
 use unilang::simd_json_parser::SIMDJsonParser;

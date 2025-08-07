@@ -314,7 +314,7 @@ fn main() -> Result< (), unilang::error::Error >
             println!( "     Type: Map" );
             println!( "     Pairs: {} entries", map.len() );
           },
-          Value::Pattern( regex ) =>
+          Value::Pattern( _regex ) =>
           {
             println!( "     Type: Regex Pattern" );
             println!( "     Valid: Pattern compiled successfully" );

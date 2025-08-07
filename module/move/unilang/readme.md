@@ -594,7 +594,7 @@ unilang provides comprehensive support for building interactive REPL application
 
 ### Basic REPL Implementation
 
-```rust
+```rust,ignore
 use unilang::{ registry::CommandRegistry, pipeline::Pipeline };
 use std::io::{ self, Write };
 
@@ -630,8 +630,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 unilang supports interactive arguments for secure input like passwords:
 
-```rust
+```rust,ignore
 // In your command definition
+use unilang::{ ArgumentDefinition, Kind, ArgumentAttributes };
+
 ArgumentDefinition {
     name: "password".to_string(),
     kind: Kind::String,
@@ -641,9 +643,11 @@ ArgumentDefinition {
         ..Default::default()
     },
     // ...
-}
+};
 
 // In your REPL loop
+use std::io::{self, Write};
+
 match result.error {
     Some(error) if error.contains("UNILANG_ARGUMENT_INTERACTIVE_REQUIRED") => {
         // Prompt for secure input
@@ -661,7 +665,9 @@ match result.error {
 For production REPL applications, consider these patterns:
 
 **Command History & Auto-completion:**
-```rust
+```rust,ignore
+use std::collections::HashMap;
+
 let mut command_history = Vec::new();
 let mut session_stats = HashMap::new();
 
@@ -676,7 +682,7 @@ command_history.push(input.to_string());
 ```
 
 **Error Recovery:**
-```rust
+```rust,ignore
 match result.error {
     Some(error) => {
         println!("❌ Error: {error}");
@@ -693,7 +699,7 @@ match result.error {
 ```
 
 **Session Management:**
-```rust
+```rust,ignore
 struct ReplSession {
     command_count: u32,
     successful_commands: u32,
@@ -702,6 +708,13 @@ struct ReplSession {
 }
 
 // Track session statistics for debugging and UX
+let mut session = ReplSession {
+    command_count: 0,
+    successful_commands: 0,
+    failed_commands: 0,
+    last_error: None,
+};
+
 session.command_count += 1;
 if result.success {
     session.successful_commands += 1;

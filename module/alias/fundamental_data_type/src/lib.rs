@@ -7,7 +7,7 @@
 //! Fundamental data types and type constructors, like Single, Pair, Many.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]

@@ -12,7 +12,8 @@
 //! Macro to answer the question: does it implement a trait?
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Implementation checking utilities" ) ]
 
 // #[ macro_use ]
 #[cfg(feature = "enabled")]

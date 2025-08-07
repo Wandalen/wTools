@@ -10,7 +10,7 @@
 //! Collection of general purpose tools for type checking.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
 /// Collection of general purpose tools for type checking.
 pub mod typing;

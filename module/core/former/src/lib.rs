@@ -111,7 +111,8 @@
   html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
 )]
 #![doc(html_root_url = "https://docs.rs/former/latest/former/")]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Code generation and builder patterns" ) ]
 
 // xxx : introduce body( struct/enum ) attribute `standalone_constructors` which create stand-alone, top-level constructors for struct/enum. for struct it's always single function, for enum it's as many functions as enum has vartianys. if there is no `arg_for_constructor` then constructors expect exaclty zero arguments. start from implementations without respect of attribute attribute `arg_for_constructor`. by default `standalone_constructors` is false
 // xxx : introduce field attribute to mark an attribute `arg_for_constructor` as an argument which should be used in constructing functions ( either standalone consturcting function or associated with struct ). in case of enums attribute `arg_for_constructor` is attachable only to fields of variant and attempt to attach attribute `arg_for_constructor` to variant must throw understandable error. name standalone constructor of struct the same way struct named, but snake case and for enums the same name variant is named, but snake case. by default it's false.

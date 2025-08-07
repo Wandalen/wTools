@@ -9,7 +9,8 @@
 //! Collection of tools to manipulate memory.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Memory management utilities" ) ]
 
 /// Namespace with dependencies.
 #[cfg(feature = "enabled")]
