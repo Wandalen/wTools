@@ -211,7 +211,7 @@ mod private
       let s2 = interner.intern( "hello" );
       
       // Should return the same reference
-      assert!( std::ptr::eq( s1, s2 ) );
+      assert!( core::ptr::eq( s1, s2 ) );
       assert_eq!( s1, "hello" );
     }
 
@@ -224,7 +224,7 @@ mod private
       let cmd2 = interner.intern_command_name( &[ "command", "subcommand" ] );
       
       // Should return the same reference and correct format
-      assert!( std::ptr::eq( cmd1, cmd2 ) );
+      assert!( core::ptr::eq( cmd1, cmd2 ) );
       assert_eq!( cmd1, ".command.subcommand" );
     }
 
@@ -263,7 +263,7 @@ mod private
       let s1 = intern( "global_test" );
       let s2 = intern( "global_test" );
       
-      assert!( std::ptr::eq( s1, s2 ) );
+      assert!( core::ptr::eq( s1, s2 ) );
       assert_eq!( s1, "global_test" );
     }
 
@@ -273,7 +273,7 @@ mod private
       let cmd1 = intern_command_name( &[ "global", "command" ] );
       let cmd2 = intern_command_name( &[ "global", "command" ] );
       
-      assert!( std::ptr::eq( cmd1, cmd2 ) );
+      assert!( core::ptr::eq( cmd1, cmd2 ) );
       assert_eq!( cmd1, ".global.command" );
     }
 
@@ -332,12 +332,12 @@ mod private
         let interner_clone = Arc::clone( &interner );
         let handle = thread::spawn( move ||
         {
-          let test_string = format!( "test_{}", i );
+          let test_string = format!( "test_{i}" );
           let interned1 = interner_clone.intern( &test_string );
           let interned2 = interner_clone.intern( &test_string );
           
           // Should return the same reference even across threads
-          assert!( std::ptr::eq( interned1, interned2 ) );
+          assert!( core::ptr::eq( interned1, interned2 ) );
           assert_eq!( interned1, test_string );
         });
         handles.push( handle );

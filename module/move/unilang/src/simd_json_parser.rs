@@ -67,7 +67,7 @@ mod private
             TypeError
             {
               expected_kind : crate::data::Kind::Object,
-              reason : format!( "SIMD-JSON failed ({}), serde_json also failed ({})", simd_error, serde_error ),
+              reason : format!( "SIMD-JSON failed ({simd_error}), serde_json also failed ({serde_error})" ),
             }
           })
         }

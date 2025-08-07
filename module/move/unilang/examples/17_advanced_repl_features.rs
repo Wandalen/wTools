@@ -622,11 +622,11 @@ fn display_session_statistics( state : &ReplSessionState )
   println!( "  • Total commands: {}", state.session_count );
   println!( "  • Successful: {} ({:.1}%)", 
     state.successful_commands,
-    if state.session_count > 0 { 100.0 * state.successful_commands as f64 / state.session_count as f64 } else { 0.0 }
+    if state.session_count > 0 { 100.0 * f64::from(state.successful_commands) / f64::from(state.session_count) } else { 0.0 }
   );
   println!( "  • Failed: {} ({:.1}%)", 
     state.failed_commands,
-    if state.session_count > 0 { 100.0 * state.failed_commands as f64 / state.session_count as f64 } else { 0.0 }
+    if state.session_count > 0 { 100.0 * f64::from(state.failed_commands) / f64::from(state.session_count) } else { 0.0 }
   );
 
   if !state.command_stats.is_empty()
@@ -659,15 +659,14 @@ fn display_session_summary( state : &ReplSessionState )
   println!( "📈 Performance:" );
   println!( "  • Commands executed: {}", state.session_count );
   println!( "  • Success rate: {:.1}%", 
-    if state.session_count > 0 { 100.0 * state.successful_commands as f64 / state.session_count as f64 } else { 0.0 }
+    if state.session_count > 0 { 100.0 * f64::from(state.successful_commands) / f64::from(state.session_count) } else { 0.0 }
   );
   
   if !state.command_stats.is_empty()
   {
     let most_used = state.command_stats.iter()
       .max_by_key( |( _, count )| **count )
-      .map( |( cmd, count )| format!( "{cmd} ({count} times)" ) )
-      .unwrap_or_else( || "none".to_string() );
+      .map_or_else(|| "none".to_string(), |( cmd, count )| format!( "{cmd} ({count} times)" ));
     println!( "  • Most used command: {most_used}" );
   }
 
