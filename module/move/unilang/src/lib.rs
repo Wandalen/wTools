@@ -43,4 +43,7 @@ mod_interface::mod_interface!
   
   /// High-level pipeline API.
   layer pipeline;
+  
+  /// String interning system for performance optimization.
+  layer interner;
 }
