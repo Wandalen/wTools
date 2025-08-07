@@ -42,7 +42,7 @@ fn main() -> Result< (), unilang::Error >
 {
   // Create a command registry
   let mut registry = CommandRegistry::new();
-  
+
   // Define a simple greeting command
   let greet_cmd = CommandDefinition
   {
@@ -75,7 +75,7 @@ fn main() -> Result< (), unilang::Error >
     version : "1.0.0".to_string(),
     ..Default::default()
   };
-  
+
   // Define the command's execution logic
   let greet_routine = Box::new( | cmd : VerifiedCommand, _ctx : ExecutionContext |
   {
@@ -84,27 +84,27 @@ fn main() -> Result< (), unilang::Error >
       Some( Value::String( s ) ) => s.clone(),
       _ => "World".to_string(),
     };
-    
+
     println!( "Hello, {}!", name );
-    
+
     Ok( OutputData
     {
       content : format!( "Hello, {}!", name ),
       format : "text".to_string(),
     })
   });
-  
+
   // Register the command
   registry.command_add_runtime( &greet_cmd, greet_routine )?;
-  
+
   // Use the Pipeline API to execute commands
   let pipeline = Pipeline::new( registry );
-  
+
   // Execute a command
   let result = pipeline.process_command_simple( ".greet name::Alice" );
   println!( "Success: {}", result.success );
   println!( "Output: {}", result.outputs[ 0 ].content );
-  
+
   Ok(())
 }
 ```
@@ -601,19 +601,19 @@ use std::io::{ self, Write };
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut registry = CommandRegistry::new();
     // Register your commands...
-    
+
     let pipeline = Pipeline::new(registry);
-    
+
     loop {
         print!("repl> ");
         io::stdout().flush()?;
-        
+
         let mut input = String::new();
         io::stdin().read_line(&mut input)?;
         let input = input.trim();
-        
+
         if input == "quit" { break; }
-        
+
         let result = pipeline.process_command_simple(input);
         if result.success {
             println!("✅ Success: {:?}", result.outputs);
@@ -621,7 +621,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("❌ Error: {}", result.error.unwrap());
         }
     }
-    
+
     Ok(())
 }
 ```
@@ -635,10 +635,10 @@ unilang supports interactive arguments for secure input like passwords:
 ArgumentDefinition {
     name: "password".to_string(),
     kind: Kind::String,
-    attributes: ArgumentAttributes { 
+    attributes: ArgumentAttributes {
         interactive: true,
         sensitive: true,
-        ..Default::default() 
+        ..Default::default()
     },
     // ...
 }
@@ -680,7 +680,7 @@ command_history.push(input.to_string());
 match result.error {
     Some(error) => {
         println!("❌ Error: {error}");
-        
+
         // Provide contextual help
         if error.contains("Command not found") {
             println!("💡 Available commands: {:?}", registry.command_names());
