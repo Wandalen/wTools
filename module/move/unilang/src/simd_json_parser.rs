@@ -49,7 +49,8 @@ mod private
     /// use unilang::simd_json_parser::SIMDJsonParser;
     /// 
     /// let json = r#"{"name": "test", "values": [1, 2, 3]}"#;
-    /// let value = SIMDJsonParser::parse_to_serde_value(json)?;
+    /// let value = SIMDJsonParser::parse_to_serde_value(json).unwrap();
+    /// assert!(!value.is_null());
     /// ```
     #[cfg(feature = "simd-json")]
     pub fn parse_to_serde_value( input : &str ) -> Result< SerdeValue, TypeError >

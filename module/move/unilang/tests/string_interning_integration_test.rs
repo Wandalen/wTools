@@ -299,7 +299,7 @@ fn test_pipeline_integration_correctness()
 #[ test ]
 fn test_error_handling_with_interning()
 {
-  let mut registry = CommandRegistry::new(); // Empty registry
+  let registry = CommandRegistry::new(); // Empty registry
   let pipeline = Pipeline::new( registry );
   
   // Try to process a non-existent command

@@ -1,6 +1,6 @@
 //! Simple JSON performance comparison test
 
-use test_tools::*;
+// Performance test for SIMD JSON parsing
 use unilang::simd_json_parser::SIMDJsonParser;
 use serde_json::Value as SerdeValue;
 use std::time::Instant;

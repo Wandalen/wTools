@@ -10,7 +10,7 @@
 //! - P99 latency: Under 500μs for command resolution
 
 #[ cfg( feature = "benchmarks" ) ]
-use std::time::{ Duration, Instant };
+use std::time::Instant;
 #[ cfg( feature = "benchmarks" ) ]
 use unilang::interner::{ StringInterner, intern_command_name };
 
@@ -86,7 +86,7 @@ fn benchmark_string_interning_miss( command_slices : &[ &[ &str ] ], iterations 
   
   let start_time = Instant::now();
   
-  for i in 0..iterations
+  for _i in 0..iterations
   {
     // Create unique interner for each iteration to simulate cache miss
     let interner = StringInterner::new();
