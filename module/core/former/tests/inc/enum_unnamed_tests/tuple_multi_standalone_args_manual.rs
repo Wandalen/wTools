@@ -23,15 +23,12 @@ pub enum TestEnum
   Variant( u32, String ),
 }
 
-// Manually implement the standalone constructor for the variant
-impl TestEnum
+/// Manually implemented standalone constructor for the Variant variant (scalar style with args).
+/// This function is at module level to match the `#[standalone_constructors]` behavior.
+#[ inline( always ) ]
+pub fn variant( value1 : u32, value2 : String ) -> TestEnum
 {
-  /// Manually implemented standalone constructor for the Variant variant (scalar style with args).
-  #[ inline( always ) ]
-  pub fn variant( value1 : u32, value2 : String ) -> Self
-  {
-    Self::Variant( value1, value2 )
-  }
+  TestEnum::Variant( value1, value2 )
 }
 
 include!( "tuple_multi_standalone_args_only_test.rs" );

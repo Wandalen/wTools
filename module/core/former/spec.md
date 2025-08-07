@@ -15,14 +15,70 @@
     *   **Storage:** An internal, temporary struct (`...FormerStorage`) that holds the intermediate state of the object being built.
     *   **Definition:** A configuration struct (`...FormerDefinition`) that defines the types and `End` condition for a forming process.
     *   **Subformer:** A `Former` instance used to build a part of a larger object.
+    *   **Target Type Categories:** The fundamental classification of Rust types the macro operates on (Structs vs Enums).
+    *   **Variant Structure Types:** The three categories of enum variant syntax (Unit, Tuple, Named) that determine parsing and generation rules.
+    *   **Behavioral Categories:** The five fundamental groupings that classify all possible Former macro usage patterns based on syntax structure and complexity. These categories drive macro implementation architecture, code generation strategies, and systematic validation (including test organization).
 
 ### 2. Core Behavioral Specification
 
 This section defines the core user-facing contract of the `former` macro. The following logic tables and attribute definitions are the single source of truth for its behavior.
 
-#### 2.1. Enum Variant Constructor Logic
+#### 2.1. Target Type Classification
 
-The macro generates a static constructor method on the enum for each variant. The type of constructor is determined by the variant's structure and attributes according to the following rules:
+The `former` macro operates on two fundamental **Target Type Categories**, each with distinct behavioral rules and test coverage families:
+
+##### 2.1.1. Structural Type Categories
+
+* **Structs** - Regular Rust structs with named fields (`struct MyStruct { field: T }`)
+* **Enums** - Rust enums with variants, subdivided by **Variant Structure Types**:
+
+##### 2.1.2. Enum Variant Structure Types
+
+The macro classifies enum variants into three **Variant Structure Types** based on their field syntax:
+
+* **Unit Variants** - No associated data (`Variant`)
+* **Tuple Variants** - Positional fields (`Variant(T1, T2)` or `Variant()`)  
+* **Named Variants** - Named fields (`Variant { field: T }` or `Variant {}`)
+
+Each Variant Structure Type has distinct parsing rules, generated code patterns, and behavioral specifications as defined in the rule tables below.
+
+##### 2.1.3. Behavioral Categories
+
+The macro architecture is organized around five fundamental **Behavioral Categories** that classify all Former usage patterns by syntax structure and complexity:
+
+* **Struct Formers** - Regular Rust structs with named fields (foundational builder patterns)
+* **Unit Variant Formers** - Enum variants with no associated data (simple enum cases)  
+* **Tuple Variant Formers** - Enum variants with positional fields (tuple-like syntax)
+* **Named Variant Formers** - Enum variants with named fields (struct-like syntax)
+* **Complex Scenario Formers** - Advanced combinations and cross-cutting patterns
+
+Each Behavioral Category has distinct:
+- **Implementation patterns** (parsing logic, code generation strategies)
+- **API characteristics** (constructor types, setter methods, subformer behavior)
+- **Rule coverage** (applicable specification rules and attribute combinations)
+- **Validation approach** (systematic testing through corresponding test families)
+
+##### 2.1.4. Implementation and Testing Organization
+
+Each **Behavioral Category** corresponds to distinct implementation modules and systematic test validation:
+
+| Behavioral Category | Target Type | Variant Structure Type | Rule Coverage | Implementation Focus | Test Family |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Struct Formers | Structs | N/A | All struct rules | Core builder patterns | `struct_tests` |
+| Unit Variant Formers | Enums | Unit Variants | Rules 1a, 2a, 3a | Simple constructors | `enum_unit_tests` |
+| Tuple Variant Formers | Enums | Tuple Variants | Rules 1b, 1d, 1f, 2b, 2d, 2f, 3b, 3d, 3f | Positional setters | `enum_unnamed_tests` |
+| Named Variant Formers | Enums | Named Variants | Rules 1c, 1e, 1g, 2c, 2e, 2g, 3c, 3g | Named field setters | `enum_named_tests` |
+| Complex Scenario Formers | Enums | Mixed/Advanced | Cross-cutting rules | Edge case handling | `enum_complex_tests` |
+
+This **Behavioral Category** system provides:
+- **Architectural guidance** for macro implementation organization
+- **API design consistency** across similar usage patterns  
+- **Specification completeness** through systematic rule coverage
+- **Quality assurance** via comprehensive test validation families
+
+#### 2.2. Enum Variant Constructor Logic
+
+The macro generates a static constructor method on the enum for each variant. The type of constructor is determined by the variant's **Variant Structure Type** and attributes according to the following rules:
 
 | Rule | Variant Structure | Attribute(s) | Generated Constructor Behavior |
 | :--- | :--- | :--- | :--- |
@@ -53,7 +109,7 @@ The macro generates a static constructor method on the enum for each variant. Th
 - Workaround: Use positional setters or mark variants as `#[scalar]` for direct construction
 
 
-#### 2.2. Standalone Constructor Behavior
+#### 2.3. Standalone Constructor Behavior
 
 When the `#[standalone_constructors]` attribute is applied to an item, the return type of the generated top-level function(s) is determined by the usage of `#[former_ignore]` on its fields:
 
@@ -62,11 +118,11 @@ When the `#[standalone_constructors]` attribute is applied to an item, the retur
 
 **⚠️ Breaking Change Notice**: This specification represents the current behavior. Previous versions may have implemented different patterns where standalone constructors always returned `Former` instances. Manual implementations following the old pattern need to be updated to match the new specification for consistency.
 
-#### 2.3. Attribute Reference
+#### 2.4. Attribute Reference
 
 The following attributes control the behavior defined in the logic tables above.
 
-##### 2.3.1. Item-Level Attributes
+##### 2.4.1. Item-Level Attributes
 
 | Attribute | Purpose & Behavior |
 | :--- | :--- |
@@ -76,7 +132,7 @@ The following attributes control the behavior defined in the logic tables above.
 | `#[standalone_constructors]` | Generates top-level constructor functions. |
 | `#[debug]` | Prints the macro's generated code to the console at compile time. |
 
-##### 2.3.2. Field-Level / Variant-Level Attributes
+##### 2.4.2. Field-Level / Variant-Level Attributes
 
 | Attribute | Purpose & Behavior |
 | :--- | :--- |
@@ -87,7 +143,7 @@ The following attributes control the behavior defined in the logic tables above.
 | `#[subform_entry]` | Generates a method returning a subformer for a single entry of a collection. |
 | `#[former_ignore]` | Excludes a field from being a parameter in `#[standalone_constructors]` functions. The field will use its default value or remain unset. |
 
-##### 2.3.3. Attribute Precedence and Interaction Rules
+##### 2.4.3. Attribute Precedence and Interaction Rules
 
 1.  **Subform vs. Scalar:** Subform attributes (`#[subform_scalar]`, `#[subform_collection]`, `#[subform_entry]`) take precedence over `#[scalar]`. If both are present, the subform behavior is implemented, and a scalar setter is **not** generated unless explicitly requested via `#[scalar(setter = true)]`.
 2.  **Setter Naming:** If a `name` is provided (e.g., `#[scalar(name = new_name)]`), it overrides the default setter name derived from the field's identifier.

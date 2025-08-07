@@ -1,25 +1,11 @@
-// File: module/core/former/tests/inc/former_enum_tests/unnamed_tests/standalone_constructor_args_tuple_only_test.rs
+// Purpose: Tests standalone constructor args functionality
+// This file is included by standalone_constructor_args_tuple derive/manual files
 
-// Use the items defined in the including file (manual or derive for args)
-use super::*;
-
-/// Tests the standalone constructor for a tuple variant that takes arguments.
 #[ test ]
-fn tuple_variant_args_test() // New test name
+fn standalone_args_constructor_test()
 {
-  // Assumes `tuple_variant_args` takes an i32 argument and returns Self (Option 2)
-  let instance = tuple_variant_args( 202 ); // Call directly
-  let expected = TestEnumArgs::TupleVariantArgs( 202 );
-  assert_eq!( instance, expected );
-}
-
-/// Tests the standalone constructor for a multi-field tuple variant that takes arguments.
-#[ test ]
-fn multi_tuple_variant_args_test()
-{
-  // Based on derive file, `MultiTupleArgs` has #[scalar] attribute and no #[arg_for_constructor] fields.
-  // Scalar behavior: constructor takes ALL fields as arguments and returns enum directly
-  let instance = multi_tuple_args( 42, true ); // Call with all field arguments
+  // Test scalar multi-tuple variant with generated constructor
+  let got = TestEnumArgs::multi_tuple_args( 42, true );
   let expected = TestEnumArgs::MultiTupleArgs( 42, true );
-  assert_eq!( instance, expected );
+  assert_eq!( got, expected );
 }

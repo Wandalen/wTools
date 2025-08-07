@@ -157,15 +157,12 @@ for TestEnumVariantEnd
 // --- End Manual Former Setup for Variant ---
 
 
-// Manually implement the standalone constructor for the variant
-impl TestEnum
+/// Manually implemented standalone constructor for the Variant variant (former builder style).
+/// This function is at module level to match the `#[standalone_constructors]` behavior.
+#[ inline( always ) ]
+pub fn variant() -> TestEnumVariantFormer
 {
-  /// Manually implemented standalone constructor for the Variant variant (former builder style).
-  #[ inline( always ) ]
-  pub fn variant() -> TestEnumVariantFormer
-  {
-    TestEnumVariantFormer::begin( None, None, TestEnumVariantEnd::default() )
-  }
+  TestEnumVariantFormer::begin( None, None, TestEnumVariantEnd::default() )
 }
 
 include!( "tuple_multi_standalone_only_test.rs" );

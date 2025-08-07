@@ -79,7 +79,7 @@ where Definition: FormerDefinition<Storage = InnerForSubformFormerStorage> {
 
 // Define the enum without the derive macro
 #[ derive( Debug, PartialEq ) ]
-pub enum EnumWithNamedFieldsManual // Renamed enum for clarity
+pub enum EnumWithNamedFields // Renamed enum for clarity
 {
   // --- Zero Fields (Named - Struct-like) ---
   VariantZeroScalar {},
@@ -99,22 +99,22 @@ pub enum EnumWithNamedFieldsManual // Renamed enum for clarity
 
 // --- Components for VariantOneSubform ---
 #[derive(Default, Debug)] pub struct EnumWithNamedFieldsVariantOneSubformEnd;
-impl FormingEnd<InnerForSubformFormerDefinitionTypes<(), EnumWithNamedFieldsManual>> for EnumWithNamedFieldsVariantOneSubformEnd {
-    #[inline(always)] fn call(&self, sub_storage: InnerForSubformFormerStorage, _context: Option<()>) -> EnumWithNamedFieldsManual {
-        EnumWithNamedFieldsManual::VariantOneSubform { field_b: sub_storage.preform() }
+impl FormingEnd<InnerForSubformFormerDefinitionTypes<(), EnumWithNamedFields>> for EnumWithNamedFieldsVariantOneSubformEnd {
+    #[inline(always)] fn call(&self, sub_storage: InnerForSubformFormerStorage, _context: Option<()>) -> EnumWithNamedFields {
+        EnumWithNamedFields::VariantOneSubform { field_b: sub_storage.preform() }
     }
 }
 
 // --- Components for VariantOneDefault ---
 #[derive(Default, Debug)] pub struct EnumWithNamedFieldsVariantOneDefaultEnd;
-impl FormingEnd<InnerForSubformFormerDefinitionTypes<(), EnumWithNamedFieldsManual>> for EnumWithNamedFieldsVariantOneDefaultEnd {
-    #[inline(always)] fn call(&self, sub_storage: InnerForSubformFormerStorage, _context: Option<()>) -> EnumWithNamedFieldsManual {
-        EnumWithNamedFieldsManual::VariantOneDefault { field_c: sub_storage.preform() }
+impl FormingEnd<InnerForSubformFormerDefinitionTypes<(), EnumWithNamedFields>> for EnumWithNamedFieldsVariantOneDefaultEnd {
+    #[inline(always)] fn call(&self, sub_storage: InnerForSubformFormerStorage, _context: Option<()>) -> EnumWithNamedFields {
+        EnumWithNamedFields::VariantOneDefault { field_c: sub_storage.preform() }
     }
 }
 
 // --- Static Methods on the Enum ---
-impl EnumWithNamedFieldsManual
+impl EnumWithNamedFields
 {
   // --- Zero Fields (Named - Struct-like) ---
   #[ inline( always ) ]
