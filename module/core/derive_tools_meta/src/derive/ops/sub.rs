@@ -149,7 +149,7 @@ fn generate_enum
   } 
   else 
   {
-    qt! { String }
+    qt! { &'static str }
   };
 
   let enum_match = super::generate_enum_match_body( item_name, variants, item_attrs, OpKind::Sub, op_expr );
