@@ -1,6 +1,6 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use the_module::prelude::*;
 
 tests_impls! {

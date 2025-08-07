@@ -1,6 +1,8 @@
 // Purpose: Replacement for generic_enum_simple_unit_derive - tests unit variants without generics
 // This works around the architectural limitation that Former derive cannot parse generic enums
 
+#![allow(non_camel_case_types)] // Allow for generated Former type names with underscores
+
 use super::*;
 #[allow(unused_imports)]
 use ::former::prelude::*;
@@ -8,7 +10,7 @@ use ::former::Former;
 
 // Simple enum without generics - works around derive macro limitation
 #[derive(Debug, PartialEq, Former)]
-#[allow(non_camel_case_types)] // Allow for generated Former type names
+#[allow(non_camel_case_types)] // Allow for generated Former type names with underscores
 pub enum SimpleEnum {
   // Unit variant
   UnitVariant,

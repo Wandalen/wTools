@@ -1,8 +1,9 @@
 //! qqq : write proper description
 use diagnostics_tools::prelude::*;
 
-fn main() {
-  a_id!(1, 2);
+fn main()
+{
+  a_id!( 1, 2 );
   /*
       print :
       ...

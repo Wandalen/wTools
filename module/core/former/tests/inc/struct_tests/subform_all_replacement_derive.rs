@@ -264,7 +264,7 @@ fn advanced_subform_all_test() {
 #[test]
 fn subform_all_stress_test() {
   // Test comprehensive combination of all subform types
-  let inner = SubformAllInner {
+  let _inner = SubformAllInner {
     title: "stress".to_string(),
     value: 777,
     active: true,
