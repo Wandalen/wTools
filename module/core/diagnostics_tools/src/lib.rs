@@ -6,6 +6,7 @@
 #![doc(html_root_url = "https://docs.rs/diagnostics_tools/latest/diagnostics_tools/")]
 //! Diagnostics tools for runtime and compile-time assertions.
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Diagnostic utilities" ) ]
 
 #[ cfg( feature = "enabled" ) ]
 /// Compile-time asserting.

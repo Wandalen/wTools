@@ -10,7 +10,7 @@
 //! Utility to publish modules on `crates.io` from a command line.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
 use ::wtest::*;
 #[ cfg( not( feature = "no_std" ) ) ]
