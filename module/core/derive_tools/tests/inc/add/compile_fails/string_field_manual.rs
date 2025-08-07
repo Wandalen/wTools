@@ -7,11 +7,11 @@ pub struct StringStruct
 impl std::ops::Add for StringStruct 
 {
   type Output = Self;
-  fn add( self, rhs : Self ) -> Self::Output 
+  fn add( self, other : Self ) -> Self::Output 
   {
     StringStruct 
     {
-      x : self.x + rhs.x, // will not compile with rhs: String. Could compile with &String or &str
+      x : self.x + other.x, // will not compile with other: String. Could compile with &String or &str
     }
   }
 }
@@ -19,11 +19,11 @@ impl std::ops::Add for StringStruct
 impl std::ops::Sub for StringStruct 
 {
   type Output = Self;
-  fn sub( self, rhs : Self ) -> Self::Output 
+  fn sub( self, other : Self ) -> Self::Output 
   {
     StringStruct 
     {
-      x : self.x - rhs.x,
+      x : self.x - other.x,
     }
   }
 }

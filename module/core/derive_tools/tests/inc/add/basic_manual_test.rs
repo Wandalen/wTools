@@ -36,12 +36,12 @@ pub struct NamedStruct { x : i32, y : i32 }
 impl Add for NamedStruct 
 {
   type Output = Self;
-  fn add( self, rhs : Self ) -> Self::Output 
+  fn add( self, other : Self ) -> Self::Output 
   {
     Self 
     {
-      x : self.x + rhs.x,
-      y : self.y + rhs.y,
+      x : self.x + other.x,
+      y : self.y + other.y,
     }
   }
 }
@@ -49,12 +49,12 @@ impl Add for NamedStruct
 impl Sub for NamedStruct 
 {
   type Output = Self;
-  fn sub( self, rhs : Self ) -> Self::Output 
+  fn sub( self, other : Self ) -> Self::Output 
   {
     Self 
     {
-      x : self.x - rhs.x,
-      y : self.y - rhs.y,
+      x : self.x - other.x,
+      y : self.y - other.y,
     }
   }
 }
@@ -66,18 +66,18 @@ pub struct TupleStruct( i32 );
 impl Add for TupleStruct 
 {
   type Output = Self;
-  fn add( self, rhs : Self ) -> Self::Output 
+  fn add( self, other : Self ) -> Self::Output 
   {
-    TupleStruct( self.0 + rhs.0 )
+    TupleStruct( self.0 + other.0 )
   }
 }
 
 impl Sub for TupleStruct 
 {
   type Output = Self;
-  fn sub( self, rhs : Self ) -> Self::Output 
+  fn sub( self, other : Self ) -> Self::Output 
   {
-    TupleStruct( self.0 - rhs.0 )
+    TupleStruct( self.0 - other.0 )
   }
 }
 
@@ -126,11 +126,11 @@ where
   O: Add< Output = O > + Sub< Output = O >,
 {
   type Output = Self;
-  fn add( self, rhs : Self ) -> Self::Output 
+  fn add( self, other : Self ) -> Self::Output 
   {
     Self 
     {
-      x : self.x + rhs.x,
+      x : self.x + other.x,
     }
   }
 }
@@ -140,11 +140,11 @@ where
   O : Add< Output = O > + Sub< Output = O >,
 {
   type Output = Self;
-  fn sub( self, rhs: Self ) -> Self::Output 
+  fn sub( self, other : Self ) -> Self::Output 
   {
     Self 
     {
-        x : self.x - rhs.x,
+        x : self.x - other.x,
     }
   }
 }
@@ -156,9 +156,9 @@ pub enum E { One( i32 ), Two }
 impl Add for E 
 {
   type Output = Result< Self, String >;
-  fn add( self, rhs : Self ) -> Self::Output 
+  fn add( self, other : Self ) -> Self::Output 
   {
-    match ( self, rhs ) 
+    match ( self, other ) 
     {
       ( E::One( a ), E::One( b ) ) => Ok( E::One( a + b ) ),
       _ => { Err( "Cannot add different variants".into() ) }
@@ -169,9 +169,9 @@ impl Add for E
 impl Sub for E 
 {
   type Output = Result< Self, String >;
-  fn sub( self, rhs : Self ) -> Self::Output 
+  fn sub( self, other : Self ) -> Self::Output 
   {
-    match ( self, rhs ) 
+    match ( self, other ) 
     {
       ( E::One( a ), E::One( b ) ) => Ok( E::One( a - b ) ),
       _ => { Err( "Cannot sub different variants".into() ) }
@@ -193,9 +193,9 @@ pub enum E2
 impl std::ops::Add for E2 
 {
   type Output = Result< Self, BoxedError >;
-  fn add( self, rhs: Self ) -> Self::Output 
+  fn add( self, other : Self ) -> Self::Output 
   {
-    match ( self, rhs ) 
+    match ( self, other ) 
     {
       ( E2::One( a ), E2::One( b ) ) => Ok( E2::One( a + b ) ),
       ( E2::Two( a ), E2::Two( b ) ) => Ok( E2::Two( a + b ) ),
@@ -207,9 +207,9 @@ impl std::ops::Add for E2
 impl std::ops::Sub for E2 
 {
   type Output = Result< Self, BoxedError >;
-  fn sub( self, rhs : Self ) -> Self::Output 
+  fn sub( self, other : Self ) -> Self::Output 
   {
-    match ( self, rhs ) 
+    match ( self, other ) 
     {
       ( E2::One( a ), E2::One( b ) ) => Ok( E2::One( a - b ) ),
       ( E2::Two( a ), E2::Two( b ) ) => Ok( E2::Two( a - b ) ),
@@ -236,9 +236,9 @@ pub enum ErrorExpr
 impl std::ops::Add for E3 
 {
   type Output = Result< Self, ErrorExpr >;
-  fn add( self, rhs : Self ) -> Self::Output 
+  fn add( self, other : Self ) -> Self::Output 
   {
-    match ( self, rhs ) 
+    match ( self, other ) 
     {
       ( E3::One( a ), E3::One( b ) ) => Ok( E3::One( a + b ) ),
       ( E3::Two( a ), E3::Two( b ) ) => Ok( E3::Two( a + b ) ),
@@ -250,9 +250,9 @@ impl std::ops::Add for E3
 impl std::ops::Sub for E3 
 {
   type Output = Result< Self, ErrorExpr >;
-  fn sub( self, rhs : Self ) -> Self::Output 
+  fn sub( self, other : Self ) -> Self::Output 
   {
-    match ( self, rhs ) 
+    match ( self, other ) 
     {
       ( E3::One( a ), E3::One( b ) ) => Ok( E3::One( a - b ) ),
       ( E3::Two( a ), E3::Two( b ) ) => Ok( E3::Two( a - b ) ),
@@ -272,9 +272,9 @@ enum E4
 impl std::ops::Add for E4 
 {
   type Output = Result< Self, BoxedError >;
-  fn add( self, rhs : Self ) -> Self::Output 
+  fn add( self, other : Self ) -> Self::Output 
   {
-    match ( self, rhs ) 
+    match ( self, other ) 
     {
       ( E4::One( a ), E4::One( b ) ) => Ok( E4::One( a + b ) ),
       ( E4::Two( a ), E4::Two( b ) ) => Ok( E4::Two( a + b ) ),
@@ -286,9 +286,9 @@ impl std::ops::Add for E4
 impl std::ops::Sub for E4 
 {
   type Output = Result< Self, BoxedError >;
-  fn sub( self, rhs : Self ) -> Self::Output 
+  fn sub( self, other : Self ) -> Self::Output 
   {
-    match ( self, rhs ) 
+    match ( self, other ) 
     {
       ( E4::One( a ), E4::One( b ) ) => Ok( E4::One( a - b ) ),
       ( E4::Two( a ), E4::Two( b ) ) => Ok( E4::Two( a - b ) ),
@@ -308,9 +308,9 @@ enum E5
 impl std::ops::Add for E5 
 {
   type Output = Result< Self, ErrorExpr >;
-  fn add( self, rhs : Self ) -> Self::Output 
+  fn add( self, other : Self ) -> Self::Output 
   {
-    match ( self, rhs )
+    match ( self, other )
     {
       ( E5::One( a ), E5::One( b ) ) => Ok( E5::One( a + b ) ),
       ( E5::Two( a ), E5::Two( b ) ) => Ok( E5::Two( a + b ) ),
@@ -322,9 +322,9 @@ impl std::ops::Add for E5
 impl std::ops::Sub for E5 
 {
   type Output = Result< Self, ErrorExpr >;
-  fn sub( self, rhs : Self ) -> Self::Output 
+  fn sub( self, other : Self ) -> Self::Output 
   {
-    match ( self, rhs ) 
+    match ( self, other ) 
     {
       ( E5::One( a ), E5::One( b ) ) => Ok( E5::One( a - b ) ),
       ( E5::Two( a ), E5::Two( b ) ) => Ok( E5::Two( a - b ) ),

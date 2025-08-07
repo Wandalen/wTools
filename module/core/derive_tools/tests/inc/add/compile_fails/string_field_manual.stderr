@@ -1,19 +1,19 @@
 error[E0308]: mismatched types
   --> tests/inc/add/compile_fails/string_field_manual.rs
    |
-   |       x : self.x + rhs.x, // will not compile with rhs: String. Could compile with &String or &str
-   |                    ^^^^^ expected `&str`, found `String`
+   |       x : self.x + other.x, // will not compile with other: String. Could compile with &String or &str
+   |                    ^^^^^^^ expected `&str`, found `String`
    |
 help: consider borrowing here
    |
-14 |       x : self.x + &rhs.x, // will not compile with rhs: String. Could compile with &String or &str
+14 |       x : self.x + &other.x, // will not compile with other: String. Could compile with &String or &str
    |                    +
 
 error[E0369]: cannot subtract `String` from `String`
  --> tests/inc/add/compile_fails/string_field_manual.rs
   |
-  |       x : self.x - rhs.x,
-  |           ------ ^ ----- String
+  |       x : self.x - other.x,
+  |           ------ ^ ------- String
   |           |
   |           String
   |

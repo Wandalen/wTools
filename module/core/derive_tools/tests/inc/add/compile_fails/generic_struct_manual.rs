@@ -7,11 +7,11 @@ pub struct GenericStruct< T >
 impl< T > std::ops::Add for GenericStruct< T > 
 {
   type Output = Self;
-  fn add( self, rhs : Self ) -> Self::Output 
+  fn add( self, other : Self ) -> Self::Output 
   {
     GenericStruct 
     {
-      x : self.x + rhs.x, // Will not compile unless T: Add
+      x : self.x + other.x, // Will not compile unless T: Add
     }
   }
 }
@@ -19,11 +19,11 @@ impl< T > std::ops::Add for GenericStruct< T >
 impl< T > std::ops::Sub for GenericStruct< T > 
 {
   type Output = Self;
-  fn sub( self, rhs : Self ) -> Self::Output 
+  fn sub( self, other : Self ) -> Self::Output 
   {
     GenericStruct 
     {
-      x : self.x - rhs.x, // Will not compile unless T: Sub
+      x : self.x - other.x, // Will not compile unless T: Sub
     }
   }
 }
