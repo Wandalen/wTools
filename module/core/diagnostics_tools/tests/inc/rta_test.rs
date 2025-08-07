@@ -219,10 +219,7 @@ tests_impls! {
   }
 }
 
-// Windows-specific test index - commented out due to macro resolution issues
-// The tests are already defined above and will run on all platforms
-/*
-#[ cfg( target_os = "windows" ) ]
+// Windows-specific test index (cfg directive disabled as requested)
 tests_index! {
   a_true_pass,
   a_true_fail_simple,
@@ -254,39 +251,4 @@ tests_index! {
   a_dbg_not_id_fail_with_msg,
   a_dbg_not_id_fail_with_msg_template,
 }
-*/
 
-#[ cfg( not( target_os = "windows" ) ) ]
-tests_index! {
-  a_true_pass,
-  a_true_fail_simple,
-  a_true_fail_with_msg,
-  a_true_fail_with_msg_template,
-
-  a_id_pass,
-  a_id_fail_simple,
-  a_id_fail_with_msg,
-  a_id_fail_with_msg_template,
-
-
-  a_not_id_pass,
-  a_not_id_fail_simple,
-  a_not_id_fail_with_msg,
-  a_not_id_fail_with_msg_template,
-
-
-  a_dbg_true_pass,
-  a_dbg_true_fail_simple,
-  a_dbg_true_fail_with_msg,
-  a_dbg_true_fail_with_msg_template,
-
-  a_dbg_id_pass,
-  a_dbg_id_fail_simple,
-  a_dbg_id_fail_with_msg,
-  a_dbg_id_fail_with_msg_template,
-
-  a_dbg_not_id_pass,
-  a_dbg_not_id_fail_simple,
-  a_dbg_not_id_fail_with_msg,
-  a_dbg_not_id_fail_with_msg_template,
-}
