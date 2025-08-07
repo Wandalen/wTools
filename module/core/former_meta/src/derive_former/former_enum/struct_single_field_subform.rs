@@ -85,9 +85,9 @@
 //! }
 //! ```
 //!
-//! ### 4. StoragePreform Implementation (Critical Prevention)
+//! ### 4. `StoragePreform` Implementation (Critical Prevention)
 //! **Issue Resolved**: Manual implementations not properly handling single-field preform logic
-//! **Root Cause**: Single-field preform requires special handling for unwrap_or_default()
+//! **Root Cause**: Single-field preform requires special handling for `unwrap_or_default()`
 //! **Solution**: Specialized preform implementation for single-field variant construction
 //! **Prevention**: Safe unwrapping with proper default value handling
 //!
@@ -175,6 +175,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// ## Returns
 /// - `Ok(TokenStream)`: Generated enum method that returns the single-field variant former
 /// - `Err(syn::Error)`: If variant processing fails due to invalid configuration
+#[allow(clippy::too_many_lines)]
 pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
 {
   let variant_name = &ctx.variant.ident;

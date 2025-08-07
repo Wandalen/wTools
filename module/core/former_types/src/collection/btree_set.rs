@@ -78,7 +78,6 @@ impl<E> StoragePreform for BTreeSet<E> {
 /// - `Formed`: The type formed at the end of the formation process, typically a `BTreeSet<E>`.
 /// - `End`: A trait determining the behavior at the end of the formation process.
 ///
-
 #[derive(Debug, Default)]
 pub struct BTreeSetDefinition<E, Context, Formed, End>
 where
@@ -112,7 +111,6 @@ where
 /// - `E`: The element type of the binary tree set.
 /// - `Context`: The context in which the binary tree set is formed.
 /// - `Formed`: The type produced as a result of the formation process.
-
 #[derive(Debug, Default)]
 pub struct BTreeSetDefinitionTypes<E, Context = (), Formed = BTreeSet<E>> {
   _phantom: core::marker::PhantomData<(E, Context, Formed)>,

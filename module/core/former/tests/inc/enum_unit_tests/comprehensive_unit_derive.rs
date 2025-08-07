@@ -79,13 +79,11 @@ fn standalone_another_variant_test() {
 // Comprehensive stress test
 #[test]
 fn comprehensive_unit_stress_test() {
-  let variants = vec![
-    ComprehensiveUnitEnum::simple_variant(),
+  let variants = [ComprehensiveUnitEnum::simple_variant(),
     ComprehensiveUnitEnum::another_variant(),
     ComprehensiveUnitEnum::yet_another_variant(),
     ComprehensiveUnitEnum::break_variant(),
-    ComprehensiveUnitEnum::loop_variant(),
-  ];
+    ComprehensiveUnitEnum::loop_variant()];
   
   // Verify all variants are different and properly constructed
   assert_eq!(variants.len(), 5);

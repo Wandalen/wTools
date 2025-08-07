@@ -46,7 +46,7 @@ mod attribute_validation;
 /// - Complex lifetime parameters (`'child`, `'storage`, etc.)
 /// - Multiple generic constraints with trait bounds
 /// - HRTB (Higher-Ranked Trait Bounds) scenarios
-/// - Static lifetime requirements for HashMap scenarios
+/// - Static lifetime requirements for `HashMap` scenarios
 ///
 /// # Pitfall Prevention
 /// The centralized generic handling prevents inconsistent generic parameter usage
@@ -87,10 +87,10 @@ impl ToTokens for FormerDefinitionTypesGenerics<'_> {
 /// This function properly handles the complex generic scenarios that were resolved during testing:
 /// - Lifetime parameter propagation (`'a`, `'child`, `'storage`)
 /// - Where clause constraint preservation
-/// - Static lifetime bounds when required for HashMap scenarios
+/// - Static lifetime bounds when required for `HashMap` scenarios
 ///
 /// # Pitfalls Prevented
-/// - **Generic Parameter Consistency**: Ensures impl_generics and where_clause are properly synchronized
+/// - **Generic Parameter Consistency**: Ensures `impl_generics` and `where_clause` are properly synchronized
 /// - **Lifetime Parameter Scope**: Prevents undeclared lifetime errors that occurred in manual implementations
 /// - **Custom vs Default Logic**: Clear separation prevents accidentally overriding user's custom implementations
 #[allow(clippy::format_in_format_args, clippy::unnecessary_wraps)]
@@ -200,7 +200,7 @@ utilizes a defined end strategy to finalize the object creation.
 /// - **Complex Lifetime Scenarios**: `<'child, T>` patterns with where clauses
 /// - **Generic Constraints**: `where T: Hash + Eq` and complex trait bounds
 /// - **Nested Structures**: Subform patterns with proper trait bound propagation
-/// - **Collection Types**: HashMap, Vec, HashSet with automatic trait bound handling
+/// - **Collection Types**: `HashMap`, Vec, `HashSet` with automatic trait bound handling
 /// - **Feature Gate Compatibility**: Proper `no_std` and `use_alloc` feature handling
 ///
 /// # Processing Flow

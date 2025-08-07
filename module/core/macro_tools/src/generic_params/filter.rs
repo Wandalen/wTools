@@ -54,21 +54,21 @@ where
 }
 
 /// Predicate to filter only lifetime parameters.
-pub fn filter_lifetimes(param: &syn::GenericParam) -> bool {
+#[must_use] pub fn filter_lifetimes(param: &syn::GenericParam) -> bool {
   matches!(param, syn::GenericParam::Lifetime(_))
 }
 
 /// Predicate to filter only type parameters.
-pub fn filter_types(param: &syn::GenericParam) -> bool {
+#[must_use] pub fn filter_types(param: &syn::GenericParam) -> bool {
   matches!(param, syn::GenericParam::Type(_))
 }
 
 /// Predicate to filter only const parameters.
-pub fn filter_consts(param: &syn::GenericParam) -> bool {
+#[must_use] pub fn filter_consts(param: &syn::GenericParam) -> bool {
   matches!(param, syn::GenericParam::Const(_))
 }
 
 /// Predicate to filter out lifetime parameters (keeping types and consts).
-pub fn filter_non_lifetimes(param: &syn::GenericParam) -> bool {
+#[must_use] pub fn filter_non_lifetimes(param: &syn::GenericParam) -> bool {
   !matches!(param, syn::GenericParam::Lifetime(_))
 }

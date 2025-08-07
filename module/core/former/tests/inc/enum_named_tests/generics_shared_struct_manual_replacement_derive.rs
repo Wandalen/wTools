@@ -5,8 +5,8 @@
 use super::*;
 
 // Simplified bounds that work with current Former API
-pub trait SimpleBoundA: std::fmt::Debug + Default + Clone + PartialEq {}
-pub trait SimpleBoundB: std::fmt::Debug + Default + Clone + PartialEq {}
+pub trait SimpleBoundA: core::fmt::Debug + Default + Clone + PartialEq {}
+pub trait SimpleBoundB: core::fmt::Debug + Default + Clone + PartialEq {}
 
 // Simple concrete type implementing both bounds
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -22,7 +22,7 @@ impl SimpleBoundB for SimpleSharedType {}
 #[derive(Debug, Clone, PartialEq, Default, former::Former)]
 pub struct SharedInner<T>
 where
-  T: SimpleBoundB + Clone + Default + PartialEq + std::fmt::Debug,
+  T: SimpleBoundB + Clone + Default + PartialEq + core::fmt::Debug,
 {
   pub content: T,
   pub shared_field: String,
@@ -69,7 +69,7 @@ fn generics_shared_struct_manual_replacement_basic_test() {
     .form();
     
   let expected = SharedStructVariant {
-    inner: inner,
+    inner,
     flag: true,
     description: "basic_test".to_string(),
   };
@@ -101,7 +101,7 @@ fn generics_shared_struct_manual_replacement_nested_building_test() {
   assert_eq!(got.inner.content.value, 100);
   assert_eq!(got.inner.shared_field, "nested_field");
   assert_eq!(got.inner.priority, 5);
-  assert_eq!(got.flag, false);
+  assert!(!got.flag);
   assert_eq!(got.description, "nested_test");
 }
 
@@ -119,12 +119,12 @@ fn generics_shared_struct_manual_replacement_shared_functionality_test() {
       .inner(
         SharedInner::former()
           .content(shared_type)
-          .shared_field(format!("field_{}", i))
+          .shared_field(format!("field_{i}"))
           .priority(i as i32)
           .form()
       )
       .flag(i % 2 == 0)
-      .description(format!("variant_{}", i))
+      .description(format!("variant_{i}"))
       .form()
   }).collect::<Vec<_>>();
   
@@ -134,10 +134,10 @@ fn generics_shared_struct_manual_replacement_shared_functionality_test() {
   for (i, variant) in variants.iter().enumerate() {
     assert_eq!(variant.inner.content.data, format!("type{}", i + 1));
     assert_eq!(variant.inner.content.value, (i + 1) as i32);
-    assert_eq!(variant.inner.shared_field, format!("field_{}", i));
+    assert_eq!(variant.inner.shared_field, format!("field_{i}"));
     assert_eq!(variant.inner.priority, i as i32);
     assert_eq!(variant.flag, i % 2 == 0);
-    assert_eq!(variant.description, format!("variant_{}", i));
+    assert_eq!(variant.description, format!("variant_{i}"));
   }
 }
 
@@ -184,19 +184,19 @@ fn generics_shared_struct_manual_replacement_complex_shared_test() {
   let variants = shared_data.into_iter().map(|(name, value)| {
     let shared_type = SimpleSharedType {
       data: name.to_string(),
-      value: value,
+      value,
     };
     
     SharedStructVariant::former()
       .inner(
         SharedInner::former()
           .content(shared_type)
-          .shared_field(format!("{}_field", name))
+          .shared_field(format!("{name}_field"))
           .priority(value / 10)
           .form()
       )
       .flag(value > 15)
-      .description(format!("{}_variant", name))
+      .description(format!("{name}_variant"))
       .form()
   }).collect::<Vec<_>>();
   
@@ -206,17 +206,17 @@ fn generics_shared_struct_manual_replacement_complex_shared_test() {
   let first = &variants[0];
   assert_eq!(first.inner.content.data, "first");
   assert_eq!(first.inner.content.value, 10);
-  assert_eq!(first.flag, false); // 10 <= 15
+  assert!(!first.flag); // 10 <= 15
   
   let second = &variants[1];
   assert_eq!(second.inner.content.data, "second");
   assert_eq!(second.inner.content.value, 20);
-  assert_eq!(second.flag, true); // 20 > 15
+  assert!(second.flag); // 20 > 15
   
   let third = &variants[2];
   assert_eq!(third.inner.content.data, "third");
   assert_eq!(third.inner.content.value, 30);
-  assert_eq!(third.flag, true); // 30 > 15
+  assert!(third.flag); // 30 > 15
 }
 
 // Test comprehensive shared struct functionality
@@ -237,7 +237,7 @@ fn generics_shared_struct_manual_replacement_comprehensive_test() {
   // Build variants using different Former API patterns
   for (i, shared_type) in shared_types.into_iter().enumerate() {
     let variant = SharedStructVariant::former()
-      .description(format!("comprehensive_{}", i))
+      .description(format!("comprehensive_{i}"))
       .flag(shared_type.value >= 0)
       .inner(
         SharedInner::former()
@@ -257,18 +257,18 @@ fn generics_shared_struct_manual_replacement_comprehensive_test() {
   let alpha_variant = &built_variants[0];
   assert_eq!(alpha_variant.inner.content.data, "alpha");
   assert_eq!(alpha_variant.inner.content.value, -1);
-  assert_eq!(alpha_variant.flag, false); // -1 < 0
+  assert!(!alpha_variant.flag); // -1 < 0
   assert_eq!(alpha_variant.inner.priority, 1); // abs(-1)
   
   let gamma_variant = &built_variants[2];
   assert_eq!(gamma_variant.inner.content.data, "gamma");
   assert_eq!(gamma_variant.inner.content.value, 42);
-  assert_eq!(gamma_variant.flag, true); // 42 >= 0
+  assert!(gamma_variant.flag); // 42 >= 0
   assert_eq!(gamma_variant.inner.priority, 42); // abs(42)
   
   // Test that all shared structures are independently functional
   for (i, variant) in built_variants.iter().enumerate() {
-    assert_eq!(variant.description, format!("comprehensive_{}", i));
+    assert_eq!(variant.description, format!("comprehensive_{i}"));
     assert!(variant.inner.shared_field.contains("shared_field_"));
   }
 }

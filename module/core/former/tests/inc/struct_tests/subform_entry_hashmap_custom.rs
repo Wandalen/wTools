@@ -221,8 +221,8 @@ impl former::StoragePreform for ParentFormerStorage {
     } else {
       Default::default()
     };
-    let result = Parent { command };
-    result
+    
+    Parent { command }
   }
 }
 
@@ -338,8 +338,8 @@ where
 {
   #[inline(always)]
   pub fn perform(self) -> Definition::Formed {
-    let result = self.form();
-    result
+    
+    self.form()
   }
 }
 
@@ -514,8 +514,8 @@ impl former::StoragePreform for ChildFormerStorage {
     } else {
       Default::default()
     };
-    let result = Child { name, description };
-    result
+    
+    Child { name, description }
   }
 }
 
@@ -628,8 +628,8 @@ where
 {
   #[inline(always)]
   pub fn perform(self) -> Definition::Formed {
-    let result = self.form();
-    result
+    
+    self.form()
   }
 }
 

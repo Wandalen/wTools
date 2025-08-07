@@ -292,5 +292,5 @@ fn subform_all_stress_test() {
   assert_eq!(got.inner_subform.title, "stress");
   assert_eq!(got.items.len(), 1);
   assert_eq!(got.entries.len(), 1);
-  assert_eq!(got.active, true);
+  assert!(got.active);
 }

@@ -21,9 +21,9 @@
 //! Field attributes are significantly more complex than struct attributes because they must handle:
 //! - **Generic Type Parameters**: Field types with complex generic constraints
 //! - **Lifetime Parameters**: References and borrowed data in field types
-//! - **Collection Type Inference**: Automatic detection of Vec, HashMap, HashSet patterns
+//! - **Collection Type Inference**: Automatic detection of Vec, `HashMap`, `HashSet` patterns
 //! - **Subform Nesting**: Recursive Former patterns for complex data structures
-//! - **Trait Bound Propagation**: Hash+Eq requirements for HashMap keys
+//! - **Trait Bound Propagation**: Hash+Eq requirements for `HashMap` keys
 //!
 //! ### Pitfalls Resolved Through Testing
 //!
@@ -43,8 +43,8 @@
 //! **Prevention**: Systematic lifetime parameter tracking across subform levels
 //!
 //! #### 4. Hash+Eq Trait Bound Requirements
-//! **Issue**: HashMap fields without proper key type trait bounds caused E0277 errors
-//! **Solution**: Automatic trait bound detection and application for HashMap scenarios
+//! **Issue**: `HashMap` fields without proper key type trait bounds caused E0277 errors
+//! **Solution**: Automatic trait bound detection and application for `HashMap` scenarios
 //! **Prevention**: Collection-specific trait bound validation and insertion
 //!
 //! ## Attribute Processing Architecture
@@ -102,7 +102,7 @@ use component_model_types::{Assign, OptionExt};
 /// ## Setter Type Attributes
 /// - **`scalar`**: Direct scalar value assignment (bypasses Former pattern)
 /// - **`subform_scalar`**: Nested scalar subform construction
-/// - **`subform_collection`**: Collection subform management (Vec, HashMap, etc.)
+/// - **`subform_collection`**: Collection subform management (Vec, `HashMap`, etc.)
 /// - **`subform_entry`**: HashMap/Map entry subform handling
 ///
 /// # Critical Design Decisions
@@ -146,7 +146,6 @@ use component_model_types::{Assign, OptionExt};
 /// - Configure generic parameter propagation
 /// - Set up proper trait bound requirements
 /// - Handle collection-specific code generation patterns
-
 #[derive(Debug, Default, Clone)] // <<< Added Clone
 pub struct FieldAttributes {
   /// Configuration attribute for a field.
@@ -191,7 +190,7 @@ impl FieldAttributes {
   /// - **Type Compatibility**: Ensures collection attributes are only applied to collection types
   /// - **Generic Consistency**: Validates generic parameter usage across attributes
   /// - **Lifetime Propagation**: Ensures lifetime parameters are properly preserved
-  /// - **Trait Bound Requirements**: Validates Hash+Eq requirements for HashMap scenarios
+  /// - **Trait Bound Requirements**: Validates Hash+Eq requirements for `HashMap` scenarios
   ///
   /// # Error Handling
   ///
@@ -213,8 +212,8 @@ impl FieldAttributes {
   /// **Solution**: Full `syn::Type` preservation with generic parameter tracking
   /// **Prevention**: Complete generic information maintained through parsing pipeline
   ///
-  /// ## 3. HashMap Key Trait Bounds (Issue Resolved)
-  /// **Problem**: HashMap fields missing Hash+Eq trait bounds on key types
+  /// ## 3. `HashMap` Key Trait Bounds (Issue Resolved)
+  /// **Problem**: `HashMap` fields missing Hash+Eq trait bounds on key types
   /// **Solution**: Automatic trait bound detection and requirement validation
   /// **Prevention**: Collection-specific trait bound validation prevents E0277 errors
   ///
@@ -368,7 +367,6 @@ where
 ///
 /// `#[ default( 13 ) ]`
 ///
-
 #[derive(Debug, Default, Clone)] // <<< Added Clone
 pub struct AttributeConfig {
   /// Default value to use for a field.

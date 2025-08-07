@@ -97,7 +97,7 @@ mod private {
   #[ cfg( test ) ]
   /// Tests the `unescape_str` function.
   #[ allow( clippy::elidable_lifetime_names ) ] // Design Rulebook requires explicit lifetimes
-  pub fn test_unescape_str< 'a >( input : &'a str ) -> Cow< 'a, str >
+  #[must_use] pub fn test_unescape_str< 'a >( input : &'a str ) -> Cow< 'a, str >
   {
     unescape_str( input )
   }

@@ -118,11 +118,9 @@ fn manual_complex_settings_test() {
 #[test]
 fn manual_usecase_workflow_test() {
   // Test different manual usecase patterns without complex trait dependencies
-  let workflow_steps = vec![
-    ManualUsecaseEnum::prompt_variant("Start workflow".to_string()),
+  let workflow_steps = [ManualUsecaseEnum::prompt_variant("Start workflow".to_string()),
     ManualUsecaseEnum::command_variant("init".to_string(), 0),
-    ManualUsecaseEnum::settings_variant("mode".to_string(), "production".to_string()),
-  ];
+    ManualUsecaseEnum::settings_variant("mode".to_string(), "production".to_string())];
   
   assert_eq!(workflow_steps.len(), 3);
   

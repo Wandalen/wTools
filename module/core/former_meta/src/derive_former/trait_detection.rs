@@ -61,6 +61,7 @@ pub fn generate_former_check(field_type: &syn::Type) -> proc_macro2::TokenStream
 /// - If type implements Former: Use subform delegation  
 /// - If type doesn't implement Former: Use scalar/direct approach
 #[allow(dead_code)]
+#[allow(clippy::needless_pass_by_value)]
 pub fn generate_smart_routing(
     field_type: &syn::Type,
     subform_approach: proc_macro2::TokenStream,
@@ -115,6 +116,7 @@ impl Default for SmartRoutingConfig {
 
 /// Advanced smart routing with configuration options
 #[allow(dead_code)]
+#[allow(clippy::needless_pass_by_value)]
 pub fn generate_configurable_smart_routing(
     field_type: &syn::Type,
     subform_approach: proc_macro2::TokenStream,
@@ -123,6 +125,7 @@ pub fn generate_configurable_smart_routing(
 ) -> proc_macro2::TokenStream {
     let former_check = generate_former_check(field_type);
     
+    #[allow(clippy::if_same_then_else)]
     let routing_logic = if config.prefer_subform {
         quote! {
             if #former_check {

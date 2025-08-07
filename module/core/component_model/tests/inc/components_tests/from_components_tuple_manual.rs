@@ -12,7 +12,7 @@ struct TargetTuple(i32, String);
 impl From<&SourceTuple> for i32 {
   #[inline(always)]
   fn from(src: &SourceTuple) -> Self {
-    src.0.clone()
+    src.0
   }
 }
 

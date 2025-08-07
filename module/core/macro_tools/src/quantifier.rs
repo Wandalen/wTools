@@ -92,7 +92,6 @@ mod private {
   ///
   /// Parse as much elements as possible.
   ///
-
   #[derive(Debug, PartialEq, Eq, Clone, Default)]
   pub struct Many<T: quote::ToTokens>(pub Vec<T>);
 

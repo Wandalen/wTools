@@ -9,7 +9,7 @@ use unilang::pipeline::Pipeline;
 use unilang::error::Error;
 use std::io::{ self, Write };
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Interactive REPL Mode Demo ===\n" );
 
@@ -83,7 +83,7 @@ fn register_interactive_commands( registry : &mut CommandRegistry ) -> Result< (
   {
     // In a real implementation, this would handle the interactive password request
     println!( "🔐 Processing login for user: {}", 
-      cmd.arguments.get( "username" ).map( |v| v.to_string() ).unwrap_or( "unknown".to_string() ) );
+      cmd.arguments.get( "username" ).map_or( "unknown".to_string(), std::string::ToString::to_string ) );
     
     // Simulate authentication
     println!( "✓ Authentication successful (demo mode)" );
@@ -219,7 +219,7 @@ fn register_interactive_commands( registry : &mut CommandRegistry ) -> Result< (
 }
 
 /// Run the interactive REPL loop
-fn run_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn std::error::Error > >
+fn run_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn core::error::Error > >
 {
   let mut command_history = Vec::new();
   let mut session_counter = 0u32;
@@ -227,7 +227,7 @@ fn run_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn std::error::Error > 
   loop
   {
     // Display prompt
-    print!( "unilang[{}]> ", session_counter );
+    print!( "unilang[{session_counter}]> " );
     io::stdout().flush()?;
 
     // Read user input
@@ -350,7 +350,7 @@ fn display_repl_help( registry : &CommandRegistry )
     
     if interactive_args > 0
     {
-      println!( "    Note: Contains {} interactive argument(s)", interactive_args );
+      println!( "    Note: Contains {interactive_args} interactive argument(s)" );
     }
     println!();
   }

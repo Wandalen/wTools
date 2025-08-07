@@ -63,7 +63,6 @@ mod private
   ///
   /// In this example, the function returns `[ 6, 4 ]` because the longest line ( "Line 1" or "Line 3" )
   /// has 6 characters, there are 4 lines in total, including the empty line and the trailing newline.
-
   pub fn size< S : AsRef< str > >( src : S ) -> [ usize ; 2 ]
   {
     let text = src.as_ref();

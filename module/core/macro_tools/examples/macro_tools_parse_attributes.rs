@@ -1,7 +1,7 @@
 //! Example: Parse Attributes with Properties
 //! 
 //! This example demonstrates how to parse custom attributes with properties
-//! using macro_tools' attribute parsing framework. This is essential for
+//! using `macro_tools`' attribute parsing framework. This is essential for
 //! creating procedural macros that accept configuration through attributes.
 
 #[ cfg( not( all( feature = "enabled", feature = "attr_prop" ) ) ) ]

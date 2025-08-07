@@ -107,7 +107,6 @@ where
 /// This struct is suited for straightforward forming processes where the storage already represents the final state of the
 /// entity, and no additional processing or transformation of the storage is required. It simplifies use cases where the
 /// storage does not undergo a transformation into a different type at the end of the forming process.
-
 #[ derive( Debug, Default ) ]
 pub struct ReturnStorage;
 

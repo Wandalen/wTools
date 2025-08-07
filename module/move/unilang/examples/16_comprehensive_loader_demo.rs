@@ -475,7 +475,7 @@ fn demonstrate_json_loading() -> Result< (), unilang::error::Error >
           *arg_stats.entry( kind_name ).or_insert( 0 ) += 1;
         }
 
-        println!( "   🔢 Argument Types: {:?}", arg_stats );
+        println!( "   🔢 Argument Types: {arg_stats:?}" );
       }
     },
     Err( error ) =>
@@ -563,7 +563,7 @@ fn demonstrate_error_handling() -> Result< (), unilang::error::Error >
       },
       Err( error ) =>
       {
-        println!( "   ✅ Error caught correctly: {}", error );
+        println!( "   ✅ Error caught correctly: {error}" );
       }
     }
     println!();
@@ -693,7 +693,7 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
           *type_complexity.entry( complexity ).or_insert( 0 ) += 1;
         }
 
-        println!( "   • Type Complexity: {:?}", type_complexity );
+        println!( "   • Type Complexity: {type_complexity:?}" );
 
         // Create routine for demonstration
         let _demo_routine = Box::new( | cmd : unilang::semantic::VerifiedCommand, _ctx : unilang::interpreter::ExecutionContext | -> Result< unilang::data::OutputData, unilang::error::Error >
@@ -719,7 +719,7 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
       if let Some( help ) = help_generator.command( "ai.ml_pipeline" )
       {
         println!( "\n📖 Generated Help Documentation:" );
-        println!( "{}", help );
+        println!( "{help}" );
       }
     },
     Err( error ) =>
@@ -735,7 +735,7 @@ fn format_value_for_ml( value : &unilang::types::Value ) -> String
 {
   match value
   {
-    unilang::types::Value::JsonString( json ) => format!( "JSON({})", json ),
+    unilang::types::Value::JsonString( json ) => format!( "JSON({json})" ),
     unilang::types::Value::List( items ) => format!( "List[{}]", items.len() ),
     unilang::types::Value::Map( map ) => format!( "Map{{{}}} ", map.len() ),
     _ => value.to_string(),

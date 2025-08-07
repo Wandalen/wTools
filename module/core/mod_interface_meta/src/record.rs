@@ -16,7 +16,6 @@ mod private {
   ///
   /// Kind of element.
   ///
-
   #[derive(Debug, PartialEq, Eq, Clone, Copy)]
   pub enum ElementType {
     MicroModule(syn::token::Mod),
@@ -59,7 +58,6 @@ mod private {
   ///
   /// Record.
   ///
-
   #[derive(Debug, PartialEq, Eq, Clone)]
   pub struct Record {
     pub attrs: AttributesOuter,
@@ -137,7 +135,6 @@ mod private {
   ///
   /// Thesis.
   ///
-
   #[derive(Debug, PartialEq, Eq, Clone)]
   pub struct Thesis {
     pub head: AttributesInner,

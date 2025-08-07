@@ -22,7 +22,7 @@ async fn async_try_from_test() {
 
   #[the_module::async_trait]
   impl the_module::AsyncTryFrom<String> for MyNumber {
-    type Error = std::num::ParseIntError;
+    type Error = core::num::ParseIntError;
 
     async fn async_try_from(value: String) -> Result<Self, Self::Error> {
       // Simulate asynchronous work
@@ -37,14 +37,14 @@ async fn async_try_from_test() {
   // Using AsyncTryFrom directly
   match MyNumber::async_try_from("42".to_string()).await {
     Ok(my_num) => println!("Converted successfully: {}", my_num.0),
-    Err(e) => println!("Conversion failed: {:?}", e),
+    Err(e) => println!("Conversion failed: {e:?}"),
   }
 
   // Using AsyncTryInto, which is automatically implemented
   let result: Result<MyNumber, _> = "42".to_string().async_try_into().await;
   match result {
     Ok(my_num) => println!("Converted successfully using AsyncTryInto: {}", my_num.0),
-    Err(e) => println!("Conversion failed using AsyncTryInto: {:?}", e),
+    Err(e) => println!("Conversion failed using AsyncTryInto: {e:?}"),
   }
 }
 

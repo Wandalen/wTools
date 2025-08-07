@@ -62,7 +62,7 @@ where
 impl From<&TupleStruct1> for i32 {
   #[inline(always)]
   fn from(src: &TupleStruct1) -> Self {
-    src.0.clone()
+    src.0
   }
 }
 

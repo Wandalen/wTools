@@ -5,6 +5,7 @@
 ) ]
 #![ doc( html_root_url = "https://docs.rs/unilang/latest/unilang/" ) ]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Universal language processing" ) ]
 #![ allow( clippy::mod_module_files ) ]
 
 /// Internal namespace.

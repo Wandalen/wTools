@@ -4,7 +4,7 @@ use super::tools::*;
 /// Private namespace of the module.
 mod private {
 
-  /// PrivateStruct1.
+  /// `PrivateStruct1`.
   #[derive(Debug, PartialEq)]
   pub struct PrivateStruct1 {}
 }

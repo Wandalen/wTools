@@ -5,3 +5,4 @@
 )]
 #![doc(html_root_url = "https://docs.rs/unilang_meta/latest/unilang_meta/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Universal language macro support" ) ]

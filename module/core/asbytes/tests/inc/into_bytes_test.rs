@@ -1,7 +1,7 @@
 #![cfg(all(feature = "enabled", feature = "into_bytes"))]
 
 use asbytes::IntoBytes; // Import the specific trait
-use std::mem;
+use core::mem;
 
 // Define a simple POD struct for testing (can be copied from basic_test.rs)
 #[repr(C)]
@@ -90,8 +90,8 @@ fn test_box_t_into_bytes() {
 #[test]
 fn test_slice_into_bytes() {
   let slice: &[u32] = &[10, 20, 30][..];
-  let expected_bytes = bytemuck::cast_slice(&*slice).to_vec();
-  let expected_len = slice.len() * mem::size_of::<u32>();
+  let expected_bytes = bytemuck::cast_slice(slice).to_vec();
+  let expected_len = core::mem::size_of_val(slice);
   let bytes = slice.into_bytes();
 
   assert_eq!(bytes.len(), expected_len);
@@ -101,7 +101,7 @@ fn test_slice_into_bytes() {
 #[test]
 fn test_box_slice_into_bytes() {
   let slice: Box<[u32]> = vec![10, 20, 30].into_boxed_slice();
-  let expected_bytes = bytemuck::cast_slice(&*slice).to_vec();
+  let expected_bytes = bytemuck::cast_slice(&slice).to_vec();
   let expected_len = slice.len() * mem::size_of::<u32>();
   let bytes = slice.into_bytes();
 

@@ -15,7 +15,6 @@ mod private
   ///
   /// Radable node factory.
   ///
-
   pub struct ReadableNodeFactory< NodeId = crate::IdentityWithInt, EdgeId = crate::IdentityWithInt >
   where
     NodeId : IdentityInterface,

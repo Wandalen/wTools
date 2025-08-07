@@ -1,6 +1,6 @@
-//! Basic usage examples for strs_tools crate.
+//! Basic usage examples for `strs_tools` crate.
 //!
-//! This example demonstrates the core functionality of strs_tools,
+//! This example demonstrates the core functionality of `strs_tools`,
 //! showing how to perform advanced string operations that go beyond
 //! Rust's standard library capabilities.
 
@@ -17,7 +17,7 @@ fn main()
 
 /// Demonstrates basic string splitting functionality.
 /// 
-/// Unlike standard `str.split()`, strs_tools provides more control
+/// Unlike standard `str.split()`, `strs_tools` provides more control
 /// over how delimiters are handled and what gets returned.
 fn basic_string_splitting()
 {
@@ -36,7 +36,7 @@ fn basic_string_splitting()
     .map( String::from )           // Convert each segment to owned String
     .collect();
     
-    println!( "Input: '{}' -> {:?}", src, result );
+    println!( "Input: '{src}' -> {result:?}" );
     // Note: With stripping(false), delimiters are preserved in output
     assert_eq!( result, vec![ "abc", " ", "def", " ", "ghi" ] );
     
@@ -47,14 +47,14 @@ fn basic_string_splitting()
     .perform();
     
     let result : Vec< String > = iter.map( String::from ).collect();
-    println!( "No delimiter found: '{}' -> {:?}", src, result );
+    println!( "No delimiter found: '{src}' -> {result:?}" );
     assert_eq!( result, vec![ "abc def ghi" ] );  // Returns original string
   }
 }
 
 /// Demonstrates delimiter preservation feature.
 ///
-/// This shows how strs_tools can preserve delimiters in the output,
+/// This shows how `strs_tools` can preserve delimiters in the output,
 /// which is useful for reconstructing the original string or for
 /// maintaining formatting context.
 fn delimiter_preservation()
@@ -75,12 +75,12 @@ fn delimiter_preservation()
     let result : Vec< String > = iter.map( String::from ).collect();
     
     println!( "With delimiters preserved:" );
-    println!( "  Input: '{}' -> {:?}", src, result );
+    println!( "  Input: '{src}' -> {result:?}" );
     assert_eq!( result, vec![ "word1", " ", "word2", " ", "word3" ] );
     
     // Verify we can reconstruct the original string
     let reconstructed = result.join( "" );
     assert_eq!( reconstructed, src );
-    println!( "  Reconstructed: '{}'", reconstructed );
+    println!( "  Reconstructed: '{reconstructed}'" );
   }
 }

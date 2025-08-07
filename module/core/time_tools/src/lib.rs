@@ -22,7 +22,6 @@
 pub mod now;
 
 /// Namespace with dependencies.
-
 #[cfg(feature = "enabled")]
 pub mod dependency {}
 

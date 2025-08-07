@@ -6,7 +6,6 @@ mod private {
   /// Trait for borrowing data as byte slices.
   /// This trait abstracts the conversion of types that implement Pod (or collections thereof)
   /// into their raw byte representation as a slice (`&[u8]`).
-
   pub trait AsBytes {
     /// Returns the underlying byte slice of the data.
     fn as_bytes(&self) -> &[u8];
@@ -28,10 +27,15 @@ mod private {
     /// For single-element tuples `(T,)`, this is 1.
     /// For collections (`Vec<T>`, `&[T]`, `[T; N]`), this is the number of `T` items.
     fn len(&self) -> usize;
+    
+    /// Returns true if the data contains no elements.
+    #[inline]
+    fn is_empty(&self) -> bool {
+      self.len() == 0
+    }
   }
 
   /// Implementation for single POD types wrapped in a tuple `(T,)`.
-
   impl<T: Pod> AsBytes for (T,) {
     #[inline]
     fn as_bytes(&self) -> &[u8] {
@@ -40,7 +44,7 @@ mod private {
 
     #[inline]
     fn byte_size(&self) -> usize {
-      std::mem::size_of::<T>()
+      core::mem::size_of::<T>()
     }
 
     #[inline]
@@ -50,7 +54,6 @@ mod private {
   }
 
   /// Implementation for Vec<T> where T is POD.
-
   impl<T: Pod> AsBytes for Vec<T> {
     #[inline]
     fn as_bytes(&self) -> &[u8] {
@@ -59,7 +62,7 @@ mod private {
 
     #[inline]
     fn byte_size(&self) -> usize {
-      self.len() * std::mem::size_of::<T>()
+      self.len() * core::mem::size_of::<T>()
     }
 
     #[inline]
@@ -69,7 +72,6 @@ mod private {
   }
 
   /// Implementation for [T] where T is POD.
-
   impl<T: Pod> AsBytes for [T] {
     #[inline]
     fn as_bytes(&self) -> &[u8] {
@@ -78,7 +80,7 @@ mod private {
 
     #[inline]
     fn byte_size(&self) -> usize {
-      self.len() * std::mem::size_of::<T>()
+      core::mem::size_of_val(self)
     }
 
     #[inline]
@@ -88,7 +90,6 @@ mod private {
   }
 
   /// Implementation for [T; N] where T is POD.
-
   impl<T: Pod, const N: usize> AsBytes for [T; N] {
     #[inline]
     fn as_bytes(&self) -> &[u8] {
@@ -97,7 +98,7 @@ mod private {
 
     #[inline]
     fn byte_size(&self) -> usize {
-      N * std::mem::size_of::<T>()
+      N * core::mem::size_of::<T>()
     }
 
     #[inline]
@@ -112,7 +113,6 @@ mod private {
 pub use own::*;
 
 /// Own namespace of the module.
-
 #[allow(unused_imports)]
 pub mod own {
   use super::*;
@@ -126,7 +126,6 @@ pub mod own {
 pub use own::*;
 
 /// Orphan namespace of the module.
-
 #[allow(unused_imports)]
 pub mod orphan {
   use super::*;
@@ -135,7 +134,6 @@ pub mod orphan {
 }
 
 /// Exposed namespace of the module.
-
 #[allow(unused_imports)]
 pub mod exposed {
   use super::*;
@@ -145,7 +143,6 @@ pub mod exposed {
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-
 #[allow(unused_imports)]
 pub mod prelude {
   use super::*;

@@ -175,7 +175,6 @@ mod private
   /// // dbg!( prefix, a, b, c, psotfix );
   /// ```
   ///
-
   #[macro_export]
   macro_rules! braces_unwrap
   {

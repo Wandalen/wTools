@@ -16,7 +16,6 @@
 pub mod typing;
 
 /// Namespace with dependencies.
-
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {

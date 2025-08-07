@@ -87,8 +87,8 @@
 //!
 //! ### 5. Method Naming Consistency (Prevention)
 //! **Issue Resolved**: Manual implementations using inconsistent naming for unit variant constructors
-//! **Root Cause**: Variant method names should follow consistent snake_case conversion patterns
-//! **Solution**: Systematic snake_case conversion from variant identifier to method name
+//! **Root Cause**: Variant method names should follow consistent `snake_case` conversion patterns
+//! **Solution**: Systematic `snake_case` conversion from variant identifier to method name
 //! **Prevention**: Consistent naming pattern maintains API uniformity across all variants
 //!
 //! ## Generated Code Architecture
@@ -143,7 +143,7 @@ use crate::derive_former::attribute_validation::{validate_variant_attributes, ge
 /// - **Generic Context**: Complete generic parameter preservation for proper type construction
 /// - **Unit Syntax**: Proper unit variant construction with direct variant name
 /// - **Type Path Safety**: Proper enum type path construction with generic parameter handling
-/// - **Naming Consistency**: Systematic snake_case conversion for method naming
+/// - **Naming Consistency**: Systematic `snake_case` conversion for method naming
 ///
 /// ## Generated Method Signature
 /// ```rust,ignore
@@ -177,7 +177,7 @@ pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::To
   // Comprehensive attribute validation
   let field_count = get_field_count(&ctx.variant.fields);
   let variant_type = get_variant_type(&ctx.variant.fields);
-  validate_variant_attributes(ctx.variant, &ctx.variant_attrs, field_count, variant_type)?;
+  validate_variant_attributes(ctx.variant, ctx.variant_attrs, field_count, variant_type)?;
 
   // Generate standalone constructor if #[standalone_constructors] is present
   if ctx.struct_attrs.standalone_constructors.is_some() {

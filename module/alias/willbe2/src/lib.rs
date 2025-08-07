@@ -5,6 +5,7 @@
 )]
 #![doc(html_root_url = "https://docs.rs/{{template_blank}}/latest/{{template_blank}}/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Build tool binary" ) ]
 
 // #[ doc( inline ) ]
 // #[ allow( unused_imports ) ]

@@ -32,7 +32,6 @@ mod private
   ///
   /// Required to convert integets to floats.
   ///
-
   #[ macro_export ]
   macro_rules! num
   {
@@ -56,7 +55,6 @@ mod private
   ///
   /// Test a file with documentation.
   ///
-
   #[ macro_export ]
   macro_rules! doc_file_test
   {

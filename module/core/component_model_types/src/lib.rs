@@ -5,6 +5,7 @@
 )]
 #![doc(html_root_url = "https://docs.rs/component_model_types/latest/component_model_types/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Component model type definitions" ) ]
 
 /// Component-based forming.
 #[cfg(feature = "enabled")]

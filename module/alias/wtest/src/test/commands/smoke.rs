@@ -33,7 +33,6 @@ pub( crate ) fn smoke_with_subject_command() -> wca::Command
 ///
 /// Perform smoke testing.
 ///
-
 pub fn smoke( ( args, props ) : ( Args, Props ) ) -> Result< () >
 {
   println!( "Command \".smoke\"" );

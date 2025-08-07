@@ -151,8 +151,7 @@ fn command_with_mixed_args_positional_after_named_error_when_option_set()
     assert!
     (
       e.to_string().contains( "Positional argument after named argument" ),
-      "Error message mismatch: {}",
-      e
+      "Error message mismatch: {e}"
     );
   }
 }
@@ -191,8 +190,7 @@ fn named_arg_with_empty_value_no_quotes_error()
     (
       e.to_string()
         .contains( "Expected value for named argument 'name' but found end of instruction" ),
-      "Error message mismatch: {}",
-      e
+      "Error message mismatch: {e}"
     );
   }
 }
@@ -277,8 +275,7 @@ fn duplicate_named_arg_error_when_option_set()
     assert!
     (
       e.to_string().contains( "Duplicate named argument 'name'" ),
-      "Error message mismatch: {}",
-      e
+      "Error message mismatch: {e}"
     );
   }
 }

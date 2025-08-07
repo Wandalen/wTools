@@ -77,8 +77,8 @@
 //!
 //! ### 5. Method Naming Consistency (Prevention)
 //! **Issue Resolved**: Manual implementations using inconsistent naming for variant constructors
-//! **Root Cause**: Variant method names should follow consistent snake_case conversion patterns
-//! **Solution**: Systematic snake_case conversion from variant identifier to method name
+//! **Root Cause**: Variant method names should follow consistent `snake_case` conversion patterns
+//! **Solution**: Systematic `snake_case` conversion from variant identifier to method name
 //! **Prevention**: Consistent naming pattern maintains API uniformity across all variants
 //!
 //! ## Generated Code Architecture
@@ -128,7 +128,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// - **Attribute Validation**: Compile-time rejection of invalid `#[subform_scalar]` attribute
 /// - **Generic Context**: Complete generic parameter preservation for proper type construction
 /// - **Type Path Safety**: Proper enum type path construction with generic parameter handling
-/// - **Naming Consistency**: Systematic snake_case conversion for method naming
+/// - **Naming Consistency**: Systematic `snake_case` conversion for method naming
 ///
 /// ## Generated Method Signature
 /// ```rust,ignore

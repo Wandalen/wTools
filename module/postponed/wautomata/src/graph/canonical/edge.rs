@@ -11,7 +11,6 @@ mod private
   ///
   /// Canonical implementation of edge.
   ///
-
   #[ derive( Debug, Copy, Clone ) ]
   pub struct Edge< EdgeId = crate::IdentityWithInt, NodeId = crate::IdentityWithInt >
   where

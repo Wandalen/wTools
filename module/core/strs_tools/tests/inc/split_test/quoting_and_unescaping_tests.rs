@@ -198,7 +198,7 @@ fn test_mre_arg3_isolated() {
     .perform()
     .map(|e| e.string)
     .collect();
-  let expected = vec![Cow::Borrowed(r#"arg3 \"#)];
+  let expected = vec![Cow::Borrowed(r"arg3 \")];
   assert_eq!(splits, expected);
 }
 

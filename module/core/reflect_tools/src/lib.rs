@@ -10,7 +10,6 @@
 pub mod reflect;
 
 /// Namespace with dependencies.
-
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {

@@ -85,7 +85,7 @@ fn simplified_mixed_struct_variant_test() {
     
   let expected = SimplifiedMixedEnum::StructVariant {
     name: "struct_test".to_string(),
-    inner: inner,
+    inner,
   };
   
   assert_eq!(got, expected);

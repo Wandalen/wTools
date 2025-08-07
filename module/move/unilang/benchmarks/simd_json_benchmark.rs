@@ -1,6 +1,6 @@
 //! SIMD JSON Parsing Performance Benchmarks
 //!
-//! Comprehensive benchmarking of SIMD-optimized JSON parsing vs serde_json
+//! Comprehensive benchmarking of SIMD-optimized JSON parsing vs `serde_json`
 //! across different payload sizes and structures to validate 4-25x performance improvements.
 
 #![ allow( missing_docs ) ]
@@ -26,7 +26,7 @@ impl JsonTestData
     let mut json = r#"{"users":["#.to_string();
     for i in 0..100
     {
-      if i > 0 { json.push_str( "," ); }
+      if i > 0 { json.push(','); }
       json.push_str( &format!(
         r#"{{"id":{},"name":"user{}","email":"user{}@example.com","active":{},"roles":["admin","user"],"created":"2024-01-01T00:00:00Z","profile":{{"age":{},"country":"US","preferences":{{"theme":"dark","lang":"en"}}}}}}"#,
         i, i, i, i % 2 == 0, 20 + ( i % 50 )
@@ -42,15 +42,15 @@ impl JsonTestData
     let mut json = r#"{"data":{"items":["#.to_string();
     for i in 0..1000
     {
-      if i > 0 { json.push_str( "," ); }
+      if i > 0 { json.push(','); }
       json.push_str( &format!(
         r#"{{"id":{},"title":"Item {}","description":"This is a detailed description for item {} with various properties and nested data structures","price":{},"category":"category_{}","tags":["tag1","tag2","tag3"],"attributes":{{"color":"red","size":"large","weight":{},"dimensions":{{"width":10,"height":20,"depth":5}}}},"reviews":[{{"rating":5,"comment":"Excellent product","reviewer":"user1"}},{{"rating":4,"comment":"Good value","reviewer":"user2"}}],"inventory":{{"stock":{},"reserved":{},"available":{}}},"timestamps":{{"created":"2024-01-01T00:00:00Z","updated":"2024-01-02T12:00:00Z","expires":"2024-12-31T23:59:59Z"}}}}"#,
-        i, i, i, 10.99 + ( i as f64 * 0.1 ), i % 10, 1.5 + ( i as f64 * 0.01 ), 100 + i, i % 10, 90 + i
+        i, i, i, 10.99 + ( f64::from(i) * 0.1 ), i % 10, 1.5 + ( f64::from(i) * 0.01 ), 100 + i, i % 10, 90 + i
       ));
     }
     json.push_str( "]," );
     json.push_str( r#""metadata":{"total":1000,"page":1,"pageSize":50,"hasMore":true,"filters":{"active":true,"category":"all"},"aggregations":{"totalValue":10999.99,"avgRating":4.5}}}}"# );
-    json.push_str( "}" );
+    json.push('}');
     json
   }
   
@@ -60,18 +60,18 @@ impl JsonTestData
     let mut json = r#"{"massiveDataset":{"records":["#.to_string();
     for i in 0..5000
     {
-      if i > 0 { json.push_str( "," ); }
+      if i > 0 { json.push(','); }
       json.push_str( &format!(
         r#"{{"id":{},"title":"Record {}","data":{{"value1":"{}","value2":{},"value3":{},"tags":["tag1","tag2"],"metadata":{{"active":{},"score":{},"created":"2024-01-01T00:00:00Z"}}}},"stats":{{"views":{},"likes":{}}},"content":{{"body":"Large content body for record {}","wordCount":{}}},"relations":{{"refs":[{},{},{}]}}}}"#,
         i, i, format!( "item_{}", i ), i * 2, i * 3, 
-        i % 2 == 0, ( i % 100 ) as f64 / 10.0,
+        i % 2 == 0, f64::from(i % 100) / 10.0,
         i * 10, i * 5,
         i, 150 + i,
         i + 10, i + 20, i + 30
       ));
     }
     json.push_str( r#"],"summary":{"totalRecords":5000,"processingTime":"145ms","memoryUsage":"256MB","version":"1.2.3"}}"# );
-    json.push_str( "}" );
+    json.push('}');
     json
   }
   
@@ -119,7 +119,7 @@ impl JsonTestData
     json.push_str( r#"],"floats":[1.1"# );
     for i in 1..500 { json.push_str( &format!( ",{}.{}", i, i % 10 ) ); }
     json.push_str( r#"],"strings":["str0""# );
-    for i in 1..300 { json.push_str( &format!( r#","str{}""#, i ) ); }
+    for i in 1..300 { json.push_str( &format!( r#","str{i}""# ) ); }
     json.push_str( r#"],"booleans":["# );
     for i in 0..200 { if i > 0 { json.push( ',' ); } json.push_str( if i % 2 == 0 { "true" } else { "false" } ); }
     json.push_str( r#"],"mixed":[1,"two",3.0,true,null,{"nested":true},[1,2,3]]"# );
@@ -128,7 +128,7 @@ impl JsonTestData
   }
 }
 
-/// Benchmark serde_json parsing performance across different payload sizes
+/// Benchmark `serde_json` parsing performance across different payload sizes
 fn bench_serde_json_parsing( c : &mut Criterion )
 {
   let mut group = c.benchmark_group( "JSON Parsing - serde_json" );
@@ -230,7 +230,7 @@ fn bench_simd_json_parsing( c : &mut Criterion )
   group.finish();
 }
 
-/// Direct performance comparison between serde_json and SIMD JSON
+/// Direct performance comparison between `serde_json` and SIMD JSON
 fn bench_json_comparison( c : &mut Criterion )
 {
   let mut group = c.benchmark_group( "JSON Comparison - serde vs SIMD" );
@@ -240,12 +240,12 @@ fn bench_json_comparison( c : &mut Criterion )
   
   group.bench_function( "serde_json_baseline", |b|
   {
-    b.iter( || serde_json::from_str::<SerdeValue>( black_box( &test_json ) ).unwrap() )
+    b.iter( || serde_json::from_str::<SerdeValue>( black_box( &test_json ) ).unwrap() );
   });
   
   group.bench_function( "simd_json_optimized", |b|
   {
-    b.iter( || SIMDJsonParser::parse_to_serde_value( black_box( &test_json ) ).unwrap() )
+    b.iter( || SIMDJsonParser::parse_to_serde_value( black_box( &test_json ) ).unwrap() );
   });
   
   group.finish();
@@ -255,7 +255,7 @@ fn bench_json_comparison( c : &mut Criterion )
 fn bench_json_allocation( c : &mut Criterion )
 {
   let mut group = c.benchmark_group( "JSON Memory Allocation" );
-  group.measurement_time( std::time::Duration::from_secs( 10 ) );
+  group.measurement_time( core::time::Duration::from_secs( 10 ) );
   
   let large_json = JsonTestData::large_json();
   
@@ -265,7 +265,7 @@ fn bench_json_allocation( c : &mut Criterion )
     {
       // Parse and immediately drop to measure allocation overhead
       let _value = serde_json::from_str::<SerdeValue>( black_box( &large_json ) ).unwrap();
-    })
+    });
   });
   
   group.bench_function( "simd_json_allocations", |b|
@@ -274,7 +274,7 @@ fn bench_json_allocation( c : &mut Criterion )
     {
       // Parse and immediately drop to measure allocation overhead
       let _value = SIMDJsonParser::parse_to_serde_value( black_box( &large_json ) ).unwrap();
-    })
+    });
   });
   
   group.finish();
@@ -288,7 +288,7 @@ fn bench_json_structures( c : &mut Criterion )
   // Generate different structure types
   let flat_object = r#"{"a":1,"b":2,"c":3,"d":4,"e":5,"f":6,"g":7,"h":8,"i":9,"j":10}"#;
   let number_array = format!( "[{}]", ( 0..100 ).map( |i| i.to_string() ).collect::<Vec<_>>().join( "," ) );
-  let string_array = format!( r#"[{}]"#, ( 0..50 ).map( |i| format!( r#""str{}""#, i ) ).collect::<Vec<_>>().join( "," ) );
+  let string_array = format!( r"[{}]", ( 0..50 ).map( |i| format!( r#""str{i}""# ) ).collect::<Vec<_>>().join( "," ) );
   let mixed_array = r#"[1,"two",3.14,true,null,{"nested":true},[1,2,3]]"#;
   
   // Flat object parsing
@@ -342,7 +342,7 @@ fn bench_json_scaling( c : &mut Criterion )
       if i > 0 { json.push( ',' ); }
       json.push_str( &format!(
         r#"{{"id":{},"name":"item{}","value":{}}}"#,
-        i, i, i as f64 * 1.5
+        i, i, f64::from(i) * 1.5
       ));
     }
     json.push_str( "]}" );

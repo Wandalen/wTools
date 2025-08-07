@@ -15,14 +15,14 @@ fn proper_name() {
   let name1 = the_module::path::unique_folder_name().unwrap();
   dbg!(&name1);
 
-  assert!(!name1.contains("Thread"), "{} has bad illegal chars", name1);
-  assert!(!name1.contains("thread"), "{} has bad illegal chars", name1);
-  assert!(!name1.contains("("), "{} has bad illegal chars", name1);
-  assert!(!name1.contains(")"), "{} has bad illegal chars", name1);
+  assert!(!name1.contains("Thread"), "{name1} has bad illegal chars");
+  assert!(!name1.contains("thread"), "{name1} has bad illegal chars");
+  assert!(!name1.contains('('), "{name1} has bad illegal chars");
+  assert!(!name1.contains(')'), "{name1} has bad illegal chars");
 
   // let name1 = "_1232_1313_".to_string();
   let re = Regex::new(r"^[0-9_]*$").unwrap();
-  assert!(re.is_match(&name1), "{} has bad illegal chars", name1)
+  assert!(re.is_match(&name1), "{name1} has bad illegal chars");
 
   // ThreadId(1)
 }
@@ -30,11 +30,11 @@ fn proper_name() {
 #[test]
 fn respects_thread_local_counter_increment() {
   let initial_name = the_module::path::unique_folder_name().unwrap();
-  let counter_value_in_initial_name: usize = initial_name.split('_').last().unwrap().parse().unwrap();
+  let counter_value_in_initial_name: usize = initial_name.split('_').next_back().unwrap().parse().unwrap();
 
   // Ensuring the next call increments the counter as expected
   let next_name = the_module::path::unique_folder_name().unwrap();
-  let counter_value_in_next_name: usize = next_name.split('_').last().unwrap().parse().unwrap();
+  let counter_value_in_next_name: usize = next_name.split('_').next_back().unwrap().parse().unwrap();
 
   assert_eq!(counter_value_in_next_name, counter_value_in_initial_name + 1);
 }
@@ -61,12 +61,12 @@ fn format_consistency_across_threads() {
   }
 
   let mut format_is_consistent = true;
-  let mut previous_format = "".to_string();
+  let mut previous_format = String::new();
   for handle in handles {
     let name = handle.join().unwrap();
     let current_format = name.split('_').collect::<Vec<&str>>().len();
 
-    if previous_format != "" {
+    if !previous_format.is_empty() {
       format_is_consistent = format_is_consistent && (current_format == previous_format.split('_').collect::<Vec<&str>>().len());
     }
 

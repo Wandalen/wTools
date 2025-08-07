@@ -4,6 +4,7 @@
 )]
 #![doc(html_root_url = "https://docs.rs/component_model_derive_meta/latest/component_model_derive_meta/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Component model macro support" ) ]
 
 #[allow(unused_imports)]
 use macro_tools::prelude::*;

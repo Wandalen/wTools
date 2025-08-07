@@ -58,6 +58,7 @@ impl< 'a > Interpreter< 'a >
   ///
   /// This method currently does not return errors directly from command execution,
   /// but it is designed to propagate `Error` from command routines in future implementations.
+  #[allow(clippy::missing_errors_doc)]
   pub fn run
   (
     &self,

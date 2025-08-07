@@ -4,6 +4,7 @@
 )]
 #![doc(html_root_url = "https://docs.rs/async_from/latest/async_from/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Async conversion utilities" ) ]
 
 /// Namespace with dependencies.
 #[cfg(feature = "enabled")]
@@ -25,7 +26,7 @@ pub mod dependency {
 mod private {
 
   pub use async_trait::async_trait;
-  use std::fmt::Debug;
+  use core::fmt::Debug;
 
   /// Trait for asynchronous conversions from a type `T`.
   ///

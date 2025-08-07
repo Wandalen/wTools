@@ -6,7 +6,6 @@ use component_model::{Assign, AssignWithType};
 ///
 /// Options1
 ///
-
 #[derive(
   Debug,
   Default,
@@ -26,7 +25,6 @@ pub struct Options1 {
 ///
 /// Options2
 ///
-
 #[derive(
   Debug,
   Default,

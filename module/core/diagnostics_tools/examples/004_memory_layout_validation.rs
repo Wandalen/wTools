@@ -15,7 +15,7 @@
 //! ```
 
 use diagnostics_tools::*;
-use std::mem::{ size_of, align_of };
+use core::mem::{ size_of, align_of };
 
 // ✅ Compile-time memory layout validation
 // These checks will be performed inside functions where they're allowed
@@ -90,11 +90,11 @@ fn demonstrate_runtime_memory_checks()
   cta_mem_same_size!( point, vector );
   println!( "   ✓ Point and Vector2 instances have same memory size" );
   
-  let ptr1 : *const u8 = std::ptr::null();
-  let ptr2 : *const i64 = std::ptr::null();
+  let ptr1 : *const u8 = core::ptr::null();
+  let ptr2 : *const i64 = core::ptr::null();
   
   // Validate that different pointer types have same size
-  cta_ptr_same_size!( &ptr1, &ptr2 );
+  cta_ptr_same_size!( &raw const ptr1, &raw const ptr2 );
   println!( "   ✓ Pointers to different types have same size" );
 }
 
@@ -107,22 +107,22 @@ fn demonstrate_advanced_layouts()
   let array_size = size_of::< [ u32; 4 ] >();
   let slice_ref_size = size_of::< &[ u32 ] >();
   
-  println!( "   [u32; 4]: {} bytes", array_size );
-  println!( "   &[u32]:   {} bytes (fat pointer)", slice_ref_size );
+  println!( "   [u32; 4]: {array_size} bytes" );
+  println!( "   &[u32]:   {slice_ref_size} bytes (fat pointer)" );
   
   // String vs &str
   let string_size = size_of::< String >();
   let str_ref_size = size_of::< &str >();
   
-  println!( "   String:   {} bytes (owned)", string_size );
-  println!( "   &str:     {} bytes (fat pointer)", str_ref_size );
+  println!( "   String:   {string_size} bytes (owned)" );
+  println!( "   &str:     {str_ref_size} bytes (fat pointer)" );
   
   // Option optimization
   let option_ptr_size = size_of::< Option< &u8 > >();
   let ptr_size = size_of::< &u8 >();
   
-  println!( "   Option<&u8>: {} bytes", option_ptr_size );
-  println!( "   &u8:         {} bytes", ptr_size );
+  println!( "   Option<&u8>: {option_ptr_size} bytes" );
+  println!( "   &u8:         {ptr_size} bytes" );
   
   if option_ptr_size == ptr_size
   {
@@ -163,7 +163,7 @@ fn point_from_array( arr : &[ u32 ] ) -> Point
   // In real code, you'd want proper conversion, but this demonstrates the concept
   
   // Simple safe conversion for demonstration
-  let x = arr.get( 0 ).copied().unwrap_or( 0 ) as f32;
+  let x = arr.first().copied().unwrap_or( 0 ) as f32;
   let y = arr.get( 1 ).copied().unwrap_or( 0 ) as f32;
   Point { x, y }
 }
@@ -184,6 +184,7 @@ fn examples_that_would_fail_compilation()
 }
 
 #[ cfg( target_pointer_width = "64" ) ]
+#[allow(dead_code)]
 fn pointer_width_specific_checks()
 {
   // Only compile these checks on 64-bit targets

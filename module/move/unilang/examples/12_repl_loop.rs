@@ -9,7 +9,7 @@ use unilang::pipeline::Pipeline;
 use unilang::interpreter::ExecutionContext;
 use std::io::{ self, Write };
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Basic REPL Loop Example ===\n" );
 
@@ -65,9 +65,7 @@ fn register_sample_commands( registry : &mut CommandRegistry ) -> Result< (), un
 
   let echo_routine = Box::new( | cmd : unilang::semantic::VerifiedCommand, _ctx : ExecutionContext |
   {
-    let message = cmd.arguments.get( "message" )
-      .map( |v| v.to_string() )
-      .unwrap_or_else( || "No message provided".to_string() );
+    let message = cmd.arguments.get( "message" ).map_or_else(|| "No message provided".to_string(), std::string::ToString::to_string);
     
     println!( "🔊 Echo: {message}" );
     
@@ -158,7 +156,7 @@ fn register_sample_commands( registry : &mut CommandRegistry ) -> Result< (), un
 }
 
 /// Core REPL loop implementation demonstrating stateless operation
-fn run_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn std::error::Error > >
+fn run_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "🚀 Starting REPL Session" );
   println!( "Type commands or 'help' for usage, 'quit' to exit\n" );
@@ -168,7 +166,7 @@ fn run_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn std::error::Error > 
   loop
   {
     // Display prompt
-    print!( "repl[{}]> ", session_count );
+    print!( "repl[{session_count}]> " );
     io::stdout().flush()?;
 
     // Read user input
@@ -209,8 +207,9 @@ fn run_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn std::error::Error > 
         {
           None =>
           {
-            if !result.outputs.is_empty()
-            {
+            if result.outputs.is_empty() {
+              println!( "✅ Command completed (no output)" );
+            } else {
               println!( "✅ Command executed successfully" );
               for output in &result.outputs
               {
@@ -219,10 +218,6 @@ fn run_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn std::error::Error > 
                   println!( "📤 Output: {}", output.content );
                 }
               }
-            }
-            else
-            {
-              println!( "✅ Command completed (no output)" );
             }
           },
           Some( error ) =>
@@ -242,7 +237,7 @@ fn run_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn std::error::Error > 
     }
   }
 
-  println!( "\n📊 Session completed. Processed {} commands.", session_count );
+  println!( "\n📊 Session completed. Processed {session_count} commands." );
   Ok( () )
 }
 

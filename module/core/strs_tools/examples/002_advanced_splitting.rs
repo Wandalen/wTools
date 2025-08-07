@@ -1,6 +1,6 @@
 //! Advanced string splitting examples demonstrating quote handling and escape sequences.
 //!
-//! This example showcases the advanced features of strs_tools that make it superior
+//! This example showcases the advanced features of `strs_tools` that make it superior
 //! to standard library string operations, particularly for parsing complex text
 //! formats like command lines, configuration files, and quoted strings.
 
@@ -29,7 +29,7 @@ fn quote_aware_splitting()
     // Parse a command with quoted arguments containing spaces
     let command_line = r#"program --input "file with spaces.txt" --output "result file.out" --verbose"#;
     
-    println!( "Parsing command: {}", command_line );
+    println!( "Parsing command: {command_line}" );
     
     let iter = string::split()
     .src( command_line )
@@ -43,7 +43,7 @@ fn quote_aware_splitting()
     println!( "Parsed arguments:" );
     for ( i, arg ) in args.iter().enumerate()
     {
-      println!( "  [{}]: '{}'", i, arg );
+      println!( "  [{i}]: '{arg}'" );
     }
     
     // Verify the quoted arguments are preserved as single tokens
@@ -56,7 +56,7 @@ fn quote_aware_splitting()
 
 /// Demonstrates handling of escape sequences within strings.
 ///
-/// Shows how strs_tools can handle escaped quotes and other special
+/// Shows how `strs_tools` can handle escaped quotes and other special
 /// characters commonly found in configuration files and string literals.
 fn escape_sequence_handling()
 {
@@ -67,7 +67,7 @@ fn escape_sequence_handling()
     // String with escaped quotes and other escape sequences
     let complex_string = r#"name="John \"The Developer\" Doe" age=30 motto="Code hard, debug harder\n""#;
     
-    println!( "Input with escapes: {}", complex_string );
+    println!( "Input with escapes: {complex_string}" );
     
     let iter = string::split()
     .src( complex_string )
@@ -81,7 +81,7 @@ fn escape_sequence_handling()
     println!( "Extracted tokens:" );
     for token in &tokens
     {
-      if token.contains( "=" )
+      if token.contains( '=' )
       {
         // Split key=value pairs
         let parts : Vec< &str > = token.splitn( 2, '=' ).collect();
@@ -94,7 +94,7 @@ fn escape_sequence_handling()
     
     // Verify escaped quotes are preserved in the value
     let name_token = tokens.iter().find( | t | t.starts_with( "name=" ) ).unwrap();
-    println!( "✓ Escaped quotes preserved in: {}", name_token );
+    println!( "✓ Escaped quotes preserved in: {name_token}" );
   }
 }
 
@@ -111,7 +111,7 @@ fn complex_delimiter_scenarios()
     // Text with mixed delimiters and quoted sections
     let mixed_format = r#"item1,item2;"quoted,item;with,delims";item3,item4"#;
     
-    println!( "Mixed delimiter text: {}", mixed_format );
+    println!( "Mixed delimiter text: {mixed_format}" );
     
     // First pass: split on semicolons (respecting quotes)
     let iter = string::split()
@@ -126,11 +126,12 @@ fn complex_delimiter_scenarios()
     println!( "Sections split by ';':" );
     for ( i, section ) in sections.iter().enumerate()
     {
-      println!( "  Section {}: '{}'", i, section );
+      println!( "  Section {i}: '{section}'" );
       
       // Further split each section by commas (if not quoted)
-      if !section.starts_with( '"' )
-      {
+      if section.starts_with( '"' ) {
+        println!( "    Quoted content: '{section}'" );
+      } else {
         let sub_iter = string::split()
         .src( section.as_str() )
         .delimeter( "," )
@@ -141,12 +142,8 @@ fn complex_delimiter_scenarios()
         
         for item in items
         {
-          println!( "    Item: '{}'", item );
+          println!( "    Item: '{item}'" );
         }
-      }
-      else
-      {
-        println!( "    Quoted content: '{}'", section );
       }
     }
     
@@ -168,7 +165,7 @@ fn performance_optimization_demo()
     let large_text = "word ".repeat( 10000 ) + "final";
     let text_size = large_text.len();
     
-    println!( "Processing large text ({} bytes)...", text_size );
+    println!( "Processing large text ({text_size} bytes)..." );
     
     let start = std::time::Instant::now();
     
@@ -183,8 +180,8 @@ fn performance_optimization_demo()
     let duration = start.elapsed();
     
     println!( "SIMD-optimized split results:" );
-    println!( "  Words found: {}", word_count );
-    println!( "  Processing time: {:?}", duration );
+    println!( "  Words found: {word_count}" );
+    println!( "  Processing time: {duration:?}" );
     println!( "  Throughput: {:.2} MB/s", 
              ( text_size as f64 ) / ( 1024.0 * 1024.0 ) / duration.as_secs_f64() );
     

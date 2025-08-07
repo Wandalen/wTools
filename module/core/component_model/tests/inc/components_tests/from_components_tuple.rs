@@ -9,7 +9,7 @@ struct SourceTuple(i32, String, f32);
 impl From<&SourceTuple> for i32 {
   #[inline(always)]
   fn from(src: &SourceTuple) -> Self {
-    src.0.clone()
+    src.0
   }
 }
 
@@ -23,7 +23,7 @@ impl From<&SourceTuple> for String {
 impl From<&SourceTuple> for f32 {
   #[inline(always)]
   fn from(src: &SourceTuple) -> Self {
-    src.2.clone()
+    src.2
   }
 }
 

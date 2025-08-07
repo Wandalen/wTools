@@ -248,12 +248,12 @@ fn main()
   let input: syn::Attribute = syn::parse_quote!( #[ mutator( custom = true, debug ) ] );
   match ItemAttributes::from_attrs(core::iter::once(&input)) {
     Ok(attrs) => {
-      println!( "Successfully parsed attribute: {:#?}", attrs );
+      println!( "Successfully parsed attribute: {attrs:#?}" );
       println!( "Custom property: {}", attrs.mutator.custom.internal() );
       println!( "Debug property: {}", attrs.mutator.debug.internal() );
     }
     Err(e) => {
-      println!( "Error parsing attribute: {}", e );
+      println!( "Error parsing attribute: {e}" );
     }
   }
   

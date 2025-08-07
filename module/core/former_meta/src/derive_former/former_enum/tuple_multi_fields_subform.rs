@@ -26,16 +26,16 @@
 //! **Solution**: Changed to `#end_name #ty_generics ::default()` with proper spacing
 //! **Impact**: Eliminated all compilation failures for multi-field tuple subforms
 //!
-//! ### 2. PhantomData Generic Declaration Errors (FIXED)  
+//! ### 2. `PhantomData` Generic Declaration Errors (FIXED)  
 //! **Issue**: Generated `PhantomData #ty_generics` without required angle brackets
-//! **Root Cause**: Missing angle bracket wrapping for generic parameters in PhantomData
+//! **Root Cause**: Missing angle bracket wrapping for generic parameters in `PhantomData`
 //! **Solution**: Use `PhantomData< #ty_generics >` with explicit angle brackets
 //! **Impact**: Fixed all struct generation compilation errors
 //!
 //! ### 3. Empty Generics Edge Case (FIXED)
 //! **Issue**: When enum has no generics, generated `PhantomData< >` with empty angle brackets
 //! **Root Cause**: Generic parameter expansion produces empty tokens for non-generic enums
-//! **Solution**: Conditional PhantomData type based on presence of generics:
+//! **Solution**: Conditional `PhantomData` type based on presence of generics:
 //! ```rust,ignore
 //! let phantom_data_type = if ctx.generics.type_params().next().is_some() {
 //!   quote! { std::marker::PhantomData< #ty_generics > }
@@ -112,10 +112,10 @@
 //! }
 //! ```
 //!
-//! ### 3. FormingEnd Integration (Critical Prevention)
-//! **Issue Resolved**: Manual implementations not properly integrating with Former's FormingEnd system
+//! ### 3. `FormingEnd` Integration (Critical Prevention)
+//! **Issue Resolved**: Manual implementations not properly integrating with Former's `FormingEnd` system
 //! **Root Cause**: Tuple variants require custom end handling for proper variant construction
-//! **Solution**: Generated custom End struct with proper FormingEnd implementation
+//! **Solution**: Generated custom End struct with proper `FormingEnd` implementation
 //! **Prevention**: Complete integration with Former's ending system for tuple variant scenarios
 //!
 //! ### 4. Generic Parameter Propagation (Critical Prevention)  
@@ -127,7 +127,7 @@
 //! ### 5. Storage Default Handling (Prevention)
 //! **Issue Resolved**: Manual implementations not providing proper default values for tuple field storage
 //! **Root Cause**: Tuple fields require Default trait bounds for safe unwrapping in preform
-//! **Solution**: Proper Default trait constraints and safe unwrap_or_default() handling
+//! **Solution**: Proper Default trait constraints and safe `unwrap_or_default()` handling
 //! **Prevention**: Generated storage ensures safe defaults for all tuple field types
 //!
 //! ## Generated Code Architecture

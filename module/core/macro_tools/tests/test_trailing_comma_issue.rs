@@ -1,4 +1,4 @@
-//! Test for trailing comma issue fix in generic_params::decompose
+//! Test for trailing comma issue fix in `generic_params::decompose`
 
 use macro_tools::generic_params;
 use quote::quote;
@@ -17,8 +17,8 @@ fn test_trailing_comma_issue_mre() {
     println!("Test 1 - Single lifetime:");
     println!("  impl_gen: {}", quote! { #impl_gen });
     println!("  ty_gen: {}", quote! { #ty_gen });
-    println!("  Generated impl: {}", impl_code);
-    println!("  Generated type: {}", type_code);
+    println!("  Generated impl: {impl_code}");
+    println!("  Generated type: {type_code}");
     
     // Check if trailing commas exist (they shouldn't)
     assert!(!impl_gen.trailing_punct(), "impl_gen should not have trailing comma");
@@ -34,8 +34,8 @@ fn test_trailing_comma_issue_mre() {
     println!("\nTest 2 - Multiple parameters:");
     println!("  impl_gen: {}", quote! { #impl_gen });
     println!("  ty_gen: {}", quote! { #ty_gen });
-    println!("  Generated impl: {}", impl_code);
-    println!("  Generated type: {}", type_code);
+    println!("  Generated impl: {impl_code}");
+    println!("  Generated type: {type_code}");
     
     // Check if trailing commas exist (they shouldn't)
     assert!(!impl_gen.trailing_punct(), "impl_gen should not have trailing comma");
@@ -59,8 +59,8 @@ fn test_trailing_comma_issue_mre() {
     println!("\nTest 4 - Single type parameter:");
     println!("  impl_gen: {}", quote! { #impl_gen });
     println!("  ty_gen: {}", quote! { #ty_gen });
-    println!("  Generated impl: {}", impl_code);
-    println!("  Generated type: {}", type_code);
+    println!("  Generated impl: {impl_code}");
+    println!("  Generated type: {type_code}");
     
     assert!(!impl_gen.trailing_punct(), "impl_gen should not have trailing comma");
     assert!(!ty_gen.trailing_punct(), "ty_gen should not have trailing comma");

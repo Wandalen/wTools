@@ -29,7 +29,7 @@ impl SimpleProperty {
 #[derive(Debug, PartialEq, Clone, Default)]
 pub struct ParametrizedProperty<T>
 where
-  T: Clone + Default + PartialEq + std::fmt::Debug,
+  T: Clone + Default + PartialEq + core::fmt::Debug,
 {
   name: T,
   code: isize,
@@ -37,7 +37,7 @@ where
 
 impl<T> ParametrizedProperty<T>
 where
-  T: Clone + Default + PartialEq + std::fmt::Debug,
+  T: Clone + Default + PartialEq + core::fmt::Debug,
 {
   #[inline]
   pub fn new<N, C>(name: N, code: C) -> Self
@@ -56,7 +56,7 @@ where
 #[derive(Debug, PartialEq, former::Former)]
 pub struct ParametrizedChild<T>
 where
-  T: Clone + Default + PartialEq + std::fmt::Debug,
+  T: Clone + Default + PartialEq + core::fmt::Debug,
 {
   pub name: String,
   pub properties: Vec<ParametrizedProperty<T>>,
@@ -65,7 +65,7 @@ where
 
 impl<T> Default for ParametrizedChild<T>
 where
-  T: Clone + Default + PartialEq + std::fmt::Debug,
+  T: Clone + Default + PartialEq + core::fmt::Debug,
 {
   fn default() -> Self {
     Self {
@@ -195,7 +195,7 @@ fn parametrized_struct_where_complex_generics_test() {
     .active(false)
     .form();
   
-  assert_eq!(bool_child.properties[0].name, true);
+  assert!(bool_child.properties[0].name);
   assert_eq!(bool_child.properties[0].code, 400isize);
   
   // Test with Option<String> parametrization
@@ -227,7 +227,7 @@ fn parametrized_struct_where_multiple_properties_test() {
   
   assert_eq!(got.name, "multi_prop_child");
   assert_eq!(got.properties.len(), 3);
-  assert_eq!(got.active, true);
+  assert!(got.active);
   
   for (i, prop) in got.properties.iter().enumerate() {
     assert_eq!(prop.name, format!("prop{}", i + 1));

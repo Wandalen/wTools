@@ -31,10 +31,7 @@ pub use own::*;
 #[allow(unused_imports)]
 #[cfg(feature = "enabled")]
 // Former macro is intentionally not re-exported; all coupling with "former" is removed.
-
 /// Own namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
 pub mod own {
 
   use super::*;

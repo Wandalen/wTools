@@ -4,7 +4,6 @@ use super::*;
 ///
 /// Options1
 ///
-
 #[derive(Debug, Default, PartialEq, the_module::ComponentFrom)]
 // #[ debug ]
 pub struct Options1 {

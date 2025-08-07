@@ -13,7 +13,7 @@
 //! - Relies on the derived static method `EnumG3::<T>::v_1()` provided by this file (via `include!`).
 //! - Asserts that this constructor returns the expected subformer (`InnerG3Former<T>`) and that using the subformer's setter (`.inner_field()`) and `.form()` results in the correct `EnumG3` enum instance.
 //! - Verifies that the bounds (`BoundA`, `BoundB`) are correctly handled by using a type that satisfies both.
-//! Simplified version of generics_shared_tuple_derive that works around Former derive issues
+//! Simplified version of `generics_shared_tuple_derive` that works around Former derive issues
 //! with generic enums. Tests the core functionality with concrete types instead.
 
 use former::Former;

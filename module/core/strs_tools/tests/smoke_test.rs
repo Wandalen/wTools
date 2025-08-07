@@ -23,7 +23,7 @@ fn debug_strs_tools_semicolon_only() {
     .split()
     .collect();
 
-  println!("DEBUG: Splits for ';;': {:?}", splits);
+  println!("DEBUG: Splits for ';;': {splits:?}");
 
   use strs_tools::string::split::{Split, SplitType};
   use std::borrow::Cow;
@@ -51,7 +51,7 @@ fn debug_strs_tools_trailing_semicolon_space() {
     .split()
     .collect();
 
-  println!("DEBUG: Splits for 'cmd1 ;; ': {:?}", splits);
+  println!("DEBUG: Splits for 'cmd1 ;; ': {splits:?}");
 
   use strs_tools::string::split::{Split, SplitType};
   use std::borrow::Cow;
@@ -88,7 +88,7 @@ fn debug_strs_tools_only_semicolon() {
     .split()
     .collect();
 
-  println!("DEBUG: Splits for ';;': {:?}", splits);
+  println!("DEBUG: Splits for ';;': {splits:?}");
 
   use strs_tools::string::split::{Split, SplitType};
   use std::borrow::Cow;

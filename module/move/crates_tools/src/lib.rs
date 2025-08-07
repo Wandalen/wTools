@@ -4,6 +4,7 @@
 )]
 #![doc(html_root_url = "https://docs.rs/crates_tools/latest/crates_tools/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Crate management utilities" ) ]
 
 /// Define a private namespace for all its items.
 #[cfg(feature = "enabled")]

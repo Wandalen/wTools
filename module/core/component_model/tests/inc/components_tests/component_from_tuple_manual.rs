@@ -7,7 +7,7 @@ struct TupleStruct(i32, String);
 impl From<&TupleStruct> for i32 {
   #[inline(always)]
   fn from(src: &TupleStruct) -> Self {
-    src.0.clone() // Access field by index
+    src.0 // Access field by index
   }
 }
 

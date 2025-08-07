@@ -37,7 +37,7 @@ fn main()
     
     // Progress reporting every 100k lookups
     if i % 100_000 == 0 && i > 0 {
-      println!( "  Completed {} lookups...", i );
+      println!( "  Completed {i} lookups..." );
     }
   }
   

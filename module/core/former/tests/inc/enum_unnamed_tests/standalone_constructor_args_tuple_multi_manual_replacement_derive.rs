@@ -45,12 +45,10 @@ fn standalone_constructor_args_multi_manual_replacement_triple_test() {
 #[test]
 fn standalone_constructor_args_multi_manual_replacement_comprehensive_test() {
   // Test all multi-arg standalone constructors work correctly
-  let test_cases = vec![
-    StandaloneArgsMultiEnum::multi_args(1, true, "first".to_string()),
+  let test_cases = [StandaloneArgsMultiEnum::multi_args(1, true, "first".to_string()),
     StandaloneArgsMultiEnum::dual_args(2.5, 2),
     StandaloneArgsMultiEnum::triple_args("third".to_string(), false, 3),
-    StandaloneArgsMultiEnum::multi_args(-10, false, "negative".to_string()),
-  ];
+    StandaloneArgsMultiEnum::multi_args(-10, false, "negative".to_string())];
   
   assert_eq!(test_cases.len(), 4);
   
@@ -58,7 +56,7 @@ fn standalone_constructor_args_multi_manual_replacement_comprehensive_test() {
   match &test_cases[0] {
     StandaloneArgsMultiEnum::MultiArgs(i, b, s) => {
       assert_eq!(*i, 1);
-      assert_eq!(*b, true);
+      assert!(*b);
       assert_eq!(s, "first");
     },
     _ => panic!("Expected MultiArgs"),
@@ -75,7 +73,7 @@ fn standalone_constructor_args_multi_manual_replacement_comprehensive_test() {
   match &test_cases[2] {
     StandaloneArgsMultiEnum::TripleArgs(s, b, i) => {
       assert_eq!(s, "third");
-      assert_eq!(*b, false);
+      assert!(!(*b));
       assert_eq!(*i, 3);
     },
     _ => panic!("Expected TripleArgs"),
@@ -86,12 +84,10 @@ fn standalone_constructor_args_multi_manual_replacement_comprehensive_test() {
 #[test]
 fn standalone_constructor_args_multi_manual_replacement_advanced_test() {
   // Test with various data types and complex values
-  let complex_cases = vec![
-    StandaloneArgsMultiEnum::multi_args(i32::MAX, true, "max_value".to_string()),
+  let complex_cases = [StandaloneArgsMultiEnum::multi_args(i32::MAX, true, "max_value".to_string()),
     StandaloneArgsMultiEnum::dual_args(f64::MIN, i32::MIN),
-    StandaloneArgsMultiEnum::triple_args("".to_string(), true, 0),
-    StandaloneArgsMultiEnum::multi_args(0, false, "zero_case".to_string()),
-  ];
+    StandaloneArgsMultiEnum::triple_args(String::new(), true, 0),
+    StandaloneArgsMultiEnum::multi_args(0, false, "zero_case".to_string())];
   
   // Verify complex value handling
   match &complex_cases[0] {
@@ -113,7 +109,7 @@ fn standalone_constructor_args_multi_manual_replacement_advanced_test() {
   match &complex_cases[2] {
     StandaloneArgsMultiEnum::TripleArgs(s, b, i) => {
       assert_eq!(s, "");
-      assert_eq!(*b, true);
+      assert!(*b);
       assert_eq!(*i, 0);
     },
     _ => panic!("Expected TripleArgs with empty string"),

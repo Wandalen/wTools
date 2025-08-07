@@ -28,15 +28,13 @@ fn test_m_t3_13_quoting_preserve_all_strip() // Renamed from test_split_indices_
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 

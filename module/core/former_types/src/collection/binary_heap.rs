@@ -85,7 +85,6 @@ where
 /// - `Formed`: The type formed at the end of the formation process, typically a `BinaryHeap<E>`.
 /// - `End`: A trait determining the behavior at the end of the formation process.
 ///
-
 #[derive(Debug, Default)]
 pub struct BinaryHeapDefinition<E, Context, Formed, End>
 where
@@ -120,7 +119,6 @@ where
 /// - `E`: The element type of the binary heap.
 /// - `Context`: The context in which the binary heap is formed.
 /// - `Formed`: The type produced as a result of the formation process.
-
 #[derive(Debug, Default)]
 pub struct BinaryHeapDefinitionTypes<E, Context = (), Formed = BinaryHeap<E>> {
   _phantom: core::marker::PhantomData<(E, Context, Formed)>,

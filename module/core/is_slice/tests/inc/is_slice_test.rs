@@ -5,8 +5,8 @@ use super::*;
 #[test]
 fn is_slice_basic() {
   let src: &[i32] = &[1, 2, 3];
-  assert_eq!(the_module::is_slice!(src), true);
-  assert_eq!(the_module::is_slice!(&[1, 2, 3][..]), true);
+  assert!(the_module::is_slice!(src));
+  assert!(the_module::is_slice!(&[1, 2, 3][..]));
   assert_eq!(the_module::is_slice!(&[1, 2, 3]), false);
 
   // the_module::inspect_type_of!( &[ 1, 2, 3 ][ .. ] );

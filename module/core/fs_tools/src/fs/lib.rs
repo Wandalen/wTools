@@ -5,12 +5,12 @@
 )]
 #![doc(html_root_url = "https://docs.rs/fs_tools/latest/fs_tools/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "File system utilities" ) ]
 
 /// Collection of primal data types.
 pub mod fs;
 
 /// Namespace with dependencies.
-
 #[cfg(feature = "enabled")]
 pub mod dependency {}
 

@@ -20,7 +20,6 @@ mod impls;
 ///
 /// Template.
 ///
-
 #[ proc_macro ]
 pub fn procedural_macro( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {

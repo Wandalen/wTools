@@ -213,7 +213,7 @@ mod private
       );
       let error = Error::Execution(error_data);
       
-      let debug_string = format!("{:?}", error);
+      let debug_string = format!("{error:?}");
       assert!(debug_string.contains("Execution"));
       assert!(debug_string.contains("DEBUG_ERROR"));
     }

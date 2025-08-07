@@ -14,7 +14,6 @@ pub struct AttributePropertyOptionalSynMarker;
 ///
 /// Property of an attribute which simply wraps one of the standard `syn` types and keeps it optional.
 ///
-
 #[derive(Debug, Clone)]
 pub struct AttributePropertyOptionalSyn<T, Marker = AttributePropertyOptionalSynMarker>(
   Option<T>,

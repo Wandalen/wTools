@@ -3,9 +3,9 @@ use super::*;
 /// Private namespace of the module.
 mod private {}
 
-/// layer_a
+/// `layer_a`
 pub mod layer_a;
-/// layer_b
+/// `layer_b`
 pub mod layer_b;
 
 /// Own namespace of the module.

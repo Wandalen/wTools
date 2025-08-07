@@ -5,6 +5,7 @@
 )]
 #![doc(html_root_url = "https://docs.rs/variadic_from/latest/variadic_from/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Variadic conversion utilities" ) ]
 
 /// Internal implementation of variadic `From` traits and macro.
 #[cfg(feature = "enabled")]

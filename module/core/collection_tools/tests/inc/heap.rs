@@ -75,7 +75,7 @@ fn iters() {
   let instance = MyContainer {
     entries: the_module::BinaryHeap::from([1, 2, 3]),
   };
-  let got: the_module::BinaryHeap<i32> = (&instance).into_iter().cloned().collect();
+  let got: the_module::BinaryHeap<i32> = (&instance).into_iter().copied().collect();
   let exp: the_module::BinaryHeap<i32> = the_module::BinaryHeap::from([1, 2, 3]);
   a_id!(got.into_sorted_vec(), exp.into_sorted_vec());
 }

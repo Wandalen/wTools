@@ -4,8 +4,8 @@ use super::*;
 fn reexport() {
   let mut map: the_module::LinkedList<i32> = the_module::LinkedList::new();
   map.push_back(1);
-  assert_eq!(map.contains(&1), true);
-  assert_eq!(map.contains(&2), false);
+  assert!(map.contains(&1));
+  assert!(!map.contains(&2));
 }
 
 #[cfg(feature = "collection_constructors")]
@@ -89,7 +89,7 @@ fn iters() {
   let instance = MyContainer {
     entries: the_module::LinkedList::from([1, 2, 3]),
   };
-  let got: the_module::LinkedList<_> = (&instance).into_iter().cloned().collect();
+  let got: the_module::LinkedList<_> = (&instance).into_iter().copied().collect();
   let exp = the_module::LinkedList::from([1, 2, 3]);
   a_id!(got, exp);
 

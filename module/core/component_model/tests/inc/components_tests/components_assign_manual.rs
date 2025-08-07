@@ -6,7 +6,6 @@ use the_module::{Assign, AssignWithType};
 ///
 /// Options1
 ///
-
 #[derive(Debug, Default, PartialEq)]
 pub struct Options1 {
   field1: i32,
@@ -17,7 +16,7 @@ pub struct Options1 {
 impl From<&Options1> for i32 {
   #[inline(always)]
   fn from(src: &Options1) -> Self {
-    src.field1.clone()
+    src.field1
   }
 }
 
@@ -31,7 +30,7 @@ impl From<&Options1> for String {
 impl From<&Options1> for f32 {
   #[inline(always)]
   fn from(src: &Options1) -> Self {
-    src.field3.clone()
+    src.field3
   }
 }
 
@@ -41,7 +40,7 @@ where
 {
   #[inline(always)]
   fn assign(&mut self, component: IntoT) {
-    self.field1 = component.into().clone();
+    self.field1 = component.into();
   }
 }
 
@@ -61,12 +60,12 @@ where
 {
   #[inline(always)]
   fn assign(&mut self, component: IntoT) {
-    self.field3 = component.into().clone();
+    self.field3 = component.into();
   }
 }
 
 ///
-/// Options1ComponentsAssign.
+/// `Options1ComponentsAssign`.
 ///
 
 // #[ allow( dead_code ) ]
@@ -102,7 +101,6 @@ where
 ///
 /// Options2
 ///
-
 #[derive(Debug, Default, PartialEq)]
 pub struct Options2 {
   field1: i32,
@@ -112,7 +110,7 @@ pub struct Options2 {
 impl From<&Options2> for i32 {
   #[inline(always)]
   fn from(src: &Options2) -> Self {
-    src.field1.clone()
+    src.field1
   }
 }
 
@@ -129,7 +127,7 @@ where
 {
   #[inline(always)]
   fn assign(&mut self, component: IntoT) {
-    self.field1 = component.into().clone();
+    self.field1 = component.into();
   }
 }
 
@@ -144,9 +142,8 @@ where
 }
 
 ///
-/// Options2ComponentsAssign.
+/// `Options2ComponentsAssign`.
 ///
-
 pub trait Options2ComponentsAssign<IntoT>
 where
   IntoT: Into<i32>,

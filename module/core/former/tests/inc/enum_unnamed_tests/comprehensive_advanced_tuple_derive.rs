@@ -126,13 +126,11 @@ fn standalone_constructors_attribute_test() {
 // Advanced stress test
 #[test]
 fn advanced_tuple_stress_test() {
-  let variants = vec![
-    AdvancedTupleEnum::zero_tuple(),
+  let variants = [AdvancedTupleEnum::zero_tuple(),
     AdvancedTupleEnum::single_scalar(111),
     AdvancedTupleEnum::single_scalar_string("stress".to_string()),
     AdvancedTupleEnum::multi_scalar(222, "stress_multi".to_string()),
-    AdvancedTupleEnum::multi_scalar_complex(2.71, false, "stress_complex".to_string()),
-  ];
+    AdvancedTupleEnum::multi_scalar_complex(2.71, false, "stress_complex".to_string())];
   
   // Verify all variants are different and properly constructed
   assert_eq!(variants.len(), 5);

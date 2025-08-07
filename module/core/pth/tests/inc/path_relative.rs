@@ -11,7 +11,7 @@ fn test_absolute_a_minus_b() {
   let expected = "../b";
   assert_eq!(
     the_module::path::path_relative(from, to),
-    PathBuf::from(PathBuf::from(expected))
+    PathBuf::from(expected)
   );
 }
 

@@ -97,18 +97,18 @@ mod private {
     fn into_bytes(self) -> Vec<u8> {
       // Dereference the Box to get &[T], cast to bytes, and clone into a Vec.
       // The Box is dropped after self is consumed.
-      bytemuck::cast_slice(&*self).to_vec()
+      bytemuck::cast_slice(&self).to_vec()
     }
   }
 
-  /// Implementation for VecDeque<T> where T is POD.
+  /// Implementation for `VecDeque`<T> where T is POD.
   impl<T: Pod> IntoBytes for std::collections::VecDeque<T> {
     #[inline]
     fn into_bytes(self) -> Vec<u8> {
       // Iterate through the deque, consuming it, and extend a byte vector
       // with the bytes of each element. This handles the potentially
       // non-contiguous nature of the deque's internal ring buffer safely.
-      let mut bytes = Vec::with_capacity(self.len() * std::mem::size_of::<T>());
+      let mut bytes = Vec::with_capacity(self.len() * core::mem::size_of::<T>());
       for element in self {
         bytes.extend_from_slice(bytemuck::bytes_of(&element));
       }
@@ -116,7 +116,7 @@ mod private {
     }
   }
 
-  /// Implementation for CString.
+  /// Implementation for `CString`.
   /// Returns the byte slice *without* the trailing NUL byte.
   impl IntoBytes for std::ffi::CString {
     #[inline]
@@ -132,7 +132,6 @@ mod private {
 pub use own::*;
 
 /// Own namespace of the module.
-
 #[allow(unused_imports)]
 pub mod own {
   use super::*;
@@ -146,7 +145,6 @@ pub mod own {
 pub use own::*;
 
 /// Orphan namespace of the module.
-
 #[allow(unused_imports)]
 pub mod orphan {
   use super::*;
@@ -155,7 +153,6 @@ pub mod orphan {
 }
 
 /// Exposed namespace of the module.
-
 #[allow(unused_imports)]
 pub mod exposed {
   use super::*;
@@ -165,7 +162,6 @@ pub mod exposed {
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-
 #[allow(unused_imports)]
 pub mod prelude {
   use super::*;

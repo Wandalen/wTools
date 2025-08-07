@@ -260,7 +260,7 @@ mod private
     #[ inline ]
     fn try_from( src : &'a AbsolutePath ) -> Result< &'a str, Self::Error >
     {
-      src.to_str().ok_or_else( || io::Error::new( io::ErrorKind::Other, format!( "Can't convert &PathBuf into &str {src}" ) ) )
+      src.to_str().ok_or_else( || io::Error::other( format!( "Can't convert &PathBuf into &str {src}" ) ) )
     }
   }
 

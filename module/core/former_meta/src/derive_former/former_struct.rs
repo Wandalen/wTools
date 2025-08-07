@@ -9,19 +9,19 @@
 //!
 //! ### Complete Former Ecosystem Generation
 //! For each struct, this module generates the complete Former pattern ecosystem:
-//! - **FormerStorage**: Temporary storage struct with Option-wrapped fields
-//! - **FormerDefinition**: Configuration struct defining formation behavior
-//! - **FormerDefinitionTypes**: Generic parameter container for the formation process
+//! - **`FormerStorage`**: Temporary storage struct with Option-wrapped fields
+//! - **`FormerDefinition`**: Configuration struct defining formation behavior
+//! - **`FormerDefinitionTypes`**: Generic parameter container for the formation process
 //! - **Former**: Main builder struct with fluent API methods
-//! - **AsSubformer**: Type alias for nested subform usage
-//! - **AsSubformerEnd**: Trait for nested subform end conditions
+//! - **`AsSubformer`**: Type alias for nested subform usage
+//! - **`AsSubformerEnd`**: Trait for nested subform end conditions
 //!
 //! ### Critical Complexity Handling
 //! This module successfully handles the complex scenarios that were blocking manual implementations:
 //! - **Complex Lifetime Parameters**: `<'child, T>` patterns with where clauses
 //! - **Generic Type Constraints**: `where T: Hash + Eq` and multi-trait bounds
 //! - **Nested Subform Hierarchies**: Parent-child relationships with proper trait propagation
-//! - **Collection Type Integration**: HashMap, Vec, HashSet with automatic trait bound handling
+//! - **Collection Type Integration**: `HashMap`, Vec, `HashSet` with automatic trait bound handling
 //! - **Storage Field Management**: Temporary fields exclusive to the formation process
 //!
 //! ## Pitfalls Resolved Through Implementation
@@ -50,10 +50,10 @@
 //! **Solution**: Automatic trait bound detection and propagation through subform hierarchies
 //! **Prevention**: Systematic trait bound calculation based on field types and usage patterns
 //!
-//! ### 5. FormerBegin Lifetime Parameter Management (Issue #8 Resolution)
-//! **Issue Resolved**: Missing lifetime parameters in FormerBegin trait implementations
+//! ### 5. `FormerBegin` Lifetime Parameter Management (Issue #8 Resolution)
+//! **Issue Resolved**: Missing lifetime parameters in `FormerBegin` trait implementations
 //! **Root Cause**: Manual implementations not including required lifetime parameters
-//! **Solution**: Proper FormerBegin trait implementation with all required lifetime parameters
+//! **Solution**: Proper `FormerBegin` trait implementation with all required lifetime parameters
 //! **Prevention**: Automated generation ensures all lifetime parameters are included
 //!
 //! ## Code Generation Architecture
@@ -106,13 +106,13 @@ use macro_tools::{
 /// ## Core Former Ecosystem (20+ Types and Traits)
 /// The function generates the complete set of types and traits required for the Former pattern:
 /// - **Entity Implementations**: `EntityToFormer`, `EntityToStorage`, `EntityToDefinition` traits
-/// - **FormerDefinitionTypes**: Generic parameter container with proper lifetime handling
-/// - **FormerDefinition**: Configuration struct with end condition management
-/// - **FormerStorage**: Option-wrapped field storage with proper generic propagation
+/// - **`FormerDefinitionTypes`**: Generic parameter container with proper lifetime handling
+/// - **`FormerDefinition`**: Configuration struct with end condition management
+/// - **`FormerStorage`**: Option-wrapped field storage with proper generic propagation
 /// - **Former**: Main builder struct with fluent API and subform support
-/// - **FormerBegin**: Trait implementation with correct lifetime parameters
-/// - **AsSubformer**: Type alias for nested subform scenarios
-/// - **AsSubformerEnd**: Trait for subform end condition handling
+/// - **`FormerBegin`**: Trait implementation with correct lifetime parameters
+/// - **`AsSubformer`**: Type alias for nested subform scenarios
+/// - **`AsSubformerEnd`**: Trait for subform end condition handling
 ///
 /// # Critical Complexity Handling
 ///
@@ -141,8 +141,8 @@ use macro_tools::{
 /// ```
 ///
 /// ### 2. Lifetime Parameter Scope Errors (Issues #1, #8 Resolution)
-/// **Problem Resolved**: Undeclared lifetime errors in FormerBegin implementations
-/// **Root Cause**: Missing lifetime parameters in FormerBegin trait bounds
+/// **Problem Resolved**: Undeclared lifetime errors in `FormerBegin` implementations
+/// **Root Cause**: Missing lifetime parameters in `FormerBegin` trait bounds
 /// **Solution**: Proper lifetime parameter propagation through all trait implementations
 /// **Prevention**: Automated inclusion of all required lifetime parameters
 /// **Example**:
@@ -170,7 +170,7 @@ use macro_tools::{
 /// ```
 ///
 /// ### 4. Trait Bound Propagation (Issues #2, #11 Resolution)
-/// **Problem Resolved**: Missing Hash+Eq bounds for HashMap scenarios
+/// **Problem Resolved**: Missing Hash+Eq bounds for `HashMap` scenarios
 /// **Root Cause**: Complex trait bound requirements not calculated and propagated
 /// **Solution**: Automatic trait bound detection and propagation
 /// **Prevention**: Field type analysis determines required trait bounds
@@ -255,6 +255,7 @@ specific needs of the broader forming context. It mandates the implementation of
   //    The struct's type parameters are passed through the Definition types, not the Former itself
   let generics_ref = generic_params::GenericsRef::new(generics);
   let classification = generics_ref.classification();
+  #[allow(clippy::no_effect_underscore_binding)]
   let _has_only_lifetimes = classification.has_only_lifetimes;
   
   // Debug output - avoid calling to_string() on the original AST as it may cause issues
@@ -472,7 +473,7 @@ specific needs of the broader forming context. It mandates the implementation of
       let first_lifetime = if let Some(syn::GenericParam::Lifetime(ref lp)) = lifetimes_only_generics.params.first() {
         &lp.lifetime
       } else {
-        return Err(syn::Error::new_spanned(&ast, "Expected lifetime parameter"));
+        return Err(syn::Error::new_spanned(ast, "Expected lifetime parameter"));
       };
       
       // Use separate 'storage lifetime with proper bounds
@@ -761,11 +762,7 @@ specific needs of the broader forming context. It mandates the implementation of
     if f.attrs.former_ignore.value(false) {
       false
     }
-    // If #[arg_for_constructor] is present, include the field
-    else if f.attrs.arg_for_constructor.value(false) {
-      true  
-    }
-    // Default behavior: include the field (inverted former_ignore logic)
+    // If #[arg_for_constructor] is present or by default, include the field
     else {
       true
     }
@@ -1035,20 +1032,18 @@ specific needs of the broader forming context. It mandates the implementation of
           #former_begin_additional_bounds
       }
     }
+  } else if former_begin_additional_bounds.is_empty() {
+    quote! {
+      where
+        Definition : former::FormerDefinition< Storage = #storage_type_ref >,
+        #struct_generics_where
+    }
   } else {
-    if former_begin_additional_bounds.is_empty() {
-      quote! {
-        where
-          Definition : former::FormerDefinition< Storage = #storage_type_ref >,
-          #struct_generics_where
-      }
-    } else {
-      // struct_generics_where already has a trailing comma from decompose
-      quote! {
-        where
-          Definition : former::FormerDefinition< Storage = #storage_type_ref >,
-          #struct_generics_where #former_begin_additional_bounds
-      }
+    // struct_generics_where already has a trailing comma from decompose
+    quote! {
+      where
+        Definition : former::FormerDefinition< Storage = #storage_type_ref >,
+        #struct_generics_where #former_begin_additional_bounds
     }
   };
   
@@ -1411,6 +1406,7 @@ specific needs of the broader forming context. It mandates the implementation of
   };
   
   // Add debug output if #[debug] attribute is present
+  #[allow(clippy::used_underscore_binding)]
   if _has_debug {
     let about = format!("derive : Former\nstruct : {item}");
     diag::report_print(about, original_input, &result);

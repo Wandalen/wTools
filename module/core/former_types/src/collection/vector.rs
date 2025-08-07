@@ -72,7 +72,6 @@ impl<E> StoragePreform for Vec<E> {
 /// - `Formed`: The type formed at the end of the formation process, typically a `Vec<E>`.
 /// - `End`: A trait determining the behavior at the end of the formation process.
 ///
-
 #[derive(Debug, Default)]
 pub struct VectorDefinition<E, Context, Formed, End>
 where
@@ -106,7 +105,6 @@ where
 /// - `E`: The element type of the vector.
 /// - `Context`: The context in which the vector is formed.
 /// - `Formed`: The type produced as a result of the formation process.
-
 #[derive(Debug, Default)]
 pub struct VectorDefinitionTypes<E, Context = (), Formed = Vec<E>> {
   _phantom: core::marker::PhantomData<(E, Context, Formed)>,

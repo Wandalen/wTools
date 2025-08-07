@@ -30,7 +30,6 @@ mod private {
   /// assert!( parsed_generics.generics.where_clause.is_some() );
   /// ```
   ///
-
   #[derive(Debug)]
   pub struct GenericsWithWhere {
     /// Syn's generics parameters.

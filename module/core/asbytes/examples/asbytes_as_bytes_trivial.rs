@@ -46,5 +46,5 @@ fn main() {
   println!("Scalar Bytes: length={}, data={:?}", scalar_tuple.byte_size(), scalar_bytes);
 
   // Original data is still available after calling .as_bytes()
-  println!("Original Vec still usable: {:?}", points_vec);
+  println!("Original Vec still usable: {points_vec:?}");
 }

@@ -12,7 +12,7 @@ struct Point {
 fn test_tuple_scalar_as_bytes() {
   {
     use asbytes::AsBytes;
-    use std::mem;
+    use core::mem;
 
     let scalar_tuple = (123u32,);
     let bytes = scalar_tuple.as_bytes();
@@ -31,7 +31,7 @@ fn test_tuple_scalar_as_bytes() {
 fn test_tuple_struct_as_bytes() {
   {
     use asbytes::AsBytes;
-    use std::mem;
+    use core::mem;
 
     let point = Point { x: 10, y: -20 };
     let struct_tuple = (point,);
@@ -51,7 +51,7 @@ fn test_tuple_struct_as_bytes() {
 fn test_vec_as_bytes() {
   {
     use asbytes::AsBytes;
-    use std::mem;
+    use core::mem;
     let v = vec![1u32, 2, 3, 4];
     let bytes = v.as_bytes();
     let expected_length = v.len() * mem::size_of::<u32>();
@@ -65,10 +65,10 @@ fn test_vec_as_bytes() {
 fn test_slice_as_bytes() {
   {
     use asbytes::exposed::AsBytes; // Using exposed path
-    use std::mem;
+    use core::mem;
     let slice: &[u32] = &[10, 20, 30];
     let bytes = slice.as_bytes();
-    let expected_length = slice.len() * mem::size_of::<u32>();
+    let expected_length = core::mem::size_of_val(slice);
     assert_eq!(bytes.len(), expected_length);
     assert_eq!(slice.byte_size(), expected_length);
     assert_eq!(slice.len(), 3); // Length of slice is number of elements
@@ -79,7 +79,7 @@ fn test_slice_as_bytes() {
 fn test_array_as_bytes() {
   {
     use asbytes::own::AsBytes; // Using own path
-    use std::mem;
+    use core::mem;
     let arr: [u32; 3] = [100, 200, 300];
     let bytes = arr.as_bytes();
     let expected_length = arr.len() * mem::size_of::<u32>();
@@ -93,7 +93,7 @@ fn test_array_as_bytes() {
 fn test_vec_struct_as_bytes() {
   {
     use asbytes::AsBytes;
-    use std::mem;
+    use core::mem;
     let points = vec![Point { x: 1, y: 2 }, Point { x: 3, y: 4 }];
     let bytes = points.as_bytes();
     let expected_length = points.len() * mem::size_of::<Point>();

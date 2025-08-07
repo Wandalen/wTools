@@ -89,7 +89,6 @@ mod private
   ///   .end()
   /// .form();
   /// ```
-
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   #[ derive( Former ) ]
   pub struct Command

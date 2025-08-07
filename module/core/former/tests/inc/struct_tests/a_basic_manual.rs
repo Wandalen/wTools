@@ -140,8 +140,8 @@ impl former::StoragePreform for Struct1FormerStorage {
         ::core::marker::PhantomData::<i32>.maybe_default()
       }
     };
-    let result = Struct1 { int_1 };
-    result
+    
+    Struct1 { int_1 }
   }
 }
 
@@ -167,8 +167,8 @@ where
 {
   #[inline(always)]
   pub fn perform(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
-    let result = self.form();
-    result
+    
+    self.form()
   }
 
   #[inline(always)]

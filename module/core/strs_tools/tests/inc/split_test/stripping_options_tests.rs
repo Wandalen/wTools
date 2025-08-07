@@ -79,11 +79,9 @@ fn test_m_t3_2_no_preserve_no_strip_no_quote() {
   .stripping( false ) // Key for this test, though it's in stripping_options_tests for grouping by original file
   .quoting( false )
   .perform();
-  let expected = vec![
-    ("a", SplitType::Delimeted, 0, 1),
+  let expected = [("a", SplitType::Delimeted, 0, 1),
     ("b", SplitType::Delimeted, 2, 3),
-    ("c", SplitType::Delimeted, 4, 5),
-  ];
+    ("c", SplitType::Delimeted, 4, 5)];
   for (i, split) in iter.enumerate() {
     assert_eq!(split.string, expected[i].0);
     assert_eq!(split.typ, expected[i].1);
@@ -106,7 +104,7 @@ fn test_m_t3_4_leading_trailing_space_no_preserve_no_strip() {
   .stripping( false ) // Key for this test
   .quoting( false )
   .perform();
-  let expected = vec![("a", SplitType::Delimeted, 1, 2), ("b", SplitType::Delimeted, 3, 4)];
+  let expected = [("a", SplitType::Delimeted, 1, 2), ("b", SplitType::Delimeted, 3, 4)];
   for (i, split) in iter.enumerate() {
     assert_eq!(split.string, expected[i].0);
     assert_eq!(split.typ, expected[i].1);

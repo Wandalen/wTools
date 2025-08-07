@@ -41,7 +41,7 @@ version = "0.1.0"
 edition = "2021"
 [dependencies]
 wca = {{path = "{}"}}"#,
-    env!("CARGO_MANIFEST_DIR").replace("\\", "/")
+    env!("CARGO_MANIFEST_DIR").replace('\\', "/")
   );
 
   let main = r#"use wca::{ Type, VerifiedCommand };
@@ -87,7 +87,7 @@ version = "0.1.0"
 edition = "2021"
 [dependencies]
 wca = {{path = "{}"}}"#,
-    env!("CARGO_MANIFEST_DIR").replace("\\", "/")
+    env!("CARGO_MANIFEST_DIR").replace('\\', "/")
   );
 
   let main = r#"fn main()
@@ -155,7 +155,7 @@ version = "0.1.0"
 edition = "2021"
 [dependencies]
 wca = {{path = "{}"}}"#,
-    env!("CARGO_MANIFEST_DIR").replace("\\", "/")
+    env!("CARGO_MANIFEST_DIR").replace('\\', "/")
   );
 
   let main = r#"fn main()

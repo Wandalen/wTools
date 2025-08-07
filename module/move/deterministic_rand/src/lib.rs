@@ -5,6 +5,7 @@
 )]
 #![doc(html_root_url = "https://docs.rs/deterministic_rand/latest/deterministic_rand/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Deterministic random number generation" ) ]
 
 use mod_interface::mod_interface;
 

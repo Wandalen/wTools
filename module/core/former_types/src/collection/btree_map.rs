@@ -79,7 +79,6 @@ where
 /// - `Formed`: The type of the entity produced, typically a `BTreeMap<K, E>`.
 /// - `End`: A trait defining the end behavior of the formation process, managing how the hash map is finalized.
 ///
-
 #[derive(Debug, Default)]
 pub struct BTreeMapDefinition<K, E, Context = (), Formed = BTreeMap<K, E>, End = ReturnStorage>
 where
@@ -115,7 +114,6 @@ where
 /// - `E`: The value type of the hash map.
 /// - `Context`: The operational context in which the hash map is formed.
 /// - `Formed`: The type produced, typically mirroring the structure of a `BTreeMap<K, E>`.
-
 #[derive(Debug, Default)]
 pub struct BTreeMapDefinitionTypes<K, E, Context = (), Formed = BTreeMap<K, E>> {
   _phantom: core::marker::PhantomData<(K, E, Context, Formed)>,

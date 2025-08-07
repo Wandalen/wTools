@@ -18,7 +18,7 @@ impl Trait1 for i32 {
 
 impl Trait1 for i64 {
   fn val(&self) -> i32 {
-    self.clone().try_into().unwrap()
+    (*self).try_into().unwrap()
   }
 }
 
@@ -46,7 +46,7 @@ impl Trait1 for &str {
 // == begin of generated
 
 #[allow(non_local_definitions)]
-impl<'c> Clone for Box<dyn Trait1 + 'c> {
+impl Clone for Box<dyn Trait1 + '_> {
   #[inline]
   fn clone(&self) -> Self {
     the_module::clone_into_box(&**self)
@@ -54,7 +54,7 @@ impl<'c> Clone for Box<dyn Trait1 + 'c> {
 }
 
 #[allow(non_local_definitions)]
-impl<'c> Clone for Box<dyn Trait1 + Send + 'c> {
+impl Clone for Box<dyn Trait1 + Send + '_> {
   #[inline]
   fn clone(&self) -> Self {
     the_module::clone_into_box(&**self)
@@ -62,7 +62,7 @@ impl<'c> Clone for Box<dyn Trait1 + Send + 'c> {
 }
 
 #[allow(non_local_definitions)]
-impl<'c> Clone for Box<dyn Trait1 + Sync + 'c> {
+impl Clone for Box<dyn Trait1 + Sync + '_> {
   #[inline]
   fn clone(&self) -> Self {
     the_module::clone_into_box(&**self)
@@ -70,7 +70,7 @@ impl<'c> Clone for Box<dyn Trait1 + Sync + 'c> {
 }
 
 #[allow(non_local_definitions)]
-impl<'c> Clone for Box<dyn Trait1 + Send + Sync + 'c> {
+impl Clone for Box<dyn Trait1 + Send + Sync + '_> {
   #[inline]
   fn clone(&self) -> Self {
     the_module::clone_into_box(&**self)

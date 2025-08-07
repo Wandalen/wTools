@@ -5,6 +5,7 @@
 )]
 #![doc(html_root_url = "https://docs.rs/impls_index_meta/latest/impls_index_meta/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Implementation indexing macro support" ) ]
 
 #[cfg(feature = "enabled")]
 mod impls;

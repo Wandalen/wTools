@@ -5,6 +5,7 @@
 )]
 #![doc(html_root_url = "https://docs.rs/file_tools/latest/file_tools/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "File manipulation utilities" ) ]
 
 /// Function description.
 #[cfg(feature = "enabled")]

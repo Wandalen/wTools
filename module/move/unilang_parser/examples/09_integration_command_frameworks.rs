@@ -1,7 +1,7 @@
 //! Integration with Command Frameworks Example
 //!
 //! This example demonstrates:
-//! - Converting GenericInstruction to application-specific structures
+//! - Converting `GenericInstruction` to application-specific structures
 //! - Building command dispatch systems
 //! - Integration patterns for CLI frameworks
 //!
@@ -34,7 +34,7 @@ impl CommandHandler for EchoHandler
   {
     if let Some( message ) = cmd.args.get( "message" )
     {
-      Ok( format!( "Echo: {}", message ) )
+      Ok( format!( "Echo: {message}" ) )
     }
     else if !cmd.positional_args.is_empty()
     {
@@ -58,12 +58,12 @@ impl CommandHandler for UserHandler
       {
         let name = cmd.args.get( "name" ).ok_or( "Missing name" )?;
         let email = cmd.args.get( "email" ).ok_or( "Missing email" )?;
-        Ok( format!( "Created user: {} ({})", name, email ) )
+        Ok( format!( "Created user: {name} ({email})" ) )
       }
       "user.list" =>
       {
         let active_only = cmd.args.get( "active" ).unwrap_or( & "false".to_string() ) == "true";
-        Ok( format!( "Listing users (active only: {})", active_only ) )
+        Ok( format!( "Listing users (active only: {active_only})" ) )
       }
       _ => Err( format!( "Unknown user command: {}", cmd.name ) )
     }
@@ -123,7 +123,7 @@ fn convert_instruction( instruction : GenericInstruction ) -> AppCommand
   }
 }
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Integration with Command Frameworks ===" );
 
@@ -131,15 +131,12 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   let registry = CommandRegistry::new();
 
   // Test cases for integration
-  let test_commands = vec!
-  [
-    "echo message::\"Hello, World!\"",
+  let test_commands = ["echo message::\"Hello, World!\"",
     "echo \"Direct positional message\"",
     "user.create name::john email::john@example.com",
     "user.list active::true",
     "user.create ?",
-    "unknown.command test::value",
-  ];
+    "unknown.command test::value"];
 
   println!( "Processing commands through the framework:\n" );
 
@@ -173,13 +170,13 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
         // Execute through registry
         match registry.execute( &app_cmd )
         {
-          Ok( result ) => println!( "   Result: {}", result ),
-          Err( error ) => println!( "   Error: {}", error ),
+          Ok( result ) => println!( "   Result: {result}" ),
+          Err( error ) => println!( "   Error: {error}" ),
         }
       }
       Err( parse_error ) =>
       {
-        println!( "   Parse Error: {}", parse_error );
+        println!( "   Parse Error: {parse_error}" );
       }
     }
     println!();
@@ -211,7 +208,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   let app_cmd = convert_instruction( validation_cmd );
 
   println!( "Validating command before execution:" );
-  if app_cmd.args.get( "name" ).map_or( true, | n | n.is_empty() )
+  if app_cmd.args.get( "name" ).is_none_or( std::string::String::is_empty )
   {
     println!( "  Validation failed: Empty name" );
   }
@@ -243,8 +240,8 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   println!( "  Aliased 'u.c' to '{}'", app_cmd.name );
   match registry.execute( &app_cmd )
   {
-    Ok( result ) => println!( "  Result: {}", result ),
-    Err( error ) => println!( "  Error: {}", error ),
+    Ok( result ) => println!( "  Result: {result}" ),
+    Err( error ) => println!( "  Error: {error}" ),
   }
 
   println!( "\n✓ Integration with command frameworks demonstration complete!" );

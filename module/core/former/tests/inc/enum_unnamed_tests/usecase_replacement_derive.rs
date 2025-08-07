@@ -131,7 +131,7 @@ fn usecase_complex_building_test() {
   match prompt_variant {
     UsecaseReplacementEnum::PromptStep(prompt) => {
       assert_eq!(prompt.message, "Complex prompt");
-      assert_eq!(prompt.required, false);
+      assert!(!prompt.required);
     },
     _ => panic!("Expected PromptStep variant"),
   }
@@ -149,8 +149,7 @@ fn usecase_complex_building_test() {
 #[test]
 fn usecase_workflow_simulation_test() {
   // Simulate a workflow using different step types
-  let steps = vec![
-    UsecaseReplacementEnum::prompt_step()
+  let steps = [UsecaseReplacementEnum::prompt_step()
       ._0(UsecasePrompt { 
         message: "Step 1".to_string(), 
         required: true 
@@ -167,8 +166,7 @@ fn usecase_workflow_simulation_test() {
         name: "threads".to_string(), 
         value: 4 
       })
-      .form(),
-  ];
+      .form()];
   
   assert_eq!(steps.len(), 3);
   

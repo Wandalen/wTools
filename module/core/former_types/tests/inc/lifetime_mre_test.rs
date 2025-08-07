@@ -17,19 +17,13 @@ use former_types::
 pub struct Sample< 'a > { field : &'a str }
 
 // Manually define the Storage, Definition, and Former for the struct.
+#[derive(Default)]
 pub struct SampleFormerStorage< 'a > { pub field : Option< &'a str > }
-impl< 'a > Default for SampleFormerStorage< 'a >
-{
-  fn default() -> Self
-  {
-    Self { field : None }
-  }
-}
 impl< 'a > Storage for SampleFormerStorage< 'a >
 {
   type Preformed = Sample< 'a >;
 }
-impl< 'a > StoragePreform for SampleFormerStorage< 'a >
+impl StoragePreform for SampleFormerStorage< '_ >
 {
   fn preform( mut self ) -> Self::Preformed
   {
@@ -45,7 +39,7 @@ impl< 'a, C, F > FormerDefinitionTypes for SampleFormerDefinitionTypes< 'a, C, F
   type Context = C;
   type Formed = F;
 }
-impl< 'a, C, F > FormerMutator for SampleFormerDefinitionTypes< 'a, C, F > {}
+impl< C, F > FormerMutator for SampleFormerDefinitionTypes< '_, C, F > {}
 
 pub struct SampleFormerDefinition< 'a, C = (), F = Sample< 'a >, E = ReturnPreformed >
 { _p : core::marker::PhantomData< ( &'a (), C, F, E ) > }

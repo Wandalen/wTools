@@ -125,7 +125,6 @@ where
 /// - `Formed`: The type of the entity produced, typically a `HashSet<K>`.
 /// - `End`: A trait defining the end behavior of the formation process, managing how the hash set is finalized.
 ///
-
 #[derive(Debug, Default)]
 pub struct HashSetDefinition<K, Context = (), Formed = HashSet<K>, End = ReturnStorage>
 where
@@ -156,7 +155,6 @@ where
 /// of a `HashSet`, including the storage type, the context, and the type ultimately formed. It ensures that
 /// these elements are congruent and coherent throughout the lifecycle of the hash set formation.
 ///
-
 #[derive(Debug, Default)]
 pub struct HashSetDefinitionTypes<K, Context = (), Formed = HashSet<K>> {
   _phantom: core::marker::PhantomData<(K, Context, Formed)>,

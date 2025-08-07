@@ -4,6 +4,7 @@
 )]
 #![doc(html_root_url = "https://docs.rs/mod_interface_meta/latest/mod_interface_meta/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Module interface macro support" ) ]
 #![warn(dead_code)]
 
 // /// Derives.

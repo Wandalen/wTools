@@ -30,15 +30,13 @@ use convert_case::{Case, Casing};
 /// - `Break` -> `r#break` (preserves raw when needed)
 /// - `Move` -> `r#move` (preserves raw when needed)  
 /// - `Value` -> `value` (normal identifier)
-/// - `MyVariant` -> `my_variant` (normal snake_case conversion)
+/// - `MyVariant` -> `my_variant` (normal `snake_case` conversion)
 pub fn variant_to_method_name(variant_ident: &syn::Ident) -> syn::Ident {
     let variant_str = variant_ident.to_string();
     
     // Check if this is a raw identifier
-    if variant_str.starts_with("r#") {
+    if let Some(actual_name) = variant_str.strip_prefix("r#") {
         // Extract the actual identifier without the r# prefix
-        let actual_name = &variant_str[2..];
-        
         // Convert to snake_case
         let snake_case_name = actual_name.to_case(Case::Snake);
         
@@ -98,8 +96,8 @@ pub fn field_to_param_name(field_ident: &syn::Ident) -> syn::Ident {
 /// - `MyVariant` -> `MyVariant` (unchanged)
 pub fn strip_raw_prefix_for_compound_ident(ident: &syn::Ident) -> String {
     let ident_str = ident.to_string();
-    if ident_str.starts_with("r#") {
-        ident_str[2..].to_string()
+    if let Some(stripped) = ident_str.strip_prefix("r#") {
+        stripped.to_string()
     } else {
         ident_str
     }
@@ -111,8 +109,7 @@ pub fn type_to_constructor_name(type_ident: &syn::Ident) -> syn::Ident {
     let type_str = type_ident.to_string();
     
     // Handle raw identifier types
-    if type_str.starts_with("r#") {
-        let actual_name = &type_str[2..];
+    if let Some(actual_name) = type_str.strip_prefix("r#") {
         let snake_case_name = actual_name.to_case(Case::Snake);
         
         if is_rust_keyword(&snake_case_name) {

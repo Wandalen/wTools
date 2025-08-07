@@ -16,9 +16,9 @@ fn a_id_run()
     s
   } else
   {
-    panic!( "Unknown panic payload type: {:?}", err );
+    panic!( "Unknown panic payload type: {err:?}" );
   };
-  let msg = String::from_utf8( strip_ansi_escapes::strip( &msg ).unwrap() ).unwrap();
+  let msg = String::from_utf8( strip_ansi_escapes::strip( msg ).unwrap() ).unwrap();
   assert!( msg.contains( "assertion failed: `(left == right)`" ) );
   assert!( msg.contains( "Diff < left / right > :" ) );
   assert!( msg.contains( "<1" ) );
@@ -42,10 +42,10 @@ fn a_not_id_run()
     s
   } else
   {
-    panic!( "Unknown panic payload type: {:?}", err );
+    panic!( "Unknown panic payload type: {err:?}" );
   };
-  let msg = String::from_utf8( strip_ansi_escapes::strip( &msg ).unwrap() ).unwrap();
+  let msg = String::from_utf8( strip_ansi_escapes::strip( msg ).unwrap() ).unwrap();
   assert!( msg.contains( "assertion failed: `(left != right)`" ) );
   assert!( msg.contains( "Both sides:" ) );
-  assert!( msg.contains( "1" ) );
+  assert!( msg.contains( '1' ) );
 }

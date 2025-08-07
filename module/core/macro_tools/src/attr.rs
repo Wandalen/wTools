@@ -329,7 +329,6 @@ mod private {
   ///
   /// For example: `// #![ deny( missing_docs ) ]`.
   ///
-
   #[derive(Debug, PartialEq, Eq, Clone, Default)]
   pub struct AttributesInner(pub Vec<syn::Attribute>);
 

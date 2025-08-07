@@ -32,7 +32,6 @@ mod private
   ///   // < is_slice!(& [1, 2, 3] [..]) = true
   /// }
   /// ```
-
   #[ macro_export ]
   macro_rules! is_slice
   {

@@ -1,6 +1,6 @@
 //! Text indentation and formatting examples.
 //!
-//! This example demonstrates how to use strs_tools for consistent text formatting,
+//! This example demonstrates how to use `strs_tools` for consistent text formatting,
 //! code generation, and document processing tasks that require precise control
 //! over line-by-line formatting.
 
@@ -29,19 +29,19 @@ fn basic_indentation()
     let original_text = "First line\nSecond line\nThird line";
     
     println!( "Original text:" );
-    println!( "{}", original_text );
+    println!( "{original_text}" );
     
     // Add 2-space indentation to each line
     let indented = string::indentation::indentation( "  ", original_text, "" );
     
     println!( "\nWith 2-space indentation:" );
-    println!( "{}", indented );
+    println!( "{indented}" );
     
     // Verify each line is properly indented
     let lines : Vec< &str > = indented.lines().collect();
     for line in &lines
     {
-      assert!( line.starts_with( "  " ), "Line should start with 2 spaces: '{}'", line );
+      assert!( line.starts_with( "  " ), "Line should start with 2 spaces: '{line}'" );
     }
     
     println!( "✓ All lines properly indented" );
@@ -78,7 +78,7 @@ fn code_generation_example()
     generated_code.push( '}' );
     
     println!( "Generated Rust code:" );
-    println!( "{}", generated_code );
+    println!( "{generated_code}" );
     
     // Verify the structure looks correct
     let lines : Vec< &str > = generated_code.lines().collect();
@@ -120,7 +120,7 @@ fn nested_structure_formatting()
     let lines : Vec< &str > = document.lines().collect();
     let mut final_doc = String::new();
     
-    for ( _i, line ) in lines.iter().enumerate()
+    for line in lines.iter()
     {
       final_doc.push_str( line );
       final_doc.push( '\n' );
@@ -134,7 +134,7 @@ fn nested_structure_formatting()
     }
     
     println!( "Nested configuration document:" );
-    println!( "{}", final_doc );
+    println!( "{final_doc}" );
     
     // Verify indentation levels are correct
     let final_lines : Vec< &str > = final_doc.lines().collect();
@@ -160,20 +160,20 @@ fn custom_line_processing()
     let documentation = "This is a function that processes data.\nIt takes input and returns output.\nUsed in data processing pipelines.";
     
     println!( "Original documentation:" );
-    println!( "{}", documentation );
+    println!( "{documentation}" );
     
     // Convert to Rust documentation comments
     let rust_docs = string::indentation::indentation( "/// ", documentation, "" );
     
     println!( "\nAs Rust documentation:" );
-    println!( "{}", rust_docs );
+    println!( "{rust_docs}" );
     
     // Convert to C-style block comments
     let c_comments = string::indentation::indentation( " * ", documentation, "" );
-    let c_block = format!( "/*\n{}\n */", c_comments );
+    let c_block = format!( "/*\n{c_comments}\n */" );
     
     println!( "\nAs C-style block comment:" );
-    println!( "{}", c_block );
+    println!( "{c_block}" );
     
     // Create a boxed comment
     let boxed_content = string::indentation::indentation( "│ ", documentation, " │" );
@@ -183,7 +183,7 @@ fn custom_line_processing()
                                 "─".repeat( 50 ) );
     
     println!( "\nAs boxed comment:" );
-    println!( "{}", boxed_comment );
+    println!( "{boxed_comment}" );
     
     // Verify the formatting
     let doc_lines : Vec< &str > = rust_docs.lines().collect();

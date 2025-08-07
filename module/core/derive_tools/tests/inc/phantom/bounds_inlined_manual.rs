@@ -1,4 +1,4 @@
-use std::{fmt::Debug, marker::PhantomData};
+use core::{fmt::Debug, marker::PhantomData};
 
 #[allow(dead_code)]
 struct BoundsInlined<T: ToString, U: Debug> {

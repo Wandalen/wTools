@@ -52,7 +52,7 @@
 //! ### 2. Storage Field Type Safety (Critical Prevention)
 //! **Issue Resolved**: Manual implementations using incorrect optional wrapping for field storage
 //! **Root Cause**: Forgetting that former storage requires Optional<T> wrapping for incremental construction
-//! **Solution**: Automatic Optional<T> wrapping with proper unwrap_or_default() handling in preform
+//! **Solution**: Automatic Optional<T> wrapping with proper `unwrap_or_default()` handling in preform
 //! **Prevention**: Generated storage always uses `Option<FieldType>` with safe defaults
 //!
 //! ```rust,ignore
@@ -167,6 +167,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// ## Returns
 /// - `Ok(TokenStream)`: Generated enum method that returns the variant former
 /// - `Err(syn::Error)`: If variant processing fails due to invalid configuration
+#[allow(clippy::too_many_lines)]
 pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
 {
   let variant_name = &ctx.variant.ident;

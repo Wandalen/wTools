@@ -1,6 +1,6 @@
 //! # Example 006: Real-World Usage Scenarios
 //!
-//! This example demonstrates practical, real-world usage patterns for diagnostics_tools
+//! This example demonstrates practical, real-world usage patterns for `diagnostics_tools`
 //! in different contexts: testing, API validation, data processing, and more.
 //!
 //! ## What you'll learn:
@@ -23,6 +23,7 @@ use std::collections::HashMap;
 // ========================================
 
 #[ derive( Debug, PartialEq ) ]
+#[allow(dead_code)]
 struct ApiResponse
 {
   status : u16,
@@ -102,7 +103,7 @@ fn validate_user_data( data : &UserData ) -> Result< ValidatedUser, String >
   a_true!( !data.name.is_empty(), "Name cannot be empty" );
   a_true!( data.name.len() <= 100, "Name too long" );
   
-  a_true!( data.email.contains( "@" ), "Email must contain @" );
+  a_true!( data.email.contains( '@' ), "Email must contain @" );
   a_true!( data.email.len() >= 5, "Email too short" );
   
   a_true!( data.age >= 13, "Must be at least 13 years old" );
@@ -249,7 +250,7 @@ fn main()
       a_id!( user.name, "Bob Smith" );
       println!( "   ✓ User validation passed: {}", user.name );
     }
-    Err( error ) => println!( "   ✗ Validation failed: {}", error ),
+    Err( error ) => println!( "   ✗ Validation failed: {error}" ),
   }
 
   // Scenario 3: Data Processing
@@ -270,7 +271,7 @@ fn main()
       println!( "   ✓ Batch processing completed with {:.1}% success rate", 
                result.success_rate * 100.0 );
     }
-    Err( error ) => println!( "   ✗ Processing failed: {}", error ),
+    Err( error ) => println!( "   ✗ Processing failed: {error}" ),
   }
 
   // Scenario 4: Performance Validation
@@ -302,7 +303,8 @@ fn main()
 
 // Additional helper functions for examples
 
-fn parse_api_response( json : &str ) -> Result< ApiResponse, Box< dyn std::error::Error > >
+#[allow(dead_code)]
+fn parse_api_response( json : &str ) -> Result< ApiResponse, Box< dyn core::error::Error > >
 {
   let value : serde_json::Value = serde_json::from_str( json )?;
   
@@ -367,6 +369,7 @@ struct AppConfig
 {
   max_retries : u32,
   timeout_seconds : u32,
+  #[allow(dead_code)]
   enable_logging : bool,
   log_level : String,
 }

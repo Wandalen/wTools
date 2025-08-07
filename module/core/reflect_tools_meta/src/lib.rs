@@ -6,6 +6,7 @@
 // #![ allow( non_snake_case ) ]
 // #![ allow( non_upper_case_globals ) ]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Reflection tools macro support" ) ]
 
 // #[ cfg( feature = "enabled" ) ]
 // use macro_tools::prelude::*;
@@ -24,7 +25,6 @@ mod implementation {
 ///
 /// qqq : write, please
 ///
-
 #[cfg(feature = "enabled")]
 #[cfg(feature = "reflect_derive")]
 #[proc_macro_derive(Reflect, attributes(debug))]

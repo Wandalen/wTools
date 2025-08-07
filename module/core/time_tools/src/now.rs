@@ -5,20 +5,23 @@ use std::time;
 /// Get current time. Units are milliseconds.
 ///
 #[cfg(not(feature = "no_std"))]
-pub fn now() -> i64 {
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::missing_panics_doc)]
+#[must_use] pub fn now() -> i64 {
   time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap().as_millis() as i64
 }
 
 ///
 /// Default units are seconds.
 ///
-
 pub mod s {
   use super::*;
 
   /// Get current time. Units are seconds.
   #[cfg(not(feature = "no_std"))]
-  pub fn now() -> i64 {
+  #[allow(clippy::cast_possible_wrap)]
+  #[allow(clippy::missing_panics_doc)]
+  #[must_use] pub fn now() -> i64 {
     time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap().as_secs() as i64
   }
 }
@@ -26,13 +29,14 @@ pub mod s {
 ///
 /// Default units are milliseconds.
 ///
-
 pub mod ms {
   use super::*;
 
   /// Get current time. Units are milliseconds.
   #[cfg(not(feature = "no_std"))]
-  pub fn now() -> i64 {
+  #[allow(clippy::cast_possible_truncation)]
+  #[allow(clippy::missing_panics_doc)]
+  #[must_use] pub fn now() -> i64 {
     time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap().as_millis() as i64
   }
 }
@@ -43,13 +47,14 @@ pub mod ms {
 ///
 /// Default units are nanoseconds.
 ///
-
 pub mod ns {
   use super::*;
 
   /// Get current time. Units are nanoseconds.
   #[cfg(not(feature = "no_std"))]
-  pub fn now() -> i64 {
+  #[allow(clippy::cast_possible_truncation)]
+  #[allow(clippy::missing_panics_doc)]
+  #[must_use] pub fn now() -> i64 {
     time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap().as_nanos() as i64
   }
 }

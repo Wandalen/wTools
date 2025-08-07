@@ -11,7 +11,6 @@ mod private {
   ///
   /// Kind of container.
   ///
-
   #[derive(Debug, PartialEq, Eq, Copy, Clone)]
   pub enum ContainerKind {
     /// Not a container.

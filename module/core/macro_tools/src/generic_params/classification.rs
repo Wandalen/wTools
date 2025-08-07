@@ -23,6 +23,7 @@ use crate::*;
 /// assert_eq!(classification.consts.len(), 1);
 /// assert!(classification.has_mixed);
 /// ```
+#[allow(clippy::struct_excessive_bools)]
 #[derive(Debug, Clone)]
 pub struct GenericsClassification<'a> {
   /// Vector of references to lifetime parameters

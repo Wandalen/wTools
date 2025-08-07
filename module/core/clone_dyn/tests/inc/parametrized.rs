@@ -10,7 +10,7 @@ where
   Self: ::core::fmt::Debug,
 {
   fn dbg(&self) -> String {
-    format!("{:?}", self)
+    format!("{self:?}")
   }
 }
 
@@ -39,19 +39,19 @@ where
 
 impl Trait1<i32, char> for i32 {
   fn dbg(&self) -> String {
-    format!("{:?}", self)
+    format!("{self:?}")
   }
 }
 
 impl Trait1<i32, char> for i64 {
   fn dbg(&self) -> String {
-    format!("{:?}", self)
+    format!("{self:?}")
   }
 }
 
 impl Trait1<i32, char> for String {
   fn dbg(&self) -> String {
-    format!("{:?}", self)
+    format!("{self:?}")
   }
 }
 
@@ -61,13 +61,13 @@ where
   Self: ::core::fmt::Debug,
 {
   fn dbg(&self) -> String {
-    format!("{:?}", self)
+    format!("{self:?}")
   }
 }
 
 impl Trait1<i32, char> for &str {
   fn dbg(&self) -> String {
-    format!("{:?}", self)
+    format!("{self:?}")
   }
 }
 

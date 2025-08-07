@@ -5,6 +5,7 @@
 )]
 #![doc(html_root_url = "https://docs.rs/impls_index/latest/impls_index/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Implementation indexing utilities" ) ]
 
 /// Collection of general purpose meta tools.
 #[cfg(feature = "enabled")]

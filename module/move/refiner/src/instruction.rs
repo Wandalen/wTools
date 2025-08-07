@@ -11,7 +11,6 @@ mod private
   ///
   /// Instruction.
   ///
-
   #[ derive( Debug, PartialEq, Eq ) ]
   pub struct Instruction
   {
@@ -46,7 +45,6 @@ mod private
   ///
   /// Adapter for instruction.
   ///
-
   pub trait InstructionParseParamsAdapter
   {
 
@@ -165,7 +163,6 @@ mod private
   ///
   /// Parameters of instruction.
   ///
-
   #[ derive( Debug, PartialEq, Eq ) ]
   pub struct InstructionParseParams
   {
@@ -191,7 +188,6 @@ mod private
   ///
   /// Parse input as instruction from splits.
   ///
-
   pub fn parse_from_splits< I >( splits : I ) -> Instruction
   where
     < I as Iterator >::Item : core::fmt::Display,

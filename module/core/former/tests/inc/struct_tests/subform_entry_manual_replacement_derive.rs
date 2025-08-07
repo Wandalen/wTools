@@ -138,12 +138,12 @@ fn entry_manual_replacement_complex_building_test() {
   let complex_child = &got.children["complex_key"];
   assert_eq!(complex_child.name, "complex_key");
   assert_eq!(complex_child.value, 999);
-  assert_eq!(complex_child.active, true);
+  assert!(complex_child.active);
   
   let another_child = &got.children["another_key"];
   assert_eq!(another_child.name, "another_key");
   assert_eq!(another_child.value, -1);
-  assert_eq!(another_child.active, false);
+  assert!(!another_child.active);
 }
 
 // Test that demonstrates subform entry chaining patterns
@@ -177,19 +177,19 @@ fn entry_manual_replacement_chaining_test() {
       "chain1" => {
         assert_eq!(child.name, "chain1");
         assert_eq!(child.value, 1);
-        assert_eq!(child.active, true);
+        assert!(child.active);
       },
       "chain2" => {
         assert_eq!(child.name, "chain2");
         assert_eq!(child.value, 2);
-        assert_eq!(child.active, false);
+        assert!(!child.active);
       },
       "chain3" => {
         assert_eq!(child.name, "chain3");
         assert_eq!(child.value, 3);
-        assert_eq!(child.active, true);
+        assert!(child.active);
       },
-      _ => panic!("Unexpected key: {}", key),
+      _ => panic!("Unexpected key: {key}"),
     }
   }
 }
@@ -213,7 +213,7 @@ fn entry_manual_replacement_comprehensive_validation_test() {
   for (key, _name, value, active) in &child_data {
     builder = builder
       .children()
-        .name(key.to_string())
+        .name((*key).to_string())
         .value(*value)
         .active(*active)
         .end();

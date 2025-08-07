@@ -4,13 +4,13 @@ use super::*;
 fn reexport() {
   let mut set1: the_module::HashSet<i32> = the_module::HashSet::new();
   set1.insert(1);
-  assert_eq!(set1.contains(&1), true);
-  assert_eq!(set1.contains(&2), false);
+  assert!(set1.contains(&1));
+  assert!(!set1.contains(&2));
 
   let mut set2: the_module::Set<i32> = the_module::Set::new();
   set2.insert(1);
-  assert_eq!(set2.contains(&1), true);
-  assert_eq!(set2.contains(&2), false);
+  assert!(set2.contains(&1));
+  assert!(!set2.contains(&2));
 
   assert_eq!(set1, set2);
 }
@@ -87,7 +87,7 @@ fn iters() {
   let instance = MyContainer {
     entries: the_module::HashSet::from([1, 2, 3]),
   };
-  let got: the_module::HashSet<_> = (&instance).into_iter().cloned().collect();
+  let got: the_module::HashSet<_> = (&instance).into_iter().copied().collect();
   let exp = the_module::HashSet::from([1, 2, 3]);
   a_id!(got, exp);
 }

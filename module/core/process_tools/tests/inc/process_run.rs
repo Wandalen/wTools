@@ -40,7 +40,7 @@ fn err_out_err() {
 
   let report = process::run(options).unwrap();
 
-  println!("{}", report);
+  println!("{report}");
 
   assert_eq!("This is stderr text\nThis is stdout text\nThis is stderr text\n", report.out);
 }

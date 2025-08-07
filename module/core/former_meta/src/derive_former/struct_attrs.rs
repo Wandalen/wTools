@@ -80,7 +80,7 @@ use component_model_types::{Assign, OptionExt};
 /// # Supported Attributes
 ///
 /// ## Core Attributes
-/// - **`storage_fields`**: Define temporary fields exclusive to the FormerStorage struct
+/// - **`storage_fields`**: Define temporary fields exclusive to the `FormerStorage` struct
 /// - **`mutator`**: Configure custom mutator for pre-formation data manipulation
 /// - **`perform`**: Specify method to call after formation with custom signature
 /// - **`debug`**: Enable debug output from macro generation
@@ -283,7 +283,7 @@ impl ItemAttributes {
   /// it clones and iterates over its fields. If `storage_fields` is `None`, it returns an empty iterator.
   ///
   // pub fn storage_fields( &self ) -> impl Iterator< Item = syn::Field >
-  pub fn storage_fields<'a>(&'a self) -> &'a syn::punctuated::Punctuated<syn::Field, syn::token::Comma> {
+  pub fn storage_fields(&self) -> &syn::punctuated::Punctuated<syn::Field, syn::token::Comma> {
     self.storage_fields.as_ref().map_or_else(
       // qqq : find better solutioin. avoid leaking
       || &*Box::leak(Box::new(syn::punctuated::Punctuated::new())),
@@ -356,7 +356,6 @@ where
 ///
 /// `#[ storage_fields( a : i32, b : Option< String > ) ]`
 ///
-
 #[derive(Debug, Default)]
 pub struct AttributeStorageFields {
   pub fields: syn::punctuated::Punctuated<syn::Field, syn::token::Comma>,
@@ -410,7 +409,6 @@ impl syn::parse::Parse for AttributeStorageFields {
 /// ```ignore
 /// custom, debug
 /// ```
-
 #[derive(Debug, Default)]
 pub struct AttributeMutator {
   /// Indicates whether a custom mutator should be generated.
@@ -568,7 +566,6 @@ impl syn::parse::Parse for ItemAttributes {
 ///
 /// `#[ perform( fn after1< 'a >() -> Option< &'a str > ) ]`
 ///
-
 #[derive(Debug)]
 pub struct AttributePerform {
   pub signature: syn::Signature,

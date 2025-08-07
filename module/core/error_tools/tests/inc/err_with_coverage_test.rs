@@ -16,8 +16,8 @@ use std::io;
 /// Test Combination: T8.1
 #[test]
 fn test_err_with_on_ok() {
-  let result: std::result::Result<u32, io::Error> = std::result::Result::Ok(10);
-  let processed: std::result::Result<u32, (String, io::Error)> = result.err_with(|| "context".to_string());
+  let result: core::result::Result<u32, io::Error> = core::result::Result::Ok(10);
+  let processed: core::result::Result<u32, (String, io::Error)> = result.err_with(|| "context".to_string());
   assert!(processed.is_ok());
   assert_eq!(processed.unwrap(), 10);
 }
@@ -27,11 +27,11 @@ fn test_err_with_on_ok() {
 #[test]
 fn test_err_with_on_err() {
   let error = io::Error::new(io::ErrorKind::NotFound, "file not found");
-  let result: std::result::Result<u32, io::Error> = std::result::Result::Err(error);
-  let processed: std::result::Result<u32, (String, io::Error)> = result.err_with(|| "custom report".to_string());
+  let result: core::result::Result<u32, io::Error> = core::result::Result::Err(error);
+  let processed: core::result::Result<u32, (String, io::Error)> = result.err_with(|| "custom report".to_string());
   assert_eq!(
     processed.map_err(|(r, e): (String, io::Error)| (r, e.kind(), e.to_string())),
-    std::result::Result::Err((
+    core::result::Result::Err((
       "custom report".to_string(),
       io::ErrorKind::NotFound,
       "file not found".to_string()
@@ -43,9 +43,9 @@ fn test_err_with_on_err() {
 /// Test Combination: T8.3
 #[test]
 fn test_err_with_report_on_ok() {
-  let result: std::result::Result<u32, io::Error> = std::result::Result::Ok(20);
+  let result: core::result::Result<u32, io::Error> = core::result::Result::Ok(20);
   let report = "fixed report".to_string();
-  let processed: std::result::Result<u32, (String, io::Error)> = result.err_with_report(&report);
+  let processed: core::result::Result<u32, (String, io::Error)> = result.err_with_report(&report);
   assert!(processed.is_ok());
   assert_eq!(processed.unwrap(), 20);
 }
@@ -55,12 +55,12 @@ fn test_err_with_report_on_ok() {
 #[test]
 fn test_err_with_report_on_err() {
   let error = io::Error::new(io::ErrorKind::PermissionDenied, "access denied");
-  let result: std::result::Result<u32, io::Error> = std::result::Result::Err(error);
+  let result: core::result::Result<u32, io::Error> = core::result::Result::Err(error);
   let report = "security issue".to_string();
-  let processed: std::result::Result<u32, (String, io::Error)> = result.err_with_report(&report);
+  let processed: core::result::Result<u32, (String, io::Error)> = result.err_with_report(&report);
   assert_eq!(
     processed.map_err(|(r, e): (String, io::Error)| (r, e.kind(), e.to_string())),
-    std::result::Result::Err((
+    core::result::Result::Err((
       "security issue".to_string(),
       io::ErrorKind::PermissionDenied,
       "access denied".to_string()
@@ -73,14 +73,14 @@ fn test_err_with_report_on_err() {
 #[test]
 fn test_result_with_report_alias() {
   type MyResult = ResultWithReport<String, io::Error>;
-  let ok_val: MyResult = std::result::Result::Ok("30".to_string());
+  let ok_val: MyResult = core::result::Result::Ok("30".to_string());
   assert!(ok_val.is_ok());
   assert_eq!(ok_val.unwrap(), "30".to_string());
 
   let err_val: MyResult =
-    std::result::Result::Err(("report".to_string(), io::Error::new(io::ErrorKind::BrokenPipe, "pipe broken")));
+    core::result::Result::Err(("report".to_string(), io::Error::new(io::ErrorKind::BrokenPipe, "pipe broken")));
   assert_eq!(
     err_val.map_err(|(r, e): (String, io::Error)| (r, e.kind(), e.to_string())),
-    std::result::Result::Err(("report".to_string(), io::ErrorKind::BrokenPipe, "pipe broken".to_string()))
+    core::result::Result::Err(("report".to_string(), io::ErrorKind::BrokenPipe, "pipe broken".to_string()))
   );
 }

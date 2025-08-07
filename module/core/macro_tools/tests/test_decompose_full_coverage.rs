@@ -1,5 +1,5 @@
 //!
-//! Full coverage tests for generic_params::decompose function
+//! Full coverage tests for `generic_params::decompose` function
 //!
 
 #![allow(unused_variables)]

@@ -2,7 +2,7 @@
 #![allow(dead_code)]
 
 use test_tools::prelude::*;
-use std::marker::PhantomData;
+use core::marker::PhantomData;
 use core::marker::PhantomData as CorePhantomData;
 
 pub struct BoundsMixed<T: ToString, U> {

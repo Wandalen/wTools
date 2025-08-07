@@ -109,7 +109,6 @@ pub struct AttributePropertyBooleanMarker;
 ///
 /// The `parse_quote!` macro is used to create a `syn::Attribute` instance with the attribute syntax,
 /// which is then parsed into the `MyAttributes` struct. The resulting `MyAttributes` instance is printed to the console.
-
 #[derive(Debug, Default, Clone, Copy)]
 pub struct AttributePropertyBoolean<Marker = AttributePropertyBooleanMarker>(bool, ::core::marker::PhantomData<Marker>);
 

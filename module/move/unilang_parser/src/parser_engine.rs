@@ -421,8 +421,7 @@ impl Parser
                     }
 
                     if named_arguments.contains_key( arg_name )
-                    {
-                      if self.options.error_on_duplicate_named_arguments
+                      && self.options.error_on_duplicate_named_arguments
                       {
                         return Err( ParseError::new
                         (
@@ -431,7 +430,6 @@ impl Parser
                         ));
                       }
                       // If not erroring on duplicates, the new value will overwrite the old one
-                    }
                     named_arguments.insert
                     (
                       arg_name.clone(),
@@ -561,8 +559,7 @@ impl Parser
                     }
 
                     if named_arguments.contains_key( arg_name )
-                    {
-                      if self.options.error_on_duplicate_named_arguments
+                      && self.options.error_on_duplicate_named_arguments
                       {
                         return Err( ParseError::new
                         (
@@ -571,7 +568,6 @@ impl Parser
                         ));
                       }
                       // If not erroring on duplicates, the new value will overwrite the old one
-                    }
                     named_arguments.insert
                     (
                       arg_name.clone(),

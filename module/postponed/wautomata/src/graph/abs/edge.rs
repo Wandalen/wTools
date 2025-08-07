@@ -8,7 +8,6 @@ mod private
   ///
   /// Kind of a edge.
   ///
-
   pub trait EdgeKindInterface
   where
     Self :
@@ -38,14 +37,12 @@ mod private
   ///
   /// No kind for edges.
   ///
-
   #[ derive( Debug, PartialEq, Eq, Copy, Clone, Hash, Default ) ]
   pub struct EdgeKindless();
 
   ///
   /// Edge of a graph.
   ///
-
   pub trait EdgeBasicInterface
   where
     Self :

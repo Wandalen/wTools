@@ -6,18 +6,18 @@ fn reexport() {
   let mut vec1: the_module::Vec<i32> = the_module::Vec::new();
   vec1.push(1);
   vec1.push(2);
-  let got = vec1.first().unwrap().clone();
+  let got = *vec1.first().unwrap();
   assert_eq!(got, 1);
-  let got = vec1.last().unwrap().clone();
+  let got = *vec1.last().unwrap();
   assert_eq!(got, 2);
 
   use std::vec::Vec as DynList;
   let mut vec2: DynList<i32> = DynList::new();
   vec2.push(1);
   vec2.push(2);
-  let got = vec2.first().unwrap().clone();
+  let got = *vec2.first().unwrap();
   assert_eq!(got, 1);
-  let got = vec2.last().unwrap().clone();
+  let got = *vec2.last().unwrap();
   assert_eq!(got, 2);
 
   assert_eq!(vec1, vec2);
@@ -109,7 +109,7 @@ fn iters() {
   let instance = MyContainer {
     entries: the_module::Vec::from([1, 2, 3]),
   };
-  let got: Vec<_> = (&instance).into_iter().cloned().collect();
+  let got: Vec<_> = (&instance).into_iter().copied().collect();
   let exp = the_module::Vec::from([1, 2, 3]);
   a_id!(got, exp);
 

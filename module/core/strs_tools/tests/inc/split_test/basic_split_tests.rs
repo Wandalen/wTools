@@ -75,7 +75,7 @@ fn unescaping_in_quoted_string() {
   let src = r#""path\\to\\file""#;
   let iter = split().src(src).quoting(true).preserving_empty(true).perform();
   let splits: Vec<_> = iter.map(|e| String::from(e.string)).collect();
-  assert_eq!(splits, vec![r#"path\to\file"#]);
+  assert_eq!(splits, vec![r"path\to\file"]);
 }
 
 #[test]
@@ -91,7 +91,7 @@ fn unescaping_only_escaped_backslash() {
   let src = r#""\\""#;
   let iter = split().src(src).quoting(true).preserving_empty(true).perform();
   let splits: Vec<_> = iter.map(|e| String::from(e.string)).collect();
-  assert_eq!(splits, vec![r#"\"#]);
+  assert_eq!(splits, vec![r"\"]);
 }
 
 #[test]
@@ -99,7 +99,7 @@ fn unescaping_consecutive_escaped_backslashes() {
   let src = r#""\\\\""#;
   let iter = split().src(src).quoting(true).preserving_empty(true).perform();
   let splits: Vec<_> = iter.map(|e| String::from(e.string)).collect();
-  assert_eq!(splits, vec![r#"\\"#]);
+  assert_eq!(splits, vec![r"\\"]);
 }
 
 #[test]
@@ -147,7 +147,7 @@ fn unescaping_unterminated_quote() {
   let src = r#""abc\""#;
   let iter = split().src(src).quoting(true).preserving_empty(true).perform();
   let splits: Vec<_> = iter.map(|e| String::from(e.string)).collect();
-  println!("DEBUG: Test received: {:?}", splits);
+  println!("DEBUG: Test received: {splits:?}");
   assert_eq!(splits, vec![r#"abc""#]);
 }
 
@@ -156,5 +156,5 @@ fn unescaping_unterminated_quote_with_escape() {
   let src = r#""abc\\""#;
   let iter = split().src(src).quoting(true).preserving_empty(true).perform();
   let splits: Vec<_> = iter.map(|e| String::from(e.string)).collect();
-  assert_eq!(splits, vec![r#"abc\"#]);
+  assert_eq!(splits, vec![r"abc\"]);
 }

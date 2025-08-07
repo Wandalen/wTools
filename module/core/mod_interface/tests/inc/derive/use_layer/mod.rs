@@ -6,7 +6,7 @@ mod tools {
 
 pub mod layer_a;
 
-/// SuperStruct1.
+/// `SuperStruct1`.
 #[derive(Debug, PartialEq)]
 pub struct SuperStruct1 {}
 

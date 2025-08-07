@@ -126,10 +126,10 @@ impl< 'a > SemanticAnalyzer< 'a >
         return self.generate_help_listing();
       }
       
-      let command_path_refs : Vec< &str > = instruction.command_path_slices.iter().map( | s | s.as_str() ).collect();
+      let command_path_refs : Vec< &str > = instruction.command_path_slices.iter().map( std::string::String::as_str ).collect();
       let command_name = crate::interner::intern_command_name( &command_path_refs );
 
-      let command_def = self.registry.command( &command_name ).ok_or_else( || ErrorData::new(
+      let command_def = self.registry.command( command_name ).ok_or_else( || ErrorData::new(
         "UNILANG_COMMAND_NOT_FOUND".to_string(),
         format!( "Command Error: The command '{command_name}' was not found. Use '.' to see all available commands or check for typos." ),
       ))?;
@@ -139,7 +139,7 @@ impl< 'a > SemanticAnalyzer< 'a >
       {
         // Generate help for this specific command
         let help_generator = crate::help::HelpGenerator::new( self.registry );
-        let help_content = help_generator.command( &command_name )
+        let help_content = help_generator.command( command_name )
           .unwrap_or( format!( "No help available for command '{command_name}'" ) );
         
         return Err( Error::Execution( ErrorData::new(
@@ -367,6 +367,7 @@ impl< 'a > SemanticAnalyzer< 'a >
       
       for (name, cmd_def) in sorted_commands
       {
+#[allow(clippy::format_push_string)]
         help_content.push_str(&format!("  {:<20} {}\n", name, cmd_def.description));
       }
       help_content.push_str("\nUse '<command> ?' to get detailed help for a specific command.\n");

@@ -4,7 +4,6 @@ use super::*;
 ///
 /// Options1
 ///
-
 #[derive(Debug, Default, PartialEq)]
 pub struct Options1 {
   field1: i32,
@@ -15,7 +14,7 @@ pub struct Options1 {
 impl From<&Options1> for i32 {
   #[inline(always)]
   fn from(src: &Options1) -> Self {
-    src.field1.clone()
+    src.field1
   }
 }
 
@@ -29,7 +28,7 @@ impl From<&Options1> for String {
 impl From<&Options1> for f32 {
   #[inline(always)]
   fn from(src: &Options1) -> Self {
-    src.field3.clone()
+    src.field3
   }
 }
 

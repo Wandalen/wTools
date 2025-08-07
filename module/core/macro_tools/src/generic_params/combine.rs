@@ -42,7 +42,7 @@ pub fn merge_params_ordered(
 
   // Collect all parameters by type
   for params in param_lists {
-    for param in params.iter() {
+    for param in *params {
       match param {
         syn::GenericParam::Lifetime(lt) => lifetimes.push(syn::GenericParam::Lifetime(lt.clone())),
         syn::GenericParam::Type(ty) => types.push(syn::GenericParam::Type(ty.clone())),
@@ -54,8 +54,8 @@ pub fn merge_params_ordered(
   // Build the result in the correct order
   let mut result = syn::punctuated::Punctuated::new();
   let all_params: Vec<_> = lifetimes.into_iter()
-    .chain(types.into_iter())
-    .chain(consts.into_iter())
+    .chain(types)
+    .chain(consts)
     .collect();
 
   for (idx, param) in all_params.iter().enumerate() {

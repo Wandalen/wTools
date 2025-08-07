@@ -104,15 +104,13 @@ fn test_m_t3_11_quoting_preserve_all_no_strip() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
@@ -169,15 +167,13 @@ fn test_m_t3_13_quoting_preserve_all_strip() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
@@ -205,15 +201,13 @@ fn test_m_t3_14_quoting_no_preserve_no_strip() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
@@ -270,15 +264,13 @@ fn test_span_content_basic_no_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
@@ -305,15 +297,13 @@ fn test_span_content_basic_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
@@ -339,15 +329,13 @@ fn test_span_content_internal_delimiters_no_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
@@ -373,15 +361,13 @@ fn test_span_content_escaped_quotes_no_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
@@ -407,15 +393,13 @@ fn test_span_content_empty_quote_no_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
@@ -441,15 +425,13 @@ fn test_span_content_empty_quote_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
@@ -474,15 +456,13 @@ fn test_span_content_quote_at_start_no_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
@@ -507,15 +487,13 @@ fn test_span_content_quote_at_end_no_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
@@ -542,15 +520,13 @@ fn test_span_content_unclosed_quote_no_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
@@ -575,14 +551,12 @@ fn test_span_content_unclosed_quote_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }

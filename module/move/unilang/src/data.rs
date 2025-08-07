@@ -56,6 +56,7 @@ mod private
   /// This struct enables fine-grained control over how arguments behave,
   /// such as whether they are required, accept multiple values, or have
   /// default values.
+  #[allow(clippy::struct_excessive_bools)]
   #[ derive( Debug, Clone, Default, serde::Serialize, serde::Deserialize ) ]
   pub struct ArgumentAttributes
   {

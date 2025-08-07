@@ -4,7 +4,8 @@
 )]
 #![doc(html_root_url = "https://docs.rs/wca/latest/wca/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "doc/", "wca.md" ) ) ]
+#![ cfg_attr( not( doc ), doc = "Command line argument parsing and processing library" ) ]
+#![cfg_attr(doc,  doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "doc/", "wca.md" ) ) )]
 
 use mod_interface::mod_interface;
 

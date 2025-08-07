@@ -4,6 +4,7 @@
 )]
 #![doc(html_root_url = "https://docs.rs/clone_dyn_meta/latest/clone_dyn_meta/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Dynamic cloning macro support" ) ]
 
 /// Internal namespace.
 mod internal {}

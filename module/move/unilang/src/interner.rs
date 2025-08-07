@@ -40,13 +40,13 @@ mod private
   impl StringInterner
   {
     /// Creates a new string interner with default size limits.
-    pub fn new() -> Self
+    #[must_use] pub fn new() -> Self
     {
       Self::with_capacity( DEFAULT_CACHE_SIZE_LIMIT )
     }
 
     /// Creates a new string interner with specified cache capacity.
-    pub fn with_capacity( size_limit : usize ) -> Self
+    #[must_use] pub fn with_capacity( size_limit : usize ) -> Self
     {
       Self
       {
@@ -62,7 +62,8 @@ mod private
     /// Interns a string, returning a 'static reference for zero-copy usage.
     /// 
     /// If the string is already cached, returns the existing reference.
-    /// Otherwise, allocates the string on the heap with Box::leak() and caches it.
+    /// Otherwise, allocates the string on the heap with `Box::leak()` and caches it.
+    #[allow(clippy::missing_panics_doc)]
     pub fn intern( &self, s : &str ) -> &'static str
     {
       // Fast path: check if already cached with read lock
@@ -108,6 +109,7 @@ mod private
     /// 
     /// Constructs command names in the format ".command.subcommand" directly
     /// without intermediate string allocations when possible.
+    #[allow(clippy::missing_panics_doc)]
     pub fn intern_command_name( &self, path_slices : &[ &str ] ) -> &'static str
     {
       if path_slices.is_empty()
@@ -131,6 +133,7 @@ mod private
     }
 
     /// Returns current cache statistics for monitoring and debugging.
+    #[allow(clippy::missing_panics_doc)]
     pub fn stats( &self ) -> InternerStats
     {
       let storage = self.storage.read().unwrap();
@@ -145,6 +148,7 @@ mod private
     }
 
     /// Clears all cached strings. Useful for testing and memory management.
+    #[allow(clippy::missing_panics_doc)]
     pub fn clear( &self )
     {
       let mut storage = self.storage.write().unwrap();
@@ -186,13 +190,15 @@ mod private
   }
 
   /// Convenience function to intern a string using the global interner.
-  pub fn intern( s : &str ) -> &'static str
+  #[must_use] #[allow(clippy::missing_panics_doc)]
+ pub fn intern( s : &str ) -> &'static str
   {
     global_interner().intern( s )
   }
 
   /// Convenience function to intern command names using the global interner.
-  pub fn intern_command_name( path_slices : &[ &str ] ) -> &'static str
+  #[must_use] #[allow(clippy::missing_panics_doc)]
+ pub fn intern_command_name( path_slices : &[ &str ] ) -> &'static str
   {
     global_interner().intern_command_name( path_slices )
   }
@@ -211,7 +217,7 @@ mod private
       let s2 = interner.intern( "hello" );
       
       // Should return the same reference
-      assert!( std::ptr::eq( s1, s2 ) );
+      assert!( core::ptr::eq( s1, s2 ) );
       assert_eq!( s1, "hello" );
     }
 
@@ -224,7 +230,7 @@ mod private
       let cmd2 = interner.intern_command_name( &[ "command", "subcommand" ] );
       
       // Should return the same reference and correct format
-      assert!( std::ptr::eq( cmd1, cmd2 ) );
+      assert!( core::ptr::eq( cmd1, cmd2 ) );
       assert_eq!( cmd1, ".command.subcommand" );
     }
 
@@ -263,7 +269,7 @@ mod private
       let s1 = intern( "global_test" );
       let s2 = intern( "global_test" );
       
-      assert!( std::ptr::eq( s1, s2 ) );
+      assert!( core::ptr::eq( s1, s2 ) );
       assert_eq!( s1, "global_test" );
     }
 
@@ -273,7 +279,7 @@ mod private
       let cmd1 = intern_command_name( &[ "global", "command" ] );
       let cmd2 = intern_command_name( &[ "global", "command" ] );
       
-      assert!( std::ptr::eq( cmd1, cmd2 ) );
+      assert!( core::ptr::eq( cmd1, cmd2 ) );
       assert_eq!( cmd1, ".global.command" );
     }
 
@@ -332,12 +338,12 @@ mod private
         let interner_clone = Arc::clone( &interner );
         let handle = thread::spawn( move ||
         {
-          let test_string = format!( "test_{}", i );
+          let test_string = format!( "test_{i}" );
           let interned1 = interner_clone.intern( &test_string );
           let interned2 = interner_clone.intern( &test_string );
           
           // Should return the same reference even across threads
-          assert!( std::ptr::eq( interned1, interned2 ) );
+          assert!( core::ptr::eq( interned1, interned2 ) );
           assert_eq!( interned1, test_string );
         });
         handles.push( handle );

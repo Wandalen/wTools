@@ -4,7 +4,7 @@
 //! demonstrating the manual implementation corresponding to the derived behavior.
 //!
 //! Coverage:
-//! - Rule 4a (#[standalone_constructors]): Manually implements the top-level constructor function (`variant`).
+//! - Rule 4a (#[`standalone_constructors`]): Manually implements the top-level constructor function (`variant`).
 //! - Rule 4b (Option 2 Logic): Manually implements the logic for a scalar standalone constructor that takes arguments for all fields in a multi-field tuple variant.
 //! - Rule 3f (Tuple + Multi-Field + Default): Implicitly relevant as `Variant` is a multi-field tuple variant.
 //!

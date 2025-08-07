@@ -4,7 +4,7 @@
 //! demonstrating the manual implementation corresponding to the derived behavior.
 //!
 //! Coverage:
-//! - Rule 4a (#[standalone_constructors]): Manually implements the top-level constructor function (`variant`).
+//! - Rule 4a (#[`standalone_constructors`]): Manually implements the top-level constructor function (`variant`).
 //! - Rule 4b (Option 2 Logic): Manually implements the logic for a standalone former builder that allows setting fields via setters (`._0()`, `._1()`) and calling `.form()`.
 //! - Rule 3f (Tuple + Multi-Field + Default): Implicitly relevant as `Variant` is a multi-field tuple variant.
 //!
@@ -28,7 +28,7 @@ use former::{
   FormerBegin,
   FormerMutator,
 };
-use std::marker::PhantomData;
+use core::marker::PhantomData;
 
 // Define the enum without the derive macro
 #[ derive( Debug, PartialEq ) ]
@@ -38,19 +38,13 @@ pub enum TestEnum
 }
 
 // --- Manual Former Setup for Variant ---
+#[derive(Default)]
 pub struct TestEnumVariantFormerStorage
 {
   field0 : Option< u32 >,
   field1 : Option< String >,
 }
 
-impl Default for TestEnumVariantFormerStorage
-{
-  fn default() -> Self
-  {
-    Self { field0 : None, field1 : None }
-  }
-}
 
 impl Storage for TestEnumVariantFormerStorage
 {

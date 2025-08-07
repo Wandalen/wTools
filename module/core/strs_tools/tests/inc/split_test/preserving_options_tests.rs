@@ -123,13 +123,11 @@ fn test_m_t3_1_preserve_all_no_strip_no_quote() {
     .stripping(false)
     .quoting(false)
     .perform();
-  let expected = vec![
-    ("a", SplitType::Delimeted, 0, 1),
+  let expected = [("a", SplitType::Delimeted, 0, 1),
     (" ", SplitType::Delimiter, 1, 2),
     ("b", SplitType::Delimeted, 2, 3),
     (" ", SplitType::Delimiter, 3, 4),
-    ("c", SplitType::Delimeted, 4, 5),
-  ];
+    ("c", SplitType::Delimeted, 4, 5)];
   for (i, split) in iter.enumerate() {
     assert_eq!(split.string, expected[i].0);
     assert_eq!(split.typ, expected[i].1);
@@ -181,13 +179,11 @@ fn test_m_t3_5_consecutive_delimiters_preserve_all() {
     .stripping(false)
     .quoting(false)
     .perform();
-  let expected = vec![
-    ("a", SplitType::Delimeted, 0, 1),
+  let expected = [("a", SplitType::Delimeted, 0, 1),
     (",", SplitType::Delimiter, 1, 2),
     ("", SplitType::Delimeted, 2, 2),
     (",", SplitType::Delimiter, 2, 3),
-    ("b", SplitType::Delimeted, 3, 4),
-  ];
+    ("b", SplitType::Delimeted, 3, 4)];
   for (i, split) in iter.enumerate() {
     assert_eq!(split.string, expected[i].0);
     assert_eq!(split.typ, expected[i].1);

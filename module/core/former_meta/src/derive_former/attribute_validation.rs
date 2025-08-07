@@ -156,7 +156,7 @@ fn validate_field_count_requirements(
   // Rule V-2 continued: #[subform_scalar] field count requirements
   if variant_attrs.subform_scalar.is_some() {
     match (variant_type, field_count) {
-      (VariantType::Tuple, 0) | (VariantType::Struct, 0) => {
+      (VariantType::Tuple | VariantType::Struct, 0) => {
         return Err(syn_err!(
           variant,
           "#[subform_scalar] cannot be used on zero-field variants. \
@@ -180,20 +180,19 @@ fn validate_field_count_requirements(
   }
 
   // Rule V-3: Zero-field struct variants require #[scalar]
-  if variant_type == VariantType::Struct && field_count == 0 {
-    if variant_attrs.scalar.is_none() && variant_attrs.subform_scalar.is_none() {
+  if variant_type == VariantType::Struct && field_count == 0
+    && variant_attrs.scalar.is_none() && variant_attrs.subform_scalar.is_none() {
       return Err(syn_err!(
         variant,
         "Zero-field struct variants require explicit #[scalar] attribute for disambiguation. \
          Add #[scalar] to generate a direct constructor for this variant."
       ));
     }
-  }
 
   Ok(())
 }
 
-/// Helper function to get validation-friendly field count from syn::Fields.
+/// Helper function to get validation-friendly field count from `syn::Fields`.
 pub fn get_field_count(fields: &syn::Fields) -> usize
 {
   match fields {
@@ -203,7 +202,7 @@ pub fn get_field_count(fields: &syn::Fields) -> usize
   }
 }
 
-/// Helper function to get variant type from syn::Fields.
+/// Helper function to get variant type from `syn::Fields`.
 pub fn get_variant_type(fields: &syn::Fields) -> VariantType
 {
   match fields {

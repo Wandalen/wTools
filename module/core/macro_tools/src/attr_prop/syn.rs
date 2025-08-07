@@ -15,7 +15,6 @@ pub struct AttributePropertySynMarker;
 ///
 /// Property of an attribute which simply wraps one of the standard `syn` types.
 ///
-
 #[derive(Debug, Clone)]
 pub struct AttributePropertySyn<T, Marker = AttributePropertySynMarker>(T, ::core::marker::PhantomData<Marker>)
 where

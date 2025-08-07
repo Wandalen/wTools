@@ -1,5 +1,5 @@
 trait Trait<'a> {}
-impl<'a> Trait<'a> for i32 {}
+impl Trait<'_> for i32 {}
 
 use core::ops::Deref;
 

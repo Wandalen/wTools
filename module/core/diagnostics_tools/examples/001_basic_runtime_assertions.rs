@@ -1,7 +1,7 @@
 //! # Example 001: Basic Runtime Assertions
 //!
 //! This example introduces the fundamental runtime assertion macros.
-//! Start here to learn the basics of diagnostics_tools.
+//! Start here to learn the basics of `diagnostics_tools`.
 //!
 //! ## What you'll learn:
 //! - Basic runtime assertion macros (`a_true`, `a_false`) 
@@ -28,19 +28,19 @@ fn main()
   
   // Instead of assert!(condition), use a_true!(condition)
   a_true!( is_even, "Expected number to be even" );
-  println!( "   ✓ {} is even", number );
+  println!( "   ✓ {number} is even" );
   
   // Instead of assert!(!condition), use a_false!(condition)  
   a_false!( number < 0, "Expected number to be positive" );
-  println!( "   ✓ {} is positive", number );
+  println!( "   ✓ {number} is positive" );
 
   // ✅ Assertions without custom messages work too
   println!( "\n2. Testing without custom messages:" );
   
   let name = "Alice";
-  a_true!( name.len() > 0 );
+  a_true!( !name.is_empty() );
   a_false!( name.is_empty() );
-  println!( "   ✓ Name '{}' is valid", name );
+  println!( "   ✓ Name '{name}' is valid" );
 
   // ✅ Comparing with standard assertions
   println!( "\n3. Comparison with standard Rust assertions:" );
@@ -58,7 +58,7 @@ fn main()
   // ✅ Common patterns
   println!( "\n4. Common assertion patterns:" );
   
-  let items = vec![ "apple", "banana", "cherry" ];
+  let items = ["apple", "banana", "cherry"];
   
   // Check collection properties
   a_true!( !items.is_empty(), "Items list should not be empty" );

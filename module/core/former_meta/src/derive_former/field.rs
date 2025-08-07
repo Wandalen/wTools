@@ -9,7 +9,7 @@
 //!
 //! ### Field Analysis and Classification
 //! - **Type Introspection**: Deep analysis of field types including generics and lifetimes
-//! - **Container Detection**: Automatic detection of Vec, HashMap, HashSet, and other collections
+//! - **Container Detection**: Automatic detection of Vec, `HashMap`, `HashSet`, and other collections
 //! - **Optional Type Handling**: Sophisticated handling of `Option<T>` wrapped fields
 //! - **Attribute Integration**: Seamless integration with field-level attributes
 //!
@@ -84,10 +84,10 @@ use macro_tools::{container_kind, syn, qt, syn_err, Result, quote};
 /// - **`ty`**: Complete field type as specified in the original struct
 /// - **`non_optional_ty`**: Inner type for Option-wrapped fields, or same as `ty` for non-optional
 /// - **`is_optional`**: Whether the field is wrapped in `Option<T>`
-/// - **`of_type`**: Container classification (Vec, HashMap, HashSet, etc.)
+/// - **`of_type`**: Container classification (Vec, `HashMap`, `HashSet`, etc.)
 ///
 /// ## Field Classification
-/// - **`for_storage`**: Whether this field should appear in the FormerStorage struct
+/// - **`for_storage`**: Whether this field should appear in the `FormerStorage` struct
 /// - **`for_formed`**: Whether this field should appear in the final formed struct
 /// - **`attrs`**: Parsed field-level attributes affecting code generation
 ///
@@ -163,10 +163,10 @@ impl<'a> FormerField<'a> {
   `scalar_setter_required`
 
   */
-  /// Construct a comprehensive FormerField from a syn::Field with full type analysis and pitfall prevention.
+  /// Construct a comprehensive `FormerField` from a `syn::Field` with full type analysis and pitfall prevention.
   ///
   /// This is the **critical constructor** that performs deep analysis of a struct field and creates
-  /// the complete FormerField representation needed for code generation. It handles all the complex
+  /// the complete `FormerField` representation needed for code generation. It handles all the complex
   /// type scenarios that caused manual implementation failures and ensures proper field categorization.
   ///
   /// # Processing Steps
@@ -185,7 +185,7 @@ impl<'a> FormerField<'a> {
   ///
   /// ## 3. Field Categorization
   /// Determines how the field should be used in code generation:
-  /// - **Storage Fields**: Fields that appear in FormerStorage struct
+  /// - **Storage Fields**: Fields that appear in `FormerStorage` struct
   /// - **Formed Fields**: Fields that appear in the final formed struct
   /// - **Both**: Fields that appear in both (most common case)
   ///
@@ -229,7 +229,7 @@ impl<'a> FormerField<'a> {
   ///
   /// # Error Handling
   /// - **Missing Identifiers**: Clear error for tuple struct fields or anonymous fields
-  /// **Generic Extraction Errors**: Proper error propagation from `typ::parameter_first()`
+  ///   **Generic Extraction Errors**: Proper error propagation from `typ::parameter_first()`
   /// - **Attribute Parsing Errors**: Full error context preservation from attribute parsing
   ///
   /// # Usage Context
@@ -274,7 +274,7 @@ impl<'a> FormerField<'a> {
   /// pitfall that caused manual implementation failures.
   ///
   /// # Purpose and Usage
-  /// Used for initializing FormerStorage, where all fields start as `None` and are
+  /// Used for initializing `FormerStorage`, where all fields start as `None` and are
   /// populated through the builder pattern. This prevents the common manual implementation
   /// error of forgetting to initialize storage fields.
   ///
@@ -900,7 +900,6 @@ field : {field_ident}",
       let debug = format!(
         r"
 /// The collection setter provides a collection setter that returns a CollectionFormer tailored for managing a collection of child entities. It employs a generic collection definition to facilitate operations on the entire collection, such as adding or updating elements.
-
 impl< Definition > {former}< Definition >
 where
   Definition : former::FormerDefinition< Storage = {former_storage} >,
@@ -1203,7 +1202,6 @@ allowing for dynamic and flexible construction of the `{item}` entity's {field_i
 /// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
 /// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
 /// integrating them into the formation process of the parent entity.
-
 impl< Definition > {former}< Definition >
 where
   Definition : former::FormerDefinition< Storage = {former_storage} >,
@@ -1524,7 +1522,6 @@ former and end action types, ensuring a seamless developer experience when formi
         r"
 /// Extends `{former}` to include a method that initializes and configures a subformer for the '{field_ident}' field.
 /// This function demonstrates the dynamic addition of a named {field_ident}, leveraging a subformer to specify detailed properties.
-
 impl< Definition > {former}< Definition >
 where
   Definition : former::FormerDefinition< Storage = < {item} as former::EntityToStorage >::Storage >,

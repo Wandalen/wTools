@@ -7,7 +7,7 @@
 
 use unilang_parser::{ Parser, UnilangParserOptions };
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -30,12 +30,12 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 
   if let Some( config ) = cmd.named_arguments.get( "config" )
   {
-    println!( "Config file: {:?}", config );
+    println!( "Config file: {config:?}" );
   }
 
   if let Some( replicas ) = cmd.named_arguments.get( "replicas" )
   {
-    println!( "Replica count: {:?}", replicas );
+    println!( "Replica count: {replicas:?}" );
   }
 
   // Another example with file operations
@@ -52,16 +52,14 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
     "Destination: {}",
     cmd2.named_arguments
     .get( "destination" )
-    .map( | arg | &arg.value )
-    .unwrap_or( & "not found".to_string() ),
+    .map_or( & "not found".to_string(), | arg | &arg.value ),
   );
   println!
   (
     "Compress: {}",
     cmd2.named_arguments
     .get( "compress" )
-    .map( | arg | &arg.value )
-    .unwrap_or( & "not found".to_string() ),
+    .map_or( & "not found".to_string(), | arg | &arg.value ),
   );
 
   println!( "\n✓ Complex argument patterns parsing successful!" );

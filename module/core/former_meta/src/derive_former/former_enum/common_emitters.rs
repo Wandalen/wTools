@@ -127,7 +127,7 @@ use macro_tools::{quote::quote};
 /// - Code template generation functions
 ///
 /// ## Returns
-/// Currently returns an empty TokenStream as no shared utilities are implemented yet.
+/// Currently returns an empty `TokenStream` as no shared utilities are implemented yet.
 #[allow(dead_code)]
 pub fn placeholder() -> proc_macro2::TokenStream {
   // This file is for common emitters, not a direct handler.

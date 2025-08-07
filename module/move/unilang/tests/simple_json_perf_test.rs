@@ -16,7 +16,7 @@ fn simple_json_perf_test()
   ];
 
   for (json_str, description) in test_cases {
-    println!("\n=== {} ===", description);
+    println!("\n=== {description} ===");
     println!("JSON size: {} bytes", json_str.len());
     
     let iterations = 10000;
@@ -27,7 +27,7 @@ fn simple_json_perf_test()
       let _ = serde_json::from_str::<SerdeValue>(json_str).unwrap();
     }
     let serde_duration = start.elapsed();
-    let serde_ops_sec = iterations as f64 / serde_duration.as_secs_f64();
+    let serde_ops_sec = f64::from(iterations) / serde_duration.as_secs_f64();
     
     // Test SIMD JSON
     let start = Instant::now();
@@ -35,7 +35,7 @@ fn simple_json_perf_test()
       let _ = SIMDJsonParser::parse_to_serde_value(json_str).unwrap();
     }
     let simd_duration = start.elapsed();
-    let simd_ops_sec = iterations as f64 / simd_duration.as_secs_f64();
+    let simd_ops_sec = f64::from(iterations) / simd_duration.as_secs_f64();
     
     println!("serde_json: {:.2}ms ({:.0} ops/sec)", 
              serde_duration.as_secs_f64() * 1000.0, serde_ops_sec);
@@ -43,7 +43,7 @@ fn simple_json_perf_test()
              simd_duration.as_secs_f64() * 1000.0, simd_ops_sec);
     
     let speedup = simd_ops_sec / serde_ops_sec;
-    println!("SIMD speedup: {:.2}x", speedup);
+    println!("SIMD speedup: {speedup:.2}x");
     
     // Test SIMD info
     println!("SIMD support: {}", SIMDJsonParser::is_simd_supported());

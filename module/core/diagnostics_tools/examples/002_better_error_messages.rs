@@ -1,7 +1,7 @@
 //! # Example 002: Better Error Messages  
 //!
 //! This example shows the power of enhanced error messages and diff output.
-//! You'll see why diagnostics_tools is superior for debugging complex data.
+//! You'll see why `diagnostics_tools` is superior for debugging complex data.
 //!
 //! ## What you'll learn:
 //! - Value comparison with `a_id!` and `a_not_id!`
@@ -39,7 +39,7 @@ fn main()
   
   // Instead of assert_eq!(a, b), use a_id!(a, b) 
   a_id!( actual_count, expected_count );
-  println!( "   ✓ Counts match: {}", actual_count );
+  println!( "   ✓ Counts match: {actual_count}" );
   
   // Instead of assert_ne!(a, b), use a_not_id!(a, b)
   a_not_id!( actual_count, 0 );

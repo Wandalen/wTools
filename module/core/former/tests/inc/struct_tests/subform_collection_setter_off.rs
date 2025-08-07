@@ -10,7 +10,6 @@ pub struct Child {
 }
 
 /// Parent
-
 #[derive(Debug, Default, PartialEq, the_module::Former)]
 // #[ debug ]
 // #[ derive( Debug, Default, PartialEq ) ]

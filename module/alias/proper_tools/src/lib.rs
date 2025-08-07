@@ -5,6 +5,7 @@
 )]
 #![doc(html_root_url = "https://docs.rs/proper_tools/latest/proper_tools/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Proper tools collection" ) ]
 
 /// Function description.
 #[cfg(feature = "enabled")]

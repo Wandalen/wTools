@@ -129,7 +129,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// - **Attribute Validation**: Compile-time rejection of invalid `#[subform_scalar]` attribute
 /// - **Generic Context**: Complete generic parameter preservation for proper type construction
 /// - **Struct Syntax**: Proper empty struct variant construction with `{}` syntax
-/// - **Naming Consistency**: Systematic snake_case conversion for method naming
+/// - **Naming Consistency**: Systematic `snake_case` conversion for method naming
 ///
 /// ## Generated Method Signature
 /// ```rust,ignore

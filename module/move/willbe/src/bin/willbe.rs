@@ -4,6 +4,7 @@
 )]
 #![doc(html_root_url = "https://docs.rs/willbe/")]
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Build and project management binary" ) ]
 
 #[allow(unused_imports, clippy::wildcard_imports)]
 use ::willbe::*;

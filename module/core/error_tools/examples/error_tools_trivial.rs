@@ -9,7 +9,7 @@ fn get_message() -> Result<&'static str> {
 
 fn main() {
   match get_message() {
-    Ok(msg) => println!("Success: {}", msg),
-    Err(e) => println!("Error: {:?}", e),
+    Ok(msg) => println!("Success: {msg}"),
+    Err(e) => println!("Error: {e:?}"),
   }
 }

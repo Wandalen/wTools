@@ -16,7 +16,7 @@ impl Trait1 for i32 {
 
 impl Trait1 for i64 {
   fn val(&self) -> i32 {
-    self.clone().try_into().unwrap()
+    (*self).try_into().unwrap()
   }
 }
 

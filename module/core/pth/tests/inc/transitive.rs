@@ -4,7 +4,7 @@ use super::*;
 #[test]
 fn basic_from() {
   use pth::TransitiveTryFrom;
-  use std::convert::TryFrom;
+  use core::convert::TryFrom;
 
   struct InitialType;
   struct IntermediateType;

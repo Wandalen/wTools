@@ -14,7 +14,7 @@ fn test_m_t3_7_empty_src_preserve_all() {
     .stripping(false)
     .quoting(false)
     .perform();
-  let expected = vec![("", SplitType::Delimeted, 0, 0)];
+  let expected = [("", SplitType::Delimeted, 0, 0)];
   for (i, split) in iter.enumerate() {
     assert_eq!(split.string, expected[i].0);
     assert_eq!(split.typ, expected[i].1);

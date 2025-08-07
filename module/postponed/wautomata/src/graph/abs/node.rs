@@ -48,7 +48,6 @@ mod private
   ///
   /// Node of a graph.
   ///
-
   pub trait NodeBasicInterface
   where
     Self :

@@ -4,7 +4,7 @@
 //! pipeline and provides the expected memory and performance benefits.
 
 use unilang::prelude::*;
-use std::sync::atomic::{ AtomicUsize, Ordering };
+use core::sync::atomic::{ AtomicUsize, Ordering };
 use std::time::Instant;
 
 // Test that string interning returns the same reference for identical command names
@@ -18,7 +18,7 @@ fn test_string_interning_reference_equality()
   let cmd2 = interner.intern_command_name( &[ "test", "command" ] );
   
   // Should return the same reference (pointer equality)
-  assert!( std::ptr::eq( cmd1, cmd2 ), "String interning should return the same reference for identical strings" );
+  assert!( core::ptr::eq( cmd1, cmd2 ), "String interning should return the same reference for identical strings" );
   assert_eq!( cmd1, ".test.command" );
 }
 
@@ -29,7 +29,7 @@ fn test_global_interner_integration()
   let cmd1 = unilang::interner::intern_command_name( &[ "global", "test" ] );
   let cmd2 = unilang::interner::intern_command_name( &[ "global", "test" ] );
   
-  assert!( std::ptr::eq( cmd1, cmd2 ) );
+  assert!( core::ptr::eq( cmd1, cmd2 ) );
   assert_eq!( cmd1, ".global.test" );
 }
 
@@ -78,7 +78,7 @@ fn test_semantic_analyzer_integration()
         error_msg.contains( "No executable routine found" ) || 
         error_msg.contains( "not implemented" ) ||
         result.success, // Or complete success
-        "Iteration {}: Unexpected error type: {}", i, error_msg 
+        "Iteration {i}: Unexpected error type: {error_msg}" 
       );
     }
   }
@@ -98,7 +98,7 @@ fn test_interning_with_empty_first_slice()
   assert_eq!( cmd2, ".test.command" );
   
   // And should be the same interned reference
-  assert!( std::ptr::eq( cmd1, cmd2 ) );
+  assert!( core::ptr::eq( cmd1, cmd2 ) );
 }
 
 #[ test ]
@@ -220,9 +220,9 @@ fn test_performance_characteristics()
   }
   let hit_time = hit_start.elapsed();
   
-  println!( "Cache miss time (bulk): {:?}", miss_time );
-  println!( "Cache miss time (single): {:?}", miss2_time );
-  println!( "Cache hit time (bulk): {:?}", hit_time );
+  println!( "Cache miss time (bulk): {miss_time:?}" );
+  println!( "Cache miss time (single): {miss2_time:?}" );
+  println!( "Cache hit time (bulk): {hit_time:?}" );
   
   // Cache hits should be faster than misses for bulk operations
   // (Single miss might be faster due to less data)
@@ -290,7 +290,7 @@ fn test_pipeline_integration_correctness()
         error_msg.contains( "No executable routine found" ) || 
         error_msg.contains( "not implemented" ) ||
         result.success,
-        "Iteration {}: Unexpected error: {}", i, error_msg 
+        "Iteration {i}: Unexpected error: {error_msg}" 
       );
     }
   }
@@ -311,7 +311,7 @@ fn test_error_handling_with_interning()
   
   let error_message = result.error.unwrap();
   assert!( error_message.contains( "not found" ) || error_message.contains( "COMMAND_NOT_FOUND" ),
-          "Error message should indicate command not found: {}", error_message );
+          "Error message should indicate command not found: {error_message}" );
 }
 
 // Test that demonstrates the memory benefits
@@ -345,7 +345,7 @@ fn test_memory_allocation_reduction()
       let interned = interner.intern_command_name( pattern );
       
       // Should be the same reference as before
-      assert!( std::ptr::eq( interned, interned_strings[ i ] ),
+      assert!( core::ptr::eq( interned, interned_strings[ i ] ),
               "Repeated interning should return same reference" );
     }
   }

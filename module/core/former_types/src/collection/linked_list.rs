@@ -72,7 +72,6 @@ impl<E> StoragePreform for LinkedList<E> {
 /// - `Formed`: The type formed at the end of the formation process, typically a `LinkedList<E>`.
 /// - `End`: A trait determining the behavior at the end of the formation process.
 ///
-
 #[derive(Debug, Default)]
 pub struct LinkedListDefinition<E, Context, Formed, End>
 where
@@ -106,7 +105,6 @@ where
 /// - `E`: The element type of the list.
 /// - `Context`: The context in which the list is formed.
 /// - `Formed`: The type produced as a result of the formation process.
-
 #[derive(Debug, Default)]
 pub struct LinkedListDefinitionTypes<E, Context = (), Formed = LinkedList<E>> {
   _phantom: core::marker::PhantomData<(E, Context, Formed)>,

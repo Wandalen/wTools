@@ -182,7 +182,6 @@ mod private {
   ///
   /// Restriction, for example `pub( crate )`.
   ///
-
   #[derive(Debug, PartialEq, Eq, Clone)]
   pub struct Restriction {
     paren_token: syn::token::Paren,
@@ -191,7 +190,6 @@ mod private {
   }
 
   /// Kinds of clause.
-
   #[derive(Debug, Hash, Default, PartialEq, Eq, Clone, Copy)]
   pub enum ClauseKind {
     /// Invisible outside.
@@ -216,7 +214,6 @@ mod private {
   ///
   /// Visibility of an element.
   ///
-
   #[derive(Debug, Default, PartialEq, Eq, Clone)]
   pub enum Visibility {
     //Private( VisPrivate ),

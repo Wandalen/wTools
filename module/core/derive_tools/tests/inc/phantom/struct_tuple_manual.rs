@@ -1,4 +1,4 @@
-use std::marker::PhantomData;
+use core::marker::PhantomData;
 
 #[allow(dead_code)]
 struct StructTuple<T>(String, i32, PhantomData<T>);

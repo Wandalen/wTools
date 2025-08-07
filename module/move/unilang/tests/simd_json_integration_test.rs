@@ -119,7 +119,7 @@ fn test_simd_json_error_handling()
     // If serde_json fails, SIMD should also fail (maintaining consistency)
     if serde_result.is_err()
     {
-      assert!( simd_result.is_err(), "SIMD should fail when serde_json fails for: {}", invalid_json );
+      assert!( simd_result.is_err(), "SIMD should fail when serde_json fails for: {invalid_json}" );
     }
   }
 }
@@ -133,8 +133,8 @@ fn test_simd_feature_detection()
   let simd_info = SIMDJsonParser::simd_info();
   
   // These should not panic and return reasonable values
-  println!( "SIMD supported: {}", simd_supported );
-  println!( "SIMD info: {}", simd_info );
+  println!( "SIMD supported: {simd_supported}" );
+  println!( "SIMD info: {simd_info}" );
   
   assert!( !simd_info.is_empty(), "SIMD info should not be empty" );
   
@@ -152,7 +152,7 @@ fn test_simd_feature_detection()
   }
 }
 
-/// Test FastJsonValue parsing for SIMD optimization
+/// Test `FastJsonValue` parsing for SIMD optimization
 #[test]
 fn test_fast_json_value_parsing()
 {
@@ -210,7 +210,7 @@ fn test_simd_json_large_payload()
   let mut large_json = r#"{"users":["#.to_string();
   for i in 0..1000
   {
-    if i > 0 { large_json.push_str( "," ); }
+    if i > 0 { large_json.push(','); }
     large_json.push_str( &format!(
       r#"{{"id":{},"name":"user{}","email":"user{}@example.com","active":{},"metadata":{{"created":"2024-01-01","role":"user"}}}}"#,
       i, i, i, i % 2 == 0
@@ -232,12 +232,12 @@ fn test_simd_json_large_payload()
 fn test_simd_json_edge_cases()
 {
   let edge_cases = vec![
-    ( r#"{}"#, "Empty object" ),
-    ( r#"[]"#, "Empty array" ),
-    ( r#"null"#, "Null value" ),
-    ( r#"true"#, "Boolean true" ),
-    ( r#"false"#, "Boolean false" ),
-    ( r#"0"#, "Zero number" ),
+    ( r"{}", "Empty object" ),
+    ( r"[]", "Empty array" ),
+    ( r"null", "Null value" ),
+    ( r"true", "Boolean true" ),
+    ( r"false", "Boolean false" ),
+    ( r"0", "Zero number" ),
     ( r#""""#, "Empty string" ),
     ( r#""\u0000""#, "Null character in string" ),
     ( r#"{"":""}"#, "Empty key and value" ),
@@ -249,9 +249,9 @@ fn test_simd_json_edge_cases()
     let simd_result = SIMDJsonParser::parse_to_serde_value( json_str );
     let serde_result = serde_json::from_str::<SerdeValue>( json_str );
     
-    assert!( simd_result.is_ok(), "SIMD should handle edge case: {}", description );
-    assert!( serde_result.is_ok(), "serde_json should handle edge case: {}", description );
-    assert_eq!( simd_result.unwrap(), serde_result.unwrap(), "Results should match for: {}", description );
+    assert!( simd_result.is_ok(), "SIMD should handle edge case: {description}" );
+    assert!( serde_result.is_ok(), "serde_json should handle edge case: {description}" );
+    assert_eq!( simd_result.unwrap(), serde_result.unwrap(), "Results should match for: {description}" );
   }
 }
 
@@ -272,25 +272,25 @@ fn test_simd_json_memory_patterns()
   }
   
   // Test parsing various sizes to ensure memory allocation is handled correctly
-  for size in vec![ 10, 100, 500 ]
+  for size in [10, 100, 500]
   {
     let mut json = r#"{"items":["#.to_string();
     for i in 0..size
     {
       if i > 0 { json.push( ',' ); }
-      json.push_str( &format!( r#"{{"id":{}}}"#, i ) );
+      json.push_str( &format!( r#"{{"id":{i}}}"# ) );
     }
     json.push_str( "]}" );
     
     let result = SIMDJsonParser::parse_to_serde_value( &json );
-    assert!( result.is_ok(), "Size {} should parse successfully", size );
+    assert!( result.is_ok(), "Size {size} should parse successfully" );
     
     // Verify the parsed structure
     if let Ok( SerdeValue::Object( obj ) ) = result
     {
       if let Some( SerdeValue::Array( items ) ) = obj.get( "items" )
       {
-        assert_eq!( items.len(), size, "Array should have {} items", size );
+        assert_eq!( items.len(), size, "Array should have {size} items" );
       }
     }
   }
@@ -348,10 +348,10 @@ fn test_simd_performance_validation()
   let mut test_json = r#"{"performance_test":{"data":["#.to_string();
   for i in 0..500
   {
-    if i > 0 { test_json.push_str( "," ); }
+    if i > 0 { test_json.push(','); }
     test_json.push_str( &format!(
       r#"{{"id":{},"name":"item{}","value":{},"tags":["tag1","tag2"],"meta":{{"created":"2024-01-01","active":{}}}}}"#,
-      i, i, i as f64 * 1.5, i % 2 == 0
+      i, i, f64::from(i) * 1.5, i % 2 == 0
     ));
   }
   test_json.push_str( "]}}" );
@@ -374,12 +374,12 @@ fn test_simd_performance_validation()
   }
   let serde_duration = serde_start.elapsed();
   
-  println!( "Performance Comparison ({} iterations):", iterations );
-  println!( "SIMD JSON: {:?} ({:.2} ops/sec)", simd_duration, iterations as f64 / simd_duration.as_secs_f64() );
-  println!( "serde_json: {:?} ({:.2} ops/sec)", serde_duration, iterations as f64 / serde_duration.as_secs_f64() );
+  println!( "Performance Comparison ({iterations} iterations):" );
+  println!( "SIMD JSON: {:?} ({:.2} ops/sec)", simd_duration, f64::from(iterations) / simd_duration.as_secs_f64() );
+  println!( "serde_json: {:?} ({:.2} ops/sec)", serde_duration, f64::from(iterations) / serde_duration.as_secs_f64() );
   
   let speedup = serde_duration.as_nanos() as f64 / simd_duration.as_nanos() as f64;
-  println!( "SIMD JSON is {:.2}x faster", speedup );
+  println!( "SIMD JSON is {speedup:.2}x faster" );
   
   #[cfg(feature = "simd-json")]
   {
@@ -406,7 +406,7 @@ fn test_simd_json_thread_safety()
       for _j in 0..100
       {
         let result = SIMDJsonParser::parse_to_serde_value( &json );
-        assert!( result.is_ok(), "Thread {} iteration {} should succeed", i, _j );
+        assert!( result.is_ok(), "Thread {i} iteration {_j} should succeed" );
       }
     })
   }).collect();

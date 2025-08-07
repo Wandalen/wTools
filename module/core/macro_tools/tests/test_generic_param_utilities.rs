@@ -1,5 +1,5 @@
 //!
-//! Tests for new generic parameter utilities in macro_tools
+//! Tests for new generic parameter utilities in `macro_tools`
 //!
 
 use macro_tools::generic_params::*;

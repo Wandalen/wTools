@@ -41,7 +41,7 @@
 //! ### Collection Integration
 //! - Automatic detection and handling of standard collections
 //! - Custom collection support through trait implementations
-//! - Specialized builders for Vec, HashMap, HashSet, etc.
+//! - Specialized builders for Vec, `HashMap`, `HashSet`, etc.
 //!
 //! ### Subform Support
 //! - Nested structure building with full type safety
@@ -94,7 +94,7 @@ mod derive_former;
 /// - **Complex Lifetime Parameters**: Handles `<'a, T>` patterns, multiple lifetimes, and where clauses
 /// - **Generic Constraints**: Works with `where T: Hash + Eq`, complex trait bounds
 /// - **Nested Structures**: Subform support for complex hierarchical data
-/// - **Collection Types**: HashMap, Vec, HashSet with proper trait bound handling
+/// - **Collection Types**: `HashMap`, Vec, `HashSet` with proper trait bound handling
 /// - **Optional Fields**: Automatic `Option<T>` handling with sensible defaults
 /// - **Custom Mutators**: Pre-formation data manipulation and validation
 ///
@@ -119,7 +119,7 @@ mod derive_former;
 /// mod test_with_collections;
 /// ```
 ///
-/// ### 3. Hash+Eq Trait Bounds for HashMap Keys
+/// ### 3. Hash+Eq Trait Bounds for `HashMap` Keys
 /// ```rust,ignore
 /// // ❌ WRONG: Using non-Hash type as HashMap key
 /// pub struct Definition; // No Hash+Eq implementation
@@ -149,7 +149,7 @@ mod derive_former;
 /// When encountering issues:
 /// 1. **Check for commented derives** (resolves 90% of issues)
 /// 2. **Verify feature gate configuration** (for collection tests)
-/// 3. **Assess trait bound requirements** (Hash+Eq for HashMap keys)
+/// 3. **Assess trait bound requirements** (Hash+Eq for `HashMap` keys)
 /// 4. **Test incremental complexity** (start simple, add complexity gradually)
 /// 5. **Enable debug output** (use `#[debug]` to see generated code)
 /// 6. **Check lifetime parameters** (ensure proper lifetime annotations)
@@ -160,7 +160,7 @@ mod derive_former;
 /// ```text
 /// error[E0277]: the trait bound `MyType: Hash` is not satisfied
 /// ```
-/// **Solution**: Implement required traits for HashMap keys:
+/// **Solution**: Implement required traits for `HashMap` keys:
 /// ```rust,ignore
 /// #[derive(Hash, Eq, PartialEq)]
 /// struct MyType { /* fields */ }
@@ -342,17 +342,17 @@ mod derive_former;
 ///
 /// #### Phase 2: Generic Classification
 /// - **Classification Results**: How generics are categorized (lifetime-only, type-only, mixed, empty)
-/// - **Generated Generic Components**: impl_generics, ty_generics, where_clause breakdown
+/// - **Generated Generic Components**: `impl_generics`, `ty_generics`, `where_clause` breakdown
 /// - **Strategy Explanation**: Why certain generation strategies were chosen
 ///
 /// #### Phase 3: Generated Components Analysis
-/// - **Core Components**: FormerStorage, FormerDefinition, FormerDefinitionTypes, Former struct
-/// - **Trait Implementations**: EntityToStorage, EntityToFormer, EntityToDefinition, etc.
+/// - **Core Components**: `FormerStorage`, `FormerDefinition`, `FormerDefinitionTypes`, Former struct
+/// - **Trait Implementations**: `EntityToStorage`, `EntityToFormer`, `EntityToDefinition`, etc.
 /// - **Formation Process**: Step-by-step formation workflow explanation
 /// - **Customizations**: How attributes affect the generated code structure
 ///
 /// #### Phase 4: Complete Generated Code
-/// - **Final TokenStream**: The complete code that will be compiled
+/// - **Final `TokenStream`**: The complete code that will be compiled
 /// - **Integration Points**: How generated code integrates with existing types
 ///
 /// ### Enabling Debug Output

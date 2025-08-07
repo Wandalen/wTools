@@ -176,13 +176,13 @@ impl former::StoragePreform for Struct1FormerStorage {
       }
     };
 
-    let result = Struct1 {
+    
+
+    Struct1 {
       vec_1,
       hashmap_1,
       hashset_1,
-    };
-
-    result
+    }
   }
 }
 
@@ -405,8 +405,8 @@ where
 {
   #[inline(always)]
   pub fn perform(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
-    let result = self.form();
-    result
+    
+    self.form()
   }
 }
 

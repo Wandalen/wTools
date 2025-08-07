@@ -225,7 +225,6 @@ mod private
   }
 
   /// A struct for extracting and organizing row of table data for formatting.
-
   #[ derive( Debug, Default ) ]
   pub struct RowDescriptor
   {
@@ -242,7 +241,6 @@ mod private
   }
 
   /// A struct for extracting and organizing row of table data for formatting.
-
   #[ derive( Debug, Default ) ]
   pub struct ColDescriptor< 'label >
   {
@@ -261,7 +259,6 @@ mod private
   /// transformation of raw table data into a structured format suitable for
   /// rendering as a table.
   ///
-
   #[ allow( dead_code ) ]
   #[ derive( Debug ) ]
   pub struct InputExtract< 'data >

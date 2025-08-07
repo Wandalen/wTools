@@ -1,7 +1,7 @@
-//! Test reuse for unilang_instruction_parser alias crate.
+//! Test reuse for `unilang_instruction_parser` alias crate.
 //!
-//! This alias crate inherits all tests from the core unilang_parser implementation.
-//! Following the wTools test reuse pattern used by meta_tools and test_tools.
+//! This alias crate inherits all tests from the core `unilang_parser` implementation.
+//! Following the wTools test reuse pattern used by `meta_tools` and `test_tools`.
 
 #[allow(unused_imports)]
 use unilang_instruction_parser as the_module;

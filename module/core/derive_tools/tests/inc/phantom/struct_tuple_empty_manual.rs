@@ -1,4 +1,4 @@
-use std::marker::PhantomData;
+use core::marker::PhantomData;
 
 #[allow(dead_code)]
 struct StructTupleEmpty<T>(PhantomData<T>);

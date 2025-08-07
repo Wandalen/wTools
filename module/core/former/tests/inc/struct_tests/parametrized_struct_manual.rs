@@ -197,8 +197,8 @@ where
       }
     };
 
-    let result = Child::<K> { name, properties };
-    result
+    
+    Child::<K> { name, properties }
   }
 }
 
@@ -221,8 +221,8 @@ where
 {
   #[inline(always)]
   pub fn perform(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
-    let result = self.form();
-    result
+    
+    self.form()
   }
 
   #[inline(always)]

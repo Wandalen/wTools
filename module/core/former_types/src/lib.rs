@@ -124,7 +124,7 @@ mod collection;
 
 /// ## Namespace with dependencies
 ///
-/// Exposes the external dependencies used by former_types for advanced integration
+/// Exposes the external dependencies used by `former_types` for advanced integration
 /// scenarios and custom implementations.
 ///
 /// ### Dependencies

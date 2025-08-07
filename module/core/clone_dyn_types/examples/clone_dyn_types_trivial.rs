@@ -110,7 +110,6 @@ fn main() {
   /// To handle this, the function returns a trait object (`Box<dyn IterTrait>`).
   /// However, Rust's `Clone` trait cannot be implemented for trait objects due to object safety constraints.
   /// The `CloneDyn` trait addresses this problem by enabling cloning of trait objects.
-
   pub fn get_iter<'a>(src: Option<&'a Vec<i32>>) -> Box<dyn IterTrait<'a, &'a i32> + 'a> {
     match &src {
       Some(src) => Box::new(src.iter()),

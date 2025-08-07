@@ -17,7 +17,6 @@ mod private
   ///
   /// Graph which know how to iterate neighbourhood of a node and capable to convert id of a node into a node.
   ///
-
   pub trait GraphNodesNominalInterface
   {
 
@@ -130,7 +129,6 @@ mod private
   ///
   /// Graph which know how to iterate neighbourhood of a node and capable to convert id of a node into a node.
   ///
-
   pub trait GraphEdgesNominalInterface
   where
     Self : GraphNodesNominalInterface,
@@ -255,7 +253,6 @@ mod private
   ///
   /// Graph edges of which is possible to enumerate.
   ///
-
   pub trait GraphEdgesEnumerableInterface
   where
     Self :
@@ -283,7 +280,6 @@ mod private
   ///
   /// Graph interface which allow to add more nodes. Know nothing about edges.
   ///
-
   pub trait GraphNodesExtendableInterface
   where
     Self :
@@ -359,7 +355,6 @@ mod private
   ///
   /// Graph interface which allow to add more edges.
   ///
-
   pub trait GraphEdgesExtendableInterface
   where
     Self :

@@ -9,7 +9,6 @@ mod private
   ///
   /// Interface to identify an instance of somthing, for exampel a node.
   ///
-
   pub trait IdentityInterface
   where
     Self :
@@ -59,7 +58,6 @@ mod private
   ///
   /// Interface to identify an instance of somthing with ability to increase it to generate a new one.
   ///
-
   pub trait IdentityGeneratorInterface< Id >
   where
     Id : IdentityInterface + Default,
@@ -80,7 +78,6 @@ mod private
   ///
   /// Instance has an id.
   ///
-
   pub trait HasId
   {
     /// Id of the node.

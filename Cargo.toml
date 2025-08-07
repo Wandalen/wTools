@@ -71,8 +71,8 @@ undocumented_unsafe_blocks = "deny"
 std_instead_of_core = "warn"
 # Denies including files in documentation unconditionally.
 doc_include_without_cfg = "warn"
-# Denies missing inline in public items.
-missing_inline_in_public_items = "warn"
+# Allows missing inline in public items (too verbose).
+missing_inline_in_public_items = "allow"
 
 # exceptions
 

@@ -6,15 +6,15 @@ fn debug_split_issue() {
   use strs_tools::string::split::{SplitOptionsFormer}; // Removed SplitType
 
   let input = r#"cmd name::"a\\\\b\\\"c\\\'d\\ne\\tf""#;
-  let mut splitter = SplitOptionsFormer::new(vec!["::", " "])
+  let splitter = SplitOptionsFormer::new(vec!["::", " "])
     .src(input)
     .quoting(true)
-    .quoting_prefixes(vec![r#"""#, r#"'"#])
-    .quoting_postfixes(vec![r#"""#, r#"'"#])
+    .quoting_prefixes(vec![r#"""#, r"'"])
+    .quoting_postfixes(vec![r#"""#, r"'"])
     .perform();
 
-  println!("Input: {:?}", input);
-  while let Some(item) = splitter.next() {
-    println!("Split item: {:?}", item);
+  println!("Input: {input:?}");
+  for item in splitter {
+    println!("Split item: {item:?}");
   }
 }
