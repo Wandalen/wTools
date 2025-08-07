@@ -291,27 +291,24 @@ fn run_repl( pipeline : &Pipeline, registry : &CommandRegistry ) -> Result< (), 
           },
           Some( error ) =>
           {
-            match &error
+            if error.contains( "UNILANG_ARGUMENT_INTERACTIVE_REQUIRED" )
             {
-              unilang::error::Error::Execution( error_data ) if error_data.code == "UNILANG_ARGUMENT_INTERACTIVE_REQUIRED" =>
-              {
-                println!( "🔒 Interactive input required for secure argument" );
-                println!( "💡 In a real application, this would prompt for secure input" );
-                
-                // Simulate interactive input (in real implementation, would use secure input)
-                print!( "Enter value securely: " );
-                io::stdout().flush()?;
-                let mut _secure_input = String::new();
-                io::stdin().read_line( &mut _secure_input )?;
-                
-                println!( "✓ Interactive input received (demo mode)" );
-                println!( "  In production: password would be masked, API keys validated" );
-              },
-              _ =>
-              {
-                println!( "❌ Error: {error}" );
-                println!( "💡 Tip: Type 'help' for available commands" );
-              }
+              println!( "🔒 Interactive input required for secure argument" );
+              println!( "💡 In a real application, this would prompt for secure input" );
+              
+              // Simulate interactive input (in real implementation, would use secure input)
+              print!( "Enter value securely: " );
+              io::stdout().flush()?;
+              let mut _secure_input = String::new();
+              io::stdin().read_line( &mut _secure_input )?;
+              
+              println!( "✓ Interactive input received (demo mode)" );
+              println!( "  In production: password would be masked, API keys validated" );
+            }
+            else
+            {
+              println!( "❌ Error: {error}" );
+              println!( "💡 Tip: Type 'help' for available commands" );
             }
           }
         }

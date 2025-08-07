@@ -166,10 +166,11 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
     println!( "🧪 Testing: {input}" );
     println!( "   Expected: {expected_error}" );
     
-    match parser.parse( input )
+    match parser.parse_single_instruction( input )
     {
-      Ok( instructions ) =>
+      Ok( instruction ) =>
       {
+        let instructions = vec![ instruction ];
         let analyzer = SemanticAnalyzer::new( &instructions, &registry );
         match analyzer.analyze()
         {
@@ -206,10 +207,11 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   println!( "🔄 Error Recovery Example:" );
   let problematic_input = "test.validate age::invalid email::test@example.com";
   
-  match parser.parse( problematic_input )
+  match parser.parse_single_instruction( problematic_input )
   {
-    Ok( instructions ) =>
+    Ok( instruction ) =>
     {
+      let instructions = vec![ instruction ];
       let analyzer = SemanticAnalyzer::new( &instructions, &registry );
       match analyzer.analyze()
       {
