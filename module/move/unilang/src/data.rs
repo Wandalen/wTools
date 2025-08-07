@@ -73,6 +73,24 @@ mod private
     pub sensitive : bool,
     /// Indicates if the argument might require user interaction (e.g., prompts).
     /// If true, the system may need to handle interactive input.
+    ///
+    /// # REPL Implementation Notes
+    /// 
+    /// **Critical Behavior**: When `interactive: true` and the argument is required but not provided:
+    /// - Semantic analysis returns `UNILANG_ARGUMENT_INTERACTIVE_REQUIRED` error
+    /// - REPL loops should catch this error and prompt for secure input
+    /// - **Important**: Optional interactive arguments with defaults do NOT trigger the error
+    /// 
+    /// **Security Best Practices**:
+    /// - Always combine with `sensitive: true` for passwords/API keys
+    /// - Never log or store interactive argument values
+    /// - Use secure input methods (masked input) in REPL implementations
+    /// 
+    /// **Common Pitfalls**:
+    /// - ❌ Don't handle interactive prompts during command execution
+    /// - ❌ Don't store interactive values in command history  
+    /// - ✅ Handle interactive prompts at the REPL level before re-execution
+    /// - ✅ Clear sensitive values from memory after use
     pub interactive : bool,
   }
 

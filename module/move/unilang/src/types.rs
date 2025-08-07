@@ -20,35 +20,35 @@ mod private
 pub enum Value
 {
   /// A sequence of characters.
-  String(String),
+  String( String ),
   /// A whole number.
-  Integer(i64),
+  Integer( i64 ),
   /// A floating-point number.
-  Float(f64),
+  Float( f64 ),
   /// A true or false value.
-  Boolean(bool),
+  Boolean( bool ),
   /// A URI representing a file system path.
-  Path(PathBuf),
+  Path( PathBuf ),
   /// A `Path` that must point to a file.
-  File(PathBuf),
+  File( PathBuf ),
   /// A `Path` that must point to a directory.
-  Directory(PathBuf),
+  Directory( PathBuf ),
   /// A string that must be one of the predefined, case-sensitive choices.
-  Enum(String),
+  Enum( String ),
   /// A Uniform Resource Locator.
-  Url(Url),
+  Url( Url ),
   /// A date and time.
-  DateTime(DateTime<FixedOffset>),
+  DateTime( DateTime< FixedOffset > ),
   /// A regular expression pattern string.
-  Pattern(Regex),
+  Pattern( Regex ),
   /// A list of elements of a specified `Type`.
-  List(Vec<Value>),
+  List( Vec< Value > ),
   /// A key-value map.
-  Map(HashMap<String, Value>),
+  Map( HashMap< String, Value > ),
   /// A JSON string.
-  JsonString(String),
+  JsonString( String ),
   /// A JSON object.
-  Object(serde_json::Value),
+  Object( serde_json::Value ),
 }
 
 impl Value
@@ -57,9 +57,12 @@ impl Value
   #[ must_use ]
   pub fn as_integer( &self ) -> Option< &i64 >
   {
-    if let Self::Integer(v) = self {
-      Some(v)
-    } else {
+    if let Self::Integer( v ) = self
+    {
+      Some( v )
+    }
+    else
+    {
       None
     }
   }
@@ -68,8 +71,9 @@ impl Value
   #[ must_use ]
   pub fn as_path( &self ) -> Option< &PathBuf >
   {
-    match self {
-      Self::Path(v) | Self::File(v) | Self::Directory(v) => Some(v),
+    match self
+    {
+      Self::Path( v ) | Self::File( v ) | Self::Directory( v ) => Some( v ),
       _ => None,
     }
   }
@@ -79,18 +83,19 @@ impl PartialEq for Value
 {
   fn eq( &self, other : &Self ) -> bool
   {
-    match (self, other) {
-      (Self::String(l), Self::String(r)) | (Self::Enum(l), Self::Enum(r)) | (Self::JsonString(l), Self::JsonString(r)) => l == r, // Merged match arms
-      (Self::Integer(l), Self::Integer(r)) => l == r,
-      (Self::Float(l), Self::Float(r)) => l == r,
-      (Self::Boolean(l), Self::Boolean(r)) => l == r,
-      (Self::Path(l), Self::Path(r)) | (Self::File(l), Self::File(r)) | (Self::Directory(l), Self::Directory(r)) => l == r, // Merged match arms
-      (Self::Url(l), Self::Url(r)) => l == r,
-      (Self::DateTime(l), Self::DateTime(r)) => l == r,
-      (Self::Pattern(l), Self::Pattern(r)) => l.as_str() == r.as_str(),
-      (Self::List(l), Self::List(r)) => l == r,
-      (Self::Map(l), Self::Map(r)) => l == r,
-      (Self::Object(l), Self::Object(r)) => l == r,
+    match ( self, other )
+    {
+      ( Self::String( l ), Self::String( r ) ) | ( Self::Enum( l ), Self::Enum( r ) ) | ( Self::JsonString( l ), Self::JsonString( r ) ) => l == r, // Merged match arms
+      ( Self::Integer( l ), Self::Integer( r ) ) => l == r,
+      ( Self::Float( l ), Self::Float( r ) ) => l == r,
+      ( Self::Boolean( l ), Self::Boolean( r ) ) => l == r,
+      ( Self::Path( l ), Self::Path( r ) ) | ( Self::File( l ), Self::File( r ) ) | ( Self::Directory( l ), Self::Directory( r ) ) => l == r, // Merged match arms
+      ( Self::Url( l ), Self::Url( r ) ) => l == r,
+      ( Self::DateTime( l ), Self::DateTime( r ) ) => l == r,
+      ( Self::Pattern( l ), Self::Pattern( r ) ) => l.as_str() == r.as_str(),
+      ( Self::List( l ), Self::List( r ) ) => l == r,
+      ( Self::Map( l ), Self::Map( r ) ) => l == r,
+      ( Self::Object( l ), Self::Object( r ) ) => l == r,
       _ => false,
     }
   }
@@ -100,18 +105,19 @@ impl fmt::Display for Value
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
-    match self {
-      Value::String(s) | Value::Enum(s) | Value::JsonString(s) => write!(f, "{s}"), // Merged match arms
-      Value::Integer(i) => write!(f, "{i}"),
-      Value::Float(fl) => write!(f, "{fl}"),
-      Value::Boolean(b) => write!(f, "{b}"),
-      Value::Path(p) | Value::File(p) | Value::Directory(p) => write!(f, "{}", p.to_string_lossy()),
-      Value::Url(u) => write!(f, "{u}"),
-      Value::DateTime(dt) => write!(f, "{}", dt.to_rfc3339()),
-      Value::Pattern(r) => write!(f, "{}", r.as_str()),
-      Value::List(l) => write!(f, "{l:?}"),
-      Value::Map(m) => write!(f, "{m:?}"),
-      Value::Object(o) => write!(f, "{o}"),
+    match self
+    {
+      Value::String( s ) | Value::Enum( s ) | Value::JsonString( s ) => write!( f, "{s}" ), // Merged match arms
+      Value::Integer( i ) => write!( f, "{i}" ),
+      Value::Float( fl ) => write!( f, "{fl}" ),
+      Value::Boolean( b ) => write!( f, "{b}" ),
+      Value::Path( p ) | Value::File( p ) | Value::Directory( p ) => write!( f, "{}", p.to_string_lossy() ),
+      Value::Url( u ) => write!( f, "{u}" ),
+      Value::DateTime( dt ) => write!( f, "{}", dt.to_rfc3339() ),
+      Value::Pattern( r ) => write!( f, "{}", r.as_str() ),
+      Value::List( l ) => write!( f, "{l:?}" ),
+      Value::Map( m ) => write!( f, "{m:?}" ),
+      Value::Object( o ) => write!( f, "{o}" ),
     }
   }
 }
@@ -134,25 +140,29 @@ pub struct TypeError
 /// specified `Kind` or if it fails validation for that `Kind`.
 pub fn parse_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
 {
-  match kind {
-    Kind::String | Kind::Integer | Kind::Float | Kind::Boolean | Kind::Enum(_) => parse_primitive_value(input, kind),
-    Kind::Path | Kind::File | Kind::Directory => parse_path_value(input, kind),
-    Kind::Url | Kind::DateTime | Kind::Pattern => parse_url_datetime_pattern_value(input, kind),
-    Kind::List(..) => parse_list_value(input, kind),
-    Kind::Map(..) => parse_map_value(input, kind),
-    Kind::JsonString | Kind::Object => parse_json_value(input, kind),
+  match kind
+  {
+    Kind::String | Kind::Integer | Kind::Float | Kind::Boolean | Kind::Enum( _ ) => parse_primitive_value( input, kind ),
+    Kind::Path | Kind::File | Kind::Directory => parse_path_value( input, kind ),
+    Kind::Url | Kind::DateTime | Kind::Pattern => parse_url_datetime_pattern_value( input, kind ),
+    Kind::List( .. ) => parse_list_value( input, kind ),
+    Kind::Map( .. ) => parse_map_value( input, kind ),
+    Kind::JsonString | Kind::Object => parse_json_value( input, kind ),
   }
 }
 
 fn parse_primitive_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
 {
-  match kind {
-    Kind::String => Ok(Value::String(input.to_string())),
-    Kind::Integer => input.parse::<i64>().map(Value::Integer).map_err(|e| TypeError {
+  match kind
+  {
+    Kind::String => Ok( Value::String( input.to_string() ) ),
+    Kind::Integer => input.parse::< i64 >().map( Value::Integer ).map_err( | e | TypeError
+    {
       expected_kind: kind.clone(),
       reason: e.to_string(),
     }),
-    Kind::Float => input.parse::<f64>().map(Value::Float).map_err(|e| TypeError {
+    Kind::Float => input.parse::< f64 >().map( Value::Float ).map_err( | e | TypeError
+    {
       expected_kind: kind.clone(),
       reason: e.to_string(),
     }),

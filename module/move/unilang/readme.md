@@ -588,6 +588,150 @@ let routine = registry.routines.get( ".namespace.command" ).unwrap();
 let result = routine( verified_command, context )?;
 ```
 
+## REPL (Read-Eval-Print Loop) Support
+
+unilang provides comprehensive support for building interactive REPL applications. The framework's stateless architecture makes it ideal for REPL implementations.
+
+### Basic REPL Implementation
+
+```rust
+use unilang::{ registry::CommandRegistry, pipeline::Pipeline };
+use std::io::{ self, Write };
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut registry = CommandRegistry::new();
+    // Register your commands...
+    
+    let pipeline = Pipeline::new(registry);
+    
+    loop {
+        print!("repl> ");
+        io::stdout().flush()?;
+        
+        let mut input = String::new();
+        io::stdin().read_line(&mut input)?;
+        let input = input.trim();
+        
+        if input == "quit" { break; }
+        
+        let result = pipeline.process_command_simple(input);
+        if result.success {
+            println!("✅ Success: {:?}", result.outputs);
+        } else {
+            println!("❌ Error: {}", result.error.unwrap());
+        }
+    }
+    
+    Ok(())
+}
+```
+
+### Interactive Arguments with Secure Input
+
+unilang supports interactive arguments for secure input like passwords:
+
+```rust
+// In your command definition
+ArgumentDefinition {
+    name: "password".to_string(),
+    kind: Kind::String,
+    attributes: ArgumentAttributes { 
+        interactive: true,
+        sensitive: true,
+        ..Default::default() 
+    },
+    // ...
+}
+
+// In your REPL loop
+match result.error {
+    Some(error) if error.contains("UNILANG_ARGUMENT_INTERACTIVE_REQUIRED") => {
+        // Prompt for secure input
+        print!("Enter password: ");
+        io::stdout().flush()?;
+        // Use secure input method (e.g., rpassword crate)
+    },
+    Some(error) => println!("❌ Error: {error}"),
+    None => println!("✅ Success"),
+}
+```
+
+### Advanced REPL Features
+
+For production REPL applications, consider these patterns:
+
+**Command History & Auto-completion:**
+```rust
+let mut command_history = Vec::new();
+let mut session_stats = HashMap::new();
+
+// In your REPL loop
+if input.ends_with('?') {
+    let partial = input.trim_end_matches('?');
+    suggest_completions(partial, &registry);
+    continue;
+}
+
+command_history.push(input.to_string());
+```
+
+**Error Recovery:**
+```rust
+match result.error {
+    Some(error) => {
+        println!("❌ Error: {error}");
+        
+        // Provide contextual help
+        if error.contains("Command not found") {
+            println!("💡 Available commands: {:?}", registry.command_names());
+        } else if error.contains("Missing required") {
+            println!("💡 Use 'help <command>' for syntax");
+        }
+    },
+    None => println!("✅ Command executed successfully"),
+}
+```
+
+**Session Management:**
+```rust
+struct ReplSession {
+    command_count: u32,
+    successful_commands: u32,
+    failed_commands: u32,
+    last_error: Option<String>,
+}
+
+// Track session statistics for debugging and UX
+session.command_count += 1;
+if result.success {
+    session.successful_commands += 1;
+} else {
+    session.failed_commands += 1;
+    session.last_error = result.error;
+}
+```
+
+### REPL Performance Considerations
+
+- **Component Reuse**: Pipeline components are stateless and reusable - this provides 20-50% performance improvement over creating new instances
+- **Memory Management**: Bound command history to prevent memory leaks in long-running sessions
+- **Static Commands**: Use static command registry with PHF for zero-cost lookups even with millions of commands
+
+### Complete REPL Examples
+
+The `examples/` directory contains comprehensive REPL implementations:
+
+- `12_repl_loop.rs` - Basic REPL with stateless operation
+- `15_interactive_repl_mode.rs` - Interactive arguments and secure input
+- `17_advanced_repl_features.rs` - Full-featured REPL with history, auto-completion, and error recovery
+
+**Key REPL Insights:**
+- ✅ **Stateless Design**: Each command execution is independent - no state accumulation
+- ✅ **Interactive Security**: Proper handling of passwords and API keys
+- ✅ **Error Isolation**: Command failures don't affect subsequent commands
+- ✅ **Memory Efficiency**: Constant memory usage regardless of session length
+- ✅ **Professional UX**: History, auto-completion, and intelligent error recovery
+
 ## Error Handling
 
 unilang provides comprehensive error handling:

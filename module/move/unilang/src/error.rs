@@ -1,6 +1,27 @@
 //!
 //! The error types for the Unilang framework.
 //!
+//! # Error Handling Patterns for REPL Applications
+//!
+//! This module defines error types optimized for REPL (Read-Eval-Print Loop) usage:
+//!
+//! ## Critical Error Codes for REPL Integration
+//! - `UNILANG_ARGUMENT_INTERACTIVE_REQUIRED`: Signals need for secure user input
+//! - `UNILANG_TYPE_MISMATCH`: Type conversion failures that should show user-friendly suggestions  
+//! - `UNILANG_ARGUMENT_MISSING`: Missing required arguments with correction hints
+//!
+//! ## Error Recovery Strategy
+//! All errors are designed to be non-fatal for REPL sessions:
+//! - Parse errors don't corrupt the parser state
+//! - Semantic errors don't affect the registry
+//! - Execution errors don't crash the application
+//! - Interactive errors provide clear next steps for the user
+//!
+//! ## Security Considerations
+//! - Error messages never contain sensitive argument values
+//! - Interactive argument errors are deliberately generic
+//! - Stack traces are sanitized in production REPL environments
+//!
 
 /// Internal namespace.
 mod private

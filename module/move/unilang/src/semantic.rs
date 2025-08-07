@@ -1,6 +1,35 @@
 //!
 //! The semantic analyzer for the Unilang framework.
 //!
+//! # Interactive Argument Handling Implementation
+//!
+//! This module implements the critical `UNILANG_ARGUMENT_INTERACTIVE_REQUIRED` error 
+//! signaling system for REPL applications:
+//!
+//! ## Key Implementation Details (lines 196-203)
+//! - Interactive arguments are detected during semantic analysis, NOT during execution
+//! - The specific error code `UNILANG_ARGUMENT_INTERACTIVE_REQUIRED` is returned
+//! - This allows REPL loops to catch the error and prompt for secure input
+//! - Optional interactive arguments with defaults do NOT trigger the error
+//!
+//! ## Security Considerations
+//! - Interactive validation occurs before any command execution
+//! - Sensitive arguments should be marked with both `interactive: true` and `sensitive: true`
+//! - The semantic analyzer never logs or stores interactive argument values
+//! - Error messages for interactive arguments are deliberately generic to avoid information leakage
+//!
+//! ## REPL Integration Pattern
+//! ```rust
+//! match semantic_analyzer.analyze() {
+//!     Err(Error::Execution(error_data)) 
+//!         if error_data.code == "UNILANG_ARGUMENT_INTERACTIVE_REQUIRED" => {
+//!         // Handle secure input prompting at REPL level
+//!         prompt_for_secure_input(&error_data.message);
+//!     },
+//!     // ... other error handling
+//! }
+//! ```
+//!
 
 /// Internal namespace.
 mod private
@@ -194,8 +223,21 @@ impl< 'a > SemanticAnalyzer< 'a >
         if !arg_def.attributes.optional
         {
           // Check for interactive arguments that require special handling
+          // Critical REPL Implementation: Interactive Argument Signaling
+          // This is the core implementation of FR-INTERACTIVE-1 requirement
           if arg_def.attributes.interactive
           {
+            // ✅ SPECIFICATION COMPLIANCE: Return exact error code as specified
+            // This error is designed to be caught by REPL loops for secure input prompting
+            // 
+            // ⚠️ SECURITY NOTE: The error message intentionally doesn't contain the argument value
+            // to prevent sensitive data (passwords, API keys) from being logged or displayed
+            //
+            // 📝 REPL INTEGRATION: REPL implementations should:
+            // 1. Catch this specific error code  
+            // 2. Present secure input prompt to user
+            // 3. Mask input if arg_def.attributes.sensitive is true
+            // 4. Re-execute the command with the provided interactive value
             return Err( Error::Execution( ErrorData::new(
               "UNILANG_ARGUMENT_INTERACTIVE_REQUIRED".to_string(),
               format!( "Interactive Argument Required: The argument '{}' is marked as interactive and must be provided interactively. The application should prompt the user for this value.", arg_def.name ),
