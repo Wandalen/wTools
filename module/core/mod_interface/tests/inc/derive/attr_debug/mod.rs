@@ -1,10 +1,8 @@
-
 use super::*;
 
 mod private {}
 
-mod_interface!
-{
+the_module::mod_interface! {
   // #![ debug ]
 
   /// layer_a
@@ -14,4 +12,4 @@ mod_interface!
 
 //
 
-include!( "../../only_test/layer_single_only_test.rs" );
+include!("../../only_test/layer_single_only_test.rs");

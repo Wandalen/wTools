@@ -1,0 +1,24 @@
+name : graphs_tools_deprecated
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # graphs_tools_deprecated
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/move/graphs_tools_deprecated/Cargo.toml'
+      module_name : 'graphs_tools_deprecated'
+      commit_message : ${{ github.event.head_commit.message }}
+      commiter_username:  ${{ github.event.head_commit.committer.username }}

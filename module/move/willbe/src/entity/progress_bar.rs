@@ -1,3 +1,4 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
   /// The `ProgressBar` structure is used to display progress indicators in the terminal.
@@ -18,12 +19,12 @@ mod private
   }
 
   #[ cfg( feature = "progress_bar" ) ]
-  impl < 'a > std::fmt::Debug for ProgressBar< 'a >
+  impl  std::fmt::Debug for ProgressBar< '_ > // fix clippy
   {
     fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
     {
       f.debug_struct( "ProgressBar" )
-        .finish()
+      .finish()
     }
   }
 
@@ -52,7 +53,8 @@ mod private
     /// # Returns
     ///
     /// A `ProgressBar` instance that can be used to update and display progress.
-    pub fn progress_bar< 'a >( &'a self, variants_len : u64 ) -> ProgressBar< 'a >
+    #[ must_use ]
+    pub fn progress_bar( &self, variants_len : u64 ) -> ProgressBar< '_ >
     {
       let progress_bar =
         {

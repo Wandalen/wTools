@@ -22,6 +22,6 @@ impl< T > IndexMut< usize > for StructMultipleTuple< T >
 }
 
 
-include!( "./only_test/struct_multiple_tuple.rs" );
+// include!( "./only_test/struct_multiple_tuple.rs" );
 
 

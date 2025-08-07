@@ -3,7 +3,7 @@
 //! Helpers.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 
@@ -75,7 +75,7 @@ mod private
 
 //
 
-meta_tools::mod_interface!
+mod_interface_meta::mod_interface!
 {
   prelude use
   {

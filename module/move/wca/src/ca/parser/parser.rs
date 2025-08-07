@@ -1,14 +1,31 @@
 mod private
 {
+
   use crate::*;
 
   use std::collections::HashMap;
+  use parser::{ Program, ParsedCommand };
+  use error_tools::untyped::Result;
+  use error_tools::dependency::thiserror;
 
-  use error::{ return_err };
+  // use error::{ return_err };
+
+  #[ allow( missing_docs ) ]
+  #[ derive( Debug, error_tools::typed::Error ) ]
+  pub enum ParserError
+  {
+    #[ error( "Internal Error: {details}" ) ]
+    InternalError { details: String },
+    #[ error( "Unexpected input. Expected: {expected}, found {input}" ) ]
+    UnexpectedInput { expected: String, input: String },
+  }
 
   /// `Parser` is a struct used for parsing data.
   #[ derive( Debug ) ]
   pub struct Parser;
+
+  // fix clippy error too large return type
+  type ParsedArgs = ( Vec< String >, HashMap< String, String >, usize );
 
   impl Parser
   {
@@ -21,13 +38,16 @@ mod private
     /// # Returns
     ///
     /// Returns a `Result` with a `Program` containing the parsed commands if successful, or an error if parsing fails.
-    // qqq : use typed error
-    pub fn parse< As, A >( &self, args : As ) -> error::untyped::Result< Program< ParsedCommand > >
+    /// # Errors
+    /// qqq: doc
+    // aaa : use typed error
+    // aaa : done.
+    pub fn parse< As, A >( &self, args : As ) -> Result< Program< ParsedCommand >, ParserError >
     where
       As : IntoIterator< Item = A >,
       A : Into< String >,
     {
-      let args = args.into_iter().map( Into::into ).collect::< Vec< _ > >();
+      let args : Vec< _ > = args.into_iter().map( Into::into ).collect();
       let mut commands = vec![];
       let mut i = 0;
       while i < args.len()
@@ -45,7 +65,7 @@ mod private
     {
       if let Some( name ) = input.strip_prefix( '.' )
       {
-        name.is_empty() || name.starts_with( '?' ) || name.chars().next().is_some_and( | c | c.is_alphanumeric() )
+        name.is_empty() || name.starts_with( '?' ) || name.chars().next().is_some_and( char::is_alphanumeric )
       }
       else
       {
@@ -54,18 +74,19 @@ mod private
     }
 
     // returns ParsedCommand and relative position of the last parsed item
-    // qqq : use typed error
-    fn parse_command( args : &[ String ] ) -> error::untyped::Result< ( ParsedCommand, usize ) >
+    // aaa : use typed error
+    fn parse_command( args : &[ String ] ) -> Result< ( ParsedCommand, usize ), ParserError >
     {
-      if args.is_empty() {
-        return_err!( "Unexpected behaviour: Try to parse command without input" );
+      if args.is_empty()
+      {
+        return Err( ParserError::InternalError { details: "Try to parse command without input".into() } );
       }
 
       let mut i = 0;
 
       if !Self::valid_command_name( &args[ i ] )
       {
-        return_err!( "Unexpected input: Expected a command, found: `{}`", args[ i ] );
+        return Err( ParserError::UnexpectedInput { expected: "command".into(), input: args[ i ].clone() } );
       }
       let name = match args[ i ].strip_prefix( '.' ).unwrap()
       {
@@ -75,10 +96,9 @@ mod private
       };
       i += 1;
       let ( subjects, properties, relative_pos ) = Self::parse_command_args( &args[ i .. ] )?;
-
       i += relative_pos;
 
-      return Ok(
+      Ok(
       (
         ParsedCommand
         {
@@ -90,9 +110,13 @@ mod private
       ))
     }
 
+
+
+
     // returns ( subjects, properties, relative_end_pos )
-    // qqq : use typed error
-    fn parse_command_args( args : &[ String ] ) -> error::untyped::Result< ( Vec< String >, HashMap< String, String >, usize ) >
+    // aaa : use typed error
+    // aaa : done
+    fn parse_command_args( args : &[ String ] ) -> Result< ParsedArgs, ParserError >
     {
       let mut i = 0;
 
@@ -125,7 +149,7 @@ mod private
           // prop:
           else
           {
-            return_err!( "Unexpected input '{}': Detected a possible property key preceding the ':' character. However, no corresponding value was found.", item );
+            return Err( ParserError::UnexpectedInput { expected: "property value".into(), input: "end of input".into() } );
           }
         }
         // prop : value | prop :value
@@ -146,17 +170,22 @@ mod private
           // :
           else
           {
-            return_err!( "Unexpected input '{} :': Detected a possible property key preceding the ':' character. However, no corresponding value was found.", item );
+            return Err( ParserError::UnexpectedInput { expected: "property value".into(), input: "end of input".into() } );
           }
         }
 
-        else if !properties_turn { subjects.push( item.to_string() ); }
-
-        else { return_err!( "Unexpected input: Expected `command` or `property`, found: `{}`", item ); }
+        else if !properties_turn
+        {
+          subjects.push( item.to_string() );
+        }
+        else
+        {
+          return Err( ParserError::UnexpectedInput { expected: "`command` or `property`".into(), input: item.into() } );
+        }
         i += 1;
       }
 
-      Ok(( subjects, properties, i ))
+      Ok( ( subjects, properties, i ) )
     }
   }
 }
@@ -166,4 +195,5 @@ mod private
 crate::mod_interface!
 {
   exposed use Parser;
+  exposed use ParserError;
 }

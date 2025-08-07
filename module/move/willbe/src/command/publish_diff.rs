@@ -1,5 +1,6 @@
 mod private
 {
+
   use crate::*;
 
   use std::fs;
@@ -8,7 +9,7 @@ mod private
 
   // use error::Result;
   // qqq : group dependencies
-  // use path::AbsolutePath;
+  // use pth::AbsolutePath;
 
   #[ derive( former::Former ) ]
   struct PublishDiffProperties
@@ -29,7 +30,9 @@ mod private
   /// # Errors
   ///
   /// Returns an error if there is an issue with the command.
-
+  ///
+  /// # Panics
+  /// qqq: doc
   pub fn publish_diff( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {
     let path : PathBuf = o.args.get_owned( 0 ).unwrap_or( std::env::current_dir()? );
@@ -43,6 +46,7 @@ mod private
     println!( "{}", action::publish_diff( o )? );
     if let Some( keep ) = keep_archive
     {
+      // qqq : dont use canonicalizefunction. path does not have exist
       let keep = AbsolutePath::try_from( fs::canonicalize( keep )? ).unwrap();
       println!( "Remote version of the package was saved at `{}`", keep.as_ref().display() );
     }
@@ -50,10 +54,10 @@ mod private
     Ok( () )
   }
 
-  impl TryFrom< wca::Props > for PublishDiffProperties
+  impl TryFrom< wca::executor::Props > for PublishDiffProperties
   {
     type Error = error::untyped::Error;
-    fn try_from( value : wca::Props ) -> Result< Self, Self::Error >
+    fn try_from( value : wca::executor::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();
 

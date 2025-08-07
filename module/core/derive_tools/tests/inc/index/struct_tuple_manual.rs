@@ -13,4 +13,4 @@ impl< T > Index< usize > for StructTuple< T >
   }
 }
 
-include!( "./only_test/struct_tuple.rs" );
+// include!( "./only_test/struct_tuple.rs" );

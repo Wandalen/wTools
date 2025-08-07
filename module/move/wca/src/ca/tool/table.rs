@@ -1,9 +1,11 @@
 mod private
 {
-  use crate::*;
 
+  use core::fmt::Write;
+
+use error_tools::untyped::Result;
   // use wtools::error::{ Result, err };
-  use error::err;
+  // use error::err;
 
   /// Represents a table composed of multiple rows.
   ///
@@ -69,7 +71,7 @@ mod private
 
   fn max_column_lengths( table : &Table ) -> Vec< usize >
   {
-    let num_columns = table.0.get( 0 ).map_or( 0, | row | row.0.len() );
+    let num_columns = table.0.first().map_or( 0, | row | row.0.len() );
     ( 0 .. num_columns )
     .map( | column_index |
     {
@@ -81,6 +83,10 @@ mod private
     .collect()
   }
 
+  #[ derive( Debug, error_tools::typed::Error ) ]
+  #[ error( "Invalid table" ) ]
+  pub struct FormatTableError;
+
   /// Formats a table into a readable string representation.
   ///
   /// # Arguments
@@ -90,15 +96,18 @@ mod private
   /// # Returns
   ///
   /// * `error::untyped::Result<String, Error>` - A `error::untyped::Result` containing the formatted table as a `String`, or an `Error` if the table is invalid.
-  // qqq : use typed error
-  pub fn format_table< IntoTable >( table : IntoTable ) -> error::untyped::Result< String >
+  /// # Errors
+  /// qqq: doc
+  // aaa : use typed error
+  // aaa : done
+  pub fn format_table< IntoTable >( table : IntoTable ) -> Result< String, FormatTableError >
   where
     IntoTable : Into< Table >,
   {
     let table = table.into();
     if !table.validate()
     {
-      return Err( err!( "Invalid table" ) );
+      return Err( FormatTableError );
     }
 
     let max_lengths = max_column_lengths( &table );
@@ -108,7 +117,7 @@ mod private
     {
       for ( i, cell ) in row.0.iter().enumerate()
       {
-        formatted_table.push_str( &format!( "{:width$}", cell, width = max_lengths[ i ] ) );
+        write!( formatted_table, "{:width$}", cell, width = max_lengths[ i ] ).expect( "Writing to String shouldn't fail" );
         formatted_table.push( ' ' );
       }
       formatted_table.pop(); // trailing space

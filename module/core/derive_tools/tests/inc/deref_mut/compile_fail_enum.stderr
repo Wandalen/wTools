@@ -1,0 +1,10 @@
+error: DerefMut cannot be derived for enums. It is only applicable to structs with a single field.
+  --> tests/inc/deref_mut/compile_fail_enum.rs:12:1
+   |
+12 | / #[ allow( dead_code ) ]
+13 | | #[ derive( derive_tools_meta::DerefMut ) ]
+14 | | enum MyEnum
+...  |
+17 | |   Variant2( i32 ),
+18 | | }
+   | |_^

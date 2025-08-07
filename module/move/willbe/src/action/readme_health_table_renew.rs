@@ -1,17 +1,19 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  use crate::*;
 
+  use crate::*;
   use std::
   {
+    fmt::Write as FmtWrite,
     fs::{ OpenOptions, File },
     io::{ Write, Read, Seek, SeekFrom },
   };
-  use path::{ Path, PathBuf };
+  use pth::{ Path, PathBuf };
   use convert_case::Casing;
   use toml_edit::Document;
   use regex::bytes::Regex;
-  use collection::HashMap;
+  use collection_tools::collection::HashMap;
 
   use error::
   {
@@ -24,8 +26,10 @@ mod private
       format_err,
     }
   };
-  use manifest::repo_url;
-  // use path::AbsolutePath;
+  use crate::entity::manifest::repo_url;
+  // use pth::AbsolutePath;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
 
   static TAG_TEMPLATE: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
   static CLOSE_TAG: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
@@ -37,14 +41,14 @@ mod private
     (
       regex::bytes::Regex::new
       (
-        r#"<!--\{ generate.healthtable(\(\)|\{\}|\(.*?\)|\{.*?\}) \} -->"#
+        r"<!--\{ generate.healthtable(\(\)|\{\}|\(.*?\)|\{.*?\}) \} -->"
       ).unwrap()
     ).ok();
     CLOSE_TAG.set
     (
       regex::bytes::Regex::new
       (
-        r#"<!--\{ generate\.healthtable\.end \} -->"#
+        r"<!--\{ generate\.healthtable\.end \} -->"
       ).unwrap()
     ).ok();
   }
@@ -109,7 +113,7 @@ mod private
     else
     {
       // qqq : for Petro : use typed error
-      Err( HealthTableRenewError::Common( error::untyped::Error::msg( "Cannot find Cargo.toml" )))
+      Err( HealthTableRenewError::Common( error::untyped::Error::msg( "Cannot find Cargo.toml" ) ) )
     }
   }
 
@@ -131,6 +135,7 @@ mod private
 
   /// Structure that holds the parameters for generating a table.
   #[ derive( Debug ) ]
+  #[ allow( clippy::struct_excessive_bools ) ]
   struct TableOptions
   {
     // Relative path from workspace root to directory with modules
@@ -149,25 +154,18 @@ mod private
   {
     fn from( value : HashMap< String, query::Value > ) -> Self
     {
+      // fix clippy
       let include_branches = value
-      .get( "with_branches" )
-      .map( | v | bool::from( v ) )
-      .unwrap_or( true );
+      .get( "with_branches" ).is_none_or(bool::from);
 
       let include_stability = value
-      .get( "with_stability" )
-      .map( | v | bool::from( v ) )
-      .unwrap_or( true );
+      .get( "with_stability" ).is_none_or(bool::from);
 
       let include_docs = value
-      .get( "with_docs" )
-      .map( | v | bool::from( v ) )
-      .unwrap_or( true );
+      .get( "with_docs" ).is_none_or(bool::from);
 
       let include = value
-      .get( "with_gitpod" )
-      .map( | v | bool::from( v ) )
-      .unwrap_or( true );
+      .get( "with_gitpod" ).is_none_or(bool::from);
 
       let b_p = value.get( "1" );
       let base_path = if let Some( query::Value::String( path ) ) = value.get( "path" ).or( b_p )
@@ -198,53 +196,51 @@ mod private
       let cargo_toml_path = path.join( "Cargo.toml" );
       if !cargo_toml_path.exists()
       {
-        return Err( HealthTableRenewError::Common( error::untyped::Error::msg( "Cannot find Cargo.toml" )))
+        return Err( HealthTableRenewError::Common( error::untyped::Error::msg( "Cannot find Cargo.toml" ) ) )
       }
-      else
+
+      let mut contents = String::new();
+      File::open( cargo_toml_path )?.read_to_string( &mut contents )?;
+      let doc = contents.parse::< Document >()?;
+
+      let core_url =
+      doc
+      .get( "workspace" )
+      .and_then( | workspace  | workspace.get( "metadata" ) )
+      .and_then( | metadata | metadata.get( "repo_url" ) )
+      .and_then( | url | url.as_str() )
+      .map( String::from );
+
+      let branches =
+      doc
+      .get( "workspace" )
+      .and_then( | workspace | workspace.get( "metadata" ) )
+      .and_then( | metadata | metadata.get( "branches" ) )
+      .and_then( | branches | branches.as_array() )
+      .map
+      (
+        | array |
+        array
+        .iter()
+        .filter_map( | value | value.as_str() )
+        .map( String::from )
+        .collect::< Vec< String > >()
+      );
+      let mut user_and_repo = String::new();
+      if let Some( core_url ) = &core_url
       {
-        let mut contents = String::new();
-        File::open( cargo_toml_path )?.read_to_string( &mut contents )?;
-        let doc = contents.parse::< Document >()?;
-
-        let core_url =
-        doc
-        .get( "workspace" )
-        .and_then( | workspace  | workspace.get( "metadata" ) )
-        .and_then( | metadata | metadata.get( "repo_url" ) )
-        .and_then( | url | url.as_str() )
-        .map( String::from );
-
-        let branches =
-        doc
-        .get( "workspace" )
-        .and_then( | workspace | workspace.get( "metadata" ) )
-        .and_then( | metadata | metadata.get( "branches" ) )
-        .and_then( | branches | branches.as_array())
-        .map
-        (
-          | array |
-          array
-          .iter()
-          .filter_map( | value | value.as_str() )
-          .map( String::from )
-          .collect::< Vec< String > >()
-        );
-        let mut user_and_repo = "".to_string();
-        if let Some( core_url ) = &core_url
-        {
-          user_and_repo = url::git_info_extract( core_url )?;
-        }
-        Ok
-        (
-          Self
-          {
-            core_url : core_url.unwrap_or_default(),
-            user_and_repo,
-            branches,
-            workspace_root : path.to_path_buf()
-          }
-        )
+        user_and_repo = url::git_info_extract( core_url )?;
       }
+      Ok
+      (
+        Self
+        {
+          core_url : core_url.unwrap_or_default(),
+          user_and_repo,
+          branches,
+          workspace_root : path.to_path_buf()
+        }
+      )
     }
 
   }
@@ -259,6 +255,12 @@ mod private
   /// will mean that at this place the table with modules located in the directory module/core will be generated.
   /// The tags do not disappear after generation.
   /// Anything between the opening and closing tag will be destroyed.
+  ///
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: doc
   // aaa : for Petro : typed errors
   // aaa : done
   pub fn readme_health_table_renew( path : &Path ) -> Result< (), HealthTableRenewError >
@@ -284,8 +286,8 @@ mod private
 
     let mut tags_closures = vec![];
     let mut tables = vec![];
-    let open_caps = TAG_TEMPLATE.get().unwrap().captures_iter( &*contents );
-    let close_caps = CLOSE_TAG.get().unwrap().captures_iter( &*contents );
+    let open_caps = TAG_TEMPLATE.get().unwrap().captures_iter( &contents );
+    let close_caps = CLOSE_TAG.get().unwrap().captures_iter( &contents );
     // iterate by regex matches and generate table content for each dir which taken from open-tag
     for ( open_captures, close_captures ) in open_caps.zip( close_caps )
     {
@@ -324,6 +326,7 @@ mod private
   }
 
   /// Writes tables into a file at specified positions.
+  #[ allow( clippy::needless_pass_by_value ) ]
   fn tables_write_into_file
   (
     tags_closures : Vec< ( usize, usize ) >,
@@ -341,11 +344,11 @@ mod private
     )
     in tags_closures.iter().zip( tables.iter() )
     {
-      range_to_target_copy( &*contents, &mut buffer, start, *end_of_start_tag )?;
+      range_to_target_copy( &contents, &mut buffer, start, *end_of_start_tag )?;
       range_to_target_copy( con.as_bytes(), &mut buffer, 0,con.len() - 1 )?;
       start = *start_of_end_tag;
     }
-    range_to_target_copy( &*contents,&mut buffer,start,contents.len() - 1 )?;
+    range_to_target_copy( &contents,&mut buffer,start,contents.len() - 1 )?;
     file.set_len( 0 )?;
     file.seek( SeekFrom::Start( 0 ) )?;
     file.write_all( &buffer )?;
@@ -353,7 +356,7 @@ mod private
   }
 
   /// Generate table from `table_parameters`.
-  /// Generate header, iterate over all modules in package (from table_parameters) and append row.
+  /// Generate header, iterate over all modules in package (from `table_parameters`) and append row.
   fn package_readme_health_table_generate
   (
     workspace : &Workspace,
@@ -369,7 +372,7 @@ mod private
       workspace
       .packages()
     )?;
-    let mut table = table_header_generate( parameters, &table_parameters );
+    let mut table = table_header_generate( parameters, table_parameters );
     for package_name in directory_names
     {
       let stability = if table_parameters.include_stability
@@ -388,7 +391,7 @@ mod private
       {
         None
       };
-      if parameters.core_url == ""
+      if parameters.core_url.is_empty()
       {
         let module_path = workspace
         .workspace_root()
@@ -420,7 +423,7 @@ ensure that at least one remotest is present in git. ",
           &package_name,
           stability.as_ref(),
           parameters,
-          &table_parameters
+          table_parameters
         )
       );
     }
@@ -429,6 +432,7 @@ ensure that at least one remotest is present in git. ",
 
   /// Return topologically sorted modules name, from packages list, in specified directory.
   // fn directory_names( path : PathBuf, packages : &[ WorkspacePackageRef< '_ > ] ) -> Result< Vec< String > >
+  #[ allow( clippy::type_complexity, clippy::unnecessary_wraps ) ]
   fn directory_names< 'a >
   (
     path : PathBuf,
@@ -478,7 +482,7 @@ ensure that at least one remotest is present in git. ",
     let module_graph = graph::construct( &module_packages_map );
     let names : Vec< String > = graph::topological_sort_with_grouping( module_graph )
     .into_iter()
-    .map
+    .flat_map
     (
       | mut group |
       {
@@ -486,7 +490,6 @@ ensure that at least one remotest is present in git. ",
         group
       }
     )
-    .flatten()
     .map( | n | n.to_string() )
     .collect();
 
@@ -511,35 +514,32 @@ ensure that at least one remotest is present in git. ",
     );
     if table_parameters.include_stability
     {
-      let mut stability = stability_generate( &stability.as_ref().unwrap() );
+      let mut stability = stability_generate( stability.as_ref().unwrap() );
       stability.push_str( " |" );
       rou.push_str( &stability );
     }
     if parameters.branches.is_some() && table_parameters.include_branches
     {
-      rou.push_str( &branch_cells_generate( &parameters, &module_name ) );
+      rou.push_str( &branch_cells_generate( parameters, module_name ) );
     }
     if table_parameters.include_docs
     {
-      rou.push_str
+      write!
       (
-        &format!
-        (
-          " [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{}) |",
-          &module_name
-        )
-      );
+        rou,
+        " [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{module_name}) |"
+      ).expect( "Writing to String shouldn't fail" );
     }
     if table_parameters.include
     {
-      let path = Path::new( table_parameters.base_path.as_str() ).join( &module_name );
+      let path = Path::new( table_parameters.base_path.as_str() ).join( module_name );
       let p = Path::new( &parameters.workspace_root ).join( &path );
       // let path = table_parameters.base_path.
-      let example = if let Some( name ) = find_example_file( p.as_path(), &module_name )
+      let example = if let Some( name ) = find_example_file( p.as_path(), module_name )
       {
-        let path = path.to_string_lossy().replace( '\\', "/" ).replace( "/", "%2F" );
+        let path = path.to_string_lossy().replace( '\\', "/" ).replace( '/', "%2F" );
         let tmp = name.to_string_lossy().replace( '\\', "/" );
-        let file_name = tmp.split( '/' ).last().unwrap();
+        let file_name = tmp.split( '/' ).next_back().unwrap();
         let name = file_name.strip_suffix( ".rs" ).unwrap();
         format!
         (
@@ -552,14 +552,15 @@ ensure that at least one remotest is present in git. ",
       }
       else
       {
-        "".into()
+        String::new()
       };
-      rou.push_str( &format!( " {} |", example ) );
+      write!(rou, " {example} |").expect( "Writing to String shouldn't fail" );
     }
     format!( "{rou}\n" )
   }
 
   /// todo
+  #[ must_use ]
   pub fn find_example_file( base_path : &Path, module_name : &str ) -> Option< PathBuf >
   {
     let examples_dir = base_path.join("examples" );
@@ -568,19 +569,18 @@ ensure that at least one remotest is present in git. ",
     {
       if let Ok( entries ) = std::fs::read_dir( &examples_dir )
       {
-        for entry in entries
+        for entry in entries.flatten()
         {
-          if let Ok( entry ) = entry
+
+          let file_name = entry.file_name();
+          if let Some( file_name_str ) = file_name.to_str()
           {
-            let file_name = entry.file_name();
-            if let Some( file_name_str ) = file_name.to_str()
+            if file_name_str == format!( "{module_name}_trivial.rs" )
             {
-              if file_name_str == format!( "{module_name}_trivial.rs" )
-              {
-                return Some( entry.path() )
-              }
+              return Some( entry.path() )
             }
           }
+
         }
       }
     }
@@ -588,19 +588,20 @@ ensure that at least one remotest is present in git. ",
     // If module_trivial.rs doesn't exist, return any other file in the examples directory
     if let Ok( entries ) = std::fs::read_dir( &examples_dir )
     {
-      for entry in entries
+      for entry in entries.flatten()
       {
-        if let Ok( entry ) = entry
+
+        let file_name = entry.file_name();
+        if let Some( file_name_str ) = file_name.to_str()
         {
-          let file_name = entry.file_name();
-          if let Some( file_name_str ) = file_name.to_str()
+          // fix clippy
+          if std::path::Path::new( file_name_str )
+          .extension().is_some_and(| ext | ext.eq_ignore_ascii_case( "rs" ))
           {
-            if file_name_str.ends_with( ".rs" )
-            {
-              return Some( entry.path() )
-            }
+            return Some( entry.path() )
           }
         }
+
       }
     }
 
@@ -608,15 +609,21 @@ ensure that at least one remotest is present in git. ",
   }
 
   /// Generate stability cell based on stability
+  #[ must_use ]
   pub fn stability_generate( stability : &Stability ) -> String
   {
     match stability
     {
-      Stability::Experimental => " [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)".into(),
-      Stability::Stable => " [![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](https://github.com/emersion/stability-badges#stable)".into(),
-      Stability::Deprecated => " [![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/emersion/stability-badges#deprecated)".into(),
-      Stability::Unstable => " [![stability-unstable](https://img.shields.io/badge/stability-unstable-yellow.svg)](https://github.com/emersion/stability-badges#unstable)".into(),
-      Stability::Frozen => " [![stability-frozen](https://img.shields.io/badge/stability-frozen-blue.svg)](https://github.com/emersion/stability-badges#frozen)".into(),
+      Stability::Experimental =>
+      " [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)".into(),
+      Stability::Stable =>
+      " [![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](https://github.com/emersion/stability-badges#stable)".into(),
+      Stability::Deprecated =>
+      " [![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/emersion/stability-badges#deprecated)".into(),
+      Stability::Unstable =>
+      " [![stability-unstable](https://img.shields.io/badge/stability-unstable-yellow.svg)](https://github.com/emersion/stability-badges#unstable)".into(),
+      Stability::Frozen =>
+      " [![stability-frozen](https://img.shields.io/badge/stability-frozen-blue.svg)](https://github.com/emersion/stability-badges#frozen)".into(),
     }
   }
 
@@ -642,7 +649,7 @@ ensure that at least one remotest is present in git. ",
       {
         for branch in branches
         {
-          header.push_str( format!( " {} |", branch ).as_str() );
+          header.push_str( format!( " {branch} |" ).as_str() );
           separator.push_str( "--------|" );
         }
       }
@@ -660,7 +667,7 @@ ensure that at least one remotest is present in git. ",
       separator.push_str( ":------:|" );
     }
 
-    format!( "{}\n{}\n", header, separator )
+    format!( "{header}\n{separator}\n" )
   }
 
   /// Generate cells for each branch
@@ -703,10 +710,7 @@ ensure that at least one remotest is present in git. ",
       target.extend_from_slice( &source[ from..= to ] );
       return Ok( () )
     }
-    else
-    {
-      Err( HealthTableRenewError::Common( error::untyped::Error::msg( "Incorrect indexes" )))
-    }
+    Err( HealthTableRenewError::Common( error::untyped::Error::msg( "Incorrect indexes" ) ) )
   }
 }
 

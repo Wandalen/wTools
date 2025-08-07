@@ -1,7 +1,14 @@
 
+# qqq : xxx : explain purpose of each line
 [env]
 MODULES_PATH = { value = "module", relative = true }
 WORKSPACE_PATH = { value = ".", relative = true }
 
 [net]
 # offline = true
+
+# [build]
+# rustdocflags = [ "--cfg", "feature=\"normal_build\"" ]
+
+# [alias]
+# test = "test --doc --features normal_build,enabled"

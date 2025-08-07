@@ -1,11 +1,9 @@
-
 use super::*;
-use the_module::{ parse_quote, qt, code_to_str, tree_print, Result };
+use the_module::{parse_quote, qt, code_to_str, tree_print, Result};
 
 //
 
-tests_impls!
-{
+tests_impls! {
 
   #[ test ]
   fn equation_test() -> Result< () >
@@ -103,8 +101,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   equation_test,
   equation_parse_test,
   equation_from_meta_test,

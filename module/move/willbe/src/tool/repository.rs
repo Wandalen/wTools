@@ -1,7 +1,7 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
-  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports, clippy::wildcard_imports ) ]
   use crate::tool::*;
 
   /// Searches for a README file in specific subdirectories of the given directory path.
@@ -9,19 +9,22 @@ mod private
   /// This function attempts to find a README file in the following subdirectories: ".github",
   /// the root directory, and "./docs". It returns the path to the first found README file, or
   /// `None` if no README file is found in any of these locations.
+  ///
+  /// # Errors
+  /// qqq: doc
   pub fn readme_path( dir_path : &std::path::Path ) -> Result< std::path::PathBuf, std::io::Error >
   {
     if let Some( path ) = readme_in_dir_find( &dir_path.join( ".github" ) )
     {
-      Ok( path )
+      std::io::Result::Ok( path )
     }
     else if let Some( path )  = readme_in_dir_find( dir_path )
     {
-      Ok( path )
+      std::io::Result::Ok( path )
     }
     else if let Some( path )  = readme_in_dir_find( &dir_path.join( "docs" ) )
     {
-      Ok( path )
+      std::io::Result::Ok( path )
     }
     else
     {
@@ -37,7 +40,7 @@ mod private
   {
     std::fs::read_dir( path )
     .ok()?
-    .filter_map( Result::ok )
+    .filter_map( std::result::Result::ok )
     .filter( | p | p.path().is_file() )
     .filter_map( | f |
     {

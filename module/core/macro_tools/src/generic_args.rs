@@ -2,9 +2,8 @@
 //! This module provides utilities to handle and manipulate generic arguments using the `syn` crate. It includes traits and functions for transforming, merging, and managing generic parameters within procedural macros, enabling seamless syntactic analysis and code generation.
 //!
 
-/// Internal namespace.
-mod private
-{
+/// Define a private namespace for all its items.
+mod private {
 
   /// A trait for converting a reference to an existing type into a `syn::AngleBracketedGenericArguments`.
   ///
@@ -12,8 +11,7 @@ mod private
   /// such as `syn::Generics`, into a uniform `syn::AngleBracketedGenericArguments`. This is particularly
   /// useful when working with Rust syntax trees in procedural macros, allowing for the manipulation
   /// and merging of generic parameters from different syntactic elements.
-  pub trait IntoGenericArgs
-  {
+  pub trait IntoGenericArgs {
     /// Converts a reference of the implementing type into `syn::AngleBracketedGenericArguments`.
     ///
     /// This method should handle the conversion logic necessary to transform the implementing
@@ -24,34 +22,30 @@ mod private
     /// # Returns
     /// A new instance of `syn::AngleBracketedGenericArguments` representing the generic parameters
     /// of the original type.
-    fn into_generic_args( &self ) -> syn::AngleBracketedGenericArguments;
+    #[allow(clippy::wrong_self_convention)]
+    fn into_generic_args(&self) -> syn::AngleBracketedGenericArguments;
   }
 
-  impl IntoGenericArgs for syn::Generics
-  {
-    fn into_generic_args( &self ) -> syn::AngleBracketedGenericArguments
-    {
-      let args = self.params.iter().map( | param |
-      {
-        match param
-        {
-          syn::GenericParam::Type( ty ) => syn::GenericArgument::Type( syn::Type::Path( syn::TypePath
-          {
+  impl IntoGenericArgs for syn::Generics {
+    fn into_generic_args(&self) -> syn::AngleBracketedGenericArguments {
+      let args = self
+        .params
+        .iter()
+        .map(|param| match param {
+          syn::GenericParam::Type(ty) => syn::GenericArgument::Type(syn::Type::Path(syn::TypePath {
             qself: None,
             path: ty.ident.clone().into(),
           })),
-          syn::GenericParam::Lifetime( lifetime ) => syn::GenericArgument::Lifetime( lifetime.lifetime.clone() ),
-          syn::GenericParam::Const( const_param ) => syn::GenericArgument::Const( syn::Expr::Path( syn::ExprPath
-          {
+          syn::GenericParam::Lifetime(lifetime) => syn::GenericArgument::Lifetime(lifetime.lifetime.clone()),
+          syn::GenericParam::Const(const_param) => syn::GenericArgument::Const(syn::Expr::Path(syn::ExprPath {
             attrs: vec![],
             qself: None,
             path: const_param.ident.clone().into(),
           })),
-        }
-      }).collect();
+        })
+        .collect();
 
-      syn::AngleBracketedGenericArguments
-      {
+      syn::AngleBracketedGenericArguments {
         colon2_token: None,
         lt_token: syn::token::Lt::default(),
         args,
@@ -98,99 +92,82 @@ mod private
   ///
   /// This example demonstrates how lifetimes `'a` and `'b` are placed before other generic parameters
   /// like `T`, `U`, and `V` in the merged result, adhering to the expected syntax order in Rust generics.
-  pub fn merge
-  (
-    a : &syn::AngleBracketedGenericArguments,
-    b : &syn::AngleBracketedGenericArguments
-  ) -> syn::AngleBracketedGenericArguments
-  {
-    let mut lifetimes : syn::punctuated::Punctuated< syn::GenericArgument, syn::token::Comma > = syn::punctuated::Punctuated::new();
-    let mut others : syn::punctuated::Punctuated< syn::GenericArgument, syn::token::Comma > = syn::punctuated::Punctuated::new();
+  #[must_use]
+  pub fn merge(
+    a: &syn::AngleBracketedGenericArguments,
+    b: &syn::AngleBracketedGenericArguments,
+  ) -> syn::AngleBracketedGenericArguments {
+    let mut lifetimes: syn::punctuated::Punctuated<syn::GenericArgument, syn::token::Comma> = syn::punctuated::Punctuated::new();
+    let mut others: syn::punctuated::Punctuated<syn::GenericArgument, syn::token::Comma> = syn::punctuated::Punctuated::new();
 
     // Function to categorize and collect arguments into lifetimes and others
-    let mut categorize_and_collect = |args : &syn::punctuated::Punctuated<syn::GenericArgument, syn::token::Comma>|
-    {
-      for arg in args.iter()
-      {
-        match arg
-        {
-          syn::GenericArgument::Lifetime( _ ) => lifetimes.push( arg.clone() ),
-          _ => others.push( arg.clone() ),
+    let mut categorize_and_collect = |args: &syn::punctuated::Punctuated<syn::GenericArgument, syn::token::Comma>| {
+      for arg in args {
+        match arg {
+          syn::GenericArgument::Lifetime(_) => lifetimes.push(arg.clone()),
+          _ => others.push(arg.clone()),
         }
       }
     };
 
     // Categorize and collect from both input arguments
-    categorize_and_collect( &a.args );
-    categorize_and_collect( &b.args );
+    categorize_and_collect(&a.args);
+    categorize_and_collect(&b.args);
 
     // Combine lifetimes and other arguments into final merged arguments
     let mut args = syn::punctuated::Punctuated::new();
-    args.extend( lifetimes );
-    args.extend( others );
+    args.extend(lifetimes);
+    args.extend(others);
 
-    syn::AngleBracketedGenericArguments
-    {
+    syn::AngleBracketedGenericArguments {
       colon2_token: None, // Adjust if needed based on context
       lt_token: syn::token::Lt::default(),
       args,
       gt_token: syn::token::Gt::default(),
     }
   }
-
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+#[doc(inline)]
+#[allow(unused_imports)]
 pub use own::*;
 
 /// Own namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod own
-{
+#[allow(unused_imports)]
+pub mod own {
+
   use super::*;
 
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use orphan::*;
-  #[ doc( inline ) ]
-  pub use private::
-  {
-    merge,
-  };
+  #[doc(inline)]
+  pub use private::{merge};
 }
 
 /// Orphan namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
+#[allow(unused_imports)]
+pub mod orphan {
+
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use exposed::*;
-  #[ doc( inline ) ]
-  pub use private::
-  {
-    IntoGenericArgs,
-  };
+  #[doc(inline)]
+  pub use private::{IntoGenericArgs};
 }
 
 /// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
+#[allow(unused_imports)]
+pub mod exposed {
   use super::*;
   pub use super::super::generic_args;
 
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::
-  {
-    prelude::*,
-  };
+  #[doc(inline)]
+  #[allow(unused_imports)]
+  pub use super::{prelude::*};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[allow(unused_imports)]
+pub mod prelude {
   use super::*;
 }

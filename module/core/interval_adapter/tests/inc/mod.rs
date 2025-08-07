@@ -1,9 +1,7 @@
-
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
 
-tests_impls!
-{
+tests_impls! {
 
   //
 
@@ -237,8 +235,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   info_from,
   from_std,
   adapter_basic,

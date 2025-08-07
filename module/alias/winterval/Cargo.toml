@@ -7,7 +7,7 @@ authors = [
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/winterval"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/winterval"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/winterval"

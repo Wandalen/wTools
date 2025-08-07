@@ -1,8 +1,10 @@
 mod private
 {
+
   use crate::*;
   use std::path::Path;
-  use error::{ untyped::Context };
+  use error::untyped::Context;
+
   use tool::template::*;
 
   /// Template for creating deploy files.
@@ -15,8 +17,10 @@ mod private
   impl DeployTemplate
   {
     /// Creates am instance of `[TemplateHolder]` for deployment template.
-    /// 
-    /// Used for properly initializing a template 
+    ///
+    /// Used for properly initializing a template
+    #[ must_use ]
+    #[ allow( clippy::should_implement_trait ) ]
     pub fn default() -> TemplateHolder
     {
       let parameters = TemplateParameters::former()
@@ -30,7 +34,7 @@ mod private
       {
         files : get_deploy_template_files(),
         parameters,
-        values : Default::default(),
+        values : TemplateValues::default(),
         parameter_storage : "./.deploy_template.toml".as_ref(),
         template_name : "deploy",
       }
@@ -41,23 +45,26 @@ mod private
   {
     let formed = TemplateFilesBuilder::former()
     // root
-    .file().data( include_str!( "../../template/deploy/.deploy_template.toml.hbs" ) ).path( "./.deploy_template.toml" ).mode( WriteMode::TomlExtend ).is_template( true ).end()
+    .file().data( include_str!( "../../template/deploy/.deploy_template.toml.hbs" ) ).path( "./.deploy_template.toml" )
+    .mode( WriteMode::TomlExtend )
+    .is_template( true )
+    .end()
     .file().data( include_str!( "../../template/deploy/Makefile.hbs" ) ).path( "./Makefile" ).is_template( true ).end()
     // /key
     .file().data( include_str!( "../../template/deploy/key/pack.sh" ) ).path( "./key/pack.sh" ).end()
-    .file().data( include_str!( "../../template/deploy/key/Readme.md" ) ).path( "./key/Readme.md" ).end()
+    .file().data( include_str!( "../../template/deploy/key/readme.md" ) ).path( "./key/readme.md" ).end()
     // /deploy/
     .file().data( include_str!( "../../template/deploy/deploy/redeploy.sh" ) ).path( "./deploy/redeploy.sh" ).end()
     .file().data( include_str!( "../../template/deploy/deploy/cloud-init.tpl.hbs" ) ).path( "./deploy/cloud-init.tpl" ).is_template( true ).end()
     .file().data( include_str!( "../../template/deploy/deploy/Dockerfile" ) ).path( "./deploy/Dockerfile" ).end()
-    .file().data( include_str!( "../../template/deploy/deploy/Readme.md" ) ).path( "./deploy/Readme.md" ).end()
+    .file().data( include_str!( "../../template/deploy/deploy/readme.md" ) ).path( "./deploy/readme.md" ).end()
     // /deploy/gar
-    .file().data( include_str!( "../../template/deploy/deploy/gar/Readme.md" ) ).path( "./deploy/gar/Readme.md" ).end()
+    .file().data( include_str!( "../../template/deploy/deploy/gar/readme.md" ) ).path( "./deploy/gar/readme.md" ).end()
     .file().data( include_str!( "../../template/deploy/deploy/gar/main.tf.hbs" ) ).path( "./deploy/gar/main.tf" ).is_template( true ).end()
     .file().data( include_str!( "../../template/deploy/deploy/gar/outputs.tf" ) ).path( "./deploy/gar/outputs.tf" ).end()
     .file().data( include_str!( "../../template/deploy/deploy/gar/variables.tf" ) ).path( "./deploy/gar/variables.tf" ).end()
     // /deploy/gce
-    .file().data( include_str!( "../../template/deploy/deploy/gce/Readme.md" ) ).path( "./deploy/gce/Readme.md" ).end()
+    .file().data( include_str!( "../../template/deploy/deploy/gce/readme.md" ) ).path( "./deploy/gce/readme.md" ).end()
     .file().data( include_str!( "../../template/deploy/deploy/gce/main.tf.hbs" ) ).path( "./deploy/gce/main.tf" ).is_template( true ).end()
     .file().data( include_str!( "../../template/deploy/deploy/gce/outputs.tf.hbs" ) ).path( "./deploy/gce/outputs.tf" ).is_template( true ).end()
     .file().data( include_str!( "../../template/deploy/deploy/gce/variables.tf" ) ).path( "./deploy/gce/variables.tf" ).end()
@@ -79,12 +86,13 @@ mod private
   fn dir_name_to_formatted( dir_name : &str, separator : &str ) -> String
   {
     dir_name
-    .replace( ' ', separator )
-    .replace( '_', separator )
+    .replace( [ ' ', '_' ], separator )
     .to_lowercase()
   }
 
   /// Creates deploy template
+  /// # Errors
+  /// qqq: doc
   pub fn deploy_renew
   (
     path : &Path,
@@ -93,14 +101,14 @@ mod private
   -> error::untyped::Result< () >
   // qqq : typed error
   {
-    if let None = template.load_existing_params( path )
+    if template.load_existing_params( path ).is_none()
     {
       let current_dir = std::env::current_dir()?;
       // qqq : for Petro : use file_name
       // qqq : for Kos : bad description
       let current_dir = current_dir
       .components()
-      .last()
+      .next_back()
       .context( "Invalid current directory" )?;
 
       let current_dir = current_dir.as_os_str().to_string_lossy();

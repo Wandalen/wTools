@@ -1,12 +1,12 @@
 [package]
 name = "pth"
-version = "0.21.0"
+version = "0.24.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/pth"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/pth"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/pth"
@@ -45,7 +45,8 @@ derive_serde = [ "serde" ]
 path_utf8 = [ "camino" ]
 
 [dependencies]
-regex = { version = "1.10.3" }
+# qqq : xxx : make sure all dependencies are in workspace
+regex = { version = "1.10.3", default-features = false }
 mod_interface = { workspace = true }
 serde = { version = "1.0.197", optional = true, features = [ "derive" ] }
 camino = { version = "1.1.7", optional = true, features = [] }

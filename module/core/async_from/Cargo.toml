@@ -6,7 +6,7 @@ authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/async_from"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/async_from"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/async_from"

@@ -25,4 +25,4 @@ impl< T > IndexMut< usize > for StructNamed< T >
 }
 
 
-include!( "./only_test/struct_named.rs" );
+// include!( "./only_test/struct_named.rs" );

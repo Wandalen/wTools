@@ -2,10 +2,11 @@
 //! Attributes analyzys and manipulation.
 //!
 
-/// Internal namespace.
-mod private
-{
+/// Define a private namespace for all its items.
+mod private {
+
   use crate::*;
+  use crate::qt;
 
   /// Checks if the given iterator of attributes contains an attribute named `debug`.
   ///
@@ -48,26 +49,20 @@ mod private
   ///
   /// assert!( contains_debug, "Expected to find 'debug' attribute" );
   /// ```
-  ///
-
-  pub fn has_debug< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> syn::Result< bool >
-  {
-    for attr in attrs
-    {
-      if let Some( ident ) = attr.path().get_ident()
-      {
-        let ident_string = format!( "{}", ident );
-        if ident_string == "debug"
-        {
-          return Ok( true )
+  /// # Errors
+  /// qqq: doc
+  pub fn has_debug<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> syn::Result<bool> {
+    for attr in attrs {
+      if let Some(ident) = attr.path().get_ident() {
+        let ident_string = format!("{ident}");
+        if ident_string == "debug" {
+          return Ok(true);
         }
-      }
-      else
-      {
-        return_syn_err!( "Unknown structure attribute:\n{}", qt!{ attr } );
+      } else {
+        return_syn_err!("Unknown structure attribute:\n{}", qt! { attr });
       }
     }
-    return Ok( false )
+    Ok(false)
   }
 
   /// Checks if the given attribute name is a standard Rust attribute.
@@ -110,11 +105,10 @@ mod private
   /// assert_eq!( macro_tools::attr::is_standard( "my_attribute" ), false );
   /// ```
   ///
-
-  pub fn is_standard<'a>( attr_name : &'a str ) -> bool
-  {
-    match attr_name
-    {
+  #[must_use]
+  #[allow(clippy::match_same_arms)]
+  pub fn is_standard(attr_name: &str) -> bool {
+    match attr_name {
       // Conditional compilation
       "cfg" | "cfg_attr" => true,
 
@@ -152,8 +146,13 @@ mod private
       "proc_macro" | "proc_macro_derive" | "proc_macro_attribute" => true,
 
       // Stability attributes
-      "stable" | "unstable" | "rustc_const_unstable" | "rustc_const_stable" |
-      "rustc_diagnostic_item" | "rustc_deprecated" | "rustc_legacy_const_generics" => true,
+      "stable"
+      | "unstable"
+      | "rustc_const_unstable"
+      | "rustc_const_stable"
+      | "rustc_diagnostic_item"
+      | "rustc_deprecated"
+      | "rustc_legacy_const_generics" => true,
 
       // Special compiler attributes
       "feature" | "non_exhaustive" => true,
@@ -172,78 +171,218 @@ mod private
     }
   }
 
+  /// Checks if the given iterator of attributes contains an attribute named `deref`.
+  ///
+  /// This function iterates over an input sequence of `syn::Attribute`, typically associated with a struct,
+  /// enum, or other item in a Rust Abstract Syntax Tree ( AST ), and determines whether any of the attributes
+  /// is exactly named `deref`.
+  ///
+  /// # Parameters
+  /// - `attrs` : An iterator over `syn::Attribute`. This could be obtained from parsing Rust code
+  ///   with the `syn` crate, where the iterator represents attributes applied to a Rust item ( like a struct or function ).
+  ///
+  /// # Returns
+  /// - `Ok( true )` if the `deref` attribute is present.
+  /// - `Ok( false )` if the `deref` attribute is not found.
+  /// - `Err( syn::Error )` if an unknown or improperly formatted attribute is encountered.
+  ///
+  /// # Errors
+  /// qqq: doc
+  pub fn has_deref<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> syn::Result<bool> {
+    for attr in attrs {
+      if let Some(ident) = attr.path().get_ident() {
+        let ident_string = format!("{ident}");
+        if ident_string == "deref" {
+          return Ok(true);
+        }
+      } else {
+        return_syn_err!("Unknown structure attribute:\n{}", qt! { attr });
+      }
+    }
+    Ok(false)
+  }
+
+  /// Checks if the given iterator of attributes contains an attribute named `deref_mut`.
+  ///
+  /// This function iterates over an input sequence of `syn::Attribute`, typically associated with a struct,
+  /// enum, or other item in a Rust Abstract Syntax Tree ( AST ), and determines whether any of the attributes
+  /// is exactly named `deref_mut`.
+  ///
+  /// # Parameters
+  /// - `attrs` : An iterator over `syn::Attribute`. This could be obtained from parsing Rust code
+  ///   with the `syn` crate, where the iterator represents attributes applied to a Rust item ( like a struct or function ).
+  ///
+  /// # Returns
+  /// - `Ok( true )` if the `deref_mut` attribute is present.
+  /// - `Ok( false )` if the `deref_mut` attribute is not found.
+  /// - `Err( syn::Error )` if an unknown or improperly formatted attribute is encountered.
+  ///
+  /// # Errors
+  /// qqq: doc
+  pub fn has_deref_mut<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> syn::Result<bool> {
+    for attr in attrs {
+      if let Some(ident) = attr.path().get_ident() {
+        let ident_string = format!("{ident}");
+        if ident_string == "deref_mut" {
+          return Ok(true);
+        }
+      } else {
+        return_syn_err!("Unknown structure attribute:\n{}", qt! { attr });
+      }
+    }
+    Ok(false)
+  }
+
+  /// Checks if the given iterator of attributes contains an attribute named `from`.
+  ///
+  /// This function iterates over an input sequence of `syn::Attribute`, typically associated with a struct,
+  /// enum, or other item in a Rust Abstract Syntax Tree ( AST ), and determines whether any of the attributes
+  /// is exactly named `from`.
+  ///
+  /// # Parameters
+  /// - `attrs` : An iterator over `syn::Attribute`. This could be obtained from parsing Rust code
+  ///   with the `syn` crate, where the iterator represents attributes applied to a Rust item ( like a struct or function ).
+  ///
+  /// # Returns
+  /// - `Ok( true )` if the `from` attribute is present.
+  /// - `Ok( false )` if the `from` attribute is not found.
+  /// - `Err( syn::Error )` if an unknown or improperly formatted attribute is encountered.
+  ///
+  /// # Errors
+  /// qqq: doc
+  pub fn has_from<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> syn::Result<bool> {
+    for attr in attrs {
+      if let Some(ident) = attr.path().get_ident() {
+        let ident_string = format!("{ident}");
+        if ident_string == "from" {
+          return Ok(true);
+        }
+      } else {
+        return_syn_err!("Unknown structure attribute:\n{}", qt! { attr });
+      }
+    }
+    Ok(false)
+  }
+
+  /// Checks if the given iterator of attributes contains an attribute named `index_mut`.
+  ///
+  /// This function iterates over an input sequence of `syn::Attribute`, typically associated with a struct,
+  /// enum, or other item in a Rust Abstract Syntax Tree ( AST ), and determines whether any of the attributes
+  /// is exactly named `index_mut`.
+  ///
+  /// # Parameters
+  /// - `attrs` : An iterator over `syn::Attribute`. This could be obtained from parsing Rust code
+  ///   with the `syn` crate, where the iterator represents attributes applied to a Rust item ( like a struct or function ).
+  ///
+  /// # Returns
+  /// - `Ok( true )` if the `index_mut` attribute is present.
+  /// - `Ok( false )` if the `index_mut` attribute is not found.
+  /// - `Err( syn::Error )` if an unknown or improperly formatted attribute is encountered.
+  ///
+  /// # Errors
+  /// qqq: doc
+  pub fn has_index_mut<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> syn::Result<bool> {
+    for attr in attrs {
+      if let Some(ident) = attr.path().get_ident() {
+        let ident_string = format!("{ident}");
+        if ident_string == "index_mut" {
+          return Ok(true);
+        }
+      } else {
+        return_syn_err!("Unknown structure attribute:\n{}", qt! { attr });
+      }
+    }
+    Ok(false)
+  }
+  /// Checks if the given iterator of attributes contains an attribute named `as_mut`.
+  ///
+  /// This function iterates over an input sequence of `syn::Attribute`, typically associated with a struct,
+  /// enum, or other item in a Rust Abstract Syntax Tree ( AST ), and determines whether any of the attributes
+  /// is exactly named `as_mut`.
+  ///
+  /// # Parameters
+  /// - `attrs` : An iterator over `syn::Attribute`. This could be obtained from parsing Rust code
+  ///   with the `syn` crate, where the iterator represents attributes applied to a Rust item ( like a struct or function ).
+  ///
+  /// # Returns
+  /// - `Ok( true )` if the `as_mut` attribute is present.
+  /// - `Ok( false )` if the `as_mut` attribute is not found.
+  /// - `Err( syn::Error )` if an unknown or improperly formatted attribute is encountered.
+  ///
+  /// # Errors
+  /// qqq: doc
+  pub fn has_as_mut<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> syn::Result<bool> {
+    for attr in attrs {
+      if let Some(ident) = attr.path().get_ident() {
+        let ident_string = format!("{ident}");
+        if ident_string == "as_mut" {
+          return Ok(true);
+        }
+      } else {
+        return_syn_err!("Unknown structure attribute:\n{}", qt! { attr });
+      }
+    }
+    Ok(false)
+  }
   ///
   /// Attribute which is inner.
   ///
   /// For example: `// #![ deny( missing_docs ) ]`.
   ///
 
-  #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
-  pub struct AttributesInner( pub Vec< syn::Attribute > );
+  #[derive(Debug, PartialEq, Eq, Clone, Default)]
+  pub struct AttributesInner(pub Vec<syn::Attribute>);
 
-  impl From< Vec< syn::Attribute > > for AttributesInner
-  {
-    #[ inline( always ) ]
-    fn from( src : Vec< syn::Attribute > ) -> Self
-    {
-      Self( src )
+  impl From<Vec<syn::Attribute>> for AttributesInner {
+    #[inline(always)]
+    fn from(src: Vec<syn::Attribute>) -> Self {
+      Self(src)
     }
   }
 
-  impl From< AttributesInner > for Vec< syn::Attribute >
-  {
-    #[ inline( always ) ]
-    fn from( src : AttributesInner ) -> Self
-    {
+  impl From<AttributesInner> for Vec<syn::Attribute> {
+    #[inline(always)]
+    fn from(src: AttributesInner) -> Self {
       src.0
     }
   }
 
-  impl AttributesInner
-  {
+  #[allow(clippy::iter_without_into_iter)]
+  impl AttributesInner {
     /// Iterator
-    pub fn iter( &self ) -> core::slice::Iter< '_, syn::Attribute >
-    {
+    pub fn iter(&self) -> core::slice::Iter<'_, syn::Attribute> {
       self.0.iter()
     }
   }
 
-  impl syn::parse::Parse
-  for AttributesInner
-  {
-    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
-    {
+  #[allow(clippy::default_trait_access)]
+  impl syn::parse::Parse for AttributesInner {
+    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
       // let mut result : Self = from!();
-      let mut result : Self = Default::default();
-      loop
-      {
-        if !input.peek( Token![ # ] ) || !input.peek2( Token![ ! ] )
-        {
+      let mut result: Self = Default::default();
+      loop {
+        if !input.peek(Token![ # ]) || !input.peek2(Token![!]) {
           break;
         }
         let input2;
-        let element = syn::Attribute
-        {
-          pound_token : input.parse()?,
-          style : syn::AttrStyle::Inner( input.parse()? ),
-          bracket_token : bracketed!( input2 in input ),
+        let element = syn::Attribute {
+          pound_token: input.parse()?,
+          style: syn::AttrStyle::Inner(input.parse()?),
+          bracket_token: bracketed!( input2 in input ),
           // path : input2.call( syn::Path::parse_mod_style )?,
           // tokens : input2.parse()?,
-          meta : input2.parse()?,
+          meta: input2.parse()?,
         };
-        result.0.push( element );
+        result.0.push(element);
       }
-      Ok( result )
+      Ok(result)
     }
   }
 
-  impl quote::ToTokens
-  for AttributesInner
-  {
-    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
-    {
+  impl quote::ToTokens for AttributesInner {
+    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
       use crate::quote::TokenStreamExt;
-      tokens.append_all( self.0.iter() );
+      tokens.append_all(self.0.iter());
     }
   }
 
@@ -253,109 +392,86 @@ mod private
   /// converting, and iterating over outer attributes. Outer attributes are those that
   /// appear outside of an item, such as `#[ ... ]` annotations in Rust.
   ///
-  #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
-  pub struct AttributesOuter( pub Vec< syn::Attribute > );
+  #[derive(Debug, PartialEq, Eq, Clone, Default)]
+  pub struct AttributesOuter(pub Vec<syn::Attribute>);
 
-  impl From< Vec< syn::Attribute > > for AttributesOuter
-  {
-    #[ inline( always ) ]
-    fn from( src : Vec< syn::Attribute > ) -> Self
-    {
-      Self( src )
+  impl From<Vec<syn::Attribute>> for AttributesOuter {
+    #[inline(always)]
+    fn from(src: Vec<syn::Attribute>) -> Self {
+      Self(src)
     }
   }
 
-  impl From< AttributesOuter > for Vec< syn::Attribute >
-  {
-    #[ inline( always ) ]
-    fn from( src : AttributesOuter ) -> Self
-    {
+  impl From<AttributesOuter> for Vec<syn::Attribute> {
+    #[inline(always)]
+    fn from(src: AttributesOuter) -> Self {
       src.0
     }
   }
 
-  impl AttributesOuter
-  {
+  #[allow(clippy::iter_without_into_iter)]
+  impl AttributesOuter {
     /// Iterator
-    pub fn iter( &self ) -> core::slice::Iter< '_, syn::Attribute >
-    {
+    pub fn iter(&self) -> core::slice::Iter<'_, syn::Attribute> {
       self.0.iter()
     }
   }
 
-  impl syn::parse::Parse
-  for AttributesOuter
-  {
-    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
-    {
-      let mut result : Self = Default::default();
-      loop
-      {
-        if !input.peek( Token![ # ] ) || input.peek2( Token![ ! ] )
-        {
+  #[allow(clippy::default_trait_access)]
+  impl syn::parse::Parse for AttributesOuter {
+    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
+      let mut result: Self = Default::default();
+      loop {
+        if !input.peek(Token![ # ]) || input.peek2(Token![!]) {
           break;
         }
         let input2;
-        let element = syn::Attribute
-        {
-          pound_token : input.parse()?,
-          style : syn::AttrStyle::Outer,
-          bracket_token : bracketed!( input2 in input ),
+        let element = syn::Attribute {
+          pound_token: input.parse()?,
+          style: syn::AttrStyle::Outer,
+          bracket_token: bracketed!( input2 in input ),
           // path : input2.call( syn::Path::parse_mod_style )?,
           // tokens : input2.parse()?,
-          meta : input2.parse()?,
+          meta: input2.parse()?,
         };
-        result.0.push( element );
+        result.0.push(element);
       }
-      Ok( result )
+      Ok(result)
     }
   }
 
-  impl quote::ToTokens
-  for AttributesOuter
-  {
-    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
-    {
+  impl quote::ToTokens for AttributesOuter {
+    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
       use crate::quote::TokenStreamExt;
-      tokens.append_all( self.0.iter() );
+      tokens.append_all(self.0.iter());
     }
   }
 
-  impl syn::parse::Parse
-  for Many< AttributesInner >
-  {
-    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
-    {
+  impl syn::parse::Parse for Many<AttributesInner> {
+    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
       let mut result = Self::new();
-      loop
-      {
+      loop {
         // let lookahead = input.lookahead1();
-        if !input.peek( Token![ # ] )
-        {
+        if !input.peek(Token![ # ]) {
           break;
         }
-        result.0.push( input.parse()? );
+        result.0.push(input.parse()?);
       }
-      Ok( result )
+      Ok(result)
     }
   }
 
-  impl syn::parse::Parse
-  for Many< AttributesOuter >
-  {
-    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
-    {
+  impl syn::parse::Parse for Many<AttributesOuter> {
+    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
       let mut result = Self::new();
-      loop
-      {
+      loop {
         // let lookahead = input.lookahead1();
-        if !input.peek( Token![ # ] )
-        {
+        if !input.peek(Token![ # ]) {
           break;
         }
-        result.0.push( input.parse()? );
+        result.0.push(input.parse()?);
       }
-      Ok( result )
+      Ok(result)
     }
   }
 
@@ -404,84 +520,73 @@ mod private
   ///
   pub trait AttributeComponent
   where
-    Self : Sized,
+    Self: Sized,
   {
-    /// The keyword that identifies the component.
-    ///
-    /// This constant is used to match the attribute to the corresponding component.
+    /// The keyword that identifies the component.\n    ///    /// This constant is used to match the attribute to the corresponding component.
     /// Each implementor of this trait must provide a unique keyword for its type.
-    const KEYWORD : &'static str;
+    const KEYWORD: &'static str;
 
-    /// Constructs the component from the given meta attribute.
-    ///
-    /// This method is responsible for parsing the provided `syn::Attribute` and
+    /// Constructs the component from the given meta attribute.\n    ///    /// This method is responsible for parsing the provided `syn::Attribute` and
     /// returning an instance of the component. If the attribute cannot be parsed
-    /// into the component, an error should be returned.
+    /// into the component, an error should be returned.\n    ///    /// # Parameters\n    ///
+    /// - `attr` : A reference to the `syn::Attribute` from which the component is to be constructed.\n    ///    /// # Returns\n    ///    /// A `syn::Result` containing the constructed component if successful, or an error if the parsing fails.
     ///
-    /// # Parameters
-    ///
-    /// - `attr` : A reference to the `syn::Attribute` from which the component is to be constructed.
-    ///
-    /// # Returns
-    ///
-    /// A `syn::Result` containing the constructed component if successful, or an error if the parsing fails.
-    fn from_meta( attr : &syn::Attribute ) -> syn::Result< Self >;
+    /// # Errors
+    /// qqq: doc
+    fn from_meta(attr: &syn::Attribute) -> syn::Result<Self>;
 
     // zzz : redo maybe
   }
-
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+#[doc(inline)]
+#[allow(unused_imports)]
 pub use own::*;
 
 /// Own namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod own
-{
+#[allow(unused_imports)]
+pub mod own {
+
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use orphan::*;
-  #[ doc( inline ) ]
-  pub use private::
-  {
+  #[doc(inline)]
+  pub use private::{
     // equation,
     has_debug,
     is_standard,
+    has_deref,
+    has_deref_mut,
+    has_from,
+    has_index_mut,
+    has_as_mut,
   };
 }
 
 /// Orphan namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
+#[allow(unused_imports)]
+pub mod orphan {
+
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
+#[allow(unused_imports)]
+pub mod exposed {
+
   use super::*;
   pub use super::super::attr;
 
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use prelude::*;
-  #[ doc( inline ) ]
-  pub use private::
-  {
-    AttributesInner,
-    AttributesOuter,
-    AttributeComponent,
-  };
+  #[doc(inline)]
+  pub use private::{AttributesInner, AttributesOuter, AttributeComponent};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[allow(unused_imports)]
+pub mod prelude {
   use super::*;
 }

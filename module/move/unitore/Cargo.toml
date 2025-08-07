@@ -6,7 +6,7 @@ authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>"
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/unitore"
 description = """
 Feed reader with the ability to set updates frequency.
@@ -43,7 +43,7 @@ toml = "0.8.10"
 serde = "1.0.196"
 url = { version = "2.0", features = ["serde"] }
 humantime-serde = "1.1.1"
-gluesql = "0.15.0"
+gluesql = "0.16.3"
 async-trait = "0.1.41"
 wca = { workspace = true }
 mockall = "0.12.1"
@@ -52,4 +52,3 @@ textwrap = "0.16.1"
 
 [dev-dependencies]
 test_tools = { workspace = true }
-

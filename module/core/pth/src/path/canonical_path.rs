@@ -1,6 +1,7 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
+
 
   use crate::*;
 
@@ -51,7 +52,10 @@ mod private
     }
 
     /// Creates an owned `CanonicalPath` with path adjoined to self.
+    /// # Panics
+    /// qqq: doc
     #[ inline ]
+    #[ must_use ]
     pub fn join< P >( &self, path : P ) -> CanonicalPath
     where
       P : AsRef< Path >,
@@ -74,8 +78,9 @@ mod private
       self.0.starts_with( base )
     }
 
-    /// Returns inner type which is PathBuf.
+    /// Returns inner type which is `PathBuf`.
     #[ inline( always ) ]
+    #[ must_use ]
     pub fn inner( self ) -> PathBuf
     {
       self.0
@@ -126,6 +131,7 @@ mod private
     }
   }
 
+  #[ allow( clippy::extra_unused_lifetimes ) ]
   impl< 'a > TryFrom< String > for CanonicalPath
   {
     type Error = std::io::Error;
@@ -223,7 +229,7 @@ mod private
       .to_str()
       .ok_or_else
       (
-        move || io::Error::new( io::ErrorKind::Other, format!( "Can't convert &PathBuf into &str {src}" ) )
+        move || io::Error::other( format!( "Can't convert &PathBuf into &str {}", src.display() ) )
       )
     }
   }

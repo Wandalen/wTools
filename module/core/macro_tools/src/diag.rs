@@ -2,9 +2,9 @@
 //! Macro helpers.
 //!
 
-/// Internal namespace.
-mod private
-{
+/// Define a private namespace for all its items.
+mod private {
+
   use crate::*;
 
   /// Adds indentation and optional prefix/postfix to each line of the given string.
@@ -44,37 +44,30 @@ mod private
   /// and a semicolon at the end of each line. The function also demonstrates handling
   /// of input strings that end with a newline character by appending an additional line
   /// consisting only of the prefix and postfix.
-
-  pub fn indentation< Prefix, Src, Postfix >( prefix : Prefix, src : Src, postfix : Postfix ) -> String
+  pub fn indentation<Prefix, Src, Postfix>(prefix: Prefix, src: Src, postfix: Postfix) -> String
   where
-    Prefix : AsRef< str >,
-    Src : AsRef< str >,
-    Postfix : AsRef< str >,
+    Prefix: AsRef<str>,
+    Src: AsRef<str>,
+    Postfix: AsRef<str>,
   {
     let prefix = prefix.as_ref();
     let postfix = postfix.as_ref();
     let src = src.as_ref();
 
-    let mut result = src
-    .lines()
-    .enumerate()
-    .fold( String::new(), | mut a, b |
-    {
-      if b.0 > 0
-      {
-        a.push_str( "\n" );
+    let mut result = src.lines().enumerate().fold(String::new(), |mut a, b| {
+      if b.0 > 0 {
+        a.push('\n');
       }
-      a.push_str( prefix );
-      a.push_str( &b.1 );
-      a.push_str( postfix );
+      a.push_str(prefix);
+      a.push_str(b.1);
+      a.push_str(postfix);
       a
     });
 
-    if src.ends_with( "\n" ) || src.ends_with( "\n\r" ) || src.ends_with( "\r\n" )
-    {
-      result.push_str( "\n" );
-      result.push_str( prefix );
-      result.push_str( postfix );
+    if src.ends_with('\n') || src.ends_with("\n\r") || src.ends_with("\r\n") {
+      result.push('\n');
+      result.push_str(prefix);
+      result.push_str(postfix);
     }
 
     result
@@ -128,24 +121,21 @@ mod private
   /// };
   ///
   /// // Format the debug report for printing or logging
-  /// let formatted_report = report_format( "Code Transformation for MyStruct", original_input, generated_code );
+  /// let formatted_report = report_format( &"Code Transformation for MyStruct", &original_input, generated_code );
   /// println!( "{}", formatted_report );
   /// ```
   ///
-
-  pub fn report_format< IntoAbout, IntoInput, IntoOutput >
-  (
-    about : IntoAbout, input : IntoInput, output : IntoOutput
-  ) -> String
+  #[allow(clippy::needless_pass_by_value)]
+  pub fn report_format<IntoAbout, IntoInput, IntoOutput>(about: IntoAbout, input: IntoInput, output: IntoOutput) -> String
   where
-    IntoAbout : ToString,
-    IntoInput : ToString,
-    IntoOutput : ToString,
+    IntoAbout: ToString,
+    IntoInput: ToString,
+    IntoOutput: ToString,
   {
-    format!( "\n" ) +
-    &format!( " = context\n\n{}\n\n", indentation( "  ", about.to_string(), "" ) ) +
-    &format!( " = original\n\n{}\n\n", indentation( "  ", input.to_string(), "" ) ) +
-    &format!( " = generated\n\n{}\n", indentation( "  ", output.to_string(), "" ) )
+    "\n".to_string()
+      + &format!(" = context\n\n{}\n\n", indentation("  ", about.to_string(), ""))
+      + &format!(" = original\n\n{}\n\n", indentation("  ", input.to_string(), ""))
+      + &format!(" = generated\n\n{}\n", indentation("  ", output.to_string(), ""))
   }
 
   /// Prints a debugging report for a pair of token streams to the standard output.
@@ -194,17 +184,13 @@ mod private
   /// The above example demonstrates how the `report_print` function can be used to visualize the changes from original input code to the generated code,
   /// helping developers to verify and understand the modifications made during code generation processes. The output is formatted to show clear distinctions
   /// between the 'original' and 'generated' sections, providing an easy-to-follow comparison.
-
-  pub fn report_print< IntoAbout, IntoInput, IntoOutput >
-  (
-    about : IntoAbout, input : IntoInput, output : IntoOutput
-  )
+  pub fn report_print<IntoAbout, IntoInput, IntoOutput>(about: IntoAbout, input: IntoInput, output: IntoOutput)
   where
-    IntoAbout : ToString,
-    IntoInput : ToString,
-    IntoOutput : ToString,
+    IntoAbout: ToString,
+    IntoInput: ToString,
+    IntoOutput: ToString,
   {
-    println!( "{}", report_format( about, input, output ) );
+    println!("{}", report_format(about, input, output));
   }
 
   ///
@@ -219,8 +205,7 @@ mod private
   /// tree_print!( tree_type );
   /// ```
   ///
-
-  #[ macro_export ]
+  #[macro_export]
   macro_rules! tree_print
   {
     ( $src :expr ) =>
@@ -247,8 +232,7 @@ mod private
   /// tree_print!( tree_type );
   /// ```
   ///
-
-  #[ macro_export ]
+  #[macro_export]
   macro_rules! code_print
   {
     ( $src :expr ) =>
@@ -266,42 +250,33 @@ mod private
   ///
   /// Macro for diagnostics purpose to export both syntax tree and source code behind it into a string.
   ///
-
-  #[ macro_export ]
-  macro_rules! tree_diagnostics_str
-  {
-    ( $src :expr ) =>
-    {{
+  #[macro_export]
+  macro_rules! tree_diagnostics_str {
+    ( $src :expr ) => {{
       let src2 = &$src;
-      format!( "{} : {} :\n{:#?}", stringify!( $src ), $crate::qt!{ #src2 }, $src )
+      format!("{} : {} :\n{:#?}", stringify!($src), $crate::qt! { #src2 }, $src)
     }};
   }
 
   ///
   /// Macro for diagnostics purpose to diagnose source code behind it and export it into a string.
   ///
-
-  #[ macro_export ]
-  macro_rules! code_diagnostics_str
-  {
-    ( $src :expr ) =>
-    {{
+  #[macro_export]
+  macro_rules! code_diagnostics_str {
+    ( $src :expr ) => {{
       let src2 = &$src;
-      format!( "{} : {}", stringify!( $src ), $crate::qt!{ #src2 } )
+      format!("{} : {}", stringify!($src), $crate::qt! { #src2 })
     }};
   }
 
   ///
   /// Macro to export source code behind a syntax tree into a string.
   ///
-
-  #[ macro_export ]
-  macro_rules! code_to_str
-  {
-    ( $src :expr ) =>
-    {{
+  #[macro_export]
+  macro_rules! code_to_str {
+    ( $src :expr ) => {{
       let src2 = &$src;
-      format!( "{}", $crate::qt!{ #src2 } )
+      format!("{}", $crate::qt! { #src2 })
     }};
   }
 
@@ -315,8 +290,7 @@ mod private
   /// # ()
   /// ```
   ///
-
-  #[ macro_export ]
+  #[macro_export]
   macro_rules! syn_err
   {
 
@@ -353,8 +327,7 @@ mod private
   /// # ()
   /// ```
   ///
-
-  #[ macro_export ]
+  #[macro_export]
   macro_rules! return_syn_err
   {
     ( $( $Arg : tt )* ) =>
@@ -363,40 +336,29 @@ mod private
     };
   }
 
-  pub use
-  {
-    tree_print,
-    code_print,
-    tree_diagnostics_str,
-    code_diagnostics_str,
-    code_to_str,
-    syn_err,
-    return_syn_err,
-  };
-
+  pub use {tree_print, code_print, tree_diagnostics_str, code_diagnostics_str, code_to_str, syn_err, return_syn_err};
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+#[doc(inline)]
+#[allow(unused_imports)]
 pub use own::*;
 
 /// Own namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod own
-{
+#[allow(unused_imports)]
+pub mod own {
+
   use super::*;
 
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use orphan::*;
-
 }
 
 /// Parented namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
+#[allow(unused_imports)]
+pub mod orphan {
+
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use exposed::*;
 
   // #[ doc( inline ) ]
@@ -405,46 +367,30 @@ pub mod orphan
   // {
   //   Result,
   // };
-
 }
 
 /// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
+#[allow(unused_imports)]
+pub mod exposed {
+
   use super::*;
   pub use super::super::diag;
 
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use prelude::*;
 
-  #[ doc( inline ) ]
-  pub use private::
-  {
-    indentation,
-    report_format,
-    report_print,
-  };
-
+  #[doc(inline)]
+  pub use private::{indentation, report_format, report_print};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[allow(unused_imports)]
+pub mod prelude {
+
   use super::*;
 
-  #[ doc( inline ) ]
-  pub use private::
-  {
-    tree_print,
-    code_print,
-    tree_diagnostics_str,
-    code_diagnostics_str,
-    code_to_str,
-    syn_err,
-    return_syn_err,
-  };
+  #[doc(inline)]
+  pub use private::{tree_print, code_print, tree_diagnostics_str, code_diagnostics_str, code_to_str, syn_err, return_syn_err};
 
   // #[ doc( inline ) ]
   // pub use private::Result;

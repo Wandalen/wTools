@@ -1,200 +1,123 @@
-use super::*;
-use macro_tools::
-{
-  attr,
-  diag,
-  generic_params,
-  item_struct,
-  Result,
-  syn::ItemStruct,
+use macro_tools::{
+  diag, generic_params, item_struct, struct_like::StructLike, Result, qt, attr, syn, proc_macro2, return_syn_err, Spanned,
 };
 
-mod field_attributes;
-use field_attributes::*;
-mod item_attributes;
-use item_attributes::*;
-use iter_tools::IterTrait;
+use super::item_attributes::{ItemAttributes};
 
-/// Generates [Not](core::ops::Not) trait implementation for input struct.
-pub fn not( input : proc_macro::TokenStream  ) -> Result< proc_macro2::TokenStream >
-{
+///
+/// Derive macro to implement Not when-ever it's possible to do automatically.
+///
+pub fn not(input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream> {
   let original_input = input.clone();
-  let parsed = syn::parse::< ItemStruct >( input )?;
-  let has_debug = attr::has_debug( parsed.attrs.iter() )?;
-  let item_attrs = ItemAttributes::from_attrs( parsed.attrs.iter() )?;
-  let item_name = &parsed.ident;
+  let parsed = syn::parse::<StructLike>(input)?;
+  let has_debug = attr::has_debug(parsed.attrs().iter())?;
+  let _item_attrs = ItemAttributes::from_attrs(parsed.attrs().iter())?;
+  let item_name = &parsed.ident();
 
-  let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
-    = generic_params::decompose( &parsed.generics );
+  let (_generics_with_defaults, generics_impl, generics_ty, generics_where) = generic_params::decompose(parsed.generics());
 
-  let field_attrs = parsed.fields.iter().map( | field | &field.attrs );
-  let field_types = item_struct::field_types( &parsed );
-  let field_names = item_struct::field_names( &parsed );
-
-  let body = match ( field_types.len(), field_names )
-  {
-    ( 0, _ ) => generate_for_unit(),
-    ( _, Some( field_names ) ) => generate_for_named( field_attrs, field_types, field_names, &item_attrs )?,
-    ( _, None ) => generate_for_tuple( field_attrs, field_types, &item_attrs )?,
+  let result = match parsed {
+    StructLike::Unit(ref _item) => generate_unit(item_name, &generics_impl, &generics_ty, &generics_where),
+    StructLike::Struct(ref item) => {
+      let field_type = item_struct::first_field_type(item)?;
+      let field_name_option = item_struct::first_field_name(item)?;
+      let field_name = field_name_option.as_ref();
+      generate_struct(
+        item_name,
+        &generics_impl,
+        &generics_ty,
+        &generics_where,
+        &field_type,
+        field_name,
+      )
+    }
+    StructLike::Enum(ref item) => {
+      return_syn_err!(item.span(), "Not can be applied only to a structure");
+    }
   };
 
-  let result = qt!
-  {
-    impl< #generics_impl > ::core::ops::Not for #item_name< #generics_ty >
+  if has_debug {
+    let about = format!("derive : Not\nstructure : {item_name}");
+    diag::report_print(about, &original_input, &result);
+  }
+
+  Ok(result)
+}
+
+/// Generates `Not` implementation for unit structs.
+///
+/// Example of generated code:
+/// ```text
+/// impl Not for MyUnit
+/// {
+///   type Output = Self;
+///   fn not( self ) -> Self
+///   {
+///     self
+///   }
+/// }
+/// ```
+fn generate_unit(
+  item_name: &syn::Ident,
+  generics_impl: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
+  generics_ty: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
+  generics_where: &syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
+) -> proc_macro2::TokenStream {
+  qt! {
+    #[ automatically_derived ]
+    impl< #generics_impl > core::ops::Not for #item_name< #generics_ty >
     where
       #generics_where
     {
       type Output = Self;
+      #[ inline( always ) ]
+      fn not( self ) -> Self::Output
+      {
+        self
+      }
+    }
+  }
+}
 
+/// Generates `Not` implementation for structs with fields.
+///
+/// Example of generated code:
+/// ```text
+/// impl Not for MyStruct
+/// {
+///   type Output = bool;
+///   fn not( self ) -> bool
+///   {
+///     !self.0
+///   }
+/// }
+/// ```
+fn generate_struct(
+  item_name: &syn::Ident,
+  generics_impl: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
+  generics_ty: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
+  generics_where: &syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
+  _field_type: &syn::Type,
+  field_name: Option<&syn::Ident>,
+) -> proc_macro2::TokenStream {
+  let body = if let Some(field_name) = field_name {
+    qt! { Self { #field_name : !self.#field_name } }
+  } else {
+    qt! { Self( !self.0 ) }
+  };
+
+  qt! {
+    #[ automatically_derived ]
+    impl< #generics_impl > core::ops::Not for #item_name< #generics_ty >
+    where
+      #generics_where
+    {
+      type Output = Self;
+      #[ inline( always ) ]
       fn not( self ) -> Self::Output
       {
         #body
       }
     }
-  };
-
-  if has_debug
-  {
-    let about = format!( "derive : Not\nstructure : {item_name}" );
-    diag::report_print( about, &original_input, &result );
   }
-
-  Ok( result )
-}
-
-fn generate_for_unit() -> proc_macro2::TokenStream
-{
-  qt! { Self {} }
-}
-
-fn generate_for_named< 'a >
-(
-  field_attributes: impl IterTrait< 'a, &'a Vec< syn::Attribute > >,
-  field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
-  field_names : impl macro_tools::IterTrait< 'a, &'a syn::Ident >,
-  item_attrs : &ItemAttributes,
-)
--> Result< proc_macro2::TokenStream >
-{
-  let fields_enabled = field_attributes
-  .map( | attrs| FieldAttributes::from_attrs( attrs.iter() ) )
-  .collect::< Result< Vec< _ > > >()?
-  .into_iter()
-  .map( | fa | fa.config.enabled.value( item_attrs.config.enabled.value( item_attrs.config.enabled.value( true ) ) ) );
-
-  let ( mut_ref_transformations, values ): ( Vec< proc_macro2::TokenStream >, Vec< proc_macro2::TokenStream > ) =
-  field_types
-  .clone()
-  .zip( field_names )
-  .zip( fields_enabled )
-  .map( | ( ( field_type, field_name ), is_enabled ) |
-  {
-    match field_type
-    {
-      syn::Type::Reference( reference ) =>
-      {
-        (
-          // If the field is a mutable reference, then change it value by reference
-          if reference.mutability.is_some()
-          {
-            qt! { *self.#field_name = !*self.#field_name; }
-          }
-          else
-          {
-            qt! {}
-          },
-          qt! { #field_name: self.#field_name }
-        )
-      }
-      _ =>
-      {
-        (
-          qt!{},
-          if is_enabled
-          {
-            qt! { #field_name: !self.#field_name }
-          }
-          else
-          {
-            qt! { #field_name: self.#field_name }
-          }
-        )
-      }
-    }
-  })
-  .unzip();
-
-  Ok(
-    qt!
-    {
-      #(#mut_ref_transformations)*
-      Self { #(#values),* }
-    }
-  )
-}
-
-fn generate_for_tuple< 'a >
-(
-  field_attributes: impl IterTrait< 'a, &'a Vec<syn::Attribute> >,
-  field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
-  item_attrs : &ItemAttributes,
-)
--> Result<proc_macro2::TokenStream>
-{
-  let fields_enabled = field_attributes
-    .map( | attrs| FieldAttributes::from_attrs( attrs.iter() ) )
-    .collect::< Result< Vec< _ > > >()?
-    .into_iter()
-    .map( | fa | fa.config.enabled.value( item_attrs.config.enabled.value( item_attrs.config.enabled.value( true ) ) ) );
-
-  let ( mut_ref_transformations, values ): (Vec< proc_macro2::TokenStream >, Vec< proc_macro2::TokenStream > ) =
-  field_types
-  .clone()
-  .enumerate()
-  .zip( fields_enabled )
-  .map( | ( ( index, field_type ), is_enabled ) |
-  {
-    let index = syn::Index::from( index );
-    match field_type
-    {
-      syn::Type::Reference( reference ) =>
-      {
-        (
-          // If the field is a mutable reference, then change it value by reference
-          if reference.mutability.is_some()
-          {
-            qt! { *self.#index = !*self.#index; }
-          }
-          else
-          {
-            qt! {}
-          },
-          qt! { self.#index }
-        )
-      }
-      _ =>
-      {
-        (
-          qt!{},
-          if is_enabled
-          {
-            qt! { !self.#index }
-          }
-          else
-          {
-            qt! { self.#index }
-          }
-        )
-      }
-    }
-  })
-  .unzip();
-
-  Ok(
-    qt!
-    {
-      #(#mut_ref_transformations)*
-      Self ( #(#values),* )
-    }
-  )
 }

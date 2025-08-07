@@ -1,18 +1,18 @@
 [package]
 name = "former"
-version = "2.11.0"
+version = "2.23.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/former"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/former"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/former"
 description = """
-A flexible implementation of the Builder pattern supporting nested builders and collection-specific subformers.
+A flexible implementation of the Builder pattern supporting nested builders and collection-specific subformers. Simplify the construction of complex objects.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
@@ -35,34 +35,40 @@ use_alloc = [ "no_std", "former_types/use_alloc", "collection_tools/use_alloc" ]
 default = [
   "enabled",
   "derive_former",
-  "derive_components",
-  "derive_component_from",
-  "derive_component_assign",
-  "derive_components_assign",
-  "derive_from_components",
+  # "derive_components",
+  # "derive_component_from",
+  # "derive_component_assign",
+  # "derive_components_assign",
+  # "derive_from_components",
   "types_former",
-  "types_component_assign",
+  # "types_component_assign",
 ]
 full = [
   "default",
+  "performance",
 ]
+
+# Performance optimization features
+performance = ["former_meta/performance"]
 enabled = [ "former_meta/enabled", "former_types/enabled" ]
 
 derive_former = [ "former_meta/derive_former", "types_former" ]
-derive_components = [ "former_meta/derive_components", "derive_component_assign", "derive_components_assign", "derive_component_from", "derive_from_components" ]
-derive_component_assign = [ "former_meta/derive_component_assign", "types_component_assign" ]
-derive_components_assign = [ "derive_component_assign", "former_meta/derive_components_assign" ]
-derive_component_from = [ "former_meta/derive_component_from" ]
-derive_from_components = [ "former_meta/derive_from_components" ]
+# derive_components = [ "former_meta/derive_components", "derive_component_assign", "derive_components_assign", "derive_component_from", "derive_from_components" ]
+# derive_component_assign = [ "former_meta/derive_component_assign", "types_component_assign" ]
+# derive_components_assign = [ "derive_component_assign", "former_meta/derive_components_assign" ]
+# derive_component_from = [ "former_meta/derive_component_from" ]
+# derive_from_components = [ "former_meta/derive_from_components" ]
 
 types_former = [ "former_types/types_former" ]
-types_component_assign = [ "former_types/types_component_assign" ]
+# types_component_assign = [ "former_types/types_component_assign" ]
+
+# Debug and diagnostics features
+former_diagnostics_print_generated = [ "former_meta/former_diagnostics_print_generated" ]
 
 [dependencies]
-former_meta = { workspace = true }
+former_meta = { workspace = true } # Debug features disabled to prevent compile-time output
 former_types = { workspace = true }
 # collection_tools = { workspace = true, features = [ "collection_constructors" ] }
-
 
 [dev-dependencies]
 test_tools = { workspace = true }

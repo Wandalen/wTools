@@ -6,3 +6,14 @@ error: Does not hold :
   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   |
   = note: this error originates in the macro `cta_true` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: unexpected `cfg` condition value: `unknown`
+ --> tests/inc/snipet/cta_true_fail.rs:5:14
+  |
+5 |   cta_true!( feature = "unknown" );
+  |              ^^^^^^^^^^^^^^^^^^^
+  |
+  = note: expected values for `feature` are: `default`, `diagnostics_compiletime_assertions`, `diagnostics_memory_layout`, `diagnostics_runtime_assertions`, `enabled`, `full`, `no_std`, and `use_alloc`
+  = help: consider adding `unknown` as a feature in `Cargo.toml`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+  = note: `#[warn(unexpected_cfgs)]` on by default

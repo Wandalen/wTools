@@ -1,18 +1,13 @@
-
 use super::*;
-mod tools
-{
-  #[ allow( unused_imports ) ]
+mod tools {
+  #[allow(unused_imports)]
   pub use super::super::*;
 }
 
 /// Private namespace of the module.
-mod private
-{
-}
+mod private {}
 
-mod_interface!
-{
+the_module::mod_interface! {
 
   /// layer_a
   layer layer_a;
@@ -20,6 +15,6 @@ mod_interface!
 }
 
 // use macro1 as macro1b;
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use macro2 as macro2b;
 // use macro3 as macro3b;

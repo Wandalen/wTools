@@ -13,6 +13,7 @@
 /.vscode
 /_*
 
+.roo
 .env
 _key
 _data
@@ -22,6 +23,7 @@ dist
 Cargo.lock
 .DS_Store
 .idea
+.mastermind
 *.log
 *.db
 *.tmp
@@ -30,3 +32,5 @@ Cargo.lock
 .warchive*
 -*
 rustc-ice-*.txt
+.roo
+.roomodes

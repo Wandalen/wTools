@@ -1,23 +1,18 @@
-
 use super::*;
-mod tools
-{
-  #[ allow( unused_imports ) ]
+mod tools {
+  #[allow(unused_imports)]
   pub use super::super::*;
 }
 
 /// Private namespace of the module.
-mod private
-{
-}
+mod private {}
 
 /// layer_a
-mod layer_a;
+pub mod layer_a;
 /// layer_b
-mod layer_b;
+pub mod layer_b;
 
-mod_interface!
-{
+the_module::mod_interface! {
 
   // zzz : test with `layer { layer_a, layer_a };`
   // zzz : test with `use { layer_a, layer_a };`
@@ -34,14 +29,12 @@ mod_interface!
 
 }
 
-mod mod1
-{
+mod mod1 {
 
   // use super::{ layer_b };
   // pub use super::{ layer_b }::orphan::*;
-
 }
 
 //
 
-include!( "../../only_test/layer_simple_only_test.rs" );
+include!("../../only_test/layer_simple_only_test.rs");

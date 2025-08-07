@@ -1,6 +1,7 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
+
 
   use crate::*;
   #[ cfg( not( feature = "no_std" ) ) ]
@@ -33,7 +34,7 @@ mod private
           std::io::Error::new
           (
             std::io::ErrorKind::NotFound,
-            format!( "Cant convert to utf8 {}", err ),
+            format!( "Cant convert to utf8 {err}" ),
           )
         }
       )

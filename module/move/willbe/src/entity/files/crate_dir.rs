@@ -1,3 +1,7 @@
+#![ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
+
+
+
 use crate::*;
 
 use entity::
@@ -23,7 +27,7 @@ use std::
 // {
 //   Result,
 // };
-use path::{ AbsolutePath, Utf8Path, Utf8PathBuf };
+use pth::{ AbsolutePath, Utf8Path, Utf8PathBuf };
 
 /// Path to crate directory
 #[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
@@ -34,6 +38,7 @@ impl CrateDir
 
   /// Returns inner type which is an absolute path.
   #[ inline( always ) ]
+  #[ must_use ]
   pub fn absolute_path( self ) -> AbsolutePath
   {
     self.0
@@ -41,6 +46,7 @@ impl CrateDir
 
   /// Returns path to manifest aka cargo file.
   #[ inline( always ) ]
+  #[ must_use ]
   pub fn manifest_file( self ) -> ManifestFile
   {
     self.into()
@@ -50,7 +56,7 @@ impl CrateDir
 
 impl fmt::Display for CrateDir
 {
-  fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
     write!( f, "{}", self.0.display() )
   }
@@ -58,7 +64,7 @@ impl fmt::Display for CrateDir
 
 impl fmt::Debug for CrateDir
 {
-  fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
     write!( f, "crate dir :: {}", self.0.display() )
   }
@@ -103,7 +109,7 @@ impl TryFrom< &CrateDir > for String
   fn try_from( src : &CrateDir ) -> Result< String, Self::Error >
   {
     let src2 : &str = src.try_into()?;
-    Ok( src2.into() )
+    Result::Ok( src2.into() )
   }
 }
 
@@ -141,10 +147,10 @@ impl TryFrom< AbsolutePath > for CrateDir
   {
     if !crate_dir_path.as_ref().join( "Cargo.toml" ).is_file()
     {
-      let err =  io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {crate_dir_path:?}" ) );
+      let err =  io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {}", crate_dir_path.display() ) );
       return Err( PathError::Io( err ) );
     }
-    Ok( Self( crate_dir_path ) )
+    Result::Ok( Self( crate_dir_path ) )
   }
 }
 

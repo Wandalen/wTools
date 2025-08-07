@@ -1,4 +1,4 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 
@@ -6,7 +6,7 @@ mod private
   ///
   /// This function looks for environment variables that are commonly set by CI/CD systems to determine if it's running
   /// within such an environment. It supports detection for a variety of popular CI/CD platforms including GitHub Actions,
-  /// GitLab CI, Travis CI, CircleCI, and Jenkins.
+  /// GitLab CI, Travis CI, `CircleCI`, and Jenkins.
   ///
   /// # Returns
   /// - `true` if an environment variable indicating a CI/CD environment is found.
@@ -27,12 +27,12 @@ mod private
   /// use process_tools::environment;
   /// assert_eq!( environment::is_cicd(), true );
   /// ```
-
   #[ cfg( feature = "process_environment_is_cicd" ) ]
+  #[ must_use ]
   pub fn is_cicd() -> bool
   {
     use std::env;
-    let ci_vars = vec!
+    let ci_vars =
     [
       "CI",             // Common in many CI systems
       "GITHUB_ACTIONS", // GitHub Actions

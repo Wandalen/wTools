@@ -1,7 +1,8 @@
-/// Internal namespace.
-
+/// Define a private namespace for all its items.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+
   use crate::*;
 
   #[ cfg( feature = "no_std" ) ]
@@ -16,8 +17,8 @@ mod private
   /// # Returns:
   ///
   /// - `bool` : Returns `true` if the path contains unescaped glob pattern characters ( `*`, `?`, `[`, `{` ),
-  /// otherwise `false`. The function takes into account escape sequences, and only considers glob characters
-  /// outside of escape sequences.
+  ///   otherwise `false`. The function takes into account escape sequences, and only considers glob characters
+  ///   outside of escape sequences.
   ///
   /// # Behavior:
   ///
@@ -35,8 +36,8 @@ mod private
   /// assert_eq!( path::is_glob( "file[0-9].txt" ), true ); // Unescaped brackets indicate a glob pattern
   /// assert_eq!( path::is_glob( "file\\[0-9].txt" ), false ); // Escaped brackets, not a glob pattern
   /// ```
-
   // qqq : xxx : should probably be Path
+  #[ must_use ]
   pub fn is_glob( path : &str ) -> bool
   {
     let mut chars = path.chars().peekable();
@@ -44,6 +45,7 @@ mod private
     let mut in_brackets = false;
     let mut in_braces = false;
 
+    #[ allow( clippy::while_let_on_iterator ) ]
     while let Some( c ) = chars.next()
     {
       if is_escaped
@@ -98,9 +100,9 @@ mod private
   /// Normalizes a given filesystem path by syntactically removing occurrences of `.` and properly handling `..` components.
   ///
   /// This function iterates over the components of the input path and applies the following rules:
-  /// - For `..` (ParentDir) components, it removes the last normal (non-special) segment from the normalized path. If the last segment is another `..` or if there are no preceding normal segments and the path does not start with the root directory (`/`), it preserves the `..` to represent moving up in the directory hierarchy.
+  /// - For `..` (`ParentDir`) components, it removes the last normal (non-special) segment from the normalized path. If the last segment is another `..` or if there are no preceding normal segments and the path does not start with the root directory (`/`), it preserves the `..` to represent moving up in the directory hierarchy.
   /// - For paths starting with the root directory followed by `..`, it retains these `..` components to accurately reflect paths that navigate upwards from the root.
-  /// - Skips `.` (CurDir) components as they represent the current directory and don't affect the path's normalization.
+  /// - Skips `.` (`CurDir`) components as they represent the current directory and don't affect the path's normalization.
   /// - Retains all other components unchanged, including normal segments and the root directory.
   ///
   /// The normalization process is purely syntactical and does not interact with the file system.
@@ -128,7 +130,6 @@ mod private
   ///
   /// A `PathBuf` containing the normalized path.
   ///
-
   pub fn normalize< P : AsRef< std::path::Path > >( path : P ) -> std::path::PathBuf
   {
     use std::path::{ Component, PathBuf };
@@ -163,11 +164,7 @@ mod private
             {
               components.pop();
             }
-            Some( Component::RootDir ) =>
-            {
-              components.push( Component::ParentDir );
-            }
-            Some( Component::ParentDir ) | None =>
+            Some( Component::RootDir | Component::ParentDir ) | None =>
             {
               components.push( Component::ParentDir );
             }
@@ -185,14 +182,15 @@ mod private
       normalized.push( "." );
     }
 
-    for component in components.iter()
+    for component in &components
     {
       normalized.push( component.as_os_str() );
     }
 
     // Convert back to a PathBuf using "/" as the separator for consistency
     #[ cfg( target_os = "windows" ) ]
-    let normalized = PathBuf::from( normalized.to_string_lossy().replace( "\\", "/" ) );
+    let normalized = PathBuf::from( normalized.to_string_lossy().replace( '\\', "/" ) );
+    // fix clippy
 
     normalized
   }
@@ -201,6 +199,8 @@ mod private
   // qqq : for Petro : for Bohdan : why that transofrmation is necessary. give several examples of input and output
   /// Returns the canonical, absolute form of the path with all intermediate components normalized and symbolic links resolved.
   /// This function does not touch fs.
+  /// # Errors
+  /// qqq: doc
   pub fn canonicalize( path : impl AsRef< std::path::Path > ) -> std::io::Result< std::path::PathBuf >
   {
     #[ cfg( target_os = "windows" ) ]
@@ -222,7 +222,7 @@ mod private
     #[ cfg( target_os = "windows" ) ]
     let path =
     {
-      const VERBATIM_PREFIX : &str = r#"\\?\"#;
+      const VERBATIM_PREFIX : &str = r"\\?\";
       // is necessary because of the normalization step that replaces the backslash with a slash.
       const VERBATIM_PREFIX_MIRRORS_EDGE : &str = "//?/";
       let p = path.display().to_string();
@@ -232,7 +232,8 @@ mod private
       }
       else
       {
-        path.into()
+        // fix clippy
+        path
       }
     };
 
@@ -266,7 +267,8 @@ mod private
   /// let folder_name = unique_folder_name().unwrap();
   /// println!( "Generated folder name: {}", folder_name );
   /// ```
-
+  /// # Errors
+  /// qqq: doc
   #[ cfg( feature = "path_unique_folder_name" ) ]
   pub fn unique_folder_name() -> std::result::Result< std::string::String, std::time::SystemTimeError >
   {
@@ -279,7 +281,9 @@ mod private
     // Thread-local static variable for a counter
     std::thread_local!
     {
-      static COUNTER : std::cell::Cell< usize > = std::cell::Cell::new( 0 );
+      // fix clippy
+      #[ allow( clippy::missing_const_for_thread_local ) ]
+      static COUNTER : core::cell::Cell< usize > = core::cell::Cell::new( 0 );
     }
 
     // Increment and get the current value of the counter safely
@@ -295,17 +299,17 @@ mod private
     let pid = std::process::id();
     let tid : String = std::format!( "{:?}", std::thread::current().id() )
     .chars()
-    .filter( | c | c.is_digit( 10 ) )
+    .filter( char::is_ascii_digit )
     .collect();
     // dbg!( &tid );
 
-    Ok( std::format!( "{}_{}_{}_{}", timestamp, pid, tid, count ) )
+    Ok( std::format!( "{timestamp}_{pid}_{tid}_{count}" ) )
   }
 
   /// Joins a list of file system paths into a single absolute path.
   ///
   /// This function takes a list of file system paths and joins them into a single path,
-  /// normalizing and simplifying them as it goes. The result is returned as a PathBuf.
+  /// normalizing and simplifying them as it goes. The result is returned as a `PathBuf`.
   ///
   /// Examples:
   ///
@@ -322,6 +326,9 @@ mod private
   /// assert_eq!( joined, std::path::PathBuf::from( PathBuf::from( "/a/b/c" ) ) );
   ///
   /// ```
+  ///
+  /// # Panics
+  /// qqq: doc
   // qqq : make macro paths_join!( ... )
   pub fn iter_join< 'a ,I, P >( paths : I ) -> PathBuf
   where
@@ -383,6 +390,7 @@ mod private
           }
           ".." =>
           {
+            #[ allow( clippy::if_not_else ) ]
             if result != "/"
             {
               if added_slah
@@ -404,7 +412,8 @@ mod private
               {
                 result.push( '/' );
               }
-            } else
+            }
+            else
             {
               result.push_str( &components[ idx.. ].to_vec().join( "/" ) );
               break;
@@ -417,7 +426,8 @@ mod private
               if result.ends_with( '/' )
               {
                 result.push_str( component );
-              } else
+              }
+              else
               {
                 result.push( '/' );
                 result.push_str( component );
@@ -471,7 +481,6 @@ mod private
   /// assert_eq!( extensions, expected );
   /// ```
   ///
-
   // qqq : xxx : should return iterator
   pub fn exts( path : impl AsRef< std::path::Path > ) -> std::vec::Vec< std::string::String >
   {
@@ -494,7 +503,7 @@ mod private
 
           let extensions = &file_name_str[ dot_index + 1.. ];
 
-          return extensions.split( '.' ).map( | s | s.to_string() ).collect()
+          return extensions.split( '.' ).map( std::string::ToString::to_string ).collect()
         }
       }
     }
@@ -534,6 +543,7 @@ mod private
   /// assert_eq!(modified_path, None);
   /// ```
   ///
+  #[ allow( clippy::manual_let_else ) ]
   pub fn without_ext( path : impl AsRef< std::path::Path > ) -> core::option::Option< std::path::PathBuf >
   {
     use std::path::{ Path, PathBuf };
@@ -549,11 +559,8 @@ mod private
 
     let path_buf = Path::new( path.as_ref() );
 
-    let parent = match path_buf.parent()
-    {
-      Some( parent ) => parent,
-      None => return None,
-    };
+    // fix clippy
+    let parent = path_buf.parent()?;
     let file_stem = match path_buf.file_stem()
     {
       Some( name ) =>
@@ -575,7 +582,7 @@ mod private
     let mut full_path = parent.to_path_buf();
     full_path.push( file_stem );
 
-    Some( PathBuf::from( full_path.to_string_lossy().replace( "\\", "/" ) ) )
+    Some( PathBuf::from( full_path.to_string_lossy().replace( '\\', "/" ) ) )
   }
 
   /// Replaces the existing path extension with the provided extension.
@@ -625,7 +632,8 @@ mod private
     if ext.is_empty()
     {
       Some( without_ext )
-    } else
+    }
+    else
     {
       Some( PathBuf::from( format!( "{}.{}", without_ext.to_string_lossy(), ext ) ) )
     }
@@ -643,7 +651,7 @@ mod private
   /// # Returns
   ///
   /// * `Option<String>` - The common directory path shared by all paths, if it exists.
-  ///                      If no common directory path exists, returns `None`.
+  ///   If no common directory path exists, returns `None`.
   ///
   /// # Examples
   ///
@@ -655,7 +663,6 @@ mod private
   /// assert_eq!( common_path, Some( "/a/b/".to_string() ) );
   /// ```
   ///
-
   // xxx : qqq : should probably be PathBuf?
   pub fn path_common< 'a, I >( paths : I ) -> Option< std::string::String >
   where
@@ -667,7 +674,7 @@ mod private
     #[ cfg( feature = "no_std" ) ]
     use alloc::{ string::{ String, ToString }, vec::Vec };
 
-    let orig_paths : Vec< String > = paths.map( | path | path.to_string() ).collect();
+    let orig_paths : Vec< String > = paths.map( std::string::ToString::to_string ).collect();
 
     if orig_paths.is_empty()
     {
@@ -679,7 +686,7 @@ mod private
 
     let mut paths = orig_paths.clone();
     // Iterate over paths to count directory frequencies
-    for path in paths.iter_mut()
+    for path in &mut paths
     {
       path_remove_dots( path );
       path_remove_double_dots( path );
@@ -691,7 +698,7 @@ mod private
       {
 
         // Construct directory path
-        let mut dir_path = dirs[ 0..i + 1 ].join( "/" );
+        let mut dir_path = dirs[ 0..=i ].join( "/" );
 
 
         // Increment frequency count
@@ -710,7 +717,7 @@ mod private
     .into_iter()
     .filter( | ( _, freq ) | *freq == paths.len() )
     .map( | ( dir, _ ) | dir )
-    .max_by_key( | dir | dir.len() )
+    .max_by_key( std::string::String::len )
     .unwrap_or_default();
 
     let mut result = common_dir.to_string();
@@ -746,7 +753,6 @@ mod private
   ///
   /// * `path` - A mutable reference to a string representing the path to be cleaned.
   ///
-
   // xxx : qqq : should probably be Path?
   fn path_remove_dots( path : &mut std::string::String )
   {
@@ -771,7 +777,6 @@ mod private
   ///
   /// * `path` - A mutable reference to a string representing the path to be cleaned.
   ///
-
   // xxx : qqq : should probably be Path?
   fn path_remove_double_dots( path : &mut std::string::String )
   {
@@ -855,7 +860,8 @@ mod private
   /// let rebased_path = pth::path::rebase( file_path, new_path, Some( old_path ) ).unwrap();
   /// assert_eq!( rebased_path, PathBuf::from( "/mnt/storage/documents/file.txt" ) );
   /// ```
-  ///
+  /// # Panics
+  /// qqq: doc
    pub fn rebase< T : AsRef< std::path::Path > >
    (
     file_path : T,

@@ -1,4 +1,2 @@
 //! Example of using `test_tools`.
-fn main()
-{
-}
+fn main() {}

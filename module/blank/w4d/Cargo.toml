@@ -6,7 +6,7 @@ authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/template_blank"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/template_blank"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/template_blank"

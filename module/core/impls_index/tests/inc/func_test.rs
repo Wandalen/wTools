@@ -1,36 +1,32 @@
-#![ deny( unused_imports ) ]
+#![deny(unused_imports)]
 
 use super::*;
-#[ allow ( unused_imports ) ]
-use the_module::prelude::*;
+// #[ allow ( unused_imports ) ]
+// use the_module::exposed::*;
 // use test_tools::exposed::*;
+// use test_tools::a_id;
 
 //
 
-#[ test ]
-fn fn_name()
-{
+#[test]
+fn fn_name() {
   let f1 = 13;
 
-  let f2 = fn_name!
-  {
+  let f2 = the_module::exposed::fn_name! {
     fn f1()
     {
     }
   };
 
-  dbg!( f2 );
-  a_id!( f2, 13 );
+  dbg!(f2);
+  a_id!(f2, 13);
 }
 
 //
 
-#[ test ]
-fn fn_rename()
-{
-
-  fn_rename!
-  {
+#[test]
+fn fn_rename() {
+  the_module::exposed::fn_rename! {
     @Name { f2 }
     @Fn
     {
@@ -41,50 +37,47 @@ fn fn_rename()
     }
   };
 
-  a_id!( f2(), 13 );
-
+  a_id!(f2(), 13);
 }
 
 //
 
-#[ test ]
-fn fns()
-{
-
-//   // test.case( "several, trivial syntax" );
-//   {
-//     let mut counter = 0;
-//
-//     macro_rules! count
-//     {
-//       ( $( $Tts : tt )* ) =>
-//       {
-//         dbg!( stringify!( $( $Tts )* ) );
-//         counter += 1;
-//         $( $Tts )*
-//       };
-//     }
-//
-//     fns2!
-//     {
-//       @Callback { count }
-//       @Fns
-//       {
-//         fn f1()
-//         {
-//           println!( "f1" );
-//         }
-//         fn f2()
-//         {
-//           println!( "f2" );
-//         }
-//       }
-//     };
-//
-//     a_id!( counter, 2 );
-//     f1();
-//     f2();
-//   }
+#[test]
+fn fns() {
+  //   // test.case( "several, trivial syntax" );
+  //   {
+  //     let mut counter = 0;
+  //
+  //     macro_rules! count
+  //     {
+  //       ( $( $Tts : tt )* ) =>
+  //       {
+  //         dbg!( stringify!( $( $Tts )* ) );
+  //         counter += 1;
+  //         $( $Tts )*
+  //       };
+  //     }
+  //
+  //     fns2!
+  //     {
+  //       @Callback { count }
+  //       @Fns
+  //       {
+  //         fn f1()
+  //         {
+  //           println!( "f1" );
+  //         }
+  //         fn f2()
+  //         {
+  //           println!( "f2" );
+  //         }
+  //       }
+  //     };
+  //
+  //     a_id!( counter, 2 );
+  //     f1();
+  //     f2();
+  //   }
 
   // test.case( "several, trivial syntax" );
   {
@@ -100,8 +93,7 @@ fn fns()
       };
     }
 
-    fns!
-    {
+    the_module::exposed::fns! {
       @Callback { count }
       @Fns
       {
@@ -116,7 +108,7 @@ fn fns()
       }
     };
 
-    a_id!( counter, 2 );
+    a_id!(counter, 2);
     f1();
     f2();
   }
@@ -135,8 +127,7 @@ fn fns()
       };
     }
 
-    fns!
-    {
+    the_module::exposed::fns! {
       @Callback { count }
       @Fns
       {
@@ -153,9 +144,9 @@ fn fns()
       }
     };
 
-    a_id!( counter, 2 );
-    f1( 1 );
-    f2( 2 );
+    a_id!(counter, 2);
+    f1(1);
+    f2(2);
   }
 
   // test.case( "several, parametrized syntax" );
@@ -172,8 +163,7 @@ fn fns()
       };
     }
 
-    fns!
-    {
+    the_module::exposed::fns! {
       @Callback { count }
       @Fns
       {
@@ -185,10 +175,9 @@ fn fns()
       }
     };
 
-    a_id!( counter, 1 );
-    f1( 1 );
+    a_id!(counter, 1);
+    f1(1);
   }
-
 
   // test.case( "several, visibility" );
   {
@@ -204,8 +193,7 @@ fn fns()
       };
     }
 
-    fns!
-    {
+    the_module::exposed::fns! {
       @Callback { count }
       @Fns
       {
@@ -217,8 +205,8 @@ fn fns()
       }
     };
 
-    a_id!( counter, 1 );
-    f1( 1 );
+    a_id!(counter, 1);
+    f1(1);
   }
 
   // test.case( "several, where with comma" );
@@ -235,8 +223,7 @@ fn fns()
       };
     }
 
-    fns!
-    {
+    the_module::exposed::fns! {
       @Callback { count }
       @Fns
       {
@@ -250,8 +237,8 @@ fn fns()
       }
     };
 
-    a_id!( counter, 1 );
-    f1( 1 );
+    a_id!(counter, 1);
+    f1(1);
   }
 
   // test.case( "several, where without comma" );
@@ -268,8 +255,7 @@ fn fns()
       };
     }
 
-    fns!
-    {
+    the_module::exposed::fns! {
       @Callback { count }
       @Fns
       {
@@ -283,40 +269,40 @@ fn fns()
       }
     };
 
-    a_id!( counter, 1 );
-    f1( 1 );
+    a_id!(counter, 1);
+    f1(1);
   }
 
-//   // test.case( "several, complex parameter" );
-//   {
-//     let mut counter = 0;
-//
-//     macro_rules! count
-//     {
-//       ( $( $Tts : tt )* ) =>
-//       {
-//         dbg!( stringify!( $( $Tts )* ) );
-//         counter += 1;
-//       };
-//     }
-//
-//     fns!
-//     {
-//       @Callback { count }
-//       @Fns
-//       {
-//         fn f1< T >( src : T ) -> T
-//         where
-//           T : < Self as From< X > >::Type
-//         {
-//           println!( "f1" );
-//           src
-//         }
-//       }
-//     };
-//
-//     a_id!( counter, 1 );
-//   }
+  //   // test.case( "several, complex parameter" );
+  //   {
+  //     let mut counter = 0;
+  //
+  //     macro_rules! count
+  //     {
+  //       ( $( $Tts : tt )* ) =>
+  //       {
+  //         dbg!( stringify!( $( $Tts )* ) );
+  //         counter += 1;
+  //       };
+  //     }
+  //
+  //     the_module::exposed::fns!
+  //     {
+  //       @Callback { count }
+  //       @Fns
+  //       {
+  //         fn f1< T >( src : T ) -> T
+  //         where
+  //           T : < Self as From< X > >::Type
+  //         {
+  //           println!( "f1" );
+  //           src
+  //         }
+  //       }
+  //     };
+  //
+  //     a_id!( counter, 1 );
+  //   }
 
   // test.case( "several, complex syntax" );
   {
@@ -333,8 +319,7 @@ fn fns()
     }
 
     // trace_macros!( true );
-    fns!
-    {
+    the_module::exposed::fns! {
       @Callback { count }
       @Fns
       {
@@ -354,9 +339,8 @@ fn fns()
     };
     // trace_macros!( false );
 
-    a_id!( counter, 2 );
-    f1( 1 );
-    f2( 2 );
+    a_id!(counter, 2);
+    f1(1);
+    f2(2);
   }
-
 }

@@ -1,13 +1,15 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( unused_imports ) ]
+
+  #[ allow( unused_imports, clippy::wildcard_imports ) ]
   use crate::tool::*;
 
   use std::ffi::OsString;
   use std::path::PathBuf;
-  use error::err;
-  use error::untyped::format_err;
+  // use error::err;
+  // use error::untyped::format_err;
   use former::Former;
   use process_tools::process;
   // use process_tools::process::*;
@@ -17,6 +19,8 @@ mod private
 
   // qqq : for Bohdan : bad : tools can't depend on entitties!
   use crate::channel::Channel;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
 
   // aaa : documentation /// aaa : documented
 
@@ -25,6 +29,7 @@ mod private
   /// The `PackOptions` struct encapsulates various options that can be configured when packaging a project,
   /// including the path to the project, the distribution channel, and various flags for controlling the behavior of the packaging process.
   #[ derive( Debug, Former, Clone ) ]
+  #[ allow( clippy::struct_excessive_bools ) ]
   pub struct PackOptions
   {
     /// The path to the project to be packaged.
@@ -47,6 +52,7 @@ mod private
     // aaa : don't abuse negative form, rename to checking_consistency
     // renamed and changed logic
     pub( crate ) checking_consistency : bool,
+    
     /// An optional temporary path to be used during packaging.
     ///
     /// This field may contain a path to a temporary directory that will be used during the packaging process.
@@ -68,10 +74,17 @@ mod private
 
   impl PackOptions
   {
+    #[ allow( clippy::if_not_else ) ]
     fn to_pack_args( &self ) -> Vec< String >
     {
+      // Building the full path to Cargo.toml
+      let manifest_path = self.path.join( "Cargo.toml" );
+      let normalized_manifest_path = manifest_path.to_string_lossy().replace( '\\', "/" );
       [ "run".to_string(), self.channel.to_string(), "cargo".into(), "package".into() ]
       .into_iter()
+      // clearly show the way to the manifesto
+      .chain( Some( "--manifest-path".to_string() ) )
+      .chain( Some( normalized_manifest_path ) )
       .chain( if self.allow_dirty { Some( "--allow-dirty".to_string() ) } else { None } )
       .chain( if !self.checking_consistency { Some( "--no-verify".to_string() ) } else { None } )
       .chain( self.temp_path.clone().map( | p | vec![ "--target-dir".to_string(), p.to_string_lossy().into() ] ).into_iter().flatten() )
@@ -79,12 +92,18 @@ mod private
     }
   }
 
+
   ///
   /// Assemble the local package into a distributable tarball.
   ///
   /// # Args :
   /// - `path` - path to the package directory
   /// - `dry` - a flag that indicates whether to execute the command or not
+  ///
+  // FIX: Added # Errors section for `pack` function
+  /// # Errors
+  ///
+  /// Returns an error if the `rustup ... cargo package` command fails.
   ///
   #[ cfg_attr
   (
@@ -96,6 +115,7 @@ mod private
   // qqq : use typed error
   pub fn pack( args : PackOptions ) -> error::untyped::Result< process::Report >
   {
+    
     let ( program, options ) = ( "rustup", args.to_pack_args() );
 
     if args.dry
@@ -107,7 +127,7 @@ mod private
           command : format!( "{program} {}", options.join( " " ) ),
           out : String::new(),
           err : String::new(),
-          current_path: args.path.to_path_buf(),
+          current_path: args.path.clone(),
           error: Ok( () ),
         }
       )
@@ -118,7 +138,7 @@ mod private
       .bin_path( program )
       .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .current_path( args.path )
-      .run().map_err( | report | err!( report.to_string() ) )
+      .run().map_err( | report | error::untyped::format_err!( report.to_string() ) )
     }
   }
 
@@ -152,16 +172,22 @@ mod private
     }
   }
 
- /// Upload a package to the registry
+  /// Upload a package to the registry
+  // FIX: Added # Errors section for `publish` function
+  /// # Errors
+  ///
+  /// Returns an error if the `cargo publish` command fails after all retry attempts.
+  ///
   #[ cfg_attr
   (
     feature = "tracing",
     track_caller,
     tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
   )]
-  pub fn publish( args : PublishOptions ) -> error::untyped::Result< process::Report >
+  pub fn publish( args : &PublishOptions ) -> error::untyped::Result< process::Report >
   // qqq : use typed error
   {
+  
     let ( program, arguments) = ( "cargo", args.as_publish_args() );
 
     if args.dry
@@ -173,7 +199,7 @@ mod private
             command : format!( "{program} {}", arguments.join( " " ) ),
             out : String::new(),
             err : String::new(),
-            current_path: args.path.to_path_buf(),
+            current_path: args.path.clone(),
             error: Ok( () ),
           }
         )
@@ -182,7 +208,7 @@ mod private
     {
       let mut results = Vec::with_capacity( args.retry_count + 1 );
       let run_args : Vec< _ > =  arguments.into_iter().map( OsString::from ).collect();
-      for _ in 0 .. args.retry_count + 1
+      for _ in 0 ..=args.retry_count
       {
         let result = process::Run::former()
         .bin_path( program )
@@ -197,11 +223,20 @@ mod private
       }
       if args.retry_count > 0
       {
-        Err( format_err!( "It took {} attempts, but still failed. Here are the errors:\n{}", args.retry_count + 1, results.into_iter().map( | r | format!( "- {r}" ) ).collect::< Vec< _ > >().join( "\n" ) ) )
+        Err( error::untyped::format_err!
+        ( 
+          "It took {} attempts, but still failed. Here are the errors:\n{}", 
+          args.retry_count + 1, 
+          results
+          .into_iter()
+          .map( | r | format!( "- {r}" ) )
+          .collect::< Vec< _ > >()
+          .join( "\n" ) 
+        ))
       }
       else
       {
-        Err( results.remove( 0 ) ).map_err( | report | err!( report.to_string() ) )
+        Err( results.remove( 0 ) ).map_err( | report | error::untyped::format_err!( report.to_string() ) )
       }
     }
   }

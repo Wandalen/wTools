@@ -1,6 +1,7 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
+
   use crate::*;
   use entity::test::{ TestPlan, TestOptions, TestsReport, tests_run };
 
@@ -8,7 +9,7 @@ mod private
   // qqq : for Petro : no asterisks imports
   // qqq : for Petro : bad : not clear what is imported, there are multiple filles with name test
 
-  use collection::HashSet;
+  use collection_tools::collection::HashSet;
   use std::{ env, fs };
 
   use former::Former;
@@ -21,7 +22,7 @@ mod private
     },
     // Result
   };
-  use iter::Itertools;
+  use iter_tools::iter::Itertools;
 
   /// Used to store arguments for running tests.
   ///
@@ -31,6 +32,7 @@ mod private
   /// - The `exclude_features` field is a vector of strings representing the names of features to exclude when running tests.
   /// - The `include_features` field is a vector of strings representing the names of features to include when running tests.
   #[ derive( Debug, Former ) ]
+  #[ allow( clippy::struct_excessive_bools ) ]
   pub struct TestsCommandOptions
   {
     dir : AbsolutePath,
@@ -63,15 +65,21 @@ mod private
   /// It is possible to enable and disable various features of the crate.
   /// The function also has the ability to run tests in parallel using `Rayon` crate.
   /// The result of the tests is written to the structure `TestsReport` and returned as a result of the function execution.
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: doc
   // zzz : it probably should not be here
   // xxx : use newtype
+  #[ allow( clippy::too_many_lines ) ]
   pub fn test( o : TestsCommandOptions, dry : bool )
   -> ResultWithReport< TestsReport, Error >
   // qqq : for Petro : typed error
   // -> Result< TestsReport, ( TestsReport, Error ) >
   {
 
-    // qqq : incapsulate progress bar logic into some function of struct. don't keep it here
+    // aaa : incapsulate progress bar logic into some function of struct. don't keep it here
     // aaa : done
 
     let mut report = TestsReport::default();
@@ -84,16 +92,18 @@ mod private
       // aaa : for Petro : non readable
       // aaa : readable and with actual command
       return Err
-      ((
-        report,
-        format_err!
+      (
         (
-          "Missing toolchain(-s) that was required : [{}]. \
+          report,
+          format_err!
+          (
+            "Missing toolchain(-s) that was required : [{}]. \
 Try to install it with `rustup install {}` command(-s)",
-          channels_diff.iter().join( ", " ),
-          channels_diff.iter().join( " " )
+            channels_diff.iter().join( ", " ),
+            channels_diff.iter().join( " " )
+          )
         )
-      ))
+      )
     }
     report.dry = dry;
     let TestsCommandOptions
@@ -123,6 +133,7 @@ Try to install it with `rustup install {}` command(-s)",
       data_type::Either::Right( manifest ) => CrateDir::from( manifest )
     };
 
+    #[ allow( clippy::useless_conversion ) ]
     let workspace = Workspace
     ::try_from( CrateDir::try_from( path.clone() ).err_with_report( &report )? )
     .err_with_report( &report )?
@@ -164,7 +175,7 @@ Try to install it with `rustup install {}` command(-s)",
     ).err_with_report( &report )?;
 
     println!( "{plan}" );
-      // aaa : split on two functions for create plan and for execute
+    // aaa : split on two functions for create plan and for execute
     // aaa : it's already separated, look line: 203 : let result = tests_run( &options );
 
     let temp_path =  if temp

@@ -1,10 +1,19 @@
 use super::*;
-use the_module::VerifiedCommand;
+use the_module::{
+  parser::Parser,
+  VerifiedCommand,
+  executor::Context,
+  Type,
+  grammar::Dictionary,
+  verifier::Verifier,
+
+  Executor,
+  // wtools
+};
 
 //
 
-tests_impls!
-{
+tests_impls! {
   fn basic()
   {
     // init parser
@@ -14,7 +23,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -42,12 +51,12 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
       .subject().hint( "hint" ).kind( Type::String ).optional( false ).end()
-      .routine( | o : VerifiedCommand | o.args.get( 0 ).map( | a | println!( "{a:?}" )).ok_or_else( || "Subject not found" ) )
+      .routine( | o : VerifiedCommand | o.args.get( 0 ).map( | a | println!( "{a:?}" ) ).ok_or_else( || "Subject not found" ) )
       .form()
     )
     .form();
@@ -78,12 +87,12 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
       .property( "prop" ).hint( "about prop" ).kind( Type::String ).optional( true ).end()
-      .routine( | o : VerifiedCommand | o.props.get( "prop" ).map( | a | println!( "{a:?}" )).ok_or_else( || "Prop not found" ) )
+      .routine( | o : VerifiedCommand | o.props.get( "prop" ).map( | a | println!( "{a:?}" ) ).ok_or_else( || "Prop not found" ) )
       .form()
     )
     .form();
@@ -121,7 +130,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "check" )
@@ -137,7 +146,7 @@ tests_impls!
     )
     .form();
     let verifier = Verifier;
-    let mut ctx = wca::Context::new( Mutex::new( 1 ) );
+    let mut ctx = wca::executor::Context::new( Mutex::new( 1 ) );
     // init executor
     let executor = Executor::former()
     .context( ctx )
@@ -160,7 +169,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -181,8 +190,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   basic,
   with_subject,
   with_property,

@@ -1,15 +1,10 @@
 #![ allow( unused_imports ) ]
 
 use super::*;
-use std::collections::HashSet;
-// use wtools::prelude::*;
 
-#[ cfg( not( feature = "no_std" ) ) ]
-mod canonical_node_test;
-#[ cfg( not( feature = "no_std" ) ) ]
-// mod cell_factory_test;
-// #[ cfg( not( feature = "no_std" ) ) ]
-mod factory_test;
-#[ cfg( not( feature = "no_std" ) ) ]
-mod identity_test;
-mod factory_impls;
+pub mod graph;
+
+mod basic_test;
+mod nodes_test;
+mod search_test;
+mod tree_print_test;

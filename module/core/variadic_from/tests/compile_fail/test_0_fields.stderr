@@ -1,0 +1,5 @@
+error[E0601]: `main` function not found in crate `$CRATE`
+ --> tests/compile_fail/test_0_fields.rs:5:27
+  |
+5 | struct Test0FieldsNamed {}
+  |                           ^ consider adding a `main` function to `$DIR/tests/compile_fail/test_0_fields.rs`

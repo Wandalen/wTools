@@ -1,17 +1,18 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+
   use crate::*;
 
-  use std::
-  {
-    fmt
-  };
-  use collection::{ BTreeMap, HashMap };
+  use std::fmt;
+  use collection_tools::collection::{ BTreeMap, HashMap };
 
-  // // use path::AbsolutePath;
+  // // use pth::AbsolutePath;
   use former::Former;
-  use error::{ untyped::Context };
+  use error::untyped::Context;
   // use workspace::Workspace;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{self, Ok};
 
   /// Options available for the .features command
   #[ derive( Debug, Former ) ]
@@ -39,25 +40,24 @@ mod private
 
   impl fmt::Display for FeaturesReport
   {
-    fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> Result< (), fmt::Error >
+    #[ allow( clippy::match_bool ) ]
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> Result< (), fmt::Error >
     {
       self.inner.iter().try_for_each
       ( | ( package, features ) |
       {
-        writeln!(f, "Package {}:", package)?;
+        writeln!( f, "Package {package}:" )?;
         features.iter().try_for_each
         ( | ( feature, dependencies ) |
         {
-          let feature = match self.with_features_deps
+          // fix clippy
+          let feature = if self.with_features_deps
           {
-            false => format!( "\t{feature}" ),
-            true
-            =>
-            {
-              let deps = dependencies.join( ", " );
-              format!( "\t{feature}: [{deps}]" )
-            }
-          };
+            let deps = dependencies.join( ", " );
+            format!( "\t{feature}: [{deps}]" )
+          }
+          else
+          { format!( "\t{feature}" ) };
           writeln!( f, "{feature}" )
         }
         )
@@ -67,6 +67,8 @@ mod private
   }
 
   /// List features
+  /// # Errors
+  /// qqq: doc
   pub fn features( FeaturesOptions { crate_dir, with_features_deps } : FeaturesOptions )
   -> error::untyped::Result< FeaturesReport >
   // qqq : typed error
@@ -78,7 +80,7 @@ mod private
       {
         if let Ok( manifest_file ) = package.manifest_file()
         {
-          manifest_file.inner().starts_with(crate_dir.clone().absolute_path())
+          manifest_file.inner().starts_with( crate_dir.clone().absolute_path() )
         }
         else
         {
@@ -96,13 +98,14 @@ mod private
     packages
     // .iter()
     .for_each
-    ( | package |
-    {
-      let features = package.features();
-      report.inner.insert(package.name().to_owned(), features.to_owned());
-    }
+    (
+      | package |
+      {
+        let features = package.features();
+        report.inner.insert( package.name().to_owned(), features.to_owned() );
+      }
     );
-    Ok( report )
+    error::untyped::Result::Ok( report )
   }
 }
 
@@ -112,3 +115,4 @@ crate::mod_interface!
   orphan use FeaturesOptions;
   orphan use FeaturesReport;
 }
+// qqq : don't use orphan here

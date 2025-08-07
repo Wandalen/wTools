@@ -1,13 +1,13 @@
 [package]
 name = "diagnostics_tools"
-version = "0.10.0"
+version = "0.11.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/diagnostics_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/diagnostics_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/diagnostics_tools"
@@ -43,12 +43,26 @@ no_std = []
 use_alloc = [ "no_std" ]
 enabled = []
 
-diagnostics_runtime_assertions = [ "pretty_assertions" ] # run-time assertions
+diagnostics_runtime_assertions = [ "dep:pretty_assertions" ] # run-time assertions
 diagnostics_compiletime_assertions = [] # compile-time assertions
 diagnostics_memory_layout = [] #
 
 [dependencies]
-pretty_assertions = { version = "~1.4.0", optional = true }
+pretty_assertions = { workspace = true, optional = true }
 
 [dev-dependencies]
+trybuild = "1.0.106"
 test_tools = { workspace = true }
+strip-ansi-escapes = "0.1.1"
+
+
+
+
+[[test]]
+name = "trybuild"
+harness = false
+
+
+[[test]]
+name = "runtime_assertion_tests"
+harness = true

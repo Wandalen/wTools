@@ -1,13 +1,13 @@
 [package]
 name = "interval_adapter"
-version = "0.27.0"
+version = "0.32.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/interval_adapter"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/interval_adapter"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/interval_adapter"

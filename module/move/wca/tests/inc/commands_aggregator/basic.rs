@@ -1,18 +1,15 @@
 use super::*;
-use the_module::VerifiedCommand;
+use the_module::{parser::Parser, VerifiedCommand, CommandsAggregator, HelpVariants, Type, Error, ValidationError};
 
-//
-
-tests_impls!
-{
+tests_impls! {
   fn simple()
   {
     let ca = CommandsAggregator::former()
     .command( "command" )
-      .hint( "hint" )
-      .long_hint( "long_hint" )
-      .routine( || println!( "Command" ) )
-      .end()
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .routine( || println!( "Command" ) )
+    .end()
     .perform();
 
     a_id!( (), ca.perform( ".command" ).unwrap() ); // Parse -> Validate -> Execute
@@ -22,11 +19,11 @@ tests_impls!
   {
     let ca = CommandsAggregator::former()
     .command( "command" )
-      .hint( "hint" )
-      .long_hint( "long_hint" )
-      .routine( || println!( "Command" ) )
-      .end()
-    .help_variants([ HelpVariants::General ])
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .routine( || println!( "Command" ) )
+    .end()
+    .help_variants( [ HelpVariants::General ] )
     .perform();
 
     a_id!( (), ca.perform( ".help" ).unwrap() ); // raw string -> GrammarProgram -> ExecutableProgram -> execute
@@ -40,35 +37,34 @@ tests_impls!
   {
     let ca = CommandsAggregator::former()
     .command( "cmd.first" )
-      .hint( "hint" )
-      .long_hint( "long_hint" )
-      .routine( || println!( "Command" ) )
-      .end()
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .routine( || println!( "Command" ) )
+    .end()
     .command( "cmd.second" )
-      .hint( "hint" )
-      .long_hint( "long_hint" )
-      .routine( || println!( "Command2" ) )
-      .end()
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .routine( || println!( "Command2" ) )
+    .end()
     .perform();
 
     a_id!( (), ca.perform( "." ).unwrap() );
-    // qqq : this use case is disabled
-    // a_id!( (), ca.perform( ".cmd." ).unwrap() );
+    a_id!( (), ca.perform( ".cmd." ).unwrap() );
   }
 
   fn error_types()
   {
     let ca = CommandsAggregator::former()
     .command( "command" )
-      .hint( "hint" )
-      .long_hint( "long_hint" )
-      .routine( || println!( "command" ) )
-      .end()
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .routine( || println!( "command" ) )
+    .end()
     .command( "command_with_execution_error" )
-      .hint( "hint" )
-      .long_hint( "long_hint" )
-      .routine( || { println!( "command" ); Err( "runtime error" ) } )
-      .end()
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .routine( || { println!( "command" ); Err( "runtime error" ) } )
+    .end()
     .perform();
 
     a_true!( ca.perform( ".command" ).is_ok() );
@@ -110,11 +106,11 @@ tests_impls!
   {
     let ca = CommandsAggregator::former()
     .command( "command" )
-      .hint( "hint" )
-      .long_hint( "long_hint" )
-      .subject().hint( "A path to directory." ).kind( Type::Path ).optional( true ).end()
-      .routine( || println!( "hello" ) )
-      .end()
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .subject().hint( "A path to directory." ).kind( Type::Path ).optional( true ).end()
+    .routine( || println!( "hello" ) )
+    .end()
     .perform();
 
     let command = vec![ ".command".into(), "./path:to_dir".into() ];
@@ -136,10 +132,10 @@ tests_impls!
 
   fn string_subject_with_colon()
   {
-    let dictionary = &the_module::Dictionary::former()
+    let dictionary = &the_module::grammar::Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -150,7 +146,7 @@ tests_impls!
     )
     .perform();
     let parser = Parser;
-    let grammar = the_module::Verifier;
+    let grammar = the_module::verifier::Verifier;
     let executor = the_module::Executor::former().form();
 
     let raw_command = parser.parse( [ ".command", "qwe:rty", "nightly:true" ] ).unwrap().commands.remove( 0 );
@@ -163,10 +159,10 @@ tests_impls!
 
   fn no_prop_subject_with_colon()
   {
-    let dictionary = &the_module::Dictionary::former()
+    let dictionary = &the_module::grammar::Dictionary::former()
     .command
     (
-      the_module::Command::former()
+      the_module::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -177,7 +173,7 @@ tests_impls!
     .form();
 
     let parser = Parser;
-    let grammar = the_module::Verifier;
+    let grammar = the_module::verifier::Verifier;
     let executor = the_module::Executor::former().form();
 
     let raw_command = parser.parse( [ ".command", "qwe:rty" ] ).unwrap().commands.remove( 0 );
@@ -190,10 +186,10 @@ tests_impls!
 
   fn optional_prop_subject_with_colon()
   {
-    let dictionary = &the_module::Dictionary::former()
+    let dictionary = &the_module::grammar::Dictionary::former()
     .command
     (
-      the_module::Command::former()
+      the_module::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -205,29 +201,30 @@ tests_impls!
     .form();
 
     let parser = Parser;
-    let grammar = the_module::Verifier;
+    let grammar = the_module::verifier::Verifier;
     let executor = the_module::Executor::former().form();
 
     let raw_command = parser.parse( [ ".command", "qwe:rty" ] ).unwrap().commands.remove( 0 );
     let grammar_command = grammar.to_command( dictionary, raw_command ).unwrap();
 
-    a_id!( grammar_command.args.0, vec![ the_module::Value::String("qwe:rty".into()) ] );
+    a_id!( grammar_command.args.0, vec![ the_module::Value::String( "qwe:rty".into() ) ] );
 
     a_id!( (), executor.command( dictionary, grammar_command ).unwrap() );
   }
 
-  // qqq : make the following test work
+  // aaa : make the following test work
+  // aaa : works
   fn subject_with_spaces()
   {
     let query = "SELECT title, links, MIN( published ) FROM Frames";
 
     let ca = CommandsAggregator::former()
     .command( "query.execute" )
-      .hint( "hint" )
-      .long_hint( "long_hint" )
-      .subject().hint( "SQL query" ).kind( Type::String ).optional( false ).end()
-      .routine( move | o : VerifiedCommand | assert_eq!( query, o.args.get_owned::< &str >( 0 ).unwrap() ) )
-      .end()
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .subject().hint( "SQL query" ).kind( Type::String ).optional( false ).end()
+    .routine( move | o : VerifiedCommand | assert_eq!( query, o.args.get_owned::< &str >( 0 ).unwrap() ) )
+    .end()
     .perform();
 
     a_id!( (), ca.perform( vec![ ".query.execute".to_string(), query.into() ] ).unwrap() );
@@ -236,8 +233,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   simple,
   with_only_general_help,
   dot_command,

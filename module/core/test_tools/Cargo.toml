@@ -1,13 +1,13 @@
 [package]
 name = "test_tools"
-version = "0.11.0"
+version = "0.16.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/test_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/test_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/test_tools"
@@ -21,71 +21,117 @@ keywords = [ "fundamental", "general-purpose", "testing" ]
 workspace = true
 
 [package.metadata.docs.rs]
-features = [ "full" ]
+features = [ "normal_build", "enabled" ]
 all-features = false
-
-
+no-default-features = false
+# features = [ "full" ]
+# all-features = false
 
 # = features
 
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
+default = [
+  "enabled",
+  # "standalone_build",
+  "normal_build",
+  "process_tools",
+  "process_environment_is_cicd",
+]
+full = [
+  "default"
+]
+doctest = [] # for doctest shorcaomings resolution
+# doctest does not work properly for aggregators
 no_std = [
-  # "error_tools/no_std",
-  # "meta_tools/no_std",
-  # "mem_tools/no_std",
-  # "typing_tools/no_std",
-  # "data_type/no_std",
-  # "diagnostics_tools/no_std",
-  # "process_tools_published/no_std",
-  # "former_stable/use_alloc",
 ]
 use_alloc = [
   "no_std",
-  # "error_tools/use_alloc",
-  # "meta_tools/use_alloc",
-  # "mem_tools/use_alloc",
-  # "typing_tools/use_alloc",
-  # "data_type/use_alloc",
-  # "diagnostics_tools/use_alloc",
-  # "process_tools_published/use_alloc",
-  # "former_stable/use_alloc",
 ]
 enabled = [
-  "error_tools/enabled",
-  "meta_tools/enabled",
-  "mem_tools/enabled",
-  "typing_tools/enabled",
-  "data_type/enabled",
-  "diagnostics_tools/enabled",
-  "process_tools/enabled",
-  "collection_tools/enabled",
 ]
 # nightly = [ "typing_tools/nightly" ]
+
+normal_build = [
+  "dep:error_tools",
+  "dep:collection_tools",
+  "dep:impls_index",
+  "dep:mem_tools",
+  "dep:typing_tools",
+  "dep:diagnostics_tools",
+]
+
+# standalone_build vesion of build is used to avoid cyclic dependency
+# when crate depend on itself
+standalone_build = [
+  "standalone_error_tools",
+  "standalone_collection_tools",
+  "standalone_impls_index",
+  "standalone_mem_tools",
+  "standalone_typing_tools",
+  "standalone_diagnostics_tools",
+]
+standalone_error_tools = [ "dep:anyhow", "dep:thiserror", "error_typed", "error_untyped" ]
+standalone_collection_tools = [ "dep:hashbrown", "collection_constructors", "collection_into_constructors" ]
+standalone_impls_index = [ "dep:impls_index_meta" ]
+standalone_mem_tools = []
+standalone_typing_tools = [ "typing_implements", "typing_is_slice", "typing_inspect_type" ]
+standalone_diagnostics_tools = [ "diagnostics_runtime_assertions", "diagnostics_compiletime_assertions", "diagnostics_memory_layout" ]
+
+# error_tools
+error_typed = []
+error_untyped = []
+# collection_tools
+collection_constructors = []
+collection_into_constructors = []
+# typing_tools
+typing_inspect_type = [ "inspect_type/enabled" ]
+typing_is_slice = [ "is_slice/enabled" ]
+typing_implements = [ "implements/enabled" ]
+# diagnostics_tools
+diagnostics_runtime_assertions = [ "dep:pretty_assertions" ] # run-time assertions
+diagnostics_compiletime_assertions = [] # compile-time assertions
+diagnostics_memory_layout = [] #
+# process_tools
+process_tools = []
+process_environment_is_cicd = []
 
 [dependencies]
 
 ## external
 
-paste = "~1.0" # zzz : remove laster
-rustversion = "~1.0"
-# anyhow = "~1.0"
-num-traits = "~0.2"
-trybuild = { version = "1.0.85", features = [ "diff" ] }
-rand = "0.8.5"
+# xxx : make sure we use workspace dependencies only
+# trybuild = { version = "1.0.85", features = [ "diff" ] }
+trybuild = { workspace = true, features = [ "diff" ] }
+rustversion = { workspace = true }
+num-traits = { workspace = true }
+rand = { workspace = true }
+# tempdir = { workspace = true }
 
 ## internal
 
-error_tools = { workspace = true, features = [ "full" ] }
-meta_tools = { workspace = true, features = [ "full" ] }
-mem_tools = { workspace = true, features = [ "full" ] }
-typing_tools = { workspace = true, features = [ "full" ] }
-data_type = { workspace = true, features = [ "full" ] }
-diagnostics_tools = { workspace = true, features = [ "full" ] }
-process_tools = { workspace = true, features = [ "full" ] }
-collection_tools = { workspace = true, features = [ "full" ] }
-# former_stable = { workspace = true, features = [ "full" ] }
+error_tools = { workspace = true, features = [ "full" ], optional = true }
+collection_tools = { workspace = true, features = [ "full" ], optional = true }
+impls_index = { workspace = true, features = [ "full" ], optional = true }
+mem_tools = { workspace = true, features = [ "full" ], optional = true }
+typing_tools = { workspace = true, features = [ "full" ], optional = true }
+diagnostics_tools = { workspace = true, features = [ "full" ], optional = true }
+
+
+## transient
+
+# error_tools
+anyhow = { workspace = true, optional = true }
+thiserror = { workspace = true, optional = true }
+# collection_tools
+hashbrown = { workspace = true, optional = true }
+# impls_index
+impls_index_meta = { workspace = true, optional = true }
+# typing_tools
+inspect_type = { workspace = true, optional = true }
+is_slice = { workspace = true, optional = true }
+implements = { workspace = true, optional = true }
+# diagnostics_tools
+pretty_assertions = { workspace = true, optional = true }
 
 [build-dependencies]
 rustc_version = "0.4"

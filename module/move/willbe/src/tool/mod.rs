@@ -8,12 +8,10 @@ crate::mod_interface!
   orphan use super::cargo;
 
   /// Function and structures to work with collections.
-  layer collection;
-  orphan use super::collection;
+  use ::collection_tools;
 
   /// Errors handling.
-  layer error;
-  orphan use super::error;
+  use crate::error;
 
   /// Operate over files.
   layer files;
@@ -24,7 +22,7 @@ crate::mod_interface!
   orphan use super::http;
 
   /// Iterating things.
-  layer iter;
+  layer iter;  
   orphan use super::iter;
 
   /// Work with paths.
@@ -66,6 +64,10 @@ crate::mod_interface!
   exposed use ::former::
   {
     Former,
+  };
+
+  exposed use ::component_model::
+  {
     Assign,
   };
 

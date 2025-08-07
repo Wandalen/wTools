@@ -1,3 +1,6 @@
+#![ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
+
+
 use crate::*;
 
 use entity::
@@ -20,7 +23,7 @@ use std::
   io,
 };
 
-use path::{ AbsolutePath, Utf8Path, Utf8PathBuf };
+use pth::{ AbsolutePath, Utf8Path, Utf8PathBuf };
 
 // use error::
 // {
@@ -42,6 +45,7 @@ impl ManifestFile
 
   /// Returns inner type whicj is an absolute path.
   #[ inline( always ) ]
+  #[ must_use ]
   pub fn inner( self ) -> AbsolutePath
   {
     self.0
@@ -49,6 +53,7 @@ impl ManifestFile
 
   /// Returns path to crate dir.
   #[ inline( always ) ]
+  #[ must_use ]
   pub fn crate_dir( self ) -> CrateDir
   {
     self.into()
@@ -58,7 +63,7 @@ impl ManifestFile
 
 impl fmt::Display for ManifestFile
 {
-  fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
     write!( f, "{}", self.0.display() )
   }
@@ -66,7 +71,7 @@ impl fmt::Display for ManifestFile
 
 impl fmt::Debug for ManifestFile
 {
-  fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
     write!( f, "manifest file :: {}", self.0.display() )
   }
@@ -127,7 +132,7 @@ impl TryFrom< &ManifestFile > for String
   fn try_from( src : &ManifestFile ) -> Result< String, Self::Error >
   {
     let src2 : &str = src.try_into()?;
-    Ok( src2.into() )
+    Result::Ok( src2.into() )
   }
 }
 
@@ -152,16 +157,16 @@ impl TryFrom< AbsolutePath > for ManifestFile
 
     if !manifest_file.as_ref().ends_with( "Cargo.toml" )
     {
-      let err = io::Error::new( io::ErrorKind::Other, format!( "File path does not end with Cargo.toml as it should {manifest_file:?}" ) );
+      let err = io::Error::other( format!( "File path does not end with Cargo.toml as it should {}", manifest_file.display() ) );
       return Err( PathError::Io( err ) );
     }
 
     if !manifest_file.as_ref().is_file()
     {
-      let err = io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {manifest_file:?}" ) );
+      let err = io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {}", manifest_file.display() ) );
       return Err( PathError::Io( err ) );
     }
-    Ok( Self( manifest_file ) )
+    Result::Ok( Self( manifest_file ) )
   }
 }
 

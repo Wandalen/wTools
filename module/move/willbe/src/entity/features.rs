@@ -1,9 +1,11 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+
   use crate::*;
-  use collection::{ BTreeSet, HashSet };
+  use collection_tools::collection::{ BTreeSet, HashSet };
   use error::untyped::{ bail }; // xxx
-  use iter::Itertools;
+  use iter_tools::iter::Itertools;
 
   /// Generates a powerset of the features available in the given `package`,
   /// filtered according to specified inclusion and exclusion criteria,
@@ -38,7 +40,10 @@ mod private
   /// let feature_combinations = features_powerset( &package, power, &exclude_features, &include_features, enabled_features, false, false );
   /// // Use `feature_combinations` as needed.
   /// ```
-
+  ///
+  /// # Errors
+  /// qqq: doc
+  #[ allow( clippy::too_many_arguments ) ]
   pub fn features_powerset
   (
     package : WorkspacePackageRef< '_ >,
@@ -58,7 +63,7 @@ mod private
     let filtered_features : BTreeSet< _ > = package
     .features()
     .keys()
-    .filter( | f | !exclude_features.contains( f ) && (include_features.contains(f) || include_features.is_empty()) )
+    .filter( | f | !exclude_features.contains( f ) && ( include_features.contains(f) || include_features.is_empty() ) )
     .cloned()
     .collect();
 
@@ -96,6 +101,7 @@ mod private
   }
 
   /// Calculate estimate for `features_powerset.length`
+  #[ must_use ]
   pub fn estimate_with
   (
     n : usize,
@@ -104,8 +110,7 @@ mod private
     with_none_features : bool,
     enabled_features : &[ String ],
     total_features : usize
-  )
-    -> usize
+  ) -> usize
   {
     let mut estimate = 0;
     let mut binom = 1;

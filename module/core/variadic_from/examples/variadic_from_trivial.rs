@@ -1,52 +1,41 @@
 // variadic_from_trivial.rs
 
-//! This example demonstrates the use of the `variadic_from` macro to implement flexible
-//! constructors for a struct, allowing it to be instantiated from different numbers of
-//! arguments or tuples. It also showcases how to derive common traits like `Debug`,
-//! `PartialEq`, `Default`, and `VariadicFrom` for the struct.
+//! This example demonstrates the use of the `VariadicFrom` derive macro.
+//! It allows a struct with a single field to automatically implement the `From` trait
+//! for multiple source types, as specified by `#[from(Type)]` attributes.
 
-#[ cfg( not( all(feature = "enabled", feature = "type_variadic_from", feature = "derive_variadic_from" ) ) ) ]
-fn main(){}
-#[ cfg( all( feature = "enabled", feature = "type_variadic_from", feature = "derive_variadic_from" ) )]
-fn main()
-{
+#[cfg(not(all(feature = "enabled", feature = "type_variadic_from", feature = "derive_variadic_from")))]
+fn main() {}
+#[cfg(all(feature = "enabled", feature = "type_variadic_from", feature = "derive_variadic_from"))]
+fn main() {
   use variadic_from::exposed::*;
+  use variadic_from_meta::VariadicFrom;
 
-  // Define a struct `MyStruct` with fields `a` and `b`.
-  // The struct derives common traits like `Debug`, `PartialEq`, `Default`, and `VariadicFrom`.
-  #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
-  // Use `#[ debug ]` to expand and debug generate code.
-  // #[ debug ]
-  struct MyStruct
-  {
-    a : i32,
-    b : i32,
+  // Define a struct `MyStruct` with a single field `value`.
+  // It derives common traits and `VariadicFrom`.
+  #[derive(Debug, PartialEq, Default, VariadicFrom)]
+  struct MyStruct {
+    value: i32,
   }
 
-  // Implement the `From1` trait for `MyStruct`, which allows constructing a `MyStruct` instance
-  // from a single `i32` value by assigning it to both `a` and `b` fields.
+  // Example with a tuple struct
+  #[derive(Debug, PartialEq, Default, VariadicFrom)]
+  struct MyTupleStruct(i32);
 
-  impl From1< i32 > for MyStruct
-  {
-    fn from1( a : i32 ) -> Self { Self { a, b : a } }
-  }
+  // Test `MyStruct` conversions
+  let got: MyStruct = 10.into();
+  let exp = MyStruct { value: 10 };
+  assert_eq!(got, exp);
 
-  let got : MyStruct = from!();
-  let exp = MyStruct { a : 0, b : 0 };
-  assert_eq!( got, exp );
+  let got_tuple: MyTupleStruct = 50.into();
+  let exp_tuple = MyTupleStruct(50);
+  assert_eq!(got_tuple, exp_tuple);
 
-  let got : MyStruct = from!( 13 );
-  let exp = MyStruct { a : 13, b : 13 };
-  assert_eq!( got, exp );
-
-  let got : MyStruct = from!( 13, 14 );
-  let exp = MyStruct { a : 13, b : 14 };
-  assert_eq!( got, exp );
-
-  dbg!( exp );
+  dbg!(exp);
   //> MyStruct {
-  //>   a : 13,
-  //>   b : 14,
+  //>   value : 10,
   //> }
 
+  dbg!(exp_tuple);
+  //> MyTupleStruct( 50 )
 }

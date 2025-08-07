@@ -5,7 +5,7 @@ use derive_tools::DerefMut;
 
 #[ allow( dead_code ) ]
 #[ derive( DerefMut ) ]
-struct BoundsMixed< T : ToString, U >( T, U )
+struct BoundsMixed< T : ToString, U >( #[ deref_mut ] T, U )
 where
   U : Debug;
 

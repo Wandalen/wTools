@@ -1,7 +1,7 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
-  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports, clippy::wildcard_imports ) ]
   use crate::*;
   use std::
   {
@@ -23,6 +23,8 @@ mod private
     ///
     /// * `Ok(PathBuf)` - The owned path buffer.
     /// * `Err(io::Error)` - An error if the conversion fails.
+    /// # Errors
+    /// qqq: doc
     fn try_into_path( self ) -> Result< PathBuf, io::Error >;
   }
 

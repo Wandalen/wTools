@@ -1,10 +1,16 @@
 mod private
 {
+
   use crate::*;
-  // use path::AbsolutePath;
+  // use pth::AbsolutePath;
   // use error::{ untyped::Error };
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
 
   /// Generate headers for workspace members
+  ///
+  /// # Errors
+  /// qqq: doc
   // qqq : typed error
   pub fn readme_modules_headers_renew() -> error::untyped::Result< () >
   {

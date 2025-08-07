@@ -2,9 +2,9 @@
 //! Attributes analyzys and manipulation.
 //!
 
-/// Internal namespace.
-mod private
-{
+/// Define a private namespace for all its items.
+mod private {
+
   use crate::*;
 
   /// Represents an equation parsed from a procedural macro input.
@@ -39,37 +39,32 @@ mod private
   /// macro_tools::tree_print!( got );
   /// assert_eq!( macro_tools::code_to_str!( got ), "default = 31".to_string() );
   /// ```
-  #[ derive( Debug ) ]
-  pub struct Equation
-  {
+  #[derive(Debug)]
+  pub struct Equation {
     /// The LHS of the equation, represented by a syntactic path.
-    pub left : syn::Path,
+    pub left: syn::Path,
     // /// The binary operator (e.g., +, -, *, /) of the equation.
     // pub op : syn::BinOp,
     /// Equality token.
-    pub op : syn::Token![ = ],
+    pub op: syn::Token![ = ],
     /// The RHS of the equation, capable of holding complex expressions.
-    pub right : proc_macro2::TokenStream,
+    pub right: proc_macro2::TokenStream,
   }
 
-  impl syn::parse::Parse for Equation
-  {
-    fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
-    {
-      let left : syn::Path = input.parse()?;
-      let op : syn::Token![ = ] = input.parse()?;
-      let right : proc_macro2::TokenStream = input.parse()?;
-      Ok( Equation { left, op, right } )
+  impl syn::parse::Parse for Equation {
+    fn parse(input: syn::parse::ParseStream<'_>) -> Result<Self> {
+      let left: syn::Path = input.parse()?;
+      let op: syn::Token![ = ] = input.parse()?;
+      let right: proc_macro2::TokenStream = input.parse()?;
+      Ok(Equation { left, op, right })
     }
   }
 
-  impl quote::ToTokens for Equation
-  {
-    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
-    {
-      self.left.to_tokens( tokens );
-      self.op.to_tokens( tokens );
-      self.right.to_tokens( tokens );
+  impl quote::ToTokens for Equation {
+    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+      self.left.to_tokens(tokens);
+      self.op.to_tokens(tokens);
+      self.right.to_tokens(tokens);
     }
   }
 
@@ -85,7 +80,7 @@ mod private
 
   ///
   /// For attribute like `#[former( default = 31 ) ]` return key `default` and value `31`,
-  /// as well as syn::Meta as the last element of result tuple.
+  /// as well as `syn::Meta` as the last element of result tuple.
   ///
   /// ### Basic use-case.
   ///
@@ -96,69 +91,62 @@ mod private
   /// let got = equation::from_meta( &attr ).unwrap();
   /// assert_eq!( macro_tools::code_to_str!( got ), "default = 31".to_string() );
   /// ```
-
-  pub fn from_meta( attr : &syn::Attribute ) -> Result< Equation >
-  {
+  /// # Errors
+  /// qqq: doc
+  pub fn from_meta(attr: &syn::Attribute) -> Result<Equation> {
     let meta = &attr.meta;
-    return match meta
-    {
-      syn::Meta::List( ref meta_list ) =>
-      {
-        let eq : Equation = syn::parse2( meta_list.tokens.clone() )?;
-        Ok( eq )
+    match meta {
+      syn::Meta::List(ref meta_list) => {
+        let eq: Equation = syn::parse2(meta_list.tokens.clone())?;
+        Ok(eq)
       }
-      _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::Meta::List( meta_list )" ) ),
-    };
+      _ => Err(syn::Error::new(
+        attr.span(),
+        "Unknown format of attribute, expected syn::Meta::List( meta_list )",
+      )),
+    }
   }
-
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+#[doc(inline)]
+#[allow(unused_imports)]
 pub use own::*;
 
 /// Own namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod own
-{
+#[allow(unused_imports)]
+pub mod own {
+
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use orphan::*;
-  #[ doc( inline ) ]
-  pub use private::
-  {
-    from_meta,
-  };
+  #[doc(inline)]
+  pub use private::{from_meta};
 }
 
 /// Orphan namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
+#[allow(unused_imports)]
+pub mod orphan {
+
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
+#[allow(unused_imports)]
+pub mod exposed {
+
   use super::*;
   pub use super::super::equation;
 
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use prelude::*;
-  #[ doc( inline ) ]
-  pub use private::
-  {
-    Equation,
-  };
+  #[doc(inline)]
+  pub use private::{Equation};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[allow(unused_imports)]
+pub mod prelude {
   use super::*;
 }

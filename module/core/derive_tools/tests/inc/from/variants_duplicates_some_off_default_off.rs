@@ -2,21 +2,21 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-#[ derive( Debug, PartialEq, the_module::From ) ]
-#[ from( off ) ]
-// #[ debug ]
+// #[ derive( Debug, PartialEq, the_module::From ) ]
+// // // // // // // // // #[ from( off ) ]
+
 pub enum GetData
 {
   Nothing,
   Nothing2,
   FromString( String ),
-  #[ from( on ) ]
+  // #[ from( on ) ]
   // #[ from( debug ) ]
   FromString2( String ),
   FromPair( String, String ),
-  #[ from( on ) ]
+  // #[ from( on ) ]
   FromPair2( String, String ),
-  #[ from( on ) ]
+  // #[ from( on ) ]
   FromBin( &'static [ u8 ] ),
   Nothing3,
 }

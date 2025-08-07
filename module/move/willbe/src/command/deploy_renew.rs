@@ -1,16 +1,20 @@
 mod private
 {
+
   use crate::*;
 
   use wca::VerifiedCommand;
   use error::{ untyped::Context };
+
   use action::deploy_renew::*;
 
   ///
   /// Create new deploy.
   ///
-
+  /// # Errors
+  /// qqq: doc
   // xxx : qqq : typed error
+  #[ allow( clippy::needless_pass_by_value ) ]
   pub fn deploy_renew( o : VerifiedCommand ) -> error::untyped::Result< () >
   {
     let current_dir = std::env::current_dir()?;

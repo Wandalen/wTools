@@ -1,5 +1,5 @@
-#[ doc( hidden ) ]
-#[ macro_export ]
+#[doc(hidden)]
+#[macro_export]
 macro_rules! _implements
 {
   ( $V : expr => $( $Traits : tt )+ ) =>

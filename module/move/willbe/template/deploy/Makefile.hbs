@@ -114,16 +114,18 @@ tf-init:
 	terraform -chdir=$(tf_dir)/aws init
 
 # Creates Artifact Registry repository on GCP in specified location
-create-artifact-repo: tf-init
+create-artifact-repo: state_storage_pull tf-init
 	terraform -chdir=$(tf_dir)/gar apply -auto-approve
 
-# Builds uarust_conf_site image
+# Builds {{docker_image_name}} image
 build-image:
-	docker build . -t name:$(TF_VAR_IMAGE_NAME) -t $(tag)
+	docker build . -f Dockerfile.1 -t name:$(TF_VAR_IMAGE_NAME) -t $(tag)_1
+	docker build . -f Dockerfile.2 -t name:$(TF_VAR_IMAGE_NAME) -t $(tag)_2
 
 # Builds and pushes local docker image to the private repository
-push-image: gcp-docker create-artifact-repo
-	docker push $(tag)
+push-image: gcp-docker create-artifact-repo state_storage_push
+	docker push $(tag)_1
+	docker push $(tag)_2
 
 # Creates GCE instance with the website configured on boot
 create-gce: check-gce-keys gcp-service state_storage_pull push-image
@@ -138,7 +140,8 @@ create-hetzner: check-hetzner-keys gcp-service state_storage_pull push-image
 	terraform -chdir=$(tf_dir)/hetzner apply -auto-approve
 
 # Deploys everything and updates terraform states
-deploy-in-container: create-$(CSP) state_storage_push
+deploy-in-container:
+	make create-$(CSP) && make state_storage_push || { make state_storage_push; echo "Deployment failed"; exit 1; }
 
 # Deploys using tools from the container
 deploy: check-gcp-keys build-image

@@ -1,9 +1,13 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+
   use crate::*;
-  use action;
-  use error::{ err };
+  // use action;
+  // use error::{ err };
   use std::fmt::{ Display, Formatter };
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
 
   #[ derive( Debug, Default ) ]
   struct ReadmeHeadersRenewReport
@@ -64,8 +68,9 @@ mod private
     }
   }
 
-
   /// Aggregates two commands: `generate_modules_headers` & `generate_main_header`
+  /// # Errors
+  /// qqq: doc
   pub fn readme_headers_renew() -> error::untyped::Result< () > // qqq : use typed error
   {
     let mut report = ReadmeHeadersRenewReport::default();
@@ -73,7 +78,7 @@ mod private
     let crate_dir = CrateDir::transitive_try_from::< AbsolutePath >( CurrentPath )?;
     let mut fail = false;
 
-    match action::readme_header_renew( crate_dir.clone() )
+    match crate::action::main_header::action( crate_dir.clone() )
     {
       Ok( r ) =>
       {
@@ -85,7 +90,7 @@ mod private
         report.main_header_renew_report = r;
         report.main_header_renew_error = Some( error );
       }
-    };
+    }
     match action::readme_modules_headers_renew( crate_dir )
     {
       Ok( r ) =>
@@ -103,7 +108,7 @@ mod private
     if fail
     {
       eprintln!( "{report}" );
-      Err( err!( "Something went wrong" ) )
+      Err( error::untyped::format_err!( "Something went wrong" ) )
     }
     else
     {

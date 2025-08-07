@@ -1,18 +1,13 @@
-
 use super::*;
-mod tools
-{
-  #[ allow( unused_imports ) ]
+mod tools {
+  #[allow(unused_imports)]
   pub use super::super::*;
 }
 
 /// Private namespace of the module.
-mod private
-{
-}
+mod private {}
 
-mod_interface!
-{
+the_module::mod_interface! {
 
   /// mod_a
   orphan mod mod_a;
@@ -27,4 +22,4 @@ mod_interface!
 
 //
 
-include!( "../../only_test/layer_have_mod_cfg_test_only.rs" );
+include!("../../only_test/layer_have_mod_cfg_test_only.rs");

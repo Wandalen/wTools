@@ -401,3 +401,46 @@ fn llist_basic()
 }
 
 // qqq : xxx : implement for other containers
+
+#[ test ]
+fn vec_of_hashmap()
+{
+  let data : Vec< HashMap< String, String > > = vec!
+  [
+    {
+      let mut map = HashMap::new();
+      map.insert( "id".to_string(), "1".to_string() );
+      map.insert( "created_at".to_string(), "1627845583".to_string() );
+      map
+    },
+    {
+      let mut map = HashMap::new();
+      map.insert( "id".to_string(), "2".to_string() );
+      map.insert( "created_at".to_string(), "13".to_string() );
+      map
+    },
+  ];
+
+  use std::borrow::Cow;
+
+  use the_module::TableFormatter;
+
+  let _as_table : AsTable< '_, Vec< HashMap< String, String > >, &str, HashMap< String, String >, str> = AsTable::new( &data );
+  let as_table = AsTable::new( &data );
+
+  let rows = TableRows::rows( &as_table );
+  assert_eq!( rows.len(), 2 );
+
+  let mut output = String::new();
+  let mut context = the_module::print::Context::new( &mut output, Default::default() );
+
+  let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
+
+  let got = as_table.table_to_string();
+
+  println!("{}", got);
+
+  assert!( got.contains( "│ id │ created_at │" ) || got.contains( "│ created_at │ id │" ) );
+  assert!( got.contains( "│ 1  │ 1627845583 │" ) || got.contains( "│ 1627845583 │ 1  │" ) );
+  assert!( got.contains( "│ 2  │     13     │" ) || got.contains( "│     13     │ 2  │" ) );
+}

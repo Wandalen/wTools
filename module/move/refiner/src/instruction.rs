@@ -4,7 +4,7 @@ mod private
   use std::collections::HashMap;
 
   // use wtools::error::{ BasicError, err };
-  use error_tools::error::{ BasicError, err };
+  use super::private::error_tools::error::{ BasicError, err };
   // use error_tools::BasicError;
   // use error_tools::err;
 
@@ -41,6 +41,7 @@ mod private
   }
 
   //
+
 
   ///
   /// Adapter for instruction.

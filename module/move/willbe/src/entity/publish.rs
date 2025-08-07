@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+
   use crate::*;
 
   use std::fmt;
@@ -14,6 +16,8 @@ mod private
     }
   };
   use error::ErrWith;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
 
   /// Represents instructions for publishing a package.
   #[ derive( Debug, Clone ) ]
@@ -46,7 +50,7 @@ mod private
     dry : bool,
   }
 
-  impl< 'a > PublishSinglePackagePlanner< 'a >
+  impl PublishSinglePackagePlanner< '_ > // fix clippy
   {
     fn build( self ) -> PackagePublishInstruction
     {
@@ -76,7 +80,7 @@ mod private
       let git_options = entity::git::GitOptions
       {
         git_root : workspace_root,
-        items : dependencies.iter().chain([ &crate_dir ]).map( | d | d.clone().absolute_path().join( "Cargo.toml" ) ).collect(),
+        items : dependencies.iter().chain( [ &crate_dir ] ).map( | d | d.clone().absolute_path().join( "Cargo.toml" ) ).collect(),
         message : format!( "{}-v{}", self.package.name().unwrap(), new_version ),
         dry : self.dry,
       };
@@ -161,21 +165,22 @@ mod private
       .collect();
       for wanted in &self.roots
       {
-        let list = action::list
+        let list = action::list_all
         (
           action::list::ListOptions::former()
           .path_to_manifest( wanted.clone() )
           .format( action::list::ListFormat::Tree )
-          .dependency_sources([ action::list::DependencySource::Local ])
-          .dependency_categories([ action::list::DependencyCategory::Primary ])
+          .dependency_sources( [ action::list::DependencySource::Local ] )
+          .dependency_categories( [ action::list::DependencyCategory::Primary ] )
           .form()
         )
-        .map_err( |( _, _e )| fmt::Error )?;
+        .map_err( | ( _, _e ) | fmt::Error )?;
         let action::list::ListReport::Tree( list ) = list else { unreachable!() };
 
+        #[ allow( clippy::items_after_statements ) ]
         fn callback( name_bump_report : &collection::HashMap< &String, ( String, String ) >, mut r : tool::ListNodeReport ) -> tool::ListNodeReport
         {
-          if let Some(( old, new )) = name_bump_report.get( &r.name )
+          if let Some( ( old, new ) ) = name_bump_report.get( &r.name )
           {
             r.version = Some( format!( "({old} -> {new})" ) );
           }
@@ -188,10 +193,10 @@ mod private
         let printer = list;
         let rep : Vec< tool::ListNodeReport > = printer.iter().map( | printer | printer.info.clone() ).collect();
         let list: Vec< tool::ListNodeReport > = rep.into_iter().map( | r | callback( &name_bump_report, r ) ).collect();
-        let printer : Vec< tool::TreePrinter > = list.iter().map( | rep | tool::TreePrinter::new( rep ) ).collect();
+        let printer : Vec< tool::TreePrinter > = list.iter().map( tool::TreePrinter::new ).collect();
 
         let list = action::list::ListReport::Tree( printer );
-        writeln!( f, "{}", list )?;
+        writeln!( f, "{list}" )?;
       }
 
       Ok( () )
@@ -311,11 +316,11 @@ mod private
         return Ok( () )
       }
       let info = get_info.as_ref().unwrap();
-      write!( f, "{}", info )?;
+      write!( f, "{info}" )?;
 
       if let Some( bump ) = bump
       {
-        writeln!( f, "{}", bump )?;
+        writeln!( f, "{bump}" )?;
       }
       if let Some( add ) = add
       {
@@ -347,7 +352,10 @@ mod private
   /// # Returns
   ///
   /// * `Result<PublishReport>` - The result of the publishing operation, including information about the publish, version bump, and git operations.
-
+  ///
+  /// # Errors
+  /// qqq: doc
+  #[ allow( clippy::option_map_unit_fn, clippy::result_large_err ) ]
   pub fn perform_package_publish( instruction : PackagePublishInstruction ) -> ResultWithReport< PublishReport, Error >
   {
     let mut report = PublishReport::default();
@@ -369,6 +377,7 @@ mod private
     // aaa : redundant field? // aaa : removed
     let bump_report = version::bump( bump ).err_with_report( &report )?;
     report.bump = Some( bump_report.clone() );
+
     let git_root = git_options.git_root.clone();
     let git = match entity::git::perform_git_commit( git_options )
     {
@@ -378,12 +387,12 @@ mod private
         version::revert( &bump_report )
         .map_err( | le | format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) ) )
         .err_with_report( &report )?;
-        return Err(( report, e ));
+        return Err( ( report, e ) );
       }
     };
     report.add = git.add;
     report.commit = git.commit;
-    report.publish = match cargo::publish( publish )
+    report.publish = match cargo::publish( &publish )
     {
       Ok( publish ) => Some( publish ),
       Err( e ) =>
@@ -395,7 +404,7 @@ mod private
           format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) )
         )
         .err_with_report( &report )?;
-        return Err(( report, e ));
+        return Err( ( report, e ) );
       }
     };
 
@@ -414,13 +423,20 @@ mod private
   /// # Returns
   ///
   /// Returns a `Result` containing a vector of `PublishReport` if successful, else an error.
+  ///
+  /// # Errors
+  /// qqq: doc
   pub fn perform_packages_publish( plan : PublishPlan ) -> error::untyped::Result< Vec< PublishReport > >
   // qqq : use typed error
   {
     let mut report = vec![];
     for package in plan.plans
     {
-      let res = perform_package_publish( package ).map_err( |( current_rep, e )| format_err!( "{}\n{current_rep}\n{e}", report.iter().map( | r | format!( "{r}" ) ).join( "\n" ) ) )?;
+      let res = perform_package_publish( package ).map_err
+      (
+        | ( current_rep, e ) |
+        format_err!( "{}\n{current_rep}\n{e}", report.iter().map( | r | format!( "{r}" ) ).join( "\n" ) )
+      )?;
       report.push( res );
     }
 

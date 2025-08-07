@@ -1,18 +1,19 @@
-
-#[ allow( unused_imports ) ]
+#![allow(unused_imports)]
 use super::*;
+use super::derives::{tests_impls, tests_index};
+use super::derives::a_id;
 
 //
 
-tests_impls!
-{
+tests_impls! {
 
   #[ cfg( all( feature = "derive_from", feature = "derive_inner_from", feature = "derive_display", feature = "derive_from_str" ) ) ]
   fn samples()
   {
     use the_module::*;
 
-    #[ derive( From, InnerFrom, Display, FromStr, PartialEq, Debug ) ]
+    #[ derive( From, // InnerFrom,
+Display, FromStr, PartialEq, Debug ) ]
     #[ display( "{a}-{b}" ) ]
     struct Struct1
     {
@@ -53,7 +54,8 @@ tests_impls!
   {
     use the_module::*;
 
-    #[ derive( From, InnerFrom, Display ) ]
+    #[ derive( From, // InnerFrom,
+Display ) ]
     #[ display( "{a}-{b}" ) ]
     struct Struct1
     {
@@ -74,10 +76,10 @@ tests_impls!
 
   //
 
-  #[ cfg( all( feature = "strum", feature = "strum_derive" ) ) ]
+  #[ cfg( all( feature = "strum", feature = "derive_strum" ) ) ]
   fn enum_with_strum()
   {
-    use the_module::{ EnumIter, IntoEnumIterator };
+    use strum::{ EnumIter, IntoEnumIterator };
 
     #[ derive( EnumIter, Debug, PartialEq ) ]
     enum Foo
@@ -94,8 +96,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   samples,
   basic,
   enum_with_strum,

@@ -2,138 +2,110 @@
 //! Parse structures, like `struct { a : i32 }`.
 //!
 
-/// Internal namespace.
-mod private
-{
+/// Define a private namespace for all its items.
+mod private {
+
   use crate::*;
 
   /// Enum to encapsulate either a field from a struct or a variant from an enum.
-  #[ derive( Debug, PartialEq, Clone ) ]
-  pub enum FieldOrVariant< 'a >
-  {
+  #[derive(Debug, PartialEq, Clone)]
+  pub enum FieldOrVariant<'a> {
     /// Represents a field within a struct or union.
-    Field( &'a syn::Field ),
+    Field(&'a syn::Field),
     /// Represents a variant within an enum.
-    Variant( &'a syn::Variant ),
+    Variant(&'a syn::Variant),
   }
 
-  impl< 'a > Copy for FieldOrVariant< 'a >
-  {
-  }
+  impl Copy for FieldOrVariant<'_> {}
 
-  impl< 'a > From< &'a syn::Field > for FieldOrVariant< 'a >
-  {
-    fn from( field : &'a syn::Field ) -> Self
-    {
-      FieldOrVariant::Field( field )
+  impl<'a> From<&'a syn::Field> for FieldOrVariant<'a> {
+    fn from(field: &'a syn::Field) -> Self {
+      FieldOrVariant::Field(field)
     }
   }
 
-  impl< 'a > From< &'a syn::Variant > for FieldOrVariant< 'a >
-  {
-    fn from( variant : &'a syn::Variant ) -> Self
-    {
-      FieldOrVariant::Variant( variant )
+  impl<'a> From<&'a syn::Variant> for FieldOrVariant<'a> {
+    fn from(variant: &'a syn::Variant) -> Self {
+      FieldOrVariant::Variant(variant)
     }
   }
 
-  impl quote::ToTokens for FieldOrVariant< '_ >
-  {
-    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
-    {
-      match self
-      {
-        FieldOrVariant::Field( item ) =>
-        {
-          item.to_tokens( tokens );
-        },
-        FieldOrVariant::Variant( item ) =>
-        {
-          item.to_tokens( tokens );
-        },
+  impl quote::ToTokens for FieldOrVariant<'_> {
+    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+      match self {
+        FieldOrVariant::Field(item) => {
+          item.to_tokens(tokens);
+        }
+        FieldOrVariant::Variant(item) => {
+          item.to_tokens(tokens);
+        }
       }
     }
   }
 
-  impl< 'a > FieldOrVariant< 'a >
-  {
-
+  impl FieldOrVariant<'_> {
     /// Returns a reference to the attributes of the item.
-    pub fn attrs( &self ) -> &Vec< syn::Attribute >
-    {
-      match self
-      {
-        FieldOrVariant::Field( e ) => &e.attrs,
-        FieldOrVariant::Variant( e ) => &e.attrs,
+    #[must_use]
+    pub fn attrs(&self) -> &Vec<syn::Attribute> {
+      match self {
+        FieldOrVariant::Field(e) => &e.attrs,
+        FieldOrVariant::Variant(e) => &e.attrs,
       }
     }
 
     /// Returns a reference to the visibility of the item.
-    pub fn vis( &self ) -> Option< &syn::Visibility >
-    {
-      match self
-      {
-        FieldOrVariant::Field( e ) => Some( &e.vis ),
-        FieldOrVariant::Variant( _ ) => None,
+    #[must_use]
+    pub fn vis(&self) -> Option<&syn::Visibility> {
+      match self {
+        FieldOrVariant::Field(e) => Some(&e.vis),
+        FieldOrVariant::Variant(_) => None,
       }
     }
 
     /// Returns a reference to the mutability of the item.
-    pub fn mutability( &self ) -> Option< &syn::FieldMutability >
-    {
-      match self
-      {
-        FieldOrVariant::Field( e ) => Some( &e.mutability ),
-        FieldOrVariant::Variant( _ ) => None,
+    #[must_use]
+    pub fn mutability(&self) -> Option<&syn::FieldMutability> {
+      match self {
+        FieldOrVariant::Field(e) => Some(&e.mutability),
+        FieldOrVariant::Variant(_) => None,
       }
     }
 
     /// Returns a reference to the identifier of the item.
-    pub fn ident( &self ) -> Option< &syn::Ident >
-    {
-      match self
-      {
-        FieldOrVariant::Field( e ) => e.ident.as_ref(),
-        FieldOrVariant::Variant( e ) => Some( &e.ident ),
+    #[must_use]
+    pub fn ident(&self) -> Option<&syn::Ident> {
+      match self {
+        FieldOrVariant::Field(e) => e.ident.as_ref(),
+        FieldOrVariant::Variant(e) => Some(&e.ident),
       }
     }
 
     /// Returns an iterator over elements of the item.
-    pub fn typ( &self ) -> Option< &syn::Type >
-    {
-      match self
-      {
-        FieldOrVariant::Field( e ) =>
-        {
-          Some( &e.ty )
-        },
-        FieldOrVariant::Variant( _e ) =>
-        {
-          None
-        },
+    #[must_use]
+    pub fn typ(&self) -> Option<&syn::Type> {
+      match self {
+        FieldOrVariant::Field(e) => Some(&e.ty),
+        FieldOrVariant::Variant(_e) => None,
       }
     }
 
     /// Returns a reference to the fields of the item.
-    pub fn fields( &self ) -> Option< &syn::Fields >
-    {
-      match self
-      {
-        FieldOrVariant::Field( _ ) => None,
-        FieldOrVariant::Variant( e ) => Some( &e.fields ),
+    #[must_use]
+    pub fn fields(&self) -> Option<&syn::Fields> {
+      match self {
+        FieldOrVariant::Field(_) => None,
+        FieldOrVariant::Variant(e) => Some(&e.fields),
       }
     }
 
     /// Returns a reference to the discriminant of the item.
-    pub fn discriminant( &self ) -> Option< &( syn::token::Eq, syn::Expr ) >
-    {
-      match self
-      {
-        FieldOrVariant::Field( _ ) => None,
-        FieldOrVariant::Variant( e ) => e.discriminant.as_ref(),
+    #[must_use]
+    pub fn discriminant(&self) -> Option<&(syn::token::Eq, syn::Expr)> {
+      match self {
+        FieldOrVariant::Field(_) => None,
+        FieldOrVariant::Variant(e) => e.discriminant.as_ref(),
       }
     }
-
   }
 
   /// Represents various struct-like constructs in Rust code.
@@ -150,333 +122,234 @@ mod private
   /// - `Enum`: Represents enums in Rust, which are types that can hold one of multiple possible variants. This is particularly
   ///   useful for type-safe state or option handling without the use of external discriminators.
   ///
-  #[ derive( Debug, PartialEq ) ]
-  pub enum StructLike
-  {
+  #[derive(Debug, PartialEq)]
+  pub enum StructLike {
     /// A unit struct with no fields.
-    Unit( syn::ItemStruct ),
+    Unit(syn::ItemStruct),
     /// A typical Rust struct with named fields.
-    Struct( syn::ItemStruct ),
+    Struct(syn::ItemStruct),
     /// A Rust enum, which can be one of several defined variants.
-    Enum( syn::ItemEnum ),
+    Enum(syn::ItemEnum),
   }
 
-  impl From< syn::ItemStruct > for StructLike
-  {
-    fn from( item_struct : syn::ItemStruct ) -> Self
-    {
-      if item_struct.fields.is_empty()
-      {
-        StructLike::Unit( item_struct )
-      }
-      else
-      {
-        StructLike::Struct( item_struct )
+  impl From<syn::ItemStruct> for StructLike {
+    fn from(item_struct: syn::ItemStruct) -> Self {
+      if item_struct.fields.is_empty() {
+        StructLike::Unit(item_struct)
+      } else {
+        StructLike::Struct(item_struct)
       }
     }
   }
 
-  impl From< syn::ItemEnum > for StructLike
-  {
-    fn from( item_enum : syn::ItemEnum ) -> Self
-    {
-      StructLike::Enum( item_enum )
+  impl From<syn::ItemEnum> for StructLike {
+    fn from(item_enum: syn::ItemEnum) -> Self {
+      StructLike::Enum(item_enum)
     }
   }
 
-  impl syn::parse::Parse for StructLike
-  {
-    fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-    {
-      use syn::{ ItemStruct, ItemEnum, Visibility, Attribute };
+  impl syn::parse::Parse for StructLike {
+    fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
+      use syn::{ItemStruct, ItemEnum, Visibility, Attribute};
 
       // Parse attributes
-      let attributes : Vec< Attribute > = input.call( Attribute::parse_outer )?;
+      let attributes: Vec<Attribute> = input.call(Attribute::parse_outer)?;
       // Parse visibility
-      let visibility : Visibility = input.parse().unwrap_or( syn::Visibility::Inherited );
+      let visibility: Visibility = input.parse().unwrap_or(syn::Visibility::Inherited);
 
       // Fork input stream to handle struct/enum keyword without consuming
       let lookahead = input.lookahead1();
-      if lookahead.peek( syn::Token![ struct ] )
-      {
+      if lookahead.peek(syn::Token![struct]) {
         // Parse ItemStruct
-        let mut item_struct : ItemStruct = input.parse()?;
+        let mut item_struct: ItemStruct = input.parse()?;
         item_struct.vis = visibility;
-        item_struct.attrs = attributes.into();
-        if item_struct.fields.is_empty()
-        {
-          Ok( StructLike::Unit( item_struct ) )
+        item_struct.attrs = attributes;
+        if item_struct.fields.is_empty() {
+          Ok(StructLike::Unit(item_struct))
+        } else {
+          Ok(StructLike::Struct(item_struct))
         }
-        else
-        {
-          Ok( StructLike::Struct( item_struct ) )
-        }
-      }
-      else if lookahead.peek( syn::Token![ enum ] )
-      {
+      } else if lookahead.peek(syn::Token![enum]) {
         // Parse ItemEnum
-        let mut item_enum : ItemEnum = input.parse()?;
+        let mut item_enum: ItemEnum = input.parse()?;
         item_enum.vis = visibility;
-        item_enum.attrs = attributes.into();
-        Ok( StructLike::Enum( item_enum ) )
-      }
-      else
-      {
-        Err( lookahead.error() )
+        item_enum.attrs = attributes;
+        Ok(StructLike::Enum(item_enum))
+      } else {
+        Err(lookahead.error())
       }
     }
   }
 
-  impl quote::ToTokens for StructLike
-  {
-    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
-    {
-      match self
-      {
-        StructLike::Unit( item ) | StructLike::Struct( item ) =>
-        {
-          item.to_tokens( tokens );
-        },
-        StructLike::Enum( item ) =>
-        {
-          item.to_tokens( tokens );
-        },
+  impl quote::ToTokens for StructLike {
+    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+      match self {
+        StructLike::Unit(item) | StructLike::Struct(item) => {
+          item.to_tokens(tokens);
+        }
+        StructLike::Enum(item) => {
+          item.to_tokens(tokens);
+        }
       }
     }
   }
 
-  impl StructLike
-  {
-
-
+  impl StructLike {
     /// Returns an iterator over elements of the item.
     // pub fn elements< 'a >( &'a self ) -> impl IterTrait< 'a, FieldOrVariant< 'a > > + 'a
-    pub fn elements< 'a >( &'a self ) -> BoxedIter< 'a, FieldOrVariant< 'a > >
-    {
-      match self
-      {
-        StructLike::Unit( _ ) =>
-        {
-          let empty : Vec< FieldOrVariant< 'a > > = vec![];
-          Box::new( empty.into_iter() )
-        },
-        StructLike::Struct( item ) =>
-        {
-          let fields = item.fields.iter().map( FieldOrVariant::from );
-          Box::new( fields )
-        },
-        StructLike::Enum( item ) =>
-        {
-          let variants = item.variants.iter().map( FieldOrVariant::from );
-          Box::new( variants )
-        },
+    pub fn elements<'a>(&'a self) -> BoxedIter<'a, FieldOrVariant<'a>> {
+      match self {
+        StructLike::Unit(_) => {
+          let empty: Vec<FieldOrVariant<'a>> = vec![];
+          Box::new(empty.into_iter())
+        }
+        StructLike::Struct(item) => {
+          let fields = item.fields.iter().map(FieldOrVariant::from);
+          Box::new(fields)
+        }
+        StructLike::Enum(item) => {
+          let variants = item.variants.iter().map(FieldOrVariant::from);
+          Box::new(variants)
+        }
       }
     }
 
     /// Returns an iterator over elements of the item.
-    pub fn attrs( &self ) -> &Vec< syn::Attribute >
-    {
-      match self
-      {
-        StructLike::Unit( item ) =>
-        {
-          &item.attrs
-        },
-        StructLike::Struct( item ) =>
-        {
-          &item.attrs
-        },
-        StructLike::Enum( item ) =>
-        {
-          &item.attrs
-        },
+    #[must_use]
+    pub fn attrs(&self) -> &Vec<syn::Attribute> {
+      match self {
+        StructLike::Unit(item) | StructLike::Struct(item) => &item.attrs,
+        StructLike::Enum(item) => &item.attrs,
       }
     }
 
     /// Returns an iterator over elements of the item.
-    pub fn vis( &self ) -> &syn::Visibility
-    {
-      match self
-      {
-        StructLike::Unit( item ) =>
-        {
-          &item.vis
-        },
-        StructLike::Struct( item ) =>
-        {
-          &item.vis
-        },
-        StructLike::Enum( item ) =>
-        {
-          &item.vis
-        },
+    #[must_use]
+    pub fn vis(&self) -> &syn::Visibility {
+      match self {
+        StructLike::Unit(item) | StructLike::Struct(item) => &item.vis,
+        StructLike::Enum(item) => &item.vis,
       }
     }
 
     /// Returns an iterator over elements of the item.
-    pub fn ident( &self ) -> &syn::Ident
-    {
-      match self
-      {
-        StructLike::Unit( item ) =>
-        {
-          &item.ident
-        },
-        StructLike::Struct( item ) =>
-        {
-          &item.ident
-        },
-        StructLike::Enum( item ) =>
-        {
-          &item.ident
-        },
+    #[must_use]
+    pub fn ident(&self) -> &syn::Ident {
+      match self {
+        StructLike::Unit(item) | StructLike::Struct(item) => &item.ident,
+        StructLike::Enum(item) => &item.ident,
       }
     }
 
     /// Returns an iterator over elements of the item.
-    pub fn generics( &self ) -> &syn::Generics
-    {
-      match self
-      {
-        StructLike::Unit( item ) =>
-        {
-          &item.generics
-        },
-        StructLike::Struct( item ) =>
-        {
-          &item.generics
-        },
-        StructLike::Enum( item ) =>
-        {
-          &item.generics
-        },
+    #[must_use]
+    pub fn generics(&self) -> &syn::Generics {
+      match self {
+        StructLike::Unit(item) | StructLike::Struct(item) => &item.generics,
+        StructLike::Enum(item) => &item.generics,
       }
     }
 
     /// Returns an iterator over fields of the item.
     // pub fn fields< 'a >( &'a self ) -> impl IterTrait< 'a, &'a syn::Field >
-    pub fn fields< 'a >( &'a self ) -> BoxedIter< 'a, &'a syn::Field >
-    {
-      let result : BoxedIter< 'a, &'a syn::Field > = match self
-      {
-        StructLike::Unit( _item ) =>
-        {
-          Box::new( std::iter::empty() )
-        },
-        StructLike::Struct( item ) =>
-        {
-          Box::new( item.fields.iter() )
-        },
-        StructLike::Enum( _item ) =>
-        {
-          Box::new( std::iter::empty() )
-        },
+    #[must_use]
+    pub fn fields<'a>(&'a self) -> BoxedIter<'a, &'a syn::Field> {
+      let result: BoxedIter<'a, &'a syn::Field> = match self {
+        StructLike::Unit(_item) => Box::new(core::iter::empty()),
+        StructLike::Struct(item) => Box::new(item.fields.iter()),
+        StructLike::Enum(_item) => Box::new(core::iter::empty()),
       };
       result
     }
 
     /// Extracts the name of each field.
+    /// # Panics
+    /// qqq: docs
     // pub fn field_names< 'a >( &'a self ) -> Option< impl IterTrait< 'a, &'a syn::Ident > + '_ >
-    pub fn field_names< 'a >( &'a self ) -> Option< BoxedIter< 'a, &'a syn::Ident >>
-    {
-      match self
-      {
-        StructLike::Unit( item ) =>
-        {
-          item_struct::field_names( item )
-        },
-        StructLike::Struct( item ) =>
-        {
-          item_struct::field_names( item )
-        },
-        StructLike::Enum( _item ) =>
-        {
-          let iter = Box::new( self.fields().map( | field | field.ident.as_ref().unwrap() ) );
-          Some( iter )
-        },
+    #[must_use]
+    pub fn field_names(&self) -> Option<BoxedIter<'_, &syn::Ident>> {
+      match self {
+        StructLike::Unit(item) | StructLike::Struct(item) => item_struct::field_names(item),
+        StructLike::Enum(_item) => {
+          let iter = Box::new(self.fields().map(|field| field.ident.as_ref().unwrap()));
+          Some(iter)
+        }
       }
     }
 
     /// Extracts the type of each field.
-    pub fn field_types<'a>( &'a self )
-    -> BoxedIter< 'a, &'a syn::Type >
-    // -> std::iter::Map
+    #[must_use]
+    pub fn field_types(&self) -> BoxedIter<'_, &syn::Type>
+// -> std::iter::Map
     // <
     //   std::boxed::Box< dyn _IterTrait< '_, &syn::Field > + 'a >,
     //   impl FnMut( &'a syn::Field ) -> &'a syn::Type + 'a,
     // >
     {
-      Box::new( self.fields().map( move | field | &field.ty ) )
+      Box::new(self.fields().map(move |field| &field.ty))
     }
 
     /// Extracts the name of each field.
     // pub fn field_attrs< 'a >( &'a self ) -> impl IterTrait< 'a, &'a Vec< syn::Attribute > >
-    pub fn field_attrs<'a>( &'a self )
-    -> BoxedIter< 'a, &'a Vec< syn::Attribute > >
-    // -> std::iter::Map
+    #[must_use]
+    pub fn field_attrs(&self) -> BoxedIter<'_, &Vec<syn::Attribute>>
+// -> std::iter::Map
     // <
     //   std::boxed::Box< dyn _IterTrait< '_, &syn::Field > + 'a >,
     //   impl FnMut( &'a syn::Field ) -> &'a Vec< syn::Attribute > + 'a,
     // >
     {
-      Box::new( self.fields().map( | field | &field.attrs ) )
+      Box::new(self.fields().map(|field| &field.attrs))
     }
 
     /// Extract the first field.
-    pub fn first_field( &self ) -> Option< &syn::Field >
-    {
+    #[must_use]
+    pub fn first_field(&self) -> Option<&syn::Field> {
       self.fields().next()
       // .ok_or( syn_err!( self.span(), "Expects at least one field" ) )
     }
-
   }
 
   //
-
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+#[doc(inline)]
+#[allow(unused_imports)]
 pub use own::*;
 
 /// Own namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod own
-{
+#[allow(unused_imports)]
+pub mod own {
+
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use orphan::*;
-  #[ doc( inline ) ]
-  pub use private::
-  {
-    StructLike,
-    FieldOrVariant,
-  };
+  #[doc(inline)]
+  pub use private::{StructLike, FieldOrVariant};
 }
 
 /// Orphan namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
+#[allow(unused_imports)]
+pub mod orphan {
+
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
+#[allow(unused_imports)]
+pub mod exposed {
+
   use super::*;
   pub use super::super::struct_like;
 
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[allow(unused_imports)]
+pub mod prelude {
   use super::*;
 }

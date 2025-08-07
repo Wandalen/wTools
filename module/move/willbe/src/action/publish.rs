@@ -1,8 +1,9 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  use crate::*;
 
+  use crate::*;
   use std::{ env, fmt, fs };
   use
   {
@@ -28,16 +29,16 @@ mod private
       if self.packages.is_empty()
       {
         write!( f, "Nothing to publish" )?;
-        return Ok( () );
+        return std::fmt::Result::Ok( () );
       }
 
       writeln!( f, "Actions :" )?;
       for ( path, report ) in &self.packages
       {
-        let report = report.to_string().replace("\n", "\n  ");
+        let report = report.to_string().replace( '\n', "\n  " );
         let path = if let Some( wrd ) = &self.workspace_root_dir
         {
-          path.as_ref().strip_prefix( &wrd.as_ref() ).unwrap()
+          path.as_ref().strip_prefix( wrd.as_ref() ).unwrap()
         }
         else
         {
@@ -65,7 +66,7 @@ mod private
           let mut actually_published : Vec< _ > = self.packages.iter()
           .filter_map
           (
-            |( path, repo )|
+            | ( path, repo ) |
             if repo.publish.as_ref().is_some_and( | r | r.error.is_ok() )
             {
               Some( path.clone() )
@@ -101,7 +102,7 @@ mod private
         }
       }
 
-      Ok( () )
+      std::fmt::Result::Ok( () )
     }
   }
 
@@ -114,10 +115,19 @@ mod private
   ///
   /// # Returns
   /// A Result containing a `PublishPlan` if successful, or an `Error` otherwise.
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if it fails to find packages, read the workspace, or create a temporary directory.
+  ///
+  /// # Panics
+  ///
+  /// Panics if `patterns` is not empty but resolving the first path to a workspace fails,
+  /// or if toposort fails on the dependency graph.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
   pub fn publish_plan
   (
-    patterns : Vec< String >,
+    patterns : &[ String ],
     channel : channel::Channel,
     dry : bool,
     temp : bool
@@ -127,10 +137,11 @@ mod private
   {
     let mut paths = collection::HashSet::new();
     // find all packages by specified folders
-    for pattern in &patterns
+    for pattern in patterns
     {
       let current_path = AbsolutePath::try_from
       (
+        // qqq : dont use canonicalizefunction. path does not have exist
         fs::canonicalize( pattern.as_str() )?
       )?;
       // let current_path = AbsolutePath::try_from( std::path::PathBuf::from( pattern ) )?;
@@ -155,7 +166,7 @@ mod private
 
     let workspace_root_dir : AbsolutePath = workspace
     .workspace_root()
-    .try_into()?;
+    .into();
 
     let packages = workspace.packages();
     let packages_to_publish : Vec< String > = packages
@@ -173,7 +184,7 @@ mod private
       &graph,
       &packages_to_publish[ .. ]
     );
-    let tmp = subgraph_wanted
+    let tmp_subgraph = subgraph_wanted
     .map
     (
       | _, n |
@@ -210,10 +221,11 @@ mod private
 
     let subgraph = graph::remove_not_required_to_publish
     (
+      &workspace,
       &package_map,
-      &tmp,
+      &tmp_subgraph,
       &packages_to_publish,
-      dir.clone()
+      dir.clone(),
     )?;
     let subgraph = subgraph
     .map( | _, n | n, | _, e | e );
@@ -244,7 +256,14 @@ mod private
   ///
   /// Publish packages.
   ///
-
+  /// # Errors
+  ///
+  /// Returns an error if any of the publishing steps fail or if cleanup of temporary directories fails.
+  ///
+  /// # Panics
+  ///
+  /// Panics if the report for a successfully published package is missing expected information.
+  #[ allow( clippy::result_large_err ) ]
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
   pub fn publish( plan : publish::PublishPlan )
   ->
@@ -258,7 +277,7 @@ mod private
     for package_report in publish::perform_packages_publish( plan ).err_with_report( &report )?
     {
       let path : &std::path::Path = package_report.get_info.as_ref().unwrap().current_path.as_ref();
-      report.packages.push(( AbsolutePath::try_from( path ).unwrap(), package_report ));
+      report.packages.push( ( AbsolutePath::try_from( path ).unwrap(), package_report ) );
     }
 
     if let Some( dir ) = temp
@@ -266,7 +285,7 @@ mod private
       fs::remove_dir_all( dir ).err_with_report( &report )?;
     }
 
-    Ok( report )
+    Result::Ok( report )
   }
 }
 

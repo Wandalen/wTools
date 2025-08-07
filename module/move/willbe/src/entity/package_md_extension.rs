@@ -1,27 +1,42 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+
   use crate::*;
 
   /// Md's extension for workspace
   pub trait PackageMdExtension
   {
     /// Package name
+    /// # Errors
+    /// qqq: doc
     fn name( &self ) -> Result< &str, package::PackageError >;
 
     /// Stability
+    /// # Errors
+    /// qqq: doc
     fn stability( &self ) -> Result< action::readme_health_table_renew::Stability, package::PackageError >;
 
     /// Repository
+    /// # Errors
+    /// qqq: doc
     fn repository( &self ) -> Result< Option< String >, package::PackageError >;
 
     /// Discord url
+    /// # Errors
+    /// qqq: doc
     fn discord_url( &self ) -> Result< Option< String >, package::PackageError >;
   }
-
-  impl < 'a > package::Package< 'a >
+  // fix clippy
+  impl  package::Package< '_ >
   {
     /// Package name
+    /// # Errors
+    /// qqq: doc
+    ///
+    /// # Panics
+    /// qqq: doc
     pub fn name( &self ) -> Result< &str, package::PackageError >
     {
       match self
@@ -33,16 +48,19 @@ mod private
 
           // Unwrap safely because of the `Package` type guarantee
           // Ok( data[ "package" ][ "name" ].as_str().unwrap().to_string() )
-          Ok( data[ "package" ][ "name" ].as_str().unwrap() )
+          Result::Ok( data[ "package" ][ "name" ].as_str().unwrap() )
         }
         Self::WorkspacePackageRef( package ) =>
         {
-          Ok( package.name() )
+          Result::Ok( package.name() )
         }
       }
     }
 
     /// Stability
+    ///
+    /// # Errors
+    /// qqq: doc
     pub fn stability( &self ) -> Result< action::readme_health_table_renew::Stability, package::PackageError >
     {
       // aaa : for Petro : bad : first of all it should be in trait. also there is duplicated code
@@ -54,7 +72,7 @@ mod private
         Self::Manifest( _ ) =>
         {
           // Unwrap safely because of the `Package` type guarantee
-          Ok
+          Result::Ok
           (
             self.package_metadata()
             .and_then( | m | m.get( "stability" ) )
@@ -65,7 +83,7 @@ mod private
         }
         Self::WorkspacePackageRef( package ) =>
         {
-          Ok
+          Result::Ok
           (
             package
             .metadata()[ "stability" ]
@@ -78,6 +96,9 @@ mod private
     }
 
     /// Repository
+    ///
+    /// # Errors
+    /// qqq: doc
     pub fn repository( &self ) -> Result< Option< String >, package::PackageError >
     {
       match self
@@ -88,22 +109,25 @@ mod private
           let data = &manifest.data;
 
           // Unwrap safely because of the `Package` type guarantee
-          Ok
+          Result::Ok
           (
             data[ "package" ]
             .get( "repository" )
             .and_then( | r | r.as_str() )
-            .map( | r | r.to_string())
+            .map( std::string::ToString::to_string )
           )
         }
         Self::WorkspacePackageRef( package ) =>
         {
-          Ok( package.repository().cloned() )
+          Result::Ok( package.repository().cloned() )
         }
       }
     }
 
     /// Discord url
+    ///
+    /// # Errors
+    /// qqq: doc
     pub fn discord_url( &self ) -> Result< Option< String >, package::PackageError >
     {
       match self
@@ -111,17 +135,17 @@ mod private
         Self::Manifest( _ ) =>
         {
           // let data = manifest.data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
-          Ok
+          Result::Ok
           (
             self.package_metadata()
             .and_then( | m | m.get( "discord_url" ) )
             .and_then( | url | url.as_str() )
-            .map( | r | r.to_string() )
+            .map( std::string::ToString::to_string )
           )
         }
         Self::WorkspacePackageRef( package ) =>
         {
-          Ok( package.metadata()[ "discord_url" ].as_str().map( | url | url.to_string() ) )
+          Result::Ok( package.metadata()[ "discord_url" ].as_str().map( std::string::ToString::to_string ) )
         }
       }
     }
@@ -136,7 +160,7 @@ mod private
           data[ "package" ]
           .get( "metadata" )
         }
-        package::Package::WorkspacePackageRef(_) =>
+        package::Package::WorkspacePackageRef( _ ) =>
         {
           None
         }

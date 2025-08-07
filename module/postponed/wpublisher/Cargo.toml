@@ -7,7 +7,7 @@ authors = [
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/wpublisher"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/wpublisher"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/wpublisher"
@@ -27,7 +27,7 @@ all-features = false
 include = [
   "/rust/impl/publisher",
   "/Cargo.toml",
-  "/Readme.md",
+  "/readme.md",
   "/License",
 ]
 

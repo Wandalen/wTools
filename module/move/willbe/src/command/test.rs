@@ -1,22 +1,26 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
+
   use crate::*;
 
-  use collection::HashSet;
+  use collection_tools::collection::HashSet;
   use std::fs;
   use colored::Colorize;
   use wca::VerifiedCommand;
   // use error::Result;
   // qqq : group dependencies
-  use path::{ AbsolutePath, PathBuf };
+  use pth::{ AbsolutePath, PathBuf };
   use action::test::TestsCommandOptions;
   use former::Former;
-  use channel::Channel;
+  use crate::entity::channel::Channel;
   use error::untyped::bail;
-  use optimization::Optimization;
+  use crate::entity::optimization::Optimization;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
 
   #[ derive( Former, Debug ) ]
+  #[ allow( clippy::struct_excessive_bools ) ]
   struct TestsProperties
   {
     #[ former( default = true ) ]
@@ -48,6 +52,8 @@ mod private
   }
 
   /// run tests in specified crate
+  /// # Errors
+  /// qqq: doc
   // qqq : don't use 1-prameter Result
   pub fn test( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {
@@ -60,17 +66,14 @@ mod private
       .unwrap_or( std::path::PathBuf::from( "" ) )
       .display()
     );
-    let prop_line = format!
-    (
-      "{}",
-      o
-      .props
-      .iter()
-      .map( | p | format!( "{}:{}", p.0, p.1.to_string() ) )
-      .collect::< Vec< _ > >().join(" ")
-    );
+    let prop_line = o
+    .props
+    .iter()
+    .map( | p | format!( "{}:{}", p.0, p.1 ) )
+    .collect::< Vec< _ > >().join(" ");
 
     let path : PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
+    // qqq : dont use canonicalizefunction. path does not have exist
     let path = AbsolutePath::try_from( fs::canonicalize( path )? )?;
     let TestsProperties
     {
@@ -127,10 +130,10 @@ Set at least one of them to true." );
       {
         if dry
         {
-          let args = if args_line.is_empty() { String::new() } else { format!(" {}", args_line) };
-          let prop = if prop_line.is_empty() { String::new() } else { format!(" {}", prop_line) };
-          let line = format!("will .publish{}{} dry:0", args, prop);
-          println!("To apply plan, call the command `{}`", line.blue());
+          let args = if args_line.is_empty() { String::new() } else { format!(" {args_line}" ) };
+          let prop = if prop_line.is_empty() { String::new() } else { format!(" {prop_line}" ) };
+          let line = format!( "will .publish{args}{prop} dry:0" );
+          println!( "To apply plan, call the command `{}`", line.blue() );
         }
         else
         {
@@ -147,10 +150,10 @@ Set at least one of them to true." );
     }
   }
 
-  impl TryFrom< wca::Props > for TestsProperties
+  impl TryFrom< wca::executor::Props > for TestsProperties
   {
     type Error = error::untyped::Error;
-    fn try_from( value : wca::Props ) -> Result< Self, Self::Error >
+    fn try_from( value : wca::executor::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();
 

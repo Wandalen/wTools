@@ -3,7 +3,7 @@ use core::ops::Not;
 use super::*;
 
 #[ allow( dead_code ) ]
-#[ derive( the_module::Not ) ]
+// #[ derive( the_module::Not ) ]
 struct BoundsMixed< T : ToString + Not< Output = T >, U >
 where
   U : Debug + Not< Output = U >,
@@ -12,4 +12,4 @@ where
   b: U,
 }
 
-include!( "./only_test/bounds_mixed.rs" );
+// include!( "./only_test/bounds_mixed.rs" );

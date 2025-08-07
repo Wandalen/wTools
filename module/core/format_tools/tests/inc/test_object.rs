@@ -200,3 +200,90 @@ pub fn test_objects_gen() -> Vec< TestObject >
   ]
 
 }
+
+pub fn test_objects_gen_with_unicode() -> Vec< TestObject >
+{
+  vec!
+  [
+    TestObject
+    {
+      id : "Доміно".to_string(),
+      created_at : 100,
+      file_ids : vec![ "файл1".to_string(), "файл2".to_string() ],
+      tools : None,
+    },
+    TestObject
+    {
+      id : "Інший юнікод".to_string(),
+      created_at : 120,
+      file_ids : vec![],
+      tools : Some
+      (
+        vec!
+        [
+          {
+            let mut map = HashMap::new();
+            map.insert( "тулз1".to_string(), "значення1".to_string() );
+            map
+          },
+          {
+            let mut map = HashMap::new();
+            map.insert( "тулз2".to_string(), "значення2".to_string() );
+            map
+          }
+        ]
+      ),
+    }
+  ]
+}
+
+pub fn test_objects_gen_2_languages() -> Vec< TestObject >
+{
+  vec!
+  [
+    TestObject
+    {
+      id : "Доміно".to_string(),
+      created_at : 100,
+      file_ids : vec![ "файл1".to_string(), "файл2".to_string() ],
+      tools : Some
+      (
+        vec!
+        [
+          {
+            let mut map = HashMap::new();
+            map.insert( "тулз1".to_string(), "значення1".to_string() );
+            map
+          },
+          {
+            let mut map = HashMap::new();
+            map.insert( "тулз2".to_string(), "значення2".to_string() );
+            map
+          }
+        ]
+      ),
+    },
+    TestObject
+    {
+      id : "File".to_string(),
+      created_at : 120,
+      file_ids : vec![ "file1".to_string(), "file2".to_string() ],
+      tools : Some
+      (
+        vec!
+        [
+          {
+            let mut map = HashMap::new();
+            map.insert( "tools1".to_string(), "value1".to_string() );
+            map
+          },
+          {
+            let mut map = HashMap::new();
+            map.insert( "tools1".to_string(), "value2".to_string() );
+            map
+          }
+        ]
+      ),
+    }
+  ]
+}

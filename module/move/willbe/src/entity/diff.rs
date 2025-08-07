@@ -1,16 +1,15 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+
   use crate::*;
 
-  use std::
-  {
-    fmt::Formatter,
-  };
-  use path::PathBuf;
-  use collection::HashMap;
+  use std::fmt::Formatter;
+  use pth::PathBuf;
+  use collection_tools::collection::HashMap;
   use colored::Colorize;
   use crates_tools::CrateArchive;
-  use collection::HashSet;
+  use collection_tools::collection::HashSet;
   use similar::{ TextDiff, ChangeTag };
 
   // use similar::*; // qqq : for Bohdan : bad
@@ -73,6 +72,9 @@ mod private
     /// # Returns
     ///
     /// Returns a new instance of the struct with the excluded items removed from the internal report.
+    /// # Panics
+    /// qqq: doc
+    #[ must_use ]
     pub fn exclude< Is, I >( mut self, items : Is ) -> Self
     where
       Is : Into< HashSet< I > >,
@@ -89,14 +91,15 @@ mod private
       Self( map )
     }
 
-    /// Checks if there are any changes in the DiffItems.
+    /// Checks if there are any changes in the `DiffItems`.
     ///
     /// # Returns
-    /// * `true` if there are changes in any of the DiffItems.
-    /// * `false` if all DiffItems are the same.
+    /// * `true` if there are changes in any of the `DiffItems`.
+    /// * `false` if all `DiffItems` are the same.
+    #[ must_use ]
     pub fn has_changes( &self ) -> bool
     {
-      !self.0.iter().all( |( _, item )| matches!( item, DiffItem::File( Diff::Same( () ) ) ))
+      !self.0.iter().all( | ( _, item ) | matches!( item, DiffItem::File( Diff::Same( () ) ) ) )
     }
   }
 
@@ -104,7 +107,7 @@ mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
-      for ( path , diff ) in self.0.iter().sorted_by_key( |( k, _ )| k.as_path() )
+      for ( path , diff ) in self.0.iter().sorted_by_key( | ( k, _ ) | k.as_path() )
       {
         match diff
         {
@@ -112,10 +115,10 @@ mod private
           {
             match item
             {
-              Diff::Same( _ ) => writeln!( f, " {}", path.display() )?,
-              Diff::Add( _ ) => writeln!( f, "+ {} NEW", path.to_string_lossy().green() )?,
-              Diff::Rem( _ ) => writeln!( f, "- {} REMOVED", path.to_string_lossy().red() )?,
-            };
+              Diff::Same( () ) => writeln!( f, " {}", path.display() )?,
+              Diff::Add( () ) => writeln!( f, "+ {} NEW", path.to_string_lossy().green() )?,
+              Diff::Rem( () ) => writeln!( f, "- {} REMOVED", path.to_string_lossy().red() )?,
+            }
           }
           DiffItem::Content( items ) =>
           {
@@ -127,17 +130,17 @@ mod private
             {
               match item
               {
-                Diff::Same( t ) => write!( f, "|   {}", t )?,
+                Diff::Same( t ) => write!( f, "|   {t}" )?,
                 Diff::Add( t ) => write!( f, "| + {}", t.green() )?,
                 Diff::Rem( t ) => write!( f, "| - {}", t.red() )?,
-              };
+              }
             }
             writeln!( f, "{}", "=".repeat( len + 2 ) )?;
           }
-        };
+        }
       }
 
-      Ok( () )
+      std::fmt::Result::Ok( () )
     }
   }
 
@@ -149,13 +152,16 @@ mod private
   /// # Arguments
   ///
   /// * `left`: A reference to the first crate archive.
-  ///           Changes that are present here but lacking in 'right' are classified as additions.
+  ///   Changes that are present here but lacking in 'right' are classified as additions.
   /// * `right`: A reference to the second crate archive.
-  ///            Changes not found in 'left' but present in 'right' are classified as removals.
+  ///   Changes not found in 'left' but present in 'right' are classified as removals.
   ///
   /// # Returns
   ///
   /// A `DiffReport` struct, representing the unique and shared attributes of the two crate archives.
+  /// # Panics
+  /// qqq: doc
+  #[ must_use ]
   pub fn crate_diff( left : &CrateArchive, right : &CrateArchive ) -> DiffReport
   {
     let mut report = DiffReport::default();
@@ -163,9 +169,11 @@ mod private
     let local_package_files : HashSet< _ > = left.list().into_iter().collect();
     let remote_package_files : HashSet< _ > = right.list().into_iter().collect();
 
+
     let local_only = local_package_files.difference( &remote_package_files );
     let remote_only = remote_package_files.difference( &local_package_files );
     let both = local_package_files.intersection( &remote_package_files );
+
 
     for &path in local_only
     {
@@ -179,9 +187,11 @@ mod private
 
     for &path in both
     {
+
       // unwraps are safe because the paths to the files was compared previously
       let local = left.content_bytes( path ).unwrap();
       let remote = right.content_bytes( path ).unwrap();
+
 
       if local == remote
       {
@@ -206,6 +216,7 @@ mod private
             items.push( item );
           }
         }
+
         report.0.insert( path.to_path_buf(), DiffItem::Content( items ) );
       }
     }

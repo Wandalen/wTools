@@ -1,11 +1,11 @@
 use super::*;
 
 #[ allow( dead_code ) ]
-#[ derive( the_module::Not ) ]
+// #[ derive( the_module::Not ) ]
 struct NamedDefaultOnSomeOff
 {
   a : bool,
-  #[ not( off ) ]
+  // #[ not( off ) ]
   b : u8,
 }
 

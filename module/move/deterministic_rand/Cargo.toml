@@ -1,13 +1,13 @@
 [package]
 name = "deterministic_rand"
-version = "0.5.0"
+version = "0.6.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Viktor Dudnik <viktor.d@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/deterministic_rand"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/deterministic_rand"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/deterministic_rand"
