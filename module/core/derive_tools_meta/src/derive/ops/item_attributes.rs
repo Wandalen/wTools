@@ -2,9 +2,10 @@ extern crate alloc;
 use macro_tools::
 { 
   Result, 
-  syn 
+  syn,
 };
-use syn::
+
+use macro_tools::syn::
 { 
   Expr, 
   Type, 

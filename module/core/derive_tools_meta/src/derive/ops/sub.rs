@@ -1,5 +1,4 @@
 use super::item_attributes::ItemAttributes;
-use crate::derive::syn::Variant;
 
 use macro_tools::
 {
@@ -13,6 +12,7 @@ use macro_tools::
   proc_macro2,
   return_syn_err,
   Spanned,
+  syn::Variant
 };
 
 use super::

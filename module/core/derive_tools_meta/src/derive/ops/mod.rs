@@ -9,14 +9,15 @@ pub use sub::sub;
 pub use mul::mul;
 pub use div::div;
 
-use item_attributes::ItemAttributes;
-use proc_macro2::TokenStream;
 use macro_tools::
 {
   qt,
   syn,
   proc_macro2,
+  proc_macro2::TokenStream,
 };
+
+use item_attributes::ItemAttributes;
 use super::FieldAccess;
 
 #[ derive( Copy, Clone ) ]
