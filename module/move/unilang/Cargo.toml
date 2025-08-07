@@ -21,7 +21,7 @@ keywords = [ "wtools", "CLI", "CUI", "user-interface" ]
 workspace = true
 
 [package.metadata.docs.rs]
-features = [ "full", "error_tools/enabled", "strs_tools/enabled", "mod_interface/enabled", "iter_tools/enabled", "former/enabled" ]
+features = [ "full", "error_tools/enabled", "mod_interface/enabled", "iter_tools/enabled", "former/enabled" ]
 all-features = false
 
 [features]
@@ -108,6 +108,16 @@ harness = false
 [[bench]]
 name = "throughput_benchmark"
 path = "benchmarks/throughput_benchmark.rs"
+harness = false
+
+[[bench]]
+name = "string_interning_benchmark"
+path = "benchmarks/string_interning_benchmark.rs"
+harness = false
+
+[[bench]]
+name = "integrated_string_interning_benchmark"
+path = "benchmarks/integrated_string_interning_benchmark.rs"
 harness = false
 
 [[test]]
