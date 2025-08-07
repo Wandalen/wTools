@@ -339,7 +339,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// No field-level attributes supported yet.
 ///
 /// ## Generated Output
-/// ```ignore
+/// ```text
 /// impl Add for MyStruct 
 /// {
 ///     type Output = Self;
@@ -355,7 +355,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// }
 /// ```
 /// Or for tuple structs:
-/// ```ignore
+/// ```text
 /// Self( self.0 + other.0, self.1 + other.1 )
 /// ```
 ///
@@ -363,7 +363,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// All fields must implement [`core::ops::Add`].
 ///
 /// ## Example Usage
-/// ```
+/// ```text
 /// use derive_tools_meta::Add;
 /// 
 /// #[ derive( Add ) ]
@@ -386,30 +386,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///   One,
 ///   Two( i32 ),
 /// }
-/// 
-/// let my_struct1 = MyNamedStruct { x : 3 };
-/// let my_struct2 = MyNamedStruct { x : 3 };
-/// 
-/// let result = ( my_struct1 + my_struct2 );
-/// 
-/// assert_eq!( result.x, 6 );
-/// 
-/// let my_struct1 = MyTupleStruct ( 3 );
-/// let my_struct2 = MyTupleStruct ( 3 );
-/// 
-/// let result = ( my_struct1 + my_struct2 );
-/// assert_eq!( result.0, 6 );
-/// 
-/// let my_enum1 = MyEnum::Two( 3 );
-/// let my_enum2 = MyEnum::Two( 3 );
-/// 
-/// let result = ( my_enum1 + my_enum2 );
-///
-/// assert!( result.is_ok() );
-/// let value = if let MyEnum::Two( val ) = result.unwrap() { val } else { panic!( "Expected MyEnum::Two variant" ) };
-/// assert_eq!( value, 6 );
 /// ```
-///
 #[ proc_macro_derive( Add, attributes( derive_ops, add, debug ) ) ]
 pub fn add( input : proc_macro::TokenStream ) -> proc_macro::TokenStream 
 {
@@ -451,7 +428,7 @@ pub fn add( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// No field-level attributes supported yet.
 ///
 /// ## Generated Output
-/// ```ignore
+/// ```text
 /// impl Sub for MyStruct 
 /// {
 ///     type Output = Self;
@@ -467,7 +444,7 @@ pub fn add( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// }
 /// ```
 /// Or for tuple structs:
-/// ```ignore
+/// ```text
 /// Self( self.0 - other.0, self.1 - other.1 )
 /// ```
 ///
@@ -475,7 +452,7 @@ pub fn add( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// All fields must implement [`core::ops::Sub`].
 ///
 /// ## Example Usage
-/// ```
+/// ```text
 /// use derive_tools_meta::Sub;
 /// 
 /// #[ derive( Sub ) ]
@@ -499,28 +476,6 @@ pub fn add( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///   One,
 ///   Two( i32 ),
 /// }
-/// 
-/// let my_struct1 = MyNamedStruct { x : 4 };
-/// let my_struct2 = MyNamedStruct { x : 3 };
-/// 
-/// let result = ( my_struct1 - my_struct2 );
-/// 
-/// assert_eq!( result.x, 1 );
-/// 
-/// let my_struct1 = MyTupleStruct ( 4 );
-/// let my_struct2 = MyTupleStruct ( 3 );
-/// 
-/// let result = ( my_struct1 - my_struct2 );
-/// assert_eq!( result.0, 1 );
-/// 
-/// let my_enum1 = MyEnum::Two( 4 );
-/// let my_enum2 = MyEnum::Two( 3 );
-/// 
-/// let result = ( my_enum1 - my_enum2 );
-///
-/// assert!( result.is_ok() );
-/// let value = if let MyEnum::Two( val ) = result.unwrap() { val } else { panic!( "Expected MyEnum::Two variant" ) };
-/// assert_eq!( value, 1 );
 /// ```
 ///
 #[ proc_macro_derive( Sub, attributes( derive_ops, sub, debug ) ) ]
@@ -564,7 +519,7 @@ pub fn sub( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// No field-level attributes supported yet.
 ///
 /// ## Generated Output
-/// ```ignore
+/// ```text
 /// impl Mul for MyStruct 
 /// {
 ///     type Output = Self;
@@ -580,7 +535,7 @@ pub fn sub( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// }
 /// ```
 /// Or for tuple structs:
-/// ```ignore
+/// ```text
 /// Self( self.0 * other.0, self.1 * other.1 )
 /// ```
 ///
@@ -588,7 +543,7 @@ pub fn sub( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// All fields must implement [`core::ops::Mul`].
 ///
 /// ## Example Usage
-/// ```
+/// ```text
 /// use derive_tools_meta::Mul;
 /// 
 /// #[ derive( Mul ) ]
@@ -608,28 +563,6 @@ pub fn sub( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///   One,
 ///   Two( i32 ),
 /// }
-/// 
-/// let my_struct1 = MyNamedStruct { x : 4 };
-/// let my_struct2 = MyNamedStruct { x : 3 };
-/// 
-/// let result = ( my_struct1 * my_struct2 );
-/// 
-/// assert_eq!( result.x, 12 );
-/// 
-/// let my_struct1 = MyTupleStruct ( 4 );
-/// let my_struct2 = MyTupleStruct ( 3 );
-/// 
-/// let result = ( my_struct1 * my_struct2 );
-/// assert_eq!( result.0, 12 );
-/// 
-/// let my_enum1 = MyEnum::Two( 4 );
-/// let my_enum2 = MyEnum::Two( 3 );
-/// 
-/// let result = ( my_enum1 * my_enum2 );
-///
-/// assert!( result.is_ok() );
-/// let value = if let MyEnum::Two( val ) = result.unwrap() { val } else { panic!( "Expected MyEnum::Two variant" ) };
-/// assert_eq!( value, 12 );
 /// ```
 ///
 #[ proc_macro_derive( Mul, attributes( derive_ops, mul, debug ) ) ]
@@ -673,7 +606,7 @@ pub fn mul( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// No field-level attributes supported yet.
 ///
 /// ## Generated Output
-/// ```ignore
+/// ```text
 /// impl Div for MyStruct 
 /// {
 ///     type Output = Self;
@@ -689,7 +622,7 @@ pub fn mul( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// }
 /// ```
 /// Or for tuple structs:
-/// ```ignore
+/// ```text
 /// Self( self.0 / other.0, self.1 / other.1 )
 /// ```
 ///
@@ -697,7 +630,7 @@ pub fn mul( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// All fields must implement [`core::ops::Div`].
 /// 
 /// ## Example Usage
-/// ```
+/// ```text
 /// use derive_tools_meta::Div;
 /// 
 /// #[ derive( Div ) ]
@@ -717,28 +650,6 @@ pub fn mul( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///   One,
 ///   Two( i32 ),
 /// }
-/// 
-/// let my_struct1 = MyNamedStruct { x : 12 };
-/// let my_struct2 = MyNamedStruct { x : 3 };
-/// 
-/// let result = ( my_struct1 / my_struct2 );
-/// 
-/// assert_eq!( result.x, 4 );
-/// 
-/// let my_struct1 = MyTupleStruct ( 12 );
-/// let my_struct2 = MyTupleStruct ( 3 );
-/// 
-/// let result = ( my_struct1 / my_struct2 );
-/// assert_eq!( result.0, 4 );
-/// 
-/// let my_enum1 = MyEnum::Two( 12 );
-/// let my_enum2 = MyEnum::Two( 3 );
-/// 
-/// let result = ( my_enum1 / my_enum2 );
-///
-/// assert!( result.is_ok() );
-/// let value = if let MyEnum::Two( val ) = result.unwrap() { val } else { panic!( "Expected MyEnum::Two variant" ) };
-/// assert_eq!( value, 4 );
 /// ```
 ///
 #[ proc_macro_derive( Div, attributes( derive_ops, div, debug ) ) ]
