@@ -10,7 +10,7 @@
 //! Macro to answer the question: does it implement a trait?
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
 // #[ macro_use ]
 mod implements_impl;

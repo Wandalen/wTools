@@ -11,7 +11,7 @@
 //! Type constructors of fundamental data types.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
 pub use derive_tools::{ From_0, From_1, From_2, From_3, from };
 
