@@ -19,14 +19,14 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   register_interactive_commands( &mut registry )?;
 
   // Step 2: Create stateless pipeline for REPL
-  let pipeline = Pipeline::new( CommandRegistry::new() );
+  let pipeline = Pipeline::new( registry );
   println!( "✓ Initialized stateless pipeline for REPL operation\n" );
 
   // Step 3: Start interactive session
   println!( "🚀 Starting Interactive REPL Session" );
   println!( "Type commands or 'help' for available commands, 'quit' to exit\n" );
 
-  run_repl( &pipeline, &registry )?;
+  run_repl( &pipeline )?;
 
   Ok( () )
 }
@@ -219,7 +219,7 @@ fn register_interactive_commands( registry : &mut CommandRegistry ) -> Result< (
 }
 
 /// Run the interactive REPL loop
-fn run_repl( pipeline : &Pipeline, registry : &CommandRegistry ) -> Result< (), Box< dyn std::error::Error > >
+fn run_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn std::error::Error > >
 {
   let mut command_history = Vec::new();
   let mut session_counter = 0u32;
@@ -250,7 +250,7 @@ fn run_repl( pipeline : &Pipeline, registry : &CommandRegistry ) -> Result< (), 
           },
           "help" | "h" =>
           {
-            display_repl_help( registry );
+            display_repl_help( pipeline.registry() );
             continue;
           },
           "history" =>
@@ -291,7 +291,7 @@ fn run_repl( pipeline : &Pipeline, registry : &CommandRegistry ) -> Result< (), 
           },
           Some( error ) =>
           {
-            if error.contains( "UNILANG_ARGUMENT_INTERACTIVE_REQUIRED" )
+            if error.contains( "UNILANG_ARGUMENT_INTERACTIVE_REQUIRED" ) || error.contains( "Interactive Argument Required" )
             {
               println!( "🔒 Interactive input required for secure argument" );
               println!( "💡 In a real application, this would prompt for secure input" );
