@@ -120,7 +120,7 @@ fn nested_structure_formatting()
     let lines : Vec< &str > = document.lines().collect();
     let mut final_doc = String::new();
     
-    for ( i, line ) in lines.iter().enumerate()
+    for ( _i, line ) in lines.iter().enumerate()
     {
       final_doc.push_str( line );
       final_doc.push( '\n' );

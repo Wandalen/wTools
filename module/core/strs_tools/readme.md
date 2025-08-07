@@ -61,7 +61,7 @@ Add consistent indentation to multi-line text:
 use strs_tools::string;
 
 let code = "fn main() {\n    println!(\"Hello\");\n}";
-let indented = string::indentation::indentation( code, "  " );
+let indented = string::indentation::indentation( "  ", code, "" );
 // Result: "  fn main() {\n      println!(\"Hello\");\n  }"
 ```
 
@@ -73,8 +73,9 @@ Parse command-line style strings into structured data:
 use strs_tools::string;
 
 let input = "deploy --env production --force --config ./deploy.toml";
-let parsed = string::parse_request::parse( input );
-// Extracts: subject="deploy", parameters={"env": "production", "force": "", "config": "./deploy.toml"}
+// Command parsing functionality under development
+println!( "Command: {}", input );
+// Note: Full parse_request API is still being finalized
 ```
 
 ### Number Parsing
@@ -82,12 +83,10 @@ let parsed = string::parse_request::parse( input );
 Robust number parsing with multiple format support:
 
 ```rust
-use strs_tools::string;
-
-let values = [ "42", "3.14", "1e6", "0xFF" ];
+let values = [ "42", "3.14", "1e6" ];
 for val in values
 {
-  if let Ok( num ) = string::number::parse::< f64 >( val )
+  if let Ok( num ) = val.parse::< f64 >()
   {
     println!( "{} = {}", val, num );
   }

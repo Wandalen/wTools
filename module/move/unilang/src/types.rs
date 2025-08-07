@@ -309,20 +309,20 @@ fn parse_json_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
 {
   match kind {
     Kind::JsonString => {
-      // Validate that it's a valid JSON string, but store it as a raw string.
-      serde_json::from_str::<serde_json::Value>(input).map_err(|e| TypeError {
+      // Validate that it's a valid JSON string using SIMD-optimized parsing
+      crate::simd_json_parser::SIMDJsonParser::parse_to_serde_value( input ).map_err( |e| TypeError {
         expected_kind: kind.clone(),
-        reason: e.to_string(),
+        reason: e.reason,
       })?;
-      Ok(Value::JsonString(input.to_string()))
+      Ok( Value::JsonString( input.to_string() ) )
     }
-    Kind::Object => serde_json::from_str::<serde_json::Value>(input)
-      .map(Value::Object)
-      .map_err(|e| TypeError {
+    Kind::Object => crate::simd_json_parser::SIMDJsonParser::parse_to_serde_value( input )
+      .map( Value::Object )
+      .map_err( |e| TypeError {
         expected_kind: kind.clone(),
-        reason: e.to_string(),
+        reason: e.reason,
       }),
-    _ => unreachable!("Called parse_json_value with non-JSON kind: {:?}", kind),
+    _ => unreachable!( "Called parse_json_value with non-JSON kind: {:?}", kind ),
   }
 }
 

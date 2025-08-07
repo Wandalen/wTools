@@ -37,7 +37,8 @@ fn basic_string_splitting()
     .collect();
     
     println!( "Input: '{}' -> {:?}", src, result );
-    assert_eq!( result, vec![ "abc", "def", "ghi" ] );
+    // Note: With stripping(false), delimiters are preserved in output
+    assert_eq!( result, vec![ "abc", " ", "def", " ", "ghi" ] );
     
     // Example with delimiter that doesn't exist
     let iter = string::split()

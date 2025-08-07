@@ -120,6 +120,11 @@ name = "integrated_string_interning_benchmark"
 path = "benchmarks/integrated_string_interning_benchmark.rs"
 harness = false
 
+[[bench]]
+name = "simd_json_benchmark"
+path = "benchmarks/simd_json_benchmark.rs"
+harness = false
+
 [[test]]
 name = "run_all_benchmarks"
 path = "benchmarks/run_all_benchmarks.rs"

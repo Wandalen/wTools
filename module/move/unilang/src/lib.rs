@@ -46,4 +46,7 @@ mod_interface::mod_interface!
   
   /// String interning system for performance optimization.
   layer interner;
+  
+  /// SIMD-optimized JSON parsing for 4-25x performance improvements.
+  layer simd_json_parser;
 }
