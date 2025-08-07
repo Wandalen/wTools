@@ -1,4 +1,4 @@
-#[ allow( clippy::wildcard_imports ) ]
+
 use crate::*;
 use core::
 {
@@ -37,11 +37,11 @@ impl TryFrom< &Path > for EitherDirOrFile
   {
     if value.file_name() == Some( "Cargo.toml".as_ref() )
     {
-      Ok( Self( data_type::Either::Right( ManifestFile::try_from( value )? ) ) )
+      Result::Ok( Self( data_type::Either::Right( ManifestFile::try_from( value )? ) ) )
     }
     else
     {
-      Ok( Self( data_type::Either::Left( CrateDir::try_from( value )? ) ) )
+      Result::Ok( Self( data_type::Either::Left( CrateDir::try_from( value )? ) ) )
     }
   }
 }

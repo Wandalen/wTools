@@ -1,13 +1,13 @@
 [package]
 name = "former_meta"
-version = "2.19.0"
+version = "2.23.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/former_meta"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/former_meta"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/former_meta"
@@ -40,7 +40,11 @@ default = [
 ]
 full = [
   "default",
+  "performance",
 ]
+
+# Performance optimization features
+performance = []
 enabled = [ "macro_tools/enabled", "iter_tools/enabled", "former_types/enabled", "component_model_types/enabled" ]
 
 derive_former = [ "convert_case" ]

@@ -1,13 +1,11 @@
-
 //!
 //! Environment of a process.
 //!
 
 /// Define a private namespace for all its items.
-mod private
-{
+mod private {
 
-  #[ allow( unused_imports ) ]
+  #[allow(unused_imports)]
   use crate::*;
 
   /// Checks if the current execution environment is a Continuous Integration (CI) or Continuous Deployment (CD) pipeline.
@@ -35,13 +33,11 @@ mod private
   /// use test_tools::process_tools::environment;
   /// assert_eq!( environment::is_cicd(), true );
   /// ```
-  #[ cfg( feature = "process_environment_is_cicd" ) ]
-  #[ must_use ]
-  pub fn is_cicd() -> bool
-  {
+  #[cfg(feature = "process_environment_is_cicd")]
+  #[must_use]
+  pub fn is_cicd() -> bool {
     use std::env;
-    let ci_vars =
-    [
+    let ci_vars = [
       "CI",             // Common in many CI systems
       "GITHUB_ACTIONS", // GitHub Actions
       "GITLAB_CI",      // GitLab CI
@@ -50,65 +46,49 @@ mod private
       "JENKINS_URL",    // Jenkins
     ];
 
-    ci_vars.iter().any( | &var | env::var( var ).is_ok() )
+    ci_vars.iter().any(|&var| env::var(var).is_ok())
   }
-
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+#[doc(inline)]
+#[allow(unused_imports)]
 pub use own::*;
 
 /// Own namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod own
-{
+#[allow(unused_imports)]
+pub mod own {
   use super::*;
 
-  #[ doc( inline ) ]
-  pub use
-  {
-    private::is_cicd,
-  };
-
+  #[doc(inline)]
+  pub use {private::is_cicd};
 }
 
 /// Shared with parent namespace of the module
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
+#[allow(unused_imports)]
+pub mod orphan {
   use super::*;
 
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use exposed::*;
-
 }
 
 /// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
+#[allow(unused_imports)]
+pub mod exposed {
   use super::*;
 
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use prelude::*;
 
-  #[ doc( inline ) ]
-  pub use private::
-  {
-  };
-
+  #[doc(inline)]
+  pub use private::{};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[allow(unused_imports)]
+pub mod prelude {
   use super::*;
 
-  #[ doc( inline ) ]
-  pub use
-  {
-  };
-
+  #[doc(inline)]
+  pub use {};
 }

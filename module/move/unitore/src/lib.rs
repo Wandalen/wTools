@@ -9,4 +9,4 @@ pub mod entity;
 pub mod sled_adapter;
 
 // qqq : src/Readmу.md with file structure please
-// aaa : added Readme.md
+// aaa : added readme.md

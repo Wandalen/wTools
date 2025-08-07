@@ -1,6 +1,6 @@
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
 
   use std::fs;
@@ -9,7 +9,7 @@ mod private
 
   // use error::Result;
   // qqq : group dependencies
-  // use path::AbsolutePath;
+  // use pth::AbsolutePath;
 
   #[ derive( former::Former ) ]
   struct PublishDiffProperties

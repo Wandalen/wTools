@@ -1,11 +1,9 @@
-
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
 
 //
 
-tests_impls!
-{
+tests_impls! {
 
   #[ cfg( any( feature = "chrono", feature = "time_chrono" ) ) ]
   fn basic()
@@ -36,7 +34,6 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   basic,
 }

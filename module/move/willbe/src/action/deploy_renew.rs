@@ -1,10 +1,10 @@
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use std::path::Path;
   use error::untyped::Context;
-  #[ allow( clippy::wildcard_imports ) ]
+
   use tool::template::*;
 
   /// Template for creating deploy files.
@@ -17,8 +17,8 @@ mod private
   impl DeployTemplate
   {
     /// Creates am instance of `[TemplateHolder]` for deployment template.
-    /// 
-    /// Used for properly initializing a template 
+    ///
+    /// Used for properly initializing a template
     #[ must_use ]
     #[ allow( clippy::should_implement_trait ) ]
     pub fn default() -> TemplateHolder
@@ -52,19 +52,19 @@ mod private
     .file().data( include_str!( "../../template/deploy/Makefile.hbs" ) ).path( "./Makefile" ).is_template( true ).end()
     // /key
     .file().data( include_str!( "../../template/deploy/key/pack.sh" ) ).path( "./key/pack.sh" ).end()
-    .file().data( include_str!( "../../template/deploy/key/Readme.md" ) ).path( "./key/Readme.md" ).end()
+    .file().data( include_str!( "../../template/deploy/key/readme.md" ) ).path( "./key/readme.md" ).end()
     // /deploy/
     .file().data( include_str!( "../../template/deploy/deploy/redeploy.sh" ) ).path( "./deploy/redeploy.sh" ).end()
     .file().data( include_str!( "../../template/deploy/deploy/cloud-init.tpl.hbs" ) ).path( "./deploy/cloud-init.tpl" ).is_template( true ).end()
     .file().data( include_str!( "../../template/deploy/deploy/Dockerfile" ) ).path( "./deploy/Dockerfile" ).end()
-    .file().data( include_str!( "../../template/deploy/deploy/Readme.md" ) ).path( "./deploy/Readme.md" ).end()
+    .file().data( include_str!( "../../template/deploy/deploy/readme.md" ) ).path( "./deploy/readme.md" ).end()
     // /deploy/gar
-    .file().data( include_str!( "../../template/deploy/deploy/gar/Readme.md" ) ).path( "./deploy/gar/Readme.md" ).end()
+    .file().data( include_str!( "../../template/deploy/deploy/gar/readme.md" ) ).path( "./deploy/gar/readme.md" ).end()
     .file().data( include_str!( "../../template/deploy/deploy/gar/main.tf.hbs" ) ).path( "./deploy/gar/main.tf" ).is_template( true ).end()
     .file().data( include_str!( "../../template/deploy/deploy/gar/outputs.tf" ) ).path( "./deploy/gar/outputs.tf" ).end()
     .file().data( include_str!( "../../template/deploy/deploy/gar/variables.tf" ) ).path( "./deploy/gar/variables.tf" ).end()
     // /deploy/gce
-    .file().data( include_str!( "../../template/deploy/deploy/gce/Readme.md" ) ).path( "./deploy/gce/Readme.md" ).end()
+    .file().data( include_str!( "../../template/deploy/deploy/gce/readme.md" ) ).path( "./deploy/gce/readme.md" ).end()
     .file().data( include_str!( "../../template/deploy/deploy/gce/main.tf.hbs" ) ).path( "./deploy/gce/main.tf" ).is_template( true ).end()
     .file().data( include_str!( "../../template/deploy/deploy/gce/outputs.tf.hbs" ) ).path( "./deploy/gce/outputs.tf" ).is_template( true ).end()
     .file().data( include_str!( "../../template/deploy/deploy/gce/variables.tf" ) ).path( "./deploy/gce/variables.tf" ).end()

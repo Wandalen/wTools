@@ -1,7 +1,9 @@
-#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
-#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
-#![ doc( html_root_url = "https://docs.rs/willbe/" ) ]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+#![doc(html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png")]
+#![doc(
+  html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
+)]
+#![doc(html_root_url = "https://docs.rs/willbe/")]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
 
 // qqq2 : xxx2 : fix broken sequence of publishing because of skipping debug dependencies
 //
@@ -57,13 +59,14 @@
 // if you publish a crate and after you try to publish another which depends on the first willbe don't see any changes and don't publish second
 // for example publishing impl_index -> after publising test_tools make willbe struggle to see that publishing of test_tools is required
 
-pub use mod_interface::mod_interface;
+#![allow(ambiguous_glob_imports)]
+
+use mod_interface::meta::mod_interface;
 
 /// Define a private namespace for all its items.
-mod private
-{
-  #[ allow( clippy::wildcard_imports ) ]
-  use crate::*;
+mod private {
+
+  use crate::{ error, command };
 
   /// Takes the command line arguments and perform associated function(s).
   /// If no arguments are provided, the function identifies this as an ambiguous state and prompts the user with a help message, suggesting possible commands they might want to execute.
@@ -73,39 +76,35 @@ mod private
   ///
   /// # Errors
   /// qqq: doc
-  pub fn run( args : Vec< String > ) -> Result< (), error::untyped::Error >
-  {
-    #[ cfg( feature = "tracing" ) ]
+  pub fn run(args: Vec<String>) -> Result<(), error::untyped::Error> {
+    #[cfg(feature = "tracing")]
     {
       tracing_subscriber::fmt().pretty().init();
     }
 
-    let args : Vec< String > = args.into_iter().skip( 1 ).collect();
+    let args: Vec<String> = args.into_iter().skip(1).collect();
 
     let ca = command::ca()
-    .help_variants( [ wca::HelpVariants::General, wca::HelpVariants::SubjectCommand ] )
-    .perform();
+      .help_variants([wca::HelpVariants::General, wca::HelpVariants::SubjectCommand])
+      .perform();
 
-    let program = args.join( " " );
-    if program.is_empty()
-    {
-      eprintln!( "Ambiguity. Did you mean?" );
-      ca.perform( ".help" )?;
-      std::process::exit( 1 )
+    let program = args.join(" ");
+    if program.is_empty() {
+      eprintln!("Ambiguity. Did you mean?");
+      ca.perform(".help")?;
+      std::process::exit(1)
+    } else {
+      Ok(ca.perform(program.as_str())?)
     }
-    else
-    {
-      Ok( ca.perform( program.as_str() )? )
-    }
-
   }
-
 }
 
-mod_interface!
-{
+mod_interface! {
 
-  own use run;
+  own use private::run;
+
+  /// Error handling facade.
+  layer error;
 
   /// Entities of which spaces consists of.
   layer entity;
@@ -120,3 +119,6 @@ mod_interface!
   layer action;
 
 }
+
+// Re-export thiserror outside of mod_interface since it doesn't have the required structure
+pub use ::error_tools::dependency::thiserror;

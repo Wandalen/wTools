@@ -25,7 +25,13 @@ fn test_m_t3_13_quoting_preserve_all_strip() // Renamed from test_split_indices_
     ("d", SplitType::Delimeted, 8, 9),
   ];
   let results: Vec<_> = iter.collect();
-  assert_eq!(results.len(), expected.len(), "Number of segments mismatch. Actual: {:?}, Expected: {:?}", results, expected);
+  assert_eq!(
+    results.len(),
+    expected.len(),
+    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
+    results,
+    expected
+  );
   for (i, split_item) in results.iter().enumerate() {
     assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
     assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
@@ -65,40 +71,43 @@ fn test_m_t3_12_quoting_no_preserve_strip() // Renamed from test_split_indices_t
 // Test Matrix ID: Combo_PE_T_PD_T_S_F
 // Description: src="a b c", del=" ", PE=T, S=F, PD=T
 #[test]
-fn test_combo_preserve_empty_true_preserve_delimiters_true_no_strip()
-{
+fn test_combo_preserve_empty_true_preserve_delimiters_true_no_strip() {
   let src = "a b c";
   let iter = split()
-  .src( src )
-  .delimeter( " " )
-  .preserving_empty( true )
-  .preserving_delimeters( true )
-  .stripping( false )
-  .perform();
-  assert_eq!( iter.map( | e | String::from( e.string ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
+    .src(src)
+    .delimeter(" ")
+    .preserving_empty(true)
+    .preserving_delimeters(true)
+    .stripping(false)
+    .perform();
+  assert_eq!(
+    iter.map(|e| String::from(e.string)).collect::<Vec<_>>(),
+    vec!["a", " ", "b", " ", "c"]
+  );
 }
 
 // Test Matrix ID: Combo_PE_F_PD_T_S_F
 // Description: src="a b c", del=" ", PE=F, S=F, PD=T
 #[test]
-fn test_combo_preserve_empty_false_preserve_delimiters_true_no_strip()
-{
+fn test_combo_preserve_empty_false_preserve_delimiters_true_no_strip() {
   let src = "a b c";
   let iter = split()
-  .src( src )
-  .delimeter( " " )
-  .preserving_empty( false )
-  .preserving_delimeters( true )
-  .stripping( false )
-  .perform();
-  assert_eq!( iter.map( | e | String::from( e.string ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
+    .src(src)
+    .delimeter(" ")
+    .preserving_empty(false)
+    .preserving_delimeters(true)
+    .stripping(false)
+    .perform();
+  assert_eq!(
+    iter.map(|e| String::from(e.string)).collect::<Vec<_>>(),
+    vec!["a", " ", "b", " ", "c"]
+  );
 }
 
 // Test Matrix ID: Combo_PE_T_PD_F_S_T
 // Description: src="a b c", del=" ", PE=T, S=T, PD=F
 #[test]
-fn test_combo_preserve_empty_true_strip_no_delimiters()
-{
+fn test_combo_preserve_empty_true_strip_no_delimiters() {
   let src = "a b c";
   let iter = split()
   .src( src )
@@ -107,5 +116,5 @@ fn test_combo_preserve_empty_true_strip_no_delimiters()
   .preserving_delimeters( false ) // Explicitly false
   .stripping( true )
   .perform();
-  assert_eq!( iter.map( | e | String::from( e.string ) ).collect::< Vec< _ > >(), vec![ "a", "b", "c" ] );
+  assert_eq!(iter.map(|e| String::from(e.string)).collect::<Vec<_>>(), vec!["a", "b", "c"]);
 }

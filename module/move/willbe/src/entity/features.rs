@@ -1,11 +1,11 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
-  use collection::{ BTreeSet, HashSet };
+  use collection_tools::collection::{ BTreeSet, HashSet };
   use error::untyped::{ bail }; // xxx
-  use iter::Itertools;
+  use iter_tools::iter::Itertools;
 
   /// Generates a powerset of the features available in the given `package`,
   /// filtered according to specified inclusion and exclusion criteria,

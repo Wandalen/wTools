@@ -14,6 +14,8 @@ mod private
     },
   };
   use error::untyped::Context;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::Ok;
 
   /// Container for templates.
   ///
@@ -273,7 +275,12 @@ mod private
       if self.0.get( key ).and_then( | v | v.as_ref() ).is_none()
       {
         println! ("Parameter `{key}` is not set" );
-        let answer = wca::ask( "Enter value" );
+        print!( "Enter value: " );
+        use std::io::{ self, Write };
+        io::stdout().flush().unwrap();
+        let mut answer = String::new();
+        io::stdin().read_line( &mut answer ).unwrap();
+        let answer = answer.trim().to_string();
         self.0.insert( key.into(), Some( wca::Value::String( answer ) ) );
       }
     }

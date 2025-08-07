@@ -1,14 +1,16 @@
 // module/move/willbe/src/command/crate_doc.rs
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
 
   use std::path::PathBuf;
   use wca::VerifiedCommand;
   use error::untyped::Error; // Use untyped::Error for the command return
   use entity::{ Workspace, WorkspaceInitError, PathError }; // Import Workspace, WorkspaceInitError, PathError
-  use path::{ AbsolutePath, CurrentPath }; // Import AbsolutePath and CurrentPath from pth
+  use pth::{ AbsolutePath, CurrentPath }; // Import AbsolutePath and CurrentPath from pth
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
 
   ///
   /// Generate documentation for a crate in a single Markdown file.

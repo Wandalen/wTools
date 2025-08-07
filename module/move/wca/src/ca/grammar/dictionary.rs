@@ -1,12 +1,13 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use former::Former;
   use indexmap::IndexMap;
   use iter_tools::Itertools;
   use grammar::Command;
+  use crate::ca::Order;
 
   // xxx : `Former` does not handle this situation well
 
@@ -111,5 +112,5 @@ mod private
 
 crate::mod_interface!
 {
-  orphan use Dictionary;
+  exposed use Dictionary;
 }

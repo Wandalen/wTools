@@ -1,57 +1,44 @@
-
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
 
-
-
-#[ the_module::clone_dyn ]
-trait Trait1
-{
-  fn val( &self ) -> i32;
+#[the_module::clone_dyn]
+trait Trait1 {
+  fn val(&self) -> i32;
 }
 
 //
 
-impl Trait1 for i32
-{
-  fn val( &self ) -> i32
-  {
+impl Trait1 for i32 {
+  fn val(&self) -> i32 {
     *self
   }
 }
 
-impl Trait1 for i64
-{
-  fn val( &self ) -> i32
-  {
+impl Trait1 for i64 {
+  fn val(&self) -> i32 {
     self.clone().try_into().unwrap()
   }
 }
 
-impl Trait1 for String
-{
-  fn val( &self ) -> i32
-  {
+impl Trait1 for String {
+  fn val(&self) -> i32 {
     self.len().try_into().unwrap()
   }
 }
 
-impl< T > Trait1 for &[ T ]
+impl<T> Trait1 for &[T]
 where
-  T : the_module::CloneDyn,
+  T: the_module::CloneDyn,
 {
-  fn val( &self ) -> i32
-  {
+  fn val(&self) -> i32 {
     self.len().try_into().unwrap()
   }
 }
 
-impl Trait1 for &str
-{
-  fn val( &self ) -> i32
-  {
+impl Trait1 for &str {
+  fn val(&self) -> i32 {
     self.len().try_into().unwrap()
   }
 }
 
-include!( "./only_test/basic.rs" );
+include!("./only_test/basic.rs");

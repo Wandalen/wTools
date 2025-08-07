@@ -37,29 +37,28 @@
 /// obj.assign( "New Name" );
 /// assert_eq!( obj.name, "New Name" );
 /// ```
-#[ cfg( feature = "types_component_assign" ) ]
-pub trait Assign< T, IntoT >
+#[cfg(feature = "types_component_assign")]
+pub trait Assign<T, IntoT>
 where
-  IntoT : Into< T >,
+  IntoT: Into<T>,
 {
   /// Sets or replaces the component on the object with the given value.
   ///
   /// This method takes ownership of the given value (`component`), which is of type `IntoT`.
   /// `component` is then converted into type `T` and set as the component of the object.
-  fn assign( &mut self, component : IntoT );
+  fn assign(&mut self, component: IntoT);
 
   /// Sets or replaces the component on the object with the given value.
   /// Unlike function (`assing`) function (`impute`) also consumes self and return it what is useful for builder pattern.
-  #[ inline( always ) ]
-  #[ must_use ]
-  fn impute( mut self, component : IntoT ) -> Self
+  #[inline(always)]
+  #[must_use]
+  fn impute(mut self, component: IntoT) -> Self
   where
-    Self : Sized,
+    Self: Sized,
   {
-    self.assign( component );
+    self.assign(component);
     self
   }
-
 }
 
 /// Extension trait to provide a method for setting a component on an `Option<Self>`
@@ -95,10 +94,10 @@ where
 /// opt_struct.option_assign( MyStruct { name: "New Name".to_string() } );
 /// assert_eq!( opt_struct.unwrap().name, "New Name" );
 /// ```
-#[ cfg( feature = "types_component_assign" ) ]
-pub trait OptionExt< T > : sealed::Sealed
+#[cfg(feature = "types_component_assign")]
+pub trait OptionExt<T>: sealed::Sealed
 where
-  T : Sized + Assign< T, T >,
+  T: Sized + Assign<T, T>,
 {
   /// Sets the component on the `Option` if it is `None`.
   ///
@@ -107,33 +106,27 @@ where
   /// # Parameters
   ///
   /// - `src`: The value to assign to the `Option`.
-  fn option_assign( & mut self, src : T );
+  fn option_assign(&mut self, src: T);
 }
 
-#[ cfg( feature = "types_component_assign" ) ]
-impl< T > OptionExt< T > for Option< T >
+#[cfg(feature = "types_component_assign")]
+impl<T> OptionExt<T> for Option<T>
 where
-  T : Sized + Assign< T, T >,
+  T: Sized + Assign<T, T>,
 {
-  #[ inline( always ) ]
-  fn option_assign( & mut self, src : T )
-  {
-    match self
-    {
-      Some( self_ref ) => Assign::assign( self_ref, Into::< T >::into( src ) ),
-      None => * self = Some( src ),
+  #[inline(always)]
+  fn option_assign(&mut self, src: T) {
+    match self {
+      Some(self_ref) => Assign::assign(self_ref, Into::<T>::into(src)),
+      None => *self = Some(src),
     }
   }
 }
 
-#[ cfg( feature = "types_component_assign" ) ]
-mod sealed
-{
+#[cfg(feature = "types_component_assign")]
+mod sealed {
   pub trait Sealed {}
-  impl< T > Sealed for Option< T >
-  where
-    T : Sized + super::Assign< T, T >,
-  {}
+  impl<T> Sealed for Option<T> where T: Sized + super::Assign<T, T> {}
 }
 
 /// The `AssignWithType` trait provides a mechanism to set a component on an object,
@@ -173,9 +166,8 @@ mod sealed
 ///
 /// assert_eq!( user_profile.username, "john_doe" );
 /// ```
-#[ cfg( feature = "types_component_assign" ) ]
-pub trait AssignWithType
-{
+#[cfg(feature = "types_component_assign")]
+pub trait AssignWithType {
   /// Sets the value of a component by its type.
   ///
   /// This method allows an implementer of `AssignWithType` to set a component on `self`
@@ -191,21 +183,20 @@ pub trait AssignWithType
   ///
   /// - `T`: The type of the component to be set on the implementing object.
   /// - `IntoT`: A type that can be converted into `T`.
-  fn assign_with_type< T, IntoT >( & mut self, component : IntoT )
+  fn assign_with_type<T, IntoT>(&mut self, component: IntoT)
   where
-    IntoT : Into< T >,
-    Self : Assign< T, IntoT >;
+    IntoT: Into<T>,
+    Self: Assign<T, IntoT>;
 }
 
-#[ cfg( feature = "types_component_assign" ) ]
-impl< S > AssignWithType for S
-{
-  #[ inline( always ) ]
-  fn assign_with_type< T, IntoT >( & mut self, component : IntoT )
+#[cfg(feature = "types_component_assign")]
+impl<S> AssignWithType for S {
+  #[inline(always)]
+  fn assign_with_type<T, IntoT>(&mut self, component: IntoT)
   where
-    IntoT : Into< T >,
-    Self : Assign< T, IntoT >,
+    IntoT: Into<T>,
+    Self: Assign<T, IntoT>,
   {
-    Assign::< T, IntoT >::assign( self, component );
+    Assign::<T, IntoT>::assign(self, component);
   }
 }

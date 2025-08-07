@@ -4,40 +4,43 @@ use strs_tools::string::split::*;
 // Test Matrix ID: Preserve_PE_T_PD_T_S_F
 // Tests preserving_empty(true) without stripping.
 #[test]
-fn test_preserving_empty_true_no_strip()
-{
+fn test_preserving_empty_true_no_strip() {
   let src = "a b c";
   let iter = split()
-  .src( src )
-  .delimeter( " " )
-  .preserving_empty( true )
-  .preserving_delimeters( true )
-  .stripping( false )
-  .perform();
-  assert_eq!( iter.map( | e | String::from( e.string ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
+    .src(src)
+    .delimeter(" ")
+    .preserving_empty(true)
+    .preserving_delimeters(true)
+    .stripping(false)
+    .perform();
+  assert_eq!(
+    iter.map(|e| String::from(e.string)).collect::<Vec<_>>(),
+    vec!["a", " ", "b", " ", "c"]
+  );
 }
 
 // Test Matrix ID: Preserve_PE_F_PD_T_S_F
 // Tests preserving_empty(false) without stripping.
 #[test]
-fn test_preserving_empty_false_no_strip()
-{
+fn test_preserving_empty_false_no_strip() {
   let src = "a b c";
   let iter = split()
-  .src( src )
-  .delimeter( " " )
-  .preserving_empty( false )
-  .preserving_delimeters( true )
-  .stripping( false )
-  .perform();
-  assert_eq!( iter.map( | e | String::from( e.string ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
+    .src(src)
+    .delimeter(" ")
+    .preserving_empty(false)
+    .preserving_delimeters(true)
+    .stripping(false)
+    .perform();
+  assert_eq!(
+    iter.map(|e| String::from(e.string)).collect::<Vec<_>>(),
+    vec!["a", " ", "b", " ", "c"]
+  );
 }
 
 // Test Matrix ID: Preserve_PE_T_PD_T_S_T
 // Tests preserving_empty(true) with stripping.
 #[test]
-fn test_preserving_empty_true_with_strip()
-{
+fn test_preserving_empty_true_with_strip() {
   let src = "a b c";
   let iter = split()
   .src( src )
@@ -48,14 +51,16 @@ fn test_preserving_empty_true_with_strip()
   .perform();
   // With PE=T, S=T, PD=T (new default): "a b c" -> "a", " ", "b", " ", "c"
   // Stripping affects Delimeted segments, not Delimiter segments.
-  assert_eq!( iter.map( | e | String::from( e.string ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
+  assert_eq!(
+    iter.map(|e| String::from(e.string)).collect::<Vec<_>>(),
+    vec!["a", " ", "b", " ", "c"]
+  );
 }
 
 // Test Matrix ID: Preserve_PE_F_PD_T_S_T
 // Tests preserving_empty(false) with stripping.
 #[test]
-fn test_preserving_empty_false_with_strip()
-{
+fn test_preserving_empty_false_with_strip() {
   let src = "a b c";
   let iter = split()
   .src( src )
@@ -66,14 +71,16 @@ fn test_preserving_empty_false_with_strip()
   .perform();
   // With PE=F, S=T, PD=T (new default): "a b c" -> "a", " ", "b", " ", "c"
   // Empty segments (if any were produced) would be dropped. Delimiters are preserved.
-  assert_eq!( iter.map( | e | String::from( e.string ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
+  assert_eq!(
+    iter.map(|e| String::from(e.string)).collect::<Vec<_>>(),
+    vec!["a", " ", "b", " ", "c"]
+  );
 }
 
 // Test Matrix ID: Preserve_PD_T_S_F_PE_F
 // Tests preserving_delimiters(true) without stripping. PE defaults to false.
 #[test]
-fn test_preserving_delimiters_true_no_strip()
-{
+fn test_preserving_delimiters_true_no_strip() {
   let src = "a b c";
   let iter = split()
   .src( src )
@@ -82,14 +89,16 @@ fn test_preserving_delimiters_true_no_strip()
   .stripping( false )
   // preserving_empty defaults to false
   .perform();
-  assert_eq!( iter.map( | e | String::from( e.string ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
+  assert_eq!(
+    iter.map(|e| String::from(e.string)).collect::<Vec<_>>(),
+    vec!["a", " ", "b", " ", "c"]
+  );
 }
 
 // Test Matrix ID: Preserve_PD_F_S_F_PE_F
 // Tests preserving_delimiters(false) without stripping. PE defaults to false.
 #[test]
-fn test_preserving_delimiters_false_no_strip()
-{
+fn test_preserving_delimiters_false_no_strip() {
   let src = "a b c";
   let iter = split()
   .src( src )
@@ -98,23 +107,22 @@ fn test_preserving_delimiters_false_no_strip()
   .stripping( false )
   // preserving_empty defaults to false
   .perform();
-  assert_eq!( iter.map( | e | String::from( e.string ) ).collect::< Vec< _ > >(), vec![ "a", "b", "c" ] );
+  assert_eq!(iter.map(|e| String::from(e.string)).collect::<Vec<_>>(), vec!["a", "b", "c"]);
 }
 
 // Test Matrix ID: T3.1
 // Description: src="a b c", del=" ", PE=T, PD=T, S=F, Q=F
 #[test]
-fn test_m_t3_1_preserve_all_no_strip_no_quote()
-{
+fn test_m_t3_1_preserve_all_no_strip_no_quote() {
   let src = "a b c";
   let iter = split()
-  .src( src )
-  .delimeter( " " )
-  .preserving_empty( true )
-  .preserving_delimeters( true )
-  .stripping( false )
-  .quoting( false )
-  .perform();
+    .src(src)
+    .delimeter(" ")
+    .preserving_empty(true)
+    .preserving_delimeters(true)
+    .stripping(false)
+    .quoting(false)
+    .perform();
   let expected = vec![
     ("a", SplitType::Delimeted, 0, 1),
     (" ", SplitType::Delimiter, 1, 2),
@@ -133,17 +141,16 @@ fn test_m_t3_1_preserve_all_no_strip_no_quote()
 // Test Matrix ID: T3.3
 // Description: src=" a b ", del=" ", PE=T, PD=T, S=F, Q=F
 #[test]
-fn test_m_t3_3_leading_trailing_space_preserve_all()
-{
+fn test_m_t3_3_leading_trailing_space_preserve_all() {
   let src = " a b ";
   let iter = split()
-  .src( src )
-  .delimeter( " " )
-  .preserving_empty( true )
-  .preserving_delimeters( true )
-  .stripping( false )
-  .quoting( false )
-  .perform();
+    .src(src)
+    .delimeter(" ")
+    .preserving_empty(true)
+    .preserving_delimeters(true)
+    .stripping(false)
+    .quoting(false)
+    .perform();
   let expected = vec![
     ("", SplitType::Delimeted, 0, 0),
     (" ", SplitType::Delimiter, 0, 1),
@@ -164,17 +171,16 @@ fn test_m_t3_3_leading_trailing_space_preserve_all()
 // Test Matrix ID: T3.5
 // Description: src="a,,b", del=",", PE=T, PD=T, S=F, Q=F
 #[test]
-fn test_m_t3_5_consecutive_delimiters_preserve_all()
-{
+fn test_m_t3_5_consecutive_delimiters_preserve_all() {
   let src = "a,,b";
   let iter = split()
-  .src( src )
-  .delimeter( "," )
-  .preserving_empty( true )
-  .preserving_delimeters( true )
-  .stripping( false )
-  .quoting( false )
-  .perform();
+    .src(src)
+    .delimeter(",")
+    .preserving_empty(true)
+    .preserving_delimeters(true)
+    .stripping(false)
+    .quoting(false)
+    .perform();
   let expected = vec![
     ("a", SplitType::Delimeted, 0, 1),
     (",", SplitType::Delimiter, 1, 2),

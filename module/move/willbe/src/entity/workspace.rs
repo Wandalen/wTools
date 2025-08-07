@@ -1,7 +1,7 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   // qqq : for Bohdan : bad
   // use std::*;
@@ -46,7 +46,7 @@ mod private
       .exec()?;
       // inout crate dir may refer on crate's manifest dir, not workspace's manifest dir
       crate_dir = ( &metadata.workspace_root ).try_into()?;
-      Ok( Self
+      Result::Ok( Self
       {
         metadata,
         crate_dir,

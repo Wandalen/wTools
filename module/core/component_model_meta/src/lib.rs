@@ -1,32 +1,39 @@
-#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
-#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
-#![ doc( html_root_url = "https://docs.rs/component_model_derive_meta/latest/component_model_derive_meta/" ) ]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+#![doc(html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png")]
+#![doc(
+  html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
+)]
+#![doc(html_root_url = "https://docs.rs/component_model_derive_meta/latest/component_model_derive_meta/")]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
 
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use macro_tools::prelude::*;
 
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( any( feature = "derive_components", feature = "derive_component_from", feature = "derive_from_components", feature = "derive_component_assign", feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
-mod component
-{
+#[cfg(feature = "enabled")]
+#[cfg(any(
+  feature = "derive_components",
+  feature = "derive_component_from",
+  feature = "derive_from_components",
+  feature = "derive_component_assign",
+  feature = "derive_component_assign",
+  feature = "derive_components_assign"
+))]
+mod component {
 
   //!
   //! Implement couple of derives of general-purpose.
   //!
 
-  #[ allow( unused_imports ) ]
+  #[allow(unused_imports)]
   use macro_tools::prelude::*;
 
-  #[ cfg( feature = "derive_component_from" ) ]
-  pub mod component_from;
-  #[ cfg( feature = "derive_from_components" ) ]
-  pub mod from_components;
-  #[ cfg( feature = "derive_component_assign" ) ]
+  #[cfg(feature = "derive_component_assign")]
   pub mod component_assign;
-  #[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
+  #[cfg(feature = "derive_component_from")]
+  pub mod component_from;
+  #[cfg(all(feature = "derive_component_assign", feature = "derive_components_assign"))]
   pub mod components_assign;
-
+  #[cfg(feature = "derive_from_components")]
+  pub mod from_components;
 }
 
 ///
@@ -70,16 +77,14 @@ mod component
 /// # }
 /// ```
 ///
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_component_from" ) ]
-#[ proc_macro_derive( ComponentFrom, attributes( debug ) ) ]
-pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
-{
-  let result = component::component_from::component_from( input );
-  match result
-  {
-    Ok( stream ) => stream.into(),
-    Err( err ) => err.to_compile_error().into(),
+#[cfg(feature = "enabled")]
+#[cfg(feature = "derive_component_from")]
+#[proc_macro_derive(ComponentFrom, attributes(debug))]
+pub fn component_from(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+  let result = component::component_from::component_from(input);
+  match result {
+    Ok(stream) => stream.into(),
+    Err(err) => err.to_compile_error().into(),
   }
 }
 
@@ -162,16 +167,14 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 /// ```
 /// This allows any type that can be converted into an `i32` or `String` to be set as
 /// the value of the `age` or `name` fields of `Person` instances, respectively.
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_component_assign" ) ]
-#[ proc_macro_derive( Assign, attributes( debug ) ) ]
-pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
-{
-  let result = component::component_assign::component_assign( input );
-  match result
-  {
-    Ok( stream ) => stream.into(),
-    Err( err ) => err.to_compile_error().into(),
+#[cfg(feature = "enabled")]
+#[cfg(feature = "derive_component_assign")]
+#[proc_macro_derive(Assign, attributes(debug))]
+pub fn component_assign(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+  let result = component::component_assign::component_assign(input);
+  match result {
+    Ok(stream) => stream.into(),
+    Err(err) => err.to_compile_error().into(),
   }
 }
 
@@ -414,16 +417,14 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 /// take_smaller_opts( &options2 );
 /// ```
 ///
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
-#[ proc_macro_derive( ComponentsAssign, attributes( debug ) ) ]
-pub fn components_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
-{
-  let result = component::components_assign::components_assign( input );
-  match result
-  {
-    Ok( stream ) => stream.into(),
-    Err( err ) => err.to_compile_error().into(),
+#[cfg(feature = "enabled")]
+#[cfg(all(feature = "derive_component_assign", feature = "derive_components_assign"))]
+#[proc_macro_derive(ComponentsAssign, attributes(debug))]
+pub fn components_assign(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+  let result = component::components_assign::components_assign(input);
+  match result {
+    Ok(stream) => stream.into(),
+    Err(err) => err.to_compile_error().into(),
   }
 }
 
@@ -514,15 +515,13 @@ pub fn components_assign( input : proc_macro::TokenStream ) -> proc_macro::Token
 /// automatically generating the necessary `From< &Options1 >` implementation for `Options2`, facilitating
 /// an easy conversion between these types based on their compatible fields.
 ///
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_from_components" ) ]
-#[ proc_macro_derive( FromComponents, attributes( debug ) ) ]
-pub fn from_components( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
-{
-  let result = component::from_components::from_components( input );
-  match result
-  {
-    Ok( stream ) => stream.into(),
-    Err( err ) => err.to_compile_error().into(),
+#[cfg(feature = "enabled")]
+#[cfg(feature = "derive_from_components")]
+#[proc_macro_derive(FromComponents, attributes(debug))]
+pub fn from_components(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+  let result = component::from_components::from_components(input);
+  match result {
+    Ok(stream) => stream.into(),
+    Err(err) => err.to_compile_error().into(),
   }
 }

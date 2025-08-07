@@ -1,10 +1,8 @@
-
 use super::*;
 
 //
 
-tests_impls!
-{
+tests_impls! {
   fn basic()
   {
     let src = "";
@@ -178,8 +176,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   basic,
   isolate_left_or_none,
   isolate_right_or_none,

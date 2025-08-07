@@ -1,13 +1,9 @@
-
 use super::*;
 
 /// Private namespace of the module.
-mod private
-{
-}
+mod private {}
 
-the_module::mod_interface!
-{
+the_module::mod_interface! {
   // #![ debug ]
 
   /// mod_own
@@ -23,4 +19,4 @@ the_module::mod_interface!
 
 //
 
-include!( "../../only_test/micro_modules_only_test.rs" );
+include!("../../only_test/micro_modules_only_test.rs");

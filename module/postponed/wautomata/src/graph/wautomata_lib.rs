@@ -13,7 +13,7 @@
 //! Implementation of automata.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]

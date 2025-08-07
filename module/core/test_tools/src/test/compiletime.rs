@@ -1,12 +1,10 @@
-
 //!
 //! Try building a program for negative testing.
 //!
 
 /// Define a private namespace for all its items.
-mod private
-{
-  #[ doc( inline ) ]
+mod private {
+  #[doc(inline)]
   pub use ::trybuild::*;
 }
 
@@ -85,62 +83,47 @@ mod private
 //   };
 // }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+#[doc(inline)]
+#[allow(unused_imports)]
 pub use own::*;
 
 /// Own namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod own
-{
+#[allow(unused_imports)]
+pub mod own {
   use super::*;
 
-  #[ doc( inline ) ]
-  pub use
-  {
-    private::*,
-  };
-
+  #[doc(inline)]
+  pub use {private::*};
 }
 
 /// Shared with parent namespace of the module
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
+#[allow(unused_imports)]
+pub mod orphan {
   use super::*;
 
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use exposed::*;
 
   pub use super::super::compiletime;
-
 }
 
 /// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
+#[allow(unused_imports)]
+pub mod exposed {
   use super::*;
 
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use prelude::*;
 
-  #[ doc( inline ) ]
-  pub use
-  {
-  };
-
+  #[doc(inline)]
+  pub use {};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[allow(unused_imports)]
+pub mod prelude {
   use super::*;
 
-  #[ doc( inline ) ]
-  pub use
-  {
-  };
-
+  #[doc(inline)]
+  pub use {};
 }

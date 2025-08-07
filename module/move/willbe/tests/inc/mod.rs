@@ -22,4 +22,3 @@ mod package;
 
 // qqq : for Mykyta: to avoid names collisions add postfix _test for all dirs and files in dir `inc`
 // query.rs -> query_test.rs
-

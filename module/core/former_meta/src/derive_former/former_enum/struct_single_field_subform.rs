@@ -1,118 +1,505 @@
-// qqq : Implement logic for Struct { f1:T1 } with #[subform_scalar] or default
+//! # Struct Single-Field Subform Handler - Implicit Variant Former Generation
+//!
+//! This handler specializes in generating implicit variant formers for struct enum variants 
+//! with a single named field, creating sophisticated builder patterns that enable field-by-field
+//! construction with comprehensive pitfall prevention for single-field scenarios.
+//!
+//! ## Variant Type Specialization
+//!
+//! **Target Pattern**: `Variant { field: T }`
+//! **Generated Constructor**: `Enum::variant() -> VariantFormer<...>`
+//! **Construction Style**: Single-field builder pattern with setter method and termination
+//!
+//! ## Key Behavioral Characteristics
+//!
+//! ### Attribute-Driven Activation
+//! - **Default Behavior**: Single-field struct variants automatically get implicit variant formers
+//! - **`#[scalar]` Override**: Forces direct constructor generation instead (handled elsewhere)
+//! - **`#[subform_scalar]` Support**: Supported and generates same implicit variant former
+//! - **Field-Level Attributes**: Individual field attributes respected in generated setter
+//!
+//! ### Generated Infrastructure Components
+//! 1. **`{Enum}{Variant}FormerStorage`**: Single-field optional storage for incremental construction
+//! 2. **`{Enum}{Variant}FormerDefinitionTypes`**: Type system integration for Former trait
+//! 3. **`{Enum}{Variant}FormerDefinition`**: Definition linking storage, context, and formed type
+//! 4. **`{Enum}{Variant}Former`**: Main builder struct with field setter and termination methods
+//! 5. **Entity Trait Implementations**: Complete Former ecosystem integration
+//!
+//! ## Critical Pitfalls Resolved
+//!
+//! ### 1. Single-Field Storage Specialization (Critical Prevention)
+//! **Issue Resolved**: Manual implementations treating single-field variants like multi-field variants
+//! **Root Cause**: Single-field struct variants have different construction patterns than multi-field
+//! **Solution**: Specialized single-field storage generation with proper Optional<T> wrapping
+//! **Prevention**: Optimized single-field handling while maintaining Former pattern consistency
+//!
+//! ```rust,ignore
+//! // Manual Implementation Pitfall:
+//! struct VariantFormerStorage {
+//!     field: String,  // ❌ Should be Option<String>
+//! }
+//! impl Default for VariantFormerStorage {
+//!     fn default() -> Self {
+//!         Self { field: String::new() }  // ❌ Wrong default handling
+//!     }
+//! }
+//!
+//! // Generated Solution:
+//! struct VariantFormerStorage {
+//!     field: Option<String>,  // ✅ Proper optional wrapping
+//! }
+//! impl Default for VariantFormerStorage {
+//!     fn default() -> Self {
+//!         Self { field: None }  // ✅ Correct optional default
+//!     }
+//! }
+//! ```
+//!
+//! ### 2. Generic Parameter Context (Critical Prevention)
+//! **Issue Resolved**: Manual implementations losing generic parameter context in single-field scenarios
+//! **Root Cause**: Single-field variants still require full generic parameter propagation
+//! **Solution**: Complete generic parameter preservation through all generated components
+//! **Prevention**: Uses `GenericsRef` for consistent generic handling regardless of field count
+//!
+//! ### 3. Setter Method Type Safety (Prevention)
+//! **Issue Resolved**: Manual implementations not properly handling Into<T> conversions for setters
+//! **Root Cause**: Field setters need flexible type acceptance while maintaining type safety
+//! **Solution**: Generated setter uses `impl Into<FieldType>` for maximum flexibility
+//! **Prevention**: Type-safe conversion handling with automatic type coercion
+//!
+//! ```rust,ignore
+//! // Manual Implementation Pitfall:
+//! impl VariantFormer {
+//!     pub fn field(mut self, value: String) -> Self {  // ❌ Too restrictive
+//!         self.storage.field = Some(value);
+//!         self
+//!     }
+//! }
+//!
+//! // Generated Solution:
+//! impl VariantFormer {
+//!     pub fn field(mut self, value: impl Into<String>) -> Self {  // ✅ Flexible input
+//!         self.storage.field = Some(value.into());
+//!         self
+//!     }
+//! }
+//! ```
+//!
+//! ### 4. StoragePreform Implementation (Critical Prevention)
+//! **Issue Resolved**: Manual implementations not properly handling single-field preform logic
+//! **Root Cause**: Single-field preform requires special handling for unwrap_or_default()
+//! **Solution**: Specialized preform implementation for single-field variant construction
+//! **Prevention**: Safe unwrapping with proper default value handling
+//!
+//! ### 5. Former Trait Integration (Critical Prevention)
+//! **Issue Resolved**: Manual implementations missing required trait implementations
+//! **Root Cause**: Single-field variants still need complete Former ecosystem integration
+//! **Solution**: Full trait implementation suite for single-field scenarios
+//! **Prevention**: Ensures compatibility with Former-based APIs regardless of field count
+//!
+//! ## Generated Code Architecture
+//!
+//! ### Single-Field Storage Infrastructure
+//! ```rust,ignore
+//! pub struct EnumVariantFormerStorage<T> 
+//! where T: Default
+//! {
+//!     pub field: Option<T>,       // Single optional field storage
+//! }
+//!
+//! impl<T> StoragePreform for EnumVariantFormerStorage<T> {
+//!     fn preform(mut self) -> Self::Preformed {
+//!         let field = self.field.unwrap_or_default();
+//!         Enum::Variant { field }
+//!     }
+//! }
+//! ```
+//!
+//! ### Builder Implementation
+//! ```rust,ignore
+//! impl<T> EnumVariantFormer<T> {
+//!     pub fn field(mut self, value: impl Into<T>) -> Self {
+//!         self.storage.field = Some(value.into());
+//!         self
+//!     }
+//!     
+//!     pub fn form(self) -> Enum<T> {
+//!         self.end()
+//!     }
+//! }
+//! ```
+//!
+//! ## Integration Notes
+//! - **Standalone Constructors**: Supports `#[standalone_constructors]` for top-level function generation
+//! - **Context Handling**: Integrates with Former's context system for advanced construction scenarios
+//! - **Performance**: Single-field optimization maintains zero-cost abstraction guarantees
+//! - **Type Safety**: Complete type safety through Former trait system integration
 
 use super::*;
-use macro_tools::{ Result, quote, syn };
-use super::EnumVariantHandlerContext;
-use proc_macro2::TokenStream; // Import TokenStream
-use convert_case::{ Case, Casing }; // Import Case and Casing from convert_case
 
-#[allow(dead_code)] // Suppress warning about unused function
-pub( crate ) fn handle( ctx : &mut EnumVariantHandlerContext< '_ > ) -> Result< TokenStream >
+use macro_tools::{ Result, quote::{ quote, format_ident }, generic_params::GenericsRef };
+use crate::derive_former::raw_identifier_utils::variant_to_method_name;
+
+/// Generates comprehensive implicit variant former infrastructure for single-field struct enum variants.
+///
+/// This function creates a complete builder ecosystem for struct variants with a single named field,
+/// implementing specialized pitfall prevention mechanisms for single-field construction patterns,
+/// storage optimization, and Former trait integration.
+///
+/// ## Generated Infrastructure
+///
+/// ### Core Components Generated:
+/// 1. **Storage Struct**: `{Enum}{Variant}FormerStorage` with single optional field wrapping
+/// 2. **Definition Types**: `{Enum}{Variant}FormerDefinitionTypes` for type system integration
+/// 3. **Definition**: `{Enum}{Variant}FormerDefinition` linking all components
+/// 4. **Former Builder**: `{Enum}{Variant}Former` with single field setter and termination methods
+/// 5. **Entity Traits**: Complete Former ecosystem trait implementations
+///
+/// ## Single-Field Specialization
+///
+/// - **Optimized Storage**: Single optional field storage with specialized default handling
+/// - **Type-Safe Setter**: Generated setter accepts `impl Into<FieldType>` for maximum flexibility
+/// - **Efficient Preform**: Specialized preform logic for single-field variant construction
+/// - **Complete Integration**: Full Former trait hierarchy implementation for ecosystem compatibility
+///
+/// ## Generated Method Signature
+/// ```rust,ignore
+/// impl<T> Enum<T> {
+///     pub fn variant() -> VariantFormer<T> { /* ... */ }
+/// }
+/// ```
+///
+/// ## Parameters
+/// - `ctx`: Mutable context containing variant information, generics, and output collections
+///
+/// ## Returns
+/// - `Ok(TokenStream)`: Generated enum method that returns the single-field variant former
+/// - `Err(syn::Error)`: If variant processing fails due to invalid configuration
+pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
 {
-  // This handler is specifically for Struct { f1: T1 } variants with #[subform_scalar] or default behavior.
-  // The main dispatch should ensure this is only called for such variants.
+  let variant_name = &ctx.variant.ident;
+  let method_name = variant_to_method_name(variant_name);
+  let enum_name = ctx.enum_name;
+  let vis = ctx.vis;
+  let field = &ctx.variant_field_info[0];
+  let field_name = &field.ident;
+  let field_type = &field.ty;
 
-  let variant_ident = &ctx.variant.ident;
-  let enum_ident = &ctx.enum_name;
-  let vis = &ctx.vis;
-
-  // Decompose generics for use in signatures (impl_generics and ty_generics are needed from local decomposition)
-  let ( _def_generics, impl_generics, ty_generics, _local_where_clause_option_unused ) = // Renamed to avoid confusion
-      macro_tools::generic_params::decompose(ctx.generics);
-
-  // Use merged_where_clause from the context for any top-level item's where clause (like standalone fns or VariantFormer struct)
-  let top_level_where_clause = match ctx.merged_where_clause { // Use ctx.merged_where_clause
-      Some(clause) => quote! { where #clause }, // Add `where` keyword if clause exists
-      None => quote! {},
-  };
-
-  // Get the single field's info
-  let field_info = ctx.variant_field_info.first().ok_or_else(|| {
-      syn::Error::new_spanned(ctx.variant, "Struct variant with subform behavior must have exactly one field for this handler.")
-  })?;
-  let field_name_original = &field_info.ident; // This is the original field name from the enum variant
-  let field_ty = &field_info.ty;
-
-  // Generate the name for the implicit variant former, make it generic if enum is generic
-  let variant_former_name_str = format!("{enum_ident}{variant_ident}Former");
-  let variant_former_ident = format_ident!("{}", variant_former_name_str);
-  let variant_former_name_generic = if ctx.generics.params.is_empty() {
-      quote! { #variant_former_ident }
+  let generics_ref = GenericsRef::new(ctx.generics);
+  let ( impl_generics, ty_generics, where_clause ) = ctx.generics.split_for_impl();
+  let enum_type_path = if ctx.generics.type_params().next().is_some() {
+    let ty_generics_tokens = generics_ref.ty_generics_tokens_if_any();
+    quote! { #enum_name :: #ty_generics_tokens }
   } else {
-      quote! { #variant_former_ident< #ty_generics > }
+    quote! { #enum_name }
   };
 
-  // Correctly create method_ident for the accessor method, handling raw identifiers
-  let method_ident = {
-      let name_str = variant_ident.to_string();
-      // Raw identifier check (consistent with other handlers)
-      if let Some(core_name) = name_str.strip_prefix("r#") {
-          let snake_core_name = core_name.to_case(Case::Snake);
-          syn::Ident::new_raw(&snake_core_name, variant_ident.span())
-      } else {
-          let snake_name = name_str.to_case(Case::Snake);
-          let is_keyword = matches!(snake_name.as_str(), "as" | "async" | "await" | "break" | "const" | "continue" | "crate" | "dyn" | "else" | "enum" | "extern" | "false" | "fn" | "for" | "if" | "impl" | "in" | "let" | "loop" | "match" | "mod" | "move" | "mut" | "pub" | "ref" | "return" | "Self" | "self" | "static" | "struct" | "super" | "trait" | "true" | "type" | "unsafe" | "use" | "where" | "while" | "union" );
-          if is_keyword {
-              syn::Ident::new_raw(&snake_name, variant_ident.span())
-          } else {
-              syn::Ident::new(&snake_name, variant_ident.span())
-          }
-      }
-  };
+  // Generate the End struct name for this variant
+  let end_struct_name = format_ident!("{}{}End", enum_name, variant_name);
 
-  // Generate the static method: Enum::variant_name() -> VariantFormer<...>
-  // Signature needs to be generic if the enum is generic.
-  // The return type `Self` for the static method is not correct here, it should be the VariantFormer type.
-  let generated_method = quote!
+  // Generate the End struct for this variant
+  let end_struct = quote!
   {
-    #[ inline( always ) ]
-    pub fn #method_ident () -> #variant_former_name_generic // Return type is the implicit variant former
+    #[derive(Default, Debug)]
+    pub struct #end_struct_name #impl_generics
+    #where_clause
+    {}
+  };
+
+  // Generate the implicit former for the variant
+  let variant_name_str = crate::derive_former::raw_identifier_utils::strip_raw_prefix_for_compound_ident(variant_name);
+  let variant_former_name = format_ident!("{}{}Former", enum_name, variant_name_str);
+  let variant_former_storage_name = format_ident!("{}{}FormerStorage", enum_name, variant_name_str);
+  let variant_former_definition_name = format_ident!("{}{}FormerDefinition", enum_name, variant_name_str);
+  let variant_former_definition_types_name = format_ident!("{}{}FormerDefinitionTypes", enum_name, variant_name_str);
+
+  // Generate the storage struct for the variant's fields
+  let storage_field_optional = quote! { pub #field_name : ::core::option::Option< #field_type > };
+  let storage_field_none = quote! { #field_name : ::core::option::Option::None };
+  let storage_field_preform = quote! { let #field_name = self.#field_name.unwrap_or_default(); };
+  let storage_field_name = quote! { #field_name };
+
+  let variant_former_code = quote!
+  {
+    // = definition types: Define the FormerDefinitionTypes struct for the variant.
+    #[ derive( Debug ) ]
+    pub struct #variant_former_definition_types_name #impl_generics
+    #where_clause
     {
-      #variant_former_name_generic::default()
+      _phantom : ::core::marker::PhantomData< ( #impl_generics ) >,
     }
-  };
 
-  // Generate standalone constructor if #[standalone_constructors] is present
-  if ctx.struct_attrs.standalone_constructors.is_some()
-  {
-    let fn_signature_generics = if ctx.generics.params.is_empty() { quote!{} } else { quote!{ < #impl_generics > } };
-    // Standalone constructor also returns the VariantFormer
-    let generated_standalone = quote!
+    impl #impl_generics ::core::default::Default
+    for #variant_former_definition_types_name #ty_generics
+    #where_clause
+    {
+      fn default() -> Self
+      {
+        Self
+        {
+          _phantom : ::core::marker::PhantomData,
+        }
+      }
+    }
+
+    impl #impl_generics former_types::FormerDefinitionTypes
+    for #variant_former_definition_types_name #ty_generics
+    #where_clause
+    {
+      type Storage = #variant_former_storage_name #ty_generics;
+      type Formed = #enum_name #ty_generics;
+      type Context = ();
+    }
+
+    // Add FormerMutator implementation here
+    impl #impl_generics former_types::FormerMutator
+    for #variant_former_definition_types_name #ty_generics
+    #where_clause
     {
       #[ inline( always ) ]
-      #vis fn #method_ident #fn_signature_generics () -> #variant_former_name_generic
-      #top_level_where_clause // Use the correctly formed where clause
+      fn form_mutation
+      (
+        _storage : &mut Self::Storage,
+        _context : &mut Option< Self::Context >,
+      )
       {
-        #variant_former_name_generic::default()
+      }
+    }
+
+    // = definition: Define the FormerDefinition struct for the variant.
+    #[ derive( Debug ) ]
+    pub struct #variant_former_definition_name #impl_generics
+    #where_clause
+    {
+      _phantom : ::core::marker::PhantomData< ( #impl_generics ) >,
+    }
+
+    impl #impl_generics ::core::default::Default
+    for #variant_former_definition_name #ty_generics
+    #where_clause
+    {
+      fn default() -> Self
+      {
+        Self
+        {
+          _phantom : ::core::marker::PhantomData,
+        }
+      }
+    }
+
+    impl #impl_generics former_types::FormerDefinition
+    for #variant_former_definition_name #ty_generics
+    #where_clause
+    {
+      type Types = #variant_former_definition_types_name #ty_generics;
+      type End = former_types::forming::ReturnPreformed;
+      type Storage = #variant_former_storage_name #ty_generics;
+      type Formed = #enum_name #ty_generics;
+      type Context = ();
+    }
+
+    // = storage: Define the FormerStorage struct for the variant.
+    #[ doc = "Stores potential values for fields during the formation process." ]
+    #[ allow( explicit_outlives_requirements ) ]
+    pub struct #variant_former_storage_name #impl_generics
+    #where_clause
+    {
+      /// A field
+      #storage_field_optional,
+    }
+
+    impl #impl_generics ::core::default::Default
+    for #variant_former_storage_name #ty_generics
+    #where_clause
+    {
+      #[ inline( always ) ]
+      fn default() -> Self
+      {
+        Self
+        {
+          #storage_field_none,
+        }
+      }
+    }
+
+    impl #impl_generics former_types::Storage
+    for #variant_former_storage_name #ty_generics
+    #where_clause
+    {
+      type Preformed = #enum_name #ty_generics;
+    }
+
+    impl #impl_generics former_types::StoragePreform
+    for #variant_former_storage_name #ty_generics
+    #where_clause
+    {
+      fn preform( mut self ) -> Self::Preformed
+      {
+        #storage_field_preform
+        let result = #enum_name::#variant_name { #field_name };
+        return result;
+      }
+    }
+
+    // = former: Define the Former struct itself for the variant.
+    pub struct #variant_former_name #impl_generics
+    #where_clause
+    {
+      pub storage : #variant_former_storage_name #ty_generics,
+      pub context : ::core::option::Option< () >,
+      pub on_end : ::core::option::Option< former_types::forming::ReturnPreformed >,
+    }
+
+    impl #impl_generics #variant_former_name #ty_generics
+    #where_clause
+    {
+      #[ inline( always ) ]
+      pub fn new
+      (
+        on_end : former_types::forming::ReturnPreformed
+      ) -> Self
+      {
+        Self::begin_coercing( ::core::option::Option::None, ::core::option::Option::None, on_end )
+      }
+
+      #[ inline( always ) ]
+      pub fn new_coercing< IntoEnd >
+      (
+        end : IntoEnd
+      ) -> Self
+      where
+        IntoEnd : ::core::convert::Into< former_types::forming::ReturnPreformed >,
+      {
+        Self::begin_coercing
+        (
+          ::core::option::Option::None,
+          ::core::option::Option::None,
+          end,
+        )
+      }
+
+      #[ inline( always ) ]
+      pub fn begin
+      (
+        mut storage : ::core::option::Option< #variant_former_storage_name #ty_generics >,
+        context : ::core::option::Option< () >,
+        on_end : former_types::forming::ReturnPreformed,
+      )
+      -> Self
+      {
+        if storage.is_none()
+        {
+          storage = ::core::option::Option::Some( ::core::default::Default::default() );
+        }
+        Self
+        {
+          storage : storage.unwrap(),
+          context : context,
+          on_end : ::core::option::Option::Some( on_end ),
+        }
+      }
+
+      #[ inline( always ) ]
+      pub fn begin_coercing< IntoEnd >
+      (
+        mut storage : ::core::option::Option< #variant_former_storage_name #ty_generics >,
+        context : ::core::option::Option< () >,
+        on_end : IntoEnd,
+      ) -> Self
+      where
+        IntoEnd : ::core::convert::Into< former_types::forming::ReturnPreformed >,
+      {
+        if storage.is_none()
+        {
+          storage = ::core::option::Option::Some( ::core::default::Default::default() );
+        }
+        Self
+        {
+          storage : storage.unwrap(),
+          context : context,
+          on_end : ::core::option::Option::Some( ::core::convert::Into::into( on_end ) ),
+        }
+      }
+
+      #[ inline( always ) ]
+      pub fn form( self ) -> #enum_name #ty_generics
+      {
+        self.end()
+      }
+
+      #[ inline( always ) ]
+      pub fn end( mut self ) -> #enum_name #ty_generics
+      {
+        let on_end = self.on_end.take().unwrap();
+        let mut context = self.context.take();
+        < #variant_former_definition_types_name #ty_generics as former_types::FormerMutator >::form_mutation( &mut self.storage, &mut context );
+        former_types::forming::FormingEnd::< #variant_former_definition_types_name #ty_generics >::call( &on_end, self.storage, context )
+      }
+
+      // Setter for the single field
+      #[ inline( always ) ]
+      pub fn #field_name( mut self, value : impl ::core::convert::Into< #field_type > ) -> Self
+      {
+        self.storage.#field_name = ::core::option::Option::Some( value.into() );
+        self
+      }
+    }
+
+    // = entity to former: Implement former traits linking the variant to its generated components.
+    impl #impl_generics former_types::EntityToFormer< #variant_former_definition_name #ty_generics >
+    for #enum_name #ty_generics
+    #where_clause
+    {
+      type Former = #variant_former_name #ty_generics;
+    }
+
+    impl #impl_generics former_types::EntityToStorage
+    for #enum_name #ty_generics
+    #where_clause
+    {
+      type Storage = #variant_former_storage_name #ty_generics;
+    }
+
+    impl #impl_generics former_types::EntityToDefinition< (), #enum_name #ty_generics, former_types::forming::ReturnPreformed >
+    for #enum_name #ty_generics
+    #where_clause
+    {
+      type Definition = #variant_former_definition_name #ty_generics;
+      type Types = #variant_former_definition_types_name #ty_generics;
+    }
+
+    impl #impl_generics former_types::EntityToDefinitionTypes< (), #enum_name #ty_generics >
+    for #enum_name #ty_generics
+    #where_clause
+    {
+      type Types = #variant_former_definition_types_name #ty_generics;
+    }
+  };
+
+  // Generate the method for the enum
+  let method = quote!
+  {
+    #[ inline( always ) ]
+    #vis fn #method_name() -> #variant_former_name #ty_generics
+    {
+      #variant_former_name::new( former_types::forming::ReturnPreformed::default() )
+    }
+  };
+
+  // Generate standalone constructor if requested
+  if ctx.struct_attrs.standalone_constructors.value(false) {
+    let standalone_method = quote!
+    {
+      #[ inline( always ) ]
+      #vis fn #method_name() -> #variant_former_name #ty_generics
+      {
+        #variant_former_name::new( former_types::forming::ReturnPreformed::default() )
       }
     };
-    ctx.standalone_constructors.push(generated_standalone);
+    ctx.standalone_constructors.push(standalone_method);
   }
 
-  // Generate a MINIMAL definition for the implicit VariantFormer struct
-  // This is NOT a full Former implementation, just enough to resolve type errors.
-  let former_fields_def = quote! { pub #field_name_original : #field_ty };
-  // let former_fields_init = quote! { #field_name_original : Default::default() }; // Unused, commented out
+  ctx.end_impls.push(variant_former_code);
 
-  let variant_former_def = quote!
-  {
-    #[derive(Debug, Default)] // Add Default for .default() call
-    #vis struct #variant_former_ident< #impl_generics > // Make former struct generic
-    #top_level_where_clause // Use the correctly formed where clause
-    {
-      #former_fields_def,
-      // If T is a parameter, PhantomData might be needed if T is not used in fields
-      // For MixedEnum { Complex { data: i32 } }, T is not used, so no PhantomData needed for this specific case.
-      // If Complex was Complex { data: T }, then PhantomData might be needed if T is not Default.
-    }
-    // Basic impl to satisfy construction, not a full Former impl
-    // impl< #impl_generics > #variant_former_name_generic // This would be for impl Former
-    // #where_clause
-    // {
-    //   // pub fn new() -> Self { Self { #former_fields_init } } // Example constructor
-    // }
-  };
-  ctx.end_impls.push(variant_former_def); // Add to end_impls to be emitted at top level
-
-  Ok( generated_method ) // Return only the static method for the main impl block
+  Ok(method)
 }

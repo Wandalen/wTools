@@ -1,15 +1,12 @@
+#![allow(missing_docs)]
 
-
-#[ test ]
-fn local_smoke_test()
-{
+#[test]
+fn local_smoke_test() {
   ::test_tools::smoke_test_for_local_run();
 }
 
-
-#[ ignore ]
-#[ test ]
-fn published_smoke_test()
-{
+#[ignore]
+#[test]
+fn published_smoke_test() {
   ::test_tools::smoke_test_for_published_run();
 }

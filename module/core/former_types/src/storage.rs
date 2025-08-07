@@ -17,8 +17,7 @@
 /// This trait is required for any storage type that temporarily holds data during the construction
 /// of an entity. It mandates the implementation of `Default`, ensuring that storage can be initialized
 /// to a default state at the start of the forming process.
-pub trait Storage : ::core::default::Default
-{
+pub trait Storage: ::core::default::Default {
   /// The type of the entity as it should appear once preformed. It could, but does not have to be the same type as `Formed`.
   type Preformed;
   // /// The type of the fully formed entity that results from the forming process.
@@ -34,8 +33,7 @@ pub trait Storage : ::core::default::Default
 /// state of the entity. However, it can differ if a custom `FormingEnd` or a different `Formed` type
 /// is defined to handle specific forming logic or requirements.
 /// But even if `Formed` is custom `Preformed` is always that structure.
-pub trait StoragePreform : Storage
-{
+pub trait StoragePreform: Storage {
   // /// The type of the entity as it should appear once fully formed.
   // type Preformed;
 
@@ -45,5 +43,5 @@ pub trait StoragePreform : Storage
   /// effectively turning the mutable storage state into the immutable, fully formed entity. This transition
   /// reflects the culmination of the forming process where the temporary, modifiable attributes of the
   /// storage are solidified into the permanent attributes of the formed entity.
-  fn preform( self ) -> Self::Preformed;
+  fn preform(self) -> Self::Preformed;
 }

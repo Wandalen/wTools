@@ -1,0 +1,19 @@
+---
+# Static command definitions for unilang
+# These commands are compiled into the binary for zero-overhead access
+- name: "version"
+  namespace: ""
+  description: "Show version information"
+  hint: "Displays the application version"
+  arguments: []
+  routine_link: null
+  status: "stable"
+  version: "1.0.0"
+  tags: []
+  aliases:
+    - "v"
+  permissions: []
+  idempotent: true
+  deprecation_message: ""
+  http_method_hint: "GET"
+  examples: []

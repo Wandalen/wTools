@@ -1,15 +1,17 @@
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
 
   use action::features::FeaturesOptions;
   use std::fs;
   use std::path::PathBuf;
-  // // use path::AbsolutePath;
+  // // use pth::AbsolutePath;
   use wca::VerifiedCommand;
   // use error::Result;
   // qqq : group dependencies
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
 
   ///
   /// List features of a package.

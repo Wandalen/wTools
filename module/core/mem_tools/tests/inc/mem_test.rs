@@ -2,8 +2,7 @@ use super::*;
 
 //
 
-tests_impls!
-{
+tests_impls! {
 
   fn same_data()
   {
@@ -109,8 +108,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   same_data,
   same_ptr,
   same_size,

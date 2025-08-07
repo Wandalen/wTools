@@ -1,8 +1,8 @@
-// mod unit_subform_scalar_error;
+// REVERTED: unit_subform_scalar_error (intentional compile_fail test - should remain disabled)
 
-#[ cfg( feature = "derive_former" ) ]
-#[ test_tools::nightly ]
-#[ test ]
+#[cfg(feature = "derive_former")]
+#[test_tools::nightly]
+#[test]
 fn subform_scalar_on_unit_compile_fail() // Renamed for clarity
 {
   let t = test_tools::compiletime::TestCases::new();

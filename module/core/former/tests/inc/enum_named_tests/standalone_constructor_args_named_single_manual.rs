@@ -4,7 +4,7 @@
 //! enum has `#[standalone_constructors]` and the field has `#[arg_for_constructor]`.
 //!
 //! Coverage:
-//! - Rule 4a (#[standalone_constructors]): Manually implements the top-level constructor function (`struct_variant_args`).
+//! - Rule 4a (#[`standalone_constructors`]): Manually implements the top-level constructor function (`struct_variant_args`).
 //! - Rule 4b (Option 2 Logic): Manually implements the logic for a scalar standalone constructor that takes an argument for the single field in a named variant.
 //! - Rule 1e (Struct + Single-Field + `#[scalar]`): Implicitly relevant as `StructVariantArgs` is a single-field named variant.
 //! - Rule 3e (Struct + Single-Field + Default): Implicitly relevant as `StructVariantArgs` is a single-field named variant.
@@ -26,11 +26,11 @@ use ::former_types::
   FormerDefinitionTypes, FormerMutator, FormerDefinition,
   FormingEnd, ReturnPreformed,
 };
-use std::marker::PhantomData;
+use core::marker::PhantomData;
 
 // === Enum Definition ===
 
-/// Enum for manual testing of standalone constructors with arguments (single named variant).
+/// Enum for manual testing of standalone constructors with arguments (combined variants).
 #[ derive( Debug, PartialEq, Clone ) ]
 pub enum TestEnumArgs // New name
 {
@@ -39,12 +39,18 @@ pub enum TestEnumArgs // New name
   {
     field : String,
   },
+  /// A struct variant with multiple fields (intended as constructor args).
+  MultiStructArgs
+  {
+    a : i32,
+    b : bool,
+  },
 }
 
 // === Manual Former Implementation for StructVariantArgs ===
 
 // Storage
-/// Storage for TestEnumArgsStructVariantArgsFormer.
+/// Storage for `TestEnumArgsStructVariantArgsFormer`.
 #[ derive( Debug, Default ) ]
 pub struct TestEnumArgsStructVariantArgsFormerStorage
 {
@@ -69,7 +75,7 @@ impl StoragePreform for TestEnumArgsStructVariantArgsFormerStorage
 }
 
 // Definition Types
-/// Definition types for TestEnumArgsStructVariantArgsFormer.
+/// Definition types for `TestEnumArgsStructVariantArgsFormer`.
 #[ derive( Debug, Default ) ]
 pub struct TestEnumArgsStructVariantArgsFormerDefinitionTypes< Context = (), Formed = TestEnumArgs >
 {
@@ -91,7 +97,7 @@ for TestEnumArgsStructVariantArgsFormerDefinitionTypes< Context, Formed >
 }
 
 // Definition
-/// Definition for TestEnumArgsStructVariantArgsFormer.
+/// Definition for `TestEnumArgsStructVariantArgsFormer`.
 #[ derive( Debug, Default ) ]
 pub struct TestEnumArgsStructVariantArgsFormerDefinition
 < Context = (), Formed = TestEnumArgs, End = TestEnumArgsStructVariantArgsEnd >
@@ -112,7 +118,7 @@ where
 }
 
 // Former
-/// Manual Former implementation for TestEnumArgs::StructVariantArgs.
+/// Manual Former implementation for `TestEnumArgs::StructVariantArgs`.
 #[ derive( Debug ) ]
 pub struct TestEnumArgsStructVariantArgsFormer
 < Definition = TestEnumArgsStructVariantArgsFormerDefinition >
@@ -175,7 +181,7 @@ where
 }
 
 // End Struct for StructVariantArgs
-/// End handler for TestEnumArgsStructVariantArgsFormer.
+/// End handler for `TestEnumArgsStructVariantArgsFormer`.
 #[ derive( Debug, Default ) ]
 pub struct TestEnumArgsStructVariantArgsEnd;
 
@@ -198,11 +204,18 @@ for TestEnumArgsStructVariantArgsEnd
 
 // === Standalone Constructors (Manual - Argument Taking) ===
 
-/// Manual standalone constructor for TestEnumArgs::StructVariantArgs (takes arg).
+/// Manual standalone constructor for `TestEnumArgs::StructVariantArgs` (takes arg).
 /// Returns Self directly as per Option 2.
 pub fn struct_variant_args( field : impl Into< String > ) -> TestEnumArgs // Changed return type
 {
   TestEnumArgs::StructVariantArgs { field : field.into() } // Direct construction
+}
+
+/// Manual standalone constructor for `TestEnumArgs::MultiStructArgs` (takes args).
+/// Returns Self directly as per Option 2.
+pub fn multi_struct_args( a : impl Into< i32 >, b : impl Into< bool > ) -> TestEnumArgs 
+{
+  TestEnumArgs::MultiStructArgs { a : a.into(), b : b.into() } // Direct construction
 }
 
 // === Include Test Logic ===

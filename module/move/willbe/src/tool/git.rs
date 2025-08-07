@@ -8,7 +8,7 @@ mod private
   use std::ffi::OsString;
   use std::path::Path;
 
-  #[ allow( clippy::wildcard_imports ) ]
+
   use process_tools::process::*;
   // use error::err;
   // qqq : group dependencies
@@ -29,9 +29,9 @@ mod private
   /// Returns an error if the `git add` command fails.
   // qqq : should be typed error, apply err_with
   #[ cfg_attr
-  ( 
-    feature = "tracing", 
-    tracing::instrument( skip( path, objects ), fields( path = %path.as_ref().display() ) ) 
+  (
+    feature = "tracing",
+    tracing::instrument( skip( path, objects ), fields( path = %path.as_ref().display() ) )
   )]
   pub fn add< P, Os, O >( path : P, objects : Os, dry : bool )
   -> error::untyped::Result< Report >
@@ -87,13 +87,13 @@ mod private
   /// Returns an error if the `git commit` command fails.
   // qqq : should be typed error, apply err_with
   #[ cfg_attr
-  ( 
-    feature = "tracing", 
+  (
+    feature = "tracing",
     tracing::instrument
-    ( 
-      skip( path, message ), 
-      fields( path = %path.as_ref().display(), message = %message.as_ref() ) 
-    ) 
+    (
+      skip( path, message ),
+      fields( path = %path.as_ref().display(), message = %message.as_ref() )
+    )
   )]
   pub fn commit< P, M >( path : P, message : M, dry : bool ) -> error::untyped::Result< Report >
   // qqq : don't use 1-prameter Result

@@ -21,8 +21,7 @@
 pub use inspect_type::*;
 
 // #[ rustversion::nightly ]
-fn main()
-{
+fn main() {
   // #[ cfg( feature = "nightly" ) ]
   // {
   //   inspect_type_of!( &[ 1, 2, 3 ][ .. ] );

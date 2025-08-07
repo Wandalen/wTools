@@ -1,11 +1,13 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   // use action;
   // use error::{ err };
   use std::fmt::{ Display, Formatter };
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
 
   #[ derive( Debug, Default ) ]
   struct ReadmeHeadersRenewReport

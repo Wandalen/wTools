@@ -1,9 +1,9 @@
 use super::*;
-use the_module::
-{
+use the_module::{
   parser::Parser,
   VerifiedCommand,
-  executor::Context, Type,
+  executor::Context,
+  Type,
   grammar::Dictionary,
   verifier::Verifier,
 
@@ -13,8 +13,7 @@ use the_module::
 
 //
 
-tests_impls!
-{
+tests_impls! {
   fn basic()
   {
     // init parser
@@ -191,8 +190,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   basic,
   with_subject,
   with_property,

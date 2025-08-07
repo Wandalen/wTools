@@ -2,8 +2,7 @@ use super::*;
 // use the_module::exposed::*;
 
 // trace_macros!( true );
-the_module::exposed::tests_impls!
-{
+the_module::exposed::tests_impls! {
 
   fn pass1_test()
   {
@@ -40,8 +39,7 @@ the_module::exposed::tests_impls!
 // trace_macros!( false );
 
 // trace_macros!( true );
-the_module::exposed::tests_index!
-{
+the_module::exposed::tests_index! {
   pass1_test,
   fail1_test,
   never_test,

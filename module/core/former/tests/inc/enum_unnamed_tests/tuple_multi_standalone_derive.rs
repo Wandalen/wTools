@@ -1,7 +1,7 @@
 //! Purpose: Tests the `#[derive(Former)]` macro's generation of a standalone former builder for a multi-field tuple variant when the enum has `#[standalone_constructors]` and no fields within the variants have the `#[arg_for_constructor]` attribute. This file focuses on verifying the derive-based implementation.
 //!
 //! Coverage:
-//! - Rule 4a (#[standalone_constructors]): Verifies the generation of the top-level constructor function (`variant`).
+//! - Rule 4a (#[`standalone_constructors`]): Verifies the generation of the top-level constructor function (`variant`).
 //! - Rule 4b (Option 2 Logic): Verifies that when no fields in a multi-field tuple variant have `#[arg_for_constructor]`, the standalone constructor returns a former builder for the variant.
 //! - Rule 3f (Tuple + Multi-Field + Default): Implicitly relevant as `Variant` is a multi-field tuple variant.
 //!

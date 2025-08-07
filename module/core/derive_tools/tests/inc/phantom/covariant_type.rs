@@ -1,9 +1,8 @@
 use super::*;
 
-#[ allow( dead_code ) ]
+#[allow(dead_code)]
 // #[ the_module::phantom ]
-struct CovariantType< T >
-{
+struct CovariantType<T> {
   a: T,
 }
 

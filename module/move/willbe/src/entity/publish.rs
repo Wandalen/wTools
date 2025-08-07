@@ -1,7 +1,7 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
 
   use std::fmt;
@@ -16,6 +16,8 @@ mod private
     }
   };
   use error::ErrWith;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
 
   /// Represents instructions for publishing a package.
   #[ derive( Debug, Clone ) ]
@@ -431,9 +433,9 @@ mod private
     for package in plan.plans
     {
       let res = perform_package_publish( package ).map_err
-      ( 
-        | ( current_rep, e ) | 
-        format_err!( "{}\n{current_rep}\n{e}", report.iter().map( | r | format!( "{r}" ) ).join( "\n" ) ) 
+      (
+        | ( current_rep, e ) |
+        format_err!( "{}\n{current_rep}\n{e}", report.iter().map( | r | format!( "{r}" ) ).join( "\n" ) )
       )?;
       report.push( res );
     }

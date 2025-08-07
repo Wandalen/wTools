@@ -1,4 +1,4 @@
-#![ cfg( feature = "string_split" ) ]
+#![cfg(feature = "string_split")]
 
 //! # Test Suite for `strs_tools::string::split`
 //!
@@ -41,11 +41,11 @@
 #![allow(unused_imports)]
 
 mod basic_split_tests;
-mod preserving_options_tests;
-mod stripping_options_tests;
-mod quoting_options_tests;
-mod indexing_options_tests;
 mod combined_options_tests;
 mod edge_case_tests;
+mod indexing_options_tests;
+mod preserving_options_tests;
 mod quoting_and_unescaping_tests;
+mod quoting_options_tests;
+mod stripping_options_tests;
 mod unescape_tests;

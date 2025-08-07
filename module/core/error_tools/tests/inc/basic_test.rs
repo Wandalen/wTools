@@ -1,12 +1,11 @@
-#![ allow( deprecated ) ]
+#![allow(deprecated)]
 // #![ allow( unused_imports ) ]
 use super::*;
 
 //
 
-#[ cfg( not( feature = "no_std" ) ) ]
-test_tools::tests_impls!
-{
+#[cfg(not(feature = "no_std"))]
+test_tools::tests_impls! {
 //   fn basic()
 //   {
 //     use std::error::Error;
@@ -122,9 +121,8 @@ test_tools::tests_impls!
 
 //
 
-#[ cfg( not( feature = "no_std" ) ) ]
-test_tools::tests_index!
-{
+#[cfg(not(feature = "no_std"))]
+test_tools::tests_index! {
   // basic,
   // use1,
   // use2,

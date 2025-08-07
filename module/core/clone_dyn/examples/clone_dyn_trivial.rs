@@ -56,29 +56,26 @@
 //! The main function demonstrates the overall usage by creating a vector, obtaining an iterator, and using the iterator to print elements.
 //!
 
-#[ cfg( not( all( feature = "enabled", feature = "derive_clone_dyn" ) ) ) ]
+#[cfg(not(all(feature = "enabled", feature = "derive_clone_dyn")))]
 fn main() {}
-#[ cfg( all( feature = "enabled", feature = "derive_clone_dyn" ) ) ]
-fn main()
-{
-  use clone_dyn::{ clone_dyn, CloneDyn };
+#[cfg(all(feature = "enabled", feature = "derive_clone_dyn"))]
+fn main() {
+  use clone_dyn::{clone_dyn, CloneDyn};
 
   /// Trait that encapsulates an iterator with specific characteristics, tailored for your needs.
-  #[ clone_dyn ]
-  pub trait IterTrait< 'a, T >
+  #[clone_dyn]
+  pub trait IterTrait<'a, T>
   where
-    T : 'a,
-    Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
-    // Self : CloneDyn,
-    // There’s no need to explicitly define this bound because the macro will handle it for you.
+    T: 'a,
+    Self: Iterator<Item = T> + ExactSizeIterator<Item = T> + DoubleEndedIterator,
   {
   }
 
-  impl< 'a, T, I > IterTrait< 'a, T > for I
+  impl<'a, T, I> IterTrait<'a, T> for I
   where
-    T : 'a,
-    Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
-    Self : CloneDyn,
+    T: 'a,
+    Self: Iterator<Item = T> + ExactSizeIterator<Item = T> + DoubleEndedIterator,
+    Self: CloneDyn,
   {
   }
 
@@ -106,12 +103,10 @@ fn main()
   /// However, Rust's `Clone` trait cannot be implemented for trait objects due to object safety constraints.
   /// The `CloneDyn` trait addresses this problem by enabling cloning of trait objects.
 
-  pub fn get_iter< 'a >( src : Option< &'a Vec< i32 > > ) -> Box< dyn IterTrait< 'a, &'a i32 > + 'a >
-  {
-    match &src
-    {
-      Some( src ) => Box::new( src.iter() ),
-      _ => Box::new( core::iter::empty() ),
+  pub fn get_iter<'a>(src: Option<&'a Vec<i32>>) -> Box<dyn IterTrait<'a, &'a i32> + 'a> {
+    match &src {
+      Some(src) => Box::new(src.iter()),
+      _ => Box::new(core::iter::empty()),
     }
   }
 
@@ -119,25 +114,23 @@ fn main()
   ///
   /// This function demonstrates the use of the `CloneDyn` trait by cloning the iterator.
   /// It then iterates over the cloned iterator and prints each element.
-  pub fn use_iter< 'a >( iter : Box< dyn IterTrait< 'a, &'a i32 > + 'a > )
-  {
+  pub fn use_iter<'a>(iter: Box<dyn IterTrait<'a, &'a i32> + 'a>) {
     // Clone would not be available if CloneDyn is not implemented for the iterator.
     // And being an object-safe trait, it can't implement Clone.
     // Nevertheless, thanks to CloneDyn, the object is clonable.
     //
     // This line demonstrates cloning the iterator and iterating over the cloned iterator.
     // Without `CloneDyn`, you would need to collect the iterator into a container, allocating memory on the heap.
-    iter.clone().for_each( | e | println!( "{e}" ) );
+    iter.clone().for_each(|e| println!("{e}"));
 
     // Iterate over the original iterator and print each element.
-    iter.for_each( | e | println!( "{e}" ) );
+    iter.for_each(|e| println!("{e}"));
   }
 
   // Create a vector of integers.
-  let data = vec![ 1, 2, 3 ];
+  let data = vec![1, 2, 3];
   // Get an iterator over the vector.
-  let iter = get_iter( Some( &data ) );
+  let iter = get_iter(Some(&data));
   // Use the iterator to print its elements.
-  use_iter( iter );
-
+  use_iter(iter);
 }

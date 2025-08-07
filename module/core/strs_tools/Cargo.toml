@@ -1,13 +1,13 @@
 [package]
 name = "strs_tools"
-version = "0.21.0"
+version = "0.24.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/strs_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/strs_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/strs_tools"
@@ -32,31 +32,62 @@ default = [
   "string_parse_request",
   "string_parse_number",
   "string_split",
+  "simd",
 ]
 full = [
   "enabled",
-  "use_alloc",
   "string_indentation",
   "string_isolate",
   "string_parse_request",
   "string_parse_number",
   "string_split",
+  "simd",
 ]
+
+# Performance optimization features - enabled by default, disable with --no-default-features
+simd = ["memchr", "aho-corasick", "bytecount", "lazy_static"]
 
 no_std = []
 use_alloc = [ "no_std" ]
 enabled = []
 
-string_indentation = [ "enabled" ]
-string_isolate = [ "enabled" ]
-string_parse_request  = [ "string_split", "string_isolate", "enabled" ]
-string_parse_number = [ "lexical", "enabled" ]
-string_split = [ "enabled" ] # Removed circular dependency on string_parse_request
-string_parse = []
+# Core features
+indentation = [ "enabled" ]
+isolate = [ "enabled" ]
+parse_request = [ "split", "isolate", "enabled" ]
+parse_number = [ "lexical", "enabled" ]
+split = [ "enabled" ]
+
+# Feature aliases for backwards compatibility
+string_indentation = [ "indentation" ]
+string_isolate = [ "isolate" ]
+string_parse_request = [ "parse_request" ]
+string_parse_number = [ "parse_number" ]
+string_parse = [ "parse_request" ]
+string_split = [ "split" ]
 
 [dependencies]
-lexical = { version = "7.0.4", optional = true }
+lexical = { workspace = true, optional = true }
 component_model_types = { workspace = true, features = ["enabled"] }
+
+# SIMD optimization dependencies (optional)
+memchr = { workspace = true, optional = true }
+aho-corasick = { workspace = true, optional = true }
+bytecount = { workspace = true, optional = true }
+lazy_static = { version = "1.4", optional = true }
+
 
 [dev-dependencies]
 test_tools = { workspace = true }
+criterion = { version = "0.5", features = ["html_reports"] }
+
+# Disabled due to infinite loop issues
+[[bench]]
+name = "bottlenecks"
+harness = false
+path = "benchmarks/bottlenecks.rs"
+
+[[bin]]
+name = "simd_test"
+required-features = ["simd"]
+

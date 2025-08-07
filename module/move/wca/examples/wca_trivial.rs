@@ -2,22 +2,19 @@
 //! A trivial example.
 //!
 
-use wca::{ CommandsAggregator, Order, Type, VerifiedCommand };
+use wca::{CommandsAggregator, Order, Type, VerifiedCommand};
 
-fn f1( o : VerifiedCommand )
-{
-  println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props );
+fn f1(o: VerifiedCommand) {
+  println!("= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props);
 }
 
-fn exit()
-{
-  println!( "just exit" );
+fn exit() {
+  println!("just exit");
 
-  std::process::exit( 0 )
+  std::process::exit(0)
 }
 
-fn main() -> error_tools::error::untyped::Result< () >
-{
+fn main() -> error_tools::error::untyped::Result<()> {
   let ca = CommandsAggregator::former()
   .command( "exit" )
   .hint( "just exit" )
@@ -50,8 +47,8 @@ fn main() -> error_tools::error::untyped::Result< () >
   // ca.execute( input ).unwrap();
   //aaa: works
 
-  let input: Vec< String > = std::env::args().skip( 1 ).collect();
-  ca.perform( input )?;
-  
-  Ok( () )
+  let input: Vec<String> = std::env::args().skip(1).collect();
+  ca.perform(input)?;
+
+  Ok(())
 }

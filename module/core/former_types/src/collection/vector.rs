@@ -4,74 +4,57 @@
 //! this module abstracts the operations on vector-like data structures, making them more flexible and easier to integrate as
 //! as subformer, enabling fluid and intuitive manipulation of vectors via builder patterns.
 //!
-#[ allow( clippy::wildcard_imports ) ]
+
 use crate::*;
-#[ allow( unused ) ]
+#[allow(unused)]
 use collection_tools::Vec;
 
-impl< E > Collection for Vec< E >
-{
+impl<E> Collection for Vec<E> {
   type Entry = E;
   type Val = E;
 
-  #[ inline( always ) ]
-  fn entry_to_val( e : Self::Entry ) -> Self::Val
-  {
+  #[inline(always)]
+  fn entry_to_val(e: Self::Entry) -> Self::Val {
     e
   }
-
 }
 
-impl< E > CollectionAdd for Vec< E >
-{
-
-  #[ inline( always ) ]
-  fn add( &mut self, e : Self::Entry ) -> bool
-  {
-    self.push( e );
+impl<E> CollectionAdd for Vec<E> {
+  #[inline(always)]
+  fn add(&mut self, e: Self::Entry) -> bool {
+    self.push(e);
     true
   }
-
 }
 
-impl< E > CollectionAssign for Vec< E >
-{
-  #[ inline( always ) ]
-  fn assign< Elements >( &mut self, elements : Elements ) -> usize
+impl<E> CollectionAssign for Vec<E> {
+  #[inline(always)]
+  fn assign<Elements>(&mut self, elements: Elements) -> usize
   where
-    Elements : IntoIterator< Item = Self::Entry >
+    Elements: IntoIterator<Item = Self::Entry>,
   {
     let initial_len = self.len();
-    self.extend( elements );
+    self.extend(elements);
     self.len() - initial_len
   }
-
 }
 
-impl< E > CollectionValToEntry< E > for Vec< E >
-where
-{
+impl<E> CollectionValToEntry<E> for Vec<E> {
   type Entry = E;
-  #[ inline( always ) ]
-  fn val_to_entry( val : E ) -> Self::Entry
-  {
+  #[inline(always)]
+  fn val_to_entry(val: E) -> Self::Entry {
     val
   }
 }
 
 // = storage
 
-impl< E > Storage
-for Vec< E >
-{
-  type Preformed = Vec< E >;
+impl<E> Storage for Vec<E> {
+  type Preformed = Vec<E>;
 }
 
-impl< E > StoragePreform
-for Vec< E >
-{
-  fn preform( self ) -> Self::Preformed
-  {
+impl<E> StoragePreform for Vec<E> {
+  fn preform(self) -> Self::Preformed {
     self
   }
 }
@@ -90,24 +73,23 @@ for Vec< E >
 /// - `End`: A trait determining the behavior at the end of the formation process.
 ///
 
-#[ derive( Debug, Default ) ]
-pub struct VectorDefinition< E, Context, Formed, End >
+#[derive(Debug, Default)]
+pub struct VectorDefinition<E, Context, Formed, End>
 where
-  End : FormingEnd< VectorDefinitionTypes< E, Context, Formed > >,
+  End: FormingEnd<VectorDefinitionTypes<E, Context, Formed>>,
 {
-  _phantom : core::marker::PhantomData< ( E, Context, Formed, End ) >,
+  _phantom: core::marker::PhantomData<(E, Context, Formed, End)>,
 }
 
-impl< E, Context, Formed, End > FormerDefinition
-for VectorDefinition< E, Context, Formed, End >
+impl<E, Context, Formed, End> FormerDefinition for VectorDefinition<E, Context, Formed, End>
 where
-  End : FormingEnd< VectorDefinitionTypes< E, Context, Formed > >,
+  End: FormingEnd<VectorDefinitionTypes<E, Context, Formed>>,
 {
-  type Storage = Vec< E >;
+  type Storage = Vec<E>;
   type Context = Context;
   type Formed = Formed;
 
-  type Types = VectorDefinitionTypes< E, Context, Formed >;
+  type Types = VectorDefinitionTypes<E, Context, Formed>;
   type End = End;
 }
 
@@ -125,66 +107,52 @@ where
 /// - `Context`: The context in which the vector is formed.
 /// - `Formed`: The type produced as a result of the formation process.
 
-#[ derive( Debug, Default ) ]
-pub struct VectorDefinitionTypes< E, Context = (), Formed = Vec< E > >
-{
-  _phantom : core::marker::PhantomData< ( E, Context, Formed ) >,
+#[derive(Debug, Default)]
+pub struct VectorDefinitionTypes<E, Context = (), Formed = Vec<E>> {
+  _phantom: core::marker::PhantomData<(E, Context, Formed)>,
 }
 
-impl< E, Context, Formed > FormerDefinitionTypes
-for VectorDefinitionTypes< E, Context, Formed >
-{
-  type Storage = Vec< E >;
+impl<E, Context, Formed> FormerDefinitionTypes for VectorDefinitionTypes<E, Context, Formed> {
+  type Storage = Vec<E>;
   type Context = Context;
   type Formed = Formed;
 }
 
 // = mutator
 
-impl< E, Context, Formed > FormerMutator
-for VectorDefinitionTypes< E, Context, Formed >
-{
-}
+impl<E, Context, Formed> FormerMutator for VectorDefinitionTypes<E, Context, Formed> {}
 
 // = Entity To
 
-impl< E, Definition > EntityToFormer< Definition >
-for Vec< E >
+impl<E, Definition> EntityToFormer<Definition> for Vec<E>
 where
-  Definition : FormerDefinition
-  <
-    Storage = Vec< E >,
-    Types = VectorDefinitionTypes
-    <
+  Definition: FormerDefinition<
+    Storage = Vec<E>,
+    Types = VectorDefinitionTypes<
       E,
-      < Definition as definition::FormerDefinition >::Context,
-      < Definition as definition::FormerDefinition >::Formed,
+      <Definition as definition::FormerDefinition>::Context,
+      <Definition as definition::FormerDefinition>::Formed,
     >,
   >,
-  Definition::End : forming::FormingEnd< Definition::Types >,
+  Definition::End: forming::FormingEnd<Definition::Types>,
 {
-  type Former = VectorFormer< E, Definition::Context, Definition::Formed, Definition::End >;
+  type Former = VectorFormer<E, Definition::Context, Definition::Formed, Definition::End>;
 }
 
-impl< E > crate::EntityToStorage
-for Vec< E >
-{
-  type Storage = Vec< E >;
+impl<E> crate::EntityToStorage for Vec<E> {
+  type Storage = Vec<E>;
 }
 
-impl< E, Context, Formed, End > crate::EntityToDefinition< Context, Formed, End >
-for Vec< E >
+impl<E, Context, Formed, End> crate::EntityToDefinition<Context, Formed, End> for Vec<E>
 where
-  End : crate::FormingEnd< VectorDefinitionTypes< E, Context, Formed > >,
+  End: crate::FormingEnd<VectorDefinitionTypes<E, Context, Formed>>,
 {
-  type Definition = VectorDefinition< E, Context, Formed, End >;
-  type Types = VectorDefinitionTypes< E, Context, Formed >;
+  type Definition = VectorDefinition<E, Context, Formed, End>;
+  type Types = VectorDefinitionTypes<E, Context, Formed>;
 }
 
-impl< E, Context, Formed > crate::EntityToDefinitionTypes< Context, Formed >
-for Vec< E >
-{
-  type Types = VectorDefinitionTypes< E, Context, Formed >;
+impl<E, Context, Formed> crate::EntityToDefinitionTypes<Context, Formed> for Vec<E> {
+  type Types = VectorDefinitionTypes<E, Context, Formed>;
 }
 
 // = subformer
@@ -200,8 +168,7 @@ for Vec< E >
 /// It is particularly useful in scenarios where vectors are repeatedly used or configured in similar ways across different
 /// parts of an application.
 ///
-pub type VectorFormer< E, Context, Formed, End > =
-CollectionFormer::< E, VectorDefinition< E, Context, Formed, End > >;
+pub type VectorFormer<E, Context, Formed, End> = CollectionFormer<E, VectorDefinition<E, Context, Formed, End>>;
 
 // = extension
 
@@ -212,23 +179,19 @@ CollectionFormer::< E, VectorDefinition< E, Context, Formed, End > >;
 /// with the builder pattern provided by the `former` framework. It's a convenience trait that simplifies
 /// creating configured vector builders with default settings.
 ///
-pub trait VecExt< E > : sealed::Sealed
-{
+pub trait VecExt<E>: sealed::Sealed {
   /// Initializes a builder pattern for `Vec` using a default `VectorFormer`.
-  fn former() -> VectorFormer< E, (), Vec< E >, ReturnStorage >;
+  fn former() -> VectorFormer<E, (), Vec<E>, ReturnStorage>;
 }
 
-impl< E > VecExt< E > for Vec< E >
-{
-  #[ allow( clippy::default_constructed_unit_structs ) ]
-  fn former() -> VectorFormer< E, (), Vec< E >, ReturnStorage >
-  {
-    VectorFormer::< E, (), Vec< E >, ReturnStorage >::new( ReturnStorage::default() )
+impl<E> VecExt<E> for Vec<E> {
+  #[allow(clippy::default_constructed_unit_structs)]
+  fn former() -> VectorFormer<E, (), Vec<E>, ReturnStorage> {
+    VectorFormer::<E, (), Vec<E>, ReturnStorage>::new(ReturnStorage::default())
   }
 }
 
-mod sealed
-{
+mod sealed {
   pub trait Sealed {}
-  impl< E > Sealed for super::Vec< E > {}
+  impl<E> Sealed for super::Vec<E> {}
 }

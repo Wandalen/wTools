@@ -6,7 +6,7 @@ authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/second_brain"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/second_brain"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/second_brain"

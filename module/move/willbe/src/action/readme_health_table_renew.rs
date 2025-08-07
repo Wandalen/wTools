@@ -1,7 +1,7 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use std::
   {
@@ -9,11 +9,11 @@ mod private
     fs::{ OpenOptions, File },
     io::{ Write, Read, Seek, SeekFrom },
   };
-  use path::{ Path, PathBuf };
+  use pth::{ Path, PathBuf };
   use convert_case::Casing;
   use toml_edit::Document;
   use regex::bytes::Regex;
-  use collection::HashMap;
+  use collection_tools::collection::HashMap;
 
   use error::
   {
@@ -26,8 +26,10 @@ mod private
       format_err,
     }
   };
-  use manifest::repo_url;
-  // use path::AbsolutePath;
+  use crate::entity::manifest::repo_url;
+  // use pth::AbsolutePath;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
 
   static TAG_TEMPLATE: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
   static CLOSE_TAG: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
@@ -612,15 +614,15 @@ ensure that at least one remotest is present in git. ",
   {
     match stability
     {
-      Stability::Experimental => 
+      Stability::Experimental =>
       " [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)".into(),
-      Stability::Stable => 
+      Stability::Stable =>
       " [![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](https://github.com/emersion/stability-badges#stable)".into(),
-      Stability::Deprecated => 
+      Stability::Deprecated =>
       " [![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/emersion/stability-badges#deprecated)".into(),
-      Stability::Unstable => 
+      Stability::Unstable =>
       " [![stability-unstable](https://img.shields.io/badge/stability-unstable-yellow.svg)](https://github.com/emersion/stability-badges#unstable)".into(),
-      Stability::Frozen => 
+      Stability::Frozen =>
       " [![stability-frozen](https://img.shields.io/badge/stability-frozen-blue.svg)](https://github.com/emersion/stability-badges#frozen)".into(),
     }
   }

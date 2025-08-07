@@ -60,3 +60,24 @@ As you build the system, please use this document to log your key implementation
 3.  Place the compiled binary in `/usr/local/bin`.
 4.  ...
 5
+
+---
+
+### Command Path and Argument Parsing Rules
+
+*   **Rule 0: Spaces are ignored:** Spaces are ignored and number of spaces is ignored.
+*   **Rule 1: Command Path Delimitation:** The command path consists of one or more segments. Segments are always separated by single dot (`.`). Spaces (single or many) might be injected before/after `.`, spaces are ignored.
+    *   Example: `.cmd.subcmd` -> `["cmd", "subcmd"]`
+    *   Example: `.cmd. subcmd` -> `["cmd", "subcmd"]`
+    *   Example: `.cmd   .  subcmd` -> `["cmd", "subcmd"]`
+    *   Example: `.cmd.subcmd.` -> `["cmd", "subcmd", "."]`
+    *   Example: `.cmd.subcmd?` -> `["cmd", "subcmd", "?"]`
+    *   Example: `.cmd.subcmd ?` -> `["cmd", "subcmd", "?"]`
+*   **Rule 2: Transition to Arguments:** The command path ends and argument parsing begins when:
+    *   A token is encountered that is *not* an identifier, a space, or a dot (e.g., an operator like `::` or `?`, or a quoted string).
+    *   An identifier is followed by a token that is *not* a dot, and is also not `::`. In this case, the identifier is the last command path segment, and the subsequent token is the first argument.
+    *   The end of the input is reached after an identifier or a dot.
+*   **Rule 3: Leading/Trailing Dots:** Leading dots (`.cmd`) are ignored. Trailing dots (`cmd.`) are considered part of the last command path segment if no arguments follow. If arguments follow, a trailing dot on the command path is an error.
+*   **Rule 4: Help Operator (`?`):** The `?` operator is valid not only immediately after the command path (i.e., as the first argument or the first token after the command path), but also `?` might be preceded by by other arguments, but `?` is always the last. If command has other arguments before `?` then semantic meaning of `?` should be expaining not only the command but those specific arguments.
+*   **Rule 5: Positional Arguments:** Positional arguments are any non-named arguments that follow the command path.
+*   **Rule 6: Named Arguments:** Named arguments are identified by the `name::value` syntax.

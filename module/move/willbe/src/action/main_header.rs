@@ -1,7 +1,7 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use std::fmt::{ Display, Formatter };
   use std::fs::OpenOptions;
@@ -76,7 +76,7 @@ mod private
           writeln!( f, "File not found or contains non-UTF-8 characters." )?;
         }
       }
-      Ok( () )
+      std::fmt::Result::Ok( () )
     }
   }
 
@@ -128,7 +128,7 @@ mod private
 
       let discord_url = workspace.discord_url();
 
-      Ok
+      Result::Ok
       (
         Self
         {
@@ -156,17 +156,17 @@ mod private
       )
       .unwrap_or_default();
 
-      Ok
+      Result::Ok
       (
         format!
         (
          r"[![{}](https://img.shields.io/github/actions/workflow/status/{}/standard_rust_scheduled.yml?label={}&logo=github&branch={})](https://github.com/{}/actions/workflows/standard_rust_scheduled.yml){}
 [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/https://github.com/{})
 [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/{})",
-          self.workspace_name, 
+          self.workspace_name,
           url::git_info_extract( &self.repository_url )?,
-          self.workspace_name, 
-          self.master_branch, 
+          self.workspace_name,
+          self.master_branch,
           url::git_info_extract( &self.repository_url )?,
           discord,
           self.workspace_name.to_lowercase(), self.workspace_name.to_lowercase(), url::git_info_extract( &self.repository_url )?,
@@ -176,7 +176,7 @@ mod private
     }
   }
 
-  /// Generate header in main Readme.md.
+  /// Generate header in main readme.md.
   /// The location of header is defined by a tag :
   /// ``` md
   /// <!--{ generate.main_header.start() }-->
@@ -271,7 +271,7 @@ mod private
     file.write_all( content.as_bytes() ).err_with_report( &report )?;
     report.touched_file = read_me_path.to_path_buf();
     report.success = true;
-    Ok( report )
+    Result::Ok( report )
   }
 }
 

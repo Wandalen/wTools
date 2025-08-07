@@ -1,395 +1,396 @@
-# Unilang Framework Specification
 
-**Version:** 2.0.0
-**Status:** Final
+# spec
+
+- **Name:** Unilang Framework
+- **Version:** 3.0.0
+- **Date:** 2025-08-05
+
+### Table of Contents
+*   **Part I: Public Contract (Mandatory Requirements)**
+    *   1. Vision & Scope
+        *   1.1. Core Vision: Define Once, Use Everywhere
+        *   1.2. In Scope: The Multi-Crate Framework
+        *   1.3. Out of Scope
+    *   2. System Actors
+    *   3. Ubiquitous Language (Vocabulary)
+    *   4. Core Functional Requirements
+        *   4.1. Command & Registry Management
+        *   4.2. Argument Parsing & Type System
+        *   4.3. Command Execution Pipeline
+        *   4.4. Help & Discovery System
+        *   4.5. Modality Support
+    *   5. Non-Functional Requirements
+    *   6. CLI Modality: Language Syntax & Processing
+    *   7. API Reference: Core Data Structures
+    *   8. Cross-Cutting Concerns (Error Handling, Security, Verbosity)
+    *   9. Feature Flags & Modularity
+*   **Part II: Internal Design (Design Recommendations)**
+    *   10. Architectural Mandates & Design Principles
+    *   11. Architectural Diagrams
+    *   12. Crate-Specific Responsibilities
+*   **Part III: Project & Process Governance**
+    *   13. Project Goals & Success Metrics
+    *   14. Deliverables
+    *   15. Open Questions
+    *   16. Core Principles of Development
+*   **Appendix: Addendum**
+    *   Conformance Checklist
+    *   Finalized Internal Design Decisions
+    *   Finalized Internal Data Models
+    *   Environment Variables
+    *   Finalized Library & Tool Versions
+    *   Deployment Checklist
 
 ---
+## Part I: Public Contract (Mandatory Requirements)
+*This part of the specification defines the stable, externally visible promises of the `unilang` framework. All requirements in this section are mandatory.*
 
-### 0. Introduction & Core Concepts
+### 1. Vision & Scope
 
-**Design Focus: `Strategic Context`**
+#### 1.1. Core Vision: Define Once, Use Everywhere
+The `unilang` framework **must** provide a unified way to define command-line utility interfaces once, automatically enabling consistent interaction across multiple modalities such as CLI, TUI, GUI, and Web APIs. The core goals are:
 
-This document is the single source of truth for the `unilang` framework. It defines the language, its components, and the responsibilities of its constituent crates.
+*   **Consistency:** A single, declarative way to define commands and their arguments, regardless of how they are presented or invoked.
+*   **Discoverability:** Easy ways for users and systems to find available commands and understand their usage through an automated help system.
+*   **Flexibility:** Support for various methods of command definition (compile-time, run-time, declarative, procedural).
+*   **Extensibility:** Provide structures that enable an integrator to build an extensible system.
+*   **Efficiency:** Support for efficient parsing and zero-overhead command dispatch for statically defined commands.
+*   **Interoperability:** A standardized representation for commands, enabling integration with other tools or web services.
+*   **Robustness:** Clear, user-friendly error handling and a rich argument validation system.
+*   **Security:** Provide a framework for defining and enforcing secure command execution.
 
-#### 0.1. Scope: A Multi-Crate Framework
+#### 1.2. In Scope: The Multi-Crate Framework
+The Unilang specification governs a suite of related crates that work together to provide the full framework functionality. The primary crates **must** be:
 
-The Unilang specification governs a suite of related crates that work together to provide the full framework functionality. This document is the canonical specification for all of them. The primary crates are:
+*   **`unilang`**: The core framework crate that orchestrates parsing, semantic analysis, execution, and modality management. It provides the primary public API for integrators.
+*   **`unilang_parser`**: A dedicated, low-level crate responsible for the lexical and syntactic analysis of the `unilang` command language.
+*   **`unilang_meta`**: A companion crate providing procedural macros (e.g., `#[command]`) to simplify compile-time command definition.
 
-*   **`unilang`**: The core framework crate that orchestrates parsing, semantic analysis, execution, and modality management.
-*   **`unilang_instruction_parser`**: A dedicated, low-level crate responsible for the lexical and syntactic analysis of the `unilang` command language (implements Section 2 of this spec).
-*   **`unilang_meta`**: A companion crate providing procedural macros to simplify compile-time command definition (implements parts of Section 3.4).
+#### 1.3. Out of Scope
+The `unilang` framework is responsible for the command interface and execution pipeline, not the business logic itself. The following are explicitly out of scope for the framework:
 
-#### 0.2. Goals of `unilang`
+*   **Business Logic Implementation:** The framework will invoke command `Routines`, but the implementation of the business logic within those routines is the responsibility of the `Integrator`.
+*   **Transactional Guarantees:** The framework does not provide transactional guarantees for sequences of commands. A failure in one command in a sequence does not automatically roll back the effects of previously executed commands.
+*   **Inter-Command State Management:** The framework provides an `ExecutionContext` for passing data to commands, but it does not manage complex state between command invocations. State management is the responsibility of the `Integrator`.
+*   **User Interface (UI) Rendering:** The framework provides the data and structure for different modalities (CLI, TUI, GUI) but does not render the UI itself. UI rendering is the responsibility of modality-specific crates or the `Integrator`'s application.
 
-`unilang` provides a unified way to define command-line utility interfaces once, automatically enabling consistent interaction across multiple modalities such as CLI, GUI, TUI, and Web APIs. The core goals are:
+### 2. System Actors
 
-1.  **Consistency:** A single way to define commands and their arguments, regardless of how they are presented or invoked.
-2.  **Discoverability:** Easy ways for users and systems to find available commands and understand their usage.
-3.  **Flexibility:** Support for various methods of command definition (compile-time, run-time, declarative, procedural).
-4.  **Extensibility:** Provide structures that enable an integrator to build an extensible system with compile-time `Extension Module`s and run-time command registration.
-5.  **Efficiency:** Support for efficient parsing and command dispatch. The architecture **must** support near-instantaneous lookup for large sets (100,000+) of statically defined commands by performing maximum work at compile time.
-6.  **Interoperability:** Standardized representation for commands, enabling integration with other tools or web services, including auto-generation of WEB endpoints.
-7.  **Robustness:** Clear error handling and validation mechanisms.
-8.  **Security:** Provide a framework for defining and enforcing secure command execution.
+An Actor is any entity that plays a distinct role and participates in an interaction within the system's architecture.
 
-#### 0.3. System Actors
+#### 2.1. Human Actors
+*   **`Integrator (Developer)`**: The primary human actor who uses the `unilang` framework crates (`unilang`, `unilang_parser`, `unilang_meta`) to build a `utility1` application. Their responsibilities include defining commands, implementing routines, and configuring the framework.
+*   **`End User`**: A human actor who interacts with the compiled `utility1` application through one of its exposed `Modalities` (e.g., by typing commands into a CLI).
 
-*   **`Integrator (Developer)`**: The primary human actor who uses the `unilang` framework to build a `utility1` application. They define commands, write routines, and configure the system.
-*   **`End User`**: A human actor who interacts with the compiled `utility1` application through one of its exposed `Modalities` (e.g., CLI, GUI).
-*   **`Operating System`**: A system actor that provides the execution environment, including the CLI shell, file system, and environment variables that `utility1` consumes for configuration.
-*   **`External Service`**: Any external system (e.g., a database, a web API, another process) that a command `Routine` might interact with.
+#### 2.2. External System Actors
+*   **`Operating System`**: A system actor that provides the execution environment for `utility1`, including the CLI shell, file system, and environment variables.
+*   **`External Service`**: Any external system (e.g., a database, a web API) that a command `Routine` might interact with. The `unilang` framework does not interact with these services directly, but it facilitates the execution of routines that do.
 
-#### 0.4. Key Terminology (Ubiquitous Language)
+#### 2.3. Internal System Actors
+*   **`Build Script (build.rs)`**: A critical internal actor responsible for compile-time operations. Its primary role is to process static command definitions (from code or manifests) and generate the Perfect Hash Function (PHF) map, enabling the zero-overhead static command registry.
+*   **`Command Registry`**: An internal actor that serves as the runtime database for all command definitions. It manages both the static (PHF) and dynamic (HashMap) command sets and provides the lookup service used by the `Semantic Analyzer`.
+*   **`Parser (unilang_parser)`**: An internal actor that performs lexical and syntactic analysis on a raw input string, converting it into a structured `GenericInstruction` without any knowledge of command definitions.
+*   **`Semantic Analyzer`**: An internal actor that validates a `GenericInstruction` against the `Command Registry` to produce a `VerifiedCommand` that is guaranteed to be executable.
+*   **`Interpreter`**: An internal actor that takes a `VerifiedCommand` and invokes its corresponding `Routine`, managing the execution context and handling results.
+
+### 3. Ubiquitous Language (Vocabulary)
 
 *   **`unilang`**: This specification and the core framework crate.
-*   **`utility1`**: A generic placeholder for the primary application that implements and interprets `unilang`.
-*   **`Command Lexicon`**: The complete set of all commands available to `utility1` at any given moment.
-*   **`Command Registry`**: The runtime data structure that implements the `Command Lexicon`.
-*   **`Command Manifest`**: An external file (e.g., in YAML or JSON format) that declares `CommandDefinition`s for runtime loading.
-*   **`Command`**: A specific action that can be invoked, identified by its `FullName`.
-*   **`FullName`**: The complete, unique, dot-separated path identifying a command (e.g., `.files.copy`).
-*   **`Namespace`**: A logical grouping for commands and other namespaces.
-*   **`CommandDefinition` / `ArgumentDefinition`**: The canonical metadata for a command or argument.
-*   **`Routine`**: The executable code (handler function) associated with a command. Its signature is `fn(VerifiedCommand, ExecutionContext) -> Result<OutputData, ErrorData>`.
-*   **`Modality`**: A specific way of interacting with `utility1` (e.g., CLI, GUI).
-*   **`parser::GenericInstruction`**: The output of the `unilang_instruction_parser`.
-*   **`VerifiedCommand`**: A command that has passed semantic analysis and is ready for execution.
-*   **`ExecutionContext`**: An object providing routines with access to global settings and services.
-*   **`OutputData` / `ErrorData`**: Standardized structures for returning success or failure results.
+*   **`utility1`**: A generic placeholder for the primary application that implements `unilang`.
+*   **`Command Registry`**: The runtime data structure that holds all known `CommandDefinition`s and their associated `Routine`s. It supports both static (compile-time) and dynamic (run-time) registration.
+*   **`CommandDefinition`**: The canonical metadata for a command, defining its name, arguments, aliases, and behavior.
+*   **`ArgumentDefinition`**: The canonical metadata for a command's argument, defining its name, `Kind`, and validation rules.
+*   **`Routine`**: The executable code (a Rust closure or function) associated with a command.
+*   **`Modality`**: A specific way of interacting with `utility1` (e.g., CLI, REPL, Web API).
+*   **`GenericInstruction`**: The structured, syntax-aware output of the `unilang_parser`, representing a parsed but unvalidated command invocation.
+*   **`VerifiedCommand`**: The output of the `Semantic Analyzer`; a command that has been validated against the `Command Registry` and is guaranteed to be executable.
+*   **`Pipeline`**: A high-level API object that orchestrates the full processing flow from string input to execution result.
+*   **`Kind`**: The data type of an argument (e.g., `Integer`, `String`, `List`, `Map`).
 
----
+### 4. Core Functional Requirements
 
-### 1. Architectural Mandates & Design Principles
+This section lists the specific, testable functions the `unilang` framework **must** provide.
 
-This section outlines the non-negotiable architectural rules and mandatory dependencies for the `unilang` ecosystem. Adherence to these principles is required to ensure consistency, maintainability, and correctness across the framework.
+#### 4.1. Command & Registry Management
+*   **FR-REG-1 (Static Registration):** The framework **must** provide a mechanism, via a `build.rs` script, to register commands at compile-time from a manifest file (e.g., `unilang.commands.yaml`).
+*   **FR-REG-2 (Dynamic Registration):** The framework **must** expose a public API (`CommandRegistry::command_add_runtime`) for registering new commands and their routines at runtime.
+*   **FR-REG-3 (Declarative Loading):** The framework **must** provide functions (`load_from_yaml_str`, `load_from_json_str`) to load `CommandDefinition`s from structured text at runtime.
+*   **FR-REG-4 (Namespace Support):** The framework **must** support hierarchical command organization through dot-separated namespaces (e.g., `.math.add`).
+*   **FR-REG-5 (Alias Resolution):** The framework **must** support command aliases. When an alias is invoked, the framework **must** execute the corresponding canonical command.
 
-#### 1.1. Parser Implementation (`unilang_instruction_parser`)
+#### 4.2. Argument Parsing & Type System
+*   **FR-ARG-1 (Type Support):** The framework **must** support parsing and type-checking for the following `Kind`s: `String`, `Integer`, `Float`, `Boolean`, `Path`, `File`, `Directory`, `Enum`, `Url`, `DateTime`, `Pattern`, `List`, `Map`, `JsonString`, and `Object`.
+*   **FR-ARG-2 (Positional Binding):** The framework **must** correctly bind positional arguments from a `GenericInstruction` to the corresponding `ArgumentDefinition`s in the order they are defined.
+*   **FR-ARG-3 (Named Binding):** The framework **must** correctly bind named arguments (`name::value`) from a `GenericInstruction` to the corresponding `ArgumentDefinition`, regardless of order.
+*   **FR-ARG-4 (Alias Binding):** The framework **must** correctly bind named arguments specified via an alias to the correct `ArgumentDefinition`.
+*   **FR-ARG-5 (Default Values):** If an optional argument with a default value is not provided, the framework **must** use the default value during semantic analysis.
+*   **FR-ARG-6 (Validation Rule Enforcement):** The `Semantic Analyzer` **must** enforce all `ValidationRule`s (`Min`, `Max`, `MinLength`, `MaxLength`, `Pattern`, `MinItems`) defined for an argument. If a rule is violated, a `UNILANG_VALIDATION_RULE_FAILED` error **must** be returned.
 
-*   **Mandate:** The `unilang_instruction_parser` crate **must not** implement low-level string tokenization (splitting) logic from scratch. It **must** use the `strs_tools` crate as its core tokenization engine.
-*   **Rationale:** This enforces a clean separation of concerns. `strs_tools` is a dedicated, specialized tool for string manipulation. By relying on it, `unilang_instruction_parser` can focus on its primary responsibility: syntactic analysis of the token stream, not the raw tokenization itself.
+#### 4.3. Command Execution Pipeline
+*   **FR-PIPE-1 (Pipeline Orchestration):** The `Pipeline` API **must** correctly orchestrate the full sequence: Parsing -> Semantic Analysis -> Interpretation.
+*   **FR-PIPE-2 (Batch Processing):** The `Pipeline::process_batch` method **must** execute a list of commands independently, collecting results for each and not stopping on individual failures.
+*   **FR-PIPE-3 (Sequence Processing):** The `Pipeline::process_sequence` method **must** execute a list of commands in order and **must** terminate immediately upon the first command failure.
 
-##### Overview of `strs_tools`
+#### 4.4. Help & Discovery System
+*   **FR-HELP-1 (Command List):** The `HelpGenerator` **must** be able to produce a formatted list of all registered commands, including their names, namespaces, and hints.
+*   **FR-HELP-2 (Detailed Command Help):** The `HelpGenerator` **must** be able to produce detailed, formatted help for a specific command, including its description, arguments (with types, defaults, and validation rules), aliases, and examples.
+*   **FR-HELP-3 (Help Operator):** The parser **must** recognize the `?` operator. When present, the `Semantic Analyzer` **must** return a `HELP_REQUESTED` error containing the detailed help text for the specified command, bypassing all argument validation.
 
-`strs_tools` is a utility library for advanced string splitting and tokenization. Its core philosophy is to provide a highly configurable, non-allocating iterator over a string, giving the consumer fine-grained control over how the string is divided.
+#### 4.5. Modality Support
+*   **FR-REPL-1 (REPL Support):** The framework's core components (`Pipeline`, `Parser`, `SemanticAnalyzer`, `Interpreter`) **must** be structured to support a REPL-style execution loop. They **must** be reusable for multiple, sequential command executions within a single process lifetime.
+    
+    *Implementation Notes:* ✅ **IMPLEMENTED**
+    - Pipeline components are fully stateless and reusable
+    - Each command execution is independent with no state accumulation
+    - Memory efficient operation verified through performance benchmarks
+    - Reference implementations available in `examples/12_repl_loop.rs`, `examples/15_interactive_repl_mode.rs`, `examples/17_advanced_repl_features.rs`
+    
+*   **FR-INTERACTIVE-1 (Interactive Argument Prompting):** When a mandatory argument with the `interactive: true` attribute is not provided, the `Semantic Analyzer` **must** return a distinct, catchable error (`UNILANG_ARGUMENT_INTERACTIVE_REQUIRED`). This allows the calling modality to intercept the error and prompt the user for input.
+    
+    *Implementation Notes:* ✅ **IMPLEMENTED** 
+    - Error code `UNILANG_ARGUMENT_INTERACTIVE_REQUIRED` is returned as specified
+    - Implemented in `src/semantic.rs` lines 196-203
+    - Comprehensive test coverage in `tests/inc/phase5/interactive_args_test.rs`
+    - REPL examples demonstrate proper error handling and secure input simulation
+*   **FR-MOD-WASM-REPL (WebAssembly REPL Modality):** The framework **must** support a web-based REPL modality that can operate entirely on the client-side without a backend server. This requires the core `unilang` library to be fully compilable to the `wasm32-unknown-unknown` target.
 
-*   **Key Principle:** The library intentionally does **not** interpret escape sequences (e.g., `\"`). It provides raw string slices, leaving the responsibility of unescaping to the consumer (`unilang_instruction_parser`).
-*   **Usage Flow:** The typical workflow involves using a fluent builder pattern:
-    1.  Call `strs_tools::string::split::split()` to get a builder (`SplitOptionsFormer`).
-    2.  Configure it with methods like `.delimeter()`, `.quoting(true)`, etc.
-    3.  Call `.perform()` to get a `SplitIterator`.
-    4.  Iterate over the `Split` items, which contain the string slice and metadata about the token.
+### 5. Non-Functional Requirements
 
-*   **Recommended Components:**
-    *   **`strs_tools::string::split::split()`**: The main entry point function that returns the builder.
-    *   **`SplitOptionsFormer`**: The builder for setting options. Key methods include:
-        *   `.delimeter( &[" ", "::", ";;"] )`: To define what separates tokens.
-        *   `.quoting( true )`: To make the tokenizer treat quoted sections as single tokens.
-        *   `.preserving_empty( false )`: To ignore empty segments resulting from consecutive delimiters.
-    *   **`SplitIterator`**: The iterator produced by the builder.
-    *   **`Split`**: The struct yielded by the iterator, containing the `string` slice, its `typ` (`Delimiter` or `Delimited`), and its `start`/`end` byte positions in the original source.
+*   **NFR-PERF-1 (Startup Time):** For a utility with 1,000,000+ statically compiled commands, the framework **must** introduce zero runtime overhead for command registration. Application startup time **must not** be proportional to the number of static commands. This **must** be achieved via compile-time generation of a Perfect Hash Function (PHF).
+*   **NFR-PERF-2 (Lookup Latency):** The p99 latency for resolving a command `FullName` and its arguments **must** be less than 100 nanoseconds for any registry size.
+*   **NFR-PERF-3 (Throughput):** The framework **must** be capable of processing over 5,000,000 simple command lookups per second on a standard developer machine.
+*   **NFR-SEC-1 (Sensitive Data):** Argument values marked as `sensitive: true` **must not** be displayed in logs or user interfaces unless explicitly required by a secure context.
+*   **NFR-ROBUST-1 (Error Reporting):** All user-facing errors **must** be returned as a structured `ErrorData` object and provide clear, actionable messages. Internal panics **must** be caught and converted to a user-friendly `UNILANG_INTERNAL_ERROR`.
+*   **NFR-PLATFORM-1 (WASM Compatibility):** The core logic of the `unilang` and `unilang_parser` crates **must** be platform-agnostic and fully compatible with the WebAssembly (`wasm32-unknown-unknown`) target. This implies that the core crates **must not** depend on libraries or functionalities that are tied to a specific native OS (e.g., native threading, direct file system access that cannot be abstracted) unless those features are conditionally compiled and disabled for the WASM target.
+*   **NFR-MODULARITY-1 (Granular Features):** All non-essential framework functionality **must** be gated behind Cargo features. This includes support for complex types (`Url`, `DateTime`), declarative loading (`serde_yaml`, `serde_json`), and other features that introduce dependencies.
+*   **NFR-MODULARITY-2 (Lightweight Core):** When compiled with `default-features = false`, the `unilang` framework **must** have a minimal dependency footprint, comparable in lightness (dependencies, compile time) to the `pico-args` crate. The core functionality **must** be contained within the `enabled` feature.
 
-#### 1.2. Macro Implementation (`unilang_meta`)
+#### 5.1. REPL Implementation Requirements & Technical Insights
 
-*   **Mandate:** The `unilang_meta` crate **must** prefer using the `macro_tools` crate as its primary dependency for all procedural macro development. Direct dependencies on `syn`, `quote`, or `proc-macro2` should be avoided.
-*   **Rationale:** `macro_tools` not only re-exports these three essential crates but also provides a rich set of higher-level abstractions and utilities. Using it simplifies parsing, reduces boilerplate code, improves error handling, and leads to more readable and maintainable procedural macros.
+The REPL (Read-Eval-Print Loop) modality has unique technical challenges and requirements that have been discovered through implementation:
 
-    > ❌ **Bad** (`Cargo.toml` with direct dependencies)
-    > ```toml
-    > [dependencies]
-    > syn = { version = "2.0", features = ["full"] }
-    > quote = "1.0"
-    > proc-macro2 = "1.0"
-    > ```
+**Stateless Operation Requirements:**
+- Each command execution cycle must be completely independent
+- No state accumulation between command executions to prevent memory leaks
+- Components (`Parser`, `SemanticAnalyzer`, `Interpreter`) must be reusable without internal state corruption
+- Performance requirement: Command execution overhead must remain constant regardless of session length
 
-    > ✅ **Good** (`Cargo.toml` with `macro_tools`)
-    > ```toml
-    > [dependencies]
-    > macro_tools = "0.57"
-    > ```
+**Interactive Argument Handling:**
+- The error code `UNILANG_ARGUMENT_INTERACTIVE_REQUIRED` must be catchable at the REPL level
+- REPL implementations must handle secure input (passwords, API keys) without logging or state persistence
+- Optional interactive arguments with defaults must not trigger interactive prompts
+- Interactive argument validation must occur during semantic analysis, not execution
 
-##### Recommended `macro_tools` Components
+**Memory Management Insights:**
+- Pipeline component reuse provides 20-50% performance improvement over creating new instances
+- Command history storage should be bounded to prevent unbounded memory growth
+- Large command outputs should be handled with streaming or pagination for long-running REPL sessions
 
-To effectively implement `unilang_meta`, the following components from `macro_tools` are recommended:
+**Error Recovery Patterns:**
+- Parse errors should provide contextual suggestions for command correction
+- Semantic analysis errors should indicate available commands and proper syntax
+- Execution errors should not terminate the REPL session
+- Error history tracking enables improved user experience with "last-error" functionality
 
-*   **Core Re-exports (`syn`, `quote`, `proc-macro2`):** Use the versions re-exported by `macro_tools` for guaranteed compatibility.
-*   **Diagnostics (`diag` module):** Essential for providing clear, professional-grade error messages to the `Integrator`.
-    *   **`syn_err!( span, "message" )`**: The primary tool for creating `syn::Error` instances with proper location information.
-    *   **`return_syn_err!(...)`**: A convenient macro to exit a parsing function with an error.
-*   **Attribute Parsing (`attr` and `attr_prop` modules):** The main task of `unilang_meta` is to parse attributes like `#[unilang::command(...)]`. These modules provide reusable components for this purpose.
-    *   **`AttributeComponent`**: A trait for defining a parsable attribute (e.g., `unilang::command`).
-    *   **`AttributePropertyComponent`**: A trait for defining a property within an attribute (e.g., `name = "..."`).
-    *   **`AttributePropertySyn` / `AttributePropertyBoolean`**: Reusable structs for parsing properties that are `syn` types (like `LitStr`) or booleans.
-*   **Item & Struct Parsing (`struct_like`, `item_struct` modules):** Needed to analyze the Rust code (struct or function) to which the macro is attached.
-    *   **`StructLike`**: A powerful enum that can represent a `struct`, `enum`, or `unit` struct, simplifying the analysis logic.
-*   **Generics Handling (`generic_params` module):** If commands can be generic, this module is indispensable.
-    *   **`GenericsRef`**: A wrapper that provides convenient methods for splitting generics into parts needed for `impl` blocks and type definitions.
-*   **General Utilities:**
-    *   **`punctuated`**: Helpers for working with `syn::punctuated::Punctuated` collections.
-    *   **`ident`**: Utilities for creating and manipulating identifiers, including handling of Rust keywords.
+**User Experience Requirements:**
+- Auto-completion suggestions require command registry introspection capabilities
+- Command history must support search and replay functionality  
+- Session statistics provide valuable debugging information
+- Clear screen and session reset capabilities are essential for productive use
 
-#### 1.3. Framework Parsing (`unilang`)
+**Performance Considerations:**
+- Static command registry with PHF provides zero-cost lookups even in REPL context
+- Dynamic command registration during REPL sessions should be supported for development workflows
+- Batch command processing capabilities enable script-like functionality within REPL
+- Command validation without execution supports syntax checking workflows
 
-*   **Mandate:** The `unilang` core framework **must** delegate all command expression parsing to the `unilang_instruction_parser` crate. It **must not** contain any of its own CLI string parsing logic.
-*   **Rationale:** This enforces the architectural separation between syntactic analysis (the responsibility of `unilang_instruction_parser`) and semantic analysis (the responsibility of `unilang`). This modularity makes the system easier to test, maintain, and reason about.
+### 6. CLI Modality: Language Syntax & Processing
 
----
+The `unilang_parser` crate **must** be the reference implementation for this section. The parser **must** adhere to the following rules in order:
 
-### 2. Language Syntax & Processing (CLI)
+*   **Rule 1 (Tokenization):** Whitespace separates tokens. Quoted strings (`'...'` or `"..."`) are treated as a single token.
+*   **Rule 2 (Command Path):** The command path is the first token. It **must** be a dot-separated identifier (e.g., `.system.echo`). A leading dot is optional.
+*   **Rule 3 (Arguments):** All subsequent tokens are arguments.
+    *   **Named Arguments:** **Must** use the `name::value` syntax.
+    *   **Positional Arguments:** Any token that is not a named argument is a positional argument.
+*   **Rule 4 (Help Operator):** The `?` operator, if present, **must** be the final token and triggers the help system.
+*   **Rule 5 (Special Case - Discovery):** A standalone dot (`.`) **must** be interpreted as a request to list all available commands.
 
-**Design Focus: `Public Contract`**
-**Primary Implementor: `unilang_instruction_parser` crate**
+### 7. API Reference: Core Data Structures
 
-This section defines the public contract for the CLI modality's syntax. The `unilang_instruction_parser` crate is the reference implementation for this section.
+The public API **must** include the following data structures with the specified fields. (See `src/data.rs` for the source of truth).
 
-#### 2.1. Unified Processing Pipeline
+*   `CommandDefinition`: Defines a command's metadata.
+*   `ArgumentDefinition`: Defines an argument's metadata.
+*   `ArgumentAttributes`: Defines behavioral flags for an argument.
+*   `Kind`: Defines the data type of an argument.
+*   `ValidationRule`: Defines a validation constraint for an argument.
+*   `OutputData`: Standardized structure for successful command output.
+*   `ErrorData`: Standardized structure for command failure information.
 
-The interpretation of a `unilang` CLI string by `utility1` **must** proceed through the following conceptual phases:
+### 8. Cross-Cutting Concerns (Error Handling, Security, Verbosity)
 
-1.  **Phase 1: Syntactic Analysis (String to `GenericInstruction`)**
-    *   **Responsibility:** `unilang_instruction_parser` crate.
-    *   **Process:** The parser consumes the input and, based on the `unilang` grammar (Appendix A.2), identifies command paths, positional arguments, named arguments (`key::value`), and operators (`;;`, `?`).
-    *   **Output:** A `Vec<parser::GenericInstruction>`. This phase has no knowledge of command definitions; it is purely syntactic.
+*   **Error Handling:** All recoverable errors **must** be propagated as `unilang::Error`, which wraps an `ErrorData` struct containing a machine-readable `code` and a human-readable `message`.
+*   **Security:** The framework **must** provide a `permissions` field in `CommandDefinition` for integrators to implement role-based access control. The `sensitive` attribute on arguments **must** be respected.
+*   **Verbosity:** The framework **must** support at least three verbosity levels (`quiet`, `normal`, `debug`) configurable via environment variable (`UNILANG_VERBOSITY`) or programmatically.
 
-2.  **Phase 2: Semantic Analysis (`GenericInstruction` to `VerifiedCommand`)**
-    *   **Responsibility:** `unilang` crate.
-    *   **Process:** Each `GenericInstruction` is validated against the `CommandRegistry`. The command name is resolved, arguments are bound to their definitions, types are checked, and validation rules are applied.
-    *   **Output:** A `Vec<VerifiedCommand>`.
+### 9. Feature Flags & Modularity
 
-3.  **Phase 3: Execution**
-    *   **Responsibility:** `unilang` crate's Interpreter.
-    *   **Process:** The interpreter invokes the `Routine` for each `VerifiedCommand`, passing it the validated arguments and execution context.
-    *   **Output:** A `Result<OutputData, ErrorData>` for each command, which is then handled by the active `Modality`.
+The framework **must** be highly modular, allowing integrators to select only the features they need to minimize binary size and compile times.
 
-#### 2.2. Naming Conventions
+#### 9.1. The `enabled` Feature
+Every crate in the `unilang` ecosystem (`unilang`, `unilang_parser`, `unilang_meta`) **must** expose an `enabled` feature. This feature **must** be part of the `default` feature set. Disabling the `enabled` feature (`--no-default-features`) **must** effectively remove all of the crate's code and dependencies from the compilation, allowing it to be "turned off" even when included as a non-optional dependency in a workspace.
 
-To ensure consistency across all `unilang`-based utilities, the following naming conventions **must** be followed:
+#### 9.2. Feature Sets
+The following feature flags **must** be available to integrators:
 
-*   **Command & Namespace Segments:** Must consist of lowercase alphanumeric characters (`a-z`, `0-9`) and underscores (`_`). Dots (`.`) are used exclusively as separators. Example: `.system.info`, `.file_utils.read_all`.
-*   **Argument Names & Aliases:** Must consist of lowercase alphanumeric characters and may use `kebab-case` for readability. Example: `input-file`, `force`, `user-name`.
-
-#### 2.3. Command Expression
-
-A `command_expression` can be one of the following:
-*   **Full Invocation:** `[namespace_path.]command_name [argument_value...] [named_argument...]`
-*   **Help Request:** `[namespace_path.][command_name] ?` or `[namespace_path.]?`
-
-#### 2.4. Parsing Rules and Precedence
-
-To eliminate ambiguity, the parser **must** adhere to the following rules in order.
-
-*   **Rule 0: Whitespace Separation**
-    *   Whitespace characters (spaces, tabs) serve only to separate tokens. Multiple consecutive whitespace characters are treated as a single separator. Whitespace is not part of a token's value unless it is inside a quoted string.
-
-*   **Rule 1: Command Path Identification**
-    *   The **Command Path** is the initial sequence of tokens that identifies the command to be executed.
-    *   A command path consists of one or more **segments**.
-    *   Segments **must** be separated by a dot (`.`). Whitespace around the dot is ignored.
-    *   A segment **must** be a valid identifier according to the `Naming Conventions` (Section 2.2).
-    *   The command path is the longest possible sequence of dot-separated identifiers at the beginning of an expression.
-
-*   **Rule 2: End of Command Path & Transition to Arguments**
-    *   The command path definitively ends, and argument parsing begins, upon encountering the **first token** that is not a valid, dot-separated identifier segment.
-    *   This transition is triggered by:
-        *   A named argument separator (`::`).
-        *   A quoted string (`"..."` or `'...'`).
-        *   The help operator (`?`).
-        *   Any other token that does not conform to the identifier naming convention.
-    *   **Example:** In `utility1 .files.copy --force`, the command path is `.files.copy`. The token `--force` is not a valid segment, so it becomes the first positional argument.
-
-*   **Rule 3: Dot (`.`) Operator Rules**
-    *   **Leading Dot:** A single leading dot at the beginning of a command path (e.g., `.files.copy`) is permitted and has no semantic meaning. It is consumed by the parser and does not form part of the command path's segments.
-    *   **Trailing Dot:** A trailing dot after the final command segment (e.g., `.files.copy.`) is a **syntax error**.
-
-*   **Rule 4: Help Operator (`?`)**
-    *   The `?` operator marks the entire instruction for help generation.
-    *   It **must** be the final token in a command expression.
-    *   It **may** be preceded by arguments. If it is, this implies a request for contextual help. The `unilang` framework (not the parser) is responsible for interpreting this context.
-    *   **Valid:** `.files.copy ?`
-    *   **Valid:** `.files.copy from::/src ?`
-    *   **Invalid:** `.files.copy ? from::/src`
-
-*   **Rule 5: Argument Types**
-    *   **Positional Arguments:** Any token that follows the command path and is not a named argument is a positional argument.
-    *   **Named Arguments:** Any pair of tokens matching the `name::value` syntax is a named argument. The `value` can be a single token or a quoted string.
-
----
-
-### 3. Core Definitions
-
-**Design Focus: `Public Contract`**
-**Primary Implementor: `unilang` crate**
-
-This section defines the core data structures that represent commands, arguments, and namespaces. These structures form the primary API surface for an `Integrator`.
-
-#### 3.1. `NamespaceDefinition` Anatomy
-
-A namespace is a first-class entity to improve discoverability and help generation.
-
-| Field | Type | Mandatory | Description |
+| Feature | Description | Dependencies Enabled | Default |
 | :--- | :--- | :--- | :--- |
-| `name` | `String` | Yes | The unique, dot-separated `FullName` of the namespace (e.g., `.files`, `.system.internal`). |
-| `hint` | `String` | No | A human-readable explanation of the namespace's purpose. |
-
-#### 3.2. `CommandDefinition` Anatomy
-
-| Field | Type | Mandatory | Description |
-| :--- | :--- | :--- | :--- |
-| `name` | `String` | Yes | The final segment of the command's name (e.g., `copy`). The full path is derived from its registered namespace. |
-| `namespace` | `String` | Yes | The `FullName` of the parent namespace this command belongs to (e.g., `.files`). |
-| `hint` | `String` | No | A human-readable explanation of the command's purpose. |
-| `arguments` | `Vec<ArgumentDefinition>` | No | A list of arguments the command accepts. |
-| `routine` | `Routine` | Yes (for static) | A direct reference to the executable code (e.g., a function pointer). |
-| `routine_link` | `String` | No | For commands loaded from a `Command Manifest`, this is a string that links to a pre-compiled, registered routine. |
-| `permissions` | `Vec<String>` | No | A list of permission identifiers required for execution. |
-| `status` | `Enum` | No (Default: `Stable`) | Lifecycle state: `Experimental`, `Stable`, `Deprecated`. |
-| `deprecation_message` | `String` | No | If `status` is `Deprecated`, explains the reason and suggests alternatives. |
-| `http_method_hint`| `String` | No | A suggested HTTP method (`GET`, `POST`, etc.) for the Web API modality. |
-| `idempotent` | `bool` | No (Default: `false`) | If `true`, the command can be safely executed multiple times. |
-| `examples` | `Vec<String>` | No | Illustrative usage examples for help text. |
-| `version` | `String` | No | The SemVer version of the individual command (e.g., "1.0.2"). |
-| `tags` | `Vec<String>` | No | Keywords for grouping or filtering commands (e.g., "filesystem", "networking"). |
-
-#### 3.3. `ArgumentDefinition` Anatomy
-
-| Field | Type | Mandatory | Description |
-| :--- | :--- | :--- | :--- |
-| `name` | `String` | Yes | The unique (within the command), case-sensitive identifier (e.g., `src`). |
-| `hint` | `String` | No | A human-readable description of the argument's purpose. |
-| `kind` | `Kind` | Yes | The data type of the argument's value. |
-| `optional` | `bool` | No (Default: `false`) | If `true`, the argument may be omitted. |
-| `default_value` | `Option<String>` | No | A string representation of the value to use if an optional argument is not provided. It will be parsed on-demand. |
-| `is_default_arg`| `bool` | No (Default: `false`) | If `true`, its value can be provided positionally in the CLI. |
-| `multiple` | `bool` | No (Default: `false`) | If `true`, the argument can be specified multiple times. |
-| `sensitive` | `bool` | No (Default: `false`) | If `true`, the value must be protected (masked in UIs, redacted in logs). |
-| `validation_rules`| `Vec<String>` | No | Custom validation logic (e.g., `"min:0"`, `"regex:^.+$"`). |
-| `aliases` | `Vec<String>` | No | A list of alternative short names (e.g., `s` for `source`). |
-| `tags` | `Vec<String>` | No | Keywords for UI grouping (e.g., "Basic", "Advanced"). |
-| `interactive` | `bool` | No (Default: `false`) | If `true`, modalities may prompt for input if the value is missing. |
-
-#### 3.4. Methods of Command Specification
-
-The methods for defining commands. The "Compile-Time Declarative" method is primarily implemented by the `unilang_meta` crate.
-
-1.  **Compile-Time Declarative (via `unilang_meta`):** Using procedural macros on Rust functions or structs to generate `CommandDefinition`s at compile time.
-2.  **Run-Time Procedural:** Using a builder API within `utility1` to construct and register commands dynamically.
-3.  **External Definition:** Loading `CommandDefinition`s from external files (e.g., YAML, JSON) at compile-time or run-time.
-
-#### 3.5. The Command Registry
-
-**Design Focus: `Internal Design`**
-**Primary Implementor: `unilang` crate**
-
-The `CommandRegistry` is the runtime data structure that stores the entire `Command Lexicon`. To meet the high-performance requirement for static commands while allowing for dynamic extension, it **must** be implemented using a **Hybrid Model**.
-
-*   **Static Registry:**
-    *   **Implementation:** A **Perfect Hash Function (PHF)** data structure.
-    *   **Content:** Contains all commands, namespaces, and routines that are known at compile-time.
-    *   **Generation:** The PHF **must** be generated by `utility1`'s build process (e.g., in `build.rs`) from all compile-time command definitions. This ensures that the cost of building the lookup table is paid during compilation, not at application startup.
-*   **Dynamic Registry:**
-    *   **Implementation:** A standard `HashMap`.
-    *   **Content:** Contains commands and namespaces that are added at runtime (e.g., from a `Command Manifest`).
-*   **Lookup Precedence:** When resolving a command `FullName`, the `CommandRegistry` **must** first query the static PHF. If the command is not found, it must then query the dynamic `HashMap`.
+| `default` | Enables the standard, full-featured framework experience. | `enabled`, `full` | Yes |
+| `enabled` | The master switch that enables the core framework logic. Disabling this removes the crate entirely. | (Core logic) | Yes |
+| `full` | A convenience feature that enables all optional functionality below. | All optional features | Yes |
+| `declarative_loading` | Enables loading `CommandDefinition`s from YAML and JSON strings. | `serde`, `serde_yaml`, `serde_json` | No |
+| `on_unknown_suggest` | Enables suggestions for mistyped commands (e.g., "did you mean...?"). | `textdistance` | No |
+| `chrono_types` | Enables support for the `Kind::DateTime` argument type. | `chrono` | No |
+| `url_types` | Enables support for the `Kind::Url` argument type. | `url` | No |
+| `regex_types` | Enables support for the `Kind::Pattern` argument type and `ValidationRule::Pattern`. | `regex` | No |
 
 ---
+## Part II: Internal Design (Design Recommendations)
+*This part of the specification describes the recommended internal architecture and implementation strategies. These are best-practice starting points, and the development team has the flexibility to modify them as needed.*
 
-### 4. Global Arguments & Configuration
+### 10. Architectural Mandates & Design Principles
 
-**Design Focus: `Public Contract`**
-**Primary Implementor: `unilang` crate**
+It is recommended that the `unilang` ecosystem adhere to the following principles:
 
-This section defines how an `Integrator` configures `utility1` and how an `End User` can override that configuration.
+*   **Parser Independence:** The `unilang` core crate **should** delegate all command string parsing to the `unilang_parser` crate.
+*   **Zero-Overhead Static Registry:** To meet `NFR-PERF-1`, it is **strongly recommended** that the `CommandRegistry` be implemented using a hybrid model:
+    *   A **Perfect Hash Function (PHF)** map, generated at compile-time in `build.rs`, for all statically known commands.
+    *   A standard `HashMap` for commands registered dynamically at runtime.
+    *   Lookups **should** check the static PHF first before falling back to the dynamic map.
+*   **`enabled` Feature Gate Mandate:** All framework crates **must** implement the `enabled` feature gate pattern. The entire crate's functionality, including its modules and dependencies, **should** be conditionally compiled using `#[cfg(feature = "enabled")]`. This is a critical mechanism for managing complex feature sets and dependencies within a Cargo workspace, allowing a crate to be effectively disabled even when it is listed as a non-optional dependency.
 
-#### 4.1. `GlobalArgumentDefinition` Anatomy
+### 11. Architectural Diagrams
 
-The `Integrator` **must** define their global arguments using this structure, which can then be registered with `utility1`.
-
-| Field | Type | Mandatory | Description |
-| :--- | :--- | :--- | :--- |
-| `name` | `String` | Yes | The unique name of the global argument (e.g., `output-format`). |
-| `hint` | `String` | No | A human-readable description. |
-| `kind` | `Kind` | Yes | The data type of the argument's value. |
-| `env_var` | `String` | No | The name of an environment variable that can set this value. |
-
-#### 4.2. Configuration Precedence
-
-Configuration values **must** be resolved in the following order of precedence (last one wins):
-1.  Default built-in values.
-2.  System-wide configuration file (e.g., `/etc/utility1/config.toml`).
-3.  User-specific configuration file (e.g., `~/.config/utility1/config.toml`).
-4.  Project-specific configuration file (e.g., `./.utility1.toml`).
-5.  Environment variables (as defined in `GlobalArgumentDefinition.env_var`).
-6.  CLI Global Arguments provided at invocation.
-
----
-
-### 5. Architectural Diagrams
-
-**Design Focus: `Strategic Context`**
-
-These diagrams provide a high-level, visual overview of the system's architecture and flow.
-
-#### 5.1. System Context Diagram
-
-This C4 diagram shows the `unilang` framework in the context of its users and the systems it interacts with.
-
+#### 11.1. Use Case Diagram
 ```mermaid
 graph TD
-    subgraph "System Context for a 'utility1' Application"
-        A[Integrator (Developer)] -- Defines Commands & Routines using --> B{unilang Framework};
-        B -- Builds into --> C[utility1 Application];
-        D[End User] -- Interacts via Modality (CLI, GUI, etc.) --> C;
-        C -- Executes Routines that may call --> E[External Service e.g., Database, API];
-        C -- Interacts with --> F[Operating System e.g., Filesystem, Env Vars];
+    subgraph Unilang Framework
+        UC1(Define Command<br/>(Static or Dynamic))
+        UC2(Implement Routine)
+        UC3(Configure Framework)
+        UC4(Execute Command)
+        UC5(Request Help)
+        UC6(List Commands)
     end
-    style B fill:#1168bd,stroke:#fff,stroke-width:2px,color:#fff
-    style C fill:#22a6f2,stroke:#fff,stroke-width:2px,color:#fff
+
+    actorIntegrator["Integrator<br/>(Developer)"]
+    actorEndUser["End User"]
+
+    actorIntegrator --> UC1
+    actorIntegrator --> UC2
+    actorIntegrator --> UC3
+
+    actorEndUser --> UC4
+    actorEndUser --> UC5
+    actorEndUser --> UC6
 ```
 
-#### 5.2. High-Level Architecture Diagram
-
-This diagram shows the internal components of the `unilang` ecosystem and their relationships.
-
+#### 11.2. System Context Diagram
 ```mermaid
 graph TD
-    subgraph "unilang Ecosystem"
-        A[unilang_meta] -- Generates Definitions at Compile Time --> B(build.rs / Static Initializers);
-        B -- Populates --> C{Static Registry (PHF)};
-        D[unilang_instruction_parser] -- Produces GenericInstruction --> E[unilang Crate];
-        subgraph E
+    style Integrator fill:#fff,stroke:#333,stroke-width:2px
+    style EndUser fill:#fff,stroke:#333,stroke-width:2px
+
+    Integrator(Integrator<br/>(Developer))
+    EndUser(End User)
+
+    subgraph "utility1 Application"
+        Unilang["unilang Framework"]
+        Utility1[utility1 Binary]
+    end
+
+    style Unilang fill:#1168bd,color:#fff
+    style Utility1 fill:#22a6f2,color:#fff
+
+    Integrator -- "Uses to build" --> Unilang
+    Unilang -- "Is a dependency of" --> Utility1
+    EndUser -- "Interacts with" --> Utility1
+```
+
+#### 11.3. C4 Container Diagram
+```mermaid
+C4Context
+    title Container diagram for a 'utility1' Application
+
+    Person(integrator, "Integrator (Developer)", "Uses macros and APIs to build the application.")
+
+    System_Boundary(utility1, "utility1 Application") {
+        Container(utility1_bin, "utility1 Binary", "Executable", "The compiled application that End Users interact with.")
+        ContainerDb(unilang_core, "unilang (Core Crate)", "Rust Library", "Orchestrates parsing, analysis, and execution.")
+        ContainerDb(unilang_parser, "unilang_parser", "Rust Library", "Provides lexical and syntactic analysis.")
+        ContainerDb(unilang_meta, "unilang_meta", "Rust Library", "Provides procedural macros for compile-time definitions.")
+    }
+
+    Rel(integrator, unilang_meta, "Uses macros from", "Compile-Time")
+    Rel(integrator, unilang_core, "Uses APIs from")
+
+    Rel(utility1_bin, unilang_core, "Depends on")
+    Rel(unilang_core, unilang_parser, "Uses for parsing")
+```
+
+#### 11.4. High-Level Architecture (Hybrid Registry)
+```mermaid
+graph TD
+    subgraph "Compile Time"
+        style CompileTime fill:#f9f9f9,stroke:#ddd,stroke-dasharray: 5 5
+        manifest("unilang.commands.yaml")
+        build_rs("Build Script (build.rs)")
+        phf_map("Static Registry (PHF Map)<br/>Generated .rs file")
+
+        manifest --> build_rs
+        build_rs --> phf_map
+    end
+
+    subgraph "Run Time"
+        style RunTime fill:#f9f9f9,stroke:#ddd,stroke-dasharray: 5 5
+        api_call("API Call<br/>(e.g., command_add_runtime)")
+        dynamic_map("Dynamic Registry (HashMap)")
+        registry["Hybrid CommandRegistry"]
+
+        api_call --> dynamic_map
+
+        subgraph registry
             direction LR
-            F[Semantic Analyzer] --> G[Interpreter];
-            G -- Uses --> H[Hybrid Command Registry];
+            phf_map_ref(Static PHF)
+            dynamic_map_ref(Dynamic HashMap)
         end
-        H -- Contains --> C;
-        H -- Contains --> I{Dynamic Registry (HashMap)};
-        J[Command Manifest (YAML/JSON)] -- Loaded at Runtime by --> E;
-        E -- Populates --> I;
+
+        phf_map -- "Included via include!()" --> phf_map_ref
+        dynamic_map -- "Contained in" --> dynamic_map_ref
     end
 ```
 
-#### 5.3. Sequence Diagram: Unified Processing Pipeline
-
-This diagram illustrates the flow of data and control during a typical CLI command execution.
-
+#### 11.5. Sequence Diagram: Unified Processing Pipeline
 ```mermaid
 sequenceDiagram
-    participant User
+    actor User
     participant CLI
-    participant Parser as unilang_instruction_parser
-    participant SemanticAnalyzer as unilang::SemanticAnalyzer
-    participant Interpreter as unilang::Interpreter
+    participant Parser (unilang_parser)
+    participant SemanticAnalyzer (unilang)
+    participant Interpreter (unilang)
     participant Routine
 
-    User->>CLI: Enters "utility1 .files.copy src::a.txt"
-    CLI->>Parser: parse_single_str("...")
+    User->>CLI: Enters "utility1 .math.add a::10 b::20"
+    CLI->>Parser: parse_single_instruction("...")
     activate Parser
-    Parser-->>CLI: Returns Vec<GenericInstruction>
+    Parser-->>CLI: Returns GenericInstruction
     deactivate Parser
-    CLI->>SemanticAnalyzer: analyze(instructions)
+    CLI->>SemanticAnalyzer: analyze(instruction)
     activate SemanticAnalyzer
-    SemanticAnalyzer-->>CLI: Returns Vec<VerifiedCommand>
+    SemanticAnalyzer-->>CLI: Returns VerifiedCommand
     deactivate SemanticAnalyzer
-    CLI->>Interpreter: run(verified_commands)
+    CLI->>Interpreter: run(command)
     activate Interpreter
     Interpreter->>Routine: execute(command, context)
     activate Routine
@@ -397,297 +398,125 @@ sequenceDiagram
     deactivate Routine
     Interpreter-->>CLI: Returns final Result
     deactivate Interpreter
-    CLI->>User: Displays formatted output or error
+    CLI->>User: Displays "Result: 30"
 ```
 
----
+### 12. Crate-Specific Responsibilities
 
-### 6. Interaction Modalities
-
-**Design Focus: `Public Contract`**
-**Primary Implementor: `unilang` crate (provides the framework)**
-
-`unilang` definitions are designed to drive various interaction modalities.
-
-*   **6.1. CLI (Command Line Interface):** The primary modality, defined in Section 2.
-*   **6.2. TUI (Textual User Interface):** An interactive terminal interface built from command definitions.
-*   **6.3. GUI (Graphical User Interface):** A graphical interface with forms and widgets generated from command definitions.
-*   **6.4. WEB Endpoints:**
-    *   **Goal:** Automatically generate a web API from `unilang` command specifications.
-    *   **Mapping:** A command `.namespace.command` maps to an HTTP path like `/api/v1/namespace/command`.
-    *   **Serialization:** Arguments are passed as URL query parameters (`GET`) or a JSON body (`POST`/`PUT`). `OutputData` and `ErrorData` are returned as JSON.
-    *   **Discoverability:** An endpoint (e.g., `/openapi.json`) **must** be available to generate an OpenAPI v3+ specification. The content of this specification is derived directly from the `CommandDefinition`, `ArgumentDefinition`, and `NamespaceDefinition` metadata.
+*   **`unilang` (Core Framework):** Recommended to be the central orchestrator, implementing the `CommandRegistry`, `SemanticAnalyzer`, `Interpreter`, `Pipeline`, and all core data structures.
+*   **`unilang_parser` (Parser):** Recommended to be the dedicated lexical and syntactic analyzer. It should be stateless and have no knowledge of command definitions.
+*   **`unilang_meta` (Macros):** Recommended to provide procedural macros for a simplified, compile-time developer experience.
 
 ---
+## Part III: Project & Process Governance
+*This part of the specification defines the project's goals, scope, and the rules governing its development process.*
 
-### 7. Cross-Cutting Concerns
+### 13. Project Goals & Success Metrics
+*   **Primary Goal:** To create a stable, performant, and ergonomic framework for building multi-modal command-line utilities in Rust that allows developers to define a command interface once and deploy it everywhere with zero-overhead for static commands.
+*   **Success Metric 1 (Performance):** The framework **must** meet all performance NFRs defined in Section 5, verified by the project's benchmark suite.
+*   **Success Metric 2 (Adoption):** The framework is considered successful if it is used to build at least three distinct `utility1` applications with different modalities within 12 months of the v1.0 release.
 
-**Design Focus: `Public Contract`**
-**Primary Implementor: `unilang` crate**
+### 14. Deliverables
 
-This section defines framework-wide contracts for handling common concerns like errors and security.
+Upon completion, the project will deliver the following artifacts:
 
-#### 7.1. Error Handling (`ErrorData`)
+1.  The published `unilang` Rust crate on crates.io.
+2.  The published `unilang_parser` Rust crate on crates.io.
+3.  The published `unilang_meta` Rust crate on crates.io.
+4.  A compiled WebAssembly (`.wasm`) package and associated JavaScript bindings for the core framework, enabling client-side execution.
+5.  Full access to the source code repository, including all examples and benchmarks.
+6.  Generated API documentation hosted on docs.rs for all public crates.
 
-Routines that fail **must** return an `ErrorData` object. The `code` field should use a standard identifier where possible.
+### 15. Open Questions
+1.  **Custom Type Registration:** What is the API and process for an `Integrator` to define a new custom `Kind` and register its associated parsing and validation logic with the framework?
+2.  **Plugin System:** What would a formal plugin system look like, allowing third-party crates to provide `unilang` commands to a host application?
 
-*   **Standard Codes:** `UNILANG_COMMAND_NOT_FOUND`, `UNILANG_ARGUMENT_INVALID`, `UNILANG_ARGUMENT_MISSING`, `UNILANG_TYPE_MISMATCH`, `UNILANG_VALIDATION_RULE_FAILED`, `UNILANG_PERMISSION_DENIED`, `UNILANG_EXECUTION_ERROR`, `UNILANG_IO_ERROR`, `UNILANG_INTERNAL_ERROR`.
-*   **New Code for External Failures:** `UNILANG_EXTERNAL_DEPENDENCY_ERROR` - To be used when a routine fails due to an error from an external service (e.g., network timeout, API error response).
+### 16. Core Principles of Development
 
-```json
-{
-  "code": "ErrorCodeIdentifier",
-  "message": "Human-readable error message.",
-  "details": {
-    "argument_name": "src",
-    "location_in_input": { "source_type": "single_string", "start_offset": 15, "end_offset": 20 }
-  },
-  "origin_command": ".files.copy"
-}
-```
+#### 16.1. Single Source of Truth
+The project's Git repository **must** be the absolute single source of truth for all project-related information. This includes specifications, documentation, source code, configuration files, and architectural diagrams.
 
-#### 7.2. Standard Output (`OutputData`)
+#### 16.2. Documentation-First Development
+All changes to the system's functionality or architecture **must** be documented in the relevant specification files *before* implementation begins.
 
-Successful routines **must** return an `OutputData` object.
+#### 16.3. Review-Driven Change Control
+All modifications to the repository, without exception, **must** go through a formal Pull Request review.
 
-```json
-{
-  "payload": "Any",
-  "metadata": { "count": 10, "warnings": [] },
-  "output_type_hint": "application/json"
-}
-```
+#### 16.4. Radical Transparency and Auditability
+The development process **must** be fully transparent and auditable. All significant decisions and discussions **must** be captured in writing within the relevant Pull Request or a linked issue tracker. The repository's history should provide a clear, chronological narrative of the project's evolution.
 
-#### 7.3. Security
+#### 16.5. File Naming Conventions
+All file names within the project repository **must** use lowercase `snake_case`.
 
-*   **Permissions:** The `permissions` field on a `CommandDefinition` declares the rights needed for execution. The `utility1` `Interpreter` is responsible for checking these.
-*   **Sensitive Data:** Arguments marked `sensitive: true` **must** be masked in UIs and redacted from logs.
+---
+### Appendix: Addendum
+*This appendix is intended for developer use during implementation. It captures as-built details and serves as a living document during the development cycle.*
 
-#### 7.4. Extensibility Model
+#### Purpose
+This document is intended to be completed by the **Developer** during the implementation phase. It is used to capture the final, as-built details of the **Internal Design**, especially where the implementation differs from the initial `Design Recommendations` in `spec.md`.
 
-*   **Compile-Time `Extension Module`s:** Rust crates that can provide a suite of components to `utility1`. An extension module **should** include a manifest file (e.g., `unilang-module.toml`) to declare the components it provides. These components are compiled into the **Static Registry (PHF)**.
-*   **Run-Time `Command Manifest`s:** `utility1` **must** provide a mechanism to load `CommandDefinition`s from external `Command Manifest` files (e.g., YAML or JSON) at runtime. These commands are registered into the **Dynamic Registry (HashMap)**. The `routine_link` field in their definitions is used to associate them with pre-compiled functions.
+#### Instructions for the Developer
+As you build the system, please use this document to log your key implementation decisions, the final data models, environment variables, and other details. This creates a crucial record for future maintenance, debugging, and onboarding.
 
 ---
 
-### 8. Project Management
+#### Conformance Checklist
+*This checklist is the definitive list of acceptance criteria for the project. Before final delivery, each item must be verified as complete and marked with `✅`. Use the 'Verification Notes' column to link to evidence (e.g., test results, screen recordings).*
 
-**Design Focus: `Strategic Context`**
+| Status | Requirement | Verification Notes |
+| :--- | :--- | :--- |
+| ❌ | **FR-REG-1:** The framework must provide a mechanism, via a `build.rs` script, to register commands at compile-time from a manifest file (e.g., `unilang.commands.yaml`). | |
+| ❌ | **FR-REG-2:** The framework must expose a public API (`CommandRegistry::command_add_runtime`) for registering new commands and their routines at runtime. | |
+| ❌ | **FR-REG-3:** The framework must provide functions (`load_from_yaml_str`, `load_from_json_str`) to load `CommandDefinition`s from structured text at runtime. | |
+| ❌ | **FR-REG-4:** The framework must support hierarchical command organization through dot-separated namespaces (e.g., `.math.add`). | |
+| ❌ | **FR-REG-5:** The framework must support command aliases. When an alias is invoked, the framework must execute the corresponding canonical command. | |
+| ❌ | **FR-ARG-1:** The framework must support parsing and type-checking for the following `Kind`s: `String`, `Integer`, `Float`, `Boolean`, `Path`, `File`, `Directory`, `Enum`, `Url`, `DateTime`, `Pattern`, `List`, `Map`, `JsonString`, and `Object`. | |
+| ❌ | **FR-ARG-2:** The framework must correctly bind positional arguments from a `GenericInstruction` to the corresponding `ArgumentDefinition`s in the order they are defined. | |
+| ❌ | **FR-ARG-3:** The framework must correctly bind named arguments (`name::value`) from a `GenericInstruction` to the corresponding `ArgumentDefinition`, regardless of order. | |
+| ❌ | **FR-ARG-4:** The framework must correctly bind named arguments specified via an alias to the correct `ArgumentDefinition`. | |
+| ❌ | **FR-ARG-5:** If an optional argument with a default value is not provided, the framework must use the default value during semantic analysis. | |
+| ❌ | **FR-ARG-6:** The `Semantic Analyzer` must enforce all `ValidationRule`s (`Min`, `Max`, `MinLength`, `MaxLength`, `Pattern`, `MinItems`) defined for an argument. If a rule is violated, a `UNILANG_VALIDATION_RULE_FAILED` error must be returned. | |
+| ❌ | **FR-PIPE-1:** The `Pipeline` API must correctly orchestrate the full sequence: Parsing -> Semantic Analysis -> Interpretation. | |
+| ❌ | **FR-PIPE-2:** The `Pipeline::process_batch` method must execute a list of commands independently, collecting results for each and not stopping on individual failures. | |
+| ❌ | **FR-PIPE-3:** The `Pipeline::process_sequence` method must execute a list of commands in order and must terminate immediately upon the first command failure. | |
+| ❌ | **FR-HELP-1:** The `HelpGenerator` must be able to produce a formatted list of all registered commands, including their names, namespaces, and hints. | |
+| ❌ | **FR-HELP-2:** The `HelpGenerator` must be able to produce detailed, formatted help for a specific command, including its description, arguments (with types, defaults, and validation rules), aliases, and examples. | |
+| ❌ | **FR-HELP-3:** The parser must recognize the `?` operator. When present, the `Semantic Analyzer` must return a `HELP_REQUESTED` error containing the detailed help text for the specified command, bypassing all argument validation. | |
+| ✅ | **FR-REPL-1:** The framework's core components (`Pipeline`, `Parser`, `SemanticAnalyzer`, `Interpreter`) must be structured to support a REPL-style execution loop. They must be reusable for multiple, sequential command executions within a single process lifetime. | Implemented with comprehensive examples and verified stateless operation |
+| ✅ | **FR-INTERACTIVE-1:** When a mandatory argument with the `interactive: true` attribute is not provided, the `Semantic Analyzer` must return a distinct, catchable error (`UNILANG_ARGUMENT_INTERACTIVE_REQUIRED`). This allows the calling modality to intercept the error and prompt the user for input. | Implemented in semantic analyzer with comprehensive test coverage and REPL integration |
+| ❌ | **FR-MOD-WASM-REPL:** The framework must support a web-based REPL modality that can operate entirely on the client-side without a backend server. This requires the core `unilang` library to be fully compilable to the `wasm32-unknown-unknown` target. | |
 
-This section contains meta-information about the project itself.
+#### Finalized Internal Design Decisions
+*A space for the developer to document key implementation choices for the system's internal design, especially where they differ from the initial recommendations in `spec.md`.*
 
-#### 8.1. Success Metrics
+-   [Decision 1: Reason...]
+-   [Decision 2: Reason...]
 
-*   **Performance:** For a `utility1` application with 100,000 statically compiled commands, the p99 latency for resolving a command `FullName` in the `CommandRegistry` **must** be less than 1 millisecond on commodity hardware.
-*   **Adoption:** The framework is considered successful if it is used to build at least three distinct `utility1` applications with different modalities.
+#### Finalized Internal Data Models
+*The definitive, as-built schema for all databases, data structures, and objects used internally by the system.*
 
-#### 8.2. Out of Scope
+-   [Model 1: Schema and notes...]
+-   [Model 2: Schema and notes...]
 
-The `unilang` framework is responsible for the command interface, not the business logic itself. The following are explicitly out of scope:
+#### Environment Variables
+*List all environment variables required to run the application. Include the variable name, a brief description of its purpose, and an example value (use placeholders for secrets).*
 
-*   **Transactional Guarantees:** The framework does not provide built-in transactional logic for command sequences. If a command in a `;;` sequence fails, the framework will not automatically roll back the effects of previous commands.
-*   **Inter-Command State Management:** The framework does not provide a mechanism for one command to pass complex state to the next, other than through external means (e.g., environment variables, files) managed by the `Integrator`.
-*   **Business Logic Implementation:** The framework provides the `Routine` execution shell, but the logic inside the routine is entirely the `Integrator`'s responsibility.
+| Variable | Description | Example |
+| :--- | :--- | :--- |
+| `UNILANG_VERBOSITY` | Sets the logging verbosity (0=quiet, 1=normal, 2=debug). | `2` |
+| `UNILANG_STATIC_COMMANDS_PATH` | Overrides the default path to the compile-time command manifest. | `config/commands.yaml` |
 
-#### 8.3. Open Questions
+#### Finalized Library & Tool Versions
+*List the critical libraries, frameworks, or tools used and their exact locked versions (e.g., from `Cargo.lock`).*
 
-This section tracks critical design decisions that are not yet finalized.
+-   `rustc`: `1.78.0`
+-   `phf`: `0.11`
+-   `serde`: `1.0`
+-   `serde_yaml`: `0.9`
 
-1.  **Runtime Routine Linking:** What is the precise mechanism for resolving a `routine_link` string from a `Command Manifest` to a callable function pointer at runtime? Options include a name-based registry populated at startup or dynamic library loading (e.g., via `libloading`). This needs to be defined.
-2.  **Custom Type Registration:** What is the API and process for an `Integrator` to define a new custom `Kind` and register its associated parsing and validation logic with the framework?
+#### Deployment Checklist
+*A step-by-step guide for deploying the application from scratch. This is not applicable for a library, but would be used by an `Integrator`.*
 
----
-
-### 9. Interpreter / Execution Engine
-
-**Design Focus: `Internal Design`**
-**Primary Implementor: `unilang` crate**
-
-The Interpreter is the internal `unilang` component responsible for orchestrating command execution. Its existence and function are critical, but its specific implementation details are not part of the public API.
-
-1.  **Routine Invocation:** For each `VerifiedCommand`, the Interpreter retrieves the linked `Routine` from the `CommandRegistry`.
-2.  **Context Preparation:** It prepares and passes the `VerifiedCommand` object and the `ExecutionContext` object to the `Routine`.
-3.  **Result Handling:** It receives the `Result<OutputData, ErrorData>` from the `Routine` and passes it to the active `Modality` for presentation.
-4.  **Sequential Execution:** It executes commands from a `;;` sequence in order, respecting the `on_error` global argument policy.
-
----
-
-### 10. Crate-Specific Responsibilities
-
-**Design Focus: `Strategic Context`**
-
-This section clarifies the role of each crate in implementing this specification.
-
-#### 10.1. `unilang` (Core Framework)
-
-*   **Role:** The central orchestrator.
-*   **Responsibilities:**
-    *   **Mandate:** Must use `unilang_instruction_parser` for all syntactic analysis.
-    *   Implements the **Hybrid `CommandRegistry`** (PHF for static, HashMap for dynamic).
-    *   Provides the build-time logic for generating the PHF from compile-time definitions.
-    *   Implements the `SemanticAnalyzer` (Phase 2) and `Interpreter` (Phase 3).
-    *   Defines all core data structures (`CommandDefinition`, `ArgumentDefinition`, etc.).
-    *   Implements the Configuration Management system.
-
-#### 10.2. `unilang_instruction_parser` (Parser)
-
-*   **Role:** The dedicated lexical and syntactic analyzer.
-*   **Responsibilities:**
-    *   **Mandate:** Must use the `strs_tools` crate for tokenization.
-    *   Provides the reference implementation for **Section 2: Language Syntax & Processing**.
-    *   Parses a raw string or slice of strings into a `Vec<parser::GenericInstruction>`.
-    *   **It has no knowledge of command definitions, types, or semantics.**
-
-#### 10.3. `unilang_meta` (Macros)
-
-*   **Role:** A developer-experience enhancement for compile-time definitions.
-*   **Responsibilities:**
-    *   **Mandate:** Must use the `macro_tools` crate for procedural macro implementation.
-    *   Provides procedural macros (e.g., `#[unilang::command]`) that generate `CommandDefinition` structures.
-    *   These generated definitions are the primary input for the **PHF generation** step in `utility1`'s build process.
-
----
-
-### 11. Appendices
-
-#### Appendix A: Formal Grammar & Definitions
-
-##### A.1. Example `unilang` Command Library (YAML)
-
-```yaml
-# commands.yaml - Example Unilang Command Definitions
-commands:
-  - name: echo
-    namespace: .string
-    hint: Prints the input string to the output.
-    status: Stable
-    version: "1.0.0"
-    idempotent: true
-    arguments:
-      - name: input-string
-        kind: String
-        is_default_arg: true
-        optional: false
-        hint: The string to be echoed.
-        aliases: [ "i", "input" ]
-      - name: times
-        kind: Integer
-        optional: true
-        default_value: "1"
-        validation_rules: [ "min:1" ]
-    examples:
-      - "utility1 .string.echo \"Hello, Unilang!\""
-```
-
-##### A.2. BNF or Formal Grammar for CLI Syntax (Simplified & Revised)
-
-This grammar reflects the strict parsing rules defined in Section 2.5.
-
-```bnf
-<invocation> ::= <utility_name> <global_args_opt> <command_sequence>
-
-<command_sequence> ::= <command_expression> <command_separator_opt>
-<command_separator_opt> ::= ";;" <command_sequence> | ""
-
-<command_expression> ::= <command_path> <arguments_and_help_opt>
-                       | <arguments_and_help>
-
-<command_path> ::= <dot_opt> <segment> <path_tail_opt>
-<path_tail_opt> ::= "." <segment> <path_tail_opt> | ""
-<segment> ::= <IDENTIFIER>
-<dot_opt> ::= "." | ""
-
-<arguments_and_help_opt> ::= <arguments_and_help> | ""
-<arguments_and_help> ::= <argument_list> <help_operator_opt> | <help_operator>
-
-<argument_list> ::= <argument> <argument_list_opt>
-<argument_list_opt> ::= <argument_list> | ""
-<argument> ::= <named_arg> | <positional_arg>
-
-<positional_arg> ::= <value>
-<named_arg> ::= <IDENTIFIER> "::" <value>
-<value> ::= <IDENTIFIER> | <QUOTED_STRING>
-
-<help_operator_opt> ::= <help_operator> | ""
-<help_operator> ::= "?"
-```
-
-#### Appendix B: Command Syntax Cookbook
-
-This appendix provides a comprehensive set of practical examples for the `unilang` CLI syntax.
-
-##### B.1. Basic Commands
-
-*   **Command in Root Namespace:**
-    ```sh
-    utility1 .ping
-    ```
-*   **Command in a Nested Namespace:**
-    ```sh
-    utility1 .network.diagnostics.ping
-    ```
-
-##### B.2. Positional vs. Named Arguments
-
-*   **Using a Positional (Default) Argument:**
-    *   Assumes `.log` defines its `message` argument with `is_default_arg: true`.
-    ```sh
-    utility1 .log "This is a log message"
-    ```
-*   **Using Named Arguments (Standard):**
-    ```sh
-    utility1 .files.copy from::/path/to/source.txt to::/path/to/destination.txt
-    ```
-*   **Using Aliases for Named Arguments:**
-    *   Assumes `from` has an alias `f` and `to` has an alias `t`.
-    ```sh
-    utility1 .files.copy f::/path/to/source.txt t::/path/to/destination.txt
-    ```
-
-##### B.3. Quoting and Escaping
-
-*   **Value with Spaces:** Quotes are required.
-    ```sh
-    utility1 .files.create path::"/home/user/My Documents/report.txt"
-    ```
-*   **Value Containing the Key-Value Separator (`::`):** Quotes are required.
-    ```sh
-    utility1 .log message::"DEPRECATED::This function will be removed."
-    ```
-*   **Value Containing Commas for a Non-List Argument:** Quotes are required.
-    ```sh
-    utility1 .set.property name::"greeting" value::"Hello, world"
-    ```
-
-##### B.4. Handling Multiple Values and Collections
-
-*   **Argument with `multiple: true`:** The argument name is repeated.
-    *   Assumes `.service.start` defines `instance` with `multiple: true`.
-    ```sh
-    utility1 .service.start instance::api instance::worker instance::db
-    ```
-*   **Argument of `Kind: List<String>`:** Values are comma-separated.
-    *   Assumes `.posts.create` defines `tags` as `List<String>`.
-    ```sh
-    utility1 .posts.create title::"New Post" tags::dev,rust,unilang
-    ```
-*   **Argument of `Kind: Map<String,String>`:** Entries are comma-separated, key/value pairs use `=`.
-    *   Assumes `.network.request` defines `headers` as `Map<String,String>`.
-    ```sh
-    utility1 .network.request url::https://api.example.com headers::Content-Type=application/json,Auth-Token=xyz
-    ```
-
-##### B.5. Command Sequences and Help
-
-*   **Command Sequence:** Multiple commands are executed in order.
-    ```sh
-    utility1 .archive.create name::backup.zip ;; .cloud.upload file::backup.zip
-    ```
-*   **Help for a Specific Command:**
-    ```sh
-    utility1 .archive.create ?
-    ```
-*   **Listing Contents of a Namespace:**
-    ```sh
-    utility1 .archive ?
-    ```
+1.  Set up the `.env` file using the template above.
+2.  Run `cargo build --release`.
+3.  Place the compiled binary in `/usr/local/bin`.

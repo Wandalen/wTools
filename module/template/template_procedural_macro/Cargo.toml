@@ -7,7 +7,7 @@ authors = [
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/procedural_macro"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/procedural_macro"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/procedural_macro"
@@ -28,7 +28,7 @@ include = [
   "/rust/impl/meta/procedural_macro_lib.rs",
   "/rust/impl/meta/procedural_macro/front",
   "/Cargo.toml",
-  "/Readme.md",
+  "/readme.md",
   "/License",
 ]
 

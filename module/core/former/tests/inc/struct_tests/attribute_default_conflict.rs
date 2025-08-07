@@ -1,17 +1,15 @@
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
 
-#[ derive( Debug, PartialEq, Default, the_module::Former ) ]
-pub struct Struct1
-{
-  #[ former( default = 31 ) ]
-  pub int_1 : i32,
+#[derive(Debug, PartialEq, Default, the_module::Former)]
+pub struct Struct1 {
+  #[former(default = 31)]
+  pub int_1: i32,
 }
 
 //
 
-tests_impls!
-{
+tests_impls! {
   fn test_complex()
   {
     let command = Struct1::former().form();
@@ -26,7 +24,6 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   test_complex,
 }

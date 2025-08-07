@@ -1,12 +1,11 @@
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use test_tools::exposed::*;
 
 //
 
-tests_impls!
-{
+tests_impls! {
   fn test_alias()
   {
     #[ derive( Debug, PartialEq, the_module::Former ) ]
@@ -45,7 +44,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+// xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
+tests_index! {
   test_alias,
 }

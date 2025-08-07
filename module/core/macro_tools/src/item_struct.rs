@@ -3,24 +3,21 @@
 //!
 
 /// Define a private namespace for all its items.
-mod private
-{
-  #[ allow( clippy::wildcard_imports ) ]
+mod private {
+
   use crate::*;
   // use iter_tools::{ IterTrait, BoxedIter };
 
   /// Extracts the types of each field into a vector.
-  #[ must_use ]
-  pub fn field_types( t : &syn::ItemStruct )
-  ->
-  impl IterTrait< '_, &syn::Type >
-  // -> std::iter::Map
+  #[must_use]
+  pub fn field_types(t: &syn::ItemStruct) -> impl IterTrait<'_, &syn::Type>
+// -> std::iter::Map
   // <
   //   syn::punctuated::Iter< 'a, syn::Field >,
   //   impl FnMut( &'a syn::Field ) -> &'a syn::Type + 'a,
   // >
   {
-    t.fields.iter().map( | field | &field.ty )
+    t.fields.iter().map(|field| &field.ty)
   }
 
   /// Retrieves the names of each field, if they exist.
@@ -28,14 +25,12 @@ mod private
   /// qqq: doc
   /// # Panics
   /// qqq: error
-  #[ allow( clippy::match_wildcard_for_single_variants ) ]
-  #[ must_use ]
-  pub fn field_names( t : &syn::ItemStruct ) -> Option< BoxedIter< '_, &syn::Ident > >
-  {
-    match &t.fields
-    {
-      syn::Fields::Named( fields ) => Some( Box::new( fields.named.iter().map( | field | field.ident.as_ref().unwrap() ) ) ),
-      syn::Fields::Unit => Some( Box::new( core::iter::empty() ) ),
+  #[allow(clippy::match_wildcard_for_single_variants)]
+  #[must_use]
+  pub fn field_names(t: &syn::ItemStruct) -> Option<BoxedIter<'_, &syn::Ident>> {
+    match &t.fields {
+      syn::Fields::Named(fields) => Some(Box::new(fields.named.iter().map(|field| field.ident.as_ref().unwrap()))),
+      syn::Fields::Unit => Some(Box::new(core::iter::empty())),
       _ => None,
     }
   }
@@ -45,22 +40,19 @@ mod private
   /// Returns the type if the struct has at least one field, otherwise returns an error.
   /// # Errors
   /// qqq
-  #[ allow( clippy::match_wildcard_for_single_variants ) ]
-  pub fn first_field_type( t : &syn::ItemStruct ) -> Result< syn::Type >
-  {
-    let maybe_field = match t.fields
-    {
-      syn::Fields::Named( ref fields ) => fields.named.first(),
-      syn::Fields::Unnamed( ref fields ) => fields.unnamed.first(),
-      _ => return Err( syn_err!( t.fields.span(), "Expects either named or unnamed field" ) ),
+  #[allow(clippy::match_wildcard_for_single_variants)]
+  pub fn first_field_type(t: &syn::ItemStruct) -> Result<syn::Type> {
+    let maybe_field = match t.fields {
+      syn::Fields::Named(ref fields) => fields.named.first(),
+      syn::Fields::Unnamed(ref fields) => fields.unnamed.first(),
+      _ => return Err(syn_err!(t.fields.span(), "Expects either named or unnamed field")),
     };
 
-    if let Some( field ) = maybe_field
-    {
-      return Ok( field.ty.clone() )
+    if let Some(field) = maybe_field {
+      return Ok(field.ty.clone());
     }
 
-    Err( syn_err!( t.span(), "Expects at least one field" ) )
+    Err(syn_err!(t.span(), "Expects at least one field"))
   }
 
   /// Retrieves the name of the first field of the struct, if available.
@@ -69,74 +61,59 @@ mod private
   /// Returns an error if the struct has no fields
   /// # Errors
   /// qqq: doc
-  #[ allow( clippy::match_wildcard_for_single_variants ) ]
-  pub fn first_field_name( t : &syn::ItemStruct ) -> Result< Option< syn::Ident > >
-  {
-    let maybe_field = match t.fields
-    {
-      syn::Fields::Named( ref fields ) => fields.named.first(),
-      syn::Fields::Unnamed( ref fields ) => fields.unnamed.first(),
-      _ => return Err( syn_err!( t.fields.span(), "Expects fields" ) ),
+  #[allow(clippy::match_wildcard_for_single_variants)]
+  pub fn first_field_name(t: &syn::ItemStruct) -> Result<Option<syn::Ident>> {
+    let maybe_field = match t.fields {
+      syn::Fields::Named(ref fields) => fields.named.first(),
+      syn::Fields::Unnamed(ref fields) => fields.unnamed.first(),
+      _ => return Err(syn_err!(t.fields.span(), "Expects fields")),
     };
 
-    if let Some( field ) = maybe_field
-    {
-      return Ok( field.ident.clone() )
+    if let Some(field) = maybe_field {
+      return Ok(field.ident.clone());
     }
 
-    Err( syn_err!( t.span(), "Expects type for fields" ) )
+    Err(syn_err!(t.span(), "Expects type for fields"))
   }
-
-
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+#[doc(inline)]
+#[allow(unused_imports)]
 pub use own::*;
 
 /// Own namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod own
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod own {
+
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use orphan::*;
-  #[ doc( inline ) ]
-  pub use private::
-  {
-    field_types,
-    field_names,
-    first_field_type,
-    first_field_name,
-  };
+  #[doc(inline)]
+  pub use private::{field_types, field_names, first_field_type, first_field_name};
 }
 
 /// Orphan namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod orphan {
+
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod exposed {
+
   use super::*;
   pub use super::super::item_struct;
 
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[allow(unused_imports)]
+pub mod prelude {
   use super::*;
 }

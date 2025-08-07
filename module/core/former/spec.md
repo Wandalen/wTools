@@ -15,14 +15,70 @@
     *   **Storage:** An internal, temporary struct (`...FormerStorage`) that holds the intermediate state of the object being built.
     *   **Definition:** A configuration struct (`...FormerDefinition`) that defines the types and `End` condition for a forming process.
     *   **Subformer:** A `Former` instance used to build a part of a larger object.
+    *   **Target Type Categories:** The fundamental classification of Rust types the macro operates on (Structs vs Enums).
+    *   **Variant Structure Types:** The three categories of enum variant syntax (Unit, Tuple, Named) that determine parsing and generation rules.
+    *   **Behavioral Categories:** The five fundamental groupings that classify all possible Former macro usage patterns based on syntax structure and complexity. These categories drive macro implementation architecture, code generation strategies, and systematic validation (including test organization).
 
 ### 2. Core Behavioral Specification
 
 This section defines the core user-facing contract of the `former` macro. The following logic tables and attribute definitions are the single source of truth for its behavior.
 
-#### 2.1. Enum Variant Constructor Logic
+#### 2.1. Target Type Classification
 
-The macro generates a static constructor method on the enum for each variant. The type of constructor is determined by the variant's structure and attributes according to the following rules:
+The `former` macro operates on two fundamental **Target Type Categories**, each with distinct behavioral rules and test coverage families:
+
+##### 2.1.1. Structural Type Categories
+
+* **Structs** - Regular Rust structs with named fields (`struct MyStruct { field: T }`)
+* **Enums** - Rust enums with variants, subdivided by **Variant Structure Types**:
+
+##### 2.1.2. Enum Variant Structure Types
+
+The macro classifies enum variants into three **Variant Structure Types** based on their field syntax:
+
+* **Unit Variants** - No associated data (`Variant`)
+* **Tuple Variants** - Positional fields (`Variant(T1, T2)` or `Variant()`)  
+* **Named Variants** - Named fields (`Variant { field: T }` or `Variant {}`)
+
+Each Variant Structure Type has distinct parsing rules, generated code patterns, and behavioral specifications as defined in the rule tables below.
+
+##### 2.1.3. Behavioral Categories
+
+The macro architecture is organized around five fundamental **Behavioral Categories** that classify all Former usage patterns by syntax structure and complexity:
+
+* **Struct Formers** - Regular Rust structs with named fields (foundational builder patterns)
+* **Unit Variant Formers** - Enum variants with no associated data (simple enum cases)  
+* **Tuple Variant Formers** - Enum variants with positional fields (tuple-like syntax)
+* **Named Variant Formers** - Enum variants with named fields (struct-like syntax)
+* **Complex Scenario Formers** - Advanced combinations and cross-cutting patterns
+
+Each Behavioral Category has distinct:
+- **Implementation patterns** (parsing logic, code generation strategies)
+- **API characteristics** (constructor types, setter methods, subformer behavior)
+- **Rule coverage** (applicable specification rules and attribute combinations)
+- **Validation approach** (systematic testing through corresponding test families)
+
+##### 2.1.4. Implementation and Testing Organization
+
+Each **Behavioral Category** corresponds to distinct implementation modules and systematic test validation:
+
+| Behavioral Category | Target Type | Variant Structure Type | Rule Coverage | Implementation Focus | Test Family |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Struct Formers | Structs | N/A | All struct rules | Core builder patterns | `struct_tests` |
+| Unit Variant Formers | Enums | Unit Variants | Rules 1a, 2a, 3a | Simple constructors | `enum_unit_tests` |
+| Tuple Variant Formers | Enums | Tuple Variants | Rules 1b, 1d, 1f, 2b, 2d, 2f, 3b, 3d, 3f | Positional setters | `enum_unnamed_tests` |
+| Named Variant Formers | Enums | Named Variants | Rules 1c, 1e, 1g, 2c, 2e, 2g, 3c, 3g | Named field setters | `enum_named_tests` |
+| Complex Scenario Formers | Enums | Mixed/Advanced | Cross-cutting rules | Edge case handling | `enum_complex_tests` |
+
+This **Behavioral Category** system provides:
+- **Architectural guidance** for macro implementation organization
+- **API design consistency** across similar usage patterns  
+- **Specification completeness** through systematic rule coverage
+- **Quality assurance** via comprehensive test validation families
+
+#### 2.2. Enum Variant Constructor Logic
+
+The macro generates a static constructor method on the enum for each variant. The type of constructor is determined by the variant's **Variant Structure Type** and attributes according to the following rules:
 
 | Rule | Variant Structure | Attribute(s) | Generated Constructor Behavior |
 | :--- | :--- | :--- | :--- |
@@ -45,18 +101,28 @@ The macro generates a static constructor method on the enum for each variant. Th
 
 **Note on Rule 3f:** This rule is updated to reflect the implemented and tested behavior. The previous specification incorrectly stated this case would generate a scalar constructor. The actual behavior is to generate a subformer for the variant itself.
 
-#### 2.2. Standalone Constructor Behavior
+**Implementation Status Note:** Single-field tuple variants (Rule 2d) have a known issue where the handler attempts to use EntityToFormer trait integration, which fails for primitive types (u32, String, etc.) that don't implement Former. Current workaround is to use explicit `#[scalar]` attribute for primitive types.
 
-When the `#[standalone_constructors]` attribute is applied to an item, the return type of the generated top-level function(s) is determined by the usage of `#[arg_for_constructor]` on its fields:
+**Enum Former Delegation Limitation:** Current enum Former implementation generates positional setters (e.g., `._0()`, `._1()`) for tuple fields rather than delegating to inner struct Former methods. This means:
+- Test expecting `.field_name()` methods on enum variant formers will fail
+- Complex enum-to-struct Former delegation is not fully implemented
+- Workaround: Use positional setters or mark variants as `#[scalar]` for direct construction
 
-*   **Rule SC-1 (Full Construction):** If **all** fields of a struct or enum variant are marked with `#[arg_for_constructor]`, the generated standalone constructor will take all fields as arguments and return the final, constructed instance (`Self`).
-*   **Rule SC-2 (Partial Construction):** If **some or none** of the fields of a struct or enum variant are marked with `#[arg_for_constructor]`, the generated standalone constructor will take only the marked fields as arguments and return an instance of the `Former` (`...Former`), pre-initialized with those arguments.
 
-#### 2.3. Attribute Reference
+#### 2.3. Standalone Constructor Behavior
+
+When the `#[standalone_constructors]` attribute is applied to an item, the return type of the generated top-level function(s) is determined by the usage of `#[former_ignore]` on its fields:
+
+*   **Rule SC-1 (Full Construction):** If **no** fields of a struct or enum variant are marked with `#[former_ignore]`, the generated standalone constructor will take all fields as arguments and return the final, constructed instance (`Self`).
+*   **Rule SC-2 (Partial Construction):** If **any** fields of a struct or enum variant are marked with `#[former_ignore]`, the generated standalone constructor will take only the non-ignored fields as arguments and return an instance of the `Former` (`...Former`), pre-initialized with those arguments.
+
+**⚠️ Breaking Change Notice**: This specification represents the current behavior. Previous versions may have implemented different patterns where standalone constructors always returned `Former` instances. Manual implementations following the old pattern need to be updated to match the new specification for consistency.
+
+#### 2.4. Attribute Reference
 
 The following attributes control the behavior defined in the logic tables above.
 
-##### 2.3.1. Item-Level Attributes
+##### 2.4.1. Item-Level Attributes
 
 | Attribute | Purpose & Behavior |
 | :--- | :--- |
@@ -66,7 +132,7 @@ The following attributes control the behavior defined in the logic tables above.
 | `#[standalone_constructors]` | Generates top-level constructor functions. |
 | `#[debug]` | Prints the macro's generated code to the console at compile time. |
 
-##### 2.3.2. Field-Level / Variant-Level Attributes
+##### 2.4.2. Field-Level / Variant-Level Attributes
 
 | Attribute | Purpose & Behavior |
 | :--- | :--- |
@@ -75,9 +141,9 @@ The following attributes control the behavior defined in the logic tables above.
 | `#[subform_scalar]` | Generates a method returning a subformer for a nested struct. The field's type must also derive `Former`. |
 | `#[subform_collection]` | Generates a method returning a specialized collection subformer (e.g., `VectorFormer`). |
 | `#[subform_entry]` | Generates a method returning a subformer for a single entry of a collection. |
-| `#[arg_for_constructor]` | Marks a field as a required argument for a `#[standalone_constructors]` function. |
+| `#[former_ignore]` | Excludes a field from being a parameter in `#[standalone_constructors]` functions. The field will use its default value or remain unset. |
 
-##### 2.3.3. Attribute Precedence and Interaction Rules
+##### 2.4.3. Attribute Precedence and Interaction Rules
 
 1.  **Subform vs. Scalar:** Subform attributes (`#[subform_scalar]`, `#[subform_collection]`, `#[subform_entry]`) take precedence over `#[scalar]`. If both are present, the subform behavior is implemented, and a scalar setter is **not** generated unless explicitly requested via `#[scalar(setter = true)]`.
 2.  **Setter Naming:** If a `name` is provided (e.g., `#[scalar(name = new_name)]`), it overrides the default setter name derived from the field's identifier.
@@ -103,7 +169,56 @@ The `#[derive(Former)]` macro generates a consistent set of components to implem
 ### 4. Diagnostics & Debugging
 
 *   **Error Handling Strategy:** The macro must produce clear, concise, and actionable compile-time errors. Errors must be associated with the specific `span` of the code that caused the issue. The `trybuild` crate must be used to create a suite of compile-fail tests to verify error-handling behavior.
-*   **Debugging Aids:** The `#[debug]` item-level attribute must be provided. When present, the macro will print the final generated `TokenStream` to the console during compilation.
+
+*   **Debug Attribute Requirements:** Following the design principle "Proc Macros: Must Implement a 'debug' Attribute", the `#[debug]` item-level attribute must be provided with comprehensive debugging capabilities.
+
+#### 4.1. Debug Attribute Specification
+
+**Attribute Usage:**
+```rust
+// Standalone debug attribute
+#[derive(Former)]
+#[debug]  // <-- Enables comprehensive debug output
+pub struct MyStruct { field: String }
+
+// Within #[former(...)] container
+#[derive(Former)]
+#[former(debug, standalone_constructors)]  // <-- Debug with other attributes
+pub struct MyStruct { field: String }
+```
+
+**Debug Output Requirements:**
+When `#[debug]` is present and the `former_diagnostics_print_generated` feature is enabled, the macro must provide detailed information in four phases:
+
+1. **Input Analysis Phase**:
+   - Target type information (name, kind, visibility)
+   - Generic parameters analysis (lifetimes, types, consts, where clauses)
+   - Field/variant analysis with types and attributes
+   - Complete attribute configuration breakdown
+
+2. **Generic Classification Phase**:
+   - Classification results (lifetime-only, type-only, mixed, empty)
+   - Generated generic components (impl_generics, ty_generics, where_clause)
+   - Strategy explanation for code generation decisions
+
+3. **Generated Components Analysis Phase**:
+   - Core component breakdown (FormerStorage, FormerDefinition, Former, etc.)
+   - Trait implementation overview
+   - Formation process workflow explanation
+   - Attribute-driven customizations impact
+
+4. **Complete Generated Code Phase**:
+   - Final TokenStream output for compilation
+   - Integration points with existing code
+
+**Feature Flag Integration:**
+Debug output must be gated behind the `former_diagnostics_print_generated` feature flag to ensure zero impact on normal compilation.
+
+**Development Workflow Integration:**
+- Zero runtime cost (analysis only during compilation)
+- Conditional compilation (debug code only with feature flag)
+- IDE-friendly output format
+- CI/CD pipeline compatibility
 
 ### 5. Lifecycle & Evolution
 
@@ -168,9 +283,53 @@ As you implement or modify the `former_meta` crate, please fill out the sections
     2.  `_derive.rs`: A file that uses `#[derive(Former)]` on an identical data structure.
     3.  `_only_test.rs`: A file containing only `#[test]` functions that is `include!`d by both the `_manual.rs` and `_derive.rs` files. This guarantees that the exact same assertions are run against both the hand-written and macro-generated implementations, ensuring their behavior is identical.
 
+
 ### Finalized Library & Tool Versions
 *List the critical libraries, frameworks, or tools used and their exact locked versions from `Cargo.lock`.*
 
 -   `rustc`: `1.78.0`
 -   `macro_tools`: `0.15.0`
 -   `convert_case`: `0.6.0`
+
+---
+
+### Enum Implementation Status and Critical Issues
+
+#### Current Implementation Status
+- **Total Tests Passing**: 227 tests (includes 12 enum tests across unit and tuple variants)
+- **Handler Status**: Most handlers working, with one critical fix applied to `tuple_multi_fields_subform`
+- **Feature Coverage**: Unit variants, basic tuple variants, multi-field scalar patterns all functional
+
+#### Critical Handler Issues Resolved
+
+**1. tuple_multi_fields_subform Handler - Major Syntax Errors (FIXED)**
+- **Issue**: Critical compilation failures preventing multi-field tuple subform usage
+- **Root Causes**: Invalid Rust syntax in generated code (`#end_name::#ty_generics::default()`), missing PhantomData angle brackets
+- **Solution**: Fixed turbo fish syntax and PhantomData generic handling with conditional support for non-generic enums
+- **Impact**: Enabled all multi-field tuple subform functionality, adding 3+ new passing tests
+
+#### Known Limitations and Workarounds
+
+**1. Single-Field Tuple Subform Handler (tuple_single_field_subform)**
+- **Issue**: Handler assumes field types implement Former trait via EntityToFormer, fails for primitive types
+- **Root Cause**: Generates code like `< u32 as EntityToFormer< u32FormerDefinition > >::Former` for primitives
+- **Workaround**: Use explicit `#[scalar]` attribute for primitive field types
+- **Status**: Needs architectural redesign or auto-routing to scalar handlers
+
+**2. Unimplemented Features**
+- **`#[arg_for_constructor]` Attribute**: Not yet implemented, prevents direct parameter standalone constructors
+- **Raw Identifiers**: Variants like `r#break` have method name generation issues
+
+#### Handler Reliability Spectrum
+1. **Fully Reliable**: `tuple_zero_fields_handler`, `tuple_*_scalar` handlers
+2. **Fixed and Reliable**: `tuple_multi_fields_subform` (after syntax fixes)
+3. **Complex but Workable**: Struct variant handlers
+4. **Problematic**: `tuple_single_field_subform` (requires explicit `#[scalar]` for primitives)
+5. **Unimplemented**: Attribute-driven standalone constructors with direct parameters
+
+#### Testing and Development Insights
+- **Effective Strategy**: Enable one test at a time, derive-first approach more reliable than manual implementations
+- **Common Issues**: Inner doc comments in shared test files cause E0753 compilation errors
+- **Performance**: Scalar handlers compile fast, subform handlers generate substantial code and compile slower
+
+This knowledge preserves critical implementation insights and provides guidance for future enum development work.

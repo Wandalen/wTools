@@ -1,4 +1,4 @@
-#![ allow( unused_imports ) ]
+#![allow(unused_imports)]
 use crate as the_module;
 use test_tools as derives;
 use core::ops::Deref;
@@ -17,68 +17,63 @@ use core::ops::Deref;
 // = own tests
 
 mod all_manual_test;
-#[ cfg
-(
-  all
-  (
-    feature = "derive_as_mut",
-    feature = "derive_as_ref",
-    feature = "derive_deref",
-    feature = "derive_deref_mut",
-    feature = "derive_from",
-    feature = "derive_index",
-    feature = "derive_index_mut",
-    feature = "derive_inner_from",
-    feature = "derive_not",
-    feature = "derive_phantom"
-  )
-)]
+#[cfg(all(
+  feature = "derive_as_mut",
+  feature = "derive_as_ref",
+  feature = "derive_deref",
+  feature = "derive_deref_mut",
+  feature = "derive_from",
+  feature = "derive_index",
+  feature = "derive_index_mut",
+  feature = "derive_inner_from",
+  feature = "derive_not",
+  feature = "derive_phantom"
+))]
 mod all_test;
 
 mod basic_test;
 
-#[ cfg( feature = "derive_as_mut" ) ]
-#[ path = "as_mut/mod.rs" ]
+#[cfg(feature = "derive_as_mut")]
+#[path = "as_mut/mod.rs"]
 mod as_mut_test;
 
 mod as_ref_manual_test;
-#[ cfg( feature = "derive_as_ref" ) ]
+#[cfg(feature = "derive_as_ref")]
 mod as_ref_test;
 
-#[ cfg( feature = "derive_deref" ) ]
-#[ path = "deref" ]
-mod deref_tests
-{
-  #[ allow( unused_imports ) ]
+#[cfg(feature = "derive_deref")]
+#[path = "deref"]
+mod deref_tests {
+  #[allow(unused_imports)]
   use super::*;
 
   //
   // Passing tests
   //
 
-  mod basic_test;
   mod basic_manual_test;
-   // T1.4
+  mod basic_test;
+  // T1.4
 
   mod generics_lifetimes; // T1.8
   mod generics_lifetimes_manual;
 
   mod generics_types; // T1.9
-  mod generics_types_manual;
   mod generics_types_default;
   mod generics_types_default_manual;
+  mod generics_types_manual;
 
   mod generics_constants; // T1.10
-  mod generics_constants_manual;
   mod generics_constants_default;
   mod generics_constants_default_manual;
+  mod generics_constants_manual;
 
   mod bounds_inlined; // T1.11
   mod bounds_inlined_manual;
-  mod bounds_where;
-  mod bounds_where_manual;
   mod bounds_mixed;
   mod bounds_mixed_manual;
+  mod bounds_where;
+  mod bounds_where_manual;
 
   mod name_collisions;
 
@@ -107,44 +102,41 @@ mod deref_tests
   // mod enum_named_empty_manual;
 }
 
-#[ cfg( feature = "derive_deref_mut" ) ]
-#[ path = "deref_mut" ]
-mod deref_mut_tests
-{
-  #[ allow( unused_imports ) ]
+#[cfg(feature = "derive_deref_mut")]
+#[path = "deref_mut"]
+mod deref_mut_tests {
+  #[allow(unused_imports)]
   use super::*;
 
-  mod basic_test;
   mod basic_manual_test;
+  mod basic_test;
 }
 
-only_for_terminal_module!
+only_for_terminal_module! {
+  #[ test_tools::nightly ]
+  #[ test ]
+  fn deref_mut_trybuild()
   {
-    #[ test_tools::nightly ]
-    #[ test ]
-    fn deref_mut_trybuild()
-    {
-      println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-      let t = test_tools::compiletime::TestCases::new();
-      t.compile_fail( "tests/inc/deref_mut/compile_fail_enum.rs" );
-    }
+    println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+    let t = test_tools::compiletime::TestCases::new();
+    t.compile_fail( "tests/inc/deref_mut/compile_fail_enum.rs" );
   }
-only_for_terminal_module!
+}
+only_for_terminal_module! {
+  #[ test_tools::nightly ]
+  #[ test ]
+  fn deref_trybuild()
   {
-    #[ test_tools::nightly ]
-    #[ test ]
-    fn deref_trybuild()
-    {
-      println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-      let t = test_tools::compiletime::TestCases::new();
-      t.compile_fail( "tests/inc/deref/struct_tuple.rs" ); // T1.3
-      t.compile_fail( "tests/inc/deref/struct_named.rs" ); // T1.5
-      t.compile_fail( "tests/inc/deref/enum_unit.rs" ); // T1.6
-      t.compile_fail( "tests/inc/deref/struct_unit.rs" ); // T1.7
-      t.compile_fail( "tests/inc/deref/compile_fail_complex_struct.rs" ); // T1.4
-      // assert!( false );
-    }
+    println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+    let t = test_tools::compiletime::TestCases::new();
+    t.compile_fail( "tests/inc/deref/struct_tuple.rs" ); // T1.3
+    t.compile_fail( "tests/inc/deref/struct_named.rs" ); // T1.5
+    t.compile_fail( "tests/inc/deref/enum_unit.rs" ); // T1.6
+    t.compile_fail( "tests/inc/deref/struct_unit.rs" ); // T1.7
+    t.compile_fail( "tests/inc/deref/compile_fail_complex_struct.rs" ); // T1.4
+    // assert!( false );
   }
+}
 // #[ cfg( feature = "derive_deref_mut" ) ]
 // #[ path = "deref_mut" ]
 // mod deref_mut_tests
@@ -175,36 +167,33 @@ only_for_terminal_module!
 
 //   mod generics_types;
 //   mod generics_types_manual;
-#[ cfg( feature = "derive_from" ) ]
-#[ path = "from" ]
-mod from_tests
-{
-  #[ allow( unused_imports ) ]
+#[cfg(feature = "derive_from")]
+#[path = "from"]
+mod from_tests {
+  #[allow(unused_imports)]
   use super::*;
 
-  mod basic_test;
   mod basic_manual_test;
+  mod basic_test;
 }
-#[ cfg( feature = "derive_inner_from" ) ]
-#[ path = "inner_from" ]
-mod inner_from_tests
-{
-  #[ allow( unused_imports ) ]
+#[cfg(feature = "derive_inner_from")]
+#[path = "inner_from"]
+mod inner_from_tests {
+  #[allow(unused_imports)]
   use super::*;
 
-  mod basic_test;
   mod basic_manual_test;
+  mod basic_test;
 }
 
-#[ cfg( feature = "derive_new" ) ]
-#[ path = "new" ]
-mod new_tests
-{
-  #[ allow( unused_imports ) ]
+#[cfg(feature = "derive_new")]
+#[path = "new"]
+mod new_tests {
+  #[allow(unused_imports)]
   use super::*;
 
-  mod basic_test;
   mod basic_manual_test;
+  mod basic_test;
 }
 //   mod generics_types_default;
 //   mod generics_types_default_manual;
@@ -222,7 +211,6 @@ mod new_tests
 //   mod bounds_where_manual;
 //   mod bounds_mixed;
 //   mod bounds_mixed_manual;
-
 
 //   //
 
@@ -295,11 +283,10 @@ mod new_tests
 //   mod variants_collisions;
 // }
 
-#[ cfg( feature = "derive_not" ) ]
-#[ path = "not" ]
-mod not_tests
-{
-  #[ allow( unused_imports ) ]
+#[cfg(feature = "derive_not")]
+#[path = "not"]
+mod not_tests {
+  #[allow(unused_imports)]
   use super::*;
   mod struct_named;
   mod struct_named_manual;
@@ -349,40 +336,38 @@ mod not_tests
   // mod tuple_default_on_some_off_manual;
 }
 
-#[ cfg( feature = "derive_phantom" ) ]
-#[ path = "phantom" ]
-mod phantom_tests
-{
-  #[ allow( unused_imports ) ]
+#[cfg(feature = "derive_phantom")]
+#[path = "phantom"]
+mod phantom_tests {
+  #[allow(unused_imports)]
   use super::*;
 
   mod struct_named;
-  mod struct_named_manual;
   mod struct_named_empty;
   mod struct_named_empty_manual;
-  
-  mod struct_tuple;
-  mod struct_tuple_manual;
-  mod struct_tuple_empty;
-  mod struct_tuple_empty_manual;
-  mod struct_unit_to_tuple;
-  mod struct_unit_to_tuple_manual;
+  mod struct_named_manual;
+
   mod bounds_inlined;
   mod bounds_inlined_manual;
   mod bounds_mixed;
   mod bounds_mixed_manual;
   mod bounds_where;
   mod bounds_where_manual;
-  mod name_collisions;
-  mod covariant_type;
-  mod covariant_type_manual;
   mod contravariant_type;
   mod contravariant_type_manual;
+  mod covariant_type;
+  mod covariant_type_manual;
+  mod name_collisions;
   mod send_sync_type;
   mod send_sync_type_manual;
+  mod struct_tuple;
+  mod struct_tuple_empty;
+  mod struct_tuple_empty_manual;
+  mod struct_tuple_manual;
+  mod struct_unit_to_tuple;
+  mod struct_unit_to_tuple_manual;
 
-  only_for_terminal_module!
-  {
+  only_for_terminal_module! {
     #[ test_tools::nightly ]
     #[ test ]
     fn phantom_trybuild()
@@ -396,14 +381,13 @@ mod phantom_tests
   }
 }
 
-
 // #[ cfg( feature = "derive_index" ) ]
 // #[ path = "index" ]
 // mod index_tests
 // {
 //   #[ allow( unused_imports ) ]
 //   use super::*;
-    
+
 //   mod struct_named;
 //   mod struct_multiple_named_field;
 //   mod struct_multiple_named_item;
@@ -414,7 +398,7 @@ mod phantom_tests
 //   mod struct_tuple_manual;
 //   mod struct_multiple_tuple_manual;
 //   mod struct_collisions;
-  
+
 //   only_for_terminal_module!
 //   {
 //     #[ test_tools::nightly ]
@@ -433,17 +417,16 @@ mod phantom_tests
 //   }
 // }
 
-#[ cfg( feature = "derive_index_mut" ) ]
-#[ path = "index_mut" ]
-mod index_mut_tests
-{
-  #[ allow( unused_imports ) ]
+#[cfg(feature = "derive_index_mut")]
+#[path = "index_mut"]
+mod index_mut_tests {
+  #[allow(unused_imports)]
   use super::*;
-  mod minimal_test; 
-  mod basic_test; 
-  // mod struct_named; 
-  // mod struct_multiple_named_field; 
-  // mod struct_multiple_named_item; 
+  mod basic_test;
+  mod minimal_test;
+  // mod struct_named;
+  // mod struct_multiple_named_field;
+  // mod struct_multiple_named_item;
   mod basic_manual_test;
   // mod struct_named_manual;
   // mod struct_multiple_named_manual;
@@ -453,8 +436,7 @@ mod index_mut_tests
   // mod struct_multiple_tuple_manual;
   // mod struct_collisions;
 
-  only_for_terminal_module!
-  {
+  only_for_terminal_module! {
     #[ test_tools::nightly ]
     #[ test ]
     fn index_mut_trybuild()
@@ -465,7 +447,7 @@ mod index_mut_tests
 
       t.compile_fail( "tests/inc/index_mut/compiletime/struct.rs" );
       t.compile_fail( "tests/inc/index_mut/compiletime/struct_unit.rs" );
-  
+
       t.compile_fail( "tests/inc/index_mut/compiletime/struct_named_empty.rs" );
       t.compile_fail( "tests/inc/index_mut/compiletime/enum.rs" );
     }

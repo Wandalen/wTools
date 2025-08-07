@@ -1,41 +1,34 @@
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
 
 ///
 /// Options1
 ///
 
-#[ derive( Debug, Default, PartialEq ) ]
-pub struct Options1
-{
-  field1 : i32,
-  field2 : String,
-  field3 : f32,
+#[derive(Debug, Default, PartialEq)]
+pub struct Options1 {
+  field1: i32,
+  field2: String,
+  field3: f32,
 }
 
-impl From< &Options1 > for i32
-{
-  #[ inline( always ) ]
-  fn from( src : &Options1 ) -> Self
-  {
+impl From<&Options1> for i32 {
+  #[inline(always)]
+  fn from(src: &Options1) -> Self {
     src.field1.clone()
   }
 }
 
-impl From< &Options1 > for String
-{
-  #[ inline( always ) ]
-  fn from( src : &Options1 ) -> Self
-  {
+impl From<&Options1> for String {
+  #[inline(always)]
+  fn from(src: &Options1) -> Self {
     src.field2.clone()
   }
 }
 
-impl From< &Options1 > for f32
-{
-  #[ inline( always ) ]
-  fn from( src : &Options1 ) -> Self
-  {
+impl From<&Options1> for f32 {
+  #[inline(always)]
+  fn from(src: &Options1) -> Self {
     src.field3.clone()
   }
 }
@@ -44,11 +37,10 @@ impl From< &Options1 > for f32
 /// Options2
 ///
 
-#[ derive( Debug, Default, PartialEq, the_module::FromComponents ) ]
-pub struct Options2
-{
-  field1 : i32,
-  field2 : String,
+#[derive(Debug, Default, PartialEq, the_module::FromComponents)]
+pub struct Options2 {
+  field1: i32,
+  field2: String,
 }
 
 // impl< T > From< T > for Options2
@@ -72,4 +64,4 @@ pub struct Options2
 
 //
 
-include!( "./only_test/from_components.rs" );
+include!("./only_test/from_components.rs");

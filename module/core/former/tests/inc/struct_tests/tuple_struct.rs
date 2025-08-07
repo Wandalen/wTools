@@ -1,6 +1,6 @@
-#![ deny( missing_docs ) ]
+#![deny(missing_docs)]
 
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
 
 // xxx : qqq : make that working

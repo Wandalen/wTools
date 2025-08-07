@@ -17,19 +17,20 @@
 //!   with manually constructed variants.
 // File: module/core/former/tests/inc/former_enum_tests/unit_tests/enum_named_fields_unit_derive.rs
 use super::*;
+#[allow(unused_imports)]
+use ::former::prelude::*;
+use ::former::Former;
 
 // Define the enum with unit variants for testing.
-#[ derive( Debug, PartialEq, former::Former ) ]
-// #[ debug ]
-#[ standalone_constructors ]
-pub enum EnumWithNamedFields
-{
+#[derive(Debug, PartialEq, Former)]
+#[former(standalone_constructors)]
+pub enum EnumWithNamedFields {
   // --- Unit Variant ---
   // Expect: unit_variant_default() -> Enum (Default is scalar for unit)
   UnitVariantDefault, // Renamed from UnitVariant
-  #[ scalar ] // Expect: unit_variant_scalar() -> Enum
+  // #[scalar] // Scalar is default for unit variants, attribute not needed
   UnitVariantScalar, // New
 }
 
 // Include the test logic file
-include!( "enum_named_fields_unit_only_test.rs" );
+include!("enum_named_fields_unit_only_test.rs");

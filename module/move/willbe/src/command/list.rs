@@ -2,7 +2,7 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
 
   use std::
@@ -12,7 +12,7 @@ mod private
   };
   use wca::VerifiedCommand;
   use error::untyped::Context;
-  use collection::HashSet;
+  use collection_tools::collection::HashSet;
 
   use action::
   {
@@ -20,6 +20,8 @@ mod private
     list::{ ListFormat, ListOptions },
   };
   use former::Former;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
 
   #[ derive( Former ) ]
   #[ allow( clippy::struct_excessive_bools ) ]

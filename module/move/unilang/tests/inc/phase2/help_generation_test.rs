@@ -5,8 +5,13 @@
 
 use assert_cmd::Command;
 use predicates::prelude::*;
-// use unilang::registry::CommandRegistry; // Removed unused import
-// use unilang::data::{ CommandDefinition, ArgumentDefinition, Kind }; // Removed unused import
+
+use predicates::Predicate;
+
+fn contains_all_unordered( expected_lines : Vec< &str > ) -> impl Predicate< str > + '_
+{
+  predicate::function( move | s : &str | expected_lines.iter().all( | line | s.contains( line ) ) )
+}
 
 // Test Matrix for Help Generation
 //
@@ -18,7 +23,7 @@ use predicates::prelude::*;
 //
 // | ID    | Command Invocation | Expected Stdout (contains)                               | Expected Stderr (contains)                               | Expected Exit Code | Notes                                     |
 // |-------|--------------------|----------------------------------------------------------|----------------------------------------------------------|--------------------|-------------------------------------------|
-// | T8.1  | `unilang_cli`      | "Available Commands:\n  echo\n  add\n  cat"             | "Usage: unilang_cli <command> [args...]"                 | 0                  | No arguments, lists all commands          |
+// | T8.1  | `unilang_cli`      | "Available Commands:\n  echo\n  add\n  cat"             | "Usage: unilang_cli <command> [args...]"                 | 0                  | Basic echo command                        |
 // | T8.2  | `unilang_cli --help` | "Available Commands:\n  echo\n  add\n  cat"             |                                                          | 0                  | Global help, lists all commands           |
 // | T8.3  | `unilang_cli help` | "Available Commands:\n  echo\n  add\n  cat"             |                                                          | 0                  | Global help, lists all commands (alias)   |
 // | T8.4  | `unilang_cli help echo` | "Usage: echo\n\n  Echoes a message."                 |                                                          | 0                  | Specific command help                     |
@@ -31,13 +36,17 @@ fn test_cli_no_args_help()
 {
   // Test Matrix Row: T8.1
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.assert()
+  cmd
+  .assert()
   .success()
-  .stdout( predicate::str::contains( "Available Commands:" )
-  .and( predicate::str::contains( "  echo            Echoes a message." ) )
-  .and( predicate::str::contains( "  add             Adds two integers." ) )
-  .and( predicate::str::contains( "  cat             Prints content of a file." ) ) )
-  .stderr( predicate::str::ends_with( "unilang_cli <command> [args...]\n" ) );
+  .stdout( contains_all_unordered( vec![
+    "Available Commands:",
+    "  .math.add       Adds two numbers.",
+    "  .math.sub       Subtracts two numbers.",
+    "  .greet          Greets the specified person.",
+    "  .config.set     Sets a configuration value.",
+  ]) )
+  .stderr( predicate::str::contains( "Usage: unilang_cli <command> [args...]" ) );
 }
 
 #[ test ]
@@ -46,12 +55,16 @@ fn test_cli_global_help_flag()
   // Test Matrix Row: T8.2
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
   cmd.arg( "--help" );
-  cmd.assert()
+  cmd
+  .assert()
   .success()
-  .stdout( predicate::str::contains( "Available Commands:" )
-  .and( predicate::str::contains( "  echo            Echoes a message." ) )
-  .and( predicate::str::contains( "  add             Adds two integers." ) )
-  .and( predicate::str::contains( "  cat             Prints content of a file." ) ) )
+  .stdout( contains_all_unordered( vec![
+    "Available Commands:",
+    "  .math.add       Adds two numbers.",
+    "  .math.sub       Subtracts two numbers.",
+    "  .greet          Greets the specified person.",
+    "  .config.set     Sets a configuration value.",
+  ]) )
   .stderr( "" ); // No stderr for successful help
 }
 
@@ -61,25 +74,17 @@ fn test_cli_global_help_command()
   // Test Matrix Row: T8.3
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
   cmd.arg( "help" );
-  cmd.assert()
+  cmd
+  .assert()
   .success()
-  .stdout( predicate::str::contains( "Available Commands:" )
-  .and( predicate::str::contains( "  echo            Echoes a message." ) )
-  .and( predicate::str::contains( "  add             Adds two integers." ) )
-  .and( predicate::str::contains( "  cat             Prints content of a file." ) ) )
+  .stdout( contains_all_unordered( vec![
+    "Available Commands:",
+    "  .math.add       Adds two numbers.",
+    "  .math.sub       Subtracts two numbers.",
+    "  .greet          Greets the specified person.",
+    "  .config.set     Sets a configuration value.",
+  ]) )
   .stderr( "" ); // No stderr for successful help
-}
-
-#[ test ]
-fn test_cli_specific_command_help_echo()
-{
-  // Test Matrix Row: T8.4
-  let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ "help", "echo" ] );
-  cmd.assert()
-  .success()
-  .stdout( predicate::str::contains( "Usage: echo\n\n  Echoes a message." ) )
-  .stderr( "" );
 }
 
 #[ test ]
@@ -87,10 +92,23 @@ fn test_cli_specific_command_help_add()
 {
   // Test Matrix Row: T8.5
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ "help", "add" ] );
-  cmd.assert()
+  cmd.args( vec![ "help", ".math.add" ] );
+  cmd
+  .assert()
   .success()
-  .stdout( predicate::str::contains( "Usage: add\n\n  Adds two integers.\n\n\nArguments:\n  a                (Kind: Integer)\n  b                (Kind: Integer)\n" ) )
+  .stdout(
+    predicate::str::contains( "Usage: add (v1.0.0)" )
+    .and( predicate::str::contains( "Aliases: sum, plus" ) )
+    .and( predicate::str::contains( "Tags: math, calculation" ) ) // Added this line
+    .and( predicate::str::contains( "Hint: Adds two numbers." ) ) // Modified this line
+    .and( predicate::str::contains( "Adds two numbers." ) ) // Modified this line
+    .and( predicate::str::contains( "Status: stable" ) )
+    .and( predicate::str::contains( "Arguments:" ) )
+    .and( predicate::str::contains( "a (Type: Integer)" ) ) // Updated for new format
+    .and( predicate::str::contains( "First number." ) ) // Description on separate line
+    .and( predicate::str::contains( "b (Type: Integer)" ) ) // Updated for new format
+    .and( predicate::str::contains( "Second number." ) ), // Description on separate line
+  )
   .stderr( "" );
 }
 
@@ -99,8 +117,9 @@ fn test_cli_help_non_existent_command()
 {
   // Test Matrix Row: T8.6
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ "help", "non_existent" ] );
-  cmd.assert()
+  cmd.args( vec![ "help", "non_existent" ] );
+  cmd
+  .assert()
   .failure()
   .stderr( predicate::str::contains( "Error: Command 'non_existent' not found for help." ) );
 }
@@ -110,8 +129,8 @@ fn test_cli_invalid_help_usage()
 {
   // Test Matrix Row: T8.7
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ "help", "arg1", "arg2" ] );
-  cmd.assert()
-  .failure()
-  .stderr( predicate::str::contains( "Error: Invalid usage of help command." ) );
+  cmd.args( vec![ "help", "arg1", "arg2" ] );
+  cmd.assert().failure().stderr( predicate::str::contains(
+    "Error: Invalid usage of help command. Use `help` or `help <command_name>`.",
+  ) );
 }

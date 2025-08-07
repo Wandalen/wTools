@@ -20,8 +20,7 @@
 // }
 
 /// Entry point.
-fn main()
-{
+fn main() {
   // let args = std::env::args().skip( 1 ).collect::< Vec< _ > >().join( " " );
   // let aggregator = wca::cui( () )
   // .command( echo.arg( "string", wca::Type::String ) )

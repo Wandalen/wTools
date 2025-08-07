@@ -1,8 +1,10 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
+  use crate::ca::Order;
+  use crate::ca::Type;
 
   use std::collections::HashMap;
   use indexmap::IndexMap;
@@ -110,9 +112,9 @@ mod private
     // aaa : it is usable
     /// The type `Routine` represents the specific implementation of the routine.
     #[ scalar( setter = false ) ]
-    #[ former( default = Routine::from( Handler::< _, std::convert::Infallible >::from( || 
-      { 
-        panic!( "No routine available: A handler function for the command is missing" ) 
+    #[ former( default = Routine::from( Handler::< _, std::convert::Infallible >::from( ||
+      {
+        panic!( "No routine available: A handler function for the command is missing" )
       })))]
     pub routine : Routine,
   }
@@ -218,7 +220,7 @@ mod private
     /// * `name` - The name of the property. It should implement the `Into< String >` trait.
     /// # Panics
     /// qqq: doc
-    pub fn property< IntoName >( self, name : IntoName ) 
+    pub fn property< IntoName >( self, name : IntoName )
     -> PropertyDescriptionAsSubformer< Self, impl PropertyDescriptionAsSubformerEnd< Self > >
     where
       IntoName : Into< String >,
@@ -258,9 +260,9 @@ mod private
 
 crate::mod_interface!
 {
-  orphan use Command;
-  orphan use CommandFormer;
-  own use ValueDescription;
+  exposed use Command;
+  exposed use CommandFormer;
+  exposed use ValueDescription;
 
   own use CommandAsSubformer;
   own use CommandAsSubformerEnd;

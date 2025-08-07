@@ -2,9 +2,9 @@
 mod private
 {
 
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
-  #[ allow( clippy::wildcard_imports ) ]
+
   use table::*;
   // qqq : for Bohdan no asterisk imports, but in special cases
   use std::
@@ -13,14 +13,16 @@ mod private
     sync,
   };
   use colored::Colorize as _;
-  #[ allow( clippy::wildcard_imports ) ]
+
   use process_tools::process::*;
   use error::
   {
     Error,
     untyped::format_err,
   };
-  use package::PackageName;
+  use crate::entity::package::PackageName;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{self, Ok, Err};
 
   #[ derive( Debug, Error ) ]
   pub enum TestError
@@ -365,10 +367,10 @@ mod private
       .chain( if self.with_all_features { Some( "--all-features".into() ) } else { None } )
       // aaa : for Petro : bad, --all-features is always disabled!
       // aaa : add `debug_assert!( !self.with_all_features )`
-      .chain( if self.enable_features.is_empty() { None } 
-      else 
-      { 
-        Some( [ "--features".into(), self.enable_features.iter().join( "," ) ] ) 
+      .chain( if self.enable_features.is_empty() { None }
+      else
+      {
+        Some( [ "--features".into(), self.enable_features.iter().join( "," ) ] )
       }.into_iter().flatten() )
       .chain( self.temp_directory_path.clone().map( | p | vec![ "--target-dir".to_string(), p.to_string_lossy().into() ] ).into_iter().flatten() )
       .collect()
@@ -414,10 +416,10 @@ mod private
     }
     else
     {
-      let envs = if options.backtrace 
-      { 
-        [ ( "RUST_BACKTRACE".to_string(), "full".to_string() ) ].into_iter().collect() 
-      } 
+      let envs = if options.backtrace
+      {
+        [ ( "RUST_BACKTRACE".to_string(), "full".to_string() ) ].into_iter().collect()
+      }
       else { collection::HashMap::new() };
       Run::former()
       .bin_path( program )

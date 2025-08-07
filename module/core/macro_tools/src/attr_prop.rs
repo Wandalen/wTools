@@ -95,16 +95,15 @@
 //! The `parse_quote!` macro is used to create a `syn::Attribute` instance with the attribute syntax,
 //! which is then parsed into the `MyAttributes` struct. The resulting `MyAttributes` instance is printed to the console.
 
-mod singletone;
-mod singletone_optional;
 mod boolean;
 mod boolean_optional;
+mod singletone;
+mod singletone_optional;
 mod syn;
 mod syn_optional;
 
 /// Define a private namespace for all its items.
-mod private
-{
+mod private {
   // use crate::*;
 
   /// Trait for properties of an attribute component that can be identified by a keyword.
@@ -132,86 +131,66 @@ mod private
   ///
   pub trait AttributePropertyComponent
   where
-    Self : Sized,
+    Self: Sized,
   {
     /// The keyword that identifies the component.
     ///
     /// This constant is used to match the attribute to the corresponding property.
     /// Each implementor of this trait must provide a unique keyword for its type.
-    const KEYWORD : &'static str;
+    const KEYWORD: &'static str;
   }
-
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+#[doc(inline)]
+#[allow(unused_imports)]
 pub use own::*;
 
 /// Own namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod own
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod own {
+
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use orphan::*;
-  #[ doc( inline ) ]
-  pub use private::
-  {
-  };
+  #[doc(inline)]
+  pub use private::{};
 }
 
 /// Orphan namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod orphan {
+
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod exposed {
+
   use super::*;
   pub use super::super::attr_prop;
 
   // pub use super::own as attr_prop;
 
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use prelude::*;
 
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::
-  {
-
-    private::AttributePropertyComponent,
-
-    singletone::AttributePropertySingletone,
-    singletone::AttributePropertySingletoneMarker,
-    singletone_optional::AttributePropertyOptionalSingletone,
-    singletone_optional::AttributePropertyOptionalSingletoneMarker,
-
-    boolean::AttributePropertyBoolean,
-    boolean::AttributePropertyBooleanMarker,
-    boolean_optional::AttributePropertyOptionalBoolean,
-    boolean_optional::AttributePropertyOptionalBooleanMarker,
-
-    syn::AttributePropertySyn,
-    syn::AttributePropertySynMarker,
-    syn_optional::AttributePropertyOptionalSyn,
+  #[doc(inline)]
+  #[allow(unused_imports)]
+  pub use super::{
+    private::AttributePropertyComponent, singletone::AttributePropertySingletone, singletone::AttributePropertySingletoneMarker,
+    singletone_optional::AttributePropertyOptionalSingletone, singletone_optional::AttributePropertyOptionalSingletoneMarker,
+    boolean::AttributePropertyBoolean, boolean::AttributePropertyBooleanMarker,
+    boolean_optional::AttributePropertyOptionalBoolean, boolean_optional::AttributePropertyOptionalBooleanMarker,
+    syn::AttributePropertySyn, syn::AttributePropertySynMarker, syn_optional::AttributePropertyOptionalSyn,
     syn_optional::AttributePropertyOptionalSynMarker,
-
   };
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[allow(unused_imports)]
+pub mod prelude {
   use super::*;
 }

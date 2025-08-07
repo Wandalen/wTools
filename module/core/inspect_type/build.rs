@@ -2,10 +2,9 @@
 
 // use rustc_version::{ version, version_meta, Channel };
 
-fn main()
-{
+fn main() {
   // Assert we haven't travelled back in time
-  assert!( rustc_version::version().unwrap().major >= 1 );
+  assert!(rustc_version::version().unwrap().major >= 1);
 
   // // Set cfg flags depending on release channel
   // match version_meta().unwrap().channel
@@ -31,5 +30,4 @@ fn main()
   //     println!("cargo:rustc-check-cfg=cfg(RUSTC_IS_DEV)");
   //   }
   // }
-
 }

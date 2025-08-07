@@ -1,6 +1,6 @@
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
 
   use std::
@@ -9,13 +9,15 @@ mod private
     io::{ Write, Read },
   };
 
-  use path::Path;
-  use collection::BTreeMap;
+  use pth::Path;
+  use collection_tools::collection::BTreeMap;
   use convert_case::{ Casing, Case };
   use handlebars::{ RenderError, TemplateError };
   use toml_edit::Document;
 
   use entity::{ PathError, WorkspaceInitError };
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
 
   use error::
   {
@@ -306,11 +308,11 @@ mod private
 
     file_write
     (
-      &workflow_root.join( "Readme.md" ),
-      include_str!( "../../template/workflow/Readme.md" )
+      &workflow_root.join( "readme.md" ),
+      include_str!( "../../template/workflow/readme.md" )
     )?;
 
-    Ok( () )
+    Ok::< _, CiCdGenerateError >( () )
   }
 
   /// Prepare params for render `appropriative_branch_for` template.
@@ -397,7 +399,8 @@ mod private
           }
         }
         url
-        .and_then( | url | url::repo_url_extract( &url ) )
+        .as_ref()
+        .and_then( | url | url::repo_url_extract( url ) )
         .and_then( | url | url::git_info_extract( &url ).ok() )
         .map( UsernameAndRepository )
         .ok_or_else( || error::untyped::format_err!( "Fail to extract repository url") )

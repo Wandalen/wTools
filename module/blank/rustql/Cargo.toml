@@ -6,7 +6,7 @@ authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/rustql"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/rustql"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/rustql"

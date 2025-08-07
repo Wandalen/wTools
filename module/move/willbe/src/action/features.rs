@@ -1,16 +1,18 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
 
   use std::fmt;
-  use collection::{ BTreeMap, HashMap };
+  use collection_tools::collection::{ BTreeMap, HashMap };
 
-  // // use path::AbsolutePath;
+  // // use pth::AbsolutePath;
   use former::Former;
   use error::untyped::Context;
   // use workspace::Workspace;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{self, Ok};
 
   /// Options available for the .features command
   #[ derive( Debug, Former ) ]
@@ -49,12 +51,12 @@ mod private
         ( | ( feature, dependencies ) |
         {
           // fix clippy
-          let feature = if self.with_features_deps 
+          let feature = if self.with_features_deps
           {
             let deps = dependencies.join( ", " );
             format!( "\t{feature}: [{deps}]" )
-          } 
-          else 
+          }
+          else
           { format!( "\t{feature}" ) };
           writeln!( f, "{feature}" )
         }
@@ -96,14 +98,14 @@ mod private
     packages
     // .iter()
     .for_each
-    ( 
+    (
       | package |
       {
         let features = package.features();
         report.inner.insert( package.name().to_owned(), features.to_owned() );
       }
     );
-    Ok( report )
+    error::untyped::Result::Ok( report )
   }
 }
 

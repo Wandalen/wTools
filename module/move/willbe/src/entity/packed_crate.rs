@@ -1,7 +1,7 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use std::
   {
@@ -39,7 +39,7 @@ mod private
   {
     let buf = format!( "package/{name}-{version}.crate" );
     let local_package_path = target_dir.join( buf );
-    Ok( local_package_path )
+    error::untyped::Result::Ok( local_package_path )
 
   }
 
@@ -72,7 +72,7 @@ mod private
     .take( u64::MAX )
     .read_to_end( &mut bytes )?;
 
-    Ok( bytes )
+    error::untyped::Result::Ok( bytes )
   }
 
 }

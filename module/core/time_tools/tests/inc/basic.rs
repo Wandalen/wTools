@@ -1,8 +1,6 @@
-
 use test_tools::exposed::*;
 
-tests_impls!
-{
+tests_impls! {
   #[ cfg( feature = "time_now" ) ]
   #[ cfg( not( feature = "no_std" ) ) ]
   fn basic()
@@ -32,7 +30,6 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   basic,
 }

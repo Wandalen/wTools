@@ -34,21 +34,16 @@ use former::{
   FormerBegin,
   FormerMutator,
 };
-use std::marker::PhantomData;
+use core::marker::PhantomData;
 
-// --- Bound, Types, and Inner Struct ---
-// Are defined in the included _only_test.rs file
-// pub trait Bound : core::fmt::Debug + Default + Clone + PartialEq {}
-// #[ derive( Debug, Default, Clone, PartialEq ) ] pub struct MyType( String ); impl Bound for MyType {}
-#[ derive( Debug, Clone, PartialEq, Default ) ] // Removed former::Former derive
-pub struct InnerScalar< T : Bound > { pub data : T, }
-impl< T : Bound > From< T > for InnerScalar< T > { fn from( data : T ) -> Self { Self { data } } }
+
+
 
 
 // --- Enum Definition with Bounds ---
 // Define the enum without the derive macro
 #[ derive( Debug, PartialEq, Clone ) ]
-pub enum EnumScalarGeneric< T : Bound > // Enum bound
+pub enum EnumScalarGeneric<T: Bound>
 {
   Variant1( InnerScalar< T > ), // Tuple variant with one generic field
   Variant2( InnerScalar< T >, bool ), // Tuple variant with generic and non-generic fields

@@ -1,11 +1,13 @@
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   // use action;
   use error::untyped::{ Error };
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
 
-  /// Generates header to main Readme.md file.
+  /// Generates header to main readme.md file.
   ///
   /// # Errors
   /// qqq: doc

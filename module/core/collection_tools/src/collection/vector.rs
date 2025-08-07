@@ -1,15 +1,15 @@
-#[ allow( unused_imports, clippy::wildcard_imports ) ]
+#[allow(unused_imports, clippy::wildcard_imports)]
 use super::*;
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-#[ allow( clippy::pub_use ) ]
+#[doc(inline)]
+#[allow(unused_imports)]
+#[allow(clippy::pub_use)]
 pub use alloc::vec::*;
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-#[ allow( clippy::pub_use ) ]
-pub use core::slice::{ Iter, IterMut };
+#[doc(inline)]
+#[allow(unused_imports)]
+#[allow(clippy::pub_use)]
+pub use core::slice::{Iter, IterMut};
 
 /// Creates a `Vec` from a list of elements.
 ///
@@ -69,8 +69,8 @@ pub use core::slice::{ Iter, IterMut };
 /// assert_eq!( mixed[ 1 ], "another value" );
 /// ```
 ///
-#[ cfg( feature = "collection_constructors" ) ]
-#[ macro_export( local_inner_macros ) ]
+#[cfg(feature = "collection_constructors")]
+#[macro_export(local_inner_macros)]
 macro_rules! vec
 {
   (
@@ -163,8 +163,8 @@ macro_rules! vec
 /// assert_eq!( mixed[ 1 ], "another value" );
 /// ```
 ///
-#[ cfg( feature = "collection_into_constructors" ) ]
-#[ macro_export( local_inner_macros ) ]
+#[cfg(feature = "collection_into_constructors")]
+#[macro_export(local_inner_macros)]
 macro_rules! into_vec
 {
   (

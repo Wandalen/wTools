@@ -1,12 +1,12 @@
 [package]
 name = "collection_tools"
-version = "0.18.0"
+version = "0.20.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/collection_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/collection_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/collection_tools"

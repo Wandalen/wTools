@@ -1,0 +1,16 @@
+//! Test if derive macros work with lifetime-only structs
+
+/// Test struct for minimal derive functionality.
+#[derive(Debug, PartialEq, Clone)]
+pub struct MinimalTest<'a> {
+    /// Test data field.
+    data: &'a str,
+}
+
+#[test]
+fn minimal_test() {
+    let input = "test";
+    let instance = MinimalTest { data: input };
+    let cloned = instance.clone();
+    assert_eq!(instance.data, cloned.data);
+}

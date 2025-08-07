@@ -1,14 +1,14 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use std::fs;
   use std::path::Path;
   use error::untyped::bail;
   // use error::Result;
   // qqq : group dependencies
-  use iter::Itertools;
+  use iter_tools::iter::Itertools;
   use template::
   {
     TemplateFileDescriptor, TemplateFiles, TemplateFilesBuilder, TemplateParameters, TemplateValues
@@ -84,8 +84,8 @@ mod private
       .path( "./Makefile" )
       .end()
       .file()
-      .data( include_str!( "../../template/workspace/Readme.md" ) )
-      .path( "./Readme.md" )
+      .data( include_str!( "../../template/workspace/readme.md" ) )
+      .path( "./readme.md" )
       .end()
       .file()
       .data( include_str!( "../../template/workspace/.cargo/config.toml" ) )
@@ -96,8 +96,8 @@ mod private
       .path( "./module/Cargo.toml" )
       .end()
       .file()
-      .data( include_str!( "../../template/workspace/module/module1/Readme.md" ) )
-      .path( "./module/module1/Readme.md" )
+      .data( include_str!( "../../template/workspace/module/module1/readme.md" ) )
+      .path( "./module/module1/readme.md" )
       .end()
       .file()
       .data

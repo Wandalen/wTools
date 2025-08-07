@@ -1,18 +1,10 @@
 use super::*;
 
-use the_module::
-{
-  parser::Parser,
-
-  Type, Value,
-  grammar::Dictionary,
-  verifier::Verifier,
-};
+use the_module::{parser::Parser, Type, Value, grammar::Dictionary, verifier::Verifier};
 
 //
 
-tests_impls!
-{
+tests_impls! {
   fn basic()
   {
     let parser = Parser;
@@ -61,7 +53,6 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   basic,
 }

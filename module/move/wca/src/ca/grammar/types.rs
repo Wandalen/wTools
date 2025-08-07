@@ -1,8 +1,7 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
-  use crate::*;
+
   use std::fmt::
   {
     Display,
@@ -48,7 +47,7 @@ mod private
     /// return casted value
     /// # Errors
     /// qqq: doc
-    fn try_cast( &self, value : String ) -> error::untyped::Result< T >;
+    fn try_cast( &self, value : String ) -> error_tools::untyped::Result< T >;
   }
 
   /// Container for a `Value` of a specific type
@@ -182,26 +181,26 @@ mod private
 
   impl TryCast< Value > for Type
   {
-    fn try_cast( &self, value : String ) -> error::untyped::Result< Value >
+    fn try_cast( &self, value : String ) -> error_tools::error::untyped::Result< Value >
     {
       match self
       {
         Self::String => Ok( Value::String( value ) ),
-        Self::Number => value.parse().map_err( | _ | 
+        Self::Number => value.parse().map_err( | _ |
         {
-          error::untyped::format_err!( "Can not parse number from `{}`", value ) 
+          error_tools::untyped::format_err!( "Can not parse number from `{}`", value )
         }).map( Value::Number ),
         Self::Path => Ok( Value::Path( value.into() ) ),
-        Self::Bool => Ok( Value::Bool( match value.as_str() 
-        { 
-          "1" | "true" => true, "0" | "false" => false, _ => 
+        Self::Bool => Ok( Value::Bool( match value.as_str()
+        {
+          "1" | "true" => true, "0" | "false" => false, _ =>
           {
-            return Err( error::untyped::format_err!( "Can not parse bool from `{}`", value ) ) 
+            return Err( error_tools::untyped::format_err!( "Can not parse bool from `{}`", value ) )
           }
         })),
         Self::List( kind, delimeter ) =>
         {
-          let values: error::untyped::Result< Vec< Value > > = value
+          let values: error_tools::error::untyped::Result< Vec< Value > > = value
           .split( *delimeter )
           .map( | val | kind.try_cast( val.into() ) )
           .collect();

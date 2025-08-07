@@ -1,13 +1,13 @@
 [package]
 name = "former"
-version = "2.19.0"
+version = "2.23.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/former"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/former"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/former"
@@ -45,7 +45,11 @@ default = [
 ]
 full = [
   "default",
+  "performance",
 ]
+
+# Performance optimization features
+performance = ["former_meta/performance"]
 enabled = [ "former_meta/enabled", "former_types/enabled" ]
 
 derive_former = [ "former_meta/derive_former", "types_former" ]
@@ -58,8 +62,11 @@ derive_former = [ "former_meta/derive_former", "types_former" ]
 types_former = [ "former_types/types_former" ]
 # types_component_assign = [ "former_types/types_component_assign" ]
 
+# Debug and diagnostics features
+former_diagnostics_print_generated = [ "former_meta/former_diagnostics_print_generated" ]
+
 [dependencies]
-former_meta = { workspace = true, features = [ "proc-macro-debug" ] } # Added proc-macro-debug feature
+former_meta = { workspace = true } # Debug features disabled to prevent compile-time output
 former_types = { workspace = true }
 # collection_tools = { workspace = true, features = [ "collection_constructors" ] }
 

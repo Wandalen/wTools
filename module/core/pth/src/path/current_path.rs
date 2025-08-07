@@ -2,7 +2,7 @@
 mod private
 {
 
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   #[ cfg( not( feature = "no_std" ) ) ]
   use std::

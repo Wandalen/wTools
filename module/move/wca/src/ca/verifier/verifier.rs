@@ -1,29 +1,32 @@
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use help::{ HelpGeneratorOptions, LevelOfDetail, generate_help_content };
-  use grammar::{ Dictionary, Command, command::ValueDescription };
+  use crate::ca::Value;
+  use grammar::{ Dictionary, Command, command::ValueDescription, types::TryCast };
   use executor::{ Args, Props };
+  use error_tools::untyped::Result;
+  use error_tools::dependency::thiserror;
   use std::collections::HashMap;
   use indexmap::IndexMap;
   use verifier::VerifiedCommand;
   use parser::{ Program, ParsedCommand };
 
   #[ allow( missing_docs ) ]
-  #[ derive( Debug, error::typed::Error ) ]
+  #[ derive( Debug, error_tools::typed::Error ) ]
   pub enum VerificationError
   {
     #[ error
     (
       "Command not found. {} {}",
-      if let Some( phrase ) = name_suggestion 
-      { 
-        format!( "Maybe you mean `.{phrase}`?" ) 
-      } 
-      else 
-      { 
-        "Please use `.` command to see the list of available commands.".into() 
+      if let Some( phrase ) = name_suggestion
+      {
+        format!( "Maybe you mean `.{phrase}`?" )
+      }
+      else
+      {
+        "Please use `.` command to see the list of available commands.".into()
       },
       // fix clippy
       if let Some( info ) = command_info { format!( "Command info: `{info}`" ) } else { String::new() }
@@ -36,7 +39,7 @@ mod private
   }
 
   #[ allow( missing_docs ) ]
-  #[ derive( Debug, error::typed::Error ) ]
+  #[ derive( Debug, error_tools::typed::Error ) ]
   pub enum SubjectError
   {
     #[ error( "Missing not optional subject" ) ]
@@ -46,7 +49,7 @@ mod private
   }
 
   #[ allow( missing_docs ) ]
-  #[ derive( Debug, error::typed::Error ) ]
+  #[ derive( Debug, error_tools::typed::Error ) ]
   pub enum PropertyError
   {
     #[ error( "Expected: {description:?}. Found: {input}" ) ]
@@ -137,10 +140,10 @@ mod private
     ) -> usize
     {
       raw_properties.iter()
-      .filter( | ( k, _ ) | 
+      .filter( | ( k, _ ) |
       {
         // fix clippy
-        !( properties.contains_key( *k ) || properties_aliases.get( *k ).is_some_and( | key | properties.contains_key( key ) ) ) 
+        !( properties.contains_key( *k ) || properties_aliases.get( *k ).is_some_and( | key | properties.contains_key( key ) ) )
       })
       .count()
     }
@@ -306,8 +309,8 @@ mod private
 
 crate::mod_interface!
 {
-  orphan use Verifier;
-  orphan use VerificationError;
+  exposed use Verifier;
+  exposed use VerificationError;
 
   // own use LevelOfDetail;
   // own use generate_help_content;

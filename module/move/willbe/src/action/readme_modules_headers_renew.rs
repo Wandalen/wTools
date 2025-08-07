@@ -1,7 +1,7 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use std::
   {
@@ -16,10 +16,10 @@ mod private
       SeekFrom,
     }
   };
-  use collection::BTreeSet;
-  // use path::AbsolutePath;
+  use collection_tools::collection::BTreeSet;
+  // use pth::AbsolutePath;
   use action::readme_health_table_renew::{ Stability, stability_generate, find_example_file };
-  use package::Package;
+  use crate::entity::package::Package;
   use error::
   {
     // err,
@@ -37,7 +37,7 @@ mod private
   // use rayon::scope_fifo;
   use regex::Regex;
   use entity::{ WorkspaceInitError, PathError };
-  use package::PackageError;
+  use crate::entity::package::PackageError;
   use error::typed::Error;
   use workspace_md_extension::WorkspaceMdExtension;
   // use error::ErrWith;
@@ -76,7 +76,7 @@ mod private
           self.found_files.len(),
           self.touched_files.len()
         )?;
-        return Ok(())
+        return std::fmt::Result::Ok(())
       }
       writeln!( f, "Touched files :" )?;
       let mut count = self.found_files.len();
@@ -92,7 +92,7 @@ mod private
       {
         writeln!( f, "Other {count} files contains non-UTF-8 characters." )?;
       }
-      Ok( () )
+      std::fmt::Result::Ok( () )
     }
   }
 
@@ -145,14 +145,14 @@ mod private
       let module_name = package.name()?;
       let repository_url = package.repository()?
       .ok_or_else::< error::untyped::Error, _ >
-      ( 
-        || error::untyped::format_err!( "Fail to find repository_url in module`s Cargo.toml" ) 
+      (
+        || error::untyped::format_err!( "Fail to find repository_url in module`s Cargo.toml" )
       )?;
 
       let discord_url = package
       .discord_url()?
       .or_else( || default_discord_url.cloned() );
-      Ok
+      Result::Ok
         (
           Self
           {
@@ -212,7 +212,7 @@ mod private
       {
         String::new()
       };
-      Ok( format!
+      Result::Ok( format!
       (
         "{} \
         [![rust-status](https://github.com/{}/actions/workflows/module_{}_push.yml/badge.svg)](https://github.com/{}/actions/workflows/module_{}_push.yml) \
@@ -226,7 +226,7 @@ mod private
     }
   }
 
-  /// Generate header in modules Readme.md.
+  /// Generate header in modules readme.md.
   /// The location of header is defined by a tag :
   /// ``` md
   /// <!--{ generate.module_header.start() }-->
@@ -336,7 +336,7 @@ mod private
       file.write_all( content.as_bytes() ).err_with_report( &report )?;
       report.touched_files.insert( path.as_ref().to_path_buf() );
     }
-    Ok( report )
+    ResultWithReport::Ok( report )
   }
 
   #[ allow( clippy::uninlined_format_args ) ]
@@ -364,7 +364,7 @@ mod private
         header
       )
     );
-    Ok( result )
+    error::untyped::Result::Ok( result )
   }
 }
 

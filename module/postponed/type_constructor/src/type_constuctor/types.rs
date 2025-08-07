@@ -705,7 +705,7 @@ mod private
   /// println!( "x : {:?}", x.0 );
   /// ```
 
-  // #[ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+  // #[ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/readme.md" ) ) ]
 
   #[ macro_export ]
   macro_rules! types

@@ -1,7 +1,7 @@
 #![ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 
 
-#[ allow( clippy::wildcard_imports ) ]
+
 use crate::*;
 
 use entity::
@@ -27,7 +27,7 @@ use std::
 // {
 //   Result,
 // };
-use path::{ AbsolutePath, Utf8Path, Utf8PathBuf };
+use pth::{ AbsolutePath, Utf8Path, Utf8PathBuf };
 
 /// Path to crate directory
 #[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
@@ -109,7 +109,7 @@ impl TryFrom< &CrateDir > for String
   fn try_from( src : &CrateDir ) -> Result< String, Self::Error >
   {
     let src2 : &str = src.try_into()?;
-    Ok( src2.into() )
+    Result::Ok( src2.into() )
   }
 }
 
@@ -150,7 +150,7 @@ impl TryFrom< AbsolutePath > for CrateDir
       let err =  io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {}", crate_dir_path.display() ) );
       return Err( PathError::Io( err ) );
     }
-    Ok( Self( crate_dir_path ) )
+    Result::Ok( Self( crate_dir_path ) )
   }
 }
 

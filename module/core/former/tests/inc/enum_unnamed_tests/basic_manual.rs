@@ -2,10 +2,11 @@
 //! with unnamed (tuple) variants, including static methods and a standalone subformer starter,
 //! to serve as a reference for verifying the `#[derive(Former)]` macro's behavior.
 //!
+#![allow(dead_code)] // Test structures are intentionally unused
 //! Coverage:
 //! - Rule 3d (Tuple + Default -> Subform): Manual implementation of static method `FunctionStep::run()`.
 //! - Rule 2d (Tuple + `#[subform_scalar]` -> InnerFormer): Manual implementation of static method `FunctionStep::r#break()`.
-//! - Rule 4a (#[standalone_constructors]): Manual implementation of the standalone subformer starter `break_variant()`.
+//! - Rule 4a (#[`standalone_constructors`]): Manual implementation of the standalone subformer starter `break_variant()`.
 //! - Rule 4b (Option 2 Logic): Manual implementation of `FormingEnd` for the variant end types.
 //!
 //! Test Relevance/Acceptance Criteria:
@@ -20,6 +21,7 @@ use super::*;
 use former::StoragePreform;
 
 // --- Inner Struct Definitions ---
+// Re-enabled Former derive - testing if trailing comma issue is fixed
 #[derive(Debug, Clone, PartialEq, former::Former)]
 pub struct Break { pub condition: bool }
 
@@ -28,7 +30,7 @@ pub struct Run { pub command: String }
 
 // --- Enum Definition ---
 #[derive(Debug, Clone, PartialEq)]
-enum FunctionStep
+pub enum FunctionStep
 {
   Break(Break),
   Run(Run),
@@ -46,7 +48,7 @@ impl FunctionStep
   -> BreakFormer< BreakFormerDefinition< (), Self, FunctionStepBreakEnd > >
   {
     // Correct: Call associated function `begin` on the Former type
-    BreakFormer::begin( None, None, FunctionStepBreakEnd::default() )
+    BreakFormer::begin( None, None, FunctionStepBreakEnd )
   }
 
   #[ inline( always ) ]
@@ -54,17 +56,26 @@ impl FunctionStep
   -> RunFormer< RunFormerDefinition< (), Self, FunctionStepRunEnd > >
   {
     // Correct: Call associated function `begin` on the Former type
-    RunFormer::begin( None, None, FunctionStepRunEnd::default() )
+    RunFormer::begin( None, None, FunctionStepRunEnd )
   }
-}
 
-  /// Manually implemented standalone subformer starter for the Break variant.
+  // Standalone constructors for #[standalone_constructors] attribute
   #[ inline( always ) ]
   pub fn break_variant()
   -> BreakFormer< BreakFormerDefinition< (), Self, FunctionStepBreakEnd > >
   {
-    BreakFormer::begin( None, None, FunctionStepBreakEnd::default() )
+    BreakFormer::begin( None, None, FunctionStepBreakEnd )
   }
+
+  #[ inline( always ) ]
+  pub fn run_variant()
+  -> RunFormer< RunFormerDefinition< (), Self, FunctionStepRunEnd > >
+  {
+    RunFormer::begin( None, None, FunctionStepRunEnd )
+  }
+}
+
+// Note: break_variant is now implemented as a method on the enum above
 
 // --- FormingEnd Implementations for End Structs ---
 

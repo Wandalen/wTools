@@ -27,9 +27,10 @@ use ::former::Former; // Import derive macro
 // === Enum Definition ===
 
 /// Enum using derive for standalone constructors with arguments.
-#[ derive( Debug, PartialEq, Clone, Former, debug ) ] // Added debug attribute
+#[ derive( Debug, PartialEq, Clone, Former ) ] // Fixed: removed debug from derive
+#[ debug ] // Separate debug attribute
 #[ standalone_constructors ] // Enable standalone constructors
-pub enum TestEnumArgs // Use the distinct name
+pub enum TestEnumArgsDerived // UNIQUE NAME: Avoid conflicts with manual tests
 {
   /// A struct variant with one field marked as constructor arg.
   StructVariantArgs // Use the distinct name
@@ -48,5 +49,29 @@ pub enum TestEnumArgs // Use the distinct name
   },
 }
 
-// === Include Test Logic ===
-include!( "standalone_constructor_args_named_only_test.rs" ); // Include the specific test file
+// === Unique Tests for Derive Version ===
+
+/// Tests the standalone constructor for the derive version (returns formers, not Self).
+#[ test ]
+fn struct_variant_args_derive_test()
+{
+  // The derived version returns a former, not Self directly
+  let instance = TestEnumArgsDerived::struct_variant_args()
+    .field("arg_value".to_string()) // Use former pattern
+    .form();
+  let expected = TestEnumArgsDerived::StructVariantArgs { field : "arg_value".to_string() };
+  assert_eq!( instance, expected );
+}
+
+/// Tests the standalone constructor for multi-field derive version.
+#[ test ]
+fn multi_struct_variant_args_derive_test()
+{
+  // The derived version returns a former, not Self directly
+  let instance = TestEnumArgsDerived::multi_struct_args()
+    .a(-1)
+    .b(false)
+    .form();
+  let expected = TestEnumArgsDerived::MultiStructArgs { a : -1, b : false };
+  assert_eq!( instance, expected );
+}

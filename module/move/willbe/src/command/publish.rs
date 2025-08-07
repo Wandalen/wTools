@@ -2,14 +2,16 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use colored::Colorize;
   use wca::VerifiedCommand;
   use error::untyped::Context; // xxx
   use former::Former;
   use std::fmt::Write;
-  use channel::Channel;
+  use crate::entity::channel::Channel;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
 
   #[ derive( Former ) ]
   #[ allow( clippy::struct_excessive_bools ) ]

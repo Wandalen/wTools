@@ -1,13 +1,13 @@
 [package]
 name = "clone_dyn"
-version = "0.34.0"
+version = "0.37.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/clone_dyn"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/clone_dyn"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/clone_dyn"

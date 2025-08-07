@@ -2,9 +2,10 @@
 /// Define a private namespace for all its items.
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
-  use wca::{ Type, CommandsAggregator, CommandsAggregatorFormer };
+  use wca::{ Type, CommandsAggregator };
+  use wca::aggregator::CommandsAggregatorFormer;
 
   ///
   /// Form CA commands grammar.
@@ -109,10 +110,10 @@ mod private
       .end()
 
     .command( "readme.health.table.renew" )
-      .hint( "Generate a table for the root `Readme.md`" )
+      .hint( "Generate a table for the root `readme.md`" )
       .long_hint(
-        r#"Generates a data summary table for the `Readme.md` file located in the root of the workspace.
-To ensure the proper execution of the command, the following tags need to be specified in the Readme.md file:
+        r#"Generates a data summary table for the `readme.md` file located in the root of the workspace.
+To ensure the proper execution of the command, the following tags need to be specified in the readme.md file:
 
 <!--{ generate.healthtable( './', with_branches:1 ) } -->
 <!--{ generate.healthtable.end } -->
@@ -252,20 +253,20 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
       .end()
 
     .command( "readme.header.renew" )
-      .hint( "Generate header in workspace`s Readme.md file")
-      .long_hint( "Generate header which contains a badge with the general status of workspace, a link to discord, an example in gitpod and documentation in workspace`s Readme.md file.\n For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.")
+      .hint( "Generate header in workspace`s readme.md file")
+      .long_hint( "Generate header which contains a badge with the general status of workspace, a link to discord, an example in gitpod and documentation in workspace`s readme.md file.\n For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.")
       .routine( command::readme_header_renew )
       .end()
 
     .command( "readme.modules.headers.renew" )
       .hint( "Generates header for each workspace member." )
-      .long_hint( "Generates header for each workspace member which contains a badge with the status of crate, a link to discord, an example in gitpod and documentation in crate Readme.md file.\nFor use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml." )
+      .long_hint( "Generates header for each workspace member which contains a badge with the status of crate, a link to discord, an example in gitpod and documentation in crate readme.md file.\nFor use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml." )
       .routine( command::readme_modules_headers_renew )
       .end()
 
     .command( "readme.headers.renew" )
-      .hint( "Aggregation of two command : `readme.header.renew` and `readme.modules.headers.renew`.\n Generated headers in workspace members and in main Readme.md file.")
-      .long_hint( "Generate header which contains a badge with the general status of workspace, a link to discord, an example in gitpod and documentation in workspace`s Readme.md file.\n For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.\n\nGenerates header for each workspace member which contains a badge with the status of crate, a link to discord, an example in gitpod and documentation in crate Readme.md file.\nFor use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml.")
+      .hint( "Aggregation of two command : `readme.header.renew` and `readme.modules.headers.renew`.\n Generated headers in workspace members and in main readme.md file.")
+      .long_hint( "Generate header which contains a badge with the general status of workspace, a link to discord, an example in gitpod and documentation in workspace`s readme.md file.\n For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.\n\nGenerates header for each workspace member which contains a badge with the status of crate, a link to discord, an example in gitpod and documentation in crate readme.md file.\nFor use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml.")
       .routine( command::readme_headers_renew )
       .end()
 
@@ -319,7 +320,7 @@ crate::mod_interface!
   layer publish_diff;
   /// Combination of two commands `main_header` and `readme_modules_headers_renew`.
   layer readme_headers_renew;
-  /// Generates health table in main Readme.md file of workspace.
+  /// Generates health table in main readme.md file of workspace.
   // aaa : for Petro : what a table??
   // aaa : add more details to documentation
   layer readme_health_table_renew;

@@ -7,7 +7,7 @@ authors = [
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/willbe2"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/alias/willbe2"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/alias/willbe2"
@@ -30,6 +30,7 @@ default = [ "enabled" ]
 full = [ "enabled" ]
 # use_alloc = [ "no_std" ]
 enabled = []
+no_std = []
 
 [dependencies]
 # willbe = { workspace = true }

@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 //! Smoke testing of the package.
 
 #[ test ]

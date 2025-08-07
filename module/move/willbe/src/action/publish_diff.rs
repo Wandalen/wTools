@@ -2,10 +2,10 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
-  use path::PathBuf;
-  use collection::HashMap;
+  use pth::PathBuf;
+  use collection_tools::collection::HashMap;
   use std::fmt;
   use colored::Colorize;
   use crates_tools::CrateArchive;
@@ -94,7 +94,7 @@ mod private
       }
       write!( f, "{diff}" )?;
 
-      Ok( () )
+      std::fmt::Result::Ok( () )
     }
   }
 

@@ -18,23 +18,21 @@ use core::fmt::Debug;
 use core::marker::PhantomData;
 
 // Helper struct used in tests (inferred from previous manual file)
-#[ derive( Debug, PartialEq, Default ) ]
-#[ allow( dead_code ) ]
-pub struct InnerForSubform
-{
-  pub value : i32,
+#[derive(Debug, PartialEq, Default)]
+#[allow(dead_code)]
+pub struct InnerForSubform {
+  pub value: i32,
 }
 
 // The enum under test for zero-field tuple variants with #[derive(Former)]
-#[ derive( Debug, PartialEq, Former ) ]
-#[former(standalone_constructors, debug)] // Added standalone_constructors and debug
-// #[ derive( Default ) ] // Do not derive Default here, it caused issues before.
-pub enum EnumWithZeroFieldTuple
-{
-  VariantZeroDefault, // Default behavior (Rule 3b)
-  #[ scalar ]
-  VariantZeroScalar, // #[scalar] attribute (Rule 1b)
+#[derive(Debug, PartialEq, Former)]
+#[former(standalone_constructors)] // Removed debug attribute
+                                   // #[ derive( Default ) ] // Do not derive Default here, it caused issues before.
+pub enum EnumWithZeroFieldTuple {
+  VariantZeroDefault(), // Default behavior (Rule 3b) - zero-field tuple variant
+  #[scalar]
+  VariantZeroScalar(), // #[scalar] attribute (Rule 1b) - zero-field tuple variant
 }
 
 // Include the shared test logic
-include!( "./tuple_zero_fields_only_test.rs" );
+include!("./tuple_zero_fields_only_test.rs");

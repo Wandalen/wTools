@@ -1,12 +1,13 @@
-#![ no_std ]
-#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
-#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
-#![ doc( html_root_url = "https://docs.rs/inspect_type/latest/inspect_type/" ) ]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+#![no_std]
+#![doc(html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png")]
+#![doc(
+  html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
+)]
+#![doc(html_root_url = "https://docs.rs/inspect_type/latest/inspect_type/")]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
 
-#[ cfg( feature = "enabled" ) ]
-mod private
-{
+#[cfg(feature = "enabled")]
+mod private {
   /// Macro to answer the question: is it a slice?
   ///
   /// ### Basic use-case.
@@ -19,88 +20,75 @@ mod private
   /// dbg!( is_slice!( &[ 1, 2, 3 ][ .. ] ) );
   /// // < is_slice!(& [1, 2, 3] [..]) = true
   /// ```
-  #[ macro_export ]
-  macro_rules! is_slice
-  {
-    ( $V : expr ) =>
-    {{
+  #[macro_export]
+  macro_rules! is_slice {
+    ( $V : expr ) => {{
       use ::core::marker::PhantomData;
 
-      trait NotSlice
-      {
-        fn is_slice( self : &'_ Self ) -> bool { false }
+      trait NotSlice {
+        fn is_slice(self: &'_ Self) -> bool {
+          false
+        }
       }
 
-      impl< T > NotSlice
-      for &'_ PhantomData< T >
-      where T : ?Sized,
-      {}
+      impl<T> NotSlice for &'_ PhantomData<T> where T: ?Sized {}
 
-      trait Slice
-      {
-        fn is_slice( self : &'_ Self ) -> bool { true }
+      trait Slice {
+        fn is_slice(self: &'_ Self) -> bool {
+          true
+        }
       }
 
-      impl< 'a, T > Slice for PhantomData< &'a &[ T ] >
-      {}
+      impl<'a, T> Slice for PhantomData<&'a &[T]> {}
 
-      fn does< T : Sized >( _ : &T ) -> PhantomData< &T >
-      {
+      fn does<T: Sized>(_: &T) -> PhantomData<&T> {
         PhantomData
       }
 
-      ( &does( &$V ) ).is_slice()
-
-    }}
+      (&does(&$V)).is_slice()
+    }};
   }
 
   pub use is_slice;
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-#[ cfg( feature = "enabled" ) ]
+#[doc(inline)]
+#[allow(unused_imports)]
+#[cfg(feature = "enabled")]
 pub use own::*;
 
 /// Own namespace of the module.
-#[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
-pub mod own
-{
+#[cfg(feature = "enabled")]
+#[allow(unused_imports)]
+pub mod own {
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
-#[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
+#[cfg(feature = "enabled")]
+#[allow(unused_imports)]
+pub mod orphan {
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[ cfg( feature = "enabled" ) ]
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
+#[cfg(feature = "enabled")]
+#[allow(unused_imports)]
+pub mod exposed {
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use prelude::*;
 }
 
-#[ cfg( feature = "enabled" ) ]
+#[cfg(feature = "enabled")]
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[allow(unused_imports)]
+pub mod prelude {
   use super::*;
-  #[ doc( inline ) ]
-  pub use private::
-  {
-    is_slice,
-  };
+  #[doc(inline)]
+  pub use private::{is_slice};
 }

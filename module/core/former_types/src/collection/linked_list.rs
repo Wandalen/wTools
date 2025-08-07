@@ -4,74 +4,57 @@
 //! this module abstracts the operations on list-like data structures, making them more flexible and easier to integrate as
 //! as subformer, enabling fluid and intuitive manipulation of lists via builder patterns.
 //!
-#[ allow( clippy::wildcard_imports ) ]
+
 use crate::*;
-#[ allow( unused ) ]
+#[allow(unused)]
 use collection_tools::LinkedList;
 
-impl< E > Collection for LinkedList< E >
-{
+impl<E> Collection for LinkedList<E> {
   type Entry = E;
   type Val = E;
 
-  #[ inline( always ) ]
-  fn entry_to_val( e : Self::Entry ) -> Self::Val
-  {
+  #[inline(always)]
+  fn entry_to_val(e: Self::Entry) -> Self::Val {
     e
   }
-
 }
 
-impl< E > CollectionAdd for LinkedList< E >
-{
-
-  #[ inline( always ) ]
-  fn add( &mut self, e : Self::Entry ) -> bool
-  {
-    self.push_back( e );
+impl<E> CollectionAdd for LinkedList<E> {
+  #[inline(always)]
+  fn add(&mut self, e: Self::Entry) -> bool {
+    self.push_back(e);
     true
   }
-
 }
 
-impl< E > CollectionAssign for LinkedList< E >
-{
-  #[ inline( always ) ]
-  fn assign< Elements >( &mut self, elements : Elements ) -> usize
+impl<E> CollectionAssign for LinkedList<E> {
+  #[inline(always)]
+  fn assign<Elements>(&mut self, elements: Elements) -> usize
   where
-    Elements : IntoIterator< Item = Self::Entry >
+    Elements: IntoIterator<Item = Self::Entry>,
   {
     let initial_len = self.len();
-    self.extend( elements );
+    self.extend(elements);
     self.len() - initial_len
   }
-
 }
 
-impl< E > CollectionValToEntry< E > for LinkedList< E >
-where
-{
+impl<E> CollectionValToEntry<E> for LinkedList<E> {
   type Entry = E;
-  #[ inline( always ) ]
-  fn val_to_entry( val : E ) -> Self::Entry
-  {
+  #[inline(always)]
+  fn val_to_entry(val: E) -> Self::Entry {
     val
   }
 }
 
 // = storage
 
-impl< E > Storage
-for LinkedList< E >
-{
-  type Preformed = LinkedList< E >;
+impl<E> Storage for LinkedList<E> {
+  type Preformed = LinkedList<E>;
 }
 
-impl< E > StoragePreform
-for LinkedList< E >
-{
-  fn preform( self ) -> Self::Preformed
-  {
+impl<E> StoragePreform for LinkedList<E> {
+  fn preform(self) -> Self::Preformed {
     self
   }
 }
@@ -90,24 +73,23 @@ for LinkedList< E >
 /// - `End`: A trait determining the behavior at the end of the formation process.
 ///
 
-#[ derive( Debug, Default ) ]
-pub struct LinkedListDefinition< E, Context, Formed, End >
+#[derive(Debug, Default)]
+pub struct LinkedListDefinition<E, Context, Formed, End>
 where
-  End : FormingEnd< LinkedListDefinitionTypes< E, Context, Formed > >,
+  End: FormingEnd<LinkedListDefinitionTypes<E, Context, Formed>>,
 {
-  _phantom : core::marker::PhantomData< ( E, Context, Formed, End ) >,
+  _phantom: core::marker::PhantomData<(E, Context, Formed, End)>,
 }
 
-impl< E, Context, Formed, End > FormerDefinition
-for LinkedListDefinition< E, Context, Formed, End >
+impl<E, Context, Formed, End> FormerDefinition for LinkedListDefinition<E, Context, Formed, End>
 where
-  End : FormingEnd< LinkedListDefinitionTypes< E, Context, Formed > >,
+  End: FormingEnd<LinkedListDefinitionTypes<E, Context, Formed>>,
 {
-  type Storage = LinkedList< E >;
+  type Storage = LinkedList<E>;
   type Context = Context;
   type Formed = Formed;
 
-  type Types = LinkedListDefinitionTypes< E, Context, Formed >;
+  type Types = LinkedListDefinitionTypes<E, Context, Formed>;
   type End = End;
 }
 
@@ -125,66 +107,52 @@ where
 /// - `Context`: The context in which the list is formed.
 /// - `Formed`: The type produced as a result of the formation process.
 
-#[ derive( Debug, Default ) ]
-pub struct LinkedListDefinitionTypes< E, Context = (), Formed = LinkedList< E > >
-{
-  _phantom : core::marker::PhantomData< ( E, Context, Formed ) >,
+#[derive(Debug, Default)]
+pub struct LinkedListDefinitionTypes<E, Context = (), Formed = LinkedList<E>> {
+  _phantom: core::marker::PhantomData<(E, Context, Formed)>,
 }
 
-impl< E, Context, Formed > FormerDefinitionTypes
-for LinkedListDefinitionTypes< E, Context, Formed >
-{
-  type Storage = LinkedList< E >;
+impl<E, Context, Formed> FormerDefinitionTypes for LinkedListDefinitionTypes<E, Context, Formed> {
+  type Storage = LinkedList<E>;
   type Context = Context;
   type Formed = Formed;
 }
 
 // = mutator
 
-impl< E, Context, Formed > FormerMutator
-for LinkedListDefinitionTypes< E, Context, Formed >
-{
-}
+impl<E, Context, Formed> FormerMutator for LinkedListDefinitionTypes<E, Context, Formed> {}
 
 // = Entity To
 
-impl< E, Definition > EntityToFormer< Definition >
-for LinkedList< E >
+impl<E, Definition> EntityToFormer<Definition> for LinkedList<E>
 where
-  Definition : FormerDefinition
-  <
-    Storage = LinkedList< E >,
-    Types = LinkedListDefinitionTypes
-    <
+  Definition: FormerDefinition<
+    Storage = LinkedList<E>,
+    Types = LinkedListDefinitionTypes<
       E,
-      < Definition as definition::FormerDefinition >::Context,
-      < Definition as definition::FormerDefinition >::Formed,
+      <Definition as definition::FormerDefinition>::Context,
+      <Definition as definition::FormerDefinition>::Formed,
     >,
   >,
-  Definition::End : forming::FormingEnd< Definition::Types >,
+  Definition::End: forming::FormingEnd<Definition::Types>,
 {
-  type Former = LinkedListFormer< E, Definition::Context, Definition::Formed, Definition::End >;
+  type Former = LinkedListFormer<E, Definition::Context, Definition::Formed, Definition::End>;
 }
 
-impl< E > crate::EntityToStorage
-for LinkedList< E >
-{
-  type Storage = LinkedList< E >;
+impl<E> crate::EntityToStorage for LinkedList<E> {
+  type Storage = LinkedList<E>;
 }
 
-impl< E, Context, Formed, End > crate::EntityToDefinition< Context, Formed, End >
-for LinkedList< E >
+impl<E, Context, Formed, End> crate::EntityToDefinition<Context, Formed, End> for LinkedList<E>
 where
-  End : crate::FormingEnd< LinkedListDefinitionTypes< E, Context, Formed > >,
+  End: crate::FormingEnd<LinkedListDefinitionTypes<E, Context, Formed>>,
 {
-  type Definition = LinkedListDefinition< E, Context, Formed, End >;
-  type Types = LinkedListDefinitionTypes< E, Context, Formed >;
+  type Definition = LinkedListDefinition<E, Context, Formed, End>;
+  type Types = LinkedListDefinitionTypes<E, Context, Formed>;
 }
 
-impl< E, Context, Formed > crate::EntityToDefinitionTypes< Context, Formed >
-for LinkedList< E >
-{
-  type Types = LinkedListDefinitionTypes< E, Context, Formed >;
+impl<E, Context, Formed> crate::EntityToDefinitionTypes<Context, Formed> for LinkedList<E> {
+  type Types = LinkedListDefinitionTypes<E, Context, Formed>;
 }
 
 // = subformer
@@ -200,8 +168,7 @@ for LinkedList< E >
 /// It is particularly useful in scenarios where lists are repeatedly used or configured in similar ways across different
 /// parts of an application.
 ///
-pub type LinkedListFormer< E, Context, Formed, End > =
-CollectionFormer::< E, LinkedListDefinition< E, Context, Formed, End > >;
+pub type LinkedListFormer<E, Context, Formed, End> = CollectionFormer<E, LinkedListDefinition<E, Context, Formed, End>>;
 
 // = extension
 
@@ -212,23 +179,19 @@ CollectionFormer::< E, LinkedListDefinition< E, Context, Formed, End > >;
 /// with the builder pattern provided by the `former` framework. It's a convenience trait that simplifies
 /// creating configured list builders with default settings.
 ///
-pub trait LinkedListExt< E > : sealed::Sealed
-{
+pub trait LinkedListExt<E>: sealed::Sealed {
   /// Initializes a builder pattern for `LinkedList` using a default `LinkedListFormer`.
-  fn former() -> LinkedListFormer< E, (), LinkedList< E >, ReturnStorage >;
+  fn former() -> LinkedListFormer<E, (), LinkedList<E>, ReturnStorage>;
 }
 
-impl< E > LinkedListExt< E > for LinkedList< E >
-{
-  #[ allow( clippy::default_constructed_unit_structs ) ]
-  fn former() -> LinkedListFormer< E, (), LinkedList< E >, ReturnStorage >
-  {
-    LinkedListFormer::< E, (), LinkedList< E >, ReturnStorage >::new( ReturnStorage::default() )
+impl<E> LinkedListExt<E> for LinkedList<E> {
+  #[allow(clippy::default_constructed_unit_structs)]
+  fn former() -> LinkedListFormer<E, (), LinkedList<E>, ReturnStorage> {
+    LinkedListFormer::<E, (), LinkedList<E>, ReturnStorage>::new(ReturnStorage::default())
   }
 }
 
-mod sealed
-{
+mod sealed {
   pub trait Sealed {}
-  impl< E > Sealed for super::LinkedList< E > {}
+  impl<E> Sealed for super::LinkedList<E> {}
 }

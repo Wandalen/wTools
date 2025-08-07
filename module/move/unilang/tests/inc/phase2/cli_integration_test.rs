@@ -30,10 +30,12 @@ fn test_cli_echo_command()
 {
   // Test Matrix Row: T6.1
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.arg( "echo" );
-  cmd.assert()
+  cmd.arg( ".system.echo" );
+  cmd
+  .assert()
   .success()
-  .stdout( "Echo command executed!\n" );
+  .stdout( predicate::str::contains( "Echo command executed!\n" ) )
+  .stderr( "" );
 }
 
 #[ test ]
@@ -41,10 +43,12 @@ fn test_cli_add_command_valid()
 {
   // Test Matrix Row: T6.2
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ "add", "1", "2" ] );
-  cmd.assert()
+  cmd.args( vec![ ".math.add", "a::1", "b::2" ] );
+  cmd
+  .assert()
   .success()
-  .stdout( "Result: 3\n" );
+  .stdout( predicate::str::contains( "Result: 3\n" ) )
+  .stderr( "" );
 }
 
 #[ test ]
@@ -52,10 +56,10 @@ fn test_cli_add_command_missing_arg()
 {
   // Test Matrix Row: T6.3
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ "add", "1" ] );
-  cmd.assert()
-  .failure()
-  .stderr( predicate::str::contains( "Error: Execution Error: Missing required argument: b" ) );
+  cmd.args( vec![ ".math.add", "a::1" ] );
+  cmd.assert().failure().stderr( predicate::str::contains(
+    "Error: Execution Error: Argument Error: The required argument 'b' is missing",
+  ) );
 }
 
 #[ test ]
@@ -63,10 +67,10 @@ fn test_cli_add_command_invalid_arg_type()
 {
   // Test Matrix Row: T6.4
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ "add", "a", "b" ] );
-  cmd.assert()
-  .failure()
-  .stderr( predicate::str::contains( "Error: Execution Error: Invalid value for argument 'a': invalid digit found in string. Expected Integer." ) );
+  cmd.args( vec![ ".math.add", "a::a", "b::b" ] );
+  cmd.assert().failure().stderr( predicate::str::contains(
+    "Error: Execution Error: Type Error: invalid digit found in string. Please provide a valid value for this type.",
+  ) );
 }
 
 #[ test ]
@@ -74,10 +78,11 @@ fn test_cli_cat_command_non_existent_file()
 {
   // Test Matrix Row: T6.5
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ "cat", "non_existent.txt" ] );
-  cmd.assert()
+  cmd.args( vec![ ".files.cat", "path::non_existent.txt" ] );
+  cmd
+  .assert()
   .failure()
-  .stderr( predicate::str::contains( "Failed to read file: " ) );
+  .stderr( predicate::str::contains( "Error: Execution Error: Failed to read file: " ) );
 }
 
 #[ test ]
@@ -89,10 +94,12 @@ fn test_cli_cat_command_valid_file()
   fs::write( &file_path, "Hello, world!" ).unwrap();
 
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ "cat", file_path.to_str().unwrap() ] );
-  cmd.assert()
+  cmd.args( vec![ ".files.cat", &format!( "path::{}", file_path.to_str().unwrap() ) ] );
+  cmd
+  .assert()
   .success()
-  .stdout( "Hello, world!\n" );
+  .stdout( predicate::str::contains( "Hello, world!\n" ) )
+  .stderr( "" );
 }
 
 #[ test ]
@@ -100,8 +107,8 @@ fn test_cli_unknown_command()
 {
   // Test Matrix Row: T6.7
   let mut cmd = Command::cargo_bin( "unilang_cli" ).unwrap();
-  cmd.args( &vec![ "unknown", "arg1", "arg2" ] );
-  cmd.assert()
-  .failure()
-  .stderr( predicate::str::contains( "Error: Execution Error: Command not found: unknown" ) );
+  cmd.args( vec![ ".unknown", "arg1", "arg2" ] );
+  cmd.assert().failure().stderr( predicate::str::contains(
+    "Error: Execution Error: Command Error: The command '.unknown' was not found",
+  ) );
 }

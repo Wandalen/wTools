@@ -1,17 +1,18 @@
 // module/core/pth/src/lib.rs
-#![ cfg_attr( feature = "no_std", no_std ) ]
-#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
-#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
-#![ doc( html_root_url = "https://docs.rs/pth/latest/pth/" ) ]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
-#![ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
+#![cfg_attr(feature = "no_std", no_std)]
+#![doc(html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png")]
+#![doc(
+  html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
+)]
+#![doc(html_root_url = "https://docs.rs/pth/latest/pth/")]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![allow(clippy::std_instead_of_alloc, clippy::std_instead_of_core)]
 
-#[ cfg( feature = "enabled" ) ]
+#[cfg(feature = "enabled")]
 use ::mod_interface::mod_interface;
 
-
-#[ cfg( feature="no_std" ) ]
-#[ macro_use ]
+#[cfg(feature = "no_std")]
+#[macro_use]
 extern crate alloc;
 
 // qqq : xxx : implement `pth::absolute::join` function or add option to `pth::path::join`
@@ -34,9 +35,8 @@ extern crate alloc;
 /// Own namespace of the module. Contains items public within this layer, but not propagated.
 mod private {}
 
-#[ cfg( feature = "enabled" ) ]
-mod_interface!
-{
+#[cfg(feature = "enabled")]
+mod_interface! {
 
   /// Basic functionality.
   layer path;

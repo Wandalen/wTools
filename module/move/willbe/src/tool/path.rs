@@ -5,8 +5,5 @@ mod private
 
 crate::mod_interface!
 {
-
-  use ::pth;
-  own use ::pth::own::*;
-
+  exposed use ::pth::{ AbsolutePath, PathBuf, Path, Utf8Path, Utf8PathBuf, unique_folder_name, normalize, CurrentPath, TransitiveTryFrom };
 }

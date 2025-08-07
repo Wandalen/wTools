@@ -1,11 +1,9 @@
-
 use super::*;
-use the_module::{ qt, tree_print };
+use the_module::{qt, tree_print};
 
 //
 
-tests_impls!
-{
+tests_impls! {
 
   fn tree_diagnostics_str_basic()
   {
@@ -127,8 +125,7 @@ TokenStream [
 
 //
 
-tests_index!
-{
+tests_index! {
   tree_diagnostics_str_basic,
   syn_err_basic,
 }

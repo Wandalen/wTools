@@ -7,7 +7,7 @@ use ::former::Former; // Import derive macro
 // === Enum Definition ===
 
 /// Enum using derive for standalone constructors with arguments.
-#[ derive( Debug, PartialEq, Clone, Former, debug ) ] // Added debug attribute
+#[ derive( Debug, PartialEq, Clone, Former ) ] // Removed debug attribute
 #[ standalone_constructors ] // Enable standalone constructors
 pub enum TestEnumArgs // Use the distinct name
 {

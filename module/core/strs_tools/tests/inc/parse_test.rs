@@ -4,8 +4,7 @@ use std::collections::HashMap;
 
 //
 
-tests_impls!
-{
+tests_impls! {
   fn op_type_from_into()
   {
     let got = parse::OpType::from( 1 );
@@ -345,8 +344,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   op_type_from_into,
   basic,
   with_subject_and_map,

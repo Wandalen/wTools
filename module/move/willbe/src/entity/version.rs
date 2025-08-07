@@ -2,7 +2,7 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
 
   use std::
@@ -15,8 +15,8 @@ mod private
   use semver::Version as SemVersion;
 
   use error::untyped::Result;
-  use manifest::Manifest;
-  use package::Package;
+  use crate::entity::manifest::Manifest;
+  use crate::entity::package::Package;
   use { error::untyped::format_err, iter::Itertools };
 
   /// Wrapper for a `SemVer` structure
@@ -29,7 +29,7 @@ mod private
 
     fn from_str( s : &str ) -> std::result::Result< Self, Self::Err >
     {
-      Ok( Self( SemVersion::from_str( s )? ) )
+      std::result::Result::Ok( Self( SemVersion::from_str( s )? ) )
     }
   }
 
@@ -164,7 +164,7 @@ mod private
       if self.changed_files.is_empty()
       {
         write!( f, "Files were not changed during bumping the version" )?;
-        return Ok( () )
+        return std::fmt::Result::Ok( () )
       }
 
       let files = changed_files.iter().map( | f | f.as_ref().display() ).join( ",\n    " );
@@ -175,7 +175,7 @@ mod private
         _ => writeln!( f, "Bump failed" )
       }?;
 
-      Ok( () )
+      std::fmt::Result::Ok( () )
     }
   }
 
@@ -208,9 +208,9 @@ mod private
     if current_version > o.new_version
     {
       return Err( format_err!
-      ( 
-        "{report:?}\nThe current version of the package is higher than need to be set\n\tpackage: {name}\n\tcurrent_version: {current_version}\n\tnew_version: {}", 
-        o.new_version 
+      (
+        "{report:?}\nThe current version of the package is higher than need to be set\n\tpackage: {name}\n\tcurrent_version: {current_version}\n\tnew_version: {}",
+        o.new_version
       ));
     }
     report.old_version = Some( o.old_version.to_string() );
@@ -288,25 +288,25 @@ mod private
           let version = &mut dependency[ "version" ];
           if let Some( current_version ) = current_version.strip_prefix( '~' )
           {
-            if current_version != new_version 
-            { 
+            if current_version != new_version
+            {
               return Err( format_err!
-              ( 
-                "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`", 
-                version.as_str().unwrap_or_default() 
-              )); 
+              (
+                "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`",
+                version.as_str().unwrap_or_default()
+              ));
             }
             *version = value( format!( "~{old_version}" ) );
           }
           else
           {
-            if version.as_str().unwrap() != new_version 
-            { 
+            if version.as_str().unwrap() != new_version
+            {
               return Err( format_err!
-              ( 
-                "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`", 
-                version.as_str().unwrap_or_default() 
-              )); 
+              (
+                "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`",
+                version.as_str().unwrap_or_default()
+              ));
             }
             *version = value( old_version.clone() );
           }
@@ -329,13 +329,13 @@ mod private
         if package.get_mut( "name" ).unwrap().as_str().unwrap() == name
         {
           let version = &mut package[ "version" ];
-          if version.as_str().unwrap() != new_version 
-          { 
+          if version.as_str().unwrap() != new_version
+          {
             return Err( format_err!
-            ( 
-              "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`", 
-              version.as_str().unwrap_or_default() 
-            )); 
+            (
+              "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`",
+              version.as_str().unwrap_or_default()
+            ));
           }
           *version = value( old_version.clone() );
         }
@@ -405,7 +405,7 @@ mod private
       manifest.store()?;
     }
 
-    Ok( report )
+    Result::Ok( report )
   }
 }
 

@@ -1,7 +1,7 @@
 /// Define a private namespace for all its items.
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use entity::test::{ TestPlan, TestOptions, TestsReport, tests_run };
 
@@ -9,7 +9,7 @@ mod private
   // qqq : for Petro : no asterisks imports
   // qqq : for Petro : bad : not clear what is imported, there are multiple filles with name test
 
-  use collection::HashSet;
+  use collection_tools::collection::HashSet;
   use std::{ env, fs };
 
   use former::Former;
@@ -22,7 +22,7 @@ mod private
     },
     // Result
   };
-  use iter::Itertools;
+  use iter_tools::iter::Itertools;
 
   /// Used to store arguments for running tests.
   ///
@@ -92,7 +92,7 @@ mod private
       // aaa : for Petro : non readable
       // aaa : readable and with actual command
       return Err
-      ( 
+      (
         (
           report,
           format_err!
@@ -102,7 +102,7 @@ Try to install it with `rustup install {}` command(-s)",
             channels_diff.iter().join( ", " ),
             channels_diff.iter().join( " " )
           )
-        ) 
+        )
       )
     }
     report.dry = dry;

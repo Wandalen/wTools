@@ -1,18 +1,10 @@
 use super::*;
 
-use the_module::
-{
-  parser::Parser,
-
-  Type, Value,
-  grammar::Dictionary,
-  verifier::Verifier,
-};
+use the_module::{parser::Parser, Type, Value, grammar::Dictionary, verifier::Verifier};
 
 //
 
-tests_impls!
-{
+tests_impls! {
   fn command_validation()
   {
     // init parser
@@ -399,8 +391,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   command_validation,
   subjects,
   subject_type_check,

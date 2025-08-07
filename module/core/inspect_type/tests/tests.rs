@@ -1,5 +1,5 @@
 //! All Tests
-#![ allow( unused_imports ) ]
+#![allow(unused_imports)]
 
 // #![ allow( unexpected_cfgs ) ]
 // #![ no_std ]

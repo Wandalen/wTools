@@ -1,15 +1,15 @@
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
 
-#[ cfg( feature = "use_alloc" ) ]
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+#[cfg(feature = "use_alloc")]
+#[doc(inline)]
+#[allow(unused_imports)]
 pub use crate::dependency::hashbrown::hash_set::*;
 
-#[ cfg( not( feature = "no_std" ) ) ]
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-#[ allow( clippy::pub_use ) ]
+#[cfg(not(feature = "no_std"))]
+#[doc(inline)]
+#[allow(unused_imports)]
+#[allow(clippy::pub_use)]
 pub use std::collections::hash_set::*;
 
 /// Creates a `HashSet` from a list of elements.
@@ -72,8 +72,8 @@ pub use std::collections::hash_set::*;
 /// assert_eq!( s.get( "value" ), Some( &"value" ) );
 /// ```
 ///
-#[ cfg( feature = "collection_constructors" ) ]
-#[ macro_export( local_inner_macros ) ]
+#[cfg(feature = "collection_constructors")]
+#[macro_export(local_inner_macros)]
 macro_rules! hset
 {
   (
@@ -168,8 +168,8 @@ macro_rules! hset
 /// assert_eq!( s.get( "value" ), Some( &"value".to_string() ) );
 /// ```
 ///
-#[ cfg( feature = "collection_into_constructors" ) ]
-#[ macro_export( local_inner_macros ) ]
+#[cfg(feature = "collection_into_constructors")]
+#[macro_export(local_inner_macros)]
 macro_rules! into_hset
 {
   (

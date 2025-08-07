@@ -1,10 +1,9 @@
-
 use super::*;
 use test_tools::exposed::*;
 
 mod as_path_test;
-mod try_into_path_test;
 mod try_into_cow_path_test;
+mod try_into_path_test;
 
 mod absolute_path_test;
 mod path_join_fn_test;
@@ -23,5 +22,5 @@ mod rebase_path;
 mod transitive;
 mod without_ext;
 
-#[ cfg( feature = "path_unique_folder_name" ) ]
+#[cfg(feature = "path_unique_folder_name")]
 mod path_unique_folder_name;

@@ -1,26 +1,20 @@
-
 // use super::*;
 
 /// Define a private namespace for all its items.
-mod private
-{
-}
+mod private {}
 
 mod child;
 
 //
 
-crate::the_module::mod_interface!
-{
+crate::the_module::mod_interface! {
   reuse child;
 }
 
 //
 
-#[ test ]
-fn basic()
-{
-
+#[test]
+fn basic() {
   let _ = child::Own;
   let _ = child::Orphan;
   let _ = child::Exposed;
@@ -30,5 +24,4 @@ fn basic()
   let _ = Orphan;
   let _ = Exposed;
   let _ = Prelude;
-
 }

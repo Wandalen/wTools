@@ -16,15 +16,15 @@ mod private
   {
     if let Some( path ) = readme_in_dir_find( &dir_path.join( ".github" ) )
     {
-      Ok( path )
+      std::io::Result::Ok( path )
     }
     else if let Some( path )  = readme_in_dir_find( dir_path )
     {
-      Ok( path )
+      std::io::Result::Ok( path )
     }
     else if let Some( path )  = readme_in_dir_find( &dir_path.join( "docs" ) )
     {
-      Ok( path )
+      std::io::Result::Ok( path )
     }
     else
     {
@@ -40,7 +40,7 @@ mod private
   {
     std::fs::read_dir( path )
     .ok()?
-    .filter_map( Result::ok )
+    .filter_map( std::result::Result::ok )
     .filter( | p | p.path().is_file() )
     .filter_map( | f |
     {

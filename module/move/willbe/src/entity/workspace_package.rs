@@ -1,10 +1,10 @@
 #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( clippy::wildcard_imports ) ]
+
   use crate::*;
   use macros::kw;
-  use collection::BTreeMap;
+  use collection_tools::collection::BTreeMap;
   use serde_json::Value;
 
   use std::
@@ -215,7 +215,7 @@ mod private
       }
 
       let joined = results.join( "\n" );
-      Ok( Cow::Owned( joined ) )
+      std::io::Result::Ok( Cow::Owned( joined ) )
     }
   }
 

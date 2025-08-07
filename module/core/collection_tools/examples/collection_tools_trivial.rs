@@ -19,20 +19,19 @@
 //! a `HashMap`, making your code cleaner and more concise. This is particularly useful in cases
 //! where you need to define a map with a known set of key-value pairs upfront.
 
-#[ cfg( not( all(
+#[cfg(not(all(
   feature = "enabled",
   feature = "collection_constructors",
-  any( feature = "use_alloc", not( feature = "no_std" ) )
+  any(feature = "use_alloc", not(feature = "no_std"))
 )))]
 fn main() {}
 
-#[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
-#[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
-fn main()
-{
+#[cfg(all(feature = "enabled", feature = "collection_constructors"))]
+#[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
+fn main() {
   use collection_tools::*;
   let map = hmap! { 3 => 13 };
   let mut expected = collection_tools::HashMap::new();
-  expected.insert( 3, 13 );
-  assert_eq!( map, expected );
+  expected.insert(3, 13);
+  assert_eq!(map, expected);
 }

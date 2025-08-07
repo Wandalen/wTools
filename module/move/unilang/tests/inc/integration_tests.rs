@@ -1,9 +1,9 @@
-use unilang_parser::{ Parser, UnilangParserOptions };
-use unilang::semantic::SemanticAnalyzer;
+use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind };
+use unilang::interpreter::{ ExecutionContext, Interpreter };
 use unilang::registry::CommandRegistry;
-use unilang::data::{ CommandDefinition, ArgumentDefinition, Kind };
-use unilang::interpreter::{ Interpreter, ExecutionContext };
+use unilang::semantic::SemanticAnalyzer;
 use unilang::types::Value;
+use unilang_parser::{ Parser, UnilangParserOptions };
 
 #[ test ]
 fn basic_integration_test()
@@ -33,6 +33,11 @@ fn basic_integration_test_with_new_parser()
         optional : false,
         multiple : false,
         validation_rules : vec![],
+        hint : "".to_string(),
+        default_value : None,
+        aliases : vec![],
+        tags : vec![],
+        attributes : unilang::data::ArgumentAttributes::former().form(),
       },
       ArgumentDefinition
       {
@@ -42,12 +47,28 @@ fn basic_integration_test_with_new_parser()
         optional : false,
         multiple : false,
         validation_rules : vec![],
+        hint : "".to_string(),
+        default_value : None,
+        aliases : vec![],
+        tags : vec![],
+        attributes : unilang::data::ArgumentAttributes::former().form(),
       },
     ],
     routine_link : Some( "add_routine".to_string() ),
+    namespace : "".to_string(),
+    hint : "".to_string(),
+    status : "".to_string(),
+    version : "".to_string(),
+    tags : vec![],
+    aliases : vec![],
+    permissions : vec![],
+    idempotent : false,
+    deprecation_message : "".to_string(),
+    http_method_hint : "".to_string(),
+    examples : vec![],
   });
 
-  let add_routine = Box::new( | cmd: unilang::semantic::VerifiedCommand, _ctx: ExecutionContext | -> Result<unilang::data::OutputData, unilang::data::ErrorData>
+  let add_routine = Box::new( | cmd : unilang::semantic::VerifiedCommand, _ctx : ExecutionContext | -> Result< unilang::data::OutputData, unilang::data::ErrorData >
   {
     let a = cmd.arguments.get( "a" ).unwrap().as_integer().unwrap();
     let b = cmd.arguments.get( "b" ).unwrap().as_integer().unwrap();

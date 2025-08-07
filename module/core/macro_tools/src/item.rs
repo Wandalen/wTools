@@ -4,9 +4,8 @@
 //! organizing the codebase into different access levels.
 
 /// Define a private namespace for all its items.
-mod private
-{
-  #[ allow( clippy::wildcard_imports ) ]
+mod private {
+
   use crate::*;
 
   /// Ensures the last field in a struct has a trailing comma.
@@ -57,83 +56,66 @@ mod private
   ///   }
   /// }.to_string() );
   /// ```
-  #[ must_use ]
-  pub fn ensure_comma( input : &syn::ItemStruct ) -> syn::ItemStruct
-  {
+  #[must_use]
+  pub fn ensure_comma(input: &syn::ItemStruct) -> syn::ItemStruct {
     let mut new_input = input.clone(); // Clone the input to modify it
 
-    match &mut new_input.fields
-    {
+    match &mut new_input.fields {
       // Handle named fields
-      syn::Fields::Named( syn::FieldsNamed { named, .. } ) =>
-      {
-        punctuated::ensure_trailing_comma( named );
-      },
+      syn::Fields::Named(syn::FieldsNamed { named, .. }) => {
+        punctuated::ensure_trailing_comma(named);
+      }
       // Handle unnamed fields (tuples)
-      syn::Fields::Unnamed( syn::FieldsUnnamed { unnamed, .. } ) =>
-      {
-        punctuated::ensure_trailing_comma( unnamed );
-      },
+      syn::Fields::Unnamed(syn::FieldsUnnamed { unnamed, .. }) => {
+        punctuated::ensure_trailing_comma(unnamed);
+      }
       // Do nothing for unit structs
       syn::Fields::Unit => {}
     }
 
     new_input
   }
-
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+#[doc(inline)]
+#[allow(unused_imports)]
 pub use own::*;
 
 /// Own namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod own
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod own {
+
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use orphan::*;
-  #[ doc( inline ) ]
-  pub use private::
-  {
-    ensure_comma,
-  };
+  #[doc(inline)]
+  pub use private::{ensure_comma};
 }
 
 /// Orphan namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod orphan {
+
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use exposed::*;
-  #[ doc( inline ) ]
-  pub use private::
-  {
-  };
+  #[doc(inline)]
+  pub use private::{};
 }
 
 /// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
+#[allow(unused_imports)]
+pub mod exposed {
   use super::*;
   pub use super::super::item;
 
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::
-  {
-    prelude::*,
-  };
+  #[doc(inline)]
+  #[allow(unused_imports)]
+  pub use super::{prelude::*};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[allow(unused_imports)]
+pub mod prelude {
   use super::*;
 }

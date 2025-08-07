@@ -1,239 +1,181 @@
 /// Define a private namespace for all its items.
-mod private
-{
+mod private {
   use macro_tools::prelude::*;
   // use macro_tools::syn::Result;
-  use core::hash::{ Hash, Hasher };
+  use core::hash::{Hash, Hasher};
 
-  pub const VALID_VISIBILITY_LIST_STR : &str = "[ private, own, orphan, exposed, prelude ]";
+  pub const VALID_VISIBILITY_LIST_STR: &str = "[ private, own, orphan, exposed, prelude ]";
 
   ///
   /// Custom keywords
   ///
-  pub mod kw
-  {
-    #[ allow( clippy::wildcard_imports ) ]
+  pub mod kw {
+
     use super::*;
     // syn::custom_keyword!( private );
-    syn::custom_keyword!( own );
-    syn::custom_keyword!( orphan );
-    syn::custom_keyword!( exposed );
-    syn::custom_keyword!( prelude );
+    syn::custom_keyword!(own);
+    syn::custom_keyword!(orphan);
+    syn::custom_keyword!(exposed);
+    syn::custom_keyword!(prelude);
 
     pub use syn::token::Pub as public;
-
   }
 
   ///
   /// Visibility constructor.
   ///
-  pub trait VisibilityInterface
-  {
-    type Token : syn::token::Token + syn::parse::Parse;
+  pub trait VisibilityInterface {
+    type Token: syn::token::Token + syn::parse::Parse;
 
-    fn vis_make( token : Self::Token, restriction : Option< Restriction > ) -> Self;
-    fn restriction( &self ) -> Option< &Restriction >;
-
+    fn vis_make(token: Self::Token, restriction: Option<Restriction>) -> Self;
+    fn restriction(&self) -> Option<&Restriction>;
   }
 
   ///
   /// Trait answering question can the visibility be used for non-standard module.
   ///
-  pub trait ValidSubNamespace
-  {
-    fn valid_sub_namespace( &self ) -> bool { false }
+  pub trait ValidSubNamespace {
+    fn valid_sub_namespace(&self) -> bool {
+      false
+    }
   }
 
   /// Has kind.
-  pub trait HasClauseKind
-  {
-
+  pub trait HasClauseKind {
     /// Static function to get kind of the visibility.
-    #[ allow( non_snake_case ) ]
-    #[ allow( dead_code ) ]
+    #[allow(non_snake_case)]
+    #[allow(dead_code)]
     fn Kind() -> ClauseKind;
 
     /// Method to get kind of the visibility.
-    #[ allow( dead_code ) ]
-    fn kind( &self ) -> ClauseKind
-    {
+    #[allow(dead_code)]
+    fn kind(&self) -> ClauseKind {
       Self::Kind()
     }
-
   }
 
   //
 
-  macro_rules! Clause
-  {
+  macro_rules! Clause {
+    ( $Name1:ident, $Kind:ident ) => {
+      #[derive(Debug, PartialEq, Eq, Clone)]
+      pub struct $Name1 {}
 
-    ( $Name1:ident, $Kind:ident ) =>
-    {
-
-      #[ derive( Debug, PartialEq, Eq, Clone ) ]
-      pub struct $Name1
-      {
-      }
-
-      impl $Name1
-      {
-        #[ allow( dead_code ) ]
-        pub fn new() -> Self
-        {
+      impl $Name1 {
+        #[allow(dead_code)]
+        pub fn new() -> Self {
           Self {}
         }
       }
 
-      impl HasClauseKind for $Name1
-      {
-        #[ allow( non_snake_case ) ]
-        #[ allow( dead_code ) ]
-        fn Kind() -> ClauseKind
-        {
+      impl HasClauseKind for $Name1 {
+        #[allow(non_snake_case)]
+        #[allow(dead_code)]
+        fn Kind() -> ClauseKind {
           ClauseKind::$Kind
         }
       }
-
-    }
-
+    };
   }
 
   //
 
-  macro_rules! Vis
-  {
-    ( $Name0:ident, $Name1:ident, $Name2:ident, $Kind:ident ) =>
-    {
-
-      #[ derive( Debug, PartialEq, Eq, Clone ) ]
-      pub struct $Name1
-      {
-        pub token : kw::$Name2,
-        pub restriction : Option< Restriction >,
+  macro_rules! Vis {
+    ( $Name0:ident, $Name1:ident, $Name2:ident, $Kind:ident ) => {
+      #[derive(Debug, PartialEq, Eq, Clone)]
+      pub struct $Name1 {
+        pub token: kw::$Name2,
+        pub restriction: Option<Restriction>,
       }
 
-      impl $Name1
-      {
-        #[ allow( dead_code ) ]
-        pub fn new() -> Self
-        {
-          Self
-          {
-            token : kw::$Name2( proc_macro2::Span::call_site() ),
-            restriction : None,
+      impl $Name1 {
+        #[allow(dead_code)]
+        pub fn new() -> Self {
+          Self {
+            token: kw::$Name2(proc_macro2::Span::call_site()),
+            restriction: None,
           }
         }
       }
 
-      impl VisibilityInterface for $Name1
-      {
+      impl VisibilityInterface for $Name1 {
         type Token = kw::$Name2;
-        fn vis_make( token : Self::Token, restriction : Option< Restriction > ) -> Self
-        {
-          Self
-          {
-            token,
-            restriction,
-          }
+        fn vis_make(token: Self::Token, restriction: Option<Restriction>) -> Self {
+          Self { token, restriction }
         }
-        fn restriction( &self ) -> Option< &Restriction >
-        {
+        fn restriction(&self) -> Option<&Restriction> {
           self.restriction.as_ref()
         }
       }
 
-      impl HasClauseKind for $Name1
-      {
-        #[ allow( non_snake_case ) ]
-        #[ allow( dead_code ) ]
-        fn Kind() -> ClauseKind
-        {
+      impl HasClauseKind for $Name1 {
+        #[allow(non_snake_case)]
+        #[allow(dead_code)]
+        fn Kind() -> ClauseKind {
           ClauseKind::$Kind
         }
       }
 
-      impl quote::ToTokens for $Name1
-      {
-        fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
-        {
-          self.token.to_tokens( tokens );
+      impl quote::ToTokens for $Name1 {
+        fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+          self.token.to_tokens(tokens);
         }
       }
 
-      impl From< $Name1 > for Visibility
-      {
-        fn from( src : $Name1 ) -> Self
-        {
-          Self::$Name0( src )
+      impl From<$Name1> for Visibility {
+        fn from(src: $Name1) -> Self {
+          Self::$Name0(src)
         }
       }
-
-
-    }
+    };
   }
 
   //
 
-  macro_rules! HasClauseKind
-  {
-
-    ( $Name1:path, $Kind:ident ) =>
-    {
-
-      impl HasClauseKind for $Name1
-      {
-        #[ allow( non_snake_case ) ]
-        #[ allow( dead_code ) ]
-        fn Kind() -> ClauseKind
-        {
+  macro_rules! HasClauseKind {
+    ( $Name1:path, $Kind:ident ) => {
+      impl HasClauseKind for $Name1 {
+        #[allow(non_snake_case)]
+        #[allow(dead_code)]
+        fn Kind() -> ClauseKind {
           ClauseKind::$Kind
         }
       }
-
-    }
-
+    };
   }
 
   //
 
-  macro_rules! impl_valid_sub_namespace
-  {
-
-    ( $Name1:path, $Val:literal ) =>
-    {
-
-      impl ValidSubNamespace for $Name1
-      {
-        fn valid_sub_namespace( &self ) -> bool
-        {
+  macro_rules! impl_valid_sub_namespace {
+    ( $Name1:path, $Val:literal ) => {
+      impl ValidSubNamespace for $Name1 {
+        fn valid_sub_namespace(&self) -> bool {
           $Val
         }
       }
-
-    }
-
+    };
   }
 
   // Vis!( Private, VisPrivate, private, 1 );
-  Vis!( Own, VisOwn, own, Own );
-  Vis!( Orphan, VisOrphan, orphan, Orphan );
-  Vis!( Exposed, VisExposed, exposed, Exposed );
-  Vis!( Prelude, VisPrelude, prelude, Prelude );
+  Vis!(Own, VisOwn, own, Own);
+  Vis!(Orphan, VisOrphan, orphan, Orphan);
+  Vis!(Exposed, VisExposed, exposed, Exposed);
+  Vis!(Prelude, VisPrelude, prelude, Prelude);
 
-  Vis!( Public, VisPublic, public, Public );
+  Vis!(Public, VisPublic, public, Public);
   // Vis!( Restricted, VisRestricted, restricted, Restricted );
 
   // HasClauseKind!( syn::Visibility::Public, Public );
-  HasClauseKind!( syn::VisRestricted, Restricted );
-  Clause!( ClauseImmediates, Immadiate );
+  HasClauseKind!(syn::VisRestricted, Restricted);
+  Clause!(ClauseImmediates, Immadiate);
 
   // impl_valid_sub_namespace!( VisPrivate, false );
-  impl_valid_sub_namespace!( VisOwn, true );
-  impl_valid_sub_namespace!( VisOrphan, true );
-  impl_valid_sub_namespace!( VisExposed, true );
-  impl_valid_sub_namespace!( VisPrelude, true );
-  impl_valid_sub_namespace!( VisPublic, false );
-  impl_valid_sub_namespace!( syn::VisRestricted, false );
+  impl_valid_sub_namespace!(VisOwn, true);
+  impl_valid_sub_namespace!(VisOrphan, true);
+  impl_valid_sub_namespace!(VisExposed, true);
+  impl_valid_sub_namespace!(VisPrelude, true);
+  impl_valid_sub_namespace!(VisPublic, false);
+  impl_valid_sub_namespace!(syn::VisRestricted, false);
   // impl_valid_sub_namespace!( syn::Visibility::Public, false );
   // impl_valid_sub_namespace!( syn::VisRestricted, false );
 
@@ -241,21 +183,19 @@ mod private
   /// Restriction, for example `pub( crate )`.
   ///
 
-  #[ derive( Debug, PartialEq, Eq, Clone ) ]
-  pub struct Restriction
-  {
-    paren_token : syn::token::Paren,
-    in_token : Option< syn::token::In >,
-    path : Box< syn::Path >,
+  #[derive(Debug, PartialEq, Eq, Clone)]
+  pub struct Restriction {
+    paren_token: syn::token::Paren,
+    in_token: Option<syn::token::In>,
+    path: Box<syn::Path>,
   }
 
   /// Kinds of clause.
 
-  #[ derive( Debug, Hash, Default, PartialEq, Eq, Clone, Copy ) ]
-  pub enum ClauseKind
-  {
+  #[derive(Debug, Hash, Default, PartialEq, Eq, Clone, Copy)]
+  pub enum ClauseKind {
     /// Invisible outside.
-    #[ default ]
+    #[default]
     Private,
     /// Owned by current file entities.
     Own,
@@ -277,48 +217,40 @@ mod private
   /// Visibility of an element.
   ///
 
-  #[ derive( Debug, Default, PartialEq, Eq, Clone ) ]
-  pub enum Visibility
-  {
+  #[derive(Debug, Default, PartialEq, Eq, Clone)]
+  pub enum Visibility {
     //Private( VisPrivate ),
-    Own( VisOwn ),
-    Orphan( VisOrphan ),
-    Exposed( VisExposed ),
-    Prelude( VisPrelude ),
-    Public( VisPublic ),
+    Own(VisOwn),
+    Orphan(VisOrphan),
+    Exposed(VisExposed),
+    Prelude(VisPrelude),
+    Public(VisPublic),
     // Public( syn::VisPublic ),
     // Crate( syn::VisCrate ),
     // Restricted( syn::VisRestricted ),
-    #[ default ]
+    #[default]
     Inherited,
   }
 
-  impl Visibility
-  {
-
-    fn parse_own( input : ParseStream< '_ > ) -> syn::Result< Self >
-    {
-      Self::_parse_vis::< VisOwn >( input )
+  impl Visibility {
+    fn parse_own(input: ParseStream<'_>) -> syn::Result<Self> {
+      Self::_parse_vis::<VisOwn>(input)
     }
 
-    fn parse_orphan( input : ParseStream< '_ > ) -> syn::Result< Self >
-    {
-      Self::_parse_vis::< VisOrphan >( input )
+    fn parse_orphan(input: ParseStream<'_>) -> syn::Result<Self> {
+      Self::_parse_vis::<VisOrphan>(input)
     }
 
-    fn parse_exposed( input : ParseStream< '_ > ) -> syn::Result< Self >
-    {
-      Self::_parse_vis::< VisExposed >( input )
+    fn parse_exposed(input: ParseStream<'_>) -> syn::Result<Self> {
+      Self::_parse_vis::<VisExposed>(input)
     }
 
-    fn parse_prelude( input : ParseStream< '_ > ) -> syn::Result< Self >
-    {
-      Self::_parse_vis::< VisPrelude >( input )
+    fn parse_prelude(input: ParseStream<'_>) -> syn::Result<Self> {
+      Self::_parse_vis::<VisPrelude>(input)
     }
 
-    fn parse_pub( input : ParseStream< '_ > ) -> syn::Result< Self >
-    {
-      Self::_parse_vis::< VisPublic >( input )
+    fn parse_pub(input: ParseStream<'_>) -> syn::Result<Self> {
+      Self::_parse_vis::<VisPublic>(input)
     }
 
     // fn parse_pub( input : ParseStream< '_ > ) -> syn::Result< Self >
@@ -326,56 +258,41 @@ mod private
     //   Ok( Visibility::Public( syn::VisPublic { pub_token : input.parse()? } ) )
     // }
 
-    fn _parse_vis< Vis >( input : ParseStream< '_ > ) -> syn::Result< Self >
+    fn _parse_vis<Vis>(input: ParseStream<'_>) -> syn::Result<Self>
     where
-      Vis : Into< Visibility > + VisibilityInterface,
+      Vis: Into<Visibility> + VisibilityInterface,
     {
       use macro_tools::syn::parse::discouraged::Speculative;
       use macro_tools::syn::ext::IdentExt;
-      let token = input.parse::< < Vis as VisibilityInterface >::Token >()?;
+      let token = input.parse::<<Vis as VisibilityInterface>::Token>()?;
 
-      if input.peek( syn::token::Paren )
-      {
+      if input.peek(syn::token::Paren) {
         let ahead = input.fork();
 
         let input2;
         let paren_token = syn::parenthesized!( input2 in ahead );
-        if input2.peek( Token![ crate ] )
-          || input2.peek( Token![ self ] )
-          || input2.peek( Token![ super ] )
-        {
-          let path = input2.call( syn::Ident::parse_any )?;
+        if input2.peek(Token![crate]) || input2.peek(Token![self]) || input2.peek(Token![super]) {
+          let path = input2.call(syn::Ident::parse_any)?;
 
           // Ensure there are no additional tokens within `input2`.
           // Without explicitly checking, we may misinterpret a tuple
           // field as a restricted visibility, causing a parse error.
           // e.g. `pub (crate::A, crate::B)` (Issue #720).
-          if input2.is_empty()
-          {
-            input.advance_to( &ahead );
+          if input2.is_empty() {
+            input.advance_to(&ahead);
 
-            let restriction = Restriction
-            {
+            let restriction = Restriction {
               paren_token,
-              in_token : None,
-              path : Box::new( syn::Path::from( path ) ),
+              in_token: None,
+              path: Box::new(syn::Path::from(path)),
             };
 
-            return Ok( Vis::vis_make
-            (
-              token,
-              Some( restriction ),
-            ).into() );
+            return Ok(Vis::vis_make(token, Some(restriction)).into());
           }
         }
-
       }
 
-      Ok( Vis::vis_make
-      (
-        token,
-        None,
-      ).into() )
+      Ok(Vis::vis_make(token, None).into())
     }
 
     // fn parse_in_crate( input : ParseStream< '_ > ) -> syn::Result< Self >
@@ -394,27 +311,24 @@ mod private
     // }
 
     /// Get kind.
-    #[ allow( dead_code ) ]
-    pub fn kind( &self ) -> ClauseKind
-    {
-      match self
-      {
+    #[allow(dead_code)]
+    pub fn kind(&self) -> ClauseKind {
+      match self {
         // Visibility::Private( e ) => e.kind(),
         // Visibility::Crate( e ) => e.kind(),
-        Visibility::Own( e ) => e.kind(),
-        Visibility::Orphan( e ) => e.kind(),
-        Visibility::Exposed( e ) => e.kind(),
-        Visibility::Prelude( e ) => e.kind(),
-        Visibility::Public( e ) => e.kind(),
+        Visibility::Own(e) => e.kind(),
+        Visibility::Orphan(e) => e.kind(),
+        Visibility::Exposed(e) => e.kind(),
+        Visibility::Prelude(e) => e.kind(),
+        Visibility::Public(e) => e.kind(),
         // Visibility::Restricted( e ) => e.kind(),
         Visibility::Inherited => ClauseKind::Private,
       }
     }
 
     /// Get restrictions.
-    #[ allow( dead_code ) ]
-    pub fn restriction( &self ) -> Option< &Restriction >
-    {
+    #[allow(dead_code)]
+    pub fn restriction(&self) -> Option<&Restriction> {
       match self
       {
         // Visibility::Private( e ) => e.restriction(),
@@ -428,13 +342,10 @@ mod private
         Visibility::Inherited => None,
       }
     }
-
   }
 
-  impl syn::parse::Parse for Visibility
-  {
-    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
-    {
+  impl syn::parse::Parse for Visibility {
+    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
       // Recognize an empty None-delimited group, as produced by a $:vis
       // matcher that matched no tokens.
 
@@ -449,99 +360,81 @@ mod private
       //   }
       // }
 
-      match()
-      {
+      match () {
         //_case if input.peek( kw::private ) => Self::parse_private( input ),
-        _case if input.peek( kw::own ) => Self::parse_own( input ),
-        _case if input.peek( kw::orphan ) => Self::parse_orphan( input ),
-        _case if input.peek( kw::exposed ) => Self::parse_exposed( input ),
-        _case if input.peek( kw::prelude ) => Self::parse_prelude( input ),
-        _case if input.peek( Token![ pub ] ) => Self::parse_pub( input ),
-        _default =>
-        {
-          Ok( Visibility::Inherited )
-        },
+        _case if input.peek(kw::own) => Self::parse_own(input),
+        _case if input.peek(kw::orphan) => Self::parse_orphan(input),
+        _case if input.peek(kw::exposed) => Self::parse_exposed(input),
+        _case if input.peek(kw::prelude) => Self::parse_prelude(input),
+        _case if input.peek(Token![pub]) => Self::parse_pub(input),
+        _default => Ok(Visibility::Inherited),
       }
-
     }
   }
 
-  impl quote::ToTokens for Visibility
-  {
-    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
-    {
-      match self
-      {
+  impl quote::ToTokens for Visibility {
+    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+      match self {
         //Visibility::Private( e ) => e.to_tokens( tokens ),
-        Visibility::Own( e ) => e.to_tokens( tokens ),
-        Visibility::Orphan( e ) => e.to_tokens( tokens ),
-        Visibility::Exposed( e ) => e.to_tokens( tokens ),
-        Visibility::Prelude( e ) => e.to_tokens( tokens ),
-        Visibility::Public( e ) => e.to_tokens( tokens ),
+        Visibility::Own(e) => e.to_tokens(tokens),
+        Visibility::Orphan(e) => e.to_tokens(tokens),
+        Visibility::Exposed(e) => e.to_tokens(tokens),
+        Visibility::Prelude(e) => e.to_tokens(tokens),
+        Visibility::Public(e) => e.to_tokens(tokens),
         Visibility::Inherited => (),
       }
     }
   }
 
-  #[ allow( clippy::derived_hash_with_manual_eq ) ]
-  impl Hash for Visibility
-  {
-    fn hash< H : Hasher >( &self, state : &mut H )
-    {
-      self.kind().hash( state );
+  #[allow(clippy::derived_hash_with_manual_eq)]
+  impl Hash for Visibility {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+      self.kind().hash(state);
     }
   }
 
-  impl ValidSubNamespace for Visibility
-  {
-    fn valid_sub_namespace( &self ) -> bool
-    {
-      match self
-      {
+  impl ValidSubNamespace for Visibility {
+    fn valid_sub_namespace(&self) -> bool {
+      match self {
         //Visibility::Private( e ) => e.valid_sub_namespace(),
-        Visibility::Own( e ) => e.valid_sub_namespace(),
-        Visibility::Orphan( e ) => e.valid_sub_namespace(),
-        Visibility::Exposed( e ) => e.valid_sub_namespace(),
-        Visibility::Prelude( e ) => e.valid_sub_namespace(),
-        Visibility::Public( e ) => e.valid_sub_namespace(),
+        Visibility::Own(e) => e.valid_sub_namespace(),
+        Visibility::Orphan(e) => e.valid_sub_namespace(),
+        Visibility::Exposed(e) => e.valid_sub_namespace(),
+        Visibility::Prelude(e) => e.valid_sub_namespace(),
+        Visibility::Public(e) => e.valid_sub_namespace(),
         Visibility::Inherited => false,
       }
     }
   }
-
 }
 
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 pub use own::*;
 
 /// Own namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod own
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod own {
+
   use super::*;
   pub use orphan::*;
 }
 
 /// Parented namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod orphan {
+
   use super::*;
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod exposed {
+
   use super::*;
   pub use prelude::*;
 
-  pub use private::
-  {
+  pub use private::{
     kw,
     VALID_VISIBILITY_LIST_STR,
     ValidSubNamespace,
@@ -555,12 +448,10 @@ pub mod exposed
     Visibility,
     ClauseKind,
   };
-
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
+#[allow(unused_imports)]
+pub mod prelude {
   use super::*;
 }

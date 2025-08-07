@@ -3,9 +3,8 @@
 //!
 
 /// Define a private namespace for all its items.
-mod private
-{
-  #[ allow( clippy::wildcard_imports ) ]
+mod private {
+
   use crate::*; // Use crate's prelude/exposed items
   use convert_case::Casing;
   use proc_macro2::Ident;
@@ -30,17 +29,13 @@ mod private
   /// assert_eq!( got_normal.to_string(), "my_var" );
   /// assert_eq!( got_keyword.to_string(), "r#fn" );
   /// ```
-  #[ must_use ]
-  pub fn ident_maybe_raw( ident : &syn::Ident ) -> Ident
-  {
+  #[must_use]
+  pub fn ident_maybe_raw(ident: &syn::Ident) -> Ident {
     let name = ident.to_string();
-    if kw::is( &name )
-    {
+    if kw::is(&name) {
       // Use r# prefix if the name is a keyword
-      format_ident!( "r#{}", name, span = ident.span() )
-    }
-    else
-    {
+      format_ident!("r#{}", name, span = ident.span())
+    } else {
       // Otherwise, use the name directly (cloned)
       ident.clone()
     }
@@ -85,69 +80,61 @@ mod private
   /// assert_eq!( got_pascal_keyword.to_string(), "Struct" ); // qqq: "Struct" is not a keyword, so `r#` is not added.
   /// ```
   #[must_use]
-  pub fn cased_ident_from_ident( original: &syn::Ident, case: convert_case::Case ) -> syn::Ident
-  {
+  pub fn cased_ident_from_ident(original: &syn::Ident, case: convert_case::Case) -> syn::Ident {
     let original_str = original.to_string();
-    let had_raw_prefix = original_str.starts_with( "r#" );
-    let core_str = if had_raw_prefix { &original_str[ 2.. ] } else { &original_str };
+    let had_raw_prefix = original_str.starts_with("r#");
+    let core_str = if had_raw_prefix { &original_str[2..] } else { &original_str };
 
-    let cased_str = core_str.to_case( case );
+    let cased_str = core_str.to_case(case);
 
-    if kw::is( &cased_str )
-    {
-      syn::Ident::new_raw( &cased_str, original.span() )
-    }
-    else
-    {
-      syn::Ident::new( &cased_str, original.span() )
+    if kw::is(&cased_str) {
+      syn::Ident::new_raw(&cased_str, original.span())
+    } else {
+      syn::Ident::new(&cased_str, original.span())
     }
   }
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+#[doc(inline)]
+#[allow(unused_imports)]
 pub use own::*;
 
 /// Own namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod own
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod own {
+
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use orphan::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use private::ident_maybe_raw;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use private::cased_ident_from_ident;
 }
 
 /// Orphan namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod orphan {
+
   use super::*;
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod exposed {
+
   use super::*;
   pub use super::super::ident; // Use the new module name
 
-  #[ doc( inline ) ]
+  #[doc(inline)]
   pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
-  #[ allow( clippy::wildcard_imports ) ]
+#[allow(unused_imports)]
+pub mod prelude {
+
   use super::*;
 }

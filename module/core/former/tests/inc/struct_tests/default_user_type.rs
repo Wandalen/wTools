@@ -1,8 +1,7 @@
-#[ allow( unused_imports ) ]
+#[allow(unused_imports)]
 use super::*;
 
-tests_impls!
-{
+tests_impls! {
   fn test_user_type_with_default()
   {
     #[ derive( Debug, PartialEq, Default ) ]
@@ -34,7 +33,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+// Test re-enabled to verify proper fix
+tests_index! {
   test_user_type_with_default,
 }

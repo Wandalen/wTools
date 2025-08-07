@@ -4,8 +4,7 @@
 
 mod private {}
 
-crate::mod_interface!
-{
+crate::mod_interface! {
 
   /// Performs validation and type casting on commands values
   layer grammar;

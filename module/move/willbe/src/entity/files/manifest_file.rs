@@ -1,6 +1,6 @@
 #![ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 
-#[ allow( clippy::wildcard_imports ) ]
+
 use crate::*;
 
 use entity::
@@ -23,7 +23,7 @@ use std::
   io,
 };
 
-use path::{ AbsolutePath, Utf8Path, Utf8PathBuf };
+use pth::{ AbsolutePath, Utf8Path, Utf8PathBuf };
 
 // use error::
 // {
@@ -132,7 +132,7 @@ impl TryFrom< &ManifestFile > for String
   fn try_from( src : &ManifestFile ) -> Result< String, Self::Error >
   {
     let src2 : &str = src.try_into()?;
-    Ok( src2.into() )
+    Result::Ok( src2.into() )
   }
 }
 
@@ -166,7 +166,7 @@ impl TryFrom< AbsolutePath > for ManifestFile
       let err = io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {}", manifest_file.display() ) );
       return Err( PathError::Io( err ) );
     }
-    Ok( Self( manifest_file ) )
+    Result::Ok( Self( manifest_file ) )
   }
 }
 
