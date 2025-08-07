@@ -3,7 +3,7 @@
 //! Master seed.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   #[ cfg( feature = "no_std" ) ]

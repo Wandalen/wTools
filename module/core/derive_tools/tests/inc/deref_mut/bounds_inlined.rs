@@ -5,7 +5,7 @@ use derive_tools::DerefMut;
 
 #[ allow( dead_code ) ]
 #[ derive( DerefMut ) ]
-struct BoundsInlined< T : ToString, U : Debug >( T, U );
+struct BoundsInlined< T : ToString, U : Debug >( #[ deref_mut ] T, U );
 
 impl< T : ToString, U : Debug > Deref for BoundsInlined< T, U >
 {

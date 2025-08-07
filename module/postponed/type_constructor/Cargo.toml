@@ -7,7 +7,7 @@ authors = [
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/type_constructor"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/type_constructor"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/type_constructor"
@@ -28,7 +28,7 @@ all-features = false
 include = [
   "/rust/impl/dt/type_constructor",
   "/Cargo.toml",
-  "/Readme.md",
+  "/readme.md",
   "/License",
 ]
 

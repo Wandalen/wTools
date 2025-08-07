@@ -1,3 +1,7 @@
+#![ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
+
+
+
 use crate::*;
 
 use entity::
@@ -24,7 +28,7 @@ use std::
 // {
 //   Result,
 // };
-use path::{ AbsolutePath, Utf8Path, Utf8PathBuf };
+use pth::{ AbsolutePath, Utf8Path, Utf8PathBuf };
 
 /// Path to a source file
 #[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
@@ -35,6 +39,7 @@ impl SourceFile
 
   /// Returns inner type which is an absolute path.
   #[ inline( always ) ]
+  #[ must_use ]
   pub fn inner( self ) -> AbsolutePath
   {
     self.0
@@ -44,7 +49,7 @@ impl SourceFile
 
 impl fmt::Display for SourceFile
 {
-  fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
     write!( f, "{}", self.0.display() )
   }
@@ -52,7 +57,7 @@ impl fmt::Display for SourceFile
 
 impl fmt::Debug for SourceFile
 {
-  fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
     write!( f, "source file :: {}", self.0.display() )
   }
@@ -97,7 +102,7 @@ impl TryFrom< &SourceFile > for String
   fn try_from( src : &SourceFile ) -> Result< String, Self::Error >
   {
     let src2 : &str = src.try_into()?;
-    Ok( src2.into() )
+    Result::Ok( src2.into() )
   }
 }
 
@@ -119,7 +124,7 @@ impl TryFrom< AbsolutePath > for SourceFile
   #[ inline( always ) ]
   fn try_from( src : AbsolutePath ) -> Result< Self, Self::Error >
   {
-    Ok( Self( src ) )
+    Result::Ok( Self( src ) )
   }
 }
 
@@ -229,17 +234,17 @@ impl CodeItems for SourceFile
   fn items( &self ) -> impl IterTrait< '_, syn::Item >
   {
     // xxx : use closures instead of expect
-    let content = fs::read_to_string( self.as_ref() ).expect( &format!( "Failed to parse file {self}" ) );
-    let parsed : syn::File = syn::parse_file( &content ).expect( &format!( "Failed to parse file {self}" ) );
+    let content = fs::read_to_string( self.as_ref() ).unwrap_or_else( | _ | panic!( "Failed to parse file {self}" ) );
+    let parsed : syn::File = syn::parse_file( &content ).unwrap_or_else( | _ |  panic!( "Failed to parse file {self}" ) );
     parsed.items.into_iter()
   }
 }
 
 impl AsCode for SourceFile
 {
-  fn as_code< 'a >( &'a self ) -> std::io::Result< Cow< 'a, str > >
+  fn as_code( &self ) -> std::io::Result< Cow< '_, str > >
   {
-    Ok( Cow::Owned( std::fs::read_to_string( self.as_ref() )? ) )
+    std::io::Result::Ok( Cow::Owned( std::fs::read_to_string( self.as_ref() )? ) )
   }
 }
 

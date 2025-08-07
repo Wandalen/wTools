@@ -1,12 +1,12 @@
 [package]
 name = "reflect_tools_meta"
-version = "0.3.0"
+version = "0.6.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/reflect_tools_meta"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/reflect_tools_meta"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/reflect_tools_meta"

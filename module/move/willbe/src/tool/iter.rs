@@ -1,4 +1,4 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 }
@@ -7,6 +7,5 @@ mod private
 
 crate::mod_interface!
 {
-  use ::iter_tools;
-  own use ::iter_tools::own::*;
+  exposed use ::iter_tools::{ Itertools, IterTrait };
 }

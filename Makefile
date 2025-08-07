@@ -39,7 +39,10 @@ sync : git.sync
 #	make audit
 
 audit :
-	cargo audit
+# This change is made to ignore the RUSTSEC-2024-0421 warning related to the idna crate.
+# The issue arises because unitore relies on gluesql, which in turn depends on an outdated version of idna.
+# Since the primary logic in unitore is built around gluesql, upgrading idna directly is not feasible.
+	cargo audit --ignore RUSTSEC-2024-0421
 
 #
 # === General commands

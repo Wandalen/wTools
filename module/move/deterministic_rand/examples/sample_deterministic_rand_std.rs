@@ -6,23 +6,21 @@
 use std::collections::HashMap;
 use deterministic_rand::IfDeterminismIteratorExt;
 
-fn main()
-{
+fn main() {
   // Create a HashMap with three key-value pairs.
-  let map: HashMap<_, _> = HashMap::from_iter( [ ( 1, "first" ), ( 2, "second" ), ( 3, "third" ) ] );
+  let map: HashMap<_, _> = HashMap::from_iter([(1, "first"), (2, "second"), (3, "third")]);
 
   // Convert the HashMap into an iterator, apply deterministic sorting to the keys,
   // and then map each (key, value) pair to just the value.
-  let _keys: Vec< _ > = map
-  .into_iter()
-  .if_determinism_then_sort_by( | ( a, _ ), ( b, _ ) | a.cmp( &b ) )
-  .map( | e | e.1 )
-  .collect();
+  let _keys: Vec<_> = map
+    .into_iter()
+    .if_determinism_then_sort_by(|(a, _), (b, _)| a.cmp(&b))
+    .map(|e| e.1)
+    .collect();
 
   // If the 'determinism' feature is enabled, assert that the sorted keys match the expected order.
   // This is a conditional compilation check that ensures the code block is compiled and run only
   // if the 'determinism' feature is enabled.
-  #[ cfg( feature = "determinism" ) ]
-  assert_eq!( _keys, vec![ "first", "second", "third" ] );
-
+  #[cfg(feature = "determinism")]
+  assert_eq!(_keys, vec!["first", "second", "third"]);
 }

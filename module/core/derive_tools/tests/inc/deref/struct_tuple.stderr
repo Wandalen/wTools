@@ -1,0 +1,21 @@
+error: Deref cannot be derived for multi-field structs without a `#[deref]` attribute on one field.
+ --> tests/inc/deref/struct_tuple.rs:4:1
+  |
+4 | / #[ allow( dead_code ) ]
+5 | | #[ derive ( Deref ) ]
+6 | | struct StructTuple( String, i32 );
+  | |__________________________________^
+
+warning: unused import: `core::ops::Deref`
+ --> tests/inc/deref/struct_tuple.rs:1:5
+  |
+1 | use core::ops::Deref;
+  |     ^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+error[E0601]: `main` function not found in crate `$CRATE`
+ --> tests/inc/deref/struct_tuple.rs:8:43
+  |
+8 | include!( "./only_test/struct_tuple.rs" );
+  |                                           ^ consider adding a `main` function to `$DIR/tests/inc/deref/struct_tuple.rs`

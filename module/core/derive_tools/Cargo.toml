@@ -1,13 +1,13 @@
 [package]
 name = "derive_tools"
-version = "0.27.0"
+version = "0.40.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/derive_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/derive_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/derive_tools"
@@ -70,8 +70,8 @@ default = [
   "strum_phf",
 
   "derive_from",
-  "derive_inner_from",
-  "derive_new",
+  # "derive_inner_from",
+  # "derive_new",
 
   "derive_phantom",
 
@@ -117,8 +117,8 @@ full = [
   "strum_phf",
 
   "derive_from",
-  "derive_inner_from",
-  "derive_new",
+  # "derive_inner_from",
+  # "derive_new",
 
   "derive_phantom",
 
@@ -194,7 +194,7 @@ parse_display = [ "parse-display" ]
 [dependencies]
 
 ## external
-derive_more = { version = "~1.0.0-beta.6", optional = true, default-features = false, features = [ "debug" ] }
+derive_more = { version = "~1.0.0-beta.6", optional = true, default-features = false }
 strum = { version = "~0.25", optional = true, default-features = false }
 # strum_macros = { version = "~0.25.3", optional = true, default-features = false }
 parse-display = { version = "~0.8.2", optional = true, default-features = false }
@@ -203,10 +203,13 @@ parse-display = { version = "~0.8.2", optional = true, default-features = false 
 ## internal
 derive_tools_meta = { workspace = true, optional = true, features = [] }
 variadic_from = { workspace = true, optional = true, features = [] }
-clone_dyn = { workspace = true, optional = true, features = [ "clone_dyn_types", "clone_dyn_meta" ] }
+clone_dyn = { workspace = true, optional = true, features = [ "clone_dyn_types", "derive_clone_dyn" ] }
 
 
 [dev-dependencies]
+
+derive_tools_meta = { workspace = true, features = ["enabled"] }
+macro_tools = { workspace = true, features = ["enabled", "diag", "attr"] }
 test_tools = { workspace = true }
 
 [build-dependencies]

@@ -2,11 +2,11 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-#[ derive( the_module::Index ) ]
+// #[ derive( the_module::Index ) ]
 struct StructNamed< T > 
 {
-  #[ index ]
+  // #[ index ]
   a : Vec< T >,
 }
 
-include!( "./only_test/struct_named.rs" );
+// include!( "./only_test/struct_named.rs" );

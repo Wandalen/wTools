@@ -1,11 +1,10 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+
   use crate::*;
   use std::fmt::{ Display, Formatter };
-  use std::fs::
-  {
-    OpenOptions
-  };
+  use std::fs::OpenOptions;
   use std::io::
   {
     Read,
@@ -16,10 +15,11 @@ mod private
   use std::path::PathBuf;
   use regex::Regex;
   use entity::{ PathError, WorkspaceInitError };
+  #[ allow( unused_imports ) ]
   use error::
   {
-    err,
-    untyped::Error,
+    // err,
+    // untyped::Error,
   };
   use workspace_md_extension::WorkspaceMdExtension;
 
@@ -48,6 +48,7 @@ mod private
 
   impl Display for MainHeaderRenewReport
   {
+    #[ allow( clippy::collapsible_else_if ) ]
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
       if self.success
@@ -75,7 +76,7 @@ mod private
           writeln!( f, "File not found or contains non-UTF-8 characters." )?;
         }
       }
-      Ok( () )
+      std::fmt::Result::Ok( () )
     }
   }
 
@@ -86,7 +87,7 @@ mod private
   {
     /// Represents a common error.
     #[ error( "Common error: {0}" ) ]
-    Common(#[ from ] Error ),
+    Common( #[ from ] error::untyped::Error ), // qqq : rid of
     /// Represents an I/O error.
     #[ error( "I/O error: {0}" ) ]
     IO( #[ from ] std::io::Error ),
@@ -116,18 +117,18 @@ mod private
       // aaa : done
       let repository_url = workspace
       .repository_url()
-      .ok_or_else::< Error, _ >
-      ( || err!( "repo_url not found in workspace Cargo.toml" ) )?;
+      .ok_or_else::< error::untyped::Error, _ >
+      ( || error::untyped::format_err!( "repo_url not found in workspace Cargo.toml" ) )?;
 
       let master_branch = workspace.master_branch().unwrap_or( "master".into() );
       let workspace_name = workspace
       .workspace_name()
-      .ok_or_else::< Error, _ >
-      ( || err!( "workspace_name not found in workspace Cargo.toml" ) )?;
+      .ok_or_else::< error::untyped::Error, _ >
+      ( || error::untyped::format_err!( "workspace_name not found in workspace Cargo.toml" ) )?;
 
       let discord_url = workspace.discord_url();
 
-      Ok
+      Result::Ok
       (
         Self
         {
@@ -140,6 +141,7 @@ mod private
     }
 
     /// Convert `Self`to header.
+    #[ allow( clippy::uninlined_format_args, clippy::wrong_self_convention ) ]
     fn to_header( self ) -> Result< String, MainHeaderRenewError >
     {
       let discord = self.discord_url
@@ -154,14 +156,18 @@ mod private
       )
       .unwrap_or_default();
 
-      Ok
+      Result::Ok
       (
         format!
         (
-         r#"[![{}](https://img.shields.io/github/actions/workflow/status/{}/standard_rust_scheduled.yml?label={}&logo=github&branch={})](https://github.com/{}/actions/workflows/standard_rust_scheduled.yml){}
+         r"[![{}](https://img.shields.io/github/actions/workflow/status/{}/standard_rust_scheduled.yml?label={}&logo=github&branch={})](https://github.com/{}/actions/workflows/standard_rust_scheduled.yml){}
 [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/https://github.com/{})
-[![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/{})"#,
-          self.workspace_name, url::git_info_extract( &self.repository_url )?, self.workspace_name, self.master_branch, url::git_info_extract( &self.repository_url )?,
+[![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/{})",
+          self.workspace_name,
+          url::git_info_extract( &self.repository_url )?,
+          self.workspace_name,
+          self.master_branch,
+          url::git_info_extract( &self.repository_url )?,
           discord,
           self.workspace_name.to_lowercase(), self.workspace_name.to_lowercase(), url::git_info_extract( &self.repository_url )?,
           self.workspace_name,
@@ -170,7 +176,7 @@ mod private
     }
   }
 
-  /// Generate header in main Readme.md.
+  /// Generate header in main readme.md.
   /// The location of header is defined by a tag :
   /// ``` md
   /// <!--{ generate.main_header.start() }-->
@@ -193,7 +199,14 @@ mod private
   /// [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/wtools)
   /// <!--{ generate.main_header.end }-->
   /// ```
-  pub fn readme_header_renew( crate_dir : CrateDir )
+  ///
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: doc
+  #[ allow( clippy::uninlined_format_args ) ]
+  pub fn action( crate_dir : CrateDir )
   // -> Result< MainHeaderRenewReport, ( MainHeaderRenewReport, MainHeaderRenewError ) >
   -> ResultWithReport< MainHeaderRenewReport, MainHeaderRenewError >
   {
@@ -258,14 +271,14 @@ mod private
     file.write_all( content.as_bytes() ).err_with_report( &report )?;
     report.touched_file = read_me_path.to_path_buf();
     report.success = true;
-    Ok( report )
+    Result::Ok( report )
   }
 }
 
 crate::mod_interface!
 {
   /// Generate header.
-  orphan use readme_header_renew;
+  own use action;
   /// Report.
   orphan use MainHeaderRenewReport;
   /// Error.

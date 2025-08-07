@@ -1,0 +1,13 @@
+error: Too many arguments
+ --> tests/compile_fail/test_from_macro_too_many_args.rs:6:11
+  |
+6 |   let _ = variadic_from::from!( 1, 2, 3, 4 );
+  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `variadic_from::from` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0601]: `main` function not found in crate `$CRATE`
+ --> tests/compile_fail/test_from_macro_too_many_args.rs:7:2
+  |
+7 | }
+  |  ^ consider adding a `main` function to `$DIR/tests/compile_fail/test_from_macro_too_many_args.rs`

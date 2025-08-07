@@ -1,10 +1,19 @@
 use super::*;
-use the_module::VerifiedCommand;
+use the_module::{
+  parser::Parser,
+  VerifiedCommand,
+  executor::Context,
+  Type,
+  grammar::Dictionary,
+  verifier::Verifier,
+
+  Executor,
+  // wtools
+};
 
 //
 
-tests_impls!
-{
+tests_impls! {
   fn basic()
   {
     // init parser
@@ -14,7 +23,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -38,7 +47,7 @@ tests_impls!
   fn with_context()
   {
     use std::sync::{ Arc, Mutex };
-    use error::untyped::Error;
+    use error_tools::untyped::Error;
 
     // init parser
     let parser = Parser;
@@ -47,7 +56,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "inc" )
@@ -63,7 +72,7 @@ tests_impls!
     )
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "eq" )
@@ -91,7 +100,7 @@ tests_impls!
     let verifier = Verifier;
 
     // starts with 0
-    let ctx = wca::Context::new( Mutex::new( 0 ) );
+    let ctx = wca::executor::Context::new( Mutex::new( 0 ) );
     // init simple executor
     let executor = Executor::former()
     .context( ctx )
@@ -113,8 +122,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   basic,
   with_context,
 }

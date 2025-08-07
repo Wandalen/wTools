@@ -1,13 +1,13 @@
 [package]
 name = "iter_tools"
-version = "0.20.0"
+version = "0.33.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/iter_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/iter_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/iter_tools"

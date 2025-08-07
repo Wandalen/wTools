@@ -1,13 +1,13 @@
 [package]
 name = "crates_tools"
-version = "0.12.0"
+version = "0.16.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Bogdan Balushkin <bohdan.b@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/crates_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/move/crates_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/crates_tools"

@@ -1,13 +1,13 @@
 [package]
 name = "variadic_from"
-version = "0.22.0"
+version = "0.35.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/variadic_from"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/variadic_from"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/variadic_from"
@@ -44,12 +44,14 @@ use_alloc = [ "no_std" ]
 enabled = []
 
 type_variadic_from = []
-derive_variadic_from = [ "type_variadic_from", "derive_tools_meta/derive_variadic_from" ]
+derive_variadic_from = [ "type_variadic_from" ]
 
 [dependencies]
 
 ## internal
-derive_tools_meta = { workspace = true, features = [ "enabled", "derive_variadic_from" ] }
+variadic_from_meta = { workspace = true }
 
 [dev-dependencies]
+
 test_tools = { workspace = true }
+trybuild = { version = "1.0", features = ["diff"] }

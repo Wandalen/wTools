@@ -5,6 +5,7 @@ use derive_tools::DerefMut;
 #[ derive( DerefMut ) ]
 struct StructNamed
 {
+  #[ deref_mut ]
   a : String,
   b : i32,
 }

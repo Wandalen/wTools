@@ -1,7 +1,8 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  use crate::*;
 
+  use crate::*;
   use std::
   {
     io::Read,
@@ -12,31 +13,44 @@ mod private
   use error::{ untyped::Context };
   use ureq::Agent;
 
-  /// Returns the local path of a packed `.crate` file based on its name, version, and manifest path.
+  /// Constructs the expected local path for a packed `.crate` file within a target directory.
   ///
-  /// # Args :
-  /// - `name` - the name of the package.
-  /// - `version` - the version of the package.
-  /// - `manifest_file` - path to the package `Cargo.toml` file.
+  /// This is a utility function that builds a predictable path without verifying
+  /// if the file actually exists. It follows the standard Cargo packaging structure.
   ///
-  /// # Returns :
-  /// The local packed `.crate` file of the package
+  /// # Arguments
+  ///
+  /// - `name` - The name of the package.
+  /// - `version` - The version of the package.
+  /// - `target_dir` - The path to the workspace's `target` directory, inside which
+  ///   the `package/` subdirectory is expected.
+  ///
+  /// # Returns
+  ///
+  /// Returns a `Result` containing a `PathBuf` that points to the expected location of the `.crate` file,
+  /// for example: `<target_dir>/package/my_package-0.1.0.crate`.
+  ///
+  /// # Errors
+  ///
+  /// This function is currently infallible as it only performs path joining and string formatting.
+  /// The `Result` is kept for API consistency.
   // qqq : typed error
-  pub fn local_path< 'a >( name : &'a str, version : &'a str, crate_dir : CrateDir ) -> error::untyped::Result< PathBuf >
+  pub fn local_path< 'a >( name : &'a str, version : &'a str, target_dir : &std::path::Path ) -> error::untyped::Result< PathBuf >
   {
-    let buf = format!( "package/{0}-{1}.crate", name, version );
-    let workspace = Workspace::try_from( crate_dir )?;
+    let buf = format!( "package/{name}-{version}.crate" );
+    let local_package_path = target_dir.join( buf );
+    error::untyped::Result::Ok( local_package_path )
 
-    let mut local_package_path = PathBuf::new();
-    local_package_path.push( workspace.target_directory() );
-    local_package_path.push( buf );
-
-    Ok( local_package_path )
   }
 
   ///
   /// Get data of remote package from crates.io.
   ///
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: doc
   // qqq : typed error
   pub fn download< 'a >( name : &'a str, version : &'a str ) -> error::untyped::Result< Vec< u8 > >
   {
@@ -45,7 +59,7 @@ mod private
     .timeout_write( Duration::from_secs( 5 ) )
     .build();
     let mut buf = String::new();
-    write!( &mut buf, "https://static.crates.io/crates/{0}/{0}-{1}.crate", name, version )?;
+    write!( &mut buf, "https://static.crates.io/crates/{name}/{name}-{version}.crate" )?;
 
     let resp = agent.get( &buf[ .. ] ).call().context( "Get data of remote package" )?;
 
@@ -58,7 +72,7 @@ mod private
     .take( u64::MAX )
     .read_to_end( &mut bytes )?;
 
-    Ok( bytes )
+    error::untyped::Result::Ok( bytes )
   }
 
 }

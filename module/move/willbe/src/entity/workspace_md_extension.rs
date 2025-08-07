@@ -1,6 +1,8 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+
   use crate::*;
 
   /// Md's extension for workspace
@@ -15,7 +17,7 @@ mod private
     /// Return the repository url
     fn repository_url( &self ) -> Option< String >;
 
-    /// Return the workspace_name
+    /// Return the `workspace_name`
     fn workspace_name( &self ) -> Option< String >;
   }
 
@@ -27,7 +29,7 @@ mod private
       .metadata
       .workspace_metadata[ "discord_url" ]
       .as_str()
-      .map( | url | url.to_string() )
+      .map( std::string::ToString::to_string )
     }
 
     fn master_branch( &self ) -> Option< String >
@@ -37,7 +39,7 @@ mod private
       .workspace_metadata
       .get( "master_branch" )
       .and_then( | b | b.as_str() )
-      .map( | b | b.to_string() )
+      .map( std::string::ToString::to_string )
     }
 
     fn repository_url( &self ) -> Option< String >
@@ -47,7 +49,7 @@ mod private
       .workspace_metadata
       .get( "repo_url" )
       .and_then( | b | b.as_str() )
-      .map( | b | b.to_string() )
+      .map( std::string::ToString::to_string )
     }
 
     fn workspace_name( &self ) -> Option< String >
@@ -57,7 +59,7 @@ mod private
       .workspace_metadata
       .get( "workspace_name" )
       .and_then( | b | b.as_str() )
-      .map( | b | b.to_string() )
+      .map( std::string::ToString::to_string )
     }
   }
 

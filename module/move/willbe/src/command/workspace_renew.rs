@@ -1,10 +1,11 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+
   use crate::*;
   use former::Former;
-
   use wca::VerifiedCommand;
-  use error::{ untyped::Context };
+  use error::untyped::Context;
   use action::WorkspaceTemplate;
 
   #[ derive( Former ) ]
@@ -17,13 +18,14 @@ mod private
   ///
   /// Create new workspace.
   ///
-
+  /// # Errors
+  /// qqq: doc
   // qqq : typed error
   pub fn workspace_renew( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {
     let WorkspaceNewProperties { repository_url, branches } = o.props.try_into()?;
     let template = WorkspaceTemplate::default();
-    action::workspace_renew
+    action::workspace_renew::action
     (
       &std::env::current_dir()?,
       template,
@@ -33,11 +35,11 @@ mod private
     .context( "Fail to create workspace" )
   }
 
-  impl TryFrom< wca::Props > for WorkspaceNewProperties
+  impl TryFrom< wca::executor::Props > for WorkspaceNewProperties
   {
     type Error = error::untyped::Error;
 
-    fn try_from( value : wca::Props ) -> std::result::Result< Self, Self::Error >
+    fn try_from( value : wca::executor::Props ) -> std::result::Result< Self, Self::Error >
     {
       let mut this = Self::former();
 

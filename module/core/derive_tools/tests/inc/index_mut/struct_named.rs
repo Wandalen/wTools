@@ -5,7 +5,7 @@ use super::*;
 #[ derive( the_module::IndexMut ) ]
 struct StructNamed< T > 
 {
-  #[ index ]
+  #[ index_mut ]
   a : Vec< T >,
 }
 

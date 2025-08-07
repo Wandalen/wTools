@@ -1,4 +1,3 @@
-
 /// Add indentation to each line.
 #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
 pub mod indentation;
@@ -11,19 +10,9 @@ pub mod number;
 /// Parse string.
 #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
 pub mod parse_request;
-/// Spit string with a delimeter.
+/// Split string with a delimiter.
 #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 pub mod split;
-
-// /// Set of modules.
-// pub( crate ) mod modules
-// {
-//   pub use super::indentation;
-//   pub use super::isolate;
-//   pub use super::number;
-//   pub use super::parse_request;
-//   pub use super::split;
-// }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
@@ -31,8 +20,8 @@ pub use own::*;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod own
-{
+pub mod own {
+  #[ allow( unused_imports ) ]
   use super::*;
   pub use orphan::*;
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
@@ -50,17 +39,18 @@ pub mod own
 
 /// Parented namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod orphan
-{
+pub mod orphan {
+  #[ allow( unused_imports ) ]
   use super::*;
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod exposed
-{
+pub mod exposed {
+  #[ allow( unused_imports ) ]
   use super::*;
+  pub use prelude::*;
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
   #[ allow( unused_imports ) ]
   pub use super::indentation::exposed::*;
@@ -77,8 +67,8 @@ pub mod exposed
 
 /// Namespace of the module to include with `use module::*`.
 #[ allow( unused_imports ) ]
-pub mod prelude
-{
+pub mod prelude {
+  #[ allow( unused_imports ) ]
   use super::*;
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
   #[ allow( unused_imports ) ]

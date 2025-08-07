@@ -1,35 +1,7 @@
-#![ allow( unused_imports ) ]
+// tests/inc/mod.rs
 
-use super::*;
+// This file is part of the test suite for the `variadic_from` crate.
+// It re-exports test modules for organization.
 
-#[ cfg( all( feature = "type_variadic_from" ) ) ]
-mod from2_named_manual;
-#[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-mod from2_named_derive;
-
-#[ cfg( all( feature = "type_variadic_from" ) ) ]
-mod from2_unnamed_manual;
-#[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-mod from2_unnamed_derive;
-
-#[ cfg( all( feature = "type_variadic_from" ) ) ]
-mod from4_named_manual;
-#[ cfg( all( feature = "type_variadic_from" ) ) ]
-mod from4_unnamed_manual;
-
-#[ cfg( all( feature = "type_variadic_from" ) ) ]
-mod from4_beyond_named;
-#[ cfg( all( feature = "type_variadic_from" ) ) ]
-mod from4_beyond_unnamed;
-
-#[ cfg( all( feature = "type_variadic_from" ) ) ]
-mod from0_named_manual;
-#[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-mod from0_named_derive;
-#[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-mod from0_unnamed_derive;
-
-#[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-mod sample;
-#[ cfg( all( feature = "type_variadic_from" ) ) ]
-mod exports;
+// Re-export the derive macro tests.
+pub mod derive_test;

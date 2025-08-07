@@ -1,9 +1,9 @@
 use super::*;
+use the_module::parser::{ParsedCommand, Parser};
 
 //
 
-tests_impls!
-{
+tests_impls! {
   fn basic()
   {
     let parser = Parser;
@@ -51,7 +51,7 @@ tests_impls!
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter([ ( "prop".into(), "value".into() ) ]),
+        properties : HashMap::from_iter( [ ( "prop".into(), "value".into() ) ] ),
       },
       parser.parse( [ ".command", "prop:value" ] ).unwrap().commands[ 0 ]
     );
@@ -80,7 +80,7 @@ tests_impls!
       {
         name : "command".into(),
         subjects : vec![ "subject".into() ],
-        properties : HashMap::from_iter([ ( "prop".into(), "value".into() ) ]),
+        properties : HashMap::from_iter( [ ( "prop".into(), "value".into() ) ] ),
       },
       parser.parse( [ ".command", "subject", "prop:value" ] ).unwrap().commands[ 0 ]
     );
@@ -131,7 +131,7 @@ tests_impls!
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter([ ( "prop".into(), "value with spaces".into() ) ]),
+        properties : HashMap::from_iter( [ ( "prop".into(), "value with spaces".into() ) ] ),
       },
       parser.parse( [ ".command", "prop:value with spaces" ] ).unwrap().commands[ 0 ]
     );
@@ -142,18 +142,18 @@ tests_impls!
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter([ ( "prop".into(), "value with spaces".into() ) ]),
+        properties : HashMap::from_iter( [ ( "prop".into(), "value with spaces".into() ) ] ),
       },
       parser.parse( [ ".command", "prop:", "value with spaces" ] ).unwrap().commands[ 0 ]
     );
-    
+
     a_id!
     (
       ParsedCommand
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter([ ( "prop".into(), "value with spaces".into() ) ]),
+        properties : HashMap::from_iter( [ ( "prop".into(), "value with spaces".into() ) ] ),
       },
       parser.parse( [ ".command", "prop", ":value with spaces" ] ).unwrap().commands[ 0 ]
     );
@@ -164,7 +164,7 @@ tests_impls!
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter([ ( "prop".into(), "value with spaces".into() ) ]),
+        properties : HashMap::from_iter( [ ( "prop".into(), "value with spaces".into() ) ] ),
       },
       parser.parse( [ ".command", "prop", ":", "value with spaces" ] ).unwrap().commands[ 0 ]
     );
@@ -202,7 +202,7 @@ tests_impls!
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter([ ( "long_prop".into(), "some-value".into() ) ]),
+        properties : HashMap::from_iter( [ ( "long_prop".into(), "some-value".into() ) ] ),
       },
       parser.parse( [ ".command", "long_prop:some-value" ] ).unwrap().commands[ 0 ]
     );
@@ -245,7 +245,7 @@ tests_impls!
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter([ ( "path".into(), "/absolute/path/to/something".into() ) ]),
+        properties : HashMap::from_iter( [ ( "path".into(), "/absolute/path/to/something".into() ) ] ),
       },
       parser.parse( [ ".command", "path:/absolute/path/to/something" ] ).unwrap().commands[ 0 ]
     );
@@ -256,7 +256,7 @@ tests_impls!
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter([ ( "path".into(), "./path/to/something".into() ) ]),
+        properties : HashMap::from_iter( [ ( "path".into(), "./path/to/something".into() ) ] ),
       },
       parser.parse( [ ".command", "path:./path/to/something" ] ).unwrap().commands[ 0 ]
     );
@@ -267,7 +267,7 @@ tests_impls!
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter([ ( "path".into(), "../path/to/something".into() ) ]),
+        properties : HashMap::from_iter( [ ( "path".into(), "../path/to/something".into() ) ] ),
       },
       parser.parse( [ ".command", "path:../path/to/something" ] ).unwrap().commands[ 0 ]
     );
@@ -283,7 +283,7 @@ tests_impls!
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::from_iter([ ( "list".into(), "[1,2,3]".into() ) ]),
+        properties : HashMap::from_iter( [ ( "list".into(), "[1,2,3]".into() ) ] ),
       },
       parser.parse( [ ".command", "list:[1,2,3]" ] ).unwrap().commands[ 0 ]
     );
@@ -299,7 +299,7 @@ tests_impls!
       {
         name : "command".into(),
         subjects : vec![ "subject with spaces".into() ],
-        properties : HashMap::from_iter([ ( "prop".into(), "property with spaces".into() ) ]),
+        properties : HashMap::from_iter( [ ( "prop".into(), "property with spaces".into() ) ] ),
       },
       parser.parse( [ ".command", "subject with spaces", "prop:property with spaces" ] ).unwrap().commands[ 0 ]
     );
@@ -311,7 +311,7 @@ tests_impls!
       {
         name : "command".into(),
         subjects : vec![ "\\.command".into() ],
-        properties : HashMap::from_iter([ ( "prop".into(), ".command".into() ) ]),
+        properties : HashMap::from_iter( [ ( "prop".into(), ".command".into() ) ] ),
       },
       parser.parse( [ ".command", "\\.command", "prop:.command" ] ).unwrap().commands[ 0 ]
     );
@@ -323,7 +323,7 @@ tests_impls!
       {
         name : "command".into(),
         subjects : vec![ "' queted ' \\ value".into() ],
-        properties : HashMap::from_iter([ ( "prop".into(), "some \"quetes\" ' \\ in string".into() ) ]),
+        properties : HashMap::from_iter( [ ( "prop".into(), "some \"quetes\" ' \\ in string".into() ) ] ),
       },
       parser.parse( [ ".command", "\' queted \' \\ value", "prop:some \"quetes\" ' \\ in string" ] ).unwrap().commands[ 0 ]
     );
@@ -354,7 +354,7 @@ tests_impls!
       },
       parser.parse( [ ".command." ] ).unwrap().commands[ 0 ]
     );
-    
+
     a_id!
     (
       ParsedCommand
@@ -365,7 +365,7 @@ tests_impls!
       },
       parser.parse( [ ".?" ] ).unwrap().commands[ 0 ]
     );
-    
+
     a_id!
     (
       ParsedCommand
@@ -381,8 +381,7 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   basic,
   with_spaces_in_value,
   not_only_alphanumeric_symbols,

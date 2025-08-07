@@ -1,40 +1,48 @@
-/// Internal namespace.
-#[ cfg( not( feature = "no_std" ) ) ]
-mod private
+use crate::abs::{ChangerInterface, HasIdInterface};
+use std::any::Any;
+use std::sync::{ Arc, Mutex };
+
+use super::identity::Id;
+use super::registry::Registry;
+use lazy_static::lazy_static;
+
+/// Interface to describe system.
+pub trait ContextInterface : Send + Sync
 {
-  // use crate::own::*;
-  use core::fmt;
-
-  // use wtools::From_0;
-
-  use crate::abs::{identity::private::HasIdInterface, changer::private::ChangerInterface};
-  // use crate::abs::*;
-  // use once_cell::sync::Lazy;
-  // use std::sync::Mutex;
-  // use dashmap::DashMap;
-  // use std::sync::Arc;
-
-  /// Registry of contexts.
-  pub trait ContextInterface
-  where
-    Self :
-      HasIdInterface +
-      // From_0 +
-      fmt::Debug +
-    ,
-  {
-    /// Type of changer of the context.
-    type Changer : ChangerInterface;
-    /// Get changer of the context.
-    fn changer( &mut self ) -> Self::Changer;
-  }
-
+  /// Get id.
+  fn id( &self ) -> Id;
+  /// Get changer.
+  fn changer( &self ) -> Box< dyn ChangerInterface >;
+  /// Get root.
+  fn root( &self ) -> &dyn Any;
 }
 
-#[ cfg( not( feature = "no_std" ) ) ]
-::meta_tools::mod_interface!
+impl dyn ContextInterface
 {
+  /// Downcast to concrete type.
+  pub fn downcast_ref< T : Any >( &self ) -> Option< &T >
+  {
+    self.root().downcast_ref()
+  }
+}
 
-  prelude use ContextInterface;
+lazy_static!
+{
+  static ref COUNTER : Mutex< i32 > = Mutex::new( 0 );
+}
 
+impl Registry< dyn ContextInterface >
+{
+  /// Current.
+  pub fn current< Context : ContextInterface >
+  (
+    _registry : &mut lazy_static::Lazy< Arc< Mutex< Registry< Context > > > >
+  )
+  -> Context::Changer
+  {
+    let mut c = unsafe { COUNTER.lock().unwrap() };
+    *c += 1;
+    println!( "Counter : {}", c );
+    todo!( "Implement" )
+  }
 }

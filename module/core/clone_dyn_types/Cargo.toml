@@ -1,12 +1,12 @@
 [package]
 name = "clone_dyn_types"
-version = "0.22.0"
+version = "0.34.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/clone_dyn_types"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/clone_dyn_types"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/clone_dyn_types"

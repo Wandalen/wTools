@@ -1,13 +1,13 @@
 [package]
 name = "is_slice"
-version = "0.9.0"
+version = "0.14.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/is_slice"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/is_slice"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/is_slice"
@@ -32,4 +32,5 @@ enabled = []
 [dependencies]
 
 [dev-dependencies]
-test_tools = { workspace = true }
+# this crate should not rely on test_tools to exclude cyclic dependencies
+# test_tools = { workspace = true }

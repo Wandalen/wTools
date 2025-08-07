@@ -1,14 +1,14 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  use crate::*;
 
-  use path::PathBuf;
-  use collection::HashMap;
+  use crate::*;
+  use pth::PathBuf;
+  use collection_tools::collection::HashMap;
   use std::fmt;
   use colored::Colorize;
   use crates_tools::CrateArchive;
-
   use action::list::ListReport;
   use error::untyped::Result;
   // qqq : group dependencies
@@ -42,6 +42,7 @@ mod private
       let root_name = tree.name.clone();
       let root_version = tree.version.as_ref().unwrap().clone();
 
+      #[ allow( clippy::items_after_statements, clippy::option_map_unit_fn ) ]
       fn modify( diffs : &HashMap< AbsolutePath, DiffReport >, tree : &mut ListNodeReport )
       {
         let path = tree.crate_dir.take().unwrap();
@@ -74,7 +75,7 @@ mod private
 
         for dep in &mut tree.normal_dependencies
         {
-          modify( diffs, dep )
+          modify( diffs, dep );
         }
       }
       modify( &self.diffs, &mut tree );
@@ -82,7 +83,7 @@ mod private
       let root = AbsolutePath::from( root_path );
       let diff = self.diffs.get( &root ).unwrap();
       let printer = TreePrinter::new( &tree );
-      writeln!( f, "Tree:\n{}", printer )?;
+      writeln!( f, "Tree:\n{printer}" )?;
       if diff.has_changes()
       {
         writeln!( f, "Changes detected in `{root_name} {root_version}`:" )?;
@@ -91,13 +92,23 @@ mod private
       {
         writeln!( f, "No changes found in `{root_name} {root_version}`. Files:" )?;
       }
-      write!( f, "{}", diff )?;
+      write!( f, "{diff}" )?;
 
-      Ok( () )
+      std::fmt::Result::Ok( () )
     }
   }
 
   /// Return the differences between a local and remote package versions.
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if there's an issue with path conversion, packing the local crate,
+  /// or if the internal `list` action returns an unexpected format.
+  ///
+  /// # Panics
+  ///
+  /// This function may panic if the internal `list_all` action fails, if it's unable to download
+  /// the package from crates.io, or if a dependency tree walk encounters an unexpected structure.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
   pub fn publish_diff( o : PublishDiffOptions ) -> Result< PublishDiffReport >
   // qqq : don't use 1-prameter Result
@@ -105,14 +116,16 @@ mod private
     let path = AbsolutePath::try_from( o.path )?;
     let dir = CrateDir::try_from( path.clone() )?;
 
-    let list = action::list
+    let workspace = Workspace::try_from( dir.clone() )?;
+
+    let list = action::list_all
     (
       action::list::ListOptions::former()
       .path_to_manifest( dir )
       .format( action::list::ListFormat::Tree )
-      .info([ action::list::PackageAdditionalInfo::Version, action::list::PackageAdditionalInfo::Path ])
-      .dependency_sources([ action::list::DependencySource::Local ])
-      .dependency_categories([ action::list::DependencyCategory::Primary ])
+      .info( [ action::list::PackageAdditionalInfo::Version, action::list::PackageAdditionalInfo::Path ] )
+      .dependency_sources( [ action::list::DependencySource::Local ] )
+      .dependency_categories( [ action::list::DependencyCategory::Primary ] )
       .form()
     )
     .unwrap();
@@ -141,21 +154,21 @@ mod private
       let name = &package.name()?;
       let version = &package.version()?;
 
-    _ = cargo::pack
-    (
-      cargo::PackOptions::former()
-      .path( dir.as_ref() )
-      .allow_dirty( true )
-      .checking_consistency( false )
-      .dry( false ).form()
-    )?;
-    let l = CrateArchive::read( packed_crate::local_path( name, version, dir )? )?;
-    let r = CrateArchive::download_crates_io( name, version ).unwrap();
+      _ = cargo::pack
+      (
+        cargo::PackOptions::former()
+        .path( dir.as_ref() )
+        .allow_dirty( true )
+        .checking_consistency( false )
+        .dry( false ).form()
+      )?;
+      let l = CrateArchive::read( packed_crate::local_path( name, version, workspace.target_directory() )? )?;
+      let r = CrateArchive::download_crates_io( name, version ).unwrap();
 
 
       if let Some( out_path ) = &o.keep_archive
       {
-        _ = std::fs::create_dir_all( &out_path );
+        _ = std::fs::create_dir_all( out_path );
         for path in r.list()
         {
           let local_path = out_path.join( path );
@@ -171,7 +184,7 @@ mod private
       let report = tasks[ current_idx ].info.normal_dependencies.clone();
       let printer : Vec< TreePrinter > = report
       .iter()
-      .map( | rep | TreePrinter::new( rep ) )
+      .map( TreePrinter::new )
       .collect();
       tasks.extend( printer );
 

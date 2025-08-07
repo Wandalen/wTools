@@ -1,18 +1,15 @@
+//! Smoke testing of the crate.
 
-
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
-#[ test ]
-fn local_smoke_test()
-{
+#[cfg(feature = "enabled")]
+#[cfg(not(feature = "no_std"))]
+#[test]
+fn local_smoke_test() {
   ::test_tools::smoke_test_for_local_run();
 }
 
-
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
-#[ test ]
-fn published_smoke_test()
-{
+#[cfg(feature = "enabled")]
+#[cfg(not(feature = "no_std"))]
+#[test]
+fn published_smoke_test() {
   ::test_tools::smoke_test_for_published_run();
 }

@@ -1,0 +1,26 @@
+[package]
+name = "variadic_from_meta"
+version = "0.6.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+]
+license = "MIT"
+readme = "readme.md"
+documentation = "https://docs.rs/variadic_from_meta"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/variadic_from_meta"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/variadic_from_meta"
+description = """
+Variadic from, proc-macro part.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+[lints]
+workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+macro_tools = { workspace = true, features = ["enabled", "struct_like", "generic_params", "typ", "diag"] }

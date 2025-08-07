@@ -1,3 +1,6 @@
+use super::*;
+
+
 #[ test ]
 fn deref()
 {

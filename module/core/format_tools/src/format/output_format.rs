@@ -1,6 +1,6 @@
 //! Customizable format of printing table.
 //!
-//! # Example of ordinary format
+//! # Example of table format
 //!
 //! ```text
 //!  sid | sname | gap
@@ -28,9 +28,11 @@
 //! ```
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
+
+  use std::borrow::Cow;
 
   use crate::*;
   use print::
@@ -38,10 +40,7 @@ mod private
     InputExtract,
     Context,
   };
-  use core::
-  {
-    fmt,
-  };
+  use core::fmt;
 
   //=
 
@@ -74,14 +73,45 @@ mod private
     #[ inline( always ) ]
     fn default() -> Self
     {
-      super::ordinary::Ordinary::instance()
+      super::table::Table::instance()
     }
+  }
+
+  /// Print table, which is constructed with vectors and `Cow`s, with the
+  /// specified output formatter.
+  ///
+  /// This function is useful when you do not want to use `AsTable`, or implement `Fields`, and
+  /// other traits, but you just have string slices in vectors.
+  ///
+  /// `rows` should not contain header of the table, it will be automatically added if `has_header`
+  /// is true.
+  pub fn vector_table_write< 'data, 'context >
+  (
+    column_names : Vec< Cow< 'data, str > >,
+    has_header : bool,
+    rows : Vec< Vec< Cow< 'data, str > > >,
+    c : &mut Context< 'context >,
+  ) -> fmt::Result
+  {
+    InputExtract::extract_from_raw_table
+    ( 
+      column_names,
+      has_header,
+      rows,
+      c.printer.filter_col,
+      c.printer.filter_row,
+      | x |
+      {
+        c.printer.output_format.extract_write( x, c )
+      }
+    )
   }
 
 }
 
-mod ordinary;
+mod table;
 mod records;
+mod keys;
 
 #[ allow( unused_imports ) ]
 pub use own::*;
@@ -97,14 +127,13 @@ pub mod own
   #[ doc( inline ) ]
   pub use
   {
-    ordinary::Ordinary,
+    table::Table,
     records::Records,
+    keys::Keys,
   };
 
   #[ doc( inline ) ]
-  pub use private::
-  {
-  };
+  pub use private::vector_table_write;
 
 }
 
@@ -125,10 +154,7 @@ pub mod exposed
   pub use super::super::output_format;
 
   #[ doc( inline ) ]
-  pub use private::
-  {
-    TableOutputFormat,
-  };
+  pub use private::TableOutputFormat;
 
 }
 

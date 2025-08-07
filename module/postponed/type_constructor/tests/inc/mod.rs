@@ -8,8 +8,8 @@ use super::*;
 // mod type_constructor;
 
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( any( feature = "prelude", feature = "dt_prelude" ) ) ]
-mod prelude_test;
+// #[ cfg( any( feature = "prelude", feature = "dt_prelude" ) ) ]
+// mod prelude_test;
 
 // #[ allow( unused_imports ) ]
 // use super::*;

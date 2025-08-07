@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+
   use crate::*;
 
   use std::fmt;
@@ -23,7 +25,7 @@ mod private
 
   impl fmt::Display for ExtendedGitReport
   {
-    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
       let Self { add, commit, push } = &self;
 
@@ -31,7 +33,7 @@ mod private
       if let Some( commit ) = commit { writeln!( f, "{commit}" )? }
       if let Some( push ) = push { writeln!( f, "{push}" )? }
 
-      Ok( () )
+      std::fmt::Result::Ok( () )
     }
   }
 
@@ -53,12 +55,15 @@ mod private
   }
 
   /// Performs a Git commit operation using the provided options
+  /// # Errors
+  /// qqq: doc
+  #[ allow( clippy::needless_pass_by_value ) ]
   pub fn perform_git_commit( o : GitOptions ) -> error::untyped::Result< ExtendedGitReport >
   // qqq : use typed error
   {
     use tool::git;
     let mut report = ExtendedGitReport::default();
-    if o.items.is_empty() { return Ok( report ); }
+    if o.items.is_empty() { return error::untyped::Result::Ok( report ); }
     let items : error::untyped::Result< Vec< _ > > = o
     .items
     .iter()
@@ -74,7 +79,7 @@ mod private
     let res = git::commit( &o.git_root, &o.message, o.dry ).map_err( | e | format_err!( "{report}\n{e}" ) )?;
     report.commit = Some( res );
 
-    Ok( report )
+    error::untyped::Result::Ok( report )
   }
 }
 

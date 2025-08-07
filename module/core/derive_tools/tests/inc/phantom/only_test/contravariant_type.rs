@@ -3,7 +3,7 @@ fn assert_contravariant( x: ContravariantType< &dyn Fn( &'static str ) -> String
   ( x.a )( "test" )
 }
 
-#[test]
+#[ test ]
 fn contravariant()
 {
   let x_fn: &dyn for< 'a > Fn( &'a str ) -> String = &| s: &str |

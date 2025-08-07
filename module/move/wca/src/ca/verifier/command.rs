@@ -1,13 +1,15 @@
 mod private
 {
+
   use crate::*;
+  use executor::{ Args, Props };
 
   /// Represents a grammatically correct command with a phrase descriptor, a list of command subjects, and a set of command options.
   ///
   /// # Example:
   ///
   /// ```
-  /// # use wca::{ VerifiedCommand, Value, Args, Props };
+  /// # use wca::{ VerifiedCommand, Value, executor::{ Args, Props } };
   /// # use std::collections::HashMap;
   /// VerifiedCommand
   /// {
@@ -22,7 +24,7 @@ mod private
   /// };
   /// ```
   ///
-  /// In the above example, a `VerifiedCommand` instance is created with the name "command", a single subject "subject_value", and one property "prop_name" with a typed values.
+  /// In the above example, a `VerifiedCommand` instance is created with the name "command", a single subject "`subject_value`", and one property "`prop_name`" with a typed values.
   ///
   #[ derive( Debug, Clone ) ]
   pub struct VerifiedCommand
@@ -46,4 +48,5 @@ crate::mod_interface!
   exposed use VerifiedCommand;
 }
 
-// qqq : use orphan instead of exposed for ALL files in the folder, dont use prelude for structs
+// aaa : use orphan instead of exposed for ALL files in the folder, dont use prelude for structs
+// aaa : done.

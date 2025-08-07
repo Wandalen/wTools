@@ -1,7 +1,6 @@
 //! trivial example
 
-fn main()
-{
+fn main() {
   use winterval::IterableInterval;
 
   //
@@ -10,17 +9,14 @@ fn main()
   // To make that work smoothly use `IterableInterval`.
   // Both `core::ops::Range` and `core::ops::RangeInclusive` implement the trait.
   //
-  fn f1( interval : impl IterableInterval )
-  {
-    for i in interval
-    {
-      println!( "{i}" );
+  fn f1(interval: impl IterableInterval) {
+    for i in interval {
+      println!("{i}");
     }
   }
 
   // Calling the function either with half-open interval `core::ops::Range`.
-  f1( 0..=3 );
+  f1(0..=3);
   // Or closed one `core::ops::RangeInclusive`.
-  f1( 0..4 );
-
+  f1(0..4);
 }

@@ -1,14 +1,11 @@
 use super::*;
-use the_module::prelude::impls3;
+use the_module::exposed::{impls3, index, implsindex as impls_index};
 
 //
 
-#[ test ]
-fn basic()
-{
-
-  impls!
-  {
+#[test]
+fn basic() {
+  impls3! {
     fn f1()
     {
       println!( "f1" );
@@ -28,17 +25,13 @@ fn basic()
 
   f1();
   f2();
-
 }
 
 //
 
-#[ test ]
-fn impl_index()
-{
-
-  impls3!
-  {
+#[test]
+fn impl_index() {
+  impls3! {
     fn f1()
     {
       println!( "f1" );
@@ -50,8 +43,7 @@ fn impl_index()
   };
 
   // trace_macros!( true );
-  index!
-  {
+  index! {
     f1,
     f2,
   }
@@ -59,15 +51,11 @@ fn impl_index()
 
   f1();
   f2();
-
 }
 
-#[ test ]
-fn impl_as()
-{
-
-  impls3!
-  {
+#[test]
+fn impl_as() {
+  impls3! {
     fn f1()
     {
       println!( "f1" );
@@ -88,12 +76,9 @@ fn impl_as()
   f2b();
 }
 
-#[ test ]
-fn impl_index_as()
-{
-
-  impls3!
-  {
+#[test]
+fn impl_index_as() {
+  impls3! {
     fn f1()
     {
       println!( "f1" );
@@ -106,8 +91,7 @@ fn impl_index_as()
   };
 
   // trace_macros!( true );
-  index!
-  {
+  index! {
     f1,
     f2 as f2b,
   }
@@ -115,5 +99,4 @@ fn impl_index_as()
 
   f1();
   f2b();
-
 }

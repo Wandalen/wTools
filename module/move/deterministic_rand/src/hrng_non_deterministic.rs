@@ -1,4 +1,3 @@
-
 //!
 //! Hierarchical random number generators itself.
 //!
@@ -6,41 +5,35 @@
 //! Both have the same interface and are interchengable by switching on/off a feature `determinsim`.
 //!
 
-/// Internal namespace.
-mod private
-{
+/// Define a private namespace for all its items.
+mod private {
 
   use crate::*;
-  use core::{ ops::Deref, ops::DerefMut };
+  use core::{ops::Deref, ops::DerefMut};
 
   /// Emulates behavior of `Arc<Mutex< ThreadRng >>` for compatibility.
 
-  #[ derive( Debug ) ]
+  #[derive(Debug)]
   pub struct SharedGenerator;
 
-
-  impl SharedGenerator
-  {
+  impl SharedGenerator {
     /// Emulate lock of a mutex.
-    #[ inline( always ) ]
-    pub fn lock( &self ) -> SharedGeneratorLock
-    {
+    #[inline(always)]
+    pub fn lock(&self) -> SharedGeneratorLock {
       SharedGeneratorLock
     }
   }
 
   /// Emulates behavior of `Arc<Mutex< ThreadRng >>` for compatibility.
 
-  #[ derive( Debug) ]
+  #[derive(Debug)]
   pub struct SharedGeneratorLock;
 
-  impl SharedGeneratorLock
-  {
+  impl SharedGeneratorLock {
     /// Emulate unwrap of a result of guard produced my locking a mutex.
-    #[ inline( always ) ]
-    pub fn unwrap( &self ) -> DerefRng
-    {
-      DerefRng( rand::thread_rng() )
+    #[inline(always)]
+    pub fn unwrap(&self) -> DerefRng {
+      DerefRng(rand::thread_rng())
     }
   }
 
@@ -48,31 +41,25 @@ mod private
   ///
   /// Used for code compatibility for both deterministic and non-deterministic modes.
 
-  #[ derive( Debug ) ]
-  pub struct DerefRng( rand::rngs::ThreadRng );
+  #[derive(Debug)]
+  pub struct DerefRng(rand::rngs::ThreadRng);
 
-  impl Deref for DerefRng
-  {
+  impl Deref for DerefRng {
     type Target = rand::rngs::ThreadRng;
-    #[ inline( always ) ]
-    fn deref( &self ) -> &Self::Target
-    {
+    #[inline(always)]
+    fn deref(&self) -> &Self::Target {
       &self.0
     }
   }
 
-  impl DerefMut for DerefRng
-  {
-    fn deref_mut( &mut self ) -> &mut Self::Target
-    {
+  impl DerefMut for DerefRng {
+    fn deref_mut(&mut self) -> &mut Self::Target {
       &mut self.0
     }
   }
 
-  impl Default for Hrng
-  {
-    fn default() -> Self
-    {
+  impl Default for Hrng {
+    fn default() -> Self {
       Hrng::master()
     }
   }
@@ -82,12 +69,10 @@ mod private
   ///
   /// Always returns `rand::thread_rng`
 
-  #[ derive( Debug, Clone ) ]
+  #[derive(Debug, Clone)]
   pub struct Hrng;
 
-  impl Hrng
-  {
-
+  impl Hrng {
     /// Construct master hierarchical random number generator with default seed phrase.
     ///
     /// ### Example
@@ -99,9 +84,8 @@ mod private
     /// let got : u64 = rng.gen();
     /// ```
 
-    #[ inline( always ) ]
-    pub fn master() -> Self
-    {
+    #[inline(always)]
+    pub fn master() -> Self {
       Self
     }
 
@@ -116,10 +100,9 @@ mod private
     /// let got : u64 = rng.gen();
     /// ```
 
-    #[ cfg( not( feature = "no_std" ) ) ]
-    #[ inline( always ) ]
-    pub fn master_with_seed( _ : Seed ) -> Self
-    {
+    #[cfg(not(feature = "no_std"))]
+    #[inline(always)]
+    pub fn master_with_seed(_: Seed) -> Self {
       Self
     }
 
@@ -137,44 +120,39 @@ mod private
     /// let got : u64 = rng.gen();
     /// ```
 
-    #[ inline( always ) ]
-    pub fn rng_ref( &self ) -> SharedGenerator
-    {
+    #[inline(always)]
+    pub fn rng_ref(&self) -> SharedGenerator {
       SharedGenerator
     }
 
     /// Creates new child hierarchical random number generator by index seed.
-    #[ inline( always ) ]
-    pub fn child( &self, _ : usize ) -> Self
-    {
+    #[inline(always)]
+    pub fn child(&self, _: usize) -> Self {
       Self
     }
 
-//     /// Creates new child hierarchical random number generator by index seed, index is deduced from the contexst.
-//     /// Index is new child is index of current newest child plus one.
-//     pub fn child_new( &self ) -> Self
-//     {
-//       self.child( 0 )
-//     }
+    //     /// Creates new child hierarchical random number generator by index seed, index is deduced from the contexst.
+    //     /// Index is new child is index of current newest child plus one.
+    //     pub fn child_new( &self ) -> Self
+    //     {
+    //       self.child( 0 )
+    //     }
 
     /// Returns number of children created by this generator.
-    #[ inline( always ) ]
-    pub fn _children_len( &self ) -> usize
-    {
+    #[inline(always)]
+    pub fn _children_len(&self) -> usize {
       0
     }
 
-//     /// Returns current index of the generator.
-//     #[ inline( always ) ]
-//     pub fn index( &self ) -> usize
-//     {
-//       0
-//     }
+    //     /// Returns current index of the generator.
+    //     #[ inline( always ) ]
+    //     pub fn index( &self ) -> usize
+    //     {
+    //       0
+    //     }
   }
-
 }
 
-crate::mod_interface!
-{
+crate::mod_interface! {
   orphan use Hrng;
 }

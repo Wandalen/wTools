@@ -5,9 +5,10 @@
 //! such as vectors, hash maps, and custom collection implementations.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
+
 
   use crate::*;
 
@@ -47,7 +48,6 @@ mod private
   /// It is especially crucial in complex data structures, such as `HashMap`s, where entries
   /// often involve a key-value pair, and simple values need to be restructured to fit this model
   /// for operations like insertion or update.
-
   pub trait CollectionValToEntry< Val >
   {
     /// The specific type of entry that corresponds to the value within the collection.
@@ -93,6 +93,7 @@ mod private
   pub trait ValToEntry< Collection >
   {
     /// Represents the type of entry that corresponds to the value within the collection.
+    /// Type `Entry` is defined by the `Collection` trait.
     type Entry;
 
     /// Transforms the instance (value) into an entry compatible with the specified collection.
@@ -141,7 +142,6 @@ mod private
   /// such as `HashMap`s. It not only identifies what constitutes an entry and a value in the context of the collection
   /// but also provides utility for converting between these two, which is critical in operations involving entry manipulation
   /// and value retrieval.
-
   pub trait Collection
   {
     /// The type of entries that can be added to the collection. This type can differ from `Val` in collections like `HashMap`,
@@ -278,8 +278,7 @@ mod private
     /// impl IntoIterator for MyCollection
     /// {
     ///   type Item = i32;
-    ///   // type IntoIter = std::vec::IntoIter< i32 >;
-    ///   type IntoIter = collection_tools::vec::IntoIter< i32 >;
+    ///   type IntoIter = std::vec::IntoIter< i32 >;
     ///   // qqq : zzz : make sure collection_tools has itearators -- done
     ///
     ///   fn into_iter( self ) -> Self::IntoIter
@@ -331,12 +330,11 @@ mod private
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
-      f
-      .debug_struct( "CollectionFormer" )
-      .field( "storage", &"Storage Present" )
-      .field( "context", &self.context.as_ref().map( |_| "Context Present" ) )
-      .field( "on_end", &self.on_end.as_ref().map( |_| "End Present" ) )
-      .finish()
+      f.debug_struct( "CollectionFormer" )
+        .field( "storage", &"Storage Present" )
+        .field( "context", &self.context.as_ref().map( | _ | "Context Present" ) )
+        .field( "on_end", &self.on_end.as_ref().map( | _ | "End Present" ) )
+        .finish()
     }
   }
 
@@ -347,14 +345,15 @@ mod private
   {
     /// Begins the construction process of a collection with optional initial storage and context,
     /// setting up an `on_end` completion handler to finalize the collection's construction.
+    /// # Panics
+    /// qqq: doc
     #[ inline( always ) ]
     pub fn begin
     (
       mut storage : core::option::Option< Definition::Storage >,
       context : core::option::Option< Definition::Context >,
       on_end : Definition::End,
-    )
-    -> Self
+    ) -> Self
     {
       if storage.is_none()
       {
@@ -370,14 +369,15 @@ mod private
 
     /// Provides a variation of the `begin` method allowing for coercion of the end handler,
     /// facilitating ease of integration with different end conditions.
+    /// # Panics
+    /// qqq: docs
     #[ inline( always ) ]
     pub fn begin_coercing< IntoEnd >
     (
       mut storage : core::option::Option< Definition::Storage >,
       context : core::option::Option< Definition::Context >,
       on_end : IntoEnd,
-    )
-    -> Self
+    ) -> Self
     where
       IntoEnd : Into< Definition::End >,
     {
@@ -394,6 +394,8 @@ mod private
     }
 
     /// Finalizes the building process, returning the formed or a context incorporating it.
+    /// # Panics
+    /// qqq: doc
     #[ inline( always ) ]
     pub fn end( mut self ) -> Definition::Formed
     {
@@ -412,6 +414,7 @@ mod private
     /// Replaces the current storage with a provided storage, allowing for resetting or
     /// redirection of the building process.
     #[ inline( always ) ]
+    #[ must_use ]
     pub fn replace( mut self, storage : Definition::Storage ) -> Self
     {
       self.storage = storage;
@@ -430,12 +433,7 @@ mod private
     #[ inline( always ) ]
     pub fn new( end : Definition::End ) -> Self
     {
-      Self::begin
-      (
-        None,
-        None,
-        end,
-      )
+      Self::begin( None, None, end )
     }
 
     /// Variant of the `new` method allowing for end condition coercion, providing flexibility
@@ -445,12 +443,7 @@ mod private
     where
       IntoEnd : Into< Definition::End >,
     {
-      Self::begin
-      (
-        None,
-        None,
-        end.into(),
-      )
+      Self::begin( None, None, end.into() )
     }
   }
 
@@ -459,49 +452,47 @@ mod private
     Definition : FormerDefinition,
     Definition::Storage : CollectionAdd< Entry = E >,
   {
-
     /// Appends an entry to the end of the storage, expanding the internal collection.
     #[ inline( always ) ]
+    #[ must_use ]
+    #[ allow( clippy::should_implement_trait ) ]
     pub fn add< IntoElement >( mut self, entry : IntoElement ) -> Self
-    where IntoElement : core::convert::Into< E >,
+    where
+      IntoElement : core::convert::Into< E >,
     {
       CollectionAdd::add( &mut self.storage, entry.into() );
       self
     }
-
   }
 
   //
 
-  impl< E, Definition > FormerBegin< Definition >
-  for CollectionFormer< E, Definition >
+  impl< 'a, E, Definition > FormerBegin< 'a, Definition > for CollectionFormer< E, Definition >
   where
     Definition : FormerDefinition,
-    Definition::Storage : CollectionAdd< Entry = E >,
+    Definition::Storage : CollectionAdd< Entry = E > + 'a,
+    Definition::Context : 'a,
+    Definition::End : 'a,
   {
-
     #[ inline( always ) ]
     fn former_begin
     (
       storage : core::option::Option< Definition::Storage >,
       context : core::option::Option< Definition::Context >,
       on_end : Definition::End,
-    )
-    -> Self
+    ) -> Self
     {
       Self::begin( storage, context, on_end )
     }
-
   }
-
 }
 
+/// Former of a binary heap.
+mod binary_heap;
 /// Former of a binary tree map.
 mod btree_map;
 /// Former of a binary tree set.
 mod btree_set;
-/// Former of a binary heap.
-mod binary_heap;
 /// Former of a hash map.
 mod hash_map;
 /// Former of a hash set.
@@ -521,6 +512,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  //
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -530,6 +522,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  //
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -539,40 +532,18 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  //
   use super::*;
 
   #[ doc( inline ) ]
   pub use prelude::*;
 
   #[ doc( inline ) ]
-  pub use private::
-  {
-
-    EntryToVal,
-    CollectionValToEntry,
-    ValToEntry,
-
-    Collection,
-    CollectionAdd,
-    CollectionAssign,
-    CollectionFormer,
-
-  };
+  pub use private::{ EntryToVal, CollectionValToEntry, ValToEntry, Collection, CollectionAdd, CollectionAssign, CollectionFormer };
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::
-  {
-    btree_map::*,
-    btree_set::*,
-    binary_heap::*,
-    hash_map::*,
-    hash_set::*,
-    linked_list::*,
-    vector::*,
-    vector_deque::*,
-  };
-
+  pub use super::{ btree_map::*, btree_set::*, binary_heap::*, hash_map::*, hash_set::*, linked_list::*, vector::*, vector_deque::* };
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

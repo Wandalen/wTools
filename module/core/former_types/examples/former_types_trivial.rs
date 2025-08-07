@@ -20,49 +20,50 @@
 //!   - `got.assign( "John" )`: Assigns the string `"John"` to the `name` field.
 //!
 
-#[ cfg( any( not( feature = "types_former" ), not( feature = "enabled" ) ) ) ]
+#[cfg(any(not(feature = "types_former"), not(feature = "enabled")))]
 fn main() {}
 
-#[ cfg( all( feature = "types_former", feature = "enabled" ) ) ]
-fn main()
-{
-  use former_types::Assign;
+#[cfg(all(feature = "types_former", feature = "enabled"))]
+fn main() {
+  use component_model_types::Assign;
 
-  #[ derive( Default, PartialEq, Debug ) ]
-  struct Person
-  {
-    age : i32,
-    name : String,
+  #[derive(Default, PartialEq, Debug)]
+  struct Person {
+    age: i32,
+    name: String,
   }
 
-  impl< IntoT > Assign< i32, IntoT > for Person
+  impl<IntoT> Assign<i32, IntoT> for Person
   where
-    IntoT : Into< i32 >,
+    IntoT: Into<i32>,
   {
-    fn assign( &mut self, component : IntoT )
-    {
+    fn assign(&mut self, component: IntoT) {
       self.age = component.into();
     }
   }
 
-  impl< IntoT > Assign< String, IntoT > for Person
+  impl<IntoT> Assign<String, IntoT> for Person
   where
-    IntoT : Into< String >,
+    IntoT: Into<String>,
   {
-    fn assign( &mut self, component : IntoT )
-    {
+    fn assign(&mut self, component: IntoT) {
       self.name = component.into();
     }
   }
 
-  let mut got : Person = Default::default();
-  got.assign( 13 );
-  got.assign( "John" );
-  assert_eq!( got, Person { age : 13, name : "John".to_string() } );
-  dbg!( got );
+  let mut got: Person = Default::default();
+  got.assign(13);
+  got.assign("John");
+  assert_eq!(
+    got,
+    Person {
+      age: 13,
+      name: "John".to_string()
+    }
+  );
+  dbg!(got);
   // > Person {
   // >   age: 13,
   // >   name: "John",
   // > }
-
 }

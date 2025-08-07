@@ -1,16 +1,20 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+
   use crate::*;
   use colored::Colorize;
-
   use wca::VerifiedCommand;
-  use error::{ untyped::Context }; // xxx
+  use error::untyped::Context; // xxx
   use former::Former;
   use std::fmt::Write;
-  use channel::Channel;
+  use crate::entity::channel::Channel;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
 
   #[ derive( Former ) ]
+  #[ allow( clippy::struct_excessive_bools ) ]
   struct PublishProperties
   {
     #[ former( default = Channel::Stable ) ]
@@ -24,7 +28,8 @@ mod private
   ///
   /// Publish package.
   ///
-
+  /// # Errors
+  /// qqq: doc
   pub fn publish( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {
     let args_line = format!
@@ -35,14 +40,11 @@ mod private
       .get_owned( 0 )
       .unwrap_or( std::path::PathBuf::from( "" ) ).display()
     );
-    let prop_line = format!
-    (
-      "{}",
-      o
-      .props
-      .iter()
-      .map( | p | format!( "{}:{}", p.0, p.1.to_string() ) )
-      .collect::< Vec< _ > >().join(" ") );
+    let prop_line = o
+    .props
+    .iter()
+    .map( | p | format!( "{}:{}", p.0, p.1 ) )
+    .collect::< Vec< _ > >().join(" ");
 
     let patterns : Vec< _ > = o
     .args
@@ -55,7 +57,7 @@ mod private
       dry,
       temp
     } = o.props.try_into()?;
-    let plan = action::publish_plan( patterns, channel, dry, temp )
+    let plan = action::publish_plan( &patterns, channel, dry, temp )
     .context( "Failed to plan the publication process" )?;
 
     let mut formatted_plan = String::new();
@@ -77,9 +79,9 @@ mod private
 
         if dry && !report.packages.is_empty()
         {
-          let args = if args_line.is_empty() { String::new() } else { format!(" {}", args_line) };
-          let prop = if prop_line.is_empty() { String::new() } else { format!(" {}", prop_line) };
-          let line = format!("will .publish{}{} dry:0", args, prop );
+          let args = if args_line.is_empty() { String::new() } else { format!(" {args_line}" ) };
+          let prop = if prop_line.is_empty() { String::new() } else { format!(" {prop_line}" ) };
+          let line = format!("will .publish{args}{prop} dry:0" );
           println!("To apply plan, call the command `{}`", line.blue() );
           // aaa : for Petro : for Bohdan : bad. should be exact command with exact parameters
           // aaa : it`s already works
@@ -95,10 +97,10 @@ mod private
     }
   }
 
-  impl TryFrom< wca::Props > for PublishProperties
+  impl TryFrom< wca::executor::Props > for PublishProperties
   {
     type Error = error::untyped::Error;
-    fn try_from( value : wca::Props ) -> Result< Self, Self::Error >
+    fn try_from( value : wca::executor::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();
 

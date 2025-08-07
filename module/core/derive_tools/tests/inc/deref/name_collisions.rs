@@ -1,5 +1,5 @@
-#![ allow( non_snake_case ) ]
-#![ allow( unused_imports ) ]
+#![allow(non_snake_case)]
+#![allow(unused_imports)]
 
 use ::core::ops::Deref;
 use derive_tools::Deref;
@@ -12,12 +12,12 @@ pub mod FromString {}
 pub mod FromPair {}
 pub mod FromBin {}
 
-#[ allow( dead_code ) ]
-#[ derive( Deref ) ]
-struct NameCollisions
-{
-  a : i32,
-  b : String,
+#[allow(dead_code)]
+#[derive(Deref)]
+struct NameCollisions {
+  #[deref]
+  a: i32,
+  b: String,
 }
 
-include!( "./only_test/name_collisions.rs" );
+include!("./only_test/name_collisions.rs");

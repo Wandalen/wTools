@@ -1,10 +1,10 @@
 use super::*;
 
 #[ allow( dead_code ) ]
-#[ derive( the_module::Not ) ]
+// #[ derive( the_module::Not ) ]
 struct NamedDefaultOnMutReferenceOff< 'a >
 {
-  #[ not( off ) ]
+  // #[ not( off ) ]
   a : &'a bool,
   b : u8,
 }

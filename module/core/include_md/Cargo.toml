@@ -7,7 +7,7 @@ authors = [
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/include_md"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/move/include_md"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/include_md"
@@ -28,7 +28,7 @@ all-features = false
 include = [
   "/rust/impl/_blank",
   "/Cargo.toml",
-  "/Readme.md",
+  "/readme.md",
   "/License",
 ]
 

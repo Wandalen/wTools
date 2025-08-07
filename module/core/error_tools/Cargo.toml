@@ -1,13 +1,13 @@
 [package]
 name = "error_tools"
-version = "0.16.0"
+version = "0.27.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/error_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/error_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/error_tools"
@@ -48,8 +48,9 @@ error_untyped = [ "anyhow" ]
 # = entry
 
 [dependencies]
-anyhow = { version = "~1.0", optional = true }
-thiserror = { version = "~1.0", optional = true }
+anyhow = { workspace = true, optional = true }
+thiserror = { workspace = true, optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
+# xxx : qqq : review

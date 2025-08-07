@@ -2,40 +2,28 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/meta_tools/latest/meta_tools/" ) ]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
 
-/// Namespace with dependencies.
+#![ warn( dead_code ) ]
 
+// Declare the top-level modules
+pub mod dependency;
+pub mod meta;
+pub mod own;
+pub mod orphan;
+pub mod exposed;
+pub mod prelude;
+
+// Re-export the exposed parts of these modules directly
 #[ cfg( feature = "enabled" ) ]
-pub mod dependency
-{
-
-  // #[ cfg( feature = "meta_mod_interface" ) ]
-  pub use ::mod_interface;
-  #[ cfg( feature = "meta_for_each" ) ]
-  pub use ::for_each;
-  #[ cfg( feature = "meta_impls_index" ) ]
-  pub use ::impls_index;
-
-  #[ cfg( feature = "meta_constructors" ) ]
-  pub use ::literally;
-  #[ cfg( feature = "meta_idents_concat" ) ]
-  pub use ::paste;
-
-  // #[ cfg( feature = "former" ) ]
-  // pub use ::former;
-  // #[ cfg( feature = "options" ) ]
-  // pub use ::woptions;
-
-}
-
-//
-
-// qqq : meta interface should be optional dependancy. please fix writing equivalent code manually
+pub use dependency::exposed::*;
 #[ cfg( feature = "enabled" ) ]
-mod_interface::mod_interface!
-{
-
-  layer meta;
-
-}
+pub use meta::exposed::*;
+#[ cfg( feature = "enabled" ) ]
+pub use own::exposed::*;
+#[ cfg( feature = "enabled" ) ]
+pub use orphan::exposed::*;
+#[ cfg( feature = "enabled" ) ]
+pub use exposed::exposed::*;
+#[ cfg( feature = "enabled" ) ]
+pub use prelude::exposed::*;

@@ -7,7 +7,7 @@ authors = [
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/instance_of"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/alias/instance_of"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/alias/instance_of"
@@ -27,7 +27,7 @@ all-features = false
 include = [
   "/rust/impl/typing/instance_of_lib.rs",
   "/Cargo.toml",
-  "/Readme.md",
+  "/readme.md",
   "/License",
 ]
 

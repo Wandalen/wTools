@@ -5,14 +5,17 @@
 // #![ deny( rust_2018_idioms ) ]
 // #![ deny( missing_debug_implementations ) ]
 // #![ deny( missing_docs ) ]
+#![ deny( unused_imports ) ]
 
+// #![ feature( type_name_of_val ) ]
+// #![ feature( type_alias_impl_trait ) ]
 // #![ feature( trace_macros ) ]
 
 //!
 //! Plot interface.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
 
 // pub use ::wmath as math;
 // use ::wtools::prelude::*;
@@ -32,21 +35,24 @@ pub mod dependency
 
 // use mod_interface::mod_interface;
 
-::meta_tools::mod_interface!
+mod private
 {
+  ::meta_tools::mod_interface!
+  {
 
-  /// Describe colors.
-  #[ cfg( not( feature = "no_std" ) ) ]
-  layer color;
-  // /// Abstraction.
-  // #[ cfg( not( feature = "no_std" ) ) ]
-  // layer abs;
-  // /// Concrete system.
-  // #[ cfg( not( feature = "no_std" ) ) ]
-  // layer sys;
+    /// Describe colors.
+    #[ cfg( not( feature = "no_std" ) ) ]
+    layer color;
+    // /// Abstraction.
+    // #[ cfg( not( feature = "no_std" ) ) ]
+    // layer abs;
+    // /// Concrete system.
+    // #[ cfg( not( feature = "no_std" ) ) ]
+    // layer sys;
 
-  use super::math;
-  own use ::wmath as math;
-  own use ::wtools::prelude::*;
+    use super::math;
+    own use ::wtools::prelude::*;
 
+  }
 }
+pub use private::color;

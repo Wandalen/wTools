@@ -2,11 +2,9 @@
 
 use cfg_aliases::cfg_aliases;
 
-fn main()
-{
+fn main() {
   // Setup cfg aliases
-  cfg_aliases!
-  {
+  cfg_aliases! {
     // Platforms
     // wasm : { target_arch = "wasm32" },
     // android : { target_os = "android" },

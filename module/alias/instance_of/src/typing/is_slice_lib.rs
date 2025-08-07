@@ -10,9 +10,9 @@
 //! Macro to answer the question: is it a slice?
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 

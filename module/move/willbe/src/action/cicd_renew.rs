@@ -1,5 +1,6 @@
 mod private
 {
+
   use crate::*;
 
   use std::
@@ -8,18 +9,20 @@ mod private
     io::{ Write, Read },
   };
 
-  use path::{ Path };
-  use collection::BTreeMap;
+  use pth::Path;
+  use collection_tools::collection::BTreeMap;
   use convert_case::{ Casing, Case };
   use handlebars::{ RenderError, TemplateError };
   use toml_edit::Document;
 
   use entity::{ PathError, WorkspaceInitError };
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
 
   use error::
   {
     typed::Error,
-    err,
+    // err,
   };
 
   #[ derive( Debug, Error ) ]
@@ -42,7 +45,13 @@ mod private
 
   // qqq : for Petro : should return Report and typed error in Result
   /// Generate workflows for modules in .github/workflows directory.
-  pub fn cicd_renew( base_path : &Path ) -> Result< (), CiCdGenerateError >
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: doc
+  #[ allow( clippy::too_many_lines, clippy::result_large_err ) ]
+  pub fn action( base_path : &Path ) -> Result< (), CiCdGenerateError >
   {
     let workspace_cache = Workspace::try_from( CrateDir::try_from( base_path )? )?;
     let packages = workspace_cache.packages();
@@ -131,13 +140,13 @@ mod private
       data.insert( "name", name.as_str() );
       data.insert( "username_and_repository", username_and_repository.0.as_str() );
       data.insert( "branch", "alpha" );
-      let manifest_file = manifest_file.to_string_lossy().replace( "\\", "/" );
+      let manifest_file = manifest_file.to_string_lossy().replace( '\\', "/" );
       let manifest_file = manifest_file.trim_start_matches( '/' );
       data.insert( "manifest_path", manifest_file );
       let content = handlebars.render( "module_push", &data )?;
       file_write( &workflow_file_name, &content )?;
 
-      println!( "file_write : {:?}", &workflow_file_name )
+      println!( "file_write : {}", &workflow_file_name.display() );
     }
 
     dbg!( &workflow_root );
@@ -299,14 +308,14 @@ mod private
 
     file_write
     (
-      &workflow_root.join( "Readme.md" ),
-      include_str!( "../../template/workflow/Readme.md" )
+      &workflow_root.join( "readme.md" ),
+      include_str!( "../../template/workflow/readme.md" )
     )?;
 
-    Ok( () )
+    Ok::< _, CiCdGenerateError >( () )
   }
 
-  /// Prepare params for render appropriative_branch_for template.
+  /// Prepare params for render `appropriative_branch_for` template.
   fn map_prepare_for_appropriative_branch< 'a >
   (
     branches : &'a str,
@@ -333,7 +342,7 @@ mod private
     {
       match std::fs::create_dir_all( folder )
       {
-        Ok( _ ) => {},
+        Ok( () ) => {},
         Err( e ) if e.kind() == std::io::ErrorKind::AlreadyExists => {},
         Err( e ) => return Err( e.into() ),
       }
@@ -372,10 +381,10 @@ mod private
       .map( String::from );
       if let Some( url ) = url
       {
-        return url::repo_url_extract( &url )
+        url::repo_url_extract( &url )
         .and_then( | url | url::git_info_extract( &url ).ok() )
         .map( UsernameAndRepository )
-        .ok_or_else( || err!( "Fail to parse repository url from workspace Cargo.toml"))
+        .ok_or_else( || error::untyped::format_err!( "Fail to parse repository url from workspace Cargo.toml") )
       }
       else
       {
@@ -389,11 +398,12 @@ mod private
             break;
           }
         }
-        return url
-        .and_then( | url | url::repo_url_extract( &url ) )
+        url
+        .as_ref()
+        .and_then( | url | url::repo_url_extract( url ) )
         .and_then( | url | url::git_info_extract( &url ).ok() )
         .map( UsernameAndRepository )
-        .ok_or_else( || err!( "Fail to extract repository url") )
+        .ok_or_else( || error::untyped::format_err!( "Fail to extract repository url") )
       }
     }
 
@@ -401,5 +411,5 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use cicd_renew;
+  own use action;
 }

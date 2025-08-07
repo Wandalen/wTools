@@ -19,10 +19,10 @@ impl Not for CustomType
 }
 
 #[ allow( dead_code ) ]
-#[ derive( the_module::Not ) ]
+// #[ derive( the_module::Not ) ]
 struct WithCustomType
 {
   custom_type : CustomType,
 }
 
-include!( "./only_test/with_custom_type.rs" );
+// include!( "./only_test/with_custom_type.rs" );

@@ -4,7 +4,7 @@
 
 use super::*;
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 pub mod private
 {
   use super::*;

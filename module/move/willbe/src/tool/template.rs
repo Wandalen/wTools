@@ -1,7 +1,7 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
-  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports, clippy::wildcard_imports ) ]
   use crate::tool::*;
 
   use std::
@@ -14,16 +14,13 @@ mod private
     },
   };
   use error::untyped::Context;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::Ok;
 
-  // qqq : for Nikita : is that trait really necessary?
-  // Template - remove
-  // DeployTemplate - move here
-  // DeployTemplateFiles - remove
-
-  /// Template for creating deploy files.
+  /// Container for templates.
   ///
-  /// Includes terraform deploy options to GCP, and Hetzner,
-  /// a Makefile for useful commands, and a key directory.
+  /// Includes files to create, parameters that those templates accept,
+  /// and values for those parameters.
   #[ derive( Debug ) ]
   pub struct TemplateHolder
   {
@@ -33,11 +30,15 @@ mod private
     pub parameters : TemplateParameters,
     /// The values associated with the template.
     pub values : TemplateValues,
+    /// Path to the parameter storage for recovering values
+    /// for already generated templated files.
+    pub parameter_storage : &'static Path,
+    /// Name of the template to generate
+    pub template_name : &'static str,
   }
 
   impl TemplateFiles for Vec< TemplateFileDescriptor > {}
 
-  // qqq : for Viktor : why DeployTemplate can't be part of template.rs?
 
   impl TemplateHolder
   {
@@ -50,6 +51,9 @@ mod private
     /// # Returns
     ///
     /// A `Result` which is `Ok` if the files are created successfully, or an `Err` otherwise.
+    ///
+    /// # Errors
+    /// qqq: doc
     pub fn create_all( self, path : &path::Path ) -> error::untyped::Result< () > // qqq : use typed error
     {
       self.files.create_all( path, &self.values )
@@ -60,6 +64,7 @@ mod private
     /// # Returns
     ///
     /// A reference to `TemplateParameters`.
+    #[ must_use ]
     pub fn parameters( &self ) -> &TemplateParameters
     {
       &self.parameters
@@ -72,7 +77,7 @@ mod private
     /// - `values`: The new `TemplateValues` to be set.
     pub fn set_values( &mut self, values : TemplateValues )
     {
-      self.values = values
+      self.values = values;
     }
 
     /// Returns a reference to the template values.
@@ -80,6 +85,7 @@ mod private
     /// # Returns
     ///
     /// A reference to `TemplateValues`.
+    #[ must_use ]
     pub fn get_values( &self ) -> &TemplateValues
     {
       &self.values
@@ -95,27 +101,6 @@ mod private
       &mut self.values
     }
 
-    /// Returns the path to the parameter storage file.
-    ///
-    /// # Returns
-    ///
-    /// A reference to a `Path` representing the parameter storage file.
-    pub fn parameter_storage( &self ) -> &Path
-    {
-      "./.deploy_template.toml".as_ref()
-      // qqq : for Mykyta : hardcode?
-    }
-
-    /// Returns the name of the template.
-    ///
-    /// # Returns
-    ///
-    /// A static string slice representing the template name.
-    pub fn template_name( &self ) -> &'static str
-    {
-      "deploy"
-    }
-
     /// Loads existing parameters from the specified path and updates the template values.
     ///
     /// # Parameters
@@ -127,10 +112,10 @@ mod private
     /// An `Option` which is `Some(())` if the parameters are loaded successfully, or `None` otherwise.
     pub fn load_existing_params( &mut self, path : &Path ) -> Option< () >
     {
-      let data = fs::read_to_string( path.join( self.parameter_storage() ) ).ok()?;
+      let data = fs::read_to_string( path.join( self.parameter_storage ) ).ok()?;
       let document = data.parse::< toml_edit::Document >().ok()?;
       let parameters : Vec< _ > = self.parameters().descriptors.iter().map( | d | &d.parameter ).cloned().collect();
-      let template_table = document.get( self.template_name() )?;
+      let template_table = document.get( self.template_name )?;
       for parameter in parameters
       {
         let value = template_table.get( &parameter )
@@ -152,6 +137,7 @@ mod private
     }
 
     /// Fetches mandatory parameters that are not set yet.
+    #[ must_use ]
     pub fn get_missing_mandatory( &self ) -> Vec< &str >
     {
       let values = self.get_values();
@@ -159,28 +145,8 @@ mod private
       .parameters()
       .list_mandatory()
       .into_iter()
-      .filter( | key | values.0.get( *key ).map( | val | val.as_ref() ).flatten().is_none() )
+      .filter( | key | values.0.get( *key ).and_then( | val | val.as_ref() ).is_none() )
       .collect()
-    }
-  }
-
-  impl Default for TemplateHolder
-  {
-    fn default() -> Self
-    {
-      let parameters = TemplateParameters::former()
-      .parameter( "gcp_project_id" ).is_mandatory( true ).end()
-      .parameter( "gcp_region" ).end()
-      .parameter( "gcp_artifact_repo_name" ).end()
-      .parameter( "docker_image_name" ).end()
-      .form();
-
-      Self
-      {
-        files : Default::default(),
-        parameters,
-        values : Default::default(),
-      }
     }
   }
 
@@ -192,10 +158,13 @@ mod private
     /// Creates all files in provided path with values for required parameters.
     ///
     /// Consumes owner of the files.
+    ///
+    /// # Errors
+    /// qqq: doc
     fn create_all( self, path : &Path, values : &TemplateValues ) -> error::untyped::Result< () > // qqq : use typed error
     {
       let fsw = FileSystem;
-      for file in self.into_iter()
+      for file in self
       {
         file.create_file( &fsw, path, values )?;
       }
@@ -214,17 +183,19 @@ mod private
   impl TemplateParameters
   {
     /// Extracts template values from props for parameters required for this template.
-    pub fn values_from_props( &self, props : &wca::Props ) -> TemplateValues
+    #[ must_use ]
+    pub fn values_from_props( &self, props : &wca::executor::Props ) -> TemplateValues
     {
       let values = self.descriptors
       .iter()
       .map( | d | &d.parameter )
-      .map( | param | ( param.clone(), props.get( param ).map( wca::Value::clone ) ) )
+      .map( | param | ( param.clone(), props.get( param ).cloned() ) )
       .collect();
       TemplateValues( values )
     }
 
     /// Get a list of all mandatory parameters.
+    #[ must_use ]
     pub fn list_mandatory( &self ) -> Vec< &str >
     {
       self.descriptors.iter().filter( | d | d.is_mandatory ).map( | d | d.parameter.as_str() ).collect()
@@ -261,27 +232,28 @@ mod private
     /// Converts values to a serializable object.
     ///
     /// Currently only `String`, `Number`, and `Bool` are supported.
+    #[ must_use ]
     pub fn to_serializable( &self ) -> collection::BTreeMap< String, String >
     {
       self.0.iter().map
       (
         | ( key, value ) |
         {
-          let value = value.as_ref().map
+          let value = value.as_ref().map_or
           (
+            "___UNSPECIFIED___".to_string(),
             | value |
             {
               match value
               {
                 wca::Value::String( val ) => val.to_string(),
                 wca::Value::Number( val ) => val.to_string(),
-                wca::Value::Path( _ ) => "unsupported".to_string(),
                 wca::Value::Bool( val ) => val.to_string(),
+                wca::Value::Path( _ ) |
                 wca::Value::List( _ ) => "unsupported".to_string(),
               }
             }
-          )
-          .unwrap_or( "___UNSPECIFIED___".to_string() );
+          );
           ( key.to_owned(), value )
         }
       )
@@ -291,7 +263,7 @@ mod private
     /// Inserts new value if parameter wasn't initialized before.
     pub fn insert_if_empty( &mut self, key : &str, value : wca::Value )
     {
-      if let None = self.0.get( key ).and_then( | v | v.as_ref() )
+      if self.0.get( key ).and_then( | v | v.as_ref() ).is_none()
       {
         self.0.insert( key.into() , Some( value ) );
       }
@@ -300,10 +272,15 @@ mod private
     /// Interactively asks user to provide value for a parameter.
     pub fn interactive_if_empty( &mut self, key : &str )
     {
-      if let None = self.0.get( key ).and_then( | v | v.as_ref() )
+      if self.0.get( key ).and_then( | v | v.as_ref() ).is_none()
       {
         println! ("Parameter `{key}` is not set" );
-        let answer = wca::ask( "Enter value" );
+        print!( "Enter value: " );
+        use std::io::{ self, Write };
+        io::stdout().flush().unwrap();
+        let mut answer = String::new();
+        io::stdin().read_line( &mut answer ).unwrap();
+        let answer = answer.trim().to_string();
         self.0.insert( key.into(), Some( wca::Value::String( answer ) ) );
       }
     }
@@ -341,7 +318,7 @@ mod private
         WriteMode::TomlExtend =>
         {
           let instruction = FileReadInstruction { path : path.into() };
-          if let Some(existing_contents) = fs.read( &instruction ).ok()
+          if let Ok( existing_contents ) = fs.read( &instruction )
           {
             let document = contents.parse::< toml_edit::Document >().context( "Failed to parse template toml file" )?;
             let template_items = document.iter();
@@ -349,10 +326,10 @@ mod private
             let mut existing_document = existing_toml_contents.parse::< toml_edit::Document >().context( "Failed to parse existing toml file" )?;
             for ( template_key, template_item ) in template_items
             {
-              match existing_document.get_mut( &template_key )
+              match existing_document.get_mut( template_key )
               {
-                Some( item ) => *item = template_item.to_owned(),
-                None => existing_document[ &template_key ] = template_item.to_owned(),
+                Some( item ) => template_item.clone_into( item ),
+                None => template_item.clone_into( &mut existing_document[ template_key ] ),
               }
             }
             return Ok( existing_document.to_string() );
@@ -438,9 +415,13 @@ mod private
   pub trait FileSystemPort
   {
     /// Writing to file implementation.
+    /// # Errors
+    /// qqq: doc
     fn write( &self, instruction : &FileWriteInstruction ) -> error::untyped::Result< () >; // qqq : use typed error
 
     /// Reading from a file implementation.
+    /// # Errors
+    /// qqq: doc
     fn read( &self, instruction : &FileReadInstruction ) -> error::untyped::Result< Vec< u8 > >; // qqq : use typed error
   }
 

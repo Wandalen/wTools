@@ -1,12 +1,12 @@
 [package]
 name = "former_types"
-version = "2.7.0"
+version = "2.20.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/former"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/former"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/former"
@@ -31,23 +31,21 @@ use_alloc = [ "no_std", "collection_tools/use_alloc" ]
 default = [
   "enabled",
   "types_former",
-  "types_component_assign",
 ]
 full = [
   "enabled",
   "types_former",
-  "types_component_assign",
 ]
 enabled = [ "collection_tools/enabled" ]
 
 types_former = []
-types_component_assign = []
 
 
 [dependencies]
 collection_tools = { workspace = true, features = [ "collection_constructors" ] }
 # qqq : optimize also make sure collection_tools expose enough features
+component_model_types = { workspace = true, features = ["enabled", "types_component_assign"] }
 
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] }
+test_tools = { workspace = true }

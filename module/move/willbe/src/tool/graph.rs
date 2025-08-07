@@ -1,7 +1,8 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports, clippy::wildcard_imports ) ]
   use crate::*;
 
   // use crate::tool::*;
@@ -13,22 +14,22 @@ mod private
     fmt::Debug,
     hash::Hash,
   };
-  use collection::{ HashMap, HashSet, VecDeque };
-  use path::PathBuf;
+  use collection_tools::collection::{ HashMap, HashSet, VecDeque };
+  use pth::PathBuf;
   use petgraph::
   {
     graph::Graph,
     algo::toposort as pg_toposort,
   };
   use petgraph::graph::NodeIndex;
+
   use petgraph::prelude::*;
 
-  use error::
-  {
-    typed::Error,
-  };
+  use error::typed::Error;
 
-  use package::{ Package, publish_need };
+  use crate::entity::package::{ Package, publish_need };
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
   // qqq : for Bohdan : bad : tools can't depend on entitties!
 
   #[ derive( Debug, Error ) ]
@@ -45,13 +46,14 @@ mod private
   ///
   /// Returns :
   /// The graph with all accepted packages
+  ///
+  /// # Panics
+  /// qqq: doc
+  #[ allow( clippy::implicit_hasher ) ]
+  #[ must_use ]
   pub fn construct< PackageIdentifier >
   (
-    packages : &HashMap
-    <
-      PackageIdentifier,
-      HashSet< PackageIdentifier >,
-    >
+    packages : &HashMap< PackageIdentifier, HashSet< PackageIdentifier >, >
   )
   -> Graph< &PackageIdentifier, &PackageIdentifier >
   where
@@ -92,6 +94,10 @@ mod private
   ///
   /// # Panics
   /// If there is a cycle in the dependency graph
+  ///
+  /// # Errors
+  /// qqq: doc
+  #[ allow( clippy::needless_pass_by_value ) ]
   pub fn toposort< 'a, PackageIdentifier : Clone + std::fmt::Debug >
   (
     graph : Graph< &'a PackageIdentifier, &'a PackageIdentifier >
@@ -123,6 +129,11 @@ mod private
   /// # Returns
   ///
   /// The function returns a vector of vectors, where each inner vector represents a group of nodes that can be executed in parallel. Tasks within each group are sorted in topological order.
+  ///
+  /// # Panics
+  /// qqq: doc
+  #[ must_use ]
+  #[ allow( clippy::needless_pass_by_value ) ]
   pub fn topological_sort_with_grouping< 'a, PackageIdentifier : Clone + std::fmt::Debug >
   (
     graph : Graph< &'a PackageIdentifier, &'a PackageIdentifier >
@@ -136,7 +147,7 @@ mod private
     }
 
     let mut roots = VecDeque::new();
-    for ( node, &degree ) in in_degree.iter()
+    for ( node, &degree ) in &in_degree
     {
       if degree == 0
       {
@@ -194,6 +205,10 @@ mod private
   ///
   /// # Constraints
   /// * `N` must implement the `PartialEq` trait.
+  ///
+  /// # Panics
+  /// qqq: doc
+  #[ allow( clippy::single_match, clippy::map_entry ) ]
   pub fn subgraph< N, E >( graph : &Graph< N, E >, roots : &[ N ] ) -> Graph< NodeIndex, EdgeIndex >
   where
     N : PartialEq< N >,
@@ -215,7 +230,7 @@ mod private
       }
     }
 
-    for ( _, sub_node_id ) in &node_map
+    for sub_node_id in node_map.values()
     {
       let node_id_graph = subgraph[ *sub_node_id ];
 
@@ -235,22 +250,50 @@ mod private
     subgraph
   }
 
-  /// Removes nodes that are not required to be published from the graph.
+  /// Filters a dependency graph to retain only the packages that require publishing.
+  ///
+  /// This function traverses the dependency graph starting from the specified `roots`.
+  /// For each package, it determines if a new version needs to be published by
+  /// packaging it locally (`cargo pack`) and comparing it with the latest version on
+  /// crates.io using the `publish_need` function.
+  ///
+  /// A package is retained in the final graph if:
+  /// 1. It has changed since its last publication.
+  /// 2. One of its dependencies requires publishing (thus forcing a version bump).
+  ///
+  /// This helps in creating a minimal publish plan, avoiding unnecessary publications
+  /// of packages that have not changed.
   ///
   /// # Arguments
   ///
-  /// * `package_map` - A reference to a `HashMap` mapping `String` keys to `Package` values.
-  /// * `graph` - A reference to a `Graph` of nodes and edges, where nodes are of type `String` and edges are of type `String`.
-  /// * `roots` - A slice of `String` representing the root nodes of the graph.
+  /// * `workspace` - The workspace context, used to locate the `target` directory for packaging.
+  /// * `package_map` - A map from package names to `Package` details, used for quick lookups.
+  /// * `graph` - The complete dependency graph of the workspace packages.
+  /// * `roots` - A slice of package names that serve as the starting points for the analysis.
+  /// * `temp_path` - An optional path to a temporary directory for `cargo pack` to use,
+  ///   preventing interference between parallel runs.
   ///
   /// # Returns
   ///
-  /// A new `Graph` with the nodes that are not required to be published removed.
-
+  /// A `Result` containing a new, filtered `Graph` with only the packages that need
+  /// to be published and their inter-dependencies.
+  ///
+  /// # Errors
+  ///
+  /// Returns an `Err` if the `cargo::pack` command fails for any of the packages during the check.
+  ///
+  /// # Panics
+  ///
+  /// This function will panic if:
+  /// - A package name from the graph cannot be found in the `package_map`.
+  /// - The graph is inconsistent and a node index is invalid.
+  /// - The `publish_need` check panics (e.g., due to network issues).
   // qqq : for Bohdan : typed error
-  pub fn remove_not_required_to_publish< 'a >
+  #[ allow( clippy::single_match, clippy::needless_pass_by_value, clippy::implicit_hasher ) ]
+  pub fn remove_not_required_to_publish
   (
-    package_map : &HashMap< String, Package< 'a > >,
+    workspace : &Workspace,
+    package_map : &HashMap< String, Package< '_ > >,
     graph : &Graph< String, String >,
     roots : &[ String ],
     temp_path : Option< PathBuf >,
@@ -264,8 +307,9 @@ mod private
     for root in roots
     {
       let root = graph.node_indices().find( | &i | graph[ i ] == *root ).unwrap();
+      // qqq : no unwraps. simulate crash here and check output. it should be verbal
       let mut dfs = DfsPostOrder::new( &graph, root );
-      'main : while let Some( n ) = dfs.next(&graph)
+      'main : while let Some( n ) = dfs.next( &graph )
       {
         for neighbor in graph.neighbors_directed( n, Outgoing )
         {
@@ -279,13 +323,13 @@ mod private
         _ = cargo::pack
         (
           cargo::PackOptions::former()
-          .path( package.crate_dir().absolute_path() )
+          .path( package.crate_dir().absolute_path().inner() )
           .option_temp_path( temp_path.clone() )
           .dry( false )
           .allow_dirty( true )
           .form()
         )?;
-        if publish_need( package, temp_path.clone() ).unwrap()
+        if publish_need( package, temp_path.clone(), workspace.target_directory() ).unwrap()
         {
           nodes.insert( n );
         }

@@ -1,13 +1,13 @@
 [package]
 name = "for_each"
-version = "0.8.0"
+version = "0.10.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/for_each"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/for_each"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/for_each"
@@ -28,7 +28,7 @@ all-features = false
 # include = [
 #   "/rust/impl/meta/for_each",
 #   "/Cargo.toml",
-#   "/Readme.md",
+#   "/readme.md",
 #   "/License",
 # ]
 

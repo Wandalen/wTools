@@ -1,14 +1,9 @@
-
 use super::*;
 
 //
 
-tests_impls!
-{
-}
+tests_impls! {}
 
 //
 
-tests_index!
-{
-}
+tests_index! {}

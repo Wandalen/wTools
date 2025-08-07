@@ -4,7 +4,7 @@ version = "0.0.0"
 edition = "2021"
 license = "MIT"
 publish = false
-readme = "Readme.md"
+readme = "readme.md"
 description = """
 Build and deploy steps.
 """
@@ -21,4 +21,4 @@ all-features = false
 willbe = { workspace = true, features = [ "full" ] }
 
 [dev-dependencies]
-test_tools = { workspace = true }
+# test_tools = { workspace = true }

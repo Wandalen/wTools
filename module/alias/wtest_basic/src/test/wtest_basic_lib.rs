@@ -10,10 +10,11 @@
 //! Tools for writing and running tests.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
 
 // doc_file_test!( "rust/test/test/asset/Test.md" );
 
+mod private {}
 /// Namespace with dependencies.
 
 #[ cfg( feature = "enabled" ) ]
@@ -48,29 +49,22 @@ pub mod dependency
   pub use ::diagnostics_tools;
 }
 
-use ::meta_tools::mod_interface;
+use mod_interface_meta::mod_interface;
 
 mod_interface!
 {
   /// Basics.
   layer basic;
 
-  // use super::exposed::meta;
-  use super::exposed::mem;
-  use super::exposed::typing;
-  use super::exposed::dt;
-  use super::exposed::diagnostics;
-
-  own use super::dependency;
-  own use super::dependency::*;
-
+  // Correctly import from the root of the respective crates
   prelude use ::meta_tools as meta;
   prelude use ::mem_tools as mem;
   prelude use ::typing_tools as typing;
   prelude use ::data_type as dt;
   prelude use ::diagnostics_tools as diagnostics;
 
-  prelude use ::meta_tools::
+  // Correctly import nested items from impls_index
+  prelude use ::impls_index::implsindex::exposed::
   {
     impls,
     index,

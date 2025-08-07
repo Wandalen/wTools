@@ -1,0 +1,21 @@
+error: Deref cannot be derived for unit structs. It is only applicable to structs with at least one field.
+ --> tests/inc/deref/struct_unit.rs:4:1
+  |
+4 | / #[ allow( dead_code ) ]
+5 | | #[ derive ( Deref ) ]
+6 | | struct StructUnit;
+  | |__________________^
+
+warning: unused import: `core::ops::Deref`
+ --> tests/inc/deref/struct_unit.rs:1:5
+  |
+1 | use core::ops::Deref;
+  |     ^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+error[E0601]: `main` function not found in crate `$CRATE`
+ --> tests/inc/deref/struct_unit.rs:8:42
+  |
+8 | include!( "./only_test/struct_unit.rs" );
+  |                                          ^ consider adding a `main` function to `$DIR/tests/inc/deref/struct_unit.rs`

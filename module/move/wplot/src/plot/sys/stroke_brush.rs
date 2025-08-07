@@ -1,7 +1,7 @@
 mod change_width;
 mod change_new;
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   use crate::own::*;

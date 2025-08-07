@@ -1,11 +1,13 @@
-
 use super::*;
 
-mod layer_a;
-mod layer_b;
+// private layer
+pub mod layer_a;
+// private layer
+pub mod layer_b;
 
-mod_interface!
-{
+mod private {}
+
+the_module::mod_interface! {
 
   /// layer_a
   use super::layer_a;
@@ -17,4 +19,4 @@ mod_interface!
 
 //
 
-include!( "../../only_test/layer_simple_only_test.rs" );
+include!("../../only_test/layer_simple_only_test.rs");

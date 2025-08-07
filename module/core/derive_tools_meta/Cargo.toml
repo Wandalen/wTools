@@ -1,13 +1,13 @@
 [package]
 name = "derive_tools_meta"
-version = "0.26.0"
+version = "0.40.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/derive_tools_meta"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/derive_tools_meta"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/derive_tools_meta"
@@ -58,7 +58,7 @@ full = [
   "derive_not",
   "derive_phantom"
 ]
-enabled = [ "macro_tools/enabled", "iter_tools/enabled", "former_types/enabled" ]
+enabled = [ "macro_tools/enabled", "iter_tools/enabled", "component_model_types/enabled" ]
 
 derive_as_mut = []
 derive_as_ref = []
@@ -78,7 +78,7 @@ derive_phantom = []
 macro_tools = { workspace = true, features = [ "attr", "attr_prop", "container_kind", "ct", "diag", "generic_args", "typ", "derive", "generic_params", "name", "phantom", "struct_like", "quantifier" ] }
 # zzz : qqq : optimize features set
 iter_tools = { workspace = true, features = [ "iter_trait" ] }
-former_types = { workspace = true, features = [ "types_component_assign" ] }
+component_model_types = { workspace = true, features = [ "types_component_assign" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }

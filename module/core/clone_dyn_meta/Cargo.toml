@@ -1,13 +1,13 @@
 [package]
 name = "clone_dyn_meta"
-version = "0.23.0"
+version = "0.35.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/clone_dyn_meta"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/clone_dyn_meta"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/clone_dyn_meta"
@@ -31,11 +31,11 @@ proc-macro = true
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-enabled = [ "macro_tools/enabled", "former_types/enabled" ]
+enabled = [ "macro_tools/enabled", "component_model_types/enabled" ]
 
 [dependencies]
 macro_tools = { workspace = true, features = [ "attr", "attr_prop", "ct", "diag", "generic_params", "punctuated", "phantom", "item_struct", "quantifier" ] } # qqq : optimize set of features
-former_types = { workspace = true, features = [ "types_component_assign" ] }
+component_model_types = { workspace = true, features = [ "types_component_assign" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }

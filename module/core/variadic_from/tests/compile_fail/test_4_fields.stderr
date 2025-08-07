@@ -1,0 +1,5 @@
+error[E0601]: `main` function not found in crate `$CRATE`
+  --> tests/compile_fail/test_4_fields.rs:11:2
+   |
+11 | }
+   |  ^ consider adding a `main` function to `$DIR/tests/compile_fail/test_4_fields.rs`

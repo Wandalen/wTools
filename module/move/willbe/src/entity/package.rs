@@ -1,18 +1,18 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+
   use crate::*;
-
-  use std::
-  {
-    hash::Hash,
-  };
-
+  use std::hash::Hash;
   use crates_tools::CrateArchive;
   use error::
   {
     // Result,
     typed::Error,
   };
+  
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{self, Ok, Err};
 
   /// A wrapper type for representing the name of a package.
   ///
@@ -32,8 +32,9 @@ mod private
   #[ derive( Debug, Clone ) ]
   pub enum Package< 'a >
   {
+
     /// `Cargo.toml` file.
-    Manifest( Manifest ),
+    Manifest( Box< Manifest > ), // fix clippy
     /// Cargo package package.
     WorkspacePackageRef( WorkspacePackageRef< 'a > ),
   }
@@ -62,7 +63,8 @@ mod private
     NotAPackage,
   }
 
-  impl< 'a > TryFrom< ManifestFile > for Package< 'a >
+  // fix clippy
+  impl TryFrom< ManifestFile > for Package< '_ >
   {
     type Error = PackageError;
 
@@ -74,11 +76,11 @@ mod private
         return Err( PackageError::NotAPackage );
       }
 
-      Ok( Self::Manifest( package ) )
+      Result::Ok( Self::Manifest( Box::new( package ) ) ) // fix clippy
     }
   }
 
-  impl< 'a > TryFrom< CrateDir > for Package< 'a >
+  impl TryFrom< CrateDir > for Package< '_ > // fix clippy
   {
     type Error = PackageError;
 
@@ -90,11 +92,11 @@ mod private
         return Err( PackageError::NotAPackage );
       }
 
-      Ok( Self::Manifest( package ) )
+      Result::Ok( Self::Manifest( Box::new( package ) ) ) // fix clippy
     }
   }
 
-  impl< 'a > TryFrom< Manifest > for Package< 'a >
+  impl TryFrom< Manifest > for Package< '_ > // fix clippy
   {
     type Error = PackageError;
 
@@ -105,7 +107,7 @@ mod private
         return Err( PackageError::NotAPackage );
       }
 
-      Ok( Self::Manifest( value ) )
+      Result::Ok( Self::Manifest( Box::new( value ) ) ) // fix clippy
     }
   }
 
@@ -117,10 +119,13 @@ mod private
     }
   }
 
-  impl< 'a > Package< 'a >
+  impl Package< '_ > // fix clippy
   {
 
     /// Path to `Cargo.toml`
+    /// # Panics
+    /// qqq: doc
+    #[ must_use ]
     pub fn manifest_file( &self ) -> ManifestFile
     {
       match self
@@ -131,6 +136,9 @@ mod private
     }
 
     /// Path to folder with `Cargo.toml`
+    /// # Panics
+    /// qqq: doc
+    #[ must_use ]
     pub fn crate_dir( &self ) -> CrateDir
     {
       match self
@@ -141,6 +149,10 @@ mod private
     }
 
     /// Package version
+    /// # Errors
+    /// qqq: doc
+    /// # Panics
+    /// qqq: doc
     pub fn version( &self ) -> Result< String, PackageError >
     {
       match self
@@ -151,16 +163,17 @@ mod private
           let data = &package.data;
 
           // Unwrap safely because of the `Package` type guarantee
-          Ok( data[ "package" ][ "version" ].as_str().unwrap().to_string() )
+          Result::Ok( data[ "package" ][ "version" ].as_str().unwrap().to_string() )
         }
         Self::WorkspacePackageRef( package ) =>
         {
-          Ok( package.version().to_string() )
+          Result::Ok( package.version().to_string() )
         }
       }
     }
 
     /// Check that module is local.
+    #[ must_use ]
     pub fn local_is( &self ) -> bool
     {
       match self
@@ -179,11 +192,13 @@ mod private
     }
 
     /// Returns the `Manifest`
+    /// # Errors
+    /// qqq: doc
     pub fn manifest( &self ) -> Result< Manifest, PackageError >
     {
       match self
       {
-        Package::Manifest( package ) => Ok( package.clone() ),
+        Package::Manifest( package ) => Ok( *package.clone() ), // fix clippy
         Package::WorkspacePackageRef( package ) => Manifest::try_from
         (
           package.manifest_file().map_err( | _ | PackageError::LocalPath )? // qqq : use trait
@@ -196,34 +211,55 @@ mod private
 
   //
 
-  /// Determines whether a package needs to be published by comparing `.crate` files from the local and remote package.
+  /// Determines if a package needs to be published by comparing its local `.crate` file against the version on crates.io.
   ///
-  /// This function requires the local package to be previously packed.
+  /// This function first locates the local, pre-packaged `.crate` file and then attempts to download
+  /// the corresponding version from the remote registry. It returns `true` if there are differences
+  /// or if the remote version does not exist (implying a new version to be published).
   ///
-  /// # Returns :
-  /// - `true` if the package needs to be published.
-  /// - `false` if there is no need to publish the package.
+  /// **Prerequisite**: The local package must have been packaged beforehand (e.g., using `cargo package`).
   ///
-  /// Panics if the package is not loaded or local package is not packed.
-
-  pub fn publish_need< 'a >( package : &Package< 'a >, path : Option< path::PathBuf > ) -> Result< bool, PackageError >
+  /// # Arguments
+  ///
+  /// * `package` - A reference to the `Package` struct for which the check is being performed.
+  /// * `path` - An optional path to a directory that contains the packaged `.crate` file.
+  ///   If `Some`, this path is used directly. If `None`, the path is constructed using `target_dir`.
+  /// * `target_dir` - The path to the workspace's `target` directory, used to find the
+  ///   local `.crate` file if a specific `path` is not provided.
+  ///
+  /// # Returns
+  ///
+  /// - `Ok(true)` if the local and remote `.crate` files have differences, or if the package
+  ///   version does not exist on crates.io (e.g., a 403 Forbidden error is received).
+  /// - `Ok(false)` if the local and remote packages are identical.
+  ///
+  /// # Errors
+  ///
+  /// This function will return an error in the following cases:
+  ///
+  /// - `PackageError::LocalPath`: If the path to the local `.crate` file cannot be determined.
+  /// - `PackageError::ReadArchive`: If the local `.crate` file exists but cannot be read.
+  /// - `PackageError::LoadRemotePackage`: If downloading the remote package fails for reasons
+  ///   other than a non-existent version (e.g., network issues).
+  /// - Any error that occurs while trying to read the package's name or version.
+  pub fn publish_need( package : &Package< '_ >, path : Option< path::PathBuf >, target_dir : &std::path::Path ) -> Result< bool, PackageError >
   {
     let name = package.name()?;
     let version = package.version()?;
     let local_package_path = path
-    .map( | p | p.join( format!( "package/{0}-{1}.crate", name, version ) ) )
-    .unwrap_or( packed_crate::local_path( &name, &version, package.crate_dir() ).map_err( | _ | PackageError::LocalPath )? );
+    .map( | p | p.join( format!( "package/{name}-{version}.crate" ) ) )
+    .unwrap_or( packed_crate::local_path( name, &version, target_dir ).map_err( | _ | PackageError::LocalPath )? );
 
     let local_package = CrateArchive::read( local_package_path ).map_err( | _ | PackageError::ReadArchive )?;
     let remote_package = match CrateArchive::download_crates_io( name, version )
     {
       Ok( archive ) => archive,
       // qqq : fix. we don't have to know about the http status code
-      Err( ureq::Error::Status( 403, _ ) ) => return Ok( true ),
+      Err( ureq::Error::Status( 403, _ ) ) => return Result::Ok( true ),
       _ => return Err( PackageError::LoadRemotePackage ),
     };
 
-    Ok( diff::crate_diff( &local_package, &remote_package ).exclude( diff::PUBLISH_IGNORE_LIST ).has_changes() )
+    Result::Ok( diff::crate_diff( &local_package, &remote_package ).exclude( diff::PUBLISH_IGNORE_LIST ).has_changes() )
   }
 
 }

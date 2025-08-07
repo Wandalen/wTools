@@ -1,4 +1,4 @@
-error: expected one of: `mod`, `use`, `layer`
+error: expected one of: `mod`, `use`, `layer`, `reuse`
  --> tests/inc/derive/layer_unknown_vis/mod.rs
   |
   |   xyz layer layer_a;

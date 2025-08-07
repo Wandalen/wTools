@@ -1,10 +1,8 @@
 //! This example demonstrates the usage of macros `impls1!` and `index!` for defining and indexing functions.
-fn main()
-{
+fn main() {
   use ::impls_index::*;
 
-  impls1!
-  {
+  impls1! {
     fn f1() -> i32
     {
       println!( "f1() : 13" );
@@ -12,11 +10,9 @@ fn main()
     }
   }
 
-  index!
-  {
+  index! {
     f1,
   }
-  assert_eq!( f1(), 13 );
+  assert_eq!(f1(), 13);
   /* print : f1() : 13 */
 }
-

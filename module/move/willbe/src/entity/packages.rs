@@ -1,12 +1,11 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+
   use crate::*;
-  use std::
-  {
-    fmt::Formatter,
-  };
-  use package::PackageName;
-  use collection::{ HashMap, HashSet };
+  use std::fmt::Formatter;
+  use crate::entity::package::PackageName;
+  use collection_tools::collection::{ HashMap, HashSet };
 
   // use workspace::WorkspacePackageRef< '_ >;
   // use Dependency;
@@ -16,6 +15,7 @@ mod private
   /// A configuration struct for specifying optional filters when using the
   /// `filter` function. It allows users to provide custom filtering
   /// functions for packages and dependencies.
+  #[ allow( clippy::type_complexity ) ]
   #[ derive( Default ) ]
   pub struct FilterMapOptions
   {
@@ -44,6 +44,7 @@ mod private
     }
   }
 
+
   /// Provides a means to filter both packages and dependencies of an existing package metadata set.
   ///
   /// # Arguments
@@ -71,10 +72,7 @@ mod private
   /// * `dependency_filter`: When specified, it's used with each package and its dependencies to decide
   ///   which dependencies should be included in the return for that package. If not provided, all
   ///   dependencies for a package are included.
-
-  // aaa : for Bohdan : for Petro : bad. don't use PackageMetadata directly, use its abstraction only!
-
-  pub fn filter< 'a >
+  pub fn filter< 'a >   // aaa : for Bohdan : for Petro : bad. don't use PackageMetadata directly, use its abstraction only!
   (
     // packages : &[ WorkspacePackageRef< '_ > ],
     packages : impl Iterator< Item = WorkspacePackageRef< 'a > >,

@@ -1,8 +1,10 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+
   use crate::*;
   use macros::kw;
-  use collection::BTreeMap;
+  use collection_tools::collection::BTreeMap;
   use serde_json::Value;
 
   use std::
@@ -12,7 +14,7 @@ mod private
 
   // xxx : qqq : Deref, DerefMut, AsRef, AsMut
 
-  /// Facade for cargo_metadata::Package
+  /// Facade for `cargo_metadata::Package`
   #[ derive( Debug, Clone, Copy ) ]
   #[ repr( transparent ) ]
   pub struct WorkspacePackageRef< 'a >
@@ -35,6 +37,7 @@ mod private
   impl< 'a > WorkspacePackageRef< 'a >
   {
     /// The name field as given in the Cargo.toml
+    #[ must_use ]
     pub fn name( &'a self ) -> &'a str
     {
       &self.inner.name
@@ -56,12 +59,21 @@ mod private
     }
 
     /// Path to the manifest Cargo.toml
+    ///
+    /// # Errors
+    /// qqq: doc
     pub fn manifest_file( &self ) -> Result< ManifestFile, PathError >
     {
       self.inner.manifest_path.as_path().try_into()
     }
 
     /// Path to the directory with manifest Cargo.toml.
+    ///
+    /// # Errors
+    /// qqq: doc
+    ///
+    /// # Panics
+    /// qqq: docs
     pub fn crate_dir( &self ) -> Result< CrateDir, PathError >
     {
       // SAFE because `manifest_path containing the Cargo.toml`
@@ -69,6 +81,7 @@ mod private
     }
 
     /// The version field as specified in the Cargo.toml
+    #[ must_use ]
     pub fn version( &self ) -> semver::Version
     {
       self.inner.version.clone()
@@ -77,6 +90,7 @@ mod private
     /// List of registries to which this package may be published (derived from the publish field).
     /// Publishing is unrestricted if None, and forbidden if the Vec is empty.
     /// This is always None if running with a version of Cargo older than 1.39.
+    #[ must_use ]
     pub fn publish( &self ) -> Option< &Vec< String > >
     {
       self.inner.publish.as_ref()
@@ -105,39 +119,42 @@ mod private
     ///   assert_eq!( package_metadata.some_value, 42 );
     /// }
     /// ```
+    #[ must_use ]
     pub fn metadata( &self ) -> &Value
     {
       &self.inner.metadata
     }
 
     /// The repository URL as specified in the Cargo.toml
+    #[ must_use ]
     pub fn repository( &self ) -> Option< &String >
     {
       self.inner.repository.as_ref()
     }
 
     /// Features provided by the crate, mapped to the features required by that feature.
+    #[ must_use ]
     pub fn features( &self ) -> &BTreeMap< String, Vec< String > >
     {
       &self.inner.features
     }
   }
 
-  impl< 'a > Entries for WorkspacePackageRef< 'a >
+  impl Entries for WorkspacePackageRef< '_ > // fix clippy
   {
     fn entries( &self ) -> impl IterTrait< '_, SourceFile >
     {
       self.inner.targets.iter().map( | target |
       {
         let src_path = &target.src_path;
-        let source : SourceFile = src_path.try_into().expect( &format!( "Illformed path to source file {src_path}" ) );
+        let source : SourceFile = src_path.try_into().unwrap_or_else( | _ | panic!( "Illformed path to source file {src_path}" ) );
         // println!( " -- {:?} {:?}", source, target.kind );
         source
       })
     }
   }
 
-  impl< 'a > Sources for WorkspacePackageRef< 'a >
+  impl Sources for WorkspacePackageRef< '_ > // fix clippy
   {
     fn sources( &self ) -> impl IterTrait< '_, SourceFile >
     {
@@ -146,14 +163,14 @@ mod private
       WalkDir::new( crate_dir )
       .into_iter()
       .filter_map( Result::ok )
-      .filter( | e | e.path().extension().map_or( false, | ext | ext == "rs" ) )
+      .filter( | e | e.path().extension().is_some_and(| ext | ext == "rs") ) // fix clippy
       .map( | e | SourceFile::try_from( e.path() ).unwrap() )
       .collect::< Vec< _ > >()
       .into_iter()
     }
   }
 
-  impl< 'a > CodeItems for WorkspacePackageRef< 'a >
+  impl CodeItems for WorkspacePackageRef< '_ > // fix clippy
   {
     fn items( &self ) -> impl IterTrait< '_, syn::Item >
     {
@@ -164,9 +181,9 @@ mod private
     }
   }
 
-  impl< 'a > AsCode for WorkspacePackageRef< 'a >
+  impl AsCode for WorkspacePackageRef< '_ > // fix clippy
   {
-    fn as_code< 'b >( &'b self ) -> std::io::Result< Cow< 'b, str > >
+    fn as_code( &self ) -> std::io::Result< Cow< '_, str > >
     {
       let mut results : Vec< String > = Vec::new();
       // zzz : introduce formatter
@@ -178,9 +195,9 @@ mod private
         .as_ref()
         .with_extension( "" )
         .file_name()
-        .expect( &format!( "Cant get file name of path {}", source.as_ref().display() ) )
+        .unwrap_or_else( || panic!( "Cant get file name of path {}", source.as_ref().display() ) )
         .to_string_lossy()
-        .replace( ".", "_" );
+        .replace( '.', "_" );
 
         if kw::is( &filename )
         {
@@ -190,7 +207,7 @@ mod private
         // qqq : xxx : use callbacks instead of expect
 
         results.push( format!( "// === Begin of File {}", source.as_ref().display() ) );
-        results.push( format!( "mod {}\n{{\n", filename ) );
+        results.push( format!( "mod {filename}\n{{\n" ) );
         results.push( code );
         results.push( "\n}".to_string() );
         results.push( format!( "// === End of File {}", source.as_ref().display() ) );
@@ -198,7 +215,7 @@ mod private
       }
 
       let joined = results.join( "\n" );
-      Ok( Cow::Owned( joined ) )
+      std::io::Result::Ok( Cow::Owned( joined ) )
     }
   }
 

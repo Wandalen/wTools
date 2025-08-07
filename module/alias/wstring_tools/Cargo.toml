@@ -7,7 +7,7 @@ authors = [
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/wstring_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/alias/wstring_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/alias/wstring_tools"
@@ -27,12 +27,13 @@ all-features = false
 include = [
   "/rust/impl/wstring_tools_lib.rs",
   "/Cargo.toml",
-  "/Readme.md",
+  "/readme.md",
   "/License",
 ]
 
 [features]
 default = [
+  "enabled",
   "indentation",
   # "isolate",
   # "parse_request",
@@ -40,12 +41,14 @@ default = [
   "parse_number",
 ]
 full = [
+  "enabled",
   "indentation",
   # "isolate",
   # "parse_request",
   # "split",
   "parse_number",
 ]
+enabled = []
 # use_std = [ "strs_tools/use_std" ]
 no_std = [ "strs_tools/no_std" ]
 use_alloc = [ "strs_tools/use_alloc" ]

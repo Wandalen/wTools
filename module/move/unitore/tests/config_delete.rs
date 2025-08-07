@@ -16,7 +16,7 @@ async fn config_delete() -> Result< () >
 {
 
   let path = std::path::PathBuf::from( "./tests/fixtures/test_config.toml" );
-  let temp_path = proper_path_tools::path::unique_folder_name().unwrap();
+  let temp_path = pth::path::unique_folder_name().unwrap();
 
   let config = Config::default()
   .path( format!( "./{}", temp_path ) )

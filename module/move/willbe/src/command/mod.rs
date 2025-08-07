@@ -1,13 +1,16 @@
-/// Internal namespace.
+// module/move/willbe/src/command/mod.rs
+/// Define a private namespace for all its items.
 mod private
 {
+
   use crate::*;
-  use wca::{ Type, CommandsAggregator, CommandsAggregatorFormer };
+  use wca::{ Type, CommandsAggregator };
+  use wca::aggregator::CommandsAggregatorFormer;
 
   ///
   /// Form CA commands grammar.
   ///
-
+  #[ allow( clippy::too_many_lines ) ]
   pub fn ca() -> CommandsAggregatorFormer
   {
     CommandsAggregator::former()
@@ -107,10 +110,10 @@ mod private
       .end()
 
     .command( "readme.health.table.renew" )
-      .hint( "Generate a table for the root `Readme.md`" )
+      .hint( "Generate a table for the root `readme.md`" )
       .long_hint(
-        r#"Generates a data summary table for the `Readme.md` file located in the root of the workspace.
-To ensure the proper execution of the command, the following tags need to be specified in the Readme.md file:
+        r#"Generates a data summary table for the `readme.md` file located in the root of the workspace.
+To ensure the proper execution of the command, the following tags need to be specified in the readme.md file:
 
 <!--{ generate.healthtable( './', with_branches:1 ) } -->
 <!--{ generate.healthtable.end } -->
@@ -128,8 +131,8 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
       .end()
 
     .command( "test" )
-      .hint( "execute tests in specific packages" )
-      .long_hint( "this command runs tests in designated packages based on the provided path. It allows for inclusion and exclusion of features, testing on different Rust version channels, parallel execution, and feature combination settings." )
+      .hint( "List crate features to run tests for each combination, aiming for full test coverage of the crate." )
+      .long_hint( "List crate features, different optimization level (Release & Debug) and toolchain (stable & nightly) to run tests for each combination. Сan be used for packages as well as workspaces. Supports parallel execution." )
       .subject().hint( "A path to directories with packages. If no path is provided, the current directory is used." ).kind( Type::Path ).optional( true ).end()
       .property( "dry" ).hint( "Enables 'dry run'. Does not run tests, only simulates. Default is `true`." ).kind( Type::Bool ).optional( true ).end()
       .property( "temp" ).hint( "If flag is `true` all test will be running in temporary directories. Default `true`." ).kind( Type::Bool ).optional( true ).end()
@@ -225,7 +228,7 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
 
     .command( "deploy.renew" )
       .hint( "Create deploy template" )
-      .long_hint( "Creates static files and directories.\nDeployment to different hosts is done via Makefile." )
+      .long_hint( "Creates static files and directories.\nDeployment to different hosts is done via Makefile.\n\nUsage example: deploy.renew gcp_project_id:wtools" )
       .property( "gcp_project_id" )
         .hint( "Google Cloud Platform Project id for image deployment, terraform state bucket, and, if specified, GCE instance deployment." )
         .kind( Type::String )
@@ -239,31 +242,31 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
       .property( "gcp_artifact_repo_name" )
         .hint( "Google Cloud Platform Artifact Repository to store docker image in. Will be generated from current directory name if unspecified." )
         .kind( Type::String )
-        .optional( false )
+        .optional( true )
         .end()
       .property( "docker_image_name" )
         .hint( "Docker image name to build and deploy. Will be generated from current directory name if unspecified." )
         .kind( Type::String )
-        .optional( false )
+        .optional( true )
         .end()
       .routine( command::deploy_renew )
       .end()
 
     .command( "readme.header.renew" )
-      .hint( "Generate header in workspace`s Readme.md file")
-      .long_hint( "Generate header which contains a badge with the general status of workspace, a link to discord, an example in gitpod and documentation in workspace`s Readme.md file.\n For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.")
+      .hint( "Generate header in workspace`s readme.md file")
+      .long_hint( "Generate header which contains a badge with the general status of workspace, a link to discord, an example in gitpod and documentation in workspace`s readme.md file.\n For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.")
       .routine( command::readme_header_renew )
       .end()
 
     .command( "readme.modules.headers.renew" )
       .hint( "Generates header for each workspace member." )
-      .long_hint( "Generates header for each workspace member which contains a badge with the status of crate, a link to discord, an example in gitpod and documentation in crate Readme.md file.\nFor use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml." )
+      .long_hint( "Generates header for each workspace member which contains a badge with the status of crate, a link to discord, an example in gitpod and documentation in crate readme.md file.\nFor use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml." )
       .routine( command::readme_modules_headers_renew )
       .end()
 
     .command( "readme.headers.renew" )
-      .hint( "Aggregation of two command : `readme.header.renew` and `readme.modules.headers.renew`.\n Generated headers in workspace members and in main Readme.md file.")
-      .long_hint( "Generate header which contains a badge with the general status of workspace, a link to discord, an example in gitpod and documentation in workspace`s Readme.md file.\n For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.\n\nGenerates header for each workspace member which contains a badge with the status of crate, a link to discord, an example in gitpod and documentation in crate Readme.md file.\nFor use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml.")
+      .hint( "Aggregation of two command : `readme.header.renew` and `readme.modules.headers.renew`.\n Generated headers in workspace members and in main readme.md file.")
+      .long_hint( "Generate header which contains a badge with the general status of workspace, a link to discord, an example in gitpod and documentation in workspace`s readme.md file.\n For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.\n\nGenerates header for each workspace member which contains a badge with the status of crate, a link to discord, an example in gitpod and documentation in crate readme.md file.\nFor use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml.")
       .routine( command::readme_headers_renew )
       .end()
 
@@ -282,6 +285,23 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
         .end()
       .routine( command::features )
       .end()
+
+    // Updated command definition
+    .command( "crate.doc" )
+      .hint( "Generate documentation for a crate in a single Markdown file." )
+      .long_hint( "Generates documentation for the specified crate and outputs it as a single Markdown file." )
+      .subject()
+        .hint( "Path to the crate directory. If not specified, uses the current directory." )
+        .kind( Type::Path )
+        .optional( true )
+        .end()
+      .property( "output" ) // Added output property
+        .hint( "Path to the output Markdown file. Defaults to {crate_name}_doc.md in the crate directory." )
+        .kind( Type::Path )
+        .optional( true )
+        .end()
+      .routine( command::crate_doc )
+      .end()
   }
 }
 
@@ -290,6 +310,8 @@ crate::mod_interface!
 
   own use ca;
 
+  /// Generate documentation for a crate.
+  layer crate_doc;
   /// List packages.
   layer list;
   /// Publish packages.
@@ -298,7 +320,7 @@ crate::mod_interface!
   layer publish_diff;
   /// Combination of two commands `main_header` and `readme_modules_headers_renew`.
   layer readme_headers_renew;
-  /// Generates health table in main Readme.md file of workspace.
+  /// Generates health table in main readme.md file of workspace.
   // aaa : for Petro : what a table??
   // aaa : add more details to documentation
   layer readme_health_table_renew;

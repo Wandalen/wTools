@@ -1,3 +1,4 @@
+
 use crate::*;
 use core::
 {
@@ -7,22 +8,20 @@ use core::
     DerefMut,
   },
 };
-use std::
-{
-  path::Path,
-};
+use std::path::Path;
 // use error::
 // {
 //   Result,
 // };
 
-/// Wrapper over `data_type::Either< CrateDir, ManifestFile >` with utils methods.
+/// Wrapper over `data_type::Either< CrateDir, ManifestFile >` with util methods.
 #[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug ) ]
 pub struct EitherDirOrFile( data_type::Either< CrateDir, ManifestFile > );
 
 impl EitherDirOrFile
 {
-  /// Returns inner type which is an data_type::Either< CrateDir, ManifestFile >.
+  /// Returns inner type which is an `data_type::Either`< `CrateDir`, `ManifestFile` >.
+  #[ must_use ]
   pub fn inner( self ) -> data_type::Either< CrateDir, ManifestFile >
   {
     self.0
@@ -38,11 +37,11 @@ impl TryFrom< &Path > for EitherDirOrFile
   {
     if value.file_name() == Some( "Cargo.toml".as_ref() )
     {
-      Ok( Self( data_type::Either::Right( ManifestFile::try_from( value )? ) ) )
+      Result::Ok( Self( data_type::Either::Right( ManifestFile::try_from( value )? ) ) )
     }
     else
     {
-      Ok( Self( data_type::Either::Left( CrateDir::try_from( value )? ) ) )
+      Result::Ok( Self( data_type::Either::Left( CrateDir::try_from( value )? ) ) )
     }
   }
 }
@@ -75,6 +74,7 @@ impl Deref for EitherDirOrFile
 {
   type Target = Path;
 
+  #[ allow( clippy::explicit_deref_methods ) ]
   fn deref( &self ) -> &Self::Target
   {
     self.0.deref()
@@ -83,6 +83,7 @@ impl Deref for EitherDirOrFile
 
 impl DerefMut for EitherDirOrFile
 {
+  #[ allow( clippy::explicit_deref_methods ) ]
   fn deref_mut( &mut self ) -> &mut Self::Target
   {
     self.0.deref_mut()

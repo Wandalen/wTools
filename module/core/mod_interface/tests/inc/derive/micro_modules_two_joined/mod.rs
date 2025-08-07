@@ -1,13 +1,9 @@
-
 use super::*;
 
 /// Private namespace of the module.
-mod private
-{
-}
+mod private {}
 
-mod_interface!
-{
+the_module::mod_interface! {
 
   own mod
   {
@@ -41,4 +37,4 @@ mod_interface!
 
 //
 
-include!( "../../only_test/micro_modules_two_only_test.rs" );
+include!("../../only_test/micro_modules_two_only_test.rs");

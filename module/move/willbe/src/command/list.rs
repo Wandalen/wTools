@@ -1,6 +1,8 @@
 /// Internal namespace.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+
   use crate::*;
 
   use std::
@@ -9,8 +11,8 @@ mod private
     path::PathBuf,
   };
   use wca::VerifiedCommand;
-  use error::{ untyped::Context };
-  use collection::HashSet;
+  use error::untyped::Context;
+  use collection_tools::collection::HashSet;
 
   use action::
   {
@@ -18,8 +20,11 @@ mod private
     list::{ ListFormat, ListOptions },
   };
   use former::Former;
+  // Explicit import for Result and its variants for pattern matching
+  use std::result::Result::{Ok, Err};
 
   #[ derive( Former ) ]
+  #[ allow( clippy::struct_excessive_bools ) ]
   struct ListProperties
   {
     #[ former( default = ListFormat::Tree ) ]
@@ -46,14 +51,14 @@ mod private
   ///
   /// List workspace packages.
   ///
-
+  /// # Errors
+  /// qqq: doc
   // qqq : typed error
   pub fn list( o : VerifiedCommand ) -> error::untyped::Result< () >
   {
     let path_to_workspace : PathBuf = o.args
     .get_owned( 0 )
     .unwrap_or( std::env::current_dir().context( "Workspace list command without subject" )? );
-    // let path_to_workspace = AbsolutePath::try_from( fs::canonicalize( path_to_workspace )? )?;
 
     let ListProperties { format, with_version, with_path, with_local, with_remote, with_primary, with_dev, with_build } = o.props.try_into()?;
 
@@ -80,13 +85,13 @@ mod private
     .dependency_categories( categories )
     .form();
 
-    match action::list( o )
+    match action::list_all( o )
     {
       Ok( report ) =>
       {
         println!( "{report}" );
       }
-      Err(( report, e )) =>
+      Err( ( report, e ) ) =>
       {
         eprintln!( "{report}" );
 
@@ -97,10 +102,10 @@ mod private
     Ok( () )
   }
 
-  impl TryFrom< wca::Props > for ListProperties
+  impl TryFrom< wca::executor::Props > for ListProperties
   {
     type Error = error::untyped::Error;
-    fn try_from( value : wca::Props ) -> Result< Self, Self::Error >
+    fn try_from( value : wca::executor::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();
 

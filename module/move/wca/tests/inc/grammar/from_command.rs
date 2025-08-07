@@ -1,9 +1,10 @@
 use super::*;
 
+use the_module::{parser::Parser, Type, Value, grammar::Dictionary, verifier::Verifier};
+
 //
 
-tests_impls!
-{
+tests_impls! {
   fn command_validation()
   {
     // init parser
@@ -13,7 +14,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -45,7 +46,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -92,7 +93,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -121,7 +122,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -156,7 +157,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -184,7 +185,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -223,7 +224,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -238,14 +239,14 @@ tests_impls!
     let grammar_command = verifier.to_command( dictionary, raw_command ).unwrap();
 
     a_true!( grammar_command.args.0.is_empty() );
-    a_id!( HashMap::from_iter([ ( "prop1".to_string(), Value::String( "value1".to_string() ) ) ]), grammar_command.props.0 );
+    a_id!( HashMap::from_iter( [ ( "prop1".to_string(), Value::String( "value1".to_string() ) ) ] ), grammar_command.props.0 );
 
     // with property re-write
     let raw_command = parser.parse( [ ".command", "prop1:value", "prop1:another_value" ] ).unwrap().commands.remove( 0 );
     let grammar_command = verifier.to_command( dictionary, raw_command ).unwrap();
 
     a_true!( grammar_command.args.0.is_empty() );
-    a_id!( HashMap::from_iter([ ( "prop1".to_string(), Value::String( "another_value".to_string() ) ) ]), grammar_command.props.0 );
+    a_id!( HashMap::from_iter( [ ( "prop1".to_string(), Value::String( "another_value".to_string() ) ) ] ), grammar_command.props.0 );
 
     // with undeclareted property
     let raw_command = parser.parse( [ ".command", "undeclareted_prop:value" ] ).unwrap().commands.remove( 0 );
@@ -268,7 +269,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -297,7 +298,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -328,17 +329,17 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
       .property( "property" )
-        .hint( "string property" )
-        .kind( Type::String )
-        .optional( true )
-        .alias( "prop" )
-        .alias( "p" )
-        .end()
+      .hint( "string property" )
+      .kind( Type::String )
+      .optional( true )
+      .alias( "prop" )
+      .alias( "p" )
+      .end()
       .form()
     )
     .form();
@@ -349,27 +350,27 @@ tests_impls!
     let grammar_command = verifier.to_command( dictionary, raw_command ).unwrap();
 
     a_true!( grammar_command.args.0.is_empty() );
-    a_id!( HashMap::from_iter([ ( "property".to_string(), Value::String( "value".to_string() ) ) ]), grammar_command.props.0 );
+    a_id!( HashMap::from_iter( [ ( "property".to_string(), Value::String( "value".to_string() ) ) ] ), grammar_command.props.0 );
 
     // first alias
     let raw_command = parser.parse( [ ".command", "prop:value" ] ).unwrap().commands.remove( 0 );
     let grammar_command = verifier.to_command( dictionary, raw_command ).unwrap();
 
     a_true!( grammar_command.args.0.is_empty() );
-    a_id!( HashMap::from_iter([ ( "property".to_string(), Value::String( "value".to_string() ) ) ]), grammar_command.props.0 );
+    a_id!( HashMap::from_iter( [ ( "property".to_string(), Value::String( "value".to_string() ) ) ] ), grammar_command.props.0 );
 
     // second alias
     let raw_command = parser.parse( [ ".command", "p:value" ] ).unwrap().commands.remove( 0 );
     let grammar_command = verifier.to_command( dictionary, raw_command ).unwrap();
 
     a_true!( grammar_command.args.0.is_empty() );
-    a_id!( HashMap::from_iter([ ( "property".to_string(), Value::String( "value".to_string() ) ) ]), grammar_command.props.0 );
+    a_id!( HashMap::from_iter( [ ( "property".to_string(), Value::String( "value".to_string() ) ) ] ), grammar_command.props.0 );
 
     // init converter with layered properties
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -384,14 +385,13 @@ tests_impls!
     let grammar_command = verifier.to_command( dictionary, raw_command ).unwrap();
 
     a_true!( grammar_command.args.0.is_empty() );
-    a_id!( HashMap::from_iter([ ( "property".to_string(), Value::String( "value".to_string() ) ) ]), grammar_command.props.0 );
+    a_id!( HashMap::from_iter( [ ( "property".to_string(), Value::String( "value".to_string() ) ) ] ), grammar_command.props.0 );
   }
 }
 
 //
 
-tests_index!
-{
+tests_index! {
   command_validation,
   subjects,
   subject_type_check,

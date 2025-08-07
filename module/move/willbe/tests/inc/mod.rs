@@ -1,4 +1,5 @@
 use super::*;
+use test_tools::exposed::*;
 
 /// Entities of which spaces consists of.
 mod entity;
@@ -14,9 +15,10 @@ mod action_tests;
 
 mod helper;
 
+mod package;
+
 // aaa : for Petro : for Bohdan : for Nikita : sort out test files to be consistent with src files
 // sorted
 
 // qqq : for Mykyta: to avoid names collisions add postfix _test for all dirs and files in dir `inc`
 // query.rs -> query_test.rs
-

@@ -1,0 +1,30 @@
+error: Deref cannot be derived for multi-field structs without a `#[deref]` attribute on one field.
+  --> tests/inc/deref/compile_fail_complex_struct.rs:5:1
+   |
+5  | / #[ allow( dead_code ) ]
+6  | | #[ derive( Debug, Clone, Copy, PartialEq, Deref ) ]
+7  | | pub struct IsTransparentComplex< 'a, 'b : 'a, T, U : ToString + ?Sized, const N : usize >( &'a T, PhantomData< &'b U > )
+8  | | where
+9  | |   'a : 'b,
+10 | |   T : AsRef< U >;
+   | |_________________^
+
+warning: unused import: `core::ops::Deref`
+ --> tests/inc/deref/compile_fail_complex_struct.rs:1:5
+  |
+1 | use core::ops::Deref;
+  |     ^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unused import: `test_tools::a_id`
+ --> tests/inc/deref/./only_test/compile_fail_complex_struct.rs
+  |
+  | use test_tools::a_id;
+  |     ^^^^^^^^^^^^^^^^
+
+error[E0601]: `main` function not found in crate `$CRATE`
+  --> tests/inc/deref/compile_fail_complex_struct.rs:12:58
+   |
+12 | include!( "./only_test/compile_fail_complex_struct.rs" );
+   |                                                          ^ consider adding a `main` function to `$DIR/tests/inc/deref/compile_fail_complex_struct.rs`

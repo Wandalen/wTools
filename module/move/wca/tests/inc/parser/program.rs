@@ -1,9 +1,9 @@
 use super::*;
+use the_module::parser::{Program, ParsedCommand, Parser};
 
 //
 
-tests_impls!
-{
+tests_impls! {
   fn basic()
   {
     let parser = Parser;
@@ -53,7 +53,6 @@ tests_impls!
 
 //
 
-tests_index!
-{
+tests_index! {
   basic,
 }

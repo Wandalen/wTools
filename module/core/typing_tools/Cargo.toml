@@ -1,14 +1,14 @@
 
 [package]
 name = "typing_tools"
-version = "0.8.0"
+version = "0.11.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/typing_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/typing_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/typing_tools"
@@ -24,8 +24,6 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-
-
 
 [features]
 

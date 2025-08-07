@@ -52,7 +52,7 @@
 
 // qqq : make the example working. use tests for inpsisrations
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 }

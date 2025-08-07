@@ -1,5 +1,10 @@
+mod private {}
+
 crate::mod_interface!
 {
+  /// Errors handling.
+  use crate::error;
+  
   /// Rust toolchain channel: stable/nightly.
   layer channel;
   orphan use super::channel;
@@ -28,7 +33,7 @@ crate::mod_interface!
   layer git;
   orphan use super::git;
 
-  /// To manipulate manifest data.
+  /// To manipulate manifest data.  
   layer manifest;
   orphan use super::manifest;
 

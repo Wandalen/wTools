@@ -1,11 +1,12 @@
+#![allow(missing_docs)]
 
+//! Smoke testing of the package.
 
 #[ test ]
 fn local_smoke_test()
 {
   ::test_tools::smoke_test_for_local_run();
 }
-
 
 #[ test ]
 fn published_smoke_test()

@@ -1,0 +1,51 @@
+[package]
+name = "asbytes"
+version = "0.2.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+]
+license = "MIT"
+readme = "readme.md"
+documentation = "https://docs.rs/asbytes"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/asbytes"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/asbytes"
+description = """
+Traits for viewing data as byte slices or consuming data into byte vectors. Relies on bytemuck for POD safety.
+"""
+categories = [ "algorithms", "development-tools", "data-structures" ] # Added data-structures
+keywords = [ "fundamental", "general-purpose", "bytes", "pod", "bytemuck" ] # Added keywords
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+features = [ "full" ]
+all-features = false
+
+[features]
+default = [ "enabled", "as_bytes", "into_bytes", "derive", "must_cast" ] # Added into_bytes
+full = [ "default" ]
+enabled = []
+# Feature for AsBytes trait and its implementations
+as_bytes = [ "dep:bytemuck" ]
+# Feature for IntoBytes trait and its implementations
+into_bytes = [ "as_bytes" ]
+
+derive = [ "bytemuck?/derive" ] # Use ? syntax for optional dependency feature
+extern_crate_alloc = [ "bytemuck?/extern_crate_alloc" ]  # Use ? syntax
+zeroable_maybe_uninit = [ "bytemuck?/zeroable_maybe_uninit" ] # Use ? syntax
+wasm_simd = [ "bytemuck?/wasm_simd" ]  # Use ? syntax
+aarch64_simd = [ "bytemuck?/aarch64_simd" ]  # Use ? syntax
+min_const_generics = [ "bytemuck?/min_const_generics" ]  # Use ? syntax
+must_cast = [ "bytemuck?/must_cast" ]  # Use ? syntax
+const_zeroed = [ "bytemuck?/const_zeroed" ]  # Use ? syntax
+
+[dependencies]
+# Bytemuck is optional, enabled by as_bytes (and thus by into_bytes)
+# Features like 'derive', 'extern_crate_alloc' are enabled via this crate's features
+bytemuck = { workspace = true, optional = true }
+
+[dev-dependencies]
+# Make sure features needed for tests are enabled here
+bytemuck = { workspace = true, features = [ "derive", "extern_crate_alloc" ] }

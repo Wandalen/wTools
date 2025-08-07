@@ -7,6 +7,12 @@ tests_impls!
   fn basic()
   {
 
+    /* test.case( "layers themself" ); */
+    {
+      a_id!( own::layer_a::layer_a_own(), true );
+      a_id!( own::layer_b::layer_b_own(), true );
+    }
+
     /* test.case( "root" ); */
     {
       a_id!( layer_a::layer_a_own(), true );

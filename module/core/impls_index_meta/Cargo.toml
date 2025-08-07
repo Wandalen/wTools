@@ -1,13 +1,13 @@
 [package]
 name = "impls_index_meta"
-version = "0.7.0"
+version = "0.13.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
   "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
-readme = "Readme.md"
+readme = "readme.md"
 documentation = "https://docs.rs/impls_index_meta"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/impls_index_meta"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/impls_index_meta"
@@ -28,12 +28,17 @@ all-features = false
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-enabled = [ "macro_tools/enabled" ]
+# The 'enabled' feature no longer depends on macro_tools
+enabled = []
 
 [lib]
 proc-macro = true
 
 [dependencies]
-macro_tools = { workspace = true, features = [ "name", "quantifier" ] }
+# macro_tools dependency removed
+# Direct dependencies added using workspace inheritance and minimal features
+proc-macro2 = { workspace = true, default-features = false, features = [ "default" ] } # Inherits version and settings from workspace
+quote = { workspace = true, default-features = false, features = [ "default" ] }      # Inherits version and settings from workspace
+syn = { workspace = true, default-features = false, features = [ "parsing", "printing", "proc-macro", "full" ] } # Inherits version, specifies features inline
 
 [dev-dependencies]
