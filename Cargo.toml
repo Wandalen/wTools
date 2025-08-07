@@ -126,7 +126,7 @@ version = "~0.1.4"
 path = "module/alias/std_x"
 
 [workspace.dependencies.unilang_parser]
-version = "~0.6.0"
+version = "~0.7.0"
 path = "module/move/unilang_parser" # Point to original unilang_parser
 
 
@@ -171,7 +171,7 @@ default-features = false
 ## derive
 
 [workspace.dependencies.derive_tools]
-version = "~0.40.0"
+version = "~0.41.0"
 path = "module/core/derive_tools"
 default-features = false
 # features = [ "enabled" ]
@@ -231,7 +231,7 @@ default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn]
-version = "~0.37.0"
+version = "~0.38.0"
 path = "module/core/clone_dyn"
 default-features = false
 # features = [ "enabled" ]
@@ -285,7 +285,7 @@ path = "module/core/for_each"
 default-features = false
 
 [workspace.dependencies.former]
-version = "~2.23.0"
+version = "~2.24.0"
 path = "module/core/former"
 default-features = false
 
@@ -324,12 +324,12 @@ version = "~0.13.0"
 path = "module/core/impls_index_meta"
 
 [workspace.dependencies.mod_interface]
-version = "~0.38.0"
+version = "~0.39.0"
 path = "module/core/mod_interface"
 default-features = false
 
 [workspace.dependencies.mod_interface_meta]
-version = "~0.36.0"
+version = "~0.37.0"
 path = "module/core/mod_interface_meta"
 default-features = false
 
@@ -426,7 +426,7 @@ path = "module/alias/werror"
 ## string tools
 
 [workspace.dependencies.strs_tools]
-version = "~0.24.0"
+version = "~0.25.0"
 path = "module/core/strs_tools"
 default-features = false
 
