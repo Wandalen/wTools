@@ -171,7 +171,7 @@ default-features = false
 ## derive
 
 [workspace.dependencies.derive_tools]
-version = "~0.40.0"
+version = "~0.41.0"
 path = "module/core/derive_tools"
 default-features = false
 # features = [ "enabled" ]
