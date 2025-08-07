@@ -5,7 +5,7 @@ use super::*;
 use the_module::prelude::*;
 
 // qqq : do negative testing, don't forget about optional arguments /* aaa : Dmytro : done */
-#[ cfg( not( target_os = "windows" ) ) ]
+// Test implementations (available on all platforms)
 tests_impls! {
   fn a_true_pass()
   {
