@@ -122,14 +122,8 @@ impl< 'a > SemanticAnalyzer< 'a >
         return self.generate_help_listing();
       }
       
-      let command_name = if instruction.command_path_slices[ 0 ].is_empty()
-      {
-        format!( ".{}", instruction.command_path_slices[ 1.. ].join( "." ) )
-      }
-      else
-      {
-        format!( ".{}", instruction.command_path_slices.join( "." ) )
-      };
+      let command_path_refs : Vec< &str > = instruction.command_path_slices.iter().map( | s | s.as_str() ).collect();
+      let command_name = crate::interner::intern_command_name( &command_path_refs );
 
       let command_def = self.registry.command( &command_name ).ok_or_else( || ErrorData::new(
         "UNILANG_COMMAND_NOT_FOUND".to_string(),

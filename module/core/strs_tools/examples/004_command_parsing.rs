@@ -1,0 +1,345 @@
+//! Command parsing and request processing examples.
+//!
+//! This example demonstrates how to parse command-line style strings
+//! into structured data, extract subjects and parameters, and handle
+//! various argument formats commonly found in CLI applications.
+
+use strs_tools::*;
+
+fn main()
+{
+  println!( "=== Command Parsing Examples ===" );
+  
+  basic_command_parsing();
+  parameter_extraction();
+  complex_command_scenarios();
+  real_world_cli_example();
+}
+
+/// Demonstrates basic command parsing functionality.
+///
+/// Shows how to extract the main subject/command from a string
+/// and separate it from its arguments and parameters.
+fn basic_command_parsing()
+{
+  println!( "\n--- Basic Command Parsing ---" );
+  
+  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
+  {
+    let command_string = "deploy --env production --force";
+    
+    println!( "Parsing command: '{}'", command_string );
+    
+    // Parse the command to extract subject and parameters
+    let parsed = string::parse_request::parse( command_string );
+    
+    println!( "Parsed result:" );
+    match parsed
+    {
+      Ok( request ) =>
+      {
+        println!( "  Subject: '{}'", request.subject );
+        println!( "  Parameters:" );
+        
+        for ( key, value ) in &request.map
+        {
+          match value
+          {
+            string::parse_request::OpType::Primitive( val ) =>
+            {
+              if val.is_empty()
+              {
+                println!( "    --{} (flag)", key );
+              }
+              else
+              {
+                println!( "    --{} = '{}'", key, val );
+              }
+            },
+            _ => println!( "    --{} = {:?}", key, value ),
+          }
+        }
+        
+        // Verify the parsing results
+        assert_eq!( request.subject, "deploy" );
+        assert!( request.map.contains_key( "env" ) );
+        assert!( request.map.contains_key( "force" ) );
+        
+        println!( "✓ Command parsed successfully" );
+      },
+      Err( e ) =>
+      {
+        println!( "  Error: {:?}", e );
+      }
+    }
+  }
+}
+
+/// Demonstrates parameter extraction from various formats.
+///
+/// Shows how to handle different parameter styles including
+/// key-value pairs, boolean flags, and quoted values.
+fn parameter_extraction()
+{
+  println!( "\n--- Parameter Extraction ---" );
+  
+  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
+  {
+    let commands = vec![
+      "install package_name --version 1.2.3 --global",
+      "config set --key database.host --value localhost",
+      "run --script \"build and test\" --parallel --workers 4",
+      "backup --source /home/user --destination \"/backup/daily backup\"",
+    ];
+    
+    for ( i, cmd ) in commands.iter().enumerate()
+    {
+      println!( "\nExample {}: {}", i + 1, cmd );
+      
+      match string::parse_request::parse( cmd )
+      {
+        Ok( request ) =>
+        {
+          println!( "  Command: '{}'", request.subject );
+          
+          // Extract specific parameter types
+          for ( key, value ) in &request.map
+          {
+            match value
+            {
+              string::parse_request::OpType::Primitive( val ) =>
+              {
+                if val.is_empty()
+                {
+                  println!( "    Flag: --{}", key );
+                }
+                else if val.chars().all( char::is_numeric )
+                {
+                  println!( "    Number: --{} = {}", key, val );
+                }
+                else if val.contains( ' ' )
+                {
+                  println!( "    Quoted: --{} = \"{}\"", key, val );
+                }
+                else
+                {
+                  println!( "    String: --{} = {}", key, val );
+                }
+              },
+              _ => println!( "    Complex: --{} = {:?}", key, value ),
+            }
+          }
+          
+          // Demonstrate extracting specific values
+          if let Some( string::parse_request::OpType::Primitive( version ) ) = request.map.get( "version" )
+          {
+            println!( "    → Version specified: {}", version );
+          }
+          
+          if request.map.contains_key( "global" )
+          {
+            println!( "    → Global installation requested" );
+          }
+          
+          println!( "✓ Parameters extracted successfully" );
+        },
+        Err( e ) =>
+        {
+          println!( "  ✗ Parse error: {:?}", e );
+        }
+      }
+    }
+  }
+}
+
+/// Demonstrates complex command parsing scenarios.
+///
+/// Shows handling of edge cases, multiple values, and
+/// sophisticated parameter combinations.
+fn complex_command_scenarios()
+{
+  println!( "\n--- Complex Command Scenarios ---" );
+  
+  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
+  {
+    // Command with multiple values for the same parameter
+    let complex_cmd = "compile --source file1.rs file2.rs --optimization level=2 --features \"serde,tokio\" --target x86_64";
+    
+    println!( "Complex command: {}", complex_cmd );
+    
+    match string::parse_request::parse( complex_cmd )
+    {
+      Ok( request ) =>
+      {
+        println!( "Subject: '{}'", request.subject );
+        
+        // Handle different parameter value types
+        for ( key, value ) in &request.map
+        {
+          match value
+          {
+            string::parse_request::OpType::Primitive( val ) =>
+            {
+              println!( "  Single value: {} = '{}'", key, val );
+            },
+            string::parse_request::OpType::Vector( vals ) =>
+            {
+              println!( "  Multiple values: {} = {:?}", key, vals );
+            },
+            string::parse_request::OpType::Map( map ) =>
+            {
+              println!( "  Key-value pairs: {} = {{", key );
+              for ( subkey, subval ) in map
+              {
+                println!( "    {} = '{}'", subkey, subval );
+              }
+              println!( "  }}" );
+            },
+          }
+        }
+        
+        println!( "✓ Complex command parsed successfully" );
+      },
+      Err( e ) =>
+      {
+        println!( "  ✗ Parse error: {:?}", e );
+      }
+    }
+    
+    // Demonstrate error handling for malformed commands
+    let malformed_commands = vec![
+      "command --param",  // Missing value
+      "--no-subject param",  // No main command
+      "cmd --key= --other",  // Empty value
+    ];
+    
+    println!( "\nTesting error handling:" );
+    for bad_cmd in malformed_commands
+    {
+      println!( "  Testing: '{}'", bad_cmd );
+      match string::parse_request::parse( bad_cmd )
+      {
+        Ok( _ ) =>
+        {
+          println!( "    → Parsed (possibly with defaults)" );
+        },
+        Err( e ) =>
+        {
+          println!( "    → Error caught: {:?}", e );
+        }
+      }
+    }
+  }
+}
+
+/// Demonstrates a real-world CLI application parsing example.
+///
+/// Shows how to implement a complete command parser for a typical
+/// development tool with multiple subcommands and parameter validation.
+fn real_world_cli_example()
+{
+  println!( "\n--- Real-World CLI Example ---" );
+  
+  #[ cfg( all( feature = "string_parse_request", not( feature = "no_std" ) ) ) ]
+  {
+    // Simulate parsing commands for a development tool
+    let dev_commands = vec![
+      "init --template rust --name my_project --git",
+      "build --release --target wasm32 --features web",
+      "test --package core --lib --verbose --coverage",
+      "deploy --environment staging --region us-west-2 --confirm",
+      "clean --cache --artifacts --logs",
+    ];
+    
+    println!( "Parsing development tool commands:" );
+    
+    for ( i, cmd ) in dev_commands.iter().enumerate()
+    {
+      println!( "\n{}. {}", i + 1, cmd );
+      
+      match string::parse_request::parse( cmd )
+      {
+        Ok( request ) =>
+        {
+          // Simulate command routing based on subject
+          match request.subject.as_str()
+          {
+            "init" =>
+            {
+              println!( "  → Project initialization command" );
+              if let Some( string::parse_request::OpType::Primitive( name ) ) = request.map.get( "name" )
+              {
+                println!( "    Project name: {}", name );
+              }
+              if let Some( string::parse_request::OpType::Primitive( template ) ) = request.map.get( "template" )
+              {
+                println!( "    Using template: {}", template );
+              }
+              if request.map.contains_key( "git" )
+              {
+                println!( "    Git repository will be initialized" );
+              }
+            },
+            "build" =>
+            {
+              println!( "  → Build command" );
+              if request.map.contains_key( "release" )
+              {
+                println!( "    Release mode enabled" );
+              }
+              if let Some( string::parse_request::OpType::Primitive( target ) ) = request.map.get( "target" )
+              {
+                println!( "    Target platform: {}", target );
+              }
+            },
+            "test" =>
+            {
+              println!( "  → Test command" );
+              if let Some( string::parse_request::OpType::Primitive( package ) ) = request.map.get( "package" )
+              {
+                println!( "    Testing package: {}", package );
+              }
+              if request.map.contains_key( "coverage" )
+              {
+                println!( "    Code coverage enabled" );
+              }
+            },
+            "deploy" =>
+            {
+              println!( "  → Deployment command" );
+              if let Some( string::parse_request::OpType::Primitive( env ) ) = request.map.get( "environment" )
+              {
+                println!( "    Target environment: {}", env );
+              }
+              if request.map.contains_key( "confirm" )
+              {
+                println!( "    Confirmation required" );
+              }
+            },
+            "clean" =>
+            {
+              println!( "  → Cleanup command" );
+              let mut cleanup_targets = Vec::new();
+              if request.map.contains_key( "cache" ) { cleanup_targets.push( "cache" ); }
+              if request.map.contains_key( "artifacts" ) { cleanup_targets.push( "artifacts" ); }
+              if request.map.contains_key( "logs" ) { cleanup_targets.push( "logs" ); }
+              println!( "    Cleaning: {}", cleanup_targets.join( ", " ) );
+            },
+            _ =>
+            {
+              println!( "  → Unknown command: {}", request.subject );
+            }
+          }
+          
+          println!( "✓ Command processed successfully" );
+        },
+        Err( e ) =>
+        {
+          println!( "  ✗ Failed to parse: {:?}", e );
+        }
+      }
+    }
+    
+    println!( "\n✓ All development tool commands processed" );
+  }
+}
