@@ -715,8 +715,8 @@ mod tests
     assert_ne!(Value::Integer(42), Value::Integer(43));
 
     // Test float equality
-    assert_eq!(Value::Float(3.14), Value::Float(3.14));
-    assert_ne!(Value::Float(3.14), Value::Float(2.71));
+    assert_eq!(Value::Float(3.15), Value::Float(3.15));
+    assert_ne!(Value::Float(3.15), Value::Float(2.71));
 
     // Test boolean equality
     assert_eq!(Value::Boolean(true), Value::Boolean(true));
@@ -731,7 +731,7 @@ mod tests
   {
     assert_eq!(Value::String("hello".to_string()).to_string(), "hello");
     assert_eq!(Value::Integer(42).to_string(), "42");
-    assert_eq!(Value::Float(3.14).to_string(), "3.14");
+    assert_eq!(Value::Float(3.15).to_string(), "3.15");
     assert_eq!(Value::Boolean(true).to_string(), "true");
     assert_eq!(Value::Path(PathBuf::from("/test")).to_string(), "/test");
   }
