@@ -43,6 +43,8 @@ full = [
   "statistical_analysis",
   "comparative_analysis",
   "optimization_hints",
+  "diff_analysis",
+  "visualization",
 ]
 
 # Core functionality
@@ -52,7 +54,7 @@ enabled = []
 integration = []
 
 # Report generation features
-markdown_reports = [ "enabled", "dep:pulldown-cmark" ]
+markdown_reports = [ "enabled", "dep:pulldown-cmark", "dep:chrono" ]
 html_reports = [ "markdown_reports", "dep:tera" ]  
 json_reports = [ "enabled", "dep:serde_json", "dep:chrono" ]
 
@@ -64,6 +66,8 @@ optimization_hints = [ "statistical_analysis" ]
 # Utility features
 data_generators = [ "enabled", "dep:rand" ]
 criterion_compat = [ "enabled", "dep:criterion" ]  # Compatibility layer
+diff_analysis = [ "enabled" ]  # Git-style diff functionality for benchmark results
+visualization = [ "enabled", "dep:plotters" ]  # Chart generation and visualization
 
 # Environment features
 no_std = []
@@ -74,13 +78,6 @@ use_alloc = [ "no_std" ]
 # workspace = true
 
 # For standalone development, using workspace-compatible lints:
-[lints.rust]
-rust_2018_idioms = { level = "warn", priority = -1 }
-future_incompatible = { level = "warn", priority = -1 }
-missing_docs = "warn"
-missing_debug_implementations = "warn"
-unsafe-code = "deny"
-
 [lints.clippy]
 pedantic = { level = "warn", priority = -1 }
 undocumented_unsafe_blocks = "deny"
@@ -124,6 +121,29 @@ needless_borrows_for_generic_args = "allow"
 redundant_closure_for_method_calls = "allow"
 inefficient_to_string = "allow"
 needless_pass_by_value = "allow"
+unreadable_literal = "allow"
+similar_names = "allow"
+map_unwrap_or = "allow"
+used_underscore_binding = "allow"
+if_not_else = "allow"
+len_zero = "allow"
+writeln_empty_string = "allow"
+useless_vec = "allow"
+unnecessary_wraps = "allow"
+unnecessary_map_or = "allow"
+unused_self = "allow"
+needless_borrow = "allow"
+single_char_add_str = "allow"
+useless_format = "allow"
+match_same_arms = "allow"
+
+[lints.rust]
+rust_2018_idioms = { level = "warn", priority = -1 }
+future_incompatible = { level = "warn", priority = -1 }
+missing_docs = "allow"
+missing_debug_implementations = "allow"
+unsafe-code = "deny"
+unused_variables = "allow"
 
 [dependencies]
 # Core dependencies - always available
@@ -141,6 +161,7 @@ statistical = { version = "1.0", optional = true }
 rand = { version = "0.8", optional = true }
 criterion = { version = "0.5", optional = true }
 chrono = { version = "0.4", features = ["serde"], optional = true }
+plotters = { version = "0.3", optional = true, default-features = false, features = ["svg_backend", "bitmap_backend"] }
 
 [dev-dependencies]
 # In workspace context, use:

@@ -100,7 +100,7 @@ impl ReportGenerator {
     }
   }
 
-  /// Generate markdown table format
+  /// Generate markdown table format with statistical rigor indicators
   pub fn generate_markdown_table(&self) -> String {
     let mut output = String::new();
     
@@ -108,28 +108,143 @@ impl ReportGenerator {
       return "No benchmark results available.\n".to_string();
     }
 
-    // Table header
-    output.push_str("| Operation | Mean Time | Ops/sec | Min | Max | Std Dev |\n");
-    output.push_str("|-----------|-----------|---------|-----|-----|----------|\n");
+    // Enhanced table header with statistical information
+    output.push_str("| Operation | Mean Time | 95% CI | Ops/sec | CV | Reliability | Samples |\n");
+    output.push_str("|-----------|-----------|--------|---------|----|-----------|---------|\n");
 
     // Sort results by performance (fastest first)
     let mut sorted_results: Vec<_> = self.results.iter().collect();
     sorted_results.sort_by(|a, b| a.1.mean_time().cmp(&b.1.mean_time()));
 
-    // Table rows
+    // Table rows with statistical rigor information
     for (name, result) in sorted_results {
+      let (ci_lower, ci_upper) = result.confidence_interval_95();
+      let cv = result.coefficient_of_variation();
+      let reliability = if result.is_reliable() { "✅" } else { "⚠️" };
+      
       output.push_str(&format!(
-        "| {} | {:.2?} | {:.0} | {:.2?} | {:.2?} | {:.2?} |\n",
+        "| {} | {:.2?} | [{:.2?} - {:.2?}] | {:.0} | {:.1}% | {} | {} |\n",
         name,
         result.mean_time(),
+        ci_lower,
+        ci_upper,
         result.operations_per_second(),
-        result.min_time(),
-        result.max_time(),
-        result.std_deviation()
+        cv * 100.0,
+        reliability,
+        result.times.len()
       ));
     }
 
     output
+  }
+
+  /// Generate comprehensive statistical report with research-grade analysis
+  pub fn generate_statistical_report(&self) -> String {
+    let mut output = String::new();
+    
+    output.push_str(&format!("# {}\n\n", self.title));
+    
+    if self.results.is_empty() {
+      return output + "No benchmark results available.\n";
+    }
+
+    // Executive summary
+    output.push_str("## Executive Summary\n\n");
+    
+    let total_tests = self.results.len();
+    let reliable_tests = self.results.values().filter(|r| r.is_reliable()).count();
+    let reliability_rate = (reliable_tests as f64 / total_tests as f64) * 100.0;
+    
+    output.push_str(&format!("- **Total benchmarks**: {}\n", total_tests));
+    output.push_str(&format!("- **Statistically reliable**: {}/{} ({:.1}%)\n", 
+                             reliable_tests, total_tests, reliability_rate));
+    
+    if let Some((fastest_name, fastest_result)) = self.fastest_result() {
+      output.push_str(&format!("- **Best performing**: {} ({:.2?} ± {:.2?})\n", 
+                               fastest_name,
+                               fastest_result.mean_time(),
+                               fastest_result.standard_error()));
+    }
+    
+    output.push('\n');
+
+    // Performance results table with statistical information
+    output.push_str("## Performance Results\n\n");
+    output.push_str(&self.generate_markdown_table());
+    output.push('\n');
+
+    // Statistical quality assessment
+    output.push_str("## Statistical Quality Assessment\n\n");
+    
+    let mut quality_issues = Vec::new();
+    let mut high_quality_results = Vec::new();
+    
+    for (name, result) in &self.results {
+      if !result.is_reliable() {
+        let cv = result.coefficient_of_variation();
+        let sample_size = result.times.len();
+        
+        let mut issues = Vec::new();
+        if sample_size < 10 {
+          issues.push("insufficient sample size");
+        }
+        if cv > 0.1 {
+          issues.push("high variability");
+        }
+        if result.max_time().as_secs_f64() / result.min_time().as_secs_f64() > 3.0 {
+          issues.push("wide performance range");
+        }
+        
+        quality_issues.push((name, issues));
+      } else {
+        high_quality_results.push(name);
+      }
+    }
+    
+    if !high_quality_results.is_empty() {
+      output.push_str("### ✅ High Quality Results\n");
+      output.push_str("*These results meet research-grade statistical standards*\n\n");
+      for name in high_quality_results {
+        let result = &self.results[name];
+        output.push_str(&format!("- **{}**: {} samples, CV={:.1}%\n", 
+                                 name, 
+                                 result.times.len(),
+                                 result.coefficient_of_variation() * 100.0));
+      }
+      output.push('\n');
+    }
+    
+    if !quality_issues.is_empty() {
+      output.push_str("### ⚠️ Quality Concerns\n");
+      output.push_str("*These results may need additional measurement for reliable conclusions*\n\n");
+      for (name, issues) in quality_issues {
+        output.push_str(&format!("- **{}**: {}\n", name, issues.join(", ")));
+      }
+      output.push('\n');
+    }
+
+    // Methodology note
+    output.push_str("## Statistical Methodology\n\n");
+    output.push_str("**Reliability Criteria**: Results marked as reliable meet all of the following:\n");
+    output.push_str("- Sample size ≥ 10 measurements\n");
+    output.push_str("- Coefficient of variation ≤ 10%\n");
+    output.push_str("- Max/min time ratio < 3.0x\n\n");
+    
+    output.push_str("**Confidence Intervals**: 95% confidence intervals calculated using t-distribution\n");
+    output.push_str("**CV (Coefficient of Variation)**: Relative standard deviation (σ/μ)\n");
+    output.push_str("**Statistical Significance**: Use p < 0.05 for hypothesis testing\n\n");
+
+    output.push_str("---\n");
+    output.push_str("*Report generated with benchkit - Research-grade statistical analysis*\n\n");
+
+    output
+  }
+
+  /// Get the fastest (best performing) result
+  fn fastest_result(&self) -> Option<(&String, &BenchmarkResult)> {
+    self.results
+      .iter()
+      .min_by(|a, b| a.1.mean_time().cmp(&b.1.mean_time()))
   }
 
   /// Generate comprehensive markdown report

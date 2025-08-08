@@ -39,7 +39,8 @@
 
 **Key Philosophy:**
 - **Toolkit over Framework**: Provide tools, not constraints
-- **Markdown-First Reporting**: Focus on readable, version-controllable reports
+- **Research-Grade Statistical Rigor**: Professional statistical analysis meeting publication standards
+- **Markdown-First Reporting**: Focus on readable, version-controllable reports  
 - **Optimization-Focused**: Surface key metrics that guide optimization decisions
 - **Integration-Friendly**: Work alongside existing tools, not replace them
 
@@ -49,12 +50,13 @@
 1. **Flexible Measurement**: Time, memory, throughput, custom metrics
 2. **Data Generation**: Configurable test data generators for common patterns
 3. **Report Generation**: Markdown, HTML, JSON outputs with customizable templates
-4. **Analysis Tools**: Statistical analysis, comparative benchmarking, regression detection
+4. **Analysis Tools**: Statistical analysis, comparative benchmarking, regression detection, git-style diffing, visualization
 5. **Documentation Integration**: Seamlessly update markdown documentation with benchmark results
 
 **Target Use Cases:**
 - Performance analysis for optimization work
 - Before/after comparisons for feature implementation
+- Historical performance tracking across commits/versions
 - Continuous performance monitoring in CI/CD
 - Documentation generation for performance characteristics
 - Research and experimentation with algorithm variants
@@ -85,6 +87,7 @@
 | **Performance Profile** | A comprehensive view of performance across multiple dimensions |
 | **Comparative Analysis** | Side-by-side comparison of two or more performance profiles |
 | **Performance Regression** | A decrease in performance compared to a baseline |
+| **Performance Diff** | Git-style comparison showing changes between benchmark results |
 | **Optimization Insight** | Actionable recommendation derived from benchmark analysis |
 | **Report Template** | A customizable format for presenting benchmark results |
 | **Data Generator** | A function that creates test data for benchmarking |
@@ -147,17 +150,34 @@
 
 #### 4.4. Analysis Tools (FR-ANALYSIS)
 
-**FR-ANALYSIS-1: Statistical Analysis**
-- Must provide standard statistical measures for benchmark results
-- Must detect outliers and provide confidence intervals
-- Must support multiple sampling strategies
+**FR-ANALYSIS-1: Research-Grade Statistical Analysis** ⭐ **CRITICAL REQUIREMENT**
+- Must provide research-grade statistical rigor meeting publication standards
+- Must calculate proper confidence intervals using t-distribution (not normal approximation)
+- Must perform statistical significance testing (Welch's t-test for unequal variances)
+- Must calculate effect sizes (Cohen's d) for practical significance assessment
+- Must detect outliers using statistical methods (IQR method)
+- Must assess normality of data distribution (Shapiro-Wilk test)
+- Must calculate statistical power for detecting meaningful differences
+- Must provide coefficient of variation for measurement reliability assessment
+- Must flag unreliable results based on statistical criteria
+- Must document statistical methodology in reports
 
 **FR-ANALYSIS-2: Comparative Analysis**
 - Must support before/after performance comparisons
 - Must provide A/B testing capabilities for algorithm variants
 - Must generate comparative reports highlighting differences
 
-**FR-ANALYSIS-3: Optimization Insights**
+**FR-ANALYSIS-3: Git-Style Performance Diffing**
+- Must compare benchmark results across different implementations or commits
+- Must generate git-style diff output showing performance changes
+- Must classify changes as improvements, regressions, or minor variations
+
+**FR-ANALYSIS-4: Visualization and Charts**
+- Must generate performance charts for scaling analysis and framework comparison
+- Must support multiple output formats (SVG, PNG, HTML)
+- Must provide high-level plotting functions for common benchmarking scenarios
+
+**FR-ANALYSIS-5: Optimization Insights**
 - Must analyze results to suggest optimization opportunities
 - Must identify performance scaling characteristics
 - Must provide actionable recommendations based on measurement patterns
@@ -194,8 +214,10 @@
 | `criterion_compat` | Compatibility layer with criterion | ✓ | criterion |
 | `html_reports` | HTML report generation | - | tera |
 | `json_reports` | JSON report output | - | serde_json |
-| `statistical_analysis` | Advanced statistical analysis | - | statistical |
+| `statistical_analysis` | **Research-grade statistical analysis** ⭐ | - | statistical |
 | `comparative_analysis` | A/B testing and comparisons | - | - |
+| `diff_analysis` | Git-style benchmark result diffing | - | - |
+| `visualization` | Chart generation and plotting | - | plotters |
 | `optimization_hints` | Performance optimization suggestions | - | statistical_analysis |
 
 ---
@@ -230,15 +252,17 @@
 ```rust
 use benchkit::prelude::*;
 
-fn benchmark_my_function() {
-    let mut suite = BenchmarkSuite::new("my_function_performance");
-    
-    suite.benchmark("small_input", || {
-        let data = generate_list_data(10);
-        bench_block(|| my_function(&data))
-    });
-    
-    suite.generate_markdown_report("performance.md", "## Performance Results");
+fn benchmark_my_function()
+{
+  let mut suite = BenchmarkSuite::new( "my_function_performance" );
+  
+  suite.benchmark( "small_input", ||
+  {
+    let data = generate_list_data( 10 );
+    bench_block( || my_function( &data ) )
+  });
+  
+  suite.generate_markdown_report( "performance.md", "## Performance Results" );
 }
 ```
 
@@ -246,14 +270,15 @@ fn benchmark_my_function() {
 ```rust
 use benchkit::prelude::*;
 
-fn compare_algorithms() {
-    let comparison = ComparativeAnalysis::new()
-        .algorithm("original", || original_algorithm(&data))
-        .algorithm("optimized", || optimized_algorithm(&data))
-        .with_data_sizes(&[10, 100, 1000, 10000]);
-    
-    let report = comparison.run_comparison();
-    report.update_markdown_section("README.md", "## Algorithm Comparison");
+fn compare_algorithms()
+{
+  let comparison = ComparativeAnalysis::new()
+    .algorithm( "original", || original_algorithm( &data ) )
+    .algorithm( "optimized", || optimized_algorithm( &data ) )
+    .with_data_sizes( &[ 10, 100, 1000, 10000 ] );
+  
+  let report = comparison.run_comparison();
+  report.update_markdown_section( "README.md", "## Algorithm Comparison" );
 }
 ```
 
@@ -261,32 +286,150 @@ fn compare_algorithms() {
 ```rust
 use benchkit::prelude::*;
 
-#[cfg(test)]
-mod performance_tests {
-    #[test]
-    fn update_performance_documentation() {
-        let suite = BenchmarkSuite::from_config("benchmarks/config.toml");
-        let results = suite.run_all();
-        
-        // Update multiple sections in documentation
-        results.update_markdown_file("docs/performance.md");
-        results.update_readme_section("README.md", "## Performance");
-    }
+#[ cfg( test ) ]
+mod performance_tests
+{
+  #[ test ]
+  fn update_performance_documentation()
+  {
+    let suite = BenchmarkSuite::from_config( "benchmarks/config.toml" );
+    let results = suite.run_all();
+    
+    // Update multiple sections in documentation
+    results.update_markdown_file( "docs/performance.md" );
+    results.update_readme_section( "README.md", "## Performance" );
+  }
 }
 ```
 
-**Pattern 4: Custom Metrics**
+**Pattern 4: Git-Style Performance Diffing**
 ```rust
 use benchkit::prelude::*;
 
-fn memory_benchmark() {
-    let mut collector = MetricCollector::new()
-        .with_timing()
-        .with_memory_usage()
-        .with_custom_metric("cache_hits", || count_cache_hits());
-        
-    let results = collector.measure(|| expensive_operation());
-    println!("{}", results.to_markdown_table());
+fn compare_implementations()
+{
+  // Baseline results (old implementation)
+  let baseline_results = vec!
+  [
+    ( "string_ops".to_string(), bench_function( "old_string_ops", || old_implementation() ) ),
+    ( "hash_compute".to_string(), bench_function( "old_hash", || old_hash_function() ) ),
+  ];
+  
+  // Current results (new implementation) 
+  let current_results = vec!
+  [
+    ( "string_ops".to_string(), bench_function( "new_string_ops", || new_implementation() ) ),
+    ( "hash_compute".to_string(), bench_function( "new_hash", || new_hash_function() ) ),
+  ];
+  
+  // Generate git-style diff
+  let diff_set = diff_benchmark_sets( &baseline_results, &current_results );
+  
+  // Show summary and detailed analysis
+  for diff in &diff_set.diffs
+  {
+    println!( "{}", diff.to_summary() );
+  }
+  
+  // Check for regressions in CI/CD
+  for regression in diff_set.regressions()
+  {
+    eprintln!( "⚠️ Performance regression detected: {}", regression.benchmark_name );
+  }
+}
+```
+
+**Pattern 5: Custom Metrics**
+```rust
+use benchkit::prelude::*;
+
+fn memory_benchmark()
+{
+  let mut collector = MetricCollector::new()
+    .with_timing()
+    .with_memory_usage()
+    .with_custom_metric( "cache_hits", || count_cache_hits() );
+    
+  let results = collector.measure( || expensive_operation() );
+  println!( "{}", results.to_markdown_table() );
+}
+```
+
+**Pattern 6: Visualization and Charts**
+```rust
+use benchkit::prelude::*;
+use std::path::Path;
+
+fn generate_performance_charts()
+{
+  // Scaling analysis chart
+  let scaling_results = vec!
+  [
+    (10, bench_function( "test_10", || algorithm_with_n( 10 ) )),
+    (100, bench_function( "test_100", || algorithm_with_n( 100 ) )),
+    (1000, bench_function( "test_1000", || algorithm_with_n( 1000 ) )),
+  ];
+  
+  plots::scaling_analysis_chart(
+    &scaling_results,
+    "Algorithm Scaling Performance", 
+    Path::new( "docs/scaling_chart.svg" )
+  );
+  
+  // Framework comparison chart
+  let framework_results = vec!
+  [
+    ("Fast Framework".to_string(), bench_function( "fast", || fast_framework() )),
+    ("Slow Framework".to_string(), bench_function( "slow", || slow_framework() )),
+  ];
+  
+  plots::framework_comparison_chart(
+    &framework_results,
+    "Framework Performance Comparison",
+    Path::new( "docs/comparison_chart.svg" )
+  );
+}
+```
+
+**Pattern 7: Research-Grade Statistical Analysis** ⭐ **CRITICAL FEATURE**
+```rust
+use benchkit::prelude::*;
+
+fn research_grade_performance_analysis()
+{
+  // Collect benchmark data with proper sample size
+  let algorithm_a_result = bench_function_n( "algorithm_a", 20, || algorithm_a() );
+  let algorithm_b_result = bench_function_n( "algorithm_b", 20, || algorithm_b() );
+  
+  // Professional statistical analysis 
+  let analysis_a = StatisticalAnalysis::analyze( &algorithm_a_result, SignificanceLevel::Standard ).unwrap();
+  let analysis_b = StatisticalAnalysis::analyze( &algorithm_b_result, SignificanceLevel::Standard ).unwrap();
+  
+  // Check statistical quality before drawing conclusions
+  if analysis_a.is_reliable() && analysis_b.is_reliable()
+  {
+    // Perform statistical comparison with proper hypothesis testing
+    let comparison = StatisticalAnalysis::compare(
+      &algorithm_a_result,
+      &algorithm_b_result, 
+      SignificanceLevel::Standard
+    ).unwrap();
+    
+    println!( "Statistical comparison:" );
+    println!( "  Effect size: {:.3} ({})", comparison.effect_size, comparison.effect_size_interpretation() );
+    println!( "  P-value: {:.4}", comparison.p_value );
+    println!( "  Significant: {}", comparison.is_significant );
+    println!( "  Conclusion: {}", comparison.conclusion() );
+    
+    // Generate research-grade report with methodology
+    let report = ReportGenerator::new( "Algorithm Comparison", results );
+    let statistical_report = report.generate_statistical_report();
+    println!( "{}", statistical_report );
+  }
+  else
+  {
+    println!( "⚠️ Results do not meet statistical reliability criteria - collect more data" );
+  }
 }
 ```
 
@@ -312,7 +455,12 @@ fn memory_benchmark() {
 - Outlier detection and handling improves result quality
 - Multiple sampling provides more reliable measurements
 
-**Lesson 5: Integration Simplicity**
+**Lesson 5: Git-Style Diffing for Performance**
+- Developers are familiar with git diff workflow and expect similar experience
+- Performance changes should be as easy to review as code changes
+- Historical comparison across commits/implementations is essential for CI/CD
+
+**Lesson 6: Integration Simplicity**
 - Developers abandon tools that require extensive setup
 - Default configurations should work for 80% of use cases
 - Incremental adoption is more successful than wholesale replacement
@@ -367,16 +515,18 @@ Based on real-world usage patterns and critical path analysis from unilang/strs_
 3. Standard data generators (`data_generators`)
 
 #### Phase 2: Analysis Tools  
-**Justification**: Needed for optimization decision-making
-1. Comparative analysis (`comparative_analysis`)
-2. Statistical analysis (`statistical_analysis`) 
-3. Regression detection and baseline management
+**Justification**: Essential for professional performance analysis
+1. **Research-grade statistical analysis (`statistical_analysis`)** ⭐ **CRITICAL**
+2. Comparative analysis (`comparative_analysis`)
+3. Git-style performance diffing (`diff_analysis`)
+4. Regression detection and baseline management
 
 #### Phase 3: Advanced Features
 **Justification**: Nice-to-have for comprehensive analysis
-1. HTML and JSON reports (`html_reports`, `json_reports`)
-2. Criterion compatibility (`criterion_compat`)
-3. Optimization hints and recommendations (`optimization_hints`)
+1. Chart generation and visualization (`visualization`)
+2. HTML and JSON reports (`html_reports`, `json_reports`)
+3. Criterion compatibility (`criterion_compat`)
+4. Optimization hints and recommendations (`optimization_hints`)
 
 #### Phase 4: Ecosystem Integration
 **Justification**: Long-term adoption and CI/CD integration

@@ -130,6 +130,7 @@ mod performance_docs
 - **Performance insights** - Automatic regression detection  
 - **Scaling analysis** - How performance changes with input size
 - **Comparison tools** - Before/after, A/B testing made easy
+- **Git-style diffing** - Compare benchmark results across commits or implementations
 
 ### 📝 **Documentation Integration**
 - **Markdown-native** - Generate tables and sections directly
@@ -239,7 +240,42 @@ fn performance_regression_check() {
 }
 ```
 
-### Pattern 4: Documentation Automation
+### Pattern 4: Git-Style Performance Diffing
+
+Compare performance across implementations or commits:
+
+```rust,ignore
+use benchkit::prelude::*;
+
+// Baseline results (old implementation)
+let baseline_results = vec![
+    ("string_ops".to_string(), bench_function("old_string_ops", || old_implementation())),
+    ("hash_compute".to_string(), bench_function("old_hash", || old_hash_function())),
+];
+
+// Current results (new implementation) 
+let current_results = vec![
+    ("string_ops".to_string(), bench_function("new_string_ops", || new_implementation())),
+    ("hash_compute".to_string(), bench_function("new_hash", || new_hash_function())),
+];
+
+// Generate git-style diff
+let diff_set = diff_benchmark_sets(&baseline_results, &current_results);
+
+// Show summary
+println!("Performance changes:");
+for diff in &diff_set.diffs {
+    println!("{}", diff.to_summary());
+}
+
+// Show detailed analysis for regressions
+for regression in diff_set.regressions() {
+    println!("\n⚠️ Regression detected:");
+    println!("{}", regression.to_diff_format());
+}
+```
+
+### Pattern 5: Documentation Automation
 
 Keep performance docs always up-to-date:
 
@@ -278,6 +314,7 @@ benchkit = {
         "html_reports",        # HTML output 
         "statistical_analysis", # Advanced statistics
         "optimization_hints",   # Performance recommendations
+        "diff_analysis",        # Git-style benchmark diffing
     ]
 }
 ```
@@ -293,6 +330,7 @@ benchkit = {
 | `statistical_analysis` | Advanced statistical analysis | - |
 | `comparative_analysis` | A/B testing capabilities | - |
 | `optimization_hints` | Performance optimization suggestions | - |
+| `diff_analysis` | Git-style benchmark result diffing | - |
 
 ## When to Use benchkit vs Criterion
 

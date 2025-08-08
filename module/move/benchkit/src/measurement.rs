@@ -95,6 +95,61 @@ impl BenchmarkResult {
     Duration::from_secs_f64(variance.sqrt())
   }
 
+  /// Get coefficient of variation (relative standard deviation) 
+  pub fn coefficient_of_variation(&self) -> f64 {
+    let mean_val = self.mean_time().as_secs_f64();
+    if mean_val > 0.0 {
+      self.std_deviation().as_secs_f64() / mean_val
+    } else {
+      0.0
+    }
+  }
+
+  /// Get standard error of the mean
+  pub fn standard_error(&self) -> Duration {
+    if self.times.is_empty() {
+      return Duration::ZERO;
+    }
+    let std_dev = self.std_deviation();
+    Duration::from_secs_f64(std_dev.as_secs_f64() / (self.times.len() as f64).sqrt())
+  }
+
+  /// Get confidence interval for the mean (95% by default)
+  pub fn confidence_interval_95(&self) -> (Duration, Duration) {
+    let mean = self.mean_time();
+    let margin = Duration::from_secs_f64(1.96 * self.standard_error().as_secs_f64());
+    (mean.saturating_sub(margin), mean + margin)
+  }
+
+  /// Get percentile value (e.g., 0.95 for 95th percentile)
+  pub fn percentile(&self, p: f64) -> Duration {
+    if self.times.is_empty() {
+      return Duration::ZERO;
+    }
+    let mut sorted = self.times.clone();
+    sorted.sort();
+    let index = (p * (sorted.len() - 1) as f64).round() as usize;
+    sorted[index.min(sorted.len() - 1)]
+  }
+
+  /// Check if results are statistically reliable based on basic criteria
+  pub fn is_reliable(&self) -> bool {
+    // Basic reliability checks:
+    // 1. Sufficient sample size (>= 10)
+    // 2. Low coefficient of variation (<= 10%)
+    // 3. Not too spread out (max/min ratio < 3.0)
+    
+    let sufficient_samples = self.times.len() >= 10;
+    let low_variation = self.coefficient_of_variation() <= 0.1;
+    let reasonable_spread = if self.min_time().as_secs_f64() > 0.0 {
+      self.max_time().as_secs_f64() / self.min_time().as_secs_f64() < 3.0
+    } else {
+      false
+    };
+
+    sufficient_samples && low_variation && reasonable_spread
+  }
+
   /// Compare this result with another, returning improvement percentage
   /// Positive percentage means this result is faster
   pub fn compare(&self, other: &BenchmarkResult) -> Comparison {
