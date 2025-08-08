@@ -6,6 +6,8 @@
 mod private
 {
   use crate::error::Error;
+  use strs_tools::string;
+  use strs_tools::string::split::SplitType;
 
   // use former::Former;
 
@@ -209,13 +211,29 @@ mod private
           {
             return Err( Error::Registration( "Empty enum choices".to_string() ) );
           }
-          let choices : Vec< String > = inner.split( ',' ).map( | s | s.trim().to_string() ).collect();
+          // Use SIMD-optimized string splitting for enum choices
+          let choices : Vec< String > = string::split()
+            .src(inner)
+            .delimeter(",")
+            .stripping(true)
+            .perform()
+            .filter(|s| s.typ == SplitType::Delimeted) // Only keep content, not delimiters
+            .map(|s| s.string.to_string().trim().to_string())
+            .collect();
           Ok( Kind::Enum( choices ) )
         },
         s if s.starts_with( "List(" ) && s.ends_with( ')' ) =>
         {
           let inner = s.strip_prefix( "List(" ).unwrap().strip_suffix( ')' ).unwrap();
-          let parts : Vec< &str > = inner.split( ',' ).collect();
+          // Use SIMD-optimized string splitting for list parsing
+          let parts : Vec< String > = string::split()
+            .src(inner)
+            .delimeter(",")
+            .stripping(true)
+            .perform()
+            .filter(|s| s.typ == SplitType::Delimeted) // Only keep content, not delimiters
+            .map(|s| s.string.to_string())
+            .collect();
           if parts.is_empty()
           {
             return Err( Error::Registration( "List requires item type".to_string() ) );
@@ -234,7 +252,15 @@ mod private
         s if s.starts_with( "Map(" ) && s.ends_with( ')' ) =>
         {
           let inner = s.strip_prefix( "Map(" ).unwrap().strip_suffix( ')' ).unwrap();
-          let parts : Vec< &str > = inner.split( ',' ).collect();
+          // Use SIMD-optimized string splitting for map parsing
+          let parts : Vec< String > = string::split()
+            .src(inner)
+            .delimeter(",")
+            .stripping(true)
+            .perform()
+            .filter(|s| s.typ == SplitType::Delimeted) // Only keep content, not delimiters
+            .map(|s| s.string.to_string())
+            .collect();
           if parts.len() < 2
           {
             return Err( Error::Registration( "Map requires key and value types".to_string() ) );

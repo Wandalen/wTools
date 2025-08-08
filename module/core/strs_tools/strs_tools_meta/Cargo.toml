@@ -1,0 +1,43 @@
+[package]
+name = "strs_tools_meta"
+version = "0.1.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+]
+license = "MIT"
+description = "Procedural macros for strs_tools compile-time optimizations. Its meta module. Don't use directly."
+categories = [ "development-tools" ]
+keywords = [ "procedural-macro", "compile-time", "optimization" ]
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+features = [ "full" ]
+all-features = false
+
+[lib]
+proc-macro = true
+
+[features]
+default = [
+  "enabled",
+  "optimize_split",
+  "optimize_match",
+]
+full = [
+  "enabled",
+  "optimize_split",
+  "optimize_match",
+]
+enabled = [ "macro_tools/enabled" ]
+
+optimize_split = []
+optimize_match = []
+
+[dependencies]
+macro_tools = { workspace = true, features = [ "attr", "ct", "diag", "typ", "derive" ] }
+
+[dev-dependencies]
+test_tools = { workspace = true }
