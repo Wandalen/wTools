@@ -13,14 +13,16 @@ Lightweight benchmarking toolkit focused on practical performance analysis and r
 ```rust
 use benchkit::prelude::*;
 
-fn main() {
-    // Measure a simple operation
-    let result = bench_function("string_processing", || {
-        "hello world".chars().collect::<Vec<_>>()
-    });
-    
-    println!("Time: {:.2?}", result.mean_time());
-    println!("Throughput: {:.2} ops/sec", result.operations_per_second());
+fn main()
+{
+  // Measure a simple operation
+  let result = bench_function( "string_processing", ||
+  {
+    "hello world".chars().collect::<Vec<_>>()
+  });
+
+  println!( "Time: {:.2?}", result.mean_time() );
+  println!( "Throughput: {:.2} ops/sec", result.operations_per_second() );
 }
 ```
 
@@ -37,12 +39,12 @@ fn generate_random_vec( size : usize ) -> Vec< u32 >
 fn main()
 {
   let mut comparison = ComparativeAnalysis::new( "sorting_algorithms" );
-  
+
   // Compare different sorting approaches
   for size in [ 100, 1000, 10000 ]
   {
     let data = generate_random_vec( size );
-    
+
     comparison = comparison.algorithm( &format!( "std_sort_{}", size ),
     {
       let mut d = data.clone();
@@ -51,7 +53,7 @@ fn main()
         d.sort();
       }
     });
-    
+
     comparison = comparison.algorithm( &format!( "unstable_sort_{}", size ),
     {
       let mut d = data.clone();
@@ -61,7 +63,7 @@ fn main()
       }
     });
   }
-  
+
   let report = comparison.run();
   println!( "Fastest: {:?}", report.fastest() );
 }
@@ -79,11 +81,11 @@ mod performance_docs
   fn update_readme_performance()
   {
     let mut suite = BenchmarkSuite::new( "api_performance" );
-    
+
     // Benchmark your API functions
     suite.benchmark( "parse_small", || parse_input( "small data" ) );
     suite.benchmark( "parse_large", || parse_input( "large data" ) );
-    
+
     // Automatically update README.md performance section
     suite.generate_markdown_report()
          .update_file( "README.md", "## Performance" )
@@ -98,7 +100,7 @@ mod performance_docs
 
 **Criterion is great, but...**
 - **Too opinionated**: Forces specific workflow and report formats
-- **Complex integration**: Requires separate benchmark directory structure  
+- **Complex integration**: Requires separate benchmark directory structure
 - **Poor documentation integration**: Results don't easily flow into README/docs
 - **Framework mentality**: You adapt to criterion, not the other way around
 
@@ -112,11 +114,11 @@ mod performance_docs
 
 **benchkit is a toolkit, not a framework:**
 
-✅ **Flexible Integration** - Use only the pieces you need  
-✅ **Markdown-First** - Designed for documentation integration  
-✅ **Zero Setup** - Works in any test file or binary  
-✅ **Statistical Sound** - Proper analysis without complexity  
-✅ **Composable** - Build custom workflows easily  
+✅ **Flexible Integration** - Use only the pieces you need
+✅ **Markdown-First** - Designed for documentation integration
+✅ **Zero Setup** - Works in any test file or binary
+✅ **Statistical Sound** - Proper analysis without complexity
+✅ **Composable** - Build custom workflows easily
 
 ## Core Features
 
@@ -127,7 +129,7 @@ mod performance_docs
 
 ### 📊 **Smart Analysis**
 - **Statistical rigor** - Confidence intervals, outlier detection
-- **Performance insights** - Automatic regression detection  
+- **Performance insights** - Automatic regression detection
 - **Scaling analysis** - How performance changes with input size
 - **Comparison tools** - Before/after, A/B testing made easy
 - **Git-style diffing** - Compare benchmark results across commits or implementations
@@ -140,7 +142,7 @@ mod performance_docs
 
 ### 🎯 **Practical Focus**
 - **Key metrics first** - Surface what matters for optimization decisions
-- **Hide complexity** - Detailed statistics available but not overwhelming  
+- **Hide complexity** - Detailed statistics available but not overwhelming
 - **Actionable results** - Clear improvement/regression percentages
 - **Real-world patterns** - Data generators for common scenarios
 
@@ -193,7 +195,7 @@ fn run_algorithm(algorithm: &str, data: &[u32]) -> u32 {
 
 fn analyze_performance() {
     let mut suite = BenchmarkSuite::new("comprehensive_analysis");
-    
+
     // Test across multiple dimensions
     for size in [10, 100, 1000, 10000] {
         for algorithm in ["baseline", "optimized", "simd"] {
@@ -204,9 +206,9 @@ fn analyze_performance() {
             });
         }
     }
-    
+
     let analysis = suite.run_analysis();
-    
+
     // Generate comprehensive report
     let report = analysis.generate_markdown_report();
     println!("{}", report.generate());
@@ -220,19 +222,19 @@ For continuous performance monitoring:
 ```rust
 use benchkit::prelude::*;
 
-#[test] 
+#[test]
 fn performance_regression_check() {
     let suite = BenchmarkSuite::from_baseline("benchmarks/baseline.json");
-    
+
     suite.benchmark("critical_path", || critical_operation());
-    
+
     let results = suite.run();
-    
+
     // Fail CI if performance regresses significantly
-    assert!(results.regression_percentage() < 10.0, 
-            "Performance regression detected: {:.1}%", 
+    assert!(results.regression_percentage() < 10.0,
+            "Performance regression detected: {:.1}%",
             results.regression_percentage());
-    
+
     // Update baseline if this is main branch
     if cfg!(feature = "update_baseline") {
         results.save_as_baseline("benchmarks/baseline.json");
@@ -253,7 +255,7 @@ let baseline_results = vec![
     ("hash_compute".to_string(), bench_function("old_hash", || old_hash_function())),
 ];
 
-// Current results (new implementation) 
+// Current results (new implementation)
 let current_results = vec![
     ("string_ops".to_string(), bench_function("new_string_ops", || new_implementation())),
     ("hash_compute".to_string(), bench_function("new_hash", || new_hash_function())),
@@ -289,7 +291,7 @@ mod doc_benchmarks {
         // Run standard benchmark suite
         let suite = BenchmarkSuite::from_config("bench_config.toml");
         let results = suite.run_all();
-        
+
         // Update multiple documentation files
         results.update_markdown_section("README.md", "## Performance")
                .update_markdown_section("docs/performance.md", "## Latest Results")
@@ -307,11 +309,11 @@ benchkit uses feature flags for optional functionality:
 benchkit = { version = "0.1", features = ["full"] }
 
 # Or pick specific features:
-benchkit = { 
-    version = "0.1", 
+benchkit = {
+    version = "0.1",
     features = [
         "markdown_reports",    # Markdown generation (default)
-        "html_reports",        # HTML output 
+        "html_reports",        # HTML output
         "statistical_analysis", # Advanced statistics
         "optimization_hints",   # Performance recommendations
         "diff_analysis",        # Git-style benchmark diffing
@@ -338,7 +340,7 @@ benchkit = {
 - ✅ You want to integrate benchmarks into existing test files
 - ✅ You need automatic documentation updates
 - ✅ You want flexible, composable measurement tools
-- ✅ You're doing ad-hoc performance analysis  
+- ✅ You're doing ad-hoc performance analysis
 - ✅ You need before/after comparisons
 - ✅ You want minimal setup overhead
 
@@ -394,7 +396,7 @@ We welcome contributions! benchkit is designed to be a community-driven toolkit 
 
 - **Data generators** - Common patterns for different domains
 - **Analysis tools** - Statistical methods and insights
-- **Report templates** - New output formats and visualizations  
+- **Report templates** - New output formats and visualizations
 - **Integration examples** - Real-world usage patterns
 - **Performance optimizations** - Keep the toolkit fast
 
