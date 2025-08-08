@@ -118,7 +118,7 @@ fn benchmark_complex_scenario(c: &mut Criterion) {
     b.iter(|| {
       for (name, data, kind) in &complex_data {
         let result = unilang::types::parse_value(black_box(data), black_box(kind));
-        black_box((name, result.unwrap_or_default()));
+        let _ = black_box((name, result));
       }
     })
   });
@@ -160,7 +160,7 @@ fn benchmark_throughput(c: &mut Criterion) {
   group.finish();
 }
 
-/// Benchmark group for strs_tools SIMD performance testing
+// Benchmark group for strs_tools SIMD performance testing
 criterion_group!(
   benches, 
   benchmark_list_parsing, 

@@ -28,7 +28,7 @@ all-features = false
 default = [ "enabled", "simd", "repl", "enhanced_repl" ]
 full = [ "enabled", "on_unknown_suggest", "simd", "repl", "enhanced_repl" ]
 enabled = []
-benchmarks = [ "simd", "clap", "pico-args", "criterion" ]
+benchmarks = [ "simd", "clap", "pico-args", "benchkit" ]
 
 # Performance optimizations - SIMD enabled by default for maximum performance
 # Can be disabled with: cargo build --no-default-features --features enabled
@@ -79,7 +79,7 @@ simd-json = { version = "0.13", optional = true } # SIMD-optimized JSON parsing
 # Benchmark dependencies moved to dev-dependencies to avoid production inclusion
 clap = { version = "4.4", optional = true }
 pico-args = { version = "0.5", optional = true }
-criterion = { version = "0.5", optional = true }
+benchkit = { path = "../benchkit", optional = true, features = [ "enabled", "markdown_reports", "data_generators" ] }
 
 [[bin]]
 name = "unilang_cli"
@@ -139,6 +139,7 @@ harness = false
 name = "strs_tools_benchmark"
 path = "benchmarks/strs_tools_benchmark.rs"
 harness = false
+
 
 [[test]]
 name = "run_all_benchmarks"
