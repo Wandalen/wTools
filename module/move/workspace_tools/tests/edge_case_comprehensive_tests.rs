@@ -23,24 +23,14 @@ use tempfile::TempDir;
 fn create_test_workspace_at( path : &std::path::Path ) -> Workspace
 {
   let path_buf = path.to_path_buf();
-  let original = env::var( "WORKSPACE_PATH" ).ok();
   
   // Ensure the directory exists
   if !path_buf.exists() {
     std::fs::create_dir_all(&path_buf).expect("Failed to create test directory");
   }
   
-  env::set_var( "WORKSPACE_PATH", &path_buf );
-  let workspace = Workspace::resolve().expect(&format!("Failed to create workspace at: {}", path_buf.display()));
-  
-  // Restore state immediately
-  match original
-  {
-    Some( value ) => env::set_var( "WORKSPACE_PATH", value ),
-    None => env::remove_var( "WORKSPACE_PATH" ),
-  }
-  
-  workspace
+  // Create workspace directly using the new constructor
+  Workspace::new( path_buf )
 }
 
 /// Test EC.1: from_git_root() in git repository  

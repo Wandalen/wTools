@@ -135,6 +135,27 @@ pub struct Workspace
 
 impl Workspace
 {
+  /// create workspace from a given root path
+  ///
+  /// # Arguments
+  ///
+  /// * `root` - the root directory path for the workspace
+  ///
+  /// # Examples
+  ///
+  /// ```rust
+  /// use workspace_tools::Workspace;
+  /// use std::path::PathBuf;
+  ///
+  /// let workspace = Workspace::new( PathBuf::from( "/path/to/workspace" ) );
+  /// ```
+  #[must_use]
+  #[inline]
+  pub fn new< P : Into< PathBuf > >( root : P ) -> Self
+  {
+    Self { root : root.into() }
+  }
+
   /// resolve workspace from environment variables
   ///
   /// reads the `WORKSPACE_PATH` environment variable set by cargo configuration

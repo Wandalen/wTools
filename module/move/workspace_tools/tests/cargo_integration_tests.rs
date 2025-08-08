@@ -136,31 +136,18 @@ fn test_cargo_metadata_success()
   let temp_dir = create_test_cargo_workspace_with_members();
   let temp_path = temp_dir.path().to_path_buf(); // Get owned path
   
-  // Save original directory - handle potential race conditions
-  let original_dir = match std::env::current_dir() {
-    Ok(dir) => dir,
-    Err(e) => {
-      eprintln!("Warning: Could not get current directory: {}", e);
-      // Fallback to a reasonable default
-      std::path::PathBuf::from(".")
-    }
-  };
-  
-  // Change to the workspace directory for cargo metadata
-  std::env::set_current_dir( &temp_path ).expect(&format!("Failed to change to temp dir: {}", temp_path.display()));
+  // Save and restore current directory to ensure stable environment
+  let original_dir = std::env::current_dir().expect("Failed to get current directory");
   
   let workspace = Workspace::from_cargo_manifest( temp_path.join( "Cargo.toml" ) ).unwrap();
   
+  // Change to temp directory for cargo metadata command
+  std::env::set_current_dir( &temp_path ).expect("Failed to change to temp directory");
+  
   let result = workspace.cargo_metadata();
   
-  // Restore original directory IMMEDIATELY but don't unwrap yet
-  let restore_result = std::env::set_current_dir( &original_dir );
-  
-  // Check restore operation succeeded
-  if let Err(e) = restore_result {
-    eprintln!("Failed to restore directory: {}", e);
-    // Continue anyway to check the main test result
-  }
+  // Restore original directory immediately
+  std::env::set_current_dir( &original_dir ).expect("Failed to restore original directory");
   
   if let Err(ref e) = result {
     println!("cargo_metadata error: {}", e);

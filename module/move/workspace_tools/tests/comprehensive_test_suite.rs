@@ -238,7 +238,7 @@ mod core_workspace_tests
     #[ cfg( feature = "cargo_integration" ) ]
     {
       // since we're in a cargo workspace, it should detect the workspace root
-      assert!( workspace.root().ends_with( "wTools" ) );
+      assert!( workspace.root().ends_with( "wTools2" ) );
       assert!( workspace.is_cargo_workspace() );
     }
     
