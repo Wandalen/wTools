@@ -652,7 +652,8 @@ fn display_session_summary( state : &ReplSessionState )
   if !state.command_stats.is_empty()
   {
     let most_used = state.command_stats.iter()
-      .max_by_key( |( _, count )| **count ).map_or_else(|| "none".to_string(), |( cmd, count )| format!( "{cmd} ({count} times)" ));
+      .max_by_key( |( _, count )| **count )
+      .map_or_else(|| "none".to_string(), |( cmd, count )| format!( "{cmd} ({count} times)" ));
     println!( "  • Most used command: {most_used}" );
   }
 
