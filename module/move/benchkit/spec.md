@@ -23,6 +23,9 @@
 * **Part II: Internal Design (Design Recommendations)**
   * 7. Architectural Principles
   * 8. Integration Patterns
+* **Part III: Development Guidelines**
+  * 9. Lessons Learned Reference
+  * 10. Implementation Priorities
 
 ---
 
@@ -316,10 +319,87 @@ fn memory_benchmark() {
 
 ---
 
-### Implementation Priority
+---
 
-1. **Phase 1**: Core timing and measurement (`enabled`)
-2. **Phase 2**: Basic markdown report generation (`markdown_reports`)  
-3. **Phase 3**: Data generators and common patterns (`data_generators`)
-4. **Phase 4**: Comparative analysis capabilities (`comparative_analysis`)
-5. **Phase 5**: Advanced features (HTML, statistical analysis, optimization hints)
+## Part III: Development Guidelines
+
+### 9. Lessons Learned Reference
+
+**CRITICAL**: All development decisions for benchkit are based on real-world experience from unilang and strs_tools benchmarking work. The complete set of requirements, anti-patterns, and lessons learned is documented in [`recommendations.md`](recommendations.md).
+
+**Key lessons that shaped benchkit design:**
+
+#### 9.1. Toolkit vs Framework Decision
+- **Problem**: Criterion's framework approach was too restrictive for our use cases
+- **Solution**: benchkit provides building blocks, not rigid workflows
+- **Evidence**: "I don't want to mess with all that problem I had" - User feedback on complexity
+
+#### 9.2. Markdown-First Integration
+- **Problem**: Manual copy-pasting of performance results into documentation
+- **Solution**: Automated markdown section updating with version control friendly output
+- **Evidence**: Frequent need to update README performance sections during optimization
+
+#### 9.3. Standard Data Size Patterns
+- **Problem**: Inconsistent data sizes across different benchmarks made comparison difficult
+- **Solution**: Standardized DataSize enum with proven effective sizes
+- **Evidence**: "Common patterns: small (10), medium (100), large (1000), huge (10000)"
+
+#### 9.4. Feature Flag Philosophy
+- **Problem**: Heavy dependencies slow compilation and increase complexity
+- **Solution**: Granular feature flags for all non-core functionality
+- **Evidence**: "put every extra feature under cargo feature" - Explicit requirement
+
+#### 9.5. Focus on Key Metrics
+- **Problem**: Statistical details overwhelm users seeking optimization guidance
+- **Solution**: Surface 2-3 key indicators, hide details behind optional analysis
+- **Evidence**: "expose just few critical parameters of optimization and hid the rest deeper"
+
+**For complete requirements and anti-patterns, see [`recommendations.md`](recommendations.md).**
+
+### 10. Implementation Priorities
+
+Based on real-world usage patterns and critical path analysis from unilang/strs_tools work:
+
+#### Phase 1: Core Functionality (MVP)
+**Justification**: Essential for any benchmarking work
+1. Basic timing and measurement (`enabled`)
+2. Simple markdown report generation (`markdown_reports`)  
+3. Standard data generators (`data_generators`)
+
+#### Phase 2: Analysis Tools  
+**Justification**: Needed for optimization decision-making
+1. Comparative analysis (`comparative_analysis`)
+2. Statistical analysis (`statistical_analysis`) 
+3. Regression detection and baseline management
+
+#### Phase 3: Advanced Features
+**Justification**: Nice-to-have for comprehensive analysis
+1. HTML and JSON reports (`html_reports`, `json_reports`)
+2. Criterion compatibility (`criterion_compat`)
+3. Optimization hints and recommendations (`optimization_hints`)
+
+#### Phase 4: Ecosystem Integration
+**Justification**: Long-term adoption and CI/CD integration
+1. CI/CD tooling and automation
+2. IDE integration and tooling support  
+3. Performance monitoring and alerting
+
+### Success Criteria
+
+**User Experience Success Metrics:**
+- [ ] New users can run first benchmark in <5 minutes
+- [ ] Integration requires <10 lines of code
+- [ ] Documentation updates happen automatically
+- [ ] Performance regressions detected within 1% accuracy
+
+**Technical Success Metrics:**
+- [ ] Measurement overhead <1% for operations >1ms
+- [ ] All features work independently
+- [ ] Compatible with existing criterion benchmarks
+- [ ] Memory usage scales linearly with data size
+
+### Reference Documents
+
+- **[`recommendations.md`](recommendations.md)** - Complete requirements from real-world experience
+- **[`readme.md`](readme.md)** - Usage-focused documentation with examples  
+- **[`examples/`](examples/)** - Comprehensive usage demonstrations

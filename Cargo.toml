@@ -18,6 +18,7 @@ exclude = [
   "module/move/refiner",
   "module/move/wplot",
   "module/move/plot_interface",
+  "module/move/workspace_tools",
   # "module/move/unilang_parser", # Explicitly exclude unilang_parser
   # "module/alias/unilang_instruction_parser", # Explicitly exclude unilang_instruction_parser
   "module/core/program_tools",
@@ -734,6 +735,14 @@ default-features = false
 
 [workspace.dependencies.bytecount]
 version = "0.6"
+
+## workspace_tools dependencies
+
+[workspace.dependencies.tempfile]
+version = "3.20.0"
+
+[workspace.dependencies.glob]
+version = "0.3.2"
 
 [patch.crates-io]
 former_meta = { path = "module/core/former_meta" }

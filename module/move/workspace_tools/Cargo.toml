@@ -1,0 +1,38 @@
+[package]
+name = "workspace_tools"
+version = "0.1.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+]
+license = "MIT"
+readme = "readme.md"
+documentation = "https://docs.rs/workspace_tools"
+repository = "https://github.com/Wandalen/workspace_tools"
+homepage = "https://github.com/Wandalen/workspace_tools"
+description = """
+Universal workspace-relative path resolution for any Rust project. Provides consistent, reliable path management regardless of execution context or working directory.
+"""
+categories = [ "development-tools", "filesystem" ]
+keywords = [ "workspace", "path", "resolution", "build-tools", "cross-platform" ]
+
+# Workspace lints disabled for standalone operation
+# [lints]
+# workspace = true
+
+[package.metadata.docs.rs]
+features = [ "full" ]
+all-features = false
+
+[features]
+default = [ "enabled" ]
+full = [ "enabled", "glob", "secret_management" ]
+enabled = []
+glob = [ "dep:glob" ]
+secret_management = []
+
+[dependencies]
+glob = { version = "0.3.2", optional = true }
+tempfile = "3.20.0"
+
+[dev-dependencies]
