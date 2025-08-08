@@ -117,7 +117,46 @@ pub struct OwnedStruct {
 - **Workaround Availability**: Full (single variant per enum)
 - **Future Compatibility**: Possible (requires complex deduplication logic)
 
-**What it means**: The macro generates conflicting trait implementations when multiple enum variants require the same traits.
+**What it means**: The Former derive macro generates the same core trait implementations for each enum, but when an enum has multiple variants, each variant tries to generate its own implementation of these shared traits, causing Rust's trait system to detect conflicting implementations.
+
+### The Specific Traits Involved
+
+The trait conflict occurs with the core Former trait ecosystem that every Former-derived type must implement:
+
+1. **`EntityToStorage`** - Maps the entity type to its storage type
+   ```rust
+   impl EntityToStorage for MyEnum {
+       type Storage = MyEnumFormerStorage;  // ← Each variant tries to define this
+   }
+   ```
+
+2. **`EntityToFormer<Definition>`** - Maps the entity to its former builder
+   ```rust
+   impl<Definition> EntityToFormer<Definition> for MyEnum {
+       type Former = MyEnumFormer<Definition>;  // ← Each variant tries to define this
+   }
+   ```
+
+3. **`EntityToDefinition<Context, Formed, End>`** - Maps to former definition types
+   ```rust
+   impl<Context, Formed, End> EntityToDefinition<Context, Formed, End> for MyEnum {
+       type Definition = MyEnumFormerDefinition<Context, Formed, End>;  // ← Duplicate here too
+   }
+   ```
+
+### Why The Conflict Happens
+
+**Current Macro Logic**:
+- Each enum variant generates its own complete set of Former traits
+- All variants target the same enum type (`MyEnum`) 
+- Rust sees multiple `impl EntityToStorage for MyEnum` blocks
+- **Result**: E0119 "conflicting implementations of trait"
+
+**Technical Root Cause**:
+The macro doesn't have sophisticated enough logic to:
+1. **Detect** when multiple variants exist in the same enum
+2. **Deduplicate** trait implementations across variants  
+3. **Merge** variant-specific logic into unified trait implementations
 
 ### ❌ This Breaks:
 ```rust
