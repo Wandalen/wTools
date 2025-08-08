@@ -2,10 +2,10 @@
 mod private {}
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
   /// `layer_a_own`
   pub fn layer_a_own() -> bool {
@@ -13,15 +13,15 @@ pub mod own {
   }
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Orphan namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
   /// `layer_a_orphan`
   pub fn layer_a_orphan() -> bool {
@@ -30,10 +30,10 @@ pub mod orphan {
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
   /// `layer_a_exposed`
   pub fn layer_a_exposed() -> bool {
@@ -42,7 +42,7 @@ pub mod exposed {
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
   /// `layer_a_prelude`

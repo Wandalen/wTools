@@ -7,14 +7,14 @@
 
 
 use crate::*;
-#[allow(unused)]
+#[ allow( unused ) ]
 use collection_tools::BinaryHeap;
 
 impl<E> Collection for BinaryHeap<E> {
   type Entry = E;
   type Val = E;
 
-  #[inline(always)]
+  #[ inline( always ) ]
   fn entry_to_val(e: Self::Entry) -> Self::Val {
     e
   }
@@ -24,7 +24,7 @@ impl<E> CollectionAdd for BinaryHeap<E>
 where
   E: Ord,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn add(&mut self, e: Self::Entry) -> bool {
     self.push(e);
     true
@@ -35,7 +35,7 @@ impl<E> CollectionAssign for BinaryHeap<E>
 where
   E: Ord,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign<Elements>(&mut self, elements: Elements) -> usize
   where
     Elements: IntoIterator<Item = Self::Entry>,
@@ -48,7 +48,7 @@ where
 
 impl<E> CollectionValToEntry<E> for BinaryHeap<E> {
   type Entry = E;
-  #[inline(always)]
+  #[ inline( always ) ]
   fn val_to_entry(val: E) -> Self::Entry {
     val
   }
@@ -85,7 +85,7 @@ where
 /// - `Formed`: The type formed at the end of the formation process, typically a `BinaryHeap<E>`.
 /// - `End`: A trait determining the behavior at the end of the formation process.
 ///
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct BinaryHeapDefinition<E, Context, Formed, End>
 where
   E: Ord,
@@ -119,7 +119,7 @@ where
 /// - `E`: The element type of the binary heap.
 /// - `Context`: The context in which the binary heap is formed.
 /// - `Formed`: The type produced as a result of the formation process.
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct BinaryHeapDefinitionTypes<E, Context = (), Formed = BinaryHeap<E>> {
   _phantom: core::marker::PhantomData<(E, Context, Formed)>,
 }
@@ -211,7 +211,7 @@ impl<E> BinaryHeapExt<E> for BinaryHeap<E>
 where
   E: Ord,
 {
-  #[allow(clippy::default_constructed_unit_structs)]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn former() -> BinaryHeapFormer<E, (), BinaryHeap<E>, ReturnStorage> {
     BinaryHeapFormer::<E, (), BinaryHeap<E>, ReturnStorage>::new(ReturnStorage::default())
   }

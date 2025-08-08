@@ -5,8 +5,8 @@
 use asbytes::AsBytes; // Import the trait
 
 // Define a POD struct
-#[repr(C)]
-#[derive(Debug, Clone, Copy, asbytes::Pod, asbytes::Zeroable)]
+#[ repr( C ) ]
+#[ derive( Debug, Clone, Copy, asbytes::Pod, asbytes::Zeroable ) ]
 struct Point {
   x: f32,
   y: f32,

@@ -3,7 +3,7 @@
 // by creating non-parametrized struct equivalents with HashMap/BTreeMap that actually work
 
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
@@ -11,46 +11,46 @@ use ::former::Former;
 use std::collections::HashMap;
 
 // Wrapper structs that derive Former for use in HashMap values
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 pub struct StringValue {
   key: String,
   value: String,
 }
 
 // Implement ValToEntry to map StringValue to HashMap key/value
-impl ::former::ValToEntry<HashMap<String, StringValue>> for StringValue {
+impl ::former::ValToEntry<HashMap< String, StringValue >> for StringValue {
   type Entry = (String, StringValue);
-  #[inline(always)]
+  #[ inline( always ) ]
   fn val_to_entry(self) -> Self::Entry {
     (self.key.clone(), self)
   }
 }
 
-#[derive(Debug, PartialEq, Former)] 
+#[ derive( Debug, PartialEq, Former ) ] 
 pub struct IntValue {
   key: String,
   value: i32,
 }
 
 // Implement ValToEntry to map IntValue to HashMap key/value
-impl ::former::ValToEntry<HashMap<String, IntValue>> for IntValue {
+impl ::former::ValToEntry<HashMap< String, IntValue >> for IntValue {
   type Entry = (String, IntValue);
-  #[inline(always)]
+  #[ inline( always ) ]
   fn val_to_entry(self) -> Self::Entry {
     (self.key.clone(), self)
   }
 }
 
 // Non-parametrized replacement for parametrized struct where functionality
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 pub struct ParametrizedStructReplacement {
   // Replaces parametrized struct with concrete HashMap types that work
-  #[subform_entry]
-  string_map: HashMap<String, StringValue>,
+  #[ subform_entry ]
+  string_map: HashMap< String, StringValue >,
   
-  #[subform_entry] 
-  int_map: HashMap<String, IntValue>,
+  #[ subform_entry ] 
+  int_map: HashMap< String, IntValue >,
   
   // Basic fields for completeness
   name: String,
@@ -58,21 +58,21 @@ pub struct ParametrizedStructReplacement {
 }
 
 // Another struct testing different HashMap scenarios  
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 pub struct AdvancedParametrizedStructReplacement {
-  #[subform_entry]
-  primary_map: HashMap<String, StringValue>,
+  #[ subform_entry ]
+  primary_map: HashMap< String, StringValue >,
   
-  #[subform_entry]
-  secondary_map: HashMap<String, IntValue>,
+  #[ subform_entry ]
+  secondary_map: HashMap< String, IntValue >,
   
   title: String,
 }
 
 // Tests replacing blocked parametrized_struct_where functionality
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-#[test]
+#[ test ]
 fn string_map_test() {
   let mut expected_string_map = HashMap::new();
   expected_string_map.insert("key1".to_string(), StringValue { key: "key1".to_string(), value: "value1".to_string() });
@@ -114,7 +114,7 @@ fn string_map_test() {
 }
 
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-#[test]  
+#[ test ]  
 fn empty_map_test() {
   let got = ParametrizedStructReplacement::former()
     .name("empty".to_string())
@@ -132,7 +132,7 @@ fn empty_map_test() {
 }
 
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-#[test]
+#[ test ]
 fn advanced_map_test() {
   let mut expected_primary = HashMap::new();
   expected_primary.insert("primary_key".to_string(), StringValue { key: "primary_key".to_string(), value: "primary_value".to_string() });
@@ -162,7 +162,7 @@ fn advanced_map_test() {
 }
 
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-#[test]
+#[ test ]
 fn single_entry_test() {
   let mut expected_map = HashMap::new();
   expected_map.insert("single".to_string(), StringValue { key: "single".to_string(), value: "entry".to_string() });

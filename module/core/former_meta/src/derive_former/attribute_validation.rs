@@ -15,17 +15,17 @@
 //! ### Validation Rules Implemented
 //!
 //! #### Rule V-1: Scalar vs Subform Scalar Conflicts
-//! - `#[scalar]` and `#[subform_scalar]` cannot be used together on the same variant
+//! - `#[ scalar ]` and `#[ subform_scalar ]` cannot be used together on the same variant
 //! - Exception: Struct variants where both have identical behavior
 //!
 //! #### Rule V-2: Subform Scalar Appropriateness
-//! - `#[subform_scalar]` cannot be used on unit variants (no fields to form)
-//! - `#[subform_scalar]` cannot be used on zero-field variants (no fields to form)
-//! - `#[subform_scalar]` cannot be used on multi-field tuple variants (ambiguous field selection)
+//! - `#[ subform_scalar ]` cannot be used on unit variants (no fields to form)
+//! - `#[ subform_scalar ]` cannot be used on zero-field variants (no fields to form)
+//! - `#[ subform_scalar ]` cannot be used on multi-field tuple variants (ambiguous field selection)
 //!
 //! #### Rule V-3: Scalar Attribute Requirements
-//! - Zero-field struct variants MUST have `#[scalar]` attribute (disambiguation requirement)
-//! - Other variant types can use `#[scalar]` optionally
+//! - Zero-field struct variants MUST have `#[ scalar ]` attribute (disambiguation requirement)
+//! - Other variant types can use `#[ scalar ]` optionally
 //!
 //! #### Rule V-4: Field Count Consistency
 //! - Single-field variants should use single-field appropriate attributes
@@ -68,7 +68,7 @@ pub fn validate_variant_attributes(
   variant_attrs: &FieldAttributes,
   field_count: usize,
   variant_type: VariantType,
-) -> Result<()>
+) -> Result< () >
 {
   validate_attribute_combinations(variant, variant_attrs)?;
   validate_variant_type_compatibility(variant, variant_attrs, variant_type)?;
@@ -77,7 +77,7 @@ pub fn validate_variant_attributes(
 }
 
 /// Represents the type of enum variant for validation purposes.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
 pub enum VariantType
 {
   /// Unit variant: `Variant`
@@ -94,9 +94,9 @@ pub enum VariantType
 fn validate_attribute_combinations(
   variant: &syn::Variant,
   variant_attrs: &FieldAttributes,
-) -> Result<()>
+) -> Result< () >
 {
-  // Rule V-1: #[scalar] and #[subform_scalar] conflict (except for struct variants)
+  // Rule V-1: #[ scalar ] and #[ subform_scalar ] conflict (except for struct variants)
   if variant_attrs.scalar.is_some() && variant_attrs.subform_scalar.is_some() {
     // For struct variants, both attributes have the same behavior, so allow it
     if matches!(variant.fields, syn::Fields::Named(_)) {
@@ -104,9 +104,9 @@ fn validate_attribute_combinations(
     } else {
       return Err(syn_err!(
         variant,
-        "Cannot use both #[scalar] and #[subform_scalar] on the same variant. \
+        "Cannot use both #[ scalar ] and #[ subform_scalar ] on the same variant. \
          These attributes have conflicting behaviors for tuple variants. \
-         Choose either #[scalar] for direct construction or #[subform_scalar] for subform construction."
+         Choose either #[ scalar ] for direct construction or #[ subform_scalar ] for subform construction."
       ));
     }
   }
@@ -121,17 +121,17 @@ fn validate_variant_type_compatibility(
   variant: &syn::Variant,
   variant_attrs: &FieldAttributes,
   variant_type: VariantType,
-) -> Result<()>
+) -> Result< () >
 {
-  // Rule V-2: #[subform_scalar] appropriateness
+  // Rule V-2: #[ subform_scalar ] appropriateness
   if variant_attrs.subform_scalar.is_some() {
     match variant_type {
       VariantType::Unit => {
         return Err(syn_err!(
           variant,
-          "#[subform_scalar] cannot be used on unit variants. \
+          "#[ subform_scalar ] cannot be used on unit variants. \
            Unit variants have no fields to form. \
-           Consider removing the #[subform_scalar] attribute."
+           Consider removing the #[ subform_scalar ] attribute."
         ));
       }
       VariantType::Tuple | VariantType::Struct => {
@@ -151,25 +151,25 @@ fn validate_field_count_requirements(
   variant_attrs: &FieldAttributes,
   field_count: usize,
   variant_type: VariantType,
-) -> Result<()>
+) -> Result< () >
 {
-  // Rule V-2 continued: #[subform_scalar] field count requirements
+  // Rule V-2 continued: #[ subform_scalar ] field count requirements
   if variant_attrs.subform_scalar.is_some() {
     match (variant_type, field_count) {
       (VariantType::Tuple | VariantType::Struct, 0) => {
         return Err(syn_err!(
           variant,
-          "#[subform_scalar] cannot be used on zero-field variants. \
+          "#[ subform_scalar ] cannot be used on zero-field variants. \
            Zero-field variants have no fields to form. \
-           Consider using #[scalar] attribute instead for direct construction."
+           Consider using #[ scalar ] attribute instead for direct construction."
         ));
       }
       (VariantType::Tuple, count) if count > 1 => {
         return Err(syn_err!(
           variant,
-          "#[subform_scalar] cannot be used on multi-field tuple variants. \
+          "#[ subform_scalar ] cannot be used on multi-field tuple variants. \
            Multi-field tuple variants have ambiguous field selection for subform construction. \
-           Consider using #[scalar] for direct construction with all fields as parameters, \
+           Consider using #[ scalar ] for direct construction with all fields as parameters, \
            or restructure as a struct variant for field-specific subform construction."
         ));
       }
@@ -179,13 +179,13 @@ fn validate_field_count_requirements(
     }
   }
 
-  // Rule V-3: Zero-field struct variants require #[scalar]
+  // Rule V-3: Zero-field struct variants require #[ scalar ]
   if variant_type == VariantType::Struct && field_count == 0
     && variant_attrs.scalar.is_none() && variant_attrs.subform_scalar.is_none() {
       return Err(syn_err!(
         variant,
-        "Zero-field struct variants require explicit #[scalar] attribute for disambiguation. \
-         Add #[scalar] to generate a direct constructor for this variant."
+        "Zero-field struct variants require explicit #[ scalar ] attribute for disambiguation. \
+         Add #[ scalar ] to generate a direct constructor for this variant."
       ));
     }
 

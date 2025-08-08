@@ -11,7 +11,7 @@ mod private
 
   // /// Pass only if callback fails either returning error or panicing.
   //
-  // pub fn should_throw< R, F : FnOnce() -> anyhow::Result< R > >( f : F ) -> anyhow::Result< R >
+  // pub fn should_throw< R, F : FnOnce() -> anyhow::Result<  R  > >( f : F ) -> anyhow::Result<  R  >
   // {
   //   f()
   // }

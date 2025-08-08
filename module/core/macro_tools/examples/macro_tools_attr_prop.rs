@@ -41,7 +41,7 @@ use macro_tools::{
 
 #[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
 /// Represents the attributes of a struct. Aggregates all its attributes.
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct ItemAttributes {
   /// Attribute for customizing the mutation process.
   pub mutator: AttributeMutator,
@@ -91,7 +91,7 @@ impl ItemAttributes {
 #[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
 /// Marker type for attribute property to specify whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-#[derive(Debug, Default, Clone, Copy)]
+#[ derive( Debug, Default, Clone, Copy ) ]
 pub struct AttributePropertyDebugMarker;
 
 #[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
@@ -107,7 +107,7 @@ pub type AttributePropertyDebug = AttributePropertySingletone<AttributePropertyD
 #[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
 /// Marker type for attribute property to indicate whether a custom code should be generated.
 /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
-#[derive(Debug, Default, Clone, Copy)]
+#[ derive( Debug, Default, Clone, Copy ) ]
 pub struct AttributePropertyCustomMarker;
 
 #[ cfg( all( feature = "enabled", feature = "attr_prop", feature = "ct", feature = "components" ) ) ]
@@ -128,7 +128,7 @@ pub type AttributePropertyCustom = AttributePropertyBoolean<AttributePropertyCus
 /// ```ignore
 /// #[ mutator( custom = true, debug = true ) ]
 /// ```
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct AttributeMutator {
   /// Indicates whether a custom mutator should be generated.
   /// Defaults to `false`, meaning no custom mutator is generated unless explicitly requested.
@@ -162,7 +162,7 @@ impl<IntoT> Assign<AttributeMutator, IntoT> for ItemAttributes
 where
   IntoT: Into<AttributeMutator>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.mutator = component.into();
   }
@@ -174,7 +174,7 @@ impl<IntoT> Assign<AttributePropertyDebug, IntoT> for AttributeMutator
 where
   IntoT: Into<AttributePropertyDebug>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.debug = component.into();
   }
@@ -186,7 +186,7 @@ impl<IntoT> Assign<AttributePropertyCustom, IntoT> for AttributeMutator
 where
   IntoT: Into<AttributePropertyCustom>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.custom = component.into();
   }
@@ -261,11 +261,11 @@ fn main()
   println!( "=== End of Example ===" );
 }
 
-#[cfg(test)]
+#[ cfg( test ) ]
 mod test {
   use super::*;
 
-  #[test]
+  #[ test ]
   fn test_attribute_parsing_and_properties() {
     // Parse an attribute and construct a `ItemAttributes` instance.
     let input: syn::Attribute = syn::parse_quote!( #[ mutator( custom = true ) ] );

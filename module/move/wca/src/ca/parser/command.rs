@@ -15,7 +15,7 @@ mod private
   pub struct Program< Command >
   {
     /// list of namespaces with commands
-    pub commands : Vec< Command >,
+    pub commands : Vec<  Command  >,
   }
 
   /// Represents a parsed command that has been extracted from an input string by a `Parser`.
@@ -47,9 +47,9 @@ mod private
     /// name of command without delimiter
     pub name : String,
     /// list of all subjects for the command
-    pub subjects : Vec< String >,
+    pub subjects : Vec<  String  >,
     /// dictionary of properties. Each property has a name and a raw value
-    pub properties : HashMap< String, String >
+    pub properties : HashMap<  String, String  >
   }
 }
 

@@ -19,9 +19,9 @@ use std::env;
 //
 
 #[ cfg( not( feature = "no_std" ) ) ]
-fn main() -> Result< (), wtools::error::BasicError >
+fn main() -> Result<  (), wtools::error::BasicError  >
 {
-  let args = env::args().skip( 1 ).collect::< Vec< String > >();
+  let args = env::args().skip( 1 ).collect::< Vec<  String  > >();
 
   let ca = wca::CommandsAggregator::former()
   // .exit_code_on_error( 1 )

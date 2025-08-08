@@ -9,34 +9,34 @@
 #![allow(clippy::mod_module_files)]
 
 /// Core error handling utilities.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod error;
 
 /// Namespace with dependencies.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency {
-  #[doc(inline)]
-  #[cfg(feature = "error_typed")]
+  #[ doc( inline ) ]
+  #[ cfg( feature = "error_typed" ) ]
   pub use ::thiserror;
-  #[doc(inline)]
-  #[cfg(feature = "error_untyped")]
+  #[ doc( inline ) ]
+  #[ cfg( feature = "error_untyped" ) ]
   pub use ::anyhow;
 }
 
 /// Prelude to use essentials: `use error_tools::prelude::*`.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod prelude {
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::error::*;
-  #[doc(inline)]
-  #[cfg(feature = "error_untyped")]
+  #[ doc( inline ) ]
+  #[ cfg( feature = "error_untyped" ) ]
   pub use super::error::untyped::*;
-  #[doc(inline)]
-  #[cfg(feature = "error_typed")]
+  #[ doc( inline ) ]
+  #[ cfg( feature = "error_typed" ) ]
   pub use super::error::typed::*;
 }
 
-#[doc(inline)]
-#[cfg(feature = "enabled")]
+#[ doc( inline ) ]
+#[ cfg( feature = "enabled" ) ]
 pub use prelude::*;

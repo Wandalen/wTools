@@ -3,14 +3,14 @@
 use super::*;
 
 /// Child
-#[derive(Debug, Default, PartialEq, the_module::Former)]
+#[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 pub struct Child {
   name: String,
   data: bool,
 }
 
 /// Parent
-#[derive(Debug, Default, PartialEq, the_module::Former)]
+#[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 // #[ debug ]
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent {
@@ -24,7 +24,7 @@ where
 {
   pub fn child() {}
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn child3(self) -> ChildAsSubformer<Self, impl ChildAsSubformerEnd<Self>> {
     self._child_subform_scalar::<<Child as former::EntityToFormer<_>>::Former, _>()
   }
@@ -34,7 +34,7 @@ where
 
 // == end of generated
 
-#[test]
+#[ test ]
 fn subforme_scalar_2() {
   let got = Parent::former().child2().name("a").data(true).end().form();
 
@@ -47,7 +47,7 @@ fn subforme_scalar_2() {
   a_id!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn subforme_scalar_3() {
   let got = Parent::former().child3().name("a").data(true).end().form();
 

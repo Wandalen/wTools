@@ -83,7 +83,7 @@
 //! ### Attribute Processing Utilities
 //! ```rust,ignore
 //! // Placeholder for future attribute processing utilities
-//! pub fn validate_variant_attributes(attrs: &FieldAttributes) -> Result<()> {
+//! pub fn validate_variant_attributes(attrs: &FieldAttributes) -> Result< () > {
 //!     // Consistent attribute validation patterns
 //! }
 //! ```
@@ -128,7 +128,7 @@ use macro_tools::{quote::quote};
 ///
 /// ## Returns
 /// Currently returns an empty `TokenStream` as no shared utilities are implemented yet.
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 pub fn placeholder() -> proc_macro2::TokenStream {
   // This file is for common emitters, not a direct handler.
   // It will contain helper functions as common patterns are identified.

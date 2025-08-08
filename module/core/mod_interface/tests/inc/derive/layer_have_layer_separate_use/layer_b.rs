@@ -25,7 +25,7 @@ mod private {
 }
 
 /// Super struct.
-#[derive(Debug, PartialEq)]
+#[ derive( Debug, PartialEq ) ]
 pub struct SubStruct2 {}
 
 //

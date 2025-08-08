@@ -3,19 +3,19 @@
 
 use super::*;
 
-#[derive(Debug, PartialEq)]
+#[ derive( Debug, PartialEq ) ]
 pub struct TypeProperty<T> {
   value: T,
 }
 
 // Minimal reproducible example of E0277 trait bound error
-#[derive(Debug, PartialEq, the_module::Former)]
+#[ derive( Debug, PartialEq, the_module::Former ) ]
 pub struct TypeOnlyMRE<T> where T: core::hash::Hash + core::cmp::Eq {
   pub name: String,
   pub data: collection_tools::HashMap<T, TypeProperty<T>>,
 }
 
-#[test]
+#[ test ]
 fn test_type_only_mre() {
   let instance = TypeOnlyMRE::<i32>::former()
     .name("test".to_string())

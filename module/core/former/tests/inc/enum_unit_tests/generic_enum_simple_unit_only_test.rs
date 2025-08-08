@@ -5,10 +5,10 @@
 use super::*; // Imports EnumOuter from the including file.
 // use std::fmt::Debug; // Removed, should be imported by the including file.
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[ derive( Copy, Clone, Debug, PartialEq ) ]
 struct MyType(i32);
 
-#[test]
+#[ test ]
 fn generic_other_variant_test()
 {
   // Test with a concrete type for the generic parameter.

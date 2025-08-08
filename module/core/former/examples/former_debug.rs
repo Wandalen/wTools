@@ -1,7 +1,7 @@
 
-//! Comprehensive demonstration of the `#[debug]` attribute for Former derive macro.
+//! Comprehensive demonstration of the `#[ debug ]` attribute for Former derive macro.
 //!
-//! The `#[debug]` attribute provides detailed debug information about:
+//! The `#[ debug ]` attribute provides detailed debug information about:
 //! - Input analysis (generics, lifetimes, fields)
 //! - Code generation process
 //! - Generated code structure  
@@ -25,8 +25,8 @@ fn main() {
   println!();
 
   // Example 1: Simple struct with debug - shows basic input analysis
-  #[derive(Debug, PartialEq, Former)]
-  // #[debug] // <-- Commented out - debug attribute only for temporary debugging
+  #[ derive( Debug, PartialEq, Former ) ]
+  // #[ debug ] // <-- Commented out - debug attribute only for temporary debugging
   pub struct UserProfile {
     age: i32,
     username: String,
@@ -34,8 +34,8 @@ fn main() {
   }
 
   // Example 2: Generic struct with debug - shows generic parameter analysis
-  #[derive(Debug, PartialEq, Former)]
-  // #[debug] // <-- Commented out - debug attribute only for temporary debugging
+  #[ derive( Debug, PartialEq, Former ) ]
+  // #[ debug ] // <-- Commented out - debug attribute only for temporary debugging
   pub struct GenericContainer<T, U>
   where
     T: Clone + core::fmt::Debug,
@@ -47,17 +47,17 @@ fn main() {
   }
 
   // Example 3: Lifetime parameters with debug - shows lifetime handling
-  #[derive(Debug, PartialEq, Former)]
-  // #[debug] // <-- Commented out - debug attribute only for temporary debugging
+  #[ derive( Debug, PartialEq, Former ) ]
+  // #[ debug ] // <-- Commented out - debug attribute only for temporary debugging
   pub struct LifetimeStruct<'a> {
     name: &'a str,
     data: String,
   }
 
   // Example 4: Struct with storage fields and debug
-  #[derive(Debug, PartialEq, Former)]
-  // #[debug] // <-- Commented out - debug attribute only for temporary debugging
-  #[storage_fields(temp_id: u64, processing_state: bool)]
+  #[ derive( Debug, PartialEq, Former ) ]
+  // #[ debug ] // <-- Commented out - debug attribute only for temporary debugging
+  #[ storage_fields( temp_id: u64, processing_state: bool ) ]
   pub struct StorageStruct {
     id: u64,
     name: String,
@@ -106,7 +106,7 @@ fn main() {
   println!();
   println!("=== Debug Information ===");
 
-  #[cfg(feature = "former_diagnostics_print_generated")]
+  #[ cfg( feature = "former_diagnostics_print_generated" ) ]
   {
     println!("Debug output should have been displayed above showing:");
     println!("  • Input Analysis: Field types, generic parameters, constraints");

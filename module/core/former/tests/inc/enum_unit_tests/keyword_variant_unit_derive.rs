@@ -1,9 +1,9 @@
-//! Purpose: Tests the `#[derive(Former)]` macro's generation of constructors for unit variants
+//! Purpose: Tests the `#[ derive( Former ) ]` macro's generation of constructors for unit variants
 //! with keyword identifiers. This file focuses on verifying the derive-based implementation.
 //!
 //! Coverage:
 //! - Rule 3a (Unit + Default): Verifies `KeywordVariantEnum::r#loop() -> KeywordVariantEnum` for a unit variant with a keyword identifier.
-//! - Rule 1a (Unit + `#[scalar]`): Verifies `KeywordVariantEnum::r#loop() -> KeywordVariantEnum` (as default for unit is scalar) for a unit variant with a keyword identifier.
+//! - Rule 1a (Unit + `#[ scalar ]`): Verifies `KeywordVariantEnum::r#loop() -> KeywordVariantEnum` (as default for unit is scalar) for a unit variant with a keyword identifier.
 //!
 //! Test Relevance/Acceptance Criteria:
 //! - Defines an enum `KeywordVariantEnum` with a unit variant `r#Loop` using a raw identifier.

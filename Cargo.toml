@@ -631,15 +631,14 @@ version = "1.41.0"
 features = []
 default-features = false
 
+# Note: anyhow and thiserror are included here ONLY for bootstrap builds
+# of test_tools to avoid cyclic dependencies with error_tools.
+# All other crates MUST use error_tools exclusively for error handling.
 [workspace.dependencies.anyhow]
 version = "~1.0"
-# features = []
-# default-features = false
 
 [workspace.dependencies.thiserror]
 version = "~1.0"
-# features = []
-# default-features = false
 
 [workspace.dependencies.pretty_assertions]
 version = "~1.4.0"

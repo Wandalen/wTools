@@ -2,7 +2,9 @@ use super::*;
 
 //
 
-#[test]
+//
+
+#[ test ]
 fn named_fields_with_named_fields() {
   use syn::{parse_quote, punctuated::Punctuated, Field, token::Comma};
   use the_module::derive;
@@ -34,7 +36,7 @@ fn named_fields_with_named_fields() {
 
 //
 
-#[test]
+#[ test ]
 fn named_fields_with_tuple_struct() {
   use syn::{parse_quote};
   use the_module::derive::named_fields;
@@ -53,7 +55,7 @@ fn named_fields_with_tuple_struct() {
 
 //
 
-#[test]
+#[ test ]
 fn named_fields_with_enum() {
   use syn::{parse_quote};
   use the_module::derive::named_fields;

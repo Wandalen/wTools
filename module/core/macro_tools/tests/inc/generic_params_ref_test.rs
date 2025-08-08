@@ -4,7 +4,7 @@ use macro_tools::{
 };
 use syn::parse_quote;
 
-#[test]
+#[ test ]
 fn test_generics_ref_std() {
   // Test Matrix Rows: T5.6, T5.8, T5.10, T5.12
   let mut generics_std: syn::Generics = parse_quote! { <'a, T, const N: usize> };
@@ -33,7 +33,7 @@ fn test_generics_ref_std() {
   assert_eq!(got_path.to_string(), expected_path.to_string());
 }
 
-#[test]
+#[ test ]
 fn test_generics_ref_empty() {
   // Test Matrix Rows: T5.7, T5.9, T5.11, T5.13
   let generics_empty: syn::Generics = parse_quote! {};

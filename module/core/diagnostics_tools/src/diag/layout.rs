@@ -34,7 +34,7 @@ mod private {
   #[ macro_export ]
   macro_rules! cta_ptr_same_size {
     ( $Ins1:expr, $Ins2:expr $(,)? ) => {{
-      #[allow(unsafe_code, unknown_lints, forget_copy, useless_transmute)]
+      #[ allow( unsafe_code, unknown_lints, forget_copy, useless_transmute ) ]
       let _ = || unsafe {
         let mut ins1 = core::ptr::read($Ins1);
         core::ptr::write(&mut ins1, core::mem::transmute(core::ptr::read($Ins2)));

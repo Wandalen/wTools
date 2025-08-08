@@ -8,57 +8,57 @@
 #![ cfg_attr( not( doc ), doc = "Component model type definitions" ) ]
 
 /// Component-based forming.
-#[cfg(feature = "enabled")]
-#[cfg(feature = "types_component_assign")]
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "types_component_assign" ) ]
 mod component;
 
 /// Namespace with dependencies.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency {
   pub use ::collection_tools;
 }
 
-#[doc(inline)]
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod own {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use crate::*;
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use crate::orphan::*; // Changed to crate::orphan::*
 }
 
 /// Parented namespace of the module.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod orphan {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use crate::*;
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use crate::exposed::*; // Changed to crate::exposed::*
 }
 
 /// Exposed namespace of the module.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod exposed {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use crate::*;
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use crate::prelude::*; // Changed to crate::prelude::*
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod prelude {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use crate::*;
-  #[doc(inline)]
-  #[cfg(feature = "types_component_assign")]
+  #[ doc( inline ) ]
+  #[ cfg( feature = "types_component_assign" ) ]
   pub use crate::component::*; // Changed to crate::component::*
 }

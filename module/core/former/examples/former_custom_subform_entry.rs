@@ -38,11 +38,11 @@ fn main() {}
 ))]
 fn main() {
   use collection_tools::HashMap;
-  #[cfg(feature = "enabled")]
+  #[ cfg( feature = "enabled" ) ]
   use former_meta::Former;
 
   // Child struct with Former derived for builder pattern support
-  #[derive(Debug, PartialEq, Former)]
+  #[ derive( Debug, PartialEq, Former ) ]
   // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
   pub struct Child {
@@ -51,12 +51,12 @@ fn main() {
   }
 
   // Parent struct to hold children
-  #[derive(Debug, PartialEq, Former)]
+  #[ derive( Debug, PartialEq, Former ) ]
   // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
   pub struct Parent {
     // Use `debug` to gennerate sketch of setter.
-    #[subform_entry(setter = false)]
+    #[ subform_entry( setter = false ) ]
     child: HashMap<String, Child>,
   }
 
@@ -68,7 +68,7 @@ fn main() {
   where
     Definition: former::FormerDefinition<Storage = <Parent as former::EntityToStorage>::Storage>,
   {
-    #[inline(always)]
+    #[ inline( always ) ]
     pub fn child(self, name: &str) -> ChildAsSubformer<Self, impl ChildAsSubformerEnd<Self>> {
       self._child_subform_entry::<ChildFormer<_>, _>().name(name)
     }
@@ -77,7 +77,7 @@ fn main() {
   // Required to define how `value` is converted into pair `( key, value )`
   impl former::ValToEntry<HashMap<String, Child>> for Child {
     type Entry = (String, Child);
-    #[inline(always)]
+    #[ inline( always ) ]
     fn val_to_entry(self) -> Self::Entry {
       (self.name.clone(), self)
     }

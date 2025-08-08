@@ -63,7 +63,7 @@ fn main() {
   use clone_dyn::{clone_dyn, CloneDyn};
 
   /// Trait that encapsulates an iterator with specific characteristics, tailored for your needs.
-  #[clone_dyn]
+  #[ clone_dyn ]
   pub trait IterTrait<'a, T>
   where
     T: 'a,

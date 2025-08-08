@@ -78,7 +78,7 @@ fn dlist_basic()
 fn hmap_basic()
 {
 
-  let data : collection_tools::HashMap< &str, TestObject > = hmap!
+  let data : collection_tools::HashMap<  &str, TestObject  > = hmap!
   {
     "a" => TestObject
     {
@@ -112,7 +112,7 @@ fn hmap_basic()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, HashMap< &str, TestObject >, &str, TestObject, str> = AsTable::new( &data );
+  let _as_table : AsTable< '_, HashMap<  &str, TestObject  >, &str, TestObject, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
@@ -222,7 +222,7 @@ fn bset_basic()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, BTreeSet< TestObject >, &str, TestObject, str> = AsTable::new( &data );
+  let _as_table : AsTable< '_, BTreeSet<  TestObject  >, &str, TestObject, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
@@ -330,7 +330,7 @@ fn hset_basic()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, HashSet< TestObject >, &str, TestObject, str> = AsTable::new( &data );
+  let _as_table : AsTable< '_, HashSet<  TestObject  >, &str, TestObject, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
@@ -405,7 +405,7 @@ fn llist_basic()
 #[ test ]
 fn vec_of_hashmap()
 {
-  let data : Vec< HashMap< String, String > > = vec!
+  let data : Vec< HashMap<  String, String  > > = vec!
   [
     {
       let mut map = HashMap::new();
@@ -425,7 +425,7 @@ fn vec_of_hashmap()
 
   use the_module::TableFormatter;
 
-  let _as_table : AsTable< '_, Vec< HashMap< String, String > >, &str, HashMap< String, String >, str> = AsTable::new( &data );
+  let _as_table : AsTable< '_, Vec< HashMap<  String, String  > >, &str, HashMap<  String, String  >, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );

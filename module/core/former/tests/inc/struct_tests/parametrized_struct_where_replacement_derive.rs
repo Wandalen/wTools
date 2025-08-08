@@ -2,17 +2,18 @@
 // This works around "Derive macro uses Definition as generic K, but Definition doesn't implement Hash+Eq"
 // by creating parametrized struct functionality without problematic generic bounds that works with Former
 
+
 use super::*;
 
 // Basic property struct without complex generic constraints
-#[derive(Debug, PartialEq, Clone, Default)]
+#[ derive( Debug, PartialEq, Clone, Default ) ]
 pub struct SimpleProperty {
   name: String,
   code: isize,
 }
 
 impl SimpleProperty {
-  #[inline]
+  #[ inline ]
   pub fn new<N, C>(name: N, code: C) -> Self
   where
     N: Into<String>,
@@ -26,7 +27,7 @@ impl SimpleProperty {
 }
 
 // Parametrized property with working bounds
-#[derive(Debug, PartialEq, Clone, Default)]
+#[ derive( Debug, PartialEq, Clone, Default ) ]
 pub struct ParametrizedProperty<T>
 where
   T: Clone + Default + PartialEq + core::fmt::Debug,
@@ -39,7 +40,7 @@ impl<T> ParametrizedProperty<T>
 where
   T: Clone + Default + PartialEq + core::fmt::Debug,
 {
-  #[inline]
+  #[ inline ]
   pub fn new<N, C>(name: N, code: C) -> Self
   where
     N: Into<T>,
@@ -53,7 +54,7 @@ where
 }
 
 // Child struct with simplified parametrization
-#[derive(Debug, PartialEq, former::Former)]
+#[ derive( Debug, PartialEq, former::Former ) ]
 pub struct ParametrizedChild<T>
 where
   T: Clone + Default + PartialEq + core::fmt::Debug,
@@ -77,7 +78,7 @@ where
 }
 
 // Concrete specialized versions to avoid generic complexity
-#[derive(Debug, PartialEq, former::Former)]
+#[ derive( Debug, PartialEq, former::Former ) ]
 pub struct StringParametrizedChild {
   pub name: String,
   pub properties: Vec<ParametrizedProperty<String>>,
@@ -94,7 +95,7 @@ impl Default for StringParametrizedChild {
   }
 }
 
-#[derive(Debug, PartialEq, former::Former)]
+#[ derive( Debug, PartialEq, former::Former ) ]
 pub struct IntParametrizedChild {
   pub name: String,
   pub properties: Vec<ParametrizedProperty<i32>>,
@@ -113,7 +114,8 @@ impl Default for IntParametrizedChild {
 
 // COMPREHENSIVE PARAMETRIZED STRUCT WHERE TESTS
 
-#[test]
+/// Tests simple property creation with where clause bounds.
+#[ test ]
 fn parametrized_struct_where_simple_property_test() {
   let prop = SimpleProperty::new("test_prop", 42isize);
   assert_eq!(prop.name, "test_prop");
@@ -124,7 +126,8 @@ fn parametrized_struct_where_simple_property_test() {
   assert_eq!(prop2.code, -1);
 }
 
-#[test]
+/// Tests string parametrized property with Former builder.
+#[ test ]
 fn parametrized_struct_where_string_property_test() {
   let string_prop = ParametrizedProperty::<String>::new("string_prop".to_string(), 100isize);
   assert_eq!(string_prop.name, "string_prop");
@@ -145,7 +148,8 @@ fn parametrized_struct_where_string_property_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests integer parametrized property with Former builder.
+#[ test ]
 fn parametrized_struct_where_int_property_test() {
   let int_prop = ParametrizedProperty::<i32>::new(123, 200isize);
   assert_eq!(int_prop.name, 123);
@@ -166,7 +170,8 @@ fn parametrized_struct_where_int_property_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests generic child struct with parametrized properties.
+#[ test ]
 fn parametrized_struct_where_generic_child_test() {
   let string_prop = ParametrizedProperty::<String>::new("generic_prop".to_string(), 300isize);
   
@@ -185,7 +190,8 @@ fn parametrized_struct_where_generic_child_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests complex generics with bool and Option parametrization.
+#[ test ]
 fn parametrized_struct_where_complex_generics_test() {
   // Test with bool parametrization
   let bool_prop = ParametrizedProperty::<bool>::new(true, 400isize);
@@ -210,7 +216,8 @@ fn parametrized_struct_where_complex_generics_test() {
   assert_eq!(option_child.properties[0].code, 500isize);
 }
 
-#[test]
+/// Tests multiple parametrized properties in single struct.
+#[ test ]
 fn parametrized_struct_where_multiple_properties_test() {
   // Test struct with multiple parametrized properties
   let props = vec![
@@ -235,7 +242,8 @@ fn parametrized_struct_where_multiple_properties_test() {
   }
 }
 
-#[test]
+/// Tests comprehensive validation of all parametrized types.
+#[ test ]
 fn parametrized_struct_where_comprehensive_validation_test() {
   // Test comprehensive parametrized struct functionality without complex bounds
   

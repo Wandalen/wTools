@@ -4,8 +4,8 @@
 //!
 //! Coverage:
 //! - Rule 3a (Unit + Default): Covered by the default behavior of unit variants.
-//! - Rule 1a (Unit + `#[scalar]`): Unit variants implicitly behave as scalar.
-//! - Rule 4a (#[standalone_constructors]): Verifies the manual implementation of a top-level constructor function.
+//! - Rule 1a (Unit + `#[ scalar ]`): Unit variants implicitly behave as scalar.
+//! - Rule 4a (#[ standalone_constructors ]): Verifies the manual implementation of a top-level constructor function.
 //!
 //! Test Relevance/Acceptance Criteria:
 //! - Defines a unit variant `UnitVariantArgs` in `TestEnumArgs`.

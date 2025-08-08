@@ -60,13 +60,13 @@ pub mod private {
   impl<'a> IsolateOptions<'a> {
     /// Do isolate.
     #[ must_use ]
-    pub fn isolate(&self) -> (&'a str, Option<&'a str>, &'a str) {
+    pub fn isolate(&self) -> (&'a str, Option< &'a str >, &'a str) {
       let times = self.times + 1;
       let result;
 
       /* */
 
-      let left_none_result = |src: &'a str| -> (&'a str, Option<&'a str>, &'a str) {
+      let left_none_result = |src: &'a str| -> (&'a str, Option< &'a str >, &'a str) {
         if self.none.0 {
           ("", None, src)
         } else {
@@ -76,7 +76,7 @@ pub mod private {
 
       /* */
 
-      let right_none_result = |src: &'a str| -> (&'a str, Option<&'a str>, &'a str) {
+      let right_none_result = |src: &'a str| -> (&'a str, Option< &'a str >, &'a str) {
         if self.none.0 {
           (src, None, "")
         } else {
@@ -86,7 +86,7 @@ pub mod private {
 
       /* */
 
-      let count_parts_len = |parts: &Vec<&str>| -> usize {
+      let count_parts_len = |parts: &Vec< &str >| -> usize {
         let mut len = 0;
         for i in 0..self.times {
           let i = i as usize;
@@ -99,7 +99,7 @@ pub mod private {
       };
 
       if self.left.0 {
-        let parts: Vec<&str> = self.src.0.trim().splitn(times.into(), self.delimeter.0).collect();
+        let parts: Vec< &str > = self.src.0.trim().splitn(times.into(), self.delimeter.0).collect();
         if parts.len() == 1 {
           result = left_none_result(parts[0]);
         } else {
@@ -117,7 +117,7 @@ pub mod private {
           }
         }
       } else {
-        let parts: Vec<&str> = self.src.0.trim().rsplitn(times.into(), self.delimeter.0).collect();
+        let parts: Vec< &str > = self.src.0.trim().rsplitn(times.into(), self.delimeter.0).collect();
         if parts.len() == 1 {
           result = right_none_result(parts[0]);
         } else {
@@ -183,9 +183,9 @@ pub mod private {
 }
 
 /// Owned namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
   use super::private as i;
 
@@ -200,17 +200,17 @@ pub mod own {
 pub use own::*;
 
 /// Parented namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
   pub use prelude::*; // Added
   pub use super::own as isolate;
@@ -224,9 +224,9 @@ pub mod exposed {
 }
 
 /// Namespace of the module to include with `use module::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
   use super::private as i;
 

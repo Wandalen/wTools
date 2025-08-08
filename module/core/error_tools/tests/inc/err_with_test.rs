@@ -1,7 +1,9 @@
 #![allow(unused_imports)]
 use super::*;
 
-#[test]
+//
+
+#[ test ]
 fn err_with() {
   use the_module::ErrWith;
   let result: Result<(), std::io::Error> = Err(std::io::Error::other("an error occurred"));
@@ -16,7 +18,7 @@ fn err_with() {
 
 //
 
-#[test]
+#[ test ]
 fn err_with_report() {
   use the_module::ErrWith;
   let result: Result<(), std::io::Error> = Err(std::io::Error::other("an error occurred"));

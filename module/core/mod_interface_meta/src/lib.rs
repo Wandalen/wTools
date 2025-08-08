@@ -92,7 +92,7 @@
 // }
 
 mod impls;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use impls::exposed::*;
 mod record;
 
@@ -107,8 +107,8 @@ use use_tree::exposed::*;
 ///
 /// Protocol of modularity unifying interface of a module and introducing layers.
 ///
-#[cfg(feature = "enabled")]
-#[proc_macro]
+#[ cfg( feature = "enabled" ) ]
+#[ proc_macro ]
 pub fn mod_interface(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
   let result = impls::mod_interface(input);
   match result {

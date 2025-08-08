@@ -17,7 +17,7 @@ use former_types::
 pub struct Sample< 'a > { field : &'a str }
 
 // Manually define the Storage, Definition, and Former for the struct.
-#[derive(Default)]
+#[ derive( Default ) ]
 pub struct SampleFormerStorage< 'a > { pub field : Option< &'a str > }
 impl< 'a > Storage for SampleFormerStorage< 'a >
 {

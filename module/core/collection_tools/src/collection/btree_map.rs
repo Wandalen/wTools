@@ -1,9 +1,9 @@
-#[allow(unused_imports, clippy::wildcard_imports)]
+#[ allow( unused_imports, clippy::wildcard_imports ) ]
 use super::*;
 
-#[doc(inline)]
-#[allow(unused_imports)]
-#[allow(clippy::pub_use)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ allow( clippy::pub_use ) ]
 pub use alloc::collections::btree_map::*;
 
 /// Creates a `BTreeMap` from a list of key-value pairs.
@@ -65,8 +65,8 @@ pub use alloc::collections::btree_map::*;
 /// assert_eq!( numbers.get( &3 ), Some( &"three" ) );
 /// ```
 ///
-#[cfg(feature = "collection_constructors")]
-#[macro_export(local_inner_macros)]
+#[ cfg( feature = "collection_constructors" ) ]
+#[ macro_export( local_inner_macros ) ]
 macro_rules! bmap
 {
   (
@@ -158,8 +158,8 @@ macro_rules! bmap
 /// assert_eq!( numbers.get( &3 ), Some( &"three".to_string() ) );
 /// ```
 ///
-#[cfg(feature = "collection_into_constructors")]
-#[macro_export(local_inner_macros)]
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ macro_export( local_inner_macros ) ]
 macro_rules! into_bmap
 {
   (

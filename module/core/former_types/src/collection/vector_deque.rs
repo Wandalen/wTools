@@ -6,21 +6,21 @@
 //!
 
 use crate::*;
-#[allow(unused)]
+#[ allow( unused ) ]
 use collection_tools::VecDeque;
 
 impl<E> Collection for VecDeque<E> {
   type Entry = E;
   type Val = E;
 
-  #[inline(always)]
+  #[ inline( always ) ]
   fn entry_to_val(e: Self::Entry) -> Self::Val {
     e
   }
 }
 
 impl<E> CollectionAdd for VecDeque<E> {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn add(&mut self, e: Self::Entry) -> bool {
     self.push_back(e);
     true
@@ -28,7 +28,7 @@ impl<E> CollectionAdd for VecDeque<E> {
 }
 
 impl<E> CollectionAssign for VecDeque<E> {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign<Elements>(&mut self, elements: Elements) -> usize
   where
     Elements: IntoIterator<Item = Self::Entry>,
@@ -41,7 +41,7 @@ impl<E> CollectionAssign for VecDeque<E> {
 
 impl<E> CollectionValToEntry<E> for VecDeque<E> {
   type Entry = E;
-  #[inline(always)]
+  #[ inline( always ) ]
   fn val_to_entry(val: E) -> Self::Entry {
     val
   }
@@ -72,7 +72,7 @@ impl<E> StoragePreform for VecDeque<E> {
 /// - `Formed`: The type formed at the end of the formation process, typically a `VecDeque<E>`.
 /// - `End`: A trait determining the behavior at the end of the formation process.
 ///
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct VecDequeDefinition<E, Context, Formed, End>
 where
   End: FormingEnd<VecDequeDefinitionTypes<E, Context, Formed>>,
@@ -105,7 +105,7 @@ where
 /// - `E`: The element type of the vector deque.
 /// - `Context`: The context in which the vector deque is formed.
 /// - `Formed`: The type produced as a result of the formation process.
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct VecDequeDefinitionTypes<E, Context = (), Formed = VecDeque<E>> {
   _phantom: core::marker::PhantomData<(E, Context, Formed)>,
 }
@@ -183,7 +183,7 @@ pub trait VecDequeExt<E>: sealed::Sealed {
 }
 
 impl<E> VecDequeExt<E> for VecDeque<E> {
-  #[allow(clippy::default_constructed_unit_structs)]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn former() -> VecDequeFormer<E, (), VecDeque<E>, ReturnStorage> {
     VecDequeFormer::<E, (), VecDeque<E>, ReturnStorage>::new(ReturnStorage::default())
   }

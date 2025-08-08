@@ -1,13 +1,15 @@
+//! Collection Former Vec Tests
+//! 
+
 // #![ allow( dead_code ) ]
 
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use collection_tools::Vec;
 use the_module::VecExt;
 
-//
-
-#[test]
+/// Tests Vec collection former add operations with various patterns.
+#[ test ]
 fn add() {
   // expliccit with CollectionFormer
 
@@ -55,9 +57,8 @@ fn add() {
   //
 }
 
-//
-
-#[test]
+/// Tests Vec collection former replace operation.
+#[ test ]
 fn replace() {
   let got: Vec<String> = the_module::VectorFormer::new(former::ReturnStorage)
     .add("x")
@@ -67,10 +68,9 @@ fn replace() {
   a_id!(got, exp);
 }
 
-//
-
+/// Tests entity to former conversion and storage traits.
 // qqq : make similar test for all collections -- done
-#[test]
+#[ test ]
 fn entity_to() {
   // qqq : uncomment and make it working -- done
   let got =
@@ -99,31 +99,34 @@ fn entity_to() {
   a_id!(got, exp);
 }
 
-#[test]
+/// Tests entry to value conversion trait.
+#[ test ]
 fn entry_to_val() {
   let got = former::EntryToVal::<Vec<i32>>::entry_to_val(13i32);
   let exp = 13i32;
   a_id!(got, exp);
 }
 
-#[test]
+/// Tests value to entry conversion trait.
+#[ test ]
 fn val_to_entry() {
   let got = former::ValToEntry::<Vec<i32>>::val_to_entry(13i32);
   let exp = 13i32;
   a_id!(got, exp);
 }
 
-#[test]
+/// Tests subformer collection integration with parent-child relationships.
+#[ test ]
 fn subformer() {
   /// Parameter description.
-  #[derive(Debug, Default, PartialEq, the_module::Former)]
+  #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
   pub struct Child {
     name: String,
     data: bool,
   }
 
   /// Parent required for the template.
-  #[derive(Debug, Default, PartialEq, the_module::Former)]
+  #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
   pub struct Parent {
     #[ subform_collection( definition = former::VectorDefinition ) ]
     children: Vec<Child>,

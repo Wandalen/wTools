@@ -3,18 +3,18 @@
 use super::*;
 
 /// Parameter description.
-#[derive(Debug, Default, PartialEq, the_module::Former)]
+#[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 pub struct Child {
   name: String,
   data: bool,
 }
 
 /// Parent required for the template.
-#[derive(Debug, Default, PartialEq, the_module::Former)]
+#[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 pub struct Parent {
   // #[ subform_collection( definition = former::VectorDefinition ) ]
   // #[ subform_entry ]
-  // #[scalar(setter = false)]
+  // #[ scalar( setter = false ) ]
   children: Vec<Child>,
 }
 
@@ -25,7 +25,7 @@ where
   Definition: former::FormerDefinition<Storage = <Parent as former::EntityToStorage>::Storage> + 'static,
   // Definition::Types : former::FormerDefinitionTypes< Storage = < Parent as former::EntityToStorage >::Storage >,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn _children_subform_entry_with_closure<Former2, Definition2, Types2>(self) -> Former2
   where
     Types2: former::FormerDefinitionTypes<Storage = ChildFormerStorage, Formed = Self, Context = Self> + 'static,
@@ -58,8 +58,8 @@ where
   }
 
   // less generic, but more concise way to define custom subform setter
-  #[inline(always)]
-  #[allow(clippy::used_underscore_items)]
+  #[ inline( always ) ]
+  #[ allow( clippy::used_underscore_items ) ]
   pub fn child(self, name: &str) -> ChildAsSubformer<Self, impl ChildAsSubformerEnd<Self>> {
     self._children_subform_entry::<ChildFormer<_>, _>().name(name)
   }
@@ -73,8 +73,8 @@ where
   // }
 
   // it is generated
-  #[inline(always)]
-  #[allow(clippy::used_underscore_items)]
+  #[ inline( always ) ]
+  #[ allow( clippy::used_underscore_items ) ]
   pub fn _child(
     self,
   ) -> <<Vec<Child> as former::Collection>::Entry as former::EntityToFormer<
@@ -95,7 +95,7 @@ where
   Definition: former::FormerDefinition<Storage = <Parent as former::EntityToStorage>::Storage> + 'static,
   // Definition::Types : former::FormerDefinitionTypes< Storage = < Parent as former::EntityToStorage >::Storage >,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn _children_subform_entry<Former2, Definition2>(self) -> Former2
   where
     Definition2: former::FormerDefinition<
@@ -118,7 +118,7 @@ pub struct ParentSubformEntryChildrenEnd<Definition> {
 }
 
 impl<Definition> Default for ParentSubformEntryChildrenEnd<Definition> {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn default() -> Self {
     Self {
       _phantom: core::marker::PhantomData,
@@ -135,7 +135,7 @@ where
     Context = ParentFormer<Definition>,
   >,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn call(&self, substorage: Types2::Storage, super_former: core::option::Option<Types2::Context>) -> Types2::Formed {
     let mut super_former = super_former.unwrap();
     if super_former.storage.children.is_none() {

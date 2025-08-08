@@ -9,7 +9,7 @@
 
 /// Define a private namespace for all its items.
 mod private {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use crate::*;
   use process_tools::environment;
   // zzz : comment out
@@ -22,7 +22,7 @@ mod private {
   // }
 
   /// Context for smoke testing of a module.
-  #[derive(Debug)]
+  #[ derive( Debug ) ]
   pub struct SmokeModuleTest<'a> {
     /// Name of module.
     pub dependency_name: &'a str,
@@ -40,7 +40,7 @@ mod private {
 
   impl<'a> SmokeModuleTest<'a> {
     /// Constructor of a context for smoke testing.
-    #[must_use]
+    #[ must_use ]
     pub fn new(dependency_name: &'a str) -> SmokeModuleTest<'a> {
       use rand::prelude::*;
 
@@ -109,7 +109,7 @@ mod private {
     /// # Errors
     ///
     /// Returns an error if the operation fails.
-    pub fn form(&mut self) -> Result<(), &'static str> {
+    pub fn form(&mut self) -> Result< (), &'static str > {
       std::fs::create_dir(&self.test_path).unwrap();
 
       let mut test_path = self.test_path.clone();
@@ -130,7 +130,7 @@ mod private {
       test_path.push(test_name);
 
       /* setup config */
-      #[cfg(target_os = "windows")]
+      #[ cfg( target_os = "windows" ) ]
       let local_path_clause = if self.local_path_clause.is_empty() {
         String::new()
       } else {
@@ -191,7 +191,7 @@ mod private {
     /// # Errors
     ///
     /// Returns an error if the operation fails.
-    pub fn perform(&self) -> Result<(), &'static str> {
+    pub fn perform(&self) -> Result< (), &'static str > {
       let mut test_path = self.test_path.clone();
 
       let test_name = format!("{}{}", self.dependency_name, self.test_postfix);
@@ -230,7 +230,7 @@ mod private {
     /// # Errors
     ///
     /// Returns an error if the operation fails.
-    pub fn clean(&self, force: bool) -> Result<(), &'static str> {
+    pub fn clean(&self, force: bool) -> Result< (), &'static str > {
       let result = std::fs::remove_dir_all(&self.test_path);
       if force {
         result.unwrap_or_default();
@@ -322,47 +322,47 @@ mod private {
 // // }
 //
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{SmokeModuleTest, smoke_test_run, smoke_tests_run, smoke_test_for_local_run, smoke_test_for_published_run};
 }
 
 /// Shared with parent namespace of the module
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 
   pub use super::super::smoke_test;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{SmokeModuleTest, smoke_test_run, smoke_tests_run, smoke_test_for_local_run, smoke_test_for_published_run};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use {};
 }

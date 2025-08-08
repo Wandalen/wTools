@@ -8,57 +8,57 @@
 #![ cfg_attr( not( doc ), doc = "Implementation indexing utilities" ) ]
 
 /// Collection of general purpose meta tools.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod implsindex;
 
 /// Namespace with dependencies.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency {
   pub use ::impls_index_meta;
 }
 
-#[cfg(feature = "enabled")]
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod own {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use super::implsindex::orphan::*;
   // pub use crate as impls_index;
 }
 
 /// Orphan namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use super::implsindex::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use super::implsindex::prelude::*;
 }

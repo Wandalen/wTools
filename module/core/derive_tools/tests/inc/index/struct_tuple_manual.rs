@@ -1,6 +1,6 @@
 use core::ops::Index;
 
-#[ allow( dead_code) ]
+#[ allow( dead_code ) ]
 struct StructTuple< T >( Vec< T > );
 
 impl< T > Index< usize > for StructTuple< T >

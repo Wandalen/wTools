@@ -3,7 +3,7 @@ use super::*;
 
 //
 
-#[test]
+#[ test ]
 fn implements_basic() {
   trait Trait1 {}
   fn impl_trait1(_: &impl Trait1) -> bool {
@@ -43,7 +43,7 @@ fn implements_basic() {
 
 //
 
-#[test]
+#[ test ]
 fn instance_of_basic() {
   let src = Box::new(true);
   assert_eq!(the_module::instance_of!( src => Copy ), false);
@@ -52,7 +52,7 @@ fn instance_of_basic() {
 
 //
 
-#[test]
+#[ test ]
 fn implements_functions() {
   let _f = || {
     println!("hello");
@@ -114,20 +114,20 @@ fn implements_functions() {
 
 //
 
-#[test]
+#[ test ]
 fn pointer_experiment() {
   let pointer_size = core::mem::size_of::<&u8>();
   dbg!(&pointer_size);
   assert_eq!(2 * pointer_size, core::mem::size_of::<&[u8]>());
   assert_eq!(2 * pointer_size, core::mem::size_of::<*const [u8]>());
-  assert_eq!(2 * pointer_size, core::mem::size_of::<Box<[u8]>>());
-  assert_eq!(2 * pointer_size, core::mem::size_of::<std::rc::Rc<[u8]>>());
+  assert_eq!(2 * pointer_size, core::mem::size_of::<Box< [u8] >>());
+  assert_eq!(2 * pointer_size, core::mem::size_of::<std::rc::Rc< [u8] >>());
   assert_eq!(pointer_size, core::mem::size_of::<&[u8; 20]>());
 }
 
 //
 
-#[test]
+#[ test ]
 fn fn_experiment() {
   fn function1() -> bool {
     true

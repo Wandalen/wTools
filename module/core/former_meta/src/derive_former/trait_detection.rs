@@ -26,7 +26,7 @@ use macro_tools::{ syn, quote::quote, proc_macro2 };
 ///     fn has_former() -> bool { true }
 /// }
 /// ```
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 pub fn generate_former_trait_detector() -> proc_macro2::TokenStream {
     quote! {
         // Compile-time trait detection helper
@@ -47,7 +47,7 @@ pub fn generate_former_trait_detector() -> proc_macro2::TokenStream {
 /// Generates code to check if a type implements Former at compile-time.
 /// 
 /// Returns a boolean expression that evaluates to true if the type implements Former.
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 pub fn generate_former_check(field_type: &syn::Type) -> proc_macro2::TokenStream {
     quote! {
         <() as __FormerDetector<#field_type>>::HAS_FORMER
@@ -60,8 +60,8 @@ pub fn generate_former_check(field_type: &syn::Type) -> proc_macro2::TokenStream
 /// This allows handlers to automatically select the best approach:
 /// - If type implements Former: Use subform delegation  
 /// - If type doesn't implement Former: Use scalar/direct approach
-#[allow(dead_code)]
-#[allow(clippy::needless_pass_by_value)]
+#[ allow( dead_code ) ]
+#[ allow( clippy::needless_pass_by_value ) ]
 pub fn generate_smart_routing(
     field_type: &syn::Type,
     subform_approach: proc_macro2::TokenStream,
@@ -80,7 +80,7 @@ pub fn generate_smart_routing(
 
 /// Generates a const assertion that can be used to provide better error messages
 /// when trait requirements aren't met.
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 pub fn generate_former_assertion(field_type: &syn::Type, _context: &str) -> proc_macro2::TokenStream {
     quote! {
         const _: fn() = || {
@@ -93,8 +93,8 @@ pub fn generate_former_assertion(field_type: &syn::Type, _context: &str) -> proc
 }
 
 /// Configuration for smart routing behavior
-#[derive(Debug, Clone)]
-#[allow(dead_code)]
+#[ derive( Debug, Clone ) ]
+#[ allow( dead_code ) ]
 pub struct SmartRoutingConfig {
     /// Whether to prefer subform approach when Former is detected
     pub prefer_subform: bool,
@@ -115,8 +115,8 @@ impl Default for SmartRoutingConfig {
 }
 
 /// Advanced smart routing with configuration options
-#[allow(dead_code)]
-#[allow(clippy::needless_pass_by_value)]
+#[ allow( dead_code ) ]
+#[ allow( clippy::needless_pass_by_value ) ]
 pub fn generate_configurable_smart_routing(
     field_type: &syn::Type,
     subform_approach: proc_macro2::TokenStream,
@@ -125,7 +125,7 @@ pub fn generate_configurable_smart_routing(
 ) -> proc_macro2::TokenStream {
     let former_check = generate_former_check(field_type);
     
-    #[allow(clippy::if_same_then_else)]
+    #[ allow( clippy::if_same_then_else ) ]
     let routing_logic = if config.prefer_subform {
         quote! {
             if #former_check {

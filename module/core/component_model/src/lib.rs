@@ -17,67 +17,67 @@
 // xxx : fix commented out tests
 
 /// Namespace with dependencies.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency {
   pub use component_model_types;
   pub use component_model_meta;
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
-#[cfg(feature = "enabled")]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
 pub use own::*;
 
-#[allow(unused_imports)]
-#[cfg(feature = "enabled")]
+#[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
 // Former macro is intentionally not re-exported; all coupling with "former" is removed.
 /// Own namespace of the module.
 pub mod own {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use component_model_meta as derive;
 }
 
 /// Parented namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use component_model_meta::*;
 
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use component_model_types::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use component_model_types::prelude::*;
 }

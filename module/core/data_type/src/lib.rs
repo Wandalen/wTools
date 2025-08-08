@@ -14,74 +14,74 @@
 pub mod dt;
 
 /// Namespace with dependencies.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency {
-  #[cfg(feature = "either")]
+  #[ cfg( feature = "either" ) ]
   pub use ::either;
   // #[ cfg( feature = "type_constructor" ) ]
   // pub use ::type_constructor; // xxx : rid of
-  #[cfg(feature = "dt_interval")]
+  #[ cfg( feature = "dt_interval" ) ]
   pub use ::interval_adapter;
-  #[cfg(feature = "dt_collection")]
+  #[ cfg( feature = "dt_collection" ) ]
   pub use ::collection_tools;
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::dt::orphan::*;
 }
 
 /// Shared with parent namespace of the module
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::dt::exposed::*;
 
-  #[cfg(feature = "dt_interval")]
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ cfg( feature = "dt_interval" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use crate::dependency::interval_adapter::exposed::*;
 
-  #[cfg(feature = "dt_collection")]
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ cfg( feature = "dt_collection" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use crate::dependency::collection_tools::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::dt::prelude::*;
 
   // #[ cfg( not( feature = "no_std" ) ) ]
@@ -111,14 +111,14 @@ pub mod prelude {
   //   Vec as DynList,
   // };
 
-  #[cfg(feature = "dt_interval")]
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ cfg( feature = "dt_interval" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use crate::dependency::interval_adapter::prelude::*;
 
-  #[cfg(feature = "dt_collection")]
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ cfg( feature = "dt_collection" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use crate::dependency::collection_tools::prelude::*;
 
   // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]

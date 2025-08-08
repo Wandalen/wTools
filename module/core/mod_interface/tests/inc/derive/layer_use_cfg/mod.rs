@@ -1,6 +1,6 @@
 use super::*;
 mod tools {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   pub use super::super::*;
 }
 

@@ -33,18 +33,18 @@ mod all_test;
 
 mod basic_test;
 
-#[cfg(feature = "derive_as_mut")]
+#[ cfg( feature = "derive_as_mut" ) ]
 #[path = "as_mut/mod.rs"]
 mod as_mut_test;
 
 mod as_ref_manual_test;
-#[cfg(feature = "derive_as_ref")]
+#[ cfg( feature = "derive_as_ref" ) ]
 mod as_ref_test;
 
-#[cfg(feature = "derive_deref")]
+#[ cfg( feature = "derive_deref" ) ]
 #[path = "deref"]
 mod deref_tests {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
 
   //
@@ -102,10 +102,10 @@ mod deref_tests {
   // mod enum_named_empty_manual;
 }
 
-#[cfg(feature = "derive_deref_mut")]
+#[ cfg( feature = "derive_deref_mut" ) ]
 #[path = "deref_mut"]
 mod deref_mut_tests {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
 
   mod basic_manual_test;
@@ -167,29 +167,29 @@ only_for_terminal_module! {
 
 //   mod generics_types;
 //   mod generics_types_manual;
-#[cfg(feature = "derive_from")]
+#[ cfg( feature = "derive_from" ) ]
 #[path = "from"]
 mod from_tests {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
 
   mod basic_manual_test;
   mod basic_test;
 }
-#[cfg(feature = "derive_inner_from")]
+#[ cfg( feature = "derive_inner_from" ) ]
 #[path = "inner_from"]
 mod inner_from_tests {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
 
   mod basic_manual_test;
   mod basic_test;
 }
 
-#[cfg(feature = "derive_new")]
+#[ cfg( feature = "derive_new" ) ]
 #[path = "new"]
 mod new_tests {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
 
   mod basic_manual_test;
@@ -283,10 +283,10 @@ mod new_tests {
 //   mod variants_collisions;
 // }
 
-#[cfg(feature = "derive_not")]
+#[ cfg( feature = "derive_not" ) ]
 #[path = "not"]
 mod not_tests {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
   mod struct_named;
   mod struct_named_manual;
@@ -336,10 +336,10 @@ mod not_tests {
   // mod tuple_default_on_some_off_manual;
 }
 
-#[cfg(feature = "derive_phantom")]
+#[ cfg( feature = "derive_phantom" ) ]
 #[path = "phantom"]
 mod phantom_tests {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
 
   mod struct_named;
@@ -417,10 +417,10 @@ mod phantom_tests {
 //   }
 // }
 
-#[cfg(feature = "derive_index_mut")]
+#[ cfg( feature = "derive_index_mut" ) ]
 #[path = "index_mut"]
 mod index_mut_tests {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
   mod basic_test;
   mod minimal_test;

@@ -1,4 +1,4 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
 #[cfg(any(feature = "either", feature = "dt_either"))]

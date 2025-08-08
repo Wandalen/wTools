@@ -9,13 +9,13 @@ use crate::*;
 
 /// Default marker for `AttributePropertySyn`.
 /// Used if no marker is defined as parameter.
-#[derive(Debug, Default, Clone, Copy)]
+#[ derive( Debug, Default, Clone, Copy ) ]
 pub struct AttributePropertySynMarker;
 
 ///
 /// Property of an attribute which simply wraps one of the standard `syn` types.
 ///
-#[derive(Debug, Clone)]
+#[ derive( Debug, Clone ) ]
 pub struct AttributePropertySyn<T, Marker = AttributePropertySynMarker>(T, ::core::marker::PhantomData<Marker>)
 where
   T: syn::parse::Parse + quote::ToTokens;
@@ -26,14 +26,14 @@ where
 {
   /// Just unwraps and returns the internal data.
   // #[ allow( dead_code ) ]
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn internal(self) -> T {
     self.0
   }
 
   /// Returns a reference to the internal data.
   // #[ allow( dead_code ) ]
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn ref_internal(&self) -> &T {
     &self.0
   }
@@ -44,7 +44,7 @@ where
   T: syn::parse::Parse + quote::ToTokens,
   IntoT: Into<AttributePropertySyn<T, Marker>>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     *self = component.into();
   }
@@ -62,7 +62,7 @@ impl<T, Marker> syn::parse::Parse for AttributePropertySyn<T, Marker>
 where
   T: syn::parse::Parse + quote::ToTokens,
 {
-  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
+  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result< Self > {
     input.parse::<syn::Token![ = ]>()?;
     let value: T = input.parse()?;
     Ok(value.into())
@@ -83,7 +83,7 @@ where
   T: syn::parse::Parse + quote::ToTokens,
 {
   type Target = T;
-  #[inline(always)]
+  #[ inline( always ) ]
   fn deref(&self) -> &T {
     &self.0
   }
@@ -93,7 +93,7 @@ impl<T, Marker> AsRef<T> for AttributePropertySyn<T, Marker>
 where
   T: syn::parse::Parse + quote::ToTokens,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn as_ref(&self) -> &T {
     &self.0
   }
@@ -103,8 +103,8 @@ impl<T, Marker> From<T> for AttributePropertySyn<T, Marker>
 where
   T: syn::parse::Parse + quote::ToTokens,
 {
-  #[inline(always)]
-  #[allow(clippy::default_constructed_unit_structs)]
+  #[ inline( always ) ]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn from(src: T) -> Self {
     Self(src, PhantomData::default())
   }

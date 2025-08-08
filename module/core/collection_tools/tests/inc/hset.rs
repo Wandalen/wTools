@@ -1,8 +1,8 @@
 use super::*;
 
-#[test]
+#[ test ]
 fn reexport() {
-  let mut set1: the_module::HashSet<i32> = the_module::HashSet::new();
+  let mut set1: the_module::HashSet< i32 > = the_module::HashSet::new();
   set1.insert(1);
   assert!(set1.contains(&1));
   assert!(!set1.contains(&2));
@@ -15,11 +15,11 @@ fn reexport() {
   assert_eq!(set1, set2);
 }
 
-#[cfg(feature = "collection_constructors")]
-#[test]
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
 fn constructor() {
   // test.case( "empty" );
-  let got: the_module::HashSet<i32> = the_module::hset! {};
+  let got: the_module::HashSet< i32 > = the_module::hset! {};
   let exp = the_module::HashSet::new();
   assert_eq!(got, exp);
 
@@ -34,11 +34,11 @@ fn constructor() {
   let _got = the_module::exposed::hset!("b");
 }
 
-#[cfg(feature = "collection_into_constructors")]
-#[test]
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
 fn into_constructor() {
   // test.case( "empty" );
-  let got: the_module::HashSet<i32> = the_module::into_hset! {};
+  let got: the_module::HashSet< i32 > = the_module::into_hset! {};
   let exp = the_module::HashSet::new();
   assert_eq!(got, exp);
 
@@ -53,10 +53,10 @@ fn into_constructor() {
   let _got: Hset<&str> = the_module::exposed::into_hset!("b");
 }
 
-#[test]
+#[ test ]
 fn iters() {
   struct MyContainer {
-    entries: the_module::HashSet<i32>,
+    entries: the_module::HashSet< i32 >,
   }
 
   impl IntoIterator for MyContainer {
@@ -80,14 +80,14 @@ fn iters() {
   let instance = MyContainer {
     entries: the_module::HashSet::from([1, 2, 3]),
   };
-  let got: the_module::HashSet<_> = instance.into_iter().collect();
+  let got: the_module::HashSet< _ > = instance.into_iter().collect();
   let exp = the_module::HashSet::from([1, 2, 3]);
   a_id!(got, exp);
 
   let instance = MyContainer {
     entries: the_module::HashSet::from([1, 2, 3]),
   };
-  let got: the_module::HashSet<_> = (&instance).into_iter().copied().collect();
+  let got: the_module::HashSet< _ > = (&instance).into_iter().copied().collect();
   let exp = the_module::HashSet::from([1, 2, 3]);
   a_id!(got, exp);
 }

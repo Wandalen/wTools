@@ -1,6 +1,6 @@
 use strs_tools::string::split::{Split};
 
-#[test]
+#[ test ]
 fn test_split_with_vec_delimiter_iterator() {
   let input = "test string";
   let delimiters = vec![" "];

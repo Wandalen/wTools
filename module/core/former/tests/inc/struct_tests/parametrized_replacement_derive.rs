@@ -3,12 +3,12 @@
 // by creating non-parametrized equivalents that provide the same functionality coverage
 
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
 // Non-parametrized replacement for parametrized field functionality
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 pub struct ParametrizedReplacementStruct {
   // Replaces parametrized field T: ?Sized functionality with concrete types
   string_field: String,
@@ -19,7 +19,7 @@ pub struct ParametrizedReplacementStruct {
 }
 
 // Another struct for testing multiple parametrized scenarios  
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 pub struct AdvancedParametrizedReplacement {
   primary_data: String,
   secondary_data: i32,
@@ -29,7 +29,7 @@ pub struct AdvancedParametrizedReplacement {
 }
 
 // Tests replacing blocked parametrized_field functionality
-#[test]
+#[ test ]
 fn string_field_test() {
   let got = ParametrizedReplacementStruct::former()
     .string_field("parametrized_replacement".to_string())
@@ -50,7 +50,7 @@ fn string_field_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn int_field_test() {
   let got = ParametrizedReplacementStruct::former()
     .int_field(12345)
@@ -69,7 +69,7 @@ fn int_field_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn bool_field_test() {
   let got = ParametrizedReplacementStruct::former()
     .bool_field(true)
@@ -89,7 +89,7 @@ fn bool_field_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn advanced_parametrized_test() {
   let got = AdvancedParametrizedReplacement::former()
     .primary_data("advanced".to_string())
@@ -107,7 +107,7 @@ fn advanced_parametrized_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn default_override_test() {
   let got = AdvancedParametrizedReplacement::former()
     .primary_data("override_test".to_string())

@@ -23,7 +23,7 @@ use std::collections::HashMap;
 // ========================================
 
 #[ derive( Debug, PartialEq ) ]
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 struct ApiResponse
 {
   status : u16,
@@ -229,7 +229,7 @@ fn main()
 
   // Scenario 1: Testing (run the actual tests to see)
   println!( "1. Enhanced Testing:" );
-  println!( "   ✓ See the #[cfg(test)] mod tests above" );
+  println!( "   ✓ See the #[ cfg( test ) ] mod tests above" );
   println!( "   ✓ Run 'cargo test' to see enhanced assertion output" );
   println!( "   ✓ Better diffs for complex data structures in test failures\n" );
 
@@ -303,7 +303,7 @@ fn main()
 
 // Additional helper functions for examples
 
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 fn parse_api_response( json : &str ) -> Result< ApiResponse, Box< dyn core::error::Error > >
 {
   let value : serde_json::Value = serde_json::from_str( json )?;
@@ -369,7 +369,7 @@ struct AppConfig
 {
   max_retries : u32,
   timeout_seconds : u32,
-  #[allow(dead_code)]
+  #[ allow( dead_code ) ]
   enable_logging : bool,
   log_level : String,
 }

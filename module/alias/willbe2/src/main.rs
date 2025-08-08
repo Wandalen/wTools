@@ -9,7 +9,7 @@
 #[allow(unused_imports)]
 use ::willbe2::*;
 
-// fn main() -> Result< (), wtools::error::untyped::Error >
+// fn main() -> Result<  (), wtools::error::untyped::Error  >
 // {
 //   Ok( willbe::run()? )
 // }

@@ -1,6 +1,6 @@
 //! Purpose: Provides a hand-written implementation of the `Former` pattern's standalone scalar constructor
 //! for a multi-field tuple variant (`Variant(u32, String)`) within an enum that has
-//! `#[standalone_constructors]` and fields with `#[arg_for_constructor]`. This file focuses on
+//! `#[ standalone_constructors ]` and fields with `#[ arg_for_constructor ]`. This file focuses on
 //! demonstrating the manual implementation corresponding to the derived behavior.
 //!
 //! Coverage:
@@ -10,7 +10,7 @@
 //!
 //! Test Relevance/Acceptance Criteria:
 //! - Defines the `TestEnum` enum with the `Variant(u32, String)` variant.
-//! - Provides a hand-written `variant` function that takes `u32` and `String` as arguments and returns `TestEnum::Variant(u32, String)`. This mimics the behavior expected when `#[standalone_constructors]` is on the enum and `#[arg_for_constructor]` is on all fields of the variant.
+//! - Provides a hand-written `variant` function that takes `u32` and `String` as arguments and returns `TestEnum::Variant(u32, String)`. This mimics the behavior expected when `#[ standalone_constructors ]` is on the enum and `#[ arg_for_constructor ]` is on all fields of the variant.
 //! - Includes shared test logic from `tuple_multi_standalone_args_only_test.rs`.
 //! - The included test calls this manually implemented standalone constructor and asserts that the returned enum instance matches a manually constructed `TestEnum::Variant(value1, value2)`. This verifies the manual implementation of the scalar standalone constructor with field arguments.
 
@@ -24,7 +24,7 @@ pub enum TestEnum
 }
 
 /// Manually implemented standalone constructor for the Variant variant (scalar style with args).
-/// This function is at module level to match the `#[standalone_constructors]` behavior.
+/// This function is at module level to match the `#[ standalone_constructors ]` behavior.
 #[ inline( always ) ]
 pub fn variant( value1 : u32, value2 : String ) -> TestEnum
 {

@@ -5,6 +5,8 @@ use std::{
   process::{Command, Stdio},
 };
 
+//
+
 pub fn start_sync<AP, Args, Arg, P>(application: AP, args: Args, path: P) -> String
 where
   AP: AsRef<Path>,

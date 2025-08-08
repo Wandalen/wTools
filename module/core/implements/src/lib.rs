@@ -16,11 +16,11 @@
 #![ cfg_attr( not( doc ), doc = "Implementation checking utilities" ) ]
 
 // #[ macro_use ]
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 mod implements_impl;
 
 /// Define a private namespace for all its items.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 mod private {
   /// Macro `implements` to answer the question: does it implement a trait?
   ///
@@ -32,7 +32,7 @@ mod private {
   /// dbg!( implements!( Box::new( 13_i32 ) => Copy ) );
   /// // < implements!( 13_i32 => Copy ) : false
   /// ```
-  #[macro_export]
+  #[ macro_export ]
   macro_rules! implements
   {
     ( $( $arg : tt )+ ) =>
@@ -51,7 +51,7 @@ mod private {
   /// dbg!( instance_of!( Box::new( 13_i32 ) => Copy ) );
   /// // < instance_of!( 13_i32 => Copy ) : false
   /// ```
-  #[macro_export]
+  #[ macro_export ]
   macro_rules! instance_of
   {
     ( $( $arg : tt )+ ) =>
@@ -64,43 +64,43 @@ mod private {
   pub use instance_of;
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
-#[cfg(feature = "enabled")]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod own {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::{private};
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{implements, instance_of};
 }

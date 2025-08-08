@@ -30,7 +30,7 @@ mod private {
   /// assert!( parsed_generics.generics.where_clause.is_some() );
   /// ```
   ///
-  #[derive(Debug)]
+  #[ derive( Debug ) ]
   pub struct GenericsWithWhere {
     /// Syn's generics parameters.
     pub generics: syn::Generics,
@@ -38,7 +38,7 @@ mod private {
 
   impl GenericsWithWhere {
     /// Unwraps the `GenericsWithWhere` to retrieve the inner `syn::Generics`.
-    #[must_use]
+    #[ must_use ]
     pub fn unwrap(self) -> syn::Generics {
       self.generics
     }
@@ -79,15 +79,15 @@ mod private {
     /// assert!( parsed_only_where.generics.params.is_empty() );
     /// assert!( parsed_only_where.generics.where_clause.is_some() );
     /// ```
-    pub fn parse_from_str(s: &str) -> syn::Result<GenericsWithWhere> {
+    pub fn parse_from_str(s: &str) -> syn::Result< GenericsWithWhere > {
       syn::parse_str::<GenericsWithWhere>(s)
     }
   }
 
   impl syn::parse::Parse for GenericsWithWhere {
-    fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
+    fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result< Self > {
       let generics: syn::Generics = input.parse()?;
-      let where_clause: Option<syn::WhereClause> = input.parse()?;
+      let where_clause: Option< syn::WhereClause > = input.parse()?;
 
       let mut generics_clone = generics.clone();
       generics_clone.where_clause = where_clause;
@@ -121,20 +121,20 @@ mod private {
   ///
   /// This is particularly useful in procedural macros for constructing parts of function
   /// signatures, type paths, and where clauses that involve generics.
-  #[derive(Debug, Clone, Copy)]
+  #[ derive( Debug, Clone, Copy ) ]
   pub struct GenericsRef<'a> {
     syn_generics: &'a syn::Generics,
   }
 
   impl<'a> GenericsRef<'a> {
     /// Creates a new `GenericsRef` from a reference to `syn::Generics`.
-    #[must_use]
+    #[ must_use ]
     pub fn new_borrowed(syn_generics: &'a syn::Generics) -> Self {
       Self { syn_generics }
     }
 
     /// Creates a new `GenericsRef` from a reference to `syn::Generics`. Alias for `new_borrowed`.
-    #[must_use]
+    #[ must_use ]
     pub fn new(syn_generics: &'a syn::Generics) -> Self {
       Self::new_borrowed(syn_generics)
     }
@@ -144,7 +144,7 @@ mod private {
     ///
     /// This is suitable for use in `impl <#impl_generics> Struct ...` contexts.
     /// It includes bounds and lifetimes.
-    #[must_use]
+    #[ must_use ]
     pub fn impl_generics_tokens_if_any(&self) -> proc_macro2::TokenStream {
       if self.syn_generics.params.is_empty() {
         return quote::quote! {};
@@ -158,7 +158,7 @@ mod private {
     ///
     /// This is suitable for use in type paths like `Struct::<#ty_generics>`.
     /// It includes only the identifiers of the generic parameters (types, lifetimes, consts).
-    #[must_use]
+    #[ must_use ]
     pub fn ty_generics_tokens_if_any(&self) -> proc_macro2::TokenStream {
       if self.syn_generics.params.is_empty() {
         return quote::quote! {};
@@ -169,7 +169,7 @@ mod private {
 
     /// Returns the `where_clause` (e.g., `where T: Trait`) as a `TokenStream`
     /// if a where clause is present in the original generics, otherwise an empty `TokenStream`.
-    #[must_use]
+    #[ must_use ]
     pub fn where_clause_tokens_if_any(&self) -> proc_macro2::TokenStream {
       let (_, _, where_clause) = self.syn_generics.split_for_impl();
       quote::quote! { #where_clause }
@@ -182,7 +182,7 @@ mod private {
     /// # Arguments
     ///
     /// * `base_ident`: The identifier of the base type (e.g., `MyType`).
-    #[must_use]
+    #[ must_use ]
     pub fn type_path_tokens_if_any(&self, base_ident: &syn::Ident) -> proc_macro2::TokenStream {
       if self.syn_generics.params.is_empty() {
         quote::quote! { #base_ident }
@@ -212,7 +212,7 @@ mod private {
     /// assert_eq!(classification.types.len(), 1);
     /// assert_eq!(classification.consts.len(), 1);
     /// ```
-    #[must_use]
+    #[ must_use ]
     pub fn classification(&self) -> super::classification::GenericsClassification<'a> {
       super::classification::classify_generics(self.syn_generics)
     }
@@ -234,7 +234,7 @@ mod private {
     ///
     /// // Result will be: <T: Clone, const N: usize>
     /// ```
-    #[must_use]
+    #[ must_use ]
     pub fn impl_generics_no_lifetimes(&self) -> proc_macro2::TokenStream {
       let filtered = super::filter::filter_params(&self.syn_generics.params, super::filter::filter_non_lifetimes);
       if filtered.is_empty() {
@@ -261,7 +261,7 @@ mod private {
     ///
     /// // Result will be: <T, N>
     /// ```
-    #[must_use]
+    #[ must_use ]
     pub fn ty_generics_no_lifetimes(&self) -> proc_macro2::TokenStream {
       let (_, _, ty_params, _) = decompose(self.syn_generics);
       let filtered = super::filter::filter_params(&ty_params, super::filter::filter_non_lifetimes);
@@ -288,7 +288,7 @@ mod private {
     /// let generics_ref2 = GenericsRef::new(&generics2);
     /// assert!(!generics_ref2.has_only_lifetimes());
     /// ```
-    #[must_use]
+    #[ must_use ]
     pub fn has_only_lifetimes(&self) -> bool {
       self.classification().has_only_lifetimes
     }
@@ -309,7 +309,7 @@ mod private {
     /// let generics_ref2 = GenericsRef::new(&generics2);
     /// assert!(!generics_ref2.has_only_types());
     /// ```
-    #[must_use]
+    #[ must_use ]
     pub fn has_only_types(&self) -> bool {
       self.classification().has_only_types
     }
@@ -326,7 +326,7 @@ mod private {
     /// let generics_ref = GenericsRef::new(&generics);
     /// assert!(generics_ref.has_only_consts());
     /// ```
-    #[must_use]
+    #[ must_use ]
     pub fn has_only_consts(&self) -> bool {
       self.classification().has_only_consts
     }
@@ -354,7 +354,7 @@ mod private {
     ///
     /// // Result will be: MyType::<T, N>
     /// ```
-    #[must_use]
+    #[ must_use ]
     pub fn type_path_no_lifetimes(&self, base_ident: &syn::Ident) -> proc_macro2::TokenStream {
       let ty_no_lifetimes = self.ty_generics_no_lifetimes();
       if self.syn_generics.params.is_empty() || 
@@ -406,8 +406,8 @@ mod private {
   /// };
   ///
   /// `assert_eq`!( got, exp );
-  #[must_use]
-  #[allow(clippy::default_trait_access)]
+  #[ must_use ]
+  #[ allow( clippy::default_trait_access ) ]
   pub fn merge(a: &syn::Generics, b: &syn::Generics) -> syn::Generics {
     let mut result = syn::Generics {
       params: Default::default(),
@@ -472,8 +472,8 @@ mod private {
   /// assert_eq!( simplified_generics.params.len(), 4 ); // Contains T, U, 'a, and N
   /// assert!( simplified_generics.where_clause.is_none() ); // Where clause is removed
   /// ```
-  #[allow(clippy::default_trait_access)]
-  #[must_use]
+  #[ allow( clippy::default_trait_access ) ]
+  #[ must_use ]
   pub fn only_names(generics: &syn::Generics) -> syn::Generics {
     use syn::{Generics, GenericParam, LifetimeParam, TypeParam, ConstParam};
 
@@ -538,7 +538,7 @@ mod private {
   /// {
   ///   < T : Clone + Default, U, 'a, const N : usize >
   /// };
-  /// let names : Vec< _ > = macro_tools::generic_params::names( &generics ).collect();
+  /// let names : Vec<  _  > = macro_tools::generic_params::names( &generics ).collect();
   ///
   /// assert_eq!( names, vec!
   /// [
@@ -548,7 +548,7 @@ mod private {
   ///   &syn::Ident::new( "N", proc_macro2::Span::call_site() )
   /// ]);
   /// ```
-  #[must_use]
+  #[ must_use ]
   pub fn names(generics: &syn::Generics) -> impl IterTrait<'_, &syn::Ident> {
     generics.params.iter().map(|param| match param {
       syn::GenericParam::Type(type_param) => &type_param.ident,
@@ -645,8 +645,8 @@ mod private {
   /// }
   /// ```
   ///
-  #[allow(clippy::type_complexity)]
-  #[must_use]
+  #[ allow( clippy::type_complexity ) ]
+  #[ must_use ]
   pub fn decompose(
     generics: &syn::Generics,
   ) -> (
@@ -766,66 +766,66 @@ mod private {
     (generics_with_defaults, generics_for_impl, generics_for_ty, generics_where)
   }
 }
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 /// Own namespace of the module.
 pub mod own {
 
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{
     merge, only_names, names, decompose, GenericsRef, GenericsWithWhere,
   };
   
   // Classification utilities
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use super::classification::{
     GenericsClassification, classify_generics,
     DecomposedClassified, decompose_classified,
   };
   
   // Filter utilities
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use super::filter::{
     filter_params,
     filter_lifetimes, filter_types, filter_consts, filter_non_lifetimes,
   };
   
   // Combination utilities
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use super::combine::{
     merge_params_ordered, params_with_additional, params_from_components,
   };
 }
 
 /// Orphan namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
   pub use super::super::generic_params;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 }

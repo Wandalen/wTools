@@ -7,7 +7,7 @@ use super::item_attributes::{ItemAttributes};
 ///
 /// Derive macro to implement Index when-ever it's possible to do automatically.
 ///
-pub fn index(input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream> {
+pub fn index(input: proc_macro::TokenStream) -> Result< proc_macro2::TokenStream > {
   let original_input = input.clone();
   let parsed = syn::parse::<StructLike>(input)?;
   let has_debug = attr::has_debug(parsed.attrs().iter())?;
@@ -64,7 +64,7 @@ fn generate(
   generics_ty: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
   generics_where: &syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
   field_type: &syn::Type,
-  field_name: Option<&syn::Ident>,
+  field_name: Option< &syn::Ident >,
 ) -> proc_macro2::TokenStream {
   let body = if let Some(field_name) = field_name {
     qt! { &self.#field_name }

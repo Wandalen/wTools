@@ -2,7 +2,7 @@ use super::*;
 
 //
 
-#[test]
+#[ test ]
 fn is_slice_basic() {
   let src: &[i32] = &[1, 2, 3];
   assert!(the_module::is_slice!(src));

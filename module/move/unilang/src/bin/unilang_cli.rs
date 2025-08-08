@@ -1,6 +1,16 @@
-//! This is a basic CLI application for the `unilang` module.
-//! It demonstrates how to initialize the command registry,
-//! parse command-line arguments, and execute commands.
+//! # unilang CLI Binary Entry Point
+//!
+//! This is a comprehensive CLI application for the `unilang` module that demonstrates:
+//! - Command registry initialization with multiple namespaces
+//! - Command-line argument parsing with proper error handling
+//! - Semantic analysis and command execution
+//! - Help system integration
+//!
+//! Following Design Rulebook principles:
+//! - Uses proper error handling with Result types
+//! - Implements comprehensive help system
+//! - Uses explicit parameter handling to avoid fragile defaults
+//! - Follows proper spacing and formatting per Codestyle Rulebook
 
 use std::collections::HashMap;
 use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, OutputData };

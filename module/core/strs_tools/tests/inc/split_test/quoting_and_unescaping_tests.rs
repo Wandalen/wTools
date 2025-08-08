@@ -5,7 +5,7 @@
 use super::*;
 use std::borrow::Cow;
 
-#[test]
+#[ test ]
 fn mre_simple_unescape_test() {
   let src = r#"instruction "arg1" "arg2 \" "arg3 \\" "#;
   let splits: Vec<_> = strs_tools::string::split()
@@ -34,7 +34,7 @@ fn mre_simple_unescape_test() {
 //   left: ["instruction", "arg1", "arg2 \" ", "arg3", "\\\\\""]
 //  right: ["instruction", "arg1", "arg2 \" ", "arg3 \\"]
 
-#[test]
+#[ test ]
 fn no_quotes_test() {
   let src = "a b c";
   let splits: Vec<_> = strs_tools::string::split()
@@ -49,7 +49,7 @@ fn no_quotes_test() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn empty_quoted_section_test() {
   let src = r#"a "" b"#;
   let splits: Vec<_> = strs_tools::string::split()
@@ -65,7 +65,7 @@ fn empty_quoted_section_test() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn multiple_escape_sequences_test() {
   let src = r#" "a\n\t\"\\" b "#;
   let splits: Vec<_> = strs_tools::string::split()
@@ -80,7 +80,7 @@ fn multiple_escape_sequences_test() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn quoted_at_start_middle_end_test() {
   let src = r#""start" middle "end""#;
   let splits: Vec<_> = strs_tools::string::split()
@@ -95,7 +95,7 @@ fn quoted_at_start_middle_end_test() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn unterminated_quote_test() {
   let src = r#"a "b c"#;
   let splits: Vec<_> = strs_tools::string::split()
@@ -109,7 +109,7 @@ fn unterminated_quote_test() {
   let expected = vec![Cow::Borrowed("a"), Cow::Borrowed("b c")];
   assert_eq!(splits, expected);
 }
-#[test]
+#[ test ]
 fn escaped_quote_only_test() {
   let src = r#" "a\"b" "#;
   let splits: Vec<_> = strs_tools::string::split()
@@ -124,7 +124,7 @@ fn escaped_quote_only_test() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn escaped_backslash_only_test() {
   let src = r#" "a\\b" "#;
   let splits: Vec<_> = strs_tools::string::split()
@@ -139,7 +139,7 @@ fn escaped_backslash_only_test() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn escaped_backslash_then_quote_test() {
   // This tests that the sequence `\\\"` correctly unescapes to `\"`.
   let src = r#" "a\\\"b" "#;
@@ -155,7 +155,7 @@ fn escaped_backslash_then_quote_test() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn consecutive_escaped_backslashes_test() {
   let src = r#" "a\\\\b" "#;
   let splits: Vec<_> = strs_tools::string::split()
@@ -170,7 +170,7 @@ fn consecutive_escaped_backslashes_test() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn test_mre_arg2_isolated() {
   // Part of the original MRE: "arg2 \" "
   let src = r#""arg2 \" ""#;
@@ -186,7 +186,7 @@ fn test_mre_arg2_isolated() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn test_mre_arg3_isolated() {
   // Part of the original MRE: "arg3 \\"
   let src = r#""arg3 \\""#;
@@ -202,7 +202,7 @@ fn test_mre_arg3_isolated() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn test_consecutive_escaped_backslashes_and_quote() {
   // Tests `\\\\\"` -> `\\"`
   let src = r#""a\\\\\"b""#;
@@ -222,7 +222,7 @@ fn test_consecutive_escaped_backslashes_and_quote() {
 // Decomposed tests for the original complex MRE test
 //
 
-#[test]
+#[ test ]
 fn test_multiple_delimiters_space_and_double_colon() {
   let input = "cmd key::value";
   let splits_iter = strs_tools::string::split()
@@ -278,7 +278,7 @@ fn test_multiple_delimiters_space_and_double_colon() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn test_quoted_value_simple() {
   let input = r#"key::"value""#;
   let splits_iter = strs_tools::string::split()
@@ -321,7 +321,7 @@ fn test_quoted_value_simple() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn test_quoted_value_with_internal_quotes() {
   let input = r#"key::"value with \"quotes\"""#;
   let splits_iter = strs_tools::string::split()
@@ -364,7 +364,7 @@ fn test_quoted_value_with_internal_quotes() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn test_quoted_value_with_escaped_backslashes() {
   let input = r#"key::"value with \\slash\\""#;
   let splits_iter = strs_tools::string::split()
@@ -407,7 +407,7 @@ fn test_quoted_value_with_escaped_backslashes() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn test_mixed_quotes_and_escapes() {
   let input = r#"key::"value with \"quotes\" and \\slash\\""#;
   let splits_iter = strs_tools::string::split()
@@ -450,7 +450,7 @@ fn test_mixed_quotes_and_escapes() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn mre_from_task_test() {
   let input = r#"cmd key::"value with \"quotes\" and \\slash\\""#;
   let splits_iter = strs_tools::string::split()

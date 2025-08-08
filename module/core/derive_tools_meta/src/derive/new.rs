@@ -6,7 +6,7 @@ use super::item_attributes::{ItemAttributes};
 ///
 /// Derive macro to implement New when-ever it's possible to do automatically.
 ///
-pub fn new(input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream> {
+pub fn new(input: proc_macro::TokenStream) -> Result< proc_macro2::TokenStream > {
   let original_input = input.clone();
   let parsed = syn::parse::<StructLike>(input)?;
   let has_debug = attr::has_debug(parsed.attrs().iter())?;
@@ -18,7 +18,7 @@ pub fn new(input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream> {
   let result = match parsed {
     StructLike::Unit(ref _item) => generate_unit(item_name, &generics_impl, &generics_ty, &generics_where),
     StructLike::Struct(ref item) => {
-      let fields_result: Result<Vec<(syn::Ident, syn::Type)>> = item
+      let fields_result: Result<Vec< (syn::Ident, syn::Type) >> = item
         .fields
         .iter()
         .map(|field| {
@@ -103,14 +103,14 @@ fn generate_struct(
     .map(|(field_name, _field_type)| {
       qt! { #field_name }
     })
-    .collect::<Vec<_>>();
+    .collect::<Vec< _ >>();
 
   let fields_params = fields
     .iter()
     .map(|(field_name, field_type)| {
       qt! { #field_name : #field_type }
     })
-    .collect::<Vec<_>>();
+    .collect::<Vec< _ >>();
 
   let body = if fields.is_empty() {
     qt! { Self {} }

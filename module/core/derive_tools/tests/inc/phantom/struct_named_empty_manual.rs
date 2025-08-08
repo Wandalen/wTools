@@ -1,6 +1,6 @@
 use core::marker::PhantomData;
 
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 struct StructNamedEmpty<T> {
   _phantom: PhantomData<T>,
 }

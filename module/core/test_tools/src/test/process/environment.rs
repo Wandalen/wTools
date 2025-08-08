@@ -5,7 +5,7 @@
 /// Define a private namespace for all its items.
 mod private {
 
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use crate::*;
 
   /// Checks if the current execution environment is a Continuous Integration (CI) or Continuous Deployment (CD) pipeline.
@@ -33,8 +33,8 @@ mod private {
   /// use test_tools::process_tools::environment;
   /// assert_eq!( environment::is_cicd(), true );
   /// ```
-  #[cfg(feature = "process_environment_is_cicd")]
-  #[must_use]
+  #[ cfg( feature = "process_environment_is_cicd" ) ]
+  #[ must_use ]
   pub fn is_cicd() -> bool {
     use std::env;
     let ci_vars = [
@@ -50,45 +50,45 @@ mod private {
   }
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use {private::is_cicd};
 }
 
 /// Shared with parent namespace of the module
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use {};
 }

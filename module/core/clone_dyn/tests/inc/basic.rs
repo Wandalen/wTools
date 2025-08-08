@@ -1,4 +1,4 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
 #[the_module::clone_dyn]

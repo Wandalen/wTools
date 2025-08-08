@@ -5,7 +5,7 @@ use the_module::exposed::{index};
 
 //
 
-#[test]
+#[ test ]
 fn empty_with_comma() {
   // test.case( "impls1 basic" );
   {
@@ -14,7 +14,7 @@ fn empty_with_comma() {
   }
 }
 
-#[test]
+#[ test ]
 fn empty_without_comma() {
   // test.case( "impls1 basic" );
   {
@@ -24,7 +24,7 @@ fn empty_without_comma() {
   }
 }
 
-#[test]
+#[ test ]
 fn with_comma() {
   // test.case( "impls1 basic" );
   {
@@ -44,7 +44,7 @@ fn with_comma() {
   }
 }
 
-#[test]
+#[ test ]
 fn without_comma() {
   // test.case( "impls1 basic" );
   {
@@ -64,7 +64,7 @@ fn without_comma() {
   }
 }
 
-#[test]
+#[ test ]
 fn parentheses_with_comma() {
   // test.case( "impls1 basic" );
   {
@@ -82,7 +82,7 @@ fn parentheses_with_comma() {
   }
 }
 
-#[test]
+#[ test ]
 fn parentheses_without_comma() {
   // test.case( "impls1 basic" );
   {

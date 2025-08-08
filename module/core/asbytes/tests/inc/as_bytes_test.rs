@@ -1,14 +1,14 @@
 #![cfg(all(feature = "enabled", feature = "as_bytes"))]
 
 // Define a simple POD struct for testing
-#[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq, bytemuck::Pod, bytemuck::Zeroable)]
+#[ repr( C ) ]
+#[ derive( Clone, Copy, Debug, PartialEq, bytemuck::Pod, bytemuck::Zeroable ) ]
 struct Point {
   x: i32,
   y: i32,
 }
 
-#[test]
+#[ test ]
 fn test_tuple_scalar_as_bytes() {
   {
     use asbytes::AsBytes;
@@ -27,7 +27,7 @@ fn test_tuple_scalar_as_bytes() {
   }
 }
 
-#[test]
+#[ test ]
 fn test_tuple_struct_as_bytes() {
   {
     use asbytes::AsBytes;
@@ -47,7 +47,7 @@ fn test_tuple_struct_as_bytes() {
   }
 }
 
-#[test]
+#[ test ]
 fn test_vec_as_bytes() {
   {
     use asbytes::AsBytes;
@@ -61,7 +61,7 @@ fn test_vec_as_bytes() {
   }
 }
 
-#[test]
+#[ test ]
 fn test_slice_as_bytes() {
   {
     use asbytes::exposed::AsBytes; // Using exposed path
@@ -75,7 +75,7 @@ fn test_slice_as_bytes() {
   }
 }
 
-#[test]
+#[ test ]
 fn test_array_as_bytes() {
   {
     use asbytes::own::AsBytes; // Using own path
@@ -89,7 +89,7 @@ fn test_array_as_bytes() {
   }
 }
 
-#[test]
+#[ test ]
 fn test_vec_struct_as_bytes() {
   {
     use asbytes::AsBytes;

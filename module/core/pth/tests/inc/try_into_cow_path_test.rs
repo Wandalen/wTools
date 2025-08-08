@@ -1,12 +1,12 @@
 use super::*;
 
-#[test]
+#[ test ]
 fn try_into_cow_path_test() {
   use std::{
     borrow::Cow,
     path::{Component, Path, PathBuf},
   };
-  #[cfg(feature = "path_utf8")]
+  #[ cfg( feature = "path_utf8" ) ]
   use the_module::{Utf8Path, Utf8PathBuf};
   use the_module::{TryIntoCowPath, AbsolutePath, CanonicalPath, NativePath, CurrentPath};
 
@@ -95,7 +95,7 @@ fn try_into_cow_path_test() {
     assert!(!cow_path.to_string_lossy().is_empty());
   }
 
-  #[cfg(feature = "path_utf8")]
+  #[ cfg( feature = "path_utf8" ) ]
   {
     // Test with &Utf8Path
     let utf8_path = Utf8Path::new("/utf8/path");

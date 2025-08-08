@@ -7,64 +7,64 @@
 #![ cfg_attr( not( doc ), doc = "Async utilities" ) ]
 
 /// Namespace with dependencies.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency {
   pub use ::async_trait;
   pub use ::async_from;
 }
 
 /// Define a private namespace for all its items.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 mod private {}
 
-#[cfg(feature = "enabled")]
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod own {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use ::async_from::orphan::*;
 }
 
 /// Orphan namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed {
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use ::async_trait::async_trait;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use ::async_from::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use ::async_from::prelude::*;
 }

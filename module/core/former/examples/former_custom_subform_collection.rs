@@ -38,11 +38,11 @@ fn main() {}
 ))]
 fn main() {
   use collection_tools::HashMap;
-  #[cfg(feature = "enabled")]
+  #[ cfg( feature = "enabled" ) ]
   use former_meta::Former;
 
   // Child struct with Former derived for builder pattern support
-  #[derive(Debug, PartialEq, Former)]
+  #[ derive( Debug, PartialEq, Former ) ]
   // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
   pub struct Child {
@@ -51,12 +51,12 @@ fn main() {
   }
 
   // Parent struct to hold children
-  #[derive(Debug, PartialEq, Former)]
+  #[ derive( Debug, PartialEq, Former ) ]
   // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
   pub struct Parent {
     // Use `debug` to gennerate sketch of setter.
-    #[subform_collection(setter = false)]
+    #[ subform_collection( setter = false ) ]
     children: HashMap<String, Child>,
   }
 
@@ -65,7 +65,7 @@ fn main() {
   where
     Definition: former::FormerDefinition<Storage = ParentFormerStorage>,
   {
-    #[inline(always)]
+    #[ inline( always ) ]
     pub fn children(self) -> ParentChildrenFormer<Self, Definition> {
       self._children_subform_collection()
     }

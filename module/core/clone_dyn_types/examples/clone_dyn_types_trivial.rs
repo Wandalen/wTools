@@ -58,7 +58,7 @@
 
 #[cfg(not(feature = "enabled"))]
 fn main() {}
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 fn main() {
   use clone_dyn_types::CloneDyn;
 
@@ -80,9 +80,9 @@ fn main() {
   }
 
   // Implement `Clone` for boxed `IterTrait` trait objects.
-  #[allow(non_local_definitions)]
+  #[ allow( non_local_definitions ) ]
   impl<'c, T> Clone for Box<dyn IterTrait<'c, T> + 'c> {
-    #[inline]
+    #[ inline ]
     fn clone(&self) -> Self {
       clone_dyn_types::clone_into_box(&**self)
     }

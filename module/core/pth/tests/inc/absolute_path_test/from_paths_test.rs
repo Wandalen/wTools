@@ -2,7 +2,7 @@ use super::*;
 
 // xxx : make it working
 
-#[test]
+#[ test ]
 fn test_from_paths_single_absolute_segment() {
   use the_module::AbsolutePath;
   use core::convert::TryFrom;
@@ -14,7 +14,7 @@ fn test_from_paths_single_absolute_segment() {
   assert_eq!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn test_from_paths_multiple_segments() {
   use the_module::AbsolutePath;
   use core::convert::TryFrom;
@@ -26,7 +26,7 @@ fn test_from_paths_multiple_segments() {
   assert_eq!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn test_from_paths_empty_segments() {
   use the_module::AbsolutePath;
 
@@ -36,7 +36,7 @@ fn test_from_paths_empty_segments() {
   assert!(result.is_err(), "Expected an error for empty segments");
 }
 
-#[test]
+#[ test ]
 fn test_from_paths_with_dot_segments() {
   use the_module::AbsolutePath;
   use core::convert::TryFrom;
@@ -48,7 +48,7 @@ fn test_from_paths_with_dot_segments() {
   assert_eq!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn test_from_paths_with_dotdot_segments() {
   use the_module::AbsolutePath;
   use core::convert::TryFrom;
@@ -60,7 +60,7 @@ fn test_from_paths_with_dotdot_segments() {
   assert_eq!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn test_from_paths_with_trailing_slash() {
   use the_module::AbsolutePath;
   use core::convert::TryFrom;
@@ -72,7 +72,7 @@ fn test_from_paths_with_trailing_slash() {
   assert_eq!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn test_from_paths_with_mixed_slashes() {
   use the_module::AbsolutePath;
   use core::convert::TryFrom;

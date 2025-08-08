@@ -11,7 +11,7 @@ mod private {
   ///
   /// Kind of container.
   ///
-  #[derive(Debug, PartialEq, Eq, Copy, Clone)]
+  #[ derive( Debug, PartialEq, Eq, Copy, Clone ) ]
   pub enum ContainerKind {
     /// Not a container.
     No,
@@ -25,7 +25,7 @@ mod private {
 
   /// Return kind of container specified by type.
   ///
-  /// Good to verify `alloc::vec::Vec< i32 >` is vector.
+  /// Good to verify `alloc::vec::Vec<  i32  >` is vector.
   /// Good to verify `std::collections::HashMap< i32, i32 >` is hash map.
   ///
   /// ### Basic use-case.
@@ -39,7 +39,7 @@ mod private {
   /// ```
   /// # Panics
   /// qqq: doc
-  #[must_use]
+  #[ must_use ]
   pub fn of_type(ty: &syn::Type) -> ContainerKind {
     if let syn::Type::Path(path) = ty {
       let last = &path.path.segments.last();
@@ -58,7 +58,7 @@ mod private {
 
   /// Return kind of container specified by type. Unlike [`of_type`] it also understand optional types.
   ///
-  /// Good to verify `Option< alloc::vec::Vec< i32 > >` is optional vector.
+  /// Good to verify `Option< alloc::vec::Vec<  i32  > >` is optional vector.
   ///
   /// ### Basic use-case.
   /// ```
@@ -72,7 +72,7 @@ mod private {
   /// ```
   /// # Panics
   /// qqq: doc
-  #[must_use]
+  #[ must_use ]
   pub fn of_optional(ty: &syn::Type) -> (ContainerKind, bool) {
     if typ::type_rightmost(ty) == Some("Option".to_string()) {
       let ty2 = typ::type_parameters(ty, 0..=0).first().copied();
@@ -88,33 +88,33 @@ mod private {
   }
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{ContainerKind, of_type, of_optional};
 }
 
 /// Orphan namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
@@ -122,12 +122,12 @@ pub mod exposed {
 
   // pub use super::own as container_kind;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 }

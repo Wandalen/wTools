@@ -7,7 +7,7 @@
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 #![ cfg_attr( not( doc ), doc = "Slice checking utilities" ) ]
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 mod private {
   /// Macro to answer the question: is it a slice?
   ///
@@ -21,7 +21,7 @@ mod private {
   /// dbg!( is_slice!( &[ 1, 2, 3 ][ .. ] ) );
   /// // < is_slice!(& [1, 2, 3] [..]) = true
   /// ```
-  #[macro_export]
+  #[ macro_export ]
   macro_rules! is_slice {
     ( $V : expr ) => {{
       use ::core::marker::PhantomData;
@@ -53,43 +53,43 @@ mod private {
   pub use is_slice;
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
-#[cfg(feature = "enabled")]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod own {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 }
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{is_slice};
 }

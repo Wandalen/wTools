@@ -28,17 +28,14 @@ all-features = false
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-# The 'enabled' feature no longer depends on macro_tools
-enabled = []
+# The 'enabled' feature activates core dependencies
+enabled = [ "macro_tools/enabled" ]
 
 [lib]
 proc-macro = true
 
 [dependencies]
-# macro_tools dependency removed
-# Direct dependencies added using workspace inheritance and minimal features
-proc-macro2 = { workspace = true, default-features = false, features = [ "default" ] } # Inherits version and settings from workspace
-quote = { workspace = true, default-features = false, features = [ "default" ] }      # Inherits version and settings from workspace
-syn = { workspace = true, default-features = false, features = [ "parsing", "printing", "proc-macro", "full" ] } # Inherits version, specifies features inline
+# Use macro_tools as per Design Rulebook requirement - provides syn, quote, proc-macro2 re-exports
+macro_tools = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]

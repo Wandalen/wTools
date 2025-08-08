@@ -10,7 +10,7 @@
 #[ allow( unused_imports ) ]
 use::willbe::*;
 
-fn main() -> Result< (), wtools::error::untyped::Error >
+fn main() -> Result<  (), wtools::error::untyped::Error  >
 {
   Ok( willbe::run( std::env::args().collect() )? )
 }

@@ -21,7 +21,7 @@ use the_module::InnerFrom;
 // pub struct UnitStruct;
 
 // IF1.2: Tuple struct with one field
-#[derive(InnerFrom)]
+#[ derive( InnerFrom ) ]
 pub struct TupleStruct1(pub i32);
 
 // IF1.3: Tuple struct with multiple fields - should not compile
@@ -29,7 +29,7 @@ pub struct TupleStruct1(pub i32);
 // pub struct TupleStruct2( pub i32, pub i32 );
 
 // IF1.4: Named struct with one field
-#[derive(InnerFrom)]
+#[ derive( InnerFrom ) ]
 pub struct NamedStruct1 {
   pub field1: i32,
 }

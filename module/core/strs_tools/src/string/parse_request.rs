@@ -19,7 +19,7 @@ mod private {
     /// Wrapper over single element of type `<T>`.
     Primitive(T),
     /// Wrapper over vector of elements of type `<T>`.
-    Vector(Vec<T>),
+    Vector(Vec< T >),
     /// Wrapper over hash map of elements of type `<T>`.
     Map(HashMap<String, T>),
   }
@@ -36,15 +36,15 @@ mod private {
     }
   }
 
-  impl<T> From<Vec<T>> for OpType<T> {
-    fn from(value: Vec<T>) -> Self {
+  impl<T> From<Vec< T >> for OpType<T> {
+    fn from(value: Vec< T >) -> Self {
       OpType::Vector(value)
     }
   }
 
   #[ allow( clippy::from_over_into ) ]
-  impl<T> Into<Vec<T>> for OpType<T> {
-    fn into(self) -> Vec<T> {
+  impl<T> Into<Vec< T >> for OpType<T> {
+    fn into(self) -> Vec< T > {
       match self {
         OpType::Vector(vec) => vec,
         _ => unimplemented!("not implemented"),
@@ -88,7 +88,7 @@ mod private {
     }
 
     /// Unwrap primitive value. Consumes self.
-    pub fn primitive(self) -> Option<T> {
+    pub fn primitive(self) -> Option< T > {
       match self {
         OpType::Primitive(v) => Some(v),
         _ => None,
@@ -96,7 +96,7 @@ mod private {
     }
 
     /// Unwrap vector value. Consumes self.
-    pub fn vector(self) -> Option<Vec<T>> {
+    pub fn vector(self) -> Option<Vec< T >> {
       match self {
         OpType::Vector(vec) => Some(vec),
         _ => None,
@@ -119,7 +119,7 @@ mod private {
     /// Parsed subject of first command.
     pub subject: String,
     /// All subjects of the commands in request.
-    pub subjects: Vec<String>,
+    pub subjects: Vec< String >,
     /// Options map of first command.
     pub map: HashMap<String, OpType<String>>,
     /// All options maps of the commands in request.
@@ -225,8 +225,8 @@ mod private {
   ///
   /// Options for parser.
   ///
-  #[allow(clippy::struct_excessive_bools)]
-  #[derive(Debug, Default)] // Added Default here, Removed former::Former derive
+  #[ allow( clippy::struct_excessive_bools ) ]
+  #[ derive( Debug, Default ) ] // Added Default here, Removed former::Former derive
   pub struct ParseOptions<'a> {
     /// Source string slice.
     pub src: ParseSrc<'a>,
@@ -266,7 +266,7 @@ mod private {
 
   impl<'a> ParseOptions<'a> {
     /// Do parsing.
-    #[allow(clippy::assigning_clones, clippy::too_many_lines, clippy::collapsible_if)]
+    #[ allow( clippy::assigning_clones, clippy::too_many_lines, clippy::collapsible_if ) ]
     /// # Panics
     /// Panics if `map_entries.1` is `None` when `join.push_str` is called.
     #[ cfg( all( feature = "string_split", feature = "string_isolate", not( feature = "no_std" ) ) ) ]
@@ -300,7 +300,7 @@ mod private {
         .preserving_empty( false )
         .preserving_delimeters( false )
         .perform();
-        iter.map(String::from).collect::<Vec<_>>()
+        iter.map(String::from).collect::<Vec< _ >>()
       };
 
       for command in commands {
@@ -339,7 +339,7 @@ mod private {
           .preserving_delimeters( true )
           .preserving_quoting( true )
           .perform()
-          .map( String::from ).collect::< Vec< _ > >();
+          .map( String::from ).collect::< Vec<  _  > >();
 
           let mut pairs = vec![];
           for a in (0..splits.len() - 2).step_by(2) {
@@ -384,7 +384,7 @@ mod private {
 
           /* */
 
-          let str_to_vec_maybe = |src: &str| -> Option<Vec<String>> {
+          let str_to_vec_maybe = |src: &str| -> Option<Vec< String >> {
             if !src.starts_with('[') || !src.ends_with(']') {
               return None;
             }
@@ -398,7 +398,7 @@ mod private {
             .preserving_delimeters( false )
             .preserving_quoting( false )
             .perform()
-            .map( | e | String::from( e ).trim().to_owned() ).collect::< Vec< String > >();
+            .map( | e | String::from( e ).trim().to_owned() ).collect::< Vec<  String  > >();
             Some(splits)
           };
 
@@ -480,14 +480,14 @@ mod private {
   }
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
   pub use orphan::*;
   pub use private::{
@@ -501,17 +501,17 @@ pub mod own {
 }
 
 /// Parented namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
   pub use prelude::*; // Added
   pub use super::own as parse_request;
@@ -521,9 +521,9 @@ pub mod exposed {
 }
 
 /// Namespace of the module to include with `use module::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use super::*;
   // pub use private::ParseOptionsAdapter; // Removed
 }

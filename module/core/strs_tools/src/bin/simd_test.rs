@@ -25,7 +25,7 @@ fn main()
   // Test scalar implementation
   println!( "⚡ Scalar Implementation:" );
   let start = Instant::now();
-  let scalar_result: Vec< _ > = split()
+  let scalar_result: Vec<  _  > = split()
     .src( test_input )
     .delimeter( delimiters.to_vec() )
     .perform()
@@ -49,7 +49,7 @@ fn main()
     {
       Ok( iter ) => 
       {
-        let simd_result: Vec< _ > = iter.collect();
+        let simd_result: Vec<  _  > = iter.collect();
         let simd_time = start.elapsed();
         
         println!( "   Time: {simd_time:?}" );

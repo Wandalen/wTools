@@ -1,8 +1,8 @@
 use core::ops::Deref;
 use derive_tools::Deref;
 
-#[allow(dead_code)]
-#[derive(Deref)]
+#[ allow( dead_code ) ]
+#[ derive( Deref ) ]
 
 struct GenericsLifetimes<'a>(&'a i32);
 

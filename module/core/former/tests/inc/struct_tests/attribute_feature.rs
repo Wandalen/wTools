@@ -2,22 +2,22 @@
 
 use super::*;
 
-#[derive(Debug, PartialEq)]
+#[ derive( Debug, PartialEq ) ]
 pub struct BaseCase {
-  #[cfg(feature = "enabled")]
+  #[ cfg( feature = "enabled" ) ]
   enabled: i32,
-  #[cfg(feature = "disabled")]
+  #[ cfg( feature = "disabled" ) ]
   disabled: i32,
 }
 
-#[derive(Debug, PartialEq, former::Former)]
+#[ derive( Debug, PartialEq, former::Former ) ]
 // #[ debug ]
 // #[ derive( Debug, PartialEq ) ]
 pub struct Foo {
-  #[cfg(feature = "enabled")]
-  #[allow(dead_code)]
+  #[ cfg( feature = "enabled" ) ]
+  #[ allow( dead_code ) ]
   enabled: i32,
-  #[cfg(feature = "disabled")]
+  #[ cfg( feature = "disabled" ) ]
   disabled: i32,
 }
 
@@ -25,14 +25,14 @@ pub struct Foo {
 
 // == end of generated
 
-#[test]
+#[ test ]
 fn basecase() {
   let got = BaseCase { enabled: 13 };
   let exp = BaseCase { enabled: 13 };
   a_id!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn basic() {
   let got = Foo::former().enabled(13).form();
   let exp = Foo { enabled: 13 };

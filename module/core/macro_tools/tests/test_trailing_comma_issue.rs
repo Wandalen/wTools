@@ -4,7 +4,7 @@ use macro_tools::generic_params;
 use quote::quote;
 use syn::parse_quote;
 
-#[test]
+#[ test ]
 fn test_trailing_comma_issue_mre() {
     // Test case 1: Simple lifetime parameter
     let generics: syn::Generics = parse_quote! { <'a> };

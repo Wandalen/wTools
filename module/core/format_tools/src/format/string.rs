@@ -186,7 +186,7 @@ mod private
   {
     type Item = &'a str;
 
-    fn next( &mut self ) -> Option< Self::Item >
+    fn next( &mut self ) -> Option<  Self::Item  >
     {
       if self.finished
       {
@@ -226,7 +226,7 @@ mod private
   {
     lines : Lines< 'a >,
     limit_width : usize,
-    cur : Option< &'a str >,
+    cur : Option<  &'a str  >,
   }
 
   impl< 'a > LinesWithLimit< 'a >
@@ -246,7 +246,7 @@ mod private
   {
     type Item = &'a str;
 
-    fn next( &mut self ) -> Option< Self::Item > 
+    fn next( &mut self ) -> Option<  Self::Item  > 
     {
       loop 
       {

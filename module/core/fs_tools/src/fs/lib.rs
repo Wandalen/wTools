@@ -11,48 +11,48 @@
 pub mod fs;
 
 /// Namespace with dependencies.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency {}
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::fs::orphan::*;
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Shared with parent namespace of the module
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::fs::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::fs::prelude::*;
 }

@@ -31,7 +31,7 @@
 /// - [`Types`]: The type system integration via [`FormerDefinitionTypes`]
 ///
 /// # Usage in Generated Code
-/// This trait is automatically implemented by the `#[derive(Former)]` macro and should
+/// This trait is automatically implemented by the `#[ derive( Former ) ]` macro and should
 /// not typically be implemented manually. It enables the Former pattern to:
 /// - Determine the correct storage type for an entity
 /// - Link to the appropriate former struct
@@ -41,7 +41,7 @@
 /// # Example Context
 /// ```rust, ignore
 /// // For a struct like this:
-/// #[derive(Former)]
+/// #[ derive( Former ) ]
 /// struct User { name: String, age: u32 }
 ///
 /// // The macro generates an implementation like:
@@ -118,10 +118,10 @@ pub trait EntityToDefinitionTypes<Context, Formed> {
 /// - **Subform Integration**: Enables nested builders with proper type relationships
 ///
 /// # Usage in Generated Code
-/// The `#[derive(Former)]` macro automatically implements this trait:
+/// The `#[ derive( Former ) ]` macro automatically implements this trait:
 /// ```rust, ignore
 /// // For a struct like:
-/// #[derive(Former)]
+/// #[ derive( Former ) ]
 /// struct Config { setting: String }
 ///
 /// // The macro generates:

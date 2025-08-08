@@ -201,7 +201,7 @@ mod private
   /// This function does not touch fs.
   /// # Errors
   /// qqq: doc
-  pub fn canonicalize( path : impl AsRef< std::path::Path > ) -> std::io::Result< std::path::PathBuf >
+  pub fn canonicalize( path : impl AsRef< std::path::Path > ) -> std::io::Result<  std::path::PathBuf  >
   {
     #[ cfg( target_os = "windows" ) ]
     use std::path::PathBuf;
@@ -255,7 +255,7 @@ mod private
   ///
   /// # Returns
   ///
-  /// A `Result< String, SystemTimeError >` where:
+  /// A `Result<  String, SystemTimeError  >` where:
   /// - `Ok( String )` contains the unique folder name if the current system time
   ///   can be determined relative to the UNIX epoch,
   /// - `Err( SystemTimeError )` if there is an error determining the system time.
@@ -270,7 +270,7 @@ mod private
   /// # Errors
   /// qqq: doc
   #[ cfg( feature = "path_unique_folder_name" ) ]
-  pub fn unique_folder_name() -> std::result::Result< std::string::String, std::time::SystemTimeError >
+  pub fn unique_folder_name() -> std::result::Result<  std::string::String, std::time::SystemTimeError  >
   {
     use std::time::{ SystemTime, UNIX_EPOCH };
     #[ cfg( feature = "no_std" ) ]
@@ -283,7 +283,7 @@ mod private
     {
       // fix clippy
       #[ allow( clippy::missing_const_for_thread_local ) ]
-      static COUNTER : core::cell::Cell< usize > = core::cell::Cell::new( 0 );
+      static COUNTER : core::cell::Cell<  usize  > = core::cell::Cell::new( 0 );
     }
 
     // Increment and get the current value of the counter safely
@@ -374,7 +374,7 @@ mod private
         added_slah = true;
         result.push( '/' );
       }
-      let components: Vec<&str> = path.split( '/' ).collect();
+      let components: Vec< &str > = path.split( '/' ).collect();
       // Split the path into components
       for ( idx, component ) in components.clone().into_iter().enumerate()
       {
@@ -398,7 +398,7 @@ mod private
                 result.pop();
                 added_slah = false;
               }
-              let mut parts : Vec< _ > = result.split( '/' ).collect();
+              let mut parts : Vec<  _  > = result.split( '/' ).collect();
               parts.pop();
               if let Some( part ) = parts.last()
               {
@@ -477,12 +477,12 @@ mod private
   ///
   /// let empty_path = "";
   /// let extensions = exts( empty_path );
-  /// let expected : Vec< String > = vec![];
+  /// let expected : Vec<  String  > = vec![];
   /// assert_eq!( extensions, expected );
   /// ```
   ///
   // qqq : xxx : should return iterator
-  pub fn exts( path : impl AsRef< std::path::Path > ) -> std::vec::Vec< std::string::String >
+  pub fn exts( path : impl AsRef< std::path::Path > ) -> std::vec::Vec<  std::string::String  >
   {
     #[ cfg( feature = "no_std" ) ]
     extern crate alloc;
@@ -544,7 +544,7 @@ mod private
   /// ```
   ///
   #[ allow( clippy::manual_let_else ) ]
-  pub fn without_ext( path : impl AsRef< std::path::Path > ) -> core::option::Option< std::path::PathBuf >
+  pub fn without_ext( path : impl AsRef< std::path::Path > ) -> core::option::Option<  std::path::PathBuf  >
   {
     use std::path::{ Path, PathBuf };
     #[ cfg( feature = "no_std" ) ]
@@ -620,7 +620,7 @@ mod private
   /// assert_eq!( modified_path, None );
   /// ```
   ///
-  pub fn change_ext( path : impl AsRef< std::path::Path >, ext : &str ) -> Option< std::path::PathBuf >
+  pub fn change_ext( path : impl AsRef< std::path::Path >, ext : &str ) -> Option<  std::path::PathBuf  >
   {
     use std::path::PathBuf;
     if path.as_ref().to_string_lossy().is_empty() || !path.as_ref().to_string_lossy().is_ascii() || !ext.is_ascii()
@@ -650,7 +650,7 @@ mod private
   ///
   /// # Returns
   ///
-  /// * `Option<String>` - The common directory path shared by all paths, if it exists.
+  /// * `Option< String >` - The common directory path shared by all paths, if it exists.
   ///   If no common directory path exists, returns `None`.
   ///
   /// # Examples
@@ -664,7 +664,7 @@ mod private
   /// ```
   ///
   // xxx : qqq : should probably be PathBuf?
-  pub fn path_common< 'a, I >( paths : I ) -> Option< std::string::String >
+  pub fn path_common< 'a, I >( paths : I ) -> Option<  std::string::String  >
   where
     I: Iterator< Item = &'a str >,
   {
@@ -674,7 +674,7 @@ mod private
     #[ cfg( feature = "no_std" ) ]
     use alloc::{ string::{ String, ToString }, vec::Vec };
 
-    let orig_paths : Vec< String > = paths.map( std::string::ToString::to_string ).collect();
+    let orig_paths : Vec<  String  > = paths.map( std::string::ToString::to_string ).collect();
 
     if orig_paths.is_empty()
     {
@@ -691,7 +691,7 @@ mod private
       path_remove_dots( path );
       path_remove_double_dots( path );
       // Split path into directories
-      let dirs : Vec< &str > = path.split( '/' ).collect();
+      let dirs : Vec<  &str  > = path.split( '/' ).collect();
 
       // Iterate over directories
       for i in 0..dirs.len()
@@ -785,7 +785,7 @@ mod private
     #[ cfg( feature = "no_std" ) ]
     use alloc::vec::Vec;
 
-    let mut cleaned_parts: Vec< &str > = Vec::new();
+    let mut cleaned_parts: Vec<  &str  > = Vec::new();
     let mut delete_empty_part = false;
     for part in path.split( '/' )
     {
@@ -866,9 +866,9 @@ mod private
    (
     file_path : T,
     new_path : T,
-    old_path : Option< T >
+    old_path : Option<  T  >
   )
-  -> Option< std::path::PathBuf >
+  -> Option<  std::path::PathBuf  >
   {
     use std::path::Path;
     use std::path::PathBuf;
@@ -941,8 +941,8 @@ mod private
     path_remove_dots( &mut from );
     path_remove_dots( &mut to );
 
-    let mut from_parts: Vec< &str > = from.split( '/' ).collect();
-    let mut to_parts: Vec< &str > = to.split( '/' ).collect();
+    let mut from_parts: Vec<  &str  > = from.split( '/' ).collect();
+    let mut to_parts: Vec<  &str  > = to.split( '/' ).collect();
     if from_parts.len() == 1 && from_parts[ 0 ].is_empty()
     {
       from_parts.pop();

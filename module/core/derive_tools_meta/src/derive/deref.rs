@@ -6,7 +6,7 @@ use macro_tools::quote::ToTokens;
 ///
 /// Derive macro to implement Deref when-ever it's possible to do automatically.
 ///
-pub fn deref(input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream> {
+pub fn deref(input: proc_macro::TokenStream) -> Result< proc_macro2::TokenStream > {
   let original_input = input.clone();
   let parsed = syn::parse::<StructLike>(input)?;
   let has_debug = attr::has_debug(parsed.attrs().iter())?;
@@ -35,7 +35,7 @@ pub fn deref(input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream>
         target_field_type = Some(field.ty.clone());
         target_field_name.clone_from(&field.ident);
       } else {
-        // Multi-field struct: require #[deref] attribute on one field
+        // Multi-field struct: require #[ deref ] attribute on one field
         for field in &item.fields {
           if attr::has_deref(field.attrs.iter())? {
             deref_attr_count += 1;
@@ -47,10 +47,10 @@ pub fn deref(input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream>
         if deref_attr_count == 0 {
           return_syn_err!(
             item.span(),
-            "Deref cannot be derived for multi-field structs without a `#[deref]` attribute on one field."
+            "Deref cannot be derived for multi-field structs without a `#[ deref ]` attribute on one field."
           );
         } else if deref_attr_count > 1 {
-          return_syn_err!(item.span(), "Only one field can have the `#[deref]` attribute.");
+          return_syn_err!(item.span(), "Only one field can have the `#[ deref ]` attribute.");
         }
       }
 
@@ -70,7 +70,7 @@ pub fn deref(input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream>
       )
     }
     StructLike::Enum(ref item) => {
-      return_syn_err!( item.span(), "Deref cannot be derived for enums. It is only applicable to structs with a single field or a field with `#[deref]` attribute." );
+      return_syn_err!( item.span(), "Deref cannot be derived for enums. It is only applicable to structs with a single field or a field with `#[ deref ]` attribute." );
     }
   };
 
@@ -94,15 +94,15 @@ pub fn deref(input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream>
 /// ///     &self.0
 /// ///   }
 /// /// }
-#[allow(clippy::too_many_arguments)]
+#[ allow( clippy::too_many_arguments ) ]
 /// ```
 fn generate(
   item_name: &syn::Ident,
   generics_impl: &syn::ImplGenerics<'_>,     // Use ImplGenerics with explicit lifetime
   generics_ty: &syn::TypeGenerics<'_>,       // Use TypeGenerics with explicit lifetime
-  generics_where: Option<&syn::WhereClause>, // Use WhereClause
+  generics_where: Option< &syn::WhereClause >, // Use WhereClause
   field_type: &syn::Type,
-  field_name: Option<&syn::Ident>,
+  field_name: Option< &syn::Ident >,
   original_input: &proc_macro::TokenStream,
   has_debug: bool,
 ) -> proc_macro2::TokenStream {

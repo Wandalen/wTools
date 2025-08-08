@@ -17,7 +17,7 @@ crate::the_module::mod_interface! {
 
 //
 
-#[test]
+#[ test ]
 fn basic() {
   let _s1 = Struct1;
   let _s2 = Struct2;

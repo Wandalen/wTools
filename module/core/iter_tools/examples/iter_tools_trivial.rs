@@ -4,7 +4,7 @@
 #[cfg(not(feature = "enabled"))]
 fn main() {}
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 fn main() {
   // Importing functions from the `iter_tools` crate
   use iter_tools::*;

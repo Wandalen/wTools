@@ -1,6 +1,6 @@
 use core::{fmt::Debug, marker::PhantomData};
 
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 struct BoundsWhere<T, U>
 where
   T: ToString,

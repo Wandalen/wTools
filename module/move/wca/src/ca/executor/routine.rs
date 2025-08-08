@@ -47,7 +47,7 @@ mod private
   /// ) );
   /// ```
   #[ derive( Debug, Clone ) ]
-  pub struct Args( pub Vec< Value > );
+  pub struct Args( pub Vec<  Value  > );
 
   impl Args
   {
@@ -65,7 +65,7 @@ mod private
     /// assert_eq!( "Hello, World!", first_arg );
     /// ```
     #[ must_use ]
-    pub fn get_owned< T : From< Value > >( &self, index : usize ) -> Option< T >
+    pub fn get_owned< T : From< Value > >( &self, index : usize ) -> Option<  T  >
     {
       self.0.get( index ).map( | arg | arg.to_owned().into() )
     }
@@ -73,7 +73,7 @@ mod private
 
   impl core::ops::Deref for Args
   {
-    type Target = Vec< Value >;
+    type Target = Vec<  Value  >;
     fn deref( &self ) -> &Self::Target
     {
       &self.0
@@ -107,7 +107,7 @@ mod private
   /// ) );
   /// ```
   #[ derive( Debug, Clone ) ]
-  pub struct Props( pub HashMap< String, Value > );
+  pub struct Props( pub HashMap<  String, Value  > );
 
   impl Props
   {
@@ -121,7 +121,7 @@ mod private
     ///
     /// assert_eq!( "World!", hello_prop );
     /// ```
-    pub fn get_owned< K : AsRef< str >, T : From< Value > >( &self, key : K ) -> Option< T >
+    pub fn get_owned< K : AsRef< str >, T : From< Value > >( &self, key : K ) -> Option<  T  >
     {
       self.0.get( key.as_ref() ).map( | arg | arg.to_owned().into() )
     }
@@ -129,7 +129,7 @@ mod private
 
   impl core::ops::Deref for Props
   {
-    type Target = HashMap< String, Value > ;
+    type Target = HashMap<  String, Value  > ;
     fn deref( &self ) -> &Self::Target
     {
       &self.0
@@ -144,8 +144,8 @@ mod private
 
   // These type aliases are kept private to hide implementation details and prevent misuse.
   // Exposing them would risk complicating the API and limit future refactoring flexibility.
-  type RoutineWithoutContextFn = dyn Fn( VerifiedCommand ) -> error_tools::untyped::Result< () >;
-  type RoutineWithContextFn = dyn Fn( Context, VerifiedCommand ) -> error_tools::untyped::Result< () >;
+  type RoutineWithoutContextFn = dyn Fn( VerifiedCommand ) -> error_tools::untyped::Result<  ()  >;
+  type RoutineWithContextFn = dyn Fn( Context, VerifiedCommand ) -> error_tools::untyped::Result<  ()  >;
 
   ///
   /// Routine handle.
@@ -241,7 +241,7 @@ mod private
   where
     I : 'static,
     O : IntoResult + 'static,
-    Routine : From< Box< dyn Fn( I ) -> error_tools::error::untyped::Result< () > > >,
+    Routine : From< Box< dyn Fn( I ) -> error_tools::error::untyped::Result<  ()  > > >,
   {
     fn from( value : Handler< I, O > ) -> Self
     {
@@ -277,34 +277,34 @@ mod private
   }
 
   // without context
-  impl From< Box< dyn Fn( () ) -> error_tools::error::untyped::Result< () > > > for Routine
+  impl From< Box< dyn Fn( () ) -> error_tools::error::untyped::Result<  ()  > > > for Routine
   {
-    fn from( value : Box< dyn Fn( () ) -> error_tools::error::untyped::Result< () > > ) -> Self
+    fn from( value : Box< dyn Fn( () ) -> error_tools::error::untyped::Result<  ()  > > ) -> Self
     {
       Self::WithoutContext( Rc::new( move | _ | { value( () )?; Ok( () ) } ) )
     }
   }
 
-  impl From< Box< dyn Fn( VerifiedCommand ) -> error_tools::error::untyped::Result< () > > > for Routine
+  impl From< Box< dyn Fn( VerifiedCommand ) -> error_tools::error::untyped::Result<  ()  > > > for Routine
   {
-    fn from( value : Box< dyn Fn( VerifiedCommand ) -> error_tools::error::untyped::Result< () > > ) -> Self
+    fn from( value : Box< dyn Fn( VerifiedCommand ) -> error_tools::error::untyped::Result<  ()  > > ) -> Self
     {
       Self::WithoutContext( Rc::new( move | a | { value( a )?; Ok( () ) } ) )
     }
   }
 
   // with context
-  impl From< Box< dyn Fn( Context ) -> error_tools::error::untyped::Result< () > > > for Routine
+  impl From< Box< dyn Fn( Context ) -> error_tools::error::untyped::Result<  ()  > > > for Routine
   {
-    fn from( value : Box< dyn Fn( Context ) -> error_tools::error::untyped::Result< () > > ) -> Self
+    fn from( value : Box< dyn Fn( Context ) -> error_tools::error::untyped::Result<  ()  > > ) -> Self
     {
       Self::WithContext( Rc::new( move | ctx, _ | { value( ctx )?; Ok( () ) } ) )
     }
   }
 
-  impl From< Box< dyn Fn(( Context, VerifiedCommand )) -> error_tools::error::untyped::Result< () > > > for Routine
+  impl From< Box< dyn Fn(( Context, VerifiedCommand )) -> error_tools::error::untyped::Result<  ()  > > > for Routine
   {
-    fn from( value : Box< dyn Fn(( Context, VerifiedCommand )) -> error_tools::error::untyped::Result< () > > ) -> Self
+    fn from( value : Box< dyn Fn(( Context, VerifiedCommand )) -> error_tools::error::untyped::Result<  ()  > > ) -> Self
     {
       Self::WithContext( Rc::new( move | ctx, a | { value(( ctx, a ))?; Ok( () ) } ) )
     }
@@ -333,17 +333,17 @@ mod private
 
   trait IntoResult
   {
-    fn into_result( self ) -> error_tools::untyped::Result< () >;
+    fn into_result( self ) -> error_tools::untyped::Result<  ()  >;
   }
 
   // xxx
   // aaa : This is an untyped error because we want to provide a common interface for all commands, while also allowing users to propagate their own specific custom errors.
-  impl IntoResult for core::convert::Infallible { fn into_result( self ) -> error_tools::untyped::Result< () > { Ok( () ) } }
-  impl IntoResult for () { fn into_result( self ) -> error_tools::untyped::Result< () > { Ok( () ) } }
+  impl IntoResult for core::convert::Infallible { fn into_result( self ) -> error_tools::untyped::Result<  ()  > { Ok( () ) } }
+  impl IntoResult for () { fn into_result( self ) -> error_tools::untyped::Result<  ()  > { Ok( () ) } }
   impl< E : core::fmt::Debug + std::fmt::Display + 'static > IntoResult
-  for error_tools::untyped::Result< (), E >
+  for error_tools::untyped::Result<  (), E  >
   {
-    fn into_result( self ) -> error_tools::untyped::Result< () >
+    fn into_result( self ) -> error_tools::untyped::Result<  ()  >
     {
       use std::any::TypeId;
       // if it's anyhow error we want to have full context(debug), and if it's not(this error) we want to display

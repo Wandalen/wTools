@@ -2,26 +2,26 @@
 // This provides mixed enum variant coverage without causing build performance issues
 
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
 // Simple inner types for mixed enum testing
-#[derive(Debug, PartialEq, Default, Clone, Former)]
+#[ derive( Debug, PartialEq, Default, Clone, Former ) ]
 pub struct SimpleInner {
   pub data: String,
   pub value: i32,
 }
 
 // Simplified mixed enum with unit, tuple, and struct variants
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 pub enum SimplifiedMixedEnum {
   // Unit variants
   UnitVariantA,
   UnitVariantB,
   
   // Tuple variants
-  #[scalar]
+  #[ scalar ]
   TupleScalar(String),
   TupleSubform(SimpleInner),
   
@@ -40,7 +40,7 @@ impl Default for SimplifiedMixedEnum {
 
 // SIMPLIFIED MIXED ENUM TESTS - comprehensive coverage without build timeout
 
-#[test]
+#[ test ]
 fn simplified_mixed_unit_variants_test() {
   let unit_a = SimplifiedMixedEnum::unit_variant_a();
   let unit_b = SimplifiedMixedEnum::unit_variant_b();
@@ -49,14 +49,14 @@ fn simplified_mixed_unit_variants_test() {
   assert_eq!(unit_b, SimplifiedMixedEnum::UnitVariantB);
 }
 
-#[test]
+#[ test ]
 fn simplified_mixed_tuple_scalar_test() {
   let got = SimplifiedMixedEnum::tuple_scalar("tuple_test".to_string());
   let expected = SimplifiedMixedEnum::TupleScalar("tuple_test".to_string());
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn simplified_mixed_tuple_subform_test() {
   let inner = SimpleInner {
     data: "subform_data".to_string(),
@@ -71,7 +71,7 @@ fn simplified_mixed_tuple_subform_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn simplified_mixed_struct_variant_test() {
   let inner = SimpleInner {
     data: "struct_data".to_string(),
@@ -92,7 +92,7 @@ fn simplified_mixed_struct_variant_test() {
 }
 
 // Test comprehensive mixed enum patterns
-#[test]
+#[ test ]
 fn simplified_mixed_comprehensive_test() {
   // Test all variant types work together
   let variants = vec![

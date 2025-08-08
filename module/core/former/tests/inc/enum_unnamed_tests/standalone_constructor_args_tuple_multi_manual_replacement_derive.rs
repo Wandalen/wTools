@@ -5,44 +5,44 @@
 use super::*;
 
 // Simple enum with multi-tuple variant for standalone constructor args testing
-#[derive(Debug, PartialEq, Clone, former::Former)]
-#[former(standalone_constructors)]
+#[ derive( Debug, PartialEq, Clone, former::Former ) ]
+#[ former( standalone_constructors ) ]
 pub enum StandaloneArgsMultiEnum {
   // Multi-field tuple variant with standalone constructor arguments
-  #[scalar]
+  #[ scalar ]
   MultiArgs(i32, bool, String),
   
-  #[scalar]
+  #[ scalar ]
   DualArgs(f64, i32),
   
-  #[scalar]
+  #[ scalar ]
   TripleArgs(String, bool, i32),
 }
 
 // COMPREHENSIVE STANDALONE CONSTRUCTOR ARGS MULTI TESTS
 
-#[test]
+#[ test ]
 fn standalone_constructor_args_multi_manual_replacement_basic_test() {
   let got = StandaloneArgsMultiEnum::multi_args(42, true, "test".to_string());
   let expected = StandaloneArgsMultiEnum::MultiArgs(42, true, "test".to_string());
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn standalone_constructor_args_multi_manual_replacement_dual_test() {
   let got = StandaloneArgsMultiEnum::dual_args(3.14, -1);
   let expected = StandaloneArgsMultiEnum::DualArgs(3.14, -1);
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn standalone_constructor_args_multi_manual_replacement_triple_test() {
   let got = StandaloneArgsMultiEnum::triple_args("triple".to_string(), false, 999);
   let expected = StandaloneArgsMultiEnum::TripleArgs("triple".to_string(), false, 999);
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn standalone_constructor_args_multi_manual_replacement_comprehensive_test() {
   // Test all multi-arg standalone constructors work correctly
   let test_cases = [StandaloneArgsMultiEnum::multi_args(1, true, "first".to_string()),
@@ -81,7 +81,7 @@ fn standalone_constructor_args_multi_manual_replacement_comprehensive_test() {
 }
 
 // Test advanced multi-arg constructor patterns
-#[test]
+#[ test ]
 fn standalone_constructor_args_multi_manual_replacement_advanced_test() {
   // Test with various data types and complex values
   let complex_cases = [StandaloneArgsMultiEnum::multi_args(i32::MAX, true, "max_value".to_string()),
@@ -117,7 +117,7 @@ fn standalone_constructor_args_multi_manual_replacement_advanced_test() {
 }
 
 // Test that demonstrates standalone constructor args work with different argument patterns
-#[test]
+#[ test ]
 fn standalone_constructor_args_multi_manual_replacement_pattern_test() {
   // Test constructor argument patterns
   let pattern_tests = [

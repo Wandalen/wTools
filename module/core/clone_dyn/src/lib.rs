@@ -8,69 +8,69 @@
 #![ cfg_attr( not( doc ), doc = "Dynamic cloning utilities" ) ]
 
 /// Namespace with dependencies.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency {
-  #[cfg(feature = "derive_clone_dyn")]
+  #[ cfg( feature = "derive_clone_dyn" ) ]
   pub use ::clone_dyn_meta;
-  #[cfg(feature = "clone_dyn_types")]
+  #[ cfg( feature = "clone_dyn_types" ) ]
   pub use ::clone_dyn_types;
 }
 
 /// Define a private namespace for all its items.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 mod private {}
 
-#[cfg(feature = "enabled")]
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod own {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan {
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 
-  #[doc(inline)]
-  #[allow(unused_imports)]
-  #[cfg(feature = "clone_dyn_types")]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ cfg( feature = "clone_dyn_types" ) ]
   pub use super::dependency::clone_dyn_types::exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 
-  #[doc(inline)]
-  #[allow(unused_imports)]
-  #[cfg(feature = "derive_clone_dyn")]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ cfg( feature = "derive_clone_dyn" ) ]
   pub use ::clone_dyn_meta::clone_dyn;
 
-  #[doc(inline)]
-  #[allow(unused_imports)]
-  #[cfg(feature = "clone_dyn_types")]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ cfg( feature = "clone_dyn_types" ) ]
   pub use super::dependency::clone_dyn_types::prelude::*;
 }

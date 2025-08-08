@@ -1,14 +1,14 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
-#[test]
+#[ test ]
 fn generates_unique_names_on_consecutive_calls() {
   let name1 = the_module::path::unique_folder_name().unwrap();
   let name2 = the_module::path::unique_folder_name().unwrap();
   assert_ne!(name1, name2);
 }
 
-#[test]
+#[ test ]
 fn proper_name() {
   use regex::Regex;
 
@@ -27,7 +27,7 @@ fn proper_name() {
   // ThreadId(1)
 }
 
-#[test]
+#[ test ]
 fn respects_thread_local_counter_increment() {
   let initial_name = the_module::path::unique_folder_name().unwrap();
   let counter_value_in_initial_name: usize = initial_name.split('_').next_back().unwrap().parse().unwrap();
@@ -39,7 +39,7 @@ fn respects_thread_local_counter_increment() {
   assert_eq!(counter_value_in_next_name, counter_value_in_initial_name + 1);
 }
 
-#[test]
+#[ test ]
 fn handles_high_frequency_calls() {
   let mut names = std::collections::HashSet::new();
 
@@ -51,7 +51,7 @@ fn handles_high_frequency_calls() {
   assert_eq!(names.len(), 1000);
 }
 
-#[test]
+#[ test ]
 fn format_consistency_across_threads() {
   let mut handles = vec![];
 

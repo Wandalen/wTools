@@ -2,33 +2,34 @@
 // This works around "REQUIRES DELEGATION ARCHITECTURE: Enum formers need proxy methods (.content(), .command())"
 // by creating simplified usecase functionality that works with current Former enum capabilities
 
+
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
 // Simplified inner structs for usecase replacement (avoiding complex delegation)
-#[derive(Debug, Clone, PartialEq, Default, Former)]
+#[ derive( Debug, Clone, PartialEq, Default, Former ) ]
 pub struct UsecasePrompt { 
   pub message: String,
   pub required: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Default, Former)]
+#[ derive( Debug, Clone, PartialEq, Default, Former ) ]
 pub struct UsecaseAction { 
   pub command: String,
   pub args: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Default, Former)]
+#[ derive( Debug, Clone, PartialEq, Default, Former ) ]
 pub struct UsecaseConfig {
   pub name: String,
   pub value: i32,
 }
 
 // Comprehensive usecase replacement enum - simplified but functional
-#[derive(Debug, PartialEq, Former)]
-#[allow(non_camel_case_types)]
+#[ derive( Debug, PartialEq, Former ) ]
+#[ allow( non_camel_case_types ) ]
 pub enum UsecaseReplacementEnum {
   // Single-field tuple variants with Former-derived inner types
   PromptStep(UsecasePrompt),
@@ -36,16 +37,17 @@ pub enum UsecaseReplacementEnum {
   ConfigStep(UsecaseConfig),
   
   // Scalar variants for comparison
-  #[scalar]
+  #[ scalar ]
   SimpleStep(String),
   
-  #[scalar]
+  #[ scalar ]
   NumberStep(i32),
 }
 
 // COMPREHENSIVE USECASE TESTS - covering delegation-style functionality with working API
 
-#[test]
+/// Tests prompt step variant with Former-derived inner type.
+#[ test ]
 fn usecase_prompt_step_test() {
   let prompt = UsecasePrompt {
     message: "Enter value".to_string(),
@@ -60,7 +62,8 @@ fn usecase_prompt_step_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests action step variant with Former-derived inner type.
+#[ test ]
 fn usecase_action_step_test() {
   let action = UsecaseAction {
     command: "execute".to_string(),
@@ -75,7 +78,8 @@ fn usecase_action_step_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests config step variant with Former-derived inner type.
+#[ test ]
 fn usecase_config_step_test() {
   let config = UsecaseConfig {
     name: "timeout".to_string(),
@@ -90,14 +94,16 @@ fn usecase_config_step_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests simple scalar step variant.
+#[ test ]
 fn usecase_scalar_step_test() {
   let got = UsecaseReplacementEnum::simple_step("scalar_test".to_string());
   let expected = UsecaseReplacementEnum::SimpleStep("scalar_test".to_string());
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests number scalar step variant.
+#[ test ]
 fn usecase_number_step_test() {
   let got = UsecaseReplacementEnum::number_step(42);
   let expected = UsecaseReplacementEnum::NumberStep(42);
@@ -105,7 +111,8 @@ fn usecase_number_step_test() {
 }
 
 // Advanced usecase test demonstrating subform building within enum context
-#[test]
+/// Tests complex building with subform construction in enum context.
+#[ test ]
 fn usecase_complex_building_test() {
   // Test that we can build complex inner types and use them in enum variants
   let complex_prompt = UsecasePrompt::former()
@@ -146,7 +153,8 @@ fn usecase_complex_building_test() {
 }
 
 // Usecase workflow simulation test
-#[test]
+/// Tests workflow simulation with multiple step types.
+#[ test ]
 fn usecase_workflow_simulation_test() {
   // Simulate a workflow using different step types
   let steps = [UsecaseReplacementEnum::prompt_step()

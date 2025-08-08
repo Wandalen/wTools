@@ -1,11 +1,11 @@
 //! Smoke tests for the `derive_tools_meta` crate.
 
-#[test]
+#[ test ]
 fn local_smoke_test() {
   ::test_tools::smoke_test_for_local_run();
 }
 
-#[test]
+#[ test ]
 fn published_smoke_test() {
   ::test_tools::smoke_test_for_published_run();
 }

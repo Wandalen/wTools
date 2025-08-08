@@ -1,6 +1,6 @@
 use super::*;
 
-#[test]
+#[ test ]
 fn reexport() {
   let mut map: the_module::LinkedList<i32> = the_module::LinkedList::new();
   map.push_back(1);
@@ -8,8 +8,8 @@ fn reexport() {
   assert!(!map.contains(&2));
 }
 
-#[cfg(feature = "collection_constructors")]
-#[test]
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
 fn constructor() {
   // test.case( "empty" );
   let got: the_module::LinkedList<i32> = the_module::llist! {};
@@ -27,8 +27,8 @@ fn constructor() {
   let _got = the_module::exposed::llist!("b");
 }
 
-#[cfg(feature = "collection_into_constructors")]
-#[test]
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
 fn into_constructor() {
   // test.case( "empty" );
   let got: the_module::LinkedList<i32> = the_module::into_llist! {};
@@ -46,7 +46,7 @@ fn into_constructor() {
   let _got: Llist<&str> = the_module::exposed::into_llist!("b");
 }
 
-#[test]
+#[ test ]
 fn iters() {
   struct MyContainer {
     entries: the_module::LinkedList<i32>,

@@ -8,12 +8,12 @@
 //! ## Core Functionality
 //!
 //! ### Supported Field Attributes
-//! - `#[former(...)]` - General field configuration including defaults
-//! - `#[scalar(...)]` - Direct scalar value assignment
-//! - `#[subform_scalar(...)]` - Nested scalar subform construction
-//! - `#[subform_collection(...)]` - Collection subform management
-//! - `#[subform_entry(...)]` - HashMap/Map entry subform handling
-//! - `#[former_ignore]` - Exclude field from constructor arguments
+//! - `#[ former( ... ) ]` - General field configuration including defaults
+//! - `#[ scalar( ... ) ]` - Direct scalar value assignment
+//! - `#[ subform_scalar( ... ) ]` - Nested scalar subform construction
+//! - `#[ subform_collection( ... ) ]` - Collection subform management
+//! - `#[ subform_entry( ... ) ]` - HashMap/Map entry subform handling
+//! - `#[ former_ignore ]` - Exclude field from constructor arguments
 //!
 //! ## Critical Implementation Insights
 //!
@@ -123,7 +123,7 @@ use component_model_types::{Assign, OptionExt};
 /// ## 1. Collection Type Compatibility
 /// **Issue Resolved**: Collection attributes on non-collection types
 /// **Prevention**: Type introspection validates attribute-type compatibility
-/// **Example**: `#[subform_collection]` on `String` field → compile error with clear message
+/// **Example**: `#[ subform_collection ]` on `String` field → compile error with clear message
 ///
 /// ## 2. Generic Parameter Consistency
 /// **Issue Resolved**: Generic parameters lost during attribute processing
@@ -138,7 +138,7 @@ use component_model_types::{Assign, OptionExt};
 /// ## 4. Default Value Type Safety
 /// **Issue Resolved**: Default values with incompatible types
 /// **Prevention**: Type-checked default value parsing and validation
-/// **Example**: `#[former(default = "string")]` on `i32` field → compile error
+/// **Example**: `#[ former( default = "string" ) ]` on `i32` field → compile error
 ///
 /// # Usage in Code Generation
 /// This structure is used throughout the code generation pipeline to:
@@ -146,22 +146,22 @@ use component_model_types::{Assign, OptionExt};
 /// - Configure generic parameter propagation
 /// - Set up proper trait bound requirements
 /// - Handle collection-specific code generation patterns
-#[derive(Debug, Default, Clone)] // <<< Added Clone
+#[ derive( Debug, Default, Clone ) ] // <<< Added Clone
 pub struct FieldAttributes {
   /// Configuration attribute for a field.
-  pub config: Option<AttributeConfig>,
+  pub config: Option< AttributeConfig >,
 
   /// Scalar setter attribute for a field.
-  pub scalar: Option<AttributeScalarSetter>,
+  pub scalar: Option< AttributeScalarSetter >,
 
   /// Subform scalar setter attribute for a field.
-  pub subform_scalar: Option<AttributeSubformScalarSetter>,
+  pub subform_scalar: Option< AttributeSubformScalarSetter >,
 
   /// Subform collection setter attribute for a field.
-  pub subform_collection: Option<AttributeSubformCollectionSetter>,
+  pub subform_collection: Option< AttributeSubformCollectionSetter >,
 
   /// Subform entry setter attribute for a field.
-  pub subform_entry: Option<AttributeSubformEntrySetter>,
+  pub subform_entry: Option< AttributeSubformEntrySetter >,
 
   /// Excludes a field from standalone constructor arguments.
   pub former_ignore: AttributePropertyFormerIgnore,
@@ -181,9 +181,9 @@ impl FieldAttributes {
   ///
   /// ## Multi-Attribute Support
   /// The parser handles multiple attributes per field and resolves conflicts intelligently:
-  /// - **Configuration**: `#[former(default = value)]` for field configuration
-  /// - **Setter Types**: `#[scalar]`, `#[subform_scalar]`, `#[subform_collection]`, `#[subform_entry]`
-  /// - **Constructor Args**: `#[arg_for_constructor]` for standalone constructor parameters
+  /// - **Configuration**: `#[ former( default = value ) ]` for field configuration
+  /// - **Setter Types**: `#[ scalar ]`, `#[ subform_scalar ]`, `#[ subform_collection ]`, `#[ subform_entry ]`
+  /// - **Constructor Args**: `#[ arg_for_constructor ]` for standalone constructor parameters
   ///
   /// ## Validation and Compatibility Checking
   /// The parser performs extensive validation to prevent runtime errors:
@@ -203,7 +203,7 @@ impl FieldAttributes {
   /// # Pitfalls Prevented
   ///
   /// ## 1. Collection Attribute Misuse (Critical Issue Resolved)
-  /// **Problem**: Collection attributes (`#[subform_collection]`) applied to non-collection fields
+  /// **Problem**: Collection attributes (`#[ subform_collection ]`) applied to non-collection fields
   /// **Solution**: Type introspection validates attribute-field type compatibility
   /// **Prevention**: Early validation prevents compilation errors in generated code
   ///
@@ -227,7 +227,7 @@ impl FieldAttributes {
   /// - **Early Termination**: Invalid attributes cause immediate failure with context
   /// - **Memory Efficient**: Uses references and avoids unnecessary cloning
   /// - **Cached Analysis**: Type introspection results cached to avoid duplicate work
-  pub fn from_attrs<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> Result<Self> {
+  pub fn from_attrs<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> Result< Self > {
     let mut result = Self::default();
     // Known attributes for error reporting
     let known_attributes = ct::concatcp!(
@@ -285,7 +285,7 @@ impl<IntoT> Assign<AttributeConfig, IntoT> for FieldAttributes
 where
   IntoT: Into<AttributeConfig>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     let component: AttributeConfig = component.into();
     self.config.option_assign(component);
@@ -296,7 +296,7 @@ impl<IntoT> Assign<AttributeScalarSetter, IntoT> for FieldAttributes
 where
   IntoT: Into<AttributeScalarSetter>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     let component = component.into();
     self.scalar.option_assign(component);
@@ -307,7 +307,7 @@ impl<IntoT> Assign<AttributeSubformScalarSetter, IntoT> for FieldAttributes
 where
   IntoT: Into<AttributeSubformScalarSetter>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     let component = component.into();
     self.subform_scalar.option_assign(component);
@@ -318,7 +318,7 @@ impl<IntoT> Assign<AttributeSubformCollectionSetter, IntoT> for FieldAttributes
 where
   IntoT: Into<AttributeSubformCollectionSetter>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     let component = component.into();
     self.subform_collection.option_assign(component);
@@ -329,7 +329,7 @@ impl<IntoT> Assign<AttributeSubformEntrySetter, IntoT> for FieldAttributes
 where
   IntoT: Into<AttributeSubformEntrySetter>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     let component = component.into();
     self.subform_entry.option_assign(component);
@@ -340,7 +340,7 @@ impl<IntoT> Assign<AttributePropertyFormerIgnore, IntoT> for FieldAttributes
 where
   IntoT: Into<AttributePropertyFormerIgnore>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     let component = component.into();
     self.former_ignore.assign(component);
@@ -351,7 +351,7 @@ impl<IntoT> Assign<AttributePropertyArgForConstructor, IntoT> for FieldAttribute
 where
   IntoT: Into<AttributePropertyArgForConstructor>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     let component = component.into();
     self.arg_for_constructor.assign(component);
@@ -367,7 +367,7 @@ where
 ///
 /// `#[ default( 13 ) ]`
 ///
-#[derive(Debug, Default, Clone)] // <<< Added Clone
+#[ derive( Debug, Default, Clone ) ] // <<< Added Clone
 pub struct AttributeConfig {
   /// Default value to use for a field.
   pub default: AttributePropertyDefault,
@@ -376,8 +376,8 @@ pub struct AttributeConfig {
 impl AttributeComponent for AttributeConfig {
   const KEYWORD: &'static str = "former";
 
-  #[allow(clippy::match_wildcard_for_single_variants)]
-  fn from_meta(attr: &syn::Attribute) -> Result<Self> {
+  #[ allow( clippy::match_wildcard_for_single_variants ) ]
+  fn from_meta(attr: &syn::Attribute) -> Result< Self > {
     match attr.meta {
       syn::Meta::List(ref meta_list) => syn::parse2::<AttributeConfig>(meta_list.tokens.clone()),
       syn::Meta::Path(ref _path) => syn::parse2::<AttributeConfig>(TokenStream::default()),
@@ -394,7 +394,7 @@ impl<IntoT> Assign<AttributeConfig, IntoT> for AttributeConfig
 where
   IntoT: Into<AttributeConfig>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     let component = component.into();
     self.default.assign(component.default);
@@ -405,14 +405,14 @@ impl<IntoT> Assign<AttributePropertyDefault, IntoT> for AttributeConfig
 where
   IntoT: Into<AttributePropertyDefault>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.default.assign(component.into());
   }
 }
 
 impl syn::parse::Parse for AttributeConfig {
-  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
+  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result< Self > {
     let mut result = Self::default();
 
     let error = |ident: &syn::Ident| -> syn::Error {
@@ -457,7 +457,7 @@ impl syn::parse::Parse for AttributeConfig {
 }
 
 /// Attribute for scalar setters.
-#[derive(Debug, Default, Clone)] // <<< Added Clone
+#[ derive( Debug, Default, Clone ) ] // <<< Added Clone
 pub struct AttributeScalarSetter {
   /// Optional identifier for naming the setter.
   pub name: AttributePropertyName,
@@ -470,7 +470,7 @@ pub struct AttributeScalarSetter {
 
 impl AttributeScalarSetter {
   /// Should setter be generated or not?
-  #[allow(dead_code)]
+  #[ allow( dead_code ) ]
   pub fn setter(&self) -> bool {
     self.setter.unwrap_or(true)
   }
@@ -479,8 +479,8 @@ impl AttributeScalarSetter {
 impl AttributeComponent for AttributeScalarSetter {
   const KEYWORD: &'static str = "scalar";
 
-  #[allow(clippy::match_wildcard_for_single_variants)]
-  fn from_meta(attr: &syn::Attribute) -> Result<Self> {
+  #[ allow( clippy::match_wildcard_for_single_variants ) ]
+  fn from_meta(attr: &syn::Attribute) -> Result< Self > {
     match attr.meta
     {
       syn::Meta::List( ref meta_list ) =>
@@ -500,7 +500,7 @@ impl<IntoT> Assign<AttributeScalarSetter, IntoT> for AttributeScalarSetter
 where
   IntoT: Into<AttributeScalarSetter>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     let component = component.into();
     self.name.assign(component.name);
@@ -513,7 +513,7 @@ impl<IntoT> Assign<AttributePropertyName, IntoT> for AttributeScalarSetter
 where
   IntoT: Into<AttributePropertyName>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.name = component.into();
   }
@@ -523,7 +523,7 @@ impl<IntoT> Assign<AttributePropertySetter, IntoT> for AttributeScalarSetter
 where
   IntoT: Into<AttributePropertySetter>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.setter = component.into();
   }
@@ -533,14 +533,14 @@ impl<IntoT> Assign<AttributePropertyDebug, IntoT> for AttributeScalarSetter
 where
   IntoT: Into<AttributePropertyDebug>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.debug = component.into();
   }
 }
 
 impl syn::parse::Parse for AttributeScalarSetter {
-  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
+  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result< Self > {
     let mut result = Self::default();
 
     let error = |ident: &syn::Ident| -> syn::Error {
@@ -590,7 +590,7 @@ impl syn::parse::Parse for AttributeScalarSetter {
 }
 
 /// Attribute for subform scalar setters.
-#[derive(Debug, Default, Clone)] // <<< Added Clone
+#[ derive( Debug, Default, Clone ) ] // <<< Added Clone
 pub struct AttributeSubformScalarSetter {
   /// Optional identifier for naming the setter.
   pub name: AttributePropertyName,
@@ -611,8 +611,8 @@ impl AttributeSubformScalarSetter {
 impl AttributeComponent for AttributeSubformScalarSetter {
   const KEYWORD: &'static str = "subform_scalar";
 
-  #[allow(clippy::match_wildcard_for_single_variants)]
-  fn from_meta(attr: &syn::Attribute) -> Result<Self> {
+  #[ allow( clippy::match_wildcard_for_single_variants ) ]
+  fn from_meta(attr: &syn::Attribute) -> Result< Self > {
     match attr.meta
     {
       syn::Meta::List( ref meta_list ) =>
@@ -632,7 +632,7 @@ impl<IntoT> Assign<AttributeSubformScalarSetter, IntoT> for AttributeSubformScal
 where
   IntoT: Into<AttributeSubformScalarSetter>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     let component = component.into();
     self.name.assign(component.name);
@@ -645,7 +645,7 @@ impl<IntoT> Assign<AttributePropertyName, IntoT> for AttributeSubformScalarSette
 where
   IntoT: Into<AttributePropertyName>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.name = component.into();
   }
@@ -655,7 +655,7 @@ impl<IntoT> Assign<AttributePropertySetter, IntoT> for AttributeSubformScalarSet
 where
   IntoT: Into<AttributePropertySetter>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.setter = component.into();
   }
@@ -665,14 +665,14 @@ impl<IntoT> Assign<AttributePropertyDebug, IntoT> for AttributeSubformScalarSett
 where
   IntoT: Into<AttributePropertyDebug>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.debug = component.into();
   }
 }
 
 impl syn::parse::Parse for AttributeSubformScalarSetter {
-  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
+  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result< Self > {
     let mut result = Self::default();
 
     let error = |ident: &syn::Ident| -> syn::Error {
@@ -722,7 +722,7 @@ impl syn::parse::Parse for AttributeSubformScalarSetter {
 }
 
 /// Attribute for subform collection setters.
-#[derive(Debug, Default, Clone)] // <<< Added Clone
+#[ derive( Debug, Default, Clone ) ] // <<< Added Clone
 pub struct AttributeSubformCollectionSetter {
   /// Optional identifier for naming the setter.
   pub name: AttributePropertyName,
@@ -745,8 +745,8 @@ impl AttributeSubformCollectionSetter {
 impl AttributeComponent for AttributeSubformCollectionSetter {
   const KEYWORD: &'static str = "subform_collection";
 
-  #[allow(clippy::match_wildcard_for_single_variants)]
-  fn from_meta(attr: &syn::Attribute) -> Result<Self> {
+  #[ allow( clippy::match_wildcard_for_single_variants ) ]
+  fn from_meta(attr: &syn::Attribute) -> Result< Self > {
     match attr.meta
     {
       syn::Meta::List( ref meta_list ) =>
@@ -766,7 +766,7 @@ impl<IntoT> Assign<AttributeSubformCollectionSetter, IntoT> for AttributeSubform
 where
   IntoT: Into<AttributeSubformCollectionSetter>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     let component = component.into();
     self.name.assign(component.name);
@@ -780,7 +780,7 @@ impl<IntoT> Assign<AttributePropertyName, IntoT> for AttributeSubformCollectionS
 where
   IntoT: Into<AttributePropertyName>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.name = component.into();
   }
@@ -790,7 +790,7 @@ impl<IntoT> Assign<AttributePropertySetter, IntoT> for AttributeSubformCollectio
 where
   IntoT: Into<AttributePropertySetter>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.setter = component.into();
   }
@@ -800,7 +800,7 @@ impl<IntoT> Assign<AttributePropertyDefinition, IntoT> for AttributeSubformColle
 where
   IntoT: Into<AttributePropertyDefinition>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.definition = component.into();
   }
@@ -810,14 +810,14 @@ impl<IntoT> Assign<AttributePropertyDebug, IntoT> for AttributeSubformCollection
 where
   IntoT: Into<AttributePropertyDebug>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.debug = component.into();
   }
 }
 
 impl syn::parse::Parse for AttributeSubformCollectionSetter {
-  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
+  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result< Self > {
     let mut result = Self::default();
 
     let error = |ident: &syn::Ident| -> syn::Error {
@@ -871,7 +871,7 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter {
 }
 
 /// Attribute for subform entry setters.
-#[derive(Debug, Default, Clone)] // <<< Added Clone
+#[ derive( Debug, Default, Clone ) ] // <<< Added Clone
 pub struct AttributeSubformEntrySetter {
   /// An optional identifier that names the setter. It is parsed from inputs
   /// like `name = my_field`.
@@ -894,8 +894,8 @@ impl AttributeSubformEntrySetter {
 impl AttributeComponent for AttributeSubformEntrySetter {
   const KEYWORD: &'static str = "subform_entry";
 
-  #[allow(clippy::match_wildcard_for_single_variants)]
-  fn from_meta(attr: &syn::Attribute) -> Result<Self> {
+  #[ allow( clippy::match_wildcard_for_single_variants ) ]
+  fn from_meta(attr: &syn::Attribute) -> Result< Self > {
     match attr.meta {
       syn::Meta::List(ref meta_list) => syn::parse2::<AttributeSubformEntrySetter>(meta_list.tokens.clone()),
       syn::Meta::Path(ref _path) => syn::parse2::<AttributeSubformEntrySetter>(TokenStream::default()),
@@ -912,7 +912,7 @@ impl<IntoT> Assign<AttributeSubformEntrySetter, IntoT> for AttributeSubformEntry
 where
   IntoT: Into<AttributeSubformEntrySetter>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     let component = component.into();
     self.name.assign(component.name);
@@ -925,7 +925,7 @@ impl<IntoT> Assign<AttributePropertyName, IntoT> for AttributeSubformEntrySetter
 where
   IntoT: Into<AttributePropertyName>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.name = component.into();
   }
@@ -935,7 +935,7 @@ impl<IntoT> Assign<AttributePropertySetter, IntoT> for AttributeSubformEntrySett
 where
   IntoT: Into<AttributePropertySetter>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.setter = component.into();
   }
@@ -945,14 +945,14 @@ impl<IntoT> Assign<AttributePropertyDebug, IntoT> for AttributeSubformEntrySette
 where
   IntoT: Into<AttributePropertyDebug>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.debug = component.into();
   }
 }
 
 impl syn::parse::Parse for AttributeSubformEntrySetter {
-  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
+  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result< Self > {
     let mut result = Self::default();
 
     let error = |ident: &syn::Ident| -> syn::Error {
@@ -1007,7 +1007,7 @@ impl syn::parse::Parse for AttributeSubformEntrySetter {
 
 /// Marker type for attribute property to specify whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-#[derive(Debug, Default, Clone, Copy)] // <<< Added Clone
+#[ derive( Debug, Default, Clone, Copy ) ] // <<< Added Clone
 pub struct DebugMarker;
 
 impl AttributePropertyComponent for DebugMarker {
@@ -1022,7 +1022,7 @@ pub type AttributePropertyDebug = AttributePropertyOptionalSingletone<DebugMarke
 
 /// Disable generation of setter.
 /// Attributes still might generate some helper methods to reuse by custom setter.
-#[derive(Debug, Default, Clone, Copy)] // <<< Added Clone
+#[ derive( Debug, Default, Clone, Copy ) ] // <<< Added Clone
 pub struct SetterMarker;
 
 impl AttributePropertyComponent for SetterMarker {
@@ -1037,7 +1037,7 @@ pub type AttributePropertySetter = AttributePropertyOptionalBoolean<SetterMarker
 
 /// Marker type for attribute property of optional identifier that names the setter. It is parsed from inputs
 /// like `name = my_field`.
-#[derive(Debug, Default, Clone, Copy)] // <<< Added Clone
+#[ derive( Debug, Default, Clone, Copy ) ] // <<< Added Clone
 pub struct NameMarker;
 
 impl AttributePropertyComponent for NameMarker {
@@ -1051,7 +1051,7 @@ pub type AttributePropertyName = AttributePropertyOptionalSyn<syn::Ident, NameMa
 // =
 
 /// Marker type for default value to use for a field.
-#[derive(Debug, Default, Clone, Copy)] // <<< Added Clone
+#[ derive( Debug, Default, Clone, Copy ) ] // <<< Added Clone
 pub struct DefaultMarker;
 
 impl AttributePropertyComponent for DefaultMarker {
@@ -1066,7 +1066,7 @@ pub type AttributePropertyDefault = AttributePropertyOptionalSyn<syn::Expr, Defa
 // =
 
 /// Marker type for definition of the collection former to use, e.g., `former::VectorFormer`.
-#[derive(Debug, Default, Clone, Copy)] // <<< Added Clone
+#[ derive( Debug, Default, Clone, Copy ) ] // <<< Added Clone
 pub struct DefinitionMarker;
 
 impl AttributePropertyComponent for DefinitionMarker {
@@ -1081,7 +1081,7 @@ pub type AttributePropertyDefinition = AttributePropertyOptionalSyn<syn::Type, D
 
 /// Marker type for attribute property excluding a field from constructor arguments.
 /// Defaults to `false`.
-#[derive(Debug, Default, Clone, Copy)] // <<< Added Clone
+#[ derive( Debug, Default, Clone, Copy ) ] // <<< Added Clone
 pub struct FormerIgnoreMarker;
 
 impl AttributePropertyComponent for FormerIgnoreMarker {
@@ -1089,14 +1089,14 @@ impl AttributePropertyComponent for FormerIgnoreMarker {
 }
 
 /// Indicates whether a field should be excluded from standalone constructor arguments.
-/// Defaults to `false`. Parsed as a singletone attribute (`#[former_ignore]`).
+/// Defaults to `false`. Parsed as a singletone attribute (`#[ former_ignore ]`).
 pub type AttributePropertyFormerIgnore = AttributePropertyOptionalSingletone<FormerIgnoreMarker>;
 
 // =
 
 /// Marker type for attribute property including a field as a constructor argument.
 /// Defaults to `false`.
-#[derive(Debug, Default, Clone, Copy)]
+#[ derive( Debug, Default, Clone, Copy ) ]
 pub struct ArgForConstructorMarker;
 
 impl AttributePropertyComponent for ArgForConstructorMarker {
@@ -1104,5 +1104,5 @@ impl AttributePropertyComponent for ArgForConstructorMarker {
 }
 
 /// Indicates whether a field should be included as an argument in standalone constructor functions.
-/// Defaults to `false`. Parsed as a singletone attribute (`#[arg_for_constructor]`).
+/// Defaults to `false`. Parsed as a singletone attribute (`#[ arg_for_constructor ]`).
 pub type AttributePropertyArgForConstructor = AttributePropertyOptionalSingletone<ArgForConstructorMarker>;

@@ -6,9 +6,9 @@
 // mod inc;
 
 #![allow(unexpected_cfgs)]
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use test_tools::exposed::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
 #[cfg(all(feature = "string_indentation", not(feature = "no_std")))]

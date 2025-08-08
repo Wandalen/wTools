@@ -1,10 +1,10 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 #[cfg(not(feature = "no_std"))]
 #[::test_tools::nightly]
-#[test]
+#[ test ]
 fn trybuild_test() {
   // let t = trybuild::TestCases::new();
   let t = ::test_tools::compiletime::TestCases::new();

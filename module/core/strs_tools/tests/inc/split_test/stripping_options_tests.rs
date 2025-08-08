@@ -4,7 +4,7 @@ use strs_tools::string::split::*;
 // Test Matrix ID: Strip_S_T_PE_T_DefaultDelim
 // Tests stripping(true) with default delimiter behavior (space).
 // With PE=true, PD=T (new default), S=true: "a b c" -> "a", " ", "b", " ", "c"
-#[test]
+#[ test ]
 fn test_stripping_true_default_delimiter() {
   let src = "a b c";
   let iter = split()
@@ -22,7 +22,7 @@ fn test_stripping_true_default_delimiter() {
 
 // Test Matrix ID: Strip_S_F_PD_T_DefaultDelim
 // Tests stripping(false) with default delimiter behavior (space).
-#[test]
+#[ test ]
 fn test_stripping_false_default_delimiter() {
   let src = "a b c";
   let iter = split()
@@ -39,7 +39,7 @@ fn test_stripping_false_default_delimiter() {
 
 // Test Matrix ID: Strip_S_T_PD_T_CustomDelimB
 // Tests stripping(true) with a custom delimiter 'b'.
-#[test]
+#[ test ]
 fn test_stripping_true_custom_delimiter_b() {
   let src = "a b c";
   let iter = split()
@@ -53,7 +53,7 @@ fn test_stripping_true_custom_delimiter_b() {
 
 // Test Matrix ID: Strip_S_T_PD_F_CustomDelimB
 // Tests stripping(true) with a custom delimiter 'b' and preserving_delimiters(false).
-#[test]
+#[ test ]
 fn test_stripping_true_custom_delimiter_b_no_preserve_delimiters() {
   let src = "a b c";
   let iter = split()
@@ -68,7 +68,7 @@ fn test_stripping_true_custom_delimiter_b_no_preserve_delimiters() {
 // Test Matrix ID: T3.2
 // Description: src="a b c", del=" ", PE=F, PD=F, S=F, Q=F
 // Note: This test has stripping(false) but is relevant to basic non-stripping behavior.
-#[test]
+#[ test ]
 fn test_m_t3_2_no_preserve_no_strip_no_quote() {
   let src = "a b c";
   let iter = split()
@@ -93,7 +93,7 @@ fn test_m_t3_2_no_preserve_no_strip_no_quote() {
 // Test Matrix ID: T3.4
 // Description: src=" a b ", del=" ", PE=F, PD=F, S=F, Q=F
 // Note: This test has stripping(false).
-#[test]
+#[ test ]
 fn test_m_t3_4_leading_trailing_space_no_preserve_no_strip() {
   let src = " a b ";
   let iter = split()

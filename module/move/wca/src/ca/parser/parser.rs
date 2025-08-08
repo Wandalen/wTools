@@ -25,7 +25,7 @@ mod private
   pub struct Parser;
 
   // fix clippy error too large return type
-  type ParsedArgs = ( Vec< String >, HashMap< String, String >, usize );
+  type ParsedArgs = ( Vec<  String  >, HashMap<  String, String  >, usize );
 
   impl Parser
   {
@@ -47,7 +47,7 @@ mod private
       As : IntoIterator< Item = A >,
       A : Into< String >,
     {
-      let args : Vec< _ > = args.into_iter().map( Into::into ).collect();
+      let args : Vec<  _  > = args.into_iter().map( Into::into ).collect();
       let mut commands = vec![];
       let mut i = 0;
       while i < args.len()
@@ -75,7 +75,7 @@ mod private
 
     // returns ParsedCommand and relative position of the last parsed item
     // aaa : use typed error
-    fn parse_command( args : &[ String ] ) -> Result< ( ParsedCommand, usize ), ParserError >
+    fn parse_command( args : &[ String ] ) -> Result<  ( ParsedCommand, usize ), ParserError  >
     {
       if args.is_empty()
       {
@@ -116,7 +116,7 @@ mod private
     // returns ( subjects, properties, relative_end_pos )
     // aaa : use typed error
     // aaa : done
-    fn parse_command_args( args : &[ String ] ) -> Result< ParsedArgs, ParserError >
+    fn parse_command_args( args : &[ String ] ) -> Result<  ParsedArgs, ParserError  >
     {
       let mut i = 0;
 

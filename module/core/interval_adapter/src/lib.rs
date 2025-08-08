@@ -8,16 +8,16 @@
 #![ cfg_attr( not( doc ), doc = "Interval and range utilities" ) ]
 
 /// Define a private namespace for all its items.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 mod private {
 
-  #[doc(inline)]
-  #[allow(unused_imports)]
-  #[allow(clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ allow( clippy::pub_use ) ]
   pub use core::ops::Bound;
-  #[doc(inline)]
-  #[allow(unused_imports)]
-  #[allow(clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ allow( clippy::pub_use ) ]
   pub use core::ops::RangeBounds;
 
   use core::cmp::{PartialEq, Eq};
@@ -25,7 +25,7 @@ mod private {
 
   // xxx : seal it
 
-  #[allow(clippy::wrong_self_convention)]
+  #[ allow( clippy::wrong_self_convention ) ]
   /// Extend bound adding few methods.
   pub trait BoundExt<T>
   where
@@ -43,8 +43,8 @@ mod private {
     T: EndPointTrait<T>,
     isize: Into<T>,
   {
-    #[inline(always)]
-    #[allow(clippy::arithmetic_side_effects, clippy::implicit_return, clippy::pattern_type_mismatch)]
+    #[ inline( always ) ]
+    #[ allow( clippy::arithmetic_side_effects, clippy::implicit_return, clippy::pattern_type_mismatch ) ]
     fn into_left_closed(&self) -> T {
       match self {
         Bound::Included(value) => *value,
@@ -53,8 +53,8 @@ mod private {
         // Bound::Unbounded => isize::MIN.into(),
       }
     }
-    #[inline(always)]
-    #[allow(clippy::arithmetic_side_effects, clippy::implicit_return, clippy::pattern_type_mismatch)]
+    #[ inline( always ) ]
+    #[ allow( clippy::arithmetic_side_effects, clippy::implicit_return, clippy::pattern_type_mismatch ) ]
     fn into_right_closed(&self) -> T {
       match self {
         Bound::Included(value) => *value,
@@ -95,41 +95,41 @@ mod private {
     fn right(&self) -> Bound<T>;
     /// Interval in closed format as pair of numbers.
     /// To convert open endpoint to closed add or subtract one.
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn bounds(&self) -> (Bound<T>, Bound<T>) {
       (self.left(), self.right())
     }
 
     /// The left endpoint of the interval, converting interval into closed one.
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn closed_left(&self) -> T {
       self.left().into_left_closed()
     }
     /// The right endpoint of the interval, converting interval into closed one.
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn closed_right(&self) -> T {
       self.right().into_right_closed()
     }
     /// Length of the interval, converting interval into closed one.
-    #[allow(clippy::implicit_return, clippy::arithmetic_side_effects)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return, clippy::arithmetic_side_effects ) ]
+    #[ inline( always ) ]
     fn closed_len(&self) -> T {
       let one: T = 1.into();
       self.closed_right() - self.closed_left() + one
     }
     /// Interval in closed format as pair of numbers, converting interval into closed one.
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn closed(&self) -> (T, T) {
       (self.closed_left(), self.closed_right())
     }
 
     /// Convert to interval in canonical format.
-    #[allow(unknown_lints, clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( unknown_lints, clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn canonical(&self) -> Interval<T> {
       Interval::new(self.left(), self.right())
     }
@@ -163,8 +163,8 @@ mod private {
   ///
   /// Both [`core::ops::Range`], [`core::ops::RangeInclusive`] are convertable to [`crate::Interval`]
   ///
-  #[allow(clippy::used_underscore_binding)]
-  #[derive(PartialEq, Eq, Debug, Clone, Copy)]
+  #[ allow( clippy::used_underscore_binding ) ]
+  #[ derive( PartialEq, Eq, Debug, Clone, Copy ) ]
   pub struct Interval<T = isize>
   where
     T: EndPointTrait<T>,
@@ -182,8 +182,8 @@ mod private {
     isize: Into<T>,
   {
     /// Constructor of an interval. Expects closed interval in arguments.
-    #[allow(unknown_lints, clippy::implicit_return)]
-    #[inline]
+    #[ allow( unknown_lints, clippy::implicit_return ) ]
+    #[ inline ]
     pub fn new(left: Bound<T>, right: Bound<T>) -> Self {
       Self {
         _left: left,
@@ -191,8 +191,8 @@ mod private {
       }
     }
     /// Convert to interval in canonical format.
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     pub fn iter<It>(&self) -> impl Iterator<Item = T> {
       self.into_iter()
     }
@@ -209,8 +209,8 @@ mod private {
   {
     type Item = T;
     type IntoIter = IntervalIterator<T>;
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn into_iter(self) -> Self::IntoIter {
       IntervalIterator::new(self)
     }
@@ -223,15 +223,15 @@ mod private {
   {
     type Item = T;
     type IntoIter = IntervalIterator<T>;
-    #[allow(unknown_lints, clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( unknown_lints, clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn into_iter(self) -> Self::IntoIter {
       IntervalIterator::new(*self)
     }
   }
 
   /// qqq: Documentation
-  #[derive(Debug)]
+  #[ derive( Debug ) ]
   pub struct IntervalIterator<T>
   where
     T: EndPointTrait<T>,
@@ -249,7 +249,7 @@ mod private {
     isize: Into<T>,
   {
     /// Constructor.
-    #[allow(clippy::used_underscore_binding, clippy::implicit_return)]
+    #[ allow( clippy::used_underscore_binding, clippy::implicit_return ) ]
     pub fn new(ins: Interval<T>) -> Self {
       let current = ins._left.into_left_closed();
       let right = ins._right.into_right_closed();
@@ -257,16 +257,16 @@ mod private {
     }
   }
 
-  #[allow(clippy::missing_trait_methods)]
+  #[ allow( clippy::missing_trait_methods ) ]
   impl<T> Iterator for IntervalIterator<T>
   where
     T: EndPointTrait<T>,
     isize: Into<T>,
   {
     type Item = T;
-    #[allow(clippy::implicit_return, clippy::arithmetic_side_effects)]
-    #[inline(always)]
-    fn next(&mut self) -> Option<Self::Item> {
+    #[ allow( clippy::implicit_return, clippy::arithmetic_side_effects ) ]
+    #[ inline( always ) ]
+    fn next(&mut self) -> Option< Self::Item > {
       if self.current <= self.right {
         let result = Some(self.current);
         self.current = self.current + 1.into();
@@ -300,202 +300,202 @@ mod private {
   //   }
   // }
 
-  #[allow(clippy::used_underscore_binding, clippy::missing_trait_methods)]
+  #[ allow( clippy::used_underscore_binding, clippy::missing_trait_methods ) ]
   impl<T> NonIterableInterval<T> for Interval<T>
   where
     T: EndPointTrait<T>,
     isize: Into<T>,
   {
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn left(&self) -> Bound<T> {
       self._left
     }
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn right(&self) -> Bound<T> {
       self._right
     }
   }
 
-  #[allow(clippy::missing_trait_methods)]
+  #[ allow( clippy::missing_trait_methods ) ]
   impl<T> NonIterableInterval<T> for core::ops::Range<T>
   where
     T: EndPointTrait<T>,
     isize: Into<T>,
   {
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn left(&self) -> Bound<T> {
       Bound::Included(self.start)
     }
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn right(&self) -> Bound<T> {
       Bound::Excluded(self.end)
     }
   }
 
-  #[allow(clippy::missing_trait_methods)]
+  #[ allow( clippy::missing_trait_methods ) ]
   impl<T> NonIterableInterval<T> for core::ops::RangeInclusive<T>
   where
     T: EndPointTrait<T>,
     isize: Into<T>,
   {
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn left(&self) -> Bound<T> {
       Bound::Included(*self.start())
     }
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn right(&self) -> Bound<T> {
       Bound::Included(*self.end())
     }
   }
 
-  #[allow(clippy::missing_trait_methods)]
+  #[ allow( clippy::missing_trait_methods ) ]
   impl<T> NonIterableInterval<T> for core::ops::RangeTo<T>
   where
     T: EndPointTrait<T>,
     isize: Into<T>,
   {
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn left(&self) -> Bound<T> {
       Bound::Unbounded
     }
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn right(&self) -> Bound<T> {
       Bound::Excluded(self.end)
     }
   }
 
-  #[allow(clippy::missing_trait_methods)]
+  #[ allow( clippy::missing_trait_methods ) ]
   impl<T> NonIterableInterval<T> for core::ops::RangeToInclusive<T>
   where
     T: EndPointTrait<T>,
     isize: Into<T>,
   {
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn left(&self) -> Bound<T> {
       Bound::Unbounded
     }
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn right(&self) -> Bound<T> {
       Bound::Included(self.end)
     }
   }
 
-  #[allow(clippy::missing_trait_methods)]
+  #[ allow( clippy::missing_trait_methods ) ]
   impl<T> NonIterableInterval<T> for core::ops::RangeFrom<T>
   where
     T: EndPointTrait<T>,
     isize: Into<T>,
   {
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn left(&self) -> Bound<T> {
       Bound::Included(self.start)
     }
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn right(&self) -> Bound<T> {
       Bound::Unbounded
     }
   }
 
-  #[allow(clippy::missing_trait_methods)]
+  #[ allow( clippy::missing_trait_methods ) ]
   impl<T> NonIterableInterval<T> for core::ops::RangeFull
   where
     T: EndPointTrait<T>,
     isize: Into<T>,
   {
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn left(&self) -> Bound<T> {
       Bound::Unbounded
     }
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn right(&self) -> Bound<T> {
       Bound::Unbounded
     }
   }
 
-  #[allow(clippy::missing_trait_methods)]
+  #[ allow( clippy::missing_trait_methods ) ]
   impl<T> NonIterableInterval<T> for (T, T)
   where
     T: EndPointTrait<T>,
     isize: Into<T>,
   {
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn left(&self) -> Bound<T> {
       Bound::Included(self.0)
     }
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn right(&self) -> Bound<T> {
       Bound::Included(self.1)
     }
   }
 
-  #[allow(clippy::missing_trait_methods)]
+  #[ allow( clippy::missing_trait_methods ) ]
   impl<T> NonIterableInterval<T> for (Bound<T>, Bound<T>)
   where
     T: EndPointTrait<T>,
     isize: Into<T>,
   {
-    #[allow(unknown_lints)]
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( unknown_lints ) ]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn left(&self) -> Bound<T> {
       self.0
     }
-    #[allow(unknown_lints)]
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( unknown_lints ) ]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn right(&self) -> Bound<T> {
       self.1
     }
   }
 
-  #[allow(clippy::missing_trait_methods)]
+  #[ allow( clippy::missing_trait_methods ) ]
   impl<T> NonIterableInterval<T> for [T; 2]
   where
     T: EndPointTrait<T>,
     isize: Into<T>,
   {
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn left(&self) -> Bound<T> {
       Bound::Included(self[0])
     }
-    #[allow(unknown_lints)]
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( unknown_lints ) ]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn right(&self) -> Bound<T> {
       Bound::Included(self[1])
     }
   }
 
-  #[allow(clippy::missing_trait_methods)]
+  #[ allow( clippy::missing_trait_methods ) ]
   impl<T> NonIterableInterval<T> for [Bound<T>; 2]
   where
     T: EndPointTrait<T>,
     isize: Into<T>,
   {
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn left(&self) -> Bound<T> {
       self[0]
     }
-    #[allow(clippy::implicit_return)]
-    #[inline(always)]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline( always ) ]
     fn right(&self) -> Bound<T> {
       self[1]
     }
@@ -568,52 +568,52 @@ mod private {
     isize: Into<T>,
     Interval<T>: From<Self>,
   {
-    #[allow(unknown_lints)]
-    #[allow(clippy::implicit_return)]
-    #[inline]
+    #[ allow( unknown_lints ) ]
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline ]
     fn into_interval(self) -> Interval<T> {
       From::from(self)
     }
   }
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
-#[cfg(feature = "enabled")]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
 // #[ allow( unused_imports ) ]
-#[allow(clippy::pub_use)]
+#[ allow( clippy::pub_use ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod own {
   use super::orphan;
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
-  #[doc(inline)]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
+  #[ doc( inline ) ]
   pub use orphan::*;
 }
 
 /// Parented namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan {
   use super::exposed;
-  #[doc(inline)]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed {
   use super::{prelude, private};
-  #[doc(inline)]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use prelude::*;
-  #[doc(inline)]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use private::{
     Bound,
     BoundExt,
@@ -632,11 +632,11 @@ pub mod exposed {
 // pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::private;
-  #[doc(inline)]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use private::{IterableInterval, NonIterableInterval, IntoInterval};
 }

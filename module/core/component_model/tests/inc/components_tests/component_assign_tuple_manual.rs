@@ -1,8 +1,8 @@
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use component_model::Assign;
 
-#[derive(Default, PartialEq, Debug)]
+#[ derive( Default, PartialEq, Debug ) ]
 struct TupleStruct(i32, String);
 
 // Manual implementation for the first field (i32)

@@ -1,4 +1,4 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
 //
@@ -71,7 +71,7 @@ impl Trait1<i32, char> for &str {
   }
 }
 
-#[test]
+#[ test ]
 fn basic() {
   //
 

@@ -1,6 +1,6 @@
 //! Purpose: Provides a hand-written implementation of the `Former` pattern's standalone former builder
 //! for a multi-field tuple variant (`Variant(u32, String)`) within an enum that has
-//! `#[standalone_constructors]` and no fields with `#[arg_for_constructor]`. This file focuses on
+//! `#[ standalone_constructors ]` and no fields with `#[ arg_for_constructor ]`. This file focuses on
 //! demonstrating the manual implementation corresponding to the derived behavior.
 //!
 //! Coverage:
@@ -11,7 +11,7 @@
 //! Test Relevance/Acceptance Criteria:
 //! - Defines the `TestEnum` enum with the `Variant(u32, String)` variant.
 //! - Provides a hand-written `variant` function that returns a former builder type (`TestEnumVariantFormer`).
-//! - Implements the former builder type with setters (`._0()`, `._1()`) and a `form()` method that constructs and returns `TestEnum::Variant(u32, String)`. This mimics the behavior expected when `#[standalone_constructors]` is on the enum and no fields have `#[arg_for_constructor]`.
+//! - Implements the former builder type with setters (`._0()`, `._1()`) and a `form()` method that constructs and returns `TestEnum::Variant(u32, String)`. This mimics the behavior expected when `#[ standalone_constructors ]` is on the enum and no fields have `#[ arg_for_constructor ]`.
 //! - Includes shared test logic from `tuple_multi_standalone_only_test.rs`.
 //! - The included test calls the manually implemented standalone constructor `variant()`, uses the returned former builders' setters, and calls `.form()`.
 //! - Asserts that the resulting enum instance matches a manually constructed `TestEnum::Variant(value1, value2)`. This verifies the manual implementation of the standalone former builder.
@@ -38,7 +38,7 @@ pub enum TestEnum
 }
 
 // --- Manual Former Setup for Variant ---
-#[derive(Default)]
+#[ derive( Default ) ]
 pub struct TestEnumVariantFormerStorage
 {
   field0 : Option< u32 >,
@@ -152,7 +152,7 @@ for TestEnumVariantEnd
 
 
 /// Manually implemented standalone constructor for the Variant variant (former builder style).
-/// This function is at module level to match the `#[standalone_constructors]` behavior.
+/// This function is at module level to match the `#[ standalone_constructors ]` behavior.
 #[ inline( always ) ]
 pub fn variant() -> TestEnumVariantFormer
 {

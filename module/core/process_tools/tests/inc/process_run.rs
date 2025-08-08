@@ -22,7 +22,7 @@ pub fn path_to_exe(name: &Path, temp_path: &Path) -> PathBuf {
     .with_extension(EXE_EXTENSION)
 }
 
-#[test]
+#[ test ]
 fn err_out_err() {
   let temp = assert_fs::TempDir::new().unwrap();
   let assets_path = asset::path().unwrap();
@@ -45,7 +45,7 @@ fn err_out_err() {
   assert_eq!("This is stderr text\nThis is stdout text\nThis is stderr text\n", report.out);
 }
 
-#[test]
+#[ test ]
 fn out_err_out() {
   let temp = assert_fs::TempDir::new().unwrap();
   let assets_path = asset::path().unwrap();

@@ -1,12 +1,12 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use the_module::{Assign, AssignWithType};
 
 ///
 /// Options1
 ///
-#[derive(Debug, Default, PartialEq)]
+#[ derive( Debug, Default, PartialEq ) ]
 pub struct Options1 {
   field1: i32,
   field2: String,
@@ -14,21 +14,21 @@ pub struct Options1 {
 }
 
 impl From<&Options1> for i32 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn from(src: &Options1) -> Self {
     src.field1
   }
 }
 
 impl From<&Options1> for String {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn from(src: &Options1) -> Self {
     src.field2.clone()
   }
 }
 
 impl From<&Options1> for f32 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn from(src: &Options1) -> Self {
     src.field3
   }
@@ -38,7 +38,7 @@ impl<IntoT> the_module::Assign<i32, IntoT> for Options1
 where
   IntoT: Into<i32>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.field1 = component.into();
   }
@@ -48,7 +48,7 @@ impl<IntoT> the_module::Assign<String, IntoT> for Options1
 where
   IntoT: Into<String>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.field2 = component.into().clone();
   }
@@ -58,7 +58,7 @@ impl<IntoT> the_module::Assign<f32, IntoT> for Options1
 where
   IntoT: Into<f32>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.field3 = component.into();
   }
@@ -87,7 +87,7 @@ where
   IntoT: Into<f32>,
   IntoT: Clone,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn options_1_assign(&mut self, component: IntoT) {
     the_module::Assign::<i32, _>::assign(self, component.clone());
     the_module::Assign::<String, _>::assign(self, component.clone());
@@ -98,21 +98,21 @@ where
 ///
 /// Options2
 ///
-#[derive(Debug, Default, PartialEq)]
+#[ derive( Debug, Default, PartialEq ) ]
 pub struct Options2 {
   field1: i32,
   field2: String,
 }
 
 impl From<&Options2> for i32 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn from(src: &Options2) -> Self {
     src.field1
   }
 }
 
 impl From<&Options2> for String {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn from(src: &Options2) -> Self {
     src.field2.clone()
   }
@@ -122,7 +122,7 @@ impl<IntoT> the_module::Assign<i32, IntoT> for Options2
 where
   IntoT: Into<i32>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.field1 = component.into();
   }
@@ -132,7 +132,7 @@ impl<IntoT> the_module::Assign<String, IntoT> for Options2
 where
   IntoT: Into<String>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     self.field2 = component.into().clone();
   }
@@ -158,7 +158,7 @@ where
   IntoT: Into<String>,
   IntoT: Clone,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn options_2_assign(&mut self, component: IntoT) {
     the_module::Assign::<i32, _>::assign(self, component.clone());
     the_module::Assign::<String, _>::assign(self, component.clone());
@@ -171,7 +171,7 @@ where
   T: Into<String>,
   T: Clone,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn from(src: T) -> Self {
     let field1 = Into::<i32>::into(src.clone());
     let field2 = Into::<String>::into(src.clone());

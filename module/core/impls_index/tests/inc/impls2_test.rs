@@ -5,7 +5,7 @@ use the_module::exposed::{index};
 
 //
 
-#[test]
+#[ test ]
 fn impls_basic() {
   // test.case( "impls2 basic" );
   {

@@ -125,7 +125,7 @@ fn demonstrate_target_validation()
 }
 
 // Example of catching misconfigurations at compile time
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 fn demonstrate_compile_time_safety()
 {
   // These would cause COMPILE ERRORS if conditions weren't met:

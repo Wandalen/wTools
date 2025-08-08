@@ -1,7 +1,9 @@
 use super::*;
 use the_module::{format_ident, ident};
 
-#[test]
+//
+
+#[ test ]
 fn ident_maybe_raw_non_keyword() {
   let input = format_ident!("my_variable");
   let expected = format_ident!("my_variable");
@@ -10,7 +12,7 @@ fn ident_maybe_raw_non_keyword() {
   assert_eq!(got.to_string(), "my_variable");
 }
 
-#[test]
+#[ test ]
 fn ident_maybe_raw_keyword_fn() {
   let input = format_ident!("fn");
   let expected = format_ident!("r#fn");
@@ -19,7 +21,7 @@ fn ident_maybe_raw_keyword_fn() {
   assert_eq!(got.to_string(), "r#fn");
 }
 
-#[test]
+#[ test ]
 fn ident_maybe_raw_keyword_struct() {
   let input = format_ident!("struct");
   let expected = format_ident!("r#struct");
@@ -28,7 +30,7 @@ fn ident_maybe_raw_keyword_struct() {
   assert_eq!(got.to_string(), "r#struct");
 }
 
-#[test]
+#[ test ]
 fn ident_maybe_raw_keyword_break() {
   let input = format_ident!("break");
   let expected = format_ident!("r#break");
@@ -37,7 +39,7 @@ fn ident_maybe_raw_keyword_break() {
   assert_eq!(got.to_string(), "r#break");
 }
 
-#[test]
+#[ test ]
 fn ident_maybe_raw_non_keyword_but_looks_like() {
   // Ensure it only checks the exact string, not variations
   let input = format_ident!("break_point");

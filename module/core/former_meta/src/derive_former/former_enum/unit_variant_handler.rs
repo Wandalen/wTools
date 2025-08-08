@@ -14,8 +14,8 @@
 //!
 //! ### Attribute-Driven Activation
 //! - **Default Behavior**: Unit variants automatically get direct constructors
-//! - **`#[scalar]` Compatibility**: Explicit `#[scalar]` attribute generates same behavior
-//! - **`#[subform_scalar]` Rejection**: Cannot be used with unit variants (compile error)
+//! - **`#[ scalar ]` Compatibility**: Explicit `#[ scalar ]` attribute generates same behavior
+//! - **`#[ subform_scalar ]` Rejection**: Cannot be used with unit variants (compile error)
 //! - **No Field Attributes**: No fields present, so field-level attributes not applicable
 //!
 //! ### Generated Method Characteristics
@@ -29,17 +29,17 @@
 //!
 //! ### 1. Unit Variant Attribute Validation (Critical Prevention)
 //! **Issue Resolved**: Manual implementations allowing incompatible attributes on unit variants
-//! **Root Cause**: `#[subform_scalar]` attribute makes no sense for variants with no fields to form
-//! **Solution**: Compile-time validation that rejects `#[subform_scalar]` on unit variants
+//! **Root Cause**: `#[ subform_scalar ]` attribute makes no sense for variants with no fields to form
+//! **Solution**: Compile-time validation that rejects `#[ subform_scalar ]` on unit variants
 //! **Prevention**: Clear error messages prevent invalid attribute usage
 //!
 //! ```rust,ignore
 //! // Manual Implementation Pitfall:
-//! #[subform_scalar]  // ❌ Invalid for unit variants
+//! #[ subform_scalar ]  // ❌ Invalid for unit variants
 //! Variant,
 //!
 //! // Generated Solution:
-//! // Compile error: "#[subform_scalar] cannot be used on unit variants."
+//! // Compile error: "#[ subform_scalar ] cannot be used on unit variants."
 //! ```
 //!
 //! ### 2. Unit Variant Construction Syntax (Prevention)
@@ -139,7 +139,7 @@ use crate::derive_former::attribute_validation::{validate_variant_attributes, ge
 ///
 /// ## Pitfall Prevention Features
 ///
-/// - **Attribute Validation**: Compile-time rejection of invalid `#[subform_scalar]` attribute
+/// - **Attribute Validation**: Compile-time rejection of invalid `#[ subform_scalar ]` attribute
 /// - **Generic Context**: Complete generic parameter preservation for proper type construction
 /// - **Unit Syntax**: Proper unit variant construction with direct variant name
 /// - **Type Path Safety**: Proper enum type path construction with generic parameter handling
@@ -155,20 +155,20 @@ use crate::derive_former::attribute_validation::{validate_variant_attributes, ge
 /// ```
 ///
 /// ## Attribute Validation
-/// - **`#[subform_scalar]` Rejection**: Generates compile error for invalid attribute usage
-/// - **`#[scalar]` Compatibility**: Accepts explicit scalar attribute (same behavior)
+/// - **`#[ subform_scalar ]` Rejection**: Generates compile error for invalid attribute usage
+/// - **`#[ scalar ]` Compatibility**: Accepts explicit scalar attribute (same behavior)
 ///
 /// ## Parameters
 /// - `_ctx`: Mutable context containing variant information, generics, and output collections
 ///
 /// ## Returns
 /// - `Ok(TokenStream)`: Generated zero-parameter constructor method for the unit variant
-/// - `Err(syn::Error)`: If `#[subform_scalar]` attribute is incorrectly applied to unit variant
+/// - `Err(syn::Error)`: If `#[ subform_scalar ]` attribute is incorrectly applied to unit variant
 ///
 /// ## Implementation Status
 /// This handler is currently a placeholder implementation that will be completed in future increments
 /// as the enum Former generation system is fully developed.
-pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::TokenStream> {
+pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result< proc_macro2::TokenStream > {
   let variant_name = &ctx.variant.ident;
   let method_name = variant_to_method_name(variant_name);
   let enum_name = ctx.enum_name;
@@ -179,7 +179,7 @@ pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::To
   let variant_type = get_variant_type(&ctx.variant.fields);
   validate_variant_attributes(ctx.variant, ctx.variant_attrs, field_count, variant_type)?;
 
-  // Generate standalone constructor if #[standalone_constructors] is present
+  // Generate standalone constructor if #[ standalone_constructors ] is present
   if ctx.struct_attrs.standalone_constructors.is_some() {
     let standalone_constructor = quote! {
       #[ inline( always ) ]

@@ -7,8 +7,8 @@ use std::io::Write; // Using std::io::Write as a simulated target
 
 // Define a POD struct
 // Added explicit padding to ensure no implicit padding bytes, satisfying `Pod` requirements.
-#[repr(C)]
-#[derive(Clone, Copy, Debug, asbytes::Pod, asbytes::Zeroable)]
+#[ repr( C ) ]
+#[ derive( Clone, Copy, Debug, asbytes::Pod, asbytes::Zeroable ) ]
 struct DataPacketHeader {
   packet_id: u64,    // 8 bytes
   payload_len: u32,  // 4 bytes

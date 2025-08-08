@@ -3,7 +3,7 @@ use the_module::qt;
 
 //
 
-#[test]
+#[ test ]
 fn type_container_kind_basic() {
   use the_module::exposed::container_kind;
 
@@ -62,13 +62,13 @@ fn type_container_kind_basic() {
   a_id!(got, the_module::container_kind::ContainerKind::No);
 
   // test.case( "hash map" );
-  let code = qt!( std::collections::HashMap< i32, i32 > );
+  let code = qt!( std::collections::HashMap<  i32, i32  > );
   let tree_type = syn::parse2::<syn::Type>(code).unwrap();
   let got = container_kind::of_type(&tree_type);
   a_id!(got, the_module::container_kind::ContainerKind::HashMap);
 
   // test.case( "hash set" );
-  let code = qt!(std::collections::HashSet<i32>);
+  let code = qt!(std::collections::HashSet< i32 >);
   let tree_type = syn::parse2::<syn::Type>(code).unwrap();
   let got = container_kind::of_type(&tree_type);
   a_id!(got, the_module::container_kind::ContainerKind::HashSet);
@@ -76,7 +76,7 @@ fn type_container_kind_basic() {
 
 //
 
-#[test]
+#[ test ]
 fn type_optional_container_kind_basic() {
   // test.case( "non optional not container" );
   let code = qt!(i32);
@@ -115,7 +115,7 @@ fn type_optional_container_kind_basic() {
   a_id!(got, (the_module::container_kind::ContainerKind::Vector, false));
 
   // test.case( "optional vector" );
-  let code = qt!(core::option::Option<std::collections::HashMap<i32, i32>>);
+  let code = qt!(core::option::Option<std::collections::HashMap< i32, i32 >>);
   let tree_type = syn::parse2::<syn::Type>(code).unwrap();
   let got = the_module::container_kind::of_optional(&tree_type);
   a_id!(got, (the_module::container_kind::ContainerKind::HashMap, true));
@@ -127,13 +127,13 @@ fn type_optional_container_kind_basic() {
   a_id!(got, (the_module::container_kind::ContainerKind::HashMap, true));
 
   // test.case( "non optional vector" );
-  let code = qt!( HashMap< i32, i32 > );
+  let code = qt!( HashMap<  i32, i32  > );
   let tree_type = syn::parse2::<syn::Type>(code).unwrap();
   let got = the_module::container_kind::of_optional(&tree_type);
   a_id!(got, (the_module::container_kind::ContainerKind::HashMap, false));
 
   // test.case( "optional vector" );
-  let code = qt!(core::option::Option<std::collections::HashSet<i32, i32>>);
+  let code = qt!(core::option::Option<std::collections::HashSet< i32, i32 >>);
   let tree_type = syn::parse2::<syn::Type>(code).unwrap();
   let got = the_module::container_kind::of_optional(&tree_type);
   a_id!(got, (the_module::container_kind::ContainerKind::HashSet, true));
@@ -145,7 +145,7 @@ fn type_optional_container_kind_basic() {
   a_id!(got, (the_module::container_kind::ContainerKind::HashSet, true));
 
   // test.case( "non optional vector" );
-  let code = qt!( HashSet< i32, i32 > );
+  let code = qt!( HashSet<  i32, i32  > );
   let tree_type = syn::parse2::<syn::Type>(code).unwrap();
   let got = the_module::container_kind::of_optional(&tree_type);
   a_id!(got, (the_module::container_kind::ContainerKind::HashSet, false));

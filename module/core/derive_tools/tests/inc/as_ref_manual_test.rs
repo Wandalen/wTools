@@ -4,7 +4,7 @@ use super::*;
 // use diagnostics_tools::prelude::*;
 // use derives::*;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[ derive( Debug, Clone, Copy, PartialEq ) ]
 pub struct IsTransparent(bool);
 
 impl AsRef<bool> for IsTransparent {

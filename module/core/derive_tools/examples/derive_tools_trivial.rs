@@ -10,8 +10,8 @@ fn main() {
   {
     use derive_tools::*;
 
-    #[derive(Display, FromStr, PartialEq, Debug, From)]
-    #[display("{a}-{b}")]
+    #[ derive( Display, FromStr, PartialEq, Debug, From ) ]
+    #[ display( "{a}-{b}" ) ]
     struct Struct1 {
       a: i32,
       b: i32,

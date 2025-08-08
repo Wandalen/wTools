@@ -31,7 +31,7 @@ mod private
       // fix clippy
       if let Some( info ) = command_info { format!( "Command info: `{info}`" ) } else { String::new() }
     )]
-    CommandNotFound { name_suggestion: Option< String >, command_info: Option< String > },
+    CommandNotFound { name_suggestion: Option<  String  >, command_info: Option<  String  > },
     #[ error( "Fail in command `.{command_name}` while processing subjects. {error}" ) ]
     Subject { command_name: String, error: SubjectError },
     #[ error( "Fail in command `.{command_name}` while processing properties. {error}" ) ]
@@ -101,7 +101,7 @@ mod private
     // aaa : use typed error
     // aaa : done
     {
-      let commands: Result< Vec< VerifiedCommand >, VerificationError > = raw_program.commands
+      let commands: Result< Vec<  VerifiedCommand  >, VerificationError > = raw_program.commands
       .into_iter()
       .map( | n | self.to_command( dictionary, n ) )
       .collect();
@@ -111,7 +111,7 @@ mod private
     }
 
     #[ cfg( feature = "on_unknown_suggest" ) ]
-    fn suggest_command< 'a >( dictionary : &'a Dictionary, user_input: &str ) -> Option< &'a str >
+    fn suggest_command< 'a >( dictionary : &'a Dictionary, user_input: &str ) -> Option<  &'a str  >
     {
       use textdistance::{ Algorithm, JaroWinkler };
       let jaro = JaroWinkler::default();
@@ -135,8 +135,8 @@ mod private
     fn get_count_from_properties
     (
       properties : &IndexMap< String, ValueDescription >,
-      properties_aliases : &HashMap< String, String >,
-      raw_properties : &HashMap< String, String >
+      properties_aliases : &HashMap<  String, String  >,
+      raw_properties : &HashMap<  String, String  >
     ) -> usize
     {
       raw_properties.iter()
@@ -153,7 +153,7 @@ mod private
       raw_count + possible_count <= subjects_count
     }
 
-    fn check_command< 'a >( variant : &'a Command, raw_command : &ParsedCommand ) -> Option< &'a Command >
+    fn check_command< 'a >( variant : &'a Command, raw_command : &ParsedCommand ) -> Option<  &'a Command  >
     {
       let Command { subjects, properties, properties_aliases, .. } = variant;
       let raw_subjects_count = raw_command.subjects.len();
@@ -168,11 +168,11 @@ mod private
     // aaa : done.
     fn extract_subjects( command : &Command, raw_command : &ParsedCommand, used_properties : &[ &String ] )
     ->
-    Result< Vec< Value >, SubjectError >
+    Result< Vec<  Value  >, SubjectError >
     {
       let mut subjects = vec![];
 
-      let all_subjects: Vec< _ > = raw_command
+      let all_subjects: Vec<  _  > = raw_command
       .subjects.clone().into_iter()
       .chain
       (
@@ -203,9 +203,9 @@ mod private
       // aaa : use typed error
       // aaa : done.
     #[ allow( clippy::manual_map ) ]
-    fn extract_properties( command: &Command, raw_command : HashMap< String, String > )
+    fn extract_properties( command: &Command, raw_command : HashMap<  String, String  > )
     ->
-    Result< HashMap< String, Value >, PropertyError >
+    Result< HashMap<  String, Value  >, PropertyError >
     {
       raw_command.into_iter()
       .filter_map
@@ -226,13 +226,13 @@ mod private
       .collect()
     }
     // fix clippy
-    fn group_properties_and_their_aliases< 'a, Ks >( aliases : &'a HashMap< String, String >, used_keys :  Ks ) -> Vec<&'a String >
+    fn group_properties_and_their_aliases< 'a, Ks >( aliases : &'a HashMap<  String, String  >, used_keys :  Ks ) -> Vec< &'a String  >
     where
       Ks : Iterator< Item = &'a String >
     {
       let reverse_aliases =
       {
-        let mut map = HashMap::< &String, Vec< &String > >::new();
+        let mut map = HashMap::< &String, Vec<  &String  > >::new();
         for ( property, alias ) in aliases
         {
           map.entry( alias ).or_default().push( property );
@@ -258,7 +258,7 @@ mod private
     // aaa : done.
     pub fn to_command( &self, dictionary : &Dictionary, raw_command : ParsedCommand )
     ->
-    Result< VerifiedCommand, VerificationError >
+    Result<  VerifiedCommand, VerificationError  >
     {
       if raw_command.name.ends_with( '.' ) | raw_command.name.ends_with( ".?" )
       {

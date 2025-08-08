@@ -8,7 +8,7 @@ use super::*;
 
 //
 
-#[test]
+#[ test ]
 fn fn_name() {
   let f1 = 13;
 
@@ -24,7 +24,7 @@ fn fn_name() {
 
 //
 
-#[test]
+#[ test ]
 fn fn_rename() {
   the_module::exposed::fn_rename! {
     @Name { f2 }
@@ -42,7 +42,7 @@ fn fn_rename() {
 
 //
 
-#[test]
+#[ test ]
 fn fns() {
   //   // test.case( "several, trivial syntax" );
   //   {

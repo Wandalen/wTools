@@ -12,7 +12,7 @@
 // extern crate alloc;
 
 /// Module containing all collection macros
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
 pub mod collection;
 
@@ -21,74 +21,74 @@ pub mod collection;
 // pub use collection::*;
 
 /// Namespace with dependencies.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency {
 
-  #[cfg(feature = "use_alloc")]
+  #[ cfg( feature = "use_alloc" ) ]
   pub use ::hashbrown;
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
-#[cfg(feature = "enabled")]
-#[allow(clippy::pub_use)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( clippy::pub_use ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod own {
   // use super::*;
 
-  #[doc(inline)]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use super::orphan::*;
 
-  #[doc(inline)]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use super::collection::own::*;
 }
 
 /// Parented namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
-  #[doc(inline)]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use exposed::*;
 
-  #[doc(inline)]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use collection::orphan::*;
 }
 
 /// Exposed namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
 
-  #[doc(inline)]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use prelude::*;
 
-  #[doc(inline)]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use collection::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::collection;
 
-  #[doc(inline)]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use collection::prelude::*;
 }
 

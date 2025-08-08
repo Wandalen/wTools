@@ -1,17 +1,17 @@
 //! Test for `struct_multi_fields_scalar` handler
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 pub enum MultiFieldEnum
 {
-  #[scalar]
+  #[ scalar ]
   VariantTwoScalar { field_d: i32, field_e: bool },
 }
 
-#[test]
+#[ test ]
 fn multi_field_scalar_test()
 {
   let got = MultiFieldEnum::variant_two_scalar(42, true);
@@ -19,7 +19,7 @@ fn multi_field_scalar_test()
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn multi_field_scalar_into_test()
 {
   // Test that impl Into<T> works correctly for multiple fields

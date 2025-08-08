@@ -13,10 +13,10 @@
 #[cfg(any(not(feature = "derive_former"), not(feature = "enabled")))]
 fn main() {}
 #[cfg(all(feature = "derive_former", feature = "enabled"))]
-#[allow(clippy::too_many_lines)]
+#[ allow( clippy::too_many_lines ) ]
 fn main() {
   // Use attribute debug to print expanded code.
-  #[derive(Debug, PartialEq)]
+  #[ derive( Debug, PartialEq ) ]
   pub struct UserProfile {
     age: i32,
     username: String,
@@ -24,7 +24,7 @@ fn main() {
   }
 
   impl UserProfile {
-    #[inline(always)]
+    #[ inline( always ) ]
     pub fn former() -> UserProfileFormer<UserProfileFormerDefinition<(), UserProfile, former::ReturnPreformed>> {
       UserProfileFormer::<UserProfileFormerDefinition<(), UserProfile, former::ReturnPreformed>>::new_coercing(
         former::ReturnPreformed,
@@ -55,7 +55,7 @@ fn main() {
 
   // = definition
 
-  #[derive(Debug)]
+  #[ derive( Debug ) ]
   pub struct UserProfileFormerDefinitionTypes<Context = (), Formed = UserProfile> {
     _phantom: core::marker::PhantomData<(*const Context, *const Formed)>,
   }
@@ -74,7 +74,7 @@ fn main() {
     type Context = Context;
   }
 
-  #[derive(Debug)]
+  #[ derive( Debug ) ]
   pub struct UserProfileFormerDefinition<Context = (), Formed = UserProfile, End = former::ReturnPreformed> {
     _phantom: core::marker::PhantomData<(*const Context, *const Formed, *const End)>,
   }
@@ -109,7 +109,7 @@ fn main() {
   }
 
   impl ::core::default::Default for UserProfileFormerStorage {
-    #[inline(always)]
+    #[ inline( always ) ]
     fn default() -> Self {
       Self {
         age: ::core::option::Option::None,
@@ -195,12 +195,12 @@ fn main() {
     Definition: former::FormerDefinition<Storage = UserProfileFormerStorage>,
     Definition::Types: former::FormerDefinitionTypes<Storage = UserProfileFormerStorage>,
   {
-    #[inline(always)]
+    #[ inline( always ) ]
     pub fn new(on_end: Definition::End) -> Self {
       Self::begin_coercing(None, None, on_end)
     }
 
-    #[inline(always)]
+    #[ inline( always ) ]
     pub fn new_coercing<IntoEnd>(end: IntoEnd) -> Self
     where
       IntoEnd: Into<Definition::End>,
@@ -208,7 +208,7 @@ fn main() {
       Self::begin_coercing(None, None, end)
     }
 
-    #[inline(always)]
+    #[ inline( always ) ]
     pub fn begin(
       mut storage: core::option::Option<Definition::Storage>,
       context: core::option::Option<Definition::Context>,
@@ -224,7 +224,7 @@ fn main() {
       }
     }
 
-    #[inline(always)]
+    #[ inline( always ) ]
     pub fn begin_coercing<IntoEnd>(
       mut storage: core::option::Option<Definition::Storage>,
       context: core::option::Option<Definition::Context>,
@@ -243,12 +243,12 @@ fn main() {
       }
     }
 
-    #[inline(always)]
+    #[ inline( always ) ]
     pub fn form(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
       self.end()
     }
 
-    #[inline(always)]
+    #[ inline( always ) ]
     pub fn end(mut self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
       let on_end = self.on_end.take().unwrap();
       let mut context = self.context.take();
@@ -256,7 +256,7 @@ fn main() {
       former::FormingEnd::<Definition::Types>::call(&on_end, self.storage, context)
     }
 
-    #[inline(always)]
+    #[ inline( always ) ]
     pub fn age<Src>(mut self, src: Src) -> Self
     where
       Src: ::core::convert::Into<i32>,
@@ -266,7 +266,7 @@ fn main() {
       self
     }
 
-    #[inline(always)]
+    #[ inline( always ) ]
     pub fn username<Src>(mut self, src: Src) -> Self
     where
       Src: ::core::convert::Into<String>,
@@ -276,7 +276,7 @@ fn main() {
       self
     }
 
-    #[inline(always)]
+    #[ inline( always ) ]
     pub fn bio_optional<Src>(mut self, src: Src) -> Self
     where
       Src: ::core::convert::Into<String>,
@@ -300,7 +300,7 @@ fn main() {
   where
     Definition: former::FormerDefinition<Storage = UserProfileFormerStorage, Formed = UserProfile>,
   {
-    #[inline(always)]
+    #[ inline( always ) ]
     pub fn perform(self) -> Definition::Formed {
       self.form()
     }
@@ -313,7 +313,7 @@ fn main() {
     Definition::Context: 'a,
     Definition::End: 'a,
   {
-    #[inline(always)]
+    #[ inline( always ) ]
     fn former_begin(
       storage: core::option::Option<Definition::Storage>,
       context: core::option::Option<Definition::Context>,

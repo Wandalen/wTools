@@ -27,7 +27,7 @@ fn main() {}
 fn main() {
   use component_model_types::Assign;
 
-  #[derive(Default, PartialEq, Debug)]
+  #[ derive( Default, PartialEq, Debug ) ]
   struct Person {
     age: i32,
     name: String,

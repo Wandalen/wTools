@@ -4,14 +4,14 @@ use asbytes::IntoBytes; // Import the specific trait
 use core::mem;
 
 // Define a simple POD struct for testing (can be copied from basic_test.rs)
-#[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq, bytemuck::Pod, bytemuck::Zeroable)]
+#[ repr( C ) ]
+#[ derive( Clone, Copy, Debug, PartialEq, bytemuck::Pod, bytemuck::Zeroable ) ]
 struct Point {
   x: i32,
   y: i32,
 }
 
-#[test]
+#[ test ]
 fn test_tuple_scalar_into_bytes() {
   let scalar_tuple = (123u32,);
   let expected_bytes = 123u32.to_le_bytes().to_vec();
@@ -21,7 +21,7 @@ fn test_tuple_scalar_into_bytes() {
   assert_eq!(bytes, expected_bytes);
 }
 
-#[test]
+#[ test ]
 fn test_tuple_struct_into_bytes() {
   let point = Point { x: 10, y: -20 };
   let struct_tuple = (point,);
@@ -32,7 +32,7 @@ fn test_tuple_struct_into_bytes() {
   assert_eq!(bytes, expected_bytes);
 }
 
-#[test]
+#[ test ]
 fn test_string_into_bytes() {
   let s = String::from("hello");
   let expected_bytes = vec![b'h', b'e', b'l', b'l', b'o'];
@@ -43,7 +43,7 @@ fn test_string_into_bytes() {
   assert_eq!(bytes, expected_bytes);
 }
 
-#[test]
+#[ test ]
 fn test_str_into_bytes() {
   let s = "hello";
   let expected_bytes = vec![b'h', b'e', b'l', b'l', b'o'];
@@ -54,7 +54,7 @@ fn test_str_into_bytes() {
   assert_eq!(bytes, expected_bytes);
 }
 
-#[test]
+#[ test ]
 fn test_array_into_bytes() {
   let arr: [u16; 3] = [100, 200, 300];
   let expected_bytes = bytemuck::cast_slice(&arr).to_vec();
@@ -64,7 +64,7 @@ fn test_array_into_bytes() {
   assert_eq!(bytes, expected_bytes);
 }
 
-#[test]
+#[ test ]
 fn test_vec_into_bytes() {
   let v = vec![Point { x: 1, y: 2 }, Point { x: 3, y: 4 }];
   let expected_bytes = bytemuck::cast_slice(v.as_slice()).to_vec();
@@ -76,7 +76,7 @@ fn test_vec_into_bytes() {
   assert_eq!(bytes, expected_bytes);
 }
 
-#[test]
+#[ test ]
 fn test_box_t_into_bytes() {
   let b = Box::new(Point { x: 5, y: 5 });
   let expected_bytes = bytemuck::bytes_of(&*b).to_vec();
@@ -87,7 +87,7 @@ fn test_box_t_into_bytes() {
   assert_eq!(bytes, expected_bytes);
 }
 
-#[test]
+#[ test ]
 fn test_slice_into_bytes() {
   let slice: &[u32] = &[10, 20, 30][..];
   let expected_bytes = bytemuck::cast_slice(slice).to_vec();
@@ -98,9 +98,9 @@ fn test_slice_into_bytes() {
   assert_eq!(bytes, expected_bytes);
 }
 
-#[test]
+#[ test ]
 fn test_box_slice_into_bytes() {
-  let slice: Box<[u32]> = vec![10, 20, 30].into_boxed_slice();
+  let slice: Box< [u32] > = vec![10, 20, 30].into_boxed_slice();
   let expected_bytes = bytemuck::cast_slice(&slice).to_vec();
   let expected_len = slice.len() * mem::size_of::<u32>();
   let bytes = slice.into_bytes();
@@ -109,7 +109,7 @@ fn test_box_slice_into_bytes() {
   assert_eq!(bytes, expected_bytes);
 }
 
-#[test]
+#[ test ]
 fn test_vecdeque_into_bytes() {
   use std::collections::VecDeque; // Keep local use for VecDeque
   let mut deque: VecDeque<u16> = VecDeque::new();
@@ -133,7 +133,7 @@ fn test_vecdeque_into_bytes() {
   assert_eq!(bytes, expected_bytes);
 }
 
-#[test]
+#[ test ]
 fn test_cstring_into_bytes() {
   use std::ffi::CString; // Keep local use for CString
   let cs = CString::new("world").unwrap();

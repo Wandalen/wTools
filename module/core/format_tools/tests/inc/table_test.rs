@@ -73,7 +73,7 @@ fn iterator_over_optional_cow()
     pub id : String,
     pub created_at : i64,
     pub file_ids : Vec< String >,
-    pub tools : Option< Vec< HashMap< String, String > > >,
+    pub tools : Option< Vec< HashMap<  String, String  > > >,
   }
 
   impl TableWithFields for TestObject2 {}
@@ -206,7 +206,7 @@ fn iterator_over_strings()
     pub id : String,
     pub created_at : i64,
     pub file_ids : Vec< String >,
-    pub tools : Option< Vec< HashMap< String, String > > >,
+    pub tools : Option< Vec< HashMap<  String, String  > > >,
   }
 
   impl TableWithFields for TestObject3 {}

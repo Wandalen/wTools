@@ -9,7 +9,7 @@
 use crate::*;
 use collection_tools::HashMap;
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K, V> Collection for HashMap<K, V>
 where
   K: core::cmp::Eq + core::hash::Hash,
@@ -17,24 +17,24 @@ where
   type Entry = (K, V);
   type Val = V;
 
-  #[inline(always)]
+  #[ inline( always ) ]
   fn entry_to_val(e: Self::Entry) -> Self::Val {
     e.1
   }
 }
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K, V> CollectionAdd for HashMap<K, V>
 where
   K: core::cmp::Eq + core::hash::Hash,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn add(&mut self, (k, v): Self::Entry) -> bool {
     self.insert(k, v).map_or_else(|| true, |_| false)
   }
 }
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K, V> CollectionAssign for HashMap<K, V>
 where
   K: core::cmp::Eq + core::hash::Hash,
@@ -51,7 +51,7 @@ where
 
 // = storage
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K, E> Storage for HashMap<K, E>
 where
   K: ::core::cmp::Eq + ::core::hash::Hash,
@@ -59,7 +59,7 @@ where
   type Preformed = HashMap<K, E>;
 }
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K, E> StoragePreform for HashMap<K, E>
 where
   K: ::core::cmp::Eq + ::core::hash::Hash,
@@ -85,7 +85,7 @@ where
 /// - `Formed`: The type of the entity produced, typically a `HashMap<K, E>`.
 /// - `End`: A trait defining the end behavior of the formation process, managing how the hash map is finalized.
 ///
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct HashMapDefinition<K, E, Context = (), Formed = HashMap<K, E>, End = ReturnStorage>
 where
   K: ::core::cmp::Eq + ::core::hash::Hash,
@@ -120,7 +120,7 @@ where
 /// - `E`: The value type of the hash map.
 /// - `Context`: The operational context in which the hash map is formed.
 /// - `Formed`: The type produced, typically mirroring the structure of a `HashMap<K, E>`.
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct HashMapDefinitionTypes<K, E, Context = (), Formed = HashMap<K, E>> {
   _phantom: core::marker::PhantomData<(K, E, Context, Formed)>,
 }
@@ -143,7 +143,7 @@ impl<K, E, Context, Formed> FormerMutator for HashMapDefinitionTypes<K, E, Conte
 
 // = Entity To
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K, E, Definition> EntityToFormer<Definition> for HashMap<K, E>
 where
   K: ::core::cmp::Eq + ::core::hash::Hash,
@@ -161,7 +161,7 @@ where
   type Former = HashMapFormer<K, E, Definition::Context, Definition::Formed, Definition::End>;
 }
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K, E> crate::EntityToStorage for HashMap<K, E>
 where
   K: ::core::cmp::Eq + ::core::hash::Hash,
@@ -169,7 +169,7 @@ where
   type Storage = HashMap<K, E>;
 }
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K, E, Context, Formed, End> crate::EntityToDefinition<Context, Formed, End> for HashMap<K, E>
 where
   K: ::core::cmp::Eq + ::core::hash::Hash,
@@ -179,7 +179,7 @@ where
   type Types = HashMapDefinitionTypes<K, E, Context, Formed>;
 }
 
-#[allow(clippy::implicit_hasher)]
+#[ allow( clippy::implicit_hasher ) ]
 impl<K, E, Context, Formed> crate::EntityToDefinitionTypes<Context, Formed> for HashMap<K, E>
 where
   K: ::core::cmp::Eq + ::core::hash::Hash,
@@ -218,7 +218,7 @@ where
   fn former() -> HashMapFormer<K, E, (), HashMap<K, E>, ReturnStorage>;
 }
 
-#[allow(clippy::default_constructed_unit_structs, clippy::implicit_hasher)]
+#[ allow( clippy::default_constructed_unit_structs, clippy::implicit_hasher ) ]
 impl<K, E> HashMapExt<K, E> for HashMap<K, E>
 where
   K: ::core::cmp::Eq + ::core::hash::Hash,

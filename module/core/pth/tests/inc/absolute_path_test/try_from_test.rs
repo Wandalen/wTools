@@ -1,7 +1,7 @@
 use super::*;
 use core::convert::TryFrom;
 
-#[test]
+#[ test ]
 fn try_from_absolute_path_test() {
   use std::path::{Path, PathBuf};
   use the_module::AbsolutePath;

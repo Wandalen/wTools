@@ -1,7 +1,7 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
-#[test]
+#[ test ]
 fn basic_from() {
   use pth::TransitiveTryFrom;
   use core::convert::TryFrom;
@@ -33,20 +33,20 @@ fn basic_from() {
   let _final_result: Result<FinalType, ConversionError> = FinalType::transitive_try_from::<IntermediateType>(initial);
 }
 
-#[test]
+#[ test ]
 fn test_transitive_try_into() {
   use pth::TransitiveTryInto;
 
   // Define NewType1 wrapping a String
-  #[derive(Debug, PartialEq)]
+  #[ derive( Debug, PartialEq ) ]
   struct NewType1(String);
 
   // Define NewType2 wrapping NewType1
-  #[derive(Debug, PartialEq)]
+  #[ derive( Debug, PartialEq ) ]
   struct NewType2(NewType1);
 
   // Define an error type for conversion
-  #[derive(Debug, PartialEq)]
+  #[ derive( Debug, PartialEq ) ]
   struct ConversionError;
 
   // Implement TryInto for converting String to NewType1

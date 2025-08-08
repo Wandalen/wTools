@@ -19,7 +19,7 @@ fn components_assign()
 }
 
 // Optional: Test assigning to self if types match exactly
-#[derive(Debug, Default, PartialEq, component_model::Assign, component_model::ComponentsAssign)]
+#[ derive( Debug, Default, PartialEq, component_model::Assign, component_model::ComponentsAssign ) ]
 struct SelfTuple(bool, char);
 
 impl From<&SelfTuple> for bool

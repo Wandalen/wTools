@@ -4,9 +4,9 @@ impl Trait<'_> for i32 {}
 use core::ops::Deref;
 use derive_tools::Deref;
 
-#[allow(dead_code)]
-#[derive(Deref)]
-struct BoundsWhere<T, U>(#[deref] T, U)
+#[ allow( dead_code ) ]
+#[ derive( Deref ) ]
+struct BoundsWhere<T, U>(#[ deref ] T, U)
 where
   T: ToString,
   for<'a> U: Trait<'a>;

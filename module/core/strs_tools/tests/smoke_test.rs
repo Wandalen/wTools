@@ -1,16 +1,16 @@
 //! Smoke testing of the package.
 
-#[test]
+#[ test ]
 fn local_smoke_test() {
   ::test_tools::smoke_test_for_local_run();
 }
 
-#[test]
+#[ test ]
 fn published_smoke_test() {
   ::test_tools::smoke_test_for_published_run();
 }
 
-#[test]
+#[ test ]
 fn debug_strs_tools_semicolon_only() {
   let input = ";;";
   let splits: Vec<_> = strs_tools::string::split()
@@ -38,7 +38,7 @@ fn debug_strs_tools_semicolon_only() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn debug_strs_tools_trailing_semicolon_space() {
   let input = "cmd1 ;; ";
   let splits: Vec<_> = strs_tools::string::split()
@@ -75,7 +75,7 @@ fn debug_strs_tools_trailing_semicolon_space() {
   assert_eq!(splits, expected);
 }
 
-#[test]
+#[ test ]
 fn debug_strs_tools_only_semicolon() {
   let input = ";;";
   let splits: Vec<_> = strs_tools::string::split()

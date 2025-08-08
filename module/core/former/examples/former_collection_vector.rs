@@ -15,13 +15,13 @@ fn main() {}
   any(feature = "use_alloc", not(feature = "no_std"))
 ))]
 fn main() {
-  #[cfg(feature = "enabled")]
+  #[ cfg( feature = "enabled" ) ]
   use former_meta::Former;
   // use former as the_module; // Commented out - unused import
 
-  #[derive(Default, Debug, PartialEq, Former)]
+  #[ derive( Default, Debug, PartialEq, Former ) ]
   pub struct Struct1 {
-    #[subform_collection( definition = former::VectorDefinition )]
+    #[ subform_collection( definition = former::VectorDefinition ) ]
     vec_1: Vec<String>,
   }
 

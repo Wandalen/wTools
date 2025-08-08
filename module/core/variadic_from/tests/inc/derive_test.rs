@@ -2,7 +2,7 @@
 
 //! ## Test Matrix for `VariadicFrom` Derive Macro
 //!
-//! This matrix outlines the test cases for the `#[derive(VariadicFrom)]` macro, covering various struct types, field counts, and type identity conditions.
+//! This matrix outlines the test cases for the `#[ derive( VariadicFrom ) ]` macro, covering various struct types, field counts, and type identity conditions.
 //!
 //! **Test Factors:**
 //! - Struct Type: Named struct (`struct Named { a: i32, b: i32 }`) vs. Tuple struct (`struct Tuple(i32, i32)`).
@@ -47,9 +47,9 @@ use variadic_from_meta::VariadicFrom;
 
 /// Tests a named struct with 1 field.
 /// Test Combination: T1.1
-#[test]
+#[ test ]
 fn test_named_struct_1_field() {
-  #[derive(VariadicFrom, Debug, PartialEq)]
+  #[ derive( VariadicFrom, Debug, PartialEq ) ]
   struct Test1 {
     a: i32,
   }
@@ -63,9 +63,9 @@ fn test_named_struct_1_field() {
 
 /// Tests a tuple struct with 1 field.
 /// Test Combination: T1.2
-#[test]
+#[ test ]
 fn test_tuple_struct_1_field() {
-  #[derive(VariadicFrom, Debug, PartialEq)]
+  #[ derive( VariadicFrom, Debug, PartialEq ) ]
   struct Test2(i32);
 
   let x = Test2::from1(10);
@@ -79,9 +79,9 @@ fn test_tuple_struct_1_field() {
 
 /// Tests a named struct with 2 identical fields.
 /// Test Combination: T2.1
-#[test]
+#[ test ]
 fn test_named_struct_2_identical_fields() {
-  #[derive(VariadicFrom, Debug, PartialEq)]
+  #[ derive( VariadicFrom, Debug, PartialEq ) ]
   struct Test3 {
     a: i32,
     b: i32,
@@ -100,9 +100,9 @@ fn test_named_struct_2_identical_fields() {
 
 /// Tests a tuple struct with 2 identical fields.
 /// Test Combination: T2.2
-#[test]
+#[ test ]
 fn test_tuple_struct_2_identical_fields() {
-  #[derive(VariadicFrom, Debug, PartialEq)]
+  #[ derive( VariadicFrom, Debug, PartialEq ) ]
   struct Test4(i32, i32);
 
   let x = Test4::from2(10, 20);
@@ -118,9 +118,9 @@ fn test_tuple_struct_2_identical_fields() {
 
 /// Tests a named struct with 2 different fields.
 /// Test Combination: T2.3
-#[test]
+#[ test ]
 fn test_named_struct_2_different_fields() {
-  #[derive(VariadicFrom, Debug, PartialEq)]
+  #[ derive( VariadicFrom, Debug, PartialEq ) ]
   struct Test5 {
     a: i32,
     b: String,
@@ -150,9 +150,9 @@ fn test_named_struct_2_different_fields() {
 
 /// Tests a tuple struct with 2 different fields.
 /// Test Combination: T2.4
-#[test]
+#[ test ]
 fn test_tuple_struct_2_different_fields() {
-  #[derive(VariadicFrom, Debug, PartialEq)]
+  #[ derive( VariadicFrom, Debug, PartialEq ) ]
   struct Test6(i32, String);
 
   let x = Test6::from2(10, "hello".to_string());
@@ -169,9 +169,9 @@ fn test_tuple_struct_2_different_fields() {
 
 /// Tests a named struct with 3 identical fields.
 /// Test Combination: T3.1
-#[test]
+#[ test ]
 fn test_named_struct_3_identical_fields() {
-  #[derive(VariadicFrom, Debug, PartialEq)]
+  #[ derive( VariadicFrom, Debug, PartialEq ) ]
   struct Test7 {
     a: i32,
     b: i32,
@@ -195,9 +195,9 @@ fn test_named_struct_3_identical_fields() {
 
 /// Tests a tuple struct with 3 identical fields.
 /// Test Combination: T3.2
-#[test]
+#[ test ]
 fn test_tuple_struct_3_identical_fields() {
-  #[derive(VariadicFrom, Debug, PartialEq)]
+  #[ derive( VariadicFrom, Debug, PartialEq ) ]
   struct Test8(i32, i32, i32);
 
   let x = Test8::from3(10, 20, 30);
@@ -217,9 +217,9 @@ fn test_tuple_struct_3_identical_fields() {
 
 /// Tests a named struct with 3 fields, last one different.
 /// Test Combination: T3.3
-#[test]
+#[ test ]
 fn test_named_struct_3_fields_last_different() {
-  #[derive(VariadicFrom, Debug, PartialEq)]
+  #[ derive( VariadicFrom, Debug, PartialEq ) ]
   struct Test9 {
     a: i32,
     b: i32,
@@ -252,9 +252,9 @@ fn test_named_struct_3_fields_last_different() {
 
 /// Tests a tuple struct with 3 fields, last one different.
 /// Test Combination: T3.4
-#[test]
+#[ test ]
 fn test_tuple_struct_3_fields_last_different() {
-  #[derive(VariadicFrom, Debug, PartialEq)]
+  #[ derive( VariadicFrom, Debug, PartialEq ) ]
   struct Test10(i32, i32, String);
 
   let x = Test10::from3(10, 20, "hello".to_string().clone());
@@ -269,9 +269,9 @@ fn test_tuple_struct_3_fields_last_different() {
 
 /// Tests a named struct with 3 fields, last two identical.
 /// Test Combination: T3.5
-#[test]
+#[ test ]
 fn test_named_struct_3_fields_last_two_identical() {
-  #[derive(VariadicFrom, Debug, PartialEq)]
+  #[ derive( VariadicFrom, Debug, PartialEq ) ]
   struct Test11 {
     a: i32,
     b: String,
@@ -315,9 +315,9 @@ fn test_named_struct_3_fields_last_two_identical() {
 
 /// Tests a tuple struct with 3 fields, last two identical.
 /// Test Combination: T3.6
-#[test]
+#[ test ]
 fn test_tuple_struct_3_fields_last_two_identical() {
-  #[derive(VariadicFrom, Debug, PartialEq)]
+  #[ derive( VariadicFrom, Debug, PartialEq ) ]
   struct Test12(i32, String, String);
 
   let x = Test12::from3(10, "a".to_string().clone(), "b".to_string().clone());
@@ -338,9 +338,9 @@ fn test_tuple_struct_3_fields_last_two_identical() {
 
 /// Tests a named struct with 1 generic field.
 /// Test Combination: T4.1
-#[test]
+#[ test ]
 fn test_named_struct_1_generic_field() {
-  #[derive(VariadicFrom, Debug, PartialEq)]
+  #[ derive( VariadicFrom, Debug, PartialEq ) ]
   struct Test13<T>
   where
     T: Clone + core::fmt::Debug + PartialEq,
@@ -360,9 +360,9 @@ fn test_named_struct_1_generic_field() {
 
 /// Tests a tuple struct with 2 generic fields.
 /// Test Combination: T4.2
-#[test]
+#[ test ]
 fn test_tuple_struct_2_generic_fields() {
-  #[derive(VariadicFrom, Debug, PartialEq)]
+  #[ derive( VariadicFrom, Debug, PartialEq ) ]
   struct Test14<T, U>
   where
     T: Clone + core::fmt::Debug + PartialEq,

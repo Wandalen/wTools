@@ -32,7 +32,7 @@ use crate::*;
 /// let merged = generic_params::merge_params_ordered(&[&list1, &list2]);
 /// // Result will be ordered as: 'a, T, U, const N: usize
 /// ```
-#[must_use]
+#[ must_use ]
 pub fn merge_params_ordered(
   param_lists: &[&syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>],
 ) -> syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma> {
@@ -53,7 +53,7 @@ pub fn merge_params_ordered(
 
   // Build the result in the correct order
   let mut result = syn::punctuated::Punctuated::new();
-  let all_params: Vec<_> = lifetimes.into_iter()
+  let all_params: Vec< _ > = lifetimes.into_iter()
     .chain(types)
     .chain(consts)
     .collect();
@@ -95,7 +95,7 @@ pub fn merge_params_ordered(
 /// let extended = generic_params::params_with_additional(&base, &additional);
 /// // Result: T, U, V
 /// ```
-#[must_use]
+#[ must_use ]
 pub fn params_with_additional(
   base: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
   additional: &[syn::GenericParam],
@@ -146,7 +146,7 @@ pub fn params_with_additional(
 /// let params = generic_params::params_from_components(&lifetimes, &types, &consts);
 /// // Result: 'a, 'b, T: Clone, const N: usize
 /// ```
-#[must_use]
+#[ must_use ]
 pub fn params_from_components(
   lifetimes: &[syn::LifetimeParam],
   types: &[syn::TypeParam],
@@ -154,7 +154,7 @@ pub fn params_from_components(
 ) -> syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma> {
   let mut result = syn::punctuated::Punctuated::new();
   
-  let all_params: Vec<syn::GenericParam> = lifetimes.iter()
+  let all_params: Vec< syn::GenericParam > = lifetimes.iter()
     .map(|lt| syn::GenericParam::Lifetime(lt.clone()))
     .chain(types.iter().map(|ty| syn::GenericParam::Type(ty.clone())))
     .chain(consts.iter().map(|ct| syn::GenericParam::Const(ct.clone())))

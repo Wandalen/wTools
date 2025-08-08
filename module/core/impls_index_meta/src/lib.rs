@@ -7,12 +7,12 @@
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 #![ cfg_attr( not( doc ), doc = "Implementation indexing macro support" ) ]
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 mod impls;
 
 /// Macros to put each function under a named macro to index every function in a class.
-#[cfg(feature = "enabled")]
-#[proc_macro]
+#[ cfg( feature = "enabled" ) ]
+#[ proc_macro ]
 pub fn impls3(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
   let result = impls::impls(input);
   match result {

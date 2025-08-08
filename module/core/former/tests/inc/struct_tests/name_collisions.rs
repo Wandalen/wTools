@@ -2,7 +2,7 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
 // #[ allow( dead_code ) ]
@@ -74,17 +74,17 @@ mod name_collision_types {
 //   i : ::std::option::Option< i32 >,
 // }
 
-#[derive(PartialEq, Debug, the_module::Former)]
+#[ derive( PartialEq, Debug, the_module::Former ) ]
 // #[ debug ]
 pub struct Struct1 {
   vec_1: collection_tools::Vec<String>,
-  hashmap_1: collection_tools::HashMap<String, String>,
-  hashset_1: collection_tools::HashSet<String>,
+  hashmap_1: collection_tools::HashMap< String, String >,
+  hashset_1: collection_tools::HashSet< String >,
   // inner : ::std::sync::Arc< ::core::cell::RefCell< dyn ::core::convert::AsRef< i32 > > >,
   i: ::core::option::Option<i32>,
 }
 
-#[test]
+#[ test ]
 fn test_vector() {
   // test.case( "vector : construction" );
 

@@ -55,7 +55,7 @@ mod private
   ///
   /// struct MyCollection< V >
   /// {
-  ///   data : Vec< V >,
+  ///   data : Vec<  V  >,
   /// }
   ///
   /// impl< V > Fields< usize, &V > for MyCollection< V >

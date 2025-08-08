@@ -18,11 +18,11 @@
 //! ```rust
 //! use former::Former;
 //!
-//! #[derive(Debug, PartialEq, Former)]
+//! #[ derive( Debug, PartialEq, Former ) ]
 //! pub struct UserProfile {
 //!     age: i32,
 //!     username: String,
-//!     bio_optional: Option<String>,
+//!     bio_optional: Option< String >,
 //! }
 //!
 //! let profile = UserProfile::former()
@@ -35,15 +35,23 @@
 //! ## Architecture Overview
 //!
 //! The Former pattern generates several key components:
-//! - **Storage Struct**: Holds intermediate state during building (all fields are `Option<T>`)
+//! - **Storage Struct**: Holds intermediate state during building (all fields are `Option< T >`)
 //! - **Former Struct**: The main builder providing the fluent API
 //! - **Definition Types**: Type system integration for advanced scenarios
 //! - **Trait Implementations**: Integration with the broader Former ecosystem
 //!
-//! ## Debug Support
+//! ## Rule Compliance & Architectural Notes
 //!
-//! The Former derive macro provides comprehensive debugging capabilities through the `#[debug]` attribute,
-//! following the design principle that "Proc Macros: Must Implement a 'debug' Attribute".
+//! This crate has been systematically designed to comply with the Design and Codestyle Rulebooks:
+//!
+//! 1. **Proc Macro Debug Support**: The Former derive macro implements comprehensive debugging
+//!    capabilities through the `#[ debug ]` attribute, following the design principle that
+//!    "Proc Macros: Must Implement a 'debug' Attribute".
+//!
+//! 2. **Dependencies**: Uses `macro_tools` over `syn`, `quote`, `proc-macro2` per design rule.
+//!    Uses `error_tools` for all error handling instead of `anyhow` or `thiserror`.
+//!
+//! 3. **Feature Architecture**: All functionality is gated behind "enabled" feature.
 //!
 //! ### Using Debug Attribute
 //!
@@ -51,17 +59,17 @@
 //! use former::Former;
 //!
 //! // Standalone debug attribute
-//! #[derive(Debug, PartialEq, Former)]
-//! // #[debug]  // <-- Commented out - debug attribute only for temporary debugging
+//! #[ derive( Debug, PartialEq, Former ) ]
+//! // #[ debug ]  // <-- Commented out - debug attribute only for temporary debugging
 //! pub struct Person {
 //!     name: String,
 //!     age: u32,
-//!     email: Option<String>,
+//!     email: Option< String >,
 //! }
 //!
-//! // Within #[former(...)] container
-//! #[derive(Debug, PartialEq, Former)]
-//! // #[former(debug, standalone_constructors)]  // <-- Debug commented out
+//! // Within #[ former( ... ) ] container
+//! #[ derive( Debug, PartialEq, Former ) ]
+//! // #[ former( debug, standalone_constructors ) ]  // <-- Debug commented out
 //! pub struct Config {
 //!     host: String,
 //!     port: u16,
@@ -70,7 +78,7 @@
 //!
 //! ### Debug Output Categories
 //!
-//! When `#[debug]` is present and the `former_diagnostics_print_generated` feature is enabled,
+//! When `#[ debug ]` is present and the `former_diagnostics_print_generated` feature is enabled,
 //! the macro provides detailed information in four phases:
 //!
 //! 1. **Input Analysis**: Target type, generic parameters, fields/variants, attribute configuration
@@ -137,15 +145,15 @@
 /// - Advanced integrations requiring direct access to core traits
 /// - Custom implementations extending the Former ecosystem
 /// - Library authors building on top of Former's foundation
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency {
   pub use former_types;
   pub use former_meta;
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
-#[cfg(feature = "enabled")]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
 pub use own::*;
 
 /// ## Own namespace of the module
@@ -161,15 +169,15 @@ pub use own::*;
 /// ### Usage Pattern
 /// This namespace is typically accessed through `use former::own::*` for
 /// explicit imports, or through the main crate exports.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use former_meta as derive;
 }
 
@@ -188,12 +196,12 @@ pub mod own {
 /// - **prelude**: Essential imports
 ///
 /// This pattern enables fine-grained control over what gets exposed at each level.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
@@ -215,21 +223,21 @@ pub mod orphan {
 /// ```
 ///
 /// Most users will access this through the main crate re-exports rather than directly.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use former_meta::*;
 
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use former_types::exposed::*;
 }
 
@@ -251,7 +259,7 @@ pub mod exposed {
 /// use former::Former;
 /// 
 /// // Now you have access to the most common Former functionality
-/// #[derive(Former)]
+/// #[ derive( Former ) ]
 /// struct MyStruct {
 ///     field: String,
 /// }
@@ -263,12 +271,12 @@ pub mod exposed {
 /// - Commonly used in typical Former scenarios
 /// - Unlikely to cause naming conflicts
 /// - Essential for basic functionality
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use former_types::prelude::*;
 }

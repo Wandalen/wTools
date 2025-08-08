@@ -13,11 +13,11 @@ fn main() {}
 
 #[cfg(all(feature = "derive_former", feature = "enabled"))]
 fn main() {
-  #[cfg(feature = "enabled")]
+  #[ cfg( feature = "enabled" ) ]
   use former_meta::Former;
 
   // Use attribute debug to print expanded code.
-  #[derive(Debug, PartialEq, Former)]
+  #[ derive( Debug, PartialEq, Former ) ]
   // Uncomment to see what derive expand into
   // #[ debug ]
   pub struct UserProfile {

@@ -5,7 +5,7 @@
 use super::*;
 
 // Simplified child struct without complex lifetime bounds
-#[derive(Debug, Clone, PartialEq, Default, former::Former)]
+#[ derive( Debug, Clone, PartialEq, Default, former::Former ) ]
 pub struct EntryChild {
   pub name: String,
   pub value: i32,
@@ -14,19 +14,19 @@ pub struct EntryChild {
 
 // Implement ValToEntry to map EntryChild to HashMap key/value
 // The key is derived from the 'name' field
-impl ::former::ValToEntry<std::collections::HashMap<String, EntryChild>> for EntryChild {
+impl ::former::ValToEntry<std::collections::HashMap< String, EntryChild >> for EntryChild {
   type Entry = (String, EntryChild);
-  #[inline(always)]
+  #[ inline( always ) ]
   fn val_to_entry(self) -> Self::Entry {
     (self.name.clone(), self)
   }
 }
 
 // Parent struct with subform entry collection functionality
-#[derive(Debug, PartialEq, former::Former)]
+#[ derive( Debug, PartialEq, former::Former ) ]
 pub struct EntryParent {
-  #[subform_entry]
-  pub children: std::collections::HashMap<String, EntryChild>,
+  #[ subform_entry ]
+  pub children: std::collections::HashMap< String, EntryChild >,
   
   pub description: String,
 }
@@ -42,7 +42,7 @@ impl Default for EntryParent {
 
 // COMPREHENSIVE SUBFORM ENTRY TESTS - avoiding complex lifetime bounds
 
-#[test]
+#[ test ]
 fn entry_manual_replacement_basic_test() {
   let child = EntryChild {
     name: "key1".to_string(),
@@ -71,7 +71,7 @@ fn entry_manual_replacement_basic_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn entry_manual_replacement_multiple_entries_test() {
   let child1 = EntryChild {
     name: "first".to_string(),
@@ -112,7 +112,7 @@ fn entry_manual_replacement_multiple_entries_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn entry_manual_replacement_complex_building_test() {
   // Test complex building scenarios without lifetime bounds
   let got = EntryParent::former()
@@ -147,7 +147,7 @@ fn entry_manual_replacement_complex_building_test() {
 }
 
 // Test that demonstrates subform entry chaining patterns
-#[test]
+#[ test ]
 fn entry_manual_replacement_chaining_test() {
   let got = EntryParent::former()
     .description("chaining_test".to_string())
@@ -195,7 +195,7 @@ fn entry_manual_replacement_chaining_test() {
 }
 
 // Comprehensive subform entry functionality validation
-#[test]
+#[ test ]
 fn entry_manual_replacement_comprehensive_validation_test() {
   // Test all aspects of subform entry building without complex lifetimes
   let child_data = vec![
@@ -236,7 +236,7 @@ fn entry_manual_replacement_comprehensive_validation_test() {
 }
 
 // Test demonstrating subform entry patterns work with all Former functionality
-#[test]
+#[ test ]
 fn entry_manual_replacement_integration_test() {
   // Test integration between subform entries and regular field setting
   let parent1 = EntryParent::former()

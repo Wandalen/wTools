@@ -11,9 +11,9 @@
 // #[ cfg( feature = "enabled" ) ]
 // use macro_tools::prelude::*;
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 mod implementation {
-  #[cfg(feature = "reflect_derive")]
+  #[ cfg( feature = "reflect_derive" ) ]
   pub mod reflect;
 }
 
@@ -25,8 +25,8 @@ mod implementation {
 ///
 /// qqq : write, please
 ///
-#[cfg(feature = "enabled")]
-#[cfg(feature = "reflect_derive")]
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "reflect_derive" ) ]
 #[proc_macro_derive(Reflect, attributes(debug))]
 pub fn derive_reflect(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
   let result = implementation::reflect::reflect(input);

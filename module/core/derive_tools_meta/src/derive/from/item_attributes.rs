@@ -5,7 +5,7 @@ use macro_tools::{AttributePropertyOptionalSingletone};
 ///
 /// Attributes of item.
 ///
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct ItemAttributes {
   ///
   /// If true, the macro will not be applied.
@@ -29,7 +29,7 @@ impl ItemAttributes {
   ///
   /// Parse attributes.
   ///
-  pub fn from_attrs<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> Result<Self>
+  pub fn from_attrs<'a>(attrs: impl Iterator<Item = &'a syn::Attribute>) -> Result< Self >
   where
     Self: Sized,
   {

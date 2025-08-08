@@ -1,12 +1,12 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use the_module::*;
 
 //
 
-#[test]
-#[cfg(feature = "enabled")]
+#[ test ]
+#[ cfg( feature = "enabled" ) ]
 fn basic() {
   // test.case( "basic" );
   let src = [1, 2, 3];

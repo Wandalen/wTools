@@ -5,9 +5,9 @@ use std::time;
 /// Get current time. Units are milliseconds.
 ///
 #[cfg(not(feature = "no_std"))]
-#[allow(clippy::cast_possible_truncation)]
-#[allow(clippy::missing_panics_doc)]
-#[must_use] pub fn now() -> i64 {
+#[ allow( clippy::cast_possible_truncation ) ]
+#[ allow( clippy::missing_panics_doc ) ]
+#[ must_use ] pub fn now() -> i64 {
   time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap().as_millis() as i64
 }
 
@@ -19,9 +19,9 @@ pub mod s {
 
   /// Get current time. Units are seconds.
   #[cfg(not(feature = "no_std"))]
-  #[allow(clippy::cast_possible_wrap)]
-  #[allow(clippy::missing_panics_doc)]
-  #[must_use] pub fn now() -> i64 {
+  #[ allow( clippy::cast_possible_wrap ) ]
+  #[ allow( clippy::missing_panics_doc ) ]
+  #[ must_use ] pub fn now() -> i64 {
     time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap().as_secs() as i64
   }
 }
@@ -34,9 +34,9 @@ pub mod ms {
 
   /// Get current time. Units are milliseconds.
   #[cfg(not(feature = "no_std"))]
-  #[allow(clippy::cast_possible_truncation)]
-  #[allow(clippy::missing_panics_doc)]
-  #[must_use] pub fn now() -> i64 {
+  #[ allow( clippy::cast_possible_truncation ) ]
+  #[ allow( clippy::missing_panics_doc ) ]
+  #[ must_use ] pub fn now() -> i64 {
     time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap().as_millis() as i64
   }
 }
@@ -52,9 +52,9 @@ pub mod ns {
 
   /// Get current time. Units are nanoseconds.
   #[cfg(not(feature = "no_std"))]
-  #[allow(clippy::cast_possible_truncation)]
-  #[allow(clippy::missing_panics_doc)]
-  #[must_use] pub fn now() -> i64 {
+  #[ allow( clippy::cast_possible_truncation ) ]
+  #[ allow( clippy::missing_panics_doc ) ]
+  #[ must_use ] pub fn now() -> i64 {
     time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap().as_nanos() as i64
   }
 }

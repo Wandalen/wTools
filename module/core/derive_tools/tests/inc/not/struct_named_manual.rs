@@ -1,6 +1,6 @@
 use core::ops::Not;
 
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 struct StructNamed {
   a: bool,
   b: u8,

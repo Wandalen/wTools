@@ -24,7 +24,7 @@
 //!    were moved to workspace level for version consistency.
 //!
 //! 3. **Attribute Formatting**: All attributes use proper spacing per Universal Formatting Rule:
-//!    `#[ cfg( feature = "enabled" ) ]` instead of `#[cfg(feature = "enabled")]`
+//!    `#[ cfg( feature = "enabled" ) ]` instead of `#[ cfg( feature = "enabled" ) ]`
 //!
 //! 4. **mod_interface Architecture**: Converted from manual namespace patterns to `mod_interface!`
 //!    macro usage for cleaner module organization and controlled visibility.

@@ -35,7 +35,7 @@ use std::sync::OnceLock;
 ///
 /// `Records` provides an implementation for table formatting that outputs
 /// each row as a separate table with 2 columns, first is name of column in the original data and second is cell value itself.
-#[derive( Debug )]
+#[ derive( Debug ) ]
 pub struct Records
 {
   /// Prefix added to each row.

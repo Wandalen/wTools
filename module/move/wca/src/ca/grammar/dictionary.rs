@@ -15,7 +15,7 @@ mod private
   // ///
   // /// This structure holds a hashmap of commands where each command is mapped to its name.
   // #[ derive( Debug, Former ) ]
-  // pub struct Dictionary( HashMap< String, Command > );
+  // pub struct Dictionary( HashMap<  String, Command  > );
 
   /// A collection of commands.
   ///
@@ -47,7 +47,7 @@ mod private
     /// # Arguments
     ///
     /// * `command` - The command to be registered.
-    pub fn register( &mut self, command : Command ) -> Option< Command >
+    pub fn register( &mut self, command : Command ) -> Option<  Command  >
     {
       self.commands.insert( command.phrase.clone(), command )
     }
@@ -62,7 +62,7 @@ mod private
     ///
     /// An `Option` containing a reference to the command with the specified `name`, if it exists.
     /// Returns `None` if no command with the specified `name` is found.
-    pub fn command< Name >( &self, name : &Name ) -> Option< &Command >
+    pub fn command< Name >( &self, name : &Name ) -> Option<  &Command  >
     where
       String : std::borrow::Borrow< Name >,
       Name : std::hash::Hash + Eq,
@@ -82,7 +82,7 @@ mod private
     /// # Returns
     ///
     /// A vector of references to `Command` that match the given `name_part`.
-    pub fn search< NamePart >( &self, name_part : NamePart ) -> Vec< &Command >
+    pub fn search< NamePart >( &self, name_part : NamePart ) -> Vec<  &Command  >
     where
       NamePart : AsRef< str >,
     {
@@ -91,7 +91,7 @@ mod private
 
     /// asd
     #[ must_use ]
-    pub fn commands( &self ) -> Vec< ( &String, &Command ) >
+    pub fn commands( &self ) -> Vec<  ( &String, &Command )  >
     {
       match self.order
       {

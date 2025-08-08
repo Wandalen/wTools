@@ -4,7 +4,7 @@ use macro_tools::generic_params;
 use quote::quote;
 use syn::parse_quote;
 
-#[test]
+#[ test ]
 fn test_decompose_no_trailing_commas() {
     let generics: syn::Generics = syn::parse_quote! { <'a, T: Clone> };
     let (_, impl_gen, ty_gen, _) = generic_params::decompose(&generics);
@@ -26,7 +26,7 @@ fn test_decompose_no_trailing_commas() {
     assert_eq!(type_code.to_string(), expected_type.to_string());
 }
 
-#[test]
+#[ test ]
 fn test_decompose_empty_generics() {
     let generics: syn::Generics = syn::parse_quote! { };
     let (_, impl_gen, ty_gen, _) = generic_params::decompose(&generics);
@@ -44,7 +44,7 @@ fn test_decompose_empty_generics() {
     assert_eq!(type_code.to_string(), "MyStruct");
 }
 
-#[test]
+#[ test ]
 fn test_decompose_single_lifetime() {
     let generics: syn::Generics = syn::parse_quote! { <'a> };
     let (_, impl_gen, ty_gen, _) = generic_params::decompose(&generics);
@@ -61,7 +61,7 @@ fn test_decompose_single_lifetime() {
     assert_eq!(impl_code.to_string(), expected_impl.to_string());
 }
 
-#[test]
+#[ test ]
 fn test_decompose_multiple_lifetimes() {
     let generics: syn::Generics = syn::parse_quote! { <'a, 'b, 'c> };
     let (_, impl_gen, ty_gen, _) = generic_params::decompose(&generics);
@@ -80,7 +80,7 @@ fn test_decompose_multiple_lifetimes() {
     assert_eq!(impl_code.to_string(), expected_impl.to_string());
 }
 
-#[test]
+#[ test ]
 fn test_decompose_mixed_generics() {
     let generics: syn::Generics = syn::parse_quote! { <'a, T, const N: usize> };
     let (_, impl_gen, ty_gen, _) = generic_params::decompose(&generics);
@@ -99,7 +99,7 @@ fn test_decompose_mixed_generics() {
     assert_eq!(type_code.to_string(), expected_type.to_string());
 }
 
-#[test]
+#[ test ]
 fn test_decompose_complex_bounds() {
     let generics: syn::Generics = syn::parse_quote! { <T: Clone + Send + 'static> };
     let (_, impl_gen, ty_gen, _) = generic_params::decompose(&generics);
@@ -118,7 +118,7 @@ fn test_decompose_complex_bounds() {
     assert_eq!(type_code.to_string(), expected_type.to_string());
 }
 
-#[test]
+#[ test ]
 fn test_decompose_with_defaults() {
     let generics: syn::Generics = syn::parse_quote! { <T = String, const N: usize = 10> };
     let (with_defaults, impl_gen, ty_gen, _) = generic_params::decompose(&generics);
@@ -141,7 +141,7 @@ fn test_decompose_with_defaults() {
     assert!(!impl_code.to_string().contains("= 10"));
 }
 
-#[test]
+#[ test ]
 fn test_decompose_with_where_clause() {
     // Parse a type with generics to extract the generics including where clause
     let item: syn::ItemStruct = parse_quote! {
@@ -166,7 +166,7 @@ fn test_decompose_with_where_clause() {
     assert!(where_code.to_string().contains("U : Send"));
 }
 
-#[test]
+#[ test ]
 fn test_decompose_single_const_param() {
     let generics: syn::Generics = syn::parse_quote! { <const N: usize> };
     let (_, impl_gen, ty_gen, _) = generic_params::decompose(&generics);
@@ -181,7 +181,7 @@ fn test_decompose_single_const_param() {
     assert_eq!(impl_code.to_string(), expected_impl.to_string());
 }
 
-#[test]
+#[ test ]
 fn test_decompose_lifetime_bounds() {
     let generics: syn::Generics = syn::parse_quote! { <'a: 'b, 'b> };
     let (_, impl_gen, ty_gen, _) = generic_params::decompose(&generics);

@@ -1,10 +1,10 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
 ///
 /// Options1
 ///
-#[derive(Debug, Default, PartialEq)]
+#[ derive( Debug, Default, PartialEq ) ]
 pub struct Options1 {
   field1: i32,
   field2: String,
@@ -12,21 +12,21 @@ pub struct Options1 {
 }
 
 impl From<&Options1> for i32 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn from(src: &Options1) -> Self {
     src.field1
   }
 }
 
 impl From<&Options1> for String {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn from(src: &Options1) -> Self {
     src.field2.clone()
   }
 }
 
 impl From<&Options1> for f32 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn from(src: &Options1) -> Self {
     src.field3
   }
@@ -35,7 +35,7 @@ impl From<&Options1> for f32 {
 ///
 /// Options2
 ///
-#[derive(Debug, Default, PartialEq, the_module::FromComponents)]
+#[ derive( Debug, Default, PartialEq, the_module::FromComponents ) ]
 pub struct Options2 {
   field1: i32,
   field2: String,

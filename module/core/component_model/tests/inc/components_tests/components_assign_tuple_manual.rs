@@ -1,14 +1,14 @@
 // module/core/component_model/tests/inc/components_tests/components_assign_tuple_manual.rs
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use component_model::{Assign, AssignWithType};
 
 // Define TupleStruct1 without derive
-#[derive(Debug, Default, PartialEq)]
+#[ derive( Debug, Default, PartialEq ) ]
 struct TupleStruct1(i32, String, f32);
 
 // Define TupleStruct2 without derive
-#[derive(Debug, Default, PartialEq)]
+#[ derive( Debug, Default, PartialEq ) ]
 struct TupleStruct2(i32, String);
 
 // Manual Assign impls for TupleStruct1
@@ -60,14 +60,14 @@ where
 
 // Implement From<&TupleStruct1> for the types present in TupleStruct2
 impl From<&TupleStruct1> for i32 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn from(src: &TupleStruct1) -> Self {
     src.0
   }
 }
 
 impl From<&TupleStruct1> for String {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn from(src: &TupleStruct1) -> Self {
     src.1.clone()
   }
@@ -91,7 +91,7 @@ where
   IntoT: Into<String>,
   IntoT: Clone,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn tuple_struct_2_assign(&mut self, component: IntoT) {
     component_model::Assign::<i32, _>::assign(self, component.clone());
     component_model::Assign::<String, _>::assign(self, component.clone());

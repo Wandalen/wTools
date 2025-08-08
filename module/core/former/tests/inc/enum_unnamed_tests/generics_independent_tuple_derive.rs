@@ -1,17 +1,17 @@
-// Purpose: Tests the `#[derive(Former)]` macro's generation of constructors for unnamed (tuple)
+// Purpose: Tests the `#[ derive( Former ) ]` macro's generation of constructors for unnamed (tuple)
 // variants with independent generic parameters and bounds, specifically when the variant
-// is marked with `#[scalar]`. This file focuses on verifying the derive-based implementation.
+// is marked with `#[ scalar ]`. This file focuses on verifying the derive-based implementation.
 //
 // Coverage:
-// - Rule 1d (Tuple + Single-Field + `#[scalar]` -> Scalar): Verifies `EnumG5::<T>::v1() -> EnumG5<T>`.
-// - Rule 4a (#[standalone_constructors]): Verifies generation of top-level constructor functions (though not explicitly tested in `_only_test.rs`).
+// - Rule 1d (Tuple + Single-Field + `#[ scalar ]` -> Scalar): Verifies `EnumG5::<T>::v1() -> EnumG5<T>`.
+// - Rule 4a (#[ standalone_constructors ]): Verifies generation of top-level constructor functions (though not explicitly tested in `_only_test.rs`).
 //
 // Test Relevance/Acceptance Criteria:
 // - Defines a generic enum `EnumG5<T: BoundA>` with a single-field tuple variant `V1(InnerG5<TypeForU>, PhantomData<T>)`.
 // - The inner struct `InnerG5<U: BoundB>` has its own generic `U` and bound `BoundB`, and is instantiated with a concrete `TypeForU` in the variant.
-// - The variant `V1` is annotated with `#[scalar]`. The enum has `#[derive(Former)]`.
+// - The variant `V1` is annotated with `#[ scalar ]`. The enum has `#[ derive( Former ) ]`.
 // - Relies on the derived static method `EnumG5::<TypeForT>::v_1()` defined in `generics_independent_tuple_only_test.rs`.
-// - Asserts that this constructor produces the correct `EnumG5` enum instance by comparing with a manually constructed variant, confirming correct handling of independent generics and the `#[scalar]` attribute.
+// - Asserts that this constructor produces the correct `EnumG5` enum instance by comparing with a manually constructed variant, confirming correct handling of independent generics and the `#[ scalar ]` attribute.
 use super::*; // Imports testing infrastructure and potentially other common items
 use std::marker::PhantomData;
 

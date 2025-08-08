@@ -21,7 +21,7 @@ fn main() {}
 fn main() {
   use collection_tools::{HashMap, hmap};
 
-  #[derive(Debug, PartialEq, former::Former)]
+  #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithMap {
     map: HashMap<&'static str, &'static str>,
   }

@@ -8,7 +8,7 @@ mod private {
   use crate::*;
 
   /// Enum to encapsulate either a field from a struct or a variant from an enum.
-  #[derive(Debug, PartialEq, Clone)]
+  #[ derive( Debug, PartialEq, Clone ) ]
   pub enum FieldOrVariant<'a> {
     /// Represents a field within a struct or union.
     Field(&'a syn::Field),
@@ -45,8 +45,8 @@ mod private {
 
   impl FieldOrVariant<'_> {
     /// Returns a reference to the attributes of the item.
-    #[must_use]
-    pub fn attrs(&self) -> &Vec<syn::Attribute> {
+    #[ must_use ]
+    pub fn attrs(&self) -> &Vec<  syn::Attribute  > {
       match self {
         FieldOrVariant::Field(e) => &e.attrs,
         FieldOrVariant::Variant(e) => &e.attrs,
@@ -54,8 +54,8 @@ mod private {
     }
 
     /// Returns a reference to the visibility of the item.
-    #[must_use]
-    pub fn vis(&self) -> Option<&syn::Visibility> {
+    #[ must_use ]
+    pub fn vis(&self) -> Option<  &syn::Visibility  > {
       match self {
         FieldOrVariant::Field(e) => Some(&e.vis),
         FieldOrVariant::Variant(_) => None,
@@ -63,8 +63,8 @@ mod private {
     }
 
     /// Returns a reference to the mutability of the item.
-    #[must_use]
-    pub fn mutability(&self) -> Option<&syn::FieldMutability> {
+    #[ must_use ]
+    pub fn mutability(&self) -> Option<  &syn::FieldMutability  > {
       match self {
         FieldOrVariant::Field(e) => Some(&e.mutability),
         FieldOrVariant::Variant(_) => None,
@@ -72,8 +72,8 @@ mod private {
     }
 
     /// Returns a reference to the identifier of the item.
-    #[must_use]
-    pub fn ident(&self) -> Option<&syn::Ident> {
+    #[ must_use ]
+    pub fn ident(&self) -> Option<  &syn::Ident  > {
       match self {
         FieldOrVariant::Field(e) => e.ident.as_ref(),
         FieldOrVariant::Variant(e) => Some(&e.ident),
@@ -81,8 +81,8 @@ mod private {
     }
 
     /// Returns an iterator over elements of the item.
-    #[must_use]
-    pub fn typ(&self) -> Option<&syn::Type> {
+    #[ must_use ]
+    pub fn typ(&self) -> Option<  &syn::Type  > {
       match self {
         FieldOrVariant::Field(e) => Some(&e.ty),
         FieldOrVariant::Variant(_e) => None,
@@ -90,8 +90,8 @@ mod private {
     }
 
     /// Returns a reference to the fields of the item.
-    #[must_use]
-    pub fn fields(&self) -> Option<&syn::Fields> {
+    #[ must_use ]
+    pub fn fields(&self) -> Option<  &syn::Fields  > {
       match self {
         FieldOrVariant::Field(_) => None,
         FieldOrVariant::Variant(e) => Some(&e.fields),
@@ -99,8 +99,8 @@ mod private {
     }
 
     /// Returns a reference to the discriminant of the item.
-    #[must_use]
-    pub fn discriminant(&self) -> Option<&(syn::token::Eq, syn::Expr)> {
+    #[ must_use ]
+    pub fn discriminant(&self) -> Option< &(syn::token::Eq, syn::Expr) > {
       match self {
         FieldOrVariant::Field(_) => None,
         FieldOrVariant::Variant(e) => e.discriminant.as_ref(),
@@ -122,7 +122,7 @@ mod private {
   /// - `Enum`: Represents enums in Rust, which are types that can hold one of multiple possible variants. This is particularly
   ///   useful for type-safe state or option handling without the use of external discriminators.
   ///
-  #[derive(Debug, PartialEq)]
+  #[ derive( Debug, PartialEq ) ]
   pub enum StructLike {
     /// A unit struct with no fields.
     Unit(syn::ItemStruct),
@@ -149,11 +149,11 @@ mod private {
   }
 
   impl syn::parse::Parse for StructLike {
-    fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
+    fn parse(input: syn::parse::ParseStream< '_ >) -> syn::Result<  Self  > {
       use syn::{ItemStruct, ItemEnum, Visibility, Attribute};
 
       // Parse attributes
-      let attributes: Vec<Attribute> = input.call(Attribute::parse_outer)?;
+      let attributes: Vec<  Attribute  > = input.call(Attribute::parse_outer)?;
       // Parse visibility
       let visibility: Visibility = input.parse().unwrap_or(syn::Visibility::Inherited);
 
@@ -215,8 +215,8 @@ mod private {
     }
 
     /// Returns an iterator over elements of the item.
-    #[must_use]
-    pub fn attrs(&self) -> &Vec<syn::Attribute> {
+    #[ must_use ]
+    pub fn attrs(&self) -> &Vec<  syn::Attribute  > {
       match self {
         StructLike::Unit(item) | StructLike::Struct(item) => &item.attrs,
         StructLike::Enum(item) => &item.attrs,
@@ -224,7 +224,7 @@ mod private {
     }
 
     /// Returns an iterator over elements of the item.
-    #[must_use]
+    #[ must_use ]
     pub fn vis(&self) -> &syn::Visibility {
       match self {
         StructLike::Unit(item) | StructLike::Struct(item) => &item.vis,
@@ -233,7 +233,7 @@ mod private {
     }
 
     /// Returns an iterator over elements of the item.
-    #[must_use]
+    #[ must_use ]
     pub fn ident(&self) -> &syn::Ident {
       match self {
         StructLike::Unit(item) | StructLike::Struct(item) => &item.ident,
@@ -242,7 +242,7 @@ mod private {
     }
 
     /// Returns an iterator over elements of the item.
-    #[must_use]
+    #[ must_use ]
     pub fn generics(&self) -> &syn::Generics {
       match self {
         StructLike::Unit(item) | StructLike::Struct(item) => &item.generics,
@@ -252,7 +252,7 @@ mod private {
 
     /// Returns an iterator over fields of the item.
     // pub fn fields< 'a >( &'a self ) -> impl IterTrait< 'a, &'a syn::Field >
-    #[must_use]
+    #[ must_use ]
     pub fn fields<'a>(&'a self) -> BoxedIter<'a, &'a syn::Field> {
       let result: BoxedIter<'a, &'a syn::Field> = match self {
         StructLike::Unit(_item) => Box::new(core::iter::empty()),
@@ -266,7 +266,7 @@ mod private {
     /// # Panics
     /// qqq: docs
     // pub fn field_names< 'a >( &'a self ) -> Option< impl IterTrait< 'a, &'a syn::Ident > + '_ >
-    #[must_use]
+    #[ must_use ]
     pub fn field_names(&self) -> Option<BoxedIter<'_, &syn::Ident>> {
       match self {
         StructLike::Unit(item) | StructLike::Struct(item) => item_struct::field_names(item),
@@ -278,7 +278,7 @@ mod private {
     }
 
     /// Extracts the type of each field.
-    #[must_use]
+    #[ must_use ]
     pub fn field_types(&self) -> BoxedIter<'_, &syn::Type>
 // -> std::iter::Map
     // <
@@ -290,21 +290,21 @@ mod private {
     }
 
     /// Extracts the name of each field.
-    // pub fn field_attrs< 'a >( &'a self ) -> impl IterTrait< 'a, &'a Vec< syn::Attribute > >
-    #[must_use]
-    pub fn field_attrs(&self) -> BoxedIter<'_, &Vec<syn::Attribute>>
+    // pub fn field_attrs< 'a >( &'a self ) -> impl IterTrait< 'a, &'a Vec<  syn::Attribute  > >
+    #[ must_use ]
+    pub fn field_attrs(&self) -> BoxedIter<'_, &Vec<  syn::Attribute  >>
 // -> std::iter::Map
     // <
     //   std::boxed::Box< dyn _IterTrait< '_, &syn::Field > + 'a >,
-    //   impl FnMut( &'a syn::Field ) -> &'a Vec< syn::Attribute > + 'a,
+    //   impl FnMut( &'a syn::Field ) -> &'a Vec<  syn::Attribute  > + 'a,
     // >
     {
       Box::new(self.fields().map(|field| &field.attrs))
     }
 
     /// Extract the first field.
-    #[must_use]
-    pub fn first_field(&self) -> Option<&syn::Field> {
+    #[ must_use ]
+    pub fn first_field(&self) -> Option<  &syn::Field  > {
       self.fields().next()
       // .ok_or( syn_err!( self.span(), "Expects at least one field" ) )
     }
@@ -313,43 +313,43 @@ mod private {
   //
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{StructLike, FieldOrVariant};
 }
 
 /// Orphan namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
   pub use super::super::struct_like;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 }

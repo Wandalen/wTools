@@ -7,12 +7,12 @@
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 #![ cfg_attr( not( doc ), doc = "Process management utilities" ) ]
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 use mod_interface::mod_interface;
 
 mod private {}
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 mod_interface! {
 
   /// Basic functionality.

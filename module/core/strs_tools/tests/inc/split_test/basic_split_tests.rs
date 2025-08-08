@@ -3,7 +3,7 @@ use strs_tools::string::split::*;
 
 // Test Matrix ID: Basic_Default_NoDelim_SimpleSrc
 // Tests the default behavior of split when no delimiters are specified.
-#[test]
+#[ test ]
 fn test_scenario_default_char_split() {
   let src = "abc";
   let iter = split()
@@ -15,7 +15,7 @@ fn test_scenario_default_char_split() {
 
 // Test Matrix ID: Basic_Default_FormMethods_SimpleSrc
 // Tests the default behavior using .form() and .split_fast() methods.
-#[test]
+#[ test ]
 fn test_scenario_default_char_split_form_methods() {
   let src = "abc";
   let opts = split().src(src).form();
@@ -33,7 +33,7 @@ fn test_scenario_default_char_split_form_methods() {
 // PE=F (default).
 // "abc" -> SFI: ""(D), "a"(L), ""(D), "b"(L), "c"(D)
 // SI yields: "a", "b", "c"
-#[test]
+#[ test ]
 fn test_scenario_multi_delimiters_incl_empty_char_split() {
   let src = "abc";
   let iter = split()
@@ -50,7 +50,7 @@ fn test_scenario_multi_delimiters_incl_empty_char_split() {
 // PE=F (default).
 // "abc" -> SFI: "a"(D), "b"(L), "c"(D)
 // SI yields: "a", "b", "c"
-#[test]
+#[ test ]
 fn test_basic_multi_delimiters_some_match() {
   let src = "abc";
   let iter = split()
@@ -63,7 +63,7 @@ fn test_basic_multi_delimiters_some_match() {
 
 // Test Matrix ID: N/A
 // Tests that escaped characters within a quoted string are correctly unescaped.
-#[test]
+#[ test ]
 fn unescaping_in_quoted_string() {
   // Test case 1: Escaped quote
   let src = r#""hello \" world""#;
@@ -78,7 +78,7 @@ fn unescaping_in_quoted_string() {
   assert_eq!(splits, vec![r"path\to\file"]);
 }
 
-#[test]
+#[ test ]
 fn unescaping_only_escaped_quote() {
   let src = r#""\"""#;
   let iter = split().src(src).quoting(true).preserving_empty(true).perform();
@@ -86,7 +86,7 @@ fn unescaping_only_escaped_quote() {
   assert_eq!(splits, vec![r#"""#]);
 }
 
-#[test]
+#[ test ]
 fn unescaping_only_escaped_backslash() {
   let src = r#""\\""#;
   let iter = split().src(src).quoting(true).preserving_empty(true).perform();
@@ -94,7 +94,7 @@ fn unescaping_only_escaped_backslash() {
   assert_eq!(splits, vec![r"\"]);
 }
 
-#[test]
+#[ test ]
 fn unescaping_consecutive_escaped_backslashes() {
   let src = r#""\\\\""#;
   let iter = split().src(src).quoting(true).preserving_empty(true).perform();
@@ -102,7 +102,7 @@ fn unescaping_consecutive_escaped_backslashes() {
   assert_eq!(splits, vec![r"\\"]);
 }
 
-#[test]
+#[ test ]
 fn unescaping_mixed_escaped_and_normal() {
   let src = r#""a\\b\"c""#;
   let iter = split().src(src).quoting(true).preserving_empty(true).perform();
@@ -110,7 +110,7 @@ fn unescaping_mixed_escaped_and_normal() {
   assert_eq!(splits, vec![r#"a\b"c"#]);
 }
 
-#[test]
+#[ test ]
 fn unescaping_at_start_and_end() {
   let src = r#""\\a\"""#;
   let iter = split().src(src).quoting(true).preserving_empty(true).perform();
@@ -118,7 +118,7 @@ fn unescaping_at_start_and_end() {
   assert_eq!(splits, vec![r#"\a""#]);
 }
 
-#[test]
+#[ test ]
 fn unescaping_with_delimiters_outside() {
   let src = r#"a "b\"c" d"#;
   let iter = split().src(src).quoting(true).delimeter(" ").perform();
@@ -126,7 +126,7 @@ fn unescaping_with_delimiters_outside() {
   assert_eq!(splits, vec!["a", " ", r#"b"c"#, " ", "d"]);
 }
 
-#[test]
+#[ test ]
 fn unescaping_with_delimiters_inside_and_outside() {
   let src = r#"a "b c\"d" e"#;
   let iter = split().src(src).quoting(true).delimeter(" ").perform();
@@ -134,7 +134,7 @@ fn unescaping_with_delimiters_inside_and_outside() {
   assert_eq!(splits, vec!["a", " ", r#"b c"d"#, " ", "e"]);
 }
 
-#[test]
+#[ test ]
 fn unescaping_empty_string() {
   let src = r#""""#;
   let iter = split().src(src).quoting(true).preserving_empty(true).perform();
@@ -142,7 +142,7 @@ fn unescaping_empty_string() {
   assert_eq!(splits, vec![""]);
 }
 
-#[test]
+#[ test ]
 fn unescaping_unterminated_quote() {
   let src = r#""abc\""#;
   let iter = split().src(src).quoting(true).preserving_empty(true).perform();
@@ -151,7 +151,7 @@ fn unescaping_unterminated_quote() {
   assert_eq!(splits, vec![r#"abc""#]);
 }
 
-#[test]
+#[ test ]
 fn unescaping_unterminated_quote_with_escape() {
   let src = r#""abc\\""#;
   let iter = split().src(src).quoting(true).preserving_empty(true).perform();

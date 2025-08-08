@@ -32,7 +32,7 @@ use strs_tools::string::split::SplitFlags;
 
 /// Tests `contains` method with a single flag.
 /// Test Combination: T2.1
-#[test]
+#[ test ]
 fn test_contains_single_flag() {
   let flags = SplitFlags::PRESERVING_EMPTY;
   assert!(flags.contains(SplitFlags::PRESERVING_EMPTY));
@@ -40,7 +40,7 @@ fn test_contains_single_flag() {
 
 /// Tests `contains` method with a single flag not contained.
 /// Test Combination: T2.2
-#[test]
+#[ test ]
 fn test_contains_single_flag_not_contained() {
   let flags = SplitFlags::PRESERVING_EMPTY;
   assert!(!flags.contains(SplitFlags::STRIPPING));
@@ -48,7 +48,7 @@ fn test_contains_single_flag_not_contained() {
 
 /// Tests `contains` method with combined flags.
 /// Test Combination: T2.3
-#[test]
+#[ test ]
 fn test_contains_combined_flags() {
   let flags = SplitFlags::PRESERVING_EMPTY | SplitFlags::STRIPPING;
   assert!(flags.contains(SplitFlags::PRESERVING_EMPTY));
@@ -56,7 +56,7 @@ fn test_contains_combined_flags() {
 
 /// Tests `contains` method with combined flags not fully contained.
 /// Test Combination: T2.4
-#[test]
+#[ test ]
 fn test_contains_combined_flags_not_fully_contained() {
   let flags = SplitFlags::PRESERVING_EMPTY;
   assert!(!flags.contains(SplitFlags::PRESERVING_EMPTY | SplitFlags::STRIPPING));
@@ -64,7 +64,7 @@ fn test_contains_combined_flags_not_fully_contained() {
 
 /// Tests `insert` method to add a new flag.
 /// Test Combination: T2.5
-#[test]
+#[ test ]
 fn test_insert_new_flag() {
   let mut flags = SplitFlags::PRESERVING_EMPTY;
   flags.insert(SplitFlags::STRIPPING);
@@ -73,7 +73,7 @@ fn test_insert_new_flag() {
 
 /// Tests `insert` method to add an existing flag.
 /// Test Combination: T2.6
-#[test]
+#[ test ]
 fn test_insert_existing_flag() {
   let mut flags = SplitFlags::PRESERVING_EMPTY;
   flags.insert(SplitFlags::PRESERVING_EMPTY);
@@ -82,7 +82,7 @@ fn test_insert_existing_flag() {
 
 /// Tests `remove` method to remove an existing flag.
 /// Test Combination: T2.7
-#[test]
+#[ test ]
 fn test_remove_existing_flag() {
   let mut flags = SplitFlags::PRESERVING_EMPTY | SplitFlags::STRIPPING;
   flags.remove(SplitFlags::STRIPPING);
@@ -91,7 +91,7 @@ fn test_remove_existing_flag() {
 
 /// Tests `remove` method to remove a non-existing flag.
 /// Test Combination: T2.8
-#[test]
+#[ test ]
 fn test_remove_non_existing_flag() {
   let mut flags = SplitFlags::PRESERVING_EMPTY;
   flags.remove(SplitFlags::STRIPPING);
@@ -100,7 +100,7 @@ fn test_remove_non_existing_flag() {
 
 /// Tests `bitor` operator to combine flags.
 /// Test Combination: T2.9
-#[test]
+#[ test ]
 fn test_bitor_operator() {
   let flags = SplitFlags::PRESERVING_EMPTY | SplitFlags::STRIPPING;
   assert_eq!(flags, SplitFlags(0b00001001));
@@ -108,7 +108,7 @@ fn test_bitor_operator() {
 
 /// Tests `bitand` operator to intersect flags.
 /// Test Combination: T2.10
-#[test]
+#[ test ]
 fn test_bitand_operator() {
   let flags = (SplitFlags::PRESERVING_EMPTY | SplitFlags::STRIPPING) & SplitFlags::PRESERVING_EMPTY;
   assert_eq!(flags, SplitFlags::PRESERVING_EMPTY);
@@ -116,7 +116,7 @@ fn test_bitand_operator() {
 
 /// Tests `not` operator to invert flags.
 /// Test Combination: T2.11
-#[test]
+#[ test ]
 fn test_not_operator() {
   let flags = !SplitFlags::PRESERVING_EMPTY;
   // Assuming all 5 flags are the only relevant bits, the inverted value should be
@@ -128,7 +128,7 @@ fn test_not_operator() {
 
 /// Tests `from_bits` and `bits` methods.
 /// Test Combination: T2.12
-#[test]
+#[ test ]
 fn test_from_bits_and_bits() {
   let value = 0b00010101;
   let flags = SplitFlags::from_bits(value).unwrap();
@@ -137,7 +137,7 @@ fn test_from_bits_and_bits() {
 
 /// Tests the default value of `SplitFlags`.
 /// Test Combination: T2.13
-#[test]
+#[ test ]
 fn test_default_value() {
   let flags = SplitFlags::default();
   assert_eq!(flags.0, 0);
@@ -145,7 +145,7 @@ fn test_default_value() {
 
 /// Tests `From<u8>` implementation.
 /// Test Combination: T2.14
-#[test]
+#[ test ]
 fn test_from_u8() {
   let flags: SplitFlags = 0b11111.into();
   assert_eq!(flags.0, 0b11111);
@@ -153,7 +153,7 @@ fn test_from_u8() {
 
 /// Tests `Into<u8>` implementation.
 /// Test Combination: T2.15
-#[test]
+#[ test ]
 fn test_into_u8() {
   let flags = SplitFlags::PRESERVING_EMPTY;
   let value: u8 = flags.into();

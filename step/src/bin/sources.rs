@@ -23,12 +23,12 @@ fn main() -> Result< () >
 
   println!( " = package - {}", package.crate_dir().unwrap() );
 
-//   let ins = r#"
+  // let ins = r#"
 // pub mod exposed
 // {
 // "#;
 //
-//   let sub = r#"
+  // let sub = r#"
 // pub mod exposed
 // {
 //   #[ allow( unused_imports ) ]

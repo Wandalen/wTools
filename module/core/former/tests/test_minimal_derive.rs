@@ -4,7 +4,7 @@
 // extern crate former_meta; // Unused - commented out
 
 /// Test struct for working derive functionality.
-#[derive(Debug, PartialEq)]
+#[ derive( Debug, PartialEq ) ]
 pub struct WorkingTest<'a> {
     /// Test data field.
     data: &'a str,
@@ -13,7 +13,7 @@ pub struct WorkingTest<'a> {
 // Now try with a custom proc macro - but we need to create it in a separate crate
 // For now, let's test if the issue persists even with an empty generated result
 
-#[test]
+#[ test ]
 fn working_test() {
     let input = "test";
     let instance = WorkingTest { data: input };

@@ -22,7 +22,7 @@ mod private {
     /// # Returns
     /// A new instance of `syn::AngleBracketedGenericArguments` representing the generic parameters
     /// of the original type.
-    #[allow(clippy::wrong_self_convention)]
+    #[ allow( clippy::wrong_self_convention ) ]
     fn into_generic_args(&self) -> syn::AngleBracketedGenericArguments;
   }
 
@@ -92,7 +92,7 @@ mod private {
   ///
   /// This example demonstrates how lifetimes `'a` and `'b` are placed before other generic parameters
   /// like `T`, `U`, and `V` in the merged result, adhering to the expected syntax order in Rust generics.
-  #[must_use]
+  #[ must_use ]
   pub fn merge(
     a: &syn::AngleBracketedGenericArguments,
     b: &syn::AngleBracketedGenericArguments,
@@ -128,46 +128,46 @@ mod private {
   }
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{merge};
 }
 
 /// Orphan namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{IntoGenericArgs};
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
   use super::*;
   pub use super::super::generic_args;
 
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::{prelude::*};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 }

@@ -8,7 +8,7 @@
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
 use unilang::error::Error;
-use unilang_parser::{Parser, UnilangParserOptions};
+use unilang_parser::{ Parser, UnilangParserOptions };
 
 #[test]
 fn test_dot_command_shows_help_instead_of_panicking()

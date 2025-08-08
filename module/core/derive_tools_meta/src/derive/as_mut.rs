@@ -18,7 +18,7 @@ use super::item_attributes::{ItemAttributes};
 ///
 /// Derive macro to implement `AsMut` when-ever it's possible to do automatically.
 ///
-pub fn as_mut(input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream> {
+pub fn as_mut(input: proc_macro::TokenStream) -> Result< proc_macro2::TokenStream > {
   let original_input = input.clone();
   let parsed = syn::parse::<StructLike>(input)?;
   let has_debug = attr::has_debug(parsed.attrs().iter())?;
@@ -45,7 +45,7 @@ pub fn as_mut(input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream
       for f in fields {
         if attr::has_as_mut(f.attrs.iter())? {
           if found_field {
-            return_syn_err!(f.span(), "Multiple `#[as_mut]` attributes are not allowed");
+            return_syn_err!(f.span(), "Multiple `#[ as_mut ]` attributes are not allowed");
           }
           field_type = Some(&f.ty);
           field_name = f.ident.as_ref();
@@ -61,7 +61,7 @@ pub fn as_mut(input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream
       } else {
         return_syn_err!(
           item.span(),
-          "Expected `#[as_mut]` attribute on one field or a single-field struct"
+          "Expected `#[ as_mut ]` attribute on one field or a single-field struct"
         );
       };
 
@@ -75,7 +75,7 @@ pub fn as_mut(input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream
       )
     }
     StructLike::Enum(ref item) => {
-      let variants_result: Result<Vec<proc_macro2::TokenStream>> = item
+      let variants_result: Result<Vec< proc_macro2::TokenStream >> = item
         .variants
         .iter()
         .map(|variant| {
@@ -125,7 +125,7 @@ fn generate(
   generics_ty: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
   generics_where: &syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
   field_type: &syn::Type,
-  field_name: Option<&syn::Ident>,
+  field_name: Option< &syn::Ident >,
 ) -> proc_macro2::TokenStream {
   let body = if let Some(field_name) = field_name {
     qt! { &mut self.#field_name }
@@ -168,7 +168,7 @@ fn variant_generate(
   generics_where: &syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
   variant: &syn::Variant,
   original_input: &proc_macro::TokenStream,
-) -> Result<proc_macro2::TokenStream> {
+) -> Result< proc_macro2::TokenStream > {
   let variant_name = &variant.ident;
   let fields = &variant.fields;
   let attrs = FieldAttributes::from_attrs(variant.attrs.iter())?;

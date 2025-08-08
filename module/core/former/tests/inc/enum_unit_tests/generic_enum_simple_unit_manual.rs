@@ -1,10 +1,10 @@
 //! Purpose: Provides a manual implementation of a constructor for a unit variant
 //! within a generic enum with bounds, to serve as a reference for verifying
-//! the `#[derive(Former)]` macro's behavior.
+//! the `#[ derive( Former ) ]` macro's behavior.
 //!
 //! Coverage:
 //! - Rule 3a (Unit + Default): Manual implementation of static method `EnumOuter::other_variant()`.
-//! - Rule 1a (Unit + `#[scalar]`): Manual implementation of static method (as default for unit is scalar).
+//! - Rule 1a (Unit + `#[ scalar ]`): Manual implementation of static method (as default for unit is scalar).
 //!
 //! Test Relevance/Acceptance Criteria:
 //! - Defines a generic enum `EnumOuter` with a unit variant `OtherVariant`.
@@ -16,17 +16,17 @@ use core::fmt::Debug; // Import Debug trait for bounds
                       // use std::marker::PhantomData; // No longer needed for this simple case
 
 // --- Enum Definition with Bounds ---
-#[derive(Debug, PartialEq)]
+#[ derive( Debug, PartialEq ) ]
 pub enum EnumOuter<X: Copy + Debug + PartialEq> {
   // --- Unit Variant ---
   OtherVariant,
-  #[allow(dead_code)] // Re-added to use generic X
+  #[ allow( dead_code ) ] // Re-added to use generic X
   _Phantom(core::marker::PhantomData<X>),
 }
 
 // --- Manual constructor for OtherVariant ---
 impl<X: Copy + Debug + PartialEq> EnumOuter<X> {
-  #[allow(dead_code)]
+  #[ allow( dead_code ) ]
   pub fn other_variant() -> Self {
     EnumOuter::OtherVariant
   }

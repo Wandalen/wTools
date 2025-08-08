@@ -1,13 +1,13 @@
 // Purpose: This file contains the core test logic for verifying the `Former` derive macro's
 // handling of enums where a tuple variant containing generic types and bounds is explicitly marked
-// with the `#[scalar]` attribute, or when default behavior applies. It defines the shared test
+// with the `#[ scalar ]` attribute, or when default behavior applies. It defines the shared test
 // functions used by both the derive and manual implementation test files for this scenario.
 //
 // Coverage:
-// - Rule 3d (Tuple + Single-Field + Default): Tests the subformer behavior for a single-field tuple variant with generics when `#[scalar]` is absent (default behavior), as implemented in the manual file and expected from the derive.
-// - Rule 3f (Tuple + Multi-Field + Default): Tests the subformer behavior for a multi-field tuple variant with generics when `#[scalar]` is absent (default behavior), as implemented in the manual file and expected from the derive. Note: This contradicts the documented Rule 3f which states default for multi-field tuple is scalar. The test logic here reflects the current manual implementation and derive expectation.
-// - Rule 1d (Tuple + Single-Field + `#[scalar]`): Tests the scalar constructor generation for a single-field tuple variant with generics when `#[scalar]` is applied, as implemented in the manual file and expected from the derive. (Note: `#[scalar]` is commented out in the derive file, so default behavior is expected and tested).
-// - Rule 1f (Tuple + Multi-Field + `#[scalar]`): Not applicable, as the test logic for the multi-field variant uses a subformer, aligning with the manual implementation and derive expectation but not the documented rule for `#[scalar]`.
+// - Rule 3d (Tuple + Single-Field + Default): Tests the subformer behavior for a single-field tuple variant with generics when `#[ scalar ]` is absent (default behavior), as implemented in the manual file and expected from the derive.
+// - Rule 3f (Tuple + Multi-Field + Default): Tests the subformer behavior for a multi-field tuple variant with generics when `#[ scalar ]` is absent (default behavior), as implemented in the manual file and expected from the derive. Note: This contradicts the documented Rule 3f which states default for multi-field tuple is scalar. The test logic here reflects the current manual implementation and derive expectation.
+// - Rule 1d (Tuple + Single-Field + `#[ scalar ]`): Tests the scalar constructor generation for a single-field tuple variant with generics when `#[ scalar ]` is applied, as implemented in the manual file and expected from the derive. (Note: `#[ scalar ]` is commented out in the derive file, so default behavior is expected and tested).
+// - Rule 1f (Tuple + Multi-Field + `#[ scalar ]`): Not applicable, as the test logic for the multi-field variant uses a subformer, aligning with the manual implementation and derive expectation but not the documented rule for `#[ scalar ]`.
 // - Rule 4b (Option 2 Logic): Demonstrated by the test logic for the `Variant2` subformer, verifying its functionality.
 //
 // Test Relevance/Acceptance Criteria:
@@ -36,7 +36,7 @@ use crate::inc::enum_unnamed_tests::scalar_generic_tuple_manual::EnumScalarGener
 fn scalar_on_single_generic_tuple_variant()
 {
   // Tests the direct constructor generated for a single-field tuple variant
-  // `Variant1(InnerScalar<T>)` marked with `#[scalar]`.
+  // `Variant1(InnerScalar<T>)` marked with `#[ scalar ]`.
   // Test Matrix Row: T14.1, T14.2 (Implicitly, as this tests the behavior expected by the matrix)
   let inner_data = InnerScalar { data: MyType( "value1".to_string() ) };
   // Expect a direct static constructor `variant_1` taking `impl Into<InnerScalar<MyType>>`
@@ -59,7 +59,7 @@ fn scalar_on_single_generic_tuple_variant()
 fn scalar_on_multi_generic_tuple_variant()
 {
   // Tests the former builder generated for a multi-field tuple variant
-  // `Variant2(InnerScalar<T>, bool)` marked with `#[scalar]`.
+  // `Variant2(InnerScalar<T>, bool)` marked with `#[ scalar ]`.
   // Test Matrix Row: T14.3, T14.4 (Implicitly, as this tests the behavior expected by the matrix)
   let inner_data = InnerScalar { data: MyType( "value2".to_string() ) };
   // Expect a former builder `variant_2` with setters `_0` and `_1`

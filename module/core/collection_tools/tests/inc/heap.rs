@@ -1,6 +1,6 @@
 use super::*;
 
-#[test]
+#[ test ]
 fn reexport() {
   let mut map: the_module::BinaryHeap<i32> = the_module::BinaryHeap::new();
   map.push(1);
@@ -9,8 +9,8 @@ fn reexport() {
   assert_eq!(exp, got);
 }
 
-#[cfg(feature = "collection_constructors")]
-#[test]
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
 fn constructor() {
   // test.case( "empty" );
   let got: the_module::BinaryHeap<i32> = the_module::heap! {};
@@ -25,8 +25,8 @@ fn constructor() {
   assert_eq!(got.into_sorted_vec(), exp.into_sorted_vec());
 }
 
-#[cfg(feature = "collection_into_constructors")]
-#[test]
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
 fn into_constructor() {
   // test.case( "empty" );
   let got: the_module::BinaryHeap<i32> = the_module::into_heap! {};
@@ -41,7 +41,7 @@ fn into_constructor() {
   assert_eq!(got.into_sorted_vec(), exp.into_sorted_vec());
 }
 
-#[test]
+#[ test ]
 fn iters() {
   struct MyContainer {
     entries: the_module::BinaryHeap<i32>,

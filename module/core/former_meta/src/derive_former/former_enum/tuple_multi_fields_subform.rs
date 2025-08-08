@@ -13,9 +13,9 @@
 //! ## Key Behavioral Characteristics
 //!
 //! ### Attribute-Driven Activation
-//! - **Default Behavior**: Multi-field tuple variants without `#[scalar]` get implicit variant formers
-//! - **`#[scalar]` Override**: Forces direct constructor generation instead (handled elsewhere)
-//! - **`#[subform_scalar]` Conflict**: Not allowed on multi-field tuple variants (compile error)
+//! - **Default Behavior**: Multi-field tuple variants without `#[ scalar ]` get implicit variant formers
+//! - **`#[ scalar ]` Override**: Forces direct constructor generation instead (handled elsewhere)
+//! - **`#[ subform_scalar ]` Conflict**: Not allowed on multi-field tuple variants (compile error)
 //! - **Field-Level Attributes**: Individual field attributes respected in generated setters
 //!
 //! ## CRITICAL FIXES APPLIED (Previously Broken)
@@ -79,14 +79,14 @@
 //! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! struct VariantFormerStorage {
-//!     field1: Option<String>,  // ❌ Should be field0 for first tuple element
-//!     field2: Option<i32>,     // ❌ Should be field1 for second tuple element
+//!     field1: Option< String >,  // ❌ Should be field0 for first tuple element
+//!     field2: Option< i32 >,     // ❌ Should be field1 for second tuple element
 //! }
 //!
 //! // Generated Solution:
 //! struct VariantFormerStorage {
-//!     field0: Option<String>,  // ✅ Correct zero-based indexing
-//!     field1: Option<i32>,     // ✅ Consistent index pattern
+//!     field0: Option< String >,  // ✅ Correct zero-based indexing
+//!     field1: Option< i32 >,     // ✅ Consistent index pattern
 //! }
 //! ```
 //!
@@ -137,9 +137,9 @@
 //! pub struct EnumVariantFormerStorage<T, U, V> 
 //! where T: Default, U: Default, V: Default
 //! {
-//!     field0: Option<T>,          // First tuple element
-//!     field1: Option<U>,          // Second tuple element
-//!     field2: Option<V>,          // Third tuple element
+//!     field0: Option< T >,          // First tuple element
+//!     field1: Option< U >,          // Second tuple element
+//!     field2: Option< V >,          // Third tuple element
 //! }
 //!
 //! impl<T, U, V> StoragePreform for EnumVariantFormerStorage<T, U, V> {
@@ -179,7 +179,7 @@
 //! ### Custom End Handler
 //! ```rust,ignore
 //! impl<T, U, V> FormingEnd<DefinitionTypes> for EnumVariantEnd<T, U, V> {
-//!     fn call(&self, sub_storage: Storage, _context: Option<()>) -> Enum<T, U, V> {
+//!     fn call(&self, sub_storage: Storage, _context: Option< () >) -> Enum<T, U, V> {
 //!         let (field0, field1, field2) = StoragePreform::preform(sub_storage);
 //!         Enum::Variant(field0, field1, field2)
 //!     }
@@ -187,7 +187,7 @@
 //! ```
 //!
 //! ## Integration Notes
-//! - **Standalone Constructors**: Supports `#[standalone_constructors]` for top-level function generation
+//! - **Standalone Constructors**: Supports `#[ standalone_constructors ]` for top-level function generation
 //! - **Context Handling**: Integrates with Former's context system for advanced construction scenarios
 //! - **Performance**: Optimized tuple construction with minimal overhead
 //! - **Type Safety**: Complete type safety through Former trait system integration
@@ -197,7 +197,7 @@ use super::*;
 use macro_tools::{ Result, quote::quote };
 use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 
-#[allow(clippy::too_many_lines)]
+#[ allow( clippy::too_many_lines ) ]
 /// Generates comprehensive implicit variant former infrastructure for multi-field tuple enum variants.
 ///
 /// This function creates a complete builder ecosystem for tuple variants with multiple unnamed fields,
@@ -243,7 +243,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// ## Returns
 /// - `Ok(TokenStream)`: Generated enum method that returns the tuple variant former
 /// - `Err(syn::Error)`: If variant processing fails due to invalid configuration
-pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
+pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result<  proc_macro2::TokenStream  >
 {
   let variant_name = &ctx.variant.ident;
   let method_name = variant_to_method_name(variant_name);
@@ -265,10 +265,10 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   let end_name = format_ident!("{}{}End", enum_name, variant_name_str);
 
   // Generate field types and names
-  let field_types: Vec<_> = fields.iter().map(|f| &f.ty).collect();
-  let field_indices: Vec<_> = (0..fields.len()).collect();
-  let field_names: Vec<_> = field_indices.iter().map(|i| format_ident!("field{}", i)).collect();
-  let setter_names: Vec<_> = field_indices.iter().map(|i| format_ident!("_{}", i)).collect();
+  let field_types: Vec< _ > = fields.iter().map(|f| &f.ty).collect();
+  let field_indices: Vec< _ > = (0..fields.len()).collect();
+  let field_names: Vec< _ > = field_indices.iter().map(|i| format_ident!("field{}", i)).collect();
+  let setter_names: Vec< _ > = field_indices.iter().map(|i| format_ident!("_{}", i)).collect();
 
   // Create the preformed tuple type
   let preformed_type = quote! { ( #( #field_types ),* ) };
@@ -286,7 +286,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
     pub struct #storage_name #impl_generics
     #where_clause
     {
-      #( #field_names : Option< #field_types > ),*
+      #( #field_names : Option<  #field_types  > ),*
     }
 
     impl #impl_generics Default for #storage_name #ty_generics
@@ -385,8 +385,8 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
     #where_clause
     {
       storage : #storage_name #ty_generics,
-      context : Option< () >,
-      on_end : Option< #end_name #ty_generics >,
+      context : Option<  ()  >,
+      on_end : Option<  #end_name #ty_generics  >,
     }
 
     impl #impl_generics #former_name #ty_generics
@@ -408,7 +408,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
       }
 
       #[ inline( always ) ]
-      pub fn begin( storage : Option< #storage_name #ty_generics >, context : Option< () >, on_end : #end_name #ty_generics ) -> Self
+      pub fn begin( storage : Option<  #storage_name #ty_generics  >, context : Option<  ()  >, on_end : #end_name #ty_generics ) -> Self
       {
         Self { storage : storage.unwrap_or_default(), context, on_end : Some( on_end ) }
       }
@@ -456,7 +456,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
       fn call(
         &self,
         sub_storage : #storage_name #ty_generics,
-        _context : Option< () >,
+        _context : Option<  ()  >,
       ) -> #enum_name #ty_generics
       {
         let ( #( #field_names ),* ) = former::StoragePreform::preform( sub_storage );

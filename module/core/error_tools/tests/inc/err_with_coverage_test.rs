@@ -14,7 +14,7 @@ use std::io;
 
 /// Tests `err_with` on an `Ok` result.
 /// Test Combination: T8.1
-#[test]
+#[ test ]
 fn test_err_with_on_ok() {
   let result: core::result::Result<u32, io::Error> = core::result::Result::Ok(10);
   let processed: core::result::Result<u32, (String, io::Error)> = result.err_with(|| "context".to_string());
@@ -24,7 +24,7 @@ fn test_err_with_on_ok() {
 
 /// Tests `err_with` on an `Err` result.
 /// Test Combination: T8.2
-#[test]
+#[ test ]
 fn test_err_with_on_err() {
   let error = io::Error::new(io::ErrorKind::NotFound, "file not found");
   let result: core::result::Result<u32, io::Error> = core::result::Result::Err(error);
@@ -41,7 +41,7 @@ fn test_err_with_on_err() {
 
 /// Tests `err_with_report` on an `Ok` result.
 /// Test Combination: T8.3
-#[test]
+#[ test ]
 fn test_err_with_report_on_ok() {
   let result: core::result::Result<u32, io::Error> = core::result::Result::Ok(20);
   let report = "fixed report".to_string();
@@ -52,7 +52,7 @@ fn test_err_with_report_on_ok() {
 
 /// Tests `err_with_report` on an `Err` result.
 /// Test Combination: T8.4
-#[test]
+#[ test ]
 fn test_err_with_report_on_err() {
   let error = io::Error::new(io::ErrorKind::PermissionDenied, "access denied");
   let result: core::result::Result<u32, io::Error> = core::result::Result::Err(error);
@@ -70,7 +70,7 @@ fn test_err_with_report_on_err() {
 
 /// Tests `ResultWithReport` type alias usage.
 /// Test Combination: T8.5
-#[test]
+#[ test ]
 fn test_result_with_report_alias() {
   type MyResult = ResultWithReport<String, io::Error>;
   let ok_val: MyResult = core::result::Result::Ok("30".to_string());

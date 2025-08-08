@@ -1,6 +1,6 @@
 #![deny(missing_docs)]
 
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
 // xxx : qqq : make that working
@@ -11,7 +11,7 @@ use super::*;
 // type Value = &'static str;
 //
 // #[ derive( Debug, PartialEq, former::Former ) ]
-// pub struct Struct1( #[ subform_collection ] HashMap< Key, Value > );
+// pub struct Struct1( #[ subform_collection ] HashMap<  Key, Value  > );
 //
 // impl Struct1
 // {

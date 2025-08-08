@@ -5,7 +5,7 @@ use std::{
   path::{Path, PathBuf},
 };
 
-#[test]
+#[ test ]
 fn basic() -> Result<(), io::Error> {
   use the_module::PathJoined;
   use std::path::PathBuf;
@@ -39,7 +39,7 @@ fn basic() -> Result<(), io::Error> {
   Ok(())
 }
 
-#[test]
+#[ test ]
 fn array_join_paths_test() -> Result<(), io::Error> {
   use the_module::{PathJoined, TryIntoCowPath};
   use std::path::PathBuf;
@@ -55,7 +55,7 @@ fn array_join_paths_test() -> Result<(), io::Error> {
   Ok(())
 }
 
-#[test]
+#[ test ]
 fn slice_join_paths_test() -> Result<(), io::Error> {
   use the_module::{PathJoined, TryIntoCowPath};
   use std::path::PathBuf;
@@ -72,7 +72,7 @@ fn slice_join_paths_test() -> Result<(), io::Error> {
   Ok(())
 }
 
-#[test]
+#[ test ]
 fn all_types() -> Result<(), io::Error> {
   use std::path::Path;
   use the_module::{AbsolutePath, CanonicalPath, NativePath, CurrentPath};
@@ -165,7 +165,7 @@ fn all_types() -> Result<(), io::Error> {
   Ok(())
 }
 
-#[test]
+#[ test ]
 fn join_function_test() -> Result<(), io::Error> {
   use the_module::path;
   use std::path::PathBuf;

@@ -31,7 +31,7 @@ mod private {
   //       }
   //     }
   //
-  //     pub fn clean( &self ) -> Result< (), &'static str >
+  //     pub fn clean( &self ) -> Result<  (), &'static str  >
   //     {
   //       let result = std::fs::remove_dir_all( &self.test_path );
   //       result.or_else( | err | format!( "Cannot remove temporary directory {}.", &self.test_path.display() ) );
@@ -50,36 +50,36 @@ mod private {
 }
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Shared with parent namespace of the module
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
   // use super::private::TempDir;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 }

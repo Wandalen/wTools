@@ -45,7 +45,7 @@ mod private
     /// Returns the Path without its final component, if there is one.
     /// Returns None if the path terminates in a root or prefix, or if it's the empty string.
     #[ inline ]
-    pub fn parent( &self ) -> Option< NativePath >
+    pub fn parent( &self ) -> Option<  NativePath  >
     {
       self.0.parent().map( PathBuf::from ).map( NativePath )
     }
@@ -108,7 +108,7 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( value : &'a str ) -> Result< Self, Self::Error >
+    fn try_from( value : &'a str ) -> Result<  Self, Self::Error  >
     {
       let path = path::canonicalize( value )?;
       // if !is_absolute( &path )
@@ -124,7 +124,7 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( src : &'a String ) -> Result< Self, Self::Error >
+    fn try_from( src : &'a String ) -> Result<  Self, Self::Error  >
     {
       < Self as TryFrom< &Path > >::try_from( src.as_ref() )
     }
@@ -136,7 +136,7 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( src : String ) -> Result< Self, Self::Error >
+    fn try_from( src : String ) -> Result<  Self, Self::Error  >
     {
       < Self as TryFrom< &Path > >::try_from( src.as_ref() )
     }
@@ -147,7 +147,7 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( value : PathBuf ) -> Result< Self, Self::Error >
+    fn try_from( value : PathBuf ) -> Result<  Self, Self::Error  >
     {
       let path = path::canonicalize( value )?;
 
@@ -162,7 +162,7 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( value : &PathBuf ) -> Result< Self, Self::Error >
+    fn try_from( value : &PathBuf ) -> Result<  Self, Self::Error  >
     {
       let path = path::canonicalize( value )?;
 
@@ -178,7 +178,7 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( value : &Path ) -> Result< Self, Self::Error >
+    fn try_from( value : &Path ) -> Result<  Self, Self::Error  >
     {
       let path = path::canonicalize( value )?;
 
@@ -194,7 +194,7 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( value : Utf8PathBuf ) -> Result< Self, Self::Error >
+    fn try_from( value : Utf8PathBuf ) -> Result<  Self, Self::Error  >
     {
       NativePath::try_from( value.as_std_path() )
     }
@@ -206,7 +206,7 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( value : &Utf8PathBuf ) -> Result< Self, Self::Error >
+    fn try_from( value : &Utf8PathBuf ) -> Result<  Self, Self::Error  >
     {
       NativePath::try_from( value.as_std_path() )
     }
@@ -218,7 +218,7 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( value : &Utf8Path ) -> Result< Self, Self::Error >
+    fn try_from( value : &Utf8Path ) -> Result<  Self, Self::Error  >
     {
       NativePath::try_from( value.as_std_path() )
     }
@@ -237,7 +237,7 @@ mod private
   {
     type Error = std::io::Error;
     #[ inline ]
-    fn try_from( src : &'a NativePath ) -> Result< &'a str, Self::Error >
+    fn try_from( src : &'a NativePath ) -> Result<  &'a str, Self::Error  >
     {
       src
       .to_str()
@@ -252,7 +252,7 @@ mod private
   {
     type Error = std::io::Error;
     #[ inline ]
-    fn try_from( src : &NativePath ) -> Result< String, Self::Error >
+    fn try_from( src : &NativePath ) -> Result<  String, Self::Error  >
     {
       let src2 : &str = src.try_into()?;
       Ok( src2.into() )
@@ -262,7 +262,7 @@ mod private
   impl TryIntoPath for NativePath
   {
     #[ inline ]
-    fn try_into_path( self ) -> Result< PathBuf, io::Error >
+    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
     {
       Ok( self.0 )
     }
@@ -289,7 +289,7 @@ mod private
 //   {
 //     type Error = std::io::Error;
 //
-//     fn try_from( value : Utf8PathBuf ) -> Result< Self, Self::Error >
+//     fn try_from( value : Utf8PathBuf ) -> Result<  Self, Self::Error  >
 //     {
 //       NativePath::try_from( value.as_std_path() )
 //     }
@@ -299,7 +299,7 @@ mod private
 //   {
 //     type Error = std::io::Error;
 //
-//     fn try_from( value : &Utf8Path ) -> Result< Self, Self::Error >
+//     fn try_from( value : &Utf8Path ) -> Result<  Self, Self::Error  >
 //     {
 //       NativePath::try_from( value.as_std_path() )
 //     }

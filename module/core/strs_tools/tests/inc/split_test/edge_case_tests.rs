@@ -3,7 +3,7 @@ use strs_tools::string::split::*;
 
 // Test Matrix ID: T3.7
 // Description: src="", del=" ", PE=T, PD=T, S=F, Q=F
-#[test]
+#[ test ]
 fn test_m_t3_7_empty_src_preserve_all() {
   let src = "";
   let iter = split()
@@ -25,7 +25,7 @@ fn test_m_t3_7_empty_src_preserve_all() {
 
 // Test Matrix ID: T3.8
 // Description: src="", del=" ", PE=F, PD=F, S=F, Q=F
-#[test]
+#[ test ]
 fn test_m_t3_8_empty_src_no_preserve() {
   let src = "";
   let iter = split()
@@ -50,7 +50,7 @@ fn test_m_t3_8_empty_src_no_preserve() {
 
 // Test Matrix ID: Edge_EmptyDelimVec
 // Description: src="abc", del=vec![]
-#[test]
+#[ test ]
 fn test_scenario_empty_delimiter_vector() {
   let src = "abc";
   let iter = split()

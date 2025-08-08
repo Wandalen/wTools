@@ -9,7 +9,7 @@ pub trait SimpleBoundA: core::fmt::Debug + Default + Clone + PartialEq {}
 pub trait SimpleBoundB: core::fmt::Debug + Default + Clone + PartialEq {}
 
 // Simple concrete type implementing both bounds
-#[derive(Debug, Clone, PartialEq, Default)]
+#[ derive( Debug, Clone, PartialEq, Default ) ]
 pub struct SimpleSharedType {
   pub data: String,
   pub value: i32,
@@ -19,7 +19,7 @@ impl SimpleBoundA for SimpleSharedType {}
 impl SimpleBoundB for SimpleSharedType {}
 
 // Inner shared struct with current Former API
-#[derive(Debug, Clone, PartialEq, Default, former::Former)]
+#[ derive( Debug, Clone, PartialEq, Default, former::Former ) ]
 pub struct SharedInner<T>
 where
   T: SimpleBoundB + Clone + Default + PartialEq + core::fmt::Debug,
@@ -30,7 +30,7 @@ where
 }
 
 // Shared struct enum with current API (non-generic to avoid Former derive limitations)
-#[derive(Debug, Clone, PartialEq, former::Former)]
+#[ derive( Debug, Clone, PartialEq, former::Former ) ]
 pub struct SharedStructVariant {
   pub inner: SharedInner<SimpleSharedType>,
   pub flag: bool,
@@ -49,7 +49,7 @@ impl Default for SharedStructVariant {
 
 // COMPREHENSIVE GENERICS SHARED STRUCT TESTS - using current Former API
 
-#[test]
+#[ test ]
 fn generics_shared_struct_manual_replacement_basic_test() {
   let shared_type = SimpleSharedType {
     data: "shared_data".to_string(),
@@ -77,7 +77,7 @@ fn generics_shared_struct_manual_replacement_basic_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn generics_shared_struct_manual_replacement_nested_building_test() {
   // Test building inner shared struct using Former API
   let shared_type = SimpleSharedType {
@@ -105,7 +105,7 @@ fn generics_shared_struct_manual_replacement_nested_building_test() {
   assert_eq!(got.description, "nested_test");
 }
 
-#[test]
+#[ test ]
 fn generics_shared_struct_manual_replacement_shared_functionality_test() {
   // Test shared functionality patterns without outdated API
   let shared_types = vec![
@@ -141,7 +141,7 @@ fn generics_shared_struct_manual_replacement_shared_functionality_test() {
   }
 }
 
-#[test]
+#[ test ]
 fn generics_shared_struct_manual_replacement_bound_compliance_test() {
   // Test that shared types properly implement bounds
   let shared_type = SimpleSharedType::default();
@@ -172,7 +172,7 @@ fn generics_shared_struct_manual_replacement_bound_compliance_test() {
   assert_eq!(got.description, "bound_compliance");
 }
 
-#[test]
+#[ test ]
 fn generics_shared_struct_manual_replacement_complex_shared_test() {
   // Test complex shared struct scenarios without manual Former implementation
   let shared_data = vec![
@@ -220,7 +220,7 @@ fn generics_shared_struct_manual_replacement_complex_shared_test() {
 }
 
 // Test comprehensive shared struct functionality
-#[test]
+#[ test ]
 fn generics_shared_struct_manual_replacement_comprehensive_test() {
   // Test all aspects of shared struct functionality with current Former API
   

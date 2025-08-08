@@ -14,8 +14,8 @@
 //!
 //! ### Attribute-Driven Activation
 //! - **Default Behavior**: Zero-field tuple variants automatically get direct constructors
-//! - **`#[scalar]` Compatibility**: Explicit `#[scalar]` attribute generates same behavior
-//! - **`#[subform_scalar]` Rejection**: Cannot be used with zero-field variants (compile error)
+//! - **`#[ scalar ]` Compatibility**: Explicit `#[ scalar ]` attribute generates same behavior
+//! - **`#[ subform_scalar ]` Rejection**: Cannot be used with zero-field variants (compile error)
 //! - **No Field Attributes**: No fields present, so field-level attributes not applicable
 //!
 //! ### Generated Method Characteristics
@@ -28,17 +28,17 @@
 //!
 //! ### 1. Attribute Validation (Critical Prevention)
 //! **Issue Resolved**: Manual implementations allowing incompatible attributes on zero-field variants
-//! **Root Cause**: `#[subform_scalar]` attribute makes no sense for variants with no fields to form
-//! **Solution**: Compile-time validation that rejects `#[subform_scalar]` on zero-field tuple variants
+//! **Root Cause**: `#[ subform_scalar ]` attribute makes no sense for variants with no fields to form
+//! **Solution**: Compile-time validation that rejects `#[ subform_scalar ]` on zero-field tuple variants
 //! **Prevention**: Clear error messages prevent invalid attribute usage
 //!
 //! ```rust,ignore
 //! // Manual Implementation Pitfall:
-//! #[subform_scalar]  // ❌ Invalid for zero-field variants
+//! #[ subform_scalar ]  // ❌ Invalid for zero-field variants
 //! Variant(),
 //!
 //! // Generated Solution:
-//! // Compile error: "#[subform_scalar] cannot be used on zero-field tuple variants."
+//! // Compile error: "#[ subform_scalar ] cannot be used on zero-field tuple variants."
 //! ```
 //!
 //! ### 2. Zero-Parameter Method Generation (Prevention)
@@ -125,7 +125,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 ///
 /// ## Pitfall Prevention Features
 ///
-/// - **Attribute Validation**: Compile-time rejection of invalid `#[subform_scalar]` attribute
+/// - **Attribute Validation**: Compile-time rejection of invalid `#[ subform_scalar ]` attribute
 /// - **Generic Context**: Complete generic parameter preservation for proper type construction
 /// - **Type Path Safety**: Proper enum type path construction with generic parameter handling
 /// - **Naming Consistency**: Systematic `snake_case` conversion for method naming
@@ -140,26 +140,26 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// ```
 ///
 /// ## Attribute Validation
-/// - **`#[subform_scalar]` Rejection**: Generates compile error for invalid attribute usage
-/// - **`#[scalar]` Compatibility**: Accepts explicit scalar attribute (same behavior)
+/// - **`#[ subform_scalar ]` Rejection**: Generates compile error for invalid attribute usage
+/// - **`#[ scalar ]` Compatibility**: Accepts explicit scalar attribute (same behavior)
 ///
 /// ## Parameters
 /// - `ctx`: Mutable context containing variant information, generics, and output collections
 ///
 /// ## Returns
 /// - `Ok(TokenStream)`: Generated zero-parameter constructor method for the empty tuple variant
-/// - `Err(syn::Error)`: If `#[subform_scalar]` attribute is incorrectly applied to zero-field variant
-pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::TokenStream> {
+/// - `Err(syn::Error)`: If `#[ subform_scalar ]` attribute is incorrectly applied to zero-field variant
+pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result< proc_macro2::TokenStream > {
   let variant_name = &ctx.variant.ident;
   let method_name = variant_to_method_name(variant_name);
   let enum_name = ctx.enum_name;
   let vis = ctx.vis;
 
-  // Rule 2b: #[subform_scalar] on zero-field tuple variants should cause a compile error
+  // Rule 2b: #[ subform_scalar ] on zero-field tuple variants should cause a compile error
   if ctx.variant_attrs.subform_scalar.is_some() {
     return Err(syn_err!(
       ctx.variant,
-      "#[subform_scalar] cannot be used on zero-field tuple variants."
+      "#[ subform_scalar ] cannot be used on zero-field tuple variants."
     ));
   }
 

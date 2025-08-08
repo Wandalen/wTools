@@ -3,18 +3,18 @@
 use super::*;
 
 /// Child
-#[derive(Debug, Default, PartialEq, the_module::Former)]
+#[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 pub struct Child {
   name: String,
   data: bool,
 }
 
 /// Parent
-#[derive(Debug, Default, PartialEq, the_module::Former)]
+#[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 // #[ debug ]
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent {
-  #[subform_scalar]
+  #[ subform_scalar ]
   child: Child,
 }
 

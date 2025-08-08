@@ -9,16 +9,16 @@
 #![ cfg_attr( not( doc ), doc = "Path utilities" ) ]
 #![allow(clippy::std_instead_of_alloc, clippy::std_instead_of_core)]
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 use ::mod_interface::mod_interface;
 
-#[cfg(feature = "no_std")]
-#[macro_use]
+#[ cfg( feature = "no_std" ) ]
+#[ macro_use ]
 extern crate alloc;
 
 // qqq : xxx : implement `pth::absolute::join` function or add option to `pth::path::join`
-//       Desired Signature Idea 1: `pub fn join<T1, T2>(p1: T1, p2: T2) -> io::Result<AbsolutePath>` (extendable for more args or tuples)
-//       Desired Signature Idea 2: `pub fn join<Paths: PathJoined>(paths: Paths, options: JoinOptions) -> io::Result<AbsolutePath>` where JoinOptions includes absolute handling.
+//       Desired Signature Idea 1: `pub fn join<T1, T2>(p1: T1, p2: T2) -> io::Result< AbsolutePath >` (extendable for more args or tuples)
+//       Desired Signature Idea 2: `pub fn join<Paths: PathJoined>(paths: Paths, options: JoinOptions) -> io::Result< AbsolutePath >` where JoinOptions includes absolute handling.
 //       Behavior:
 //       1. Takes multiple path-like items (e.g., via tuple, slice, or multiple args).
 //       2. Finds the rightmost item that represents an absolute path.
@@ -36,7 +36,7 @@ extern crate alloc;
 /// Own namespace of the module. Contains items public within this layer, but not propagated.
 mod private {}
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 mod_interface! {
 
   /// Basic functionality.

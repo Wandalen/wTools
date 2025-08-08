@@ -1,13 +1,13 @@
 use super::*;
 mod tools {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   pub use super::super::*;
 }
 
 pub mod layer_a;
 
 /// `SuperStruct1`.
-#[derive(Debug, PartialEq)]
+#[ derive( Debug, PartialEq ) ]
 pub struct SuperStruct1 {}
 
 mod private {}

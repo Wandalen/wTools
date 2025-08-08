@@ -184,7 +184,7 @@ fn examples_that_would_fail_compilation()
 }
 
 #[ cfg( target_pointer_width = "64" ) ]
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 fn pointer_width_specific_checks()
 {
   // Only compile these checks on 64-bit targets
