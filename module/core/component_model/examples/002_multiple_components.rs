@@ -22,7 +22,7 @@ fn main()
   db_config.assign( "postgres.example.com" );  // String -> host
   db_config.assign( 5432 );                    // i32 -> port  
   
-  println!( "Individual assignment result: {:?}", db_config );
+  println!( "Individual assignment result: {db_config:?}" );
   
   // Verify all fields were set correctly
   assert_eq!( db_config.host, "postgres.example.com" );
@@ -33,7 +33,7 @@ fn main()
     .impute( "localhost" )
     .impute( 3306 );
   
-  println!( "Fluent assignment: {:?}", db_config2 );
+  println!( "Fluent assignment: {db_config2:?}" );
   
   // Mix mutable and fluent styles
   let mut db_config3 = DatabaseConnection::default()
@@ -41,7 +41,7 @@ fn main()
   
   db_config3.assign( 5433 );
   
-  println!( "Mixed style: {:?}", db_config3 );
+  println!( "Mixed style: {db_config3:?}" );
   
   println!( "✅ Component assignment patterns complete!" );
 }

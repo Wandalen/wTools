@@ -21,8 +21,8 @@ fn main()
     .impute( "Alice" )    // Sets String field (name)
     .impute( 25 );        // Sets i32 field (age)
   
-  println!( "Created person: {:?}", person );
-  assert_eq!( person, Person { name: "Alice".to_string(), age: 25 } );
+  println!( "Created person: {person:?}" );
+  assert_eq!( person, Person { name : "Alice".to_string(), age : 25 } );
   
   println!( "✅ Component model working perfectly!" );
 }

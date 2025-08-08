@@ -5,7 +5,8 @@
 
 use workspace_tools::{ workspace, Workspace, WorkspaceError };
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+#[allow(clippy::too_many_lines)]
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "🚨 workspace error handling patterns\n" );
   
@@ -18,10 +19,10 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
     Ok( ws ) => println!( "   unexpected success: {}", ws.root().display() ),
     Err( WorkspaceError::EnvironmentVariableMissing( var ) ) =>
     {
-      println!( "   ✅ caught missing env var: {}", var );
+      println!( "   ✅ caught missing env var: {var}" );
       println!( "   💡 solution: set WORKSPACE_PATH or use resolve_or_fallback()" );
     }
-    Err( e ) => println!( "   unexpected error: {}", e ),
+    Err( e ) => println!( "   unexpected error: {e}" ),
   }
   
   // 2. fallback resolution (never fails)
@@ -42,7 +43,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
       println!( "   ✅ caught path not found: {}", path.display() );
       println!( "   💡 solution: ensure WORKSPACE_PATH points to existing directory" );
     }
-    Err( e ) => println!( "   unexpected error: {}", e ),
+    Err( e ) => println!( "   unexpected error: {e}" ),
   }
   
   // setup valid workspace for remaining examples
@@ -56,10 +57,10 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
     Ok( normalized ) => println!( "   unexpected success: {}", normalized.display() ),
     Err( WorkspaceError::IoError( msg ) ) =>
     {
-      println!( "   ✅ caught io error: {}", msg );
+      println!( "   ✅ caught io error: {msg}" );
       println!( "   💡 normalization requires existing paths" );
     }
-    Err( e ) => println!( "   unexpected error type: {}", e ),
+    Err( e ) => println!( "   unexpected error type: {e}" ),
   }
   
   // 5. configuration errors
@@ -79,13 +80,13 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
         Ok( () ) => println!( "   unexpected validation success" ),
         Err( WorkspaceError::ConfigurationError( msg ) ) =>
         {
-          println!( "   ✅ caught configuration error: {}", msg );
+          println!( "   ✅ caught configuration error: {msg}" );
           println!( "   💡 always validate workspace in production" );
         }
-        Err( e ) => println!( "   unexpected error: {}", e ),
+        Err( e ) => println!( "   unexpected error: {e}" ),
       }
     }
-    Err( e ) => println!( "   error during resolve: {}", e ),
+    Err( e ) => println!( "   error during resolve: {e}" ),
   }
   
   // cleanup
@@ -107,34 +108,34 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   {
     Ok( () ) => println!( "   ✅ operation succeeded" ),
     Err( WorkspaceError::EnvironmentVariableMissing( var ) ) =>
-      println!( "   handle missing env: {}", var ),
+      println!( "   handle missing env: {var}" ),
     Err( WorkspaceError::PathNotFound( path ) ) =>
       println!( "   handle missing path: {}", path.display() ),
     Err( WorkspaceError::ConfigurationError( msg ) ) =>
-      println!( "   handle config error: {}", msg ),
+      println!( "   handle config error: {msg}" ),
     Err( WorkspaceError::IoError( msg ) ) =>
-      println!( "   handle io error: {}", msg ),
+      println!( "   handle io error: {msg}" ),
     #[ cfg( feature = "glob" ) ]
     Err( WorkspaceError::GlobError( msg ) ) =>
-      println!( "   handle glob error: {}", msg ),
+      println!( "   handle glob error: {msg}" ),
     Err( WorkspaceError::PathOutsideWorkspace( path ) ) =>
       println!( "   handle security violation: {}", path.display() ),
     
     // handle new error types from cargo and serde integration
     #[ cfg( feature = "cargo_integration" ) ]
     Err( WorkspaceError::CargoError( msg ) ) =>
-      println!( "   handle cargo error: {}", msg ),
+      println!( "   handle cargo error: {msg}" ),
     
     #[ cfg( feature = "cargo_integration" ) ]  
     Err( WorkspaceError::TomlError( msg ) ) =>
-      println!( "   handle toml error: {}", msg ),
+      println!( "   handle toml error: {msg}" ),
     
     #[ cfg( feature = "serde_integration" ) ]
     Err( WorkspaceError::SerdeError( msg ) ) =>
-      println!( "   handle serde error: {}", msg ),
+      println!( "   handle serde error: {msg}" ),
     
     // catch-all for any future error variants (required due to #[non_exhaustive])
-    Err( e ) => println!( "   handle unknown error: {}", e ),
+    Err( e ) => println!( "   handle unknown error: {e}" ),
   }
   
   println!( "\n💡 error handling best practices:" );

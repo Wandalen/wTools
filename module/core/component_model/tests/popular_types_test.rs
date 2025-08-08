@@ -3,7 +3,7 @@
 //! ## Test Matrix: Popular Types Functionality
 //!
 //! ### Test Factors
-//! - **Field Type**: Duration, PathBuf, SocketAddr, HashMap, HashSet
+//! - **Field Type**: `Duration`, `PathBuf`, `SocketAddr`, `HashMap`, `HashSet`
 //! - **Input Type**: Type-specific conversions vs standard Into
 //! - **Assignment Style**: Type-specific assign vs standard assign
 //! - **Struct Properties**: Default derivable vs Custom Default required
@@ -22,8 +22,8 @@
 //! | TPT07 | Backward    | Basic types only      | Standard         | Default derivable| Backward compatibility preserved |
 //!
 
-use std::time::Duration;
-use std::net::SocketAddr;
+use core::time::Duration;
+use core::net::SocketAddr;
 use std::path::PathBuf;
 use std::collections::{ HashMap, HashSet };
 
@@ -41,32 +41,32 @@ fn test_duration_assignment_types()
   #[derive(ComponentModel)]
   struct Config
   {
-    timeout: Duration,
+    timeout : Duration,
   }
 
   let mut config = Config::default();
 
   // Test u64 (seconds) - use specific type annotation
-  component_model_types::Assign::<Duration, u64>::assign(&mut config, 30u64);
-  assert_eq!(config.timeout, Duration::from_secs(30));
+  component_model_types::Assign::< Duration, u64 >::assign( &mut config, 30u64 );
+  assert_eq!( config.timeout, Duration::from_secs( 30 ) );
 
   // Test f64 (fractional seconds) - use specific type annotation 
-  component_model_types::Assign::<Duration, f64>::assign(&mut config, 2.5f64);
-  assert_eq!(config.timeout, Duration::from_secs_f64(2.5));
+  component_model_types::Assign::< Duration, f64 >::assign( &mut config, 2.5f64 );
+  assert_eq!( config.timeout, Duration::from_secs_f64( 2.5 ) );
 
   // Test (u64, u32) tuple for (seconds, nanos) - use specific type annotation
-  component_model_types::Assign::<Duration, (u64, u32)>::assign(&mut config, (5u64, 500_000_000u32));
-  assert_eq!(config.timeout, Duration::new(5, 500_000_000));
+  component_model_types::Assign::< Duration, ( u64, u32 ) >::assign( &mut config, ( 5u64, 500_000_000u32 ) );
+  assert_eq!( config.timeout, Duration::new( 5, 500_000_000 ) );
 
   // Test Duration directly (this should work with Into trait)
-  let expected_duration = Duration::from_millis(1500);
+  let expected_duration = Duration::from_millis( 1500 );
   // This won't work because we don't have a generic Into implementation for Duration fields
   // component_model_types::Assign::<Duration, Duration>::assign(&mut config, expected_duration);
   config.timeout = expected_duration; // Set directly for now
-  assert_eq!(config.timeout, expected_duration);
+  assert_eq!( config.timeout, expected_duration );
 }
 
-/// Tests SocketAddr field compilation with custom Default implementation.
+/// Tests `SocketAddr` field compilation with custom Default implementation.
 /// Test Combination: TPT02
 #[test]  
 fn test_socket_addr_assignment()
@@ -76,16 +76,16 @@ fn test_socket_addr_assignment()
   #[derive(ComponentModel)]
   struct ServerConfig
   {
-    bind_addr: SocketAddr,
+    bind_addr : SocketAddr,
   }
 
   impl Default for ServerConfig 
   {
     fn default() -> Self 
     {
-      use std::net::Ipv4Addr;
+      use core::net::Ipv4Addr;
       Self { 
-        bind_addr: SocketAddr::new(Ipv4Addr::new(0, 0, 0, 0).into(), 0) 
+        bind_addr : SocketAddr::new( Ipv4Addr::new( 0, 0, 0, 0 ).into(), 0 ) 
       }
     }
   }
@@ -95,10 +95,10 @@ fn test_socket_addr_assignment()
   // Test string parsing
   // Note: This will be implemented later
   // For now, test that the struct compiles with SocketAddr field
-  assert_eq!(config.bind_addr.port(), 0); // Default SocketAddr is 0.0.0.0:0
+  assert_eq!( config.bind_addr.port(), 0 ); // Default SocketAddr is 0.0.0.0:0
 }
 
-/// Tests PathBuf field compilation and framework readiness for type-specific assignment.
+/// Tests `PathBuf` field compilation and framework readiness for type-specific assignment.
 /// Test Combination: TPT03
 #[test]
 fn test_path_buf_assignment()
@@ -107,7 +107,7 @@ fn test_path_buf_assignment()
   #[derive(ComponentModel)]
   struct AppConfig
   {
-    config_path: PathBuf,
+    config_path : PathBuf,
   }
 
   let config = AppConfig::default();
@@ -117,10 +117,10 @@ fn test_path_buf_assignment()
   // Assign::assign(&mut config, "/etc/app.conf");
   // Assign::assign(&mut config, PathBuf::from("/tmp/test.conf"));
   
-  assert_eq!(config.config_path, PathBuf::new()); // Default PathBuf is empty
+  assert_eq!( config.config_path, PathBuf::new() ); // Default PathBuf is empty
 }
 
-/// Tests HashMap field compilation and framework readiness.
+/// Tests `HashMap` field compilation and framework readiness.
 /// Test Combination: TPT04
 #[test]
 fn test_hash_map_assignment()
@@ -129,7 +129,7 @@ fn test_hash_map_assignment()
   #[derive(ComponentModel)]
   struct DataConfig
   {
-    settings: HashMap<String, i32>,
+    settings : HashMap< String, i32 >,
   }
 
   let config = DataConfig::default();
@@ -139,10 +139,10 @@ fn test_hash_map_assignment()
   // let data = vec![("key1".to_string(), 1), ("key2".to_string(), 2)];
   // Assign::assign(&mut config, data);
   
-  assert!(config.settings.is_empty()); // Default HashMap is empty
+  assert!( config.settings.is_empty() ); // Default HashMap is empty
 }
 
-/// Tests HashSet field compilation and framework readiness.
+/// Tests `HashSet` field compilation and framework readiness.
 /// Test Combination: TPT05
 #[test]
 fn test_hash_set_assignment()
@@ -151,7 +151,7 @@ fn test_hash_set_assignment()
   #[derive(ComponentModel)]  
   struct TagConfig
   {
-    tags: HashSet<String>,
+    tags : HashSet< String >,
   }
 
   let config = TagConfig::default();
@@ -161,10 +161,10 @@ fn test_hash_set_assignment()
   // let tags = vec!["tag1".to_string(), "tag2".to_string()];
   // Assign::assign(&mut config, tags);
   
-  assert!(config.tags.is_empty()); // Default HashSet is empty
+  assert!( config.tags.is_empty() ); // Default HashSet is empty
 }
 
-/// Tests mixed integration of all popular types with custom Default implementation.  
+/// Tests mixed integration of all popular types with custom Default implementation.
 /// Test Combination: TPT06
 #[test] 
 fn test_popular_types_integration()
@@ -173,24 +173,24 @@ fn test_popular_types_integration()
   #[derive(ComponentModel)]
   struct ComplexConfig
   {
-    timeout: Duration,
-    bind_addr: SocketAddr,
-    config_path: PathBuf,
-    settings: HashMap<String, String>,
-    allowed_ips: HashSet<String>,
+    timeout : Duration,
+    bind_addr : SocketAddr,
+    config_path : PathBuf,
+    settings : HashMap< String, String >,
+    allowed_ips : HashSet< String >,
   }
 
   impl Default for ComplexConfig 
   {
     fn default() -> Self
     {
-      use std::net::Ipv4Addr;
+      use core::net::Ipv4Addr;
       Self {
-        timeout: Duration::from_secs(0),
-        bind_addr: SocketAddr::new(Ipv4Addr::new(0, 0, 0, 0).into(), 0),
-        config_path: PathBuf::new(),
-        settings: HashMap::new(),
-        allowed_ips: HashSet::new(),
+        timeout : Duration::from_secs( 0 ),
+        bind_addr : SocketAddr::new( Ipv4Addr::new( 0, 0, 0, 0 ).into(), 0 ),
+        config_path : PathBuf::new(),
+        settings : HashMap::new(),
+        allowed_ips : HashSet::new(),
       }
     }
   }
@@ -198,11 +198,11 @@ fn test_popular_types_integration()
   // Test that we can create the struct and it compiles
   let config = ComplexConfig::default();
   
-  assert_eq!(config.timeout, Duration::from_secs(0));
-  assert_eq!(config.bind_addr.port(), 0);
-  assert_eq!(config.config_path, PathBuf::new());
-  assert!(config.settings.is_empty());
-  assert!(config.allowed_ips.is_empty());
+  assert_eq!( config.timeout, Duration::from_secs( 0 ) );
+  assert_eq!( config.bind_addr.port(), 0 );
+  assert_eq!( config.config_path, PathBuf::new() );
+  assert!( config.settings.is_empty() );
+  assert!( config.allowed_ips.is_empty() );
 }
 
 /// Tests backward compatibility with basic types to ensure no regressions.
@@ -214,16 +214,16 @@ fn test_basic_type_support()
   #[derive(ComponentModel)]
   struct BasicConfig
   {
-    name: String,
-    count: i32,
+    name : String,
+    count : i32,
   }
 
   let mut config = BasicConfig::default();
   
   // Test that non-popular types still work with generic Into
-  Assign::assign(&mut config, "test".to_string());
-  Assign::assign(&mut config, 42i32);
+  Assign::assign( &mut config, "test".to_string() );
+  Assign::assign( &mut config, 42i32 );
   
-  assert_eq!(config.name, "test");
-  assert_eq!(config.count, 42);
+  assert_eq!( config.name, "test" );
+  assert_eq!( config.count, 42 );
 }

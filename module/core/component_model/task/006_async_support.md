@@ -27,17 +27,17 @@ struct AppConfig {
   port: u16,
   
   #[component(fetch_from = "vault", secret = "app/api-key")]
-  api_key: String,
+  api_key : String,
   
-  #[component(fetch_from = "redis", ttl = "3600")]
-  cached_config: CachedSettings,
+  #[ component( fetch_from = "redis", ttl = "3600" ) ]
+  cached_config : CachedSettings,
 }
 
 // Async component resolution
 let config = AppConfig::default()
-  .async_assign(fetch_database_url().await)
-  .async_assign(load_api_key_from_vault().await)
-  .async_assign(get_cached_settings().await)
+  .async_assign( fetch_database_url().await )
+  .async_assign( load_api_key_from_vault().await )
+  .async_assign( get_cached_settings().await )
   .build()
   .await?;
 

@@ -1,4 +1,4 @@
-//! Comprehensive Edge Case Tests for workspace_tools
+//! Comprehensive Edge Case Tests for `workspace_tools`
 //!
 //! ## Test Matrix: Edge Case Coverage  
 //!
@@ -29,11 +29,23 @@ fn create_test_workspace_at( path : &std::path::Path ) -> Workspace
     std::fs::create_dir_all(&path_buf).expect("Failed to create test directory");
   }
   
-  // Create workspace directly using the new constructor
-  Workspace::new( path_buf )
+  // Save original environment variable
+  let original = env::var( "WORKSPACE_PATH" ).ok();
+  
+  env::set_var( "WORKSPACE_PATH", &path_buf );
+  let workspace = Workspace::resolve().unwrap_or_else(|_| panic!("Failed to create workspace at: {}", path_buf.display()));
+  
+  // Restore state immediately
+  match original
+  {
+    Some( value ) => env::set_var( "WORKSPACE_PATH", value ),
+    None => env::remove_var( "WORKSPACE_PATH" ),
+  }
+  
+  workspace
 }
 
-/// Test EC.1: from_git_root() in git repository  
+/// Test EC.1: `from_git_root()` in git repository  
 #[ test ]
 fn test_from_git_root_in_repository()
 {
@@ -63,7 +75,7 @@ fn test_from_git_root_in_repository()
   }
 }
 
-/// Test EC.2: from_git_root() not in git repository
+/// Test EC.2: `from_git_root()` not in git repository
 #[ test ]
 fn test_from_git_root_not_in_repository()
 {
@@ -81,11 +93,11 @@ fn test_from_git_root_not_in_repository()
   match result.unwrap_err()
   {
     WorkspaceError::PathNotFound( _ ) => {}, // Expected
-    other => panic!( "Expected PathNotFound, got {:?}", other ),
+    other => panic!( "Expected PathNotFound, got {other:?}" ),
   }
 }
 
-/// Test EC.3: from_git_root() with nested git repositories
+/// Test EC.3: `from_git_root()` with nested git repositories
 #[ test ]
 fn test_from_git_root_nested_repositories()
 {
@@ -121,7 +133,7 @@ fn test_from_git_root_nested_repositories()
   }
 }
 
-/// Test EC.4: from_cwd() is infallible
+/// Test EC.4: `from_cwd()` is infallible
 #[ test ]
 fn test_from_cwd_infallible()
 {
@@ -140,7 +152,7 @@ fn test_from_cwd_infallible()
   }
 }
 
-/// Test EC.5: resolve_or_fallback() behavior without environment
+/// Test EC.5: `resolve_or_fallback()` behavior without environment
 #[ test ]
 fn test_resolve_or_fallback_no_environment()
 {
@@ -166,7 +178,7 @@ fn test_resolve_or_fallback_no_environment()
   // Note: May fail if fallback directory doesn't exist, but shouldn't panic
 }
 
-/// Test EC.6: workspace() helper function error cases
+/// Test EC.6: `workspace()` helper function error cases
 #[ test ]
 fn test_workspace_helper_function_error()
 {
@@ -204,7 +216,7 @@ fn test_concurrent_workspace_access()
       // Perform various operations
       let _root = ws.root();
       let _config = ws.config_dir();
-      let _joined = ws.join( format!( "file_{}.txt", i ) );
+      let _joined = ws.join( format!( "file_{i}.txt" ) );
       let _is_workspace = ws.is_workspace_file( ws.root() );
       
       // Return thread ID for verification
@@ -247,7 +259,7 @@ fn test_memory_efficiency_large_operations()
   }
   
   // Test should complete without excessive memory usage or panics
-  assert!( true, "Large operations completed successfully" );
+  // Large operations completed successfully
 }
 
 /// Test EC.9: Cross-platform path handling
@@ -272,14 +284,14 @@ fn test_cross_platform_path_handling()
     let joined = workspace.join( test_path );
     
     // Should produce valid absolute paths
-    assert!( joined.is_absolute(), "Joined path should be absolute for: {}", test_path );
+    assert!( joined.is_absolute(), "Joined path should be absolute for: {test_path}" );
     
     // Should start with workspace root
     assert!( joined.starts_with( temp_dir.path() ), 
-      "Joined path should start with workspace root for: {}", test_path );
+      "Joined path should start with workspace root for: {test_path}" );
     
     // Basic path operations should work
-    assert!( joined.is_absolute(), "Path should be absolute for: {}", test_path );
+    assert!( joined.is_absolute(), "Path should be absolute for: {test_path}" );
   }
 }
 
@@ -369,7 +381,7 @@ fn test_very_long_filename_operations()
   
   // Create very long filename (but within reasonable limits)
   let long_name = "a".repeat( 200 );
-  let long_filename = format!( "{}.txt", long_name );
+  let long_filename = format!( "{long_name}.txt" );
   
   let joined = workspace.join( &long_filename );
   assert!( joined.starts_with( temp_dir.path() ) );
@@ -392,7 +404,7 @@ fn test_rapid_repeated_operations()
   // Perform many rapid operations
   for i in 0..100
   {
-    let filename = format!( "file_{}.txt", i );
+    let filename = format!( "file_{i}.txt" );
     
     // All these should be consistent across calls
     let joined1 = workspace.join( &filename );

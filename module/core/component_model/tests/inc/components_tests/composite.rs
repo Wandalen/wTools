@@ -15,9 +15,9 @@ use component_model::{Assign, AssignWithType};
   the_module::FromComponents, ) ]
 // qqq : make these traits working for generic struct, use `split_for_impl`
 pub struct Options1 {
-  field1: i32,
-  field2: String,
-  field3: f32,
+  field1 : i32,
+  field2 : String,
+  field3 : f32,
 }
 
 ///
@@ -31,8 +31,8 @@ pub struct Options1 {
   the_module::ComponentsAssign,
   the_module::FromComponents, ) ]
 pub struct Options2 {
-  field1: i32,
-  field2: String,
+  field1 : i32,
+  field2 : String,
 }
 
 //

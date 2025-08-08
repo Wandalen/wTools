@@ -6,7 +6,7 @@
 //! 3. Configuration saving and updating
 //! 4. Layered configuration management
 //!
-//! Run with: cargo run --example 010_cargo_and_serde_integration --features full
+//! Run with: cargo run --example `010_cargo_and_serde_integration` --features full
 
 use workspace_tools::Workspace;
 
@@ -58,13 +58,13 @@ impl ConfigMerge for AppConfig
   }
 }
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "🚀 Cargo Integration and Serde Integration Demo\n" );
 
   // demonstrate cargo integration
   #[ cfg( feature = "cargo_integration" ) ]
-  cargo_integration_demo()?;
+  cargo_integration_demo();
 
   // demonstrate serde integration
   #[ cfg( feature = "serde_integration" ) ]
@@ -74,7 +74,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 }
 
 #[ cfg( feature = "cargo_integration" ) ]
-fn cargo_integration_demo() -> Result< (), Box< dyn std::error::Error > >
+fn cargo_integration_demo()
 {
   println!( "📦 Cargo Integration Features:" );
   
@@ -113,13 +113,13 @@ fn cargo_integration_demo() -> Result< (), Box< dyn std::error::Error > >
               println!( "     Workspace dependencies:" );
               for ( name, version ) in &metadata.workspace_dependencies
               {
-                println!( "       • {} = {}", name, version );
+                println!( "       • {name} = {version}" );
               }
             }
           }
           Err( e ) =>
           {
-            println!( "  ⚠️  Failed to get cargo metadata: {}", e );
+            println!( "  ⚠️  Failed to get cargo metadata: {e}" );
           }
         }
         
@@ -136,7 +136,7 @@ fn cargo_integration_demo() -> Result< (), Box< dyn std::error::Error > >
           }
           Err( e ) =>
           {
-            println!( "  ⚠️  Failed to get workspace members: {}", e );
+            println!( "  ⚠️  Failed to get workspace members: {e}" );
           }
         }
       }
@@ -147,7 +147,7 @@ fn cargo_integration_demo() -> Result< (), Box< dyn std::error::Error > >
     }
     Err( e ) =>
     {
-      println!( "  ⚠️  No cargo workspace detected: {}", e );
+      println!( "  ⚠️  No cargo workspace detected: {e}" );
       println!( "     Falling back to standard workspace detection..." );
     }
   }
@@ -157,11 +157,10 @@ fn cargo_integration_demo() -> Result< (), Box< dyn std::error::Error > >
   println!( "  🎯 Final workspace location: {}", workspace.root().display() );
   
   println!();
-  Ok( () )
 }
 
 #[ cfg( feature = "serde_integration" ) ]
-fn serde_integration_demo() -> Result< (), Box< dyn std::error::Error > >
+fn serde_integration_demo() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "🔧 Serde Integration Features:" );
   
@@ -284,7 +283,7 @@ fn serde_integration_demo() -> Result< (), Box< dyn std::error::Error > >
   match workspace.load_config::< AppConfig >( "nonexistent" )
   {
     Ok( _ ) => println!( "     Unexpected success!" ),
-    Err( e ) => println!( "     ✅ Properly handled missing config: {}", e ),
+    Err( e ) => println!( "     ✅ Properly handled missing config: {e}" ),
   }
   
   println!();

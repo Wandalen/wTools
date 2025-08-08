@@ -8,10 +8,11 @@ Create a unified `#[derive(ComponentModel)]` macro that combines all existing de
 
 Users currently need multiple derives:
 ```rust
-#[derive(Default, Assign, ComponentsAssign, FromComponents, ComponentFrom)]
-struct Config {
-  host: String,
-  port: i32,
+#[ derive( Default, Assign, ComponentsAssign, FromComponents, ComponentFrom ) ]
+struct Config
+{
+  host : String,
+  port : i32,
 }
 ```
 
@@ -19,10 +20,11 @@ struct Config {
 
 Single, comprehensive derive:
 ```rust
-#[derive(ComponentModel)]
-struct Config {
-  host: String,
-  port: i32,
+#[ derive( ComponentModel ) ]
+struct Config
+{
+  host : String,
+  port : i32,
 }
 ```
 
@@ -48,16 +50,18 @@ struct Config {
 #### **Macro Structure**
 ```rust
 // In component_model_meta/src/lib.rs
-#[proc_macro_derive(ComponentModel, attributes(component))]
-pub fn derive_component_model(input: TokenStream) -> TokenStream {
-  let ast = syn::parse(input).unwrap();
+#[ proc_macro_derive( ComponentModel, attributes( component ) ) ]
+pub fn derive_component_model( input : TokenStream ) -> TokenStream
+{
+  let ast = syn::parse( input ).unwrap();
   
-  let assign_impl = generate_assign_impl(&ast);
-  let components_assign_impl = generate_components_assign_impl(&ast);
-  let component_from_impl = generate_component_from_impl(&ast);
-  let from_components_impl = generate_from_components_impl(&ast);
+  let assign_impl = generate_assign_impl( &ast );
+  let components_assign_impl = generate_components_assign_impl( &ast );
+  let component_from_impl = generate_component_from_impl( &ast );
+  let from_components_impl = generate_from_components_impl( &ast );
   
-  quote! {
+  quote!
+  {
     #assign_impl
     #components_assign_impl
     #component_from_impl
@@ -75,28 +79,30 @@ pub fn derive_component_model(input: TokenStream) -> TokenStream {
 
 #### **Unit Tests**
 ```rust
-#[derive(ComponentModel)]
-struct TestStruct {
-  name: String,
-  value: i32,
+#[ derive( ComponentModel ) ]
+struct TestStruct
+{
+  name : String,
+  value : i32,
 }
 
-#[test]
-fn test_unified_derive() {
+#[ test ]
+fn test_unified_derive()
+{
   let mut obj = TestStruct::default();
   
   // Test Assign
-  obj.assign("test");
-  obj.assign(42);
+  obj.assign( "test" );
+  obj.assign( 42 );
   
   // Test ComponentFrom
-  let obj2: TestStruct = ComponentFrom::component_from("hello");
+  let obj2 : TestStruct = ComponentFrom::component_from( "hello" );
   
   // Test FromComponents
-  let obj3: TestStruct = FromComponents::from_components(("world", 100));
+  let obj3 : TestStruct = FromComponents::from_components( ( "world", 100 ) );
   
-  assert_eq!(obj.name, "test");
-  assert_eq!(obj.value, 42);
+  assert_eq!( obj.name, "test" );
+  assert_eq!( obj.value, 42 );
 }
 ```
 

@@ -30,7 +30,7 @@ fn test_centralized_secrets_access()
       assert!( !key.is_empty(), "API key should not be empty" );
     },
     Err( e ) => {
-      println!( "Failed to load OpenAI API key: {}", e );
+      println!( "Failed to load OpenAI API key: {e}" );
       // This might be expected if the file doesn't exist in test environment
     },
   }
@@ -43,7 +43,7 @@ fn test_centralized_secrets_access()
       assert!( !key.is_empty(), "API key should not be empty" );
     },
     Err( e ) => {
-      println!( "Failed to load Gemini API key: {}", e );
+      println!( "Failed to load Gemini API key: {e}" );
       // This might be expected if the file doesn't exist in test environment
     },
   }

@@ -306,7 +306,7 @@ fn create_test_workspace_with_yaml_config() -> ( TempDir, Workspace )
 {
   let ( temp_dir, workspace ) = create_test_workspace();
   
-  let config = r#"
+  let config = r"
 name: yaml_app
 port: 5000
 features:
@@ -316,7 +316,7 @@ database:
   host: yaml.db.com
   port: 5432
   name: yaml_db
-"#;
+";
 
   fs::write( workspace.config_dir().join( "app.yaml" ), config ).unwrap();
   

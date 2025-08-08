@@ -1,4 +1,4 @@
-//! comprehensive tests for workspace_tools functionality
+//! comprehensive tests for `workspace_tools` functionality
 //!
 //! ## test matrix for workspace functionality
 //!
@@ -52,7 +52,7 @@ fn test_workspace_resolution_missing_env_var()
     {
       assert_eq!( var, "WORKSPACE_PATH" );
     }
-    other => panic!( "expected EnvironmentVariableMissing, got {:?}", other ),
+    other => panic!( "expected EnvironmentVariableMissing, got {other:?}" ),
   }
 }
 
@@ -102,7 +102,7 @@ fn test_workspace_validation_invalid_path()
     {
       assert_eq!( path, invalid_path );
     }
-    other => panic!( "expected PathNotFound, got {:?}", other ),
+    other => panic!( "expected PathNotFound, got {other:?}" ),
   }
 }
 
@@ -240,7 +240,7 @@ fn test_convenience_function()
 fn test_error_display()
 {
   let error = WorkspaceError::EnvironmentVariableMissing( "TEST_VAR".to_string() );
-  let display = format!( "{}", error );
+  let display = format!( "{error}" );
   
   assert!( display.contains( "TEST_VAR" ) );
   assert!( display.contains( "WORKSPACE_PATH" ) );
@@ -373,6 +373,8 @@ mod glob_tests
   fn test_find_config()
   {
     let temp_dir = TempDir::new().unwrap();
+    let original = env::var( "WORKSPACE_PATH" ).ok();
+    
     env::set_var( "WORKSPACE_PATH", temp_dir.path() );
     
     let workspace = Workspace::resolve().unwrap();
@@ -388,8 +390,12 @@ mod glob_tests
     let found = workspace.find_config( "app" ).unwrap();
     assert_eq!( found, config_file );
     
-    // cleanup
-    env::remove_var( "WORKSPACE_PATH" );
+    // restore environment
+    match original
+    {
+      Some( value ) => env::set_var( "WORKSPACE_PATH", value ),
+      None => env::remove_var( "WORKSPACE_PATH" ),
+    }
   }
   
   /// test config file discovery with multiple extensions

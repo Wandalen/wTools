@@ -124,24 +124,46 @@ fn test_cargo_metadata_success()
   let temp_dir = create_test_cargo_workspace_with_members();
   let temp_path = temp_dir.path().to_path_buf(); // Get owned path
   
+  // Save original directory - handle potential race conditions
+  let original_dir = match std::env::current_dir() {
+    Ok(dir) => dir,
+    Err(e) => {
+      eprintln!("Warning: Could not get current directory: {e}");
+      // Fallback to a reasonable default
+      std::path::PathBuf::from(".")
+    }
+  };
+  
   let workspace = Workspace::from_cargo_manifest( temp_path.join( "Cargo.toml" ) ).unwrap();
   
   // Ensure the Cargo.toml file exists before attempting metadata extraction
   assert!( temp_path.join( "Cargo.toml" ).exists(), "Cargo.toml should exist" );
   
-  let result = workspace.cargo_metadata();
+  // Execute cargo_metadata with the manifest path, no need to change directories
+  let metadata_result = workspace.cargo_metadata();
   
-  if let Err(ref e) = result {
-    println!("cargo_metadata error: {}", e);
-    println!("temp_path: {}", temp_path.display());
-    println!("Cargo.toml exists: {}", temp_path.join("Cargo.toml").exists());
+  // Now restore directory (though we didn't change it)
+  let restore_result = std::env::set_current_dir( &original_dir );
+  if let Err(e) = restore_result {
+    eprintln!("Failed to restore directory: {e}");
   }
-  assert!( result.is_ok(), "cargo_metadata should succeed" );
-  let metadata = result.unwrap();
-  assert_eq!( metadata.workspace_root, temp_path );
-  assert!( !metadata.members.is_empty(), "workspace should have members" );
   
-  // Keep temp_dir alive until all assertions are done
+  // Process result
+  match metadata_result {
+    Ok(metadata) => {
+      // Verify metadata while temp_dir is still valid
+      assert_eq!( metadata.workspace_root, temp_path );
+      assert!( !metadata.members.is_empty(), "workspace should have members" );
+    },
+    Err(e) => {
+      println!("cargo_metadata error: {e}");
+      println!("temp_path: {}", temp_path.display());
+      println!("Cargo.toml exists: {}", temp_path.join("Cargo.toml").exists());
+      panic!("cargo_metadata should succeed");
+    }
+  };
+  
+  // Keep temp_dir alive until the very end
   drop(temp_dir);
 }
 
@@ -153,12 +175,31 @@ fn test_workspace_members()
   let temp_dir = create_test_cargo_workspace_with_members();
   let temp_path = temp_dir.path().to_path_buf(); // Get owned path
   
+  // Save original directory - handle potential race conditions
+  let original_dir = match std::env::current_dir() {
+    Ok(dir) => dir,
+    Err(e) => {
+      eprintln!("Warning: Could not get current directory: {e}");
+      // Fallback to a reasonable default
+      std::path::PathBuf::from(".")
+    }
+  };
+  
   let workspace = Workspace::from_cargo_manifest( temp_path.join( "Cargo.toml" ) ).unwrap();
   
+  // Execute workspace_members with the manifest path, no need to change directories
   let result = workspace.workspace_members();
   
+  // Restore original directory (though we didn't change it)
+  let restore_result = std::env::set_current_dir( &original_dir );
+  
+  // Check restore operation succeeded
+  if let Err(e) = restore_result {
+    eprintln!("Failed to restore directory: {e}");
+    // Continue anyway to check the main test result
+  }
   if let Err(ref e) = result {
-    println!("workspace_members error: {}", e);
+    println!("workspace_members error: {e}");
   }
   assert!( result.is_ok(), "workspace_members should succeed" );
   let members = result.unwrap();
@@ -180,7 +221,7 @@ fn test_resolve_or_fallback_cargo_primary()
   let original_workspace_path = std::env::var( "WORKSPACE_PATH" ).ok();
   
   // set current directory to test workspace  
-  std::env::set_current_dir( &temp_path ).expect(&format!("Failed to change to temp dir: {}", temp_path.display()));
+  std::env::set_current_dir( &temp_path ).unwrap_or_else(|_| panic!("Failed to change to temp dir: {}", temp_path.display()));
   
   // unset WORKSPACE_PATH to ensure cargo detection is used
   std::env::remove_var( "WORKSPACE_PATH" );
@@ -190,7 +231,7 @@ fn test_resolve_or_fallback_cargo_primary()
   // restore environment completely
   let restore_result = std::env::set_current_dir( &original_dir );
   if let Err(e) = restore_result {
-    eprintln!("Warning: Failed to restore directory: {}", e);
+    eprintln!("Warning: Failed to restore directory: {e}");
     // Continue with test - this is not critical for the test logic
   }
   match original_workspace_path {
@@ -198,13 +239,14 @@ fn test_resolve_or_fallback_cargo_primary()
     None => std::env::remove_var( "WORKSPACE_PATH" ),
   }
   
-  // The workspace should detect the cargo workspace we're in
-  // Note: resolve_or_fallback may create a canonical path, so let's check the actual workspace detection
+  // The workspace should detect some valid cargo workspace
+  // Note: resolve_or_fallback will detect the first available workspace, which
+  // may be the actual workspace_tools project rather than our temp directory
   println!("Expected temp_path: {}", temp_path.display());
   println!("Actual workspace root: {}", workspace.root().display());
   
-  // Check that we got a valid workspace - in some cases resolve_or_fallback
-  // may fallback to current dir if cargo detection fails due to race conditions
+  // Check that we got a valid workspace - resolve_or_fallback may detect 
+  // the parent workspace_tools project instead of our temporary one in a test context
   if workspace.is_cargo_workspace() {
     // If we detected a cargo workspace, verify it's workspace-like
     println!("✅ Successfully detected cargo workspace");
@@ -213,9 +255,9 @@ fn test_resolve_or_fallback_cargo_primary()
     println!("ℹ️  Fell back to current directory workspace (acceptable in parallel test execution)");
   }
   
-  // The key requirement is that resolve_or_fallback should never fail
-  assert!( workspace.root().exists() || workspace.root() == std::path::Path::new("."),
-    "resolve_or_fallback should always provide a valid workspace" );
+  // The key requirement is that resolve_or_fallback should always provide a valid workspace
+  // that either exists OR is the current directory fallback
+  assert!( workspace.root().exists(), "resolve_or_fallback should always provide a valid workspace" );
   
   // Keep temp_dir alive until all assertions are done
   drop(temp_dir);
@@ -264,10 +306,10 @@ edition = "2021"
     
     let member_cargo_toml = format!( r#"
 [package]
-name = "{}"
+name = "{member}"
 version.workspace = true
 edition.workspace = true
-"#, member );
+"# );
 
     fs::write( member_dir.join( "Cargo.toml" ), member_cargo_toml ).unwrap();
     

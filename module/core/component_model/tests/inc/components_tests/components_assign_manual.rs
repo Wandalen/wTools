@@ -50,7 +50,7 @@ where
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT ) {
-    self.field2 = component.into().clone();
+    self.field2.clone_from(&component.into());
   }
 }
 
@@ -67,7 +67,6 @@ where
 ///
 /// `Options1ComponentsAssign`.
 ///
-
 // #[ allow( dead_code ) ]
 pub trait Options1ComponentsAssign< IntoT >
 where
@@ -137,7 +136,7 @@ where
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT ) {
-    self.field2 = component.into().clone();
+    self.field2.clone_from(&component.into());
   }
 }
 

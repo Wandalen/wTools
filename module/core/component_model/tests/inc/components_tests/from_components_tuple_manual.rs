@@ -23,7 +23,7 @@ impl From< &SourceTuple > for String {
   }
 }
 
-// Manual implementation of From<T> for TargetTuple
+// Manual implementation of From< T > for TargetTuple
 impl< T > From< T > for TargetTuple
 where
   T : Into< i32 >,

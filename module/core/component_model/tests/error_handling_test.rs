@@ -1,4 +1,4 @@
-//! Error handling and validation tests for ComponentModel derive macro  
+//! Error handling and validation tests for `ComponentModel` derive macro  
 //!
 //! ## Test Matrix: Error Handling and Edge Cases
 //!
@@ -25,7 +25,7 @@ use component_model as the_module;
 use the_module::ComponentModel;
 
 // TEH03: Empty struct with braces should compile but generate no implementations
-/// Tests ComponentModel derive with empty struct produces no implementations.
+/// Tests `ComponentModel` derive with empty struct produces no implementations.
 /// Test Combination: TEH03  
 #[test]
 fn test_empty_struct_no_implementations()
@@ -34,14 +34,15 @@ fn test_empty_struct_no_implementations()
   struct EmptyStruct {}
 
   // Empty struct should compile successfully
-  let _empty = EmptyStruct {};
+  let empty_struct = EmptyStruct {};
+  let _ = empty_struct; // Prevent unused variable warning
   
   // We can't test that no implementations were generated at runtime,
   // but if this compiles, the derive macro handled it correctly
 }
 
 // TEH05: Debug attribute should work without errors
-/// Tests ComponentModel derive with debug attribute processes correctly.
+/// Tests `ComponentModel` derive with debug attribute processes correctly.
 /// Test Combination: TEH05
 #[test] 
 fn test_debug_attribute_processing()
@@ -51,22 +52,22 @@ fn test_debug_attribute_processing()
   // Note: #[debug] attribute support to be implemented later
   struct DebugStruct
   {
-    name: String,
-    value: i32,
+    name : String,
+    value : i32,
   }
 
   let mut debug_struct = DebugStruct::default();
   
   // Test that assignment still works with debug attribute
   use the_module::Assign;
-  Assign::assign(&mut debug_struct, "debug_test".to_string());
-  Assign::assign(&mut debug_struct, 123i32);
+  Assign::assign( &mut debug_struct, "debug_test".to_string() );
+  Assign::assign( &mut debug_struct, 123i32 );
   
-  assert_eq!(debug_struct.name, "debug_test");
-  assert_eq!(debug_struct.value, 123);
+  assert_eq!( debug_struct.name, "debug_test" );
+  assert_eq!( debug_struct.value, 123 );
 }
 
-/// Tests ComponentModel behavior with struct containing no named fields.
+/// Tests `ComponentModel` behavior with struct containing no named fields.
 /// Test Combination: Edge case for empty field processing
 #[test]
 fn test_struct_with_zero_fields()
@@ -81,7 +82,7 @@ fn test_struct_with_zero_fields()
   // No Assign implementations should be generated
 }
 
-/// Tests ComponentModel with complex attribute combinations.
+/// Tests `ComponentModel` with complex attribute combinations.
 /// Test Combination: Advanced attribute processing  
 #[test]
 fn test_complex_attribute_combinations()
@@ -90,28 +91,28 @@ fn test_complex_attribute_combinations()
   #[derive(ComponentModel)]
   struct ComplexAttributeStruct
   {
-    #[allow(dead_code)]
-    name: String,
+    #[ allow( dead_code ) ]
+    name : String,
     
-    #[cfg(test)]
-    test_field: i32,
+    #[ cfg( test ) ]
+    test_field : i32,
   }
 
   let mut complex_struct = ComplexAttributeStruct::default();
   
   // Test assignment works despite complex attributes
   use the_module::Assign;
-  Assign::assign(&mut complex_struct, "complex_test".to_string());
-  assert_eq!(complex_struct.name, "complex_test");
+  Assign::assign( &mut complex_struct, "complex_test".to_string() );
+  assert_eq!( complex_struct.name, "complex_test" );
   
   #[cfg(test)]
   {
-    Assign::assign(&mut complex_struct, 456i32);
-    assert_eq!(complex_struct.test_field, 456);
+    Assign::assign( &mut complex_struct, 456i32 );
+    assert_eq!( complex_struct.test_field, 456 );
   }
 }
 
-/// Tests ComponentModel with reserved Rust keywords as field names.
+/// Tests `ComponentModel` with reserved Rust keywords as field names.
 /// Test Combination: Edge case for identifier handling
 #[test]
 fn test_reserved_keyword_field_names()
@@ -120,26 +121,26 @@ fn test_reserved_keyword_field_names()
   #[derive(ComponentModel)]
   struct KeywordFieldStruct
   {
-    r#type: String,    // Reserved keyword as field name
-    r#match: i32,      // Another reserved keyword
-    normal_field: bool,
+    r#type : String,    // Reserved keyword as field name
+    r#match : i32,      // Another reserved keyword
+    normal_field : bool,
   }
 
   let mut keyword_struct = KeywordFieldStruct::default();
   
   // Test assignment works with keyword field names (note: String assignment is ambiguous)
   use the_module::Assign;
-  Assign::assign(&mut keyword_struct, 789i32);
+  Assign::assign( &mut keyword_struct, 789i32 );
   // Note: bool assignment may be ambiguous, use direct assignment
   keyword_struct.normal_field = true;
   
   // Verify fields were assigned correctly
-  assert_eq!(keyword_struct.r#type, String::default());
-  assert_eq!(keyword_struct.r#match, 789);
-  assert_eq!(keyword_struct.normal_field, true);
+  assert_eq!( keyword_struct.r#type, String::default() );
+  assert_eq!( keyword_struct.r#match, 789 );
+  assert!( keyword_struct.normal_field );
 }
 
-/// Tests ComponentModel with deeply nested generic types.
+/// Tests `ComponentModel` with deeply nested generic types.
 /// Test Combination: Complex type handling
 #[test]
 fn test_nested_generic_types()
@@ -150,9 +151,9 @@ fn test_nested_generic_types()
   #[derive(ComponentModel)]
   struct NestedGenericStruct
   {
-    simple: String,
-    nested: HashMap<String, Vec<i32>>,
-    optional: Option<String>,
+    simple : String,
+    nested : HashMap< String, Vec< i32 > >,
+    optional : Option< String >,
   }
 
   let mut nested_struct = NestedGenericStruct::default();
@@ -162,16 +163,16 @@ fn test_nested_generic_types()
   
   // Complex types should get standard Into-based implementations
   let mut test_map = HashMap::new();
-  test_map.insert("key".to_string(), vec![1, 2, 3]);
-  Assign::assign(&mut nested_struct, test_map.clone());
+  test_map.insert( "key".to_string(), vec![ 1, 2, 3 ] );
+  Assign::assign( &mut nested_struct, test_map.clone() );
   
   // Only test unambiguous assignments
-  assert_eq!(nested_struct.simple, String::default());
-  assert_eq!(nested_struct.nested, test_map);
-  assert_eq!(nested_struct.optional, None); // Default unchanged
+  assert_eq!( nested_struct.simple, String::default() );
+  assert_eq!( nested_struct.nested, test_map );
+  assert_eq!( nested_struct.optional, None ); // Default unchanged
 }
 
-/// Tests ComponentModel with simple field type handling.
+/// Tests `ComponentModel` with simple field type handling.
 /// Test Combination: Basic type parameter handling (placeholder for future generic support)
 #[test]
 fn test_simple_field_parameters()
@@ -180,17 +181,17 @@ fn test_simple_field_parameters()
   #[derive(ComponentModel)]
   struct SimpleStruct
   {
-    name: String,
-    value: i32,
+    name : String,
+    value : i32,
   }
 
   let mut simple_struct = SimpleStruct::default();
   
   // Test assignment works with simple parameters
   use the_module::Assign;
-  Assign::assign(&mut simple_struct, "simple_test".to_string());
-  Assign::assign(&mut simple_struct, 42i32);
+  Assign::assign( &mut simple_struct, "simple_test".to_string() );
+  Assign::assign( &mut simple_struct, 42i32 );
   
-  assert_eq!(simple_struct.name, "simple_test");
-  assert_eq!(simple_struct.value, 42);
+  assert_eq!( simple_struct.name, "simple_test" );
+  assert_eq!( simple_struct.value, 42 );
 }

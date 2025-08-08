@@ -62,9 +62,9 @@ cargo run --example 008_performance_comparison
 ```rust
 #[derive(Default, Assign)]
 struct Config {
-  host: String,
-  port: u16,
-  timeout: f64,
+  host : String,
+  port : u16,
+  timeout : f64,
 }
 
 let config = Config::default()
@@ -84,7 +84,7 @@ config.components_assign((
 
 ### 🏗️ **Object Creation from Components**
 ```rust
-let config: Config = FromComponents::from_components((
+let config : Config = FromComponents::from_components((
   "localhost", 8080u16, 30.0f64
 ));
 ```

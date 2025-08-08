@@ -1,12 +1,12 @@
 //! # 007 - Real-World CLI Application
 //!
-//! complete example of a cli application using workspace_tools for
+//! complete example of a cli application using `workspace_tools` for
 //! configuration, logging, data storage, and resource management
 
 use workspace_tools::workspace;
 use std::{ fs, io::Write };
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "🔧 real-world cli application example\n" );
   
@@ -64,7 +64,7 @@ impl Default for AppConfig
 
 impl CliApp
 {
-  fn new() -> Result< Self, Box< dyn std::error::Error > >
+  fn new() -> Result< Self, Box< dyn core::error::Error > >
   {
     println!( "1️⃣  initializing cli application..." );
     
@@ -90,7 +90,7 @@ impl CliApp
     Ok( Self { workspace, config } )
   }
   
-  fn ensure_directory_structure( ws : &workspace_tools::Workspace ) -> Result< (), Box< dyn std::error::Error > >
+  fn ensure_directory_structure( ws : &workspace_tools::Workspace ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "   📁 ensuring directory structure..." );
     
@@ -112,7 +112,7 @@ impl CliApp
     Ok( () )
   }
   
-  fn load_configuration( ws : &workspace_tools::Workspace ) -> Result< AppConfig, Box< dyn std::error::Error > >
+  fn load_configuration( ws : &workspace_tools::Workspace ) -> Result< AppConfig, Box< dyn core::error::Error > >
   {
     println!( "   ⚙️  loading configuration..." );
     
@@ -122,7 +122,7 @@ impl CliApp
     {
       println!( "     loading from: {}", config_file.display() );
       let content = fs::read_to_string( config_file )?;
-      Self::parse_config( &content )?
+      Self::parse_config( &content )
     }
     else
     {
@@ -134,11 +134,11 @@ impl CliApp
       default_config
     };
     
-    println!( "     ✅ configuration loaded: {:?}", config );
+    println!( "     ✅ configuration loaded: {config:?}" );
     Ok( config )
   }
   
-  fn setup_logging( ws : &workspace_tools::Workspace, config : &AppConfig ) -> Result< (), Box< dyn std::error::Error > >
+  fn setup_logging( ws : &workspace_tools::Workspace, config : &AppConfig ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "   📋 setting up logging..." );
     
@@ -169,7 +169,7 @@ impl CliApp
     println!( "   logs: {}", self.workspace.logs_dir().display() );
   }
   
-  fn run_demo_commands( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn run_demo_commands( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "\n3️⃣  running demo commands:" );
     
@@ -184,7 +184,7 @@ impl CliApp
     
     // command 4: resource discovery
     #[ cfg( feature = "glob" ) ]
-    self.discover_resources()?;
+    self.discover_resources();
     
     // command 5: maintenance
     self.run_maintenance()?;
@@ -192,7 +192,7 @@ impl CliApp
     Ok( () )
   }
   
-  fn process_data( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn process_data( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "   📊 processing data..." );
     
@@ -226,7 +226,7 @@ impl CliApp
     Ok( () )
   }
   
-  fn manage_cache( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn manage_cache( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "   💾 managing cache..." );
     
@@ -265,7 +265,7 @@ impl CliApp
     Ok( () )
   }
   
-  fn export_data( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn export_data( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "   📤 exporting data..." );
     
@@ -273,13 +273,13 @@ impl CliApp
     let timestamp = chrono::Utc::now().format( "%Y%m%d_%H%M%S" );
     
     // export configuration
-    let config_export = exports_dir.join( format!( "config_export_{}.toml", timestamp ) );
+    let config_export = exports_dir.join( format!( "config_export_{timestamp}.toml" ) );
     let config_content = Self::config_to_toml( &self.config );
     fs::write( &config_export, config_content )?;
     println!( "     exported config: {}", config_export.display() );
     
     // export data summary
-    let data_export = exports_dir.join( format!( "data_summary_{}.json", timestamp ) );
+    let data_export = exports_dir.join( format!( "data_summary_{timestamp}.json" ) );
     let summary = format!( r#"{{
   "export_timestamp": "{}",
   "workspace_root": "{}",
@@ -297,7 +297,7 @@ impl CliApp
   }
   
   #[ cfg( feature = "glob" ) ]
-  fn discover_resources( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn discover_resources( &self )
   {
     println!( "   🔍 discovering resources..." );
     
@@ -325,14 +325,12 @@ impl CliApp
             println!( "       ... and {} more", files.len() - 3 );
           }
         }
-        Err( e ) => println!( "     {}: error - {}", description, e ),
+        Err( e ) => println!( "     {description}: error - {e}" ),
       }
     }
-    
-    Ok( () )
   }
   
-  fn run_maintenance( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn run_maintenance( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "   🧹 running maintenance..." );
     
@@ -340,25 +338,25 @@ impl CliApp
     match self.workspace.validate()
     {
       Ok( () ) => println!( "     ✅ workspace structure is healthy" ),
-      Err( e ) => println!( "     ⚠️  workspace issue: {}", e ),
+      Err( e ) => println!( "     ⚠️  workspace issue: {e}" ),
     }
     
     // check disk usage
     let data_size = Self::calculate_directory_size( &self.workspace.data_dir() )?;
     let log_size = Self::calculate_directory_size( &self.workspace.logs_dir() )?;
     
-    println!( "     data directory: {} bytes", data_size );
-    println!( "     logs directory: {} bytes", log_size );
+    println!( "     data directory: {data_size} bytes" );
+    println!( "     logs directory: {log_size} bytes" );
     
     // simulate old file cleanup based on retention policy
     let retention_days = self.config.data_retention_days;
-    println!( "     retention policy: {} days", retention_days );
-    println!( "     (in production: would clean files older than {} days)", retention_days );
+    println!( "     retention policy: {retention_days} days" );
+    println!( "     (in production: would clean files older than {retention_days} days)" );
     
     Ok( () )
   }
   
-  fn cleanup( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn cleanup( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "\n4️⃣  cleaning up demo files..." );
     
@@ -387,7 +385,7 @@ impl CliApp
   
   // utility methods
   
-  fn parse_config( content : &str ) -> Result< AppConfig, Box< dyn std::error::Error > >
+  fn parse_config( content : &str ) -> AppConfig
   {
     // simple toml-like parsing for demo (in real app, use toml crate)
     let mut config = AppConfig::default();
@@ -410,7 +408,7 @@ impl CliApp
       }
     }
     
-    Ok( config )
+    config
   }
   
   fn config_to_toml( config : &AppConfig ) -> String
@@ -425,7 +423,7 @@ max_cache_size_mb = {}
     )
   }
   
-  fn calculate_directory_size( dir : &std::path::Path ) -> Result< u64, Box< dyn std::error::Error > >
+  fn calculate_directory_size( dir : &std::path::Path ) -> Result< u64, Box< dyn core::error::Error > >
   {
     let mut total_size = 0;
     
@@ -468,11 +466,13 @@ mod chrono
   
   impl DateTime
   {
-    pub fn format( &self, _fmt : &str ) -> impl std::fmt::Display
+    #[allow(clippy::unused_self)]
+    pub fn format( &self, _fmt : &str ) -> impl core::fmt::Display
     {
       "2024-01-01 12:00:00"
     }
     
+    #[allow(clippy::unused_self)]
     pub fn to_rfc3339( &self ) -> String
     {
       "2024-01-01T12:00:00Z".to_string()
