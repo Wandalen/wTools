@@ -15,12 +15,11 @@ fn debug_strs_tools_semicolon_only() {
   let input = ";;";
   let splits: Vec<_> = strs_tools::string::split()
     .src(input)
-    .delimeter(vec![";;"])
+    .delimeters(&[";;"])
     .preserving_delimeters(true)
     .preserving_empty(false)
     .stripping(true)
-    .form()
-    .split()
+    .perform()
     .collect();
 
   println!("DEBUG: Splits for ';;': {:?}", splits);
@@ -43,12 +42,11 @@ fn debug_strs_tools_trailing_semicolon_space() {
   let input = "cmd1 ;; ";
   let splits: Vec<_> = strs_tools::string::split()
     .src(input)
-    .delimeter(vec![";;"])
+    .delimeters(&[";;"])
     .preserving_delimeters(true)
     .preserving_empty(false)
     .stripping(true)
-    .form()
-    .split()
+    .perform()
     .collect();
 
   println!("DEBUG: Splits for 'cmd1 ;; ': {:?}", splits);
@@ -80,12 +78,11 @@ fn debug_strs_tools_only_semicolon() {
   let input = ";;";
   let splits: Vec<_> = strs_tools::string::split()
     .src(input)
-    .delimeter(vec![";;"])
+    .delimeters(&[";;"])
     .preserving_delimeters(true)
     .preserving_empty(false)
     .stripping(true)
-    .form()
-    .split()
+    .perform()
     .collect();
 
   println!("DEBUG: Splits for ';;': {:?}", splits);

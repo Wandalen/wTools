@@ -227,10 +227,9 @@ fn test_multiple_delimiters_space_and_double_colon() {
   let input = "cmd key::value";
   let splits_iter = strs_tools::string::split()
     .src(input)
-    .delimeter(vec![" ", "::"])
+    .delimeters(&[" ", "::"])
     .preserving_delimeters(true)
-    .form()
-    .split();
+    .perform();
 
   let splits: Vec<strs_tools::string::split::Split<'_>> = splits_iter.collect();
 
@@ -286,8 +285,7 @@ fn test_quoted_value_simple() {
     .delimeter("::")
     .preserving_delimeters(true)
     .quoting(true)
-    .form()
-    .split();
+    .perform();
 
   let splits: Vec<strs_tools::string::split::Split<'_>> = splits_iter.collect();
 
@@ -329,8 +327,7 @@ fn test_quoted_value_with_internal_quotes() {
     .delimeter("::")
     .preserving_delimeters(true)
     .quoting(true)
-    .form()
-    .split();
+    .perform();
 
   let splits: Vec<strs_tools::string::split::Split<'_>> = splits_iter.collect();
 
@@ -372,8 +369,7 @@ fn test_quoted_value_with_escaped_backslashes() {
     .delimeter("::")
     .preserving_delimeters(true)
     .quoting(true)
-    .form()
-    .split();
+    .perform();
 
   let splits: Vec<strs_tools::string::split::Split<'_>> = splits_iter.collect();
 
@@ -415,8 +411,7 @@ fn test_mixed_quotes_and_escapes() {
     .delimeter("::")
     .preserving_delimeters(true)
     .quoting(true)
-    .form()
-    .split();
+    .perform();
 
   let splits: Vec<strs_tools::string::split::Split<'_>> = splits_iter.collect();
 
@@ -455,11 +450,10 @@ fn mre_from_task_test() {
   let input = r#"cmd key::"value with \"quotes\" and \\slash\\""#;
   let splits_iter = strs_tools::string::split()
     .src(input)
-    .delimeter(vec![" ", "::"])
+    .delimeters(&[" ", "::"])
     .preserving_delimeters(true)
     .quoting(true)
-    .form()
-    .split();
+    .perform();
 
   let splits: Vec<strs_tools::string::split::Split<'_>> = splits_iter.collect();
 

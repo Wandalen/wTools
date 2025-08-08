@@ -19,6 +19,9 @@ pub mod zero_copy;
 /// Parser integration for single-pass processing.
 #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 pub mod parser;
+/// Specialized high-performance string splitting algorithms.
+#[ cfg( all( feature = "string_split", feature = "specialized_algorithms", not( feature = "no_std" ) ) ) ]
+pub mod specialized;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
@@ -45,6 +48,8 @@ pub mod own {
   pub use super::zero_copy::{ ZeroCopyStringExt, ZeroCopySplit, ZeroCopySegment, zero_copy_split };
   #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
   pub use super::parser::{ ParserIntegrationExt, CommandParser, ParsedToken, ParseError, parse_and_split };
+  #[ cfg( all( feature = "string_split", feature = "specialized_algorithms", not( feature = "no_std" ) ) ) ]
+  pub use super::specialized::{ smart_split, SingleCharSplitIterator, BoyerMooreSplitIterator, SplitResult, SplitAlgorithm, AlgorithmSelector };
 }
 
 /// Parented namespace of the module.
@@ -77,6 +82,8 @@ pub mod exposed {
   pub use super::zero_copy::{ ZeroCopyStringExt, zero_copy_split };
   #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
   pub use super::parser::{ ParserIntegrationExt, ParsedToken, parse_and_split };
+  #[ cfg( all( feature = "string_split", feature = "specialized_algorithms", not( feature = "no_std" ) ) ) ]
+  pub use super::specialized::{ smart_split, SingleCharSplitIterator, BoyerMooreSplitIterator };
 }
 
 /// Namespace of the module to include with `use module::*`.

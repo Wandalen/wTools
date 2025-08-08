@@ -55,7 +55,7 @@ fn test_scenario_empty_delimiter_vector() {
   let src = "abc";
   let iter = split()
   .src( src )
-  .delimeter( Vec::<&str>::new() ) // Explicitly Vec<&str>
+  .delimeters( &[] ) // Empty slice
   // preserving_delimeters defaults to true
   .perform();
   assert_eq!(iter.map(|e| String::from(e.string)).collect::<Vec<_>>(), vec!["abc"]);

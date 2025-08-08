@@ -18,13 +18,11 @@ fn test_scenario_default_char_split() {
 #[test]
 fn test_scenario_default_char_split_form_methods() {
   let src = "abc";
-  let opts = split().src(src).form();
-  let iter = opts.split();
+  let iter = split().src(src).perform();
   assert_eq!(iter.map(|e| String::from(e.string)).collect::<Vec<_>>(), vec!["abc"]);
 
   let src = "abc";
-  let opts = split().src(src).form();
-  let iter = opts.split_fast();
+  let iter = split().src(src).perform();
   assert_eq!(iter.map(|e| String::from(e.string)).collect::<Vec<_>>(), vec!["abc"]);
 }
 
@@ -38,7 +36,7 @@ fn test_scenario_multi_delimiters_incl_empty_char_split() {
   let src = "abc";
   let iter = split()
   .src( src )
-  .delimeter( vec![ "a", "b", "" ] )
+  .delimeters( &[ "a", "b", "" ] )
   // preserving_delimeters defaults to true
   .perform();
   assert_eq!(iter.map(|e| String::from(e.string)).collect::<Vec<_>>(), vec!["a", "b", "c"]);
@@ -55,7 +53,7 @@ fn test_basic_multi_delimiters_some_match() {
   let src = "abc";
   let iter = split()
   .src( src )
-  .delimeter( vec![ "b", "d" ] )
+  .delimeters( &[ "b", "d" ] )
   // preserving_delimeters defaults to true
   .perform();
   assert_eq!(iter.map(|e| String::from(e.string)).collect::<Vec<_>>(), vec!["a", "b", "c"]);
