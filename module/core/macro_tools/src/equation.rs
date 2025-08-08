@@ -39,7 +39,7 @@ mod private {
   /// macro_tools::tree_print!( got );
   /// assert_eq!( macro_tools::code_to_str!( got ), "default = 31".to_string() );
   /// ```
-  #[derive(Debug)]
+  #[ derive( Debug ) ]
   pub struct Equation {
     /// The LHS of the equation, represented by a syntactic path.
     pub left: syn::Path,
@@ -52,7 +52,7 @@ mod private {
   }
 
   impl syn::parse::Parse for Equation {
-    fn parse(input: syn::parse::ParseStream<'_>) -> Result<Self> {
+    fn parse(input: syn::parse::ParseStream<'_>) -> Result< Self > {
       let left: syn::Path = input.parse()?;
       let op: syn::Token![ = ] = input.parse()?;
       let right: proc_macro2::TokenStream = input.parse()?;
@@ -93,7 +93,7 @@ mod private {
   /// ```
   /// # Errors
   /// qqq: doc
-  pub fn from_meta(attr: &syn::Attribute) -> Result<Equation> {
+  pub fn from_meta(attr: &syn::Attribute) -> Result< Equation > {
     let meta = &attr.meta;
     match meta {
       syn::Meta::List(ref meta_list) => {
@@ -108,45 +108,45 @@ mod private {
   }
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{from_meta};
 }
 
 /// Orphan namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
   pub use super::super::equation;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{Equation};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 }

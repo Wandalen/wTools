@@ -1,11 +1,11 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 // use test_tools::exposed::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use the_module::prelude::*;
 
 // qqq : do negative testing, don't forget about optional arguments /* aaa : Dmytro : done */
-#[cfg(not(target_os = "windows"))]
+// Test implementations (available on all platforms)
 tests_impls! {
   fn a_true_pass()
   {
@@ -219,7 +219,7 @@ tests_impls! {
   }
 }
 
-#[cfg(target_os = "windows")]
+// Windows-specific test index (cfg directive disabled as requested)
 tests_index! {
   a_true_pass,
   a_true_fail_simple,
@@ -252,37 +252,3 @@ tests_index! {
   a_dbg_not_id_fail_with_msg_template,
 }
 
-#[cfg(not(target_os = "windows"))]
-tests_index! {
-  a_true_pass,
-  a_true_fail_simple,
-  a_true_fail_with_msg,
-  a_true_fail_with_msg_template,
-
-  a_id_pass,
-  a_id_fail_simple,
-  a_id_fail_with_msg,
-  a_id_fail_with_msg_template,
-
-
-  a_not_id_pass,
-  a_not_id_fail_simple,
-  a_not_id_fail_with_msg,
-  a_not_id_fail_with_msg_template,
-
-
-  a_dbg_true_pass,
-  a_dbg_true_fail_simple,
-  a_dbg_true_fail_with_msg,
-  a_dbg_true_fail_with_msg_template,
-
-  a_dbg_id_pass,
-  a_dbg_id_fail_simple,
-  a_dbg_id_fail_with_msg,
-  a_dbg_id_fail_with_msg_template,
-
-  a_dbg_not_id_pass,
-  a_dbg_not_id_fail_simple,
-  a_dbg_not_id_fail_with_msg,
-  a_dbg_not_id_fail_with_msg_template,
-}

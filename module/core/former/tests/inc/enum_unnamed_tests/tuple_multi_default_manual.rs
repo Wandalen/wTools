@@ -33,7 +33,7 @@ pub enum TestEnum
 }
 
 // --- Manual Former Setup for Variant ---
-#[derive(Default)]
+#[ derive( Default ) ]
 pub struct TestEnumVariantFormerStorage
 {
   field0 : Option< u32 >,

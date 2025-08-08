@@ -7,19 +7,19 @@ use collection_tools::HashSet;
 // == define custom collections
 
 // Custom collection that logs additions
-#[derive(Debug, PartialEq)]
+#[ derive( Debug, PartialEq ) ]
 pub struct LoggingSet<K>
 where
   K: core::cmp::Eq + core::hash::Hash,
 {
-  set: HashSet<K>,
+  set: HashSet< K >,
 }
 
 impl<K> Default for LoggingSet<K>
 where
   K: core::cmp::Eq + core::hash::Hash,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn default() -> Self {
     Self { set: HashSet::default() }
   }
@@ -56,7 +56,7 @@ where
   type Entry = K;
   type Val = K;
 
-  #[inline(always)]
+  #[ inline( always ) ]
   fn entry_to_val(e: Self::Entry) -> Self::Val {
     e
   }
@@ -66,7 +66,7 @@ impl<K> former::CollectionAdd for LoggingSet<K>
 where
   K: core::cmp::Eq + core::hash::Hash,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn add(&mut self, e: Self::Entry) -> bool {
     self.set.insert(e)
   }
@@ -91,7 +91,7 @@ where
   K: core::cmp::Eq + core::hash::Hash,
 {
   type Entry = K;
-  #[inline(always)]
+  #[ inline( always ) ]
   fn val_to_entry(val: K) -> Self::Entry {
     val
   }
@@ -117,7 +117,7 @@ where
 
 // = definition types
 
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct LoggingSetDefinitionTypes<K, Context = (), Formed = LoggingSet<K>> {
   _phantom: core::marker::PhantomData<(K, Context, Formed)>,
 }
@@ -133,7 +133,7 @@ where
 
 // = definition
 
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct LoggingSetDefinition<K, Context = (), Formed = LoggingSet<K>, End = former::ReturnStorage> {
   _phantom: core::marker::PhantomData<(K, Context, Formed, End)>,
 }
@@ -207,9 +207,9 @@ pub type LoggingSetAsSubformer<K, Context, Formed, End> =
 // == use custom collection
 
 /// Parent required for the template.
-#[derive(Debug, Default, PartialEq, the_module::Former)]
+#[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 pub struct Parent {
-  #[subform_collection]
+  #[ subform_collection ]
   children: LoggingSet<i32>,
 }
 
@@ -217,7 +217,7 @@ pub struct Parent {
 
 // == end of generated
 
-#[test]
+#[ test ]
 fn basic() {
   // Using the builder pattern provided by Former to manipulate Parent
   let parent = Parent::former().children().add(10).add(20).add(10).end().form();

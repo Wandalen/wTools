@@ -10,6 +10,6 @@ fn deref()
 {
   let a = NameCollisions { a : 5, b : "boo".into() };
   let exp = &5;
-  let got = a.deref();
+  let got = &*a;
   assert_eq!(got, exp);
 }

@@ -16,14 +16,14 @@ fn main() {}
 
 #[cfg(all(feature = "derive_former", feature = "enabled"))]
 fn main() {
-  #[cfg(feature = "enabled")]
+  #[ cfg( feature = "enabled" ) ]
   use former_meta::Former;
 
   /// Structure with a custom setter.
-  #[derive(Debug, Former)]
+  #[ derive( Debug, Former ) ]
   pub struct StructWithCustomSetters {
     // Use `debug` to gennerate sketch of setter.
-    #[scalar(setter = false)]
+    #[ scalar( setter = false ) ]
     word: String,
   }
 
@@ -32,7 +32,7 @@ fn main() {
     Definition: former::FormerDefinition<Storage = StructWithCustomSettersFormerStorage>,
   {
     // Custom alternative setter for `word`
-    #[inline]
+    #[ inline ]
     pub fn word<Src>(mut self, src: Src) -> Self
     where
       Src: ::core::convert::Into<String>,

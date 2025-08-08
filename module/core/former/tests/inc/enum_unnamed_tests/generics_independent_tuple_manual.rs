@@ -1,9 +1,9 @@
 //! Purpose: Provides a manual implementation of constructors and `FormingEnd` for an enum
 //! with unnamed (tuple) variants that have independent generic parameters and bounds,
-//! to serve as a reference for verifying the `#[derive(Former)]` macro's behavior.
+//! to serve as a reference for verifying the `#[ derive( Former ) ]` macro's behavior.
 //!
 //! Coverage:
-//! - Rule 1d (Tuple + Single-Field + `#[scalar]` -> Scalar): Manual implementation of static method `EnumG5::v_1()`.
+//! - Rule 1d (Tuple + Single-Field + `#[ scalar ]` -> Scalar): Manual implementation of static method `EnumG5::v_1()`.
 //! - Rule 4b (Option 2 Logic): Manual implementation of `FormingEnd` for the variant end type.
 //!
 //! Test Relevance/Acceptance Criteria:

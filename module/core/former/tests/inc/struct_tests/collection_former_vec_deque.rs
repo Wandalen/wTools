@@ -1,13 +1,13 @@
 // #![ allow( dead_code ) ]
 
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use collection_tools::VecDeque;
 use the_module::VecDequeExt;
 
 //
 
-#[test]
+#[ test ]
 fn add() {
   // explicit with CollectionFormer
 
@@ -63,7 +63,7 @@ fn add() {
 
 //
 
-#[test]
+#[ test ]
 fn replace() {
   let got: VecDeque<String> = the_module::VecDequeFormer::new(former::ReturnStorage)
     .add("x")
@@ -76,7 +76,7 @@ fn replace() {
 //
 
 // qqq : make similar test for all collections -- done
-#[test]
+#[ test ]
 fn entity_to() {
   // qqq : uncomment and make it working -- done
   let got = <VecDeque<i32> as former::EntityToFormer<
@@ -103,31 +103,31 @@ fn entity_to() {
   a_id!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn entry_to_val() {
   let got = former::EntryToVal::<VecDeque<i32>>::entry_to_val(13);
   let exp = 13;
   a_id!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn val_to_entry() {
   let got = former::ValToEntry::<VecDeque<i32>>::val_to_entry(13);
   let exp = 13;
   a_id!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn subformer() {
   /// Parameter description.
-  #[derive(Debug, Default, PartialEq, the_module::Former)]
+  #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
   pub struct Child {
     name: String,
     data: bool,
   }
 
   /// Parent required for the template.
-  #[derive(Debug, Default, PartialEq, the_module::Former)]
+  #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
   pub struct Parent {
     #[ subform_collection( definition = former::VecDequeDefinition ) ]
     children: VecDeque<Child>,

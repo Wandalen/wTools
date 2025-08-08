@@ -1,20 +1,20 @@
 #![allow(dead_code)]
 
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use collection_tools::HashSet;
 use the_module::HashSetExt;
 
 // qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ] -- done
 // #[ cfg( not( feature = "use_alloc" ) ) ]
-#[test]
+#[ test ]
 fn add() {
   // explicit with CollectionFormer
 
-  let got: HashSet<String> = the_module::CollectionFormer::<
+  let got: HashSet< String > = the_module::CollectionFormer::<
     String,
-    former::HashSetDefinition<String, (), HashSet<String>, the_module::ReturnStorage>,
+    former::HashSetDefinition<String, (), HashSet< String >, the_module::ReturnStorage>,
   >::new(former::ReturnStorage)
   .add("a")
   .add("b")
@@ -24,8 +24,8 @@ fn add() {
 
   // explicit with HashSetFormer
 
-  let got: HashSet<String> =
-    the_module::HashSetFormer::<String, (), HashSet<String>, the_module::ReturnStorage>::new(former::ReturnStorage)
+  let got: HashSet< String > =
+    the_module::HashSetFormer::<String, (), HashSet< String >, the_module::ReturnStorage>::new(former::ReturnStorage)
       .add("a")
       .add("b")
       .form();
@@ -34,13 +34,13 @@ fn add() {
 
   // compact with HashSetFormer
 
-  let got: HashSet<String> = the_module::HashSetFormer::new(former::ReturnStorage).add("a").add("b").form();
+  let got: HashSet< String > = the_module::HashSetFormer::new(former::ReturnStorage).add("a").add("b").form();
   let exp = collection_tools::hset!["a".to_string(), "b".to_string(),];
   a_id!(got, exp);
 
   // with begin_coercing
 
-  let got: HashSet<String> = the_module::HashSetFormer::begin(
+  let got: HashSet< String > = the_module::HashSetFormer::begin(
     Some(collection_tools::hset!["a".to_string()]),
     Some(()),
     former::ReturnStorage,
@@ -52,7 +52,7 @@ fn add() {
 
   // with help of ext
 
-  let got: HashSet<String> = HashSet::former().add("a").add("b").form();
+  let got: HashSet< String > = HashSet::former().add("a").add("b").form();
   let exp = collection_tools::hset!["a".to_string(), "b".to_string(),];
   a_id!(got, exp);
 
@@ -61,9 +61,9 @@ fn add() {
 
 // qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ] -- done
 // #[ cfg( not( feature = "use_alloc" ) ) ]
-#[test]
+#[ test ]
 fn replace() {
-  let got: HashSet<String> = the_module::HashSetFormer::new(former::ReturnStorage)
+  let got: HashSet< String > = the_module::HashSetFormer::new(former::ReturnStorage)
     .add("x")
     .replace(collection_tools::hset!["a".to_string(), "b".to_string()])
     .form();
@@ -71,25 +71,25 @@ fn replace() {
   a_id!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn entity_to() {
-  let got = < HashSet< i32 > as former::EntityToFormer< former::HashSetDefinition< i32, (), HashSet< i32 >, former::ReturnStorage > > >
+  let got = < HashSet<  i32  > as former::EntityToFormer< former::HashSetDefinition< i32, (), HashSet<  i32  >, former::ReturnStorage > > >
   ::Former::new( former::ReturnStorage )
   .add( 13 )
   .form();
   let exp = collection_tools::hset![13];
   a_id!(got, exp);
 
-  let got = <HashSet<i32> as former::EntityToStorage>::Storage::default();
+  let got = <HashSet< i32 > as former::EntityToStorage>::Storage::default();
   let exp =
   <
-    HashSet< i32 > as former::EntityToFormer
+    HashSet<  i32  > as former::EntityToFormer
     <
       former::HashSetDefinition
       <
         i32,
         (),
-        HashSet< i32 >,
+        HashSet<  i32  >,
         former::ReturnStorage,
       >
     >
@@ -97,42 +97,42 @@ fn entity_to() {
   .form();
   a_id!(got, exp);
 
-  let got = <HashSet<i32> as former::EntityToStorage>::Storage::default();
-  let exp = <HashSet<i32> as former::EntityToFormer<
-    <HashSet<i32> as former::EntityToDefinition<(), HashSet<i32>, former::ReturnPreformed>>::Definition,
+  let got = <HashSet< i32 > as former::EntityToStorage>::Storage::default();
+  let exp = <HashSet< i32 > as former::EntityToFormer<
+    <HashSet< i32 > as former::EntityToDefinition<(), HashSet< i32 >, former::ReturnPreformed>>::Definition,
   >>::Former::new(former::ReturnPreformed)
   .form();
   a_id!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn entry_to_val() {
-  let got = former::EntryToVal::<HashSet<i32>>::entry_to_val(13i32);
+  let got = former::EntryToVal::<HashSet< i32 >>::entry_to_val(13i32);
   let exp = 13i32;
   a_id!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn val_to_entry() {
-  let got = former::ValToEntry::<HashSet<i32>>::val_to_entry(13i32);
+  let got = former::ValToEntry::<HashSet< i32 >>::val_to_entry(13i32);
   let exp = 13i32;
   a_id!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn subformer() {
   /// Parameter description.
-  #[derive(Debug, Default, PartialEq, Eq, Hash, the_module::Former)]
+  #[ derive( Debug, Default, PartialEq, Eq, Hash, the_module::Former ) ]
   pub struct Child {
     name: String,
     data: bool,
   }
 
   /// Parent required for the template.
-  #[derive(Debug, Default, PartialEq, the_module::Former)]
+  #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
   pub struct Parent {
     #[ subform_collection( definition = former::HashSetDefinition ) ]
-    children: HashSet<Child>,
+    children: HashSet< Child >,
   }
 
   let got = Parent::former()

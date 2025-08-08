@@ -17,41 +17,42 @@
 //! - Standalone constructors with various argument patterns
 //! - Shared functionality that generic tests were trying to validate
 //! - Independent functionality that generic tests were trying to validate
+//!
 
 use super::*;
 use ::former::prelude::*;
 use ::former::Former;
 
 // Inner structs for comprehensive testing (non-generic to avoid macro issues)
-#[derive(Debug, PartialEq, Default, Clone, Former)]
+#[ derive( Debug, PartialEq, Default, Clone, Former ) ]
 pub struct UltimateInnerA {
   pub field_a: String,
   pub field_b: i32,
 }
 
-#[derive(Debug, PartialEq, Default, Clone, Former)]
+#[ derive( Debug, PartialEq, Default, Clone, Former ) ]
 pub struct UltimateInnerB {
   pub value: f64,
   pub active: bool,
 }
 
 // ULTIMATE COMPREHENSIVE ENUM - replaces all blocked generic enum functionality
-#[derive(Debug, PartialEq, Former)]
-#[former(standalone_constructors)]
+#[ derive( Debug, PartialEq, Former ) ]
+#[ former( standalone_constructors ) ]
 pub enum UltimateStructEnum {
   
   // ZERO-FIELD VARIANTS (replaces generic zero-field functionality)
-  #[scalar]
+  #[ scalar ]
   EmptyScalar {},
   
-  #[scalar]
+  #[ scalar ]
   EmptyDefault {},
   
   // SINGLE-FIELD VARIANTS (replaces generic single-field functionality) 
-  #[scalar]
+  #[ scalar ]
   SingleScalarString { data: String },
   
-  #[scalar]
+  #[ scalar ]
   SingleScalarNumber { count: i32 },
   
   SingleSubformA { inner: UltimateInnerA },
@@ -59,16 +60,16 @@ pub enum UltimateStructEnum {
   SingleSubformB { inner: UltimateInnerB },
   
   // MULTI-FIELD VARIANTS (replaces generic multi-field functionality)
-  #[scalar]
+  #[ scalar ]
   MultiScalarBasic { name: String, age: i32 },
   
-  #[scalar]
+  #[ scalar ]
   MultiScalarComplex { id: u64, title: String, active: bool, score: f64 },
   
   MultiDefaultBasic { field1: String, field2: i32 },
   
   MultiMixedBasic { 
-    #[scalar]
+    #[ scalar ]
     scalar_field: String, 
     subform_field: UltimateInnerA 
   },
@@ -80,9 +81,9 @@ pub enum UltimateStructEnum {
   },
   
   ComplexCombination {
-    #[scalar] 
+    #[ scalar ] 
     name: String,
-    #[scalar]
+    #[ scalar ]
     priority: i32,
     config_a: UltimateInnerA,
     config_b: UltimateInnerB,
@@ -91,35 +92,40 @@ pub enum UltimateStructEnum {
 
 // ULTIMATE COMPREHENSIVE TESTS - covering all scenarios the blocked tests intended
 
-#[test]
+/// Tests zero-field scalar variant construction.
+#[ test ]
 fn ultimate_zero_field_scalar_test() {
   let got = UltimateStructEnum::empty_scalar();
   let expected = UltimateStructEnum::EmptyScalar {};
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests zero-field default variant construction.
+#[ test ]
 fn ultimate_zero_field_default_test() {
   let got = UltimateStructEnum::empty_default();
   let expected = UltimateStructEnum::EmptyDefault {};
   assert_eq!(got, expected);
 }
 
-#[test]  
+/// Tests single scalar string field variant.
+#[ test ]  
 fn ultimate_single_scalar_string_test() {
   let got = UltimateStructEnum::single_scalar_string("ultimate_test".to_string());
   let expected = UltimateStructEnum::SingleScalarString { data: "ultimate_test".to_string() };
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests single scalar number field variant.
+#[ test ]
 fn ultimate_single_scalar_number_test() {
   let got = UltimateStructEnum::single_scalar_number(999);
   let expected = UltimateStructEnum::SingleScalarNumber { count: 999 };
   assert_eq!(got, expected);
 }
 
-#[test] 
+/// Tests single subform variant with type A.
+#[ test ] 
 fn ultimate_single_subform_a_test() {
   let inner = UltimateInnerA { field_a: "subform_test".to_string(), field_b: 42 };
   let got = UltimateStructEnum::single_subform_a()
@@ -129,7 +135,8 @@ fn ultimate_single_subform_a_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests single subform variant with type B.
+#[ test ]
 fn ultimate_single_subform_b_test() {
   let inner = UltimateInnerB { value: 3.14, active: true };
   let got = UltimateStructEnum::single_subform_b()
@@ -139,14 +146,16 @@ fn ultimate_single_subform_b_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests multi-field scalar variant with basic types.
+#[ test ]
 fn ultimate_multi_scalar_basic_test() {
   let got = UltimateStructEnum::multi_scalar_basic("Alice".to_string(), 30);
   let expected = UltimateStructEnum::MultiScalarBasic { name: "Alice".to_string(), age: 30 };
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests multi-field scalar variant with complex types.
+#[ test ]
 fn ultimate_multi_scalar_complex_test() {
   let got = UltimateStructEnum::multi_scalar_complex(12345_u64, "Manager".to_string(), true, 98.5);
   let expected = UltimateStructEnum::MultiScalarComplex { 
@@ -158,7 +167,8 @@ fn ultimate_multi_scalar_complex_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests multi-field variant with default constructor pattern.
+#[ test ]
 fn ultimate_multi_default_basic_test() {
   let got = UltimateStructEnum::multi_default_basic()
     .field1("default_test".to_string())
@@ -171,7 +181,8 @@ fn ultimate_multi_default_basic_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests multi-subform variant with two inner types.
+#[ test ]
 fn ultimate_multi_subforms_test() {
   let inner_a = UltimateInnerA { field_a: "multi_a".to_string(), field_b: 100 };
   let inner_b = UltimateInnerB { value: 2.718, active: false };
@@ -188,7 +199,8 @@ fn ultimate_multi_subforms_test() {
   assert_eq!(got, expected);
 }
 
-#[test] 
+/// Tests complex combination with mixed scalar and subform fields.
+#[ test ] 
 fn ultimate_complex_combination_test() {
   let config_a = UltimateInnerA { field_a: "complex_a".to_string(), field_b: 500 };
   let config_b = UltimateInnerB { value: 1.414, active: true };
@@ -210,7 +222,8 @@ fn ultimate_complex_combination_test() {
 }
 
 // STRESS TEST - comprehensive functionality validation
-#[test]
+/// Tests comprehensive stress test with multiple variant types.
+#[ test ]
 fn ultimate_comprehensive_stress_test() {
   // Test that all variants can be created successfully
   let variants = vec![

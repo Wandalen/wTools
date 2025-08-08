@@ -1,17 +1,17 @@
 //! Test for `struct_single_field_scalar` handler
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 pub enum SingleFieldEnum
 {
-  #[scalar]
+  #[ scalar ]
   VariantOneScalar { field_a: String },
 }
 
-#[test]
+#[ test ]
 fn single_field_scalar_test()
 {
   let got = SingleFieldEnum::variant_one_scalar("value_a".to_string());
@@ -19,7 +19,7 @@ fn single_field_scalar_test()
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn single_field_scalar_into_test()
 {
   // Test that impl Into<String> works correctly

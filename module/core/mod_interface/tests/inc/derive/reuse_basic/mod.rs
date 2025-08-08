@@ -13,7 +13,7 @@ crate::the_module::mod_interface! {
 
 //
 
-#[test]
+#[ test ]
 fn basic() {
   let _ = child::Own;
   let _ = child::Orphan;

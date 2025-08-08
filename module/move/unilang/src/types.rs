@@ -8,6 +8,8 @@ mod private
 {
   use crate::data::Kind;
   use std::path::PathBuf; // Removed `Path`
+  use strs_tools::string;
+  use strs_tools::string::split::SplitType;
   use url::Url;
   use chrono::{DateTime, FixedOffset};
   use regex::Regex;
@@ -264,10 +266,18 @@ fn parse_list_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
     return Ok(Value::List(Vec::new()));
   }
   let delimiter = delimiter_opt.unwrap_or(',');
-  let parts: Vec<&str> = input.split(delimiter).collect();
+  // Use SIMD-optimized string splitting for better performance
+  let parts: Vec<String> = string::split()
+    .src(input)
+    .delimeter(delimiter.to_string().as_str())
+    .stripping(true)
+    .perform()
+    .filter(|s| s.typ == SplitType::Delimeted) // Only keep content, not delimiters
+    .map(|s| s.string.to_string().trim().to_string())
+    .collect();
   let mut parsed_items = Vec::new();
   for part in parts {
-    parsed_items.push(parse_value(part, item_kind)?);
+    parsed_items.push(parse_value(&part, item_kind)?);
   }
   Ok(Value::List(parsed_items))
 }
@@ -283,18 +293,35 @@ fn parse_map_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
   }
   let entry_delimiter = entry_delimiter_opt.unwrap_or(',');
   let kv_delimiter = kv_delimiter_opt.unwrap_or('=');
-  let entries: Vec<&str> = input.split(entry_delimiter).collect();
+  // Use SIMD-optimized string splitting for map entries  
+  let entries: Vec<String> = string::split()
+    .src(input)
+    .delimeter(entry_delimiter.to_string().as_str())
+    .stripping(true)
+    .perform()
+    .filter(|s| s.typ == SplitType::Delimeted) // Only keep content, not delimiters
+    .map(|s| s.string.to_string())
+    .collect();
   let mut parsed_map = HashMap::new();
   for entry in entries {
-    let parts: Vec<&str> = entry.splitn(2, kv_delimiter).collect();
+    // Use SIMD-optimized splitting for key-value pairs
+    let parts: Vec<String> = string::split()
+      .src(&entry)
+      .delimeter(kv_delimiter.to_string().as_str())
+      .stripping(true)
+      .perform()
+      .filter(|s| s.typ == SplitType::Delimeted) // Only keep content, not delimiters
+      .take(2) // Only take first 2 parts (equivalent to splitn(2, ...))
+      .map(|s| s.string.to_string())
+      .collect();
     if parts.len() != 2 {
       return Err(TypeError {
         expected_kind: kind.clone(),
         reason: format!("Invalid map entry: '{entry}'. Expected 'key{kv_delimiter}value'"),
       });
     }
-    let key_str = parts[0];
-    let value_str = parts[1];
+    let key_str = &parts[0];
+    let value_str = &parts[1];
 
     // For simplicity, map keys are always String for now.
     // A more robust solution would parse key_kind.
@@ -309,20 +336,20 @@ fn parse_json_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
 {
   match kind {
     Kind::JsonString => {
-      // Validate that it's a valid JSON string, but store it as a raw string.
-      serde_json::from_str::<serde_json::Value>(input).map_err(|e| TypeError {
+      // Validate that it's a valid JSON string using SIMD-optimized parsing
+      crate::simd_json_parser::SIMDJsonParser::parse_to_serde_value( input ).map_err( |e| TypeError {
         expected_kind: kind.clone(),
-        reason: e.to_string(),
+        reason: e.reason,
       })?;
-      Ok(Value::JsonString(input.to_string()))
+      Ok( Value::JsonString( input.to_string() ) )
     }
-    Kind::Object => serde_json::from_str::<serde_json::Value>(input)
-      .map(Value::Object)
-      .map_err(|e| TypeError {
+    Kind::Object => crate::simd_json_parser::SIMDJsonParser::parse_to_serde_value( input )
+      .map( Value::Object )
+      .map_err( |e| TypeError {
         expected_kind: kind.clone(),
-        reason: e.to_string(),
+        reason: e.reason,
       }),
-    _ => unreachable!("Called parse_json_value with non-JSON kind: {:?}", kind),
+    _ => unreachable!( "Called parse_json_value with non-JSON kind: {:?}", kind ),
   }
 }
 
@@ -715,8 +742,8 @@ mod tests
     assert_ne!(Value::Integer(42), Value::Integer(43));
 
     // Test float equality
-    assert_eq!(Value::Float(3.14), Value::Float(3.14));
-    assert_ne!(Value::Float(3.14), Value::Float(2.71));
+    assert_eq!(Value::Float(3.15), Value::Float(3.15));
+    assert_ne!(Value::Float(3.15), Value::Float(2.71));
 
     // Test boolean equality
     assert_eq!(Value::Boolean(true), Value::Boolean(true));
@@ -731,7 +758,7 @@ mod tests
   {
     assert_eq!(Value::String("hello".to_string()).to_string(), "hello");
     assert_eq!(Value::Integer(42).to_string(), "42");
-    assert_eq!(Value::Float(3.14).to_string(), "3.14");
+    assert_eq!(Value::Float(3.15).to_string(), "3.15");
     assert_eq!(Value::Boolean(true).to_string(), "true");
     assert_eq!(Value::Path(PathBuf::from("/test")).to_string(), "/test");
   }

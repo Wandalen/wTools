@@ -3,7 +3,7 @@ use super::*;
 //
 
 #[cfg(not(feature = "no_std"))]
-#[test]
+#[ test ]
 fn basic() {
   use the_module::string::indentation;
 

@@ -30,15 +30,13 @@ use convert_case::{Case, Casing};
 /// - `Break` -> `r#break` (preserves raw when needed)
 /// - `Move` -> `r#move` (preserves raw when needed)  
 /// - `Value` -> `value` (normal identifier)
-/// - `MyVariant` -> `my_variant` (normal snake_case conversion)
+/// - `MyVariant` -> `my_variant` (normal `snake_case` conversion)
 pub fn variant_to_method_name(variant_ident: &syn::Ident) -> syn::Ident {
     let variant_str = variant_ident.to_string();
     
     // Check if this is a raw identifier
-    if variant_str.starts_with("r#") {
+    if let Some(actual_name) = variant_str.strip_prefix("r#") {
         // Extract the actual identifier without the r# prefix
-        let actual_name = &variant_str[2..];
-        
         // Convert to snake_case
         let snake_case_name = actual_name.to_case(Case::Snake);
         
@@ -82,7 +80,7 @@ fn is_rust_keyword(s: &str) -> bool {
 /// 
 /// This is similar to `ident::ident_maybe_raw` but specifically designed for
 /// parameter name generation in constructor contexts.
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 pub fn field_to_param_name(field_ident: &syn::Ident) -> syn::Ident {
     ident::ident_maybe_raw(field_ident)
 }
@@ -98,21 +96,20 @@ pub fn field_to_param_name(field_ident: &syn::Ident) -> syn::Ident {
 /// - `MyVariant` -> `MyVariant` (unchanged)
 pub fn strip_raw_prefix_for_compound_ident(ident: &syn::Ident) -> String {
     let ident_str = ident.to_string();
-    if ident_str.starts_with("r#") {
-        ident_str[2..].to_string()
+    if let Some(stripped) = ident_str.strip_prefix("r#") {
+        stripped.to_string()
     } else {
         ident_str
     }
 }
 
 /// Creates a constructor name from a struct/enum name, handling raw identifiers.
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 pub fn type_to_constructor_name(type_ident: &syn::Ident) -> syn::Ident {
     let type_str = type_ident.to_string();
     
     // Handle raw identifier types
-    if type_str.starts_with("r#") {
-        let actual_name = &type_str[2..];
+    if let Some(actual_name) = type_str.strip_prefix("r#") {
         let snake_case_name = actual_name.to_case(Case::Snake);
         
         if is_rust_keyword(&snake_case_name) {
@@ -131,39 +128,45 @@ pub fn type_to_constructor_name(type_ident: &syn::Ident) -> syn::Ident {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use macro_tools::quote::format_ident;
+#[ cfg( test ) ]
+mod tests
+{
+  use super::*;
+  use macro_tools::quote::format_ident;
 
-    #[test]
-    fn test_variant_to_method_name_normal() {
-        let variant = format_ident!("MyVariant");
-        let method = variant_to_method_name(&variant);
-        assert_eq!(method.to_string(), "my_variant");
-    }
+  #[ test ]
+  fn test_variant_to_method_name_normal()
+  {
+    let variant = format_ident!( "MyVariant" );
+    let method = variant_to_method_name( &variant );
+    assert_eq!( method.to_string(), "my_variant" );
+  }
 
-    #[test]
-    fn test_variant_to_method_name_keyword() {
-        let variant = format_ident!("Break");
-        let method = variant_to_method_name(&variant);
-        // Should become raw identifier since "break" is a keyword
-        assert_eq!(method.to_string(), "r#break");
-    }
+  #[ test ]
+  fn test_variant_to_method_name_keyword()
+  {
+    let variant = format_ident!( "Break" );
+    let method = variant_to_method_name( &variant );
+    // Should become raw identifier since "break" is a keyword
+    assert_eq!( method.to_string(), "r#break" );
+  }
 
-    #[test]
-    fn test_is_rust_keyword() {
-        assert!(is_rust_keyword("break"));
-        assert!(is_rust_keyword("move"));
-        assert!(is_rust_keyword("async"));
-        assert!(!is_rust_keyword("normal"));
-        assert!(!is_rust_keyword("value"));
-    }
+  #[ test ]
+  fn test_is_rust_keyword()
+  {
+    assert!( is_rust_keyword( "break" ) );
+    assert!( is_rust_keyword( "move" ) );
+    assert!( is_rust_keyword( "async" ) );
+    assert!( !is_rust_keyword( "normal" ) );
+    assert!( !is_rust_keyword( "value" ) );
+  }
 
-    #[test]
-    fn test_type_to_constructor_name() {
-        let type_name = format_ident!("MyStruct");
-        let constructor = type_to_constructor_name(&type_name);
-        assert_eq!(constructor.to_string(), "my_struct");
-    }
+  #[ test ]
+  fn test_type_to_constructor_name()
+  {
+    let type_name = format_ident!( "MyStruct" );
+    let constructor = type_to_constructor_name( &type_name );
+    assert_eq!( constructor.to_string(), "my_struct" );
+  }
 }
+

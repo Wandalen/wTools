@@ -124,7 +124,7 @@ impl MutationOperator for SubsetMutation
     let rng_ref = hrng.rng_ref();
     let mut rng = rng_ref.lock().unwrap();
 
-    //remove random item
+    // remove random item
     loop 
     {
       let position = ( 0..person.subset.len() ).choose( &mut *rng ).unwrap();
@@ -135,7 +135,7 @@ impl MutationOperator for SubsetMutation
       }
     }
 
-    //add random item
+    // add random item
     loop 
     {
       let position = ( 0..person.subset.len() ).choose( &mut *rng ).unwrap();

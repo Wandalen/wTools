@@ -4,7 +4,7 @@ use component_model_types::{Assign};
 
 //
 
-pub fn clone_dyn(attr_input: proc_macro::TokenStream, item_input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream> {
+pub fn clone_dyn(attr_input: proc_macro::TokenStream, item_input: proc_macro::TokenStream) -> Result< proc_macro2::TokenStream > {
   let attrs = syn::parse::<ItemAttributes>(attr_input)?;
   let original_input = item_input.clone();
   let mut item_parsed = syn::parse::<syn::ItemTrait>(item_input)?;
@@ -79,7 +79,7 @@ pub fn clone_dyn(attr_input: proc_macro::TokenStream, item_input: proc_macro::To
 }
 
 impl syn::parse::Parse for ItemAttributes {
-  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
+  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result< Self > {
     let mut result = Self::default();
 
     let error = |ident: &syn::Ident| -> syn::Error {
@@ -123,7 +123,7 @@ impl syn::parse::Parse for ItemAttributes {
 // == attributes
 
 /// Represents the attributes of a struct. Aggregates all its attributes.
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct ItemAttributes {
   /// Attribute for customizing generated code.
   pub debug: AttributePropertyDebug,
@@ -133,7 +133,7 @@ impl<IntoT> Assign<AttributePropertyDebug, IntoT> for ItemAttributes
 where
   IntoT: Into<AttributePropertyDebug>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign(&mut self, prop: IntoT) {
     self.debug = prop.into();
   }
@@ -142,7 +142,7 @@ where
 // == attribute properties
 
 /// Marker type for attribute property to specify whether to provide a generated code as a hint.
-#[derive(Debug, Default, Clone, Copy)]
+#[ derive( Debug, Default, Clone, Copy ) ]
 pub struct AttributePropertyDebugMarker;
 
 impl AttributePropertyComponent for AttributePropertyDebugMarker {

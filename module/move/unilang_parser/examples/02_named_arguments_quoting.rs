@@ -7,7 +7,7 @@
 
 use unilang_parser::{ Parser, UnilangParserOptions };
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -22,17 +22,17 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   println!( "Named arguments:" );
   for ( key, value ) in &cmd.named_arguments
   {
-    println!( "  {}: {:?}", key, value );
+    println!( "  {key}: {value:?}" );
   }
 
   // Access specific named arguments
   if let Some( sql ) = cmd.named_arguments.get( "sql" )
   {
-    println!( "\nSQL Query: {:?}", sql );
+    println!( "\nSQL Query: {sql:?}" );
   }
   if let Some( timeout ) = cmd.named_arguments.get( "timeout" )
   {
-    println!( "Timeout: {:?}", timeout );
+    println!( "Timeout: {timeout:?}" );
   }
 
   // Example with single quotes

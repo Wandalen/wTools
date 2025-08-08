@@ -1,6 +1,9 @@
-//! Test file to verify the comprehensive #[debug] attribute implementation
+//! Test file to verify the comprehensive #[ debug ] attribute implementation
 
+#![allow(unused_imports)]
 #![allow(missing_docs)]
+
+use former as the_module;
 
 #[ cfg( not( feature = "no_std" ) ) ]
 #[ cfg( feature = "derive_former" ) ]

@@ -2,10 +2,10 @@
 
 #![allow(missing_docs, dead_code)]
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 use former_meta::Former;
 
-#[derive(Debug, Former)]
+#[ derive( Debug, Former ) ]
 pub struct Minimal<'a> {
   data: &'a str,
 }

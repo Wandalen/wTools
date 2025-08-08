@@ -1,10 +1,10 @@
 #![deny(missing_docs)]
 
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
 // Test re-enabled to verify proper fix
-#[derive(Debug, PartialEq, former::Former)]
+#[ derive( Debug, PartialEq, former::Former ) ]
 // #[ derive( Debug, PartialEq, former::Former ) ] #[ debug ]
 // #[ derive( Debug, PartialEq ) ] #[ debug ]
 pub struct Struct1 {

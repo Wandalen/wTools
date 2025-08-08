@@ -46,7 +46,7 @@ mod attribute_validation;
 /// - Complex lifetime parameters (`'child`, `'storage`, etc.)
 /// - Multiple generic constraints with trait bounds
 /// - HRTB (Higher-Ranked Trait Bounds) scenarios
-/// - Static lifetime requirements for HashMap scenarios
+/// - Static lifetime requirements for `HashMap` scenarios
 ///
 /// # Pitfall Prevention
 /// The centralized generic handling prevents inconsistent generic parameter usage
@@ -87,24 +87,24 @@ impl ToTokens for FormerDefinitionTypesGenerics<'_> {
 /// This function properly handles the complex generic scenarios that were resolved during testing:
 /// - Lifetime parameter propagation (`'a`, `'child`, `'storage`)
 /// - Where clause constraint preservation
-/// - Static lifetime bounds when required for HashMap scenarios
+/// - Static lifetime bounds when required for `HashMap` scenarios
 ///
 /// # Pitfalls Prevented
-/// - **Generic Parameter Consistency**: Ensures impl_generics and where_clause are properly synchronized
+/// - **Generic Parameter Consistency**: Ensures `impl_generics` and `where_clause` are properly synchronized
 /// - **Lifetime Parameter Scope**: Prevents undeclared lifetime errors that occurred in manual implementations
 /// - **Custom vs Default Logic**: Clear separation prevents accidentally overriding user's custom implementations
-#[allow(clippy::format_in_format_args, clippy::unnecessary_wraps)]
+#[ allow( clippy::format_in_format_args, clippy::unnecessary_wraps ) ]
 pub fn mutator(
-  #[allow(unused_variables)] item: &syn::Ident,
-  #[allow(unused_variables)] original_input: &macro_tools::proc_macro2::TokenStream,
+  #[ allow( unused_variables ) ] item: &syn::Ident,
+  #[ allow( unused_variables ) ] original_input: &macro_tools::proc_macro2::TokenStream,
   mutator: &AttributeMutator,
-  #[allow(unused_variables)] former_definition_types: &syn::Ident,
+  #[ allow( unused_variables ) ] former_definition_types: &syn::Ident,
   generics: &FormerDefinitionTypesGenerics<'_>,
   former_definition_types_ref: &proc_macro2::TokenStream,
-) -> Result<TokenStream> {
-  #[allow(unused_variables)] // Some variables only used with feature flag
+) -> Result< TokenStream > {
+  #[ allow( unused_variables ) ] // Some variables only used with feature flag
   let impl_generics = generics.impl_generics;
-  #[allow(unused_variables)]
+  #[ allow( unused_variables ) ]
   let ty_generics = generics.ty_generics;
   let where_clause = generics.where_clause;
   
@@ -126,7 +126,7 @@ pub fn mutator(
   // If debug is enabled for the mutator attribute, print a helpful example,
   // but only if the `former_diagnostics_print_generated` feature is enabled.
   if mutator.debug.value(false) {
-    #[cfg(feature = "former_diagnostics_print_generated")]
+    #[ cfg( feature = "former_diagnostics_print_generated" ) ]
     {
       let debug = format!(
         r"
@@ -142,7 +142,7 @@ pub fn mutator(
    fn form_mutation
    (
      storage : &mut Self::Storage,
-     context : &mut Option< Self::Context >,
+     context : &mut Option<  Self::Context  >,
    )
    {{
      // Example: Set a default value if field 'a' wasn't provided
@@ -186,7 +186,7 @@ utilizes a defined end strategy to finalize the object creation.
 
 /// Generate the whole Former ecosystem for either a struct or an enum.
 ///
-/// This is the main entry point for the `#[derive(Former)]` macro and orchestrates the entire
+/// This is the main entry point for the `#[ derive( Former ) ]` macro and orchestrates the entire
 /// code generation process. It handles the complexity of dispatching to appropriate handlers
 /// based on the input type and manages the cross-cutting concerns like debugging and attribute parsing.
 ///
@@ -200,7 +200,7 @@ utilizes a defined end strategy to finalize the object creation.
 /// - **Complex Lifetime Scenarios**: `<'child, T>` patterns with where clauses
 /// - **Generic Constraints**: `where T: Hash + Eq` and complex trait bounds
 /// - **Nested Structures**: Subform patterns with proper trait bound propagation
-/// - **Collection Types**: HashMap, Vec, HashSet with automatic trait bound handling
+/// - **Collection Types**: `HashMap`, Vec, `HashSet` with automatic trait bound handling
 /// - **Feature Gate Compatibility**: Proper `no_std` and `use_alloc` feature handling
 ///
 /// # Processing Flow
@@ -227,8 +227,8 @@ utilizes a defined end strategy to finalize the object creation.
 /// - **Single-Pass Parsing**: Attributes parsed once and reused across handlers
 /// - **Conditional Debug**: Debug code generation only when explicitly requested
 /// - **Efficient Dispatching**: Direct type-based dispatch without unnecessary processing
-#[allow(clippy::too_many_lines)]
-pub fn former(input: proc_macro::TokenStream) -> Result<TokenStream> {
+#[ allow( clippy::too_many_lines ) ]
+pub fn former(input: proc_macro::TokenStream) -> Result< TokenStream > {
   let original_input: TokenStream = input.clone().into();
   let ast = syn::parse::<syn::DeriveInput>(input)?;
 
@@ -254,13 +254,13 @@ pub fn former(input: proc_macro::TokenStream) -> Result<TokenStream> {
   }?;
 
   // Write generated code to file for debugging if needed
-  #[cfg(debug_assertions)]
+  #[ cfg( debug_assertions ) ]
   std::fs::write("/tmp/generated_former_code.rs", result.to_string()).ok();
 
-  // If the top-level `#[debug]` attribute was found, print the final generated code,
+  // If the top-level `#[ debug ]` attribute was found, print the final generated code,
   // but only if the `former_diagnostics_print_generated` feature is enabled.
   if has_debug {
-    #[cfg(feature = "former_diagnostics_print_generated")]
+    #[ cfg( feature = "former_diagnostics_print_generated" ) ]
     {
       let about = format!("derive : Former\nstructure : {}", ast.ident);
       diag::report_print(about, &original_input, &result);

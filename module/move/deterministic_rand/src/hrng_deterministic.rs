@@ -16,7 +16,6 @@ mod private {
   ///
   /// Generator under mutex and reference counter.
   ///
-
   pub type SharedGenerator = Arc<Mutex<ChaCha8Rng>>;
   // qqq : parametrize, use ChaCha8Rng by default, but allow to specify other
 
@@ -27,7 +26,6 @@ mod private {
   ///
   /// Master random number generator produce children and each child might produce more children as much as dataflows in progam.
   ///
-
   #[derive(Debug, Clone)]
   pub struct Hrng {
     /// List of child generators produced by this hierarchical random number generator.
@@ -54,8 +52,7 @@ mod private {
     /// let mut rng = rng_ref.lock().unwrap();
     /// let got : u64 = rng.gen();
     /// ```
-
-    pub fn master() -> Self {
+    #[must_use] pub fn master() -> Self {
       Self::master_with_seed(Seed::default())
     }
 
@@ -69,13 +66,16 @@ mod private {
     /// let mut rng = rng_ref.lock().unwrap();
     /// let got : u64 = rng.gen();
     /// ```
-
+    #[must_use] 
+    #[allow(clippy::used_underscore_binding)]
     pub fn master_with_seed(seed: Seed) -> Self {
       let mut _generator: ChaCha8Rng = rand_seeder::Seeder::from(seed.into_inner()).make_rng();
       let _children_generator = ChaCha8Rng::seed_from_u64(_generator.next_u64());
       let generator = Arc::new(Mutex::new(_generator));
+#[allow(clippy::used_underscore_binding)]
       let children_generator = Arc::new(Mutex::new(_children_generator));
       Self {
+#[allow(clippy::default_trait_access)]
         children: Default::default(),
         generator,
         children_generator,
@@ -96,8 +96,10 @@ mod private {
       let _children_generator = ChaCha8Rng::seed_from_u64(rng.next_u64());
       rng.set_stream(0);
       let generator = Arc::new(Mutex::new(rng));
+#[allow(clippy::used_underscore_binding)]
       let children_generator = Arc::new(Mutex::new(_children_generator));
       Self {
+#[allow(clippy::default_trait_access)]
         children: Default::default(),
         generator,
         children_generator,
@@ -118,14 +120,14 @@ mod private {
     /// let mut rng = rng_ref.lock().unwrap();
     /// let got : u64 = rng.gen();
     /// ```
-
     #[inline(always)]
-    pub fn rng_ref(&self) -> SharedGenerator {
+    #[must_use] pub fn rng_ref(&self) -> SharedGenerator {
       self.generator.clone()
     }
 
     /// Creates new child hierarchical random number generator by index seed.
-    pub fn child(&self, index: usize) -> Self {
+    #[must_use] #[allow(clippy::missing_panics_doc)]
+ pub fn child(&self, index: usize) -> Self {
       let children = self.children.read().unwrap();
       if children.len() > index {
         return children[index].clone();
@@ -143,8 +145,8 @@ mod private {
       }
 
       children.reserve(index + 1 - len);
-      for _ in len..(index + 1) {
-        children.push(Self::_with_short_seed(rng.next_u64()))
+      for _ in len..=index {
+        children.push(Self::_with_short_seed(rng.next_u64()));
       }
       children[index].clone()
     }
@@ -152,12 +154,15 @@ mod private {
     //     // xxx : remove, maybe
     //     /// Creates new child hierarchical random number generator by index seed, index is deduced from the contexst.
     //     /// Index is new child is index of current newest child plus one.
+    //     #[allow(clippy::missing_panics_doc)]
     //     pub fn child_new( &self ) -> Self
     //     {
     //       self.child( self.children.read().unwrap().len() )
     //     }
 
     /// Returns number of children created by this generator. Used only for diagnostics.
+    #[must_use] 
+    #[allow(clippy::missing_panics_doc)]
     pub fn _children_len(&self) -> usize {
       self.children.read().unwrap().len()
     }

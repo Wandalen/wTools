@@ -15,7 +15,6 @@ mod private
   ///
   /// Generative node factory.
   ///
-
   pub struct GenerativeNodeFactory< NodeId = crate::IdentityWithInt, EdgeId = crate::IdentityWithInt >
   where
     NodeId : IdentityInterface + HasIdGenerator< NodeId >,

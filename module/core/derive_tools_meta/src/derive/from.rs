@@ -19,7 +19,7 @@ use super::item_attributes::{ItemAttributes};
 ///
 /// Derive macro to implement From when-ever it's possible to do automatically.
 ///
-pub fn from(input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream> {
+pub fn from(input: proc_macro::TokenStream) -> Result< proc_macro2::TokenStream > {
   let original_input = input.clone();
   let parsed = syn::parse::<StructLike>(input)?;
   let has_debug = attr::has_debug(parsed.attrs().iter())?;
@@ -65,7 +65,7 @@ pub fn from(input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream> 
       handle_struct_fields(&context)? // Propagate error
     }
     StructLike::Enum(ref item) => {
-      let variants_result: Result<Vec<proc_macro2::TokenStream>> = item
+      let variants_result: Result<Vec< proc_macro2::TokenStream >> = item
         .variants
         .iter()
         .map(|variant| {
@@ -106,12 +106,12 @@ struct StructFieldHandlingContext<'a> {
   has_debug: bool,
   generics_impl: &'a syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
   generics_ty: &'a syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
-  generics_where: Option<&'a syn::WhereClause>,
+  generics_where: Option< &'a syn::WhereClause >,
   original_input: &'a proc_macro::TokenStream,
 }
 
 /// Handles the generation of `From` implementation for structs.
-fn handle_struct_fields(context: &StructFieldHandlingContext<'_>) -> Result<proc_macro2::TokenStream> // Change return type here
+fn handle_struct_fields(context: &StructFieldHandlingContext<'_>) -> Result< proc_macro2::TokenStream > // Change return type here
 {
   let fields_count = context.item.fields.len();
   let mut target_field_type = None;
@@ -134,7 +134,7 @@ fn handle_struct_fields(context: &StructFieldHandlingContext<'_>) -> Result<proc
     target_field_name = field.ident.clone();
     target_field_index = Some(0);
   } else {
-    // Multi-field struct: require #[from] attribute on one field
+    // Multi-field struct: require #[ from ] attribute on one field
     for (i, field) in context.item.fields.iter().enumerate() {
       if attr::has_from(field.attrs.iter())? {
         from_attr_count += 1;
@@ -147,10 +147,10 @@ fn handle_struct_fields(context: &StructFieldHandlingContext<'_>) -> Result<proc
     if from_attr_count == 0 {
       return_syn_err!(
         context.item.span(),
-        "From cannot be derived for multi-field structs without a `#[from]` attribute on one field."
+        "From cannot be derived for multi-field structs without a `#[ from ]` attribute on one field."
       );
     } else if from_attr_count > 1 {
-      return_syn_err!(context.item.span(), "Only one field can have the `#[from]` attribute.");
+      return_syn_err!(context.item.span(), "Only one field can have the `#[ from ]` attribute.");
     }
   }
 
@@ -178,11 +178,11 @@ struct GenerateContext<'a> {
   has_debug: bool,
   generics_impl: &'a syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
   generics_ty: &'a syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
-  generics_where: Option<&'a syn::WhereClause>,
+  generics_where: Option< &'a syn::WhereClause >,
   field_type: &'a syn::Type,
-  field_name: Option<&'a syn::Ident>,
+  field_name: Option< &'a syn::Ident >,
   all_fields: &'a syn::Fields,
-  field_index: Option<usize>,
+  field_index: Option< usize >,
   original_input: &'a proc_macro::TokenStream,
 }
 
@@ -296,9 +296,9 @@ fn generate(context: &GenerateContext<'_>) -> proc_macro2::TokenStream {
 
 /// Generates the body tokens for a struct's `From` implementation.
 fn generate_struct_body_tokens(
-  field_name: Option<&syn::Ident>,
+  field_name: Option< &syn::Ident >,
   all_fields: &syn::Fields,
-  field_index: Option<usize>,
+  field_index: Option< usize >,
   has_debug: bool,
   original_input: &proc_macro::TokenStream,
 ) -> proc_macro2::TokenStream {
@@ -320,7 +320,7 @@ fn generate_struct_body_tokens(
 }
 
 /// Generates the field tokens for a tuple struct's `From` implementation.
-fn generate_tuple_struct_fields_tokens(all_fields: &syn::Fields, field_index: Option<usize>) -> proc_macro2::TokenStream {
+fn generate_tuple_struct_fields_tokens(all_fields: &syn::Fields, field_index: Option< usize >) -> proc_macro2::TokenStream {
   let mut fields_tokens = proc_macro2::TokenStream::new();
   let mut first = true;
   for (i, field) in all_fields.into_iter().enumerate() {
@@ -372,7 +372,7 @@ struct VariantGenerateContext<'a> {
   has_debug: bool,
   generics_impl: &'a syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
   generics_ty: &'a syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
-  generics_where: Option<&'a syn::WhereClause>,
+  generics_where: Option< &'a syn::WhereClause >,
   variant: &'a syn::Variant,
   original_input: &'a proc_macro::TokenStream,
 }
@@ -389,7 +389,7 @@ struct VariantGenerateContext<'a> {
 /// ///   }
 /// /// }
 /// ```
-fn variant_generate(context: &VariantGenerateContext<'_>) -> Result<proc_macro2::TokenStream> {
+fn variant_generate(context: &VariantGenerateContext<'_>) -> Result< proc_macro2::TokenStream > {
   let item_name = context.item_name;
   let item_attrs = context.item_attrs;
   let has_debug = context.has_debug;
@@ -482,7 +482,7 @@ field : {variant_name}",
 
 /// Generates the where clause tokens for an enum variant's `From` implementation.
 fn generate_variant_where_clause_tokens(
-  generics_where: Option<&syn::WhereClause>,
+  generics_where: Option< &syn::WhereClause >,
   generics_impl: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
 ) -> proc_macro2::TokenStream {
   let mut predicates_vec = Vec::new();

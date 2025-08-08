@@ -26,9 +26,9 @@ mod private
     }
 
     /// Used for simplifying seed creation from a [`u64`] seed.
-    pub fn from_integer( src : u64 ) -> Self
+    #[must_use] pub fn from_integer( src : u64 ) -> Self
     {
-      Self( format!( "master_seed_{}", src ) )
+      Self( format!( "master_seed_{src}" ) )
     }
 
     /// Random string as seed.
@@ -40,12 +40,12 @@ mod private
       .take( 16 )
       .map(char::from)
       .collect();
-      debug_assert!( str.len() > 0 );
+      debug_assert!( !str.is_empty() );
       Self( str )
     }
 
     /// Returns inner seed string value.
-    pub fn into_inner( self ) -> String
+    #[must_use] pub fn into_inner( self ) -> String
     {
       self.0
     }

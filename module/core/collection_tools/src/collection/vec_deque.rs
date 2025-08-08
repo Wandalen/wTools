@@ -1,9 +1,9 @@
-#[allow(unused_imports, clippy::wildcard_imports)]
+#[ allow( unused_imports, clippy::wildcard_imports ) ]
 use super::*;
 
-#[doc(inline)]
-#[allow(unused_imports)]
-#[allow(clippy::pub_use)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ allow( clippy::pub_use ) ]
 pub use alloc::collections::vec_deque::*;
 
 /// Creates a `VecDeque` from a list of elements.
@@ -69,8 +69,8 @@ pub use alloc::collections::vec_deque::*;
 /// assert_eq!( fruits.back(), Some( &"cherry" ) ); // The last element
 /// ```
 ///
-#[cfg(feature = "collection_constructors")]
-#[macro_export(local_inner_macros)]
+#[ cfg( feature = "collection_constructors" ) ]
+#[ macro_export( local_inner_macros ) ]
 macro_rules! deque
 {
   (
@@ -162,8 +162,8 @@ macro_rules! deque
 /// assert_eq!( fruits.back(), Some( &"cherry".to_string() ) ); // The last element
 /// ```
 ///
-#[cfg(feature = "collection_into_constructors")]
-#[macro_export(local_inner_macros)]
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ macro_export( local_inner_macros ) ]
 macro_rules! into_vecd
 {
   (

@@ -11,7 +11,7 @@ use super::*;
 use derive_tools_meta::{Deref, DerefMut};
 use test_tools::a_id;
 
-#[derive(Debug, Clone, Copy, PartialEq, Deref, DerefMut)]
+#[ derive( Debug, Clone, Copy, PartialEq, Deref, DerefMut ) ]
 pub struct IsTransparentSimple(bool);
 
 // #[ derive( Debug, Clone, Copy, PartialEq, DerefMut ) ]
@@ -21,7 +21,7 @@ pub struct IsTransparentSimple(bool);
 //   T : AsRef< U >;
 
 /// Tests the `DerefMut` derive macro for various struct types.
-#[test]
+#[ test ]
 fn deref_mut_test() {
   // Test for IsTransparentSimple
   let mut got = IsTransparentSimple(true);

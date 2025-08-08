@@ -1,12 +1,12 @@
 // Purpose: Provides shared test assertions and logic for both the derived and manual implementations
-// of standalone scalar constructors for multi-field tuple variants with `#[arg_for_constructor]`
+// of standalone scalar constructors for multi-field tuple variants with `#[ arg_for_constructor ]`
 // fields. It tests that standalone constructors generated/implemented when the enum has
-// `#[standalone_constructors]` and all variant fields have `#[arg_for_constructor]` behave as
+// `#[ standalone_constructors ]` and all variant fields have `#[ arg_for_constructor ]` behave as
 // expected (scalar style, taking field arguments).
 //
 // Coverage:
-// - Rule 4a (#[standalone_constructors]): Tests the existence and functionality of the top-level constructor function (`variant`).
-// - Rule 4b (Option 2 Logic): Tests that the standalone constructor takes arguments corresponding to the `#[arg_for_constructor]` fields and returns the final enum instance.
+// - Rule 4a (#[ standalone_constructors ]): Tests the existence and functionality of the top-level constructor function (`variant`).
+// - Rule 4b (Option 2 Logic): Tests that the standalone constructor takes arguments corresponding to the `#[ arg_for_constructor ]` fields and returns the final enum instance.
 // - Rule 3f (Tuple + Multi-Field + Default): Implicitly tested via the `Variant` variant.
 //
 // Test Relevance/Acceptance Criteria:
@@ -25,7 +25,7 @@ mod tests
   fn variant_test()
   {
     // Test Matrix Row: T19.1 (Implicitly, as this tests the behavior expected by the matrix)
-    // Tests the standalone scalar constructor for Variant (multi field, #[arg_for_constructor] on all fields)
+    // Tests the standalone scalar constructor for Variant (multi field, #[ arg_for_constructor ] on all fields)
     let value1 = 123;
     let value2 = "abc".to_string();
     let got = variant( value1, value2.clone() ); // Call the standalone constructor

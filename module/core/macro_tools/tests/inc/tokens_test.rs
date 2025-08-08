@@ -3,7 +3,7 @@ use the_module::{tree_print};
 
 //
 
-#[test]
+#[ test ]
 fn tokens() {
   let got: the_module::Tokens = syn::parse_quote!(a = b);
   // tree_print!( got );

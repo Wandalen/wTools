@@ -3,26 +3,26 @@
 use super::*;
 use test_tools::exposed::*;
 
-#[cfg(feature = "derive_components")]
+#[ cfg( feature = "derive_components" ) ]
 mod components_tests {
   use super::*;
 
-  #[cfg(feature = "derive_component_from")]
+  #[ cfg( feature = "derive_component_from" ) ]
   mod component_from;
-  #[cfg(feature = "derive_component_from")]
+  #[ cfg( feature = "derive_component_from" ) ]
   mod component_from_manual;
-  #[cfg(feature = "derive_component_from")]
+  #[ cfg( feature = "derive_component_from" ) ]
   mod component_from_tuple;
-  #[cfg(feature = "derive_component_from")]
+  #[ cfg( feature = "derive_component_from" ) ]
   mod component_from_tuple_manual;
 
-  #[cfg(feature = "derive_component_assign")]
+  #[ cfg( feature = "derive_component_assign" ) ]
   mod component_assign;
-  #[cfg(feature = "derive_component_assign")]
+  #[ cfg( feature = "derive_component_assign" ) ]
   mod component_assign_manual;
-  #[cfg(feature = "derive_component_assign")]
+  #[ cfg( feature = "derive_component_assign" ) ]
   mod component_assign_tuple;
-  #[cfg(feature = "derive_component_assign")]
+  #[ cfg( feature = "derive_component_assign" ) ]
   mod component_assign_tuple_manual;
 
   #[cfg(all(feature = "derive_component_assign", feature = "derive_components_assign"))]

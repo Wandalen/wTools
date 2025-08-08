@@ -1,10 +1,10 @@
 // Purpose: Provides shared test assertions and logic for verifying the constructors generated
-// by `#[derive(Former)]` for enums with unit variants that use keyword identifiers.
+// by `#[ derive( Former ) ]` for enums with unit variants that use keyword identifiers.
 // This file is included by `keyword_variant_unit_derive.rs`.
 //
 // Coverage:
 // - Rule 3a (Unit + Default): Tests static method `KeywordVariantEnum::r#loop()`.
-// - Rule 1a (Unit + `#[scalar]`): Tests static method (as default for unit is scalar).
+// - Rule 1a (Unit + `#[ scalar ]`): Tests static method (as default for unit is scalar).
 //
 // Test Relevance/Acceptance Criteria:
 // - Defines a test function (`keyword_variant_constructors`) that invokes the static method

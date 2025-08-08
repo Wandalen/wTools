@@ -1,6 +1,6 @@
 /// Not meant to be called directly.
-#[doc(hidden)]
-#[macro_export(local_inner_macros)]
+#[ doc( hidden ) ]
+#[ macro_export( local_inner_macros ) ]
 macro_rules! count
 {
   ( @single $( $x : tt )* ) => ( () );
@@ -14,7 +14,7 @@ macro_rules! count
   );
 }
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
 extern crate alloc;
 
@@ -35,71 +35,71 @@ pub mod vec_deque;
 /// [Vec] macros
 pub mod vector;
 
-#[doc(inline)]
-#[allow(unused_imports)]
-#[cfg(feature = "enabled")]
-#[allow(clippy::pub_use)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( clippy::pub_use ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
 
-  #[doc(inline)]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use orphan::*;
   // xxx2 : check
 }
 
 /// Parented namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
-  #[doc(inline)]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
 
-  #[doc(inline)]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use prelude::*;
 
-  #[doc(inline)]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use super::super::collection;
 
-  #[doc(inline)]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use super::{btree_map, btree_set, binary_heap, hash_map, hash_set, linked_list, vector, vec_deque};
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
-  #[cfg(feature = "collection_constructors")]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ cfg( feature = "collection_constructors" ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use crate::{vec as dlist, deque, llist, hset, hmap, bmap, bset};
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
-  #[cfg(feature = "collection_into_constructors")]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ cfg( feature = "collection_into_constructors" ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use crate::{into_vec, into_vec as into_dlist, into_vecd, into_llist, into_hset, into_hmap, into_bmap, into_bset};
 
   // #[ cfg( feature = "reexports" ) ]
   #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
-  #[doc(inline)]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use {
     btree_map::BTreeMap, btree_set::BTreeSet, binary_heap::BinaryHeap, hash_map::HashMap, hash_set::HashSet,
     linked_list::LinkedList, vector::Vec, vec_deque::VecDeque,
@@ -107,8 +107,8 @@ pub mod exposed {
 
   // #[ cfg( feature = "reexports" ) ]
   #[cfg(any(feature = "use_alloc", not(feature = "no_std")))]
-  #[doc(inline)]
-  #[allow(clippy::useless_attribute, clippy::pub_use)]
+  #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use {
     LinkedList as Llist, Vec as Dlist, VecDeque as Deque, HashMap as Map, HashMap as Hmap, HashSet as Set, HashSet as Hset,
     BTreeMap as Bmap, BTreeSet as Bset,
@@ -118,8 +118,8 @@ pub mod exposed {
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 }

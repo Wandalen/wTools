@@ -1,14 +1,14 @@
-#[allow(unused_imports, clippy::wildcard_imports)]
+#[ allow( unused_imports, clippy::wildcard_imports ) ]
 use super::*;
 
-#[doc(inline)]
-#[allow(unused_imports)]
-#[allow(clippy::pub_use)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ allow( clippy::pub_use ) ]
 pub use alloc::vec::*;
 
-#[doc(inline)]
-#[allow(unused_imports)]
-#[allow(clippy::pub_use)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ allow( clippy::pub_use ) ]
 pub use core::slice::{Iter, IterMut};
 
 /// Creates a `Vec` from a list of elements.
@@ -69,8 +69,8 @@ pub use core::slice::{Iter, IterMut};
 /// assert_eq!( mixed[ 1 ], "another value" );
 /// ```
 ///
-#[cfg(feature = "collection_constructors")]
-#[macro_export(local_inner_macros)]
+#[ cfg( feature = "collection_constructors" ) ]
+#[ macro_export( local_inner_macros ) ]
 macro_rules! vec
 {
   (
@@ -108,13 +108,13 @@ macro_rules! vec
 /// ```rust
 /// # use collection_tools::{Vec, into_vec};
 /// // Vec of i32
-/// let vec1 : Vec< i32 > = into_vec!( 1, 2, 3, 4, 5 );
+/// let vec1 : Vec<  i32  > = into_vec!( 1, 2, 3, 4, 5 );
 ///
 /// // Vec of String
-/// let vec2 : Vec< String > = into_vec!{ "hello", "world", "rust" };
+/// let vec2 : Vec<  String  > = into_vec!{ "hello", "world", "rust" };
 ///
 /// // With trailing comma
-/// let vec3 : Vec< f64 > = into_vec!( 1.1, 2.2, 3.3, );
+/// let vec3 : Vec<  f64  > = into_vec!( 1.1, 2.2, 3.3, );
 /// ```
 ///
 /// # Parameters
@@ -134,7 +134,7 @@ macro_rules! vec
 ///
 /// ```rust
 /// # use collection_tools::{Vec, into_vec};
-/// let vec : Vec< i32 > = into_vec!( 1, 2, 3 );
+/// let vec : Vec<  i32  > = into_vec!( 1, 2, 3 );
 /// assert_eq!( vec[ 0 ], 1 );
 /// assert_eq!( vec[ 1 ], 2 );
 /// assert_eq!( vec[ 2 ], 3 );
@@ -146,7 +146,7 @@ macro_rules! vec
 ///
 /// ```rust
 /// # use collection_tools::{Vec, into_vec};
-/// let words : Vec< String > = into_vec!( "alpha", "beta", "gamma" );
+/// let words : Vec<  String  > = into_vec!( "alpha", "beta", "gamma" );
 /// assert_eq!( words[ 0 ], "alpha" );
 /// assert_eq!( words[ 1 ], "beta" );
 /// assert_eq!( words[ 2 ], "gamma" );
@@ -158,13 +158,13 @@ macro_rules! vec
 ///
 /// ```rust
 /// # use collection_tools::{Vec, into_vec};
-/// let mixed : Vec< String > = into_vec!{ "value", "another value".to_string() };
+/// let mixed : Vec<  String  > = into_vec!{ "value", "another value".to_string() };
 /// assert_eq!( mixed[ 0 ], "value" );
 /// assert_eq!( mixed[ 1 ], "another value" );
 /// ```
 ///
-#[cfg(feature = "collection_into_constructors")]
-#[macro_export(local_inner_macros)]
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ macro_export( local_inner_macros ) ]
 macro_rules! into_vec
 {
   (

@@ -33,8 +33,7 @@ pub( crate ) fn smoke_with_subject_command() -> wca::Command
 ///
 /// Perform smoke testing.
 ///
-
-pub fn smoke( ( args, props ) : ( Args, Props ) ) -> Result< () >
+pub fn smoke( ( args, props ) : ( Args, Props ) ) -> Result<  ()  >
 {
   println!( "Command \".smoke\"" );
   let mut current_path = current_dir().unwrap();
@@ -224,7 +223,7 @@ impl< 'a > SmokeModuleTest< 'a >
     self
   }
 
-  fn form( &mut self ) -> Result< (), &'static str >
+  fn form( &mut self ) -> Result<  (), &'static str  >
   {
     std::fs::create_dir( &self.test_path ).unwrap();
 
@@ -286,7 +285,7 @@ impl< 'a > SmokeModuleTest< 'a >
     Ok( () )
   }
 
-  fn perform( &self ) -> Result<(), BasicError>
+  fn perform( &self ) -> Result< (), BasicError >
   {
     let mut test_path = self.test_path.clone();
     let test_name = format!( "{}{}", self.dependency_name, self.test_postfix );
@@ -310,7 +309,7 @@ impl< 'a > SmokeModuleTest< 'a >
     Ok( () )
   }
 
-  fn clean( &self, force : bool ) -> Result<(), &'static str>
+  fn clean( &self, force : bool ) -> Result< (), &'static str >
   {
     let result = std::fs::remove_dir_all( &self.test_path );
     if force

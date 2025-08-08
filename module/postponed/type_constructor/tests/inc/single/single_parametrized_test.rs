@@ -22,7 +22,6 @@ tests_impls!
       ///
       /// Attribute which is inner.
       ///
-
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
       single Single : mod1::f32;
@@ -316,7 +315,6 @@ tests_impls!
       ///
       /// Attribute which is inner.
       ///
-
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
       single Single : mod1::Floats< T : PartialEq + std::marker::Copy >;

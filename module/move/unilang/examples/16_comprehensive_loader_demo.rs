@@ -13,13 +13,13 @@ fn main() -> Result< (), unilang::error::Error >
 
   // Step 1: Demonstrate YAML loading with all features
   demonstrate_yaml_loading()?;
-  
-  // Step 2: Demonstrate JSON loading with all features  
+
+  // Step 2: Demonstrate JSON loading with all features
   demonstrate_json_loading()?;
-  
+
   // Step 3: Error handling scenarios
   demonstrate_error_handling()?;
-  
+
   // Step 4: Complex validation and types
   demonstrate_complex_features()?;
 
@@ -36,19 +36,19 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
   let comprehensive_yaml = r#"
 # Complete command definition showcasing all available fields
 - name: "process_data"
-  namespace: ".analytics" 
+  namespace: ".analytics"
   description: "Processes analytical data with comprehensive options"
   hint: "Data processing pipeline with validation"
   status: "stable"
   version: "3.1.2"
-  tags: 
+  tags:
     - "analytics"
     - "data"
     - "processing"
     - "ml"
   aliases:
     - "proc"
-    - "analyze" 
+    - "analyze"
     - "process"
   permissions:
     - "read_data"
@@ -75,10 +75,10 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
       validation_rules: []
       aliases: ["i", "source", "data"]
       tags: ["required", "input"]
-    
+
     # File path argument with existence validation
     - name: "output"
-      kind: "File" 
+      kind: "File"
       description: "Output file for processed results"
       hint: "Result file path"
       attributes:
@@ -90,7 +90,7 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
       validation_rules: []
       aliases: ["o", "dest", "target"]
       tags: ["output", "file"]
-      
+
     # Enum argument with predefined choices
     - name: "algorithm"
       kind: "Enum([\"linear\", \"svm\", \"random_forest\", \"neural_network\"])"
@@ -105,7 +105,7 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
       validation_rules: []
       aliases: ["a", "algo", "method"]
       tags: ["algorithm", "ml"]
-      
+
     # Map argument for algorithm parameters
     - name: "parameters"
       kind: "Map(String,Float,;,=)"
@@ -119,7 +119,7 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
       validation_rules: []
       aliases: ["p", "params", "config"]
       tags: ["configuration", "tuning"]
-      
+
     # List argument for feature selection
     - name: "features"
       kind: "List(String,|)"
@@ -133,7 +133,7 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
       validation_rules: []
       aliases: ["f", "cols", "columns"]
       tags: ["features", "selection"]
-      
+
     # Boolean flag for validation
     - name: "validate"
       kind: "Boolean"
@@ -148,7 +148,7 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
       validation_rules: []
       aliases: ["v", "check"]
       tags: ["validation", "quality"]
-      
+
     # Integer with range validation
     - name: "threads"
       kind: "Integer"
@@ -163,7 +163,7 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
       validation_rules: []
       aliases: ["t", "workers"]
       tags: ["performance", "parallelism"]
-      
+
     # Float with precision requirements
     - name: "threshold"
       kind: "Float"
@@ -178,7 +178,7 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
       validation_rules: []
       aliases: ["th", "confidence"]
       tags: ["filtering", "quality"]
-      
+
     # DateTime for time-based filtering
     - name: "start_date"
       kind: "DateTime"
@@ -192,7 +192,7 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
       validation_rules: []
       aliases: ["start", "from"]
       tags: ["temporal", "filtering"]
-      
+
     # URL for remote data sources
     - name: "remote_source"
       kind: "Url"
@@ -206,7 +206,7 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
       validation_rules: []
       aliases: ["url", "endpoint"]
       tags: ["remote", "api"]
-      
+
     # Pattern for data filtering
     - name: "filter_pattern"
       kind: "Pattern"
@@ -220,7 +220,7 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
       validation_rules: []
       aliases: ["regex", "pattern"]
       tags: ["filtering", "regex"]
-      
+
     # JSON configuration object
     - name: "advanced_config"
       kind: "Object"
@@ -234,7 +234,7 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
       validation_rules: []
       aliases: ["config", "settings"]
       tags: ["advanced", "json"]
-      
+
     # Sensitive API key (interactive)
     - name: "api_key"
       kind: "String"
@@ -248,13 +248,13 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
       validation_rules: []
       aliases: ["key", "token"]
       tags: ["security", "auth"]
-      
+
   routine_link: "analytics.process_data_routine"
 
 # Second command demonstrating minimal required fields
 - name: "simple_task"
   namespace: ".util"
-  description: "Simple utility task with minimal configuration" 
+  description: "Simple utility task with minimal configuration"
   hint: "Basic utility"
   status: "experimental"
   version: "0.1.0"
@@ -275,7 +275,7 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
     Ok( commands ) =>
     {
       println!( "✅ Successfully loaded {} commands from YAML", commands.len() );
-      
+
       for cmd in &commands
       {
         println!( "\n🎯 Command: {}.{}", cmd.namespace, cmd.name );
@@ -284,7 +284,7 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
         println!( "   Arguments: {} defined", cmd.arguments.len() );
         println!( "   Aliases: {:?}", cmd.aliases );
         println!( "   Tags: {:?}", cmd.tags );
-        
+
         if !cmd.arguments.is_empty()
         {
           println!( "   🔧 Arguments:" );
@@ -318,7 +318,7 @@ fn demonstrate_json_loading() -> Result< (), unilang::error::Error >
     "namespace": ".devops",
     "description": "Deploys microservices with comprehensive deployment options",
     "hint": "Production deployment tool",
-    "status": "stable", 
+    "status": "stable",
     "version": "2.5.1",
     "tags": ["devops", "deployment", "kubernetes", "docker"],
     "aliases": ["deploy", "release", "ship"],
@@ -348,7 +348,7 @@ fn demonstrate_json_loading() -> Result< (), unilang::error::Error >
       },
       {
         "name": "version",
-        "kind": "String", 
+        "kind": "String",
         "description": "Service version/tag to deploy",
         "hint": "Docker image tag",
         "attributes": {
@@ -449,7 +449,7 @@ fn demonstrate_json_loading() -> Result< (), unilang::error::Error >
     Ok( commands ) =>
     {
       println!( "✅ Successfully loaded {} commands from JSON", commands.len() );
-      
+
       for cmd in &commands
       {
         println!( "\n🚀 Command: {}.{}", cmd.namespace, cmd.name );
@@ -457,7 +457,7 @@ fn demonstrate_json_loading() -> Result< (), unilang::error::Error >
         println!( "   Status: {} (v{})", cmd.status, cmd.version );
         println!( "   Arguments: {} defined", cmd.arguments.len() );
         println!( "   Permissions: {:?}", cmd.permissions );
-        
+
         // Analyze argument complexity
         let mut arg_stats = std::collections::HashMap::new();
         for arg in &cmd.arguments
@@ -474,8 +474,8 @@ fn demonstrate_json_loading() -> Result< (), unilang::error::Error >
           };
           *arg_stats.entry( kind_name ).or_insert( 0 ) += 1;
         }
-        
-        println!( "   🔢 Argument Types: {:?}", arg_stats );
+
+        println!( "   🔢 Argument Types: {arg_stats:?}" );
       }
     },
     Err( error ) =>
@@ -498,14 +498,14 @@ fn demonstrate_error_handling() -> Result< (), unilang::error::Error >
       "Invalid YAML",
       r#"
 - name: "test"
-  namespace: ".test" 
+  namespace: ".test"
   description: "Test"
   invalid: yaml: syntax: {
 "#,
       "YAML"
     ),
-    
-    // Invalid JSON syntax  
+
+    // Invalid JSON syntax
     (
       "Invalid JSON",
       r#"[
@@ -518,14 +518,14 @@ fn demonstrate_error_handling() -> Result< (), unilang::error::Error >
 ]"#,
       "JSON"
     ),
-    
+
     // Empty input handling
     (
       "Empty YAML",
       "",
       "YAML"
     ),
-    
+
     // Malformed command structure
     (
       "Missing required fields",
@@ -540,14 +540,14 @@ fn demonstrate_error_handling() -> Result< (), unilang::error::Error >
   for ( description, content, format ) in error_test_cases
   {
     println!( "🧪 Testing: {description}" );
-    
+
     let result = match format
     {
       "YAML" => load_command_definitions_from_yaml_str( content ),
       "JSON" => load_command_definitions_from_json_str( content ),
       _ => unreachable!(),
     };
-    
+
     match result
     {
       Ok( commands ) =>
@@ -563,7 +563,7 @@ fn demonstrate_error_handling() -> Result< (), unilang::error::Error >
       },
       Err( error ) =>
       {
-        println!( "   ✅ Error caught correctly: {}", error );
+        println!( "   ✅ Error caught correctly: {error}" );
       }
     }
     println!();
@@ -605,7 +605,7 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
       validation_rules: []
       aliases: ["data", "train_data"]
       tags: ["required", "input"]
-      
+
     - name: "model_config"
       kind: "JsonString"
       description: "Model architecture configuration"
@@ -619,7 +619,7 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
       validation_rules: []
       aliases: ["config", "arch"]
       tags: ["model", "architecture"]
-      
+
     - name: "hyperparams"
       kind: "Map(String,Float,;,=)"
       description: "Hyperparameter values"
@@ -632,7 +632,7 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
       validation_rules: []
       aliases: ["params", "hp"]
       tags: ["tuning", "optimization"]
-      
+
     - name: "feature_columns"
       kind: "List(String,|)"
       description: "Feature columns to use"
@@ -645,7 +645,7 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
       validation_rules: []
       aliases: ["features", "cols"]
       tags: ["features"]
-      
+
     - name: "validation_split"
       kind: "Float"
       description: "Validation data split ratio"
@@ -659,7 +659,7 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
       validation_rules: []
       aliases: ["val_split", "validation"]
       tags: ["validation"]
-      
+
   routine_link: "ai.ml_pipeline_routine"
 "#;
 
@@ -668,14 +668,14 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
     Ok( commands ) =>
     {
       println!( "✅ Complex command loaded successfully" );
-      
+
       let mut registry = CommandRegistry::new();
       for cmd in commands
       {
         println!( "\n🧠 ML Pipeline Command Analysis:" );
         println!( "   • Name: {}.{}", cmd.namespace, cmd.name );
         println!( "   • Arguments: {}", cmd.arguments.len() );
-        
+
         // Analyze argument types and complexity
         let mut type_complexity = std::collections::HashMap::new();
         for arg in &cmd.arguments
@@ -692,34 +692,34 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
           };
           *type_complexity.entry( complexity ).or_insert( 0 ) += 1;
         }
-        
-        println!( "   • Type Complexity: {:?}", type_complexity );
-        
+
+        println!( "   • Type Complexity: {type_complexity:?}" );
+
         // Create routine for demonstration
-        let demo_routine = Box::new( | cmd : unilang::semantic::VerifiedCommand, _ctx : unilang::interpreter::ExecutionContext | -> Result< unilang::data::OutputData, unilang::error::Error >
+        let _demo_routine = Box::new( | cmd : unilang::semantic::VerifiedCommand, _ctx : unilang::interpreter::ExecutionContext | -> Result< unilang::data::OutputData, unilang::error::Error >
         {
           println!( "🚀 Executing ML Pipeline with {} arguments", cmd.arguments.len() );
           for ( name, value ) in &cmd.arguments
           {
             println!( "   Parameter {name}: {}", format_value_for_ml( value ) );
           }
-          
+
           Ok( unilang::data::OutputData
           {
             content : "ML Pipeline execution completed (demo)".to_string(),
             format : "text".to_string(),
           })
         });
-        
+
         registry.register( cmd );
         // Note: In a full demo, we'd register the routine too
       }
-      
+
       let help_generator = HelpGenerator::new( &registry );
       if let Some( help ) = help_generator.command( "ai.ml_pipeline" )
       {
         println!( "\n📖 Generated Help Documentation:" );
-        println!( "{}", help );
+        println!( "{help}" );
       }
     },
     Err( error ) =>
@@ -735,7 +735,7 @@ fn format_value_for_ml( value : &unilang::types::Value ) -> String
 {
   match value
   {
-    unilang::types::Value::JsonString( json ) => format!( "JSON({})", json ),
+    unilang::types::Value::JsonString( json ) => format!( "JSON({json})" ),
     unilang::types::Value::List( items ) => format!( "List[{}]", items.len() ),
     unilang::types::Value::Map( map ) => format!( "Map{{{}}} ", map.len() ),
     _ => value.to_string(),
@@ -745,7 +745,7 @@ fn format_value_for_ml( value : &unilang::types::Value ) -> String
 fn display_best_practices()
 {
   println!( "🎯 Command Definition Best Practices:\n" );
-  
+
   println!( "📋 YAML Recommendations:" );
   println!( "  • Use meaningful command and argument names" );
   println!( "  • Provide comprehensive descriptions and hints" );

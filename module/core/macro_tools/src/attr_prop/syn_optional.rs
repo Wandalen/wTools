@@ -8,16 +8,15 @@ use crate::*;
 
 /// Default marker for `AttributePropertyOptionalSyn`.
 /// Used if no marker is defined as parameter.
-#[derive(Debug, Default, Clone, Copy)]
+#[ derive( Debug, Default, Clone, Copy ) ]
 pub struct AttributePropertyOptionalSynMarker;
 
 ///
 /// Property of an attribute which simply wraps one of the standard `syn` types and keeps it optional.
 ///
-
-#[derive(Debug, Clone)]
+#[ derive( Debug, Clone ) ]
 pub struct AttributePropertyOptionalSyn<T, Marker = AttributePropertyOptionalSynMarker>(
-  Option<T>,
+  Option< T >,
   ::core::marker::PhantomData<Marker>,
 )
 where
@@ -28,14 +27,14 @@ where
   T: syn::parse::Parse + quote::ToTokens,
 {
   /// Just unwraps and returns the internal data.
-  #[inline(always)]
-  pub fn internal(self) -> Option<T> {
+  #[ inline( always ) ]
+  pub fn internal(self) -> Option< T > {
     self.0
   }
 
   /// Returns an Option reference to the internal data.
-  #[inline(always)]
-  pub fn ref_internal(&self) -> Option<&T> {
+  #[ inline( always ) ]
+  pub fn ref_internal(&self) -> Option< &T > {
     self.0.as_ref()
   }
 }
@@ -47,8 +46,8 @@ where
 {
   /// Inserts value of another instance into the option if it is None, then returns a mutable reference to the contained value.
   /// If another instance does is None then do nothing.
-  #[allow(clippy::single_match)]
-  #[inline(always)]
+  #[ allow( clippy::single_match ) ]
+  #[ inline( always ) ]
   fn assign(&mut self, component: IntoT) {
     let component = component.into();
     match component.0 {
@@ -72,7 +71,7 @@ impl<T, Marker> Default for AttributePropertyOptionalSyn<T, Marker>
 where
   T: syn::parse::Parse + quote::ToTokens,
 {
-  #[allow(clippy::default_constructed_unit_structs)]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn default() -> Self {
     Self(None, PhantomData::default())
   }
@@ -82,7 +81,7 @@ impl<T, Marker> syn::parse::Parse for AttributePropertyOptionalSyn<T, Marker>
 where
   T: syn::parse::Parse + quote::ToTokens,
 {
-  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
+  fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result< Self > {
     input.parse::<syn::Token![ = ]>()?;
     let value: T = input.parse()?;
     Ok(value.into())
@@ -102,19 +101,19 @@ impl<T, Marker> core::ops::Deref for AttributePropertyOptionalSyn<T, Marker>
 where
   T: syn::parse::Parse + quote::ToTokens,
 {
-  type Target = Option<T>;
-  #[inline(always)]
-  fn deref(&self) -> &Option<T> {
+  type Target = Option< T >;
+  #[ inline( always ) ]
+  fn deref(&self) -> &Option< T > {
     &self.0
   }
 }
 
-impl<T, Marker> AsRef<Option<T>> for AttributePropertyOptionalSyn<T, Marker>
+impl<T, Marker> AsRef<Option< T >> for AttributePropertyOptionalSyn<T, Marker>
 where
   T: syn::parse::Parse + quote::ToTokens,
 {
-  #[inline(always)]
-  fn as_ref(&self) -> &Option<T> {
+  #[ inline( always ) ]
+  fn as_ref(&self) -> &Option< T > {
     &self.0
   }
 }
@@ -123,39 +122,39 @@ impl<T, Marker> From<T> for AttributePropertyOptionalSyn<T, Marker>
 where
   T: syn::parse::Parse + quote::ToTokens,
 {
-  #[inline(always)]
-  #[allow(clippy::default_constructed_unit_structs)]
+  #[ inline( always ) ]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn from(src: T) -> Self {
     Self(Some(src), PhantomData::default())
   }
 }
 
-impl<T, Marker> From<Option<T>> for AttributePropertyOptionalSyn<T, Marker>
+impl<T, Marker> From<Option< T >> for AttributePropertyOptionalSyn<T, Marker>
 where
   T: syn::parse::Parse + quote::ToTokens,
 {
-  #[inline(always)]
-  #[allow(clippy::default_constructed_unit_structs)]
-  fn from(src: Option<T>) -> Self {
+  #[ inline( always ) ]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
+  fn from(src: Option< T >) -> Self {
     Self(src, PhantomData::default())
   }
 }
 
-impl<T, Marker> From<AttributePropertyOptionalSyn<T, Marker>> for Option<T>
+impl<T, Marker> From<AttributePropertyOptionalSyn<T, Marker>> for Option< T >
 where
   T: syn::parse::Parse + quote::ToTokens,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn from(src: AttributePropertyOptionalSyn<T, Marker>) -> Self {
     src.0
   }
 }
 
-impl<'a, T, Marker> From<&'a AttributePropertyOptionalSyn<T, Marker>> for Option<&'a T>
+impl<'a, T, Marker> From<&'a AttributePropertyOptionalSyn<T, Marker>> for Option< &'a T >
 where
   T: syn::parse::Parse + quote::ToTokens,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn from(src: &'a AttributePropertyOptionalSyn<T, Marker>) -> Self {
     src.0.as_ref()
   }

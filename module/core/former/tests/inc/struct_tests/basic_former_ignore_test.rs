@@ -1,18 +1,18 @@
 //! Basic test to verify the Former derive works with new #[`former_ignore`] attribute
 
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
-#[test]
+#[ test ]
 fn basic_former_ignore_test()
 {
   /// Test struct with `former_ignore` attribute (not using standalone constructors)
-  #[derive(Debug, PartialEq, Former)]
+  #[ derive( Debug, PartialEq, Former ) ]
   pub struct BasicConfig
   {
     name: String,             // Regular field
-    #[former_ignore]          // This field should be ignored for some purpose
+    #[ former_ignore ]          // This field should be ignored for some purpose
     internal_flag: bool,
   }
 

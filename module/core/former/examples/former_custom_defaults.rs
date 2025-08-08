@@ -21,13 +21,13 @@ fn main() {}
 
 #[cfg(all(feature = "derive_former", feature = "enabled"))]
 fn main() {
-  #[cfg(feature = "enabled")]
+  #[ cfg( feature = "enabled" ) ]
   use former_meta::Former;
 
   /// Structure with default attributes.
-  #[derive(Debug, PartialEq, Former)]
+  #[ derive( Debug, PartialEq, Former ) ]
   pub struct ExampleStruct {
-    #[former(default = 5)]
+    #[ former( default = 5 ) ]
     number: i32,
     #[ former( default = "Hello, Former!".to_string() ) ]
     greeting: String,

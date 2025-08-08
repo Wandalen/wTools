@@ -1,11 +1,10 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
 ///
 /// Options1
 ///
-
-#[derive(Debug, Default, PartialEq, the_module::ComponentFrom)]
+#[ derive( Debug, Default, PartialEq, the_module::ComponentFrom ) ]
 // #[ debug ]
 pub struct Options1 {
   field1: i32,

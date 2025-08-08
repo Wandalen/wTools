@@ -6,7 +6,7 @@ mod private {
   /// Are two pointers points on the same data.
   ///
   /// Does not require arguments to have the same type.
-  #[allow(unsafe_code)]
+  #[ allow( unsafe_code ) ]
   pub fn same_data<T1: ?Sized, T2: ?Sized>(src1: &T1, src2: &T2) -> bool {
     extern "C" {
       fn memcmp(s1: *const u8, s2: *const u8, n: usize) -> i32;
@@ -61,39 +61,39 @@ mod private {
   }
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use super::{orphan::*};
 }
 
 /// Orphan namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use super::{exposed::*, private::same_data, private::same_ptr, private::same_size, private::same_region};
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
   use super::*;
   // Expose itself.
   pub use super::super::mem;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 }

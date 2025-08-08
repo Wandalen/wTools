@@ -1,6 +1,8 @@
 use super::*;
 
-#[test]
+//
+
+#[ test ]
 fn field_names_with_named_fields() {
   use syn::parse_quote;
   use the_module::item_struct::field_names;
@@ -15,13 +17,13 @@ fn field_names_with_named_fields() {
 
   let names = field_names(&item_struct);
   assert!(names.is_some(), "Expected to extract field names");
-  let names: Vec<_> = names.unwrap().collect();
+  let names: Vec< _ > = names.unwrap().collect();
   assert_eq!(names.len(), 2, "Expected two field names");
   assert_eq!(names[0], "a", "First field name mismatch");
   assert_eq!(names[1], "b", "Second field name mismatch");
 }
 
-#[test]
+#[ test ]
 fn field_names_with_unnamed_fields() {
   use syn::parse_quote;
   use the_module::item_struct::field_names;
@@ -34,7 +36,7 @@ fn field_names_with_unnamed_fields() {
   assert!(names.is_none(), "Expected None for unnamed fields");
 }
 
-#[test]
+#[ test ]
 fn field_names_with_unit_struct() {
   use syn::parse_quote;
   use the_module::item_struct::field_names;
@@ -45,11 +47,11 @@ fn field_names_with_unit_struct() {
 
   let names = field_names(&item_struct);
   assert!(names.is_some());
-  let names: Vec<_> = names.unwrap().collect();
+  let names: Vec< _ > = names.unwrap().collect();
   assert_eq!(names.len(), 0);
 }
 
-#[test]
+#[ test ]
 fn field_names_with_reserved_keywords() {
   use syn::parse_quote;
   use the_module::item_struct::field_names;
@@ -64,7 +66,7 @@ fn field_names_with_reserved_keywords() {
 
   let names = field_names(&item_struct);
   assert!(names.is_some(), "Expected to extract field names");
-  let names: Vec<_> = names.unwrap().collect();
+  let names: Vec< _ > = names.unwrap().collect();
   assert_eq!(names.len(), 2, "Expected two field names");
   assert_eq!(
     names[0],
@@ -78,7 +80,7 @@ fn field_names_with_reserved_keywords() {
   );
 }
 
-#[test]
+#[ test ]
 fn test_field_or_variant_field() {
   let input: proc_macro2::TokenStream = quote::quote! {
     struct MyStruct
@@ -99,7 +101,7 @@ fn test_field_or_variant_field() {
   }
 }
 
-#[test]
+#[ test ]
 fn test_field_or_variant_variant() {
   let input: proc_macro2::TokenStream = quote::quote! {
     enum MyEnum
@@ -121,7 +123,7 @@ fn test_field_or_variant_variant() {
   }
 }
 
-#[test]
+#[ test ]
 fn test_typ() {
   let input: proc_macro2::TokenStream = quote::quote! {
     struct MyStruct
@@ -136,7 +138,7 @@ fn test_typ() {
   assert_eq!(field_or_variant.typ(), Some(&syn::parse_quote!(i32)));
 }
 
-#[test]
+#[ test ]
 fn test_attrs() {
   let input: proc_macro2::TokenStream = quote::quote! {
     struct MyStruct
@@ -152,7 +154,7 @@ fn test_attrs() {
   assert!(field_or_variant.attrs().iter().any(|attr| attr.path().is_ident("some_attr")));
 }
 
-#[test]
+#[ test ]
 fn test_vis() {
   let input: proc_macro2::TokenStream = quote::quote! {
     struct MyStruct
@@ -167,7 +169,7 @@ fn test_vis() {
   assert!(matches!(field_or_variant.vis(), Some(syn::Visibility::Public(_))));
 }
 
-#[test]
+#[ test ]
 fn test_ident() {
   let input: proc_macro2::TokenStream = quote::quote! {
     struct MyStruct

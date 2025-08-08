@@ -11,7 +11,7 @@ use unilang::error::Error;
 use std::io::{ self, Write };
 use std::collections::HashMap;
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Advanced REPL Features Demo ===\n" );
 
@@ -69,9 +69,7 @@ fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result<
 
   let ls_routine = Box::new( | cmd : unilang::semantic::VerifiedCommand, _ctx |
   {
-    let path = cmd.arguments.get( "path" )
-      .map( |v| v.to_string() )
-      .unwrap_or_else( || ".".to_string() );
+    let path = cmd.arguments.get( "path" ).map_or_else(|| ".".to_string(), std::string::ToString::to_string);
     
     println!( "📁 Listing directory: {path}" );
     
@@ -137,9 +135,7 @@ fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result<
 
   let ping_routine = Box::new( | cmd : unilang::semantic::VerifiedCommand, _ctx |
   {
-    let host = cmd.arguments.get( "host" )
-      .map( |v| v.to_string() )
-      .unwrap_or_else( || "localhost".to_string() );
+    let host = cmd.arguments.get( "host" ).map_or_else(|| "localhost".to_string(), std::string::ToString::to_string);
     
     let count = cmd.arguments.get( "count" )
       .and_then( |v| v.as_integer() )
@@ -224,17 +220,11 @@ fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result<
 
   let process_routine = Box::new( | cmd : unilang::semantic::VerifiedCommand, _ctx |
   {
-    let input = cmd.arguments.get( "input" )
-      .map( |v| v.to_string() )
-      .unwrap_or_else( || "stdin".to_string() );
+    let input = cmd.arguments.get( "input" ).map_or_else(|| "stdin".to_string(), std::string::ToString::to_string);
     
-    let algorithm = cmd.arguments.get( "algorithm" )
-      .map( |v| v.to_string() )
-      .unwrap_or_else( || "mean".to_string() );
+    let algorithm = cmd.arguments.get( "algorithm" ).map_or_else(|| "mean".to_string(), std::string::ToString::to_string);
     
-    let format = cmd.arguments.get( "format" )
-      .map( |v| v.to_string() )
-      .unwrap_or_else( || "table".to_string() );
+    let format = cmd.arguments.get( "format" ).map_or_else(|| "table".to_string(), std::string::ToString::to_string);
 
     println!( "📊 Processing {input} with {algorithm} algorithm, output as {format}" );
     
@@ -261,7 +251,7 @@ fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result<
     Ok( OutputData
     {
       content : output,
-      format : format,
+      format,
     })
   });
 
@@ -273,7 +263,7 @@ fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result<
 }
 
 /// Advanced REPL implementation with comprehensive features
-fn run_advanced_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn std::error::Error > >
+fn run_advanced_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn core::error::Error > >
 {
   let mut session_state = ReplSessionState::new();
 
@@ -312,7 +302,7 @@ fn run_advanced_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn std::error:
         session_state.session_count += 1;
 
         // Handle auto-completion suggestions
-        if input.ends_with( "?" )
+        if input.ends_with( '?' )
         {
           let partial_command = input.trim_end_matches( '?' );
           suggest_completions( partial_command );
@@ -388,14 +378,14 @@ impl ReplSessionState
 }
 
 /// Handle REPL meta-commands (help, history, etc.)
-fn handle_meta_commands( input : &str, state : &mut ReplSessionState ) -> Result< bool, Box< dyn std::error::Error > >
+fn handle_meta_commands( input : &str, state : &mut ReplSessionState ) -> Result< bool, Box< dyn core::error::Error > >
 {
   match input
   {
     "quit" | "exit" | "q" =>
     {
       println!( "👋 Goodbye! Session completed." );
-      return Err( "quit".into() ); // Use error to break out of main loop
+      Err( "quit".into() )// Use error to break out of main loop
     },
     "help" | "h" =>
     {
@@ -454,8 +444,9 @@ fn handle_command_result( result : unilang::pipeline::CommandResult, input : &st
       state.successful_commands += 1;
       state.last_error = None;
       
-      if !result.outputs.is_empty()
-      {
+      if result.outputs.is_empty() {
+        println!( "✅ Command completed (no output)" );
+      } else {
         println!( "✅ Command executed successfully" );
         for output in &result.outputs
         {
@@ -464,10 +455,6 @@ fn handle_command_result( result : unilang::pipeline::CommandResult, input : &st
             println!( "📤 Output: {}", output.content );
           }
         }
-      }
-      else
-      {
-        println!( "✅ Command completed (no output)" );
       }
     },
     Some( error ) =>
@@ -622,11 +609,11 @@ fn display_session_statistics( state : &ReplSessionState )
   println!( "  • Total commands: {}", state.session_count );
   println!( "  • Successful: {} ({:.1}%)", 
     state.successful_commands,
-    if state.session_count > 0 { 100.0 * state.successful_commands as f64 / state.session_count as f64 } else { 0.0 }
+    if state.session_count > 0 { 100.0 * f64::from(state.successful_commands) / f64::from(state.session_count) } else { 0.0 }
   );
   println!( "  • Failed: {} ({:.1}%)", 
     state.failed_commands,
-    if state.session_count > 0 { 100.0 * state.failed_commands as f64 / state.session_count as f64 } else { 0.0 }
+    if state.session_count > 0 { 100.0 * f64::from(state.failed_commands) / f64::from(state.session_count) } else { 0.0 }
   );
 
   if !state.command_stats.is_empty()
@@ -659,15 +646,14 @@ fn display_session_summary( state : &ReplSessionState )
   println!( "📈 Performance:" );
   println!( "  • Commands executed: {}", state.session_count );
   println!( "  • Success rate: {:.1}%", 
-    if state.session_count > 0 { 100.0 * state.successful_commands as f64 / state.session_count as f64 } else { 0.0 }
+    if state.session_count > 0 { 100.0 * f64::from(state.successful_commands) / f64::from(state.session_count) } else { 0.0 }
   );
   
   if !state.command_stats.is_empty()
   {
     let most_used = state.command_stats.iter()
       .max_by_key( |( _, count )| **count )
-      .map( |( cmd, count )| format!( "{cmd} ({count} times)" ) )
-      .unwrap_or_else( || "none".to_string() );
+      .map_or_else(|| "none".to_string(), |( cmd, count )| format!( "{cmd} ({count} times)" ));
     println!( "  • Most used command: {most_used}" );
   }
 

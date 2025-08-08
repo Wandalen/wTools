@@ -25,10 +25,10 @@ fn main()
       println!
       (
         "Error location: {} to {}",
-        error.location.as_ref().map_or( 0, | loc | loc.start() ),
-        error.location.as_ref().map_or( 0, | loc | loc.end() )
+        error.location.as_ref().map_or( 0, unilang_parser::SourceLocation::start ),
+        error.location.as_ref().map_or( 0, unilang_parser::SourceLocation::end )
       );
-      println!( "Error message: {}", error );
+      println!( "Error message: {error}" );
 
       // The specific ErrorKind variants might have changed, so we check for Syntax error with specific message
       if matches!( error.kind, ErrorKind::Syntax( _ ) )
@@ -49,10 +49,10 @@ fn main()
       println!
       (
         "Error location: {} to {}",
-        error.location.as_ref().map_or( 0, | loc | loc.start() ),
-        error.location.as_ref().map_or( 0, | loc | loc.end() )
+        error.location.as_ref().map_or( 0, unilang_parser::SourceLocation::start ),
+        error.location.as_ref().map_or( 0, unilang_parser::SourceLocation::end )
       );
-      println!( "Error message: {}", error );
+      println!( "Error message: {error}" );
     }
   }
 
@@ -67,10 +67,10 @@ fn main()
       println!
       (
         "Error location: {} to {}",
-        error.location.as_ref().map_or( 0, | loc | loc.start() ),
-        error.location.as_ref().map_or( 0, | loc | loc.end() )
+        error.location.as_ref().map_or( 0, unilang_parser::SourceLocation::start ),
+        error.location.as_ref().map_or( 0, unilang_parser::SourceLocation::end )
       );
-      println!( "Error message: {}", error );
+      println!( "Error message: {error}" );
     }
   }
 
@@ -82,7 +82,7 @@ fn main()
     Err( error ) =>
     {
       println!( "Error type: {:?}", error.kind );
-      println!( "Error message: {}", error );
+      println!( "Error message: {error}" );
     }
   }
 
@@ -97,10 +97,10 @@ fn main()
       println!
       (
         "Error location: {} to {}",
-        error.location.as_ref().map_or( 0, | loc | loc.start() ),
-        error.location.as_ref().map_or( 0, | loc | loc.end() )
+        error.location.as_ref().map_or( 0, unilang_parser::SourceLocation::start ),
+        error.location.as_ref().map_or( 0, unilang_parser::SourceLocation::end )
       );
-      println!( "Error message: {}", error );
+      println!( "Error message: {error}" );
     }
   }
 
@@ -118,13 +118,10 @@ fn main()
   }
 
   println!( "\n=== Error Categorization Demo ===" );
-  let test_cases = vec!
-  [
-    "invalid..path",
+  let test_cases = ["invalid..path",
     r#"cmd "unterminated"#,
     "cmd arg:::bad",
-    "",
-  ];
+    ""];
 
   for ( i, test_case ) in test_cases.iter().enumerate()
   {

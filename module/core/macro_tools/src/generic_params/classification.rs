@@ -23,14 +23,15 @@ use crate::*;
 /// assert_eq!(classification.consts.len(), 1);
 /// assert!(classification.has_mixed);
 /// ```
-#[derive(Debug, Clone)]
+#[ allow( clippy::struct_excessive_bools ) ]
+#[ derive( Debug, Clone ) ]
 pub struct GenericsClassification<'a> {
   /// Vector of references to lifetime parameters
-  pub lifetimes: Vec<&'a syn::LifetimeParam>,
+  pub lifetimes: Vec< &'a syn::LifetimeParam >,
   /// Vector of references to type parameters
-  pub types: Vec<&'a syn::TypeParam>,
+  pub types: Vec< &'a syn::TypeParam >,
   /// Vector of references to const parameters
-  pub consts: Vec<&'a syn::ConstParam>,
+  pub consts: Vec< &'a syn::ConstParam >,
   /// True if generics contain only lifetime parameters
   pub has_only_lifetimes: bool,
   /// True if generics contain only type parameters
@@ -71,7 +72,7 @@ pub struct GenericsClassification<'a> {
 /// assert!(!classification.has_only_lifetimes);
 /// assert!(classification.has_mixed);
 /// ```
-#[must_use]
+#[ must_use ]
 pub fn classify_generics(generics: &syn::Generics) -> GenericsClassification<'_> {
   let mut lifetimes = Vec::new();
   let mut types = Vec::new();
@@ -108,7 +109,7 @@ pub fn classify_generics(generics: &syn::Generics) -> GenericsClassification<'_>
 ///
 /// This struct builds upon the basic `decompose` function by providing additional
 /// classification information and pre-computed filtered parameter lists for common use cases.
-#[derive(Debug, Clone)]
+#[ derive( Debug, Clone ) ]
 pub struct DecomposedClassified {
   /// Original fields from decompose - generics with defaults preserved and trailing comma
   pub generics_with_defaults: syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
@@ -160,7 +161,7 @@ pub struct DecomposedClassified {
 /// assert_eq!(decomposed.generics_impl_only_types.len(), 1);
 /// assert_eq!(decomposed.generics_impl_no_lifetimes.len(), 2); // T and const N
 /// ```
-#[must_use]
+#[ must_use ]
 pub fn decompose_classified(generics: &syn::Generics) -> DecomposedClassified {
   use super::{decompose, filter};
   

@@ -10,7 +10,7 @@
 //! Macro to answer the question: is it a slice?
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
 /// Define a private namespace for all its items.
 mod private
@@ -32,7 +32,6 @@ mod private
   ///   // < is_slice!(& [1, 2, 3] [..]) = true
   /// }
   /// ```
-
   #[ macro_export ]
   macro_rules! is_slice
   {

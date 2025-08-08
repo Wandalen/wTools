@@ -2,9 +2,9 @@ mod tuple_multi_subform_scalar_error;
 mod tuple_single_subform_non_former_error; // Re-enabled - compile_fail test
 mod tuple_zero_subform_scalar_error; // Comment out to avoid compilation issues
 
-#[cfg(feature = "derive_former")]
+#[ cfg( feature = "derive_former" ) ]
 #[test_tools::nightly]
-#[test]
+#[ test ]
 fn former_trybuild() {
   println!("current_dir : {:?}", std::env::current_dir().unwrap());
   let t = test_tools::compiletime::TestCases::new();

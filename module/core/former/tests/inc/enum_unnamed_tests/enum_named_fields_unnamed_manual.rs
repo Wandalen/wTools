@@ -1,10 +1,10 @@
 // Purpose: Provides a manual implementation of constructors for an enum with zero-field
 // unnamed (tuple) variants using named fields syntax, including static methods, to serve
-// as a reference for verifying the `#[derive(Former)]` macro's behavior.
+// as a reference for verifying the `#[ derive( Former ) ]` macro's behavior.
 //
 // Coverage:
 // - Rule 3b (Tuple + Zero-Field + Default): Manual implementation of static method `EnumWithNamedFields::variant_zero_unnamed_default()`.
-// - Rule 1b (Tuple + Zero-Field + `#[scalar]`): Manual implementation of static method `EnumWithNamedFields::variant_zero_unnamed_scalar()`.
+// - Rule 1b (Tuple + Zero-Field + `#[ scalar ]`): Manual implementation of static method `EnumWithNamedFields::variant_zero_unnamed_scalar()`.
 //
 // Test Relevance/Acceptance Criteria:
 // - Defines an enum `EnumWithNamedFields` with two zero-field unnamed variants: `VariantZeroUnnamedDefault()` and `VariantZeroUnnamedScalar()`.

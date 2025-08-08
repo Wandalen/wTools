@@ -17,7 +17,7 @@ mod private
 
   use entity::{ PathError, WorkspaceInitError };
   // Explicit import for Result and its variants for pattern matching
-  use std::result::Result::{Ok, Err};
+  use core::result::Result::{Ok, Err};
 
   use error::
   {

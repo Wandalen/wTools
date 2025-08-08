@@ -1,6 +1,6 @@
 use core::ops::Deref;
 
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 struct GenericsLifetimes<'a>(&'a i32);
 
 impl<'a> Deref for GenericsLifetimes<'a> {

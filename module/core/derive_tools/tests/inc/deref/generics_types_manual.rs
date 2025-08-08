@@ -1,6 +1,6 @@
 use core::ops::Deref;
 
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 struct GenericsTypes<T>(T);
 
 impl<T> Deref for GenericsTypes<T> {

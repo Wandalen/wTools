@@ -1,10 +1,10 @@
 //! Purpose: Provides a manual implementation of constructors for an enum with unit variants
 //! using named fields syntax, including static methods, to serve as a reference for verifying
-//! the `#[derive(Former)]` macro's behavior.
+//! the `#[ derive( Former ) ]` macro's behavior.
 //!
 //! Coverage:
 //! - Rule 3a (Unit + Default): Manual implementation of static method `EnumWithNamedFields::unit_variant_default()`.
-//! - Rule 1a (Unit + `#[scalar]`): Manual implementation of static method `EnumWithNamedFields::unit_variant_scalar()`.
+//! - Rule 1a (Unit + `#[ scalar ]`): Manual implementation of static method `EnumWithNamedFields::unit_variant_scalar()`.
 //!
 //! Test Relevance/Acceptance Criteria:
 //! - Defines an enum `EnumWithNamedFields` with unit variants `UnitVariantDefault` and `UnitVariantScalar`.
@@ -20,7 +20,7 @@ use former::{
 use core::marker::PhantomData;
 
 // Define the enum with unit variants for manual testing.
-#[derive(Debug, PartialEq)]
+#[ derive( Debug, PartialEq ) ]
 pub enum EnumWithNamedFields {
   // --- Unit Variant ---
   UnitVariantScalar,  // New
@@ -30,11 +30,11 @@ pub enum EnumWithNamedFields {
 // --- Manual implementation of static methods on the Enum ---
 impl EnumWithNamedFields {
   // --- Unit Variant ---
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn unit_variant_scalar() -> Self {
     Self::UnitVariantScalar
   } // New
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn unit_variant_default() -> Self {
     Self::UnitVariantDefault
   } // Renamed (Default is scalar)

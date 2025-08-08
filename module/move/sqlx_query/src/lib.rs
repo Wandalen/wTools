@@ -17,13 +17,15 @@
 //! depending on `sqlx_compiletime_checks` has been enabled during the build.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/../../../", "readme.md" ) ) ]
+#![cfg_attr(doc,  doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/../../../", "readme.md" ) ) )]
 
 /// Define a private namespace for all its items.
 #[cfg(feature = "enabled")]
 mod private {
 
-  #[ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/../../../", "readme.md" ) ) ]
+  /// Expands to either sqlx function `query` or macro `query!` call
+  /// depending on `sqlx_compiletime_checks` has been enabled during the build.
+  #[cfg_attr(doc,  doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/../../../", "readme.md" ) ) )]
   #[macro_export]
   macro_rules! query
   {
@@ -53,9 +55,8 @@ mod private {
     };
   }
 
-  ///
-  ///
-  ///
+  /// Expands to either sqlx function `query_as` or macro `query_as!` call
+  /// depending on `sqlx_compiletime_checks` has been enabled during the build.
   #[macro_export]
   macro_rules! query_as
   {

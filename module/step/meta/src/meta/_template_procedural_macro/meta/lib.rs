@@ -13,14 +13,13 @@
 //! Template.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
 mod impls;
 
 ///
 /// Template.
 ///
-
 #[ proc_macro ]
 pub fn procedural_macro( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {

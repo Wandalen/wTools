@@ -62,30 +62,30 @@ use std::{
   // process::Command,
 };
 
-#[derive(Debug, Default, Former)]
-#[allow(dead_code)]
+#[ derive( Debug, Default, Former ) ]
+#[ allow( dead_code ) ]
 pub struct SourceFile {
   file_path: PathBuf,
   data: GetData,
 }
 
-#[derive(Debug, Default, Former)]
-#[allow(dead_code)]
+#[ derive( Debug, Default, Former ) ]
+#[ allow( dead_code ) ]
 pub struct Entry {
   source_file: SourceFile,
   typ: EntryType,
 }
 
-#[derive(Debug, Default, Former)]
-#[allow(dead_code)]
+#[ derive( Debug, Default, Former ) ]
+#[ allow( dead_code ) ]
 pub struct CargoFile {
   file_path: PathBuf,
   data: GetData,
 }
 
-#[derive(Debug, Default, Former)]
+#[ derive( Debug, Default, Former ) ]
 // #[ debug ]
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 pub struct Program {
   write_path: Option<PathBuf>,
   read_path: Option<PathBuf>,
@@ -94,16 +94,16 @@ pub struct Program {
   cargo_file: Option<CargoFile>,
 }
 
-#[derive(Debug, Default, Former)]
-#[allow(dead_code)]
+#[ derive( Debug, Default, Former ) ]
+#[ allow( dead_code ) ]
 pub struct ProgramRun {
   // #[ embed ]
   program: Program,
   calls: Vec<ProgramCall>,
 }
 
-#[derive(Debug)]
-#[allow(dead_code)]
+#[ derive( Debug ) ]
+#[ allow( dead_code ) ]
 pub enum GetData {
   FromStr(&'static str),
   FromBin(&'static [u8]),
@@ -117,8 +117,8 @@ impl Default for GetData {
   }
 }
 
-#[derive(Debug, Default)]
-#[allow(dead_code)]
+#[ derive( Debug, Default ) ]
+#[ allow( dead_code ) ]
 pub struct ProgramCall {
   action: ProgramAction,
   current_path: Option<PathBuf>,
@@ -126,19 +126,19 @@ pub struct ProgramCall {
   index_of_entry: i32,
 }
 
-#[derive(Debug, Default)]
-#[allow(dead_code)]
+#[ derive( Debug, Default ) ]
+#[ allow( dead_code ) ]
 pub enum ProgramAction {
-  #[default]
+  #[ default ]
   Run,
   Build,
   Test,
 }
 
-#[derive(Debug, Default)]
-#[allow(dead_code)]
+#[ derive( Debug, Default ) ]
+#[ allow( dead_code ) ]
 pub enum EntryType {
-  #[default]
+  #[ default ]
   Bin,
   Lib,
   Test,

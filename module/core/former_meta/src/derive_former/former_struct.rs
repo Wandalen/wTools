@@ -9,19 +9,19 @@
 //!
 //! ### Complete Former Ecosystem Generation
 //! For each struct, this module generates the complete Former pattern ecosystem:
-//! - **FormerStorage**: Temporary storage struct with Option-wrapped fields
-//! - **FormerDefinition**: Configuration struct defining formation behavior
-//! - **FormerDefinitionTypes**: Generic parameter container for the formation process
+//! - **`FormerStorage`**: Temporary storage struct with Option-wrapped fields
+//! - **`FormerDefinition`**: Configuration struct defining formation behavior
+//! - **`FormerDefinitionTypes`**: Generic parameter container for the formation process
 //! - **Former**: Main builder struct with fluent API methods
-//! - **AsSubformer**: Type alias for nested subform usage
-//! - **AsSubformerEnd**: Trait for nested subform end conditions
+//! - **`AsSubformer`**: Type alias for nested subform usage
+//! - **`AsSubformerEnd`**: Trait for nested subform end conditions
 //!
 //! ### Critical Complexity Handling
 //! This module successfully handles the complex scenarios that were blocking manual implementations:
 //! - **Complex Lifetime Parameters**: `<'child, T>` patterns with where clauses
 //! - **Generic Type Constraints**: `where T: Hash + Eq` and multi-trait bounds
 //! - **Nested Subform Hierarchies**: Parent-child relationships with proper trait propagation
-//! - **Collection Type Integration**: HashMap, Vec, HashSet with automatic trait bound handling
+//! - **Collection Type Integration**: `HashMap`, Vec, `HashSet` with automatic trait bound handling
 //! - **Storage Field Management**: Temporary fields exclusive to the formation process
 //!
 //! ## Pitfalls Resolved Through Implementation
@@ -50,10 +50,10 @@
 //! **Solution**: Automatic trait bound detection and propagation through subform hierarchies
 //! **Prevention**: Systematic trait bound calculation based on field types and usage patterns
 //!
-//! ### 5. FormerBegin Lifetime Parameter Management (Issue #8 Resolution)
-//! **Issue Resolved**: Missing lifetime parameters in FormerBegin trait implementations
+//! ### 5. `FormerBegin` Lifetime Parameter Management (Issue #8 Resolution)
+//! **Issue Resolved**: Missing lifetime parameters in `FormerBegin` trait implementations
 //! **Root Cause**: Manual implementations not including required lifetime parameters
-//! **Solution**: Proper FormerBegin trait implementation with all required lifetime parameters
+//! **Solution**: Proper `FormerBegin` trait implementation with all required lifetime parameters
 //! **Prevention**: Automated generation ensures all lifetime parameters are included
 //!
 //! ## Code Generation Architecture
@@ -106,13 +106,13 @@ use macro_tools::{
 /// ## Core Former Ecosystem (20+ Types and Traits)
 /// The function generates the complete set of types and traits required for the Former pattern:
 /// - **Entity Implementations**: `EntityToFormer`, `EntityToStorage`, `EntityToDefinition` traits
-/// - **FormerDefinitionTypes**: Generic parameter container with proper lifetime handling
-/// - **FormerDefinition**: Configuration struct with end condition management
-/// - **FormerStorage**: Option-wrapped field storage with proper generic propagation
+/// - **`FormerDefinitionTypes`**: Generic parameter container with proper lifetime handling
+/// - **`FormerDefinition`**: Configuration struct with end condition management
+/// - **`FormerStorage`**: Option-wrapped field storage with proper generic propagation
 /// - **Former**: Main builder struct with fluent API and subform support
-/// - **FormerBegin**: Trait implementation with correct lifetime parameters
-/// - **AsSubformer**: Type alias for nested subform scenarios
-/// - **AsSubformerEnd**: Trait for subform end condition handling
+/// - **`FormerBegin`**: Trait implementation with correct lifetime parameters
+/// - **`AsSubformer`**: Type alias for nested subform scenarios
+/// - **`AsSubformerEnd`**: Trait for subform end condition handling
 ///
 /// # Critical Complexity Handling
 ///
@@ -141,8 +141,8 @@ use macro_tools::{
 /// ```
 ///
 /// ### 2. Lifetime Parameter Scope Errors (Issues #1, #8 Resolution)
-/// **Problem Resolved**: Undeclared lifetime errors in FormerBegin implementations
-/// **Root Cause**: Missing lifetime parameters in FormerBegin trait bounds
+/// **Problem Resolved**: Undeclared lifetime errors in `FormerBegin` implementations
+/// **Root Cause**: Missing lifetime parameters in `FormerBegin` trait bounds
 /// **Solution**: Proper lifetime parameter propagation through all trait implementations
 /// **Prevention**: Automated inclusion of all required lifetime parameters
 /// **Example**:
@@ -163,14 +163,14 @@ use macro_tools::{
 /// **Example**:
 /// ```rust,ignore
 /// // ❌ MANUAL IMPLEMENTATION ERROR: Direct field storage
-/// pub struct MyStructFormerStorage { field: String } // Should be Option<String>
+/// pub struct MyStructFormerStorage { field: String } // Should be Option< String >
 /// 
 /// // ✅ GENERATED CODE: Proper Option wrapping
-/// pub struct MyStructFormerStorage { field: Option<String> }
+/// pub struct MyStructFormerStorage { field: Option< String > }
 /// ```
 ///
 /// ### 4. Trait Bound Propagation (Issues #2, #11 Resolution)
-/// **Problem Resolved**: Missing Hash+Eq bounds for HashMap scenarios
+/// **Problem Resolved**: Missing Hash+Eq bounds for `HashMap` scenarios
 /// **Root Cause**: Complex trait bound requirements not calculated and propagated
 /// **Solution**: Automatic trait bound detection and propagation
 /// **Prevention**: Field type analysis determines required trait bounds
@@ -201,14 +201,14 @@ use macro_tools::{
 /// - **Runtime Efficiency**: Generated code compiles to optimal machine code
 /// - **Memory Efficiency**: Option wrapping minimizes memory overhead
 /// - **Zero-Cost Abstractions**: Former pattern adds no runtime overhead
-#[allow(clippy::too_many_lines)]
+#[ allow( clippy::too_many_lines ) ]
 pub fn former_for_struct(
   ast: &syn::DeriveInput,
   _data_struct: &syn::DataStruct,
   original_input: &macro_tools::proc_macro2::TokenStream,
   item_attributes: &ItemAttributes, // Changed: Accept parsed ItemAttributes
   _has_debug: bool,                 // This is the correctly determined has_debug - now unused locally
-) -> Result<TokenStream> {
+) -> Result< TokenStream > {
   use macro_tools::IntoGenericArgs;
   use convert_case::{Case, Casing}; // Added for snake_case naming // Space before ;
 
@@ -255,10 +255,11 @@ specific needs of the broader forming context. It mandates the implementation of
   //    The struct's type parameters are passed through the Definition types, not the Former itself
   let generics_ref = generic_params::GenericsRef::new(generics);
   let classification = generics_ref.classification();
+  #[ allow( clippy::no_effect_underscore_binding ) ]
   let _has_only_lifetimes = classification.has_only_lifetimes;
   
   // Debug output - avoid calling to_string() on the original AST as it may cause issues
-  #[cfg(feature = "former_diagnostics_print_generated")]
+  #[ cfg( feature = "former_diagnostics_print_generated" ) ]
   if _has_debug || classification.has_only_lifetimes {
     eprintln!("Struct: {}", item);
     eprintln!("has_only_lifetimes: {}", classification.has_only_lifetimes);
@@ -310,7 +311,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
 
   // Extract lifetimes separately (currently unused but may be needed)
-  let _lifetimes: Vec<_> = generics.lifetimes().cloned().collect();
+  let _lifetimes: Vec< _ > = generics.lifetimes().cloned().collect();
   
   // FormerBegin always uses 'a from the trait itself
 
@@ -472,7 +473,7 @@ specific needs of the broader forming context. It mandates the implementation of
       let first_lifetime = if let Some(syn::GenericParam::Lifetime(ref lp)) = lifetimes_only_generics.params.first() {
         &lp.lifetime
       } else {
-        return Err(syn::Error::new_spanned(&ast, "Expected lifetime parameter"));
+        return Err(syn::Error::new_spanned(ast, "Expected lifetime parameter"));
       };
       
       // Use separate 'storage lifetime with proper bounds
@@ -741,31 +742,27 @@ specific needs of the broader forming context. It mandates the implementation of
   /* fields: Process struct fields and storage_fields attribute. */
   let fields = derive::named_fields(ast)?;
   // Create FormerField representation for actual struct fields.
-  let formed_fields: Vec<_> = fields
+  let formed_fields: Vec< _ > = fields
     .iter()
     .map(|field| FormerField::from_syn(field, true, true))
-    .collect::<Result<_>>()?;
+    .collect::<Result< _ >>()?;
   // Create FormerField representation for storage-only fields.
-  let storage_fields: Vec<_> = struct_attrs
+  let storage_fields: Vec< _ > = struct_attrs
     .storage_fields()
     .iter()
     .map(|field| FormerField::from_syn(field, true, false))
-    .collect::<Result<_>>()?;
+    .collect::<Result< _ >>()?;
 
   // <<< Start of changes for constructor arguments >>>
   // Identify fields marked as constructor arguments
-  let constructor_args_fields: Vec<_> = formed_fields
+  let constructor_args_fields: Vec< _ > = formed_fields
   .iter()
   .filter( | f | {
-    // If #[former_ignore] is present, exclude the field
+    // If #[ former_ignore ] is present, exclude the field
     if f.attrs.former_ignore.value(false) {
       false
     }
-    // If #[arg_for_constructor] is present, include the field
-    else if f.attrs.arg_for_constructor.value(false) {
-      true  
-    }
-    // Default behavior: include the field (inverted former_ignore logic)
+    // If #[ arg_for_constructor ] is present or by default, include the field
     else {
       true
     }
@@ -826,11 +823,11 @@ specific needs of the broader forming context. It mandates the implementation of
   // Generate code snippets for each field (storage init, storage field def, preform logic, setters).
   let (
     storage_field_none,     // Code for initializing storage field to None.
-    storage_field_optional, // Code for the storage field definition (e.g., `pub field: Option<Type>`).
+    storage_field_optional, // Code for the storage field definition (e.g., `pub field: Option< Type >`).
     storage_field_name,     // Code for the field name (e.g., `field,`). Used in final struct construction.
     storage_field_preform,  // Code for unwrapping/defaulting the field in `preform`.
     former_field_setter,    // Code for the setter method(s) for the field.
-  ): (Vec<_>, Vec<_>, Vec<_>, Vec<_>, Vec<_>) = formed_fields // Combine actual fields and storage-only fields for processing.
+  ): (Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >) = formed_fields // Combine actual fields and storage-only fields for processing.
     .iter()
     .chain(storage_fields.iter())
     .map(| field | // Space around |
@@ -856,10 +853,10 @@ specific needs of the broader forming context. It mandates the implementation of
     .multiunzip();
 
   // Collect results, separating setters and namespace code (like End structs).
-  let results: Result<Vec<_>> = former_field_setter.into_iter().collect();
-  let (former_field_setter, namespace_code): (Vec<_>, Vec<_>) = results?.into_iter().unzip();
+  let results: Result<Vec< _ >> = former_field_setter.into_iter().collect();
+  let (former_field_setter, namespace_code): (Vec< _ >, Vec< _ >) = results?.into_iter().unzip();
   // Collect preform logic results.
-  let storage_field_preform: Vec<_> = storage_field_preform.into_iter().collect::<Result<_>>()?;
+  let storage_field_preform: Vec< _ > = storage_field_preform.into_iter().collect::<Result< _ >>()?;
   // Generate mutator implementation code.
   let _former_mutator_code = mutator( // Changed to _former_mutator_code
     item,
@@ -941,7 +938,7 @@ specific needs of the broader forming context. It mandates the implementation of
       }
     }
   } else {
-    // If #[standalone_constructors] is not present, generate nothing.
+    // If #[ standalone_constructors ] is not present, generate nothing.
     quote! {}
   };
   // <<< End of updated code for standalone constructor (Option 2) >>>
@@ -1035,20 +1032,18 @@ specific needs of the broader forming context. It mandates the implementation of
           #former_begin_additional_bounds
       }
     }
+  } else if former_begin_additional_bounds.is_empty() {
+    quote! {
+      where
+        Definition : former::FormerDefinition< Storage = #storage_type_ref >,
+        #struct_generics_where
+    }
   } else {
-    if former_begin_additional_bounds.is_empty() {
-      quote! {
-        where
-          Definition : former::FormerDefinition< Storage = #storage_type_ref >,
-          #struct_generics_where
-      }
-    } else {
-      // struct_generics_where already has a trailing comma from decompose
-      quote! {
-        where
-          Definition : former::FormerDefinition< Storage = #storage_type_ref >,
-          #struct_generics_where #former_begin_additional_bounds
-      }
+    // struct_generics_where already has a trailing comma from decompose
+    quote! {
+      where
+        Definition : former::FormerDefinition< Storage = #storage_type_ref >,
+        #struct_generics_where #former_begin_additional_bounds
     }
   };
   
@@ -1228,9 +1223,9 @@ specific needs of the broader forming context. It mandates the implementation of
       /// Temporary storage for all fields during the formation process.
       pub storage : Definition::Storage,
       /// Optional context.
-      pub context : ::core::option::Option< Definition::Context >,
+      pub context : ::core::option::Option<  Definition::Context  >,
       /// Optional handler for the end of formation.
-      pub on_end : ::core::option::Option< Definition::End >,
+      pub on_end : ::core::option::Option<  Definition::End  >,
     }
 
     #[ automatically_derived ]
@@ -1269,8 +1264,8 @@ specific needs of the broader forming context. It mandates the implementation of
       #[ inline( always ) ]
       pub fn begin
       ( // Paren on new line
-        mut storage : ::core::option::Option< Definition::Storage >,
-        context : ::core::option::Option< Definition::Context >,
+        mut storage : ::core::option::Option<  Definition::Storage  >,
+        context : ::core::option::Option<  Definition::Context  >,
         on_end : < Definition as former::FormerDefinition >::End,
       ) // Paren on new line
       -> Self
@@ -1291,8 +1286,8 @@ specific needs of the broader forming context. It mandates the implementation of
       #[ inline( always ) ]
       pub fn begin_coercing< IntoEnd >
       ( // Paren on new line
-        mut storage : ::core::option::Option< Definition::Storage >,
-        context : ::core::option::Option< Definition::Context >,
+        mut storage : ::core::option::Option<  Definition::Storage  >,
+        context : ::core::option::Option<  Definition::Context  >,
         on_end : IntoEnd,
       ) -> Self // Paren on new line
       where
@@ -1373,8 +1368,8 @@ specific needs of the broader forming context. It mandates the implementation of
       #[ inline( always ) ]
       fn former_begin
       ( // Paren on new line
-        storage : ::core::option::Option< Definition::Storage >,
-        context : ::core::option::Option< Definition::Context >,
+        storage : ::core::option::Option<  Definition::Storage  >,
+        context : ::core::option::Option<  Definition::Context  >,
         on_end : Definition::End,
       ) // Paren on new line
       -> Self
@@ -1410,7 +1405,8 @@ specific needs of the broader forming context. It mandates the implementation of
 
   };
   
-  // Add debug output if #[debug] attribute is present
+  // Add debug output if #[ debug ] attribute is present
+  #[ allow( clippy::used_underscore_binding ) ]
   if _has_debug {
     let about = format!("derive : Former\nstruct : {item}");
     diag::report_print(about, original_input, &result);
@@ -1423,7 +1419,7 @@ specific needs of the broader forming context. It mandates the implementation of
   // returning malformed TokenStream, not by missing the original struct
   
   // Debug: Print the result for lifetime-only and type-only structs to diagnose issues
-  #[cfg(feature = "former_diagnostics_print_generated")]
+  #[ cfg( feature = "former_diagnostics_print_generated" ) ]
   if classification.has_only_lifetimes && item.to_string().contains("TestLifetime") {
     eprintln!("LIFETIME DEBUG: Generated code for {}:", item);
     eprintln!("{}", result);

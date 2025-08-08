@@ -182,6 +182,7 @@ impl Pipeline
   ///
   /// let result = pipeline.process_command("help", context);
   /// ```
+#[allow(clippy::needless_pass_by_value)]
   #[must_use] pub fn process_command( &self, command_str : &str, mut context : ExecutionContext ) -> CommandResult
   {
     let command = command_str.to_string();
@@ -276,6 +277,7 @@ impl Pipeline
   /// let batch_result = pipeline.process_batch(&commands, context);
   /// println!("Success rate: {:.1}%", batch_result.success_rate());
   /// ```
+#[allow(clippy::needless_pass_by_value)]
   #[must_use] pub fn process_batch( &self, commands : &[ &str ], context : ExecutionContext ) -> BatchResult
   {
     let mut results = Vec::new();
@@ -317,6 +319,7 @@ impl Pipeline
   /// # Arguments
   /// * `commands` - Slice of command strings to process
   /// * `context` - The execution context (will be moved and mutated)
+#[allow(clippy::needless_pass_by_value)]
   #[must_use] pub fn process_sequence( &self, commands : &[ &str ], context : ExecutionContext ) -> BatchResult
   {
     let mut results = Vec::new();
@@ -359,6 +362,7 @@ impl Pipeline
   /// # Returns
   /// - `Ok(())` if the command is valid and would be executable
   /// - `Err(Error)` if the command has syntax or semantic errors
+  #[allow(clippy::missing_errors_doc)]
   pub fn validate_command( &self, command_str : &str ) -> Result< (), Error >
   {
     // Step 1: Parsing
@@ -476,6 +480,7 @@ CommandResult
 ///
 /// This is a shorthand for creating a pipeline and validating one command.
 /// Note: This creates a new parser each time, so it's less efficient than reusing a Pipeline.
+#[allow(clippy::missing_errors_doc)]
 pub fn validate_single_command
 (
   command_str : &str,

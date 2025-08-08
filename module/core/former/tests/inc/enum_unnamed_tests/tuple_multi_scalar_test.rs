@@ -1,17 +1,17 @@
 //! Test for `tuple_multi_fields_scalar` handler
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 pub enum TupleMultiScalarEnum
 {
-  #[scalar]
+  #[ scalar ]
   Variant(i32, String, bool),
 }
 
-#[test]
+#[ test ]
 fn tuple_multi_scalar_test()
 {
   let got = TupleMultiScalarEnum::variant(42, "test".to_string(), true);
@@ -19,7 +19,7 @@ fn tuple_multi_scalar_test()
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn tuple_multi_scalar_into_test()
 {
   // Test that impl Into<T> works correctly for multiple fields

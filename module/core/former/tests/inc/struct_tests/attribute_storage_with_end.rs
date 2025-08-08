@@ -1,7 +1,7 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
-#[derive(Debug, PartialEq, the_module::Former)]
+#[ derive( Debug, PartialEq, the_module::Former ) ]
 #[ storage_fields( a : i32, b : Option< String > ) ]
 // #[ debug ]
 // #[ derive( Debug, PartialEq ) ]
@@ -15,7 +15,7 @@ pub struct Struct1CustomEnd {
 
 // impl< Definition > Default for Struct1CustomEnd< Definition >
 impl Default for Struct1CustomEnd {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn default() -> Self {
     Self {
       _phantom: core::marker::PhantomData,
@@ -23,9 +23,9 @@ impl Default for Struct1CustomEnd {
   }
 }
 
-#[automatically_derived]
+#[ automatically_derived ]
 impl<Context> former::FormingEnd<Struct1FormerDefinitionTypes<Context, Struct1>> for Struct1CustomEnd {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn call(&self, storage: Struct1FormerStorage, super_former: Option<Context>) -> Struct1 {
     let a = storage.a.unwrap_or_default();
     let b = storage.b.unwrap_or_default();

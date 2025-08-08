@@ -14,7 +14,7 @@ fn main() {
   // and then map each (key, value) pair to just the value.
   let _keys: Vec<_> = map
     .into_iter()
-    .if_determinism_then_sort_by(|(a, _), (b, _)| a.cmp(&b))
+    .if_determinism_then_sort_by(|(a, _), (b, _)| a.cmp(b))
     .map(|e| e.1)
     .collect();
 

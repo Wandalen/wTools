@@ -72,6 +72,7 @@ mod private
   ///
   /// Static, const-compatible version of `ArgumentAttributes`.
   ///
+  #[allow(clippy::struct_excessive_bools)]
   #[ derive( Debug, Clone, Copy ) ]
   pub struct StaticArgumentAttributes
   {

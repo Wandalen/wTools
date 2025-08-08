@@ -1,12 +1,12 @@
 #![allow(dead_code)]
 
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use collection_tools::BinaryHeap;
 use the_module::BinaryHeapExt;
 
-#[test]
+#[ test ]
 fn add() {
   // explicit with CollectionFormer
 
@@ -62,7 +62,7 @@ fn add() {
 
 // qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ] -- done
 // #[ cfg( not( feature = "use_alloc" ) ) ]
-#[test]
+#[ test ]
 fn replace() {
   let got: BinaryHeap<String> = the_module::BinaryHeapFormer::new(former::ReturnStorage)
     .add("x")
@@ -72,7 +72,7 @@ fn replace() {
   a_id!(got.into_sorted_vec(), exp.into_sorted_vec());
 }
 
-#[test]
+#[ test ]
 fn entity_to() {
   let got = <BinaryHeap<i32> as former::EntityToFormer<
     former::BinaryHeapDefinition<i32, (), BinaryHeap<i32>, former::ReturnStorage>,
@@ -97,31 +97,31 @@ fn entity_to() {
   a_id!(got.into_sorted_vec(), exp.into_sorted_vec());
 }
 
-#[test]
+#[ test ]
 fn entry_to_val() {
   let got = former::EntryToVal::<BinaryHeap<i32>>::entry_to_val(13i32);
   let exp = 13i32;
   a_id!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn val_to_entry() {
   let got = former::ValToEntry::<BinaryHeap<i32>>::val_to_entry(13i32);
   let exp = 13i32;
   a_id!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn subformer() {
   /// Parameter description.
-  #[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord, the_module::Former)]
+  #[ derive( Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord, the_module::Former ) ]
   pub struct Child {
     name: String,
     data: bool,
   }
 
   /// Parent required for the template.
-  #[derive(Debug, Default, the_module::Former)]
+  #[ derive( Debug, Default, the_module::Former ) ]
   pub struct Parent {
     #[ subform_collection( definition = former::BinaryHeapDefinition ) ]
     children: BinaryHeap<Child>,

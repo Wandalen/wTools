@@ -1,8 +1,8 @@
 //! # Tuple Single-Field Subform Handler - Fixed Implementation
 //!
 //! This is a FIXED implementation of the tuple single-field subform handler that generates
-//! proper variant formers instead of attempting to delegate to EntityToFormer trait.
-//! This approach mirrors the working struct_single_field_subform pattern.
+//! proper variant formers instead of attempting to delegate to `EntityToFormer` trait.
+//! This approach mirrors the working `struct_single_field_subform` pattern.
 //!
 //! ## Key Differences from Original
 //!
@@ -15,11 +15,11 @@
 //! ### Fixed Approach:
 //! - Generates complete variant former infrastructure (`VariantFormer`)
 //! - Works with any field type (primitives, structs, etc.)
-//! - Mirrors the reliable struct_single_field_subform pattern
+//! - Mirrors the reliable `struct_single_field_subform` pattern
 //! - Provides indexed setter (._0) for tuple field access
 //!
 //! ## Generated Infrastructure:
-//! - `{Enum}{Variant}FormerStorage`: Storage with `field0: Option<T>`
+//! - `{Enum}{Variant}FormerStorage`: Storage with `field0: Option< T >`
 //! - `{Enum}{Variant}FormerDefinitionTypes`: Type system integration
 //! - `{Enum}{Variant}FormerDefinition`: Definition linking all components
 //! - `{Enum}{Variant}Former`: Builder with `._0(value)` setter
@@ -92,7 +92,7 @@ fn is_delegation_candidate(variant_name: &syn::Ident, field_type: &syn::Type) ->
 }
 
 /// Generates delegation code that returns the inner type's Former.
-/// The delegation returns the inner Former directly so that .form() returns the inner type,
+/// The delegation returns the inner Former directly so that .`form()` returns the inner type,
 /// which can then be manually wrapped in the enum variant by the caller.
 fn generate_delegated_former(
   ctx: &EnumVariantHandlerContext<'_>,
@@ -118,7 +118,7 @@ fn generate_delegated_former(
 /// Generates implicit variant former infrastructure for single-field tuple enum variants.
 ///
 /// This function creates a complete builder ecosystem for tuple variants with a single unnamed field,
-/// implementing the same pattern as struct_single_field_subform but adapted for tuple field access.
+/// implementing the same pattern as `struct_single_field_subform` but adapted for tuple field access.
 ///
 /// ## Generated Method Signature
 /// ```rust,ignore
@@ -140,7 +140,8 @@ fn generate_delegated_former(
 /// ## Returns
 /// - `Ok(TokenStream)`: Generated enum method that returns the tuple variant former
 /// - `Err(syn::Error)`: If variant processing fails due to invalid configuration
-pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
+#[ allow( clippy::too_many_lines ) ]
+pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result<  proc_macro2::TokenStream  >
 {
   let variant_name = &ctx.variant.ident;
   let method_name = variant_to_method_name(variant_name);
@@ -171,7 +172,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
     pub struct #storage_name #impl_generics
     #where_clause
     {
-      field0 : Option< #field_type >,
+      field0 : Option<  #field_type  >,
     }
 
     impl #impl_generics Default for #storage_name #ty_generics
@@ -269,8 +270,8 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
     #where_clause
     {
       storage : #storage_name #ty_generics,
-      context : Option< () >,
-      on_end : Option< #end_name #ty_generics >,
+      context : Option<  ()  >,
+      on_end : Option<  #end_name #ty_generics  >,
     }
 
     impl #impl_generics #former_name #ty_generics
@@ -292,7 +293,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
       }
 
       #[ inline( always ) ]
-      pub fn begin( storage : Option< #storage_name #ty_generics >, context : Option< () >, on_end : #end_name #ty_generics ) -> Self
+      pub fn begin( storage : Option<  #storage_name #ty_generics  >, context : Option<  ()  >, on_end : #end_name #ty_generics ) -> Self
       {
         Self { storage : storage.unwrap_or_default(), context, on_end : Some( on_end ) }
       }
@@ -338,7 +339,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
       fn call(
         &self,
         sub_storage : #storage_name #ty_generics,
-        _context : Option< () >,
+        _context : Option<  ()  >,
       ) -> #enum_name #ty_generics
       {
         let field0 = former::StoragePreform::preform( sub_storage );

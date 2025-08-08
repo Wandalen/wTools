@@ -129,7 +129,7 @@ fn test_performance_stress_full()
   
   for i in 0..lookup_count {
     // Test lookups for existing and non-existing commands
-    let cmd_name = if i % 10 == 0 { ".version" } else { &format!(".nonexistent_{}", i) };
+    let cmd_name = if i % 10 == 0 { ".version" } else { &format!(".nonexistent_{i}") };
     
     let lookup_start = Instant::now();
     let _command = registry.command( cmd_name );

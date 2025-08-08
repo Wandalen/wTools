@@ -23,7 +23,7 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( src : CurrentPath ) -> Result< Self, Self::Error >
+    fn try_from( src : CurrentPath ) -> Result<  Self, Self::Error  >
     {
       Utf8PathBuf::try_from( PathBuf::try_from( src )? )
       .map_err
@@ -48,7 +48,7 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( _ : CurrentPath ) -> Result< Self, Self::Error >
+    fn try_from( _ : CurrentPath ) -> Result<  Self, Self::Error  >
     {
       env::current_dir()
     }
@@ -61,7 +61,7 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( src : CurrentPath ) -> Result< Self, Self::Error >
+    fn try_from( src : CurrentPath ) -> Result<  Self, Self::Error  >
     {
       AbsolutePath::try_from( PathBuf::try_from( src )? )
     }
@@ -69,7 +69,7 @@ mod private
 
   impl TryIntoPath for &CurrentPath
   {
-    fn try_into_path( self ) -> Result< PathBuf, io::Error >
+    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
     {
       env::current_dir()
     }
@@ -77,7 +77,7 @@ mod private
 
   impl TryIntoPath for CurrentPath
   {
-    fn try_into_path( self ) -> Result< PathBuf, io::Error >
+    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
     {
       env::current_dir()
     }

@@ -39,7 +39,7 @@ mod private
     ///
     /// Returns `None` if the path terminates in a root or prefix, or if it's the empty string.
     #[ inline ]
-    pub fn parent( &self ) -> Option< AbsolutePath >
+    pub fn parent( &self ) -> Option<  AbsolutePath  >
     {
       self.0.parent().map( PathBuf::from ).map( AbsolutePath )
     }
@@ -66,7 +66,7 @@ mod private
     }
 
     /// Returns the inner `PathBuf`.
-    #[inline(always)]
+    #[ inline( always ) ]
     #[ must_use ]
     pub fn inner( self ) -> PathBuf
     {
@@ -89,7 +89,7 @@ mod private
     /// # Errors
     /// qqq: doc
     #[ allow( clippy::should_implement_trait ) ]
-    pub fn from_iter< 'a, I, P >( iter : I ) -> Result< Self, io::Error >
+    pub fn from_iter< 'a, I, P >( iter : I ) -> Result<  Self, io::Error  >
     where
       I : Iterator< Item = P >,
       P : TryIntoCowPath< 'a >,
@@ -112,7 +112,7 @@ mod private
     /// * `Err(io::Error)` - An error if any component fails to convert.
     /// # Errors
     /// qqq: doc
-    pub fn from_paths< Paths : PathJoined >( paths : Paths ) -> Result< Self, io::Error >
+    pub fn from_paths< Paths : PathJoined >( paths : Paths ) -> Result<  Self, io::Error  >
     {
       Self::try_from( paths.iter_join()? )
     }
@@ -139,7 +139,7 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( src : PathBuf ) -> Result< Self, Self::Error >
+    fn try_from( src : PathBuf ) -> Result<  Self, Self::Error  >
     {
       < Self as TryFrom< &Path > >::try_from( src.as_path() )
     }
@@ -150,7 +150,7 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( src : &PathBuf ) -> Result< Self, Self::Error >
+    fn try_from( src : &PathBuf ) -> Result<  Self, Self::Error  >
     {
       < Self as TryFrom< &Path > >::try_from( src.as_path() )
     }
@@ -161,7 +161,7 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( src : &Path ) -> Result< Self, Self::Error >
+    fn try_from( src : &Path ) -> Result<  Self, Self::Error  >
     {
       let path = path::canonicalize( src )?;
 
@@ -179,7 +179,7 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( src : &'a str ) -> Result< Self, Self::Error >
+    fn try_from( src : &'a str ) -> Result<  Self, Self::Error  >
     {
       < Self as TryFrom< &Path > >::try_from( src.as_ref() )
     }
@@ -190,7 +190,7 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( src : &'a String ) -> Result< Self, Self::Error >
+    fn try_from( src : &'a String ) -> Result<  Self, Self::Error  >
     {
       < Self as TryFrom< &Path > >::try_from( src.as_ref() )
     }
@@ -202,43 +202,43 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( src : String ) -> Result< Self, Self::Error >
+    fn try_from( src : String ) -> Result<  Self, Self::Error  >
     {
       < Self as TryFrom< &Path > >::try_from( src.as_ref() )
     }
   }
 
-  #[cfg( feature = "path_utf8" )]
+  #[ cfg( feature = "path_utf8" ) ]
   impl TryFrom< Utf8PathBuf > for AbsolutePath
   {
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( src : Utf8PathBuf ) -> Result< Self, Self::Error >
+    fn try_from( src : Utf8PathBuf ) -> Result<  Self, Self::Error  >
     {
       AbsolutePath::try_from( src.as_std_path() )
     }
   }
 
-  #[cfg( feature = "path_utf8" )]
+  #[ cfg( feature = "path_utf8" ) ]
   impl TryFrom< &Utf8PathBuf > for AbsolutePath
   {
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( src : &Utf8PathBuf ) -> Result< Self, Self::Error >
+    fn try_from( src : &Utf8PathBuf ) -> Result<  Self, Self::Error  >
     {
       AbsolutePath::try_from( src.as_std_path() )
     }
   }
 
-  #[cfg( feature = "path_utf8" )]
+  #[ cfg( feature = "path_utf8" ) ]
   impl TryFrom< &Utf8Path > for AbsolutePath
   {
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( src : &Utf8Path ) -> Result< Self, Self::Error >
+    fn try_from( src : &Utf8Path ) -> Result<  Self, Self::Error  >
     {
       AbsolutePath::try_from( src.as_std_path() )
     }
@@ -258,9 +258,9 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( src : &'a AbsolutePath ) -> Result< &'a str, Self::Error >
+    fn try_from( src : &'a AbsolutePath ) -> Result<  &'a str, Self::Error  >
     {
-      src.to_str().ok_or_else( || io::Error::new( io::ErrorKind::Other, format!( "Can't convert &PathBuf into &str {src}" ) ) )
+      src.to_str().ok_or_else( || io::Error::other( format!( "Can't convert &PathBuf into &str {src}" ) ) )
     }
   }
 
@@ -269,7 +269,7 @@ mod private
     type Error = std::io::Error;
 
     #[ inline ]
-    fn try_from( src : &AbsolutePath ) -> Result< String, Self::Error >
+    fn try_from( src : &AbsolutePath ) -> Result<  String, Self::Error  >
     {
       let src2 : &str = src.try_into()?;
       Ok( src2.into() )
@@ -279,7 +279,7 @@ mod private
   impl TryIntoPath for AbsolutePath
   {
     #[ inline ]
-    fn try_into_path( self ) -> Result< PathBuf, io::Error >
+    fn try_into_path( self ) -> Result<  PathBuf, io::Error  >
     {
       Ok( self.0 )
     }

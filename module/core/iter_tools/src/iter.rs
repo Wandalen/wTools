@@ -1,10 +1,10 @@
 // #[ cfg( not( feature = "no_std" ) ) ]
 mod private {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   use crate::*;
   // use ::itertools::process_results;
 
-  #[cfg(feature = "iter_trait")]
+  #[ cfg( feature = "iter_trait" ) ]
   use clone_dyn_types::CloneDyn;
 
   /// Trait that encapsulates an iterator with specific characteristics and implemetning `CloneDyn`.
@@ -32,7 +32,7 @@ mod private {
   /// {
   ///   type Item = i32;
   ///
-  ///   fn next( &mut self ) -> Option< Self::Item >
+  ///   fn next( &mut self ) -> Option<  Self::Item  >
   ///   {
   ///     // implementation
   ///     Some( 1 )
@@ -50,7 +50,7 @@ mod private {
   ///
   /// impl DoubleEndedIterator for MyIterator
   /// {
-  ///   fn next_back( &mut self ) -> Option< Self::Item >
+  ///   fn next_back( &mut self ) -> Option<  Self::Item  >
   ///   {
   ///     // implementation
   ///     Some( 1 )
@@ -58,7 +58,7 @@ mod private {
   /// }
   ///
   /// ```
-  #[cfg(feature = "iter_trait")]
+  #[ cfg( feature = "iter_trait" ) ]
   pub trait _IterTrait<'a, T>
   where
     T: 'a,
@@ -67,7 +67,7 @@ mod private {
   {
   }
 
-  #[cfg(feature = "iter_trait")]
+  #[ cfg( feature = "iter_trait" ) ]
   impl<'a, T, I> _IterTrait<'a, T> for I
   where
     T: 'a,
@@ -85,7 +85,7 @@ mod private {
   /// - Be traversed from both ends ( `DoubleEndedIterator` ),
   /// - Be clonable ( `Clone` ).
   ///
-  #[cfg(feature = "iter_trait")]
+  #[ cfg( feature = "iter_trait" ) ]
   pub trait IterTrait<'a, T>
   where
     T: 'a,
@@ -93,7 +93,7 @@ mod private {
   {
   }
 
-  #[cfg(feature = "iter_trait")]
+  #[ cfg( feature = "iter_trait" ) ]
   impl<'a, T, I> IterTrait<'a, T> for I
   where
     T: 'a,
@@ -104,41 +104,41 @@ mod private {
   /// Implement `Clone` for boxed `_IterTrait` trait objects.
   ///
   /// This allows cloning of boxed iterators that implement `_IterTrait`.
-  #[cfg(feature = "iter_trait")]
+  #[ cfg( feature = "iter_trait" ) ]
   #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-  #[allow(non_local_definitions)]
+  #[ allow( non_local_definitions ) ]
   impl<'c, T> Clone for Box<dyn _IterTrait<'c, T> + 'c> {
-    #[inline]
+    #[ inline ]
     fn clone(&self) -> Self {
       clone_dyn_types::clone_into_box(&**self)
     }
   }
 
-  #[cfg(feature = "iter_trait")]
+  #[ cfg( feature = "iter_trait" ) ]
   #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-  #[allow(non_local_definitions)]
+  #[ allow( non_local_definitions ) ]
   impl<'c, T> Clone for Box<dyn _IterTrait<'c, T> + Send + 'c> {
-    #[inline]
+    #[ inline ]
     fn clone(&self) -> Self {
       clone_dyn_types::clone_into_box(&**self)
     }
   }
 
-  #[cfg(feature = "iter_trait")]
+  #[ cfg( feature = "iter_trait" ) ]
   #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-  #[allow(non_local_definitions)]
+  #[ allow( non_local_definitions ) ]
   impl<'c, T> Clone for Box<dyn _IterTrait<'c, T> + Sync + 'c> {
-    #[inline]
+    #[ inline ]
     fn clone(&self) -> Self {
       clone_dyn_types::clone_into_box(&**self)
     }
   }
 
-  #[cfg(feature = "iter_trait")]
+  #[ cfg( feature = "iter_trait" ) ]
   #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-  #[allow(non_local_definitions)]
+  #[ allow( non_local_definitions ) ]
   impl<'c, T> Clone for Box<dyn _IterTrait<'c, T> + Send + Sync + 'c> {
-    #[inline]
+    #[ inline ]
     fn clone(&self) -> Self {
       clone_dyn_types::clone_into_box(&**self)
     }
@@ -148,13 +148,13 @@ mod private {
   ///
   /// Prefer `BoxedIter` over `impl _IterTrait` when using trait objects ( `dyn _IterTrait` ) because the concrete type in return is less restrictive than `impl _IterTrait`.
   ///
-  #[cfg(feature = "iter_trait")]
+  #[ cfg( feature = "iter_trait" ) ]
   #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
   pub type BoxedIter<'a, T> = Box<dyn _IterTrait<'a, T> + 'a>;
 
   /// Extension of iterator.
   // zzz : review
-  #[cfg(feature = "iter_ext")]
+  #[ cfg( feature = "iter_ext" ) ]
   #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
   pub trait IterExt
   where
@@ -163,55 +163,55 @@ mod private {
     /// Iterate each element and return `core::Result::Err` if any element is error.
     /// # Errors
     /// qqq: errors
-    fn map_result<F, RE, El>(self, f: F) -> core::result::Result<Vec<El>, RE>
+    fn map_result<F, RE, El>(self, f: F) -> core::result::Result<Vec< El >, RE>
     where
       Self: Sized + Clone,
-      F: FnMut(<Self as core::iter::Iterator>::Item) -> core::result::Result<El, RE>,
+      F: FnMut(<Self as core::iter::Iterator>::Item) -> core::result::Result< El, RE >,
       RE: core::fmt::Debug;
   }
 
-  #[cfg(feature = "iter_ext")]
+  #[ cfg( feature = "iter_ext" ) ]
   #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
   impl<Iterator> IterExt for Iterator
   where
     Iterator: core::iter::Iterator,
   {
-    fn map_result<F, RE, El>(self, f: F) -> core::result::Result<Vec<El>, RE>
+    fn map_result<F, RE, El>(self, f: F) -> core::result::Result<Vec< El >, RE>
     where
       Self: Sized + Clone,
-      F: FnMut(<Self as core::iter::Iterator>::Item) -> core::result::Result<El, RE>,
+      F: FnMut(<Self as core::iter::Iterator>::Item) -> core::result::Result< El, RE >,
       RE: core::fmt::Debug,
     {
       let vars_maybe = self.map(f);
-      let vars: Vec<_> = ::itertools::process_results(vars_maybe, |iter| iter.collect())?;
+      let vars: Vec< _ > = ::itertools::process_results(vars_maybe, |iter| iter.collect())?;
       Ok(vars)
     }
   }
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use ::itertools::{
     all,
     any,
@@ -254,40 +254,40 @@ pub mod orphan {
   };
 
   #[cfg(not(feature = "no_std"))]
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use core::iter::zip;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 
-  #[doc(inline)]
-  #[cfg(feature = "iter_trait")]
+  #[ doc( inline ) ]
+  #[ cfg( feature = "iter_trait" ) ]
   pub use private::{_IterTrait, IterTrait};
 
-  #[doc(inline)]
-  #[cfg(feature = "iter_trait")]
+  #[ doc( inline ) ]
+  #[ cfg( feature = "iter_trait" ) ]
   #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
   pub use private::BoxedIter;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
 
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use ::itertools::{Diff, Either, EitherOrBoth, FoldWhile, MinMaxResult, Position, Itertools, PeekingNext};
 
-  #[doc(inline)]
-  #[cfg(feature = "iter_ext")]
+  #[ doc( inline ) ]
+  #[ cfg( feature = "iter_ext" ) ]
   #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
   pub use private::IterExt;
 }

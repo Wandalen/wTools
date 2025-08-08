@@ -4,8 +4,8 @@ use super::*;
 
 /// Parameter description.
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, Default, PartialEq, the_module::Former)]
-#[derive(Debug, Default, PartialEq)]
+// #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
+#[ derive( Debug, Default, PartialEq ) ]
 pub struct Child {
   name: String,
   data: bool,
@@ -13,13 +13,13 @@ pub struct Child {
 
 /// Parent required for the template.
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, Default, PartialEq, the_module::Former)]
-#[derive(Debug, Default, PartialEq)]
+// #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
+#[ derive( Debug, Default, PartialEq ) ]
 // #[ derive( Debug, Default, PartialEq, the_module::Former ) ] #[ debug ]
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent {
   // #[ subform_collection( definition = former::VectorDefinition ) ]
-  // #[scalar(setter = false)]
+  // #[ scalar( setter = false ) ]
   children: Vec<Child>,
 }
 
@@ -27,7 +27,7 @@ pub struct Parent {
 
 // Parent struct implementations
 impl Parent {
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn former() -> ParentFormer<ParentFormerDefinition<(), Parent, former::ReturnPreformed>> {
     ParentFormer::<ParentFormerDefinition<(), Parent, former::ReturnPreformed>>::new_coercing(former::ReturnPreformed)
   }
@@ -57,7 +57,7 @@ where
 }
 
 // Parent former definition types
-#[derive(Debug)]
+#[ derive( Debug ) ]
 pub struct ParentFormerDefinitionTypes<Context = (), Formed = Parent> {
   _phantom: core::marker::PhantomData<(Context, Formed)>,
 }
@@ -79,7 +79,7 @@ impl<Context, Formed> former::FormerDefinitionTypes for ParentFormerDefinitionTy
 impl<Context, Formed> former::FormerMutator for ParentFormerDefinitionTypes<Context, Formed> {}
 
 // Parent former definition
-#[derive(Debug)]
+#[ derive( Debug ) ]
 pub struct ParentFormerDefinition<Context = (), Formed = Parent, End = former::ReturnPreformed> {
   _phantom: core::marker::PhantomData<(Context, Formed, End)>,
 }
@@ -109,7 +109,7 @@ pub struct ParentFormerStorage {
 }
 
 impl core::default::Default for ParentFormerStorage {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn default() -> Self {
     Self {
       children: core::option::Option::None,
@@ -128,8 +128,8 @@ impl former::StoragePreform for ParentFormerStorage {
     } else {
       Default::default()
     };
-    let result = Parent { children };
-    result
+    
+    Parent { children }
   }
 }
 
@@ -149,12 +149,12 @@ where
   Definition: former::FormerDefinition<Storage = ParentFormerStorage>,
   Definition::Types: former::FormerDefinitionTypes<Storage = ParentFormerStorage>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn new(on_end: Definition::End) -> Self {
     Self::begin_coercing(None, None, on_end)
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn new_coercing<IntoEnd>(end: IntoEnd) -> Self
   where
     IntoEnd: core::convert::Into<Definition::End>,
@@ -162,7 +162,7 @@ where
     Self::begin_coercing(None, None, end)
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn begin(
     mut storage: core::option::Option<Definition::Storage>,
     context: core::option::Option<Definition::Context>,
@@ -178,7 +178,7 @@ where
     }
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn begin_coercing<IntoEnd>(
     mut storage: core::option::Option<Definition::Storage>,
     context: core::option::Option<Definition::Context>,
@@ -197,12 +197,12 @@ where
     }
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn form(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
     self.end()
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn end(mut self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
     let on_end = self.on_end.take().unwrap();
     let mut context = self.context.take();
@@ -226,10 +226,10 @@ where
   Definition: former::FormerDefinition<Storage = ParentFormerStorage, Formed = Parent>,
   Definition::Types: former::FormerDefinitionTypes<Storage = ParentFormerStorage, Formed = Parent>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn perform(self) -> Definition::Formed {
-    let result = self.form();
-    result
+    
+    self.form()
   }
 }
 
@@ -240,7 +240,7 @@ where
   Definition::Context: 'storage,
   Definition::End: 'storage,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn former_begin(
     storage: core::option::Option<Definition::Storage>,
     context: core::option::Option<Definition::Context>,
@@ -254,7 +254,7 @@ where
 
 // Child struct implementations
 impl Child {
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn former() -> ChildFormer<ChildFormerDefinition<(), Child, former::ReturnPreformed>> {
     ChildFormer::<ChildFormerDefinition<(), Child, former::ReturnPreformed>>::new_coercing(former::ReturnPreformed)
   }
@@ -284,7 +284,7 @@ where
 }
 
 // Child former definition types
-#[derive(Debug)]
+#[ derive( Debug ) ]
 pub struct ChildFormerDefinitionTypes<Context = (), Formed = Child> {
   _phantom: core::marker::PhantomData<(Context, Formed)>,
 }
@@ -306,7 +306,7 @@ impl<Context, Formed> former::FormerDefinitionTypes for ChildFormerDefinitionTyp
 impl<Context, Formed> former::FormerMutator for ChildFormerDefinitionTypes<Context, Formed> {}
 
 // Child former definition
-#[derive(Debug)]
+#[ derive( Debug ) ]
 pub struct ChildFormerDefinition<Context = (), Formed = Child, End = former::ReturnPreformed> {
   _phantom: core::marker::PhantomData<(Context, Formed, End)>,
 }
@@ -337,7 +337,7 @@ pub struct ChildFormerStorage {
 }
 
 impl core::default::Default for ChildFormerStorage {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn default() -> Self {
     Self {
       name: core::option::Option::None,
@@ -362,8 +362,8 @@ impl former::StoragePreform for ChildFormerStorage {
     } else {
       Default::default()
     };
-    let result = Child { name, data };
-    result
+    
+    Child { name, data }
   }
 }
 
@@ -383,12 +383,12 @@ where
   Definition: former::FormerDefinition<Storage = ChildFormerStorage>,
   Definition::Types: former::FormerDefinitionTypes<Storage = ChildFormerStorage>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn new(on_end: Definition::End) -> Self {
     Self::begin_coercing(None, None, on_end)
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn new_coercing<IntoEnd>(end: IntoEnd) -> Self
   where
     IntoEnd: core::convert::Into<Definition::End>,
@@ -396,7 +396,7 @@ where
     Self::begin_coercing(None, None, end)
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn begin(
     mut storage: core::option::Option<Definition::Storage>,
     context: core::option::Option<Definition::Context>,
@@ -412,7 +412,7 @@ where
     }
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn begin_coercing<IntoEnd>(
     mut storage: core::option::Option<Definition::Storage>,
     context: core::option::Option<Definition::Context>,
@@ -431,12 +431,12 @@ where
     }
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn form(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
     self.end()
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn end(mut self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
     let on_end = self.on_end.take().unwrap();
     let mut context = self.context.take();
@@ -444,14 +444,14 @@ where
     former::FormingEnd::<Definition::Types>::call(&on_end, self.storage, context)
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn name(mut self, src: impl Into<String>) -> Self {
     debug_assert!(self.storage.name.is_none());
     self.storage.name = Some(src.into());
     self
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn data(mut self, src: bool) -> Self {
     debug_assert!(self.storage.data.is_none());
     self.storage.data = Some(src);
@@ -474,10 +474,10 @@ where
   Definition: former::FormerDefinition<Storage = ChildFormerStorage, Formed = Child>,
   Definition::Types: former::FormerDefinitionTypes<Storage = ChildFormerStorage, Formed = Child>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn perform(self) -> Definition::Formed {
-    let result = self.form();
-    result
+    
+    self.form()
   }
 }
 
@@ -488,7 +488,7 @@ where
   Definition::Context: 'storage,
   Definition::End: 'storage,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn former_begin(
     storage: core::option::Option<Definition::Storage>,
     context: core::option::Option<Definition::Context>,
@@ -500,12 +500,12 @@ where
 
 // == begin of generated for Parent in context of attribute collection( former::VectorDefinition ) ]
 
-#[automatically_derived]
+#[ automatically_derived ]
 impl<Definition> ParentFormer<Definition>
 where
   Definition: former::FormerDefinition<Storage = ParentFormerStorage>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn _children_subform_collection<'a, Former2>(self) -> Former2
   where
     Former2: former::FormerBegin<'a, former::VectorDefinition<Child, Self, Self, ParentSubformCollectionChildrenEnd<Definition>>>,
@@ -520,7 +520,7 @@ where
     Former2::former_begin(None, Some(self), ParentSubformCollectionChildrenEnd::<Definition>::default())
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn children(
     self,
   ) -> former::CollectionFormer<Child, former::VectorDefinition<Child, Self, Self, ParentSubformCollectionChildrenEnd<Definition>>>
@@ -544,7 +544,7 @@ pub struct ParentSubformCollectionChildrenEnd<Definition> {
 }
 
 impl<Definition> Default for ParentSubformCollectionChildrenEnd<Definition> {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn default() -> Self {
     Self {
       _phantom: core::marker::PhantomData,
@@ -552,14 +552,14 @@ impl<Definition> Default for ParentSubformCollectionChildrenEnd<Definition> {
   }
 }
 
-#[automatically_derived]
+#[ automatically_derived ]
 impl<Definition>
   former::FormingEnd<<Vec<Child> as former::EntityToDefinitionTypes<ParentFormer<Definition>, ParentFormer<Definition>>>::Types>
   for ParentSubformCollectionChildrenEnd<Definition>
 where
   Definition: former::FormerDefinition<Storage = ParentFormerStorage>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn call(&self, storage: Vec<Child>, super_former: Option<ParentFormer<Definition>>) -> ParentFormer<Definition> {
     let mut super_former = super_former.unwrap();
     if let Some(ref mut field) = super_former.storage.children {

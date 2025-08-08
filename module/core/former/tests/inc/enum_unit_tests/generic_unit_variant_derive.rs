@@ -6,12 +6,12 @@ use former::Former;
 
 /// Generic enum with a unit variant, using Former.
 // Temporarily making this non-generic to test basic functionality
-#[derive(Debug, PartialEq, Former)]
-#[former(standalone_constructors, debug)]
+#[ derive( Debug, PartialEq, Former ) ]
+#[ former( standalone_constructors, debug ) ]
 pub enum GenericOption
 {
-  #[scalar] // Treat Value as a scalar constructor for the enum
-  #[allow(dead_code)] // This variant is not constructed by these specific unit tests
+  #[ scalar ] // Treat Value as a scalar constructor for the enum
+  #[ allow( dead_code ) ] // This variant is not constructed by these specific unit tests
   Value(i32),
   NoValue, // Unit variant
 }

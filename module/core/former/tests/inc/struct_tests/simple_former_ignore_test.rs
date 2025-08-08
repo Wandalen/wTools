@@ -1,23 +1,23 @@
 //! Simple test for #[`former_ignore`] attribute - minimal test to verify basic functionality
 
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
-#[test]
+#[ test ]
 fn simple_former_ignore_test()
 {
   /// Test struct with standalone constructors and `former_ignore` attribute
-  #[derive(Debug, PartialEq, Former)]
-  #[standalone_constructors]
+  #[ derive( Debug, PartialEq, Former ) ]
+  #[ standalone_constructors ]
   pub struct SimpleConfig
   {
     name: String,             // Constructor arg (not ignored)
-    #[former_ignore]          // This field is NOT a constructor arg
+    #[ former_ignore ]          // This field is NOT a constructor arg
     value: Option<i32>,
   }
 
-  // Since value is marked with #[former_ignore], the standalone constructor
+  // Since value is marked with #[ former_ignore ], the standalone constructor
   // should return a Former that allows setting the ignored field
   let config_former = simple_config("test".to_string());
   
@@ -30,12 +30,12 @@ fn simple_former_ignore_test()
   assert_eq!(config.value, Some(42));
 }
 
-#[test]
+#[ test ]
 fn simple_no_ignore_test()
 {
   /// Test struct with NO ignored fields - should return Self directly
-  #[derive(Debug, PartialEq, Former)]
-  #[standalone_constructors]
+  #[ derive( Debug, PartialEq, Former ) ]
+  #[ standalone_constructors ]
   pub struct DirectConfig
   {
     name: String,  // Constructor arg (not ignored)

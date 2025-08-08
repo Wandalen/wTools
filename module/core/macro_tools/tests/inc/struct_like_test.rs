@@ -1,6 +1,6 @@
 use super::*;
 
-#[test]
+#[ test ]
 fn basic() {
   use syn::{parse_quote, ItemStruct};
   use the_module::struct_like;
@@ -112,7 +112,7 @@ fn basic() {
 
 //
 
-#[test]
+#[ test ]
 fn structlike_unit_struct() {
   use syn::parse_quote;
   use the_module::struct_like::StructLike;
@@ -128,7 +128,7 @@ fn structlike_unit_struct() {
   assert_eq!(struct_like.ident().to_string(), "UnitStruct", "Struct name mismatch");
 }
 
-#[test]
+#[ test ]
 fn structlike_struct() {
   use syn::parse_quote;
   use the_module::struct_like::StructLike;
@@ -149,7 +149,7 @@ fn structlike_struct() {
   assert_eq!(struct_like.fields().count(), 2, "Expected two fields");
 }
 
-#[test]
+#[ test ]
 fn structlike_enum() {
   use syn::parse_quote;
   use the_module::struct_like::StructLike;
@@ -169,7 +169,7 @@ fn structlike_enum() {
   assert_eq!(struct_like.ident().to_string(), "TestEnum", "Enum name mismatch");
 }
 
-#[test]
+#[ test ]
 fn test_field_or_variant_field() {
   use syn::parse_quote;
   use the_module::struct_like::{FieldOrVariant, StructLike};
@@ -190,7 +190,7 @@ fn test_field_or_variant_field() {
   }
 }
 
-#[test]
+#[ test ]
 fn test_field_or_variant_variant() {
   use syn::parse_quote;
   use the_module::struct_like::{FieldOrVariant, StructLike};
@@ -214,7 +214,7 @@ fn test_field_or_variant_variant() {
   }
 }
 
-#[test]
+#[ test ]
 fn test_typ() {
   use syn::parse_quote;
   use the_module::struct_like::{FieldOrVariant, StructLike};
@@ -231,7 +231,7 @@ fn test_typ() {
   assert_eq!(field_or_variant.typ(), Some(&parse_quote!(i32)));
 }
 
-#[test]
+#[ test ]
 fn test_attrs() {
   use syn::parse_quote;
   use the_module::struct_like::{FieldOrVariant, StructLike};
@@ -249,7 +249,7 @@ fn test_attrs() {
   assert!(field_or_variant.attrs().iter().any(|attr| attr.path().is_ident("some_attr")));
 }
 
-#[test]
+#[ test ]
 fn test_vis() {
   use syn::parse_quote;
   use the_module::struct_like::{FieldOrVariant, StructLike};
@@ -266,7 +266,7 @@ fn test_vis() {
   assert!(matches!(field_or_variant.vis(), Some(syn::Visibility::Public(_))));
 }
 
-#[test]
+#[ test ]
 fn test_ident() {
   use the_module::struct_like::StructLike;
   use syn::parse_quote;
@@ -288,7 +288,7 @@ fn test_ident() {
 
 //
 
-#[test]
+#[ test ]
 fn struct_with_attrs() {
   use the_module::struct_like::StructLike;
 
@@ -335,7 +335,7 @@ fn struct_with_attrs() {
 //
 // }
 
-#[test]
+#[ test ]
 fn struct_with_attrs2() {
   use quote::ToTokens;
   use the_module::struct_like::{StructLike, FieldOrVariant};
@@ -352,10 +352,10 @@ fn struct_with_attrs2() {
     }
   };
 
-  // Parse the input into a StructLike enum
+  // Test StructLike's ability to handle enum declarations
   let ast: StructLike = syn::parse2(input).unwrap();
 
-  // Ensure the parsed item is an enum
+  // Verify that StructLike correctly identifies enum variant type
   assert!(matches!(ast, StructLike::Enum(_)), "Expected StructLike::Enum variant");
 
   // Check the attributes of the enum
@@ -387,7 +387,7 @@ fn struct_with_attrs2() {
   );
 
   // Check all variant names
-  let variant_names: Vec<String> = elements.iter().map(|elem| elem.ident().unwrap().to_string()).collect();
+  let variant_names: Vec< String > = elements.iter().map(|elem| elem.ident().unwrap().to_string()).collect();
   assert_eq!(
     variant_names,
     vec!["Nothing", "FromString", "FromBin"],
@@ -397,8 +397,8 @@ fn struct_with_attrs2() {
   // Check the types of the variants
   let variant_types: Vec<Option<&syn::Type>> = elements.iter().map(|elem| elem.typ()).collect();
 
-  // let variant_fields: Vec< syn::Fields > = ast.elements().map( | e | e.fields() ).collect();
-  let variant_fields: Vec<syn::Fields> = elements.iter().filter_map(|elem| elem.fields().cloned()).collect();
+  // let variant_fields: Vec<  syn::Fields  > = ast.elements().map( | e | e.fields() ).collect();
+  let variant_fields: Vec< syn::Fields > = elements.iter().filter_map(|elem| elem.fields().cloned()).collect();
   // dbg!( &variant_types );
 
   assert_eq!(variant_types.len(), 3, "Expected three variants");

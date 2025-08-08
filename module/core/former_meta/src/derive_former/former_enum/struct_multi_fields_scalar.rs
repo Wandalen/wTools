@@ -1,21 +1,21 @@
 //! # Struct Multi-Field Scalar Handler - Direct Constructor Generation
 //!
 //! This handler specializes in generating direct scalar constructors for struct enum variants 
-//! with multiple named fields marked with the `#[scalar]` attribute, providing efficient 
+//! with multiple named fields marked with the `#[ scalar ]` attribute, providing efficient 
 //! direct construction patterns that bypass the Former pattern for performance-critical scenarios.
 //!
 //! ## Variant Type Specialization
 //!
-//! **Target Pattern**: `Variant { field1: T1, field2: T2, ..., fieldN: TN }` with `#[scalar]` attribute
+//! **Target Pattern**: `Variant { field1: T1, field2: T2, ..., fieldN: TN }` with `#[ scalar ]` attribute
 //! **Generated Constructor**: `Enum::variant { field1, field2, ..., fieldN } -> Enum`
 //! **Construction Style**: Direct struct-style constructor with named field parameters
 //!
 //! ## Key Behavioral Characteristics
 //!
 //! ### Attribute-Driven Activation
-//! - **`#[scalar]` Required**: Multi-field struct variants require explicit `#[scalar]` attribute
-//! - **Default Behavior**: Without `#[scalar]`, these variants get implicit variant formers
-//! - **`#[subform_scalar]` Compatibility**: Can be combined with `#[subform_scalar]` (same behavior)
+//! - **`#[ scalar ]` Required**: Multi-field struct variants require explicit `#[ scalar ]` attribute
+//! - **Default Behavior**: Without `#[ scalar ]`, these variants get implicit variant formers
+//! - **`#[ subform_scalar ]` Compatibility**: Can be combined with `#[ subform_scalar ]` (same behavior)
 //! - **Field-Level Attributes**: Individual field attributes respected for constructor parameters
 //!
 //! ### Generated Method Characteristics
@@ -100,7 +100,7 @@
 //!
 //! ### Standalone Constructor (Optional)
 //! ```rust,ignore
-//! // Generated when #[standalone_constructors] is present
+//! // Generated when #[ standalone_constructors ] is present
 //! pub fn variant(
 //!     field1: impl Into<T>,
 //!     field2: impl Into<U>,
@@ -125,7 +125,7 @@ use super::*;
 use macro_tools::{Result, quote::quote, syn_err};
 use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 
-/// Generates direct scalar constructor for multi-field struct enum variants with `#[scalar]` attribute.
+/// Generates direct scalar constructor for multi-field struct enum variants with `#[ scalar ]` attribute.
 ///
 /// This function creates efficient direct constructors for struct variants with multiple named fields,
 /// implementing comprehensive pitfall prevention for named field parameter handling, struct construction
@@ -169,7 +169,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// ## Implementation Status
 /// This handler is currently a placeholder implementation that will be completed in future increments
 /// as the enum Former generation system is fully developed.
-pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::TokenStream> {
+pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result< proc_macro2::TokenStream > {
   let variant_name = &ctx.variant.ident;
   let method_name = variant_to_method_name(variant_name);
   let enum_name = ctx.enum_name;
@@ -184,29 +184,29 @@ pub fn handle(ctx: &mut EnumVariantHandlerContext<'_>) -> Result<proc_macro2::To
     ));
   }
 
-  // Rule: This handler is for #[scalar] variants only
+  // Rule: This handler is for #[ scalar ] variants only
   if ctx.variant_attrs.scalar.is_none() {
     return Err(syn_err!(
       ctx.variant,
-      "struct_multi_fields_scalar handler requires #[scalar] attribute"
+      "struct_multi_fields_scalar handler requires #[ scalar ] attribute"
     ));
   }
 
   // Collect field names and types
-  let field_params: Vec<_> = fields.iter().map(|field| {
+  let field_params: Vec< _ > = fields.iter().map(|field| {
     let field_name = field.ident.as_ref().ok_or_else(|| {
       syn_err!(field, "Struct variant field must have a name")
     })?;
     let field_type = &field.ty;
     Ok(quote! { #field_name: impl Into<#field_type> })
-  }).collect::<Result<Vec<_>>>()?;
+  }).collect::<Result<Vec< _ >>>()?;
 
-  let field_assigns: Vec<_> = fields.iter().map(|field| {
+  let field_assigns: Vec< _ > = fields.iter().map(|field| {
     let field_name = field.ident.as_ref().unwrap();
     quote! { #field_name: #field_name.into() }
   }).collect();
 
-  // Generate standalone constructor if #[standalone_constructors] is present
+  // Generate standalone constructor if #[ standalone_constructors ] is present
   if ctx.struct_attrs.standalone_constructors.is_some() {
     let standalone_constructor = quote! {
       #[ inline( always ) ]

@@ -1,8 +1,8 @@
 //!
 //! Tests for interactive argument signaling (M5.2, M5.3)
 //!
-//! This test verifies that the SemanticAnalyzer correctly returns
-//! UNILANG_ARGUMENT_INTERACTIVE_REQUIRED for missing interactive arguments.
+//! This test verifies that the `SemanticAnalyzer` correctly returns
+//! `UNILANG_ARGUMENT_INTERACTIVE_REQUIRED` for missing interactive arguments.
 //!
 
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes };

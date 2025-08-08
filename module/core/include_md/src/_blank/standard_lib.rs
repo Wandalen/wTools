@@ -15,40 +15,40 @@
 //! ___.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
 /// Namespace with dependencies.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency {}
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Parented namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
   use super::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 }

@@ -1,9 +1,9 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
-#[derive(Debug, PartialEq, the_module::Former)]
+#[ derive( Debug, PartialEq, the_module::Former ) ]
 #[ storage_fields( a : i32, b : Option< String > ) ]
-#[mutator(custom)]
+#[ mutator( custom ) ]
 // #[ debug ]
 // #[ derive( Debug, PartialEq ) ]
 pub struct Struct1 {
@@ -14,7 +14,7 @@ pub struct Struct1 {
 
 impl<Context, Formed> former::FormerMutator for Struct1FormerDefinitionTypes<Context, Formed> {
   /// Mutates the context and storage of the entity just before the formation process completes.
-  #[inline]
+  #[ inline ]
   fn form_mutation(storage: &mut Self::Storage, _context: &mut ::core::option::Option<Self::Context>) {
     storage.a.get_or_insert_with(Default::default);
     storage.b.get_or_insert_with(Default::default);

@@ -3,13 +3,13 @@
 use former::Former;
 
 /// Simple test struct with lifetime parameter.
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 pub struct SimpleTest<'a> {
     /// Test data field.
     data: &'a str,
 }
 
-#[test]
+#[ test ]
 fn simple_test() {
     let input = "test";
     let instance = SimpleTest::former().data(input).form();

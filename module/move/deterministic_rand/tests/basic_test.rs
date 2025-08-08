@@ -17,8 +17,8 @@ fn test_rng_manager() {
       let mut rng = rng_ref.lock().unwrap();
       let mut count = 0;
       for _ in 0..1000 {
-        let a = rng.sample(&range);
-        let b = rng.sample(&range);
+        let a = rng.sample(range);
+        let b = rng.sample(range);
         if a * a + b * b <= 1.0 {
           count += 1;
         }
@@ -26,10 +26,10 @@ fn test_rng_manager() {
       count
     })
     .sum::<u64>();
-  let _got_pi = 4. * (got as f64) / ((100 * 1000) as f64);
+  let _got_pi = 4. * (got as f64) / f64::from(100 * 1000);
   #[cfg(not(feature = "no_std"))]
   #[cfg(feature = "determinism")]
-  assert_eq!(_got_pi, 3.1438)
+  assert_eq!(_got_pi, 3.1438);
 }
 
 #[cfg(not(feature = "no_std"))]

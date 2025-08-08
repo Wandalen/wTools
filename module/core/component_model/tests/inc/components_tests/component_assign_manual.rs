@@ -1,9 +1,9 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use the_module::Assign;
 
-#[derive(Default, PartialEq, Debug)]
+#[ derive( Default, PartialEq, Debug ) ]
 struct Person {
   age: i32,
   name: String,

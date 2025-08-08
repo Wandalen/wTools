@@ -13,14 +13,14 @@
 //! - **Zero-Field Variants**: `Variant()` and `Variant {}` → Specialized handling
 //!
 //! ### Attribute-Driven Generation
-//! - **`#[scalar]`**: Forces direct constructor generation for all variant types
-//! - **`#[subform_scalar]`**: Enables subform-based construction with inner/variant formers
+//! - **`#[ scalar ]`**: Forces direct constructor generation for all variant types
+//! - **`#[ subform_scalar ]`**: Enables subform-based construction with inner/variant formers
 //! - **Default Behavior**: Intelligent selection based on variant field characteristics
-//! - **`#[standalone_constructors]`**: Generates top-level constructor functions
+//! - **`#[ standalone_constructors ]`**: Generates top-level constructor functions
 //!
 //! ## Expected Enum Former Behavior Matrix
 //!
-//! ### 1. `#[scalar]` Attribute Behavior
+//! ### 1. `#[ scalar ]` Attribute Behavior
 //! - **Unit Variant**: `Enum::variant() -> Enum` (Direct constructor)
 //! - **Zero-Field Tuple**: `Enum::variant() -> Enum` (Direct constructor)
 //! - **Zero-Field Struct**: `Enum::variant() -> Enum` (Direct constructor)
@@ -28,9 +28,9 @@
 //! - **Single-Field Struct**: `Enum::variant { field: InnerType } -> Enum` (Direct with named field)
 //! - **Multi-Field Tuple**: `Enum::variant(T1, T2, ...) -> Enum` (Direct with all parameters)
 //! - **Multi-Field Struct**: `Enum::variant { f1: T1, f2: T2, ... } -> Enum` (Direct with all fields)
-//! - **Error Prevention**: Cannot be combined with `#[subform_scalar]` (generates compile error)
+//! - **Error Prevention**: Cannot be combined with `#[ subform_scalar ]` (generates compile error)
 //!
-//! ### 2. `#[subform_scalar]` Attribute Behavior
+//! ### 2. `#[ subform_scalar ]` Attribute Behavior
 //! - **Unit Variant**: Error - No fields to form
 //! - **Zero-Field Variants**: Error - No fields to form
 //! - **Single-Field Tuple**: `Enum::variant() -> InnerFormer<...>` (Inner type former)
@@ -41,15 +41,15 @@
 //! ### 3. Default Behavior (No Attribute)
 //! - **Unit Variant**: `Enum::variant() -> Enum` (Direct constructor)
 //! - **Zero-Field Tuple**: `Enum::variant() -> Enum` (Direct constructor)
-//! - **Zero-Field Struct**: Error - Requires explicit `#[scalar]` attribute
+//! - **Zero-Field Struct**: Error - Requires explicit `#[ scalar ]` attribute
 //! - **Single-Field Tuple**: `Enum::variant() -> InnerFormer<...>` (Inner type former - PROBLEMATIC: fails for primitives)
 //! - **Single-Field Struct**: `Enum::variant() -> VariantFormer<...>` (Implicit variant former)
-//! - **Multi-Field Tuple**: `Enum::variant(T1, T2, ...) -> Enum` (Direct constructor - behaves like `#[scalar]`)
+//! - **Multi-Field Tuple**: `Enum::variant(T1, T2, ...) -> Enum` (Direct constructor - behaves like `#[ scalar ]`)
 //! - **Multi-Field Struct**: `Enum::variant() -> VariantFormer<...>` (Implicit variant former)
 //!
-//! ### 4. `#[standalone_constructors]` Body-Level Attribute
+//! ### 4. `#[ standalone_constructors ]` Body-Level Attribute
 //! - Generates top-level constructor functions for each variant: `my_variant()`
-//! - Return type depends on `#[former_ignore]` field annotations
+//! - Return type depends on `#[ former_ignore ]` field annotations
 //! - Integrates with variant-level attribute behavior
 //!
 //! ## Critical Pitfalls Resolved
@@ -142,7 +142,7 @@ mod unit_variant_handler;
 // or re-exported for use by submodules.
 // These will remain in this file.
 // qqq : Define EnumVariantFieldInfo struct
-#[allow(dead_code)] // Suppress warnings about unused fields
+#[ allow( dead_code ) ] // Suppress warnings about unused fields
 pub(super) struct EnumVariantFieldInfo {
   pub ident: syn::Ident,
   pub ty: syn::Type,
@@ -151,7 +151,7 @@ pub(super) struct EnumVariantFieldInfo {
 }
 
 // qqq : Define EnumVariantHandlerContext struct
-#[allow(dead_code)] // Suppress warnings about unused fields
+#[ allow( dead_code ) ] // Suppress warnings about unused fields
 pub(super) struct EnumVariantHandlerContext<'a> {
   pub ast: &'a syn::DeriveInput,
   pub variant: &'a syn::Variant,
@@ -162,24 +162,24 @@ pub(super) struct EnumVariantHandlerContext<'a> {
   pub original_input: &'a TokenStream,
   pub variant_attrs: &'a FieldAttributes,
   pub variant_field_info: &'a [EnumVariantFieldInfo],
-  pub merged_where_clause: Option<&'a syn::WhereClause>,
-  pub methods: &'a mut Vec<TokenStream>,
-  pub end_impls: &'a mut Vec<TokenStream>,
-  pub standalone_constructors: &'a mut Vec<TokenStream>,
+  pub merged_where_clause: Option< &'a syn::WhereClause >,
+  pub methods: &'a mut Vec< TokenStream >,
+  pub end_impls: &'a mut Vec< TokenStream >,
+  pub standalone_constructors: &'a mut Vec< TokenStream >,
 
   pub has_debug: bool,
 
 
 }
 
-#[allow(clippy::too_many_lines)]
+#[ allow( clippy::too_many_lines ) ]
 pub(super) fn former_for_enum(
   ast: &syn::DeriveInput,
   data_enum: &syn::DataEnum,
   original_input: &TokenStream,
   item_attributes: &ItemAttributes, // Changed: Accept parsed ItemAttributes
   has_debug: bool,
-) -> Result<TokenStream> {
+) -> Result< TokenStream > {
   let enum_name = &ast.ident;
   let vis = &ast.vis;
   let generics = &ast.generics;
@@ -198,7 +198,7 @@ pub(super) fn former_for_enum(
 
   for variant in &data_enum.variants {
     let variant_attrs = FieldAttributes::from_attrs(variant.attrs.iter())?;
-    let variant_field_info: Vec<Result<EnumVariantFieldInfo>> = match &variant.fields {
+    let variant_field_info: Vec<Result< EnumVariantFieldInfo >> = match &variant.fields {
       // qqq : Logic to populate variant_field_info (from previous plan)
       syn::Fields::Named(f) => f
         .named
@@ -246,7 +246,7 @@ pub(super) fn former_for_enum(
         .collect(),
       syn::Fields::Unit => vec![],
     };
-    let variant_field_info: Vec<EnumVariantFieldInfo> = variant_field_info.into_iter().collect::<Result<_>>()?;
+    let variant_field_info: Vec< EnumVariantFieldInfo > = variant_field_info.into_iter().collect::<Result< _ >>()?;
 
     let mut ctx = EnumVariantHandlerContext {
       ast,
@@ -284,7 +284,7 @@ pub(super) fn former_for_enum(
             // CRITICAL ROUTING ISSUE: Default behavior attempts subform which fails for primitives
             // tuple_single_field_subform expects field type to implement Former trait
             // Primitive types (u32, String, etc.) don't implement Former, causing compilation errors
-            // WORKAROUND: Users must add explicit #[scalar] for primitive field types
+            // WORKAROUND: Users must add explicit #[ scalar ] for primitive field types
             // TODO: Add compile-time Former trait detection or auto-route to scalar for primitives
             let generated = tuple_single_field_subform::handle(&mut ctx)?;
             ctx.methods.push(generated); // Collect generated tokens
@@ -294,7 +294,7 @@ pub(super) fn former_for_enum(
           if ctx.variant_attrs.subform_scalar.is_some() {
             return Err(syn::Error::new_spanned(
               ctx.variant,
-              "#[subform_scalar] cannot be used on tuple variants with multiple fields.",
+              "#[ subform_scalar ] cannot be used on tuple variants with multiple fields.",
             ));
           }
           if ctx.variant_attrs.scalar.is_some() {
@@ -315,13 +315,13 @@ pub(super) fn former_for_enum(
           if ctx.variant_attrs.subform_scalar.is_some() {
             return Err(syn::Error::new_spanned(
               ctx.variant,
-              "#[subform_scalar] is not allowed on zero-field struct variants.",
+              "#[ subform_scalar ] is not allowed on zero-field struct variants.",
             ));
           }
           if ctx.variant_attrs.scalar.is_none() {
             return Err(syn::Error::new_spanned(
               ctx.variant,
-              "Zero-field struct variants require `#[scalar]` attribute for direct construction.",
+              "Zero-field struct variants require `#[ scalar ]` attribute for direct construction.",
             ));
           }
           let generated = struct_zero_fields_handler::handle(&mut ctx)?;
@@ -345,13 +345,13 @@ pub(super) fn former_for_enum(
           }
         }
       },
-    } // End of match
+    }
 
-  } // End of loop
+  }
 
   let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
 
-  #[cfg(feature = "former_diagnostics_print_generated")]
+  #[ cfg( feature = "former_diagnostics_print_generated" ) ]
   if has_debug {
     diag::report_print(
       format!("DEBUG: Raw generics for {enum_name}"),
@@ -378,7 +378,7 @@ pub(super) fn former_for_enum(
   let result = {
     let impl_header = quote! { impl #impl_generics #enum_name #ty_generics };
 
-    #[cfg(feature = "former_diagnostics_print_generated")]
+    #[ cfg( feature = "former_diagnostics_print_generated" ) ]
     if has_debug {
       diag::report_print(
         format!("DEBUG: Methods collected before final quote for {enum_name}"),
@@ -405,7 +405,7 @@ pub(super) fn former_for_enum(
     }
   };
 
-  #[cfg(feature = "former_diagnostics_print_generated")]
+  #[ cfg( feature = "former_diagnostics_print_generated" ) ]
   if has_debug {
     let about = format!("derive : Former\nenum : {enum_name}");
     diag::report_print(about, original_input, &result);

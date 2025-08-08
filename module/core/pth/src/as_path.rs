@@ -44,7 +44,7 @@ mod private
   }
 
   /// Implementation of `AsPath` for `Utf8Path`.
-  #[cfg( feature = "path_utf8" )]
+  #[ cfg( feature = "path_utf8" ) ]
   impl AsPath for Utf8Path
   {
     fn as_path( &self ) -> &Path

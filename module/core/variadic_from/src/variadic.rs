@@ -26,7 +26,7 @@ where
 }
 
 /// Macro to construct a struct from variadic arguments.
-#[macro_export]
+#[ macro_export ]
 macro_rules! from {
   () => {
     core::default::Default::default()

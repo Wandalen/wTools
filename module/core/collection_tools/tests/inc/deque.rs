@@ -1,15 +1,15 @@
 use super::*;
 
-#[test]
+#[ test ]
 fn reexport() {
   let mut map: the_module::VecDeque<i32> = the_module::VecDeque::new();
   map.push_back(1);
-  assert_eq!(map.contains(&1), true);
-  assert_eq!(map.contains(&2), false);
+  assert!(map.contains(&1));
+  assert!(!map.contains(&2));
 }
 
-#[cfg(feature = "collection_constructors")]
-#[test]
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
 fn constructor() {
   // test.case( "empty" );
   let got: the_module::VecDeque<i32> = the_module::deque! {};
@@ -27,8 +27,8 @@ fn constructor() {
   let _got = the_module::exposed::deque!("b");
 }
 
-#[cfg(feature = "collection_into_constructors")]
-#[test]
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
 fn into_constructor() {
   // test.case( "empty" );
   let got: the_module::VecDeque<i32> = the_module::into_vecd! {};
@@ -46,7 +46,7 @@ fn into_constructor() {
   let _got = the_module::exposed::deque!("b");
 }
 
-#[test]
+#[ test ]
 fn iters() {
   struct MyContainer {
     entries: the_module::VecDeque<i32>,
@@ -89,7 +89,7 @@ fn iters() {
   let instance = MyContainer {
     entries: the_module::VecDeque::from([1, 2, 3]),
   };
-  let got: the_module::VecDeque<_> = (&instance).into_iter().cloned().collect();
+  let got: the_module::VecDeque<_> = (&instance).into_iter().copied().collect();
   let exp = the_module::VecDeque::from([1, 2, 3]);
   a_id!(got, exp);
 

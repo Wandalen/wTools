@@ -47,7 +47,7 @@ mod private
     /// return casted value
     /// # Errors
     /// qqq: doc
-    fn try_cast( &self, value : String ) -> error_tools::untyped::Result< T >;
+    fn try_cast( &self, value : String ) -> error_tools::untyped::Result<  T  >;
   }
 
   /// Container for a `Value` of a specific type
@@ -92,7 +92,7 @@ mod private
     /// Bool
     Bool( bool ),
     /// List
-    List( Vec< Value > ),
+    List( Vec<  Value  > ),
   }
 
   impl Display for Value
@@ -167,21 +167,21 @@ mod private
       std::path::PathBuf => | value | value
   }
 
-  impl< T : From< Value > > From< Value > for Vec< T >
+  impl< T : From< Value > > From< Value > for Vec<  T  >
   {
     fn from( value : Value ) -> Self
     {
       match value
       {
         Value::List( value ) => value.into_iter().map( std::convert::Into::into ).collect(),
-        _ => panic!( "Unknown cast variant. Got `{value:?}` and try to cast to `Vec<{}>`", core::any::type_name::< T >() )
+        _ => panic!( "Unknown cast variant. Got `{value:?}` and try to cast to `Vec< {} >`", core::any::type_name::< T >() )
       }
     }
   }
 
   impl TryCast< Value > for Type
   {
-    fn try_cast( &self, value : String ) -> error_tools::error::untyped::Result< Value >
+    fn try_cast( &self, value : String ) -> error_tools::error::untyped::Result<  Value  >
     {
       match self
       {
@@ -200,7 +200,7 @@ mod private
         })),
         Self::List( kind, delimeter ) =>
         {
-          let values: error_tools::error::untyped::Result< Vec< Value > > = value
+          let values: error_tools::error::untyped::Result< Vec<  Value  > > = value
           .split( *delimeter )
           .map( | val | kind.try_cast( val.into() ) )
           .collect();

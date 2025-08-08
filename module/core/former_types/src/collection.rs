@@ -188,7 +188,7 @@ mod private
     ///
     /// struct MyCollection
     /// {
-    ///   entries : Vec< i32 >,
+    ///   entries : Vec<  i32  >,
     /// }
     ///
     /// impl Collection for MyCollection
@@ -259,7 +259,7 @@ mod private
     ///
     /// struct MyCollection
     /// {
-    ///   entries : Vec< i32 >,
+    ///   entries : Vec<  i32  >,
     /// }
     ///
     /// impl Collection for MyCollection
@@ -318,8 +318,8 @@ mod private
     Definition::Storage : CollectionAdd< Entry = E >,
   {
     storage : Definition::Storage,
-    context : core::option::Option< Definition::Context >,
-    on_end : core::option::Option< Definition::End >,
+    context : core::option::Option<  Definition::Context  >,
+    on_end : core::option::Option<  Definition::End  >,
   }
 
   use core::fmt;
@@ -350,8 +350,8 @@ mod private
     #[ inline( always ) ]
     pub fn begin
     (
-      mut storage : core::option::Option< Definition::Storage >,
-      context : core::option::Option< Definition::Context >,
+      mut storage : core::option::Option<  Definition::Storage  >,
+      context : core::option::Option<  Definition::Context  >,
       on_end : Definition::End,
     ) -> Self
     {
@@ -374,8 +374,8 @@ mod private
     #[ inline( always ) ]
     pub fn begin_coercing< IntoEnd >
     (
-      mut storage : core::option::Option< Definition::Storage >,
-      context : core::option::Option< Definition::Context >,
+      mut storage : core::option::Option<  Definition::Storage  >,
+      context : core::option::Option<  Definition::Context  >,
       on_end : IntoEnd,
     ) -> Self
     where
@@ -477,8 +477,8 @@ mod private
     #[ inline( always ) ]
     fn former_begin
     (
-      storage : core::option::Option< Definition::Storage >,
-      context : core::option::Option< Definition::Context >,
+      storage : core::option::Option<  Definition::Storage  >,
+      context : core::option::Option<  Definition::Context  >,
       on_end : Definition::End,
     ) -> Self
     {

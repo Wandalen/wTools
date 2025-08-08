@@ -102,7 +102,6 @@ fn assumption_choose_weighted() {
     let mut rng = rng.lock().unwrap();
     let got = (1..1000)
       .zip((1..1000).rev())
-      .into_iter()
       .collect::<Vec<_>>()
       .choose_weighted(&mut *rng, |w| w.0)
       .map(|(i, j)| (*i, *j))
@@ -111,7 +110,6 @@ fn assumption_choose_weighted() {
 
     let got = (1..1000)
       .zip((1..1000).rev())
-      .into_iter()
       .collect::<Vec<_>>()
       .choose_weighted(&mut *rng, |w| w.0)
       .map(|(i, j)| (*i, *j))
@@ -130,7 +128,6 @@ fn assumption_choose_multiple_weighted() {
     let mut rng = rng.lock().unwrap();
     let got = (1..10)
       .zip((1..10).rev())
-      .into_iter()
       .collect::<Vec<_>>()
       .choose_multiple_weighted(&mut *rng, 10, |w| w.0)
       .unwrap()
@@ -143,7 +140,6 @@ fn assumption_choose_multiple_weighted() {
 
     let got = (1..10)
       .zip((1..10).rev())
-      .into_iter()
       .collect::<Vec<_>>()
       .choose_multiple_weighted(&mut *rng, 10, |w| w.0)
       .unwrap()

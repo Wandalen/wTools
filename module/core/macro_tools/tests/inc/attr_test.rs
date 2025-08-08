@@ -1,9 +1,7 @@
 use super::*;
 use the_module::{attr, qt, Result};
 
-//
-
-#[test]
+#[ test ]
 fn is_standard_standard() {
   // Test a selection of attributes known to be standard
   assert!(attr::is_standard("cfg"), "Expected 'cfg' to be a standard attribute.");
@@ -13,7 +11,7 @@ fn is_standard_standard() {
   assert!(attr::is_standard("doc"), "Expected 'doc' to be a standard attribute.");
 }
 
-#[test]
+#[ test ]
 fn is_standard_non_standard() {
   // Test some made-up attributes that should not be standard
   assert!(
@@ -30,7 +28,7 @@ fn is_standard_non_standard() {
   );
 }
 
-#[test]
+#[ test ]
 fn is_standard_edge_cases() {
   // Test edge cases like empty strings or unusual input
   assert!(
@@ -47,7 +45,7 @@ fn is_standard_edge_cases() {
   );
 }
 
-#[test]
+#[ test ]
 fn attribute_component_from_meta() {
   use the_module::AttributeComponent;
   struct MyComponent;
@@ -84,7 +82,7 @@ fn attribute_component_from_meta() {
   assert!(result.is_err());
 }
 
-#[test]
+#[ test ]
 fn attribute_basic() -> Result<()> {
   use macro_tools::syn::parse::Parser;
 

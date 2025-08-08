@@ -432,7 +432,7 @@ mod private
   ///
   /// # Arguments
   ///
-  /// - `args`: ListOptions - The arguments for listing packages.
+  /// - `args`: `ListOptions` - The arguments for listing packages.
   ///
   /// # Returns
   ///

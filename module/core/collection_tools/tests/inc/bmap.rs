@@ -1,19 +1,19 @@
 use super::*;
 
-#[test]
+#[ test ]
 fn reexport() {
-  let mut map: the_module::BTreeMap<i32, i32> = the_module::BTreeMap::new();
+  let mut map: the_module::BTreeMap< i32, i32 > = the_module::BTreeMap::new();
   map.insert(1, 2);
   let exp = 2;
   let got = *map.get(&1).unwrap();
   assert_eq!(exp, got);
 }
 
-#[cfg(feature = "collection_constructors")]
-#[test]
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
 fn constructor() {
   // test.case( "empty" );
-  let got: the_module::BTreeMap<i32, i32> = the_module::bmap! {};
+  let got: the_module::BTreeMap< i32, i32 > = the_module::bmap! {};
   let exp = the_module::BTreeMap::new();
   assert_eq!(got, exp);
 
@@ -28,11 +28,11 @@ fn constructor() {
   let _got = the_module::exposed::bmap!( "a" => "b" );
 }
 
-#[cfg(feature = "collection_into_constructors")]
-#[test]
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
 fn into_constructor() {
   // test.case( "empty" );
-  let got: the_module::BTreeMap<i32, i32> = the_module::into_bmap! {};
+  let got: the_module::BTreeMap< i32, i32 > = the_module::into_bmap! {};
   let exp = the_module::BTreeMap::new();
   assert_eq!(got, exp);
 
@@ -47,10 +47,10 @@ fn into_constructor() {
   let _got: Bmap<&str, &str> = the_module::exposed::into_bmap!( "a" => "b" );
 }
 
-#[test]
+#[ test ]
 fn iters() {
   struct MyContainer {
-    entries: the_module::BTreeMap<i32, i32>,
+    entries: the_module::BTreeMap< i32, i32 >,
   }
 
   impl IntoIterator for MyContainer {
@@ -74,14 +74,14 @@ fn iters() {
   let instance = MyContainer {
     entries: the_module::BTreeMap::from([(1, 3), (2, 2), (3, 1)]),
   };
-  let got: the_module::BTreeMap<_, _> = instance.into_iter().collect();
+  let got: the_module::BTreeMap< _, _ > = instance.into_iter().collect();
   let exp = the_module::BTreeMap::from([(1, 3), (2, 2), (3, 1)]);
   a_id!(got, exp);
 
   let instance = MyContainer {
     entries: the_module::BTreeMap::from([(1, 3), (2, 2), (3, 1)]),
   };
-  let got: the_module::BTreeMap<_, _> = (&instance).into_iter().map(|(k, v)| (k.clone(), v.clone())).collect();
+  let got: the_module::BTreeMap< _, _ > = (&instance).into_iter().map(|(k, v)| (*k, *v)).collect();
   let exp = the_module::BTreeMap::from([(1, 3), (2, 2), (3, 1)]);
   a_id!(got, exp);
 }

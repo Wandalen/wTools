@@ -14,7 +14,7 @@
 //! Implementation of automata.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
 
 wtools::mod_interface!

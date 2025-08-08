@@ -12,19 +12,19 @@ use super::*;
 use derive_tools_meta::From;
 use test_tools::a_id;
 
-#[derive(Debug, Clone, Copy, PartialEq, From)]
+#[ derive( Debug, Clone, Copy, PartialEq, From ) ]
 
 pub struct IsTransparentSimple(bool);
 
-#[derive(Debug, Clone, Copy, PartialEq, From)]
+#[ derive( Debug, Clone, Copy, PartialEq, From ) ]
 
-pub struct IsTransparentComplex<'a, 'b: 'a, T, U: ToString + ?Sized>(#[from] &'a T, core::marker::PhantomData<&'b U>)
+pub struct IsTransparentComplex<'a, 'b: 'a, T, U: ToString + ?Sized>(#[ from ] &'a T, core::marker::PhantomData<&'b U>)
 where
   'a: 'b,
   T: AsRef<U>;
 
 /// Tests the `From` derive macro for various struct types.
-#[test]
+#[ test ]
 fn from_test() {
   // Test for IsTransparentSimple
   let got = IsTransparentSimple::from(true);

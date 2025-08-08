@@ -22,7 +22,7 @@ mod private {
   /// let ts : proc_macro2::TokenStream = qt! { let x = 10; };
   /// let tokens = tokens::Tokens::new( ts );
   /// ```
-  #[derive(Default)]
+  #[ derive( Default ) ]
   pub struct Tokens {
     /// `proc_macro2::TokenStream`
     pub inner: proc_macro2::TokenStream,
@@ -30,14 +30,14 @@ mod private {
 
   impl Tokens {
     /// Constructor from `proc_macro2::TokenStream`.
-    #[must_use]
+    #[ must_use ]
     pub fn new(inner: proc_macro2::TokenStream) -> Self {
       Tokens { inner }
     }
   }
 
   impl syn::parse::Parse for Tokens {
-    fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
+    fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result< Self > {
       let inner: proc_macro2::TokenStream = input.parse()?;
       Ok(Tokens::new(inner))
     }
@@ -62,30 +62,30 @@ mod private {
   }
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
@@ -93,14 +93,14 @@ pub mod exposed {
   pub use super::super::tokens;
   // pub use super::own as tokens;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{Tokens};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 }

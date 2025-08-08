@@ -33,7 +33,7 @@ fn main() -> error_tools::error::untyped::Result<()> {
     .routine(|ctx: Context| {
       let i: Arc<Mutex<i32>> = ctx.get().unwrap();
       let mut i = i.lock().unwrap();
-      println!("i = {}", i);
+      println!("i = {i}");
       *i += 1;
     })
     .end()
@@ -45,12 +45,12 @@ fn main() -> error_tools::error::untyped::Result<()> {
     .end()
     .routine(|o: VerifiedCommand| {
       println!("Returns an error");
-      Err(format!("{}", o.args.get_owned::<String>(0).unwrap_or_default()))
+      Err(o.args.get_owned::<String>(0).unwrap_or_default().to_string())
     })
     .end()
     .command("exit")
     .hint("just exit")
-    .routine(Handler::<_, std::convert::Infallible>::from(|| {
+    .routine(Handler::<_, core::convert::Infallible>::from(|| {
       println!("exit");
       std::process::exit(0)
     }))

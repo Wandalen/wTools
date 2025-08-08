@@ -32,7 +32,7 @@
 //!   behave for this specific scenario involving independent generics in struct variants.
 //! - To manually construct the implicit former infrastructure (Storage, Definitions, Former, End)
 //!   for the `V1` variant, ensuring correct handling of the enum's generic `T` and its bounds.
-//! - To validate the logic used by the `#[derive(Former)]` macro by comparing its generated
+//! - To validate the logic used by the `#[ derive( Former ) ]` macro by comparing its generated
 //!   code's behavior against this manual implementation using the shared tests in
 //!   `generics_independent_struct_only_test.rs`.
 

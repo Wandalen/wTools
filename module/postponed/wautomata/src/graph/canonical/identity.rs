@@ -17,7 +17,6 @@ mod private
   ///
   /// Identify an instance by its location in memory.
   ///
-
   #[ derive( Debug, PartialEq, Eq, Copy, Clone, Hash, Default ) ]
   pub struct IdentityWithPointer( usize );
 
@@ -65,7 +64,6 @@ mod private
   ///
   /// Identify an instance by name.
   ///
-
   #[ derive( PartialEq, Eq, Copy, Clone, Hash ) ]
   pub struct IdentityWithName( pub &'static str )
   ;
@@ -123,7 +121,6 @@ mod private
   ///
   /// Interface to to generate a new IDs for IdentityWithInt
   ///
-
   #[ derive( Debug, Copy, Clone, Default ) ]
   pub struct IdGeneratorInt
   {

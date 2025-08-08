@@ -1,18 +1,18 @@
 use super::*;
 
-#[test]
+#[ test ]
 fn reexport() {
-  let mut map: the_module::BTreeSet<i32> = the_module::BTreeSet::new();
+  let mut map: the_module::BTreeSet< i32 > = the_module::BTreeSet::new();
   map.insert(1);
-  assert_eq!(map.contains(&1), true);
-  assert_eq!(map.contains(&2), false);
+  assert!(map.contains(&1));
+  assert!(!map.contains(&2));
 }
 
-#[cfg(feature = "collection_constructors")]
-#[test]
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
 fn constructor() {
   // test.case( "empty" );
-  let got: the_module::BTreeSet<i32> = the_module::bset! {};
+  let got: the_module::BTreeSet< i32 > = the_module::bset! {};
   let exp = the_module::BTreeSet::new();
   assert_eq!(got, exp);
 
@@ -27,11 +27,11 @@ fn constructor() {
   let _got = the_module::exposed::bset!("b");
 }
 
-#[cfg(feature = "collection_into_constructors")]
-#[test]
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
 fn into_constructor() {
   // test.case( "empty" );
-  let got: the_module::BTreeSet<i32> = the_module::into_bset! {};
+  let got: the_module::BTreeSet< i32 > = the_module::into_bset! {};
   let exp = the_module::BTreeSet::new();
   assert_eq!(got, exp);
 
@@ -46,10 +46,10 @@ fn into_constructor() {
   let _got: Bset<&str> = the_module::exposed::into_bset!("b");
 }
 
-#[test]
+#[ test ]
 fn iters() {
   struct MyContainer {
-    entries: the_module::BTreeSet<i32>,
+    entries: the_module::BTreeSet< i32 >,
   }
 
   impl IntoIterator for MyContainer {
@@ -73,14 +73,14 @@ fn iters() {
   let instance = MyContainer {
     entries: the_module::BTreeSet::from([1, 2, 3]),
   };
-  let got: the_module::BTreeSet<_> = instance.into_iter().collect();
+  let got: the_module::BTreeSet< _ > = instance.into_iter().collect();
   let exp = the_module::BTreeSet::from([1, 2, 3]);
   a_id!(got, exp);
 
   let instance = MyContainer {
     entries: the_module::BTreeSet::from([1, 2, 3]),
   };
-  let got: the_module::BTreeSet<_> = (&instance).into_iter().cloned().collect();
+  let got: the_module::BTreeSet< _ > = (&instance).into_iter().copied().collect();
   let exp = the_module::BTreeSet::from([1, 2, 3]);
   a_id!(got, exp);
 }

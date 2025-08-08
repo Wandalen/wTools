@@ -3,7 +3,8 @@
   html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
 )]
 #![doc(html_root_url = "https://docs.rs/clone_dyn_meta/latest/clone_dyn_meta/")]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Dynamic cloning macro support" ) ]
 
 /// Internal namespace.
 mod internal {}
@@ -31,7 +32,7 @@ mod internal {}
 /// ```
 ///
 /// To learn more about the feature, study the module [`clone_dyn`](https://docs.rs/clone_dyn/latest/clone_dyn/).
-#[proc_macro_attribute]
+#[ proc_macro_attribute ]
 pub fn clone_dyn(attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
   let result = clone_dyn::clone_dyn(attr, item);
   match result {

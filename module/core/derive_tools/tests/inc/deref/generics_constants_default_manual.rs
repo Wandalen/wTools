@@ -1,6 +1,6 @@
 use core::ops::Deref;
 
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 struct GenericsConstantsDefault<const N: usize = 0>(i32);
 
 impl<const N: usize> Deref for GenericsConstantsDefault<N> {

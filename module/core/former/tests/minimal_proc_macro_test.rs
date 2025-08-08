@@ -4,27 +4,27 @@
 // use former::Former; // Unused - commented out
 
 /// Test struct without derive to ensure compilation works.
-#[allow(dead_code)]
-#[derive(Debug)]
+#[ allow( dead_code ) ]
+#[ derive( Debug ) ]
 pub struct WorksWithoutDerive<'a> {
     /// Test data field.
     data: &'a str,
 }
 
 /// Test struct with standard derives.
-#[derive(Debug, Clone)]
+#[ derive( Debug, Clone ) ]
 pub struct WorksWithStandardDerives<'a> {
     /// Test data field.
     data: &'a str,
 }
 
 // This fails - our custom Former derive
-// #[derive(Former)]
+// #[ derive( Former ) ]
 // pub struct FailsWithFormerDerive<'a> {
 //     data: &'a str,
 // }
 
-#[test]
+#[ test ]
 fn test_standard_derives_work() {
     let data = "test";
     let instance = WorksWithStandardDerives { data };

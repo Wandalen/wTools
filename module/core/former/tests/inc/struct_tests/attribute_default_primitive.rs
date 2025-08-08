@@ -1,23 +1,23 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
 use collection_tools::HashMap;
 use collection_tools::HashSet;
 
-#[derive(Debug, PartialEq, the_module::Former)]
+#[ derive( Debug, PartialEq, the_module::Former ) ]
 pub struct Struct1 {
-  #[former(default = 31)]
+  #[ former( default = 31 ) ]
   pub int_1: i32,
-  #[former(default = "abc")]
+  #[ former( default = "abc" ) ]
   string_1: String,
-  #[former(default = 31)]
+  #[ former( default = 31 ) ]
   int_optional_1: Option<i32>,
-  #[former(default = "abc")]
+  #[ former( default = "abc" ) ]
   string_optional_1: Option<String>,
 
   vec_1: Vec<String>,
-  hashmap_1: HashMap<String, String>,
-  hashset_1: HashSet<String>,
+  hashmap_1: HashMap< String, String >,
+  hashset_1: HashSet< String >,
 }
 
 //

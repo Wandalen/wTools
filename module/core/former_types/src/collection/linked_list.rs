@@ -6,21 +6,21 @@
 //!
 
 use crate::*;
-#[allow(unused)]
+#[ allow( unused ) ]
 use collection_tools::LinkedList;
 
 impl<E> Collection for LinkedList<E> {
   type Entry = E;
   type Val = E;
 
-  #[inline(always)]
+  #[ inline( always ) ]
   fn entry_to_val(e: Self::Entry) -> Self::Val {
     e
   }
 }
 
 impl<E> CollectionAdd for LinkedList<E> {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn add(&mut self, e: Self::Entry) -> bool {
     self.push_back(e);
     true
@@ -28,7 +28,7 @@ impl<E> CollectionAdd for LinkedList<E> {
 }
 
 impl<E> CollectionAssign for LinkedList<E> {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn assign<Elements>(&mut self, elements: Elements) -> usize
   where
     Elements: IntoIterator<Item = Self::Entry>,
@@ -41,7 +41,7 @@ impl<E> CollectionAssign for LinkedList<E> {
 
 impl<E> CollectionValToEntry<E> for LinkedList<E> {
   type Entry = E;
-  #[inline(always)]
+  #[ inline( always ) ]
   fn val_to_entry(val: E) -> Self::Entry {
     val
   }
@@ -72,8 +72,7 @@ impl<E> StoragePreform for LinkedList<E> {
 /// - `Formed`: The type formed at the end of the formation process, typically a `LinkedList<E>`.
 /// - `End`: A trait determining the behavior at the end of the formation process.
 ///
-
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct LinkedListDefinition<E, Context, Formed, End>
 where
   End: FormingEnd<LinkedListDefinitionTypes<E, Context, Formed>>,
@@ -106,8 +105,7 @@ where
 /// - `E`: The element type of the list.
 /// - `Context`: The context in which the list is formed.
 /// - `Formed`: The type produced as a result of the formation process.
-
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct LinkedListDefinitionTypes<E, Context = (), Formed = LinkedList<E>> {
   _phantom: core::marker::PhantomData<(E, Context, Formed)>,
 }
@@ -185,7 +183,7 @@ pub trait LinkedListExt<E>: sealed::Sealed {
 }
 
 impl<E> LinkedListExt<E> for LinkedList<E> {
-  #[allow(clippy::default_constructed_unit_structs)]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn former() -> LinkedListFormer<E, (), LinkedList<E>, ReturnStorage> {
     LinkedListFormer::<E, (), LinkedList<E>, ReturnStorage>::new(ReturnStorage::default())
   }

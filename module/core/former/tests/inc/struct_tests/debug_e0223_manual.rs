@@ -3,13 +3,13 @@
 
 use super::*;
 
-#[derive(Default, Debug, PartialEq)]
+#[ derive( Default, Debug, PartialEq ) ]
 pub struct MinimalStructManual {
   vec_1: Vec<String>,
 }
 
 // Manual implementation of what the Former macro should generate
-#[derive(Default)]
+#[ derive( Default ) ]
 pub struct MinimalStructManualFormerStorage {
   pub vec_1: Option<Vec<String>>,
 }
@@ -30,7 +30,7 @@ impl former::StoragePreform for MinimalStructManualFormerStorage {
   }
 }
 
-#[derive(Debug)]
+#[ derive( Debug ) ]
 pub struct MinimalStructManualFormerDefinitionTypes<__Context = (), __Formed = MinimalStructManual> {
   _phantom: core::marker::PhantomData<(*const __Context, *const __Formed)>,
 }
@@ -47,7 +47,7 @@ impl<__Context, __Formed> former::FormerDefinitionTypes for MinimalStructManualF
   type Context = __Context;
 }
 
-#[derive(Debug)]
+#[ derive( Debug ) ]
 pub struct MinimalStructManualFormerDefinition<
   __Context = (),
   __Formed = MinimalStructManual,
@@ -184,7 +184,7 @@ impl MinimalStructManual {
   }
 }
 
-#[test]
+#[ test ]
 fn manual_test() {
   let _instance = MinimalStructManual::former()
     .vec_1()

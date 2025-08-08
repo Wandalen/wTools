@@ -1,6 +1,6 @@
 use former::Former;
 
-struct HashMap< T >
+struct HashMap<  T  >
 {
   f1 : T,
 }
@@ -8,7 +8,7 @@ struct HashMap< T >
 #[ derive( Former ) ]
 pub struct Struct1
 {
-  f2 : HashMap< i32 >,
+  f2 : HashMap<  i32  >,
 }
 
 fn main()

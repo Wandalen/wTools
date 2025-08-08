@@ -17,7 +17,7 @@ mod private
   use error::untyped::bail;
   use crate::entity::optimization::Optimization;
   // Explicit import for Result and its variants for pattern matching
-  use std::result::Result::{Ok, Err};
+  use core::result::Result::{Ok, Err};
 
   #[ derive( Former, Debug ) ]
   #[ allow( clippy::struct_excessive_bools ) ]

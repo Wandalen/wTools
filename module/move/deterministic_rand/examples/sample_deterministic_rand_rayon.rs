@@ -39,8 +39,8 @@ fn main() {
       for _ in 0..10_000
       {
         // Sample two numbers from the range and calculate their positions.
-        let a = rng.sample( &range );
-        let b = rng.sample( &range );
+        let a = rng.sample( range );
+        let b = rng.sample( range );
 
         // If the point (a, b) lies within a unit circle, increment the count.
         if a * a + b * b <= 1.0
@@ -57,7 +57,7 @@ fn main() {
   .sum::< u64 >();
 
   // Calculate an approximation of Pi using the Monte Carlo method.
-  let got_pi = 4. * (got as f64) / ((10_000 * 1000) as f64);
+  let got_pi = 4. * (got as f64) / f64::from(10_000 * 1000);
 
   // If determinism is enabled, assert that the calculated value of Pi matches the expected result.
   #[cfg(feature = "determinism")]

@@ -42,7 +42,7 @@ fn main() -> Result< (), unilang::Error >
 {
   // Create a command registry
   let mut registry = CommandRegistry::new();
-  
+
   // Define a simple greeting command
   let greet_cmd = CommandDefinition
   {
@@ -75,7 +75,7 @@ fn main() -> Result< (), unilang::Error >
     version : "1.0.0".to_string(),
     ..Default::default()
   };
-  
+
   // Define the command's execution logic
   let greet_routine = Box::new( | cmd : VerifiedCommand, _ctx : ExecutionContext |
   {
@@ -84,27 +84,27 @@ fn main() -> Result< (), unilang::Error >
       Some( Value::String( s ) ) => s.clone(),
       _ => "World".to_string(),
     };
-    
+
     println!( "Hello, {}!", name );
-    
+
     Ok( OutputData
     {
       content : format!( "Hello, {}!", name ),
       format : "text".to_string(),
     })
   });
-  
+
   // Register the command
   registry.command_add_runtime( &greet_cmd, greet_routine )?;
-  
+
   // Use the Pipeline API to execute commands
   let pipeline = Pipeline::new( registry );
-  
+
   // Execute a command
   let result = pipeline.process_command_simple( ".greet name::Alice" );
   println!( "Success: {}", result.success );
   println!( "Output: {}", result.outputs[ 0 ].content );
-  
+
   Ok(())
 }
 ```
@@ -594,26 +594,26 @@ unilang provides comprehensive support for building interactive REPL application
 
 ### Basic REPL Implementation
 
-```rust
+```rust,ignore
 use unilang::{ registry::CommandRegistry, pipeline::Pipeline };
 use std::io::{ self, Write };
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut registry = CommandRegistry::new();
     // Register your commands...
-    
+
     let pipeline = Pipeline::new(registry);
-    
+
     loop {
         print!("repl> ");
         io::stdout().flush()?;
-        
+
         let mut input = String::new();
         io::stdin().read_line(&mut input)?;
         let input = input.trim();
-        
+
         if input == "quit" { break; }
-        
+
         let result = pipeline.process_command_simple(input);
         if result.success {
             println!("✅ Success: {:?}", result.outputs);
@@ -621,7 +621,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("❌ Error: {}", result.error.unwrap());
         }
     }
-    
+
     Ok(())
 }
 ```
@@ -630,20 +630,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 unilang supports interactive arguments for secure input like passwords:
 
-```rust
+```rust,ignore
 // In your command definition
+use unilang::{ ArgumentDefinition, Kind, ArgumentAttributes };
+
 ArgumentDefinition {
     name: "password".to_string(),
     kind: Kind::String,
-    attributes: ArgumentAttributes { 
+    attributes: ArgumentAttributes {
         interactive: true,
         sensitive: true,
-        ..Default::default() 
+        ..Default::default()
     },
     // ...
-}
+};
 
 // In your REPL loop
+use std::io::{self, Write};
+
 match result.error {
     Some(error) if error.contains("UNILANG_ARGUMENT_INTERACTIVE_REQUIRED") => {
         // Prompt for secure input
@@ -661,7 +665,9 @@ match result.error {
 For production REPL applications, consider these patterns:
 
 **Command History & Auto-completion:**
-```rust
+```rust,ignore
+use std::collections::HashMap;
+
 let mut command_history = Vec::new();
 let mut session_stats = HashMap::new();
 
@@ -676,11 +682,11 @@ command_history.push(input.to_string());
 ```
 
 **Error Recovery:**
-```rust
+```rust,ignore
 match result.error {
     Some(error) => {
         println!("❌ Error: {error}");
-        
+
         // Provide contextual help
         if error.contains("Command not found") {
             println!("💡 Available commands: {:?}", registry.command_names());
@@ -693,7 +699,7 @@ match result.error {
 ```
 
 **Session Management:**
-```rust
+```rust,ignore
 struct ReplSession {
     command_count: u32,
     successful_commands: u32,
@@ -702,6 +708,13 @@ struct ReplSession {
 }
 
 // Track session statistics for debugging and UX
+let mut session = ReplSession {
+    command_count: 0,
+    successful_commands: 0,
+    failed_commands: 0,
+    last_error: None,
+};
+
 session.command_count += 1;
 if result.success {
     session.successful_commands += 1;

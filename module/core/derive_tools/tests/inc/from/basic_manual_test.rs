@@ -10,7 +10,7 @@
 use super::*;
 use test_tools::a_id;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[ derive( Debug, Clone, Copy, PartialEq ) ]
 pub struct IsTransparentSimple(bool);
 
 impl From<bool> for IsTransparentSimple {
@@ -19,8 +19,8 @@ impl From<bool> for IsTransparentSimple {
   }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
-#[allow(dead_code)]
+#[ derive( Debug, Clone, Copy, PartialEq ) ]
+#[ allow( dead_code ) ]
 pub struct IsTransparentComplex<'a, 'b: 'a, T, U: ToString + ?Sized, const N: usize>(&'a T, core::marker::PhantomData<&'b U>)
 where
   'a: 'b,
@@ -37,7 +37,7 @@ where
 }
 
 /// Tests the `From` manual implementation for various struct types.
-#[test]
+#[ test ]
 fn from_test() {
   // Test for IsTransparentSimple
   let got = IsTransparentSimple::from(true);

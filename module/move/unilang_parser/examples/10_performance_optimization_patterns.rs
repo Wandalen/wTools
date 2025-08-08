@@ -9,7 +9,7 @@
 use unilang_parser::{ Parser, UnilangParserOptions };
 use std::time::Instant;
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Performance Optimization Patterns ===" );
 
@@ -50,12 +50,12 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 
         if successful_parses <= 3
         { // Only print first few for brevity
-          println!( "  ✓ {}: {} args", command_name, arg_count );
+          println!( "  ✓ {command_name}: {arg_count} args" );
         }
       },
       Err( e ) =>
       {
-        eprintln!( "  ✗ Parse error in '{}': {}", cmd_str, e );
+        eprintln!( "  ✗ Parse error in '{cmd_str}': {e}" );
       }
     }
   }
@@ -66,7 +66,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
     "  Processed {} commands in {:?} ({:.2} μs/command)",
     successful_parses,
     duration,
-    duration.as_micros() as f64 / successful_parses as f64
+    duration.as_micros() as f64 / f64::from(successful_parses)
   );
 
   // Pattern 2: Batch processing with pre-validation
@@ -108,21 +108,18 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
       let process_duration = process_start.elapsed();
       println!( "  Processed in {:?} (total: {:?})", process_duration, parse_duration + process_duration );
     }
-    Err( e ) => eprintln!( "  Batch parse error: {}", e ),
+    Err( e ) => eprintln!( "  Batch parse error: {e}" ),
   }
 
   // Pattern 3: Memory-efficient streaming for large inputs
   println!( "\n3. Memory-Efficient Processing:" );
 
   // Simulate processing large number of commands without storing all results
-  let large_command_set = vec!
-  [
-    "log.write level::info message::\"System started\"",
+  let large_command_set = ["log.write level::info message::\"System started\"",
     "metrics.record cpu::85.2 memory::67.8 disk::45.1",
     "alert.check threshold::95 service::database",
     "backup.verify checksum::abc123 size::1024MB",
-    "security.scan type::vulnerability target::web_app",
-  ];
+    "security.scan type::vulnerability target::web_app"];
 
   let streaming_start = Instant::now();
   let mut processed_count = 0;
@@ -155,12 +152,12 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
     "  Streamed {} commands in {:?} ({:.2} μs/command)",
     processed_count,
     streaming_duration,
-    streaming_duration.as_micros() as f64 / processed_count as f64
+    streaming_duration.as_micros() as f64 / f64::from(processed_count)
   );
   println!
   (
     "  Average arguments per command: {:.1}",
-    total_args as f64 / processed_count as f64
+    total_args as f64 / f64::from(processed_count)
   );
 
   // Pattern 4: Error handling optimization
@@ -199,8 +196,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   let error_duration = error_start.elapsed();
   println!
   (
-    "  Processed mixed input: {} success, {} errors in {:?}",
-    success_count, error_count, error_duration
+    "  Processed mixed input: {success_count} success, {error_count} errors in {error_duration:?}"
   );
 
   // Pattern 5: Configuration optimization
@@ -238,8 +234,8 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   }
   let strict_duration = strict_start.elapsed();
 
-  println!( "  Default config: {:?} for 1000 parses", fast_duration );
-  println!( "  Strict config:  {:?} for 1000 parses", strict_duration );
+  println!( "  Default config: {fast_duration:?} for 1000 parses" );
+  println!( "  Strict config:  {strict_duration:?} for 1000 parses" );
   println!
   (
     "  Performance ratio: {:.2}x",

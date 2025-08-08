@@ -11,11 +11,11 @@ pub mod private
 
   // qqq : xxx : implement for Vec
   // aaa : added implementation of Instance trait for Vec
-  impl< T > Instance for Vec< T >
+  impl< T > Instance for Vec<  T  >
   where
-    CollectionDescriptor< Vec< T > > : Entity,
+    CollectionDescriptor< Vec<  T  > > : Entity,
   {
-    type Entity = CollectionDescriptor::< Vec< T > >;
+    type Entity = CollectionDescriptor::< Vec<  T  > >;
     fn _reflect( &self ) -> Self::Entity
     {
       CollectionDescriptor::< Self >::new( self.len() )
@@ -27,7 +27,7 @@ pub mod private
     }
   }
 
-  impl< T > Entity for CollectionDescriptor< Vec< T > >
+  impl< T > Entity for CollectionDescriptor< Vec<  T  > >
   where
     T : 'static + Instance,
   {
@@ -47,19 +47,19 @@ pub mod private
     #[ inline( always ) ]
     fn type_name( &self ) -> &'static str
     {
-      core::any::type_name::< Vec< T > >()
+      core::any::type_name::< Vec<  T  > >()
     }
 
     #[ inline( always ) ]
     fn type_id( &self ) -> core::any::TypeId
     {
-      core::any::TypeId::of::< Vec< T > >()
+      core::any::TypeId::of::< Vec<  T  > >()
     }
 
     #[ inline( always ) ]
     fn elements( &self ) -> Box< dyn Iterator< Item = KeyVal > >
     {
-      let result : Vec< KeyVal > = ( 0 .. self.len() )
+      let result : Vec<  KeyVal  > = ( 0 .. self.len() )
       .map( | k | KeyVal { key : Primitive::usize( k ), val : Box::new( < T as Instance >::Reflect() ) } )
       .collect();
 

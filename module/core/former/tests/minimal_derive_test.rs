@@ -1,13 +1,17 @@
 //! Test if derive macros work with lifetime-only structs
 
+#![allow(unused_imports)]
+
+use former as the_module;
+
 /// Test struct for minimal derive functionality.
-#[derive(Debug, PartialEq, Clone)]
+#[ derive( Debug, PartialEq, Clone ) ]
 pub struct MinimalTest<'a> {
     /// Test data field.
     data: &'a str,
 }
 
-#[test]
+#[ test ]
 fn minimal_test() {
     let input = "test";
     let instance = MinimalTest { data: input };

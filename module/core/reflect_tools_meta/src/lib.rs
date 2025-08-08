@@ -5,14 +5,15 @@
 #![doc(html_root_url = "https://docs.rs/clone_dyn_meta/latest/clone_dyn_meta/")]
 // #![ allow( non_snake_case ) ]
 // #![ allow( non_upper_case_globals ) ]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Reflection tools macro support" ) ]
 
 // #[ cfg( feature = "enabled" ) ]
 // use macro_tools::prelude::*;
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 mod implementation {
-  #[cfg(feature = "reflect_derive")]
+  #[ cfg( feature = "reflect_derive" ) ]
   pub mod reflect;
 }
 
@@ -24,9 +25,8 @@ mod implementation {
 ///
 /// qqq : write, please
 ///
-
-#[cfg(feature = "enabled")]
-#[cfg(feature = "reflect_derive")]
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "reflect_derive" ) ]
 #[proc_macro_derive(Reflect, attributes(debug))]
 pub fn derive_reflect(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
   let result = implementation::reflect::reflect(input);

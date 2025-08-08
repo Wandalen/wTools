@@ -1,18 +1,18 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
-#[derive(Default, Debug, PartialEq)]
+#[ derive( Default, Debug, PartialEq ) ]
 pub struct Struct1 {
   vec_1: Vec<String>,
-  hashmap_1: collection_tools::HashMap<String, String>,
-  hashset_1: collection_tools::HashSet<String>,
+  hashmap_1: collection_tools::HashMap< String, String >,
+  hashset_1: collection_tools::HashSet< String >,
 }
 
 // == begin of generated
 
-#[automatically_derived]
+#[ automatically_derived ]
 impl Struct1 {
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn former() -> Struct1Former<Struct1FormerDefinition<(), Struct1, former::ReturnPreformed>> {
     Struct1Former::<Struct1FormerDefinition<(), Struct1, former::ReturnPreformed>>::new_coercing(former::ReturnPreformed)
   }
@@ -29,7 +29,7 @@ impl former::EntityToStorage for Struct1 {
   type Storage = Struct1FormerStorage;
 }
 
-#[derive(Debug)]
+#[ derive( Debug ) ]
 pub struct Struct1FormerDefinitionTypes<Context = (), Formed = Struct1> {
   _phantom: core::marker::PhantomData<(Context, Formed)>,
 }
@@ -50,7 +50,7 @@ impl<Context, Formed> former::FormerDefinitionTypes for Struct1FormerDefinitionT
 
 impl<Context, Formed> former::FormerMutator for Struct1FormerDefinitionTypes<Context, Formed> {}
 
-#[derive(Debug)]
+#[ derive( Debug ) ]
 pub struct Struct1FormerDefinition<Context = (), Formed = Struct1, End = former::ReturnPreformed> {
   _phantom: core::marker::PhantomData<(Context, Formed, End)>,
 }
@@ -77,13 +77,13 @@ where
 pub struct Struct1FormerStorage {
   pub vec_1: core::option::Option<Vec<String>>,
 
-  pub hashmap_1: core::option::Option<collection_tools::HashMap<String, String>>,
+  pub hashmap_1: core::option::Option<collection_tools::HashMap< String, String >>,
 
-  pub hashset_1: core::option::Option<collection_tools::HashSet<String>>,
+  pub hashset_1: core::option::Option<collection_tools::HashSet< String >>,
 }
 
 impl core::default::Default for Struct1FormerStorage {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn default() -> Self {
     Self {
       vec_1: core::option::Option::None,
@@ -147,7 +147,7 @@ impl former::StoragePreform for Struct1FormerStorage {
           }
         }
 
-        core::marker::PhantomData::<collection_tools::HashMap<String, String>>.maybe_default()
+        core::marker::PhantomData::<collection_tools::HashMap< String, String >>.maybe_default()
       }
     };
 
@@ -172,17 +172,17 @@ impl former::StoragePreform for Struct1FormerStorage {
           }
         }
 
-        core::marker::PhantomData::<collection_tools::HashSet<String>>.maybe_default()
+        core::marker::PhantomData::<collection_tools::HashSet< String >>.maybe_default()
       }
     };
 
-    let result = Struct1 {
+    
+
+    Struct1 {
       vec_1,
       hashmap_1,
       hashset_1,
-    };
-
-    result
+    }
   }
 }
 
@@ -196,18 +196,18 @@ where
   on_end: core::option::Option<Definition::End>,
 }
 
-#[automatically_derived]
+#[ automatically_derived ]
 impl<Definition> Struct1Former<Definition>
 where
   Definition: former::FormerDefinition,
   Definition::Types: former::FormerDefinitionTypes<Storage = Struct1FormerStorage>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn new(on_end: Definition::End) -> Self {
     Self::begin_coercing(None, None, on_end)
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn new_coercing<IntoEnd>(end: IntoEnd) -> Self
   where
     IntoEnd: Into<Definition::End>,
@@ -215,7 +215,7 @@ where
     Self::begin_coercing(None, None, end)
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn begin(
     mut storage: core::option::Option<<Definition::Types as former::FormerDefinitionTypes>::Storage>,
     context: core::option::Option<<Definition::Types as former::FormerDefinitionTypes>::Context>,
@@ -231,7 +231,7 @@ where
     }
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn begin_coercing<IntoEnd>(
     mut storage: core::option::Option<<Definition::Types as former::FormerDefinitionTypes>::Storage>,
     context: core::option::Option<<Definition::Types as former::FormerDefinitionTypes>::Context>,
@@ -250,19 +250,19 @@ where
     }
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn form(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
     self.end()
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn end(mut self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
     former::FormingEnd::<Definition::Types>::call(&on_end, self.storage, context)
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn _vec_1_assign<'a, Former2>(self) -> Former2
   where
     Former2: former::FormerBegin<'a, former::VectorDefinition<String, Self, Self, Struct1SubformCollectionVec1End<Definition>>>,
@@ -279,7 +279,7 @@ where
     Former2::former_begin(None, Some(self), Struct1SubformCollectionVec1End::<Definition>::default())
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn vec_1<'a>(
     self,
   ) -> former::CollectionFormer<String, former::VectorDefinition<String, Self, Self, Struct1SubformCollectionVec1End<Definition>>>
@@ -301,26 +301,26 @@ where
     > > ()
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn _hashmap_1_assign<'a, Former2>(self) -> Former2
   where
     Former2:
       former::FormerBegin<'a, former::HashMapDefinition<String, String, Self, Self, Struct1SubformCollectionHashmap1End<Definition>>>,
     former::HashMapDefinition<String, String, Self, Self, Struct1SubformCollectionHashmap1End<Definition>>:
       former::FormerDefinition<
-        // Storage : former::CollectionAdd< Entry = < collection_tools::HashMap< String, String > as former::Collection >::Entry >,
-        Storage = collection_tools::HashMap<String, String>,
+        // Storage : former::CollectionAdd< Entry = < collection_tools::HashMap<  String, String  > as former::Collection >::Entry >,
+        Storage = collection_tools::HashMap< String, String >,
         Context = Struct1Former<Definition>,
         End = Struct1SubformCollectionHashmap1End<Definition>,
       >,
     Struct1SubformCollectionHashmap1End<Definition>:
-      former::FormingEnd<<collection_tools::HashMap<String, String> as former::EntityToDefinitionTypes<Self, Self>>::Types>,
+      former::FormingEnd<<collection_tools::HashMap< String, String > as former::EntityToDefinitionTypes<Self, Self>>::Types>,
     Definition: 'a,
   {
     Former2::former_begin(None, Some(self), Struct1SubformCollectionHashmap1End::<Definition>::default())
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn hashmap_1<'a>(
     self,
   ) -> former::CollectionFormer<
@@ -330,13 +330,13 @@ where
   where
     former::HashMapDefinition<String, String, Self, Self, Struct1SubformCollectionHashmap1End<Definition>>:
       former::FormerDefinition<
-        // Storage : former::CollectionAdd< Entry = < collection_tools::HashMap< String, String > as former::Collection >::Entry >,
-        Storage = collection_tools::HashMap<String, String>,
+        // Storage : former::CollectionAdd< Entry = < collection_tools::HashMap<  String, String  > as former::Collection >::Entry >,
+        Storage = collection_tools::HashMap< String, String >,
         Context = Struct1Former<Definition>,
         End = Struct1SubformCollectionHashmap1End<Definition>,
       >,
     Struct1SubformCollectionHashmap1End<Definition>:
-      former::FormingEnd<<collection_tools::HashMap<String, String> as former::EntityToDefinitionTypes<Self, Self>>::Types>,
+      former::FormingEnd<<collection_tools::HashMap< String, String > as former::EntityToDefinitionTypes<Self, Self>>::Types>,
     Definition: 'a,
   {
     self._hashmap_1_assign::<'a, former::CollectionFormer<
@@ -345,24 +345,24 @@ where
     >>()
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn _hashset_1_assign<'a, Former2>(self) -> Former2
   where
     Former2: former::FormerBegin<'a, former::HashSetDefinition<String, Self, Self, Struct1SubformCollectionHashset1End<Definition>>>,
     former::HashSetDefinition<String, Self, Self, Struct1SubformCollectionHashset1End<Definition>>: former::FormerDefinition<
-      // Storage : former::CollectionAdd< Entry = < collection_tools::HashSet< String > as former::Collection >::Entry >,
-      Storage = collection_tools::HashSet<String>,
+      // Storage : former::CollectionAdd< Entry = < collection_tools::HashSet<  String  > as former::Collection >::Entry >,
+      Storage = collection_tools::HashSet< String >,
       Context = Struct1Former<Definition>,
       End = Struct1SubformCollectionHashset1End<Definition>,
     >,
     Struct1SubformCollectionHashset1End<Definition>:
-      former::FormingEnd<<collection_tools::HashSet<String> as former::EntityToDefinitionTypes<Self, Self>>::Types>,
+      former::FormingEnd<<collection_tools::HashSet< String > as former::EntityToDefinitionTypes<Self, Self>>::Types>,
     Definition: 'a,
   {
     Former2::former_begin(None, Some(self), Struct1SubformCollectionHashset1End::<Definition>::default())
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn hashset_1<'a>(
     self,
   ) -> former::CollectionFormer<
@@ -371,13 +371,13 @@ where
   >
   where
     former::HashSetDefinition<String, Self, Self, Struct1SubformCollectionHashset1End<Definition>>: former::FormerDefinition<
-      // Storage : former::CollectionAdd< Entry = < collection_tools::HashSet< String > as former::Collection >::Entry >,
-      Storage = collection_tools::HashSet<String>,
+      // Storage : former::CollectionAdd< Entry = < collection_tools::HashSet<  String  > as former::Collection >::Entry >,
+      Storage = collection_tools::HashSet< String >,
       Context = Struct1Former<Definition>,
       End = Struct1SubformCollectionHashset1End<Definition>,
     >,
     Struct1SubformCollectionHashset1End<Definition>:
-      former::FormingEnd<<collection_tools::HashSet<String> as former::EntityToDefinitionTypes<Self, Self>>::Types>,
+      former::FormingEnd<<collection_tools::HashSet< String > as former::EntityToDefinitionTypes<Self, Self>>::Types>,
     Definition: 'a,
   {
     self._hashset_1_assign::<'a, former::CollectionFormer<
@@ -403,10 +403,10 @@ where
   Definition: former::FormerDefinition,
   Definition::Types: former::FormerDefinitionTypes<Storage = Struct1FormerStorage, Formed = Struct1>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn perform(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
-    let result = self.form();
-    result
+    
+    self.form()
   }
 }
 
@@ -416,7 +416,7 @@ where
   Definition::Context: 'a,
   Definition::End: 'a,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn former_begin(
     storage: core::option::Option<Definition::Storage>,
     context: core::option::Option<Definition::Context>,
@@ -427,10 +427,10 @@ where
   }
 }
 
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 pub type Struct1AsSubformer<Superformer, End> = Struct1Former<Struct1FormerDefinition<Superformer, Superformer, End>>;
 
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 pub trait Struct1AsSubformerEnd<SuperFormer>
 where
   Self: former::FormingEnd<Struct1FormerDefinitionTypes<SuperFormer, SuperFormer>>,
@@ -449,7 +449,7 @@ pub struct Struct1SubformCollectionVec1End<Definition> {
 }
 
 impl<Definition> Default for Struct1SubformCollectionVec1End<Definition> {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn default() -> Self {
     Self {
       _phantom: core::marker::PhantomData,
@@ -465,7 +465,7 @@ where
   Definition: former::FormerDefinition<Storage = Struct1FormerStorage>,
   Definition::Types: former::FormerDefinitionTypes<Storage = Struct1FormerStorage>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn call(
     &self,
     storage: collection_tools::Vec<String>,
@@ -486,7 +486,7 @@ pub struct Struct1SubformCollectionHashmap1End<Definition> {
 }
 
 impl<Definition> Default for Struct1SubformCollectionHashmap1End<Definition> {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn default() -> Self {
     Self {
       _phantom: core::marker::PhantomData,
@@ -501,10 +501,10 @@ where
   Definition: former::FormerDefinition<Storage = Struct1FormerStorage>,
   Definition::Types: former::FormerDefinitionTypes<Storage = Struct1FormerStorage>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn call(
     &self,
-    storage: collection_tools::HashMap<String, String>,
+    storage: collection_tools::HashMap< String, String >,
     super_former: Option<Struct1Former<Definition>>,
   ) -> Struct1Former<Definition> {
     let mut super_former = super_former.unwrap();
@@ -522,7 +522,7 @@ pub struct Struct1SubformCollectionHashset1End<Definition> {
 }
 
 impl<Definition> Default for Struct1SubformCollectionHashset1End<Definition> {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn default() -> Self {
     Self {
       _phantom: core::marker::PhantomData,
@@ -536,10 +536,10 @@ where
   Definition: former::FormerDefinition<Storage = Struct1FormerStorage>,
   Definition::Types: former::FormerDefinitionTypes<Storage = Struct1FormerStorage>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn call(
     &self,
-    storage: collection_tools::HashSet<String>,
+    storage: collection_tools::HashSet< String >,
     super_former: Option<Struct1Former<Definition>>,
   ) -> Struct1Former<Definition> {
     let mut super_former = super_former.unwrap();

@@ -7,7 +7,7 @@
 
 use unilang_parser::{ Parser, UnilangParserOptions };
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   let parser = Parser::new( UnilangParserOptions::default() );
 
@@ -22,14 +22,14 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   // The parser handles escape sequences
   if let Some( text ) = cmd.named_arguments.get( "text" )
   {
-    println!( "Text with escapes: {:?}", text );
-    println!( "Text displayed: {:?}", text );
+    println!( "Text with escapes: {text:?}" );
+    println!( "Text displayed: {text:?}" );
   }
 
   if let Some( pattern ) = cmd.named_arguments.get( "pattern" )
   {
-    println!( "Regex pattern: {:?}", pattern );
-    println!( "Pattern displayed: {:?}", pattern );
+    println!( "Regex pattern: {pattern:?}" );
+    println!( "Pattern displayed: {pattern:?}" );
   }
 
   // JSON-like content with escaping
@@ -41,7 +41,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 
   if let Some( payload ) = cmd2.named_arguments.get( "payload" )
   {
-    println!( "JSON payload: {:?}", payload );
+    println!( "JSON payload: {payload:?}" );
   }
 
   // File paths with spaces and special characters
@@ -72,7 +72,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 
   if let Some( sql ) = cmd5.named_arguments.get( "sql" )
   {
-    println!( "SQL query: {:?}", sql );
+    println!( "SQL query: {sql:?}" );
   }
 
   println!( "\n✓ Advanced escaping and quoting parsing successful!" );

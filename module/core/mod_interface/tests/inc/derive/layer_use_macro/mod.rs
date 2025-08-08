@@ -1,6 +1,6 @@
 use super::*;
 mod tools {
-  #[allow(unused_imports)]
+  #[ allow( unused_imports ) ]
   pub use super::super::*;
 }
 
@@ -15,6 +15,6 @@ the_module::mod_interface! {
 }
 
 // use macro1 as macro1b;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use macro2 as macro2b;
 // use macro3 as macro3b;

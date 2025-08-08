@@ -1,7 +1,7 @@
 // #![ allow( dead_code ) ]
 
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use collection_tools::Vec;
 
 fn context_plus_13(_storage: Vec<String>, context: Option<f32>) -> f32 {
@@ -80,7 +80,7 @@ impl<E> the_module::FormingEnd<Return13Generic<E>> for Return13Generic<E> {
   }
 }
 
-#[test]
+#[ test ]
 fn definitions() {
   pub fn f1<Definition>(_x: Definition)
   where
@@ -112,7 +112,7 @@ fn definitions() {
 
 //
 
-#[test]
+#[ test ]
 fn begin_and_custom_end() {
   // basic case
 
@@ -144,7 +144,7 @@ fn begin_and_custom_end() {
 
 //
 
-#[test]
+#[ test ]
 fn custom_definition() {
   //
 
@@ -167,7 +167,7 @@ fn custom_definition() {
 
 //
 
-#[test]
+#[ test ]
 fn custom_definition_parametrized() {
   //
 
@@ -206,7 +206,7 @@ fn custom_definition_parametrized() {
 
 //
 
-#[test]
+#[ test ]
 fn custom_definition_custom_end() {
   struct Return13;
   impl former::FormerDefinitionTypes for Return13 {

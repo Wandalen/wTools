@@ -84,13 +84,13 @@ fn benchmark_initialize_thousand_commands(c: &mut Criterion) {
   const COUNT: usize = 1_000;
 
   c.bench_function("initialize_thousand_commands_without_args", |b| {
-    b.iter(|| initialize_commands_without_args(COUNT))
+    b.iter(|| initialize_commands_without_args(COUNT));
   });
   c.bench_function("initialize_thousand_commands_with_subjects", |b| {
-    b.iter(|| initialize_commands_with_subjects(COUNT))
+    b.iter(|| initialize_commands_with_subjects(COUNT));
   });
   c.bench_function("initialize_thousand_commands_with_properties", |b| {
-    b.iter(|| initialize_commands_with_properties(COUNT))
+    b.iter(|| initialize_commands_with_properties(COUNT));
   });
 }
 
@@ -101,19 +101,19 @@ fn benchmark_initialize_and_run_thousand_commands(c: &mut Criterion) {
     b.iter(|| {
       let ca = initialize_commands_without_args(COUNT);
       run_commands(ca, ".command_999");
-    })
+    });
   });
   c.bench_function("initialize_and_run_thousand_commands_with_subjects", |b| {
     b.iter(|| {
       let ca = initialize_commands_with_subjects(COUNT);
       run_commands(ca, ".command_999");
-    })
+    });
   });
   c.bench_function("initialize_and_run_thousand_commands_with_properties", |b| {
     b.iter(|| {
       let ca = initialize_commands_with_properties(COUNT);
       run_commands(ca, ".command_999");
-    })
+    });
   });
 }
 

@@ -2,39 +2,40 @@
 // This works around architectural limitations by creating comprehensive mixed enum coverage
 // that combines unit, tuple, and struct variants in one working non-generic test
 
+
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
 // Inner types for testing complex subform scenarios
-#[derive(Debug, PartialEq, Default, Clone, Former)]
+#[ derive( Debug, PartialEq, Default, Clone, Former ) ]
 pub struct ComplexInner {
   pub title: String,
   pub count: i32,
   pub active: bool,
 }
 
-#[derive(Debug, PartialEq, Default, Clone, Former)]
+#[ derive( Debug, PartialEq, Default, Clone, Former ) ]
 pub struct SecondaryInner {
   pub value: f64,
   pub name: String,
 }
 
 // ULTIMATE MIXED ENUM - combines all variant types in comprehensive coverage
-#[derive(Debug, PartialEq, Former)]
-#[allow(non_camel_case_types)] // Allow for generated Former type names  
-#[former(standalone_constructors)]
+#[ derive( Debug, PartialEq, Former ) ]
+#[ allow( non_camel_case_types ) ] // Allow for generated Former type names  
+#[ former( standalone_constructors ) ]
 pub enum UltimateMixedEnum {
   // UNIT VARIANTS (replaces unit variant functionality)
   SimpleUnit,
   AnotherUnit, 
   
   // TUPLE VARIANTS (replaces tuple variant functionality)
-  #[scalar]
+  #[ scalar ]
   ZeroTuple(),
   
-  #[scalar]
+  #[ scalar ]
   ScalarTuple(i32, String),
   
   SubformTuple(ComplexInner),
@@ -42,10 +43,10 @@ pub enum UltimateMixedEnum {
   MultiTuple(String, ComplexInner, bool),
   
   // STRUCT VARIANTS (replaces struct variant functionality)  
-  #[scalar]
+  #[ scalar ]
   ZeroStruct {},
   
-  #[scalar] 
+  #[ scalar ] 
   ScalarStruct { id: i32, name: String },
   
   SubformStruct { inner: ComplexInner },
@@ -57,7 +58,7 @@ pub enum UltimateMixedEnum {
   },
   
   // COMPLEX MIXED SCENARIOS (replaces complex mixed functionality)
-  #[scalar]
+  #[ scalar ]
   ComplexScalar { 
     id: u64, 
     title: String, 
@@ -71,14 +72,16 @@ pub enum UltimateMixedEnum {
 // COMPREHENSIVE MIXED ENUM TESTS - covering ALL variant type scenarios
 
 // Unit variant tests
-#[test]
+/// Tests unit variant construction with simple_unit.
+#[ test ]
 fn simple_unit_test() {
   let got = UltimateMixedEnum::simple_unit();
   let expected = UltimateMixedEnum::SimpleUnit;
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests unit variant construction with another_unit.
+#[ test ]
 fn another_unit_test() {
   let got = UltimateMixedEnum::another_unit();
   let expected = UltimateMixedEnum::AnotherUnit;
@@ -86,21 +89,24 @@ fn another_unit_test() {
 }
 
 // Tuple variant tests
-#[test]
+/// Tests empty tuple variant construction.
+#[ test ]
 fn zero_tuple_test() {
   let got = UltimateMixedEnum::zero_tuple();
   let expected = UltimateMixedEnum::ZeroTuple();
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests scalar tuple variant with explicit parameters.
+#[ test ]
 fn scalar_tuple_test() {
   let got = UltimateMixedEnum::scalar_tuple(42, "scalar".to_string());
   let expected = UltimateMixedEnum::ScalarTuple(42, "scalar".to_string());
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests subform tuple variant with complex inner type.
+#[ test ]
 fn subform_tuple_test() {
   let inner = ComplexInner { 
     title: "tuple_subform".to_string(), 
@@ -114,7 +120,8 @@ fn subform_tuple_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests multi-element tuple variant with mixed types.
+#[ test ]
 fn multi_tuple_test() {
   let inner = ComplexInner { 
     title: "multi_tuple".to_string(), 
@@ -131,14 +138,16 @@ fn multi_tuple_test() {
 }
 
 // Struct variant tests
-#[test]
+/// Tests empty struct variant construction.
+#[ test ]
 fn zero_struct_test() {
   let got = UltimateMixedEnum::zero_struct();
   let expected = UltimateMixedEnum::ZeroStruct {};
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests scalar struct variant with explicit parameters.
+#[ test ]
 fn scalar_struct_test() {
   let got = UltimateMixedEnum::scalar_struct(777, "struct_scalar".to_string());
   let expected = UltimateMixedEnum::ScalarStruct { 
@@ -148,7 +157,8 @@ fn scalar_struct_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests subform struct variant with complex inner type.
+#[ test ]
 fn subform_struct_test() {
   let inner = ComplexInner { 
     title: "struct_subform".to_string(), 
@@ -162,7 +172,8 @@ fn subform_struct_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests multi-field struct variant with multiple subforms.
+#[ test ]
 fn multi_struct_test() {
   let primary = ComplexInner { 
     title: "primary".to_string(), 
@@ -187,7 +198,8 @@ fn multi_struct_test() {
 }
 
 // Complex scenario tests
-#[test]
+/// Tests complex scalar struct with multiple field types.
+#[ test ]
 fn complex_scalar_test() {
   let got = UltimateMixedEnum::complex_scalar(
     9999_u64, 
@@ -204,7 +216,8 @@ fn complex_scalar_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests advanced mixed tuple with subform and scalar.
+#[ test ]
 fn advanced_mixed_test() {
   let secondary = SecondaryInner { 
     value: 1.618, 
@@ -219,7 +232,8 @@ fn advanced_mixed_test() {
 }
 
 // ULTIMATE COMPREHENSIVE STRESS TEST
-#[test]
+/// Tests comprehensive stress test with multiple variant types.
+#[ test ]
 fn ultimate_mixed_stress_test() {
   // Test that all variant types can coexist and work correctly
   let variants = vec![
@@ -246,7 +260,8 @@ fn ultimate_mixed_stress_test() {
 }
 
 // ARCHITECTURAL VALIDATION TEST
-#[test]
+/// Tests architectural validation for mixed enum patterns.
+#[ test ]
 fn architectural_validation_test() {
   // This test validates that our comprehensive replacement strategy
   // successfully works around all the major architectural limitations:

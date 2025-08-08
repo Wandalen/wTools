@@ -12,10 +12,10 @@ pub mod FromString {}
 pub mod FromPair {}
 pub mod FromBin {}
 
-#[allow(dead_code)]
-#[derive(Deref)]
+#[ allow( dead_code ) ]
+#[ derive( Deref ) ]
 struct NameCollisions {
-  #[deref]
+  #[ deref ]
   a: i32,
   b: String,
 }

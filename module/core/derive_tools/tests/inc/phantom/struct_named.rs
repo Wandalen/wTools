@@ -11,7 +11,7 @@
 #![allow(dead_code)]
 
 use test_tools::prelude::*;
-use std::marker::PhantomData;
+use core::marker::PhantomData;
 
 // P1.1: Named struct with one field
 

@@ -3,7 +3,7 @@ use strs_tools::string::split::*;
 
 // Test Matrix ID: T3.9
 // Description: src="abc", del="b", PE=T, PD=T, S=F, Q=F, Idx=0 (first)
-#[test]
+#[ test ]
 fn test_m_t3_9_mod_index_first() {
   let src = "abc";
   let mut iter = split()
@@ -15,7 +15,7 @@ fn test_m_t3_9_mod_index_first() {
     .quoting(false)
     .perform();
 
-  let result = iter.next(); // Call next() on the iterator
+  let result = iter.next(); // Get first token to verify expected index values
 
   let expected_split = ("a", SplitType::Delimeted, 0, 1);
   assert!(result.is_some());
@@ -28,7 +28,7 @@ fn test_m_t3_9_mod_index_first() {
 
 // Test Matrix ID: T3.10
 // Description: src="abc", del="b", PE=F, PD=F, S=F, Q=F, Idx=-1 (last)
-#[test]
+#[ test ]
 fn test_m_t3_10_mod_index_last() {
   let src = "abc";
   let iter = split() // Changed from `let mut iter`
@@ -53,7 +53,7 @@ fn test_m_t3_10_mod_index_last() {
 
 // Test Matrix ID: Index_Nth_Positive_Valid
 // Description: src="a,b,c,d", del=",", Idx=1 (second element)
-#[test]
+#[ test ]
 fn test_scenario_index_positive_1() {
   let src = "a,b,c,d";
   let mut iter = split()
@@ -79,7 +79,7 @@ fn test_scenario_index_positive_1() {
 // Note: Standard iterators' nth() does not support negative indexing.
 // This test will need to collect and then index from the end, or use `iter.rev().nth(1)` for second to last.
 // For simplicity and directness, collecting and indexing is clearer if `perform_tuple` is not used.
-#[test]
+#[ test ]
 fn test_scenario_index_negative_2() {
   let src = "a,b,c,d";
   let splits: Vec<_> = split()
@@ -104,7 +104,7 @@ fn test_scenario_index_negative_2() {
 
 // Test Matrix ID: Index_Nth_Positive_OutOfBounds
 // Description: src="a,b", del=",", Idx=5
-#[test]
+#[ test ]
 fn test_scenario_index_out_of_bounds_positive() {
   let src = "a,b";
   let mut iter = split()
@@ -118,7 +118,7 @@ fn test_scenario_index_out_of_bounds_positive() {
 
 // Test Matrix ID: Index_Nth_Negative_OutOfBounds
 // Description: src="a,b", del=",", Idx=-5
-#[test]
+#[ test ]
 fn test_scenario_index_out_of_bounds_negative() {
   let src = "a,b";
   let splits: Vec<_> = split()
@@ -137,7 +137,7 @@ fn test_scenario_index_out_of_bounds_negative() {
 
 // Test Matrix ID: Index_Nth_WithPreserving
 // Description: src="a,,b", del=",", PE=T, PD=T, Idx=1 (second element, which is a delimiter)
-#[test]
+#[ test ]
 fn test_scenario_index_preserving_delimiters_and_empty() {
   let src = "a,,b";
   let mut iter = split()

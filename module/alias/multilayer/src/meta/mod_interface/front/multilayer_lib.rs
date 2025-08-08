@@ -13,7 +13,7 @@
 //! Protocol of modularity unifying interface of a module and introducing layers.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]

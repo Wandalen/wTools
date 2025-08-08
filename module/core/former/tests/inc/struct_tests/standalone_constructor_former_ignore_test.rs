@@ -1,15 +1,15 @@
 //! Test specifically for #[`former_ignore`] behavior in standalone constructors
 
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
-#[test]
+#[ test ]
 fn standalone_constructor_no_ignore_returns_self()
 {
   /// Test struct with NO ignored fields - constructor should return Self directly
-  #[derive(Debug, PartialEq, Former)]
-  #[standalone_constructors]
+  #[ derive( Debug, PartialEq, Former ) ]
+  #[ standalone_constructors ]
   pub struct DirectStruct
   {
     name: String,  // Constructor arg (not ignored)
@@ -24,20 +24,20 @@ fn standalone_constructor_no_ignore_returns_self()
   assert_eq!(instance.value, 42);
 }
 
-#[test]
+#[ test ]
 fn standalone_constructor_with_ignore_returns_former()
 {
   /// Test struct with some ignored fields - constructor should return Former
-  #[derive(Debug, PartialEq, Former)]
-  #[standalone_constructors]
+  #[ derive( Debug, PartialEq, Former ) ]
+  #[ standalone_constructors ]
   pub struct PartialStruct
   {
     name: String,             // Constructor arg (not ignored)
-    #[former_ignore]          // This field is NOT a constructor arg
+    #[ former_ignore ]          // This field is NOT a constructor arg
     value: Option<i32>,
   }
 
-  // Since value is marked with #[former_ignore], the standalone constructor
+  // Since value is marked with #[ former_ignore ], the standalone constructor
   // should take only name as argument and return a Former
   let config_former = partial_struct("test".to_string());
   

@@ -19,7 +19,7 @@
 //! - Provides indexed setter (._0) for tuple field access
 //!
 //! ## Generated Infrastructure:
-//! - `{Enum}{Variant}FormerStorage`: Storage with `field0: Option<T>`
+//! - `{Enum}{Variant}FormerStorage`: Storage with `field0: Option< T >`
 //! - `{Enum}{Variant}FormerDefinitionTypes`: Type system integration
 //! - `{Enum}{Variant}FormerDefinition`: Definition linking all components
 //! - `{Enum}{Variant}Former`: Builder with `._0(value)` setter
@@ -55,7 +55,7 @@ use convert_case::Case;
 /// ## Returns
 /// - `Ok(TokenStream)`: Generated enum method that returns the tuple variant former
 /// - `Err(syn::Error)`: If variant processing fails due to invalid configuration
-pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
+pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result<  proc_macro2::TokenStream  >
 {
   let variant_name = &ctx.variant.ident;
   let method_name = cased_ident_from_ident(variant_name, Case::Snake);
@@ -86,7 +86,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
     pub struct #storage_name #impl_generics
     #where_clause
     {
-      field0 : Option< #field_type >,
+      field0 : Option<  #field_type  >,
     }
 
     impl #impl_generics Default for #storage_name #ty_generics
@@ -184,8 +184,8 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
     #where_clause
     {
       storage : #storage_name #ty_generics,
-      context : Option< () >,
-      on_end : Option< #end_name #ty_generics >,
+      context : Option<  ()  >,
+      on_end : Option<  #end_name #ty_generics  >,
     }
 
     impl #impl_generics #former_name #ty_generics
@@ -207,7 +207,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
       }
 
       #[ inline( always ) ]
-      pub fn begin( storage : Option< #storage_name #ty_generics >, context : Option< () >, on_end : #end_name #ty_generics ) -> Self
+      pub fn begin( storage : Option<  #storage_name #ty_generics  >, context : Option<  ()  >, on_end : #end_name #ty_generics ) -> Self
       {
         Self { storage : storage.unwrap_or_default(), context, on_end : Some( on_end ) }
       }
@@ -253,7 +253,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
       fn call(
         &self,
         sub_storage : #storage_name #ty_generics,
-        _context : Option< () >,
+        _context : Option<  ()  >,
       ) -> #enum_name #ty_generics
       {
         let field0 = former::StoragePreform::preform( sub_storage );

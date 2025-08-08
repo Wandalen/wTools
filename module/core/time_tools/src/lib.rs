@@ -12,58 +12,58 @@
 //! Collection of time tools.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Time utilities" ) ]
 
 /// Operates over current time.
-#[cfg(feature = "time_now")]
+#[ cfg( feature = "time_now" ) ]
 #[path = "./now.rs"]
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod now;
 
 /// Namespace with dependencies.
-
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency {}
 
 /// Own namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod own {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
-#[cfg(feature = "enabled")]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
 pub use own::*;
 
 /// Shared with parent namespace of the module
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed {
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
-  #[cfg(feature = "time_now")]
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ cfg( feature = "time_now" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::now::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[cfg(feature = "enabled")]
-#[allow(unused_imports)]
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 }

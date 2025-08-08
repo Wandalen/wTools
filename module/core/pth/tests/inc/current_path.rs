@@ -1,4 +1,4 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
 #[cfg(not(feature = "no_std"))]
@@ -8,10 +8,10 @@ use the_module::{
   PathBuf,
 };
 
-#[cfg(feature = "path_utf8")]
+#[ cfg( feature = "path_utf8" ) ]
 use the_module::Utf8PathBuf;
 
-#[test]
+#[ test ]
 #[cfg(not(feature = "no_std"))]
 fn basic() {
   let cd = the_module::CurrentPath;
@@ -22,7 +22,7 @@ fn basic() {
   let absolute_path: AbsolutePath = cd.try_into().unwrap();
   println!("absolute_path : {absolute_path:?}");
 
-  #[cfg(feature = "path_utf8")]
+  #[ cfg( feature = "path_utf8" ) ]
   #[cfg(not(feature = "no_std"))]
   {
     let cd = the_module::CurrentPath;

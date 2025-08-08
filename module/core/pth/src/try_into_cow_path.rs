@@ -68,7 +68,7 @@ mod private
   }
 
   /// Implementation of `TryIntoCowPath` for a reference to `Utf8Path`.
-  #[cfg( feature = "path_utf8" )]
+  #[ cfg( feature = "path_utf8" ) ]
   impl< 'a > TryIntoCowPath< 'a > for &'a Utf8Path
   {
     fn try_into_cow_path( self ) -> Result< Cow<'a, Path>, io::Error >
@@ -78,7 +78,7 @@ mod private
   }
 
   /// Implementation of `TryIntoCowPath` for `Utf8PathBuf`.
-  #[cfg( feature = "path_utf8" )]
+  #[ cfg( feature = "path_utf8" ) ]
   impl<'a> TryIntoCowPath<'a> for Utf8PathBuf
   {
     fn try_into_cow_path( self ) -> Result< Cow<'a, Path>, io::Error >
