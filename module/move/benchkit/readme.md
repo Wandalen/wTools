@@ -29,30 +29,41 @@ fn main() {
 ```rust
 use benchkit::prelude::*;
 
-fn generate_random_vec(size: usize) -> Vec<u32> {
-    (0..size).map(|x| x as u32).collect()
+fn generate_random_vec( size : usize ) -> Vec< u32 >
+{
+  ( 0..size ).map( |x| x as u32 ).collect()
 }
 
-fn main() {
-    let mut comparison = ComparativeAnalysis::new("sorting_algorithms");
+fn main()
+{
+  let mut comparison = ComparativeAnalysis::new( "sorting_algorithms" );
+  
+  // Compare different sorting approaches
+  for size in [ 100, 1000, 10000 ]
+  {
+    let data = generate_random_vec( size );
     
-    // Compare different sorting approaches
-    for size in [100, 1000, 10000] {
-        let data = generate_random_vec(size);
-        
-        comparison = comparison.algorithm(&format!("std_sort_{}", size), {
-            let mut d = data.clone();
-            move || { d.sort(); }
-        });
-        
-        comparison = comparison.algorithm(&format!("unstable_sort_{}", size), {
-            let mut d = data.clone();
-            move || { d.sort_unstable(); }
-        });
-    }
+    comparison = comparison.algorithm( &format!( "std_sort_{}", size ),
+    {
+      let mut d = data.clone();
+      move ||
+      {
+        d.sort();
+      }
+    });
     
-    let report = comparison.run();
-    println!("Fastest: {:?}", report.fastest());
+    comparison = comparison.algorithm( &format!( "unstable_sort_{}", size ),
+    {
+      let mut d = data.clone();
+      move ||
+      {
+        d.sort_unstable();
+      }
+    });
+  }
+  
+  let report = comparison.run();
+  println!( "Fastest: {:?}", report.fastest() );
 }
 ```
 
@@ -61,21 +72,23 @@ fn main() {
 ```rust
 use benchkit::prelude::*;
 
-#[cfg(test)]
-mod performance_docs {
-    #[test]
-    fn update_readme_performance() {
-        let mut suite = BenchmarkSuite::new("api_performance");
-        
-        // Benchmark your API functions
-        suite.benchmark("parse_small", || parse_input("small data"));
-        suite.benchmark("parse_large", || parse_input("large data"));
-        
-        // Automatically update README.md performance section
-        suite.generate_markdown_report()
-             .update_file("README.md", "## Performance")
-             .expect("Failed to update documentation");
-    }
+#[ cfg( test ) ]
+mod performance_docs
+{
+  #[ test ]
+  fn update_readme_performance()
+  {
+    let mut suite = BenchmarkSuite::new( "api_performance" );
+    
+    // Benchmark your API functions
+    suite.benchmark( "parse_small", || parse_input( "small data" ) );
+    suite.benchmark( "parse_large", || parse_input( "large data" ) );
+    
+    // Automatically update README.md performance section
+    suite.generate_markdown_report()
+         .update_file( "README.md", "## Performance" )
+         .expect( "Failed to update documentation" );
+  }
 }
 ```
 
@@ -117,6 +130,7 @@ mod performance_docs {
 - **Performance insights** - Automatic regression detection  
 - **Scaling analysis** - How performance changes with input size
 - **Comparison tools** - Before/after, A/B testing made easy
+- **Git-style diffing** - Compare benchmark results across commits or implementations
 
 ### 📝 **Documentation Integration**
 - **Markdown-native** - Generate tables and sections directly
@@ -226,7 +240,42 @@ fn performance_regression_check() {
 }
 ```
 
-### Pattern 4: Documentation Automation
+### Pattern 4: Git-Style Performance Diffing
+
+Compare performance across implementations or commits:
+
+```rust,ignore
+use benchkit::prelude::*;
+
+// Baseline results (old implementation)
+let baseline_results = vec![
+    ("string_ops".to_string(), bench_function("old_string_ops", || old_implementation())),
+    ("hash_compute".to_string(), bench_function("old_hash", || old_hash_function())),
+];
+
+// Current results (new implementation) 
+let current_results = vec![
+    ("string_ops".to_string(), bench_function("new_string_ops", || new_implementation())),
+    ("hash_compute".to_string(), bench_function("new_hash", || new_hash_function())),
+];
+
+// Generate git-style diff
+let diff_set = diff_benchmark_sets(&baseline_results, &current_results);
+
+// Show summary
+println!("Performance changes:");
+for diff in &diff_set.diffs {
+    println!("{}", diff.to_summary());
+}
+
+// Show detailed analysis for regressions
+for regression in diff_set.regressions() {
+    println!("\n⚠️ Regression detected:");
+    println!("{}", regression.to_diff_format());
+}
+```
+
+### Pattern 5: Documentation Automation
 
 Keep performance docs always up-to-date:
 
@@ -265,6 +314,7 @@ benchkit = {
         "html_reports",        # HTML output 
         "statistical_analysis", # Advanced statistics
         "optimization_hints",   # Performance recommendations
+        "diff_analysis",        # Git-style benchmark diffing
     ]
 }
 ```
@@ -280,6 +330,7 @@ benchkit = {
 | `statistical_analysis` | Advanced statistical analysis | - |
 | `comparative_analysis` | A/B testing capabilities | - |
 | `optimization_hints` | Performance optimization suggestions | - |
+| `diff_analysis` | Git-style benchmark result diffing | - |
 
 ## When to Use benchkit vs Criterion
 
