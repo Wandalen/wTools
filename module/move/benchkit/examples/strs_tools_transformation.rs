@@ -113,7 +113,7 @@ fn demonstrate_memory_tracking() -> error_tools::Result<()>
       // Simulate zero-copy approach
       let base_str = "base_string_for_slicing";
       let _slices: Vec<&str> = (0..100)
-        .map(|i| &base_str[..10.min(base_str.len())])
+        .map(|_i| &base_str[..10.min(base_str.len())])
         .collect();
       
       // Minimal allocation tracking

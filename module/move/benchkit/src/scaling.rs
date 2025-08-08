@@ -61,8 +61,11 @@ impl ScalingConfig
 #[derive(Debug, Clone)]
 pub struct ScalingAnalysis
 {
+  /// Benchmark results for different scale factors
   pub results: HashMap<usize, BenchmarkResult>,
+  /// Configuration used for scaling analysis
   pub config: ScalingConfig,
+  /// Name of the operation being analyzed
   pub operation_name: String,
 }
 
@@ -137,9 +140,13 @@ impl ScalingAnalysis
 #[derive(Debug, Clone)]
 pub struct ComplexityReport
 {
+  /// Name of the operation analyzed
   pub operation_name: String,
+  /// Estimated algorithmic complexity (e.g., "O(n)", "O(n²)")
   pub estimated_complexity: String,
+  /// Statistical correlation coefficient of the fit
   pub correlation_coefficient: f64,
+  /// Human-readable performance insights and recommendations
   pub performance_insights: Vec<String>,
 }
 

@@ -611,10 +611,15 @@ impl AllocationPatternAnalysis
 #[derive(Debug, Clone)]
 pub struct AllocationSizeStats
 {
+  /// Minimum allocation size
   pub min: usize,
+  /// Maximum allocation size
   pub max: usize,
+  /// Median allocation size
   pub median: usize,
+  /// Mean allocation size
   pub mean: f64,
+  /// Total number of allocations
   pub total_allocations: usize,
 }
 

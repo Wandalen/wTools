@@ -385,7 +385,7 @@ fn test_comprehensive_reporting() -> error_tools::Result<()>
   });
 
   let results = suite.run_analysis();
-  let report = results.generate_markdown_report();
+  let _report = results.generate_markdown_report();
   
   // Generate comprehensive report
   let comprehensive_report = generate_full_report(&test_data, &results);

@@ -431,7 +431,7 @@ fn test_parser_comprehensive_reporting() -> error_tools::Result<()>
   });
 
   let parser_results = parser_suite.run_analysis();
-  let parser_report = parser_results.generate_markdown_report();
+  let _parser_report = parser_results.generate_markdown_report();
   
   // Generate parser-specific comprehensive report
   let comprehensive_report = generate_parser_report(&parser_workload, &parser_results);

@@ -15,7 +15,6 @@ exclude = [
   "module/move/unitore",
   "module/move/gspread",
   "module/move/optimization_tools",
-  "module/move/benchkit",
   "module/move/refiner",
   "module/move/wplot",
   "module/move/plot_interface",

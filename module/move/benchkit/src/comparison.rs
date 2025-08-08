@@ -42,8 +42,11 @@ impl Default for ComparisonConfig
 #[derive(Debug)]
 pub struct FrameworkComparison
 {
+  /// Configuration used for comparison
   pub config: ComparisonConfig,
-  pub results: HashMap<String, HashMap<usize, BenchmarkResult>>, // framework -> scale -> result
+  /// Benchmark results organized by framework and scale
+  pub results: HashMap<String, HashMap<usize, BenchmarkResult>>,
+  /// Analyzed characteristics of each framework
   pub framework_characteristics: HashMap<String, FrameworkCharacteristics>,
 }
 
@@ -51,22 +54,34 @@ pub struct FrameworkComparison
 #[derive(Debug, Clone)]
 pub struct FrameworkCharacteristics
 {
+  /// Framework name
   pub name: String,
+  /// Estimated algorithmic complexity
   pub estimated_complexity: String,
+  /// Optimal scale range for this framework
   pub best_scale_range: String,
+  /// Performance category classification
   pub performance_category: PerformanceCategory,
+  /// Framework strengths
   pub strengths: Vec<String>,
+  /// Framework weaknesses
   pub weaknesses: Vec<String>,
 }
 
+/// Performance category classification for frameworks
 #[derive(Debug, Clone)]
 pub enum PerformanceCategory
 {
-  HighPerformance,   // Consistently fast across scales
-  ScalableOptimal,   // Gets better at larger scales
-  SmallScaleOptimal, // Good for small scales only
-  GeneralPurpose,    // Decent across all scales
-  Poor,             // Consistently slow
+  /// Consistently fast across all scales
+  HighPerformance,
+  /// Gets better at larger scales
+  ScalableOptimal,
+  /// Good for small scales only
+  SmallScaleOptimal,
+  /// Decent across all scales
+  GeneralPurpose,
+  /// Consistently slow performance
+  Poor,
 }
 
 impl FrameworkComparison

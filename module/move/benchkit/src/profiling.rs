@@ -10,10 +10,14 @@ use std::time::Instant;
 #[derive(Debug, Clone)]
 pub struct AllocationResult
 {
+  /// Name of the operation
   pub name: String,
+  /// Estimated total number of allocations
   pub estimated_allocations: usize,
+  /// Timing benchmark result
   pub timing_result: BenchmarkResult,
-  pub allocation_rate: f64, // allocations per operation
+  /// Allocations per operation
+  pub allocation_rate: f64,
 }
 
 impl AllocationResult
@@ -41,9 +45,12 @@ impl AllocationResult
 #[derive(Debug, Clone)]
 pub struct AllocationComparison
 {
+  /// Baseline allocation result
   pub baseline: AllocationResult,
+  /// Current allocation result being compared
   pub current: AllocationResult,
-  pub allocation_improvement: f64, // Positive means baseline allocates less
+  /// Allocation improvement percentage (positive means baseline allocates less)
+  pub allocation_improvement: f64,
 }
 
 impl AllocationComparison
@@ -180,9 +187,13 @@ where
 #[derive(Debug, Clone)]
 pub struct MemoryProfile
 {
+  /// Name of the operation profiled
   pub operation_name: String,
+  /// Peak estimated memory usage in megabytes
   pub peak_estimated_usage_mb: f64,
+  /// Average memory usage in megabytes
   pub average_usage_mb: f64,
+  /// Identified allocation hotspots
   pub allocation_hotspots: Vec<String>,
 }
 

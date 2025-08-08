@@ -179,7 +179,7 @@ fn benchmark_parser_complexity_scaling(workload: &ParserWorkload) -> error_tools
   Ok(())
 }
 
-fn analyze_parser_pipeline_performance(workload: &ParserWorkload) -> error_tools::Result<()>
+fn analyze_parser_pipeline_performance(_workload: &ParserWorkload) -> error_tools::Result<()>
 {
   println!("3️⃣ Parser Pipeline Performance Analysis");
   println!("-------------------------------------");
