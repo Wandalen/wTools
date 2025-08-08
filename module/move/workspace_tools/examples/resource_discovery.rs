@@ -1,4 +1,4 @@
-//! resource discovery example for workspace_tools
+//! resource discovery example for `workspace_tools`
 //!
 //! this example demonstrates glob-based file finding functionality
 
@@ -88,19 +88,19 @@ fn main() -> Result< (), workspace_tools::WorkspaceError >
   match ws.find_config( "app" )
   {
     Ok( config ) => println!( "  app config: {}", config.display() ),
-    Err( e ) => println!( "  app config not found: {}", e ),
+    Err( e ) => println!( "  app config not found: {e}" ),
   }
   
   match ws.find_config( "database" )
   {
     Ok( config ) => println!( "  database config: {}", config.display() ),
-    Err( e ) => println!( "  database config not found: {}", e ),
+    Err( e ) => println!( "  database config not found: {e}" ),
   }
   
   match ws.find_config( "nonexistent" )
   {
     Ok( config ) => println!( "  nonexistent config: {}", config.display() ),
-    Err( e ) => println!( "  nonexistent config not found (expected): {}", e ),
+    Err( e ) => println!( "  nonexistent config not found (expected): {e}" ),
   }
   
   // clean up demo files

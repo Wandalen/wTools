@@ -1,12 +1,12 @@
 //! # 008 - Web Service Integration  
 //!
-//! demonstrates workspace_tools integration with web services
+//! demonstrates `workspace_tools` integration with web services
 //! shows asset serving, config loading, logging, and deployment patterns
 
 use workspace_tools::workspace;
 use std::fs;
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "🌐 web service integration example\n" );
   
@@ -62,7 +62,7 @@ impl Default for ServiceConfig
 
 impl WebService
 {
-  fn new() -> Result< Self, Box< dyn std::error::Error > >
+  fn new() -> Result< Self, Box< dyn core::error::Error > >
   {
     println!( "1️⃣  initializing web service..." );
     
@@ -85,7 +85,7 @@ impl WebService
     Ok( Self { workspace, config } )
   }
   
-  fn setup_web_structure( ws : &workspace_tools::Workspace ) -> Result< (), Box< dyn std::error::Error > >
+  fn setup_web_structure( ws : &workspace_tools::Workspace ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "   🏗️  setting up web service structure..." );
     
@@ -117,23 +117,23 @@ impl WebService
     Ok( () )
   }
   
-  fn load_config( ws : &workspace_tools::Workspace ) -> Result< ServiceConfig, Box< dyn std::error::Error > >
+  fn load_config( ws : &workspace_tools::Workspace ) -> Result< ServiceConfig, Box< dyn core::error::Error > >
   {
     println!( "   ⚙️  loading service configuration..." );
     
     // try environment-specific config first
     let env = std::env::var( "ENVIRONMENT" ).unwrap_or( "development".to_string() );
-    let config_file = ws.config_dir().join( format!( "{}.toml", env ) );
+    let config_file = ws.config_dir().join( format!( "{env}.toml" ) );
     
     let config = if config_file.exists()
     {
       println!( "     loading {}: {}", env, config_file.display() );
       let content = fs::read_to_string( config_file )?;
-      Self::parse_config( &content, &env )?
+      Self::parse_config( &content, &env )
     }
     else
     {
-      println!( "     creating default {} config", env );
+      println!( "     creating default {env} config" );
       let default_config = Self::create_default_config( &env );
       let config_content = Self::config_to_toml( &default_config );
       fs::write( &config_file, config_content )?;
@@ -141,14 +141,14 @@ impl WebService
     };
     
     // load secrets if available
-    Self::load_secrets( ws, &config )?;
+    Self::load_secrets( ws, &config );
     
-    println!( "     ✅ configuration loaded: {:?}", config );
+    println!( "     ✅ configuration loaded: {config:?}" );
     Ok( config )
   }
   
   #[ cfg( feature = "secret_management" ) ]
-  fn load_secrets( ws : &workspace_tools::Workspace, config : &ServiceConfig ) -> Result< (), Box< dyn std::error::Error > >
+  fn load_secrets( ws : &workspace_tools::Workspace, config : &ServiceConfig )
   {
     println!( "   🔒 loading service secrets..." );
     
@@ -165,18 +165,15 @@ impl WebService
       Ok( _ ) => println!( "     ✅ jwt signing configured" ),
       Err( _ ) => println!( "     ⚠️  no jwt secret (generate for production!)" ),
     }
-    
-    Ok( () )
   }
   
   #[ cfg( not( feature = "secret_management" ) ) ]
-  fn load_secrets( _ws : &workspace_tools::Workspace, _config : &ServiceConfig ) -> Result< (), Box< dyn std::error::Error > >
+  fn load_secrets( _ws : &workspace_tools::Workspace, _config : &ServiceConfig )
   {
     println!( "   ℹ️  secret management not enabled" );
-    Ok( () )
   }
   
-  fn demonstrate_features( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn demonstrate_features( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "\n2️⃣  demonstrating web service features:" );
     
@@ -189,7 +186,7 @@ impl WebService
     Ok( () )
   }
   
-  fn setup_static_assets( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn setup_static_assets( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "   📄 setting up static assets..." );
     
@@ -223,7 +220,7 @@ body {
     println!( "     created: {}", css_file.display() );
     
     // create javascript
-    let js_content = r#"// main application javascript
+    let js_content = r"// main application javascript
 document.addEventListener('DOMContentLoaded', function() {
     console.log('workspace_tools demo app loaded');
     
@@ -241,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // setup event listeners
     document.querySelector('#load-data')?.addEventListener('click', loadData);
 });
-"#;
+";
     
     let js_file = self.workspace.join( "static/js/app.js" );
     fs::write( &js_file, js_content )?;
@@ -256,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
     Ok( () )
   }
   
-  fn create_templates( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn create_templates( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "   📋 creating html templates..." );
     
@@ -349,7 +346,7 @@ document.addEventListener('DOMContentLoaded', function() {
     Ok( () )
   }
   
-  fn simulate_request_handling( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn simulate_request_handling( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "   🌐 simulating request handling..." );
     
@@ -367,13 +364,13 @@ document.addEventListener('DOMContentLoaded', function() {
     for ( method, path, description ) in requests
     {
       let response = self.handle_request( method, path )?;
-      println!( "     {} {} -> {} ({})", method, path, response, description );
+      println!( "     {method} {path} -> {response} ({description})" );
     }
     
     Ok( () )
   }
   
-  fn handle_request( &self, method : &str, path : &str ) -> Result< String, Box< dyn std::error::Error > >
+  fn handle_request( &self, method : &str, path : &str ) -> Result< String, Box< dyn core::error::Error > >
   {
     match ( method, path )
     {
@@ -443,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
-  fn demonstrate_uploads( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn demonstrate_uploads( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "   📤 demonstrating upload handling..." );
     
@@ -465,7 +462,7 @@ document.addEventListener('DOMContentLoaded', function() {
       let size = data.len();
       let size_mb = size as f64 / 1024.0 / 1024.0;
       
-      if size_mb > self.config.upload_max_size_mb as f64
+      if size_mb > f64::from(self.config.upload_max_size_mb)
       {
         println!( "     ❌ {} rejected: {:.2}mb > {}mb limit", 
           filename, size_mb, self.config.upload_max_size_mb
@@ -474,14 +471,14 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       else
       {
-        println!( "     ✅ {} accepted: {:.2}mb", filename, size_mb );
+        println!( "     ✅ {filename} accepted: {size_mb:.2}mb" );
       }
     }
     
     Ok( () )
   }
   
-  fn show_deployment_config( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn show_deployment_config( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "   🚀 generating deployment configurations..." );
     
@@ -508,7 +505,7 @@ EXPOSE {}
 
 # run application
 CMD ["./target/release/{}"]
-"#, self.config.port, self.config.name.replace( "-", "_" ) );
+"#, self.config.port, self.config.name.replace( '-', "_" ) );
     
     let dockerfile_path = self.workspace.join( "dockerfile" );
     fs::write( &dockerfile_path, dockerfile )?;
@@ -591,7 +588,7 @@ secrets:
     Ok( () )
   }
   
-  fn cleanup( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn cleanup( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "\n3️⃣  cleaning up demo files..." );
     
@@ -642,8 +639,7 @@ secrets:
   
   fn create_default_config( environment : &str ) -> ServiceConfig
   {
-    let mut config = ServiceConfig::default();
-    config.environment = environment.to_string();
+    let mut config = ServiceConfig { environment: environment.to_string(), ..Default::default() };
     
     // adjust defaults based on environment
     match environment
@@ -666,7 +662,7 @@ secrets:
     config
   }
   
-  fn parse_config( content : &str, environment : &str ) -> Result< ServiceConfig, Box< dyn std::error::Error > >
+  fn parse_config( content : &str, environment : &str ) -> ServiceConfig
   {
     let mut config = Self::create_default_config( environment );
     
@@ -689,7 +685,7 @@ secrets:
       }
     }
     
-    Ok( config )
+    config
   }
   
   fn config_to_toml( config : &ServiceConfig ) -> String

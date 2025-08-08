@@ -1,4 +1,4 @@
-//! Feature Combination Tests for workspace_tools
+//! Feature Combination Tests for `workspace_tools`
 //!
 //! ## Test Matrix: Feature Combination Coverage
 //!
@@ -82,7 +82,7 @@ edition.workspace = true
   let metadata = workspace.cargo_metadata();
   if let Err( ref e ) = metadata
   {
-    println!( "Cargo metadata error: {}", e );
+    println!( "Cargo metadata error: {e}" );
   }
   assert!( metadata.is_ok(), "Should get cargo metadata" );
 }
@@ -135,7 +135,7 @@ fn test_glob_secret_management_integration()
     if let Some( filename ) = file.file_name()
     {
       let secrets = workspace.load_secrets_from_file( &filename.to_string_lossy() );
-      assert!( secrets.is_ok(), "Should load secrets from file: {:?}", filename );
+      assert!( secrets.is_ok(), "Should load secrets from file: {filename:?}" );
       assert!( !secrets.unwrap().is_empty(), "Secret file should not be empty" );
     }
   }
@@ -172,10 +172,10 @@ edition = "2021"
     
     let member_cargo = format!( r#"
 [package]
-name = "{}"
+name = "{member}"
 version.workspace = true
 edition.workspace = true
-"#, member );
+"# );
     fs::write( member_dir.join( "Cargo.toml" ), member_cargo ).unwrap();
     fs::write( member_dir.join( "src/lib.rs" ), "// library code" ).unwrap();
   }
@@ -446,7 +446,7 @@ fn test_all_features_performance()
   // Perform multiple operations quickly
   for i in 0..100
   {
-    let _joined = workspace.join( format!( "file_{}.txt", i ) );
+    let _joined = workspace.join( format!( "file_{i}.txt" ) );
     let _config_dir = workspace.config_dir();
     let _is_cargo = workspace.is_cargo_workspace();
   }

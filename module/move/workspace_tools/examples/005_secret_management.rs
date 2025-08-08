@@ -1,7 +1,7 @@
-//! # 005 - Secret Management (secret_management feature)  
+//! # 005 - Secret Management (`secret_management` feature)  
 //!
 //! secure configuration loading with environment fallbacks
-//! this example requires the "secret_management" feature
+//! this example requires the "`secret_management`" feature
 
 #[ cfg( feature = "secret_management" ) ]
 fn main() -> Result< (), workspace_tools::WorkspaceError >
@@ -36,7 +36,7 @@ fn main() -> Result< (), workspace_tools::WorkspaceError >
   for ( key, value ) in &secrets
   {
     let masked = mask_secret( value );
-    println!( "   {}: {}", key, masked );
+    println!( "   {key}: {masked}" );
   }
   
   // 4. load specific secret keys
@@ -51,7 +51,7 @@ fn main() -> Result< (), workspace_tools::WorkspaceError >
       Ok( value ) => 
         println!( "   {}: {} (length: {})", key, mask_secret( &value ), value.len() ),
       Err( e ) => 
-        println!( "   {}: ❌ {}", key, e ),
+        println!( "   {key}: ❌ {e}" ),
     }
   }
   
@@ -75,7 +75,7 @@ fn main() -> Result< (), workspace_tools::WorkspaceError >
           if secrets.contains_key( key ) { "file" } else { "environment" }
         ),
       Err( e ) => 
-        println!( "   {}: ❌ {}", key, e ),
+        println!( "   {key}: ❌ {e}" ),
     }
   }
   
@@ -91,14 +91,14 @@ fn main() -> Result< (), workspace_tools::WorkspaceError >
       Ok( file_secrets ) => 
         println!( "   {}: loaded {} secrets", file_format, file_secrets.len() ),
       Err( _ ) => 
-        println!( "   {}: not found or empty", file_format ),
+        println!( "   {file_format}: not found or empty" ),
     }
   }
   
   // 7. secret validation and security
   println!( "\n7️⃣  secret validation patterns:" );
   
-  validate_secrets( &ws )?;
+  validate_secrets( &ws );
   
   // 8. practical application configuration
   println!( "\n8️⃣  practical application configuration:" );
@@ -106,7 +106,7 @@ fn main() -> Result< (), workspace_tools::WorkspaceError >
   demonstrate_app_config( &ws )?;
   
   // cleanup
-  cleanup_secret_files( &ws )?;
+  cleanup_secret_files( &ws );
   
   println!( "\n🔒 secret management best practices:" );
   println!( "   • never commit secret files to version control" );
@@ -153,11 +153,11 @@ SENTRY_DSN="https://key@sentry.io/project"
   println!( "   created: {}", secrets_file.display() );
   
   // production environment
-  let prod_secrets = r#"# production environment secrets
+  let prod_secrets = r"# production environment secrets
 DATABASE_URL=postgresql://prod-user:prod-pass@prod-db:5432/myapp_prod
 API_KEY=sk-prod-abcdef1234567890
 DEBUG=false
-"#;
+";
 
   let prod_file = ws.secret_file( "production.env" );
   fs::write( &prod_file, prod_secrets )
@@ -165,12 +165,12 @@ DEBUG=false
   println!( "   created: {}", prod_file.display() );
   
   // development environment  
-  let dev_secrets = r#"# development environment secrets
+  let dev_secrets = r"# development environment secrets
 DATABASE_URL=postgresql://dev:dev@localhost:5432/myapp_dev
 API_KEY=sk-dev-test1234567890
 DEBUG=true
 LOG_LEVEL=debug
-"#;
+";
 
   let dev_file = ws.secret_file( "development.env" );
   fs::write( &dev_file, dev_secrets )
@@ -181,7 +181,7 @@ LOG_LEVEL=debug
 }
 
 #[ cfg( feature = "secret_management" ) ]
-fn validate_secrets( ws : &workspace_tools::Workspace ) -> Result< (), workspace_tools::WorkspaceError >
+fn validate_secrets( ws : &workspace_tools::Workspace )
 {
   let required_secrets = vec![ "DATABASE_URL", "API_KEY", "JWT_SECRET" ];
   let optional_secrets = vec![ "REDIS_URL", "SENTRY_DSN" ];
@@ -199,11 +199,11 @@ fn validate_secrets( ws : &workspace_tools::Workspace ) -> Result< (), workspace
         }
         else
         {
-          println!( "     ✅ {} is valid", secret );
+          println!( "     ✅ {secret} is valid" );
         }
       }
       Err( _ ) => 
-        println!( "     ❌ {} is missing (required)", secret ),
+        println!( "     ❌ {secret} is missing (required)" ),
     }
   }
   
@@ -212,12 +212,10 @@ fn validate_secrets( ws : &workspace_tools::Workspace ) -> Result< (), workspace
   {
     match ws.load_secret_key( secret, "-secrets.sh" )
     {
-      Ok( _ ) => println!( "     ✅ {} is available", secret ),
-      Err( _ ) => println!( "     ℹ️  {} not configured (optional)", secret ),
+      Ok( _ ) => println!( "     ✅ {secret} is available" ),
+      Err( _ ) => println!( "     ℹ️  {secret} not configured (optional)" ),
     }
   }
-  
-  Ok( () )
 }
 
 #[ cfg( feature = "secret_management" ) ]
@@ -249,8 +247,7 @@ fn demonstrate_app_config( ws : &workspace_tools::Workspace ) -> Result< (), wor
   println!( "     redis: {}", 
     config.redis_url
       .as_ref()
-      .map( | url | mask_secret( url ) )
-      .unwrap_or( "not configured".to_string() )
+      .map_or( "not configured".to_string(), | url | mask_secret( url ) )
   );
   println!( "     debug: {}", config.debug );
   
@@ -258,10 +255,9 @@ fn demonstrate_app_config( ws : &workspace_tools::Workspace ) -> Result< (), wor
 }
 
 #[ cfg( feature = "secret_management" ) ]
-fn cleanup_secret_files( ws : &workspace_tools::Workspace ) -> Result< (), workspace_tools::WorkspaceError >
+fn cleanup_secret_files( ws : &workspace_tools::Workspace )
 {
   let _ = std::fs::remove_dir_all( ws.secret_dir() );
-  Ok( () )
 }
 
 #[ cfg( feature = "secret_management" ) ]

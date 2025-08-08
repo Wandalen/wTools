@@ -1,6 +1,6 @@
 //! # 000 - Hello Workspace
 //!
-//! the most basic introduction to workspace_tools
+//! the most basic introduction to `workspace_tools`
 //! this example shows the fundamental concept of workspace resolution
 
 use workspace_tools::{ workspace, WorkspaceError };

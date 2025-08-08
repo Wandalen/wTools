@@ -1,6 +1,6 @@
 //! # 006 - Testing Integration
 //!
-//! testing patterns with workspace_tools for isolated test environments
+//! testing patterns with `workspace_tools` for isolated test environments
 //! demonstrates test utilities and best practices
 
 use workspace_tools::WorkspaceError;
@@ -17,7 +17,7 @@ fn main() -> Result< (), WorkspaceError >
   
   #[ cfg( feature = "enabled" ) ]
   {
-    demonstrate_basic_testing()?;
+    demonstrate_basic_testing();
     demonstrate_structured_testing()?;
     demonstrate_config_testing()?;
     demonstrate_isolation_testing()?;
@@ -45,7 +45,7 @@ fn main() -> Result< (), WorkspaceError >
 }
 
 #[ cfg( feature = "enabled" ) ]
-fn demonstrate_basic_testing() -> Result< (), WorkspaceError >
+fn demonstrate_basic_testing()
 {
   println!( "1️⃣  basic testing patterns:" );
   
@@ -70,8 +70,6 @@ fn demonstrate_basic_testing() -> Result< (), WorkspaceError >
   
   // temp_dir automatically cleans up when dropped
   println!( "   ✅ automatic cleanup on scope exit" );
-  
-  Ok( () )
 }
 
 #[ cfg( feature = "enabled" ) ]
@@ -146,7 +144,7 @@ fn demonstrate_config_testing() -> Result< (), WorkspaceError >
     match ws.find_config( "app" )
     {
       Ok( config ) => println!( "   ✅ found app config: {}", config.display() ),
-      Err( e ) => println!( "   ❌ failed to find app config: {}", e ),
+      Err( e ) => println!( "   ❌ failed to find app config: {e}" ),
     }
     
     match ws.find_config( "nonexistent" )

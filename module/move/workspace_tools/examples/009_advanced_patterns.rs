@@ -1,12 +1,12 @@
 //! # 009 - Advanced Patterns and Extensibility
 //!
 //! advanced usage patterns, extensibility, and integration with other rust ecosystem tools
-//! demonstrates workspace_tools as a foundation for more complex applications
+//! demonstrates `workspace_tools` as a foundation for more complex applications
 
 use workspace_tools::{ workspace, Workspace };
 use std::{ fs, collections::HashMap };
 
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "🚀 advanced workspace patterns and extensibility\n" );
   
@@ -39,8 +39,8 @@ struct AdvancedWorkspaceManager
 trait WorkspacePlugin : Send + Sync
 {
   fn name( &self ) -> &str;
-  fn initialize( &mut self, workspace : &Workspace ) -> Result< (), Box< dyn std::error::Error > >;
-  fn process( &self, workspace : &Workspace ) -> Result< PluginResult, Box< dyn std::error::Error > >;
+  fn initialize( &mut self, workspace : &Workspace ) -> Result< (), Box< dyn core::error::Error > >;
+  fn process( &self, workspace : &Workspace ) -> Result< PluginResult, Box< dyn core::error::Error > >;
 }
 
 struct PluginResult
@@ -62,7 +62,7 @@ struct EnvironmentConfig
 
 impl AdvancedWorkspaceManager
 {
-  fn new() -> Result< Self, Box< dyn std::error::Error > >
+  fn new() -> Result< Self, Box< dyn core::error::Error > >
   {
     println!( "1️⃣  initializing advanced workspace manager..." );
     
@@ -92,11 +92,11 @@ impl AdvancedWorkspaceManager
     Ok( Self { workspace, plugins, environments } )
   }
   
-  fn demonstrate_patterns( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn demonstrate_patterns( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "\n2️⃣  demonstrating advanced patterns:" );
     
-    self.demonstrate_plugin_system()?;
+    self.demonstrate_plugin_system();
     self.demonstrate_environment_overlays()?;
     self.demonstrate_workspace_templates()?;
     self.demonstrate_tool_integration()?;
@@ -105,7 +105,7 @@ impl AdvancedWorkspaceManager
     Ok( () )
   }
   
-  fn demonstrate_plugin_system( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn demonstrate_plugin_system( &self )
   {
     println!( "   🔌 plugin system demonstration:" );
     
@@ -123,23 +123,21 @@ impl AdvancedWorkspaceManager
           
           for ( key, value ) in result.data
           {
-            println!( "       {}: {}", key, value );
+            println!( "       {key}: {value}" );
           }
         }
         Err( e ) => println!( "     {} -> error: {}", plugin.name(), e ),
       }
     }
-    
-    Ok( () )
   }
   
-  fn demonstrate_environment_overlays( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn demonstrate_environment_overlays( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "\n   🏗️  environment overlay system:" );
     
     for ( env_name, env_config ) in &self.environments
     {
-      println!( "     environment: {}", env_name );
+      println!( "     environment: {env_name}" );
       
       // create environment-specific configuration
       let env_dir = self.workspace.config_dir().join( "environments" ).join( env_name );
@@ -162,20 +160,20 @@ cache_enabled = {}
       // feature-specific overlays
       for feature in &env_config.features
       {
-        let feature_config = format!( r#"# {} feature configuration
-[{}]
+        let feature_config = format!( r#"# {feature} feature configuration
+[{feature}]
 enabled = true
-config_file = "config/features/{}.toml"
-"#, feature, feature, feature );
+config_file = "config/features/{feature}.toml"
+"# );
         
-        fs::write( env_dir.join( format!( "{}.toml", feature ) ), feature_config )?;
-        println!( "       created overlay: {}/{}.toml", env_name, feature );
+        fs::write( env_dir.join( format!( "{feature}.toml" ) ), feature_config )?;
+        println!( "       created overlay: {env_name}/{feature}.toml" );
       }
       
       // apply environment variables
       for ( key, value ) in &env_config.variables
       {
-        println!( "       env {}: {}", key, value );
+        println!( "       env {key}: {value}" );
       }
       
       // resolve environment-specific paths
@@ -189,7 +187,7 @@ config_file = "config/features/{}.toml"
     Ok( () )
   }
   
-  fn demonstrate_workspace_templates( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn demonstrate_workspace_templates( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "\n   📋 workspace template system:" );
     
@@ -206,8 +204,8 @@ config_file = "config/features/{}.toml"
     
     for ( template_name, template_config ) in templates
     {
-      let template_dir = templates_dir.join( template_name );
-      fs::create_dir_all( &template_dir )?;
+      let template_path = templates_dir.join( template_name );
+      fs::create_dir_all( &template_path )?;
       
       // create template metadata
       let metadata = format!( r#"# workspace template: {}
@@ -227,18 +225,18 @@ author = "workspace_tools"
         template_config.description,
         template_config.directories.join( "\n" ),
         template_config.files.iter()
-          .map( | ( name, _ ) | format!( r#""{}" = "template""#, name ) )
+          .map( | ( name, _ ) | format!( r#""{name}" = "template""# ) )
           .collect::< Vec< _ > >()
           .join( "\n" )
       );
       
-      fs::write( template_dir.join( "template.toml" ), metadata )?;
+      fs::write( template_path.join( "template.toml" ), metadata )?;
       
       // create template files
       let file_count = template_config.files.len();
       for ( filename, content ) in &template_config.files
       {
-        let file_path = template_dir.join( filename );
+        let file_path = template_path.join( filename );
         if let Some( parent ) = file_path.parent()
         {
           fs::create_dir_all( parent )?;
@@ -246,15 +244,15 @@ author = "workspace_tools"
         fs::write( file_path, content )?;
       }
       
-      println!( "     created template: {}", template_name );
+      println!( "     created template: {template_name}" );
       println!( "       directories: {}", template_config.directories.len() );
-      println!( "       files: {}", file_count );
+      println!( "       files: {file_count}" );
     }
     
     Ok( () )
   }
   
-  fn demonstrate_tool_integration( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn demonstrate_tool_integration( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "\n   🔧 rust ecosystem tool integration:" );
     
@@ -373,7 +371,7 @@ fn setup_logging() -> Result<(), Box<dyn std::error::Error>> {
     Ok( () )
   }
   
-  fn demonstrate_multi_workspace_composition( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn demonstrate_multi_workspace_composition( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "\n   🏗️  multi-workspace composition:" );
     
@@ -395,20 +393,20 @@ fn setup_logging() -> Result<(), Box<dyn std::error::Error>> {
       let sub_cargo_dir = sub_ws_dir.join( ".cargo" );
       fs::create_dir_all( &sub_cargo_dir )?;
       
-      let sub_cargo_config = format!( r#"[env]
-WORKSPACE_PATH = {{ value = ".", relative = true }}
-PARENT_WORKSPACE = {{ value = "../..", relative = true }}
+      let sub_cargo_config = r#"[env]
+WORKSPACE_PATH = { value = ".", relative = true }
+PARENT_WORKSPACE = { value = "../..", relative = true }
 
 [alias]
 parent-test = "test --manifest-path ../../Cargo.toml"
-"# );
+"#.to_string();
       
       fs::write( sub_cargo_dir.join( "config.toml" ), sub_cargo_config )?;
       
       // create workspace composition manifest
       let composition_manifest = format!( r#"# workspace composition manifest
-name = "{}"
-description = "{}"
+name = "{workspace_name}"
+description = "{description}"
 parent_workspace = "../.."
 
 [dependencies.internal]
@@ -427,7 +425,7 @@ src = "src"
 parent_config = true
 parent_secrets = true
 isolated_data = true
-"#, workspace_name, description );
+"# );
       
       fs::write( sub_ws_dir.join( "workspace.toml" ), composition_manifest )?;
       
@@ -437,7 +435,7 @@ isolated_data = true
         fs::create_dir_all( sub_ws_dir.join( dir ) )?;
       }
       
-      println!( "     created sub-workspace: {} ({})", workspace_name, description );
+      println!( "     created sub-workspace: {workspace_name} ({description})" );
     }
     
     // create workspace orchestration script
@@ -484,7 +482,7 @@ echo "multi-workspace build completed!"
     Ok( () )
   }
   
-  fn cleanup( &self ) -> Result< (), Box< dyn std::error::Error > >
+  fn cleanup( &self ) -> Result< (), Box< dyn core::error::Error > >
   {
     println!( "\n3️⃣  cleaning up advanced demo..." );
     
@@ -586,7 +584,7 @@ echo "multi-workspace build completed!"
     environments
   }
   
-  fn setup_advanced_structure( ws : &Workspace ) -> Result< (), Box< dyn std::error::Error > >
+  fn setup_advanced_structure( ws : &Workspace ) -> Result< (), Box< dyn core::error::Error > >
   {
     let advanced_dirs = vec!
     [
@@ -707,15 +705,15 @@ impl ConfigValidatorPlugin
 
 impl WorkspacePlugin for ConfigValidatorPlugin
 {
-  fn name( &self ) -> &str { "config-validator" }
+  fn name( &self ) -> &'static str { "config-validator" }
   
-  fn initialize( &mut self, _workspace : &Workspace ) -> Result< (), Box< dyn std::error::Error > >
+  fn initialize( &mut self, _workspace : &Workspace ) -> Result< (), Box< dyn core::error::Error > >
   {
     self.initialized = true;
     Ok( () )
   }
   
-  fn process( &self, workspace : &Workspace ) -> Result< PluginResult, Box< dyn std::error::Error > >
+  fn process( &self, workspace : &Workspace ) -> Result< PluginResult, Box< dyn core::error::Error > >
   {
     let config_dir = workspace.config_dir();
     let config_count = if config_dir.exists()
@@ -731,7 +729,7 @@ impl WorkspacePlugin for ConfigValidatorPlugin
     Ok( PluginResult
     {
       success : config_count > 0,
-      message : format!( "found {} config files", config_count ),
+      message : format!( "found {config_count} config files" ),
       data,
     } )
   }
@@ -741,9 +739,9 @@ struct AssetOptimizerPlugin;
 impl AssetOptimizerPlugin { fn new() -> Self { Self } }
 impl WorkspacePlugin for AssetOptimizerPlugin
 {
-  fn name( &self ) -> &str { "asset-optimizer" }
-  fn initialize( &mut self, _workspace : &Workspace ) -> Result< (), Box< dyn std::error::Error > > { Ok( () ) }
-  fn process( &self, workspace : &Workspace ) -> Result< PluginResult, Box< dyn std::error::Error > >
+  fn name( &self ) -> &'static str { "asset-optimizer" }
+  fn initialize( &mut self, _workspace : &Workspace ) -> Result< (), Box< dyn core::error::Error > > { Ok( () ) }
+  fn process( &self, workspace : &Workspace ) -> Result< PluginResult, Box< dyn core::error::Error > >
   {
     let static_dir = workspace.join( "static" );
     let asset_count = if static_dir.exists() { fs::read_dir( static_dir )?.count() } else { 0 };
@@ -754,7 +752,7 @@ impl WorkspacePlugin for AssetOptimizerPlugin
     Ok( PluginResult
     {
       success : true,
-      message : format!( "optimized {} assets", asset_count ),
+      message : format!( "optimized {asset_count} assets" ),
       data,
     } )
   }
@@ -764,9 +762,9 @@ struct SecurityScannerPlugin;
 impl SecurityScannerPlugin { fn new() -> Self { Self } }
 impl WorkspacePlugin for SecurityScannerPlugin
 {
-  fn name( &self ) -> &str { "security-scanner" }  
-  fn initialize( &mut self, _workspace : &Workspace ) -> Result< (), Box< dyn std::error::Error > > { Ok( () ) }
-  fn process( &self, workspace : &Workspace ) -> Result< PluginResult, Box< dyn std::error::Error > >
+  fn name( &self ) -> &'static str { "security-scanner" }  
+  fn initialize( &mut self, _workspace : &Workspace ) -> Result< (), Box< dyn core::error::Error > > { Ok( () ) }
+  fn process( &self, workspace : &Workspace ) -> Result< PluginResult, Box< dyn core::error::Error > >
   {
     let mut issues = 0;
     let mut data = HashMap::new();
@@ -792,7 +790,7 @@ impl WorkspacePlugin for SecurityScannerPlugin
     Ok( PluginResult
     {
       success : issues == 0,
-      message : format!( "security scan: {} issues found", issues ),
+      message : format!( "security scan: {issues} issues found" ),
       data,
     } )
   }
@@ -802,15 +800,15 @@ struct DocumentationGeneratorPlugin;
 impl DocumentationGeneratorPlugin { fn new() -> Self { Self } }
 impl WorkspacePlugin for DocumentationGeneratorPlugin
 {
-  fn name( &self ) -> &str { "doc-generator" }
-  fn initialize( &mut self, _workspace : &Workspace ) -> Result< (), Box< dyn std::error::Error > > { Ok( () ) }
-  fn process( &self, workspace : &Workspace ) -> Result< PluginResult, Box< dyn std::error::Error > >
+  fn name( &self ) -> &'static str { "doc-generator" }
+  fn initialize( &mut self, _workspace : &Workspace ) -> Result< (), Box< dyn core::error::Error > > { Ok( () ) }
+  fn process( &self, workspace : &Workspace ) -> Result< PluginResult, Box< dyn core::error::Error > >
   {
     let docs_dir = workspace.docs_dir();
     fs::create_dir_all( &docs_dir )?;
     
     // generate workspace documentation
-    let workspace_doc = format!( r#"# workspace documentation
+    let workspace_doc = format!( r"# workspace documentation
 
 generated by workspace_tools documentation plugin
 
@@ -822,7 +820,7 @@ generated by workspace_tools documentation plugin
 
 ## structure
 this workspace follows the standard workspace_tools layout for consistent development.
-"#, 
+", 
       workspace.root().display(),
       workspace.config_dir().display(), 
       workspace.data_dir().display(),

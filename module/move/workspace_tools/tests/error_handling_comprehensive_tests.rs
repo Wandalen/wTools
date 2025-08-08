@@ -1,4 +1,4 @@
-//! Comprehensive Error Handling Tests for workspace_tools
+//! Comprehensive Error Handling Tests for `workspace_tools`
 //!
 //! ## Test Matrix: Error Handling Coverage
 //!
@@ -20,84 +20,84 @@ use workspace_tools::{ Workspace, WorkspaceError };
 use std::{ env, path::PathBuf };
 use tempfile::TempDir;
 
-/// Test ER.1: EnvironmentVariableMissing error display
+/// Test ER.1: `EnvironmentVariableMissing` error display
 #[ test ]
 fn test_environment_variable_missing_display()
 {
   let error = WorkspaceError::EnvironmentVariableMissing( "TEST_VAR".to_string() );
-  let display = format!( "{}", error );
+  let display = format!( "{error}" );
   
   assert!( display.contains( "TEST_VAR" ) );
   assert!( display.contains( "WORKSPACE_PATH" ) );
   assert!( display.to_lowercase().contains( "environment" ) );
 }
 
-/// Test ER.2: PathNotFound error display
+/// Test ER.2: `PathNotFound` error display
 #[ test ]
 fn test_path_not_found_display()
 {
   let test_path = PathBuf::from( "/nonexistent/test/path" );
   let error = WorkspaceError::PathNotFound( test_path.clone() );
-  let display = format!( "{}", error );
+  let display = format!( "{error}" );
   
   assert!( display.contains( "/nonexistent/test/path" ) );
   assert!( display.to_lowercase().contains( "not found" ) || display.to_lowercase().contains( "does not exist" ) );
 }
 
-/// Test ER.3: IoError error display
+/// Test ER.3: `IoError` error display
 #[ test ]
 fn test_io_error_display()
 {
   let error = WorkspaceError::IoError( "Access denied".to_string() );
-  let display = format!( "{}", error );
+  let display = format!( "{error}" );
   
   assert!( display.contains( "Access denied" ) || display.contains( "permission denied" ) );
 }
 
-/// Test ER.4: PathOutsideWorkspace error display
+/// Test ER.4: `PathOutsideWorkspace` error display
 #[ test ]
 fn test_path_outside_workspace_display()
 {
   let test_path = PathBuf::from( "/outside/workspace/path" );
   let error = WorkspaceError::PathOutsideWorkspace( test_path.clone() );
-  let display = format!( "{}", error );
+  let display = format!( "{error}" );
   
   assert!( display.contains( "/outside/workspace/path" ) );
   assert!( display.to_lowercase().contains( "outside" ) );
   assert!( display.to_lowercase().contains( "workspace" ) );
 }
 
-/// Test ER.5: CargoError error display
+/// Test ER.5: `CargoError` error display
 #[ cfg( feature = "cargo_integration" ) ]
 #[ test ]
 fn test_cargo_error_display()
 {
   let error = WorkspaceError::CargoError( "Failed to parse Cargo.toml".to_string() );
-  let display = format!( "{}", error );
+  let display = format!( "{error}" );
   
   assert!( display.contains( "Failed to parse Cargo.toml" ) );
   assert!( display.to_lowercase().contains( "cargo" ) );
 }
 
-/// Test ER.6: TomlError error display
+/// Test ER.6: `TomlError` error display
 #[ cfg( feature = "cargo_integration" ) ]
 #[ test ]
 fn test_toml_error_display()
 {
   let error = WorkspaceError::TomlError( "Invalid TOML syntax".to_string() );
-  let display = format!( "{}", error );
+  let display = format!( "{error}" );
   
   assert!( display.contains( "Invalid TOML syntax" ) );
   assert!( display.to_lowercase().contains( "toml" ) );
 }
 
-/// Test ER.7: SerdeError error display
+/// Test ER.7: `SerdeError` error display
 #[ cfg( feature = "serde_integration" ) ]
 #[ test ]
 fn test_serde_error_display()
 {
   let error = WorkspaceError::SerdeError( "Deserialization failed".to_string() );
-  let display = format!( "{}", error );
+  let display = format!( "{error}" );
   
   assert!( display.contains( "Deserialization failed" ) );
   assert!( display.to_lowercase().contains( "serde" ) || display.to_lowercase().contains( "serialization" ) );
@@ -132,10 +132,10 @@ fn test_error_trait_implementation()
     let _source = error.source(); // Should not panic
     
     // Test Display is implemented
-    assert!( !format!( "{}", error ).is_empty() );
+    assert!( !format!( "{error}" ).is_empty() );
     
     // Test Debug is implemented  
-    assert!( !format!( "{:?}", error ).is_empty() );
+    assert!( !format!( "{error:?}" ).is_empty() );
   }
 }
 
@@ -147,13 +147,13 @@ fn test_error_clone()
   let cloned = original.clone();
   
   // Verify clone by comparing string representations
-  assert_eq!( format!( "{:?}", original ), format!( "{:?}", cloned ) );
+  assert_eq!( format!( "{original:?}" ), format!( "{:?}", cloned ) );
   assert_eq!( original.to_string(), cloned.to_string() );
   
   let original2 = WorkspaceError::PathNotFound( PathBuf::from( "/test" ) );
   let cloned2 = original2.clone();
   
-  assert_eq!( format!( "{:?}", original2 ), format!( "{:?}", cloned2 ) );
+  assert_eq!( format!( "{original2:?}" ), format!( "{:?}", cloned2 ) );
   assert_eq!( original2.to_string(), cloned2.to_string() );
 }
 
@@ -162,7 +162,7 @@ fn test_error_clone()
 fn test_error_debug_format()
 {
   let error = WorkspaceError::EnvironmentVariableMissing( "DEBUG_TEST".to_string() );
-  let debug = format!( "{:?}", error );
+  let debug = format!( "{error:?}" );
   
   assert!( debug.contains( "EnvironmentVariableMissing" ) );
   assert!( debug.contains( "DEBUG_TEST" ) );
@@ -214,7 +214,7 @@ fn test_error_creation_missing_env_var()
   match result.unwrap_err()
   {
     WorkspaceError::EnvironmentVariableMissing( var ) => assert_eq!( var, "WORKSPACE_PATH" ),
-    other => panic!( "Expected EnvironmentVariableMissing, got {:?}", other ),
+    other => panic!( "Expected EnvironmentVariableMissing, got {other:?}" ),
   }
 }
 
@@ -241,7 +241,7 @@ fn test_error_creation_invalid_path()
   match result.unwrap_err()
   {
     WorkspaceError::PathNotFound( path ) => assert_eq!( path, invalid_path ),
-    other => panic!( "Expected PathNotFound, got {:?}", other ),
+    other => panic!( "Expected PathNotFound, got {other:?}" ),
   }
 }
 
@@ -269,7 +269,7 @@ fn test_error_creation_validate_invalid()
   match workspace_result.unwrap_err()
   {
     WorkspaceError::PathNotFound( path ) => assert_eq!( path, invalid_path ),
-    other => panic!( "Expected PathNotFound, got {:?}", other ),
+    other => panic!( "Expected PathNotFound, got {other:?}" ),
   }
 }
 
@@ -314,7 +314,7 @@ fn test_io_error_wrapping()
       assert_eq!( message, "Test permission denied" );
       assert!( message.contains( "Test permission denied" ) );
     },
-    other => panic!( "Expected IoError, got {:?}", other ),
+    other => panic!( "Expected IoError, got {other:?}" ),
   }
 }
 
@@ -351,7 +351,7 @@ fn test_all_error_display_completeness()
     for expected in expected_substrings
     {
       assert!( display.contains( &expected.to_lowercase() ), 
-        "Error '{}' should contain '{}' in display message", error, expected );
+        "Error '{error}' should contain '{expected}' in display message" );
     }
   }
 }

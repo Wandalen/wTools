@@ -1,4 +1,4 @@
-//! secret management example for workspace_tools
+//! secret management example for `workspace_tools`
 //!
 //! this example demonstrates secure configuration loading functionality
 
@@ -21,12 +21,12 @@ fn main() -> Result< (), workspace_tools::WorkspaceError >
   std::fs::create_dir_all( &secret_dir ).map_err( | e | workspace_tools::WorkspaceError::IoError( e.to_string() ) )?;
   
   let secret_file = secret_dir.join( "-secrets.sh" );
-  let secret_content = r#"# application secrets (shell format)
+  let secret_content = r"# application secrets (shell format)
 API_KEY=your_api_key_here
 DATABASE_URL=postgresql://user:pass@localhost/db
 # optional secrets
 REDIS_URL=redis://localhost:6379
-"#;
+";
   
   std::fs::write( &secret_file, secret_content ).map_err( | e | workspace_tools::WorkspaceError::IoError( e.to_string() ) )?;
   
@@ -46,7 +46,7 @@ REDIS_URL=redis://localhost:6379
     {
       "***".to_string()
     };
-    println!( "  {}: {}", key, masked_value );
+    println!( "  {key}: {masked_value}" );
   }
   
   // load specific secret key
@@ -54,15 +54,15 @@ REDIS_URL=redis://localhost:6379
   match ws.load_secret_key( "API_KEY", "-secrets.sh" )
   {
     Ok( key ) => println!( "  API_KEY loaded (length: {})", key.len() ),
-    Err( e ) => println!( "  failed to load API_KEY: {}", e ),
+    Err( e ) => println!( "  failed to load API_KEY: {e}" ),
   }
   
   // demonstrate fallback to environment
   std::env::set_var( "ENV_SECRET", "from_environment" );
   match ws.load_secret_key( "ENV_SECRET", "-secrets.sh" )
   {
-    Ok( key ) => println!( "  ENV_SECRET from environment: {}", key ),
-    Err( e ) => println!( "  failed to load ENV_SECRET: {}", e ),
+    Ok( key ) => println!( "  ENV_SECRET from environment: {key}" ),
+    Err( e ) => println!( "  failed to load ENV_SECRET: {e}" ),
   }
   
   // clean up demo files

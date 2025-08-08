@@ -1,6 +1,6 @@
 //! # 001 - Standard Directory Layout
 //!
-//! workspace_tools promotes a consistent directory structure
+//! `workspace_tools` promotes a consistent directory structure
 //! this example shows the standard directories and their intended uses
 
 use workspace_tools::{ workspace, WorkspaceError };

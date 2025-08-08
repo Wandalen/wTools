@@ -58,7 +58,7 @@ fn main() -> Result< (), workspace_tools::WorkspaceError >
       Ok( config_path ) => 
         println!( "   {} config: {}", config_name, config_path.display() ),
       Err( _ ) => 
-        println!( "   {} config: not found", config_name ),
+        println!( "   {config_name} config: not found" ),
     }
   }
   
@@ -79,7 +79,7 @@ fn main() -> Result< (), workspace_tools::WorkspaceError >
     match ws.find_resources( pattern )
     {
       Ok( files ) => println!( "   {}: {} files", description, files.len() ),
-      Err( e ) => println!( "   {}: error - {}", description, e ),
+      Err( e ) => println!( "   {description}: error - {e}" ),
     }
   }
   
@@ -101,7 +101,7 @@ fn main() -> Result< (), workspace_tools::WorkspaceError >
   println!( "   test files: {}", test_files.len() );
   
   // cleanup demo structure
-  cleanup_demo_structure( &ws )?;
+  cleanup_demo_structure( &ws );
   
   println!( "\n💡 resource discovery best practices:" );
   println!( "   • use specific patterns to avoid finding too many files" );
@@ -183,7 +183,7 @@ fn setup_demo_structure( ws : &workspace_tools::Workspace ) -> Result< (), works
 }
 
 #[ cfg( feature = "glob" ) ]
-fn cleanup_demo_structure( ws : &workspace_tools::Workspace ) -> Result< (), workspace_tools::WorkspaceError >
+fn cleanup_demo_structure( ws : &workspace_tools::Workspace )
 {
   use std::fs;
   
@@ -194,8 +194,6 @@ fn cleanup_demo_structure( ws : &workspace_tools::Workspace ) -> Result< (), wor
     let path = ws.join( dir );
     let _ = fs::remove_dir_all( path ); // ignore errors during cleanup
   }
-  
-  Ok( () )
 }
 
 #[ cfg( feature = "glob" ) ]
@@ -203,7 +201,7 @@ fn print_files( files : &[ std::path::PathBuf ], indent : &str )
 {
   if files.is_empty()
   {
-    println!( "{}(no files found)", indent );
+    println!( "{indent}(no files found)" );
   }
   else
   {

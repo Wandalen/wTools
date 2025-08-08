@@ -140,37 +140,44 @@ fn test_cargo_metadata_success()
   let original_dir = match std::env::current_dir() {
     Ok(dir) => dir,
     Err(e) => {
-      eprintln!("Warning: Could not get current directory: {}", e);
+      eprintln!("Warning: Could not get current directory: {e}");
       // Fallback to a reasonable default
       std::path::PathBuf::from(".")
     }
   };
   
   // Change to the workspace directory for cargo metadata
-  std::env::set_current_dir( &temp_path ).expect(&format!("Failed to change to temp dir: {}", temp_path.display()));
+  std::env::set_current_dir( &temp_path ).unwrap_or_else(|_| panic!("Failed to change to temp dir: {}", temp_path.display()));
   
   let workspace = Workspace::from_cargo_manifest( temp_path.join( "Cargo.toml" ) ).unwrap();
   
+  // Execute cargo_metadata while still in the temp directory
   let result = workspace.cargo_metadata();
   
-  // Restore original directory IMMEDIATELY but don't unwrap yet
+  // Process result immediately before any directory changes
+  let metadata_result = match result {
+    Ok(metadata) => {
+      // Verify metadata while temp_dir is still valid
+      assert_eq!( metadata.workspace_root, temp_path );
+      assert!( !metadata.members.is_empty(), "workspace should have members" );
+      Ok(metadata)
+    },
+    Err(e) => {
+      println!("cargo_metadata error: {e}");
+      Err(e)
+    }
+  };
+  
+  // Now restore directory after all cargo operations are complete
   let restore_result = std::env::set_current_dir( &original_dir );
-  
-  // Check restore operation succeeded
   if let Err(e) = restore_result {
-    eprintln!("Failed to restore directory: {}", e);
-    // Continue anyway to check the main test result
+    eprintln!("Failed to restore directory: {e}");
   }
   
-  if let Err(ref e) = result {
-    println!("cargo_metadata error: {}", e);
-  }
-  assert!( result.is_ok(), "cargo_metadata should succeed" );
-  let metadata = result.unwrap();
-  assert_eq!( metadata.workspace_root, temp_path );
-  assert!( !metadata.members.is_empty(), "workspace should have members" );
+  // Final assertion after directory restore
+  assert!( metadata_result.is_ok(), "cargo_metadata should succeed" );
   
-  // Keep temp_dir alive until all assertions are done
+  // Keep temp_dir alive until the very end
   drop(temp_dir);
 }
 
@@ -185,14 +192,14 @@ fn test_workspace_members()
   let original_dir = match std::env::current_dir() {
     Ok(dir) => dir,
     Err(e) => {
-      eprintln!("Warning: Could not get current directory: {}", e);
+      eprintln!("Warning: Could not get current directory: {e}");
       // Fallback to a reasonable default
       std::path::PathBuf::from(".")
     }
   };
   
   // Change to the workspace directory for cargo operations
-  std::env::set_current_dir( &temp_path ).expect(&format!("Failed to change to temp dir: {}", temp_path.display()));
+  std::env::set_current_dir( &temp_path ).unwrap_or_else(|_| panic!("Failed to change to temp dir: {}", temp_path.display()));
   
   let workspace = Workspace::from_cargo_manifest( temp_path.join( "Cargo.toml" ) ).unwrap();
   
@@ -203,12 +210,12 @@ fn test_workspace_members()
   
   // Check restore operation succeeded
   if let Err(e) = restore_result {
-    eprintln!("Failed to restore directory: {}", e);
+    eprintln!("Failed to restore directory: {e}");
     // Continue anyway to check the main test result
   }
   
   if let Err(ref e) = result {
-    println!("workspace_members error: {}", e);
+    println!("workspace_members error: {e}");
   }
   assert!( result.is_ok(), "workspace_members should succeed" );
   let members = result.unwrap();
@@ -230,7 +237,7 @@ fn test_resolve_or_fallback_cargo_primary()
   let original_workspace_path = std::env::var( "WORKSPACE_PATH" ).ok();
   
   // set current directory to test workspace  
-  std::env::set_current_dir( &temp_path ).expect(&format!("Failed to change to temp dir: {}", temp_path.display()));
+  std::env::set_current_dir( &temp_path ).unwrap_or_else(|_| panic!("Failed to change to temp dir: {}", temp_path.display()));
   
   // unset WORKSPACE_PATH to ensure cargo detection is used
   std::env::remove_var( "WORKSPACE_PATH" );
@@ -240,7 +247,7 @@ fn test_resolve_or_fallback_cargo_primary()
   // restore environment completely
   let restore_result = std::env::set_current_dir( &original_dir );
   if let Err(e) = restore_result {
-    eprintln!("Warning: Failed to restore directory: {}", e);
+    eprintln!("Warning: Failed to restore directory: {e}");
     // Continue with test - this is not critical for the test logic
   }
   match original_workspace_path {
@@ -314,10 +321,10 @@ edition = "2021"
     
     let member_cargo_toml = format!( r#"
 [package]
-name = "{}"
+name = "{member}"
 version.workspace = true
 edition.workspace = true
-"#, member );
+"# );
 
     fs::write( member_dir.join( "Cargo.toml" ), member_cargo_toml ).unwrap();
     

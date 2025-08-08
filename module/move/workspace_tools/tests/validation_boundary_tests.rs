@@ -1,4 +1,4 @@
-//! Comprehensive Validation and Boundary Tests for workspace_tools  
+//! Comprehensive Validation and Boundary Tests for `workspace_tools`  
 //!
 //! ## Test Matrix: Validation and Boundary Coverage
 //!
@@ -39,7 +39,7 @@ fn create_test_workspace_at( path : &std::path::Path ) -> Workspace
   workspace
 }
 
-/// Test VB.1: validate() with file instead of directory
+/// Test VB.1: `validate()` with file instead of directory
 #[ test ]
 fn test_validate_file_instead_of_directory()
 {
@@ -72,12 +72,12 @@ fn test_validate_file_instead_of_directory()
     match workspace_result.unwrap_err()
     {
       WorkspaceError::IoError( _ ) | WorkspaceError::PathNotFound( _ ) => {}, // Expected - file is not a valid workspace directory
-      other => panic!( "Expected IoError or PathNotFound, got {:?}", other ),
+      other => panic!( "Expected IoError or PathNotFound, got {other:?}" ),
     }
   }
 }
 
-/// Test VB.2: validate() with directory that exists  
+/// Test VB.2: `validate()` with directory that exists  
 #[ test ]
 fn test_validate_existing_directory_success()
 {
@@ -89,7 +89,7 @@ fn test_validate_existing_directory_success()
   assert!( result.is_ok(), "validate() should succeed for existing directory" );
 }
 
-/// Test VB.3: validate() with non-existent directory
+/// Test VB.3: `validate()` with non-existent directory
 #[ test ]
 fn test_validate_nonexistent_directory()
 {
@@ -113,11 +113,11 @@ fn test_validate_nonexistent_directory()
   match result.unwrap_err()
   {
     WorkspaceError::PathNotFound( path ) => assert_eq!( path, nonexistent ),
-    other => panic!( "Expected PathNotFound, got {:?}", other ),
+    other => panic!( "Expected PathNotFound, got {other:?}" ),
   }
 }
 
-/// Test VB.4: is_workspace_file() with exact workspace root
+/// Test VB.4: `is_workspace_file()` with exact workspace root
 #[ test ]
 fn test_is_workspace_file_exact_root()
 {
@@ -129,7 +129,7 @@ fn test_is_workspace_file_exact_root()
   assert!( is_workspace, "Workspace root should be considered a workspace file" );
 }
 
-/// Test VB.5: is_workspace_file() with parent of workspace root
+/// Test VB.5: `is_workspace_file()` with parent of workspace root
 #[ test ]
 fn test_is_workspace_file_parent_directory()
 {
@@ -144,7 +144,7 @@ fn test_is_workspace_file_parent_directory()
   }
 }
 
-/// Test VB.6: is_workspace_file() with deeply nested path
+/// Test VB.6: `is_workspace_file()` with deeply nested path
 #[ test ]
 fn test_is_workspace_file_deeply_nested()
 {
@@ -161,7 +161,7 @@ fn test_is_workspace_file_deeply_nested()
   assert!( is_workspace, "Deeply nested path should be considered a workspace file" );
 }
 
-/// Test VB.7: is_workspace_file() with path containing .. traversal
+/// Test VB.7: `is_workspace_file()` with path containing .. traversal
 #[ test ]
 fn test_is_workspace_file_with_traversal()
 {
@@ -178,7 +178,7 @@ fn test_is_workspace_file_with_traversal()
   assert!( is_workspace, "Path with .. traversal that stays within workspace should be considered workspace file" );
 }
 
-/// Test VB.8: is_workspace_file() with absolute path outside workspace
+/// Test VB.8: `is_workspace_file()` with absolute path outside workspace
 #[ test ]
 fn test_is_workspace_file_absolute_outside()
 {
@@ -326,8 +326,8 @@ fn test_validation_with_special_files()
   assert!( result.is_ok(), "Validation should succeed for directory with typical workspace files" );
   
   // Verify the special files are considered workspace files
-  assert!( workspace.is_workspace_file( &workspace.cargo_toml() ) );
-  assert!( workspace.is_workspace_file( &workspace.readme() ) );
+  assert!( workspace.is_workspace_file( workspace.cargo_toml() ) );
+  assert!( workspace.is_workspace_file( workspace.readme() ) );
   assert!( workspace.is_workspace_file( temp_dir.path().join( ".gitignore" ) ) );
 }
 
@@ -351,8 +351,8 @@ fn test_path_join_edge_cases()
     let joined = workspace.join( edge_case );
     
     // All join operations should produce absolute paths
-    assert!( joined.is_absolute(), "Joined path should be absolute for: {}", edge_case );
-    assert!( joined.starts_with( temp_dir.path() ), "Joined path should start with workspace root for: {}", edge_case );
+    assert!( joined.is_absolute(), "Joined path should be absolute for: {edge_case}" );
+    assert!( joined.starts_with( temp_dir.path() ), "Joined path should start with workspace root for: {edge_case}" );
   }
 }
 
@@ -390,7 +390,7 @@ fn test_large_workspace_structure()
   for dir in &dirs
   {
     let dir_path = temp_dir.path().join( dir );
-    assert!( workspace.is_workspace_file( &dir_path ), "Directory {} should be within workspace", dir );
+    assert!( workspace.is_workspace_file( &dir_path ), "Directory {dir} should be within workspace" );
   }
 }
 
@@ -404,7 +404,7 @@ fn test_deeply_nested_workspace()
   let mut deep_path = temp_dir.path().to_path_buf();
   for i in 1..=20
   {
-    deep_path.push( format!( "level{}", i ) );
+    deep_path.push( format!( "level{i}" ) );
   }
   
   fs::create_dir_all( &deep_path ).unwrap();

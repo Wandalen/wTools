@@ -48,18 +48,18 @@ fn main() -> Result< (), WorkspaceError >
   match ws.validate()
   {
     Ok( () ) => println!( "   ✅ workspace structure is valid and accessible" ),
-    Err( e ) => println!( "   ❌ workspace validation failed: {}", e ),
+    Err( e ) => println!( "   ❌ workspace validation failed: {e}" ),
   }
   
   // 5. path normalization (resolves .., symlinks, etc.)
   println!( "\n5️⃣  path normalization:" );
   let messy_path = "config/../data/./cache.db";
-  println!( "   messy path: {}", messy_path );
+  println!( "   messy path: {messy_path}" );
   
   match ws.normalize_path( messy_path )
   {
     Ok( normalized ) => println!( "   normalized: {}", normalized.display() ),
-    Err( e ) => println!( "   normalization failed: {}", e ),
+    Err( e ) => println!( "   normalization failed: {e}" ),
   }
   
   println!( "\n💡 key principles:" );

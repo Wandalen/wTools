@@ -1,4 +1,4 @@
-//! Comprehensive Path Operations Tests for workspace_tools
+//! Comprehensive Path Operations Tests for `workspace_tools`
 //!
 //! ## Test Matrix: Path Operations Coverage
 //!
@@ -41,7 +41,7 @@ fn create_test_workspace_at( path : &std::path::Path ) -> Workspace
   workspace
 }
 
-/// Test PO.1: join() with relative path
+/// Test PO.1: `join()` with relative path
 #[ test ]
 fn test_join_relative_path()
 {
@@ -54,7 +54,7 @@ fn test_join_relative_path()
   assert_eq!( joined, expected );
 }
 
-/// Test PO.2: join() with absolute path
+/// Test PO.2: `join()` with absolute path
 #[ test ]
 fn test_join_absolute_path()
 {
@@ -68,7 +68,7 @@ fn test_join_absolute_path()
   assert_eq!( joined, absolute_path );
 }
 
-/// Test PO.3: join() with empty path
+/// Test PO.3: `join()` with empty path
 #[ test ] 
 fn test_join_empty_path()
 {
@@ -81,7 +81,7 @@ fn test_join_empty_path()
   assert_eq!( joined, workspace.root() );
 }
 
-/// Test PO.4: join() with parent directory traversal
+/// Test PO.4: `join()` with parent directory traversal
 #[ test ]
 fn test_join_parent_traversal()
 {
@@ -94,7 +94,7 @@ fn test_join_parent_traversal()
   assert_eq!( joined, expected );
 }
 
-/// Test PO.5: join() with current directory references
+/// Test PO.5: `join()` with current directory references
 #[ test ]
 fn test_join_current_directory()
 {
@@ -107,7 +107,7 @@ fn test_join_current_directory()
   assert_eq!( joined, expected );
 }
 
-/// Test PO.6: cargo_toml() returns correct path
+/// Test PO.6: `cargo_toml()` returns correct path
 #[ test ]
 fn test_cargo_toml_path()
 {
@@ -120,7 +120,7 @@ fn test_cargo_toml_path()
   assert_eq!( cargo_path, expected );
 }
 
-/// Test PO.7: readme() returns correct path  
+/// Test PO.7: `readme()` returns correct path  
 #[ test ]
 fn test_readme_path()
 {
@@ -217,7 +217,7 @@ fn test_very_long_path_handling()
   // Create nested structure
   for i in 0..10
   {
-    long_path.push( format!( "{}_{}", long_dir_name, i ) );
+    long_path.push( format!( "{long_dir_name}_{i}" ) );
   }
   long_path.push( "final_file.txt" );
   
@@ -272,7 +272,7 @@ fn test_all_standard_directory_paths()
   for ( actual_path, expected_suffix ) in expected_mappings
   {
     let expected = temp_dir.path().join( expected_suffix );
-    assert_eq!( actual_path, expected, "Mismatch for {}", expected_suffix );
+    assert_eq!( actual_path, expected, "Mismatch for {expected_suffix}" );
   }
 }
 

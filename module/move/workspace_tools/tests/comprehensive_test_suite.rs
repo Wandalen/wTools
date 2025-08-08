@@ -1,15 +1,15 @@
-//! comprehensive test suite with perfect coverage for workspace_tools
+//! comprehensive test suite with perfect coverage for `workspace_tools`
 //!
 //! ## comprehensive test matrix
 //!
 //! ### core workspace functionality
 //! | id    | component            | test case                  | conditions           | expected result      |
 //! |-------|---------------------|----------------------------|----------------------|----------------------|
-//! | w1.1  | workspace::resolve  | env var set, path exists   | valid directory      | success              |
-//! | w1.2  | workspace::resolve  | env var set, path missing  | nonexistent path     | PathNotFound error   |
-//! | w1.3  | workspace::resolve  | env var missing            | no env var           | EnvironmentMissing   |
-//! | w1.4  | workspace::resolve  | env var empty              | empty string         | PathNotFound error   |
-//! | w1.5  | workspace::resolve  | env var is file not dir    | points to file       | error on validate    |
+//! | w1.1  | `workspace::resolve`  | env var set, path exists   | valid directory      | success              |
+//! | w1.2  | `workspace::resolve`  | env var set, path missing  | nonexistent path     | `PathNotFound` error   |
+//! | w1.3  | `workspace::resolve`  | env var missing            | no env var           | `EnvironmentMissing`   |
+//! | w1.4  | `workspace::resolve`  | env var empty              | empty string         | `PathNotFound` error   |
+//! | w1.5  | `workspace::resolve`  | env var is file not dir    | points to file       | error on validate    |
 //! | w2.1  | fallback resolution | no env, cwd exists         | current dir valid    | uses current dir     |
 //! | w2.2  | fallback resolution | no env, in git repo        | .git dir found       | uses git root        |
 //! | w2.3  | fallback resolution | no env, no git, no cwd     | all fail             | uses root fallback   |
@@ -24,51 +24,51 @@
 //! | w5.2  | validation          | valid workspace            | accessible dir       | success              |
 //! | w5.3  | validation          | inaccessible workspace    | permission denied    | error                |
 //! | w6.1  | normalization       | relative path              | exists in workspace  | canonical path       |
-//! | w6.2  | normalization       | nonexistent path           | doesn't exist        | IoError              |
+//! | w6.2  | normalization       | nonexistent path           | doesn't exist        | `IoError`              |
 //! | w6.3  | normalization       | symlink resolution         | symlinks present     | resolved target      |
 //!
 //! ### error handling comprehensive tests  
 //! | id    | error type          | trigger condition          | validation           |
 //! |-------|---------------------|----------------------------|----------------------|
-//! | e1.1  | EnvironmentMissing  | no WORKSPACE_PATH          | correct error msg    |
-//! | e1.2  | PathNotFound        | nonexistent path           | path in error        |
-//! | e1.3  | PathOutsideWorkspace| external path              | path in error        |
-//! | e1.4  | ConfigurationError  | workspace is file          | descriptive message  |
-//! | e1.5  | IoError             | permission denied          | io error details     |
+//! | e1.1  | `EnvironmentMissing`  | no `WORKSPACE_PATH`          | correct error msg    |
+//! | e1.2  | `PathNotFound`        | nonexistent path           | path in error        |
+//! | e1.3  | `PathOutsideWorkspace`| external path              | path in error        |
+//! | e1.4  | `ConfigurationError`  | workspace is file          | descriptive message  |
+//! | e1.5  | `IoError`             | permission denied          | io error details     |
 //! | e2.1  | error display       | all error variants         | human readable       |
 //! | e2.2  | error debug         | all error variants         | debug info           |
-//! | e2.3  | error from trait    | std::error::Error impl     | proper trait impl    |
+//! | e2.3  | error from trait    | `std::error::Error` impl     | proper trait impl    |
 //!
 //! ### feature-specific tests (glob)
 //! | id    | feature             | test case                  | conditions           | expected             |
 //! |-------|---------------------|----------------------------|----------------------|----------------------|
-//! | g1.1  | find_resources      | simple pattern             | *.rs files exist     | all rust files       |
-//! | g1.2  | find_resources      | recursive pattern          | **/*.rs pattern      | nested rust files    |
-//! | g1.3  | find_resources      | no matches                 | pattern matches none | empty vec            |
-//! | g1.4  | find_resources      | invalid pattern            | malformed glob       | GlobError            |
-//! | g2.1  | find_config         | toml exists                | app.toml present     | finds toml           |
-//! | g2.2  | find_config         | yaml exists                | app.yaml present     | finds yaml           |
-//! | g2.3  | find_config         | json exists                | app.json present     | finds json           |
-//! | g2.4  | find_config         | dotfile exists             | .app.toml present    | finds dotfile        |
-//! | g2.5  | find_config         | multiple formats exist     | toml+yaml+json       | priority order       |
-//! | g2.6  | find_config         | no config found            | none exist           | PathNotFound         |
+//! | g1.1  | `find_resources`      | simple pattern             | *.rs files exist     | all rust files       |
+//! | g1.2  | `find_resources`      | recursive pattern          | **/*.rs pattern      | nested rust files    |
+//! | g1.3  | `find_resources`      | no matches                 | pattern matches none | empty vec            |
+//! | g1.4  | `find_resources`      | invalid pattern            | malformed glob       | `GlobError`            |
+//! | g2.1  | `find_config`         | toml exists                | app.toml present     | finds toml           |
+//! | g2.2  | `find_config`         | yaml exists                | app.yaml present     | finds yaml           |
+//! | g2.3  | `find_config`         | json exists                | app.json present     | finds json           |
+//! | g2.4  | `find_config`         | dotfile exists             | .app.toml present    | finds dotfile        |
+//! | g2.5  | `find_config`         | multiple formats exist     | toml+yaml+json       | priority order       |
+//! | g2.6  | `find_config`         | no config found            | none exist           | `PathNotFound`         |
 //!
-//! ### feature-specific tests (secret_management)
+//! ### feature-specific tests (`secret_management`)
 //! | id    | feature             | test case                  | conditions           | expected             |
 //! |-------|---------------------|----------------------------|----------------------|----------------------|
-//! | s1.1  | secret_dir          | secret directory path      | any workspace        | .secret path         |
-//! | s1.2  | secret_file         | secret file path           | filename provided    | .secret/filename     |
-//! | s2.1  | load_secrets_file   | valid key=value format     | proper shell format  | parsed hashmap       |
-//! | s2.2  | load_secrets_file   | quoted values              | "value" and 'value'  | unquoted values      |
-//! | s2.3  | load_secrets_file   | comments and empty lines   | # comments present   | ignored lines        |
-//! | s2.4  | load_secrets_file   | file doesn't exist         | missing file         | empty hashmap        |
-//! | s2.5  | load_secrets_file   | file read error            | permission denied    | IoError              |
-//! | s2.6  | load_secrets_file   | malformed content          | invalid format       | partial parsing      |
-//! | s3.1  | load_secret_key     | key in file                | key exists in file   | value from file      |
-//! | s3.2  | load_secret_key     | key in environment         | env var exists       | value from env       |
-//! | s3.3  | load_secret_key     | key in both                | file and env         | file takes priority  |
-//! | s3.4  | load_secret_key     | key in neither             | not found anywhere   | ConfigError          |
-//! | s3.5  | parse_key_value     | various formats            | edge case formats    | correct parsing      |
+//! | s1.1  | `secret_dir`          | secret directory path      | any workspace        | .secret path         |
+//! | s1.2  | `secret_file`         | secret file path           | filename provided    | .secret/filename     |
+//! | s2.1  | `load_secrets_file`   | valid key=value format     | proper shell format  | parsed hashmap       |
+//! | s2.2  | `load_secrets_file`   | quoted values              | "value" and 'value'  | unquoted values      |
+//! | s2.3  | `load_secrets_file`   | comments and empty lines   | # comments present   | ignored lines        |
+//! | s2.4  | `load_secrets_file`   | file doesn't exist         | missing file         | empty hashmap        |
+//! | s2.5  | `load_secrets_file`   | file read error            | permission denied    | `IoError`              |
+//! | s2.6  | `load_secrets_file`   | malformed content          | invalid format       | partial parsing      |
+//! | s3.1  | `load_secret_key`     | key in file                | key exists in file   | value from file      |
+//! | s3.2  | `load_secret_key`     | key in environment         | env var exists       | value from env       |
+//! | s3.3  | `load_secret_key`     | key in both                | file and env         | file takes priority  |
+//! | s3.4  | `load_secret_key`     | key in neither             | not found anywhere   | `ConfigError`          |
+//! | s3.5  | `parse_key_value`     | various formats            | edge case formats    | correct parsing      |
 //!
 //! ### integration and cross-platform tests
 //! | id    | category            | test case                  | platform/condition   | validation           |
@@ -80,7 +80,7 @@
 //! | i1.5  | permissions         | read-only workspace        | restricted access    | graceful handling    |
 //! | i2.1  | concurrent access   | multiple workspace inits   | concurrent creation  | thread safety        |
 //! | i2.2  | environment changes | env var changed mid-test   | dynamic changes      | consistent behavior  |
-//! | i3.1  | testing utilities   | create_test_workspace      | temp dir creation    | isolated workspace   |
+//! | i3.1  | testing utilities   | `create_test_workspace`      | temp dir creation    | isolated workspace   |
 //! | i3.2  | testing utilities   | structured workspace       | full dir structure   | all dirs created     |
 //!
 //! ### performance and stress tests  
@@ -150,7 +150,7 @@ mod core_workspace_tests
         // In case of race condition, this is acceptable but should be noted
         eprintln!("Warning: Environment variable was cleared by parallel test execution");
       },
-      other => panic!( "expected PathNotFound or EnvironmentVariableMissing, got {:?}", other ),
+      other => panic!( "expected PathNotFound or EnvironmentVariableMissing, got {other:?}" ),
     }
   }
 
@@ -170,7 +170,7 @@ mod core_workspace_tests
     {
       WorkspaceError::EnvironmentVariableMissing( var ) => 
         assert_eq!( var, "WORKSPACE_PATH" ),
-      other => panic!( "expected EnvironmentVariableMissing, got {:?}", other ),
+      other => panic!( "expected EnvironmentVariableMissing, got {other:?}" ),
     }
   }
 
@@ -194,7 +194,7 @@ mod core_workspace_tests
     {
       WorkspaceError::PathNotFound( path ) => assert_eq!( path, PathBuf::from( "" ) ),
       WorkspaceError::EnvironmentVariableMissing( _ ) => {}, // also acceptable
-      other => panic!( "expected PathNotFound or EnvironmentVariableMissing, got {:?}", other ),
+      other => panic!( "expected PathNotFound or EnvironmentVariableMissing, got {other:?}" ),
     }
   }
 
@@ -218,7 +218,7 @@ mod core_workspace_tests
     {
       WorkspaceError::ConfigurationError( msg ) => 
         assert!( msg.contains( "not a directory" ) ),
-      other => panic!( "expected ConfigurationError, got {:?}", other ),
+      other => panic!( "expected ConfigurationError, got {other:?}" ),
     }
     
     restore_env_var( "WORKSPACE_PATH", original );
@@ -450,7 +450,7 @@ mod path_operation_tests
     let ( _temp_dir, workspace ) = testing::create_test_workspace();
     
     let result = workspace.validate();
-    assert!( result.is_ok(), "workspace validation should succeed: {:?}", result );
+    assert!( result.is_ok(), "workspace validation should succeed: {result:?}" );
   }
 
   /// test w6.1: path normalization for existing paths
@@ -483,7 +483,7 @@ mod path_operation_tests
     match result.unwrap_err()
     {
       WorkspaceError::IoError( msg ) => assert!( msg.contains( "normalize" ) ),
-      other => panic!( "expected IoError, got {:?}", other ),
+      other => panic!( "expected IoError, got {other:?}" ),
     }
   }
 }
@@ -496,77 +496,77 @@ mod error_handling_tests
 {
   use super::*;
 
-  /// test e1.1: EnvironmentVariableMissing error
+  /// test e1.1: `EnvironmentVariableMissing` error
   #[ test ]
   fn test_environment_variable_missing_error()
   {
     let error = WorkspaceError::EnvironmentVariableMissing( "TEST_VAR".to_string() );
     
-    let display = format!( "{}", error );
+    let display = format!( "{error}" );
     assert!( display.contains( "TEST_VAR" ) );
     assert!( display.contains( "WORKSPACE_PATH" ) );
     
     // test Debug trait
-    let debug = format!( "{:?}", error );
+    let debug = format!( "{error:?}" );
     assert!( debug.contains( "EnvironmentVariableMissing" ) );
     assert!( debug.contains( "TEST_VAR" ) );
   }
 
-  /// test e1.2: PathNotFound error
+  /// test e1.2: `PathNotFound` error
   #[ test ]
   fn test_path_not_found_error()
   {
     let test_path = PathBuf::from( "/nonexistent/path" );
     let error = WorkspaceError::PathNotFound( test_path.clone() );
     
-    let display = format!( "{}", error );
+    let display = format!( "{error}" );
     assert!( display.contains( "/nonexistent/path" ) );
     assert!( display.contains( "not found" ) );
     
-    let debug = format!( "{:?}", error );
+    let debug = format!( "{error:?}" );
     assert!( debug.contains( "PathNotFound" ) );
   }
 
-  /// test e1.3: PathOutsideWorkspace error
+  /// test e1.3: `PathOutsideWorkspace` error
   #[ test ]
   fn test_path_outside_workspace_error()
   {
     let test_path = PathBuf::from( "/external/path" );
     let error = WorkspaceError::PathOutsideWorkspace( test_path.clone() );
     
-    let display = format!( "{}", error );
+    let display = format!( "{error}" );
     assert!( display.contains( "/external/path" ) );
     assert!( display.contains( "outside workspace" ) );
   }
 
-  /// test e1.4: ConfigurationError
+  /// test e1.4: `ConfigurationError`
   #[ test ]
   fn test_configuration_error()
   {
     let error = WorkspaceError::ConfigurationError( "test configuration issue".to_string() );
     
-    let display = format!( "{}", error );
+    let display = format!( "{error}" );
     assert!( display.contains( "test configuration issue" ) );
     assert!( display.contains( "configuration error" ) );
   }
 
-  /// test e1.5: IoError
+  /// test e1.5: `IoError`
   #[ test ]
   fn test_io_error()
   {
     let error = WorkspaceError::IoError( "permission denied".to_string() );
     
-    let display = format!( "{}", error );
+    let display = format!( "{error}" );
     assert!( display.contains( "permission denied" ) );
     assert!( display.contains( "io error" ) );
   }
 
-  /// test e2.1: error std::error::Error trait implementation
+  /// test e2.1: error `std::error::Error` trait implementation
   #[ test ]
   fn test_error_trait_implementation()
   {
     let error = WorkspaceError::ConfigurationError( "test".to_string() );
-    let error_trait : &dyn std::error::Error = &error;
+    let error_trait : &dyn core::error::Error = &error;
     
     // should not panic - confirms trait is properly implemented
     let _ = error_trait.to_string();
@@ -587,8 +587,8 @@ mod error_handling_tests
     
     for error in errors
     {
-      let display = format!( "{}", error );
-      let debug = format!( "{:?}", error );
+      let display = format!( "{error}" );
+      let debug = format!( "{error:?}" );
       
       assert!( !display.is_empty(), "display should not be empty" );
       assert!( !debug.is_empty(), "debug should not be empty" );
@@ -602,7 +602,7 @@ mod error_handling_tests
     let error = WorkspaceError::ConfigurationError( "test".to_string() );
     let cloned = error.clone();
     
-    assert_eq!( format!( "{}", error ), format!( "{}", cloned ) );
+    assert_eq!( format!( "{error}" ), format!( "{}", cloned ) );
   }
 }
 
@@ -696,7 +696,7 @@ mod glob_functionality_tests
     match result.unwrap_err()
     {
       WorkspaceError::GlobError( msg ) => assert!( !msg.is_empty() ),
-      other => panic!( "expected GlobError, got {:?}", other ),
+      other => panic!( "expected GlobError, got {other:?}" ),
     }
   }
 
@@ -786,7 +786,7 @@ mod glob_functionality_tests
       {
         assert!( path.ends_with( "nonexistent_config.toml" ) );
       }
-      other => panic!( "expected PathNotFound, got {:?}", other ),
+      other => panic!( "expected PathNotFound, got {other:?}" ),
     }
   }
 }
@@ -863,7 +863,7 @@ EMPTY_QUOTES=""
     assert_eq!( secrets.get( "QUOTED_DOUBLE" ), Some( &"value with spaces".to_string() ) );
     assert_eq!( secrets.get( "QUOTED_SINGLE" ), Some( &"another value".to_string() ) );
     assert_eq!( secrets.get( "UNQUOTED" ), Some( &"simple_value".to_string() ) );
-    assert_eq!( secrets.get( "EMPTY_QUOTES" ), Some( &"".to_string() ) );
+    assert_eq!( secrets.get( "EMPTY_QUOTES" ), Some( &String::new() ) );
   }
 
   /// test s2.3: load secrets with comments and empty lines
@@ -875,7 +875,7 @@ EMPTY_QUOTES=""
     let secret_dir = workspace.secret_dir();
     fs::create_dir_all( &secret_dir ).unwrap();
     
-    let secret_content = r#"# this is a comment
+    let secret_content = r"# this is a comment
 API_KEY=secret123
 
 # another comment
@@ -883,7 +883,7 @@ DB_URL=postgres://localhost
 # more comments
 
 VALID_KEY=valid_value
-"#;
+";
     let secret_file = secret_dir.join( "commented.env" );
     fs::write( &secret_file, secret_content ).unwrap();
     
@@ -933,7 +933,7 @@ VALID_KEY=valid_value
     match result.unwrap_err()
     {
       WorkspaceError::IoError( msg ) => assert!( msg.contains( "restricted.env" ) ),
-      other => panic!( "expected IoError, got {:?}", other ),
+      other => panic!( "expected IoError, got {other:?}" ),
     }
   }
 
@@ -1029,7 +1029,7 @@ VALID_KEY=valid_value
         assert!( msg.contains( "NONEXISTENT_KEY" ) );
         assert!( msg.contains( "not found" ) );
       }
-      other => panic!( "expected ConfigurationError, got {:?}", other ),
+      other => panic!( "expected ConfigurationError, got {other:?}" ),
     }
   }
 
@@ -1059,7 +1059,7 @@ KEY_WITH_HASH_IN_VALUE=value#with#hash
     
     assert_eq!( secrets.get( "KEY_WITH_SPACES" ), Some( &"value_with_spaces".to_string() ) );
     assert_eq!( secrets.get( "KEY_EQUALS_IN_VALUE" ), Some( &"key=value=pair".to_string() ) );
-    assert_eq!( secrets.get( "EMPTY_VALUE" ), Some( &"".to_string() ) );
+    assert_eq!( secrets.get( "EMPTY_VALUE" ), Some( &String::new() ) );
     assert_eq!( secrets.get( "KEY_WITH_QUOTES_IN_VALUE" ), Some( &"value with 'single' quotes".to_string() ) );
     assert_eq!( secrets.get( "KEY_WITH_HASH_IN_VALUE" ), Some( &"value#with#hash".to_string() ) );
     assert_eq!( secrets.get( "INDENTED_KEY" ), Some( &"indented_value".to_string() ) );
@@ -1177,7 +1177,7 @@ mod integration_tests
       
       thread::spawn( move ||
       {
-        let path = workspace.join( format!( "thread_{}.txt", i ) );
+        let path = workspace.join( format!( "thread_{i}.txt" ) );
         let is_workspace_file = workspace.is_workspace_file( &path );
         let config_dir = workspace.config_dir();
         
@@ -1290,18 +1290,18 @@ mod performance_tests
     // create deep directory structure with many files
     for dir_i in 0..50
     {
-      let dir_path = workspace.join( format!( "deep/dir_{}", dir_i ) );
+      let dir_path = workspace.join( format!( "deep/dir_{dir_i}" ) );
       fs::create_dir_all( &dir_path ).unwrap();
       
       for file_i in 0..100
       {
-        let file_path = dir_path.join( format!( "file_{}.rs", file_i ) );
-        fs::write( file_path, format!( "// content for file {}", file_i ) ).unwrap();
+        let file_path = dir_path.join( format!( "file_{file_i}.rs" ) );
+        fs::write( file_path, format!( "// content for file {file_i}" ) ).unwrap();
       }
     }
     
     let creation_time = start.elapsed();
-    println!( "created 5000 files in {:?}", creation_time );
+    println!( "created 5000 files in {creation_time:?}" );
     
     // test glob performance
     let start = Instant::now();
@@ -1313,7 +1313,7 @@ mod performance_tests
     }
     
     let glob_time = start.elapsed();
-    println!( "glob search took {:?}", glob_time );
+    println!( "glob search took {glob_time:?}" );
     
     // should complete in reasonable time (adjust threshold as needed)
     assert!( glob_time.as_secs() < 5, "glob search should complete within 5 seconds" );
@@ -1334,9 +1334,9 @@ mod performance_tests
     {
       for i in 0..20
       {
-        let file_path = workspace.join( format!( "files/test_{}.{}", i, ext ) );
+        let file_path = workspace.join( format!( "files/test_{i}.{ext}" ) );
         fs::create_dir_all( file_path.parent().unwrap() ).unwrap();
-        fs::write( file_path, format!( "content {}", i ) ).unwrap();
+        fs::write( file_path, format!( "content {i}" ) ).unwrap();
       }
     }
     
@@ -1350,7 +1350,7 @@ mod performance_tests
       
       thread::spawn( move ||
       {
-        let pattern = format!( "files/**/*.{}", ext );
+        let pattern = format!( "files/**/*.{ext}" );
         workspace.find_resources( &pattern ).unwrap()
       })
     }).collect();
@@ -1363,7 +1363,7 @@ mod performance_tests
     }
     
     let concurrent_time = start.elapsed();
-    println!( "100 concurrent globs found {} files in {:?}", total_found, concurrent_time );
+    println!( "100 concurrent globs found {total_found} files in {concurrent_time:?}" );
     
     // should complete without hanging
     assert!( concurrent_time.as_secs() < 10 );
@@ -1385,7 +1385,8 @@ mod performance_tests
     let mut secret_content = String::with_capacity( 1_024 * 1_024 );
     for i in 0..10_000
     {
-      secret_content.push_str( &format!( "KEY_{}=value_with_some_content_{}\n", i, i ) );
+      use core::fmt::Write;
+      writeln!( &mut secret_content, "KEY_{i}=value_with_some_content_{i}" ).unwrap();
     }
     
     let secret_file = secret_dir.join( "large.env" );
@@ -1410,10 +1411,10 @@ mod performance_tests
   #[ ignore = "stress test - run with cargo test -- --ignored" ]
   fn test_repeated_workspace_operations()
   {
-    let _temp_dir = TempDir::new().unwrap();
+    let temp_dir = TempDir::new().unwrap();
     let original = env::var( "WORKSPACE_PATH" ).ok();
     
-    env::set_var( "WORKSPACE_PATH", _temp_dir.path() );
+    env::set_var( "WORKSPACE_PATH", temp_dir.path() );
     
     let start = Instant::now();
     
@@ -1425,12 +1426,12 @@ mod performance_tests
       // perform various operations
       let _ = workspace.validate();
       let _ = workspace.config_dir();
-      let _ = workspace.join( format!( "file_{}.txt", i ) );
-      let _ = workspace.is_workspace_file( _temp_dir.path() );
+      let _ = workspace.join( format!( "file_{i}.txt" ) );
+      let _ = workspace.is_workspace_file( temp_dir.path() );
     }
     
     let repeated_ops_time = start.elapsed();
-    println!( "1000 repeated operations took {:?}", repeated_ops_time );
+    println!( "1000 repeated operations took {repeated_ops_time:?}" );
     
     // should be consistently fast
     assert!( repeated_ops_time.as_millis() < 500, "repeated operations should be fast" );
@@ -1462,7 +1463,7 @@ mod performance_tests
     // perform operations on all instances
     for ( i, ws ) in workspaces.iter().enumerate()
     {
-      let _ = ws.join( format!( "test_{}", i ) );
+      let _ = ws.join( format!( "test_{i}" ) );
       let _ = ws.validate();
     }
     
@@ -1493,7 +1494,7 @@ mod edge_case_tests
     assert!( workspace.is_workspace_file( &long_path ) );
     
     // join should handle long paths
-    let joined = workspace.join( format!( "dir/{}", long_name ) );
+    let joined = workspace.join( format!( "dir/{long_name}" ) );
     assert!( joined.to_string_lossy().len() > 200 );
   }
 
@@ -1565,7 +1566,7 @@ mod edge_case_tests
     let ( _temp_dir, workspace ) = testing::create_test_workspace();
     
     // create very deep nesting
-    let deep_parts : Vec< String > = ( 0..20 ).map( | i | format!( "level_{}", i ) ).collect();
+    let deep_parts : Vec< String > = ( 0..20 ).map( | i | format!( "level_{i}" ) ).collect();
     let deep_path = deep_parts.join( "/" );
     
     let joined = workspace.join( &deep_path );

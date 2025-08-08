@@ -1,4 +1,4 @@
-//! basic usage example for workspace_tools
+//! basic usage example for `workspace_tools`
 //!
 //! this example demonstrates the core functionality of workspace path resolution
 
@@ -47,7 +47,7 @@ fn main() -> Result< (), WorkspaceError >
   match ws.validate()
   {
     Ok( () ) => println!( "  workspace structure is valid" ),
-    Err( e ) => println!( "  workspace validation failed: {}", e ),
+    Err( e ) => println!( "  workspace validation failed: {e}" ),
   }
   
   Ok( () )
