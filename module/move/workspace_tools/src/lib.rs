@@ -412,6 +412,10 @@ impl Workspace
 {
   /// find files matching a glob pattern within the workspace
   ///
+  /// # Errors
+  ///
+  /// returns error if the glob pattern is invalid or if there are errors reading the filesystem
+  ///
   /// # examples
   ///
   /// ```rust
@@ -455,6 +459,10 @@ impl Workspace
   /// - config/{name}.json
   /// - .{name}.toml (dotfile in workspace root)
   ///
+  /// # Errors
+  ///
+  /// returns error if no configuration file with the given name is found
+  ///
   /// # examples
   ///
   /// ```rust
@@ -473,13 +481,13 @@ impl Workspace
   {
     let candidates = vec!
     [
-      self.config_dir().join( format!( "{}.toml", name ) ),
-      self.config_dir().join( format!( "{}.yaml", name ) ),
-      self.config_dir().join( format!( "{}.yml", name ) ),
-      self.config_dir().join( format!( "{}.json", name ) ),
-      self.root.join( format!( ".{}.toml", name ) ),
-      self.root.join( format!( ".{}.yaml", name ) ),
-      self.root.join( format!( ".{}.yml", name ) ),
+      self.config_dir().join( format!( "{name}.toml" ) ),
+      self.config_dir().join( format!( "{name}.yaml" ) ),
+      self.config_dir().join( format!( "{name}.yml" ) ),
+      self.config_dir().join( format!( "{name}.json" ) ),
+      self.root.join( format!( ".{name}.toml" ) ),
+      self.root.join( format!( ".{name}.yaml" ) ),
+      self.root.join( format!( ".{name}.yml" ) ),
     ];
 
     for candidate in candidates
@@ -491,7 +499,7 @@ impl Workspace
     }
 
     Err( WorkspaceError::PathNotFound(
-      self.config_dir().join( format!( "{}.toml", name ) )
+      self.config_dir().join( format!( "{name}.toml" ) )
     ) )
   }
 }
@@ -502,6 +510,7 @@ impl Workspace
   /// get secrets directory path
   ///
   /// returns `workspace_root/.secret`
+  #[ must_use ]
   pub fn secret_dir( &self ) -> PathBuf
   {
     self.root.join( ".secret" )
@@ -510,6 +519,7 @@ impl Workspace
   /// get path to secret configuration file
   ///
   /// returns `workspace_root/.secret/{name}`
+  #[ must_use ]
   pub fn secret_file( &self, name : &str ) -> PathBuf
   {
     self.secret_dir().join( name )
@@ -518,6 +528,10 @@ impl Workspace
   /// load secrets from a key-value file
   ///
   /// supports shell script format (KEY=value lines)
+  ///
+  /// # Errors
+  ///
+  /// returns error if the file cannot be read or contains invalid format
   ///
   /// # examples
   ///
@@ -550,12 +564,16 @@ impl Workspace
     let content = fs::read_to_string( &secret_file )
       .map_err( | e | WorkspaceError::IoError( format!( "failed to read {}: {}", secret_file.display(), e ) ) )?;
 
-    self.parse_key_value_file( &content )
+    Ok( Self::parse_key_value_file( &content ) )
   }
 
   /// load a specific secret key with fallback to environment
   ///
   /// tries to load from secret file first, then falls back to environment variable
+  ///
+  /// # Errors
+  ///
+  /// returns error if the key is not found in either the secret file or environment variables
   ///
   /// # examples
   ///
@@ -597,7 +615,7 @@ impl Workspace
   /// parse key-value file content
   ///
   /// supports shell script format with comments and quotes
-  fn parse_key_value_file( &self, content : &str ) -> Result< HashMap< String, String > >
+  fn parse_key_value_file( content : &str ) -> HashMap< String, String >
   {
     let mut secrets = HashMap::new();
 
@@ -632,11 +650,12 @@ impl Workspace
       }
     }
 
-    Ok( secrets )
+    secrets
   }
 }
 
 /// testing utilities for workspace functionality
+#[ cfg( feature = "enabled" ) ]
 pub mod testing
 {
   use super::*;

@@ -26,12 +26,12 @@ all-features = false
 [features]
 default = [ "enabled" ]
 full = [ "enabled", "glob", "secret_management" ]
-enabled = []
+enabled = [ "dep:tempfile" ]
 glob = [ "dep:glob" ]
 secret_management = []
 
 [dependencies]
 glob = { workspace = true, optional = true }
-tempfile = { workspace = true }
+tempfile = { workspace = true, optional = true }
 
 [dev-dependencies]
