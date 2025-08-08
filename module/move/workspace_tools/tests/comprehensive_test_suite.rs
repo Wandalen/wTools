@@ -215,18 +215,30 @@ mod core_workspace_tests
     restore_env_var( "WORKSPACE_PATH", original );
   }
 
-  /// test w2.1: fallback resolution to current directory
+  /// test w2.1: fallback resolution behavior
   #[ test ]
   fn test_fallback_to_current_dir()
   {
     let original = env::var( "WORKSPACE_PATH" ).ok();
     env::remove_var( "WORKSPACE_PATH" );
     let workspace = Workspace::resolve_or_fallback();
-    let current_dir = env::current_dir().unwrap();
     
     restore_env_var( "WORKSPACE_PATH", original );
     
-    assert_eq!( workspace.root(), current_dir );
+    // with cargo integration enabled, should detect cargo workspace first
+    #[ cfg( feature = "cargo_integration" ) ]
+    {
+      // since we're in a cargo workspace, it should detect the workspace root
+      assert!( workspace.root().ends_with( "wTools" ) );
+      assert!( workspace.is_cargo_workspace() );
+    }
+    
+    // without cargo integration, should fallback to current directory
+    #[ cfg( not( feature = "cargo_integration" ) ) ]
+    {
+      let current_dir = env::current_dir().unwrap();
+      assert_eq!( workspace.root(), current_dir );
+    }
   }
 
   /// test w2.2: fallback resolution to git root

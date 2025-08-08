@@ -80,4 +80,7 @@ pub mod prelude {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use component_model_types::prelude::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use component_model_types::popular_types;
 }

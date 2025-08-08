@@ -7,6 +7,9 @@ use std::env;
 #[ test ]
 fn test_centralized_secrets_access()
 {
+  // save original environment  
+  let original_workspace_path = env::var( "WORKSPACE_PATH" ).ok();
+  
   // Set environment variable for testing
   env::set_var( "WORKSPACE_PATH", env::current_dir().unwrap().parent().unwrap().parent().unwrap() );
   
@@ -53,4 +56,10 @@ fn test_centralized_secrets_access()
   }
   
   println!( "Centralized secrets management test completed successfully!" );
+  
+  // restore original environment
+  match original_workspace_path {
+    Some( path ) => env::set_var( "WORKSPACE_PATH", path ),
+    None => env::remove_var( "WORKSPACE_PATH" ),
+  }
 }

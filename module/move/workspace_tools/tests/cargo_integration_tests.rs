@@ -1,0 +1,238 @@
+//! Test Matrix: Cargo Integration
+//!
+//! | Test ID | Feature | Scenario | Expected Result |
+//! |---------|---------|----------|-----------------|
+//! | CI001   | from_cargo_workspace | Auto-detect from current workspace | Success |
+//! | CI002   | from_cargo_workspace | No cargo workspace found | Error |
+//! | CI003   | from_cargo_manifest | Valid manifest path | Success |
+//! | CI004   | from_cargo_manifest | Invalid manifest path | Error |
+//! | CI005   | is_cargo_workspace | Current directory is cargo workspace | true |
+//! | CI006   | is_cargo_workspace | Current directory is not cargo workspace | false |
+//! | CI007   | cargo_metadata | Extract metadata from workspace | Success with metadata |
+//! | CI008   | workspace_members | Get all workspace members | Success with member list |
+//! | CI009   | resolve_or_fallback | Cargo integration as primary strategy | Uses cargo detection first |
+
+#![ cfg( feature = "cargo_integration" ) ]
+
+use workspace_tools::{ Workspace, WorkspaceError };
+use std::fs;
+use tempfile::TempDir;
+
+/// Test CI001: Auto-detect from current workspace  
+#[ test ]
+fn test_from_cargo_workspace_success()
+{
+  let temp_dir = create_test_cargo_workspace();
+  
+  // save original environment
+  let original_dir = std::env::current_dir().unwrap();
+  
+  // set current directory to the test workspace
+  std::env::set_current_dir( temp_dir.path() ).unwrap();
+  
+  let result = Workspace::from_cargo_workspace();
+  
+  // restore original directory
+  std::env::set_current_dir( original_dir ).unwrap();
+  
+  assert!( result.is_ok() );
+  let workspace = result.unwrap();
+  assert_eq!( workspace.root(), temp_dir.path() );
+}
+
+/// Test CI002: No cargo workspace found
+#[ test ]  
+fn test_from_cargo_workspace_not_found()
+{
+  let temp_dir = TempDir::new().unwrap();
+  
+  // save original environment
+  let original_dir = std::env::current_dir().unwrap();
+  
+  // set current directory to empty directory
+  std::env::set_current_dir( temp_dir.path() ).unwrap();
+  
+  let result = Workspace::from_cargo_workspace();
+  
+  // restore original directory
+  std::env::set_current_dir( original_dir ).unwrap();
+  
+  assert!( result.is_err() );
+  assert!( matches!( result.unwrap_err(), WorkspaceError::PathNotFound( _ ) ) );
+}
+
+/// Test CI003: Valid manifest path
+#[ test ]
+fn test_from_cargo_manifest_valid()
+{
+  let temp_dir = create_test_cargo_workspace();
+  let manifest_path = temp_dir.path().join( "Cargo.toml" );
+  
+  let result = Workspace::from_cargo_manifest( &manifest_path );
+  
+  assert!( result.is_ok() );
+  let workspace = result.unwrap();
+  assert_eq!( workspace.root(), temp_dir.path() );
+}
+
+/// Test CI004: Invalid manifest path
+#[ test ]
+fn test_from_cargo_manifest_invalid()
+{
+  let temp_dir = TempDir::new().unwrap();
+  let manifest_path = temp_dir.path().join( "NonExistent.toml" );
+  
+  let result = Workspace::from_cargo_manifest( &manifest_path );
+  
+  assert!( result.is_err() );
+  assert!( matches!( result.unwrap_err(), WorkspaceError::PathNotFound( _ ) ) );
+}
+
+/// Test CI005: Current directory is cargo workspace
+#[ test ]
+fn test_is_cargo_workspace_true()
+{
+  let temp_dir = create_test_cargo_workspace();
+  let workspace = Workspace::from_cargo_manifest( temp_dir.path().join( "Cargo.toml" ) ).unwrap();
+  
+  assert!( workspace.is_cargo_workspace() );
+}
+
+/// Test CI006: Current directory is not cargo workspace  
+#[ test ]
+fn test_is_cargo_workspace_false()
+{
+  let temp_dir = TempDir::new().unwrap();
+  
+  // save original environment
+  let original_workspace_path = std::env::var( "WORKSPACE_PATH" ).ok();
+  
+  // set WORKSPACE_PATH to the temp directory (no Cargo.toml)
+  std::env::set_var( "WORKSPACE_PATH", temp_dir.path() );
+  let workspace = Workspace::resolve().unwrap();
+  
+  assert!( !workspace.is_cargo_workspace() );
+  
+  // restore environment
+  match original_workspace_path {
+    Some( path ) => std::env::set_var( "WORKSPACE_PATH", path ),
+    None => std::env::remove_var( "WORKSPACE_PATH" ),
+  }
+}
+
+/// Test CI007: Extract metadata from workspace
+#[ test ]
+fn test_cargo_metadata_success()
+{
+  let temp_dir = create_test_cargo_workspace_with_members();
+  let workspace = Workspace::from_cargo_manifest( temp_dir.path().join( "Cargo.toml" ) ).unwrap();
+  
+  let result = workspace.cargo_metadata();
+  
+  assert!( result.is_ok() );
+  let metadata = result.unwrap();
+  assert_eq!( metadata.workspace_root, temp_dir.path() );
+  assert!( !metadata.members.is_empty() );
+}
+
+/// Test CI008: Get all workspace members
+#[ test ]
+fn test_workspace_members()
+{
+  let temp_dir = create_test_cargo_workspace_with_members();
+  let workspace = Workspace::from_cargo_manifest( temp_dir.path().join( "Cargo.toml" ) ).unwrap();
+  
+  let result = workspace.workspace_members();
+  
+  assert!( result.is_ok() );
+  let members = result.unwrap();
+  assert!( !members.is_empty() );
+}
+
+/// Test CI009: Cargo integration as primary strategy
+#[ test ]
+fn test_resolve_or_fallback_cargo_primary()
+{
+  let temp_dir = create_test_cargo_workspace();
+  
+  // save original environment
+  let original_dir = std::env::current_dir().unwrap();
+  let original_workspace_path = std::env::var( "WORKSPACE_PATH" ).ok();
+  
+  // set current directory to test workspace  
+  std::env::set_current_dir( temp_dir.path() ).unwrap();
+  
+  // unset WORKSPACE_PATH to ensure cargo detection is used
+  std::env::remove_var( "WORKSPACE_PATH" );
+  
+  let workspace = Workspace::resolve_or_fallback();
+  
+  // restore environment completely
+  std::env::set_current_dir( original_dir ).unwrap();
+  match original_workspace_path {
+    Some( path ) => std::env::set_var( "WORKSPACE_PATH", path ),
+    None => std::env::remove_var( "WORKSPACE_PATH" ),
+  }
+  
+  assert_eq!( workspace.root(), temp_dir.path() );
+  assert!( workspace.is_cargo_workspace() );
+}
+
+/// Helper function to create a test cargo workspace
+fn create_test_cargo_workspace() -> TempDir
+{
+  let temp_dir = TempDir::new().unwrap();
+  
+  let cargo_toml_content = r#"
+[workspace]
+members = []
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+"#;
+
+  fs::write( temp_dir.path().join( "Cargo.toml" ), cargo_toml_content ).unwrap();
+  
+  temp_dir
+}
+
+/// Helper function to create a test cargo workspace with members
+fn create_test_cargo_workspace_with_members() -> TempDir
+{
+  let temp_dir = TempDir::new().unwrap();
+  
+  let cargo_toml_content = r#"
+[workspace]
+members = [ "member1", "member2" ]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+"#;
+
+  fs::write( temp_dir.path().join( "Cargo.toml" ), cargo_toml_content ).unwrap();
+  
+  // create workspace members
+  for member in [ "member1", "member2" ]
+  {
+    let member_dir = temp_dir.path().join( member );
+    fs::create_dir_all( &member_dir ).unwrap();
+    
+    let member_cargo_toml = format!( r#"
+[package]
+name = "{}"
+version.workspace = true
+edition.workspace = true
+"#, member );
+
+    fs::write( member_dir.join( "Cargo.toml" ), member_cargo_toml ).unwrap();
+    
+    // create src/lib.rs
+    let src_dir = member_dir.join( "src" );
+    fs::create_dir_all( &src_dir ).unwrap();
+    fs::write( src_dir.join( "lib.rs" ), "// test library" ).unwrap();
+  }
+  
+  temp_dir
+}

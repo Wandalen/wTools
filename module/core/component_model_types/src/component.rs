@@ -39,13 +39,12 @@
 /// ```
 #[ cfg( feature = "types_component_assign" ) ]
 pub trait Assign<T, IntoT>
-where
-  IntoT: Into<T>,
 {
   /// Sets or replaces the component on the object with the given value.
   ///
   /// This method takes ownership of the given value (`component`), which is of type `IntoT`.
-  /// `component` is then converted into type `T` and set as the component of the object.
+  /// For standard implementations, `component` is converted into type `T` using `Into<T>`.
+  /// For popular types, custom conversion logic may be used.
   fn assign(&mut self, component: IntoT);
 
   /// Sets or replaces the component on the object with the given value.

@@ -34,6 +34,8 @@ let logs = ws.logs_dir();
 
 ## 🚀 key benefits
 
+- **📦 cargo integration** - automatic cargo workspace detection (NEW!)
+- **🔧 serde integration** - seamless configuration loading/saving (NEW!)  
 - **🎯 zero configuration** - works with simple `.cargo/config.toml` setup
 - **🏗️ standard layout** - promotes consistent project structure  
 - **🔒 built-in secrets** - secure configuration loading with fallbacks
@@ -163,6 +165,73 @@ let secrets = ws.load_secrets_from_file("-secrets.sh")?;
 
 // load specific key with environment fallback
 let api_key = ws.load_secret_key("API_KEY", "-secrets.sh")?;
+```
+
+### cargo integration (cargo_integration feature)
+
+```toml
+[dependencies]
+workspace_tools = { version = "0.1", features = ["cargo_integration"] }
+```
+
+```rust
+use workspace_tools::Workspace;
+
+// automatic cargo workspace detection - no .cargo/config.toml needed!
+let ws = Workspace::from_cargo_workspace()?;
+
+// or use resolve_or_fallback for cargo-first detection
+let ws = Workspace::resolve_or_fallback(); // tries cargo → env → current_dir → git
+
+// access cargo metadata
+if ws.is_cargo_workspace() {
+    let metadata = ws.cargo_metadata()?;
+    println!("workspace root: {}", metadata.workspace_root.display());
+    
+    for member in metadata.members {
+        println!("  • {} v{}", member.name, member.version);
+    }
+    
+    let member_dirs = ws.workspace_members()?;
+}
+```
+
+### serde integration (serde_integration feature)
+
+```toml
+[dependencies]
+workspace_tools = { version = "0.1", features = ["serde_integration"] }
+serde = { version = "1.0", features = ["derive"] }
+```
+
+```rust
+use serde::{Serialize, Deserialize};
+use workspace_tools::workspace;
+
+#[derive(Serialize, Deserialize)]
+struct AppConfig {
+    name: String,
+    port: u16,
+    database: DatabaseConfig,
+}
+
+let ws = workspace()?;
+
+// automatic format detection - loads config/app.{toml,yaml,json}
+let config: AppConfig = ws.load_config("app")?;
+
+// save configuration with format preservation
+ws.save_config("app", &config)?;
+
+// load from specific file with format detection
+let config: AppConfig = ws.load_config_from("config/custom.json")?;
+
+// layered configuration merging
+let config: AppConfig = ws.load_config_layered(&["base", "development"])?;
+
+// partial configuration updates
+let updates = serde_json::json!({ "port": 9090 });
+let updated: AppConfig = ws.update_config("app", updates)?;
 ```
 
 ## 🧪 testing integration

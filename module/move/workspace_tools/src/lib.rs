@@ -47,11 +47,14 @@ use std::
   path::{ Path, PathBuf },
 };
 
+#[ cfg( feature = "cargo_integration" ) ]
+use std::collections::HashMap;
+
 #[ cfg( feature = "glob" ) ]
 use glob::glob;
 
 #[ cfg( feature = "secret_management" ) ]
-use std::{ collections::HashMap, fs };
+use std::fs;
 
 /// workspace path resolution errors
 #[ derive( Debug, Clone ) ]
@@ -71,6 +74,15 @@ pub enum WorkspaceError
   PathNotFound( PathBuf ),
   /// path is outside workspace boundaries
   PathOutsideWorkspace( PathBuf ),
+  /// cargo metadata error
+  #[ cfg( feature = "cargo_integration" ) ]
+  CargoError( String ),
+  /// toml parsing error
+  #[ cfg( feature = "cargo_integration" ) ]
+  TomlError( String ),
+  /// serde deserialization error
+  #[ cfg( feature = "serde_integration" ) ]
+  SerdeError( String ),
 }
 
 impl core::fmt::Display for WorkspaceError
@@ -93,6 +105,15 @@ impl core::fmt::Display for WorkspaceError
         write!( f, "path not found: {}. ensure the workspace structure is properly initialized", path.display() ),
       WorkspaceError::PathOutsideWorkspace( path ) =>
         write!( f, "path is outside workspace boundaries: {}", path.display() ),
+      #[ cfg( feature = "cargo_integration" ) ]
+      WorkspaceError::CargoError( msg ) =>
+        write!( f, "cargo metadata error: {msg}" ),
+      #[ cfg( feature = "cargo_integration" ) ]
+      WorkspaceError::TomlError( msg ) =>
+        write!( f, "toml parsing error: {msg}" ),
+      #[ cfg( feature = "serde_integration" ) ]
+      WorkspaceError::SerdeError( msg ) =>
+        write!( f, "serde error: {msg}" ),
     }
   }
 }
@@ -155,9 +176,10 @@ impl Workspace
   /// resolve workspace with fallback strategies
   ///
   /// tries multiple strategies to resolve workspace root:
-  /// 1. environment variable (`WORKSPACE_PATH`)
-  /// 2. current working directory
-  /// 3. git repository root (if .git directory found)
+  /// 1. cargo workspace detection (if cargo_integration feature enabled)
+  /// 2. environment variable (`WORKSPACE_PATH`)
+  /// 3. current working directory
+  /// 4. git repository root (if .git directory found)
   ///
   /// # examples
   ///
@@ -171,10 +193,22 @@ impl Workspace
   #[inline]
   pub fn resolve_or_fallback() -> Self
   {
-    Self::resolve()
-      .or_else( |_| Self::from_current_dir() )
-      .or_else( |_| Self::from_git_root() )
-      .unwrap_or_else( |_| Self::from_cwd() )
+    #[ cfg( feature = "cargo_integration" ) ]
+    {
+      Self::from_cargo_workspace()
+        .or_else( |_| Self::resolve() )
+        .or_else( |_| Self::from_current_dir() )
+        .or_else( |_| Self::from_git_root() )
+        .unwrap_or_else( |_| Self::from_cwd() )
+    }
+    
+    #[ cfg( not( feature = "cargo_integration" ) ) ]
+    {
+      Self::resolve()
+        .or_else( |_| Self::from_current_dir() )
+        .or_else( |_| Self::from_git_root() )
+        .unwrap_or_else( |_| Self::from_cwd() )
+    }
   }
 
   /// create workspace from current working directory
@@ -404,6 +438,58 @@ impl Workspace
     Ok( PathBuf::from( value ) )
   }
 }
+
+// cargo integration types and implementations
+#[ cfg( feature = "cargo_integration" ) ]
+/// cargo metadata information for workspace
+#[ derive( Debug, Clone ) ]
+pub struct CargoMetadata
+{
+  /// root directory of the cargo workspace
+  pub workspace_root : PathBuf,
+  /// list of workspace member packages
+  pub members : Vec< CargoPackage >,
+  /// workspace-level dependencies
+  pub workspace_dependencies : HashMap< String, String >,
+}
+
+#[ cfg( feature = "cargo_integration" ) ]
+/// information about a cargo package within a workspace
+#[ derive( Debug, Clone ) ]
+pub struct CargoPackage
+{
+  /// package name
+  pub name : String,
+  /// package version
+  pub version : String,
+  /// path to the package's Cargo.toml
+  pub manifest_path : PathBuf,
+  /// root directory of the package
+  pub package_root : PathBuf,
+}
+
+// serde integration types
+#[ cfg( feature = "serde_integration" ) ]
+/// trait for configuration types that can be merged
+pub trait ConfigMerge : Sized
+{
+  /// merge this configuration with another, returning the merged result
+  fn merge( self, other : Self ) -> Self;
+}
+
+#[ cfg( feature = "serde_integration" ) ]
+/// workspace-aware serde deserializer
+#[ derive( Debug ) ]
+pub struct WorkspaceDeserializer< 'ws >
+{
+  /// reference to workspace for path resolution
+  pub workspace : &'ws Workspace,
+}
+
+#[ cfg( feature = "serde_integration" ) ]
+/// custom serde field for workspace-relative paths
+#[ derive( Debug, Clone, PartialEq ) ]
+pub struct WorkspacePath( pub PathBuf );
 
 // conditional compilation for optional features
 
@@ -651,6 +737,432 @@ impl Workspace
     }
 
     secrets
+  }
+}
+
+#[ cfg( feature = "cargo_integration" ) ]
+impl Workspace
+{
+  /// create workspace from cargo workspace root (auto-detected)
+  ///
+  /// traverses up directory tree looking for `Cargo.toml` with `[workspace]` section
+  /// or workspace member that references a workspace root
+  ///
+  /// # Errors
+  ///
+  /// returns error if no cargo workspace is found or if cargo.toml cannot be parsed
+  ///
+  /// # examples
+  ///
+  /// ```rust
+  /// use workspace_tools::Workspace;
+  ///
+  /// let workspace = Workspace::from_cargo_workspace()?;
+  /// println!("cargo workspace root: {}", workspace.root().display());
+  /// # Ok::<(), workspace_tools::WorkspaceError>(())
+  /// ```
+  pub fn from_cargo_workspace() -> Result< Self >
+  {
+    let workspace_root = Self::find_cargo_workspace()?;
+    Ok( Self { root : workspace_root } )
+  }
+
+  /// create workspace from specific cargo.toml path
+  ///
+  /// # Errors
+  ///
+  /// returns error if the manifest path does not exist or cannot be parsed
+  pub fn from_cargo_manifest< P : AsRef< Path > >( manifest_path : P ) -> Result< Self >
+  {
+    let manifest_path = manifest_path.as_ref();
+    
+    if !manifest_path.exists()
+    {
+      return Err( WorkspaceError::PathNotFound( manifest_path.to_path_buf() ) );
+    }
+
+    let workspace_root = if manifest_path.file_name() == Some( std::ffi::OsStr::new( "Cargo.toml" ) )
+    {
+      manifest_path.parent()
+        .ok_or_else( || WorkspaceError::ConfigurationError( "invalid manifest path".to_string() ) )?
+        .to_path_buf()
+    }
+    else
+    {
+      manifest_path.to_path_buf()
+    };
+
+    Ok( Self { root : workspace_root } )
+  }
+
+  /// get cargo metadata for this workspace
+  ///
+  /// # Errors
+  ///
+  /// returns error if cargo metadata command fails or workspace is not a cargo workspace
+  pub fn cargo_metadata( &self ) -> Result< CargoMetadata >
+  {
+    let cargo_toml = self.cargo_toml();
+    
+    if !cargo_toml.exists()
+    {
+      return Err( WorkspaceError::CargoError( "not a cargo workspace".to_string() ) );
+    }
+
+    // use cargo_metadata crate for robust metadata extraction
+    let metadata = cargo_metadata::MetadataCommand::new()
+      .manifest_path( &cargo_toml )
+      .exec()
+      .map_err( | e | WorkspaceError::CargoError( e.to_string() ) )?;
+
+    let mut members = Vec::new();
+    let mut workspace_dependencies = HashMap::new();
+
+    // extract workspace member information
+    for package in metadata.workspace_packages()
+    {
+      members.push( CargoPackage {
+        name : package.name.clone(),
+        version : package.version.to_string(),
+        manifest_path : package.manifest_path.clone().into(),
+        package_root : package.manifest_path
+          .parent()
+          .unwrap_or( &package.manifest_path )
+          .into(),
+      } );
+    }
+
+    // extract workspace dependencies if available
+    if let Some( deps ) = metadata.workspace_metadata.get( "dependencies" )
+    {
+      if let Some( deps_map ) = deps.as_object()
+      {
+        for ( name, version ) in deps_map
+        {
+          if let Some( version_str ) = version.as_str()
+          {
+            workspace_dependencies.insert( name.clone(), version_str.to_string() );
+          }
+        }
+      }
+    }
+
+    Ok( CargoMetadata {
+      workspace_root : metadata.workspace_root.into(),
+      members,
+      workspace_dependencies,
+    } )
+  }
+
+  /// check if this workspace is a cargo workspace
+  pub fn is_cargo_workspace( &self ) -> bool
+  {
+    let cargo_toml = self.cargo_toml();
+    
+    if !cargo_toml.exists()
+    {
+      return false;
+    }
+
+    // check if Cargo.toml contains workspace section
+    if let Ok( content ) = std::fs::read_to_string( &cargo_toml )
+    {
+      if let Ok( parsed ) = toml::from_str::< toml::Value >( &content )
+      {
+        return parsed.get( "workspace" ).is_some();
+      }
+    }
+
+    false
+  }
+
+  /// get workspace members (if cargo workspace)
+  ///
+  /// # Errors
+  ///
+  /// returns error if not a cargo workspace or cargo metadata fails
+  pub fn workspace_members( &self ) -> Result< Vec< PathBuf > >
+  {
+    let metadata = self.cargo_metadata()?;
+    Ok( metadata.members.into_iter().map( | pkg | pkg.package_root ).collect() )
+  }
+
+  /// find cargo workspace root by traversing up directory tree
+  fn find_cargo_workspace() -> Result< PathBuf >
+  {
+    let mut current = std::env::current_dir()
+      .map_err( | e | WorkspaceError::IoError( e.to_string() ) )?;
+
+    loop
+    {
+      let manifest = current.join( "Cargo.toml" );
+      if manifest.exists()
+      {
+        let content = std::fs::read_to_string( &manifest )
+          .map_err( | e | WorkspaceError::IoError( e.to_string() ) )?;
+        
+        let parsed : toml::Value = toml::from_str( &content )
+          .map_err( | e | WorkspaceError::TomlError( e.to_string() ) )?;
+
+        // check if this is a workspace root
+        if parsed.get( "workspace" ).is_some()
+        {
+          return Ok( current );
+        }
+
+        // check if this is a workspace member pointing to a parent workspace
+        if let Some( package ) = parsed.get( "package" )
+        {
+          if package.get( "workspace" ).is_some()
+          {
+            // continue searching upward for the actual workspace root
+          }
+        }
+      }
+
+      match current.parent()
+      {
+        Some( parent ) => current = parent.to_path_buf(),
+        None => return Err( WorkspaceError::PathNotFound( current ) ),
+      }
+    }
+  }
+}
+
+#[ cfg( feature = "serde_integration" ) ]
+impl Workspace
+{
+  /// load configuration with automatic format detection
+  ///
+  /// # Errors
+  ///
+  /// returns error if configuration file is not found or cannot be deserialized
+  ///
+  /// # examples
+  ///
+  /// ```rust,no_run
+  /// use workspace_tools::workspace;
+  /// use serde::Deserialize;
+  ///
+  /// #[derive(Deserialize)]
+  /// struct AppConfig {
+  ///     name: String,
+  ///     port: u16,
+  /// }
+  ///
+  /// let ws = workspace()?;
+  /// // looks for config/app.toml, config/app.yaml, config/app.json
+  /// let config: AppConfig = ws.load_config("app")?;
+  /// # Ok::<(), workspace_tools::WorkspaceError>(())
+  /// ```
+  pub fn load_config< T >( &self, name : &str ) -> Result< T >
+  where
+    T : serde::de::DeserializeOwned,
+  {
+    let config_path = self.find_config( name )?;
+    self.load_config_from( config_path )
+  }
+
+  /// load configuration from specific file
+  ///
+  /// # Errors
+  ///
+  /// returns error if file cannot be read or deserialized
+  pub fn load_config_from< T, P >( &self, path : P ) -> Result< T >
+  where
+    T : serde::de::DeserializeOwned,
+    P : AsRef< Path >,
+  {
+    let path = path.as_ref();
+    let content = std::fs::read_to_string( path )
+      .map_err( | e | WorkspaceError::IoError( format!( "failed to read {}: {}", path.display(), e ) ) )?;
+
+    let extension = path.extension()
+      .and_then( | ext | ext.to_str() )
+      .unwrap_or( "toml" );
+
+    match extension
+    {
+      "toml" => toml::from_str( &content )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "toml deserialization error: {}", e ) ) ),
+      "json" => serde_json::from_str( &content )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "json deserialization error: {}", e ) ) ),
+      "yaml" | "yml" => serde_yaml::from_str( &content )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "yaml deserialization error: {}", e ) ) ),
+      _ => Err( WorkspaceError::ConfigurationError( format!( "unsupported config format: {}", extension ) ) ),
+    }
+  }
+
+  /// save configuration with format matching the original
+  ///
+  /// # Errors
+  ///
+  /// returns error if configuration cannot be serialized or written to file
+  pub fn save_config< T >( &self, name : &str, config : &T ) -> Result< () >
+  where
+    T : serde::Serialize,
+  {
+    let config_path = self.find_config( name )
+      .or_else( |_| Ok( self.config_dir().join( format!( "{}.toml", name ) ) ) )?;
+    
+    self.save_config_to( config_path, config )
+  }
+
+  /// save configuration to specific file with format detection
+  ///
+  /// # Errors
+  ///
+  /// returns error if configuration cannot be serialized or written to file
+  pub fn save_config_to< T, P >( &self, path : P, config : &T ) -> Result< () >
+  where
+    T : serde::Serialize,
+    P : AsRef< Path >,
+  {
+    let path = path.as_ref();
+    let extension = path.extension()
+      .and_then( | ext | ext.to_str() )
+      .unwrap_or( "toml" );
+
+    let content = match extension
+    {
+      "toml" => toml::to_string_pretty( config )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "toml serialization error: {}", e ) ) )?,
+      "json" => serde_json::to_string_pretty( config )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "json serialization error: {}", e ) ) )?,
+      "yaml" | "yml" => serde_yaml::to_string( config )
+        .map_err( | e | WorkspaceError::SerdeError( format!( "yaml serialization error: {}", e ) ) )?,
+      _ => return Err( WorkspaceError::ConfigurationError( format!( "unsupported config format: {}", extension ) ) ),
+    };
+
+    // ensure parent directory exists
+    if let Some( parent ) = path.parent()
+    {
+      std::fs::create_dir_all( parent )
+        .map_err( | e | WorkspaceError::IoError( format!( "failed to create directory {}: {}", parent.display(), e ) ) )?;
+    }
+
+    // atomic write using temporary file
+    let temp_path = path.with_extension( format!( "{}.tmp", extension ) );
+    std::fs::write( &temp_path, content )
+      .map_err( | e | WorkspaceError::IoError( format!( "failed to write temporary file {}: {}", temp_path.display(), e ) ) )?;
+    
+    std::fs::rename( &temp_path, path )
+      .map_err( | e | WorkspaceError::IoError( format!( "failed to rename {} to {}: {}", temp_path.display(), path.display(), e ) ) )?;
+
+    Ok( () )
+  }
+
+  /// load and merge multiple configuration layers
+  ///
+  /// # Errors
+  ///
+  /// returns error if any configuration file cannot be loaded or merged
+  pub fn load_config_layered< T >( &self, names : &[ &str ] ) -> Result< T >
+  where
+    T : serde::de::DeserializeOwned + ConfigMerge,
+  {
+    let mut result : Option< T > = None;
+
+    for name in names
+    {
+      if let Ok( config ) = self.load_config::< T >( name )
+      {
+        result = Some( match result
+        {
+          Some( existing ) => existing.merge( config ),
+          None => config,
+        } );
+      }
+    }
+
+    result.ok_or_else( || WorkspaceError::ConfigurationError( "no configuration files found".to_string() ) )
+  }
+
+  /// update configuration partially
+  ///
+  /// # Errors
+  ///
+  /// returns error if configuration cannot be loaded, updated, or saved
+  pub fn update_config< T, U >( &self, name : &str, updates : U ) -> Result< T >
+  where
+    T : serde::de::DeserializeOwned + serde::Serialize,
+    U : serde::Serialize,
+  {
+    // load existing configuration
+    let existing : T = self.load_config( name )?;
+    
+    // serialize both to json for merging
+    let existing_json = serde_json::to_value( &existing )
+      .map_err( | e | WorkspaceError::SerdeError( format!( "failed to serialize existing config: {}", e ) ) )?;
+    
+    let updates_json = serde_json::to_value( updates )
+      .map_err( | e | WorkspaceError::SerdeError( format!( "failed to serialize updates: {}", e ) ) )?;
+
+    // merge json objects
+    let merged = Self::merge_json_objects( existing_json, updates_json )?;
+    
+    // deserialize back to target type
+    let updated : T = serde_json::from_value( merged )
+      .map_err( | e | WorkspaceError::SerdeError( format!( "failed to deserialize merged config: {}", e ) ) )?;
+    
+    // save updated configuration
+    self.save_config( name, &updated )?;
+    
+    Ok( updated )
+  }
+
+  /// merge two json objects recursively
+  fn merge_json_objects( mut base : serde_json::Value, updates : serde_json::Value ) -> Result< serde_json::Value >
+  {
+    match ( &mut base, updates )
+    {
+      ( serde_json::Value::Object( ref mut base_map ), serde_json::Value::Object( updates_map ) ) =>
+      {
+        for ( key, value ) in updates_map
+        {
+          match base_map.get_mut( &key )
+          {
+            Some( existing ) if existing.is_object() && value.is_object() =>
+            {
+              *existing = Self::merge_json_objects( existing.clone(), value )?;
+            }
+            _ =>
+            {
+              base_map.insert( key, value );
+            }
+          }
+        }
+      }
+      ( _, updates_value ) =>
+      {
+        base = updates_value;
+      }
+    }
+    
+    Ok( base )
+  }
+}
+
+#[ cfg( feature = "serde_integration" ) ]
+impl serde::Serialize for WorkspacePath
+{
+  fn serialize< S >( &self, serializer : S ) -> core::result::Result< S::Ok, S::Error >
+  where
+    S : serde::Serializer,
+  {
+    self.0.serialize( serializer )
+  }
+}
+
+#[ cfg( feature = "serde_integration" ) ]
+impl< 'de > serde::Deserialize< 'de > for WorkspacePath
+{
+  fn deserialize< D >( deserializer : D ) -> core::result::Result< Self, D::Error >
+  where
+    D : serde::Deserializer< 'de >,
+  {
+    let path = PathBuf::deserialize( deserializer )?;
+    Ok( WorkspacePath( path ) )
   }
 }
 

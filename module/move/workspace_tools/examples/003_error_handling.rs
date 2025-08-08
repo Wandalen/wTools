@@ -119,6 +119,22 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
       println!( "   handle glob error: {}", msg ),
     Err( WorkspaceError::PathOutsideWorkspace( path ) ) =>
       println!( "   handle security violation: {}", path.display() ),
+    
+    // handle new error types from cargo and serde integration
+    #[ cfg( feature = "cargo_integration" ) ]
+    Err( WorkspaceError::CargoError( msg ) ) =>
+      println!( "   handle cargo error: {}", msg ),
+    
+    #[ cfg( feature = "cargo_integration" ) ]  
+    Err( WorkspaceError::TomlError( msg ) ) =>
+      println!( "   handle toml error: {}", msg ),
+    
+    #[ cfg( feature = "serde_integration" ) ]
+    Err( WorkspaceError::SerdeError( msg ) ) =>
+      println!( "   handle serde error: {}", msg ),
+    
+    // catch-all for any future error variants (required due to #[non_exhaustive])
+    Err( e ) => println!( "   handle unknown error: {}", e ),
   }
   
   println!( "\n💡 error handling best practices:" );

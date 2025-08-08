@@ -234,7 +234,8 @@ author = "workspace_tools"
       fs::write( template_dir.join( "template.toml" ), metadata )?;
       
       // create template files
-      for ( filename, content ) in template_config.files
+      let file_count = template_config.files.len();
+      for ( filename, content ) in &template_config.files
       {
         let file_path = template_dir.join( filename );
         if let Some( parent ) = file_path.parent()
@@ -246,7 +247,7 @@ author = "workspace_tools"
       
       println!( "     created template: {}", template_name );
       println!( "       directories: {}", template_config.directories.len() );
-      println!( "       files: {}", template_config.files.len() );
+      println!( "       files: {}", file_count );
     }
     
     Ok( () )
@@ -718,7 +719,7 @@ impl WorkspacePlugin for ConfigValidatorPlugin
     let config_dir = workspace.config_dir();
     let config_count = if config_dir.exists()
     {
-      fs::read_dir( config_dir )?.count()
+      fs::read_dir( &config_dir )?.count()
     }
     else { 0 };
     

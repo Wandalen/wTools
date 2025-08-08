@@ -179,7 +179,7 @@ fn test_workspace_boundaries_external()
   env::remove_var( "WORKSPACE_PATH" );
 }
 
-/// test fallback resolution using current directory
+/// test fallback resolution behavior
 /// test combination: t3.1
 #[ test ]
 fn test_fallback_resolution_current_dir()
@@ -187,10 +187,21 @@ fn test_fallback_resolution_current_dir()
   env::remove_var( "WORKSPACE_PATH" );
   
   let workspace = Workspace::resolve_or_fallback();
-  let current_dir = env::current_dir().unwrap();
   
-  // should fallback to current directory
-  assert_eq!( workspace.root(), current_dir );
+  // with cargo integration enabled, should detect cargo workspace first
+  #[ cfg( feature = "cargo_integration" ) ]
+  {
+    // since we're in a cargo workspace, it should detect the workspace root
+    assert!( workspace.root().ends_with( "wTools" ) );
+    assert!( workspace.is_cargo_workspace() );
+  }
+  
+  // without cargo integration, should fallback to current directory
+  #[ cfg( not( feature = "cargo_integration" ) ) ]
+  {
+    let current_dir = env::current_dir().unwrap();
+    assert_eq!( workspace.root(), current_dir );
+  }
 }
 
 /// test workspace creation from current directory

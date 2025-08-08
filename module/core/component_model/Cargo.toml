@@ -31,20 +31,20 @@ use_alloc = [ "no_std", "component_model_types/use_alloc", "collection_tools/use
 # no_std = [ "collection_tools/no_std" ]
 # use_alloc = [ "no_std", "collection_tools/use_alloc" ]
 
-default = [
+default = [ "full" ]
+full = [
   "enabled",
-  "derive_components",
+  "derive_component_model",
+  "derive_components", 
   "derive_component_from",
   "derive_component_assign",
   "derive_components_assign",
   "derive_from_components",
   "types_component_assign",
 ]
-full = [
-  "default",
-]
 enabled = [ "component_model_meta/enabled", "component_model_types/enabled" ]
 
+derive_component_model = [ "component_model_meta/derive_component_model", "derive_component_assign", "derive_components_assign", "derive_component_from", "derive_from_components" ]
 derive_components = [ "component_model_meta/derive_components", "derive_component_assign", "derive_components_assign", "derive_component_from", "derive_from_components" ]
 derive_component_assign = [ "component_model_meta/derive_component_assign", "types_component_assign" ]
 derive_components_assign = [ "derive_component_assign", "component_model_meta/derive_components_assign" ]
@@ -53,8 +53,8 @@ derive_from_components = [ "component_model_meta/derive_from_components" ]
 types_component_assign = [ "component_model_types/types_component_assign" ]
 
 [dependencies]
-component_model_meta = { workspace = true }
-component_model_types = { workspace = true }
+component_model_meta = { workspace = true, optional = true }
+component_model_types = { workspace = true, optional = true }
 # collection_tools = { workspace = true, features = [ "collection_constructors" ] }
 
 [dev-dependencies]

@@ -1,0 +1,14 @@
+name = "dev_app"
+version = "1.0.0-dev"
+port = 8080
+debug = true
+features = [
+    "debug_toolbar",
+    "hot_reload",
+]
+
+[database]
+host = "localhost"
+port = 5432
+name = "dev_db"
+ssl = false

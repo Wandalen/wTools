@@ -12,6 +12,11 @@
 #[ cfg( feature = "types_component_assign" ) ]
 mod component;
 
+/// Popular type support for common Rust types.
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "types_component_assign" ) ]
+pub mod popular_types;
+
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency {
@@ -61,4 +66,7 @@ pub mod prelude {
   #[ doc( inline ) ]
   #[ cfg( feature = "types_component_assign" ) ]
   pub use crate::component::*; // Changed to crate::component::*
+  #[ doc( inline ) ]
+  #[ cfg( feature = "types_component_assign" ) ]
+  pub use crate::popular_types::*;
 }

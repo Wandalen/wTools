@@ -28,17 +28,15 @@ proc-macro = true
 
 [features]
 
-default = [
+default = [ "full" ]
+full = [
   "enabled",
   "derive_component_model",
   "derive_components",
-  "derive_component_from",
+  "derive_component_from", 
   "derive_component_assign",
   "derive_components_assign",
   "derive_from_components",
-]
-full = [
-  "default",
 ]
 enabled = [ "macro_tools/enabled", "iter_tools/enabled", "component_model_types/enabled" ]
 
@@ -50,9 +48,9 @@ derive_component_from = []
 derive_from_components = []
 
 [dependencies]
-macro_tools = { workspace = true, features = [ "attr", "attr_prop", "ct", "item_struct", "container_kind", "diag", "phantom", "generic_params", "generic_args", "typ", "derive", "ident" ] } # qqq : zzz : optimize set of features
-component_model_types = { workspace = true, features = [ "types_component_assign" ] }
-iter_tools = { workspace = true }
+macro_tools = { workspace = true, features = [ "attr", "attr_prop", "ct", "item_struct", "container_kind", "diag", "phantom", "generic_params", "generic_args", "typ", "derive", "ident" ], optional = true } # qqq : zzz : optimize set of features
+component_model_types = { workspace = true, features = [ "types_component_assign" ], optional = true }
+iter_tools = { workspace = true, optional = true }
 convert_case = { version = "0.6.0", default-features = false, optional = true, features = [] }
 
 [dev-dependencies]
