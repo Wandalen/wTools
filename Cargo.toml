@@ -127,7 +127,7 @@ version = "~0.1.4"
 path = "module/alias/std_x"
 
 [workspace.dependencies.unilang_parser]
-version = "~0.8.0"
+version = "~0.9.0"
 path = "module/move/unilang_parser" # Point to original unilang_parser
 
 
@@ -325,12 +325,12 @@ version = "~0.13.0"
 path = "module/core/impls_index_meta"
 
 [workspace.dependencies.mod_interface]
-version = "~0.40.0"
+version = "~0.41.0"
 path = "module/core/mod_interface"
 default-features = false
 
 [workspace.dependencies.mod_interface_meta]
-version = "~0.38.0"
+version = "~0.39.0"
 path = "module/core/mod_interface_meta"
 default-features = false
 
@@ -415,7 +415,7 @@ default-features = false
 ## error
 
 [workspace.dependencies.error_tools]
-version = "~0.28.0"
+version = "~0.29.0"
 path = "module/core/error_tools"
 default-features = false
 
@@ -427,7 +427,7 @@ path = "module/alias/werror"
 ## string tools
 
 [workspace.dependencies.strs_tools]
-version = "~0.26.0"
+version = "~0.27.0"
 path = "module/core/strs_tools"
 default-features = false
 
