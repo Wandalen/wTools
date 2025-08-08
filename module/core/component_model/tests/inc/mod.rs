@@ -34,13 +34,13 @@ mod components_tests {
   #[cfg(all(feature = "derive_component_assign", feature = "derive_components_assign"))]
   mod components_assign_tuple_manual;
 
-  #[cfg(all(feature = "derive_from_components"))]
+  #[cfg(feature = "derive_from_components")]
   mod from_components;
-  #[cfg(all(feature = "derive_from_components"))]
+  #[cfg(feature = "derive_from_components")]
   mod from_components_manual;
-  #[cfg(all(feature = "derive_from_components"))]
+  #[cfg(feature = "derive_from_components")]
   mod from_components_tuple;
-  #[cfg(all(feature = "derive_from_components"))]
+  #[cfg(feature = "derive_from_components")]
   mod from_components_tuple_manual;
 
   #[cfg(all(

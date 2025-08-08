@@ -146,36 +146,29 @@ fn test_cargo_metadata_success()
     }
   };
   
-  // Change to the workspace directory for cargo metadata
-  std::env::set_current_dir( &temp_path ).unwrap_or_else(|_| panic!("Failed to change to temp dir: {}", temp_path.display()));
-  
   let workspace = Workspace::from_cargo_manifest( temp_path.join( "Cargo.toml" ) ).unwrap();
   
-  // Execute cargo_metadata while still in the temp directory
-  let result = workspace.cargo_metadata();
+  // Execute cargo_metadata with the manifest path, no need to change directories
+  let metadata_result = workspace.cargo_metadata();
   
-  // Process result immediately before any directory changes
-  let metadata_result = match result {
-    Ok(metadata) => {
-      // Verify metadata while temp_dir is still valid
-      assert_eq!( metadata.workspace_root, temp_path );
-      assert!( !metadata.members.is_empty(), "workspace should have members" );
-      Ok(metadata)
-    },
-    Err(e) => {
-      println!("cargo_metadata error: {e}");
-      Err(e)
-    }
-  };
-  
-  // Now restore directory after all cargo operations are complete
+  // Now restore directory (though we didn't change it)
   let restore_result = std::env::set_current_dir( &original_dir );
   if let Err(e) = restore_result {
     eprintln!("Failed to restore directory: {e}");
   }
   
-  // Final assertion after directory restore
-  assert!( metadata_result.is_ok(), "cargo_metadata should succeed" );
+  // Process result
+  match metadata_result {
+    Ok(metadata) => {
+      // Verify metadata while temp_dir is still valid
+      assert_eq!( metadata.workspace_root, temp_path );
+      assert!( !metadata.members.is_empty(), "workspace should have members" );
+    },
+    Err(e) => {
+      println!("cargo_metadata error: {e}");
+      panic!("cargo_metadata should succeed");
+    }
+  };
   
   // Keep temp_dir alive until the very end
   drop(temp_dir);
@@ -198,14 +191,12 @@ fn test_workspace_members()
     }
   };
   
-  // Change to the workspace directory for cargo operations
-  std::env::set_current_dir( &temp_path ).unwrap_or_else(|_| panic!("Failed to change to temp dir: {}", temp_path.display()));
-  
   let workspace = Workspace::from_cargo_manifest( temp_path.join( "Cargo.toml" ) ).unwrap();
   
+  // Execute workspace_members with the manifest path, no need to change directories
   let result = workspace.workspace_members();
   
-  // Restore original directory IMMEDIATELY but don't unwrap yet
+  // Restore original directory (though we didn't change it)
   let restore_result = std::env::set_current_dir( &original_dir );
   
   // Check restore operation succeeded
@@ -255,13 +246,14 @@ fn test_resolve_or_fallback_cargo_primary()
     None => std::env::remove_var( "WORKSPACE_PATH" ),
   }
   
-  // The workspace should detect the cargo workspace we're in
-  // Note: resolve_or_fallback may create a canonical path, so let's check the actual workspace detection
+  // The workspace should detect some valid cargo workspace
+  // Note: resolve_or_fallback will detect the first available workspace, which
+  // may be the actual workspace_tools project rather than our temp directory
   println!("Expected temp_path: {}", temp_path.display());
   println!("Actual workspace root: {}", workspace.root().display());
   
-  // Check that we got a valid workspace - in some cases resolve_or_fallback
-  // may fallback to current dir if cargo detection fails due to race conditions
+  // Check that we got a valid workspace - resolve_or_fallback may detect 
+  // the parent workspace_tools project instead of our temporary one in a test context
   if workspace.is_cargo_workspace() {
     // If we detected a cargo workspace, verify it's workspace-like
     println!("✅ Successfully detected cargo workspace");
@@ -270,9 +262,9 @@ fn test_resolve_or_fallback_cargo_primary()
     println!("ℹ️  Fell back to current directory workspace (acceptable in parallel test execution)");
   }
   
-  // The key requirement is that resolve_or_fallback should never fail
-  assert!( workspace.root().exists() || workspace.root() == std::path::Path::new("."),
-    "resolve_or_fallback should always provide a valid workspace" );
+  // The key requirement is that resolve_or_fallback should always provide a valid workspace
+  // that either exists OR is the current directory fallback
+  assert!( workspace.root().exists(), "resolve_or_fallback should always provide a valid workspace" );
   
   // Keep temp_dir alive until all assertions are done
   drop(temp_dir);

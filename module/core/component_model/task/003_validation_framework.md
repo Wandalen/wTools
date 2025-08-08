@@ -8,10 +8,13 @@ Implement a comprehensive validation framework that allows field-level validatio
 
 No built-in validation exists - users must implement validation manually:
 ```rust
-impl Config {
-  fn set_port(&mut self, port: u16) {
-    if port < 1024 {
-      panic!("Port must be >= 1024");
+impl Config
+{
+  fn set_port( &mut self, port : u16 )
+  {
+    if port < 1024
+    {
+      panic!( "Port must be >= 1024" );
     }
     self.port = port;
   }
@@ -23,28 +26,32 @@ impl Config {
 Declarative validation with clear error reporting:
 ```rust
 #[derive(ComponentModel)]
-struct Config {
-  #[component(validate = "is_valid_host")]
-  host: String,
+struct Config
+{
+  #[ component( validate = "is_valid_host" ) ]
+  host : String,
   
-  #[component(validate = "is_port_range(1024, 65535)")]
-  port: u16,
+  #[ component( validate = "is_port_range(1024, 65535)" ) ]
+  port : u16,
   
-  #[component(validate = "not_empty")]
-  database_name: String,
+  #[ component( validate = "not_empty" ) ]
+  database_name : String,
 }
 
 // Usage with validation
 let result = Config::default()
-  .try_assign("") // Fails validation
-  .and_then(|c| c.try_assign(80u16)) // Fails validation
-  .and_then(|c| c.try_assign(""));   // Fails validation
+  .try_assign( "" ) // Fails validation
+  .and_then( | c | c.try_assign( 80u16 ) ) // Fails validation
+  .and_then( | c | c.try_assign( "" ) );   // Fails validation
 
-match result {
-  Ok(config) => println!("Valid config: {:?}", config),
-  Err(errors) => {
-    for error in errors {
-      eprintln!("Validation error: {}", error);
+match result
+{
+  Ok( config ) => println!( "Valid config: {:?}", config ),
+  Err( errors ) =>
+  {
+    for error in errors
+    {
+      eprintln!( "Validation error: {}", error );
     }
   }
 }
@@ -56,42 +63,49 @@ match result {
 
 #### **Result-Based Assignment**
 ```rust
-pub trait TryAssign<T, IntoT> {
+pub trait TryAssign< T, IntoT >
+{
   type Error;
   
-  fn try_assign(&mut self, component: IntoT) -> Result<(), Self::Error>;
-  fn try_impute(self, component: IntoT) -> Result<Self, Self::Error>
+  fn try_assign( &mut self, component : IntoT ) -> Result< (), Self::Error >;
+  fn try_impute( self, component : IntoT ) -> Result< Self, Self::Error >
   where
-    Self: Sized;
+    Self : Sized;
 }
 ```
 
 #### **Error Types**
 ```rust
-#[derive(Debug, Clone)]
-pub struct ValidationError {
-  pub field_name: String,
-  pub field_type: String,
-  pub provided_value: String,
-  pub error_message: String,
-  pub suggestion: Option<String>,
+#[ derive( Debug, Clone ) ]
+pub struct ValidationError
+{
+  pub field_name : String,
+  pub field_type : String,
+  pub provided_value : String,
+  pub error_message : String,
+  pub suggestion : Option< String >,
 }
 
-#[derive(Debug, Clone)]
-pub struct ValidationErrors {
-  pub errors: Vec<ValidationError>,
+#[ derive( Debug, Clone ) ]
+pub struct ValidationErrors
+{
+  pub errors : Vec< ValidationError >,
 }
 
-impl std::fmt::Display for ValidationErrors {
-  fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-    for (i, error) in self.errors.iter().enumerate() {
-      if i > 0 { writeln!(f)?; }
-      write!(f, "Field '{}': {}", error.field_name, error.error_message)?;
-      if let Some(suggestion) = &error.suggestion {
-        write!(f, " (try: {})", suggestion)?;
+impl std::fmt::Display for ValidationErrors
+{
+  fn fmt( &self, f : &mut std::fmt::Formatter ) -> std::fmt::Result
+  {
+    for ( i, error ) in self.errors.iter().enumerate()
+    {
+      if i > 0 { writeln!( f )?; }
+      write!( f, "Field '{}': {}", error.field_name, error.error_message )?;
+      if let Some( suggestion ) = &error.suggestion
+      {
+        write!( f, " (try: {})", suggestion )?;
       }
     }
-    Ok(())
+    Ok( () )
   }
 }
 ```
@@ -100,41 +114,60 @@ impl std::fmt::Display for ValidationErrors {
 
 #### **String Validators**
 ```rust
-pub fn not_empty(value: &str) -> Result<(), String> {
-  if value.is_empty() {
-    Err("cannot be empty".to_string())
-  } else {
-    Ok(())
+pub fn not_empty( value : &str ) -> Result< (), String >
+{
+  if value.is_empty()
+  {
+    Err( "cannot be empty".to_string() )
+  }
+  else
+  {
+    Ok( () )
   }
 }
 
-pub fn min_length(min: usize) -> impl Fn(&str) -> Result<(), String> {
-  move |value| {
-    if value.len() < min {
-      Err(format!("must be at least {} characters", min))
-    } else {
-      Ok(())
+pub fn min_length( min : usize ) -> impl Fn( &str ) -> Result< (), String >
+{
+  move | value |
+  {
+    if value.len() < min
+    {
+      Err( format!( "must be at least {} characters", min ) )
+    }
+    else
+    {
+      Ok( () )
     }
   }
 }
 
-pub fn max_length(max: usize) -> impl Fn(&str) -> Result<(), String> {
-  move |value| {
-    if value.len() > max {
-      Err(format!("must be at most {} characters", max))
-    } else {
-      Ok(())
+pub fn max_length( max : usize ) -> impl Fn( &str ) -> Result< (), String >
+{
+  move | value |
+  {
+    if value.len() > max
+    {
+      Err( format!( "must be at most {} characters", max ) )
+    }
+    else
+    {
+      Ok( () )
     }
   }
 }
 
-pub fn matches_regex(pattern: &str) -> impl Fn(&str) -> Result<(), String> {
-  let regex = Regex::new(pattern).expect("Invalid regex pattern");
-  move |value| {
-    if regex.is_match(value) {
-      Ok(())
-    } else {
-      Err(format!("must match pattern: {}", pattern))
+pub fn matches_regex( pattern : &str ) -> impl Fn( &str ) -> Result< (), String >
+{
+  let regex = Regex::new( pattern ).expect( "Invalid regex pattern" );
+  move | value |
+  {
+    if regex.is_match( value )
+    {
+      Ok( () )
+    }
+    else
+    {
+      Err( format!( "must match pattern: {}", pattern ) )
     }
   }
 }
@@ -142,32 +175,47 @@ pub fn matches_regex(pattern: &str) -> impl Fn(&str) -> Result<(), String> {
 
 #### **Numeric Validators**
 ```rust
-pub fn min_value<T: PartialOrd + std::fmt::Display>(min: T) -> impl Fn(&T) -> Result<(), String> {
-  move |value| {
-    if value < &min {
-      Err(format!("must be at least {}", min))
-    } else {
-      Ok(())
+pub fn min_value< T : PartialOrd + std::fmt::Display >( min : T ) -> impl Fn( &T ) -> Result< (), String >
+{
+  move | value |
+  {
+    if value < &min
+    {
+      Err( format!( "must be at least {}", min ) )
+    }
+    else
+    {
+      Ok( () )
     }
   }
 }
 
-pub fn max_value<T: PartialOrd + std::fmt::Display>(max: T) -> impl Fn(&T) -> Result<(), String> {
-  move |value| {
-    if value > &max {
-      Err(format!("must be at most {}", max))
-    } else {
-      Ok(())
+pub fn max_value< T : PartialOrd + std::fmt::Display >( max : T ) -> impl Fn( &T ) -> Result< (), String >
+{
+  move | value |
+  {
+    if value > &max
+    {
+      Err( format!( "must be at most {}", max ) )
+    }
+    else
+    {
+      Ok( () )
     }
   }
 }
 
-pub fn range<T: PartialOrd + std::fmt::Display>(min: T, max: T) -> impl Fn(&T) -> Result<(), String> {
-  move |value| {
-    if value < &min || value > &max {
-      Err(format!("must be between {} and {}", min, max))
-    } else {
-      Ok(())
+pub fn range< T : PartialOrd + std::fmt::Display >( min : T, max : T ) -> impl Fn( &T ) -> Result< (), String >
+{
+  move | value |
+  {
+    if value < &min || value > &max
+    {
+      Err( format!( "must be between {} and {}", min, max ) )
+    }
+    else
+    {
+      Ok( () )
     }
   }
 }
@@ -178,12 +226,14 @@ pub fn range<T: PartialOrd + std::fmt::Display>(min: T, max: T) -> impl Fn(&T) -
 #### **Function Reference**
 ```rust
 #[derive(ComponentModel)]
-struct Config {
-  #[component(validate = "not_empty")]
-  name: String,
+struct Config
+{
+  #[ component( validate = "not_empty" ) ]
+  name : String,
 }
 
-fn not_empty(value: &str) -> Result<(), String> {
+fn not_empty( value : &str ) -> Result< (), String >
+{
   // validation logic
 }
 ```
@@ -191,18 +241,20 @@ fn not_empty(value: &str) -> Result<(), String> {
 #### **Closure Syntax**
 ```rust
 #[derive(ComponentModel)]
-struct Config {
-  #[component(validate = "|v| if v.len() > 0 { Ok(()) } else { Err(\"empty\".to_string()) }")]
-  name: String,
+struct Config
+{
+  #[ component( validate = "|v| if v.len() > 0 { Ok(()) } else { Err(\"empty\".to_string()) }" ) ]
+  name : String,
 }
 ```
 
 #### **Multiple Validators**
 ```rust
 #[derive(ComponentModel)]
-struct Config {
-  #[component(validate = ["not_empty", "min_length(3)", "max_length(50)"])]
-  username: String,
+struct Config
+{
+  #[ component( validate = [ "not_empty", "min_length(3)", "max_length(50)" ] ) ]
+  username : String,
 }
 ```
 
@@ -210,30 +262,38 @@ struct Config {
 
 The derive macro generates:
 ```rust
-impl TryAssign<String, &str> for Config {
+impl TryAssign< String, &str > for Config
+{
   type Error = ValidationErrors;
   
-  fn try_assign(&mut self, component: &str) -> Result<(), Self::Error> {
+  fn try_assign( &mut self, component : &str ) -> Result< (), Self::Error >
+  {
     let mut errors = Vec::new();
     
     // Run validation
-    if let Err(msg) = not_empty(component) {
-      errors.push(ValidationError {
-        field_name: "name".to_string(),
-        field_type: "String".to_string(),
-        provided_value: component.to_string(),
-        error_message: msg,
-        suggestion: Some("provide a non-empty string".to_string()),
-      });
+    if let Err( msg ) = not_empty( component )
+    {
+      errors.push
+      (
+        ValidationError
+        {
+          field_name : "name".to_string(),
+          field_type : "String".to_string(),
+          provided_value : component.to_string(),
+          error_message : msg,
+          suggestion : Some( "provide a non-empty string".to_string() ),
+        }
+      );
     }
     
-    if !errors.is_empty() {
-      return Err(ValidationErrors { errors });
+    if !errors.is_empty()
+    {
+      return Err( ValidationErrors { errors } );
     }
     
     // If validation passes, assign
     self.name = component.to_string();
-    Ok(())
+    Ok( () )
   }
 }
 ```
@@ -276,98 +336,107 @@ impl TryAssign<String, &str> for Config {
 
 ### **Unit Tests**
 ```rust
-#[cfg(test)]
-mod tests {
+#[ cfg( test ) ]
+mod tests
+{
   use super::*;
   
-  #[test]
-  fn test_validation_success() {
-    #[derive(ComponentModel)]
-    struct Config {
-      #[component(validate = "not_empty")]
-      name: String,
+  #[ test ]
+  fn test_validation_success()
+  {
+    #[ derive( ComponentModel ) ]
+    struct Config
+    {
+      #[ component( validate = "not_empty" ) ]
+      name : String,
     }
     
     let mut config = Config::default();
-    assert!(config.try_assign("test").is_ok());
-    assert_eq!(config.name, "test");
+    assert!( config.try_assign( "test" ).is_ok() );
+    assert_eq!( config.name, "test" );
   }
   
-  #[test]
-  fn test_validation_failure() {
-    #[derive(ComponentModel)]
-    struct Config {
-      #[component(validate = "not_empty")]
-      name: String,
+  #[ test ]
+  fn test_validation_failure()
+  {
+    #[ derive( ComponentModel ) ]
+    struct Config
+    {
+      #[ component( validate = "not_empty" ) ]
+      name : String,
     }
     
     let mut config = Config::default();
-    let result = config.try_assign("");
+    let result = config.try_assign( "" );
     
-    assert!(result.is_err());
+    assert!( result.is_err() );
     let errors = result.unwrap_err();
-    assert_eq!(errors.errors.len(), 1);
-    assert_eq!(errors.errors[0].field_name, "name");
+    assert_eq!( errors.errors.len(), 1 );
+    assert_eq!( errors.errors[ 0 ].field_name, "name" );
   }
   
-  #[test]
-  fn test_multiple_validators() {
-    #[derive(ComponentModel)]
-    struct Config {
-      #[component(validate = ["not_empty", "min_length(3)"])]
-      username: String,
+  #[ test ]
+  fn test_multiple_validators()
+  {
+    #[ derive( ComponentModel ) ]
+    struct Config
+    {
+      #[ component( validate = [ "not_empty", "min_length(3)" ] ) ]
+      username : String,
     }
     
     let mut config = Config::default();
     
     // Should fail both validations
-    let result = config.try_assign("");
-    assert!(result.is_err());
+    let result = config.try_assign( "" );
+    assert!( result.is_err() );
     
     // Should fail min_length
-    let result = config.try_assign("ab");
-    assert!(result.is_err());
+    let result = config.try_assign( "ab" );
+    assert!( result.is_err() );
     
     // Should succeed
-    let result = config.try_assign("abc");
-    assert!(result.is_ok());
+    let result = config.try_assign( "abc" );
+    assert!( result.is_ok() );
   }
 }
 ```
 
 ### **Integration Tests**
 ```rust
-#[test]
-fn test_real_world_validation() {
-  #[derive(ComponentModel)]
-  struct ServerConfig {
-    #[component(validate = "not_empty")]
-    host: String,
+#[ test ]
+fn test_real_world_validation()
+{
+  #[ derive( ComponentModel ) ]
+  struct ServerConfig
+  {
+    #[ component( validate = "not_empty" ) ]
+    host : String,
     
-    #[component(validate = "range(1024, 65535)")]
-    port: u16,
+    #[ component( validate = "range(1024, 65535)" ) ]
+    port : u16,
     
-    #[component(validate = "min_value(1)")]
-    worker_count: usize,
+    #[ component( validate = "min_value(1)" ) ]
+    worker_count : usize,
   }
   
   // Test valid configuration
   let config = ServerConfig::default()
-    .try_impute("localhost")
-    .and_then(|c| c.try_impute(8080u16))
-    .and_then(|c| c.try_impute(4usize));
+    .try_impute( "localhost" )
+    .and_then( | c | c.try_impute( 8080u16 ) )
+    .and_then( | c | c.try_impute( 4usize ) );
     
-  assert!(config.is_ok());
+  assert!( config.is_ok() );
   
   // Test invalid configuration
   let result = ServerConfig::default()
-    .try_impute("")  // Empty host
-    .and_then(|c| c.try_impute(80u16))  // Invalid port
-    .and_then(|c| c.try_impute(0usize)); // Invalid worker count
+    .try_impute( "" )  // Empty host
+    .and_then( | c | c.try_impute( 80u16 ) )  // Invalid port
+    .and_then( | c | c.try_impute( 0usize ) ); // Invalid worker count
     
-  assert!(result.is_err());
+  assert!( result.is_err() );
   let errors = result.unwrap_err();
-  assert_eq!(errors.errors.len(), 3);
+  assert_eq!( errors.errors.len(), 3 );
 }
 ```
 

@@ -26,13 +26,13 @@ fn main()
   let mut app_config = AppConfig::default();
   app_config.assign( "MyWebApp" );
   app_config.assign( 1 );  // version 1
-  println!( "App config: {:?}", app_config );
+  println!( "App config: {app_config:?}" );
   
   // Server configuration with fluent style
   let server_config = ServerSettings::default()
     .impute( "127.0.0.1:8080" )
     .impute( 4 );  // 4 worker threads
-  println!( "Server config: {:?}", server_config );
+  println!( "Server config: {server_config:?}" );
   
   // Configuration factory pattern
   fn create_dev_config() -> AppConfig {
@@ -50,15 +50,15 @@ fn main()
   let dev_config = create_dev_config();
   let prod_config = create_prod_config();
   
-  println!( "Dev config: {:?}", dev_config );
-  println!( "Prod config: {:?}", prod_config );
+  println!( "Dev config: {dev_config:?}" );
+  println!( "Prod config: {prod_config:?}" );
   
   // Environment-specific server settings
   let mut high_load_server = ServerSettings::default();
   high_load_server.assign( "0.0.0.0:80" );  // Bind to all interfaces
   high_load_server.assign( 16 );            // More workers for production
   
-  println!( "High-load server: {:?}", high_load_server );
+  println!( "High-load server: {high_load_server:?}" );
   
   // Verify configurations
   assert_eq!( app_config.app_name, "MyWebApp" );

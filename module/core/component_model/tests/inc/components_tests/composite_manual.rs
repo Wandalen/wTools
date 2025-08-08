@@ -50,7 +50,7 @@ where
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT ) {
-    self.field2 = component.into().clone();
+    self.field2.clone_from(&component.into());
   }
 }
 
@@ -134,7 +134,7 @@ where
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT ) {
-    self.field2 = component.into().clone();
+    self.field2.clone_from(&component.into());
   }
 }
 

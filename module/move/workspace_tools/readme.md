@@ -13,13 +13,13 @@ Rust's cargo workspaces solve dependency management beautifully, but leave a gap
 
 ```rust
 // ❌ fragile - breaks when execution context changes
-let config = std::fs::read_to_string("../../../config/app.toml")?;
+let config = std::fs::read_to_string( "../../../config/app.toml" )?;
 
 // ❌ brittle - fails when run from different directories  
-let data_path = Path::new("./data/cache.db");
+let data_path = Path::new( "./data/cache.db" );
 
 // ❌ hardcoded - not portable across environments
-let logs = Path::new("/tmp/myapp/logs");
+let logs = Path::new( "/tmp/myapp/logs" );
 ```
 
 **workspace_tools** provides the missing runtime workspace resolution:
@@ -27,8 +27,8 @@ let logs = Path::new("/tmp/myapp/logs");
 ```rust
 // ✅ reliable - works from any execution context
 let ws = workspace()?;
-let config = std::fs::read_to_string(ws.join("config/app.toml"))?;
-let data_path = ws.data_dir().join("cache.db");
+let config = std::fs::read_to_string( ws.join( "config/app.toml" ) )?;
+let data_path = ws.data_dir().join( "cache.db" );
 let logs = ws.logs_dir();
 ```
 
@@ -67,19 +67,20 @@ WORKSPACE_PATH = { value = ".", relative = true }
 ```rust
 use workspace_tools::workspace;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result< (), Box< dyn std::error::Error > >
+{
     let ws = workspace()?;
     
     // access standard directories
-    let config = ws.config_dir().join("app.toml");
-    let data = ws.data_dir().join("cache.db");
+    let config = ws.config_dir().join( "app.toml" );
+    let data = ws.data_dir().join( "cache.db" );
     let logs = ws.logs_dir();
     
     // check workspace boundaries
-    assert!(ws.is_workspace_file(&config));
+    assert!( ws.is_workspace_file( &config ) );
     
-    println!("workspace root: {}", ws.root().display());
-    Ok(())
+    println!( "workspace root: {}", ws.root().display() );
+    Ok( () )
 }
 ```
 
@@ -119,12 +120,12 @@ println!("root: {}", ws.root().display());
 ws.validate()?; // ensure workspace is accessible
 
 // path operations  
-let app_config = ws.join("config/app.toml");
-let normalized = ws.normalize_path("config/../data/file.json")?;
+let app_config = ws.join( "config/app.toml" );
+let normalized = ws.normalize_path( "config/../data/file.json" )?;
 
 // boundary checking
-assert!(ws.is_workspace_file(&app_config));
-assert!(!ws.is_workspace_file("/etc/passwd"));
+assert!( ws.is_workspace_file( &app_config ) );
+assert!( !ws.is_workspace_file( "/etc/passwd" ) );
 ```
 
 ### resource discovery (glob feature)
@@ -138,11 +139,11 @@ workspace_tools = { version = "0.1", features = ["glob"] }
 let ws = workspace()?;
 
 // find files with patterns
-let rust_files = ws.find_resources("src/**/*.rs")?;
-let test_files = ws.find_resources("tests/**/*.rs")?;
+let rust_files = ws.find_resources( "src/**/*.rs" )?;
+let test_files = ws.find_resources( "tests/**/*.rs" )?;
 
 // smart config discovery
-let db_config = ws.find_config("database")?;  
+let db_config = ws.find_config( "database" )?;  
 // finds config/database.{toml,yaml,json} or .database.toml
 ```
 
@@ -161,10 +162,10 @@ workspace_tools = { version = "0.1", features = ["secret_management"] }
 let ws = workspace()?;
 
 // load all secrets
-let secrets = ws.load_secrets_from_file("-secrets.sh")?;
+let secrets = ws.load_secrets_from_file( "-secrets.sh" )?;
 
 // load specific key with environment fallback
-let api_key = ws.load_secret_key("API_KEY", "-secrets.sh")?;
+let api_key = ws.load_secret_key( "API_KEY", "-secrets.sh" )?;
 ```
 
 ### cargo integration (cargo_integration feature)
@@ -184,12 +185,14 @@ let ws = Workspace::from_cargo_workspace()?;
 let ws = Workspace::resolve_or_fallback(); // tries cargo → env → current_dir → git
 
 // access cargo metadata
-if ws.is_cargo_workspace() {
+if ws.is_cargo_workspace()
+{
     let metadata = ws.cargo_metadata()?;
-    println!("workspace root: {}", metadata.workspace_root.display());
+    println!( "workspace root: {}", metadata.workspace_root.display() );
     
-    for member in metadata.members {
-        println!("  • {} v{}", member.name, member.version);
+    for member in metadata.members
+    {
+        println!( "  • {} v{}", member.name, member.version );
     }
     
     let member_dirs = ws.workspace_members()?;
@@ -205,33 +208,34 @@ serde = { version = "1.0", features = ["derive"] }
 ```
 
 ```rust
-use serde::{Serialize, Deserialize};
+use serde::{ Serialize, Deserialize };
 use workspace_tools::workspace;
 
-#[derive(Serialize, Deserialize)]
-struct AppConfig {
-    name: String,
-    port: u16,
-    database: DatabaseConfig,
+#[ derive( Serialize, Deserialize ) ]
+struct AppConfig
+{
+    name : String,
+    port : u16,
+    database : DatabaseConfig,
 }
 
 let ws = workspace()?;
 
 // automatic format detection - loads config/app.{toml,yaml,json}
-let config: AppConfig = ws.load_config("app")?;
+let config : AppConfig = ws.load_config( "app" )?;
 
 // save configuration with format preservation
-ws.save_config("app", &config)?;
+ws.save_config( "app", &config )?;
 
 // load from specific file with format detection
-let config: AppConfig = ws.load_config_from("config/custom.json")?;
+let config : AppConfig = ws.load_config_from( "config/custom.json" )?;
 
 // layered configuration merging
-let config: AppConfig = ws.load_config_layered(&["base", "development"])?;
+let config : AppConfig = ws.load_config_layered( &[ "base", "development" ] )?;
 
 // partial configuration updates
-let updates = serde_json::json!({ "port": 9090 });
-let updated: AppConfig = ws.update_config("app", updates)?;
+let updates = serde_json::json!( { "port": 9090 } );
+let updated : AppConfig = ws.update_config( "app", updates )?;
 ```
 
 ## 🧪 testing integration
@@ -239,16 +243,18 @@ let updated: AppConfig = ws.update_config("app", updates)?;
 workspace_tools makes testing with isolated workspaces trivial:
 
 ```rust
-#[cfg(test)]
-mod tests {
+#[ cfg( test ) ]
+mod tests
+{
     use workspace_tools::testing::create_test_workspace;
     
-    #[test]
-    fn test_config_loading() {
-        let (_temp_dir, ws) = create_test_workspace();
+    #[ test ]
+    fn test_config_loading()
+    {
+        let ( _temp_dir, ws ) = create_test_workspace();
         
         // test in complete isolation
-        let config_path = ws.config_dir().join("test.toml");  
+        let config_path = ws.config_dir().join( "test.toml" );  
         // ... test logic
     }
 }
@@ -261,34 +267,35 @@ mod tests {
 ```rust
 use serde::Deserialize;
 
-#[derive(Deserialize)]
-struct AppConfig {
-    name: String,
-    port: u16,
+#[ derive( Deserialize ) ]
+struct AppConfig
+{
+    name : String,
+    port : u16,
 }
 
 let ws = workspace()?;
-let config_path = ws.find_config("app")?;
-let config: AppConfig = toml::from_str(&std::fs::read_to_string(config_path)?)?;
+let config_path = ws.find_config( "app" )?;
+let config : AppConfig = toml::from_str( &std::fs::read_to_string( config_path )? )?;
 ```
 
 ### with tracing logs
 
 ```rust
-use tracing_appender::rolling::{RollingFileAppender, Rotation};
+use tracing_appender::rolling::{ RollingFileAppender, Rotation };
 
 let ws = workspace()?;
 let log_dir = ws.logs_dir();
-std::fs::create_dir_all(&log_dir)?;
+std::fs::create_dir_all( &log_dir )?;
 
-let file_appender = RollingFileAppender::new(Rotation::DAILY, log_dir, "app.log");
+let file_appender = RollingFileAppender::new( Rotation::DAILY, log_dir, "app.log" );
 ```
 
 ### with database migrations
 
 ```rust
 let ws = workspace()?;
-let migrations_dir = ws.join("migrations");
+let migrations_dir = ws.join( "migrations" );
 // run migrations from consistent location regardless of cwd
 ```
 

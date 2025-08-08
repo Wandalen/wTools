@@ -11,22 +11,23 @@ Manual extraction with framework-specific boilerplate:
 // Different boilerplate for each framework
 // Axum
 async fn axum_handler(
-  Path(user_id): Path<u64>,
-  Query(params): Query<HashMap<String, String>>,
-  headers: HeaderMap,
-) -> Result<String, StatusCode> { /* ... */ }
+  Path( user_id ) : Path< u64 >,
+  Query( params ) : Query< HashMap< String, String > >,
+  headers : HeaderMap,
+) -> Result< String, StatusCode > { /* ... */ }
 
 // Actix-web  
 async fn actix_handler(
-  path: web::Path<u64>,
-  query: web::Query<HashMap<String, String>>,
-  req: HttpRequest,
-) -> Result<String, ActixError> { /* ... */ }
+  path : web::Path< u64 >,
+  query : web::Query< HashMap< String, String > >,
+  req : HttpRequest,
+) -> Result< String, ActixError > { /* ... */ }
 
 // Custom framework - completely different API
-async fn custom_handler(request: CustomRequest) -> CustomResponse {
-  let user_id = request.get_path_param("user_id")?;
-  let page = request.get_query("page")?;
+async fn custom_handler( request : CustomRequest ) -> CustomResponse
+{
+  let user_id = request.get_path_param( "user_id" )?;
+  let page = request.get_query( "page" )?;
   // ... different extraction logic
 }
 ```
@@ -35,19 +36,20 @@ async fn custom_handler(request: CustomRequest) -> CustomResponse {
 
 Universal extraction that works with any framework:
 ```rust
-#[derive(Extract)]
-struct ApiRequest {
-  #[extract(path)]
-  user_id: u64,
+#[ derive( Extract ) ]
+struct ApiRequest
+{
+  #[ extract( path ) ]
+  user_id : u64,
   
-  #[extract(query)]
-  page: Option<u32>,
+  #[ extract( query ) ]
+  page : Option< u32 >,
   
-  #[extract(header = "authorization")]
-  auth_token: String,
+  #[ extract( header = "authorization" ) ]
+  auth_token : String,
   
-  #[extract(json)]
-  body: CreateUserRequest,
+  #[ extract( json ) ]
+  body : CreateUserRequest,
   
   #[extract(custom = "extract_user_from_jwt")]
   current_user: User,
@@ -78,21 +80,23 @@ async fn config_handler(
 
 #### **ExtractSource Trait**
 ```rust
-pub trait ExtractSource {
+pub trait ExtractSource
+{
   type Context;
-  type Error: std::error::Error;
+  type Error : std::error::Error;
   
-  fn extract<T>(&self, context: &Self::Context, spec: &ExtractSpec) -> Result<T, Self::Error>
+  fn extract< T >( &self, context : &Self::Context, spec : &ExtractSpec ) -> Result< T, Self::Error >
   where 
-    T: FromExtract<Self>;
+    T : FromExtract< Self >;
     
-  fn supports_extraction(&self, spec: &ExtractSpec) -> bool;
+  fn supports_extraction( &self, spec : &ExtractSpec ) -> bool;
 }
 
-pub trait FromExtract<E: ExtractSource> {
-  fn from_extract(source: &E, context: &E::Context, spec: &ExtractSpec) -> Result<Self, E::Error>
+pub trait FromExtract< E : ExtractSource >
+{
+  fn from_extract( source : &E, context : &E::Context, spec : &ExtractSpec ) -> Result< Self, E::Error >
   where 
-    Self: Sized;
+    Self : Sized;
 }
 ```
 

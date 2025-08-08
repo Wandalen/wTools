@@ -21,21 +21,21 @@ fn main()
   config1.assign( "localhost" );
   config1.assign( 8080 );
   
-  println!( "Mutable style: {:?}", config1 );
+  println!( "Mutable style: {config1:?}" );
   
   // Fluent builder style with impute()
   let config2 = ServerConfig::default()
     .impute( "api.example.com" )    // Returns Self for chaining
     .impute( 443 );                 // Chainable
   
-  println!( "Fluent style: {:?}", config2 );
+  println!( "Fluent style: {config2:?}" );
   
   // You can mix and match approaches
   let config3 = ServerConfig::default()
     .impute( "staging.example.com" )
     .impute( 8443 );
   
-  println!( "Mixed style: {:?}", config3 );
+  println!( "Mixed style: {config3:?}" );
   
   // Verify all configs are different
   assert_ne!( config1, config2 );

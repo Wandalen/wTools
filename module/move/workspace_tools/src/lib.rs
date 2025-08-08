@@ -23,14 +23,15 @@
 //! ```rust
 //! use workspace_tools::{ workspace, WorkspaceError };
 //!
-//! # fn main() -> Result<(), WorkspaceError> {
+//! # fn main() -> Result< (), WorkspaceError >
+//! # {
 //! // get workspace instance
 //! let ws = workspace()?;
 //!
 //! // resolve workspace-relative paths
-//! let config_path = ws.config_dir().join("app.toml");
-//! let data_path = ws.data_dir().join("cache.db");
-//! # Ok(())
+//! let config_path = ws.config_dir().join( "app.toml" );
+//! let data_path = ws.data_dir().join( "cache.db" );
+//! # Ok( () )
 //! # }
 //! ```
 //!
@@ -151,10 +152,10 @@ impl Workspace
   /// ```rust
   /// use workspace_tools::Workspace;
   ///
-  /// # std::env::set_var("WORKSPACE_PATH", std::env::current_dir().unwrap());
+  /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
   /// let workspace = Workspace::resolve()?;
-  /// println!("workspace root: {}", workspace.root().display());
-  /// # Ok::<(), workspace_tools::WorkspaceError>(())
+  /// println!( "workspace root: {}", workspace.root().display() );
+  /// # Ok::< (), workspace_tools::WorkspaceError >( () )
   /// ```
   /// 
   /// # Errors
@@ -278,10 +279,10 @@ impl Workspace
   /// ```rust
   /// use workspace_tools::workspace;
   ///
-  /// # std::env::set_var("WORKSPACE_PATH", std::env::current_dir().unwrap());
+  /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
   /// let ws = workspace()?;
-  /// let config_file = ws.join("config/app.toml");
-  /// # Ok::<(), workspace_tools::WorkspaceError>(())
+  /// let config_file = ws.join( "config/app.toml" );
+  /// # Ok::< (), workspace_tools::WorkspaceError >( () )
   /// ```
   #[inline]
   pub fn join< P : AsRef< Path > >( &self, path : P ) -> PathBuf
@@ -401,13 +402,13 @@ impl Workspace
   /// ```rust
   /// use workspace_tools::workspace;
   ///
-  /// # std::env::set_var("WORKSPACE_PATH", std::env::current_dir().unwrap());
+  /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
   /// let ws = workspace()?;
-  /// let config_path = ws.join("config/app.toml");
+  /// let config_path = ws.join( "config/app.toml" );
   ///
-  /// assert!(ws.is_workspace_file(&config_path));
-  /// assert!(!ws.is_workspace_file("/etc/passwd"));
-  /// # Ok::<(), workspace_tools::WorkspaceError>(())
+  /// assert!( ws.is_workspace_file( &config_path ) );
+  /// assert!( !ws.is_workspace_file( "/etc/passwd" ) );
+  /// # Ok::< (), workspace_tools::WorkspaceError >( () )
   /// ```
   #[inline]
   pub fn is_workspace_file< P : AsRef< Path > >( &self, path : P ) -> bool
@@ -508,15 +509,15 @@ impl Workspace
   /// ```rust
   /// use workspace_tools::workspace;
   ///
-  /// # std::env::set_var("WORKSPACE_PATH", std::env::current_dir().unwrap());
+  /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
   /// let ws = workspace()?;
   ///
   /// // find all rust source files
-  /// let rust_files = ws.find_resources("src/**/*.rs")?;
+  /// let rust_files = ws.find_resources( "src/**/*.rs" )?;
   ///
   /// // find all configuration files
-  /// let configs = ws.find_resources("config/**/*.toml")?;
-  /// # Ok::<(), workspace_tools::WorkspaceError>(())
+  /// let configs = ws.find_resources( "config/**/*.toml" )?;
+  /// # Ok::< (), workspace_tools::WorkspaceError >( () )
   /// ```
   pub fn find_resources( &self, pattern : &str ) -> Result< Vec< PathBuf > >
   {
@@ -555,14 +556,15 @@ impl Workspace
   /// ```rust
   /// use workspace_tools::workspace;
   ///
-  /// # std::env::set_var("WORKSPACE_PATH", std::env::current_dir().unwrap());
+  /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
   /// let ws = workspace()?;
   ///
   /// // looks for config/database.toml, config/database.yaml, etc.
-  /// if let Ok(config_path) = ws.find_config("database") {
-  ///     println!("found config at: {}", config_path.display());
+  /// if let Ok( config_path ) = ws.find_config( "database" )
+  /// {
+  ///     println!( "found config at: {}", config_path.display() );
   /// }
-  /// # Ok::<(), workspace_tools::WorkspaceError>(())
+  /// # Ok::< (), workspace_tools::WorkspaceError >( () )
   /// ```
   pub fn find_config( &self, name : &str ) -> Result< PathBuf >
   {
@@ -625,19 +627,22 @@ impl Workspace
   /// ```rust
   /// use workspace_tools::workspace;
   ///
-  /// # std::env::set_var("WORKSPACE_PATH", std::env::current_dir().unwrap());
+  /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
   /// let ws = workspace()?;
   ///
   /// // load from .secret/-secrets.sh
-  /// match ws.load_secrets_from_file("-secrets.sh") {
-  ///     Ok(secrets) => {
-  ///         if let Some(api_key) = secrets.get("API_KEY") {
-  ///             println!("loaded api key");
+  /// match ws.load_secrets_from_file( "-secrets.sh" )
+  /// {
+  ///     Ok( secrets ) =>
+  ///     {
+  ///         if let Some( api_key ) = secrets.get( "API_KEY" )
+  ///         {
+  ///             println!( "loaded api key" );
   ///         }
   ///     }
-  ///     Err(_) => println!("no secrets file found"),
+  ///     Err( _ ) => println!( "no secrets file found" ),
   /// }
-  /// # Ok::<(), workspace_tools::WorkspaceError>(())
+  /// # Ok::< (), workspace_tools::WorkspaceError >( () )
   /// ```
   pub fn load_secrets_from_file( &self, filename : &str ) -> Result< HashMap< String, String > >
   {
@@ -667,15 +672,16 @@ impl Workspace
   /// ```rust
   /// use workspace_tools::workspace;
   ///
-  /// # std::env::set_var("WORKSPACE_PATH", std::env::current_dir().unwrap());
+  /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
   /// let ws = workspace()?;
   ///
   /// // looks for API_KEY in .secret/-secrets.sh, then in environment
-  /// match ws.load_secret_key("API_KEY", "-secrets.sh") {
-  ///     Ok(key) => println!("loaded api key"),
-  ///     Err(_) => println!("api key not found"),
+  /// match ws.load_secret_key( "API_KEY", "-secrets.sh" )
+  /// {
+  ///     Ok( key ) => println!( "loaded api key" ),
+  ///     Err( _ ) => println!( "api key not found" ),
   /// }
-  /// # Ok::<(), workspace_tools::WorkspaceError>(())
+  /// # Ok::< (), workspace_tools::WorkspaceError >( () )
   /// ```
   pub fn load_secret_key( &self, key_name : &str, filename : &str ) -> Result< String >
   {
@@ -759,8 +765,8 @@ impl Workspace
   /// use workspace_tools::Workspace;
   ///
   /// let workspace = Workspace::from_cargo_workspace()?;
-  /// println!("cargo workspace root: {}", workspace.root().display());
-  /// # Ok::<(), workspace_tools::WorkspaceError>(())
+  /// println!( "cargo workspace root: {}", workspace.root().display() );
+  /// # Ok::< (), workspace_tools::WorkspaceError >( () )
   /// ```
   pub fn from_cargo_workspace() -> Result< Self >
   {
@@ -946,16 +952,17 @@ impl Workspace
   /// use workspace_tools::workspace;
   /// use serde::Deserialize;
   ///
-  /// #[derive(Deserialize)]
-  /// struct AppConfig {
-  ///     name: String,
-  ///     port: u16,
+  /// #[ derive( Deserialize ) ]
+  /// struct AppConfig
+  /// {
+  ///     name : String,
+  ///     port : u16,
   /// }
   ///
   /// let ws = workspace()?;
   /// // looks for config/app.toml, config/app.yaml, config/app.json
-  /// let config: AppConfig = ws.load_config("app")?;
-  /// # Ok::<(), workspace_tools::WorkspaceError>(())
+  /// let config : AppConfig = ws.load_config( "app" )?;
+  /// # Ok::< (), workspace_tools::WorkspaceError >( () )
   /// ```
   pub fn load_config< T >( &self, name : &str ) -> Result< T >
   where
@@ -1187,17 +1194,19 @@ pub mod testing
   /// # examples
   ///
   /// ```rust
-  /// #[cfg(test)]
-  /// mod tests {
+  /// #[ cfg( test ) ]
+  /// mod tests
+  /// {
   ///     use workspace_tools::testing::create_test_workspace;
   ///
-  ///     #[test]
-  ///     fn test_my_feature() {
-  ///         let (_temp_dir, workspace) = create_test_workspace();
+  ///     #[ test ]
+  ///     fn test_my_feature()
+  ///     {
+  ///         let ( _temp_dir, workspace ) = create_test_workspace();
   ///
   ///         // test with isolated workspace
-  ///         let config = workspace.config_dir().join("test.toml");
-  ///         assert!(config.starts_with(workspace.root()));
+  ///         let config = workspace.config_dir().join( "test.toml" );
+  ///         assert!( config.starts_with( workspace.root() ) );
   ///     }
   /// }
   /// ```
@@ -1268,10 +1277,10 @@ pub mod testing
 /// ```rust
 /// use workspace_tools::workspace;
 ///
-/// # std::env::set_var("WORKSPACE_PATH", std::env::current_dir().unwrap());
+/// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
 /// let ws = workspace()?;
 /// let config_dir = ws.config_dir();
-/// # Ok::<(), workspace_tools::WorkspaceError>(())
+/// # Ok::< (), workspace_tools::WorkspaceError >( () )
 /// ```
 #[ inline ]
 pub fn workspace() -> Result< Workspace >

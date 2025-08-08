@@ -9,8 +9,10 @@ Add built-in support for commonly used Rust types to eliminate manual implementa
 Users must manually implement `Assign` for popular types:
 ```rust
 // Manual implementation needed
-impl<T: Into<Duration>> Assign<Duration, T> for MyConfig {
-  fn assign(&mut self, component: T) {
+impl< T : Into< Duration > > Assign< Duration, T > for MyConfig
+{
+  fn assign( &mut self, component : T )
+  {
     self.timeout = component.into();
   }
 }
@@ -21,18 +23,19 @@ impl<T: Into<Duration>> Assign<Duration, T> for MyConfig {
 Built-in support for common types:
 ```rust
 #[derive(ComponentModel)]
-struct Config {
-  timeout: Duration,        // Works automatically
-  bind_addr: SocketAddr,    // Works automatically  
-  config_path: PathBuf,     // Works automatically
-  request_id: Uuid,         // Feature-gated
-  base_url: Url,           // Feature-gated
+struct Config
+{
+  timeout : Duration,        // Works automatically
+  bind_addr : SocketAddr,    // Works automatically  
+  config_path : PathBuf,     // Works automatically
+  request_id : Uuid,         // Feature-gated
+  base_url : Url,           // Feature-gated
 }
 
 let config = Config::default()
-  .impute(Duration::from_secs(30))
-  .impute("127.0.0.1:8080".parse::<SocketAddr>().unwrap())
-  .impute(PathBuf::from("/etc/app.conf"));
+  .impute( Duration::from_secs( 30 ) )
+  .impute( "127.0.0.1:8080".parse::< SocketAddr >().unwrap() )
+  .impute( PathBuf::from( "/etc/app.conf" ) );
 ```
 
 ## 📝 **Detailed Requirements**
@@ -68,19 +71,21 @@ let config = Config::default()
 #### **UUID Support** (`uuid` feature)
 ```rust
 // In component_model_types/src/popular_types.rs
-#[cfg(feature = "uuid")]
-mod uuid_support {
+#[ cfg( feature = "uuid" ) ]
+mod uuid_support
+{
   use super::*;
   use uuid::Uuid;
   
-  impl<T> Assign<Uuid, T> for dyn AssignTarget<Uuid>
+  impl< T > Assign< Uuid, T > for dyn AssignTarget< Uuid >
   where
-    T: Into<String>,
+    T : Into< String >,
   {
-    fn assign(&mut self, component: T) {
-      let uuid = Uuid::parse_str(&component.into())
-        .unwrap_or_else(|_| Uuid::new_v4());
-      self.set_component(uuid);
+    fn assign( &mut self, component : T )
+    {
+      let uuid = Uuid::parse_str( &component.into() )
+        .unwrap_or_else( | _ | Uuid::new_v4() );
+      self.set_component( uuid );
     }
   }
 }
@@ -88,19 +93,21 @@ mod uuid_support {
 
 #### **URL Support** (`url` feature)
 ```rust
-#[cfg(feature = "url")]
-mod url_support {
+#[ cfg( feature = "url" ) ]
+mod url_support
+{
   use super::*;
   use url::Url;
   
-  impl<T> Assign<Url, T> for dyn AssignTarget<Url>
+  impl< T > Assign< Url, T > for dyn AssignTarget< Url >
   where
-    T: AsRef<str>,
+    T : AsRef< str >,
   {
-    fn assign(&mut self, component: T) {
-      let url = Url::parse(component.as_ref())
-        .expect("Invalid URL format");
-      self.set_component(url);
+    fn assign( &mut self, component : T )
+    {
+      let url = Url::parse( component.as_ref() )
+        .expect( "Invalid URL format" );
+      self.set_component( url );
     }
   }
 }
@@ -108,21 +115,23 @@ mod url_support {
 
 #### **Serde Integration** (`serde` feature)
 ```rust
-#[cfg(feature = "serde")]
-mod serde_support {
+#[ cfg( feature = "serde" ) ]
+mod serde_support
+{
   use super::*;
-  use serde::{Deserialize, Serialize};
+  use serde::{ Deserialize, Serialize };
   
   // Automatic JSON assignment
-  impl<T, U> Assign<T, U> for dyn AssignTarget<T>
+  impl< T, U > Assign< T, U > for dyn AssignTarget< T >
   where
-    T: for<'de> Deserialize<'de>,
-    U: AsRef<str>,
+    T : for< 'de > Deserialize< 'de >,
+    U : AsRef< str >,
   {
-    fn assign(&mut self, component: U) {
-      let value: T = serde_json::from_str(component.as_ref())
-        .expect("Failed to deserialize JSON");
-      self.set_component(value);
+    fn assign( &mut self, component : U )
+    {
+      let value : T = serde_json::from_str( component.as_ref() )
+        .expect( "Failed to deserialize JSON" );
+      self.set_component( value );
     }
   }
 }
@@ -135,39 +144,49 @@ mod serde_support {
 // In component_model_types/src/popular_types.rs
 
 // Duration support
-impl<IntoT> Assign<Duration, IntoT> for dyn ComponentTarget<Duration>
+impl< IntoT > Assign< Duration, IntoT > for dyn ComponentTarget< Duration >
 where
-  IntoT: IntoDuration,
+  IntoT : IntoDuration,
 {
-  fn assign(&mut self, component: IntoT) {
-    self.set_field(component.into_duration());
+  fn assign( &mut self, component : IntoT )
+  {
+    self.set_field( component.into_duration() );
   }
 }
 
-pub trait IntoDuration {
-  fn into_duration(self) -> Duration;
+pub trait IntoDuration
+{
+  fn into_duration( self ) -> Duration;
 }
 
-impl IntoDuration for u64 {
-  fn into_duration(self) -> Duration {
-    Duration::from_secs(self)
+impl IntoDuration for u64
+{
+  fn into_duration( self ) -> Duration
+  {
+    Duration::from_secs( self )
   }
 }
 
-impl IntoDuration for f64 {
-  fn into_duration(self) -> Duration {
-    Duration::from_secs_f64(self)
+impl IntoDuration for f64
+{
+  fn into_duration( self ) -> Duration
+  {
+    Duration::from_secs_f64( self )
   }
 }
 
-impl IntoDuration for (u64, u32) {
-  fn into_duration(self) -> Duration {
-    Duration::new(self.0, self.1)
+impl IntoDuration for ( u64, u32 )
+{
+  fn into_duration( self ) -> Duration
+  {
+    Duration::new( self.0, self.1 )
   }
 }
 
-impl IntoDuration for Duration {
-  fn into_duration(self) -> Duration {
+impl IntoDuration for Duration
+{
+  fn into_duration( self ) -> Duration
+  {
     self
   }
 }
@@ -212,53 +231,60 @@ impl IntoDuration for Duration {
 
 ### **Unit Tests by Type**
 ```rust
-#[cfg(test)]
-mod tests {
+#[ cfg( test ) ]
+mod tests
+{
   use super::*;
   
-  #[test]
-  fn test_duration_assignment() {
-    #[derive(ComponentModel)]
-    struct Config {
-      timeout: Duration,
+  #[ test ]
+  fn test_duration_assignment()
+  {
+    #[ derive( ComponentModel ) ]
+    struct Config
+    {
+      timeout : Duration,
     }
     
     let mut config = Config::default();
     
     // Test various input types
-    config.assign(30u64);                    // seconds
-    assert_eq!(config.timeout, Duration::from_secs(30));
+    config.assign( 30u64 );                    // seconds
+    assert_eq!( config.timeout, Duration::from_secs( 30 ) );
     
-    config.assign(2.5f64);                   // fractional seconds
-    assert_eq!(config.timeout, Duration::from_secs_f64(2.5));
+    config.assign( 2.5f64 );                   // fractional seconds
+    assert_eq!( config.timeout, Duration::from_secs_f64( 2.5 ) );
     
-    config.assign((5, 500_000_000u32));      // (seconds, nanos)
-    assert_eq!(config.timeout, Duration::new(5, 500_000_000));
+    config.assign( ( 5, 500_000_000u32 ) );      // (seconds, nanos)
+    assert_eq!( config.timeout, Duration::new( 5, 500_000_000 ) );
   }
   
-  #[test]
-  fn test_socket_addr_assignment() {
-    #[derive(ComponentModel)]
-    struct ServerConfig {
-      bind_addr: SocketAddr,
+  #[ test ]
+  fn test_socket_addr_assignment()
+  {
+    #[ derive( ComponentModel ) ]
+    struct ServerConfig
+    {
+      bind_addr : SocketAddr,
     }
     
     let mut config = ServerConfig::default();
-    config.assign("127.0.0.1:8080");
-    assert_eq!(config.bind_addr.port(), 8080);
+    config.assign( "127.0.0.1:8080" );
+    assert_eq!( config.bind_addr.port(), 8080 );
   }
   
-  #[cfg(feature = "uuid")]
-  #[test]
-  fn test_uuid_assignment() {
-    #[derive(ComponentModel)]
-    struct Request {
-      id: Uuid,
+  #[ cfg( feature = "uuid" ) ]
+  #[ test ]
+  fn test_uuid_assignment()
+  {
+    #[ derive( ComponentModel ) ]
+    struct Request
+    {
+      id : Uuid,
     }
     
     let mut request = Request::default();
-    request.assign("550e8400-e29b-41d4-a716-446655440000");
-    assert!(!request.id.is_nil());
+    request.assign( "550e8400-e29b-41d4-a716-446655440000" );
+    assert!( !request.id.is_nil() );
   }
 }
 ```
@@ -266,24 +292,26 @@ mod tests {
 ### **Integration Tests**
 ```rust
 // tests/popular_types_integration.rs
-#[test]
-fn test_real_world_config() {
-  #[derive(ComponentModel)]
-  struct AppConfig {
-    server_addr: SocketAddr,
-    timeout: Duration,
-    config_path: PathBuf,
-    #[cfg(feature = "uuid")]
-    instance_id: Uuid,
+#[ test ]
+fn test_real_world_config()
+{
+  #[ derive( ComponentModel ) ]
+  struct AppConfig
+  {
+    server_addr : SocketAddr,
+    timeout : Duration,
+    config_path : PathBuf,
+    #[ cfg( feature = "uuid" ) ]
+    instance_id : Uuid,
   }
   
   let config = AppConfig::default()
-    .impute("0.0.0.0:3000")
-    .impute(Duration::from_secs(60))
-    .impute(PathBuf::from("/app/config.toml"));
+    .impute( "0.0.0.0:3000" )
+    .impute( Duration::from_secs( 60 ) )
+    .impute( PathBuf::from( "/app/config.toml" ) );
     
-  assert_eq!(config.server_addr.port(), 3000);
-  assert_eq!(config.timeout, Duration::from_secs(60));
+  assert_eq!( config.server_addr.port(), 3000 );
+  assert_eq!( config.timeout, Duration::from_secs( 60 ) );
 }
 ```
 

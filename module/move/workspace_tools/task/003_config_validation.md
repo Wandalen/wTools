@@ -30,64 +30,69 @@ Implement schema-based configuration validation to prevent runtime configuration
 
 ### **New API Surface**
 ```rust
-impl Workspace {
+impl Workspace
+{
     /// Load and validate configuration with schema
-    pub fn load_config_with_schema<T>(
+    pub fn load_config_with_schema< T >(
         &self, 
-        config_name: &str, 
-        schema: &str
-    ) -> Result<T> 
+        config_name : &str, 
+        schema : &str
+    ) -> Result< T > 
     where 
-        T: serde::de::DeserializeOwned;
+        T : serde::de::DeserializeOwned;
     
     /// Load configuration with embedded schema
-    pub fn load_config<T>(&self, config_name: &str) -> Result<T>
+    pub fn load_config< T >( &self, config_name : &str ) -> Result< T >
     where
-        T: serde::de::DeserializeOwned + ConfigSchema;
+        T : serde::de::DeserializeOwned + ConfigSchema;
     
     /// Validate configuration file against schema
-    pub fn validate_config_file<P: AsRef<Path>>(
+    pub fn validate_config_file< P : AsRef< Path > >(
         &self,
-        config_path: P,
-        schema: &str
-    ) -> Result<ConfigValidation>;
+        config_path : P,
+        schema : &str
+    ) -> Result< ConfigValidation >;
     
     /// Get configuration with environment overrides
-    pub fn load_config_with_env<T>(
+    pub fn load_config_with_env< T >(
         &self,
-        config_name: &str,
-        env_prefix: &str
-    ) -> Result<T>
+        config_name : &str,
+        env_prefix : &str
+    ) -> Result< T >
     where
-        T: serde::de::DeserializeOwned + ConfigSchema;
+        T : serde::de::DeserializeOwned + ConfigSchema;
 }
 
 /// Trait for types that can provide their own validation schema
-pub trait ConfigSchema {
+pub trait ConfigSchema
+{
     fn json_schema() -> &'static str;
     fn config_name() -> &'static str;
 }
 
-#[derive(Debug, Clone)]
-pub struct ConfigValidation {
-    pub valid: bool,
-    pub errors: Vec<ValidationError>,
-    pub warnings: Vec<ValidationWarning>,
+#[ derive( Debug, Clone ) ]
+pub struct ConfigValidation
+{
+    pub valid : bool,
+    pub errors : Vec< ValidationError >,
+    pub warnings : Vec< ValidationWarning >,
 }
 
-#[derive(Debug, Clone)]
-pub struct ValidationError {
-    pub path: String,
-    pub message: String,
-    pub line: Option<usize>,
-    pub column: Option<usize>,
+#[ derive( Debug, Clone ) ]
+pub struct ValidationError
+{
+    pub path : String,
+    pub message : String,
+    pub line : Option< usize >,
+    pub column : Option< usize >,
 }
 
-#[derive(Debug, Clone)]  
-pub struct ValidationWarning {
-    pub path: String,
-    pub message: String,
-    pub suggestion: Option<String>,
+#[ derive( Debug, Clone ) ]  
+pub struct ValidationWarning
+{
+    pub path : String,
+    pub message : String,
+    pub suggestion : Option< String >,
 }
 ```
 
@@ -96,8 +101,8 @@ pub struct ValidationWarning {
 #### **Step 1: Dependencies and Foundation** (Day 1)
 ```rust
 // Add to Cargo.toml
-[features]
-default = ["enabled", "config_validation"]
+[ features ]
+default = [ "enabled", "config_validation" ]
 config_validation = [
     "dep:serde",
     "dep:serde_json", 
@@ -106,75 +111,87 @@ config_validation = [
     "dep:jsonschema",
 ]
 
-[dependencies]
-serde = { version = "1.0", features = ["derive"], optional = true }
+[ dependencies ]
+serde = { version = "1.0", features = [ "derive" ], optional = true }
 serde_json = { version = "1.0", optional = true }
 toml = { version = "0.8", optional = true }
 serde_yaml = { version = "0.9", optional = true }
 jsonschema = { version = "0.17", optional = true }
 
 // Config validation module
-#[cfg(feature = "config_validation")]
-mod config_validation {
-    use serde_json::{Value, from_str as json_from_str};
-    use jsonschema::{JSONSchema, ValidationError as JsonSchemaError};
+#[ cfg( feature = "config_validation" ) ]
+mod config_validation
+{
+    use serde_json::{ Value, from_str as json_from_str };
+    use jsonschema::{ JSONSchema, ValidationError as JsonSchemaError };
     use std::path::Path;
     
-    pub struct ConfigValidator {
-        schemas: std::collections::HashMap<String, JSONSchema>,
+    pub struct ConfigValidator
+    {
+        schemas : std::collections::HashMap< String, JSONSchema >,
     }
     
-    impl ConfigValidator {
-        pub fn new() -> Self {
-            Self {
-                schemas: std::collections::HashMap::new(),
+    impl ConfigValidator
+    {
+        pub fn new() -> Self
+        {
+            Self
+            {
+                schemas : std::collections::HashMap::new(),
             }
         }
         
-        pub fn add_schema(&mut self, name: &str, schema: &str) -> Result<()> {
-            let schema_value: Value = json_from_str(schema)
-                .map_err(|e| WorkspaceError::ConfigurationError(
-                    format!("Invalid JSON schema: {}", e)
-                ))?;
+        pub fn add_schema( &mut self, name : &str, schema : &str ) -> Result< () >
+        {
+            let schema_value : Value = json_from_str( schema )
+                .map_err( | e | WorkspaceError::ConfigurationError(
+                    format!( "Invalid JSON schema: {}", e )
+                ) )?;
                 
-            let compiled = JSONSchema::compile(&schema_value)
-                .map_err(|e| WorkspaceError::ConfigurationError(
-                    format!("Schema compilation error: {}", e)
-                ))?;
+            let compiled = JSONSchema::compile( &schema_value )
+                .map_err( | e | WorkspaceError::ConfigurationError(
+                    format!( "Schema compilation error: {}", e )
+                ) )?;
                 
-            self.schemas.insert(name.to_string(), compiled);
-            Ok(())
+            self.schemas.insert( name.to_string(), compiled );
+            Ok( () )
         }
         
-        pub fn validate_json(&self, schema_name: &str, json: &Value) -> Result<ConfigValidation> {
-            let schema = self.schemas.get(schema_name)
-                .ok_or_else(|| WorkspaceError::ConfigurationError(
-                    format!("Schema '{}' not found", schema_name)
-                ))?;
+        pub fn validate_json( &self, schema_name : &str, json : &Value ) -> Result< ConfigValidation >
+        {
+            let schema = self.schemas.get( schema_name )
+                .ok_or_else( || WorkspaceError::ConfigurationError(
+                    format!( "Schema '{}' not found", schema_name )
+                ) )?;
                 
-            let validation_result = schema.validate(json);
+            let validation_result = schema.validate( json );
             
-            match validation_result {
-                Ok(_) => Ok(ConfigValidation {
-                    valid: true,
-                    errors: vec![],
-                    warnings: vec![],
-                }),
-                Err(errors) => {
-                    let validation_errors: Vec<ValidationError> = errors
-                        .map(|error| ValidationError {
-                            path: error.instance_path.to_string(),
-                            message: error.to_string(),
-                            line: None, // TODO: Extract from parsing
-                            column: None,
-                        })
+            match validation_result
+            {
+                Ok( _ ) => Ok( ConfigValidation
+                {
+                    valid : true,
+                    errors : vec![],
+                    warnings : vec![],
+                } ),
+                Err( errors ) =>
+                {
+                    let validation_errors : Vec< ValidationError > = errors
+                        .map( | error | ValidationError
+                        {
+                            path : error.instance_path.to_string(),
+                            message : error.to_string(),
+                            line : None, // TODO: Extract from parsing
+                            column : None,
+                        } )
                         .collect();
                         
-                    Ok(ConfigValidation {
-                        valid: false,
-                        errors: validation_errors,
-                        warnings: vec![],
-                    })
+                    Ok( ConfigValidation
+                    {
+                        valid : false,
+                        errors : validation_errors,
+                        warnings : vec![],
+                    } )
                 }
             }
         }
@@ -184,67 +201,76 @@ mod config_validation {
 
 #### **Step 2: Configuration Format Detection and Parsing** (Day 1-2)
 ```rust
-#[cfg(feature = "config_validation")]
-impl Workspace {
+#[ cfg( feature = "config_validation" ) ]
+impl Workspace
+{
     /// Detect configuration file format from extension
-    fn detect_config_format<P: AsRef<Path>>(path: P) -> Result<ConfigFormat> {
+    fn detect_config_format< P : AsRef< Path > >( path : P ) -> Result< ConfigFormat >
+    {
         let path = path.as_ref();
-        match path.extension().and_then(|ext| ext.to_str()) {
-            Some("toml") => Ok(ConfigFormat::Toml),
-            Some("yaml") | Some("yml") => Ok(ConfigFormat::Yaml),
-            Some("json") => Ok(ConfigFormat::Json),
-            _ => Err(WorkspaceError::ConfigurationError(
-                format!("Unsupported config format: {}", path.display())
-            ))
+        match path.extension().and_then( | ext | ext.to_str() )
+        {
+            Some( "toml" ) => Ok( ConfigFormat::Toml ),
+            Some( "yaml" ) | Some( "yml" ) => Ok( ConfigFormat::Yaml ),
+            Some( "json" ) => Ok( ConfigFormat::Json ),
+            _ => Err( WorkspaceError::ConfigurationError(
+                format!( "Unsupported config format: {}", path.display() )
+            ) )
         }
     }
     
     /// Parse configuration file to JSON value for validation
-    fn parse_config_to_json<P: AsRef<Path>>(
+    fn parse_config_to_json< P : AsRef< Path > >(
         &self, 
-        config_path: P
-    ) -> Result<serde_json::Value> {
+        config_path : P
+    ) -> Result< serde_json::Value >
+    {
         let path = config_path.as_ref();
-        let content = std::fs::read_to_string(path)
-            .map_err(|e| WorkspaceError::IoError(e.to_string()))?;
+        let content = std::fs::read_to_string( path )
+            .map_err( | e | WorkspaceError::IoError( e.to_string() ) )?;
             
-        let format = self.detect_config_format(path)?;
+        let format = self.detect_config_format( path )?;
         
-        match format {
-            ConfigFormat::Json => {
-                serde_json::from_str(&content)
-                    .map_err(|e| WorkspaceError::ConfigurationError(
-                        format!("JSON parsing error in {}: {}", path.display(), e)
-                    ))
+        match format
+        {
+            ConfigFormat::Json =>
+            {
+                serde_json::from_str( &content )
+                    .map_err( | e | WorkspaceError::ConfigurationError(
+                        format!( "JSON parsing error in {}: {}", path.display(), e )
+                    ) )
             }
-            ConfigFormat::Toml => {
-                let toml_value: toml::Value = toml::from_str(&content)
-                    .map_err(|e| WorkspaceError::ConfigurationError(
-                        format!("TOML parsing error in {}: {}", path.display(), e)
-                    ))?;
+            ConfigFormat::Toml =>
+            {
+                let toml_value : toml::Value = toml::from_str( &content )
+                    .map_err( | e | WorkspaceError::ConfigurationError(
+                        format!( "TOML parsing error in {}: {}", path.display(), e )
+                    ) )?;
                     
                 // Convert TOML to JSON for validation
-                let json_string = serde_json::to_string(&toml_value)
-                    .map_err(|e| WorkspaceError::ConfigurationError(e.to_string()))?;
-                serde_json::from_str(&json_string)
-                    .map_err(|e| WorkspaceError::ConfigurationError(e.to_string()))
+                let json_string = serde_json::to_string( &toml_value )
+                    .map_err( | e | WorkspaceError::ConfigurationError( e.to_string() ) )?;
+                serde_json::from_str( &json_string )
+                    .map_err( | e | WorkspaceError::ConfigurationError( e.to_string() ) )
             }
-            ConfigFormat::Yaml => {
-                let yaml_value: serde_yaml::Value = serde_yaml::from_str(&content)
-                    .map_err(|e| WorkspaceError::ConfigurationError(
-                        format!("YAML parsing error in {}: {}", path.display(), e)
-                    ))?;
+            ConfigFormat::Yaml =>
+            {
+                let yaml_value : serde_yaml::Value = serde_yaml::from_str( &content )
+                    .map_err( | e | WorkspaceError::ConfigurationError(
+                        format!( "YAML parsing error in {}: {}", path.display(), e )
+                    ) )?;
                     
                 // Convert YAML to JSON for validation
-                serde_json::to_value(yaml_value)
-                    .map_err(|e| WorkspaceError::ConfigurationError(e.to_string()))
+                serde_json::to_value( yaml_value )
+                    .map_err( | e | WorkspaceError::ConfigurationError( e.to_string() ) )
             }
         }
     }
 }
 
-#[derive(Debug, Clone)]
-enum ConfigFormat {
+#[ derive( Debug, Clone ) ]
+enum ConfigFormat
+{
     Json,
     Toml, 
     Yaml,
@@ -253,15 +279,16 @@ enum ConfigFormat {
 
 #### **Step 3: Main Configuration Loading API** (Day 2-3)
 ```rust
-#[cfg(feature = "config_validation")]
-impl Workspace {
-    pub fn load_config_with_schema<T>(
+#[ cfg( feature = "config_validation" ) ]
+impl Workspace
+{
+    pub fn load_config_with_schema< T >(
         &self,
-        config_name: &str,
-        schema: &str
-    ) -> Result<T>
+        config_name : &str,
+        schema : &str
+    ) -> Result< T >
     where
-        T: serde::de::DeserializeOwned
+        T : serde::de::DeserializeOwned
     {
         // Find configuration file
         let config_path = self.find_config(config_name)?;
@@ -478,21 +505,25 @@ impl ConfigSchema for AppConfig {
 
 #### **Step 5: Testing and Examples** (Day 4)
 ```rust
-#[cfg(test)]
-#[cfg(feature = "config_validation")]
-mod config_validation_tests {
+#[ cfg( test ) ]
+#[ cfg( feature = "config_validation" ) ]
+mod config_validation_tests
+{
     use super::*;
     use crate::testing::create_test_workspace_with_structure;
     
-    #[derive(serde::Deserialize, serde::Serialize)]
-    struct TestConfig {
-        name: String,
-        port: u16,
-        enabled: bool,
+    #[ derive( serde::Deserialize, serde::Serialize ) ]
+    struct TestConfig
+    {
+        name : String,
+        port : u16,
+        enabled : bool,
     }
     
-    impl ConfigSchema for TestConfig {
-        fn json_schema() -> &'static str {
+    impl ConfigSchema for TestConfig
+    {
+        fn json_schema() -> &'static str
+        {
             r#"{
                 "type": "object",
                 "properties": {
@@ -508,9 +539,10 @@ mod config_validation_tests {
         fn config_name() -> &'static str { "test" }
     }
     
-    #[test]
-    fn test_valid_config_loading() {
-        let (_temp_dir, ws) = create_test_workspace_with_structure();
+    #[ test ]
+    fn test_valid_config_loading()
+    {
+        let ( _temp_dir, ws ) = create_test_workspace_with_structure();
         
         let config_content = r#"
 name = "test_app"
@@ -518,17 +550,18 @@ port = 8080
 enabled = true
 "#;
         
-        std::fs::write(ws.config_dir().join("test.toml"), config_content).unwrap();
+        std::fs::write( ws.config_dir().join( "test.toml" ), config_content ).unwrap();
         
-        let config: TestConfig = ws.load_config("test").unwrap();
-        assert_eq!(config.name, "test_app");
-        assert_eq!(config.port, 8080);
-        assert_eq!(config.enabled, true);
+        let config : TestConfig = ws.load_config( "test" ).unwrap();
+        assert_eq!( config.name, "test_app" );
+        assert_eq!( config.port, 8080 );
+        assert_eq!( config.enabled, true );
     }
     
-    #[test] 
-    fn test_invalid_config_validation() {
-        let (_temp_dir, ws) = create_test_workspace_with_structure();
+    #[ test ] 
+    fn test_invalid_config_validation()
+    {
+        let ( _temp_dir, ws ) = create_test_workspace_with_structure();
         
         let invalid_config = r#"
 name = "test_app"
@@ -536,24 +569,27 @@ port = 99999  # Invalid port number
 enabled = "not_a_boolean"
 "#;
         
-        std::fs::write(ws.config_dir().join("test.toml"), invalid_config).unwrap();
+        std::fs::write( ws.config_dir().join( "test.toml" ), invalid_config ).unwrap();
         
-        let result = ws.load_config::<TestConfig>("test");
-        assert!(result.is_err());
+        let result = ws.load_config::< TestConfig >( "test" );
+        assert!( result.is_err() );
         
         let error = result.unwrap_err();
-        match error {
-            WorkspaceError::ConfigurationError(msg) => {
-                assert!(msg.contains("validation failed"));
-                assert!(msg.contains("port"));
+        match error
+        {
+            WorkspaceError::ConfigurationError( msg ) =>
+            {
+                assert!( msg.contains( "validation failed" ) );
+                assert!( msg.contains( "port" ) );
             }
-            _ => panic!("Expected configuration error"),
+            _ => panic!( "Expected configuration error" ),
         }
     }
     
-    #[test]
-    fn test_environment_overrides() {
-        let (_temp_dir, ws) = create_test_workspace_with_structure();
+    #[ test ]
+    fn test_environment_overrides()
+    {
+        let ( _temp_dir, ws ) = create_test_workspace_with_structure();
         
         let config_content = r#"
 name = "test_app" 
@@ -561,21 +597,21 @@ port = 8080
 enabled = false
 "#;
         
-        std::fs::write(ws.config_dir().join("test.toml"), config_content).unwrap();
+        std::fs::write( ws.config_dir().join( "test.toml" ), config_content ).unwrap();
         
         // Set environment overrides
-        std::env::set_var("APP_PORT", "9000");
-        std::env::set_var("APP_ENABLED", "true");
+        std::env::set_var( "APP_PORT", "9000" );
+        std::env::set_var( "APP_ENABLED", "true" );
         
-        let config: TestConfig = ws.load_config_with_env("test", "APP_").unwrap();
+        let config : TestConfig = ws.load_config_with_env( "test", "APP_" ).unwrap();
         
-        assert_eq!(config.name, "test_app"); // Not overridden
-        assert_eq!(config.port, 9000); // Overridden
-        assert_eq!(config.enabled, true); // Overridden
+        assert_eq!( config.name, "test_app" ); // Not overridden
+        assert_eq!( config.port, 9000 ); // Overridden
+        assert_eq!( config.enabled, true ); // Overridden
         
         // Cleanup
-        std::env::remove_var("APP_PORT");
-        std::env::remove_var("APP_ENABLED");
+        std::env::remove_var( "APP_PORT" );
+        std::env::remove_var( "APP_ENABLED" );
     }
 }
 ```

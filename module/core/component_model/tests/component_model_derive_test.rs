@@ -1,6 +1,6 @@
-//! Test file for ComponentModel derive macro
+//! Test file for `ComponentModel` derive macro
 //!
-//! ## Test Matrix: ComponentModel Derive Functionality
+//! ## Test Matrix: `ComponentModel` Derive Functionality
 //!
 //! ### Test Factors
 //! - **Field Count**: One, Multiple
@@ -24,7 +24,7 @@
 use component_model as the_module;
 use the_module::Assign;
 
-/// Tests ComponentModel derive with multiple basic field types using both direct and fluent assignment.
+/// Tests `ComponentModel` derive with multiple basic field types using both direct and fluent assignment.
 /// Test Combination: TCM01
 #[test]
 fn test_component_model_basic_derive()
@@ -33,30 +33,30 @@ fn test_component_model_basic_derive()
   #[derive(the_module::ComponentModel)]
   struct TestStruct
   {
-    name: String,
-    value: i32,
+    name : String,
+    value : i32,
   }
 
   // Test that all traits are implemented
   let mut obj = TestStruct::default();
   
   // Should be able to use Assign trait
-  Assign::assign(&mut obj, "test_name".to_string());
-  Assign::assign(&mut obj, 42i32);
+  Assign::assign( &mut obj, "test_name".to_string() );
+  Assign::assign( &mut obj, 42i32 );
   
-  assert_eq!(obj.name, "test_name");
-  assert_eq!(obj.value, 42);
+  assert_eq!( obj.name, "test_name" );
+  assert_eq!( obj.value, 42 );
   
   // Should be able to use impute (fluent style)
   let obj2 = TestStruct::default()
-    .impute("fluent_name".to_string())
-    .impute(100i32);
+    .impute( "fluent_name".to_string() )
+    .impute( 100i32 );
     
-  assert_eq!(obj2.name, "fluent_name");
-  assert_eq!(obj2.value, 100);
+  assert_eq!( obj2.name, "fluent_name" );
+  assert_eq!( obj2.value, 100 );
 }
 
-/// Tests ComponentModel derive handles conflicting field types by generating only unique type implementations.
+/// Tests `ComponentModel` derive handles conflicting field types by generating only unique type implementations.
 /// Test Combination: TCM02
 #[test]
 fn test_component_model_with_conflicting_types()
@@ -65,20 +65,20 @@ fn test_component_model_with_conflicting_types()
   #[derive(the_module::ComponentModel)]
   struct ConflictStruct
   {
-    first_string: String,
-    second_string: String, // This should cause conflicts for String assignment
-    number: i32,
+    first_string : String,
+    second_string : String, // This should cause conflicts for String assignment
+    number : i32,
   }
 
   let mut obj = ConflictStruct::default();
   
   // With conflicting types, assignment should still work but may be ambiguous
   // The macro should handle this by not generating conflicting implementations
-  Assign::assign(&mut obj, 42i32);
-  assert_eq!(obj.number, 42);
+  Assign::assign( &mut obj, 42i32 );
+  assert_eq!( obj.number, 42 );
 }
 
-/// Tests ComponentModel derive with sequential direct assignment to multiple basic field types.
+/// Tests `ComponentModel` derive with sequential direct assignment to multiple basic field types.
 /// Test Combination: TCM03
 #[test]
 fn test_component_model_tuple_assignment()
@@ -87,24 +87,24 @@ fn test_component_model_tuple_assignment()
   #[derive(the_module::ComponentModel)]
   struct TupleStruct
   {
-    name: String,
-    value: i32,
-    flag: bool,
+    name : String,
+    value : i32,
+    flag : bool,
   }
 
   // Should be able to create from tuple components if implemented
   // This test may fail initially until tuple support is added
   let mut obj = TupleStruct::default();
-  Assign::assign(&mut obj, "tuple_name".to_string());
-  Assign::assign(&mut obj, 123i32);
-  Assign::<bool, _>::assign(&mut obj, true);
+  Assign::assign( &mut obj, "tuple_name".to_string() );
+  Assign::assign( &mut obj, 123i32 );
+  Assign::< bool, _ >::assign( &mut obj, true );
     
-  assert_eq!(obj.name, "tuple_name");
-  assert_eq!(obj.value, 123);
-  assert_eq!(obj.flag, true);
+  assert_eq!( obj.name, "tuple_name" );
+  assert_eq!( obj.value, 123 );
+  assert!( obj.flag );
 }
 
-/// Tests ComponentModel derive with debug attribute processing and direct assignment.  
+/// Tests `ComponentModel` derive with debug attribute processing and direct assignment.
 /// Test Combination: TCM04
 #[test]
 fn test_component_model_with_attributes()
@@ -114,9 +114,9 @@ fn test_component_model_with_attributes()
   #[debug]
   struct AttributedStruct
   {
-    #[component(default = "default_value")]
-    name: String,
-    value: i32,
+    #[ component( default = "default_value" ) ]
+    name : String,
+    value : i32,
   }
 
   // Test that attributes are processed
@@ -125,9 +125,9 @@ fn test_component_model_with_attributes()
   // For now, just test that the derive compiles with attributes
   // Actual attribute behavior will be implemented later
   let mut obj2 = obj;
-  Assign::assign(&mut obj2, "new_name".to_string());
-  Assign::assign(&mut obj2, 42i32);
+  Assign::assign( &mut obj2, "new_name".to_string() );
+  Assign::assign( &mut obj2, 42i32 );
   
-  assert_eq!(obj2.name, "new_name");
-  assert_eq!(obj2.value, 42);
+  assert_eq!( obj2.name, "new_name" );
+  assert_eq!( obj2.value, 42 );
 }
