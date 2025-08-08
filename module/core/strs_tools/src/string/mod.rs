@@ -13,6 +13,12 @@ pub mod parse_request;
 /// Split string with a delimiter.
 #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
 pub mod split;
+/// Zero-copy string operations.
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+pub mod zero_copy;
+/// Parser integration for single-pass processing.
+#[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+pub mod parser;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
@@ -35,6 +41,10 @@ pub mod own {
   pub use super::parse_request::orphan::*;
   #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
   pub use super::split::orphan::*;
+  #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+  pub use super::zero_copy::{ ZeroCopyStringExt, ZeroCopySplit, ZeroCopySegment, zero_copy_split };
+  #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+  pub use super::parser::{ ParserIntegrationExt, CommandParser, ParsedToken, ParseError, parse_and_split };
 }
 
 /// Parented namespace of the module.
@@ -63,6 +73,10 @@ pub mod exposed {
   pub use super::parse_request::exposed::*;
   #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
   pub use super::split::exposed::*;
+  #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+  pub use super::zero_copy::{ ZeroCopyStringExt, zero_copy_split };
+  #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+  pub use super::parser::{ ParserIntegrationExt, ParsedToken, parse_and_split };
 }
 
 /// Namespace of the module to include with `use module::*`.
@@ -82,4 +96,8 @@ pub mod prelude {
   pub use super::parse_request::prelude::*;
   #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
   pub use super::split::prelude::*;
+  #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+  pub use super::zero_copy::ZeroCopyStringExt;
+  #[ cfg( all( feature = "string_split", not( feature = "no_std" ) ) ) ]
+  pub use super::parser::ParserIntegrationExt;
 }

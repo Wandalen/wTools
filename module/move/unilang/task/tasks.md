@@ -2,6 +2,7 @@
 
 | Task | Status | Priority | Responsible |
 |---|---|---|---|
+| [`011_strs_tools_simd_ref.md`](./011_strs_tools_simd_ref.md) | Completed | High | @AI |
 | [`implement_parser_rules_task.md`](./implement_parser_rules_task.md) | Not Started | High | @AI |
 | [`refactor_unilang_unified_architecture_completed_20250726.md`](./refactor_unilang_unified_architecture_completed_20250726.md) | Completed | High | @AI |
 | [`architectural_unification_task.md`](./architectural_unification_task.md) | Not Started | High | @user |

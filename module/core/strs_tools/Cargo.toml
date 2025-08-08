@@ -33,6 +33,7 @@ default = [
   "string_parse_number",
   "string_split",
   "simd",
+  "compile_time_optimizations",
 ]
 full = [
   "enabled",
@@ -42,10 +43,12 @@ full = [
   "string_parse_number",
   "string_split",
   "simd",
+  "compile_time_optimizations",
 ]
 
 # Performance optimization features - enabled by default, disable with --no-default-features
 simd = ["memchr", "aho-corasick", "bytecount", "lazy_static"]
+compile_time_optimizations = ["strs_tools_meta"]
 
 no_std = []
 use_alloc = [ "no_std" ]
@@ -70,6 +73,9 @@ string_split = [ "split" ]
 lexical = { workspace = true, optional = true }
 component_model_types = { workspace = true, features = ["enabled"] }
 
+# Compile-time optimization macros
+strs_tools_meta = { path = "strs_tools_meta", optional = true }
+
 # SIMD optimization dependencies (optional)
 memchr = { workspace = true, optional = true }
 aho-corasick = { workspace = true, optional = true }
@@ -80,12 +86,23 @@ lazy_static = { version = "1.4", optional = true }
 [dev-dependencies]
 test_tools = { workspace = true }
 criterion = { version = "0.5", features = ["html_reports"] }
+ctor = { version = "0.2" }
 
 # Disabled due to infinite loop issues
 [[bench]]
 name = "bottlenecks"
 harness = false
 path = "benchmarks/bottlenecks.rs"
+
+[[bench]]
+name = "zero_copy_comparison"
+harness = false
+path = "benchmarks/zero_copy_comparison.rs"
+
+[[bench]]
+name = "compile_time_optimization_benchmark"
+harness = false
+path = "benchmarks/compile_time_optimization_benchmark.rs"
 
 [[bin]]
 name = "simd_test"

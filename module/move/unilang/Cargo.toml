@@ -63,6 +63,7 @@ mod_interface = { workspace = true, features = [ "enabled" ] }
 iter_tools = { workspace = true, features = [ "enabled" ] }
 former = { workspace = true, features = [ "enabled", "derive_former" ] }
 unilang_parser = { workspace = true } # SIMD features controlled by main unilang features
+strs_tools = { workspace = true, features = [ "enabled", "simd" ] } # SIMD-optimized string processing
 
 ## external
 log = "0.4"
@@ -132,6 +133,11 @@ harness = false
 [[bench]]
 name = "simd_json_benchmark"
 path = "benchmarks/simd_json_benchmark.rs"
+harness = false
+
+[[bench]]
+name = "strs_tools_benchmark"
+path = "benchmarks/strs_tools_benchmark.rs"
 harness = false
 
 [[test]]

@@ -48,6 +48,10 @@ pub mod string;
 #[ cfg( all( feature = "enabled", feature = "simd" ) ) ]
 pub mod simd;
 
+/// Re-export compile-time optimization macros.
+#[ cfg( all( feature = "enabled", feature = "compile_time_optimizations" ) ) ]
+pub use strs_tools_meta::*;
+
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
