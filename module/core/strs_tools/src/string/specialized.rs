@@ -428,6 +428,8 @@ pub struct BoyerMooreSplitIterator<'a> {
   /// Fixed pattern to search for
   pattern: &'a str,
   /// Bad character table for Boyer-Moore optimization (ASCII only)
+  /// Currently unused as simplified search is used for performance vs complexity tradeoff
+  #[allow(dead_code)]
   bad_char_table: [ usize; 256 ],
   /// Current position in input string
   position: usize,

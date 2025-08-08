@@ -124,8 +124,8 @@ strs_tools_meta = { path = "strs_tools_meta", optional = true }
 # SIMD optimization dependencies (optional)
 # When simd feature is disabled, these dependencies are not included at all
 # When simd feature is enabled, these dependencies use their SIMD-optimized features
-memchr = { workspace = true, optional = true, default-features = false, features = [] }
-aho-corasick = { workspace = true, optional = true, default-features = false, features = [] }
+memchr = { workspace = true, optional = true }
+aho-corasick = { workspace = true, optional = true }
 bytecount = { workspace = true, optional = true }
 lazy_static = { version = "1.4", optional = true }
 

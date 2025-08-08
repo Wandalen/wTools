@@ -726,9 +726,11 @@ version = "7.0.4"
 
 [workspace.dependencies.memchr]
 version = "2.7"
+default-features = false
 
 [workspace.dependencies.aho-corasick]
 version = "1.1"
+default-features = false
 
 [workspace.dependencies.bytecount]
 version = "0.6"

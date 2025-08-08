@@ -39,7 +39,7 @@ impl Parser
   {
     let splits_iter = strs_tools::split()
     .src( input )
-    .delimeter( vec![ " ", "\n", "\t", "\r", "::", "?", "#", ".", "!" ] )
+    .delimeters( &[ " ", "\n", "\t", "\r", "::", "?", "#", ".", "!" ] )
     .preserving_delimeters( true )
     .quoting( true )
     .preserving_quoting( false )
@@ -75,12 +75,11 @@ impl Parser
   {
     let segments : Vec< Split< '_ > > = strs_tools::split()
     .src( input )
-    .delimeter( vec![ ";;" ] )
+    .delimeters( &[ ";;" ] )
     .preserving_delimeters( true )
     .preserving_empty( false ) // Do not preserve empty segments for whitespace
     .stripping( true ) // Strip leading/trailing whitespace from delimited segments
-    .form()
-    .split()
+    .perform()
     .collect();
 
     let mut instructions = Vec::new();
