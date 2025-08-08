@@ -8,32 +8,33 @@
 [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Fcomponent_model%2Fexamples%2Fcomponent_model_trivial.rs,RUN_POSTFIX=--example%20module%2Fcore%2Fcomponent_model%2Fexamples%2Fcomponent_model_trivial.rs/https://github.com/Wandalen/wTools)
 [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 
-**Revolutionary type-safe component assignment for Rust** - Build complex objects with zero boilerplate using derive macros and type-driven field setting. Perfect for configuration builders, fluent APIs, and object composition patterns.
+Revolutionary type-safe component assignment for Rust. Build complex objects with zero boilerplate using derive macros and type-driven field setting. Perfect for configuration builders, fluent APIs, and object composition patterns.
 
 ## 🚀 Why Component Model?
 
 Traditional struct initialization is verbose and error-prone:
 
 ```rust
-# struct Config { host: String, port: i32 }
+# struct Config { host : String, port : i32 }
 # struct ConfigBuilder;
 # impl ConfigBuilder {
 #   fn new() -> Self { ConfigBuilder }
-#   fn host(self, _: &str) -> Self { self }
-#   fn port(self, _: i32) -> Self { self }
-#   fn build(self) -> Config { Config { host: "".to_string(), port: 0 } }
+#   fn host( self, _ : &str ) -> Self { self }
+#   fn port( self, _ : i32 ) -> Self { self }
+#   fn build( self ) -> Config { Config { host : "".to_string(), port : 0 } }
 # }
 // Traditional approach - repetitive and fragile
-let config = Config {
-  host: "localhost".to_string(),
-  port: 8080,
+let config = Config
+{
+  host : "localhost".to_string(),
+  port : 8080,
 };
 
 // Builder pattern - lots of boilerplate
 let config = ConfigBuilder::new()
-  .host("localhost")
-  .port(8080)  
-  .build();
+.host( "localhost" )
+.port( 8080 )
+.build();
 ```
 
 **Component Model approach** - Clean, type-safe, zero boilerplate:
@@ -41,21 +42,22 @@ let config = ConfigBuilder::new()
 ```rust
 use component_model::Assign;
 
-#[derive(Default, Assign)]
-struct Config {
-  host: String,
-  port: i32,
+#[ derive( Default, Assign ) ]
+struct Config
+{
+  host : String,
+  port : i32,
 }
 
 // Set components by type - no field names needed!
 let mut config = Config::default();
-config.assign("localhost");  // Automatically sets String field
-config.assign(8080);         // Automatically sets i32 field  
+config.assign( "localhost" );  // Automatically sets String field
+config.assign( 8080 );         // Automatically sets i32 field  
 
 // Or use fluent style
 let config = Config::default()
-  .impute("localhost")
-  .impute(8080);
+.impute( "localhost" )
+.impute( 8080 );
 ```
 
 ## ✨ Key Features
@@ -66,87 +68,157 @@ let config = Config::default()
 - **🛡️ Type safety** - All assignments checked at compile time
 - **🔄 Flexible conversion** - Accepts any type convertible to target field type
 - **📦 Multiple assignment** - Set multiple components with `ComponentsAssign`
+- **⚡ Popular types support** - Built-in support for Duration, PathBuf, SocketAddr, and more
+- **🏗️ ComponentModel derive** - Unified derive macro combining all functionality
 
 ## 🚀 Quick Start
 
 Add to your `Cargo.toml`:
 
 ```toml
-[dependencies]
+[ dependencies ]
 component_model = "0.4"
 ```
 
+### Feature Flags
+
+Component Model follows granular feature gating for minimal builds:
+
+```toml
+[ dependencies ]
+# Minimal version - no features enabled by default  
+component_model = { version = "0.4", default-features = false }
+
+# Enable specific features as needed
+component_model = { version = "0.4", features = [ "derive_component_model" ] }
+
+# Or enable all features (default)
+component_model = { version = "0.4", features = [ "full" ] }
+```
+
+Available features:
+- **`enabled`** - Master switch for core functionality
+- **`full`** - All features (enabled by default)
+- **`derive_component_model`** - Unified ComponentModel derive macro
+- **`derive_component_assign`** - Basic Assign derive macro
+- **`derive_components_assign`** - Multiple component assignment
+- **`derive_component_from`** - Component creation from single values
+- **`derive_from_components`** - Component creation from multiple values
+
 ## 📖 Core Concepts
 
-### 1. Basic Assignment with Derive
+### 1. Basic Assignment with ComponentModel
 
 ```rust
-use component_model::Assign;
+use component_model::{ ComponentModel, Assign };
 
-#[derive(Default, Debug, Assign)]
-struct Person {
-  age: i32,
-  name: String,
+#[ derive( Default, Debug, ComponentModel ) ]
+struct Person
+{
+  age : i32,
+  name : String,
 }
 
-fn main() {
+fn main()
+{
   let mut person = Person::default();
   
   // Type-driven assignment - no field names!
-  person.assign(25);           // Sets age: i32  
-  person.assign("Alice");      // Sets name: String
+  person.assign( 25 );           // Sets age : i32  
+  person.assign( "Alice" );      // Sets name : String
   
-  println!("{:?}", person);    // Person { age: 25, name: "Alice" }
+  println!( "{:?}", person );    // Person { age: 25, name: "Alice" }
 }
 ```
 
-### 2. Fluent Builder Pattern
+### 2. Popular Types Support
+
+ComponentModel provides built-in support for popular Rust types with intelligent conversion:
 
 ```rust
-# use component_model::Assign;
-# #[derive(Default, Assign)]
-# struct Person { name: String, age: i32 }
-let person = Person::default()
-  .impute("Bob")           // Chainable assignment
-  .impute(30);             // Returns Self for chaining
+use component_model::{ ComponentModel, Assign };
+use std::time::Duration;
+use std::path::PathBuf;
+
+#[ derive( Default, Debug, ComponentModel ) ]
+struct Config
+{
+  timeout : Duration,
+  config_path : PathBuf,
+  port : i32,
+}
+
+fn main()
+{
+  let mut config = Config::default();
+  
+  // Duration from seconds (u64)
+  config.assign( 30u64 );  // Duration::from_secs( 30 )
+  
+  // Duration from fractional seconds (f64)  
+  config.assign( 2.5f64 ); // Duration::from_secs_f64( 2.5 )
+  
+  // PathBuf from string slice
+  config.assign( "/etc/app.conf" ); // PathBuf::from( "/etc/app.conf" )
+  
+  // i32 assignment
+  config.assign( 8080i32 );
+}
 ```
 
-### 3. Multiple Component Assignment
+### 3. Fluent Builder Pattern
 
 ```rust
-use component_model::Assign;
+# use component_model::{ ComponentModel, Assign };
+# #[ derive( Default, ComponentModel ) ]
+# struct Person { name : String, age : i32 }
+let person = Person::default()
+.impute( "Bob" )           // Chainable assignment
+.impute( 30 );             // Returns Self for chaining
+```
 
-#[derive(Default, Assign)]
-struct ServerConfig {
-  host: String,
-  port: i32, 
+### 4. Multiple Component Assignment
+
+```rust
+use component_model::{ ComponentModel, Assign };
+
+#[ derive( Default, ComponentModel ) ]
+struct ServerConfig
+{
+  host : String,
+  port : i32, 
 }
 
 let mut config = ServerConfig::default();
-config.assign("localhost");    // String component
-config.assign(8080);           // i32 component
+config.assign( "localhost" );    // String component
+config.assign( 8080 );           // i32 component
 ```
 
-### 4. Manual Implementation (Advanced)
+### 5. Manual Implementation (Advanced)
 
 For custom behavior, implement traits manually:
 
 ```rust
 use component_model::prelude::*;
 
-struct Database {
-  url: String,
-  pool_size: usize,
+struct Database
+{
+  url : String,
+  pool_size : usize,
 }
 
-impl<T: Into<String>> Assign<String, T> for Database {
-  fn assign(&mut self, component: T) {
+impl< T : Into< String > > Assign< String, T > for Database
+{
+  fn assign( &mut self, component : T )
+  {
     self.url = component.into();
   }
 }
 
-impl<T: Into<usize>> Assign<usize, T> for Database {  
-  fn assign(&mut self, component: T) {
+impl< T : Into< usize > > Assign< usize, T > for Database
+{  
+  fn assign( &mut self, component : T )
+  {
     self.pool_size = component.into();
   }
 }
@@ -154,6 +226,7 @@ impl<T: Into<usize>> Assign<usize, T> for Database {
 
 ## 📚 Available Derive Macros
 
+- **`ComponentModel`** - ⭐ **Recommended** - Unified derive combining all functionality
 - **`Assign`** - Basic component assignment by type
 - **`ComponentsAssign`** - Multiple component assignment from tuples  
 - **`ComponentFrom`** - Create objects from single components
@@ -161,51 +234,105 @@ impl<T: Into<usize>> Assign<usize, T> for Database {
 
 ## 🎯 Real-World Use Cases
 
-### Configuration Management
+### Configuration Management with Popular Types
 ```rust
-use component_model::Assign;
+use component_model::{ ComponentModel, Assign };
+use std::time::Duration;
+use std::path::PathBuf;
 
-#[derive(Default, Assign)]
-struct DatabaseConfig {
-  host: String,
-  port: i32,
+#[ derive( Default, ComponentModel ) ]
+struct DatabaseConfig
+{
+  host : String,
+  port : i32,
+  timeout : Duration,
 }
 
 let config = DatabaseConfig::default()
-  .impute("postgres.example.com")
-  .impute(5432);
+.impute( "postgres.example.com" )    // String
+.impute( 5432 )                      // i32  
+.impute( 30u64 );                    // Duration from seconds
 ```
 
 ### HTTP Client Builders
 ```rust
-use component_model::Assign;
+use component_model::{ ComponentModel, Assign };
+use std::time::Duration;
 
-#[derive(Default, Assign)]
-struct HttpClient {
-  base_url: String,
-  timeout_secs: i32,
+#[ derive( Default, ComponentModel ) ]
+struct HttpClient
+{
+  base_url : String,
+  timeout : Duration,
 }
 
 let client = HttpClient::default()
-  .impute("https://api.example.com")
-  .impute(30);
+.impute( "https://api.example.com" )
+.impute( 30.0f64 );  // Duration from fractional seconds
 ```
 
 ### Game Entity Systems
 ```rust
-use component_model::Assign;
+use component_model::{ ComponentModel, Assign };
 
-#[derive(Default, Assign)]
-struct Player {
-  name: String,
-  level: i32,
+#[ derive( Default, ComponentModel ) ]
+struct Player
+{
+  name : String,
+  level : i32,
 }
 
 // Initialize components
 let mut player = Player::default();
-player.assign("Hero");
-player.assign(1);
+player.assign( "Hero" );
+player.assign( 1 );
 ```
+
+## 🧪 Examples
+
+Explore the [examples directory](examples/) for comprehensive usage patterns:
+
+- **[`000_basic_assignment.rs`](examples/000_basic_assignment.rs)** - Basic component assignment
+- **[`001_fluent_builder.rs`](examples/001_fluent_builder.rs)** - Fluent builder pattern
+- **[`002_multiple_components.rs`](examples/002_multiple_components.rs)** - Multiple component handling
+- **[`003_component_from.rs`](examples/003_component_from.rs)** - Component creation patterns
+- **[`004_working_example.rs`](examples/004_working_example.rs)** - Real-world usage scenarios
+- **[`component_model_trivial.rs`](examples/component_model_trivial.rs)** - Minimal example
+
+## 📋 Supported Popular Types
+
+ComponentModel includes built-in intelligent conversion for:
+
+| Type | Input Types | Example |
+|------|-------------|---------|
+| `Duration` | `u64`, `f64`, `(u64, u32)` | `config.assign( 30u64 )` |
+| `PathBuf` | `&str`, `String` | `config.assign( "/path/file" )` |
+| `SocketAddr` | *Coming soon* | String parsing planned |
+| `HashMap` | *Framework ready* | Vec conversion planned |
+| `HashSet` | *Framework ready* | Vec conversion planned |
+
+## ⚠️ Important Limitations
+
+**Type Ambiguity**: When a struct has multiple fields of the same type, `assign()` becomes ambiguous and won't compile. This is by design for type safety.
+
+```rust
+# use component_model::{ ComponentModel, Assign };
+# #[ derive( Default, ComponentModel ) ]
+struct Config
+{
+  host : String,
+  database : String,  // Multiple String fields cause ambiguity
+}
+
+// This won't compile due to ambiguity:
+// let mut config = Config::default();
+// config.assign( "localhost" );  // Error: which String field?
+```
+
+**Workarounds**:
+1. Use different types when possible (e.g., `String` vs `PathBuf`)
+2. Use direct field assignment: `config.host = "localhost".to_string();`
+3. Implement manual `Assign` traits for specific use cases
 
 ## 🔗 Learn More
 

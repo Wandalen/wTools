@@ -3,8 +3,8 @@
 //! advanced usage patterns, extensibility, and integration with other rust ecosystem tools
 //! demonstrates workspace_tools as a foundation for more complex applications
 
-use workspace_tools::{ workspace, Workspace, WorkspaceError };
-use std::{ fs, collections::HashMap, path::PathBuf };
+use workspace_tools::{ workspace, Workspace };
+use std::{ fs, collections::HashMap };
 
 fn main() -> Result< (), Box< dyn std::error::Error > >
 {
@@ -53,6 +53,7 @@ struct PluginResult
 #[ derive( Clone ) ]
 struct EnvironmentConfig
 {
+  #[ allow( dead_code ) ]
   name : String,
   variables : HashMap< String, String >,
   paths : HashMap< String, String >,

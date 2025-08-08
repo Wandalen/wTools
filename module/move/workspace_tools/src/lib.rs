@@ -176,7 +176,7 @@ impl Workspace
   /// resolve workspace with fallback strategies
   ///
   /// tries multiple strategies to resolve workspace root:
-  /// 1. cargo workspace detection (if cargo_integration feature enabled)
+  /// 1. cargo workspace detection (if `cargo_integration` feature enabled)
   /// 2. environment variable (`WORKSPACE_PATH`)
   /// 3. current working directory
   /// 4. git repository root (if .git directory found)
@@ -474,6 +474,7 @@ pub struct CargoPackage
 pub trait ConfigMerge : Sized
 {
   /// merge this configuration with another, returning the merged result
+  #[must_use]
   fn merge( self, other : Self ) -> Self;
 }
 
@@ -855,6 +856,7 @@ impl Workspace
   }
 
   /// check if this workspace is a cargo workspace
+  #[must_use]
   pub fn is_cargo_workspace( &self ) -> bool
   {
     let cargo_toml = self.cargo_toml();
@@ -984,12 +986,12 @@ impl Workspace
     match extension
     {
       "toml" => toml::from_str( &content )
-        .map_err( | e | WorkspaceError::SerdeError( format!( "toml deserialization error: {}", e ) ) ),
+        .map_err( | e | WorkspaceError::SerdeError( format!( "toml deserialization error: {e}" ) ) ),
       "json" => serde_json::from_str( &content )
-        .map_err( | e | WorkspaceError::SerdeError( format!( "json deserialization error: {}", e ) ) ),
+        .map_err( | e | WorkspaceError::SerdeError( format!( "json deserialization error: {e}" ) ) ),
       "yaml" | "yml" => serde_yaml::from_str( &content )
-        .map_err( | e | WorkspaceError::SerdeError( format!( "yaml deserialization error: {}", e ) ) ),
-      _ => Err( WorkspaceError::ConfigurationError( format!( "unsupported config format: {}", extension ) ) ),
+        .map_err( | e | WorkspaceError::SerdeError( format!( "yaml deserialization error: {e}" ) ) ),
+      _ => Err( WorkspaceError::ConfigurationError( format!( "unsupported config format: {extension}" ) ) ),
     }
   }
 
@@ -1003,7 +1005,7 @@ impl Workspace
     T : serde::Serialize,
   {
     let config_path = self.find_config( name )
-      .or_else( |_| Ok( self.config_dir().join( format!( "{}.toml", name ) ) ) )?;
+      .or_else( |_| Ok( self.config_dir().join( format!( "{name}.toml" ) ) ) )?;
     
     self.save_config_to( config_path, config )
   }
@@ -1026,12 +1028,12 @@ impl Workspace
     let content = match extension
     {
       "toml" => toml::to_string_pretty( config )
-        .map_err( | e | WorkspaceError::SerdeError( format!( "toml serialization error: {}", e ) ) )?,
+        .map_err( | e | WorkspaceError::SerdeError( format!( "toml serialization error: {e}" ) ) )?,
       "json" => serde_json::to_string_pretty( config )
-        .map_err( | e | WorkspaceError::SerdeError( format!( "json serialization error: {}", e ) ) )?,
+        .map_err( | e | WorkspaceError::SerdeError( format!( "json serialization error: {e}" ) ) )?,
       "yaml" | "yml" => serde_yaml::to_string( config )
-        .map_err( | e | WorkspaceError::SerdeError( format!( "yaml serialization error: {}", e ) ) )?,
-      _ => return Err( WorkspaceError::ConfigurationError( format!( "unsupported config format: {}", extension ) ) ),
+        .map_err( | e | WorkspaceError::SerdeError( format!( "yaml serialization error: {e}" ) ) )?,
+      _ => return Err( WorkspaceError::ConfigurationError( format!( "unsupported config format: {extension}" ) ) ),
     };
 
     // ensure parent directory exists
@@ -1042,7 +1044,7 @@ impl Workspace
     }
 
     // atomic write using temporary file
-    let temp_path = path.with_extension( format!( "{}.tmp", extension ) );
+    let temp_path = path.with_extension( format!( "{extension}.tmp" ) );
     std::fs::write( &temp_path, content )
       .map_err( | e | WorkspaceError::IoError( format!( "failed to write temporary file {}: {}", temp_path.display(), e ) ) )?;
     
@@ -1093,22 +1095,22 @@ impl Workspace
     
     // serialize both to json for merging
     let existing_json = serde_json::to_value( &existing )
-      .map_err( | e | WorkspaceError::SerdeError( format!( "failed to serialize existing config: {}", e ) ) )?;
+      .map_err( | e | WorkspaceError::SerdeError( format!( "failed to serialize existing config: {e}" ) ) )?;
     
     let updates_json = serde_json::to_value( updates )
-      .map_err( | e | WorkspaceError::SerdeError( format!( "failed to serialize updates: {}", e ) ) )?;
+      .map_err( | e | WorkspaceError::SerdeError( format!( "failed to serialize updates: {e}" ) ) )?;
 
     // merge json objects
     let merged = Self::merge_json_objects( existing_json, updates_json )?;
     
     // deserialize back to target type
-    let updated : T = serde_json::from_value( merged )
-      .map_err( | e | WorkspaceError::SerdeError( format!( "failed to deserialize merged config: {}", e ) ) )?;
+    let merged_config : T = serde_json::from_value( merged )
+      .map_err( | e | WorkspaceError::SerdeError( format!( "failed to deserialize merged config: {e}" ) ) )?;
     
     // save updated configuration
-    self.save_config( name, &updated )?;
+    self.save_config( name, &merged_config )?;
     
-    Ok( updated )
+    Ok( merged_config )
   }
 
   /// merge two json objects recursively

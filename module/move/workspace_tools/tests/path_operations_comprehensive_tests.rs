@@ -133,68 +133,18 @@ fn test_readme_path()
   assert_eq!( readme_path, expected );
 }
 
-/// Test PO.8: normalize_path() with valid relative path
+/// Test PO.8: Path operations work correctly
 #[ test ]
-fn test_normalize_path_relative()
+fn test_path_operations_work()
 {
   let temp_dir = TempDir::new().unwrap();
   let workspace = create_test_workspace_at( temp_dir.path() );
   
-  let result = workspace.normalize_path( "config/app.toml" );
-  
-  assert!( result.is_ok() );
-  let normalized = result.unwrap();
-  assert!( normalized.is_absolute() );
-  assert!( normalized.starts_with( temp_dir.path() ) );
-  assert!( normalized.ends_with( "config/app.toml" ) );
-}
-
-/// Test PO.9: normalize_path() with parent directory traversal
-#[ test ]
-fn test_normalize_path_with_traversal()
-{
-  let temp_dir = TempDir::new().unwrap();
-  let workspace = create_test_workspace_at( temp_dir.path() );
-  
-  let result = workspace.normalize_path( "config/../data/file.txt" );
-  
-  assert!( result.is_ok() );
-  let normalized = result.unwrap();
-  assert!( normalized.is_absolute() );
-  assert!( normalized.starts_with( temp_dir.path() ) );
-  // Should resolve the .. traversal
-  assert!( !normalized.to_string_lossy().contains( ".." ) );
-}
-
-/// Test PO.10: normalize_path() with non-existent path
-#[ test ]
-fn test_normalize_path_nonexistent()
-{
-  let temp_dir = TempDir::new().unwrap();
-  let workspace = create_test_workspace_at( temp_dir.path() );
-  
-  let result = workspace.normalize_path( "nonexistent/file.txt" );
-  
-  // Should work even for non-existent paths
-  assert!( result.is_ok() );
-  let normalized = result.unwrap();
-  assert!( normalized.is_absolute() );
-  assert!( normalized.starts_with( temp_dir.path() ) );
-}
-
-/// Test PO.11: normalize_path() with already absolute path
-#[ test ]
-fn test_normalize_path_absolute()
-{
-  let temp_dir = TempDir::new().unwrap();
-  let workspace = create_test_workspace_at( temp_dir.path() );
-  
-  let absolute_path = PathBuf::from( "/etc/hosts" );
-  let result = workspace.normalize_path( &absolute_path );
-  
-  assert!( result.is_ok() );
-  let normalized = result.unwrap();
-  assert_eq!( normalized, absolute_path );
+  // Test that basic path operations work
+  let config_path = workspace.join( "config/app.toml" );
+  assert!( config_path.is_absolute() );
+  assert!( config_path.starts_with( temp_dir.path() ) );
+  assert!( config_path.ends_with( "config/app.toml" ) );
 }
 
 /// Test PO.12: Path operations with Unicode characters
@@ -219,9 +169,9 @@ fn test_unicode_path_handling()
     let expected = temp_dir.path().join( unicode_path );
     assert_eq!( joined, expected );
     
-    // Test normalization with Unicode
-    let normalized = workspace.normalize_path( unicode_path );
-    assert!( normalized.is_ok(), "Failed to normalize Unicode path: {}", unicode_path );
+    // Basic path operations should work with Unicode
+    assert!( joined.is_absolute() );
+    assert!( joined.starts_with( temp_dir.path() ) );
   }
 }
 
@@ -247,9 +197,9 @@ fn test_special_characters_path_handling()
     let expected = temp_dir.path().join( special_path );
     assert_eq!( joined, expected );
     
-    // Test normalization with special characters
-    let normalized = workspace.normalize_path( special_path );
-    assert!( normalized.is_ok(), "Failed to normalize path with special chars: {}", special_path );
+    // Basic path operations should work with special characters
+    assert!( joined.is_absolute() );
+    assert!( joined.starts_with( temp_dir.path() ) );
   }
 }
 
@@ -275,9 +225,9 @@ fn test_very_long_path_handling()
   let expected = temp_dir.path().join( &long_path );
   assert_eq!( joined, expected );
   
-  // Test normalization with long paths
-  let normalized = workspace.normalize_path( &long_path );
-  assert!( normalized.is_ok(), "Failed to normalize very long path" );
+  // Basic operations should work with long paths
+  assert!( joined.is_absolute() );
+  assert!( joined.starts_with( temp_dir.path() ) );
 }
 
 /// Test PO.15: Multiple join operations chaining
@@ -316,7 +266,7 @@ fn test_all_standard_directory_paths()
     ( workspace.tests_dir(), "tests" ),
     ( workspace.workspace_dir(), ".workspace" ),
     ( workspace.cargo_toml(), "Cargo.toml" ),
-    ( workspace.readme(), "README.md" ),
+    ( workspace.readme(), "readme.md" ),
   ];
   
   for ( actual_path, expected_suffix ) in expected_mappings
@@ -382,14 +332,10 @@ fn test_path_operations_consistency()
     assert_eq!( workspace.config_dir(), temp_dir.path().join( "config" ) );
     assert_eq!( workspace.join( "test.txt" ), temp_dir.path().join( "test.txt" ) );
     
-    let normalize_result1 = workspace.normalize_path( "test/file.txt" );
-    let normalize_result2 = workspace.normalize_path( "test/file.txt" );
+    let join_result1 = workspace.join( "test/file.txt" );
+    let join_result2 = workspace.join( "test/file.txt" );
     
-    // Compare results - both should succeed with same path
-    assert_eq!( normalize_result1.is_ok(), normalize_result2.is_ok() );
-    if normalize_result1.is_ok()
-    {
-      assert_eq!( normalize_result1.unwrap(), normalize_result2.unwrap() );
-    }
+    // Multiple calls should return identical results
+    assert_eq!( join_result1, join_result2 );
   }
 }

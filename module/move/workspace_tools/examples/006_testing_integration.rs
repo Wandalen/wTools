@@ -3,7 +3,7 @@
 //! testing patterns with workspace_tools for isolated test environments
 //! demonstrates test utilities and best practices
 
-use workspace_tools::{ workspace, WorkspaceError };
+use workspace_tools::WorkspaceError;
 
 #[ cfg( feature = "enabled" ) ]
 use workspace_tools::testing::{ create_test_workspace, create_test_workspace_with_structure };

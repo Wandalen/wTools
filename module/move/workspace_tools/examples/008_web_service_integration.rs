@@ -3,8 +3,8 @@
 //! demonstrates workspace_tools integration with web services
 //! shows asset serving, config loading, logging, and deployment patterns
 
-use workspace_tools::{ workspace, WorkspaceError };
-use std::{ fs, collections::HashMap };
+use workspace_tools::workspace;
+use std::fs;
 
 fn main() -> Result< (), Box< dyn std::error::Error > >
 {

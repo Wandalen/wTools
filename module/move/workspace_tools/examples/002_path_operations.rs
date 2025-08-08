@@ -4,7 +4,6 @@
 //! this example demonstrates joining, validation, and boundary checking
 
 use workspace_tools::{ workspace, WorkspaceError };
-use std::path::Path;
 
 fn main() -> Result< (), WorkspaceError >
 {

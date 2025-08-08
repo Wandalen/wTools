@@ -3,7 +3,7 @@
 //! complete example of a cli application using workspace_tools for
 //! configuration, logging, data storage, and resource management
 
-use workspace_tools::{ workspace, WorkspaceError };
+use workspace_tools::workspace;
 use std::{ fs, io::Write };
 
 fn main() -> Result< (), Box< dyn std::error::Error > >

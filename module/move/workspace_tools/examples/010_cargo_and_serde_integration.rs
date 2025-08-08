@@ -8,7 +8,7 @@
 //!
 //! Run with: cargo run --example 010_cargo_and_serde_integration --features full
 
-use workspace_tools::{ Workspace, WorkspaceError };
+use workspace_tools::Workspace;
 
 #[ cfg( feature = "serde_integration" ) ]
 use serde::{ Deserialize, Serialize };
