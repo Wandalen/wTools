@@ -451,7 +451,7 @@ pub struct MemoryProfiler
 struct AllocationEvent
 {
   /// Time since profiling started
-  timestamp: Duration,
+  _timestamp: Duration, // Keep for future timeline analysis features
   /// Event type
   event_type: AllocationEventType,
   /// Size of allocation/deallocation
@@ -463,6 +463,14 @@ enum AllocationEventType
 {
   Allocation,
   Deallocation,
+}
+
+impl Default for MemoryProfiler
+{
+  fn default() -> Self
+  {
+    Self::new()
+  }
 }
 
 impl MemoryProfiler
@@ -482,7 +490,7 @@ impl MemoryProfiler
   {
     self.events.push(AllocationEvent
     {
-      timestamp: self.start_time.elapsed(),
+      _timestamp: self.start_time.elapsed(),
       event_type: AllocationEventType::Allocation,
       size,
     });
@@ -493,7 +501,7 @@ impl MemoryProfiler
   {
     self.events.push(AllocationEvent
     {
-      timestamp: self.start_time.elapsed(),
+      _timestamp: self.start_time.elapsed(),
       event_type: AllocationEventType::Deallocation,
       size,
     });

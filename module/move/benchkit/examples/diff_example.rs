@@ -1,10 +1,14 @@
 //! Example demonstrating git-style diff functionality for benchmark results
 
+#[cfg(feature = "diff_analysis")]
 use benchkit::prelude::*;
+#[cfg(feature = "diff_analysis")]
 use std::time::Duration;
 
 fn main()
 {
+  #[cfg(feature = "diff_analysis")]
+  {
   println!("🔄 Benchkit Diff Analysis Example");
   
   // Simulate baseline benchmark results (old implementation)
@@ -89,5 +93,12 @@ fn main()
     {
       println!("  - {}: {:.1}% faster", improvement.benchmark_name, improvement.analysis.ops_per_sec_change);
     }
+  }
+  } // End of cfg(feature = "diff_analysis")
+  
+  #[cfg(not(feature = "diff_analysis"))]
+  {
+    println!("🔄 Benchkit Diff Analysis Example (disabled)");
+    println!("Enable with --features diff_analysis");
   }
 }

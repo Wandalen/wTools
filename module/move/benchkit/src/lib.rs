@@ -51,6 +51,12 @@ pub mod throughput;
 #[ cfg( feature = "enabled" ) ]
 pub mod memory_tracking;
 
+#[ cfg( feature = "enabled" ) ]
+pub mod parser_analysis;
+
+#[ cfg( feature = "enabled" ) ]
+pub mod parser_data_generation;
+
 /// Prelude module for convenient imports
 #[ cfg( feature = "enabled" ) ]
 pub mod prelude
@@ -85,4 +91,6 @@ pub mod prelude
   pub use crate::data_generation::*;
   pub use crate::throughput::*;
   pub use crate::memory_tracking::*;
+  pub use crate::parser_analysis::*;
+  pub use crate::parser_data_generation::*;
 }

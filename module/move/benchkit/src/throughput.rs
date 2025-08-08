@@ -334,8 +334,8 @@ impl BandwidthAnalyzer
   ) -> MemoryBandwidthMetrics
   {
     let time_seconds = processing_time.as_secs_f64();
-    let total_bytes_read = data_size * read_passes as u64;
-    let total_bytes_written = data_size * write_passes as u64;
+    let total_bytes_read = data_size * u64::from(read_passes);
+    let total_bytes_written = data_size * u64::from(write_passes);
     let total_bytes = total_bytes_read + total_bytes_written;
     
     let bandwidth = if time_seconds > 0.0 
