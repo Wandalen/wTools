@@ -122,8 +122,11 @@ impl fmt::Display for BenchmarkResult {
 /// Comparison between two benchmark results
 #[derive(Debug, Clone)]
 pub struct Comparison {
+  /// The baseline benchmark result to compare against
   pub baseline: BenchmarkResult,
+  /// The current benchmark result being compared
   pub current: BenchmarkResult,
+  /// Improvement percentage (positive means current is faster than baseline)
   pub improvement_percentage: f64,
 }
 

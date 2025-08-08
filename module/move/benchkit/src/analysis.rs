@@ -10,7 +10,15 @@ use std::collections::HashMap;
 pub struct ComparativeAnalysis {
   name: String,
   variants: HashMap<String, Box<dyn FnMut() + Send>>,
-  results: HashMap<String, BenchmarkResult>,
+}
+
+impl std::fmt::Debug for ComparativeAnalysis {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    f.debug_struct("ComparativeAnalysis")
+      .field("name", &self.name)
+      .field("variants", &format!("{} variants", self.variants.len()))
+      .finish()
+  }
 }
 
 impl ComparativeAnalysis {
@@ -19,7 +27,6 @@ impl ComparativeAnalysis {
     Self {
       name: name.into(),
       variants: HashMap::new(), 
-      results: HashMap::new(),
     }
   }
 
@@ -59,7 +66,9 @@ impl ComparativeAnalysis {
 /// Report containing results of comparative analysis
 #[derive(Debug)]
 pub struct ComparisonReport {
+  /// Name of the comparison analysis
   pub name: String,
+  /// Results of each algorithm variant tested
   pub results: HashMap<String, BenchmarkResult>,
 }
 
@@ -166,7 +175,9 @@ impl ComparisonReport {
 /// Performance regression analysis
 #[derive(Debug, Clone)]
 pub struct RegressionAnalysis {
+  /// Baseline benchmark results to compare against
   pub baseline_results: HashMap<String, BenchmarkResult>,
+  /// Current benchmark results being analyzed
   pub current_results: HashMap<String, BenchmarkResult>,
 }
 

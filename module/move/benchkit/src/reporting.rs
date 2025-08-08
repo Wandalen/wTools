@@ -190,7 +190,7 @@ impl ReportGenerator {
 
     // Performance tiers
     let fastest = sorted_results.first().unwrap().1;
-    let slowest = sorted_results.last().unwrap().1;
+    let _slowest = sorted_results.last().unwrap().1;
     let median_idx = sorted_results.len() / 2;
     let median = sorted_results[median_idx].1;
 

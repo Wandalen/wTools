@@ -133,6 +133,7 @@ pub fn generate_urls(size: DataSize) -> Vec<String> {
 }
 
 /// Seeded random data generator using simple LCG
+#[derive(Debug)]
 pub struct SeededGenerator {
   seed: u64,
 }
@@ -183,6 +184,7 @@ pub fn generate_random_vec(size: usize) -> Vec<i32> {
 }
 
 /// Generate test data for common parsing scenarios (based on unilang experience)
+#[derive(Debug)]
 pub struct ParsingTestData;
 
 impl ParsingTestData {

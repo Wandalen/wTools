@@ -9,10 +9,22 @@ use std::collections::HashMap;
 
 /// A collection of benchmarks that can be run together
 pub struct BenchmarkSuite {
+  /// Name of the benchmark suite
   pub name: String,
   benchmarks: HashMap<String, Box<dyn FnMut() + Send>>,
   config: MeasurementConfig,
   results: HashMap<String, BenchmarkResult>,
+}
+
+impl std::fmt::Debug for BenchmarkSuite {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    f.debug_struct("BenchmarkSuite")
+      .field("name", &self.name)
+      .field("benchmarks", &format!("{} benchmarks", self.benchmarks.len()))
+      .field("config", &self.config)
+      .field("results", &format!("{} results", self.results.len()))
+      .finish()
+  }
 }
 
 impl BenchmarkSuite {
@@ -103,7 +115,9 @@ impl BenchmarkSuite {
 /// Results from running a benchmark suite
 #[derive(Debug)]
 pub struct SuiteResults {
+  /// Name of the benchmark suite that was run
   pub suite_name: String,
+  /// Individual benchmark results from the suite
   pub results: HashMap<String, BenchmarkResult>,
 }
 
