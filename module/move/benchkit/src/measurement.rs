@@ -30,6 +30,7 @@ impl BenchmarkResult {
   }
 
   /// Add a custom metric to the result
+  #[ must_use ]
   pub fn with_metric( mut self, name: impl Into<String>, value: f64 ) -> Self
   {
     self.metrics.insert( name.into(), value );
@@ -37,6 +38,7 @@ impl BenchmarkResult {
   }
 
   /// Get the mean execution time
+  #[ must_use ]
   pub fn mean_time( &self ) -> Duration
   {
     if self.times.is_empty()
@@ -47,7 +49,8 @@ impl BenchmarkResult {
     total / u32::try_from( self.times.len() ).unwrap_or( 1 )
   }
 
-  /// Get the median execution time  
+  /// Get the median execution time
+  #[ must_use ]
   pub fn median_time(&self) -> Duration {
     if self.times.is_empty() {
       return Duration::ZERO;
@@ -58,16 +61,19 @@ impl BenchmarkResult {
   }
 
   /// Get the minimum execution time
+  #[ must_use ]
   pub fn min_time(&self) -> Duration {
     self.times.iter().min().copied().unwrap_or(Duration::ZERO)
   }
 
   /// Get the maximum execution time
+  #[ must_use ]
   pub fn max_time(&self) -> Duration {
     self.times.iter().max().copied().unwrap_or(Duration::ZERO)
   }
 
   /// Calculate operations per second based on mean time
+  #[ must_use ]
   pub fn operations_per_second(&self) -> f64 {
     let mean_secs = self.mean_time().as_secs_f64();
     if mean_secs > 0.0 {
@@ -78,6 +84,7 @@ impl BenchmarkResult {
   }
 
   /// Get the standard deviation of timing measurements
+  #[ must_use ]
   pub fn std_deviation(&self) -> Duration {
     if self.times.len() < 2 {
       return Duration::ZERO;
@@ -95,7 +102,8 @@ impl BenchmarkResult {
     Duration::from_secs_f64(variance.sqrt())
   }
 
-  /// Get coefficient of variation (relative standard deviation) 
+  /// Get coefficient of variation (relative standard deviation)
+  #[ must_use ]
   pub fn coefficient_of_variation(&self) -> f64 {
     let mean_val = self.mean_time().as_secs_f64();
     if mean_val > 0.0 {
@@ -106,6 +114,7 @@ impl BenchmarkResult {
   }
 
   /// Get standard error of the mean
+  #[ must_use ]
   pub fn standard_error(&self) -> Duration {
     if self.times.is_empty() {
       return Duration::ZERO;
@@ -115,6 +124,7 @@ impl BenchmarkResult {
   }
 
   /// Get confidence interval for the mean (95% by default)
+  #[ must_use ]
   pub fn confidence_interval_95(&self) -> (Duration, Duration) {
     let mean = self.mean_time();
     let margin = Duration::from_secs_f64(1.96 * self.standard_error().as_secs_f64());
@@ -122,17 +132,20 @@ impl BenchmarkResult {
   }
 
   /// Get percentile value (e.g., 0.95 for 95th percentile)
+  #[ must_use ]
   pub fn percentile(&self, p: f64) -> Duration {
     if self.times.is_empty() {
       return Duration::ZERO;
     }
     let mut sorted = self.times.clone();
     sorted.sort();
+    #[ allow( clippy::cast_possible_truncation, clippy::cast_sign_loss ) ]
     let index = (p * (sorted.len() - 1) as f64).round() as usize;
     sorted[index.min(sorted.len() - 1)]
   }
 
   /// Check if results are statistically reliable based on basic criteria
+  #[ must_use ]
   pub fn is_reliable(&self) -> bool {
     // Basic reliability checks:
     // 1. Sufficient sample size (>= 10)

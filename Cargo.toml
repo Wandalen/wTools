@@ -743,6 +743,21 @@ version = "3.20.0"
 [workspace.dependencies.glob]
 version = "0.3.2"
 
+[workspace.dependencies.cargo_metadata]
+version = "0.18.1"
+
+[workspace.dependencies.toml]
+version = "0.8.23"
+features = [ "preserve_order" ]
+
+[workspace.dependencies.chrono]
+version = "0.4.34"
+features = [ "serde" ]
+
+[workspace.dependencies.criterion]
+version = "0.5.1"
+features = [ "html_reports" ]
+
 [workspace.dependencies.workspace_tools]
 version = "~0.1.0"
 path = "module/move/workspace_tools"

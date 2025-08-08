@@ -190,7 +190,7 @@ impl FrameworkComparison
       .map(|r| r.operations_per_second())
       .sum::<f64>() / results.len() as f64;
     
-    let performance_category = if avg_ops > 100000.0
+    let performance_category = if avg_ops > 100_000.0
     {
       PerformanceCategory::HighPerformance
     }

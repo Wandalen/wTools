@@ -3,9 +3,12 @@
 //! This tests benchkit with actual strs_tools functionality to identify issues.
 
 use benchkit::prelude::*;
+
 use std::collections::HashMap;
 
-fn main() -> error_tools::Result<()>
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+
+fn main() -> Result<()>
 {
   println!("🧪 Manual Testing of strs_tools + benchkit Integration");
   println!("======================================================");
@@ -34,7 +37,7 @@ fn main() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_basic_benchkit() -> error_tools::Result<()>
+fn test_basic_benchkit() -> Result<()>
 {
   println!("1️⃣ Testing Basic Benchkit Functionality");
   println!("---------------------------------------");
@@ -71,7 +74,7 @@ fn test_basic_benchkit() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_data_generation() -> error_tools::Result<()>
+fn test_data_generation() -> Result<()>
 {
   println!("2️⃣ Testing Data Generation");
   println!("-------------------------");
@@ -106,7 +109,7 @@ fn test_data_generation() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_memory_tracking() -> error_tools::Result<()>
+fn test_memory_tracking() -> Result<()>
 {
   println!("3️⃣ Testing Memory Tracking");
   println!("-------------------------");
@@ -149,7 +152,7 @@ fn test_memory_tracking() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_throughput_analysis() -> error_tools::Result<()>
+fn test_throughput_analysis() -> Result<()>
 {
   println!("4️⃣ Testing Throughput Analysis");
   println!("-----------------------------");
@@ -198,7 +201,7 @@ fn test_throughput_analysis() -> error_tools::Result<()>
 }
 
 #[cfg(feature = "statistical_analysis")]
-fn test_statistical_analysis() -> error_tools::Result<()>
+fn test_statistical_analysis() -> Result<()>
 {
   println!("5️⃣ Testing Statistical Analysis");
   println!("------------------------------");
@@ -240,7 +243,7 @@ fn test_statistical_analysis() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_report_generation() -> error_tools::Result<()>
+fn test_report_generation() -> Result<()>
 {
   println!("6️⃣ Testing Report Generation");
   println!("---------------------------");

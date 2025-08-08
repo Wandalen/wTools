@@ -358,27 +358,29 @@ impl ParserWorkload
                              self.error_case_count,
                              self.error_case_count as f64 / self.commands.len() as f64 * 100.0));
     
-    summary.push_str(&format!("- Complexity distribution:\n"));
+    summary.push_str("- Complexity distribution:\n");
     for (complexity, count) in &self.complexity_distribution
     {
       let percentage = *count as f64 / (self.commands.len() - self.error_case_count) as f64 * 100.0;
-      summary.push_str(&format!("  * {:?}: {} ({:.1}%)\n", complexity, count, percentage));
+      summary.push_str(&format!("  * {complexity:?}: {count} ({percentage:.1}%)\n"));
     }
     
     summary
   }
   
   /// Get sample commands for preview
+  #[ must_use ]
   pub fn sample_commands(&self, count: usize) -> Vec<&String>
   {
     self.commands.iter().take(count).collect()
   }
 }
 
-/// Enhanced DataGenerator with parser-specific extensions
+/// Enhanced `DataGenerator` with parser-specific extensions
 impl DataGenerator
 {
   /// Generate unilang commands with enhanced patterns
+  #[ must_use ]
   pub fn generate_enhanced_unilang_commands(&self, count: usize) -> Vec<String>
   {
     let generator = ParserCommandGenerator::new()
@@ -396,6 +398,7 @@ impl DataGenerator
   }
   
   /// Generate parser test scenarios with specific patterns
+  #[ must_use ]
   pub fn generate_parser_scenarios(&self, scenario_type: &str, count: usize) -> Vec<String>
   {
     let generator = ParserCommandGenerator::new()

@@ -18,7 +18,7 @@ fn main()
   // Measure a simple operation
   let result = bench_function( "string_processing", ||
   {
-    "hello world".chars().collect::<Vec<_>>()
+    "hello world".chars().collect::< Vec< _ > >()
   });
 
   println!( "Time: {:.2?}", result.mean_time() );
@@ -33,7 +33,7 @@ use benchkit::prelude::*;
 
 fn generate_random_vec( size : usize ) -> Vec< u32 >
 {
-  ( 0..size ).map( |x| x as u32 ).collect()
+  ( 0..size ).map( | x | x as u32 ).collect()
 }
 
 fn main()
@@ -155,22 +155,24 @@ Perfect for ad-hoc performance analysis:
 ```rust
 use benchkit::prelude::*;
 
-fn old_algorithm(data: &[u32]) -> u32 {
-    data.iter().sum()
+fn old_algorithm( data : &[ u32 ] ) -> u32
+{
+  data.iter().sum()
 }
 
-fn new_algorithm(data: &[u32]) -> u32 {
-    data.iter().fold(0, |acc, x| acc + x)
+fn new_algorithm( data : &[ u32 ] ) -> u32
+{
+  data.iter().fold( 0, | acc, x | acc + x )
 }
 
-let data = vec![1, 2, 3, 4, 5];
+let data = vec![ 1, 2, 3, 4, 5 ];
 
 // Quick check - is this optimization working?
-let before = bench_once(|| old_algorithm(&data));
-let after = bench_once(|| new_algorithm(&data));
+let before = bench_once( || old_algorithm( &data ) );
+let after = bench_once( || new_algorithm( &data ) );
 
-let comparison = before.compare(&after);
-println!("Improvement: {:.1}%", comparison.improvement_percentage);
+let comparison = before.compare( &after );
+println!( "Improvement: {:.1}%", comparison.improvement_percentage );
 ```
 
 ### Pattern 2: Comprehensive Analysis
@@ -180,38 +182,45 @@ For thorough performance characterization:
 ```rust
 use benchkit::prelude::*;
 
-fn generate_test_data(size: usize) -> Vec<u32> {
-    (0..size).map(|x| x as u32).collect()
+fn generate_test_data( size : usize ) -> Vec< u32 >
+{
+  ( 0..size ).map( | x | x as u32 ).collect()
 }
 
-fn run_algorithm(algorithm: &str, data: &[u32]) -> u32 {
-    match algorithm {
-        "baseline" => data.iter().sum(),
-        "optimized" => data.iter().fold(0, |acc, x| acc + x),
-        "simd" => data.iter().sum::<u32>(),
-        _ => 0,
-    }
+fn run_algorithm( algorithm : &str, data : &[ u32 ] ) -> u32
+{
+  match algorithm
+  {
+    "baseline" => data.iter().sum(),
+    "optimized" => data.iter().fold( 0, | acc, x | acc + x ),
+    "simd" => data.iter().sum::< u32 >(),
+    _ => 0,
+  }
 }
 
-fn analyze_performance() {
-    let mut suite = BenchmarkSuite::new("comprehensive_analysis");
+fn analyze_performance()
+{
+  let mut suite = BenchmarkSuite::new( "comprehensive_analysis" );
 
-    // Test across multiple dimensions
-    for size in [10, 100, 1000, 10000] {
-        for algorithm in ["baseline", "optimized", "simd"] {
-            let data = generate_test_data(size);
-            let alg = algorithm.to_string();
-            suite.benchmark(&format!("{}_size_{}", algorithm, size), move || {
-                run_algorithm(&alg, &data);
-            });
-        }
+  // Test across multiple dimensions
+  for size in [ 10, 100, 1000, 10000 ]
+  {
+    for algorithm in [ "baseline", "optimized", "simd" ]
+    {
+      let data = generate_test_data( size );
+      let alg = algorithm.to_string();
+      suite.benchmark( &format!( "{}_size_{}", algorithm, size ), move ||
+      {
+        run_algorithm( &alg, &data );
+      });
     }
+  }
 
-    let analysis = suite.run_analysis();
+  let analysis = suite.run_analysis();
 
-    // Generate comprehensive report
-    let report = analysis.generate_markdown_report();
-    println!("{}", report.generate());
+  // Generate comprehensive report
+  let report = analysis.generate_markdown_report();
+  println!( "{}", report.generate() );
 }
 ```
 
@@ -222,23 +231,25 @@ For continuous performance monitoring:
 ```rust
 use benchkit::prelude::*;
 
-#[test]
-fn performance_regression_check() {
-    let suite = BenchmarkSuite::from_baseline("benchmarks/baseline.json");
+#[ test ]
+fn performance_regression_check()
+{
+  let suite = BenchmarkSuite::from_baseline( "benchmarks/baseline.json" );
 
-    suite.benchmark("critical_path", || critical_operation());
+  suite.benchmark( "critical_path", || critical_operation() );
 
-    let results = suite.run();
+  let results = suite.run();
 
-    // Fail CI if performance regresses significantly
-    assert!(results.regression_percentage() < 10.0,
-            "Performance regression detected: {:.1}%",
-            results.regression_percentage());
+  // Fail CI if performance regresses significantly
+  assert!( results.regression_percentage() < 10.0,
+          "Performance regression detected: {:.1}%",
+          results.regression_percentage() );
 
-    // Update baseline if this is main branch
-    if cfg!(feature = "update_baseline") {
-        results.save_as_baseline("benchmarks/baseline.json");
-    }
+  // Update baseline if this is main branch
+  if cfg!( feature = "update_baseline" )
+  {
+    results.save_as_baseline( "benchmarks/baseline.json" );
+  }
 }
 ```
 
@@ -250,30 +261,34 @@ Compare performance across implementations or commits:
 use benchkit::prelude::*;
 
 // Baseline results (old implementation)
-let baseline_results = vec![
-    ("string_ops".to_string(), bench_function("old_string_ops", || old_implementation())),
-    ("hash_compute".to_string(), bench_function("old_hash", || old_hash_function())),
+let baseline_results = vec!
+[
+  ( "string_ops".to_string(), bench_function( "old_string_ops", || old_implementation() ) ),
+  ( "hash_compute".to_string(), bench_function( "old_hash", || old_hash_function() ) ),
 ];
 
 // Current results (new implementation)
-let current_results = vec![
-    ("string_ops".to_string(), bench_function("new_string_ops", || new_implementation())),
-    ("hash_compute".to_string(), bench_function("new_hash", || new_hash_function())),
+let current_results = vec!
+[
+  ( "string_ops".to_string(), bench_function( "new_string_ops", || new_implementation() ) ),
+  ( "hash_compute".to_string(), bench_function( "new_hash", || new_hash_function() ) ),
 ];
 
 // Generate git-style diff
-let diff_set = diff_benchmark_sets(&baseline_results, &current_results);
+let diff_set = diff_benchmark_sets( &baseline_results, &current_results );
 
 // Show summary
-println!("Performance changes:");
-for diff in &diff_set.diffs {
-    println!("{}", diff.to_summary());
+println!( "Performance changes:" );
+for diff in &diff_set.diffs
+{
+  println!( "{}", diff.to_summary() );
 }
 
 // Show detailed analysis for regressions
-for regression in diff_set.regressions() {
-    println!("\n⚠️ Regression detected:");
-    println!("{}", regression.to_diff_format());
+for regression in diff_set.regressions()
+{
+  println!( "\n⚠️ Regression detected:" );
+  println!( "{}", regression.to_diff_format() );
 }
 ```
 
@@ -284,19 +299,21 @@ Keep performance docs always up-to-date:
 ```rust
 use benchkit::prelude::*;
 
-#[cfg(test)]
-mod doc_benchmarks {
-    #[test]
-    fn update_performance_docs() {
-        // Run standard benchmark suite
-        let suite = BenchmarkSuite::from_config("bench_config.toml");
-        let results = suite.run_all();
+#[ cfg( test ) ]
+mod doc_benchmarks
+{
+  #[ test ]
+  fn update_performance_docs()
+  {
+    // Run standard benchmark suite
+    let suite = BenchmarkSuite::from_config( "bench_config.toml" );
+    let results = suite.run_all();
 
-        // Update multiple documentation files
-        results.update_markdown_section("README.md", "## Performance")
-               .update_markdown_section("docs/performance.md", "## Latest Results")
-               .generate_comparison_chart("docs/performance_chart.md");
-    }
+    // Update multiple documentation files
+    results.update_markdown_section( "README.md", "## Performance" )
+           .update_markdown_section( "docs/performance.md", "## Latest Results" )
+           .generate_comparison_chart( "docs/performance_chart.md" );
+  }
 }
 ```
 

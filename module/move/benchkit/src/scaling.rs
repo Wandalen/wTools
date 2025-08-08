@@ -25,7 +25,7 @@ impl Default for ScalingConfig
   {
     Self
     {
-      scale_factors: vec![10, 100, 1000, 10000, 100000],
+      scale_factors: vec![10, 100, 1000, 10000, 100_000],
       quick_mode: false,
       warmup_iterations: 10,
     }
@@ -50,7 +50,7 @@ impl ScalingConfig
   {
     Self
     {
-      scale_factors: vec![1, 10, 100, 1000, 10000, 100000],
+      scale_factors: vec![1, 10, 100, 1000, 10000, 100_000],
       quick_mode: false,
       warmup_iterations: 20,
     }

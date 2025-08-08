@@ -218,7 +218,7 @@ impl MemoryProfile
     
     // Simplified memory estimation based on timing characteristics
     let ops_per_sec = iterations as f64 / duration.as_secs_f64();
-    let estimated_memory_per_op = if ops_per_sec > 100000.0
+    let estimated_memory_per_op = if ops_per_sec > 100_000.0
     {
       0.001 // Very fast = likely cached/minimal allocation
     }

@@ -5,10 +5,12 @@
 
 use benchkit::prelude::*;
 
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+
 // We'll simulate unilang_parser functionality since it's in a different workspace
 // In real integration, you'd use: use unilang_parser::{Parser, UnilangParserOptions};
 
-fn main() -> error_tools::Result<()>
+fn main() -> Result<()>
 {
   println!("🚀 Benchkit Integration with unilang_parser");
   println!("============================================");
@@ -42,7 +44,7 @@ fn main() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_parser_data_generation() -> error_tools::Result<()>
+fn test_parser_data_generation() -> Result<()>
 {
   println!("1️⃣ Parser-Specific Data Generation");
   println!("---------------------------------");
@@ -86,7 +88,7 @@ fn test_parser_data_generation() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_parsing_performance_analysis() -> error_tools::Result<()>
+fn test_parsing_performance_analysis() -> Result<()>
 {
   println!("2️⃣ Parser Performance Analysis");
   println!("-----------------------------");
@@ -167,7 +169,7 @@ fn test_parsing_performance_analysis() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_parser_memory_analysis() -> error_tools::Result<()>
+fn test_parser_memory_analysis() -> Result<()>
 {
   println!("3️⃣ Parser Memory Analysis");
   println!("------------------------");
@@ -233,7 +235,7 @@ fn test_parser_memory_analysis() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_parser_throughput_analysis() -> error_tools::Result<()>
+fn test_parser_throughput_analysis() -> Result<()>
 {
   println!("4️⃣ Parser Throughput Analysis");  
   println!("----------------------------");
@@ -309,7 +311,7 @@ fn test_parser_throughput_analysis() -> error_tools::Result<()>
 }
 
 #[cfg(feature = "statistical_analysis")]
-fn test_parser_statistical_analysis() -> error_tools::Result<()>
+fn test_parser_statistical_analysis() -> Result<()>
 {
   println!("5️⃣ Parser Statistical Analysis");
   println!("-----------------------------");
@@ -376,7 +378,7 @@ fn test_parser_statistical_analysis() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_parser_comprehensive_reporting() -> error_tools::Result<()>
+fn test_parser_comprehensive_reporting() -> Result<()>
 {
   println!("6️⃣ Parser Comprehensive Reporting");
   println!("--------------------------------");

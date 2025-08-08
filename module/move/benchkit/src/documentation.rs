@@ -7,7 +7,8 @@
 use crate::prelude::*;
 use std::fs;
 use std::path::{Path, PathBuf};
-use error_tools::Result;
+
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 /// Documentation update configuration
 #[derive(Debug, Clone)]

@@ -7,6 +7,8 @@ use crate::measurement::{ BenchmarkResult, MeasurementConfig };
 use crate::analysis::RegressionAnalysis;
 use std::collections::HashMap;
 
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+
 /// A collection of benchmarks that can be run together
 pub struct BenchmarkSuite {
   /// Name of the benchmark suite
@@ -140,7 +142,7 @@ impl SuiteResults {
   }
 
   /// Save results as new baseline
-  pub fn save_as_baseline(&self, _baseline_file: impl AsRef<std::path::Path>) -> error_tools::Result<()> {
+  pub fn save_as_baseline(&self, _baseline_file: impl AsRef<std::path::Path>) -> Result<()> {
     // TODO: Implement saving to JSON/TOML file
     // For now, just succeed
     Ok(())
@@ -250,7 +252,7 @@ impl MarkdownReport {
     &self, 
     file_path: impl AsRef<std::path::Path>, 
     section_name: &str
-  ) -> error_tools::Result<()> {
+  ) -> Result<()> {
     // TODO: Implement markdown file section updating
     // This would parse existing markdown, find section, and replace content
     println!("Would update {} section in {:?}", section_name, file_path.as_ref());
@@ -258,7 +260,7 @@ impl MarkdownReport {
   }
 
   /// Save report to file
-  pub fn save(&self, file_path: impl AsRef<std::path::Path>) -> error_tools::Result<()> {
+  pub fn save(&self, file_path: impl AsRef<std::path::Path>) -> Result<()> {
     let content = self.generate();
     std::fs::write(file_path, content)?;
     Ok(())

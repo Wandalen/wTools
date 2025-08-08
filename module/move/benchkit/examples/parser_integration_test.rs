@@ -5,7 +5,9 @@
 
 use benchkit::prelude::*;
 
-fn main() -> error_tools::Result<()>
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+
+fn main() -> Result<()>
 {
   println!("🧪 Testing Parser-Specific Benchkit Features");
   println!("==========================================");
@@ -32,7 +34,7 @@ fn main() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_parser_command_generation() -> error_tools::Result<()>
+fn test_parser_command_generation() -> Result<()>
 {
   println!("1️⃣ Parser Command Generation Test");
   println!("-------------------------------");
@@ -79,7 +81,7 @@ fn test_parser_command_generation() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_parser_analysis() -> error_tools::Result<()>
+fn test_parser_analysis() -> Result<()>
 {
   println!("2️⃣ Parser Analysis Test");
   println!("---------------------");
@@ -127,7 +129,7 @@ fn test_parser_analysis() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_parser_pipeline_analysis() -> error_tools::Result<()>
+fn test_parser_pipeline_analysis() -> Result<()>
 {
   println!("3️⃣ Parser Pipeline Analysis Test");
   println!("------------------------------");
@@ -174,7 +176,7 @@ fn test_parser_pipeline_analysis() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_parser_workload_analysis() -> error_tools::Result<()>
+fn test_parser_workload_analysis() -> Result<()>
 {
   println!("4️⃣ Parser Workload Analysis Test");
   println!("------------------------------");
@@ -212,7 +214,7 @@ fn test_parser_workload_analysis() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_parser_throughput_scenarios() -> error_tools::Result<()>
+fn test_parser_throughput_scenarios() -> Result<()>
 {
   println!("5️⃣ Parser Throughput Scenarios Test");
   println!("----------------------------------");

@@ -1193,7 +1193,7 @@ impl< 'de > serde::Deserialize< 'de > for WorkspacePath
 #[ cfg( feature = "enabled" ) ]
 pub mod testing
 {
-  use super::*;
+  use super::Workspace;
   use tempfile::TempDir;
 
   /// create a temporary workspace for testing

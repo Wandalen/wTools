@@ -111,9 +111,8 @@ fn test_workspace_validation_invalid_path()
 fn test_standard_directories()
 {
   let temp_dir = TempDir::new().unwrap();
-  env::set_var( "WORKSPACE_PATH", temp_dir.path() );
   
-  let workspace = Workspace::resolve().unwrap();
+  let workspace = Workspace::new( temp_dir.path() );
   
   assert_eq!( workspace.config_dir(), temp_dir.path().join( "config" ) );
   assert_eq!( workspace.data_dir(), temp_dir.path().join( "data" ) );
@@ -121,9 +120,6 @@ fn test_standard_directories()
   assert_eq!( workspace.docs_dir(), temp_dir.path().join( "docs" ) );
   assert_eq!( workspace.tests_dir(), temp_dir.path().join( "tests" ) );
   assert_eq!( workspace.workspace_dir(), temp_dir.path().join( ".workspace" ) );
-  
-  // cleanup
-  env::remove_var( "WORKSPACE_PATH" );
 }
 
 /// test path joining functionality
@@ -191,9 +187,13 @@ fn test_fallback_resolution_current_dir()
   // with cargo integration enabled, should detect cargo workspace first
   #[ cfg( feature = "cargo_integration" ) ]
   {
-    // since we're in a cargo workspace, it should detect the workspace root
-    assert!( workspace.root().ends_with( "wTools" ) );
+    // should detect actual cargo workspace (not just fallback to current dir)
     assert!( workspace.is_cargo_workspace() );
+    // workspace root should exist and be a directory
+    assert!( workspace.root().exists() );
+    assert!( workspace.root().is_dir() );
+    // should contain a Cargo.toml with workspace configuration
+    assert!( workspace.cargo_toml().exists() );
   }
   
   // without cargo integration, should fallback to current directory
@@ -314,17 +314,15 @@ mod secret_management_tests
   fn test_secret_key_loading_with_fallback()
   {
     let temp_dir = TempDir::new().unwrap();
-    env::set_var( "WORKSPACE_PATH", temp_dir.path() );
     env::set_var( "TEST_ENV_KEY", "env_value" );
     
-    let workspace = Workspace::resolve().unwrap();
+    let workspace = Workspace::new( temp_dir.path() );
     
     // test fallback to environment variable
     let value = workspace.load_secret_key( "TEST_ENV_KEY", "nonexistent.env" ).unwrap();
     assert_eq!( value, "env_value" );
     
     // cleanup
-    env::remove_var( "WORKSPACE_PATH" );
     env::remove_var( "TEST_ENV_KEY" );
   }
 }
