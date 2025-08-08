@@ -19,27 +19,32 @@ pub struct BenchmarkResult {
 
 impl BenchmarkResult {
   /// Create a new benchmark result
-  pub fn new(name: impl Into<String>, times: Vec<Duration>) -> Self {
-    Self {
-      name: name.into(),
+  pub fn new( name : impl Into< String >, times : Vec< Duration > ) -> Self
+  {
+    Self
+    {
+      name : name.into(),
       times,
-      metrics: std::collections::HashMap::new(),
+      metrics : std::collections::HashMap::new(),
     }
   }
 
   /// Add a custom metric to the result
-  pub fn with_metric(mut self, name: impl Into<String>, value: f64) -> Self {
-    self.metrics.insert(name.into(), value);
+  pub fn with_metric( mut self, name : impl Into< String >, value : f64 ) -> Self
+  {
+    self.metrics.insert( name.into(), value );
     self
   }
 
   /// Get the mean execution time
-  pub fn mean_time(&self) -> Duration {
-    if self.times.is_empty() {
+  pub fn mean_time( &self ) -> Duration
+  {
+    if self.times.is_empty()
+    {
       return Duration::ZERO;
     }
-    let total: Duration = self.times.iter().sum();
-    total / self.times.len() as u32
+    let total : Duration = self.times.iter().sum();
+    total / u32::try_from( self.times.len() ).unwrap_or( 1 )
   }
 
   /// Get the median execution time  
@@ -290,7 +295,8 @@ mod tests {
   #[test]
   fn test_bench_block_macro() {
     let result = bench_block!({
-      let _x = 42 + 42;
+      let x = 42 + 42;
+      std::hint::black_box( x );
     });
     
     assert!(result.times.len() == 1);

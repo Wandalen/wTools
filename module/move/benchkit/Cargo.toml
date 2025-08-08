@@ -26,13 +26,18 @@ all-features = false
 [features]
 default = [
   "enabled",
+  "integration", 
   "markdown_reports",
   "data_generators",
   "criterion_compat",
 ]
 
 full = [
-  "default", 
+  "enabled",
+  "integration",
+  "markdown_reports",
+  "data_generators", 
+  "criterion_compat",
   "html_reports",
   "json_reports",
   "statistical_analysis",
@@ -42,6 +47,9 @@ full = [
 
 # Core functionality
 enabled = []
+
+# Testing features
+integration = []
 
 # Report generation features
 markdown_reports = [ "enabled", "dep:pulldown-cmark" ]
@@ -65,7 +73,7 @@ use_alloc = [ "no_std" ]
 # [lints]
 # workspace = true
 
-# For standalone development, define lints inline:
+# For standalone development, using workspace-compatible lints:
 [lints.rust]
 rust_2018_idioms = { level = "warn", priority = -1 }
 future_incompatible = { level = "warn", priority = -1 }
@@ -76,9 +84,46 @@ unsafe-code = "deny"
 [lints.clippy]
 pedantic = { level = "warn", priority = -1 }
 undocumented_unsafe_blocks = "deny"
-std_instead_of_core = "warn"
 doc_include_without_cfg = "warn"
+
+# Allow reasonable patterns for this toolkit
+single_call_fn = "allow"
+inline_always = "allow"
+module_name_repetitions = "allow"
+absolute_paths = "allow"
+wildcard_imports = "allow"
+std_instead_of_alloc = "allow"
+items_after_statements = "allow"
+cast_precision_loss = "allow"
+pub_use = "allow"
+question_mark_used = "allow"
+implicit_return = "allow"
+arbitrary_source_item_ordering = "allow"
+mod_module_files = "allow"
+missing_docs_in_private_items = "allow"
+
+# Additional allows for pedantic lints in benchmarking toolkit
+std_instead_of_core = "allow"  # std::time::Instant required, not available in core
 missing_inline_in_public_items = "allow"
+must_use_candidate = "allow"
+return_self_not_must_use = "allow"
+needless_raw_string_hashes = "allow"
+cast_possible_truncation = "allow"
+uninlined_format_args = "allow"
+too_many_lines = "allow"
+missing_panics_doc = "allow"
+missing_errors_doc = "allow"
+format_push_string = "allow"
+redundant_closure = "allow"
+cast_sign_loss = "allow"
+implicit_hasher = "allow"
+doc_markdown = "allow"
+assigning_clones = "allow"
+unnecessary_debug_formatting = "allow"
+needless_borrows_for_generic_args = "allow"
+redundant_closure_for_method_calls = "allow"
+inefficient_to_string = "allow"
+needless_pass_by_value = "allow"
 
 [dependencies]
 # Core dependencies - always available

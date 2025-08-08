@@ -147,7 +147,7 @@ impl SeededGenerator {
   /// Generate next random number
   fn next(&mut self) -> u64 {
     // Simple Linear Congruential Generator
-    self.seed = self.seed.wrapping_mul(1103515245).wrapping_add(12345);
+    self.seed = self.seed.wrapping_mul(1_103_515_245).wrapping_add(12345);
     self.seed
   }
 

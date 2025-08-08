@@ -29,30 +29,41 @@ fn main() {
 ```rust
 use benchkit::prelude::*;
 
-fn generate_random_vec(size: usize) -> Vec<u32> {
-    (0..size).map(|x| x as u32).collect()
+fn generate_random_vec( size : usize ) -> Vec< u32 >
+{
+  ( 0..size ).map( |x| x as u32 ).collect()
 }
 
-fn main() {
-    let mut comparison = ComparativeAnalysis::new("sorting_algorithms");
+fn main()
+{
+  let mut comparison = ComparativeAnalysis::new( "sorting_algorithms" );
+  
+  // Compare different sorting approaches
+  for size in [ 100, 1000, 10000 ]
+  {
+    let data = generate_random_vec( size );
     
-    // Compare different sorting approaches
-    for size in [100, 1000, 10000] {
-        let data = generate_random_vec(size);
-        
-        comparison = comparison.algorithm(&format!("std_sort_{}", size), {
-            let mut d = data.clone();
-            move || { d.sort(); }
-        });
-        
-        comparison = comparison.algorithm(&format!("unstable_sort_{}", size), {
-            let mut d = data.clone();
-            move || { d.sort_unstable(); }
-        });
-    }
+    comparison = comparison.algorithm( &format!( "std_sort_{}", size ),
+    {
+      let mut d = data.clone();
+      move ||
+      {
+        d.sort();
+      }
+    });
     
-    let report = comparison.run();
-    println!("Fastest: {:?}", report.fastest());
+    comparison = comparison.algorithm( &format!( "unstable_sort_{}", size ),
+    {
+      let mut d = data.clone();
+      move ||
+      {
+        d.sort_unstable();
+      }
+    });
+  }
+  
+  let report = comparison.run();
+  println!( "Fastest: {:?}", report.fastest() );
 }
 ```
 
@@ -61,21 +72,23 @@ fn main() {
 ```rust
 use benchkit::prelude::*;
 
-#[cfg(test)]
-mod performance_docs {
-    #[test]
-    fn update_readme_performance() {
-        let mut suite = BenchmarkSuite::new("api_performance");
-        
-        // Benchmark your API functions
-        suite.benchmark("parse_small", || parse_input("small data"));
-        suite.benchmark("parse_large", || parse_input("large data"));
-        
-        // Automatically update README.md performance section
-        suite.generate_markdown_report()
-             .update_file("README.md", "## Performance")
-             .expect("Failed to update documentation");
-    }
+#[ cfg( test ) ]
+mod performance_docs
+{
+  #[ test ]
+  fn update_readme_performance()
+  {
+    let mut suite = BenchmarkSuite::new( "api_performance" );
+    
+    // Benchmark your API functions
+    suite.benchmark( "parse_small", || parse_input( "small data" ) );
+    suite.benchmark( "parse_large", || parse_input( "large data" ) );
+    
+    // Automatically update README.md performance section
+    suite.generate_markdown_report()
+         .update_file( "README.md", "## Performance" )
+         .expect( "Failed to update documentation" );
+  }
 }
 ```
 

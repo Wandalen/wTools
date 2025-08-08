@@ -2,23 +2,27 @@
 //!
 //! These tests verify that the core functionality works correctly.
 
+#![ cfg( feature = "integration" ) ]
+
 use benchkit::prelude::*;
 use std::time::Duration;
 
 #[test]
 fn test_basic_timing()
 {
-  let result = bench_function("basic_test", || {
+  let result = bench_function( "basic_test", ||
+  {
     let mut sum = 0;
-    for i in 1..100 {
+    for i in 1..100
+    {
       sum += i;
     }
-    std::hint::black_box(sum);
+    std::hint::black_box( sum );
   });
 
-  assert!(!result.times.is_empty());
-  assert!(result.mean_time().as_nanos() > 0);
-  assert_eq!(result.name, "basic_test");
+  assert!( !result.times.is_empty() );
+  assert!( result.mean_time().as_nanos() > 0 );
+  assert_eq!( result.name, "basic_test" );
 }
 
 #[test]
