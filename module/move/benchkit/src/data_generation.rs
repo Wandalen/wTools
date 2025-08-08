@@ -213,9 +213,18 @@ impl DataGenerator
       match self.complexity
       {
         DataComplexity::Simple => "a".repeat(size),
-        DataComplexity::Medium => format!("data_{}_", i).repeat(size / 10 + 1)[..size].to_string(),
-        DataComplexity::Complex => format!("complex_data_{}_{}", i, "x".repeat(i % 50)).repeat(size / 30 + 1)[..size].to_string(),
-        DataComplexity::Full => format!("full_complexity_{}_{}_unicode_🦀_{}", i, "pattern".repeat(i % 10), "end").repeat(size / 50 + 1)[..size].to_string(),
+        DataComplexity::Medium => {
+          let pattern = format!("data_{}_", i).repeat(size / 10 + 1);
+          pattern[..size.min(pattern.len())].to_string()
+        },
+        DataComplexity::Complex => {
+          let pattern = format!("complex_data_{}_{}", i, "x".repeat(i % 50)).repeat(size / 30 + 1);
+          pattern[..size.min(pattern.len())].to_string()
+        },
+        DataComplexity::Full => {
+          let pattern = format!("full_complexity_{}_{}_unicode_🦀_{}", i, "pattern".repeat(i % 10), "end").repeat(size / 50 + 1);
+          pattern[..size.min(pattern.len())].to_string()
+        },
       }
     }).collect()
   }

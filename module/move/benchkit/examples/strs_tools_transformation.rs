@@ -250,24 +250,28 @@ fn generate_comprehensive_strs_tools_report() -> error_tools::Result<()>
   // Simulate comparative analysis
   let mut comparison = ComparativeAnalysis::new("strs_tools_splitting_analysis");
   
+  let test_data_clone1 = test_data.clone();
+  let test_data_clone2 = test_data.clone();
+  let test_data_clone3 = test_data.clone();
+  
   comparison = comparison
-    .algorithm("simd_optimized", ||
+    .algorithm("simd_optimized", move ||
     {
       // Simulate SIMD string splitting
-      let segments = test_data.split(',').count();
+      let segments = test_data_clone1.split(',').count();
       std::hint::black_box(segments);
     })
-    .algorithm("scalar_standard", ||
+    .algorithm("scalar_standard", move ||
     {
       // Simulate standard string splitting  
-      let segments = test_data.split(&[',', ';'][..]).count();
+      let segments = test_data_clone2.split(&[',', ';'][..]).count();
       std::hint::black_box(segments);
       std::thread::sleep(std::time::Duration::from_millis(1)); // Simulate slower processing
     })
-    .algorithm("generic_fallback", ||
+    .algorithm("generic_fallback", move ||
     {
       // Simulate generic implementation
-      let segments = test_data.split(&[',', ';', ':'][..]).count();
+      let segments = test_data_clone3.split(&[',', ';', ':'][..]).count();
       std::hint::black_box(segments);
       std::thread::sleep(std::time::Duration::from_millis(3)); // Simulate much slower processing
     });
@@ -277,9 +281,9 @@ fn generate_comprehensive_strs_tools_report() -> error_tools::Result<()>
   // Generate comprehensive report
   let comprehensive_report = generate_comprehensive_markdown_report(&report);
   
-  // Save report
-  std::fs::write("target/strs_tools_benchkit_report.md", &comprehensive_report)?;
-  println!("    📄 Report saved: target/strs_tools_benchkit_report.md");
+  // Save report (temporary file with hyphen prefix)
+  std::fs::write("target/-strs_tools_benchkit_report.md", &comprehensive_report)?;
+  println!("    📄 Report saved: target/-strs_tools_benchkit_report.md");
   
   // Show summary
   if let Some((best_name, best_result)) = report.fastest() 

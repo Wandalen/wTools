@@ -19,18 +19,18 @@ pub struct BenchmarkResult {
 
 impl BenchmarkResult {
   /// Create a new benchmark result
-  pub fn new( name : impl Into< String >, times : Vec< Duration > ) -> Self
+  pub fn new( name: impl Into<String>, times: Vec<Duration> ) -> Self
   {
     Self
     {
-      name : name.into(),
+      name: name.into(),
       times,
-      metrics : std::collections::HashMap::new(),
+      metrics: std::collections::HashMap::new(),
     }
   }
 
   /// Add a custom metric to the result
-  pub fn with_metric( mut self, name : impl Into< String >, value : f64 ) -> Self
+  pub fn with_metric( mut self, name: impl Into<String>, value: f64 ) -> Self
   {
     self.metrics.insert( name.into(), value );
     self
@@ -43,7 +43,7 @@ impl BenchmarkResult {
     {
       return Duration::ZERO;
     }
-    let total : Duration = self.times.iter().sum();
+    let total: Duration = self.times.iter().sum();
     total / u32::try_from( self.times.len() ).unwrap_or( 1 )
   }
 
