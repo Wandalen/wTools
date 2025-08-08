@@ -126,7 +126,7 @@ impl SuiteResults {
   }
 
   /// Save results as new baseline
-  pub fn save_as_baseline(&self, _baseline_file: impl AsRef<std::path::Path>) -> Result<(), std::io::Error> {
+  pub fn save_as_baseline(&self, _baseline_file: impl AsRef<std::path::Path>) -> error_tools::Result<()> {
     // TODO: Implement saving to JSON/TOML file
     // For now, just succeed
     Ok(())
@@ -236,7 +236,7 @@ impl MarkdownReport {
     &self, 
     file_path: impl AsRef<std::path::Path>, 
     section_name: &str
-  ) -> Result<(), Box<dyn std::error::Error>> {
+  ) -> error_tools::Result<()> {
     // TODO: Implement markdown file section updating
     // This would parse existing markdown, find section, and replace content
     println!("Would update {} section in {:?}", section_name, file_path.as_ref());
@@ -244,9 +244,10 @@ impl MarkdownReport {
   }
 
   /// Save report to file
-  pub fn save(&self, file_path: impl AsRef<std::path::Path>) -> Result<(), std::io::Error> {
+  pub fn save(&self, file_path: impl AsRef<std::path::Path>) -> error_tools::Result<()> {
     let content = self.generate();
-    std::fs::write(file_path, content)
+    std::fs::write(file_path, content)?;
+    Ok(())
   }
 }
 

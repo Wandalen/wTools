@@ -61,8 +61,32 @@ criterion_compat = [ "enabled", "dep:criterion" ]  # Compatibility layer
 no_std = []
 use_alloc = [ "no_std" ]
 
+# In workspace context, use:
+# [lints]
+# workspace = true
+
+# For standalone development, define lints inline:
+[lints.rust]
+rust_2018_idioms = { level = "warn", priority = -1 }
+future_incompatible = { level = "warn", priority = -1 }
+missing_docs = "warn"
+missing_debug_implementations = "warn"
+unsafe-code = "deny"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+undocumented_unsafe_blocks = "deny"
+std_instead_of_core = "warn"
+doc_include_without_cfg = "warn"
+missing_inline_in_public_items = "allow"
+
 [dependencies]
 # Core dependencies - always available
+# Note: In workspace context, use:
+# error_tools = { workspace = true, features = [ "enabled" ] }
+# mod_interface = { workspace = true }
+# For standalone development:
+error_tools = { git = "https://github.com/Wandalen/wTools", branch = "alpha", features = [ "enabled" ] }
 
 # Feature-gated dependencies  
 pulldown-cmark = { version = "0.10", optional = true }
@@ -74,6 +98,10 @@ criterion = { version = "0.5", optional = true }
 chrono = { version = "0.4", features = ["serde"], optional = true }
 
 [dev-dependencies]
+# In workspace context, use:
+# test_tools = { workspace = true }
+# tempfile = { workspace = true }
+# For standalone development:
 tempfile = "3.0"
 
 # Examples will be added as implementation progresses

@@ -24,7 +24,7 @@ impl MarkdownUpdater {
   }
 
   /// Update the section with new content
-  pub fn update_section(&self, content: &str) -> Result<(), std::io::Error> {
+  pub fn update_section(&self, content: &str) -> error_tools::Result<()> {
     // Read existing file or create empty content
     let existing_content = if self.file_path.exists() {
       std::fs::read_to_string(&self.file_path)?
@@ -251,7 +251,7 @@ impl ReportGenerator {
   }
 
   /// Update markdown file section with report
-  pub fn update_markdown_file(&self, file_path: impl AsRef<Path>, section_name: &str) -> Result<(), std::io::Error> {
+  pub fn update_markdown_file(&self, file_path: impl AsRef<Path>, section_name: &str) -> error_tools::Result<()> {
     let updater = MarkdownUpdater::new(file_path, section_name);
     let content = self.generate_comprehensive_report();
     updater.update_section(&content)
@@ -300,7 +300,7 @@ pub mod quick {
     file_path: impl AsRef<Path>,
     section_name: &str,
     title: &str
-  ) -> Result<(), std::io::Error> {
+  ) -> error_tools::Result<()> {
     let generator = ReportGenerator::new(title, results.clone());
     generator.update_markdown_file(file_path, section_name)
   }

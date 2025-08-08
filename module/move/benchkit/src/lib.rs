@@ -20,10 +20,10 @@
 //! // Simple timing measurement
 //! let result = bench_function("my_operation", || {
 //!     // Your code here
-//!     std::thread::sleep(std::time::Duration::from_millis(1));
+//!     std::hint::black_box(42 + 42);
 //! });
 //! 
-//! println!("Average time: {:.2?}", result.mean_time());
+//! println!("Average time: {:?}", result.mean_time());
 //! ```
 //!
 //! ## Features

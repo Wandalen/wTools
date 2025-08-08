@@ -29,6 +29,10 @@ fn main() {
 ```rust
 use benchkit::prelude::*;
 
+fn generate_random_vec(size: usize) -> Vec<u32> {
+    (0..size).map(|x| x as u32).collect()
+}
+
 fn main() {
     let mut comparison = ComparativeAnalysis::new("sorting_algorithms");
     
@@ -36,19 +40,19 @@ fn main() {
     for size in [100, 1000, 10000] {
         let data = generate_random_vec(size);
         
-        comparison.add_variant(&format!("std_sort_{}", size), {
+        comparison = comparison.algorithm(&format!("std_sort_{}", size), {
             let mut d = data.clone();
-            move || d.sort()
+            move || { d.sort(); }
         });
         
-        comparison.add_variant(&format!("unstable_sort_{}", size), {
+        comparison = comparison.algorithm(&format!("unstable_sort_{}", size), {
             let mut d = data.clone();
-            move || d.sort_unstable()  
+            move || { d.sort_unstable(); }
         });
     }
     
     let report = comparison.run();
-    report.print_summary();
+    println!("Fastest: {:?}", report.fastest());
 }
 ```
 
@@ -135,11 +139,22 @@ Perfect for ad-hoc performance analysis:
 ```rust
 use benchkit::prelude::*;
 
+fn old_algorithm(data: &[u32]) -> u32 {
+    data.iter().sum()
+}
+
+fn new_algorithm(data: &[u32]) -> u32 {
+    data.iter().fold(0, |acc, x| acc + x)
+}
+
+let data = vec![1, 2, 3, 4, 5];
+
 // Quick check - is this optimization working?
 let before = bench_once(|| old_algorithm(&data));
 let after = bench_once(|| new_algorithm(&data));
 
-println!("Improvement: {:.1}%", before.compare(&after).improvement());
+let comparison = before.compare(&after);
+println!("Improvement: {:.1}%", comparison.improvement_percentage);
 ```
 
 ### Pattern 2: Comprehensive Analysis
@@ -149,6 +164,19 @@ For thorough performance characterization:
 ```rust
 use benchkit::prelude::*;
 
+fn generate_test_data(size: usize) -> Vec<u32> {
+    (0..size).map(|x| x as u32).collect()
+}
+
+fn run_algorithm(algorithm: &str, data: &[u32]) -> u32 {
+    match algorithm {
+        "baseline" => data.iter().sum(),
+        "optimized" => data.iter().fold(0, |acc, x| acc + x),
+        "simd" => data.iter().sum::<u32>(),
+        _ => 0,
+    }
+}
+
 fn analyze_performance() {
     let mut suite = BenchmarkSuite::new("comprehensive_analysis");
     
@@ -156,8 +184,9 @@ fn analyze_performance() {
     for size in [10, 100, 1000, 10000] {
         for algorithm in ["baseline", "optimized", "simd"] {
             let data = generate_test_data(size);
-            suite.benchmark(&format!("{}_size_{}", algorithm, size), || {
-                run_algorithm(algorithm, &data)
+            let alg = algorithm.to_string();
+            suite.benchmark(&format!("{}_size_{}", algorithm, size), move || {
+                run_algorithm(&alg, &data);
             });
         }
     }
@@ -165,10 +194,8 @@ fn analyze_performance() {
     let analysis = suite.run_analysis();
     
     // Generate comprehensive report
-    analysis.generate_report()
-            .with_scaling_analysis()
-            .with_recommendations()
-            .save_markdown("performance_analysis.md");
+    let report = analysis.generate_markdown_report();
+    println!("{}", report.generate());
 }
 ```
 
