@@ -215,10 +215,12 @@ impl ReportGenerator {
 
     // Generate insights
     if !fast_ops.is_empty() {
-      output.push_str(&format!("**High-performance operations**: {}\n", fast_ops.join(", ")));
+      let fast_list: Vec<String> = fast_ops.iter().map(|s| s.to_string()).collect();
+      output.push_str(&format!("**High-performance operations**: {}\n", fast_list.join(", ")));
     }
     if !slow_ops.is_empty() {
-      output.push_str(&format!("**Optimization candidates**: {}\n", slow_ops.join(", ")));
+      let slow_list: Vec<String> = slow_ops.iter().map(|s| s.to_string()).collect();
+      output.push_str(&format!("**Optimization candidates**: {}\n", slow_list.join(", ")));
     }
 
     // Statistical insights
@@ -231,7 +233,7 @@ impl ReportGenerator {
   }
 
   /// Calculate overall performance variance across results
-  fn calculate_performance_variance(&self) -> f64 {
+  pub fn calculate_performance_variance(&self) -> f64 {
     if self.results.len() < 2 {
       return 0.0;
     }

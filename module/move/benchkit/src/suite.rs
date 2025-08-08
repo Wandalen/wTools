@@ -4,11 +4,10 @@
 //! collections of benchmarks, with support for baselines and reporting.
 
 use crate::measurement::{ BenchmarkResult, MeasurementConfig };
-use crate::analysis::{ ComparisonReport, RegressionAnalysis };
+use crate::analysis::RegressionAnalysis;
 use std::collections::HashMap;
 
 /// A collection of benchmarks that can be run together
-#[derive(Debug)]
 pub struct BenchmarkSuite {
   pub name: String,
   benchmarks: HashMap<String, Box<dyn FnMut() + Send>>,
@@ -87,14 +86,14 @@ impl BenchmarkSuite {
   }
 
   /// Create suite from baseline file (for regression testing)
-  pub fn from_baseline(baseline_file: impl AsRef<std::path::Path>) -> Self {
+  pub fn from_baseline(_baseline_file: impl AsRef<std::path::Path>) -> Self {
     // TODO: Implement loading from JSON/TOML baseline file
     // For now, return empty suite
     Self::new("baseline_comparison")
   }
 
   /// Create suite from configuration file  
-  pub fn from_config(config_file: impl AsRef<std::path::Path>) -> Self {
+  pub fn from_config(_config_file: impl AsRef<std::path::Path>) -> Self {
     // TODO: Implement loading from configuration file
     // For now, return empty suite
     Self::new("configured_suite")
@@ -127,7 +126,7 @@ impl SuiteResults {
   }
 
   /// Save results as new baseline
-  pub fn save_as_baseline(&self, baseline_file: impl AsRef<std::path::Path>) -> Result<(), std::io::Error> {
+  pub fn save_as_baseline(&self, _baseline_file: impl AsRef<std::path::Path>) -> Result<(), std::io::Error> {
     // TODO: Implement saving to JSON/TOML file
     // For now, just succeed
     Ok(())

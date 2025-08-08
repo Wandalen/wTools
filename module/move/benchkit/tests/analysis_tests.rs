@@ -17,7 +17,9 @@
 //! | A1.5 | Regression    | Stable perf     | 5%        | No significant changes detected      |
 //! | A1.6 | Comparative   | Multiple algos  | Default   | Full ranking with relative speeds    |
 
-use super::*;
+use benchkit::prelude::*;
+use std::time::Duration;
+use std::collections::HashMap;
 
 /// Tests comparative analysis with different performance characteristics
 /// Test Combination: A1.1
@@ -354,7 +356,7 @@ fn test_regression_analysis_missing_baselines()
 fn test_comparative_analysis_summary_printing()
 {
   let comparison = ComparativeAnalysis::new("summary_test")
-    .algorithm("first", || std::hint::black_box(1))
+    .algorithm("first", || { std::hint::black_box(1); })
     .algorithm("second", || {
       for i in 0..100 {
         std::hint::black_box(i);

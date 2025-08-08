@@ -19,7 +19,7 @@
 //! | G1.7 | Parsing      | Small  | Test data    | Command args, CSV, JSON formats     |
 //! | G1.8 | File paths   | Large  | Static       | 1000 valid file path strings       |
 
-use super::*;
+use benchkit::prelude::*;
 
 /// Tests basic list data generation with small size
 /// Test Combination: G1.1

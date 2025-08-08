@@ -15,10 +15,10 @@ exclude = [
   "module/move/unitore",
   "module/move/gspread",
   "module/move/optimization_tools",
+  "module/move/benchkit",
   "module/move/refiner",
   "module/move/wplot",
   "module/move/plot_interface",
-  "module/move/workspace_tools",
   # "module/move/unilang_parser", # Explicitly exclude unilang_parser
   # "module/alias/unilang_instruction_parser", # Explicitly exclude unilang_instruction_parser
   "module/core/program_tools",
@@ -743,6 +743,11 @@ version = "3.20.0"
 
 [workspace.dependencies.glob]
 version = "0.3.2"
+
+[workspace.dependencies.workspace_tools]
+version = "~0.1.0"
+path = "module/move/workspace_tools"
+default-features = false
 
 [patch.crates-io]
 former_meta = { path = "module/core/former_meta" }

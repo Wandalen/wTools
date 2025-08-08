@@ -18,7 +18,9 @@
 //! | R1.6 | File update  | Multiple      | New section    | Append section if not found          |
 //! | R1.7 | JSON         | Multiple      | Generate       | Valid JSON with all metrics          |
 
-use super::*;
+use benchkit::prelude::*;
+use std::time::Duration;
+use std::collections::HashMap;
 use std::fs;
 use tempfile::TempDir;
 

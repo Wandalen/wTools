@@ -1389,10 +1389,10 @@ mod performance_tests
   #[ ignore = "stress test - run with cargo test -- --ignored" ]
   fn test_repeated_workspace_operations()
   {
-    let temp_dir = TempDir::new().unwrap();
+    let _temp_dir = TempDir::new().unwrap();
     let original = env::var( "WORKSPACE_PATH" ).ok();
     
-    env::set_var( "WORKSPACE_PATH", temp_dir.path() );
+    env::set_var( "WORKSPACE_PATH", _temp_dir.path() );
     
     let start = Instant::now();
     
@@ -1405,7 +1405,7 @@ mod performance_tests
       let _ = workspace.validate();
       let _ = workspace.config_dir();
       let _ = workspace.join( format!( "file_{}.txt", i ) );
-      let _ = workspace.is_workspace_file( temp_dir.path() );
+      let _ = workspace.is_workspace_file( _temp_dir.path() );
     }
     
     let repeated_ops_time = start.elapsed();

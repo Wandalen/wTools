@@ -7,7 +7,6 @@ use crate::measurement::{ BenchmarkResult, Comparison };
 use std::collections::HashMap;
 
 /// Comparative analysis for multiple algorithm variants
-#[derive(Debug)]
 pub struct ComparativeAnalysis {
   name: String,
   variants: HashMap<String, Box<dyn FnMut() + Send>>,
@@ -42,11 +41,11 @@ impl ComparativeAnalysis {
   }
 
   /// Run the comparative analysis
-  pub fn run(mut self) -> ComparisonReport {
+  pub fn run(self) -> ComparisonReport {
     let mut results = HashMap::new();
     
     for (name, mut variant) in self.variants {
-      let result = crate::measurement::bench_function(&name, &mut variant);
+      let result = crate::measurement::bench_function(&name, || variant());
       results.insert(name.clone(), result);
     }
     
@@ -96,7 +95,7 @@ impl ComparisonReport {
       // Show relative performance of all variants
       println!("\nRelative Performance:");
       for (name, result) in self.sorted_by_performance() {
-        let comparison = result.compare(fastest_result);
+        let _comparison = result.compare(fastest_result);
         let relative_speed = if name == fastest_name {
           "baseline".to_string()
         } else {

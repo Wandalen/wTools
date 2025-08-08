@@ -17,7 +17,9 @@
 //! | S1.5 | Default       | Single     | Result access   | Previous results retrievable         |
 //! | S1.6 | Default       | Multiple   | Print summary   | Console output formatted correctly   |
 
-use super::*;
+use benchkit::prelude::*;
+use std::time::Duration;
+use std::collections::HashMap;
 
 /// Tests single benchmark execution in suite
 /// Test Combination: S1.1
@@ -204,9 +206,9 @@ fn test_suite_summary_printing()
 fn test_suite_builder_pattern()
 {
   let suite = BenchmarkSuite::new("builder_test")
-    .add_benchmark("first", || std::hint::black_box(1))
-    .add_benchmark("second", || std::hint::black_box(2))
-    .add_benchmark("third", || std::hint::black_box(3))
+    .add_benchmark("first", || { std::hint::black_box(1); })
+    .add_benchmark("second", || { std::hint::black_box(2); })
+    .add_benchmark("third", || { std::hint::black_box(3); })
     .with_config(MeasurementConfig {
       iterations: 5,
       warmup_iterations: 1,
@@ -371,10 +373,10 @@ fn test_suite_markdown_customization()
 fn test_multiple_suite_independence()
 {
   let mut suite1 = BenchmarkSuite::new("suite_one")
-    .add_benchmark("op1", || std::hint::black_box(1));
+    .add_benchmark("op1", || { std::hint::black_box(1); });
   
   let mut suite2 = BenchmarkSuite::new("suite_two")
-    .add_benchmark("op2", || std::hint::black_box(2));
+    .add_benchmark("op2", || { std::hint::black_box(2); });
   
   let results1 = suite1.run_all();
   let results2 = suite2.run_all();

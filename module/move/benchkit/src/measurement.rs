@@ -185,7 +185,7 @@ impl Default for MeasurementConfig {
 }
 
 /// Measure execution time of a function with default configuration
-pub fn bench_function<F, R>(name: impl Into<String>, mut f: F) -> BenchmarkResult
+pub fn bench_function<F, R>(name: impl Into<String>, f: F) -> BenchmarkResult
 where
   F: FnMut() -> R,
 {

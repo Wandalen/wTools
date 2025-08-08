@@ -18,7 +18,8 @@
 //! | T1.6 | Simple        | Default        | Comparison functionality     | Improvement percentages calculated   |
 //! | T1.7 | Simple        | Default        | Operations per second        | Correct ops/sec calculation          |
 
-use super::*;
+use benchkit::prelude::*;
+use std::time::{Duration, Instant};
 
 /// Tests basic timing measurement functionality
 /// Test Combination: T1.1
