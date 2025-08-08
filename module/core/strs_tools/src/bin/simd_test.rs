@@ -27,7 +27,7 @@ fn main()
   let start = Instant::now();
   let scalar_result: Vec<  _  > = split()
     .src( test_input )
-    .delimeter( delimiters.to_vec() )
+    .delimeters( &delimiters )
     .perform()
     .collect();
   let scalar_time = start.elapsed();

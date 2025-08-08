@@ -6,10 +6,9 @@ fn test_split_with_vec_delimiter_iterator() {
   let delimiters = vec![" "];
   let splits: Vec<Split<'_>> = strs_tools::split()
     .src(input)
-    .delimeter(delimiters)
+    .delimeters(&delimiters)
     .preserving_delimeters(false)
-    .form()
-    .into_iter()
+    .perform()
     .collect();
 
   assert_eq!(splits.len(), 2);
