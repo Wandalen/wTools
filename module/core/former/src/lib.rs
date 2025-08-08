@@ -271,6 +271,8 @@ pub mod exposed {
 /// - Commonly used in typical Former scenarios
 /// - Unlikely to cause naming conflicts
 /// - Essential for basic functionality
+// mod _minimal_generic_test; // CONFIRMED: Generic enum parsing limitation is real
+
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod prelude {

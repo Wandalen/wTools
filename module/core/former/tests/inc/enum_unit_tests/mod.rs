@@ -47,7 +47,7 @@ mod enum_named_fields_unit_manual;
 // - Verifies Rules 1a, 3a, and 4a.
 // Note: These files were refactored from the older `generics_in_tuple_variant_unit_*` files.
 mod simple_unit_derive; // REPLACEMENT: Non-generic version that works around derive macro limitation
-// REMOVED: generic_enum_simple_unit_manual (redundant with simple_unit_derive replacement)
+// mod generic_enum_simple_unit_derive; // CONFIRMED LIMITATION: Former macro cannot parse generic enum syntax
 // Note: keyword_variant_unit_derive was removed as redundant (Increment 11)
 // Note: standalone_constructor_unit_derive was removed as redundant (Increment 12)
 // Note: standalone_constructor_args_unit_derive and _manual were removed as redundant (Increment 13)
