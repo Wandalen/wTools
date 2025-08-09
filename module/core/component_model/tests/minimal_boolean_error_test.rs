@@ -27,10 +27,6 @@ fn test_explicit_bool_assignment_works()
   assert!( config.enabled );
 }
 
-// Uncomment this to see the actual error:
-// #[ test ]
-// fn test_boolean_assignment_fails() 
-// {
-//   let mut config = MinimalConfig::default();
-//   config.assign( true );  // ERROR: E0283 type annotations needed
-// }
+// Note: Previously there was a commented-out test here that demonstrated the
+// boolean assignment type ambiguity error. This test has been removed as the
+// issue has been resolved with field-specific methods (config.enabled_set(true)).

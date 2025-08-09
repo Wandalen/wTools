@@ -69,10 +69,10 @@ only_for_terminal_module! {
   {
 
     println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-    let _t = test_tools::compiletime::TestCases::new();
+    let t = test_tools::compiletime::TestCases::new();
 
-    // zzz : make it working test
-    //t.run( "tests/inc/components_tests/compiletime/components_component_from_debug.rs" );
+    // ComponentFrom debug test - now enabled with proper test functions
+    t.pass( "tests/inc/components_tests/compiletime/components_component_from_debug.rs" );
 
   }
 

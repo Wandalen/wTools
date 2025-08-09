@@ -166,7 +166,112 @@ fn main()
 }
 ```
 
-### 3. Fluent Builder Pattern
+### 3. Enum Fields in Structs
+
+ComponentModel works with structs that contain enum fields, enabling type-safe enum assignment:
+
+```rust
+use component_model::{ ComponentModel, Assign };
+
+#[ derive( Debug, PartialEq ) ]
+enum Status
+{
+  Pending,
+  Processing { progress : f64 },
+  Completed { result : String },
+  Failed { error : String },
+}
+
+impl Default for Status
+{
+  fn default() -> Self { Status::Pending }
+}
+
+#[ derive( Default, Debug, ComponentModel ) ]
+struct Task
+{
+  id : u32,
+  status : Status,
+  priority : u8,
+}
+
+fn main()
+{
+  let mut task = Task::default();
+  
+  // Use field-specific methods with enums
+  task.id_set( 42u32 );
+  task.priority_set( 5u8 );
+  task.status_set( Status::Processing { progress: 0.75 } );
+  
+  println!( "{:?}", task );
+  
+  // Fluent style with enums
+  let completed_task = Task::default()
+    .id_with( 100u32 )
+    .status_with( Status::Completed { result: "Success".to_string() } )
+    .priority_with( 1u8 );
+    
+  match completed_task.status {
+    Status::Completed { result } => println!( "Task completed: {}", result ),
+    _ => println!( "Unexpected status" ),
+  }
+}
+```
+
+#### Complex Enum Fields
+
+```rust
+use component_model::{ ComponentModel, Assign };
+use std::time::Duration;
+
+#[ derive( Debug ) ]
+enum ConnectionState
+{
+  Disconnected,
+  Connecting { timeout : Duration },
+  Connected { session_id : String },
+}
+
+impl Default for ConnectionState
+{
+  fn default() -> Self { ConnectionState::Disconnected }
+}
+
+#[ derive( Default, Debug, ComponentModel ) ]
+struct NetworkService
+{
+  name : String,
+  state : ConnectionState,
+  retry_count : u32,
+}
+
+fn main()
+{
+  let mut service = NetworkService::default();
+  
+  // Field-specific methods work seamlessly with enum fields
+  service.name_set( "WebSocket".to_string() );
+  service.retry_count_set( 3u32 );
+  service.state_set( ConnectionState::Connected { 
+    session_id: "sess_12345".to_string() 
+  } );
+  
+  // Fluent pattern with complex enums
+  let connecting_service = NetworkService::default()
+    .name_with( "HTTP Client".to_string() )
+    .state_with( ConnectionState::Connecting { 
+      timeout: Duration::from_secs( 30 )
+    } )
+    .retry_count_with( 0u32 );
+    
+  println!( "{:?}", connecting_service );
+}
+```
+
+> **Note**: Direct ComponentModel derive on enums is planned for future releases. Currently, enums work as field types in structs with ComponentModel.
+
+### 4. Fluent Builder Pattern
 
 ```rust
 # use component_model::{ ComponentModel, Assign };
@@ -177,7 +282,7 @@ let person = Person::default()
 .impute( 30 );             // Returns Self for chaining
 ```
 
-### 4. Multiple Component Assignment
+### 5. Multiple Component Assignment
 
 ```rust
 use component_model::{ ComponentModel, Assign };
@@ -194,7 +299,7 @@ config.assign( "localhost" );    // String component
 config.assign( 8080 );           // i32 component
 ```
 
-### 5. Manual Implementation (Advanced)
+### 6. Manual Implementation (Advanced)
 
 For custom behavior, implement traits manually:
 

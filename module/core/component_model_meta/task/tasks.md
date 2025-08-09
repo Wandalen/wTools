@@ -5,25 +5,23 @@
 
 | Task | Title | Difficulty | Value | Status | Timeline | Dependencies |
 |------|-------|------------|-------|--------|----------|--------------|
-| [001](001_fix_boolean_assignment_type_ambiguity.md) | Fix Boolean Assignment Type Ambiguity | 🟡 Medium | 🔥 High | ✅ **COMPLETED** | 1-2w | None |
+| [001](completed/001_fix_boolean_assignment_type_ambiguity.md) | Fix Boolean Assignment Type Ambiguity | 🟡 Medium | 🔥 High | ✅ **COMPLETED** | 1-2w | None |
 | [002](002_add_proper_from_conflict_detection.md) | Add Proper From Conflict Detection | 🟡 Medium | 🔥 High | 📋 Planned | 2-3w | 001 |
-| [003](003_optimize_macro_tools_features.md) | Optimize macro_tools Features | 🟢 Easy | 🟡 Low | 📋 Planned | 1w | None |
+| [003](completed/003_optimize_macro_tools_features.md) | Optimize macro_tools Features | 🟢 Easy | 🟡 Low | ✅ **COMPLETED** | 1w | None |
 
 ## 🚀 **Recommended Implementation Order**
 
 **✅ COMPLETED (High Value Foundation)**:
 1. ~~**Task 001** - Fix Boolean Assignment Type Ambiguity~~ ✅ **DONE** (core functionality fixed)
+2. ~~**Task 003** - Optimize macro_tools Features~~ ✅ **DONE** (performance optimization)
 
 **Next High Impact (Medium Difficulty + High Value)**:
-2. **Task 002** - Add Proper From Conflict Detection (enables ComponentFrom functionality)
-
-**Low Priority (Easy + Low Value)**:
-3. **Task 003** - Optimize macro_tools Features (performance optimization)
+3. **Task 002** - Add Proper From Conflict Detection (enables ComponentFrom functionality)
 
 ## 📊 **Task Status Summary**
 
-- **✅ Completed**: 1 task
-- **📋 Planned**: 2 tasks  
+- **✅ Completed**: 2 tasks
+- **📋 Planned**: 1 task  
 - **⏸️ On Hold**: 0 tasks
 
 ## 🎯 **Key Milestones**
