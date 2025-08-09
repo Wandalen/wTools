@@ -14,7 +14,7 @@
 //! | FC.8 | Performance | All features enabled | No significant overhead |
 
 use workspace_tools::{ Workspace, WorkspaceError };
-use std::{ env, fs };
+use std::fs;
 use tempfile::TempDir;
 
 /// Test FC.1: Cargo + Serde integration
@@ -92,19 +92,9 @@ edition.workspace = true
 #[ test ]
 fn test_glob_secret_management_integration()
 {
-  let temp_dir = TempDir::new().unwrap();
-  // Save original state and set workspace path
-  let original = env::var( "WORKSPACE_PATH" ).ok();
-  env::set_var( "WORKSPACE_PATH", temp_dir.path() );
+  use workspace_tools::testing::create_test_workspace;
   
-  let workspace = Workspace::resolve().unwrap();
-  
-  // Restore state
-  match original
-  {
-    Some( value ) => env::set_var( "WORKSPACE_PATH", value ),
-    None => env::remove_var( "WORKSPACE_PATH" ),
-  }
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   // Create secret directory structure
   fs::create_dir_all( workspace.secret_dir() ).unwrap();
@@ -208,6 +198,7 @@ edition.workspace = true
 fn test_serde_secret_management_integration()
 {
   use serde::{ Serialize, Deserialize };
+  use workspace_tools::testing::create_test_workspace;
   
   #[ derive( Debug, Serialize, Deserialize, PartialEq ) ]
   struct DatabaseConfig
@@ -218,19 +209,7 @@ fn test_serde_secret_management_integration()
     password : String,
   }
   
-  let temp_dir = TempDir::new().unwrap();
-  // Save original state and set workspace path
-  let original = env::var( "WORKSPACE_PATH" ).ok();
-  env::set_var( "WORKSPACE_PATH", temp_dir.path() );
-  
-  let workspace = Workspace::resolve().unwrap();
-  
-  // Restore state
-  match original
-  {
-    Some( value ) => env::set_var( "WORKSPACE_PATH", value ),
-    None => env::remove_var( "WORKSPACE_PATH" ),
-  }
+  let ( _temp_dir, workspace ) = create_test_workspace();
   
   // Create directories
   fs::create_dir_all( workspace.config_dir() ).unwrap();
@@ -369,19 +348,9 @@ edition.workspace = true
 #[ test ]
 fn test_minimal_functionality()
 {
-  let temp_dir = TempDir::new().unwrap();
-  // Save original state and set workspace path
-  let original = env::var( "WORKSPACE_PATH" ).ok();
-  env::set_var( "WORKSPACE_PATH", temp_dir.path() );
+  use workspace_tools::testing::create_test_workspace;
   
-  let workspace = Workspace::resolve().unwrap();
-  
-  // Restore state
-  match original
-  {
-    Some( value ) => env::set_var( "WORKSPACE_PATH", value ),
-    None => env::remove_var( "WORKSPACE_PATH" ),
-  }
+  let ( temp_dir, workspace ) = create_test_workspace();
   
   // Basic workspace operations should always work
   assert!( workspace.validate().is_ok() );
@@ -403,19 +372,8 @@ fn test_minimal_functionality()
   assert!( workspace.is_workspace_file( &joined ) );
   assert!( !workspace.is_workspace_file( "/etc/passwd" ) );
   
-  // Convenience function should work
-  let original = env::var( "WORKSPACE_PATH" ).ok();
-  env::set_var( "WORKSPACE_PATH", temp_dir.path() );
-  
+  // Convenience function should work by using the environment variable set by create_test_workspace
   let ws_result = workspace_tools::workspace();
-  
-  // Restore environment
-  match original
-  {
-    Some( value ) => env::set_var( "WORKSPACE_PATH", value ),
-    None => env::remove_var( "WORKSPACE_PATH" ),
-  }
-  
   assert!( ws_result.is_ok() );
   let ws = ws_result.unwrap();
   assert_eq!( ws.root(), temp_dir.path() );

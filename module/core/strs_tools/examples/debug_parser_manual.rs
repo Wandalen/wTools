@@ -1,3 +1,5 @@
+//! Manual debug example for string parser functionality.
+
 use strs_tools::string::parser::*;
 
 fn main() {
