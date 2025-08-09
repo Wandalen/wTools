@@ -199,7 +199,6 @@ edition.workspace = true
 fn test_serde_secret_management_integration()
 {
   use serde::{ Serialize, Deserialize };
-  use workspace_tools::testing::create_test_workspace;
   
   #[ derive( Debug, Serialize, Deserialize, PartialEq ) ]
   struct DatabaseConfig
