@@ -14,7 +14,7 @@
 //! | FC.8 | Performance | All features enabled | No significant overhead |
 
 use workspace_tools::{ Workspace, WorkspaceError };
-use std::{ env, fs };
+use std::fs;
 use tempfile::TempDir;
 
 /// Test FC.1: Cargo + Serde integration
@@ -376,19 +376,8 @@ fn test_minimal_functionality()
   assert!( workspace.is_workspace_file( &joined ) );
   assert!( !workspace.is_workspace_file( "/etc/passwd" ) );
   
-  // Convenience function should work
-  let original = env::var( "WORKSPACE_PATH" ).ok();
-  env::set_var( "WORKSPACE_PATH", temp_dir.path() );
-  
+  // Convenience function should work by using the environment variable set by create_test_workspace
   let ws_result = workspace_tools::workspace();
-  
-  // Restore environment
-  match original
-  {
-    Some( value ) => env::set_var( "WORKSPACE_PATH", value ),
-    None => env::remove_var( "WORKSPACE_PATH" ),
-  }
-  
   assert!( ws_result.is_ok() );
   let ws = ws_result.unwrap();
   assert_eq!( ws.root(), temp_dir.path() );

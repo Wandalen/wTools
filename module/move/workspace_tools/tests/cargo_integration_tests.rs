@@ -173,7 +173,7 @@ fn test_cargo_metadata_success()
       println!("Cargo.toml exists: {}", temp_path.join("Cargo.toml").exists());
       panic!("cargo_metadata should succeed");
     }
-  };
+  }
   
   // Keep temp_dir alive until the very end
   drop(temp_dir);

@@ -228,9 +228,8 @@ fn test_workspace_creation_root_directory()
   }
   
   // Root directory should work (if accessible)
-  if result.is_ok()
+  if let Ok( workspace ) = result
   {
-    let workspace = result.unwrap();
     assert_eq!( workspace.root(), PathBuf::from( "/" ) );
   }
   // If it fails, it should be due to permissions, not path resolution
