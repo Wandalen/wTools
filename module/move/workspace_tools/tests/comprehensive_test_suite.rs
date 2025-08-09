@@ -97,8 +97,10 @@ use std::{
   env, fs, path::PathBuf,
   sync::{ Arc, Mutex },
   thread,
-  time::Instant,
 };
+
+#[ cfg( feature = "stress" ) ]
+use std::time::Instant;
 
 // ============================================================================
 // core workspace functionality tests
@@ -1274,13 +1276,14 @@ mod integration_tests
 // performance and stress tests
 // ============================================================================
 
+#[ cfg( feature = "stress" ) ]
 mod performance_tests
 {
   use super::*;
 
   /// test p1.1: large workspace with many files
   #[ test ]
-  #[ ignore = "slow test - run with cargo test -- --ignored" ]
+  #[ cfg( feature = "stress" ) ]
   fn test_large_workspace_performance()
   {
     let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
@@ -1321,8 +1324,7 @@ mod performance_tests
 
   /// test p1.2: many concurrent glob patterns
   #[ test ]
-  #[ cfg( feature = "glob" ) ]
-  #[ ignore = "stress test - run with cargo test -- --ignored" ]
+  #[ cfg( all( feature = "glob", feature = "stress" ) ) ]
   fn test_concurrent_glob_patterns()
   {
     let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
@@ -1372,8 +1374,7 @@ mod performance_tests
 
   /// test p1.3: large secret files parsing
   #[ test ]
-  #[ cfg( feature = "secret_management" ) ]
-  #[ ignore = "stress test - run with cargo test -- --ignored" ]
+  #[ cfg( all( feature = "secret_management", feature = "stress" ) ) ]
   fn test_large_secret_files()
   {
     let ( _temp_dir, workspace ) = testing::create_test_workspace();
@@ -1408,7 +1409,7 @@ mod performance_tests
 
   /// test p1.4: repeated workspace operations
   #[ test ]
-  #[ ignore = "stress test - run with cargo test -- --ignored" ]
+  #[ cfg( feature = "stress" ) ]
   fn test_repeated_workspace_operations()
   {
     let temp_dir = TempDir::new().unwrap();
@@ -1446,7 +1447,7 @@ mod performance_tests
 
   /// test p1.5: memory usage during operations
   #[ test ]
-  #[ ignore = "memory test - run with cargo test -- --ignored" ]
+  #[ cfg( feature = "stress" ) ]
   fn test_memory_usage()
   {
     let ( _temp_dir, _workspace ) = testing::create_test_workspace_with_structure();

@@ -25,12 +25,14 @@ all-features = false
 
 [features]
 default = [ "full" ]
-full = [ "enabled", "glob", "secret_management", "cargo_integration", "serde_integration" ]
+full = [ "enabled", "glob", "secret_management", "cargo_integration", "serde_integration", "stress", "integration" ]
 enabled = [ "dep:tempfile" ]
 glob = [ "dep:glob" ]
 secret_management = []
 cargo_integration = [ "dep:cargo_metadata", "dep:toml" ]
 serde_integration = [ "dep:serde", "dep:serde_json", "dep:serde_yaml" ]
+stress = []
+integration = []
 
 [dependencies]
 glob = { workspace = true, optional = true }
