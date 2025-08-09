@@ -1,154 +1,225 @@
-# abc def
-# === common
+
+# This Makefile provides a leveled system for testing and watching a Rust project.
 #
 
-# Comma
-comma := ,
-
-# Checks two given strings for equality.
-eq = $(if $(or $(1),$(2)),$(and $(findstring $(1),$(2)),\
-                                $(findstring $(2),$(1))),1)
-
 #
-# === Parameters
+# === Parameters ===
 #
 
-VERSION ?= $(strip $(shell grep -m1 'version = "' Cargo.toml | cut -d '"' -f2))
+# Defines package flags for cargo commands if a crate is specified.
+# e.g., `make ctest1 crate=my-app` will set PKG_FLAGS to `-p my-app`.
+PKG_FLAGS = $(if $(crate),-p $(crate))
 
 #
-# === Git
-#
-
-# Sync local repostiry.
-#
-# Usage :
-#	make git.sync [message='description of changes']
-
-git.sync :
-	git add --all && git commit -am $(message) && git pull
-
-sync : git.sync
-
-#
-# === External cargo crates commands
-#
-
-# Check vulnerabilities with cargo-audit.
-#
-# Usage :
-#	make audit
-
-audit :
-# This change is made to ignore the RUSTSEC-2024-0421 warning related to the idna crate.
-# The issue arises because unitore relies on gluesql, which in turn depends on an outdated version of idna.
-# Since the primary logic in unitore is built around gluesql, upgrading idna directly is not feasible.
-	cargo audit --ignore RUSTSEC-2024-0421
-
-#
-# === General commands
-#
-
-# Generate crates documentation from Rust sources.
-#
-# Usage :
-#	make doc [private=(yes|no)] [open=(yes|no)] [clean=(no|yes)] [manifest_path=(|[path])]
-
-doc :
-ifeq ($(clean),yes)
-	@rm -rf target/doc/
-endif
-	cargo doc --all-features \
-		$(if $(call eq,$(private),no),,--document-private-items) \
-		$(if $(call eq,$(manifest_path),),--manifest-path ./Cargo.toml,--manifest-path $(manifest_path)) \
-		$(if $(call eq,$(open),no),,--open)
-
-# Lint Rust sources with Clippy.
-#
-# Usage :
-#	make lint [warnings=(no|yes)] [manifest_path=(|[path])]
-
-lint :
-	cargo clippy --all-features \
-		$(if $(call eq,$(manifest_path),),--manifest-path ./Cargo.toml,--manifest-path $(manifest_path)) \
-		$(if $(call eq,$(warnings),no),-- -D warnings,)
-
-# Check Rust sources `check`.
-#
-# Usage :
-#	make check [manifest_path=(|[path])]
-
-check :
-	cargo check \
-		$(if $(call eq,$(manifest_path),),--manifest-path ./Cargo.toml,--manifest-path $(manifest_path))
-
-# Format and lint Rust sources.
-#
-# Usage :
-#	make normalize
-
-normalize : fmt lint
-
-# Perform common checks on the module.
-#
-# Usage :
-#	make checkmate
-
-checkmate : doc lint check
-
-# Format Rust sources with rustfmt.
-#
-# Usage :
-#	make fmt [check=(no|yes)]
-
-fmt :
-	{ find -L module -name *.rs -print0 ; } | xargs -0 rustfmt +nightly $(if $(call eq,$(check),yes),-- --check,)
-
-# cargo +nightly fmt --all $(if $(call eq,$(check),yes),-- --check,)
-
-# Run project Rust sources with Cargo.
-#
-# Usage :
-#	make up
-
-up :
-	cargo up
-
-# Run project Rust sources with Cargo.
-#
-# Usage :
-#	make clean
-
-clean :
-	cargo clean && rm -rf Cargo.lock && cargo cache -a && cargo update
-
-# Run Rust tests of project.
-#
-# Usage :
-#	make test
-
-test :
-	cargo test --all-features
-
-# Run format link test and tests.
-#
-# Usage :
-#	make all
-
-all : fmt lint test
-
-#
-# === .PHONY section
+# === .PHONY section ===
 #
 
 .PHONY : \
-	all \
-	audit \
-	docs \
-	lint \
-	check \
-	fmt \
-	normalize \
-	checkmate \
-	test \
-	up \
-	doc
+	help \
+	env-install \
+	env-check \
+	cwa \
+	ctest1 \
+	ctest2 \
+	ctest3 \
+	ctest4 \
+	ctest5 \
+	wtest1 \
+	wtest2 \
+	wtest3 \
+	wtest4 \
+	wtest5
+
+#
+# === Help ===
+#
+
+# Display the list of available commands.
+#
+# Usage:
+#	make help
+help:
+	@echo "=== Rust Development Makefile Commands ==="
+	@echo ""
+	@echo "Setup:"
+	@echo "  env-install      - Install all required development tools (cargo-nextest, willbe, etc.)."
+	@echo "  env-check        - Manually verify that all required tools are installed."
+	@echo ""
+	@echo "Workspace Management:"
+	@echo "  cwa              - Full update and clean workspace (rustup + cargo tools + cache cleanup)."
+	@echo ""
+	@echo "Test Commands (each level includes all previous steps):"
+	@echo "  ctest1 [crate=..] - Level 1: Primary test suite (cargo nextest run)."
+	@echo "  ctest2 [crate=..] - Level 2: Primary + Documentation tests."
+	@echo "  ctest3 [crate=..] - Level 3: Primary + Doc + Linter checks."
+	@echo "  ctest4 [crate=..] - Level 4: All checks + Heavy testing (unused deps + audit)."
+	@echo "  ctest5 [crate=..] - Level 5: Full heavy testing with mutation tests."
+	@echo ""
+	@echo "Watch Commands (auto-run on file changes):"
+	@echo "  wtest1 [crate=..] - Watch Level 1: Primary tests only."
+	@echo "  wtest2 [crate=..] - Watch Level 2: Primary + Doc tests."
+	@echo "  wtest3 [crate=..] - Watch Level 3: Primary + Doc + Linter."
+	@echo "  wtest4 [crate=..] - Watch Level 4: All checks + Heavy testing (deps + audit)."
+	@echo "  wtest5 [crate=..] - Watch Level 5: Full heavy testing with mutations."
+	@echo ""
+
+
+#
+# === Setup ===
+#
+
+# Install all tools for the development environment.
+#
+# Usage :
+#	make env-install
+env-install:
+	@echo "Setting up nightly toolchain..."
+	@rustup toolchain install nightly
+	@echo "\nInstalling required development tools..."
+	@cargo install cargo-nextest cargo-wipe cargo-watch willbe cargo-audit
+	@cargo +nightly install cargo-udeps
+	@echo "\nDevelopment environment setup is complete!"
+
+# Manually verify that the development environment is installed correctly.
+#
+# Usage :
+#	make env-check
+env-check:
+	@echo "Verifying development environment..."
+	@rustup toolchain list | grep -q 'nightly' || (echo "Error: Rust nightly toolchain not found. Please run 'make env-install'" && exit 1)
+	@command -v cargo-nextest >/dev/null || (echo "Error: cargo-nextest not found. Please run 'make env-install'" && exit 1)
+	@command -v cargo-wipe >/dev/null || (echo "Error: cargo-wipe not found. Please run 'make env-install'" && exit 1)
+	@command -v cargo-watch >/dev/null || (echo "Error: cargo-watch not found. Please run 'make env-install'" && exit 1)
+	@command -v willbe >/dev/null || (echo "Error: willbe not found. Please run 'make env-install'" && exit 1)
+	@command -v cargo-udeps >/dev/null || (echo "Error: cargo-udeps not found. Please run 'make env-install'" && exit 1)
+	@command -v cargo-audit >/dev/null || (echo "Error: cargo-audit not found. Please run 'make env-install'" && exit 1)
+	@echo "Environment verification successful."
+
+#
+# === Workspace Management ===
+#
+
+# Full update and clean workspace.
+#
+# Usage :
+#	make cwa
+cwa:
+	@clear
+	@echo "Running full workspace update and clean..."
+	@rustup update
+	@echo "\nUpdating cargo tools..."
+	@cargo install -q cargo-update cargo-wipe cargo-cache
+	@echo "\nCleaning cargo cache..."
+	@cargo cache --autoclean-expensive --gc
+	@echo "\nWiping build artifacts..."
+	@cargo wipe rust
+	@echo "\nWiping node modules..."
+	@cargo wipe node
+	@echo "\nWiping target directory..."
+	@cargo wipe -w
+	@echo "\nWorkspace update and clean complete."
+
+#
+# === Test Commands ===
+#
+
+# Test Level 1: Primary test suite.
+#
+# Usage :
+#	make ctest1 [crate=name]
+ctest1:
+	@clear
+	@echo "Running Test Level 1: Primary test suite..."
+	@RUSTFLAGS="-D warnings" cargo nextest run $(PKG_FLAGS)
+
+# Test Level 2: Primary + Documentation tests.
+#
+# Usage :
+#	make ctest2 [crate=name]
+ctest2:
+	@clear
+	@echo "Running Test Level 2: Primary + Doc tests..."
+	@RUSTFLAGS="-D warnings" cargo nextest run $(PKG_FLAGS) && \
+	RUSTDOCFLAGS="-D warnings" cargo test --doc $(PKG_FLAGS)
+
+# Test Level 3: Primary + Doc + Linter.
+#
+# Usage :
+#	make ctest3 [crate=name]
+ctest3:
+	@clear
+	@echo "Running Test Level 3: All standard checks..."
+	@RUSTFLAGS="-D warnings" cargo nextest run $(PKG_FLAGS) && \
+	RUSTDOCFLAGS="-D warnings" cargo test --doc $(PKG_FLAGS) && \
+	cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings
+
+# Test Level 4: All standard + Heavy testing (deps, audit).
+#
+# Usage :
+#	make ctest4 [crate=name]
+ctest4:
+	@clear
+	@echo "Running Test Level 4: All checks + Heavy testing..."
+	@RUSTFLAGS="-D warnings" cargo nextest run $(PKG_FLAGS) && \
+	RUSTDOCFLAGS="-D warnings" cargo test --doc $(PKG_FLAGS) && \
+	cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && \
+	cargo +nightly udeps --all-targets $(PKG_FLAGS) && \
+	cargo +nightly audit $(PKG_FLAGS)
+
+# Test Level 5: Full heavy testing with mutation tests.
+#
+# Usage :
+#	make ctest5 [crate=name]
+ctest5:
+	@clear
+	@echo "Running Test Level 5: Full heavy testing with mutations..."
+	@RUSTFLAGS="-D warnings" cargo nextest run $(PKG_FLAGS) && \
+	RUSTDOCFLAGS="-D warnings" cargo test --doc $(PKG_FLAGS) && \
+	cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && \
+	willbe .test dry:0 && \
+	cargo +nightly udeps --all-targets $(PKG_FLAGS) && \
+	cargo +nightly audit $(PKG_FLAGS)
+
+#
+# === Watch Commands ===
+#
+
+# Watch Level 1: Primary tests only.
+#
+# Usage :
+#	make wtest1 [crate=name]
+wtest1:
+	@echo "Watching Level 1: Primary tests..."
+	@cargo watch -c -x "nextest run $(PKG_FLAGS)"
+
+# Watch Level 2: Primary + Doc tests.
+#
+# Usage :
+#	make wtest2 [crate=name]
+wtest2:
+	@echo "Watching Level 2: Primary + Doc tests..."
+	@cargo watch -c -x "nextest run $(PKG_FLAGS)" -x "test --doc $(PKG_FLAGS)"
+
+# Watch Level 3: Primary + Doc + Linter.
+#
+# Usage :
+#	make wtest3 [crate=name]
+wtest3:
+	@echo "Watching Level 3: All standard checks..."
+	@cargo watch -c -x "nextest run $(PKG_FLAGS)" -x "test --doc $(PKG_FLAGS)" -x "clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings"
+
+# Watch Level 4: All standard + Heavy testing.
+#
+# Usage :
+#	make wtest4 [crate=name]
+wtest4:
+	@echo "Watching Level 4: All checks + Heavy testing..."
+	@cargo watch -c --shell "RUSTFLAGS=\"-D warnings\" cargo nextest run $(PKG_FLAGS) && RUSTDOCFLAGS=\"-D warnings\" cargo test --doc $(PKG_FLAGS) && cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && cargo +nightly udeps --all-targets $(PKG_FLAGS) && cargo +nightly audit $(PKG_FLAGS)"
+
+# Watch Level 5: Full heavy testing with mutations.
+#
+# Usage :
+#	make wtest5 [crate=name]
+wtest5:
+	@echo "Watching Level 5: Full heavy testing..."
+	@cargo watch -c --shell "RUSTFLAGS=\"-D warnings\" cargo nextest run $(PKG_FLAGS) && RUSTDOCFLAGS=\"-D warnings\" cargo test --doc $(PKG_FLAGS) && cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && willbe .test dry:0 && cargo +nightly udeps --all-targets $(PKG_FLAGS) && cargo +nightly audit $(PKG_FLAGS)"
