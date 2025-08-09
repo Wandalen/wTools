@@ -4,8 +4,8 @@
 
 | Priority | Task | Description | Difficulty | Value | Effort | Phase | Status |
 |----------|------|-------------|------------|-------|--------|--------|---------|
-| 1 | [001_cargo_integration.md](001_cargo_integration.md) | Auto-detect Cargo workspaces, eliminate manual setup | ⭐⭐ | ⭐⭐⭐⭐⭐ | 3-4 days | 1 | ✅ **COMPLETED** |
-| 2 | [005_serde_integration.md](005_serde_integration.md) | First-class serde support for configuration management | ⭐⭐ | ⭐⭐⭐⭐⭐ | 3-4 days | 2 | ✅ **COMPLETED** |
+| 1 | [001_cargo_integration.md](completed/001_cargo_integration.md) | Auto-detect Cargo workspaces, eliminate manual setup | ⭐⭐ | ⭐⭐⭐⭐⭐ | 3-4 days | 1 | ✅ **COMPLETED** |
+| 2 | [005_serde_integration.md](completed/005_serde_integration.md) | First-class serde support for configuration management | ⭐⭐ | ⭐⭐⭐⭐⭐ | 3-4 days | 2 | ✅ **COMPLETED** |
 | 3 | [003_config_validation.md](003_config_validation.md) | Schema-based config validation, prevent runtime errors | ⭐⭐⭐ | ⭐⭐⭐⭐ | 3-4 days | 1 | 🔄 **PLANNED** |
 | 4 | [002_template_system.md](002_template_system.md) | Project scaffolding with built-in templates | ⭐⭐⭐ | ⭐⭐⭐⭐ | 4-5 days | 1 | 🔄 **PLANNED** |
 | 5 | [006_environment_management.md](006_environment_management.md) | Dev/staging/prod configuration support | ⭐⭐⭐ | ⭐⭐⭐⭐ | 3-4 days | 2 | 🔄 **PLANNED** |

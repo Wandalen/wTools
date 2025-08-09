@@ -12,8 +12,6 @@ extern crate alloc;
 
 #[ cfg( feature = "use_alloc" ) ]
 use alloc::string::String;
-#[ cfg( all( feature = "use_alloc", feature = "simd" ) ) ]
-use alloc::format;
 
 #[ cfg( not( feature = "no_std" ) ) ]
 use std::string::String;

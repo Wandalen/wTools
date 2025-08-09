@@ -12,7 +12,7 @@ use component_model::ComponentModel;
 /// Test debug attribute generates output
 /// Test Combination: T4.1
 #[ derive( ComponentModel ) ]
-#[ debug ]
+#[ debug ]  // This test specifically tests debug attribute functionality
 struct DebugTest
 {
   name : String,
@@ -24,8 +24,8 @@ struct DebugTest
 #[ test ]
 fn test_debug_attribute_functionality()
 {
-  // This test ensures the debug attribute compiles correctly
-  // The actual debug output would be visible during compilation with debug attribute
+  // This test ensures the debug attribute functionality works correctly
+  // The debug attribute is enabled here because this test specifically tests debug functionality
   let mut config = DebugTest { name: String::new(), value: 0 };
   
   // Field-specific methods should be generated and work

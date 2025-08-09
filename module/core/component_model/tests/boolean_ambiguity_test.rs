@@ -162,20 +162,6 @@ fn test_fluent_with_explicit_types()
   assert!( config.enabled );
 }
 
-// This test demonstrates the current problem - it should fail to compile
-// #[ test ]
-// fn test_boolean_assignment_ambiguity_demonstration()
-// {
-//   let mut config = ConfigWithUniqueTypes::default();
-//   
-//   // This line should cause type ambiguity error:
-//   config.assign( true );  // ERROR: E0283 type annotations needed
-// }
-//
-// #[ test ]  
-// fn test_boolean_impute_ambiguity_demonstration()
-// {
-//   // This should also fail:
-//   let _config = ConfigWithUniqueTypes::default()
-//     .impute( true );  // ERROR: E0283 type annotations needed  
-// }
+// Note: Previously there were commented-out tests here that demonstrated the
+// boolean assignment type ambiguity errors. These tests have been removed as the
+// issue has been resolved with field-specific methods (config.enabled_set(true)).

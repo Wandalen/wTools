@@ -3,7 +3,7 @@
 //! This crate provides macros that analyze string patterns at compile time
 //! and generate optimized code for common string operations.
 //!
-//! This is a meta module for strs_tools. Don't use directly.
+//! This is a meta module for `strs_tools`. Don't use directly.
 
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
@@ -91,18 +91,21 @@ pub fn optimize_match( input: TokenStream ) -> TokenStream
 #[ cfg( feature = "optimize_split" ) ]
 fn optimize_split_impl( input: TokenStream ) -> Result< macro_tools::proc_macro2::TokenStream >
 {
-  syn::parse( input.into() ).and_then( generate_optimized_split )
+  let parsed_input = syn::parse( input )?;
+  Ok( generate_optimized_split( &parsed_input ) )
 }
 
 #[ cfg( feature = "optimize_match" ) ]
 fn optimize_match_impl( input: TokenStream ) -> Result< macro_tools::proc_macro2::TokenStream >
 {
-  syn::parse( input.into() ).and_then( generate_optimized_match )
+  let parsed_input = syn::parse( input )?;
+  Ok( generate_optimized_match( &parsed_input ) )
 }
 
-/// Input structure for optimize_split macro
+/// Input structure for `optimize_split` macro
 #[ cfg( feature = "optimize_split" ) ]
 #[ derive( Debug ) ]
+#[ allow( clippy::struct_excessive_bools ) ]
 struct OptimizeSplitInput
 {
   source: Expr,
@@ -157,37 +160,31 @@ impl syn::parse::Parse for OptimizeSplitInput
       
       let ident: syn::Ident = input.parse()?;
       
-      match ident.to_string().as_str()
-      {
-        "debug" =>
+      if ident.to_string().as_str() == "debug" {
+        debug = true;
+      } else {
+        input.parse::< syn::Token![=] >()?;
+        
+        match ident.to_string().as_str()
         {
-          debug = true;
-        },
-        _ =>
-        {
-          input.parse::< syn::Token![=] >()?;
-          
-          match ident.to_string().as_str()
+          "preserve_delimiters" =>
           {
-            "preserve_delimiters" =>
-            {
-              let lit: syn::LitBool = input.parse()?;
-              preserve_delimiters = lit.value;
-            },
-            "preserve_empty" =>
-            {
-              let lit: syn::LitBool = input.parse()?;
-              preserve_empty = lit.value;
-            },
-            "use_simd" =>
-            {
-              let lit: syn::LitBool = input.parse()?;
-              use_simd = lit.value;
-            },
-            _ =>
-            {
-              return Err( syn::Error::new( ident.span(), "Unknown parameter" ) );
-            }
+            let lit: syn::LitBool = input.parse()?;
+            preserve_delimiters = lit.value;
+          },
+          "preserve_empty" =>
+          {
+            let lit: syn::LitBool = input.parse()?;
+            preserve_empty = lit.value;
+          },
+          "use_simd" =>
+          {
+            let lit: syn::LitBool = input.parse()?;
+            use_simd = lit.value;
+          },
+          _ =>
+          {
+            return Err( syn::Error::new( ident.span(), "Unknown parameter" ) );
           }
         }
       }
@@ -205,7 +202,7 @@ impl syn::parse::Parse for OptimizeSplitInput
   }
 }
 
-/// Input structure for optimize_match macro
+/// Input structure for `optimize_match` macro
 #[ cfg( feature = "optimize_match" ) ]
 #[ derive( Debug ) ]
 struct OptimizeMatchInput
@@ -289,7 +286,7 @@ impl syn::parse::Parse for OptimizeMatchInput
 
 /// Generate optimized split code based on compile-time analysis
 #[ cfg( feature = "optimize_split" ) ]
-fn generate_optimized_split( input: OptimizeSplitInput ) -> Result< macro_tools::proc_macro2::TokenStream >
+fn generate_optimized_split( input: &OptimizeSplitInput ) -> macro_tools::proc_macro2::TokenStream
 {
   let source = &input.source;
   let delimiters = &input.delimiters;
@@ -298,11 +295,11 @@ fn generate_optimized_split( input: OptimizeSplitInput ) -> Result< macro_tools:
   let use_simd = input.use_simd;
   
   // Compile-time optimization decisions
-  let optimization = analyze_split_pattern( delimiters )?;
+  let optimization = analyze_split_pattern( delimiters );
   
   if input.debug
   {
-    eprintln!( "optimize_split! debug: pattern={:?}, optimization={:?}", delimiters, optimization );
+    eprintln!( "optimize_split! debug: pattern={delimiters:?}, optimization={optimization:?}" );
   }
   
   match optimization
@@ -310,7 +307,7 @@ fn generate_optimized_split( input: OptimizeSplitInput ) -> Result< macro_tools:
     SplitOptimization::SingleCharDelimiter( delim ) =>
     {
       // Generate highly optimized single-character split
-      Ok( quote!
+      quote!
       {
         {
           // Compile-time optimized single character split
@@ -321,19 +318,17 @@ fn generate_optimized_split( input: OptimizeSplitInput ) -> Result< macro_tools:
             .preserve_empty( #preserve_empty )
             .perform()
         }
-      } )
+      }
     },
     
     SplitOptimization::MultipleCharDelimiters =>
     {
       // Generate multi-delimiter optimization
-      let delim_array = macro_tools::proc_macro2::TokenStream::from_iter(
-        delimiters.iter().map( |d| quote! { #d, } )
-      );
+      let delim_array = delimiters.iter().map( |d| quote! { #d, } ).collect::< macro_tools::proc_macro2::TokenStream >();
       
       if use_simd
       {
-        Ok( quote!
+        quote!
         {
           {
             // Compile-time optimized SIMD multi-delimiter split
@@ -360,11 +355,11 @@ fn generate_optimized_split( input: OptimizeSplitInput ) -> Result< macro_tools:
                 .perform()
             }
           }
-        } )
+        }
       }
       else
       {
-        Ok( quote!
+        quote!
         {
           {
             // Compile-time optimized zero-copy multi-delimiter split
@@ -375,37 +370,37 @@ fn generate_optimized_split( input: OptimizeSplitInput ) -> Result< macro_tools:
               .preserve_empty( #preserve_empty )
               .perform()
           }
-        } )
+        }
       }
     },
     
     SplitOptimization::ComplexPattern =>
     {
       // Generate complex pattern optimization fallback to zero-copy
-      Ok( quote!
+      quote!
       {
         {
           // Compile-time optimized complex pattern matching fallback to zero-copy
           strs_tools::string::zero_copy::zero_copy_split( #source, &[ "," ] )
         }
-      } )
+      }
     }
   }
 }
 
 /// Generate optimized match code based on compile-time analysis
 #[ cfg( feature = "optimize_match" ) ]
-fn generate_optimized_match( input: OptimizeMatchInput ) -> Result< macro_tools::proc_macro2::TokenStream >
+fn generate_optimized_match( input: &OptimizeMatchInput ) -> macro_tools::proc_macro2::TokenStream
 {
   let source = &input.source;
   let patterns = &input.patterns;
   let strategy = &input.strategy;
   
-  let optimization = analyze_match_pattern( patterns, strategy )?;
+  let optimization = analyze_match_pattern( patterns, strategy );
   
   if input.debug
   {
-    eprintln!( "optimize_match! debug: patterns={:?}, strategy={:?}, optimization={:?}", patterns, strategy, optimization );
+    eprintln!( "optimize_match! debug: patterns={patterns:?}, strategy={strategy:?}, optimization={optimization:?}" );
   }
   
   match optimization
@@ -413,20 +408,20 @@ fn generate_optimized_match( input: OptimizeMatchInput ) -> Result< macro_tools:
     MatchOptimization::SinglePattern( pattern ) =>
     {
       // Generate optimized single pattern matching
-      Ok( quote!
+      quote!
       {
         {
           // Compile-time optimized single pattern match
           #source.find( #pattern )
         }
-      } )
+      }
     },
     
     MatchOptimization::TrieBasedMatch =>
     {
       // Generate trie-based pattern matching
       let _trie_data = build_compile_time_trie( patterns );
-      Ok( quote!
+      quote!
       {
         {
           // Compile-time generated trie matching (simplified implementation)
@@ -445,13 +440,13 @@ fn generate_optimized_match( input: OptimizeMatchInput ) -> Result< macro_tools:
           }
           best_match
         }
-      } )
+      }
     },
     
     MatchOptimization::SequentialMatch =>
     {
       // Generate sequential pattern matching
-      Ok( quote!
+      quote!
       {
         {
           // Compile-time sequential pattern matching
@@ -466,7 +461,7 @@ fn generate_optimized_match( input: OptimizeMatchInput ) -> Result< macro_tools:
           }
           result
         }
-      } )
+      }
     }
   }
 }
@@ -493,7 +488,7 @@ enum MatchOptimization
 
 /// Analyze delimiter patterns for optimization opportunities
 #[ cfg( feature = "optimize_split" ) ]
-fn analyze_split_pattern( delimiters: &[ String ] ) -> Result< SplitOptimization >
+fn analyze_split_pattern( delimiters: &[ String ] ) -> SplitOptimization
 {
   if delimiters.len() == 1
   {
@@ -501,43 +496,43 @@ fn analyze_split_pattern( delimiters: &[ String ] ) -> Result< SplitOptimization
     if delim.len() == 1
     {
       // Single character delimiter - highest optimization potential
-      Ok( SplitOptimization::SingleCharDelimiter( delim.clone() ) )
+      SplitOptimization::SingleCharDelimiter( delim.clone() )
     }
     else
     {
       // Multi-character single delimiter
-      Ok( SplitOptimization::MultipleCharDelimiters )
+      SplitOptimization::MultipleCharDelimiters
     }
   }
   else if delimiters.len() <= 8 && delimiters.iter().all( |d| d.len() <= 4 )
   {
     // Multiple simple delimiters - good for SIMD
-    Ok( SplitOptimization::MultipleCharDelimiters )
+    SplitOptimization::MultipleCharDelimiters
   }
   else
   {
     // Complex patterns - use state machine approach
-    Ok( SplitOptimization::ComplexPattern )
+    SplitOptimization::ComplexPattern
   }
 }
 
 /// Analyze match patterns for optimization opportunities
 #[ cfg( feature = "optimize_match" ) ]
-fn analyze_match_pattern( patterns: &[ String ], _strategy: &str ) -> Result< MatchOptimization >
+fn analyze_match_pattern( patterns: &[ String ], _strategy: &str ) -> MatchOptimization
 {
   if patterns.len() == 1
   {
-    Ok( MatchOptimization::SinglePattern( patterns[0].clone() ) )
+    MatchOptimization::SinglePattern( patterns[0].clone() )
   }
   else if patterns.len() <= 16 && patterns.iter().all( |p| p.len() <= 8 )
   {
     // Small set of short patterns - use trie
-    Ok( MatchOptimization::TrieBasedMatch )
+    MatchOptimization::TrieBasedMatch
   }
   else
   {
     // Large pattern set - use sequential matching
-    Ok( MatchOptimization::SequentialMatch )
+    MatchOptimization::SequentialMatch
   }
 }
 
