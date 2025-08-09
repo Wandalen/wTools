@@ -139,7 +139,7 @@ mod core_workspace_tests
       .duration_since(std::time::UNIX_EPOCH)
       .unwrap_or_default()
       .as_nanos();
-    let nonexistent = PathBuf::from( format!("/tmp/nonexistent_workspace_test_{:?}_{}", thread_id, timestamp) );
+    let nonexistent = PathBuf::from( format!("/tmp/nonexistent_workspace_test_{thread_id:?}_{timestamp}") );
     
     env::set_var( "WORKSPACE_PATH", &nonexistent );
     
