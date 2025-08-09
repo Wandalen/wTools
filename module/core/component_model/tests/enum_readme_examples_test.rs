@@ -19,6 +19,7 @@ enum Status
   Pending,
   Processing { progress : f64 },
   Completed { result : String },
+  #[ allow( dead_code ) ]
   Failed { error : String },
 }
 
