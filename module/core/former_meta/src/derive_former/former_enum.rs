@@ -119,6 +119,8 @@
 
 
 use macro_tools::{Result, generic_params::GenericsRef, syn, proc_macro2};
+#[ cfg( feature = "former_diagnostics_print_generated" ) ]
+use macro_tools::diag;
 use macro_tools::quote::{format_ident, quote};
 use macro_tools::proc_macro2::TokenStream;
 use super::struct_attrs::ItemAttributes; // Corrected import
