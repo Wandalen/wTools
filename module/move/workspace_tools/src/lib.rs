@@ -171,12 +171,14 @@ impl Workspace
   /// # examples
   ///
   /// ```rust
+  /// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
   /// use workspace_tools::Workspace;
   ///
   /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
   /// let workspace = Workspace::resolve()?;
   /// println!( "workspace root: {}", workspace.root().display() );
-  /// # Ok::< (), workspace_tools::WorkspaceError >( () )
+  /// # Ok(())
+  /// # }
   /// ```
   /// 
   /// # Errors
@@ -298,12 +300,14 @@ impl Workspace
   /// # examples
   ///
   /// ```rust
+  /// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
   /// use workspace_tools::workspace;
   ///
   /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
   /// let ws = workspace()?;
   /// let config_file = ws.join( "config/app.toml" );
-  /// # Ok::< (), workspace_tools::WorkspaceError >( () )
+  /// # Ok(())
+  /// # }
   /// ```
   #[inline]
   pub fn join< P : AsRef< Path > >( &self, path : P ) -> PathBuf
@@ -421,6 +425,7 @@ impl Workspace
   /// # examples
   ///
   /// ```rust
+  /// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
   /// use workspace_tools::workspace;
   ///
   /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
@@ -429,7 +434,8 @@ impl Workspace
   ///
   /// assert!( ws.is_workspace_file( &config_path ) );
   /// assert!( !ws.is_workspace_file( "/etc/passwd" ) );
-  /// # Ok::< (), workspace_tools::WorkspaceError >( () )
+  /// # Ok(())
+  /// # }
   /// ```
   #[inline]
   pub fn is_workspace_file< P : AsRef< Path > >( &self, path : P ) -> bool
@@ -528,6 +534,7 @@ impl Workspace
   /// # examples
   ///
   /// ```rust
+  /// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
   /// use workspace_tools::workspace;
   ///
   /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
@@ -538,7 +545,8 @@ impl Workspace
   ///
   /// // find all configuration files
   /// let configs = ws.find_resources( "config/**/*.toml" )?;
-  /// # Ok::< (), workspace_tools::WorkspaceError >( () )
+  /// # Ok(())
+  /// # }
   /// ```
   pub fn find_resources( &self, pattern : &str ) -> Result< Vec< PathBuf > >
   {
@@ -575,6 +583,7 @@ impl Workspace
   /// # examples
   ///
   /// ```rust
+  /// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
   /// use workspace_tools::workspace;
   ///
   /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
@@ -585,7 +594,8 @@ impl Workspace
   /// {
   ///     println!( "found config at: {}", config_path.display() );
   /// }
-  /// # Ok::< (), workspace_tools::WorkspaceError >( () )
+  /// # Ok(())
+  /// # }
   /// ```
   pub fn find_config( &self, name : &str ) -> Result< PathBuf >
   {
@@ -646,6 +656,7 @@ impl Workspace
   /// # examples
   ///
   /// ```rust
+  /// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
   /// use workspace_tools::workspace;
   ///
   /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
@@ -663,7 +674,8 @@ impl Workspace
   ///     }
   ///     Err( _ ) => println!( "no secrets file found" ),
   /// }
-  /// # Ok::< (), workspace_tools::WorkspaceError >( () )
+  /// # Ok(())
+  /// # }
   /// ```
   pub fn load_secrets_from_file( &self, filename : &str ) -> Result< HashMap< String, String > >
   {
@@ -691,6 +703,7 @@ impl Workspace
   /// # examples
   ///
   /// ```rust
+  /// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
   /// use workspace_tools::workspace;
   ///
   /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
@@ -702,7 +715,8 @@ impl Workspace
   ///     Ok( key ) => println!( "loaded api key" ),
   ///     Err( _ ) => println!( "api key not found" ),
   /// }
-  /// # Ok::< (), workspace_tools::WorkspaceError >( () )
+  /// # Ok(())
+  /// # }
   /// ```
   pub fn load_secret_key( &self, key_name : &str, filename : &str ) -> Result< String >
   {
@@ -783,11 +797,13 @@ impl Workspace
   /// # examples
   ///
   /// ```rust
+  /// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
   /// use workspace_tools::Workspace;
   ///
   /// let workspace = Workspace::from_cargo_workspace()?;
   /// println!( "cargo workspace root: {}", workspace.root().display() );
-  /// # Ok::< (), workspace_tools::WorkspaceError >( () )
+  /// # Ok(())
+  /// # }
   /// ```
   pub fn from_cargo_workspace() -> Result< Self >
   {
@@ -980,10 +996,12 @@ impl Workspace
   ///     port : u16,
   /// }
   ///
+  /// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
   /// let ws = workspace()?;
   /// // looks for config/app.toml, config/app.yaml, config/app.json
   /// let config : AppConfig = ws.load_config( "app" )?;
-  /// # Ok::< (), workspace_tools::WorkspaceError >( () )
+  /// # Ok(())
+  /// # }
   /// ```
   pub fn load_config< T >( &self, name : &str ) -> Result< T >
   where
@@ -1296,12 +1314,14 @@ pub mod testing
 /// # examples
 ///
 /// ```rust
+/// # fn main() -> Result<(), workspace_tools::WorkspaceError> {
 /// use workspace_tools::workspace;
 ///
 /// # std::env::set_var( "WORKSPACE_PATH", std::env::current_dir().unwrap() );
 /// let ws = workspace()?;
 /// let config_dir = ws.config_dir();
-/// # Ok::< (), workspace_tools::WorkspaceError >( () )
+/// # Ok(())
+/// # }
 /// ```
 #[ inline ]
 pub fn workspace() -> Result< Workspace >

@@ -10,48 +10,55 @@ use std::collections::HashMap;
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 /// A collection of benchmarks that can be run together
-pub struct BenchmarkSuite {
+pub struct BenchmarkSuite
+{
   /// Name of the benchmark suite
-  pub name: String,
-  benchmarks: HashMap<String, Box<dyn FnMut() + Send>>,
-  config: MeasurementConfig,
-  results: HashMap<String, BenchmarkResult>,
+  pub name : String,
+  benchmarks : HashMap< String, Box< dyn FnMut() + Send > >,
+  config : MeasurementConfig,
+  results : HashMap< String, BenchmarkResult >,
 }
 
-impl std::fmt::Debug for BenchmarkSuite {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    f.debug_struct("BenchmarkSuite")
-      .field("name", &self.name)
-      .field("benchmarks", &format!("{} benchmarks", self.benchmarks.len()))
-      .field("config", &self.config)
-      .field("results", &format!("{} results", self.results.len()))
+impl std::fmt::Debug for BenchmarkSuite
+{
+  fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+  {
+    f.debug_struct( "BenchmarkSuite" )
+      .field( "name", &self.name )
+      .field( "benchmarks", &format!( "{} benchmarks", self.benchmarks.len() ) )
+      .field( "config", &self.config )
+      .field( "results", &format!( "{} results", self.results.len() ) )
       .finish()
   }
 }
 
-impl BenchmarkSuite {
+impl BenchmarkSuite
+{
   /// Create a new benchmark suite
-  pub fn new(name: impl Into<String>) -> Self {
-    Self {
-      name: name.into(),
-      benchmarks: HashMap::new(),
-      config: MeasurementConfig::default(),
-      results: HashMap::new(),
+  pub fn new( name : impl Into< String > ) -> Self
+  {
+    Self
+    {
+      name : name.into(),
+      benchmarks : HashMap::new(),
+      config : MeasurementConfig::default(),
+      results : HashMap::new(),
     }
   }
 
   /// Set measurement configuration for all benchmarks in suite
-  pub fn with_config(mut self, config: MeasurementConfig) -> Self {
+  pub fn with_config( mut self, config : MeasurementConfig ) -> Self
+  {
     self.config = config;
     self
   }
 
   /// Add a benchmark to the suite
-  pub fn benchmark<F>(&mut self, name: impl Into<String>, f: F) -> &mut Self
+  pub fn benchmark< F >( &mut self, name : impl Into< String >, f : F ) -> &mut Self
   where
-    F: FnMut() + Send + 'static,
+    F : FnMut() + Send + 'static,
   {
-    self.benchmarks.insert(name.into(), Box::new(f));
+    self.benchmarks.insert( name.into(), Box::new( f ) );
     self
   }
 
