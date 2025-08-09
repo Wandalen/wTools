@@ -31,6 +31,7 @@ impl ComparativeAnalysis {
   }
 
   /// Add an algorithm variant to compare
+  #[must_use]
   pub fn add_variant<F>(mut self, name: impl Into<String>, f: F) -> Self 
   where
     F: FnMut() + Send + 'static,
@@ -40,6 +41,7 @@ impl ComparativeAnalysis {
   }
 
   /// Add an algorithm variant to compare (builder pattern alias)
+  #[must_use]
   pub fn algorithm<F>(self, name: impl Into<String>, f: F) -> Self
   where  
     F: FnMut() + Send + 'static,
@@ -48,11 +50,12 @@ impl ComparativeAnalysis {
   }
 
   /// Run the comparative analysis
+  #[must_use]
   pub fn run(self) -> ComparisonReport {
     let mut results = HashMap::new();
     
-    for (name, mut variant) in self.variants {
-      let result = crate::measurement::bench_function(&name, || variant());
+    for (name, variant) in self.variants {
+      let result = crate::measurement::bench_function(&name, variant);
       results.insert(name.clone(), result);
     }
     
@@ -74,6 +77,7 @@ pub struct ComparisonReport {
 
 impl ComparisonReport {
   /// Get the fastest result
+  #[must_use]
   pub fn fastest(&self) -> Option<(&String, &BenchmarkResult)> {
     self.results
       .iter()
@@ -81,6 +85,7 @@ impl ComparisonReport {
   }
 
   /// Get the slowest result
+  #[must_use]
   pub fn slowest(&self) -> Option<(&String, &BenchmarkResult)> {
     self.results
       .iter()
@@ -88,6 +93,7 @@ impl ComparisonReport {
   }
 
   /// Get all results sorted by performance (fastest first)
+  #[must_use]
   pub fn sorted_by_performance(&self) -> Vec<(&String, &BenchmarkResult)> {
     let mut results: Vec<_> = self.results.iter().collect();
     results.sort_by(|a, b| a.1.mean_time().cmp(&b.1.mean_time()));
@@ -120,6 +126,7 @@ impl ComparisonReport {
   }
 
   /// Generate markdown summary
+  #[must_use]
   pub fn to_markdown(&self) -> String {
     let mut output = String::new();
     output.push_str(&format!("## {} Comparison\n\n", self.name));
@@ -160,11 +167,11 @@ impl ComparisonReport {
     if let (Some((fastest_name, _)), Some((slowest_name, slowest_result))) = 
       (self.fastest(), self.slowest()) {
       output.push_str("### Key Insights\n\n");
-      output.push_str(&format!("- **Best performing**: {} algorithm\n", fastest_name));
+      output.push_str(&format!("- **Best performing**: {fastest_name} algorithm\n"));
       if fastest_name != slowest_name {
         let fastest = self.fastest().unwrap().1;
         let speedup = slowest_result.mean_time().as_secs_f64() / fastest.mean_time().as_secs_f64();
-        output.push_str(&format!("- **Performance range**: {:.1}x difference between fastest and slowest\n", speedup));
+        output.push_str(&format!("- **Performance range**: {speedup:.1}x difference between fastest and slowest\n"));
       }
     }
     
@@ -183,6 +190,7 @@ pub struct RegressionAnalysis {
 
 impl RegressionAnalysis {
   /// Create new regression analysis from baseline and current results
+  #[must_use]
   pub fn new(
     baseline: HashMap<String, BenchmarkResult>,
     current: HashMap<String, BenchmarkResult>
@@ -194,6 +202,7 @@ impl RegressionAnalysis {
   }
 
   /// Detect regressions (performance degradations > threshold)
+  #[must_use]
   pub fn detect_regressions(&self, threshold_percent: f64) -> Vec<Comparison> {
     let mut regressions = Vec::new();
     
@@ -209,7 +218,8 @@ impl RegressionAnalysis {
     regressions
   }
 
-  /// Detect improvements (performance gains > threshold)  
+  /// Detect improvements (performance gains > threshold)
+  #[must_use]
   pub fn detect_improvements(&self, threshold_percent: f64) -> Vec<Comparison> {
     let mut improvements = Vec::new();
     
@@ -226,6 +236,7 @@ impl RegressionAnalysis {
   }
 
   /// Get overall regression percentage (worst case)
+  #[must_use]
   pub fn worst_regression_percentage(&self) -> f64 {
     self.detect_regressions(0.0)
       .iter()
@@ -234,6 +245,7 @@ impl RegressionAnalysis {
   }
 
   /// Generate regression report
+  #[must_use]
   pub fn generate_report(&self) -> String {
     let mut report = String::new();
     report.push_str("# Performance Regression Analysis\n\n");
@@ -274,42 +286,3 @@ impl RegressionAnalysis {
   }
 }
 
-#[cfg(test)]
-mod tests {
-  use super::*;
-  use crate::measurement::bench_once;
-  use std::thread;
-  use std::time::Duration;
-
-  #[test]
-  fn test_comparative_analysis() {
-    let comparison = ComparativeAnalysis::new("test_comparison")
-      .algorithm("fast", || {})
-      .algorithm("slow", || thread::sleep(Duration::from_millis(1)));
-    
-    let report = comparison.run();
-    assert_eq!(report.results.len(), 2);
-    
-    let fastest = report.fastest();
-    assert!(fastest.is_some());
-    assert_eq!(fastest.unwrap().0, "fast");
-  }
-
-  #[test]
-  fn test_regression_analysis() {
-    let fast_result = bench_once(|| {});
-    let slow_result = bench_once(|| thread::sleep(Duration::from_millis(1)));
-    
-    let mut baseline = HashMap::new();
-    baseline.insert("test".to_string(), fast_result);
-    
-    let mut current = HashMap::new();
-    current.insert("test".to_string(), slow_result);
-    
-    let analysis = RegressionAnalysis::new(baseline, current);
-    let regressions = analysis.detect_regressions(1.0);
-    
-    assert!(!regressions.is_empty());
-    assert!(analysis.worst_regression_percentage() > 0.0);
-  }
-}

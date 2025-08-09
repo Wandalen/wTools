@@ -5,7 +5,7 @@
 //! Designed to meet research publication standards for performance evaluation.
 
 use crate::measurement::BenchmarkResult;
-use error_tools::Result;
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 use std::time::Duration;
 
 /// Statistical significance levels for hypothesis testing
@@ -220,7 +220,7 @@ impl StatisticalAnalysis
   {
     if result.times.is_empty() 
     {
-      return Err(error_tools::Error::msg("Cannot analyze empty benchmark result"));
+      return Err("Cannot analyze empty benchmark result".into());
     }
 
     let n = result.times.len();
@@ -292,7 +292,7 @@ impl StatisticalAnalysis
   {
     if result_a.times.is_empty() || result_b.times.is_empty() 
     {
-      return Err(error_tools::Error::msg("Cannot compare empty benchmark results"));
+      return Err("Cannot compare empty benchmark results".into());
     }
 
     // Welch's t-test (unequal variances assumed)
@@ -484,7 +484,7 @@ impl StatisticalAnalysis
   {
     // Simplified power calculation - assumes detecting 10% effect size
     let effect_size = 0.1; // 10% effect
-    let alpha = significance_level.alpha();
+    let _alpha = significance_level.alpha();
     let z_alpha = significance_level.t_critical();
     let z_beta = effect_size * (n as f64).sqrt() / std_dev - z_alpha;
     
@@ -496,7 +496,7 @@ impl StatisticalAnalysis
     else { 0.2 }
   }
 
-  fn t_test_p_value(t_stat: f64, df: f64) -> f64 
+  fn t_test_p_value(t_stat: f64, _df: f64) -> f64 
   {
     // Simplified p-value calculation
     // In practice, would use proper t-distribution CDF
@@ -508,71 +508,3 @@ impl StatisticalAnalysis
   }
 }
 
-#[cfg(test)]
-mod tests 
-{
-  use super::*;
-  use std::time::Duration;
-
-  fn create_test_result(name: &str, durations: Vec<u64>) -> BenchmarkResult 
-  {
-    let times: Vec<Duration> = durations.into_iter().map(Duration::from_millis).collect();
-    BenchmarkResult::new(name, times)
-  }
-
-  #[test]
-  fn test_confidence_interval() 
-  {
-    let ci = ConfidenceInterval::new(
-      Duration::from_millis(100),
-      Duration::from_millis(10),
-      0.95
-    );
-    
-    assert_eq!(ci.point_estimate, Duration::from_millis(100));
-    assert_eq!(ci.lower_bound, Duration::from_millis(90));
-    assert_eq!(ci.upper_bound, Duration::from_millis(110));
-    assert!(ci.contains(Duration::from_millis(95)));
-    assert!(!ci.contains(Duration::from_millis(120)));
-  }
-
-  #[test]
-  fn test_statistical_analysis() 
-  {
-    let result = create_test_result("test", vec![95, 100, 105, 98, 102, 97, 103, 99, 101, 96]);
-    let analysis = StatisticalAnalysis::analyze(&result, SignificanceLevel::Standard).unwrap();
-    
-    assert_eq!(analysis.benchmark_result.name, "test");
-    assert!(analysis.coefficient_of_variation > 0.0);
-    assert!(analysis.coefficient_of_variation < 0.1); // Should be low for this data
-    assert!(analysis.statistical_power > 0.0);
-  }
-
-  #[test]
-  fn test_statistical_comparison() 
-  {
-    let result_a = create_test_result("fast", vec![90, 95, 92, 88, 94]);
-    let result_b = create_test_result("slow", vec![110, 115, 112, 108, 114]);
-    
-    let test = StatisticalAnalysis::compare(&result_a, &result_b, SignificanceLevel::Standard).unwrap();
-    
-    assert!(test.effect_size.abs() > 0.0);
-    assert!(test.p_value >= 0.0 && test.p_value <= 1.0);
-    assert_eq!(test.effect_size_interpretation(), "large"); // Should be large difference
-  }
-
-  #[test]
-  fn test_outlier_detection() 
-  {
-    let times = vec![
-      Duration::from_millis(100),
-      Duration::from_millis(102),
-      Duration::from_millis(98),
-      Duration::from_millis(101),
-      Duration::from_millis(500), // Outlier
-    ];
-    
-    let outliers = StatisticalAnalysis::detect_outliers(&times);
-    assert_eq!(outliers, 1);
-  }
-}

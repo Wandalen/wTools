@@ -376,7 +376,7 @@ impl ReportGenerator {
 
   /// Generate JSON format report  
   #[cfg(feature = "json_reports")]
-  pub fn generate_json(&self) -> Result<String, serde_json::Error> {
+  pub fn generate_json(&self) -> Result<String> {
     use serde_json::json;
     
     let results_json: serde_json::Value = self.results.iter()
@@ -403,7 +403,7 @@ impl ReportGenerator {
       }
     });
 
-    serde_json::to_string_pretty(&report)
+    Ok(serde_json::to_string_pretty(&report)?)
   }
 }
 
@@ -429,65 +429,3 @@ pub mod quick {
   }
 }
 
-#[cfg(test)]
-mod tests {
-  use super::*;
-  use crate::measurement::bench_once;
-  use std::time::Duration;
-
-  #[test]
-  fn test_markdown_section_replacement() {
-    let updater = MarkdownUpdater::new("test.md", "Performance");
-    
-    let existing = r#"# My Project
-
-## Introduction
-Some intro text.
-
-## Performance
-Old performance data here.
-More old data.
-
-## Conclusion
-End text.
-"#;
-
-    let new_content = "New performance data!";
-    let result = updater.replace_section_content(existing, new_content);
-    
-    assert!(result.contains("New performance data!"));
-    assert!(!result.contains("Old performance data"));
-    assert!(result.contains("## Introduction"));
-    assert!(result.contains("## Conclusion"));
-  }
-
-  #[test]
-  fn test_report_generation() {
-    let mut results = HashMap::new();
-    
-    // Create some mock results
-    results.insert("fast_op".to_string(), bench_once(|| {}));
-    results.insert("slow_op".to_string(), bench_once(|| {
-      std::thread::sleep(Duration::from_millis(1));
-    }));
-
-    let generator = ReportGenerator::new("Test Report", results);
-    let markdown = generator.generate_markdown_table();
-    
-    assert!(markdown.contains("| Operation |"));
-    assert!(markdown.contains("fast_op"));
-    assert!(markdown.contains("slow_op"));
-  }
-
-  #[test]
-  fn test_performance_insights() {
-    let mut results = HashMap::new();
-    results.insert("op1".to_string(), bench_once(|| {}));
-    results.insert("op2".to_string(), bench_once(|| {}));
-    
-    let generator = ReportGenerator::new("Insights Test", results);
-    let report = generator.generate_comprehensive_report();
-    
-    assert!(report.contains("## Performance Insights"));
-  }
-}

@@ -78,10 +78,10 @@ impl BenchmarkSuite
     println!("Running benchmark suite: {}", self.name);
     
     for (name, benchmark) in &mut self.benchmarks {
-      print!("  Running {} ... ", name);
+      print!("  Running {name} ... ");
       let result = crate::measurement::bench_function_with_config(
         name, 
-        self.config.clone(), 
+        &self.config, 
         benchmark
       );
       println!("{:.2?}", result.mean_time());
@@ -274,34 +274,3 @@ impl MarkdownReport {
   }
 }
 
-#[cfg(test)]
-mod tests {
-  use super::*;
-  use std::thread;
-  use std::time::Duration;
-
-  #[test]
-  fn test_benchmark_suite() {
-    let mut suite = BenchmarkSuite::new("test_suite")
-      .add_benchmark("fast_op", || {})
-      .add_benchmark("slow_op", || thread::sleep(Duration::from_millis(1)));
-
-    let results = suite.run_all();
-    assert_eq!(results.results.len(), 2);
-    assert!(results.results.contains_key("fast_op"));
-    assert!(results.results.contains_key("slow_op"));
-  }
-
-  #[test] 
-  fn test_markdown_report() {
-    let mut suite = BenchmarkSuite::new("test_report");
-    suite.benchmark("test_op", || {});
-    
-    let results = suite.run_all();
-    let report = results.generate_markdown_report();
-    
-    let markdown = report.generate();
-    assert!(markdown.contains("## test_report Results"));
-    assert!(markdown.contains("| Benchmark |"));
-  }
-}

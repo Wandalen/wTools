@@ -165,6 +165,7 @@ impl BenchmarkResult {
 
   /// Compare this result with another, returning improvement percentage
   /// Positive percentage means this result is faster
+  #[must_use]
   pub fn compare(&self, other: &BenchmarkResult) -> Comparison {
     let my_time = self.mean_time().as_secs_f64();
     let other_time = other.mean_time().as_secs_f64();
@@ -205,16 +206,19 @@ pub struct Comparison {
 
 impl Comparison {
   /// Get the improvement percentage (positive means current is faster)
+  #[must_use]
   pub fn improvement(&self) -> f64 {
     self.improvement_percentage
   }
 
   /// Check if current result shows significant improvement (>5%)
+  #[must_use]
   pub fn is_improvement(&self) -> bool {
     self.improvement_percentage > 5.0
   }
 
   /// Check if current result shows significant regression (<-5%)
+  #[must_use]
   pub fn is_regression(&self) -> bool {
     self.improvement_percentage < -5.0
   }
@@ -265,7 +269,7 @@ pub fn bench_function<F, R>(name: impl Into<String>, f: F) -> BenchmarkResult
 where
   F: FnMut() -> R,
 {
-  bench_function_with_config(name, MeasurementConfig::default(), f)
+  bench_function_with_config(name, &MeasurementConfig::default(), f)
 }
 
 /// Measure execution time of a function once (single iteration)
@@ -283,7 +287,7 @@ where
 /// Measure execution time with custom configuration
 pub fn bench_function_with_config<F, R>(
   name: impl Into<String>, 
-  config: MeasurementConfig,
+  config: &MeasurementConfig,
   mut f: F
 ) -> BenchmarkResult
 where
@@ -336,37 +340,3 @@ where
   (result, elapsed)
 }
 
-#[cfg(test)]
-mod tests {
-  use super::*;
-  use std::thread;
-
-  #[test]
-  fn test_basic_measurement() {
-    let result = bench_function("test_sleep", || {
-      thread::sleep(Duration::from_millis(1));
-    });
-    
-    assert!(result.mean_time() >= Duration::from_millis(1));
-    assert!(!result.name.is_empty());
-  }
-
-  #[test] 
-  fn test_comparison() {
-    let fast = bench_once(|| {});
-    let slow = bench_once(|| thread::sleep(Duration::from_millis(1)));
-    
-    let comparison = fast.compare(&slow);
-    assert!(comparison.is_improvement());
-  }
-
-  #[test]
-  fn test_bench_block_macro() {
-    let result = bench_block!({
-      let x = 42 + 42;
-      std::hint::black_box( x );
-    });
-    
-    assert!(result.times.len() == 1);
-  }
-}

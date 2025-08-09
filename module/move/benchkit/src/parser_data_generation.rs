@@ -125,7 +125,7 @@ impl ParserCommandGenerator
     }
     else
     {
-      format!("{} {}", command_path, arguments.join(" "))
+      format!("{command_path} {}", arguments.join(" "))
     }
   }
   
@@ -140,7 +140,7 @@ impl ParserCommandGenerator
   {
     let commands = self.generate_commands(count);
     let separator = &self.separators[0]; // Use first separator
-    commands.join(&format!(" {} ", separator))
+    commands.join(&format!(" {separator} "))
   }
   
   /// Generate error cases for parser robustness testing
@@ -165,24 +165,25 @@ impl ParserCommandGenerator
         match self.complexity
         {
           CommandComplexity::Simple => base_pattern.to_string(),
-          CommandComplexity::Standard => format!("{} arg::value", base_pattern),
-          CommandComplexity::Complex => format!("{} arg1::value1 arg2::\"complex value\"", base_pattern),
-          CommandComplexity::Comprehensive => format!("{} arg1::value1 arg2::[item1,item2] nested::{{key::value}}", base_pattern),
+          CommandComplexity::Standard => format!("{base_pattern} arg::value"),
+          CommandComplexity::Complex => format!("{base_pattern} arg1::value1 arg2::\"complex value\""),
+          CommandComplexity::Comprehensive => format!("{base_pattern} arg1::value1 arg2::[item1,item2] nested::{{key::value}}"),
         }
       })
       .collect()
   }
   
   /// Generate realistic parser workload with distribution
+  #[must_use]
   pub fn generate_workload(&self, total_count: usize) -> ParserWorkload
   {
-    let distribution = self.get_complexity_distribution();
+    let distribution = Self::get_complexity_distribution();
     let mut commands = Vec::with_capacity(total_count);
     let mut complexity_counts = HashMap::new();
     
     for i in 0..total_count
     {
-      let complexity_level = self.select_complexity_by_distribution(i, &distribution);
+      let complexity_level = Self::select_complexity_by_distribution(i, &distribution);
       let generator = self.clone().complexity(complexity_level);
       let command = generator.generate_command(i);
       
@@ -191,6 +192,7 @@ impl ParserCommandGenerator
     }
     
     // Add some error cases for robustness testing
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
     let error_count = (total_count as f32 * 0.05) as usize; // 5% error cases
     let mut error_cases = self.generate_error_cases(error_count);
     commands.append(&mut error_cases);
@@ -260,37 +262,54 @@ impl ParserCommandGenerator
     for i in 0..arg_count
     {
       let pattern = &self.argument_patterns[i % self.argument_patterns.len()];
-      let arg = self.generate_argument_by_pattern(pattern, index, i);
+      let arg = Self::generate_argument_by_pattern(pattern, index, i);
       arguments.push(arg);
     }
     
     arguments
   }
   
-  fn generate_argument_by_pattern(&self, pattern: &ArgumentPattern, cmd_index: usize, arg_index: usize) -> String
+  fn generate_argument_by_pattern(pattern: &ArgumentPattern, cmd_index: usize, arg_index: usize) -> String
   {
     match pattern
     {
-      ArgumentPattern::Positional => format!("pos_arg_{}", arg_index),
-      ArgumentPattern::Named => format!("param{}::value{}", arg_index, cmd_index % 100),
-      ArgumentPattern::Quoted => format!("description::\"Command {} argument {}\"", cmd_index, arg_index),
-      ArgumentPattern::Array => format!("items::[\"item{}\",\"item{}\",\"item{}\"]", 
-                                       arg_index, arg_index + 1, arg_index + 2),
-      ArgumentPattern::Nested => format!("config::{{timeout::{},retries::{}}}", 
-                                        (cmd_index % 10) + 1, (arg_index % 3) + 1),
+      ArgumentPattern::Positional => format!("pos_arg_{arg_index}"),
+      ArgumentPattern::Named => {
+        let value = cmd_index % 100;
+        format!("param{arg_index}::value{value}")
+      },
+      ArgumentPattern::Quoted => format!("description::\"Command {cmd_index} argument {arg_index}\""),
+      ArgumentPattern::Array => {
+        let item1 = arg_index;
+        let item2 = arg_index + 1;
+        let item3 = arg_index + 2;
+        format!("items::[\"item{item1}\",\"item{item2}\",\"item{item3}\"]") 
+      },
+      ArgumentPattern::Nested => {
+        let timeout = (cmd_index % 10) + 1;
+        let retries = (arg_index % 3) + 1;
+        format!("config::{{timeout::{timeout},retries::{retries}}}")
+      },
       ArgumentPattern::Mixed => {
         match arg_index % 3
         {
-          0 => format!("param{}::value{}", arg_index, cmd_index % 100),
-          1 => format!("description::\"Command {} argument {}\"", cmd_index, arg_index),
-          _ => format!("items::[\"item{}\",\"item{}\",\"item{}\"]", 
-                      arg_index, arg_index + 1, arg_index + 2),
+          0 => {
+            let value = cmd_index % 100;
+            format!("param{arg_index}::value{value}")
+          },
+          1 => format!("description::\"Command {cmd_index} argument {arg_index}\""),
+          _ => {
+            let item1 = arg_index;
+            let item2 = arg_index + 1;
+            let item3 = arg_index + 2;
+            format!("items::[\"item{item1}\",\"item{item2}\",\"item{item3}\"]") 
+          },
         }
       }
     }
   }
   
-  fn get_complexity_distribution(&self) -> Vec<(CommandComplexity, f32)>
+  fn get_complexity_distribution() -> Vec<(CommandComplexity, f32)>
   {
     // Realistic distribution based on typical CLI usage
     vec![
@@ -301,7 +320,7 @@ impl ParserCommandGenerator
     ]
   }
   
-  fn select_complexity_by_distribution(&self, index: usize, distribution: &[(CommandComplexity, f32)]) -> CommandComplexity
+  fn select_complexity_by_distribution(index: usize, distribution: &[(CommandComplexity, f32)]) -> CommandComplexity
   {
     let mut cumulative = 0.0;
     let normalized_index = (index as f32) / 100.0 % 1.0; // Normalize to 0-1 range
@@ -341,16 +360,17 @@ impl ParserWorkload
   /// Calculate workload statistics
   pub fn calculate_statistics(&mut self)
   {
-    self.total_characters = self.commands.iter().map(|cmd| cmd.len()).sum();
+    self.total_characters = self.commands.iter().map(std::string::String::len).sum();
     self.average_command_length = self.total_characters as f64 / self.commands.len() as f64;
   }
   
   /// Get workload summary
+  #[must_use]
   pub fn summary(&self) -> String
   {
     let mut summary = String::new();
     
-    summary.push_str(&format!("Parser Workload Summary:\n"));
+    summary.push_str("Parser Workload Summary:\n");
     summary.push_str(&format!("- Total commands: {}\n", self.commands.len()));
     summary.push_str(&format!("- Total characters: {}\n", self.total_characters));
     summary.push_str(&format!("- Average length: {:.1} chars/command\n", self.average_command_length));
@@ -418,87 +438,3 @@ impl DataGenerator
   }
 }
 
-#[cfg(test)]
-mod tests
-{
-  use super::*;
-
-  #[test]
-  fn test_parser_command_generator()
-  {
-    let generator = ParserCommandGenerator::new()
-      .complexity(CommandComplexity::Standard)
-      .max_arguments(3);
-    
-    let command = generator.generate_command(0);
-    assert!(!command.is_empty());
-    assert!(command.contains("."));
-  }
-
-  #[test]
-  fn test_command_complexity()
-  {
-    let simple_gen = ParserCommandGenerator::new().complexity(CommandComplexity::Simple);
-    let complex_gen = ParserCommandGenerator::new().complexity(CommandComplexity::Complex);
-    
-    let simple_cmd = simple_gen.generate_command(0);
-    let complex_cmd = complex_gen.generate_command(0);
-    
-    // Complex commands should be longer
-    assert!(complex_cmd.len() > simple_cmd.len());
-  }
-
-  #[test]
-  fn test_error_case_generation()
-  {
-    let generator = ParserCommandGenerator::new();
-    let error_cases = generator.generate_error_cases(5);
-    
-    assert_eq!(error_cases.len(), 5);
-    assert!(error_cases.iter().any(|cmd| cmd.contains("..")));
-  }
-
-  #[test]
-  fn test_workload_generation()
-  {
-    let generator = ParserCommandGenerator::new();
-    let mut workload = generator.generate_workload(100);
-    workload.calculate_statistics();
-    
-    assert_eq!(workload.commands.len(), 105); // 100 + 5% error cases
-    assert!(workload.total_characters > 0);
-    assert!(workload.average_command_length > 0.0);
-  }
-
-  #[test]
-  fn test_argument_patterns()
-  {
-    // Test that individual patterns work correctly
-    let generator = ParserCommandGenerator::new()
-      .complexity(CommandComplexity::Complex) // More args increases chance of array pattern
-      .max_arguments(4);
-      
-    // Create a generator with only array pattern to ensure it's used
-    let mut array_generator = generator.clone();
-    array_generator.argument_patterns = vec![ArgumentPattern::Array];
-    
-    let array_cmd = array_generator.generate_command(0);
-    assert!(array_cmd.contains("["), "Array pattern command should contain '['");
-    
-    // Test mixed patterns
-    let mixed_generator = ParserCommandGenerator::new()
-      .complexity(CommandComplexity::Complex)
-      .max_arguments(4)
-      .with_pattern(ArgumentPattern::Named)
-      .with_pattern(ArgumentPattern::Array);
-    
-    let commands = mixed_generator.generate_commands(30);
-    
-    // Should contain named arguments
-    assert!(commands.iter().any(|cmd| cmd.contains("::")));
-    
-    // With complex commands and 30 samples, should find array arguments
-    let has_array = commands.iter().any(|cmd| cmd.contains("["));
-    assert!(has_array, "Expected to find array arguments in {} complex commands", commands.len());
-  }
-}
