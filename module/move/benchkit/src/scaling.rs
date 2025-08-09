@@ -25,7 +25,7 @@ impl Default for ScalingConfig
   {
     Self
     {
-      scale_factors: vec![10, 100, 1000, 10000, 100000],
+      scale_factors: vec![10, 100, 1000, 10000, 100_000],
       quick_mode: false,
       warmup_iterations: 10,
     }
@@ -50,7 +50,7 @@ impl ScalingConfig
   {
     Self
     {
-      scale_factors: vec![1, 10, 100, 1000, 10000, 100000],
+      scale_factors: vec![1, 10, 100, 1000, 10000, 100_000],
       quick_mode: false,
       warmup_iterations: 20,
     }
@@ -61,8 +61,11 @@ impl ScalingConfig
 #[derive(Debug, Clone)]
 pub struct ScalingAnalysis
 {
+  /// Benchmark results for different scale factors
   pub results: HashMap<usize, BenchmarkResult>,
+  /// Configuration used for scaling analysis
   pub config: ScalingConfig,
+  /// Name of the operation being analyzed
   pub operation_name: String,
 }
 
@@ -137,9 +140,13 @@ impl ScalingAnalysis
 #[derive(Debug, Clone)]
 pub struct ComplexityReport
 {
+  /// Name of the operation analyzed
   pub operation_name: String,
+  /// Estimated algorithmic complexity (e.g., "O(n)", "O(n²)")
   pub estimated_complexity: String,
+  /// Statistical correlation coefficient of the fit
   pub correlation_coefficient: f64,
+  /// Human-readable performance insights and recommendations
   pub performance_insights: Vec<String>,
 }
 

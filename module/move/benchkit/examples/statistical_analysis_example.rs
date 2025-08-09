@@ -6,7 +6,10 @@
 use benchkit::prelude::*;
 
 #[cfg(feature = "statistical_analysis")]
-fn main() -> error_tools::Result<()>
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+
+#[cfg(feature = "statistical_analysis")]
+fn main() -> Result<()>
 {
   use std::time::Duration;
   use std::collections::HashMap;

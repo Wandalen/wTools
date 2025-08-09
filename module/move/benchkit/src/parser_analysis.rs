@@ -304,7 +304,7 @@ impl ParserComparison
         report.push_str("### Performance Speedups\n\n");
         report.push_str(&format!("*Relative to {} (baseline)*\n\n", slowest_name));
         
-        for (name, metrics) in &sorted_metrics
+        for (name, _metrics) in &sorted_metrics
         {
           if let Some(speedup) = speedups.get(*name)
           {

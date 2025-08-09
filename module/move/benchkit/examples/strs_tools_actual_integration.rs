@@ -5,13 +5,15 @@
 
 use benchkit::prelude::*;
 
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+
 // Import strs_tools (conditional compilation for when available)
 // #[cfg(feature = "integration")]
 // use strs_tools::string::specialized::{
 //     smart_split, SingleCharSplitIterator, BoyerMooreSplitIterator
 // };
 
-fn main() -> error_tools::Result<()>
+fn main() -> Result<()>
 {
   println!("🔧 Testing Benchkit with Actual strs_tools Integration");
   println!("=======================================================");
@@ -36,7 +38,7 @@ fn main() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_standard_string_operations() -> error_tools::Result<()>
+fn test_standard_string_operations() -> Result<()>
 {
   println!("1️⃣ Testing Standard String Operations");
   println!("------------------------------------");
@@ -119,7 +121,7 @@ fn test_standard_string_operations() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_strs_tools_specialized_algorithms() -> error_tools::Result<()>
+fn test_strs_tools_specialized_algorithms() -> Result<()>
 {
   println!("2️⃣ Testing strs_tools Specialized Algorithms (Simulation)");
   println!("----------------------------------------------------------");
@@ -200,7 +202,7 @@ fn test_strs_tools_specialized_algorithms() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_real_world_performance_profiling() -> error_tools::Result<()>
+fn test_real_world_performance_profiling() -> Result<()>
 {
   println!("3️⃣ Testing Real-World Performance Profiling");
   println!("-------------------------------------------");
@@ -273,7 +275,7 @@ fn test_real_world_performance_profiling() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_edge_case_handling() -> error_tools::Result<()>
+fn test_edge_case_handling() -> Result<()>
 {
   println!("4️⃣ Testing Edge Case Handling");
   println!("-----------------------------");
@@ -326,7 +328,7 @@ fn test_edge_case_handling() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_large_dataset_performance() -> error_tools::Result<()>
+fn test_large_dataset_performance() -> Result<()>
 {
   println!("5️⃣ Testing Large Dataset Performance");
   println!("-----------------------------------");

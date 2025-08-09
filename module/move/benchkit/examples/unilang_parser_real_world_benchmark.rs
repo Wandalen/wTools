@@ -5,7 +5,9 @@
 
 use benchkit::prelude::*;
 
-fn main() -> error_tools::Result<()>
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+
+fn main() -> Result<()>
 {
   println!("🚀 Real-World unilang_parser Benchmarking with Enhanced benchkit");
   println!("===============================================================");
@@ -84,7 +86,7 @@ fn create_realistic_unilang_workload() -> ParserWorkload
   workload
 }
 
-fn benchmark_parser_complexity_scaling(workload: &ParserWorkload) -> error_tools::Result<()>
+fn benchmark_parser_complexity_scaling(workload: &ParserWorkload) -> Result<()>
 {
   println!("2️⃣ Parser Complexity Scaling Analysis");
   println!("------------------------------------");
@@ -179,7 +181,7 @@ fn benchmark_parser_complexity_scaling(workload: &ParserWorkload) -> error_tools
   Ok(())
 }
 
-fn analyze_parser_pipeline_performance(workload: &ParserWorkload) -> error_tools::Result<()>
+fn analyze_parser_pipeline_performance(_workload: &ParserWorkload) -> Result<()>
 {
   println!("3️⃣ Parser Pipeline Performance Analysis");
   println!("-------------------------------------");
@@ -252,7 +254,7 @@ fn analyze_parser_pipeline_performance(workload: &ParserWorkload) -> error_tools
   Ok(())
 }
 
-fn compare_parsing_strategies(workload: &ParserWorkload) -> error_tools::Result<()>
+fn compare_parsing_strategies(workload: &ParserWorkload) -> Result<()>
 {
   println!("4️⃣ Parsing Strategy Comparison");
   println!("-----------------------------");
@@ -342,7 +344,7 @@ fn compare_parsing_strategies(workload: &ParserWorkload) -> error_tools::Result<
   Ok(())
 }
 
-fn analyze_parser_memory_efficiency(workload: &ParserWorkload) -> error_tools::Result<()>
+fn analyze_parser_memory_efficiency(workload: &ParserWorkload) -> Result<()>
 {
   println!("5️⃣ Parser Memory Efficiency Analysis");
   println!("----------------------------------");
@@ -474,7 +476,7 @@ fn analyze_parser_memory_efficiency(workload: &ParserWorkload) -> error_tools::R
   Ok(())
 }
 
-fn generate_parser_performance_report(workload: &ParserWorkload) -> error_tools::Result<()>
+fn generate_parser_performance_report(workload: &ParserWorkload) -> Result<()>
 {
   println!("6️⃣ Comprehensive Parser Performance Report");
   println!("----------------------------------------");

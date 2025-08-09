@@ -7,7 +7,8 @@
 use crate::prelude::*;
 use std::fs;
 use std::path::{Path, PathBuf};
-use error_tools::Result;
+
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 /// Documentation update configuration
 #[derive(Debug, Clone)]
@@ -51,6 +52,7 @@ impl DocumentationConfig
 }
 
 /// Documentation updater
+#[derive(Debug)]
 pub struct DocumentationUpdater
 {
   config: DocumentationConfig,
@@ -167,9 +169,13 @@ impl DocumentationUpdater
 #[derive(Debug)]
 pub struct DocumentationDiff
 {
+  /// Path to the updated file
   pub file_path: PathBuf,
+  /// Original content before update
   pub old_content: String,
+  /// New content after update
   pub new_content: String,
+  /// Section marker used for update
   pub section_marker: String,
 }
 
@@ -221,6 +227,7 @@ impl DocumentationDiff
 }
 
 /// Benchmark documentation generator
+#[derive(Debug)]
 pub struct BenchmarkDocumentationGenerator;
 
 impl BenchmarkDocumentationGenerator
@@ -372,7 +379,7 @@ mod tests
     let updater = DocumentationUpdater::new(config);
     
     let new_content = "| Algorithm | Speed |\n|-----------|-------|\n| Fast | 100 ops/sec |";
-    let diff = updater.update_section(new_content)?;
+    let _diff = updater.update_section(new_content)?;
     
     // Verify update
     let updated = std::fs::read_to_string(&temp_file)?;

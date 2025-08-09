@@ -23,12 +23,14 @@ use tempfile::TempDir;
 fn create_test_workspace_at( path : &std::path::Path ) -> Workspace
 {
   let path_buf = path.to_path_buf();
-  let original = env::var( "WORKSPACE_PATH" ).ok();
   
   // Ensure the directory exists
   if !path_buf.exists() {
     std::fs::create_dir_all(&path_buf).expect("Failed to create test directory");
   }
+  
+  // Save original environment variable
+  let original = env::var( "WORKSPACE_PATH" ).ok();
   
   env::set_var( "WORKSPACE_PATH", &path_buf );
   let workspace = Workspace::resolve().unwrap_or_else(|_| panic!("Failed to create workspace at: {}", path_buf.display()));

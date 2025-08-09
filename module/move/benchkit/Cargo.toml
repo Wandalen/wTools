@@ -73,101 +73,28 @@ visualization = [ "enabled", "dep:plotters" ]  # Chart generation and visualizat
 no_std = []
 use_alloc = [ "no_std" ]
 
-# In workspace context, use:
-# [lints]
-# workspace = true
+# = lints
 
-# For standalone development, using workspace-compatible lints:
-[lints.clippy]
-pedantic = { level = "warn", priority = -1 }
-undocumented_unsafe_blocks = "deny"
-doc_include_without_cfg = "warn"
-
-# Allow reasonable patterns for this toolkit
-single_call_fn = "allow"
-inline_always = "allow"
-module_name_repetitions = "allow"
-absolute_paths = "allow"
-wildcard_imports = "allow"
-std_instead_of_alloc = "allow"
-items_after_statements = "allow"
-cast_precision_loss = "allow"
-pub_use = "allow"
-question_mark_used = "allow"
-implicit_return = "allow"
-arbitrary_source_item_ordering = "allow"
-mod_module_files = "allow"
-missing_docs_in_private_items = "allow"
-
-# Additional allows for pedantic lints in benchmarking toolkit
-std_instead_of_core = "allow"  # std::time::Instant required, not available in core
-missing_inline_in_public_items = "allow"
-must_use_candidate = "allow"
-return_self_not_must_use = "allow"
-needless_raw_string_hashes = "allow"
-cast_possible_truncation = "allow"
-uninlined_format_args = "allow"
-too_many_lines = "allow"
-missing_panics_doc = "allow"
-missing_errors_doc = "allow"
-format_push_string = "allow"
-redundant_closure = "allow"
-cast_sign_loss = "allow"
-implicit_hasher = "allow"
-doc_markdown = "allow"
-assigning_clones = "allow"
-unnecessary_debug_formatting = "allow"
-needless_borrows_for_generic_args = "allow"
-redundant_closure_for_method_calls = "allow"
-inefficient_to_string = "allow"
-needless_pass_by_value = "allow"
-unreadable_literal = "allow"
-similar_names = "allow"
-map_unwrap_or = "allow"
-used_underscore_binding = "allow"
-if_not_else = "allow"
-len_zero = "allow"
-writeln_empty_string = "allow"
-useless_vec = "allow"
-unnecessary_wraps = "allow"
-unnecessary_map_or = "allow"
-unused_self = "allow"
-needless_borrow = "allow"
-single_char_add_str = "allow"
-useless_format = "allow"
-match_same_arms = "allow"
-
-[lints.rust]
-rust_2018_idioms = { level = "warn", priority = -1 }
-future_incompatible = { level = "warn", priority = -1 }
-missing_docs = "allow"
-missing_debug_implementations = "allow"
-unsafe-code = "deny"
-unused_variables = "allow"
+[lints]
+workspace = true
 
 [dependencies]
-# Core dependencies - always available
-# Note: In workspace context, use:
-# error_tools = { workspace = true, features = [ "enabled" ] }
-# mod_interface = { workspace = true }
-# For standalone development:
-error_tools = { git = "https://github.com/Wandalen/wTools", branch = "alpha", features = [ "enabled" ] }
+# Core dependencies
+error_tools = { workspace = true, features = [ "enabled" ] }
 
-# Feature-gated dependencies  
-pulldown-cmark = { version = "0.10", optional = true }
-tera = { version = "1.19", optional = true }
-serde_json = { version = "1.0", optional = true }
+# Feature-gated dependencies - using workspace where available
+serde_json = { workspace = true, optional = true }
+rand = { workspace = true, optional = true }
+chrono = { workspace = true, optional = true }
+criterion = { workspace = true, optional = true }
+
+# Feature-gated dependencies - not in workspace, use direct versions
+pulldown-cmark = { version = "0.13", optional = true }
+tera = { version = "1.20", optional = true }
 statistical = { version = "1.0", optional = true }
-rand = { version = "0.8", optional = true }
-criterion = { version = "0.5", optional = true }
-chrono = { version = "0.4", features = ["serde"], optional = true }
-plotters = { version = "0.3", optional = true, default-features = false, features = ["svg_backend", "bitmap_backend"] }
+plotters = { version = "0.3.7", optional = true, default-features = false, features = ["svg_backend", "bitmap_backend"] }
 
 [dev-dependencies]
-# In workspace context, use:
-# test_tools = { workspace = true }
-# tempfile = { workspace = true }
-# For standalone development:
-tempfile = "3.0"
+tempfile = { workspace = true }
 
 # Examples will be added as implementation progresses

@@ -4,9 +4,12 @@
 //! to clean, research-grade benchkit analysis with dramatically reduced code.
 
 use benchkit::prelude::*;
+
 use std::collections::HashMap;
 
-fn main() -> error_tools::Result<()>
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+
+fn main() -> Result<()>
 {
   println!("🚀 Benchkit Applied to strs_tools: The Complete Transformation");
   println!("================================================================");
@@ -88,7 +91,7 @@ fn demonstrate_data_generation()
 }
 
 /// Demonstrate memory allocation tracking
-fn demonstrate_memory_tracking() -> error_tools::Result<()>
+fn demonstrate_memory_tracking() -> Result<()>
 {
   println!("  🧠 Memory Allocation Analysis:");
   
@@ -113,7 +116,7 @@ fn demonstrate_memory_tracking() -> error_tools::Result<()>
       // Simulate zero-copy approach
       let base_str = "base_string_for_slicing";
       let _slices: Vec<&str> = (0..100)
-        .map(|i| &base_str[..10.min(base_str.len())])
+        .map(|_i| &base_str[..10.min(base_str.len())])
         .collect();
       
       // Minimal allocation tracking
@@ -136,7 +139,7 @@ fn demonstrate_memory_tracking() -> error_tools::Result<()>
 }
 
 /// Demonstrate throughput analysis
-fn demonstrate_throughput_analysis() -> error_tools::Result<()>
+fn demonstrate_throughput_analysis() -> Result<()>
 {
   println!("  📈 Throughput Analysis:");
   
@@ -195,7 +198,7 @@ fn demonstrate_throughput_analysis() -> error_tools::Result<()>
 
 /// Demonstrate statistical analysis
 #[cfg(feature = "statistical_analysis")]
-fn demonstrate_statistical_analysis() -> error_tools::Result<()>
+fn demonstrate_statistical_analysis() -> Result<()>
 {
   println!("  📊 Statistical Analysis:");
   
@@ -236,7 +239,7 @@ fn demonstrate_statistical_analysis() -> error_tools::Result<()>
 }
 
 /// Generate comprehensive report combining all analyses
-fn generate_comprehensive_strs_tools_report() -> error_tools::Result<()>
+fn generate_comprehensive_strs_tools_report() -> Result<()>
 {
   println!("  📋 Comprehensive Report:");
   

@@ -6,7 +6,10 @@
 use benchkit::prelude::*;
 
 #[cfg(feature = "visualization")]
-fn main() -> error_tools::Result<()>
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+
+#[cfg(feature = "visualization")]
+fn main() -> Result<()>
 {
   use std::path::Path;
   

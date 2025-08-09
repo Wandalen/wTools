@@ -5,7 +5,9 @@
 
 use benchkit::prelude::*;
 
-fn main() -> error_tools::Result<()>
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+
+fn main() -> Result<()>
 {
   println!("🧪 Comprehensive strs_tools + benchkit Integration Test");
   println!("=======================================================");
@@ -34,7 +36,7 @@ fn main() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_basic_string_operations() -> error_tools::Result<()>
+fn test_basic_string_operations() -> Result<()>
 {
   println!("1️⃣ Testing Basic String Operations");
   println!("---------------------------------");
@@ -77,7 +79,7 @@ fn test_basic_string_operations() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_string_data_generation() -> error_tools::Result<()>
+fn test_string_data_generation() -> Result<()>
 {
   println!("2️⃣ Testing String-Specific Data Generation");
   println!("------------------------------------------");
@@ -112,7 +114,7 @@ fn test_string_data_generation() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_string_memory_analysis() -> error_tools::Result<()>
+fn test_string_memory_analysis() -> Result<()>
 {
   println!("3️⃣ Testing String Memory Analysis");
   println!("--------------------------------");
@@ -176,7 +178,7 @@ fn test_string_memory_analysis() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_string_throughput_analysis() -> error_tools::Result<()>
+fn test_string_throughput_analysis() -> Result<()>
 {
   println!("4️⃣ Testing String Throughput Analysis");
   println!("------------------------------------");
@@ -270,7 +272,7 @@ fn test_string_throughput_analysis() -> error_tools::Result<()>
 }
 
 #[cfg(feature = "statistical_analysis")]
-fn test_string_statistical_analysis() -> error_tools::Result<()>
+fn test_string_statistical_analysis() -> Result<()>
 {
   println!("5️⃣ Testing String Statistical Analysis");
   println!("-------------------------------------");
@@ -340,7 +342,7 @@ fn test_string_statistical_analysis() -> error_tools::Result<()>
   Ok(())
 }
 
-fn test_comprehensive_reporting() -> error_tools::Result<()>
+fn test_comprehensive_reporting() -> Result<()>
 {
   println!("6️⃣ Testing Comprehensive Reporting");
   println!("---------------------------------");
@@ -385,7 +387,7 @@ fn test_comprehensive_reporting() -> error_tools::Result<()>
   });
 
   let results = suite.run_analysis();
-  let report = results.generate_markdown_report();
+  let _report = results.generate_markdown_report();
   
   // Generate comprehensive report
   let comprehensive_report = generate_full_report(&test_data, &results);

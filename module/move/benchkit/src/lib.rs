@@ -5,6 +5,8 @@
   html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
 ) ]
 #![ doc( html_root_url = "https://docs.rs/benchkit/latest/benchkit/" ) ]
+#![ allow( clippy::std_instead_of_core ) ]
+#![ allow( clippy::format_push_string ) ]
 
 #[ cfg( feature = "enabled" ) ]
 pub mod measurement;
