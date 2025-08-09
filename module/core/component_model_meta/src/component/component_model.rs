@@ -53,7 +53,81 @@ pub fn component_model( input : proc_macro::TokenStream ) -> Result< proc_macro2
     }
   }
 
-  // Generate Assign implementations for each unique field type
+  // Generate field-specific methods for ALL fields to avoid type ambiguity
+  for field in fields.iter()
+  {
+    let field_name = field.ident.as_ref().unwrap();
+    let field_type = &field.ty;
+    
+    // Generate field-specific assignment methods to avoid type ambiguity
+    let field_name_str = field_name.to_string();
+    let clean_field_name = if field_name_str.starts_with("r#") {
+      field_name_str.trim_start_matches("r#")
+    } else {
+      &field_name_str
+    };
+    let assign_method_name = syn::Ident::new( &format!( "{}_assign", clean_field_name ), field_name.span() );
+    let impute_method_name = syn::Ident::new( &format!( "{}_impute", clean_field_name ), field_name.span() );
+    
+    let field_specific_methods = if generics.params.is_empty() {
+      quote::quote!
+      {
+        impl #struct_name
+        {
+          /// Field-specific assignment method to avoid type ambiguity
+          #[ inline( always ) ]
+          pub fn #assign_method_name < IntoT >( &mut self, component : IntoT )
+          where
+            IntoT : Into< #field_type >
+          {
+            self.#field_name = component.into();
+          }
+          
+          /// Field-specific impute method for fluent builder pattern
+          #[ inline( always ) ]
+          #[ must_use ]
+          pub fn #impute_method_name < IntoT >( mut self, component : IntoT ) -> Self
+          where
+            IntoT : Into< #field_type >
+          {
+            self.#field_name = component.into();
+            self
+          }
+        }
+      }
+    } else {
+      quote::quote!
+      {
+        impl #impl_generics #struct_name #ty_generics 
+        #where_clause
+        {
+          /// Field-specific assignment method to avoid type ambiguity
+          #[ inline( always ) ]
+          pub fn #assign_method_name < IntoT >( &mut self, component : IntoT )
+          where
+            IntoT : Into< #field_type >
+          {
+            self.#field_name = component.into();
+          }
+          
+          /// Field-specific impute method for fluent builder pattern  
+          #[ inline( always ) ]
+          #[ must_use ]
+          pub fn #impute_method_name < IntoT >( mut self, component : IntoT ) -> Self
+          where
+            IntoT : Into< #field_type >
+          {
+            self.#field_name = component.into();
+            self
+          }
+        }
+      }
+    };
+    
+    result.extend( field_specific_methods );
+  }
+
+  // Generate Assign implementations only for unique field types to avoid conflicts
   for field in unique_fields.iter()
   {
     let field_name = field.ident.as_ref().unwrap();

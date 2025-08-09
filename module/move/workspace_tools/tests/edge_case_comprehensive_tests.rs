@@ -29,20 +29,8 @@ fn create_test_workspace_at( path : &std::path::Path ) -> Workspace
     std::fs::create_dir_all(&path_buf).expect("Failed to create test directory");
   }
   
-  // Save original environment variable
-  let original = env::var( "WORKSPACE_PATH" ).ok();
-  
-  env::set_var( "WORKSPACE_PATH", &path_buf );
-  let workspace = Workspace::resolve().unwrap_or_else(|_| panic!("Failed to create workspace at: {}", path_buf.display()));
-  
-  // Restore state immediately
-  match original
-  {
-    Some( value ) => env::set_var( "WORKSPACE_PATH", value ),
-    None => env::remove_var( "WORKSPACE_PATH" ),
-  }
-  
-  workspace
+  // Create workspace directly to ensure we get the exact path we want
+  Workspace::new( path )
 }
 
 /// Test EC.1: `from_git_root()` in git repository  
@@ -360,7 +348,8 @@ fn test_workspace_with_hidden_files()
   fs::create_dir_all( temp_dir.path().join( ".git" ) ).unwrap();
   fs::write( temp_dir.path().join( ".git/config" ), "[core]\n" ).unwrap();
   
-  let workspace = create_test_workspace_at( temp_dir.path() );
+  // For this test, create a direct workspace from temp directory to ensure correct root
+  let workspace = Workspace::new( temp_dir.path() );
   
   // Should validate successfully
   assert!( workspace.validate().is_ok() );

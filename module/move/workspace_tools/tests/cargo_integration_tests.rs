@@ -26,21 +26,33 @@ use tempfile::TempDir;
 fn test_from_cargo_workspace_success()
 {
   let temp_dir = create_test_cargo_workspace();
+  let temp_path = temp_dir.path().to_path_buf(); // Get owned path
   
   // save original environment
   let original_dir = std::env::current_dir().unwrap();
   
+  // Verify the Cargo.toml exists before changing directories
+  assert!( temp_path.join( "Cargo.toml" ).exists(), "Test workspace Cargo.toml should exist" );
+  
   // set current directory to the test workspace
-  std::env::set_current_dir( temp_dir.path() ).unwrap();
+  std::env::set_current_dir( &temp_path ).unwrap();
   
   let result = Workspace::from_cargo_workspace();
   
   // restore original directory IMMEDIATELY
   std::env::set_current_dir( &original_dir ).unwrap();
   
+  if let Err(ref e) = result {
+    println!("from_cargo_workspace error: {e}");
+    println!("temp_path: {}", temp_path.display());
+    println!("Cargo.toml exists: {}", temp_path.join("Cargo.toml").exists());
+  }
   assert!( result.is_ok(), "from_cargo_workspace should succeed when in cargo workspace directory" );
   let workspace = result.unwrap();
-  assert_eq!( workspace.root(), temp_dir.path() );
+  assert_eq!( workspace.root(), &temp_path );
+  
+  // Keep temp_dir alive until end
+  drop(temp_dir);
 }
 
 /// Test CI002: No cargo workspace found
