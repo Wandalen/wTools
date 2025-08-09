@@ -93,18 +93,9 @@ edition.workspace = true
 fn test_glob_secret_management_integration()
 {
   let temp_dir = TempDir::new().unwrap();
-  // Save original state and set workspace path
-  let original = env::var( "WORKSPACE_PATH" ).ok();
-  env::set_var( "WORKSPACE_PATH", temp_dir.path() );
   
-  let workspace = Workspace::resolve().unwrap();
-  
-  // Restore state
-  match original
-  {
-    Some( value ) => env::set_var( "WORKSPACE_PATH", value ),
-    None => env::remove_var( "WORKSPACE_PATH" ),
-  }
+  // Use temp directory directly instead of environment variable manipulation
+  let workspace = Workspace::new( temp_dir.path() );
   
   // Create secret directory structure
   fs::create_dir_all( workspace.secret_dir() ).unwrap();
@@ -219,18 +210,9 @@ fn test_serde_secret_management_integration()
   }
   
   let temp_dir = TempDir::new().unwrap();
-  // Save original state and set workspace path
-  let original = env::var( "WORKSPACE_PATH" ).ok();
-  env::set_var( "WORKSPACE_PATH", temp_dir.path() );
   
-  let workspace = Workspace::resolve().unwrap();
-  
-  // Restore state
-  match original
-  {
-    Some( value ) => env::set_var( "WORKSPACE_PATH", value ),
-    None => env::remove_var( "WORKSPACE_PATH" ),
-  }
+  // Use temp directory directly instead of environment variable manipulation
+  let workspace = Workspace::new( temp_dir.path() );
   
   // Create directories
   fs::create_dir_all( workspace.config_dir() ).unwrap();
@@ -370,18 +352,9 @@ edition.workspace = true
 fn test_minimal_functionality()
 {
   let temp_dir = TempDir::new().unwrap();
-  // Save original state and set workspace path
-  let original = env::var( "WORKSPACE_PATH" ).ok();
-  env::set_var( "WORKSPACE_PATH", temp_dir.path() );
   
-  let workspace = Workspace::resolve().unwrap();
-  
-  // Restore state
-  match original
-  {
-    Some( value ) => env::set_var( "WORKSPACE_PATH", value ),
-    None => env::remove_var( "WORKSPACE_PATH" ),
-  }
+  // Use temp directory directly instead of environment variable manipulation
+  let workspace = Workspace::new( temp_dir.path() );
   
   // Basic workspace operations should always work
   assert!( workspace.validate().is_ok() );

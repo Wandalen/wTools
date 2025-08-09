@@ -717,7 +717,7 @@ mod private {
     }
   }
 
-  /// Basic builder for creating simple `SplitOptions` without OpType dependency.
+  /// Basic builder for creating simple `SplitOptions` without `OpType` dependency.
   #[ derive( Debug ) ]
   pub struct BasicSplitBuilder<'a> {
     src: &'a str,
@@ -727,8 +727,15 @@ mod private {
     quoting_postfixes: Vec<&'a str>,
   }
 
+  impl<'a> Default for BasicSplitBuilder<'a> {
+    fn default() -> Self {
+      Self::new()
+    }
+  }
+
   impl<'a> BasicSplitBuilder<'a> {
     /// Creates a new `BasicSplitBuilder`.
+    #[ must_use ]
     pub fn new() -> BasicSplitBuilder<'a> {
       Self {
         src: "",
@@ -831,7 +838,7 @@ mod private {
       let options = SplitOptions {
         src: self.src,
         delimeter: self.delimiters.clone(),
-        flags: self.flags.clone(),
+        flags: self.flags,
         quoting_prefixes: self.quoting_prefixes.clone(),
         quoting_postfixes: self.quoting_postfixes.clone(),
       };

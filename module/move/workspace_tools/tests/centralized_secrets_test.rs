@@ -3,15 +3,19 @@
 
 use workspace_tools::workspace;
 use std::env;
+use tempfile::TempDir;
 
 #[ test ]
 fn test_centralized_secrets_access()
 {
+  // Use temp directory for testing instead of modifying the actual repository
+  let temp_dir = TempDir::new().unwrap();
+  
   // save original environment  
   let original_workspace_path = env::var( "WORKSPACE_PATH" ).ok();
   
-  // Set environment variable for testing
-  env::set_var( "WORKSPACE_PATH", env::current_dir().unwrap().parent().unwrap().parent().unwrap() );
+  // Set environment variable to temp directory for testing
+  env::set_var( "WORKSPACE_PATH", temp_dir.path() );
   
   let ws = workspace().expect( "Should resolve workspace" );
   

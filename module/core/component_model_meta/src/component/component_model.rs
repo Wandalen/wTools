@@ -1,7 +1,7 @@
 //! Component model unified derive macro implementation
 
 use macro_tools::prelude::*;
-use macro_tools::attr;
+use macro_tools::{attr, diag};
 
 /// Generate `ComponentModel` derive implementation
 /// 
@@ -13,6 +13,7 @@ use macro_tools::attr;
 #[allow(clippy::too_many_lines, clippy::manual_let_else, clippy::explicit_iter_loop)]
 pub fn component_model( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream, syn::Error >
 {
+  let original_input = input.clone();
   let parsed = syn::parse::<syn::DeriveInput>( input )?;
   
   // Extract debug attribute if present (Design Rule: Proc Macros Must Have debug Attribute)
@@ -66,8 +67,8 @@ pub fn component_model( input : proc_macro::TokenStream ) -> Result< proc_macro2
     } else {
       &field_name_str
     };
-    let set_method_name = syn::Ident::new( &format!( "{}_set", clean_field_name ), field_name.span() );
-    let with_method_name = syn::Ident::new( &format!( "{}_with", clean_field_name ), field_name.span() );
+    let set_method_name = syn::Ident::new( &format!( "{clean_field_name}_set" ), field_name.span() );
+    let with_method_name = syn::Ident::new( &format!( "{clean_field_name}_with" ), field_name.span() );
     
     let field_specific_methods = if generics.params.is_empty() {
       quote::quote!
@@ -219,7 +220,8 @@ pub fn component_model( input : proc_macro::TokenStream ) -> Result< proc_macro2
 
   if debug
   {
-    eprintln!( "Generated ComponentModel implementation:\n{result}" );
+    let about = format!("derive : ComponentModel\nstructure : {}", struct_name);
+    diag::report_print(about, original_input, &result);
   }
 
   Ok( result )

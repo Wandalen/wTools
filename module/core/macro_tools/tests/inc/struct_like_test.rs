@@ -342,7 +342,7 @@ fn struct_with_attrs2() {
 
   let input: proc_macro2::TokenStream = quote::quote! {
     #[ derive( Debug, PartialEq, the_module::From ) ]
-    #[ debug ]
+    // #[ debug ] // Disabled to prevent debug output pollution
     pub enum GetData
     {
       #[ allow( dead_code ) ]
