@@ -111,7 +111,7 @@ fn test_component_model_with_attributes()
 {
   #[derive(Default, Debug, PartialEq)]
   #[derive(the_module::ComponentModel)]
-  #[debug]
+  // #[debug]  // Disabled to keep compilation output clean
   struct AttributedStruct
   {
     #[ component( default = "default_value" ) ]

@@ -8,7 +8,7 @@
 use component_model::ComponentModel;
 
 #[ derive( Default, ComponentModel ) ]
-#[ debug ]
+#[ debug ]  // This example specifically demonstrates debug attribute functionality
 struct Config
 {
   host : String,
