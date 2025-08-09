@@ -43,13 +43,13 @@ pub enum ArgumentPattern
 {
   /// Positional arguments (value1 value2)
   Positional,
-  /// Named arguments (key::value)
+  /// Named arguments (`key::value`)
   Named,
   /// Quoted arguments ("value with spaces")
   Quoted,
   /// Array arguments ([item1,item2,item3])
   Array,
-  /// Nested arguments (key::{sub::value})
+  /// Nested arguments (`key::{sub::value}`)
   Nested,
   /// Mixed patterns combining multiple types
   Mixed,
@@ -77,12 +77,14 @@ impl Default for ParserCommandGenerator
 impl ParserCommandGenerator
 {
   /// Create a new parser command generator
+  #[must_use]
   pub fn new() -> Self
   {
     Self::default()
   }
   
   /// Set command complexity level
+  #[must_use]
   pub fn complexity(mut self, complexity: CommandComplexity) -> Self
   {
     self.complexity = complexity;
@@ -90,6 +92,7 @@ impl ParserCommandGenerator
   }
   
   /// Set maximum nesting depth
+  #[must_use]
   pub fn max_depth(mut self, depth: usize) -> Self
   {
     self.max_depth = depth;
@@ -97,6 +100,7 @@ impl ParserCommandGenerator
   }
   
   /// Set maximum arguments per command
+  #[must_use]
   pub fn max_arguments(mut self, args: usize) -> Self
   {
     self.max_arguments = args;
@@ -104,6 +108,7 @@ impl ParserCommandGenerator
   }
   
   /// Add argument pattern
+  #[must_use]
   pub fn with_pattern(mut self, pattern: ArgumentPattern) -> Self
   {
     if !self.argument_patterns.contains(&pattern)
@@ -114,6 +119,7 @@ impl ParserCommandGenerator
   }
   
   /// Generate a single command
+  #[must_use]
   pub fn generate_command(&self, index: usize) -> String
   {
     let command_path = self.generate_command_path(index);
@@ -130,12 +136,14 @@ impl ParserCommandGenerator
   }
   
   /// Generate multiple commands
+  #[must_use]
   pub fn generate_commands(&self, count: usize) -> Vec<String>
   {
     (0..count).map(|i| self.generate_command(i)).collect()
   }
   
   /// Generate batch command string with separators
+  #[must_use]
   pub fn generate_batch_commands(&self, count: usize) -> String
   {
     let commands = self.generate_commands(count);
@@ -144,6 +152,7 @@ impl ParserCommandGenerator
   }
   
   /// Generate error cases for parser robustness testing
+  #[must_use]
   pub fn generate_error_cases(&self, count: usize) -> Vec<String>
   {
     let error_patterns = [

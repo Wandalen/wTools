@@ -21,11 +21,15 @@ impl MarkdownUpdater {
   pub fn new(file_path: impl AsRef<Path>, section_name: &str) -> Self {
     Self {
       file_path: file_path.as_ref().to_path_buf(),
-      section_marker: format!("## {}", section_name),
+      section_marker: format!("## {section_name}"),
     }
   }
 
   /// Update the section with new content
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if the file cannot be read or written.
   pub fn update_section(&self, content: &str) -> Result<()> {
     // Read existing file or create empty content
     let existing_content = if self.file_path.exists() {
@@ -49,7 +53,7 @@ impl MarkdownUpdater {
 
     for line in lines {
       if line.trim_start().starts_with("## ") {
-        if line.contains(&self.section_marker.trim_start_matches("## ")) {
+        if line.contains(self.section_marker.trim_start_matches("## ")) {
           // Found our target section
           result.push(line);
           result.push("");
@@ -103,6 +107,7 @@ impl ReportGenerator {
   }
 
   /// Generate markdown table format with statistical rigor indicators
+  #[must_use]
   pub fn generate_markdown_table(&self) -> String {
     let mut output = String::new();
     
@@ -141,6 +146,7 @@ impl ReportGenerator {
   }
 
   /// Generate comprehensive statistical report with research-grade analysis
+  #[must_use]
   pub fn generate_statistical_report(&self) -> String {
     let mut output = String::new();
     
@@ -157,13 +163,11 @@ impl ReportGenerator {
     let reliable_tests = self.results.values().filter(|r| r.is_reliable()).count();
     let reliability_rate = (reliable_tests as f64 / total_tests as f64) * 100.0;
     
-    output.push_str(&format!("- **Total benchmarks**: {}\n", total_tests));
-    output.push_str(&format!("- **Statistically reliable**: {}/{} ({:.1}%)\n", 
-                             reliable_tests, total_tests, reliability_rate));
+    output.push_str(&format!("- **Total benchmarks**: {total_tests}\n"));
+    output.push_str(&format!("- **Statistically reliable**: {reliable_tests}/{total_tests} ({reliability_rate:.1}%)\n"));
     
     if let Some((fastest_name, fastest_result)) = self.fastest_result() {
-      output.push_str(&format!("- **Best performing**: {} ({:.2?} ± {:.2?})\n", 
-                               fastest_name,
+      output.push_str(&format!("- **Best performing**: {fastest_name} ({:.2?} ± {:.2?})\n", 
                                fastest_result.mean_time(),
                                fastest_result.standard_error()));
     }
@@ -182,7 +186,9 @@ impl ReportGenerator {
     let mut high_quality_results = Vec::new();
     
     for (name, result) in &self.results {
-      if !result.is_reliable() {
+      if result.is_reliable() {
+        high_quality_results.push(name);
+      } else {
         let cv = result.coefficient_of_variation();
         let sample_size = result.times.len();
         
@@ -198,8 +204,6 @@ impl ReportGenerator {
         }
         
         quality_issues.push((name, issues));
-      } else {
-        high_quality_results.push(name);
       }
     }
     
@@ -250,6 +254,11 @@ impl ReportGenerator {
   }
 
   /// Generate comprehensive markdown report
+  ///
+  /// # Panics
+  ///
+  /// Panics if the sorted results are empty but last() is called.
+  #[must_use]
   pub fn generate_comprehensive_report(&self) -> String {
     let mut output = String::new();
     
@@ -275,7 +284,7 @@ impl ReportGenerator {
       if sorted_results.len() > 1 {
         let slowest = sorted_results.last().unwrap();
         let ratio = slowest.1.mean_time().as_secs_f64() / fastest_result.mean_time().as_secs_f64();
-        output.push_str(&format!("**Performance range**: {:.1}x difference between fastest and slowest\n", ratio));
+        output.push_str(&format!("**Performance range**: {ratio:.1}x difference between fastest and slowest\n"));
       }
     }
     output.push('\n');
@@ -332,11 +341,11 @@ impl ReportGenerator {
 
     // Generate insights
     if !fast_ops.is_empty() {
-      let fast_list: Vec<String> = fast_ops.iter().map(|s| s.to_string()).collect();
+      let fast_list: Vec<String> = fast_ops.iter().map(|s| (*s).clone()).collect();
       output.push_str(&format!("**High-performance operations**: {}\n", fast_list.join(", ")));
     }
     if !slow_ops.is_empty() {
-      let slow_list: Vec<String> = slow_ops.iter().map(|s| s.to_string()).collect();
+      let slow_list: Vec<String> = slow_ops.iter().map(|s| (*s).clone()).collect();
       output.push_str(&format!("**Optimization candidates**: {}\n", slow_list.join(", ")));
     }
 
@@ -350,6 +359,7 @@ impl ReportGenerator {
   }
 
   /// Calculate overall performance variance across results
+  #[must_use]
   pub fn calculate_performance_variance(&self) -> f64 {
     if self.results.len() < 2 {
       return 0.0;
@@ -368,13 +378,21 @@ impl ReportGenerator {
   }
 
   /// Update markdown file section with report
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if the file cannot be read or written.
   pub fn update_markdown_file(&self, file_path: impl AsRef<Path>, section_name: &str) -> Result<()> {
     let updater = MarkdownUpdater::new(file_path, section_name);
     let content = self.generate_comprehensive_report();
     updater.update_section(&content)
   }
 
-  /// Generate JSON format report  
+  /// Generate JSON format report
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if JSON serialization fails.
   #[cfg(feature = "json_reports")]
   pub fn generate_json(&self) -> Result<String> {
     use serde_json::json;

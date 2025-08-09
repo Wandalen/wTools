@@ -1,7 +1,7 @@
 //! Data generators for benchmarking
 //!
 //! This module provides common data generation patterns based on learnings
-//! from unilang and strs_tools benchmarking. It focuses on realistic test
+//! from unilang and `strs_tools` benchmarking. It focuses on realistic test
 //! data with configurable parameters.
 
 /// Common data size patterns for benchmarking
@@ -21,6 +21,7 @@ pub enum DataSize {
 
 impl DataSize {
   /// Get the actual size value
+  #[must_use]
   pub fn size(&self) -> usize {
     match self {
       DataSize::Small => 10,
@@ -32,25 +33,29 @@ impl DataSize {
   }
 
   /// Get standard size variants for iteration
+  #[must_use]
   pub fn standard_sizes() -> Vec<DataSize> {
     vec![DataSize::Small, DataSize::Medium, DataSize::Large, DataSize::Huge]
   }
 }
 
 /// Generate list data with configurable size and delimiter
+#[must_use]
 pub fn generate_list_data(size: DataSize) -> String {
   generate_list_data_with_delimiter(size, ",")
 }
 
 /// Generate list data with custom delimiter
+#[must_use]
 pub fn generate_list_data_with_delimiter(size: DataSize, delimiter: &str) -> String {
   (1..=size.size())
-    .map(|i| format!("item{}", i))
+    .map(|i| format!("item{i}"))
     .collect::<Vec<_>>()
     .join(delimiter)
 }
 
 /// Generate numeric list data
+#[must_use]
 pub fn generate_numeric_list(size: DataSize) -> String {
   (1..=size.size())
     .map(|i| i.to_string())
@@ -59,32 +64,37 @@ pub fn generate_numeric_list(size: DataSize) -> String {
 }
 
 /// Generate map/dictionary data with key-value pairs
+#[must_use]
 pub fn generate_map_data(size: DataSize) -> String {
   generate_map_data_with_delimiters(size, ",", "=")
 }
 
 /// Generate map data with custom delimiters
+#[must_use]
 pub fn generate_map_data_with_delimiters(size: DataSize, entry_delimiter: &str, kv_delimiter: &str) -> String {
   (1..=size.size())
-    .map(|i| format!("key{}{kv_delimiter}value{}", i, i, kv_delimiter = kv_delimiter))
+    .map(|i| format!("key{i}{kv_delimiter}value{i}"))
     .collect::<Vec<_>>()
     .join(entry_delimiter)
 }
 
 /// Generate enum choices data
+#[must_use]
 pub fn generate_enum_data(size: DataSize) -> String {
   (1..=size.size())
-    .map(|i| format!("choice{}", i))
+    .map(|i| format!("choice{i}"))
     .collect::<Vec<_>>()
     .join(",")
 }
 
 /// Generate string data with controlled length
+#[must_use]
 pub fn generate_string_data(length: usize) -> String {
   "a".repeat(length)
 }
 
 /// Generate string data with varying lengths
+#[must_use]
 pub fn generate_variable_strings(count: usize, min_len: usize, max_len: usize) -> Vec<String> {
   let mut strings = Vec::with_capacity(count);
   let step = if count > 1 { (max_len - min_len) / (count - 1) } else { 0 };
@@ -98,17 +108,18 @@ pub fn generate_variable_strings(count: usize, min_len: usize, max_len: usize) -
 }
 
 /// Generate nested data structure (JSON-like)
+#[must_use]
 pub fn generate_nested_data(depth: usize, width: usize) -> String {
   fn generate_level(current_depth: usize, max_depth: usize, width: usize) -> String {
     if current_depth >= max_depth {
-      return format!("\"value{}\"", current_depth);
+      return format!("\"value{current_depth}\"");
     }
     
     let items: Vec<String> = (0..width)
       .map(|i| {
-        let key = format!("key{}", i);
+        let key = format!("key{i}");
         let value = generate_level(current_depth + 1, max_depth, width);
-        format!("\"{}\": {}", key, value)
+        format!("\"{key}\": {value}")
       })
       .collect();
     
@@ -119,16 +130,18 @@ pub fn generate_nested_data(depth: usize, width: usize) -> String {
 }
 
 /// Generate file path data
+#[must_use]
 pub fn generate_file_paths(size: DataSize) -> Vec<String> {
   (1..=size.size())
-    .map(|i| format!("/path/to/file{}.txt", i))
+    .map(|i| format!("/path/to/file{i}.txt"))
     .collect()
 }
 
 /// Generate URL data
+#[must_use]
 pub fn generate_urls(size: DataSize) -> Vec<String> {
   (1..=size.size())
-    .map(|i| format!("https://example{}.com/path", i))
+    .map(|i| format!("https://example{i}.com/path"))
     .collect()
 }
 
@@ -140,6 +153,7 @@ pub struct SeededGenerator {
 
 impl SeededGenerator {
   /// Create new seeded generator
+  #[must_use]
   pub fn new(seed: u64) -> Self {
     Self { seed }
   }
@@ -157,6 +171,7 @@ impl SeededGenerator {
     
     (0..length)
       .map(|_| {
+        #[allow(clippy::cast_possible_truncation)]
         let idx = (self.next() as usize) % CHARS.len();
         CHARS[idx] as char
       })
@@ -165,8 +180,11 @@ impl SeededGenerator {
 
   /// Generate random integer in range
   pub fn random_int(&mut self, min: i32, max: i32) -> i32 {
+    #[allow(clippy::cast_sign_loss)]
     let range = (max - min) as u64;
-    min + ((self.next() % range) as i32)
+    #[allow(clippy::cast_possible_truncation)]
+    let result = (self.next() % range) as i32;
+    min + result
   }
 
   /// Generate random vector of integers  
@@ -178,6 +196,7 @@ impl SeededGenerator {
 }
 
 /// Convenience function to generate random vector with default seed
+#[must_use]
 pub fn generate_random_vec(size: usize) -> Vec<i32> {
   let mut gen = SeededGenerator::new(42);
   gen.random_vec(size, 1, 1000)
@@ -189,25 +208,28 @@ pub struct ParsingTestData;
 
 impl ParsingTestData {
   /// Generate command-line argument style data
+  #[must_use]
   pub fn command_args(size: DataSize) -> String {
     (1..=size.size())
-      .map(|i| format!("--arg{} value{}", i, i))
+      .map(|i| format!("--arg{i} value{i}"))
       .collect::<Vec<_>>()
       .join(" ")
   }
 
   /// Generate configuration file style data
+  #[must_use]
   pub fn config_pairs(size: DataSize) -> String {
     (1..=size.size())
-      .map(|i| format!("setting{}=value{}", i, i))
+      .map(|i| format!("setting{i}=value{i}"))
       .collect::<Vec<_>>()
       .join("\n")
   }
 
   /// Generate CSV-like data
+  #[must_use]
   pub fn csv_data(rows: usize, cols: usize) -> String {
     let header = (1..=cols)
-      .map(|i| format!("column{}", i))
+      .map(|i| format!("column{i}"))
       .collect::<Vec<_>>()
       .join(",");
     
@@ -215,7 +237,7 @@ impl ParsingTestData {
     
     for row in 1..=rows {
       let line = (1..=cols)
-        .map(|col| format!("row{}col{}", row, col))
+        .map(|col| format!("row{row}col{col}"))
         .collect::<Vec<_>>()
         .join(",");
       lines.push(line);
@@ -225,6 +247,7 @@ impl ParsingTestData {
   }
 
   /// Generate JSON-like object data
+  #[must_use]
   pub fn json_objects(size: DataSize) -> String {
     let objects: Vec<String> = (1..=size.size())
       .map(|i| format!(r#"{{"id": {}, "name": "object{}", "value": {}}}"#, i, i, i * 10))

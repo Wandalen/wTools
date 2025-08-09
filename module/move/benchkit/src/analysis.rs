@@ -126,6 +126,10 @@ impl ComparisonReport {
   }
 
   /// Generate markdown summary
+  ///
+  /// # Panics
+  ///
+  /// Panics if `fastest()` returns Some but `unwrap()` fails on the same call.
   #[must_use]
   pub fn to_markdown(&self) -> String {
     let mut output = String::new();
@@ -169,9 +173,10 @@ impl ComparisonReport {
       output.push_str("### Key Insights\n\n");
       output.push_str(&format!("- **Best performing**: {fastest_name} algorithm\n"));
       if fastest_name != slowest_name {
-        let fastest = self.fastest().unwrap().1;
-        let speedup = slowest_result.mean_time().as_secs_f64() / fastest.mean_time().as_secs_f64();
-        output.push_str(&format!("- **Performance range**: {speedup:.1}x difference between fastest and slowest\n"));
+        if let Some((_, fastest)) = self.fastest() {
+          let speedup = slowest_result.mean_time().as_secs_f64() / fastest.mean_time().as_secs_f64();
+          output.push_str(&format!("- **Performance range**: {speedup:.1}x difference between fastest and slowest\n"));
+        }
       }
     }
     

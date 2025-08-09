@@ -3,7 +3,6 @@
 //! Tests for comparative analysis and regression analysis
 
 #[ cfg( feature = "integration" ) ]
-
 use benchkit::prelude::*;
 use std::thread;
 use std::time::Duration;

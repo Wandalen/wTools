@@ -35,6 +35,7 @@ impl Default for ScalingConfig
 impl ScalingConfig
 {
   /// Create quick scaling config for rapid feedback
+  #[must_use]
   pub fn quick() -> Self
   {
     Self
@@ -46,6 +47,7 @@ impl ScalingConfig
   }
   
   /// Create comprehensive scaling config
+  #[must_use]
   pub fn comprehensive() -> Self
   {
     Self
@@ -72,6 +74,7 @@ pub struct ScalingAnalysis
 impl ScalingAnalysis
 {
   /// Analyze performance scaling characteristics
+  #[must_use]
   pub fn complexity_analysis(&self) -> ComplexityReport
   {
     let mut data_points = Vec::new();
@@ -90,6 +93,7 @@ impl ScalingAnalysis
   }
   
   /// Generate markdown report for scaling results
+  #[must_use]
   pub fn to_markdown(&self) -> String
   {
     let mut output = String::new();
@@ -102,8 +106,7 @@ impl ScalingAnalysis
     sorted_scales.sort();
     
     let baseline_ops = self.results.get(sorted_scales[0])
-      .map(|r| r.operations_per_second())
-      .unwrap_or(1.0);
+      .map_or(1.0, |r| r.operations_per_second());
     
     for &scale in sorted_scales
     {
@@ -153,6 +156,7 @@ pub struct ComplexityReport
 impl ComplexityReport
 {
   /// Analyze complexity from data points
+  #[must_use]
   pub fn analyze(operation_name: &str, data_points: Vec<(f64, f64)>) -> Self
   {
     let (complexity, correlation) = Self::estimate_complexity(&data_points);
@@ -236,6 +240,7 @@ impl ComplexityReport
   }
   
   /// Generate markdown representation
+  #[must_use]
   pub fn to_markdown(&self) -> String
   {
     let mut output = String::new();
@@ -248,7 +253,7 @@ impl ComplexityReport
       output.push_str("**Key Insights**:\n");
       for insight in &self.performance_insights
       {
-        output.push_str(&format!("- {}\n", insight));
+        output.push_str(&format!("- {insight}\n"));
       }
     }
     
@@ -268,14 +273,14 @@ where
   let config = config.unwrap_or_default();
   let mut results = HashMap::new();
   
-  println!("🔬 Power-of-10 Scaling Analysis: {}", operation_name);
+  println!("🔬 Power-of-10 Scaling Analysis: {operation_name}");
   println!("Testing scales: {:?}", config.scale_factors);
   
   for &scale in &config.scale_factors
   {
-    println!("  📊 Testing scale: {}", scale);
+    println!("  📊 Testing scale: {scale}");
     
-    let result = bench_function(&format!("{}_{}", operation_name, scale), ||
+    let result = bench_function(format!("{operation_name}_{scale}"), ||
     {
       operation(scale);
     });

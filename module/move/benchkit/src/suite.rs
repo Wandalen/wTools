@@ -47,6 +47,7 @@ impl BenchmarkSuite
   }
 
   /// Set measurement configuration for all benchmarks in suite
+  #[must_use]
   pub fn with_config( mut self, config : MeasurementConfig ) -> Self
   {
     self.config = config;
@@ -63,6 +64,7 @@ impl BenchmarkSuite
   }
 
   /// Add a benchmark to the suite (builder pattern)
+  #[must_use]
   pub fn add_benchmark<F>(mut self, name: impl Into<String>, f: F) -> Self
   where
     F: FnMut() + Send + 'static,
@@ -88,7 +90,7 @@ impl BenchmarkSuite
       results.insert(name.clone(), result);
     }
     
-    self.results = results.clone();
+    self.results.clone_from(&results);
     
     SuiteResults {
       suite_name: self.name.clone(),
@@ -102,6 +104,7 @@ impl BenchmarkSuite
   }
 
   /// Get results from previous run
+  #[must_use]
   pub fn results(&self) -> &HashMap<String, BenchmarkResult> {
     &self.results
   }
@@ -132,16 +135,19 @@ pub struct SuiteResults {
 
 impl SuiteResults {
   /// Generate markdown report for all results
+  #[must_use]
   pub fn generate_markdown_report(&self) -> MarkdownReport {
     MarkdownReport::new(&self.suite_name, &self.results)
   }
 
   /// Get regression analysis if baseline is available
+  #[must_use]
   pub fn regression_analysis(&self, baseline: &HashMap<String, BenchmarkResult>) -> RegressionAnalysis {
     RegressionAnalysis::new(baseline.clone(), self.results.clone())
   }
 
   /// Get worst regression percentage
+  #[must_use]
   pub fn regression_percentage(&self) -> f64 {
     // TODO: Implement regression calculation against stored baseline
     // For now, return 0
@@ -149,6 +155,10 @@ impl SuiteResults {
   }
 
   /// Save results as new baseline
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if the file cannot be written to.
   pub fn save_as_baseline(&self, _baseline_file: impl AsRef<std::path::Path>) -> Result<()> {
     // TODO: Implement saving to JSON/TOML file
     // For now, just succeed
@@ -182,6 +192,7 @@ pub struct MarkdownReport {
 
 impl MarkdownReport {
   /// Create new markdown report
+  #[must_use]
   pub fn new(suite_name: &str, results: &HashMap<String, BenchmarkResult>) -> Self {
     Self {
       suite_name: suite_name.to_string(),
@@ -192,18 +203,25 @@ impl MarkdownReport {
   }
 
   /// Include raw timing data in report
+  #[must_use]
   pub fn with_raw_data(mut self) -> Self {
     self.include_raw_data = true;
     self
   }
 
   /// Include detailed statistics
+  #[must_use]
   pub fn with_statistics(mut self) -> Self {
     self.include_statistics = true;
     self
   }
 
   /// Generate the markdown content
+  ///
+  /// # Panics
+  ///
+  /// Panics if there are no results but `sorted_results` is accessed.
+  #[must_use]
   pub fn generate(&self) -> String {
     let mut output = String::new();
     
@@ -245,7 +263,7 @@ impl MarkdownReport {
       if sorted_results.len() > 1 {
         let slowest = sorted_results.last().unwrap();
         let ratio = slowest.1.mean_time().as_secs_f64() / fastest_result.mean_time().as_secs_f64();
-        output.push_str(&format!("- **Performance range**: {:.1}x difference between fastest and slowest\n", ratio));
+        output.push_str(&format!("- **Performance range**: {ratio:.1}x difference between fastest and slowest\n"));
       }
       
       output.push('\n');
@@ -255,6 +273,10 @@ impl MarkdownReport {
   }
 
   /// Update specific section in markdown file
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if the file cannot be read or written.
   pub fn update_file(
     &self, 
     file_path: impl AsRef<std::path::Path>, 
@@ -262,11 +284,15 @@ impl MarkdownReport {
   ) -> Result<()> {
     // TODO: Implement markdown file section updating
     // This would parse existing markdown, find section, and replace content
-    println!("Would update {} section in {:?}", section_name, file_path.as_ref());
+    println!("Would update {section_name} section in {}", file_path.as_ref().display());
     Ok(())
   }
 
   /// Save report to file
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if the file cannot be written to.
   pub fn save(&self, file_path: impl AsRef<std::path::Path>) -> Result<()> {
     let content = self.generate();
     std::fs::write(file_path, content)?;

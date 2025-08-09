@@ -23,6 +23,7 @@ pub struct AllocationResult
 impl AllocationResult
 {
   /// Compare allocation efficiency with another result
+  #[must_use]
   pub fn compare_allocations(&self, other: &AllocationResult) -> AllocationComparison
   {
     AllocationComparison
@@ -56,6 +57,7 @@ pub struct AllocationComparison
 impl AllocationComparison
 {
   /// Generate markdown report
+  #[must_use]
   pub fn to_markdown(&self) -> String
   {
     let mut output = String::new();
@@ -114,7 +116,7 @@ pub fn bench_with_allocation_tracking<F>(
 where
   F: FnMut() + Send,
 {
-  println!("🧠 Memory allocation tracking: {}", name);
+  println!("🧠 Memory allocation tracking: {name}");
   
   // Run the timing benchmark
   let timing_result = bench_function(name, ||
@@ -127,7 +129,7 @@ where
   let estimated_total_allocations = total_operations * estimated_allocs_per_call;
   let allocation_rate = estimated_allocs_per_call as f64;
   
-  println!("  📊 Est. allocations: {} ({:.1}/op)", estimated_total_allocations, allocation_rate);
+  println!("  📊 Est. allocations: {estimated_total_allocations} ({allocation_rate:.1}/op)");
   
   AllocationResult
   {
@@ -204,7 +206,7 @@ impl MemoryProfile
   where
     F: Fn() + Send,
   {
-    println!("📈 Memory profiling: {}", name);
+    println!("📈 Memory profiling: {name}");
     
     let start_time = Instant::now();
     
@@ -244,7 +246,7 @@ impl MemoryProfile
       hotspots.push("High memory usage detected".to_string());
     }
     
-    println!("  📊 Est. peak memory: {:.2} MB, avg: {:.2} MB", peak_usage, average_usage);
+    println!("  📊 Est. peak memory: {peak_usage:.2} MB, avg: {average_usage:.2} MB");
     
     Self
     {
@@ -256,6 +258,7 @@ impl MemoryProfile
   }
   
   /// Generate markdown report
+  #[must_use]
   pub fn to_markdown(&self) -> String
   {
     let mut output = String::new();
