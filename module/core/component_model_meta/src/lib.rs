@@ -572,13 +572,13 @@ pub fn from_components(input: proc_macro::TokenStream) -> proc_macro::TokenStrea
 /// // Use Assign trait (auto-generated)
 /// config.assign( "localhost".to_string() );
 /// config.assign( 8080i32 );
-/// config.enabled_assign( true ); // Use field-specific method to avoid type ambiguity
+/// config.enabled_set( true ); // Use field-specific method to avoid type ambiguity
 /// 
-/// // Use fluent builder pattern via impute() (auto-generated)
+/// // Use fluent builder pattern (auto-generated)
 /// let config2 = Config::default()
 ///   .impute( "api.example.com".to_string() )
 ///   .impute( 3000i32 )
-///   .enabled_impute( false ); // Use field-specific method to avoid type ambiguity
+///   .enabled_with( false ); // Use field-specific method to avoid type ambiguity
 /// ```
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_component_model" ) ]

@@ -31,8 +31,8 @@ fn test_basic_struct_field_methods()
   let mut config = BasicConfig { value: 0, name: String::new() };
   
   // Field-specific methods should work
-  config.value_assign( 42i32 );
-  config.name_assign( "test".to_string() );
+  config.value_set( 42i32 );
+  config.name_set( "test".to_string() );
   
   assert_eq!( config.value, 42 );
   assert_eq!( config.name, "test" );
@@ -44,8 +44,8 @@ fn test_basic_struct_field_methods()
 fn test_basic_struct_fluent_pattern()
 {
   let config = BasicConfig { value: 0, name: String::new() }
-    .value_impute( 100 )
-    .name_impute( "fluent".to_string() );
+    .value_with( 100 )
+    .name_with( "fluent".to_string() );
     
   assert_eq!( config.value, 100 );
   assert_eq!( config.name, "fluent" );
@@ -68,9 +68,9 @@ fn test_keyword_field_names()
   let mut config = KeywordFields { r#type: String::new(), r#match: 0, r#use: false };
   
   // Methods should have clean names without r# prefix
-  config.type_assign( "test_type".to_string() );
-  config.match_assign( 100i32 );
-  config.use_assign( true );
+  config.type_set( "test_type".to_string() );
+  config.match_set( 100i32 );
+  config.use_set( true );
   
   assert_eq!( config.r#type, "test_type" );
   assert_eq!( config.r#match, 100 );
@@ -83,9 +83,9 @@ fn test_keyword_field_names()
 fn test_keyword_fields_fluent()
 {
   let config = KeywordFields { r#type: String::new(), r#match: 0, r#use: false }
-    .type_impute( "fluent_type".to_string() )
-    .match_impute( 200i32 )
-    .use_impute( true );
+    .type_with( "fluent_type".to_string() )
+    .match_with( 200i32 )
+    .use_with( true );
     
   assert_eq!( config.r#type, "fluent_type" );
   assert_eq!( config.r#match, 200 );
@@ -106,11 +106,11 @@ fn test_single_field_struct()
 {
   let mut config = SingleField { data: String::new() };
   
-  config.data_assign( "single".to_string() );
+  config.data_set( "single".to_string() );
   assert_eq!( config.data, "single" );
   
   let config2 = SingleField { data: String::new() }
-    .data_impute( "single_fluent".to_string() );
+    .data_with( "single_fluent".to_string() );
   assert_eq!( config2.data, "single_fluent" );
 }
 
@@ -140,9 +140,9 @@ fn test_complex_field_types()
 {
   let mut config = ComplexFields::default();
   
-  config.items_assign( vec![ "a".to_string(), "b".to_string() ] );
-  config.maybe_value_assign( Some( 42 ) );
-  config.mapping_assign( {
+  config.items_set( vec![ "a".to_string(), "b".to_string() ] );
+  config.maybe_value_set( Some( 42 ) );
+  config.mapping_set( {
     let mut map = HashMap::new();
     map.insert( "key".to_string(), 100 );
     map
@@ -159,9 +159,9 @@ fn test_complex_field_types()
 fn test_complex_types_fluent()
 {
   let config = ComplexFields::default()
-    .items_impute( vec![ "x".to_string() ] )
-    .maybe_value_impute( Some( 999 ) )
-    .mapping_impute( HashMap::new() );
+    .items_with( vec![ "x".to_string() ] )
+    .maybe_value_with( Some( 999 ) )
+    .mapping_with( HashMap::new() );
     
   assert_eq!( config.items, vec![ "x".to_string() ] );
   assert_eq!( config.maybe_value, Some( 999 ) );
@@ -200,13 +200,13 @@ fn test_comprehensive_field_mix()
   };
   
   // Test all field-specific assignment methods
-  config.float_field_assign( 3.14f64 );
-  config.string_field_assign( "mixed".to_string() );
-  config.int_field_assign( 789i32 );
-  config.bool_field_assign( true );
-  config.vec_field_assign( vec![ 1, 2, 3 ] );
-  config.option_field_assign( Some( "option".to_string() ) );
-  config.async_assign( true );
+  config.float_field_set( 3.14f64 );
+  config.string_field_set( "mixed".to_string() );
+  config.int_field_set( 789i32 );
+  config.bool_field_set( true );
+  config.vec_field_set( vec![ 1, 2, 3 ] );
+  config.option_field_set( Some( "option".to_string() ) );
+  config.async_set( true );
   
   assert_eq!( config.float_field, 3.14f64 );
   assert_eq!( config.string_field, "mixed" );

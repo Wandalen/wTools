@@ -20,17 +20,17 @@ fn main() {
   let mut config = Config::default();
   
   // Use field-specific methods to avoid type ambiguity
-  config.host_assign( "localhost".to_string() );
-  config.port_assign( 8080i32 );
-  config.enabled_assign( true );
+  config.host_set( "localhost".to_string() );
+  config.port_set( 8080i32 );
+  config.enabled_set( true );
   
   println!( "Config: host={}, port={}, enabled={}", config.host, config.port, config.enabled );
   
   // Fluent pattern also works
   let config2 = Config::default()
-    .host_impute( "api.example.com".to_string() )
-    .port_impute( 3000i32 )
-    .enabled_impute( false );
+    .host_with( "api.example.com".to_string() )
+    .port_with( 3000i32 )
+    .enabled_with( false );
     
   println!( "Config2: host={}, port={}, enabled={}", config2.host, config2.port, config2.enabled );
 }

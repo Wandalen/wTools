@@ -29,16 +29,16 @@ fn test_debug_attribute_functionality()
   let mut config = DebugTest { name: String::new(), value: 0 };
   
   // Field-specific methods should be generated and work
-  config.name_assign( "debug_test".to_string() );
-  config.value_assign( 123i32 );
+  config.name_set( "debug_test".to_string() );
+  config.value_set( 123i32 );
   
   assert_eq!( config.name, "debug_test" );
   assert_eq!( config.value, 123 );
   
   // Test fluent pattern also works with debug enabled
   let config2 = DebugTest { name: String::new(), value: 0 }
-    .name_impute( "debug_fluent".to_string() )
-    .value_impute( 456i32 );
+    .name_with( "debug_fluent".to_string() )
+    .value_with( 456i32 );
     
   assert_eq!( config2.name, "debug_fluent" );
   assert_eq!( config2.value, 456 );

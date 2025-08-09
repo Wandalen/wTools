@@ -4,8 +4,8 @@
 //!
 //! | ID   | Test Case                           | Expected Output                    |
 //! |------|------------------------------------|------------------------------------|
-//! | T1.1 | Field-specific assignment methods  | Methods work without type ambiguity|
-//! | T1.2 | Field-specific impute methods      | Fluent pattern works correctly     |
+//! | T1.1 | Field-specific setter methods      | Methods work without type ambiguity|
+//! | T1.2 | Field-specific builder methods     | Fluent pattern works correctly     |
 //! | T1.3 | Explicit Assign trait usage       | Original trait still functional    |
 //! | T1.4 | Multiple bool fields handling      | Each field gets specific methods   |
 //! | T1.5 | Multiple bool fields fluent        | Fluent pattern with all bool fields|
@@ -21,32 +21,32 @@ struct TestConfig
   enabled : bool,
 }
 
-/// Test that field-specific assignment methods work correctly
+/// Test that field-specific setter methods work correctly
 /// Test Combination: T1.1
 #[ test ]
 fn test_field_specific_assignment_methods()
 {
   let mut config = TestConfig::default();
   
-  // Use field-specific methods to avoid type ambiguity
-  config.host_assign( "localhost".to_string() );
-  config.port_assign( 8080i32 );
-  config.enabled_assign( true );
+  // Use field-specific setter methods to avoid type ambiguity
+  config.host_set( "localhost".to_string() );
+  config.port_set( 8080i32 );
+  config.enabled_set( true );
   
   assert_eq!( config.host, "localhost" );
   assert_eq!( config.port, 8080 );
   assert!( config.enabled );
 }
 
-/// Test that field-specific impute methods work for fluent builder pattern  
+/// Test that field-specific builder methods work for fluent builder pattern  
 /// Test Combination: T1.2
 #[ test ]
 fn test_field_specific_impute_methods()
 {
   let config = TestConfig::default()
-    .host_impute( "api.example.com".to_string() )
-    .port_impute( 3000i32 )
-    .enabled_impute( false );
+    .host_with( "api.example.com".to_string() )
+    .port_with( 3000i32 )
+    .enabled_with( false );
     
   assert_eq!( config.host, "api.example.com" );
   assert_eq!( config.port, 3000 );
@@ -79,7 +79,7 @@ struct MultiBoolConfig
   verbose : bool,
 }
 
-/// Test multiple bool fields each get their own specific assignment methods
+/// Test multiple bool fields each get their own specific setter methods
 /// Test Combination: T1.4
 #[ test ]
 fn test_multiple_bool_fields_with_field_specific_methods()
@@ -87,9 +87,9 @@ fn test_multiple_bool_fields_with_field_specific_methods()
   let mut config = MultiBoolConfig::default();
   
   // Each bool field gets its own specific method
-  config.enabled_assign( true );
-  config.debug_assign( false );  
-  config.verbose_assign( true );
+  config.enabled_set( true );
+  config.debug_set( false );  
+  config.verbose_set( true );
   
   assert!( config.enabled );
   assert!( !config.debug );
@@ -102,9 +102,9 @@ fn test_multiple_bool_fields_with_field_specific_methods()
 fn test_multiple_bool_fields_fluent_pattern()
 {
   let config = MultiBoolConfig::default()
-    .enabled_impute( true )
-    .debug_impute( false )
-    .verbose_impute( true );
+    .enabled_with( true )
+    .debug_with( false )
+    .verbose_with( true );
     
   assert!( config.enabled );
   assert!( !config.debug );

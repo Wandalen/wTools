@@ -66,27 +66,27 @@ pub fn component_model( input : proc_macro::TokenStream ) -> Result< proc_macro2
     } else {
       &field_name_str
     };
-    let assign_method_name = syn::Ident::new( &format!( "{}_assign", clean_field_name ), field_name.span() );
-    let impute_method_name = syn::Ident::new( &format!( "{}_impute", clean_field_name ), field_name.span() );
+    let set_method_name = syn::Ident::new( &format!( "{}_set", clean_field_name ), field_name.span() );
+    let with_method_name = syn::Ident::new( &format!( "{}_with", clean_field_name ), field_name.span() );
     
     let field_specific_methods = if generics.params.is_empty() {
       quote::quote!
       {
         impl #struct_name
         {
-          /// Field-specific assignment method to avoid type ambiguity
+          /// Field-specific setter method to avoid type ambiguity
           #[ inline( always ) ]
-          pub fn #assign_method_name < IntoT >( &mut self, component : IntoT )
+          pub fn #set_method_name < IntoT >( &mut self, component : IntoT )
           where
             IntoT : Into< #field_type >
           {
             self.#field_name = component.into();
           }
           
-          /// Field-specific impute method for fluent builder pattern
+          /// Field-specific builder method for fluent pattern
           #[ inline( always ) ]
           #[ must_use ]
-          pub fn #impute_method_name < IntoT >( mut self, component : IntoT ) -> Self
+          pub fn #with_method_name < IntoT >( mut self, component : IntoT ) -> Self
           where
             IntoT : Into< #field_type >
           {
@@ -101,19 +101,19 @@ pub fn component_model( input : proc_macro::TokenStream ) -> Result< proc_macro2
         impl #impl_generics #struct_name #ty_generics 
         #where_clause
         {
-          /// Field-specific assignment method to avoid type ambiguity
+          /// Field-specific setter method to avoid type ambiguity
           #[ inline( always ) ]
-          pub fn #assign_method_name < IntoT >( &mut self, component : IntoT )
+          pub fn #set_method_name < IntoT >( &mut self, component : IntoT )
           where
             IntoT : Into< #field_type >
           {
             self.#field_name = component.into();
           }
           
-          /// Field-specific impute method for fluent builder pattern  
+          /// Field-specific builder method for fluent pattern  
           #[ inline( always ) ]
           #[ must_use ]
-          pub fn #impute_method_name < IntoT >( mut self, component : IntoT ) -> Self
+          pub fn #with_method_name < IntoT >( mut self, component : IntoT ) -> Self
           where
             IntoT : Into< #field_type >
           {

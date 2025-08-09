@@ -29,7 +29,7 @@ fn main() {
   // config.assign( true );  // ERROR: type annotations needed
   
   // NEW WAY: Use field-specific method to avoid ambiguity
-  config.enabled_assign( true );  // ✅ Clear and unambiguous
+  config.enabled_set( true );  // ✅ Clear and unambiguous
   
   println!("✅ Config successfully set:");
   println!("   host: {}", config.host);

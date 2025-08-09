@@ -39,10 +39,10 @@ fn test_multiple_identical_bool_fields()
   };
   
   // Each boolean field should have its own specific method
-  config.enabled_assign( true );
-  config.visible_assign( false );
-  config.active_assign( true );
-  config.debug_assign( false );
+  config.enabled_set( true );
+  config.visible_set( false );
+  config.active_set( true );
+  config.debug_set( false );
   
   assert_eq!( config.enabled, true );
   assert_eq!( config.visible, false );
@@ -61,10 +61,10 @@ fn test_multiple_bools_fluent()
     active: false,
     debug: false,
   }
-  .enabled_impute( true )
-  .visible_impute( true )
-  .active_impute( false )
-  .debug_impute( true );
+  .enabled_with( true )
+  .visible_with( true )
+  .active_with( false )
+  .debug_with( true );
   
   assert_eq!( config.enabled, true );
   assert_eq!( config.visible, true );
@@ -91,8 +91,8 @@ fn test_very_long_field_names()
   };
   
   // Methods should be generated correctly even for very long names
-  config.this_is_a_very_long_field_name_that_tests_method_generation_assign( "long_test".to_string() );
-  config.another_extremely_long_field_name_for_testing_purposes_assign( 999i32 );
+  config.this_is_a_very_long_field_name_that_tests_method_generation_set( "long_test".to_string() );
+  config.another_extremely_long_field_name_for_testing_purposes_set( 999i32 );
   
   assert_eq!( config.this_is_a_very_long_field_name_that_tests_method_generation, "long_test" );
   assert_eq!( config.another_extremely_long_field_name_for_testing_purposes, 999 );
@@ -115,11 +115,11 @@ fn test_mixed_assign_and_impute()
   let mut config = MixedUsage { name: String::new(), count: 0, enabled: false };
   
   // Mix assignment and fluent patterns
-  config.name_assign( "mixed".to_string() );
+  config.name_set( "mixed".to_string() );
   
   let config = config
-    .count_impute( 42i32 )
-    .enabled_impute( true );
+    .count_with( 42i32 )
+    .enabled_with( true );
     
   assert_eq!( config.name, "mixed" );
   assert_eq!( config.count, 42 );
@@ -147,8 +147,8 @@ fn test_nested_generic_types()
     mapping: std::collections::HashMap::new(),
   };
   
-  config.data_assign( vec![ Some( "nested".to_string() ), None ] );
-  config.mapping_assign( {
+  config.data_set( vec![ Some( "nested".to_string() ), None ] );
+  config.mapping_set( {
     let mut map = std::collections::HashMap::new();
     map.insert( "key".to_string(), vec![ 1, 2, 3 ] );
     map
