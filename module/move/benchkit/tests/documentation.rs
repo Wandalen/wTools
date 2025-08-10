@@ -16,8 +16,8 @@ type Result<T> = core::result::Result<T, Box<dyn core::error::Error>>;
 #[cfg(feature = "markdown_reports")]
 fn test_documentation_update() -> Result<()>
 {
-  // Create temporary test file
-  let temp_file = std::env::temp_dir().join("test_readme.md");
+  // Create temporary test file (avoid README.md to comply with rules)
+  let temp_file = std::env::temp_dir().join("-benchkit_test_doc.md");
   let mut file = std::fs::File::create(&temp_file)?;
   writeln!(file, "# Test Project")?;
   writeln!(file)?;

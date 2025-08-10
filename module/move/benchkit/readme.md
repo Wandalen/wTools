@@ -187,21 +187,16 @@ if let Some( ( fastest_name, _ ) ) = report.fastest()
   println!( "Fastest algorithm: {}", fastest_name );
 }
 
-// Compare performance results like a git diff.
-let diff_set = diff_benchmark_sets( &baseline_results, &current_results );
-for regression in diff_set.regressions()
-{
-  println!( "{}", regression.to_diff_format() );
-}
+// Example benchmark results
+let result_a = bench_function( "test_a", || { /* ... */ } );
+let result_b = bench_function( "test_b", || { /* ... */ } );
 
-// Use research-grade statistics when you need high confidence.
-let comparison = StatisticalAnalysis::compare
-(
-  &result_a,
-  &result_b,
-  SignificanceLevel::Standard,
-)?;
-println!( "{}", comparison.conclusion() );
+// Compare two benchmark results
+let comparison = result_a.compare( &result_b );
+if comparison.is_improvement()
+{
+  println!( "Performance improved!" );
+}
 ```
 
 </details>
@@ -237,17 +232,22 @@ The "documentation-first" philosophy is enabled by powerful report generation an
 ```rust
 use benchkit::prelude::*;
 
-let mut suite = BenchmarkSuite::new( "api_performance" );
-suite.benchmark( "get_user", || { /* ... */ } );
-suite.benchmark( "create_user", || { /* ... */ } );
-let results = suite.run_analysis();
+fn main() -> Result< (), Box< dyn std::error::Error > >
+{
+  let mut suite = BenchmarkSuite::new( "api_performance" );
+  suite.benchmark( "get_user", || { /* ... */ } );
+  suite.benchmark( "create_user", || { /* ... */ } );
+  let results = suite.run_analysis();
 
-// Generate a markdown report from the results.
-let markdown_report = results.generate_markdown_report().generate();
+  // Generate a markdown report from the results.
+  let markdown_report = results.generate_markdown_report().generate();
 
-// Automatically update the "## Performance" section of a file.
-let updater = MarkdownUpdater::new( "README.md", "Performance" );
-updater.update_section( &markdown_report )?;
+  // Automatically update the "## Performance" section of a file.
+  let updater = MarkdownUpdater::new( "README.md", "Performance" );
+  updater.update_section( &markdown_report )?;
+  
+  Ok( () )
+}
 ```
 
 </details>
@@ -256,7 +256,7 @@ updater.update_section( &markdown_report )?;
 
 `benchkit` is designed to make performance analysis a natural part of your development cycle.
 
-```
+```text
 [ 1. Write Code ] -> [ 2. Add Benchmark in `tests/` ] -> [ 3. Run `cargo test` ]
        ^                                                              |
        |                                                              v
