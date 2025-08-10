@@ -8,6 +8,16 @@ mod private
     env,
     io,
   };
+  
+  #[cfg(feature = "no_std")]
+  extern crate std;
+  
+  #[cfg(feature = "no_std")]
+  use std::
+  {
+    env,
+    io,
+  };
 
   /// Symbolize current path.
   #[ derive( Clone, Copy, Debug, Default, PartialEq, Eq ) ]

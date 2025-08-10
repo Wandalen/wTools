@@ -4,6 +4,17 @@ mod private
   #[ allow( unused_imports, clippy::wildcard_imports ) ]
   #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
   use crate::*;
+  #[cfg(not(feature = "no_std"))]
+  use std::
+  {
+    io,
+    path::{ Component, Path, PathBuf },
+  };
+  
+  #[cfg(feature = "no_std")]
+  extern crate std;
+  
+  #[cfg(feature = "no_std")]
   use std::
   {
     io,

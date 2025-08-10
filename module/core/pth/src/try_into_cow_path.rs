@@ -4,6 +4,18 @@ mod private
 {
 
   use crate::*;
+  #[cfg(not(feature = "no_std"))]
+  use std::
+  {
+    borrow::Cow,
+    io,
+    path::{ Component, Path, PathBuf },
+  };
+  
+  #[cfg(feature = "no_std")]
+  extern crate std;
+  
+  #[cfg(feature = "no_std")]
   use std::
   {
     borrow::Cow,
