@@ -5,6 +5,6 @@
 use data_type as the_module;
 
 #[ allow( unused_imports ) ]
-use test_tools::exposed::*;
+use test_tools::prelude::*;
 
 mod inc;

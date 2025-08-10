@@ -2,6 +2,9 @@
 use super::*;
 #[ allow( unused_imports ) ]
 use the_module::prelude::*;
+use test_tools::impls_index::tests_impls;
+use test_tools::impls_index::tests_index;
+use diagnostics_tools::cta_true;
 
 tests_impls! {
 

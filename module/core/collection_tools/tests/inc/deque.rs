@@ -84,19 +84,19 @@ fn iters() {
   };
   let got: the_module::VecDeque<_> = instance.into_iter().collect();
   let exp = the_module::VecDeque::from([1, 2, 3]);
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   let instance = MyContainer {
     entries: the_module::VecDeque::from([1, 2, 3]),
   };
   let got: the_module::VecDeque<_> = (&instance).into_iter().copied().collect();
   let exp = the_module::VecDeque::from([1, 2, 3]);
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   let mut instance = MyContainer {
     entries: the_module::VecDeque::from([1, 2, 3]),
   };
   (&mut instance).into_iter().for_each(|v| *v *= 2);
   let exp = the_module::VecDeque::from([2, 4, 6]);
-  a_id!(instance.entries, exp);
+  assert_eq!(instance.entries, exp);
 }

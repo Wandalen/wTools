@@ -41,7 +41,7 @@ fn main() {
 
   // --- Different types of data to serialize and send ---
   let header = DataPacketHeader {
-    packet_id: 0xABCDEF0123456789,
+    packet_id: 0xABCD_EF01_2345_6789,
     payload_len: 128,
     checksum: 0x55AA,
     _padding: [0, 0], // Initialize padding
