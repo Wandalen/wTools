@@ -223,7 +223,7 @@ default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.variadic_from_meta]
-version = "~0.8.0"
+version = "~0.9.0"
 path = "module/core/variadic_from_meta"
 default-features = false
 # features = [ "enabled" ]
