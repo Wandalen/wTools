@@ -4,8 +4,37 @@
 #![ allow( clippy::std_instead_of_core ) ]
 
 use crate::error::{ ParseError, SourceLocation };
-use strs_tools::string::split::{ Split, SplitType };
+use alloc::string::{ String, ToString };
+use alloc::borrow::Cow;
 use core::fmt;
+
+/// Temporary simple replacement for `strs_tools` Split
+#[ derive( Debug, Clone ) ]
+pub struct Split< 'a >
+{
+  /// The string content of this split
+  pub string : Cow< 'a, str >,
+  /// The byte bounds in the original string  
+  pub bounds : ( usize, usize ),
+  /// Start position in the original string
+  pub start : usize,
+  /// End position in the original string
+  pub end : usize,
+  /// Type of this split segment
+  pub typ : SplitType,
+  /// Whether this segment was originally quoted
+  pub was_quoted : bool,
+}
+
+/// Type of split segment
+#[ derive( Debug, Clone, PartialEq ) ]
+pub enum SplitType
+{
+  /// A delimiter segment
+  Delimiter,
+  /// A non-delimiter segment
+  NonDelimiter,
+}
 
 /// Represents a token with its original split information and classified kind.
 #[ derive( Debug, Clone ) ]
@@ -106,19 +135,19 @@ pub fn classify_split( s : &Split< '_ > ) -> Result< ( UnilangTokenKind, SourceL
 
   let result = match s.string
   {
-    std::borrow::Cow::Borrowed( "::" ) => Ok( ( UnilangTokenKind::Operator( "::" ), original_location ) ),
-    std::borrow::Cow::Borrowed( "?" ) => Ok( ( UnilangTokenKind::Operator( "?" ), original_location ) ),
-    std::borrow::Cow::Borrowed( ":" ) => Ok( ( UnilangTokenKind::Operator( ":" ), original_location ) ),
-    std::borrow::Cow::Borrowed( "." ) => Ok( ( UnilangTokenKind::Delimiter( "." ), original_location ) ),
-    std::borrow::Cow::Borrowed( " " ) => Ok( ( UnilangTokenKind::Delimiter( " " ), original_location ) ),
-    std::borrow::Cow::Borrowed( "\t" ) => Ok( ( UnilangTokenKind::Delimiter( "\t" ), original_location ) ),
-    std::borrow::Cow::Borrowed( "\r" ) => Ok( ( UnilangTokenKind::Delimiter( "\r" ), original_location ) ),
-    std::borrow::Cow::Borrowed( "\n" ) => Ok( ( UnilangTokenKind::Delimiter( "\n" ), original_location ) ),
-    std::borrow::Cow::Borrowed( "#" ) => Ok( ( UnilangTokenKind::Delimiter( "#" ), original_location ) ),
-    std::borrow::Cow::Borrowed( "!" ) => Ok( ( UnilangTokenKind::Unrecognized( "!".to_string() ), original_location ) ),
+    Cow::Borrowed( "::" ) => Ok( ( UnilangTokenKind::Operator( "::" ), original_location ) ),
+    Cow::Borrowed( "?" ) => Ok( ( UnilangTokenKind::Operator( "?" ), original_location ) ),
+    Cow::Borrowed( ":" ) => Ok( ( UnilangTokenKind::Operator( ":" ), original_location ) ),
+    Cow::Borrowed( "." ) => Ok( ( UnilangTokenKind::Delimiter( "." ), original_location ) ),
+    Cow::Borrowed( " " ) => Ok( ( UnilangTokenKind::Delimiter( " " ), original_location ) ),
+    Cow::Borrowed( "\t" ) => Ok( ( UnilangTokenKind::Delimiter( "\t" ), original_location ) ),
+    Cow::Borrowed( "\r" ) => Ok( ( UnilangTokenKind::Delimiter( "\r" ), original_location ) ),
+    Cow::Borrowed( "\n" ) => Ok( ( UnilangTokenKind::Delimiter( "\n" ), original_location ) ),
+    Cow::Borrowed( "#" ) => Ok( ( UnilangTokenKind::Delimiter( "#" ), original_location ) ),
+    Cow::Borrowed( "!" ) => Ok( ( UnilangTokenKind::Unrecognized( "!".to_string() ), original_location ) ),
     _ =>
     {
-      if s.typ == SplitType::Delimeted
+      if s.typ == SplitType::Delimiter
       {
         if s.was_quoted
         {
