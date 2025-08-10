@@ -428,6 +428,11 @@ version = "~0.27.0"
 path = "module/core/strs_tools"
 default-features = false
 
+[workspace.dependencies.strs_tools_meta]
+version = "~0.3.0"
+path = "module/core/strs_tools_meta"
+default-features = false
+
 [workspace.dependencies.wstring_tools]
 version = "~0.2.0"
 path = "module/alias/wstring_tools"
