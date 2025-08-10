@@ -1,4 +1,3 @@
-
 # This Makefile provides a leveled system for testing and watching a Rust project.
 #
 
@@ -130,7 +129,7 @@ cwa:
 ctest1:
 	@clear
 	@echo "Running Test Level 1: Primary test suite..."
-	@RUSTFLAGS="-D warnings" cargo nextest run $(PKG_FLAGS)
+	@RUSTFLAGS="-D warnings" cargo nextest run --all-features $(PKG_FLAGS)
 
 # Test Level 2: Primary + Documentation tests.
 #
@@ -139,8 +138,8 @@ ctest1:
 ctest2:
 	@clear
 	@echo "Running Test Level 2: Primary + Doc tests..."
-	@RUSTFLAGS="-D warnings" cargo nextest run $(PKG_FLAGS) && \
-	RUSTDOCFLAGS="-D warnings" cargo test --doc $(PKG_FLAGS)
+	@RUSTFLAGS="-D warnings" cargo nextest run --all-features $(PKG_FLAGS) && \
+	RUSTDOCFLAGS="-D warnings" cargo test --doc --all-features $(PKG_FLAGS)
 
 # Test Level 3: Primary + Doc + Linter.
 #
@@ -149,8 +148,8 @@ ctest2:
 ctest3:
 	@clear
 	@echo "Running Test Level 3: All standard checks..."
-	@RUSTFLAGS="-D warnings" cargo nextest run $(PKG_FLAGS) && \
-	RUSTDOCFLAGS="-D warnings" cargo test --doc $(PKG_FLAGS) && \
+	@RUSTFLAGS="-D warnings" cargo nextest run --all-features $(PKG_FLAGS) && \
+	RUSTDOCFLAGS="-D warnings" cargo test --doc --all-features $(PKG_FLAGS) && \
 	cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings
 
 # Test Level 4: All standard + Heavy testing (deps, audit).
@@ -160,11 +159,11 @@ ctest3:
 ctest4:
 	@clear
 	@echo "Running Test Level 4: All checks + Heavy testing..."
-	@RUSTFLAGS="-D warnings" cargo nextest run $(PKG_FLAGS) && \
-	RUSTDOCFLAGS="-D warnings" cargo test --doc $(PKG_FLAGS) && \
+	@RUSTFLAGS="-D warnings" cargo nextest run --all-features $(PKG_FLAGS) && \
+	RUSTDOCFLAGS="-D warnings" cargo test --doc --all-features $(PKG_FLAGS) && \
 	cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && \
-	cargo +nightly udeps --all-targets $(PKG_FLAGS) && \
-	cargo +nightly audit $(PKG_FLAGS)
+	cargo +nightly udeps --all-targets --all-features $(PKG_FLAGS) && \
+	cargo +nightly audit --all-features $(PKG_FLAGS)
 
 # Test Level 5: Full heavy testing with mutation tests.
 #
@@ -173,12 +172,12 @@ ctest4:
 ctest5:
 	@clear
 	@echo "Running Test Level 5: Full heavy testing with mutations..."
-	@RUSTFLAGS="-D warnings" cargo nextest run $(PKG_FLAGS) && \
-	RUSTDOCFLAGS="-D warnings" cargo test --doc $(PKG_FLAGS) && \
+	@RUSTFLAGS="-D warnings" cargo nextest run --all-features $(PKG_FLAGS) && \
+	RUSTDOCFLAGS="-D warnings" cargo test --doc --all-features $(PKG_FLAGS) && \
 	cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && \
 	willbe .test dry:0 && \
-	cargo +nightly udeps --all-targets $(PKG_FLAGS) && \
-	cargo +nightly audit $(PKG_FLAGS)
+	cargo +nightly udeps --all-targets --all-features $(PKG_FLAGS) && \
+	cargo +nightly audit --all-features $(PKG_FLAGS)
 
 #
 # === Watch Commands ===
@@ -190,7 +189,7 @@ ctest5:
 #	make wtest1 [crate=name]
 wtest1:
 	@echo "Watching Level 1: Primary tests..."
-	@cargo watch -c -x "nextest run $(PKG_FLAGS)"
+	@cargo watch -c -x "nextest run --all-features $(PKG_FLAGS)"
 
 # Watch Level 2: Primary + Doc tests.
 #
@@ -198,7 +197,7 @@ wtest1:
 #	make wtest2 [crate=name]
 wtest2:
 	@echo "Watching Level 2: Primary + Doc tests..."
-	@cargo watch -c -x "nextest run $(PKG_FLAGS)" -x "test --doc $(PKG_FLAGS)"
+	@cargo watch -c -x "nextest run --all-features $(PKG_FLAGS)" -x "test --doc --all-features $(PKG_FLAGS)"
 
 # Watch Level 3: Primary + Doc + Linter.
 #
@@ -206,7 +205,7 @@ wtest2:
 #	make wtest3 [crate=name]
 wtest3:
 	@echo "Watching Level 3: All standard checks..."
-	@cargo watch -c -x "nextest run $(PKG_FLAGS)" -x "test --doc $(PKG_FLAGS)" -x "clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings"
+	@cargo watch -c -x "nextest run --all-features $(PKG_FLAGS)" -x "test --doc --all-features $(PKG_FLAGS)" -x "clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings"
 
 # Watch Level 4: All standard + Heavy testing.
 #
@@ -214,7 +213,7 @@ wtest3:
 #	make wtest4 [crate=name]
 wtest4:
 	@echo "Watching Level 4: All checks + Heavy testing..."
-	@cargo watch -c --shell "RUSTFLAGS=\"-D warnings\" cargo nextest run $(PKG_FLAGS) && RUSTDOCFLAGS=\"-D warnings\" cargo test --doc $(PKG_FLAGS) && cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && cargo +nightly udeps --all-targets $(PKG_FLAGS) && cargo +nightly audit $(PKG_FLAGS)"
+	@cargo watch -c --shell "RUSTFLAGS=\"-D warnings\" cargo nextest run --all-features $(PKG_FLAGS) && RUSTDOCFLAGS=\"-D warnings\" cargo test --doc --all-features $(PKG_FLAGS) && cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && cargo +nightly udeps --all-targets --all-features $(PKG_FLAGS) && cargo +nightly audit --all-features $(PKG_FLAGS)"
 
 # Watch Level 5: Full heavy testing with mutations.
 #
@@ -222,4 +221,4 @@ wtest4:
 #	make wtest5 [crate=name]
 wtest5:
 	@echo "Watching Level 5: Full heavy testing..."
-	@cargo watch -c --shell "RUSTFLAGS=\"-D warnings\" cargo nextest run $(PKG_FLAGS) && RUSTDOCFLAGS=\"-D warnings\" cargo test --doc $(PKG_FLAGS) && cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && willbe .test dry:0 && cargo +nightly udeps --all-targets $(PKG_FLAGS) && cargo +nightly audit $(PKG_FLAGS)"
+	@cargo watch -c --shell "RUSTFLAGS=\"-D warnings\" cargo nextest run --all-features $(PKG_FLAGS) && RUSTDOCFLAGS=\"-D warnings\" cargo test --doc --all-features $(PKG_FLAGS) && cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && willbe .test dry:0 && cargo +nightly udeps --all-targets --all-features $(PKG_FLAGS) && cargo +nightly audit --all-features $(PKG_FLAGS)"
