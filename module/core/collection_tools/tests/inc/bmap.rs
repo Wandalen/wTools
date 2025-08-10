@@ -76,12 +76,12 @@ fn iters() {
   };
   let got: the_module::BTreeMap< _, _ > = instance.into_iter().collect();
   let exp = the_module::BTreeMap::from([(1, 3), (2, 2), (3, 1)]);
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   let instance = MyContainer {
     entries: the_module::BTreeMap::from([(1, 3), (2, 2), (3, 1)]),
   };
   let got: the_module::BTreeMap< _, _ > = (&instance).into_iter().map(|(k, v)| (*k, *v)).collect();
   let exp = the_module::BTreeMap::from([(1, 3), (2, 2), (3, 1)]);
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 }

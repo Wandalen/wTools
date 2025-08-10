@@ -19,7 +19,7 @@ fn fn_name() {
   };
 
   dbg!(f2);
-  a_id!(f2, 13);
+  assert_eq!(f2, 13);
 }
 
 //
@@ -37,7 +37,7 @@ fn fn_rename() {
     }
   };
 
-  a_id!(f2(), 13);
+  assert_eq!(f2(), 13);
 }
 
 //
@@ -83,6 +83,7 @@ fn fns() {
   {
     let mut counter = 0;
 
+    #[allow(unused_macros)]
     macro_rules! count
     {
       ( $( $Tts : tt )* ) =>
@@ -108,7 +109,7 @@ fn fns() {
       }
     };
 
-    a_id!(counter, 2);
+    assert_eq!(counter, 2);
     f1();
     f2();
   }
@@ -117,6 +118,7 @@ fn fns() {
   {
     let mut counter = 0;
 
+    #[allow(unused_macros)]
     macro_rules! count
     {
       ( $( $Tts : tt )* ) =>
@@ -144,7 +146,7 @@ fn fns() {
       }
     };
 
-    a_id!(counter, 2);
+    assert_eq!(counter, 2);
     f1(1);
     f2(2);
   }
@@ -153,6 +155,7 @@ fn fns() {
   {
     let mut counter = 0;
 
+    #[allow(unused_macros)]
     macro_rules! count
     {
       ( $( $Tts : tt )* ) =>
@@ -175,7 +178,7 @@ fn fns() {
       }
     };
 
-    a_id!(counter, 1);
+    assert_eq!(counter, 1);
     f1(1);
   }
 
@@ -183,6 +186,7 @@ fn fns() {
   {
     let mut counter = 0;
 
+    #[allow(unused_macros)]
     macro_rules! count
     {
       ( $( $Tts : tt )* ) =>
@@ -205,7 +209,7 @@ fn fns() {
       }
     };
 
-    a_id!(counter, 1);
+    assert_eq!(counter, 1);
     f1(1);
   }
 
@@ -213,6 +217,7 @@ fn fns() {
   {
     let mut counter = 0;
 
+    #[allow(unused_macros)]
     macro_rules! count
     {
       ( $( $Tts : tt )* ) =>
@@ -237,7 +242,7 @@ fn fns() {
       }
     };
 
-    a_id!(counter, 1);
+    assert_eq!(counter, 1);
     f1(1);
   }
 
@@ -245,6 +250,7 @@ fn fns() {
   {
     let mut counter = 0;
 
+    #[allow(unused_macros)]
     macro_rules! count
     {
       ( $( $Tts : tt )* ) =>
@@ -269,7 +275,7 @@ fn fns() {
       }
     };
 
-    a_id!(counter, 1);
+    assert_eq!(counter, 1);
     f1(1);
   }
 
@@ -308,6 +314,7 @@ fn fns() {
   {
     let mut counter = 0;
 
+    #[allow(unused_macros)]
     macro_rules! count
     {
       ( $( $Tts : tt )* ) =>
@@ -339,7 +346,7 @@ fn fns() {
     };
     // trace_macros!( false );
 
-    a_id!(counter, 2);
+    assert_eq!(counter, 2);
     f1(1);
     f2(2);
   }

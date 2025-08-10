@@ -1,5 +1,7 @@
+#[cfg(all(feature = "string_split", not(feature = "no_std")))]
 use strs_tools::string::split::{Split};
 
+#[cfg(all(feature = "string_split", not(feature = "no_std")))]
 #[ test ]
 fn test_split_with_vec_delimiter_iterator() {
   let input = "test string";

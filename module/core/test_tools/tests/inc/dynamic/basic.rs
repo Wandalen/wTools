@@ -1,14 +1,14 @@
 #[ allow( unused_imports ) ]
 use super::the_module::*;
 
-tests_impls!
+the_module::tests_impls!
 {
 
   //
 
   fn pass1_test()
   {
-    a_id!( true, true );
+    the_module::a_id!( true, true );
   }
 
   //
@@ -38,7 +38,7 @@ tests_impls!
 
 //
 
-tests_index!
+the_module::tests_index!
 {
   pass1_test,
   fail1_test,

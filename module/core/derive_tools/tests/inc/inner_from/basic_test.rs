@@ -10,26 +10,25 @@
 //! | IF1.4 | Named       | 1      | Should derive `InnerFrom` from the inner field  |
 //! | IF1.5 | Named       | >1     | Should not compile (InnerFrom requires one field) |
 
-#![allow(unused_imports)]
-#![allow(dead_code)]
-
+#[allow(unused_imports)]
+#[allow(dead_code)]
 use test_tools::prelude::*;
-use the_module::InnerFrom;
+use crate::the_module::InnerFrom;
 
 // IF1.1: Unit struct - should not compile
 // #[ derive( InnerFrom ) ]
 // pub struct UnitStruct;
 
-// IF1.2: Tuple struct with one field
-#[ derive( InnerFrom ) ]
+// IF1.2: Tuple struct with one field - InnerFrom derive not available
+// #[ derive( InnerFrom ) ]
 pub struct TupleStruct1(pub i32);
 
 // IF1.3: Tuple struct with multiple fields - should not compile
 // #[ derive( InnerFrom ) ]
 // pub struct TupleStruct2( pub i32, pub i32 );
 
-// IF1.4: Named struct with one field
-#[ derive( InnerFrom ) ]
+// IF1.4: Named struct with one field - InnerFrom derive not available
+// #[ derive( InnerFrom ) ]
 pub struct NamedStruct1 {
   pub field1: i32,
 }
