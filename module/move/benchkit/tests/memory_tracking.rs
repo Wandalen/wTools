@@ -55,7 +55,7 @@ fn test_memory_comparison()
     || 
     {
       // No allocations
-      let _x = 42;
+      core::hint::black_box(42);
     },
     3,
   );
@@ -98,6 +98,9 @@ fn test_allocation_stats()
     current_usage: 256,
   };
   
-  assert_eq!(stats.average_allocation_size(), 102.4);
-  assert_eq!(stats.memory_efficiency(), 0.5);
+  #[allow(clippy::float_cmp)]
+  {
+    assert_eq!(stats.average_allocation_size(), 102.4);
+    assert_eq!(stats.memory_efficiency(), 0.5);
+  }
 }

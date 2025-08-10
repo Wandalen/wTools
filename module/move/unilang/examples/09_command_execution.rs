@@ -11,6 +11,7 @@ use unilang::interpreter::{ ExecutionContext, Interpreter };
 use unilang::types::Value;
 use unilang_parser::{ Parser, UnilangParserOptions };
 
+#[allow(clippy::too_many_lines)]
 fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== Command Execution Demo ===\n" );
@@ -202,7 +203,7 @@ fn main() -> Result< (), unilang::error::Error >
     {
       return Err( ErrorData::new(
         "DIVISION_BY_ZERO".to_string(),
-        format!( "Cannot divide {} by zero. Division by zero is undefined.", dividend ),
+        format!( "Cannot divide {dividend} by zero. Division by zero is undefined." ),
       ));
     }
 
@@ -353,8 +354,7 @@ fn main() -> Result< (), unilang::error::Error >
   // Step 2: Execute commands demonstrating different scenarios
   let parser = Parser::new( UnilangParserOptions::default() );
 
-  let test_cases = vec!
-  [
+  let test_cases = [
     // Successful executions
     ( "hello Alice", "Simple successful execution" ),
     ( "system.status --verbose", "Command with context and detailed output" ),
@@ -436,7 +436,7 @@ fn main() -> Result< (), unilang::error::Error >
     match parser.parse_single_instruction( cmd_str )
     {
       Ok( instruction ) => all_instructions.push( instruction ),
-      Err( e ) => println!( "❌ Failed to parse '{}': {}", cmd_str, e ),
+      Err( e ) => println!( "❌ Failed to parse '{cmd_str}': {e}" ),
     }
   }
 

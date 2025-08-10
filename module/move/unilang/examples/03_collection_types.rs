@@ -7,6 +7,7 @@ use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, 
 use unilang::registry::CommandRegistry;
 use unilang::types::Value;
 
+#[allow(clippy::too_many_lines)]
 fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== Collection Types Demo ===\n" );

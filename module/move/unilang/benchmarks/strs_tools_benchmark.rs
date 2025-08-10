@@ -1,8 +1,10 @@
-//! Benchmark for strs_tools SIMD string operations performance impact
+//! Benchmark for `strs_tools` SIMD string operations performance impact
 //!
 //! This benchmark measures the performance difference between standard library
-//! string operations and strs_tools SIMD-optimized operations in the context
+//! string operations and `strs_tools` SIMD-optimized operations in the context
 //! of unilang parsing tasks.
+
+#![allow(missing_docs)]
 
 use criterion::{ black_box, criterion_group, criterion_main, Criterion };
 use unilang::data::Kind;
@@ -14,12 +16,12 @@ fn generate_list_data(items: usize) -> String {
 
 /// Generate test data for map parsing benchmarks  
 fn generate_map_data(entries: usize) -> String {
-  (1..=entries).map(|i| format!("key{}=value{}", i, i)).collect::<Vec<_>>().join(",")
+  (1..=entries).map(|i| format!("key{i}=value{i}")).collect::<Vec<_>>().join(",")
 }
 
 /// Generate test data for enum choices parsing
 fn generate_enum_data(choices: usize) -> String {
-  (1..=choices).map(|i| format!("choice{}", i)).collect::<Vec<_>>().join(",")
+  (1..=choices).map(|i| format!("choice{i}")).collect::<Vec<_>>().join(",")
 }
 
 fn benchmark_list_parsing(c: &mut Criterion) {
@@ -32,7 +34,7 @@ fn benchmark_list_parsing(c: &mut Criterion) {
     ("huge_list_10000", 10000),
   ];
   
-  for (name, size) in test_cases.iter() {
+  for (name, size) in &test_cases {
     let data = generate_list_data(*size);
     let kind = Kind::List(Box::new(Kind::Integer), Some(','));
     
@@ -40,7 +42,7 @@ fn benchmark_list_parsing(c: &mut Criterion) {
       b.iter(|| {
         let result = unilang::types::parse_value(black_box(&data), black_box(&kind));
         black_box(result)
-      })
+      });
     });
   }
   
@@ -57,7 +59,7 @@ fn benchmark_map_parsing(c: &mut Criterion) {
     ("huge_map_2000", 2000),
   ];
   
-  for (name, size) in test_cases.iter() {
+  for (name, size) in &test_cases {
     let data = generate_map_data(*size);
     let kind = Kind::Map(
       Box::new(Kind::String),
@@ -70,7 +72,7 @@ fn benchmark_map_parsing(c: &mut Criterion) {
       b.iter(|| {
         let result = unilang::types::parse_value(black_box(&data), black_box(&kind));
         black_box(result)
-      })
+      });
     });
   }
   
@@ -87,15 +89,15 @@ fn benchmark_enum_parsing(c: &mut Criterion) {
     ("huge_enum_500", 500),
   ];
   
-  for (name, size) in test_cases.iter() {
+  for (name, size) in &test_cases {
     let choices_str = generate_enum_data(*size);
-    let enum_kind_str = format!("Enum({})", choices_str);
+    let enum_kind_str = format!("Enum({choices_str})");
     
     group.bench_function(*name, |b| {
       b.iter(|| {
         let result: Result<Kind, _> = black_box(&enum_kind_str).parse();
         black_box(result)
-      })
+      });
     });
   }
   
@@ -120,7 +122,7 @@ fn benchmark_complex_scenario(c: &mut Criterion) {
         let result = unilang::types::parse_value(black_box(data), black_box(kind));
         let _ = black_box((name, result));
       }
-    })
+    });
   });
   
   group.finish();
@@ -146,7 +148,7 @@ fn benchmark_throughput(c: &mut Criterion) {
     b.iter(|| {
       let result = unilang::types::parse_value(black_box(&large_list), black_box(&list_kind));
       black_box(result)
-    })
+    });
   });
   
   group.throughput(criterion::Throughput::Bytes(large_map.len() as u64));
@@ -154,7 +156,7 @@ fn benchmark_throughput(c: &mut Criterion) {
     b.iter(|| {
       let result = unilang::types::parse_value(black_box(&large_map), black_box(&map_kind));
       black_box(result)
-    })
+    });
   });
   
   group.finish();

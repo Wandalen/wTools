@@ -3,7 +3,7 @@
 #[cfg(feature = "integration")]
 use benchkit::prelude::*;
 use std::collections::HashMap;
-use std::time::Duration;
+use core::time::Duration;
 
 #[test]
 fn test_framework_comparison()

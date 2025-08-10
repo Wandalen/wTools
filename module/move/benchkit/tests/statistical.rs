@@ -3,8 +3,9 @@
 #[cfg(feature = "integration")]
 use benchkit::prelude::*;
 #[cfg(feature = "statistical_analysis")]
+#[allow(unused_imports)]
 use benchkit::statistical::*;
-use std::time::Duration;
+use core::time::Duration;
 
 #[allow(dead_code)]
 fn create_test_result(name: &str, durations: Vec<u64>) -> BenchmarkResult 

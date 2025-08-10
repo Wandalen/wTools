@@ -1,11 +1,12 @@
 #!/usr/bin/env rust-script
 //! Comprehensive benchmark runner that executes all benchmarks and updates documentation
 //! 
-//! Usage: cargo test run_all_benchmarks --release -- --nocapture
+//! Usage: cargo test `run_all_benchmarks` --release -- --nocapture
 
 #[cfg(feature = "benchmarks")]
 use std::process::Command;
-use std::time::{Duration, Instant};
+use core::time::Duration;
+use std::time::Instant;
 use std::fs;
 use std::path::Path;
 
@@ -20,11 +21,11 @@ fn run_comprehensive_benchmark_impl() {
     
     // Call the comprehensive benchmark binary directly with timeout
     let mut child = match Command::new("cargo")
-        .args(&["run", "--release", "--bin", "comprehensive_benchmark", "--features", "benchmarks"])
+        .args(["run", "--release", "--bin", "comprehensive_benchmark", "--features", "benchmarks"])
         .spawn() {
         Ok(child) => child,
         Err(e) => {
-            println!("❌ Failed to start comprehensive benchmark: {}", e);
+            println!("❌ Failed to start comprehensive benchmark: {e}");
             return;
         }
     };
@@ -54,7 +55,7 @@ fn run_comprehensive_benchmark_impl() {
                 std::thread::sleep(Duration::from_secs(5));
             }
             Err(e) => {
-                println!("❌ Error monitoring benchmark process: {}", e);
+                println!("❌ Error monitoring benchmark process: {e}");
                 break;
             }
         }
@@ -69,6 +70,7 @@ fn run_comprehensive_benchmark_impl() {
 // Removed unused BenchmarkSuite struct and run_benchmark_suite function
 // Now using direct function calls to avoid infinite loops
 
+#[allow(clippy::too_many_lines)]
 fn update_readme_with_results() -> Result<(), String> {
     println!("📝 Updating README with latest benchmark results...");
     
@@ -89,7 +91,7 @@ fn update_readme_with_results() -> Result<(), String> {
                     let mut clap_data = Vec::new();
                     let mut pico_data = Vec::new();
                     
-                    for line in lines.iter() {
+                    for line in &lines {
                         // Skip comment lines, empty lines, and header line
                         if line.trim().starts_with('#') || line.trim().is_empty() || line.trim().starts_with("framework,") {
                             continue;
@@ -110,8 +112,7 @@ fn update_readme_with_results() -> Result<(), String> {
                             let lookup_time_us = lookup_time.parse::<f64>().unwrap_or(0.0) / 1000.0; // ns to μs
                             let init_time_val = init_time.parse::<f64>().unwrap_or(0.0); // already in μs
                             
-                            let row = format!("| **{}** | ~{:.1}s | ~{} KB | ~{:.1} μs | ~{:.1} μs | ~{}/sec |",
-                                            commands, build_time_s, binary_size, init_time_val, lookup_time_us, throughput);
+                            let row = format!("| **{commands}** | ~{build_time_s:.1}s | ~{binary_size} KB | ~{init_time_val:.1} μs | ~{lookup_time_us:.1} μs | ~{throughput}/sec |");
                             
                             match framework {
                                 "unilang" => unilang_data.push(row),
@@ -144,7 +145,7 @@ fn update_readme_with_results() -> Result<(), String> {
         let timestamp = format!("<!-- Last updated: {} UTC -->\n", now.format("%Y-%m-%d %H:%M:%S"));
         
         let content = fs::read_to_string(readme_path)
-            .map_err(|e| format!("Failed to read README: {}", e))?;
+            .map_err(|e| format!("Failed to read README: {e}"))?;
         
         let mut updated_content = if content.starts_with("<!--") {
             // Replace existing timestamp
@@ -152,11 +153,11 @@ fn update_readme_with_results() -> Result<(), String> {
             if lines.len() > 1 {
                 format!("{}\n{}", timestamp.trim(), lines[1..].join("\n"))
             } else {
-                format!("{}\n{}", timestamp, content)
+                format!("{timestamp}\n{content}")
             }
         } else {
             // Add new timestamp
-            format!("{}{}", timestamp, content)
+            format!("{timestamp}{content}")
         };
         
         // If we have new performance data, update the performance tables section
@@ -166,14 +167,14 @@ fn update_readme_with_results() -> Result<(), String> {
                 if let Some(end_pos) = updated_content[start_pos..].find("## 🔧 Available Benchmarks") {
                     let before = &updated_content[..start_pos];
                     let after = &updated_content[start_pos + end_pos..];
-                    updated_content = format!("{}{}\n{}", before, performance_data, after);
+                    updated_content = format!("{before}{performance_data}\n{after}");
                     println!("✅ Performance tables updated with live benchmark data");
                 }
             }
         }
         
         fs::write(readme_path, updated_content)
-            .map_err(|e| format!("Failed to write README: {}", e))?;
+            .map_err(|e| format!("Failed to write README: {e}"))?;
         
         println!("✅ README updated successfully");
     }
@@ -197,7 +198,7 @@ fn update_readme_with_results() -> Result<(), String> {
     if !found_dirs.is_empty() {
         println!("📊 Updated benchmark results found in:");
         for dir in found_dirs {
-            println!("   - {}", dir);
+            println!("   - {dir}");
         }
     }
     
@@ -232,7 +233,7 @@ mod tests {
         
         std::thread::spawn(move || {
             // Catch panics to prevent benchmark from stopping
-            let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            let result = std::panic::catch_unwind(core::panic::AssertUnwindSafe(|| {
                 run_comprehensive_benchmark_impl();
             }));
             let _ = tx.send(result);
@@ -240,7 +241,7 @@ mod tests {
         
         // Wait for completion or timeout
         match rx.recv_timeout(individual_timeout) {
-            Ok(Ok(_)) => {
+            Ok(Ok(())) => {
                 let final_duration = start_time.elapsed();
                 println!("✅ Comprehensive benchmark completed in {:.1} minutes", final_duration.as_secs_f64() / 60.0);
                 results.push(("Comprehensive Framework Comparison".to_string(), final_duration));
@@ -261,7 +262,7 @@ mod tests {
         println!("📝 Updating README with any available benchmark results...");
         match update_readme_with_results() {
             Ok(()) => println!("✅ Documentation updated successfully"),
-            Err(error) => println!("⚠️  Documentation update failed: {}", error),
+            Err(error) => println!("⚠️  Documentation update failed: {error}"),
         }
         
         // Print comprehensive summary
@@ -273,7 +274,7 @@ mod tests {
         if !results.is_empty() {
             println!("✅ Successful benchmarks:");
             for (name, duration) in &results {
-                println!("   {} - {:.1}s", name, duration.as_secs_f64());
+                println!("   {name} - {:.1}s", duration.as_secs_f64());
             }
             println!();
         }
@@ -281,7 +282,7 @@ mod tests {
         if !failed_benchmarks.is_empty() {
             println!("❌ Failed benchmarks:");
             for name in &failed_benchmarks {
-                println!("   {}", name);
+                println!("   {name}");
             }
             println!();
         }
@@ -300,13 +301,13 @@ mod tests {
         println!();
         
         let total_benchmarks = 1; // Just running the comprehensive benchmark now
-        let success_rate = results.len() as f64 / total_benchmarks as f64 * 100.0;
-        println!("🎯 Success rate: {:.1}% ({}/{} benchmarks)", 
-                 success_rate, results.len(), total_benchmarks);
+        let success_rate = results.len() as f64 / f64::from(total_benchmarks) * 100.0;
+        println!("🎯 Success rate: {success_rate:.1}% ({}/{total_benchmarks} benchmarks)", 
+                 results.len());
         
         // Warn about failures but don't assert to prevent CI issues
         if success_rate < 80.0 {
-            println!("⚠️  Low success rate: {:.1}% (some benchmarks may have issues)", success_rate);
+            println!("⚠️  Low success rate: {success_rate:.1}% (some benchmarks may have issues)");
         }
         
         println!("\n🎉 All benchmarks completed successfully!");

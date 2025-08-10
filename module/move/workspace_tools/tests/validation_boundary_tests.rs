@@ -19,6 +19,10 @@
 
 use workspace_tools::{ Workspace, WorkspaceError };
 use std::{ env, fs, path::PathBuf };
+use std::sync::Mutex;
+
+// Global mutex to serialize environment variable tests
+static ENV_TEST_MUTEX: Mutex< () > = Mutex::new( () );
 use tempfile::{ TempDir, NamedTempFile };
 
 /// Helper function to create a test workspace without environment variables
@@ -188,9 +192,10 @@ fn test_is_workspace_file_absolute_outside()
 
 /// Test VB.9: Workspace creation with empty string path  
 #[ test ]
-#[ ignore = "Environment variable manipulation has concurrency issues with other tests" ]
 fn test_workspace_creation_empty_path()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
+  
   // Save original state
   let original = env::var( "WORKSPACE_PATH" ).ok();
   

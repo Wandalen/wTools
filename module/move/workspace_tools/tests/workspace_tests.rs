@@ -19,21 +19,32 @@
 use workspace_tools::{ Workspace, WorkspaceError, workspace };
 use tempfile::TempDir;
 use std::{ env, path::PathBuf };
+use std::sync::Mutex;
+
+// Global mutex to serialize environment variable tests
+static ENV_TEST_MUTEX: Mutex< () > = Mutex::new( () );
 
 /// test workspace resolution with environment variable set
 /// test combination: t1.1
 #[ test ]
-#[ ignore = "Environment variable manipulation has concurrency issues with other tests" ]
 fn test_workspace_resolution_with_env_var()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
+  
   let temp_dir = TempDir::new().unwrap();
+  let original = env::var( "WORKSPACE_PATH" ).ok();
+  
   env::set_var( "WORKSPACE_PATH", temp_dir.path() );
   
   let workspace = Workspace::resolve().unwrap();
   assert_eq!( workspace.root(), temp_dir.path() );
   
-  // cleanup
-  env::remove_var( "WORKSPACE_PATH" );
+  // restore original value
+  match original
+  {
+    Some( value ) => env::set_var( "WORKSPACE_PATH", value ),
+    None => env::remove_var( "WORKSPACE_PATH" ),
+  }
 }
 
 /// test workspace resolution with missing environment variable

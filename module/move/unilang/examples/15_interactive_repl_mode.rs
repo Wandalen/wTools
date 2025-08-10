@@ -17,9 +17,9 @@ use rustyline::error::ReadlineError;
 #[ cfg( feature = "enhanced_repl" ) ]
 use rustyline::history::History;
 #[ cfg( feature = "enhanced_repl" ) ]
-
 #[ cfg( feature = "repl" ) ]
-fn main() -> Result< (), Box< dyn std::error::Error > >
+#[allow(clippy::too_many_lines)]
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Interactive REPL Mode Demo ===\n" );
 
@@ -53,7 +53,8 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 }
 
 #[ cfg( not( feature = "repl" ) ) ]
-fn main() -> Result< (), Box< dyn std::error::Error > >
+#[allow(clippy::too_many_lines)]
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Interactive REPL Mode Demo ===\n" );
   println!( "❌ REPL functionality is not enabled." );
@@ -72,6 +73,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 
 /// Register commands that demonstrate interactive argument handling
 #[ cfg( feature = "repl" ) ]
+#[allow(clippy::too_many_lines)]
 fn register_interactive_commands( registry : &mut CommandRegistry ) -> Result< (), Error >
 {
   // Command with interactive password input
@@ -406,6 +408,7 @@ fn run_basic_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn std::error::Er
 
 /// Run the enhanced interactive REPL loop (with rustyline for history/arrows)
 #[ cfg( feature = "enhanced_repl" ) ]
+#[allow(clippy::too_many_lines)]
 fn run_enhanced_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn core::error::Error > >
 {
   let mut rl = DefaultEditor::new()?;

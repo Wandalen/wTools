@@ -5,7 +5,7 @@
 #[ cfg( feature = "integration" ) ]
 use benchkit::prelude::*;
 use std::thread;
-use std::time::Duration;
+use core::time::Duration;
 use std::collections::HashMap;
 
 #[test]

@@ -13,6 +13,7 @@ use unilang::semantic::SemanticAnalyzer;
 use unilang::types::Value;
 use unilang_parser::{ Parser, UnilangParserOptions };
 
+#[allow(clippy::too_many_lines)]
 fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== Full Unilang Pipeline Demo ===\n" );
@@ -58,8 +59,7 @@ fn main() -> Result< (), unilang::error::Error >
   let parser = Parser::new( UnilangParserOptions::default() );
 
   // Simulate a series of user commands
-  let user_commands = vec!
-  [
+  let user_commands = [
     "help",
     "util.echo 'Starting file operations...'",
     "file.list path::/tmp format::table",
@@ -190,6 +190,7 @@ fn main() -> Result< (), unilang::error::Error >
 }
 
 /// Process a single command through the complete pipeline
+#[allow(clippy::unnecessary_wraps)]
 fn process_command
 (
   command_str : &str,
@@ -255,6 +256,7 @@ Result< (), unilang::error::Error >
 }
 
 /// Set up file management commands
+#[allow(clippy::too_many_lines)]
 fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang::error::Error >
 {
   // File listing command
@@ -484,6 +486,7 @@ fn setup_file_commands( registry : &mut CommandRegistry ) -> Result< (), unilang
 }
 
 /// Set up text processing commands
+#[allow(clippy::too_many_lines)]
 fn setup_text_commands( registry : &mut CommandRegistry ) -> Result< (), unilang::error::Error >
 {
   let analyze_command = CommandDefinition::former()
@@ -719,6 +722,7 @@ fn setup_network_commands( registry : &mut CommandRegistry ) -> Result< (), unil
 }
 
 /// Set up utility commands
+#[allow(clippy::too_many_lines)]
 fn setup_utility_commands( registry : &mut CommandRegistry ) -> Result< (), unilang::error::Error >
 {
   // Echo command

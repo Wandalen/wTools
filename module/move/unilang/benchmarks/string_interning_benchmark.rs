@@ -9,6 +9,9 @@
 //! - Memory allocation reduction: ~90% fewer allocations for repeated commands
 //! - P99 latency: Under 500μs for command resolution
 
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::cast_sign_loss)]
+
 #[ cfg( feature = "benchmarks" ) ]
 use std::time::Instant;
 #[ cfg( feature = "benchmarks" ) ]
@@ -174,7 +177,7 @@ fn benchmark_global_interner( command_slices : &[ &[ &str ] ], iterations : usiz
   // Pre-populate global cache
   for slices in command_slices
   {
-    intern_command_name( slices );
+    let _ = intern_command_name( slices );
   }
   
   let start_time = Instant::now();
@@ -243,12 +246,12 @@ fn run_string_interning_benchmarks()
     vec![ "deploy", "production", "service" ],
   ];
   
-  let command_slices : Vec< &[ &str ] > = test_commands.iter().map( | v | v.as_slice() ).collect();
+  let command_slices : Vec< &[ &str ] > = test_commands.iter().map( std::vec::Vec::as_slice ).collect();
   let iterations = 10_000; // Enough iterations for statistical significance
   
   println!( "Test Configuration:" );
   println!( "- Command patterns: {}", command_slices.len() );
-  println!( "- Iterations per pattern: {}", iterations );
+  println!( "- Iterations per pattern: {iterations}" );
   println!( "- Total operations: {}", command_slices.len() * iterations );
   println!();
   
@@ -292,7 +295,7 @@ fn run_string_interning_benchmarks()
   
   let alloc_reduction = ( ( baseline.memory_allocations - interner_hit.memory_allocations ) as f64 
                          / baseline.memory_allocations as f64 ) * 100.0;
-  println!( "Memory Allocation Reduction (Cache Hit): {:.0}%", alloc_reduction );
+  println!( "Memory Allocation Reduction (Cache Hit): {alloc_reduction:.0}%" );
   
   // Success criteria validation
   let target_met = hit_improvement >= 5.0;

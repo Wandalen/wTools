@@ -19,6 +19,10 @@
 
 use workspace_tools::{ Workspace, WorkspaceError };
 use std::fs;
+use std::sync::Mutex;
+
+// Global mutex to serialize cargo tests that might change working directory
+static CARGO_TEST_MUTEX: Mutex< () > = Mutex::new( () );
 use tempfile::TempDir;
 
 /// Test CI001: Auto-detect from current workspace  
@@ -130,9 +134,10 @@ fn test_is_cargo_workspace_false()
 
 /// Test CI007: Extract metadata from workspace  
 #[ test ]
-#[ ignore = "cargo_metadata has concurrency issues with other tests changing working directory" ]
 fn test_cargo_metadata_success()
 {
+  let _lock = CARGO_TEST_MUTEX.lock().unwrap();
+  
   let temp_dir = create_test_cargo_workspace_with_members();
   let temp_path = temp_dir.path().to_path_buf(); // Get owned path
   
@@ -181,9 +186,10 @@ fn test_cargo_metadata_success()
 
 /// Test CI008: Get all workspace members
 #[ test ]
-#[ ignore = "workspace_members has concurrency issues with other tests changing working directory" ]
 fn test_workspace_members()
 {
+  let _lock = CARGO_TEST_MUTEX.lock().unwrap();
+  
   let temp_dir = create_test_cargo_workspace_with_members();
   let temp_path = temp_dir.path().to_path_buf(); // Get owned path
   

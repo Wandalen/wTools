@@ -2,7 +2,7 @@
 
 #[cfg(feature = "integration")]
 use benchkit::prelude::*;
-use std::time::Duration;
+use core::time::Duration;
 use std::collections::HashMap;
 
 fn create_test_result(time_ms: u64) -> BenchmarkResult

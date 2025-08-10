@@ -181,7 +181,7 @@ fn test_save_config_to()
 
 /// Test SI008: Merge multiple config layers
 #[ test ]
-#[ ignore = "layered config implementation has incorrect merge order - override configs should win over base configs" ]
+#[ cfg( test ) ]
 fn test_load_config_layered()
 {
   let ( _temp_dir, workspace ) = create_test_workspace_with_layered_configs();

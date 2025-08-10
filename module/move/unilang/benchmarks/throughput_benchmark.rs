@@ -24,7 +24,7 @@ fn run_framework_comparison_benchkit( command_count : usize ) -> ComparisonRepor
 {
   println!( "🎯 Comparative Analysis: {} Commands (using benchkit)", command_count );
 
-  let mut comparison = ComparativeAnalysis::new( &format!( "frameworks_{}_commands", command_count ) );
+  let mut comparison = ComparativeAnalysis::new( format!( "frameworks_{}_commands", command_count ) );
   
   // Unilang SIMD benchmark
   comparison = comparison.algorithm( "unilang_simd", move ||
@@ -137,7 +137,7 @@ fn benchmark_unilang_simd_operation( command_count : usize )
   for cmd in &test_commands
   {
     let _ = pipeline.process_command_simple( cmd );
-    std::hint::black_box( cmd ); // Prevent optimization
+    core::hint::black_box( cmd ); // Prevent optimization
   }
 }
 
@@ -149,7 +149,7 @@ fn benchmark_unilang_no_simd_operation( command_count : usize )
   benchmark_unilang_simd_operation( command_count );
   
   // Add simulated non-SIMD overhead
-  std::thread::sleep( std::time::Duration::from_nanos( 100 ) );
+  std::thread::sleep( core::time::Duration::from_nanos( 100 ) );
 }
 
 /// Clap operation
@@ -210,7 +210,7 @@ fn benchmark_pico_args_operation( command_count : usize )
       format!( "test_{}", i ),
     ];
     
-    let args = Arguments::from_vec( args_vec.iter().map( |s| s.into() ).collect() );
+    let args = Arguments::from_vec( args_vec.iter().map( core::convert::Into::into ).collect() );
     let _ = args.finish();
   }
 }
@@ -264,8 +264,8 @@ fn run_memory_benchmark_benchkit()
     let command_slices = vec![ vec![ "perf", "cmd_1" ], vec![ "perf", "cmd_2" ] ];
     for slices in &command_slices
     {
-      let _command_name = format!( ".{}", slices.join( "." ) );
-      std::hint::black_box( _command_name );
+      let command_name = format!( ".{}", slices.join( "." ) );
+      core::hint::black_box( command_name );
     }
   });
   
@@ -276,9 +276,9 @@ fn run_memory_benchmark_benchkit()
     for slices in &command_slices
     {
       // Simulate cached lookup - much faster
-      let _command_name = format!( ".{}", slices.join( "." ) );
-      std::hint::black_box( _command_name );
-      std::thread::sleep( std::time::Duration::from_nanos( 10 ) ); // Simulate cache hit speed
+      let command_name = format!( ".{}", slices.join( "." ) );
+      core::hint::black_box( command_name );
+      std::thread::sleep( core::time::Duration::from_nanos( 10 ) ); // Simulate cache hit speed
     }
   });
   
@@ -347,6 +347,7 @@ fn main()
 mod tests
 {
   #[ cfg( feature = "benchmarks" ) ]
+  #[allow(unused_imports)]
   use super::*;
 
   #[ cfg( feature = "benchmarks" ) ]

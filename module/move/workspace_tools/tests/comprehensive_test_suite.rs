@@ -102,6 +102,9 @@ use std::{
 #[ cfg( feature = "stress" ) ]
 use std::time::Instant;
 
+// Global mutex to serialize environment variable tests
+static ENV_TEST_MUTEX: Mutex< () > = Mutex::new( () );
+
 // ============================================================================
 // core workspace functionality tests
 // ============================================================================
@@ -112,9 +115,10 @@ mod core_workspace_tests
 
   /// test w1.1: workspace resolution with valid environment variable
   #[ test ]
-  #[ ignore = "Environment variable manipulation has concurrency issues with other tests" ]
   fn test_resolve_with_valid_env_var()
   {
+    let _lock = ENV_TEST_MUTEX.lock().unwrap();
+    
     let temp_dir = TempDir::new().unwrap();
     let original = env::var( "WORKSPACE_PATH" ).ok();
     
@@ -129,9 +133,10 @@ mod core_workspace_tests
 
   /// test w1.2: workspace resolution with nonexistent path
   #[ test ]
-  #[ ignore = "Environment variable manipulation has concurrency issues with other tests" ]
   fn test_resolve_with_nonexistent_path()
   {
+    let _lock = ENV_TEST_MUTEX.lock().unwrap();
+    
     let original = env::var( "WORKSPACE_PATH" ).ok();
     // Use a truly unique path that's unlikely to exist or be created by other tests
     let thread_id = std::thread::current().id();

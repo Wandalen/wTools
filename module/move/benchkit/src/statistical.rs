@@ -461,7 +461,7 @@ impl StatisticalAnalysis
     kurt
   }
 
-  fn detect_outliers(times: &[Duration]) -> usize 
+  pub fn detect_outliers(times: &[Duration]) -> usize 
   {
     if times.len() < 4 { return 0; }
     

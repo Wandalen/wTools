@@ -4,6 +4,7 @@
 //! benchkit features to comprehensively benchmark actual unilang parser performance.
 
 use benchkit::prelude::*;
+use std::fmt::Write;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
@@ -494,20 +495,20 @@ fn generate_parser_performance_report(workload: &ParserWorkload) -> Result<()>
   
   // Workload summary
   report.push_str("## Parser Workload Analysis\n\n");
-  report.push_str(&format!("- **Total commands analyzed**: {}\n", workload.commands.len()));
-  report.push_str(&format!("- **Total characters processed**: {} ({:.2} MB)\n", 
-    workload.total_characters, workload.total_characters as f64 / 1_048_576.0));
-  report.push_str(&format!("- **Average command length**: {:.1} characters\n", workload.average_command_length));
-  report.push_str(&format!("- **Error cases included**: {} ({:.1}%)\n\n", 
-    workload.error_case_count, workload.error_case_count as f64 / workload.commands.len() as f64 * 100.0));
+  writeln!(&mut report, "- **Total commands analyzed**: {}", workload.commands.len()).unwrap();
+  writeln!(&mut report, "- **Total characters processed**: {} ({:.2} MB)", 
+    workload.total_characters, workload.total_characters as f64 / 1_048_576.0).unwrap();
+  writeln!(&mut report, "- **Average command length**: {:.1} characters", workload.average_command_length).unwrap();
+  writeln!(&mut report, "- **Error cases included**: {} ({:.1}%)\n", 
+    workload.error_case_count, workload.error_case_count as f64 / workload.commands.len() as f64 * 100.0).unwrap();
 
   // Complexity distribution
   report.push_str("### Command Complexity Distribution\n\n");
   for (complexity, count) in &workload.complexity_distribution {
     let percentage = *count as f64 / (workload.commands.len() - workload.error_case_count) as f64 * 100.0;
-    report.push_str(&format!("- **{:?}**: {} commands ({:.1}%)\n", complexity, count, percentage));
+    writeln!(&mut report, "- **{complexity:?}**: {count} commands ({percentage:.1}%)").unwrap();
   }
-  report.push_str("\n");
+  report.push('\n');
 
   // Performance highlights
   report.push_str("## Performance Highlights\n\n");
@@ -582,4 +583,4 @@ fn generate_parser_performance_report(workload: &ParserWorkload) -> Result<()>
   Ok(())
 }
 
-use std::time::Duration;
+use core::time::Duration;
