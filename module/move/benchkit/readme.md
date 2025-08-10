@@ -30,7 +30,7 @@ This is the core philosophy of `benchkit`. It doesn't impose a workflow; it prov
 
 ## 🚀 Quick Start: Compare, Analyze, and Document
 
-This example demonstrates the core `benchkit` workflow: comparing two algorithms and automatically updating a performance section in your `README.md`.
+This example demonstrates the core `benchkit` workflow: comparing two algorithms and automatically updating a performance section in your `readme.md`.
 
 **1. Add to `dev-dependencies` in `Cargo.toml`:**
 ```toml
@@ -86,46 +86,73 @@ fn update_readme_performance_docs()
   let report = comparison.run();
   let markdown = report.to_markdown();
 
-  let updater = MarkdownUpdater::new( "README.md", "Performance" );
+  let updater = MarkdownUpdater::new( "readme.md", "Performance" );
   updater.update_section( &markdown ).unwrap();
 }
 ```
 
-**3. Add a placeholder section to your `README.md`:**
+**3. Add a placeholder section to your `readme.md`:**
 
 ```markdown
 ## Performance
 
-<!-- benchkit-performance-start -->
-Old performance data will be replaced here.
-<!-- benchkit-performance-end -->
-```
+## api_performance Results
 
-**4. Run `cargo test`:**
-
-Your `README.md` is automatically updated with a clean, version-controlled report:
-
-```markdown
-## Performance
-
-<!-- benchkit-performance-start -->
-<!-- Last updated: 2025-08-08 12:30:00 UTC -->
-
-### Sorting Algorithms Comparison
-
-| Algorithm | Mean Time | Operations/sec | Relative Performance |
-|---|---|---|---|
-| std_unstable_sort | 4.31µs | 231,842 | **Fastest** |
-| std_stable_sort | 8.12µs | 123,152 | 1.9x slower |
+| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
+|-----------|-----------|---------|-----|-----|----------|
+| create_user | 84.00ns | 11904762 | 80.00ns | 120.00ns | 13.00ns |
+| get_user | 88.00ns | 11363636 | 80.00ns | 120.00ns | 17.00ns |
 
 ### Key Insights
 
-- **Best performing**: std_unstable_sort algorithm
-- **Performance range**: 1.9x difference between fastest and slowest
-<!-- benchkit-performance-end -->
-```
+- **Fastest operation**: create_user (84.00ns)
+- **Performance range**: 1.0x difference between fastest and slowest
 
----
+
+
+## api_performance Results
+
+| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
+|-----------|-----------|---------|-----|-----|----------|
+| get_user | 84.00ns | 11904762 | 80.00ns | 120.00ns | 13.00ns |
+| create_user | 92.00ns | 10869565 | 80.00ns | 120.00ns | 19.00ns |
+
+### Key Insights
+
+- **Fastest operation**: get_user (84.00ns)
+- **Performance range**: 1.1x difference between fastest and slowest
+
+
+
+## Performance
+
+## api_performance Results
+
+| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
+|-----------|-----------|---------|-----|-----|----------|
+| create_user | 84.00ns | 11904762 | 80.00ns | 120.00ns | 13.00ns |
+| get_user | 88.00ns | 11363636 | 80.00ns | 120.00ns | 17.00ns |
+
+### Key Insights
+
+- **Fastest operation**: create_user (84.00ns)
+- **Performance range**: 1.0x difference between fastest and slowest
+
+
+
+## api_performance Results
+
+| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
+|-----------|-----------|---------|-----|-----|----------|
+| get_user | 84.00ns | 11904762 | 80.00ns | 120.00ns | 13.00ns |
+| create_user | 92.00ns | 10869565 | 80.00ns | 120.00ns | 19.00ns |
+
+### Key Insights
+
+- **Fastest operation**: get_user (84.00ns)
+- **Performance range**: 1.1x difference between fastest and slowest
+
+
 
 ## 🧰 What's in the Toolkit?
 
@@ -243,7 +270,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
   let markdown_report = results.generate_markdown_report().generate();
 
   // Automatically update the "## Performance" section of a file.
-  let updater = MarkdownUpdater::new( "README.md", "Performance" );
+  let updater = MarkdownUpdater::new( "readme.md", "Performance" );
   updater.update_section( &markdown_report )?;
   
   Ok( () )
@@ -260,7 +287,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 [ 1. Write Code ] -> [ 2. Add Benchmark in `tests/` ] -> [ 3. Run `cargo test` ]
        ^                                                              |
        |                                                              v
-[ 5. Commit Code + Perf Docs ] <- [ 4. Auto-Update `README.md` ] <- [ Analyze Console Results ]
+[ 5. Commit Code + Perf Docs ] <- [ 4. Auto-Update `readme.md` ] <- [ Analyze Console Results ]
 ```
 
 ## Installation

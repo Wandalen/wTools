@@ -26,7 +26,7 @@ pub struct DocumentationConfig
 
 impl DocumentationConfig
 {
-  /// Create config for README.md performance section
+  /// Create config for readme.md performance section
   pub fn readme_performance(readme_path: impl AsRef<Path>) -> Self
   {
     Self
