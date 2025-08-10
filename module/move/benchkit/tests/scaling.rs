@@ -13,14 +13,14 @@ fn test_scaling_analysis()
       // Simulate O(n) operation
       for i in 0..scale
       {
-        std::hint::black_box(i);
+        core::hint::black_box(i);
       }
     },
     Some(ScalingConfig::quick())
   );
   
-  assert!(analysis.results.len() > 0);
+  assert!(!analysis.results.is_empty());
   
   let complexity = analysis.complexity_analysis();
-  println!("Complexity analysis: {:?}", complexity);
+  println!("Complexity analysis: {complexity:?}");
 }
