@@ -109,6 +109,18 @@ impl ScalingChart
     
     self.add_series(name, data_points);
   }
+
+  /// Get the number of data series in the chart
+  pub fn data_series_count(&self) -> usize
+  {
+    self.data_series.len()
+  }
+
+  /// Get the number of data points in a specific series
+  pub fn data_points_count(&self, series_index: usize) -> Option< usize >
+  {
+    self.data_series.get( series_index ).map( | ( _, points ) | points.len() )
+  }
   
   /// Generate the chart and save to file
   pub fn generate(&self, output_path: &Path) -> Result<()>
@@ -296,6 +308,18 @@ impl ComparisonChart
     {
       self.add_framework(name, result.operations_per_second());
     }
+  }
+
+  /// Get the number of data points in the chart
+  pub fn data_count(&self) -> usize
+  {
+    self.data.len()
+  }
+
+  /// Get the operations per second for a specific framework by index
+  pub fn ops_per_second(&self, index: usize) -> Option< f64 >
+  {
+    self.data.get( index ).map( | ( _, ops ) | *ops )
   }
   
   /// Generate the chart

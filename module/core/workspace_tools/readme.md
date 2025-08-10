@@ -118,7 +118,7 @@ You have now eliminated brittle, context-dependent file paths from your project!
 ```
 your-project/
 ├── .cargo/
-├── .secrets.sh          # (Optional) Securely manage secrets
+├── .secret/             # (Optional) Securely manage secrets
 ├── .workspace/          # Internal workspace metadata
 ├── Cargo.toml           # Your workspace root
 ├── config/              # ( ws.config_dir() ) Application configuration
@@ -193,14 +193,14 @@ let db_config = ws.find_config( "database" )?; // Finds config/database.toml, .y
 <details>
 <summary><strong>🔒 Secure Secret Management (`secret_management`)</strong></summary>
 
-Load secrets from a dedicated, git-ignored `.secrets.sh` file, with fallbacks to environment variables.
+Load secrets from files in a dedicated, git-ignored `.secret/` directory, with fallbacks to environment variables.
 
 **Enable:** Add `workspace_tools = { workspace = true, features = ["secret_management"] }` to `Cargo.toml`.
 
 ```
 // .gitignore
 .*
-// .secrets.sh
+// .secret/-secrets.sh
 API_KEY="your-super-secret-key"
 ```
 
@@ -209,8 +209,8 @@ use workspace_tools::workspace;
 
 let ws = workspace()?;
 
-// Loads API_KEY from .secrets.sh, or falls back to the environment.
-let api_key = ws.load_secret_key( "API_KEY", ".secrets.sh" )?;
+// Loads API_KEY from .secret/-secrets.sh, or falls back to the environment.
+let api_key = ws.load_secret_key( "API_KEY", "-secrets.sh" )?;
 ```
 
 </details>

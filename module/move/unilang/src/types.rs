@@ -8,8 +8,7 @@ mod private
 {
   use crate::data::Kind;
   use std::path::PathBuf; // Removed `Path`
-  use strs_tools::string;
-  use strs_tools::string::split::SplitType;
+  // Removed strs_tools dependencies - using standard Rust string operations
   use url::Url;
   use chrono::{DateTime, FixedOffset};
   use regex::Regex;
@@ -266,14 +265,11 @@ fn parse_list_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
     return Ok(Value::List(Vec::new()));
   }
   let delimiter = delimiter_opt.unwrap_or(',');
-  // Use SIMD-optimized string splitting for better performance
-  let parts: Vec<String> = string::split()
-    .src(input)
-    .delimeter(delimiter.to_string().as_str())
-    .stripping(true)
-    .perform()
-    .filter(|s| s.typ == SplitType::Delimeted) // Only keep content, not delimiters
-    .map(|s| s.string.to_string().trim().to_string())
+  // Use standard Rust string splitting for better performance
+  let parts: Vec<String> = input
+    .split(delimiter)
+    .map(|s| s.trim().to_string())
+    .filter(|s| !s.is_empty())
     .collect();
   let mut parsed_items = Vec::new();
   for part in parts {
@@ -293,26 +289,19 @@ fn parse_map_value( input : &str, kind : &Kind ) -> Result< Value, TypeError >
   }
   let entry_delimiter = entry_delimiter_opt.unwrap_or(',');
   let kv_delimiter = kv_delimiter_opt.unwrap_or('=');
-  // Use SIMD-optimized string splitting for map entries  
-  let entries: Vec<String> = string::split()
-    .src(input)
-    .delimeter(entry_delimiter.to_string().as_str())
-    .stripping(true)
-    .perform()
-    .filter(|s| s.typ == SplitType::Delimeted) // Only keep content, not delimiters
-    .map(|s| s.string.to_string())
+  // Use standard Rust string splitting for map entries  
+  let entries: Vec<String> = input
+    .split(entry_delimiter)
+    .map(|s| s.trim().to_string())
+    .filter(|s| !s.is_empty())
     .collect();
   let mut parsed_map = HashMap::new();
   for entry in entries {
-    // Use SIMD-optimized splitting for key-value pairs
-    let parts: Vec<String> = string::split()
-      .src(&entry)
-      .delimeter(kv_delimiter.to_string().as_str())
-      .stripping(true)
-      .perform()
-      .filter(|s| s.typ == SplitType::Delimeted) // Only keep content, not delimiters
-      .take(2) // Only take first 2 parts (equivalent to splitn(2, ...))
-      .map(|s| s.string.to_string())
+    // Use standard Rust splitting for key-value pairs
+    let parts: Vec<String> = entry
+      .splitn(2, kv_delimiter) // splitn limits to 2 parts maximum
+      .map(|s| s.trim().to_string())
+      .filter(|s| !s.is_empty())
       .collect();
     if parts.len() != 2 {
       return Err(TypeError {

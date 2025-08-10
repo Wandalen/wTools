@@ -6,12 +6,12 @@
 use benchkit::prelude::*;
 
 #[cfg(feature = "statistical_analysis")]
-type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+type Result<T> = core::result::Result<T, Box<dyn core::error::Error>>;
 
 #[cfg(feature = "statistical_analysis")]
 fn main() -> Result<()>
 {
-  use std::time::Duration;
+  use core::time::Duration;
   use std::collections::HashMap;
   
   println!("📊 Benchkit Research-Grade Statistical Analysis Example");
@@ -95,12 +95,12 @@ fn main() -> Result<()>
   
   // Generate research-grade statistical report
   let statistical_report = report_generator.generate_statistical_report();
-  println!("{}", statistical_report);
+  println!("{statistical_report}");
   
   // Save report to file
   let report_path = "target/statistical_analysis_report.md";
   std::fs::write(report_path, &statistical_report)?;
-  println!("📝 Full statistical report saved to: {}", report_path);
+  println!("📝 Full statistical report saved to: {report_path}");
   
   println!("\n🎓 Key Research-Grade Features Demonstrated:");
   println!("  ✅ Confidence intervals with proper t-distribution");

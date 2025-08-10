@@ -24,8 +24,8 @@ fn test_allocation_tracking()
 #[test]
 fn test_string_operations_comparison()
 {
-  let test_data = vec![ vec![ "perf", "cmd_1" ], vec![ "perf", "cmd_2" ] ];
-  let test_slices : Vec< &[ &str ] > = test_data.iter().map( | v | v.as_slice() ).collect();
+  let test_data = [vec![ "perf", "cmd_1" ], vec![ "perf", "cmd_2" ]];
+  let test_slices : Vec< &[ &str ] > = test_data.iter().map( std::vec::Vec::as_slice ).collect();
   
   let comparison = bench_string_operations(
     "format_join",
@@ -35,5 +35,5 @@ fn test_string_operations_comparison()
     &test_slices,
   );
   
-  println!( "Comparison: {:?}", comparison );
+  println!( "Comparison: {comparison:?}" );
 }

@@ -1,11 +1,11 @@
-//! Testing benchkit with actual strs_tools algorithms
+//! Testing benchkit with actual `strs_tools` algorithms
 //!
 //! This tests benchkit integration with the actual specialized algorithms
-//! from strs_tools to ensure real-world compatibility.
+//! from `strs_tools` to ensure real-world compatibility.
 
 use benchkit::prelude::*;
 
-type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+type Result<T> = core::result::Result<T, Box<dyn core::error::Error>>;
 
 // Import strs_tools (conditional compilation for when available)
 // #[cfg(feature = "integration")]
@@ -20,25 +20,26 @@ fn main() -> Result<()>
   println!();
 
   // Test 1: Basic string operations (always available)
-  test_standard_string_operations()?;
+  test_standard_string_operations();
   
   // Test 2: strs_tools specialized algorithms (simulation)
-  test_strs_tools_specialized_algorithms()?;
+  test_strs_tools_specialized_algorithms();
   
   // Test 3: Performance profiling of real algorithms
-  test_real_world_performance_profiling()?;
+  test_real_world_performance_profiling();
   
   // Test 4: Edge case handling
-  test_edge_case_handling()?;
+  test_edge_case_handling();
   
   // Test 5: Large data set handling
-  test_large_dataset_performance()?;
+  test_large_dataset_performance();
 
   println!("✅ All strs_tools integration tests completed!");
+  
   Ok(())
 }
 
-fn test_standard_string_operations() -> Result<()>
+fn test_standard_string_operations()
 {
   println!("1️⃣ Testing Standard String Operations");
   println!("------------------------------------");
@@ -74,22 +75,23 @@ fn test_standard_string_operations() -> Result<()>
   single_char_comparison = single_char_comparison
     .algorithm("std_split", move || {
       let count = single_data_clone.split(',').count();
-      std::hint::black_box(count);
+      core::hint::black_box(count);
     })
     .algorithm("std_matches", move || {
       let count = single_data_clone2.matches(',').count();
-      std::hint::black_box(count);
+      core::hint::black_box(count);
     })
     .algorithm("manual_byte_scan", move || {
       let count = single_data_clone3.bytes().filter(|&b| b == b',').count();
-      std::hint::black_box(count);
+      core::hint::black_box(count);
     });
 
   let single_report = single_char_comparison.run();
   
   if let Some((fastest_single, result)) = single_report.fastest() {
     println!("  ✅ Single char analysis:");
-    println!("     - Fastest: {} ({:.0} ops/sec)", fastest_single, result.operations_per_second());
+    let ops_per_sec = result.operations_per_second();
+    println!("     - Fastest: {fastest_single} ({ops_per_sec:.0} ops/sec)");
     println!("     - Reliability: CV = {:.1}%", result.coefficient_of_variation() * 100.0);
   }
 
@@ -102,26 +104,26 @@ fn test_standard_string_operations() -> Result<()>
   multi_char_comparison = multi_char_comparison
     .algorithm("std_split", move || {
       let count = multi_data_clone.split("::").count();
-      std::hint::black_box(count);
+      core::hint::black_box(count);
     })
     .algorithm("std_matches", move || {
       let count = multi_data_clone2.matches("::").count();
-      std::hint::black_box(count);
+      core::hint::black_box(count);
     });
 
   let multi_report = multi_char_comparison.run();
   
   if let Some((fastest_multi, result)) = multi_report.fastest() {
     println!("  ✅ Multi char analysis:");
-    println!("     - Fastest: {} ({:.0} ops/sec)", fastest_multi, result.operations_per_second());
+    let ops_per_sec = result.operations_per_second();
+    println!("     - Fastest: {fastest_multi} ({ops_per_sec:.0} ops/sec)");
     println!("     - Reliability: CV = {:.1}%", result.coefficient_of_variation() * 100.0);
   }
 
   println!();
-  Ok(())
 }
 
-fn test_strs_tools_specialized_algorithms() -> Result<()>
+fn test_strs_tools_specialized_algorithms()
 {
   println!("2️⃣ Testing strs_tools Specialized Algorithms (Simulation)");
   println!("----------------------------------------------------------");
@@ -132,7 +134,8 @@ fn test_strs_tools_specialized_algorithms() -> Result<()>
     .complexity(DataComplexity::Complex)
     .generate_string();
     
-  println!("  📊 Test data: {} bytes", test_data.len());
+  let test_data_len = test_data.len();
+  println!("  📊 Test data: {test_data_len} bytes");
 
   let test_data_clone = test_data.clone();
   let test_data_clone2 = test_data.clone();
@@ -144,18 +147,18 @@ fn test_strs_tools_specialized_algorithms() -> Result<()>
     .algorithm("generic_split", move || {
       // Simulating generic split algorithm
       let count = test_data_clone.split(',').count();
-      std::hint::black_box(count);
+      core::hint::black_box(count);
     })
     .algorithm("single_char_specialized_sim", move || {
       // Simulating single char specialized split
       let count = test_data_clone2.split(',').count();
-      std::hint::black_box(count);
+      core::hint::black_box(count);
     })
     .algorithm("smart_split_auto_sim", move || {
       // Simulating smart split algorithm
       let count = test_data_clone3.split(',').count();
       std::thread::sleep(std::time::Duration::from_nanos(500)); // Simulate slightly slower processing
-      std::hint::black_box(count);
+      core::hint::black_box(count);
     });
 
   let specialized_report = specialized_comparison.run();
@@ -181,13 +184,13 @@ fn test_strs_tools_specialized_algorithms() -> Result<()>
   boyer_moore_comparison = boyer_moore_comparison
     .algorithm("generic_multi_split", move || {
       let count = multi_data_clone.split("::").count();
-      std::hint::black_box(count);
+      core::hint::black_box(count);
     })
     .algorithm("boyer_moore_specialized_sim", move || {
       // Simulating Boyer-Moore pattern matching  
       let count = multi_data_clone2.split("::").count();
       std::thread::sleep(std::time::Duration::from_nanos(200)); // Simulate slightly different performance
-      std::hint::black_box(count);
+      core::hint::black_box(count);
     });
 
   let boyer_report = boyer_moore_comparison.run();
@@ -199,10 +202,9 @@ fn test_strs_tools_specialized_algorithms() -> Result<()>
   }
 
   println!();
-  Ok(())
 }
 
-fn test_real_world_performance_profiling() -> Result<()>
+fn test_real_world_performance_profiling()
 {
   println!("3️⃣ Testing Real-World Performance Profiling");
   println!("-------------------------------------------");
@@ -228,12 +230,12 @@ fn test_real_world_performance_profiling() -> Result<()>
     "split_and_collect_all",
     move || {
       let parts: Vec<&str> = cmd_clone.split_whitespace().collect();
-      std::hint::black_box(parts.len());
+      core::hint::black_box(parts.len());
     },
     "iterator_count_only", 
     move || {
       let count = cmd_clone2.split_whitespace().count();
-      std::hint::black_box(count);
+      core::hint::black_box(count);
     },
     15,
   );
@@ -272,10 +274,9 @@ fn test_real_world_performance_profiling() -> Result<()>
   }
   
   println!();
-  Ok(())
 }
 
-fn test_edge_case_handling() -> Result<()>
+fn test_edge_case_handling()
 {
   println!("4️⃣ Testing Edge Case Handling");
   println!("-----------------------------");
@@ -299,7 +300,7 @@ fn test_edge_case_handling() -> Result<()>
     
     suite.benchmark(benchmark_name, move || {
       let count = data_clone.split(',').count();
-      std::hint::black_box(count);
+      core::hint::black_box(count);
     });
   }
   
@@ -325,16 +326,15 @@ fn test_edge_case_handling() -> Result<()>
   println!("     - Reliability: {}/{} cases meet standards", reliable_count, total_count);
   
   println!();
-  Ok(())
 }
 
-fn test_large_dataset_performance() -> Result<()>
+fn test_large_dataset_performance()
 {
   println!("5️⃣ Testing Large Dataset Performance");
   println!("-----------------------------------");
   
   // Generate large datasets to test scaling characteristics
-  let scales = vec![1000, 10000, 100000];
+  let scales = vec![1000, 10000, 100_000];
   
   for &scale in &scales {
     println!("  📊 Testing scale: {} items", scale);
@@ -366,7 +366,7 @@ fn test_large_dataset_performance() -> Result<()>
     
     let (_result, stats) = memory_test.run_with_tracking(1, move || {
       let count = data_clone2.split(',').count();
-      std::hint::black_box(count);
+      core::hint::black_box(count);
     });
     
     println!("     Memory overhead: {} bytes", stats.total_allocated);
@@ -375,6 +375,5 @@ fn test_large_dataset_performance() -> Result<()>
   
   println!("  ✅ Large dataset testing completed - no performance issues detected");
   println!();
-  Ok(())
 }
 

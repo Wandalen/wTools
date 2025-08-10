@@ -9,6 +9,8 @@
 use unilang_parser::{ Parser, UnilangParserOptions };
 use std::time::Instant;
 
+#[allow(clippy::too_many_lines)]
+#[allow(clippy::unnecessary_wraps)]
 fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   println!( "=== Performance Optimization Patterns ===" );
@@ -128,21 +130,14 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
   // Process one at a time to minimize memory usage
   for cmd in large_command_set.iter().cycle().take( 1000 )
   {
-    match parser.parse_single_instruction( cmd )
-    {
-      Ok( instruction ) =>
-      {
-        processed_count += 1;
-        total_args += instruction.positional_arguments.len() + instruction.named_arguments.len();
+    if let Ok( instruction ) = parser.parse_single_instruction( cmd ) {
+      processed_count += 1;
+      total_args += instruction.positional_arguments.len() + instruction.named_arguments.len();
 
-        // Process immediately without storing
-        // In real application, you'd execute the command here
-      }
-      Err( _ ) =>
-      {
-        // Handle error without breaking the stream
-        continue;
-      }
+      // Process immediately without storing
+      // In real application, you'd execute the command here
+    } else {
+      // Handle error without breaking the stream
     }
   }
 

@@ -5,7 +5,7 @@ use benchkit::prelude::*;
 #[cfg(feature = "visualization")]
 #[allow(unused_imports)]
 use benchkit::plotting::*;
-use std::time::Duration;
+use core::time::Duration;
 
 #[allow(dead_code)]
 fn create_test_result(name: &str, ops_per_sec: f64) -> BenchmarkResult
@@ -31,8 +31,8 @@ fn test_scaling_chart_creation()
   chart.add_scaling_results("Test Series", &scaling_results);
   
   // Verify data was added
-  assert_eq!(chart.data_series.len(), 1);
-  assert_eq!(chart.data_series[0].1.len(), 3);
+  assert_eq!(chart.data_series_count(), 1);
+  assert_eq!(chart.data_points_count(0).unwrap(), 3);
 }
 
 #[test]
@@ -50,9 +50,9 @@ fn test_comparison_chart_creation()
   chart.add_benchmark_results(&framework_results);
   
   // Verify data was added
-  assert_eq!(chart.data.len(), 2);
-  assert_eq!(chart.data[0].1, 1000.0);
-  assert_eq!(chart.data[1].1, 500.0);
+  assert_eq!(chart.data_count(), 2);
+  assert_eq!(chart.ops_per_second(0).unwrap(), 1000.0);
+  assert_eq!(chart.ops_per_second(1).unwrap(), 500.0);
 }
 
 #[test]

@@ -1,4 +1,4 @@
-//! Comprehensive demonstration of benchkit applied to strs_tools
+//! Comprehensive demonstration of benchkit applied to `strs_tools`
 //!
 //! This example shows the transformation from complex criterion-based benchmarks
 //! to clean, research-grade benchkit analysis with dramatically reduced code.
@@ -7,7 +7,7 @@ use benchkit::prelude::*;
 
 use std::collections::HashMap;
 
-type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+type Result<T> = core::result::Result<T, Box<dyn core::error::Error>>;
 
 fn main() -> Result<()>
 {
@@ -76,7 +76,7 @@ fn demonstrate_data_generation()
   println!("    Unilang commands:");
   for cmd in &unilang_commands 
   {
-    println!("      - {}", cmd);
+    println!("      - {cmd}");
   }
   
   // Size-controlled generation

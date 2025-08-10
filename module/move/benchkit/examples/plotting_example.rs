@@ -6,7 +6,7 @@
 use benchkit::prelude::*;
 
 #[cfg(feature = "visualization")]
-type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+type Result<T> = core::result::Result<T, Box<dyn core::error::Error>>;
 
 #[cfg(feature = "visualization")]
 fn main() -> Result<()>
@@ -37,7 +37,7 @@ fn main() -> Result<()>
     "Performance Scaling Analysis",
     scaling_path
   )?;
-  println!("✅ Scaling chart generated: {:?}", scaling_path);
+  println!("✅ Scaling chart generated: {}", scaling_path.display());
   
   // Generate comparison chart
   let comparison_path = Path::new("target/framework_comparison.svg");
@@ -46,7 +46,7 @@ fn main() -> Result<()>
     "Framework Performance Comparison", 
     comparison_path
   )?;
-  println!("✅ Comparison chart generated: {:?}", comparison_path);
+  println!("✅ Comparison chart generated: {}", comparison_path.display());
   
   // Generate trend chart
   let historical_data = vec![
@@ -63,7 +63,7 @@ fn main() -> Result<()>
     "Performance Trend Over Time",
     trend_path
   )?;
-  println!("✅ Trend chart generated: {:?}", trend_path);
+  println!("✅ Trend chart generated: {}", trend_path.display());
   
   println!("\n🎉 All charts generated successfully!");
   println!("   View the SVG files in your browser or image viewer");

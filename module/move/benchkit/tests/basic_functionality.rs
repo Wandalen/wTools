@@ -5,7 +5,7 @@
 #![ cfg( feature = "integration" ) ]
 
 use benchkit::prelude::*;
-use std::time::Duration;
+use core::time::Duration;
 
 #[test]
 fn test_basic_timing()
@@ -17,7 +17,7 @@ fn test_basic_timing()
     {
       sum += i;
     }
-    std::hint::black_box( sum );
+    core::hint::black_box( sum );
   });
 
   assert!( !result.times.is_empty() );
@@ -43,11 +43,11 @@ fn test_benchmark_suite()
   let mut suite = BenchmarkSuite::new("test_suite");
   
   suite.benchmark("operation1", || {
-    std::hint::black_box(42 + 42);
+    core::hint::black_box(42 + 42);
   });
   
   suite.benchmark("operation2", || {
-    std::hint::black_box("test".len());
+    core::hint::black_box("test".len());
   });
 
   let results = suite.run_all();
@@ -61,12 +61,12 @@ fn test_comparative_analysis()
 {
   let comparison = ComparativeAnalysis::new("test_comparison")
     .algorithm("fast", || {
-      std::hint::black_box(1 + 1);
+      core::hint::black_box(1 + 1);
     })
     .algorithm("slow", || {
       // Simulate a slower operation
       for i in 0..50 {
-        std::hint::black_box(i);
+        core::hint::black_box(i);
       }
     });
 

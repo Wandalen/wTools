@@ -51,7 +51,7 @@ fn test_csv_generation()
   
   let lines: Vec<&str> = csv_data.lines().collect();
   assert_eq!(lines.len(), 3);
-  assert!(lines[0].contains(","));
+  assert!(lines[0].contains(','));
 }
 
 #[test]
@@ -61,7 +61,7 @@ fn test_unilang_command_generation()
   let commands = generator.generate_unilang_commands(5);
   
   assert_eq!(commands.len(), 5);
-  assert!(commands.iter().all(|cmd| cmd.contains(".")));
+  assert!(commands.iter().all(|cmd| cmd.contains('.')));
 }
 
 #[test]

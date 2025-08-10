@@ -3,7 +3,7 @@
 #[cfg(feature = "diff_analysis")]
 use benchkit::prelude::*;
 #[cfg(feature = "diff_analysis")]
-use std::time::Duration;
+use core::time::Duration;
 
 fn main()
 {

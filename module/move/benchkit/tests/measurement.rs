@@ -5,7 +5,7 @@ use benchkit::prelude::*;
 #[cfg(feature = "integration")]
 use benchkit::bench_block;
 use std::thread;
-use std::time::Duration;
+use core::time::Duration;
 
 #[test]
 fn test_basic_measurement()
@@ -33,7 +33,7 @@ fn test_bench_block_macro()
 {
   let result = bench_block!({
     let x = 42 + 42;
-    std::hint::black_box( x );
+    core::hint::black_box( x );
   });
   
   assert!(result.times.len() == 1);
