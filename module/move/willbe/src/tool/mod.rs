@@ -45,7 +45,7 @@ crate::mod_interface!
   layer git;
   orphan use super::git;
 
-  /// The parse function parses an input string into a HashMap where the keys are String and the values are of type Value.
+  /// The parse function parses an input string into a `HashMap` where the keys are `String` and the values are of type `Value`.
   layer query;
   orphan use super::query;
 

@@ -5,13 +5,14 @@
 //! `UNILANG_ARGUMENT_INTERACTIVE_REQUIRED` for missing interactive arguments.
 //!
 
+use std::collections::HashMap;
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes };
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
 use unilang_parser::{ GenericInstruction, SourceLocation };
-use std::collections::HashMap;
 
 #[test]
+#[allow(clippy::too_many_lines)]
 fn test_interactive_argument_signaling()
 {
   // Create a command with an interactive argument
@@ -124,8 +125,8 @@ fn test_interactive_argument_signaling()
     overall_location: SourceLocation::StrSpan { start: 0, end: 30 },
   };
 
-  let instructions_complete = vec![instruction_complete];
-  let analyzer_complete = SemanticAnalyzer::new(&instructions_complete, &registry);
+  let instructions_with_all_args = vec![instruction_complete];
+  let analyzer_complete = SemanticAnalyzer::new(&instructions_with_all_args, &registry);
   let result = analyzer_complete.analyze();
   
   // This should succeed since both arguments are provided
@@ -148,8 +149,8 @@ fn test_interactive_argument_signaling()
     overall_location: SourceLocation::StrSpan { start: 0, end: 20 },
   };
 
-  let instructions_missing_regular = vec![instruction_missing_regular];
-  let analyzer_missing_regular = SemanticAnalyzer::new(&instructions_missing_regular, &registry);
+  let instructions_with_missing_args = vec![instruction_missing_regular];
+  let analyzer_missing_regular = SemanticAnalyzer::new(&instructions_with_missing_args, &registry);
   let error_regular = analyzer_missing_regular.analyze().unwrap_err();
   
   // Should get regular missing argument error (not interactive)
@@ -182,7 +183,6 @@ fn test_interactive_optional_argument()
           interactive: true,
           sensitive: true,
           default: Some("default_pass".to_string()),
-          ..Default::default()
         },
         validation_rules: vec![],
         hint: String::new(),

@@ -7,6 +7,12 @@
 #![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 #![ cfg_attr( not( doc ), doc = "Universal language processing" ) ]
 #![ allow( clippy::mod_module_files ) ]
+#![ allow( clippy::format_push_string ) ]
+#![ allow( clippy::used_underscore_binding ) ]
+#![ allow( clippy::match_same_arms ) ]
+#![ allow( clippy::uninlined_format_args ) ]
+#![ allow( clippy::semicolon_if_nothing_returned ) ]
+#![ allow( clippy::redundant_closure ) ]
 
 /// Internal namespace.
 mod private

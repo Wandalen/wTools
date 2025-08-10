@@ -10,6 +10,7 @@ use unilang::pipeline::{ Pipeline, process_single_command, validate_single_comma
 use unilang::registry::CommandRegistry;
 use unilang::types::Value;
 
+#[allow(clippy::too_many_lines)]
 fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== High-Level Pipeline API Demo ===\n" );
@@ -272,6 +273,7 @@ fn setup_demo_registry() -> Result< CommandRegistry, unilang::error::Error >
 }
 
 /// Set up calculator commands
+#[allow(clippy::too_many_lines)]
 fn setup_calc_commands( registry : &mut CommandRegistry ) -> Result< (), unilang::error::Error >
 {
   // Add command

@@ -82,6 +82,7 @@ fn test_load_from_yaml_str_simple_command()
 }
 
 #[ test ]
+#[allow(clippy::too_many_lines)]
 fn test_load_from_yaml_str_all_scalar_types()
 {
   // Test Matrix Row: T1.2
@@ -390,6 +391,7 @@ fn test_load_from_yaml_str_collection_types()
 }
 
 #[ test ]
+#[allow(clippy::too_many_lines)]
 fn test_load_from_yaml_str_complex_types_and_attributes()
 {
   // Test Matrix Row: T1.4, T1.5

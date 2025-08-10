@@ -101,7 +101,7 @@ fn package_version_bump() {
   temp_module.child("c").copy_from(&c, &["**"]).unwrap();
   let c_temp_path = temp_module.join("c");
   let c_temp_absolute_path = CrateDir::try_from(c_temp_path).unwrap();
-  let c_temp_crate_dir = CrateDir::try_from(c_temp_absolute_path.clone()).unwrap();
+  let c_temp_crate_dir = c_temp_absolute_path.clone();
   let c_package = Package::try_from(c_temp_crate_dir.clone()).unwrap();
   let version = c_package.version().unwrap();
 

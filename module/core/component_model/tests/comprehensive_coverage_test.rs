@@ -1,11 +1,11 @@
-//! Comprehensive test coverage for ComponentModel derive macro
+//! Comprehensive test coverage for `ComponentModel` derive macro
 //!
 //! ## Test Matrix for Complete Coverage
 //!
 //! | ID    | Test Case                              | Expected Output                        |
 //! |-------|----------------------------------------|----------------------------------------|
 //! | T3.1a | Basic structs without generics         | Field-specific methods work correctly  |
-//! | T3.2  | Keyword field names (r#type, etc)     | Methods with clean names (assign_type)|
+//! | T3.2  | Keyword field names (r#type, etc)     | Methods with clean names (`assign_type`)|
 //! | T3.3  | Single field struct                    | Single field-specific method          |
 //! | T3.4  | Complex field types (Vec, Option, etc)| Methods work with complex types        |
 //! | T3.6  | Mixed field types comprehensive        | All supported field types work        |
@@ -74,7 +74,7 @@ fn test_keyword_field_names()
   
   assert_eq!( config.r#type, "test_type" );
   assert_eq!( config.r#match, 100 );
-  assert_eq!( config.r#use, true );
+  assert!( config.r#use );
 }
 
 /// Test keyword fields fluent pattern
@@ -89,7 +89,7 @@ fn test_keyword_fields_fluent()
     
   assert_eq!( config.r#type, "fluent_type" );
   assert_eq!( config.r#match, 200 );
-  assert_eq!( config.r#use, true );
+  assert!( config.r#use );
 }
 
 // Test single field struct
@@ -115,24 +115,14 @@ fn test_single_field_struct()
 }
 
 // Test complex field types
-/// Test complex field types (Vec, Option, HashMap, etc.) work correctly
+/// Test complex field types (Vec, Option, `HashMap`, etc.) work correctly
 /// Test Combination: T3.4
-#[ derive( ComponentModel, Debug, PartialEq ) ]
+#[ derive( ComponentModel, Debug, PartialEq, Default ) ]
 struct ComplexFields
 {
   items : Vec< String >,
   maybe_value : Option< i32 >,
   mapping : HashMap< String, i32 >,
-}
-
-impl Default for ComplexFields {
-  fn default() -> Self {
-    Self {
-      items: Vec::new(),
-      maybe_value: None,
-      mapping: HashMap::new(),
-    }
-  }
 }
 
 #[ test ]
@@ -187,6 +177,7 @@ struct ComprehensiveMix
 }
 
 #[ test ]
+#[ allow( clippy::float_cmp ) ]  // Exact comparison needed for test
 fn test_comprehensive_field_mix()
 {
   let mut config = ComprehensiveMix {
@@ -200,7 +191,7 @@ fn test_comprehensive_field_mix()
   };
   
   // Test all field-specific assignment methods
-  config.float_field_set( 3.14f64 );
+  config.float_field_set( core::f64::consts::PI );
   config.string_field_set( "mixed".to_string() );
   config.int_field_set( 789i32 );
   config.bool_field_set( true );
@@ -208,13 +199,13 @@ fn test_comprehensive_field_mix()
   config.option_field_set( Some( "option".to_string() ) );
   config.async_set( true );
   
-  assert_eq!( config.float_field, 3.14f64 );
+  assert_eq!( config.float_field, core::f64::consts::PI );
   assert_eq!( config.string_field, "mixed" );
   assert_eq!( config.int_field, 789 );
-  assert_eq!( config.bool_field, true );
+  assert!( config.bool_field );
   assert_eq!( config.vec_field, vec![ 1, 2, 3 ] );
   assert_eq!( config.option_field, Some( "option".to_string() ) );
-  assert_eq!( config.r#async, true );
+  assert!( config.r#async );
 }
 
 // Note: Complex generic types with where clauses are not yet fully supported

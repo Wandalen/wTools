@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use unilang::data::{ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes};
 use unilang_parser::{SourceLocation};
 use unilang::registry::CommandRegistry;
@@ -19,7 +20,7 @@ fn setup_test_environment(command: CommandDefinition) -> CommandRegistry {
 fn analyze_program(
   command_name: &str,
   positional_args: Vec<unilang_parser::Argument>,
-  named_args: std::collections::HashMap<String, unilang_parser::Argument>,
+  named_args: HashMap<String, unilang_parser::Argument>,
   registry: &CommandRegistry,
 ) -> Result<Vec<unilang::semantic::VerifiedCommand>, unilang::error::Error> {
   // eprintln!( "--- analyze_program debug ---" );
@@ -86,7 +87,7 @@ fn test_path_argument_type() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_ok());
@@ -103,7 +104,7 @@ fn test_path_argument_type() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_err());
@@ -159,7 +160,7 @@ fn test_file_argument_type() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_ok());
@@ -179,7 +180,7 @@ fn test_file_argument_type() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_err());
@@ -239,7 +240,7 @@ fn test_directory_argument_type() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_ok());
@@ -259,7 +260,7 @@ fn test_directory_argument_type() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_err());
@@ -316,7 +317,7 @@ fn test_enum_argument_type() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_ok());
@@ -333,7 +334,7 @@ fn test_enum_argument_type() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_err());
@@ -349,7 +350,7 @@ fn test_enum_argument_type() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_err());
@@ -403,7 +404,7 @@ fn test_url_argument_type() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_ok());
@@ -420,7 +421,7 @@ fn test_url_argument_type() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_err());
@@ -474,7 +475,7 @@ fn test_datetime_argument_type() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_ok());
@@ -491,7 +492,7 @@ fn test_datetime_argument_type() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_err());
@@ -545,7 +546,7 @@ fn test_pattern_argument_type() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_ok());
@@ -563,7 +564,7 @@ fn test_pattern_argument_type() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_err());
@@ -586,7 +587,6 @@ fn test_default_argument() {
         interactive: false,
         sensitive: false,
         default: Some("default_value_string".to_string()),
-        ..Default::default()
       },
       validation_rules: vec![],
       hint: String::new(),
@@ -609,7 +609,7 @@ fn test_default_argument() {
   let registry = setup_test_environment(command);
 
   // Test Matrix Row: T1.9 (no value provided, use default)
-  let result = analyze_program(".test.command", vec![], std::collections::HashMap::new(), &registry);
+  let result = analyze_program(".test.command", vec![], HashMap::new(), &registry);
   assert!(result.is_ok());
   let verified_command = result.unwrap().remove(0);
   let arg = verified_command.arguments.get("default_arg").unwrap();
@@ -624,7 +624,7 @@ fn test_default_argument() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_ok());

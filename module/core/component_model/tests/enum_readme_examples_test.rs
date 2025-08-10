@@ -1,4 +1,6 @@
 //! Test enum examples from README to ensure they compile and work correctly
+
+#![ allow( clippy::std_instead_of_core ) ]  // Duration not available in core
 //!
 //! ## Test Matrix for Enum README Examples
 //!
@@ -9,13 +11,15 @@
 //! | ER3  | Field-specific enum methods  | set/with methods work with enums    |
 
 use component_model::ComponentModel;
+
 use std::time::Duration;
 
 /// Test enum from README example (struct field, not derived)
 /// Test Combination: ER1
-#[ derive( Debug, PartialEq ) ]
+#[ derive( Debug, PartialEq, Default ) ]
 enum Status
 {
+  #[ default ]
   Pending,
   Processing { progress : f64 },
   Completed { result : String },
@@ -33,13 +37,6 @@ struct Task
   priority : u8,
 }
 
-impl Default for Status
-{
-  fn default() -> Self
-  {
-    Status::Pending
-  }
-}
 
 /// Test enum assignment as shown in README
 /// Test Combination: ER1
@@ -56,6 +53,7 @@ fn test_basic_enum_assignment_from_readme()
   assert_eq!( task.id, 42 );
   assert_eq!( task.priority, 5 );
   match task.status {
+    #[ allow( clippy::float_cmp ) ]  // Exact comparison needed for test
     Status::Processing { progress } => assert_eq!( progress, 0.75 ),
     _ => panic!( "Expected Processing status" ),
   }
@@ -81,20 +79,13 @@ fn test_fluent_enum_assignment_from_readme()
 
 /// Test enum from second README example (struct field, not derived)
 /// Test Combination: ER2
-#[ derive( Debug ) ]
+#[ derive( Debug, Default ) ]
 enum ConnectionState
 {
+  #[ default ]
   Disconnected,
   Connecting { timeout : Duration },
   Connected { session_id : String },
-}
-
-impl Default for ConnectionState
-{
-  fn default() -> Self
-  {
-    ConnectionState::Disconnected
-  }
 }
 
 /// Test struct with complex enum field from README

@@ -1,5 +1,5 @@
 //!
-//! Tests for the static_data module
+//! Tests for the `static_data` module
 //!
 
 use unilang::static_data::*;

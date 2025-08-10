@@ -10,6 +10,7 @@
 use unilang::prelude::*;
 
 #[test]
+#[allow(clippy::too_many_lines)]
 fn test_help_formatting_is_readable()
 {
   // This test ensures help output follows the improved formatting specification

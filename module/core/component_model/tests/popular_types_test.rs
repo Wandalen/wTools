@@ -85,7 +85,7 @@ fn test_socket_addr_assignment()
     {
       use core::net::Ipv4Addr;
       Self { 
-        bind_addr : SocketAddr::new( Ipv4Addr::new( 0, 0, 0, 0 ).into(), 0 ) 
+        bind_addr : SocketAddr::new( Ipv4Addr::UNSPECIFIED.into(), 0 ) 
       }
     }
   }
@@ -187,7 +187,7 @@ fn test_popular_types_integration()
       use core::net::Ipv4Addr;
       Self {
         timeout : Duration::from_secs( 0 ),
-        bind_addr : SocketAddr::new( Ipv4Addr::new( 0, 0, 0, 0 ).into(), 0 ),
+        bind_addr : SocketAddr::new( Ipv4Addr::UNSPECIFIED.into(), 0 ),
         config_path : PathBuf::new(),
         settings : HashMap::new(),
         allowed_ips : HashSet::new(),

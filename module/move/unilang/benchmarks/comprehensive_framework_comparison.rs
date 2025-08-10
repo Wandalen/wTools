@@ -4,6 +4,14 @@
 //! exponentially increasing command counts, providing detailed metrics for
 //! framework selection decisions.
 
+#![allow(clippy::uninlined_format_args)]
+#![allow(clippy::too_many_lines)]
+#![allow(clippy::similar_names)]
+#![allow(clippy::module_name_repetitions)]
+#![allow(clippy::cast_precision_loss)]
+#![allow(clippy::cast_sign_loss)]
+#![allow(clippy::cast_possible_truncation)]
+
 
 #[ cfg( feature = "benchmarks" ) ]
 use std::time::{Duration, Instant};
@@ -45,12 +53,11 @@ where
     match rx.recv_timeout(timeout_duration) {
         Ok(Ok(result)) => Some(result),
         Ok(Err(_)) => {
-            println!("❌ {} benchmark panicked for {} commands", benchmark_name, command_count);
+            println!("❌ {benchmark_name} benchmark panicked for {command_count} commands");
             None
         }
         Err(_) => {
-            println!("⏰ {} benchmark timed out after {} minutes for {} commands", 
-                     benchmark_name, timeout_minutes, command_count);
+            println!("⏰ {benchmark_name} benchmark timed out after {timeout_minutes} minutes for {command_count} commands");
             None
         }
     }
@@ -871,7 +878,7 @@ fn average_benchmark_results(results: &[ComprehensiveBenchmarkResult]) -> Compre
         compile_time_ms: avg_compile_time_ms,
         binary_size_kb: avg_binary_size_kb,
         init_time_us: avg_init_time_us,
-        avg_lookup_ns: avg_lookup_ns,
+        avg_lookup_ns,
         p99_lookup_ns: avg_p99_lookup_ns,
         commands_per_second: avg_commands_per_second,
     }
@@ -905,7 +912,7 @@ mod tests {
         println!("Testing Unilang vs Clap vs Pico-Args with compile time metrics");
         println!("Testing all powers of 10 from 10¹ to 10⁵ with 3 repetitions each\n");
 
-        let command_counts = vec![10, 100, 1000, 10000, 100000];
+        let command_counts = vec![10, 100, 1000, 10000, 100_000];
         let repetitions = 3;
         let mut all_results = Vec::new();
 
@@ -1318,7 +1325,7 @@ fn run_comprehensive_benchmark() {
     }
     println!();
 
-    let command_counts = vec![10, 100, 1000, 10000, 100000];
+    let command_counts = vec![10, 100, 1000, 10000, 100_000];
     let repetitions = 3;
     let mut all_results = Vec::new();
 
@@ -1477,7 +1484,7 @@ fn run_comprehensive_benchmark() {
             println!("✅ benchmarks/readme.md updated with comprehensive results");
             display_md_file_diff("benchmarks/readme.md", &old_content, &new_content);
         }
-        Err(e) => eprintln!("❌ Failed to update README: {}", e),
+        Err(e) => eprintln!("❌ Failed to update README: {e}"),
     }
 
     println!("\n✅ All three frameworks show excellent performance characteristics!");
@@ -1491,11 +1498,12 @@ use criterion::{criterion_group, criterion_main, Criterion};
 #[cfg(feature = "benchmarks")]
 fn comprehensive_benchmark(c: &mut Criterion) {
     c.bench_function("comprehensive_benchmark", |b| {
-        b.iter(|| run_comprehensive_benchmark())
+        b.iter(run_comprehensive_benchmark);
     });
 }
 
 #[cfg(feature = "benchmarks")]
+#[allow(missing_docs)]
 criterion_group!(benches, comprehensive_benchmark);
 #[cfg(feature = "benchmarks")]
 criterion_main!(benches);

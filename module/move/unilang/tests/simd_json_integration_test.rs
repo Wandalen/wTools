@@ -211,10 +211,11 @@ fn test_simd_json_large_payload()
   for i in 0..1000
   {
     if i > 0 { large_json.push(','); }
-    large_json.push_str( &format!(
-      r#"{{"id":{},"name":"user{}","email":"user{}@example.com","active":{},"metadata":{{"created":"2024-01-01","role":"user"}}}}"#,
-      i, i, i, i % 2 == 0
-    ));
+    use core::fmt::Write;
+    write!( &mut large_json,
+      r#"{{"id":{i},"name":"user{i}","email":"user{i}@example.com","active":{},"metadata":{{"created":"2024-01-01","role":"user"}}}}"#,
+      i % 2 == 0
+    ).unwrap();
   }
   large_json.push_str( "]}" );
   
@@ -278,7 +279,8 @@ fn test_simd_json_memory_patterns()
     for i in 0..size
     {
       if i > 0 { json.push( ',' ); }
-      json.push_str( &format!( r#"{{"id":{i}}}"# ) );
+      use core::fmt::Write;
+      write!( &mut json, r#"{{"id":{i}}}"# ).unwrap();
     }
     json.push_str( "]}" );
     
@@ -339,7 +341,7 @@ fn test_simd_json_formatting_compatibility()
 
 /// Benchmark comparison test to validate performance improvements
 #[test]  
-#[ignore] // Run manually with: cargo test test_simd_performance_validation --release -- --ignored --nocapture
+#[ignore = "Run manually with: cargo test test_simd_performance_validation --release -- --ignored --nocapture"]
 fn test_simd_performance_validation()
 {
   use std::time::Instant;
@@ -349,10 +351,11 @@ fn test_simd_performance_validation()
   for i in 0..500
   {
     if i > 0 { test_json.push(','); }
-    test_json.push_str( &format!(
-      r#"{{"id":{},"name":"item{}","value":{},"tags":["tag1","tag2"],"meta":{{"created":"2024-01-01","active":{}}}}}"#,
-      i, i, f64::from(i) * 1.5, i % 2 == 0
-    ));
+    use core::fmt::Write;
+    write!( &mut test_json,
+      r#"{{"id":{i},"name":"item{i}","value":{},"tags":["tag1","tag2"],"meta":{{"created":"2024-01-01","active":{}}}}}"#,
+      f64::from(i) * 1.5, i % 2 == 0
+    ).unwrap();
   }
   test_json.push_str( "]}}" );
   
@@ -403,10 +406,10 @@ fn test_simd_json_thread_safety()
     let json = Arc::clone( &test_json );
     thread::spawn( move ||
     {
-      for _j in 0..100
+      for j in 0..100
       {
         let result = SIMDJsonParser::parse_to_serde_value( &json );
-        assert!( result.is_ok(), "Thread {i} iteration {_j} should succeed" );
+        assert!( result.is_ok(), "Thread {i} iteration {j} should succeed" );
       }
     })
   }).collect();

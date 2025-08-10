@@ -202,7 +202,7 @@ fn main() -> Result< (), unilang::error::Error >
     {
       return Err( ErrorData::new(
         "DIVISION_BY_ZERO".to_string(),
-        format!( "Cannot divide {dividend} by zero. Division by zero is undefined." ),
+        format!( "Cannot divide {} by zero. Division by zero is undefined.", dividend ),
       ));
     }
 
@@ -436,7 +436,7 @@ fn main() -> Result< (), unilang::error::Error >
     match parser.parse_single_instruction( cmd_str )
     {
       Ok( instruction ) => all_instructions.push( instruction ),
-      Err( e ) => println!( "❌ Failed to parse '{cmd_str}': {e}" ),
+      Err( e ) => println!( "❌ Failed to parse '{}': {}", cmd_str, e ),
     }
   }
 

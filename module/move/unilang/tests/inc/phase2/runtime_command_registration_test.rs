@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use unilang::{
   data::{ArgumentDefinition, CommandDefinition, Kind, OutputData, ErrorData, ArgumentAttributes},
   registry::CommandRegistry,
@@ -5,7 +6,6 @@ use unilang::{
   interpreter::ExecutionContext,
 };
 use unilang_parser::{SourceLocation};
-use std::collections::HashMap;
 
 // Test Matrix for Runtime Command Registration
 //

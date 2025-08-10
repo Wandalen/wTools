@@ -19,7 +19,8 @@ use std::path::Path;
 
   for i in 0..count
   {
-    yaml.push_str( &format!( r#"
+    use core::fmt::Write;
+    write!( &mut yaml, r#"
 - name: "cmd_{i}"
   namespace: ".perf"
   description: "Performance test command {i}"
@@ -61,7 +62,7 @@ use std::path::Path;
   deprecation_message: ""
   http_method_hint: "GET"
   examples: []
-"# ) );
+"# ).unwrap();
   }
 
   yaml
@@ -104,7 +105,7 @@ fn test_performance_stress_setup()
 }
 
 #[ test ]
-#[ ignore ] // This test should be run manually or in CI due to its intensive nature
+#[ ignore = "This test should be run manually or in CI due to its intensive nature" ]
 fn test_performance_stress_full()
 {
   use std::time::Instant;
@@ -140,6 +141,7 @@ fn test_performance_stress_full()
   
   // Calculate p99 latency
   latencies.sort();
+  #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
   let p99 = latencies[ (lookup_count as f64 * 0.99) as usize ];
   let p99_micros = p99.as_nanos() as f64 / 1000.0;
   

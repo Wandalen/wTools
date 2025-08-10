@@ -198,41 +198,37 @@ fn plan() {
   let rep = test(args, true).unwrap().success_reports[0].clone().tests;
 
   assert!(rep
-    .get(
+    .contains_key(
       &TestVariant::former()
         .optimization(Optimization::Debug)
         .channel(Channel::Stable)
         .features(BTreeSet::default())
         .form()
-    )
-    .is_some());
+    ));
   assert!(rep
-    .get(
+    .contains_key(
       &TestVariant::former()
         .optimization(Optimization::Debug)
         .channel(Channel::Nightly)
         .features(BTreeSet::default())
         .form()
-    )
-    .is_some());
+    ));
   assert!(rep
-    .get(
+    .contains_key(
       &TestVariant::former()
         .optimization(Optimization::Release)
         .channel(Channel::Stable)
         .features(BTreeSet::default())
         .form()
-    )
-    .is_some());
+    ));
   assert!(rep
-    .get(
+    .contains_key(
       &TestVariant::former()
         .optimization(Optimization::Release)
         .channel(Channel::Nightly)
         .features(BTreeSet::default())
         .form()
-    )
-    .is_some());
+    ));
 }
 
 #[test]

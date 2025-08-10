@@ -8,6 +8,7 @@ use unilang::registry::CommandRegistry;
 use unilang::help::HelpGenerator;
 use unilang::types::Value;
 
+#[allow(clippy::too_many_lines)]
 fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== Namespaces and Aliases Demo ===\n" );
@@ -285,15 +286,12 @@ fn main() -> Result< (), unilang::error::Error >
       Ok( entries ) =>
       {
         let mut files = Vec::new();
-        for entry in entries
+        for entry in entries.flatten()
         {
-          if let Ok( entry ) = entry
+          if let Some( name ) = entry.file_name().to_str()
           {
-            if let Some( name ) = entry.file_name().to_str()
-            {
-              files.push( name.to_string() );
-              println!( "  {name}" );
-            }
+            files.push( name.to_string() );
+            println!( "  {name}" );
           }
         }
 

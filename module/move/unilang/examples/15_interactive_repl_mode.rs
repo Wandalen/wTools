@@ -17,7 +17,6 @@ use rustyline::error::ReadlineError;
 #[ cfg( feature = "enhanced_repl" ) ]
 use rustyline::history::History;
 #[ cfg( feature = "enhanced_repl" ) ]
-use atty;
 
 #[ cfg( feature = "repl" ) ]
 fn main() -> Result< (), Box< dyn std::error::Error > >
@@ -407,7 +406,7 @@ fn run_basic_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn std::error::Er
 
 /// Run the enhanced interactive REPL loop (with rustyline for history/arrows)
 #[ cfg( feature = "enhanced_repl" ) ]
-fn run_enhanced_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn std::error::Error > >
+fn run_enhanced_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn core::error::Error > >
 {
   let mut rl = DefaultEditor::new()?;
   let mut session_counter = 0u32;
@@ -442,7 +441,7 @@ fn run_enhanced_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn std::error:
 
   loop
   {
-    let prompt = format!( "unilang[{}]> ", session_counter );
+    let prompt = format!( "unilang[{session_counter}]> " );
     
     match rl.readline( &prompt )
     {
@@ -456,7 +455,7 @@ fn run_enhanced_repl( pipeline : &Pipeline ) -> Result< (), Box< dyn std::error:
           "" => continue, // Empty input
           "quit" | "exit" | "q" =>
           {
-            println!( "👋 Goodbye! Executed {} commands this session.", session_counter );
+            println!( "👋 Goodbye! Executed {session_counter} commands this session." );
             break;
           },
           "help" | "h" =>

@@ -4,6 +4,8 @@
 //! across different payload sizes and structures to validate 4-25x performance improvements.
 
 #![ allow( missing_docs ) ]
+#![allow(clippy::format_push_string)]
+#![allow(clippy::format_in_format_args)]
 
 use criterion::{ black_box, criterion_group, criterion_main, Criterion, BenchmarkId };
 use serde_json::Value as SerdeValue;

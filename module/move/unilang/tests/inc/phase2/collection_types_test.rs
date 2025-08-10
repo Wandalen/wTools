@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use unilang::data::{ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes};
 use unilang_parser::{SourceLocation};
 use unilang::registry::CommandRegistry;
@@ -28,7 +29,7 @@ fn setup_test_environment(command: CommandDefinition) -> CommandRegistry {
 fn analyze_program(
   command_name: &str,
   positional_args: Vec<unilang_parser::Argument>,
-  named_args: std::collections::HashMap<String, unilang_parser::Argument>,
+  named_args: HashMap<String, unilang_parser::Argument>,
   registry: &CommandRegistry,
 ) -> Result<Vec<unilang::semantic::VerifiedCommand>, unilang::error::Error> {
   // eprintln!( "--- analyze_program debug ---" );
@@ -95,7 +96,7 @@ fn test_list_string_kind() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_ok());
@@ -148,7 +149,7 @@ fn test_list_integer_custom_delimiter_kind() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_ok());
@@ -201,7 +202,7 @@ fn test_map_string_integer_kind() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_ok());
@@ -257,7 +258,7 @@ fn test_map_string_string_custom_delimiters_kind() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    std::collections::HashMap::new(),
+    HashMap::new(),
     &registry,
   );
   assert!(result.is_ok());

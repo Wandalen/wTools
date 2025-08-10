@@ -2,6 +2,7 @@
 mod private
 {
   #[ allow( unused_imports, clippy::wildcard_imports ) ]
+  #[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
   use crate::*;
   use std::
   {

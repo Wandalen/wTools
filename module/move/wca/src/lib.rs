@@ -15,7 +15,7 @@
 //!
 //! ## Completed Compliance Work:
 //!
-//! 1. **mod_interface Architecture**: Uses `mod_interface!` macro for clean module
+//! 1. **`mod_interface` Architecture**: Uses `mod_interface!` macro for clean module
 //!    organization and controlled visibility per architectural guidelines.
 //!
 //! 2. **Documentation Strategy**: Uses both readme.md inclusion and specialized

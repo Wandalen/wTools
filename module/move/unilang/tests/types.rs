@@ -90,7 +90,9 @@ fn test_parse_value_float_success()
 {
   let result = parse_value("3.14", &Kind::Float);
   assert!(result.is_ok());
-  assert_eq!(result.unwrap(), Value::Float(3.14));
+  #[allow(clippy::approx_constant)]
+  let expected = 3.14;
+  assert_eq!(result.unwrap(), Value::Float(expected));
 }
 
 #[test]

@@ -220,7 +220,7 @@ pub fn component_model( input : proc_macro::TokenStream ) -> Result< proc_macro2
 
   if debug
   {
-    let about = format!("derive : ComponentModel\nstructure : {}", struct_name);
+    let about = format!("derive : ComponentModel\nstructure : {struct_name}");
     diag::report_print(about, original_input, &result);
   }
 

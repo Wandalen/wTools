@@ -56,7 +56,7 @@ fn test_complex_mixed_configuration()
       use core::net::Ipv4Addr;
       Self {
         timeout : Duration::from_secs( 30 ),
-        bind_addr : SocketAddr::new( Ipv4Addr::new( 127, 0, 0, 1 ).into(), 8080 ),
+        bind_addr : SocketAddr::new( Ipv4Addr::LOCALHOST.into(), 8080 ),
         log_path : PathBuf::from( "/tmp/server.log" ),
         name : "default-server".to_string(),
         port : 8080,
@@ -188,7 +188,7 @@ fn test_real_world_app_config()
     {
       use core::net::Ipv4Addr;
       Self {
-        server_addr : SocketAddr::new( Ipv4Addr::new( 0, 0, 0, 0 ).into(), 3000 ),
+        server_addr : SocketAddr::new( Ipv4Addr::UNSPECIFIED.into(), 3000 ),
         timeout : Duration::from_secs( 30 ),
         config_path : PathBuf::from( "app.toml" ),
         log_path : PathBuf::from( "app.log" ),

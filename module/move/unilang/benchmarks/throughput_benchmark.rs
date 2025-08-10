@@ -4,6 +4,10 @@
 //! performance testing. Replaces manual timing and statistics with benchkit's
 //! professional benchmarking infrastructure.
 
+#![allow(clippy::too_many_lines)]
+#![allow(clippy::similar_names)]
+#![allow(clippy::uninlined_format_args)]
+
 #[ cfg( feature = "benchmarks" ) ]
 use benchkit::prelude::*;
 #[ cfg( feature = "benchmarks" ) ]
@@ -200,8 +204,7 @@ fn benchmark_pico_args_operation( command_count : usize )
   // Test with sample arguments
   for i in 0..10.min( command_count )
   {
-    let args_vec = vec!
-    [
+    let args_vec = [
       "benchmark".to_string(),
       format!( "--cmd-{}", i % command_count ),
       format!( "test_{}", i ),

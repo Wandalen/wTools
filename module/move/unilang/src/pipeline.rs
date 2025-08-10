@@ -10,7 +10,7 @@
 //! The Pipeline is specifically designed for REPL (Read-Eval-Print Loop) applications:
 //!
 //! ## Stateless Operation
-//! - **Critical**: All components (Parser, SemanticAnalyzer, Interpreter) are completely stateless
+//! - **Critical**: All components (Parser, `SemanticAnalyzer`, Interpreter) are completely stateless
 //! - Each `process_command` call is independent - no state accumulation between calls
 //! - Memory usage remains constant regardless of session length
 //! - Safe for long-running REPL sessions without memory leaks

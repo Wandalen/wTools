@@ -1,7 +1,7 @@
 //!
 //! SIMD-optimized JSON parsing module for high-performance value parsing.
 //!
-//! This module provides 4-25x faster JSON parsing compared to serde_json
+//! This module provides 4-25x faster JSON parsing compared to `serde_json`
 //! by leveraging SIMD instructions (AVX2/SSE4.2) for byte-level operations.
 
 /// Internal namespace.

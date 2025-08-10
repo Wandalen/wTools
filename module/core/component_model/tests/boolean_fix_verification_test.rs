@@ -38,7 +38,7 @@ fn test_field_specific_assignment_methods()
   assert!( config.enabled );
 }
 
-/// Test that field-specific builder methods work for fluent builder pattern  
+/// Test that field-specific builder methods work for fluent builder pattern
 /// Test Combination: T1.2
 #[ test ]
 fn test_field_specific_impute_methods()

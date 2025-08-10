@@ -20,6 +20,7 @@ use component_model::ComponentModel;
 /// Test multiple bool fields each get specific methods
 /// Test Combination: T5.3
 #[ derive( ComponentModel, Debug, PartialEq ) ]
+#[ allow( clippy::struct_excessive_bools ) ]  // Needed for testing multiple bool fields
 struct MultipleBoolsDetailed
 {
   enabled : bool,
@@ -44,10 +45,10 @@ fn test_multiple_identical_bool_fields()
   config.active_set( true );
   config.debug_set( false );
   
-  assert_eq!( config.enabled, true );
-  assert_eq!( config.visible, false );
-  assert_eq!( config.active, true );
-  assert_eq!( config.debug, false );
+  assert!( config.enabled );
+  assert!( !config.visible );
+  assert!( config.active );
+  assert!( !config.debug );
 }
 
 /// Test fluent pattern with multiple bool fields
@@ -66,10 +67,10 @@ fn test_multiple_bools_fluent()
   .active_with( false )
   .debug_with( true );
   
-  assert_eq!( config.enabled, true );
-  assert_eq!( config.visible, true );
-  assert_eq!( config.active, false );
-  assert_eq!( config.debug, true );
+  assert!( config.enabled );
+  assert!( config.visible );
+  assert!( !config.active );
+  assert!( config.debug );
 }
 
 // Test very long field names
@@ -123,7 +124,7 @@ fn test_mixed_assign_and_impute()
     
   assert_eq!( config.name, "mixed" );
   assert_eq!( config.count, 42 );
-  assert_eq!( config.enabled, true );
+  assert!( config.enabled );
 }
 
 // Note: Generic types with complex bounds are not yet supported

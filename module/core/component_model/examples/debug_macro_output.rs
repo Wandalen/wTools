@@ -1,7 +1,7 @@
 //! Example showing debug attribute functionality
 //! 
 //! This example demonstrates how to use the `debug` attribute 
-//! with ComponentModel to see the generated code output.
+//! with `ComponentModel` to see the generated code output.
 //! 
 //! Run with: `cargo run --example debug_macro_output`
 

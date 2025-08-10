@@ -175,7 +175,7 @@ fn test_external_usage_batch_processing()
   
   let pipeline = Pipeline::new( registry );
   let commands = vec![ "echo", "echo", "echo" ];
-  let batch_result = pipeline.process_batch( &commands, Default::default() );
+  let batch_result = pipeline.process_batch( &commands, ExecutionContext::default() );
   
   assert_eq!( batch_result.total_commands, 3 );
   assert_eq!( batch_result.successful_commands, 3 );

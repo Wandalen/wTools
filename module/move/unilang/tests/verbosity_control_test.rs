@@ -12,12 +12,10 @@ fn test_parser_options_verbosity_levels()
   assert_eq!( default_options.verbosity, 1, "Default verbosity should be 1 (normal)" );
 
   // Test custom verbosity levels
-  let mut quiet_options = UnilangParserOptions::default();
-  quiet_options.verbosity = 0;
+  let quiet_options = UnilangParserOptions { verbosity: 0, ..Default::default() };
   assert_eq!( quiet_options.verbosity, 0, "Should be able to set quiet mode" );
 
-  let mut debug_options = UnilangParserOptions::default();
-  debug_options.verbosity = 2;
+  let debug_options = UnilangParserOptions { verbosity: 2, ..Default::default() };
   assert_eq!( debug_options.verbosity, 2, "Should be able to set debug mode" );
 }
 
@@ -65,14 +63,13 @@ fn test_pipeline_with_custom_verbosity()
 
   // Create a pipeline with quiet verbosity
   let registry = CommandRegistry::new();
-  let mut quiet_options = UnilangParserOptions::default();
-  quiet_options.verbosity = 0;
+  let quiet_options = UnilangParserOptions { verbosity: 0, ..Default::default() };
   
   let _pipeline = Pipeline::with_parser_options( registry, quiet_options );
   
   // The pipeline should be created successfully with custom options
   // In a real implementation, this would suppress debug output
-  assert!( true, "Pipeline created with custom verbosity" );
+  // Pipeline creation test successful
 }
 
 #[test]
@@ -92,15 +89,19 @@ fn test_verbosity_levels_documentation()
   match 1u8 {
     0 => {
       // Quiet mode: suppress all non-essential output
+      println!("Quiet mode");
     },
     1 => {
       // Normal mode: standard output, no debug info
+      println!("Normal mode");
     },
     2 => {
       // Debug mode: include parser traces and debug info
+      println!("Debug mode");
     },
     _ => {
       // Invalid verbosity level
+      println!("Invalid level");
     }
   }
 }
