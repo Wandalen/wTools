@@ -298,7 +298,7 @@ path = "module/core/former_types"
 default-features = false
 
 [workspace.dependencies.component_model]
-version = "~0.4.0"
+version = "~0.5.0"
 path = "module/core/component_model"
 default-features = false
 
