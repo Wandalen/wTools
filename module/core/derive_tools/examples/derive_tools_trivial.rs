@@ -10,7 +10,7 @@ fn main() {
   {
     use derive_tools::*;
 
-    #[ derive( Display, FromStr, PartialEq, Debug, From ) ]
+    #[ derive( Display, FromStr, PartialEq, Debug ) ]
     #[ display( "{a}-{b}" ) ]
     struct Struct1 {
       a: i32,
@@ -19,13 +19,13 @@ fn main() {
 
     // derived Display
     let src = Struct1 { a: 1, b: 3 };
-    let got = format!("{}", src);
+    let got = format!("{src}");
     let exp = "1-3";
-    println!("{}", got);
+    println!("{got}");
     assert_eq!(got, exp);
 
     // derived FromStr
-    use std::str::FromStr;
+    use core::str::FromStr;
     let src = Struct1::from_str("1-3");
     let exp = Ok(Struct1 { a: 1, b: 3 });
     assert_eq!(src, exp);

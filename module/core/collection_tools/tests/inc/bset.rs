@@ -75,12 +75,12 @@ fn iters() {
   };
   let got: the_module::BTreeSet< _ > = instance.into_iter().collect();
   let exp = the_module::BTreeSet::from([1, 2, 3]);
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   let instance = MyContainer {
     entries: the_module::BTreeSet::from([1, 2, 3]),
   };
   let got: the_module::BTreeSet< _ > = (&instance).into_iter().copied().collect();
   let exp = the_module::BTreeSet::from([1, 2, 3]);
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 }
