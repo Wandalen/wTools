@@ -46,7 +46,7 @@ fn main() -> Result< (), unilang::Error >
   // Define a simple greeting command
   let greet_cmd = CommandDefinition
   {
-    name : "greet".to_string(),
+    name : ".greet".to_string(),
     namespace : String::new(),  // Global namespace
     description : "A friendly greeting command".to_string(),
     hint : "Says hello to someone".to_string(),
@@ -112,6 +112,29 @@ fn main() -> Result< (), unilang::Error >
 Run this example:
 ```sh
 cargo run --example 01_basic_command_registration
+```
+
+## Command Requirements
+
+**Important**: All commands in unilang must follow explicit naming conventions:
+
+- ✅ **Dot Prefix Required**: Commands must start with a dot (e.g., `.greet`, `.math.add`)
+- ❌ **No Implicit Magic**: Command names are used exactly as registered - no automatic transformations
+- 🔧 **Namespace Format**: Use `.namespace.command` for hierarchical organization
+- ⚡ **Validation**: Framework rejects commands that don't follow these rules
+
+```rust
+// ✅ Correct - explicit dot prefix
+let cmd = CommandDefinition {
+  name: ".greet".to_string(),  // Required dot prefix
+  // ...
+};
+
+// ❌ Wrong - will be rejected  
+let cmd = CommandDefinition {
+  name: "greet".to_string(),   // Missing dot prefix - ERROR!
+  // ...
+};
 ```
 
 ## Core Concepts

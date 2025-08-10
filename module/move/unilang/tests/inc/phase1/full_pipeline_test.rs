@@ -156,7 +156,7 @@ fn interpreter_tests()
   (
     &CommandDefinition
     {
-      name : "cmd1".to_string(),
+      name : ".cmd1".to_string(),
       description : String::new(),
       arguments : vec![],
       routine_link : Some( "cmd1_routine_link".to_string() ),
@@ -192,7 +192,7 @@ fn interpreter_tests()
   (
     &CommandDefinition
     {
-      name : "cmd2".to_string(),
+      name : ".cmd2".to_string(),
       description : String::new(),
       arguments : vec![],
       routine_link : Some( "cmd2_routine_link".to_string() ),
@@ -215,7 +215,7 @@ fn interpreter_tests()
   let parser = Parser::new( UnilangParserOptions::default() );
 
   // T4.1
-  let input = "cmd1";
+  let input = ".cmd1";
   let instruction = parser.parse_single_instruction( input ).unwrap();
   let instructions = &[ instruction ][ .. ];
   let analyzer = SemanticAnalyzer::new( instructions, &registry );
@@ -227,7 +227,7 @@ fn interpreter_tests()
   assert_eq!( result[ 0 ].content, "cmd1 executed" );
 
   // T4.2
-  let input_commands = vec![ "cmd1", "cmd2" ];
+  let input_commands = vec![ ".cmd1", ".cmd2" ];
   let mut instructions_vec : Vec< GenericInstruction > = Vec::new();
   for cmd_str in input_commands
   {

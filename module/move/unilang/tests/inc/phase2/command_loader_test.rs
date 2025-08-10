@@ -45,7 +45,7 @@ fn test_load_from_yaml_str_simple_command()
 {
   // Test Matrix Row: T1.1
   let yaml_str = r#"
-    - name: hello
+    - name: .hello
       description: Says hello
       arguments: []
       routine_link: dummy_hello_routine
@@ -66,7 +66,7 @@ fn test_load_from_yaml_str_simple_command()
 
   assert!( registry.commands().contains_key( ".system.hello" ) );
   let command = registry.command(".system.hello").unwrap();
-  assert_eq!( command.name, "hello" );
+  assert_eq!( command.name, ".hello" );
   assert_eq!( command.description, "Says hello" );
   assert!( command.arguments.is_empty() );
   assert_eq!( command.routine_link, Some( "dummy_hello_routine".to_string() ) );
@@ -566,7 +566,7 @@ fn test_load_from_json_str_simple_command()
   let json_str = r#"
     [
       {
-        "name": "hello_json",
+        "name": ".hello_json",
         "description": "Says hello from JSON",
         "arguments": [],
         "routine_link": "dummy_hello_json_routine",
@@ -589,7 +589,7 @@ fn test_load_from_json_str_simple_command()
 
   assert!( registry.commands().contains_key( ".system.hello_json" ) );
   let command = registry.command(".system.hello_json").unwrap();
-  assert_eq!( command.name, "hello_json" );
+  assert_eq!( command.name, ".hello_json" );
   assert_eq!( command.description, "Says hello from JSON" );
   assert!( command.arguments.is_empty() );
   assert_eq!( command.routine_link, Some( "dummy_hello_json_routine".to_string() ) );

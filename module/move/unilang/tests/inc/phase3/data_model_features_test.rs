@@ -96,7 +96,7 @@ fn test_command_version_in_help()
   cmd
   .assert()
   .success()
-  .stdout( predicate::str::contains( "Usage: add (v1.0.0)" ) )
+  .stdout( predicate::str::contains( "Usage: .add (v1.0.0)" ) )
   .stderr( "" );
 }
 

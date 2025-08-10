@@ -535,7 +535,7 @@ mod tests
 
     // Add a simple test command
     let test_command = CommandDefinition::former()
-    .name( "test" )
+    .name( ".test" )
     .namespace( String::new() )
     .description( "Test command".to_string() )
     .hint( "Test command" )

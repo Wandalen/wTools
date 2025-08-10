@@ -43,7 +43,7 @@ fn run() -> Result< (), unilang::error::Error >
 
   // .math.add command
   let math_add_def = CommandDefinition::former()
-  .name( "add" )
+  .name( ".add" )
   .namespace( ".math".to_string() ) // Changed to String
   .description( "Adds two numbers.".to_string() )
   .hint( "Adds two numbers." )
@@ -95,7 +95,7 @@ fn run() -> Result< (), unilang::error::Error >
 
   // .math.sub command
   let math_sub_def = CommandDefinition::former()
-  .name( "sub" )
+  .name( ".sub" )
   .namespace( ".math".to_string() ) // Changed to String
   .description( "Subtracts two numbers.".to_string() )
   .hint( "Subtracts two numbers." )
@@ -147,7 +147,7 @@ fn run() -> Result< (), unilang::error::Error >
 
   // .greet command
   let greet_def = CommandDefinition::former()
-  .name( "greet" )
+  .name( ".greet" )
   .namespace( String::new() ) // Changed to String (global namespace)
   .description( "Greets the specified person.".to_string() )
   .hint( "Greets the specified person." )
@@ -195,7 +195,7 @@ fn run() -> Result< (), unilang::error::Error >
 
   // .config.set command
   let config_set_def = CommandDefinition::former()
-  .name( "set" )
+  .name( ".set" )
   .namespace( ".config".to_string() ) // Changed to String
   .description( "Sets a configuration value.".to_string() )
   .hint( "Sets a configuration value." )
@@ -245,7 +245,7 @@ fn run() -> Result< (), unilang::error::Error >
 
   // .system.echo command
   let echo_def = CommandDefinition::former()
-  .name( "echo" )
+  .name( ".echo" )
   .namespace( ".system".to_string() ) // Changed to String
   .description( "Echoes a message".to_string() )
   .hint( "Echoes back the provided arguments.".to_string() )
@@ -287,7 +287,7 @@ fn run() -> Result< (), unilang::error::Error >
 
   // .files.cat command
   let cat_def = CommandDefinition::former()
-  .name( "cat" )
+  .name( ".cat" )
   .namespace( ".files".to_string() ) // Changed to String
   .description( "Read and display file contents".to_string() )
   .hint( "Print file contents to stdout".to_string() )

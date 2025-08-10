@@ -40,7 +40,7 @@
 *   Control Files to Reference:
     *   `module/move/unilang/spec.md`
     *   `module/move/unilang/roadmap.md`
-    *   `module/move/unilang/task/phase3.md` (for auditing purposes)
+    *   `module/move/unilang/task/003_phase3.md` (for auditing purposes)
 *   Files to Include (for AI's reference):
     *   `module/move/unilang/src/lib.rs`
     *   `module/move/unilang/src/semantic.rs`
@@ -99,8 +99,8 @@
 *   **Commit Message:** "chore(audit): Review unilang crate structure and tests"
 
 ##### Increment 2: Audit Core Refactoring (Increments 1-5)
-*   **Goal:** To verify the completion and correctness of the core refactoring work described in Increments 1-5 of the original `phase3.md` plan.
-*   **Specification Reference:** `phase3.md` (Increments 1-5)
+*   **Goal:** To verify the completion and correctness of the core refactoring work described in Increments 1-5 of the original `003_phase3.md` plan.
+*   **Specification Reference:** `003_phase3.md` (Increments 1-5)
 *   **Steps:**
     1.  **Audit `SemanticAnalyzer`:**
         *   Read `module/move/unilang/src/semantic.rs`.
@@ -125,19 +125,19 @@
 
 ##### Increment 3: Audit Feature Implementation (Increments 6-10)
 *   **Goal:** To verify the completion and correctness of the feature work (aliasing, help generation, bug fixes) from Increments 6-10 of the original plan.
-*   **Specification Reference:** `phase3.md` (Increments 6-10)
+*   **Specification Reference:** `003_phase3.md` (Increments 6-10)
 *   **Steps:**
     1.  **Audit Aliasing:**
         *   Read `module/move/unilang/tests/inc/phase3/data_model_features_test.rs`.
         *   Read `module/move/unilang/src/bin/unilang_cli.rs`.
-        *   Verify that the alias test exists and that the resolution logic is implemented as described in the original plan (lines 152-154 of `phase3.md`).
+        *   Verify that the alias test exists and that the resolution logic is implemented as described in the original plan (lines 152-154 of `003_phase3.md`).
     3.  **Audit Help Generator:**
         *   Read `module/move/unilang/src/help.rs`.
         *   Read `module/move/unilang/tests/inc/phase2/help_generation_test.rs`.
         *   Verify that the help output includes the new metadata fields (`Aliases:`, `Status:`, `Version:`) and that tests assert this. (Note: The original plan's `Notes & Insights` already stated these tests were passing, so this is a re-verification).
     4.  **Audit Registry Fix:**
         *   Read `module/move/unilang/src/registry.rs`.
-        *   Verify that the key generation logic for `commands` and `routines` is consistent and correct, as described in the original plan's notes (lines 250-252 of `phase3.md`).
+        *   Verify that the key generation logic for `commands` and `routines` is consistent and correct, as described in the original plan's notes (lines 250-252 of `003_phase3.md`).
     5.  Use `insert_content` to add any discrepancies or incomplete work found during the audit to `### Notes & Insights`.
     6.  Perform Increment Verification.
 *   **Increment Verification:**
@@ -147,7 +147,7 @@
 
 ##### Increment 4: Audit Documentation and Examples (Increments 11-12)
 *   **Goal:** To verify the completion and quality of the documentation and examples from Increments 11-12 of the original plan.
-*   **Specification Reference:** `phase3.md` (Increments 11-12)
+*   **Specification Reference:** `003_phase3.md` (Increments 11-12)
 *   **Steps:**
     1.  **Audit Example:** Read `unilang/examples/full_cli_example.rs`. Verify it is comprehensive and demonstrates the new features.
     2.  **Audit `Readme.md`:** Read `unilang/Readme.md`. Verify it points to the new example.
@@ -160,7 +160,7 @@
 
 ##### Increment 5: Focused Debugging for `diagnostics_tools` Doctest
 *   **Goal:** To diagnose and fix the `Failing (Stuck)` doctest in `diagnostics_tools`.
-*   **Specification Reference:** `phase3.md` (Tests section)
+*   **Specification Reference:** `003_phase3.md` (Tests section)
 *   **Steps:**
     1.  Locate the `diagnostics_tools` doctest. Based on the file list, this is likely in `crates_tools`. I will search for it.
     2.  Analyze the test code and the `should_panic` attribute. The error "Test executable succeeded, but it's marked should_panic" means the code inside the test *did not* panic as expected.
@@ -279,7 +279,7 @@
 *   **Commit Message:** "chore(task): Complete Phase 3 audit and finalization"
 
 ### Notes & Insights
-*   This plan is an "audit and enhance" plan. It assumes the previous `phase3.md` plan was mostly executed but requires verification and supplementation.
+*   This plan is an "audit and enhance" plan. It assumes the previous `003_phase3.md` plan was mostly executed but requires verification and supplementation.
 *   The `diagnostics_tools` doctest failure is a high-priority fix.
 *   Test coverage for the new data model fields is critical for ensuring the framework is robust.
 *   **Audit Finding (Structure):** The `unilang` crate source has a flat module structure (`data`, `error`, `help`, etc.) and a single binary `unilang_cli`. The legacy `ca` module mentioned in the original plan does not appear to be declared in `src/lib.rs`.

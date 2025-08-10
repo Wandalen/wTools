@@ -153,7 +153,7 @@ fn test_complete_workflow()
   
   // Define a command
   let greet_cmd = CommandDefinition::former()
-    .name( "greet" )
+    .name( ".greet" )
     .namespace( String::new() )
     .description( "Greets a person".to_string() )
     .hint( "Simple greeting" )
@@ -165,7 +165,7 @@ fn test_complete_workflow()
     .idempotent( true )
     .deprecation_message( String::new() )
     .http_method_hint( "GET".to_string() )
-    .examples( vec![ "greet name::\"Alice\"".to_string() ] )
+    .examples( vec![ ".greet name::\"Alice\"".to_string() ] )
     .arguments( vec![
       ArgumentDefinition::former()
         .name( "name" )
@@ -202,7 +202,7 @@ fn test_complete_workflow()
   
   // Test with Pipeline API
   let pipeline = Pipeline::new( registry );
-  let result = pipeline.process_command_simple( "greet name::\"Test\"" );
+  let result = pipeline.process_command_simple( ".greet name::\"Test\"" );
   
   assert!( result.success );
   assert_eq!( result.outputs[ 0 ].content, "Hello, Test!" );

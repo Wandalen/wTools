@@ -12,7 +12,7 @@ fn test_external_usage_with_prelude()
   
   // Create a simple command
   let cmd = CommandDefinition::former()
-    .name( "hello" )
+    .name( ".hello" )
     .namespace( String::new() )
     .description( "Says hello".to_string() )
     .end();
@@ -32,7 +32,7 @@ fn test_external_usage_with_prelude()
   
   // Use Pipeline API
   let pipeline = Pipeline::new( registry );
-  let result = pipeline.process_command_simple( "hello" );
+  let result = pipeline.process_command_simple( ".hello" );
   
   assert!( result.success );
   assert_eq!( result.outputs[ 0 ].content, "Hello, World!" );
@@ -59,7 +59,7 @@ fn test_external_usage_with_specific_imports()
   
   // Create a command with arguments
   let cmd = CommandDefinition::former()
-    .name( "greet" )
+    .name( ".greet" )
     .namespace( String::new() )
     .description( "Greets someone".to_string() )
     .arguments( vec![
@@ -88,7 +88,7 @@ fn test_external_usage_with_specific_imports()
   registry.command_add_runtime( &cmd, routine ).unwrap();
   
   let pipeline = Pipeline::new( registry );
-  let result = pipeline.process_command_simple( "greet name::\"Alice\"" );
+  let result = pipeline.process_command_simple( ".greet name::\"Alice\"" );
   
   assert!( result.success );
   assert_eq!( result.outputs[ 0 ].content, "Hello, Alice!" );
@@ -108,7 +108,7 @@ fn test_external_usage_with_module_imports()
   let mut registry = CommandRegistry::new();
   
   let cmd = CommandDefinition::former()
-    .name( "test" )
+    .name( ".test" )
     .namespace( String::new() )
     .description( "Test command".to_string() )
     .end();
@@ -125,7 +125,7 @@ fn test_external_usage_with_module_imports()
   registry.command_add_runtime( &cmd, routine ).unwrap();
   
   let pipeline = Pipeline::new( registry );
-  let result = pipeline.process_command_simple( "test" );
+  let result = pipeline.process_command_simple( ".test" );
   
   assert!( result.success );
   assert_eq!( result.outputs[ 0 ].content, "Test successful" );
@@ -157,7 +157,7 @@ fn test_external_usage_batch_processing()
   let mut registry = CommandRegistry::new();
   
   let cmd = CommandDefinition::former()
-    .name( "echo" )
+    .name( ".echo" )
     .namespace( String::new() )
     .description( "Echo command".to_string() )
     .end();
@@ -174,7 +174,7 @@ fn test_external_usage_batch_processing()
   registry.command_add_runtime( &cmd, routine ).unwrap();
   
   let pipeline = Pipeline::new( registry );
-  let commands = vec![ "echo", "echo", "echo" ];
+  let commands = vec![ ".echo", ".echo", ".echo" ];
   let batch_result = pipeline.process_batch( &commands, ExecutionContext::default() );
   
   assert_eq!( batch_result.total_commands, 3 );

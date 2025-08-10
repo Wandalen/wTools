@@ -80,7 +80,7 @@ fn test_register_and_execute_simple_command() {
   // Test Matrix Row: T1.1
   let mut registry = CommandRegistry::new();
   let command_def = CommandDefinition {
-    name: "simple_cmd".to_string(),
+    name: ".simple_cmd".to_string(),
     description: "A simple test command".to_string(),
     arguments: vec![],
     routine_link: Some("dummy_routine".to_string()),
@@ -108,7 +108,7 @@ fn test_register_command_with_arguments() {
   // Test Matrix Row: T1.2
   let mut registry = CommandRegistry::new();
   let command_def = CommandDefinition {
-    name: "arg_cmd".to_string(),
+    name: ".arg_cmd".to_string(),
     description: "A command with arguments".to_string(),
     arguments: vec![ArgumentDefinition {
       name: "arg1".to_string(),
@@ -163,7 +163,7 @@ fn test_register_duplicate_command() {
   // Test Matrix Row: T1.3
   let mut registry = CommandRegistry::new();
   let command_def = CommandDefinition {
-    name: "duplicate_cmd".to_string(),
+    name: ".duplicate_cmd".to_string(),
     description: "A command to be duplicated".to_string(),
     arguments: vec![],
     routine_link: None,
@@ -190,7 +190,7 @@ fn test_register_duplicate_command() {
 fn test_execute_non_existent_command() {
   // Test Matrix Row: T1.4
   let registry = CommandRegistry::new();
-  let result = analyze_and_run("non_existent_cmd", vec![], std::collections::HashMap::new(), &registry);
+  let result = analyze_and_run(".non_existent_cmd", vec![], std::collections::HashMap::new(), &registry);
   assert!(result.is_err());
   assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "UNILANG_COMMAND_NOT_FOUND" ));
 }
@@ -200,7 +200,7 @@ fn test_execute_command_with_missing_argument() {
   // Test Matrix Row: T1.5
   let mut registry = CommandRegistry::new();
   let command_def = CommandDefinition {
-    name: "missing_arg_cmd".to_string(),
+    name: ".missing_arg_cmd".to_string(),
     description: "A command with a missing argument".to_string(),
     arguments: vec![ArgumentDefinition {
       name: "required_arg".to_string(),
@@ -243,7 +243,7 @@ fn test_execute_command_with_invalid_arg_type() {
   // Test Matrix Row: T1.6
   let mut registry = CommandRegistry::new();
   let command_def = CommandDefinition {
-    name: "invalid_type_cmd".to_string(),
+    name: ".invalid_type_cmd".to_string(),
     description: "A command with an invalid argument type".to_string(),
     arguments: vec![ArgumentDefinition {
       name: "int_arg".to_string(),

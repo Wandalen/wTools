@@ -217,6 +217,9 @@ mod private
       }
     }
     
+    /// Get information about SIMD acceleration status.
+    /// 
+    /// Returns a string indicating whether SIMD acceleration is enabled or disabled.
     #[cfg(not(feature = "simd-json"))]
     pub fn simd_info() -> &'static str
     {
@@ -271,7 +274,10 @@ mod private
     }
   }
 
-  // Fallback implementation when SIMD is not available
+  /// Fallback implementation when SIMD is not available.
+  /// 
+  /// This provides the same API as the SIMD version but uses standard
+  /// `serde_json` parsing for compatibility when SIMD features are disabled.
   #[cfg(not(feature = "simd-json"))]
   #[derive( Debug )]
   pub struct FastJsonValue
@@ -282,19 +288,28 @@ mod private
   #[cfg(not(feature = "simd-json"))]
   impl FastJsonValue
   {
+    /// Parse JSON string to owned value using standard serde parsing.
+    /// 
+    /// This fallback method provides the same API as the SIMD version
+    /// but uses standard JSON parsing when SIMD features are not available.
     #[allow(clippy::missing_errors_doc)]
-
     pub fn parse_owned( input : &str ) -> Result< Self, serde_json::Error >
     {
       let value = serde_json::from_str( input )?;
       Ok( FastJsonValue { value } )
     }
     
+    /// Convert this `FastJsonValue` to a standard `serde_json::Value`.
+    /// 
+    /// This consumes the `FastJsonValue` and returns the underlying serde value.
     pub fn to_serde_value( self ) -> SerdeValue
     {
       self.value
     }
     
+    /// Get a reference to the underlying serde value.
+    /// 
+    /// This provides access to the internal value without consuming the `FastJsonValue`.
     pub fn as_simd_value( &self ) -> &SerdeValue
     {
       &self.value
