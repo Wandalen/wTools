@@ -17,6 +17,7 @@
 use unilang::{ CommandDefinition, CommandRegistry, Pipeline, ExecutionContext, VerifiedCommand, OutputData, ErrorData };
 
 /// Demonstration command handler
+#[allow(clippy::needless_pass_by_value, clippy::unnecessary_wraps)]
 fn demo_handler(cmd: VerifiedCommand, _ctx: ExecutionContext) -> Result< OutputData, ErrorData >
 {
   let output = format!("✅ Successfully executed command: {}", cmd.definition.name);
@@ -24,6 +25,7 @@ fn demo_handler(cmd: VerifiedCommand, _ctx: ExecutionContext) -> Result< OutputD
 }
 
 #[test]
+#[allow(clippy::too_many_lines)]
 fn demonstrate_issue_017_solution()
 {
   println!("\n🔍 Issue 017: Command Runtime Registration Failure - ACTUAL SOLUTION\n");
@@ -52,9 +54,9 @@ fn demonstrate_issue_017_solution()
   println!("📝 Registering commands with EXPLICIT DOT PREFIXES...");
   for (name, description) in &working_commands {
     let cmd = CommandDefinition {
-      name: name.to_string(), // ← Explicit dot prefix required
+      name: (*name).to_string(), // ← Explicit dot prefix required
       namespace: String::new(),
-      description: description.to_string(),
+      description: (*description).to_string(),
       routine_link: None,
       arguments: Vec::new(),
       hint: String::new(),
@@ -70,8 +72,8 @@ fn demonstrate_issue_017_solution()
     };
     
     let result = registry.command_add_runtime(&cmd, Box::new(demo_handler));
-    assert!(result.is_ok(), "Failed to register {}", name);
-    println!("   ✅ {} → registered with explicit naming", name);
+    assert!(result.is_ok(), "Failed to register {name}");
+    println!("   ✅ {name} → registered with explicit naming");
   }
   
   // Demonstrate validation prevents invalid commands
@@ -137,7 +139,7 @@ fn demonstrate_issue_017_solution()
         println!("      {}", output.content);
       }
     } else {
-      panic!("❌ Command {} failed: {}", cmd_name, 
+      panic!("❌ Command {cmd_name} failed: {}", 
              result.error.as_ref().unwrap_or(&"unknown".to_string()));
     }
   }
@@ -173,9 +175,9 @@ fn verify_issue_017_completely_resolved()
   
   for (name, description) in &original_failing_commands {
     let cmd = CommandDefinition {
-      name: name.to_string(), // Explicit dot prefix
+      name: (*name).to_string(), // Explicit dot prefix
       namespace: String::new(), // Empty namespace
-      description: description.to_string(),
+      description: (*description).to_string(),
       routine_link: None,
       arguments: Vec::new(),
       hint: String::new(),
@@ -191,7 +193,7 @@ fn verify_issue_017_completely_resolved()
     };
     
     let result = registry.command_add_runtime(&cmd, Box::new(demo_handler));
-    assert!(result.is_ok(), "Registration should succeed for {}", name);
+    assert!(result.is_ok(), "Registration should succeed for {name}");
   }
   
   let pipeline = Pipeline::new(registry);
@@ -204,17 +206,16 @@ fn verify_issue_017_completely_resolved()
     
     // These should ALL work perfectly now with our solution
     assert!(result.success, 
-           "REGRESSION: Command {} still failing after fix: {}", 
-           cmd, 
+           "REGRESSION: Command {cmd} still failing after fix: {}", 
            result.error.as_ref().unwrap_or(&"unknown".to_string()));
            
     // Verify we get the expected success output
-    assert!(!result.outputs.is_empty(), "Command {} should produce output", cmd);
+    assert!(!result.outputs.is_empty(), "Command {cmd} should produce output");
     
     let output_contains_success = result.outputs.iter()
       .any(|output| output.content.contains("Successfully executed"));
     assert!(output_contains_success, 
-           "Command {} should show successful execution", cmd);
+           "Command {cmd} should show successful execution");
   }
   
   println!("✅ Issue 017 verification PASSED - all previously failing commands now work flawlessly!");

@@ -124,17 +124,32 @@ cargo run --example 01_basic_command_registration
 - ⚡ **Validation**: Framework rejects commands that don't follow these rules
 
 ```rust
+use unilang::CommandDefinition;
+
 // ✅ Correct - explicit dot prefix
 let cmd = CommandDefinition {
   name: ".greet".to_string(),  // Required dot prefix
-  // ...
+  namespace: String::new(),
+  description: String::new(),
+  routine_link: None,
+  arguments: Vec::new(),
+  hint: String::new(),
+  status: String::new(),
+  version: String::new(),
+  tags: Vec::new(),
+  aliases: Vec::new(),
+  permissions: Vec::new(),
+  idempotent: false,
+  deprecation_message: String::new(),
+  http_method_hint: String::new(),
+  examples: Vec::new(),
 };
 
-// ❌ Wrong - will be rejected  
-let cmd = CommandDefinition {
-  name: "greet".to_string(),   // Missing dot prefix - ERROR!
-  // ...
-};
+// This would be rejected by validation
+// let invalid_cmd = CommandDefinition {
+//   name: "greet".to_string(),   // Missing dot prefix - ERROR!
+//   // ... other fields would be required too
+// };
 ```
 
 ## Core Concepts
