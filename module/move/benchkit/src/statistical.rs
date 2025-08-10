@@ -461,6 +461,7 @@ impl StatisticalAnalysis
     kurt
   }
 
+  /// Detect outliers in timing data using IQR method
   pub fn detect_outliers(times: &[Duration]) -> usize 
   {
     if times.len() < 4 { return 0; }

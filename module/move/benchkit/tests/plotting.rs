@@ -3,6 +3,7 @@
 #[cfg(feature = "integration")]
 use benchkit::prelude::*;
 #[cfg(feature = "visualization")]
+#[allow(unused_imports)]
 use benchkit::plotting::*;
 use std::time::Duration;
 

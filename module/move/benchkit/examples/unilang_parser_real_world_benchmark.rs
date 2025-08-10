@@ -541,9 +541,9 @@ fn generate_parser_performance_report(workload: &ParserWorkload) -> Result<()>
   report.push_str("## Representative Command Samples\n\n");
   let samples = workload.sample_commands(8);
   for (i, cmd) in samples.iter().enumerate() {
-    report.push_str(&format!("{}. `{}`\n", i + 1, cmd));
+    writeln!(&mut report, "{}. `{cmd}`", i + 1).unwrap();
   }
-  report.push_str("\n");
+  report.push('\n');
 
   // Benchkit enhancement summary
   report.push_str("## benchkit Enhancement Summary\n\n");
@@ -565,7 +565,7 @@ fn generate_parser_performance_report(workload: &ParserWorkload) -> Result<()>
   std::fs::write(report_path, &report)?;
 
   println!("  ✅ Comprehensive report generated:");
-  println!("     - Report saved: {}", report_path);
+  println!("     - Report saved: {report_path}");
   println!("     - Report size: {} lines", report.lines().count());
   println!("     - Content sections: 8 major sections");
 
