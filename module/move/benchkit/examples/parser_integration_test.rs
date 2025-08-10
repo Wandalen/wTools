@@ -3,6 +3,17 @@
 //! This example validates that the new parser analysis and data generation
 //! modules work correctly with realistic parsing scenarios.
 
+#![allow(clippy::format_push_string)]
+#![allow(clippy::uninlined_format_args)]
+#![allow(clippy::std_instead_of_core)]
+#![allow(clippy::unnecessary_wraps)]
+#![allow(clippy::useless_format)]
+#![allow(clippy::redundant_closure_for_method_calls)]
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::cast_sign_loss)]
+#![allow(clippy::needless_borrows_for_generic_args)]
+#![allow(clippy::doc_markdown)]
+
 use benchkit::prelude::*;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;

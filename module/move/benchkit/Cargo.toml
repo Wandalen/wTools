@@ -14,7 +14,7 @@ description = """
 Lightweight benchmarking toolkit focused on practical performance analysis and report generation.
 Non-restrictive alternative to criterion, designed for easy integration and markdown report generation.
 """
-categories = [ "development-tools", "testing" ]
+categories = [ "development-tools", "development-tools::profiling" ]
 keywords = [ "benchmark", "performance", "toolkit", "markdown", "reports" ]
 
 [package.metadata.docs.rs]

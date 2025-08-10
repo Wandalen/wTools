@@ -1,7 +1,16 @@
-//! Real-world example of benchmarking unilang_parser with enhanced benchkit
+//! Real-world example of benchmarking `unilang_parser` with enhanced benchkit
 //!
 //! This example demonstrates how to use the newly implemented parser-specific
 //! benchkit features to comprehensively benchmark actual unilang parser performance.
+
+#![allow(clippy::format_push_string)]
+#![allow(clippy::uninlined_format_args)]
+#![allow(clippy::std_instead_of_core)]
+#![allow(clippy::unnecessary_wraps)]
+#![allow(clippy::redundant_closure_for_method_calls)]
+#![allow(clippy::useless_format)]
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::cast_sign_loss)]
 
 use benchkit::prelude::*;
 use std::fmt::Write;

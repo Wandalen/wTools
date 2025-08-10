@@ -1,7 +1,16 @@
-//! Comprehensive testing of benchkit with actual strs_tools algorithms
+//! Comprehensive testing of benchkit with actual `strs_tools` algorithms
 //!
-//! This tests the actual specialized algorithms from strs_tools to validate
+//! This tests the actual specialized algorithms from `strs_tools` to validate
 //! benchkit integration and identify any issues.
+
+#![allow(clippy::format_push_string)]
+#![allow(clippy::uninlined_format_args)]
+#![allow(clippy::std_instead_of_core)]
+#![allow(clippy::unnecessary_wraps)]
+#![allow(clippy::useless_format)]
+#![allow(clippy::redundant_closure_for_method_calls)]
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::cast_sign_loss)]
 
 use benchkit::prelude::*;
 

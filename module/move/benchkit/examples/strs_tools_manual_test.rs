@@ -1,6 +1,18 @@
-//! Manual testing of strs_tools integration with benchkit
+//! Manual testing of `strs_tools` integration with benchkit
 //!
-//! This tests benchkit with actual strs_tools functionality to identify issues.
+//! This tests benchkit with actual `strs_tools` functionality to identify issues.
+
+#![allow(clippy::doc_markdown)]
+#![allow(clippy::format_push_string)]
+#![allow(clippy::uninlined_format_args)]
+#![allow(clippy::std_instead_of_core)]
+#![allow(clippy::unnecessary_wraps)]
+#![allow(clippy::useless_format)]
+#![allow(clippy::redundant_closure_for_method_calls)]
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::cast_sign_loss)]
+#![allow(clippy::no_effect_underscore_binding)]
+#![allow(clippy::used_underscore_binding)]
 
 use benchkit::prelude::*;
 

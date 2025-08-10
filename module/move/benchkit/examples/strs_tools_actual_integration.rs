@@ -3,6 +3,17 @@
 //! This tests benchkit integration with the actual specialized algorithms
 //! from `strs_tools` to ensure real-world compatibility.
 
+#![allow(clippy::format_push_string)]
+#![allow(clippy::uninlined_format_args)]
+#![allow(clippy::std_instead_of_core)]
+#![allow(clippy::unnecessary_wraps)]
+#![allow(clippy::useless_format)]
+#![allow(clippy::redundant_closure_for_method_calls)]
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::cast_sign_loss)]
+#![allow(clippy::needless_borrows_for_generic_args)]
+#![allow(clippy::doc_markdown)]
+
 use benchkit::prelude::*;
 
 type Result<T> = core::result::Result<T, Box<dyn core::error::Error>>;
@@ -157,7 +168,7 @@ fn test_strs_tools_specialized_algorithms()
     .algorithm("smart_split_auto_sim", move || {
       // Simulating smart split algorithm
       let count = test_data_clone3.split(',').count();
-      std::thread::sleep(std::time::Duration::from_nanos(500)); // Simulate slightly slower processing
+      std::thread::sleep(core::time::Duration::from_nanos(500)); // Simulate slightly slower processing
       core::hint::black_box(count);
     });
 
@@ -189,7 +200,7 @@ fn test_strs_tools_specialized_algorithms()
     .algorithm("boyer_moore_specialized_sim", move || {
       // Simulating Boyer-Moore pattern matching  
       let count = multi_data_clone2.split("::").count();
-      std::thread::sleep(std::time::Duration::from_nanos(200)); // Simulate slightly different performance
+      std::thread::sleep(core::time::Duration::from_nanos(200)); // Simulate slightly different performance
       core::hint::black_box(count);
     });
 
@@ -255,11 +266,11 @@ fn test_real_world_performance_profiling()
   let mut throughput_results = std::collections::HashMap::new();
   
   // Simulate different processing speeds
-  let fast_times = vec![std::time::Duration::from_micros(100); 20];
+  let fast_times = vec![core::time::Duration::from_micros(100); 20];
   throughput_results.insert("optimized_parser".to_string(), 
                            BenchmarkResult::new("optimized", fast_times));
   
-  let slow_times = vec![std::time::Duration::from_micros(500); 20];
+  let slow_times = vec![core::time::Duration::from_micros(500); 20];
   throughput_results.insert("generic_parser".to_string(), 
                            BenchmarkResult::new("generic", slow_times));
   
@@ -283,7 +294,7 @@ fn test_edge_case_handling()
   
   // Test empty strings, single characters, repeated delimiters
   let edge_cases = vec![
-    ("empty_string", "".to_string()),
+    ("empty_string", String::new()),
     ("single_char", "a".to_string()),
     ("only_delimiters", ",,,,,".to_string()),
     ("no_delimiters", "abcdefghijk".to_string()),
@@ -296,7 +307,7 @@ fn test_edge_case_handling()
   
   for (name, test_data) in edge_cases {
     let data_clone = test_data.clone();
-    let benchmark_name = format!("split_{}", name);
+    let benchmark_name = format!("split_{name}");
     
     suite.benchmark(benchmark_name, move || {
       let count = data_clone.split(',').count();
@@ -320,7 +331,7 @@ fn test_edge_case_handling()
     let cv = result.coefficient_of_variation() * 100.0;
     let status = if is_reliable { "✅" } else { "⚠️" };
     
-    println!("     - {}: {} (CV: {:.1}%)", name, status, cv);
+    println!("     - {name}: {status} (CV: {cv:.1}%)");
   }
   
   println!("     - Reliability: {}/{} cases meet standards", reliable_count, total_count);

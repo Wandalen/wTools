@@ -74,7 +74,7 @@ fn main() -> Result<()>
 #[cfg(feature = "visualization")]
 fn create_test_result(name: &str, ops_per_sec: f64) -> BenchmarkResult
 {
-  use std::time::Duration;
+  use core::time::Duration;
   let duration = Duration::from_secs_f64(1.0 / ops_per_sec);
   BenchmarkResult::new(name, vec![duration; 5])
 }

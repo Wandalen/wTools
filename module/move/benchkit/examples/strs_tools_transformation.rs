@@ -3,6 +3,15 @@
 //! This example shows the transformation from complex criterion-based benchmarks
 //! to clean, research-grade benchkit analysis with dramatically reduced code.
 
+#![allow(clippy::format_push_string)]
+#![allow(clippy::uninlined_format_args)]
+#![allow(clippy::std_instead_of_core)]
+#![allow(clippy::unnecessary_wraps)]
+#![allow(clippy::useless_format)]
+#![allow(clippy::redundant_closure_for_method_calls)]
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::cast_sign_loss)]
+
 use benchkit::prelude::*;
 
 use std::collections::HashMap;
@@ -24,7 +33,7 @@ fn main() -> Result<()>
   // 2. Memory Tracking Showcase
   println!("2️⃣ Memory Allocation Tracking");
   println!("-----------------------------");
-  demonstrate_memory_tracking()?;
+  demonstrate_memory_tracking();
   println!();
 
   // 3. Throughput Analysis Showcase
@@ -91,7 +100,7 @@ fn demonstrate_data_generation()
 }
 
 /// Demonstrate memory allocation tracking
-fn demonstrate_memory_tracking() -> Result<()>
+fn demonstrate_memory_tracking()
 {
   println!("  🧠 Memory Allocation Analysis:");
   
@@ -104,7 +113,7 @@ fn demonstrate_memory_tracking() -> Result<()>
     {
       // Simulate string allocation heavy workload
       let _data: Vec<String> = (0..100)
-        .map(|i| format!("allocated_string_{}", i))
+        .map(|i| format!("allocated_string_{i}"))
         .collect();
       
       // Simulate tracking the allocation
@@ -134,8 +143,6 @@ fn demonstrate_memory_tracking() -> Result<()>
   println!("    Memory reduction: {:.1}%", reduction);
   
   println!("    ✅ Replaced complex manual memory profiling code");
-  
-  Ok(())
 }
 
 /// Demonstrate throughput analysis
