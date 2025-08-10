@@ -17,49 +17,137 @@ use alloc::string::{ String, ToString };
 use alloc::format;
 
 // Simple split function to replace strs_tools functionality
-fn simple_split< 'a >( input : &'a str, _delimiters : &[ &str ] ) -> Vec< crate::item_adapter::Split< 'a > >
+fn simple_split< 'a >( input : &'a str, delimiters : &[ &str ] ) -> Vec< crate::item_adapter::Split< 'a > >
 {
-  // Very simple implementation - just split on spaces for now
   let mut result = Vec::new();
-  let mut start = 0;
+  let mut pos = 0;
   
-  for ( i, c ) in input.char_indices()
+  while pos < input.len()
   {
-    if c.is_whitespace()
+    // Check if we're starting a quoted string
+    let ch = input.chars().nth( pos ).unwrap();
+    if ch == '"'
     {
-      if start < i
+      // Handle quoted string
+      let quote_start = pos;
+      pos += ch.len_utf8(); // Skip opening quote
+      let content_start = pos;
+      
+      // Find closing quote
+      while pos < input.len()
       {
+        let current_ch = input.chars().nth( pos ).unwrap();
+        if current_ch == '"'
+        {
+          // Found closing quote
+          let content_end = pos;
+          pos += current_ch.len_utf8(); // Skip closing quote
+          
+          // Create split for the quoted content (without the quotes)
+          result.push( crate::item_adapter::Split {
+            string : alloc::borrow::Cow::Borrowed( &input[ content_start..content_end ] ),
+            bounds : ( quote_start, pos ),
+            start : quote_start,
+            end : pos,
+            typ : crate::item_adapter::SplitType::Delimiter,
+            was_quoted : true, // Mark as quoted
+          });
+          break;
+        }
+        pos += current_ch.len_utf8();
+      }
+      
+      // If we reached end without finding closing quote, treat as error (but for now just continue)
+      if pos >= input.len() && input.chars().nth( input.len() - 1 ).unwrap() != '"'
+      {
+        // Unterminated quote - for now just include what we have
         result.push( crate::item_adapter::Split {
-          string : alloc::borrow::Cow::Borrowed( &input[ start..i ] ),
-          bounds : ( start, i ),
-          start,
-          end : i,
-          typ : crate::item_adapter::SplitType::NonDelimiter,
-          was_quoted : false,
+          string : alloc::borrow::Cow::Borrowed( &input[ content_start.. ] ),
+          bounds : ( quote_start, input.len() ),
+          start : quote_start,
+          end : input.len(),
+          typ : crate::item_adapter::SplitType::Delimiter,
+          was_quoted : true,
         });
       }
+      continue;
+    }
+    
+    // First check for multi-character delimiters
+    let mut found_delimiter = false;
+    
+    for delimiter in delimiters
+    {
+      if delimiter.len() > 1 && input[ pos.. ].starts_with( delimiter )
+      {
+        result.push( crate::item_adapter::Split {
+          string : alloc::borrow::Cow::Borrowed( &input[ pos..pos + delimiter.len() ] ),
+          bounds : ( pos, pos + delimiter.len() ),
+          start : pos,
+          end : pos + delimiter.len(),
+          typ : crate::item_adapter::SplitType::Delimiter,
+          was_quoted : false,
+        });
+        pos += delimiter.len();
+        found_delimiter = true;
+        break;
+      }
+    }
+    
+    if found_delimiter
+    {
+      continue;
+    }
+    
+    // Check for single-character delimiters or whitespace
+    let ch_str = &input[ pos..pos + ch.len_utf8() ];
+    
+    if ch.is_whitespace() || delimiters.iter().any( | d | d.len() == 1 && *d == ch_str )
+    {
       result.push( crate::item_adapter::Split {
-        string : alloc::borrow::Cow::Borrowed( &input[ i..i + c.len_utf8() ] ),
-        bounds : ( i, i + c.len_utf8() ),
-        start : i,
-        end : i + c.len_utf8(),
+        string : alloc::borrow::Cow::Borrowed( ch_str ),
+        bounds : ( pos, pos + ch.len_utf8() ),
+        start : pos,
+        end : pos + ch.len_utf8(),
         typ : crate::item_adapter::SplitType::Delimiter,
         was_quoted : false,
       });
-      start = i + c.len_utf8();
+      pos += ch.len_utf8();
     }
-  }
-  
-  if start < input.len()
-  {
-    result.push( crate::item_adapter::Split {
-      string : alloc::borrow::Cow::Borrowed( &input[ start.. ] ),
-      bounds : ( start, input.len() ),
-      start,
-      end : input.len(),
-      typ : crate::item_adapter::SplitType::NonDelimiter,
-      was_quoted : false,
-    });
+    else
+    {
+      // Find end of non-delimiter segment
+      let start_pos = pos;
+      while pos < input.len()
+      {
+        let current_ch = input.chars().nth( pos ).unwrap();
+        let current_ch_str = &input[ pos..pos + current_ch.len_utf8() ];
+        
+        // Check if we hit a delimiter or quote
+        let is_delimiter = current_ch == '"' || current_ch.is_whitespace() || 
+          delimiters.iter().any( | d | d.len() == 1 && *d == current_ch_str ) ||
+          delimiters.iter().any( | d | d.len() > 1 && input[ pos.. ].starts_with( d ) );
+        
+        if is_delimiter
+        {
+          break;
+        }
+        
+        pos += current_ch.len_utf8();
+      }
+      
+      if start_pos < pos
+      {
+        result.push( crate::item_adapter::Split {
+          string : alloc::borrow::Cow::Borrowed( &input[ start_pos..pos ] ),
+          bounds : ( start_pos, pos ),
+          start : start_pos,
+          end : pos,
+          typ : crate::item_adapter::SplitType::Delimiter, // Mark as delimiter so it gets classified as Identifier
+          was_quoted : false,
+        });
+      }
+    }
   }
   
   result

@@ -144,7 +144,16 @@ mod core_workspace_tests
       .duration_since(std::time::UNIX_EPOCH)
       .unwrap_or_default()
       .as_nanos();
-    let nonexistent = PathBuf::from( format!("/tmp/nonexistent_workspace_test_{thread_id:?}_{timestamp}") );
+    // Use platform-appropriate temp directory with a guaranteed nonexistent subpath
+    let nonexistent = env::temp_dir()
+      .join( format!("nonexistent_workspace_test_{thread_id:?}_{timestamp}") )
+      .join( "deeply_nested_nonexistent_subdir" );
+    
+    // Ensure this path definitely doesn't exist
+    if nonexistent.exists()
+    {
+      fs::remove_dir_all( &nonexistent ).ok();
+    }
     
     env::set_var( "WORKSPACE_PATH", &nonexistent );
     
@@ -346,11 +355,16 @@ mod path_operation_tests
   {
     let ( _temp_dir, workspace ) = testing::create_test_workspace();
     
+    // Use platform-appropriate absolute path
+    #[ cfg( windows ) ]
+    let absolute_path = "C:\\Windows\\System32";
+    #[ cfg( not( windows ) ) ]
     let absolute_path = "/etc/passwd";
+    
     let joined = workspace.join( absolute_path );
     
     // PathBuf::join behavior: absolute path components replace the entire path
-    // so joining "/etc/passwd" to workspace root gives "/etc/passwd"
+    // so joining absolute path to workspace root gives that absolute path
     assert_eq!( joined, PathBuf::from( absolute_path ) );
   }
 
@@ -403,13 +417,21 @@ mod path_operation_tests
   {
     let ( _temp_dir, workspace ) = testing::create_test_workspace();
     
-    let external_paths = vec!
-    [
-      PathBuf::from( "/etc/passwd" ),
-      PathBuf::from( "/tmp" ),
-      PathBuf::from( "/" ),
-      env::temp_dir(), // different temp directory
-    ];
+    // Use platform-appropriate external paths
+    let mut external_paths = vec![ env::temp_dir() ]; // different temp directory
+    
+    #[ cfg( windows ) ]
+    {
+      external_paths.push( PathBuf::from( "C:\\" ) );
+      external_paths.push( PathBuf::from( "C:\\Windows" ) );
+    }
+    
+    #[ cfg( not( windows ) ) ]
+    {
+      external_paths.push( PathBuf::from( "/etc/passwd" ) );
+      external_paths.push( PathBuf::from( "/tmp" ) );
+      external_paths.push( PathBuf::from( "/" ) );
+    }
     
     for path in external_paths
     {
@@ -535,11 +557,16 @@ mod error_handling_tests
   #[ test ]
   fn test_path_not_found_error()
   {
+    // Use platform-appropriate nonexistent path
+    #[ cfg( windows ) ]
+    let test_path = PathBuf::from( "Z:\\nonexistent\\path" );
+    #[ cfg( not( windows ) ) ]
     let test_path = PathBuf::from( "/nonexistent/path" );
+    
     let error = WorkspaceError::PathNotFound( test_path.clone() );
     
     let display = format!( "{error}" );
-    assert!( display.contains( "/nonexistent/path" ) );
+    assert!( display.contains( "nonexistent" ) );
     assert!( display.contains( "not found" ) );
     
     let debug = format!( "{error:?}" );
@@ -726,6 +753,11 @@ mod glob_functionality_tests
     let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
     
     let config_file = workspace.config_dir().join( "app.toml" );
+    // Ensure parent directory exists before writing
+    if let Some( parent ) = config_file.parent()
+    {
+      fs::create_dir_all( parent ).unwrap();
+    }
     fs::write( &config_file, "[app]\nname = \"test\"\n" ).unwrap();
     
     let found = workspace.find_config( "app" ).unwrap();
@@ -739,6 +771,11 @@ mod glob_functionality_tests
     let ( _temp_dir, workspace ) = testing::create_test_workspace_with_structure();
     
     let config_file = workspace.config_dir().join( "app.yaml" );
+    // Ensure parent directory exists before writing  
+    if let Some( parent ) = config_file.parent()
+    {
+      fs::create_dir_all( parent ).unwrap();
+    }
     fs::write( &config_file, "name: test\nversion: 1.0\n" ).unwrap();
     
     let found = workspace.find_config( "app" ).unwrap();

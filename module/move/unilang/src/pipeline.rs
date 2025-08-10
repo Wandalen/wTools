@@ -598,7 +598,7 @@ mod tests
     let pipeline = Pipeline::new( registry );
     let context = ExecutionContext::default();
 
-    let result = pipeline.process_command( "test world", context );
+    let result = pipeline.process_command( ".test world", context );
 
     assert!( result.success );
     assert!( result.error.is_none() );
@@ -643,7 +643,7 @@ mod tests
     let pipeline = Pipeline::new( registry );
     let context = ExecutionContext::default();
 
-    let commands = vec![ "test hello", "test world", "nonexistent" ];
+    let commands = vec![ ".test hello", ".test world", "nonexistent" ];
     let batch_result = pipeline.process_batch( &commands, context );
 
     assert_eq!( batch_result.total_commands, 3 );
@@ -661,7 +661,7 @@ mod tests
     let pipeline = Pipeline::new( registry );
 
     // Valid command
-    assert!( pipeline.validate_command( "test hello" ).is_ok() );
+    assert!( pipeline.validate_command( ".test hello" ).is_ok() );
 
     // Invalid command
     assert!( pipeline.validate_command( "nonexistent_command" ).is_err() );
@@ -674,12 +674,12 @@ mod tests
     let context = ExecutionContext::default();
 
     // Test process_single_command
-    let result = process_single_command( "test hello", &registry, context );
+    let result = process_single_command( ".test hello", &registry, context );
     assert!( result.success );
     assert_eq!( result.outputs[ 0 ].content, "hello" );
 
     // Test validate_single_command
-    assert!( validate_single_command( "test hello", &registry ).is_ok() );
+    assert!( validate_single_command( ".test hello", &registry ).is_ok() );
     assert!( validate_single_command( "nonexistent", &registry ).is_err() );
   }
 }
