@@ -42,7 +42,9 @@ simd = [ "simd-json", "unilang_parser/simd" ]  # SIMD optimizations enabled by d
 repl = []
 
 # Enhanced REPL with command history, auto-completion, and arrow key support
-# Requires the base 'repl' feature
+# Enables: Arrow key navigation, tab completion, secure input, session persistence
+# Dependencies: rustyline (terminal handling), atty (interactive detection)
+# Auto-fallback: Gracefully degrades to basic REPL in non-interactive environments
 enhanced_repl = [ "repl", "dep:rustyline", "dep:atty" ]
 
 # This configuration suggests an action to be done when the command is unknown. In this case, when an unknown command is encountered, the system might suggest alternatives
