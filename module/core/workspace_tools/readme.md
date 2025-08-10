@@ -1,410 +1,305 @@
 # workspace_tools
 
-[![Crates.io](https://img.shields.io/crates/v/workspace_tools)](https://crates.io/crates/workspace_tools)
+[![Crates.io](https://img.shields.io/crates/v/workspace_tools.svg)](https://crates.io/crates/workspace_tools)
 [![Documentation](https://docs.rs/workspace_tools/badge.svg)](https://docs.rs/workspace_tools)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://img.shields.io/badge/tests-94%20passing-brightgreen)](#testing)
+[![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://img.shields.io/badge/tests-passing-brightgreen)](#-testing)
 
-**The missing piece of Rust workspace development** — Runtime workspace-relative path resolution that just works.
+**Stop fighting with file paths in Rust. `workspace_tools` provides foolproof, workspace-relative path resolution that works everywhere: in your tests, binaries, and examples, regardless of the execution context.**
 
-## 🎯 why workspace_tools?
+It's the missing piece of the Rust development workflow that lets you focus on building, not on debugging broken paths.
 
-Rust's cargo workspaces solve dependency management beautifully, but leave a gap for **runtime path resolution**. Applications struggle with:
+## 🎯 The Problem: Brittle File Paths
 
-```rust
-// ❌ fragile - breaks when execution context changes
-let config = std::fs::read_to_string( "../../../config/app.toml" )?;
-
-// ❌ brittle - fails when run from different directories  
-let data_path = Path::new( "./data/cache.db" );
-
-// ❌ hardcoded - not portable across environments
-let logs = Path::new( "/tmp/myapp/logs" );
-```
-
-**workspace_tools** provides the missing runtime workspace resolution:
+Every Rust developer has faced this. Your code works on your machine, but breaks in CI or when run from a different directory.
 
 ```rust
-// ✅ reliable - works from any execution context
-let ws = workspace()?;
-let config = std::fs::read_to_string( ws.join( "config/app.toml" ) )?;
-let data_path = ws.data_dir().join( "cache.db" );
-let logs = ws.logs_dir();
+// ❌ Brittle: This breaks if you run `cargo test` or execute the binary from a subdirectory.
+let config = std::fs::read_to_string( "../../config/app.toml" )?;
+
+// ❌ Inconsistent: This relies on the current working directory, which is unpredictable.
+let data = Path::new( "./data/cache.db" );
 ```
 
-## 🚀 key benefits
+## ✅ The Solution: A Reliable Workspace Anchor
 
-- **📦 cargo integration** - automatic cargo workspace detection (NEW!)
-- **🔧 serde integration** - seamless configuration loading/saving (NEW!)  
-- **🎯 zero configuration** - works with simple `.cargo/config.toml` setup
-- **🏗️ standard layout** - promotes consistent project structure  
-- **🔒 built-in secrets** - secure configuration loading with fallbacks
-- **🔍 resource discovery** - find files with glob patterns
-- **🧪 testing ready** - isolated workspace utilities for tests
-- **🌍 cross-platform** - handles Windows/Mac/Linux path differences
-- **⚡ lightweight** - single file, optional features, zero runtime deps
-
-## ⚡ quick start
-
-### 1. add to cargo.toml
-
-```toml
-[dependencies]
-workspace_tools = "0.1"
-```
-
-### 2. configure workspace
-
-Add to workspace root `.cargo/config.toml`:
-
-```toml
-[env]
-WORKSPACE_PATH = { value = ".", relative = true }
-```
-
-### 3. use in your code
+`workspace_tools` gives you a stable anchor to your project's root, making all file operations simple and predictable.
 
 ```rust
 use workspace_tools::workspace;
+
+// ✅ Reliable: This works from anywhere.
+let ws = workspace()?; // Automatically finds your project root!
+let config = std::fs::read_to_string( ws.join( "config/app.toml" ) )?;
+let data = ws.data_dir().join( "cache.db" ); // Use standard, predictable directories.
+```
+
+---
+
+## 🚀 Quick Start in 60 Seconds
+
+Get up and running with a complete, working example in less than a minute.
+
+**1. Add the Dependency**
+
+In your project's root directory, run:
+```bash
+cargo add workspace_tools
+```
+
+**2. Use it in Your Code**
+
+`workspace_tools` automatically finds your project root by looking for the `Cargo.toml` file that contains your `[workspace]` definition. **No configuration is required.**
+
+<details>
+<summary><strong>Click to see a complete `main.rs` example</strong></summary>
+
+```rust
+use workspace_tools::workspace;
+use std::fs;
+use std::path::Path;
 
 fn main() -> Result< (), Box< dyn std::error::Error > >
 {
-    let ws = workspace()?;
-    
-    // access standard directories
-    let config = ws.config_dir().join( "app.toml" );
-    let data = ws.data_dir().join( "cache.db" );
-    let logs = ws.logs_dir();
-    
-    // check workspace boundaries
-    assert!( ws.is_workspace_file( &config ) );
-    
-    println!( "workspace root: {}", ws.root().display() );
-    Ok( () )
+  // 1. Get the workspace instance. It just works!
+  let ws = workspace()?;
+  println!( "✅ Workspace Root Found: {}", ws.root().display() );
+
+  // 2. Create a path to a config file in the standard `/config` directory.
+  let config_path = ws.config_dir().join( "app.toml" );
+  println!( "⚙️  Attempting to read config from: {}", config_path.display() );
+
+  // 3. Let's create a dummy config file to read.
+  // In a real project, this file would already exist.
+  setup_dummy_config( &config_path )?;
+
+  // 4. Now, reliably read the file. This works from anywhere!
+  let config_content = fs::read_to_string( &config_path )?;
+  println!( "\n🎉 Successfully read config file! Content:\n---" );
+  println!( "{}", config_content.trim() );
+  println!( "---" );
+
+  Ok( () )
 }
-```
 
-## 📁 standard directory layout
-
-workspace_tools promotes a consistent, predictable project structure:
-
-```
-workspace-root/
-├── .cargo/config.toml    # workspace configuration
-├── .workspace/           # workspace metadata
-├── config/              # ← ws.config_dir()
-│   ├── app.toml
-│   ├── database.yaml
-│   └── services.json
-├── data/                # ← ws.data_dir()  
-│   ├── cache.db
-│   └── state.json
-├── logs/                # ← ws.logs_dir()
-├── docs/                # ← ws.docs_dir()
-├── tests/               # ← ws.tests_dir()
-└── .secret/             # ← ws.secret_dir() [secret_management]
-    └── -secrets.sh
-```
-
-## 🎭 feature showcase
-
-### core functionality
-
-```rust
-use workspace_tools::{ workspace, WorkspaceError };
-
-let ws = workspace()?;
-
-// workspace introspection
-println!("root: {}", ws.root().display());
-ws.validate()?; // ensure workspace is accessible
-
-// path operations  
-let app_config = ws.join( "config/app.toml" );
-let normalized = ws.normalize_path( "config/../data/file.json" )?;
-
-// boundary checking
-assert!( ws.is_workspace_file( &app_config ) );
-assert!( !ws.is_workspace_file( "/etc/passwd" ) );
-```
-
-### resource discovery (glob feature)
-
-```toml
-[dependencies]
-workspace_tools = { version = "0.1", features = ["glob"] }
-```
-
-```rust
-let ws = workspace()?;
-
-// find files with patterns
-let rust_files = ws.find_resources( "src/**/*.rs" )?;
-let test_files = ws.find_resources( "tests/**/*.rs" )?;
-
-// smart config discovery
-let db_config = ws.find_config( "database" )?;  
-// finds config/database.{toml,yaml,json} or .database.toml
-```
-
-### secret management (secret_management feature)
-
-```toml
-[dependencies] 
-workspace_tools = { version = "0.1", features = ["secret_management"] }
-```
-
-```rust
-// .secret/-secrets.sh
-// API_KEY=your_secret_here
-// DATABASE_URL="postgresql://localhost/db"
-
-let ws = workspace()?;
-
-// load all secrets
-let secrets = ws.load_secrets_from_file( "-secrets.sh" )?;
-
-// load specific key with environment fallback
-let api_key = ws.load_secret_key( "API_KEY", "-secrets.sh" )?;
-```
-
-### cargo integration (cargo_integration feature)
-
-```toml
-[dependencies]
-workspace_tools = { version = "0.1", features = ["cargo_integration"] }
-```
-
-```rust
-use workspace_tools::Workspace;
-
-// automatic cargo workspace detection - no .cargo/config.toml needed!
-let ws = Workspace::from_cargo_workspace()?;
-
-// or use resolve_or_fallback for cargo-first detection
-let ws = Workspace::resolve_or_fallback(); // tries cargo → env → current_dir → git
-
-// access cargo metadata
-if ws.is_cargo_workspace()
+// Helper function to create a dummy config file for the example.
+fn setup_dummy_config( path : &Path ) -> Result< (), std::io::Error >
 {
-    let metadata = ws.cargo_metadata()?;
-    println!( "workspace root: {}", metadata.workspace_root.display() );
-    
-    for member in metadata.members
-    {
-        println!( "  • {} v{}", member.name, member.version );
-    }
-    
-    let member_dirs = ws.workspace_members()?;
+  if let Some( parent ) = path.parent()
+  {
+    fs::create_dir_all( parent )?;
+  }
+  fs::write( path, "[server]\nhost = \"127.0.0.1\"\nport = 8080\n" )?;
+  Ok( () )
 }
 ```
+</details>
 
-### serde integration (serde_integration feature)
+**3. Run Your Application**
 
-```toml
-[dependencies]
-workspace_tools = { version = "0.1", features = ["serde_integration"] }
-serde = { version = "1.0", features = ["derive"] }
+Run your code from different directories to see `workspace_tools` in action:
+
+```bash
+# Run from the project root (this will work)
+cargo run
+
+# Run from a subdirectory (this will also work!)
+cd src
+cargo run
+```
+You have now eliminated brittle, context-dependent file paths from your project!
+
+---
+
+## 📁 A Standard for Project Structure
+
+`workspace_tools` helps standardize your projects, making them instantly familiar to you, your team, and your tools.
+
+```
+your-project/
+├── .cargo/
+├── .secrets.sh          # (Optional) Securely manage secrets
+├── .workspace/          # Internal workspace metadata
+├── Cargo.toml           # Your workspace root
+├── config/              # ( ws.config_dir() ) Application configuration
+├── data/                # ( ws.data_dir() )   Databases, caches, user data
+├── docs/                # ( ws.docs_dir() )   Project documentation
+├── logs/                # ( ws.logs_dir() )   Runtime log files
+├── src/
+└── tests/               # ( ws.tests_dir() )  Integration tests & fixtures
 ```
 
-```rust
-use serde::{ Serialize, Deserialize };
-use workspace_tools::workspace;
+---
 
-#[ derive( Serialize, Deserialize ) ]
-struct AppConfig
-{
-    name : String,
-    port : u16,
-    database : DatabaseConfig,
-}
+## 🎭 Advanced Features
 
-let ws = workspace()?;
+`workspace_tools` is packed with powerful, optional features. Enable them in your `Cargo.toml` as needed.
 
-// automatic format detection - loads config/app.{toml,yaml,json}
-let config : AppConfig = ws.load_config( "app" )?;
+<details>
+<summary><strong>🔧 Seamless Serde Integration (`serde_integration`)</strong></summary>
 
-// save configuration with format preservation
-ws.save_config( "app", &config )?;
+Eliminate boilerplate for loading `.toml`, `.json`, and `.yaml` files.
 
-// load from specific file with format detection
-let config : AppConfig = ws.load_config_from( "config/custom.json" )?;
-
-// layered configuration merging
-let config : AppConfig = ws.load_config_layered( &[ "base", "development" ] )?;
-
-// partial configuration updates
-let updates = serde_json::json!( { "port": 9090 } );
-let updated : AppConfig = ws.update_config( "app", updates )?;
-```
-
-## 🧪 testing integration
-
-workspace_tools makes testing with isolated workspaces trivial:
-
-```rust
-#[ cfg( test ) ]
-mod tests
-{
-    use workspace_tools::testing::create_test_workspace;
-    
-    #[ test ]
-    fn test_config_loading()
-    {
-        let ( _temp_dir, ws ) = create_test_workspace();
-        
-        // test in complete isolation
-        let config_path = ws.config_dir().join( "test.toml" );  
-        // ... test logic
-    }
-}
-```
-
-## 🏗️ integration examples
-
-### with serde configuration
+**Enable:** `cargo add serde` and add `workspace_tools = { workspace = true, features = ["serde_integration"] }` to `Cargo.toml`.
 
 ```rust
 use serde::Deserialize;
+use workspace_tools::workspace;
 
 #[ derive( Deserialize ) ]
 struct AppConfig
 {
-    name : String,
-    port : u16,
+  name : String,
+  port : u16,
 }
 
 let ws = workspace()?;
-let config_path = ws.find_config( "app" )?;
-let config : AppConfig = toml::from_str( &std::fs::read_to_string( config_path )? )?;
+
+// Automatically finds and parses `config/app.{toml,yaml,json}`.
+let config : AppConfig = ws.load_config( "app" )?;
+println!( "Running '{}' on port {}", config.name, config.port );
+
+// Load and merge multiple layers (e.g., base + production).
+let final_config : AppConfig = ws.load_config_layered( &[ "base", "production" ] )?;
+
+// Partially update a configuration file on disk.
+let updates = serde_json::json!( { "port": 9090 } );
+let updated_config : AppConfig = ws.update_config( "app", updates )?;
 ```
 
-### with tracing logs
+</details>
+
+<details>
+<summary><strong>🔍 Powerful Resource Discovery (`glob`)</strong></summary>
+
+Find files anywhere in your workspace using glob patterns.
+
+**Enable:** Add `workspace_tools = { workspace = true, features = ["glob"] }` to `Cargo.toml`.
 
 ```rust
-use tracing_appender::rolling::{ RollingFileAppender, Rotation };
+use workspace_tools::workspace;
 
 let ws = workspace()?;
-let log_dir = ws.logs_dir();
-std::fs::create_dir_all( &log_dir )?;
 
-let file_appender = RollingFileAppender::new( Rotation::DAILY, log_dir, "app.log" );
+// Find all Rust source files recursively.
+let rust_files = ws.find_resources( "src/**/*.rs" )?;
+
+// Intelligently find a config file, trying multiple extensions.
+let db_config = ws.find_config( "database" )?; // Finds config/database.toml, .yaml, etc.
 ```
 
-### with database migrations
+</details>
+
+<details>
+<summary><strong>🔒 Secure Secret Management (`secret_management`)</strong></summary>
+
+Load secrets from a dedicated, git-ignored `.secrets.sh` file, with fallbacks to environment variables.
+
+**Enable:** Add `workspace_tools = { workspace = true, features = ["secret_management"] }` to `Cargo.toml`.
+
+```
+// .gitignore
+.*
+// .secrets.sh
+API_KEY="your-super-secret-key"
+```
 
 ```rust
+use workspace_tools::workspace;
+
 let ws = workspace()?;
-let migrations_dir = ws.join( "migrations" );
-// run migrations from consistent location regardless of cwd
+
+// Loads API_KEY from .secrets.sh, or falls back to the environment.
+let api_key = ws.load_secret_key( "API_KEY", ".secrets.sh" )?;
 ```
 
-## 🌍 deployment flexibility
-
-### docker containers
-
-```dockerfile
-FROM rust:alpine
-ENV WORKSPACE_PATH=/app
-WORKDIR /app
-COPY . .
-RUN cargo build --release
-```
-
-### systemd services
-
-```ini
-[Service]
-Environment=WORKSPACE_PATH=/opt/myapp
-WorkingDirectory=/opt/myapp
-ExecStart=/opt/myapp/target/release/myapp
-```
-
-### just/make integration
-
-```just
-# justfile
-export WORKSPACE_PATH := justfile_directory()
-
-test:
-    cargo test
-
-run:
-    cargo run
-```
-
-## 📊 use cases
-
-✅ **cli applications** - consistent config/data/log paths  
-✅ **web services** - reliable asset and config loading  
-✅ **desktop apps** - standard directory structures  
-✅ **build tools** - workspace-aware file processing  
-✅ **testing frameworks** - isolated workspace environments  
-✅ **data processing** - portable path resolution  
-
-## ⚙️ fallback strategies
-
-workspace_tools is resilient with multiple resolution strategies:
-
-1. **environment variable** (`WORKSPACE_PATH`) - primary method
-2. **current directory** - when no env var set  
-3. **git repository root** - searches upward for `.git/`
-4. **current working directory** - ultimate fallback (never fails)
-
-```rust
-// always succeeds with some valid workspace root
-let ws = Workspace::resolve_or_fallback();
-```
-
-## 📚 comprehensive examples
-
-Check out `/examples/` for detailed usage patterns:
-
-- `workspace_basic_usage.rs` - core functionality walkthrough
-- `secret_management.rs` - secure configuration patterns  
-- `resource_discovery.rs` - file finding with glob patterns
-
-## 🧪 testing
-
-workspace_tools maintains **94 passing tests** with comprehensive coverage:
-
-- core workspace resolution (13 tests)
-- comprehensive integration suite (63 tests)  
-- secret management functionality (1 test)
-- documentation examples (11 tests)
-- performance benchmarks (5 ignored/optional)
-
-```bash
-cargo test                    # run core tests
-cargo test --all-features     # run all feature tests
-cargo test --features glob    # test glob functionality
-```
-
-## 📈 roadmap & contributing
-
-### planned features
-
-- **config validation** - schema-based configuration checking
-- **workspace templates** - scaffold standard layouts  
-- **plugin system** - extensible workspace behaviors
-- **async file operations** - tokio integration
-- **workspace watching** - file change notifications
-
-### contributing
-
-contributions welcome! workspace_tools follows the **design rulebook** patterns:
-
-- explicit lifetimes and error handling
-- comprehensive testing with matrix coverage  
-- feature-gated optional functionality
-- consistent 2-space formatting
-
-see [contributing guidelines](contributing.md) for details.
-
-## ⚖️ license
-
-licensed under the [MIT license](license).
+</details>
 
 ---
 
-> **"finally, a workspace tool that works the way rust developers think"** — eliminate path resolution pain forever
+## 🛠️ Built for the Real World
+
+`workspace_tools` is designed for production use, with features that support robust testing and flexible deployment.
+
+### Testing with Confidence
+
+Create clean, isolated environments for your tests.
+
+```rust
+// In tests/my_test.rs
+#![ cfg( feature = "integration" ) ]
+use workspace_tools::testing::create_test_workspace_with_structure;
+use std::fs;
+
+#[ test ]
+fn my_feature_test()
+{
+  // Creates a temporary, isolated workspace that is automatically cleaned up.
+  let ( _temp_dir, ws ) = create_test_workspace_with_structure();
+
+  // Write test-specific files without polluting your project.
+  let config_path = ws.config_dir().join( "test_config.toml" );
+  fs::write( &config_path, "[settings]\nenabled = true" ).unwrap();
+
+  // ... your test logic here ...
+}
+```
+
+### Flexible Deployment
+
+Because `workspace_tools` can be configured via `WORKSPACE_PATH`, it adapts effortlessly to any environment.
+
+**Dockerfile:**
+```dockerfile
+# Your build stages...
+
+# Final stage
+FROM debian:bookworm-slim
+WORKDIR /app
+ENV WORKSPACE_PATH=/app # Set the workspace root inside the container.
+
+COPY --from=builder /app/target/release/my-app .
+COPY config/ ./config/
+COPY assets/ ./assets/
+
+CMD ["./my-app"] # Your app now runs with the correct workspace context.
+```
+
+### Resilient by Design
+
+`workspace_tools` has a smart fallback strategy to find your workspace root, ensuring it always finds a sensible path.
+
+```mermaid
+graph TD
+    A[Start] --> B{Cargo Workspace?};
+    B -->|Yes| C[Use Cargo Root];
+    B -->|No| D{WORKSPACE_PATH Env Var?};
+    D -->|Yes| E[Use Env Var Path];
+    D -->|No| F{.git folder nearby?};
+    F -->|Yes| G[Use Git Root];
+    F -->|No| H[Use Current Directory];
+    C --> Z[Success];
+    E --> Z[Success];
+    G --> Z[Success];
+    H --> Z[Success];
+```
+
+---
+
+## 🚧 Vision & Roadmap
+
+`workspace_tools` is actively developed. Our vision is to make workspace management a solved problem in Rust. Upcoming features include:
+
+*   **Project Scaffolding**: A powerful `cargo workspace-tools init` command to create new projects from templates.
+*   **Configuration Validation**: Schema-based validation to catch config errors before they cause panics.
+*   **Async & Hot-Reloading**: Full `tokio` integration for non-blocking file operations and live configuration reloads.
+*   **Official CLI Tool**: A `cargo workspace-tools` command for managing your workspace from the terminal.
+*   **IDE Integration**: Rich support for VS Code and RustRover to bring workspace-awareness directly into your editor.
+
+## 🤝 Contributing
+
+This project thrives on community contributions. Whether it's reporting a bug, suggesting a feature, or writing code, your help is welcome! Please see our task list and contribution guidelines.
+
+## ⚖️ License
+
+This project is licensed under the **MIT License**.
