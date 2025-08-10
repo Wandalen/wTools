@@ -89,7 +89,8 @@ pub enum WorkspaceError
 impl core::fmt::Display for WorkspaceError
 {
   #[ inline ]
-  fn fmt( &self, f : &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
+  #[ allow( clippy::elidable_lifetime_names ) ]
+  fn fmt< 'a >( &self, f : &mut core::fmt::Formatter< 'a > ) -> core::fmt::Result
   {
     match self
     {

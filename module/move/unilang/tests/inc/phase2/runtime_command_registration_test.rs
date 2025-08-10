@@ -63,7 +63,7 @@ fn analyze_and_run(
 ) -> Result<Vec<OutputData>, unilang::error::Error> {
   let instructions = vec![unilang_parser::GenericInstruction {
     command_path_slices: command_name.split('.').map(std::string::ToString::to_string).collect(),
-    named_arguments: named_args,
+    named_arguments: named_args.into_iter().collect(),
     positional_arguments: positional_args,
     help_requested: false,
     overall_location: SourceLocation::StrSpan { start: 0, end: 0 }, // Placeholder
@@ -98,7 +98,7 @@ fn test_register_and_execute_simple_command() {
   };
   registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
-  let result = analyze_and_run("test.simple_cmd", vec![], HashMap::new(), &registry);
+  let result = analyze_and_run("test.simple_cmd", vec![], std::collections::HashMap::new(), &registry);
   assert!(result.is_ok());
   assert_eq!(result.unwrap()[0].content, "Dummy routine executed!");
 }
@@ -143,7 +143,7 @@ fn test_register_command_with_arguments() {
     .command_add_runtime(&command_def, Box::new(arg_test_routine))
     .unwrap();
 
-  let mut named_args = HashMap::new();
+  let mut named_args = std::collections::HashMap::new();
   named_args.insert(
     "arg1".to_string(),
     unilang_parser::Argument {
@@ -190,7 +190,7 @@ fn test_register_duplicate_command() {
 fn test_execute_non_existent_command() {
   // Test Matrix Row: T1.4
   let registry = CommandRegistry::new();
-  let result = analyze_and_run("non_existent_cmd", vec![], HashMap::new(), &registry);
+  let result = analyze_and_run("non_existent_cmd", vec![], std::collections::HashMap::new(), &registry);
   assert!(result.is_err());
   assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "UNILANG_COMMAND_NOT_FOUND" ));
 }
@@ -233,7 +233,7 @@ fn test_execute_command_with_missing_argument() {
   };
   registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
-  let result = analyze_and_run("test.missing_arg_cmd", vec![], HashMap::new(), &registry);
+  let result = analyze_and_run("test.missing_arg_cmd", vec![], std::collections::HashMap::new(), &registry);
   assert!(result.is_err());
   assert!(matches!( result.unwrap_err(), unilang::error::Error::Execution( data ) if data.code == "UNILANG_ARGUMENT_MISSING" ));
 }
@@ -276,7 +276,7 @@ fn test_execute_command_with_invalid_arg_type() {
   };
   registry.command_add_runtime(&command_def, Box::new(dummy_routine)).unwrap();
 
-  let mut named_args = HashMap::new();
+  let mut named_args = std::collections::HashMap::new();
   named_args.insert(
     "int_arg".to_string(),
     unilang_parser::Argument {

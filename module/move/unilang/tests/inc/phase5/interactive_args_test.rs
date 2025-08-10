@@ -5,7 +5,6 @@
 //! `UNILANG_ARGUMENT_INTERACTIVE_REQUIRED` for missing interactive arguments.
 //!
 
-use std::collections::HashMap;
 use unilang::data::{ ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes };
 use unilang::registry::CommandRegistry;
 use unilang::semantic::SemanticAnalyzer;
@@ -79,7 +78,7 @@ fn test_interactive_argument_signaling()
   let instruction = GenericInstruction
   {
     command_path_slices: vec!["config".to_string(), "set".to_string()],
-    named_arguments: HashMap::from([
+    named_arguments: std::collections::BTreeMap::from([
       ("key".to_string(), unilang_parser::Argument {
         name: Some("key".to_string()),
         value: "theme".to_string(),
@@ -106,7 +105,7 @@ fn test_interactive_argument_signaling()
   let instruction_complete = GenericInstruction
   {
     command_path_slices: vec!["config".to_string(), "set".to_string()],
-    named_arguments: HashMap::from([
+    named_arguments: std::collections::BTreeMap::from([
       ("key".to_string(), unilang_parser::Argument {
         name: Some("key".to_string()),
         value: "theme".to_string(),
@@ -136,7 +135,7 @@ fn test_interactive_argument_signaling()
   let instruction_missing_regular = GenericInstruction
   {
     command_path_slices: vec!["config".to_string(), "set".to_string()],
-    named_arguments: HashMap::from([
+    named_arguments: std::collections::BTreeMap::from([
       ("value".to_string(), unilang_parser::Argument {
         name: Some("value".to_string()),
         value: "dark".to_string(),
@@ -209,7 +208,7 @@ fn test_interactive_optional_argument()
   let instruction = GenericInstruction
   {
     command_path_slices: vec!["optional".to_string(), "interactive".to_string()],
-    named_arguments: HashMap::new(),
+    named_arguments: std::collections::BTreeMap::new(),
     positional_arguments: vec![],
     help_requested: false,
     overall_location: SourceLocation::StrSpan { start: 0, end: 20 },

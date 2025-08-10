@@ -4,6 +4,7 @@
 #![ allow( clippy::std_instead_of_core ) ]
 
 use core::fmt;
+use alloc::string::String;
 
 /// Represents a span of characters in the source string.
 #[ derive( Debug, PartialEq, Eq, Clone ) ]

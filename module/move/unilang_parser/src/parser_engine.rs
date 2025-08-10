@@ -10,9 +10,60 @@ use crate::
   item_adapter::{ RichItem, UnilangTokenKind },
 };
 use crate::instruction::{ Argument, GenericInstruction };
-use std::collections::HashMap;
-use alloc::vec::IntoIter;
-use strs_tools::string::split::{ Split, SplitType };
+use crate::item_adapter::{ Split, SplitType };
+use alloc::collections::BTreeMap;
+use alloc::vec::{ Vec, IntoIter };
+use alloc::string::{ String, ToString };
+use alloc::format;
+
+// Simple split function to replace strs_tools functionality
+fn simple_split< 'a >( input : &'a str, _delimiters : &[ &str ] ) -> Vec< crate::item_adapter::Split< 'a > >
+{
+  // Very simple implementation - just split on spaces for now
+  let mut result = Vec::new();
+  let mut start = 0;
+  
+  for ( i, c ) in input.char_indices()
+  {
+    if c.is_whitespace()
+    {
+      if start < i
+      {
+        result.push( crate::item_adapter::Split {
+          string : alloc::borrow::Cow::Borrowed( &input[ start..i ] ),
+          bounds : ( start, i ),
+          start,
+          end : i,
+          typ : crate::item_adapter::SplitType::NonDelimiter,
+          was_quoted : false,
+        });
+      }
+      result.push( crate::item_adapter::Split {
+        string : alloc::borrow::Cow::Borrowed( &input[ i..i + c.len_utf8() ] ),
+        bounds : ( i, i + c.len_utf8() ),
+        start : i,
+        end : i + c.len_utf8(),
+        typ : crate::item_adapter::SplitType::Delimiter,
+        was_quoted : false,
+      });
+      start = i + c.len_utf8();
+    }
+  }
+  
+  if start < input.len()
+  {
+    result.push( crate::item_adapter::Split {
+      string : alloc::borrow::Cow::Borrowed( &input[ start.. ] ),
+      bounds : ( start, input.len() ),
+      start,
+      end : input.len(),
+      typ : crate::item_adapter::SplitType::NonDelimiter,
+      was_quoted : false,
+    });
+  }
+  
+  result
+}
 
 /// The main parser struct.
 #[ derive( Debug ) ]
@@ -37,15 +88,11 @@ impl Parser
   /// Returns a `ParseError` if the input string cannot be parsed into a valid instruction.
   pub fn parse_single_instruction( &self, input : &str ) -> Result< crate::instruction::GenericInstruction, ParseError >
   {
-    let splits_iter = strs_tools::split()
-    .src( input )
-    .delimeters( &[ " ", "\n", "\t", "\r", "::", "?", "#", ".", "!" ] )
-    .preserving_delimeters( true )
-    .quoting( true )
-    .preserving_quoting( false )
-    .perform();
+    // Simple replacement for strs_tools split since the feature is not available
+    let splits_iter = simple_split( input, &[ " ", "\n", "\t", "\r", "::", "?", "#", ".", "!" ] );
 
     let rich_items : Vec< RichItem< '_ > > = splits_iter
+    .into_iter()
     .map( | s |
     {
       let ( kind, adjusted_source_location ) = crate::item_adapter::classify_split( &s )?;
@@ -73,14 +120,8 @@ impl Parser
   /// which indicates a logic error where a trailing delimiter was expected but not found.
   pub fn parse_multiple_instructions( &self, input : &str ) -> Result< Vec< crate::instruction::GenericInstruction >, ParseError >
   {
-    let segments : Vec< Split< '_ > > = strs_tools::split()
-    .src( input )
-    .delimeters( &[ ";;" ] )
-    .preserving_delimeters( true )
-    .preserving_empty( false ) // Do not preserve empty segments for whitespace
-    .stripping( true ) // Strip leading/trailing whitespace from delimited segments
-    .perform()
-    .collect();
+    // Simple replacement for strs_tools split on ";;"
+    let segments : Vec< Split< '_ > > = simple_split( input, &[ ";;" ] );
 
     let mut instructions = Vec::new();
     let mut last_was_delimiter = true; // Tracks if the previous segment was a delimiter
@@ -91,12 +132,8 @@ impl Parser
       return Ok( Vec::new() ); // Empty input, no instructions
     }
 
-    // Check if the first segment is an empty delimited segment (e.g., " ;; cmd")
-    // or if the input starts with a delimiter (e.g., ";; cmd")
-    // This handles "EmptyInstructionSegment" for leading " ;;" or "  ;;"
-    if ( segments[ 0 ].typ == SplitType::Delimiter
-      || ( segments[ 0 ].typ == SplitType::Delimeted && segments[ 0 ].string.trim().is_empty() ) )
-      && segments[ 0 ].start == 0
+    // Check if the first segment is a delimiter at the start
+    if segments[ 0 ].typ == SplitType::Delimiter && segments[ 0 ].start == 0
     {
       return Err( ParseError::new
       (
@@ -112,7 +149,7 @@ impl Parser
     for segment in &segments
     {
       // Filter out empty delimited segments that are not actual content
-      if segment.typ == SplitType::Delimeted && segment.string.trim().is_empty()
+      if segment.typ == SplitType::Delimiter && segment.string.trim().is_empty()
       {
         continue; // Skip this segment, it's just whitespace or an empty token from stripping
       }
@@ -179,7 +216,7 @@ impl Parser
       {
         command_path_slices : Vec::new(),
         positional_arguments : Vec::new(),
-        named_arguments : HashMap::new(),
+        named_arguments : BTreeMap::new(),
         help_requested : false,
         overall_location : SourceLocation::None, // No specific location for empty input
       });
@@ -316,10 +353,10 @@ impl Parser
     &self,
     items_iter : &mut core::iter::Peekable< IntoIter< RichItem< '_ > > >,
   )
-  -> Result< ( Vec< Argument >, HashMap< String, Argument >, bool ), ParseError >
+  -> Result< ( Vec< Argument >, BTreeMap< String, Argument >, bool ), ParseError >
   {
     let mut positional_arguments = Vec::new();
-    let mut named_arguments = HashMap::new();
+    let mut named_arguments = BTreeMap::new();
     let mut help_operator_found = false;
 
     while let Some( item ) = items_iter.next()

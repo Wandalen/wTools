@@ -39,7 +39,7 @@ fn analyze_program(
 
   let instructions = vec![unilang_parser::GenericInstruction {
     command_path_slices: command_name.split('.').map(std::string::ToString::to_string).collect(),
-    named_arguments: named_args,
+    named_arguments: named_args.into_iter().collect(),
     positional_arguments: positional_args,
     help_requested: false,
     overall_location: SourceLocation::StrSpan { start: 0, end: 0 }, // Placeholder
@@ -96,7 +96,7 @@ fn test_list_string_kind() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    HashMap::new(),
+    std::collections::HashMap::new(),
     &registry,
   );
   assert!(result.is_ok());
@@ -149,7 +149,7 @@ fn test_list_integer_custom_delimiter_kind() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    HashMap::new(),
+    std::collections::HashMap::new(),
     &registry,
   );
   assert!(result.is_ok());
@@ -202,7 +202,7 @@ fn test_map_string_integer_kind() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    HashMap::new(),
+    std::collections::HashMap::new(),
     &registry,
   );
   assert!(result.is_ok());
@@ -258,7 +258,7 @@ fn test_map_string_string_custom_delimiters_kind() {
       name_location: None,
       value_location: SourceLocation::StrSpan { start: 0, end: 0 },
     }],
-    HashMap::new(),
+    std::collections::HashMap::new(),
     &registry,
   );
   assert!(result.is_ok());
