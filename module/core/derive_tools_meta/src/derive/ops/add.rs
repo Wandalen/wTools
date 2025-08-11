@@ -180,12 +180,12 @@ fn generate_enum
 /// impl Add for MyStruct 
 /// {
 ///     type Output = Self;
-///     fn add(self, other: Self) -> Self::Output 
+///     fn add( self, other : Self ) -> Self::Output 
 ///     {
 ///         Self 
 ///         {
-///             field1: self.field1 + other.field1,
-///             field2: self.field2 + other.field2,
+///             field1 : self.field1 + other.field1,
+///             field2 : self.field2 + other.field2,
 ///             ...
 ///         }
 ///     }

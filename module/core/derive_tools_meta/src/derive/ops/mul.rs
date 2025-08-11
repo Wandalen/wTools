@@ -181,12 +181,12 @@ fn generate_enum
 /// impl Mul for MyStruct 
 /// {
 ///     type Output = Self;
-///     fn mul(self, other: Self) -> Self::Output 
+///     fn mul( self, other : Self ) -> Self::Output 
 ///     {
 ///         Self 
 ///         {
-///             field1: self.field1 * other.field1,
-///             field2: self.field2 * other.field2,
+///             field1 : self.field1 * other.field1,
+///             field2 : self.field2 * other.field2,
 ///             ...
 ///         }
 ///     }
