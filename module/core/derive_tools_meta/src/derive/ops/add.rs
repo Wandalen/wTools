@@ -109,19 +109,22 @@ pub fn add( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
 /// ```text
 /// impl Add for MyEnum 
 /// {
-///     type Output = Result<Self, ErrorType>;
-///     fn add(self, other: Self) -> Self::Output {
-///         match (self, other) {
-///             (MyEnum::NamedVariant { x: a0, y: a1 }, MyEnum::NamedVariant { x: b0, y: b1 }) => Ok(
-///                 MyEnum::NamedVariant {
-///                     x: a0 + b0,
-///                     y: a1 + b1,
+///     type Output = Result< Self, ErrorType >;
+///     fn add( self, other : Self ) -> Self::Output 
+///     {
+///         match ( self, other ) 
+///         {
+///             ( MyEnum::NamedVariant { x : a0, y : a1 }, MyEnum::NamedVariant { x : b0, y : b1 } ) => Ok(
+///                 MyEnum::NamedVariant 
+///                 {
+///                     x : a0 + b0,
+///                     y : a1 + b1,
 ///                 }
 ///             ),
-///             (MyEnum::TupleVariant(a0), MyEnum::TupleVariant(b0)) => Ok(
-///                 MyEnum::TupleVariant(a0 + b0)
+///             ( MyEnum::TupleVariant( a0 ), MyEnum::TupleVariant( b0 ) ) => Ok(
+///                 MyEnum::TupleVariant( a0 + b0 )
 ///             ),
-///             _ => Err("Mismatched variants".into()),
+///             _ => Err( "Mismatched variants".into() ),
 ///         }
 ///     }
 /// }
