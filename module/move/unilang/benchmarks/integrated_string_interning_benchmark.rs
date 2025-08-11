@@ -4,6 +4,9 @@
 //! within the full command processing pipeline, measuring the end-to-end
 //! improvement in semantic analysis performance.
 
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::cast_sign_loss)]
+
 #[ cfg( feature = "benchmarks" ) ]
 use std::time::Instant;
 #[ cfg( feature = "benchmarks" ) ]
@@ -103,7 +106,7 @@ fn benchmark_integrated_pipeline( iterations : usize, repeat_factor : usize ) ->
   {
     for cmd in &base_commands
     {
-      test_commands.push( cmd.to_string() );
+      test_commands.push( (*cmd).to_string() );
     }
   }
   
@@ -130,7 +133,7 @@ fn benchmark_integrated_pipeline( iterations : usize, repeat_factor : usize ) ->
   
   IntegratedBenchmarkResult
   {
-    test_name : format!( "Integrated Pipeline ({}x repetition)", repeat_factor ),
+    test_name : format!( "Integrated Pipeline ({repeat_factor}x repetition)" ),
     commands_processed : total_processed,
     total_time_ms : total_time.as_secs_f64() * 1000.0,
     avg_time_per_command_ns : total_time.as_nanos() as f64 / total_processed as f64,
@@ -153,7 +156,7 @@ fn benchmark_cache_warmup_effect() -> Vec< IntegratedBenchmarkResult >
   
   for ( repeat_factor, scenario_name ) in test_scenarios
   {
-    println!( "Running {} scenario...", scenario_name );
+    println!( "Running {scenario_name} scenario..." );
     
     let result = benchmark_integrated_pipeline( 1000, repeat_factor );
     results.push( result );
@@ -201,8 +204,8 @@ fn run_integrated_benchmark()
     
     println!( "Cold Cache Performance: {:.0} cmd/sec", cold_cache.commands_per_second );
     println!( "Hot Cache Performance: {:.0} cmd/sec", hot_cache.commands_per_second );
-    println!( "Throughput Improvement: {:.1}x", throughput_improvement );
-    println!( "Latency Improvement: {:.1}x", latency_improvement );
+    println!( "Throughput Improvement: {throughput_improvement:.1}x" );
+    println!( "Latency Improvement: {latency_improvement:.1}x" );
     println!();
     
     // Validate against targets

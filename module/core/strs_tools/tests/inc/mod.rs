@@ -7,7 +7,7 @@
 
 #![allow(unexpected_cfgs)]
 #[ allow( unused_imports ) ]
-use test_tools::exposed::*;
+use test_tools::prelude::*;
 #[ allow( unused_imports ) ]
 use super::*;
 

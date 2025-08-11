@@ -7,6 +7,7 @@ use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, 
 use unilang::registry::CommandRegistry;
 use unilang::types::Value;
 
+#[allow(clippy::too_many_lines)]
 fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== Argument Types Demo ===\n" );
@@ -156,9 +157,9 @@ fn main() -> Result< (), unilang::error::Error >
         Value::Integer( i ) => println!( "  {name}: {i} (Integer)" ),
         Value::Float( f ) => println!( "  {name}: {f} (Float)" ),
         Value::Boolean( b ) => println!( "  {name}: {b} (Boolean)" ),
-        Value::Path( p ) => println!( "  {name}: {p:?} (Path)" ),
-        Value::File( f ) => println!( "  {name}: {f:?} (File)" ),
-        Value::Directory( d ) => println!( "  {name}: {d:?} (Directory)" ),
+        Value::Path( p ) => println!( "  {name}: {} (Path)", p.display() ),
+        Value::File( f ) => println!( "  {name}: {} (File)", f.display() ),
+        Value::Directory( d ) => println!( "  {name}: {} (Directory)", d.display() ),
         Value::Enum( e ) => println!( "  {name}: '{e}' (Enum)" ),
         Value::Url( u ) => println!( "  {name}: {u} (Url)" ),
         Value::DateTime( dt ) => println!( "  {name}: {dt} (DateTime)" ),

@@ -9,6 +9,9 @@
 #[ allow( unused_imports ) ]
 use macro_tools::prelude::*;
 
+/// Popular type support for derive macro generation
+mod popular_types;
+
 #[ cfg( feature = "enabled" ) ]
 #[cfg(any(
   feature = "derive_components",
@@ -35,6 +38,8 @@ mod component {
   pub mod components_assign;
   #[ cfg( feature = "derive_from_components" ) ]
   pub mod from_components;
+  #[ cfg( feature = "derive_component_model" ) ]
+  pub mod component_model;
 }
 
 ///
@@ -521,6 +526,65 @@ pub fn components_assign(input: proc_macro::TokenStream) -> proc_macro::TokenStr
 #[proc_macro_derive(FromComponents, attributes(debug))]
 pub fn from_components(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
   let result = component::from_components::from_components(input);
+  match result {
+    Ok(stream) => stream.into(),
+    Err(err) => err.to_compile_error().into(),
+  }
+}
+
+/// Unified derive macro that combines all component model functionality into a single annotation.
+/// 
+/// The `ComponentModel` derive automatically generates implementations for:
+/// - `Assign`: Basic component assignment with type-safe field setting
+/// - `ComponentsAssign`: Multiple component assignment from tuples (when applicable) 
+/// - `ComponentFrom`: Create objects from single components (when applicable)
+/// - `FromComponents`: Create objects from multiple components (when applicable)
+/// 
+/// This eliminates the need to apply multiple individual derives and reduces boilerplate.
+/// 
+/// # Features
+/// 
+/// - Requires the `derive_component_model` feature to be enabled for use.
+/// - Automatically detects which trait implementations are appropriate for the struct.
+/// - Handles type conflicts gracefully by skipping conflicting implementations.
+/// 
+/// # Attributes
+/// 
+/// - `debug` : Optional attribute to enable debug-level output during macro expansion.
+/// - `component` : Optional field-level attribute for customizing component behavior.
+/// 
+/// # Examples
+/// 
+/// ```rust
+/// use component_model_meta::ComponentModel;
+/// use component_model_types::Assign;
+/// 
+/// #[ derive( Default, ComponentModel ) ]
+/// struct Config
+/// {
+///   host : String,
+///   port : i32,
+///   enabled : bool,
+/// }
+/// 
+/// let mut config = Config::default();
+/// 
+/// // Use Assign trait (auto-generated)
+/// config.assign( "localhost".to_string() );
+/// config.assign( 8080i32 );
+/// config.enabled_set( true ); // Use field-specific method to avoid type ambiguity
+/// 
+/// // Use fluent builder pattern (auto-generated)
+/// let config2 = Config::default()
+///   .impute( "api.example.com".to_string() )
+///   .impute( 3000i32 )
+///   .enabled_with( false ); // Use field-specific method to avoid type ambiguity
+/// ```
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_component_model" ) ]
+#[proc_macro_derive(ComponentModel, attributes(debug, component))]
+pub fn component_model(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+  let result = component::component_model::component_model(input);
   match result {
     Ok(stream) => stream.into(),
     Err(err) => err.to_compile_error().into(),

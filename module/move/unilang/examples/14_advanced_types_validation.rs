@@ -7,6 +7,7 @@ use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, 
 use unilang::registry::CommandRegistry;
 use unilang::types::{ Value, parse_value };
 
+#[allow(clippy::too_many_lines)]
 fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== Advanced Types and Validation Demo ===\n" );

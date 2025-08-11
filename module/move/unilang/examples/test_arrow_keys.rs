@@ -1,7 +1,7 @@
 //! Test arrow key functionality with rustyline
 //! 
 //! This is a minimal test to verify arrow keys work for command history.
-//! Run with: cargo run --example test_arrow_keys --features enhanced_repl
+//! Run with: cargo run --example `test_arrow_keys` --features `enhanced_repl`
 
 #[ cfg( feature = "enhanced_repl" ) ]
 use rustyline::DefaultEditor;
@@ -11,7 +11,7 @@ use rustyline::error::ReadlineError;
 use rustyline::history::History;
 
 #[ cfg( feature = "enhanced_repl" ) ]
-fn main() -> Result< (), Box< dyn std::error::Error > >
+fn main() -> Result< (), Box< dyn core::error::Error > >
 {
   let mut rl = DefaultEditor::new()?;
   
@@ -28,7 +28,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
 
   loop
   {
-    let prompt = format!( "test[{}]> ", command_count );
+    let prompt = format!( "test[{command_count}]> " );
     
     match rl.readline( &prompt )
     {
@@ -38,7 +38,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
         
         match input
         {
-          "" => continue,
+          "" => {}
           "quit" | "exit" =>
           {
             println!( "Goodbye!" );
@@ -59,14 +59,14 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
                 println!( "  {}: {}", i + 1, cmd );
               }
             }
-            continue;
+            {}
           },
           _ =>
           {
             // Add to history and process
             rl.add_history_entry( input )?;
             command_count += 1;
-            println!( "Processed: '{}' (try arrow keys now!)", input );
+            println!( "Processed: '{input}' (try arrow keys now!)" );
           }
         }
       },
@@ -82,7 +82,7 @@ fn main() -> Result< (), Box< dyn std::error::Error > >
       },
       Err( err ) =>
       {
-        println!( "Error: {:?}", err );
+        println!( "Error: {err:?}" );
         break;
       }
     }

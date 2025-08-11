@@ -18,20 +18,20 @@ fn components_assign()
   assert_eq!( t2, exp );
 }
 
-// Optional: Test assigning to self if types match exactly
+// Optional : Test assigning to self if types match exactly
 #[ derive( Debug, Default, PartialEq, component_model::Assign, component_model::ComponentsAssign ) ]
 struct SelfTuple(bool, char);
 
 impl From<&SelfTuple> for bool
 {
-    fn from( src: &SelfTuple ) -> Self
+    fn from( src : &SelfTuple ) -> Self
     {
         src.0
     }
 }
 impl From<&SelfTuple> for char
 {
-    fn from( src: &SelfTuple ) -> Self
+    fn from( src : &SelfTuple ) -> Self
     {
         src.1
     }

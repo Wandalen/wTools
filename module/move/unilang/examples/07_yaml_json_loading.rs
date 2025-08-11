@@ -6,6 +6,7 @@
 use unilang::registry::CommandRegistry;
 use unilang::help::HelpGenerator;
 
+#[allow(clippy::too_many_lines)]
 fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== YAML and JSON Command Loading Demo ===\n" );

@@ -13,7 +13,7 @@ fn from_components()
   let exp = TargetTuple( 42, "Hello".to_string() );
   assert_eq!( got, exp );
 
-  // Ensure clone works if needed for the generic From<T> bound
+  // Ensure clone works if needed for the generic From< T > bound
   // let src_clone = src.clone(); // Would need #[ derive( Clone ) ] on SourceTuple
   // let got_clone : TargetTuple = src_clone.into();
   // assert_eq!( got_clone, exp );

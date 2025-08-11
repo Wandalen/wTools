@@ -1,7 +1,6 @@
 
 use super::*;
 use macro_tools::{attr, diag, Result, format_ident};
-use iter_tools::Itertools;
 
 ///
 /// Generate `ComponentsAssign` trait implementation for the type, providing `components_assign` function
@@ -37,7 +36,12 @@ pub fn components_assign(input: proc_macro::TokenStream) -> Result< proc_macro2:
       let component_assign = generate_component_assign_call(field);
       (bound1, bound2, component_assign)
     })
-    .multiunzip();
+    .fold((Vec::new(), Vec::new(), Vec::new()), |(mut bounds1, mut bounds2, mut assigns), (b1, b2, assign)| {
+      bounds1.push(b1);
+      bounds2.push(b2);
+      assigns.push(assign);
+      (bounds1, bounds2, assigns)
+    });
 
   let bounds1: Vec< _ > = bounds1.into_iter().collect::<Result< _ >>()?;
   let bounds2: Vec< _ > = bounds2.into_iter().collect::<Result< _ >>()?;

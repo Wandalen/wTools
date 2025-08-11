@@ -39,6 +39,7 @@ pub enum SegmentType {
 
 impl<'a> ZeroCopySegment<'a> {
   /// Create a new zero-copy segment from a string slice
+  #[ must_use ]
   pub fn from_str( content: &'a str, start: usize, end: usize ) -> Self {
     Self {
       content: Cow::Borrowed( content ),
@@ -50,6 +51,7 @@ impl<'a> ZeroCopySegment<'a> {
   }
   
   /// Create a delimiter segment
+  #[ must_use ]
   pub fn delimiter( content: &'a str, start: usize, end: usize ) -> Self {
     Self {
       content: Cow::Borrowed( content ),

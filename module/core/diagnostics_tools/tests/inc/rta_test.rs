@@ -3,6 +3,14 @@ use super::*;
 // use test_tools::exposed::*;
 #[ allow( unused_imports ) ]
 use the_module::prelude::*;
+use test_tools::impls_index::tests_impls;
+use test_tools::impls_index::tests_index;
+use diagnostics_tools::a_true;
+use diagnostics_tools::a_id;
+use diagnostics_tools::a_not_id;
+use diagnostics_tools::a_dbg_true;
+use diagnostics_tools::a_dbg_id;
+use diagnostics_tools::a_dbg_not_id;
 
 // qqq : do negative testing, don't forget about optional arguments /* aaa : Dmytro : done */
 // Test implementations (available on all platforms)
@@ -12,19 +20,19 @@ tests_impls! {
     a_true!( 1 == 1 );
   }
 
-  #[ should_panic ]
+  #[ should_panic( expected = "assertion failed" ) ]
   fn a_true_fail_simple()
   {
     a_true!( 1 == 2 );
   }
 
-  #[ should_panic ]
+  #[ should_panic( expected = "not equal" ) ]
   fn a_true_fail_with_msg()
   {
     a_true!( 1 == 2, "not equal" );
   }
 
-  #[ should_panic ]
+  #[ should_panic( expected = "not equal" ) ]
   fn a_true_fail_with_msg_template()
   {
     let v = 2;
@@ -38,19 +46,19 @@ tests_impls! {
     a_id!( "abc", "abc" );
   }
 
-  #[ should_panic ]
+  #[ should_panic( expected = "assertion failed" ) ]
   fn a_id_fail_simple()
   {
     a_id!( 1, 2 );
   }
 
-  #[ should_panic ]
+  #[ should_panic( expected = "not equal" ) ]
   fn a_id_fail_with_msg()
   {
     a_id!( 1, 2, "not equal" );
   }
 
-  #[ should_panic ]
+  #[ should_panic( expected = "not equal" ) ]
   fn a_id_fail_with_msg_template()
   {
     let v = 2;
@@ -66,19 +74,19 @@ tests_impls! {
     a_not_id!( "abc", "abd" );
   }
 
-  #[ should_panic ]
+  #[ should_panic( expected = "assertion failed" ) ]
   fn a_not_id_fail_simple()
   {
     a_not_id!( 1, 1 );
   }
 
-  #[ should_panic ]
+  #[ should_panic( expected = "equal" ) ]
   fn a_not_id_fail_with_msg()
   {
     a_not_id!( 1, 1, "equal" );
   }
 
-  #[ should_panic ]
+  #[ should_panic( expected = "equal" ) ]
   fn a_not_id_fail_with_msg_template()
   {
     let v = 1;
@@ -111,21 +119,21 @@ tests_impls! {
   }
 
   #[ cfg( debug_assertions ) ]
-  #[ should_panic ]
+  #[ should_panic( expected = "assertion failed" ) ]
   fn a_dbg_true_fail_simple()
   {
     a_dbg_true!( 1 == 2 );
   }
 
   #[ cfg( debug_assertions ) ]
-  #[ should_panic ]
+  #[ should_panic( expected = "not equal" ) ]
   fn a_dbg_true_fail_with_msg()
   {
     a_dbg_true!( 1 == 2, "not equal" );
   }
 
   #[ cfg( debug_assertions ) ]
-  #[ should_panic ]
+  #[ should_panic( expected = "not equal" ) ]
   fn a_dbg_true_fail_with_msg_template()
   {
     let v = 2;
@@ -154,21 +162,21 @@ tests_impls! {
   }
 
   #[ cfg( debug_assertions ) ]
-  #[ should_panic ]
+  #[ should_panic( expected = "assertion failed" ) ]
   fn a_dbg_id_fail_simple()
   {
     a_dbg_id!( 1, 2 );
   }
 
   #[ cfg( debug_assertions ) ]
-  #[ should_panic ]
+  #[ should_panic( expected = "not equal" ) ]
   fn a_dbg_id_fail_with_msg()
   {
     a_dbg_id!( 1, 2, "not equal" );
   }
 
   #[ cfg( debug_assertions ) ]
-  #[ should_panic ]
+  #[ should_panic( expected = "not equal" ) ]
   fn a_dbg_id_fail_with_msg_template()
   {
     let v = 2;
@@ -197,21 +205,21 @@ tests_impls! {
   }
 
   #[ cfg( debug_assertions ) ]
-  #[ should_panic ]
+  #[ should_panic( expected = "assertion failed" ) ]
   fn a_dbg_not_id_fail_simple()
   {
     a_dbg_not_id!( 1, 1 );
   }
 
   #[ cfg( debug_assertions ) ]
-  #[ should_panic ]
+  #[ should_panic( expected = "equal" ) ]
   fn a_dbg_not_id_fail_with_msg()
   {
     a_dbg_not_id!( 1, 1, "equal" );
   }
 
   #[ cfg( debug_assertions ) ]
-  #[ should_panic ]
+  #[ should_panic( expected = "equal" ) ]
   fn a_dbg_not_id_fail_with_msg_template()
   {
     let v = 1;

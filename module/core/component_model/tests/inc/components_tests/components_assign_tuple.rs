@@ -11,16 +11,16 @@ struct TupleStruct1(i32, String, f32);
 struct TupleStruct2(i32, String);
 
 // Implement From<&TupleStruct1> for the types present in TupleStruct2
-impl From<&TupleStruct1> for i32 {
+impl From< &TupleStruct1 > for i32 {
   #[ inline( always ) ]
-  fn from(src: &TupleStruct1) -> Self {
+  fn from( src : &TupleStruct1 ) -> Self {
     src.0
   }
 }
 
-impl From<&TupleStruct1> for String {
+impl From< &TupleStruct1 > for String {
   #[ inline( always ) ]
-  fn from(src: &TupleStruct1) -> Self {
+  fn from( src : &TupleStruct1 ) -> Self {
     src.1.clone()
   }
 }

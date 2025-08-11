@@ -1,10 +1,18 @@
 /// Define a private namespace for all its items.
 mod private
 {
-
-
   use crate::*;
   #[ cfg( not( feature = "no_std" ) ) ]
+  use std::
+  {
+    env,
+    io,
+  };
+  
+  #[cfg(feature = "no_std")]
+  extern crate std;
+  
+  #[cfg(feature = "no_std")]
   use std::
   {
     env,

@@ -28,6 +28,7 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
 }
 
 /// Register sample commands for REPL demonstration
+#[allow(clippy::too_many_lines)]
 fn register_sample_commands( registry : &mut CommandRegistry ) -> Result< (), unilang::error::Error >
 {
   // Echo command

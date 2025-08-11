@@ -1,6 +1,6 @@
 [package]
 name = "component_model_meta"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -28,7 +28,8 @@ proc-macro = true
 
 [features]
 
-default = [
+default = [ "full" ]
+full = [
   "enabled",
   "derive_component_model",
   "derive_components",
@@ -37,10 +38,7 @@ default = [
   "derive_components_assign",
   "derive_from_components",
 ]
-full = [
-  "default",
-]
-enabled = [ "macro_tools/enabled", "iter_tools/enabled", "component_model_types/enabled" ]
+enabled = [ "macro_tools/enabled", "component_model_types/enabled" ]
 
 derive_component_model = [ "convert_case" ]
 derive_components = [ "derive_component_assign", "derive_components_assign", "derive_component_from", "derive_from_components" ]
@@ -50,9 +48,8 @@ derive_component_from = []
 derive_from_components = []
 
 [dependencies]
-macro_tools = { workspace = true, features = [ "attr", "attr_prop", "ct", "item_struct", "container_kind", "diag", "phantom", "generic_params", "generic_args", "typ", "derive", "ident" ] } # qqq : zzz : optimize set of features
-component_model_types = { workspace = true, features = [ "types_component_assign" ] }
-iter_tools = { workspace = true }
+macro_tools = { workspace = true, features = [ "attr", "diag", "item_struct" ], optional = true } # Optimized feature set based on actual usage
+component_model_types = { workspace = true, features = [ "types_component_assign" ], optional = true }
 convert_case = { version = "0.6.0", default-features = false, optional = true, features = [] }
 
 [dev-dependencies]

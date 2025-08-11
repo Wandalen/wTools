@@ -42,14 +42,14 @@ mod_interface! {
   /// Basic functionality.
   layer path;
 
-  /// AsPath trait.
+  /// `AsPath` trait.
   layer as_path;
-  /// TryIntoPath trait.
+  /// `TryIntoPath` trait.
   layer try_into_path;
-  /// TryIntoPath trait.
+  /// `TryIntoPath` trait.
   layer try_into_cow_path;
 
-  /// Transitive TryFrom and TryInto.
+  /// Transitive `TryFrom` and `TryInto`.
   layer transitive;
 
   #[ cfg( feature = "path_utf8" ) ]

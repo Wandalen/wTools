@@ -192,7 +192,7 @@ fn with_many_members_and_varius_config() {
 }
 
 #[test]
-#[should_panic]
+#[should_panic(expected = "workspace_name not found in workspace Cargo.toml")]
 fn without_needed_config() {
   // Arrange
   let temp = arrange("variadic_tag_configurations");

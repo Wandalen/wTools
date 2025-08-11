@@ -26,6 +26,7 @@ mod private {
 
 /// Super struct.
 #[ derive( Debug, PartialEq ) ]
+#[ allow( dead_code ) ]
 pub struct SubStruct2 {}
 
 //

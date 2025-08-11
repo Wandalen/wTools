@@ -8,7 +8,7 @@
 //! - **Fluent Builder API**: Generate clean, ergonomic builder interfaces
 //! - **Advanced Generic Support**: Handle complex generic parameters and lifetime constraints
 //! - **Subform Integration**: Build nested structures with full type safety
-//! - **Collection Builders**: Specialized support for Vec, HashMap, HashSet, and custom collections
+//! - **Collection Builders**: Specialized support for Vec, `HashMap`, `HashSet`, and custom collections
 //! - **Custom Validation**: Pre-formation validation through custom mutators
 //! - **Flexible Configuration**: Extensive attribute system for fine-grained control
 //! - **No-std Compatibility**: Full support for no-std environments with optional alloc
@@ -84,7 +84,7 @@
 //! 1. **Input Analysis**: Target type, generic parameters, fields/variants, attribute configuration
 //! 2. **Generic Classification**: How generics are categorized and processed
 //! 3. **Generated Components**: Complete breakdown of Former ecosystem components
-//! 4. **Final Generated Code**: The complete TokenStream output
+//! 4. **Final Generated Code**: The complete `TokenStream` output
 //!
 //! ### Enabling Debug Output
 //!

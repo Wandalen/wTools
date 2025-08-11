@@ -10,11 +10,11 @@
 //! | I1.4  | Named       | 1      | Should derive `Index` from the inner field      |
 //! | I1.5  | Named       | >1     | Should not compile (Index requires one field)   |
 
-#![ allow( unused_imports ) ]
-#![ allow( dead_code ) ]
+#[ allow( unused_imports ) ]
+#[ allow( dead_code ) ]
 
 use test_tools::prelude::*;
-use the_module::Index;
+use crate::the_module::Index;
 use core::ops::Index as _;
 
 // I1.1: Unit struct - should not compile

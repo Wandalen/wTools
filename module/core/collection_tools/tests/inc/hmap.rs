@@ -93,19 +93,19 @@ fn iters() {
   };
   let got: the_module::HashMap< _, _ > = instance.into_iter().collect();
   let exp = the_module::HashMap::from([(1, 3), (2, 2), (3, 1)]);
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   let instance = MyContainer {
     entries: the_module::HashMap::from([(1, 3), (2, 2), (3, 1)]),
   };
   let got: the_module::HashMap< _, _ > = (&instance).into_iter().map(|(k, v)| (*k, *v)).collect();
   let exp = the_module::HashMap::from([(1, 3), (2, 2), (3, 1)]);
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   let mut instance = MyContainer {
     entries: the_module::HashMap::from([(1, 3), (2, 2), (3, 1)]),
   };
   (&mut instance).into_iter().for_each(|(_, v)| *v *= 2);
   let exp = the_module::HashMap::from([(1, 6), (2, 4), (3, 2)]);
-  a_id!(instance.entries, exp);
+  assert_eq!(instance.entries, exp);
 }

@@ -1,6 +1,6 @@
 [package]
 name = "strs_tools"
-version = "0.26.0"
+version = "0.27.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -119,13 +119,13 @@ lexical = { workspace = true, optional = true }
 component_model_types = { workspace = true, features = ["enabled"] }
 
 # Compile-time optimization macros
-strs_tools_meta = { path = "strs_tools_meta", optional = true }
+strs_tools_meta = { version = "0.2.0", path = "strs_tools_meta", optional = true }
 
 # SIMD optimization dependencies (optional)
 # When simd feature is disabled, these dependencies are not included at all
 # When simd feature is enabled, these dependencies use their SIMD-optimized features
-memchr = { workspace = true, optional = true, default-features = false, features = [] }
-aho-corasick = { workspace = true, optional = true, default-features = false, features = [] }
+memchr = { workspace = true, optional = true }
+aho-corasick = { workspace = true, optional = true }
 bytecount = { workspace = true, optional = true }
 lazy_static = { version = "1.4", optional = true }
 

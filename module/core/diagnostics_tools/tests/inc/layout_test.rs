@@ -2,6 +2,12 @@
 use super::*;
 #[ allow( unused_imports ) ]
 use the_module::prelude::*;
+use test_tools::impls_index::tests_impls;
+use test_tools::impls_index::tests_index;
+use diagnostics_tools::cta_type_same_size;
+use diagnostics_tools::cta_type_same_align;
+use diagnostics_tools::cta_ptr_same_size;
+use diagnostics_tools::cta_mem_same_size;
 
 // qqq : do negative testing /* aaa : Dmytro : done */
 // zzz : continue here

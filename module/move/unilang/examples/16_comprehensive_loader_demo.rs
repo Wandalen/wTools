@@ -29,6 +29,7 @@ fn main() -> Result< (), unilang::error::Error >
   Ok( () )
 }
 
+#[allow(clippy::too_many_lines)]
 fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
 {
   println!( "=== YAML Loading Demonstration ===\n" );
@@ -308,6 +309,7 @@ fn demonstrate_yaml_loading() -> Result< (), unilang::error::Error >
   Ok( () )
 }
 
+#[allow(clippy::too_many_lines)]
 fn demonstrate_json_loading() -> Result< (), unilang::error::Error >
 {
   println!( "\n=== JSON Loading Demonstration ===\n" );
@@ -488,6 +490,7 @@ fn demonstrate_json_loading() -> Result< (), unilang::error::Error >
   Ok( () )
 }
 
+#[allow(clippy::unnecessary_wraps)]
 fn demonstrate_error_handling() -> Result< (), unilang::error::Error >
 {
   println!( "\n=== Error Handling Scenarios ===\n" );
@@ -572,6 +575,8 @@ fn demonstrate_error_handling() -> Result< (), unilang::error::Error >
   Ok( () )
 }
 
+#[allow(clippy::too_many_lines)]
+#[allow(clippy::unnecessary_wraps)]
 fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
 {
   println!( "=== Complex Features Demonstration ===\n" );
@@ -685,8 +690,7 @@ fn demonstrate_complex_features() -> Result< (), unilang::error::Error >
             unilang::data::Kind::String | unilang::data::Kind::Integer | unilang::data::Kind::Float | unilang::data::Kind::Boolean => "Simple",
             unilang::data::Kind::File | unilang::data::Kind::Directory | unilang::data::Kind::Path => "FileSystem",
             unilang::data::Kind::Enum(_) => "Enum",
-            unilang::data::Kind::List(_, _) => "Collection",
-            unilang::data::Kind::Map(_, _, _, _) => "Collection",
+            unilang::data::Kind::List(_, _) | unilang::data::Kind::Map(_, _, _, _) => "Collection",
             unilang::data::Kind::JsonString | unilang::data::Kind::Object => "JSON",
             unilang::data::Kind::Url | unilang::data::Kind::DateTime | unilang::data::Kind::Pattern => "Advanced",
           };

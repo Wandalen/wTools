@@ -6,21 +6,21 @@ use component_model::Assign;
 struct TupleStruct(i32, String);
 
 // Manual implementation for the first field (i32)
-impl<IntoT> Assign<i32, IntoT> for TupleStruct
+impl< IntoT > Assign< i32, IntoT > for TupleStruct
 where
-  IntoT: Into<i32>,
+  IntoT : Into< i32 >,
 {
-  fn assign(&mut self, component: IntoT) {
+  fn assign( &mut self, component : IntoT ) {
     self.0 = component.into(); // Access field by index
   }
 }
 
 // Manual implementation for the second field (String)
-impl<IntoT> Assign<String, IntoT> for TupleStruct
+impl< IntoT > Assign< String, IntoT > for TupleStruct
 where
-  IntoT: Into<String>,
+  IntoT : Into< String >,
 {
-  fn assign(&mut self, component: IntoT) {
+  fn assign( &mut self, component : IntoT ) {
     self.1 = component.into(); // Access field by index
   }
 }

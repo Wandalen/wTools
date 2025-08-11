@@ -7,6 +7,7 @@
 
 use unilang_parser::{ ErrorKind, Parser, UnilangParserOptions };
 
+#[allow(clippy::too_many_lines)]
 fn main()
 {
   let parser = Parser::new( UnilangParserOptions::default() );

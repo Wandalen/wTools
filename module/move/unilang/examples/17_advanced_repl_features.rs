@@ -31,6 +31,7 @@ fn main() -> Result< (), Box< dyn core::error::Error > >
 }
 
 /// Register comprehensive command set for advanced REPL demonstration
+#[allow(clippy::too_many_lines)]
 fn register_comprehensive_commands( registry : &mut CommandRegistry ) -> Result< (), Error >
 {
   // File system commands

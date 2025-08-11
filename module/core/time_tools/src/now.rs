@@ -15,6 +15,7 @@ use std::time;
 /// Default units are seconds.
 ///
 pub mod s {
+  #[ allow( unused_imports ) ]
   use super::*;
 
   /// Get current time. Units are seconds.
@@ -30,6 +31,7 @@ pub mod s {
 /// Default units are milliseconds.
 ///
 pub mod ms {
+  #[ allow( unused_imports ) ]
   use super::*;
 
   /// Get current time. Units are milliseconds.
@@ -48,6 +50,7 @@ pub mod ms {
 /// Default units are nanoseconds.
 ///
 pub mod ns {
+  #[ allow( unused_imports ) ]
   use super::*;
 
   /// Get current time. Units are nanoseconds.

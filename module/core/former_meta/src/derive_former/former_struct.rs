@@ -207,7 +207,7 @@ pub fn former_for_struct(
   _data_struct: &syn::DataStruct,
   original_input: &macro_tools::proc_macro2::TokenStream,
   item_attributes: &ItemAttributes, // Changed: Accept parsed ItemAttributes
-  _has_debug: bool,                 // This is the correctly determined has_debug - now unused locally
+  has_debug: bool,                  // This is the correctly determined has_debug
 ) -> Result< TokenStream > {
   use macro_tools::IntoGenericArgs;
   use convert_case::{Case, Casing}; // Added for snake_case naming // Space before ;
@@ -260,12 +260,12 @@ specific needs of the broader forming context. It mandates the implementation of
   
   // Debug output - avoid calling to_string() on the original AST as it may cause issues
   #[ cfg( feature = "former_diagnostics_print_generated" ) ]
-  if _has_debug || classification.has_only_lifetimes {
-    eprintln!("Struct: {}", item);
+  if has_debug || classification.has_only_lifetimes {
+    eprintln!("Struct: {item}");
     eprintln!("has_only_lifetimes: {}", classification.has_only_lifetimes);
     eprintln!("has_only_types: {}", classification.has_only_types);
     eprintln!("has_mixed: {}", classification.has_mixed);
-    eprintln!("classification: {:?}", classification);
+    eprintln!("classification: {classification:?}");
   }
 
   // Helper for generics with trailing comma when not empty (for cases where we need it)
@@ -1406,8 +1406,7 @@ specific needs of the broader forming context. It mandates the implementation of
   };
   
   // Add debug output if #[ debug ] attribute is present
-  #[ allow( clippy::used_underscore_binding ) ]
-  if _has_debug {
+  if has_debug {
     let about = format!("derive : Former\nstruct : {item}");
     diag::report_print(about, original_input, &result);
   }
@@ -1421,8 +1420,8 @@ specific needs of the broader forming context. It mandates the implementation of
   // Debug: Print the result for lifetime-only and type-only structs to diagnose issues
   #[ cfg( feature = "former_diagnostics_print_generated" ) ]
   if classification.has_only_lifetimes && item.to_string().contains("TestLifetime") {
-    eprintln!("LIFETIME DEBUG: Generated code for {}:", item);
-    eprintln!("{}", result);
+    eprintln!("LIFETIME DEBUG: Generated code for {item}:");
+    eprintln!("{result}");
   }
   
   Ok(result)

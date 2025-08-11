@@ -11,6 +11,7 @@ use unilang::interpreter::{ ExecutionContext, Interpreter };
 use unilang::types::Value;
 use unilang_parser::{ Parser, UnilangParserOptions };
 
+#[allow(clippy::too_many_lines)]
 fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== Command Execution Demo ===\n" );
@@ -353,8 +354,7 @@ fn main() -> Result< (), unilang::error::Error >
   // Step 2: Execute commands demonstrating different scenarios
   let parser = Parser::new( UnilangParserOptions::default() );
 
-  let test_cases = vec!
-  [
+  let test_cases = [
     // Successful executions
     ( "hello Alice", "Simple successful execution" ),
     ( "system.status --verbose", "Command with context and detailed output" ),

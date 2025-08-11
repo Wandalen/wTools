@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use unilang::data::{ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes};
 use unilang_parser::{SourceLocation};
 use unilang::registry::CommandRegistry;
@@ -28,7 +29,7 @@ fn setup_test_environment(command: CommandDefinition) -> CommandRegistry {
 fn analyze_program(
   command_name: &str,
   positional_args: Vec<unilang_parser::Argument>,
-  named_args: std::collections::HashMap<String, unilang_parser::Argument>,
+  named_args: HashMap<String, unilang_parser::Argument>,
   registry: &CommandRegistry,
 ) -> Result<Vec<unilang::semantic::VerifiedCommand>, unilang::error::Error> {
   // eprintln!( "--- analyze_program debug ---" );
@@ -38,7 +39,7 @@ fn analyze_program(
 
   let instructions = vec![unilang_parser::GenericInstruction {
     command_path_slices: command_name.split('.').map(std::string::ToString::to_string).collect(),
-    named_arguments: named_args,
+    named_arguments: named_args.into_iter().collect(),
     positional_arguments: positional_args,
     help_requested: false,
     overall_location: SourceLocation::StrSpan { start: 0, end: 0 }, // Placeholder

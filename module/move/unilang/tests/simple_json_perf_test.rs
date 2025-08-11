@@ -6,7 +6,7 @@ use serde_json::Value as SerdeValue;
 use std::time::Instant;
 
 #[test]
-#[ignore] // Run with: cargo test simple_json_perf_test --release --features simd -- --ignored --nocapture
+#[ignore = "Run with: cargo test simple_json_perf_test --release --features simd -- --ignored --nocapture"]
 fn simple_json_perf_test()
 {
   // Test with different JSON sizes to see where SIMD helps

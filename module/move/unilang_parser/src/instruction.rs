@@ -1,6 +1,8 @@
 //! Defines the core instruction and argument structures for unilang.
 #![ allow( clippy::doc_markdown ) ]
-use std::collections::HashMap;
+use alloc::collections::BTreeMap;
+use alloc::vec::Vec;
+use alloc::string::String;
 use super::error::SourceLocation;
 
 /// Represents a single argument to a command, either positional or named.
@@ -42,7 +44,7 @@ pub struct GenericInstruction
   /// A hash map of named arguments.
   /// The key is the argument name (e.g., "config" for `config::"path/to/file"`),
   /// and the value is an [`Argument`] struct containing the unescaped value and locations.
-  pub named_arguments : HashMap< String, Argument >,
+  pub named_arguments : BTreeMap< String, Argument >,
   /// A vector of positional arguments, stored as [`Argument`] structs.
   /// These are maintained in the order they appeared in the input.
   /// The `name` field within these `Argument` structs will be `None`.

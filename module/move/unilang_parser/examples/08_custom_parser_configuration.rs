@@ -7,6 +7,7 @@
 
 use unilang_parser::{ Parser, UnilangParserOptions };
 
+#[allow(clippy::too_many_lines)]
 fn main()
 {
   println!( "=== Custom Parser Configuration ===" );

@@ -34,13 +34,13 @@ mod components_tests {
   #[cfg(all(feature = "derive_component_assign", feature = "derive_components_assign"))]
   mod components_assign_tuple_manual;
 
-  #[cfg(all(feature = "derive_from_components"))]
+  #[cfg(feature = "derive_from_components")]
   mod from_components;
-  #[cfg(all(feature = "derive_from_components"))]
+  #[cfg(feature = "derive_from_components")]
   mod from_components_manual;
-  #[cfg(all(feature = "derive_from_components"))]
+  #[cfg(feature = "derive_from_components")]
   mod from_components_tuple;
-  #[cfg(all(feature = "derive_from_components"))]
+  #[cfg(feature = "derive_from_components")]
   mod from_components_tuple_manual;
 
   #[cfg(all(
@@ -69,10 +69,10 @@ only_for_terminal_module! {
   {
 
     println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-    let _t = test_tools::compiletime::TestCases::new();
+    let t = test_tools::compiletime::TestCases::new();
 
-    // zzz : make it working test
-    //t.run( "tests/inc/components_tests/compiletime/components_component_from_debug.rs" );
+    // ComponentFrom debug test - now enabled with proper test functions
+    t.pass( "tests/inc/components_tests/compiletime/components_component_from_debug.rs" );
 
   }
 

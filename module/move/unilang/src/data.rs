@@ -6,8 +6,7 @@
 mod private
 {
   use crate::error::Error;
-  use strs_tools::string;
-  use strs_tools::string::split::SplitType;
+  // Removed strs_tools dependencies - using standard Rust string operations
 
   // use former::Former;
 
@@ -211,28 +210,22 @@ mod private
           {
             return Err( Error::Registration( "Empty enum choices".to_string() ) );
           }
-          // Use SIMD-optimized string splitting for enum choices
-          let choices : Vec< String > = string::split()
-            .src(inner)
-            .delimeter(",")
-            .stripping(true)
-            .perform()
-            .filter(|s| s.typ == SplitType::Delimeted) // Only keep content, not delimiters
-            .map(|s| s.string.to_string().trim().to_string())
+          // Use standard Rust string splitting for enum choices
+          let choices : Vec< String > = inner
+            .split(',')
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty())
             .collect();
           Ok( Kind::Enum( choices ) )
         },
         s if s.starts_with( "List(" ) && s.ends_with( ')' ) =>
         {
           let inner = s.strip_prefix( "List(" ).unwrap().strip_suffix( ')' ).unwrap();
-          // Use SIMD-optimized string splitting for list parsing
-          let parts : Vec< String > = string::split()
-            .src(inner)
-            .delimeter(",")
-            .stripping(true)
-            .perform()
-            .filter(|s| s.typ == SplitType::Delimeted) // Only keep content, not delimiters
-            .map(|s| s.string.to_string())
+          // Use standard Rust string splitting for list parsing
+          let parts : Vec< String > = inner
+            .split(',')
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty())
             .collect();
           if parts.is_empty()
           {
@@ -252,14 +245,11 @@ mod private
         s if s.starts_with( "Map(" ) && s.ends_with( ')' ) =>
         {
           let inner = s.strip_prefix( "Map(" ).unwrap().strip_suffix( ')' ).unwrap();
-          // Use SIMD-optimized string splitting for map parsing
-          let parts : Vec< String > = string::split()
-            .src(inner)
-            .delimeter(",")
-            .stripping(true)
-            .perform()
-            .filter(|s| s.typ == SplitType::Delimeted) // Only keep content, not delimiters
-            .map(|s| s.string.to_string())
+          // Use standard Rust string splitting for map parsing
+          let parts : Vec< String > = inner
+            .split(',')
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty())
             .collect();
           if parts.len() < 2
           {
