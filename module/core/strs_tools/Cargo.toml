@@ -29,7 +29,7 @@ all-features = false
 default = [
   "enabled",
   "string_indentation",
-  "string_isolate", 
+  "string_isolate",
   "string_split",
   "string_parse_number",
   "string_parse_request",
@@ -42,7 +42,7 @@ full = [
   "enabled",
   "string_indentation",
   "string_isolate",
-  "string_split", 
+  "string_split",
   "string_parse_number",
   "string_parse_request",
   "simd",
@@ -51,7 +51,7 @@ full = [
 ]
 
 # ========================================
-# CORE FEATURES (granular control) 
+# CORE FEATURES (granular control)
 # ========================================
 
 # Minimal functionality - required for all other features
@@ -66,7 +66,7 @@ string_isolate = ["enabled"]
 # String splitting functionality (core splitting algorithms)
 string_split = ["enabled"]
 
-# Number parsing functionality  
+# Number parsing functionality
 string_parse_number = ["dep:lexical", "enabled"]
 
 # Request parsing functionality (depends on string_split + string_isolate)
@@ -80,7 +80,7 @@ string_parse_request = ["string_split", "string_isolate", "enabled"]
 # When enabled: uses vectorized operations, runtime CPU detection
 # When disabled: uses scalar fallbacks, smaller binary size
 simd = [
-  "dep:memchr", "memchr/std",                                    # memchr with runtime AVX2 detection  
+  "dep:memchr", "memchr/std",                                    # memchr with runtime AVX2 detection
   "dep:aho-corasick", "aho-corasick/std", "aho-corasick/perf-literal", # aho-corasick with vectorized prefilters
   "dep:bytecount",                                               # SIMD byte counting
   "dep:lazy_static"                                              # Required for SIMD static initialization
@@ -92,14 +92,14 @@ specialized_algorithms = ["string_split"] # Requires string_split as base functi
 # Compile-time pattern optimizations using proc macros
 compile_time_optimizations = ["dep:strs_tools_meta"]
 
-# ========================================  
+# ========================================
 # ENVIRONMENT FEATURES (platform control)
 # ========================================
 
 # no_std compatibility - disables std-dependent features
 no_std = []
 
-# Enables alloc-based functionality in no_std environments  
+# Enables alloc-based functionality in no_std environments
 use_alloc = ["no_std"]
 
 # ========================================
@@ -107,7 +107,7 @@ use_alloc = ["no_std"]
 # ========================================
 
 # Short aliases for common features
-indentation = ["string_indentation"] 
+indentation = ["string_indentation"]
 isolate = ["string_isolate"]
 split = ["string_split"]
 parse_number = ["string_parse_number"]
@@ -119,7 +119,7 @@ lexical = { workspace = true, optional = true }
 component_model_types = { workspace = true, features = ["enabled"] }
 
 # Compile-time optimization macros
-strs_tools_meta = { version = "0.2.0", path = "strs_tools_meta", optional = true }
+strs_tools_meta = { workspace = true, path = "strs_tools_meta", optional = true }
 
 # SIMD optimization dependencies (optional)
 # When simd feature is disabled, these dependencies are not included at all

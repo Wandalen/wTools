@@ -40,6 +40,75 @@ mod private
   use crate::semantic::SemanticAnalyzer;
   use unilang_parser::{ Parser, UnilangParserOptions };
 
+  ///
+  /// Structured error types for better API consistency and error handling.
+  ///
+  /// This enum replaces string matching for common error patterns and provides
+  /// type-safe access to error information for REPL applications and CLI tools.
+  #[ derive( Debug, Clone, PartialEq ) ]
+  #[allow(dead_code)]
+  pub enum UnilangError
+  {
+    /// Command was not found, with optional suggestions for similar commands.
+    CommandNotFound 
+    { 
+      /// The command that was not found
+      command: String, 
+      /// Suggested similar commands
+      suggestions: Vec<String> 
+    },
+    /// An interactive argument is required and must be prompted from the user.
+    InteractiveArgumentRequired 
+    { 
+      /// The argument name that requires interactive input
+      argument: String, 
+      /// The command that requires the interactive argument
+      command: String 
+    },
+    /// A static command was called but has no executable routine.
+    StaticCommandNoRoutine 
+    { 
+      /// The static command name
+      command: String 
+    },
+    /// Command arguments are invalid.
+    InvalidArguments 
+    { 
+      /// Error message describing the invalid arguments
+      message: String 
+    },
+    /// Command execution failed.
+    ExecutionFailure 
+    { 
+      /// Error message describing the execution failure
+      message: String 
+    },
+    /// Help request (e.g., user typed '.' or command with '?').
+    HelpRequest 
+    { 
+      /// List of available commands to show in help
+      commands: Vec<String> 
+    },
+    /// Parse error occurred.
+    ParseError 
+    { 
+      /// Error message describing the parse error
+      message: String 
+    },
+    /// Semantic analysis error occurred.
+    SemanticError 
+    { 
+      /// Error message describing the semantic analysis error
+      message: String 
+    },
+    /// Generic error that doesn't fit other categories.
+    Other 
+    { 
+      /// The error message
+      message: String 
+    },
+  }
+
 ///
 /// Result of processing a single command through the pipeline.
 ///
@@ -54,6 +123,407 @@ pub struct CommandResult
   pub success : bool,
   /// Error message if the command failed.
   pub error : Option< String >,
+}
+
+impl CommandResult
+{
+  /// Returns true if command executed successfully.
+  /// 
+  /// This method provides a clear, single source of truth for success detection,
+  /// eliminating the confusion between checking `success` field and `error` field.
+  #[ must_use ]
+  pub fn is_success( &self ) -> bool
+  {
+    self.error.is_none() && self.success
+  }
+
+  /// Returns true if command failed.
+  /// 
+  /// This is the logical complement of `is_success()`.
+  #[ must_use ]
+  pub fn is_error( &self ) -> bool
+  {
+    !self.is_success()
+  }
+
+  /// Returns error message if any.
+  /// 
+  /// Provides convenient access to error message without repeated Option handling.
+  #[ must_use ]
+  pub fn error_message( &self ) -> Option< &str >
+  {
+    self.error.as_ref().map( |e| e.as_str() )
+  }
+
+  /// Returns outputs if command succeeded, empty slice otherwise.
+  /// 
+  /// This prevents accessing potentially invalid outputs when command failed.
+  #[ must_use ]
+  pub fn outputs_or_empty( &self ) -> &[ OutputData ]
+  {
+    if self.is_success()
+    {
+      &self.outputs
+    }
+    else
+    {
+      &[]
+    }
+  }
+
+  /// Parses the error message into a structured UnilangError type.
+  /// 
+  /// This enables type-safe error handling instead of fragile string matching.
+  /// Returns None if the command succeeded.
+  #[ must_use ]
+  pub fn error_type( &self ) -> Option< UnilangError >
+  {
+    let error_msg = self.error.as_ref()?;
+    
+    // Parse interactive argument errors - handle both old and new formats
+    if error_msg.contains( "UNILANG_ARGUMENT_INTERACTIVE_REQUIRED" ) 
+      || error_msg.contains( "Interactive Argument Required" )
+    {
+      // Extract argument name and command from error message
+      let argument = extract_interactive_argument( error_msg ).unwrap_or( "unknown" ).to_string();
+      let command = extract_command_from_error( error_msg ).unwrap_or( &self.command ).to_string();
+      return Some( UnilangError::InteractiveArgumentRequired { argument, command } );
+    }
+
+    // Parse help requests (when user types '.' or similar)
+    if error_msg.contains( "Available commands:" )
+    {
+      let commands = extract_available_commands( error_msg );
+      return Some( UnilangError::HelpRequest { commands } );
+    }
+
+    // Parse static command errors
+    if error_msg.contains( "static command without an executable routine" )
+    {
+      let command = extract_command_from_error( error_msg ).unwrap_or( &self.command ).to_string();
+      return Some( UnilangError::StaticCommandNoRoutine { command } );
+    }
+
+    // Parse command not found errors
+    if error_msg.contains( "Command not found" ) || error_msg.contains( "No such command" )
+    {
+      let command = self.command.clone();
+      let suggestions = extract_command_suggestions( error_msg );
+      return Some( UnilangError::CommandNotFound { command, suggestions } );
+    }
+
+    // Parse different error types based on pipeline stage
+    if error_msg.contains( "Parse error:" )
+    {
+      return Some( UnilangError::ParseError { message: error_msg.clone() } );
+    }
+
+    if error_msg.contains( "Semantic analysis error:" )
+    {
+      return Some( UnilangError::SemanticError { message: error_msg.clone() } );
+    }
+
+    if error_msg.contains( "Execution error:" )
+    {
+      return Some( UnilangError::ExecutionFailure { message: error_msg.clone() } );
+    }
+
+    // Default to Other for unrecognized patterns
+    Some( UnilangError::Other { message: error_msg.clone() } )
+  }
+
+  /// Returns true if error indicates interactive input is required.
+  /// 
+  /// This is a convenience method for the common pattern of checking for
+  /// interactive argument requirements in REPL applications.
+  /// 
+  /// # REPL Integration Example
+  /// ```rust,ignore
+  /// use unilang::prelude::*;
+  /// 
+  /// let result = pipeline.process_command_simple(".login username::john");
+  /// 
+  /// if result.requires_interactive_input() {
+  ///     if let Some(arg_name) = result.interactive_argument() {
+  ///         // Enhanced REPL: Use secure input with masking
+  ///         #[cfg(feature = "enhanced_repl")]
+  ///         {
+  ///             use rustyline::DefaultEditor;
+  ///             let mut rl = DefaultEditor::new()?;
+  ///             let value = rl.readline(&format!("Enter {}: ", arg_name))?;
+  ///             // Re-run command with interactive argument
+  ///             let retry_cmd = format!("{} {}::{}", original_cmd, arg_name, value);
+  ///             let retry_result = pipeline.process_command_simple(&retry_cmd);
+  ///         }
+  ///         
+  ///         // Basic REPL: Standard input (visible)
+  ///         #[cfg(all(feature = "repl", not(feature = "enhanced_repl")))]
+  ///         {
+  ///             use std::io::{self, Write};
+  ///             print!("Enter {}: ", arg_name);
+  ///             io::stdout().flush()?;
+  ///             // ... handle input
+  ///         }
+  ///     }
+  /// }
+  /// ```
+  /// 
+  /// # Security Notes
+  /// - Always use secure input methods for interactive arguments
+  /// - Never log or store sensitive interactive values
+  /// - Clear sensitive data from memory after use
+  #[ must_use ]
+  pub fn requires_interactive_input( &self ) -> bool
+  {
+    matches!( self.error_type(), Some( UnilangError::InteractiveArgumentRequired { .. } ) )
+  }
+
+  /// Returns the argument name that requires interactive input.
+  /// 
+  /// Returns None if this is not an interactive argument error.
+  #[ must_use ]
+  pub fn interactive_argument( &self ) -> Option< String >
+  {
+    if let Some( UnilangError::InteractiveArgumentRequired { argument, .. } ) = self.error_type()
+    {
+      Some( argument )
+    }
+    else
+    {
+      None
+    }
+  }
+
+  /// Returns true if error contains help information.
+  /// 
+  /// This is useful for detecting when the user requested help (e.g., typed '.')
+  /// versus when a genuine error occurred.
+  /// 
+  /// # REPL Integration Example
+  /// ```rust,ignore
+  /// use unilang::prelude::*;
+  /// 
+  /// let result = pipeline.process_command_simple(".");  // List all commands
+  /// 
+  /// if result.is_help_response() {
+  ///     println!("📖 Available Commands:");
+  ///     
+  ///     if let Some(help_text) = result.help_content() {
+  ///         // Enhanced REPL: Rich formatting
+  ///         #[cfg(feature = "enhanced_repl")]
+  ///         println!("{}", help_text);
+  ///         
+  ///         // Basic REPL: Plain text
+  ///         #[cfg(all(feature = "repl", not(feature = "enhanced_repl")))]
+  ///         println!("{}", help_text);
+  ///     } else {
+  ///         // Fallback to raw error message
+  ///         println!("{}", result.error_message().unwrap_or("Help not available"));
+  ///     }
+  /// } else {
+  ///     // Handle as genuine error
+  ///     println!("❌ Error: {}", result.error_message().unwrap_or("Unknown error"));
+  /// }
+  /// ```
+  /// 
+  /// # Common Help Triggers
+  /// - Typing `.` alone lists all commands
+  /// - Typing `.command ?` shows help for specific command
+  /// - Empty namespaces (e.g., `.nonexistent.`) may trigger help
+  #[ must_use ]
+  pub fn is_help_response( &self ) -> bool
+  {
+    matches!( self.error_type(), Some( UnilangError::HelpRequest { .. } ) )
+  }
+
+  /// Extracts formatted help content from error message.
+  /// 
+  /// Returns None if this is not a help request error.
+  #[ must_use ]
+  pub fn help_content( &self ) -> Option< String >
+  {
+    if let Some( UnilangError::HelpRequest { commands } ) = self.error_type()
+    {
+      Some( format_help_content( &commands ) )
+    }
+    else
+    {
+      None
+    }
+  }
+}
+
+/// Helper function to extract interactive argument name from error message.
+fn extract_interactive_argument( error_msg : &str ) -> Option< &str >
+{
+  // Look for patterns like "The argument 'arg_name' is marked as interactive"
+  if let Some( start ) = error_msg.find( "The argument '" )
+  {
+    let after = &error_msg[ start + "The argument '".len().. ];
+    if let Some( end ) = after.find( '\'' )
+    {
+      return Some( &after[ ..end ] );
+    }
+  }
+  
+  // Fallback: look for "Interactive Argument Required: <arg_name>"
+  if let Some( start ) = error_msg.find( "Interactive Argument Required:" )
+  {
+    let after_prefix = &error_msg[ start + "Interactive Argument Required:".len().. ];
+    if let Some( arg_start ) = after_prefix.find( |c: char| !c.is_whitespace() )
+    {
+      let arg_part = &after_prefix[ arg_start.. ];
+      if let Some( arg_end ) = arg_part.find( |c: char| c.is_whitespace() )
+      {
+        return Some( &arg_part[ ..arg_end ] );
+      }
+      else
+      {
+        return Some( arg_part );
+      }
+    }
+  }
+  
+  // Another fallback: look for "argument '" pattern
+  if let Some( start ) = error_msg.find( "argument '" )
+  {
+    let after = &error_msg[ start + "argument '".len().. ];
+    if let Some( end ) = after.find( '\'' )
+    {
+      return Some( &after[ ..end ] );
+    }
+  }
+  
+  None
+}
+
+/// Helper function to extract command name from error message.
+fn extract_command_from_error( error_msg : &str ) -> Option< &str >
+{
+  // Look for "for command <name>" pattern
+  if let Some( start ) = error_msg.find( "for command " )
+  {
+    let after = &error_msg[ start + "for command ".len().. ];
+    if let Some( end ) = after.find( |c: char| c.is_whitespace() )
+    {
+      return Some( &after[ ..end ] );
+    }
+    else
+    {
+      return Some( after );
+    }
+  }
+  
+  // Look for "command '<name>'" pattern  
+  if let Some( start ) = error_msg.find( "command '" )
+  {
+    let after = &error_msg[ start + "command '".len().. ];
+    if let Some( end ) = after.find( '\'' )
+    {
+      return Some( &after[ ..end ] );
+    }
+  }
+  
+  None
+}
+
+/// Helper function to extract available commands from help error message.
+fn extract_available_commands( error_msg : &str ) -> Vec< String >
+{
+  let mut commands = Vec::new();
+  let mut in_commands_section = false;
+  
+  for line in error_msg.lines()
+  {
+    let line = line.trim();
+    
+    if line.contains( "Available commands:" )
+    {
+      in_commands_section = true;
+      continue;
+    }
+    
+    if in_commands_section
+    {
+      // Stop if we hit an empty line or different section
+      if line.is_empty() || line.starts_with( "Use" ) || line.starts_with( "For" )
+      {
+        break;
+      }
+      
+      // Extract command names - they typically start with '.' 
+      // Handle various indentation patterns
+      if line.starts_with( '.' )
+      {
+        // Direct command line
+        if let Some( cmd_end ) = line.find( ' ' )
+        {
+          commands.push( line[ 1..cmd_end ].to_string() ); // Skip the '.'
+        }
+        else
+        {
+          commands.push( line[ 1.. ].to_string() );
+        }
+      }
+      else if line.contains( '.' )
+      {
+        // Find the first '.' in the line and extract command
+        if let Some( dot_pos ) = line.find( '.' )
+        {
+          let after_dot = &line[ dot_pos + 1.. ];
+          if let Some( cmd_end ) = after_dot.find( ' ' )
+          {
+            commands.push( after_dot[ ..cmd_end ].to_string() );
+          }
+          else
+          {
+            commands.push( after_dot.to_string() );
+          }
+        }
+      }
+    }
+  }
+  
+  commands
+}
+
+/// Helper function to extract command suggestions from error message.
+fn extract_command_suggestions( error_msg : &str ) -> Vec< String >
+{
+  let mut suggestions = Vec::new();
+  
+  // Look for "Did you mean:" pattern
+  if let Some( start ) = error_msg.find( "Did you mean:" )
+  {
+    let after = &error_msg[ start + "Did you mean:".len().. ];
+    for word in after.split_whitespace()
+    {
+      if word.starts_with( '.' )
+      {
+        suggestions.push( word.trim_end_matches( ',' ).trim_end_matches( '?' ).to_string() );
+      }
+    }
+  }
+  
+  suggestions
+}
+
+/// Helper function to format help content from command list.
+fn format_help_content( commands : &[ String ] ) -> String
+{
+  if commands.is_empty()
+  {
+    "No commands available.".to_string()
+  }
+  else
+  {
+    let mut content = "Available commands:\n".to_string();
+    for command in commands
+    {
+      content.push_str( &format!( "  .{}\n", command ) );
+    }
+    content
+  }
 }
 
 ///
@@ -507,12 +977,14 @@ Result< (), Error >
 
 mod_interface::mod_interface!
 {
+  exposed use private::UnilangError;
   exposed use private::CommandResult;
   exposed use private::BatchResult;
   exposed use private::Pipeline;
   exposed use private::process_single_command;
   exposed use private::validate_single_command;
   
+  prelude use private::UnilangError;
   prelude use private::CommandResult;
   prelude use private::BatchResult;
   prelude use private::Pipeline;

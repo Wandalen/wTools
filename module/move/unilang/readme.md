@@ -626,6 +626,54 @@ let routine = registry.routines.get( ".namespace.command" ).unwrap();
 let result = routine( verified_command, context )?;
 ```
 
+## REPL Features
+
+Unilang provides two REPL modes designed for different use cases and environments:
+
+### Basic REPL (`repl` feature)
+- **Standard I/O**: Works in any terminal environment
+- **Command History**: Tracks executed commands for debugging
+- **Built-in Help**: Integrated help system with `?` operator
+- **Cross-platform**: Compatible with all supported platforms
+- **Lightweight**: Minimal dependencies for embedded use cases
+
+### Enhanced REPL (`enhanced_repl` feature) ⭐ **Enabled by Default**
+- **📋 Arrow Key Navigation**: ↑/↓ for command history browsing
+- **⚡ Tab Auto-completion**: Command and argument completion
+- **🔐 Interactive Input**: Secure password/API key prompting with masked input
+- **🧠 Advanced Error Recovery**: Intelligent suggestions and contextual help
+- **💾 Persistent Session**: Command history saved across sessions
+- **🖥️ Terminal Detection**: Automatic fallback to basic REPL in non-interactive environments
+- **🎨 Rich Display**: Colorized output and formatted help (when supported)
+
+### Feature Comparison
+
+| Capability | Basic REPL | Enhanced REPL |
+|------------|------------|---------------|
+| Command execution | ✅ | ✅ |
+| Error handling | ✅ | ✅ |
+| Help system (`?`) | ✅ | ✅ |
+| Arrow key history | ❌ | ✅ |
+| Tab completion | ❌ | ✅ |
+| Interactive prompts | Basic | Secure/Masked |
+| Session persistence | ❌ | ✅ |
+| Auto-fallback | N/A | ✅ |
+| Dependencies | None | `rustyline`, `atty` |
+
+### Quick Start
+
+**Default (Enhanced REPL included):**
+```toml
+[dependencies]
+unilang = "0.10"  # Enhanced REPL enabled by default
+```
+
+**Minimal dependencies (basic REPL only):**
+```toml
+[dependencies]
+unilang = { version = "0.10", default-features = false, features = ["enabled", "repl"] }
+```
+
 ## REPL (Read-Eval-Print Loop) Support
 
 unilang provides comprehensive support for building interactive REPL applications. The framework's stateless architecture makes it ideal for REPL implementations.
@@ -782,6 +830,105 @@ The `examples/` directory contains comprehensive REPL implementations:
 - ✅ **Error Isolation**: Command failures don't affect subsequent commands
 - ✅ **Memory Efficiency**: Constant memory usage regardless of session length
 - ✅ **Professional UX**: History, auto-completion, and intelligent error recovery
+
+## REPL Migration Guide
+
+### From Basic to Enhanced REPL
+
+**Step 1: Update your Cargo.toml**
+```toml
+# If you currently use basic REPL:
+unilang = { version = "0.10", default-features = false, features = ["enabled", "repl"] }
+
+# Change to default (Enhanced REPL included):
+unilang = "0.10"
+
+# Or explicitly enable enhanced REPL:
+unilang = { version = "0.10", features = ["enhanced_repl"] }
+```
+
+**Step 2: Feature Detection in Code**
+```rust
+#[cfg(feature = "enhanced_repl")]
+fn setup_enhanced_repl() -> Result<(), Box<dyn std::error::Error>> {
+    use rustyline::DefaultEditor;
+    let mut rl = DefaultEditor::new()?;
+    
+    println!("🚀 Enhanced REPL: Arrow keys and tab completion enabled!");
+    // Your enhanced REPL loop here...
+    Ok(())
+}
+
+#[cfg(all(feature = "repl", not(feature = "enhanced_repl")))]
+fn setup_basic_repl() -> Result<(), Box<dyn std::error::Error>> {
+    use std::io::{self, Write};
+    
+    println!("📝 Basic REPL: Standard input/output mode");
+    // Your basic REPL loop here...
+    Ok(())
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    #[cfg(feature = "enhanced_repl")]
+    setup_enhanced_repl()?;
+    
+    #[cfg(all(feature = "repl", not(feature = "enhanced_repl")))]
+    setup_basic_repl()?;
+    
+    Ok(())
+}
+```
+
+**Step 3: Handling Interactive Arguments**
+Enhanced REPL provides better support for interactive arguments:
+
+```rust
+use unilang::prelude::*;
+
+// In your REPL loop
+let result = pipeline.process_command_simple(&input);
+
+if result.requires_interactive_input() {
+    if let Some(arg_name) = result.interactive_argument() {
+        #[cfg(feature = "enhanced_repl")]
+        {
+            // Enhanced REPL: Secure password prompt with masking
+            use rustyline::DefaultEditor;
+            let mut rl = DefaultEditor::new()?;
+            let password = rl.readline(&format!("Enter {}: ", arg_name))?;
+            // Re-run command with interactive argument...
+        }
+        
+        #[cfg(all(feature = "repl", not(feature = "enhanced_repl")))]
+        {
+            // Basic REPL: Standard input (visible)
+            use std::io::{self, Write};
+            print!("Enter {}: ", arg_name);
+            io::stdout().flush()?;
+            let mut value = String::new();
+            io::stdin().read_line(&mut value)?;
+            // Re-run command with interactive argument...
+        }
+    }
+}
+```
+
+### Migration Checklist
+
+- [ ] Updated `Cargo.toml` with `enhanced_repl` feature
+- [ ] Added feature-gated code for both REPL modes
+- [ ] Updated interactive argument handling
+- [ ] Tested both enhanced and basic REPL modes
+- [ ] Updated error handling for better UX
+
+### Backward Compatibility
+
+The enhanced REPL automatically falls back to basic functionality when:
+- Running in non-interactive environments (pipes, redirects)
+- Terminal capabilities are limited
+- Dependencies are unavailable
+
+Your existing REPL code will continue to work unchanged.
 
 ## Error Handling
 
