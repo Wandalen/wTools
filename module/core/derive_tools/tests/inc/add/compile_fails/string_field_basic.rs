@@ -4,7 +4,7 @@ use derive_tools::
   Sub 
 };
 
-// // T1.4: Named struct with String (should not compile)
+// T1.4: Named struct with String (should not compile)
 #[ derive( Add, Sub ) ]
 pub struct StringStruct 
 { 

@@ -1,4 +1,4 @@
-//T1.5: Generic struct (should not compile)
+// T1.5: Generic struct (should not compile)
 pub struct GenericStruct< T > 
 { 
   x : T 
