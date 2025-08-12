@@ -5,7 +5,7 @@ mod private
   use crate::*;
 
   use std::fmt::Formatter;
-  use pth::PathBuf;
+  use std::path::PathBuf;
   use collection_tools::collection::HashMap;
   use colored::Colorize;
   use crates_tools::CrateArchive;
