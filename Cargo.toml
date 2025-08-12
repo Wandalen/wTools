@@ -322,7 +322,7 @@ version = "~0.13.0"
 path = "module/core/impls_index_meta"
 
 [workspace.dependencies.mod_interface]
-version = "~0.43.0"
+version = "~0.44.0"
 path = "module/core/mod_interface"
 default-features = false
 
