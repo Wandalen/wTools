@@ -26,7 +26,7 @@ all-features = false
 [features]
 default = [
   "enabled",
-  "integration", 
+  "integration",
   "markdown_reports",
   "data_generators",
   "criterion_compat",
@@ -36,7 +36,7 @@ full = [
   "enabled",
   "integration",
   "markdown_reports",
-  "data_generators", 
+  "data_generators",
   "criterion_compat",
   "html_reports",
   "json_reports",
@@ -55,10 +55,10 @@ integration = []
 
 # Report generation features
 markdown_reports = [ "enabled", "dep:pulldown-cmark", "dep:chrono" ]
-html_reports = [ "markdown_reports", "dep:tera" ]  
+html_reports = [ "markdown_reports", "dep:tera" ]
 json_reports = [ "enabled", "dep:serde_json", "dep:chrono" ]
 
-# Analysis features  
+# Analysis features
 statistical_analysis = [ "enabled", "dep:statistical" ]
 comparative_analysis = [ "enabled" ]
 optimization_hints = [ "statistical_analysis" ]
