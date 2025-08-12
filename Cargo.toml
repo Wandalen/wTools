@@ -306,7 +306,7 @@ path = "module/core/component_model_meta"
 default-features = false
 
 [workspace.dependencies.component_model_types]
-version = "~0.10.0"
+version = "~0.11.0"
 path = "module/core/component_model_types"
 default-features = false
 
