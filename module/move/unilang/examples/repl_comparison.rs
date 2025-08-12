@@ -2,6 +2,13 @@
 //!
 //! This example demonstrates the differences between basic and enhanced REPL modes,
 //! allowing you to see both implementations side-by-side.
+
+#![ allow( clippy::needless_continue ) ]
+#![ allow( clippy::uninlined_format_args ) ]
+#![ allow( clippy::cast_lossless ) ]
+#![ allow( clippy::std_instead_of_core ) ]
+#![ allow( clippy::manual_string_new ) ]
+#![ allow( clippy::collapsible_else_if ) ]
 //!
 //! ## Features Comparison
 //! 
