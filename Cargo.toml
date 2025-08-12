@@ -424,7 +424,7 @@ path = "module/alias/werror"
 ## string tools
 
 [workspace.dependencies.strs_tools]
-version = "~0.27.0"
+version = "~0.28.0"
 path = "module/core/strs_tools"
 default-features = false
 
