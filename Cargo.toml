@@ -159,7 +159,7 @@ default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.collection_tools]
-version = "~0.24.0"
+version = "~0.25.0"
 path = "module/core/collection_tools"
 default-features = false
 
