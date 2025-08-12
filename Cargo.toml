@@ -159,7 +159,7 @@ default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.collection_tools]
-version = "~0.24.0"
+version = "~0.25.0"
 path = "module/core/collection_tools"
 default-features = false
 
@@ -167,31 +167,31 @@ default-features = false
 ## derive
 
 [workspace.dependencies.derive_tools]
-version = "~0.46.0"
+version = "~0.47.0"
 path = "module/core/derive_tools"
 default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.derive_tools_meta]
-version = "~0.45.0"
+version = "~0.46.0"
 path = "module/core/derive_tools_meta"
 default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.reflect_tools]
-version = "~0.6.0"
+version = "~0.7.0"
 path = "module/core/reflect_tools"
 default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.reflect_tools_meta]
-version = "~0.6.0"
+version = "~0.7.0"
 path = "module/core/reflect_tools_meta"
 default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.format_tools]
-version = "~0.5.0"
+version = "~0.6.0"
 path = "module/core/format_tools"
 default-features = false
 # features = [ "enabled" ]
@@ -215,25 +215,25 @@ path = "module/alias/fundamental_data_type"
 default-features = false
 
 [workspace.dependencies.variadic_from]
-version = "~0.40.0"
+version = "~0.41.0"
 path = "module/core/variadic_from"
 default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.variadic_from_meta]
-version = "~0.11.0"
+version = "~0.12.0"
 path = "module/core/variadic_from_meta"
 default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn]
-version = "~0.43.0"
+version = "~0.44.0"
 path = "module/core/clone_dyn"
 default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn_meta]
-version = "~0.40.0"
+version = "~0.41.0"
 path = "module/core/clone_dyn_meta"
 # features = [ "enabled" ]
 
@@ -306,7 +306,7 @@ path = "module/core/component_model_meta"
 default-features = false
 
 [workspace.dependencies.component_model_types]
-version = "~0.10.0"
+version = "~0.11.0"
 path = "module/core/component_model_types"
 default-features = false
 
@@ -351,7 +351,7 @@ default-features = false
 ## macro tools
 
 [workspace.dependencies.macro_tools]
-version = "~0.66.0"
+version = "~0.67.0"
 path = "module/core/macro_tools"
 default-features = false
 
