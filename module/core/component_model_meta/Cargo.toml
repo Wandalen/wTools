@@ -53,4 +53,4 @@ component_model_types = { workspace = true, features = [ "types_component_assign
 convert_case = { version = "0.6.0", default-features = false, optional = true, features = [] }
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }

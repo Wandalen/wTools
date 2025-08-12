@@ -168,7 +168,7 @@ serde = "1.0"
 serde_yaml = "0.9"
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }
 assert_cmd = "2.0"
 predicates = "2.1"
 assert_fs = "1.0"

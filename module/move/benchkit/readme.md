@@ -100,6 +100,20 @@ fn update_readme_performance_docs()
 
 | Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
 |-----------|-----------|---------|-----|-----|----------|
+| create_user | 36.00ns | 27777778 | 0.00ns | 40.00ns | 13.00ns |
+| get_user | 40.00ns | 25000000 | 40.00ns | 40.00ns | 0.00ns |
+
+### Key Insights
+
+- **Fastest operation**: create_user (36.00ns)
+- **Performance range**: 1.1x difference between fastest and slowest
+
+
+
+## api_performance Results
+
+| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
+|-----------|-----------|---------|-----|-----|----------|
 | get_user | 32.00ns | 31250000 | 0.00ns | 40.00ns | 17.00ns |
 | create_user | 36.00ns | 27777778 | 0.00ns | 40.00ns | 13.00ns |
 
@@ -195,6 +209,20 @@ fn update_readme_performance_docs()
 
 
 ## Performance
+
+## api_performance Results
+
+| Benchmark | Mean Time | Ops/sec | Min | Max | Std Dev |
+|-----------|-----------|---------|-----|-----|----------|
+| create_user | 36.00ns | 27777778 | 0.00ns | 40.00ns | 13.00ns |
+| get_user | 40.00ns | 25000000 | 40.00ns | 40.00ns | 0.00ns |
+
+### Key Insights
+
+- **Fastest operation**: create_user (36.00ns)
+- **Performance range**: 1.1x difference between fastest and slowest
+
+
 
 ## api_performance Results
 

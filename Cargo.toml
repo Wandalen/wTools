@@ -483,7 +483,6 @@ path = "module/alias/wtest"
 [workspace.dependencies.test_tools]
 version = "~0.16.0"
 path = "module/core/test_tools"
-features = [ "full" ]
 
 # [workspace.dependencies.test_tools_stable]
 # package = "test_tools"
@@ -634,7 +633,6 @@ version = "0.1.83"
 
 [workspace.dependencies.tokio]
 version = "1.41.0"
-features = []
 default-features = false
 
 # Note: anyhow and thiserror are included here ONLY for bootstrap builds
@@ -672,6 +670,18 @@ version = "~0.2"
 
 [workspace.dependencies.rand]
 version = "0.8.5"
+
+[workspace.dependencies.rand_chacha]
+version = "0.3.1"
+
+[workspace.dependencies.rand_seeder]
+version = "0.3.0"
+
+[workspace.dependencies.sealed]
+version = "0.5.0"
+
+[workspace.dependencies.rayon]
+version = "1.8.0"
 
 [workspace.dependencies.trybuild]
 version = "1.0.85"
@@ -754,15 +764,12 @@ version = "0.18.1"
 
 [workspace.dependencies.toml]
 version = "0.8.23"
-features = [ "preserve_order" ]
 
 [workspace.dependencies.chrono]
 version = "0.4.34"
-features = [ "serde" ]
 
 [workspace.dependencies.criterion]
 version = "0.5.1"
-features = [ "html_reports" ]
 
 [workspace.dependencies.workspace_tools]
 version = "~0.2.0"

@@ -131,7 +131,7 @@ lazy_static = { version = "1.4", optional = true }
 
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }
 criterion = { version = "0.5", features = ["html_reports"] }
 ctor = { version = "0.2" }
 

@@ -49,5 +49,5 @@ duct = "0.13.7"
 
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }
 assert_fs = { version = "1.1.1" }

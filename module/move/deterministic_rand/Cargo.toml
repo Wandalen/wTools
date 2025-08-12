@@ -36,14 +36,14 @@ determinism = [ "rand_chacha", "rand_seeder", "iter_tools" ]
 [dependencies]
 mod_interface = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ], optional = true }
-rand = "0.8.5"
-rand_chacha = { version = "0.3.1", optional = true }
-rand_seeder = { version = "0.2.3", optional = true }
-sealed = "0.5.0"
+rand = { workspace = true }
+rand_chacha = { workspace = true, optional = true }
+rand_seeder = { workspace = true, optional = true }
+sealed = { workspace = true }
 
 [dev-dependencies]
-test_tools = { workspace = true }
-rayon = "1.8.0"
+test_tools = { workspace = true, features = [ "full" ] }
+rayon = { workspace = true }
 
 [[example]]
 name = "sample_deterministic_rand_trivial"

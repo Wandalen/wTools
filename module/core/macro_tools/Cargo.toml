@@ -118,4 +118,4 @@ clone_dyn_types = { workspace = true, features = [] }
 component_model_types = { workspace = true, features = [ "types_component_assign" ] }
 
 [dev-dependencies]
-test_tools = { workspace = true } # Added test_tools dependency
+test_tools = { workspace = true, features = [ "full" ] } # Added test_tools dependency

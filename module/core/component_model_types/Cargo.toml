@@ -47,4 +47,4 @@ collection_tools = { workspace = true, features = [ "collection_constructors" ] 
 
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }

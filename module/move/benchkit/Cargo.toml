@@ -85,8 +85,8 @@ error_tools = { workspace = true, features = [ "enabled" ] }
 # Feature-gated dependencies - using workspace where available
 serde_json = { workspace = true, optional = true }
 rand = { workspace = true, optional = true }
-chrono = { workspace = true, optional = true }
-criterion = { workspace = true, optional = true }
+chrono = { workspace = true, features = [ "serde" ], optional = true }
+criterion = { workspace = true, features = [ "html_reports" ], optional = true }
 
 # Feature-gated dependencies - not in workspace, use direct versions
 pulldown-cmark = { version = "0.13", optional = true }
