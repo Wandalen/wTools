@@ -55,7 +55,7 @@ full = [
 # ========================================
 
 # Minimal functionality - required for all other features
-enabled = []
+enabled = [ "strs_tools_meta/enabled" ]
 
 # String indentation functionality
 string_indentation = ["enabled"]
@@ -119,7 +119,7 @@ lexical = { workspace = true, optional = true }
 component_model_types = { workspace = true, features = ["enabled"] }
 
 # Compile-time optimization macros
-strs_tools_meta = { workspace = true, path = "strs_tools_meta", optional = true }
+strs_tools_meta = { workspace = true, optional = true }
 
 # SIMD optimization dependencies (optional)
 # When simd feature is disabled, these dependencies are not included at all
