@@ -114,6 +114,10 @@ pub mod own {
     use super::super::*;
     pub use orphan::*;
 
+    pub use prelude::syn;
+    pub use prelude::proc_macro2;
+    pub use prelude::quote;
+
     pub use private::{Result};
 
     #[ cfg( feature = "attr" ) ]
