@@ -1,22 +1,24 @@
-//! Integration tests for optimize_split macro
+//! Integration tests for `optimize_split` macro
 //!
-//! # Test Matrix for optimize_split
+//! # Test Matrix for `optimize_split`
 //!
 //! | Test ID | Scenario | Delimiter Type | Options | Expected Behavior |
 //! |---------|----------|----------------|---------|-------------------|
 //! | TC1 | Single char delimiter | "," | default | Single char optimization |
 //! | TC2 | Multiple char single delim | "->" | default | Multi-char delimiter optimization |
-//! | TC3 | Multiple delimiters | [",", ";"] | default | Multi-delimiter optimization |
-//! | TC4 | Complex delimiters | [",", "->", "::"] | default | Complex pattern fallback |
+//! | TC3 | Multiple delimiters | `[",", ";"]` | default | Multi-delimiter optimization |
+//! | TC4 | Complex delimiters | `[",", "->", "::"]` | default | Complex pattern fallback |
 //! | TC5 | Preserve delimiters | "," | preserve_delimiters=true | Include delimiters in result |
 //! | TC6 | Preserve empty | "," | preserve_empty=true | Include empty segments |
-//! | TC7 | SIMD disabled | [",", ";"] | use_simd=false | Non-SIMD path |
+//! | TC7 | SIMD disabled | `[",", ";"]` | use_simd=false | Non-SIMD path |
 //! | TC8 | Debug mode | "," | debug | Debug output generated |
 //!
 
+#[ cfg( feature = "optimize_split" ) ]
 use strs_tools_meta::optimize_split;
 
 // TC1: Single character delimiter - should use SingleCharDelimiter optimization
+#[ cfg( feature = "optimize_split" ) ]
 #[ test ]
 fn tc1_single_char_delimiter()
 {
@@ -30,6 +32,7 @@ fn tc1_single_char_delimiter()
 }
 
 // TC2: Multiple character single delimiter - should use MultipleCharDelimiters optimization
+#[ cfg( feature = "optimize_split" ) ]
 #[ test ]
 fn tc2_multi_char_single_delimiter()
 {
@@ -43,6 +46,7 @@ fn tc2_multi_char_single_delimiter()
 }
 
 // TC3: Multiple delimiters - should use MultipleCharDelimiters optimization
+#[ cfg( feature = "optimize_split" ) ]
 #[ test ]
 fn tc3_multiple_delimiters()
 {
@@ -56,6 +60,7 @@ fn tc3_multiple_delimiters()
 }
 
 // TC4: Complex delimiters - should use ComplexPattern fallback
+#[ cfg( feature = "optimize_split" ) ]
 #[ test ]
 fn tc4_complex_delimiters()
 {
@@ -67,6 +72,7 @@ fn tc4_complex_delimiters()
 }
 
 // TC5: Preserve delimiters option
+#[ cfg( feature = "optimize_split" ) ]
 #[ test ]
 fn tc5_preserve_delimiters()
 {
@@ -78,6 +84,7 @@ fn tc5_preserve_delimiters()
 }
 
 // TC6: Preserve empty segments option
+#[ cfg( feature = "optimize_split" ) ]
 #[ test ]
 fn tc6_preserve_empty()
 {
@@ -91,6 +98,7 @@ fn tc6_preserve_empty()
 }
 
 // TC7: SIMD disabled
+#[ cfg( feature = "optimize_split" ) ]
 #[ test ]
 fn tc7_simd_disabled()
 {
@@ -105,6 +113,7 @@ fn tc7_simd_disabled()
 
 // TC8: Debug mode test
 // Note: Debug output goes to stderr and can be observed during manual testing
+#[ cfg( feature = "optimize_split" ) ]
 #[ test ]
 fn tc8_debug_mode()
 {
@@ -117,6 +126,7 @@ fn tc8_debug_mode()
 }
 
 // Test for explicit parameter values to avoid fragile tests
+#[ cfg( feature = "optimize_split" ) ]
 #[ test ]
 fn tc9_explicit_parameters()
 {
@@ -135,6 +145,7 @@ fn tc9_explicit_parameters()
 }
 
 // Test default value equivalence - dedicated test for parameter defaults
+#[ cfg( feature = "optimize_split" ) ]
 #[ test ]
 fn tc10_default_value_equivalence()
 {

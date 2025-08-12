@@ -1,20 +1,22 @@
-//! Integration tests for optimize_match macro
+//! Integration tests for `optimize_match` macro
 //!
-//! # Test Matrix for optimize_match
+//! # Test Matrix for `optimize_match`
 //!
 //! | Test ID | Scenario | Pattern Type | Strategy | Expected Behavior |
 //! |---------|----------|--------------|----------|-------------------|
 //! | TC1 | Single pattern | "prefix" | default | Single pattern optimization |
-//! | TC2 | Multiple small patterns | ["http://", "https://"] | "first_match" | Trie-based optimization |
+//! | TC2 | Multiple small patterns | `["http://", "https://"]` | `"first_match"` | Trie-based optimization |
 //! | TC3 | Multiple large patterns | Many long patterns | "first_match" | Sequential matching |
-//! | TC4 | Strategy: longest_match | ["a", "ab", "abc"] | "longest_match" | Longest match strategy |
-//! | TC5 | Strategy: all_matches | ["a", "b"] | "all_matches" | All matches strategy |
+//! | TC4 | Strategy: longest_match | `["a", "ab", "abc"]` | `"longest_match"` | Longest match strategy |
+//! | TC5 | Strategy: all_matches | `["a", "b"]` | `"all_matches"` | All matches strategy |
 //! | TC6 | Debug mode | "test" | default, debug | Debug output generated |
 //!
 
+#[ cfg( feature = "optimize_match" ) ]
 use strs_tools_meta::optimize_match;
 
 // TC1: Single pattern - should use SinglePattern optimization
+#[ cfg( feature = "optimize_match" ) ]
 #[ test ]
 fn tc1_single_pattern()
 {
@@ -25,6 +27,7 @@ fn tc1_single_pattern()
 }
 
 // TC2: Multiple small patterns - should use TrieBasedMatch optimization
+#[ cfg( feature = "optimize_match" ) ]
 #[ test ]
 fn tc2_multiple_small_patterns()
 {
@@ -35,6 +38,7 @@ fn tc2_multiple_small_patterns()
 }
 
 // TC3: First match strategy explicit
+#[ cfg( feature = "optimize_match" ) ]
 #[ test ]
 fn tc3_first_match_strategy()
 {
@@ -45,6 +49,7 @@ fn tc3_first_match_strategy()
 }
 
 // TC4: Longest match strategy
+#[ cfg( feature = "optimize_match" ) ]
 #[ test ]
 fn tc4_longest_match_strategy()
 {
@@ -55,6 +60,7 @@ fn tc4_longest_match_strategy()
 }
 
 // TC5: All matches strategy
+#[ cfg( feature = "optimize_match" ) ]
 #[ test ]
 fn tc5_all_matches_strategy()
 {
@@ -66,6 +72,7 @@ fn tc5_all_matches_strategy()
 
 // TC6: Debug mode test
 // Note: Debug output goes to stderr and can be observed during manual testing
+#[ cfg( feature = "optimize_match" ) ]
 #[ test ]
 fn tc6_debug_mode()
 {
@@ -75,6 +82,7 @@ fn tc6_debug_mode()
 }
 
 // Test for explicit parameter values to avoid fragile tests
+#[ cfg( feature = "optimize_match" ) ]
 #[ test ]
 fn tc7_explicit_parameters()
 {
@@ -84,6 +92,7 @@ fn tc7_explicit_parameters()
 }
 
 // Test default value equivalence - dedicated test for parameter defaults
+#[ cfg( feature = "optimize_match" ) ]
 #[ test ]
 fn tc8_default_value_equivalence()
 {
@@ -95,6 +104,7 @@ fn tc8_default_value_equivalence()
 }
 
 // Test no match case
+#[ cfg( feature = "optimize_match" ) ]
 #[ test ]
 fn tc9_no_match()
 {
@@ -104,6 +114,7 @@ fn tc9_no_match()
 }
 
 // Test empty input
+#[ cfg( feature = "optimize_match" ) ]
 #[ test ]
 fn tc10_empty_input()
 {
