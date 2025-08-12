@@ -589,7 +589,7 @@ version = "~0.2.0"
 path = "module/move/llm_tools"
 
 [workspace.dependencies.benchkit]
-version = "~0.3.0"
+version = "~0.4.0"
 path = "module/move/benchkit"
 
 ## steps
