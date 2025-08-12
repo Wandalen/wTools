@@ -124,6 +124,11 @@ Try to install it with `rustup install {}` command(-s)",
       #[ cfg( feature = "progress_bar" ) ]
       with_progress,
     } = o;
+    
+    // Default value when progress_bar feature is disabled
+    #[ cfg( not( feature = "progress_bar" ) ) ]
+    #[ allow( unused_variables ) ]
+    let with_progress = false;
 
     // zzz : watch and review after been ready
     // aaa : for Petro : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >

@@ -94,6 +94,11 @@ mod private
       #[ cfg( feature = "progress_bar" ) ]
       with_progress
     } = o.props.try_into()?;
+    
+    // Default value when progress_bar feature is disabled
+    #[ cfg( not( feature = "progress_bar" ) ) ]
+    #[ allow( unused_variables ) ]
+    let with_progress = false;
 
     let mut channels = HashSet::new();
     if with_stable { channels.insert( Channel::Stable ); }
