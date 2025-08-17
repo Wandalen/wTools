@@ -9,7 +9,7 @@ mod private
     io::{ Write, Read },
   };
 
-  use pth::Path;
+  use std::path::Path;
   use collection_tools::collection::BTreeMap;
   use convert_case::{ Casing, Case };
   use handlebars::{ RenderError, TemplateError };
@@ -17,7 +17,7 @@ mod private
 
   use entity::{ PathError, WorkspaceInitError };
   // Explicit import for Result and its variants for pattern matching
-  use std::result::Result::{Ok, Err};
+  use core::result::Result::{Ok, Err};
 
   use error::
   {

@@ -1,6 +1,6 @@
 use super::*;
 
-#[test]
+#[ test ]
 fn ensure_comma_named_struct_with_multiple_fields() {
   use syn::{parse_quote, ItemStruct};
 
@@ -20,7 +20,7 @@ fn ensure_comma_named_struct_with_multiple_fields() {
   a_id!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn ensure_comma_named_struct_with_single_field() {
   use syn::{parse_quote, ItemStruct};
 
@@ -36,7 +36,7 @@ fn ensure_comma_named_struct_with_single_field() {
   assert_eq!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn ensure_comma_named_struct_with_no_fields() {
   use syn::{parse_quote, ItemStruct};
 
@@ -49,7 +49,7 @@ fn ensure_comma_named_struct_with_no_fields() {
   assert_eq!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn ensure_comma_unnamed_struct_with_multiple_fields() {
   use syn::{parse_quote, ItemStruct};
 
@@ -62,7 +62,7 @@ fn ensure_comma_unnamed_struct_with_multiple_fields() {
   assert_eq!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn ensure_comma_unnamed_struct_with_single_field() {
   use syn::{parse_quote, ItemStruct};
 
@@ -75,7 +75,7 @@ fn ensure_comma_unnamed_struct_with_single_field() {
   assert_eq!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn ensure_comma_unnamed_struct_with_no_fields() {
   use syn::{parse_quote, ItemStruct};
 
@@ -88,7 +88,7 @@ fn ensure_comma_unnamed_struct_with_no_fields() {
   assert_eq!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn ensure_comma_unit_struct_with_no_fields() {
   use syn::{parse_quote, ItemStruct};
 

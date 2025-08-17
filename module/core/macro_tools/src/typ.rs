@@ -10,22 +10,22 @@ mod private {
 
   /// Check is the rightmost item of path refering a type is specified type.
   ///
-  /// Good to verify `core::option::Option< i32 >` is optional.
-  /// Good to verify `alloc::vec::Vec< i32 >` is vector.
+  /// Good to verify `core::option::Option<  i32  >` is optional.
+  /// Good to verify `alloc::vec::Vec<  i32  >` is vector.
   ///
   /// ### Basic use-case.
   /// ```rust
   /// use macro_tools::exposed::*;
   ///
-  /// let code = qt!( core::option::Option< i32 > );
+  /// let code = qt!( core::option::Option<  i32  > );
   /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
   /// let got = typ::type_rightmost( &tree_type );
   /// assert_eq!( got, Some( "Option".to_string() ) );
   /// ```
   /// # Panics
   /// qqq: doc
-  #[must_use]
-  pub fn type_rightmost(ty: &syn::Type) -> Option<String> {
+  #[ must_use ]
+  pub fn type_rightmost(ty: &syn::Type) -> Option< String > {
     if let syn::Type::Path(path) = ty {
       let last = &path.path.segments.last();
       if last.is_none() {
@@ -38,13 +38,13 @@ mod private {
 
   /// Return the specified number of parameters of the type.
   ///
-  /// Good to getting `i32` from `core::option::Option< i32 >` or `alloc::vec::Vec< i32 >`
+  /// Good to getting `i32` from `core::option::Option<  i32  >` or `alloc::vec::Vec<  i32  >`
   ///
   /// ### Basic use-case.
   /// ```
   /// use macro_tools::{ typ, qt };
   ///
-  /// let code = qt!( core::option::Option< i8, i16, i32, i64 > );
+  /// let code = qt!( core::option::Option<  i8, i16, i32, i64  > );
   /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
   /// let got = typ::type_parameters( &tree_type, 0..=2 );
   /// got.iter().for_each( | e | println!( "{}", qt!( #e ) ) );
@@ -54,8 +54,8 @@ mod private {
   /// ```
   /// # Panics
   /// qqq: doc
-  #[allow(clippy::cast_possible_wrap, clippy::needless_pass_by_value)]
-  pub fn type_parameters(ty: &syn::Type, range: impl NonIterableInterval) -> Vec<&syn::Type> {
+  #[ allow( clippy::cast_possible_wrap, clippy::needless_pass_by_value ) ]
+  pub fn type_parameters(ty: &syn::Type, range: impl NonIterableInterval) -> Vec< &syn::Type > {
     if let syn::Type::Path(syn::TypePath {
       path: syn::Path { ref segments, .. },
       ..
@@ -77,7 +77,7 @@ mod private {
         // dbg!( left );
         // dbg!( right );
         // dbg!( len );
-        let selected: Vec<&syn::Type> = args3
+        let selected: Vec< &syn::Type > = args3
           .iter()
           .skip_while(|e| !matches!(e, syn::GenericArgument::Type(_)))
           .skip(usize::try_from(left.max(0)).unwrap())
@@ -105,12 +105,12 @@ mod private {
   /// # Example
   ///
   /// ```rust
-  /// let type_string = "Option< i32 >";
+  /// let type_string = "Option<  i32  >";
   /// let parsed_type : syn::Type = syn::parse_str( type_string ).expect( "Type should parse correctly" );
   /// assert!( macro_tools::typ::is_optional( &parsed_type ) );
   /// ```
   ///
-  #[must_use]
+  #[ must_use ]
   pub fn is_optional(ty: &syn::Type) -> bool {
     typ::type_rightmost(ty) == Some("Option".to_string())
   }
@@ -124,14 +124,14 @@ mod private {
   ///
   /// # Example
   /// ```rust
-  /// let type_string = "Result< Option< i32 >, Error >";
+  /// let type_string = "Result< Option<  i32  >, Error >";
   /// let parsed_type : syn::Type = syn::parse_str( type_string ).expect( "Type should parse correctly" );
   /// let first_param = macro_tools::typ::parameter_first( &parsed_type ).expect( "Should have at least one parameter" );
-  /// // Option< i32 >
+  /// // Option<  i32  >
   /// ```
   /// # Errors
   /// qqq: docs
-  pub fn parameter_first(ty: &syn::Type) -> Result<&syn::Type> {
+  pub fn parameter_first(ty: &syn::Type) -> Result< &syn::Type > {
     typ::type_parameters(ty, 0..=0)
       .first()
       .copied()
@@ -139,32 +139,32 @@ mod private {
   }
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{type_rightmost, type_parameters, is_optional, parameter_first};
 }
 
 /// Orphan namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
@@ -173,12 +173,12 @@ pub mod exposed {
 
   // pub use super::own as typ;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 }

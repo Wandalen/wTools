@@ -1,7 +1,7 @@
 /// Shared test logic for unit variants with keyword identifiers.
 use super::*;
 
-#[test]
+#[ test ]
 fn keyword_static_constructors()
 {
   // Expect original names (for derive macro)
@@ -9,7 +9,7 @@ fn keyword_static_constructors()
   assert_eq!(KeywordTest::r#struct, KeywordTest::r#struct);
 }
 
-#[test]
+#[ test ]
 fn keyword_standalone_constructors()
 {
   // Expect original names (for derive macro)

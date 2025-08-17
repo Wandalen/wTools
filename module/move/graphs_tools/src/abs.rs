@@ -14,7 +14,6 @@ mod private
   ///
   /// Interface to identify an instance of somthing, for exampel a node.
   ///
-
   pub trait IdentityInterface
   where
     Self :

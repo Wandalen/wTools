@@ -15,7 +15,8 @@ use plotters::
   chart::ChartBuilder
 };
 use iter_tools::Itertools;
-use std::{ sync::{ Mutex, OnceLock }, collections::HashMap };
+use std::sync::{ Mutex, OnceLock };
+use std::collections::HashMap;
 
 /// Struct that can be accessed in any place in code to add some data to draw plots.
 pub static PLOTS : OnceLock< Mutex< Plots > > = OnceLock::new();

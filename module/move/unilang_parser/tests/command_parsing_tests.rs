@@ -31,7 +31,7 @@ fn parse_and_assert( input : &str, expected_path : &[ &str ], expected_args : &[
   assert_eq!( instruction.positional_arguments.len(), expected_args.len() );
   for ( i, expected_arg ) in expected_args.iter().enumerate()
   {
-    assert_eq!( instruction.positional_arguments[ i ].value, expected_arg.to_string() );
+    assert_eq!( instruction.positional_arguments[ i ].value, (*expected_arg).to_string() );
   }
 }
 

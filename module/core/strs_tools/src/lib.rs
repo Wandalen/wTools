@@ -5,8 +5,24 @@
   html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
 ) ]
 #![ doc( html_root_url = "https://docs.rs/strs_tools/latest/strs_tools/" ) ]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "String manipulation utilities" ) ]
 #![ allow( clippy::std_instead_of_alloc ) ]
+#![ allow( clippy::must_use_candidate ) ]
+#![ allow( clippy::elidable_lifetime_names ) ]
+#![ allow( clippy::std_instead_of_core ) ]
+#![ allow( clippy::manual_strip ) ]
+#![ allow( clippy::doc_markdown ) ]
+#![ allow( clippy::new_without_default ) ]
+#![ allow( clippy::clone_on_copy ) ]
+#![ allow( clippy::single_match_else ) ]
+#![ allow( clippy::return_self_not_must_use ) ]
+#![ allow( clippy::match_same_arms ) ]
+#![ allow( clippy::missing_panics_doc ) ]
+#![ allow( clippy::missing_errors_doc ) ]
+#![ allow( clippy::iter_cloned_collect ) ]
+#![ allow( clippy::redundant_closure ) ]
+#![ allow( clippy::uninlined_format_args ) ]
 
 //! # Rule Compliance & Architectural Notes
 //!
@@ -23,7 +39,7 @@
 //!    were moved to workspace level for version consistency.
 //!
 //! 3. **Attribute Formatting**: All attributes use proper spacing per Universal Formatting Rule:
-//!    `#[ cfg( feature = "enabled" ) ]` instead of `#[cfg(feature = "enabled")]`
+//!    `#[ cfg( feature = "enabled" ) ]` instead of `#[ cfg( feature = "enabled" ) ]`
 //!
 //! 4. **mod_interface Architecture**: Converted from manual namespace patterns to `mod_interface!`
 //!    macro usage for cleaner module organization and controlled visibility.
@@ -46,6 +62,11 @@ pub mod string;
 /// SIMD-optimized string operations.
 #[ cfg( all( feature = "enabled", feature = "simd" ) ) ]
 pub mod simd;
+
+/// Re-export compile-time optimization macros.
+#[ cfg( all( feature = "enabled", feature = "compile_time_optimizations" ) ) ]
+#[ allow( unused_imports ) ]
+pub use strs_tools_meta::*;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]

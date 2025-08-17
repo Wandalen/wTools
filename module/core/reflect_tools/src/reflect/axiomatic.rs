@@ -311,14 +311,14 @@ mod private
     /// Container length.
     pub len : usize,
     /// Container keys.
-    pub keys : Vec< primitive::Primitive >,
+    pub keys : Vec<  primitive::Primitive  >,
     _phantom : core::marker::PhantomData< I >,
   }
 
   impl< I : Instance > KeyedCollectionDescriptor< I >
   {
     /// Constructor of the descriptor of container type.
-    pub fn new( size : usize, keys : Vec< primitive::Primitive > ) -> Self
+    pub fn new( size : usize, keys : Vec<  primitive::Primitive  > ) -> Self
     {
       let _phantom = core::marker::PhantomData::< I >;
       Self
@@ -482,7 +482,7 @@ mod private
   // qqq : aaa : added implementation for slice
   impl< T : Instance > IsContainer for &'static [ T ] {}
   // qqq : aaa : added implementation for Vec
-  impl< T : Instance + 'static > IsContainer for Vec< T > {}
+  impl< T : Instance + 'static > IsContainer for Vec<  T  > {}
   // qqq : aaa : added implementation for HashMap
   impl< K : IsScalar + Clone + 'static, V : Instance + 'static > IsContainer for std::collections::HashMap< K, V >
   where primitive::Primitive : From< K > {}

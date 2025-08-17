@@ -23,7 +23,7 @@ pub mod private
       KeyedCollectionDescriptor::< Self >::new
       (
         self.len(),
-        self.keys().into_iter().map( | k | primitive::Primitive::from( k.clone() ) ).collect::< Vec< _ > >(),
+        self.keys().into_iter().map( | k | primitive::Primitive::from( k.clone() ) ).collect::< Vec<  _  > >(),
       )
     }
     #[ inline( always ) ]
@@ -66,7 +66,7 @@ pub mod private
     #[ inline( always ) ]
     fn elements( &self ) -> Box< dyn Iterator< Item = KeyVal > >
     {
-      let mut result : Vec< KeyVal > = ( 0 .. self.len() )
+      let mut result : Vec<  KeyVal  > = ( 0 .. self.len() )
       .map( | k | KeyVal { key : Primitive::usize( k ), val : Box::new( < V as Instance >::Reflect() ) } )
       .collect();
 

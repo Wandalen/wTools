@@ -116,7 +116,7 @@ mod private
   /// ```
   #[ derive( Debug ) ]
   #[ derive( former::Former ) ]
-  #[ storage_fields( help_generator : HelpGeneratorFn, help_variants : HashSet< HelpVariants >, order : Order ) ]
+  #[ storage_fields( help_generator : HelpGeneratorFn, help_variants : HashSet<  HelpVariants  >, order : Order ) ]
   #[ mutator( custom ) ]
   // #[ debug ]
   pub struct CommandsAggregator
@@ -134,12 +134,12 @@ mod private
     #[ former( default = Verifier ) ]
     verifier : Verifier,
 
-    callback_fn : Option< CommandsAggregatorCallback >,
+    callback_fn : Option<  CommandsAggregatorCallback  >,
   }
 
   impl< Context, Formed > former::FormerMutator for CommandsAggregatorFormerDefinitionTypes< Context, Formed >
   {
-    fn form_mutation( storage : &mut Self::Storage, _context : &mut Option< Self::Context > )
+    fn form_mutation( storage : &mut Self::Storage, _context : &mut Option<  Self::Context  > )
     {
       let ca = storage;
       let dictionary = ca.dictionary.get_or_insert_with( Dictionary::default );
@@ -178,7 +178,7 @@ mod private
       IntoName : Into< String >,
     {
       let name = name.into();
-      let on_end = | command : CommandFormerStorage, super_former : Option< Self > | -> Self
+      let on_end = | command : CommandFormerStorage, super_former : Option<  Self  > | -> Self
       {
         let mut super_former = super_former.unwrap();
         let mut dictionary = super_former.storage.dictionary.unwrap_or_default();
@@ -277,7 +277,7 @@ mod private
     /// Takes a string with program and executes it
     /// # Errors
     /// qqq: doc
-    pub fn perform< S >( &self, program : S ) -> Result< (), Error >
+    pub fn perform< S >( &self, program : S ) -> Result<  (), Error  >
     where
       S : IntoInput
     {

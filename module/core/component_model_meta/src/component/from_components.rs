@@ -29,8 +29,8 @@ use macro_tools::{attr, diag, item_struct, Result, proc_macro2::TokenStream};
 /// }
 /// ```
 ///
-#[inline]
-pub fn from_components(input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream> {
+#[ inline ]
+pub fn from_components(input: proc_macro::TokenStream) -> Result< proc_macro2::TokenStream > {
   let original_input = input.clone();
   let parsed = syn::parse::<syn::ItemStruct>(input)?;
   let has_debug = attr::has_debug(parsed.attrs.iter())?;
@@ -39,10 +39,10 @@ pub fn from_components(input: proc_macro::TokenStream) -> Result<proc_macro2::To
   let item_name = &parsed.ident;
 
   // Generate snippets based on whether fields are named or unnamed
-  let (field_assigns, final_construction): (Vec<TokenStream>, TokenStream) = match &parsed.fields {
+  let (field_assigns, final_construction): (Vec< TokenStream >, TokenStream) = match &parsed.fields {
     syn::Fields::Named(fields_named) => {
       let assigns = field_assign_named(fields_named.named.iter());
-      let names: Vec<_> = fields_named.named.iter().map(|f| f.ident.as_ref().unwrap()).collect();
+      let names: Vec< _ > = fields_named.named.iter().map(|f| f.ident.as_ref().unwrap()).collect();
       let construction = quote! { Self { #( #names, )* } };
       (assigns, construction)
     }
@@ -86,8 +86,8 @@ pub fn from_components(input: proc_macro::TokenStream) -> Result<proc_macro2::To
 }
 
 /// Generates trait bounds for the `From< T >` implementation. (Same as before)
-#[inline]
-fn trait_bounds<'a>(field_types: impl macro_tools::IterTrait<'a, &'a syn::Type>) -> Vec<proc_macro2::TokenStream> {
+#[ inline ]
+fn trait_bounds<'a>(field_types: impl macro_tools::IterTrait<'a, &'a syn::Type>) -> Vec< proc_macro2::TokenStream > {
   field_types
     .map(|field_type| {
       qt! {
@@ -98,8 +98,8 @@ fn trait_bounds<'a>(field_types: impl macro_tools::IterTrait<'a, &'a syn::Type>)
 }
 
 /// Generates assignment snippets for named fields.
-#[inline]
-fn field_assign_named<'a>(fields: impl Iterator<Item = &'a syn::Field>) -> Vec<proc_macro2::TokenStream> {
+#[ inline ]
+fn field_assign_named<'a>(fields: impl Iterator<Item = &'a syn::Field>) -> Vec< proc_macro2::TokenStream > {
   fields
     .map(|field| {
       let field_ident = field.ident.as_ref().unwrap(); // Safe because we are in Named fields
@@ -112,10 +112,10 @@ fn field_assign_named<'a>(fields: impl Iterator<Item = &'a syn::Field>) -> Vec<p
 }
 
 /// Generates assignment snippets for unnamed fields and returns temporary variable names.
-#[inline]
+#[ inline ]
 fn field_assign_unnamed<'a>(
   fields: impl Iterator<Item = (usize, &'a syn::Field)>,
-) -> (Vec<proc_macro2::TokenStream>, Vec<proc_macro2::Ident>) {
+) -> (Vec< proc_macro2::TokenStream >, Vec< proc_macro2::Ident >) {
   fields
     .map(|(index, field)| {
       let temp_var_name = format_ident!("field_{}", index); // Create temp name like field_0

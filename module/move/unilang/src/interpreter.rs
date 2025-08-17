@@ -58,6 +58,7 @@ impl< 'a > Interpreter< 'a >
   ///
   /// This method currently does not return errors directly from command execution,
   /// but it is designed to propagate `Error` from command routines in future implementations.
+  #[allow(clippy::missing_errors_doc)]
   pub fn run
   (
     &self,
@@ -71,22 +72,18 @@ impl< 'a > Interpreter< 'a >
       // For now, just print the command to simulate execution
       // println!( "Executing: {command:?}" );
 
-      // Look up the routine from the registry
+      // EXPLICIT COMMAND NAMING (FR-REG-6): Use command names exactly as registered
+      // Following the governing principle: minimum implicit magic!
+      // Command names are now required to have dot prefixes and are used as-is
       let full_command_name = if command.definition.namespace.is_empty()
       {
-        format!( ".{}", command.definition.name )
+        // Root-level command: use name exactly as registered (with dot prefix)
+        command.definition.name.clone()
       }
       else
       {
-        let ns = &command.definition.namespace;
-        if ns.starts_with( '.' )
-        {
-          format!( "{}.{}", ns, command.definition.name )
-        }
-        else
-        {
-          format!( ".{}.{}", ns, command.definition.name )
-        }
+        // Namespaced command: explicit concatenation without transformations
+        format!( "{}.{}", command.definition.namespace, command.definition.name.strip_prefix('.').unwrap_or(&command.definition.name) )
       };
       let routine = self.registry.get_routine( &full_command_name ).ok_or_else( ||
       {

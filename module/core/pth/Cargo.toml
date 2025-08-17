@@ -1,6 +1,6 @@
 [package]
 name = "pth"
-version = "0.24.0"
+version = "0.25.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -52,4 +52,4 @@ serde = { version = "1.0.197", optional = true, features = [ "derive" ] }
 camino = { version = "1.1.7", optional = true, features = [] }
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }

@@ -1,6 +1,6 @@
 [package]
 name = "error_tools"
-version = "0.27.0"
+version = "0.32.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -52,5 +52,5 @@ anyhow = { workspace = true, optional = true }
 thiserror = { workspace = true, optional = true }
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }
 # xxx : qqq : review

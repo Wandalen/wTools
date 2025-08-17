@@ -1,10 +1,10 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
-#[derive(Debug, PartialEq, the_module::Former)]
+#[ derive( Debug, PartialEq, the_module::Former ) ]
 pub struct StructWithCustomSetters {
   ordinary: String,
-  #[scalar(setter = false)]
+  #[ scalar( setter = false ) ]
   magic: String,
 }
 
@@ -33,7 +33,7 @@ where
   }
 }
 
-#[test]
+#[ test ]
 fn basic() {
   // ordinary + magic
   let got = StructWithCustomSetters::former().ordinary("val1").magic("val2").form();

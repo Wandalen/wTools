@@ -1,9 +1,9 @@
-#[allow(unused_imports, clippy::wildcard_imports)]
+#[ allow( unused_imports, clippy::wildcard_imports ) ]
 use super::*;
 
-#[doc(inline)]
-#[allow(unused_imports)]
-#[allow(clippy::pub_use)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ allow( clippy::pub_use ) ]
 pub use alloc::collections::btree_set::*;
 
 /// Creates a `BTreeSet` from a list of elements.
@@ -51,8 +51,8 @@ pub use alloc::collections::btree_set::*;
 /// assert_eq!( set.len(), 3 );
 /// ```
 ///
-#[cfg(feature = "collection_constructors")]
-#[macro_export(local_inner_macros)]
+#[ cfg( feature = "collection_constructors" ) ]
+#[ macro_export( local_inner_macros ) ]
 macro_rules! bset
 {
   (
@@ -144,8 +144,8 @@ macro_rules! bset
 /// assert!( s.contains( "value" ) );
 /// ```
 ///
-#[cfg(feature = "collection_into_constructors")]
-#[macro_export(local_inner_macros)]
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ macro_export( local_inner_macros ) ]
 macro_rules! into_bset
 {
   (

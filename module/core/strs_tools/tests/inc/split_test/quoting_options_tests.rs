@@ -3,7 +3,7 @@ use strs_tools::string::split::*;
 
 // Test Matrix ID: Quote_Q_F_PQ_T
 // Tests quoting(false) with preserving_quoting(true).
-#[test]
+#[ test ]
 fn test_quoting_disabled_preserving_quotes_true() {
   let src = "a 'b' c";
   let iter = split()
@@ -23,7 +23,7 @@ fn test_quoting_disabled_preserving_quotes_true() {
 
 // Test Matrix ID: Quote_Q_F_PQ_F
 // Tests quoting(false) with preserving_quoting(false).
-#[test]
+#[ test ]
 fn test_quoting_disabled_preserving_quotes_false() {
   let src = "a 'b' c";
   let iter = split()
@@ -43,7 +43,7 @@ fn test_quoting_disabled_preserving_quotes_false() {
 
 // Test Matrix ID: Quote_Q_T_PQ_T
 // Tests quoting(true) with preserving_quoting(true).
-#[test]
+#[ test ]
 fn test_quoting_enabled_preserving_quotes_true() {
   let src = "a 'b' c";
   let iter = split()
@@ -63,7 +63,7 @@ fn test_quoting_enabled_preserving_quotes_true() {
 
 // Test Matrix ID: Quote_Q_T_PQ_F
 // Tests quoting(true) with preserving_quoting(false).
-#[test]
+#[ test ]
 fn test_quoting_enabled_preserving_quotes_false() {
   let src = "a 'b' c";
   let iter = split()
@@ -80,7 +80,7 @@ fn test_quoting_enabled_preserving_quotes_false() {
 
 // Test Matrix ID: T3.11
 // Description: src="a 'b c' d", del=" ", PE=T, PD=T, S=F, Q=T
-#[test]
+#[ test ]
 fn test_m_t3_11_quoting_preserve_all_no_strip() {
   let src = "a 'b c' d";
   let iter = split()
@@ -104,21 +104,19 @@ fn test_m_t3_11_quoting_preserve_all_no_strip() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
 // Test Matrix ID: T3.12
 // Description: src="a 'b c' d", del=" ", PE=F, PD=F, S=T, Q=T
-#[test]
+#[ test ]
 fn test_m_t3_12_quoting_no_preserve_strip() {
   let src = "a 'b c' d";
   let iter = split()
@@ -145,7 +143,7 @@ fn test_m_t3_12_quoting_no_preserve_strip() {
 
 // Test Matrix ID: T3.13
 // Description: src="a 'b c' d", del=" ", PE=T, PD=T, S=T, Q=T
-#[test]
+#[ test ]
 fn test_m_t3_13_quoting_preserve_all_strip() {
   let src = "a 'b c' d";
   let iter = split()
@@ -169,21 +167,19 @@ fn test_m_t3_13_quoting_preserve_all_strip() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
 // Test Matrix ID: T3.14
 // Description: src="a 'b c' d", del=" ", PE=F, PD=F, S=F, Q=T
-#[test]
+#[ test ]
 fn test_m_t3_14_quoting_no_preserve_no_strip() {
   let src = "a 'b c' d";
   let iter = split()
@@ -205,21 +201,19 @@ fn test_m_t3_14_quoting_no_preserve_no_strip() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
 // Test Matrix ID: T3.15
 // Description: src="a 'b c' d", del=" ", PE=T, PD=T, S=F, Q=F (Quoting disabled)
-#[test]
+#[ test ]
 fn test_m_t3_15_no_quoting_preserve_all_no_strip() {
   let src = "a 'b c' d";
   let iter = split()
@@ -249,7 +243,7 @@ fn test_m_t3_15_no_quoting_preserve_all_no_strip() {
 
 // Test Matrix ID: Inc2.1_Span_Content_1
 // Description: Verify span and raw content for basic quoted string, not preserving quotes.
-#[test]
+#[ test ]
 fn test_span_content_basic_no_preserve() {
   let src = r#"cmd arg1 "hello world" arg2"#;
   let iter = split()
@@ -270,21 +264,19 @@ fn test_span_content_basic_no_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
 // Test Matrix ID: Inc2.1_Span_Content_2
 // Description: Verify span and raw content for basic quoted string, preserving quotes.
-#[test]
+#[ test ]
 fn test_span_content_basic_preserve() {
   let src = r#"cmd arg1 "hello world" arg2"#;
   let iter = split()
@@ -305,21 +297,19 @@ fn test_span_content_basic_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
 // Test Matrix ID: Inc2.1_Span_Content_3
 // Description: Quoted string with internal delimiters, not preserving quotes.
-#[test]
+#[ test ]
 fn test_span_content_internal_delimiters_no_preserve() {
   let src = r#"cmd "val: ue" arg2"#;
   let iter = split()
@@ -339,21 +329,19 @@ fn test_span_content_internal_delimiters_no_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
 // Test Matrix ID: Inc2.1_Span_Content_4
 // Description: Quoted string with escaped inner quotes, not preserving quotes.
-#[test]
+#[ test ]
 fn test_span_content_escaped_quotes_no_preserve() {
   let src = r#"cmd "hello \"world\"" arg2"#;
   let iter = split()
@@ -373,21 +361,19 @@ fn test_span_content_escaped_quotes_no_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
 // Test Matrix ID: Inc2.1_Span_Content_5
 // Description: Empty quoted string, not preserving quotes.
-#[test]
+#[ test ]
 fn test_span_content_empty_quote_no_preserve() {
   let src = r#"cmd "" arg2"#;
   let iter = split()
@@ -407,21 +393,19 @@ fn test_span_content_empty_quote_no_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
 // Test Matrix ID: Inc2.1_Span_Content_6
 // Description: Empty quoted string, preserving quotes.
-#[test]
+#[ test ]
 fn test_span_content_empty_quote_preserve() {
   let src = r#"cmd "" arg2"#;
   let iter = split()
@@ -441,21 +425,19 @@ fn test_span_content_empty_quote_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
 // Test Matrix ID: Inc2.1_Span_Content_7
 // Description: Quoted string at the beginning, not preserving quotes.
-#[test]
+#[ test ]
 fn test_span_content_quote_at_start_no_preserve() {
   let src = r#""hello world" cmd"#;
   let iter = split()
@@ -474,21 +456,19 @@ fn test_span_content_quote_at_start_no_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
 // Test Matrix ID: Inc2.1_Span_Content_8
 // Description: Quoted string at the end, not preserving quotes.
-#[test]
+#[ test ]
 fn test_span_content_quote_at_end_no_preserve() {
   let src = r#"cmd "hello world""#;
   let iter = split()
@@ -507,21 +487,19 @@ fn test_span_content_quote_at_end_no_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
 // Test Matrix ID: Inc2.1_Span_Content_9
 // Description: Unclosed quote, not preserving quotes.
-#[test]
+#[ test ]
 fn test_span_content_unclosed_quote_no_preserve() {
   let src = r#"cmd "hello world"#; // No closing quote
   let iter = split()
@@ -542,21 +520,19 @@ fn test_span_content_unclosed_quote_no_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }
 
 // Test Matrix ID: Inc2.1_Span_Content_10
 // Description: Unclosed quote, preserving quotes.
-#[test]
+#[ test ]
 fn test_span_content_unclosed_quote_preserve() {
   let src = r#"cmd "hello world"#; // No closing quote
   let iter = split()
@@ -575,14 +551,12 @@ fn test_span_content_unclosed_quote_preserve() {
   assert_eq!(
     results.len(),
     expected.len(),
-    "Number of segments mismatch. Actual: {:?}, Expected: {:?}",
-    results,
-    expected
+    "Number of segments mismatch. Actual: {results:?}, Expected: {expected:?}"
   );
   for (i, split_item) in results.iter().enumerate() {
-    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {}", i);
-    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {}", i);
-    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {}", i);
-    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {}", i);
+    assert_eq!(split_item.string, expected[i].0, "String mismatch at index {i}");
+    assert_eq!(split_item.typ, expected[i].1, "Type mismatch at index {i}");
+    assert_eq!(split_item.start, expected[i].2, "Start index mismatch at index {i}");
+    assert_eq!(split_item.end, expected[i].3, "End index mismatch at index {i}");
   }
 }

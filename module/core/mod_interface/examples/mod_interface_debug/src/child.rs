@@ -1,7 +1,7 @@
 mod private
 {
   /// Routine of child module.
-  pub fn inner_is() -> bool
+  #[ must_use ] pub fn inner_is() -> bool
   {
     true
   }

@@ -8,7 +8,6 @@ mod private
   ///
   /// Should not be used directly. Instead use macro [crate::types!].
   ///
-
   #[ macro_export ]
   macro_rules! _pair
   {
@@ -170,7 +169,6 @@ mod private
     /// // let vec_of_i32_in_tuple = type_constructor::Pair::< i32, f32 >::from( [ 13, 13.0 ] );
     /// ```
     ///
-
     #[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
     pub pair Pair : < T1, T2 >;
 
@@ -184,7 +182,6 @@ mod private
     /// let vec_of_i32_in_tuple = type_constructor::HomoPair::< i32 >::from( [ 13, 31 ] );
     /// ```
     ///
-
     #[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
     pub pair HomoPair : < T >;
 

@@ -22,7 +22,6 @@ tests_impls!
       ///
       /// Attribute which is inner.
       ///
-
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
       many Many : mod1::f32;

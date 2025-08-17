@@ -137,7 +137,7 @@ where
   }
 
   #[ inline( always ) ]
-  #[allow(dead_code)]
+  #[ allow( dead_code ) ]
   pub fn new( on_end : Definition::End ) -> Self
   {
     Self::begin( None, None, on_end )
@@ -179,7 +179,7 @@ for TestEnumArgsTupleVariantArgsEnd
 
 /// Manual standalone constructor for `TestEnumArgs::TupleVariantArgs` (takes arg).
 /// Returns Self directly as per Option 2.
-#[allow(clippy::just_underscores_and_digits)] // _0 is conventional for tuple field access
+#[ allow( clippy::just_underscores_and_digits ) ] // _0 is conventional for tuple field access
 pub fn tuple_variant_args( _0 : impl Into< i32 > ) -> TestEnumArgs // Changed return type
 {
   TestEnumArgs::TupleVariantArgs( _0.into() ) // Direct construction

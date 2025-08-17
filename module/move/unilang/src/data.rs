@@ -6,6 +6,7 @@
 mod private
 {
   use crate::error::Error;
+  // Removed strs_tools dependencies - using standard Rust string operations
 
   // use former::Former;
 
@@ -56,6 +57,7 @@ mod private
   /// This struct enables fine-grained control over how arguments behave,
   /// such as whether they are required, accept multiple values, or have
   /// default values.
+  #[allow(clippy::struct_excessive_bools)]
   #[ derive( Debug, Clone, Default, serde::Serialize, serde::Deserialize ) ]
   pub struct ArgumentAttributes
   {
@@ -208,13 +210,23 @@ mod private
           {
             return Err( Error::Registration( "Empty enum choices".to_string() ) );
           }
-          let choices : Vec< String > = inner.split( ',' ).map( | s | s.trim().to_string() ).collect();
+          // Use standard Rust string splitting for enum choices
+          let choices : Vec< String > = inner
+            .split(',')
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty())
+            .collect();
           Ok( Kind::Enum( choices ) )
         },
         s if s.starts_with( "List(" ) && s.ends_with( ')' ) =>
         {
           let inner = s.strip_prefix( "List(" ).unwrap().strip_suffix( ')' ).unwrap();
-          let parts : Vec< &str > = inner.split( ',' ).collect();
+          // Use standard Rust string splitting for list parsing
+          let parts : Vec< String > = inner
+            .split(',')
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty())
+            .collect();
           if parts.is_empty()
           {
             return Err( Error::Registration( "List requires item type".to_string() ) );
@@ -233,7 +245,12 @@ mod private
         s if s.starts_with( "Map(" ) && s.ends_with( ')' ) =>
         {
           let inner = s.strip_prefix( "Map(" ).unwrap().strip_suffix( ')' ).unwrap();
-          let parts : Vec< &str > = inner.split( ',' ).collect();
+          // Use standard Rust string splitting for map parsing
+          let parts : Vec< String > = inner
+            .split(',')
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty())
+            .collect();
           if parts.len() < 2
           {
             return Err( Error::Registration( "Map requires key and value types".to_string() ) );

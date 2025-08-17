@@ -254,7 +254,7 @@ fn write_results
     std::io::Write::write( &mut file, str_legend.as_bytes() )?;
   }
 
-  //final table
+  // final table
   std::io::Write::write(&mut file, format!( "## Summary:\n" ).as_bytes() )?;
   let mut builder = Builder::default();
   let mut headers = vec![ String::from( "mode" ) ];

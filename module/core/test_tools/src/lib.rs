@@ -4,7 +4,8 @@
   html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
 )]
 #![doc(html_root_url = "https://docs.rs/test_tools/latest/test_tools/")]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( doc ), doc = "Testing utilities and tools" ) ]
 // xxx : remove
 //! ```rust
 //! println!("-- doc test: printing Cargo feature environment variables --");
@@ -18,27 +19,27 @@
 // xxx2 : try to repurpose top-level lib.rs fiel for only top level features
 
 /// Namespace with dependencies.
-#[allow(unused_imports)]
-#[cfg(feature = "enabled")]
+#[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
 #[cfg(not(feature = "doctest"))]
 pub mod dependency {
 
   // // zzz : exclude later
   // #[ doc( inline ) ]
   // pub use ::paste;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use ::trybuild;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use ::rustversion;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use ::num_traits;
 
   #[cfg(all(feature = "standalone_build", not(feature = "normal_build")))]
-  #[cfg(feature = "standalone_diagnostics_tools")]
-  #[doc(inline)]
+  #[ cfg( feature = "standalone_diagnostics_tools" ) ]
+  #[ doc( inline ) ]
   pub use ::pretty_assertions;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use super::{
     error_tools,
     collection_tools,
@@ -108,7 +109,7 @@ mod private {}
 // #[ cfg( not( feature = "no_std" ) ) ]
 // pub use test::{ compiletime, helper, smoke_test };
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 #[cfg(not(feature = "doctest"))]
 pub mod test;
 
@@ -116,58 +117,58 @@ pub mod test;
 ///
 /// We don't want to run doctest of included files, because all of the are relative to submodule.
 /// So we disable doctests of such submodules with `#[ cfg( not( doctest ) ) ]`.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 #[cfg(not(feature = "doctest"))]
 // #[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
 #[cfg(all(feature = "standalone_build", not(feature = "normal_build")))]
 // #[ cfg( any( not( doctest ), not( feature = "standalone_build" ) ) ) ]
 mod standalone;
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 #[cfg(not(feature = "doctest"))]
 #[cfg(all(feature = "standalone_build", not(feature = "normal_build")))]
 pub use standalone::*;
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 #[cfg(not(feature = "doctest"))]
 #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
 pub use ::{error_tools, collection_tools, impls_index, mem_tools, typing_tools, diagnostics_tools};
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 #[cfg(not(feature = "doctest"))]
 #[cfg(not(all(feature = "standalone_build", not(feature = "normal_build"))))]
 pub use error_tools::error;
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 #[cfg(not(feature = "doctest"))]
 #[cfg(all(feature = "standalone_build", not(feature = "normal_build")))]
 pub use implsindex as impls_index;
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 #[cfg(not(feature = "doctest"))]
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub use ::{};
 
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 #[cfg(not(feature = "doctest"))]
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 #[cfg(not(feature = "doctest"))]
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use test::own::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use {
     error_tools::{debug_assert_id, debug_assert_identical, debug_assert_ni, debug_assert_not_identical, ErrWith},
     collection_tools::orphan::*, impls_index::orphan::*, mem_tools::orphan::*, typing_tools::orphan::*,
@@ -176,33 +177,33 @@ pub mod own {
 }
 
 /// Shared with parent namespace of the module
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 #[cfg(not(feature = "doctest"))]
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use test::orphan::*;
 }
 
 /// Exposed namespace of the module.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 #[cfg(not(feature = "doctest"))]
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use prelude::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use test::exposed::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use {
     error_tools::{debug_assert_id, debug_assert_identical, debug_assert_ni, debug_assert_not_identical, ErrWith},
     collection_tools::exposed::*, impls_index::exposed::*, mem_tools::exposed::*, typing_tools::exposed::*,
@@ -211,18 +212,18 @@ pub mod exposed {
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 #[cfg(not(feature = "doctest"))]
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use test::prelude::*;
 
   pub use ::rustversion::{nightly, stable};
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use {
     error_tools::{debug_assert_id, debug_assert_identical, debug_assert_ni, debug_assert_not_identical, ErrWith},
     collection_tools::prelude::*, impls_index::prelude::*, mem_tools::prelude::*, typing_tools::prelude::*,

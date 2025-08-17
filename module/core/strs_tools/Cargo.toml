@@ -1,6 +1,6 @@
 [package]
 name = "strs_tools"
-version = "0.24.0"
+version = "0.29.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -25,52 +25,105 @@ features = [ "full" ]
 all-features = false
 
 [features]
+# Default feature set - includes all commonly used features with performance optimizations
 default = [
   "enabled",
   "string_indentation",
   "string_isolate",
-  "string_parse_request",
-  "string_parse_number",
   "string_split",
+  "string_parse_number",
+  "string_parse_request",
   "simd",
+  "compile_time_optimizations",
 ]
+
+# Full feature set - includes everything for maximum functionality
 full = [
   "enabled",
   "string_indentation",
   "string_isolate",
-  "string_parse_request",
-  "string_parse_number",
   "string_split",
+  "string_parse_number",
+  "string_parse_request",
   "simd",
+  "compile_time_optimizations",
+  "specialized_algorithms", # Explicit control over Task 007 algorithms
 ]
 
-# Performance optimization features - enabled by default, disable with --no-default-features
-simd = ["memchr", "aho-corasick", "bytecount", "lazy_static"]
+# ========================================
+# CORE FEATURES (granular control)
+# ========================================
 
+# Minimal functionality - required for all other features
+enabled = [ "strs_tools_meta/enabled" ]
+
+# String indentation functionality
+string_indentation = ["enabled"]
+
+# String isolation functionality (left/right/between extraction)
+string_isolate = ["enabled"]
+
+# String splitting functionality (core splitting algorithms)
+string_split = ["enabled"]
+
+# Number parsing functionality
+string_parse_number = ["dep:lexical", "enabled"]
+
+# Request parsing functionality (depends on string_split + string_isolate)
+string_parse_request = ["string_split", "string_isolate", "enabled"]
+
+# ========================================
+# PERFORMANCE FEATURES (optional optimizations)
+# ========================================
+
+# SIMD acceleration for all applicable algorithms
+# When enabled: uses vectorized operations, runtime CPU detection
+# When disabled: uses scalar fallbacks, smaller binary size
+simd = [
+  "dep:memchr", "memchr/std",                                    # memchr with runtime AVX2 detection
+  "dep:aho-corasick", "aho-corasick/std", "aho-corasick/perf-literal", # aho-corasick with vectorized prefilters
+  "dep:bytecount",                                               # SIMD byte counting
+  "dep:lazy_static"                                              # Required for SIMD static initialization
+]
+
+# Task 007 specialized algorithms (SingleChar, Boyer-Moore, smart selection)
+specialized_algorithms = ["string_split"] # Requires string_split as base functionality
+
+# Compile-time pattern optimizations using proc macros
+compile_time_optimizations = ["dep:strs_tools_meta"]
+
+# ========================================
+# ENVIRONMENT FEATURES (platform control)
+# ========================================
+
+# no_std compatibility - disables std-dependent features
 no_std = []
-use_alloc = [ "no_std" ]
-enabled = []
 
-# Core features
-indentation = [ "enabled" ]
-isolate = [ "enabled" ]
-parse_request = [ "split", "isolate", "enabled" ]
-parse_number = [ "lexical", "enabled" ]
-split = [ "enabled" ]
+# Enables alloc-based functionality in no_std environments
+use_alloc = ["no_std"]
 
-# Feature aliases for backwards compatibility
-string_indentation = [ "indentation" ]
-string_isolate = [ "isolate" ]
-string_parse_request = [ "parse_request" ]
-string_parse_number = [ "parse_number" ]
-string_parse = [ "parse_request" ]
-string_split = [ "split" ]
+# ========================================
+# COMPATIBILITY ALIASES (short names for convenience)
+# ========================================
+
+# Short aliases for common features
+indentation = ["string_indentation"]
+isolate = ["string_isolate"]
+split = ["string_split"]
+parse_number = ["string_parse_number"]
+parse_request = ["string_parse_request"]
+string_parse = ["string_parse_request"] # Additional alias
 
 [dependencies]
 lexical = { workspace = true, optional = true }
 component_model_types = { workspace = true, features = ["enabled"] }
 
+# Compile-time optimization macros
+strs_tools_meta = { workspace = true, optional = true }
+
 # SIMD optimization dependencies (optional)
+# When simd feature is disabled, these dependencies are not included at all
+# When simd feature is enabled, these dependencies use their SIMD-optimized features
 memchr = { workspace = true, optional = true }
 aho-corasick = { workspace = true, optional = true }
 bytecount = { workspace = true, optional = true }
@@ -78,14 +131,25 @@ lazy_static = { version = "1.4", optional = true }
 
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }
 criterion = { version = "0.5", features = ["html_reports"] }
+ctor = { version = "0.2" }
 
 # Disabled due to infinite loop issues
 [[bench]]
 name = "bottlenecks"
 harness = false
 path = "benchmarks/bottlenecks.rs"
+
+[[bench]]
+name = "zero_copy_comparison"
+harness = false
+path = "benchmarks/zero_copy_comparison.rs"
+
+[[bench]]
+name = "compile_time_optimization_benchmark"
+harness = false
+path = "benchmarks/compile_time_optimization_benchmark.rs"
 
 [[bin]]
 name = "simd_test"

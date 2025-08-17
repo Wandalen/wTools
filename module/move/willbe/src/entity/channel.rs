@@ -8,7 +8,7 @@ mod private
     fmt::Formatter,
     ffi::OsString,
   };
-  use pth::Path;
+  use std::path::Path;
   use collection_tools::collection::HashSet;
   use error::untyped::{ Error };
 

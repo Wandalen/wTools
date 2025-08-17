@@ -4,7 +4,7 @@
 
 include!( "./test_helpers.rs" );
 
-#[test]
+#[ test ]
 fn test_unescape_str_visibility()
 {
   let input = r#"abc\""#;

@@ -27,10 +27,10 @@ use super::{ Split, SplitType };
 pub struct SIMDSplitIterator<'a> 
 {
   input: &'a str,
-  patterns: Arc< AhoCorasick >,
+  patterns: Arc<  AhoCorasick  >,
   position: usize,
-  #[allow(dead_code)] // Used for debugging and future enhancements
-  delimiter_patterns: Vec< String >,
+  #[ allow( dead_code ) ] // Used for debugging and future enhancements
+  delimiter_patterns: Vec<  String  >,
   last_was_delimiter: bool,
   finished: bool,
 }
@@ -47,10 +47,10 @@ impl<'a> SIMDSplitIterator<'a>
   /// 
   /// Returns `aho_corasick::BuildError` if the pattern compilation fails or
   /// if no valid delimiters are provided.
-  pub fn new( input: &'a str, delimiters: &[ &str ] ) -> Result< Self, aho_corasick::BuildError > 
+  pub fn new( input: &'a str, delimiters: &[ &str ] ) -> Result<  Self, aho_corasick::BuildError  > 
   {
     // Filter out empty delimiters to avoid matching issues
-    let filtered_delimiters: Vec< &str > = delimiters
+    let filtered_delimiters: Vec<  &str  > = delimiters
       .iter()
       .filter( |&d| !d.is_empty() )
       .copied()
@@ -85,8 +85,8 @@ impl<'a> SIMDSplitIterator<'a>
   #[ must_use ]
   pub fn from_cached_patterns( 
     input: &'a str, 
-    patterns: Arc< AhoCorasick >, 
-    delimiter_patterns: Vec< String > 
+    patterns: Arc<  AhoCorasick  >, 
+    delimiter_patterns: Vec<  String  > 
   ) -> Self 
   {
     Self {
@@ -105,7 +105,7 @@ impl<'a> Iterator for SIMDSplitIterator<'a>
 {
   type Item = Split<'a>;
   
-  fn next( &mut self ) -> Option< Self::Item > 
+  fn next( &mut self ) -> Option<  Self::Item  > 
   {
     if self.finished || self.position > self.input.len() 
     {
@@ -187,8 +187,8 @@ impl<'a> Iterator for SIMDSplitIterator<'a>
 #[ cfg( feature = "simd" ) ]
 use std::sync::LazyLock;
 
-#[cfg(feature = "simd")]
-static PATTERN_CACHE: LazyLock<RwLock<HashMap<Vec<String>, Arc<AhoCorasick>>>> = 
+#[ cfg( feature = "simd" ) ]
+static PATTERN_CACHE: LazyLock<RwLock<HashMap<Vec< String >, Arc< AhoCorasick >>>> = 
   LazyLock::new(|| RwLock::new(HashMap::new()));
 
 /// Retrieves or creates a cached aho-corasick pattern automaton.
@@ -204,9 +204,9 @@ static PATTERN_CACHE: LazyLock<RwLock<HashMap<Vec<String>, Arc<AhoCorasick>>>> =
 /// 
 /// Panics if the pattern cache mutex is poisoned due to a panic in another thread.
 #[ cfg( feature = "simd" ) ]
-pub fn get_or_create_cached_patterns( delimiters: &[ &str ] ) -> Result< Arc< AhoCorasick >, aho_corasick::BuildError > 
+pub fn get_or_create_cached_patterns( delimiters: &[ &str ] ) -> Result< Arc<  AhoCorasick  >, aho_corasick::BuildError > 
 {
-  let delimiter_key: Vec< String > = delimiters
+  let delimiter_key: Vec<  String  > = delimiters
     .iter()
     .filter( |&d| !d.is_empty() )
     .map( |s| (*s).to_string() )
@@ -257,7 +257,7 @@ pub fn get_or_create_cached_patterns( delimiters: &[ &str ] ) -> Result< Arc< Ah
 pub fn simd_split_cached<'a>( input: &'a str, delimiters: &[ &str ] ) -> Result< SIMDSplitIterator<'a>, aho_corasick::BuildError > 
 {
   let patterns = get_or_create_cached_patterns( delimiters )?;
-  let delimiter_patterns: Vec< String > = delimiters
+  let delimiter_patterns: Vec<  String  > = delimiters
     .iter()
     .filter( |&d| !d.is_empty() )
     .map( |s| (*s).to_string() )
@@ -273,7 +273,7 @@ pub struct SIMDSplitIterator<'a>( std::marker::PhantomData< &'a str > );
 #[ cfg( not( feature = "simd" ) ) ]
 impl<'a> SIMDSplitIterator<'a> 
 {
-  pub fn new( _input: &'a str, _delimiters: &[ &str ] ) -> Result< Self, &'static str > 
+  pub fn new( _input: &'a str, _delimiters: &[ &str ] ) -> Result<  Self, &'static str  > 
   {
     Err( "SIMD feature not enabled" )
   }
@@ -284,7 +284,7 @@ impl<'a> Iterator for SIMDSplitIterator<'a>
 {
   type Item = Split<'a>;
   
-  fn next( &mut self ) -> Option< Self::Item > 
+  fn next( &mut self ) -> Option<  Self::Item  > 
   {
     None
   }

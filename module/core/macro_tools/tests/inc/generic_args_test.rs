@@ -3,7 +3,7 @@ use the_module::parse_quote;
 
 //
 
-#[test]
+#[ test ]
 fn assumptions() {
 
   // let code : syn::ItemStruct = syn::parse_quote!
@@ -40,7 +40,7 @@ fn assumptions() {
 
 //
 
-#[test]
+#[ test ]
 fn into_generic_args_empty_generics() {
   use syn::{Generics, AngleBracketedGenericArguments, token};
   use macro_tools::IntoGenericArgs;
@@ -64,7 +64,7 @@ fn into_generic_args_empty_generics() {
 }
 
 //
-#[test]
+#[ test ]
 fn into_generic_args_single_type_parameter() {
   use syn::{Generics, AngleBracketedGenericArguments, parse_quote};
   use macro_tools::IntoGenericArgs;
@@ -89,7 +89,7 @@ fn into_generic_args_single_type_parameter() {
   );
 }
 
-#[test]
+#[ test ]
 fn into_generic_args_single_lifetime_parameter() {
   use syn::{Generics, AngleBracketedGenericArguments, GenericArgument, parse_quote, punctuated::Punctuated};
   use macro_tools::IntoGenericArgs;
@@ -121,7 +121,7 @@ fn into_generic_args_single_lifetime_parameter() {
   );
 }
 
-#[test]
+#[ test ]
 fn into_generic_args_single_const_parameter() {
   use syn::{
     Generics, AngleBracketedGenericArguments, GenericArgument, Expr, ExprPath, Ident,
@@ -167,7 +167,7 @@ fn into_generic_args_single_const_parameter() {
 
 //
 
-#[test]
+#[ test ]
 fn into_generic_args_mixed_parameters() {
   use syn::{
     Generics, AngleBracketedGenericArguments, GenericArgument, Type, TypePath, Expr, ExprPath, Ident, Lifetime,
@@ -224,7 +224,7 @@ fn into_generic_args_mixed_parameters() {
 
 // = generic_args::merge
 
-#[test]
+#[ test ]
 fn merge_empty_arguments() {
   use syn::AngleBracketedGenericArguments;
   use macro_tools::generic_args;
@@ -239,7 +239,7 @@ fn merge_empty_arguments() {
 
 //
 
-#[test]
+#[ test ]
 fn merge_one_empty_one_non_empty() {
   use syn::AngleBracketedGenericArguments;
   use macro_tools::generic_args;
@@ -254,7 +254,7 @@ fn merge_one_empty_one_non_empty() {
 
 //
 
-#[test]
+#[ test ]
 fn merge_duplicate_arguments() {
   use syn::AngleBracketedGenericArguments;
   use macro_tools::generic_args;
@@ -269,7 +269,7 @@ fn merge_duplicate_arguments() {
 
 //
 
-#[test]
+#[ test ]
 fn merge_large_number_of_arguments() {
   use syn::AngleBracketedGenericArguments;
   use macro_tools::generic_args;
@@ -288,7 +288,7 @@ fn merge_large_number_of_arguments() {
 
 //
 
-#[test]
+#[ test ]
 fn merge_complex_generic_constraints() {
   use syn::AngleBracketedGenericArguments;
   use macro_tools::generic_args;
@@ -303,7 +303,7 @@ fn merge_complex_generic_constraints() {
 
 //
 
-#[test]
+#[ test ]
 fn merge_different_orders_of_arguments() {
   use syn::AngleBracketedGenericArguments;
   use macro_tools::generic_args;
@@ -318,7 +318,7 @@ fn merge_different_orders_of_arguments() {
 
 //
 
-#[test]
+#[ test ]
 fn merge_interaction_with_lifetimes_and_constants() {
   use syn::AngleBracketedGenericArguments;
   use macro_tools::generic_args;

@@ -1,6 +1,6 @@
 //! Purpose: Provides a manual implementation of constructors and `FormingEnd` for an enum
 //! with unnamed (tuple) variants that have shared generic parameters and bounds, using the
-//! default subform behavior, to serve as a reference for verifying the `#[derive(Former)]`
+//! default subform behavior, to serve as a reference for verifying the `#[ derive( Former ) ]`
 //! macro's behavior.
 //!
 //! Coverage:

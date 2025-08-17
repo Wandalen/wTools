@@ -1,6 +1,6 @@
 use super::*;
 
-#[derive(Debug, Default, PartialEq, component_model::ComponentFrom)]
+#[ derive( Debug, Default, PartialEq, component_model::ComponentFrom ) ]
 struct TupleStruct(i32, String);
 
 //

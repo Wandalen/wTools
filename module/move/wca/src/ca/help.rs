@@ -47,7 +47,7 @@ mod private
     #[ former( default = String::new() ) ]
     pub command_prefix : String,
     /// Show help for the specified commands
-    pub for_commands : Vec< &'a Command >,
+    pub for_commands : Vec<  &'a Command  >,
     /// Reresents how much information to display for the subjects
     ///
     /// - `None` - nothing
@@ -114,7 +114,7 @@ mod private
         LevelOfDetail::Detailed => command.subjects.iter().map( | v |
         {
           format!( "< {}{:?} >", if v.optional { "?" } else { "" }, v.kind )
-        }).collect::< Vec< _ > >().join( " " ),
+        }).collect::< Vec<  _  > >().join( " " ),
       };
       let properties = match o.property_detailing
       {
@@ -124,7 +124,7 @@ mod private
         LevelOfDetail::Detailed => command.properties( dictionary.order ).iter().map( | ( n, v ) |
         {
           format!( "< {}:{}{:?} >", if v.optional { "?" } else { "" }, n, v.kind )
-        }).collect::< Vec< _ > >().join( " " ),
+        }).collect::< Vec<  _  > >().join( " " ),
       };
 
       let footer = if o.with_footer
@@ -344,13 +344,13 @@ mod private
     // fn dot_command_help( &self, helper : &HelpGeneratorFn, grammar : &mut Dictionary )
     // {
     //   // generate commands names
-    //   let commands : Vec< _ > = grammar.commands.iter().map( |( name, cmd )| ( format!( "help.{name}" ), cmd.clone() ) ).collect();
+    //   let commands : Vec<  _  > = grammar.commands.iter().map( |( name, cmd )| ( format!( "help.{name}" ), cmd.clone() ) ).collect();
     //
     //   // generate Commands grammar
     //   let grammar_helps = commands
     //   .iter()
     //   .map( |( help_name, _ )| Command::former().hint( "prints full information about a specified command" ).phrase( help_name ).form() )
-    //   .collect::< Vec< _ > >();
+    //   .collect::< Vec<  _  > >();
     //
     //   // add commands to Verifier
     //   for cmd in grammar_helps

@@ -52,16 +52,40 @@ pretty_assertions = { workspace = true, optional = true }
 
 [dev-dependencies]
 trybuild = "1.0.106"
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }
 strip-ansi-escapes = "0.1.1"
+serde_json = "1.0"
 
 
 
+
+[[example]]
+name = "001_basic_runtime_assertions"
+required-features = ["enabled"]
+
+[[example]]
+name = "002_better_error_messages"
+required-features = ["enabled"]
+
+[[example]]
+name = "003_compile_time_checks"
+required-features = ["enabled"]
+
+[[example]]
+name = "004_memory_layout_validation"
+required-features = ["enabled"]
+
+[[example]]
+name = "005_debug_variants"
+required-features = ["enabled"]
+
+[[example]]
+name = "006_real_world_usage"
+required-features = ["enabled"]
 
 [[test]]
 name = "trybuild"
 harness = false
-
 
 [[test]]
 name = "runtime_assertion_tests"

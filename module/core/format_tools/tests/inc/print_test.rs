@@ -28,7 +28,7 @@ pub struct TestObject
   pub id : String,
   pub created_at : i64,
   pub file_ids : Vec< String >,
-  pub tools : Option< Vec< HashMap< String, String > > >,
+  pub tools : Option< Vec< HashMap<  String, String  > > >,
 }
 
 impl Fields< &'static str, MaybeAs< '_, str, WithRef > >

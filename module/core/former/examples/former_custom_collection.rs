@@ -20,12 +20,12 @@ fn main() {}
   feature = "derive_former",
   any(feature = "use_alloc", not(feature = "no_std"))
 ))]
-#[allow(clippy::too_many_lines)]
+#[ allow( clippy::too_many_lines ) ]
 fn main() {
   use collection_tools::HashSet;
 
   // Custom collection that logs additions.
-  #[derive(Debug, PartialEq)]
+  #[ derive( Debug, PartialEq ) ]
   pub struct LoggingSet<K>
   where
     K: core::cmp::Eq + core::hash::Hash,
@@ -38,7 +38,7 @@ fn main() {
   where
     K: core::cmp::Eq + core::hash::Hash,
   {
-    #[inline(always)]
+    #[ inline( always ) ]
     fn default() -> Self {
       Self {
         set: HashSet::default(), // Initialize the internal HashSet.
@@ -80,7 +80,7 @@ fn main() {
     type Entry = K;
     type Val = K;
 
-    #[inline(always)]
+    #[ inline( always ) ]
     fn entry_to_val(e: Self::Entry) -> Self::Val {
       e // Direct mapping of entries to values.
     }
@@ -91,7 +91,7 @@ fn main() {
   where
     K: core::cmp::Eq + core::hash::Hash,
   {
-    #[inline(always)]
+    #[ inline( always ) ]
     fn add(&mut self, e: Self::Entry) -> bool {
       self.set.insert(e) // Log the addition and add the element to the internal HashSet.
     }
@@ -118,7 +118,7 @@ fn main() {
     K: core::cmp::Eq + core::hash::Hash,
   {
     type Entry = K;
-    #[inline(always)]
+    #[ inline( always ) ]
     fn val_to_entry(val: K) -> Self::Entry {
       val // Direct conversion of value to entry.
     }
@@ -149,7 +149,7 @@ fn main() {
   // Definitions related to the type settings for the LoggingSet, which detail how the collection should behave with former.
 
   /// Holds generic parameter types for forming operations related to `LoggingSet`.
-  #[derive(Debug, Default)]
+  #[ derive( Debug, Default ) ]
   pub struct LoggingSetDefinitionTypes<K, Context = (), Formed = LoggingSet<K>> {
     _phantom: core::marker::PhantomData<(K, Context, Formed)>,
   }
@@ -167,7 +167,7 @@ fn main() {
   // = definition
 
   /// Provides a complete definition for `LoggingSet` including the end condition of the forming process.
-  #[derive(Debug, Default)]
+  #[ derive( Debug, Default ) ]
   pub struct LoggingSetDefinition<K, Context = (), Formed = LoggingSet<K>, End = former::ReturnStorage> {
     _phantom: core::marker::PhantomData<(K, Context, Formed, End)>,
   }
@@ -247,9 +247,9 @@ fn main() {
   // == use custom collection
 
   /// Parent required for the template.
-  #[derive(Debug, Default, PartialEq, former::Former)]
+  #[ derive( Debug, Default, PartialEq, former::Former ) ]
   pub struct Parent {
-    #[subform_collection( definition = LoggingSetDefinition )]
+    #[ subform_collection( definition = LoggingSetDefinition ) ]
     children: LoggingSet<i32>,
   }
 

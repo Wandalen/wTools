@@ -85,4 +85,4 @@ impls_index = { workspace = true }
 # # diagnostics_tools = { workspace = true, features = [ "full" ] } # Already added above
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }

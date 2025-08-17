@@ -2,13 +2,13 @@
 // #![ allow( dead_code ) ]
 
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use collection_tools::LinkedList;
 use the_module::LinkedListExt;
 
 //
 
-#[test]
+#[ test ]
 fn add() {
   // explicit with CollectionFormer
 
@@ -64,7 +64,7 @@ fn add() {
 
 //
 
-#[test]
+#[ test ]
 fn replace() {
   let got: LinkedList<String> = the_module::LinkedListFormer::new(former::ReturnStorage)
     .add("x")
@@ -76,7 +76,7 @@ fn replace() {
 
 //
 
-#[test]
+#[ test ]
 fn entity_to() {
   let got = <LinkedList<i32> as former::EntityToFormer<
     former::LinkedListDefinition<i32, (), LinkedList<i32>, former::ReturnPreformed>,
@@ -102,31 +102,31 @@ fn entity_to() {
   a_id!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn entry_to_val() {
   let got = former::EntryToVal::<LinkedList<i32>>::entry_to_val(13);
   let exp = 13i32;
   a_id!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn val_to_entry() {
   let got = former::ValToEntry::<LinkedList<i32>>::val_to_entry(13);
   let exp = 13;
   a_id!(got, exp);
 }
 
-#[test]
+#[ test ]
 fn subformer() {
   /// Parameter description.
-  #[derive(Debug, Default, PartialEq, the_module::Former)]
+  #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
   pub struct Child {
     name: String,
     data: bool,
   }
 
   /// Parent required for the template.
-  #[derive(Debug, Default, PartialEq, the_module::Former)]
+  #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
   pub struct Parent {
     #[ subform_collection( definition = former::LinkedListDefinition ) ]
     children: LinkedList<Child>,

@@ -1,23 +1,23 @@
 //! Test for `tuple_single_field_subform` handler
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
 // Helper struct that derives Former for subform testing
-#[derive(Debug, PartialEq, Default, Clone, Former)]
+#[ derive( Debug, PartialEq, Default, Clone, Former ) ]
 pub struct InnerStruct {
   pub value: i64,
 }
 
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 pub enum TupleSingleSubformEnum
 {
-  #[subform_scalar]
+  #[ subform_scalar ]
   Variant(InnerStruct),
 }
 
-#[test]
+#[ test ]
 fn tuple_single_subform_test()
 {
   // Using fixed handler approach with ._0() indexed setter
@@ -32,7 +32,7 @@ fn tuple_single_subform_test()
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn tuple_single_subform_defaults_test()
 {
   // Test using default values with fixed handler

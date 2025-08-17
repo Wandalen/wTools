@@ -39,7 +39,7 @@ fn test_command_with_dot_prefix_and_file_path_with_dot_slash()
       assert_eq!(instruction.positional_arguments.len(), 0, "Should have no positional arguments");
     },
     Err(e) => {
-      panic!("Parsing should succeed but failed with error: {:?}", e);
+      panic!("Parsing should succeed but failed with error: {e:?}");
     }
   }
 }
@@ -64,15 +64,15 @@ fn test_command_with_dot_prefix_and_various_file_paths()
     match result {
       Ok(instruction) => {
         let command_name = instruction.command_path_slices.join(".");
-        assert_eq!(command_name, "run_file", "Command name should be 'run_file' for input: {}", input);
+        assert_eq!(command_name, "run_file", "Command name should be 'run_file' for input: {input}");
         assert_eq!(
           instruction.named_arguments.get("file").unwrap().value,
           expected_path,
-          "File path should be correctly parsed for input: {}", input
+          "File path should be correctly parsed for input: {input}"
         );
       },
       Err(e) => {
-        panic!("Parsing should succeed for '{}' but failed with error: {:?}", input, e);
+        panic!("Parsing should succeed for '{input}' but failed with error: {e:?}");
       }
     }
   }
@@ -103,7 +103,7 @@ fn test_file_path_does_not_interfere_with_command_parsing()
       );
     },
     Err(e) => {
-      panic!("Parsing should succeed but failed with error: {:?}", e);
+      panic!("Parsing should succeed but failed with error: {e:?}");
     }
   }
 }
@@ -128,5 +128,5 @@ fn test_documentation_of_file_path_parsing_requirements()
   let should_parse_successfully = true;
   
   assert!(should_parse_successfully, 
-    "Input '{}' should parse successfully with proper file path handling", problematic_input);
+    "Input '{problematic_input}' should parse successfully with proper file path handling");
 }

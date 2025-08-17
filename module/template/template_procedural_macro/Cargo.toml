@@ -60,5 +60,5 @@ procedural_macro_meta = { workspace = true }
 procedural_macro_runtime = { workspace = true }
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }
 # trybuild = { version = "~1.0", features = [ "diff" ] }

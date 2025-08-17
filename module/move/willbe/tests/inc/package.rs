@@ -173,14 +173,6 @@ members = [
           }
           eprintln!("macro dependency {} not found. required for {}", name, package.name);
         }
-        Dependency::Normal { name, path, .. } => {
-          if let Some(package) = self.find(&name) {
-            if let Some(real_path) = &package.path {
-              let real_path = real_path.strip_prefix(self.path.join("members")).unwrap_or(real_path);
-              *path = Some(real_path.into());
-            }
-          }
-        }
         Dependency::Dev { name, is_macro, .. } if *is_macro => {
           if let Some(package) = self.find(&name) {
             if let Some(path) = &package.path {
@@ -190,7 +182,7 @@ members = [
           }
           eprintln!("macro dev-dependency {} not found. required for {}", name, package.name);
         }
-        Dependency::Dev { name, path, .. } => {
+        Dependency::Normal { name, path, .. } | Dependency::Dev { name, path, .. } => {
           if let Some(package) = self.find(&name) {
             if let Some(real_path) = &package.path {
               let real_path = real_path.strip_prefix(self.path.join("members")).unwrap_or(real_path);

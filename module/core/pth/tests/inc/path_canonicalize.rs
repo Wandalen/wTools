@@ -1,9 +1,9 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 use std::path::PathBuf;
 use the_module::path;
 
-#[test]
+#[ test ]
 fn assumptions() {
 
   // assert_eq!( PathBuf::from( "c:/src/" ).is_absolute(), false ); // qqq : xxx : this assumption is false on linux
@@ -12,7 +12,7 @@ fn assumptions() {
   // assert_eq!( PathBuf::from( "/c/src/" ).is_absolute(), true ); // qqq : xxx : this assumption is false, too
 }
 
-#[test]
+#[ test ]
 fn basic() {
   let got = path::canonicalize(PathBuf::from("src"));
   let exp = PathBuf::from("src");

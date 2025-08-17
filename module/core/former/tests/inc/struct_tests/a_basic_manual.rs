@@ -1,7 +1,7 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
-#[derive(Debug, PartialEq)]
+#[ derive( Debug, PartialEq ) ]
 pub struct Struct1 {
   pub int_1: i32,
 }
@@ -10,9 +10,9 @@ pub struct Struct1 {
 
 // = formed
 
-#[automatically_derived]
+#[ automatically_derived ]
 impl Struct1 {
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn former() -> Struct1Former<Struct1FormerDefinition<(), Struct1, former::ReturnPreformed>> {
     Struct1Former::<Struct1FormerDefinition<(), Struct1, former::ReturnPreformed>>::new(former::ReturnPreformed)
   }
@@ -45,7 +45,7 @@ impl<Context, Formed> former::EntityToDefinitionTypes<Context, Formed> for Struc
 
 // = definition types
 
-#[derive(Debug)]
+#[ derive( Debug ) ]
 // pub struct Struct1FormerDefinitionTypes< Context = (), Formed = Struct1 >
 pub struct Struct1FormerDefinitionTypes<Context, Formed> {
   _phantom: core::marker::PhantomData<(Context, Formed)>,
@@ -67,7 +67,7 @@ impl<Context, Formed> former::FormerDefinitionTypes for Struct1FormerDefinitionT
 
 // = definition
 
-#[derive(Debug)]
+#[ derive( Debug ) ]
 // pub struct Struct1FormerDefinition< Context = (), Formed = Struct1, End = former::ReturnPreformed >
 pub struct Struct1FormerDefinition<Context, Formed, End> {
   _phantom: core::marker::PhantomData<(Context, Formed, End)>,
@@ -102,7 +102,7 @@ pub struct Struct1FormerStorage {
 }
 
 impl ::core::default::Default for Struct1FormerStorage {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn default() -> Self {
     Self {
       int_1: ::core::option::Option::None,
@@ -140,8 +140,8 @@ impl former::StoragePreform for Struct1FormerStorage {
         ::core::marker::PhantomData::<i32>.maybe_default()
       }
     };
-    let result = Struct1 { int_1 };
-    result
+    
+    Struct1 { int_1 }
   }
 }
 
@@ -160,23 +160,23 @@ where
   on_end: ::core::option::Option<Definition::End>,
 }
 
-#[automatically_derived]
+#[ automatically_derived ]
 impl<Definition> Struct1Former<Definition>
 where
   Definition: former::FormerDefinition<Storage = Struct1FormerStorage>,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn perform(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
-    let result = self.form();
-    result
+    
+    self.form()
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn new(on_end: Definition::End) -> Self {
     Self::begin_coercing(None, None, on_end)
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn new_coercing<IntoEnd>(end: IntoEnd) -> Self
   where
     IntoEnd: Into<Definition::End>,
@@ -184,7 +184,7 @@ where
     Self::begin_coercing(None, None, end)
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn begin(
     mut storage: core::option::Option<Definition::Storage>,
     context: core::option::Option<Definition::Context>,
@@ -200,7 +200,7 @@ where
     }
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn begin_coercing<IntoEnd>(
     mut storage: core::option::Option<Definition::Storage>,
     context: core::option::Option<Definition::Context>,
@@ -219,12 +219,12 @@ where
     }
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn form(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
     self.end()
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn end(mut self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed {
     let on_end = self.on_end.take().unwrap();
     let mut context = self.context.take();
@@ -232,7 +232,7 @@ where
     former::FormingEnd::<Definition::Types>::call(&on_end, self.storage, context)
   }
 
-  #[inline]
+  #[ inline ]
   pub fn int_1<Src>(mut self, src: Src) -> Self
   where
     Src: ::core::convert::Into<i32>,
@@ -262,7 +262,7 @@ where
   Definition::Context: 'a,
   Definition::End: 'a,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn former_begin(
     storage: core::option::Option<Definition::Storage>,
     context: core::option::Option<Definition::Context>,

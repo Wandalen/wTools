@@ -218,7 +218,7 @@ impl TableOutputFormat for Table
     let wrapped_text = text_wrap
     (
       filtered_data,
-      x.col_descriptors.iter().map( | c | c.width ).collect::< Vec< usize > >(),
+      x.col_descriptors.iter().map( | c | c.width ).collect::< Vec<  usize  > >(),
       if self.max_width == 0 { 0 } else { self.max_width - visual_elements_width }, 
       columns_nowrap_width 
     );

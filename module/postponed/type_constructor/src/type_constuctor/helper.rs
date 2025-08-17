@@ -8,7 +8,6 @@ mod private
   ///
   /// Do not use manually.
   ///
-
   #[ cfg( feature = "make" ) ]
   #[ macro_export ]
   macro_rules! _if_make
@@ -24,7 +23,6 @@ mod private
   ///
   /// Do not use manually.
   ///
-
   #[ cfg( not( feature = "make" ) ) ]
   #[ macro_export ]
   macro_rules! _if_make

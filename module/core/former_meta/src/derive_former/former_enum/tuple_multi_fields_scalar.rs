@@ -13,9 +13,9 @@
 //! ## Key Behavioral Characteristics
 //!
 //! ### Attribute-Driven Activation
-//! - **`#[scalar]` Required**: Multi-field tuple variants require explicit `#[scalar]` attribute
-//! - **Default Behavior**: Without `#[scalar]`, these variants get implicit variant formers
-//! - **`#[subform_scalar]` Conflict**: Cannot be combined with `#[subform_scalar]` (compile error)
+//! - **`#[ scalar ]` Required**: Multi-field tuple variants require explicit `#[ scalar ]` attribute
+//! - **Default Behavior**: Without `#[ scalar ]`, these variants get implicit variant formers
+//! - **`#[ subform_scalar ]` Conflict**: Cannot be combined with `#[ subform_scalar ]` (compile error)
 //! - **Field-Level Attributes**: Individual field attributes respected for constructor arguments
 //!
 //! ### Generated Method Characteristics
@@ -71,14 +71,14 @@
 //!
 //! ```rust,ignore
 //! // Manual Implementation Pitfall:
-//! fn variant(s: String, v: Vec<i32>) -> MyEnum {  // ❌ Too restrictive
+//! fn variant(s: String, v: Vec< i32 >) -> MyEnum {  // ❌ Too restrictive
 //!     MyEnum::Variant(s, v)
 //! }
 //!
 //! // Generated Solution:
 //! fn variant(
 //!     _0: impl Into<String>,     // ✅ Accepts &str, String, etc.
-//!     _1: impl Into<Vec<i32>>    // ✅ Accepts various collection types
+//!     _1: impl Into<Vec< i32 >>    // ✅ Accepts various collection types
 //! ) -> MyEnum {
 //!     MyEnum::Variant(_0.into(), _1.into())
 //! }
@@ -86,8 +86,8 @@
 //!
 //! ### 5. Standalone Constructor Integration (Prevention)
 //! **Issue Resolved**: Manual implementations not supporting standalone constructor generation
-//! **Root Cause**: `#[standalone_constructors]` attribute requires special handling for multi-field variants
-//! **Solution**: Conditional generation of top-level constructor functions with `#[arg_for_constructor]` support
+//! **Root Cause**: `#[ standalone_constructors ]` attribute requires special handling for multi-field variants
+//! **Solution**: Conditional generation of top-level constructor functions with `#[ arg_for_constructor ]` support
 //! **Prevention**: Complete integration with attribute-driven constructor generation system
 //!
 //! ## Generated Code Architecture
@@ -107,7 +107,7 @@
 //!
 //! ### Standalone Constructor (Optional)
 //! ```rust,ignore
-//! // Generated when #[standalone_constructors] is present
+//! // Generated when #[ standalone_constructors ] is present
 //! pub fn variant(
 //!     _0: impl Into<T>,
 //!     _1: impl Into<U>,
@@ -127,7 +127,7 @@ use super::*;
 use macro_tools::{ Result, quote::quote, generic_params::GenericsRef };
 use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 
-/// Generates direct scalar constructor for multi-field tuple enum variants with `#[scalar]` attribute.
+/// Generates direct scalar constructor for multi-field tuple enum variants with `#[ scalar ]` attribute.
 ///
 /// This function creates efficient direct constructors for tuple variants with multiple unnamed fields,
 /// implementing comprehensive pitfall prevention for parameter handling, generic propagation,
@@ -165,7 +165,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// ## Returns
 /// - `Ok(TokenStream)`: Generated direct constructor method for the multi-field tuple variant
 /// - `Err(syn::Error)`: If variant processing fails due to invalid configuration
-pub fn handle( _ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
+pub fn handle( _ctx : &mut EnumVariantHandlerContext<'_> ) -> Result<  proc_macro2::TokenStream  >
 {
   let variant_name = & _ctx.variant.ident;
   let method_name = variant_to_method_name(variant_name);
@@ -201,7 +201,7 @@ pub fn handle( _ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro
   if _ctx.struct_attrs.standalone_constructors.value(false) {
     // For scalar variants, always generate constructor.
     // Check if we should use only fields marked with arg_for_constructor, or all fields
-    let constructor_fields: Vec<_> = fields.iter().filter(|f| f.is_constructor_arg).collect();
+    let constructor_fields: Vec< _ > = fields.iter().filter(|f| f.is_constructor_arg).collect();
     
     if constructor_fields.is_empty() {
       // No fields marked with arg_for_constructor - use all fields (scalar behavior)

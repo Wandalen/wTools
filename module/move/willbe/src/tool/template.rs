@@ -15,7 +15,7 @@ mod private
   };
   use error::untyped::Context;
   // Explicit import for Result and its variants for pattern matching
-  use std::result::Result::Ok;
+  use core::result::Result::Ok;
 
   /// Container for templates.
   ///
@@ -270,6 +270,7 @@ mod private
     }
 
     /// Interactively asks user to provide value for a parameter.
+    #[allow(clippy::missing_panics_doc)]
     pub fn interactive_if_empty( &mut self, key : &str )
     {
       if self.0.get( key ).and_then( | v | v.as_ref() ).is_none()

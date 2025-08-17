@@ -4,7 +4,7 @@ mod private
 {
 
   use crate::*;
-  use pth::PathBuf;
+  use std::path::PathBuf;
   use collection_tools::collection::HashMap;
   use std::fmt;
   use colored::Colorize;

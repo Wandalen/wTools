@@ -1,13 +1,13 @@
-//! Purpose: Tests the `#[derive(Former)]` macro's generation of constructors for unit variants
+//! Purpose: Tests the `#[ derive( Former ) ]` macro's generation of constructors for unit variants
 //! within an enum that has generic parameters and bounds. This file focuses on verifying
 //! the derive-based implementation.
 //!
 //! Coverage:
 //! - Rule 3a (Unit + Default): Verifies `EnumOuter::<T>::other_variant() -> EnumOuter<T>` for a generic enum.
-//! - Rule 1a (Unit + `#[scalar]`): Verifies `EnumOuter::<T>::other_variant() -> EnumOuter<T>` (as default for unit is scalar) for a generic enum.
+//! - Rule 1a (Unit + `#[ scalar ]`): Verifies `EnumOuter::<T>::other_variant() -> EnumOuter<T>` (as default for unit is scalar) for a generic enum.
 //!
 //! Test Relevance/Acceptance Criteria:
-//! - Defines a generic enum `EnumOuter<X: Copy>` with a unit variant `OtherVariant`, and the `#[derive(Former)]` and `#[ debug ]` attributes.
+//! - Defines a generic enum `EnumOuter<X: Copy>` with a unit variant `OtherVariant`, and the `#[ derive( Former ) ]` and `#[ debug ]` attributes.
 //! - Relies on the derived static method `EnumOuter::<MyType>::other_variant()`.
 //! - Asserts that the `got` instance is equal to an `expected` instance, which is manually
 //!   constructed as `EnumOuter::<MyType>::OtherVariant`. This confirms the constructor produces the correct variant instance for a generic enum.
@@ -19,8 +19,8 @@ use std::marker::PhantomData; // Import PhantomData
 // --- Enum Definition with Bounds ---
 // Apply Former derive here. This is what we are testing.
 // xxx : Re-enable when trailing comma issue is fully fixed in macro_tools::generic_params::decompose
-// #[derive(Debug, PartialEq, former::Former)]
-#[derive(Debug, PartialEq)]
+// #[ derive( Debug, PartialEq, former::Former ) ]
+#[ derive( Debug, PartialEq ) ]
 // #[ debug ]
 pub enum EnumOuter< X : Copy > // Enum bound: Copy
 {

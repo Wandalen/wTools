@@ -1,4 +1,4 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 // use test_tools::exposed::*;
 use test_tools::{tests_impls, tests_index, a_id};

@@ -1,5 +1,5 @@
 //!
-//! Tests for new generic parameter utilities in macro_tools
+//! Tests for new generic parameter utilities in `macro_tools`
 //!
 
 use macro_tools::generic_params::*;
@@ -20,7 +20,7 @@ use syn::parse_quote;
 // | C1.9  | Mixed: <T, const N: usize>                 | has_mixed: true                                 |
 // | C1.10 | Mixed: <'a, T, const N: usize>             | has_mixed: true                                 |
 
-#[test]
+#[ test ]
 fn test_classify_generics_empty() {
     let generics: syn::Generics = parse_quote! {};
     let classification = classify_generics(&generics);
@@ -35,7 +35,7 @@ fn test_classify_generics_empty() {
     assert_eq!(classification.consts.len(), 0);
 }
 
-#[test]
+#[ test ]
 fn test_classify_generics_only_lifetimes() {
     // Single lifetime
     let generics: syn::Generics = parse_quote! { <'a> };
@@ -56,7 +56,7 @@ fn test_classify_generics_only_lifetimes() {
     assert_eq!(classification.lifetimes.len(), 3);
 }
 
-#[test]
+#[ test ]
 fn test_classify_generics_only_types() {
     // Single type
     let generics: syn::Generics = parse_quote! { <T> };
@@ -77,7 +77,7 @@ fn test_classify_generics_only_types() {
     assert_eq!(classification.types.len(), 3);
 }
 
-#[test]
+#[ test ]
 fn test_classify_generics_only_consts() {
     // Single const
     let generics: syn::Generics = parse_quote! { <const N: usize> };
@@ -98,7 +98,7 @@ fn test_classify_generics_only_consts() {
     assert_eq!(classification.consts.len(), 2);
 }
 
-#[test]
+#[ test ]
 fn test_classify_generics_mixed() {
     // Lifetime + Type
     let generics: syn::Generics = parse_quote! { <'a, T> };
@@ -126,7 +126,7 @@ fn test_classify_generics_mixed() {
 }
 
 // Test filter_params
-#[test]
+#[ test ]
 fn test_filter_params_lifetimes() {
     let generics: syn::Generics = parse_quote! { <'a, 'b, T, U, const N: usize> };
     let filtered = filter_params(&generics.params, filter_lifetimes);
@@ -140,7 +140,7 @@ fn test_filter_params_lifetimes() {
     }
 }
 
-#[test]
+#[ test ]
 fn test_filter_params_types() {
     let generics: syn::Generics = parse_quote! { <'a, T: Clone, U, const N: usize> };
     let filtered = filter_params(&generics.params, filter_types);
@@ -154,7 +154,7 @@ fn test_filter_params_types() {
     }
 }
 
-#[test]
+#[ test ]
 fn test_filter_params_consts() {
     let generics: syn::Generics = parse_quote! { <'a, T, const N: usize, const M: i32> };
     let filtered = filter_params(&generics.params, filter_consts);
@@ -168,7 +168,7 @@ fn test_filter_params_consts() {
     }
 }
 
-#[test]
+#[ test ]
 fn test_filter_params_non_lifetimes() {
     let generics: syn::Generics = parse_quote! { <'a, 'b, T, const N: usize> };
     let filtered = filter_params(&generics.params, filter_non_lifetimes);
@@ -182,7 +182,7 @@ fn test_filter_params_non_lifetimes() {
     }
 }
 
-#[test]
+#[ test ]
 fn test_filter_params_custom_predicate() {
     let generics: syn::Generics = parse_quote! { <T: Clone, U: Default, V> };
     
@@ -199,7 +199,7 @@ fn test_filter_params_custom_predicate() {
 }
 
 // Test decompose_classified
-#[test]
+#[ test ]
 fn test_decompose_classified_basic() {
     let generics: syn::Generics = parse_quote! { <'a, T: Clone, const N: usize> };
     let decomposed = decompose_classified(&generics);
@@ -222,7 +222,7 @@ fn test_decompose_classified_basic() {
     assert!(!decomposed.generics_ty.trailing_punct());
 }
 
-#[test]
+#[ test ]
 fn test_decompose_classified_lifetime_only() {
     let generics: syn::Generics = parse_quote! { <'a, 'b> };
     let decomposed = decompose_classified(&generics);
@@ -233,7 +233,7 @@ fn test_decompose_classified_lifetime_only() {
 }
 
 // Test merge_params_ordered
-#[test]
+#[ test ]
 fn test_merge_params_ordered_basic() {
     let list1: syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma> = 
         parse_quote! { T, const N: usize };
@@ -254,7 +254,7 @@ fn test_merge_params_ordered_basic() {
     assert!(matches!(params[3], syn::GenericParam::Const(_)));    // const N
 }
 
-#[test]
+#[ test ]
 fn test_merge_params_ordered_empty() {
     let list1: syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma> = 
         syn::punctuated::Punctuated::new();
@@ -268,7 +268,7 @@ fn test_merge_params_ordered_empty() {
     assert!(merged_empty.is_empty());
 }
 
-#[test]
+#[ test ]
 fn test_merge_params_ordered_complex() {
     let list1: syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma> = 
         parse_quote! { 'b, T: Clone, const N: usize };
@@ -296,7 +296,7 @@ fn test_merge_params_ordered_complex() {
 }
 
 // Test params_with_additional
-#[test]
+#[ test ]
 fn test_params_with_additional_basic() {
     let base: syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma> = 
         parse_quote! { T, U };
@@ -317,7 +317,7 @@ fn test_params_with_additional_basic() {
     }
 }
 
-#[test]
+#[ test ]
 fn test_params_with_additional_empty_base() {
     let base: syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma> = 
         syn::punctuated::Punctuated::new();
@@ -329,11 +329,11 @@ fn test_params_with_additional_empty_base() {
     assert!(!extended.trailing_punct());
 }
 
-#[test]
+#[ test ]
 fn test_params_with_additional_with_trailing_comma() {
     let mut base: syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma> = 
         parse_quote! { T };
-    base.push_punct(syn::token::Comma::default()); // Add trailing comma
+    base.push_punct(syn::token::Comma::default()); // Test edge case where base params already have trailing punctuation
     
     let additional = vec![parse_quote! { U }];
     let extended = params_with_additional(&base, &additional);
@@ -343,7 +343,7 @@ fn test_params_with_additional_with_trailing_comma() {
 }
 
 // Test params_from_components
-#[test]
+#[ test ]
 fn test_params_from_components_basic() {
     let lifetimes = vec![parse_quote! { 'a }, parse_quote! { 'b }];
     let types = vec![parse_quote! { T: Clone }];
@@ -362,14 +362,14 @@ fn test_params_from_components_basic() {
     assert!(matches!(param_vec[3], syn::GenericParam::Const(_)));
 }
 
-#[test]
+#[ test ]
 fn test_params_from_components_empty() {
     let params = params_from_components(&[], &[], &[]);
     assert!(params.is_empty());
     assert!(!params.trailing_punct());
 }
 
-#[test]
+#[ test ]
 fn test_params_from_components_partial() {
     // Only types
     let types = vec![parse_quote! { T }, parse_quote! { U }];
@@ -382,7 +382,7 @@ fn test_params_from_components_partial() {
 }
 
 // Test GenericsRef extensions
-#[test]
+#[ test ]
 fn test_generics_ref_classification() {
     let generics: syn::Generics = parse_quote! { <'a, T, const N: usize> };
     let generics_ref = GenericsRef::new(&generics);
@@ -394,7 +394,7 @@ fn test_generics_ref_classification() {
     assert_eq!(classification.consts.len(), 1);
 }
 
-#[test]
+#[ test ]
 fn test_generics_ref_has_only_methods() {
     // Only lifetimes
     let generics: syn::Generics = parse_quote! { <'a, 'b> };
@@ -418,7 +418,7 @@ fn test_generics_ref_has_only_methods() {
     assert!(generics_ref.has_only_consts());
 }
 
-#[test]
+#[ test ]
 fn test_generics_ref_impl_no_lifetimes() {
     let generics: syn::Generics = parse_quote! { <'a, T: Clone, const N: usize> };
     let generics_ref = GenericsRef::new(&generics);
@@ -428,7 +428,7 @@ fn test_generics_ref_impl_no_lifetimes() {
     assert_eq!(impl_no_lifetimes.to_string(), expected.to_string());
 }
 
-#[test]
+#[ test ]
 fn test_generics_ref_ty_no_lifetimes() {
     let generics: syn::Generics = parse_quote! { <'a, T, const N: usize> };
     let generics_ref = GenericsRef::new(&generics);
@@ -438,7 +438,7 @@ fn test_generics_ref_ty_no_lifetimes() {
     assert_eq!(ty_no_lifetimes.to_string(), expected.to_string());
 }
 
-#[test]
+#[ test ]
 fn test_generics_ref_type_path_no_lifetimes() {
     use quote::format_ident;
     
@@ -460,7 +460,7 @@ fn test_generics_ref_type_path_no_lifetimes() {
 }
 
 // Integration tests
-#[test]
+#[ test ]
 fn test_integration_former_meta_pattern() {
     // Simulate the former_meta use case
     let struct_generics: syn::Generics = parse_quote! { <'a, T: Clone, const N: usize> };
@@ -484,7 +484,7 @@ fn test_integration_former_meta_pattern() {
     assert_eq!(entity_generics.len(), 4);
 }
 
-#[test]
+#[ test ]
 fn test_edge_cases() {
     // Empty filter result
     let generics: syn::Generics = parse_quote! { <'a, 'b> };

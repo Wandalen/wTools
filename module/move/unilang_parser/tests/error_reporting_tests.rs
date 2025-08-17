@@ -50,8 +50,7 @@ fn error_invalid_escape_sequence_location_str() {
 
   assert!(
     result.is_ok(),
-    "parse_single_instruction unexpectedly failed for input: {}",
-    input
+    "parse_single_instruction unexpectedly failed for input: {input}"
   );
   let instruction = result.unwrap();
   assert_eq!(instruction.positional_arguments[0].value, "arg1".to_string());
@@ -66,7 +65,7 @@ fn error_invalid_escape_sequence_location_str() {
 #[test]
 fn error_unexpected_delimiter_location_str() {
   let parser = Parser::new(UnilangParserOptions::default());
-  let input = r#"cmd :: arg2"#;
+  let input = r"cmd :: arg2";
   let result = parser.parse_single_instruction(input);
 
   assert!(
@@ -95,8 +94,7 @@ fn empty_instruction_segment_double_semicolon() {
   let result = parser.parse_multiple_instructions(input); // Changed to parse_multiple_instructions
   assert!(
     result.is_err(),
-    "Expected error for empty segment due to ';;', input: '{}'",
-    input
+    "Expected error for empty segment due to ';;', input: '{input}'"
   );
   let err = result.unwrap_err();
   assert_eq!(
@@ -117,8 +115,7 @@ fn empty_instruction_segment_trailing_semicolon() {
   let result = parser.parse_multiple_instructions(input);
   assert!(
     result.is_err(),
-    "Expected error for empty segment due to trailing ';;', input: '{}'",
-    input
+    "Expected error for empty segment due to trailing ';;', input: '{input}'"
   );
   let err = result.unwrap_err();
   assert_eq!(
@@ -139,8 +136,7 @@ fn empty_instruction_segment_only_semicolon() {
   let result = parser.parse_multiple_instructions(input);
   assert!(
     result.is_err(),
-    "Expected error for input being only ';;', input: '{}'",
-    input
+    "Expected error for input being only ';;', input: '{input}'"
   );
   let err = result.unwrap_err();
   assert_eq!(
@@ -161,15 +157,13 @@ fn missing_value_for_named_arg() {
   let result = parser.parse_single_instruction(input);
   assert!(
     result.is_err(),
-    "Expected error for missing value for named arg, input: '{}'",
-    input
+    "Expected error for missing value for named arg, input: '{input}'"
   );
   let err = result.unwrap_err();
   match err.kind {
     ErrorKind::Syntax(s) => assert!(
       s.contains("Expected value for named argument 'name' but found end of instruction"),
-      "Msg: {}",
-      s
+      "Msg: {s}"
     ),
     _ => panic!("Expected Syntax error, but got: {:?}", err.kind),
   }
@@ -207,7 +201,7 @@ fn unexpected_colon_colon_after_value() {
   let parser = Parser::new(UnilangParserOptions::default());
   let input = "cmd name::val1 ::val2";
   let result = parser.parse_single_instruction(input);
-  assert!(result.is_err(), "Expected error for 'name::val1 ::val2', input: '{}'", input);
+  assert!(result.is_err(), "Expected error for 'name::val1 ::val2', input: '{input}'");
   let err = result.unwrap_err();
   assert_eq!(
     err.kind,
@@ -227,12 +221,11 @@ fn positional_after_named_error() {
   let result = parser.parse_single_instruction(input);
   assert!(
     result.is_err(),
-    "Expected error for positional after named, input: '{}'",
-    input
+    "Expected error for positional after named, input: '{input}'"
   );
   let err = result.unwrap_err();
   match err.kind {
-    ErrorKind::Syntax(s) => assert!(s.contains("Positional argument after named argument"), "Msg: {}", s), // Removed .to_string()
+    ErrorKind::Syntax(s) => assert!(s.contains("Positional argument after named argument"), "Msg: {s}"), // Removed .to_string()
     _ => panic!("Expected Syntax error, but got: {:?}", err.kind),
   }
   assert_eq!(err.location, Some(SourceLocation::StrSpan { start: 14, end: 18 }));
@@ -245,7 +238,7 @@ fn unexpected_help_operator_middle() {
   let parser = Parser::new(UnilangParserOptions::default());
   let input = "cmd ? arg1";
   let result = parser.parse_single_instruction(input);
-  assert!(result.is_err(), "Expected error for '?' in middle, input: '{}'", input);
+  assert!(result.is_err(), "Expected error for '?' in middle, input: '{input}'");
   let err = result.unwrap_err();
   assert_eq!(
     err.kind,
@@ -269,7 +262,7 @@ fn unexpected_token_in_args() {
     input,
     result.ok()
   );
-  if let Ok(_) = result {
+  if result.is_ok() {
     return;
   }
   let err = result.unwrap_err();

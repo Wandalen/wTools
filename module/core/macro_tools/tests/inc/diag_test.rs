@@ -54,7 +54,7 @@ TokenStream [
         spacing: Alone,
     },
 ]"#;
-    let code = qt!( std::collections::HashMap< i32, i32 > );
+    let code = qt!( std::collections::HashMap<  i32, i32  > );
     let got = the_module::tree_diagnostics_str!( code );
     // println!( "{}", got );
     a_id!( got, exp );

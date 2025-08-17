@@ -14,7 +14,9 @@ use plotters::
   }, 
   chart::ChartBuilder
 };
-use std::{ env, path::{ PathBuf, Path }, process::Command };
+use std::env;
+use std::path::{ PathBuf, Path };
+use std::process::Command;
 use super::{ solver::ExtremePoint, linear_problem::Problem };
 
 /// Get path of workspace or return current if fail to get path of workspace.

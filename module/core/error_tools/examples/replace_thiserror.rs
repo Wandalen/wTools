@@ -45,15 +45,15 @@ fn main()
   let path1 = PathBuf::from( "data.txt" );
   match process_data( &path1 )
   {
-    Ok( num ) => println!( "Processed data: {}", num ),
-    Err( e ) => println!( "An error occurred: {}", e ),
+    Ok( num ) => println!( "Processed data: {num}" ),
+    Err( e ) => println!( "An error occurred: {e}" ),
   }
 
   let path2 = PathBuf::from( "invalid_data.txt" );
   match process_data( &path2 )
   {
     Ok( _ ) => (),
-    Err( e ) => println!( "Correctly handled parsing error: {}", e ),
+    Err( e ) => println!( "Correctly handled parsing error: {e}" ),
   }
 
   // Clean up dummy files

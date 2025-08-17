@@ -32,6 +32,6 @@ fn main() {
   // is accessible both directly via the child module and
   // via the parent's propagated prelude.
   assert_eq!(prelude::inner_is(), child::prelude::inner_is());
-  assert_eq!(child::inner_is(), true); // Also accessible directly in child's root
-  assert_eq!(prelude::inner_is(), true); // Accessible via parent's prelude
+  assert!(child::inner_is()); // Also accessible directly in child's root
+  assert!(prelude::inner_is()); // Accessible via parent's prelude
 }

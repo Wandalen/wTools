@@ -1,17 +1,17 @@
 //! Test for `tuple_multi_fields_subform` handler with default behavior (no attributes)
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 pub enum TupleMultiDefaultEnum
 {
   // No attributes - should use default behavior (Rule 3f - multi-field subform)
   Variant(i32, String, bool),
 }
 
-#[test]
+#[ test ]
 fn tuple_multi_default_test()
 {
   let got = TupleMultiDefaultEnum::variant()
@@ -23,7 +23,7 @@ fn tuple_multi_default_test()
   assert_eq!(got, expected);
 }
 
-#[test]
+#[ test ]
 fn tuple_multi_default_into_test()
 {
   // Test that impl Into<T> works correctly for multiple fields

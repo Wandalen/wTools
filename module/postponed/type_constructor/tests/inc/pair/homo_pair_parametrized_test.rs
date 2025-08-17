@@ -38,7 +38,6 @@ tests_impls!
       ///
       /// Attribute which is inner.
       ///
-
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
       pair Pair : mod1::f32;

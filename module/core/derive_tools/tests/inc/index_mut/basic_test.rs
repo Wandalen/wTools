@@ -22,17 +22,17 @@ use derive_tools::IndexMut;
 // pub struct UnitStruct;
 
 // IM1.2: Tuple struct with one field
-#[derive(IndexMut)]
-pub struct TupleStruct1(#[index_mut] pub i32);
+#[ derive( IndexMut ) ]
+pub struct TupleStruct1(#[ index_mut ] pub i32);
 
 // IM1.3: Tuple struct with multiple fields - should not compile
 // #[ derive( IndexMut ) ]
 // pub struct TupleStruct2( pub i32, pub i32 );
 
 // IM1.4: Named struct with one field
-#[derive(IndexMut)]
+#[ derive( IndexMut ) ]
 pub struct NamedStruct1 {
-  #[index_mut]
+  #[ index_mut ]
   pub field1: i32,
 }
 

@@ -5,6 +5,8 @@ use std::{
   process::{Command, Stdio},
 };
 
+//
+
 pub fn start_sync<AP, Args, Arg, P>(application: AP, args: Args, path: P) -> String
 where
   AP: AsRef<Path>,
@@ -41,7 +43,7 @@ version = "0.1.0"
 edition = "2021"
 [dependencies]
 wca = {{path = "{}"}}"#,
-    env!("CARGO_MANIFEST_DIR").replace("\\", "/")
+    env!("CARGO_MANIFEST_DIR").replace('\\', "/")
   );
 
   let main = r#"use wca::{ Type, VerifiedCommand };
@@ -87,7 +89,7 @@ version = "0.1.0"
 edition = "2021"
 [dependencies]
 wca = {{path = "{}"}}"#,
-    env!("CARGO_MANIFEST_DIR").replace("\\", "/")
+    env!("CARGO_MANIFEST_DIR").replace('\\', "/")
   );
 
   let main = r#"fn main()
@@ -100,17 +102,17 @@ wca = {{path = "{}"}}"#,
     .property( "c-property" ).kind( Type::String ).optional( true ).end()
     .property( "b-property" ).kind( Type::String ).optional( true ).end()
     .property( "a-property" ).kind( Type::String ).optional( true ).end()
-    .routine( | o : VerifiedCommand | { println!("c") } )
+    .routine( | _o : VerifiedCommand | { println!("c") } )
     .end()
    .command( "b" )
     .hint( "b" )
     .property( "b-property" ).kind( Type::String ).optional( true ).end()
-    .routine( | o : VerifiedCommand | { println!("b") } )
+    .routine( | _o : VerifiedCommand | { println!("b") } )
     .end()
    .command( "a" )
     .hint( "a" )
     .property( "a-property" ).kind( Type::String ).optional( true ).end()
-    .routine( | o : VerifiedCommand | { println!("a") } )
+    .routine( | _o : VerifiedCommand | { println!("a") } )
     .end()
    .order( Order::Nature )
  
@@ -155,7 +157,7 @@ version = "0.1.0"
 edition = "2021"
 [dependencies]
 wca = {{path = "{}"}}"#,
-    env!("CARGO_MANIFEST_DIR").replace("\\", "/")
+    env!("CARGO_MANIFEST_DIR").replace('\\', "/")
   );
 
   let main = r#"fn main()
@@ -168,17 +170,17 @@ wca = {{path = "{}"}}"#,
     .property( "c-property" ).kind( Type::String ).optional( true ).end()
     .property( "b-property" ).kind( Type::String ).optional( true ).end()
     .property( "a-property" ).kind( Type::String ).optional( true ).end()
-    .routine( | o : VerifiedCommand | { println!("c") } )
+    .routine( | _o : VerifiedCommand | { println!("c") } )
     .end()
    .command( "b" )
     .hint( "b" )
     .property( "b-property" ).kind( Type::String ).optional( true ).end()
-    .routine( | o : VerifiedCommand | { println!("b") } )
+    .routine( | _o : VerifiedCommand | { println!("b") } )
     .end()
    .command( "a" )
     .hint( "a" )
     .property( "a-property" ).kind( Type::String ).optional( true ).end()
-    .routine( | o : VerifiedCommand | { println!("a") } )
+    .routine( | _o : VerifiedCommand | { println!("a") } )
     .end()
     .order( Order::Lexicography )
    .perform();

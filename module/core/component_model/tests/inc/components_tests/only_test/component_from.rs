@@ -13,6 +13,6 @@ fn component_assign()
   assert_eq!( field2, "Hello, world!".to_string() );
 
   let field3 : f32 = ( &o1 ).into();
-  assert_eq!( field3, 13.01 );
+  assert!( (field3 - 13.01).abs() < f32::EPSILON );
 
 }

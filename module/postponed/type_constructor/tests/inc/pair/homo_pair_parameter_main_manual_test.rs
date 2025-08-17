@@ -4,7 +4,6 @@ use super::*;
 ///
 /// Attribute which is inner.
 ///
-
 #[ derive( Debug, Clone, PartialEq ) ]
 struct Pair< T1 >( pub T1, pub T1 );
 impl< T1 > core::ops::Deref for Pair< T1 >

@@ -1,9 +1,9 @@
-#[allow(unused_imports, clippy::wildcard_imports)]
+#[ allow( unused_imports, clippy::wildcard_imports ) ]
 use super::*;
 
-#[doc(inline)]
-#[allow(unused_imports)]
-#[allow(clippy::pub_use)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ allow( clippy::pub_use ) ]
 pub use alloc::collections::linked_list::*;
 
 /// Creates a `LinkedList` from a llist of elements.
@@ -63,8 +63,8 @@ pub use alloc::collections::linked_list::*;
 /// assert_eq!( fruits.back(), Some( &"cherry" ) ); // The last element
 /// ```
 ///
-#[cfg(feature = "collection_constructors")]
-#[macro_export(local_inner_macros)]
+#[ cfg( feature = "collection_constructors" ) ]
+#[ macro_export( local_inner_macros ) ]
 macro_rules! llist
 {
   (
@@ -157,8 +157,8 @@ macro_rules! llist
 /// assert_eq!( fruits.back(), Some( &"cherry".to_string() ) ); // The last element
 /// ```
 ///
-#[cfg(feature = "collection_into_constructors")]
-#[macro_export(local_inner_macros)]
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ macro_export( local_inner_macros ) ]
 macro_rules! into_llist
 {
   (

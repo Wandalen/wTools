@@ -7,6 +7,7 @@ use unilang::data::{ ArgumentAttributes, ArgumentDefinition, CommandDefinition, 
 use unilang::registry::CommandRegistry;
 use unilang::types::{ Value, parse_value };
 
+#[allow(clippy::too_many_lines)]
 fn main() -> Result< (), unilang::error::Error >
 {
   println!( "=== Advanced Types and Validation Demo ===\n" );
@@ -30,8 +31,8 @@ fn main() -> Result< (), unilang::error::Error >
   .examples( vec!
   [
     r#"examples.advanced_types config::'{"timeout":30,"retries":3}'"#.to_string(),
-    r#"advanced_types data::1,2,3,4,5 mapping::key1=value1,key2=value2"#.to_string(),
-    r#"adv regex::'\d{4}-\d{2}-\d{2}' timestamp::'2023-12-25T10:30:00+00:00'"#.to_string()
+    r"advanced_types data::1,2,3,4,5 mapping::key1=value1,key2=value2".to_string(),
+    r"adv regex::'\d{4}-\d{2}-\d{2}' timestamp::'2023-12-25T10:30:00+00:00'".to_string()
   ])
   .arguments( vec!
   [
@@ -314,7 +315,7 @@ fn main() -> Result< (), unilang::error::Error >
             println!( "     Type: Map" );
             println!( "     Pairs: {} entries", map.len() );
           },
-          Value::Pattern( regex ) =>
+          Value::Pattern( _regex ) =>
           {
             println!( "     Type: Regex Pattern" );
             println!( "     Valid: Pattern compiled successfully" );
@@ -353,7 +354,7 @@ fn main() -> Result< (), unilang::error::Error >
   {
     println!( "🔍 {description}:" );
     println!( "   Input: {input}" );
-    println!( "   Rules: {:?}", rules );
+    println!( "   Rules: {rules:?}" );
     
     match parse_value( input, &kind )
     {
@@ -413,13 +414,13 @@ fn main() -> Result< (), unilang::error::Error >
   println!( r#"cargo run --bin unilang_cli examples.advanced_types config::'{{\"timeout\":30,\"retries\":5}}'"# );
   
   println!( "\n# List and map data:" );
-  println!( r#"cargo run --bin unilang_cli adv data::10,20,30,40 mapping::env=prod,region=us-east"# );
+  println!( r"cargo run --bin unilang_cli adv data::10,20,30,40 mapping::env=prod,region=us-east" );
   
   println!( "\n# Pattern and datetime:" );
-  println!( r#"cargo run --bin unilang_cli advanced_types regex::'\\d{{4}}-\\d{{2}}-\\d{{2}}' timestamp::'2023-12-25T15:30:00Z'"# );
+  println!( r"cargo run --bin unilang_cli advanced_types regex::'\\d{{4}}-\\d{{2}}-\\d{{2}}' timestamp::'2023-12-25T15:30:00Z'" );
   
   println!( "\n# File system types:" );
-  println!( r#"cargo run --bin unilang_cli adv input_file::/tmp/data.txt output_dir::/tmp"# );
+  println!( r"cargo run --bin unilang_cli adv input_file::/tmp/data.txt output_dir::/tmp" );
 
   println!( "\n💡 The advanced type system supports complex real-world scenarios while" );
   println!( "   maintaining type safety and comprehensive validation." );

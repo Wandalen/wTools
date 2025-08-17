@@ -4,15 +4,15 @@
 //!
 #![allow(dead_code)] // Test structures are intentionally unused
 
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former_types::{Storage, StoragePreform, FormerDefinitionTypes, FormerMutator, FormerDefinition, FormingEnd, ReturnPreformed};
 
 // === Struct Definition: No Args ===
 
 /// Manual struct without constructor args.
-#[derive(Debug, PartialEq, Default, Clone)]
+#[ derive( Debug, PartialEq, Default, Clone ) ]
 pub struct TestStructNoArgs {
   /// A simple field.
   pub field1: i32,
@@ -22,7 +22,7 @@ pub struct TestStructNoArgs {
 // ... (No changes needed here, as all methods/fields are used by no_args_test) ...
 // Storage
 /// Manual storage for `TestStructNoArgsFormer`.
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct TestStructNoArgsFormerStorage {
   /// Optional storage for field1.
   pub field1: Option<i32>,
@@ -33,7 +33,7 @@ impl Storage for TestStructNoArgsFormerStorage {
 }
 
 impl StoragePreform for TestStructNoArgsFormerStorage {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn preform(mut self) -> Self::Preformed {
     TestStructNoArgs {
       field1: self.field1.take().unwrap_or_default(),
@@ -43,7 +43,7 @@ impl StoragePreform for TestStructNoArgsFormerStorage {
 
 // Definition Types
 /// Manual definition types for `TestStructNoArgsFormer`.
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct TestStructNoArgsFormerDefinitionTypes<Context = (), Formed = TestStructNoArgs> {
   _phantom: core::marker::PhantomData<(Context, Formed)>,
 }
@@ -58,7 +58,7 @@ impl<Context, Formed> FormerMutator for TestStructNoArgsFormerDefinitionTypes<Co
 
 // Definition
 /// Manual definition for `TestStructNoArgsFormer`.
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct TestStructNoArgsFormerDefinition<Context = (), Formed = TestStructNoArgs, End = ReturnPreformed> {
   _phantom: core::marker::PhantomData<(Context, Formed, End)>,
 }
@@ -76,8 +76,8 @@ where
 
 // Former
 /// Manual Former for `TestStructNoArgs`.
-#[allow(dead_code)] // Test structure for demonstration purposes
-#[derive(Debug)]
+#[ allow( dead_code ) ] // Test structure for demonstration purposes
+#[ derive( Debug ) ]
 pub struct TestStructNoArgsFormer<Definition = TestStructNoArgsFormerDefinition>
 where
   Definition: FormerDefinition<Storage = TestStructNoArgsFormerStorage>,
@@ -97,13 +97,13 @@ where
   Definition::Types: FormerMutator,
 {
   /// Finalizes the forming process.
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn form(self) -> <Definition::Types as FormerDefinitionTypes>::Formed {
     self.end()
   }
 
   /// Finalizes the forming process.
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn end(mut self) -> <Definition::Types as FormerDefinitionTypes>::Formed {
     let end = self.on_end.take().unwrap();
     <Definition::Types as FormerMutator>::form_mutation(&mut self.storage, &mut self.context);
@@ -111,7 +111,7 @@ where
   }
 
   /// Begins the forming process.
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn begin(s: Option<Definition::Storage>, c: Option<Definition::Context>, e: Definition::End) -> Self {
     Self {
       storage: s.unwrap_or_default(),
@@ -121,13 +121,13 @@ where
   }
 
   /// Creates a new former instance.
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn new(e: Definition::End) -> Self {
     Self::begin(None, None, e)
   }
 
   /// Setter for field1.
-  #[inline]
+  #[ inline ]
   pub fn field1(mut self, src: impl Into<i32>) -> Self {
     debug_assert!(self.storage.field1.is_none());
     self.storage.field1 = Some(src.into());
@@ -144,7 +144,7 @@ pub fn test_struct_no_args(field1: i32) -> TestStructNoArgs {
 
 // === Struct Definition: With Args ===
 /// Manual struct with constructor args.
-#[derive(Debug, PartialEq, Default, Clone)]
+#[ derive( Debug, PartialEq, Default, Clone ) ]
 pub struct TestStructWithArgs {
   /// Field A.
   pub a: String,
@@ -157,7 +157,7 @@ pub struct TestStructWithArgs {
 // === Manual Former Implementation: With Args ===
 // ... (Storage, DefTypes, Def implementations remain the same) ...
 /// Manual storage for `TestStructWithArgsFormer`.
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct TestStructWithArgsFormerStorage {
   /// Optional storage for `a`.
   pub a: Option<String>,
@@ -172,7 +172,7 @@ impl Storage for TestStructWithArgsFormerStorage {
 }
 
 impl StoragePreform for TestStructWithArgsFormerStorage {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn preform(mut self) -> Self::Preformed {
     TestStructWithArgs {
       a: self.a.take().unwrap_or_default(),
@@ -183,7 +183,7 @@ impl StoragePreform for TestStructWithArgsFormerStorage {
 }
 
 /// Manual definition types for `TestStructWithArgsFormer`.
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct TestStructWithArgsFormerDefinitionTypes<C = (), F = TestStructWithArgs> {
   _p: core::marker::PhantomData<(C, F)>,
 }
@@ -197,7 +197,7 @@ impl<C, F> FormerDefinitionTypes for TestStructWithArgsFormerDefinitionTypes<C, 
 impl<C, F> FormerMutator for TestStructWithArgsFormerDefinitionTypes<C, F> {}
 
 /// Manual definition for `TestStructWithArgsFormer`.
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct TestStructWithArgsFormerDefinition<C = (), F = TestStructWithArgs, E = ReturnPreformed> {
   _p: core::marker::PhantomData<(C, F, E)>,
 }
@@ -214,8 +214,8 @@ where
 }
 
 /// Manual Former for `TestStructWithArgs`.
-#[derive(Debug)]
-#[allow(dead_code)] // Allow dead code for the whole struct as tests might not use all fields
+#[ derive( Debug ) ]
+#[ allow( dead_code ) ] // Allow dead code for the whole struct as tests might not use all fields
 pub struct TestStructWithArgsFormer<D = TestStructWithArgsFormerDefinition>
 where
   D: FormerDefinition<Storage = TestStructWithArgsFormerStorage>,
@@ -235,15 +235,15 @@ where
   D::Types: FormerMutator,
 {
   /// Finalizes the forming process.
-  #[inline(always)]
-  #[allow(dead_code)] // Warning: method is never used
+  #[ inline( always ) ]
+  #[ allow( dead_code ) ] // Warning: method is never used
   pub fn form(self) -> <D::Types as FormerDefinitionTypes>::Formed {
     self.end()
   }
 
   /// Finalizes the forming process.
-  #[inline(always)]
-  #[allow(dead_code)] // Warning: method is never used
+  #[ inline( always ) ]
+  #[ allow( dead_code ) ] // Warning: method is never used
   pub fn end(mut self) -> <D::Types as FormerDefinitionTypes>::Formed {
     let end = self.on_end.take().unwrap();
     <D::Types as FormerMutator>::form_mutation(&mut self.storage, &mut self.context);
@@ -251,7 +251,7 @@ where
   }
 
   /// Begins the forming process.
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn begin(s: Option<D::Storage>, c: Option<D::Context>, e: D::End) -> Self {
     Self {
       storage: s.unwrap_or_default(),
@@ -261,15 +261,15 @@ where
   }
 
   /// Creates a new former instance.
-  #[inline(always)]
-  #[allow(dead_code)]
+  #[ inline( always ) ]
+  #[ allow( dead_code ) ]
   pub fn new(e: D::End) -> Self {
     Self::begin(None, None, e)
   }
 
   /// Setter for `a`.
-  #[inline]
-  #[allow(dead_code)]
+  #[ inline ]
+  #[ allow( dead_code ) ]
   pub fn a(mut self, src: impl Into<String>) -> Self {
     debug_assert!(self.storage.a.is_none());
     self.storage.a = Some(src.into());
@@ -277,8 +277,8 @@ where
   }
 
   /// Setter for `b`.
-  #[inline]
-  #[allow(dead_code)]
+  #[ inline ]
+  #[ allow( dead_code ) ]
   pub fn b(mut self, src: impl Into<bool>) -> Self {
     debug_assert!(self.storage.b.is_none());
     self.storage.b = Some(src.into());
@@ -286,8 +286,8 @@ where
   }
 
   /// Setter for `c`.
-  #[inline]
-  #[allow(dead_code)] // Warning: method is never used
+  #[ inline ]
+  #[ allow( dead_code ) ] // Warning: method is never used
   pub fn c(mut self, src: impl Into<f32>) -> Self {
     debug_assert!(self.storage.c.is_none());
     self.storage.c = Some(src.into());
@@ -297,7 +297,7 @@ where
 
 // === Standalone Constructor (Manual): With Args ===
 /// Manual standalone constructor for `TestStructWithArgs`.
-#[allow(dead_code)] // Warning: function is never used
+#[ allow( dead_code ) ] // Warning: function is never used
 pub fn test_struct_with_args(
   a: impl Into<String>,
   b: impl Into<bool>,

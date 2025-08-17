@@ -12,7 +12,7 @@ fn person_mutate()
 {
   logger_init();
 
-  //let initial = SudokuInitial::new_sa( Board::default(), Seed::default() );
+  // let initial = SudokuInitial::new_sa( Board::default(), Seed::default() );
   let board = Board::default();
   let hrng = Hrng::master_with_seed( Seed::default() );
 

@@ -5,7 +5,7 @@ use the_module::exposed::impls1;
 
 //
 
-#[test]
+#[ test ]
 fn impls_basic() {
   // test.case( "impls1 basic" );
   {

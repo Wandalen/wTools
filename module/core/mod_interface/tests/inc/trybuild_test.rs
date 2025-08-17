@@ -1,4 +1,4 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 // use crate::only_for_terminal_module;
 
@@ -9,7 +9,7 @@ use super::*;
 // #[ cfg( module_mod_interface ) ]
 // #[ cfg( module_is_terminal ) ]
 #[test_tools::nightly]
-#[test]
+#[ test ]
 fn trybuild_tests() {
   // qqq : fix test : if run its test with --target-dir flag it's fall (for example : cargo test --target-dir C:\foo\bar )
   // use test_tools::dependency::trybuild;

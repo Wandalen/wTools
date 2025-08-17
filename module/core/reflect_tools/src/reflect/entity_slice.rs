@@ -60,7 +60,7 @@ pub mod private
     fn elements( &self ) -> Box< dyn Iterator< Item = KeyVal > >
     {
 
-      let result : Vec< KeyVal > = ( 0 .. self.len() )
+      let result : Vec<  KeyVal  > = ( 0 .. self.len() )
       .map( | k | KeyVal { key : Primitive::usize( k ), val : Box::new( < T as Instance >::Reflect() ) } )
       .collect();
 

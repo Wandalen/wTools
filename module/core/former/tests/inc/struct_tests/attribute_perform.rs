@@ -1,12 +1,12 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
-#[derive(Debug, PartialEq, the_module::Former)]
+#[ derive( Debug, PartialEq, the_module::Former ) ]
 pub struct Struct0 {
   pub int_1: i32,
 }
 
-#[derive(Debug, PartialEq, the_module::Former)]
+#[ derive( Debug, PartialEq, the_module::Former ) ]
 #[ perform( fn perform1< 'a >() -> Option< &'a str > ) ]
 pub struct Struct1 {
   pub int_1: i32,

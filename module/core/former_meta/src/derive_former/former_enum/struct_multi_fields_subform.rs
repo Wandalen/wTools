@@ -14,8 +14,8 @@
 //!
 //! ### Attribute-Driven Activation
 //! - **Default Behavior**: Multi-field struct variants automatically get implicit variant formers
-//! - **`#[scalar]` Override**: Forces direct constructor generation instead (handled elsewhere)
-//! - **`#[subform_scalar]` Support**: Supported but generates same implicit variant former
+//! - **`#[ scalar ]` Override**: Forces direct constructor generation instead (handled elsewhere)
+//! - **`#[ subform_scalar ]` Support**: Supported but generates same implicit variant former
 //! - **Field-Level Attributes**: Individual field attributes respected in generated setters
 //!
 //! ### Generated Infrastructure Components
@@ -52,20 +52,20 @@
 //! ### 2. Storage Field Type Safety (Critical Prevention)
 //! **Issue Resolved**: Manual implementations using incorrect optional wrapping for field storage
 //! **Root Cause**: Forgetting that former storage requires Optional<T> wrapping for incremental construction
-//! **Solution**: Automatic Optional<T> wrapping with proper unwrap_or_default() handling in preform
-//! **Prevention**: Generated storage always uses `Option<FieldType>` with safe defaults
+//! **Solution**: Automatic Optional<T> wrapping with proper `unwrap_or_default()` handling in preform
+//! **Prevention**: Generated storage always uses `Option< FieldType >` with safe defaults
 //!
 //! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! struct VariantFormerStorage {
-//!     field1: String,  // ❌ Should be Option<String>
-//!     field2: i32,     // ❌ Should be Option<i32>
+//!     field1: String,  // ❌ Should be Option< String >
+//!     field2: i32,     // ❌ Should be Option< i32 >
 //! }
 //!
 //! // Generated Solution:
 //! struct VariantFormerStorage {
-//!     field1: Option<String>,  // ✅ Proper optional wrapping
-//!     field2: Option<i32>,     // ✅ Allows incremental construction
+//!     field1: Option< String >,  // ✅ Proper optional wrapping
+//!     field2: Option< i32 >,     // ✅ Allows incremental construction
 //! }
 //! ```
 //!
@@ -94,8 +94,8 @@
 //! pub struct EnumVariantFormerStorage<T, U> 
 //! where T: Clone, U: Default
 //! {
-//!     pub field1: Option<T>,      // Incremental field storage
-//!     pub field2: Option<U>,      // Safe optional wrapping
+//!     pub field1: Option< T >,      // Incremental field storage
+//!     pub field2: Option< U >,      // Safe optional wrapping
 //! }
 //! ```
 //!
@@ -121,10 +121,10 @@
 //! ```
 //!
 //! ## Integration Notes
-//! - **Standalone Constructors**: Supports `#[standalone_constructors]` for top-level function generation
+//! - **Standalone Constructors**: Supports `#[ standalone_constructors ]` for top-level function generation
 //! - **Context Handling**: Integrates with Former's context system for advanced construction scenarios
 //! - **Error Handling**: Provides clear compilation errors for invalid attribute combinations
-//! - **Performance**: Generated code is optimized with `#[inline(always)]` for zero-cost abstractions
+//! - **Performance**: Generated code is optimized with `#[ inline( always ) ]` for zero-cost abstractions
 
 use super::*;
 
@@ -150,7 +150,7 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// ## Pitfall Prevention Mechanisms
 ///
 /// - **Generic Safety**: All generated items properly propagate generic parameters and where clauses
-/// - **Storage Safety**: Fields are wrapped in `Option<T>` with safe default handling
+/// - **Storage Safety**: Fields are wrapped in `Option< T >` with safe default handling
 /// - **Trait Integration**: Complete Former trait hierarchy implementation prevents ecosystem incompatibility
 /// - **Context Preservation**: Proper context handling for advanced Former scenarios
 ///
@@ -167,7 +167,8 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// ## Returns
 /// - `Ok(TokenStream)`: Generated enum method that returns the variant former
 /// - `Err(syn::Error)`: If variant processing fails due to invalid configuration
-pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
+#[ allow( clippy::too_many_lines ) ]
+pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result<  proc_macro2::TokenStream  >
 {
   let variant_name = &ctx.variant.ident;
   let method_name = variant_to_method_name(variant_name);
@@ -190,7 +191,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   // Generate the End struct for this variant
   let end_struct = quote!
   {
-    #[derive(Default, Debug)]
+    #[ derive( Default, Debug ) ]
     pub struct #end_struct_name #impl_generics
     #where_clause
     {}
@@ -204,26 +205,26 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   let variant_former_definition_types_name = format_ident!("{}{}FormerDefinitionTypes", enum_name, variant_name_str);
 
   // Generate the storage struct for the variant's fields
-  let storage_field_optional: Vec<_> = fields.iter().map(|f| {
+  let storage_field_optional: Vec< _ > = fields.iter().map(|f| {
     let field_name = &f.ident;
     let field_type = &f.ty;
-    quote! { pub #field_name : ::core::option::Option< #field_type > }
+    quote! { pub #field_name : ::core::option::Option<  #field_type  > }
   }).collect();
-  let storage_field_none: Vec<_> = fields.iter().map(|f| {
+  let storage_field_none: Vec< _ > = fields.iter().map(|f| {
     let field_name = &f.ident;
     quote! { #field_name : ::core::option::Option::None }
   }).collect();
-  let storage_field_preform: Vec<_> = fields.iter().map(|f| {
+  let storage_field_preform: Vec< _ > = fields.iter().map(|f| {
     let field_name = &f.ident;
     quote! { let #field_name = self.#field_name.unwrap_or_default(); }
   }).collect();
-  let storage_field_name: Vec<_> = fields.iter().map(|f| {
+  let storage_field_name: Vec< _ > = fields.iter().map(|f| {
     let field_name = &f.ident;
     quote! { #field_name }
   }).collect();
 
   // Capture field types for setters
-  let field_types_for_setters: Vec<_> = fields.iter().map(|f| &f.ty).collect();
+  let field_types_for_setters: Vec< _ > = fields.iter().map(|f| &f.ty).collect();
 
   let variant_former_code = quote!
   {
@@ -266,7 +267,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
       fn form_mutation
       (
         _storage : &mut Self::Storage,
-        _context : &mut Option< Self::Context >,
+        _context : &mut Option<  Self::Context  >,
       )
       {
       }
@@ -354,8 +355,8 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
     #where_clause
     {
       pub storage : #variant_former_storage_name #ty_generics,
-      pub context : ::core::option::Option< () >,
-      pub on_end : ::core::option::Option< former_types::forming::ReturnPreformed >,
+      pub context : ::core::option::Option<  ()  >,
+      pub on_end : ::core::option::Option<  former_types::forming::ReturnPreformed  >,
     }
 
     impl #impl_generics #variant_former_name #ty_generics
@@ -389,8 +390,8 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
       #[ inline( always ) ]
       pub fn begin
       (
-        mut storage : ::core::option::Option< #variant_former_storage_name #ty_generics >,
-        context : ::core::option::Option< () >,
+        mut storage : ::core::option::Option<  #variant_former_storage_name #ty_generics  >,
+        context : ::core::option::Option<  ()  >,
         on_end : former_types::forming::ReturnPreformed,
       )
       -> Self
@@ -410,8 +411,8 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
       #[ inline( always ) ]
       pub fn begin_coercing< IntoEnd >
       (
-        mut storage : ::core::option::Option< #variant_former_storage_name #ty_generics >,
-        context : ::core::option::Option< () >,
+        mut storage : ::core::option::Option<  #variant_former_storage_name #ty_generics  >,
+        context : ::core::option::Option<  ()  >,
         on_end : IntoEnd,
       ) -> Self
       where

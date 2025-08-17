@@ -1,15 +1,15 @@
 use super::*;
 
-#[test]
+#[ test ]
 fn reexport() {
   let mut map: the_module::LinkedList<i32> = the_module::LinkedList::new();
   map.push_back(1);
-  assert_eq!(map.contains(&1), true);
-  assert_eq!(map.contains(&2), false);
+  assert!(map.contains(&1));
+  assert!(!map.contains(&2));
 }
 
-#[cfg(feature = "collection_constructors")]
-#[test]
+#[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
 fn constructor() {
   // test.case( "empty" );
   let got: the_module::LinkedList<i32> = the_module::llist! {};
@@ -27,8 +27,8 @@ fn constructor() {
   let _got = the_module::exposed::llist!("b");
 }
 
-#[cfg(feature = "collection_into_constructors")]
-#[test]
+#[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
 fn into_constructor() {
   // test.case( "empty" );
   let got: the_module::LinkedList<i32> = the_module::into_llist! {};
@@ -46,9 +46,10 @@ fn into_constructor() {
   let _got: Llist<&str> = the_module::exposed::into_llist!("b");
 }
 
-#[test]
+#[ test ]
 fn iters() {
   struct MyContainer {
+    #[allow(clippy::linkedlist)]
     entries: the_module::LinkedList<i32>,
   }
 
@@ -84,19 +85,19 @@ fn iters() {
   };
   let got: the_module::LinkedList<_> = instance.into_iter().collect();
   let exp = the_module::LinkedList::from([1, 2, 3]);
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   let instance = MyContainer {
     entries: the_module::LinkedList::from([1, 2, 3]),
   };
-  let got: the_module::LinkedList<_> = (&instance).into_iter().cloned().collect();
+  let got: the_module::LinkedList<_> = (&instance).into_iter().copied().collect();
   let exp = the_module::LinkedList::from([1, 2, 3]);
-  a_id!(got, exp);
+  assert_eq!(got, exp);
 
   let mut instance = MyContainer {
     entries: the_module::LinkedList::from([1, 2, 3]),
   };
   (&mut instance).into_iter().for_each(|v| *v *= 2);
   let exp = the_module::LinkedList::from([2, 4, 6]);
-  a_id!(instance.entries, exp);
+  assert_eq!(instance.entries, exp);
 }

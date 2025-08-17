@@ -41,7 +41,7 @@
 //! ### Collection Integration
 //! - Automatic detection and handling of standard collections
 //! - Custom collection support through trait implementations
-//! - Specialized builders for Vec, HashMap, HashSet, etc.
+//! - Specialized builders for Vec, `HashMap`, `HashSet`, etc.
 //!
 //! ### Subform Support
 //! - Nested structure building with full type safety
@@ -74,12 +74,12 @@
   html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
 )]
 #![doc(html_root_url = "https://docs.rs/former_derive_meta/latest/former_derive_meta/")]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ]
+#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
 
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use macro_tools::{Result, diag};
 
-#[cfg(feature = "derive_former")]
+#[ cfg( feature = "derive_former" ) ]
 mod derive_former;
 
 /// Derive macro for generating a `Former` struct, applying a Builder Pattern to the annotated struct.
@@ -94,8 +94,8 @@ mod derive_former;
 /// - **Complex Lifetime Parameters**: Handles `<'a, T>` patterns, multiple lifetimes, and where clauses
 /// - **Generic Constraints**: Works with `where T: Hash + Eq`, complex trait bounds
 /// - **Nested Structures**: Subform support for complex hierarchical data
-/// - **Collection Types**: HashMap, Vec, HashSet with proper trait bound handling
-/// - **Optional Fields**: Automatic `Option<T>` handling with sensible defaults
+/// - **Collection Types**: `HashMap`, Vec, `HashSet` with proper trait bound handling
+/// - **Optional Fields**: Automatic `Option< T >` handling with sensible defaults
 /// - **Custom Mutators**: Pre-formation data manipulation and validation
 ///
 /// ## ⚠️ Common Pitfalls and Solutions
@@ -103,12 +103,12 @@ mod derive_former;
 /// ### 1. Commented-Out Derive Attributes (90% of issues)
 /// ```rust,ignore
 /// // ❌ WRONG: Derive commented out - will appear as "complex" issue
-/// // #[derive(Debug, PartialEq, Former)]
-/// #[derive(Debug, PartialEq)]
+/// // #[ derive( Debug, PartialEq, Former ) ]
+/// #[ derive( Debug, PartialEq ) ]
 /// pub struct MyStruct { ... }
 ///
 /// // ✅ CORRECT: Uncomment derive attribute
-/// #[derive(Debug, PartialEq, Former)]
+/// #[ derive( Debug, PartialEq, Former ) ]
 /// pub struct MyStruct { ... }
 /// ```
 ///
@@ -119,7 +119,7 @@ mod derive_former;
 /// mod test_with_collections;
 /// ```
 ///
-/// ### 3. Hash+Eq Trait Bounds for HashMap Keys
+/// ### 3. Hash+Eq Trait Bounds for `HashMap` Keys
 /// ```rust,ignore
 /// // ❌ WRONG: Using non-Hash type as HashMap key
 /// pub struct Definition; // No Hash+Eq implementation
@@ -128,14 +128,14 @@ mod derive_former;
 /// }
 ///
 /// // ✅ CORRECT: Implement required traits or use different key type
-/// #[derive(Hash, Eq, PartialEq)]
+/// #[ derive( Hash, Eq, PartialEq ) ]
 /// pub struct Definition; // Now implements Hash+Eq
 /// ```
 ///
 /// ### 4. Lifetime Parameter Complexity
 /// ```rust,ignore
 /// // ✅ WORKS: Complex lifetime scenarios are supported
-/// #[derive(Former)]
+/// #[ derive( Former ) ]
 /// pub struct Child<'child, T>
 /// where
 ///   T: 'child + ?Sized,
@@ -149,9 +149,9 @@ mod derive_former;
 /// When encountering issues:
 /// 1. **Check for commented derives** (resolves 90% of issues)
 /// 2. **Verify feature gate configuration** (for collection tests)
-/// 3. **Assess trait bound requirements** (Hash+Eq for HashMap keys)
+/// 3. **Assess trait bound requirements** (Hash+Eq for `HashMap` keys)
 /// 4. **Test incremental complexity** (start simple, add complexity gradually)
-/// 5. **Enable debug output** (use `#[debug]` to see generated code)
+/// 5. **Enable debug output** (use `#[ debug ]` to see generated code)
 /// 6. **Check lifetime parameters** (ensure proper lifetime annotations)
 ///
 /// ### Common Error Patterns and Solutions
@@ -160,9 +160,9 @@ mod derive_former;
 /// ```text
 /// error[E0277]: the trait bound `MyType: Hash` is not satisfied
 /// ```
-/// **Solution**: Implement required traits for HashMap keys:
+/// **Solution**: Implement required traits for `HashMap` keys:
 /// ```rust,ignore
-/// #[derive(Hash, Eq, PartialEq)]
+/// #[ derive( Hash, Eq, PartialEq ) ]
 /// struct MyType { /* fields */ }
 /// ```
 ///
@@ -172,7 +172,7 @@ mod derive_former;
 /// ```
 /// **Solution**: Add proper lifetime parameters:
 /// ```rust,ignore
-/// #[derive(Former)]
+/// #[ derive( Former ) ]
 /// struct MyStruct<'a> {
 ///     reference: &'a str,
 /// }
@@ -181,12 +181,12 @@ mod derive_former;
 /// #### Commented Derive Issues
 /// ```rust,ignore
 /// // ❌ WRONG: This will appear as a "complex" compilation error
-/// // #[derive(Debug, PartialEq, Former)]
-/// #[derive(Debug, PartialEq)]
+/// // #[ derive( Debug, PartialEq, Former ) ]
+/// #[ derive( Debug, PartialEq ) ]
 /// struct MyStruct { field: String }
 ///
 /// // ✅ CORRECT: Uncomment the derive attribute
-/// #[derive(Debug, PartialEq, Former)]
+/// #[ derive( Debug, PartialEq, Former ) ]
 /// struct MyStruct { field: String }
 /// ```
 ///
@@ -222,11 +222,11 @@ mod derive_former;
 /// ```rust,ignore
 /// use former::Former;
 ///
-/// #[derive(Debug, PartialEq, Former)]
+/// #[ derive( Debug, PartialEq, Former ) ]
 /// pub struct UserProfile {
 ///     age: i32,
 ///     username: String,
-///     bio_optional: Option<String>,
+///     bio_optional: Option< String >,
 /// }
 ///
 /// let profile = UserProfile::former()
@@ -242,12 +242,12 @@ mod derive_former;
 /// use former::Former;
 /// use std::collections::HashMap;
 ///
-/// #[derive(Debug, Former)]
+/// #[ derive( Debug, Former ) ]
 /// pub struct Config {
-///     #[collection]
+///     #[ collection ]
 ///     settings: HashMap<String, String>,
-///     #[collection]
-///     tags: Vec<String>,
+///     #[ collection ]
+///     tags: Vec< String >,
 /// }
 ///
 /// let config = Config::former()
@@ -261,13 +261,13 @@ mod derive_former;
 /// ```rust,ignore
 /// use former::Former;
 ///
-/// #[derive(Debug, Former)]
+/// #[ derive( Debug, Former ) ]
 /// pub struct Container<'a, T>
 /// where
 ///     T: Clone + 'a,
 /// {
 ///     data: &'a T,
-///     metadata: Option<String>,
+///     metadata: Option< String >,
 /// }
 ///
 /// let value = "hello".to_string();
@@ -282,8 +282,8 @@ mod derive_former;
 /// ```rust,ignore
 /// use former::Former;
 ///
-/// #[derive(Debug, Former)]
-/// #[mutator(custom)]
+/// #[ derive( Debug, Former ) ]
+/// #[ mutator( custom ) ]
 /// pub struct ValidatedStruct {
 ///     min_value: i32,
 ///     max_value: i32,
@@ -291,7 +291,7 @@ mod derive_former;
 ///
 /// // Custom mutator implementation
 /// impl FormerMutator for ValidatedStructDefinitionTypes {
-///     fn form_mutation(storage: &mut Self::Storage, _context: &mut Option<Self::Context>) {
+///     fn form_mutation(storage: &mut Self::Storage, _context: &mut Option< Self::Context >) {
 ///         if let (Some(min), Some(max)) = (&storage.min_value, &storage.max_value) {
 ///             if min > max {
 ///                 std::mem::swap(&mut storage.min_value, &mut storage.max_value);
@@ -303,7 +303,7 @@ mod derive_former;
 ///
 /// ## Debugging Generated Code
 ///
-/// The Former derive macro provides comprehensive debugging capabilities through the `#[debug]` attribute,
+/// The Former derive macro provides comprehensive debugging capabilities through the `#[ debug ]` attribute,
 /// following the design principle that "Proc Macros: Must Implement a 'debug' Attribute".
 ///
 /// ### Debug Attribute Usage
@@ -312,17 +312,17 @@ mod derive_former;
 /// use former::Former;
 ///
 /// // Standalone debug attribute
-/// #[derive(Debug, PartialEq, Former)]
-/// #[debug]  // <-- Enables comprehensive debug output
+/// #[ derive( Debug, PartialEq, Former ) ]
+/// #[ debug ]  // <-- Enables comprehensive debug output
 /// pub struct Person {
 ///     name: String,
 ///     age: u32,
-///     email: Option<String>,
+///     email: Option< String >,
 /// }
 ///
-/// // Within #[former(...)] container
-/// #[derive(Debug, PartialEq, Former)]
-/// #[former(debug, standalone_constructors)]  // <-- Debug with other attributes
+/// // Within #[ former( ... ) ] container
+/// #[ derive( Debug, PartialEq, Former ) ]
+/// #[ former( debug, standalone_constructors ) ]  // <-- Debug with other attributes
 /// pub struct Config {
 ///     host: String,
 ///     port: u16,
@@ -331,7 +331,7 @@ mod derive_former;
 ///
 /// ### Comprehensive Debug Information
 ///
-/// When `#[debug]` is present and the `former_diagnostics_print_generated` feature is enabled,
+/// When `#[ debug ]` is present and the `former_diagnostics_print_generated` feature is enabled,
 /// the macro provides detailed information in four phases:
 ///
 /// #### Phase 1: Input Analysis
@@ -342,17 +342,17 @@ mod derive_former;
 ///
 /// #### Phase 2: Generic Classification
 /// - **Classification Results**: How generics are categorized (lifetime-only, type-only, mixed, empty)
-/// - **Generated Generic Components**: impl_generics, ty_generics, where_clause breakdown
+/// - **Generated Generic Components**: `impl_generics`, `ty_generics`, `where_clause` breakdown
 /// - **Strategy Explanation**: Why certain generation strategies were chosen
 ///
 /// #### Phase 3: Generated Components Analysis
-/// - **Core Components**: FormerStorage, FormerDefinition, FormerDefinitionTypes, Former struct
-/// - **Trait Implementations**: EntityToStorage, EntityToFormer, EntityToDefinition, etc.
+/// - **Core Components**: `FormerStorage`, `FormerDefinition`, `FormerDefinitionTypes`, Former struct
+/// - **Trait Implementations**: `EntityToStorage`, `EntityToFormer`, `EntityToDefinition`, etc.
 /// - **Formation Process**: Step-by-step formation workflow explanation
 /// - **Customizations**: How attributes affect the generated code structure
 ///
 /// #### Phase 4: Complete Generated Code
-/// - **Final TokenStream**: The complete code that will be compiled
+/// - **Final `TokenStream`**: The complete code that will be compiled
 /// - **Integration Points**: How generated code integrates with existing types
 ///
 /// ### Enabling Debug Output
@@ -385,8 +385,8 @@ mod derive_former;
 /// - **Conditional Compilation**: Debug code only included with feature flag
 /// - **IDE Integration**: Debug output appears in compiler output and can be captured by IDEs
 /// - **CI/CD Friendly**: Can be enabled in build pipelines for automated analysis
-#[cfg(feature = "enabled")]
-#[cfg(feature = "derive_former")]
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_former" ) ]
 #[
   proc_macro_derive
   (

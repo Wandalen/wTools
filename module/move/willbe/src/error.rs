@@ -9,6 +9,6 @@ crate::mod_interface!
   exposed use ::error_tools::dependency::*;
   
   // Re-export standard library Result and Option
-  exposed use ::std::result::Result;
-  exposed use ::std::option::Option;
+  exposed use ::core::result::Result;
+  exposed use ::core::option::Option;
 }

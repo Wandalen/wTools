@@ -9,8 +9,8 @@
 //!
 //! ### Field Analysis and Classification
 //! - **Type Introspection**: Deep analysis of field types including generics and lifetimes
-//! - **Container Detection**: Automatic detection of Vec, HashMap, HashSet, and other collections
-//! - **Optional Type Handling**: Sophisticated handling of `Option<T>` wrapped fields
+//! - **Container Detection**: Automatic detection of Vec, `HashMap`, `HashSet`, and other collections
+//! - **Optional Type Handling**: Sophisticated handling of `Option< T >` wrapped fields
 //! - **Attribute Integration**: Seamless integration with field-level attributes
 //!
 //! ### Code Generation Capabilities
@@ -22,7 +22,7 @@
 //! ## Critical Pitfalls Resolved
 //!
 //! ### 1. Optional Type Detection and Handling
-//! **Issue Resolved**: Confusion between `Option<T>` fields and non-optional fields in storage
+//! **Issue Resolved**: Confusion between `Option< T >` fields and non-optional fields in storage
 //! **Root Cause**: Manual implementations not properly distinguishing optional vs required fields
 //! **Solution**: Systematic optional type detection with proper storage generation
 //! **Prevention**: Automated `is_optional` detection prevents manual implementation errors
@@ -83,21 +83,21 @@ use macro_tools::{container_kind, syn, qt, syn_err, Result, quote};
 /// ## Type Analysis
 /// - **`ty`**: Complete field type as specified in the original struct
 /// - **`non_optional_ty`**: Inner type for Option-wrapped fields, or same as `ty` for non-optional
-/// - **`is_optional`**: Whether the field is wrapped in `Option<T>`
-/// - **`of_type`**: Container classification (Vec, HashMap, HashSet, etc.)
+/// - **`is_optional`**: Whether the field is wrapped in `Option< T >`
+/// - **`of_type`**: Container classification (Vec, `HashMap`, `HashSet`, etc.)
 ///
 /// ## Field Classification
-/// - **`for_storage`**: Whether this field should appear in the FormerStorage struct
+/// - **`for_storage`**: Whether this field should appear in the `FormerStorage` struct
 /// - **`for_formed`**: Whether this field should appear in the final formed struct
 /// - **`attrs`**: Parsed field-level attributes affecting code generation
 ///
 /// # Critical Design Decisions
 ///
 /// ## Optional Type Handling Strategy
-/// The structure distinguishes between fields that are naturally `Option<T>` in the original
-/// struct versus fields that become `Option<T>` in the storage struct:
-/// - **Natural Optional**: `field: Option<String>` → storage: `field: Option<Option<String>>`  
-/// - **Storage Optional**: `field: String` → storage: `field: Option<String>`
+/// The structure distinguishes between fields that are naturally `Option< T >` in the original
+/// struct versus fields that become `Option< T >` in the storage struct:
+/// - **Natural Optional**: `field: Option< String >` → storage: `field: Option<Option< String >>`  
+/// - **Storage Optional**: `field: String` → storage: `field: Option< String >`
 ///
 /// ## Container Type Classification
 /// Automatic detection of collection types enables appropriate setter generation:
@@ -115,12 +115,12 @@ use macro_tools::{container_kind, syn, qt, syn_err, Result, quote};
 /// ## 2. Optional Type Confusion (Prevention)
 /// **Problem**: Confusion between naturally optional fields and storage-optional fields
 /// **Prevention**: Clear `is_optional` flag with proper handling in storage generation
-/// **Example**: `Option<String>` vs `String` handled correctly in storage generation
+/// **Example**: `Option< String >` vs `String` handled correctly in storage generation
 ///
 /// ## 3. Container Misclassification (Prevention)
 /// **Problem**: Collection types not recognized, leading to inappropriate setter generation
 /// **Prevention**: Comprehensive container type detection using `container_kind` analysis
-/// **Example**: `Vec<T>` automatically detected for collection subform generation
+/// **Example**: `Vec< T >` automatically detected for collection subform generation
 ///
 /// # Usage in Code Generation
 /// This structure is used throughout the Former pattern code generation to:
@@ -128,12 +128,12 @@ use macro_tools::{container_kind, syn, qt, syn_err, Result, quote};
 /// - Generate proper storage field declarations
 /// - Create correct preform conversion logic
 /// - Maintain generic parameter consistency
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 pub struct FormerField<'a> {
   pub attrs: FieldAttributes,
   pub vis: &'a syn::Visibility,
   pub ident: &'a syn::Ident,
-  pub colon_token: &'a Option<syn::token::Colon>,
+  pub colon_token: &'a Option< syn::token::Colon >,
   pub ty: &'a syn::Type,
   pub non_optional_ty: &'a syn::Type,
   pub is_optional: bool,
@@ -163,36 +163,36 @@ impl<'a> FormerField<'a> {
   `scalar_setter_required`
 
   */
-  /// Construct a comprehensive FormerField from a syn::Field with full type analysis and pitfall prevention.
+  /// Construct a comprehensive `FormerField` from a `syn::Field` with full type analysis and pitfall prevention.
   ///
   /// This is the **critical constructor** that performs deep analysis of a struct field and creates
-  /// the complete FormerField representation needed for code generation. It handles all the complex
+  /// the complete `FormerField` representation needed for code generation. It handles all the complex
   /// type scenarios that caused manual implementation failures and ensures proper field categorization.
   ///
   /// # Processing Steps
   ///
   /// ## 1. Attribute Processing
   /// Parses and validates all field-level attributes using `FieldAttributes::from_attrs()`:
-  /// - Configuration attributes (`#[former(default = ...)]`)
-  /// - Setter type attributes (`#[scalar]`, `#[subform_collection]`, etc.)
-  /// - Constructor argument exclusion markers (`#[former_ignore]`)
+  /// - Configuration attributes (`#[ former( default = ... ) ]`)
+  /// - Setter type attributes (`#[ scalar ]`, `#[ subform_collection ]`, etc.)
+  /// - Constructor argument exclusion markers (`#[ former_ignore ]`)
   ///
   /// ## 2. Type Analysis and Classification
   /// Performs comprehensive type analysis to determine field characteristics:
-  /// - **Optional Detection**: Uses `typ::is_optional()` to detect `Option<T>` wrapping
+  /// - **Optional Detection**: Uses `typ::is_optional()` to detect `Option< T >` wrapping
   /// - **Container Classification**: Uses `container_kind::of_optional()` for collection detection
-  /// - **Generic Extraction**: Extracts inner type from `Option<T>` for further processing
+  /// - **Generic Extraction**: Extracts inner type from `Option< T >` for further processing
   ///
   /// ## 3. Field Categorization
   /// Determines how the field should be used in code generation:
-  /// - **Storage Fields**: Fields that appear in FormerStorage struct
+  /// - **Storage Fields**: Fields that appear in `FormerStorage` struct
   /// - **Formed Fields**: Fields that appear in the final formed struct
   /// - **Both**: Fields that appear in both (most common case)
   ///
   /// # Pitfalls Prevented
   ///
   /// ## 1. Optional Type Detection Errors (Critical Prevention)
-  /// **Problem**: Manual implementations incorrectly handling `Option<T>` fields
+  /// **Problem**: Manual implementations incorrectly handling `Option< T >` fields
   /// **Prevention**: Systematic optional detection with proper inner type extraction
   /// **Example**:
   /// ```rust,ignore
@@ -205,7 +205,7 @@ impl<'a> FormerField<'a> {
   /// **Prevention**: Comprehensive container kind detection
   /// **Example**:
   /// ```rust,ignore
-  /// // Field: Vec<Child>
+  /// // Field: Vec< Child >
   /// // ✅ Correctly classified: of_type = ContainerKind::Vector
   /// ```
   ///
@@ -229,7 +229,7 @@ impl<'a> FormerField<'a> {
   ///
   /// # Error Handling
   /// - **Missing Identifiers**: Clear error for tuple struct fields or anonymous fields
-  /// **Generic Extraction Errors**: Proper error propagation from `typ::parameter_first()`
+  ///   **Generic Extraction Errors**: Proper error propagation from `typ::parameter_first()`
   /// - **Attribute Parsing Errors**: Full error context preservation from attribute parsing
   ///
   /// # Usage Context
@@ -237,7 +237,7 @@ impl<'a> FormerField<'a> {
   /// - Regular struct fields → `for_storage = true, for_formed = true`
   /// - Storage-only fields → `for_storage = true, for_formed = false`
   /// - Special processing fields → Custom flag combinations
-  pub fn from_syn(field: &'a syn::Field, for_storage: bool, for_formed: bool) -> Result<Self> {
+  pub fn from_syn(field: &'a syn::Field, for_storage: bool, for_formed: bool) -> Result< Self > {
     let attrs = FieldAttributes::from_attrs(field.attrs.iter())?;
     let vis = &field.vis;
     let ident = field.ident.as_ref().ok_or_else(|| {
@@ -274,7 +274,7 @@ impl<'a> FormerField<'a> {
   /// pitfall that caused manual implementation failures.
   ///
   /// # Purpose and Usage
-  /// Used for initializing FormerStorage, where all fields start as `None` and are
+  /// Used for initializing `FormerStorage`, where all fields start as `None` and are
   /// populated through the builder pattern. This prevents the common manual implementation
   /// error of forgetting to initialize storage fields.
   ///
@@ -290,7 +290,7 @@ impl<'a> FormerField<'a> {
   /// string_1 : ::core::option::Option::None, 
   /// int_optional_1 : ::core::option::Option::None,
   /// ```
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn storage_fields_none(&self) -> TokenStream {
     let ident = Some(self.ident.clone());
     let tokens = qt! { ::core::option::Option::None };
@@ -308,8 +308,8 @@ impl<'a> FormerField<'a> {
   /// It prevents the common manual implementation pitfall of incorrect Option nesting.
   ///
   /// # Option Wrapping Strategy
-  /// - **Non-Optional Field**: `field: Type` → `pub field: Option<Type>`
-  /// - **Optional Field**: `field: Option<Type>` → `pub field: Option<Type>` (no double wrapping)
+  /// - **Non-Optional Field**: `field: Type` → `pub field: Option< Type >`
+  /// - **Optional Field**: `field: Option< Type >` → `pub field: Option< Type >` (no double wrapping)
   ///
   /// # Pitfall Prevention
   /// **Issue Resolved**: Incorrect Option wrapping in storage fields
@@ -320,13 +320,13 @@ impl<'a> FormerField<'a> {
   /// # Generated Code Example
   ///
   /// ```ignore
-  /// pub int_1 : core::option::Option< i32 >,
-  /// pub string_1 : core::option::Option< String >,
-  /// pub int_optional_1 :  core::option::Option< i32 >,
-  /// pub string_optional_1 : core::option::Option< String >,
+  /// pub int_1 : core::option::Option<  i32  >,
+  /// pub string_1 : core::option::Option<  String  >,
+  /// pub int_optional_1 :  core::option::Option<  i32  >,
+  /// pub string_optional_1 : core::option::Option<  String  >,
   /// ```
   ///
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn storage_field_optional(&self) -> TokenStream {
     let ident = Some(self.ident.clone());
     let ty = self.ty.clone();
@@ -335,7 +335,7 @@ impl<'a> FormerField<'a> {
     let ty2 = if self.is_optional {
       qt! { #ty }
     } else {
-      qt! { ::core::option::Option< #ty > }
+      qt! { ::core::option::Option<  #ty  > }
     };
 
     qt! {
@@ -350,7 +350,7 @@ impl<'a> FormerField<'a> {
   /// and error cases, resolving many conversion pitfalls from manual implementations.
   ///
   /// # Conversion Strategy
-  /// ## For Optional Fields (`Option<T>`)
+  /// ## For Optional Fields (`Option< T >`)
   /// - If storage has value: unwrap and wrap in `Some`
   /// - If no value + default: create `Some(default)`
   /// - If no value + no default: return `None`
@@ -393,9 +393,9 @@ impl<'a> FormerField<'a> {
   /// };
   /// ```
   ///
-  #[inline(always)]
-  #[allow(clippy::unnecessary_wraps)]
-  pub fn storage_field_preform(&self) -> Result<TokenStream> {
+  #[ inline( always ) ]
+  #[ allow( clippy::unnecessary_wraps ) ]
+  pub fn storage_field_preform(&self) -> Result< TokenStream > {
     if !self.for_formed {
       return Ok(qt! {});
     }
@@ -404,7 +404,7 @@ impl<'a> FormerField<'a> {
     let ty = self.ty;
 
     // <<< Reverted: Use AttributePropertyOptionalSyn and ref_internal() >>>
-    let default: Option<&syn::Expr> = self.attrs.config.as_ref().and_then(|attr| attr.default.ref_internal());
+    let default: Option< &syn::Expr > = self.attrs.config.as_ref().and_then(|attr| attr.default.ref_internal());
     // <<< End Revert >>>
 
     let tokens = if self.is_optional {
@@ -501,7 +501,7 @@ impl<'a> FormerField<'a> {
   /// **Solution**: Conditional field name extraction based on `for_formed` flag
   /// **Prevention**: Automatic field categorization prevents field mixing errors
   ///
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn storage_field_name(&self) -> TokenStream {
     if !self.for_formed {
       return qt! {};
@@ -520,7 +520,7 @@ impl<'a> FormerField<'a> {
   /// # Setter Type Determination
   /// The method automatically selects setter types based on field analysis:
   /// - **Scalar Setters**: For basic types (`i32`, `String`, etc.)
-  /// - **Collection Setters**: For container types (`Vec<T>`, `HashMap<K,V>`, `HashSet<T>`)
+  /// - **Collection Setters**: For container types (`Vec< T >`, `HashMap<K,V>`, `HashSet<T>`)
   /// - **Subform Entry Setters**: For HashMap-like containers with entry-based building
   /// - **Custom Attribute Setters**: When field has explicit setter type attributes
   ///
@@ -533,7 +533,7 @@ impl<'a> FormerField<'a> {
   /// ## 1. Incorrect Setter Type Selection (Critical Prevention)
   /// **Problem**: Manual implementations choosing wrong setter types for container fields
   /// **Prevention**: Automatic container type detection with proper setter type selection
-  /// **Example**: `Vec<T>` automatically gets collection setter, not scalar setter
+  /// **Example**: `Vec< T >` automatically gets collection setter, not scalar setter
   ///
   /// ## 2. Generic Parameter Loss in Setters (Prevention)
   /// **Problem**: Setter methods losing generic parameter information from original field
@@ -552,9 +552,9 @@ impl<'a> FormerField<'a> {
   /// 4. **Code Generation**: Generate setter methods with proper generic handling
   /// 5. **Namespace Generation**: Create supporting code for complex setter types
   ///
-  #[inline]
-  #[allow(clippy::too_many_arguments)]
-  #[allow(unused_variables)]
+  #[ inline ]
+  #[ allow( clippy::too_many_arguments ) ]
+  #[ allow( unused_variables ) ]
   pub fn former_field_setter(
     &self,
     item: &syn::Ident,
@@ -567,7 +567,7 @@ impl<'a> FormerField<'a> {
     former_generics_ty: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
     former_generics_where: &syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
     former_storage: &syn::Ident,
-  ) -> Result<(TokenStream, TokenStream)> {
+  ) -> Result< (TokenStream, TokenStream) > {
     // scalar setter
     let namespace_code = qt! {};
     let setters_code = self.scalar_setter(item, former, former_storage, original_input);
@@ -660,7 +660,7 @@ impl<'a> FormerField<'a> {
   /// # Generated Code Pattern
   /// ```ignore
   /// #[doc = "Setter for the 'field_name' field."]
-  /// #[inline]
+  /// #[ inline ]
   /// pub fn field_name<Src>(mut self, src: Src) -> Self
   /// where
   ///   Src: ::core::convert::Into<FieldType>,
@@ -670,8 +670,8 @@ impl<'a> FormerField<'a> {
   ///   self
   /// }
   /// ```
-  #[inline]
-  #[allow(clippy::format_in_format_args)]
+  #[ inline ]
+  #[ allow( clippy::format_in_format_args ) ]
   pub fn scalar_setter(
     &self,
     item: &syn::Ident,
@@ -756,9 +756,9 @@ field : {field_ident}",
   ///
   /// See `tests/inc/former_tests/subform_collection_manual.rs` for example of generated code.
   ///
-  #[inline]
-    #[allow(unused_variables)]
-  #[allow(clippy::too_many_lines, clippy::too_many_arguments)]
+  #[ inline ]
+    #[ allow( unused_variables ) ]
+  #[ allow( clippy::too_many_lines, clippy::too_many_arguments ) ]
   pub fn subform_collection_setter(
     &self,
     item: &syn::Ident,
@@ -771,7 +771,7 @@ field : {field_ident}",
     former_generics_ty: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
     former_generics_where: &syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
     original_input: &macro_tools::proc_macro2::TokenStream,
-  ) -> Result<(TokenStream, TokenStream)> {
+  ) -> Result< (TokenStream, TokenStream) > {
     let attr = self.attrs.subform_collection.as_ref().unwrap();
     let field_ident = &self.ident;
     let field_typ = &self.non_optional_ty;
@@ -788,7 +788,7 @@ field : {field_ident}",
     // Note: former_generics_ty always contains at least 'Definition' for formers
     let former_type_ref = qt! { #former< Definition > };
 
-    #[allow(clippy::useless_attribute, clippy::items_after_statements)]
+    #[ allow( clippy::useless_attribute, clippy::items_after_statements ) ]
     use convert_case::{Case, Casing};
 
     // Get the field name as a string
@@ -829,7 +829,7 @@ field : {field_ident}",
           #field_typ as former::EntityToDefinition< #former_type_ref, #former_type_ref, #subform_collection_end< Definition > >
         >::Definition
       }
-      // < Vec< String > as former::EntityToDefinition< Self, Self, Struct1SubformCollectionVec1End > >::Definition
+      // < Vec<  String  > as former::EntityToDefinition< Self, Self, Struct1SubformCollectionVec1End > >::Definition
     };
     // <<< End Revert >>>
 
@@ -900,7 +900,6 @@ field : {field_ident}",
       let debug = format!(
         r"
 /// The collection setter provides a collection setter that returns a CollectionFormer tailored for managing a collection of child entities. It employs a generic collection definition to facilitate operations on the entire collection, such as adding or updating elements.
-
 impl< Definition > {former}< Definition >
 where
   Definition : former::FormerDefinition< Storage = {former_storage} >,
@@ -1016,7 +1015,7 @@ with the new content generated during the subforming process.
         (
           &self,
           storage : #field_typ,
-          super_former : Option< #former_type_ref >,
+          super_former : Option<  #former_type_ref  >,
         )
         -> #former_type_ref
         {
@@ -1049,9 +1048,9 @@ with the new content generated during the subforming process.
   ///
   /// See `tests/inc/former_tests/subform_entry_manual.rs` for example of generated code.
   ///
-    #[allow(unused_variables)]
-  #[inline]
-  #[allow(clippy::format_in_format_args, clippy::too_many_lines, clippy::too_many_arguments)]
+    #[ allow( unused_variables ) ]
+  #[ inline ]
+  #[ allow( clippy::format_in_format_args, clippy::too_many_lines, clippy::too_many_arguments ) ]
   pub fn subform_entry_setter(
     &self,
     item: &syn::Ident,
@@ -1062,7 +1061,7 @@ with the new content generated during the subforming process.
     struct_generics_ty: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
     struct_generics_where: &syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
     original_input: &macro_tools::proc_macro2::TokenStream,
-  ) -> Result<(TokenStream, TokenStream)> {
+  ) -> Result< (TokenStream, TokenStream) > {
     use convert_case::{Case, Casing};
     let field_ident = self.ident;
     let field_typ = self.non_optional_ty;
@@ -1203,7 +1202,6 @@ allowing for dynamic and flexible construction of the `{item}` entity's {field_i
 /// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
 /// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
 /// integrating them into the formation process of the parent entity.
-
 impl< Definition > {former}< Definition >
 where
   Definition : former::FormerDefinition< Storage = {former_storage} >,
@@ -1302,7 +1300,7 @@ formation process of the `{item}`.
         (
           &self,
           substorage : Types2::Storage,
-          super_former : core::option::Option< Types2::Context >,
+          super_former : core::option::Option<  Types2::Context  >,
         )
         -> Types2::Formed
         {
@@ -1333,15 +1331,13 @@ formation process of the `{item}`.
   /// Generates setter functions to subform scalar and all corresponding helpers.
   ///
   /// See `tests/inc/former_tests/subform_scalar_manual.rs` for example of generated code.
-  #[inline]
-  #[allow(
-    clippy::format_in_format_args,
+  #[ inline ]
+  #[ allow( clippy::format_in_format_args,
     clippy::unnecessary_wraps,
     unused_variables,
 
     clippy::too_many_lines,
-    clippy::too_many_arguments
-  )]
+    clippy::too_many_arguments ) ]
   pub fn subform_scalar_setter(
     &self,
     item: &syn::Ident,
@@ -1352,7 +1348,7 @@ formation process of the `{item}`.
     struct_generics_ty: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
     struct_generics_where: &syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
     original_input: &macro_tools::proc_macro2::TokenStream,
-  ) -> Result<(TokenStream, TokenStream)> {
+  ) -> Result< (TokenStream, TokenStream) > {
     use convert_case::{Case, Casing};
     let field_ident = self.ident;
     let field_typ = self.non_optional_ty;
@@ -1524,7 +1520,6 @@ former and end action types, ensuring a seamless developer experience when formi
         r"
 /// Extends `{former}` to include a method that initializes and configures a subformer for the '{field_ident}' field.
 /// This function demonstrates the dynamic addition of a named {field_ident}, leveraging a subformer to specify detailed properties.
-
 impl< Definition > {former}< Definition >
 where
   Definition : former::FormerDefinition< Storage = < {item} as former::EntityToStorage >::Storage >,
@@ -1610,7 +1605,7 @@ Essentially, this end action integrates the individually formed scalar value bac
             (
               &self,
               substorage : Types2::Storage,
-              super_former : core::option::Option< Types2::Context >,
+              super_former : core::option::Option<  Types2::Context  >,
             )
             -> Types2::Formed
             {
@@ -1658,7 +1653,7 @@ Essentially, this end action integrates the individually formed scalar value bac
     //         (
     //           &self,
     //           substorage : Types2::Storage,
-    //           super_former : core::option::Option< Types2::Context >,
+    //           super_former : core::option::Option<  Types2::Context  >,
     //         )
     //         -> Types2::Formed
     //         {
@@ -1686,7 +1681,7 @@ Essentially, this end action integrates the individually formed scalar value bac
   }
 
   /// Get name of setter for subform scalar if such setter should be generated.
-  pub fn subform_scalar_setter_name(&self) -> Option<&syn::Ident> {
+  pub fn subform_scalar_setter_name(&self) -> Option< &syn::Ident > {
     if let Some(ref attr) = self.attrs.subform_scalar {
       if attr.setter() {
         if let Some(name) = attr.name.ref_internal() {
@@ -1699,7 +1694,7 @@ Essentially, this end action integrates the individually formed scalar value bac
   }
 
   /// Get name of setter for collection if such setter should be generated.
-  pub fn subform_collection_setter_name(&self) -> Option<&syn::Ident> {
+  pub fn subform_collection_setter_name(&self) -> Option< &syn::Ident > {
     if let Some(ref attr) = self.attrs.subform_collection {
       if attr.setter() {
         if let Some(name) = attr.name.ref_internal() {
@@ -1712,7 +1707,7 @@ Essentially, this end action integrates the individually formed scalar value bac
   }
 
   /// Get name of setter for subform if such setter should be generated.
-  pub fn subform_entry_setter_name(&self) -> Option<&syn::Ident> {
+  pub fn subform_entry_setter_name(&self) -> Option< &syn::Ident > {
     if let Some(ref attr) = self.attrs.subform_entry {
       if attr.setter() {
         if let Some(ref name) = attr.name.as_ref() {

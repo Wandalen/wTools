@@ -105,7 +105,7 @@ mod private
   // aaa : should it be typed? it is user command with unknown error type
   // fix clippy error
   fn exec_command( command : VerifiedCommand, routine : Routine, ctx : Context )
-  -> error_tools::error::untyped::Result< () >
+  -> error_tools::error::untyped::Result<  ()  >
   {
     match routine
     {
@@ -128,7 +128,7 @@ mod private
   #[ allow( clippy::needless_pass_by_value ) ]
   // fix clippy error
   fn exec_internal_command( dictionary : &Dictionary, command : VerifiedCommand )
-  -> Result< (), InternalCommandError >
+  -> Result<  (), InternalCommandError  >
   {
     match command.phrase.as_str()
     {

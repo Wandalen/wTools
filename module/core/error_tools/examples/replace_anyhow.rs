@@ -18,13 +18,13 @@ fn main() {
   _ = std::fs::write("temp.txt", "hello world");
 
   match read_and_process_file("temp.txt") {
-    Ok(processed) => println!("Processed content: {}", processed),
-    Err(e) => println!("An error occurred: {:?}", e),
+    Ok(processed) => println!("Processed content: {processed}"),
+    Err(e) => println!("An error occurred: {e:?}"),
   }
 
   match read_and_process_file("non_existent.txt") {
     Ok(_) => (),
-    Err(e) => println!("Correctly handled error for non-existent file: {:?}", e),
+    Err(e) => println!("Correctly handled error for non-existent file: {e:?}"),
   }
 
   // Clean up the dummy file

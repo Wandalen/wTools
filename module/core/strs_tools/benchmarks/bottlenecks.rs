@@ -82,22 +82,16 @@ fn bench_multi_delimiter_bottleneck( c: &mut Criterion )
       {
         b.iter( || 
         {
-          match data.simd_split( &delimiters ) 
-          {
-            Ok( iter ) => 
-            {
-              let result: Vec< _ > = iter.collect();
-              black_box( result )
-            },
-            Err( _ ) => 
-            {
-              let result: Vec< _ > = split()
-                .src( black_box( data ) )
-                .delimeter( delimiters.clone() )
-                .perform()
-                .collect();
-              black_box( result )
-            }
+          if let Ok( iter ) = data.simd_split( &delimiters ) {
+            let result: Vec< _ > = iter.collect();
+            black_box( result )
+          } else {
+            let result: Vec< _ > = split()
+              .src( black_box( data ) )
+              .delimeter( delimiters.clone() )
+              .perform()
+              .collect();
+            black_box( result )
           }
         } );
       },
@@ -132,7 +126,7 @@ fn bench_large_input_bottleneck( c: &mut Criterion )
     } 
     else 
     {
-      format!( "{}b", size )
+      format!( "{size}b" )
     };
     
     // Scalar implementation
@@ -162,22 +156,16 @@ fn bench_large_input_bottleneck( c: &mut Criterion )
       {
         b.iter( || 
         {
-          match data.simd_split( &delimiters ) 
-          {
-            Ok( iter ) => 
-            {
-              let result: Vec< _ > = iter.collect();
-              black_box( result )
-            },
-            Err( _ ) => 
-            {
-              let result: Vec< _ > = split()
-                .src( black_box( data ) )
-                .delimeter( delimiters.clone() )
-                .perform()
-                .collect();
-              black_box( result )
-            }
+          if let Ok( iter ) = data.simd_split( &delimiters ) {
+            let result: Vec< _ > = iter.collect();
+            black_box( result )
+          } else {
+            let result: Vec< _ > = split()
+              .src( black_box( data ) )
+              .delimeter( delimiters.clone() )
+              .perform()
+              .collect();
+            black_box( result )
           }
         } );
       },
@@ -231,22 +219,16 @@ fn bench_pattern_complexity_bottleneck( c: &mut Criterion )
       {
         b.iter( || 
         {
-          match data.simd_split( &delimiters ) 
-          {
-            Ok( iter ) => 
-            {
-              let result: Vec< _ > = iter.collect();
-              black_box( result )
-            },
-            Err( _ ) => 
-            {
-              let result: Vec< _ > = split()
-                .src( black_box( data ) )
-                .delimeter( delimiters.clone() )
-                .perform()
-                .collect();
-              black_box( result )
-            }
+          if let Ok( iter ) = data.simd_split( &delimiters ) {
+            let result: Vec< _ > = iter.collect();
+            black_box( result )
+          } else {
+            let result: Vec< _ > = split()
+              .src( black_box( data ) )
+              .delimeter( delimiters.clone() )
+              .perform()
+              .collect();
+            black_box( result )
           }
         } );
       },
@@ -273,7 +255,7 @@ fn print_diff( old_content: &str, new_content: &str )
     if changes_shown >= MAX_CHANGES {
       let remaining = max_lines - i;
       if remaining > 0 {
-        println!( "    ... and {} more lines changed", remaining );
+        println!( "    ... and {remaining} more lines changed" );
       }
       break;
     }
@@ -283,10 +265,10 @@ fn print_diff( old_content: &str, new_content: &str )
     
     if old_line != new_line {
       if !old_line.is_empty() {
-        println!( "  - {}", old_line );
+        println!( "  - {old_line}" );
       }
       if !new_line.is_empty() {
-        println!( "  + {}", new_line );
+        println!( "  + {new_line}" );
       }
       if old_line.is_empty() && new_line.is_empty() {
         continue; // Skip empty line changes
@@ -375,9 +357,7 @@ fn update_benchmark_docs()
 {
   let current_time = Command::new( "date" )
     .arg( "+%Y-%m-%d %H:%M UTC" )
-    .output()
-    .map( |out| String::from_utf8_lossy( &out.stdout ).trim().to_string() )
-    .unwrap_or_else( |_| "2025-08-06".to_string() );
+    .output().map_or_else(|_| "2025-08-06".to_string(), |out| String::from_utf8_lossy( &out.stdout ).trim().to_string());
 
   // Generate current benchmark results
   let results = generate_benchmark_results();
@@ -444,8 +424,8 @@ Benchmarks automatically update the following files:
 ", 
     min_improvement, max_improvement,
     avg_improvement,
-    results.iter().find( |r| r.category.contains( "500KB" ) ).map( |r| r.improvement_factor ).unwrap_or( 0.0 ),
-    results.iter().find( |r| r.category.contains( "8 delims" ) ).map( |r| r.improvement_factor ).unwrap_or( 0.0 ),
+    results.iter().find( |r| r.category.contains( "500KB" ) ).map_or( 0.0, |r| r.improvement_factor ),
+    results.iter().find( |r| r.category.contains( "8 delims" ) ).map_or( 0.0, |r| r.improvement_factor ),
     peak_simd_throughput / 1000.0, // Convert to MiB/s  
     peak_scalar_throughput,
     current_time = current_time );
@@ -476,7 +456,7 @@ Based on recent benchmark runs, SIMD optimizations provide the following improve
 
 | Test Category | Input Size | Improvement | Detailed Metrics |
 |---------------|------------|-------------|------------------|
-{}
+{performance_table}
 ## Bottleneck Analysis
 
 ### Critical Performance Factors
@@ -493,7 +473,7 @@ Based on recent benchmark runs, SIMD optimizations provide the following improve
 
 *Generated: {current_time}*
 *This file updated after each benchmark run*
-", performance_table, current_time = current_time );
+" );
 
   // 3. Current run results with latest timing data
   let mut current_run_content = format!( 
@@ -523,7 +503,7 @@ The benchmark system tests three critical bottlenecks:
 ## Current Run Results
 
 ### Detailed Timing Data
-", current_time = current_time );
+" );
   
   // Add detailed timing data for current run results
   for result in &results {
@@ -544,7 +524,7 @@ The benchmark system tests three critical bottlenecks:
     ) );
   }
   
-  current_run_content.push_str( &format!( "
+  current_run_content.push_str( "
 ## Performance Characteristics
 
 ### SIMD Advantages
@@ -568,33 +548,31 @@ The benchmark system tests three critical bottlenecks:
 
 *This file provides technical details for the most recent benchmark execution*
 *Updated automatically each time benchmarks are run*
-" ) );
+" );
 
   // Write all documentation files and collect new content
-  let new_contents = vec![
-    ( "benchmarks/readme.md", readme_content ),
+  let new_contents = [( "benchmarks/readme.md", readme_content ),
     ( "benchmarks/detailed_results.md", detailed_content ),
-    ( "benchmarks/current_run_results.md", current_run_content ),
-  ];
+    ( "benchmarks/current_run_results.md", current_run_content )];
 
   let mut updated_count = 0;
   for ( ( path, content ), old_content ) in new_contents.iter().zip( old_versions.iter() ) {
-    if let Ok( _ ) = fs::write( path, content ) {
+    if let Ok( () ) = fs::write( path, content ) {
       updated_count += 1;
       
       // Print diff if there are changes
-      if old_content != content {
-        println!( "
-📄 Changes in {}:", path );
-        print_diff( old_content, content );
-      } else {
-        println!( "📄 No changes in {}", path );
-      }
+      if old_content == content {
+              println!( "📄 No changes in {path}" );
+            } else {
+              println!( "
+      📄 Changes in {path}:" );
+              print_diff( old_content, content );
+            }
     }
   }
   
   println!( "
-📝 Updated {} benchmark documentation files", updated_count );
+📝 Updated {updated_count} benchmark documentation files" );
 }
 
 criterion_group!(

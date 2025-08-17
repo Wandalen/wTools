@@ -42,8 +42,8 @@ mod private {
   /// // Output will include a _phantom field of type `PhantomData< ( T, U ) >`
   /// ```
   ///
-  #[allow(clippy::default_trait_access, clippy::semicolon_if_nothing_returned)]
-  #[must_use]
+  #[ allow( clippy::default_trait_access, clippy::semicolon_if_nothing_returned ) ]
+  #[ must_use ]
   pub fn add_to_item(input: &syn::ItemStruct) -> syn::ItemStruct {
     // Only proceed if there are generics
     if input.generics.params.is_empty() {
@@ -121,8 +121,8 @@ mod private {
   /// // Output : ::core::marker::PhantomData< ( &'a (), *const T, N ) >
   /// ```
   ///
-  #[must_use]
-  #[allow(clippy::default_trait_access)]
+  #[ must_use ]
+  #[ allow( clippy::default_trait_access ) ]
   pub fn tuple(input: &syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>) -> syn::Type {
     use proc_macro2::Span;
     use syn::{GenericParam, Type};
@@ -167,48 +167,48 @@ mod private {
   }
 }
 
-#[doc(inline)]
-#[allow(unused_imports)]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 /// Own namespace of the module.
 pub mod own {
 
   use super::*;
 
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use orphan::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{add_to_item, tuple};
 }
 
 /// Orphan namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use exposed::*;
-  #[doc(inline)]
+  #[ doc( inline ) ]
   pub use private::{};
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
   use super::*;
 
   pub use super::super::phantom;
   // pub use super::own as phantom;
 
-  #[doc(inline)]
-  #[allow(unused_imports)]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::{prelude::*};
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
   use super::*;
 }

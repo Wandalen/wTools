@@ -27,7 +27,6 @@ mod private
 
   /// Trait for types used as keys of rows in table-like structures.
   ///
-
   pub trait RowKey
   {
   }
@@ -43,7 +42,6 @@ mod private
   /// The `CellKey` trait aggregates necessary bounds for keys, ensuring they support
   /// debugging, equality comparison, and hashing.
   ///
-
   pub trait CellKey
   where
     Self : core::cmp::Eq + std::hash::Hash + Borrow< str >,
@@ -61,7 +59,6 @@ mod private
   /// `CellRepr` aggregates necessary bounds for types used as cell representations,
   /// ensuring they are copyable and have a static lifetime.
   ///
-
   pub trait CellRepr
   where
     Self : Copy + 'static,

@@ -1,4 +1,4 @@
-#[derive(Debug, PartialEq, former::Former)]
+#[ derive( Debug, PartialEq, former::Former ) ]
 pub struct Test<'a> {
     value: &'a str,
 }

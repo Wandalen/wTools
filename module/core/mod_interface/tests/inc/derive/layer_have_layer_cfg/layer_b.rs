@@ -5,25 +5,25 @@ use super::tools::*;
 mod private
 {
 
-  /// layer_b_own
+  /// `layer_b_own`
   pub fn layer_b_own() -> bool
   {
     true
   }
 
-  /// layer_b_orphan
+  /// `layer_b_orphan`
   pub fn layer_b_orphan() -> bool
   {
     true
   }
 
-  /// layer_b_exposed
+  /// `layer_b_exposed`
   pub fn layer_b_exposed() -> bool
   {
     true
   }
 
-  /// layer_b_prelude
+  /// `layer_b_prelude`
   pub fn layer_b_prelude() -> bool
   {
     true
@@ -33,6 +33,7 @@ mod private
 
 /// Super struct.
 #[ derive( Debug, PartialEq ) ]
+#[ allow( dead_code ) ]
 pub struct SubStruct2
 {
 }

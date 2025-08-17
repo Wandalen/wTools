@@ -3,7 +3,7 @@
 include!("../test_helpers.rs");
 use strs_tools::string::split::*;
 
-#[test]
+#[ test ]
 fn no_escapes() {
   let input = "hello world";
   let result = test_unescape_str(input);
@@ -11,7 +11,7 @@ fn no_escapes() {
   assert_eq!(result, "hello world");
 }
 
-#[test]
+#[ test ]
 fn valid_escapes() {
   let input = r#"hello \"world\\, \n\t\r end"#;
   let expected = "hello \"world\\, \n\t\r end";
@@ -20,7 +20,7 @@ fn valid_escapes() {
   assert_eq!(result, expected);
 }
 
-#[test]
+#[ test ]
 fn debug_unescape_unterminated_quote_input() {
   let input = r#"abc\""#;
   let expected = r#"abc""#;
@@ -28,7 +28,7 @@ fn debug_unescape_unterminated_quote_input() {
   assert_eq!(result, expected);
 }
 
-#[test]
+#[ test ]
 fn mixed_escapes() {
   let input = r#"a\"b\\c\nd"#;
   let expected = "a\"b\\c\nd";
@@ -37,7 +37,7 @@ fn mixed_escapes() {
   assert_eq!(result, expected);
 }
 
-#[test]
+#[ test ]
 fn unrecognized_escape() {
   let input = r"hello \z world";
   let result = test_unescape_str(input);
@@ -45,7 +45,7 @@ fn unrecognized_escape() {
   assert_eq!(result, r"hello \z world");
 }
 
-#[test]
+#[ test ]
 fn empty_string() {
   let input = "";
   let result = test_unescape_str(input);
@@ -53,7 +53,7 @@ fn empty_string() {
   assert_eq!(result, "");
 }
 
-#[test]
+#[ test ]
 fn trailing_backslash() {
   let input = r"hello\";
   let result = test_unescape_str(input);
@@ -61,7 +61,7 @@ fn trailing_backslash() {
   assert_eq!(result, r"hello\");
 }
 
-#[test]
+#[ test ]
 fn unescape_trailing_escaped_quote() {
   let input = r#"abc\""#;
   let expected = r#"abc""#;

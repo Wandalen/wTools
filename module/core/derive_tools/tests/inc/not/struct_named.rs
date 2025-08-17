@@ -1,6 +1,6 @@
 use super::*;
 
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 // #[ derive( the_module::Not ) ]
 struct StructNamed {
   a: bool,

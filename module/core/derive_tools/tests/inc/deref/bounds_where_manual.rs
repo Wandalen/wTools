@@ -1,9 +1,9 @@
 trait Trait<'a> {}
-impl<'a> Trait<'a> for i32 {}
+impl Trait<'_> for i32 {}
 
 use core::ops::Deref;
 
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 struct BoundsWhere<T, U>(T, U)
 where
   T: ToString,

@@ -1,11 +1,11 @@
 // Purpose: Provides shared test assertions and logic for verifying the constructors generated
-// by `#[derive(Former)]` for enums with unnamed (tuple) variants that return subformers.
+// by `#[ derive( Former ) ]` for enums with unnamed (tuple) variants that return subformers.
 // This file is included by both `basic_derive.rs` and `basic_manual.rs`.
 //
 // Coverage:
 // - Rule 3d (Tuple + Default -> Subform): Tests static method `FunctionStep::run()`.
-// - Rule 2d (Tuple + `#[subform_scalar]` -> InnerFormer): Tests static method `FunctionStep::r#break()`.
-// - Rule 4a (#[standalone_constructors]): Tests the standalone subformer starter `FunctionStep::break_variant()`.
+// - Rule 2d (Tuple + `#[ subform_scalar ]` -> InnerFormer): Tests static method `FunctionStep::r#break()`.
+// - Rule 4a (#[ standalone_constructors ]): Tests the standalone subformer starter `FunctionStep::break_variant()`.
 // - Rule 4b (Option 2 Logic): Tests the use of subformer methods and `.form()`.
 //
 // Test Relevance/Acceptance Criteria:

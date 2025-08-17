@@ -14,9 +14,9 @@
 //! ## Key Behavioral Characteristics
 //!
 //! ### Attribute-Driven Activation
-//! - **Default Behavior**: Single-field tuple variants without `#[scalar]` get inner type formers
-//! - **`#[subform_scalar]` Support**: Explicitly enables inner former integration (same behavior)
-//! - **`#[scalar]` Override**: Forces direct constructor generation (handled elsewhere)
+//! - **Default Behavior**: Single-field tuple variants without `#[ scalar ]` get inner type formers
+//! - **`#[ subform_scalar ]` Support**: Explicitly enables inner former integration (same behavior)
+//! - **`#[ scalar ]` Override**: Forces direct constructor generation (handled elsewhere)
 //! - **Field Type Constraint**: Field type must implement Former trait for this handler
 //!
 //! ### Generated Infrastructure Components
@@ -88,7 +88,7 @@
 //!
 //! ### Custom End Handler
 //! ```rust,ignore
-//! #[derive(Default, Debug)]
+//! #[ derive( Default, Debug ) ]
 //! pub struct EnumVariantEnd<T> 
 //! where T: Former
 //! {
@@ -96,7 +96,7 @@
 //! }
 //!
 //! impl<T> FormingEnd<EnumVariantEndDefinitionTypes<T>> for EnumVariantEnd<T> {
-//!     fn call(&self, sub_storage: Storage, _context: Option<Context>) -> Enum<T> {
+//!     fn call(&self, sub_storage: Storage, _context: Option< Context >) -> Enum<T> {
 //!         let inner = StoragePreform::preform(sub_storage);
 //!         Enum::Variant(inner)
 //!     }
@@ -168,7 +168,7 @@ use convert_case::Case;
 /// ## Generated End Handler
 /// ```rust,ignore
 /// impl<T> FormingEnd<EndDefinitionTypes<T>> for EnumVariantEnd<T> {
-///     fn call(&self, sub_storage: Storage, _context: Option<Context>) -> Enum<T> {
+///     fn call(&self, sub_storage: Storage, _context: Option< Context >) -> Enum<T> {
 ///         let inner = StoragePreform::preform(sub_storage);
 ///         Enum::Variant(inner)
 ///     }
@@ -182,7 +182,7 @@ use convert_case::Case;
 /// **Root Cause**: Generated code like `< u32 as EntityToFormer< u32FormerDefinition > >::Former`
 /// **Reality**: Primitive types (u32, String, etc.) don't implement Former
 /// **Impact**: Single-field tuple variants with primitives fail to compile
-/// **Current Workaround**: Use explicit `#[scalar]` attribute to force scalar behavior
+/// **Current Workaround**: Use explicit `#[ scalar ]` attribute to force scalar behavior
 ///
 /// ### 2. Invalid Former Definition Type Generation
 /// **Problem**: Generates non-existent types like `u32FormerDefinition`
@@ -212,15 +212,15 @@ use convert_case::Case;
 /// ```
 ///
 /// ## Handler Reliability Status: PROBLEMATIC ❌
-/// **Working Cases**: Field types that implement Former (custom structs with #[derive(Former)])
+/// **Working Cases**: Field types that implement Former (custom structs with #[ derive( Former ) ])
 /// **Failing Cases**: Primitive types (u32, String, bool, etc.) - most common usage
-/// **Workaround**: Explicit `#[scalar]` attribute required for primitive types
+/// **Workaround**: Explicit `#[ scalar ]` attribute required for primitive types
 /// **Proper Solution Needed**: Either implement proper Former integration or add smart routing
 ///
 /// ## Development Impact and Context
 /// This handler represents the most significant blocking issue in enum derive implementation.
 /// It prevents the natural usage pattern where developers expect single-field tuple variants
-/// with primitives to work by default. The requirement for explicit `#[scalar]` attributes
+/// with primitives to work by default. The requirement for explicit `#[ scalar ]` attributes
 /// creates a poor developer experience and breaks the principle of sensible defaults.
 /// 
 /// **Testing Impact**: Multiple test files remain disabled due to this issue.
@@ -233,7 +233,7 @@ use convert_case::Case;
 /// ## Returns
 /// - `Ok(TokenStream)`: Generated enum method that returns configured field type former
 /// - `Err(syn::Error)`: If variant processing fails or field type path is invalid
-pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
+pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result<  proc_macro2::TokenStream  >
 {
   let variant_name = &ctx.variant.ident;
   let method_name = cased_ident_from_ident(variant_name, Case::Snake);
@@ -258,7 +258,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   // Generate the End struct for this variant (for both Rule 2d and 3d)
   let end_struct = quote!
   {
-    #[derive(Default, Debug)]
+    #[ derive( Default, Debug ) ]
     pub struct #end_struct_name #impl_generics
     #where_clause
     {}
@@ -279,7 +279,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
 
   let end_definition_types = quote!
   {
-    #[derive(Default, Debug)]
+    #[ derive( Default, Debug ) ]
     pub struct #enum_end_definition_types #impl_generics
     #where_clause
     {}
@@ -301,7 +301,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
       fn form_mutation
       (
         _storage : &mut Self::Storage,
-        _context : &mut Option< Self::Context >,
+        _context : &mut Option<  Self::Context  >,
       )
       {
       }
@@ -337,7 +337,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   // Rule 3d.i: When the field type implements Former, return its former
   // and create the infrastructure to convert the formed inner type to the enum variant
   let method = if ctx.variant_attrs.subform_scalar.is_some() {
-    // Rule 2d: #[subform_scalar] means configured former with custom End
+    // Rule 2d: #[ subform_scalar ] means configured former with custom End
     quote!
     {
       #[ inline( always ) ]

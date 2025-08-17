@@ -1,6 +1,6 @@
 use former::Former;
 
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 pub struct Test<T> {
     pub value: T,
 }

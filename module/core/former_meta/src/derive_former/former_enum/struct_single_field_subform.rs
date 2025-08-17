@@ -14,8 +14,8 @@
 //!
 //! ### Attribute-Driven Activation
 //! - **Default Behavior**: Single-field struct variants automatically get implicit variant formers
-//! - **`#[scalar]` Override**: Forces direct constructor generation instead (handled elsewhere)
-//! - **`#[subform_scalar]` Support**: Supported and generates same implicit variant former
+//! - **`#[ scalar ]` Override**: Forces direct constructor generation instead (handled elsewhere)
+//! - **`#[ subform_scalar ]` Support**: Supported and generates same implicit variant former
 //! - **Field-Level Attributes**: Individual field attributes respected in generated setter
 //!
 //! ### Generated Infrastructure Components
@@ -36,7 +36,7 @@
 //! ```rust,ignore
 //! // Manual Implementation Pitfall:
 //! struct VariantFormerStorage {
-//!     field: String,  // ❌ Should be Option<String>
+//!     field: String,  // ❌ Should be Option< String >
 //! }
 //! impl Default for VariantFormerStorage {
 //!     fn default() -> Self {
@@ -46,7 +46,7 @@
 //!
 //! // Generated Solution:
 //! struct VariantFormerStorage {
-//!     field: Option<String>,  // ✅ Proper optional wrapping
+//!     field: Option< String >,  // ✅ Proper optional wrapping
 //! }
 //! impl Default for VariantFormerStorage {
 //!     fn default() -> Self {
@@ -85,9 +85,9 @@
 //! }
 //! ```
 //!
-//! ### 4. StoragePreform Implementation (Critical Prevention)
+//! ### 4. `StoragePreform` Implementation (Critical Prevention)
 //! **Issue Resolved**: Manual implementations not properly handling single-field preform logic
-//! **Root Cause**: Single-field preform requires special handling for unwrap_or_default()
+//! **Root Cause**: Single-field preform requires special handling for `unwrap_or_default()`
 //! **Solution**: Specialized preform implementation for single-field variant construction
 //! **Prevention**: Safe unwrapping with proper default value handling
 //!
@@ -104,7 +104,7 @@
 //! pub struct EnumVariantFormerStorage<T> 
 //! where T: Default
 //! {
-//!     pub field: Option<T>,       // Single optional field storage
+//!     pub field: Option< T >,       // Single optional field storage
 //! }
 //!
 //! impl<T> StoragePreform for EnumVariantFormerStorage<T> {
@@ -130,7 +130,7 @@
 //! ```
 //!
 //! ## Integration Notes
-//! - **Standalone Constructors**: Supports `#[standalone_constructors]` for top-level function generation
+//! - **Standalone Constructors**: Supports `#[ standalone_constructors ]` for top-level function generation
 //! - **Context Handling**: Integrates with Former's context system for advanced construction scenarios
 //! - **Performance**: Single-field optimization maintains zero-cost abstraction guarantees
 //! - **Type Safety**: Complete type safety through Former trait system integration
@@ -175,7 +175,8 @@ use crate::derive_former::raw_identifier_utils::variant_to_method_name;
 /// ## Returns
 /// - `Ok(TokenStream)`: Generated enum method that returns the single-field variant former
 /// - `Err(syn::Error)`: If variant processing fails due to invalid configuration
-pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2::TokenStream >
+#[ allow( clippy::too_many_lines ) ]
+pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result<  proc_macro2::TokenStream  >
 {
   let variant_name = &ctx.variant.ident;
   let method_name = variant_to_method_name(variant_name);
@@ -200,7 +201,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   // Generate the End struct for this variant
   let end_struct = quote!
   {
-    #[derive(Default, Debug)]
+    #[ derive( Default, Debug ) ]
     pub struct #end_struct_name #impl_generics
     #where_clause
     {}
@@ -214,7 +215,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
   let variant_former_definition_types_name = format_ident!("{}{}FormerDefinitionTypes", enum_name, variant_name_str);
 
   // Generate the storage struct for the variant's fields
-  let storage_field_optional = quote! { pub #field_name : ::core::option::Option< #field_type > };
+  let storage_field_optional = quote! { pub #field_name : ::core::option::Option<  #field_type  > };
   let storage_field_none = quote! { #field_name : ::core::option::Option::None };
   let storage_field_preform = quote! { let #field_name = self.#field_name.unwrap_or_default(); };
   let storage_field_name = quote! { #field_name };
@@ -260,7 +261,7 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
       fn form_mutation
       (
         _storage : &mut Self::Storage,
-        _context : &mut Option< Self::Context >,
+        _context : &mut Option<  Self::Context  >,
       )
       {
       }
@@ -346,8 +347,8 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
     #where_clause
     {
       pub storage : #variant_former_storage_name #ty_generics,
-      pub context : ::core::option::Option< () >,
-      pub on_end : ::core::option::Option< former_types::forming::ReturnPreformed >,
+      pub context : ::core::option::Option<  ()  >,
+      pub on_end : ::core::option::Option<  former_types::forming::ReturnPreformed  >,
     }
 
     impl #impl_generics #variant_former_name #ty_generics
@@ -381,8 +382,8 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
       #[ inline( always ) ]
       pub fn begin
       (
-        mut storage : ::core::option::Option< #variant_former_storage_name #ty_generics >,
-        context : ::core::option::Option< () >,
+        mut storage : ::core::option::Option<  #variant_former_storage_name #ty_generics  >,
+        context : ::core::option::Option<  ()  >,
         on_end : former_types::forming::ReturnPreformed,
       )
       -> Self
@@ -402,8 +403,8 @@ pub fn handle( ctx : &mut EnumVariantHandlerContext<'_> ) -> Result< proc_macro2
       #[ inline( always ) ]
       pub fn begin_coercing< IntoEnd >
       (
-        mut storage : ::core::option::Option< #variant_former_storage_name #ty_generics >,
-        context : ::core::option::Option< () >,
+        mut storage : ::core::option::Option<  #variant_former_storage_name #ty_generics  >,
+        context : ::core::option::Option<  ()  >,
         on_end : IntoEnd,
       ) -> Self
       where

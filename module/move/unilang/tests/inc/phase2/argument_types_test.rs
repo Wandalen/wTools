@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use unilang::data::{ArgumentDefinition, CommandDefinition, Kind, ArgumentAttributes};
 use unilang_parser::{SourceLocation};
 use unilang::registry::CommandRegistry;
@@ -8,6 +9,8 @@ use url::Url;
 use chrono::DateTime;
 use regex::Regex;
 
+//
+
 fn setup_test_environment(command: CommandDefinition) -> CommandRegistry {
   let mut registry = CommandRegistry::new();
   registry.register(command);
@@ -17,7 +20,7 @@ fn setup_test_environment(command: CommandDefinition) -> CommandRegistry {
 fn analyze_program(
   command_name: &str,
   positional_args: Vec<unilang_parser::Argument>,
-  named_args: std::collections::HashMap<String, unilang_parser::Argument>,
+  named_args: HashMap<String, unilang_parser::Argument>,
   registry: &CommandRegistry,
 ) -> Result<Vec<unilang::semantic::VerifiedCommand>, unilang::error::Error> {
   // eprintln!( "--- analyze_program debug ---" );
@@ -27,7 +30,7 @@ fn analyze_program(
 
   let instructions = vec![unilang_parser::GenericInstruction {
     command_path_slices: command_name.split('.').map(std::string::ToString::to_string).collect(),
-    named_arguments: named_args,
+    named_arguments: named_args.into_iter().collect(),
     positional_arguments: positional_args,
     help_requested: false,
     overall_location: SourceLocation::StrSpan { start: 0, end: 0 }, // Placeholder
@@ -584,7 +587,6 @@ fn test_default_argument() {
         interactive: false,
         sensitive: false,
         default: Some("default_value_string".to_string()),
-        ..Default::default()
       },
       validation_rules: vec![],
       hint: String::new(),
@@ -607,7 +609,7 @@ fn test_default_argument() {
   let registry = setup_test_environment(command);
 
   // Test Matrix Row: T1.9 (no value provided, use default)
-  let result = analyze_program(".test.command", vec![], std::collections::HashMap::new(), &registry);
+  let result = analyze_program(".test.command", vec![], HashMap::new(), &registry);
   assert!(result.is_ok());
   let verified_command = result.unwrap().remove(0);
   let arg = verified_command.arguments.get("default_arg").unwrap();

@@ -3,20 +3,20 @@
 // by creating simplified subform collection functionality that actually works
 
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
 // Simplified replacement for subform collection functionality
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 pub struct SubformCollectionReplacement {
   // Simple vector field (basic collection functionality)
-  #[subform_collection]
+  #[ subform_collection ]
   items: Vec<String>,
   
   // Simple collection with default
-  #[subform_collection]
+  #[ subform_collection ]
   numbers: Vec<i32>,
   
   // Basic field for completeness
@@ -24,13 +24,13 @@ pub struct SubformCollectionReplacement {
 }
 
 // Another struct with more complex collection scenarios
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
 pub struct AdvancedSubformCollectionReplacement {
-  #[subform_collection]
+  #[ subform_collection ]
   string_list: Vec<String>,
   
-  #[subform_collection] 
+  #[ subform_collection ] 
   int_list: Vec<i32>,
   
   title: String,
@@ -39,7 +39,7 @@ pub struct AdvancedSubformCollectionReplacement {
 
 // Tests replacing blocked subform_collection_playground functionality
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-#[test]
+#[ test ]
 fn simple_collection_test() {
   let got = SubformCollectionReplacement::former()
     .name("collection_test".to_string())
@@ -65,7 +65,7 @@ fn simple_collection_test() {
 }
 
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-#[test]
+#[ test ]
 fn empty_collection_test() {
   let got = SubformCollectionReplacement::former()
     .name("empty_test".to_string())
@@ -81,7 +81,7 @@ fn empty_collection_test() {
 }
 
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-#[test]
+#[ test ]
 fn advanced_collection_test() {
   let got = AdvancedSubformCollectionReplacement::former()
     .title("advanced".to_string())
@@ -108,7 +108,7 @@ fn advanced_collection_test() {
 }
 
 #[cfg(any(not(feature = "no_std"), feature = "use_alloc"))]
-#[test]
+#[ test ]
 fn mixed_collection_test() {
   let got = AdvancedSubformCollectionReplacement::former()
     .active(false)

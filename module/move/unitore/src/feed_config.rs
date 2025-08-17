@@ -1,6 +1,7 @@
 //! Reading and parsing of subscription configuration file.
 
-use std::{ fs::OpenOptions, io::{ BufReader, Read } };
+use std::fs::OpenOptions;
+use std::io::{ BufReader, Read };
 use error_tools::{ untyped::Context, untyped::Result };
 use serde::Deserialize;
 

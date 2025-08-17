@@ -5,8 +5,8 @@
 use asbytes::AsBytes; // Import the trait
 
 // Define a POD struct
-#[repr(C)]
-#[derive(Debug, Clone, Copy, asbytes::Pod, asbytes::Zeroable)]
+#[ repr( C ) ]
+#[ derive( Debug, Clone, Copy, asbytes::Pod, asbytes::Zeroable ) ]
 struct Point {
   x: f32,
   y: f32,
@@ -46,5 +46,5 @@ fn main() {
   println!("Scalar Bytes: length={}, data={:?}", scalar_tuple.byte_size(), scalar_bytes);
 
   // Original data is still available after calling .as_bytes()
-  println!("Original Vec still usable: {:?}", points_vec);
+  println!("Original Vec still usable: {points_vec:?}");
 }

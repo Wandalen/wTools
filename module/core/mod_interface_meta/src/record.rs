@@ -16,8 +16,7 @@ mod private {
   ///
   /// Kind of element.
   ///
-
-  #[derive(Debug, PartialEq, Eq, Clone, Copy)]
+  #[ derive( Debug, PartialEq, Eq, Clone, Copy ) ]
   pub enum ElementType {
     MicroModule(syn::token::Mod),
     Layer(kw::layer),
@@ -28,7 +27,7 @@ mod private {
   //
 
   impl syn::parse::Parse for ElementType {
-    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
+    fn parse(input: ParseStream<'_>) -> syn::Result< Self > {
       let lookahead = input.lookahead1();
       let element_type = match () {
         _case if lookahead.peek(syn::token::Mod) => ElementType::MicroModule(input.parse()?),
@@ -45,7 +44,7 @@ mod private {
 
   impl quote::ToTokens for ElementType {
     fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
-      #[allow(clippy::enum_glob_use)]
+      #[ allow( clippy::enum_glob_use ) ]
       use ElementType::*;
       match self {
         MicroModule(e) => e.to_tokens(tokens),
@@ -59,21 +58,20 @@ mod private {
   ///
   /// Record.
   ///
-
-  #[derive(Debug, PartialEq, Eq, Clone)]
+  #[ derive( Debug, PartialEq, Eq, Clone ) ]
   pub struct Record {
     pub attrs: AttributesOuter,
     pub vis: Visibility,
     pub element_type: ElementType,
     pub elements: syn::punctuated::Punctuated<Pair<AttributesOuter, syn::Path>, syn::token::Comma>,
-    pub use_elements: Option<crate::UseTree>,
-    pub semi: Option<syn::token::Semi>,
+    pub use_elements: Option< crate::UseTree >,
+    pub semi: Option< syn::token::Semi >,
   }
 
   //
 
   impl syn::parse::Parse for Record {
-    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
+    fn parse(input: ParseStream<'_>) -> syn::Result< Self > {
       let attrs = input.parse()?;
       let vis = input.parse()?;
       let element_type = input.parse()?;
@@ -137,8 +135,7 @@ mod private {
   ///
   /// Thesis.
   ///
-
-  #[derive(Debug, PartialEq, Eq, Clone)]
+  #[ derive( Debug, PartialEq, Eq, Clone ) ]
   pub struct Thesis {
     pub head: AttributesInner,
     pub records: Records,
@@ -148,8 +145,8 @@ mod private {
 
   impl Thesis {
     /// Validate each inner attribute of the thesis.
-    #[allow(dead_code)]
-    pub fn inner_attributes_validate(&self) -> syn::Result<()> {
+    #[ allow( dead_code ) ]
+    pub fn inner_attributes_validate(&self) -> syn::Result< () > {
       self.head.iter().try_for_each(|attr| {
         // code_print!( attr );
         // code_print!( attr.path() );
@@ -168,7 +165,7 @@ mod private {
       Ok(())
     }
     /// Does the thesis has debug inner attribute.
-    #[allow(dead_code)]
+    #[ allow( dead_code ) ]
     pub fn has_debug(&self) -> bool {
       self.head.iter().any(|attr| code_to_str!(attr.path()) == "debug")
     }
@@ -177,7 +174,7 @@ mod private {
   //
 
   impl syn::parse::Parse for Thesis {
-    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
+    fn parse(input: ParseStream<'_>) -> syn::Result< Self > {
       let head = input.parse()?;
       // let head = Default::default();
       let records = input.parse()?;
@@ -195,11 +192,11 @@ mod private {
   }
 }
 
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod own {
 
   use super::*;
@@ -207,7 +204,7 @@ pub mod own {
 }
 
 /// Parented namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod orphan {
 
   use super::*;
@@ -215,7 +212,7 @@ pub mod orphan {
 }
 
 /// Exposed namespace of the module.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod exposed {
 
   use super::*;
@@ -224,7 +221,7 @@ pub mod exposed {
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 pub mod prelude {
 
   use super::*;

@@ -1,11 +1,11 @@
 //! Purpose: Provides a manual implementation of constructors and `FormingEnd` for an enum
 //! with unnamed (tuple) variants, including static methods and a standalone subformer starter,
-//! to serve as a reference for verifying the `#[derive(Former)]` macro's behavior.
+//! to serve as a reference for verifying the `#[ derive( Former ) ]` macro's behavior.
 //!
 #![allow(dead_code)] // Test structures are intentionally unused
 //! Coverage:
 //! - Rule 3d (Tuple + Default -> Subform): Manual implementation of static method `FunctionStep::run()`.
-//! - Rule 2d (Tuple + `#[subform_scalar]` -> InnerFormer): Manual implementation of static method `FunctionStep::r#break()`.
+//! - Rule 2d (Tuple + `#[ subform_scalar ]` -> InnerFormer): Manual implementation of static method `FunctionStep::r#break()`.
 //! - Rule 4a (#[`standalone_constructors`]): Manual implementation of the standalone subformer starter `break_variant()`.
 //! - Rule 4b (Option 2 Logic): Manual implementation of `FormingEnd` for the variant end types.
 //!
@@ -22,14 +22,14 @@ use former::StoragePreform;
 
 // --- Inner Struct Definitions ---
 // Re-enabled Former derive - testing if trailing comma issue is fixed
-#[derive(Debug, Clone, PartialEq, former::Former)]
+#[ derive( Debug, Clone, PartialEq, former::Former ) ]
 pub struct Break { pub condition: bool }
 
-#[derive(Debug, Clone, PartialEq, former::Former)]
+#[ derive( Debug, Clone, PartialEq, former::Former ) ]
 pub struct Run { pub command: String }
 
 // --- Enum Definition ---
-#[derive(Debug, Clone, PartialEq)]
+#[ derive( Debug, Clone, PartialEq ) ]
 pub enum FunctionStep
 {
   Break(Break),
@@ -37,8 +37,8 @@ pub enum FunctionStep
 }
 
 // --- Specialized End Structs ---
-#[derive(Default, Debug)] pub struct FunctionStepBreakEnd;
-#[derive(Default, Debug)] pub struct FunctionStepRunEnd;
+#[ derive( Default, Debug ) ] pub struct FunctionStepBreakEnd;
+#[ derive( Default, Debug ) ] pub struct FunctionStepRunEnd;
 
 // --- Static Variant Constructor Methods ---
 impl FunctionStep
@@ -59,7 +59,7 @@ impl FunctionStep
     RunFormer::begin( None, None, FunctionStepRunEnd )
   }
 
-  // Standalone constructors for #[standalone_constructors] attribute
+  // Standalone constructors for #[ standalone_constructors ] attribute
   #[ inline( always ) ]
   pub fn break_variant()
   -> BreakFormer< BreakFormerDefinition< (), Self, FunctionStepBreakEnd > >

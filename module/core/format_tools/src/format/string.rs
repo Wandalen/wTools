@@ -63,7 +63,6 @@ mod private
   ///
   /// In this example, the function returns `[ 6, 4 ]` because the longest line ( "Line 1" or "Line 3" )
   /// has 6 characters, there are 4 lines in total, including the empty line and the trailing newline.
-
   pub fn size< S : AsRef< str > >( src : S ) -> [ usize ; 2 ]
   {
     let text = src.as_ref();
@@ -187,7 +186,7 @@ mod private
   {
     type Item = &'a str;
 
-    fn next( &mut self ) -> Option< Self::Item >
+    fn next( &mut self ) -> Option<  Self::Item  >
     {
       if self.finished
       {
@@ -227,7 +226,7 @@ mod private
   {
     lines : Lines< 'a >,
     limit_width : usize,
-    cur : Option< &'a str >,
+    cur : Option<  &'a str  >,
   }
 
   impl< 'a > LinesWithLimit< 'a >
@@ -247,7 +246,7 @@ mod private
   {
     type Item = &'a str;
 
-    fn next( &mut self ) -> Option< Self::Item > 
+    fn next( &mut self ) -> Option<  Self::Item  > 
     {
       loop 
       {

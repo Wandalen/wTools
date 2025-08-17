@@ -1,4 +1,4 @@
-//! Purpose: Tests the `#[derive(Former)]` macro's generation of a former builder for a named
+//! Purpose: Tests the `#[ derive( Former ) ]` macro's generation of a former builder for a named
 //! (struct-like) variant (`V1`) within a generic enum (`EnumG6<T>`), where the variant contains
 //! a field with an independent concrete generic type (`InnerG6<TypeForU>`). This file focuses on
 //! verifying the derive-based implementation's handling of independent generics and the generation
@@ -12,7 +12,7 @@
 //! - Defines a generic enum `EnumG6<T: BoundA>` with a named variant `V1 { inner: InnerG6<TypeForU>, flag: bool, _phantom_t: PhantomData<T> }`.
 //! - Defines the inner struct `InnerG6<U: BoundB>` which also derives `Former`.
 //! - Defines dummy bounds (`BoundA`, `BoundB`) and concrete types (`TypeForT`, `TypeForU`) in the included test file.
-//! - Applies `#[derive(Former)]` to both `EnumG6` and `InnerG6`.
+//! - Applies `#[ derive( Former ) ]` to both `EnumG6` and `InnerG6`.
 //! - Includes shared test logic from `generics_independent_struct_only_test.rs`.
 //! - The included tests call the derived static method `EnumG6::<TypeForT>::v_1()`, use the returned former's setters (`.inner()`, `.flag()`), and call `.form()`.
 //! - Asserts that the resulting enum instances match manually constructed expected values. This verifies that the derived former builder correctly handles fields with independent concrete generic types and non-generic fields within a generic enum.
@@ -21,7 +21,7 @@
 
 //! # Derive Test: Independent Generics in Struct Variants
 //!
-//! This test file focuses on verifying the `#[derive(Former)]` macro's ability to handle
+//! This test file focuses on verifying the `#[ derive( Former ) ]` macro's ability to handle
 //! enums with struct-like variants where the generics involved are independent.
 //! Specifically, it tests an enum `EnumG6<T>` where a variant `V1` contains a field
 //! whose type uses a *concrete* type (`InnerG6<TypeForU>`) unrelated to the enum's `T`.

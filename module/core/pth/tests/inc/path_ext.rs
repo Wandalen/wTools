@@ -1,37 +1,37 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
 
-#[test]
+#[ test ]
 fn empty_path() {
   let path = "";
   assert_eq!(the_module::path::ext(path), "");
 }
 
-#[test]
+#[ test ]
 fn txt_extension() {
   let path = "some.txt";
   assert_eq!(the_module::path::ext(path), "txt");
 }
 
-#[test]
+#[ test ]
 fn path_with_non_empty_dir_name() {
   let path = "/foo/bar/baz.asdf";
   assert_eq!(the_module::path::ext(path), "asdf");
 }
 
-#[test]
+#[ test ]
 fn hidden_file() {
   let path = "/foo/bar/.baz";
   assert_eq!(the_module::path::ext(path), "");
 }
 
-#[test]
+#[ test ]
 fn several_extension() {
   let path = "/foo.coffee.md";
   assert_eq!(the_module::path::ext(path), "md");
 }
 
-#[test]
+#[ test ]
 fn file_without_extension() {
   let path = "/foo/bar/baz";
   assert_eq!(the_module::path::ext(path), "");

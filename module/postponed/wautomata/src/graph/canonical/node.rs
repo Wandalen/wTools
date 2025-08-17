@@ -9,7 +9,6 @@ mod private
   ///
   /// Canonical implementation of node.
   ///
-
   pub struct Node< NodeId = crate::IdentityWithInt, EdgeId = crate::IdentityWithInt >
   where
     NodeId : IdentityInterface,

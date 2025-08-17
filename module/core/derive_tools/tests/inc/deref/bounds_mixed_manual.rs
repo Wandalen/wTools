@@ -2,7 +2,7 @@ use core::fmt::Debug;
 
 use core::ops::Deref;
 
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 struct BoundsMixed<T: ToString, U>(T, U)
 where
   U: Debug;

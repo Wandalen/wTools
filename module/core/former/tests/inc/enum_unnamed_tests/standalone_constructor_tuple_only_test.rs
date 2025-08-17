@@ -1,7 +1,7 @@
-// Purpose: Provides shared test assertions and logic for both the derived and manual implementations of standalone former builder functions for tuple variants without `#[arg_for_constructor]` fields. It tests that standalone constructors generated/implemented when the enum has `#[standalone_constructors]` and no variant fields have `#[arg_for_constructor]` behave as expected (former builder style).
+// Purpose: Provides shared test assertions and logic for both the derived and manual implementations of standalone former builder functions for tuple variants without `#[ arg_for_constructor ]` fields. It tests that standalone constructors generated/implemented when the enum has `#[ standalone_constructors ]` and no variant fields have `#[ arg_for_constructor ]` behave as expected (former builder style).
 //
 // Coverage:
-// - Rule 4a (#[standalone_constructors]): Tests the existence and functionality of top-level constructor functions (`variant1`, `variant2`).
+// - Rule 4a (#[ standalone_constructors ]): Tests the existence and functionality of top-level constructor functions (`variant1`, `variant2`).
 // - Rule 4b (Option 2 Logic): Tests that these standalone constructors return former builders for the variants.
 // - Rule 3d (Tuple + Single-Field + Default): Implicitly tested via `Variant1`.
 // - Rule 3f (Tuple + Multi-Field + Default): Implicitly tested via `Variant2`.
@@ -23,7 +23,7 @@ mod tests
   fn variant1_test()
   {
     // Test Matrix Row: T16.1 (Implicitly, as this tests the behavior expected by the matrix)
-    // Tests the standalone constructor for Variant1 (single field, no #[arg_for_constructor])
+    // Tests the standalone constructor for Variant1 (single field, no #[ arg_for_constructor ])
     let value = 123;
     let got = variant_1() // Call the standalone constructor (note underscore naming)
       ._0( value ) // Use the setter for the field
@@ -37,7 +37,7 @@ mod tests
   fn variant2_test()
   {
     // Test Matrix Row: T16.2 (Implicitly, as this tests the behavior expected by the matrix)
-    // Tests the standalone constructor for Variant2 (multi field, no #[arg_for_constructor])
+    // Tests the standalone constructor for Variant2 (multi field, no #[ arg_for_constructor ])
     let value1 = 456;
     let value2 = "abc".to_string();
     let got = variant_2() // Call the standalone constructor (note underscore naming)

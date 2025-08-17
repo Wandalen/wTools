@@ -3,7 +3,7 @@ use super::*;
 use macro_tools::{attr, diag, Result, proc_macro2::TokenStream, syn::Index};
 
 /// Generates `From` implementations for each unique component (field) of the structure.
-pub fn component_from(input: proc_macro::TokenStream) -> Result<proc_macro2::TokenStream> {
+pub fn component_from(input: proc_macro::TokenStream) -> Result< proc_macro2::TokenStream > {
   let original_input = input.clone();
   let parsed = syn::parse::<syn::ItemStruct>(input)?;
   let has_debug = attr::has_debug(parsed.attrs.iter())?;
@@ -14,12 +14,12 @@ pub fn component_from(input: proc_macro::TokenStream) -> Result<proc_macro2::Tok
     syn::Fields::Named(fields_named) => {
       fields_named.named.iter()
       .map( | field | for_each_field( field, None, item_name ) ) // Pass None for index
-      .collect::< Result< Vec< _ > > >()?
+      .collect::< Result< Vec<  _  > > >()?
     }
     syn::Fields::Unnamed(fields_unnamed) => {
       fields_unnamed.unnamed.iter().enumerate()
       .map( |( index, field )| for_each_field( field, Some( index ), item_name ) ) // Pass Some(index)
-      .collect::< Result< Vec< _ > > >()?
+      .collect::< Result< Vec<  _  > > >()?
     }
     syn::Fields::Unit => {
       // No fields to generate From for
@@ -61,9 +61,9 @@ pub fn component_from(input: proc_macro::TokenStream) -> Result<proc_macro2::Tok
 /// ```
 fn for_each_field(
   field: &syn::Field,
-  index: Option<usize>, // Added index parameter
+  index: Option< usize >, // Added index parameter
   item_name: &syn::Ident,
-) -> Result<proc_macro2::TokenStream> {
+) -> Result< proc_macro2::TokenStream > {
   let field_type = &field.ty;
 
   // Construct the field accessor based on whether it's named or tuple

@@ -1,20 +1,20 @@
 use super::*;
 
-#[derive(Debug, Default, PartialEq)]
+#[ derive( Debug, Default, PartialEq ) ]
 struct TupleStruct(i32, String);
 
 // Manual implementation for the first field (i32)
 impl From<&TupleStruct> for i32 {
-  #[inline(always)]
-  fn from(src: &TupleStruct) -> Self {
-    src.0.clone() // Access field by index
+  #[ inline( always ) ]
+  fn from( src : &TupleStruct  ) -> Self {
+    src.0 // Access field by index
   }
 }
 
 // Manual implementation for the second field (String)
 impl From<&TupleStruct> for String {
-  #[inline(always)]
-  fn from(src: &TupleStruct) -> Self {
+  #[ inline( always ) ]
+  fn from( src : &TupleStruct  ) -> Self {
     src.1.clone() // Access field by index
   }
 }

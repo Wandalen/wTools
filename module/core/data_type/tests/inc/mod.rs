@@ -1,5 +1,9 @@
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::prelude::*;
+use test_tools::impls_index::tests_impls;
+use test_tools::impls_index::tests_index;
 
 #[cfg(any(feature = "either", feature = "dt_either"))]
 mod either_test;
@@ -8,6 +12,6 @@ mod either_test;
 // #[ path = "../../../../core/type_constructor/tests/inc/mod.rs" ]
 // mod type_constructor;
 
-#[cfg(any(feature = "dt_interval"))]
+#[cfg(feature = "dt_interval")]
 #[path = "../../../../core/interval_adapter/tests/inc/mod.rs"]
 mod interval_test;

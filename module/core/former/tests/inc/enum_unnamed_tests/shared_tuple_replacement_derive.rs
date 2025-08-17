@@ -2,20 +2,21 @@
 // This works around "requires delegation architecture (.inner_field method missing)"
 // by creating non-generic shared tuple functionality that works with current Former capabilities
 
+
 use super::*;
-#[allow(unused_imports)]
+#[ allow( unused_imports ) ]
 use ::former::prelude::*;
 use ::former::Former;
 
 // Shared inner types for tuple variants (non-generic to avoid parsing issues)
-#[derive(Debug, PartialEq, Default, Clone, Former)]
+#[ derive( Debug, PartialEq, Default, Clone, Former ) ]
 pub struct SharedTupleInnerA {
   pub content: String,
   pub priority: i32,
   pub enabled: bool,
 }
 
-#[derive(Debug, PartialEq, Default, Clone, Former)]
+#[ derive( Debug, PartialEq, Default, Clone, Former ) ]
 pub struct SharedTupleInnerB {
   pub name: String,
   pub value: f64,
@@ -23,18 +24,18 @@ pub struct SharedTupleInnerB {
 }
 
 // Shared tuple replacement enum - non-generic shared functionality
-#[derive(Debug, PartialEq, Former)]
-#[allow(non_camel_case_types)]
+#[ derive( Debug, PartialEq, Former ) ]
+#[ allow( non_camel_case_types ) ]
 pub enum SharedTupleReplacementEnum {
   // Shared variants with different inner types (replaces generic T functionality)
   VariantA(SharedTupleInnerA),
   VariantB(SharedTupleInnerB),
   
   // Scalar variants for comprehensive coverage
-  #[scalar]
+  #[ scalar ]
   ScalarString(String),
   
-  #[scalar]
+  #[ scalar ]
   ScalarNumber(i32),
   
   // Multi-field shared variants
@@ -44,7 +45,8 @@ pub enum SharedTupleReplacementEnum {
 
 // COMPREHENSIVE SHARED TUPLE TESTS - covering shared functionality without delegation architecture
 
-#[test]
+/// Tests shared variant A with tuple subform.
+#[ test ]
 fn shared_variant_a_test() {
   let inner = SharedTupleInnerA {
     content: "shared_content_a".to_string(),
@@ -60,7 +62,8 @@ fn shared_variant_a_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests shared variant B with tuple subform.
+#[ test ]
 fn shared_variant_b_test() {
   let inner = SharedTupleInnerB {
     name: "shared_name_b".to_string(),
@@ -76,21 +79,24 @@ fn shared_variant_b_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests shared scalar string tuple variant.
+#[ test ]
 fn shared_scalar_string_test() {
   let got = SharedTupleReplacementEnum::scalar_string("shared_scalar".to_string());
   let expected = SharedTupleReplacementEnum::ScalarString("shared_scalar".to_string());
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests shared scalar number tuple variant.
+#[ test ]
 fn shared_scalar_number_test() {
   let got = SharedTupleReplacementEnum::scalar_number(42);
   let expected = SharedTupleReplacementEnum::ScalarNumber(42);
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests multi-field shared variant A with subform and string.
+#[ test ]
 fn shared_multi_variant_a_test() {
   let inner = SharedTupleInnerA {
     content: "multi_a".to_string(),
@@ -107,7 +113,8 @@ fn shared_multi_variant_a_test() {
   assert_eq!(got, expected);
 }
 
-#[test]
+/// Tests multi-field shared variant B with subform and number.
+#[ test ]
 fn shared_multi_variant_b_test() {
   let inner = SharedTupleInnerB {
     name: "multi_b".to_string(),
@@ -125,7 +132,8 @@ fn shared_multi_variant_b_test() {
 }
 
 // Test shared functionality patterns (what generics_shared was trying to achieve)
-#[test]
+/// Tests shared functionality patterns across variant types.
+#[ test ]
 fn shared_functionality_pattern_test() {
   // Create instances of both shared inner types
   let inner_a = SharedTupleInnerA {
@@ -170,7 +178,8 @@ fn shared_functionality_pattern_test() {
 }
 
 // Comprehensive shared functionality validation
-#[test]
+/// Tests comprehensive shared functionality validation.
+#[ test ]
 fn comprehensive_shared_validation_test() {
   // Test that all shared variant types work together
   let all_variants = vec![

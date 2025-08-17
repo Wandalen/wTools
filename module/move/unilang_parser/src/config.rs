@@ -4,6 +4,8 @@
 //! customization of the parsing behavior, such as delimiters, whitespace
 //! handling, and error policies.
 
+use alloc::{ vec, vec::Vec };
+
 #[ derive( Clone, PartialEq, Eq ) ]
 /// Configuration options for the Unilang parser.
 #[ derive( Debug ) ]

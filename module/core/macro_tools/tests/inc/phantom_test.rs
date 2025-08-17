@@ -1,7 +1,7 @@
 use super::*;
 use the_module::{tree_print};
 
-#[test]
+#[ test ]
 fn phantom_add_basic() {
   let item: syn::ItemStruct = syn::parse_quote! {
     pub struct Struct1< 'a, Context, Formed >
@@ -25,7 +25,7 @@ fn phantom_add_basic() {
 
 //
 
-#[test]
+#[ test ]
 fn phantom_add_no_generics() {
   use syn::parse_quote;
   use quote::ToTokens;
@@ -44,7 +44,7 @@ fn phantom_add_no_generics() {
 
 //
 
-#[test]
+#[ test ]
 fn phantom_add_type_generics() {
   use syn::parse_quote;
   use quote::ToTokens;
@@ -64,7 +64,7 @@ fn phantom_add_type_generics() {
 
 //
 
-#[test]
+#[ test ]
 fn phantom_add_lifetime_generics() {
   use syn::parse_quote;
   use quote::ToTokens;
@@ -84,7 +84,7 @@ fn phantom_add_lifetime_generics() {
 
 //
 
-#[test]
+#[ test ]
 fn phantom_add_const_generics() {
   use syn::parse_quote;
   use quote::ToTokens;
@@ -104,7 +104,7 @@ fn phantom_add_const_generics() {
 
 //
 
-#[test]
+#[ test ]
 fn phantom_add_mixed_generics() {
   use syn::parse_quote;
   use quote::ToTokens;
@@ -124,7 +124,7 @@ fn phantom_add_mixed_generics() {
 
 //
 
-#[test]
+#[ test ]
 fn phantom_add_named_fields() {
   use syn::parse_quote;
   use quote::ToTokens;
@@ -145,7 +145,7 @@ fn phantom_add_named_fields() {
 
 //
 
-#[test]
+#[ test ]
 fn phantom_add_unnamed_fields() {
   use syn::parse_quote;
   use quote::ToTokens;
@@ -159,7 +159,7 @@ fn phantom_add_unnamed_fields() {
 
 //
 
-#[test]
+#[ test ]
 fn phantom_add_unnamed_fields_with_generics() {
   use syn::parse_quote;
   use quote::ToTokens;
@@ -180,7 +180,7 @@ fn phantom_add_unnamed_fields_with_generics() {
 
 //
 
-#[test]
+#[ test ]
 fn phantom_add_unnamed_fields_lifetime_generics() {
   use syn::parse_quote;
   use quote::ToTokens;
@@ -202,7 +202,7 @@ fn phantom_add_unnamed_fields_lifetime_generics() {
 
 //
 
-#[test]
+#[ test ]
 fn phantom_add_unnamed_fields_const_generics() {
   use syn::parse_quote;
   use quote::ToTokens;
@@ -224,7 +224,7 @@ fn phantom_add_unnamed_fields_const_generics() {
 //
 
 //
-#[test]
+#[ test ]
 fn phantom_tuple_empty_generics() {
   use syn::{punctuated::Punctuated, GenericParam, token::Comma, parse_quote};
   use macro_tools::phantom::tuple;
@@ -245,7 +245,7 @@ fn phantom_tuple_empty_generics() {
 
 //
 
-#[test]
+#[ test ]
 fn phantom_tuple_only_type_parameters() {
   use syn::{parse_quote, punctuated::Punctuated, GenericParam, token::Comma};
   use macro_tools::phantom::tuple;
@@ -266,7 +266,7 @@ fn phantom_tuple_only_type_parameters() {
 
 //
 
-#[test]
+#[ test ]
 fn phantom_tuple_mixed_generics() {
   use syn::{parse_quote, punctuated::Punctuated, GenericParam, token::Comma};
   use macro_tools::phantom::tuple;

@@ -15,7 +15,7 @@ where
   type Entry = (K, V);
   type Val = V;
 
-  #[inline(always)]
+  #[ inline( always ) ]
   fn entry_to_val(e: Self::Entry) -> Self::Val {
     e.1
   }
@@ -25,7 +25,7 @@ impl<K, V> CollectionAdd for BTreeMap<K, V>
 where
   K: Ord,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn add(&mut self, (k, v): Self::Entry) -> bool {
     self.insert(k, v).map_or_else(|| true, |_| false)
   }
@@ -79,8 +79,7 @@ where
 /// - `Formed`: The type of the entity produced, typically a `BTreeMap<K, E>`.
 /// - `End`: A trait defining the end behavior of the formation process, managing how the hash map is finalized.
 ///
-
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct BTreeMapDefinition<K, E, Context = (), Formed = BTreeMap<K, E>, End = ReturnStorage>
 where
   K: Ord,
@@ -115,8 +114,7 @@ where
 /// - `E`: The value type of the hash map.
 /// - `Context`: The operational context in which the hash map is formed.
 /// - `Formed`: The type produced, typically mirroring the structure of a `BTreeMap<K, E>`.
-
-#[derive(Debug, Default)]
+#[ derive( Debug, Default ) ]
 pub struct BTreeMapDefinitionTypes<K, E, Context = (), Formed = BTreeMap<K, E>> {
   _phantom: core::marker::PhantomData<(K, E, Context, Formed)>,
 }
@@ -211,7 +209,7 @@ impl<K, E> BTreeMapExt<K, E> for BTreeMap<K, E>
 where
   K: Ord,
 {
-  #[allow(clippy::default_constructed_unit_structs)]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn former() -> BTreeMapFormer<K, E, (), BTreeMap<K, E>, ReturnStorage> {
     BTreeMapFormer::<K, E, (), BTreeMap<K, E>, ReturnStorage>::new(ReturnStorage::default())
   }

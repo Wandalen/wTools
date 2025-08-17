@@ -1,6 +1,6 @@
-use std::{fmt::Debug, marker::PhantomData};
+use core::{fmt::Debug, marker::PhantomData};
 
-#[allow(dead_code)]
+#[ allow( dead_code ) ]
 struct BoundsMixed<T: ToString, U>
 where
   U: Debug,

@@ -10,11 +10,11 @@
 //! | N1.4  | Named       | 1      | Should derive `Not` for named structs with one field |
 //! | N1.5  | Named       | >1     | Should not compile (Not requires one field)     |
 
-#![ allow( unused_imports ) ]
-#![ allow( dead_code ) ]
+#[ allow( unused_imports ) ]
+#[ allow( dead_code ) ]
 
 use test_tools::prelude::*;
-use the_module::Not;
+use crate::the_module::Not;
 
 // N1.1: Unit struct
 #[ derive( Not ) ]

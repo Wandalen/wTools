@@ -94,9 +94,9 @@ fn main()
         }) {
           if !inner_params.is_empty() {
             println!( "    Inner parameters:" );
-            inner_params.iter().for_each( |inner| {
+            for inner in &inner_params {
               println!( "      - {}", qt!( #inner ) );
-            });
+            }
           }
         }
       }

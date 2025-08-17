@@ -1,5 +1,5 @@
 // Purpose: Provides shared test assertions and logic for verifying the constructors generated
-// by `#[derive(Former)]` for enums with unnamed (tuple) variants that have shared generic
+// by `#[ derive( Former ) ]` for enums with unnamed (tuple) variants that have shared generic
 // parameters and bounds, using the default subform behavior. This file is included by both
 // `generics_shared_tuple_derive.rs` and `generics_shared_tuple_manual.rs`.
 //
@@ -21,7 +21,7 @@ pub trait BoundA : core::fmt::Debug + Default + Clone + PartialEq {}
 pub trait BoundB : core::fmt::Debug + Default + Clone + PartialEq {}
 
 // Define a concrete type that satisfies both bounds for testing
-#[derive(Debug, Default, Clone, PartialEq)]
+#[ derive( Debug, Default, Clone, PartialEq ) ]
 pub struct MyType {
   pub value: i32,
 }

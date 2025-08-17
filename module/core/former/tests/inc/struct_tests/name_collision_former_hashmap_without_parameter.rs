@@ -13,14 +13,14 @@ pub trait OnEnd {}
 pub struct None {}
 pub struct Some {}
 
-#[derive(Debug, PartialEq)]
-struct HashMap<T> {
+#[ derive( Debug, PartialEq ) ]
+struct HashMap< T > {
   pub f1: T,
 }
 
-#[derive(Debug, PartialEq, Former)]
+#[ derive( Debug, PartialEq, Former ) ]
 pub struct Struct1 {
-  f2: HashMap<i32>,
+  f2: HashMap< i32 >,
   i: ::core::option::Option<i32>,
 }
 

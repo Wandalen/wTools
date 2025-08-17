@@ -1,6 +1,6 @@
 [package]
 name = "process_tools"
-version = "0.14.0"
+version = "0.15.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -49,5 +49,5 @@ duct = "0.13.7"
 
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }
 assert_fs = { version = "1.1.1" }

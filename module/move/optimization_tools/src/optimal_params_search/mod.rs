@@ -8,6 +8,7 @@ use iter_tools::Itertools;
 use ordered_float::OrderedFloat;
 use crate::hybrid_optimizer::*;
 use results_serialize::read_results;
+use error_tools::dependency::thiserror;
 
 /// Configuration for optimal parameters search.
 #[ derive( Debug, Clone ) ]

@@ -6,6 +6,8 @@
 //! and retrieval of commands using fully qualified names, including debug prints
 //! of string keys and their byte representations.
 //!
+
+#![ allow( clippy::uninlined_format_args ) ]
 //! | ID | Test Case | Expected Behavior | Debug Output |
 //! |---|---|---|---|
 //! | T-REG-1 | Register and retrieve command with namespace | Command should be found using its fully qualified name. | Print registered key and lookup key with byte representations. |
@@ -21,7 +23,7 @@ fn test_command_registry_key_mismatch()
   let mut registry = CommandRegistry::new();
 
   let command_def = CommandDefinition::former()
-  .name( "my_command" )
+  .name( ".my_command" )
   .namespace( ".my_namespace" )
   .hint( "A test command." )
   .description( "This is a test command for debugging registry issues." )
@@ -60,16 +62,17 @@ fn test_command_registry_key_mismatch()
 
   // Attempt to retrieve the command using the fully qualified name
   let lookup_key = if command_def.namespace.is_empty() {
-    format!( ".{}", command_def.name )
+    command_def.name.clone() // Name already has dot prefix
   } else {
     let ns = &command_def.namespace;
+    let name_without_dot = command_def.name.strip_prefix('.').unwrap_or(&command_def.name);
     if ns.starts_with( '.' )
     {
-      format!( "{}.{}", ns, command_def.name )
+      format!( "{}.{}", ns, name_without_dot )
     }
     else
     {
-      format!( ".{}.{}", ns, command_def.name )
+      format!( ".{}.{}", ns, name_without_dot )
     }
   };
   println!( "DEBUG: Lookup key: '{}' (bytes: {:?})", lookup_key, lookup_key.as_bytes() );

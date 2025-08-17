@@ -3,13 +3,13 @@
 
 use super::*;
 
-#[derive(Default, Debug, PartialEq, former::Former)]
+#[ derive( Default, Debug, PartialEq, former::Former ) ]
 pub struct MinimalStruct {
-  #[subform_collection( definition = former::VectorDefinition )]
+  #[ subform_collection( definition = former::VectorDefinition ) ]
   vec_1: Vec<String>,
 }
 
-#[test]
+#[ test ]
 fn minimal_test() {
   let _instance = MinimalStruct::former()
     .vec_1()

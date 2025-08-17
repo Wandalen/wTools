@@ -2,7 +2,7 @@ use super::*;
 
 // xxx : qqq : rewrite this tests with running external application
 
-#[test]
+#[ test ]
 fn basic() {
   assert!(the_module::environment::is_cicd() || !the_module::environment::is_cicd());
 }

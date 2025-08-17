@@ -7,5 +7,6 @@
 // #![ feature( trace_macros ) ]
 // #![ feature( type_name_of_val ) ]
 
+#[ allow( unused_imports ) ]
 use mem_tools as the_module;
 mod inc;

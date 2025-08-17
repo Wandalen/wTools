@@ -1,0 +1,47 @@
+[package]
+name = "workspace_tools"
+version = "0.2.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+]
+license = "MIT"
+readme = "readme.md"
+documentation = "https://docs.rs/workspace_tools"
+repository = "https://github.com/Wandalen/workspace_tools"
+homepage = "https://github.com/Wandalen/workspace_tools"
+description = """
+Universal workspace-relative path resolution for any Rust project. Provides consistent, reliable path management regardless of execution context or working directory.
+"""
+categories = [ "development-tools", "filesystem" ]
+keywords = [ "workspace", "path", "resolution", "build-tools", "cross-platform" ]
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+features = [ "full" ]
+all-features = false
+
+[features]
+default = [ "full" ]
+full = [ "enabled", "glob", "secret_management", "cargo_integration", "serde_integration", "stress", "integration" ]
+enabled = [ "dep:tempfile" ]
+glob = [ "dep:glob" ]
+secret_management = []
+cargo_integration = [ "dep:cargo_metadata", "dep:toml" ]
+serde_integration = [ "dep:serde", "dep:serde_json", "dep:serde_yaml" ]
+stress = []
+integration = []
+
+[dependencies]
+glob = { workspace = true, optional = true }
+tempfile = { workspace = true, optional = true }
+cargo_metadata = { workspace = true, optional = true }
+toml = { workspace = true, features = [ "preserve_order" ], optional = true }
+serde = { workspace = true, features = [ "derive" ], optional = true }
+serde_json = { workspace = true, optional = true }
+serde_yaml = { workspace = true, optional = true }
+
+[dev-dependencies]
+# Test utilities - using minimal local dependencies only

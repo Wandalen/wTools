@@ -58,7 +58,7 @@
 
 #[cfg(not(feature = "enabled"))]
 fn main() {}
-#[cfg(feature = "enabled")]
+#[ cfg( feature = "enabled" ) ]
 fn main() {
   use clone_dyn_types::CloneDyn;
 
@@ -80,9 +80,9 @@ fn main() {
   }
 
   // Implement `Clone` for boxed `IterTrait` trait objects.
-  #[allow(non_local_definitions)]
+  #[ allow( non_local_definitions ) ]
   impl<'c, T> Clone for Box<dyn IterTrait<'c, T> + 'c> {
-    #[inline]
+    #[ inline ]
     fn clone(&self) -> Self {
       clone_dyn_types::clone_into_box(&**self)
     }
@@ -110,7 +110,6 @@ fn main() {
   /// To handle this, the function returns a trait object (`Box<dyn IterTrait>`).
   /// However, Rust's `Clone` trait cannot be implemented for trait objects due to object safety constraints.
   /// The `CloneDyn` trait addresses this problem by enabling cloning of trait objects.
-
   pub fn get_iter<'a>(src: Option<&'a Vec<i32>>) -> Box<dyn IterTrait<'a, &'a i32> + 'a> {
     match &src {
       Some(src) => Box::new(src.iter()),

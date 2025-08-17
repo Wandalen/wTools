@@ -19,7 +19,7 @@ use core::
 use std::sync::OnceLock;
 
 /// A struct representing the list of keys output format.
-#[derive( Debug )]
+#[ derive( Debug ) ]
 pub struct Keys
 {
   // /// Prefix added to each row.

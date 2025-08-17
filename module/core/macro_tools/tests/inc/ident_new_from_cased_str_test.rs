@@ -1,4 +1,4 @@
-#[cfg(test)]
+#[ cfg( test ) ]
 mod tests {
     use macro_tools::ident;
     use syn::spanned::Spanned; // Corrected import for Spanned
@@ -8,7 +8,7 @@ mod tests {
         proc_macro2::Span::call_site()
     }
 
-    #[test]
+    #[ test ]
     fn t6_1_normal_ident() {
         // ID: T6.1, Input: ("normal_ident", span, false), Expected: Ok(syn::Ident::new("normal_ident", span))
         let span = dummy_span();
@@ -23,7 +23,7 @@ mod tests {
         // Here, we trust the span is passed through.
     }
 
-    #[test]
+    #[ test ]
     fn t6_2_keyword_becomes_raw() {
         // ID: T6.2, Input: ("fn", span, false), Expected: Ok(syn::Ident::new_raw("fn", span))
         let span = dummy_span();
@@ -33,7 +33,7 @@ mod tests {
         assert_eq!(ident.to_string(), "r#fn");
     }
 
-    #[test]
+    #[ test ]
     fn t6_3_original_raw_keyword_stays_raw() {
         // ID: T6.3, Input: ("fn", span, true), Expected: Ok(syn::Ident::new_raw("fn", span))
         let span = dummy_span();
@@ -43,7 +43,7 @@ mod tests {
         assert_eq!(ident.to_string(), "r#fn");
     }
 
-    #[test]
+    #[ test ]
     fn t6_4_original_raw_non_keyword_stays_raw() {
         // ID: T6.4, Input: ("my_raw_ident", span, true), Expected: Ok(syn::Ident::new_raw("my_raw_ident", span))
         let span = dummy_span();
@@ -53,7 +53,7 @@ mod tests {
         assert_eq!(ident.to_string(), "r#my_raw_ident");
     }
 
-    #[test]
+    #[ test ]
     fn t6_5_empty_string_err() {
         // ID: T6.5, Input: ("", span, false), Expected: Err(_)
         let span = dummy_span();
@@ -61,7 +61,7 @@ mod tests {
         assert!(result.is_err(), "Test T6.5 failed: expected error for empty string");
     }
 
-    #[test]
+    #[ test ]
     fn t6_6_invalid_chars_err() {
         // ID: T6.6, Input: ("with space", span, false), Expected: Err(_)
         let span = dummy_span();
@@ -69,7 +69,7 @@ mod tests {
         assert!(result.is_err(), "Test T6.6 failed: expected error for string with space");
     }
 
-    #[test]
+    #[ test ]
     fn t6_7_valid_pascal_case_ident() {
         // ID: T6.7, Input: ("ValidIdent", span, false), Expected: Ok(syn::Ident::new("ValidIdent", span))
         let span = dummy_span();
@@ -79,7 +79,7 @@ mod tests {
         assert_eq!(ident.to_string(), "ValidIdent");
     }
 
-    #[test]
+    #[ test ]
     fn underscore_ident() {
         let span = dummy_span();
         let result = ident::new_ident_from_cased_str("_", span, false);
@@ -87,7 +87,7 @@ mod tests {
         assert_eq!(result.unwrap().to_string(), "_");
     }
 
-    #[test]
+    #[ test ]
     fn underscore_prefixed_ident() {
         let span = dummy_span();
         let result = ident::new_ident_from_cased_str("_my_ident", span, false);
@@ -95,7 +95,7 @@ mod tests {
         assert_eq!(result.unwrap().to_string(), "_my_ident");
     }
 
-    #[test]
+    #[ test ]
     fn keyword_if_becomes_raw() {
         let span = dummy_span();
         let result = ident::new_ident_from_cased_str("if", span, false);
@@ -103,7 +103,7 @@ mod tests {
         assert_eq!(result.unwrap().to_string(), "r#if");
     }
 
-    #[test]
+    #[ test ]
     fn keyword_if_original_raw_stays_raw() {
         let span = dummy_span();
         let result = ident::new_ident_from_cased_str("if", span, true);
