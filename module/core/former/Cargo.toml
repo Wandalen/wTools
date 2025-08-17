@@ -95,3 +95,8 @@ required-features = ["benchmarks"]
 name = "real_memory_benchmark"
 path = "benches/real_memory_benchmark.rs"
 required-features = ["benchmarks"]
+
+[[bin]]
+name = "real_builder_benchmark"
+path = "benches/real_builder_benchmark.rs"
+required-features = ["benchmarks"]
