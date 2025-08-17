@@ -49,7 +49,8 @@ full = [
 ]
 
 # Performance optimization features
-performance = ["former_meta/performance"]
+performance = ["former_meta/performance", "dep:benchkit"]
+benchmarks = ["performance", "dep:benchkit"]
 enabled = [ "former_meta/enabled", "former_types/enabled" ]
 
 derive_former = [ "former_meta/derive_former", "types_former" ]
@@ -69,7 +70,28 @@ former_diagnostics_print_generated = [ "former_meta/former_diagnostics_print_gen
 former_meta = { workspace = true } # Debug features disabled to prevent compile-time output
 former_types = { workspace = true }
 # collection_tools = { workspace = true, features = [ "collection_constructors" ] }
+benchkit = { workspace = true, optional = true, features = [ "enabled", "markdown_reports", "data_generators" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
 collection_tools = { workspace = true, features = [ "collection_constructors" ] }
+
+[[bin]]
+name = "former_optimization_benchmark"
+path = "benches/former_optimization_benchmark.rs"
+required-features = ["benchmarks"]
+
+[[bin]]
+name = "macro_expansion_benchmark"
+path = "benches/macro_expansion_benchmark.rs"
+required-features = ["benchmarks"]
+
+[[bin]]
+name = "builder_runtime_benchmark"
+path = "benches/builder_runtime_benchmark.rs"
+required-features = ["benchmarks"]
+
+[[bin]]
+name = "real_memory_benchmark"
+path = "benches/real_memory_benchmark.rs"
+required-features = ["benchmarks"]
