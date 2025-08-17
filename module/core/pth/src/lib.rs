@@ -59,7 +59,7 @@ mod_interface! {
   // own use ::std::path::{ PathBuf, Path, Component };
 
   #[ cfg( not( feature = "no_std" ) ) ]
-  own use ::std::path::*;
+  exposed use ::std::path::{ Path, PathBuf };
 
   #[ cfg( not( feature = "no_std" ) ) ]
   own use ::std::borrow::Cow;

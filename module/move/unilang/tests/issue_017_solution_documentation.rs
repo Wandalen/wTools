@@ -1,5 +1,8 @@
 //! Issue 017 Solution Documentation and Demonstration
 //!
+
+#![ allow( clippy::uninlined_format_args ) ]
+//!
 //! **Problem**: Commands registered with dot prefixes (e.g., ".chat") failed at runtime 
 //! with "No executable routine found" errors, despite successful registration.
 //!

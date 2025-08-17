@@ -882,34 +882,44 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 **Step 3: Handling Interactive Arguments**
 Enhanced REPL provides better support for interactive arguments:
 
-```rust
+```rust,no_run
 use unilang::prelude::*;
 
-// In your REPL loop
-let result = pipeline.process_command_simple(&input);
+fn handle_interactive_input() -> Result< (), Box< dyn std::error::Error > >
+{
+  let registry = CommandRegistry::new();
+  let mut pipeline = Pipeline::new( registry );
+  let input = String::from( "example_command" );
+  
+  // In your REPL loop
+  let result = pipeline.process_command_simple( &input );
 
-if result.requires_interactive_input() {
-    if let Some(arg_name) = result.interactive_argument() {
-        #[cfg(feature = "enhanced_repl")]
-        {
-            // Enhanced REPL: Secure password prompt with masking
-            use rustyline::DefaultEditor;
-            let mut rl = DefaultEditor::new()?;
-            let password = rl.readline(&format!("Enter {}: ", arg_name))?;
-            // Re-run command with interactive argument...
-        }
-        
-        #[cfg(all(feature = "repl", not(feature = "enhanced_repl")))]
-        {
-            // Basic REPL: Standard input (visible)
-            use std::io::{self, Write};
-            print!("Enter {}: ", arg_name);
-            io::stdout().flush()?;
-            let mut value = String::new();
-            io::stdin().read_line(&mut value)?;
-            // Re-run command with interactive argument...
-        }
+  if result.requires_interactive_input()
+  {
+    if let Some( arg_name ) = result.interactive_argument()
+    {
+      #[ cfg( feature = "enhanced_repl" ) ]
+      {
+        // Enhanced REPL: Secure password prompt with masking
+        use rustyline::DefaultEditor;
+        let mut rl = DefaultEditor::new()?;
+        let password = rl.readline( &format!( "Enter {}: ", arg_name ) )?;
+        // Re-run command with interactive argument...
+      }
+      
+      #[ cfg( all( feature = "repl", not( feature = "enhanced_repl" ) ) ) ]
+      {
+        // Basic REPL: Standard input (visible)
+        use std::io::{ self, Write };
+        print!( "Enter {}: ", arg_name );
+        io::stdout().flush()?;
+        let mut value = String::new();
+        io::stdin().read_line( &mut value )?;
+        // Re-run command with interactive argument...
+      }
     }
+  }
+  Ok( () )
 }
 ```
 

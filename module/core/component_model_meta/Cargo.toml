@@ -1,6 +1,6 @@
 [package]
 name = "component_model_meta"
-version = "0.5.0"
+version = "0.6.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -53,4 +53,4 @@ component_model_types = { workspace = true, features = [ "types_component_assign
 convert_case = { version = "0.6.0", default-features = false, optional = true, features = [] }
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }

@@ -152,7 +152,7 @@ impl CommandResult
   #[ must_use ]
   pub fn error_message( &self ) -> Option< &str >
   {
-    self.error.as_ref().map( |e| e.as_str() )
+    self.error.as_deref()
   }
 
   /// Returns outputs if command succeeded, empty slice otherwise.
@@ -171,7 +171,7 @@ impl CommandResult
     }
   }
 
-  /// Parses the error message into a structured UnilangError type.
+  /// Parses the error message into a structured `UnilangError` type.
   /// 
   /// This enables type-safe error handling instead of fragile string matching.
   /// Returns None if the command succeeded.
@@ -377,10 +377,7 @@ fn extract_interactive_argument( error_msg : &str ) -> Option< &str >
       {
         return Some( &arg_part[ ..arg_end ] );
       }
-      else
-      {
-        return Some( arg_part );
-      }
+      return Some( arg_part );
     }
   }
   
@@ -408,10 +405,7 @@ fn extract_command_from_error( error_msg : &str ) -> Option< &str >
     {
       return Some( &after[ ..end ] );
     }
-    else
-    {
-      return Some( after );
-    }
+    return Some( after );
   }
   
   // Look for "command '<name>'" pattern  
@@ -453,16 +447,16 @@ fn extract_available_commands( error_msg : &str ) -> Vec< String >
       
       // Extract command names - they typically start with '.' 
       // Handle various indentation patterns
-      if line.starts_with( '.' )
+      if let Some( stripped ) = line.strip_prefix( '.' )
       {
         // Direct command line
-        if let Some( cmd_end ) = line.find( ' ' )
+        if let Some( cmd_end ) = stripped.find( ' ' )
         {
-          commands.push( line[ 1..cmd_end ].to_string() ); // Skip the '.'
+          commands.push( stripped[ ..cmd_end ].to_string() );
         }
         else
         {
-          commands.push( line[ 1.. ].to_string() );
+          commands.push( stripped.to_string() );
         }
       }
       else if line.contains( '.' )

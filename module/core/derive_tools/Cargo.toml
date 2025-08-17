@@ -1,6 +1,6 @@
 [package]
 name = "derive_tools"
-version = "0.45.0"
+version = "0.47.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -210,7 +210,7 @@ clone_dyn = { workspace = true, optional = true, features = [ "clone_dyn_types",
 
 derive_tools_meta = { workspace = true, features = ["enabled"] }
 macro_tools = { workspace = true, features = ["enabled", "diag", "attr"] }
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }
 
 [build-dependencies]
 cfg_aliases = "0.1.1"

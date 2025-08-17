@@ -1,6 +1,6 @@
 [package]
 name = "mod_interface_meta"
-version = "0.41.0"
+version = "0.42.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -46,4 +46,4 @@ macro_tools = { workspace = true }
 derive_tools = { workspace = true, features = [ "enabled", "derive_is_variant" ] }
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }

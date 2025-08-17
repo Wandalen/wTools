@@ -9,7 +9,7 @@ mod private
     io::{ Write, Read },
   };
 
-  use pth::Path;
+  use std::path::Path;
   use collection_tools::collection::BTreeMap;
   use convert_case::{ Casing, Case };
   use handlebars::{ RenderError, TemplateError };

@@ -1,6 +1,6 @@
 [package]
 name = "strs_tools_meta"
-version = "0.5.0"
+version = "0.6.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -31,13 +31,11 @@ full = [
   "optimize_split",
   "optimize_match",
 ]
-enabled = [ "macro_tools/enabled" ]
+enabled = []
 
-optimize_split = []
-optimize_match = []
+optimize_split = [ "dep:macro_tools" ]
+optimize_match = [ "dep:macro_tools" ]
 
 [dependencies]
-macro_tools = { workspace = true, features = [ "attr", "ct", "diag", "typ", "derive" ] }
+macro_tools = { workspace = true, features = [ "attr", "ct", "diag", "typ", "derive", "enabled" ], optional = true }
 
-[dev-dependencies]
-test_tools = { workspace = true }

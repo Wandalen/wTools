@@ -1,5 +1,10 @@
 //! MRE test for issue 017: Command Runtime Registration Failure
 
+#![ allow( clippy::doc_markdown ) ]
+#![ allow( clippy::unnecessary_wraps ) ]
+#![ allow( clippy::uninlined_format_args ) ]
+#![ allow( clippy::inefficient_to_string ) ]
+
 use unilang::{ CommandDefinition, CommandRegistry, Pipeline, ExecutionContext, VerifiedCommand, OutputData, ErrorData };
 
 /// MRE test for issue 017: Command Runtime Registration Failure

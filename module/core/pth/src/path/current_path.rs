@@ -7,6 +7,8 @@ mod private
   {
     env,
     io,
+    path::{ Path, PathBuf },
+    borrow::Cow,
   };
   
   #[cfg(feature = "no_std")]
@@ -17,6 +19,8 @@ mod private
   {
     env,
     io,
+    path::{ Path, PathBuf },
+    borrow::Cow,
   };
 
   /// Symbolize current path.

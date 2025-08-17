@@ -27,7 +27,8 @@ PKG_FLAGS = $(if $(crate),-p $(crate))
 	wtest2 \
 	wtest3 \
 	wtest4 \
-	wtest5
+	wtest5 \
+	clean-cache-files
 
 #
 # === Help ===
@@ -60,6 +61,9 @@ help:
 	@echo "  wtest3 [crate=..] - Watch Level 3: Primary + Doc + Linter."
 	@echo "  wtest4 [crate=..] - Watch Level 4: All checks + Heavy testing (deps + audit)."
 	@echo "  wtest5 [crate=..] - Watch Level 5: Full heavy testing with mutations."
+	@echo ""
+	@echo "Cache Management:"
+	@echo "  clean-cache-files - Add hyphen prefix to cache files for git exclusion."
 	@echo ""
 
 
@@ -163,7 +167,8 @@ ctest4:
 	RUSTDOCFLAGS="-D warnings" cargo test --doc --all-features $(PKG_FLAGS) && \
 	cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && \
 	cargo +nightly udeps --all-targets --all-features $(PKG_FLAGS) && \
-	cargo +nightly audit --all-features $(PKG_FLAGS)
+	cargo +nightly audit --all-features $(PKG_FLAGS) && \
+	$(MAKE) --no-print-directory clean-cache-files
 
 # Test Level 5: Full heavy testing with mutation tests.
 #
@@ -177,7 +182,8 @@ ctest5:
 	cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && \
 	willbe .test dry:0 && \
 	cargo +nightly udeps --all-targets --all-features $(PKG_FLAGS) && \
-	cargo +nightly audit --all-features $(PKG_FLAGS)
+	cargo +nightly audit --all-features $(PKG_FLAGS) && \
+	$(MAKE) --no-print-directory clean-cache-files
 
 #
 # === Watch Commands ===
@@ -213,7 +219,7 @@ wtest3:
 #	make wtest4 [crate=name]
 wtest4:
 	@echo "Watching Level 4: All checks + Heavy testing..."
-	@cargo watch -c --shell "RUSTFLAGS=\"-D warnings\" cargo nextest run --all-features $(PKG_FLAGS) && RUSTDOCFLAGS=\"-D warnings\" cargo test --doc --all-features $(PKG_FLAGS) && cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && cargo +nightly udeps --all-targets --all-features $(PKG_FLAGS) && cargo +nightly audit --all-features $(PKG_FLAGS)"
+	@cargo watch -c --shell "RUSTFLAGS=\"-D warnings\" cargo nextest run --all-features $(PKG_FLAGS) && RUSTDOCFLAGS=\"-D warnings\" cargo test --doc --all-features $(PKG_FLAGS) && cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && cargo +nightly udeps --all-targets --all-features $(PKG_FLAGS) && cargo +nightly audit --all-features $(PKG_FLAGS) && make --no-print-directory clean-cache-files"
 
 # Watch Level 5: Full heavy testing with mutations.
 #
@@ -221,4 +227,22 @@ wtest4:
 #	make wtest5 [crate=name]
 wtest5:
 	@echo "Watching Level 5: Full heavy testing..."
-	@cargo watch -c --shell "RUSTFLAGS=\"-D warnings\" cargo nextest run --all-features $(PKG_FLAGS) && RUSTDOCFLAGS=\"-D warnings\" cargo test --doc --all-features $(PKG_FLAGS) && cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && willbe .test dry:0 && cargo +nightly udeps --all-targets --all-features $(PKG_FLAGS) && cargo +nightly audit --all-features $(PKG_FLAGS)"
+	@cargo watch -c --shell "RUSTFLAGS=\"-D warnings\" cargo nextest run --all-features $(PKG_FLAGS) && RUSTDOCFLAGS=\"-D warnings\" cargo test --doc --all-features $(PKG_FLAGS) && cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && willbe .test dry:0 && cargo +nightly udeps --all-targets --all-features $(PKG_FLAGS) && cargo +nightly audit --all-features $(PKG_FLAGS) && make --no-print-directory clean-cache-files"
+
+#
+# === Cache Cleanup ===
+#
+
+# Clean cache files created by cargo audit and other tools by adding hyphen prefix.
+# This ensures they are ignored by git while preserving the data for future runs.
+#
+# Usage :
+#	make clean-cache-files
+clean-cache-files:
+	@echo "Cleaning cache files (adding hyphen prefix for git exclusion)..."
+	@if [ -d "advisory-db" ]; then mv advisory-db -advisory-db 2>/dev/null || true; fi
+	@if [ -f "advisory-db..lock" ]; then mv advisory-db..lock -advisory-db..lock 2>/dev/null || true; fi
+	@if [ -d ".global-cache" ]; then mv .global-cache -.global-cache 2>/dev/null || true; fi
+	@if [ -d ".package-cache" ]; then mv .package-cache -.package-cache 2>/dev/null || true; fi
+	@if [ -d "registry" ]; then mv registry -registry 2>/dev/null || true; fi
+	@echo "Cache files cleaned successfully."

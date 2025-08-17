@@ -7,7 +7,7 @@ mod private
 
   use std::
   {
-    // borrow::Cow,
+    borrow::Cow,
     path::{ Path, PathBuf },
     io,
   };

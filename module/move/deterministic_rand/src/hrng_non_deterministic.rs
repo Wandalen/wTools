@@ -8,6 +8,7 @@
 /// Define a private namespace for all its items.
 mod private {
 
+  #[ allow( unused_imports ) ]
   use crate::*;
   use core::{ops::Deref, ops::DerefMut};
 

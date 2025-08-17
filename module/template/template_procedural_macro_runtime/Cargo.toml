@@ -54,4 +54,4 @@ path = "tests/_integration_test/smoke_test.rs"
 [dependencies]
 
 [dev-dependencies]
-test_tools = { workspace = true }
+test_tools = { workspace = true, features = [ "full" ] }

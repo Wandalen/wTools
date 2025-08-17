@@ -208,6 +208,7 @@ mod private
     #[ cfg( feature = "no_std" ) ]
     extern crate alloc;
     #[ cfg( feature = "no_std" ) ]
+    #[ allow( unused_imports ) ]
     use alloc::string::ToString;
 
     // println!( "a" );
@@ -330,11 +331,13 @@ mod private
   /// # Panics
   /// qqq: doc
   // qqq : make macro paths_join!( ... )
-  pub fn iter_join< 'a ,I, P >( paths : I ) -> PathBuf
+  pub fn iter_join< 'a ,I, P >( paths : I ) -> std::path::PathBuf
   where
     I : Iterator< Item = P >,
     P : TryIntoCowPath< 'a >,
   {
+    #[ allow( unused_imports ) ]
+    use std::path::PathBuf;
     #[ cfg( feature = "no_std" ) ]
     extern crate alloc;
     #[ cfg( feature = "no_std" ) ]

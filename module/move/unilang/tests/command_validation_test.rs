@@ -3,6 +3,11 @@
 //! Tests that the framework enforces explicit dot prefixes and rejects
 //! commands that don't follow the naming requirements.
 
+#![ allow( clippy::unnecessary_wraps ) ]
+#![ allow( clippy::uninlined_format_args ) ]
+#![ allow( clippy::print_literal ) ]
+#![ allow( clippy::single_char_pattern ) ]
+
 use unilang::{ CommandDefinition, CommandRegistry, ExecutionContext, VerifiedCommand, OutputData, ErrorData };
 
 fn dummy_handler(_cmd: VerifiedCommand, _ctx: ExecutionContext) -> Result< OutputData, ErrorData >
